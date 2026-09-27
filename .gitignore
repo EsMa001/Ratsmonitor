@@ -61,3 +61,11 @@ next-env.d.ts
 
 # Lokale Protokolle
 *.log
+
+# Lokale Zugangskonfiguration
+.dev.vars*
+
+.dev.vars*
+
+/.local-backups/
+/ratsmonitor-data*.json*

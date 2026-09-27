@@ -19,7 +19,7 @@ export interface TopicEvent {
 }
 export interface ContentEvidence {url:string;quote:string;location?:string}
 export interface ContentAnalysis {id:string;status:'completed'|'insufficient_source'|'failed'|'stale';method:string;generatedAt:string;inputHash:string;sourceSignature:string;basis:string;reason?:string;evidence:ContentEvidence[];sourceDocuments:{url:string;hash:string;fetchedAt:string}[];checks:{name:string;passed:boolean}[];reviewStatus:'not_independently_reviewed'|'reviewed'}
-export interface WeightedKeywords {status:'completed'|'stale';method:string;generatedAt:string;inputHash:string;basis:string;items:{term:string;weight:number;evidence?:ContentEvidence}[]}
+export interface WeightedKeywords {inputBasis?:'title'|'content';status:'completed'|'stale';method:string;generatedAt:string;inputHash:string;basis:string;items:{term:string;weight:number;evidence?:ContentEvidence}[]}
 export interface ArticleMetadata {version:string;firstImportedAt:string|null;sourceModifiedAt:string|null;lastFetchedAt:string|null;lastProcessedAt:string|null}
 export interface QualityResult {
     passed: boolean;
@@ -62,6 +62,7 @@ export interface TopicDetail extends TopicCard {
     committee: string;
     eventDate: string;
     reference: string;
+    referenceStatus?:'not_available_in_source';
     documents: SourceDocument[];
     events: TopicEvent[];
     relevanceReason: string;

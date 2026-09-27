@@ -10,7 +10,7 @@ Der erste regionale Initialbestand enthält 437 zusätzliche Artikel (84 Billerb
 
 Der versionierte Bestand einschließlich Zwölf-Monats-Nachladung umfasst nach lokalem Abgleich 24.921 kanonische Artikel aus 43 Gebieten (39 Kommunen, vier Kreise). Die zwanzig jüngst ergänzten Kommunen im Münsterland und nördlichen Ruhrgebiet liefern nach dem Folgeimport 8.993 Artikel. Er ist keine NRW-Vollerhebung und keine Live-Zählung der Datenbank. Die vollständige Aufteilung sowie offene Anforderungen stehen im Hauptdokument.
 
-Verbindliche Ergänzungen zu Fachlichkeit, Datenbank, Vergleich und Gestaltung: [Konsolidierte Anforderungen v0.21](requirements/vor-Ort_Anforderungen.md).
+Verbindliche Ergänzungen zu Fachlichkeit, Datenbank, Vergleich und Gestaltung: [Konsolidierte Anforderungen v0.22](requirements/vor-Ort_Anforderungen.md).
 
 Der initiale Münster-Datenstand enthält 537 Vorgänge aus 57 Sitzungen (Stand 20.09.2026); fünf nicht erreichbare Verknüpfungen sind als Abdeckungslücke ausgewiesen. Bei 317 Vorgängen wurde Dokumenttext aus über OParl gelieferten PDFs gewonnen. Sieben Beiträge haben bei der Erstellung des MVP KI-Zusammenfassungen erhalten; weitere Beiträge zeigen transparente Quellenüberblicke und Originalauszüge. Es werden keine erfundenen Ratsdaten verwendet.
 
@@ -212,3 +212,23 @@ Schema vor Inhaltsimport anwenden: `0003_typical_mauler.sql` ergänzt `article_a
 Fortsetzung nur ausdrücklich starten, bis `remaining=0`; `conflictIds` vor weiterer Bearbeitung prüfen. Bereits gespeicherte Analysen werden übersprungen. Die Antwort `stored` zählt den tatsächlichen Billerbeck-Bestand. Pro Artikel erfolgen Versionssicherung, vier getrennte Analysestände und Aktualisierung atomar. Metadatenimporte erhalten vorhandene Zusammenfassungen und markieren geänderte Eingaben als veraltet. Keine Verarbeitung durch GET, Öffnen der Analyse, Import oder Deployment.
 
 Neue API-gestützte Zusammenfassungsversuche speichern ebenfalls nur kompakte Ergebnisse, Belege und Provenienz; neu heruntergeladene Volltexte gelangen nicht in den dauerhaften Artikeldatensatz. Vorhandene Alt-Auszüge bleiben erhalten. Das vorbereitete Paket ist ein einmaliger Teststand und verarbeitet keine späteren Artikel automatisch. Eine erneute direkte Inhaltsanalyse benötigt ein neu geprüftes Paket; die API-gestützte Laufzeitverarbeitung ist weiterhin nicht konfiguriert. Methodik und verbleibende Lücken: [Pilotbericht](requirements/billerbeck-content-pilot.md).
+
+
+## Vollständige Datenbank lokal übernehmen
+
+Im angemeldeten Adminbereich „Datenbank sichern“ → „Vollständigen Datenexport herunterladen“. Das enthält den tatsächlich gespeicherten Online-Bestand samt alten Fassungen, Analysen und Quellenstand. Die Datei ist keine Auswahl des Feeds und nicht der mitgelieferte Demo-/Ersatzstand. Sie erzeugt keine neuen KI-Texte. „Vollständigkeit prüfen“ zählt fehlende Pflichtangaben ohne Analyseaufruf.
+
+Windows: Den laufenden Server zuerst mit **Strg+C** beenden, bis wieder `PS ...>` erscheint. Im Projektverzeichnis die aktuellen Migrationen anwenden, dann die heruntergeladene Datei importieren:
+
+```powershell
+cd "C:\Git\vor-ort-quellcode"
+pnpm exec wrangler d1 migrations apply DB --local --config .\wrangler.local.json --persist-to .\.wrangler\state
+node scripts/database-restore.mjs "$HOME\Downloads\ratsmonitor-data-2026-09-27.jsonl.gz"
+pnpm exec vite --host 127.0.0.1 --port 5173 --strictPort
+```
+
+Den tatsächlichen Dateinamen einsetzen. Das Werkzeug benötigt Node >=22.13 (für Windows empfohlen: der bereits eingerichtete Node 24), kein Python. Es findet die vorhandene lokale D1-Datenbank, kontrolliert Prüfsummen und Zeilenzahlen und übernimmt ausschließlich Fachdaten. Der lokale Adminzugang bleibt bestehen. Bei einer bereits gefüllten Datenbank stoppt es ohne Änderung. Nur zum ausdrücklich gewünschten Ersatz `--replace` ergänzen; davor wird automatisch eine SQLite-Sicherung unter `.local-backups/` angelegt. Den lokalen Server während der Wiederherstellung geschlossen lassen.
+
+Die Kopie stimmt mit dem Online-Stand **zum Exportzeitpunkt** überein. Spätere Änderungen laufen nicht automatisch zwischen beiden Installationen mit. Alle bekannten Quellen- und KI-Lücken bleiben in der Kopie sichtbar. Die Dateien `ratsmonitor-data*.json*`, `.local-backups/`, `.wrangler/` und `.dev.vars*` gehören nicht in Git. Regelmäßige separate Sicherungen der Arbeitsergebnisse sind weiterhin erforderlich.
+
+Für einen ausdrücklich beauftragten technischen Export kann `DATA_EXPORT_TOKEN` als separates Runtime-Geheimnis gesetzt werden. `GET /api/internal/database-export` erlaubt ausschließlich die vier festen Inhaltstabellen und Feldprüfungen. Der Browser verwendet stattdessen die bestehende Betreiberanmeldung unter `/api/admin/database`.

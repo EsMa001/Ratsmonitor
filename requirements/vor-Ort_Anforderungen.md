@@ -1,6 +1,6 @@
-# vor Ort - Anforderungen v0.21: Kommunalpolitik in NRW
+# vor Ort - Anforderungen v0.22: Kommunalpolitik in NRW
 
-Stand: 27.09.2026. Version v0.21 ergänzt gespeicherte KI-Inhaltszusammenfassungen und nachvollziehbare Artikeldaten für den Billerbeck-Test (Abschnitt 29). Version v0.20 trennt das Lesen gespeicherter Auswertungen von der ausschließlich manuell gestarteten Artikelanalyse (Abschnitt 28). Die Performance-Korrekturen aus Abschnitt 27 bleiben erhalten. Die sechs Kartenansichten aus v0.18 sowie Administration und Folgeimporte bleiben erhalten. Dieses Dokument ist die maßgebliche aktuelle Ergänzung zur Stakeholder-Basis v0.3 und zum Anforderungsabgleich v0.4. Bei Widersprüchen gilt v0.21. Bestehende Anforderungs-IDs bleiben erhalten. Frühere Prüfberichte und Studien dokumentieren ihren damaligen, eingefrorenen Stand; sie werden durch den neuen Import nicht rückwirkend verändert.
+Stand: 27.09.2026. Version v0.22 ergänzt die verbindliche Inhaltsvollständigkeit und Übertragung des tatsächlichen Online-Bestands in die lokale Datenbank (Abschnitt 30). Version v0.21 ergänzt gespeicherte KI-Inhaltszusammenfassungen und nachvollziehbare Artikeldaten für den Billerbeck-Test (Abschnitt 29). Version v0.20 trennt das Lesen gespeicherter Auswertungen von der ausschließlich manuell gestarteten Artikelanalyse (Abschnitt 28). Die Performance-Korrekturen aus Abschnitt 27 bleiben erhalten. Die sechs Kartenansichten aus v0.18 sowie Administration und Folgeimporte bleiben erhalten. Dieses Dokument ist die maßgebliche aktuelle Ergänzung zur Stakeholder-Basis v0.3 und zum Anforderungsabgleich v0.4. Bei Widersprüchen gilt v0.22. Bestehende Anforderungs-IDs bleiben erhalten. Frühere Prüfberichte und Studien dokumentieren ihren damaligen, eingefrorenen Stand; sie werden durch den neuen Import nicht rückwirkend verändert.
 
 **Anforderung und Erfüllung sind getrennt:** „Umgesetzt“ bedeutet im Code vorhanden, keine vollständige Produktabnahme. „Teilweise“ bezeichnet eine vorhandene Funktion mit einer benannten Grenze. „Offen“ bezeichnet eine weiterhin geltende, nicht erfüllte Anforderung oder ausstehende Prüfung. Die Aktualisierung v0.20 dokumentiert weiterhin die technische Vorbereitung des regelmäßigen Importbetriebs. Seine dauerhafte Aktivierung und Produktionsabnahme stehen aus. Abweichungen werden nicht durch Abschwächen der Anforderungen verdeckt.
 
@@ -919,3 +919,34 @@ Alle 402 Artikel besitzen getrennte Regel-/KI-Labels und das bereits ausgearbeit
 Für 39 Sitzungen wurden öffentliche Teilnahmeangaben erfasst; die 508 Einträge sind Person-Sitzungs-Zuordnungen, keine 508 unterschiedlichen Menschen. 23 Artikel enthalten strukturierte Ergebnis-/Umsetzungsangaben. Sechs Quellen weisen erkennbare Widersprüche oder Rechen-/Datumsprobleme auf, die separat festgehalten werden. Fehlende Teilnehmer, Stimmenzahlen oder Sachverhalte werden nicht ergänzt.
 
 Prüfungen müssen Paketvollständigkeit, Originalbelege, Quellenzuordnung, Grenzen der Textlänge, Gewichte, getrennte Methoden, Zugangsschutz, atomare Speicherung, Wiederholungsschutz und Erhalt bei Folgeimporten abdecken. Diese technischen Prüfungen und die Erstellung durch dasselbe KI-System ersetzen **keine unabhängige Inhaltsstichprobe**. Diese ist vor belastbaren Aussagen zur Genauigkeit weiterhin erforderlich. Einzelheiten und Zählregeln: [Billerbeck-Inhaltstest](billerbeck-content-pilot.md).
+
+
+## 30 / Vollständige Artikelbestände online und lokal (v0.22)
+
+### SA-44 / Derselbe vollständige Mindestdatensatz in beiden Betriebsarten
+
+Alle Artikel sollen online und lokal die Angaben aus TA-29 enthalten. Dies umfasst insbesondere Bearbeitungsdatum, Gremium, Stadt/Kreis, öffentlich belegte Sitzungsteilnahme, Vorgangsnummer soweit vorhanden, bekannten Prozessstand, Titel, kurze und ausführliche KI-Inhaltszusammenfassung, Originalverweise, getrennte Regel-/KI-Labels und zehn inhaltsbasierte Stichwörter mit positiven ganzzahligen Gewichten und Summe 100. Die lokale Website darf nicht nur einen vereinfachten Ersatzbestand erhalten. Eine unbekannte Vorgangsnummer ist von belegtem Nichtvorliegen zu unterscheiden.
+
+**Vollständige Übertragung ist nicht gleich vollständige inhaltliche Bearbeitung.** Fehlende, veraltete oder unzureichend belegte Inhalte bleiben offene Anforderungen. Es werden weder erfundene Teilnehmer ergänzt noch Titeltexte zu KI-Inhaltszusammenfassungen umbenannt. Zehn Stichwörter dürfen nicht durch Synonyme, allgemeine Füllbegriffe oder erfundene Inhalte erzwungen werden. Für inhaltsleere amtliche Einträge bleibt eine begründete Quellenlücke statt eines künstlichen Berichts.
+
+### TA-31 / Vollständiger, überprüfbarer Datentransfer
+
+Der Export umfasst alle Zeilen von `topics` einschließlich zusammengeführter Verweise, `article_versions`, `article_analyses` und `source_coverage` mit unveränderten Payloads. Metadaten, Sitzungen, Teilnehmer, Zusammenfassungen und Bewertungen werden vollständig übertragen, soweit gespeichert. Inhaltsimporte werden durch den Export nicht gestartet. Originaldokumente werden für die Sicherung nicht neu heruntergeladen.
+
+Jede Inhaltsänderung erhöht durch Datenbanktrigger eine Revisionsnummer. Alle Exportseiten müssen dieselbe Revision besitzen. Wird während der Übertragung geändert, wird sie verworfen und muss neu gestartet werden. Begrenzte Seiten, SHA-256-Prüfsummen und erwartete Zeilenzahlen sichern die Übertragung ab. Prüfsummen belegen technische Integrität, nicht sachliche Richtigkeit oder eine unabhängige Freigabe. Migration 0004 ergänzt lediglich Tabelle und Trigger; sie füllt keine Artikel auf.
+
+Der lokale Import läuft in einer einzigen Transaktion. Fehlerhafte, manipulierte oder unvollständige Daten werden zurückgerollt. Vorhandene Artikel werden standardmäßig nicht ersetzt. Ein expliziter Ersatz sichert zuerst die lokale SQLite-Datei. Lokale Anmeldung, Adminbindung und Push-Abonnements bleiben erhalten. Drei ausdrücklich erlaubte Initialisierungsmarker vermeiden ein späteres Überschreiben durch den mitgelieferten Anfangsbestand. Administrative Geheimnisse, Anmeldedaten, Abonnements, Sperren und Betriebsprotokolle gehören nicht in den fachlichen Transfer.
+
+Eine wiederhergestellte Kopie entspricht genau dem Exportzeitpunkt. Automatische Synchronisation oder Konfliktauflösung zwischen zwei weiterbearbeiteten Datenbanken ist nicht Bestandteil dieser Änderung. Quellcode, Schema und Wiederherstellungswerkzeug gehören in Git; vollständige aktuelle Datenexports und SQLite-Sicherungen werden getrennt gesichert und standardmäßig ignoriert.
+
+### FA-49 / Betreiberprüfung und Sicherung
+
+Die Adminseite bietet eine manuell abrufbare Tabelle je Pflichtangabe für den Gesamtbestand und Billerbeck: vorhanden, offen sowie Anzahl der Artikel, die alle Kriterien gleichzeitig erfüllen. Unbekannte Werte zählen nicht als abgeschlossen. Die Prüfung klassifiziert nicht und erzeugt keine Inhalte. Zusätzlich kann der Betreiber den vollständigen Artikelbestand herunterladen. Der Betreiberzugang wird auf jedem API-Aufruf geprüft. Ein gesondertes geheimes Exporttoken erlaubt ausschließlich lesende Abrufe über den internen Exportendpunkt, keine Analyse oder Schreiboperationen.
+
+### DA-52 / Verständliche Grenzen
+
+Der Bereich „Datenbank & Vollständigkeit“ übernimmt Schrift, Tabellen, Farben und Schaltflächen der bestehenden Adminseite. Er nennt Fortschritt und Fehler, erläutert Sitzungsteilnahme und grenzt den Übertragungszeitpunkt von einer laufenden Synchronisation ab. „Vollständig übertragen“ darf nicht als „alle KI-Inhalte erstellt“ dargestellt werden.
+
+### QA-09 / Abnahme und offene Inhalte
+
+Technisch zu prüfen: vollständige Hin-/Rückübertragung einschließlich Analysehistorie; Erhalt der lokalen Adminbindung; gesperrter Zugriff auf geschützte Tabellen; Abbruch bei zwischenzeitlicher Inhaltsänderung; Rücknahme bei Prüfsummenfehler oder fehlenden Exportseiten; keine Schreiboperation beim Prüfen. Die tatsächliche inhaltliche Komplettierung des Gesamtbestands bleibt offen. Der bisherige Billerbeck-Stand aus QA-08 bleibt unverändert: 310 Inhaltszusammenfassungen, 92 Quellenlücken und titelbasierte Stichwortprofile mit weniger als zehn Begriffen. Ein Datenexport behebt diese Lücken nicht.
