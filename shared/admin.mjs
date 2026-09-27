@@ -5,7 +5,7 @@ export function sourceHealth(coverage,count,now=new Date()){
  const last=coverage.lastSuccessAt||coverage.importedAt||null;
  const stale=configured&&count>0&&(!last||!Number.isFinite(Date.parse(last))||Date.parse(last)<now.getTime()-7*86400000);
  const partial=count>0&&!coverage.complete;
- return {configured,stale,partial,lastSuccessAt:last,attention:configured&&(!count||partial||stale),state:!configured?'Nicht angebunden':!count?'Ohne Artikel':partial?'Teilstand':stale?'Datenstand älter':'Ohne gemeldete Lücke'};
+ return {configured,stale,partial,lastSuccessAt:last,attention:configured&&(!count||partial||stale||coverage.attemptStatus==='failed'),state:coverage.attemptStatus==='failed'?'Abruf fehlgeschlagen':!configured?'Nicht angebunden':!count?'Ohne Artikel':partial?'Teilstand':stale?'Datenstand älter':'Ohne gemeldete Lücke'};
 }
 export function filterAdminSources(rows,filter='data',query=''){
  const q=query.trim().toLocaleLowerCase('de-DE');

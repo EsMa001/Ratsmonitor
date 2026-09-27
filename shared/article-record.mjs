@@ -11,7 +11,8 @@ export function preserveArticleContent(old,incoming,source=incoming){
   if(old.contentAnalysis){const stale=old.contentAnalysis.sourceSignature!==analysisSignature(next);next.contentAnalysis={...old.contentAnalysis,...(stale?{status:'stale',reason:'Die Quelldaten haben sich seit dieser Auswertung geändert. Eine erneute Analyse muss manuell gestartet werden.'}:{})};}
  }
  if(old.officialTitle!==next.officialTitle&&old.weightedKeywords&&next.weightedKeywords===old.weightedKeywords)next.weightedKeywords={...old.weightedKeywords,status:'stale'};
- if(next.contentAnalysis?.status==='stale'&&next.labelAssessments?.ai)next.labelAssessments={...next.labelAssessments,ai:{...next.labelAssessments.ai,status:'stale'}};
+ if((next.contentAnalysis?.status==='stale'||next.labelAssessments?.ai?.sourceSignature&&next.labelAssessments.ai.sourceSignature!==analysisSignature(next))&&next.labelAssessments?.ai)next.labelAssessments={...next.labelAssessments,ai:{...next.labelAssessments.ai,status:'stale'}};
+ if(next.weightedKeywords?.inputBasis==='content'&&next.weightedKeywords.sourceSignature&&next.weightedKeywords.sourceSignature!==analysisSignature(next))next.weightedKeywords={...next.weightedKeywords,status:'stale'};
  // Retain already stored extracts. New processing does not persist full documents.
  if(old.hasDocumentText&&old.sourceText&&!source.hasDocumentText&&!source.documentText){next.sourceText=old.sourceText;next.documentText=old.documentText||'';next.hasDocumentText=true;next.documentSource=old.documentSource;}
  else if(!next.documentText&&!next.hasDocumentText)next.hasDocumentText=false;

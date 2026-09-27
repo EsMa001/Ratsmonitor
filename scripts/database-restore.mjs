@@ -42,7 +42,7 @@ export async function restoreData(db,file,{replace=false}={}){
   // These three flags avoid reapplying the bundled seed over an imported live copy.
   for(const key of INITIALIZATION_KEYS)db.prepare('DELETE FROM system_state WHERE key=?').run(key);
   for(const m of manifest.initialization)db.prepare('INSERT INTO system_state(key,value) VALUES(?,?)').run(m.key,m.value);
-  db.prepare("INSERT INTO system_state(key,value) VALUES('last-data-restore',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(JSON.stringify({at:new Date().toISOString(),sourceCreatedAt:manifest.createdAt,sourceRevision:manifest.revision,counts}));
+  db.prepare("INSERT INTO system_state(key,value) VALUES('last-data-restore',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(JSON.stringify({at:new Date().toISOString(),sourceCreatedAt:manifest.createdAt,sourceRevision:manifest.revision,localRevision:Number(db.prepare("SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) AS revision").get().revision),counts}));
   db.exec('COMMIT');return {counts,sourceCreatedAt:manifest.createdAt,sourceRevision:manifest.revision};
  }catch(error){db.exec('ROLLBACK');throw error;}finally{reader.close();input.destroy();stream.destroy();}
 }

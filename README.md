@@ -232,3 +232,11 @@ Den tatsächlichen Dateinamen einsetzen. Das Werkzeug benötigt Node >=22.13 (f�
 Die Kopie stimmt mit dem Online-Stand **zum Exportzeitpunkt** überein. Spätere Änderungen laufen nicht automatisch zwischen beiden Installationen mit. Alle bekannten Quellen- und KI-Lücken bleiben in der Kopie sichtbar. Die Dateien `ratsmonitor-data*.json*`, `.local-backups/`, `.wrangler/` und `.dev.vars*` gehören nicht in Git. Regelmäßige separate Sicherungen der Arbeitsergebnisse sind weiterhin erforderlich.
 
 Für einen ausdrücklich beauftragten technischen Export kann `DATA_EXPORT_TOKEN` als separates Runtime-Geheimnis gesetzt werden. `GET /api/internal/database-export` erlaubt ausschließlich die vier festen Inhaltstabellen und Feldprüfungen. Der Browser verwendet stattdessen die bestehende Betreiberanmeldung unter `/api/admin/database`.
+
+### Admin: Daten & Verarbeitung
+
+`/admin` enthält Karte, Auswahl für einzelne/mehrere Gebiete oder ganz NRW und vier manuell gestartete Stufen. `/admin?seite=2` enthält Qualität, Prüflisten und Betrieb. Abruf- und Regelaufträge werden gespeichert; der Browser führt nach einem bewussten Start einzelne Schritte nacheinander aus. Schließen der Seite pausiert weitere Schritte. Wiederöffnen startet nichts. Nicht angebundene Gebiete werden ausgewiesen, nicht als erfolgreich abgerufen gezählt.
+
+Claude Code wird manuell gestartet: auf Seite 1 KI-Schritte auswählen, Auftrag herunterladen, gemäß [Claude-Verarbeitung](requirements/claude-processing.md) bearbeiten und Ergebnisdatei wieder einlesen. Kein zusätzlicher KI-API-Schlüssel erforderlich; Claude Code benötigt weiterhin seinen eigenen Zugang. Quelleninhalte werden dabei vom gewählten Modelldienst verarbeitet. `scripts/claude-job.mjs validate` prüft offline, `apply` sichert und schreibt nach Stoppen des lokalen Servers in die lokale SQLite-Datei. Keine freien SQL-Schreibbefehle durch Claude nötig.
+
+Die Adminzahlen stammen aus der verbundenen Datenbank. Online-Export und lokale Übernahme sind getrennt: die Online-Seite bestätigt nicht den Zustand eines fremden PCs. Die Wiederherstellung hinterlegt einen lokalen Übernahmebeleg. Neue CLI-Analyseaufträge und temporäre Ergebnisdateien unter `.local-backups/ai-runs/` ablegen, damit diese nicht versehentlich in Git gelangen.

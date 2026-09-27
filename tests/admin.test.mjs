@@ -80,6 +80,9 @@ test('CSV export neutralizes spreadsheet formulas and escapes delimiters and quo
 const uri=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
 globalThis.adminFixture={user:null,env:{DB:db,ADMIN_SETUP_HASH:hash},reads:0,syncs:0,analyses:0,prepared:0};
 const stubs={
+ '@/server/integrations/pipeline-jobs.mjs':'export async function pipelineAction(){globalThis.adminFixture.syncs++;return {status:"queued"};}',
+ '@/server/integrations/ai-jobs.mjs':'export async function getAiJob(){globalThis.adminFixture.reads++;return null;} export async function createAiJob(){globalThis.adminFixture.analyses++;return {};} export async function applyAiResults(){globalThis.adminFixture.analyses++;return {};} export async function cancelAiJob(){globalThis.adminFixture.analyses++;return {};}',
+
  'server-only':'export {};',
  'cloudflare:workers':'export const env=globalThis.adminFixture.env;',
  '@/app/chatgpt-auth':'export async function getChatGPTUser(){return globalThis.adminFixture.user;}',
@@ -95,11 +98,11 @@ function load(file){if(cache.has(file))return cache.get(file);let s=fs.readFileS
  s=ts.transpileModule(s,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText.replace(/((?:from\s*|import\s*)['"])([^'"]+)(['"])/g,(m,pre,spec,post)=>{if(stubs[spec])return pre+uri(stubs[spec])+post;const base=spec.startsWith('@/')?path.join(root,spec.slice(2)):spec.startsWith('.')?path.resolve(path.dirname(file),spec):null;if(!base)return m;return pre+load([base,base+'.ts'].find(p=>fs.existsSync(p)&&fs.statSync(p).isFile()))+post;});
  const out=uri(s);cache.set(file,out);return out;
 }
-const routes=Object.fromEntries(await Promise.all(['overview','review','export','import','claim','analyse','prepared-analysis','database'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
+const routes=Object.fromEntries(await Promise.all(['overview','review','export','import','claim','analyse','prepared-analysis','database','pipeline','ai-job'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
 const req=(route,body,headers={})=>new Request('https://site.example/api/admin/'+route,{method:body===undefined?'GET':'POST',headers:{origin:'https://site.example','content-type':'application/json',...headers},...(body===undefined?{}:{body})});
 test('every data endpoint denies anonymous and other signed-in users before any reads or imports',async()=>{
  reset();await claimAdmin(db,owner,code,hash);globalThis.adminFixture.reads=0;globalThis.adminFixture.syncs=0;
- for(const [user,status] of [[null,401],[other,403]]){globalThis.adminFixture.user=user;for(const route of ['overview','review','export','import','analyse','prepared-analysis','database']){const response=['import','analyse','prepared-analysis'].includes(route)?await routes[route].POST(req(route,'{"region":"billerbeck"}')):await routes[route].GET(req(route));assert.equal(response.status,status,route);assert.match(response.headers.get('cache-control'),/no-store/);assert.ok(!(await response.text()).includes('sources'));}}
+ for(const [user,status] of [[null,401],[other,403]]){globalThis.adminFixture.user=user;for(const route of ['overview','review','export','import','analyse','prepared-analysis','database','pipeline','ai-job']){const response=['import','analyse','prepared-analysis','pipeline','ai-job'].includes(route)?await routes[route].POST(req(route,'{"region":"billerbeck"}')):await routes[route].GET(req(route));assert.equal(response.status,status,route);assert.match(response.headers.get('cache-control'),/no-store/);assert.ok(!(await response.text()).includes('sources'));}}
  assert.equal(globalThis.adminFixture.reads,0);assert.equal(globalThis.adminFixture.syncs,0);assert.equal(globalThis.adminFixture.prepared,0);
 });
 test('authorized APIs validate all inputs and keep import locked to configured territory identifiers',async()=>{
@@ -133,4 +136,11 @@ test('prepared content import requires a deliberate owner POST from the same ori
  assert.equal(globalThis.adminFixture.prepared,0);
  assert.equal((await routes['prepared-analysis'].POST(req('prepared-analysis','{}'))).status,200);
  assert.equal(globalThis.adminFixture.prepared,1);
+});
+
+test('pipeline and Claude mutations require same origin, owner and JSON; GET does not process data',async()=>{
+ globalThis.adminFixture.user=owner;
+ assert.equal(routes.pipeline.GET,undefined);
+ for(const route of ['pipeline','ai-job']){assert.equal((await routes[route].POST(req(route,'{}',{origin:'https://evil.example'}))).status,403);assert.equal((await routes[route].POST(req(route,'null'))).status,400);}
+ const before=globalThis.adminFixture.analyses;assert.equal((await routes['ai-job'].GET()).status,200);assert.equal(globalThis.adminFixture.analyses,before);
 });

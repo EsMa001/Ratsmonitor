@@ -1,3 +1,5 @@
+import {parseAttendance} from './sessionnet-details.mjs';
+import {sourceDecision} from './source-fields.mjs';
 import {historyStart,HISTORY_MONTHS} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
 import {hash,category,sourceSummary,parallel} from './oparl.mjs';
@@ -56,11 +58,24 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
   const date=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+offset,1));const url=source.base+`si0040.${source.extension}?__cjahr=${date.getUTCFullYear()}&__cmonat=${date.getUTCMonth()+1}`;
   try{const html=await get(url,source);if(!/sessionnet|si0040/i.test(html))throw Error('Unbekanntes Kalenderformat');for(const m of meetingRows(html,source.base))if(m.date>=fromDay)meetings.set(m.url,m);}catch(e){issues.push(e.message);if(/403|401/.test(e.message))denied=true;}
  },3);
- const grouped=new Map();let count=0;
+ const grouped=new Map();let count=0;const detailsCache=new Map();
+ const detail=url=>{if(!detailsCache.has(url))detailsCache.set(url,get(url,source));return detailsCache.get(url);};
  if(meetings.size>400)issues.push("Sitzungslimit erreicht; weiterer Import erforderlich.");
  await parallel([...meetings.values()].sort((a,b)=>oldestFirst?a.date.localeCompare(b.date):b.date.localeCompare(a.date)).slice(0,400),async m=>{
   try{const h=await get(m.url,source);if(!/tofnum/.test(h)) {issues.push(missingAgendaIssue(h,m.url));return;}
-   for(const row of parseAgenda(h,m,source,now)){const previous=grouped.get(row.id);if(previous){previous.events.push(row.event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[row.event]});}
+   let attendance=parseAttendance(h,m.url,now.toISOString());
+   const attendanceUrl=links(h,source.base).find(l=>/to0045\.(asp|php)/i.test(l.url))?.url;
+   if(attendanceUrl&&attendance.status!=='available'){try{attendance=parseAttendance(await detail(attendanceUrl),attendanceUrl,now.toISOString());}catch(e){issues.push('Teilnahmeangaben: '+e.message);}}
+   for(const row of parseAgenda(h,m,source,now)){
+    row.event.attendance=attendance;row.event.decision=sourceDecision(row.event);
+    row.sourceData={version:'public-source-fields-v1',method:'sessionnet',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:row.sourceUrl,fields:{reference:row.reference,title:row.title,result:row.event.result}}],detailStatus:'completed',issues:[]};
+    const detailUrl=row.identityLinks.find(url=>/vo0050\.(asp|php)/.test(url));
+    if(detailUrl){try{const html=await detail(detailUrl);const all=links(html,source.base);for(const l of all.filter(l=>/getfile\.|\/getfile|\.pdf/i.test(l.url)))row.documents.push({title:l.label||l.title||'Originalunterlage',url:allowed(l.url,source),kind:'application/pdf'});
+     // Preserve structured field/value rows. Never retain the entire page or a full text body.
+     const pairs=[];for(const match of html.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){const cells=[...match[1].matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(m=>text(m[1]));if(cells.length===2&&cells[0].length<100&&cells[1].length<1200&&/Vorlage|Aktenzeichen|Datum|Art|Betreff|Federführ|Zuständig|Status|Bereich/i.test(cells[0]))pairs.push({field:cells[0],value:cells[1]});}
+     row.sourceData.records.push({kind:'paper',url:detailUrl,fields:pairs});
+    }catch(e){row.sourceData.detailStatus='partial';row.sourceData.issues.push(e.message);issues.push('Vorlagendetails: '+e.message);}}
+    const previous=grouped.get(row.id);if(previous){previous.events.push(row.event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[row.event]});}
   }catch(e){issues.push(m.url+': '+e.message);}count++;onProgress(source.id+': '+count+'/'+meetings.size+' Sitzungen');
  },3);
  const topics=[];

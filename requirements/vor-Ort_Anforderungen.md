@@ -1,6 +1,6 @@
-# vor Ort - Anforderungen v0.22: Kommunalpolitik in NRW
+# vor Ort - Anforderungen v0.23: Kommunalpolitik in NRW
 
-Stand: 27.09.2026. Version v0.22 ergänzt die verbindliche Inhaltsvollständigkeit und Übertragung des tatsächlichen Online-Bestands in die lokale Datenbank (Abschnitt 30). Version v0.21 ergänzt gespeicherte KI-Inhaltszusammenfassungen und nachvollziehbare Artikeldaten für den Billerbeck-Test (Abschnitt 29). Version v0.20 trennt das Lesen gespeicherter Auswertungen von der ausschließlich manuell gestarteten Artikelanalyse (Abschnitt 28). Die Performance-Korrekturen aus Abschnitt 27 bleiben erhalten. Die sechs Kartenansichten aus v0.18 sowie Administration und Folgeimporte bleiben erhalten. Dieses Dokument ist die maßgebliche aktuelle Ergänzung zur Stakeholder-Basis v0.3 und zum Anforderungsabgleich v0.4. Bei Widersprüchen gilt v0.22. Bestehende Anforderungs-IDs bleiben erhalten. Frühere Prüfberichte und Studien dokumentieren ihren damaligen, eingefrorenen Stand; sie werden durch den neuen Import nicht rückwirkend verändert.
+Stand: 27.09.2026. Version v0.23 ergänzt die Adminzentrale mit Karte, Gebietsauswahl, manuellen Verarbeitungsaufträgen, Claude-Code-Ergebnisimport und Speichernachweisen (Abschnitt 31). Version v0.22 ergänzt die verbindliche Inhaltsvollständigkeit und Übertragung des tatsächlichen Online-Bestands in die lokale Datenbank (Abschnitt 30). Version v0.21 ergänzt gespeicherte KI-Inhaltszusammenfassungen und nachvollziehbare Artikeldaten für den Billerbeck-Test (Abschnitt 29). Version v0.20 trennt das Lesen gespeicherter Auswertungen von der ausschließlich manuell gestarteten Artikelanalyse (Abschnitt 28). Die Performance-Korrekturen aus Abschnitt 27 bleiben erhalten. Die sechs Kartenansichten aus v0.18 sowie Administration und Folgeimporte bleiben erhalten. Dieses Dokument ist die maßgebliche aktuelle Ergänzung zur Stakeholder-Basis v0.3 und zum Anforderungsabgleich v0.4. Bei Widersprüchen gilt v0.23. Bestehende Anforderungs-IDs bleiben erhalten. Frühere Prüfberichte und Studien dokumentieren ihren damaligen, eingefrorenen Stand; sie werden durch den neuen Import nicht rückwirkend verändert.
 
 **Anforderung und Erfüllung sind getrennt:** „Umgesetzt“ bedeutet im Code vorhanden, keine vollständige Produktabnahme. „Teilweise“ bezeichnet eine vorhandene Funktion mit einer benannten Grenze. „Offen“ bezeichnet eine weiterhin geltende, nicht erfüllte Anforderung oder ausstehende Prüfung. Die Aktualisierung v0.20 dokumentiert weiterhin die technische Vorbereitung des regelmäßigen Importbetriebs. Seine dauerhafte Aktivierung und Produktionsabnahme stehen aus. Abweichungen werden nicht durch Abschwächen der Anforderungen verdeckt.
 
@@ -950,3 +950,49 @@ Der Bereich „Datenbank & Vollständigkeit“ übernimmt Schrift, Tabellen, Far
 ### QA-09 / Abnahme und offene Inhalte
 
 Technisch zu prüfen: vollständige Hin-/Rückübertragung einschließlich Analysehistorie; Erhalt der lokalen Adminbindung; gesperrter Zugriff auf geschützte Tabellen; Abbruch bei zwischenzeitlicher Inhaltsänderung; Rücknahme bei Prüfsummenfehler oder fehlenden Exportseiten; keine Schreiboperation beim Prüfen. Die tatsächliche inhaltliche Komplettierung des Gesamtbestands bleibt offen. Der bisherige Billerbeck-Stand aus QA-08 bleibt unverändert: 310 Inhaltszusammenfassungen, 92 Quellenlücken und titelbasierte Stichwortprofile mit weniger als zehn Begriffen. Ein Datenexport behebt diese Lücken nicht.
+
+## 31 / Admin als Daten- und Verarbeitungszentrale (v0.23)
+
+Diese Anforderungen konkretisieren SA-44, FA-49 und DA-52. Die bisherigen Einschränkungen zur manuellen Analyse, unabhängigen Prüfung und fehlenden vollständigen Originalarchivierung gelten weiter.
+
+### FA-50 / Zwei Adminseiten und territoriale Übersicht
+
+Seite 1 (`/admin`) ist die primäre Arbeitsansicht: NRW-Karte, Bestands- und Abrufstatus, Kommunen-/Kreisauswahl, Verarbeitungsstufen, gespeicherte Aufträge, Datenbankprüfung und Export. Seite 2 (`/admin?seite=2`) enthält Qualitätsstatistiken, Prüflisten, historische Importläufe, das ältere vorbereitete Billerbeck-Paket, optionale API-Zusammenfassungen und Betriebseinstellungen. Der bisherige Betreiberzugang schützt beide Seiten und jeden Verwaltungsendpunkt.
+
+Die Karte zeigt Kommunen und Kreise in getrennten Ebenen. Auswahl ist per Karte und per beschrifteter Liste möglich. Gebiete ohne Quelle, angebundene Gebiete ohne Daten, Teilbestände, vorhandene Daten und fehlgeschlagene letzte Abrufe müssen unterscheidbar sein. Weitere Kartenfarben zeigen Berichtszahlen und den Anteil abgeschlossener Verarbeitungsschritte. Fehlende Daten sind kein Nullwert politischer Aktivität. Die Karte wird als statische Datei nachgeladen, keine Analyse beim Öffnen.
+
+Je Gebiet: Zahl kanonischer Berichte, Zeitpunkt des letzten Versuchs und der letzten erfolgreichen Übernahme, letzte gespeicherte Bearbeitung, Quellenmethode, Abrufhinweise und Zähler je Prozessschritt. Ein später fehlgeschlagener Abruf darf den letzten erfolgreichen Stand nicht verdecken oder löschen.
+
+### FA-51 / Manuelle Auswahl und gespeicherte Aufträge
+
+Einzelne Gebiete, mehrere Gebiete, alle Gebiete mit Daten oder ganz NRW (396 Kommunen und 31 Kreise) können ausgewählt werden. „Ganz NRW“ bedeutet alle Kataloggebiete, keine Behauptung einer bereits vollständigen Quellenanbindung. Nicht angebundene Quellen bleiben mit Begründung offen.
+
+Ein ausdrücklicher Start erzeugt eine gespeicherte Warteschlange. Für Stufe 1 wird je Schritt ein Gebiet abgerufen; Stufe 2 verarbeitet bis zu 500 Artikel eines Gebiets und setzt innerhalb des beauftragten Sammelauftrags fort. Schließen der Browserseite stoppt die weitere Ausführung nach dem laufenden Serveraufruf. Wiederöffnen darf keine Verarbeitung starten: Fortsetzen benötigt einen Klick. Pause wirkt nach dem aktuellen Schritt. Abbruch löscht keine gespeicherten Daten. Bei abgerissener Antwort wird ein möglicherweise bereits gespeicherter Schritt als „Ausgang prüfen“ markiert, statt unbemerkt wiederholt zu werden. Bestehende Import- und Auftragssperren verhindern parallele Schreibläufe.
+
+### TA-32 / Stufe 1: öffentliche Quelldaten ohne KI
+
+Es werden die über angebundene OParl-/RIS-Adapter erreichbaren öffentlichen Angaben übernommen: Identität, Zeitpunkte, Titel, Referenz, Gremien, Sitzungen, Beratungsergebnisse, Dokument- und Protokollverweise, belegte Teilnehmerangaben und zusätzliche strukturierte Quellfelder. OParl-Teilnehmer stammen aus dem expliziten `participant`-Feld, nicht aus Gremienmitgliedschaften. SessionNet liest erkannte öffentliche Teilnahmetabellen und verlinkte Vorlagendetails. Nicht öffentliche Tagesordnungspunkte werden ausgeschlossen. Original-HTML/PDF und vollständige Texte werden nicht dauerhaft gesammelt (TA-30).
+
+**Vollständige Extraktion bleibt das Ziel, keine pauschale Erfolgsgarantie:** Anbieterformate, nicht freigegebene Unterlagen, fehlende Felder, Pagination und begrenzte Abrufzeit können Lücken erzeugen. SessionNet-Detailfelder werden für bekannte tabellarische Strukturen gelesen; unbekannte RIS-Layouts und nicht exponierte Teilnehmerdaten sind nicht automatisch vollständig erschlossen. More-Rubin liefert im aktuellen Adapter keine gesicherte Teilnehmerliste. Der Status muss Teilstände und solche fehlenden Pflichtfelder anzeigen. Ein weiterer gleicher Abruf garantiert keinen Fortschritt jenseits eines festen Anbieter-/Zeitlimits; anbieterspezifische Fortsetzung bleibt ein weiterer Ausbaupunkt. Die neue Oberfläche allein ersetzt keine fehlenden Quellenadapter.
+
+### TA-33 / Stufen 2 und 3: Regeln und Claude Code
+
+Regel-Labels und Vergleichsmerkmale werden getrennt von KI-Ergebnissen gespeichert. Stufe 3 erlaubt unabhängige Auswahl von KI-Inhaltszusammenfassung, KI-Label und zehn gewichteten Inhaltsstichwörtern. Titelbasierte alte Stichwortprofile zählen nicht als vollständige Inhaltsstichwörter. KI-Labels zählen in Stufe 3 nur bei ausgewiesener Inhaltsbasis (`source_content`); die 92 alten Titel-/Teilinhalt-Labels bleiben gespeichert, zählen dort aber offen. Die historischen Qualitätsstatistiken auf Seite 2 dürfen weiterhin alle KI-Labels getrennt zählen. Gewichte bleiben positiv und ganzzahlig; Summe 100.
+
+Für den gewählten Ablauf ohne zusätzliche KI-API erstellt die Adminseite einen Auftrag mit 1–100 fest ausgewählten Artikeln (Standard: 10), Quellverweisen, Methodenversion, Labelkatalog und Eingabeprüfsummen. Dieser Auftrag startet Claude Code nicht fern. Der Betreiber startet Claude Code manuell mit der Auftragsdatei. Die Ergebnisdatei kann im Adminbereich geprüft und in die verbundene Datenbank übernommen werden; alternativ lokal durch `scripts/claude-job.mjs` mit Sicherung und erneuter Öffnung zur Prüfung. Die verbindliche ausführbare Arbeitsanweisung steht in `requirements/claude-processing.md`.
+
+Schema, Belege, aktuelle Eingabefassung, Auswahl, Labelkatalog und Gewichte werden vor dem Speichern geprüft. Erfolgreiche Ergebnisse, begründete Quellenlücken und technische Fehler erhalten getrennte Analysefassungen. Quellenlücken ersetzen keine guten vorhandenen Inhalte. Wiederholungen sind ohne Doppelanalysen möglich; zwischenzeitliche Änderungen erzeugen Konflikte. Validierte KI-Ergebnisse sind weiterhin nicht unabhängig fachlich freigegeben. Unterschiedliche Informationsbasis bleibt beim späteren Regel-/KI-Vergleich sichtbar.
+
+### TA-34 / Stufe 4: nachvollziehbare Speicherung
+
+Die Oberfläche liest ihre Zahlen aus der aktuell verbundenen Datenbank und zeigt deren Inhaltsrevision. Nach KI-Import werden die gespeicherten Payloads erneut gelesen; der Importbeleg nennt gespeicherte und bereits vorhandene Artikel sowie Konflikte. Ergebnisse aller abgeschlossenen Stufen sind unmittelbar in dieser Datenbank gespeichert.
+
+Ein Export belegt nur die heruntergeladene Momentaufnahme. Eine Online-Seite hat keinen automatischen Einblick in die Windows-Datenbank. Erst die lokale Wiederherstellung hinterlegt einen Übernahmebeleg mit Quellstand, Anzahl und lokaler Revision. Die lokale Adminseite zeigt diesen Beleg und den aktuellen Bestand. Bei direktem lokalen Arbeiten ist kein zusätzlicher Export erforderlich. Für ältere Übernahmebelege ohne lokale Revision darf nicht behauptet werden, der Stand sei seitdem unverändert.
+
+### DA-53 / Arbeitsfläche und zugängliche Statusdarstellung
+
+Fira Sans, Kobaltblau und die bestehende Typografie bleiben erhalten. Oben: Seitennavigation, kompakte Bestandszahlen, Karte und auswählbare Gebietsliste. Darunter: vier nummerierte Stufen mit Zahlen, Aktionen und klaren offenen Zuständen. Farbcodes werden durch Text, Legende und Liste ergänzt. Such- und Mehrfachauswahl funktionieren unabhängig von der SVG-Karte per Tastatur. Auf kleinen Bildschirmen stehen Karte, Liste und Schritte untereinander. Tabellen/Listen sind begrenzt und eigene längere Listen scrollbar. Die zweite Adminseite darf die operative Hauptansicht nicht ersetzen.
+
+### QA-10 / Prüfungen
+
+Zu prüfen sind Zugangsschutz der neuen Endpunkte, Gebietseingaben einschließlich Gesamt-NRW, Wiederaufnahme/Abbruch, erhaltene Quellenlücken, keine GET-Mutationen, korrekte SQL-Zähler, deterministische Integer-Gewichte, unveränderte Regel-Labels, Quellen-/Hashkonflikte, Wiederholung identischer Ergebnisse, atomare Speicherung und lokale Importbelege. Keine dieser Prüfungen startet einen echten NRW-Import oder kostenpflichtige KI-Aufrufe. Ein vollständiger NRW-Abruf und eine unabhängige Bewertung neuer KI-Texte sind gesonderte Betriebsschritte.

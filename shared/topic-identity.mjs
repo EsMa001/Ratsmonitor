@@ -26,6 +26,8 @@ export function identityState(t){return t.identity?.conflict?'conflict':paperKey
 export function mergeHistory(old,fresh){
  const events=new Map((old.events||[]).map(e=>[JSON.stringify([e.url,e.date,e.committee]),e]));
  for(const e of fresh.events||[]){const key=JSON.stringify([e.url,e.date,e.committee]),prior=events.get(key);const next={...prior,...e};
+  if(prior?.attendance?.status==='available'&&e.attendance?.status!=='available')next.attendance=prior.attendance;
+  if(prior?.decision&&prior.decision.kind!=='unknown'&&e.decision?.kind==='unknown')next.decision=prior.decision;
   // A metadata-only adapter reporting "unknown" is not contrary evidence to a
   // result read from the public minutes. Keep its source-backed enrichment.
   if(prior?.decision&&e.status==='unknown'&&!e.result){next.status=prior.status;next.description=prior.description;next.result=prior.result;}

@@ -86,7 +86,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const combined=mergeImport({topics:[...old.values()],coverage:previousCoverage},fresh);
     for(const incoming of fresh.topics.length?combined.topics:[]){
         const p=old.get(incoming.id);let t:Topic=preserveAnalysis(incoming,p);
-        const unchanged=p&&p.status===t.status&&p.officialTitle===t.officialTitle&&p.sourceUrl===t.sourceUrl&&JSON.stringify(p.events)===JSON.stringify(t.events)&&JSON.stringify(p.documents)===JSON.stringify(t.documents)&&JSON.stringify(p.identity)===JSON.stringify(t.identity)&&JSON.stringify(p.identityLinks)===JSON.stringify(t.identityLinks)&&JSON.stringify(p.identityRecords)===JSON.stringify(t.identityRecords);
+        const unchanged=p&&JSON.stringify(p.sourceData?.records)===JSON.stringify(t.sourceData?.records)&&p.status===t.status&&p.officialTitle===t.officialTitle&&p.sourceUrl===t.sourceUrl&&JSON.stringify(p.events)===JSON.stringify(t.events)&&JSON.stringify(p.documents)===JSON.stringify(t.documents)&&JSON.stringify(p.identity)===JSON.stringify(t.identity)&&JSON.stringify(p.identityLinks)===JSON.stringify(t.identityLinks)&&JSON.stringify(p.identityRecords)===JSON.stringify(t.identityRecords);
         if(unchanged)t={...p,regionId:region,metadata:t.metadata};
         if(old.size>0&&!t.identity?.mergedInto&&!unchanged&&['approved','rejected'].includes(t.status)&&p?.status!==t.status)decisions.push(t);
         if(unchanged){if(t.metadata)await env.DB.prepare("UPDATE topics SET payload=json_set(payload,'$.metadata',json(?)) WHERE id=?").bind(JSON.stringify(t.metadata),t.id).run();continue;}

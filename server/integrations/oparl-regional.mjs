@@ -1,3 +1,4 @@
+import {compactOparl,sourceDecision,publicParticipants} from './source-fields.mjs';
 import {historyStart,HISTORY_MONTHS} from './history-window.mjs';
 import {chooseBody} from './body-identity.mjs';
 import {publicAgenda} from './public-agenda.mjs';
@@ -28,17 +29,18 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  const grouped=new Map();
  await parallel(meetings,async m=>{
   let org=[];for(const o of m.organization||[]){try{org.push(clean((await object(o))?.name||'Gremium'));}catch{org.push('Gremium laut Originalquelle');}}
+  const attendance=await publicParticipants(m,object,now.toISOString());
   const committee=org.join(', ')||clean(m.name)||'Öffentliche Sitzung';
   const resolved=await parallel(m.agendaItem||[],async a=>{try{return await object(a)}catch(e){issues.push('Tagesordnungspunkt: '+e.message);return {public:false};}},3);
   const visible=publicAgenda(resolved);if(visible.unclear)issues.push(visible.unclear+' Tagesordnungspunkte ohne eindeutigen Öffentlichkeitsnachweis ausgelassen.');
   for(const a of visible.items){try{let c,p;try{if(a.consultation){c=await object(a.consultation);if(c.paper)p=await object(c.paper);}}catch(e){issues.push('Verknüpfung: '+e.message);/* Keep the independently public agenda item. A later official paper link can merge it. */}
    if(c?.deleted||p?.deleted)continue;const rawKey=p?.id||a.id;if(!rawKey)continue;const key=allowed(rawKey);const officialTitle=clean(p?.name||a.name);if(!officialTitle)continue;
    let status=statusOf(a,c,m,now);if(m.start.slice(0,10)<=now.toISOString().slice(0,10)&&!clean(a.result))status='unknown';
-   const event={date:m.start.slice(0,10),committee,status,description:clean(a.result)||'Öffentlich auf der Tagesordnung; kein Ergebnis im erfassten Feld.',result:clean(a.result),url:allowed(m.id),publicEvidence:a.publicEvidence};
+   const event={date:m.start.slice(0,10),committee,status,description:clean(a.result)||'Öffentlich auf der Tagesordnung; kein Ergebnis im erfassten Feld.',result:clean(a.result),url:allowed(m.id),publicEvidence:a.publicEvidence,attendance};event.decision=sourceDecision(event);
    const documents=[{title:'Amtlicher OParl-Datensatz',url:allowed(key),kind:'oparl'}];
-   for(const f0 of [p?.mainFile,...p?.auxiliaryFile||[],a.resolutionFile,...a.auxiliaryFile||[]].filter(Boolean)){try{const f=await object(f0);if(f.deleted||!f.accessUrl)continue;documents.push({title:clean(f.name||f.fileName||'Originalunterlage'),url:allowed(f.accessUrl),kind:f.mimeType||'document'});}catch(e){issues.push('Dokumentverweis: '+e.message);}}
+   for(const f0 of [p?.mainFile,...p?.auxiliaryFile||[],a.resolutionFile,...a.auxiliaryFile||[],m.invitation,m.resultsProtocol,m.verbatimProtocol,...m.auxiliaryFile||[]].filter(Boolean)){try{const f=await object(f0);if(f.deleted||!f.accessUrl)continue;documents.push({title:clean(f.name||f.fileName||'Originalunterlage'),url:allowed(f.accessUrl),kind:f.mimeType||'document'});}catch(e){issues.push('Dokumentverweis: '+e.message);}}
    const topicId=source.id+'-oparl-'+(await hash(key)).slice(0,20);
-   if(grouped.has(key)){const prev=grouped.get(key);prev.events.push(event);prev.documents.push(...documents);prev.identityLinks.push(allowed(a.id));}else grouped.set(key,{id:topicId,regionId:source.id,source:source.kind,public:true,title:officialTitle,officialTitle,metadata:{sourceModifiedAt:p?.modified||a.modified||null},reference:clean(p?.reference),category:category(officialTitle),updatedAt:now.toISOString(),sourceUrl:key,identityLinks:[key,allowed(a.id)],events:[event],documents,relevanceReason:'Öffentlicher Vorgang: '+source.name});
+   if(grouped.has(key)){const prev=grouped.get(key);prev.events.push(event);prev.documents.push(...documents);prev.identityLinks.push(allowed(a.id));}else grouped.set(key,{id:topicId,regionId:source.id,source:source.kind,public:true,title:officialTitle,officialTitle,sourceData:{version:'public-source-fields-v1',method:'oparl',fetchedAt:now.toISOString(),records:[compactOparl(p,'paper'),compactOparl(a,'agenda'),compactOparl(c,'consultation'),compactOparl(m,'meeting')].filter(Boolean)},metadata:{sourceModifiedAt:p?.modified||a.modified||null},reference:clean(p?.reference),category:category(officialTitle),updatedAt:now.toISOString(),sourceUrl:key,identityLinks:[key,allowed(a.id)],events:[event],documents,relevanceReason:'Öffentlicher Vorgang: '+source.name});
   }catch(e){issues.push('Tagesordnungspunkt: '+e.message);}}
  },3);
  const topics=[];for(const t of grouped.values()){t.events.sort((a,b)=>a.date.localeCompare(b.date));const last=t.events.at(-1);Object.assign(t,{status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];t.sourceText=t.title+'\n'+t.events.map(e=>e.description).join('\n');Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name.replace(/^(Stadt|Gemeinde) /,''));t.quality={passed:false,checks:[{name:'Öffentliche Quelle',passed:true,detail:'Öffentlichkeit durch Kennzeichen oder ausdrücklich bezeichneten öffentlichen Sitzungsabschnitt belegt.'},{name:'Inhaltsprüfung',passed:false,detail:'Automatischer Quellenüberblick; keine redaktionelle Freigabe.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);}
