@@ -1,0 +1,1 @@
+import{env}from'cloudflare:workers';export async function GET(){const row=env.DB?await env.DB.prepare("SELECT value FROM system_state WHERE key='latest-decision'").first<{value:string}>():null;return Response.json(row?JSON.parse(row.value):null,{headers:{'Cache-Control':'no-store'}})}

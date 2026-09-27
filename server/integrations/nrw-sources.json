@@ -1,0 +1,520 @@
+[
+  {
+    "id": "nrw-05334002",
+    "name": "Stadt Aachen",
+    "kind": "city",
+    "system": "https://ratsinfo.aachen.de/public/oparl/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "system-verified",
+    "upgradeHttpLinks": true,
+    "verifiedSource": "https://offenedaten.aachen.de/dataset/oparl-schnittstelle-zum-ratsinformationsystem-der-stadt-aachen",
+    "verifiedAt": "2026-09-26",
+    "meetingScan": "forward",
+    "maxPages": 24
+  },
+  {
+    "id": "nrw-05358004",
+    "name": "Gemeinde Aldenhoven",
+    "kind": "city",
+    "system": "https://ratsinfo.aldenhoven.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05366004",
+    "name": "Stadt Bad Münstereifel",
+    "kind": "city",
+    "system": "https://ratsinfo.bad-muenstereifel.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05362004",
+    "name": "Stadt Bedburg",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4780/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05362008",
+    "name": "Stadt Bergheim",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4800/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05314000",
+    "name": "Stadt Bonn",
+    "kind": "city",
+    "system": "https://www.bonn.sitzung-online.de/public/oparl/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05362012",
+    "name": "Stadt Brühl",
+    "kind": "city",
+    "system": "https://ratsinfo.bruehl.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05562004",
+    "name": "Stadt Castrop-Rauxel",
+    "kind": "city",
+    "system": "https://castroprauxel.gremien.info/oparl",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05111000",
+    "name": "Stadt Düsseldorf",
+    "kind": "city",
+    "system": "https://ris-oparl.itk-rheinland.de/Oparl/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05566008",
+    "name": "Stadt Emsdetten",
+    "kind": "city",
+    "system": "https://emsdetten.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05758008",
+    "name": "Stadt Enger",
+    "kind": "city",
+    "system": "https://enger.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05362020",
+    "name": "Stadt Erftstadt",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4490/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05370004",
+    "name": "Stadt Erkelenz",
+    "kind": "city",
+    "system": "https://ratsinfo.erkelenz.de/bi/oparl/1.0/system.asp",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05366",
+    "name": "Kreis Euskirchen",
+    "kind": "district",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4520/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05154016",
+    "name": "Stadt Goch",
+    "kind": "city",
+    "system": "https://ris.goch.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05754",
+    "name": "Kreis Gütersloh",
+    "kind": "district",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4890/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05914000",
+    "name": "Stadt Hagen",
+    "kind": "city",
+    "system": "https://www.hagen.de/buergerinfo/oparl/1.0/system.asp",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05758012",
+    "name": "Stadt Herford",
+    "kind": "city",
+    "system": "https://herford.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05758016",
+    "name": "Gemeinde Hiddenhausen",
+    "kind": "city",
+    "system": "https://hiddenhausen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358016",
+    "name": "Gemeinde Hürtgenwald",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4220/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358020",
+    "name": "Gemeinde Inden",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4230/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358024",
+    "name": "Stadt Jülich",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4240/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05366024",
+    "name": "Gemeinde Kall",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4550/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05362032",
+    "name": "Stadt Kerpen",
+    "kind": "city",
+    "system": "https://ratsinfo.stadt-kerpen.de/webservice/oparl/v1.0/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05758020",
+    "name": "Gemeinde Kirchlengern",
+    "kind": "city",
+    "system": "https://kirchlengern.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05114000",
+    "name": "Stadt Krefeld",
+    "kind": "city",
+    "system": "https://ris.krefeld.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358028",
+    "name": "Gemeinde Kreuzau",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4250/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05315000",
+    "name": "Stadt Köln",
+    "kind": "city",
+    "system": "https://buergerinfo.stadt-koeln.de/oparl/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05566032",
+    "name": "Gemeinde Ladbergen",
+    "kind": "city",
+    "system": "https://ladbergen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05754024",
+    "name": "Gemeinde Langenberg",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4883/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358032",
+    "name": "Gemeinde Langerwehe",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4260/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05766048",
+    "name": "Gemeinde Leopoldshöhe",
+    "kind": "city",
+    "system": "https://leopoldshoehe.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358036",
+    "name": "Stadt Linnich",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4270/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358040",
+    "name": "Gemeinde Merzenich",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4280/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05366032",
+    "name": "Gemeinde Nettersheim",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4580/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358052",
+    "name": "Gemeinde Nörvenich",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4160/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05966024",
+    "name": "Stadt Olpe",
+    "kind": "city",
+    "system": "https://sitzungsdienst.kdz-ws.net/gkz330/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05362036",
+    "name": "Stadt Pulheim",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4350/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05770040",
+    "name": "Stadt Rahden",
+    "kind": "city",
+    "system": "http://rahden.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05154044",
+    "name": "Stadt Rees",
+    "kind": "city",
+    "system": "https://sessionnet-oparl.krz.de/oparl/bodies/5205",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05754028",
+    "name": "Stadt Rheda-Wiedenbrück",
+    "kind": "city",
+    "system": "https://ratsinfo.rheda-wiedenbrueck.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05758028",
+    "name": "Gemeinde Rödinghausen",
+    "kind": "city",
+    "system": "https://roedinghausen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05166024",
+    "name": "Gemeinde Schwalmtal",
+    "kind": "city",
+    "system": "https://ris.schwalmtal.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05122000",
+    "name": "Stadt Solingen",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4957/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05758032",
+    "name": "Stadt Spenge",
+    "kind": "city",
+    "system": "https://spenge.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05754040",
+    "name": "Gemeinde Steinhagen",
+    "kind": "city",
+    "system": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05770044",
+    "name": "Gemeinde Stemwede",
+    "kind": "city",
+    "system": "https://stemwede.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358056",
+    "name": "Gemeinde Titz",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4170/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05554064",
+    "name": "Stadt Velen",
+    "kind": "city",
+    "system": "https://velen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05358060",
+    "name": "Gemeinde Vettweiß",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4180/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05166",
+    "name": "Kreis Viersen",
+    "kind": "district",
+    "system": "https://kis.kreis-viersen.de/webservice/oparl/v1.0/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05758036",
+    "name": "Stadt Vlotho",
+    "kind": "city",
+    "system": "https://vlotho.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05154060",
+    "name": "Gemeinde Wachtendonk",
+    "kind": "city",
+    "system": "https://ris.wachtendonk.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05366040",
+    "name": "Gemeinde Weilerswist",
+    "kind": "city",
+    "system": "https://sdnetrim.kdvz-frechen.de/rim4510/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05362040",
+    "name": "Stadt Wesseling",
+    "kind": "city",
+    "system": "https://ratsinfo.wesseling.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05166036",
+    "name": "Stadt Willich",
+    "kind": "city",
+    "system": "https://ris.stadt-willich.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  },
+  {
+    "id": "nrw-05124000",
+    "name": "Stadt Wuppertal",
+    "kind": "city",
+    "system": "https://oparl.wuppertal.de/oparl/system",
+    "method": "oparl",
+    "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
+    "state": "discovered"
+  }
+]

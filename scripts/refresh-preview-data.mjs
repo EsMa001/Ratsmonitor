@@ -1,0 +1,1 @@
+import{readFile,writeFile}from'node:fs/promises';const d=JSON.parse(await readFile('data/topics.json'));const q=s=>"'"+String(s).replace(/'/g,"''")+"'";const sql=d.topics.map(t=>'UPDATE topics SET status='+q(t.status)+',payload='+q(JSON.stringify(t))+' WHERE id='+q(t.id)+';').join('\n');await writeFile('.sites-runtime/refresh.sql',sql);

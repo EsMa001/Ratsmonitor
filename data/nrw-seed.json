@@ -1,0 +1,2430 @@
+{
+  "format": "nrw-split-v1",
+  "revision": "e20c38018e3addf1",
+  "coverage": [
+    {
+      "regionId": "nrw-05334002",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T15:25:31.630Z",
+      "lastAttemptAt": "2026-09-26T15:25:31.630Z",
+      "meetings": 59,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Listenlimit erreicht; Quelle noch nicht vollständig eingelesen."
+      ],
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/system",
+      "body": "http://ratsinfo.aachen.de/public/oparl/bodies?id=1"
+    },
+    {
+      "regionId": "nrw-05358004",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:49:33.969Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ratsinfo.aldenhoven.de/webservice/oparl/v1.1/system",
+      "body": "https://ratsinfo.aldenhoven.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05366004",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:47:05.683Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ratsinfo.bad-muenstereifel.de/webservice/oparl/v1.1/system",
+      "body": "https://ratsinfo.bad-muenstereifel.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05362004",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:39:07.127Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4780/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4780/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05362008",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:39:27.701Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4800/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4800/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05314000",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:39:33.680Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+      ],
+      "sourceUrl": "https://www.bonn.sitzung-online.de/public/oparl/system"
+    },
+    {
+      "regionId": "nrw-05362012",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:39:33.015Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ratsinfo.bruehl.de/webservice/oparl/v1.1/system",
+      "body": "https://ratsinfo.bruehl.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05562004",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:39:33.682Z",
+      "meetings": 32,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout",
+        "Verknüpfung: Abrufbudget erreicht",
+        "Nicht aufgelöste Vorlagenverknüpfungen: mehrere Tagesordnungspunkte derselben Vorlage können getrennt erfasst sein. Die Vorgangszählung ist deshalb ein vorläufiger Teilstand."
+      ],
+      "sourceUrl": "https://castroprauxel.gremien.info/oparl",
+      "body": "https://castroprauxel.gremien.info/oparl/body/CAS"
+    },
+    {
+      "regionId": "nrw-05111000",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:39:59.070Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Keine eindeutig zugeordnete Körperschaft mit Sitzungsliste"
+      ],
+      "sourceUrl": "https://ris-oparl.itk-rheinland.de/Oparl/system"
+    },
+    {
+      "regionId": "nrw-05566008",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T15:19:24.401Z",
+      "lastAttemptAt": "2026-09-26T15:19:24.401Z",
+      "meetings": 21,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Begrenzter Abruf vom Ende der Sitzungsliste; Vollständigkeit des Zeitraums nicht bestätigt.",
+        "Listenlimit erreicht; Quelle noch nicht vollständig eingelesen."
+      ],
+      "sourceUrl": "https://emsdetten.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://emsdetten.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05758008",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:40:00.344Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://enger.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://enger.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05362020",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:40:24.563Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4490/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4490/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05370004",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:40:31.889Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "OParl HTTP 404"
+      ],
+      "sourceUrl": "https://ratsinfo.erkelenz.de/bi/oparl/1.0/system.asp"
+    },
+    {
+      "regionId": "nrw-05366",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:40:31.892Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4520/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4520/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05154016",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:40:50.337Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ris.goch.de/webservice/oparl/v1.1/system",
+      "body": "https://ris.goch.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05754",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:40:56.779Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4890/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4890/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05914000",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:41:22.006Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "OParl HTTP 404"
+      ],
+      "sourceUrl": "https://www.hagen.de/buergerinfo/oparl/1.0/system.asp"
+    },
+    {
+      "regionId": "nrw-05758012",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T15:43:15.463Z",
+      "lastAttemptAt": "2026-09-26T15:43:15.463Z",
+      "meetings": 21,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Begrenzter Abruf vom Ende der Sitzungsliste; Vollständigkeit des Zeitraums nicht bestätigt.",
+        "Listenlimit erreicht; Quelle noch nicht vollständig eingelesen."
+      ],
+      "sourceUrl": "https://herford.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://herford.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05758016",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:41:23.302Z",
+      "meetings": 15,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [],
+      "sourceUrl": "https://hiddenhausen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://hiddenhausen.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358016",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:41:46.306Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4220/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4220/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358020",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:42:16.490Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4230/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4230/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358024",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:42:43.819Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4240/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4240/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05366024",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:43:06.980Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4550/webservice/oparl/v1.1/system"
+    },
+    {
+      "regionId": "nrw-05362032",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:43:03.968Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ratsinfo.stadt-kerpen.de/webservice/oparl/v1.0/system",
+      "body": "https://ratsinfo.stadt-kerpen.de/webservice/oparl/v1.0/body/1"
+    },
+    {
+      "regionId": "nrw-05758020",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:43:06.982Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://kirchlengern.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://kirchlengern.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05114000",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T15:43:15.473Z",
+      "lastAttemptAt": "2026-09-26T15:43:15.473Z",
+      "meetings": 24,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Begrenzter Abruf vom Ende der Sitzungsliste; Vollständigkeit des Zeitraums nicht bestätigt.",
+        "Listenlimit erreicht; Quelle noch nicht vollständig eingelesen.",
+        "Verknüpfung: The operation was aborted due to timeout",
+        "Verknüpfung: Zeitbudget der Quelle erreicht",
+        "Nicht aufgelöste Vorlagenverknüpfungen: mehrere Tagesordnungspunkte derselben Vorlage können getrennt erfasst sein. Die Vorgangszählung ist deshalb ein vorläufiger Teilstand."
+      ],
+      "sourceUrl": "https://ris.krefeld.de/webservice/oparl/v1.1/system",
+      "body": "https://ris.krefeld.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358028",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:43:35.945Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4250/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4250/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:43:51.424Z",
+      "meetings": 236,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Listenlimit erreicht; Quelle noch nicht vollständig eingelesen.",
+        "Verknüpfung: The operation was aborted due to timeout",
+        "Verknüpfung: Abrufbudget erreicht",
+        "Nicht aufgelöste Vorlagenverknüpfungen: mehrere Tagesordnungspunkte derselben Vorlage können getrennt erfasst sein. Die Vorgangszählung ist deshalb ein vorläufiger Teilstand."
+      ],
+      "sourceUrl": "https://buergerinfo.stadt-koeln.de/oparl/system",
+      "body": "https://buergerinfo.stadt-koeln.de/oparl/bodies/stadtverwaltung_koeln"
+    },
+    {
+      "regionId": "nrw-05566032",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T15:43:15.475Z",
+      "lastAttemptAt": "2026-09-26T15:43:15.475Z",
+      "meetings": 8,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Begrenzter Abruf vom Ende der Sitzungsliste; Vollständigkeit des Zeitraums nicht bestätigt.",
+        "Listenlimit erreicht; Quelle noch nicht vollständig eingelesen."
+      ],
+      "sourceUrl": "https://ladbergen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://ladbergen.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05754024",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:45:13.508Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "OParl HTTP 404"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4883/webservice/oparl/v1.1/system"
+    },
+    {
+      "regionId": "nrw-05358032",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:45:13.509Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4260/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4260/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05766048",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:45:33.083Z",
+      "meetings": 24,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [],
+      "sourceUrl": "https://leopoldshoehe.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://leopoldshoehe.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358036",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:47:37.419Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4270/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4270/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358040",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:48:06.943Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4280/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4280/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05366032",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:48:33.627Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4580/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4580/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358052",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:48:59.163Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4160/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4160/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05966024",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:49:31.439Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "OParl HTTP 502"
+      ],
+      "sourceUrl": "https://sitzungsdienst.kdz-ws.net/gkz330/webservice/oparl/v1.1/system"
+    },
+    {
+      "regionId": "nrw-05362036",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:49:31.442Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4350/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4350/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05770040",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:49:53.875Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Quelle außerhalb der freigegebenen OParl-Adresse"
+      ],
+      "sourceUrl": "http://rahden.ratsinfomanagement.net/webservice/oparl/v1.1/system"
+    },
+    {
+      "regionId": "nrw-05154044",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:50:03.061Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "OParl HTTP 401"
+      ],
+      "sourceUrl": "https://sessionnet-oparl.krz.de/oparl/bodies/5205"
+    },
+    {
+      "regionId": "nrw-05754028",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:50:15.061Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ratsinfo.rheda-wiedenbrueck.de/webservice/oparl/v1.1/system"
+    },
+    {
+      "regionId": "nrw-05758028",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:50:15.061Z",
+      "meetings": 10,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [],
+      "sourceUrl": "https://roedinghausen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://roedinghausen.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05166024",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:51:25.068Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ris.schwalmtal.de/webservice/oparl/v1.1/system",
+      "body": "https://ris.schwalmtal.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05122000",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:52:05.358Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4957/webservice/oparl/v1.1/system"
+    },
+    {
+      "regionId": "nrw-05758032",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:52:06.668Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://spenge.ratsinfomanagement.net/webservice/oparl/v1.1/system"
+    },
+    {
+      "regionId": "nrw-05754040",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:52:05.362Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/system",
+      "body": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05770044",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:52:06.669Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://stemwede.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://stemwede.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358056",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:52:43.062Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4170/webservice/oparl/v1.1/system"
+    },
+    {
+      "regionId": "nrw-05554064",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:52:35.318Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://velen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://velen.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05358060",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:52:43.063Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4180/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4180/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05166",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:53:03.040Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://kis.kreis-viersen.de/webservice/oparl/v1.0/system",
+      "body": "https://kis.kreis-viersen.de/webservice/oparl/v1.0/body/1"
+    },
+    {
+      "regionId": "nrw-05758036",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:53:09.631Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://vlotho.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+      "body": "https://vlotho.ratsinfomanagement.net/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05154060",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:53:30.873Z",
+      "meetings": 4,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [],
+      "sourceUrl": "https://ris.wachtendonk.de/webservice/oparl/v1.1/system",
+      "body": "https://ris.wachtendonk.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05366040",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:53:38.930Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sdnetrim.kdvz-frechen.de/rim4510/webservice/oparl/v1.1/system",
+      "body": "https://sdnetrim.kdvz-frechen.de/rim4510/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05362040",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:54:10.693Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ratsinfo.wesseling.de/webservice/oparl/v1.1/system",
+      "body": "https://ratsinfo.wesseling.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05166036",
+      "method": "oparl",
+      "from": "2026-06-26",
+      "to": "2026-09-26",
+      "importedAt": "2026-09-26T14:54:23.344Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://ris.stadt-willich.de/webservice/oparl/v1.1/system",
+      "body": "https://ris.stadt-willich.de/webservice/oparl/v1.1/body/1"
+    },
+    {
+      "regionId": "nrw-05124000",
+      "method": "oparl",
+      "from": null,
+      "to": null,
+      "importedAt": null,
+      "lastAttemptAt": "2026-09-26T14:54:43.432Z",
+      "meetings": 0,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "OParl HTTP 400"
+      ],
+      "sourceUrl": "https://oparl.wuppertal.de/oparl/system"
+    },
+    {
+      "regionId": "nrw-05558032",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:53:39.913Z",
+      "meetings": 35,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://www.nottuln.de/sessionnet/sessionnetbi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T08:54:15.742Z"
+    },
+    {
+      "regionId": "nrw-05558020",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:53:37.922Z",
+      "meetings": 41,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4287: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4286: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4285: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4284: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4283: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4282: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4281: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4279: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4341: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4340: fetch failed",
+        "https://www.ris-havixbeck.de/bi/si0057.php?__ksinr=4339: fetch failed"
+      ],
+      "sourceUrl": "https://www.ris-havixbeck.de/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T08:54:18.119Z"
+    },
+    {
+      "regionId": "nrw-05558040",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:53:37.469Z",
+      "meetings": 27,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/rosendahl/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T08:55:37.442Z"
+    },
+    {
+      "regionId": "nrw-05558012",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:54:22.070Z",
+      "meetings": 53,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://buergerinfo.coesfeld.de/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T08:54:59.403Z"
+    },
+    {
+      "regionId": "nrw-05558016",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:01:13.532Z",
+      "meetings": 36,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "The operation was aborted due to timeout",
+        "The operation was aborted due to timeout",
+        "The operation was aborted due to timeout"
+      ],
+      "sourceUrl": "https://sessionweb.duelmen.de/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:03:28.435Z"
+    },
+    {
+      "regionId": "nrw-05558044",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:59:03.770Z",
+      "meetings": 32,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/gemeinde-senden/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T08:59:26.739Z"
+    },
+    {
+      "regionId": "nrw-05558024",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:59:02.689Z",
+      "meetings": 43,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "https://www.stadt-luedinghausen.de/sessionnet/buergerinfo/si0057.php?__ksinr=2352: fetch failed"
+      ],
+      "sourceUrl": "https://www.stadt-luedinghausen.de/sessionnet/buergerinfo/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T08:59:37.443Z"
+    },
+    {
+      "regionId": "nrw-05554004",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:59:03.974Z",
+      "meetings": 45,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "https://sessionnet.owl-it.de/stadt-ahaus/bi/si0057.asp?__ksinr=1795: fetch failed"
+      ],
+      "sourceUrl": "https://sessionnet.owl-it.de/stadt-ahaus/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T08:59:31.582Z"
+    },
+    {
+      "regionId": "nrw-05558036",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:59:59.218Z",
+      "meetings": 32,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5180: fetch failed",
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5179: fetch failed",
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5238: fetch failed",
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5181: fetch failed",
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5178: fetch failed",
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5177: fetch failed",
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5176: fetch failed",
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5052: fetch failed",
+        "https://ratsinfo.olfen.de/bi/si0057.asp?__ksinr=5040: fetch failed"
+      ],
+      "sourceUrl": "https://ratsinfo.olfen.de/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:00:38.901Z"
+    },
+    {
+      "regionId": "nrw-05558004",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T08:59:58.154Z",
+      "meetings": 26,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/ascheberg/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:01:49.856Z"
+    },
+    {
+      "regionId": "nrw-05558028",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:28:10.404Z",
+      "meetings": 29,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/nordkirchen/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:28:32.645Z"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T11:17:21.552Z",
+      "meetings": 129,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Sitzungsdetails noch nicht öffentlich freigegeben: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7448",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7634",
+        "Sitzungsdetails noch nicht öffentlich freigegeben: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7631",
+        "Sitzungsdetails noch nicht öffentlich freigegeben: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7521",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7527",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7520",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7483",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7455",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7451",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7433",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7378",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7230",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7074",
+        "Keine lesbare öffentliche Tagesordnung: https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7284"
+      ],
+      "sourceUrl": "https://www.rheine-buergerinfo.de/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T11:18:58.574Z"
+    },
+    {
+      "regionId": "nrw-05570044",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:28:10.407Z",
+      "meetings": 33,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/telgte/BI/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:28:32.482Z"
+    },
+    {
+      "regionId": "nrw-05570024",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T11:17:19.936Z",
+      "meetings": 34,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Keine lesbare öffentliche Tagesordnung: https://sessionnet.owl-it.de/everswinkel/bi/si0057.asp?__ksinr=861",
+        "Keine lesbare öffentliche Tagesordnung: https://sessionnet.owl-it.de/everswinkel/bi/si0057.asp?__ksinr=845"
+      ],
+      "sourceUrl": "https://sessionnet.owl-it.de/everswinkel/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T11:19:38.435Z"
+    },
+    {
+      "regionId": "nrw-05570032",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:28:39.136Z",
+      "meetings": 27,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://www.ostbevern.de/sessionnet/sessionnetbi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:29:02.810Z"
+    },
+    {
+      "regionId": "nrw-05570036",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T11:17:19.573Z",
+      "meetings": 36,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Keine lesbare öffentliche Tagesordnung: https://session.sassenberg.de/sessionnet/bi/si0057.php?__ksinr=913"
+      ],
+      "sourceUrl": "https://session.sassenberg.de/sessionnet/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T11:17:56.112Z"
+    },
+    {
+      "regionId": "nrw-05554060",
+      "method": "official-api",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:29:11.228Z",
+      "meetings": 27,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://suedlohn.gremien.info/"
+    },
+    {
+      "regionId": "nrw-05562016",
+      "method": "official-api",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:29:11.257Z",
+      "meetings": 34,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://haltern.gremien.info/"
+    },
+    {
+      "regionId": "nrw-05562008",
+      "method": "official-api",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:29:11.259Z",
+      "meetings": 40,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://datteln.gremien.info/"
+    },
+    {
+      "regionId": "nrw-05562036",
+      "method": "official-api",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T11:17:56.299Z",
+      "meetings": 42,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://waltrop.gremien.info/"
+    },
+    {
+      "regionId": "nrw-05562020",
+      "method": "official-api",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:29:43.787Z",
+      "meetings": 42,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://herten.gremien.info/"
+    },
+    {
+      "regionId": "nrw-05562012",
+      "method": "official-api",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:29:47.254Z",
+      "meetings": 88,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://dorsten.gremien.info/"
+    },
+    {
+      "regionId": "nrw-05570020",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T11:18:35.023Z",
+      "meetings": 34,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Sitzungsdetails noch nicht öffentlich freigegeben: https://sessionnet.owl-it.de/ennigerloh/bi/si0057.asp?__ksinr=3612"
+      ],
+      "sourceUrl": "https://sessionnet.owl-it.de/ennigerloh/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T11:20:46.258Z"
+    },
+    {
+      "regionId": "nrw-05570012",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T11:19:07.593Z",
+      "meetings": 31,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Keine lesbare öffentliche Tagesordnung: https://sessionnet.owl-it.de/beelen/bi/si0057.asp?__ksinr=2350",
+        "Keine lesbare öffentliche Tagesordnung: https://sessionnet.owl-it.de/beelen/bi/si0057.asp?__ksinr=2337"
+      ],
+      "sourceUrl": "https://sessionnet.owl-it.de/beelen/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T11:21:05.855Z"
+    },
+    {
+      "regionId": "nrw-05566068",
+      "method": "oparl",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T11:19:38.505Z",
+      "lastAttemptAt": "2026-09-27T11:19:38.505Z",
+      "meetings": 33,
+      "sourceCount": 1,
+      "complete": false,
+      "issues": [
+        "Listenlimit erreicht; Quelle noch nicht vollständig eingelesen.",
+        "Verknüpfung: The operation was aborted due to timeout",
+        "Verknüpfung: Zeitbudget der Quelle erreicht",
+        "Nicht aufgelöste Vorlagenverknüpfungen: mehrere Tagesordnungspunkte derselben Vorlage können getrennt erfasst sein. Die Vorgangszählung ist deshalb ein vorläufiger Teilstand."
+      ],
+      "sourceUrl": "https://ochtrup.gremien.info/oparl/system",
+      "body": "https://ochtrup.gremien.info/oparl/body/Ochtrup"
+    },
+    {
+      "regionId": "nrw-05570052",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:30:16.668Z",
+      "meetings": 53,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/warendorf/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:30:45.725Z"
+    },
+    {
+      "regionId": "nrw-05570008",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:30:17.093Z",
+      "meetings": 58,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/beckum/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:30:47.619Z"
+    },
+    {
+      "regionId": "nrw-05570028",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:31:10.854Z",
+      "meetings": 45,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/oelde/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:31:37.652Z"
+    },
+    {
+      "regionId": "nrw-05570048",
+      "method": "scraper",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:31:10.696Z",
+      "meetings": 24,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://sessionnet.owl-it.de/wadersloh/bi/",
+      "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+      "apiCheckedAt": "2026-09-27T09:31:32.303Z"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "method": "official-api",
+      "from": "2025-09-27",
+      "to": "2026-09-27",
+      "importedAt": "2026-09-27T09:31:03.798Z",
+      "meetings": 81,
+      "sourceCount": 1,
+      "complete": true,
+      "issues": [],
+      "sourceUrl": "https://marl.gremien.info/"
+    }
+  ],
+  "parts": [
+    {
+      "regionId": "nrw-05334002",
+      "file": "nrw-seed-parts/nrw-05334002-0000.json",
+      "count": 100,
+      "sha256": "d56dd3b2b006fb4b2799c2a72aaf7ffacea7f86b3ce4c78c9ea4a40d641e08e9"
+    },
+    {
+      "regionId": "nrw-05334002",
+      "file": "nrw-seed-parts/nrw-05334002-0001.json",
+      "count": 100,
+      "sha256": "8ca5d7641c08b0312fc0e4a5c03089f611b2b5dd5879ffdc6252fb5939e77c3c"
+    },
+    {
+      "regionId": "nrw-05334002",
+      "file": "nrw-seed-parts/nrw-05334002-0002.json",
+      "count": 100,
+      "sha256": "565b73a5831db0f507443fd859aaad0a82d18c5357cf0b7ae67287c47f2c4a40"
+    },
+    {
+      "regionId": "nrw-05334002",
+      "file": "nrw-seed-parts/nrw-05334002-0003.json",
+      "count": 100,
+      "sha256": "2d75765af95941f583203b959c5566ab6b8a154154c2a6315a9302c96aa3415e"
+    },
+    {
+      "regionId": "nrw-05334002",
+      "file": "nrw-seed-parts/nrw-05334002-0004.json",
+      "count": 100,
+      "sha256": "8052a885388f097e14707d8e249aa041bc353717be2c5832f2f6c02ae569ab21"
+    },
+    {
+      "regionId": "nrw-05334002",
+      "file": "nrw-seed-parts/nrw-05334002-0005.json",
+      "count": 100,
+      "sha256": "563ef4af28d5f53bbe6f9484e00f1ffa677e80a03804189c29f9edcb44b144bd"
+    },
+    {
+      "regionId": "nrw-05334002",
+      "file": "nrw-seed-parts/nrw-05334002-0006.json",
+      "count": 22,
+      "sha256": "43eeabc20fb5123cff077e6e388a421d3d3a8f2a54f9dc2878e64f6dd21bac86"
+    },
+    {
+      "regionId": "nrw-05562004",
+      "file": "nrw-seed-parts/nrw-05562004-0000.json",
+      "count": 100,
+      "sha256": "7353d3effc4496b106bef6dfbe12e3e20d2df9347521148f81a98faeaaf68845"
+    },
+    {
+      "regionId": "nrw-05562004",
+      "file": "nrw-seed-parts/nrw-05562004-0001.json",
+      "count": 100,
+      "sha256": "54af3006b948fed63bc6c524c964e30c370fc073ae01035bd580714ad2babdea"
+    },
+    {
+      "regionId": "nrw-05562004",
+      "file": "nrw-seed-parts/nrw-05562004-0002.json",
+      "count": 57,
+      "sha256": "17442328cd39b681275f026c3c06415473d6b7ac45d55c09efedb643c5740102"
+    },
+    {
+      "regionId": "nrw-05566008",
+      "file": "nrw-seed-parts/nrw-05566008-0000.json",
+      "count": 100,
+      "sha256": "17c812d81bfe785f4a5b8588f40371fb229952a42331b44a2f694b499a1d1aee"
+    },
+    {
+      "regionId": "nrw-05566008",
+      "file": "nrw-seed-parts/nrw-05566008-0001.json",
+      "count": 14,
+      "sha256": "4b5214f93ebaefd5500ade52485ae21be4fccf0d6382ca1a066da0dcd592d0fe"
+    },
+    {
+      "regionId": "nrw-05758012",
+      "file": "nrw-seed-parts/nrw-05758012-0000.json",
+      "count": 100,
+      "sha256": "b979b914b7ae6a68f0f1928d302dd4fedc529c7d1e70da774bf939a6b59b035d"
+    },
+    {
+      "regionId": "nrw-05758012",
+      "file": "nrw-seed-parts/nrw-05758012-0001.json",
+      "count": 100,
+      "sha256": "5488b010c146eadd82796a9841416a30f801dda4b3c75d843ec780cf639063df"
+    },
+    {
+      "regionId": "nrw-05758012",
+      "file": "nrw-seed-parts/nrw-05758012-0002.json",
+      "count": 23,
+      "sha256": "226f8262f897b152caa35942d37b474ab380ab1e83e46d5b39bb81276dd30e98"
+    },
+    {
+      "regionId": "nrw-05114000",
+      "file": "nrw-seed-parts/nrw-05114000-0000.json",
+      "count": 100,
+      "sha256": "2b2041dbbff280ee28b7ade5c6a8d78d8664a552ed94139151e4bcc8fb17454f"
+    },
+    {
+      "regionId": "nrw-05114000",
+      "file": "nrw-seed-parts/nrw-05114000-0001.json",
+      "count": 41,
+      "sha256": "e2f3fced1e61f2f5d9cd40b9d881627f8273050b5387c6a12575f9c5f76daf77"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0000.json",
+      "count": 100,
+      "sha256": "620c7b552e3deb022452bccfe47472a936094c79ccc0086226811e31ffba2229"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0001.json",
+      "count": 100,
+      "sha256": "f3ffd9cdd770f1299015f130a0963a5960888789819aecf4f2ae4fa125ac7539"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0002.json",
+      "count": 100,
+      "sha256": "df711a06d5a47ebb3b4b4c5e0b1c1330c86db51b89086cd7e44eb5a0e9aa2843"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0003.json",
+      "count": 100,
+      "sha256": "93d64bf63ec47e023a027f5e5fd3f5b180ed3a65bc4955fd32155a39d5ba564e"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0004.json",
+      "count": 100,
+      "sha256": "f88daf7b6d3e87acfd8a582a300506c462f2e5f2eb5f71eb8da6ae02c0a10b8d"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0005.json",
+      "count": 100,
+      "sha256": "08252d3e656916d4a735b1480e0889589553201b79c4992d1ec7f3cdf7d91316"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0006.json",
+      "count": 100,
+      "sha256": "85e8be41f15e3df0d84f6b8de56ce2bade1562bf176501148300b33118cc03a0"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0007.json",
+      "count": 100,
+      "sha256": "122d86266f2c22c0abed548ce23a13a71260554b3e49aff68e17e9d8faa0b748"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0008.json",
+      "count": 100,
+      "sha256": "03950d6bfcda85c329b626507eab6dadb92554a252f9486547ad4c8ac15a22b7"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0009.json",
+      "count": 100,
+      "sha256": "a3d47365115f2bcb0a1361381f584758686e5a590001193f0690d734f665c8e1"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0010.json",
+      "count": 100,
+      "sha256": "30b9674134feebd169243a7dae776b07ea2fd071c1f9d1f562e73af42f4ade94"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0011.json",
+      "count": 100,
+      "sha256": "2ac0cdf4baeb2ea566dc6da421de31b926ce618b87571320a4bbaa59bcdce19c"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0012.json",
+      "count": 100,
+      "sha256": "1959c8501184a8be23c38326302d45b0f36b59b42747836e351f82083edcc159"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0013.json",
+      "count": 100,
+      "sha256": "79622a6345574f82bb84b63664f2345b18a1541f8c02b0bc746f4a81a5bb48f3"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0014.json",
+      "count": 100,
+      "sha256": "c413c8bd0559d57f17e345c2b59e627fa77073403b2072682efc6df1a8176711"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0015.json",
+      "count": 100,
+      "sha256": "a6eae03b04922f03bc0bf9c9d6c2d1319e500b68c19e5ec217c1ee7970fc7c3b"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0016.json",
+      "count": 100,
+      "sha256": "4bd72a4c700e66d8febcde1e6f189a2bcc2b764a8b9c4e051637186355aa70e4"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0017.json",
+      "count": 100,
+      "sha256": "a1f35e76b46d0caab6f0fd06ff149036d6229ad07105d7640531ffebf4886134"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0018.json",
+      "count": 100,
+      "sha256": "e50c7130d1cb5abff4cec94dffed778beeb04a5fd3a86f7efcd01b2f58ef60f6"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0019.json",
+      "count": 100,
+      "sha256": "2d40ec88086a6ae4d784830f8a249962c4135ac8d3d43b1b6295aa66defc3edd"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0020.json",
+      "count": 100,
+      "sha256": "ff8e53d473d692c21e490ce14d2ca6ece7c618345ef6b76498dc82033c6fd280"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0021.json",
+      "count": 100,
+      "sha256": "d41d025da94202685168e7a219de5cdc53346aaca0e4f42ac7c4ddaa1aa78054"
+    },
+    {
+      "regionId": "nrw-05315000",
+      "file": "nrw-seed-parts/nrw-05315000-0022.json",
+      "count": 86,
+      "sha256": "40df1f52d6760a6ce85da709b661dd0c352560ba387df91f14fcdbf9af5d4432"
+    },
+    {
+      "regionId": "nrw-05566032",
+      "file": "nrw-seed-parts/nrw-05566032-0000.json",
+      "count": 66,
+      "sha256": "984568e7147eb68370b9c66d6be434577ba3279f2c7dae4a895b252b94a0f4da"
+    },
+    {
+      "regionId": "nrw-05558032",
+      "file": "nrw-seed-parts/nrw-05558032-0000.json",
+      "count": 100,
+      "sha256": "f6c33d75e4b4b99d7ccd59389ae52f3650d277e514462d09829819000972b273"
+    },
+    {
+      "regionId": "nrw-05558032",
+      "file": "nrw-seed-parts/nrw-05558032-0001.json",
+      "count": 100,
+      "sha256": "91565778e3f2b5db5c62206d9f01caa1e374415eaefad0d4fe3b441ab3ebc9ba"
+    },
+    {
+      "regionId": "nrw-05558032",
+      "file": "nrw-seed-parts/nrw-05558032-0002.json",
+      "count": 100,
+      "sha256": "3b1b1fbe6be6fd3caba65659a58a5a21e09d940ac322f1d4285f366259820da0"
+    },
+    {
+      "regionId": "nrw-05558032",
+      "file": "nrw-seed-parts/nrw-05558032-0003.json",
+      "count": 63,
+      "sha256": "c170a1869c7c575a5476d46d0e1bc047a4f3c29a3fab4b94515c25cfed4be58a"
+    },
+    {
+      "regionId": "nrw-05558020",
+      "file": "nrw-seed-parts/nrw-05558020-0000.json",
+      "count": 100,
+      "sha256": "e58d4c9adc6d23b3122a02f3e6431ef4f9c89074bc9085da2c1161372acc5c11"
+    },
+    {
+      "regionId": "nrw-05558020",
+      "file": "nrw-seed-parts/nrw-05558020-0001.json",
+      "count": 100,
+      "sha256": "fbf1056f5c3bce480916ad78d7f28e64730a825db215589817bf5f09dba4f7fe"
+    },
+    {
+      "regionId": "nrw-05558020",
+      "file": "nrw-seed-parts/nrw-05558020-0002.json",
+      "count": 94,
+      "sha256": "150642b6a5a8ddc966d2022e99aa8a88d5032139b4edc11c1d78cb8196cb23ab"
+    },
+    {
+      "regionId": "nrw-05558040",
+      "file": "nrw-seed-parts/nrw-05558040-0000.json",
+      "count": 100,
+      "sha256": "6bf7dd91afa6cb64a44ac0591401e6030b06280a64e88994530d4e7dcd962b32"
+    },
+    {
+      "regionId": "nrw-05558040",
+      "file": "nrw-seed-parts/nrw-05558040-0001.json",
+      "count": 100,
+      "sha256": "f0e16695decf334590e740e770a8227b932457d82eb511e481c5a5126eb3c2c7"
+    },
+    {
+      "regionId": "nrw-05558040",
+      "file": "nrw-seed-parts/nrw-05558040-0002.json",
+      "count": 100,
+      "sha256": "681cd71fcc93931f24a6cd68eea295c60c0732f2cbd665898981472c68c39ed2"
+    },
+    {
+      "regionId": "nrw-05558040",
+      "file": "nrw-seed-parts/nrw-05558040-0003.json",
+      "count": 100,
+      "sha256": "13dda0664b7fabde9d8dd0024248b3ae67ae07f1365b09defb69e1f4fead3dd3"
+    },
+    {
+      "regionId": "nrw-05558040",
+      "file": "nrw-seed-parts/nrw-05558040-0004.json",
+      "count": 18,
+      "sha256": "b346442367f2d7aa04392038b134e46e5bdc9699dbd3b2489e3e96aa28fbd213"
+    },
+    {
+      "regionId": "nrw-05558012",
+      "file": "nrw-seed-parts/nrw-05558012-0000.json",
+      "count": 100,
+      "sha256": "bb190af4ec5c8d7c983da1646dd9c937042c23d2acdbd4208589c0119ea495e8"
+    },
+    {
+      "regionId": "nrw-05558012",
+      "file": "nrw-seed-parts/nrw-05558012-0001.json",
+      "count": 100,
+      "sha256": "834c43ddb38d6f36cc34541d4897df1499704ee5185ebe91e44085299b36368b"
+    },
+    {
+      "regionId": "nrw-05558012",
+      "file": "nrw-seed-parts/nrw-05558012-0002.json",
+      "count": 100,
+      "sha256": "ab64f451092bd154f408727a22259a91097cfdc493be169001f30aa058b326bc"
+    },
+    {
+      "regionId": "nrw-05558012",
+      "file": "nrw-seed-parts/nrw-05558012-0003.json",
+      "count": 100,
+      "sha256": "05d6148894621e3412aa197cea0c22ff50a5b1e01a517792bb0feb18dac17d9d"
+    },
+    {
+      "regionId": "nrw-05558012",
+      "file": "nrw-seed-parts/nrw-05558012-0004.json",
+      "count": 84,
+      "sha256": "06fc36bffc99f97a6b3ab4237ca2720163d1b9bf30ac9ef245ab4287447da884"
+    },
+    {
+      "regionId": "nrw-05558016",
+      "file": "nrw-seed-parts/nrw-05558016-0000.json",
+      "count": 100,
+      "sha256": "e5eecc4ef0bcdd2907246cbe1fc0b57952606fc3395e89213b86265bc276690c"
+    },
+    {
+      "regionId": "nrw-05558016",
+      "file": "nrw-seed-parts/nrw-05558016-0001.json",
+      "count": 100,
+      "sha256": "ec8ba2f9a5149fc57c0ae71aa896c264c42aefd74779d3ad663c0f79636460cf"
+    },
+    {
+      "regionId": "nrw-05558016",
+      "file": "nrw-seed-parts/nrw-05558016-0002.json",
+      "count": 100,
+      "sha256": "179cdbf9298dff44f2d04c6f04e836a6f2b3b3403282379675cf0bdd02b4a8ff"
+    },
+    {
+      "regionId": "nrw-05558016",
+      "file": "nrw-seed-parts/nrw-05558016-0003.json",
+      "count": 93,
+      "sha256": "c6293a0fb46c7fc1ab514a718103576ce75094596408cbc4e93af554c7c3742d"
+    },
+    {
+      "regionId": "nrw-05558044",
+      "file": "nrw-seed-parts/nrw-05558044-0000.json",
+      "count": 100,
+      "sha256": "cd5894784ef5f9a7e00b12df1230eb1657c5719d23fa0ac90d7df22df1e389ed"
+    },
+    {
+      "regionId": "nrw-05558044",
+      "file": "nrw-seed-parts/nrw-05558044-0001.json",
+      "count": 100,
+      "sha256": "454c55ab8cd2dd397b81f74f24c6deb8bef61c2f3cb0adbf78a709d3358d97cf"
+    },
+    {
+      "regionId": "nrw-05558044",
+      "file": "nrw-seed-parts/nrw-05558044-0002.json",
+      "count": 100,
+      "sha256": "0ac67d9a3d482b7e645879542180ef79cb85fdbbfcf374822a0fe518097c27d5"
+    },
+    {
+      "regionId": "nrw-05558044",
+      "file": "nrw-seed-parts/nrw-05558044-0003.json",
+      "count": 100,
+      "sha256": "29ba870789672c4e107f0c95f9aa93f74adcb9928e3f5e3c51d7904a0119c0e4"
+    },
+    {
+      "regionId": "nrw-05558044",
+      "file": "nrw-seed-parts/nrw-05558044-0004.json",
+      "count": 50,
+      "sha256": "b9b2fd80f3f379bb03afcb735f4b569c67504e332ab3725f065396a5534aea9e"
+    },
+    {
+      "regionId": "nrw-05558024",
+      "file": "nrw-seed-parts/nrw-05558024-0000.json",
+      "count": 100,
+      "sha256": "f87a95b860c2502ce3df669eabeae40a2261f22e522ffedb6e22dccd90ef8f60"
+    },
+    {
+      "regionId": "nrw-05558024",
+      "file": "nrw-seed-parts/nrw-05558024-0001.json",
+      "count": 100,
+      "sha256": "914d0e7ce35c0b100e4eaeeabbf73e1b761d231035e005f64ed7d490829a77b5"
+    },
+    {
+      "regionId": "nrw-05558024",
+      "file": "nrw-seed-parts/nrw-05558024-0002.json",
+      "count": 100,
+      "sha256": "c1c4c9c47eb4016f3a4811a8571b4b851a918f382728862a30ef4ae4fdc5b8ac"
+    },
+    {
+      "regionId": "nrw-05558024",
+      "file": "nrw-seed-parts/nrw-05558024-0003.json",
+      "count": 48,
+      "sha256": "88761e14187072154425c92899e51aa956c2ede3bebac14febb173cabc458611"
+    },
+    {
+      "regionId": "nrw-05554004",
+      "file": "nrw-seed-parts/nrw-05554004-0000.json",
+      "count": 100,
+      "sha256": "fd98a1c71df2843e2da60e4644129ec2c633d78bcd1446af8b4a0ef506bde9d1"
+    },
+    {
+      "regionId": "nrw-05554004",
+      "file": "nrw-seed-parts/nrw-05554004-0001.json",
+      "count": 100,
+      "sha256": "2d8a4ec8d3aebb661236da791b0b351f12b296148fd0825993feab932d20e81b"
+    },
+    {
+      "regionId": "nrw-05554004",
+      "file": "nrw-seed-parts/nrw-05554004-0002.json",
+      "count": 100,
+      "sha256": "98d3c07e3d48c2503fae38337957ee633495d4eb2e71993d033825ce25c3b027"
+    },
+    {
+      "regionId": "nrw-05554004",
+      "file": "nrw-seed-parts/nrw-05554004-0003.json",
+      "count": 100,
+      "sha256": "b439ec86f3666ee3fcc9ccaa75ba235d669ca59ba6b06c49b43483fb26bf74e0"
+    },
+    {
+      "regionId": "nrw-05554004",
+      "file": "nrw-seed-parts/nrw-05554004-0004.json",
+      "count": 33,
+      "sha256": "2de1839eb353e0a7a91a56825f9f27bb00229a47916c2d8dba52188bb984efee"
+    },
+    {
+      "regionId": "nrw-05558036",
+      "file": "nrw-seed-parts/nrw-05558036-0000.json",
+      "count": 100,
+      "sha256": "e95317dbeec6f1ef5ee53841fa13322557efb3f8c5b9fbf817f6461d24331613"
+    },
+    {
+      "regionId": "nrw-05558036",
+      "file": "nrw-seed-parts/nrw-05558036-0001.json",
+      "count": 100,
+      "sha256": "7f4a2c0ef191e8af7a9ef388c0ec279a55ff14842437d7022d0d13ab94a6d11e"
+    },
+    {
+      "regionId": "nrw-05558036",
+      "file": "nrw-seed-parts/nrw-05558036-0002.json",
+      "count": 82,
+      "sha256": "46e57780d389e59f8667cb6c304054d4bc87082597ef45bdb8d6c76407d8f904"
+    },
+    {
+      "regionId": "nrw-05558004",
+      "file": "nrw-seed-parts/nrw-05558004-0000.json",
+      "count": 100,
+      "sha256": "3e25d28b40743ab233eaccd2b4d8939a5111046806601c3e9f904230953ffe7d"
+    },
+    {
+      "regionId": "nrw-05558004",
+      "file": "nrw-seed-parts/nrw-05558004-0001.json",
+      "count": 100,
+      "sha256": "3e5e9ced23cdd33883900af632c96d0b2853b5b3695e91827e06a5e72fc8300e"
+    },
+    {
+      "regionId": "nrw-05558004",
+      "file": "nrw-seed-parts/nrw-05558004-0002.json",
+      "count": 10,
+      "sha256": "a51c9dcbbed15a9422f5796d984b7da051bf5413fbf4f5d386bbcef6caae5206"
+    },
+    {
+      "regionId": "nrw-05558028",
+      "file": "nrw-seed-parts/nrw-05558028-0000.json",
+      "count": 100,
+      "sha256": "e473bbb265f9de581921d6fe2b97557b7f56d0f5f9b94cfd0c07025e1f3ab13d"
+    },
+    {
+      "regionId": "nrw-05558028",
+      "file": "nrw-seed-parts/nrw-05558028-0001.json",
+      "count": 100,
+      "sha256": "5686ea0be55a4eaed5a734afe236d341b039855da83779eec4bc5055f0f75b6e"
+    },
+    {
+      "regionId": "nrw-05558028",
+      "file": "nrw-seed-parts/nrw-05558028-0002.json",
+      "count": 18,
+      "sha256": "e8395b50a1d5ff2b7f261fb029d7833996957d7af6fa74a6b487693199d6ee5c"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0000.json",
+      "count": 100,
+      "sha256": "4cf3f886375077e27be8c7d1dc6ea4b7ae3e300e462849cf8230d65a027c6bd2"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0001.json",
+      "count": 100,
+      "sha256": "8299b662cd134daa1456dc846975128016893dfb3ef84704028ab23c43931780"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0002.json",
+      "count": 100,
+      "sha256": "946d5e164aa9935dd6b3b3a30c885e7bf4f97f2413dcf12f6b55de4a9eebb9bd"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0003.json",
+      "count": 100,
+      "sha256": "8219083c55d172a5d16d516833b019c8cbebfc30610a315bd4cf7f0976016717"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0004.json",
+      "count": 100,
+      "sha256": "797b96c6a3cd62144fb97cad064b8e6f068bdbda39a7169dadffcc25405764e7"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0005.json",
+      "count": 100,
+      "sha256": "672ac237ead9fd19dfd25f451df196bf9f5f49098d37da9247be9f1683c31950"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0006.json",
+      "count": 100,
+      "sha256": "6a73b81d7399f195b158e4c1bd9f72a18a65f965b646535bf0e11da3df3c9d31"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0007.json",
+      "count": 100,
+      "sha256": "3b56d5669943292b9e4db780c32876fa2dffb393e2474dd1745ab8d593590577"
+    },
+    {
+      "regionId": "nrw-05566076",
+      "file": "nrw-seed-parts/nrw-05566076-0008.json",
+      "count": 94,
+      "sha256": "3fb644bfd139827c122bd352f42c74fb0e63a1e86471a1204730955e5f5cbdb5"
+    },
+    {
+      "regionId": "nrw-05570044",
+      "file": "nrw-seed-parts/nrw-05570044-0000.json",
+      "count": 100,
+      "sha256": "5b162330617d097a9c7ca4571dc43af14e5408aac8eab9ae40e9b7dd2e865c8a"
+    },
+    {
+      "regionId": "nrw-05570044",
+      "file": "nrw-seed-parts/nrw-05570044-0001.json",
+      "count": 100,
+      "sha256": "c6323ade9eb07862eeeae081600e9e48039d7637fced575bc1c2fe977bb759dd"
+    },
+    {
+      "regionId": "nrw-05570044",
+      "file": "nrw-seed-parts/nrw-05570044-0002.json",
+      "count": 100,
+      "sha256": "6c4c0af4b9facd457d864a0a3c6625649572fe3bbd6a64b99a3236ed81aeb5f3"
+    },
+    {
+      "regionId": "nrw-05570044",
+      "file": "nrw-seed-parts/nrw-05570044-0003.json",
+      "count": 100,
+      "sha256": "cc5ebb2e9797e83c686d34c9dd681b35111e58dcedb7797d6e1f55a54339e076"
+    },
+    {
+      "regionId": "nrw-05570044",
+      "file": "nrw-seed-parts/nrw-05570044-0004.json",
+      "count": 100,
+      "sha256": "3071e3f40bc46a0217e23c381efd18d10d1227afba7c07542b9fef81a90a076d"
+    },
+    {
+      "regionId": "nrw-05570044",
+      "file": "nrw-seed-parts/nrw-05570044-0005.json",
+      "count": 16,
+      "sha256": "0f362f0527ae36b1aa69a3865bdfe1ff413106a762b49ed30a4614749f294a18"
+    },
+    {
+      "regionId": "nrw-05570024",
+      "file": "nrw-seed-parts/nrw-05570024-0000.json",
+      "count": 100,
+      "sha256": "d3ab5bb7e725afdb971cd226df5d5952ff9cfc341c2d0bfc37dbedb6fe466502"
+    },
+    {
+      "regionId": "nrw-05570024",
+      "file": "nrw-seed-parts/nrw-05570024-0001.json",
+      "count": 100,
+      "sha256": "7480f6562500c0e7c00601daeabfe1c1b31a25d9a49529dc5712ac90fefda766"
+    },
+    {
+      "regionId": "nrw-05570024",
+      "file": "nrw-seed-parts/nrw-05570024-0002.json",
+      "count": 3,
+      "sha256": "5b794c4d11ece62fdbb65ad744baff40c8c4cbb70733a7e6df1e0b4f45903ec1"
+    },
+    {
+      "regionId": "nrw-05570032",
+      "file": "nrw-seed-parts/nrw-05570032-0000.json",
+      "count": 100,
+      "sha256": "74bcac2e4e6155a85a216db2b18cbba7b6b4bf649bd48fba0da8382d6a7d5c44"
+    },
+    {
+      "regionId": "nrw-05570032",
+      "file": "nrw-seed-parts/nrw-05570032-0001.json",
+      "count": 100,
+      "sha256": "e0faf7dc7887024dbb62113eb6cfa7ea0ac582184874e9fb2168e9e46168c34d"
+    },
+    {
+      "regionId": "nrw-05570032",
+      "file": "nrw-seed-parts/nrw-05570032-0002.json",
+      "count": 100,
+      "sha256": "9bad567069d9fbfbe77219951b692e9b436010a37137b438e2f6040fb442d073"
+    },
+    {
+      "regionId": "nrw-05570032",
+      "file": "nrw-seed-parts/nrw-05570032-0003.json",
+      "count": 96,
+      "sha256": "893c65c23f72c12b54426855e5a4730367d6dd4eca3dc8ad937e223bc838a282"
+    },
+    {
+      "regionId": "nrw-05570036",
+      "file": "nrw-seed-parts/nrw-05570036-0000.json",
+      "count": 100,
+      "sha256": "d8ed5a822f4df2b9cd574ed4b2fcfdee83756a48b5a311958e48a068abf53079"
+    },
+    {
+      "regionId": "nrw-05570036",
+      "file": "nrw-seed-parts/nrw-05570036-0001.json",
+      "count": 100,
+      "sha256": "055a5bab696617146125dad9e06f8dc8727e03fdb45ace598dacb991c5925deb"
+    },
+    {
+      "regionId": "nrw-05570036",
+      "file": "nrw-seed-parts/nrw-05570036-0002.json",
+      "count": 100,
+      "sha256": "77f9c1ab194b248d5bc554d3648749f09c05861bb6c0be9d531101426d405fa0"
+    },
+    {
+      "regionId": "nrw-05570036",
+      "file": "nrw-seed-parts/nrw-05570036-0003.json",
+      "count": 100,
+      "sha256": "2157f02853e59b21358a010bb4282a8971ce0478ccb7b14741ef9cf19c442029"
+    },
+    {
+      "regionId": "nrw-05570036",
+      "file": "nrw-seed-parts/nrw-05570036-0004.json",
+      "count": 5,
+      "sha256": "3ea058391b98731debea050837283e8e98f9d5daffcf0b0f44faaea496297ead"
+    },
+    {
+      "regionId": "nrw-05554060",
+      "file": "nrw-seed-parts/nrw-05554060-0000.json",
+      "count": 100,
+      "sha256": "4b96e20e03ef4bbda9655fca5f0a2a1f611da0cb653d4cdaba3286184a0657f0"
+    },
+    {
+      "regionId": "nrw-05554060",
+      "file": "nrw-seed-parts/nrw-05554060-0001.json",
+      "count": 76,
+      "sha256": "5b208d0dd367a836d55545971462f39580836bb8f6785a72419c9b6c86a86e60"
+    },
+    {
+      "regionId": "nrw-05562016",
+      "file": "nrw-seed-parts/nrw-05562016-0000.json",
+      "count": 100,
+      "sha256": "b0b34624f4976b7b61e6611e04efbb60e253e618bd21a6a9539930f11a7c58f3"
+    },
+    {
+      "regionId": "nrw-05562016",
+      "file": "nrw-seed-parts/nrw-05562016-0001.json",
+      "count": 100,
+      "sha256": "73f7a1953d6ec45bfd25e67f8b4a545b5aeb9525d29157ffd2e972931d98a1f2"
+    },
+    {
+      "regionId": "nrw-05562016",
+      "file": "nrw-seed-parts/nrw-05562016-0002.json",
+      "count": 57,
+      "sha256": "ed9eb134bde31f4591c1c3b35288eaefd3cdb46967d1ad673d9521725dab3466"
+    },
+    {
+      "regionId": "nrw-05562008",
+      "file": "nrw-seed-parts/nrw-05562008-0000.json",
+      "count": 100,
+      "sha256": "c7f8ad1fb58c79a4bd100b83f3f7e0035b7f01192450d95f9b76523829af950f"
+    },
+    {
+      "regionId": "nrw-05562008",
+      "file": "nrw-seed-parts/nrw-05562008-0001.json",
+      "count": 100,
+      "sha256": "8c1f65da35f5b953d39d0dad92d694712f0130db6f8acba34819f975fa5aed98"
+    },
+    {
+      "regionId": "nrw-05562008",
+      "file": "nrw-seed-parts/nrw-05562008-0002.json",
+      "count": 100,
+      "sha256": "a113468cf2f5c0edbb5472c821070157f9d7827eb78be7675295a3e99cb67bbc"
+    },
+    {
+      "regionId": "nrw-05562008",
+      "file": "nrw-seed-parts/nrw-05562008-0003.json",
+      "count": 33,
+      "sha256": "260e873f2df56f1c56860116879426cd65e8852d94cdca60c471c3e6c2210456"
+    },
+    {
+      "regionId": "nrw-05562036",
+      "file": "nrw-seed-parts/nrw-05562036-0000.json",
+      "count": 100,
+      "sha256": "f652b30ec05f6a42d40f27c685bc88bf03ae76caac395461036e3801df28a613"
+    },
+    {
+      "regionId": "nrw-05562036",
+      "file": "nrw-seed-parts/nrw-05562036-0001.json",
+      "count": 100,
+      "sha256": "d4d290749bbfd47ccf35c87bc8a7a4d2855bb44ef26a52b4f1a4719a116224d7"
+    },
+    {
+      "regionId": "nrw-05562036",
+      "file": "nrw-seed-parts/nrw-05562036-0002.json",
+      "count": 92,
+      "sha256": "4f218792e1a794e10ef4f0d2d030c966f83d5c72db7fb5f015be4c2050dd718b"
+    },
+    {
+      "regionId": "nrw-05562020",
+      "file": "nrw-seed-parts/nrw-05562020-0000.json",
+      "count": 100,
+      "sha256": "43c345e90399f75e3b982901d886f06cc7771f7f1a5fb714d7ab2a8fdad3e2e3"
+    },
+    {
+      "regionId": "nrw-05562020",
+      "file": "nrw-seed-parts/nrw-05562020-0001.json",
+      "count": 100,
+      "sha256": "1a1a38a3d221971e7718cb766dfebc4f6052985a0db096c3666489ae4931060e"
+    },
+    {
+      "regionId": "nrw-05562020",
+      "file": "nrw-seed-parts/nrw-05562020-0002.json",
+      "count": 100,
+      "sha256": "71d5ffcd5fb2a2f47ec38a468e3f3113ed7c8f000ad87dc01e9a3a406d49c142"
+    },
+    {
+      "regionId": "nrw-05562020",
+      "file": "nrw-seed-parts/nrw-05562020-0003.json",
+      "count": 100,
+      "sha256": "0c080ccfa6982b52e8c1ecc1aadd29ba7e3f9b9df37562009fb85b65bfc7f614"
+    },
+    {
+      "regionId": "nrw-05562020",
+      "file": "nrw-seed-parts/nrw-05562020-0004.json",
+      "count": 100,
+      "sha256": "354ad01232194e7397b0daa50d5f27edc595e63d2cf50437b55077256b4e9bb5"
+    },
+    {
+      "regionId": "nrw-05562020",
+      "file": "nrw-seed-parts/nrw-05562020-0005.json",
+      "count": 21,
+      "sha256": "6e00bfa6341fc17313d786205dcca026aef45efbf945e8ebe86c489a214c8c9e"
+    },
+    {
+      "regionId": "nrw-05562012",
+      "file": "nrw-seed-parts/nrw-05562012-0000.json",
+      "count": 100,
+      "sha256": "db700d781af11cd031d3e1bde7520089d8ee05fcb04f5837634afe01129f1a3d"
+    },
+    {
+      "regionId": "nrw-05562012",
+      "file": "nrw-seed-parts/nrw-05562012-0001.json",
+      "count": 100,
+      "sha256": "9b813cf2a9051ad8e5367a1c5a9a85371789e03408bb1416b52a54bb3eb66796"
+    },
+    {
+      "regionId": "nrw-05562012",
+      "file": "nrw-seed-parts/nrw-05562012-0002.json",
+      "count": 100,
+      "sha256": "2ba6494df489d28c71fb3f2896a53fff4729423780abd4f4555b5297f1abd880"
+    },
+    {
+      "regionId": "nrw-05562012",
+      "file": "nrw-seed-parts/nrw-05562012-0003.json",
+      "count": 100,
+      "sha256": "1dcb0b42b3aa65440c6562953ecfc392be089fd9374e55024a17b422b254be79"
+    },
+    {
+      "regionId": "nrw-05562012",
+      "file": "nrw-seed-parts/nrw-05562012-0004.json",
+      "count": 100,
+      "sha256": "f222d5d4d03b4c7824677d6bc0f843738c17961129e21344b400da26adf01306"
+    },
+    {
+      "regionId": "nrw-05562012",
+      "file": "nrw-seed-parts/nrw-05562012-0005.json",
+      "count": 100,
+      "sha256": "1efcd9e61f5fa4f55d1eccbaee7c4b8eeb8627e3809c500f158f4087de8ed559"
+    },
+    {
+      "regionId": "nrw-05562012",
+      "file": "nrw-seed-parts/nrw-05562012-0006.json",
+      "count": 96,
+      "sha256": "c0bc6869ab8bb925f71cade2310a87aff66335fdc401552290dcb3e79c59a408"
+    },
+    {
+      "regionId": "nrw-05570020",
+      "file": "nrw-seed-parts/nrw-05570020-0000.json",
+      "count": 100,
+      "sha256": "3ee14db19bdc05d4e2682363eb55d771b5f23e1ac521ac35698a33ec1ddcd729"
+    },
+    {
+      "regionId": "nrw-05570020",
+      "file": "nrw-seed-parts/nrw-05570020-0001.json",
+      "count": 100,
+      "sha256": "6de7d46154d286de80a9443cc1704c0ae18f5779a91197246863fccec730827c"
+    },
+    {
+      "regionId": "nrw-05570020",
+      "file": "nrw-seed-parts/nrw-05570020-0002.json",
+      "count": 100,
+      "sha256": "0d13b4057f0b8604a04055cc0299d4f069cd826c619136ef5e9aa93cf4308282"
+    },
+    {
+      "regionId": "nrw-05570020",
+      "file": "nrw-seed-parts/nrw-05570020-0003.json",
+      "count": 100,
+      "sha256": "68814745610c0f27d2858590612c5523006a0411ddf93a368685d7ed63890875"
+    },
+    {
+      "regionId": "nrw-05570020",
+      "file": "nrw-seed-parts/nrw-05570020-0004.json",
+      "count": 100,
+      "sha256": "58f7ec403f909c658a227c9a587d372a3824ac489a3d517fab88e3448b62f661"
+    },
+    {
+      "regionId": "nrw-05570020",
+      "file": "nrw-seed-parts/nrw-05570020-0005.json",
+      "count": 100,
+      "sha256": "65d6869bfb197e31bd0a0d54ca987278b6ff74ad9b12af899701bb1d1c46012b"
+    },
+    {
+      "regionId": "nrw-05570020",
+      "file": "nrw-seed-parts/nrw-05570020-0006.json",
+      "count": 17,
+      "sha256": "2a7e9fda7198419e168518e4fe38b3a2ff8ff337e89ef18c070287e2b6c97818"
+    },
+    {
+      "regionId": "nrw-05570012",
+      "file": "nrw-seed-parts/nrw-05570012-0000.json",
+      "count": 100,
+      "sha256": "f4f2818ac42b7629292dd128973bde592a2e89ed5b97ea9027c3af06fc84233b"
+    },
+    {
+      "regionId": "nrw-05570012",
+      "file": "nrw-seed-parts/nrw-05570012-0001.json",
+      "count": 100,
+      "sha256": "29ec713bb4bb56f77d18db2a72ae6a0b43711816bd752362e596e2cbf80f3ba3"
+    },
+    {
+      "regionId": "nrw-05570012",
+      "file": "nrw-seed-parts/nrw-05570012-0002.json",
+      "count": 16,
+      "sha256": "ad31b8aace893642f873f24bb6a4e3ea18737313bd9ac79a0fe1d47c13b18284"
+    },
+    {
+      "regionId": "nrw-05566068",
+      "file": "nrw-seed-parts/nrw-05566068-0000.json",
+      "count": 100,
+      "sha256": "5105a9c1d89c516b6fd4ef7f89e91ec3d256aae8f2a8041a29d04af18887351b"
+    },
+    {
+      "regionId": "nrw-05566068",
+      "file": "nrw-seed-parts/nrw-05566068-0001.json",
+      "count": 100,
+      "sha256": "13d142c283487f36bd5c44c39456a9116eb9e434d68e39d69d9163700413ca90"
+    },
+    {
+      "regionId": "nrw-05566068",
+      "file": "nrw-seed-parts/nrw-05566068-0002.json",
+      "count": 100,
+      "sha256": "e768f25fed0898f9085010439a43b3bf36750c93f1c41d7572d8fd349c4bcd0d"
+    },
+    {
+      "regionId": "nrw-05566068",
+      "file": "nrw-seed-parts/nrw-05566068-0003.json",
+      "count": 100,
+      "sha256": "15dee8e3367b0de4be855f259c804c66c891166cd05bb272e2a1de23c2377f61"
+    },
+    {
+      "regionId": "nrw-05566068",
+      "file": "nrw-seed-parts/nrw-05566068-0004.json",
+      "count": 96,
+      "sha256": "c229bd5ecfe763281f4ca02c5286f0b29d1e8b28025a49e2731ae27dbf545e89"
+    },
+    {
+      "regionId": "nrw-05570052",
+      "file": "nrw-seed-parts/nrw-05570052-0000.json",
+      "count": 100,
+      "sha256": "5bc2d5d1c2d7265ad1c0a968b2a701056abdfd0d168b4df0881e8d8e961e9d67"
+    },
+    {
+      "regionId": "nrw-05570052",
+      "file": "nrw-seed-parts/nrw-05570052-0001.json",
+      "count": 100,
+      "sha256": "1069ab2833b863daa986846ce4098d4bfcb9d23a639ab386f96bb1db291720c0"
+    },
+    {
+      "regionId": "nrw-05570052",
+      "file": "nrw-seed-parts/nrw-05570052-0002.json",
+      "count": 100,
+      "sha256": "6cc0e8dba7237aa4eb2a2d20efd16a8adc18e7f46e4865ed3240c3ee8efd313e"
+    },
+    {
+      "regionId": "nrw-05570052",
+      "file": "nrw-seed-parts/nrw-05570052-0003.json",
+      "count": 100,
+      "sha256": "dd935e9cac76e289eeaf2ec9c2408e19f0e466ccf9d38df7f15fda32d8beaf7f"
+    },
+    {
+      "regionId": "nrw-05570052",
+      "file": "nrw-seed-parts/nrw-05570052-0004.json",
+      "count": 25,
+      "sha256": "5880bc15e0f3ef05c461aee1b330c4b09c36b1b4e42ed737571c94ad21d4d8e0"
+    },
+    {
+      "regionId": "nrw-05570008",
+      "file": "nrw-seed-parts/nrw-05570008-0000.json",
+      "count": 100,
+      "sha256": "c3239ca28eb7c55b4d18d9e2dad55320ba494d2977951b8e4be764343fe17191"
+    },
+    {
+      "regionId": "nrw-05570008",
+      "file": "nrw-seed-parts/nrw-05570008-0001.json",
+      "count": 100,
+      "sha256": "4f0f549c3e02f2fd734500413fbea1b44c23fab1d8ae63ed587af8451613465b"
+    },
+    {
+      "regionId": "nrw-05570008",
+      "file": "nrw-seed-parts/nrw-05570008-0002.json",
+      "count": 100,
+      "sha256": "cd5b8d4c13a060407ad8b27bf52cf4d8cedb958d4e5c989887f21433b3e6e6b3"
+    },
+    {
+      "regionId": "nrw-05570008",
+      "file": "nrw-seed-parts/nrw-05570008-0003.json",
+      "count": 100,
+      "sha256": "2545b0088144c1afe0be03784b8439f54aeac667619d9c96e8e16328bea75856"
+    },
+    {
+      "regionId": "nrw-05570008",
+      "file": "nrw-seed-parts/nrw-05570008-0004.json",
+      "count": 98,
+      "sha256": "9644454ccce9a6a2053bc92db8a3c66099945ca1683da5427fa2285032ee64ab"
+    },
+    {
+      "regionId": "nrw-05570028",
+      "file": "nrw-seed-parts/nrw-05570028-0000.json",
+      "count": 100,
+      "sha256": "740e4c3e0a4a26dbc6cf32e062c2440a3931acff9747485b3ef07afc470213c3"
+    },
+    {
+      "regionId": "nrw-05570028",
+      "file": "nrw-seed-parts/nrw-05570028-0001.json",
+      "count": 100,
+      "sha256": "b0f2b0c6302c96b78c904fa3f605cdd0c9262158fc9d22cb04e7716ca402046d"
+    },
+    {
+      "regionId": "nrw-05570028",
+      "file": "nrw-seed-parts/nrw-05570028-0002.json",
+      "count": 100,
+      "sha256": "e0d224b02b92f6ae160650296e77f35be6cab38eff38520fe311206393608281"
+    },
+    {
+      "regionId": "nrw-05570028",
+      "file": "nrw-seed-parts/nrw-05570028-0003.json",
+      "count": 100,
+      "sha256": "dcf3ad288442bc1514218aec804d259dd85b66af6b9db242199ccfda0dcb4d3b"
+    },
+    {
+      "regionId": "nrw-05570028",
+      "file": "nrw-seed-parts/nrw-05570028-0004.json",
+      "count": 41,
+      "sha256": "daea2c9e84b67420111a1107f49f8874783c9dfa60506445ea0b84e09a37d425"
+    },
+    {
+      "regionId": "nrw-05570048",
+      "file": "nrw-seed-parts/nrw-05570048-0000.json",
+      "count": 100,
+      "sha256": "d914073c698ebe654001b6ab4c0feb0f80c41f1f37cd6ae046f647f352e8443c"
+    },
+    {
+      "regionId": "nrw-05570048",
+      "file": "nrw-seed-parts/nrw-05570048-0001.json",
+      "count": 100,
+      "sha256": "d6c22861647b37706a13bf8749cec270302e16ef7c14b404403d28b718b2006d"
+    },
+    {
+      "regionId": "nrw-05570048",
+      "file": "nrw-seed-parts/nrw-05570048-0002.json",
+      "count": 100,
+      "sha256": "65e1fd6a0fafbb9402e2515360b42b882ad4951d460927bace1c0ad4d084c9ad"
+    },
+    {
+      "regionId": "nrw-05570048",
+      "file": "nrw-seed-parts/nrw-05570048-0003.json",
+      "count": 96,
+      "sha256": "854ce214beda24d93e7632eb3a81c930d893e8c4c681ea8e4d97914ae778c7ed"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0000.json",
+      "count": 100,
+      "sha256": "960b476b04c16a30304908a61e688306f75a3fa7217dedb166a99028e75e77ae"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0001.json",
+      "count": 100,
+      "sha256": "29423cbb08e0c59c348defc58dc3e3881fdd6d457e215c3940e80f565282ac2b"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0002.json",
+      "count": 100,
+      "sha256": "e861132a6a1d4f19a5295640e198ee95dff8e678a657be33e84c8c94d78c8a94"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0003.json",
+      "count": 100,
+      "sha256": "91dede9132dd1cf094bea689cc9031248422c2c733ef939b9968da42ee46b914"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0004.json",
+      "count": 100,
+      "sha256": "baee648f1cc893d6a4c1aa0f5d897c9efdf0833a8e54d011c068fb7c059af2fe"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0005.json",
+      "count": 100,
+      "sha256": "35f7861a7d0cfa3b3fcc26190defcf467396bb6f5f6d208efae29dc92e7dcf6c"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0006.json",
+      "count": 100,
+      "sha256": "1ba2087971795c1935a5461048974ef2fe0444f2ee541281b06955041a9504a8"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0007.json",
+      "count": 100,
+      "sha256": "4d0d7e61df4908935aca50de81ab4680037bf43e9ea36d8bfd215911c3a1cb30"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0008.json",
+      "count": 100,
+      "sha256": "b672c4f16a92d20e534fbf161356d6296f8949b5c2f5edc018619dac5740f119"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0009.json",
+      "count": 100,
+      "sha256": "830ef04c490f46a8b52a99c3b338dfee2a32b7b0055f3e9ad4963778f0cf92f3"
+    },
+    {
+      "regionId": "nrw-05562024",
+      "file": "nrw-seed-parts/nrw-05562024-0010.json",
+      "count": 4,
+      "sha256": "5a8adb7fe41a0786e4c3f51ac30eda0ab635042a8c96b4871329bcc390590878"
+    }
+  ]
+}

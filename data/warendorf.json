@@ -1,0 +1,2830 @@
+{
+  "topics": [
+    {
+      "id": "warendorf-top-103780--1",
+      "title": "Fragestunde für Einwohnerinnen und Einwohner",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103780",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103780",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-06-26",
+          "committee": "Finanzausschuss",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103780"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Fragestunde für Einwohnerinnen und Einwohner",
+      "category": "Stadtleben",
+      "committee": "Finanzausschuss",
+      "eventDate": "2026-06-26",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Fragestunde für Einwohnerinnen und Einwohner\n2026-06-26 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Fragestunde für Einwohnerinnen und Einwohner. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Fragestunde für Einwohnerinnen und Einwohner“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Finanzausschuss. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "e63d5361e1003e7ee9845ca4c5416a9257058b8e6c996ad2249c1baef673bc19"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109910",
+      "title": "Information zum vorläufigen Jahresabschluss 2025",
+      "reference": "093/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109910",
+      "status": "info",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151083&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109910",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-06-26",
+          "committee": "Finanzausschuss",
+          "status": "info",
+          "description": "zur Kenntnis genommen",
+          "result": "zur Kenntnis genommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103780"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Information zum vorläufigen Jahresabschluss 2025",
+      "category": "Stadtleben",
+      "committee": "Finanzausschuss",
+      "eventDate": "2026-06-26",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Information zum vorläufigen Jahresabschluss 2025\n2026-06-26 zur Kenntnis genommen",
+      "shortSummary": "Information zum vorläufigen Jahresabschluss 2025. Die Information wurde zur Kenntnis genommen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Information zum vorläufigen Jahresabschluss 2025“ wird in Kreis Warendorf behandelt. Die Information wurde zur Kenntnis genommen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Finanzausschuss. Die Vorlage trägt das Aktenzeichen 093/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "45e6e763d822c2309b3eaeda8da7a250d7e83271df3b9a4a179b04542704af16"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109919",
+      "title": "Über- und außerplanmäßige Aufwendungen und Auszahlungen 2025",
+      "reference": "102/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109919",
+      "status": "info",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151218&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage 1 - Zusammenstellung der über- und außerplanmäßigen Aufwendungen und Auszahlungen 2025",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151230&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109919",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-06-26",
+          "committee": "Finanzausschuss",
+          "status": "info",
+          "description": "zur Kenntnis genommen",
+          "result": "zur Kenntnis genommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103780"
+        },
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "info",
+          "description": "zur Kenntnis genommen",
+          "result": "zur Kenntnis genommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "info",
+          "description": "zur Kenntnis genommen",
+          "result": "zur Kenntnis genommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Über- und außerplanmäßige Aufwendungen und Auszahlungen 2025",
+      "category": "Stadtleben",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Über- und außerplanmäßige Aufwendungen und Auszahlungen 2025\n2026-06-26 zur Kenntnis genommen\n2026-07-03 zur Kenntnis genommen\n2026-07-10 zur Kenntnis genommen",
+      "shortSummary": "Über- und außerplanmäßige Aufwendungen und Auszahlungen 2025. Die Information wurde zur Kenntnis genommen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Über- und außerplanmäßige Aufwendungen und Auszahlungen 2025“ wird in Kreis Warendorf behandelt. Die Information wurde zur Kenntnis genommen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 102/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "7ef035821e1ba06142c8dd786d5996211d21d2d5203411850785969aa5ab900d"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109888",
+      "title": "Bericht zur Haushaltssituation 2026",
+      "reference": "071/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109888",
+      "status": "info",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151007&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Finanzstatusbericht zum 15.04.2026",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151229&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109888",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-06-26",
+          "committee": "Finanzausschuss",
+          "status": "info",
+          "description": "zur Kenntnis genommen",
+          "result": "zur Kenntnis genommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103780"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Bericht zur Haushaltssituation 2026",
+      "category": "Finanzen & Wirtschaft",
+      "committee": "Finanzausschuss",
+      "eventDate": "2026-06-26",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Bericht zur Haushaltssituation 2026\n2026-06-26 zur Kenntnis genommen",
+      "shortSummary": "Bericht zur Haushaltssituation 2026. Die Information wurde zur Kenntnis genommen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Bericht zur Haushaltssituation 2026“ wird in Kreis Warendorf behandelt. Die Information wurde zur Kenntnis genommen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Finanzausschuss. Die Vorlage trägt das Aktenzeichen 071/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "5250c19a983f1838fb6f56ba5dcb62b12069304076432db45480941fbc86abc7"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109920",
+      "title": "Sachstand zum Forderungsmanagement des Kreises Warendorf",
+      "reference": "103/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109920",
+      "status": "info",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151228&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109920",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-06-26",
+          "committee": "Finanzausschuss",
+          "status": "info",
+          "description": "zur Kenntnis genommen",
+          "result": "zur Kenntnis genommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103780"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Sachstand zum Forderungsmanagement des Kreises Warendorf",
+      "category": "Stadtleben",
+      "committee": "Finanzausschuss",
+      "eventDate": "2026-06-26",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Sachstand zum Forderungsmanagement des Kreises Warendorf\n2026-06-26 zur Kenntnis genommen",
+      "shortSummary": "Sachstand zum Forderungsmanagement des Kreises Warendorf. Die Information wurde zur Kenntnis genommen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Sachstand zum Forderungsmanagement des Kreises Warendorf“ wird in Kreis Warendorf behandelt. Die Information wurde zur Kenntnis genommen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Finanzausschuss. Die Vorlage trägt das Aktenzeichen 103/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "57ef8eebdd10bb0cff6ff59179d102d38929e44c96a3b60286740ff0fd2a0744"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109913",
+      "title": "Änderung des Vergaberechts für Kommunen in NRW zum 01.01.2026",
+      "reference": "096/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109913",
+      "status": "info",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151108&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109913",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-06-26",
+          "committee": "Finanzausschuss",
+          "status": "info",
+          "description": "zur Kenntnis genommen",
+          "result": "zur Kenntnis genommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103780"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Änderung des Vergaberechts für Kommunen in NRW zum 01.01.2026",
+      "category": "Stadtleben",
+      "committee": "Finanzausschuss",
+      "eventDate": "2026-06-26",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Änderung des Vergaberechts für Kommunen in NRW zum 01.01.2026\n2026-06-26 zur Kenntnis genommen",
+      "shortSummary": "Änderung des Vergaberechts für Kommunen in NRW zum 01.01.2026. Die Information wurde zur Kenntnis genommen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Änderung des Vergaberechts für Kommunen in NRW zum 01.01.2026“ wird in Kreis Warendorf behandelt. Die Information wurde zur Kenntnis genommen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Finanzausschuss. Die Vorlage trägt das Aktenzeichen 096/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "c1d670a7c17251dba00e5dc9fa625fca651a529c764ad97a4ca907b606b8fce8"
+      }
+    },
+    {
+      "id": "warendorf-top-103781--1",
+      "title": "Fragestunde für Einwohnerinnen und Einwohner",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Fragestunde für Einwohnerinnen und Einwohner",
+      "category": "Stadtleben",
+      "committee": "Kreisausschuss",
+      "eventDate": "2026-07-03",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Fragestunde für Einwohnerinnen und Einwohner\n2026-07-03 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Fragestunde für Einwohnerinnen und Einwohner. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Fragestunde für Einwohnerinnen und Einwohner“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreisausschuss. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "e5fbbfe9d10526c96bdeebee43dd1357593fb4a137187871a3987dee427133f7"
+      }
+    },
+    {
+      "id": "warendorf-top-103781--2",
+      "title": "Bericht der Verwaltung",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Bericht der Verwaltung",
+      "category": "Stadtleben",
+      "committee": "Kreisausschuss",
+      "eventDate": "2026-07-03",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Bericht der Verwaltung\n2026-07-03 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Bericht der Verwaltung. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Bericht der Verwaltung“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreisausschuss. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "399411f7510de0cb558ad2d824c784c1a1be0d10f4a7eb7af394c5ae0b8ca8d4"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109922",
+      "title": "Rettungsdienstgebühren im Kreis Warendorf / Aktuelle Entwicklung",
+      "reference": "105/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109922",
+      "status": "postponed",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151315&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage 1- Auszug Partielle Finanzierung von Fehlfahrten und Fehleinsätzen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151316&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage 2 - Informationspapier zur Zukunft des Rettungsdienstes",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151317&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109922",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "postponed",
+          "description": "vertagt",
+          "result": "vertagt",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Rettungsdienstgebühren im Kreis Warendorf / Aktuelle Entwicklung",
+      "category": "Finanzen & Wirtschaft",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Rettungsdienstgebühren im Kreis Warendorf / Aktuelle Entwicklung\n2026-07-03 einstimmig angenommen\n2026-07-10 vertagt",
+      "shortSummary": "Rettungsdienstgebühren im Kreis Warendorf / Aktuelle Entwicklung. Die Behandlung wurde verschoben. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Rettungsdienstgebühren im Kreis Warendorf / Aktuelle Entwicklung“ wird in Kreis Warendorf behandelt. Die Behandlung wurde verschoben.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 105/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "a2f06de63636185e9a0ec8a11fc6f894624e4538e34877eb172b3792bb064758"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109863",
+      "title": "Vorstellung Kommunale Pflegeplanung 2026",
+      "reference": "047/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109863",
+      "status": "recommended",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=150733&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "ENTWURF Kommunale Pflegeplanung 2026",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=150732&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109863",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Vorstellung Kommunale Pflegeplanung 2026",
+      "category": "Gesundheit & Soziales",
+      "committee": "Kreisausschuss",
+      "eventDate": "2026-07-03",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Vorstellung Kommunale Pflegeplanung 2026\n2026-07-03 einstimmig angenommen",
+      "shortSummary": "Vorstellung Kommunale Pflegeplanung 2026. Ein Gremium hat zugestimmt; die abschließende Entscheidung ist noch nicht belegt. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Vorstellung Kommunale Pflegeplanung 2026“ wird in Kreis Warendorf behandelt. Ein Gremium hat zugestimmt; die abschließende Entscheidung ist noch nicht belegt.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreisausschuss. Die Vorlage trägt das Aktenzeichen 047/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "acf06f3ab21ed757880cc2a05148caf2052c7720c8c300b89e1afeedfa923f83"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109921",
+      "title": "Etablierung der Schiedsgerichtsbarkeit NS-Raubgut (Abgabe eines „stehenden Angebots“)",
+      "reference": "104/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109921",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151264&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage: Erklärung Stehendes Angebot",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151320&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109921",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "mehrheitlich angenommen",
+          "result": "mehrheitlich angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "mehrheitlich angenommen",
+          "result": "mehrheitlich angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Etablierung der Schiedsgerichtsbarkeit NS-Raubgut (Abgabe eines „stehenden Angebots“)",
+      "category": "Stadtleben",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Etablierung der Schiedsgerichtsbarkeit NS-Raubgut (Abgabe eines „stehenden Angebots“)\n2026-07-03 mehrheitlich angenommen\n2026-07-10 mehrheitlich angenommen",
+      "shortSummary": "Etablierung der Schiedsgerichtsbarkeit NS-Raubgut (Abgabe eines „stehenden Angebots“). Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Etablierung der Schiedsgerichtsbarkeit NS-Raubgut (Abgabe eines „stehenden Angebots“)“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 104/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "05c95c422362b4c4beca60548a3d4e0423236b085a58abf94aa3cdd8ccae7a50"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109882",
+      "title": "Integriertes Klimaanpassungskonzept für den Kreis Warendorf",
+      "reference": "065/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109882",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=150910&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "KLAK Band III Maßnahmen Kreisverwaltung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151130&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "KLAK Band II Analysen Kreisverwaltung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151129&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "KLAK Band I Rahmenbericht Kreisverwaltung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151128&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109882",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "mehrheitlich angenommen",
+          "result": "mehrheitlich angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "mehrheitlich angenommen",
+          "result": "mehrheitlich angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Integriertes Klimaanpassungskonzept für den Kreis Warendorf",
+      "category": "Klima & Umwelt",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Integriertes Klimaanpassungskonzept für den Kreis Warendorf\n2026-07-03 mehrheitlich angenommen\n2026-07-10 mehrheitlich angenommen",
+      "shortSummary": "Integriertes Klimaanpassungskonzept für den Kreis Warendorf. Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Integriertes Klimaanpassungskonzept für den Kreis Warendorf“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 065/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "c2cb857435b8ee219b17dfb456a7e9ff102c201fb07f27546283e4d8acad729d"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109903",
+      "title": "Aufhebung der öffentlich-rechtlichen Vereinbarung zur Wahrnehmung von Aufgaben des Öffentlichen Personennahverkehrs (ÖPNV) in den Kreisen Coesfeld und Warendorf",
+      "reference": "086/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109903",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151050&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109903",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Aufhebung der öffentlich-rechtlichen Vereinbarung zur Wahrnehmung von Aufgaben des Öffentlichen Personennahverkehrs (ÖPNV) in den Kreisen Coesfeld und Warendorf",
+      "category": "Mobilität",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Aufhebung der öffentlich-rechtlichen Vereinbarung zur Wahrnehmung von Aufgaben des Öffentlichen Personennahverkehrs (ÖPNV) in den Kreisen Coesfeld und Warendorf\n2026-07-03 einstimmig angenommen\n2026-07-10 einstimmig angenommen",
+      "shortSummary": "Aufhebung der öffentlich-rechtlichen Vereinbarung zur Wahrnehmung von Aufgaben des Öffentlichen Personennahverkehrs (ÖPNV) in den Kreisen Coesfeld und Warendorf. Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Aufhebung der öffentlich-rechtlichen Vereinbarung zur Wahrnehmung von Aufgaben des Öffentlichen Personennahverkehrs (ÖPNV) in den Kreisen Coesfeld und Warendorf“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 086/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "a830f71583f65567c2d51b696ae8ef687ab6df3cd2e4ed1d60c5f8dda20406a8"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109887",
+      "title": "MVA Hamm Verbund - Änderung Verträge",
+      "reference": "070/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109887",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151002&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Beteiligungsübersicht 2026",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151238&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109887",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "MVA Hamm Verbund - Änderung Verträge",
+      "category": "Stadtleben",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "MVA Hamm Verbund - Änderung Verträge\n2026-07-03 einstimmig angenommen\n2026-07-10 einstimmig angenommen",
+      "shortSummary": "MVA Hamm Verbund - Änderung Verträge. Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „MVA Hamm Verbund - Änderung Verträge“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 070/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "a641a2492993c859700e4c0e520a7930e9a2e83b3e5120c8872e84f567fd2b9c"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109904",
+      "title": "Tarifmaßnahme zum 01.04.2027 im WestfalenTarif",
+      "reference": "087/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109904",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151056&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109904",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Tarifmaßnahme zum 01.04.2027 im WestfalenTarif",
+      "category": "Stadtleben",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Tarifmaßnahme zum 01.04.2027 im WestfalenTarif\n2026-07-03 einstimmig angenommen\n2026-07-10 einstimmig angenommen",
+      "shortSummary": "Tarifmaßnahme zum 01.04.2027 im WestfalenTarif. Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Tarifmaßnahme zum 01.04.2027 im WestfalenTarif“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 087/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "3f4bc5150c53aafee20c716fc897caf5b14a4d7a9ea7493dbec7cfbbe4866ca6"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109908",
+      "title": "Weiterentwicklung der Strukturen des NWL (Trägerwechsel und Satzungsänderung)",
+      "reference": "091/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109908",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151079&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage 1 Zielfassung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151095&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage 2 Synopse",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151092&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage 3 Mitteilungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151094&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109908",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Weiterentwicklung der Strukturen des NWL (Trägerwechsel und Satzungsänderung)",
+      "category": "Stadtleben",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Weiterentwicklung der Strukturen des NWL (Trägerwechsel und Satzungsänderung)\n2026-07-03 einstimmig angenommen\n2026-07-10 einstimmig angenommen",
+      "shortSummary": "Weiterentwicklung der Strukturen des NWL (Trägerwechsel und Satzungsänderung). Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Weiterentwicklung der Strukturen des NWL (Trägerwechsel und Satzungsänderung)“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 091/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "f221b7fd8b414fdc24b56cac1c544f63cff328b4533ef7c593ac79bf8acea97b"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109907",
+      "title": "Weiterentwicklung der Strukturen des Zweckverbandes Mobilität Münsterland (ZVM) einschließlich Satzungsänderung",
+      "reference": "090/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109907",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151076&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Satzung Synopse Stand27052026",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151131&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109907",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "mehrheitlich angenommen",
+          "result": "mehrheitlich angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        },
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "mehrheitlich angenommen",
+          "result": "mehrheitlich angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Weiterentwicklung der Strukturen des Zweckverbandes Mobilität Münsterland (ZVM) einschließlich Satzungsänderung",
+      "category": "Mobilität",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Weiterentwicklung der Strukturen des Zweckverbandes Mobilität Münsterland (ZVM) einschließlich Satzungsänderung\n2026-07-03 mehrheitlich angenommen\n2026-07-10 mehrheitlich angenommen",
+      "shortSummary": "Weiterentwicklung der Strukturen des Zweckverbandes Mobilität Münsterland (ZVM) einschließlich Satzungsänderung. Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Weiterentwicklung der Strukturen des Zweckverbandes Mobilität Münsterland (ZVM) einschließlich Satzungsänderung“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 090/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "3b5b1fa5bfa147d5e4e0d4c9903ad5e2f27bdb2c8088782fc5081369bf8a71bb"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109909",
+      "title": "Förderantrag zum MobiTicket 2027",
+      "reference": "092/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109909",
+      "status": "recommended",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151091&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109909",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-03",
+          "committee": "Kreisausschuss",
+          "status": "recommended",
+          "description": "mehrheitlich angenommen",
+          "result": "mehrheitlich angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103781"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Förderantrag zum MobiTicket 2027",
+      "category": "Stadtleben",
+      "committee": "Kreisausschuss",
+      "eventDate": "2026-07-03",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Förderantrag zum MobiTicket 2027\n2026-07-03 mehrheitlich angenommen",
+      "shortSummary": "Förderantrag zum MobiTicket 2027. Ein Gremium hat zugestimmt; die abschließende Entscheidung ist noch nicht belegt. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Förderantrag zum MobiTicket 2027“ wird in Kreis Warendorf behandelt. Ein Gremium hat zugestimmt; die abschließende Entscheidung ist noch nicht belegt.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreisausschuss. Die Vorlage trägt das Aktenzeichen 092/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "d034247f2a98e9c7dadcf10a7b0f980e90605ea55bf407a1bbc5c7fe09738a47"
+      }
+    },
+    {
+      "id": "warendorf-top-103782--1",
+      "title": "Fragestunde für Einwohnerinnen und Einwohner",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Fragestunde für Einwohnerinnen und Einwohner",
+      "category": "Stadtleben",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Fragestunde für Einwohnerinnen und Einwohner\n2026-07-10 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Fragestunde für Einwohnerinnen und Einwohner. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Fragestunde für Einwohnerinnen und Einwohner“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "ddfe5363ddbda0a090139567528c3e9c3d44c43aa7836bf6df7e50405cd802a0"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109923",
+      "title": "Änderung der Geschäftsordnung für den Kreistag des Kreises Warendorf",
+      "reference": "106/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109923",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151407&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109923",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Änderung der Geschäftsordnung für den Kreistag des Kreises Warendorf",
+      "category": "Stadtleben",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Änderung der Geschäftsordnung für den Kreistag des Kreises Warendorf\n2026-07-10 einstimmig angenommen",
+      "shortSummary": "Änderung der Geschäftsordnung für den Kreistag des Kreises Warendorf. Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Änderung der Geschäftsordnung für den Kreistag des Kreises Warendorf“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 106/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "91d3509d584b7b9e8ddc077c2d842658f2d4a2530cfb76c23de4843280810616"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109931",
+      "title": "Umbesetzung in den Ausschüssen und Gremien des Kreises Warendorf - Antrag der Kreistagsfraktion Die Linke",
+      "reference": "113/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109931",
+      "status": "approved",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151429&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage: Antrag der Kreistagsfraktion Die Linke vom 02.07.2026",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151430&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109931",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-10",
+          "committee": "Kreistag",
+          "status": "approved",
+          "description": "einstimmig angenommen",
+          "result": "einstimmig angenommen",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103782"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Umbesetzung in den Ausschüssen und Gremien des Kreises Warendorf - Antrag der Kreistagsfraktion Die Linke",
+      "category": "Stadtleben",
+      "committee": "Kreistag",
+      "eventDate": "2026-07-10",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Umbesetzung in den Ausschüssen und Gremien des Kreises Warendorf - Antrag der Kreistagsfraktion Die Linke\n2026-07-10 einstimmig angenommen",
+      "shortSummary": "Umbesetzung in den Ausschüssen und Gremien des Kreises Warendorf - Antrag der Kreistagsfraktion Die Linke. Ein Beschluss ist dokumentiert. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Umbesetzung in den Ausschüssen und Gremien des Kreises Warendorf - Antrag der Kreistagsfraktion Die Linke“ wird in Kreis Warendorf behandelt. Ein Beschluss ist dokumentiert.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Kreistag. Die Vorlage trägt das Aktenzeichen 113/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "180e7bf2b326e190b72d27da488cf32fb627a80a6e908deecb407739ea089348"
+      }
+    },
+    {
+      "id": "warendorf-top-103897--1",
+      "title": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für Errichtung eines Feuerlöschteichs im Landschaftsschutzgebiet „Averdung“.",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-15",
+          "committee": "Beirat nach dem Naturschutzgesetz",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für Errichtung eines Feuerlöschteichs im Landschaftsschutzgebiet „Averdung“.",
+      "category": "Stadtleben",
+      "committee": "Beirat nach dem Naturschutzgesetz",
+      "eventDate": "2026-07-15",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für Errichtung eines Feuerlöschteichs im Landschaftsschutzgebiet „Averdung“.\n2026-07-15 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für Errichtung eines Feuerlöschteichs im Landschaftsschutzgebiet „Averdung“. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für Errichtung eines Feuerlöschteichs im Landschaftsschutzgebiet „Averdung“.“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Beirat nach dem Naturschutzgesetz. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "4ac687eb2142aceaa3192accf6ac2223bb476597f2bb65b18d927bb0ca70d82b"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109926",
+      "title": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für den Bau eines Co-Location Batteriespeichers im Landschaftsschutzgebiet „Averdung“.",
+      "reference": "108/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109926",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109926",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-15",
+          "committee": "Beirat nach dem Naturschutzgesetz",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für den Bau eines Co-Location Batteriespeichers im Landschaftsschutzgebiet „Averdung“.",
+      "category": "Bauen & Wohnen",
+      "committee": "Beirat nach dem Naturschutzgesetz",
+      "eventDate": "2026-07-15",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für den Bau eines Co-Location Batteriespeichers im Landschaftsschutzgebiet „Averdung“.\n2026-07-15 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für den Bau eines Co-Location Batteriespeichers im Landschaftsschutzgebiet „Averdung“. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Drensteinfurter Platte für den Bau eines Co-Location Batteriespeichers im Landschaftsschutzgebiet „Averdung“.“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Beirat nach dem Naturschutzgesetz. Die Vorlage trägt das Aktenzeichen 108/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "5808d137fd15d40e8a794b3f3f4a48aaa43ca00aa29ca22ac475c4019894db57"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109927",
+      "title": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Sendenhorst für den Bau eines Parkstreifens im Landschaftsschutzgebiet „Landschaftsraum Hagedorn / Rummler / Hohe Ward“.",
+      "reference": "109/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109927",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109927",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-15",
+          "committee": "Beirat nach dem Naturschutzgesetz",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Sendenhorst für den Bau eines Parkstreifens im Landschaftsschutzgebiet „Landschaftsraum Hagedorn / Rummler / Hohe Ward“.",
+      "category": "Bauen & Wohnen",
+      "committee": "Beirat nach dem Naturschutzgesetz",
+      "eventDate": "2026-07-15",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Sendenhorst für den Bau eines Parkstreifens im Landschaftsschutzgebiet „Landschaftsraum Hagedorn / Rummler / Hohe Ward“.\n2026-07-15 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Sendenhorst für den Bau eines Parkstreifens im Landschaftsschutzgebiet „Landschaftsraum Hagedorn / Rummler …. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplanes Sendenhorst für den Bau eines Parkstreifens im Landschaftsschutzgebiet „Landschaftsraum Hagedorn / Rummler / Hohe Ward“.“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Beirat nach dem Naturschutzgesetz. Die Vorlage trägt das Aktenzeichen 109/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "0cba38ca018832267e9f9f1fe986818eb65759b1a888e421423e85447181f4a1"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109928",
+      "title": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplans Östliche Emsaue / Beelen für den Bau eines Kollektorfeldes im Landschaftsschutzgebiet „Beelener Mark mit Beilbachniederung /Hemfeld“.",
+      "reference": "110/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109928",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109928",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-15",
+          "committee": "Beirat nach dem Naturschutzgesetz",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplans Östliche Emsaue / Beelen für den Bau eines Kollektorfeldes im Landschaftsschutzgebiet „Beelener Mark mit Beilbachniederung /Hemfeld“.",
+      "category": "Bauen & Wohnen",
+      "committee": "Beirat nach dem Naturschutzgesetz",
+      "eventDate": "2026-07-15",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplans Östliche Emsaue / Beelen für den Bau eines Kollektorfeldes im Landschaftsschutzgebiet „Beelener Mark mit Beilbachniederung /Hemfeld“.\n2026-07-15 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplans Östliche Emsaue / Beelen für den Bau eines Kollektorfeldes im Landschaftsschutzgebiet „Beelener …. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Antrag auf Befreiung gem. § 67 BNatSchG von den Festsetzungen des Landschaftsplans Östliche Emsaue / Beelen für den Bau eines Kollektorfeldes im Landschaftsschutzgebiet „Beelener Mark mit Beilbachniederung /Hemfeld“.“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Beirat nach dem Naturschutzgesetz. Die Vorlage trägt das Aktenzeichen 110/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "d501aba522865f38790d499436a2e04229fbef2e3910b806938cfd5f9cd3b7e2"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109929",
+      "title": "Antrag auf Befreiung gem. § 67 BNatSchG von den Verboten der Schutzgebietsverordnung „Verordnung zum Schutze von Landschaftsstellen im Kreis Warendorf vom 30.11.1973“ für den Bau eines Carports",
+      "reference": "111/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109929",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109929",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-15",
+          "committee": "Beirat nach dem Naturschutzgesetz",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Antrag auf Befreiung gem. § 67 BNatSchG von den Verboten der Schutzgebietsverordnung „Verordnung zum Schutze von Landschaftsstellen im Kreis Warendorf vom 30.11.1973“ für den Bau eines Carports",
+      "category": "Bauen & Wohnen",
+      "committee": "Beirat nach dem Naturschutzgesetz",
+      "eventDate": "2026-07-15",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Antrag auf Befreiung gem. § 67 BNatSchG von den Verboten der Schutzgebietsverordnung „Verordnung zum Schutze von Landschaftsstellen im Kreis Warendorf vom 30.11.1973“ für den Bau eines Carports\n2026-07-15 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Antrag auf Befreiung gem. § 67 BNatSchG von den Verboten der Schutzgebietsverordnung „Verordnung zum Schutze von Landschaftsstellen im Kreis Warendorf vom 30.11.1973“ für den …. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Antrag auf Befreiung gem. § 67 BNatSchG von den Verboten der Schutzgebietsverordnung „Verordnung zum Schutze von Landschaftsstellen im Kreis Warendorf vom 30.11.1973“ für den Bau eines Carports“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Beirat nach dem Naturschutzgesetz. Die Vorlage trägt das Aktenzeichen 111/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "3447063ae650fb1226a15b5319a9d345644f72f951631bef426c680854c4182b"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109930",
+      "title": "Entscheidung über den pauschalen Verzicht auf das Widerspruchsrecht des Beirates in unkritischen Fällen.",
+      "reference": "112/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109930",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109930",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-15",
+          "committee": "Beirat nach dem Naturschutzgesetz",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Entscheidung über den pauschalen Verzicht auf das Widerspruchsrecht des Beirates in unkritischen Fällen.",
+      "category": "Stadtleben",
+      "committee": "Beirat nach dem Naturschutzgesetz",
+      "eventDate": "2026-07-15",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Entscheidung über den pauschalen Verzicht auf das Widerspruchsrecht des Beirates in unkritischen Fällen.\n2026-07-15 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Entscheidung über den pauschalen Verzicht auf das Widerspruchsrecht des Beirates in unkritischen Fällen. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Entscheidung über den pauschalen Verzicht auf das Widerspruchsrecht des Beirates in unkritischen Fällen.“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Beirat nach dem Naturschutzgesetz. Die Vorlage trägt das Aktenzeichen 112/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "f297575883594a094e8873db2eb13d0287776717848b50c541fe7e5a293ff577"
+      }
+    },
+    {
+      "id": "warendorf-top-103897--7",
+      "title": "Verschiedenes",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897",
+      "status": "unknown",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-07-15",
+          "committee": "Beirat nach dem Naturschutzgesetz",
+          "status": "unknown",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103897"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Verschiedenes",
+      "category": "Stadtleben",
+      "committee": "Beirat nach dem Naturschutzgesetz",
+      "eventDate": "2026-07-15",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Verschiedenes\n2026-07-15 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Verschiedenes. Der Stand ist noch offen. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Verschiedenes“ wird in Kreis Warendorf behandelt. Der Stand ist noch offen.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Beirat nach dem Naturschutzgesetz. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "7018580298920908be128c102de85d3742bbd4205702708cdc60bc19ad5688e0"
+      }
+    },
+    {
+      "id": "warendorf-top-103783--1",
+      "title": "Fragestunde für Einwohnerinnen und Einwohner",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103783",
+      "status": "announced",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103783",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-06",
+          "committee": "Ausschuss für öffentliche Ordnung und Bevölkerungsschutz",
+          "status": "announced",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103783"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Fragestunde für Einwohnerinnen und Einwohner",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für öffentliche Ordnung und Bevölkerungsschutz",
+      "eventDate": "2026-10-06",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Fragestunde für Einwohnerinnen und Einwohner\n2026-10-06 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Fragestunde für Einwohnerinnen und Einwohner. Das Thema ist angekündigt. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Fragestunde für Einwohnerinnen und Einwohner“ wird in Kreis Warendorf behandelt. Das Thema ist angekündigt.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für öffentliche Ordnung und Bevölkerungsschutz. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "4fa81dea0a7cdf24f8bebb16b49ff1939a9b088d3ab20c0c56789ae776a0bc6f"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109961",
+      "title": "Bericht zu aktuellen Themen im Bereich Brandschutz",
+      "reference": "143/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109961",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151633&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109961",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-06",
+          "committee": "Ausschuss für öffentliche Ordnung und Bevölkerungsschutz",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103783"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Bericht zu aktuellen Themen im Bereich Brandschutz",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für öffentliche Ordnung und Bevölkerungsschutz",
+      "eventDate": "2026-10-06",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Bericht zu aktuellen Themen im Bereich Brandschutz\n2026-10-06 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Bericht zu aktuellen Themen im Bereich Brandschutz. Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Bericht zu aktuellen Themen im Bereich Brandschutz“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für öffentliche Ordnung und Bevölkerungsschutz. Die Vorlage trägt das Aktenzeichen 143/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "0e50da376d319eecbf17c538ba04b1b0a76fe2fa13de361718c03e08354590ab"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109955",
+      "title": "Entwicklung eines neuen Standorts für das Feuerwehrausbildungszentrum",
+      "reference": "137/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109955",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151624&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anlage 1 Lager- und Übungshalle",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151667&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109955",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-06",
+          "committee": "Ausschuss für öffentliche Ordnung und Bevölkerungsschutz",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103783"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Entwicklung eines neuen Standorts für das Feuerwehrausbildungszentrum",
+      "category": "Bildung & Familie",
+      "committee": "Ausschuss für öffentliche Ordnung und Bevölkerungsschutz",
+      "eventDate": "2026-10-06",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Entwicklung eines neuen Standorts für das Feuerwehrausbildungszentrum\n2026-10-06 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Entwicklung eines neuen Standorts für das Feuerwehrausbildungszentrum. Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Entwicklung eines neuen Standorts für das Feuerwehrausbildungszentrum“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für öffentliche Ordnung und Bevölkerungsschutz. Die Vorlage trägt das Aktenzeichen 137/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "365a0e3f95ff2e7655b3e5867159f280d85de52f536241c12ef2330da09bc35a"
+      }
+    },
+    {
+      "id": "warendorf-top-103783--4",
+      "title": "Anfragen der Kreistagsmitglieder",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103783",
+      "status": "announced",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103783",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-06",
+          "committee": "Ausschuss für öffentliche Ordnung und Bevölkerungsschutz",
+          "status": "announced",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103783"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Anfragen der Kreistagsmitglieder",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für öffentliche Ordnung und Bevölkerungsschutz",
+      "eventDate": "2026-10-06",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Anfragen der Kreistagsmitglieder\n2026-10-06 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Anfragen der Kreistagsmitglieder. Das Thema ist angekündigt. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Anfragen der Kreistagsmitglieder“ wird in Kreis Warendorf behandelt. Das Thema ist angekündigt.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für öffentliche Ordnung und Bevölkerungsschutz. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "9c42ee5b7d2fdcf8ed734a1c75b1719192c8f9aca922cad67b9f618b14bb736c"
+      }
+    },
+    {
+      "id": "warendorf-top-103784--1",
+      "title": "Fragestunde für Einwohnerinnen und Einwohner",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103784",
+      "status": "announced",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103784",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-07",
+          "committee": "Ausschuss für Digitalisierung",
+          "status": "announced",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103784"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Fragestunde für Einwohnerinnen und Einwohner",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Digitalisierung",
+      "eventDate": "2026-10-07",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Fragestunde für Einwohnerinnen und Einwohner\n2026-10-07 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Fragestunde für Einwohnerinnen und Einwohner. Das Thema ist angekündigt. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Fragestunde für Einwohnerinnen und Einwohner“ wird in Kreis Warendorf behandelt. Das Thema ist angekündigt.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Digitalisierung. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "c82d40f510ce79a3247aae7c27302d31129770aec76f9fda2f3bbbdf5eafd4e0"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109966",
+      "title": "Sachstandsbericht geförderter Glasfaserausbau und Mobilfunksituation im Kreis Warendorf / Vorstellung NRW-Förderung „Koordination Digitale Infrastruktur\"",
+      "reference": "148/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109966",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151662&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109966",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-07",
+          "committee": "Ausschuss für Digitalisierung",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103784"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Sachstandsbericht geförderter Glasfaserausbau und Mobilfunksituation im Kreis Warendorf / Vorstellung NRW-Förderung „Koordination Digitale Infrastruktur\"",
+      "category": "Bauen & Wohnen",
+      "committee": "Ausschuss für Digitalisierung",
+      "eventDate": "2026-10-07",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Sachstandsbericht geförderter Glasfaserausbau und Mobilfunksituation im Kreis Warendorf / Vorstellung NRW-Förderung „Koordination Digitale Infrastruktur\"\n2026-10-07 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Sachstandsbericht geförderter Glasfaserausbau und Mobilfunksituation im Kreis Warendorf / Vorstellung NRW-Förderung „Koordination Digitale Infrastruktur\". Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Sachstandsbericht geförderter Glasfaserausbau und Mobilfunksituation im Kreis Warendorf / Vorstellung NRW-Förderung „Koordination Digitale Infrastruktur\"“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Digitalisierung. Die Vorlage trägt das Aktenzeichen 148/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "ec730069c88f6bc395005c6c84a21a523cfec1d539d0a940e5d26f982b8adfd8"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109967",
+      "title": "Vorstellung des aktualisierten Geoportals und Ausblick auf die interkommunale Zusammenarbeit im Bereich Geoinformation und Geoportal",
+      "reference": "149/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109967",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151665&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109967",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-07",
+          "committee": "Ausschuss für Digitalisierung",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103784"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Vorstellung des aktualisierten Geoportals und Ausblick auf die interkommunale Zusammenarbeit im Bereich Geoinformation und Geoportal",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Digitalisierung",
+      "eventDate": "2026-10-07",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Vorstellung des aktualisierten Geoportals und Ausblick auf die interkommunale Zusammenarbeit im Bereich Geoinformation und Geoportal\n2026-10-07 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Vorstellung des aktualisierten Geoportals und Ausblick auf die interkommunale Zusammenarbeit im Bereich Geoinformation und Geoportal. Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Vorstellung des aktualisierten Geoportals und Ausblick auf die interkommunale Zusammenarbeit im Bereich Geoinformation und Geoportal“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Digitalisierung. Die Vorlage trägt das Aktenzeichen 149/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "43926a89f3da16c9f0ba72a0c772efe5edab0fdf977f5f290430001c480b93df"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109968",
+      "title": "Datenschutz bei neuen Digitalisierungsprojekten",
+      "reference": "150/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109968",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151692&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109968",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-07",
+          "committee": "Ausschuss für Digitalisierung",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103784"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Datenschutz bei neuen Digitalisierungsprojekten",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Digitalisierung",
+      "eventDate": "2026-10-07",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Datenschutz bei neuen Digitalisierungsprojekten\n2026-10-07 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Datenschutz bei neuen Digitalisierungsprojekten. Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Datenschutz bei neuen Digitalisierungsprojekten“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Digitalisierung. Die Vorlage trägt das Aktenzeichen 150/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "98c1254844e5b649a4769acd0f11b0d19abb243803c34264cbb964ea6105d093"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109969",
+      "title": "Anfragen der Kreistagsmitglieder",
+      "reference": "151/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109969",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151672&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Anfrage der FWG-Kreistagsfraktion vom 04.09.2026",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151688&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109969",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-07",
+          "committee": "Ausschuss für Digitalisierung",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103784"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Anfragen der Kreistagsmitglieder",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Digitalisierung",
+      "eventDate": "2026-10-07",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Anfragen der Kreistagsmitglieder\n2026-10-07 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Anfragen der Kreistagsmitglieder. Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Anfragen der Kreistagsmitglieder“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Digitalisierung. Die Vorlage trägt das Aktenzeichen 151/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "008dbcee43f7fc6cc698bfee8ec49a0e2735a1309572422b8e83c4acd3881112"
+      }
+    },
+    {
+      "id": "warendorf-top-103785--1",
+      "title": "Fragestunde für Einwohnerinnen und Einwohner",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785",
+      "status": "announced",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-08",
+          "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+          "status": "announced",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Fragestunde für Einwohnerinnen und Einwohner",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+      "eventDate": "2026-10-08",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Fragestunde für Einwohnerinnen und Einwohner\n2026-10-08 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Fragestunde für Einwohnerinnen und Einwohner. Das Thema ist angekündigt. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Fragestunde für Einwohnerinnen und Einwohner“ wird in Kreis Warendorf behandelt. Das Thema ist angekündigt.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Bildung, Integration, Kultur und Sport. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "4bea0d4af8094305a5dec38877bcd553115e8bc2100a2e7c5c536f9585978968"
+      }
+    },
+    {
+      "id": "warendorf-top-103785--2",
+      "title": "Bericht der Verwaltung",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785",
+      "status": "announced",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-08",
+          "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+          "status": "announced",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Bericht der Verwaltung",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+      "eventDate": "2026-10-08",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Bericht der Verwaltung\n2026-10-08 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Bericht der Verwaltung. Das Thema ist angekündigt. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Bericht der Verwaltung“ wird in Kreis Warendorf behandelt. Das Thema ist angekündigt.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Bildung, Integration, Kultur und Sport. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "d5f48c534c70a686b0eed06f8de1fc10617704b4f6fea15f5df6017a7e6ab758"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109942",
+      "title": "Demokratiebildung – Angebote des Amtes für Jugend und Bildung",
+      "reference": "124/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109942",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151528&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109942",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-08",
+          "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Demokratiebildung – Angebote des Amtes für Jugend und Bildung",
+      "category": "Bildung & Familie",
+      "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+      "eventDate": "2026-10-08",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Demokratiebildung – Angebote des Amtes für Jugend und Bildung\n2026-10-08 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Demokratiebildung – Angebote des Amtes für Jugend und Bildung. Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Demokratiebildung – Angebote des Amtes für Jugend und Bildung“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Bildung, Integration, Kultur und Sport. Die Vorlage trägt das Aktenzeichen 124/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "52029d7830a1222b34450bc8844311e95b3fd1814320dc9bd515c8c685cdbb17"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109943",
+      "title": "Bericht über die Umsetzung des ESF Plus-Programms „Bildungskommunen\"",
+      "reference": "125/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109943",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151533&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109943",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-08",
+          "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Bericht über die Umsetzung des ESF Plus-Programms „Bildungskommunen\"",
+      "category": "Bildung & Familie",
+      "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+      "eventDate": "2026-10-08",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Bericht über die Umsetzung des ESF Plus-Programms „Bildungskommunen\"\n2026-10-08 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Bericht über die Umsetzung des ESF Plus-Programms „Bildungskommunen\". Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Bericht über die Umsetzung des ESF Plus-Programms „Bildungskommunen\"“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Bildung, Integration, Kultur und Sport. Die Vorlage trägt das Aktenzeichen 125/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "14a5bf7002668f532fc04768fd1785b7fa5fe07aa0b316642945a6e3cc45d75b"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109940",
+      "title": "Rückblick „Revolution Train“ im Jahr 2026",
+      "reference": "122/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109940",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151513&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109940",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-08",
+          "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Rückblick „Revolution Train“ im Jahr 2026",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+      "eventDate": "2026-10-08",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Rückblick „Revolution Train“ im Jahr 2026\n2026-10-08 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Rückblick „Revolution Train“ im Jahr 2026. Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Rückblick „Revolution Train“ im Jahr 2026“ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Bildung, Integration, Kultur und Sport. Die Vorlage trägt das Aktenzeichen 122/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "2d703812b9bdc04cfc28311c31ac22c0726c5da3b1001112e3ffaa22d70176e8"
+      }
+    },
+    {
+      "id": "warendorf-vo-2004109944",
+      "title": "Vorstellung des schulischen Lernorts „Regenbogenschulhaus“",
+      "reference": "126/2026",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109944",
+      "status": "consulting",
+      "documents": [
+        {
+          "title": "Sitzungsvorlage",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/getfile.php?id=151604&type=do",
+          "kind": "application/pdf"
+        },
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/vo0050.php?__kvonr=2004109944",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-08",
+          "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+          "status": "consulting",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Vorstellung des schulischen Lernorts „Regenbogenschulhaus“",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+      "eventDate": "2026-10-08",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Vorstellung des schulischen Lernorts „Regenbogenschulhaus“\n2026-10-08 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Vorstellung des schulischen Lernorts „Regenbogenschulhaus“. Eine Vorlage steht zur Beratung. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Vorstellung des schulischen Lernorts „Regenbogenschulhaus““ wird in Kreis Warendorf behandelt. Eine Vorlage steht zur Beratung.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Bildung, Integration, Kultur und Sport. Die Vorlage trägt das Aktenzeichen 126/2026."
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "95b997ac88dff867e2c49affc4607cc8e24b373246c042a0d59b1829ed2bbcba"
+      }
+    },
+    {
+      "id": "warendorf-top-103785--7",
+      "title": "Anfragen der Ausschussmitglieder",
+      "reference": "",
+      "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785",
+      "status": "announced",
+      "documents": [
+        {
+          "title": "Vorlage / öffentliche Tagesordnung",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785",
+          "kind": "html"
+        }
+      ],
+      "events": [
+        {
+          "date": "2026-10-08",
+          "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+          "status": "announced",
+          "description": "Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+          "result": "",
+          "url": "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103785"
+        }
+      ],
+      "regionId": "warendorf",
+      "source": "district",
+      "public": true,
+      "officialTitle": "Anfragen der Ausschussmitglieder",
+      "category": "Stadtleben",
+      "committee": "Ausschuss für Bildung, Integration, Kultur und Sport",
+      "eventDate": "2026-10-08",
+      "updatedAt": "2026-09-26T12:09:57.013Z",
+      "relevanceReason": "Öffentlicher Vorgang: Kreis Warendorf",
+      "sourceText": "Anfragen der Ausschussmitglieder\n2026-10-08 Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.",
+      "shortSummary": "Anfragen der Ausschussmitglieder. Das Thema ist angekündigt. Die Details stehen in den verlinkten Originalunterlagen.",
+      "longSummary": [
+        "Das Thema „Anfragen der Ausschussmitglieder“ wird in Kreis Warendorf behandelt. Das Thema ist angekündigt.",
+        "Zuständig ist in der zuletzt erfassten Beratung: Ausschuss für Bildung, Integration, Kultur und Sport. "
+      ],
+      "generatedBy": "Automatischer Quellenüberblick",
+      "quality": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Originalquelle",
+            "passed": true,
+            "detail": "Öffentliche SessionNet-Seite; konservative Statusauswertung."
+          },
+          {
+            "name": "Inhaltliche Prüfung",
+            "passed": false,
+            "detail": "Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung."
+          }
+        ],
+        "checkedAt": "2026-09-26T12:09:57.013Z",
+        "sourceHash": "e8e6582594eae5757bc540efeb035694fb4181da89ad477b68ec88dc1b08d348"
+      }
+    }
+  ],
+  "coverage": {
+    "regionId": "warendorf",
+    "method": "scraper",
+    "from": "2026-06-26",
+    "to": "2026-09-26",
+    "importedAt": "2026-09-26T12:09:57.013Z",
+    "meetings": 10,
+    "sourceCount": 1,
+    "complete": false,
+    "issues": [
+      "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103896: fetch failed",
+      "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103906: fetch failed",
+      "https://www.kreis-warendorf.de/w1/sessionnet/bi/si0057.php?__ksinr=103912: fetch failed"
+    ],
+    "sourceUrl": "https://www.kreis-warendorf.de/w1/sessionnet/bi/",
+    "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+    "apiCheckedAt": "2026-09-26T12:10:27.712Z"
+  }
+}

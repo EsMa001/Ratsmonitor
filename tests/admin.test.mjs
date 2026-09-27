@@ -1,0 +1,134 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {DatabaseSync} from 'node:sqlite';
+import {createHash} from 'node:crypto';
+import ts from 'typescript';
+import {adminAccess,claimAdmin,requireAdminAccess,requireSameOrigin} from '../server/integrations/admin-access.mjs';
+import {loadAdminData,adminReview} from '../server/integrations/admin-data.mjs';
+import {filterAdminSources,sourcesCsv} from '../shared/admin.mjs';
+
+const root=path.resolve(import.meta.dirname,'..'),sqlite=new DatabaseSync(':memory:');
+for(const f of fs.readdirSync(path.join(root,'drizzle')).filter(f=>f.endsWith('.sql')).sort())sqlite.exec(fs.readFileSync(path.join(root,'drizzle',f),'utf8'));
+const db={prepare(sql){let args=[];return {bind(...v){args=v;return this;},async all(){return {results:sqlite.prepare(sql).all(...args)};},async first(){return sqlite.prepare(sql).get(...args)||null;},async run(){sqlite.prepare(sql).run(...args);return {success:true};}};},async batch(statements){return Promise.all(statements.map(s=>s.all()));}};
+const owner={userId:'trusted-site-sub',email:'owner@example.org'},other={userId:'other-site-sub',email:owner.email};
+const code='fixture-activation-code',hash=createHash('sha256').update(code).digest('hex');
+const reset=()=>{for(const t of ['topics','source_coverage','import_runs','article_versions','system_state','push_subscriptions'])sqlite.exec('DELETE FROM '+t);};
+const errorStatus=n=>e=>e.status===n;
+const insert=(id,extra={})=>{const t={id,regionId:'billerbeck',status:'consulting',title:'Schulbau '+id,updatedAt:'2026-09-26T12:00:00Z',generatedBy:'Quellenüberblick',classification:{primary:'bildung'},documents:[],...extra};sqlite.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run(id,t.regionId,'city','2026-09-20',t.updatedAt,t.status,JSON.stringify(t));};
+
+test('admin identity is claimed once, checks trusted ID rather than email and fails closed',async()=>{
+ reset();assert.equal((await adminAccess(db,null)).kind,'anonymous');
+ await assert.rejects(requireAdminAccess(db,null),errorStatus(401));
+ await assert.rejects(claimAdmin(db,owner,'wrong',hash),errorStatus(403));
+ assert.equal((await adminAccess(db,owner)).kind,'setup');
+ const claims=await Promise.allSettled([claimAdmin(db,owner,code,hash),claimAdmin(db,other,code,hash)]);
+ assert.equal(claims.filter(r=>r.status==='fulfilled').length,1);
+ const winner=claims[0].status==='fulfilled'?owner:other,loser=winner===owner?other:owner;
+ assert.equal((await adminAccess(db,winner)).kind,'owner');
+ assert.equal((await adminAccess(db,loser)).kind,'denied');
+ await assert.rejects(requireAdminAccess(db,loser),errorStatus(403));
+ await assert.rejects(claimAdmin(db,owner,code,hash),errorStatus(409));
+ await assert.rejects(adminAccess(null,owner),errorStatus(503));
+ const saved=sqlite.prepare('SELECT value FROM system_state').get().value;
+ assert.ok(!saved.includes(code)&&!saved.includes(hash)&&!saved.includes(owner.email));
+});
+test('admin mutations reject missing or cross-site origin and non-JSON requests',()=>{
+ const request=headers=>new Request('https://site.example/api/admin/import',{method:'POST',headers});
+ for(const headers of [{},{origin:'https://evil.example','content-type':'application/json'},{origin:'https://site.example','content-type':'application/json','sec-fetch-site':'cross-site'}])assert.throws(()=>requireSameOrigin(request(headers)),errorStatus(403));
+ assert.throws(()=>requireSameOrigin(request({origin:'https://site.example','content-type':'text/plain'})),errorStatus(415));
+ assert.doesNotThrow(()=>requireSameOrigin(request({origin:'https://site.example','content-type':'application/json'})));
+});
+test('real admin SQL counts canonical articles, separate quality states and source coverage without disclosing secrets',async()=>{
+ reset();insert('a',{generatedBy:'KI-Zusammenfassung',quality:{passed:true},documents:[{kind:'application/pdf'}]});
+ insert('b',{regionId:'muenster',classification:{primary:'unklar'},status:'unknown',summaryIssue:'Unbelegte Zahl',identity:{conflict:true}});
+ insert('alias',{identity:{mergedInto:'a'},classification:{primary:'unklar'}});
+ sqlite.prepare('INSERT INTO source_coverage VALUES(?,?)').run('billerbeck',JSON.stringify({method:'scraper',complete:false,importedAt:'2026-09-10T00:00:00Z',issues:['Teilabruf']}));
+ sqlite.prepare('INSERT INTO source_coverage VALUES(?,?)').run('muenster',JSON.stringify({method:'oparl',complete:true,importedAt:'2026-09-27T00:00:00Z',issues:[]}));
+ sqlite.prepare('INSERT INTO push_subscriptions(id,endpoint,auth,p256dh,created_at) VALUES(?,?,?,?,?)').run('1','https://private-push.example/secret','private-auth','private-key','2026-09-27');
+ sqlite.prepare('INSERT INTO system_state VALUES(?,?)').run('admin-owner-v1',JSON.stringify({userId:'secret-owner'}));
+ sqlite.prepare('INSERT INTO import_runs VALUES(?,?,?,?,?)').run('run','2026-09-27T00:00:00Z',null,'running',JSON.stringify({region:'billerbeck',trigger:'scheduled',issues:['private-diagnostics']}));
+ const result=await loadAdminData(db,{now:new Date('2026-09-27T12:00:00Z')});
+ assert.equal(result.counts.online,2);assert.equal(result.counts.aliases,1);assert.equal(result.counts.unlabelled,1);
+ for(const key of ['aiSummaries','qualityPassed','pdfArticles','conflicts','textIssues','pushSubscriptions'])assert.equal(result.counts[key],1,key);
+ assert.equal(result.counts.updated7d,2);assert.equal(result.sources.length,427);
+ assert.equal(result.sources.find(s=>s.id==='billerbeck').count,1);
+ assert.equal(result.sources.find(s=>s.id==='billerbeck').stale,true);
+ assert.equal(result.sources.find(s=>s.id==='borken').configured,true);
+ assert.equal(filterAdminSources(result.sources,'partial').length,1);
+ assert.equal(filterAdminSources(result.sources,'data','Münster').length,1);
+ assert.equal(result.runs[0].abandoned,true);assert.equal(result.lastScheduledAt,'2026-09-27T00:00:00Z');
+ assert.equal(result.labels.reduce((n,l)=>n+l.count,0),2);
+ assert.equal(result.review.total,1);
+ const json=JSON.stringify(result);for(const secret of ['secret-owner','private-auth','private-key','private-push','private-diagnostics'])assert.ok(!json.includes(secret));
+});
+test('review filters stay parameterized, exclude aliases, constrain region and cap result rows',async()=>{
+ reset();for(let i=0;i<30;i++)insert('open-'+i,{classification:{primary:'unklar'}});
+ insert('elsewhere',{regionId:'muenster',classification:{primary:'unklar'},status:'unknown'});
+ insert('alias',{classification:{primary:'unklar'},identity:{mergedInto:'open-1'}});
+ const result=await adminReview(db,'labels','billerbeck');assert.equal(result.total,30);assert.equal(result.articles.length,25);assert.ok(result.articles.every(t=>t.regionId==='billerbeck'));
+ assert.equal((await adminReview(db,'status')).total,1);
+ await assert.rejects(adminReview(db,'labels',"' OR 1=1 --"));
+});
+test('CSV export neutralizes spreadsheet formulas and escapes delimiters and quotes',()=>{
+ const csv=sourcesCsv([{name:'=HYPERLINK("x")',ags:'055',kind:'city',count:1,state:'Teilstand',issues:['note; "quoted"']}]);
+ assert.ok(csv.startsWith('\ufeff'));assert.ok(csv.includes('"\'=HYPERLINK(""x"")"'));assert.ok(csv.includes('note; ""quoted""'));assert.equal(csv.split('\r\n').length,2);
+});
+
+const uri=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
+globalThis.adminFixture={user:null,env:{DB:db,ADMIN_SETUP_HASH:hash},reads:0,syncs:0,analyses:0,prepared:0};
+const stubs={
+ 'server-only':'export {};',
+ 'cloudflare:workers':'export const env=globalThis.adminFixture.env;',
+ '@/app/chatgpt-auth':'export async function getChatGPTUser(){return globalThis.adminFixture.user;}',
+ '@/server/repositories/admin':'export async function getAdminDashboard(){globalThis.adminFixture.reads++;return {sources:[]};} export async function getAdminReview(){globalThis.adminFixture.reads++;return {};}',
+ '@/server/integrations/manual-analysis.mjs':'export async function analysePending(){globalThis.adminFixture.analyses++;return {status:200,data:{processed:1,remaining:0}};}',
+ '@/server/data/billerbeck-content-v1.json':'export default {};',
+ '@/server/integrations/prepared-analysis.mjs':'export async function importPreparedAnalysis(){globalThis.adminFixture.prepared++;return {status:200,data:{processed:1,remaining:0}};}',
+ '@/server/services/sync':'export async function runSync(){globalThis.adminFixture.syncs++;return {status:200,data:{topics:1}};}'
+};
+const cache=new Map();
+function load(file){if(cache.has(file))return cache.get(file);let s=fs.readFileSync(file,'utf8');if(file.endsWith('.json'))return uri('export default '+s+';');if(file.endsWith('.mjs'))return pathToFileURL(file).href;
+ s=ts.transpileModule(s,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText.replace(/((?:from\s*|import\s*)['"])([^'"]+)(['"])/g,(m,pre,spec,post)=>{if(stubs[spec])return pre+uri(stubs[spec])+post;const base=spec.startsWith('@/')?path.join(root,spec.slice(2)):spec.startsWith('.')?path.resolve(path.dirname(file),spec):null;if(!base)return m;return pre+load([base,base+'.ts'].find(p=>fs.existsSync(p)&&fs.statSync(p).isFile()))+post;});
+ const out=uri(s);cache.set(file,out);return out;
+}
+const routes=Object.fromEntries(await Promise.all(['overview','review','export','import','claim','analyse','prepared-analysis'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
+const req=(route,body,headers={})=>new Request('https://site.example/api/admin/'+route,{method:body===undefined?'GET':'POST',headers:{origin:'https://site.example','content-type':'application/json',...headers},...(body===undefined?{}:{body})});
+test('every data endpoint denies anonymous and other signed-in users before any reads or imports',async()=>{
+ reset();await claimAdmin(db,owner,code,hash);globalThis.adminFixture.reads=0;globalThis.adminFixture.syncs=0;
+ for(const [user,status] of [[null,401],[other,403]]){globalThis.adminFixture.user=user;for(const route of ['overview','review','export','import','analyse','prepared-analysis']){const response=['import','analyse','prepared-analysis'].includes(route)?await routes[route].POST(req(route,'{"region":"billerbeck"}')):await routes[route].GET(req(route));assert.equal(response.status,status,route);assert.match(response.headers.get('cache-control'),/no-store/);assert.ok(!(await response.text()).includes('sources'));}}
+ assert.equal(globalThis.adminFixture.reads,0);assert.equal(globalThis.adminFixture.syncs,0);assert.equal(globalThis.adminFixture.prepared,0);
+});
+test('authorized APIs validate all inputs and keep import locked to configured territory identifiers',async()=>{
+ globalThis.adminFixture.user=owner;
+ assert.equal((await routes.overview.GET()).status,200);
+ for(const body of ['null','[]','{','{"region":"not-configured"}'])assert.equal((await routes.import.POST(req('import',body))).status,400);
+ assert.equal((await routes.import.POST(req('import','{"region":"billerbeck"}',{origin:'https://evil.example'}))).status,403);
+ assert.equal((await routes.import.POST(req('import','{"region":"billerbeck"}'))).status,200);
+ assert.equal(globalThis.adminFixture.syncs,1);
+ assert.equal((await routes.review.GET(req('review?issue=nope'))).status,400);
+ assert.equal((await routes.export.GET(req('export?filter=nope'))).status,400);
+ assert.equal((await routes.claim.POST(req('claim','null'))).status,400);
+ const csv=await routes.export.GET(req('export'));assert.equal(csv.status,200);assert.match(csv.headers.get('content-type'),/text\/csv/);
+});
+
+test('manual analysis requires the owner and valid input; no GET and no automatic follow-up',async()=>{
+ globalThis.adminFixture.user=owner;globalThis.adminFixture.analyses=0;
+ assert.equal(routes.analyse.GET,undefined);
+ for(const body of ['null','[]','{','{"region":"unknown","mode":"analysis"}','{"region":"all","mode":"summaries"}','{"region":"all","mode":"wrong"}'])assert.equal((await routes.analyse.POST(req('analyse',body))).status,400);
+ assert.equal((await routes.analyse.POST(req('analyse','{"region":"all","mode":"analysis"}',{origin:'https://other.example'}))).status,403);
+ assert.equal((await routes.analyse.POST(req('analyse','{"region":"muenster","mode":"summaries"}'))).status,409);
+ assert.equal(globalThis.adminFixture.analyses,0);
+ const result=await routes.analyse.POST(req('analyse','{"region":"all","mode":"analysis"}'));assert.equal(result.status,200);assert.equal(globalThis.adminFixture.analyses,1);
+ assert.match(result.headers.get('cache-control'),/no-store/);
+});
+test('prepared content import requires a deliberate owner POST from the same origin',async()=>{
+ globalThis.adminFixture.user=owner;globalThis.adminFixture.prepared=0;
+ assert.equal(routes['prepared-analysis'].GET,undefined);
+ assert.equal((await routes['prepared-analysis'].POST(req('prepared-analysis','{}',{origin:'https://evil.example'}))).status,403);
+ assert.equal(globalThis.adminFixture.prepared,0);
+ assert.equal((await routes['prepared-analysis'].POST(req('prepared-analysis','{}'))).status,200);
+ assert.equal(globalThis.adminFixture.prepared,1);
+});

@@ -1,0 +1,26 @@
+name: Politische Quellen aktualisieren
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: political-source-import
+  cancel-in-progress: false
+jobs:
+  import:
+    # Explicit activation after secrets are configured; no implied active service.
+    if: vars.IMPORTS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/run-imports.mjs
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          IMPORT_TOKEN: ${{ secrets.IMPORT_TOKEN }}
+          IMPORT_TRIGGER: ${{ github.event_name == 'workflow_dispatch' && 'manual' || 'scheduled' }}

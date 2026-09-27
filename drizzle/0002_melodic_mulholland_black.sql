@@ -1,0 +1,1 @@
+CREATE INDEX `idx_topics_canonical_region_status` ON `topics` (`region_id`,`status`) WHERE json_extract("topics"."payload",'$.identity.mergedInto') IS NULL;

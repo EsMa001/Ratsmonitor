@@ -1,0 +1,81 @@
+{
+  "sourceCommit": "ae96fbb0d936c6ede63d5d944b4ece6917893536",
+  "revision": "5f74c5f840137a66",
+  "canonicalTotal": 24794,
+  "regions": [
+    {
+      "id": "nrw-05566076",
+      "name": "Stadt Rheine",
+      "count": 894,
+      "issues": [
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7448: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7631: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7521: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7634: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7527: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7520: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7483: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7455: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7451: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7433: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7378: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7230: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7074: fetch failed",
+        "https://www.rheine-buergerinfo.de/si0057.asp?__ksinr=7284: fetch failed"
+      ]
+    },
+    {
+      "id": "nrw-05570024",
+      "name": "Gemeinde Everswinkel",
+      "count": 203,
+      "issues": [
+        "https://sessionnet.owl-it.de/everswinkel/bi/si0057.asp?__ksinr=861: fetch failed",
+        "https://sessionnet.owl-it.de/everswinkel/bi/si0057.asp?__ksinr=845: fetch failed"
+      ]
+    },
+    {
+      "id": "nrw-05570036",
+      "name": "Stadt Sassenberg",
+      "count": 405,
+      "issues": [
+        "https://session.sassenberg.de/sessionnet/bi/si0057.php?__ksinr=913: fetch failed"
+      ]
+    },
+    {
+      "id": "nrw-05562036",
+      "name": "Stadt Waltrop",
+      "count": 291,
+      "issues": [
+        "https://waltrop.gremien.info/meeting?id=ni_2025-10-5: Quelle antwortet mit HTTP 500"
+      ]
+    },
+    {
+      "id": "nrw-05570020",
+      "name": "Stadt Ennigerloh",
+      "count": 617,
+      "issues": [
+        "https://sessionnet.owl-it.de/ennigerloh/bi/si0057.asp?__ksinr=3612: fetch failed"
+      ]
+    },
+    {
+      "id": "nrw-05570012",
+      "name": "Gemeinde Beelen",
+      "count": 216,
+      "issues": [
+        "https://sessionnet.owl-it.de/beelen/bi/si0057.asp?__ksinr=2350: fetch failed",
+        "https://sessionnet.owl-it.de/beelen/bi/si0057.asp?__ksinr=2337: fetch failed"
+      ]
+    },
+    {
+      "id": "nrw-05566068",
+      "name": "Stadt Ochtrup",
+      "count": 363,
+      "issues": [
+        "Listenlimit erreicht; Quelle noch nicht vollständig eingelesen.",
+        "Verknüpfung: The operation was aborted due to timeout",
+        "Verknüpfung: Zeitbudget der Quelle erreicht",
+        "Nicht aufgelöste Vorlagenverknüpfungen: mehrere Tagesordnungspunkte derselben Vorlage können getrennt erfasst sein. Die Vorgangszählung ist deshalb ein vorläufiger Teilstand."
+      ]
+    }
+  ]
+}

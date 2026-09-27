@@ -1,0 +1,74 @@
+/* vor Ort · Design-Tokens, Entwurf 2 (Stand 21.09.2026)
+   Gleiche Werte wie tokens.json. Kontrastwerte gegen Weiß (#FFFFFF) nach WCAG 2.x. */
+
+:root {
+  /* Farben: Grundlage */
+  --color-paper: #FFFFFF;          /* Hintergrund */
+  --color-surface: #F4F4F2;        /* Flächen für Hinweise und Bildplatzhalter */
+  --color-ink: #141414;            /* Überschriften, Marken, Linien 3 px, 18,4:1 */
+  --color-text: #1F1F1F;           /* Fließtext Detailansicht, 16,5:1 */
+  --color-text-secondary: #333333; /* Anreißer, Erläuterungen, 12,6:1 */
+  --color-meta: #5C5C5C;           /* Dachzeile, Datum, Herkunft, 6,7:1 */
+  --color-subtle: #6B6B6B;         /* inaktive Tab-Leiste, 5,3:1 */
+  --color-control: #8C8C8C;        /* Rahmen von Schaltern und Optionen (nicht Text), 3,4:1 */
+  --color-step-inactive: #D6D6D6;  /* nicht erreichte Verfahrensschritte (zusätzlich per Text benannt) */
+  --color-line: #E2E2E2;           /* Haarlinien zwischen Einträgen */
+
+  /* Farben: Akzent, nur für bedienbare Elemente */
+  --color-accent: #2352AD;         /* Kobalt, oklch(0.46 0.155 262), 7,3:1 */
+  --color-accent-hover: #173B80;
+  --color-on-accent: #FFFFFF;
+
+  /* Schrift */
+  --font-sans: 'Fira Sans', 'Segoe UI', sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Schriftgrade: Größe und Zeilenhöhe */
+  --type-display-size: 32px;        --type-display-line: 38px;        /* Einstieg, Hauptaussage */
+  --type-title-l-size: 31px;        --type-title-l-line: 36px;        /* Seitentitel, Themenüberschrift Detail */
+  --type-title-lead-size: 27px;     --type-title-lead-line: 32px;     /* Aufmacher im Feed */
+  --type-title-m-size: 23px;        --type-title-m-line: 28px;        /* Abschnitte in der Detailansicht */
+  --type-title-s-size: 20px;        --type-title-s-line: 25px;        /* Überschrift im Feed */
+  --type-lead-size: 18px;           --type-lead-line: 27px;           /* Vorspann in der Detailansicht */
+  --type-body-article-size: 17px;   --type-body-article-line: 27px;   /* Fließtext Detailansicht */
+  --type-body-l-size: 17px;         --type-body-l-line: 26px;         /* Anreißer Aufmacher, Einleitung */
+  --type-section-size: 17px;        --type-section-line: 22px;        /* Zwischenüberschrift mit 3-px-Linie */
+  --type-body-size: 16px;           --type-body-line: 24px;           /* Anreißer im Feed, Seitenintro */
+  --type-body-s-size: 15px;         --type-body-s-line: 22px;
+  --type-label-size: 14px;          --type-label-line: 20px;
+  --type-meta-size: 13px;           --type-meta-line: 18px;           /* Dachzeile, Datum, Marken */
+  --type-caption-size: 12px;        --type-caption-line: 16px;        /* Tab-Leiste, kleinster Schriftgrad */
+
+  --letter-spacing-display: -0.6px;
+  --letter-spacing-title: -0.5px;
+  --letter-spacing-lead: -0.4px;
+  --letter-spacing-section: -0.3px;
+  --letter-spacing-title-s: -0.2px;
+
+  /* Abstände */
+  --space-gutter: 20px;            /* seitlicher Rand */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+
+  /* Form */
+  --radius-tag: 3px;
+  --radius-control: 6px;
+  --rule-section: 3px solid var(--color-ink);
+  --rule-hairline: 1px solid var(--color-line);
+  --touch-min: 44px;
+
+  /* Layout */
+  --screen-max: 560px;             /* Breite auf großen Bildschirmen; Entwurf basiert auf 390 px */
+  --tabbar-height: 81px;           /* 4 + 52 + 24 + 1 px Linie */
+  --actionbar-height: 87px;        /* 10 + 50 + 26 + 1 px Linie */
+}

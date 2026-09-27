@@ -1,0 +1,11 @@
+import {sql} from 'drizzle-orm';
+import {sqliteTable,text,integer,index} from 'drizzle-orm/sqlite-core';
+export const topics=sqliteTable('topics',{id:text('id').primaryKey(),regionId:text('region_id').notNull().default('muenster'),source:text('source').notNull(),eventDate:text('event_date').notNull(),updatedAt:text('updated_at').notNull(),status:text('status').notNull(),payload:text('payload').notNull()},t=>[index('idx_topics_event_date').on(t.eventDate),index('idx_topics_region_updated').on(t.regionId,t.updatedAt),index('idx_topics_canonical_region_status').on(t.regionId,t.status).where(sql`json_extract(${t.payload},'$.identity.mergedInto') IS NULL`)]);
+export const systemState=sqliteTable('system_state',{key:text('key').primaryKey(),value:text('value').notNull()});
+export const pushSubscriptions=sqliteTable('push_subscriptions',{id:text('id').primaryKey(),endpoint:text('endpoint').notNull(),auth:text('auth'),p256dh:text('p256dh'),createdAt:text('created_at').notNull(),lastSentAt:text('last_sent_at')});
+export const importRuns=sqliteTable('import_runs',{id:text('id').primaryKey(),startedAt:text('started_at').notNull(),finishedAt:text('finished_at'),status:text('status').notNull(),details:text('details').notNull()});
+
+export const articleVersions=sqliteTable('article_versions',{id:text('id').primaryKey(),topicId:text('topic_id').notNull(),capturedAt:text('captured_at').notNull(),payload:text('payload').notNull()},t=>[index('idx_versions_topic').on(t.topicId,t.capturedAt)]);
+export const sourceCoverage=sqliteTable('source_coverage',{regionId:text('region_id').primaryKey(),payload:text('payload').notNull()});
+// Immutable result versions; source refreshes never overwrite analysis history.
+export const articleAnalyses=sqliteTable('article_analyses',{id:text('id').primaryKey(),topicId:text('topic_id').notNull(),kind:text('kind').notNull(),method:text('method').notNull(),inputHash:text('input_hash').notNull(),createdAt:text('created_at').notNull(),payload:text('payload').notNull()},t=>[index('idx_article_analyses_topic_kind').on(t.topicId,t.kind,t.createdAt)]);

@@ -1,0 +1,11 @@
+{
+  "nrw-05334002": {
+    "system": "https://ratsinfo.aachen.de/public/oparl/system",
+    "upgradeHttpLinks": true,
+    "verifiedSource": "https://offenedaten.aachen.de/dataset/oparl-schnittstelle-zum-ratsinformationsystem-der-stadt-aachen",
+    "verifiedAt": "2026-09-26",
+    "state": "system-verified",
+    "meetingScan": "forward",
+    "maxPages": 24
+  }
+}

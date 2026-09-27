@@ -1,0 +1,6 @@
+import{readFile,writeFile}from'node:fs/promises';import{enrichDocument}from'../server/integrations/documents.mjs';import{parallel,hash,qualityCheck}from'../server/integrations/oparl.mjs';
+import{execFileSync}from'node:child_process';
+const data=JSON.parse(await readFile('data/topics.json','utf8'));let count=0,errors=0;
+const read=async url=>{const p='.oparl-cache/'+await hash(url);try{return await readFile(p+'.txt','utf8')}catch{}const r=await fetch(url,{signal:AbortSignal.timeout(30000),redirect:'error'});if(!r.ok)throw Error('HTTP '+r.status);const b=new Uint8Array(await r.arrayBuffer());if(b.length>12000000)throw Error('zu groß');await writeFile(p+'.pdf',b);execFileSync('pdftotext',['-layout',p+'.pdf',p+'.txt'],{timeout:12000,stdio:'ignore'});return(await readFile(p+'.txt','utf8')).slice(0,65000)};
+data.topics=await parallel(data.topics,async t=>{try{t=await enrichDocument(t,read);t.quality=await qualityCheck(t)}catch(e){errors++;t.documentIssue='Dokumenttext konnte noch nicht gelesen werden.'}if(++count%50===0)console.log('Dokumente geprüft: '+count+'/'+data.topics.length);return t},4);
+await writeFile('data/topics.json',JSON.stringify(data,null,2)+'\n');console.log(JSON.stringify({topics:data.topics.length,withDocumentText:data.topics.filter(t=>t.hasDocumentText||t.documentText).length,errors}));

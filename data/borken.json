@@ -1,0 +1,19 @@
+{
+  "topics": [],
+  "coverage": {
+    "regionId": "borken",
+    "method": "scraper",
+    "from": "2026-06-22",
+    "to": "2026-09-22",
+    "importedAt": "2026-09-22T19:31:55.709Z",
+    "meetings": 0,
+    "sourceCount": 1,
+    "complete": false,
+    "issues": [
+      "Noch keine Artikel erfolgreich erfasst."
+    ],
+    "sourceUrl": "https://secure.kreis-borken.de/BI/",
+    "apiCheck": "Keine nutzbare OParl-Schnittstelle am geprüften Herstellerendpunkt.",
+    "apiCheckedAt": "2026-09-22T19:32:13.736Z"
+  }
+}

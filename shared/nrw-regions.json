@@ -1,0 +1,4210 @@
+[
+  {
+    "id": "billerbeck",
+    "name": "Stadt Billerbeck",
+    "shortName": "Billerbeck",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334002",
+    "name": "Stadt Aachen",
+    "shortName": "Aachen",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334002",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554004",
+    "name": "Stadt Ahaus",
+    "shortName": "Ahaus",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570004",
+    "name": "Stadt Ahlen",
+    "shortName": "Ahlen",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358004",
+    "name": "Gemeinde Aldenhoven",
+    "shortName": "Aldenhoven",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382004",
+    "name": "Gemeinde Alfter",
+    "shortName": "Alfter",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170004",
+    "name": "Gemeinde Alpen",
+    "shortName": "Alpen",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334004",
+    "name": "Stadt Alsdorf",
+    "shortName": "Alsdorf",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962004",
+    "name": "Stadt Altena",
+    "shortName": "Altena",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05774004",
+    "name": "Gemeinde Altenbeken",
+    "shortName": "Altenbeken",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566004",
+    "name": "Gemeinde Altenberge",
+    "shortName": "Altenberge",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974004",
+    "name": "Gemeinde Anröchte",
+    "shortName": "Anröchte",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958004",
+    "name": "Stadt Arnsberg",
+    "shortName": "Arnsberg",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558004",
+    "name": "Gemeinde Ascheberg",
+    "shortName": "Ascheberg",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05966004",
+    "name": "Stadt Attendorn",
+    "shortName": "Attendorn",
+    "kind": "city",
+    "district": "nrw-05966",
+    "ags": "05966004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766004",
+    "name": "Gemeinde Augustdorf",
+    "shortName": "Augustdorf",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970004",
+    "name": "Stadt Bad Berleburg",
+    "shortName": "Bad Berleburg",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762004",
+    "name": "Stadt Bad Driburg",
+    "shortName": "Bad Driburg",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382008",
+    "name": "Stadt Bad Honnef",
+    "shortName": "Bad Honnef",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970028",
+    "name": "Stadt Bad Laasphe",
+    "shortName": "Bad Laasphe",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05774008",
+    "name": "Stadt Bad Lippspringe",
+    "shortName": "Bad Lippspringe",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366004",
+    "name": "Stadt Bad Münstereifel",
+    "shortName": "Bad Münstereifel",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770004",
+    "name": "Stadt Bad Oeynhausen",
+    "shortName": "Bad Oeynhausen",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766008",
+    "name": "Stadt Bad Salzuflen",
+    "shortName": "Bad Salzuflen",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974008",
+    "name": "Gemeinde Bad Sassendorf",
+    "shortName": "Bad Sassendorf",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974008",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05774040",
+    "name": "Stadt Bad Wünnenberg",
+    "shortName": "Bad Wünnenberg",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334008",
+    "name": "Stadt Baesweiler",
+    "shortName": "Baesweiler",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962008",
+    "name": "Stadt Balve",
+    "shortName": "Balve",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766012",
+    "name": "Stadt Barntrup",
+    "shortName": "Barntrup",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570008",
+    "name": "Stadt Beckum",
+    "shortName": "Beckum",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362004",
+    "name": "Stadt Bedburg",
+    "shortName": "Bedburg",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154004",
+    "name": "Gemeinde Bedburg-Hau",
+    "shortName": "Bedburg-Hau",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570012",
+    "name": "Gemeinde Beelen",
+    "shortName": "Beelen",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570012",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362008",
+    "name": "Stadt Bergheim",
+    "shortName": "Bergheim",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378004",
+    "name": "Stadt Bergisch Gladbach",
+    "shortName": "Bergisch Gladbach",
+    "kind": "city",
+    "district": "nrw-05378",
+    "ags": "05378004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978004",
+    "name": "Stadt Bergkamen",
+    "shortName": "Bergkamen",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374004",
+    "name": "Stadt Bergneustadt",
+    "shortName": "Bergneustadt",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958008",
+    "name": "Gemeinde Bestwig",
+    "shortName": "Bestwig",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958008",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762008",
+    "name": "Stadt Beverungen",
+    "shortName": "Beverungen",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05711000",
+    "name": "Stadt Bielefeld",
+    "shortName": "Bielefeld",
+    "kind": "city",
+    "district": null,
+    "ags": "05711000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05366008",
+    "name": "Gemeinde Blankenheim",
+    "shortName": "Blankenheim",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366008",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766016",
+    "name": "Stadt Blomberg",
+    "shortName": "Blomberg",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554008",
+    "name": "Stadt Bocholt",
+    "shortName": "Bocholt",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05911000",
+    "name": "Stadt Bochum",
+    "shortName": "Bochum",
+    "kind": "city",
+    "district": null,
+    "ags": "05911000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05314000",
+    "name": "Stadt Bonn",
+    "shortName": "Bonn",
+    "kind": "city",
+    "district": null,
+    "ags": "05314000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05774012",
+    "name": "Gemeinde Borchen",
+    "shortName": "Borchen",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774012",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762012",
+    "name": "Stadt Borgentreich",
+    "shortName": "Borgentreich",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754004",
+    "name": "Stadt Borgholzhausen",
+    "shortName": "Borgholzhausen",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "borken",
+    "name": "Kreis Borken",
+    "shortName": "Borken",
+    "kind": "district",
+    "district": "borken",
+    "ags": "05554"
+  },
+  {
+    "id": "nrw-05554012",
+    "name": "Stadt Borken",
+    "shortName": "Borken",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382012",
+    "name": "Stadt Bornheim",
+    "shortName": "Bornheim",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05512000",
+    "name": "Stadt Bottrop",
+    "shortName": "Bottrop",
+    "kind": "city",
+    "district": null,
+    "ags": "05512000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05762016",
+    "name": "Stadt Brakel",
+    "shortName": "Brakel",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954004",
+    "name": "Stadt Breckerfeld",
+    "shortName": "Breckerfeld",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958012",
+    "name": "Stadt Brilon",
+    "shortName": "Brilon",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166004",
+    "name": "Gemeinde Brüggen",
+    "shortName": "Brüggen",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166004",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362012",
+    "name": "Stadt Brühl",
+    "shortName": "Brühl",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970008",
+    "name": "Gemeinde Burbach",
+    "shortName": "Burbach",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970008",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378008",
+    "name": "Stadt Burscheid",
+    "shortName": "Burscheid",
+    "kind": "city",
+    "district": "nrw-05378",
+    "ags": "05378008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978008",
+    "name": "Gemeinde Bönen",
+    "shortName": "Bönen",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978008",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758004",
+    "name": "Stadt Bünde",
+    "shortName": "Bünde",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05774016",
+    "name": "Stadt Büren",
+    "shortName": "Büren",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562004",
+    "name": "Stadt Castrop-Rauxel",
+    "shortName": "Castrop-Rauxel",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "coesfeld",
+    "name": "Kreis Coesfeld",
+    "shortName": "Coesfeld",
+    "kind": "district",
+    "district": "coesfeld",
+    "ags": "05558"
+  },
+  {
+    "id": "nrw-05558012",
+    "name": "Stadt Coesfeld",
+    "shortName": "Coesfeld",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366012",
+    "name": "Gemeinde Dahlem",
+    "shortName": "Dahlem",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366012",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562008",
+    "name": "Stadt Datteln",
+    "shortName": "Datteln",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05774020",
+    "name": "Stadt Delbrück",
+    "shortName": "Delbrück",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766020",
+    "name": "Stadt Detmold",
+    "shortName": "Detmold",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170008",
+    "name": "Stadt Dinslaken",
+    "shortName": "Dinslaken",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05162004",
+    "name": "Stadt Dormagen",
+    "shortName": "Dormagen",
+    "kind": "city",
+    "district": "nrw-05162",
+    "ags": "05162004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562012",
+    "name": "Stadt Dorsten",
+    "shortName": "Dorsten",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05913000",
+    "name": "Stadt Dortmund",
+    "shortName": "Dortmund",
+    "kind": "city",
+    "district": null,
+    "ags": "05913000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05570016",
+    "name": "Stadt Drensteinfurt",
+    "shortName": "Drensteinfurt",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05966008",
+    "name": "Stadt Drolshagen",
+    "shortName": "Drolshagen",
+    "kind": "city",
+    "district": "nrw-05966",
+    "ags": "05966008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05112000",
+    "name": "Stadt Duisburg",
+    "shortName": "Duisburg",
+    "kind": "city",
+    "district": null,
+    "ags": "05112000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05766024",
+    "name": "Gemeinde Dörentrup",
+    "shortName": "Dörentrup",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558016",
+    "name": "Stadt Dülmen",
+    "shortName": "Dülmen",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358",
+    "name": "Kreis Düren",
+    "shortName": "Düren",
+    "kind": "district",
+    "district": "nrw-05358",
+    "ags": "05358"
+  },
+  {
+    "id": "nrw-05358008",
+    "name": "Stadt Düren",
+    "shortName": "Düren",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05111000",
+    "name": "Stadt Düsseldorf",
+    "shortName": "Düsseldorf",
+    "kind": "city",
+    "district": null,
+    "ags": "05111000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05382016",
+    "name": "Gemeinde Eitorf",
+    "shortName": "Eitorf",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382016",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362016",
+    "name": "Stadt Elsdorf",
+    "shortName": "Elsdorf",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154008",
+    "name": "Stadt Emmerich am Rhein",
+    "shortName": "Emmerich am Rhein",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566008",
+    "name": "Stadt Emsdetten",
+    "shortName": "Emsdetten",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374008",
+    "name": "Gemeinde Engelskirchen",
+    "shortName": "Engelskirchen",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374008",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758008",
+    "name": "Stadt Enger",
+    "shortName": "Enger",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954",
+    "name": "Kreis Ennepe-Ruhr-Kreis",
+    "shortName": "Ennepe-Ruhr-Kreis",
+    "kind": "district",
+    "district": "nrw-05954",
+    "ags": "05954"
+  },
+  {
+    "id": "nrw-05954008",
+    "name": "Stadt Ennepetal",
+    "shortName": "Ennepetal",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570020",
+    "name": "Stadt Ennigerloh",
+    "shortName": "Ennigerloh",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974012",
+    "name": "Gemeinde Ense",
+    "shortName": "Ense",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974012",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362020",
+    "name": "Stadt Erftstadt",
+    "shortName": "Erftstadt",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370004",
+    "name": "Stadt Erkelenz",
+    "shortName": "Erkelenz",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158004",
+    "name": "Stadt Erkrath",
+    "shortName": "Erkrath",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158004",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970012",
+    "name": "Gemeinde Erndtebrück",
+    "shortName": "Erndtebrück",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970012",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974016",
+    "name": "Stadt Erwitte",
+    "shortName": "Erwitte",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334012",
+    "name": "Stadt Eschweiler",
+    "shortName": "Eschweiler",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958016",
+    "name": "Gemeinde Eslohe (Sauerland)",
+    "shortName": "Eslohe (Sauerland)",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958016",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770008",
+    "name": "Stadt Espelkamp",
+    "shortName": "Espelkamp",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05113000",
+    "name": "Stadt Essen",
+    "shortName": "Essen",
+    "kind": "city",
+    "district": null,
+    "ags": "05113000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05366",
+    "name": "Kreis Euskirchen",
+    "shortName": "Euskirchen",
+    "kind": "district",
+    "district": "nrw-05366",
+    "ags": "05366"
+  },
+  {
+    "id": "nrw-05366016",
+    "name": "Stadt Euskirchen",
+    "shortName": "Euskirchen",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570024",
+    "name": "Gemeinde Everswinkel",
+    "shortName": "Everswinkel",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766028",
+    "name": "Gemeinde Extertal",
+    "shortName": "Extertal",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05966012",
+    "name": "Gemeinde Finnentrop",
+    "shortName": "Finnentrop",
+    "kind": "city",
+    "district": "nrw-05966",
+    "ags": "05966012",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362024",
+    "name": "Stadt Frechen",
+    "shortName": "Frechen",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970016",
+    "name": "Stadt Freudenberg",
+    "shortName": "Freudenberg",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978012",
+    "name": "Stadt Fröndenberg/Ruhr",
+    "shortName": "Fröndenberg/Ruhr",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370008",
+    "name": "Gemeinde Gangelt",
+    "shortName": "Gangelt",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370008",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370012",
+    "name": "Stadt Geilenkirchen",
+    "shortName": "Geilenkirchen",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154012",
+    "name": "Stadt Geldern",
+    "shortName": "Geldern",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05513000",
+    "name": "Stadt Gelsenkirchen",
+    "shortName": "Gelsenkirchen",
+    "kind": "city",
+    "district": null,
+    "ags": "05513000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05554016",
+    "name": "Stadt Gescher",
+    "shortName": "Gescher",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974020",
+    "name": "Stadt Geseke",
+    "shortName": "Geseke",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954012",
+    "name": "Stadt Gevelsberg",
+    "shortName": "Gevelsberg",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562014",
+    "name": "Stadt Gladbeck",
+    "shortName": "Gladbeck",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562014",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154016",
+    "name": "Stadt Goch",
+    "shortName": "Goch",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166008",
+    "name": "Gemeinde Grefrath",
+    "shortName": "Grefrath",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166008",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566012",
+    "name": "Stadt Greven",
+    "shortName": "Greven",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05162008",
+    "name": "Stadt Grevenbroich",
+    "shortName": "Grevenbroich",
+    "kind": "city",
+    "district": "nrw-05162",
+    "ags": "05162008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554020",
+    "name": "Stadt Gronau (Westf.)",
+    "shortName": "Gronau (Westf.)",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374012",
+    "name": "Stadt Gummersbach",
+    "shortName": "Gummersbach",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754",
+    "name": "Kreis Gütersloh",
+    "shortName": "Gütersloh",
+    "kind": "district",
+    "district": "nrw-05754",
+    "ags": "05754"
+  },
+  {
+    "id": "nrw-05754008",
+    "name": "Stadt Gütersloh",
+    "shortName": "Gütersloh",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158008",
+    "name": "Stadt Haan",
+    "shortName": "Haan",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158008",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05914000",
+    "name": "Stadt Hagen",
+    "shortName": "Hagen",
+    "kind": "city",
+    "district": null,
+    "ags": "05914000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05754012",
+    "name": "Stadt Halle (Westf.)",
+    "shortName": "Halle (Westf.)",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958020",
+    "name": "Stadt Hallenberg",
+    "shortName": "Hallenberg",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562016",
+    "name": "Stadt Haltern am See",
+    "shortName": "Haltern am See",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962012",
+    "name": "Stadt Halver",
+    "shortName": "Halver",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05915000",
+    "name": "Stadt Hamm",
+    "shortName": "Hamm",
+    "kind": "city",
+    "district": null,
+    "ags": "05915000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05170012",
+    "name": "Stadt Hamminkeln",
+    "shortName": "Hamminkeln",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754016",
+    "name": "Stadt Harsewinkel",
+    "shortName": "Harsewinkel",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954016",
+    "name": "Stadt Hattingen",
+    "shortName": "Hattingen",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558020",
+    "name": "Gemeinde Havixbeck",
+    "shortName": "Havixbeck",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554024",
+    "name": "Gemeinde Heek",
+    "shortName": "Heek",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554028",
+    "name": "Gemeinde Heiden",
+    "shortName": "Heiden",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158012",
+    "name": "Stadt Heiligenhaus",
+    "shortName": "Heiligenhaus",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358012",
+    "name": "Stadt Heimbach",
+    "shortName": "Heimbach",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370",
+    "name": "Kreis Heinsberg",
+    "shortName": "Heinsberg",
+    "kind": "district",
+    "district": "nrw-05370",
+    "ags": "05370"
+  },
+  {
+    "id": "nrw-05370016",
+    "name": "Stadt Heinsberg",
+    "shortName": "Heinsberg",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366020",
+    "name": "Gemeinde Hellenthal",
+    "shortName": "Hellenthal",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962016",
+    "name": "Stadt Hemer",
+    "shortName": "Hemer",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382020",
+    "name": "Stadt Hennef (Sieg)",
+    "shortName": "Hennef (Sieg)",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954020",
+    "name": "Stadt Herdecke",
+    "shortName": "Herdecke",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758",
+    "name": "Kreis Herford",
+    "shortName": "Herford",
+    "kind": "district",
+    "district": "nrw-05758",
+    "ags": "05758"
+  },
+  {
+    "id": "nrw-05758012",
+    "name": "Stadt Herford",
+    "shortName": "Herford",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05916000",
+    "name": "Stadt Herne",
+    "shortName": "Herne",
+    "kind": "city",
+    "district": null,
+    "ags": "05916000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05962020",
+    "name": "Gemeinde Herscheid",
+    "shortName": "Herscheid",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562020",
+    "name": "Stadt Herten",
+    "shortName": "Herten",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754020",
+    "name": "Gemeinde Herzebrock-Clarholz",
+    "shortName": "Herzebrock-Clarholz",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334016",
+    "name": "Stadt Herzogenrath",
+    "shortName": "Herzogenrath",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758016",
+    "name": "Gemeinde Hiddenhausen",
+    "shortName": "Hiddenhausen",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758016",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970020",
+    "name": "Stadt Hilchenbach",
+    "shortName": "Hilchenbach",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158016",
+    "name": "Stadt Hilden",
+    "shortName": "Hilden",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770012",
+    "name": "Gemeinde Hille",
+    "shortName": "Hille",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770012",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958",
+    "name": "Kreis Hochsauerlandkreis",
+    "shortName": "Hochsauerlandkreis",
+    "kind": "district",
+    "district": "nrw-05958",
+    "ags": "05958"
+  },
+  {
+    "id": "nrw-05978016",
+    "name": "Gemeinde Holzwickede",
+    "shortName": "Holzwickede",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978016",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566020",
+    "name": "Gemeinde Hopsten",
+    "shortName": "Hopsten",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766032",
+    "name": "Stadt Horn-Bad Meinberg",
+    "shortName": "Horn-Bad Meinberg",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566024",
+    "name": "Stadt Horstmar",
+    "shortName": "Horstmar",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566016",
+    "name": "Stadt Hörstel",
+    "shortName": "Hörstel",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05774024",
+    "name": "Gemeinde Hövelhof",
+    "shortName": "Hövelhof",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762",
+    "name": "Kreis Höxter",
+    "shortName": "Höxter",
+    "kind": "district",
+    "district": "nrw-05762",
+    "ags": "05762"
+  },
+  {
+    "id": "nrw-05762020",
+    "name": "Stadt Höxter",
+    "shortName": "Höxter",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370020",
+    "name": "Stadt Hückelhoven",
+    "shortName": "Hückelhoven",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374016",
+    "name": "Stadt Hückeswagen",
+    "shortName": "Hückeswagen",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770016",
+    "name": "Gemeinde Hüllhorst",
+    "shortName": "Hüllhorst",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770016",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170016",
+    "name": "Gemeinde Hünxe",
+    "shortName": "Hünxe",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170016",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358016",
+    "name": "Gemeinde Hürtgenwald",
+    "shortName": "Hürtgenwald",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358016",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362028",
+    "name": "Stadt Hürth",
+    "shortName": "Hürth",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566028",
+    "name": "Stadt Ibbenbüren",
+    "shortName": "Ibbenbüren",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358020",
+    "name": "Gemeinde Inden",
+    "shortName": "Inden",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962024",
+    "name": "Stadt Iserlohn",
+    "shortName": "Iserlohn",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554032",
+    "name": "Stadt Isselburg",
+    "shortName": "Isselburg",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154020",
+    "name": "Gemeinde Issum",
+    "shortName": "Issum",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05162012",
+    "name": "Stadt Jüchen",
+    "shortName": "Jüchen",
+    "kind": "city",
+    "district": "nrw-05162",
+    "ags": "05162012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358024",
+    "name": "Stadt Jülich",
+    "shortName": "Jülich",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05162016",
+    "name": "Stadt Kaarst",
+    "shortName": "Kaarst",
+    "kind": "city",
+    "district": "nrw-05162",
+    "ags": "05162016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154024",
+    "name": "Stadt Kalkar",
+    "shortName": "Kalkar",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366024",
+    "name": "Gemeinde Kall",
+    "shortName": "Kall",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766036",
+    "name": "Gemeinde Kalletal",
+    "shortName": "Kalletal",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766036",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978020",
+    "name": "Stadt Kamen",
+    "shortName": "Kamen",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170020",
+    "name": "Stadt Kamp-Lintfort",
+    "shortName": "Kamp-Lintfort",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166012",
+    "name": "Stadt Kempen",
+    "shortName": "Kempen",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166012",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154028",
+    "name": "Gemeinde Kerken",
+    "shortName": "Kerken",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362032",
+    "name": "Stadt Kerpen",
+    "shortName": "Kerpen",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154032",
+    "name": "Stadt Kevelaer",
+    "shortName": "Kevelaer",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962028",
+    "name": "Stadt Kierspe",
+    "shortName": "Kierspe",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05966016",
+    "name": "Gemeinde Kirchhundem",
+    "shortName": "Kirchhundem",
+    "kind": "city",
+    "district": "nrw-05966",
+    "ags": "05966016",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758020",
+    "name": "Gemeinde Kirchlengern",
+    "shortName": "Kirchlengern",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154",
+    "name": "Kreis Kleve",
+    "shortName": "Kleve",
+    "kind": "district",
+    "district": "nrw-05154",
+    "ags": "05154"
+  },
+  {
+    "id": "nrw-05154036",
+    "name": "Stadt Kleve",
+    "shortName": "Kleve",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05162020",
+    "name": "Stadt Korschenbroich",
+    "shortName": "Korschenbroich",
+    "kind": "city",
+    "district": "nrw-05162",
+    "ags": "05162020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154040",
+    "name": "Gemeinde Kranenburg",
+    "shortName": "Kranenburg",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05114000",
+    "name": "Stadt Krefeld",
+    "shortName": "Krefeld",
+    "kind": "city",
+    "district": null,
+    "ags": "05114000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05358028",
+    "name": "Gemeinde Kreuzau",
+    "shortName": "Kreuzau",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970024",
+    "name": "Stadt Kreuztal",
+    "shortName": "Kreuztal",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05315000",
+    "name": "Stadt Köln",
+    "shortName": "Köln",
+    "kind": "city",
+    "district": null,
+    "ags": "05315000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05382024",
+    "name": "Stadt Königswinter",
+    "shortName": "Königswinter",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378012",
+    "name": "Gemeinde Kürten",
+    "shortName": "Kürten",
+    "kind": "city",
+    "district": "nrw-05378",
+    "ags": "05378012",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566032",
+    "name": "Gemeinde Ladbergen",
+    "shortName": "Ladbergen",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566032",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566036",
+    "name": "Gemeinde Laer",
+    "shortName": "Laer",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566036",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766040",
+    "name": "Stadt Lage",
+    "shortName": "Lage",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754024",
+    "name": "Gemeinde Langenberg",
+    "shortName": "Langenberg",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158020",
+    "name": "Stadt Langenfeld (Rhld.)",
+    "shortName": "Langenfeld (Rhld.)",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358032",
+    "name": "Gemeinde Langerwehe",
+    "shortName": "Langerwehe",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358032",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554036",
+    "name": "Gemeinde Legden",
+    "shortName": "Legden",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554036",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378016",
+    "name": "Stadt Leichlingen (Rhld.)",
+    "shortName": "Leichlingen (Rhld.)",
+    "kind": "city",
+    "district": "nrw-05378",
+    "ags": "05378016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766044",
+    "name": "Stadt Lemgo",
+    "shortName": "Lemgo",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566040",
+    "name": "Stadt Lengerich",
+    "shortName": "Lengerich",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05966020",
+    "name": "Stadt Lennestadt",
+    "shortName": "Lennestadt",
+    "kind": "city",
+    "district": "nrw-05966",
+    "ags": "05966020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766048",
+    "name": "Gemeinde Leopoldshöhe",
+    "shortName": "Leopoldshöhe",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766048",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05316000",
+    "name": "Stadt Leverkusen",
+    "shortName": "Leverkusen",
+    "kind": "city",
+    "district": null,
+    "ags": "05316000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05774028",
+    "name": "Stadt Lichtenau",
+    "shortName": "Lichtenau",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566044",
+    "name": "Gemeinde Lienen",
+    "shortName": "Lienen",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566044",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374020",
+    "name": "Gemeinde Lindlar",
+    "shortName": "Lindlar",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358036",
+    "name": "Stadt Linnich",
+    "shortName": "Linnich",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766",
+    "name": "Kreis Lippe",
+    "shortName": "Lippe",
+    "kind": "district",
+    "district": "nrw-05766",
+    "ags": "05766"
+  },
+  {
+    "id": "nrw-05974024",
+    "name": "Gemeinde Lippetal",
+    "shortName": "Lippetal",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974028",
+    "name": "Stadt Lippstadt",
+    "shortName": "Lippstadt",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382028",
+    "name": "Stadt Lohmar",
+    "shortName": "Lohmar",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566048",
+    "name": "Gemeinde Lotte",
+    "shortName": "Lotte",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566048",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758024",
+    "name": "Stadt Löhne",
+    "shortName": "Löhne",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770020",
+    "name": "Stadt Lübbecke",
+    "shortName": "Lübbecke",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962032",
+    "name": "Stadt Lüdenscheid",
+    "shortName": "Lüdenscheid",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558024",
+    "name": "Stadt Lüdinghausen",
+    "shortName": "Lüdinghausen",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766052",
+    "name": "Stadt Lügde",
+    "shortName": "Lügde",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766052",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978024",
+    "name": "Stadt Lünen",
+    "shortName": "Lünen",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374024",
+    "name": "Gemeinde Marienheide",
+    "shortName": "Marienheide",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762024",
+    "name": "Stadt Marienmünster",
+    "shortName": "Marienmünster",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562024",
+    "name": "Stadt Marl",
+    "shortName": "Marl",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958024",
+    "name": "Stadt Marsberg",
+    "shortName": "Marsberg",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366028",
+    "name": "Stadt Mechernich",
+    "shortName": "Mechernich",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382032",
+    "name": "Stadt Meckenheim",
+    "shortName": "Meckenheim",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958028",
+    "name": "Stadt Medebach",
+    "shortName": "Medebach",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05162022",
+    "name": "Stadt Meerbusch",
+    "shortName": "Meerbusch",
+    "kind": "city",
+    "district": "nrw-05162",
+    "ags": "05162022",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962036",
+    "name": "Stadt Meinerzhagen",
+    "shortName": "Meinerzhagen",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962040",
+    "name": "Stadt Menden (Sauerland)",
+    "shortName": "Menden (Sauerland)",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358040",
+    "name": "Gemeinde Merzenich",
+    "shortName": "Merzenich",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958032",
+    "name": "Stadt Meschede",
+    "shortName": "Meschede",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566052",
+    "name": "Gemeinde Metelen",
+    "shortName": "Metelen",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566052",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566056",
+    "name": "Gemeinde Mettingen",
+    "shortName": "Mettingen",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566056",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158",
+    "name": "Kreis Mettmann",
+    "shortName": "Mettmann",
+    "kind": "district",
+    "district": "nrw-05158",
+    "ags": "05158"
+  },
+  {
+    "id": "nrw-05158024",
+    "name": "Stadt Mettmann",
+    "shortName": "Mettmann",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770024",
+    "name": "Stadt Minden",
+    "shortName": "Minden",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770",
+    "name": "Kreis Minden-Lübbecke",
+    "shortName": "Minden-Lübbecke",
+    "kind": "district",
+    "district": "nrw-05770",
+    "ags": "05770"
+  },
+  {
+    "id": "nrw-05170024",
+    "name": "Stadt Moers",
+    "shortName": "Moers",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158026",
+    "name": "Stadt Monheim am Rhein",
+    "shortName": "Monheim am Rhein",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158026",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334020",
+    "name": "Stadt Monschau",
+    "shortName": "Monschau",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334020",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374028",
+    "name": "Gemeinde Morsbach",
+    "shortName": "Morsbach",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382036",
+    "name": "Gemeinde Much",
+    "shortName": "Much",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382036",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962",
+    "name": "Kreis Märkischer Kreis",
+    "shortName": "Märkischer Kreis",
+    "kind": "district",
+    "district": "nrw-05962",
+    "ags": "05962"
+  },
+  {
+    "id": "nrw-05974032",
+    "name": "Gemeinde Möhnesee",
+    "shortName": "Möhnesee",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974032",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05116000",
+    "name": "Stadt Mönchengladbach",
+    "shortName": "Mönchengladbach",
+    "kind": "city",
+    "district": null,
+    "ags": "05116000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05117000",
+    "name": "Stadt Mülheim an der Ruhr",
+    "shortName": "Mülheim an der Ruhr",
+    "kind": "city",
+    "district": null,
+    "ags": "05117000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "muenster",
+    "name": "Stadt Münster",
+    "shortName": "Münster",
+    "kind": "city",
+    "district": null,
+    "ags": "05515000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05962044",
+    "name": "Gemeinde Nachrodt-Wiblingwerde",
+    "shortName": "Nachrodt-Wiblingwerde",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962044",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970032",
+    "name": "Stadt Netphen",
+    "shortName": "Netphen",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366032",
+    "name": "Gemeinde Nettersheim",
+    "shortName": "Nettersheim",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366032",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166016",
+    "name": "Stadt Nettetal",
+    "shortName": "Nettetal",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166016",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566060",
+    "name": "Gemeinde Neuenkirchen",
+    "shortName": "Neuenkirchen",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566060",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962048",
+    "name": "Stadt Neuenrade",
+    "shortName": "Neuenrade",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962048",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170028",
+    "name": "Stadt Neukirchen-Vluyn",
+    "shortName": "Neukirchen-Vluyn",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970036",
+    "name": "Gemeinde Neunkirchen",
+    "shortName": "Neunkirchen",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970036",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382040",
+    "name": "Gemeinde Neunkirchen-Seelscheid",
+    "shortName": "Neunkirchen-Seelscheid",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05162024",
+    "name": "Stadt Neuss",
+    "shortName": "Neuss",
+    "kind": "city",
+    "district": "nrw-05162",
+    "ags": "05162024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358044",
+    "name": "Stadt Nideggen",
+    "shortName": "Nideggen",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382044",
+    "name": "Stadt Niederkassel",
+    "shortName": "Niederkassel",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166020",
+    "name": "Gemeinde Niederkrüchten",
+    "shortName": "Niederkrüchten",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358048",
+    "name": "Gemeinde Niederzier",
+    "shortName": "Niederzier",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358048",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762028",
+    "name": "Stadt Nieheim",
+    "shortName": "Nieheim",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558028",
+    "name": "Gemeinde Nordkirchen",
+    "shortName": "Nordkirchen",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566064",
+    "name": "Gemeinde Nordwalde",
+    "shortName": "Nordwalde",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566064",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558032",
+    "name": "Gemeinde Nottuln",
+    "shortName": "Nottuln",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558032",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358052",
+    "name": "Gemeinde Nörvenich",
+    "shortName": "Nörvenich",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358052",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374032",
+    "name": "Gemeinde Nümbrecht",
+    "shortName": "Nümbrecht",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374032",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374",
+    "name": "Kreis Oberbergischer Kreis",
+    "shortName": "Oberbergischer Kreis",
+    "kind": "district",
+    "district": "nrw-05374",
+    "ags": "05374"
+  },
+  {
+    "id": "nrw-05119000",
+    "name": "Stadt Oberhausen",
+    "shortName": "Oberhausen",
+    "kind": "city",
+    "district": null,
+    "ags": "05119000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05566068",
+    "name": "Stadt Ochtrup",
+    "shortName": "Ochtrup",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566068",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378020",
+    "name": "Gemeinde Odenthal",
+    "shortName": "Odenthal",
+    "kind": "city",
+    "district": "nrw-05378",
+    "ags": "05378020",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570028",
+    "name": "Stadt Oelde",
+    "shortName": "Oelde",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562028",
+    "name": "Stadt Oer-Erkenschwick",
+    "shortName": "Oer-Erkenschwick",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766056",
+    "name": "Stadt Oerlinghausen",
+    "shortName": "Oerlinghausen",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766056",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558036",
+    "name": "Stadt Olfen",
+    "shortName": "Olfen",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05966",
+    "name": "Kreis Olpe",
+    "shortName": "Olpe",
+    "kind": "district",
+    "district": "nrw-05966",
+    "ags": "05966"
+  },
+  {
+    "id": "nrw-05966024",
+    "name": "Stadt Olpe",
+    "shortName": "Olpe",
+    "kind": "city",
+    "district": "nrw-05966",
+    "ags": "05966024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958036",
+    "name": "Stadt Olsberg",
+    "shortName": "Olsberg",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570032",
+    "name": "Gemeinde Ostbevern",
+    "shortName": "Ostbevern",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570032",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378024",
+    "name": "Stadt Overath",
+    "shortName": "Overath",
+    "kind": "city",
+    "district": "nrw-05378",
+    "ags": "05378024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05774",
+    "name": "Kreis Paderborn",
+    "shortName": "Paderborn",
+    "kind": "district",
+    "district": "nrw-05774",
+    "ags": "05774"
+  },
+  {
+    "id": "nrw-05774032",
+    "name": "Stadt Paderborn",
+    "shortName": "Paderborn",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770028",
+    "name": "Stadt Petershagen",
+    "shortName": "Petershagen",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962052",
+    "name": "Stadt Plettenberg",
+    "shortName": "Plettenberg",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962052",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770032",
+    "name": "Stadt Porta Westfalica",
+    "shortName": "Porta Westfalica",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770036",
+    "name": "Stadt Preußisch Oldendorf",
+    "shortName": "Preußisch Oldendorf",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362036",
+    "name": "Stadt Pulheim",
+    "shortName": "Pulheim",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374036",
+    "name": "Stadt Radevormwald",
+    "shortName": "Radevormwald",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554040",
+    "name": "Gemeinde Raesfeld",
+    "shortName": "Raesfeld",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770040",
+    "name": "Stadt Rahden",
+    "shortName": "Rahden",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158028",
+    "name": "Stadt Ratingen",
+    "shortName": "Ratingen",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566072",
+    "name": "Gemeinde Recke",
+    "shortName": "Recke",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566072",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "recklinghausen",
+    "name": "Kreis Recklinghausen",
+    "shortName": "Recklinghausen",
+    "kind": "district",
+    "district": "recklinghausen",
+    "ags": "05562"
+  },
+  {
+    "id": "nrw-05562032",
+    "name": "Stadt Recklinghausen",
+    "shortName": "Recklinghausen",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154044",
+    "name": "Stadt Rees",
+    "shortName": "Rees",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374040",
+    "name": "Gemeinde Reichshof",
+    "shortName": "Reichshof",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554044",
+    "name": "Gemeinde Reken",
+    "shortName": "Reken",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554044",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05120000",
+    "name": "Stadt Remscheid",
+    "shortName": "Remscheid",
+    "kind": "city",
+    "district": null,
+    "ags": "05120000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05754028",
+    "name": "Stadt Rheda-Wiedenbrück",
+    "shortName": "Rheda-Wiedenbrück",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554048",
+    "name": "Stadt Rhede",
+    "shortName": "Rhede",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554048",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362",
+    "name": "Kreis Rhein-Erft-Kreis",
+    "shortName": "Rhein-Erft-Kreis",
+    "kind": "district",
+    "district": "nrw-05362",
+    "ags": "05362"
+  },
+  {
+    "id": "nrw-05162",
+    "name": "Kreis Rhein-Kreis Neuss",
+    "shortName": "Rhein-Kreis Neuss",
+    "kind": "district",
+    "district": "nrw-05162",
+    "ags": "05162"
+  },
+  {
+    "id": "nrw-05382",
+    "name": "Kreis Rhein-Sieg-Kreis",
+    "shortName": "Rhein-Sieg-Kreis",
+    "kind": "district",
+    "district": "nrw-05382",
+    "ags": "05382"
+  },
+  {
+    "id": "nrw-05382048",
+    "name": "Stadt Rheinbach",
+    "shortName": "Rheinbach",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382048",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170032",
+    "name": "Stadt Rheinberg",
+    "shortName": "Rheinberg",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566076",
+    "name": "Stadt Rheine",
+    "shortName": "Rheine",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566076",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378",
+    "name": "Kreis Rheinisch-Bergischer Kreis",
+    "shortName": "Rheinisch-Bergischer Kreis",
+    "kind": "district",
+    "district": "nrw-05378",
+    "ags": "05378"
+  },
+  {
+    "id": "nrw-05154048",
+    "name": "Gemeinde Rheurdt",
+    "shortName": "Rheurdt",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154048",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754032",
+    "name": "Stadt Rietberg",
+    "shortName": "Rietberg",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334024",
+    "name": "Gemeinde Roetgen",
+    "shortName": "Roetgen",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05162028",
+    "name": "Gemeinde Rommerskirchen",
+    "shortName": "Rommerskirchen",
+    "kind": "city",
+    "district": "nrw-05162",
+    "ags": "05162028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558040",
+    "name": "Gemeinde Rosendahl",
+    "shortName": "Rosendahl",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382052",
+    "name": "Gemeinde Ruppichteroth",
+    "shortName": "Ruppichteroth",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382052",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758028",
+    "name": "Gemeinde Rödinghausen",
+    "shortName": "Rödinghausen",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378028",
+    "name": "Stadt Rösrath",
+    "shortName": "Rösrath",
+    "kind": "city",
+    "district": "nrw-05378",
+    "ags": "05378028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974036",
+    "name": "Stadt Rüthen",
+    "shortName": "Rüthen",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566080",
+    "name": "Gemeinde Saerbeck",
+    "shortName": "Saerbeck",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566080",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05774036",
+    "name": "Stadt Salzkotten",
+    "shortName": "Salzkotten",
+    "kind": "city",
+    "district": "nrw-05774",
+    "ags": "05774036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382056",
+    "name": "Stadt Sankt Augustin",
+    "shortName": "Sankt Augustin",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382056",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570036",
+    "name": "Stadt Sassenberg",
+    "shortName": "Sassenberg",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962056",
+    "name": "Gemeinde Schalksmühle",
+    "shortName": "Schalksmühle",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962056",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170036",
+    "name": "Gemeinde Schermbeck",
+    "shortName": "Schermbeck",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170036",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766060",
+    "name": "Stadt Schieder-Schwalenberg",
+    "shortName": "Schieder-Schwalenberg",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766060",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05766064",
+    "name": "Gemeinde Schlangen",
+    "shortName": "Schlangen",
+    "kind": "city",
+    "district": "nrw-05766",
+    "ags": "05766064",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366036",
+    "name": "Stadt Schleiden",
+    "shortName": "Schleiden",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754036",
+    "name": "Stadt Schloß Holte-Stukenbrock",
+    "shortName": "Schloß Holte-Stukenbrock",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958040",
+    "name": "Stadt Schmallenberg",
+    "shortName": "Schmallenberg",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166024",
+    "name": "Gemeinde Schwalmtal",
+    "shortName": "Schwalmtal",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954024",
+    "name": "Stadt Schwelm",
+    "shortName": "Schwelm",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954024",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978028",
+    "name": "Stadt Schwerte",
+    "shortName": "Schwerte",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554052",
+    "name": "Gemeinde Schöppingen",
+    "shortName": "Schöppingen",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554052",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370024",
+    "name": "Gemeinde Selfkant",
+    "shortName": "Selfkant",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370024",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978032",
+    "name": "Stadt Selm",
+    "shortName": "Selm",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05558044",
+    "name": "Gemeinde Senden",
+    "shortName": "Senden",
+    "kind": "city",
+    "district": "coesfeld",
+    "ags": "05558044",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570040",
+    "name": "Stadt Sendenhorst",
+    "shortName": "Sendenhorst",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382060",
+    "name": "Stadt Siegburg",
+    "shortName": "Siegburg",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382060",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970040",
+    "name": "Stadt Siegen",
+    "shortName": "Siegen",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970",
+    "name": "Kreis Siegen-Wittgenstein",
+    "shortName": "Siegen-Wittgenstein",
+    "kind": "district",
+    "district": "nrw-05970",
+    "ags": "05970"
+  },
+  {
+    "id": "nrw-05334028",
+    "name": "Gemeinde Simmerath",
+    "shortName": "Simmerath",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974",
+    "name": "Kreis Soest",
+    "shortName": "Soest",
+    "kind": "district",
+    "district": "nrw-05974",
+    "ags": "05974"
+  },
+  {
+    "id": "nrw-05974040",
+    "name": "Stadt Soest",
+    "shortName": "Soest",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05122000",
+    "name": "Stadt Solingen",
+    "shortName": "Solingen",
+    "kind": "city",
+    "district": null,
+    "ags": "05122000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05170040",
+    "name": "Gemeinde Sonsbeck",
+    "shortName": "Sonsbeck",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758032",
+    "name": "Stadt Spenge",
+    "shortName": "Spenge",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954028",
+    "name": "Stadt Sprockhövel",
+    "shortName": "Sprockhövel",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554056",
+    "name": "Stadt Stadtlohn",
+    "shortName": "Stadtlohn",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554056",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "steinfurt",
+    "name": "Kreis Steinfurt",
+    "shortName": "Steinfurt",
+    "kind": "district",
+    "district": "steinfurt",
+    "ags": "05566"
+  },
+  {
+    "id": "nrw-05566084",
+    "name": "Stadt Steinfurt",
+    "shortName": "Steinfurt",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566084",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754040",
+    "name": "Gemeinde Steinhagen",
+    "shortName": "Steinhagen",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762032",
+    "name": "Stadt Steinheim",
+    "shortName": "Steinheim",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05770044",
+    "name": "Gemeinde Stemwede",
+    "shortName": "Stemwede",
+    "kind": "city",
+    "district": "nrw-05770",
+    "ags": "05770044",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334032",
+    "name": "Stadt Stolberg (Rhld.)",
+    "shortName": "Stolberg (Rhld.)",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154052",
+    "name": "Stadt Straelen",
+    "shortName": "Straelen",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154052",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334",
+    "name": "Kreis Städteregion Aachen",
+    "shortName": "Städteregion Aachen",
+    "kind": "district",
+    "district": "nrw-05334",
+    "ags": "05334"
+  },
+  {
+    "id": "nrw-05958044",
+    "name": "Stadt Sundern (Sauerland)",
+    "shortName": "Sundern (Sauerland)",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382064",
+    "name": "Gemeinde Swisttal",
+    "shortName": "Swisttal",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382064",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554060",
+    "name": "Gemeinde Südlohn",
+    "shortName": "Südlohn",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554060",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566088",
+    "name": "Stadt Tecklenburg",
+    "shortName": "Tecklenburg",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566088",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570044",
+    "name": "Stadt Telgte",
+    "shortName": "Telgte",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358056",
+    "name": "Gemeinde Titz",
+    "shortName": "Titz",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358056",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382068",
+    "name": "Stadt Troisdorf",
+    "shortName": "Troisdorf",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382068",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166028",
+    "name": "Stadt Tönisvorst",
+    "shortName": "Tönisvorst",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166028",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154056",
+    "name": "Gemeinde Uedem",
+    "shortName": "Uedem",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154056",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978",
+    "name": "Kreis Unna",
+    "shortName": "Unna",
+    "kind": "district",
+    "district": "nrw-05978",
+    "ags": "05978"
+  },
+  {
+    "id": "nrw-05978036",
+    "name": "Stadt Unna",
+    "shortName": "Unna",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05158032",
+    "name": "Stadt Velbert",
+    "shortName": "Velbert",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554064",
+    "name": "Stadt Velen",
+    "shortName": "Velen",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554064",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754044",
+    "name": "Stadt Verl",
+    "shortName": "Verl",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754048",
+    "name": "Stadt Versmold",
+    "shortName": "Versmold",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754048",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05358060",
+    "name": "Gemeinde Vettweiß",
+    "shortName": "Vettweiß",
+    "kind": "city",
+    "district": "nrw-05358",
+    "ags": "05358060",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166",
+    "name": "Kreis Viersen",
+    "shortName": "Viersen",
+    "kind": "district",
+    "district": "nrw-05166",
+    "ags": "05166"
+  },
+  {
+    "id": "nrw-05166032",
+    "name": "Stadt Viersen",
+    "shortName": "Viersen",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05758036",
+    "name": "Stadt Vlotho",
+    "shortName": "Vlotho",
+    "kind": "city",
+    "district": "nrw-05758",
+    "ags": "05758036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170044",
+    "name": "Stadt Voerde (Niederrhein)",
+    "shortName": "Voerde (Niederrhein)",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05554068",
+    "name": "Stadt Vreden",
+    "shortName": "Vreden",
+    "kind": "city",
+    "district": "borken",
+    "ags": "05554068",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382072",
+    "name": "Gemeinde Wachtberg",
+    "shortName": "Wachtberg",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382072",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154060",
+    "name": "Gemeinde Wachtendonk",
+    "shortName": "Wachtendonk",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154060",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05570048",
+    "name": "Gemeinde Wadersloh",
+    "shortName": "Wadersloh",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570048",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374044",
+    "name": "Stadt Waldbröl",
+    "shortName": "Waldbröl",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370032",
+    "name": "Gemeinde Waldfeucht",
+    "shortName": "Waldfeucht",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370032",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05562036",
+    "name": "Stadt Waltrop",
+    "shortName": "Waltrop",
+    "kind": "city",
+    "district": "recklinghausen",
+    "ags": "05562036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762036",
+    "name": "Stadt Warburg",
+    "shortName": "Warburg",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "warendorf",
+    "name": "Kreis Warendorf",
+    "shortName": "Warendorf",
+    "kind": "district",
+    "district": "warendorf",
+    "ags": "05570"
+  },
+  {
+    "id": "nrw-05570052",
+    "name": "Stadt Warendorf",
+    "shortName": "Warendorf",
+    "kind": "city",
+    "district": "warendorf",
+    "ags": "05570052",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974044",
+    "name": "Stadt Warstein",
+    "shortName": "Warstein",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370036",
+    "name": "Stadt Wassenberg",
+    "shortName": "Wassenberg",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05154064",
+    "name": "Gemeinde Weeze",
+    "shortName": "Weeze",
+    "kind": "city",
+    "district": "nrw-05154",
+    "ags": "05154064",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370040",
+    "name": "Stadt Wegberg",
+    "shortName": "Wegberg",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366040",
+    "name": "Gemeinde Weilerswist",
+    "shortName": "Weilerswist",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366040",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974048",
+    "name": "Gemeinde Welver",
+    "shortName": "Welver",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974048",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05966028",
+    "name": "Gemeinde Wenden",
+    "shortName": "Wenden",
+    "kind": "city",
+    "district": "nrw-05966",
+    "ags": "05966028",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05962060",
+    "name": "Stadt Werdohl",
+    "shortName": "Werdohl",
+    "kind": "city",
+    "district": "nrw-05962",
+    "ags": "05962060",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974052",
+    "name": "Stadt Werl",
+    "shortName": "Werl",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974052",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05378032",
+    "name": "Stadt Wermelskirchen",
+    "shortName": "Wermelskirchen",
+    "kind": "city",
+    "district": "nrw-05378",
+    "ags": "05378032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05978040",
+    "name": "Stadt Werne",
+    "shortName": "Werne",
+    "kind": "city",
+    "district": "nrw-05978",
+    "ags": "05978040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05754052",
+    "name": "Stadt Werther (Westf.)",
+    "shortName": "Werther (Westf.)",
+    "kind": "city",
+    "district": "nrw-05754",
+    "ags": "05754052",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170",
+    "name": "Kreis Wesel",
+    "shortName": "Wesel",
+    "kind": "district",
+    "district": "nrw-05170",
+    "ags": "05170"
+  },
+  {
+    "id": "nrw-05170048",
+    "name": "Stadt Wesel",
+    "shortName": "Wesel",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170048",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05362040",
+    "name": "Stadt Wesseling",
+    "shortName": "Wesseling",
+    "kind": "city",
+    "district": "nrw-05362",
+    "ags": "05362040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566092",
+    "name": "Gemeinde Westerkappeln",
+    "shortName": "Westerkappeln",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566092",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954032",
+    "name": "Stadt Wetter (Ruhr)",
+    "shortName": "Wetter (Ruhr)",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954032",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05566096",
+    "name": "Gemeinde Wettringen",
+    "shortName": "Wettringen",
+    "kind": "city",
+    "district": "steinfurt",
+    "ags": "05566096",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05974056",
+    "name": "Gemeinde Wickede (Ruhr)",
+    "shortName": "Wickede (Ruhr)",
+    "kind": "city",
+    "district": "nrw-05974",
+    "ags": "05974056",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374048",
+    "name": "Stadt Wiehl",
+    "shortName": "Wiehl",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374048",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05762040",
+    "name": "Stadt Willebadessen",
+    "shortName": "Willebadessen",
+    "kind": "city",
+    "district": "nrw-05762",
+    "ags": "05762040",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05166036",
+    "name": "Stadt Willich",
+    "shortName": "Willich",
+    "kind": "city",
+    "district": "nrw-05166",
+    "ags": "05166036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05970044",
+    "name": "Gemeinde Wilnsdorf",
+    "shortName": "Wilnsdorf",
+    "kind": "city",
+    "district": "nrw-05970",
+    "ags": "05970044",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05382076",
+    "name": "Gemeinde Windeck",
+    "shortName": "Windeck",
+    "kind": "city",
+    "district": "nrw-05382",
+    "ags": "05382076",
+    "municipalityType": "Gemeinde",
+    "independent": false
+  },
+  {
+    "id": "nrw-05958048",
+    "name": "Stadt Winterberg",
+    "shortName": "Winterberg",
+    "kind": "city",
+    "district": "nrw-05958",
+    "ags": "05958048",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05374052",
+    "name": "Stadt Wipperfürth",
+    "shortName": "Wipperfürth",
+    "kind": "city",
+    "district": "nrw-05374",
+    "ags": "05374052",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05954036",
+    "name": "Stadt Witten",
+    "shortName": "Witten",
+    "kind": "city",
+    "district": "nrw-05954",
+    "ags": "05954036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05124000",
+    "name": "Stadt Wuppertal",
+    "shortName": "Wuppertal",
+    "kind": "city",
+    "district": null,
+    "ags": "05124000",
+    "municipalityType": "Stadt",
+    "independent": true
+  },
+  {
+    "id": "nrw-05158036",
+    "name": "Stadt Wülfrath",
+    "shortName": "Wülfrath",
+    "kind": "city",
+    "district": "nrw-05158",
+    "ags": "05158036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05334036",
+    "name": "Stadt Würselen",
+    "shortName": "Würselen",
+    "kind": "city",
+    "district": "nrw-05334",
+    "ags": "05334036",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05170052",
+    "name": "Stadt Xanten",
+    "shortName": "Xanten",
+    "kind": "city",
+    "district": "nrw-05170",
+    "ags": "05170052",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05366044",
+    "name": "Stadt Zülpich",
+    "shortName": "Zülpich",
+    "kind": "city",
+    "district": "nrw-05366",
+    "ags": "05366044",
+    "municipalityType": "Stadt",
+    "independent": false
+  },
+  {
+    "id": "nrw-05370028",
+    "name": "Stadt Übach-Palenberg",
+    "shortName": "Übach-Palenberg",
+    "kind": "city",
+    "district": "nrw-05370",
+    "ags": "05370028",
+    "municipalityType": "Stadt",
+    "independent": false
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1789926328073,
+      "tag": "0000_flawless_kitty_pryde",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1790105690093,
+      "tag": "0001_high_brood",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790518902455,
+      "tag": "0002_melodic_mulholland_black",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1790523821026,
+      "tag": "0003_typical_mauler",
+      "breakpoints": true
+    }
+  ]
+}

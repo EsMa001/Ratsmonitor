@@ -1,0 +1,112 @@
+[
+  {
+    "id": "nrw-05558032",
+    "name": "Gemeinde Nottuln",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.nottuln.de/sessionnet/sessionnetbi/",
+    "extension": "php",
+    "verifiedSource": "https://www.nottuln.de/sessionnet/sessionnetbi/si0040.php",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05558020",
+    "name": "Gemeinde Havixbeck",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.ris-havixbeck.de/bi/",
+    "extension": "php",
+    "verifiedSource": "https://www.havixbeck.de/de/rathaus/politik/ratsinfo.php",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05558040",
+    "name": "Gemeinde Rosendahl",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/rosendahl/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://serviceportal.rosendahl.de/detail/-/vr-bis-detail/dienstleistung/175/show",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05558012",
+    "name": "Stadt Coesfeld",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.coesfeld.de/",
+    "extension": "php",
+    "verifiedSource": "https://serviceportal.coesfeld.de/detail/-/vr-bis-detail/einrichtung/435238/show",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05558016",
+    "name": "Stadt Dülmen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionweb.duelmen.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.duelmen.de/duelmenrathaus/politik",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05558044",
+    "name": "Gemeinde Senden",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/gemeinde-senden/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.senden-westfalen.de/de/rathaus-politik/politik/der-gemeinderat",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05558024",
+    "name": "Stadt Lüdinghausen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.stadt-luedinghausen.de/sessionnet/buergerinfo/",
+    "extension": "php",
+    "verifiedSource": "https://www.luedinghausen.de/rathaus-politik/politik/ratsinformationssystem.html",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05554004",
+    "name": "Stadt Ahaus",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/stadt-ahaus/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.stadt-ahaus.de/de/beteiligung-politik/ratsinformationssystem.php",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05558036",
+    "name": "Stadt Olfen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.olfen.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.olfen.de/rathaus-buergerservice/ratsinformationssystem/ratsinfo-fuer-buerger",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05558004",
+    "name": "Gemeinde Ascheberg",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/ascheberg/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.ascheberg.de/",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp antwortete am 27.09.2026 mit HTTP 404. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  }
+]

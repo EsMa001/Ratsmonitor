@@ -1,0 +1,212 @@
+[
+  {
+    "id": "nrw-05558028",
+    "name": "Gemeinde Nordkirchen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/nordkirchen/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.nordkirchen.de/startseite/gemeinde/impressum-service/inhaltsverzeichnis",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05566076",
+    "name": "Stadt Rheine",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.rheine-buergerinfo.de/",
+    "extension": "asp",
+    "verifiedSource": "https://www.rheine.de/rathaus-service/stadtteilbeirte/7891.Aufgaben-Ziele-Ansprechpartner.html",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05570044",
+    "name": "Stadt Telgte",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/telgte/BI/",
+    "extension": "asp",
+    "verifiedSource": "https://www.telgte.de/",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05570024",
+    "name": "Gemeinde Everswinkel",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/everswinkel/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.everswinkel.de/de/rathaus/sitzungsdienst-fuer-ratsmitglieder.php",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05570032",
+    "name": "Gemeinde Ostbevern",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.ostbevern.de/sessionnet/sessionnetbi/",
+    "extension": "php",
+    "verifiedSource": "https://www.ostbevern.de/sessionnet/sessionnetbi/vo0050.php?__kvonr=4908",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05570036",
+    "name": "Stadt Sassenberg",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://session.sassenberg.de/sessionnet/bi/",
+    "extension": "php",
+    "verifiedSource": "https://session.sassenberg.de/sessionnet/bi/vo0050.php?__kvonr=4705",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05554060",
+    "name": "Gemeinde Südlohn",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://suedlohn.gremien.info/",
+    "verifiedSource": "https://www.suedlohn.de/",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "OParl meldet nicht aktiviert; anonyme öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nrw-05562016",
+    "name": "Stadt Haltern am See",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://haltern.gremien.info/",
+    "verifiedSource": "https://www.haltern-am-see.de/",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "OParl meldet nicht aktiviert; anonyme öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nrw-05562008",
+    "name": "Stadt Datteln",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://datteln.gremien.info/",
+    "verifiedSource": "https://www.datteln.de/",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "OParl meldet nicht aktiviert; anonyme öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nrw-05562036",
+    "name": "Stadt Waltrop",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://waltrop.gremien.info/",
+    "verifiedSource": "https://www.waltrop.de/",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "OParl meldet nicht aktiviert; anonyme öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nrw-05562020",
+    "name": "Stadt Herten",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://herten.gremien.info/",
+    "verifiedSource": "https://www.herten.de/",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "OParl meldet nicht aktiviert; anonyme öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nrw-05562012",
+    "name": "Stadt Dorsten",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://dorsten.gremien.info/",
+    "verifiedSource": "https://www.dorsten.de/",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "OParl meldet nicht aktiviert; anonyme öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nrw-05570020",
+    "name": "Stadt Ennigerloh",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/ennigerloh/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.ennigerloh.de/",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05570012",
+    "name": "Gemeinde Beelen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/beelen/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.beelen.de/startseite",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05566068",
+    "name": "Stadt Ochtrup",
+    "kind": "city",
+    "method": "oparl",
+    "system": "https://ochtrup.gremien.info/oparl/system",
+    "verifiedSource": "https://www.ochtrup.de/",
+    "verifiedAt": "2026-09-27",
+    "maxPages": 1,
+    "meetingScan": "forward",
+    "maxResponseChars": 7000000,
+    "apiCheck": "Aktives OParl bestätigt. Neueste Sitzungsliste umfasst mehr als fünf Millionen Zeichen; quellenspezifisches Limit sieben Millionen, eine Listenseite."
+  },
+  {
+    "id": "nrw-05570052",
+    "name": "Stadt Warendorf",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/warendorf/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.warendorf.de/de/stadt/aktuell/pressemitteilungen/2023/juli/vertragsunterzeichnung-fuer-ersatzneubau-jakobus-kindergarten/",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05570008",
+    "name": "Stadt Beckum",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/beckum/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.beckum.de/news/juli-bis-september-2026/ratsticker/",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05570028",
+    "name": "Stadt Oelde",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/oelde/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.oelde.de/de/kalender/ratssitzungen-und-staedt-veranstaltungen/2026/2026-05-11-ratssitzung/",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05570048",
+    "name": "Gemeinde Wadersloh",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/wadersloh/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.wadersloh.de/rathaus/rat-und-ausschuesse",
+    "verifiedAt": "2026-09-27"
+  },
+  {
+    "id": "nrw-05562024",
+    "name": "Stadt Marl",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://marl.gremien.info/",
+    "verifiedSource": "https://marl.de/",
+    "verifiedAt": "2026-09-27",
+    "apiCheck": "OParl meldet nicht aktiviert; anonyme öffentliche Kalender-API erreichbar."
+  }
+]
