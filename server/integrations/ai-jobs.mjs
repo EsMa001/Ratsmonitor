@@ -39,7 +39,7 @@ async function applyAiResultsUnlocked(db,job,output){
    const topic=patchArticle(JSON.parse(row.payload),p,at),statements=[
     db.prepare("SELECT CASE WHEN EXISTS(SELECT 1 FROM topics WHERE id=? AND payload=?) THEN 1 ELSE json('conflict') END").bind(p.article.id,row.payload),
     db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),p.article.id,at,row.payload),
-    ...p.analyses.map(a=>db.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(a.payload.id,p.article.id,a.kind,AI_METHOD,a.payload.inputHash,at,JSON.stringify(a.payload))),
+    ...p.analyses.map(a=>db.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(a.payload.id,p.article.id,a.kind,a.payload.method,a.payload.inputHash,at,JSON.stringify(a.payload))),
     db.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(topic),p.article.id)
    ];
    await db.batch(statements);
@@ -49,7 +49,7 @@ async function applyAiResultsUnlocked(db,job,output){
   // Track exact successfully applied article IDs from this job, not unrelated historical analyses.
   job.appliedIds=[...new Set([...(job.appliedIds||[]),...prepared.filter(p=>!conflicts.includes(p.article.id)).map(p=>p.article.id)])];job.applied=job.appliedIds.length;job.status=job.applied>=job.articles.length?'completed':'prepared';await save(db,job);
   const receipt={jobId:job.id,at,applied,skipped,conflicts,outcomes,revision:Number((await db.prepare("SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) AS revision").first()).revision)};
-  await db.prepare('INSERT INTO import_runs(id,started_at,finished_at,status,details) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),at,new Date().toISOString(),conflicts.length?'partial':'completed',JSON.stringify({mode:'claude-analysis',region:job.regions.length===1?job.regions[0]:'all',trigger:'manual',processed:applied,skipped,conflicts,outcomes})).run();
+  await db.prepare('INSERT INTO import_runs(id,started_at,finished_at,status,details) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),at,new Date().toISOString(),conflicts.length?'partial':'completed',JSON.stringify({mode:job.method===AI_METHOD?'ai-agent-analysis':'claude-analysis',region:job.regions.length===1?job.regions[0]:'all',trigger:'manual',processed:applied,skipped,conflicts,outcomes})).run();
   await db.prepare("INSERT INTO system_state(key,value) VALUES('last-ai-apply',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(JSON.stringify(receipt)).run();return receipt;
  }finally{invalidateReads();await db.prepare("DELETE FROM system_state WHERE key='import-lock' AND value=?").bind(lease).run();}
 }

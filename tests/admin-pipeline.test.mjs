@@ -1,15 +1,15 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {DatabaseSync} from 'node:sqlite';
-import {sqliteAdapter} from '../scripts/claude-job.mjs';
+import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {pipelineAction,selectedRegions,canImport} from '../server/integrations/pipeline-jobs.mjs';
 import {createAiJob,applyAiResults,cancelAiJob,getAiJob} from '../server/integrations/ai-jobs.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
-import {keywordWeights} from '../shared/ai-job.mjs';
+import {keywordWeights,articleResult,AI_METHOD,LEGACY_AI_METHOD} from '../shared/ai-job.mjs';
 import {hashText} from '../shared/database-transfer.mjs';
 import {preserveArticleContent} from '../shared/article-record.mjs';
 import {compactOparl,publicParticipants} from '../server/integrations/source-fields.mjs';
 function fixture(){const sql=new DatabaseSync(':memory:');for(const f of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+f,import.meta.url),'utf8'));const db=sqliteAdapter(sql);const put=(id,region='billerbeck',extra={})=>{const t={id,regionId:region,title:'Schulbau',officialTitle:'Schulbau',status:'consulting',sourceUrl:'https://example.org/paper',documents:[],events:[],classification:{primary:'bildung',method:'title-rules-v2',version:'labels-v2',evidence:'Schulbau'},labelAssessments:{rule:{primary:'bildung',method:'rules'}},metadata:{firstImportedAt:'2026-09-01'},...extra};sql.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run(id,region,'city','2026-09-27','2026-09-27','consulting',JSON.stringify(t));return t;};return {sql,db,put};}
 const checks=['source_read','process','numbers','neutrality'].map(name=>({name,passed:true}));
-async function output(job){const quote='Im Rat wird der Schulneubau beraten.',url='https://example.org/paper',e={url,quote};return {format:'ratsmonitor-ai-results-v1',jobId:job.id,articles:job.articles.map(a=>({id:a.id,expectedPayloadHash:a.payloadHash,model:'test-model',sources:[{url,hash:'a'.repeat(64),fetchedAt:'2026-09-27T19:00:00Z',excerpts:[quote]}],summary:{status:'completed',shortSummary:quote,longSummary:[quote],evidence:[e],checks},aiLabel:{status:'completed',primary:'bildung',secondary:[],reason:'Schulneubau',evidence:[e],checks},keywords:{status:'completed',items:Array.from({length:10},(_,i)=>({term:'Begriff '+i,score:1+i%5,reason:'Testbegründung',evidence:e})),evidence:[e],checks}}))};}
+async function output(job){const quote='Im Rat wird der Schulneubau beraten.',url='https://example.org/paper',e={url,quote};return {format:'ratsmonitor-ai-results-v1',jobId:job.id,articles:job.articles.map(a=>({id:a.id,expectedPayloadHash:a.payloadHash,agent:'Example Agent',model:'test-model',sources:[{url,hash:'a'.repeat(64),fetchedAt:'2026-09-27T19:00:00Z',excerpts:[quote]}],summary:{status:'completed',shortSummary:quote,longSummary:[quote],evidence:[e],checks},aiLabel:{status:'completed',primary:'bildung',secondary:[],reason:'Schulneubau',evidence:[e],checks},keywords:{status:'completed',items:Array.from({length:10},(_,i)=>({term:'Begriff '+i,score:1+i%5,reason:'Testbegründung',evidence:e})),evidence:[e],checks}}))};}
 
 test('selection validates IDs, distinguishes districts, and covers the complete NRW catalogue',()=>{assert.equal(selectedRegions('all').length,427);assert.deepEqual(selectedRegions(['billerbeck','billerbeck','coesfeld']),['billerbeck','coesfeld']);assert.throws(()=>selectedRegions(['x\' OR 1=1']));assert.throws(()=>selectedRegions([]));assert.equal(canImport('billerbeck'),true);});
 test('persistent queue handles partial sources, unavailable territory, cancellation and interrupted steps without replay',async()=>{
@@ -50,4 +50,45 @@ test('article commit rolls back all versions if database write fails',async()=>{
 test('source extraction retains public structured fields and does not copy private agenda lists or full text',async()=>{
  const r=compactOparl({id:'id',name:'Rat',meetingState:'durchgeführt',agendaItem:[{public:false,name:'Private'}],text:'Long body',created:'now'},'meeting');assert.equal(r.fields.meetingState,'durchgeführt');assert.equal(r.fields.agendaItem,undefined);assert.equal(r.fields.text,undefined);
  const attendance=await publicParticipants({id:'https://example.org/meeting',participant:['person']},async()=>({name:'Example Person'}),'now');assert.equal(attendance.status,'available');assert.equal(attendance.people[0].presence,'present');
+});
+
+
+test('generic jobs retain arbitrary agent provenance in storage, hashes and counters',async()=>{
+ const {sql,db,put}=fixture();put('a');
+ const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel','keywords']});
+ assert.equal(job.method,AI_METHOD);assert.ok(!/claude/i.test(job.instructions));
+ const result=await output(job);delete result.articles[0].agent;
+ await assert.rejects(applyAiResults(db,job,result),/KI-Agenten/);
+ for(const agent of ['Codex','Claude Code','Another Agent']){
+  result.articles[0].agent=agent;
+  const prepared=await articleResult(job,job.articles[0],result.articles[0]);
+  assert.equal(prepared.analyses[0].payload.agent,agent);
+  assert.equal(prepared.analyses[0].payload.method,AI_METHOD);
+ }
+ const first=await articleResult(job,job.articles[0],result.articles[0]);
+ result.articles[0].agent='Different Agent';
+ const second=await articleResult(job,job.articles[0],result.articles[0]);
+ assert.notEqual(first.analyses[0].payload.id,second.analyses[0].payload.id);
+ await applyAiResults(db,job,result);
+ for(const row of sql.prepare('SELECT method,payload FROM article_analyses').all()){
+  assert.equal(row.method,AI_METHOD);assert.equal(JSON.parse(row.payload).agent,'Different Agent');
+ }
+ assert.equal(JSON.parse(sql.prepare('SELECT details FROM import_runs').get().details).mode,'ai-agent-analysis');
+ assert.equal((await applyAiResults(db,job,result)).skipped,1);
+ assert.equal((await processingStatus(db)).regions[0].keywords,1);sql.close();
+});
+
+test('legacy results retain their original hashes and repeat without relabelling',async()=>{
+ const {sql,db,put}=fixture();put('a');
+ const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary']});job.method=LEGACY_AI_METHOD;
+ sql.prepare("UPDATE system_state SET value=? WHERE key='admin-ai-job'").run(JSON.stringify(job));
+ const result=await output(job),r=result.articles[0];delete r.agent;
+ const prepared=await articleResult(job,job.articles[0],r);
+ const oldHash=await hashText(JSON.stringify({signature:job.articles[0].sourceSignature,sources:r.sources.map(s=>[s.url,s.hash]).sort(),method:LEGACY_AI_METHOD,model:r.model}));
+ assert.equal(prepared.analyses[0].payload.inputHash,oldHash);
+ assert.equal(prepared.analyses[0].payload.id,await hashText(['a','summary',oldHash,LEGACY_AI_METHOD].join('\n')));
+ await applyAiResults(db,job,result);assert.equal((await applyAiResults(db,job,result)).skipped,1);
+ assert.equal(sql.prepare('SELECT method FROM article_analyses').get().method,LEGACY_AI_METHOD);
+ r.agent='Codex';await assert.rejects(applyAiResults(db,job,result),/neuen Auftrag/);
+ assert.equal(sql.prepare('SELECT count(*) n FROM article_analyses').get().n,1);sql.close();
 });
