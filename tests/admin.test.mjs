@@ -138,9 +138,11 @@ test('prepared content import requires a deliberate owner POST from the same ori
  assert.equal(globalThis.adminFixture.prepared,1);
 });
 
-test('pipeline and Claude mutations require same origin, owner and JSON; GET does not process data',async()=>{
+test('pipeline and AI mutations require same origin, owner and JSON; GET does not process data',async()=>{
  globalThis.adminFixture.user=owner;
  assert.equal(routes.pipeline.GET,undefined);
  for(const route of ['pipeline','ai-job']){assert.equal((await routes[route].POST(req(route,'{}',{origin:'https://evil.example'}))).status,403);assert.equal((await routes[route].POST(req(route,'null'))).status,400);}
- const before=globalThis.adminFixture.analyses;assert.equal((await routes['ai-job'].GET()).status,200);assert.equal(globalThis.adminFixture.analyses,before);
+ const before=globalThis.adminFixture.analyses;assert.equal((await routes['ai-job'].GET(req('ai-job'))).status,200);assert.equal(globalThis.adminFixture.analyses,before);
+ for(const offset of ['-1','1.5','abc'])assert.equal((await routes['ai-job'].GET(req('ai-job?offset='+offset))).status,400);
+ assert.equal((await routes['ai-job'].POST(req('ai-job',JSON.stringify({action:'apply',result:{articles:Array(101).fill({id:'x'})}})))).status,400);
 });

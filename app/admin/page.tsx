@@ -11,7 +11,7 @@ export const metadata={title:'Administration · vor Ort',robots:{index:false,fol
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string}>}){const {seite}=await searchParams;return <AdminContent second={seite==='2'}/>;}
 async function AdminContent({second}:{second:boolean}){
  const user=await getChatGPTUser();
- const frame=(children:React.ReactNode)=><main id="inhalt" className="admin-gate"><a className="wordmark" href="/">vor Ort<span className="wordmark__dot">.</span></a><p className="eyebrow">ADMINISTRATION</p>{children}<a className="text-link" href="/">Zur öffentlichen Website</a></main>;
+ const frame=(children:React.ReactNode)=><main id="inhalt" className="admin-gate"><a className="wordmark" href="/">Ratsmonitor<span className="wordmark__dot">.</span></a><p className="eyebrow">ADMINISTRATION</p>{children}<a className="text-link" href="/">Zur öffentlichen Website</a></main>;
  if(!user)return frame(<><h1>Geschützter Bereich</h1><p>Melde dich mit ChatGPT an, um die Administration zu öffnen.</p><Button asChild className="admin-gate-action"><a target="_top" href={chatGPTSignInPath('/admin')}>Mit ChatGPT anmelden</a></Button></>);
  try{
   const access=await adminAccess(env.DB,user);

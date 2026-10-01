@@ -45,7 +45,7 @@ export function AdminDashboardView({initial,displayName,signOutPath}:{initial:Ad
  const busy=!!importing||!!analysing||!!data.importBusyUntil;
  function sourceFocus(next:string){setFilter(next);setQuery('');}
  return <main id="inhalt" className="admin-shell">
-  <header className="admin-topbar"><a className="wordmark" href="/">vor Ort<span className="wordmark__dot">.</span></a><span className="admin-access"><ShieldCheck size={16}/> Administration</span><a target="_top" href={signOutPath}>Abmelden</a></header>
+  <header className="admin-topbar"><a className="wordmark" href="/">Ratsmonitor<span className="wordmark__dot">.</span></a><span className="admin-access"><ShieldCheck size={16}/> Administration</span><a target="_top" href={signOutPath}>Abmelden</a></header>
   <nav className="admin-pages" aria-label="Adminseiten"><a href="/admin">1 <span>Daten & Verarbeitung</span></a><a href="/admin?seite=2" aria-current="page">2 <span>Qualität & Betrieb</span></a></nav>
   <div className="admin-heading"><div><p className="eyebrow">BESTAND & BETRIEB</p><h1>Qualität & Betrieb.</h1><p>{displayName} · Datenbankstand {date(data.asOf)} Uhr</p></div><Button className="admin-refresh" variant="outline" onClick={()=>refresh()} disabled={refreshing||!!importing||!!analysing}><RefreshCw size={16} className={refreshing?'admin-spin':''}/>{refreshing?'Wird geladen …':'Zahlen aktualisieren'}</Button></div>
   {error&&<p className="admin-error" role="alert">{error} Der letzte geladene Stand bleibt sichtbar.</p>}

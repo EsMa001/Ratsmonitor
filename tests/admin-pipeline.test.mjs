@@ -92,3 +92,61 @@ test('legacy results retain their original hashes and repeat without relabelling
  r.agent='Codex';await assert.rejects(applyAiResults(db,job,result),/neuen Auftrag/);
  assert.equal(sql.prepare('SELECT count(*) n FROM article_analyses').get().n,1);sql.close();
 });
+
+test('limited exports rotate after cancellation and failed results, survive restart, and keep kinds separate',async()=>{
+ const {sql,db,put}=fixture();try{
+  for(const id of ['a','b','c'])put(id);
+  const request={regions:['billerbeck'],kinds:['summary'],limit:1};
+  const first=await createAiJob(db,request);assert.equal(first.articles[0].id,'a');
+  await assert.rejects(createAiJob(db,request),/bereits vorbereitet/);
+  const redownload=await getAiJob(sqliteAdapter(sql));assert.equal(redownload.id,first.id);assert.equal(redownload.articles[0].id,'a');
+  await cancelAiJob(db,first.id);
+  const second=await createAiJob(sqliteAdapter(sql),request);assert.equal(second.articles[0].id,'b');
+  const failed=await output(second);failed.articles[0].summary={status:'insufficient_source',reason:'Nur Tagesordnung verfügbar'};
+  await applyAiResults(db,second,failed);
+  const third=await createAiJob(db,request);assert.equal(third.articles[0].id,'c');
+  await applyAiResults(db,third,await output(third));
+  const fourth=await createAiJob(db,request);assert.equal(fourth.articles[0].id,'a'); // oldest export, c is completed
+  await cancelAiJob(db,fourth.id);
+  const otherKind=await createAiJob(db,{...request,kinds:['keywords']});assert.equal(otherKind.articles[0].id,'a'); // never exported for keywords
+ }finally{sql.close();}
+});
+test('all freezes more than 100 inputs in rows, pages downloads, and accepts idempotent partial results',async()=>{
+ const {sql,db,put}=fixture();try{
+  for(let i=0;i<205;i++)put('article-'+String(i).padStart(3,'0'));
+  put('outside','muenster');put('alias','billerbeck',{identity:{mergedInto:'article-000'}});
+  const revision=sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision;
+  const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:'all'},{metadataOnly:true});
+  assert.equal(job.articleCount,205);assert.equal(job.articles,undefined);
+  assert.equal(sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision,revision);
+  const stored=JSON.parse(sql.prepare("SELECT value FROM system_state WHERE key='admin-ai-job'").get().value);
+  assert.equal(stored.articles,undefined);assert.equal(sql.prepare('SELECT count(*) n FROM ai_job_articles').get().n,205);
+  const first=await getAiJob(db,{id:job.id,limit:100}),second=await getAiJob(db,{id:job.id,offset:100,limit:100}),last=await getAiJob(db,{id:job.id,offset:200,limit:100});
+  assert.deepEqual([first.articles.length,second.articles.length,last.articles.length],[100,100,5]);
+  assert.equal(new Set([...first.articles,...second.articles,...last.articles].map(a=>a.id)).size,205);
+  await assert.rejects(getAiJob(db,{id:'changed',limit:100}),/geändert/);
+  const partial=await output(first);assert.equal((await applyAiResults(db,job,partial)).applied,100);
+  assert.equal((await processingStatus(db)).aiJob.applied,100);assert.equal((await processingStatus(db)).aiJob.status,'prepared');
+  assert.equal((await applyAiResults(db,job,partial)).skipped,100);
+  await assert.rejects(createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:100}),/bereits vorbereitet/);
+  await applyAiResults(db,job,await output(second));await applyAiResults(db,job,await output(last));
+  assert.equal((await processingStatus(db)).aiJob.applied,205);assert.equal((await processingStatus(db)).aiJob.status,'completed');
+  const empty=await createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:'all'});assert.equal(empty.articles.length,0);
+ }finally{sql.close();}
+});
+test('job creation failure does not advance dispatches or replace the previous manifest',async()=>{
+ const {sql,db,put}=fixture();try{
+  put('a');const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:1});await cancelAiJob(db,job.id);
+  const before=sql.prepare('SELECT * FROM ai_dispatches').all();
+  sql.exec("CREATE TRIGGER refuse_job BEFORE INSERT ON ai_job_articles BEGIN SELECT RAISE(ABORT,'test snapshot failure'); END;");
+  await assert.rejects(createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:'all'}),/snapshot failure/);
+  assert.deepEqual(sql.prepare('SELECT * FROM ai_dispatches').all(),before);
+  assert.equal((await getAiJob(db)).id,job.id);
+  assert.equal(sql.prepare("SELECT count(*) n FROM system_state WHERE key IN ('import-lock','ai-job-lease')").get().n,0);
+  sql.exec('DROP TRIGGER refuse_job');
+  for(const limit of [0,101,-1,'100',null,'ALL']){
+   if(limit===null)continue;
+   await assert.rejects(createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit}),/Paketgröße/);
+  }
+ }finally{sql.close();}
+});

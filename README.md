@@ -1,6 +1,18 @@
-# vor Ort · Billerbeck und Region
+# Ratsmonitor · Kommunalpolitik entdecken
 
 Responsive MVP zum Lesen öffentlicher Kommunalpolitik. 396 NRW-Städte und Gemeinden sowie 31 Kreise / Städteregionen zur Auswahl; zwölf Monate angefragter Rückblick plus veröffentlichte anstehende Beratungen. Keine Kommentare oder Beteiligungshinweise.
+
+## Aktuelle Oberfläche (28.09.2026)
+
+Das Design aus `ratsmonitor-react.zip` ersetzt die öffentliche Startseite. Komponenten: `components/ratsmonitor/`, Seiten: `app/(monitor)/`, Styles: `app/ratsmonitor.css`. Technische Grundlage bleibt die bestehende Vinext-/React-/D1-Anwendung. Der ZIP-Demobestand und dessen simulierte Anmeldung werden nicht verwendet.
+
+- Karte, Ortserkennung, Umkreis, Freitext, Thema, Monat und Status arbeiten mit `GET /api/search` und dem verbundenen D1-Bestand. Kommunen und Kreise sind getrennt auswählbar. Pro Seite werden 30 Vorgänge geladen. Ändert sich der Datenstand, erfordert Weiterblättern ein Neuladen. Ohne Datenbank zeigt die Suche einen Fehler.
+- `/beschluss/:id` und die bisherigen `/thema/:id` zeigen echte Details, Originalquellen und bestehende Analysen. `/analysen`, `/quellen` und `/mitteilungen` bleiben erreichbar.
+- `/konto/suchen` speichert Filter ausschließlich im lokalen Browser. Dafür gibt es keine Kontoanmeldung, Cloud-Synchronisierung oder E-Mail-Abonnements. Die vorhandene Push-Funktion ist separat unter `/mitteilungen` erreichbar.
+- `/admin` ist die geschützte Projektsteuerung für Gebietsauswahl, Datenabruf, Regeln, agentenunabhängige KI-Aufträge und Ergebnisübernahme; `/admin?seite=2` enthält Qualität und Betrieb. Anmeldung und Berechtigungsprüfungen bleiben erhalten.
+- Die Übersichtskarte stammt aus dem ZIP (Verwaltungsgrenzen 2018). Sie ist keine aktuelle Vollerhebung. Herkunft und Lizenz: [public/data/SOURCES.md](public/data/SOURCES.md).
+
+Lokal mit vorhandenen Abhängigkeiten und eingerichteter D1-Datenbank: `npm run dev -- --host 127.0.0.1 --port 5173`. Prüfung: `node --test tests/*.test.mjs` und `node node_modules/typescript/bin/tsc --noEmit --incremental false`; Produktionsbuild: `npm run build`. Die neuen Suchtests in `tests/monitor-search.test.mjs` verwenden eine isolierte In-Memory-Datenbank. Seitenaufrufe starten keine Importe oder KI-Verarbeitung.
 
 ## Daten
 

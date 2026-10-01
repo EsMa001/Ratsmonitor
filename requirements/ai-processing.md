@@ -4,10 +4,10 @@ Diese Anleitung ist der ausführbare Vertrag für die Adminfunktion „KI-Auftra
 
 ## Bedienung
 
-1. Lokale Website starten, `/admin` öffnen, Orte und gewünschte KI-Schritte auswählen. Mit zehn Artikeln beginnen.
+1. Lokale Website starten, `/admin` öffnen, Orte und gewünschte KI-Schritte auswählen. Die Paketgröße ist 10, 25, 50, 100 oder „Alle offenen Artikel“. „Alle“ gilt für die gewählten Gebiete und KI-Schritte, nicht automatisch für ganz NRW.
 2. „KI-Auftrag vorbereiten“ anklicken. Die JSON-Datei im Projekt speichern, zum Beispiel unter `.local-backups/ai-runs/auftrag.json`. Das erzeugt noch keine KI-Inhalte.
 3. Den KI-Agenten deiner Wahl im Projekt starten: „Lies requirements/ai-processing.md und .local-backups/ai-runs/auftrag.json. Bearbeite ausschließlich diese Artikel und Schritte. Erzeuge .local-backups/ai-runs/ergebnisse.json und validiere die Datei.“
-4. Im Adminbereich „Ergebnisse prüfen & speichern“ anklicken und die Ergebnisdatei wählen. Dafür kann der Webserver laufen bleiben: das Backend verwendet die gemeinsame Importsperre.
+4. Im Adminbereich „Ergebnisse prüfen & speichern“ anklicken und die Ergebnisdatei wählen. Mehrere Teildateien mit derselben `jobId` sind erlaubt; jede enthält ausschließlich ihre bearbeiteten Artikel. Der Browser überträgt Dateien bis 100 MB automatisch in Paketen mit höchstens 100 Artikeln und 2,9 MB. Bei größeren Ergebnissen mehrere Dateien liefern. Der Webserver kann laufen bleiben: das Backend verwendet die gemeinsame Importsperre. Nach einem Abbruch darf dieselbe Datei erneut eingelesen werden; bereits gespeicherte Ergebnisse werden erkannt.
 5. Alternativ für die CLI-Speicherung Webserver und schreibende Datenbankprogramme beenden. `node scripts/ai-job.mjs apply .local-backups/ai-runs/auftrag.json .local-backups/ai-runs/ergebnisse.json` ausführen. Das Werkzeug findet die eindeutige D1-Datei, sichert sie, prüft, schreibt transaktional je Artikel und öffnet die Datei erneut zur Kontrolle.
 6. Server wieder starten und den Status im Adminbereich aktualisieren. Die lokale Website liest dieselbe Datenbank. Ein zusätzlicher Datenexport ist dafür nicht erforderlich.
 
@@ -70,6 +70,14 @@ node scripts/ai-job.mjs validate .local-backups/ai-runs/auftrag.json .local-back
 ```
 
 ## Speicherung und Wiederholbarkeit
+
+### Auswahl und Exportreihenfolge
+
+Ein Artikel kommt nur in die Auswahl, wenn mindestens einer der gewählten KI-Schritte noch nicht aktuell erfolgreich abgeschlossen ist. Die Auswahl bevorzugt Artikel ohne bisherigen Export für die gewählten Schritte. Danach folgen die am längsten zurückliegenden Exporte, bei Gleichstand das neueste Sitzungsdatum und die Artikel-ID. Der Exportverlauf wird je Artikel und KI-Schritt in `ai_dispatches` gespeichert und bleibt bei Neustart oder Verwerfen erhalten. Ein Export ist kein erfolgreiches KI-Ergebnis.
+
+Ein vorbereiteter Auftrag reserviert seine feste Artikelliste. Währenddessen lässt sich kein weiterer Auftrag vorbereiten. „Auftrag herunterladen“ lädt dieselbe Liste erneut; erst Ergebnisübernahme aller Artikel oder ausdrückliches Verwerfen erlaubt den nächsten Auftrag. Teilergebnisse lassen die übrigen Artikel reserviert. `failed` und `insufficient_source` schließen den Bearbeitungsversuch ab, gelten aber nicht als erfolgreiche Inhaltsauswertung. Solche Artikel bleiben offen und kommen nach bisher nicht exportierten beziehungsweise länger zurückliegenden Artikeln wieder an die Reihe. Wenn nur diese Artikel offen sind, können sie erneut ausgewählt werden.
+
+„Alle“ friert die vollständige offene Auswahl ein. Die einzelnen Eingaben liegen in `ai_job_articles`, die kleine Auftragsbeschreibung weiterhin in `system_state`. Download und Ergebnisübernahme werden in Portionen übertragen. Die Datenbankmigration `drizzle/0005_ai_export_queue.sql` muss vor Nutzung dieser Funktion angewendet sein. Frühere Exporte ohne gespeicherten Verlauf können nicht rückwirkend erkannt werden; bestehende erfolgreiche Analysen werden weiterhin berücksichtigt. Alte eingebettete Aufträge bleiben lesbar. Beim Umzug nur fachlicher Daten per JSON-Export wird die lokale Exportreihenfolge nicht übertragen; eine vollständige SQLite-Sicherung enthält sie.
 
 Die Speicherung prüft Eingabehash, Artikelzuordnung, Quellenadressen, Belege in den mitgelieferten Auszügen, Labelkatalog, Länge, Scores und Gewichte. Das beweist nicht, dass der KI-Agent die Originalquelle richtig verstanden oder einen Auszug unverändert übertragen hat; Stichproben bleiben erforderlich. Vollständige historische Originaltexte sind bewusst nicht archiviert und können aus Prüfsummen nicht rekonstruiert werden.
 
