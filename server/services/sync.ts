@@ -2,6 +2,7 @@ import {compactSummaryAttempt} from '../integrations/compact-summary.mjs';
 import {invalidateReads} from './read-cache.mjs';
 import {importHealth} from '../integrations/import-health.mjs';
 import {mergeImport} from '../integrations/merge-import.mjs';
+import {historyWindow} from '@/shared/history-window.mjs';
 import 'server-only';
 import {preserveAnalysis} from '@/shared/analysis-state.mjs';
 import { env } from 'cloudflare:workers';
@@ -12,7 +13,10 @@ import { enrichDocument } from '@/server/integrations/documents.mjs';
 import { summarize } from '@/server/integrations/ai-summary.mjs';
 import { dispatchDecisionPush } from '@/server/services/push';
 import type { StoredTopic as Topic, ImportData as FeedData } from '@/server/types';
-export async function runSync(mode: 'metadata' | 'summaries',region='muenster', trigger: 'manual' | 'scheduled' = 'manual') { if(mode==='summaries'&&trigger!=='manual')return {status:403,data:{error:'Textverarbeitung startet ausschließlich manuell im Adminbereich.'}}; if (!env.DB)
+/** options.window selects the look-back period for metadata imports ('1w' | '1m' | '3m' | '12m'; default twelve months). */
+export async function runSync(mode: 'metadata' | 'summaries',region='muenster', trigger: 'manual' | 'scheduled' = 'manual', options: {window?: string} = {}) { if(mode==='summaries'&&trigger!=='manual')return {status:403,data:{error:'Textverarbeitung startet ausschließlich manuell im Adminbereich.'}};
+    let lookback: string; try { lookback = historyWindow(options.window); } catch { return { status: 400, data: { error: 'Ungültiger Zeitraum für den Abruf.' } }; }
+    if (!env.DB)
     return { status: 503, data: { error: 'Datenbank fehlt' } }; await ensureData();
     const coverageRow = await env.DB.prepare('SELECT payload FROM source_coverage WHERE region_id=?').bind(region).first<{payload:string}>();
     const previousCoverage = coverageRow ? JSON.parse(coverageRow.payload) : {};
@@ -22,8 +26,8 @@ export async function runSync(mode: 'metadata' | 'summaries',region='muenster', 
     value: string;
 }>(); if (!lock)
     return { status: 409, data: { error: 'Import läuft bereits', retryAfter: 60 } }; try {
-    await env.DB.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id, started, 'running', JSON.stringify({mode,region,trigger})).run();
-    return { status: 200, data: await (mode === 'summaries' ? refreshSummaries(id, started,region) : refreshMetadata(id, started,region,previousCoverage)) };
+    await env.DB.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id, started, 'running', JSON.stringify(mode==='metadata'?{mode,region,trigger,window:lookback}:{mode,region,trigger})).run();
+    return { status: 200, data: await (mode === 'summaries' ? refreshSummaries(id, started,region) : refreshMetadata(id, started,region,previousCoverage,lookback)) };
 }
 catch (e) {
     await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), 'failed', JSON.stringify({ mode,region,trigger,error: e instanceof Error ? e.message : 'Importfehler' }), id).run();
@@ -72,10 +76,10 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
     if (processed >= 8)
         break;
 } await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), 'completed', JSON.stringify({ mode: "summaries", region, processed, aiConfigured: !!env.OPENAI_API_KEY }), id).run(); return { processed, more: processed === 8, aiConfigured: !!env.OPENAI_API_KEY }; }
-async function refreshMetadata(id: string, started: string,region:string,previousCoverage:any) {
+async function refreshMetadata(id: string, started: string,region:string,previousCoverage:any,lookback:string) {
     if (!env.DB)
         throw Error('Datenbank fehlt');
-    const fresh = await collectRegion(region,{maxDurationMs:120000}) as FeedData;
+    const fresh = await collectRegion(region,{maxDurationMs:120000,window:lookback}) as FeedData;
     const previous = await env.DB.prepare('SELECT id,payload FROM topics WHERE region_id=?').bind(region).all<{
         id: string;
         payload: string;
@@ -96,7 +100,9 @@ async function refreshMetadata(id: string, started: string,region:string,previou
         const group=t.identity?.mergedInto||t.id;groups.set(group,[...(groups.get(group)||[]),...statements]);
     }
     for(const statements of groups.values())await env.DB.batch(statements);
-    const health=importHealth(previousCoverage,{at:started,count:fresh.topics.length,complete:fresh.coverage.complete});
+    // A short window without meetings is a successful attempt; the stored stock and its status stay as they are.
+    const quiet=Boolean(combined.quiet);
+    const health=importHealth(previousCoverage,{at:started,count:fresh.topics.length,complete:fresh.coverage.complete,quiet});
     const coverage={...combined.coverage,regionId:region,...health,importedAt:health.lastSuccessAt};
     // Missing items remain in the archive. A partial scan never deletes an article.
     await env.DB.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload').bind(region,JSON.stringify(coverage)).run();
@@ -105,6 +111,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
         await env.DB.prepare("INSERT INTO system_state(key,value) VALUES('latest-decision',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(JSON.stringify({ id: t.id, title: t.title, shortSummary: t.shortSummary, detectedAt: started, count: decisions.length })).run();
         await dispatchDecisionPush();
     }
-    await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), fresh.coverage.complete ? 'completed' : 'partial', JSON.stringify({ mode:'metadata',region, count: fresh.topics.length, decisions: decisions.length, issues: fresh.coverage.issues }), id).run();
-    return { topics: fresh.topics.length, decisions: decisions.length, coverage };
+    await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), fresh.coverage.complete || quiet ? 'completed' : 'partial', JSON.stringify({ mode:'metadata',region, window: lookback, quiet, count: fresh.topics.length, decisions: decisions.length, issues: fresh.coverage.issues }), id).run();
+    // attemptComplete describes this attempt; coverage.complete describes the stored period.
+    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet };
 }

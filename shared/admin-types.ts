@@ -1,5 +1,5 @@
 export type ProcessingCounts={total:number;rules:number;summary:number;aiLabel:number;keywords:number;insufficient:number;stale:number;fetchedAt:string|null;processedAt:string|null};
-export type PipelineJob={id:string;stage:string;createdAt:string;updatedAt:string;status:string;items:{region:string;status:string;processed:number;message:string}[]};
+export type PipelineJob={id:string;stage:string;window?:string;createdAt:string;updatedAt:string;status:string;items:{region:string;status:string;processed:number;message:string}[]};
 export type AdminSource={processing:ProcessingCounts;attemptStatus:string|null;id:string;name:string;ags:string;kind:string;count:number;pendingAnalysis:number;method:string;configured:boolean;canImport:boolean;stale:boolean;partial:boolean;attention:boolean;state:string;lastSuccessAt:string|null;lastAttemptAt:string|null;issues:string[];sourceUrl:string|null;complete:boolean;nextRetryAt:string|null};
 export type AdminArticle={id:string;regionId:string;title:string;status:string;updatedAt:string;label:string;generatedBy:string};
 export type AdminRun={id:string;startedAt:string;finishedAt:string|null;status:string;region:string;mode:string;trigger:string;count:number|null;issueCount:number;abandoned:boolean};

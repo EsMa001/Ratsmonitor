@@ -1,11 +1,11 @@
 import {compactOparl,sourceDecision,publicParticipants} from './source-fields.mjs';
-import {historyStart,HISTORY_MONTHS} from './history-window.mjs';
+import {windowStart} from './history-window.mjs';
 import {chooseBody} from './body-identity.mjs';
 import {publicAgenda} from './public-agenda.mjs';
 import {clean,hash,statusOf,sourceSummary,category,parallel} from './oparl.mjs';
 /** A provider-configured, portable collector. No Cloudflare or app dependencies. */
-export async function collectRegionalOparl(source,{now=new Date(),getJson=null,maxRequests=350,maxPages=Math.min(24,source.maxPages||6),maxDurationMs=300000,onProgress=()=>{}}={}){
- const since=historyStart(now);const from=since.toISOString().slice(0,10),issues=[];let requests=0;const cache=new Map();const base=new URL(source.system);const deadline=Date.now()+maxDurationMs;
+export async function collectRegionalOparl(source,{now=new Date(),getJson=null,maxRequests=350,maxPages=Math.min(24,source.maxPages||6),maxDurationMs=300000,onProgress=()=>{},window:lookback}={}){
+ const since=windowStart(now,lookback);const from=since.toISOString().slice(0,10),issues=[];let requests=0;const cache=new Map();const base=new URL(source.system);const deadline=Date.now()+maxDurationMs;
  const allowed=value=>{const u=new URL(value);if(source.upgradeHttpLinks&&u.protocol==='http:'&&u.hostname===base.hostname&&!u.port&&!base.port)u.protocol='https:';if(u.protocol!=='https:'||u.origin!==base.origin||u.username||u.password)throw Error('Quelle außerhalb der freigegebenen OParl-Adresse');return u.href;};
  const get=async url=>{url=allowed(url);if(Date.now()>=deadline)throw Error('Zeitbudget der Quelle erreicht');if(cache.has(url))return cache.get(url);if(++requests>maxRequests)throw Error('Abrufbudget erreicht');const promise=(async()=>{if(getJson)return getJson(url);const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(Math.max(1,Math.min(55000,deadline-Date.now()))),headers:{Accept:'application/json'}});if(!r.ok)throw Error('OParl HTTP '+r.status);const raw=await r.text();if(raw.length>Math.min(7e6,Math.max(5e6,source.maxResponseChars||5e6)))throw Error('Antwort überschreitet Größenlimit');return JSON.parse(raw);})();cache.set(url,promise);return promise;};
  const object=async x=>typeof x==='string'?get(x):x;
@@ -44,5 +44,5 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
   }catch(e){issues.push('Tagesordnungspunkt: '+e.message);}}
  },3);
  const topics=[];for(const t of grouped.values()){t.events.sort((a,b)=>a.date.localeCompare(b.date));const last=t.events.at(-1);Object.assign(t,{status:last.status,eventDate:last.date,committee:last.committee});t.documents=[...new Map(t.documents.map(d=>[d.url,d])).values()];t.sourceText=t.title+'\n'+t.events.map(e=>e.description).join('\n');Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name.replace(/^(Stadt|Gemeinde) /,''));t.quality={passed:false,checks:[{name:'Öffentliche Quelle',passed:true,detail:'Öffentlichkeit durch Kennzeichen oder ausdrücklich bezeichneten öffentlichen Sitzungsabschnitt belegt.'},{name:'Inhaltsprüfung',passed:false,detail:'Automatischer Quellenüberblick; keine redaktionelle Freigabe.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);}
- onProgress(source.name+': '+topics.length+' Artikel');return {topics,coverage:{regionId:source.id,method:'oparl',from:meetings.length?from:null,to:meetings.length?now.toISOString().slice(0,10):null,importedAt:meetings.length?now.toISOString():null,lastAttemptAt:now.toISOString(),meetings:meetings.length,sourceCount:1,complete:issues.length===0&&topics.length>0,issues:[...new Set(issues)],sourceUrl:source.system,body:body.id}};
+ onProgress(source.name+': '+topics.length+' Artikel');return {topics,coverage:{regionId:source.id,method:'oparl',from:meetings.length?from:null,to:meetings.length?now.toISOString().slice(0,10):null,importedAt:meetings.length?now.toISOString():null,lastAttemptAt:now.toISOString(),meetings:meetings.length,sourceCount:1,quiet:meetings.length===0&&issues.length===0,complete:issues.length===0&&topics.length>0,issues:[...new Set(issues)],sourceUrl:source.system,body:body.id}};
 }

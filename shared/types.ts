@@ -73,7 +73,7 @@ export interface Coverage {
     lastAttemptAt?: string;
     lastSuccessAt?: string | null;
     lastCompleteAt?: string | null;
-    attemptStatus?: 'failed' | 'completed' | 'partial' | 'empty';
+    attemptStatus?: 'failed' | 'completed' | 'partial' | 'empty' | 'unchanged';
     failureCount?: number;
     nextRetryAt?: string | null;
     from: string | null;

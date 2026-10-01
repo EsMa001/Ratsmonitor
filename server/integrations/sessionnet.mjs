@@ -1,6 +1,6 @@
 import {parseAttendance} from './sessionnet-details.mjs';
 import {sourceDecision} from './source-fields.mjs';
-import {historyStart,HISTORY_MONTHS} from './history-window.mjs';
+import {windowStart,calendarMonthsBack} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
 import {hash,category,sourceSummary,parallel} from './oparl.mjs';
 const entities={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',ouml:'ö',auml:'ä',uuml:'ü',Ouml:'Ö',Auml:'Ä',Uuml:'Ü',szlig:'ß',ndash:'-',mdash:'-'};
@@ -48,12 +48,12 @@ export function parseAgenda(h,meeting,source,now=new Date()){
  }
  return result;
 }
-export async function collectSessionNet(source,{now=new Date(),get=fetchText,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{}}={}){
+export async function collectSessionNet(source,{now=new Date(),get=fetchText,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback}={}){
  get=budgeted(get,maxDurationMs,2);
- const from=historyStart(now);const fromDay=from.toISOString().slice(0,10),issues=[],meetings=new Map();
- // Calendar months cover the rolling twelve months and already published next-month meetings.
+ const from=windowStart(now,lookback);const fromDay=from.toISOString().slice(0,10),issues=[],meetings=new Map();
+ // Calendar months cover the selected look-back window (default: rolling twelve months) and already published next-month meetings.
  let denied=false;
- await parallel(Array.from({length:HISTORY_MONTHS+2},(_,i)=>1-i),async offset=>{
+ await parallel(Array.from({length:calendarMonthsBack(now,from)+2},(_,i)=>1-i),async offset=>{
   if(denied)return;
   const date=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+offset,1));const url=source.base+`si0040.${source.extension}?__cjahr=${date.getUTCFullYear()}&__cmonat=${date.getUTCMonth()+1}`;
   try{const html=await get(url,source);if(!/sessionnet|si0040/i.test(html))throw Error('Unbekanntes Kalenderformat');for(const m of meetingRows(html,source.base))if(m.date>=fromDay)meetings.set(m.url,m);}catch(e){issues.push(e.message);if(/403|401/.test(e.message))denied=true;}
@@ -83,5 +83,5 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SessionNet-Seite; konservative Statusauswertung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
- return {topics,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size,sourceCount:1,complete:issues.length===0&&topics.length>0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ return {topics,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size,sourceCount:1,quiet:meetings.size===0&&issues.length===0,complete:issues.length===0&&topics.length>0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }
