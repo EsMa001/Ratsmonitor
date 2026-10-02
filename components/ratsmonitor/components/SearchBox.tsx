@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { isCovered } from "../lib/constants";
 import { PlaceIndex, type PlaceEntry } from "../lib/place";
 import { norm } from "../lib/text";
+import { hasScope } from "../lib/savedSearch";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { useSearch, useSearchResults } from "../state/search";
@@ -9,8 +10,9 @@ import { IconCheck, IconPin, IconSearch, IconX } from "./icons";
 
 type Row =
   | { kind: "head"; label: string }
-  | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void }
-  | { kind: "text"; label: string; pick: () => void };
+  | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void; scope?: "only" | "with" }
+  | { kind: "text"; label: string; pick: () => void }
+  | { kind: "scope"; label: string; sub: string; sel: boolean; pick: () => void };
 
 /** Suchfeld mit Ortserkennung und Vorschlagsliste */
 export function SearchBox() {
@@ -29,26 +31,34 @@ export function SearchBox() {
     if (view !== "overview") goOverview();
   };
 
+  /* Varianten eines Orts: kreisfreie Städte und Länder nur einmal */
+  const variants = (ags: string): ("only" | "with")[] => (hasScope(ags, geo) ? ["only", "with"] : ["only"]);
+  const scopeName = (ags: string, scope?: "only" | "with") => {
+    const nm = geo!.info(ags).name;
+    if (scope !== "with") return nm;
+    return ags.length === 5 ? `${nm} & Gemeinden` : `${nm} & ${geo!.info(ags.slice(0, 5)).name}`;
+  };
+
   const rows = ((): Row[] => {
     if (!open || !state.q.trim() || !place || !geo) return [];
     const out: Row[] = [];
     if (placeActive && pq.place) {
-      out.push({ kind: "head", label: "Als Ort erkannt" });
-      out.push({ kind: "item", entry: pq.place, sel: true, pick: () => setOpen(false) });
-      if (pq.alts.length) {
-        out.push({ kind: "head", label: "Andere Orte mit diesem Namen" });
-        for (const e of pq.alts)
-          out.push({
-            kind: "item",
-            entry: e,
-            sel: false,
-            pick: () => {
-              const ign = { ...state.placeIgnored };
-              delete ign[pq.key];
-              apply(state.q, { placeOverrides: { ...state.placeOverrides, [pq.key]: e.ags }, placeIgnored: ign });
-            },
-          });
-      }
+      /* Eine flache Liste: erst Städte/Gemeinden, dann Kreise, dann die Kombinationen.
+         Bei einer Kreisstadt also: Stadt, Kreis, Stadt & Kreis */
+      const cur = pq.place;
+      const all = [cur, ...pq.alts].sort((x, y) => y.ags.length - x.ags.length);
+      const choose = (e: PlaceEntry, scope: "only" | "with") => {
+        if (e.ags !== cur.ags) {
+          const ign = { ...state.placeIgnored };
+          delete ign[pq.key];
+          apply(state.q, { placeOverrides: { ...state.placeOverrides, [pq.key]: e.ags }, placeIgnored: ign, scope });
+        }
+        search.setScope(scope);
+        setOpen(false);
+      };
+      const combos = all.filter((e) => hasScope(e.ags, geo) && !(e.ags.length === 5 && all.some((o) => o.ags.length === 8 && o.ags.startsWith(e.ags))));
+      for (const [e, scope] of [...all.map((e) => [e, "only"] as const), ...combos.map((e) => [e, "with"] as const)])
+        out.push({ kind: "item", entry: e, scope, sel: e.ags === state.area && (scope === state.scope || !hasScope(e.ags, geo)), pick: () => choose(e, scope) });
       out.push({
         kind: "text",
         label: `„${pq.phraseRaw}“ nur als Suchbegriff verwenden`,
@@ -60,9 +70,11 @@ export function SearchBox() {
     if (sg.items.length && !(placeActive && lastTok && pq.key.endsWith(lastTok))) {
       out.push({ kind: "head", label: "Orte" });
       for (const e of sg.items)
+        for (const scope of variants(e.ags))
         out.push({
           kind: "item",
           entry: e,
+          scope,
           sel: false,
           pick: () => {
             const h = geo.get(e.ags);
@@ -70,8 +82,9 @@ export function SearchBox() {
             const k = norm(phrase);
             const ign = { ...state.placeIgnored };
             delete ign[k];
-            apply(sg.toks.slice(0, sg.start).concat([phrase]).join(" "), { placeOverrides: { ...state.placeOverrides, [k]: e.ags }, placeIgnored: ign });
-            inputRef.current?.focus();
+            apply(sg.toks.slice(0, sg.start).concat([phrase]).join(" "), { placeOverrides: { ...state.placeOverrides, [k]: e.ags }, placeIgnored: ign, scope });
+            search.setScope(scope);
+            setOpen(false);
           },
         });
     }
@@ -123,7 +136,7 @@ export function SearchBox() {
 
   let pickIndex = -1;
   return (
-    <div className="relative z-[4] min-w-0 flex-[1_1_100%] desk:max-w-[500px] desk:flex-[1_1_300px] desk:min-w-[200px]">
+    <div className="relative z-[4] min-w-0">
       <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
       <label htmlFor="q" className="sr-only">
         Beschlüsse und Artikel durchsuchen
@@ -134,7 +147,7 @@ export function SearchBox() {
         type="search"
         autoComplete="off"
         spellCheck={false}
-        placeholder="Suche nach Titel, Thema oder Ort …"
+        placeholder="Suchbegriffe, mehrere mit Komma trennen (z. B. Kita, Schule) …"
         role="combobox"
         aria-expanded={showList}
         aria-controls="search-assist"
@@ -198,6 +211,24 @@ export function SearchBox() {
               );
             pickIndex++;
             const idx = pickIndex;
+            if (r.kind === "scope")
+              return (
+                <button
+                  key={"s" + i}
+                  id={`sa-${idx}`}
+                  type="button"
+                  role="option"
+                  aria-selected={r.sel}
+                  onClick={r.pick}
+                  className={`grid min-h-10 w-full grid-cols-[18px_minmax(0,1fr)] items-center gap-2 rounded-lg px-2 py-1.5 text-left ${r.sel ? "bg-teal-50" : idx === active ? "bg-slate-100" : "hover:bg-slate-100"}`}
+                >
+                  <span className={`h-3.5 w-3.5 rounded-full border-2 ${r.sel ? "border-teal-600 bg-teal-600 shadow-[inset_0_0_0_2px_white]" : "border-slate-400"}`} />
+                  <span className="min-w-0">
+                    <span className={`block truncate text-sm ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{r.label}</span>
+                    <span className="block text-xs text-slate-500">{r.sub}</span>
+                  </span>
+                </button>
+              );
             if (r.kind === "text")
               return (
                 <button
@@ -215,7 +246,7 @@ export function SearchBox() {
             const inf = geo!.info(r.entry.ags);
             return (
               <button
-                key={r.entry.ags + i}
+                key={r.entry.ags + (r.scope ?? "") + i}
                 id={`sa-${idx}`}
                 type="button"
                 role="option"
@@ -227,10 +258,10 @@ export function SearchBox() {
               >
                 {r.sel ? <IconCheck className="text-teal-600" /> : <IconPin className="text-slate-500" />}
                 <span className="min-w-0">
-                  <span className={`block truncate text-sm ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{inf.name}</span>
-                  <span className="block text-xs text-slate-500">{inf.meta}</span>
+                  <span className={`block truncate text-sm ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{scopeName(r.entry.ags, r.scope)}</span>
+                  <span className="block text-xs text-slate-500">{r.scope === "with" ? (r.entry.ags.length === 5 ? "Kreis und alle Städte und Gemeinden im Kreis" : "Gemeinde und Beschlüsse ihres Kreises") : inf.meta}</span>
                 </span>
-                {isCovered(r.entry.ags,coverage) ? <span className="count-pill">{areaCounts[r.entry.ags] || 0}</span> : <span />}
+                <span />
               </button>
             );
           })}

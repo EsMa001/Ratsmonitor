@@ -16,12 +16,25 @@
  * Marks are a cache, stored per area in system_state. Without them everything is read, as before.
  * MARKS_VERSION must be raised whenever the reading of agenda or paper pages changes: all marks then lose validity.
  */
+import {HISTORY_WINDOWS,windowSpanDays} from './history-window.mjs';
 export const MARKS_VERSION=1;
-export const RECENT_DAYS=14,TRUST_HOURS=6,MIN_AGE_DAYS=45,AGE_SPREAD_DAYS=30,KEEP_DAYS=430;
+export const RECENT_DAYS=14,TRUST_HOURS=6,MIN_AGE_DAYS=45,AGE_SPREAD_DAYS=30;
+// Marks are kept as long as the longest selectable import period reaches back, plus two months of slack.
+// A mark that is dropped earlier makes every resumed import read the same old meetings again.
+export const KEEP_DAYS=Math.max(...Object.keys(HISTORY_WINDOWS).map(windowSpanDays))+58;
 const DAY=86400000;
 const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return h>>>0;};
 const day=time=>new Date(time).toISOString().slice(0,10);
 export const marksKey=region=>'import-marks:'+region;
+/**
+ * The meeting list of an area, kept for the step that continues an import: {window, readAt, body, strategy, rows}.
+ * Asking a large installation for two years of meetings can take most of the time of a step; without the kept list
+ * every continuation would spend its time on the list again and read no meeting.
+ */
+export const listKey=region=>'import-list:'+region;
+export function readList(text){try{const kept=JSON.parse(text||'null');return kept&&typeof kept.window==='string'&&Number.isFinite(kept.readAt)&&Array.isArray(kept.rows)?kept:null;}catch{return null;}}
+/** A kept list is used for the same period and body, and only for TRUST_HOURS: after that the list is asked again. */
+export const usableList=(kept,window,body,now)=>Boolean(kept&&kept.window===window&&kept.body===body&&now.getTime()-kept.readAt>=0&&now.getTime()-kept.readAt<TRUST_HOURS*3600000);
 /** Stored value → {address: [date, fingerprint, readAt, phase, items]}; anything unreadable or of another version is empty. */
 export function readMarks(text){
  try{const stored=JSON.parse(text||'null');return stored?.v===MARKS_VERSION&&stored.marks&&typeof stored.marks==='object'&&!Array.isArray(stored.marks)?stored.marks:{};}catch{return {};}

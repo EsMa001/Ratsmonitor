@@ -8,6 +8,7 @@ import {collectSessionNet,fetchText} from '../../server/integrations/sessionnet.
 import {collectRegionalOparl} from '../../server/integrations/oparl-regional.mjs';
 import {collectRubin} from '../../server/integrations/more-rubin.mjs';
 import {collectSdnet} from '../../server/integrations/sdnet.mjs';
+import {collectAllris} from '../../server/integrations/allris.mjs';
 import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
 const dir=process.env.DIR||'tmp/sample/',out=dir+'year/';fs.mkdirSync(out,{recursive:true});
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
@@ -17,6 +18,7 @@ const BUDGET=Number(process.env.BUDGET||1200000);
 const collect=source=>source.method==='oparl'?collectRegionalOparl(source,{window:'12m',maxDurationMs:BUDGET,maxRequests:8000,maxPages:80})
  :source.adapter==='more-rubin'?collectRubin(source,{window:'12m',maxDurationMs:BUDGET})
  :source.adapter==='sdnet'?collectSdnet(source,{window:'12m',maxDurationMs:BUDGET,maxListPages:200})
+ :source.adapter==='allris'?collectAllris(source,{window:'12m',maxDurationMs:BUDGET})
  :collectSessionNet(source,{window:'12m',maxDurationMs:BUDGET});
 const json=async url=>{const r=await fetch(url,{headers:{'User-Agent':SOURCE_USER_AGENT,Accept:'application/json'},signal:AbortSignal.timeout(30000)});if(!r.ok)throw Error('HTTP '+r.status);return r.json();};
 // An association's system holds one body per member municipality: read them all and add them up.

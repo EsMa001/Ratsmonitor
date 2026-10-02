@@ -5,9 +5,10 @@ import {collectRubin} from './more-rubin.mjs';
 import {SOURCES} from './regions.mjs';
 import {collectSessionNet,fetchText} from './sessionnet.mjs';
 import {collectSdnet} from './sdnet.mjs';
+import {collectAllris} from './allris.mjs';
 import {collectOparl,requestJson} from './oparl.mjs';
 /**
- * options.window selects the look-back period ('1w' | '1m' | '3m' | '12m'); it is validated before any request and recorded with the source status.
+ * options.window selects the look-back period ('1w' | '1m' | '3m' | '12m' | '24m'); it is validated before any request and recorded with the source status.
  * options.trace (import-trace.mjs) records every request to the source, whichever adapter reads it.
  */
 export async function collectRegion(id,options={}){
@@ -29,6 +30,10 @@ async function collect(id,options){
  if(source.adapter==='sdnet'){
   await vendorOparlOff(source.base+'webservice/oparl/v1.1/system');
   const d=await collectSdnet(source,pages);d.coverage.apiCheck=checked||'OParl-Schnittstelle des Herstellers ist nicht aktiviert.';d.coverage.apiCheckedAt=new Date().toISOString();return d;
+ }
+ if(source.adapter==='allris'){
+  // The reader asks the system's own OParl address itself, in the one session it keeps for the whole import.
+  const d=await collectAllris(source,{...pages,checkOparl:!checked});d.coverage.apiCheck=checked||'OParl-Adresse des Systems (oparl/system) liefert kein OParl-System.';d.coverage.apiCheckedAt=new Date().toISOString();return d;
  }
  if(source.extension){
   // Probe the vendor's public OParl endpoint. Failures do not masquerade as API data.

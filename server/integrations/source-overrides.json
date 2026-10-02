@@ -67,10 +67,19 @@
     "note": "Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar."
   },
   "nrw-05124000": {
-    "method": "pending",
-    "state": "unreachable",
-    "verifiedAt": "2026-10-01",
-    "note": "Die OParl-Adresse antwortet mit HTTP 400; die Website der Stadt verlangt eine Zugriffsprüfung im Browser."
+    "method": "scraper",
+    "base": "https://ris.wuppertal.de/",
+    "extension": "asp",
+    "state": "system-verified",
+    "verifiedAt": "2026-10-02",
+    "verifiedSource": "https://wuppertal.de/",
+    "oparlFallback": {
+      "system": "https://oparl.wuppertal.de/oparl/system",
+      "reason": "OParl-Adresse antwortet mit HTTP 400",
+      "checkedAt": "2026-10-02"
+    },
+    "apiCheck": "OParl-Adresse aus dem OParl-Verzeichnis antwortete am 02.10.2026 mit HTTP 400; deshalb öffentliche Seiten.",
+    "note": "Die OParl-Adresse aus dem Verzeichnis antwortet mit HTTP 400. Die öffentlichen SessionNet-Seiten unter ris.wuppertal.de antworten ohne Zugriffsprüfung und werden gelesen (geprüft am 02.10.2026: 605 öffentliche Tagesordnungspunkte in drei Monaten)."
   },
   "nrw-05358004": {
     "meetingScan": "filter"

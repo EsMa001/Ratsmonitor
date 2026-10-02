@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { MapPanel } from "../components/map/MapPanel";
+import { SearchFilterPanel } from "../components/SearchFilterPanel";
 import { ResultsPanel } from "../components/results/ResultsPanel";
 import { overviewScroll } from "../state/nav";
 
@@ -29,16 +30,10 @@ export function OverviewPage({ active }: { active: boolean }) {
   return (
     <div hidden={!active}>
       <MapPanel active={active} />
-      <main id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page flex-col gap-4 px-4 pb-8 pt-4 sm:gap-6 sm:px-6 sm:pb-10 sm:pt-6">
+      <main id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page flex-col gap-[0.3vw] pb-[0.3vw] pt-[0.3vw]">
         <h1 className="sr-only">Kommunalpolitik entdecken: öffentliche Vorgänge, Beratungen und Beschlüsse</h1>
+        <SearchFilterPanel />
         <ResultsPanel />
-        <p className="m-0 text-center text-[12.5px] text-slate-500">
-          Öffentliche Ratsinformationen aus dem gespeicherten Bestand. Kartenflächen bedeuten keine vollständige Datenabdeckung. Verwaltungsgrenzen: © GeoBasis-DE / BKG 2019 (VG250, Stand 31.12.2018),{" "}
-          <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="text-slate-600 underline">
-            Datenlizenz Deutschland Namensnennung 2.0
-          </a>
-          , für die Darstellung vereinfacht. Nachbarstaaten: Natural Earth.
-        </p>
       </main>
     </div>
   );

@@ -4,7 +4,7 @@ import {importHealth} from '../integrations/import-health.mjs';
 import {mergeImport} from '../integrations/merge-import.mjs';
 import {historyWindow} from '@/shared/history-window.mjs';
 import {acquireImport} from '../integrations/import-lock.mjs';
-import {readMarks,writeMarks,marksKey} from '../integrations/meeting-marks.mjs';
+import {readMarks,writeMarks,marksKey,readList,listKey} from '../integrations/meeting-marks.mjs';
 import {createTrace,saveDebug} from '../integrations/import-trace.mjs';
 import 'server-only';
 import {preserveAnalysis} from '@/shared/analysis-state.mjs';
@@ -17,7 +17,7 @@ import { summarize } from '@/server/integrations/ai-summary.mjs';
 import { dispatchDecisionPush } from '@/server/services/push';
 import type { StoredTopic as Topic, ImportData as FeedData } from '@/server/types';
 const FAILURE_CAUSE = 'Fehlerursache: ';
-/** options.window selects the look-back period for metadata imports ('1w' | '1m' | '3m' | '12m'; default twelve months). */
+/** options.window selects the look-back period for metadata imports ('1w' | '1m' | '3m' | '12m' | '24m'; default twelve months). */
 export async function runSync(mode: 'metadata' | 'summaries',region='muenster', trigger: 'manual' | 'scheduled' = 'manual', options: {window?: string} = {}) { if(mode==='summaries'&&trigger!=='manual')return {status:403,data:{error:'Textverarbeitung startet ausschließlich manuell im Adminbereich.'}};
     let lookback: string; try { lookback = historyWindow(options.window); } catch { return { status: 400, data: { error: 'Ungültiger Zeitraum für den Abruf.' } }; }
     if (!env.DB)
@@ -104,8 +104,11 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     for (const t of old.values()) for (const e of (t.events || []) as {url?: string}[]) if (e.url) stock.add(e.url);
     const marksRow = await env.DB.prepare('SELECT value FROM system_state WHERE key=?').bind(marksKey(region)).first<{value: string}>();
     const known = readMarks(marksRow?.value);
+    // The meeting list a step read a short while ago; the step that continues the import does not ask for it again.
+    const listRow = await env.DB.prepare('SELECT value FROM system_state WHERE key=?').bind(listKey(region)).first<{value: string}>();
+    const keptList = readList(listRow?.value);
     const collectStarted = Date.now();
-    const fresh = await collectRegion(region,{maxDurationMs:120000,window:lookback,marks:{known,stock},trace}) as FeedData;
+    const fresh = await collectRegion(region,{maxDurationMs:120000,window:lookback,marks:{known,stock,list:keptList},trace}) as FeedData;
     const collectMs = Date.now() - collectStarted, written = { created: 0, changed: 0, unchanged: 0 };
     const unchanged = Number(fresh.coverage.unchangedMeetings || 0), warnings = fresh.coverage.warnings || [];
     const decisions: Topic[] = [];
@@ -132,6 +135,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     await env.DB.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload').bind(region,JSON.stringify(coverage)).run();
     // Only now, with the reports stored, do the marks of this import count.
     if (fresh.marks) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(marksKey(region), writeMarks({...known,...fresh.marks}, new Date())).run();
+    if (fresh.list) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(listKey(region), JSON.stringify(fresh.list)).run();
     if (decisions.length && region==='muenster') {
         const t = decisions.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
         await env.DB.prepare("INSERT INTO system_state(key,value) VALUES('latest-decision',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(JSON.stringify({ id: t.id, title: t.title, shortSummary: t.shortSummary, detectedAt: started, count: decisions.length })).run();
@@ -142,7 +146,9 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), status, JSON.stringify({ mode:'metadata',region, window: lookback, quiet, count: fresh.topics.length, unchangedMeetings: unchanged, decisions: decisions.length, issues: fresh.coverage.issues, warnings, debug: brief(record) }), id).run();
     // A record that cannot be stored does not undo a stored import.
     try { await saveDebug(env.DB, record); } catch {}
+    // A step that only got further in the meeting list has made progress too: the next one continues behind it.
+    const listAdvanced = Boolean(fresh.list) && (fresh.list as {readAt?: number}).readAt !== keptList?.readAt;
     // attemptComplete describes this attempt; coverage.complete describes the stored period.
     // resume: the time limit ended this attempt after it had read further meetings; the next attempt continues behind them.
-    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet, unchanged, warnings, resume: Boolean(fresh.coverage.resumable) && Number(fresh.readMeetings || 0) > 0 };
+    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet, unchanged, warnings, resume: Boolean(fresh.coverage.resumable) && (Number(fresh.readMeetings || 0) > 0 || listAdvanced) };
 }

@@ -3,7 +3,7 @@ import population from '../../shared/nrw-population.json' with {type:'json'};
 import frame from '../../shared/germany-population.json' with {type:'json'};
 import sample from '../../shared/estimate-samples.json' with {type:'json'};
 import size from '../../shared/document-size-sample.json' with {type:'json'};
-import {estimateGermany,sampleQuality,areaClass,profile,capture,seasonality,stateFactor,SIZE_CLASSES,LEVELS,SAMPLE_RULES} from '../../shared/estimate.mjs';
+import {estimateGermany,sampleQuality,areaClass,profile,capture,seasonality,stateFactor,annualize,SIZE_CLASSES,LEVELS,SAMPLE_RULES} from '../../shared/estimate.mjs';
 import {estimateVolume,SIZE_RULES} from '../../shared/estimate-size.mjs';
 import {rangeStart} from '../../shared/timeline.mjs';
 import {adminTimeline} from './admin-timeline.mjs';
@@ -57,13 +57,15 @@ export async function adminEstimate(db,{now=new Date(),replicates=SAMPLE_RULES.r
   candidates[c.id]=Array.from({length:Math.min(WANTED_SAMPLES,open.length)},(_,i)=>open[Math.floor(i*step)]).map(r=>({id:r.id,name:r.name,population:population[r.id]}));
  }
  const brief=a=>({id:a.id,name:a.name,origin:a.origin,level:a.level,class:areaClass(a),state:a.state,population:a.population,reports:a.reports,method:a.method||null});
+ // Areas with reports but without a complete year: shown in the charts with a projected yearly figure, never used in the calculation.
+ const provisional=excluded.map(a=>{const projected=a.population>0?annualize(a,a.origin==='sample'?sample:{from,to},season.weeks):null;return projected?{...brief(a),reason:a.reason,annual:projected.annual,weeks:projected.weeks,connected:a.origin==='stored'&&canImport(a.id)}:null;}).filter(Boolean);
  const strata=SIZE_CLASSES.map(c=>{const drawn=sample.units.filter(u=>areaClass(u)===c.id),own=examples.filter(a=>areaClass(a)===c.id);return {id:c.id,name:c.name,drawn:drawn.length,connected:drawn.filter(u=>u.outcome==='connected').length,sampleExamples:own.filter(a=>a.origin==='sample').length,storedWithData:stored.filter(a=>areaClass(a)===c.id).length,storedExamples:own.filter(a=>a.origin==='stored').length,candidates:candidates[c.id]};});
  // The draws and the cells stay on the server; the page gets the condensed figures.
  const result={...estimate};delete result.cells;delete result.replicates;
  return {asOf:timeline.asOf,from,to,
   frame:{source:frame.source,populationYear:frame.populationYear,...frame.totals,units:Object.fromEntries(Object.entries({municipality:'municipalities',district:'districts',association:'associations',borough:'boroughs'}).map(([level,key])=>[level,Object.values(frame[key]).reduce((n,list)=>n+list.length,0)]))},
   sample:{builtAt:sample.builtAt,from:sample.from,to:sample.to,design:sample.design,units:sample.units.length,connected:sample.units.filter(u=>u.outcome==='connected').length,counted:counted.length,storedWithData:stored.length,strata},
-  examples:examples.map(brief),excluded:excluded.map(a=>({...brief(a),reason:a.reason})),
+  examples:examples.map(brief),excluded:excluded.map(a=>({...brief(a),reason:a.reason})),provisional,
   ...result,
   levels:result.levels.map(l=>({...l,model:l.model&&{n:l.model.n,measured:l.model.measured,slope:l.model.slope,typical:l.model.typical,smear:l.model.smear,shrink:l.model.shrink,scatter:l.model.scatter,states:Object.fromEntries(Object.entries(l.model.states).map(([state,s])=>[state,{n:s.n,raw:Math.exp(s.raw-l.model.typical),factor:stateFactor(l.model,state)}]))}})),
   capture:captured,

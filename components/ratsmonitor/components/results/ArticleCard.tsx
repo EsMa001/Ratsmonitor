@@ -2,7 +2,7 @@ import { memo } from "react";
 import { STATUS_BY_ID } from "../../lib/constants";
 import { MONTH_SHORT, fmtDate, highlightSegments } from "../../lib/text";
 import type { Article } from "../../types";
-import { IconPin, IconTag } from "../icons";
+import { SaveArticleButton } from "../SaveArticleButton";
 
 export function Highlight({ text, terms }: { text: string; terms: string[] }) {
   return (
@@ -34,11 +34,10 @@ interface Props {
   onHover: (ags: string) => void;
 }
 
-/** Eintrag der Ergebnisliste; die ganze Karte ist klickbar, die Chips filtern */
-export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, gemeindeActive, themaActive, onOpen, onGemeinde, onThema, onHover }: Props) {
+/** Eintrag der Ergebnisliste: Überschrift, Unterzeile, Zusammenfassung; die ganze Karte ist klickbar */
+export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, onOpen, onHover }: Props) {
   const [y, m, d] = a.date.split("-");
-  const chip =
-    "relative z-[1] inline-flex h-[26px] items-center gap-[5px] rounded-full border px-[9px] text-[12.5px] font-medium transition-colors";
+  const sub = [a.gemeinde, a.gremium].filter(Boolean).join(" · ");
   return (
     <article
       onMouseEnter={() => onHover(a.ags)}
@@ -49,63 +48,60 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
         onOpen(a);
       }}
       style={{ animationDelay: `${Math.min(index * 30, 240)}ms` }}
-      className="group relative grid shrink-0 animate-cardIn cursor-pointer grid-cols-1 gap-2.5 rounded-xl border border-slate-200 bg-white p-4 transition-[border-color,box-shadow] hover:border-slate-300 hover:shadow-card has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-teal-600 sm:grid-cols-[64px_minmax(0,1fr)] sm:gap-[18px] sm:py-[18px] sm:pl-4 sm:pr-5"
+      className="group relative grid shrink-0 animate-cardIn grid-cols-[52px_minmax(0,1fr)] gap-3 cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2.5 transition-[border-color,box-shadow] hover:border-slate-300 hover:shadow-card has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-teal-600 sm:px-3.5"
     >
-      <div aria-hidden="true" className="flex items-baseline gap-1.5 sm:flex-col sm:items-center sm:border-r sm:border-slate-200 sm:pr-3.5 sm:pt-0.5 sm:text-center">
-        <span className="text-sm font-semibold leading-none tracking-[-.02em] sm:text-2xl">{Number(d)||'—'}</span>
-        <span className="text-xs font-semibold uppercase tracking-[.06em] text-teal-600 sm:mt-1">{MONTH_SHORT[Number(m) - 1]}</span>
-        <span className="text-xs text-slate-500">{y}</span>
+      <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-3 pt-0.5 text-center">
+        <span className="text-xl font-semibold leading-none tracking-[-.02em]">{Number(d) || "—"}</span>
+        <span className="mt-1 text-[11px] font-semibold uppercase tracking-[.06em] text-teal-600">{MONTH_SHORT[Number(m) - 1]}</span>
+        <span className="text-[11px] text-slate-500">{y}</span>
       </div>
-      <div>
-        <div className="mb-1.5 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            aria-pressed={gemeindeActive}
-            title="Nach Gemeinde filtern"
-            onClick={() => onGemeinde(a)}
-            className={`${chip} ${gemeindeActive ? "border-teal-200 bg-teal-50 text-teal-700" : "border-slate-200 bg-white text-slate-900 hover:bg-slate-100"}`}
-          >
-            <IconPin size={13} />
-            <Highlight text={a.gemeinde} terms={terms} />
-          </button>
-          <button
-            type="button"
-            aria-pressed={themaActive}
-            title="Nach Thema filtern"
-            onClick={() => onThema(a)}
-            className={`${chip} ${themaActive ? "border-teal-200 bg-teal-50 text-teal-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
-          >
-            <IconTag size={13} />
-            <Highlight text={a.thema} terms={terms} />
-          </button>
-          <span className="text-[12.5px] text-slate-500">
-            <Highlight text={a.gremium} terms={terms} />
-          </span>
-          <StatusBadge status={a.status} className="sm:ml-auto" />
-        </div>
-        <h3 className="mb-1.5 mt-0 text-[17px] font-semibold leading-[1.35] tracking-[-.01em]">
-          <a
-            href={`/beschluss/${a.id}`}
-            onClick={(e) => {
-              if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-              e.preventDefault();
-              onOpen(a);
-            }}
-            className="text-slate-900 no-underline outline-none transition-colors group-hover:text-teal-700"
-          >
-            <Highlight text={a.title} terms={terms} />
-          </a>
-        </h3>
-        <p className="m-0 max-w-[96ch] text-[14.5px] leading-[1.62] text-slate-600">
-          <Highlight text={a.teaser} terms={terms} />
-        </p>
-        <div className="mt-2.5 flex items-center gap-3.5 text-[12.5px] text-slate-500">
-          <time dateTime={a.date}>Sitzung am {fmtDate(a.date)}</time>
-          <span aria-hidden="true" className="font-medium text-teal-600">
-            Ausführlich lesen ›
-          </span>
-        </div>
+      <div className="min-w-0">
+      <SaveArticleButton article={{ id: a.id, title: a.title, date: a.date, gemeinde: a.gemeinde, teaser: a.teaser }} className="float-right -mr-1.5 -mt-1 ml-2" />
+      <h3 className="m-0 text-[17px] font-semibold leading-[1.35] tracking-[-.01em]">
+        <a
+          href={`/beschluss/${a.id}`}
+          onClick={(e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+            e.preventDefault();
+            onOpen(a);
+          }}
+          className="text-slate-900 no-underline outline-none transition-colors group-hover:text-teal-700"
+        >
+          <Highlight text={a.title} terms={terms} />
+        </a>
+      </h3>
+      <p className="mb-1.5 mt-0.5 text-[13px] font-medium text-slate-500">
+        <Highlight text={sub} terms={terms} />
+      </p>
+      <p className="m-0 max-w-[96ch] text-[14.5px] leading-[1.6] text-slate-600">
+        <Highlight text={a.teaser} terms={terms} />
+      </p>
+      {a.steps && a.steps.length > 1 && a.steps[0].d < new Date().toISOString().slice(0, 10) && <StepTimeline steps={a.steps} />}
       </div>
     </article>
   );
 });
+
+/** Kleine Timeline der bisherigen Beratungen eines Vorgangs */
+function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
+  const shown = steps.slice(-5);
+  return (
+    <ol aria-label="Verlauf des Vorgangs" className="mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none]">
+      {steps.length > shown.length && <li className="mr-2 self-center text-[11px] text-slate-400">+{steps.length - shown.length}</li>}
+      {shown.map((st, i) => {
+        const last = i === shown.length - 1;
+        return (
+          <li key={i} className="relative flex min-w-[96px] max-w-[170px] flex-1 flex-col gap-0.5 pr-2">
+            <div className="flex items-center">
+              <span className={`h-2.5 w-2.5 flex-none rounded-full ${last ? "bg-teal-600 ring-4 ring-teal-100" : "bg-slate-300"}`} />
+              {!last && <span className="h-px flex-1 bg-slate-300" />}
+            </div>
+            <span className="text-[11px] font-semibold tabular-nums text-slate-600">{fmtDate(st.d)}</span>
+            <span className="truncate text-[11px] text-slate-500" title={st.c}>{st.c || "Gremium offen"}</span>
+            <span className="truncate text-[11px] text-slate-400">{STATUS_BY_ID[st.s as Article["status"]]?.label || ""}</span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}

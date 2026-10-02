@@ -1,6 +1,6 @@
 /** Time series of stored reports for the administration. Pure functions, shared by server, page and tests. */
 export const TIMELINE_BUCKETS=Object.freeze({day:'Tag',week:'Woche',month:'Monat'});
-export const TIMELINE_RANGES=Object.freeze({'3m':Object.freeze({label:'Letzte 3 Monate',months:3}),'12m':Object.freeze({label:'Letzte 12 Monate',months:12}),all:Object.freeze({label:'Gesamter Bestand'})});
+export const TIMELINE_RANGES=Object.freeze({'3m':Object.freeze({label:'Letzte 3 Monate',months:3}),'12m':Object.freeze({label:'Letzte 12 Monate',months:12}),'24m':Object.freeze({label:'Letzte 24 Monate',months:24}),all:Object.freeze({label:'Gesamter Bestand'})});
 export const TIMELINE_BASES=Object.freeze({event:'Erste Beratung (Sitzungsdatum)',import:'Aufnahme in die Datenbank'});
 const DAY=86400000;
 const iso=time=>new Date(time).toISOString().slice(0,10);

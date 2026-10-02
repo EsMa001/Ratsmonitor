@@ -1,9 +1,27 @@
 import Link from 'next/link';
-import {IconUser} from './icons';
+import {IconBookmark,IconHeart,IconUser} from './icons';
+import {useSavedArticles} from '../lib/savedArticles';
 import {useAccount} from '../state/account';
+
+/** Drei Symbole rechts in der Kopfzeile: Admin, gespeicherte Suchen, Konto */
 export function AccountMenu({currentPage}:{currentPage:string}){
- const {saved}=useAccount();
- return <details className="relative [grid-area:account]"><summary aria-label="Navigation öffnen" className="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm"><IconUser size={18}/><span className="hidden sm:inline">Mein Bereich</span></summary><nav id="account-menu" aria-label="Hauptnavigation" className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-pop">
- {[['/','Übersicht'],['/konto/suchen',`Gespeicherte Suchen (${saved.length})`],['/analysen','Analysen & Vergleiche'],['/quellen','Quellen & Datenabdeckung'],['/mitteilungen','Push-Mitteilungen'],['/konto/hilfe','Hilfe'],['/admin','Admin-Projektsteuerung']].map(([href,title])=><Link onClick={e=>e.currentTarget.closest('details')?.removeAttribute('open')} className="block rounded-lg px-3 py-2.5 text-sm hover:bg-teal-50 hover:text-teal-800" key={href} href={href}>{title}</Link>)}
- <p className="border-t border-slate-200 px-3 py-2 text-xs text-slate-500">Suchen werden in diesem Browser gespeichert.</p></nav></details>;
+ const {saved}=useAccount(),articles=useSavedArticles();
+ const base='relative grid h-10 w-10 place-items-center rounded-lg border transition-colors';
+ const cls=(on:boolean)=>`${base} ${on?'border-teal-200 bg-teal-50 text-teal-700':'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`;
+ return <nav aria-label="Konto" className="flex items-center gap-2">
+  <Link href="/admin" title="Administration" aria-label="Administration" className={cls(false)}>
+   <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
+  </Link>
+  <Link href="/konto/suchen" title="Gespeicherte Suchen" aria-label={`Gespeicherte Suchen (${saved.length})`} className={cls(currentPage==='suchen')}>
+   <IconHeart size={19} filled={currentPage==='suchen'}/>
+   {saved.length>0&&<span className="absolute -right-1.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-rose-500 px-1 text-[10.5px] font-semibold text-white">{saved.length}</span>}
+  </Link>
+  <Link href="/konto/artikel" title="Gespeicherte Artikel" aria-label={`Gespeicherte Artikel (${articles.length})`} className={cls(currentPage==='artikel')}>
+   <IconBookmark size={19} filled={currentPage==='artikel'}/>
+   {articles.length>0&&<span className="absolute -right-1.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-600 px-1 text-[10.5px] font-semibold text-white">{articles.length}</span>}
+  </Link>
+  <Link href="/konto/profil" title="Konto" aria-label="Konto" className={cls(currentPage==='profil')}>
+   <IconUser size={19}/>
+  </Link>
+ </nav>;
 }

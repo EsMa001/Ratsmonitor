@@ -5,6 +5,7 @@ import {collectSessionNet} from '../../server/integrations/sessionnet.mjs';
 import {collectRegionalOparl} from '../../server/integrations/oparl-regional.mjs';
 import {collectRubin} from '../../server/integrations/more-rubin.mjs';
 import {collectSdnet} from '../../server/integrations/sdnet.mjs';
+import {collectAllris} from '../../server/integrations/allris.mjs';
 // DIR and AREAS let the same check run over another list of areas (e.g. the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -32,6 +33,29 @@ async function probeOparl(url){
 function sessionNetBase(urls){
  for(const u of urls){const m=u.match(/^(https?:\/\/[^?#]*\/)(?:si0040|si0041|si0046|si0057|info|default|kp0041|kp0040|gr0040|vo0040|to0040|pa0040|suchen01|recherche|do0040|au0040|yw0040)\.(asp|php)/i);if(m)return {base:m[1].replace(/^http:/,'https:'),extension:m[2].toLowerCase()};}
  return null;
+}
+// A linked start page often shows no SessionNet address itself (it redirects by script, or sits in a frame, or the
+// system lives at the root of its own host). Then the usual entry page is asked for next to it. Plain requests only.
+async function findSessionNet(url){
+ // gi/ and ri/ are the areas of a SessionNet system that need a login; bi/ next to them is the public one.
+ const u=new URL(url),here=u.origin+u.pathname.replace(/[^/]*$/,''),bases=[...new Set([here.replace(/\/(gi|ri)\/$/i,'/bi/'),here,u.origin+'/',u.origin+'/bi/',here+'bi/'])];
+ for(const base of bases)for(const extension of ['asp','php']){
+  let p;try{p=await withHost(base,()=>page(base+'si0040.'+extension,12000));}catch{continue;}
+  if(p.status===200&&/sessionnet/i.test(p.html)&&/si005[67]\.|smc-|kalender/i.test(p.html))return {base:new URL(p.url).href.replace(/si0040\.(asp|php).*$/i,'').replace(/^http:/,'https:'),extension};
+ }
+ return null;
+}
+// SD.NET on a host of its own does not always name the product on its start page; its list of papers does.
+async function isSdnet(url){
+ try{const p=await withHost(url,()=>page(new URL(url).origin+'/vorlagen',12000));return p.status===200&&/SD\.NET|sdnet/i.test(p.html);}catch{return false;}
+}
+// ALLRIS 4 serves its public pages from one folder, usually /public/. A page of the system names that folder, a page
+// of the official website links pages in it (same host, e.g. /allris/si010); a link to the host alone is answered
+// from /public/. Addresses ending in .asp belong to the older ALLRIS 3.
+function allrisBases(url,html){
+ const u=new URL(url);if(/\.asp$/i.test(u.pathname))return [];
+ const linked=hrefs(html,url).filter(h=>new URL(h).hostname===u.hostname).map(h=>h.match(/^(https?:\/\/[^?#]*\/)(?:si010|si018|to010|vo020|vo040|gr010|gr020|kp040|tr010)(?:[?#]|$)/)?.[1]).filter(Boolean);
+ return [...new Set([/wicket/i.test(html)?u.origin+u.pathname.replace(/[^/]*$/,''):null,...linked,u.origin+'/public/'].filter(Boolean))].map(b=>b.replace(/^http:/,'https:')).slice(0,3);
 }
 const hrefs=(html,base)=>[...html.matchAll(/(?:href|src|action)\s*=\s*["']([^"'#]+)/gi)].map(m=>{try{const u=new URL(m[1].replace(/&amp;/g,'&'),base);return /^https?:$/.test(u.protocol)?u.href:null;}catch{return null;}}).filter(Boolean);
 const title=html=>(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]||'').replace(/\s+/g,' ').trim().slice(0,160);
@@ -108,6 +132,8 @@ async function verify(region,row){
  };
  for(let i=0;i<ordered.length&&i<12;i++){const c=ordered[i];
   let p;try{p=await withHost(c.url,()=>page(c.finalUrl||c.url));}catch(e){p={status:0,url:c.url,html:'',error:e.message};}
+  // Many official websites still link with http://; the systems themselves answer only on https://.
+  if(p.status!==200&&/^http:/.test(c.finalUrl||c.url)){const secure=(c.finalUrl||c.url).replace(/^http:/,'https:');try{const again=await withHost(secure,()=>page(secure));if(again.status===200)p=again;}catch{}}
   if(p.status!==200){
    // The page is not readable for programs (or failed). Only the official interface is asked; a refusal is never worked around.
    const note={url:c.url,status:p.status,error:p.error,from:c.from};const key=new URL(c.url).origin+'|oparl-only';
@@ -115,8 +141,13 @@ async function verify(region,row){
    result.tried.push(note);continue;}
   // An internal page about the council: follow its links to an external system once.
   if(hops<8)for(const u of new Set(hrefs(p.html,p.url))){if(seenUrls.has(u)||!strong.test(u)||/[.](pdf|jpe?g|png|css|js|ico|svg)([?]|$)/i.test(u))continue;if(new URL(u).hostname===new URL(p.url).hostname&&!/si00[0-9][0-9]|[/]bi[/]|sessionnet/i.test(u))continue;seenUrls.add(u);ordered.push({url:u,from:p.url,byHref:true});if(++hops>=8)break;}
-  const all=[p.url,...hrefs(p.html,p.url)];const system=systemOf(p.url,p.html);if(!result.systems.includes(system))result.systems.push(system);
-  const sn=sessionNetBase(all.filter(u=>new URL(u).hostname===new URL(p.url).hostname).concat(all));
+  const all=[p.url,...hrefs(p.html,p.url)];let system=systemOf(p.url,p.html);
+  let sn=sessionNetBase(all.filter(u=>new URL(u).hostname===new URL(p.url).hostname).concat(all));
+  if(sn&&/\/(gi|ri)\/$/i.test(sn.base))sn=await findSessionNet(sn.base)||sn;
+  if(!sn&&(system==='sessionnet'||system==='unknown')&&strong.test(p.url))sn=await findSessionNet(p.url);
+  if(sn&&system==='unknown')system='sessionnet';
+  if(!sn&&system==='unknown'&&strong.test(p.url)&&await isSdnet(p.url))system='sdnet';
+  if(!result.systems.includes(system))result.systems.push(system);
   const key=(sn?.base||new URL(p.url).origin)+'|'+system;if(seenBases.has(key))continue;seenBases.add(key);
   // TRUST_LINK: for units that have no name of their own in the system (an association reached through a member
   // municipality), the link from the official website is the evidence. A district page is still never a city's source.
@@ -152,6 +183,18 @@ async function verify(region,row){
    try{const d=await withHost(source.base,()=>collectSdnet(source,{window:WINDOW,maxDurationMs:150000}));note.sdTopics=d.topics.length;note.sdMeetings=d.coverage.meetings;note.sdIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);
     if(d.topics.length){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am ${germanDate} nicht aktiviert; öffentliche SD.NET-Seiten erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings}};result.tried.push(note);return result;}
    }catch(e){note.sdError=e.message.slice(0,160);}
+  }
+  // 5. Public ALLRIS 4 pages. The reader asks the system's own OParl address first and keeps one session.
+  if(system==='allris'){
+   if(/\.asp$/i.test(new URL(p.url).pathname))note.allrisGeneration=3;
+   for(const base of allrisBases(p.url,p.html)){
+    const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter:'allris',base};
+    try{const d=await withHost(base,()=>collectAllris(source,{window:WINDOW,maxDurationMs:150000,checkOparl:!note.oparl}));note.allrisTopics=d.topics.length;note.allrisMeetings=d.coverage.meetings;note.allrisIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);delete note.allrisError;
+     if(d.topics.length){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`OParl-Adresse des Systems (${base}oparl/system) lieferte am ${germanDate} kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings}};result.tried.push(note);return result;}
+     // The system asked not to be read by programs (or not right now): no further address of it is tried.
+     if(note.allrisIssues.some(i=>/Zugriffsprüfung|zu viele Zugriffe/.test(i)))break;
+    }catch(e){note.allrisError=e.message.slice(0,160);}
+   }
   }
   result.tried.push(note);
  }

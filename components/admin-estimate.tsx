@@ -6,6 +6,7 @@ type Level=Range&{id:string;name:string;samples:number;model:Model|null;assumed:
 type SizeClass=Range&{id:string;name:string;range:string;level:string;basis:'measured'|'thin'|'model'|'assumed'|'none';samples:number;germany:{count:number;population:number}};
 type FederalState=Range&{id:string;name:string;municipalities:number;districts:number;associations:number;boroughs:number;population:number;samples:number;factors:Record<string,{examples:number;factor:number}|null>;perDay:number;per1000:number;ownShare:number};
 type Example={id:string;name:string;origin:'stored'|'sample';level:string;class:string;state:string;population:number;reports:number;method:string|null;reason?:string};
+type Provisional=Example&{reason:string;annual:number;weeks:number;connected:boolean};
 type Stratum={id:string;name:string;drawn:number;connected:number;sampleExamples:number;storedWithData:number;storedExamples:number;candidates:{id:string;name:string;population:number}[]};
 type Capture={classes:{id:string;name:string;units:number;counts:{connected:number;unreadable:number;unknown:number};connected:number|null;unreadable:number|null;known:{areas:number;connected:number};perYear:{connected:number;unreadable:number;unknown:number;knownOpen:number;total:number}}[];total:{connected:number;unreadable:number;unknown:number;knownOpen:number;total:number;connectedShare:number}};
 type Metric={perYear:number;perDay:number;lowPerYear:number;highPerYear:number};
@@ -17,7 +18,7 @@ type Size={measuredAt:string;tokenizer:string|null;charsPerToken:number;charsPer
 type Season={weeks:number[];weekdays:number[];monthly:number[];strongWeek:number;quietWeeks:number;peakWeekday:number;followUpShare:number;consultationsPerReport:number;peakDay:number;followUpsPerYear:number};
 type Validation={n:number;medianError:number|null;bias:number|null;within50:number|null;states:{level:string;state:string;name:string;examples:number;actual:number;predicted:number;error:number}[]};
 type Estimate={asOf:string;from:string;to:string;frame:{source:string;populationYear:string;municipalities:number;population:number;districts:number;associations:number;memberMunicipalities:number;boroughs:number;units:Record<string,number>};
- sample:{builtAt:string;from:string;to:string;design:string;units:number;connected:number;counted:number;storedWithData:number;strata:Stratum[]};examples:Example[];excluded:Example[];
+ sample:{builtAt:string;from:string;to:string;design:string;units:number;connected:number;counted:number;storedWithData:number;strata:Stratum[]};examples:Example[];excluded:Example[];provisional:Provisional[];
  classes:SizeClass[];states:FederalState[];levels:Level[];validation:Validation;sampleCount:number;basis:{own:number;typical:number;borrowed:number};total:Range&{perDay:number;lowPerDay:number;highPerDay:number;perWorkday:number};
  capture:Capture;documents:{share:number;byClass:Record<string,number>;linksPerReport:number|null};volume:Volume|null;size:Size|null;season:Season;
  rules:{minMonths:number;startSlackDays:number;endSlackDays:number;gapFactor:number;maxUnreadableMeetings:number;workdaysPerYear:number;minForModel:number;replicates:number;capTokens:number;primaryChars:number;primaryPages:number;maxBytes:number}};
@@ -37,31 +38,34 @@ const KIND_NAMES:Record<DataKind,string>={counted:'gezählt',model:'gerechnet',a
 const Tag=({kind,children}:{kind:DataKind;children?:ReactNode})=><span className={'admin-estimate-tag is-'+kind}>{children||KIND_NAMES[kind]}</span>;
 const UNIT:Record<string,[string,string]>={municipality:['Gemeinde','Gemeinden'],district:['Kreis','Kreise'],association:['Verband','Verbände'],borough:['Bezirk','Bezirke']};
 const TYPES:Record<string,string>={paper:'Vorlage, Antrag, Anfrage',decision:'Beschlusstext, Auszug',attachment:'Anlage',minutes:'Niederschrift, Protokoll',invitation:'Einladung, Bekanntmachung, Sitzungsmappe',other:'Sonstiges (Titel ohne erkennbare Art, meist Anlagen)'};
-const SYSTEMS:Record<string,string>={oparl:'OParl',sessionnet:'SessionNet','more-rubin':'More! Rubin',sdnet:'SD.NET',scraper:'SessionNet'};
+const SYSTEMS:Record<string,string>={oparl:'OParl',sessionnet:'SessionNet','more-rubin':'More! Rubin',sdnet:'SD.NET',allris:'ALLRIS',scraper:'SessionNet'};
 const WEEKDAYS=['Mo','Di','Mi','Do','Fr','Sa','So'],MONTHS=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const at=(m:Model,population:number)=>Math.exp(m.typical+m.slope*Math.log(population))*m.smear;
 const stateName=(states:FederalState[],id:string)=>states.find(s=>s.id===id)?.name||id;
 const weekStart=(from:string,i:number)=>new Date(Date.parse(from+'T00:00:00Z')+i*7*86400000);
 /** Examples of one level against their inhabitants, both on logarithmic axes, with the model for a typical state. */
-function Scatter({level,examples}:{level:Level;examples:Example[]}){
+function Scatter({level,examples,provisional}:{level:Level;examples:Example[];provisional:Provisional[]}){
  const own=examples.filter(e=>e.level===level.id&&e.reports>0&&e.population>0),m=level.model;
  if(!own.length||!m)return null;
- const W=440,H=330,L=72,R=30,T=12,B=54,lx=own.map(e=>Math.log10(e.population)),ly=own.map(e=>Math.log10(e.reports));
+ // Areas without a complete year: their yearly figure is projected from the weeks they cover.
+ const open=provisional.filter(e=>e.level===level.id&&e.annual>=1&&e.population>0);
+ const W=440,H=330,L=72,R=30,T=12,B=54,lx=[...own,...open].map(e=>Math.log10(e.population)),ly=[...own.map(e=>e.reports),...open.map(e=>e.annual)].map(v=>Math.log10(v));
  const x0=Math.floor(Math.min(...lx)),x1=Math.max(x0+1,Math.ceil(Math.max(...lx))),y0=Math.floor(Math.min(...ly)),y1=Math.max(y0+1,Math.ceil(Math.max(...ly)));
  const x=(v:number)=>L+(v-x0)/(x1-x0)*(W-L-R),y=(v:number)=>T+(H-T-B)*(1-(v-y0)/(y1-y0)),clampY=(v:number)=>Math.min(y1,Math.max(y0,v));
  const decades=(a:number,b:number)=>Array.from({length:b-a+1},(_,i)=>a+i),label=(e:number)=>e>=6?n(10**(e-6))+' Mio.':n(10**e);
  const line=(e:number)=>clampY(Math.log10(at(m,10**e))),[one]=UNIT[level.id];
- return <figure><figcaption>{level.name}: {n(own.length)} Beispiele <Tag kind="counted"/></figcaption>
+ return <figure><figcaption>{level.name}: {n(own.length)} Beispiele <Tag kind="counted"/>{open.length>0&&<> + {n(open.length)} mit Teilbestand <Tag kind="assumed">hochgerechnet</Tag></>}</figcaption>
   <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${level.name}: Berichte pro Jahr (senkrecht) gegen Einwohner (waagerecht) für ${own.length} Beispiele, beide Achsen logarithmisch. Die Werte stehen in der Liste der Beispielgebiete.`}>
    {decades(y0,y1).map(e=><g key={'y'+e}><line x1={L} x2={W-R} y1={y(e)} y2={y(e)} stroke={e===y0?'#8a8a8a':'#e3e3e3'}/><text x={L-8} y={y(e)+4} textAnchor="end" fontSize="12" fill="#555">{label(e)}</text></g>)}
    {decades(x0,x1).map(e=><g key={'x'+e}><line x1={x(e)} x2={x(e)} y1={T} y2={H-B} stroke={e===x0?'#8a8a8a':'#e3e3e3'}/><text x={x(e)} y={H-B+17} textAnchor="middle" fontSize="12" fill="#555">{label(e)}</text></g>)}
    <text x={(L+W-R)/2} y={H-10} textAnchor="middle" fontSize="14" fill="#171717">Einwohner</text>
    <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="#171717">Berichte pro Jahr</text>
+   {open.map(e=>{const title=`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte in ${n(e.weeks)} Wochen, aufs Jahr hochgerechnet rund ${round(e.annual)}. Nicht in der Rechnung: ${e.reason}.`,cx=x(Math.log10(e.population)),cy=y(Math.log10(e.annual));return e.origin==='stored'?<circle key={e.id} cx={cx} cy={cy} r="3.5" fill="#fff" fillOpacity=".6" stroke="#2352ad" strokeOpacity=".55" strokeWidth="1.2"><title>{title}</title></circle>:<rect key={e.id} x={cx-3.2} y={cy-3.2} width="6.4" height="6.4" fill="#fff" fillOpacity=".6" stroke="#b4530a" strokeOpacity=".6" strokeWidth="1.2"><title>{title}</title></rect>;})}
    <line x1={x(x0)} y1={y(line(x0))} x2={x(x1)} y2={y(line(x1))} stroke="#171717" strokeWidth="2"/>
    {own.map(e=>e.origin==='stored'?<circle key={e.id} cx={x(Math.log10(e.population))} cy={y(Math.log10(e.reports))} r="4.5" fill="#2352ad" fillOpacity=".75" stroke="#fff" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></circle>
     :<rect key={e.id} x={x(Math.log10(e.population))-4} y={y(Math.log10(e.reports))-4} width="8" height="8" fill="#b4530a" fillOpacity=".8" stroke="#fff" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></rect>)}
   </svg>
-  <p className="admin-estimate-explain">Jeder Punkt ist ein Gebiet mit einem gezählten Jahr: je weiter rechts, desto mehr Einwohner; je weiter oben, desto mehr Berichte. Die Linie ist das Modell. {m.slope<.1?`Sie verläuft fast waagerecht: Ein ${one} hat unabhängig von seiner Größe ähnlich viele Berichte.`:`Sie steigt: Bei doppelter Einwohnerzahl erwartet das Modell ${signed(2**m.slope-1)} Berichte.`}</p>
+  <p className="admin-estimate-explain">Jeder Punkt ist ein Gebiet mit einem gezählten Jahr: je weiter rechts, desto mehr Einwohner; je weiter oben, desto mehr Berichte. Die Linie ist das Modell und beruht nur auf den gefüllten Punkten. {open.length>0?'Hohle Punkte sind Gebiete mit Berichten, aber ohne vollständiges Jahr: Ihr Jahreswert ist aus den vorhandenen Wochen hochgerechnet und geht nicht in die Rechnung ein. ':''}{m.slope<.1?`Sie verläuft fast waagerecht: Ein ${one} hat unabhängig von seiner Größe ähnlich viele Berichte.`:`Sie steigt: Bei doppelter Einwohnerzahl erwartet das Modell ${signed(2**m.slope-1)} Berichte.`}</p>
  </figure>;
 }
 /** Bars over a value axis in steps of one half; the exact figures are in the bar titles. */
@@ -79,13 +83,23 @@ function Bars({values,labels,ticks,unit,reference,xTitle,yTitle}:{values:number[
 const Share=({value}:{value:number})=><span className="admin-estimate-share"><span style={{width:Math.max(0,Math.min(100,100*value))+'%'}}/></span>;
 /** Germany-wide estimate of new reports and of the documents behind them, with every step of the derivation. Reads only. */
 export function AdminEstimate({revision,initial}:{revision:number;initial?:Estimate}){
- const [loaded,setLoaded]=useState<Record<number,Estimate>>(initial?{[revision]:initial}:{}),[failed,setFailed]=useState<Record<number,string>>({});
+ const [loaded,setLoaded]=useState<Record<number,Estimate>>(initial?{[revision]:initial}:{}),[failed,setFailed]=useState<Record<number,string>>({}),[busy,setBusy]=useState(false),[loadedAt,setLoadedAt]=useState(0);
  const data=loaded[revision],error=failed[revision]||'';
  useEffect(()=>{
   if(loaded[revision]||failed[revision])return;const c=new AbortController();
-  fetch('/api/admin/estimate',{cache:'no-store',signal:c.signal}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}));});
+  fetch('/api/admin/estimate',{cache:'no-store',signal:c.signal}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}));});
   return()=>c.abort();
  },[revision,loaded,failed]);
+ // The figures follow the database: recalculated on request and when the page becomes visible again after a while.
+ // No timer runs; nothing is started on the server.
+ const reload=()=>{
+  if(busy)return;setBusy(true);
+  fetch('/api/admin/estimate',{cache:'no-store'}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}))).finally(()=>setBusy(false));
+ };
+ useEffect(()=>{
+  const onVisible=()=>{if(document.visibilityState==='visible'&&loadedAt&&Date.now()-loadedAt>120000)reload();};
+  document.addEventListener('visibilitychange',onVisible);return()=>document.removeEventListener('visibilitychange',onVisible);
+ });
  const download=()=>{
   if(!data)return;const {examples,excluded,...figures}=data;
   const url=URL.createObjectURL(new Blob([JSON.stringify({hinweis:'Hochrechnung des Berichts- und Dokumentenaufkommens; Werte pro Jahr, sofern nicht anders benannt. Tokens sind lokal gezählte Näherungen.',...figures,examples:examples.length,excluded:excluded.length},null,1)],{type:'application/json'}));
@@ -96,12 +110,13 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
  const d=data,v=d.volume,size=d.size,variant=(id:string)=>v?.variants.find(x=>x.id===id),municipal=d.levels.find(l=>l.id==='municipality')?.model,today=variant('primary'),once=variant('once');
  const sampleStates=[...new Set(d.examples.filter(e=>e.origin==='sample').map(e=>e.state))],stored=d.examples.filter(e=>e.origin==='stored').length;
  const measuredStates=d.states.filter(s=>Object.values(s.factors).some(Boolean));
+ const partialStored=d.excluded.filter(e=>e.origin==='stored'&&e.reports>0);
  const docs=size?.documents,readable=docs?docs.read:0;
  // Shares of the yearly total by what they rest on. Counted: the reports of the examples themselves.
  const counted=d.examples.reduce((sum,e)=>sum+e.reports,0),countedShare=Math.min(1,counted/d.total.perYear),assumedShare=(d.basis.typical+d.basis.borrowed)/d.total.perYear,modelShare=Math.max(0,1-countedShare-assumedShare);
  const withExamples=d.states.filter(s=>s.samples>0).map(s=>s.name),without=d.states.filter(s=>!s.samples).map(s=>s.name),borrowed=d.levels.filter(l=>l.assumed).map(l=>l.name),units=Object.values(d.frame.units).reduce((a,b)=>a+b,0);
  return <section className="admin-estimate" id="admin-hochrechnung">
-  <div className="admin-section-heading"><div><p className="eyebrow">HOCHRECHNUNG DEUTSCHLAND</p><h2>Wie viele Berichte und wie viel Text fallen bundesweit pro Tag an?</h2></div><span>{n(d.sampleCount)} Beispiele mit vollständigem Jahr · {day(d.from)} bis {day(d.to)}</span></div>
+  <div className="admin-section-heading"><div><p className="eyebrow">HOCHRECHNUNG DEUTSCHLAND</p><h2>Wie viele Berichte und wie viel Text fallen bundesweit pro Tag an?</h2></div><span>{n(d.sampleCount)} Beispiele mit vollständigem Jahr · {day(d.from)} bis {day(d.to)}<br/>Stand der Datenbank: {new Date(d.asOf).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'})} · <button type="button" className="admin-timeline-retry" disabled={busy} onClick={reload}>{busy?'Wird neu berechnet …':'Neu berechnen'}</button></span></div>
   <div className="admin-kpis">
    <div className="admin-kpi admin-kpi-primary"><span>Neue Berichte pro Tag</span><strong>{round(d.total.perDay)}</strong><small>Spanne {round(d.total.lowPerDay)} bis {round(d.total.highPerDay)} · Durchschnitt über alle Kalendertage</small></div>
    <div className="admin-kpi"><span>Pro Arbeitstag · an einem starken Tag</span><strong>{round(d.total.perWorkday)} <em>· {round(d.season.peakDay)}</em></strong><small>{n(d.rules.workdaysPerYear)} Arbeitstage im Jahr · stärkster Wochentag einer starken Sitzungswoche</small></div>
@@ -134,6 +149,7 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
 
   <h3 className="admin-estimate-step"><span>2</span> Woher die Beispiele stammen<span className="admin-estimate-tags"><Tag kind="counted"/></span></h3>
   <p>Zwei Quellen liefern gezählte Jahre: der <strong>gespeicherte Bestand in NRW</strong> ({n(d.sample.storedWithData)} Gebiete mit Berichten, davon {n(stored)} mit vollständigem Jahr) und eine <strong>Zufallsstichprobe außerhalb von NRW</strong>. Für die Stichprobe wurden {n(d.sample.units)} Einheiten ausgelost, für jede die offizielle Website nach dem Ratsinformationssystem durchsucht und, wo es lesbar war, zwölf Monate abgerufen und gezählt – ohne etwas in die Datenbank zu schreiben. So entstanden {n(d.examples.length-stored)} weitere Beispiele aus {n(sampleStates.length)} Bundesländern ({sampleStates.map(s=>stateName(d.states,s)).join(', ')}); gezählt am {day(d.sample.to)}.</p>
+  {partialStored.length>0&&<p role="status" className="admin-notice"><strong>{n(d.sample.storedWithData-stored)} NRW-Gebiete haben Berichte, aber kein vollständiges Jahr</strong> und zählen deshalb nicht als Beispiel – fast immer, weil sie mit einem kürzeren Zeitraum (1 Woche, 1 Monat, 3 Monate) abgerufen wurden. Die Seite rechnet bei jedem Laden neu: Sobald ein Gebiet mit „12 Monate“ abgerufen ist, wird es zum Beispiel. In den Diagrammen in Schritt 3 stehen diese Gebiete als hohle Punkte. <a className="admin-estimate-action" href={'/admin?auswahl='+partialStored.map(e=>e.id).join(',')}>Diese {n(partialStored.length)} Gebiete auf Seite 1 für einen 12-Monats-Abruf auswählen →</a></p>}
   <p className="admin-note">{d.sample.design} Ausgelost wurde nach einer festen Zufallsreihenfolge, damit auch Einheiten ohne lesbares System im Ergebnis stehen: Sie zeigen, wie viel des Aufkommens erfassbar ist (Schritt 6).</p>
   <div className="admin-estimate-table"><table>
    <thead><tr><th scope="col">Klasse</th><th scope="col">Stichprobe: ausgelost</th><th scope="col">davon lesbar</th><th scope="col">vollständiges Jahr</th><th scope="col">NRW: mit Berichten</th><th scope="col">vollständiges Jahr</th><th scope="col">Beispiele gesamt</th></tr></thead>
@@ -172,8 +188,8 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
     :<td colSpan={4} className="admin-estimate-wrap"><Tag kind="assumed"/> Kein Beispiel: Es gilt die Kurve der Gemeinden bei der Größe der Einheit.</td>}
    </tr>;})}</tbody>
   </table></div>
-  <div className="admin-estimate-charts">{d.levels.map(l=><Scatter key={l.id} level={l} examples={d.examples}/>)}</div>
-  <p className="admin-note"><span className="admin-estimate-key is-stored"/> gezählt: gespeicherter Bestand NRW <span className="admin-estimate-key is-sample"/> gezählt: Stichprobe außerhalb von NRW <span className="admin-estimate-key is-line"/> gerechnet: Modell für ein Land mit typischem Niveau. Beide Achsen sind logarithmisch: Jeder Teilstrich ist das Zehnfache des vorigen.</p>
+  <div className="admin-estimate-charts">{d.levels.map(l=><Scatter key={l.id} level={l} examples={d.examples} provisional={d.provisional}/>)}</div>
+  <p className="admin-note"><span className="admin-estimate-key is-stored"/> gezählt: gespeicherter Bestand NRW <span className="admin-estimate-key is-sample"/> gezählt: Stichprobe außerhalb von NRW <span className="admin-estimate-key is-open"/> Teilbestand, aufs Jahr hochgerechnet (nicht in der Rechnung) <span className="admin-estimate-key is-line"/> gerechnet: Modell für ein Land mit typischem Niveau. Beide Achsen sind logarithmisch: Jeder Teilstrich ist das Zehnfache des vorigen.</p>
   {measuredStates.length>0&&<div className="admin-estimate-table"><table>
    <thead><tr><th scope="col">Niveau je Bundesland</th>{d.levels.filter(l=>l.model).map(l=><th scope="col" key={l.id}>{l.name}</th>)}</tr></thead>
    <tbody>{measuredStates.map(s=><tr key={s.id}><th scope="row">{s.name}</th>{d.levels.filter(l=>l.model).map(l=>{const f=s.factors[l.id],raw=l.model?.states[s.id]?.raw;return <td key={l.id}>{f?<>{signed(f.factor-1)}<small>{n(f.examples)} {f.examples===1?'Beispiel':'Beispiele'}{raw&&Math.abs(raw-f.factor)>.02?` · ungedämpft ${signed(raw-1)}`:''}</small></>:(l.id==='municipality'?s.municipalities:l.id==='district'?s.districts:l.id==='association'?s.associations:s.boroughs)?<Tag kind="assumed">angenommen: typisches Niveau</Tag>:'–'}</td>;})}</tr>)}</tbody>

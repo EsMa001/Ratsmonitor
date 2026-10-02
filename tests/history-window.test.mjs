@@ -22,16 +22,17 @@ test('SessionNet requests thirteen overlapping calendar months plus next month',
  assert.equal(calls.length,14);assert.ok(calls.some(u=>u.includes('__cjahr=2025&__cmonat=9')));assert.equal(result.coverage.from,'2025-09-27');assert.equal(result.coverage.complete,false);
 });
 test('selectable look-back windows resolve to exact start dates and reject unknown values',()=>{
- assert.deepEqual(Object.keys(HISTORY_WINDOWS),['1w','1m','3m','12m']);assert.equal(DEFAULT_HISTORY_WINDOW,'12m');
+ assert.deepEqual(Object.keys(HISTORY_WINDOWS),['1w','1m','3m','12m','24m']);assert.equal(DEFAULT_HISTORY_WINDOW,'12m');
  assert.equal(windowStart(now,'1w').toISOString(),'2026-09-20T12:00:00.000Z');
  assert.equal(windowStart(now,'1m').toISOString(),'2026-08-27T12:00:00.000Z');
  assert.equal(windowStart(now,'3m').toISOString(),'2026-06-27T12:00:00.000Z');
  assert.equal(windowStart(now,'12m').toISOString(),'2025-09-27T12:00:00.000Z');
+ assert.equal(windowStart(now,'24m').toISOString(),'2024-09-27T12:00:00.000Z');
  // Callers that do not choose keep the established twelve months.
  assert.equal(windowStart(now).toISOString(),historyStart(now).toISOString());assert.equal(historyWindow(undefined),'12m');assert.equal(historyWindow(''),'12m');
  assert.equal(windowStart(new Date('2026-03-31T12:00:00Z'),'1m').toISOString(),'2026-02-28T12:00:00.000Z');
  for(const bad of ['2y','12M',7,{},'__proto__'])assert.throws(()=>historyWindow(bad),/Rückblick/);
- const spans=Object.keys(HISTORY_WINDOWS).map(windowSpanDays);assert.deepEqual(spans,[...spans].sort((a,b)=>a-b));assert.equal(new Set(spans).size,4);
+ const spans=Object.keys(HISTORY_WINDOWS).map(windowSpanDays);assert.deepEqual(spans,[...spans].sort((a,b)=>a-b));assert.equal(new Set(spans).size,5);
  assert.equal(calendarMonthsBack(now,windowStart(now,'12m')),12);assert.equal(calendarMonthsBack(now,windowStart(now,'1w')),0);
  const october=new Date('2026-10-03T12:00:00Z');assert.equal(calendarMonthsBack(october,windowStart(october,'1w')),1);
 });
@@ -44,6 +45,8 @@ test('SessionNet requests only the calendar months of the selected window',async
  assert.equal((await run('1w',new Date('2026-10-03T12:00:00Z'))).calls.length,3);
  const quarter=await run('3m');assert.equal(quarter.calls.length,5);assert.equal(quarter.result.coverage.from,'2026-06-27');
  const month=await run('1m');assert.equal(month.calls.length,3);assert.equal(month.result.coverage.from,'2026-08-27');
+ // Two years: the calendar months of the period and the next month.
+ const twoYears=await run('24m');assert.equal(twoYears.calls.length,26);assert.ok(twoYears.calls.some(u=>u.includes('__cjahr=2024&__cmonat=9')));assert.equal(twoYears.result.coverage.from,'2024-09-27');
  // A failed calendar request is an issue, never a quiet period.
  const failed=await collectSessionNet(source,{now,window:'1w',get:async()=>{throw Error('HTTP 500');}});assert.equal(failed.coverage.quiet,false);
 });

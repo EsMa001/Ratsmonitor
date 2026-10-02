@@ -238,6 +238,10 @@ test('an import cut off by the time limit continues in the same job, but not wit
  job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[1]],window:'12m'},()=>{});
  let attempts=0;for(;job.status!=='completed'&&attempts<30;attempts++)job=await pipelineAction(db,{action:'step',id:job.id},async()=>cut);
  assert.equal(attempts,11);assert.equal(job.items[0].status,'partial');assert.match(job.items[0].message,/Zeitbudget/);
+ // Two years are twice the work: twenty continuations.
+ job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[4]],window:'24m'},()=>{});
+ for(attempts=0;job.status!=='completed'&&attempts<50;attempts++)job=await pipelineAction(db,{action:'step',id:job.id},async()=>cut);
+ assert.equal(attempts,21);assert.equal(job.items[0].status,'partial');assert.equal(job.window,'24m');
  // An attempt that read nothing further is not continued.
  job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[2]]},()=>{});
  job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{...cut.data,resume:false}}));assert.equal(job.items[0].status,'partial');sql.close();

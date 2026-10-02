@@ -69,6 +69,21 @@ export function profile(days,from){
  for(const [day,count] of days){const t=time(day),week=Math.floor((t-time(from))/(7*DAY));if(week<0||week>52)continue;weeks[week]+=count;weekdays[(new Date(t).getUTCDay()+6)%7]+=count;monthly[Number(day.slice(5,7))-1]+=count;}
  return {weeks,weekdays,monthly};
 }
+/** Fewest covered weeks from which a partial stock is projected to a year. */
+export const MIN_PROJECTED_WEEKS=3;
+/**
+ * Yearly figure of an area whose stock covers only part of the period: its reports divided by the share of a year
+ * that the covered weeks usually carry. weeks: reports per week relative to the average week (seasonality().weeks),
+ * so four weeks before the summer break count for more than four weeks within it.
+ * A rough figure for display only; it never enters the estimate. Null if too little is covered.
+ */
+export function annualize(area,{from},weeks){
+ if(!area.reports||!area.firstDay||!area.lastDay)return null;
+ const index=day=>Math.floor((time(day)-time(from))/(7*DAY)),first=Math.max(0,index(area.firstDay)),last=Math.min(weeks.length-1,index(area.lastDay));
+ if(last-first+1<MIN_PROJECTED_WEEKS)return null;
+ let share=0;for(let week=first;week<=last;week++)share+=(weeks[week]||0)/weeks.length;
+ return share>0?{annual:area.reports/share,weeks:last-first+1}:null;
+}
 const mean=values=>values.reduce((a,b)=>a+b,0)/values.length;
 const clamp=(value,low,high)=>Math.min(high,Math.max(low,value));
 export const quantile=(values,q)=>{const s=[...values].sort((a,b)=>a-b);if(!s.length)return 0;const at=(s.length-1)*q,low=Math.floor(at),high=Math.ceil(at);return s[low]+(s[high]-s[low])*(at-low);};

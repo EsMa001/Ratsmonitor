@@ -25,6 +25,8 @@ test('a trace records every request with duration and outcome and leaves results
 test('request kinds are read from the address; long runs and long addresses stay bounded',async()=>{
  assert.equal(requestKind('https://x.example/bi/to0045.php?__ksinr=3'),'to0045');assert.equal(requestKind('https://x.example/webservice/oparl/v1.1/body/1/meeting'),'oparl');
  assert.equal(requestKind('https://stadt.gremien.info/api.php?json=true&id=calendar'),'api calendar');assert.equal(requestKind('https://stadt.example/sdnetrim/vorgang/?__=abc123'),'vorgang');assert.equal(requestKind('kaputt'),'unbekannt');
+ // ALLRIS 4 pages carry no file extension; the follow-up request of a calendar page counts as the calendar.
+ assert.equal(requestKind('https://x.example/public/to010?SILFDNR=1000587'),'to010');assert.equal(requestKind('https://x.example/public/si010?0-1.0-&MM=9&YY=2026'),'si010');assert.equal(requestKind('https://x.example/public/oparl/system'),'oparl');
  const trace=createTrace('x'),get=trace.wrap(async()=>'ok');for(let i=0;i<1503;i++)await get('https://x.example/bi/si0057.asp?__ksinr='+i+'&pad='+'p'.repeat(i===0?400:0));
  const record=trace.finish();assert.equal(record.requests.length,1500);assert.equal(record.droppedRequests,3);assert.equal(record.requests[0].url.length,220);assert.equal(record.summary.requests,1500);assert.equal(record.window,null);
 });

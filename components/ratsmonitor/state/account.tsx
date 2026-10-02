@@ -8,7 +8,7 @@ export function AccountProvider({children}:{children:ReactNode}){
  const [saved,setSaved]=useState<SavedSearch[]>([]),[ready,setReady]=useState(false);
  useEffect(()=>{setSaved(readSavedSearches());setReady(true);},[]);
  const save=(list:SavedSearch[])=>{writeSavedSearches(list);setSaved(list);};
- const value:Account={saved,ready,addSaved(snap,name){const today=new Date().toISOString().slice(0,10),s:SavedSearch={...snap,id:crypto.randomUUID(),name,created:today,lastSeen:today,notify:{on:false,freq:'daily'}};save([s,...saved]);return s;},updateSaved(id,patch){save(saved.map(s=>s.id===id?{...s,...patch,notify:{on:false,freq:'daily'}}:s));},removeSaved(id){save(saved.filter(s=>s.id!==id));}};
+ const value:Account={saved,ready,addSaved(snap,name){const today=new Date().toISOString().slice(0,10),s:SavedSearch={...snap,id:crypto.randomUUID(),name,created:today,lastSeen:today,notify:{on:false,freq:'daily'}};save([s,...saved]);return s;},updateSaved(id,patch){save(saved.map(s=>s.id===id?{...s,...patch}:s));},removeSaved(id){save(saved.filter(s=>s.id!==id));}};
  return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 export function useAccount(){const v=useContext(Context);if(!v)throw Error('AccountProvider fehlt');return v;}

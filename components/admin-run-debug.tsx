@@ -1,5 +1,6 @@
 'use client';
 import {useState} from 'react';
+import {HISTORY_WINDOWS} from '@/shared/history-window.mjs';
 type RequestRow={t:number;ms:number;kind:string;url:string;ok:boolean;size?:number;error?:string};
 type Summary={requests:number;failed:number;networkMs:number;kinds:Record<string,{requests:number;failed:number;ms:number}>;errors:Record<string,number>;slowest:{url:string;ms:number;ok:boolean}[]};
 type Trace={region:string;window:string|null;startedAt:string;durationMs:number;status?:string;error?:string;adapter?:string|null;meetings?:number;unchangedMeetings?:number;readMeetings?:number|null;reports?:number;stockBefore?:number;written?:{created:number;changed:number;unchanged:number};marksKnown?:number;collectMs?:number;storeMs?:number;issues?:string[];warnings?:string[];summary:Summary;droppedRequests:number;requests:RequestRow[]};
@@ -9,7 +10,7 @@ const n=(v:number|null|undefined)=>v===null||v===undefined?'–':v.toLocaleStrin
 const seconds=(ms:number|null|undefined)=>ms===null||ms===undefined?'–':(ms/1000).toLocaleString('de-DE',{maximumFractionDigits:1,minimumFractionDigits:1})+' s';
 const time=(s:string|null|undefined)=>s?new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'medium'}):'–';
 const STATUS:Record<string,string>={completed:'vollständig',partial:'Teilstand',failed:'fehlgeschlagen',running:'läuft'};
-const WINDOWS:Record<string,string>={'1w':'1 Woche','1m':'1 Monat','3m':'3 Monate','12m':'12 Monate'};
+const WINDOWS:Record<string,string>=Object.fromEntries(Object.entries(HISTORY_WINDOWS).map(([id,w])=>[id,w.label]));
 /** The record of an area's last import and its recent runs, as text and tables. */
 export function RunDebugView({data}:{data:Debug}){
  const t=data.last,s=t?.summary;

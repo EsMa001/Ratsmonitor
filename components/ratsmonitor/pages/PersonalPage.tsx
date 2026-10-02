@@ -4,9 +4,15 @@ import {useState} from 'react';
 import {useAccount} from '../state/account';
 import {useSearch} from '../state/search';
 import {useAppNav} from '../state/nav';
+import {SavedSearchesPage} from './SavedSearchesPage';
+import {ProfilePage} from './ProfilePage';
+import {SavedArticlesPage} from './SavedArticlesPage';
 export function PersonalPage(){
  const path=usePathname(),savedPage=path.endsWith('/suchen'),{saved,ready,removeSaved}=useAccount(),search=useSearch(),{goOverview}=useAppNav(),[error,setError]=useState('');
- return <main id="inhalt" className="mx-auto grid max-w-page gap-6 px-4 py-8 sm:px-6 tab:grid-cols-[240px_1fr]"><nav aria-label="Persönlicher Bereich" className="flex flex-col gap-2"><Link className="btn-secondary justify-start" href="/konto/suchen">Gespeicherte Suchen</Link><Link className="btn-secondary justify-start" href="/konto/hilfe">Hilfe & Datenquellen</Link><Link className="btn-secondary justify-start" href="/admin">Admin-Projektsteuerung</Link><Link className="link-btn mt-4" href="/">Zur Übersicht</Link></nav><section>
+ if(path.endsWith('/artikel'))return <main id="inhalt" className="mx-auto max-w-page py-[0.3vw]"><SavedArticlesPage/></main>;
+ if(path.endsWith('/profil'))return <main id="inhalt" className="mx-auto max-w-page py-[0.3vw]"><ProfilePage/></main>;
+ if(savedPage)return <main id="inhalt" className="mx-auto max-w-page py-[0.3vw]"><SavedSearchesPage/></main>;
+ return <main id="inhalt" className="mx-auto max-w-page py-[0.3vw]"><section>
  <h1 className="text-3xl font-bold tracking-tight">{savedPage?'Gespeicherte Suchen':'Hilfe & Datenquellen'}</h1>
  {savedPage?<><p className="mt-3 text-slate-600">Deine Suchen bleiben in diesem Browser gespeichert. Kein Benutzerkonto erforderlich; keine Synchronisierung und kein E-Mail-Versand.</p>{error&&<p role="alert" className="mt-4 text-rose-700">{error}</p>}{ready&&!saved.length&&<div className="card-shell mt-6 p-8"><h2 className="text-lg font-semibold">Noch keine gespeicherten Suchen</h2><p className="mt-2 text-slate-500">Stelle deine Filter in der Übersicht ein und wähle „Suche speichern“.</p><Link className="btn-primary mt-5" href="/">Suche öffnen</Link></div>}{saved.map(s=><article key={s.id} className="card-shell mt-4 p-5"><h2 className="text-lg font-semibold">{s.name}</h2><p className="mt-2 text-sm text-slate-500">{s.level==='district'?'Kreise':'Städte & Gemeinden'} · {s.text||'Alle Themen'}{s.monat?' · '+s.monat:''}</p><div className="mt-4 flex gap-3"><button className="btn-primary" onClick={()=>{if(search.applySaved(s))goOverview();else setError('Die Karte für die Umkreissuche lädt noch. Bitte erneut versuchen.');}}>Suche öffnen</button><button className="btn-secondary" onClick={()=>{try{removeSaved(s.id);}catch{setError('Die Änderung konnte nicht gespeichert werden.');}}}>Entfernen</button></div></article>)}</>:<div className="card-shell mt-6 space-y-6 p-6">
  <section><h2 className="text-lg font-semibold">Was wird hier gezeigt?</h2><p className="mt-2 text-slate-600">Öffentlich erfasste Vorlagen, Beratungen und Entscheidungen. Ein angekündigter Vorgang ist noch kein Beschluss. Maßgeblich bleiben die verlinkten Originalquellen.</p></section>

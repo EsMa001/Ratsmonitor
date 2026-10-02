@@ -6,7 +6,7 @@ import {bucketStart,mergeAreas,rangeStart,timelineSeries,timelineStats,TIMELINE_
 import {adminTimeline} from '../server/integrations/admin-timeline.mjs';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 test('buckets start on the day, on Monday or on the first of the month',()=>{
- assert.deepEqual(Object.keys(TIMELINE_BUCKETS),['day','week','month']);assert.deepEqual(Object.keys(TIMELINE_RANGES),['3m','12m','all']);assert.deepEqual(Object.keys(TIMELINE_BASES),['event','import']);
+ assert.deepEqual(Object.keys(TIMELINE_BUCKETS),['day','week','month']);assert.deepEqual(Object.keys(TIMELINE_RANGES),['3m','12m','24m','all']);assert.deepEqual(Object.keys(TIMELINE_BASES),['event','import']);
  assert.equal(bucketStart('2026-09-30','day'),'2026-09-30');assert.equal(bucketStart('2026-09-30','week'),'2026-09-28');assert.equal(bucketStart('2026-09-28','week'),'2026-09-28');
  assert.equal(bucketStart('2026-10-04','week'),'2026-09-28');assert.equal(bucketStart('2027-01-01','week'),'2026-12-28');assert.equal(bucketStart('2026-09-30','month'),'2026-09-01');
 });

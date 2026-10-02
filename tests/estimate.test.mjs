@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {SIZE_CLASSES,LEVELS,SAMPLE_RULES,FEDERAL_STATES,sizeClass,areaClass,sampleQuality,profile,fitLevel,predict,stateFactor,validate,estimateGermany,capture,seasonality,quantile,random} from '../shared/estimate.mjs';
+import {SIZE_CLASSES,LEVELS,SAMPLE_RULES,FEDERAL_STATES,MIN_PROJECTED_WEEKS,annualize,sizeClass,areaClass,sampleQuality,profile,fitLevel,predict,stateFactor,validate,estimateGermany,capture,seasonality,quantile,random} from '../shared/estimate.mjs';
 import {summarizeSize,areaMeans,estimateVolume,SIZE_FIELDS,SIZE_RULES,VARIANTS,PAGE_BINS} from '../shared/estimate-size.mjs';
 import {documentType,primaryDocument,DOCUMENT_TYPES} from '../shared/document-type.mjs';
 import {adminEstimate} from '../server/integrations/admin-estimate.mjs';
@@ -63,6 +63,18 @@ test('the profile sorts the days of a year into weeks, weekdays and calendar mon
  const p=profile([['2025-10-03',2],['2025-10-06',5],['2025-10-10',1],['2026-10-02',4],['2025-10-02',9],['2026-03-18',3]],'2025-10-03');
  assert.equal(p.weeks.length,53);assert.equal(p.weeks[0],2+5);assert.equal(p.weeks[1],1);assert.equal(p.weeks[52],4);assert.equal(p.weeks.reduce((a,b)=>a+b,0),15,'the day before the period is ignored');
  assert.deepEqual(p.weekdays,[5,0,3,0,2+1+4,0,0]);assert.equal(p.monthly[9],12);assert.equal(p.monthly[2],3);
+});
+test('a partial stock is projected to a year by the share its weeks usually carry',()=>{
+ const even=Array(52).fill(1),stock={reports:40,firstDay:'2025-10-03',lastDay:'2025-10-30'};
+ // Four of 52 even weeks hold 40 reports: 520 a year.
+ assert.deepEqual(annualize(stock,period,even),{annual:520,weeks:4});
+ // The same four weeks are twice as strong as an average week: the year is only half as large.
+ const strong=[...even];for(let i=0;i<4;i++)strong[i]=2;near(annualize(stock,period,strong).annual,260);
+ // Weeks before the period and after its last week do not count; too few weeks give no figure.
+ assert.equal(annualize({reports:40,firstDay:'2025-09-01',lastDay:'2025-10-20'},period,even).weeks,3);
+ assert.equal(annualize({reports:40,firstDay:'2025-10-03',lastDay:'2025-10-12'},period,even),null);assert.equal(MIN_PROJECTED_WEEKS,3);
+ assert.equal(annualize({reports:0,firstDay:'2025-10-03',lastDay:'2026-01-30'},period,even),null);assert.equal(annualize({reports:5},period,even),null);
+ assert.equal(annualize(stock,period,Array(52).fill(0)),null,'no usual share, no projection');
 });
 test('the model recovers slope and state levels from exact data',()=>{
  // Two states on the same slope 0.6; the second state lies at twice the level.
@@ -232,6 +244,9 @@ test('the admin estimate combines stored NRW areas with the measured sample and 
  assert.equal(e.from,'2025-10-03');assert.equal(e.to,'2026-10-02');
  const billerbeck=e.examples.find(a=>a.id==='billerbeck');assert.equal(billerbeck.origin,'stored');assert.equal(billerbeck.reports,360);assert.equal(billerbeck.class,'small');assert.equal(billerbeck.state,'05');assert.equal(billerbeck.population,population.billerbeck);
  assert.match(e.excluded.find(a=>a.id==='warendorf').reason,/beginnt erst am 20\.08\.2026/);assert.equal(e.sample.storedWithData,2);
+ // The partial stock appears as a provisional point: projected to a year, named with its reason, not an example.
+ const open=e.provisional.find(a=>a.id==='warendorf');assert.equal(open.reports,40);assert.equal(open.weeks,5);assert.ok(open.annual>40*52/5/3&&open.annual<40*52/5*3,'projected '+open.annual);assert.equal(open.level,'district');assert.match(open.reason,/beginnt erst/);assert.equal(open.connected,true);
+ assert.ok(!e.examples.some(a=>a.id==='warendorf'));assert.ok(!e.provisional.some(a=>a.id==='billerbeck'));
  // The measured sample is part of every estimate.
  const fromSample=e.examples.filter(a=>a.origin==='sample');assert.ok(fromSample.length>=30,'examples of the sample: '+fromSample.length);assert.ok(new Set(fromSample.map(a=>a.state)).size>=5);
  assert.equal(e.sample.units,sample.units.length);assert.equal(e.sample.strata.length,SIZE_CLASSES.length);assert.equal(e.sample.strata.reduce((n,s)=>n+s.drawn,0),sample.units.length);

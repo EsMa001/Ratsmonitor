@@ -26,4 +26,6 @@ export interface ImportData {
     // Meetings read completely by this import, and how many of them were read now (see meeting-marks.mjs).
     marks?: Record<string, unknown>;
     readMeetings?: number;
+    // The meeting list of this import, kept for the step that continues it (OParl; see meeting-marks.mjs).
+    list?: unknown;
 }

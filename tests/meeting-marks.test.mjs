@@ -28,8 +28,9 @@ test('a mark is relied on only for the same side of today, outside the days afte
  assert.equal(usableMark(comingMarks,coming,later(19*DAY)),null);
 });
 test('marks are stored with a version and without meetings older than the longest import period',()=>{
- const marks={a:['2026-09-01','h',1,'p',2],old:['2025-06-01','h',1,'p',2],broken:'x'},text=writeMarks(marks,now);
- assert.deepEqual(readMarks(text),{a:marks.a});assert.equal(JSON.parse(text).v,MARKS_VERSION);assert.equal(marksKey('billerbeck'),'import-marks:billerbeck');
+ // The longest period is two years: a meeting of last year keeps its mark, one from before the period loses it.
+ const marks={a:['2026-09-01','h',1,'p',2],lastYear:['2025-06-01','h',1,'p',2],old:['2024-06-01','h',1,'p',2],broken:'x'},text=writeMarks(marks,now);
+ assert.deepEqual(readMarks(text),{a:marks.a,lastYear:marks.lastYear});assert.equal(JSON.parse(text).v,MARKS_VERSION);assert.equal(marksKey('billerbeck'),'import-marks:billerbeck');
  assert.deepEqual(readMarks(JSON.stringify({v:MARKS_VERSION+1,marks})),{},'marks of another version are void');
  for(const bad of [undefined,'','{','[]','{"v":1}','{"v":1,"marks":[1]}'])assert.deepEqual(readMarks(bad),{});
 });

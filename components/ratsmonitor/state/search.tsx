@@ -11,7 +11,7 @@ import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } 
 import { useData } from "./data";
 
 export const INITIAL_SEARCH: SearchState = {
-  level:"city", q: "", area: "", areaSrc: "", radius: null, thema: "", monat: "", status: "", sort: "desc", placeOverrides: {}, placeIgnored: {},
+  level:"city", q: "", area: "", areaSrc: "", radius: null, thema: "", monat: "", von: "", bis: "", scope: "only", status: "", sort: "desc", placeOverrides: {}, placeIgnored: {},
 };
 
 interface SearchActions {
@@ -24,6 +24,8 @@ interface SearchActions {
   clearRadius: () => void;
   setThema: (v: string) => void;
   setMonat: (v: string) => void;
+  setZeitraum: (von: string, bis: string) => void;
+  setScope: (v: "only" | "with") => void;
   setStatus: (v: StatusId | "") => void;
   setLevel: (v:"city"|"district")=>void;
   setSort: (v: "asc" | "desc") => void;
@@ -126,6 +128,12 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       },
       setThema: (v) => commit({ ...ref.current, thema: v }),
       setMonat: (v) => commit({ ...ref.current, monat: v }),
+      setZeitraum: (von, bis) => commit({ ...ref.current, von, bis, monat: "" }),
+      setScope: (v) => {
+        const s = ref.current;
+        /* „Nur Kreis“ auf der Kreisebene der Karte zeigen, „inklusive Gemeinden“ auf der Gemeindeebene */
+        commit({ ...s, scope: v, level: s.area.length === 5 ? (v === "only" ? "district" : "city") : s.level });
+      },
       setStatus: (v) => commit({ ...ref.current, status: v }),
       setLevel(v) {
         const s=ref.current;
@@ -162,7 +170,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         } else if (pq?.place && pq.key) ignored[pq.key] = true;
         clearTimeout(focusTimer.current);
         commit({
-          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area: sv.area, areaSrc, radius, thema: sv.thema, monat: sv.monat, status: sv.status,
+          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area: sv.area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status,
           placeOverrides: overrides, placeIgnored: ignored,
         });
         setPopupState("");
@@ -215,8 +223,8 @@ function useDerivedResults(state:SearchState):SearchResults {
   const pq:ParseResult=place?place.parse(state.q,state.placeOverrides,state.placeIgnored):{place:null,alts:[],rest:state.q.trim(),key:'',phraseRaw:''};
   const placeActive=!!(pq.place&&state.areaSrc==='search'&&state.area===pq.place.ags),text=textPart(state.q,state.area,state.areaSrc,pq);
   const within=state.radius&&geo?geo.within(state.radius):null;
-  const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,status:state.status,level:state.level};
-  const params=new URLSearchParams({q:text,area:state.area,label:state.thema,month:state.monat,status:state.status,level:state.level,sort:state.sort});
+  const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,status:state.status,level:state.level};
+  const params=new URLSearchParams({q:text,area:state.area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:state.area?state.scope:"with",status:state.status,level:state.level,sort:state.sort});
   if(state.radius)params.set('within',within?REGIONS.filter(r=>r.kind===state.level&&within.set.has(r.ags)).map(r=>r.ags).join(','):'');
   const spec:FilterSpec={area:state.area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
   return {pq,placeActive,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString()};

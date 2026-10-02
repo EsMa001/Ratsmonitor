@@ -1,7 +1,8 @@
 import {sourceDecision} from './source-fields.mjs';
-import {windowStart} from './history-window.mjs';
+import {windowStart,historyWindow,windowYears} from './history-window.mjs';
+import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
-import {fetchText,allowed,text,decode} from './sessionnet.mjs';
+import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 // Public pages of SD.NET RIM (Sternberg). Only plain links of the public site are followed:
 // the paper list, the calendar export and the meeting pages. The calendar's data endpoint is not used,
@@ -74,8 +75,13 @@ export function resultStatus(result,committee){
  if(/beschlossen|zugestimmt|angenommen|abgelehnt|\b(?:einstimmig|mehrheitlich) (?:dafür|dagegen)\b/i.test(result))return /^(Rat|Gemeinderat|Stadtrat|Stadtverordnetenversammlung|Kreistag)(\s|$)/i.test(committee)?(/abgelehnt|dagegen/i.test(result)?'rejected':'approved'):'recommended';
  return null;
 }
-export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurationMs=300000,maxListPages=40,onProgress=()=>{},window:lookback}={}){
+// marks (optional): what earlier imports read completely, see meeting-marks.mjs. A mark counts only for the import
+// period it was written with: a paper page names the earlier meetings of its paper, and only meetings inside the
+// period are followed. After a change to a longer period every meeting is therefore read once more.
+// maxListPages: pages of the paper list that are read; by default forty for each year of the period.
+export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurationMs=300000,maxListPages,onProgress=()=>{},window:lookback,marks}={}){
  get=budgeted(get,maxDurationMs,2);
+ const period=historyWindow(lookback)+':';maxListPages??=40*windowYears(lookback);
  const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),until=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+2,0)).toISOString().slice(0,10);
  const issues=[],meetings=new Map();const keep=m=>{if(m.date>=fromDay&&m.date<=until&&!meetings.has(m.url))meetings.set(m.url,m);};
  // 1. Paper list, newest papers first. Its order follows the paper number, not the meeting date,
@@ -93,7 +99,7 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
  try{const page=await get(source.base+'termine',source);const exportUrl=decode(page.match(/data-export-url=["']([^"']+)["']/)?.[1]||'');
   if(exportUrl)for(const m of calendarMeetings(await get(allowed(exportUrl,source),source),source))if(!m.cancelled)keep(m);
  }catch(e){issues.push('Kalenderexport: '+e.message);}
- const grouped=new Map(),today=now.toISOString().slice(0,10);let count=0,limited=false,upcoming=0;
+ const grouped=new Map(),today=now.toISOString().slice(0,10),held={};let count=0,limited=false,upcoming=0,unchanged=0,done=0,unread=0;
  const matters=new Map();const matter=url=>{if(!matters.has(url))matters.set(url,get(url,source).then(html=>parseSdnetMatter(html,source)));return matters.get(url);};
  // 3. Meeting pages. A paper page names every meeting that discussed the paper; the paper list shows only the
  //    latest one. Meetings found that way are read in the next round, until no new meeting turns up.
@@ -101,13 +107,20 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
  while(round.length){
   const found=[];
   await parallel(round.sort((a,b)=>b.date.localeCompare(a.date)),async m=>{
-   if(count>=400){limited=true;return;}count++;
+   const mark=usableMark(marks,m,now),known=mark&&String(mark.print).startsWith(period)?mark:null;
+   // Read completely a moment ago: an import that ran out of time continues behind it without asking again.
+   if(known?.trusted){held[m.url]=marks.known[m.url];unchanged++;return;}
+   if(count>=MAX_MEETINGS){limited=true;return;}count++;
    try{const html=await get(m.url,source);
     const header=text(html.match(/Sitzung:\s*<\/t[dh]>\s*<td[^>]*>([\s\S]*?)<\/td>/i)?.[1]||'');const meeting={...m,committee:m.committee||header.replace(/\s*,\s*\d+\.\s*Sitzung.*$/,'')||'Öffentliche Sitzung'};
     const items=parseSdnetAgenda(html,meeting,source,now);
     // The calendar export lists every scheduled meeting. An upcoming meeting without an agenda has nothing public
     // to read yet; that is counted, not reported as a gap. A past meeting without a readable agenda is a gap.
     if(!items){if(m.date>today)upcoming++;else issues.push('Keine lesbare öffentliche Tagesordnung: '+m.url);return;}
+    // What the agenda page says. If that is what it said when the papers were last read, they are not fetched again.
+    const print=period+(await hash(JSON.stringify(items.map(r=>[r.id,r.title,r.reference,r.agenda.number,r.event.description,r.documents.map(d=>d.url)])))).slice(0,16);
+    if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;return;}
+    let cut=false,complete=true;
     for(const row of items){
      row.sourceData={version:'public-source-fields-v1',method:'sdnet',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:m.url,fields:{reference:row.reference,title:row.title,number:row.agenda.number,matter:row.agenda.key}}],detailStatus:'completed',issues:[]};delete row.agenda;
      if(row.reference&&row.identityLinks[0]){
@@ -116,16 +129,19 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
        const own=detail.consultations.find(c=>c.url===m.url);
        if(own?.result){row.event.result=own.result;row.event.description='Abstimmung laut Beratungsfolge: '+own.result;row.event.status=row.status=resultStatus(own.result,meeting.committee)||row.status;}
        for(const c of detail.consultations)if(c.date>=fromDay&&c.date<=until&&!meetings.has(c.url)){meetings.set(c.url,c);found.push(c);}
-      }catch(e){row.sourceData.detailStatus='partial';row.sourceData.issues.push(e.message);issues.push('Vorlagendetails: '+e.message);}
+      }catch(e){row.sourceData.detailStatus='partial';row.sourceData.issues.push(e.message);complete=false;if(/Zeitbudget/.test(e.message))cut=true;else issues.push('Vorlagendetails: '+e.message);}
      }
      row.event.attendance={status:'not_collected',sourceUrl:m.url,fetchedAt:now.toISOString(),people:[]};row.event.decision=sourceDecision(row.event);
      const previous=grouped.get(row.id);if(previous){previous.events.push(row.event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[row.event]});
     }
-   }catch(e){issues.push(m.url+': '+e.message);}
+    // A meeting counts as read only if every paper page behind it could be read.
+    if(cut)unread++;else if(complete){held[m.url]=newMark(m,print,now,items.length);done++;}
+   }catch(e){if(/Zeitbudget/.test(e.message))unread++;else issues.push(m.url+': '+e.message);}
    onProgress(source.id+': '+count+'/'+meetings.size+' Sitzungen');
   },3);
   round=found;
  }
+ if(unread)issues.push(`Zeitbudget der Quelle erreicht; ${unread} ${unread===1?'Sitzung':'Sitzungen'} noch nicht vollständig gelesen.`);
  if(limited)issues.push('Sitzungslimit erreicht; weiterer Import erforderlich.');
  const topics=[];
  for(const row of grouped.values()){
@@ -134,5 +150,6 @@ export async function collectSdnet(source,{now=new Date(),get=fetchText,maxDurat
   Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SD.NET-Seite; Tagesordnungspunkte aus dem Abschnitt „Öffentliche Sitzung“.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
- return {topics,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size-upcoming,upcomingWithoutAgenda:upcoming,sourceCount:1,quiet:topics.length===0&&issues.length===0,complete:issues.length===0&&topics.length>0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ // Unchanged meetings are a successful reading: their reports are in the database already.
+ return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size-upcoming,upcomingWithoutAgenda:upcoming,...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }

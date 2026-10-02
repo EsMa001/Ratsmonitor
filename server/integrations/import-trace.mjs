@@ -11,11 +11,11 @@
  */
 const MAX_REQUESTS=1500,MAX_URL=220,MAX_ERROR=160;
 export const debugKey=region=>'import-debug:'+region;
-/** Kind of a request, read from its address: the page type of SessionNet (si0057, vo0050 …), 'oparl', or the last path segment. */
+/** Kind of a request, read from its address: the page type of SessionNet (si0057, vo0050 …) or ALLRIS (si010, to010 …), 'oparl', or the last path segment. */
 export function requestKind(url){
  try{
   const u=new URL(url),last=u.pathname.split('/').filter(Boolean).pop()||'';
-  const page=last.match(/^([a-z]{2}[0-9]{4})\.(?:asp|php)$/i);if(page)return page[1].toLowerCase();
+  const page=last.match(/^([a-z]{2}[0-9]{4})\.(?:asp|php)$/i)||last.match(/^([a-z]{2}[0-9]{3})$/i);if(page)return page[1].toLowerCase();
   if(/oparl/i.test(u.pathname)||/^oparl\./i.test(u.hostname))return 'oparl';
   if(last==='api.php')return 'api '+(u.searchParams.get('id')||'');
   return last.replace(/[0-9]+/g,'#').slice(0,24)||'/';

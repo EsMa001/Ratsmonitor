@@ -1,5 +1,16 @@
 [
   {
+    "id": "nrw-05112000",
+    "name": "Stadt Duisburg",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/duisburg/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.duisburg.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nrw-05113000",
     "name": "Stadt Essen",
     "kind": "city",
@@ -28,6 +39,17 @@
     "verifiedAt": "2026-10-01",
     "note": "Gemeinsames System der ITK Rheinland mit mehreren Körperschaften; die Körperschaft ist fest zugeordnet.",
     "meetingScan": "end"
+  },
+  {
+    "id": "nrw-05117000",
+    "name": "Stadt Mülheim an der Ruhr",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ratsinfo.muelheim-ruhr.de/public/",
+    "verifiedSource": "https://cms.muelheim-ruhr.de/rathaus/politik/ratsinformationssystem",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfo.muelheim-ruhr.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nrw-05120000",
@@ -197,6 +219,28 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05158",
+    "name": "Kreis Mettmann",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://kis.kreis-mettmann.de/",
+    "verifiedSource": "https://www.kreis-mettmann.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05158004",
+    "name": "Stadt Erkrath",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ris.erkrath.de/",
+    "verifiedSource": "https://erkrath.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05158008",
     "name": "Stadt Haan",
     "kind": "city",
@@ -241,6 +285,19 @@
     "verifiedSource": "https://www.langenfeld.de/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05158024",
+    "name": "Stadt Mettmann",
+    "kind": "city",
+    "system": "https://mettmann.gremien.info/oparl/system",
+    "method": "oparl",
+    "body": "https://mettmann.gremien.info/oparl/body/ME",
+    "note": "Einzige Körperschaft des von der offiziellen Website verlinkten Systems („Kreisstadt Mettmann“); fest zugeordnet.",
+    "meetingScan": "forward",
+    "state": "system-verified",
+    "verifiedSource": "https://www.mettmann.de/web/sitzungstermine/",
+    "verifiedAt": "2026-10-02"
   },
   {
     "id": "nrw-05158028",
@@ -468,6 +525,17 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05170008",
+    "name": "Stadt Dinslaken",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ris.dinslaken.de/",
+    "verifiedSource": "https://dinslaken.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05170012",
     "name": "Stadt Hamminkeln",
     "kind": "city",
@@ -556,6 +624,17 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05170044",
+    "name": "Stadt Voerde (Niederrhein)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ris.voerde.de/",
+    "verifiedSource": "https://voerde.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05170052",
     "name": "Stadt Xanten",
     "kind": "city",
@@ -576,6 +655,28 @@
     "verifiedSource": "https://www.leverkusen.de/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05334",
+    "name": "Kreis Städteregion Aachen",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://gremieninfo.staedteregion-aachen.de/public/",
+    "verifiedSource": "https://www.staedteregion-aachen.de/de/navigation/staedteregion",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://gremieninfo.staedteregion-aachen.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05334004",
+    "name": "Stadt Alsdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ratsinfo.alsdorf.de/public/",
+    "verifiedSource": "https://alsdorf.de/web/cms/front_content.php?idcat=159&lang=1",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfo.alsdorf.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nrw-05334008",
@@ -612,6 +713,28 @@
     "meetingScan": "filter"
   },
   {
+    "id": "nrw-05334020",
+    "name": "Stadt Monschau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ratsinfo.monschau.de/public/",
+    "verifiedSource": "https://www.monschau.de/rathaus-politik/ratsinformationssystem/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfo.monschau.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05334024",
+    "name": "Gemeinde Roetgen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ratsinfo.roetgen.de/public/",
+    "verifiedSource": "https://www.roetgen.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfo.roetgen.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05334028",
     "name": "Gemeinde Simmerath",
     "kind": "city",
@@ -621,6 +744,17 @@
     "verifiedSource": "https://www.simmerath.de/",
     "verifiedAt": "2026-10-01",
     "meetingScan": "filter"
+  },
+  {
+    "id": "nrw-05334032",
+    "name": "Stadt Stolberg (Rhld.)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.stolberg.sitzung-online.de/public/",
+    "verifiedSource": "https://serviceportal.stolberg.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://www.stolberg.sitzung-online.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nrw-05334036",
@@ -634,6 +768,17 @@
     "meetingScan": "filter"
   },
   {
+    "id": "nrw-05358",
+    "name": "Kreis Düren",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://sdnet.kreis-dueren.de/",
+    "verifiedSource": "https://kreis-dueren.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05358008",
     "name": "Stadt Düren",
     "kind": "city",
@@ -645,6 +790,50 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05358012",
+    "name": "Stadt Heimbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.heimbach-eifel.de/",
+    "verifiedSource": "https://heimbach-eifel.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05358044",
+    "name": "Stadt Nideggen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.nideggen.de/",
+    "verifiedSource": "https://nideggen.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05358048",
+    "name": "Gemeinde Niederzier",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.niederzier.de/",
+    "verifiedSource": "https://niederzier.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05362",
+    "name": "Kreis Rhein-Erft-Kreis",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://sdnet.rhein-erft-kreis.de/",
+    "verifiedSource": "https://rhein-erft-kreis.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05362016",
     "name": "Stadt Elsdorf",
     "kind": "city",
@@ -654,6 +843,39 @@
     "verifiedSource": "https://www.elsdorf.de/rathaus-service/politik/ratsinformationssystem",
     "verifiedAt": "2026-10-01",
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05362024",
+    "name": "Stadt Frechen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.stadt-frechen.de/",
+    "verifiedSource": "https://stadt-frechen.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05362028",
+    "name": "Stadt Hürth",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.huerth.de/",
+    "verifiedSource": "https://huerth.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05366012",
+    "name": "Gemeinde Dahlem",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.dahlem.de/",
+    "verifiedSource": "https://dahlem.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
     "id": "nrw-05366016",
@@ -687,6 +909,28 @@
     "verifiedSource": "https://www.mechernich.de/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nrw-05366036",
+    "name": "Stadt Schleiden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.schleiden.sitzung-online.de/public/",
+    "verifiedSource": "https://www.schleiden.de/rathaus/rathaus/politik/buerger-und-ratsinformationssystem-allris/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://www.schleiden.sitzung-online.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05366044",
+    "name": "Stadt Zülpich",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.zuelpich.de/",
+    "verifiedSource": "https://zuelpich.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
     "id": "nrw-05370",
@@ -733,6 +977,29 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05370020",
+    "name": "Stadt Hückelhoven",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/hueckelhoven/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.hueckelhoven.de/rathaus/kontakte/sitzungen-und-ausschuesse/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05370024",
+    "name": "Gemeinde Selfkant",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.biz/",
+    "extension": "php",
+    "verifiedSource": "https://selfkant.de/buergerinfoportal/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "note": "Von der offiziellen Website hinter einer Einwilligungsabfrage eingebettet; das System nennt als eigene Adresse www.selfkant.biz/sessionnet/bi."
+  },
+  {
     "id": "nrw-05370028",
     "name": "Stadt Übach-Palenberg",
     "kind": "city",
@@ -766,6 +1033,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05370040",
+    "name": "Stadt Wegberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ratsinfo.wegberg.de/public/",
+    "verifiedSource": "https://www.wegberg.de/politik-wirtschaft/buergerinformationssystem-rats-ausschuss-sitzungen/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfo.wegberg.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05374",
     "name": "Kreis Oberbergischer Kreis",
     "kind": "district",
@@ -786,6 +1064,39 @@
     "verifiedSource": "https://www.bergneustadt.de/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05374012",
+    "name": "Stadt Gummersbach",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.gummersbach.de/bi/",
+    "extension": "php",
+    "verifiedSource": "https://www.gummersbach.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05374016",
+    "name": "Stadt Hückeswagen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/hueckeswagen/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.hueckeswagen.de/rathaus-und-politik/politik/rat-und-ausschuesse/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05374020",
+    "name": "Gemeinde Lindlar",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.lindlar.sitzung-online.de/public/",
+    "verifiedSource": "https://www.lindlar.de/politik-und-verwaltung/politik/buergerinformationssystem.html",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://www.lindlar.sitzung-online.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nrw-05374024",
@@ -832,6 +1143,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05374044",
+    "name": "Stadt Waldbröl",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.waldbroel.sitzung-online.de/integration/",
+    "verifiedSource": "https://www.waldbroel.de/rathaus/ratsinfo/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://www.waldbroel.sitzung-online.de/integration/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05374048",
     "name": "Stadt Wiehl",
     "kind": "city",
@@ -841,6 +1163,17 @@
     "verifiedSource": "https://sessionnet.owl-it.de/wiehl/bi/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05374052",
+    "name": "Stadt Wipperfürth",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/wipperfuerth/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://sessionnet.owl-it.de/wipperfuerth/bi/info.asp",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "nrw-05378",
@@ -953,6 +1286,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05382016",
+    "name": "Gemeinde Eitorf",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/eitorf/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://sessionnet.owl-it.de/eitorf/bi/info.asp",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nrw-05382020",
     "name": "Stadt Hennef (Sieg)",
     "kind": "city",
@@ -962,6 +1306,17 @@
     "verifiedSource": "https://sessionnet.owl-it.de/hennef/bi/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05382024",
+    "name": "Stadt Königswinter",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://sdnet.koenigswinter.de/",
+    "verifiedSource": "https://www.koenigswinter.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
     "id": "nrw-05382028",
@@ -984,6 +1339,28 @@
     "verifiedSource": "https://sessionnet.owl-it.de/meckenheim/bi/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05382036",
+    "name": "Gemeinde Much",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.much.sitzung-online.de/public/",
+    "verifiedSource": "https://www.much.de/rathaus/politik/buergerinformationssystem",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://www.much.sitzung-online.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05382040",
+    "name": "Gemeinde Neunkirchen-Seelscheid",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/nk-se/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.nk-se.de/rathaus-service/ratsinformationen/ratsinformationssystem",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "nrw-05382044",
@@ -1074,6 +1451,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05382076",
+    "name": "Gemeinde Windeck",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/gemeinde-windeck/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://gemeinde-windeck.de/doerfer/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nrw-05512000",
     "name": "Stadt Bottrop",
     "kind": "city",
@@ -1083,6 +1471,17 @@
     "verifiedSource": "https://www.bottrop.de/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05513000",
+    "name": "Stadt Gelsenkirchen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ratsinformation.gelsenkirchen.de/",
+    "verifiedSource": "https://www.gelsenkirchen.de/de/default.aspx",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinformation.gelsenkirchen.de/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nrw-05554008",
@@ -1129,6 +1528,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "nrw-05562014",
+    "name": "Stadt Gladbeck",
+    "kind": "city",
+    "system": "https://gladbeck.gremien.info/oparl/system",
+    "method": "oparl",
+    "meetingScan": "forward",
+    "state": "system-verified",
+    "verifiedSource": "https://www.gladbeck.de/inhalt",
+    "verifiedAt": "2026-10-02"
+  },
+  {
     "id": "nrw-05562028",
     "name": "Stadt Oer-Erkenschwick",
     "kind": "city",
@@ -1171,6 +1581,17 @@
     "verifiedSource": "https://www.ahlen.de/",
     "verifiedAt": "2026-10-01",
     "meetingScan": "filter"
+  },
+  {
+    "id": "nrw-05570016",
+    "name": "Stadt Drensteinfurt",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/drensteinfurt/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://sessionnet.owl-it.de/drensteinfurt/bi/info.asp",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "nrw-05570040",
@@ -1314,6 +1735,17 @@
     "verifiedSource": "https://www.marienmuenster.de/de/rathaus-service/stadtrat/ratsinformationssystem",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05762028",
+    "name": "Stadt Nieheim",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://nieheim.gremien.info/",
+    "verifiedSource": "https://www.nieheim.de/Stadt-Verwaltung/Rat/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
     "id": "nrw-05762032",
@@ -1668,6 +2100,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05954036",
+    "name": "Stadt Witten",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://secure.stadt-witten.de/session/bis/",
+    "extension": "asp",
+    "verifiedSource": "https://www.witten.de/rathaus-service/rat-lokalpolitik/ratsinformationssystem/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05958008",
+    "name": "Gemeinde Bestwig",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.bestwig.sitzung-online.com/public/",
+    "verifiedSource": "https://bestwig.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://www.bestwig.sitzung-online.com/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05958012",
     "name": "Stadt Brilon",
     "kind": "city",
@@ -1712,6 +2166,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05958032",
+    "name": "Stadt Meschede",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.meschede.sitzung-online.de/public/",
+    "verifiedSource": "https://www.meschede.de/rathaus-service/politik-verwaltung/buerger-ratsinfosystem",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://www.meschede.sitzung-online.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05958040",
+    "name": "Stadt Schmallenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.schmallenberg.de/",
+    "verifiedSource": "https://www.schmallenberg.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05962016",
     "name": "Stadt Hemer",
     "kind": "city",
@@ -1732,6 +2208,17 @@
     "verifiedSource": "https://www.herscheid.de/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05962032",
+    "name": "Stadt Lüdenscheid",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.luedenscheid.de/",
+    "extension": "asp",
+    "verifiedSource": "https://luedenscheid.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "nrw-05962040",
@@ -1822,6 +2309,22 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05970",
+    "name": "Kreis Siegen-Wittgenstein",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://gremien.siegen-wittgenstein.de/",
+    "oparlFallback": {
+      "system": "https://gremien.siegen-wittgenstein.de/webservice/oparl/v1.1/system",
+      "reason": "The operation was aborted due to timeout",
+      "checkedAt": "2026-10-02"
+    },
+    "verifiedSource": "https://www.siegen-wittgenstein.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse https://gremien.siegen-wittgenstein.de/webservice/oparl/v1.1/system antwortete am 02.10.2026, lieferte aber keine verwertbaren Sitzungen (The operation was aborted due to timeout); deshalb öffentliche Seiten."
+  },
+  {
     "id": "nrw-05970004",
     "name": "Stadt Bad Berleburg",
     "kind": "city",
@@ -1886,6 +2389,17 @@
     "verifiedSource": "https://www.kreuztal.de/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "nrw-05970028",
+    "name": "Stadt Bad Laasphe",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet",
+    "base": "https://ratsinfo.bad-laasphe.de/",
+    "verifiedSource": "https://ratsinfo.bad-laasphe.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
     "id": "nrw-05970032",
@@ -2031,6 +2545,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05974040",
+    "name": "Stadt Soest",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.soest.sitzung-online.de/public/",
+    "verifiedSource": "https://www.soest.de/politik-verwaltung/rat-und-politik",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "OParl-Adresse des Systems (https://www.soest.sitzung-online.de/public/oparl/system) lieferte am 02.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05974044",
     "name": "Stadt Warstein",
     "kind": "city",
@@ -2108,6 +2633,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "nrw-05978020",
+    "name": "Stadt Kamen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsportal.kamen.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.stadt-kamen.de/",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nrw-05978028",
     "name": "Stadt Schwerte",
     "kind": "city",
@@ -2117,6 +2653,17 @@
     "verifiedSource": "https://www.schwerte.de/politik-verwaltung-mitmachstadt/politik/buergerinnen-und-ratsinformationssystem",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05978036",
+    "name": "Stadt Unna",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/unna/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.unna.de/mitsprache",
+    "verifiedAt": "2026-10-02",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "nrw-05978040",

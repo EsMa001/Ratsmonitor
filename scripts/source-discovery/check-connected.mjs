@@ -1,5 +1,5 @@
 // Diagnosis: runs every connected source once through the real collector (Node, no database writes).
-// node scripts/source-discovery/check-connected.mjs [1w|1m|3m|12m] [output.jsonl] [id,id,…]
+// node scripts/source-discovery/check-connected.mjs [1w|1m|3m|12m|24m] [output.jsonl] [id,id,…]
 import fs from 'node:fs';
 import {collectRegion} from '../../server/integrations/collect-region.mjs';
 import {NRW_SOURCES} from '../../server/integrations/source-catalog.mjs';

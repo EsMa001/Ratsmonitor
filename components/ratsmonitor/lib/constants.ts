@@ -25,6 +25,11 @@ export const MAP_COLORS = {
   dim: "rgba(246,247,249,.74)",
 };
 
+/** Abdeckungsstufe: 1 = Teilbestand (letzter Abruf lückenhaft), 2 = vollständig abgerufen */
+export function colorForCoverage(level: number): string {
+  return level >= 3 ? MAP_COLORS.scale[2] : level === 2 ? MAP_COLORS.scale[1] : MAP_COLORS.scale[0];
+}
+
 export function colorForCount(c: number): string {
   const s = MAP_COLORS.scale;
   return c === 0 ? MAP_COLORS.zero : c <= 25 ? s[0] : c <= 100 ? s[1] : c <= 500 ? s[2] : s[3];

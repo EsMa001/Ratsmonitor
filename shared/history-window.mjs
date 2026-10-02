@@ -13,6 +13,7 @@ export const HISTORY_WINDOWS=Object.freeze({
  '1m':Object.freeze({label:'1 Monat',months:1}),
  '3m':Object.freeze({label:'3 Monate',months:3}),
  '12m':Object.freeze({label:'12 Monate',months:HISTORY_MONTHS}),
+ '24m':Object.freeze({label:'24 Monate',months:2*HISTORY_MONTHS}),
 });
 /** Callers that do not choose a window keep the established twelve-month behaviour. */
 export const DEFAULT_HISTORY_WINDOW='12m';
@@ -30,5 +31,7 @@ export function windowStart(now=new Date(),value){
 }
 /** Approximate length in days; only used to compare which window is narrower. */
 export function windowSpanDays(value){const w=HISTORY_WINDOWS[historyWindow(value)];return 'days' in w?w.days:w.months*31;}
+/** How many years a window spans, at least one. Limits that were set for a year of data are multiplied by it. */
+export const windowYears=value=>Math.max(1,Math.ceil(windowSpanDays(value)/windowSpanDays('12m')));
 /** Calendar months between the window start and now, for sources with monthly calendars. */
 export function calendarMonthsBack(now,from){return (now.getUTCFullYear()-from.getUTCFullYear())*12+now.getUTCMonth()-from.getUTCMonth();}

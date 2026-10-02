@@ -2,18 +2,35 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { isCovered } from "../../lib/constants";
 import { MapEngine } from "../../lib/geo/mapEngine";
 import { plural } from "../../lib/text";
+import { hasFilters } from "../../lib/savedSearch";
 import { useData } from "../../state/data";
 import { useSearch, useSearchResults } from "../../state/search";
 import { IconMinus, IconPlus, IconRadius, IconReset, IconX } from "../icons";
 import { Legend } from "./Legend";
 import { RadiusPanel } from "./RadiusPanel";
 
+/** Trefferstufe: 0 keine, 1 wenige, 2 mittel, 3 viele (ohne Suche nur 0 oder 3) */
+function hitLevel(c: number, t: [number, number], graded: boolean) {
+  if (!c) return 0;
+  if (!graded) return 3;
+  return c <= t[0] ? 1 : c <= t[1] ? 2 : 3;
+}
+
 /** Karte aller Gemeinden mit Zoom, Legende, Popup und Umkreis */
 export function MapPanel({ active }: { active: boolean }) {
   const { geo, geoError } = useData();
   const search = useSearch();
   const { state, popup, mapRef } = search;
-  const { areaCounts, coverage } = useSearchResults();
+  const { areaCounts, coverage, snapshot } = useSearchResults();
+  const filtered = hasFilters(snapshot);
+  const hits = coverage.map((c) => areaCounts[c.ags] || 0).filter(Boolean).sort((a, b) => a - b);
+  const maxHits = hits.at(-1) ?? 0;
+  /* Lineare Stufen: gleich breite Drittel bis zum Höchstwert */
+  const t1 = Math.max(1, Math.round(maxHits / 3)), t2 = Math.max(t1, Math.round((2 * maxHits) / 3));
+  const [zoomHint, setZoomHint] = useState("Zum Zoomen Strg gedrückt halten und scrollen");
+  useEffect(() => {
+    if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) setZoomHint("Zum Zoomen ⌘ (Cmd) gedrückt halten und scrollen");
+  }, []);
   const stageRef = useRef<HTMLDivElement>(null);
   const baseRef = useRef<HTMLCanvasElement>(null);
   const overRef = useRef<HTMLCanvasElement>(null);
@@ -88,8 +105,9 @@ export function MapPanel({ active }: { active: boolean }) {
   }, [engine, mapRef, placePopup]);
 
   useEffect(() => {
-    engine?.update(areaCounts, state.area, state.radius, coverage.map(c=>c.ags),state.level);
-  }, [engine, areaCounts, state.area, state.radius, coverage,state.level]);
+    const levels = Object.fromEntries(coverage.map((c) => [c.ags, hitLevel(areaCounts[c.ags] || 0, [t1, t2], filtered)]));
+    engine?.update(levels, state.area, state.radius, coverage.map(c=>c.ags),state.level);
+  }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage,state.level]);
 
   useLayoutEffect(() => {
     placePopup();
@@ -125,8 +143,10 @@ export function MapPanel({ active }: { active: boolean }) {
   useEffect(() => () => clearTimeout(hintTimer.current), []);
 
   const countText = (ags: string) => {
+    if (!isCovered(ags, coverage)) return "Keine Treffer";
     const c = areaCounts[ags] || 0;
-    return isCovered(ags,coverage) ? `${c} ${plural(c, "passender Eintrag", "passende Einträge")}` : "nicht erfasst";
+    if (!c) return "Keine Treffer";
+    return filtered ? `${c} Treffer` : "Treffer vorhanden";
   };
   const tipInfo = geo && tip && !popup ? geo.info(tip.ags) : null;
   const popInfo = geo && popup ? geo.info(popup) : null;
@@ -136,13 +156,13 @@ export function MapPanel({ active }: { active: boolean }) {
   const btnSecondary = "min-h-9 rounded-lg border border-teal-200 bg-white px-2.5 text-[13.5px] font-medium text-teal-700 hover:bg-teal-50";
 
   return (
-    <section aria-label="Karte der Gemeinden und Kreise" className="relative h-[460px] overflow-hidden border-b border-slate-200 bg-map-ground sm:h-[520px]">
+    <section aria-label="Karte der Gemeinden und Kreise" className="relative mx-auto mt-[0.3vw] h-[460px] max-w-page overflow-hidden rounded-xl border border-slate-200 bg-map-ground shadow-card sm:h-[520px]">
       <div ref={stageRef} className="absolute inset-0 cursor-grab touch-none select-none">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas
           ref={overRef}
           role="img"
-          aria-label="Karte der Gemeinden. Die Auswahl eines Gebiets ist auch über den Gebietsfilter in der Kopfzeile möglich."
+          aria-label="Karte der Gemeinden. Die Auswahl eines Gebiets ist auch über den Gebietsfilter unter der Karte möglich."
           className="absolute left-0 top-0 block h-full w-full"
         />
         {!geo && <div className="absolute inset-0 grid place-items-center text-[13px] text-slate-500">{geoError ? "Kartendaten konnten nicht geladen werden." : "Karte wird aufgebaut …"}</div>}
@@ -165,7 +185,7 @@ export function MapPanel({ active }: { active: boolean }) {
             hint ? "opacity-100" : "opacity-0"
           }`}
         >
-          Zum Zoomen Strg (Mac: ⌘) gedrückt halten und scrollen
+          {zoomHint}
         </div>
         {popInfo && (
           <div
@@ -244,9 +264,9 @@ export function MapPanel({ active }: { active: boolean }) {
               </button>
             ))}
           </div>
-          <Legend />
+          <Legend graded={filtered} max={maxHits} t1={t1} t2={t2} />
           {state.radius && geo && <RadiusPanel />}
-          <span className="absolute bottom-2 right-6 hidden rounded bg-map-ground/85 px-[5px] py-px text-[10.5px] text-slate-500 sm:block">© GeoBasis-DE / BKG 2019</span>
+          <span className="pointer-events-auto absolute left-2 top-2 rounded sm:left-auto sm:top-auto bg-map-ground/85 px-[5px] py-px text-[10.5px] text-slate-500 sm:bottom-2 sm:right-6">© GeoBasis-DE / BKG 2019, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="underline">dl-de/by-2-0</a>, vereinfacht</span>
         </div>
       </div>
       {/* Nur für Screenreader: Hinweis auf die Auswahl über den Gebietsfilter */}

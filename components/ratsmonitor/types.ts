@@ -18,6 +18,8 @@ export interface ArticleData {
   beschluss?: string;
   punkte?: string[];
   ausblick?: string;
+  /** Stationen des Vorgangs (Datum, Status, Gremium) */
+  steps?: { d: string; s: string; c: string }[];
 }
 
 export interface Article extends ArticleData {
@@ -60,6 +62,10 @@ export interface SearchState {
   radius: Radius | null;
   thema: string;
   monat: string;
+  von: string;
+  bis: string;
+  /** Gebietsumfang: nur das Gebiet oder inklusive (Kreis mit Gemeinden bzw. Gemeinde mit Kreis) */
+  scope: "only" | "with";
   status: StatusId | "";
   sort: "desc" | "asc";
   level: "city" | "district";
@@ -82,9 +88,13 @@ export interface SavedSearch {
   radius: { ags: string; km: number; x?: number; y?: number } | null;
   thema: string;
   monat: string;
+  von?: string;
+  bis?: string;
+  scope?: "only" | "with";
   status: StatusId | "";
   level?: "city" | "district";
-  notify: { on: boolean; freq: NotifyFreq };
+  /** Benachrichtigung: on = Push, mail = E-Mail an email; freq gilt für beide */
+  notify: { on: boolean; freq: NotifyFreq; mail?: boolean; email?: string };
   created: string; // ISO
   lastSeen: string; // ISO
 }

@@ -2,7 +2,7 @@ import {AdminError} from './admin-access.mjs';
 import regions from '../../shared/nrw-regions.json' with {type:'json'};
 import {NRW_SOURCES} from './source-catalog.mjs';
 import {SOURCES} from './regions.mjs';
-import {historyWindow} from '../../shared/history-window.mjs';
+import {historyWindow,windowYears} from '../../shared/history-window.mjs';
 export const canImport=id=>id==='muenster'||SOURCES.some(s=>s.id===id)||NRW_SOURCES.some(s=>s.id===id&&s.method!=='pending');
 export function selectedRegions(value){
  if(value==='all')return regions.map(r=>r.id);
@@ -17,6 +17,7 @@ export const PARALLEL=Object.freeze({metadata:6,analysis:1});
 /** Imports that may run at the same time against one operator of council systems. */
 export const PER_PROVIDER=2;
 // An import that the time limit cut off continues where it stopped, at most this many times per area and job.
+// Continuations of one area within a job, for each year of the import period.
 const MAX_RESUMES=10;
 /**
  * Operator of an area's council system: the registrable part of its host name. Many municipalities share one
@@ -90,7 +91,7 @@ export async function pipelineAction(db,body,run){
   else {item.processed+=Number(d.processed??d.topics??0);
    // The item reports this attempt; the stored period may still be partial from an earlier, wider import.
    const complete=d.attemptComplete??d.coverage?.complete;
-   if(job.stage==='metadata'&&d.resume&&(item.resumes||0)<MAX_RESUMES){item.resumes=(item.resumes||0)+1;item.status='queued';item.message=`Zeitlimit erreicht; der Abruf wird fortgesetzt (Teil ${item.resumes+1}).`;}
+   if(job.stage==='metadata'&&d.resume&&(item.resumes||0)<MAX_RESUMES*windowYears(job.window)){item.resumes=(item.resumes||0)+1;item.status='queued';item.message=`Zeitlimit erreicht; der Abruf wird fortgesetzt (Teil ${item.resumes+1}).`;}
    else {item.status=job.stage==='analysis'&&d.remaining>0?'queued':d.coverage&&!complete?'partial':'completed';item.message=job.stage==='analysis'?`${d.remaining||0} Artikel noch offen.`:d.quiet?'Keine Sitzungen im gewählten Zeitraum; gespeicherter Bestand unverändert.':d.coverage?.issues?.join(' · ').slice(0,2500)||(d.unchanged?`Ergebnis in der Datenbank gespeichert; ${d.unchanged} unveränderte ${d.unchanged===1?'Sitzung':'Sitzungen'} übersprungen.`:'Ergebnis in der Datenbank gespeichert.');
     if(d.warnings?.length)item.message=(item.message+` Warnung: ${d.warnings.join(' · ')}`).slice(0,3000);}}
   if(job.status!=='cancelled')job.status=job.items.some(i=>i.status==='running')?'running':job.items.some(i=>i.status==='queued')?'queued':'completed';

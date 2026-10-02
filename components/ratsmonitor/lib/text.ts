@@ -12,7 +12,7 @@ export function norm(s: string): string {
 }
 
 export function terms(text: string): string[] {
-  return norm(text).split(/\s+/).filter(Boolean);
+  return norm(text).split(/[\s,;|]+/).filter(Boolean);
 }
 
 export interface Segment {

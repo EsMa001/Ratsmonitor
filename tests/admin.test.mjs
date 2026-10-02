@@ -8,6 +8,7 @@ import {createHash} from 'node:crypto';
 import ts from 'typescript';
 import {adminAccess,claimAdmin,requireAdminAccess,requireSameOrigin} from '../server/integrations/admin-access.mjs';
 import {loadAdminData,adminReview} from '../server/integrations/admin-data.mjs';
+import {processingStatus} from '../server/integrations/processing-status.mjs';
 import {filterAdminSources,sourcesCsv} from '../shared/admin.mjs';
 
 const root=path.resolve(import.meta.dirname,'..'),sqlite=new DatabaseSync(':memory:');
@@ -64,12 +65,32 @@ test('real admin SQL counts canonical articles, separate quality states and sour
  assert.equal(result.review.total,1);
  const json=JSON.stringify(result);for(const secret of ['secret-owner','private-auth','private-key','private-push','private-diagnostics'])assert.ok(!json.includes(secret));
 });
+test('the overview reads the stored reports once; its figures per area equal the separate processing status',async()=>{
+ reset();const at=new Date('2026-09-27T12:00:00Z');
+ insert('a');insert('b',{regionId:'muenster',classification:{primary:'unklar'},metadata:{lastFetchedAt:'2026-09-26T10:00:00Z'}});
+ insert('c',{regionId:'muenster',classification:{primary:'bauen'},contentAnalysis:{status:'stale'},metadata:{lastFetchedAt:'2026-09-27T10:00:00Z',lastProcessedAt:'2026-09-27T11:00:00Z'}});
+ insert('d',{regionId:'muenster',classification:{primary:'unklar'},contentAnalysis:{status:'insufficient_source'}});insert('alias',{identity:{mergedInto:'a'},classification:{primary:'unklar'}});
+ // Statements that read into the stored reports, beyond the indexed columns.
+ const asked=[],watched={prepare(sql){asked.push(sql);return db.prepare(sql);},batch:statements=>db.batch(statements)},scans=()=>asked.filter(q=>/FROM topics WHERE/.test(q)&&q.includes("'$.classification.primary'")).length;
+ const full=await loadAdminData(watched,{now:at});assert.equal(scans(),2,'one scan for all figures, one for the review list');
+ asked.length=0;const light=await loadAdminData(watched,{now:at,review:false});assert.equal(scans(),1);assert.ok(!asked.some(q=>q.includes('LIMIT 25')));
+ assert.deepEqual(light.review,{issue:'labels',total:2,articles:[]});assert.deepEqual({...light,review:0},{...full,review:0});
+ assert.equal(full.review.total,2);assert.deepEqual(full.review.articles.map(a=>a.id).sort(),['b','d']);
+ assert.equal(full.counts.online,4);assert.equal(full.counts.aliases,1);assert.equal(full.counts.unlabelled,2);assert.equal(full.counts.summaryStale,1);assert.equal(full.counts.summaryInsufficient,1);
+ assert.deepEqual(full.labels.filter(l=>l.count).map(l=>[l.id,l.count]),[['bildung',1],['bauen',1],['unklar',2]]);
+ const status=await processingStatus(db);assert.equal(status.regions.length,2);
+ for(const area of status.regions){const shown=full.sources.find(s=>s.id===area.region_id);assert.equal(shown.count,area.total);assert.deepEqual(shown.processing,{...area},area.region_id);assert.equal(shown.pendingAnalysis,area.total-area.rules);}
+ const muenster=full.sources.find(s=>s.id==='muenster').processing;assert.equal(muenster.total,3);assert.equal(muenster.stale,1);assert.equal(muenster.insufficient,1);assert.equal(muenster.fetchedAt,'2026-09-27T10:00:00Z');assert.equal(muenster.processedAt,'2026-09-27T11:00:00Z');
+ assert.deepEqual(full.sources.find(s=>s.id==='borken').processing,{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,fetchedAt:null,processedAt:null});
+});
 test('review filters stay parameterized, exclude aliases, constrain region and cap result rows',async()=>{
  reset();for(let i=0;i<30;i++)insert('open-'+i,{classification:{primary:'unklar'}});
  insert('elsewhere',{regionId:'muenster',classification:{primary:'unklar'},status:'unknown'});
  insert('alias',{classification:{primary:'unklar'},identity:{mergedInto:'open-1'}});
  const result=await adminReview(db,'labels','billerbeck');assert.equal(result.total,30);assert.equal(result.articles.length,25);assert.ok(result.articles.every(t=>t.regionId==='billerbeck'));
  assert.equal((await adminReview(db,'status')).total,1);
+ // A total the caller already knows is taken as given; the list is still read.
+ const known=await adminReview(db,'labels','all',{total:31});assert.equal(known.total,31);assert.equal(known.articles.length,25);
  await assert.rejects(adminReview(db,'labels',"' OR 1=1 --"));
 });
 test('CSV export neutralizes spreadsheet formulas and escapes delimiters and quotes',()=>{

@@ -23,11 +23,12 @@ test('every statewide source belongs to exactly one catalogued area and is addre
   if(s.method==='oparl'){assert.ok(https(s.system),s.name);if(s.body)assert.ok(https(s.body)&&new URL(s.body).origin===new URL(s.system).origin,s.name);}
   else if(s.method==='official-api'){assert.equal(s.adapter,'more-rubin');assert.ok(https(s.base)&&s.base.endsWith('/'),s.name);}
   else {assert.equal(s.method,'scraper');assert.ok(https(s.base)&&s.base.endsWith('/'),s.name);
-   // Two page scrapers: SD.NET sources name their adapter, SessionNet sources their page extension.
-   if(s.adapter){assert.equal(s.adapter,'sdnet');assert.equal(s.extension,undefined,s.name);assert.equal(new URL(s.base).pathname,'/',s.name);}
+   // Three page scrapers: SD.NET and ALLRIS sources name their adapter, SessionNet sources their page extension.
+   if(s.adapter){assert.match(s.adapter,/^(sdnet|allris)$/);assert.equal(s.extension,undefined,s.name);if(s.adapter==='sdnet')assert.equal(new URL(s.base).pathname,'/',s.name);}
    else assert.match(s.extension,/^(asp|php)$/);}
  }
  assert.ok(sources.filter(s=>s.adapter==='sdnet').length>40,'the SD.NET sources are part of the catalog');
+ assert.ok(sources.filter(s=>s.adapter==='allris').length>=10,'the ALLRIS sources are part of the catalog');
 });
 test('an SD.NET source is read through its own collector and only while the vendor OParl endpoint is switched off',async()=>{
  const sd=sources.find(s=>s.adapter==='sdnet'&&!s.oparlFallback);const original=globalThis.fetch;const calls=[];

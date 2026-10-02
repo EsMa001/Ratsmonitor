@@ -1,5 +1,5 @@
 import type { Radius } from "../../types";
-import { MAP_COLORS as C, colorForCount } from "../constants";
+import { MAP_COLORS as C, colorForCoverage } from "../constants";
 import type { BBox, GeoModel } from "./geoModel";
 
 interface View {
@@ -170,7 +170,9 @@ export class MapEngine {
 
   /* ---------- Ansicht ---------- */
   private clampK(k: number) {
-    const kmin = 0.35 * Math.min(this.W / 70000, this.H / 90000);
+    /* Höchstens so weit herauszoomen, dass Deutschland vollständig sichtbar ist */
+    const bb = this.geo.germany.bb;
+    const kmin = 0.92 * Math.min((this.W - 32) / Math.max(bb[2] - bb[0], 1), (this.H - 32) / Math.max(bb[3] - bb[1], 1));
     return Math.max(kmin, Math.min(0.6, k));
   }
 
@@ -359,8 +361,8 @@ export class MapEngine {
     ctx.fill(fp);
     const L = this.level === "district" ? G.krs : G.gem;
     for (const ags of this.coverage) {
-      const i=L.idx.get(ags);if(i===undefined)continue;
-      ctx.fillStyle = colorForCount(this.counts[L.ags[i]] || 0);
+      const i=L.idx.get(ags);if(i===undefined||!this.counts[L.ags[i]])continue;
+      ctx.fillStyle = colorForCoverage(this.counts[L.ags[i]] || 0);
       ctx.fill(L.path[i]);
     }
     if (pxkm >= 3) {

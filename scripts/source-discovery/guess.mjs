@@ -28,7 +28,7 @@ async function guess(region){
  const backlink=html=>domains.some(d=>html.includes('//'+d)||html.includes('//www.'+d)||html.includes('.'+d+'/'));
  // Own domain: the address itself proves the assignment.
  for(const d of domains){
-  for(const base of [`https://ratsinfo.${d}/`,`https://ris.${d}/`,`https://session.${d}/`,`https://sessionnet.${d}/`,`https://buergerinfo.${d}/`,`https://sitzungsdienst.${d}/`,`https://allris.${d}/`,`https://www.${d}/sessionnet/`,`https://www.${d}/buergerinfo/`,`https://www.${d}/ratsinfo/`]){
+  for(const base of [`https://ratsinfo.${d}/`,`https://ris.${d}/`,`https://session.${d}/`,`https://sessionnet.${d}/`,`https://buergerinfo.${d}/`,`https://sitzungsdienst.${d}/`,`https://allris.${d}/`,`https://sdnet.${d}/`,`https://gremien.${d}/`,`https://ratsinformation.${d}/`,`https://sitzungen.${d}/`,`https://rat.${d}/`,`https://bi.${d}/`,`https://www.${d}/sessionnet/`,`https://www.${d}/sessionnet/bi/`,`https://www.${d}/buergerinfo/`,`https://www.${d}/ratsinfo/`,`https://www.${d}/bi/`,`https://www.${d}/ris/`]){
    const p=await get(base);tried.push(base+' '+p.status);
    if(p.status===200&&/sessionnet|si0040|allris|sd\.net|ratsinfo|oparl|more! ?rubin|sitzung/i.test(p.body))found.push({url:p.url,from:'https://'+d+'/',byHref:true,guessed:'eigene Domain'});
   }

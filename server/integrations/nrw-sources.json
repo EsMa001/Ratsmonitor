@@ -587,10 +587,19 @@
     "name": "Stadt Wuppertal",
     "kind": "city",
     "system": "https://oparl.wuppertal.de/oparl/system",
-    "method": "pending",
+    "method": "scraper",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "unreachable",
-    "verifiedAt": "2026-10-01",
-    "note": "Die OParl-Adresse antwortet mit HTTP 400; die Website der Stadt verlangt eine Zugriffsprüfung im Browser."
+    "state": "system-verified",
+    "verifiedAt": "2026-10-02",
+    "note": "Die OParl-Adresse aus dem Verzeichnis antwortet mit HTTP 400. Die öffentlichen SessionNet-Seiten unter ris.wuppertal.de antworten ohne Zugriffsprüfung und werden gelesen (geprüft am 02.10.2026: 605 öffentliche Tagesordnungspunkte in drei Monaten).",
+    "base": "https://ris.wuppertal.de/",
+    "extension": "asp",
+    "verifiedSource": "https://wuppertal.de/",
+    "oparlFallback": {
+      "system": "https://oparl.wuppertal.de/oparl/system",
+      "reason": "OParl-Adresse antwortet mit HTTP 400",
+      "checkedAt": "2026-10-02"
+    },
+    "apiCheck": "OParl-Adresse aus dem OParl-Verzeichnis antwortete am 02.10.2026 mit HTTP 400; deshalb öffentliche Seiten."
   }
 ]

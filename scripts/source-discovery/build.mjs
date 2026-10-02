@@ -43,13 +43,18 @@ const reason=row=>{
  if(tried.some(t=>t.oparl&&!t.oparlTopics))return 'OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen'+(tried.find(t=>t.oparlError)?' ('+tried.find(t=>t.oparlError).oparlError+')':'');
  if(tried.length&&tried.every(t=>t.status===403))return 'Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert';
  if(systems.includes('sdnet'))return 'SD.NET erwähnt, System selbst nicht erreichbar oder nicht gefunden';
+ if(tried.some(t=>t.system==='allris'&&/Wartungsarbeiten/i.test(t.title||'')))return 'ALLRIS 4; die Bürgerinformation war bei der Prüfung wegen Wartungsarbeiten nicht verfügbar. Erneut prüfen';
+ if(tried.some(t=>(t.allrisIssues||[]).some(i=>/Zugriffsprüfung/.test(i))))return 'ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert';
+ if(tried.some(t=>(t.allrisIssues||[]).some(i=>/zu viele Zugriffe/.test(i))))return 'ALLRIS 4 gefunden; das System meldete bei der Prüfung zu viele Zugriffe und sperrte vorübergehend. Erneut prüfen';
+ if(tried.some(t=>t.allrisTopics===0||t.allrisError))return 'ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte'+(tried.find(t=>t.allrisError||t.allrisIssues?.length)?' ('+(tried.find(t=>t.allrisError)?.allrisError||tried.find(t=>t.allrisIssues?.length).allrisIssues[0])+')':'');
+ if(tried.some(t=>t.allrisGeneration===3))return 'ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser';
  if(systems.includes('allris'))return 'ALLRIS ohne erreichbare OParl-Schnittstelle';
  if(tried.some(t=>t.identity&&!t.identity.ok)&&!tried.some(t=>t.identity?.ok))return 'Gefundenes System nicht eindeutig dem Gebiet zuzuordnen';
  return 'Kein unterstütztes Ratsinformationssystem erkannt';
 };
 const open=regions.filter(r=>!connected.has(r.id)).map(r=>({...r,reason:switchedOff.get(r.id)?.note||reason(verified[r.id]||(candidates[r.id]?.candidates?.length?{tried:[],systems:[]}:null)),link:switchedOff.get(r.id)?.system||(verified[r.id]?.tried||[]).find(t=>t.url)?.url||candidates[r.id]?.candidates?.[0]?.url||''}));
 const count=(list,key)=>Object.entries(list.reduce((a,x)=>(a[key(x)]=(a[key(x)]||0)+1,a),{})).sort((a,b)=>b[1]-a[1]);
-const methodName=s=>s.method==='oparl'?'OParl':s.method==='official-api'?'More! Rubin (Kalender-API)':s.adapter==='sdnet'?'SD.NET (öffentliche Seiten)':'SessionNet (öffentliche Seiten)';
+const methodName=s=>s.method==='oparl'?'OParl':s.method==='official-api'?'More! Rubin (Kalender-API)':s.adapter==='sdnet'?'SD.NET (öffentliche Seiten)':s.adapter==='allris'?'ALLRIS 4 (öffentliche Seiten)':'SessionNet (öffentliche Seiten)';
 const today=new Date().toISOString().slice(0,10).split('-').reverse().join('.');
 const lines=['# Quellen für ganz NRW: Ergebnis der automatischen Suche','',
  `Stand: ${today}. Erzeugt von \`scripts/source-discovery/\` (Ablauf siehe README dort).`,'',
