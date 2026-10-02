@@ -92,7 +92,6 @@ export function SearchBox() {
   })();
 
   const picks = rows.filter((r): r is Exclude<Row, { kind: "head" }> => r.kind !== "head");
-  const firstSuggest = placeActive ? null : picks.find((r) => r.kind === "item");
   const showList = open && rows.length > 0;
   const placeOn = state.areaSrc === "search" && !!state.area;
 
@@ -119,8 +118,8 @@ export function SearchBox() {
       setActive((i) => (i - 1 + n) % n);
     } else if (e.key === "Enter" && showList && n) {
       e.preventDefault();
+      /* Nur einen ausdrücklich markierten Vorschlag übernehmen; sonst bleibt der eingegebene Text die Suche */
       if (active >= 0 && picks[active]) picks[active].pick();
-      else if (firstSuggest) firstSuggest.pick();
       else setOpen(false);
     } else if (e.key === "Escape") {
       if (showList) {
