@@ -117,6 +117,8 @@ test('the estimate sums the model over every unit of the frame, by class, level 
  const nrw=e.states.find(s=>s.id==='05'),berlin=e.states.find(s=>s.id==='11'),rlp=e.states.find(s=>s.id==='07');
  near(nrw.perYear,curve(600000)+curve(50000)+curve(10000)+450,1e-3);assert.deepEqual(nrw.factors.municipality,{examples:6,factor:1});assert.equal(nrw.factors.association,null);
  near(berlin.perYear,curve(300000),1e-3);assert.equal(berlin.boroughs,1);assert.equal(berlin.population,3600000);
+ // What the figures rest on: NRW on its own examples, the other states on the typical level or on a borrowed model.
+ near(e.basis.own,nrw.perYear,1e-6);near(e.basis.borrowed,by.association.perYear+by.borough.perYear,1e-6);near(e.basis.own+e.basis.typical+e.basis.borrowed,total,1e-6);near(nrw.ownShare,1);assert.equal(berlin.ownShare,0);assert.equal(rlp.ownShare,0);
  near(rlp.perYear,curve(8000)+curve(20000)+curve(10000),1e-3);assert.equal(rlp.associations,2);assert.equal(rlp.factors.municipality,null);assert.equal(rlp.population,38000);
  assert.deepEqual(e.states.map(s=>s.perYear),[...e.states.map(s=>s.perYear)].sort((a,b)=>b-a),'sorted by volume');
  // Range: every figure lies inside its range; exact data leave no range for the municipal classes.
@@ -239,7 +241,7 @@ test('the admin estimate combines stored NRW areas with the measured sample and 
  near(e.classes.reduce((n,c)=>n+c.perYear,0),e.total.perYear,1e-6);near(e.states.reduce((n,s)=>n+s.perYear,0),e.total.perYear,1e-6);
  assert.equal(e.cells,undefined);assert.equal(e.replicates,undefined,'the draws stay on the server');
  // Capturability, size and seasonality are derived from the same examples.
- near(e.capture.total.total,e.total.perYear,1e-6);assert.ok(e.capture.total.connectedShare>0&&e.capture.total.connectedShare<1);
+ near(e.capture.total.total,e.total.perYear,1e-6);near(e.basis.own+e.basis.typical+e.basis.borrowed,e.total.perYear,1e-6);assert.ok(e.basis.typical>0);assert.ok(e.states.every(s=>s.ownShare>=0&&s.ownShare<=1+1e-9));assert.ok(e.capture.total.connectedShare>0&&e.capture.total.connectedShare<1);
  assert.ok(e.documents.share>0&&e.documents.share<1);assert.equal(e.frame.districts,294);assert.equal(e.frame.units.district,294);
  assert.ok(e.volume.total.tokensOnce.perYear>0);assert.equal(e.volume.variants.length,VARIANTS.length);assert.equal(e.size.reports,sizeSample.reports.length);assert.ok(e.size.charsPerToken>1.5&&e.size.charsPerToken<5);
  assert.ok(e.season.peakDay>e.total.perDay);assert.ok(e.season.consultationsPerReport>=1);near(e.season.monthly.reduce((a,b)=>a+b,0),1);

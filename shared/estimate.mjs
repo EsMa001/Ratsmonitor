@@ -183,14 +183,18 @@ export function estimateGermany({samples,frame,replicates=SAMPLE_RULES.replicate
   return {id:c.id,name:c.name,range:c.range,level,basis,samples:own.length,germany:{count:populations.length,population:populations.reduce((a,b)=>a+b,0)},...figure((state,id)=>id===c.id)};
  });
  const municipalIds=new Set(SIZE_CLASSES.filter(c=>c.min!==undefined).map(c=>c.id));
+ // What a figure rests on. own: the state has examples of that level. typical: it has none, the typical level of the
+ // measured states stands in. borrowed: the level has no example anywhere and uses the municipal model.
+ const basisOf=(state,id)=>{const model=point.models[municipalIds.has(id)?'municipality':id];return !model?'borrowed':model.states[state]?'own':'typical';};
+ const basis=filter=>{const sum={own:0,typical:0,borrowed:0};for(const [state,cell] of Object.entries(point.cells))if(filter(state))for(const [id,value] of Object.entries(cell))sum[basisOf(state,id)]+=value;return sum;};
  const states=Object.entries(FEDERAL_STATES).map(([id,name])=>{
   const population=sumOf(frame.municipalities[id]||[],p=>p)+sumOf(frame.associations[id]||[],p=>p)+(frame.cityStates?.[id]||0),f=figure(state=>state===id);
   return {id,name,municipalities:(frame.municipalities[id]||[]).length,districts:(frame.districts[id]||[]).length,associations:(frame.associations[id]||[]).length,boroughs:(frame.boroughs[id]||[]).length,population,samples:samples.filter(s=>s.state===id).length,
-   factors:Object.fromEntries(Object.keys(LEVELS).map(level=>[level,point.models[level]?.states[id]?{examples:point.models[level].states[id].n,factor:stateFactor(point.models[level],id)}:null])),...f,perDay:f.perYear/365,per1000:population?1000*f.perYear/population:0};
+   factors:Object.fromEntries(Object.keys(LEVELS).map(level=>[level,point.models[level]?.states[id]?{examples:point.models[level].states[id].n,factor:stateFactor(point.models[level],id)}:null])),...f,perDay:f.perYear/365,per1000:population?1000*f.perYear/population:0,ownShare:f.perYear?basis(state=>state===id).own/f.perYear:0};
  }).sort((a,b)=>b.perYear-a.perYear);
  const levels=Object.entries(LEVELS).map(([id,name])=>({id,name,samples:samples.filter(s=>s.level===id).length,model:point.models[id],assumed:!point.models[id],...figure((state,cls)=>id==='municipality'?municipalIds.has(cls):cls===id)}));
  const total=figure();
- return {classes,states,levels,cells:point.cells,replicates:runs,validation:validate(samples),sampleCount:samples.length,
+ return {classes,states,levels,basis:basis(()=>true),cells:point.cells,replicates:runs,validation:validate(samples),sampleCount:samples.length,
   total:{...total,perDay:total.perYear/365,lowPerDay:total.lowPerYear/365,highPerDay:total.highPerYear/365,perWorkday:total.perYear/SAMPLE_RULES.workdaysPerYear}};
 }
 /**

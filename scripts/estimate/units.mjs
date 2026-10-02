@@ -5,18 +5,22 @@
 // A sampled member municipality therefore stands for its association as a whole.
 //   node scripts/estimate/units.mjs prepare   → tmp/sample/units.json, candidates-units.json (then verify, see below)
 //   node scripts/estimate/units.mjs           → tmp/sample/sources.json: one row per unit with source and outcome
+// DIR=tmp/sample2/ selects another sample folder.
 // Verification of the units between the two calls:
 //   DIR=tmp/sample/ AREAS=tmp/sample/units.json CANDIDATES=candidates-units.json OUT=verified-units.json TRUST_LINK=1 node scripts/source-discovery/verify.mjs
 import fs from 'node:fs';
 import {FEDERAL_STATES} from '../../shared/estimate.mjs';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
-const read=file=>JSON.parse(fs.readFileSync(file,'utf8')),dir='tmp/sample/',optional=file=>fs.existsSync(dir+file)?read(dir+file):{};
+const read=file=>JSON.parse(fs.readFileSync(file,'utf8')),dir=process.env.DIR||'tmp/sample/',optional=file=>fs.existsSync(dir+file)?read(dir+file):{};
 const areas=read(dir+'areas.json'),candidates=read(dir+'candidates.json'),verified=read(dir+'verified.json');
 const latest=new Map();for(const r of read('tmp/population/municipalities.json')){if(!/^\d{8}$/.test(r.key))continue;const old=latest.get(r.key);if(!old||(r.date||'')>(old.date||''))latest.set(r.key,r);}
 const population=new Map([...latest.values()].filter(r=>r.pop>0&&(r.date||'')>='2022').map(r=>[r.key,r.pop]));
 const regional=new Map(read('tmp/population/regional-keys.json').filter(r=>/^\d{12}$/.test(r.rs)&&population.has(r.key)).map(r=>[r.key,r.rs.slice(0,9)]));
 const members=new Map();for(const [key,rs] of regional)members.set(rs,[...(members.get(rs)||[]),key]);
-const association=key=>{const rs=regional.get(key);return rs&&members.get(rs).length>=2?rs:null;};
+// Baden-Württemberg: members of an administrative association keep their own council system and stay units of their own
+// (the same rule as in scripts/build-population.mjs).
+const INDEPENDENT_MEMBERS=new Set(['08']);
+const association=key=>{const rs=INDEPENDENT_MEMBERS.has(key.slice(0,2))?null:regional.get(key);return rs&&members.get(rs).length>=2?rs:null;};
 const sampledMembers=areas.filter(a=>a.level==='municipality'&&association(a.ags));
 // One unit per association that a sampled municipality belongs to.
 const units=new Map();

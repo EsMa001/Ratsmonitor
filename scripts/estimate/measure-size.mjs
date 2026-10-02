@@ -33,10 +33,12 @@ for(const row of db.prepare("SELECT id,region_id AS area,json_extract(payload,'$
 }
 db.close();
 for(const region of regions)if(byArea.has(region.id))areas.push({id:region.id,name:region.name,level:region.kind==='district'?'district':'municipality',state:'05',population:population[region.id],external:false,reports:byArea.get(region.id)});
-if(fs.existsSync('tmp/sample/sources.json')){
- const units=new Map(read('tmp/sample/sources.json').map(u=>[u.id,u]));
- for(const file of fs.readdirSync('tmp/sample/year')){
-  const year=read('tmp/sample/year/'+file),unit=units.get(year.id);if(!year.ok||!unit)continue;
+// SAMPLES=tmp/sample/,tmp/sample2/ reads several draws.
+for(const dir of (process.env.SAMPLES||'tmp/sample/').split(',').map(s=>s.trim()).filter(Boolean)){
+ if(!fs.existsSync(dir+'sources.json'))continue;
+ const units=new Map(read(dir+'sources.json').map(u=>[u.id,u]));
+ for(const file of fs.readdirSync(dir+'year')){
+  const year=read(dir+'year/'+file),unit=units.get(year.id);if(!year.ok||!unit)continue;
   areas.push({id:unit.id,name:unit.name,level:unit.level,state:unit.state,population:unit.population,external:true,reports:year.reports.filter(r=>r.days[0]>=from&&r.days[0]<=to).map(r=>({id:r.id,documents:r.documents.filter(isPdf).map(d=>({url:d.url,title:d.title}))}))});
  }
 }

@@ -153,5 +153,26 @@ test('marks of read meetings reach the collector, are stored after the reports a
  reset();insert(a);
  globalThis.identityFixture.fresh={topics:[{...make('a'),officialTitle:'Wärmeplanung, geändert',updatedAt:'2026-09-30'}],marks:{[meeting]:mark},readMeetings:1,coverage:coverage('2026-09-30')};
  failBatch=true;assert.equal((await sync.runSync('metadata','billerbeck')).status,502);failBatch=false;
- assert.equal(marksRow(),undefined);assert.equal(db.prepare("SELECT count(*) AS n FROM system_state WHERE key LIKE 'import-%'").get().n,0,'no lock is left behind');
+ assert.equal(marksRow(),undefined);assert.equal(db.prepare("SELECT count(*) AS n FROM system_state WHERE key='import-lock' OR key LIKE 'import-run:%'").get().n,0,'no lock is left behind');
+});
+test('every import leaves a record for the debug view; warnings are kept apart from gaps',async()=>{
+ reset();const a=make('a');insert(a);
+ const debug=()=>JSON.parse(db.prepare("SELECT value FROM system_state WHERE key='import-debug:billerbeck'").get().value);
+ const details=()=>JSON.parse(db.prepare('SELECT details FROM import_runs ORDER BY started_at DESC LIMIT 1').get().details);
+ const warning='Vorlage nicht öffentlich (HTTP 401): https://fixture.example/paper/9';
+ globalThis.identityFixture.fresh={topics:[{...make('a'),officialTitle:'Wärmeplanung, geändert',updatedAt:'2026-09-27'},{...make('b'),sourceUrl:url+'/agendaitem/b',updatedAt:'2026-09-27'}],readMeetings:2,coverage:{regionId:'billerbeck',method:'scraper',importedAt:'2026-09-27',from:'2026-07-01',to:'2026-09-27',meetings:2,complete:true,issues:[],warnings:[warning]}};
+ const result=await sync.runSync('metadata','billerbeck','manual',{window:'1m'});assert.equal(result.status,200);assert.deepEqual(result.data.warnings,[warning]);assert.equal(result.data.attemptComplete,true);
+ // The collector is handed the trace of this import.
+ assert.equal(typeof globalThis.identityFixture.options.trace.wrap,'function');
+ let record=debug();assert.equal(record.status,'completed');assert.equal(record.window,'1m');assert.equal(record.adapter,'scraper');assert.equal(record.reports,2);assert.equal(record.stockBefore,1);assert.deepEqual(record.written,{created:1,changed:1,unchanged:0});
+ assert.equal(record.meetings,2);assert.equal(record.readMeetings,2);assert.deepEqual(record.warnings,[warning]);assert.deepEqual(record.issues,[]);assert.equal(record.summary.requests,0);assert.ok(record.durationMs>=0&&record.collectMs>=0&&record.storeMs>=0);
+ assert.deepEqual(details().warnings,[warning]);assert.deepEqual(Object.keys(details().debug).sort(),['durationMs','failed','networkMs','requests']);assert.equal(record.runId,db.prepare('SELECT id FROM import_runs ORDER BY started_at DESC LIMIT 1').get().id);
+ // The warning is stored with the source status and does not make it incomplete.
+ const stored=JSON.parse(db.prepare("SELECT payload FROM source_coverage WHERE region_id='billerbeck'").get().payload);assert.deepEqual(stored.warnings,[warning]);assert.equal(stored.complete,true);assert.equal(stored.attemptStatus,'completed');
+ // A failing source: the record names the error, the stock stays.
+ globalThis.identityFixture.error=true;const failed=await sync.runSync('metadata','billerbeck');globalThis.identityFixture.error=false;assert.equal(failed.status,502);
+ record=debug();assert.equal(record.status,'failed');assert.equal(record.error,'upstream unavailable');assert.equal(record.window,'12m');assert.equal(details().error,'upstream unavailable');assert.equal(details().debug.requests,0);
+ assert.equal(db.prepare('SELECT count(*) AS n FROM topics').get().n,2);
+ // Reading documents for summaries is not an import of official data and leaves the record alone.
+ await sync.runSync('summaries','billerbeck');assert.equal(debug().status,'failed');
 });

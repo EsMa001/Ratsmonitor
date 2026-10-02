@@ -21,7 +21,8 @@ export interface StoredTopic extends TopicDetail {
 export interface ImportData {
     topics: StoredTopic[];
     // unchangedMeetings: meetings skipped because their agenda is as it was; resumable: the time limit ended the attempt.
-    coverage: Coverage & {unchangedMeetings?: number; resumable?: boolean};
+    // warnings: remarks that do not make the import incomplete, e.g. papers the source does not publish.
+    coverage: Coverage & {unchangedMeetings?: number; resumable?: boolean; warnings?: string[]; method?: string};
     // Meetings read completely by this import, and how many of them were read now (see meeting-marks.mjs).
     marks?: Record<string, unknown>;
     readMeetings?: number;

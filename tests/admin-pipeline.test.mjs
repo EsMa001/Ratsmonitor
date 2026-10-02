@@ -230,6 +230,10 @@ test('an import cut off by the time limit continues in the same job, but not wit
  assert.equal(job.items[0].status,'queued');assert.equal(job.items[0].processed,40);assert.match(job.items[0].message,/wird fortgesetzt \(Teil 2\)/);assert.equal(job.status,'queued');
  job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{topics:35,unchanged:60,attemptComplete:true,coverage:{complete:true,issues:[]}}}));
  assert.equal(job.items[0].status,'completed');assert.equal(job.items[0].processed,75);assert.match(job.items[0].message,/60 unveränderte Sitzungen übersprungen/);assert.equal(job.status,'completed');
+ // A warning is shown with the result and does not turn a complete import into a partial one.
+ job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[3]]},()=>{});
+ job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{topics:3,attemptComplete:true,warnings:['Vorlage nicht öffentlich (HTTP 401): x'],coverage:{complete:true,issues:[]}}}));
+ assert.equal(job.items[0].status,'completed');assert.equal(job.items[0].message,'Ergebnis in der Datenbank gespeichert. Warnung: Vorlage nicht öffentlich (HTTP 401): x');
  // A source that never gets through: after ten continuations the item ends as a partial result.
  job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[1]],window:'12m'},()=>{});
  let attempts=0;for(;job.status!=='completed'&&attempts<30;attempts++)job=await pipelineAction(db,{action:'step',id:job.id},async()=>cut);

@@ -3,15 +3,16 @@
 //                                     search and, where a source could be read, the figures of its year
 //   shared/document-size-sample.json  the measured size of documents (only when tmp/size/measured.json exists)
 // Input: tmp/sample/sources.json, tmp/sample/year/*.json, tmp/size/measured.json. Works offline.
-// Run: node scripts/estimate/build-samples.mjs      (TO=2026-10-02 fixes the end of the period)
+// Run: node scripts/estimate/build-samples.mjs      (TO=2026-10-02 fixes the end of the period;
+//      SAMPLES=tmp/sample/,tmp/sample2/ merges several draws)
 import fs from 'node:fs';
 import {rangeStart} from '../../shared/timeline.mjs';
-import {profile} from '../../shared/estimate.mjs';
+import {profile,FEDERAL_STATES} from '../../shared/estimate.mjs';
 import {summarizeSize} from '../../shared/estimate-size.mjs';
-const read=file=>JSON.parse(fs.readFileSync(file,'utf8')),dir='tmp/sample/';
+const read=file=>JSON.parse(fs.readFileSync(file,'utf8')),dirs=(process.env.SAMPLES||'tmp/sample/').split(',').map(s=>s.trim()).filter(Boolean);
 const to=process.env.TO||new Date().toISOString().slice(0,10),from=rangeStart('12m',to,new Map());
 const isPdf=d=>d.kind==='application/pdf'||d.kind==='pdf';
-const units=read(dir+'sources.json').map(u=>{
+const units=dirs.flatMap(dir=>read(dir+'sources.json').map(u=>{
  const row={id:u.id,name:u.name,level:u.level,state:u.state,population:u.population,class:u.class,members:u.members||null,outcome:u.outcome,system:u.system||null};
  const file=dir+'year/'+u.id+'.json';if(!u.source||!fs.existsSync(file))return row;
  const year=read(file);if(!year.ok)return {...row,error:year.error};
@@ -24,9 +25,12 @@ const units=read(dir+'sources.json').map(u=>{
  return {...row,method:year.method,bodies:year.bodies||1,meetings:year.meetings,unreadableMeetings:unreadable,reports:reports.length,meetingDays:sorted.length,months:new Set(sorted.map(d=>d.slice(0,7))).size,firstDay:sorted[0]||null,lastDay:sorted.at(-1)||null,
   withDocuments,links:linkCount,documents:links.size,followUps:reports.filter(r=>r.days.length>1).length,consultations:reports.reduce((n,r)=>n+r.days.length,0),
   notes:Object.entries(year.issues).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([kind,count])=>`${count}× ${kind}`),...profile([...days],from)};
-});
+}));
+if(new Set(units.map(u=>u.id)).size!==units.length)throw Error('Eine Einheit steht in mehreren Stichproben.');
+// The states of the draw: those with units other than boroughs; the city states contribute all their boroughs.
+const drawn=[...new Set(units.filter(u=>u.level!=='borough').map(u=>u.state))].sort().map(s=>FEDERAL_STATES[s]),boroughs=units.some(u=>u.level==='borough');
 fs.writeFileSync('shared/estimate-samples.json',JSON.stringify({builtAt:new Date().toISOString().slice(0,10),from,to,
- design:'Zufallsstichprobe je Bundesland und Größenklasse in Bayern, Rheinland-Pfalz, Schleswig-Holstein, Niedersachsen und Sachsen sowie alle Bezirke von Berlin und Hamburg; gezogene Mitgliedsgemeinden stehen für ihren Gemeindeverband.',units})+'\n');
+ design:`Zufallsstichprobe je Bundesland und Größenklasse in ${drawn.slice(0,-1).join(', ')} und ${drawn.at(-1)}${boroughs?' sowie alle Bezirke von Berlin und Hamburg':''}; alle Städte ab 100.000 Einwohnern dieser Länder; gezogene Mitgliedsgemeinden stehen für ihren Gemeindeverband.`,units})+'\n');
 const counted=units.filter(u=>u.reports!==undefined);
 console.log(units.length,'Einheiten,',units.filter(u=>u.outcome==='connected').length,'mit lesbarer Quelle,',counted.length,'gezählt,',counted.reduce((n,u)=>n+u.reports,0),'Berichte im Zeitraum',from,'bis',to);
 if(fs.existsSync('tmp/size/measured.json')){

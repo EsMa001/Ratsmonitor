@@ -91,7 +91,8 @@ export async function pipelineAction(db,body,run){
    // The item reports this attempt; the stored period may still be partial from an earlier, wider import.
    const complete=d.attemptComplete??d.coverage?.complete;
    if(job.stage==='metadata'&&d.resume&&(item.resumes||0)<MAX_RESUMES){item.resumes=(item.resumes||0)+1;item.status='queued';item.message=`Zeitlimit erreicht; der Abruf wird fortgesetzt (Teil ${item.resumes+1}).`;}
-   else {item.status=job.stage==='analysis'&&d.remaining>0?'queued':d.coverage&&!complete?'partial':'completed';item.message=job.stage==='analysis'?`${d.remaining||0} Artikel noch offen.`:d.quiet?'Keine Sitzungen im gewählten Zeitraum; gespeicherter Bestand unverändert.':d.coverage?.issues?.join(' · ').slice(0,2500)||(d.unchanged?`Ergebnis in der Datenbank gespeichert; ${d.unchanged} unveränderte ${d.unchanged===1?'Sitzung':'Sitzungen'} übersprungen.`:'Ergebnis in der Datenbank gespeichert.');}}
+   else {item.status=job.stage==='analysis'&&d.remaining>0?'queued':d.coverage&&!complete?'partial':'completed';item.message=job.stage==='analysis'?`${d.remaining||0} Artikel noch offen.`:d.quiet?'Keine Sitzungen im gewählten Zeitraum; gespeicherter Bestand unverändert.':d.coverage?.issues?.join(' · ').slice(0,2500)||(d.unchanged?`Ergebnis in der Datenbank gespeichert; ${d.unchanged} unveränderte ${d.unchanged===1?'Sitzung':'Sitzungen'} übersprungen.`:'Ergebnis in der Datenbank gespeichert.');
+    if(d.warnings?.length)item.message=(item.message+` Warnung: ${d.warnings.join(' · ')}`).slice(0,3000);}}
   if(job.status!=='cancelled')job.status=job.items.some(i=>i.status==='running')?'running':job.items.some(i=>i.status==='queued')?'queued':'completed';
   await save(db,stamp(job));return job;
  });

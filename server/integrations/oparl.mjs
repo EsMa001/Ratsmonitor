@@ -7,7 +7,16 @@ export const OPARL='https://oparl.stadt-muenster.de/system';
 export const BODY='https://oparl.stadt-muenster.de/bodies/0001';
 export const RIS='https://www.stadt-muenster.de/sessionnet/sessionnetbi/';
 export function checkedUrl(value){const u=new URL(value);if(u.protocol!=='https:'||u.hostname!=='oparl.stadt-muenster.de'||u.username||u.password)throw Error('Unzulässige OParl-Adresse');return u.href}
-export async function requestJson(url,timeoutMs=55000){const r=await fetchNoRedirect(checkedUrl(url),{signal:AbortSignal.timeout(timeoutMs),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok)throw Error('OParl HTTP '+r.status);return r.json()}
+// A lost or reset connection gets one more attempt. An HTTP status, a redirect or a timeout is an answer of its own
+// and is not repeated.
+export async function requestJson(url,timeoutMs=55000){
+ for(let attempt=0;;attempt++){
+  try{const r=await fetchNoRedirect(checkedUrl(url),{signal:AbortSignal.timeout(timeoutMs),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok)throw Object.assign(Error('OParl HTTP '+r.status),{answered:true});return await r.json();}
+  catch(e){if(attempt>=1||e.answered||e.name==='TimeoutError'||/Weiterleitung|Nicht freigegeben|Fremde/.test(String(e.message)))throw e;await new Promise(done=>setTimeout(done,400));}
+ }
+}
+// The source refuses the record itself (HTTP 401 or 403): it exists but is not public.
+const notPublic=e=>/HTTP (401|403)\b/.exec(String(e?.message))?.[1]||null;
 export async function readList(url,get=requestJson){let next=url,out=[],seen=new Set();while(next){next=checkedUrl(next.replace(/\+/g,'%2B'));if(seen.has(next))throw Error('Wiederholte OParl-Listenseite');seen.add(next);if(seen.size>100)throw Error('OParl-Seitenlimit erreicht');const j=await get(next);if(!Array.isArray(j.data))throw Error('Ungültige OParl-Liste');out.push(...j.data);next=j.links?.next;}return out}
 export async function parallel(items,fn,n=3){const result=new Array(items.length);let i=0;await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{while(i<items.length){const at=i++;result[at]=await fn(items[at],at)}}));return result}
 export const clean=s=>String(s||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
@@ -30,15 +39,15 @@ export function sourceSummary(t){const state={approved:'Ein Beschluss ist dokume
 export function fileDocs(files){return (files||[]).filter(f=>f&&!f.deleted&&f.accessUrl).map(f=>({title:clean(f.name||f.fileName||'Originaldokument'),url:checkedUrl(f.accessUrl),kind:f.mimeType||'document'}))}
 export async function collectOparl({now=new Date(),getJson=requestJson,maxDurationMs=300000,onProgress=()=>{},window:lookback}={}){
  const fetchJson=budgeted(getJson,maxDurationMs),cache=new Map();getJson=url=>{if(!cache.has(url))cache.set(url,fetchJson(url));return cache.get(url);};
- const from=windowStart(now,lookback);const fromDay=from.toISOString().slice(0,10);const since=new Date(from);since.setUTCDate(since.getUTCDate()-45);const query='?limit=1000&modified_since='+encodeURIComponent(since.toISOString());const issues=[];
+ const from=windowStart(now,lookback);const fromDay=from.toISOString().slice(0,10);const since=new Date(from);since.setUTCDate(since.getUTCDate()-45);const query='?limit=1000&modified_since='+encodeURIComponent(since.toISOString());const issues=[],warnings=[];
  const system=await getJson(OPARL);const bodies=await readList(system.body,getJson);const body=bodies.find(b=>b.id===BODY);if(!body)throw Error('Stadt Münster fehlt in der OParl-Schnittstelle');
  const [meetingsRaw,papersRaw,organizations]=await Promise.all([readList(body.meeting+query,getJson),readList(body.paper+query,getJson),readList(body.organization+'?limit=1000&omit_internal=true',getJson)]);
  const meetings=meetingsRaw.filter(m=>!m.deleted&&m.start&&m.start.slice(0,10)>=fromDay);
  const orgs=new Map(organizations.filter(o=>!o.deleted).map(o=>[o.id,clean(o.name)]));const papers=new Map(papersRaw.filter(p=>!p.deleted).map(p=>[p.id,p]));const consultations=new Map();for(const p of papers.values())for(const c of p.consultation||[])if(!c.deleted)consultations.set(c.id,c);
  const items=meetings.flatMap(m=>(m.agendaItem||[]).filter(a=>a.public===true&&!a.deleted).map(a=>({a,m})));
  const missing=[...new Set(items.map(x=>x.a.consultation).filter(id=>id&&!consultations.has(id)))];onProgress(`OParl: ${meetings.length} Sitzungen, ${items.length} öffentliche Tagesordnungspunkte, ${missing.length} zusätzliche Beratungsverknüpfungen.`);
- await parallel(missing,async id=>{try{const c=await getJson(id);if(!c.deleted)consultations.set(id,c)}catch{issues.push('Beratungsverknüpfung nicht erreichbar: '+id)}});
- const missingPapers=[...new Set([...consultations.values()].map(c=>c.paper).filter(id=>id&&!papers.has(id)))];await parallel(missingPapers,async id=>{try{const p=await getJson(id);if(!p.deleted)papers.set(id,p)}catch{issues.push('Vorlage nicht erreichbar: '+id)}});
+ await parallel(missing,async id=>{try{const c=await getJson(id);if(!c.deleted)consultations.set(id,c)}catch(e){if(notPublic(e))warnings.push(`Beratungsverknüpfung nicht öffentlich (HTTP ${notPublic(e)}): ${id}`);else issues.push('Beratungsverknüpfung nicht erreichbar: '+id)}});
+ const missingPapers=[...new Set([...consultations.values()].map(c=>c.paper).filter(id=>id&&!papers.has(id)))];await parallel(missingPapers,async id=>{try{const p=await getJson(id);if(!p.deleted)papers.set(id,p)}catch(e){if(notPublic(e))warnings.push(`Vorlage nicht öffentlich (HTTP ${notPublic(e)}): ${id}`);else issues.push('Vorlage nicht erreichbar: '+id)}});
  const attendances=new Map();await parallel(meetings,async m=>attendances.set(m.id,await publicParticipants(m,getJson,now.toISOString())));
  const grouped=new Map();for(const {a,m} of items){const c=consultations.get(a.consultation),p=c&&papers.get(c.paper);const key=p?.id||a.id;if(!grouped.has(key))grouped.set(key,{paper:p,items:[]});grouped.get(key).items.push({a,m,c})}
  // Publish new public papers even before they have a meeting in the current period.
@@ -51,5 +60,5 @@ export async function collectOparl({now=new Date(),getJson=requestJson,maxDurati
  const sourceData={version:'public-source-fields-v1',method:'oparl',fetchedAt:now.toISOString(),records:[compactOparl(p,'paper'),...g.items.flatMap(({a,m,c})=>[compactOparl(a,'agenda'),compactOparl(c,'consultation'),compactOparl(m,'meeting')])].filter(Boolean)};
  const t={id,sourceData,public:true,source:'city',title:officialTitle,officialTitle,status:last?.status||'consulting',category:category(officialTitle),committee:last?.committee||'Noch keiner Sitzung zugeordnet',eventDate:last?.date||p?.date||(p?.created||now.toISOString()).slice(0,10),updatedAt:[p?.modified,...g.items.map(x=>x.a.modified)].filter(Boolean).sort().at(-1)||now.toISOString(),metadata:{sourceModifiedAt:[p?.modified,...g.items.map(x=>x.a.modified)].filter(Boolean).sort().at(-1)||null},reference:p?.reference||'',documents:[...new Map(docs.map(d=>[d.url,d])).values()],events,relevanceReason:'Öffentlicher Vorgang der Stadt Münster.',sourceUrl:key,identityLinks:[key,...g.items.map(x=>x.a.id)],sourceText:officialTitle+'\n'+(p?.paperType||'')+'\n'+events.map(e=>`${e.date} ${e.committee}: ${e.description}`).join('\n'),paperType:p?.paperType||'',documentText:'',generatedBy:''};Object.assign(t,sourceSummary(t));t.quality=await qualityCheck(t);return t;
  });
- topics.sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));return {topics,coverage:{from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.length,sourceCount:1,quiet:meetings.length===0&&issues.length===0,complete:issues.length===0,issues}};
+ topics.sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));return {topics,coverage:{from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.length,sourceCount:1,quiet:meetings.length===0&&issues.length===0,complete:issues.length===0,issues,...(warnings.length?{warnings}:{})}};
 }

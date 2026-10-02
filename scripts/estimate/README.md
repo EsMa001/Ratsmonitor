@@ -23,6 +23,21 @@ Die Schritte 5 und 6 setzen einen unterbrochenen Lauf fort. `TO=2026-10-02` legt
 - Eine gezogene Mitgliedsgemeinde steht für ihren Gemeindeverband: Verband und Mitglieder führen in der Regel ein gemeinsames System. Welche Gemeinden zusammengehören, ergibt sich aus den ersten neun Stellen des Regionalschlüssels.
 - `TRUST_LINK=1` bei der Prüfung der Verbände: Das System eines Verbands nennt die einzelne Mitgliedsgemeinde oft nicht im Namen. Der Verweis von der offiziellen Website der Gemeinde gilt dann als Beleg.
 
+## Weitere Ziehungen
+
+Eine zweite Ziehung liegt in einem eigenen Ordner und wird am Ende mit der ersten zusammengeführt. So bleibt die erste Stichprobe unverändert und nachvollziehbar.
+
+```bash
+export DIR=tmp/sample2/
+STATES=08,06,12,16,13,15,10,04 CITY_STATES= PER_STATE='{"tiny":20,"small":12,"medium":8,"district":4,"association":0}' node scripts/estimate/draw-sample.mjs
+AREAS=tmp/sample2/areas.json node scripts/source-discovery/crawl.mjs      # danach verify.mjs, units.mjs, count-year.mjs mit demselben DIR
+SAMPLES=tmp/sample/,tmp/sample2/ node scripts/estimate/measure-size.mjs
+SAMPLES=tmp/sample/,tmp/sample2/ node scripts/estimate/build-samples.mjs
+```
+
+- `STATES`: Länder, in denen gezogen wird. `CITY_STATES`: Stadtstaaten, deren Bezirke vollständig aufgenommen werden (leer lassen, wenn sie schon in einer anderen Ziehung stehen). `PER_STATE`: Anzahl je Größenklasse; Städte ab 100.000 Einwohnern werden immer alle genommen.
+- Die zweite Ziehung (02.10.2026) umfasst die acht Länder ohne Beispiel aus der ersten: Baden-Württemberg, Hessen, Brandenburg, Thüringen, Mecklenburg-Vorpommern, Sachsen-Anhalt, Saarland und Bremen. Gemeindeverbände entstehen dort nur über gezogene Mitgliedsgemeinden.
+
 ## Zählung
 
 - Ein Bericht zählt an dem Tag, an dem er erstmals auf einer Tagesordnung stand.

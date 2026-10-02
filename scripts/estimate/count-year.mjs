@@ -9,7 +9,7 @@ import {collectRegionalOparl} from '../../server/integrations/oparl-regional.mjs
 import {collectRubin} from '../../server/integrations/more-rubin.mjs';
 import {collectSdnet} from '../../server/integrations/sdnet.mjs';
 import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
-const dir='tmp/sample/',out=dir+'year/';fs.mkdirSync(out,{recursive:true});
+const dir=process.env.DIR||'tmp/sample/',out=dir+'year/';fs.mkdirSync(out,{recursive:true});
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const sources=read(dir+'sources.json').filter(r=>r.source),only=process.argv[2]?new Set(process.argv[2].split(',')):null;
 // Twenty minutes per unit: a year of a large city needs several hundred requests.
