@@ -1,12 +1,13 @@
 import {compactOparl,sourceDecision,publicParticipants} from './source-fields.mjs';
 import {windowStart} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
+import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 // Public OParl 1.1 only. No HTML scraper or alternative RIS data path.
 export const OPARL='https://oparl.stadt-muenster.de/system';
 export const BODY='https://oparl.stadt-muenster.de/bodies/0001';
 export const RIS='https://www.stadt-muenster.de/sessionnet/sessionnetbi/';
 export function checkedUrl(value){const u=new URL(value);if(u.protocol!=='https:'||u.hostname!=='oparl.stadt-muenster.de'||u.username||u.password)throw Error('Unzulässige OParl-Adresse');return u.href}
-export async function requestJson(url,timeoutMs=55000){const r=await fetch(checkedUrl(url),{signal:AbortSignal.timeout(timeoutMs),redirect:'error',headers:{Accept:'application/json'}});if(!r.ok)throw Error('OParl HTTP '+r.status);return r.json()}
+export async function requestJson(url,timeoutMs=55000){const r=await fetchNoRedirect(checkedUrl(url),{signal:AbortSignal.timeout(timeoutMs),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok)throw Error('OParl HTTP '+r.status);return r.json()}
 export async function readList(url,get=requestJson){let next=url,out=[],seen=new Set();while(next){next=checkedUrl(next.replace(/\+/g,'%2B'));if(seen.has(next))throw Error('Wiederholte OParl-Listenseite');seen.add(next);if(seen.size>100)throw Error('OParl-Seitenlimit erreicht');const j=await get(next);if(!Array.isArray(j.data))throw Error('Ungültige OParl-Liste');out.push(...j.data);next=j.links?.next;}return out}
 export async function parallel(items,fn,n=3){const result=new Array(items.length);let i=0;await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{while(i<items.length){const at=i++;result[at]=await fn(items[at],at)}}));return result}
 export const clean=s=>String(s||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();

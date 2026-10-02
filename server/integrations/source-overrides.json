@@ -7,5 +7,210 @@
     "state": "system-verified",
     "meetingScan": "forward",
     "maxPages": 24
+  },
+  "nrw-05314000": {
+    "system": "https://www.bonn.sitzung-online.de/oparl/system",
+    "verifiedSource": "https://www.bonn.sitzung-online.de/oparl/system",
+    "verifiedAt": "2026-10-01",
+    "state": "system-verified",
+    "note": "Die im OParl-Verzeichnis genannte Adresse /public/oparl/system liefert eine Zugriffsprüfung statt Daten.",
+    "meetingScan": "filter"
+  },
+  "nrw-05111000": {
+    "upgradeHttpLinks": true,
+    "body": "https://ris-oparl.itk-rheinland.de/Oparl/bodies/0015",
+    "verifiedSource": "https://ris-oparl.itk-rheinland.de/Oparl/bodies",
+    "verifiedAt": "2026-10-01",
+    "state": "system-verified",
+    "note": "Gemeinsames System der ITK Rheinland mit mehreren Körperschaften; die Körperschaft ist fest zugeordnet.",
+    "meetingScan": "end"
+  },
+  "nrw-05370004": {
+    "system": "https://ratsinfo.erkelenz.de/public/oparl/system",
+    "upgradeHttpLinks": true,
+    "verifiedSource": "https://www.erkelenz.de/rathaus-politik/politik/rat-der-stadt-erkelenz/",
+    "verifiedAt": "2026-10-01",
+    "state": "system-verified"
+  },
+  "nrw-05154044": {
+    "system": "https://ris.stadt-rees.de/webservice/oparl/v1.1/system",
+    "verifiedSource": "https://www.stadt-rees.de/",
+    "verifiedAt": "2026-10-01",
+    "state": "system-verified",
+    "meetingScan": "filter"
+  },
+  "nrw-05966024": {
+    "system": "https://ratsinfo.olpe.de/webservice/oparl/v1.1/system",
+    "verifiedSource": "https://olpe.de/Verwaltung-Politik/Politik/Ratsinformationssystem/",
+    "verifiedAt": "2026-10-01",
+    "state": "system-verified",
+    "meetingScan": "filter"
+  },
+  "nrw-05754024": {
+    "system": "https://ratsinfo.langenberg.de/webservice/oparl/v1.1/system",
+    "verifiedSource": "https://ratsinfo.langenberg.de/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-01",
+    "state": "system-verified",
+    "meetingScan": "filter"
+  },
+  "nrw-05770040": {
+    "system": "https://rahden.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "verifiedSource": "https://rahden.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-01",
+    "state": "system-verified",
+    "meetingScan": "filter"
+  },
+  "nrw-05914000": {
+    "method": "pending",
+    "state": "unreachable",
+    "verifiedAt": "2026-10-01",
+    "note": "Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar."
+  },
+  "nrw-05124000": {
+    "method": "pending",
+    "state": "unreachable",
+    "verifiedAt": "2026-10-01",
+    "note": "Die OParl-Adresse antwortet mit HTTP 400; die Website der Stadt verlangt eine Zugriffsprüfung im Browser."
+  },
+  "nrw-05358004": {
+    "meetingScan": "filter"
+  },
+  "nrw-05366004": {
+    "meetingScan": "filter"
+  },
+  "nrw-05362004": {
+    "meetingScan": "filter"
+  },
+  "nrw-05362008": {
+    "meetingScan": "filter"
+  },
+  "nrw-05362012": {
+    "meetingScan": "end"
+  },
+  "nrw-05562004": {
+    "meetingScan": "forward"
+  },
+  "nrw-05566008": {
+    "meetingScan": "filter"
+  },
+  "nrw-05758008": {
+    "meetingScan": "filter"
+  },
+  "nrw-05362020": {
+    "meetingScan": "filter"
+  },
+  "nrw-05366": {
+    "meetingScan": "filter"
+  },
+  "nrw-05154016": {
+    "meetingScan": "filter"
+  },
+  "nrw-05754": {
+    "meetingScan": "filter"
+  },
+  "nrw-05758012": {
+    "meetingScan": "filter"
+  },
+  "nrw-05758016": {
+    "meetingScan": "filter"
+  },
+  "nrw-05358016": {
+    "meetingScan": "end"
+  },
+  "nrw-05358020": {
+    "meetingScan": "filter"
+  },
+  "nrw-05358024": {
+    "meetingScan": "filter"
+  },
+  "nrw-05366024": {
+    "meetingScan": "filter"
+  },
+  "nrw-05362032": {
+    "meetingScan": "filter"
+  },
+  "nrw-05758020": {
+    "meetingScan": "filter"
+  },
+  "nrw-05114000": {
+    "meetingScan": "end"
+  },
+  "nrw-05358028": {
+    "meetingScan": "filter"
+  },
+  "nrw-05315000": {
+    "meetingScan": "end"
+  },
+  "nrw-05566032": {
+    "meetingScan": "filter"
+  },
+  "nrw-05358032": {
+    "meetingScan": "filter"
+  },
+  "nrw-05766048": {
+    "meetingScan": "filter"
+  },
+  "nrw-05358036": {
+    "meetingScan": "filter"
+  },
+  "nrw-05358040": {
+    "meetingScan": "filter"
+  },
+  "nrw-05366032": {
+    "meetingScan": "filter"
+  },
+  "nrw-05358052": {
+    "meetingScan": "filter"
+  },
+  "nrw-05362036": {
+    "meetingScan": "filter"
+  },
+  "nrw-05754028": {
+    "meetingScan": "filter"
+  },
+  "nrw-05758028": {
+    "meetingScan": "filter"
+  },
+  "nrw-05166024": {
+    "meetingScan": "filter"
+  },
+  "nrw-05122000": {
+    "meetingScan": "end"
+  },
+  "nrw-05758032": {
+    "meetingScan": "filter"
+  },
+  "nrw-05754040": {
+    "meetingScan": "filter"
+  },
+  "nrw-05770044": {
+    "meetingScan": "filter"
+  },
+  "nrw-05358056": {
+    "meetingScan": "filter"
+  },
+  "nrw-05554064": {
+    "meetingScan": "filter"
+  },
+  "nrw-05358060": {
+    "meetingScan": "filter"
+  },
+  "nrw-05166": {
+    "meetingScan": "filter"
+  },
+  "nrw-05758036": {
+    "meetingScan": "filter"
+  },
+  "nrw-05154060": {
+    "meetingScan": "filter"
+  },
+  "nrw-05366040": {
+    "meetingScan": "filter"
+  },
+  "nrw-05362040": {
+    "meetingScan": "end"
+  },
+  "nrw-05166036": {
+    "meetingScan": "filter"
   }
 }

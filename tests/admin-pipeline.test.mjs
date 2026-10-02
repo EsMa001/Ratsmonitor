@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
-import {pipelineAction,selectedRegions,canImport} from '../server/integrations/pipeline-jobs.mjs';
+import {pipelineAction,selectedRegions,canImport,provider,PARALLEL,PER_PROVIDER} from '../server/integrations/pipeline-jobs.mjs';
 import {createAiJob,applyAiResults,cancelAiJob,getAiJob} from '../server/integrations/ai-jobs.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
 import {keywordWeights,articleResult,AI_METHOD,LEGACY_AI_METHOD} from '../shared/ai-job.mjs';
@@ -149,4 +149,92 @@ test('job creation failure does not advance dispatches or replace the previous m
    await assert.rejects(createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit}),/Paketgröße/);
   }
  }finally{sql.close();}
+});
+// Four areas of one operator and six of six other operators, all with a connected source.
+function parallelAreas(){
+ const groups=new Map();for(const id of selectedRegions('all').filter(canImport))groups.set(provider(id),[...(groups.get(provider(id))||[]),id]);
+ const shared=[...groups.values()].find(ids=>ids.length>=4).slice(0,4),single=[...groups.values()].filter(ids=>ids[0]!==shared[0]).map(ids=>ids[0]).slice(0,6);
+ return {shared,single};
+}
+const wait=ms=>new Promise(done=>setTimeout(done,ms));
+const stored=sql=>JSON.parse(sql.prepare("SELECT value FROM system_state WHERE key='admin-pipeline-job'").get().value);
+const done={status:200,data:{topics:1,coverage:{complete:true,issues:[]}}};
+test('import steps run side by side: at most six, at most two of one operator, every area exactly once',async()=>{
+ const {sql,db}=fixture(),{shared,single}=parallelAreas();
+ assert.equal(new Set(shared.map(provider)).size,1);assert.equal(new Set([...shared,...single].map(provider)).size,7);assert.equal(PARALLEL.metadata,6);assert.equal(PARALLEL.analysis,1);assert.equal(PER_PROVIDER,2);
+ const job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[...shared,...single],window:'1w'},()=>{});
+ const active=new Set(),seen=[];let most=0,mostShared=0;
+ const run=async(stage,region,window)=>{
+  assert.equal(stage,'metadata');assert.equal(window,'1w');
+  active.add(region);most=Math.max(most,active.size);mostShared=Math.max(mostShared,[...active].filter(other=>provider(other)===provider(shared[0])).length);
+  // Long enough for six callers to get their turn at the stored job while the first imports still run.
+  seen.push(region);await wait(350);active.delete(region);
+  return {status:200,data:{topics:2,coverage:{complete:true,issues:[]}}};
+ };
+ // Nine callers, more than the server allows: the surplus is told to wait and asks again.
+ let waits=0;
+ const worker=async()=>{for(;;){const state=await pipelineAction(db,{action:'step',id:job.id},run);if(state.status==='completed')return state;if(state.wait){waits++;await wait(4);}}};
+ const finished=await Promise.all(Array.from({length:9},worker));
+ assert.equal(most,6);assert.equal(mostShared,2,'two of one operator at once, never three');assert.ok(waits>0);assert.equal(seen.length,10);assert.equal(new Set(seen).size,10,'no area is imported twice');
+ const final=stored(sql);assert.equal(final.status,'completed');assert.ok(finished.every(f=>f.status==='completed'));
+ assert.ok(final.items.every(i=>i.status==='completed'&&i.processed===2&&!i.startedAt));assert.equal(final.wait,undefined,'wait is an answer, not part of the stored job');
+ assert.equal(sql.prepare("SELECT count(*) n FROM system_state WHERE key='pipeline-lease'").get().n,0);sql.close();
+});
+test('a step waits while the only open areas belong to a busy operator; rule labelling stays one at a time',async()=>{
+ const {sql,db}=fixture(),{shared}=parallelAreas();
+ let job=await pipelineAction(db,{action:'create',stage:'metadata',regions:shared.slice(0,3)},()=>{});
+ let release;const gate=new Promise(open=>{release=open;}),calls=[];
+ const held=async(stage,region)=>{calls.push(region);await gate;return done;};
+ const first=pipelineAction(db,{action:'step',id:job.id},held);await wait(10);
+ const second=pipelineAction(db,{action:'step',id:job.id},held);await wait(10);
+ const third=await pipelineAction(db,{action:'step',id:job.id},()=>{throw Error('must wait for the operator');});
+ assert.equal(third.wait,true);assert.equal(third.status,'running');assert.deepEqual(third.items.map(i=>i.status),['running','running','queued']);assert.ok(third.items[0].startedAt);
+ release();await first;job=await second;assert.deepEqual(job.items.map(i=>i.status),['completed','completed','queued']);assert.equal(job.status,'queued');
+ job=await pipelineAction(db,{action:'step',id:job.id},async(stage,region)=>{calls.push(region);return done;});
+ assert.equal(job.status,'completed');assert.deepEqual(calls,shared.slice(0,3));
+ // Rule labelling: a second caller waits even though another area is open.
+ job=await pipelineAction(db,{action:'create',stage:'analysis',regions:['billerbeck','coesfeld']},()=>{});
+ let free;const hold=new Promise(open=>{free=open;});
+ const labelling=pipelineAction(db,{action:'step',id:job.id},async()=>{await hold;return {status:200,data:{processed:10,remaining:0}};});
+ await wait(10);
+ assert.equal((await pipelineAction(db,{action:'step',id:job.id},()=>{throw Error('one at a time');})).wait,true);
+ free();await labelling;sql.close();
+});
+test('a silent step is marked for checking after five minutes, a recent one is left alone; a cancelled job keeps results',async()=>{
+ const {sql,db}=fixture(),{single}=parallelAreas();
+ let job=await pipelineAction(db,{action:'create',stage:'metadata',regions:single.slice(0,3)},()=>{});
+ job.status='running';
+ Object.assign(job.items[0],{status:'running',startedAt:new Date(Date.now()-6*60000).toISOString()});
+ Object.assign(job.items[1],{status:'running',startedAt:new Date(Date.now()-60000).toISOString()});
+ await db.prepare("UPDATE system_state SET value=? WHERE key='admin-pipeline-job'").bind(JSON.stringify(job)).run();
+ const calls=[];
+ job=await pipelineAction(db,{action:'step',id:job.id},async(stage,region)=>{calls.push(region);return done;});
+ assert.deepEqual(calls,[single[2]],'neither running area is repeated');
+ assert.deepEqual(job.items.map(i=>i.status),['unknown','running','completed']);assert.match(job.items[0].message,/Antwort unterbrochen/);assert.equal(job.status,'running');
+ // Nothing left to claim, one step still out: the caller is asked to wait.
+ assert.equal((await pipelineAction(db,{action:'step',id:job.id},()=>{throw Error('nothing to claim');})).wait,true);
+ // A job cancelled while a step runs still records what that step stored, and stays cancelled.
+ job=await pipelineAction(db,{action:'cancel',id:job.id},()=>{});assert.equal(job.status,'cancelled');
+ job=await pipelineAction(db,{action:'create',stage:'metadata',regions:single.slice(0,2)},()=>{});
+ const id=job.id,running=pipelineAction(db,{action:'step',id},async()=>{await wait(20);return {status:502,data:{error:'Import fehlgeschlagen',cause:'HTTP 503'}};});
+ await wait(5);await pipelineAction(db,{action:'cancel',id},()=>{});
+ job=await running;assert.equal(job.status,'cancelled');assert.equal(job.items[0].status,'failed');assert.match(job.items[0].message,/Ursache: HTTP 503/);assert.equal(job.items[1].status,'queued');
+ assert.equal((await pipelineAction(db,{action:'step',id},()=>{throw Error('cancelled jobs do not run');})).status,'cancelled');
+ await assert.rejects(pipelineAction(db,{action:'step',id:'other'},()=>{}),/inzwischen geändert/);sql.close();
+});
+test('an import cut off by the time limit continues in the same job, but not without end; unchanged meetings are named',async()=>{
+ const {sql,db}=fixture(),{single}=parallelAreas();
+ let job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[0]],window:'12m'},()=>{});
+ const cut={status:200,data:{topics:40,resume:true,attemptComplete:false,coverage:{complete:false,issues:['Zeitbudget der Quelle erreicht; 80 Sitzungen noch nicht vollständig gelesen.']}}};
+ job=await pipelineAction(db,{action:'step',id:job.id},async()=>cut);
+ assert.equal(job.items[0].status,'queued');assert.equal(job.items[0].processed,40);assert.match(job.items[0].message,/wird fortgesetzt \(Teil 2\)/);assert.equal(job.status,'queued');
+ job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{topics:35,unchanged:60,attemptComplete:true,coverage:{complete:true,issues:[]}}}));
+ assert.equal(job.items[0].status,'completed');assert.equal(job.items[0].processed,75);assert.match(job.items[0].message,/60 unveränderte Sitzungen übersprungen/);assert.equal(job.status,'completed');
+ // A source that never gets through: after ten continuations the item ends as a partial result.
+ job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[1]],window:'12m'},()=>{});
+ let attempts=0;for(;job.status!=='completed'&&attempts<30;attempts++)job=await pipelineAction(db,{action:'step',id:job.id},async()=>cut);
+ assert.equal(attempts,11);assert.equal(job.items[0].status,'partial');assert.match(job.items[0].message,/Zeitbudget/);
+ // An attempt that read nothing further is not continued.
+ job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[2]]},()=>{});
+ job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{...cut.data,resume:false}}));assert.equal(job.items[0].status,'partial');sql.close();
 });

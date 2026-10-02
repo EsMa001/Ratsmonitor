@@ -2,6 +2,8 @@ import {parseAttendance} from './sessionnet-details.mjs';
 import {sourceDecision} from './source-fields.mjs';
 import {windowStart,calendarMonthsBack} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
+import {SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {usableMark,newMark} from './meeting-marks.mjs';
 import {hash,category,sourceSummary,parallel} from './oparl.mjs';
 const entities={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',ouml:'ö',auml:'ä',uuml:'ü',Ouml:'Ö',Auml:'Ä',Uuml:'Ü',szlig:'ß',ndash:'-',mdash:'-'};
 export function decode(s){return String(s||'').replace(/&(#x[0-9a-f]+|#\d+|\w+);/gi,(m,k)=>k[0]==='#'?String.fromCodePoint(k[1].toLowerCase()==='x'?parseInt(k.slice(2),16):Number(k.slice(1))):entities[k]??m)}
@@ -13,7 +15,7 @@ export async function fetchText(url,source,timeoutMs=20000,request=fetch){
  for(let hop=0;hop<=3;hop++){
   if(seen.has(next))throw Error('Wiederholte Weiterleitung der Quelle');seen.add(next);
   const remaining=deadline-Date.now();if(remaining<=0)throw Error('Zeitbudget der Quelle erreicht');
-  const r=await request(next,{redirect:'manual',signal:AbortSignal.timeout(remaining),headers:{'User-Agent':'VorOrt-PoliticalTopics/0.5 (public council documents)','Accept':'text/html,application/json'}});
+  const r=await request(next,{redirect:'manual',signal:AbortSignal.timeout(remaining),headers:{'User-Agent':SOURCE_USER_AGENT,'Accept':'text/html,application/json'}});
   if([301,302,303,307,308].includes(r.status)){
    const location=r.headers.get('location');await r.body?.cancel();
    if(!location)throw Error('Weiterleitung ohne Zieladresse');
@@ -25,7 +27,8 @@ export async function fetchText(url,source,timeoutMs=20000,request=fetch){
  }
 }
 export function missingAgendaIssue(html,url){return /Zu dieser Sitzung wurden noch keine Detailinformationen freigegeben/i.test(text(html))?'Sitzungsdetails noch nicht öffentlich freigegeben: '+url:'Keine lesbare öffentliche Tagesordnung: '+url;}
-export function meetingRows(h,base){return links(h,base).filter(l=>/si0057\.(asp|php)/.test(l.url)&&/\d{2}\.\d{2}\.\d{4}/.test(l.title)).map(l=>{const date=l.title.match(/(\d{2})\.(\d{2})\.(\d{4})/);return {...l,date:`${date[3]}-${date[2]}-${date[1]}`,committee:l.title.replace(/^Details anzeigen:\s*/,'').replace(/\s*\d{2}\.\d{2}\.\d{4}.*/,'')};});}
+// Some installations link the calendar to the meeting overview (si0056); the agenda of the same meeting is si0057.
+export function meetingRows(h,base){return links(h,base).filter(l=>/si005[67]\.(asp|php)/.test(l.url)&&/\d{2}\.\d{2}\.\d{4}/.test(l.title)).map(l=>{const date=l.title.match(/(\d{2})\.(\d{2})\.(\d{4})/);return {...l,url:l.url.replace(/si0056\.(asp|php)/,'si0057.$1'),date:`${date[3]}-${date[2]}-${date[1]}`,committee:l.title.replace(/^Details anzeigen:\s*/,'').replace(/\s*\d{2}\.\d{2}\.\d{4}.*/,'')};});}
 export function parseAgenda(h,meeting,source,now=new Date()){
  const result=[];let ordinal=0;
  for(const m of h.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){
@@ -48,7 +51,9 @@ export function parseAgenda(h,meeting,source,now=new Date()){
  }
  return result;
 }
-export async function collectSessionNet(source,{now=new Date(),get=fetchText,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback}={}){
+// marks (optional): what earlier imports read completely, see meeting-marks.mjs. The result then names the marks that
+// hold after this import; the caller stores them once the reports are saved.
+export async function collectSessionNet(source,{now=new Date(),get=fetchText,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks}={}){
  get=budgeted(get,maxDurationMs,2);
  const from=windowStart(now,lookback);const fromDay=from.toISOString().slice(0,10),issues=[],meetings=new Map();
  // Calendar months cover the selected look-back window (default: rolling twelve months) and already published next-month meetings.
@@ -58,15 +63,24 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
   const date=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+offset,1));const url=source.base+`si0040.${source.extension}?__cjahr=${date.getUTCFullYear()}&__cmonat=${date.getUTCMonth()+1}`;
   try{const html=await get(url,source);if(!/sessionnet|si0040/i.test(html))throw Error('Unbekanntes Kalenderformat');for(const m of meetingRows(html,source.base))if(m.date>=fromDay)meetings.set(m.url,m);}catch(e){issues.push(e.message);if(/403|401/.test(e.message))denied=true;}
  },3);
- const grouped=new Map();let count=0;const detailsCache=new Map();
+ const grouped=new Map();let count=0,unchanged=0,read=0,unread=0;const detailsCache=new Map(),held={};
  const detail=url=>{if(!detailsCache.has(url))detailsCache.set(url,get(url,source));return detailsCache.get(url);};
  if(meetings.size>400)issues.push("Sitzungslimit erreicht; weiterer Import erforderlich.");
  await parallel([...meetings.values()].sort((a,b)=>oldestFirst?a.date.localeCompare(b.date):b.date.localeCompare(a.date)).slice(0,400),async m=>{
+  const known=usableMark(marks,m,now);
+  // Read completely a moment ago: an import that ran out of time continues behind it without asking again.
+  if(known?.trusted){held[m.url]=marks.known[m.url];unchanged++;count++;return;}
   try{const h=await get(m.url,source);if(!/tofnum/.test(h)) {issues.push(missingAgendaIssue(h,m.url));return;}
    let attendance=parseAttendance(h,m.url,now.toISOString());
    const attendanceUrl=links(h,source.base).find(l=>/to0045\.(asp|php)/i.test(l.url))?.url;
-   if(attendanceUrl&&attendance.status!=='available'){try{attendance=parseAttendance(await detail(attendanceUrl),attendanceUrl,now.toISOString());}catch(e){issues.push('Teilnahmeangaben: '+e.message);}}
-   for(const row of parseAgenda(h,m,source,now)){
+   const rows=parseAgenda(h,m,source,now);
+   // Everything the agenda page says: items, results, linked papers and documents, attendance. If that is what it
+   // said when the papers were last read, the pages behind it are not fetched again.
+   const print=(await hash(JSON.stringify([rows.map(r=>[r.id,r.title,r.reference,r.event.result,r.identityLinks,r.documents.map(d=>d.url)]),attendance.status,attendance.people.length,attendanceUrl||'']))).slice(0,16);
+   if(known?.print===print){held[m.url]=marks.known[m.url];unchanged++;count++;return;}
+   let cut=false,complete=true;
+   if(attendanceUrl&&attendance.status!=='available'){try{attendance=parseAttendance(await detail(attendanceUrl),attendanceUrl,now.toISOString());}catch(e){if(/Zeitbudget/.test(e.message))cut=true;else issues.push('Teilnahmeangaben: '+e.message);}}
+   for(const row of rows){
     row.event.attendance=attendance;row.event.decision=sourceDecision(row.event);
     row.sourceData={version:'public-source-fields-v1',method:'sessionnet',fetchedAt:now.toISOString(),records:[{kind:'agenda',url:row.sourceUrl,fields:{reference:row.reference,title:row.title,result:row.event.result}}],detailStatus:'completed',issues:[]};
     const detailUrl=row.identityLinks.find(url=>/vo0050\.(asp|php)/.test(url));
@@ -74,14 +88,18 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
      // Preserve structured field/value rows. Never retain the entire page or a full text body.
      const pairs=[];for(const match of html.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){const cells=[...match[1].matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(m=>text(m[1]));if(cells.length===2&&cells[0].length<100&&cells[1].length<1200&&/Vorlage|Aktenzeichen|Datum|Art|Betreff|Federführ|Zuständig|Status|Bereich/i.test(cells[0]))pairs.push({field:cells[0],value:cells[1]});}
      row.sourceData.records.push({kind:'paper',url:detailUrl,fields:pairs});
-    }catch(e){row.sourceData.detailStatus='partial';row.sourceData.issues.push(e.message);issues.push('Vorlagendetails: '+e.message);}}
+    }catch(e){row.sourceData.detailStatus='partial';row.sourceData.issues.push(e.message);complete=false;if(/Zeitbudget/.test(e.message))cut=true;else issues.push('Vorlagendetails: '+e.message);}}
     const previous=grouped.get(row.id);if(previous){previous.events.push(row.event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);}else grouped.set(row.id,{...row,events:[row.event]});}
-  }catch(e){issues.push(m.url+': '+e.message);}count++;onProgress(source.id+': '+count+'/'+meetings.size+' Sitzungen');
+   // A meeting counts as read only if every paper page behind it could be read.
+   if(cut)unread++;else if(complete){held[m.url]=newMark(m,print,now,rows.length);read++;}
+  }catch(e){if(/Zeitbudget/.test(e.message))unread++;else issues.push(m.url+': '+e.message);}count++;onProgress(source.id+': '+count+'/'+meetings.size+' Sitzungen');
  },3);
+ if(unread)issues.push(`Zeitbudget der Quelle erreicht; ${unread} ${unread===1?'Sitzung':'Sitzungen'} noch nicht vollständig gelesen.`);
  const topics=[];
  for(const row of grouped.values()){
   row.events.sort((a,b)=>a.date.localeCompare(b.date));const last=row.events.at(-1);const t={...row,regionId:source.id,source:source.kind,public:true,officialTitle:row.title,category:category(row.title),status:last.status,committee:last.committee,eventDate:last.date,updatedAt:now.toISOString(),relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:row.title+'\n'+row.events.map(e=>e.date+' '+e.description).join('\n'),documents:[...new Map([...row.documents,{title:'Vorlage / öffentliche Tagesordnung',url:row.sourceUrl,kind:'html'}].map(d=>[d.url,d])).values()]};delete t.event;
   Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SessionNet-Seite; konservative Statusauswertung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
- return {topics,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size,sourceCount:1,quiet:meetings.size===0&&issues.length===0,complete:issues.length===0&&topics.length>0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ // Unchanged meetings are a successful reading: their reports are in the database already.
+ return {topics,marks:held,readMeetings:read,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size,...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread?{resumable:true}:{}),sourceCount:1,quiet:meetings.size===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }

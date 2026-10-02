@@ -17,7 +17,7 @@ const stubs={
  'cloudflare:workers':'export const env=globalThis.identityFixture.env;',
  '@/server/repositories/seed':'export async function ensureData(){}',
  './seed':'export async function ensureData(){}',
- '@/server/integrations/collect-region.mjs':'export async function collectRegion(){if(globalThis.identityFixture.error)throw Error("upstream unavailable");return globalThis.identityFixture.fresh;}',
+ '@/server/integrations/collect-region.mjs':'export async function collectRegion(id,options){globalThis.identityFixture.options=options;if(globalThis.identityFixture.error)throw Error("upstream unavailable");return globalThis.identityFixture.fresh;}',
  '@/server/integrations/documents.mjs':'export async function enrichDocument(t){return t;}',
  '@/server/integrations/ai-summary.mjs':'export async function summarize(t){return t;}',
  '@/server/services/push':'export async function dispatchDecisionPush(){}'
@@ -127,4 +127,31 @@ test('public reads never initialise storage or label new articles, and imports d
  const runs=db.prepare('SELECT count(*) n FROM import_runs').get().n;
  assert.equal((await sync.runSync('summaries','billerbeck','scheduled')).status,403);
  assert.equal(db.prepare('SELECT count(*) n FROM import_runs').get().n,runs);
+});
+test('marks of read meetings reach the collector, are stored after the reports and withheld when storing fails',async()=>{
+ reset();const a=make('a'),meeting=a.events[0].url,mark=['2026-09-20','abc',Date.now(),'p',1];insert(a);
+ const marksRow=()=>db.prepare("SELECT value FROM system_state WHERE key='import-marks:billerbeck'").get();
+ const coverage=day=>({regionId:'billerbeck',importedAt:day,from:'2026-07-01',to:day,meetings:1,complete:true,issues:[]});
+ globalThis.identityFixture.fresh={topics:[{...make('a'),updatedAt:'2026-09-27'}],marks:{[meeting]:mark},readMeetings:1,coverage:coverage('2026-09-27')};
+ let result=await sync.runSync('metadata','billerbeck');assert.equal(result.status,200);assert.equal(result.data.unchanged,0);assert.equal(result.data.resume,false);
+ // The collector is told which meetings have reports in the database; nothing was marked before.
+ assert.deepEqual(globalThis.identityFixture.options.marks.known,{});assert.ok(globalThis.identityFixture.options.marks.stock.has(meeting));assert.equal(globalThis.identityFixture.options.window,'12m');
+ assert.deepEqual(JSON.parse(marksRow().value).marks,{[meeting]:mark});
+ // Next import: the meeting is unchanged, no report comes back. The stock stays, the attempt is a success.
+ globalThis.identityFixture.fresh={topics:[],marks:{[meeting]:mark},readMeetings:0,coverage:{...coverage('2026-09-28'),unchangedMeetings:1}};
+ result=await sync.runSync('metadata','billerbeck');assert.equal(result.status,200);assert.equal(result.data.unchanged,1);assert.equal(result.data.attemptComplete,true);assert.equal(result.data.topics,0);
+ assert.deepEqual(globalThis.identityFixture.options.marks.known,{[meeting]:mark});
+ assert.equal(db.prepare('SELECT count(*) AS n FROM topics').get().n,1);
+ const stored=JSON.parse(db.prepare("SELECT payload FROM source_coverage WHERE region_id='billerbeck'").get().payload);
+ assert.equal(stored.complete,true);assert.deepEqual(stored.issues,[]);assert.equal(stored.attemptStatus,'completed');assert.equal(stored.failureCount,0);assert.equal(stored.lastSuccessAt,stored.lastAttemptAt);
+ assert.equal(JSON.parse(db.prepare('SELECT details FROM import_runs ORDER BY started_at DESC LIMIT 1').get().details).unchangedMeetings,1);
+ // The time limit ended an attempt that read further meetings: the caller is told to continue.
+ globalThis.identityFixture.fresh={topics:[{...make('a'),updatedAt:'2026-09-29'}],marks:{[meeting]:mark},readMeetings:4,coverage:{...coverage('2026-09-29'),complete:false,resumable:true,issues:['Zeitbudget der Quelle erreicht; 9 Sitzungen noch nicht vollständig gelesen.']}};
+ result=await sync.runSync('metadata','billerbeck');assert.equal(result.data.resume,true);assert.equal(result.data.attemptComplete,false);
+ globalThis.identityFixture.fresh={...globalThis.identityFixture.fresh,readMeetings:0};assert.equal((await sync.runSync('metadata','billerbeck')).data.resume,false,'no progress, no continuation');
+ // Storing the reports fails: the marks of that import must not count.
+ reset();insert(a);
+ globalThis.identityFixture.fresh={topics:[{...make('a'),officialTitle:'Wärmeplanung, geändert',updatedAt:'2026-09-30'}],marks:{[meeting]:mark},readMeetings:1,coverage:coverage('2026-09-30')};
+ failBatch=true;assert.equal((await sync.runSync('metadata','billerbeck')).status,502);failBatch=false;
+ assert.equal(marksRow(),undefined);assert.equal(db.prepare("SELECT count(*) AS n FROM system_state WHERE key LIKE 'import-%'").get().n,0,'no lock is left behind');
 });

@@ -96,3 +96,9 @@ test('admin pipeline fixes the chosen window per job, passes it to the import an
  await pipelineAction(db,{action:'step',id:job.id},async(...args)=>{calls.push(args);return {status:200,data:{processed:0,remaining:0}};});
  assert.deepEqual(calls[2],['analysis','billerbeck',undefined]);sql.close();
 });
+test('SessionNet calendars that link the meeting overview (si0056) lead to the agenda page (si0057)',async()=>{
+ const {meetingRows}=await import('../server/integrations/sessionnet.mjs');
+ const html='<a href="si0056.asp?__ksinr=15478" title="Details anzeigen: Kreistag 10.09.2026">Kreistag</a><a href="si0057.php?__ksinr=7" title="Details anzeigen: Rat 11.09.2026">Rat</a><a href="si0056.asp?__ksinr=1">ohne Datum</a>';
+ const rows=meetingRows(html,'https://example.test/bi/');
+ assert.deepEqual(rows.map(r=>[r.url,r.date,r.committee]),[['https://example.test/bi/si0057.asp?__ksinr=15478','2026-09-10','Kreistag'],['https://example.test/bi/si0057.php?__ksinr=7','2026-09-11','Rat']]);
+});

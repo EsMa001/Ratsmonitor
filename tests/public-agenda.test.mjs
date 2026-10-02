@@ -22,3 +22,18 @@ test('an older snapshot cannot roll back a newer article or coverage',()=>{
  const merged=mergeImport(latest,{topics:[{id:'a',title:'Old',updatedAt:'2026-09-20'}],coverage:{importedAt:'2026-09-20'}});
  assert.equal(merged.topics[0].title,'New');assert.equal(merged.coverage.importedAt,'2026-09-26');
 });
+test('provider wordings of the public heading are recognised; a private or unknown heading still ends the section',()=>{
+ // SD.NET exports no public flag at all; the section heading is the only evidence.
+ for(const heading of ['Öffentlich','öffentlich','- Öffentlicher Teil -','Öffentlicher Teil','Öffentliche Sitzung']){
+  const r=publicAgenda([{id:'h',number:'I.',name:heading},{id:'a',number:'1.',name:'Schulbau'},{id:'b',number:'2.',name:'Radweg'}]);
+  assert.deepEqual(r.items.map(i=>i.id),['a','b'],heading);assert.equal(r.items[0].publicEvidence.method,'public-section');
+ }
+ for(const closing of ['nichtöffentlich','Nicht öffentlich','- Nichtöffentlicher Teil -','Nicht-öffentliche Sitzung']){
+  const r=publicAgenda([{id:'h',number:'A',name:'- Öffentlicher Teil -'},{id:'a',number:'1',name:'Schulbau'},{id:'n',number:'B',name:closing},{id:'c',number:'9',name:'Grundstück'}]);
+  assert.deepEqual(r.items.map(i=>i.id),['a'],closing);assert.equal(r.unclear,1);
+ }
+ // A lettered or Roman heading with any other name ends the public part as well.
+ assert.deepEqual(publicAgenda([{id:'h',number:'A',name:'Öffentlich'},{id:'a',number:'1',name:'Schulbau'},{id:'x',number:'B',name:'Vertrauliches'},{id:'c',number:'9',name:'Grundstück'}]).items.map(i=>i.id),['a']);
+ // A normal item that merely starts with the word is no heading.
+ const r=publicAgenda([{id:'x',number:'1',name:'Öffentliche Bekanntmachung der Satzung'},{id:'y',number:'2',name:'Öffentlichkeitsarbeit'}]);assert.equal(r.items.length,0);assert.equal(r.unclear,2);
+});

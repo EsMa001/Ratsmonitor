@@ -20,7 +20,8 @@
     "system": "https://ratsinfo.aldenhoven.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05366004",
@@ -29,7 +30,8 @@
     "system": "https://ratsinfo.bad-muenstereifel.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05362004",
@@ -38,7 +40,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4780/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05362008",
@@ -47,16 +50,21 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4800/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05314000",
     "name": "Stadt Bonn",
     "kind": "city",
-    "system": "https://www.bonn.sitzung-online.de/public/oparl/system",
+    "system": "https://www.bonn.sitzung-online.de/oparl/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "system-verified",
+    "verifiedSource": "https://www.bonn.sitzung-online.de/oparl/system",
+    "verifiedAt": "2026-10-01",
+    "note": "Die im OParl-Verzeichnis genannte Adresse /public/oparl/system liefert eine Zugriffsprüfung statt Daten.",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05362012",
@@ -65,7 +73,8 @@
     "system": "https://ratsinfo.bruehl.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "end"
   },
   {
     "id": "nrw-05562004",
@@ -74,7 +83,8 @@
     "system": "https://castroprauxel.gremien.info/oparl",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "forward"
   },
   {
     "id": "nrw-05111000",
@@ -83,7 +93,13 @@
     "system": "https://ris-oparl.itk-rheinland.de/Oparl/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "system-verified",
+    "upgradeHttpLinks": true,
+    "body": "https://ris-oparl.itk-rheinland.de/Oparl/bodies/0015",
+    "verifiedSource": "https://ris-oparl.itk-rheinland.de/Oparl/bodies",
+    "verifiedAt": "2026-10-01",
+    "note": "Gemeinsames System der ITK Rheinland mit mehreren Körperschaften; die Körperschaft ist fest zugeordnet.",
+    "meetingScan": "end"
   },
   {
     "id": "nrw-05566008",
@@ -92,7 +108,8 @@
     "system": "https://emsdetten.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05758008",
@@ -101,7 +118,8 @@
     "system": "https://enger.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05362020",
@@ -110,16 +128,20 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4490/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05370004",
     "name": "Stadt Erkelenz",
     "kind": "city",
-    "system": "https://ratsinfo.erkelenz.de/bi/oparl/1.0/system.asp",
+    "system": "https://ratsinfo.erkelenz.de/public/oparl/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "system-verified",
+    "upgradeHttpLinks": true,
+    "verifiedSource": "https://www.erkelenz.de/rathaus-politik/politik/rat-der-stadt-erkelenz/",
+    "verifiedAt": "2026-10-01"
   },
   {
     "id": "nrw-05366",
@@ -128,7 +150,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4520/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05154016",
@@ -137,7 +160,8 @@
     "system": "https://ris.goch.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05754",
@@ -146,16 +170,19 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4890/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05914000",
     "name": "Stadt Hagen",
     "kind": "city",
     "system": "https://www.hagen.de/buergerinfo/oparl/1.0/system.asp",
-    "method": "oparl",
+    "method": "pending",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "unreachable",
+    "verifiedAt": "2026-10-01",
+    "note": "Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar."
   },
   {
     "id": "nrw-05758012",
@@ -164,7 +191,8 @@
     "system": "https://herford.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05758016",
@@ -173,7 +201,8 @@
     "system": "https://hiddenhausen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05358016",
@@ -182,7 +211,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4220/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "end"
   },
   {
     "id": "nrw-05358020",
@@ -191,7 +221,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4230/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05358024",
@@ -200,7 +231,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4240/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05366024",
@@ -209,7 +241,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4550/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05362032",
@@ -218,7 +251,8 @@
     "system": "https://ratsinfo.stadt-kerpen.de/webservice/oparl/v1.0/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05758020",
@@ -227,7 +261,8 @@
     "system": "https://kirchlengern.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05114000",
@@ -236,7 +271,8 @@
     "system": "https://ris.krefeld.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "end"
   },
   {
     "id": "nrw-05358028",
@@ -245,7 +281,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4250/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05315000",
@@ -254,7 +291,8 @@
     "system": "https://buergerinfo.stadt-koeln.de/oparl/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "end"
   },
   {
     "id": "nrw-05566032",
@@ -263,16 +301,20 @@
     "system": "https://ladbergen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05754024",
     "name": "Gemeinde Langenberg",
     "kind": "city",
-    "system": "https://sdnetrim.kdvz-frechen.de/rim4883/webservice/oparl/v1.1/system",
+    "system": "https://ratsinfo.langenberg.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "system-verified",
+    "verifiedSource": "https://ratsinfo.langenberg.de/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-01",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05358032",
@@ -281,7 +323,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4260/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05766048",
@@ -290,7 +333,8 @@
     "system": "https://leopoldshoehe.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05358036",
@@ -299,7 +343,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4270/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05358040",
@@ -308,7 +353,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4280/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05366032",
@@ -317,7 +363,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4580/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05358052",
@@ -326,16 +373,20 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4160/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05966024",
     "name": "Stadt Olpe",
     "kind": "city",
-    "system": "https://sitzungsdienst.kdz-ws.net/gkz330/webservice/oparl/v1.1/system",
+    "system": "https://ratsinfo.olpe.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "system-verified",
+    "verifiedSource": "https://olpe.de/Verwaltung-Politik/Politik/Ratsinformationssystem/",
+    "verifiedAt": "2026-10-01",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05362036",
@@ -344,25 +395,32 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4350/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05770040",
     "name": "Stadt Rahden",
     "kind": "city",
-    "system": "http://rahden.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "system": "https://rahden.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "system-verified",
+    "verifiedSource": "https://rahden.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-01",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05154044",
     "name": "Stadt Rees",
     "kind": "city",
-    "system": "https://sessionnet-oparl.krz.de/oparl/bodies/5205",
+    "system": "https://ris.stadt-rees.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "system-verified",
+    "verifiedSource": "https://www.stadt-rees.de/",
+    "verifiedAt": "2026-10-01",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05754028",
@@ -371,7 +429,8 @@
     "system": "https://ratsinfo.rheda-wiedenbrueck.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05758028",
@@ -380,7 +439,8 @@
     "system": "https://roedinghausen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05166024",
@@ -389,7 +449,8 @@
     "system": "https://ris.schwalmtal.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05122000",
@@ -398,7 +459,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4957/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "end"
   },
   {
     "id": "nrw-05758032",
@@ -407,7 +469,8 @@
     "system": "https://spenge.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05754040",
@@ -416,7 +479,8 @@
     "system": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05770044",
@@ -425,7 +489,8 @@
     "system": "https://stemwede.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05358056",
@@ -434,7 +499,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4170/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05554064",
@@ -443,7 +509,8 @@
     "system": "https://velen.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05358060",
@@ -452,7 +519,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4180/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05166",
@@ -461,7 +529,8 @@
     "system": "https://kis.kreis-viersen.de/webservice/oparl/v1.0/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05758036",
@@ -470,7 +539,8 @@
     "system": "https://vlotho.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05154060",
@@ -479,7 +549,8 @@
     "system": "https://ris.wachtendonk.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05366040",
@@ -488,7 +559,8 @@
     "system": "https://sdnetrim.kdvz-frechen.de/rim4510/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05362040",
@@ -497,7 +569,8 @@
     "system": "https://ratsinfo.wesseling.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "end"
   },
   {
     "id": "nrw-05166036",
@@ -506,15 +579,18 @@
     "system": "https://ris.stadt-willich.de/webservice/oparl/v1.1/system",
     "method": "oparl",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "discovered",
+    "meetingScan": "filter"
   },
   {
     "id": "nrw-05124000",
     "name": "Stadt Wuppertal",
     "kind": "city",
     "system": "https://oparl.wuppertal.de/oparl/system",
-    "method": "oparl",
+    "method": "pending",
     "registrySource": "https://github.com/OParl/resources/blob/main/endpoints.yml",
-    "state": "discovered"
+    "state": "unreachable",
+    "verifiedAt": "2026-10-01",
+    "note": "Die OParl-Adresse antwortet mit HTTP 400; die Website der Stadt verlangt eine Zugriffsprüfung im Browser."
   }
 ]
