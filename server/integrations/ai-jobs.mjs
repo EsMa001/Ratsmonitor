@@ -1,6 +1,7 @@
 import {AdminError} from './admin-access.mjs';
 import {selectedRegions} from './pipeline-jobs.mjs';
 import {STAGE_SQL,CANONICAL} from './processing-status.mjs';
+import {insertUsage} from '../../shared/ai-usage.mjs';
 import {AI_KINDS,AI_METHOD,articleResult,patchArticle,analysisSignature,aiInstructions} from '../../shared/ai-job.mjs';
 import {LABELS} from '../../shared/labels.mjs';
 import {hashText} from '../../shared/database-transfer.mjs';
@@ -99,6 +100,7 @@ async function applyAiResultsUnlocked(db,job,output){
    const topic=patchArticle(JSON.parse(row.payload),p,at),statements=[
     db.prepare("SELECT CASE WHEN EXISTS(SELECT 1 FROM topics WHERE id=? AND payload=?) THEN 1 ELSE json('conflict') END").bind(p.article.id,row.payload),
     db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),p.article.id,at,row.payload),
+    insertUsage(db,{...p.usage,topicId:p.article.id,regionId:p.article.region||'',at}),
     ...p.analyses.map(a=>db.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(a.payload.id,p.article.id,a.kind,a.payload.method,a.payload.inputHash,at,JSON.stringify(a.payload))),
     db.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(topic),p.article.id),
     ...(job.storage==='rows-v1'?[db.prepare('UPDATE ai_job_articles SET applied=1 WHERE job_id=? AND topic_id=?').bind(job.id,p.article.id)]:[])

@@ -14,6 +14,7 @@ import { qualityCheck } from '@/server/integrations/oparl.mjs';
 import { collectRegion } from '@/server/integrations/collect-region.mjs';
 import { enrichDocument } from '@/server/integrations/documents.mjs';
 import { summarize } from '@/server/integrations/ai-summary.mjs';
+import { insertUsage } from '@/shared/ai-usage.mjs';
 import { dispatchDecisionPush } from '@/server/services/push';
 import type { StoredTopic as Topic, ImportData as FeedData } from '@/server/types';
 const FAILURE_CAUSE = 'Fehlerursache: ';
@@ -80,11 +81,13 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
         t.summaryAttemptedAt = started;
     if (region==='muenster' && t.generatedBy !== 'KI-Zusammenfassung')
         t.quality = await qualityCheck(t);
+    const u=(t as any).aiUsage;
     const compact=await compactSummaryAttempt(old,t,started);
     await env.DB.batch([
       env.DB.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),old.id,started,JSON.stringify(old)),
       env.DB.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(compact.analysis.id,old.id,'summary',compact.analysis.method,compact.analysis.inputHash,started,JSON.stringify(compact.analysis)),
-      env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(compact.topic),old.id)
+      env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(compact.topic),old.id),
+      ...(u?[insertUsage(env.DB,{...u,topicId:old.id,regionId:region})]:[])
     ]);
     processed++;
     if (processed >= 8)

@@ -246,3 +246,20 @@ test('an import cut off by the time limit continues in the same job, but not wit
  job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[2]]},()=>{});
  job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{...cut.data,resume:false}}));assert.equal(job.items[0].status,'partial');sql.close();
 });
+
+test('agent usage, words and attachments are stored once per article; missing figures stay unknown',async()=>{
+ const {sql,db,put}=fixture();put('a');put('b');
+ const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel','keywords']});
+ const result=await output(job);
+ const [one,two]=result.articles;
+ one.sources[0].words=1200;one.sources[0].kind='page';
+ one.sources.push({...one.sources[0],url:'https://example.org/paper',words:3000,kind:'attachment'});
+ one.usage={basis:'measured',inputTokens:9000,outputTokens:700,cachedTokens:2000};
+ await applyAiResults(db,job,{...result,articles:[one,two]});
+ const rows=sql.prepare('SELECT * FROM ai_usage ORDER BY topic_id').all();
+ assert.equal(rows.length,2);
+ assert.deepEqual([rows[0].agent,rows[0].model,rows[0].token_basis,rows[0].word_count,rows[0].source_count,rows[0].attachment_count,rows[0].input_tokens,rows[0].output_tokens,rows[0].cached_tokens,rows[0].total_tokens],['Example Agent','test-model','measured',4200,2,1,9000,700,2000,9700]);
+ assert.deepEqual([rows[1].token_basis,rows[1].total_tokens,rows[1].word_count],['unknown',null,null]);
+ await assert.rejects(articleResult(job,job.articles[0],{...one,usage:{basis:'measured',inputTokens:'x',outputTokens:1}}),/usage/);
+ sql.close();
+});

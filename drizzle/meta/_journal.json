@@ -50,6 +50,13 @@
       "when": 1790584896368,
       "tag": "0006_search_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1791028184806,
+      "tag": "0007_ai_usage",
+      "breakpoints": true
     }
   ]
 }
