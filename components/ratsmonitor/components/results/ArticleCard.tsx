@@ -26,11 +26,7 @@ interface Props {
   article: Article;
   index: number;
   terms: string[];
-  gemeindeActive: boolean;
-  themaActive: boolean;
   onOpen: (a: Article) => void;
-  onGemeinde: (a: Article) => void;
-  onThema: (a: Article) => void;
   onHover: (ags: string) => void;
 }
 

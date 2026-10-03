@@ -1,6 +1,7 @@
 import {mergeImport} from './merge-import.mjs';
 import {importHealth} from './import-health.mjs';
 import {preserveAnalysis} from '../../shared/analysis-state.mjs';
+import {metadataChanged} from '../../shared/article-record.mjs';
 /** Merge an offline backfill into the current database, never replace its snapshot. */
 export async function applyBackfill(db,bundle){
  const key='history-backfill-'+bundle.revision;
@@ -21,7 +22,8 @@ export async function applyBackfill(db,bundle){
    for(const incoming of fresh.topics.length?combined.topics:[]){
     const prior=old.get(incoming.id);
     const fields=['status','officialTitle','sourceUrl','events','documents','identity','identityLinks','identityRecords'];
-    if(prior&&fields.every(k=>JSON.stringify(prior[k])===JSON.stringify(incoming[k]))){if(incoming.metadata)await db.prepare("UPDATE topics SET payload=json_set(payload,'$.metadata',json(?)) WHERE id=?").bind(JSON.stringify(incoming.metadata),incoming.id).run();continue;}
+    // Unverändert: nur schreiben, wenn sich an den Metadaten mehr als der Abrufzeitpunkt geändert hat (gebündelt unten)
+    if(prior&&fields.every(k=>JSON.stringify(prior[k])===JSON.stringify(incoming[k]))){if(incoming.metadata&&metadataChanged(prior.metadata,incoming.metadata))groups.set('meta:'+incoming.id,[db.prepare("UPDATE topics SET payload=json_set(payload,'$.metadata',json(?)) WHERE id=?").bind(JSON.stringify(incoming.metadata),incoming.id)]);continue;}
     const t={...preserveAnalysis(incoming,prior),regionId:region};
     const group=t.identity?.mergedInto||t.id,statements=groups.get(group)||[];
     if(prior)statements.push(db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),t.id,bundle.revision,JSON.stringify(prior)));

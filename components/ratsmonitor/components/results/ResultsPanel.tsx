@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { filterChips } from "../../lib/savedSearch";
 import { useData } from "../../state/data";
 import { overviewScroll, useAppNav } from "../../state/nav";
@@ -17,6 +17,8 @@ export function ResultsPanel() {
   const { push } = useAppNav();
   const { allowFeature, limits } = useEntitlements();
   const pages = Math.max(1, Math.ceil(res.total / 20));
+  /* Gleiche Grenze wie der Server (MAX_PAGE in monitor-search.mjs) */
+  const MAX_PAGE = 250;
   /* Gäste sehen nur die erste Seite; Blättern öffnet den Hinweis zur Anmeldung */
   const goPage = (p: number) => {
     if (p > 1 && !allowFeature("results", res.total)) return;
@@ -54,12 +56,11 @@ export function ResultsPanel() {
   }, [listKey, updateFades]);
 
   const onOpen = useCallback((a: Article) => push(`/beschluss/${a.id}`, a.id), [push]);
-  const onGemeinde = useCallback(
-    (a: Article) => (state.area === a.ags ? search.setArea("", "ui") : search.setArea(a.ags, "ui", { zoom: true })),
-    [search, state.area],
-  );
-  const onThema = useCallback((a: Article) => search.setThema(state.thema === a.thema ? "" : a.thema), [search, state.thema]);
   const onHover = useCallback((ags: string) => mapRef.current?.setExternalHover(ags), [mapRef]);
+  /* Gleiche Begriffe = gleiches Array, damit die Artikelkarten (memo) nicht neu rendern */
+  const termsKey = res.terms.join("|");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const terms = useMemo(() => res.terms, [termsKey]);
 
   const active = filterChips(res.snapshot, geo).length > 0;
   const n = res.total;
@@ -80,7 +81,7 @@ export function ResultsPanel() {
           aria-label="Ergebnisliste"
           onScroll={updateFades}
           onMouseLeave={() => onHover("")}
-          className={`flex flex-col gap-[0.3vw] p-[0.3vw] outline-none transition-opacity ${articlesReady?"":"opacity-50"}`}
+          className={`flex flex-col gap-[max(0.3vw,6px)] p-[max(0.3vw,6px)] outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
         >
           {!articlesReady && res.results.length===0 && <div className="p-8 text-center text-[13px] text-slate-500">Einträge werden geladen …</div>}
           {res.results.map((a, i) => (
@@ -88,12 +89,8 @@ export function ResultsPanel() {
               key={a.id}
               article={a}
               index={i}
-              terms={res.terms}
-              gemeindeActive={state.area === a.ags}
-              themaActive={state.thema === a.thema}
+              terms={terms}
               onOpen={onOpen}
-              onGemeinde={onGemeinde}
-              onThema={onThema}
               onHover={onHover}
             />
           ))}
@@ -132,11 +129,12 @@ export function ResultsPanel() {
         <span className="text-sm text-slate-500">
           {active ? `${res.total.toLocaleString("de-DE")} Treffer · Seite ${res.page} von ${pages}` : `Seite ${res.page}`}
         </span>
-        {res.page < pages && (
+        {res.page < Math.min(pages, MAX_PAGE) && (
           <button className="btn-secondary" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
             Weiter
           </button>
         )}
+        {res.page >= MAX_PAGE && pages > MAX_PAGE && <span className="w-full text-center text-[13px] text-slate-500">Für weitere Treffer bitte die Suche eingrenzen.</span>}
       </nav>
     </section>
   );

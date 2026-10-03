@@ -156,8 +156,8 @@ export function MapPanel({ active }: { active: boolean }) {
   const btnSecondary = "min-h-9 rounded-lg border border-teal-200 bg-white px-2.5 text-[13.5px] font-medium text-teal-700 hover:bg-teal-50";
 
   return (
-    <section aria-label="Karte der Gemeinden und Kreise" className="relative mx-auto mt-[0.3vw] h-[460px] max-w-page overflow-hidden rounded-xl border border-slate-200 bg-map-ground shadow-card sm:h-[520px]">
-      <div ref={stageRef} className="absolute inset-0 cursor-grab touch-none select-none">
+    <section aria-label="Karte der Gemeinden und Kreise" className="relative mx-auto mt-[max(0.3vw,6px)] h-[460px] max-w-page overflow-hidden rounded-xl border border-slate-200 bg-map-ground shadow-card sm:h-[520px]">
+      <div ref={stageRef} className="absolute inset-0 cursor-grab touch-pan-y select-none">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas
           ref={overRef}

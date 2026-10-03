@@ -14,7 +14,13 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  const allowed=value=>{const u=new URL(value);if(source.upgradeHttpLinks&&u.protocol==='http:'&&u.hostname===base.hostname&&!u.port&&!base.port)u.protocol='https:';if(u.protocol!=='https:'||u.origin!==base.origin||u.username||u.password)throw Error('Quelle außerhalb der freigegebenen OParl-Adresse');return u.href;};
  const load=async(url,patience)=>{if(getJson)return getJson(url);const r=await fetchNoRedirect(url,{signal:AbortSignal.timeout(Math.max(1,Math.min(patience,deadline-Date.now()))),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok)throw Error('OParl HTTP '+r.status);const raw=await r.text();if(raw.length>Math.min(7e6,Math.max(5e6,source.maxResponseChars||5e6)))throw Error('Antwort überschreitet Größenlimit');return JSON.parse(raw);};
  // trace (optional) records every request of this import for the debug view.
- const request=trace?trace.wrap(load):load;
+ const traced=trace?trace.wrap(load):load;
+ // Höchstens 5 gleichzeitige Netzabrufe (Workers erlaubt 6 offene Verbindungen). Die verschachtelten parallel()-Aufrufe
+ // könnten sonst bis zu 9 starten; wartende Abrufe verbrauchten dabei schon ihr Zeitlimit. Das Limit beginnt erst mit dem Slot.
+ let active=0;const waiting=[];
+ const slot=()=>active<5?(active++,Promise.resolve()):new Promise(resolve=>waiting.push(resolve));
+ const free=()=>{const next=waiting.shift();if(next)next();else active--;};
+ const request=async(url,patience)=>{await slot();try{return await traced(url,patience);}finally{free();}};
  const get=async(url,patience=55000)=>{url=allowed(url);if(Date.now()>=deadline)throw Error('Zeitbudget der Quelle erreicht');if(cache.has(url))return cache.get(url);if(++requests>maxRequests)throw Error('Abrufbudget erreicht');const promise=request(url,patience);cache.set(url,promise);return promise;};
  const object=async x=>typeof x==='string'?get(x):x;
  const fromEnd='Begrenzter Abruf vom Ende der Sitzungsliste; Vollständigkeit des Zeitraums nicht bestätigt.';

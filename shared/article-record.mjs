@@ -18,5 +18,10 @@ export function preserveArticleContent(old,incoming,source=incoming){
  else if(!next.documentText&&!next.hasDocumentText)next.hasDocumentText=false;
  return next;
 }
+/** Hat sich an den Metadaten mehr geändert als der reine Abrufzeitpunkt? Nur dann lohnt ein Schreibvorgang. */
+export function metadataChanged(prior,next){
+ const strip=m=>{if(!m)return null;const {lastFetchedAt,...rest}=m;return rest;};
+ return JSON.stringify(strip(prior))!==JSON.stringify(strip(next));
+}
 export function importedMetadata(t,prior,at){return {version:RECORD_VERSION,firstImportedAt:prior?.metadata?.firstImportedAt||(prior?null:at),sourceModifiedAt:null,lastProcessedAt:null,...prior?.metadata,...t.metadata,lastFetchedAt:at||t.metadata?.lastFetchedAt||null};}
 export function validKeywords(value){return !!value&&Array.isArray(value.items)&&value.items.length>0&&value.items.length<=10&&new Set(value.items.map(k=>k.term)).size===value.items.length&&value.items.every(k=>typeof k.term==='string'&&k.term.trim()&&Number.isInteger(k.weight)&&k.weight>0)&&value.items.reduce((s,k)=>s+k.weight,0)===100;}

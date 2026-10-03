@@ -57,6 +57,13 @@
       "when": 1791028184806,
       "tag": "0007_ai_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1791028184807,
+      "tag": "0008_search_cards_trigger",
+      "breakpoints": true
     }
   ]
 }

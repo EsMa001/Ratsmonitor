@@ -8,6 +8,8 @@ import {readMarks,writeMarks,marksKey,readList,listKey} from '../integrations/me
 import {createTrace,saveDebug} from '../integrations/import-trace.mjs';
 import 'server-only';
 import {preserveAnalysis} from '@/shared/analysis-state.mjs';
+import {metadataChanged} from '@/shared/article-record.mjs';
+import {batches} from '../integrations/batches.mjs';
 import { env } from 'cloudflare:workers';
 import { ensureData } from '@/server/repositories/seed';
 import { qualityCheck } from '@/server/integrations/oparl.mjs';
@@ -115,7 +117,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const collectMs = Date.now() - collectStarted, written = { created: 0, changed: 0, unchanged: 0 };
     const unchanged = Number(fresh.coverage.unchangedMeetings || 0), warnings = fresh.coverage.warnings || [];
     const decisions: Topic[] = [];
-    const groups=new Map<string,any[]>();
+    const groups=new Map<string,any[]>(),touch:any[]=[];
     const combined=mergeImport({topics:[...old.values()],coverage:previousCoverage},fresh);
     for(const incoming of fresh.topics.length?combined.topics:[]){
         const p=old.get(incoming.id);let t:Topic=preserveAnalysis(incoming,p);
@@ -123,13 +125,16 @@ async function refreshMetadata(id: string, started: string,region:string,previou
         if(unchanged)t={...p,regionId:region,metadata:t.metadata};
         if(old.size>0&&!t.identity?.mergedInto&&!unchanged&&['approved','rejected'].includes(t.status)&&p?.status!==t.status)decisions.push(t);
         if(unchanged)written.unchanged++;else if(p)written.changed++;else written.created++;
-        if(unchanged){if(t.metadata)await env.DB.prepare("UPDATE topics SET payload=json_set(payload,'$.metadata',json(?)) WHERE id=?").bind(JSON.stringify(t.metadata),t.id).run();continue;}
+        // Unveränderte Vorgänge nur schreiben, wenn sich an den Metadaten mehr als der Abrufzeitpunkt geändert hat.
+        // Der Abrufzeitpunkt steht für das ganze Gebiet in source_coverage; so bleiben Revision und Suchkarten ruhig.
+        if(unchanged){if(t.metadata&&metadataChanged(p?.metadata,t.metadata))touch.push(env.DB.prepare("UPDATE topics SET payload=json_set(payload,'$.metadata',json(?)) WHERE id=?").bind(JSON.stringify(t.metadata),t.id));continue;}
         const statements=[];
         if(p)statements.push(env.DB.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),p.id,started,JSON.stringify(p)));
         statements.push(env.DB.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET event_date=excluded.event_date,updated_at=excluded.updated_at,status=excluded.status,payload=excluded.payload').bind(t.id,region,t.source,t.eventDate,t.updatedAt,t.status,JSON.stringify(t)));
         const group=t.identity?.mergedInto||t.id;groups.set(group,[...(groups.get(group)||[]),...statements]);
     }
-    for(const statements of groups.values())await env.DB.batch(statements);
+    // Gebündelt schreiben: Identitätsgruppen bleiben zusammen in einem Batch (atomar), mehrere Gruppen teilen sich einen.
+    for(const batch of batches([...groups.values(),...touch.map(s=>[s])]))await env.DB.batch(batch);
     // A short window without meetings is a successful attempt; the stored stock and its status stay as they are.
     const quiet=Boolean(combined.quiet);
     const health=importHealth(previousCoverage,{at:started,count:fresh.topics.length+unchanged,complete:fresh.coverage.complete,quiet});

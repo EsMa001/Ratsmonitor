@@ -93,7 +93,7 @@ export function SearchFilterPanel() {
   const dateInput = "h-11 rounded-[10px] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 outline-none hover:border-slate-300 focus:border-teal-600 focus:shadow-focus";
 
   return (
-    <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[0.3vw]">
+    <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[max(0.3vw,6px)]">
       <div role="search" className="flex min-w-0 items-center gap-2">
         <div className="min-w-0 flex-1"><SearchBox /></div>
         <button type="button" aria-expanded={open} aria-controls="filter-body" title={open ? "Filter einklappen" : "Filter anzeigen"} onClick={() => {

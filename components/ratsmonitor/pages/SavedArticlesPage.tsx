@@ -41,7 +41,7 @@ export function SavedArticlesPage() {
         </div>
       )}
 
-      <ul className="m-0 mt-5 flex list-none flex-col gap-[0.3vw] p-0">
+      <ul className="m-0 mt-5 flex list-none flex-col gap-[max(0.3vw,6px)] p-0">
         {list.map((a) => (
           <li key={a.id} className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card transition-shadow hover:shadow-pop">
             <div className="min-w-0 flex-1">

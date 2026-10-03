@@ -1,4 +1,4 @@
-@theme {--breakpoint-tab:901px;--breakpoint-desk:1121px;--container-page:99.4vw;--color-map-ground:#f6f7f9;--color-map-zero:#d7dce3;--color-map-s1:#b9eae4;--color-map-s2:#72d4ca;--color-map-s3:#0d9488;--color-map-s4:#0f766e;--color-map-hatch:#c3c9d1;--shadow-card:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d;--shadow-pop:0 16px 40px #0f172a24,0 2px 6px #0f172a0f;--shadow-seg:0 1px 2px #0f172a14;--shadow-focus:0 0 0 4px #0d948833;--animate-menuIn:menuIn .14s ease-out;--animate-cardIn:cardIn .28s ease-out both;@keyframes menuIn {from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes cardIn {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+@theme {--breakpoint-tab:901px;--breakpoint-desk:1121px;--container-page:calc(100% - max(0.6vw,12px));--color-map-ground:#f6f7f9;--color-map-zero:#d7dce3;--color-map-s1:#b9eae4;--color-map-s2:#72d4ca;--color-map-s3:#0d9488;--color-map-s4:#0f766e;--color-map-hatch:#c3c9d1;--shadow-card:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d;--shadow-pop:0 16px 40px #0f172a24,0 2px 6px #0f172a0f;--shadow-seg:0 1px 2px #0f172a14;--shadow-focus:0 0 0 4px #0d948833;--animate-menuIn:menuIn .14s ease-out;--animate-cardIn:cardIn .28s ease-out both;@keyframes menuIn {from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes cardIn {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
 @layer base {.ratsmonitor{min-height:100vh;background:#f8fafc;color:#0f172a;font-size:15px;line-height:1.5}.ratsmonitor a{color:inherit}.ratsmonitor button{cursor:pointer}.ratsmonitor button:disabled{cursor:not-allowed}.ratsmonitor :focus-visible{outline:2px solid #0f766e;outline-offset:3px}.ratsmonitor mark{background:#fef3c7;color:inherit;border-radius:3px}.ratsmonitor dialog{margin:auto}.ratsmonitor p{overflow-wrap:anywhere}}
 @layer components {
   /* Schaltflächen */
@@ -88,7 +88,7 @@
 
 /* Administration im Rahmen der übrigen Seiten: gleicher Hintergrund, 0,3 % Rand links und rechts */
 html:has(.admin-shell),body:has(.admin-shell),body:has(.admin-gate){background:#f8fafc}
-.admin-shell{max-width:99.4vw!important;margin:16px auto 32px!important;border-radius:16px;box-shadow:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d}
+.admin-shell{max-width:calc(100% - max(0.6vw,12px))!important;margin:16px auto 32px!important;border-radius:16px;box-shadow:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d}
 .admin-back{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 12px 0 8px;border:1px solid #e2e8f0;border-radius:9px;background:#fff;color:#334155!important;font-size:.875rem;font-weight:500;text-decoration:none}
 .admin-back:hover{background:#f1f5f9;color:#0f172a!important}
 .admin-topbar>a.admin-back:last-child{margin-left:0}

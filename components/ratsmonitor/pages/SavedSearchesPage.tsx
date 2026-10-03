@@ -121,7 +121,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
       )}
 
       {/* Vorschau wie die Startseite im Kleinen: Artikelkarten in einem scrollbaren Bereich */}
-      <div className="scroll-thin flex max-h-[340px] flex-col gap-[0.3vw] overflow-y-auto border-t border-slate-100 bg-slate-50/60 p-[0.3vw]">
+      <div className="scroll-thin flex max-h-[340px] flex-col gap-[max(0.3vw,6px)] overflow-y-auto border-t border-slate-100 bg-slate-50/60 p-[max(0.3vw,6px)]">
         {preview === null && <p className="m-0 px-3 py-2 text-[13px] text-slate-400">Vorschau wird geladen …</p>}
         {ok && !ok.items.length && <p className="m-0 px-3 py-2 text-[13px] text-slate-400">Aktuell keine Treffer.</p>}
         {ok?.items.map((a) => {
@@ -218,7 +218,7 @@ export function SavedSearchesPage() {
         </div>
       )}
 
-      <div className="mt-5 flex flex-col gap-[0.3vw]">
+      <div className="mt-5 flex flex-col gap-[max(0.3vw,6px)]">
         {saved.map((s) => (
           <SavedCard key={s.id} s={s} />
         ))}

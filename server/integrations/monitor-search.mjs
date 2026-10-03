@@ -1,5 +1,7 @@
 import {LABELS} from '../../shared/labels.mjs';
 
+/** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
+export const MAX_PAGE=250;
 export class SearchError extends Error { constructor(message,status=400){super(message);this.status=status;} }
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 const FILLER=new Set(['und','oder','der','die','das','den','dem','des','ein','eine','einer','in','im','am','an','zu','zum','zur','von','vom','fur','mit','bei','auf','aus','nach']);
@@ -7,7 +9,9 @@ export function parseMonitorSearch(params){
  const q=params.get('q')||'',area=params.get('area')||'',label=params.get('label')||'',month=params.get('month')||'',status=params.get('status')||'',level=params.get('level')||'city',sort=params.get('sort')||'desc',from=params.get('from')||'',to=params.get('to')||'',scope=params.get('scope')==='only'?'only':'with';
  const statuses=['announced','consulting','recommended','approved','rejected','postponed','info','unknown'];
  if(q.length>200||!/^\d{0,8}$/.test(area)||(area&&!['2','5','8'].includes(String(area.length)))||(label&&!LABELS.some(l=>l.name===label))||(month&&!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))||(from&&!/^\d{4}-\d{2}-\d{2}$/.test(from))||(to&&!/^\d{4}-\d{2}-\d{2}$/.test(to))||(status&&!statuses.includes(status))||!['city','district'].includes(level)||!['asc','desc'].includes(sort))throw new SearchError('Ungültiger Suchfilter.');
- const raw=params.get('page')||'1';if(!/^\d+$/.test(raw)||Number(raw)<1||Number(raw)>100000)throw new SearchError('Ungültige Seite.');
+ const raw=params.get('page')||'1';if(!/^\d+$/.test(raw)||Number(raw)<1)throw new SearchError('Ungültige Seite.');
+ /* Tiefe Seiten sind teuer (OFFSET) und für Menschen nutzlos: ab hier Suche eingrenzen */
+ if(Number(raw)>MAX_PAGE)throw new SearchError('Bitte grenze die Suche ein, um weitere Treffer zu sehen.');
  const within=params.has('within')?params.get('within').split(',').filter(Boolean):null;
  if(within&&(within.length>500||within.some(a=>!/^\d{5}(\d{3})?$/.test(a))))throw new SearchError('Ungültiger Umkreis.');
  const revision=params.get('revision');if(revision!==null&&!/^\d+$/.test(revision))throw new SearchError('Ungültiger Datenstand.');

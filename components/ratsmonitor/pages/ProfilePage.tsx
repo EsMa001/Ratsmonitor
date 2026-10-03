@@ -17,7 +17,7 @@ function PlanCards() {
   return (
     <section id="tarif" aria-labelledby="tarif-title" className="mt-6 scroll-mt-20">
       <h2 id="tarif-title" className="m-0 text-lg font-semibold">Tarif</h2>
-      <div className="mt-3 grid gap-[0.3vw] md:grid-cols-3">
+      <div className="mt-3 grid gap-[max(0.3vw,6px)] md:grid-cols-3">
         {PLANS.map((plan) => {
           const current = plan.tier === tier;
           return (

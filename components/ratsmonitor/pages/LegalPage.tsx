@@ -216,7 +216,7 @@ function Datenschutz() {
 
 export function LegalPage({ kind }: { kind: "impressum" | "datenschutz" }) {
   return (
-    <main id="inhalt" className="mx-auto max-w-page py-[0.3vw]">
+    <main id="inhalt" className="mx-auto max-w-page py-[max(0.3vw,6px)]">
       <article className="card-shell px-4 py-6 sm:px-8">
         <div className="max-w-[80ch]">{kind === "impressum" ? <Impressum /> : <Datenschutz />}</div>
       </article>

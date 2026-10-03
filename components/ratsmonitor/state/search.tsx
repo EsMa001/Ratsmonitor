@@ -236,6 +236,7 @@ export interface SearchResults {
 }
 
 
+const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
 function useDerivedResults(state:SearchState):SearchResults {
  const {geo,place}=useData();
  const local=useMemo(()=>{
@@ -276,6 +277,10 @@ function useDerivedResults(state:SearchState):SearchResults {
  if(!loading&&remote.data)lastGood.current=remote.data;
  /* Beim Nachladen die bisherigen Treffer stehen lassen, statt die Liste zu leeren */
  const data=loading?lastGood.current:remote.data;
- return {...local,results:data?.articles??[],total:data?.total??0,areaCounts:data?.areaCounts??{},themaCounts:data?.themaCounts??{},monatCounts:data?.monatCounts??{},statusCounts:data?.statusCounts??{},statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:data?.coverage??[],loading,error:loading?'':remote.error,page,setPage:(p:number)=>setNavigation({key:local.key,page:p}),retry:()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);}};
+ const setPage=useCallback((p:number)=>setNavigation({key:local.key,page:p}),[local.key]);
+ const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
+ /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
+ const error=loading?'':remote.error;
+ return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:data?.coverage??EMPTY_COVERAGE,loading,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}
