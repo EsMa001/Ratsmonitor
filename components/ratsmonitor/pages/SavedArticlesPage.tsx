@@ -3,16 +3,30 @@ import { IconBookmark } from "../components/icons";
 import { removeSavedArticle, useSavedArticles } from "../lib/savedArticles";
 import { FollowButton } from "../components/FollowButton";
 import { fmtDate } from "../lib/text";
+import { useEntitlements } from "../lib/entitlements";
+import { LoginRequired, UsagePill } from "../components/TierNotice";
 
 /** Liste der gespeicherten Artikel (Lesezeichen) */
 export function SavedArticlesPage() {
   const list = useSavedArticles();
+  const { tier, used, max } = useEntitlements();
+  if (tier === "guest")
+    return (
+      <>
+        <h1 className="m-0 text-3xl font-bold tracking-tight">Gespeicherte Artikel</h1>
+        <LoginRequired title="Artikel speichern" text="Melde dich kostenlos an, um Artikel zu speichern und bei Neuigkeiten zu einem Vorgang benachrichtigt zu werden." />
+      </>
+    );
   return (
     <>
       <h1 className="m-0 text-3xl font-bold tracking-tight">
         Gespeicherte Artikel{list.length > 0 && <span className="ml-2 align-middle text-lg font-semibold text-slate-400">{list.length}</span>}
       </h1>
       <p className="m-0 mt-1.5 text-slate-600">Artikel, die du dir gemerkt hast. Mit der Glocke wirst du informiert, sobald es zu einem Vorgang Neuigkeiten gibt.</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <UsagePill label="Artikel" used={used.bookmarks} max={max.bookmarks} />
+        <UsagePill label="Benachrichtigungen" used={used.notifications} max={max.notifications} />
+      </div>
 
       {!list.length && (
         <div className="mt-6 flex flex-col items-center rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">

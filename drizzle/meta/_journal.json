@@ -43,6 +43,13 @@
       "when": 1790584896367,
       "tag": "0005_ai_export_queue",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1790584896368,
+      "tag": "0006_search_cards",
+      "breakpoints": true
     }
   ]
 }

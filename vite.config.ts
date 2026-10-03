@@ -52,6 +52,11 @@ export default defineConfig(async () => {
 
   return {
     server: {
+      // Vite aktiviert das Weiterleiten von Browser-Konsolenfehlern automatisch, wenn der
+      // Dev-Server von einem KI-Agenten gestartet wurde. Ist der HMR-WebSocket dann (noch)
+      // nicht verbunden, wirft das Weiterleiten selbst einen Fehler, der wiederum
+      // weitergeleitet wird: Endlosschleife "can't access property 'send' of undefined".
+      forwardConsole: false,
       ...(managedLinux ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
       ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
     },

@@ -6,6 +6,7 @@ import { useSearch, useSearchResults } from "../../state/search";
 import type { Article } from "../../types";
 import { IconArrowUp, IconEmptySearch } from "../icons";
 import { ArticleCard } from "./ArticleCard";
+import { useEntitlements } from "../../lib/entitlements";
 
 export function ResultsPanel() {
   const { geo } = useData();
@@ -14,6 +15,19 @@ export function ResultsPanel() {
   const res = useSearchResults();
   const articlesReady=!res.loading;
   const { push } = useAppNav();
+  const { allowFeature, limits } = useEntitlements();
+  const pages = Math.max(1, Math.ceil(res.total / 20));
+  /* Gäste sehen nur die erste Seite; Blättern öffnet den Hinweis zur Anmeldung */
+  const goPage = (p: number) => {
+    if (p > 1 && !allowFeature("results", res.total)) return;
+    res.setPage(p);
+    listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const pageNow = res.page, setPageNow = res.setPage;
+  useEffect(() => {
+    if (!Number.isFinite(limits.maxResults) || pageNow <= 1) return;
+    setPageNow(1);
+  }, [limits.maxResults, pageNow, setPageNow]);
   const listRef = useRef<HTMLDivElement>(null);
   const [fade, setFade] = useState({ top: false, bottom: false, toTop: false });
 
@@ -66,9 +80,9 @@ export function ResultsPanel() {
           aria-label="Ergebnisliste"
           onScroll={updateFades}
           onMouseLeave={() => onHover("")}
-          className="flex flex-col gap-[0.3vw] p-[0.3vw] outline-none"
+          className={`flex flex-col gap-[0.3vw] p-[0.3vw] outline-none transition-opacity ${articlesReady?"":"opacity-50"}`}
         >
-          {!articlesReady && <div className="p-8 text-center text-[13px] text-slate-500">Einträge werden geladen …</div>}
+          {!articlesReady && res.results.length===0 && <div className="p-8 text-center text-[13px] text-slate-500">Einträge werden geladen …</div>}
           {res.results.map((a, i) => (
             <ArticleCard
               key={a.id}
@@ -108,7 +122,22 @@ export function ResultsPanel() {
           <IconArrowUp size={18} />
         </button>
       </div>
-      <nav aria-label="Ergebnisseiten" className="flex items-center justify-between gap-3 border-t border-slate-200 p-2"><button className="btn-secondary" disabled={res.loading||res.page<=1} onClick={()=>{res.setPage(res.page-1);listRef.current?.scrollIntoView({behavior:"smooth",block:"start"});}}>Zurück</button><span className="text-sm text-slate-500">Seite {res.page}{active?` von ${Math.max(1,Math.ceil(res.total/20))}`:""}</span><button className="btn-secondary" disabled={res.loading||res.page*20>=res.total} onClick={()=>{res.setPage(res.page+1);listRef.current?.scrollIntoView({behavior:"smooth",block:"start"});}}>Weiter</button></nav>
+      {/* Paginierung mittig: „Zurück“ erst ab Seite 2, „Weiter“ nur wenn es weitere Treffer gibt */}
+      <nav aria-label="Ergebnisseiten" className="flex flex-wrap items-center justify-center gap-3 border-t border-slate-200 p-2">
+        {res.page > 1 && (
+          <button className="btn-secondary" disabled={res.loading} onClick={() => goPage(res.page - 1)}>
+            Zurück
+          </button>
+        )}
+        <span className="text-sm text-slate-500">
+          {active ? `${res.total.toLocaleString("de-DE")} Treffer · Seite ${res.page} von ${pages}` : `Seite ${res.page}`}
+        </span>
+        {res.page < pages && (
+          <button className="btn-secondary" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
+            Weiter
+          </button>
+        )}
+      </nav>
     </section>
   );
 }

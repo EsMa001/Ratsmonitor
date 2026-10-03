@@ -5,6 +5,8 @@ import { filterChips } from "../lib/savedSearch";
 import { fmtDate } from "../lib/text";
 import { useAccount } from "../state/account";
 import { readProfile } from "./ProfilePage";
+import { useEntitlements } from "../lib/entitlements";
+import { LoginRequired, UsagePill } from "../components/TierNotice";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
@@ -65,6 +67,9 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const preview = usePreview(s);
   const n = s.notify;
   const set = (patch: Partial<SavedSearch["notify"]>) => updateSaved(s.id, { notify: { ...n, ...patch } });
+  const { allow, limits } = useEntitlements();
+  const profile = readProfile();
+  const recipients = [profile.email, ...(limits.emails > 1 ? profile.recipients : [])].filter(Boolean).slice(0, limits.emails);
   const chips = filterChips({ q: s.q, text: s.text, area: s.area, areaSrc: s.areaSrc, radius: s.radius, thema: s.thema, monat: s.monat, von: s.von, bis: s.bis, scope: s.scope, status: s.status, level: s.level }, geo);
   const ok = preview && preview !== "error" ? preview : null;
   const fresh = ok ? ok.items.filter((a) => a.date > s.lastSeen).length : 0;
@@ -150,7 +155,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
 
       <footer className="flex flex-wrap items-center gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-3">
         <label className="flex cursor-pointer items-center gap-3 text-[13.5px] font-medium text-slate-700">
-          <Switch on={!!n.mail} onChange={(v) => set({ mail: v, email: n.email || readProfile().email })} />
+          <Switch on={!!n.mail} onChange={(v) => { if (v && !allow("notifications")) return; set({ mail: v, email: n.email || profile.email }); }} />
           E-Mail bei neuen Treffern
         </label>
         {n.mail && (
@@ -165,6 +170,11 @@ function SavedCard({ s }: { s: SavedSearch }) {
             <option value="weekly">Wöchentlich</option>
           </select>
         )}
+        {n.mail && recipients.length > 0 && (
+          <span className="text-[12.5px] text-slate-500" title={recipients.join(", ")}>
+            an {recipients.length === 1 ? recipients[0] : `${recipients.length} Empfänger`}
+          </span>
+        )}
       </footer>
     </article>
   );
@@ -172,6 +182,14 @@ function SavedCard({ s }: { s: SavedSearch }) {
 
 export function SavedSearchesPage() {
   const { saved, ready } = useAccount();
+  const { tier, used, max } = useEntitlements();
+  if (tier === "guest")
+    return (
+      <>
+        <h1 className="m-0 text-3xl font-bold tracking-tight">Gespeicherte Suchen</h1>
+        <LoginRequired title="Suchen speichern" text="Melde dich kostenlos an, um Suchen zu speichern und über neue Treffer informiert zu werden." />
+      </>
+    );
   return (
     <>
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -180,6 +198,10 @@ export function SavedSearchesPage() {
             Gespeicherte Suchen{ready && saved.length > 0 && <span className="ml-2 align-middle text-lg font-semibold text-slate-400">{saved.length}</span>}
           </h1>
           <p className="m-0 mt-1.5 text-slate-600">Neue Treffer auf einen Blick. E-Mail-Benachrichtigungen legst du pro Suche fest.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <UsagePill label="Suchen" used={used.searches} max={max.searches} />
+          <UsagePill label="Benachrichtigungen" used={used.notifications} max={max.notifications} />
         </div>
       </div>
 

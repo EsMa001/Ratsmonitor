@@ -14,15 +14,18 @@ export interface SearchSnapshot {
   von?: string;
   bis?: string;
   scope?: "only" | "with";
+  /** Weitere Orte aus der Suche */
+  more?: { ags: string; scope: "only" | "with" }[];
   status: StatusId | "";
   level?: "city" | "district";
 }
 
 
 /** Signatur einer Suche, um gespeicherte Suchen wiederzuerkennen */
-export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level">): string {
+export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more">): string {
   const t = norm(s.text || "").split(/\s+/).filter(Boolean).sort().join(" ");
-  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city"].join("|");
+  const more = (s.more || []).map((m) => `${m.ags}:${m.scope}`).sort().join(",");
+  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|");
 }
 
 export function hasFilters(s: SearchSnapshot): boolean {
@@ -30,11 +33,18 @@ export function hasFilters(s: SearchSnapshot): boolean {
 }
 
 export interface FilterChip {
-  key: "q" | "area" | "radius" | "thema" | "monat" | "zeitraum" | "status";
+  key: "q" | "area" | "more" | "radius" | "thema" | "monat" | "zeitraum" | "status";
   label: string;
   value: string;
-  /** bei mehreren Suchbegriffen: der einzelne Begriff dieses Chips */
+  /** bei mehreren Suchbegriffen: der einzelne Begriff dieses Chips; bei weiteren Orten: deren AGS */
   term?: string;
+}
+
+/** Anzeigename eines Orts samt Umfang, z. B. „Billerbeck & Kreis Coesfeld“ */
+export function placeLabel(ags: string, scope: "only" | "with" | undefined, geo: GeoModel | null): string {
+  const name = (a: string) => (geo ? geo.info(a).name : a);
+  if (!hasScope(ags, geo) || scope !== "with") return name(ags);
+  return ags.length === 5 ? `${name(ags)} & Gemeinden` : `${name(ags)} & ${name(ags.slice(0, 5))}`;
 }
 
 export function filterChips(s: SearchSnapshot, geo: GeoModel | null): FilterChip[] {
@@ -42,7 +52,8 @@ export function filterChips(s: SearchSnapshot, geo: GeoModel | null): FilterChip
   const out: FilterChip[] = [];
   /* Komma trennt Suchbegriffe; jeder Begriff ist ein eigenes Suchobjekt */
   for (const term of splitTerms(s.text)) out.push({ key: "q", label: "Suche", value: `„${term}“`, term });
-  if (s.area) out.push({ key: "area", label: "Gebiet", value: hasScope(s.area, geo) && s.scope === "with" ? (s.area.length === 5 ? `${name(s.area)} & Gemeinden` : `${name(s.area)} & ${name(s.area.slice(0, 5))}`) : name(s.area) });
+  if (s.area) out.push({ key: "area", label: "Gebiet", value: placeLabel(s.area, s.scope, geo) });
+  for (const m of s.more || []) out.push({ key: "more", label: "Gebiet", value: placeLabel(m.ags, m.scope, geo), term: m.ags });
   if (s.radius) out.push({ key: "radius", label: "Umkreis", value: `${s.radius.km} km um ${name(s.radius.ags)}` });
   if (s.thema) out.push({ key: "thema", label: "Thema", value: s.thema });
   if (s.monat) out.push({ key: "monat", label: "Zeitraum", value: monthLabel(s.monat) });
@@ -71,7 +82,8 @@ export function hasScope(area: string, geo: GeoModel | null): boolean {
 }
 
 export function splitTerms(text: string): string[] {
-  return (text || "").split(/[,;|]/).map((t) => t.trim()).filter(Boolean);
+  /* Komma, Semikolon, senkrechter Strich und das Wort „oder“ trennen Alternativen */
+  return (text || "").split(/[,;|]|\s+oder\s+/i).map((t) => t.trim()).filter(Boolean);
 }
 
 function wherePhrase(name: string): string {

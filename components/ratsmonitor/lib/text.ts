@@ -11,8 +11,12 @@ export function norm(s: string): string {
   return o;
 }
 
+/** Füllwörter, die die Suche ignoriert (gleiche Liste wie server/integrations/monitor-search.mjs) */
+export const FILLER = new Set(["und", "oder", "der", "die", "das", "den", "dem", "des", "ein", "eine", "einer", "in", "im", "am", "an", "zu", "zum", "zur", "von", "vom", "fur", "mit", "bei", "auf", "aus", "nach"]);
+
 export function terms(text: string): string[] {
-  return norm(text).split(/[\s,;|]+/).filter(Boolean);
+  /* Füllwörter (wie serverseitig) nicht hervorheben */
+  return norm(text).split(/[\s,;|]+/).filter((w) => w && !FILLER.has(w));
 }
 
 export interface Segment {

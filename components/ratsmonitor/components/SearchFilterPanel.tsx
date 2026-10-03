@@ -9,8 +9,10 @@ import { useUi } from "../state/ui";
 import { FilterSelect } from "./FilterSelect";
 import { GeoFilter } from "./GeoFilter";
 import { IconHeart, IconFilter, IconX } from "./icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useEntitlements } from "../lib/entitlements";
 import { SearchBox } from "./SearchBox";
+import { removePhrase } from "../lib/place";
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 const daysAgo = (n: number) => iso(new Date(Date.now() - n * 864e5));
@@ -36,6 +38,16 @@ export function SearchFilterPanel() {
   const [open, setOpen] = useState(false);
   const { saved, addSaved, removeSaved } = useAccount();
   const toast = useToast();
+  const { allow, allowFeature, limits } = useEntitlements();
+  /* Gäste haben keine Filter: Panel schließen und gesetzte Filter zurücknehmen */
+  useEffect(() => {
+    if (limits.filters) return;
+    setOpen(false);
+    if (state.thema) search.setThema("");
+    if (state.status) search.setStatus("");
+    if (state.monat) search.setMonat("");
+    if (state.von || state.bis) search.setZeitraum("", "");
+  }, [limits.filters, state.thema, state.status, state.monat, state.von, state.bis, search]);
   /* Ein Klick speichert die Suche unter einem automatisch erzeugten Namen; erneuter Klick entfernt sie */
   const toggleSave = () => {
     try {
@@ -43,6 +55,7 @@ export function SearchFilterPanel() {
         removeSaved(savedHit.id);
         return toast("Gespeicherte Suche entfernt.");
       }
+      if (!allow("searches")) return;
       const base = suggestName(res.snapshot, geo);
       let name = base;
       for (let i = 2; saved.some((x) => x.name === name); i++) name = `${base} (${i})`;
@@ -56,11 +69,19 @@ export function SearchFilterPanel() {
   const preset = PRESETS.find((p) => state.von === daysAgo(Number(p.value)) && state.bis === daysAgo(0))?.value ?? (state.von || state.bis ? "custom" : "");
 
   const clearChip = (key: (typeof chips)[number]["key"], term?: string) => {
-    if (key === "q" && term && splitTerms(res.text).length > 1) {
-      const rest = splitTerms(state.q).filter((t) => t.toLowerCase() !== term.toLowerCase());
-      return search.applySearch(rest.join(", "));
+    /* Einzelnen Suchbegriff entfernen; Orte und andere Begriffe bleiben stehen */
+    if (key === "q" && term && splitTerms(res.text).length > 1) return search.applySearch(removePhrase(state.q, term));
+    if (key === "q") {
+      /* Nur den Text entfernen, erkannte Orte bleiben in der Eingabe */
+      const places = res.placeActive ? [res.pq.phraseRaw, ...(res.pq.extra ?? []).map((h) => h.phraseRaw)] : [];
+      return search.applySearch(places.join(", "));
     }
-    if (key === "q") return search.applySearch(res.placeActive ? res.pq.phraseRaw : "");
+    /* Orte aus der Suche aus dem Suchtext entfernen; die übrigen Orte bleiben erkannt */
+    if (key === "area" && res.placeActive) return search.applySearch(removePhrase(state.q, res.pq.phraseRaw));
+    if (key === "more") {
+      const hit = res.pq.extra?.find((h) => h.place.ags === term);
+      return hit ? search.applySearch(removePhrase(state.q, hit.phraseRaw)) : undefined;
+    }
     if (key === "area") return search.setArea("", "ui");
     if (key === "radius") return search.clearRadius();
     if (key === "thema") return search.setThema("");
@@ -75,7 +96,10 @@ export function SearchFilterPanel() {
     <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[0.3vw]">
       <div role="search" className="flex min-w-0 items-center gap-2">
         <div className="min-w-0 flex-1"><SearchBox /></div>
-        <button type="button" aria-expanded={open} aria-controls="filter-body" title={open ? "Filter einklappen" : "Filter anzeigen"} onClick={() => setOpen((o) => !o)} className={`relative grid h-11 w-11 flex-none place-items-center rounded-[10px] border transition-colors ${open || filterCount ? "border-teal-200 bg-teal-50 text-teal-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}>
+        <button type="button" aria-expanded={open} aria-controls="filter-body" title={open ? "Filter einklappen" : "Filter anzeigen"} onClick={() => {
+            if (!open && !allowFeature("filters")) return;
+            setOpen((o) => !o);
+          }} className={`relative grid h-11 w-11 flex-none place-items-center rounded-[10px] border transition-colors ${open || filterCount ? "border-teal-200 bg-teal-50 text-teal-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}>
           <IconFilter size={20} />
           {filterCount > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-teal-600 px-1 text-[11px] font-semibold text-white">{filterCount}</span>}
         </button>

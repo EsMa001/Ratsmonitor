@@ -16,15 +16,34 @@ test('real SQL search pages canonicals, separates levels, excludes raw text and 
  for(let i=0;i<35;i++)put('a'+String(i).padStart(2,'0'));
  put('alias','billerbeck',{identity:{mergedInto:'a00'}});put('county','coesfeld');put('elsewhere','other');
  const before=sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision;
- const first=await searchMonitor(db,catalog,new URLSearchParams('area=05558008&q=dulmen'));
- assert.equal(first.total,35);assert.equal(first.articles.length,30);assert.equal(first.areaCounts['05558'],36);assert.equal(first.statusCounts.consulting,35);assert.equal(first.themaCounts['Bildung & Betreuung'],35);assert.equal(first.coverage.length,2);
+ const first=await searchMonitor(db,catalog,new URLSearchParams('area=05558008&scope=only&q=dulmen'));
+ /* Mit Gebiet werden Gemeinde- und Kreisebene gemeinsam betrachtet: drei Regionen in der Abdeckung */
+ assert.equal(first.total,35);assert.equal(first.articles.length,20);assert.equal(first.areaCounts['05558'],37);assert.equal(first.statusCounts.consulting,35);assert.equal(first.themaCounts['Bildung & Betreuung'],35);assert.equal(first.coverage.length,3);
  assert.ok(!JSON.stringify(first).includes('private raw text'));assert.ok(!JSON.stringify(first).includes('documentText'));
- const second=await searchMonitor(db,catalog,new URLSearchParams('area=05558008&page=2&revision='+first.revision));assert.equal(second.articles.length,5);assert.equal(new Set([...first.articles,...second.articles].map(a=>a.id)).size,35);
+ const second=await searchMonitor(db,catalog,new URLSearchParams('area=05558008&scope=only&page=2&revision='+first.revision));assert.equal(second.articles.length,15);assert.equal(new Set([...first.articles,...second.articles].map(a=>a.id)).size,35);
  const county=await searchMonitor(db,catalog,new URLSearchParams('level=district'));assert.equal(county.total,1);assert.equal(county.areaCounts['05558'],1);assert.equal(county.areaCounts[''],1);
  assert.equal((await searchMonitor(db,catalog,new URLSearchParams('within='))).total,0);
  assert.equal((await searchMonitor(db,catalog,new URLSearchParams('within=05558008'))).total,35);
  assert.equal((await searchMonitor(db,catalog,new URLSearchParams('q=%25'))).total,0);
  assert.equal(sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision,before);
  put('new');await assert.rejects(searchMonitor(db,catalog,new URLSearchParams('revision='+first.revision)),e=>e.status===409);
+ }finally{sql.close();}
+});
+test('several places, alternatives and filler words combine as expected',async()=>{
+ const {sql,db,put}=fixture();try{
+ for(let i=0;i<3;i++)put('b'+i);put('county','coesfeld');put('elsewhere','other');
+ const total=q=>searchMonitor(db,catalog,new URLSearchParams(q)).then(r=>r.total);
+ assert.equal(await total('area=05558008&scope=only&q=dulmen'),3);
+ /* Gemeinde inklusive ihres Kreises */
+ assert.equal(await total('area=05558008&scope=with&q=dulmen'),4);
+ /* Weiterer Ort aus der Suche: ODER zwischen den Orten */
+ assert.equal(await total('area=05558008&scope=only&more=05558012:only&q=dulmen'),4);
+ assert.equal(await total('area=05558008&scope=only&more=05558012:only,05558:only'),5);
+ /* Füllwörter werden ignoriert, "oder" trennt Alternativen wie ein Komma */
+ assert.equal(await total('area=05558008&scope=only&q=und%20dulmen'),3);
+ assert.equal(await total('q=gibtsnicht%20oder%20dulmen'),4);
+ assert.equal(await total('q=gibtsnicht%2C%20dulmen'),4);
+ assert.equal(await total('q=gibtsnicht%20dulmen'),0);
+ for(const bad of ['more=abc:only','more='+Array(9).fill('05558008:only').join(',')])assert.throws(()=>parseMonitorSearch(new URLSearchParams(bad)));
  }finally{sql.close();}
 });

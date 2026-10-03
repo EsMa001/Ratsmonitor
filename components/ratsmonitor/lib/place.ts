@@ -12,15 +12,28 @@ export interface PlaceEntry {
   n: string;
 }
 
+export interface PlaceHit {
+  place: PlaceEntry;
+  alts: PlaceEntry[];
+  /** normalisierte Suchphrase des Orts */
+  key: string;
+  /** Ortsname so, wie er eingegeben wurde */
+  phraseRaw: string;
+}
+
 export interface ParseResult {
   place: PlaceEntry | null;
   alts: PlaceEntry[];
-  /** Eingabe ohne den erkannten Ortsnamen */
+  /** Eingabe ohne den ersten erkannten Ortsnamen */
   rest: string;
   /** normalisierte Suchphrase des Orts */
   key: string;
   /** Ortsname so, wie er eingegeben wurde */
   phraseRaw: string;
+  /** Weitere erkannte Orte (mehrere Orte parallel, z. B. „Billerbeck, Coesfeld, Kita“) */
+  extra?: PlaceHit[];
+  /** Eingabe ohne alle erkannten Ortsnamen: der eigentliche Suchtext */
+  restAll?: string;
 }
 
 export interface SuggestResult {
@@ -43,7 +56,20 @@ const ALIAS: Record<string, string> = {
   berlin: "11", hamburg: "02", bremen: "04", saarland: "10", thueringen: "16", thuringen: "16",
 };
 
-const clean = (tok: string) => tok.replace(/^[„"'(«»]+|[“"'),.;:!?«»]+$/g, "");
+const clean = (tok: string) => tok.replace(/^[„"'(«»|]+|[“"'),.;:!?«»|]+$/g, "");
+
+/** Wörter der Eingabe; Trennzeichen ohne Leerzeichen („Billerbeck,Kita“) trennen ebenfalls */
+const splitToks = (raw: string) => raw.replace(/([,;|])(?=\S)/g, "$1 ").split(/\s+/).filter(Boolean);
+
+/** Übrig gebliebene Trennzeichen und Bindewörter („oder“, „und“) am Rand entfernen */
+function tidy(t: string): string {
+  let s = t.replace(/\s+/g, " ").replace(/\b(oder|und)(?:\s+(?:oder|und))+\b/gi, "$1").trim();
+  for (let prev = ""; s !== prev; ) {
+    prev = s;
+    s = s.replace(/^(?:[,;|]\s*|(?:oder|und)\s+)/i, "").replace(/(?:\s*[,;|]|\s+(?:oder|und))$/i, "").trim();
+  }
+  return s;
+}
 
 function bases(name: string): string[] {
   const b1 = name.replace(/\s*\(.*?\)\s*$/, "").trim();
@@ -113,11 +139,29 @@ export class PlaceIndex {
     return s + Math.min(10, Math.log10(1 + this.geo.areaSize(e.ags)) * 3);
   }
 
+  /** Erster Ort plus alle weiteren Orte der Eingabe; restAll ist der reine Suchtext */
   parse(q: string, overrides: Record<string, string>, ignored: Record<string, true>): ParseResult {
+    const first = this.parseOne(q, overrides, ignored);
+    if (!first.place) return { ...first, extra: [], restAll: tidy(first.rest) };
+    const extra: PlaceHit[] = [];
+    const seen = new Set([first.place.ags]);
+    let rest = first.rest;
+    for (let i = 0; i < 8; i++) {
+      const next = this.parseOne(rest, overrides, ignored);
+      if (!next.place) break;
+      rest = next.rest;
+      if (seen.has(next.place.ags)) continue;
+      seen.add(next.place.ags);
+      extra.push({ place: next.place, alts: next.alts, key: next.key, phraseRaw: next.phraseRaw });
+    }
+    return { ...first, extra, restAll: tidy(rest) };
+  }
+
+  private parseOne(q: string, overrides: Record<string, string>, ignored: Record<string, true>): ParseResult {
     const raw = (q || "").trim();
     const none: ParseResult = { place: null, alts: [], rest: raw, key: "", phraseRaw: "" };
     if (!raw) return none;
-    const toks = raw.split(/\s+/);
+    const toks = splitToks(raw);
     for (let len = Math.min(5, toks.length); len >= 1; len--) {
       for (let st = 0; st + len <= toks.length; st++) {
         const phraseRaw = toks.slice(st, st + len).map(clean).join(" ").trim();
@@ -143,7 +187,7 @@ export class PlaceIndex {
 
   /** Vorschläge für das zuletzt getippte Wort, solange es noch kein vollständiger Ortsname ist */
   suggest(q: string, exclude = ""): SuggestResult {
-    const toks = (q || "").trim().split(/\s+/).filter(Boolean);
+    const toks = splitToks((q || "").trim());
     for (let len = Math.min(3, toks.length); len >= 1; len--) {
       const st = toks.length - len;
       const p = norm(toks.slice(st).map(clean).join(" "));
@@ -162,7 +206,23 @@ export class PlaceIndex {
   static clean = clean;
 }
 
-/** Text der Suche ohne den als Gebiet übernommenen Ort */
+/** Text der Suche ohne die als Gebiet übernommenen Orte */
 export function textPart(q: string, area: string, areaSrc: string, pq: ParseResult): string {
-  return pq.place && areaSrc === "search" && area === pq.place.ags ? pq.rest : q;
+  return pq.place && areaSrc === "search" && area === pq.place.ags ? (pq.restAll ?? pq.rest) : q;
+}
+
+/** Entfernt einen Ortsnamen aus der Eingabe (z. B. beim Löschen seines Filter-Chips) */
+export function removePhrase(q: string, phraseRaw: string): string {
+  const toks = splitToks(q);
+  const target = norm(phraseRaw);
+  for (let len = Math.min(5, toks.length); len >= 1; len--)
+    for (let st = 0; st + len <= toks.length; st++)
+      if (norm(toks.slice(st, st + len).map(clean).join(" ")) === target) {
+        const before = toks.slice(0, st), after = toks.slice(st + len);
+        /* Trennzeichen des entfernten Worts erhalten, damit Alternativen getrennt bleiben */
+        const sep = /[,;|]$/.exec(toks[st + len - 1])?.[0];
+        if (sep && before.length && after.length && !/[,;|]$/.test(before[before.length - 1])) before[before.length - 1] += sep;
+        return tidy(before.concat(after).join(" "));
+      }
+  return q;
 }

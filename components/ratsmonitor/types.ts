@@ -73,6 +73,8 @@ export interface SearchState {
   placeOverrides: Record<string, string>;
   /** Suchphrasen, die nicht als Ort erkannt werden sollen */
   placeIgnored: Record<string, true>;
+  /** Umfang je weiterem Ort aus der Suche (AGS → nur Gebiet / inklusive Kreis bzw. Gemeinden) */
+  placeScopes?: Record<string, "only" | "with">;
 }
 
 /* ---------- Konto ---------- */
@@ -91,6 +93,8 @@ export interface SavedSearch {
   von?: string;
   bis?: string;
   scope?: "only" | "with";
+  /** Weitere Orte aus der Suche */
+  more?: { ags: string; scope: "only" | "with" }[];
   status: StatusId | "";
   level?: "city" | "district";
   /** Benachrichtigung: on = Push, mail = E-Mail an email; freq gilt für beide */

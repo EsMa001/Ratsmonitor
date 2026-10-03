@@ -5,13 +5,13 @@ import { STATUS } from "../lib/constants";
 import { addCount, countBy, matches, type FilterSpec } from "../lib/filter";
 import type { MapEngine } from "../lib/geo/mapEngine";
 import { textPart, type ParseResult } from "../lib/place";
-import { signature, type SearchSnapshot } from "../lib/savedSearch";
+import { hasScope, signature, type SearchSnapshot } from "../lib/savedSearch";
 import { terms as toTerms } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
 
 export const INITIAL_SEARCH: SearchState = {
-  level:"city", q: "", area: "", areaSrc: "", radius: null, thema: "", monat: "", von: "", bis: "", scope: "only", status: "", sort: "desc", placeOverrides: {}, placeIgnored: {},
+  level:"city", q: "", area: "", areaSrc: "", radius: null, thema: "", monat: "", von: "", bis: "", scope: "only", status: "", sort: "desc", placeOverrides: {}, placeIgnored: {}, placeScopes: {},
 };
 
 interface SearchActions {
@@ -26,6 +26,8 @@ interface SearchActions {
   setMonat: (v: string) => void;
   setZeitraum: (von: string, bis: string) => void;
   setScope: (v: "only" | "with") => void;
+  /** Umfang eines weiteren Orts aus der Suche */
+  setPlaceScope: (ags: string, v: "only" | "with") => void;
   setStatus: (v: StatusId | "") => void;
   setLevel: (v:"city"|"district")=>void;
   setSort: (v: "asc" | "desc") => void;
@@ -134,6 +136,10 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         /* „Nur Kreis“ auf der Kreisebene der Karte zeigen, „inklusive Gemeinden“ auf der Gemeindeebene */
         commit({ ...s, scope: v, level: s.area.length === 5 ? (v === "only" ? "district" : "city") : s.level });
       },
+      setPlaceScope: (ags, v) => {
+        const s = ref.current;
+        commit({ ...s, placeScopes: { ...s.placeScopes, [ags]: v } });
+      },
       setStatus: (v) => commit({ ...ref.current, status: v }),
       setLevel(v) {
         const s=ref.current;
@@ -171,7 +177,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         clearTimeout(focusTimer.current);
         commit({
           ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area: sv.area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status,
-          placeOverrides: overrides, placeIgnored: ignored,
+          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])),
         });
         setPopupState("");
         if (radius) mapRef.current?.fitCircle(radius);
@@ -222,9 +228,12 @@ function useDerivedResults(state:SearchState):SearchResults {
  const local=useMemo(()=>{
   const pq:ParseResult=place?place.parse(state.q,state.placeOverrides,state.placeIgnored):{place:null,alts:[],rest:state.q.trim(),key:'',phraseRaw:''};
   const placeActive=!!(pq.place&&state.areaSrc==='search'&&state.area===pq.place.ags),text=textPart(state.q,state.area,state.areaSrc,pq);
+  /* Weitere Orte aus der Suche: gelten zusätzlich zum ersten Ort (ODER), jeweils mit eigenem Umfang */
+  const more=placeActive?(pq.extra??[]).map(h=>({ags:h.place.ags,scope:(hasScope(h.place.ags,geo)?state.placeScopes?.[h.place.ags]??'only':'only') as 'only'|'with'})):[];
   const within=state.radius&&geo?geo.within(state.radius):null;
-  const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,status:state.status,level:state.level};
+  const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level};
   const params=new URLSearchParams({q:text,area:state.area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:state.area?state.scope:"with",status:state.status,level:state.level,sort:state.sort});
+  if(more.length)params.set('more',more.map(m=>m.ags+':'+m.scope).join(','));
   if(state.radius)params.set('within',within?REGIONS.filter(r=>r.kind===state.level&&within.set.has(r.ags)).map(r=>r.ags).join(','):'');
   const spec:FilterSpec={area:state.area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
   return {pq,placeActive,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString()};
@@ -250,7 +259,11 @@ function useDerivedResults(state:SearchState):SearchResults {
   },180);
   return()=>{clearTimeout(timer);abort.abort();};
  },[local.key,page,attempt,requestKey]);
- const loading=remote.key!==requestKey,data=loading?null:remote.data;
+ const loading=remote.key!==requestKey;
+ const lastGood=useRef<ResponseData|null>(null);
+ if(!loading&&remote.data)lastGood.current=remote.data;
+ /* Beim Nachladen die bisherigen Treffer stehen lassen, statt die Liste zu leeren */
+ const data=loading?lastGood.current:remote.data;
  return {...local,results:data?.articles??[],total:data?.total??0,areaCounts:data?.areaCounts??{},themaCounts:data?.themaCounts??{},monatCounts:data?.monatCounts??{},statusCounts:data?.statusCounts??{},statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:data?.coverage??[],loading,error:loading?'':remote.error,page,setPage:(p:number)=>setNavigation({key:local.key,page:p}),retry:()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);}};
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

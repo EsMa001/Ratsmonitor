@@ -57,17 +57,38 @@ export function SearchBox() {
         setOpen(false);
       };
       const combos = all.filter((e) => hasScope(e.ags, geo) && !(e.ags.length === 5 && all.some((o) => o.ags.length === 8 && o.ags.startsWith(e.ags))));
+      const extra = pq.extra ?? [];
+      if (extra.length) out.push({ kind: "head", label: "Erkannter Ort" });
       for (const [e, scope] of [...all.map((e) => [e, "only"] as const), ...combos.map((e) => [e, "with"] as const)])
         out.push({ kind: "item", entry: e, scope, sel: e.ags === state.area && (scope === state.scope || !hasScope(e.ags, geo)), pick: () => choose(e, scope) });
-      out.push({
-        kind: "text",
-        label: `„${pq.phraseRaw}“ nur als Suchbegriff verwenden`,
-        pick: () => apply(state.q, { placeIgnored: { ...state.placeIgnored, [pq.key]: true } }),
-      });
+      /* Weitere Orte der Suche, jeweils mit eigenem Umfang */
+      for (const h of extra) {
+        out.push({ kind: "head", label: "Weiterer Ort" });
+        const cur = state.placeScopes?.[h.place.ags] ?? "only";
+        for (const scope of variants(h.place.ags))
+          out.push({
+            kind: "item",
+            entry: h.place,
+            scope,
+            sel: scope === cur || !hasScope(h.place.ags, geo),
+            pick: () => {
+              search.setPlaceScope(h.place.ags, scope);
+              setOpen(false);
+            },
+          });
+      }
+      for (const h of [pq, ...extra])
+        out.push({
+          kind: "text",
+          label: `„${h.phraseRaw}“ nur als Suchbegriff verwenden`,
+          pick: () => apply(state.q, { placeIgnored: { ...state.placeIgnored, [h.key]: true } }),
+        });
     }
     const sg = place.suggest(state.q, placeActive && pq.place ? pq.place.ags : "");
     const lastTok = norm(sg.toks.length ? PlaceIndex.clean(sg.toks[sg.toks.length - 1]) : "");
-    if (sg.items.length && !(placeActive && lastTok && pq.key.endsWith(lastTok))) {
+    /* Keine Vorschläge für ein Wort, das schon zu einem erkannten Ort gehört */
+    const recognized = placeActive ? [pq.key, ...(pq.extra ?? []).map((h) => h.key)] : [];
+    if (sg.items.length && !(lastTok && recognized.some((k) => k.split(" ").includes(lastTok)))) {
       out.push({ kind: "head", label: "Orte" });
       for (const e of sg.items)
         for (const scope of variants(e.ags))
@@ -82,8 +103,17 @@ export function SearchBox() {
             const k = norm(phrase);
             const ign = { ...state.placeIgnored };
             delete ign[k];
-            apply(sg.toks.slice(0, sg.start).concat([phrase]).join(" "), { placeOverrides: { ...state.placeOverrides, [k]: e.ags }, placeIgnored: ign, scope });
-            search.setScope(scope);
+            const next = sg.toks.slice(0, sg.start).concat([phrase]).join(" ");
+            const overrides = { ...state.placeOverrides, [k]: e.ags };
+            /* Ist schon ein anderer Ort erkannt, wird der Vorschlag ein weiterer Ort mit eigenem Umfang */
+            const primary = place.parse(next, overrides, ign).place;
+            if (primary && primary.ags !== e.ags) {
+              apply(next, { placeOverrides: overrides, placeIgnored: ign });
+              search.setPlaceScope(e.ags, scope);
+            } else {
+              apply(next, { placeOverrides: overrides, placeIgnored: ign, scope });
+              search.setScope(scope);
+            }
             setOpen(false);
           },
         });
