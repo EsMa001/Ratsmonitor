@@ -26,7 +26,8 @@ export async function searchMonitor(db,catalog,params){
  const f=parseMonitorSearch(params),limit=20;
  /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
  const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...f.more];
- const regions=places.some(p=>p.ags.length>2)?catalog:catalog.filter(r=>r.kind===f.level);
+ /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */
+ const regions=places.length?catalog:catalog.filter(r=>r.kind===f.level);
  const byId=new Map(regions.map(r=>[r.id,r]));
  /* Regionen eines Orts je nach Umfang: nur das Gebiet oder inklusive Kreis bzw. Gemeinden */
  const inPlace=(r,{ags,scope})=>ags.length===2?r.ags.startsWith(ags):scope==='only'?r.ags===ags:ags.length===5?r.ags.startsWith(ags):r.ags===ags||r.ags===ags.slice(0,5);
