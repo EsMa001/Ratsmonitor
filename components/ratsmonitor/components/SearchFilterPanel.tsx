@@ -72,17 +72,17 @@ export function SearchFilterPanel() {
     /* Einzelnen Suchbegriff entfernen; Orte und andere Begriffe bleiben stehen */
     if (key === "q" && term && splitTerms(res.text).length > 1) return search.applySearch(removePhrase(state.q, term));
     if (key === "q") {
-      /* Nur den Text entfernen, erkannte Orte bleiben in der Eingabe */
-      const places = res.placeActive ? [res.pq.phraseRaw, ...(res.pq.extra ?? []).map((h) => h.phraseRaw)] : [];
-      return search.applySearch(places.join(", "));
+      /* Nur den Text entfernen, noch nicht übernommene Orte bleiben in der Eingabe */
+      return search.applySearch(res.liveHits.map((h) => h.phraseRaw).join(", "));
     }
-    /* Orte aus der Suche aus dem Suchtext entfernen; die übrigen Orte bleiben erkannt */
-    if (key === "area" && res.placeActive) return search.applySearch(removePhrase(state.q, res.pq.phraseRaw));
-    if (key === "more") {
-      const hit = res.pq.extra?.find((h) => h.place.ags === term);
-      return hit ? search.applySearch(removePhrase(state.q, hit.phraseRaw)) : undefined;
+    /* Ort aus dem Suchtext: dort entfernen; fester Ortsfilter: direkt entfernen, ein weiterer Ort rückt nach */
+    if (key === "area") return res.placeActive ? search.applySearch(removePhrase(state.q, res.pq.phraseRaw)) : search.clearArea();
+    if (key === "more" && term) {
+      const hit = res.liveHits.find((h) => h.place.ags === term);
+      if (state.morePlaces?.some((m) => m.ags === term)) search.removeMorePlace(term);
+      if (hit) search.applySearch(removePhrase(state.q, hit.phraseRaw));
+      return;
     }
-    if (key === "area") return search.setArea("", "ui");
     if (key === "radius") return search.clearRadius();
     if (key === "thema") return search.setThema("");
     if (key === "monat") return search.setMonat("");

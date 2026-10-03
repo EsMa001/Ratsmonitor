@@ -75,6 +75,8 @@ export interface SearchState {
   placeIgnored: Record<string, true>;
   /** Umfang je weiterem Ort aus der Suche (AGS → nur Gebiet / inklusive Kreis bzw. Gemeinden) */
   placeScopes?: Record<string, "only" | "with">;
+  /** Weitere als Filter übernommene Orte (stehen nicht mehr im Suchtext) */
+  morePlaces?: { ags: string; scope: "only" | "with" }[];
 }
 
 /* ---------- Konto ---------- */

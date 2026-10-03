@@ -4,14 +4,15 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { STATUS } from "../lib/constants";
 import { addCount, countBy, matches, type FilterSpec } from "../lib/filter";
 import type { MapEngine } from "../lib/geo/mapEngine";
-import { textPart, type ParseResult } from "../lib/place";
+import type { ParseResult, PlaceHit } from "../lib/place";
+import { applySearchState, clearAreaState, commitPlacesState, deriveFilters } from "../lib/searchLogic";
 import { hasScope, signature, type SearchSnapshot } from "../lib/savedSearch";
 import { terms as toTerms } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
 
 export const INITIAL_SEARCH: SearchState = {
-  level:"city", q: "", area: "", areaSrc: "", radius: null, thema: "", monat: "", von: "", bis: "", scope: "only", status: "", sort: "desc", placeOverrides: {}, placeIgnored: {}, placeScopes: {},
+  level:"city", q: "", area: "", areaSrc: "", radius: null, thema: "", monat: "", von: "", bis: "", scope: "only", status: "", sort: "desc", placeOverrides: {}, placeIgnored: {}, placeScopes: {}, morePlaces: [],
 };
 
 interface SearchActions {
@@ -28,6 +29,14 @@ interface SearchActions {
   setScope: (v: "only" | "with") => void;
   /** Umfang eines weiteren Orts aus der Suche */
   setPlaceScope: (ags: string, v: "only" | "with") => void;
+  /**
+   * Im Suchtext erkannte Orte als feste Filter übernehmen und aus dem Text entfernen,
+   * damit das Feld frei für den nächsten Begriff ist. sep: Eingabe endete mit einem Komma.
+   */
+  commitPlaces: (sep?: boolean) => void;
+  /** Ersten Ortsfilter entfernen; ein weiterer Ort rückt nach */
+  clearArea: () => void;
+  removeMorePlace: (ags: string) => void;
   setStatus: (v: StatusId | "") => void;
   setLevel: (v:"city"|"district")=>void;
   setSort: (v: "asc" | "desc") => void;
@@ -83,21 +92,11 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     };
     const a: SearchActions = {
       applySearch(value, extra) {
-        const s = { ...ref.current, ...extra };
-        const pq = parse(value, s);
-        const next: SearchState = { ...s, q: value, level: pq.place?.ags.length === 8 ? "city" : s.level };
-        if (pq.place) {
-          if (s.area !== pq.place.ags || s.areaSrc !== "search") {
-            next.area = pq.place.ags;
-            next.areaSrc = "search";
-            next.radius = null;
-            setPopupState("");
-            schedFocus(pq.place.ags);
-          }
-        } else if (s.areaSrc === "search") {
-          next.area = "";
-          next.areaSrc = "";
-          schedFocus("");
+        /* Ein bereits übernommener Ortsfilter bleibt stehen; neu getippte Orte kommen als weitere Orte dazu */
+        const { next, focus } = applySearchState({ ...ref.current, ...extra }, value, parse);
+        if (focus !== undefined) {
+          if (focus) setPopupState("");
+          schedFocus(focus);
         }
         commit(next);
       },
@@ -116,7 +115,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         const s = ref.current;
         const r: Radius = { ags, x: c.x, y: c.y, km: s.radius ? s.radius.km : 20 };
         const moving = !!s.radius;
-        commit({ ...s, ...stripPlace(s), radius: r, area: "", areaSrc: "" });
+        commit({ ...s, ...stripPlace(s), radius: r, area: "", areaSrc: "", morePlaces: [] });
         setPopupState("");
         mapRef.current?.fitCircle(r, moving);
       },
@@ -136,9 +135,21 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         /* „Nur Kreis“ auf der Kreisebene der Karte zeigen, „inklusive Gemeinden“ auf der Gemeindeebene */
         commit({ ...s, scope: v, level: s.area.length === 5 ? (v === "only" ? "district" : "city") : s.level });
       },
+      commitPlaces(sep) {
+        const next = commitPlacesState(ref.current, !!sep, parse);
+        if (next) commit(next);
+      },
+      clearArea() {
+        commit(clearAreaState(ref.current, parse));
+        setPopupState("");
+      },
+      removeMorePlace(ags) {
+        const s = ref.current;
+        commit({ ...s, morePlaces: (s.morePlaces ?? []).filter((m) => m.ags !== ags) });
+      },
       setPlaceScope: (ags, v) => {
         const s = ref.current;
-        commit({ ...s, placeScopes: { ...s.placeScopes, [ags]: v } });
+        commit({ ...s, placeScopes: { ...s.placeScopes, [ags]: v }, morePlaces: (s.morePlaces ?? []).map((m) => (m.ags === ags ? { ...m, scope: v } : m)) });
       },
       setStatus: (v) => commit({ ...ref.current, status: v }),
       setLevel(v) {
@@ -177,7 +188,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         clearTimeout(focusTimer.current);
         commit({
           ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area: sv.area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status,
-          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])),
+          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: (sv.more || []).filter((m) => m.ags !== sv.area),
         });
         setPopupState("");
         if (radius) mapRef.current?.fitCircle(radius);
@@ -208,6 +219,8 @@ export interface SearchResults {
   pq: ParseResult;
   /** Ort aus der Suche ist als Gebiet aktiv */
   placeActive: boolean;
+  /** Im Suchtext erkannte Orte, die gerade als Filter wirken (noch nicht übernommen) */
+  liveHits: PlaceHit[];
   text: string;
   terms: string[];
   spec: FilterSpec;
@@ -227,16 +240,15 @@ function useDerivedResults(state:SearchState):SearchResults {
  const {geo,place}=useData();
  const local=useMemo(()=>{
   const pq:ParseResult=place?place.parse(state.q,state.placeOverrides,state.placeIgnored):{place:null,alts:[],rest:state.q.trim(),key:'',phraseRaw:''};
-  const placeActive=!!(pq.place&&state.areaSrc==='search'&&state.area===pq.place.ags),text=textPart(state.q,state.area,state.areaSrc,pq);
-  /* Weitere Orte aus der Suche: gelten zusätzlich zum ersten Ort (ODER), jeweils mit eigenem Umfang */
-  const more=placeActive?(pq.extra??[]).map(h=>({ags:h.place.ags,scope:(hasScope(h.place.ags,geo)?state.placeScopes?.[h.place.ags]??'only':'only') as 'only'|'with'})):[];
+  /* Ortsfilter: fester erster Ort (state.area), feste weitere Orte (morePlaces) und live im Text erkannte Orte */
+  const {placeActive,liveHits,text,more}=deriveFilters(state,pq,ags=>hasScope(ags,geo));
   const within=state.radius&&geo?geo.within(state.radius):null;
   const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level};
   const params=new URLSearchParams({q:text,area:state.area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:state.area?state.scope:"with",status:state.status,level:state.level,sort:state.sort});
   if(more.length)params.set('more',more.map(m=>m.ags+':'+m.scope).join(','));
   if(state.radius)params.set('within',within?REGIONS.filter(r=>r.kind===state.level&&within.set.has(r.ags)).map(r=>r.ags).join(','):'');
   const spec:FilterSpec={area:state.area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
-  return {pq,placeActive,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString()};
+  return {pq,placeActive,liveHits,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString()};
  },[state,geo,place]);
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);
  const page=navigation.key===local.key?navigation.page:1;

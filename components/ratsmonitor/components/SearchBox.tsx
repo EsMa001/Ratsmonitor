@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { isCovered } from "../lib/constants";
 import { PlaceIndex, type PlaceEntry } from "../lib/place";
 import { norm } from "../lib/text";
 import { hasScope } from "../lib/savedSearch";
+import { isReplacement } from "../lib/searchLogic";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { useSearch, useSearchResults } from "../state/search";
@@ -19,7 +19,7 @@ export function SearchBox() {
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
-  const { pq, placeActive, areaCounts,coverage } = useSearchResults();
+  const { pq, placeActive, liveHits } = useSearchResults();
   const { view, goOverview } = useAppNav();
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -54,40 +54,41 @@ export function SearchBox() {
           apply(state.q, { placeOverrides: { ...state.placeOverrides, [pq.key]: e.ags }, placeIgnored: ign, scope });
         }
         search.setScope(scope);
+        search.commitPlaces();
         setOpen(false);
       };
       const combos = all.filter((e) => hasScope(e.ags, geo) && !(e.ags.length === 5 && all.some((o) => o.ags.length === 8 && o.ags.startsWith(e.ags))));
-      const extra = pq.extra ?? [];
-      if (extra.length) out.push({ kind: "head", label: "Erkannter Ort" });
+      if (liveHits.length > 1) out.push({ kind: "head", label: "Erkannter Ort" });
       for (const [e, scope] of [...all.map((e) => [e, "only"] as const), ...combos.map((e) => [e, "with"] as const)])
         out.push({ kind: "item", entry: e, scope, sel: e.ags === state.area && (scope === state.scope || !hasScope(e.ags, geo)), pick: () => choose(e, scope) });
-      /* Weitere Orte der Suche, jeweils mit eigenem Umfang */
-      for (const h of extra) {
-        out.push({ kind: "head", label: "Weiterer Ort" });
-        const cur = state.placeScopes?.[h.place.ags] ?? "only";
-        for (const scope of variants(h.place.ags))
-          out.push({
-            kind: "item",
-            entry: h.place,
-            scope,
-            sel: scope === cur || !hasScope(h.place.ags, geo),
-            pick: () => {
-              search.setPlaceScope(h.place.ags, scope);
-              setOpen(false);
-            },
-          });
-      }
-      for (const h of [pq, ...extra])
+    }
+    /* Weitere im Text erkannte Orte (zusätzlich zu einem bestehenden Ortsfilter), jeweils mit eigenem Umfang */
+    for (const h of liveHits.filter((x) => x.place.ags !== state.area)) {
+      out.push({ kind: "head", label: "Weiterer Ort" });
+      const cur = state.placeScopes?.[h.place.ags] ?? "only";
+      for (const scope of variants(h.place.ags))
         out.push({
-          kind: "text",
-          label: `„${h.phraseRaw}“ nur als Suchbegriff verwenden`,
-          pick: () => apply(state.q, { placeIgnored: { ...state.placeIgnored, [h.key]: true } }),
+          kind: "item",
+          entry: h.place,
+          scope,
+          sel: scope === cur || !hasScope(h.place.ags, geo),
+          pick: () => {
+            search.setPlaceScope(h.place.ags, scope);
+            search.commitPlaces();
+            setOpen(false);
+          },
         });
     }
+    for (const h of liveHits)
+      out.push({
+        kind: "text",
+        label: `„${h.phraseRaw}“ nur als Suchbegriff verwenden`,
+        pick: () => apply(state.q, { placeIgnored: { ...state.placeIgnored, [h.key]: true } }),
+      });
     const sg = place.suggest(state.q, placeActive && pq.place ? pq.place.ags : "");
     const lastTok = norm(sg.toks.length ? PlaceIndex.clean(sg.toks[sg.toks.length - 1]) : "");
     /* Keine Vorschläge für ein Wort, das schon zu einem erkannten Ort gehört */
-    const recognized = placeActive ? [pq.key, ...(pq.extra ?? []).map((h) => h.key)] : [];
+    const recognized = liveHits.map((h) => h.key);
     if (sg.items.length && !(lastTok && recognized.some((k) => k.split(" ").includes(lastTok)))) {
       out.push({ kind: "head", label: "Orte" });
       for (const e of sg.items)
@@ -105,15 +106,18 @@ export function SearchBox() {
             delete ign[k];
             const next = sg.toks.slice(0, sg.start).concat([phrase]).join(" ");
             const overrides = { ...state.placeOverrides, [k]: e.ags };
-            /* Ist schon ein anderer Ort erkannt, wird der Vorschlag ein weiterer Ort mit eigenem Umfang */
+            /* Gibt es schon einen anderen Ort (fest oder im Text), wird der Vorschlag ein weiterer Ort mit eigenem Umfang */
             const primary = place.parse(next, overrides, ign).place;
-            if (primary && primary.ags !== e.ags) {
+            const fixed = !!state.area && state.areaSrc !== "search" && state.area !== e.ags;
+            if (fixed || (primary && primary.ags !== e.ags)) {
               apply(next, { placeOverrides: overrides, placeIgnored: ign });
               search.setPlaceScope(e.ags, scope);
             } else {
               apply(next, { placeOverrides: overrides, placeIgnored: ign, scope });
               search.setScope(scope);
             }
+            /* Gewählter Ort wird fester Filter, das Feld ist frei für den nächsten Begriff */
+            search.commitPlaces();
             setOpen(false);
           },
         });
@@ -146,11 +150,14 @@ export function SearchBox() {
     } else if (e.key === "ArrowUp" && showList && n) {
       e.preventDefault();
       setActive((i) => (i - 1 + n) % n);
-    } else if (e.key === "Enter" && showList && n) {
+    } else if (e.key === "Enter") {
       e.preventDefault();
-      /* Nur einen ausdrücklich markierten Vorschlag übernehmen; sonst bleibt der eingegebene Text die Suche */
-      if (active >= 0 && picks[active]) picks[active].pick();
-      else setOpen(false);
+      /* Nur einen ausdrücklich markierten Vorschlag übernehmen; sonst erkannte Orte als Filter festhalten */
+      if (showList && n && active >= 0 && picks[active]) picks[active].pick();
+      else {
+        search.commitPlaces();
+        setOpen(false);
+      }
     } else if (e.key === "Escape") {
       if (showList) {
         e.preventDefault();
@@ -185,12 +192,18 @@ export function SearchBox() {
         value={state.q}
         onChange={(e) => {
           setOpen(true);
-          apply(e.target.value);
+          const value = e.target.value.replace(/^\s+/, "");
+          /* Erkannten Ort überschrieben (statt gelöscht): Ort bleibt als Filter erhalten */
+          if (liveHits.length && isReplacement(state.q, value)) search.commitPlaces();
+          apply(value);
+          /* Komma nach einem Ort: Ort wird fester Filter, weiterschreiben mit dem nächsten Begriff */
+          if (/[,;|]\s*$/.test(value)) search.commitPlaces(true);
         }}
         onFocus={() => setOpen(true)}
         onBlur={() => {
           setOpen(false);
           setActive(-1);
+          search.commitPlaces();
         }}
         onKeyDown={onKeyDown}
         className={`h-11 w-full rounded-[10px] border border-slate-200 bg-slate-50 pl-[42px] text-[15px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-[#8a94a6] hover:border-slate-300 focus:border-teal-600 focus:bg-white focus:shadow-focus ${
