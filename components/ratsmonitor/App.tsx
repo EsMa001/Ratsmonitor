@@ -1,4 +1,5 @@
 'use client';
+import {Footer} from "./components/Footer";
 import {useEffect} from 'react';
 import {usePathname} from 'next/navigation';
 import {Header} from './components/Header';
@@ -19,5 +20,5 @@ import {ToastProvider} from './state/toast';
 import {UiProvider} from './state/ui';
 /** Browser-Tab trägt den Namen der gewählten Marke; nach jedem Seitenwechsel neu setzen, weil Next den Titel aus den Metadaten zurückschreiben kann */
 function useBrandTitle(p:string){const {brand}=useBrand();useEffect(()=>{document.title=pageTitle(brand);},[brand,p]);}
-function Content(){const p=usePathname();useBrandTitle(p);return <><Header/><OverviewPage active={p==='/'}/>{(p.startsWith('/beschluss/')||p.startsWith('/thema/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isInfoPath(p)&&<InfoPages path={p}/>}<footer className="mx-auto flex max-w-page flex-wrap justify-center gap-4 pb-6 pt-2 text-[13px] text-slate-500"><a href="/impressum" className="hover:text-slate-900">Impressum</a><a href="/datenschutz" className="hover:text-slate-900">Datenschutz</a></footer><SaveSearchDialog/><GateDialog/><DevBrandSwitcher/></>;}
+function Content(){const p=usePathname();useBrandTitle(p);return <><Header/><OverviewPage active={p==='/'}/>{(p.startsWith('/beschluss/')||p.startsWith('/thema/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isInfoPath(p)&&<InfoPages path={p}/>}<Footer/><SaveSearchDialog/><GateDialog/><DevBrandSwitcher/></>;}
 export default function MonitorApp(){return <div className="ratsmonitor"><DataProvider><ToastProvider><SearchProvider><AccountProvider><UiProvider><Content/></UiProvider></AccountProvider></SearchProvider></ToastProvider></DataProvider></div>;}

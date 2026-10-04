@@ -52,7 +52,8 @@ export function filterChips(s: SearchSnapshot, geo: GeoModel | null): FilterChip
   const out: FilterChip[] = [];
   /* Komma trennt Suchbegriffe; jeder Begriff ist ein eigenes Suchobjekt */
   for (const term of splitTerms(s.text)) out.push({ key: "q", label: "Suche", value: `„${term}“`, term });
-  if (s.area) out.push({ key: "area", label: "Gebiet", value: placeLabel(s.area, s.scope, geo) });
+  /* Mit Umkreis steht das Gebiet nur als dessen Mittelpunkt im Umkreis-Filter */
+  if (s.area && !s.radius) out.push({ key: "area", label: "Gebiet", value: placeLabel(s.area, s.scope, geo) });
   for (const m of s.more || []) out.push({ key: "more", label: "Gebiet", value: placeLabel(m.ags, m.scope, geo), term: m.ags });
   if (s.radius) out.push({ key: "radius", label: "Umkreis", value: `${s.radius.km} km um ${name(s.radius.ags)}` });
   if (s.thema) out.push({ key: "thema", label: "Thema", value: s.thema });

@@ -11,7 +11,7 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
           <path d="M8 11V8a4 4 0 0 1 8 0v3" />
         </svg>
       </span>
-      <h2 className="mb-1 mt-4 text-lg font-semibold">{title}</h2>
+      <h2 className="mb-1 mt-4 text-[18px] font-semibold">{title}</h2>
       <p className="m-0 max-w-[48ch] text-slate-500">{text}</p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
         <Link className="btn-primary" href="/konto/profil#tarif">
@@ -32,7 +32,7 @@ export function UsagePill({ label, used, max }: { label: string; used: number; m
   const { tier } = useTier();
   const full = Number.isFinite(max) && used >= max;
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[12px] font-medium ${full ? "border-amber-200 bg-amber-50 text-amber-800" : "border-slate-200 bg-white text-slate-600"}`}>
+    <span className={`inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[12px] font-medium ${full ? "border-amber-200 bg-amber-50 text-amber-800" : "border-slate-200 bg-white text-slate-600"}`}>
       {label}: {usage(used, max)}
       <span className="text-slate-400">· {TIER_LABEL[tier]}</span>
       {full && (

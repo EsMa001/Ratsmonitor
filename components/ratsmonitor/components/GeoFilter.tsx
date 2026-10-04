@@ -121,7 +121,7 @@ export function GeoFilter() {
         aria-controls="geo-panel"
         title={state.radius ? "Umkreisfilter aktiv" : state.area && geo ? geo.pathText(state.area) : "Gebiet wählen: Bundesland, Kreis, Kommune"}
         onClick={() => (open ? close() : openPanel())}
-        className={`flex h-11 w-full items-center gap-2 rounded-[10px] border px-3 text-left text-sm font-medium transition-[border-color,box-shadow,background-color] desk:w-full ${
+        className={`flex h-11 w-full items-center gap-2 rounded-[10px] border px-3 text-left text-[14px] font-normal transition-[border-color,box-shadow,background-color] desk:w-full ${
           open ? "border-teal-600 shadow-focus" : activeFilter ? "border-teal-200" : "border-slate-200 hover:border-slate-300"
         } ${activeFilter ? "bg-teal-50 text-teal-700" : "bg-white text-slate-900"}`}
       >
@@ -155,7 +155,7 @@ export function GeoFilter() {
                   {s}
                 </>
               );
-              const cls = `flex flex-1 items-center gap-1.5 rounded-[7px] px-2 py-1.5 text-left text-xs ${
+              const cls = `flex flex-1 items-center gap-1.5 rounded-[7px] px-2 py-1.5 text-left text-[12px] ${
                 cur ? "bg-teal-50 font-semibold text-teal-700" : done ? "bg-slate-50 text-slate-600" : "bg-slate-50 text-slate-500"
               }`;
               return done ? (
@@ -169,7 +169,7 @@ export function GeoFilter() {
               );
             })}
           </div>
-          <div className="flex flex-wrap items-center gap-0.5 px-3 pt-2.5 text-[12.5px] text-slate-500">
+          <div className="flex flex-wrap items-center gap-0.5 px-3 pt-2.5 text-[12px] text-slate-500">
             {lvl === 0 ? (
               <span className="px-1 py-0.5 font-semibold text-slate-900">Deutschland</span>
             ) : (
@@ -208,7 +208,7 @@ export function GeoFilter() {
               placeholder={ph + " …"}
               value={find}
               onChange={(e) => setFind(e.target.value)}
-              className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-[13.5px] outline-none focus:border-teal-600 focus:shadow-[0_0_0_3px_rgba(13,148,136,.2)]"
+              className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-[13px] outline-none focus:border-teal-600 focus:shadow-[0_0_0_3px_rgba(13,148,136,.2)]"
             />
           </div>
           <ul role="list" className="scroll-thin m-0 min-h-0 flex-1 list-none overflow-y-auto p-1.5">
@@ -222,7 +222,7 @@ export function GeoFilter() {
                   allSel ? "bg-teal-50" : ""
                 }`}
               >
-                <span className={`truncate text-sm font-medium ${allSel ? "text-teal-700" : ""}`}>{allLabel}</span>
+                <span className={`truncate text-[14px] font-medium ${allSel ? "text-teal-700" : ""}`}>{allLabel}</span>
                 {nav ? badge(nav) : <span />}
                 {allSel ? <IconCheck className="text-teal-700" /> : <span />}
               </button>
@@ -257,8 +257,8 @@ export function GeoFilter() {
                     }`}
                   >
                     <span className="min-w-0">
-                      <span className={`block truncate text-sm ${sel ? "font-semibold text-teal-700" : ""}`}>{e.name}</span>
-                      <span className="block text-xs text-slate-500">{meta}</span>
+                      <span className={`block truncate text-[14px] ${sel ? "font-semibold text-teal-700" : ""}`}>{e.name}</span>
+                      <span className="block text-[12px] text-slate-500">{meta}</span>
                     </span>
                     {badge(e.ags)}
                     {drill ? <IconChevronRight className="text-slate-500" /> : state.area === e.ags ? <IconCheck className="text-teal-700" /> : <span />}

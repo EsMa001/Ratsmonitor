@@ -5,9 +5,8 @@ import { plural } from "../../lib/text";
 import { hasFilters } from "../../lib/savedSearch";
 import { useData } from "../../state/data";
 import { useSearch, useSearchResults } from "../../state/search";
-import { IconMinus, IconPlus, IconRadius, IconReset, IconX } from "../icons";
+import { IconCenter, IconChevronDown, IconChevronUp, IconMap, IconMinus, IconPlus, IconReset, IconX } from "../icons";
 import { Legend } from "./Legend";
-import { RadiusPanel } from "./RadiusPanel";
 
 /** Trefferstufe: 0 keine, 1 wenige, 2 mittel, 3 viele (ohne Suche nur 0 oder 3) */
 function hitLevel(c: number, t: [number, number], graded: boolean) {
@@ -21,21 +20,34 @@ export function MapPanel({ active }: { active: boolean }) {
   const { geo, geoError } = useData();
   const search = useSearch();
   const { state, popup, mapRef } = search;
-  const { areaCounts, coverage, snapshot } = useSearchResults();
+  const { areaCounts, coverage, snapshot, text, loading } = useSearchResults();
   const filtered = hasFilters(snapshot);
   const hits = coverage.map((c) => areaCounts[c.ags] || 0).filter(Boolean).sort((a, b) => a - b);
   const maxHits = hits.at(-1) ?? 0;
   /* Lineare Stufen: gleich breite Drittel bis zum Höchstwert */
   const t1 = Math.max(1, Math.round(maxHits / 3)), t2 = Math.max(t1, Math.round((2 * maxHits) / 3));
-  const [zoomHint, setZoomHint] = useState("Zum Zoomen Strg gedrückt halten und scrollen");
+  const [zoomHint, setZoomHint] = useState("Zum Zoomen in die Karte klicken oder Strg gedrückt halten");
   useEffect(() => {
-    if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) setZoomHint("Zum Zoomen ⌘ (Cmd) gedrückt halten und scrollen");
+    if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) setZoomHint("Zum Zoomen in die Karte klicken oder ⌘ (Cmd) gedrückt halten");
   }, []);
   const stageRef = useRef<HTMLDivElement>(null);
   const baseRef = useRef<HTMLCanvasElement>(null);
   const overRef = useRef<HTMLCanvasElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
+  /* Karte einklappbar; die Wahl bleibt im Browser gespeichert */
+  const [collapsed, setCollapsedState] = useState(false);
+  useEffect(() => {
+    try {
+      setCollapsedState(localStorage.getItem("rm-map-collapsed") === "1");
+    } catch {}
+  }, []);
+  const setCollapsed = (v: boolean) => {
+    setCollapsedState(v);
+    try {
+      localStorage.setItem("rm-map-collapsed", v ? "1" : "0");
+    } catch {}
+  };
   const [tip, setTip] = useState<{ ags: string; x: number; y: number } | null>(null);
   const [hint, setHint] = useState(false);
   const hintTimer = useRef(0);
@@ -83,7 +95,6 @@ export function MapPanel({ active }: { active: boolean }) {
       onSelect(ags) {
         const { state: s, search: act } = live.current;
         if (!ags) return act.setPopup("");
-        if (s.radius) return act.setPopup(ags);
         const deselect = s.area === ags;
         act.setArea(deselect ? "" : ags, "map");
         act.setPopup(deselect ? "" : ags);
@@ -142,6 +153,25 @@ export function MapPanel({ active }: { active: boolean }) {
 
   useEffect(() => () => clearTimeout(hintTimer.current), []);
 
+  /* Auf alle Gebiete mit Treffern zentrieren; im Umkreis auf den ganzen Kreis */
+  const centerHits = () => {
+    if (!engine) return;
+    if (state.radius) return engine.fitCircle(state.radius);
+    engine.focusMany(coverage.map((c) => c.ags).filter((a) => areaCounts[a]));
+  };
+
+  /* Neuer Suchbegriff ohne gewähltes Gebiet: sobald die Treffer da sind, die Karte auf sie zentrieren */
+  const pendingCenter = useRef(false);
+  useEffect(() => {
+    pendingCenter.current = !!text.trim();
+  }, [text]);
+  useEffect(() => {
+    if (loading || !pendingCenter.current) return;
+    pendingCenter.current = false;
+    if (!state.area && !state.radius) centerHits();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, areaCounts]);
+
   const countText = (ags: string) => {
     if (!isCovered(ags, coverage)) return "Keine Treffer";
     const c = areaCounts[ags] || 0;
@@ -151,12 +181,22 @@ export function MapPanel({ active }: { active: boolean }) {
   const tipInfo = geo && tip && !popup ? geo.info(tip.ags) : null;
   const popInfo = geo && popup ? geo.info(popup) : null;
 
-  const btnPrimary =
-    "flex min-h-9 items-center justify-center gap-2 rounded-lg border border-teal-600 bg-teal-600 px-2.5 text-[13.5px] font-medium text-white hover:border-teal-700 hover:bg-teal-700";
-  const btnSecondary = "min-h-9 rounded-lg border border-teal-200 bg-white px-2.5 text-[13.5px] font-medium text-teal-700 hover:bg-teal-50";
 
   return (
-    <section aria-label="Karte der Gemeinden und Kreise" className="relative mx-auto mt-[max(0.3vw,6px)] h-[460px] max-w-page overflow-hidden rounded-xl border border-slate-200 bg-map-ground shadow-card sm:h-[520px]">
+    <>
+    {collapsed && (
+      <button
+        type="button"
+        onClick={() => setCollapsed(false)}
+        aria-expanded={false}
+        className="mx-auto mt-[12px] flex h-11 w-full max-w-page items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-[14px] font-medium text-slate-700 shadow-card hover:bg-slate-50"
+      >
+        <IconMap size={18} className="text-teal-600" />
+        Karte anzeigen
+        <IconChevronDown size={16} className="ml-auto text-slate-500" />
+      </button>
+    )}
+    <section hidden={collapsed} aria-label="Karte der Gemeinden und Kreise" className="relative mx-auto mt-[12px] h-[460px] max-w-page overflow-hidden rounded-2xl border border-slate-200 bg-map-ground shadow-card sm:h-[520px]">
       <div ref={stageRef} className="absolute inset-0 cursor-grab touch-pan-y select-none">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas
@@ -168,7 +208,7 @@ export function MapPanel({ active }: { active: boolean }) {
         {!geo && <div className="absolute inset-0 grid place-items-center text-[13px] text-slate-500">{geoError ? "Kartendaten konnten nicht geladen werden." : "Karte wird aufgebaut …"}</div>}
         <div
           ref={tipRef}
-          className={`pointer-events-none absolute z-[6] max-w-[260px] rounded-lg bg-slate-900 px-2.5 py-[7px] text-[12.5px] leading-[1.35] text-white shadow-pop transition-opacity duration-75 ${
+          className={`pointer-events-none absolute z-[6] max-w-[260px] rounded-lg bg-slate-900 px-2.5 py-[7px] text-[12px] leading-[1.35] text-white shadow-pop transition-opacity duration-75 ${
             tipInfo ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -181,7 +221,7 @@ export function MapPanel({ active }: { active: boolean }) {
           )}
         </div>
         <div
-          className={`pointer-events-none absolute left-1/2 top-4 z-[6] -translate-x-1/2 rounded-full bg-slate-900/90 px-3 py-1.5 text-[12.5px] text-white transition-opacity duration-200 ${
+          className={`pointer-events-none absolute left-1/2 top-4 z-[6] -translate-x-1/2 rounded-full bg-slate-900/90 px-3 py-1.5 text-[12px] text-white transition-opacity duration-200 ${
             hint ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -206,57 +246,27 @@ export function MapPanel({ active }: { active: boolean }) {
             >
               <IconX />
             </button>
-            <b className="block pr-7 text-[14.5px] leading-[1.3]">{popInfo.name}</b>
-            <span className="block text-[12.5px] text-slate-500">{popInfo.meta}</span>
+            <b className="block pr-7 text-[14px] leading-[1.3]">{popInfo.name}</b>
+            <span className="block text-[12px] text-slate-500">{popInfo.meta}</span>
             <div className="mt-1 text-slate-600">{countText(popup)}</div>
-            <div className="mt-2.5 flex flex-col gap-1.5">
-              {!state.radius && (
-                <>
-                  <button type="button" className={btnPrimary} onClick={() => search.startRadius(popup)}>
-                    <IconRadius />
-                    Alle im Umkreis auswählen
-                  </button>
-                  {state.area === popup && (
-                    <button type="button" className={btnSecondary} onClick={() => search.setArea("", "ui")}>
-                      Auswahl aufheben
-                    </button>
-                  )}
-                </>
-              )}
-              {state.radius && state.radius.ags === popup && (
-                <button type="button" className={btnSecondary} onClick={search.clearRadius}>
-                  Umkreis aufheben
-                </button>
-              )}
-              {state.radius && state.radius.ags !== popup && (
-                <>
-                  <button type="button" className={btnPrimary} onClick={() => search.startRadius(popup)}>
-                    <IconRadius />
-                    Umkreis hierher verlegen
-                  </button>
-                  <button type="button" className={btnSecondary} onClick={() => search.setArea(popup, "ui", { clearRadius: true })}>
-                    Nur dieses Gebiet anzeigen
-                  </button>
-                </>
-              )}
-            </div>
           </div>
         )}
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-[5]">
         <div className="relative mx-auto h-full max-w-page">
-          <div className="pointer-events-auto absolute right-3 top-3 flex flex-col overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-xs sm:right-6 sm:top-4">
+          <div className="pointer-events-auto absolute right-3 top-3 flex flex-col overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-xs">
             {[
               { label: "Hineinzoomen", icon: <IconPlus />, run: () => engine?.zoomBy(1.8) },
               { label: "Herauszoomen", icon: <IconMinus />, run: () => engine?.zoomBy(1 / 1.8) },
+              { label: "Karte auf alle Treffer zentrieren", icon: <IconCenter />, run: centerHits },
               { label: "Suche und Filter zurücksetzen, Deutschland anzeigen", icon: <IconReset />, run: search.resetAll },
             ].map((b, i) => (
               <button
                 key={b.label}
                 type="button"
                 aria-label={b.label}
-                title={i === 2 ? "Suche und Filter zurücksetzen" : undefined}
+                title={i === 2 ? "Auf alle Treffer zentrieren" : i === 3 ? "Suche und Filter zurücksetzen" : undefined}
                 onClick={b.run}
                 className="grid h-8 w-8 place-items-center border-b border-slate-200 bg-white text-slate-600 last:border-b-0 hover:bg-slate-100 hover:text-slate-900 sm:h-9 sm:w-9"
               >
@@ -264,13 +274,30 @@ export function MapPanel({ active }: { active: boolean }) {
               </button>
             ))}
           </div>
+          {/* Dezent mittig am unteren Rand */}
+          <button
+            type="button"
+            onClick={() => setCollapsed(true)}
+            className="pointer-events-auto absolute bottom-3 left-1/2 hidden h-8 -translate-x-1/2 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[12px] font-medium text-slate-600 shadow-xs hover:text-slate-900 sm:inline-flex"
+          >
+            <IconChevronUp size={14} />
+            Karte einklappen
+          </button>
+          <button
+            type="button"
+            aria-label="Karte einklappen"
+            onClick={() => setCollapsed(true)}
+            className="pointer-events-auto absolute bottom-3 left-1/2 grid h-8 w-11 -translate-x-1/2 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-xs sm:hidden"
+          >
+            <IconChevronUp size={16} />
+          </button>
           <Legend graded={filtered} max={maxHits} t1={t1} t2={t2} />
-          {state.radius && geo && <RadiusPanel />}
-          <span className="pointer-events-auto absolute left-2 top-2 rounded sm:left-auto sm:top-auto bg-map-ground/85 px-[5px] py-px text-[10.5px] text-slate-500 sm:bottom-2 sm:right-6">© GeoBasis-DE / BKG 2019, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="underline">dl-de/by-2-0</a>, vereinfacht</span>
+          <span className="pointer-events-auto absolute left-2 top-2 rounded sm:left-auto sm:top-auto bg-map-ground/85 px-[5px] py-px text-[11px] text-slate-500 sm:bottom-3 sm:right-3">© GeoBasis-DE / BKG 2019, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="underline">dl-de/by-2-0</a>, vereinfacht</span>
         </div>
       </div>
       {/* Nur für Screenreader: Hinweis auf die Auswahl über den Gebietsfilter */}
       <span className="sr-only">{popInfo ? `${popInfo.name} ausgewählt` : ""}</span>
     </section>
+    </>
   );
 }

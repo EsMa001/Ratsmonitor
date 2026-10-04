@@ -206,12 +206,12 @@ export function SearchBox() {
           search.commitPlaces();
         }}
         onKeyDown={onKeyDown}
-        className={`h-11 w-full rounded-[10px] border border-slate-200 bg-slate-50 pl-[42px] text-[15px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-[#8a94a6] hover:border-slate-300 focus:border-teal-600 focus:bg-white focus:shadow-focus ${
+        className={`h-11 w-full rounded-xl border border-transparent bg-[#f8f9fa] pl-[42px] text-[15px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-slate-400 hover:bg-[#f1f3f5] focus:border-teal-600 focus:bg-white focus:shadow-focus ${
           placeOn ? "pr-[128px]" : "pr-11"
         }`}
       />
       {placeOn && (
-        <span className="pointer-events-none absolute right-11 top-1/2 inline-flex h-6 -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-teal-50 px-2 text-xs font-semibold text-teal-700">
+        <span className="pointer-events-none absolute right-11 top-1/2 inline-flex h-6 -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-teal-50 px-2 text-[12px] font-semibold text-teal-700">
           <IconPin size={12} />
           Ort erkannt
         </span>
@@ -228,14 +228,7 @@ export function SearchBox() {
         >
           <IconX />
         </button>
-      ) : (
-        <kbd
-          aria-hidden="true"
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md border border-b-2 border-slate-200 bg-white px-[7px] py-[3px] font-sans text-xs font-medium leading-none text-slate-500"
-        >
-          /
-        </kbd>
-      )}
+      ) : null}
       {showList && (
         <div
           id="search-assist"
@@ -247,7 +240,7 @@ export function SearchBox() {
           {rows.map((r, i) => {
             if (r.kind === "head")
               return (
-                <div key={"h" + i} className="px-2 pb-1 pt-1.5 text-[11.5px] font-semibold uppercase tracking-[.04em] text-slate-500">
+                <div key={"h" + i} className="px-2 pb-1 pt-1.5 text-[12px] font-semibold uppercase tracking-[.04em] text-slate-500">
                   {r.label}
                 </div>
               );
@@ -266,8 +259,8 @@ export function SearchBox() {
                 >
                   <span className={`h-3.5 w-3.5 rounded-full border-2 ${r.sel ? "border-teal-600 bg-teal-600 shadow-[inset_0_0_0_2px_white]" : "border-slate-400"}`} />
                   <span className="min-w-0">
-                    <span className={`block truncate text-sm ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{r.label}</span>
-                    <span className="block text-xs text-slate-500">{r.sub}</span>
+                    <span className={`block truncate text-[14px] ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{r.label}</span>
+                    <span className="block text-[12px] text-slate-500">{r.sub}</span>
                   </span>
                 </button>
               );
@@ -278,7 +271,7 @@ export function SearchBox() {
                   id={`sa-${idx}`}
                   type="button"
                   onClick={r.pick}
-                  className={`mt-1 w-full border-0 border-t border-slate-200 bg-transparent px-2 pb-[5px] pt-[9px] text-left text-[12.5px] text-slate-500 hover:text-slate-900 hover:underline hover:underline-offset-2 ${
+                  className={`mt-1 w-full border-0 border-t border-slate-200 bg-transparent px-2 pb-[5px] pt-[9px] text-left text-[12px] text-slate-500 hover:text-slate-900 hover:underline hover:underline-offset-2 ${
                     idx === active ? "text-slate-900 underline underline-offset-2" : ""
                   }`}
                 >
@@ -300,8 +293,8 @@ export function SearchBox() {
               >
                 {r.sel ? <IconCheck className="text-teal-600" /> : <IconPin className="text-slate-500" />}
                 <span className="min-w-0">
-                  <span className={`block truncate text-sm ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{scopeName(r.entry.ags, r.scope)}</span>
-                  <span className="block text-xs text-slate-500">{r.scope === "with" ? (r.entry.ags.length === 5 ? "Kreis und alle Städte und Gemeinden im Kreis" : "Gemeinde und Beschlüsse ihres Kreises") : inf.meta}</span>
+                  <span className={`block truncate text-[14px] ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{scopeName(r.entry.ags, r.scope)}</span>
+                  <span className="block text-[12px] text-slate-500">{r.scope === "with" ? (r.entry.ags.length === 5 ? "Kreis und alle Städte und Gemeinden im Kreis" : "Gemeinde und Beschlüsse ihres Kreises") : inf.meta}</span>
                 </span>
                 <span />
               </button>

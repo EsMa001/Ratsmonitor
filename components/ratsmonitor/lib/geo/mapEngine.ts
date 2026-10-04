@@ -44,8 +44,6 @@ export class MapEngine {
   private fastQueued = false;
   private drawQueued = false;
   private overQueued = false;
-  private hatch: CanvasPattern | null = null;
-  private hatchDpr = 0;
   private counts: Record<string, number> = {};
   private countsKey = "";
   private level: "city" | "district" = "city";
@@ -72,7 +70,6 @@ export class MapEngine {
     this.over = over;
     this.bctx = base.getContext("2d");
     this.octx = over.getContext("2d");
-    this.hatch = null;
     const ro = new ResizeObserver(() => this.resize());
     ro.observe(stage);
     const unbind = this.bindEvents(over);
@@ -154,6 +151,20 @@ export class MapEngine {
     const mx = (b[2] - b[0]) * 0.06 + 200;
     const my = (b[3] - b[1]) * 0.06 + 200;
     this.flyTo(this.fitView([b[0] - mx, b[1] - my, b[2] + mx, b[3] + my], 40), 700);
+  }
+
+  /** Fließend auf mehrere Gebiete zoomen (z. B. alle Treffer); ohne Gebiete ganz Deutschland */
+  focusMany(list: string[]) {
+    if (!this.view) return;
+    let bb: BBox | null = null;
+    for (const ags of list) {
+      const b = this.geo.bbox(ags);
+      if (b) bb = bb ? [Math.min(bb[0], b[0]), Math.min(bb[1], b[1]), Math.max(bb[2], b[2]), Math.max(bb[3], b[3])] : [b[0], b[1], b[2], b[3]];
+    }
+    if (!bb) return this.focusArea("");
+    const mx = (bb[2] - bb[0]) * 0.06 + 200;
+    const my = (bb[3] - bb[1]) * 0.06 + 200;
+    this.flyTo(this.fitView([bb[0] - mx, bb[1] - my, bb[2] + mx, bb[3] + my], 40), 700);
   }
 
   fitCircle(r: Radius, onlyIfNeeded = false) {
@@ -312,29 +323,6 @@ export class MapEngine {
     });
   }
 
-  private getHatch(): CanvasPattern {
-    if (this.hatch && this.hatchDpr === this.dpr) return this.hatch;
-    const s = Math.round(7 * this.dpr);
-    const c = document.createElement("canvas");
-    c.width = c.height = s;
-    const x = c.getContext("2d")!;
-    x.fillStyle = "#ffffff";
-    x.fillRect(0, 0, s, s);
-    x.strokeStyle = C.hatch;
-    x.lineWidth = Math.max(1, this.dpr);
-    x.beginPath();
-    x.moveTo(-1, s + 1);
-    x.lineTo(s + 1, -1);
-    x.moveTo(-1, 1);
-    x.lineTo(1, -1);
-    x.moveTo(s - 1, s + 1);
-    x.lineTo(s + 1, s - 1);
-    x.stroke();
-    this.hatch = this.bctx!.createPattern(c, "repeat")!;
-    this.hatchDpr = this.dpr;
-    return this.hatch;
-  }
-
   private drawBase() {
     const ctx = this.bctx!;
     const G = this.geo;
@@ -354,10 +342,6 @@ export class MapEngine {
     ctx.stroke(G.neighbours);
     const fp = G.germany.path;
     ctx.fillStyle = "#ffffff";
-    ctx.fill(fp);
-    const pat = this.getHatch();
-    pat.setTransform(ctx.getTransform().inverse());
-    ctx.fillStyle = pat;
     ctx.fill(fp);
     const L = this.level === "district" ? G.krs : G.gem;
     for (const ags of this.coverage) {
@@ -380,14 +364,19 @@ export class MapEngine {
     ctx.stroke(G.mesh[2]);
     ctx.save();
     ctx.clip(fp);
-    ctx.strokeStyle = pxkm < 1.2 ? "#b3bbc5" : pxkm < 4 ? "#8a94a0" : "#6f7985";
+    /* Halbtransparente Linien: auf weißen und auf eingefärbten Gebieten gleichermaßen sichtbar */
+    ctx.strokeStyle = pxkm < 1.2 ? "rgba(30,41,59,.28)" : pxkm < 4 ? "rgba(30,41,59,.42)" : "rgba(30,41,59,.52)";
     ctx.lineWidth = px(Math.max(0.25, Math.min(1.1, 0.2 + pxkm * 0.18)));
     ctx.stroke(G.mesh[0]);
-    ctx.strokeStyle = pxkm < 1.2 ? "#98a1ad" : "#5f6874";
-    ctx.lineWidth = px(pxkm < 1.2 ? 0.5 : 1.2);
+    ctx.restore();
+    /* Kreis- und Ländergrenzen zuletzt und mit dem Zoom kräftiger, damit sie sich immer von den Gemeindegrenzen abheben */
+    ctx.save();
+    ctx.clip(fp);
+    ctx.strokeStyle = pxkm < 1.2 ? "rgba(30,41,59,.36)" : "rgba(30,41,59,.62)";
+    ctx.lineWidth = px(pxkm < 1.2 ? 0.5 : Math.min(1.9, 1 + pxkm * 0.08));
     ctx.stroke(G.mesh[1]);
-    ctx.strokeStyle = "#4b5563";
-    ctx.lineWidth = px(1.2);
+    ctx.strokeStyle = "rgba(30,41,59,.72)";
+    ctx.lineWidth = px(Math.min(2.6, 1.2 + pxkm * 0.12));
     ctx.stroke(G.mesh[2]);
     ctx.restore();
     ctx.strokeStyle = C.national;
@@ -602,8 +591,14 @@ export class MapEngine {
     const leave = () => {
       if (!drag) setHover("", 0, 0);
     };
+    /* Nach einem Klick in die Karte zoomt das Mausrad ohne Taste; ein Klick außerhalb gibt das Scrollen der Seite zurück */
+    let engaged = false;
+    const engage = () => (engaged = true);
+    const outside = (e: PointerEvent) => {
+      if (!el.contains(e.target as Node)) engaged = false;
+    };
     const wheel = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) {
+      if (engaged || e.ctrlKey || e.metaKey) {
         e.preventDefault();
         const p = rel(e);
         this.zoomAt(p[0], p[1], Math.exp(-e.deltaY * (e.deltaMode === 1 ? 0.05 : 0.0022)));
@@ -615,6 +610,8 @@ export class MapEngine {
       this.zoomAt(p[0], p[1], 2);
     };
     el.addEventListener("pointerdown", down);
+    el.addEventListener("pointerdown", engage);
+    document.addEventListener("pointerdown", outside);
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerup", up);
     el.addEventListener("pointercancel", cancel);
@@ -623,6 +620,8 @@ export class MapEngine {
     el.addEventListener("dblclick", dbl);
     return () => {
       el.removeEventListener("pointerdown", down);
+      el.removeEventListener("pointerdown", engage);
+      document.removeEventListener("pointerdown", outside);
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerup", up);
       el.removeEventListener("pointercancel", cancel);

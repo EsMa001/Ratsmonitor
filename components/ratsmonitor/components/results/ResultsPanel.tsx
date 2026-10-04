@@ -1,3 +1,4 @@
+import { useListView } from "../../lib/listView";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { filterChips } from "../../lib/savedSearch";
 import { useData } from "../../state/data";
@@ -13,6 +14,7 @@ export function ResultsPanel() {
   const search = useSearch();
   const { state, mapRef } = search;
   const res = useSearchResults();
+  const view = useListView();
   const articlesReady=!res.loading;
   const { push } = useAppNav();
   const { allowFeature, limits } = useEntitlements();
@@ -81,10 +83,10 @@ export function ResultsPanel() {
           aria-label="Ergebnisliste"
           onScroll={updateFades}
           onMouseLeave={() => onHover("")}
-          className={`flex flex-col gap-[max(0.3vw,6px)] p-[max(0.3vw,6px)] outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
+          className={`flex flex-col px-[12px] py-[12px] outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
         >
           {!articlesReady && res.results.length===0 && <div className="p-8 text-center text-[13px] text-slate-500">Einträge werden geladen …</div>}
-          {res.results.map((a, i) => (
+          {(Number.isFinite(limits.maxResults) ? res.results.slice(0, limits.maxResults) : res.results).map((a, i) => (
             <ArticleCard
               key={a.id}
               article={a}
@@ -92,6 +94,7 @@ export function ResultsPanel() {
               terms={terms}
               onOpen={onOpen}
               onHover={onHover}
+              compact={view === "compact"}
             />
           ))}
           {articlesReady && !res.error && n === 0 && (
@@ -99,8 +102,8 @@ export function ResultsPanel() {
               <div className="mb-1.5 grid h-12 w-12 place-items-center rounded-xl bg-slate-100 text-slate-500">
                 <IconEmptySearch size={22} />
               </div>
-              <h3 className="m-0 text-base text-slate-900">Keine Vorgänge gefunden{emptyWhere}</h3>
-              <p className="m-0 text-sm">Für diese Kombination aus Gebiet, Suchbegriff und Filtern gibt es keine Einträge.</p>
+              <h3 className="m-0 text-[16px] text-slate-900">Keine Vorgänge gefunden{emptyWhere}</h3>
+              <p className="m-0 text-[14px]">Für diese Kombination aus Gebiet, Suchbegriff und Filtern gibt es keine Einträge.</p>
               <button type="button" onClick={search.resetAll} className="btn-primary mt-2.5">
                 Alle Filter zurücksetzen
               </button>
@@ -126,7 +129,7 @@ export function ResultsPanel() {
             Zurück
           </button>
         )}
-        <span className="text-sm text-slate-500">
+        <span className="text-[14px] text-slate-500">
           {active ? `${res.total.toLocaleString("de-DE")} Treffer · Seite ${res.page} von ${pages}` : `Seite ${res.page}`}
         </span>
         {res.page < Math.min(pages, MAX_PAGE) && (
