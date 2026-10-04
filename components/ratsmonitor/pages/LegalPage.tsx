@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useBrand } from "../lib/brand";
 
 /* Platzhalter: vor Veröffentlichung durch die echten Angaben des Betreibers ersetzen */
 const BETREIBER = {
@@ -42,6 +43,7 @@ function Anschrift() {
 }
 
 function Impressum() {
+  const { name } = useBrand();
   return (
     <>
       <h1 className="text-3xl font-bold tracking-tight">Impressum</h1>
@@ -53,7 +55,7 @@ function Impressum() {
       </P>
       <H2>Hinweis zu den Inhalten</H2>
       <P>
-        Der Ratsmonitor bereitet öffentlich zugängliche Informationen aus Ratsinformationssystemen von Kommunen und Kreisen auf. Zusammenfassungen werden teilweise
+        {name} bereitet öffentlich zugängliche Informationen aus Ratsinformationssystemen von Kommunen und Kreisen auf. Zusammenfassungen werden teilweise
         automatisiert, auch mit Hilfe künstlicher Intelligenz, erstellt und können Fehler enthalten. Maßgeblich sind ausschließlich die verlinkten Originalunterlagen der
         jeweiligen Kommune.
       </P>
@@ -74,6 +76,7 @@ function Impressum() {
 }
 
 function Datenschutz() {
+  const { name } = useBrand();
   return (
     <>
       <h1 className="text-3xl font-bold tracking-tight">Datenschutzerklärung</h1>
@@ -141,7 +144,7 @@ function Datenschutz() {
       </P>
 
       <H2>7. Datenquellen und genutzte Schnittstellen (APIs)</H2>
-      <P>Für die Inhalte des Ratsmonitors greift ausschließlich unser Server auf folgende Schnittstellen zu. Dein Browser stellt dabei keine Verbindung zu diesen Diensten her.</P>
+      <P>Für die Inhalte von {name} greift ausschließlich unser Server auf folgende Schnittstellen zu. Dein Browser stellt dabei keine Verbindung zu diesen Diensten her.</P>
       <Ul
         items={[
           <>

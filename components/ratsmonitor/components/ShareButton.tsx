@@ -21,7 +21,7 @@ export function ShareButton({ title, url, className = "" }: { title: string; url
       aria-label={copied ? "Link kopiert" : "Link teilen"}
       className={`grid h-9 w-9 flex-none place-items-center text-teal-600 transition-colors hover:text-teal-800 ${className}`}
     >
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         {copied ? (
           <path d="m5 12.5 4.5 4.5L19 7.5" />
         ) : (

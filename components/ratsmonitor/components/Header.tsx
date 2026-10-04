@@ -1,4 +1,5 @@
 import { usePathname } from "next/navigation";
+import { MainMenu } from "../menu/MainMenu";
 import { useAppNav } from "../state/nav";
 import { AccountMenu } from "./AccountMenu";
 import { Brand } from "./Brand";
@@ -14,9 +15,12 @@ export function Header() {
   };
 
   return (
-    <header className="relative top-0 z-[1100] border-b border-slate-200 bg-white/95 backdrop-blur-[8px] backdrop-saturate-[1.8] sm:sticky">
-      <div className="mx-auto flex min-h-[60px] max-w-page items-center justify-between gap-4 py-2">
-        <Brand onClick={leave} />
+    <header className="relative top-0 z-[1100] border-b border-slate-200 bg-white sm:sticky">
+      <div className="flex h-[72px] items-center justify-between gap-4 px-4">
+        <div className="flex items-center gap-[14px]">
+          <MainMenu />
+          <Brand onClick={leave} />
+        </div>
         <div className="flex items-center gap-3">
           <DevTierSwitcher />
           <AccountMenu currentPage={kontoPage} />

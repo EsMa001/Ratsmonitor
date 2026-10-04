@@ -69,3 +69,6 @@ next-env.d.ts
 
 /.local-backups/
 /ratsmonitor-data*.json*
+
+# Interne Strategiepapiere, nicht im oeffentlichen Repo
+docs/strategie/

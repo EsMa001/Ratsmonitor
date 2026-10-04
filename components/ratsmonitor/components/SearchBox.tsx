@@ -212,7 +212,7 @@ export function SearchBox() {
       />
       {placeOn && (
         <span className="pointer-events-none absolute right-11 top-1/2 inline-flex h-6 -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-teal-50 px-2 text-xs font-semibold text-teal-700">
-          <IconPin size={12} strokeWidth={2.4} />
+          <IconPin size={12} />
           Ort erkannt
         </span>
       )}
