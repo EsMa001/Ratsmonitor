@@ -19,6 +19,8 @@ export interface PlaceHit {
   key: string;
   /** Ortsname so, wie er eingegeben wurde */
   phraseRaw: string;
+  /** Teil einer Region (z. B. „Münsterland“): Kreis samt Gemeinden */
+  region?: string;
 }
 
 export interface ParseResult {
@@ -34,6 +36,8 @@ export interface ParseResult {
   extra?: PlaceHit[];
   /** Eingabe ohne alle erkannten Ortsnamen: der eigentliche Suchtext */
   restAll?: string;
+  /** Erster Ort stammt aus einer Region */
+  region?: string;
 }
 
 export interface SuggestResult {
@@ -55,6 +59,30 @@ const ALIAS: Record<string, string> = {
   nrw: "05", nds: "03", ni: "03", bw: "08", rlp: "07", mv: "13", mvp: "13", sh: "01", bayern: "09", hessen: "06", sachsen: "14",
   berlin: "11", hamburg: "02", bremen: "04", saarland: "10", thueringen: "16", thuringen: "16",
 };
+
+/* Regionen als Sammelbegriff für Kreise und kreisfreie Städte (Kreisschlüssel) */
+const REGIONS: Record<string, { name: string; ags: string[] }> = {
+  munsterland: { name: "Münsterland", ags: ["05515", "05554", "05558", "05566", "05570"] },
+  sauerland: { name: "Sauerland", ags: ["05958", "05962", "05966"] },
+  ruhrgebiet: { name: "Ruhrgebiet", ags: ["05112", "05113", "05117", "05119", "05170", "05512", "05513", "05562", "05911", "05913", "05914", "05915", "05916", "05954", "05978"] },
+  ruhrpott: { name: "Ruhrgebiet", ags: ["05112", "05113", "05117", "05119", "05170", "05512", "05513", "05562", "05911", "05913", "05914", "05915", "05916", "05954", "05978"] },
+  "ostwestfalen-lippe": { name: "Ostwestfalen-Lippe", ags: ["05711", "05754", "05758", "05762", "05766", "05770", "05774"] },
+  ostwestfalen: { name: "Ostwestfalen-Lippe", ags: ["05711", "05754", "05758", "05762", "05766", "05770", "05774"] },
+  owl: { name: "Ostwestfalen-Lippe", ags: ["05711", "05754", "05758", "05762", "05766", "05770", "05774"] },
+  niederrhein: { name: "Niederrhein", ags: ["05114", "05116", "05154", "05162", "05166", "05170"] },
+  "bergisches land": { name: "Bergisches Land", ags: ["05120", "05122", "05124", "05374", "05378"] },
+  siegerland: { name: "Siegerland", ags: ["05970"] },
+  eifel: { name: "Eifel", ags: ["05334", "05358", "05366"] },
+  ostfriesland: { name: "Ostfriesland", ags: ["03402", "03452", "03457", "03462"] },
+  "osnabrucker land": { name: "Osnabrücker Land", ags: ["03404", "03459"] },
+};
+
+/** Regionen, deren Kreise alle in der Liste stehen (für einen gemeinsamen Chip) */
+export function regionsIn(ags: string[]): { name: string; ags: string[] }[] {
+  const set = new Set(ags), out: { name: string; ags: string[] }[] = [];
+  for (const r of Object.values(REGIONS)) if (!out.some((o) => o.name === r.name) && r.ags.length > 1 && r.ags.every((a) => set.has(a))) out.push(r);
+  return out;
+}
 
 const clean = (tok: string) => tok.replace(/^[„"'(«»|]+|[“"'),.;:!?«»|]+$/g, "");
 
@@ -142,6 +170,33 @@ export class PlaceIndex {
 
   /** Erster Ort plus alle weiteren Orte der Eingabe; restAll ist der reine Suchtext */
   parse(q: string, overrides: Record<string, string>, ignored: Record<string, true>): ParseResult {
+    /* Regionen zuerst herauslösen: sie stehen für mehrere Kreise auf einmal */
+    const regionHits: PlaceHit[] = [];
+    let toks = splitToks((q || "").trim());
+    for (let len = 2; len >= 1; len--)
+      for (let st = 0; st + len <= toks.length; st++) {
+        const phraseRaw = toks.slice(st, st + len).map(clean).join(" ").trim();
+        const key = norm(phraseRaw);
+        const r = REGIONS[key];
+        if (!r || ignored[key]) continue;
+        for (const ags of r.ags) {
+          const e = this.entries.find((x) => x.ags === ags);
+          if (e && !regionHits.some((h) => h.place.ags === ags)) regionHits.push({ place: e, alts: [], key, phraseRaw, region: r.name });
+        }
+        toks = toks.slice(0, st).concat(toks.slice(st + len));
+        st--;
+      }
+    if (!regionHits.length) return this.parsePlaces(q, overrides, ignored);
+    const base = this.parsePlaces(toks.join(" "), overrides, ignored);
+    if (base.place) {
+      const seen = new Set([base.place.ags, ...(base.extra ?? []).map((h) => h.place.ags)]);
+      return { ...base, extra: [...(base.extra ?? []), ...regionHits.filter((h) => !seen.has(h.place.ags))] };
+    }
+    const [h0, ...more] = regionHits;
+    return { place: h0.place, alts: [], rest: base.rest, key: h0.key, phraseRaw: h0.phraseRaw, region: h0.region, extra: more, restAll: base.restAll };
+  }
+
+  private parsePlaces(q: string, overrides: Record<string, string>, ignored: Record<string, true>): ParseResult {
     const first = this.parseOne(q, overrides, ignored);
     if (!first.place) return { ...first, extra: [], restAll: tidy(first.rest) };
     const extra: PlaceHit[] = [];

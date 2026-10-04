@@ -23,7 +23,8 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
   const chips = filterChips(res.snapshot, geo);
   const active = chips.length > 0;
   const savedHit = signatures.get(res.signature);
-  const filterCount = chips.filter((c) => c.key !== "q").length;
+  /* Zähler am Filter-Knopf: nur was im Filterfenster einstellbar ist (Orte stehen als Chips unter der Leiste) */
+  const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length;
 
   /* Ein Klick speichert die Suche unter einem automatisch erzeugten Namen; erneuter Klick entfernt sie */
   const toggleSave = () => {

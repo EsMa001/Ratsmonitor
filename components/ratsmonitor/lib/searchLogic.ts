@@ -17,6 +17,13 @@ export function applySearchState(s: SearchState, value: string, parse: Parse): {
   const pq = parse(value, s);
   const committed = isCommitted(s);
   const next: SearchState = { ...s, q: value, level: !committed && pq.place?.ags.length === 8 ? "city" : s.level };
+  /* Regionen: jeder Kreis zählt samt seiner Gemeinden */
+  const regional = [...(pq.region && pq.place ? [pq.place.ags] : []), ...(pq.extra ?? []).filter((h) => h.region).map((h) => h.place.ags)];
+  if (regional.length) {
+    next.level = "city";
+    next.placeScopes = { ...s.placeScopes, ...Object.fromEntries(regional.map((a) => [a, "with" as const])) };
+    if (pq.region && !committed) next.scope = "with";
+  }
   if (pq.place) {
     if (!committed && (s.area !== pq.place.ags || s.areaSrc !== "search")) {
       next.area = pq.place.ags;

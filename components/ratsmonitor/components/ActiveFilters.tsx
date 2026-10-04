@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { filterChips, splitTerms } from "../lib/savedSearch";
-import { removePhrase } from "../lib/place";
+import { regionsIn, removePhrase } from "../lib/place";
 import { useData } from "../state/data";
 import { useSearch, useSearchResults } from "../state/search";
 import { IconCalendar, IconPin, IconSearch, IconX } from "./icons";
@@ -31,8 +31,13 @@ export function ActiveFilters() {
   const search = useSearch();
   const { state } = search;
   const res = useSearchResults();
-  const chips = filterChips(res.snapshot, geo);
-  if (!chips.length) return null;
+  const all = filterChips(res.snapshot, geo);
+  /* Regionen (z. B. Münsterland) als ein Chip statt je Kreis */
+  const placeAgs = [state.area, ...(res.snapshot.more ?? []).map((m) => m.ags)].filter(Boolean);
+  const regions = regionsIn(placeAgs);
+  const inRegion = new Set(regions.flatMap((r) => r.ags));
+  const chips = all.filter((c) => !((c.key === "area" && inRegion.has(state.area)) || (c.key === "more" && c.term && inRegion.has(c.term))));
+  if (!all.length) return null;
 
   const clearChip = (key: (typeof chips)[number]["key"], term?: string) => {
     if (key === "q" && term && splitTerms(res.text).length > 1) return search.applySearch(removePhrase(state.q, term));
@@ -55,6 +60,25 @@ export function ActiveFilters() {
 
   return (
     <div className="pointer-events-auto flex w-full max-w-[720px] flex-wrap justify-start gap-1.5 pl-[52px] pr-[52px]">
+      {regions.map((r) => (
+        <button
+          key={"region" + r.name}
+          type="button"
+          aria-label={`Region ${r.name} entfernen`}
+          onClick={() => {
+            /* Alle Orte der Region entfernen; übrige Orte und Filter bleiben */
+            const rest = placeAgs.filter((a) => !r.ags.includes(a));
+            for (const a of placeAgs.slice(1)) if (r.ags.includes(a)) search.removeMorePlace(a);
+            if (r.ags.includes(state.area)) search.clearArea();
+            if (!rest.length && res.placeActive) search.applySearch(removePhrase(state.q, res.pq.phraseRaw));
+          }}
+          className="group inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm hover:bg-teal-100/90"
+        >
+          <span className="text-teal-600/80"><IconPin size={14} /></span>
+          {r.name}
+          <IconX size={14} className="text-teal-600/60 group-hover:text-teal-700" />
+        </button>
+      ))}
       {chips.map((c) => (
         <button
           key={c.key + (c.term ?? "")}
@@ -69,7 +93,7 @@ export function ActiveFilters() {
           <IconX size={14} className="text-teal-600/60 group-hover:text-teal-700" />
         </button>
       ))}
-      {chips.length > 1 && (
+      {chips.length + regions.length > 1 && (
         <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="inline-flex h-7 items-center px-1.5 text-[14px] text-teal-600 hover:underline">
           Alle entfernen
         </button>

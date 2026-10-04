@@ -69,6 +69,13 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
       </h3>
       <p className="mb-1.5 mt-0.5 text-[14px] font-medium text-slate-500">
         <Highlight text={sub} terms={terms} />
+        {/* Stand dezent am Ende der Zeile */}
+        {STATUS_BY_ID[a.status] && (
+          <span className="whitespace-nowrap font-normal">
+            {" · "}
+            {STATUS_BY_ID[a.status].label}
+          </span>
+        )}
       </p>
       {!compact && <p className="m-0 max-w-[96ch] text-[14px] leading-[1.6] text-slate-600">
         <Highlight text={a.teaser} terms={terms} />
