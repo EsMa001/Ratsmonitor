@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { IconHeart } from "../components/icons";
+import { IconHeart, IconX } from "../components/icons";
 import { filterChips } from "../lib/savedSearch";
 import { fmtDate } from "../lib/text";
 import { useAccount } from "../state/account";
 import { readProfile } from "./ProfilePage";
 import { useEntitlements } from "../lib/entitlements";
 import { LoginRequired, UsagePill } from "../components/TierNotice";
+import { PageHead } from "../info/blocks";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
@@ -69,7 +70,15 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const set = (patch: Partial<SavedSearch["notify"]>) => updateSaved(s.id, { notify: { ...n, ...patch } });
   const { allow, limits } = useEntitlements();
   const profile = readProfile();
-  const recipients = [profile.email, ...(limits.emails > 1 ? profile.recipients : [])].filter(Boolean).slice(0, limits.emails);
+  /* Weitere Empfänger gelten je Suche; ältere Einstellungen aus dem Konto werden übernommen */
+  const extra = limits.emails > 1 ? (n.recipients ?? profile.recipients ?? []) : [];
+  const [draft, setDraft] = useState("");
+  const addRecipient = () => {
+    const v = draft.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || extra.includes(v) || extra.length >= limits.emails - 1) return;
+    set({ recipients: [...extra, v] });
+    setDraft("");
+  };
   const chips = filterChips({ q: s.q, text: s.text, area: s.area, areaSrc: s.areaSrc, radius: s.radius, thema: s.thema, monat: s.monat, von: s.von, bis: s.bis, scope: s.scope, status: s.status, level: s.level }, geo);
   const ok = preview && preview !== "error" ? preview : null;
   const fresh = ok ? ok.items.filter((a) => a.date > s.lastSeen).length : 0;
@@ -84,16 +93,16 @@ function SavedCard({ s }: { s: SavedSearch }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card transition-shadow hover:shadow-pop">
       <header className="flex items-start gap-3 px-5 pb-3 pt-4">
-        <span className="mt-0.5 grid h-10 w-10 flex-none place-items-center rounded-xl bg-rose-50 text-rose-500">
+        <span className="mt-0.5 grid h-10 w-10 flex-none place-items-center rounded-xl bg-teal-50 text-teal-600">
           <IconHeart size={19} filled />
         </span>
         <div className="min-w-0 flex-1">
-          <button type="button" onClick={open} className="block max-w-full truncate text-left text-[16.5px] font-semibold text-slate-900 hover:text-teal-700">
+          <button type="button" onClick={open} className="block max-w-full truncate text-left text-[16px] font-semibold text-slate-900 hover:text-teal-700">
             {s.name}
           </button>
           <p className="m-0 mt-0.5 flex items-center gap-2 text-[13px] text-slate-500">
             {ok ? `${ok.total.toLocaleString("de-DE")} Treffer` : preview === "error" ? "Treffer nicht verfügbar" : "Lädt …"}
-            {fresh > 0 && <span className="rounded-full bg-amber-100 px-2 py-px text-[11.5px] font-semibold text-amber-800">{fresh} neu</span>}
+            {fresh > 0 && <span className="rounded-full bg-amber-100 px-2 py-px text-[12px] font-semibold text-amber-800">{fresh} neu</span>}
           </p>
         </div>
         <div className="flex flex-none items-center">
@@ -121,7 +130,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
       )}
 
       {/* Vorschau wie die Startseite im Kleinen: Artikelkarten in einem scrollbaren Bereich */}
-      <div className="scroll-thin flex max-h-[340px] flex-col gap-[max(0.3vw,6px)] overflow-y-auto border-t border-slate-100 bg-slate-50/60 p-[max(0.3vw,6px)]">
+      <div className="scroll-thin flex max-h-[340px] flex-col overflow-y-auto border-t border-slate-100 px-[12px]">
         {preview === null && <p className="m-0 px-3 py-2 text-[13px] text-slate-400">Vorschau wird geladen …</p>}
         {ok && !ok.items.length && <p className="m-0 px-3 py-2 text-[13px] text-slate-400">Aktuell keine Treffer.</p>}
         {ok?.items.map((a) => {
@@ -130,23 +139,23 @@ function SavedCard({ s }: { s: SavedSearch }) {
             <Link
               key={a.id}
               href={`/beschluss/${a.id}`}
-              className="grid grid-cols-[46px_minmax(0,1fr)] gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 no-underline transition-[border-color,box-shadow] hover:border-slate-300 hover:shadow-card"
+              className="grid grid-cols-[46px_minmax(0,1fr)] gap-3 rounded-lg border-b border-slate-200 px-3 py-3 no-underline transition-colors last:border-b-0 hover:bg-slate-50"
             >
               <div className="flex flex-col items-center border-r border-slate-200 pr-3 pt-0.5 text-center">
-                <span className="text-lg font-semibold leading-none text-slate-900">{Number(d) || "—"}</span>
-                <span className="mt-1 text-[10.5px] font-semibold uppercase tracking-[.06em] text-teal-600">{MONTH_SHORT[Number(m) - 1]}</span>
-                <span className="text-[10.5px] text-slate-500">{y}</span>
+                <span className="text-[18px] font-semibold leading-none text-slate-900">{Number(d) || "—"}</span>
+                <span className="mt-1 text-[11px] font-semibold uppercase tracking-[.06em] text-teal-600">{MONTH_SHORT[Number(m) - 1]}</span>
+                <span className="text-[11px] text-slate-500">{y}</span>
               </div>
               <div className="min-w-0">
                 <div className="flex items-start gap-2">
                   <h3 className="m-0 min-w-0 flex-1 text-[15px] font-semibold leading-snug text-slate-900">{a.title}</h3>
                   {a.date > s.lastSeen && <span className="badge-new">neu</span>}
                 </div>
-                <p className="m-0 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px] font-medium text-slate-500">
+                <p className="m-0 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] font-medium text-slate-500">
                   {[a.gemeinde, a.gremium].filter(Boolean).join(" · ")}
                   <StatusBadge status={a.status} />
                 </p>
-                {a.teaser && <p className="m-0 mt-1 line-clamp-2 text-[13.5px] leading-relaxed text-slate-600">{a.teaser}</p>}
+                {a.teaser && <p className="m-0 mt-1 line-clamp-2 text-[13px] leading-relaxed text-slate-600">{a.teaser}</p>}
               </div>
             </Link>
           );
@@ -154,7 +163,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
       </div>
 
       <footer className="flex flex-wrap items-center gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-3">
-        <label className="flex cursor-pointer items-center gap-3 text-[13.5px] font-medium text-slate-700">
+        <label className="flex cursor-pointer items-center gap-3 text-[13px] font-medium text-slate-700">
           <Switch on={!!n.mail} onChange={(v) => { if (v && !allow("notifications")) return; set({ mail: v, email: n.email || profile.email }); }} />
           E-Mail bei neuen Treffern
         </label>
@@ -170,10 +179,31 @@ function SavedCard({ s }: { s: SavedSearch }) {
             <option value="weekly">Wöchentlich</option>
           </select>
         )}
-        {n.mail && recipients.length > 0 && (
-          <span className="text-[12.5px] text-slate-500" title={recipients.join(", ")}>
-            an {recipients.length === 1 ? recipients[0] : `${recipients.length} Empfänger`}
-          </span>
+        {n.mail && profile.email && <span className="text-[12px] text-slate-500">an {profile.email}</span>}
+        {n.mail && limits.emails > 1 && (
+          <div className="flex w-full flex-wrap items-center gap-1.5">
+            <span className="text-[12px] text-slate-500">Weitere Empfänger:</span>
+            {extra.map((r) => (
+              <button key={r} type="button" aria-label={`Empfänger ${r} entfernen`} onClick={() => set({ recipients: extra.filter((x) => x !== r) })} className="group inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 pl-2.5 pr-1.5 text-[12px] font-medium text-teal-700">
+                {r}
+                <IconX size={14} className="opacity-70 group-hover:opacity-100" />
+              </button>
+            ))}
+            {extra.length < limits.emails - 1 && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  addRecipient();
+                }}
+                className="flex items-center gap-1"
+              >
+                <input type="email" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="z. B. team@firma.de" aria-label="Weitere E-Mail-Adresse" className="h-9 w-[200px] rounded-lg border border-slate-200 bg-white px-3 text-[13px] outline-none focus:border-teal-600 focus:shadow-focus" />
+                <button type="submit" className="btn-secondary btn-sm">
+                  Hinzufügen
+                </button>
+              </form>
+            )}
+          </div>
         )}
       </footer>
     </article>
@@ -186,44 +216,41 @@ export function SavedSearchesPage() {
   if (tier === "guest")
     return (
       <>
-        <h1 className="m-0 text-3xl font-bold tracking-tight">Gespeicherte Suchen</h1>
-        <LoginRequired title="Suchen speichern" text="Melde dich kostenlos an, um Suchen zu speichern und über neue Treffer informiert zu werden." />
+        <PageHead icon="search" label="Suchen" name="Gespeicherte Suchen" />
+        <section className="ri-sec ri-sec--tight">
+          <LoginRequired title="Suchen speichern" text="Melden Sie sich kostenlos an, um Suchen zu speichern und über neue Treffer informiert zu werden." />
+        </section>
       </>
     );
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="m-0 text-3xl font-bold tracking-tight">
-            Gespeicherte Suchen{ready && saved.length > 0 && <span className="ml-2 align-middle text-lg font-semibold text-slate-400">{saved.length}</span>}
-          </h1>
-          <p className="m-0 mt-1.5 text-slate-600">Neue Treffer auf einen Blick. E-Mail-Benachrichtigungen legst du pro Suche fest.</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
+      <PageHead icon="search" label="Suchen" name={`Gespeicherte Suchen${ready && saved.length ? ` (${saved.length})` : ""}`} title={<>Ihre Themen.<br />Immer im Blick.</>} lead="Neue Treffer auf einen Blick. Benachrichtigungen und Empfänger legen Sie pro Suche fest.">
+        <div className="mt-4 flex flex-wrap gap-2">
           <UsagePill label="Suchen" used={used.searches} max={max.searches} />
           <UsagePill label="Benachrichtigungen" used={used.notifications} max={max.notifications} />
         </div>
-      </div>
+      </PageHead>
+      <section className="ri-sec ri-sec--tight">
 
       {ready && !saved.length && (
-        <div className="mt-6 flex flex-col items-center rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
-          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-rose-50 text-rose-500">
+        <div className="flex flex-col items-center rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-600">
             <IconHeart size={26} />
           </span>
-          <h2 className="mb-1 mt-4 text-lg font-semibold">Noch keine gespeicherten Suchen</h2>
-          <p className="m-0 max-w-[44ch] text-slate-500">Suche oder filtere in der Übersicht und tippe auf das Herz neben dem Suchfeld.</p>
+          <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Suchen</h2>
+          <p className="m-0 max-w-[44ch] text-slate-500">Suchen oder filtern Sie in der Übersicht und tippen Sie auf das Herz neben dem Suchfeld.</p>
           <Link className="btn-primary mt-5" href="/">
             Zur Suche
           </Link>
         </div>
       )}
 
-      <div className="mt-5 flex flex-col gap-[max(0.3vw,6px)]">
+      <div className="flex flex-col gap-3">
         {saved.map((s) => (
           <SavedCard key={s.id} s={s} />
         ))}
       </div>
-
+      </section>
     </>
   );
 }

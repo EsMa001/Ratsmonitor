@@ -40,5 +40,5 @@ export const LOGO_IDS = Object.keys(LOGOS) as LogoId[];
 export const DEFAULT_LOGO: LogoId = "quorumo-v2o";
 export const DEFAULT_BRAND: BrandId = LOGOS[DEFAULT_LOGO].brand;
 
-export const PAGE_TAGLINE = "Politik für deine Region";
+export const PAGE_TAGLINE = "Politik für Ihre Region";
 export const pageTitle = (id: BrandId) => `${BRAND_NAME[id]} · ${PAGE_TAGLINE}`;

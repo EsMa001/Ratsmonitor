@@ -16,7 +16,7 @@ export function Header() {
 
   return (
     <header className="relative top-0 z-[1100] border-b border-slate-200 bg-white sm:sticky">
-      <div className="flex h-[72px] items-center justify-between gap-4 px-4">
+      <div className="flex h-[56px] items-center justify-between gap-4 px-4">
         <div className="flex items-center gap-[14px]">
           <MainMenu />
           <Brand onClick={leave} />

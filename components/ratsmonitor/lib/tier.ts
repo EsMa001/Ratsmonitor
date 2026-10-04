@@ -21,7 +21,7 @@ export interface TierLimits {
 
 const INF = Number.POSITIVE_INFINITY;
 export const LIMITS: Record<Tier, TierLimits> = {
-  guest: { maxResults: 20, filters: false, bookmarks: 0, savedSearches: 0, notifications: 0, emails: 0 },
+  guest: { maxResults: 10, filters: false, bookmarks: 0, savedSearches: 0, notifications: 0, emails: 0 },
   basic: { maxResults: INF, filters: true, bookmarks: 1, savedSearches: 1, notifications: 1, emails: 1 },
   pro: { maxResults: INF, filters: true, bookmarks: INF, savedSearches: INF, notifications: INF, emails: 1 },
   enterprise: { maxResults: INF, filters: true, bookmarks: INF, savedSearches: INF, notifications: INF, emails: 5 },

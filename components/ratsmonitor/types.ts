@@ -100,7 +100,7 @@ export interface SavedSearch {
   status: StatusId | "";
   level?: "city" | "district";
   /** Benachrichtigung: on = Push, mail = E-Mail an email; freq gilt für beide */
-  notify: { on: boolean; freq: NotifyFreq; mail?: boolean; email?: string };
+  notify: { on: boolean; freq: NotifyFreq; mail?: boolean; email?: string; /** weitere Empfänger dieser Suche (Enterprise) */ recipients?: string[] };
   created: string; // ISO
   lastSeen: string; // ISO
 }

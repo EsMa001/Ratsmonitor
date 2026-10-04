@@ -9,20 +9,20 @@ export const TEASER_MAX_SENTENCES=4;
 export const isCovered=(ags:string,coverage:{ags:string}[])=>coverage.some(r=>r.ags===ags||r.ags.startsWith(ags));
 /** Kartenstufen, identisch mit tailwind.preset (colors.map) */
 export const MAP_COLORS = {
-  ground: "#f6f7f9",
-  neighbour: "#e5e8ec",
+  ground: "#ffffff",
+  neighbour: "#f8f9fa",
   line: "#d3d8df",
   national: "#8b95a1",
   hatch: "#c9cfd7",
   zero: "#d7dce3",
-  scale: ["#b9eae4", "#72d4ca", "#0d9488", "#0f766e"],
-  selection: "#0b1220",
+  scale: ["#b3dfda", "#8ccdc7", "#6ebfb8", "#0f766e"],
+  selection: "#0f766e",
   hover: "#0f766e",
   hoverFill: "rgba(13,148,136,.12)",
-  ring: "#f59e0b",
-  ringFill: "rgba(245,158,11,.08)",
-  ringDot: "#d97706",
-  dim: "rgba(246,247,249,.74)",
+  ring: "#d1665a",
+  ringFill: "rgba(209,102,90,.08)",
+  ringDot: "#b4493e",
+  dim: "rgba(255,255,255,.74)",
 };
 
 /** Abdeckungsstufe: 1 = Teilbestand (letzter Abruf lückenhaft), 2 = vollständig abgerufen */

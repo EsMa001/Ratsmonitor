@@ -1,15 +1,15 @@
-@theme {--breakpoint-tab:901px;--breakpoint-desk:1121px;--container-page:calc(100% - max(0.6vw,12px));--color-map-ground:#f6f7f9;--color-map-zero:#d7dce3;--color-map-s1:#b9eae4;--color-map-s2:#72d4ca;--color-map-s3:#0d9488;--color-map-s4:#0f766e;--color-map-hatch:#c3c9d1;--shadow-card:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d;--shadow-pop:0 16px 40px #0f172a24,0 2px 6px #0f172a0f;--shadow-seg:0 1px 2px #0f172a14;--shadow-focus:0 0 0 4px #0d948833;--animate-menuIn:menuIn .14s ease-out;--animate-cardIn:cardIn .28s ease-out both;@keyframes menuIn {from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes cardIn {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+@theme {--breakpoint-tab:901px;--breakpoint-desk:1121px;--container-page:calc(100% - 2 * max(1vw,16px));--color-map-ground:#ffffff;--color-map-zero:#d7dce3;--color-map-s1:#b3dfda;--color-map-s2:#8ccdc7;--color-map-s3:#6ebfb8;--color-map-s4:#0f766e;--color-map-hatch:#c3c9d1;--shadow-card:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d;--shadow-pop:0 16px 40px #0f172a24,0 2px 6px #0f172a0f;--shadow-seg:0 1px 2px #0f172a14;--shadow-focus:0 0 0 4px #0d948833;--animate-menuIn:menuIn .14s ease-out;--animate-cardIn:cardIn .28s ease-out both;@keyframes menuIn {from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes cardIn {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
 @layer base {.ratsmonitor{min-height:100vh;background:#f8fafc;color:#0f172a;font-size:15px;line-height:1.5}.ratsmonitor a{color:inherit}.ratsmonitor button{cursor:pointer}.ratsmonitor button:disabled{cursor:not-allowed}.ratsmonitor :focus-visible{outline:2px solid #0f766e;outline-offset:3px}.ratsmonitor mark{background:#fef3c7;color:inherit;border-radius:3px}.ratsmonitor dialog{margin:auto}.ratsmonitor p{overflow-wrap:anywhere}}
 @layer components {
   /* Schaltflächen */
   .btn-primary {
-    @apply inline-flex h-10 items-center justify-center gap-[7px] whitespace-nowrap rounded-[9px] border border-teal-700 bg-teal-700 px-4 text-sm font-medium text-white transition-colors hover:border-teal-700 hover:bg-teal-700 disabled:pointer-events-none disabled:opacity-[.45];
+    @apply inline-flex h-11 items-center justify-center gap-[7px] whitespace-nowrap rounded-[10px] border border-teal-700 bg-teal-700 px-4 text-sm font-medium text-white transition-colors hover:border-teal-800 hover:bg-teal-800 disabled:pointer-events-none disabled:opacity-[.45];
   }
   .btn-secondary {
-    @apply inline-flex h-10 items-center justify-center gap-[7px] whitespace-nowrap rounded-[9px] border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 transition-colors hover:border-slate-400/70 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-[.45];
+    @apply inline-flex h-11 items-center justify-center gap-[7px] whitespace-nowrap rounded-[10px] border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 transition-colors hover:border-slate-400/70 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-[.45];
   }
   .btn-sm {
-    @apply h-[34px] rounded-lg px-3 text-[13px];
+    @apply h-9 rounded-lg px-3 text-[13px];
   }
   .btn-danger {
     @apply text-rose-700 hover:border-rose-200 hover:bg-rose-50;
@@ -23,7 +23,7 @@
 
   /* Formularfelder */
   .field-input {
-    @apply h-[42px] w-full rounded-lg border border-slate-300 bg-white px-3 text-[14.5px] text-slate-900 outline-none transition-[border-color,box-shadow] hover:border-slate-400/70 focus:border-teal-600 focus:shadow-focus aria-[invalid=true]:border-rose-600 aria-[invalid=true]:focus:shadow-[0_0_0_4px_rgba(225,29,72,.15)];
+    @apply h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14.5px] text-slate-900 outline-none transition-[border-color,box-shadow] hover:border-slate-400/70 focus:border-teal-600 focus:shadow-focus aria-[invalid=true]:border-rose-600 aria-[invalid=true]:focus:shadow-[0_0_0_4px_rgba(225,29,72,.15)];
   }
   .field-label {
     @apply text-[13.5px] font-semibold text-slate-900;
@@ -35,7 +35,7 @@
     @apply m-0 text-[12.5px] font-medium leading-[1.45] text-rose-700;
   }
   .select-base {
-    @apply h-11 cursor-pointer appearance-none rounded-[10px] border border-slate-200 bg-white pl-3.5 pr-9 text-sm font-medium text-slate-900 outline-none transition-[border-color,box-shadow,background-color] hover:border-slate-300 focus:border-teal-600 focus:shadow-focus;
+    @apply h-11 cursor-pointer appearance-none rounded-[10px] border border-slate-200 bg-white pl-3.5 pr-9 text-sm font-normal text-slate-900 outline-none transition-[border-color,box-shadow,background-color] hover:border-slate-300 focus:border-teal-600 focus:shadow-focus;
   }
   .select-active {
     @apply border-teal-200 bg-teal-50 text-teal-700;
@@ -43,7 +43,7 @@
 
   /* Karten, Chips, Badges */
   .card-shell {
-    @apply rounded-xl border border-slate-200 bg-white shadow-card;
+    @apply rounded-2xl border border-slate-200 bg-white shadow-card;
   }
   .chip-soft {
     @apply inline-flex min-h-[26px] items-center gap-[5px] rounded-full border border-slate-200 bg-slate-50 px-[9px] py-0.5 text-[12.5px] font-medium leading-[1.3] text-slate-900;
@@ -64,19 +64,19 @@
 }
 
 /* Shared administration keeps its workflows and follows the new visual identity. */
-@layer base {.admin-shell{max-width:1320px;border-radius:16px;background:#fff}.admin-shell,.admin-gate{--primary:#0f766e;--ring:#0f766e;--color-accent:#0f766e}.admin-stage-number,.admin-pages a[aria-current=page],.admin-shell .eyebrow{color:#0f766e;border-color:#0f766e}.admin-stage,.admin-map,.admin-job{border-radius:12px}.admin-stage-ai,.admin-job{background:#f0fdfa}.admin-shell .wordmark{color:#0f766e}.admin-gate{max-width:640px;margin:48px auto;padding:32px;border:1px solid #e2e8f0;border-radius:16px;background:#fff}.ratsmonitor .analysis-provenance,.ratsmonitor .prose{margin-top:28px}.ratsmonitor .heading-m{font-size:19px;line-height:1.4}.ratsmonitor .facts__row{padding:10px 0}.ratsmonitor .page-note{font-size:14px;line-height:1.6;margin-top:10px}}
+@layer base {.admin-shell{max-width:1320px;border-radius:16px;background:#fff}.admin-shell,.admin-gate{--primary:#0f766e;--ring:#0f766e;--color-accent:#0f766e}.admin-stage-number,.admin-pages a[aria-current=page],.admin-shell .eyebrow{color:#0d9488;border-color:#0f766e}.admin-stage,.admin-map,.admin-job{border-radius:12px}.admin-stage-ai,.admin-job{background:#f0fdfa}.admin-shell .wordmark{color:#0d9488}.admin-gate{max-width:640px;margin:48px auto;padding:32px;border:1px solid #e2e8f0;border-radius:16px;background:#fff}.ratsmonitor .analysis-provenance,.ratsmonitor .prose{margin-top:28px}.ratsmonitor .heading-m{font-size:18px;line-height:1.4}.ratsmonitor .facts__row{padding:10px 0}.ratsmonitor .page-note{font-size:14px;line-height:1.6;margin-top:10px}}
 @media(prefers-reduced-motion:reduce){.ratsmonitor *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 /* Explicit light controls for the administration workspace. */
   .admin-shell { max-width:1320px; color:#0f172a; }
   .admin-shell .admin-pages a[aria-current=page],
   .admin-shell .admin-kpi-primary>strong,
-  .admin-shell .admin-stage-number {color:#0f766e;border-color:#0f766e;}
+  .admin-shell .admin-stage-number {color:#0d9488;border-color:#0f766e;}
   .admin-shell .admin-kpis {border-top:2px solid #0f766e;}
   .admin-shell .admin-source-item.is-selected {background:#f0fdfa;}
   .admin-shell .admin-topbar>a:last-child,
   .admin-shell .admin-source-item summary,
-  .admin-shell .admin-footer a {color:#0f766e;}
+  .admin-shell .admin-footer a {color:#0d9488;}
   .admin-shell [data-slot=button], .admin-gate [data-slot=button] {appearance:none;min-height:40px;border-radius:9px;cursor:pointer;}
   .admin-shell [data-slot=button][data-variant=outline] {background:white;border:1px solid #cbd5e1;}
   .admin-shell [data-slot=button][data-variant=default], .admin-gate [data-slot=button][data-variant=default] {background:#0f766e;color:white;}
@@ -89,6 +89,15 @@
 /* Administration im Rahmen der übrigen Seiten: gleicher Hintergrund, 0,3 % Rand links und rechts */
 html:has(.admin-shell),body:has(.admin-shell),body:has(.admin-gate){background:#f8fafc}
 .admin-shell{max-width:calc(100% - max(0.6vw,12px))!important;margin:16px auto 32px!important;border-radius:16px;box-shadow:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d}
-.admin-back{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 12px 0 8px;border:1px solid #e2e8f0;border-radius:9px;background:#fff;color:#334155!important;font-size:.875rem;font-weight:500;text-decoration:none}
+.admin-back{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 12px 0 8px;border:1px solid #e2e8f0;border-radius:9px;background:#fff;color:#64748b!important;font-size:14px;font-weight:500;text-decoration:none}
 .admin-back:hover{background:#f1f5f9;color:#0f172a!important}
 .admin-topbar>a.admin-back:last-child{margin-left:0}
+/* Eigener Leeren-Button im Suchfeld: den des Browsers ausblenden */
+input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+/* Möglichst wenig Fett: jede Stufe eine Stufe leichter; Überschriften höchstens halbfett */
+body .font-bold,body b,body strong{font-weight:600}
+body .font-semibold{font-weight:500}
+body .font-medium{font-weight:400}
+body h1,body h2,body h3{font-weight:600}
+/* Nur ein Schwarz, ein Grau und ein Petrol (Teal-600) für Text und Akzente; die Karte zeichnet eigene Farben */
+.ratsmonitor{--color-slate-400:#64748b;--color-slate-500:#64748b;--color-slate-600:#64748b;--color-slate-700:#64748b;--color-slate-800:#64748b;--color-slate-900:#0f172a;--color-slate-950:#0f172a;--color-teal-500:#0d9488;--color-teal-600:#0d9488;--color-teal-700:#0d9488;--color-teal-800:#0d9488;--color-teal-900:#0d9488}
