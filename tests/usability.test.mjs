@@ -23,9 +23,9 @@ const output=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ES
  .replaceAll("'lucide-react'",JSON.stringify(import.meta.resolve('lucide-react')))
  .replaceAll("'@/shared/types'",JSON.stringify('data:text/javascript,export const formatDate=x=>x;'));
 const {Header,Footer}=await import('data:text/javascript;base64,'+Buffer.from(output).toString('base64'));
-test('rendered four-item navigation and header keep the selected territory',()=>{
+test('rendered three-item navigation and header keep the selected territory',()=>{
  const html=renderToStaticMarkup(createElement(Footer,{region:'muenster',active:'analysen'}));
- for(const path of ['/','/analysen','/mitteilungen','/quellen'])assert.ok(html.includes('href="'+regionLink(path,'muenster')+'"'));
- assert.equal((html.match(/class="tabbar__item"/g)||[]).length,4);assert.equal((html.match(/aria-current="page"/g)||[]).length,1);
- const header=renderToStaticMarkup(createElement(Header,{region:'coesfeld'}));assert.ok(header.includes('href="/?region=coesfeld"'));assert.ok(header.includes('href="/mitteilungen?region=coesfeld"'));
+ for(const path of ['/','/analysen','/quellen'])assert.ok(html.includes('href="'+regionLink(path,'muenster')+'"'));
+ assert.equal((html.match(/class="tabbar__item"/g)||[]).length,3);assert.ok(!html.includes('/mitteilungen'));assert.equal((html.match(/aria-current="page"/g)||[]).length,1);
+ const header=renderToStaticMarkup(createElement(Header,{region:'coesfeld'}));assert.ok(header.includes('href="/?region=coesfeld"'));assert.ok(!header.includes('/mitteilungen'));
 });

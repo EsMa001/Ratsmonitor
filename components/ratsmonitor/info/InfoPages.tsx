@@ -1,4 +1,6 @@
 import { useSearchParams } from "next/navigation";
+import { QuellenPage } from "./QuellenPage";
+import { UeberUnsPage } from "./UeberUnsPage";
 import { useEffect, type ComponentType } from "react";
 import { AboutPage } from "./AboutPage";
 import { KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
@@ -32,6 +34,8 @@ function AgbPage() {
 const PAGES: Record<string, ComponentType> = {
   "/ueber-ratsmonitor": AboutPage,
   "/faq": FaqPage,
+  "/quellen": QuellenPage,
+  "/ueber-uns": UeberUnsPage,
   "/branchen": BranchenPage,
   "/preise": PreisePage,
   "/anmelden": LoginPage,
@@ -45,7 +49,9 @@ const brancheOf = (p: string) => (p.startsWith("/branchen/") ? brancheBySlug(p.s
 /** Seiten des Dreistrichmenüs; eingehängt neben Übersicht, Detail- und Kontoseiten */
 export function InfoPages({ path }: { path: string }) {
   const query = useSearchParams().toString();
-  useEffect(() => window.scrollTo(0, 0), [path]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [path]);
   const b = brancheOf(path);
   const Page = PAGES[path];
   return (

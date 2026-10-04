@@ -91,10 +91,18 @@ export function PageHead({
 
 export function SearchTermButton({ term, light }: { term: string; light?: boolean }) {
   const open = useOpenSearch();
+  /* Überall wie ein vorausgefülltes Suchfeld: zeigt direkt, was passiert, und sieht aus wie die echte Suche.
+     light (im Abschluss): etwas breiter, damit es neben dem Text ausgewogen wirkt */
   return (
-    <button type="button" className={"ri-btn " + (light ? "ri-btn--inv" : "ri-btn--dark")} onClick={() => open(term)}>
-      <Icon name="search" size={15} />
-      Nach „{term}“ suchen
+    <button
+      type="button"
+      onClick={() => open(term)}
+      aria-label={`Nach „${term}“ suchen`}
+      className={`group flex h-12 w-full items-center gap-3 rounded-xl bg-white pl-4 pr-3 text-left shadow-card transition-shadow hover:shadow-pop ${light ? "max-w-[380px] sm:w-[380px]" : "max-w-[440px]"}`}
+    >
+      <Icon name="search" size={18} className="flex-none text-slate-500" />
+      <span className="min-w-0 flex-1 truncate text-[16px] text-slate-900">{term}</span>
+      <span className="flex-none text-[14px] text-teal-600">Suchen <span className="inline-block transition-transform group-hover:translate-x-0.5">→</span></span>
     </button>
   );
 }
@@ -146,7 +154,7 @@ export function HitPreview({ term, example }: { term: string; example: Example }
 }
 
 /** Dunkler Abschluss: Überschrift, optional Unterzeile oder Suchbegriffe, Knopf rechts */
-export function DarkCta({ title, sub, pills, action }: { title: string; sub?: string; pills?: string[]; action: ReactNode }) {
+export function DarkCta({ title, sub, pills, action }: { title: string; sub?: string; pills?: string[]; action?: ReactNode }) {
   const open = useOpenSearch();
   return (
     <section className="ri-dark">
@@ -157,8 +165,11 @@ export function DarkCta({ title, sub, pills, action }: { title: string; sub?: st
           {pills && (
             <div className="ri-pills">
               {pills.map((p) => (
-                <button key={p} type="button" className="ri-pill" onClick={() => open(p)}>
-                  {p}
+                /* Kleine Such-Buttons im Stil des vorausgefüllten Suchfelds */
+                <button key={p} type="button" aria-label={`Nach „${p}“ suchen`} className="group flex h-10 items-center gap-2 rounded-lg bg-white pl-3 pr-2.5 text-left shadow-card transition-shadow hover:shadow-pop" onClick={() => open(p)}>
+                  <Icon name="search" size={15} className="flex-none text-slate-500" />
+                  <span className="text-[14px] text-slate-900">{p}</span>
+                  <span className="text-[14px] text-teal-600 transition-transform group-hover:translate-x-0.5">→</span>
                 </button>
               ))}
             </div>

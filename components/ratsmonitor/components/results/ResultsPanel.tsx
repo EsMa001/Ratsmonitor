@@ -5,7 +5,7 @@ import { useData } from "../../state/data";
 import { overviewScroll, useAppNav } from "../../state/nav";
 import { useSearch, useSearchResults } from "../../state/search";
 import type { Article } from "../../types";
-import { IconArrowUp, IconEmptySearch } from "../icons";
+import { IconArrowUp, IconEmptySearch, IconChevronLeft, IconChevronRight } from "../icons";
 import { ArticleCard } from "./ArticleCard";
 import { useEntitlements } from "../../lib/entitlements";
 
@@ -85,7 +85,7 @@ export function ResultsPanel() {
           onMouseLeave={() => onHover("")}
           className={`flex flex-col px-[12px] py-[12px] outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
         >
-          {!articlesReady && res.results.length===0 && <div className="p-8 text-center text-[13px] text-slate-500">Einträge werden geladen …</div>}
+          {!articlesReady && res.results.length===0 && <div className="p-8 text-center text-[14px] text-slate-500">Einträge werden geladen …</div>}
           {(Number.isFinite(limits.maxResults) ? res.results.slice(0, limits.maxResults) : res.results).map((a, i) => (
             <ArticleCard
               key={a.id}
@@ -125,19 +125,19 @@ export function ResultsPanel() {
       {/* Paginierung mittig: „Zurück“ erst ab Seite 2, „Weiter“ nur wenn es weitere Treffer gibt */}
       <nav aria-label="Ergebnisseiten" className="flex flex-wrap items-center justify-center gap-3 border-t border-slate-200 p-2">
         {res.page > 1 && (
-          <button className="btn-secondary" disabled={res.loading} onClick={() => goPage(res.page - 1)}>
-            Zurück
+          <button type="button" aria-label="Vorherige Seite" title="Vorherige Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-600 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page - 1)}>
+            <IconChevronLeft size={20} />
           </button>
         )}
         <span className="text-[14px] text-slate-500">
           {active ? `${res.total.toLocaleString("de-DE")} Treffer · Seite ${res.page} von ${pages}` : `Seite ${res.page}`}
         </span>
         {res.page < Math.min(pages, MAX_PAGE) && (
-          <button className="btn-secondary" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
-            Weiter
+          <button type="button" aria-label="Nächste Seite" title="Nächste Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-600 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
+            <IconChevronRight size={20} />
           </button>
         )}
-        {res.page >= MAX_PAGE && pages > MAX_PAGE && <span className="w-full text-center text-[13px] text-slate-500">Für weitere Treffer bitte die Suche eingrenzen.</span>}
+        {res.page >= MAX_PAGE && pages > MAX_PAGE && <span className="w-full text-center text-[14px] text-slate-500">Für weitere Treffer bitte die Suche eingrenzen.</span>}
       </nav>
     </section>
   );

@@ -35,7 +35,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         role="status"
         aria-live="polite"
-        className={`pointer-events-none fixed bottom-6 left-1/2 z-[2000] flex max-w-[calc(100vw-32px)] -translate-x-1/2 items-center gap-3.5 rounded-[10px] bg-slate-900 px-4 py-2.5 text-[13px] text-white shadow-pop transition-[opacity,transform] duration-200 ${
+        className={`pointer-events-none fixed bottom-6 left-1/2 z-[2000] flex max-w-[calc(100vw-32px)] -translate-x-1/2 items-center gap-3.5 rounded-[10px] bg-slate-900 px-4 py-2.5 text-[14px] text-white shadow-pop transition-[opacity,transform] duration-200 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
         }`}
       >
@@ -43,7 +43,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toast?.action && visible && (
           <button
             type="button"
-            className="pointer-events-auto shrink-0 border-0 bg-transparent py-0.5 text-[13px] font-semibold text-teal-300 underline underline-offset-2 hover:text-white"
+            className="pointer-events-auto shrink-0 border-0 bg-transparent py-0.5 text-[14px] font-semibold text-teal-300 underline underline-offset-2 hover:text-white"
             onClick={() => {
               const run = toast.action?.run;
               setVisible(false);

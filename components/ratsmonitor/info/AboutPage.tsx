@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Link from "next/link";
 import { useBrand, useBrandText } from "../lib/brand";
 import { DarkCta, PageHead, PlacePill, StatusPill, useOpenSearch } from "./blocks";
@@ -24,24 +25,35 @@ const POINTS: [string, string][] = [
   ["Innovation mitgestalten", "Als früher Nutzer profitieren Sie als Erste von neuen Funktionen und prägen mit Ihrem Feedback, wie Ratsmonitor wächst."],
 ];
 
+/* Suchbegriffe zu den Beispielen: ein Klick startet eine echte Suche */
+const HIT_TERMS = ["Bebauungsplan", "Wärmeplanung", "Radweg"];
+
 function SearchPreview() {
+  const openSearch = useOpenSearch();
+  const [q, setQ] = useState("");
   return (
-    <div className="ri-pv2" aria-label="Beispiel einer Suche">
-      <div className="ri-pv2__search">
+    <div className="ri-pv2" aria-label="Suche ausprobieren">
+      <form
+        className="ri-pv2__search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          openSearch(q.trim());
+        }}
+      >
         <Icon name="search" size={14} />
-        Suche nach Titel, Thema oder Ort …
-      </div>
-      {HITS.map((h) => (
-        <div key={h.title} className="ri-pv2__item">
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Suche nach Titel, Thema oder Ort …" aria-label="Suche ausprobieren" className="min-w-0 flex-1 border-0 bg-transparent text-inherit outline-none" />
+      </form>
+      {HITS.map((h, i) => (
+        <button key={h.title} type="button" onClick={() => openSearch(HIT_TERMS[i] ?? h.title)} className="ri-pv2__item w-full cursor-pointer text-left hover:bg-slate-50">
           <div className="ri-pv2__row">
             <PlacePill place={h.place} />
             <StatusPill status={h.status} />
           </div>
           <p className="ri-pv2__h">{h.title}</p>
           <span className="ri-pv2__meta">{h.meta}</span>
-        </div>
+        </button>
       ))}
-      <span className="ri-pv__foot">Beispiel mit fiktiven Daten</span>
+      <span className="ri-pv__foot">Beispiele mit fiktiven Daten. Ein Klick sucht im echten Bestand.</span>
     </div>
   );
 }
@@ -54,8 +66,8 @@ export function AboutPage() {
     <>
       <PageHead
         icon="landmark"
-        label={name}
-        name={`Über ${name}`}
+        label="Produkt"
+        name={`Das kann ${name}`}
         title={
           <>
             Kommunale Entscheidungen.
@@ -63,7 +75,7 @@ export function AboutPage() {
             Endlich durchsuchbar.
           </>
         }
-        lead={`${name} ist ein Tech-Startup. Wir machen aus tausenden verstreuten Ratsinformationssystemen eine einzige, intelligente Datenbank.`}
+        lead={`${name} bündelt verstreute Ratsinformationssysteme zu einer einzigen, durchsuchbaren Datenbank, Schritt für Schritt für ganz Deutschland.`}
         aside={<SearchPreview />}
       >
         <div className="ri-actions">
@@ -120,7 +132,7 @@ export function AboutPage() {
             </p>
           </div>
           <Link href="/preise" className="ri-btn ri-btn--light">
-            Free-Version ansehen
+            Kostenlose Version ansehen
           </Link>
         </div>
       </section>

@@ -31,7 +31,7 @@ export function FilterSelect({ id, label, allLabel, value, options, counts, onCh
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`select-base w-full text-ellipsis ${sm ? "!h-9 !rounded-lg !pl-3 !pr-8 !text-[13px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${
+        className={`select-base w-full text-ellipsis ${sm ? "!h-9 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${
           value && highlight ? "select-active" : ""
         }`}
       >

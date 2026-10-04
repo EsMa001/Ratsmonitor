@@ -28,9 +28,9 @@ export function OverviewPage({ active }: { active: boolean }) {
   }, [active]);
 
   return (
-    <div hidden={!active}>
+    <div hidden={!active} className="rm-flat">
       <MapPanel active={active} />
-      <main id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page flex-col gap-[12px] pb-[12px] pt-[12px]">
+      <main id={active ? "inhalt" : undefined} className="mx-auto flex max-w-page flex-col gap-[12px] pb-0 pt-[12px]">
         <h1 className="sr-only">Kommunalpolitik entdecken: öffentliche Vorgänge, Beratungen und Beschlüsse</h1>
         <SearchFilterPanel />
         <ResultsPanel />

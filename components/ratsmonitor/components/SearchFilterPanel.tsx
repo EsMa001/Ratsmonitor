@@ -93,7 +93,7 @@ export function SearchFilterPanel() {
             setOpen((o) => !o);
           }} className={`relative grid h-11 w-9 flex-none place-items-center rounded-xl transition-colors ${open || filterCount ? "text-teal-700 hover:bg-slate-100" : "text-slate-600 hover:bg-slate-100"}`}>
           <IconFilter size={20} />
-          {filterCount > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-teal-600 px-1 text-[11px] font-semibold text-white">{filterCount}</span>}
+          {filterCount > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-teal-600 px-1 text-[12px] font-semibold text-white">{filterCount}</span>}
         </button>
         <button type="button" disabled={!active && !savedHit} onClick={toggleSave} aria-pressed={!!savedHit} title={savedHit ? "Gespeicherte Suche entfernen" : active ? "Suche speichern" : "Erst suchen oder filtern, dann speichern"} aria-label={savedHit ? "Gespeicherte Suche entfernen" : "Suche speichern"} className={`grid h-11 w-9 flex-none place-items-center rounded-xl transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${savedHit ? "text-teal-600 hover:bg-slate-100" : "text-slate-600 hover:bg-slate-100 hover:text-teal-600"}`}>
           <IconHeart size={20} filled={!!savedHit} />
@@ -168,17 +168,6 @@ export function SearchFilterPanel() {
               Alle zurücksetzen
             </button>
           )}
-          {/* Ein Icon-Umschalter wie in Finder/Explorer: zeigt die Ansicht, zu der gewechselt wird */}
-          <button
-            type="button"
-            aria-pressed={listView === "compact"}
-            aria-label={listView === "compact" ? "Ausführliche Ansicht" : "Kompakte Ansicht"}
-            title={listView === "compact" ? "Ausführliche Ansicht" : "Kompakte Ansicht"}
-            onClick={() => setListView(listView === "compact" ? "full" : "compact")}
-            className="ml-auto grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-          >
-            {listView === "compact" ? <IconViewFull size={20} /> : <IconViewCompact size={20} />}
-          </button>
           <FilterSelect
             id="f-sort"
             label="Sortierung"
@@ -191,8 +180,19 @@ export function SearchFilterPanel() {
             onChange={(v) => search.setSort(v as "asc" | "desc")}
             size="sm"
             highlight={false}
-            className="[&_select]:!border-transparent [&_select]:!bg-transparent [&_select]:!shadow-none [&_select:hover]:!bg-slate-100"
+            className="ml-auto [&>svg]:!right-[9px] [&_select]:!border-transparent [&_select]:!bg-transparent [&_select]:!font-normal [&_select]:!text-slate-500 [&_select]:!shadow-none [&_select:hover]:!bg-slate-100 [&_select:hover]:!text-slate-900"
           />
+          {/* Ein Umschalter rechts neben der Sortierung: Icon und Bezeichnung der Ansicht, zu der gewechselt wird */}
+          <button
+            type="button"
+            aria-pressed={listView === "compact"}
+            title={listView === "compact" ? "Zur ausführlichen Ansicht wechseln" : "Zur kompakten Ansicht wechseln"}
+            onClick={() => setListView(listView === "compact" ? "full" : "compact")}
+            aria-label={listView === "compact" ? "Ausführliche Ansicht" : "Kompakte Ansicht"}
+            className="grid h-9 w-9 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+          >
+            {listView === "compact" ? <IconViewCompact size={20} /> : <IconViewFull size={20} />}
+          </button>
       </div>
     </section>
   );

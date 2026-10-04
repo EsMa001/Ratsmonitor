@@ -50,8 +50,8 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
     >
       <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-3 pt-0.5 text-center">
         <span className="text-[22px] font-semibold leading-none tracking-[-.02em]">{Number(d) || "—"}</span>
-        <span className="mt-1 text-[11px] font-semibold uppercase tracking-[.06em] text-teal-600">{MONTH_SHORT[Number(m) - 1]}</span>
-        <span className="text-[11px] text-slate-500">{y}</span>
+        <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-600">{MONTH_SHORT[Number(m) - 1]}</span>
+        <span className="text-[12px] text-slate-500">{y}</span>
       </div>
       <div className="min-w-0">
       <h3 className="m-0 text-[16px] font-semibold leading-[1.35] tracking-[-.01em]">
@@ -67,7 +67,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
           <Highlight text={a.title} terms={terms} />
         </a>
       </h3>
-      <p className="mb-1.5 mt-0.5 text-[13px] font-medium text-slate-500">
+      <p className="mb-1.5 mt-0.5 text-[14px] font-medium text-slate-500">
         <Highlight text={sub} terms={terms} />
       </p>
       {!compact && <p className="m-0 max-w-[96ch] text-[14px] leading-[1.6] text-slate-600">
@@ -77,7 +77,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
       </div>
       {/* Eigene Spalte fürs Lesezeichen: der Text endet bündig mit dem Suchfeld (rechts davon Filter und Herz) */}
       <div className="flex w-[56px] justify-end">
-        <SaveArticleButton article={{ id: a.id, title: a.title, date: a.date, gemeinde: a.gemeinde, teaser: a.teaser }} size={22} className="-mr-1.5 -mt-1" />
+        <SaveArticleButton article={{ id: a.id, title: a.title, date: a.date, gemeinde: a.gemeinde, teaser: a.teaser }} size={20} className="-mr-3.5 -mt-1" />
       </div>
     </article>
   );
@@ -88,7 +88,7 @@ function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
   const shown = steps.slice(-5);
   return (
     <ol aria-label="Verlauf des Vorgangs" className="mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none]">
-      {steps.length > shown.length && <li className="mr-2 self-center text-[11px] text-slate-400">+{steps.length - shown.length}</li>}
+      {steps.length > shown.length && <li className="mr-2 self-center text-[12px] text-slate-400">+{steps.length - shown.length}</li>}
       {shown.map((st, i) => {
         const last = i === shown.length - 1;
         return (
@@ -97,9 +97,9 @@ function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
               <span className={`h-2.5 w-2.5 flex-none rounded-full ${last ? "bg-teal-600 ring-4 ring-teal-100" : "bg-slate-300"}`} />
               {!last && <span className="h-px flex-1 bg-slate-300" />}
             </div>
-            <span className="text-[11px] font-semibold tabular-nums text-slate-600">{fmtDate(st.d)}</span>
-            <span className="truncate text-[11px] text-slate-500" title={st.c}>{st.c || "Gremium offen"}</span>
-            <span className="truncate text-[11px] text-slate-400">{STATUS_BY_ID[st.s as Article["status"]]?.label || ""}</span>
+            <span className="text-[12px] font-semibold tabular-nums text-slate-600">{fmtDate(st.d)}</span>
+            <span className="truncate text-[12px] text-slate-500" title={st.c}>{st.c || "Gremium offen"}</span>
+            <span className="truncate text-[12px] text-slate-400">{STATUS_BY_ID[st.s as Article["status"]]?.label || ""}</span>
           </li>
         );
       })}

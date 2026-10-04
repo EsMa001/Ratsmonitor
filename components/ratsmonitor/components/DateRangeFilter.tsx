@@ -26,7 +26,7 @@ export function DateRangeFilter() {
   const label = preset ? preset.label : von || bis ? rangeLabel(von, bis) : "Gesamter Zeitraum";
   const range: DateRange | undefined = von || bis ? { from: fromIso(von), to: fromIso(bis) } : undefined;
   const item = (on: boolean) =>
-    `rounded-lg px-3 py-2 text-left text-[13px] font-medium ${on ? "bg-teal-50 text-teal-700" : "text-slate-700 hover:bg-slate-100"}`;
+    `rounded-lg px-3 py-2 text-left text-[14px] font-medium ${on ? "bg-teal-50 text-teal-700" : "text-slate-700 hover:bg-slate-100"}`;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -40,7 +40,7 @@ export function DateRangeFilter() {
           <IconChevronDown size={14} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto rounded-2xl border-slate-200 bg-white p-2 text-slate-900 shadow-pop [--primary:#0f766e] [--primary-foreground:#fff] [--accent:#f0fdfa] [--accent-foreground:#0f766e]">
+      <PopoverContent align="start" className="w-auto rounded-2xl border-slate-200 bg-white p-2 text-slate-900 shadow-pop [--primary:#0d9488] [--primary-foreground:#fff] [--accent:#f0fdfa] [--accent-foreground:#0d9488]">
         <div className="flex flex-col gap-2 sm:flex-row">
           <div className="flex flex-row flex-wrap gap-1 sm:w-[150px] sm:flex-col">
             <button type="button" className={item(!von && !bis)} onClick={() => (search.setZeitraum("", ""), setOpen(false))}>

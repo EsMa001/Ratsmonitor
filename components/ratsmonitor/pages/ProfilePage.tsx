@@ -58,9 +58,9 @@ export function ProfilePage() {
   if (tier === "guest")
     return (
       <>
-        <PageHead icon="user" label="Konto" name="Mein Konto" />
+        <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Sie sind nicht<br />angemeldet.</>} lead="Ohne Konto sehen Sie 10 Treffer je Suche. Mit einem kostenlosen Konto nutzen Sie alle Treffer und Filter und können speichern." />
         <section className="ri-sec ri-sec--tight">
-        <LoginRequired title="Sie sind nicht angemeldet" text="Mit einem kostenlosen Konto sehen Sie alle Treffer, nutzen die Filter und können Artikel, Suchen und Benachrichtigungen speichern." />
+        <LoginRequired title="Kostenlos anmelden" text="Mit einem kostenlosen Konto sehen Sie alle Treffer, nutzen die Filter und können Artikel, Suchen und Benachrichtigungen speichern." />
         <PlanCards />
         </section>
       </>
@@ -68,11 +68,11 @@ export function ProfilePage() {
 
   return (
     <>
-      <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Ihre Angaben.<br />Ihr Tarif.</>} lead="Persönliche Angaben, Voreinstellungen und Tarif an einem Ort." />
+      <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Ihre Angaben.<br />Ihr Tarif.</>} lead="Persönliche Angaben und Tarif an einem Ort. Benachrichtigungen legen Sie direkt bei jeder gespeicherten Suche fest." />
       <section className="ri-sec ri-sec--tight">
 
       <form
-        className="card-shell grid gap-4 px-4 py-5 sm:grid-cols-2 sm:px-6"
+        className="grid gap-4 sm:grid-cols-2"
         onSubmit={(e) => {
           e.preventDefault();
           save();
@@ -88,29 +88,11 @@ export function ProfilePage() {
           <input type="email" className={field} value={p.email} onChange={(e) => setP({ ...p, email: e.target.value })} placeholder="name@beispiel.de" autoComplete="email" />
         </label>
 
-        <h2 className="m-0 mt-2 text-[18px] font-semibold sm:col-span-2">Voreinstellungen</h2>
-        <label>
-          <span className={label}>Meine Region</span>
-          <input className={field} value={p.region} onChange={(e) => setP({ ...p, region: e.target.value })} placeholder="z. B. Billerbeck" />
-        </label>
-        <label>
-          <span className={label}>Benachrichtigungen standardmäßig</span>
-          <select className="select-base w-full" value={p.freq} onChange={(e) => setP({ ...p, freq: e.target.value as NotifyFreq })}>
-            <option value="instant">Sofort</option>
-            <option value="daily">Täglich</option>
-            <option value="weekly">Wöchentlich</option>
-          </select>
-        </label>
-        <label className="flex items-center gap-2.5 text-[14px] sm:col-span-2">
-          <input type="checkbox" className="h-4 w-4 accent-teal-600" checked={p.newsletter} onChange={(e) => setP({ ...p, newsletter: e.target.checked })} />
-          Wöchentliche Zusammenfassung für meine Region per E-Mail
-        </label>
-
         <div className="flex flex-wrap items-center gap-3 border-t border-slate-200 pt-4 sm:col-span-2">
           <button type="submit" className="btn-primary">
             Speichern
           </button>
-          <button type="button" onClick={wipe} className="ml-auto text-[13px] text-rose-700 underline underline-offset-2">
+          <button type="button" onClick={wipe} className="ml-auto text-[14px] text-rose-700 underline underline-offset-2">
             Alle Daten in diesem Browser löschen
           </button>
         </div>

@@ -62,6 +62,7 @@ function Timeline({ b }: { b: Branche }) {
 export function BranchePage({ b }: { b: Branche }) {
   const { name } = useBrand();
   const term = b.keywords[0];
+  const openBenefit = useOpenSearch();
   return (
     <>
       <PageHead icon={b.icon} label="Branche" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview term={term} example={b.example} />}>
@@ -73,13 +74,24 @@ export function BranchePage({ b }: { b: Branche }) {
 
       <section className="ri-band">
         <div className="ri-grid3">
-          {b.benefits.map(([icon, title, text]) => (
-            <div key={title} className="ri-bcard">
-              <Icon name={icon} size={28} className="ri-bcard__icon" />
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </div>
-          ))}
+          {/* Jede Kachel startet eine echte Suche mit einem passenden Begriff der Branche */}
+          {b.benefits.map(([icon, title, text, term]) => {
+            return (
+              <button key={title} type="button" onClick={() => openBenefit(term)} className="ri-bcard flex cursor-pointer flex-col text-left">
+                <Icon name={icon} size={28} className="ri-bcard__icon" />
+                <h3>{title}</h3>
+                <p>{text}</p>
+                {/* Sieht aus wie die kleinen Such-Buttons; die ganze Kachel startet die Suche */}
+                <span className="mt-auto pt-4">
+                  <span className="inline-flex h-10 items-center gap-2 rounded-lg bg-white pl-3 pr-2.5 shadow-card">
+                    <Icon name="search" size={15} className="flex-none text-slate-500" />
+                    <span className="text-[14px] text-slate-900">{term}</span>
+                    <span className="text-[14px] text-teal-600">→</span>
+                  </span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -107,22 +119,33 @@ export function BranchePage({ b }: { b: Branche }) {
       </section>
 
       <section className="ri-sec ri-sec--tight">
-        <h2 className="ri-eyebrow">Worauf {name} für Sie achtet</h2>
-        <p className="ri-wr">
-          {b.watch.map((w, i) => (
-            <span key={w}>
-              {w}
-              {i < b.watch.length - 1 && (
-                <span className="ri-wr__sep" aria-hidden="true">
-                  ·
-                </span>
-              )}{" "}
-            </span>
-          ))}
-        </p>
+        {/* Gleiche Überschrift wie die anderen Abschnitte; Themen als Zeile mit Häkchen, nicht auf die volle Breite gestreckt */}
+        <h2 className="ri-h2">Worauf {name} für Sie achtet</h2>
+        {/* Je Thema ein konkreter Anwendungsfall: zwei Spalten, nur Zeilenlinien */}
+        <table className="w-full border-collapse text-left" style={{ marginTop: 24 }}>
+          <thead>
+            <tr className="border-b border-slate-200">
+              <th scope="col" className="w-[34%] py-3 pr-6 text-[12px] font-normal uppercase tracking-wide text-slate-500">Thema</th>
+              <th scope="col" className="py-3 text-[12px] font-normal uppercase tracking-wide text-slate-500">Ihr Nutzen mit {name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {b.watch.map((w, i) => (
+              <tr key={w} className="border-b border-slate-200 align-top last:border-b-0">
+                <th scope="row" className="py-4 pr-6 text-[16px] font-semibold text-slate-900">
+                  <span className="inline-flex items-start gap-2.5">
+                    <Icon name="check" size={18} className="mt-0.5 flex-none text-teal-600" />
+                    {w}
+                  </span>
+                </th>
+                <td className="py-4 text-[16px] leading-relaxed text-slate-500">{b.useCases?.[i] ?? ""}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
-      <DarkCta title={b.closing} pills={b.keywords} action={<SearchTermButton term={term} light />} />
+      <DarkCta title={b.closing} pills={b.keywords} />
     </>
   );
 }

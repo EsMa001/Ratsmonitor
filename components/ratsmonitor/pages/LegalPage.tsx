@@ -138,8 +138,8 @@ function Datenschutz() {
         möglich und auf Grundlage des EU-U.S. Data Privacy Framework abgesichert.
       </P>
       <P>
-        Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Sie können sie jederzeit widerrufen, indem Sie die Mitteilungen auf der
-        Seite „Push-Mitteilungen“ ausschalten oder die Berechtigung im Browser entziehen. Die gespeicherte Push-Adresse wird dann gelöscht; ungültig gewordene Adressen
+        Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Sie können sie jederzeit widerrufen, indem Sie die Berechtigung für Mitteilungen
+        in Ihren Browser-Einstellungen entziehen. Die gespeicherte Push-Adresse wird dann gelöscht; ungültig gewordene Adressen
         entfernen wir automatisch.
       </P>
 

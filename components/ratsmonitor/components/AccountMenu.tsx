@@ -14,11 +14,11 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   </Link>
   <Link href="/konto/suchen" title="Gespeicherte Suchen" aria-label={`Gespeicherte Suchen (${saved.length})`} className={cls(currentPage==='suchen')}>
    <IconHeart size={19} filled={currentPage==='suchen'}/>
-   {saved.length>0&&<span className="absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-600 px-[3px] text-[11px] font-semibold leading-none text-white">{saved.length}</span>}
+   {saved.length>0&&<span className="absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-600 px-[3px] text-[12px] font-semibold leading-none text-white">{saved.length}</span>}
   </Link>
   <Link href="/konto/artikel" title="Gespeicherte Artikel" aria-label={`Gespeicherte Artikel (${articles.length})`} className={cls(currentPage==='artikel')}>
    <IconBookmark size={19} filled={currentPage==='artikel'}/>
-   {articles.length>0&&<span className="absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-600 px-[3px] text-[11px] font-semibold leading-none text-white">{articles.length}</span>}
+   {articles.length>0&&<span className="absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-600 px-[3px] text-[12px] font-semibold leading-none text-white">{articles.length}</span>}
   </Link>
   <Link href="/konto/profil" title="Konto" aria-label="Konto" className={cls(currentPage==='profil')}>
    <IconUser size={19}/>

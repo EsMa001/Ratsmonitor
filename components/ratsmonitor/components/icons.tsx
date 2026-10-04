@@ -59,8 +59,7 @@ export const IconViewFull = (p: IconProps) => (
 );
 export const IconViewCompact = (p: IconProps) => (
   <Svg {...p}>
-    <path d="M8 6h12M8 12h12M8 18h12" />
-    <path d="M4 6h.01M4 12h.01M4 18h.01" />
+    <path d="M4 5h16M4 9.67h16M4 14.33h16M4 19h16" />
   </Svg>
 );
 export const IconChevronUp = (p: IconProps) => (

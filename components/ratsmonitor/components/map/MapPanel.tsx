@@ -185,15 +185,21 @@ export function MapPanel({ active }: { active: boolean }) {
   return (
     <>
     {collapsed && (
+      /* Eingeklappt: eine ruhige Leiste in zartem Petrol, mit deutlichem Karten-Symbol und kurzer Erklärung */
       <button
         type="button"
         onClick={() => setCollapsed(false)}
         aria-expanded={false}
-        className="mx-auto mt-[12px] flex h-11 w-full max-w-page items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-[14px] font-medium text-slate-700 shadow-card hover:bg-slate-50"
+        className="group mx-auto mt-[12px] flex w-full max-w-page items-center gap-4 rounded-xl bg-teal-50/70 px-4 py-3 text-left transition-colors hover:bg-teal-50"
       >
-        <IconMap size={18} className="text-teal-600" />
-        Karte anzeigen
-        <IconChevronDown size={16} className="ml-auto text-slate-500" />
+        <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-white text-teal-600 shadow-xs">
+          <IconMap size={22} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[16px] font-semibold text-slate-900">Karte anzeigen</span>
+          <span className="block text-[14px] text-slate-500">Treffer nach Gemeinden und Kreisen sehen</span>
+        </span>
+        <IconChevronDown size={20} className="flex-none text-teal-600 transition-transform group-hover:translate-y-0.5" />
       </button>
     )}
     <section hidden={collapsed} aria-label="Karte der Gemeinden und Kreise" className="relative mx-auto mt-[12px] h-[460px] max-w-page overflow-hidden rounded-2xl border border-slate-200 bg-map-ground shadow-card sm:h-[520px]">
@@ -205,7 +211,7 @@ export function MapPanel({ active }: { active: boolean }) {
           aria-label="Karte der Gemeinden. Die Auswahl eines Gebiets ist auch über den Gebietsfilter unter der Karte möglich."
           className="absolute left-0 top-0 block h-full w-full"
         />
-        {!geo && <div className="absolute inset-0 grid place-items-center text-[13px] text-slate-500">{geoError ? "Kartendaten konnten nicht geladen werden." : "Karte wird aufgebaut …"}</div>}
+        {!geo && <div className="absolute inset-0 grid place-items-center text-[14px] text-slate-500">{geoError ? "Kartendaten konnten nicht geladen werden." : "Karte wird aufgebaut …"}</div>}
         <div
           ref={tipRef}
           className={`pointer-events-none absolute z-[6] max-w-[260px] rounded-lg bg-slate-900 px-2.5 py-[7px] text-[12px] leading-[1.35] text-white shadow-pop transition-opacity duration-75 ${
@@ -214,7 +220,7 @@ export function MapPanel({ active }: { active: boolean }) {
         >
           {tipInfo && tip && (
             <>
-              <b className="block text-[13px] font-semibold">{tipInfo.name}</b>
+              <b className="block text-[14px] font-semibold">{tipInfo.name}</b>
               <span className="block text-slate-300">{tipInfo.meta}</span>
               <span className="mt-0.5 block">{countText(tip.ags)}</span>
             </>
@@ -232,7 +238,7 @@ export function MapPanel({ active }: { active: boolean }) {
             ref={popRef}
             role="dialog"
             aria-label={popInfo.name}
-            className="group absolute left-0 top-0 z-[7] w-[230px] -translate-x-1/2 -translate-y-[calc(100%+14px)] rounded-xl border border-slate-200 bg-white py-3 pl-3.5 pr-3 text-[13px] shadow-pop data-[below=true]:translate-y-3.5 sm:w-[260px]"
+            className="group absolute left-0 top-0 z-[7] w-[230px] -translate-x-1/2 -translate-y-[calc(100%+14px)] rounded-xl border border-slate-200 bg-white py-3 pl-3.5 pr-3 text-[14px] shadow-pop data-[below=true]:translate-y-3.5 sm:w-[260px]"
           >
             <span
               aria-hidden="true"
@@ -274,25 +280,18 @@ export function MapPanel({ active }: { active: boolean }) {
               </button>
             ))}
           </div>
-          {/* Dezent mittig am unteren Rand */}
-          <button
-            type="button"
-            onClick={() => setCollapsed(true)}
-            className="pointer-events-auto absolute bottom-3 left-1/2 hidden h-8 -translate-x-1/2 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-[12px] font-medium text-slate-600 shadow-xs hover:text-slate-900 sm:inline-flex"
-          >
-            <IconChevronUp size={14} />
-            Karte einklappen
-          </button>
+          {/* Lasche wie ein kleines Dach am unteren Kartenrand: zeigt, dass sich die Karte nach oben einklappen lässt */}
           <button
             type="button"
             aria-label="Karte einklappen"
+            title="Karte einklappen"
             onClick={() => setCollapsed(true)}
-            className="pointer-events-auto absolute bottom-3 left-1/2 grid h-8 w-11 -translate-x-1/2 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-xs sm:hidden"
+            className="pointer-events-auto absolute bottom-0 left-1/2 grid h-6 w-14 -translate-x-1/2 place-items-center rounded-t-xl border border-b-0 border-slate-200 bg-white text-slate-500 hover:text-teal-600"
           >
-            <IconChevronUp size={16} />
+            <IconChevronUp size={18} />
           </button>
           <Legend graded={filtered} max={maxHits} t1={t1} t2={t2} />
-          <span className="pointer-events-auto absolute left-2 top-2 rounded sm:left-auto sm:top-auto bg-map-ground/85 px-[5px] py-px text-[11px] text-slate-500 sm:bottom-3 sm:right-3">© GeoBasis-DE / BKG 2019, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="underline">dl-de/by-2-0</a>, vereinfacht</span>
+          <span className="pointer-events-auto absolute left-2 top-2 rounded sm:left-auto sm:top-auto bg-map-ground/85 px-[5px] py-px text-[12px] text-slate-500 sm:bottom-3 sm:right-3">© GeoBasis-DE / BKG 2019, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="underline">dl-de/by-2-0</a>, vereinfacht</span>
         </div>
       </div>
       {/* Nur für Screenreader: Hinweis auf die Auswahl über den Gebietsfilter */}

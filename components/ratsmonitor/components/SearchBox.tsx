@@ -172,7 +172,7 @@ export function SearchBox() {
 
   let pickIndex = -1;
   return (
-    <div className="relative z-[4] min-w-0">
+    <div className="rm-glow relative z-[4] min-w-0">
       <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
       <label htmlFor="q" className="sr-only">
         Beschlüsse und Artikel durchsuchen
@@ -206,7 +206,7 @@ export function SearchBox() {
           search.commitPlaces();
         }}
         onKeyDown={onKeyDown}
-        className={`h-11 w-full rounded-xl border border-transparent bg-[#f8f9fa] pl-[42px] text-[15px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-slate-400 hover:bg-[#f1f3f5] focus:border-teal-600 focus:bg-white focus:shadow-focus ${
+        className={`h-11 w-full rounded-xl border border-transparent bg-white pl-[42px] text-[16px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-slate-400 ${
           placeOn ? "pr-[128px]" : "pr-11"
         }`}
       />

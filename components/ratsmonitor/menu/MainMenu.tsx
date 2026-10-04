@@ -5,9 +5,10 @@ import { createPortal } from "react-dom";
 import { BRANCHEN } from "../info/content";
 import { useBrandText } from "../lib/brand";
 import { Icon } from "../info/icons";
+import { useTier } from "../lib/tier";
 
 const MAIN_TOP = [
-  { href: "/ueber-ratsmonitor", label: "Über Ratsmonitor" },
+  { href: "/ueber-ratsmonitor", label: "Über uns" },
   { href: "/faq", label: "FAQ" },
   { href: "/branchen", label: "Branchen & Anwendungsfälle" },
 ];
@@ -18,6 +19,7 @@ export function MainMenu() {
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
   const brandText = useBrandText();
+  const { tier } = useTier();
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +30,8 @@ export function MainMenu() {
 
   useEffect(() => {
     if (!open) return;
-    panelRef.current?.querySelector<HTMLElement>("a")?.focus();
+    /* Fokus auf das Menü selbst, nicht auf den ersten Eintrag: sonst sähe „Suche“ wie ausgewählt aus */
+    panelRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
@@ -81,14 +84,14 @@ export function MainMenu() {
         createPortal(
           <div className="ri-menu">
             <div className="ri-menu__bg" onClick={close} aria-hidden="true" />
-            <div ref={panelRef} id="hauptmenue" className="ri-menu__panel" role="dialog" aria-label="Hauptmenü" style={{ top: pos.top, left: pos.left, maxHeight: `calc(100dvh - ${pos.top}px - 12px)` }} onKeyDown={trap}>
+            <div ref={panelRef} id="hauptmenue" tabIndex={-1} className="ri-menu__panel outline-none" role="dialog" aria-label="Hauptmenü" style={{ top: pos.top, left: pos.left, maxHeight: `calc(100dvh - ${pos.top}px - 12px)` }} onKeyDown={trap}>
+              {/* Gleiche Gruppen wie in der Fußzeile; Linien statt Kästen. Gespeichertes und Konto erreicht man über die Icons in der Kopfzeile */}
               <nav className="ri-menu__nav" aria-label="Menü">
-                <p className="ri-menu__label">Menü</p>
-                {MAIN_TOP.map((m) => (
-                  <Link key={m.href} href={m.href} className="ri-menu__main" aria-current={current(m.href)} onClick={pick}>
-                    {brandText(m.label)}
-                  </Link>
-                ))}
+                <p className="ri-menu__label">Produkt</p>
+                <Link href="/" className="ri-menu__main" aria-current={current("/")} onClick={pick}>Suche</Link>
+                <Link href="/ueber-ratsmonitor" className="ri-menu__main" aria-current={current("/ueber-ratsmonitor")} onClick={pick}>{brandText("Das kann Ratsmonitor")}</Link>
+                <Link href="/preise" className="ri-menu__main" aria-current={current("/preise")} onClick={pick}>Preise & Tarife</Link>
+                <Link href="/branchen" className="ri-menu__main" aria-current={current("/branchen")} onClick={pick}>Branchen & Anwendungsfälle</Link>
                 <ul className="ri-menu__subs">
                   {BRANCHEN.map((b) => {
                     const href = `/branchen/${b.slug}`;
@@ -102,17 +105,23 @@ export function MainMenu() {
                     );
                   })}
                 </ul>
-                <Link href="/preise" className="ri-menu__main" aria-current={current("/preise")} onClick={pick}>
-                  Preise & Tarife
-                </Link>
+                <p className="ri-menu__label ri-menu__label--sep">Informationen</p>
+                {MAIN_TOP.filter((m) => m.href === "/faq").map((m) => (
+                  <Link key={m.href} href={m.href} className="ri-menu__main" aria-current={current(m.href)} onClick={pick}>
+                    {brandText(m.label)}
+                  </Link>
+                ))}
+                <Link href="/quellen" className="ri-menu__main" aria-current={current("/quellen")} onClick={pick}>Quellen & Abdeckung</Link>
+                <Link href="/ueber-uns" className="ri-menu__main" aria-current={current("/ueber-uns")} onClick={pick}>Über uns</Link>
               </nav>
-              <div className="ri-menu__start">
-                <strong>Kostenlos starten</strong>
-                <p>Suchen speichern und Beschlüsse merken.</p>
-                <Link href="/registrieren?tarif=free" onClick={pick}>
-                  Konto erstellen →
-                </Link>
-              </div>
+              {tier === "guest" && (
+                <div className="ri-menu__start">
+                  <Link href="/registrieren?tarif=free" className="btn-primary w-full" onClick={pick}>
+                    Kostenlos starten
+                  </Link>
+                  <p>Suchen speichern und Beschlüsse merken.</p>
+                </div>
+              )}
             </div>
           </div>,
           document.body,

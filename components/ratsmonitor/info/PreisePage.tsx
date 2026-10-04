@@ -1,7 +1,20 @@
 import Link from "next/link";
 import { DarkCta, PageHead, QaItem } from "./blocks";
-import { COMPARE, PLANS, PRICE_FAQ } from "./content";
+import { PRICE_FAQ } from "./content";
+import { LIMITS, PRO_PRICE, TIER_LABEL, type Tier } from "../lib/tier";
 import { PlanCards } from "../components/PlanCards";
+
+const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
+const count = (n: number) => (n === 0 ? "–" : Number.isFinite(n) ? String(n) : "unbegrenzt");
+const COMPARE_ROWS: [string, (t: Tier) => string][] = [
+  ["Preis", (t) => (t === "guest" ? "0 €" : t === "basic" ? "kostenlos" : t === "pro" ? PRO_PRICE : "auf Anfrage")],
+  ["Treffer je Suche", (t) => (Number.isFinite(LIMITS[t].maxResults) ? String(LIMITS[t].maxResults) : "alle")],
+  ["Filter (Gebiet, Zeitraum, Thema, Status)", (t) => (LIMITS[t].filters ? "✓" : "–")],
+  ["Gespeicherte Suchen", (t) => count(LIMITS[t].savedSearches)],
+  ["Gespeicherte Artikel", (t) => count(LIMITS[t].bookmarks)],
+  ["Aktive Benachrichtigungen", (t) => count(LIMITS[t].notifications)],
+  ["E-Mail-Empfänger je Benachrichtigung", (t) => (LIMITS[t].emails > 1 ? `bis zu ${LIMITS[t].emails}` : count(LIMITS[t].emails))],
+];
 
 export function PreisePage() {
   return (
@@ -17,41 +30,33 @@ export function PreisePage() {
             Jederzeit kündbar.
           </>
         }
-        lead="Durchsuchen Sie über 4.500 Ratsinformationssysteme und lassen Sie sich per E-Mail informieren, sobald zu Ihrem Thema etwas beschlossen wird."
+        lead="Durchsuchen Sie die Ratsinformationssysteme der Kommunen und lassen Sie sich per E-Mail informieren, sobald zu Ihrem Thema etwas beschlossen wird."
       />
       <section className="ri-sec ri-sec--prices">
         {/* Gleiche Tarifkarten wie im Konto */}
         <PlanCards publicPage />
 
         <h2 className="ri-h2 ri-h2--md ri-h2--gap">Alle Leistungen im Vergleich</h2>
+        {/* Aus denselben Tarif-Grenzen wie die Karten erzeugt (lib/tier.ts), damit beides übereinstimmt */}
         <table className="ri-table">
           <thead>
             <tr>
               <th className="ri-table__first">
                 <span className="sr-only">Leistung</span>
               </th>
-              {PLANS.map((p) => (
-                <th key={p.id} scope="col">
-                  {p.name}
+              {TIERS.map((t) => (
+                <th key={t} scope="col">
+                  {t === "guest" ? "Ohne Konto" : TIER_LABEL[t]}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">Preis</th>
-              {PLANS.map((p) => (
-                <td key={p.id}>
-                  {p.amount}
-                  {p.id !== "free" && <small> {p.unit}</small>}
-                </td>
-              ))}
-            </tr>
-            {COMPARE.map(([label, ...cells]) => (
+            {COMPARE_ROWS.map(([label, cell]) => (
               <tr key={label}>
                 <th scope="row">{label}</th>
-                {cells.map((c, i) => (
-                  <td key={i}>{c}</td>
+                {TIERS.map((t) => (
+                  <td key={t}>{cell(t)}</td>
                 ))}
               </tr>
             ))}

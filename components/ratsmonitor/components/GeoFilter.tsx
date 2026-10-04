@@ -146,7 +146,7 @@ export function GeoFilter() {
               const inner = (
                 <>
                   <b
-                    className={`grid h-[18px] w-[18px] flex-none place-items-center rounded-full text-[11px] font-semibold ${
+                    className={`grid h-[18px] w-[18px] flex-none place-items-center rounded-full text-[12px] font-semibold ${
                       cur ? "bg-teal-600 text-white" : done ? "bg-teal-100 text-teal-700" : "bg-slate-200 text-slate-600"
                     }`}
                   >
@@ -208,7 +208,7 @@ export function GeoFilter() {
               placeholder={ph + " …"}
               value={find}
               onChange={(e) => setFind(e.target.value)}
-              className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-[13px] outline-none focus:border-teal-600 focus:shadow-[0_0_0_3px_rgba(13,148,136,.2)]"
+              className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-[14px] outline-none focus:border-teal-600 focus:shadow-[0_0_0_3px_rgba(13,148,136,.2)]"
             />
           </div>
           <ul role="list" className="scroll-thin m-0 min-h-0 flex-1 list-none overflow-y-auto p-1.5">
@@ -227,7 +227,7 @@ export function GeoFilter() {
                 {allSel ? <IconCheck className="text-teal-700" /> : <span />}
               </button>
             </li>
-            {kids.length === 0 && <li className="p-3 text-[13px] text-slate-500">Kein Gebiet gefunden</li>}
+            {kids.length === 0 && <li className="p-3 text-[14px] text-slate-500">Kein Gebiet gefunden</li>}
             {kids.map((e) => {
               const sel = state.area === e.ags || (state.area.startsWith(e.ags) && e.ags.length < state.area.length);
               let meta: string;

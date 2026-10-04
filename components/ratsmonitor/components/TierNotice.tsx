@@ -4,7 +4,7 @@ import { IS_DEV, setTier, TIER_LABEL, useTier, usage } from "../lib/tier";
 /** Platzhalter für Bereiche, die eine Anmeldung voraussetzen (Gast) */
 export function LoginRequired({ title, text }: { title: string; text: string }) {
   return (
-    <div className="mt-6 flex flex-col items-center rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+    <div className="flex flex-col items-center px-6 py-10 text-center">
       <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-600">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <rect x="5" y="11" width="14" height="10" rx="2" />

@@ -36,7 +36,7 @@ export function AreaBar() {
   ] as const;
 
   return (
-    <div role="group" aria-label={`Gebiet ${name}`} className="flex flex-col gap-1 text-[13px]">
+    <div role="group" aria-label={`Gebiet ${name}`} className="flex flex-col gap-1 text-[14px]">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <span className="inline-flex min-w-0 items-center gap-1.5 font-semibold text-slate-900">
           <IconPin size={16} className="flex-none text-teal-600" />

@@ -14,7 +14,7 @@ export function Legend({ graded, max, t1, t2 }: { graded: boolean; max: number; 
   return (
     <div
       aria-label="Legende"
-      className="pointer-events-auto absolute bottom-3 left-3 right-3 rounded-[10px] border border-slate-200 bg-white/95 px-2 py-[5px] text-[11px] text-slate-600 shadow-xs sm:right-auto sm:px-3 sm:py-2 sm:text-[12px]"
+      className="pointer-events-auto absolute bottom-3 left-3 right-3 rounded-[10px] border border-slate-200 bg-white/95 px-2 py-[5px] text-[12px] text-slate-600 shadow-xs sm:right-auto sm:px-3 sm:py-2 sm:text-[12px]"
     >
       <div className="mb-[5px] hidden font-semibold text-slate-900 sm:block">Treffer</div>
       <div className="flex flex-wrap items-center gap-x-[9px] gap-y-1 sm:gap-x-3 sm:gap-y-1.5">

@@ -407,7 +407,7 @@ export class MapEngine {
       if (!this.inView(b)) continue;
       const [sx, sy] = this.toScreen(L.lp[2 * i], L.lp[2 * i + 1]);
       const strong = covSet.has(i);
-      ctx.font = (strong ? "600 12px " : "500 11px ") + fam;
+      ctx.font = (strong ? "600 12px " : "500 12px ") + fam;
       const label = L.name[i];
       const tw = ctx.measureText(label).width;
       if (!strong && (b[2] - b[0]) * this.view!.k < tw * 0.9) continue;
