@@ -1,7 +1,7 @@
 // Stage 1: find links to the council information system (RIS) on each official municipal website.
 // Reads only public pages, follows normal links, identifies itself and never retries a refused request.
 import fs from 'node:fs';
-import {loadAreas} from './areas.mjs';
+import {loadAreas,skipReason} from './areas.mjs';
 // DIR, LAND and AREAS let the same search run over another list of areas (another state, or the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -10,11 +10,14 @@ const wikidata=JSON.parse(fs.readFileSync(dir+'wikidata.json','utf8'));
 const configured=new Set(['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen',...['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources','de-sources'].flatMap(f=>{try{return JSON.parse(fs.readFileSync('server/integrations/'+f+'.json','utf8')).map(s=>s.id);}catch{return [];}})]);
 const outFile=dir+(process.env.OUT||'candidates.json');
 const done=fs.existsSync(outFile)?JSON.parse(fs.readFileSync(outFile,'utf8')):{};
-const only=process.argv[2]?new Set(process.argv[2].split(',')):null;
-const todo=regions.filter(r=>only?only.has(r.id):!configured.has(r.id)&&!done[r.id]);
+// The areas to search again: a comma-separated list as argument, or a file with one id per line (ONLY_FILE).
+const only=process.env.ONLY_FILE?new Set(fs.readFileSync(process.env.ONLY_FILE,'utf8').split(/\s+/).filter(Boolean)):process.argv[2]?new Set(process.argv[2].split(',')):null;
+const todo=regions.filter(r=>only?only.has(r.id):!configured.has(r.id)&&!done[r.id]&&!skipReason(r));
 
 export const RIS_HREF=/(sessionnet|si00\d\d\.(?:asp|php)|\/info\.(?:asp|php)|\/bi\/|buergerinfo|ratsinfo|allris|sitzung-online\.de|gremien\.info|more-rubin|ratsinfomanagement\.net|sdnetrim|kdz-ws\.net|sessionweb|\/\/session\.|\/\/ris[.-]|\/ris\/|sitzungsdienst|ratsportal|\/oparl|rim\d{4}|gremieninfo|ratsinformation|kreistagsinfo|\/\/rim\.|\/\/sd\.|pv-rat|provox|\/\/politik\.|\/\/rat\.|session\.[a-z0-9-]+\.de|tagesordnung|sitzungskalender)/i;
 const RIS_TEXT=/(ratsinfo|rats- und bürgerinfo|bürgerinfo|buergerinfo|ratsinformation|kreistagsinfo|kreistagsinformation|sitzungskalender|sitzungsdienst|gremieninfo|sitzungstermine|allris|session ?net|ratsportal|rats- und ausschuss|sitzungen)/i;
+// Brochures ("Bürgerinfobroschüre"), magazines, forms, livestreams and budget pages share words with council systems.
+const NOT_RIS_TEXT=/broschüre|magazin|formular|livestream|video|haushalt|newsletter|app\b/i;
 const NAV=/(politik|stadtrat|gemeinderat|kreistag|\brat\b|gremien|rathaus|verwaltung|kommunalpolitik|ortsrecht|sitzung)/i;
 
 async function get(url,timeout=15000){
@@ -35,15 +38,22 @@ function anchors(html,base){
  for(const m of html.matchAll(/<(?:iframe|frame)\b[^>]*src\s*=\s*["']([^"']+)["']/gi)){try{out.push({url:new URL(m[1],base).href,text:'(eingebettet)'});}catch{}}
  return out;
 }
-const skip=/\.(pdf|jpe?g|png|gif|svg|zip|docx?|xlsx?|ics|mp[34])(\?|$)|mailto:|facebook|instagram|youtube|twitter|linkedin|google\.|wikipedia|\/(impressum|datenschutz|kontakt|barrierefrei)/i;
+const skip=/\.(pdf|jpe?g|png|gif|svg|zip|docx?|xlsx?|ics|mp[34])(\?|$)|mailto:|facebook|instagram|youtube|twitter|linkedin|google\.|wikipedia|readspeaker\.com|whatsapp\.com|\/\/wa\.me\/|xing\.com|\/\/t\.me\/|total-lokal\.de|buergerservice-portal\.de|heimat-info\.de|lifesizecloud|oksh\.de|\.social\/@|x\.com\/intent|twitter\.com\/(?:intent|share)|facebook\.com\/(?:share|sharer)|linkedin\.com\/(?:share|uas)|acrobat\.adobe\.com|atlas\.bayern\.de|\/\/epaper\.|apps\.apple\.com|apps\.microsoft\.com|play\.google\.com|www\.sitzungsdienst\.net|\/\/www\.ratsinfomanagement\.net|somacos\.de|cc-egov\.de|\/(impressum|datenschutz|kontakt|barrierefrei)/i;
 async function crawl(region){
- const sites=[...new Set(wikidata.filter(w=>w.kind===region.kind&&w.ags===region.ags&&w.website).map(w=>w.website))];
+ let sites=[...new Set(wikidata.filter(w=>w.kind===region.kind&&w.ags===region.ags&&w.website).map(w=>w.website))];
+ // A municipal association without a website of its own: the website of its member of the same name (an "erfüllende
+ // Gemeinde" carries out the tasks of the others), otherwise those of its first members. The system found there still
+ // has to name the association itself (verify.mjs).
+ if(!sites.length&&Array.isArray(region.members)){
+  const named=region.members.filter(m=>m.name===region.shortName),members=[...named,...region.members.filter(m=>!named.includes(m))];
+  sites=[...new Set(members.flatMap(m=>wikidata.filter(w=>w.kind==='city'&&w.ags===m.ags&&w.website).map(w=>w.website)))].slice(0,3);
+ }
  const found=new Map(),visited=new Set(),log=[];let budget=20;
  const bare=h=>h.replace(/^www\./,'');
- const IN_SITE=/sessionnet|si00[0-9][0-9][.](asp|php)|[/]bi[/]|[/]info[.](asp|php)/i;
+ const IN_SITE=/sessionnet|si00[0-9][0-9][.](asp|php)|[/]bi[/]|[/]info[.](asp|php)|[/]allris[/]|[/](si010|si018|gr010|to010|vo020|kp040)([?]|$)/i;
  // A hit is a link that leaves the municipal site (or is an embedded SessionNet path). Internal pages about the council are explored further.
  const scan=(page,host)=>{const nav=[];for(const a of anchors(page.html,page.url)){if(skip.test(a.url))continue;let u;try{u=new URL(a.url);}catch{continue;}
-   const external=bare(u.hostname)!==host,href=RIS_HREF.test(a.url),text=RIS_TEXT.test(a.text);
+   const external=bare(u.hostname)!==host,href=RIS_HREF.test(a.url),text=RIS_TEXT.test(a.text)&&!NOT_RIS_TEXT.test(a.text);
    if((external&&(href||text))||(!external&&IN_SITE.test(a.url))){const k=a.url.split('#')[0];if(!found.has(k))found.set(k,{url:k,text:a.text,from:page.url,byHref:href,byText:text});}
    else if(!external&&(href||text||NAV.test(a.text)||NAV.test(u.pathname)))nav.push({...a,hot:href||text,from:page.url});}
   return nav;};
@@ -55,7 +65,7 @@ async function crawl(region){
   const host=bare(new URL(home.url).hostname);
   // Best-first search: pages that look like the council section are opened before general navigation.
   const queue=scan(home,host).map(x=>({...x,depth:1}));
-  while(budget>0&&!found.size&&queue.length){
+  while(budget>0&&![...found.values()].some(c=>c.byHref)&&queue.length){
    queue.sort((x,y)=>score(y)-score(x)||x.depth-y.depth);
    const a=queue.shift(),k=a.url.split('#')[0];if(visited.has(k))continue;visited.add(k);budget--;
    try{const page=await get(k,12000);
@@ -66,7 +76,7 @@ async function crawl(region){
    }catch(e){log.push(k+': '+e.message);}
   }
  }
- return {id:region.id,name:region.name,kind:region.kind,ags:region.ags,sites,candidates:[...found.values()].slice(0,40),pages:visited.size,log:log.slice(0,8)};
+ return {id:region.id,name:region.name,kind:region.kind,ags:region.ags,sites,candidates:[...found.values()].slice(0,40),pages:visited.size,log:log.slice(0,8),searchedAt:Date.now()};
 }
 const score=a=>(a.hot?6:0)+(/ratsinfo|sitzung|gremien|politik/i.test(a.text+a.url)?3:0)+(/stadtrat|gemeinderat|kreistag|\brat\b/i.test(a.text)?2:0)+(/rathaus|verwaltung/i.test(a.text)?1:0);
 const queue=[...todo];let n=0;

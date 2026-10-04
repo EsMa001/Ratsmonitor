@@ -1,0 +1,102 @@
+[
+ {
+  "toNr": 41578,
+  "oSt": 1,
+  "nummer": "1",
+  "ebene": 1,
+  "text": "Eröffnung der Sitzung, Feststellung der Ordnungsmäßigkeit der Einladung und Beschlussfähigkeit",
+  "textLang": "Eröffnung der Sitzung, Feststellung der Ordnungsmäßigkeit der Einladung und Beschlussfähigkeit",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "beschluss": "bestätigt",
+  "sort": 10
+ },
+ {
+  "toNr": 41580,
+  "oSt": 1,
+  "nummer": "3",
+  "ebene": 1,
+  "text": "Genehmigung von Niederschriften",
+  "textLang": "Genehmigung von Niederschriften",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "sort": 30
+ },
+ {
+  "toNr": 41603,
+  "oSt": 1,
+  "nummer": "3.1",
+  "ebene": 2,
+  "text": "Genehmigung der Niederschrift der 36. Sitzung des Hauptausschusses vom 22.07.2026",
+  "textLang": "Genehmigung der Niederschrift der 36. Sitzung des Hauptausschusses vom 22.07.2026",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "beschluss": "bestätigt",
+  "sort": 40
+ },
+ {
+  "toNr": 41581,
+  "oSt": 1,
+  "nummer": "4",
+  "ebene": 1,
+  "text": "Beratungsgegenstände in öffentlicher Sitzung",
+  "textLang": "Beratungsgegenstände in öffentlicher Sitzung",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "sort": 60
+ },
+ {
+  "toNr": 41582,
+  "oSt": 1,
+  "nummer": "4.1",
+  "ebene": 2,
+  "text": "Beratung von Beschlussvorlagen zur 19. Ratssitzung am 10.09.2026",
+  "textLang": "Beratung von Beschlussvorlagen zur 19. Ratssitzung am 10.09.2026",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "sort": 70
+ },
+ {
+  "toNr": 41595,
+  "oSt": 1,
+  "nummer": "4.1.1",
+  "ebene": 3,
+  "text": "Neufassung der Vergabeordnung der Stadt Sangerhausen für die Vergabe öffentlicher Aufträge",
+  "textLang": "Neufassung der Vergabeordnung der Stadt Sangerhausen für die Vergabe öffentlicher Aufträge",
+  "voNr": 4220,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "beschluss": "Abstimmung Ausschuss",
+  "sort": 80
+ },
+ {
+  "toNr": 41596,
+  "oSt": 1,
+  "nummer": "4.1.2",
+  "ebene": 3,
+  "text": "3. Änderung der Hauptsatzung",
+  "textLang": "3. Änderung der Hauptsatzung",
+  "voNr": 4221,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "beschluss": "Abstimmung Ausschuss",
+  "sort": 90
+ },
+ {
+  "toNr": 41585,
+  "oSt": 1,
+  "nummer": "4.4",
+  "ebene": 2,
+  "text": "Wiedervorlage",
+  "textLang": "Wiedervorlage",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "sort": 160
+ }
+]

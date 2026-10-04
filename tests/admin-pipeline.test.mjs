@@ -294,6 +294,22 @@ test('one request runs several lanes; pause holds further areas until resume; an
  assert.equal(job.scope,'sources');assert.equal(job.items.length,selectedRegions('sources').length);assert.equal(job.counts.unavailable,undefined);assert.equal(job.window,'1w');
  assert.ok(JSON.stringify(stored(sql)).length<400*job.items.length,'the stored job stays small');sql.close();
 });
+test('a new job replaces an open one only when asked to, and never while imports of it still run',async()=>{
+ const {sql,db}=fixture(),{single}=parallelAreas(),put=job=>db.prepare("UPDATE system_state SET value=? WHERE key='admin-pipeline-job'").bind(JSON.stringify(job)).run();
+ const old=await pipelineAction(db,{action:'create',stage:'metadata',regions:single.slice(0,3),window:'12m'},()=>{});
+ const germany={action:'create',stage:'metadata',regions:'sources',window:'1w'};
+ await assert.rejects(pipelineAction(db,germany,()=>{}),/fortsetzen oder beenden/);
+ // An import of the open job is still running (another tab): it is waited for.
+ Object.assign(old.items[0],{status:'running',startedAt:new Date().toISOString()});old.status='running';await put(old);
+ await assert.rejects(pipelineAction(db,{...germany,replace:true},()=>{}),/laufenden Abrufe/);
+ assert.equal(stored(sql).id,old.id);
+ // An interrupted one (silent for more than five minutes) does not hold the replacement back.
+ old.items[0].startedAt=new Date(Date.now()-6*60000).toISOString();await put(old);
+ const next=await pipelineAction(db,{...germany,replace:true},()=>{});
+ assert.notEqual(next.id,old.id);assert.equal(next.scope,'sources');assert.equal(next.window,'1w');assert.equal(stored(sql).id,next.id);
+ await assert.rejects(pipelineAction(db,{action:'step',id:old.id},()=>{throw Error('the old job is gone');}),/inzwischen geändert/);
+ sql.close();
+});
 test('the page follows a job through parallel requests: its merged answers equal the stored job',async()=>{
  const {sql,db}=fixture(),{shared,single}=parallelAreas();
  const number=text=>[...text].reduce((n,c)=>(n*31+c.charCodeAt(0))%9973,7);

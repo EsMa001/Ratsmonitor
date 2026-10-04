@@ -23,7 +23,7 @@ test('Niedersachsen: 403 administrative units and 37 districts with unique keys,
  assert.equal(catalog.find(r=>r.ags==='03241').name,'Region Hannover');assert.equal(catalog.find(r=>r.ags==='03241001').district,'nds-03241');
  /* Jede Gemeinde gehört zu höchstens einem Gebiet */
  const members=cities.flatMap(r=>r.members?r.members.map(m=>m.ags):[r.ags]);assert.equal(new Set(members).size,members.length);
- assert.deepEqual(LANDS.map(l=>l.id),['05','03']);assert.equal(new Set(CATALOG.map(r=>r.id)).size,CATALOG.length);
+ assert.deepEqual(LANDS.slice(0,2).map(l=>l.id),['05','03']);assert.equal(new Set(CATALOG.map(r=>r.id)).size,CATALOG.length);
 });
 test('OParl bodies of Samtgemeinden and Einheitsgemeinden are matched by their regional key',()=>{
  const sg=catalog.find(r=>r.id==='nds-033585401'),town=catalog.find(r=>r.id==='nds-03101000');

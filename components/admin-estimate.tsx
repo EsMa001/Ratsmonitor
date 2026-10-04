@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useState,type ReactNode} from 'react';
+import {landName} from '@/shared/lands.mjs';
 type Range={perYear:number;lowPerYear:number;highPerYear:number};
 type Model={n:number;measured:boolean;slope:number;typical:number;smear:number;shrink:number;scatter:number;states:Record<string,{n:number;raw:number;factor:number}>};
 type Level=Range&{id:string;name:string;samples:number;model:Model|null;assumed:boolean};
@@ -17,7 +18,7 @@ type Kind={documents:number;pages:number;tokens:number;bytes:number};
 type Size={measuredAt:string;tokenizer:string|null;charsPerToken:number;charsPerTokenOther:number|null;perArea:number;areas:number;reports:number;documents:{tried:number;failed:number;read:number;large:number;largeBytes:number;notPdf:number;scans:number;pages:number;scanPages:number;bytes:number;tokens:number;perDocument:{pages:Stat;tokens:Stat;bytes:Stat};bins:(Kind&{id:string;label:string})[];types:Record<string,Kind>}};
 type Season={weeks:number[];weekdays:number[];monthly:number[];strongWeek:number;quietWeeks:number;peakWeekday:number;followUpShare:number;consultationsPerReport:number;peakDay:number;followUpsPerYear:number};
 type Validation={n:number;medianError:number|null;bias:number|null;within50:number|null;states:{level:string;state:string;name:string;examples:number;actual:number;predicted:number;error:number}[]};
-type Estimate={asOf:string;from:string;to:string;frame:{source:string;populationYear:string;municipalities:number;population:number;districts:number;associations:number;memberMunicipalities:number;boroughs:number;units:Record<string,number>};
+type Estimate={asOf:string;from:string;to:string;catalogStates?:string[];frame:{source:string;populationYear:string;municipalities:number;population:number;districts:number;associations:number;memberMunicipalities:number;boroughs:number;units:Record<string,number>};
  sample:{builtAt:string;from:string;to:string;design:string;units:number;connected:number;counted:number;storedWithData:number;strata:Stratum[]};examples:Example[];excluded:Example[];provisional:Provisional[];
  classes:SizeClass[];states:FederalState[];levels:Level[];validation:Validation;sampleCount:number;basis:{own:number;typical:number;borrowed:number};total:Range&{perDay:number;lowPerDay:number;highPerDay:number;perWorkday:number};
  capture:Capture;documents:{share:number;byClass:Record<string,number>;linksPerReport:number|null};volume:Volume|null;size:Size|null;season:Season;
@@ -30,6 +31,8 @@ const bytes=(v:number)=>v>=1e12?n(v/1e12,1)+' TB':v>=1e9?n(v/1e9,v>=1e10?0:1)+' 
 const pct=(v:number|null|undefined,digits=0)=>v===null||v===undefined?'–':n(100*v,digits)+' %';
 const signed=(v:number)=>(v>0?'+':v<0?'−':'±')+n(Math.abs(100*v))+' %';
 const day=(s:string)=>s.split('-').reverse().join('.');
+// The states in which the source search ran: there the catalog says which areas are readable, not the sample.
+const catalogLands=(ids:string[]=['05','03'])=>ids.length>=14&&!ids.includes('11')&&!ids.includes('02')?'allen Ländern außer Berlin und Hamburg':ids.map(landName).join(', ').replace(/, ([^,]*)$/,' und $1');
 const short=(name:string)=>name.replace(/^(Stadt|Gemeinde|Kreis|Landkreis) /,'');
 const BASIS={measured:'aus Beispielen gerechnet',thin:'dünn belegt: wenige Beispiele',model:'kein eigenes Beispiel: Modell verlängert',assumed:'angenommen: Kurve der Gemeinden',none:'kein Beispiel'};
 type DataKind='counted'|'model'|'assumed';
@@ -148,7 +151,7 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
   <p className="admin-note">Zusammen {n(d.frame.municipalities)} Gemeinden mit {n(d.frame.population/1e6,1)} Mio. Einwohnern. {d.frame.source}; Stand {d.frame.populationYear}.</p>
 
   <h3 className="admin-estimate-step"><span>2</span> Woher die Beispiele stammen<span className="admin-estimate-tags"><Tag kind="counted"/></span></h3>
-  <p>Zwei Quellen liefern gezählte Jahre: der <strong>gespeicherte Bestand in NRW und Niedersachsen</strong> ({n(d.sample.storedWithData)} Gebiete mit Berichten, davon {n(stored)} mit vollständigem Jahr) und eine <strong>Zufallsstichprobe aus ganz Deutschland</strong>. Für die Stichprobe wurden {n(d.sample.units)} Einheiten ausgelost, für jede die offizielle Website nach dem Ratsinformationssystem durchsucht und, wo es lesbar war, zwölf Monate abgerufen und gezählt – ohne etwas in die Datenbank zu schreiben. So entstanden {n(d.examples.length-stored)} weitere Beispiele aus {n(sampleStates.length)} Bundesländern ({sampleStates.map(s=>stateName(d.states,s)).join(', ')}); gezählt am {day(d.sample.to)}.</p>
+  <p>Zwei Quellen liefern gezählte Jahre: der <strong>gespeicherte Bestand</strong> ({n(d.sample.storedWithData)} Gebiete mit Berichten, davon {n(stored)} mit vollständigem Jahr) und eine <strong>Zufallsstichprobe aus ganz Deutschland</strong>. Für die Stichprobe wurden {n(d.sample.units)} Einheiten ausgelost, für jede die offizielle Website nach dem Ratsinformationssystem durchsucht und, wo es lesbar war, zwölf Monate abgerufen und gezählt – ohne etwas in die Datenbank zu schreiben. So entstanden {n(d.examples.length-stored)} weitere Beispiele aus {n(sampleStates.length)} Bundesländern ({sampleStates.map(s=>stateName(d.states,s)).join(', ')}); gezählt am {day(d.sample.to)}.</p>
   {partialStored.length>0&&<p role="status" className="admin-notice"><strong>{n(d.sample.storedWithData-stored)} gespeicherte Gebiete haben Berichte, aber kein vollständiges Jahr</strong> und zählen deshalb nicht als Beispiel – fast immer, weil sie mit einem kürzeren Zeitraum (1 Woche, 1 Monat, 3 Monate) abgerufen wurden. Die Seite rechnet bei jedem Laden neu: Sobald ein Gebiet mit „12 Monate“ abgerufen ist, wird es zum Beispiel. In den Diagrammen in Schritt 3 stehen diese Gebiete als hohle Punkte. <a className="admin-estimate-action" href={'/admin?auswahl='+partialStored.map(e=>e.id).join(',')}>Diese {n(partialStored.length)} Gebiete auf Seite 1 für einen 12-Monats-Abruf auswählen →</a></p>}
   <p className="admin-note">{d.sample.design} Ausgelost wurde nach einer festen Zufallsreihenfolge, damit auch Einheiten ohne lesbares System im Ergebnis stehen: Sie zeigen, wie viel des Aufkommens erfassbar ist (Schritt 6).</p>
   <div className="admin-estimate-table"><table>
@@ -189,7 +192,7 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
    </tr>;})}</tbody>
   </table></div>
   <div className="admin-estimate-charts">{d.levels.map(l=><Scatter key={l.id} level={l} examples={d.examples} provisional={d.provisional}/>)}</div>
-  <p className="admin-note"><span className="admin-estimate-key is-stored"/> gezählt: gespeicherter Bestand NRW und Niedersachsen <span className="admin-estimate-key is-sample"/> gezählt: Stichprobe <span className="admin-estimate-key is-open"/> Teilbestand, aufs Jahr hochgerechnet (nicht in der Rechnung) <span className="admin-estimate-key is-line"/> gerechnet: Modell für ein Land mit typischem Niveau. Beide Achsen sind logarithmisch: Jeder Teilstrich ist das Zehnfache des vorigen.</p>
+  <p className="admin-note"><span className="admin-estimate-key is-stored"/> gezählt: gespeicherter Bestand <span className="admin-estimate-key is-sample"/> gezählt: Stichprobe <span className="admin-estimate-key is-open"/> Teilbestand, aufs Jahr hochgerechnet (nicht in der Rechnung) <span className="admin-estimate-key is-line"/> gerechnet: Modell für ein Land mit typischem Niveau. Beide Achsen sind logarithmisch: Jeder Teilstrich ist das Zehnfache des vorigen.</p>
   {measuredStates.length>0&&<div className="admin-estimate-table"><table>
    <thead><tr><th scope="col">Niveau je Bundesland</th>{d.levels.filter(l=>l.model).map(l=><th scope="col" key={l.id}>{l.name}</th>)}</tr></thead>
    <tbody>{measuredStates.map(s=><tr key={s.id}><th scope="row">{s.name}</th>{d.levels.filter(l=>l.model).map(l=>{const f=s.factors[l.id],raw=l.model?.states[s.id]?.raw;return <td key={l.id}>{f?<>{signed(f.factor-1)}<small>{n(f.examples)} {f.examples===1?'Beispiel':'Beispiele'}{raw&&Math.abs(raw-f.factor)>.02?` · ungedämpft ${signed(raw-1)}`:''}</small></>:(l.id==='municipality'?s.municipalities:l.id==='district'?s.districts:l.id==='association'?s.associations:s.boroughs)?<Tag kind="assumed">angenommen: typisches Niveau</Tag>:'–'}</td>;})}</tr>)}</tbody>
@@ -227,15 +230,15 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
   </table></div></>}</>}
 
   <h3 className="admin-estimate-step"><span>6</span> Wie viel davon heute lesbar ist<span className="admin-estimate-tags"><Tag kind="counted">Stichprobe gezählt</Tag><Tag kind="model">Anteil gerechnet</Tag></span></h3>
-  <p>Die Hochrechnung beschreibt das gesamte Aufkommen. Erfassen lässt sich nur, was ein Ratsinformationssystem öffentlich und maschinenlesbar anbietet. Die Zufallsstichprobe zeigt, wie oft das der Fall ist; für NRW und Niedersachsen ist der Stand jeder einzelnen Anbindung bekannt; dort zählt die Stichprobe nicht. Die Anteile sind nach erwarteten Berichten gewichtet – eine Großstadt zählt mehr als ein Dorf.</p>
+  <p>Die Hochrechnung beschreibt das gesamte Aufkommen. Erfassen lässt sich nur, was ein Ratsinformationssystem öffentlich und maschinenlesbar anbietet. Die Zufallsstichprobe zeigt, wie oft das der Fall ist; in {catalogLands(d.catalogStates)} ist der Stand jeder einzelnen Anbindung aus der Quellensuche bekannt; dort zählt die Stichprobe nicht. Die Anteile sind nach erwarteten Berichten gewichtet – eine Großstadt zählt mehr als ein Dorf.</p>
   <div className="admin-estimate-table"><table>
-   <thead><tr><th scope="col">Klasse</th><th scope="col">Stichprobe</th><th scope="col">lesbar</th><th scope="col">System erkannt, nicht lesbar</th><th scope="col">kein System gefunden</th><th scope="col">NRW/Nds. angebunden</th><th scope="col">Lesbare Berichte pro Tag</th><th scope="col">von</th></tr></thead>
+   <thead><tr><th scope="col">Klasse</th><th scope="col">Stichprobe</th><th scope="col">lesbar</th><th scope="col">System erkannt, nicht lesbar</th><th scope="col">kein System gefunden</th><th scope="col">Katalog angebunden</th><th scope="col">Lesbare Berichte pro Tag</th><th scope="col">von</th></tr></thead>
    <tbody>{d.capture.classes.map(c=><tr key={c.id}><th scope="row">{c.name}</th><td>{n(c.units)}</td>
     <td>{c.units?<>{n(c.counts.connected)}<small>{pct(c.connected)} der Berichte</small></>:'–'}</td><td>{c.units?<>{n(c.counts.unreadable)}<small>{pct(c.unreadable)} der Berichte</small></>:'–'}</td><td>{c.units?n(c.counts.unknown):'–'}</td>
     <td>{c.known.areas?`${n(c.known.connected)} von ${n(c.known.areas)}`:'–'}</td><td>{round(c.perYear.connected/365)}</td><td>{round(c.perYear.total/365)}</td></tr>)}</tbody>
    <tfoot><tr><th scope="row">Deutschland gesamt</th><td>{n(d.sample.units)}</td><td>{n(d.sample.connected)}</td><td></td><td></td><td></td><td>{round(d.capture.total.connected/365)}</td><td>{round(d.capture.total.total/365)}</td></tr></tfoot>
   </table></div>
-  <p className="admin-note">Lesbar: {pct(d.capture.total.connectedShare)} des Aufkommens. System erkannt, aber mit den vorhandenen Bausteinen nicht lesbar (zum Beispiel ALLRIS ohne offene Schnittstelle oder ein Abrufschutz): {pct(d.capture.total.unreadable/d.capture.total.total)}. Nicht angebundene Gebiete in NRW und Niedersachsen: {pct(d.capture.total.knownOpen/d.capture.total.total)}. Kein System gefunden: {pct(d.capture.total.unknown/d.capture.total.total)} – das ist eine Obergrenze, denn die Suche findet nicht jedes System, vor allem bei kleinen Gemeinden ohne bekannte Website.</p>
+  <p className="admin-note">Lesbar: {pct(d.capture.total.connectedShare)} des Aufkommens. System erkannt, aber mit den vorhandenen Bausteinen nicht lesbar (zum Beispiel ALLRIS ohne offene Schnittstelle oder ein Abrufschutz): {pct(d.capture.total.unreadable/d.capture.total.total)}. Nicht angebundene Gebiete in {catalogLands(d.catalogStates)}: {pct(d.capture.total.knownOpen/d.capture.total.total)}. Kein System gefunden: {pct(d.capture.total.unknown/d.capture.total.total)} – das ist eine Obergrenze, denn die Suche findet nicht jedes System, vor allem bei kleinen Gemeinden ohne bekannte Website.</p>
 
   {v&&size&&docs&&<>
   <h3 className="admin-estimate-step"><span>7</span> Umfang der Dokumente<span className="admin-estimate-tags"><Tag kind="counted">gemessen</Tag></span></h3>
@@ -321,7 +324,7 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
    <li>Bezirke von Berlin und Hamburg: {d.levels.find(l=>l.id==='borough')?.model?'eigene Beispiele vorhanden.':'kein Bezirk war lesbar (ALLRIS ohne offene Schnittstelle bzw. Abrufschutz); ihre Berichte sind mit der Kurve der Gemeinden angenommen.'}</li>
    <li>Nicht enthalten: Landtage, Zweckverbände, Regionalverbände, Ortsbeiräte ohne eigenes System und alles Nichtöffentliche.</li>
    {municipal&&<li>Kleinstgemeinden außerhalb von Verbänden liegen am Rand des gemessenen Bereichs: Die Kurve wird dort über die kleinsten Beispiele hinaus verlängert.</li>}
-   <li>Stand der Zählung: Bestand NRW und Niedersachsen vom {new Date(d.asOf).toLocaleDateString('de-DE')}, Stichprobe vom {day(d.sample.builtAt)}. Die Beispiele aus dem Bestand ändern sich mit jedem Abruf; die Stichprobe und die Dokumentenmessung werden mit den Skripten unter <code>scripts/estimate/</code> erneuert.</li>
+   <li>Stand der Zählung: gespeicherter Bestand vom {new Date(d.asOf).toLocaleDateString('de-DE')}, Stichprobe vom {day(d.sample.builtAt)}. Die Beispiele aus dem Bestand ändern sich mit jedem Abruf; die Stichprobe und die Dokumentenmessung werden mit den Skripten unter <code>scripts/estimate/</code> erneuert.</li>
   </ul>
   <p className="admin-note">Erkannte Systeme der lesbaren Stichprobe: {Object.entries(d.examples.filter(e=>e.origin==='sample'&&e.method).reduce<Record<string,number>>((sum,e)=>({...sum,[SYSTEMS[e.method!]||e.method!]:(sum[SYSTEMS[e.method!]||e.method!]||0)+1}),{})).map(([name,count])=>`${name} ${n(count)}`).join(' · ')}.</p>
  </section>;

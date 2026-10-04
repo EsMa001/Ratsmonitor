@@ -8,6 +8,14 @@ export function compactOparl(record,kind){
  }
  return {kind,fields:data};
 }
+/**
+ * Bodies whose decision is final for their area: the council of a municipality, of a municipal association or of a
+ * district, named as in the states (Bavaria: Marktgemeinderat, Gemeinschaftsversammlung; Hessen, Schleswig-Holstein,
+ * Brandenburg, Mecklenburg-Vorpommern: Gemeinde- or Stadtvertretung; Rhineland-Palatinate: Verbands- and
+ * Ortsgemeinderat; Lower Saxony: Samtgemeinderat; Ämter: Amtsausschuss; administrative unions: Verbandsversammlung).
+ * The decision of any other committee is a recommendation.
+ */
+export const DECIDING_BODY=/^(?:Rat|Gemeinderat|Marktgemeinderat|Stadtrat|Stadtverordnetenversammlung|Gemeindevertretung|Stadtvertretung|Verbandsgemeinderat|Samtgemeinderat|Ortsgemeinderat|Gemeinschaftsversammlung|Amtsausschuss|Verbandsversammlung|Kreistag)(?:\s|$)/i;
 export function sourceDecision(event){return {kind:{approved:'decision',rejected:'decision',recommended:'recommendation',info:'information',postponed:'postponed'}[event.status]||'unknown',text:event.result||'',date:event.date,sourceUrl:event.url,implementationStatus:'unknown'};}
 export async function publicParticipants(meeting,resolve,fetchedAt){
  if(!Array.isArray(meeting.participant))return {status:'not_collected',sourceUrl:meeting.id,fetchedAt,people:[]};

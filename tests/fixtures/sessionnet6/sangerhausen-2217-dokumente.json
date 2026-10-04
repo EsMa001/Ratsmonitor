@@ -1,0 +1,56 @@
+[
+ {
+  "toNr": 41288,
+  "doNr": 54940,
+  "name": "OB-Bericht",
+  "ref": "/api/v1/dokumente/54940/datei",
+  "sort": 0,
+  "freigabeDatum": "2026-09-10",
+  "artNr": 0
+ },
+ {
+  "toNr": 41322,
+  "doNr": 54135,
+  "name": "Beschlussvorlage",
+  "ref": "/api/v1/dokumente/54135/datei",
+  "sort": 0,
+  "freigabeDatum": "2026-09-15",
+  "artNr": 0
+ },
+ {
+  "toNr": 41322,
+  "doNr": 54137,
+  "name": "Synopse zur Neufassung der Vergabeordnung 09-26",
+  "ref": "/api/v1/dokumente/54137/datei",
+  "sort": 0,
+  "freigabeDatum": "2026-09-15",
+  "artNr": 0
+ },
+ {
+  "toNr": 41322,
+  "doNr": 54966,
+  "name": "Beschluss",
+  "ref": "/api/v1/dokumente/54966/datei",
+  "sort": 0,
+  "freigabeDatum": "2026-09-11",
+  "artNr": 0
+ },
+ {
+  "toNr": 41323,
+  "doNr": 54152,
+  "name": "Beschlussvorlage",
+  "ref": "/api/v1/dokumente/54152/datei",
+  "sort": 0,
+  "freigabeDatum": "2026-09-22",
+  "artNr": 0
+ },
+ {
+  "toNr": 41305,
+  "doNr": 53923,
+  "name": "Informationsvorlage",
+  "ref": "/api/v1/dokumente/53923/datei",
+  "sort": 0,
+  "freigabeDatum": "2026-08-20",
+  "artNr": 0
+ }
+]

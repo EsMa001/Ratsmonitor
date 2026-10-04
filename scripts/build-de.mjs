@@ -97,8 +97,8 @@ for(const land of LANDS){
  const kreise=new Set();
  for(const [ags,features] of byKey(krs,p=>p.ags)){
   const p=features[0].properties;if(/^(Kreisfreie Stadt|Stadtkreis)$/.test(p.bez))continue;
-  /* Der Regionalverband Saarbrücken trägt seine Art schon im Namen. */
-  kreise.add(ags);districts.push([ags,typeOf(/^Regionalverband /.test(p.gen)?'':p.bez),p.gen]);shapes.push({id:'de-'+ags,ags,kind:'district',...shape(features)});
+  /* Der Regionalverband Saarbrücken und Kreise wie der Burgenlandkreis tragen ihre Art schon im Namen. */
+  kreise.add(ags);districts.push([ags,typeOf(/^Regionalverband |kreis/i.test(p.gen)?'':p.bez),p.gen]);shapes.push({id:'de-'+ags,ags,kind:'district',...shape(features)});
   people['de-'+ags]=municipalities.filter(g=>g.properties.ags.startsWith(ags)).reduce((n,g)=>n+(pop.get(g.properties.ags)||0),0);
  }
  const single=(m,features)=>{areas.push([m.ags,typeOf(m.bez),m.gen]);shapes.push({id:'de-'+m.ags,ags:m.ags,kind:'city',...shape(features)});people['de-'+m.ags]=count(m.ags);};

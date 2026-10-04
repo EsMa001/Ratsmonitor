@@ -73,13 +73,18 @@ test('the overview reads the stored reports once; its figures per area equal the
  // Statements that read into the stored reports, beyond the indexed columns.
  const asked=[],watched={prepare(sql){asked.push(sql);return db.prepare(sql);},batch:statements=>db.batch(statements)},scans=()=>asked.filter(q=>/FROM topics WHERE/.test(q)&&q.includes("'$.classification.primary'")).length;
  const full=await loadAdminData(watched,{now:at});assert.equal(scans(),2,'one scan for all figures, one for the review list');
- asked.length=0;const light=await loadAdminData(watched,{now:at,review:false});assert.equal(scans(),1);assert.ok(!asked.some(q=>q.includes('LIMIT 25')));
+ // Unchanged reports are not read a second time (revision-cache.mjs).
+ asked.length=0;const light=await loadAdminData(watched,{now:at,review:false});assert.equal(scans(),0);assert.ok(!asked.some(q=>q.includes('LIMIT 25')));
  assert.deepEqual(light.review,{issue:'labels',total:2,articles:[]});assert.deepEqual({...light,review:0},{...full,review:0});
  assert.equal(full.review.total,2);assert.deepEqual(full.review.articles.map(a=>a.id).sort(),['b','d']);
  assert.equal(full.counts.online,4);assert.equal(full.counts.aliases,1);assert.equal(full.counts.unlabelled,2);assert.equal(full.counts.summaryStale,1);assert.equal(full.counts.summaryInsufficient,1);
  assert.deepEqual(full.labels.filter(l=>l.count).map(l=>[l.id,l.count]),[['bildung',1],['bauen',1],['unklar',2]]);
  const status=await processingStatus(db);assert.equal(status.regions.length,2);
  for(const area of status.regions){const shown=full.sources.find(s=>s.id===area.region_id);assert.equal(shown.count,area.total);assert.deepEqual(shown.processing,{...area},area.region_id);assert.equal(shown.pendingAnalysis,area.total-area.rules);}
+ // A changed report is read again, and so is the next hour: "updated in the last seven days" moves with the clock.
+ asked.length=0;insert('e');const changed=await loadAdminData(watched,{now:at,review:false});assert.equal(scans(),1);assert.equal(changed.counts.online,5);
+ asked.length=0;await loadAdminData(watched,{now:new Date('2026-09-27T13:00:00Z'),review:false});assert.equal(scans(),1);
+ asked.length=0;await loadAdminData(watched,{now:new Date('2026-09-27T13:30:00Z'),review:false});assert.equal(scans(),0);
  const muenster=full.sources.find(s=>s.id==='muenster').processing;assert.equal(muenster.total,3);assert.equal(muenster.stale,1);assert.equal(muenster.insufficient,1);assert.equal(muenster.fetchedAt,'2026-09-27T10:00:00Z');assert.equal(muenster.processedAt,'2026-09-27T11:00:00Z');
  assert.deepEqual(full.sources.find(s=>s.id==='borken').processing,{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,blocked_summary:0,blocked_aiLabel:0,blocked_keywords:0,fetchedAt:null,processedAt:null});
 });

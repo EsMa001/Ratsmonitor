@@ -178,6 +178,18 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03154",
+    "name": "Landkreis Helmstedt",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "cron-ratsinfo",
+    "base": "https://ris.helmstedt.de/",
+    "start": "https://ris.helmstedt.de/index.php?id=30&no_cache=1",
+    "verifiedSource": "https://ris.helmstedt.de/index.php?id=30&no_cache=1",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; cron Ratsinfo für TYPO3 (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "nds-03154013",
     "name": "Stadt Königslutter am Elm",
     "kind": "city",
@@ -201,6 +213,54 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.lehre.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03154019",
+    "name": "Stadt Schöningen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "cron-ratsinfo",
+    "base": "https://ris.schoeningen.de/",
+    "start": "https://ris.schoeningen.de/index.php?id=13&no_cache=1",
+    "verifiedSource": "https://schoeningen.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; cron Ratsinfo für TYPO3 (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "nds-03154028",
+    "name": "Stadt Helmstedt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "cron-ratsinfo",
+    "base": "https://ris.stadt-helmstedt.de/",
+    "start": "https://ris.stadt-helmstedt.de/index.php?id=8&no_cache=1",
+    "verifiedSource": "https://stadt-helmstedt.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; cron Ratsinfo für TYPO3 (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "nds-031545402",
+    "name": "Samtgemeinde Heeseberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "cron-ratsinfo",
+    "base": "https://ris.samtgemeindeheeseberg.de/",
+    "start": "https://ris.samtgemeindeheeseberg.de/index.php?id=13&no_cache=1",
+    "verifiedSource": "https://samtgemeindeheeseberg.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; cron Ratsinfo für TYPO3 (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "nds-031545403",
+    "name": "Samtgemeinde Nord-Elm",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "cron-ratsinfo",
+    "base": "https://ris.samtgemeinde-nord-elm.de/",
+    "start": "https://ris.samtgemeinde-nord-elm.de/index.php?id=349",
+    "verifiedSource": "https://samtgemeinde-nord-elm.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; cron Ratsinfo für TYPO3 (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "nds-03155",
     "name": "Landkreis Northeim",
     "kind": "district",
@@ -221,6 +281,17 @@
     "verifiedSource": "https://www.kalefeld.de/buergerservice/ratsgremien/rat-der-gemeinde-kalefeld/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.kalefeld.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03155007",
+    "name": "Gemeinde Katlenburg-Lindau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.katlenburglindau.de/allris/",
+    "verifiedSource": "https://katlenburglindau.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.katlenburglindau.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-03155011",
@@ -256,6 +327,18 @@
     "apiCheck": "OParl-Adresse des Systems (https://kreistagsinfo.landkreis-peine.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03157002",
+    "name": "Gemeinde Hohenhameln",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://ris.hohenhameln.de/bi/",
+    "calendar": "si010.asp",
+    "verifiedSource": "https://ris.hohenhameln.de/ri/logon.asp",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "nds-03157005",
     "name": "Gemeinde Lengede",
     "kind": "city",
@@ -265,6 +348,28 @@
     "verifiedSource": "https://www.lengede.de/politik-verwaltung/politik/buergerinformationssystem/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.lengede.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03157007",
+    "name": "Gemeinde Vechelde",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.vechelde.de/allris/",
+    "verifiedSource": "https://vechelde.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.vechelde.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03157008",
+    "name": "Gemeinde Wendeburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.wendeburg.de/allris/",
+    "verifiedSource": "https://wendeburg.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.wendeburg.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-03157009",
@@ -313,6 +418,17 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "nds-031585403",
+    "name": "Samtgemeinde Oderwald",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://session.sg-oderwald.de/buergerinfo/",
+    "extension": "php",
+    "verifiedSource": "https://sg-oderwald.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nds-031585406",
     "name": "Samtgemeinde Sickte",
     "kind": "city",
@@ -358,6 +474,17 @@
     "base": "https://sessionnet.owl-it.de/bad_grund/bi/",
     "extension": "asp",
     "verifiedSource": "https://www.gemeinde-bad-grund.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03159003",
+    "name": "Stadt Bad Lauterberg im Harz",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinformationssystem.badlauterberg.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "http://ratsinformationssystem.badlauterberg.de/bi/info.asp",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
@@ -472,6 +599,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03241003",
+    "name": "Stadt Burgdorf",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.burgdorf-ratsinfo.de/bi/",
+    "extension": "php",
+    "verifiedSource": "https://www.burgdorf.de/rathaus-politik/politik/buerger-und-ratsinformationssystem/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03241004",
+    "name": "Stadt Burgwedel",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.burgwedel.de/allris/",
+    "verifiedSource": "https://burgwedel.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.burgwedel.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nds-03241005",
     "name": "Stadt Garbsen",
     "kind": "city",
@@ -583,6 +732,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.wedemark.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03241021",
+    "name": "Stadt Wunstorf",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://wunstorf.gremien.info/",
+    "verifiedSource": "https://www.wunstorf.de/portal/startseite.html",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "nds-03251007",
     "name": "Stadt Bassum",
     "kind": "city",
@@ -627,6 +787,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03251041",
+    "name": "Stadt Syke",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.syke.de/allris/",
+    "verifiedSource": "https://syke.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.syke.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nds-03251044",
     "name": "Gemeinde Wagenfeld",
     "kind": "city",
@@ -636,6 +807,17 @@
     "verifiedSource": "https://www.wagenfeld.de/rathaus-und-politik/politik-und-wahlen/ratsinformationssystem/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.wagenfeld.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03251047",
+    "name": "Gemeinde Weyhe",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.weyhe.de/allris/",
+    "verifiedSource": "https://weyhe.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.weyhe.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-032515404",
@@ -773,6 +955,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03255023",
+    "name": "Stadt Holzminden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.holzminden.de/allris/",
+    "verifiedSource": "https://holzminden.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.holzminden.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nds-03256022",
     "name": "Stadt Nienburg (Weser)",
     "kind": "city",
@@ -793,6 +986,17 @@
     "verifiedSource": "https://www.rehburg-loccum.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.rehburg-loccum.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03256030",
+    "name": "Gemeinde Steyerberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.steyerberg.de/allris/",
+    "verifiedSource": "https://steyerberg.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.steyerberg.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-032565402",
@@ -939,6 +1143,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.sitzungsdienst-bergen.de/integration/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03351006",
+    "name": "Stadt Celle",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.celle.de/buergerinformationssystem/",
+    "verifiedSource": "https://www.celle.de/Stadt/Kommunalpolitik/B%C3%BCrger-und-Ratsinformationssystem/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.celle.de/buergerinformationssystem/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nds-03351026",
     "name": "Gemeinde Südheide",
     "kind": "city",
@@ -984,6 +1199,39 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.landkreis-harburg.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03353005",
+    "name": "Stadt Buchholz in der Nordheide",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.buchholz.de/allris/",
+    "verifiedSource": "https://buchholz.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.buchholz.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03353026",
+    "name": "Gemeinde Neu Wulmstorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.neu-wulmstorf.de/allris/",
+    "verifiedSource": "https://neu-wulmstorf.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.neu-wulmstorf.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03353029",
+    "name": "Gemeinde Rosengarten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.gemeinde-rosengarten.de/allris/",
+    "verifiedSource": "https://gemeinde-rosengarten.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.gemeinde-rosengarten.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nds-03353031",
     "name": "Gemeinde Seevetal",
     "kind": "city",
@@ -1015,6 +1263,17 @@
     "verifiedSource": "https://www.winsen.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.winsen.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-033535402",
+    "name": "Samtgemeinde Hanstedt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.hanstedt.de/allris/",
+    "verifiedSource": "https://hanstedt.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.hanstedt.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-033535405",
@@ -1114,6 +1373,17 @@
     "verifiedSource": "https://www.bleckede.de/home.aspx",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.bleckede.sitzung-online.de/integration/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03355022",
+    "name": "Stadt Lüneburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://buergerinfo.stadt.lueneburg.de/public/",
+    "verifiedSource": "https://www.hansestadt-lueneburg.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://buergerinfo.stadt.lueneburg.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-033555402",
@@ -1226,20 +1496,6 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
-    "id": "nds-033575403",
-    "name": "Samtgemeinde Geestequelle",
-    "kind": "city",
-    "ags": "033575403",
-    "system": "https://www.ratsinfomanagement.net/webservice/oparl/v1.1/system",
-    "method": "oparl",
-    "body": "https://www.ratsinfomanagement.net/webservice/oparl/v1.1/body/1",
-    "note": "Einzige Körperschaft des von der offiziellen Website verlinkten Systems („Stadt Musterstadt“); fest zugeordnet.",
-    "meetingScan": "filter",
-    "state": "system-verified",
-    "verifiedSource": "https://www.sitzungsdienst.net/sdnet-rich-sitzungsapps/",
-    "verifiedAt": "2026-10-04"
-  },
-  {
     "id": "nds-033575405",
     "name": "Samtgemeinde Sittensen",
     "kind": "city",
@@ -1271,6 +1527,18 @@
     "verifiedSource": "https://www.tarmstedt.de/index.php/ratsinformationssystem-474.html",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-033575408",
+    "name": "Samtgemeinde Zeven",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ris.zeven.de/sessionnet/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://ris.zeven.de/sessionnet/bi/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "Websuche"
   },
   {
     "id": "nds-03358",
@@ -1305,6 +1573,22 @@
     "verifiedSource": "https://www.munster.de/home.aspx",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.munster.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03358017",
+    "name": "Gemeinde Neuenkirchen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://egov3.heidekreis.de/somacos-nk/nkbi/",
+    "extension": "asp",
+    "oparlFallback": {
+      "system": "https://egov3.heidekreis.de/oparl/system",
+      "reason": "Körperschaft nicht eindeutig dem ausgewählten Gebiet zugeordnet",
+      "checkedAt": "2026-10-04"
+    },
+    "verifiedSource": "https://egov3.heidekreis.de/somacos-nk/nkbi/si0040.asp",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse https://egov3.heidekreis.de/oparl/system antwortete am 04.10.2026, lieferte aber keine verwertbaren Sitzungen (Körperschaft nicht eindeutig dem ausgewählten Gebiet zugeordnet); deshalb öffentliche Seiten."
   },
   {
     "id": "nds-03358019",
@@ -1351,6 +1635,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.walsrode.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-033585402",
+    "name": "Samtgemeinde Rethem (Aller)",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.rethem.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://rethem.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nds-033585403",
     "name": "Samtgemeinde Schwarmstedt",
     "kind": "city",
@@ -1362,6 +1657,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03359",
+    "name": "Landkreis Stade",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.lkstade.sitzung-online.de/public/",
+    "verifiedSource": "https://www.landkreis-stade.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.lkstade.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nds-03359010",
     "name": "Stadt Buxtehude",
     "kind": "city",
@@ -1371,6 +1677,29 @@
     "verifiedSource": "https://portal.buxtehude.de/dienstleistungen/-/egov-bis-detail/dienstleistung/7984/show",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.buxtehude.de/allris4/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03359013",
+    "name": "Gemeinde Drochtersen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.drochtersen.de/",
+    "api": "https://risapi3.kic-software.de/",
+    "verifiedSource": "https://drochtersen.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
+    "id": "nds-03359028",
+    "name": "Gemeinde Jork",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.jork.de/allris/",
+    "verifiedSource": "https://jork.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.jork.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-033595401",
@@ -1437,6 +1766,25 @@
     "verifiedSource": "https://www.hansestadt-uelzen.de/home.aspx",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://sitzungsdienst.hansestadt-uelzen.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-033605404",
+    "name": "Samtgemeinde Rosche",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://rosche.gremien.info/",
+    "bodies": [
+      "G-OETZEN",
+      "G-RAETZLIN",
+      "G-Rosche",
+      "G-STOETZE",
+      "G-SUHLENDO",
+      "SG-ROSCHE"
+    ],
+    "verifiedSource": "https://www.samtgemeinde-rosche.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
     "id": "nds-033605405",
@@ -1542,6 +1890,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03451002",
+    "name": "Gemeinde Bad Zwischenahn",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.bad-zwischenahn.de/sessionnet/buergerinfo/",
+    "extension": "php",
+    "verifiedSource": "https://www.bad-zwischenahn.de/de/rathaus/politik/ratsinformationssystem.php",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03451004",
+    "name": "Gemeinde Edewecht",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.edewecht.de/",
+    "extension": "asp",
+    "verifiedSource": "https://edewecht.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nds-03451005",
     "name": "Gemeinde Rastede",
     "kind": "city",
@@ -1551,6 +1921,18 @@
     "verifiedSource": "https://www.rastede.de/politik/ratsinformationssystem/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03451007",
+    "name": "Stadt Westerstede",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.westerstede.de/allris/",
+    "calendar": "si010_r.asp",
+    "verifiedSource": "https://westerstede.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
   },
   {
     "id": "nds-03451008",
@@ -1662,6 +2044,17 @@
     "verifiedSource": "https://www.gemeinde-dornum.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nds-03453",
+    "name": "Landkreis Cloppenburg",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://buergerinfo.lkclp.de/",
+    "extension": "asp",
+    "verifiedSource": "https://lkclp.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "nds-03453001",
@@ -1988,6 +2381,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03455027",
+    "name": "Gemeinde Zetel",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.zetel.de/sessionnet/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://zetel.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nds-03456",
     "name": "Landkreis Grafschaft Bentheim",
     "kind": "district",
@@ -2077,6 +2481,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.borkum.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03457012",
+    "name": "Gemeinde Jemgum",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.jemgum.de/",
+    "extension": "asp",
+    "verifiedSource": "https://www.jemgum.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nds-03457013",
     "name": "Stadt Leer (Ostfriesland)",
     "kind": "city",
@@ -2118,6 +2533,28 @@
     "base": "https://ratsinfo.gemeinde-bunde.de/bi/",
     "extension": "asp",
     "verifiedSource": "https://www.gemeinde-bunde.de/politik/buerger-und-ratsinformationssystem",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-034575402",
+    "name": "Samtgemeinde Hesel",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsportal.hesel.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://hesel.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-034575403",
+    "name": "Samtgemeinde Jümme",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.juemme.de/",
+    "extension": "asp",
+    "verifiedSource": "https://juemme.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
@@ -2173,6 +2610,17 @@
     "base": "https://badlaer.ris.itebo.de/bi/",
     "extension": "asp",
     "verifiedSource": "https://www.bad-laer.de/leben.html",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03459006",
+    "name": "Gemeinde Bad Rothenfelde",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://rothenfelde.ris.itebo.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://rothenfelde.ris.itebo.de/bi/si0040.asp",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
@@ -2318,6 +2766,17 @@
     "base": "https://ratsinfo.damme.de/bi/",
     "extension": "asp",
     "verifiedSource": "https://www.damme.de/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03460003",
+    "name": "Stadt Dinklage",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.dinklage.de/",
+    "extension": "asp",
+    "verifiedSource": "https://dinklage.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
@@ -2479,6 +2938,17 @@
     "base": "https://buergerinfo.stadland.de/",
     "extension": "asp",
     "verifiedSource": "https://www.stadland.de/gemeinde-rathaus/politik/buergerinfoportal/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03462",
+    "name": "Landkreis Wittmund",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://buergerinfo.landkreis-wittmund.de/",
+    "extension": "asp",
+    "verifiedSource": "https://www.landkreis-wittmund.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },

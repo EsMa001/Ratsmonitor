@@ -42,7 +42,7 @@ function site(meetings){
  state.get=async url=>{
   const u=new URL(url),file=u.pathname.split('/').pop(),id=Number(u.searchParams.get('__ksinr')||u.searchParams.get('__kvonr'));state.log.push(file);
   const failure=state.fail?.(file,id);if(failure)throw Error(failure);
-  if(file==='si0040.asp'){const month=u.searchParams.get('__cjahr')+'-'+String(u.searchParams.get('__cmonat')).padStart(2,'0');return '<html>SessionNet '+state.meetings.filter(m=>m.date.startsWith(month)).map(m=>`<a href="si0057.asp?__ksinr=${m.id}" title="Details anzeigen: ${m.committee} ${german(m.date)}">Sitzung</a>`).join('')+'</html>';}
+  if(file==='si0040.asp'){const month=u.searchParams.get('__cjahr')+'-'+String(u.searchParams.get('__cmonat')).padStart(2,'0');return '<html><meta name="sessionnet" content="V:050500"/>SessionNet '+state.meetings.filter(m=>m.date.startsWith(month)).map(m=>`<a href="si0057.asp?__ksinr=${m.id}" title="Details anzeigen: ${m.committee} ${german(m.date)}">Sitzung</a>`).join('')+'</html>';}
   if(file==='si0057.asp'){const m=state.meetings.find(x=>x.id===id);return `<table><tr><td class="tofnum">Ö 1</td><td class="tobetr"><div class="smc-card-header-title">Thema ${m.id}</div><a href="vo0050.asp?__kvonr=${m.paper}">V/${m.paper}</a>${m.result?' Beschluss: '+m.result:''}</td></tr></table><a href="to0045.asp?__ksinr=${m.id}">Anwesenheit</a>`;}
   if(file==='vo0050.asp')return `<table><tr><td>Vorlage</td><td>V/${id}</td></tr></table><a href="getfile.asp?id=${id}">Vorlage</a>`;
   if(file==='to0045.asp')return '<table id="smc_page_to0045_contenttable1"><tr><td>Anna Beispiel</td><td></td><td>Mitglied</td></tr></table>';

@@ -7,6 +7,7 @@ import {estimateVolume,SIZE_RULES} from '../../shared/estimate-size.mjs';
 import {rangeStart} from '../../shared/timeline.mjs';
 import {adminTimeline} from './admin-timeline.mjs';
 import {canImport} from './pipeline-jobs.mjs';
+import {atRevision} from './revision-cache.mjs';
 // Classes with fewer complete examples of the connected states than this get suggestions for a twelve-month import.
 const WANTED_SAMPLES=8;
 // Level in the population frame: Lower Saxon Samtgemeinden are associations, their members belong to them.
@@ -25,7 +26,8 @@ const ratio=(list,a,b)=>{const total=list.reduce((n,x)=>n+(x[b]||0),0);return to
 export async function adminEstimate(db,{now=new Date(),replicates=SAMPLE_RULES.replicates}={}){
  const timeline=await adminTimeline(db,{basis:'event',now}),to=timeline.today,from=rangeStart('12m',to,new Map());
  const coverage=new Map((await db.prepare('SELECT region_id,payload FROM source_coverage').all()).results.map(r=>[r.region_id,readJson(r.payload)]));
- const details=new Map((await db.prepare(DETAILS_SQL).bind(from,to).all()).results.map(r=>[r.area,r]));
+ // This scan reads every report as well; its rows are kept until the reports change (revision-cache.mjs).
+ const details=new Map((await atRevision(db,'estimate|'+from+'|'+to,async()=>(await db.prepare(DETAILS_SQL).bind(from,to).all()).results)).map(r=>[r.area,r]));
  // --- candidates: stored areas of the connected states and the units of the sample ---
  const stored=[];
  for(const region of regions){
@@ -67,7 +69,8 @@ export async function adminEstimate(db,{now=new Date(),replicates=SAMPLE_RULES.r
  const strata=SIZE_CLASSES.map(c=>{const drawn=sample.units.filter(u=>areaClass(u)===c.id),own=examples.filter(a=>areaClass(a)===c.id);return {id:c.id,name:c.name,drawn:drawn.length,connected:drawn.filter(u=>u.outcome==='connected').length,sampleExamples:own.filter(a=>a.origin==='sample').length,storedWithData:stored.filter(a=>areaClass(a)===c.id).length,storedExamples:own.filter(a=>a.origin==='stored').length,candidates:candidates[c.id]};});
  // The draws and the cells stay on the server; the page gets the condensed figures.
  const result={...estimate};delete result.cells;delete result.replicates;
- return {asOf:timeline.asOf,from,to,
+ // catalogStates: where the connection state of every area comes from the catalog instead of the sample.
+ return {asOf:timeline.asOf,from,to,catalogStates:knownStates,
   frame:{source:frame.source,populationYear:frame.populationYear,...frame.totals,units:Object.fromEntries(Object.entries({municipality:'municipalities',district:'districts',association:'associations',borough:'boroughs'}).map(([level,key])=>[level,Object.values(frame[key]).reduce((n,list)=>n+list.length,0)]))},
   sample:{builtAt:sample.builtAt,from:sample.from,to:sample.to,design:sample.design,units:sample.units.length,connected:sample.units.filter(u=>u.outcome==='connected').length,counted:counted.length,storedWithData:stored.length,strata},
   examples:examples.map(brief),excluded:excluded.map(a=>({...brief(a),reason:a.reason})),provisional,

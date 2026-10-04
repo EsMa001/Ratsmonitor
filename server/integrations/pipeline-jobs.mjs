@@ -133,7 +133,12 @@ export async function pipelineAction(db,body,run){
  const since=typeof body.since==='string'&&body.since.length<40?body.since:undefined;
  if(body.action==='create')return locked(db,async()=>{
   const job=await read(db);
-  if(job&&['queued','running'].includes(job.status)&&job.items.some(i=>i.status==='queued'||i.status==='running'))throw new AdminError(409,'Bitte den bestehenden Auftrag fortsetzen oder beenden.');
+  if(job&&['queued','running'].includes(job.status)&&job.items.some(i=>i.status==='queued'||i.status==='running')){
+   // replace: the operator ends the open job with the start of the new one. Imports of it that are still running
+   // (another tab, another request) are waited for; their results would have no job left to report to.
+   if(!body.replace)throw new AdminError(409,'Bitte den bestehenden Auftrag fortsetzen oder beenden.');
+   if(job.items.some(i=>i.status==='running'&&Date.now()-Date.parse(i.startedAt||'')<STALE_MS))throw new AdminError(409,'Der offene Auftrag ruft gerade noch Gebiete ab. Bitte pausieren und warten, bis die laufenden Abrufe gespeichert sind.');
+  }
   if(!['metadata','analysis'].includes(body.stage))throw new AdminError(400,'Ungültige Verarbeitungsstufe.');
   const ids=selectedRegions(body.regions),at=new Date().toISOString(),imports=body.stage==='metadata';
   // The look-back window is fixed when the job is created, so a resumed job keeps the period the operator chose.

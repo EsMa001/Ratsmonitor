@@ -1,0 +1,71 @@
+{
+ "textsanddocsvisible": true,
+ "meetingstate": 0,
+ "meetingname": "7. Sitzung des Planungs- und Verkehrssenates",
+ "meetingnum": "7.",
+ "id": "100898894-105768989",
+ "clientname": "Stadt Aschaffenburg",
+ "name": "Erlass einer Veränderungssperre für das Gebiet \"Südlich Bismarckallee - Mitte\" zwischen Bismarckallee, Gneisenaustraße, Bechtoldstraße, Ludwigsallee, Yorckstraße und Scharnhorststraße (Nr. 3/28) (Vorberatend)",
+ "meetingid": 100898894,
+ "committeeid": 20670,
+ "committeename": "Planungs- und Verkehrssenat",
+ "numbering": "2",
+ "conordertype": "Vorberatend",
+ "restricted": false,
+ "conorderid": 105768987,
+ "conorder_order": 1,
+ "editor": null,
+ "orderinmeeting": 2,
+ "agendaitemtype": "",
+ "meetingdate": "2026-09-22T00:00:00",
+ "numberingsnapshot": "2",
+ "numberingsnapshotorder": 2,
+ "pageno": "",
+ "globalid": "",
+ "inpart": 0,
+ "attendee": 0,
+ "entitledToVote": 0,
+ "consultants": 0,
+ "publizierungsumfang": 0,
+ "nameadditional": "",
+ "bereitstellungsumfang": true,
+ "op": 0,
+ "opdatetime": "2026-09-07T08:54:00",
+ "downloadallowed": true,
+ "unreadop": null,
+ "textblocks": [
+  {
+   "caption": ".Beschlussvorschlag",
+   "content": "PGZvbnQgc2l6ZT0yPg0KPGRpdiBhbGlnbj1qdXN0aWZ5Pjxmb250IHNpemU9Mz5JLiBEZXIgU3RhZHRyYXQgZGVyIFN0YWR0IEFzY2hhZmZlbmJ1cmcgYmVzY2hsaWUmc3psaWc7dCBhdWYgR3J1bmQgJnNlY3Q7",
+   "mmsdataid2": "100898894-105768989-105768995"
+  }
+ ],
+ "documents": [],
+ "conorderitems": [
+  {
+   "agendaitemid": "100898894-105768989",
+   "meetingid": 100898894,
+   "meetingname": "7. Sitzung des Planungs- und Verkehrssenates",
+   "committeeid": 20670,
+   "committeename": "Planungs- und Verkehrssenat",
+   "meetingdate": "2026-09-22T00:00:00",
+   "numbering": "2",
+   "restricted": "ö",
+   "clientname": "Stadt Aschaffenburg",
+   "conordertypename": "Vorberatend"
+  },
+  {
+   "agendaitemid": "100898916-105768971",
+   "meetingid": 100898916,
+   "meetingname": "13. Sitzung des Stadtrates (Plenum)",
+   "committeeid": 14939,
+   "committeename": "Stadtrat (Plenum)",
+   "meetingdate": "2026-10-05T00:00:00",
+   "numbering": "4",
+   "restricted": "ö",
+   "clientname": "Stadt Aschaffenburg",
+   "conordertypename": "Beschließend"
+  }
+ ],
+ "votings": []
+}

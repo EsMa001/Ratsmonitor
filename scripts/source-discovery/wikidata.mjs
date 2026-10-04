@@ -14,8 +14,12 @@ for(const land of lands()){
  OPTIONAL { ?item wdt:P856 ?website }
  SERVICE wikibase:label { bd:serviceParam wikibase:language "de" }
 }`;
- const r=await fetch('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(q),{headers:{'User-Agent':'Ratsmonitor-SourceCatalog/1.0 (public council information; contact via github.com/EsMa001/Ratsmonitor)',Accept:'application/sparql-results+json'},signal:AbortSignal.timeout(150000)});
- if(!r.ok)throw Error('Wikidata HTTP '+r.status+' (Land '+land+')');
+ // The public query service sometimes answers a large state with a timeout; a second or third attempt usually passes.
+ let r;
+ for(let attempt=1;;attempt++){
+  try{r=await fetch('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(q),{headers:{'User-Agent':'Ratsmonitor-SourceCatalog/1.0 (public council information; contact via github.com/EsMa001/Ratsmonitor)',Accept:'application/sparql-results+json'},signal:AbortSignal.timeout(150000)});if(r.ok)break;throw Error('Wikidata HTTP '+r.status+' (Land '+land+')');}
+  catch(e){if(attempt>=3)throw e;console.log('Land',land,'Versuch',attempt,'fehlgeschlagen:',e.message);await new Promise(done=>setTimeout(done,10000*attempt));}
+ }
  const part=(await r.json()).results.bindings.map(b=>({ags:b.ags.value,kind:b.kind.value,label:b.itemLabel.value,website:b.website?.value||null}));
  rows.push(...part);console.log('Land',land,part.length,'Zeilen');
  await new Promise(done=>setTimeout(done,1500));

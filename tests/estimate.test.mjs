@@ -263,7 +263,7 @@ test('the admin estimate combines stored NRW areas with the measured sample and 
  // Suggestions name connected NRW areas of thinly covered classes, never areas that already are examples.
  const medium=e.sample.strata.find(s=>s.id==='small');assert.ok(medium.candidates.length>0&&medium.candidates.length<=8);assert.ok(!medium.candidates.some(c=>c.id==='billerbeck'));assert.equal(medium.storedExamples,1);
  // Gemeindeverbände: angebundene niedersächsische Samtgemeinden sind Kandidaten; NRW hat keine.
- const associations=e.sample.strata.find(s=>s.id==='association').candidates;assert.ok(associations.length>0&&associations.length<=8);assert.ok(associations.every(c=>c.id.startsWith('nds-')&&/^Samtgemeinde /.test(c.name)));
+ const associations=e.sample.strata.find(s=>s.id==='association').candidates;assert.ok(associations.length>0&&associations.length<=8);assert.ok(associations.every(c=>/^(nds|de)-\d{9}$/.test(c.id)&&/^(Samtgemeinde|Verbandsgemeinde|Amt|Verwaltungsgemeinschaft|Verwaltungsverband|Erfüllende Gemeinde) /.test(c.name)));
  // An empty database still gives the estimate of the sample.
  const empty=await adminEstimate(sqlite().db,{now:new Date('2026-10-02T12:00:00Z'),replicates:10});assert.equal(empty.sample.storedWithData,0);assert.ok(empty.total.perYear>0);
 });
