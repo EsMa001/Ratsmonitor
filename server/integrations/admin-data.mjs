@@ -1,5 +1,6 @@
 import {processingState,stageColumns} from './processing-status.mjs';
 import {lockedUntil} from './import-lock.mjs';
+import {atRevision} from './revision-cache.mjs';
 import {CATALOG as regions} from '../../shared/catalog.mjs';
 import {LABELS} from '../../shared/labels.mjs';
 import {sourceHealth,REVIEW_FILTERS} from '../../shared/admin.mjs';
@@ -34,16 +35,20 @@ const TOTALS=['contentSummaries','insufficient','stale','aiLabels','weightedKeyw
  */
 export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushConfigured=false,review=true}={}){
  const week=new Date(now.getTime()-7*86400000).toISOString();
- const queries=[
+ // The scan of the reports is kept until the reports change (revision-cache.mjs); "updated in the last seven days" moves
+ // with the clock, so a kept result also ends with the hour.
+ const scanned=()=>db.batch([
   db.prepare(`SELECT region_id,count(*) count,coalesce(sum(json_extract(payload,'$.contentAnalysis.status')='completed'),0) contentSummaries,coalesce(sum(json_extract(payload,'$.labelAssessments.ai.primary') IS NOT NULL),0) aiLabels,coalesce(sum(json_extract(payload,'$.weightedKeywords.status')='completed'),0) weightedKeywords,coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) aiSummaries,coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) qualityPassed,coalesce(sum(updated_at>=? AND updated_at<=?),0) updated7d,coalesce(sum(EXISTS(SELECT 1 FROM json_each(json_extract(topics.payload,'$.documents')) d WHERE json_extract(d.value,'$.kind')='application/pdf')),0) pdfArticles,coalesce(sum(json_extract(payload,'$.identity.conflict')=1),0) conflicts,coalesce(sum((${conditions.summaries})),0) textIssues,coalesce(sum(${ANALYSIS_PENDING_SQL}),0) pendingAnalysis,${stageColumns({withRules:false})},${LABELS.map(l=>`coalesce(sum(${label}='${l.id}'),0) AS label_${l.id}`).join(',')} FROM topics WHERE ${canonical} GROUP BY region_id`).bind(week,now.toISOString()),
+  db.prepare(`SELECT status AS id,count(*) count FROM topics WHERE ${canonical} GROUP BY status`)
+ ]);
+ const queries=[
   db.prepare('SELECT region_id,payload FROM source_coverage'),
-  db.prepare(`SELECT status AS id,count(*) count FROM topics WHERE ${canonical} GROUP BY status`),
   db.prepare('SELECT id,started_at,finished_at,status,details FROM import_runs ORDER BY started_at DESC LIMIT 30'),
   db.prepare('SELECT (SELECT count(*) FROM article_versions) versions,(SELECT count(*) FROM article_analyses) analysisVersions,(SELECT count(*) FROM topics) stored,(SELECT count(*) FROM push_subscriptions) pushSubscriptions'),
   db.prepare("SELECT key,value FROM system_state WHERE key='import-lock'"),
   db.prepare("SELECT max(started_at) lastScheduledAt FROM import_runs WHERE json_extract(details,'$.trigger')='scheduled'")
  ];
- const [[scan,coverage,statuses,runRows,extra,lockRows,scheduled],state]=await Promise.all([db.batch(queries),processingState(db)]);
+ const [[scan,statuses],[coverage,runRows,extra,lockRows,scheduled],state]=await Promise.all([atRevision(db,'overview|'+now.toISOString().slice(0,13),scanned),db.batch(queries),processingState(db)]);
  const areas=new Map(scan.results.map(r=>[r.region_id,r])),sum=key=>scan.results.reduce((n,r)=>n+Number(r[key]||0),0),online=sum('count');
  const {stored,...other}=extra.results[0];
  // Merged reports are all stored rows that are not articles of their own.

@@ -1,4 +1,5 @@
 import {TIMELINE_BASES} from '../../shared/timeline.mjs';
+import {atRevision} from './revision-cache.mjs';
 const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
 // The day a report first appeared on an agenda, or the day it was first stored. Reports stored before the
 // import date was recorded carry none; they are returned as undated instead of being guessed.
@@ -12,7 +13,8 @@ const DAY_SQL={
  */
 export async function adminTimeline(db,{basis='event',now=new Date()}={}){
  if(!Object.hasOwn(TIMELINE_BASES,basis))throw Error('Ungültiger Zeitbezug');
- const rows=(await db.prepare(`SELECT region_id AS area,${DAY_SQL[basis]} AS day,count(*) AS count FROM topics WHERE ${canonical} GROUP BY region_id,day ORDER BY day,region_id`).all()).results;
+ // The scan reads every report; its rows are kept until the reports change (revision-cache.mjs).
+ const rows=await atRevision(db,'timeline|'+basis,async()=>(await db.prepare(`SELECT region_id AS area,${DAY_SQL[basis]} AS day,count(*) AS count FROM topics WHERE ${canonical} GROUP BY region_id,day ORDER BY day,region_id`).all()).results);
  const days=[],index=new Map(),areas={},undated={};let total=0;
  for(const row of rows){
   const count=Number(row.count);total+=count;

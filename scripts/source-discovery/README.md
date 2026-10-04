@@ -10,8 +10,11 @@ node scripts/source-discovery/crawl.mjs      # Links zum Ratsinformationssystem 
 node scripts/source-discovery/verify.mjs     # Systemart bestimmen, mit den Abrufprogrammen prüfen (3 Monate)
 node scripts/source-discovery/build.mjs      # Katalogdatei und requirements/statewide-sources-report.md schreiben
 node scripts/source-discovery/servers.mjs    # Adressen der Quellenrechner festhalten (Abrufplaner: höchstens zwei je Server)
+node scripts/source-discovery/robots.mjs     # je Quelle festhalten, ob robots.txt den gelesenen Pfad erlaubt
 node --test tests/*.test.mjs
 ```
+
+`robots.mjs` fragt je Rechner einmal `/robots.txt` (Kennung des Abrufs, höchstens zwei gleichzeitig und höchstens eine Anfrage je Sekunde je Server) und schreibt das Urteil je Quelle nach `server/integrations/source-robots.json`: `erlaubt`, `verboten`, `keine` (keine robots.txt) oder `unklar` (keine Antwort; ein früheres Urteil bleibt dann stehen). `ONLY_NEW=1` fragt nur die Rechner von Quellen ohne Urteil, etwa nach einem `build.mjs`, das Quellen ergänzt hat. Regeln nach RFC 9309 in `server/integrations/robots.mjs`. Das Urteil wird festgehalten, aber noch nirgends angewendet; siehe README des Projekts, „robots.txt“.
 
 Optional vor `build.mjs`: `guess.mjs` probiert für weiterhin offene Gebiete die üblichen Adressen (`ratsinfo.<domain>`, `sessionnet.owl-it.de/<name>/bi/` usw.). Die Treffer werden getrennt geprüft:
 
@@ -19,6 +22,17 @@ Optional vor `build.mjs`: `guess.mjs` probiert für weiterhin offene Gebiete die
 node scripts/source-discovery/guess.mjs
 CANDIDATES=candidates-guessed.json OUT=verified-guessed.json node scripts/source-discovery/verify.mjs <id,id,…>
 ```
+
+Mit `OWN_ONLY=1` fragt `guess.mjs` nur die eigene Domain des Gebiets (für Läufe über viele Gebiete, etwa alle Länder außer NRW): Die geteilten Rechner (owl-it, gremien.info, ratsinfomanagement.net, sitzung-online.de) bekämen sonst Tausende Anfragen, und mehrere von ihnen untersagen Programmen den Abruf per robots.txt. Antwortet ein typischer SessionNet-Rechnername (`ratsinfo.`, `buergerinfo.`, `sessionnet.`, `session.`, `sitzungsdienst.`) ohne System an der Wurzel, wird auch `bi/` dort gefragt.
+
+`oparl-register.mjs` sucht offizielle OParl-Adressen, die ohne Link auf der Website bekannt sind: das Verzeichnis des OParl-Projekts (`endpoints.yml` in github.com/OParl/resources; Zuordnung nur über die amtlichen Schlüssel des Wikidata-Eintrags) und die OParl-Adresse von ekom21-Mandanten (`rim.ekom21.de/<mandant>/webservice/oparl/v1.1/system`), deren Seiten eine Web-Firewall für Programme sperrt. Adressen, deren robots.txt den Abruf untersagt, werden ausgelassen. `verify.mjs` fragt bei diesen Kandidaten nur die Schnittstelle selbst:
+
+```
+node scripts/source-discovery/oparl-register.mjs
+CANDIDATES=candidates-oparl.json OUT=verified-oparl.json node scripts/source-discovery/verify.mjs
+```
+
+`build.mjs` übernimmt `verified-guessed.json`, `verified-guessed-own.json` und `verified-oparl.json` von selbst.
 
 Alle Schritte lassen sich mit einer kommagetrennten Liste von Gebiets-IDs auf einzelne Gebiete beschränken. `crawl.mjs`, `guess.mjs` und `verify.mjs` setzen einen abgebrochenen Lauf fort.
 
@@ -31,7 +45,14 @@ Alle Schritte lassen sich mit einer kommagetrennten Liste von Gebiets-IDs auf ei
 - **Nebenan fragen statt raten.** Zeigt eine verlinkte Seite selbst keine Systemadresse (Weiterleitung per Skript, Rahmen, System an der Wurzel des Rechners), fragt die Prüfung die übliche Einstiegsseite `si0040` daneben, unter `/bi/` und an der Wurzel. Führt ein Link in den Anmeldebereich von SessionNet (`gi/`, `ri/`), wird der öffentliche Bereich `bi/` daneben geprüft. Ein mit `http://` angegebener Link wird auch über `https://` gefragt. SD.NET auf einer eigenen Adresse wird an seiner Vorlagenliste erkannt.
 - **Keine Umgehung.** Antwortet eine Seite mit HTTP 403 oder einer Zugriffsprüfung, wird nur die offizielle OParl-Adresse gefragt. Es gibt keine erneuten Versuche und keine Browser-Kennung. Die Skripte nennen sich im `User-Agent` selbst. Zeigt ein ALLRIS-System die Zugriffsprüfung des Herstellers („Zugriff pruefen“) oder meldet es „Zu viele Zugriffe“, endet seine Prüfung sofort; der Bericht nennt das als Grund.
 - **ALLRIS behutsam prüfen.** Bei `sitzung-online.de` betriebene Systeme sperren ein Netzwerk vorübergehend, wenn kurz nacheinander mehrere Anfragen ohne Sitzungs-Cookie kommen. Der Leser hält deshalb eine Sitzung je Abruf. Für die Prüfung heißt das: je Gebiet nur eine Adresse in die Kandidatenliste, keine wiederholten Läufe im Minutenabstand, und nach einer Sperre erst am nächsten Tag erneut prüfen. ALLRIS 4 wird an seinem Seitenordner erkannt (meist `/public/`, sonst der Ordner, den die offizielle Website verlinkt); Adressen auf `.asp` gehören zu ALLRIS 3, für das es keinen Leser gibt.
-- **Bestand bleibt.** `build.mjs` löscht keine Einträge. Einträge mit fest zugeordneter Körperschaft werden nicht überschrieben.
+- **robots.txt.** Vor der ersten Seite eines Rechners liest `verify.mjs` dessen robots.txt (einmal je Rechner). Untersagt sie unseren Programmen den Pfad, wird er nicht gefragt; der Bericht nennt das als Grund. `IGNORE_ROBOTS=1` schaltet die Prüfung ab. Seit dem 04.10.2026; ältere Prüfungen haben robots.txt nicht beachtet, siehe `robots.mjs` und README des Projekts.
+- **Bestand bleibt.** `build.mjs` löscht keine Einträge. Einträge mit fest zugeordneter Körperschaft werden nicht überschrieben. Ausnahmen: Demo-Mandanten und doppelt vergebene Adressen (siehe unten).
+- **Landkreise über ihre Gremien.** Nennen Adresse und Startseite weder den Kreis noch seinen Kreistag (etwa `muenchen.gremien.info` für den Landkreis München), entscheiden die gelesenen Sitzungen: Gremien wie Kreistag oder Kreisausschuss belegen das System des Kreises, die Gremien einer Stadt nicht. Gilt nur für Links von der offiziellen Website des Kreises.
+- **Anmeldebereich.** Eine Adresse, die bei SessionNet auf die Anmeldung (`ylogon`) führt, ist der Bereich der Mandatsträger. Geprüft wird der öffentliche Teil daneben: `bi/` statt `gi/` oder `ri/`, `buergerinfo` statt `ratsinfo` (Ordner oder Rechnername), `sessionnetbi` statt `sessionnetri`.
+- **Mitbenutzte Systeme.** Nennt der Teil der Adresse, der den Betreiber benennt (der erste Ordner bei Systemen mit einem Ordner je Gemeinde, sonst der Rechnername), eine andere Gemeinde und nicht die eigene, gehört das System dieser anderen Gemeinde oder ihrem Verband (`…/altshausen/bi/` für Fleischwangen). Die Leser können die Gremien eines gemeinsamen Systems nicht trennen; die mitbenutzende Gemeinde wird nicht angebunden, und das System zählt für alle Beteiligten als doppelt vergeben (`areas.mjs`, `foreignOwner`).
+- **Doppelt vergebene Adressen** werden auch über die Dateien der Länder hinweg erkannt; geändert wird nur die Zieldatei.
+- **Demo-Mandanten.** Eine Körperschaft wie „Stadt Musterstadt“ ist nie die Quelle eines Gebiets, auch nicht in einem früher geschriebenen Eintrag.
+- **Namenszusätze.** „Dillingen a.d.Donau“, „Neumarkt i.d.OPf.“ oder „Neustadt in Sachsen“ werden auch ohne Zusatz erkannt. Links auf Vorlese- und Teilen-Dienste (readspeaker, WhatsApp …) sind keine Kandidaten.
 
 ## Korrekturen am OParl-Verzeichnis
 
@@ -65,9 +86,13 @@ node scripts/source-discovery/servers.mjs
 ```
 
 - Ein Land nach dem anderen ist möglich (`LAND=09`), nötig ist es nicht: Die Begrenzung gilt je Server, und die großen Betreiber arbeiten bundesweit. `build.mjs` behält vorhandene Einträge; ein späterer Lauf über weitere Länder ergänzt die Datei.
-- Die Prüfung hält höchstens zwei Anfragen gleichzeitig je Server (Domain des Betreibers und IP-Adresse), wie der Abruf. Rund 4.500 Gebiete brauchen damit etwa eineinhalb bis zwei Stunden.
-- Ist die Suche für ein Land abgeschlossen, gehört es in `LANDS` (`shared/lands.mjs`): Erst dann wertet die Hochrechnung dort den Katalog aus statt der Stichprobe.
-- Berlin und Hamburg sind je ein Gebiet; ihre Bezirke mit eigenen Systemen fehlen im Katalog noch.
+- Die Prüfung hält höchstens zwei Anfragen gleichzeitig je Server (Domain des Betreibers und IP-Adresse), wie der Abruf. Der Lauf über 4.455 Gebiete am 04.10.2026 brauchte rund 45 Minuten (Linksuche 20, Prüfung 25).
+- Ist die Suche für ein Land abgeschlossen, gehört es in `LANDS` (`shared/lands.mjs`): Erst dann wertet die Hochrechnung dort den Katalog aus statt der Stichprobe. Seit dem 04.10.2026 sind das alle Länder außer Berlin und Hamburg.
+- Berlin und Hamburg sind je ein Gebiet und werden nicht durchsucht (`skipReason` in `areas.mjs`): Ein von der Stadt verlinktes System gehört einer Bezirksversammlung, nicht der ganzen Stadt. Beide nutzen dort ALLRIS 3, für das es keinen Leser gibt.
+- Lange Läufe stürzen auf manchen Rechnern ohne Meldung ab. `crawl.mjs` und `verify.mjs` setzen fort; ein Wächter wie `tmp/source-discovery-de/run.ps1` startet sie neu. Nie zwei `verify.mjs` gleichzeitig: Beide schreiben `verified.json`.
+- Eine einzelne Liste nachprüfen: `node scripts/source-discovery/verify.mjs <id,id,…>` (prüft auch bereits geprüfte Gebiete erneut).
+- **Plattform-Adressen raten** (`guess-platforms.mjs`): komm.one (`<name>-sitzungsdienst.komm.one`) und KISA (`ris-<name>.zv-kisa.de`) beantworten DNS nur für vorhandene Mandanten; die Suche kommt deshalb ohne Last auf den Plattformen aus. Beide Systeme verlinken die Website der Gemeinde nicht. Eine geratene Adresse wird nur Kandidat, wenn der Name im Land eindeutig ist; `verify.mjs` muss dann wie immer den Gebietsnamen im System finden und öffentliche Tagesordnungspunkte lesen. Aufruf: `LAND=de DIR=… node scripts/source-discovery/guess-platforms.mjs`, danach `CANDIDATES=candidates-guessed.json OUT=verified-guessed.json` für `verify.mjs`; `build.mjs` übernimmt `verified-guessed.json` von selbst.
+- **Rücksicht auf Plattformen.** Nach rund einer Stunde Such- und Prüfverkehr nahm komm.one am 04.10.2026 keine Verbindungen von unserem Netzwerk mehr an; drei Stunden später antwortete `www.komm.one` wieder, die Mandantenrechner (`…-sitzungsdienst.komm.one`) noch nicht. 36 geratene komm.one-Adressen sind deshalb noch ungeprüft (`tmp/source-discovery-de/kommone-ids.txt`), ebenso die robots.txt der 158 komm.one-Quellen. Vor einem neuen Lauf einen Mandantenrechner einmal fragen. Wiederholte Läufe gegen dieselbe Plattform zeitlich strecken; `tmp/source-discovery-de/verify-paced.ps1` prüft eine ID-Liste paarweise mit Pause.
 
 ## Andere Gebietslisten
 

@@ -1,4 +1,4 @@
-import {sourceDecision} from './source-fields.mjs';
+import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text} from './sessionnet.mjs';
@@ -12,7 +12,7 @@ export function mapRubinMeeting(m,source,now=new Date()){
   if(/kenntnis|information/i.test(a.counselling_status?.name||''))status=m.datum>now.toISOString().slice(0,10)?'announced':'info';
   if(m.datum>now.toISOString().slice(0,10)){}
   else if(/vertagt|zurückgestellt/i.test(result))status='postponed';
-  else if(/angenommen|beschlossen|zugestimmt|abgelehnt/i.test(result))status=/^(?:Rat|Stadtrat|Gemeinderat|Stadtverordnetenversammlung|Kreistag)(?:\s|$)/i.test(committee)?(/abgelehnt/i.test(result)?'rejected':'approved'):'recommended';
+  else if(/angenommen|beschlossen|zugestimmt|abgelehnt/i.test(result))status=DECIDING_BODY.test(committee)?(/abgelehnt/i.test(result)?'rejected':'approved'):'recommended';
   const id=/^\d+$/.test(a.vorlagennummer)?source.id+'-vo-'+a.vorlagennummer:source.id+'-top-'+a.ai_id;
   const url=allowed(m.full_url,source);const event={date:m.datum,committee,status,description:result||'Öffentlicher Tagesordnungspunkt; ein Beschlussergebnis ist im erfassten Text nicht belegt.',result,url,attendance:{status:'not_collected',sourceUrl:url,fetchedAt:now.toISOString(),people:[]}};event.decision=sourceDecision(event);return {id,regionId:source.id,source:source.kind,public:true,title:text(a.title),officialTitle:text(a.title),status,category:category(a.title),committee,eventDate:m.datum,updatedAt:now.toISOString(),reference:(a.documents||[]).find(d=>d.alias)?.alias||'',documents:[...documents,{title:'Öffentliche Sitzung',url,kind:'html'}],events:[event],sourceData:{version:'public-source-fields-v1',method:'official-api',fetchedAt:now.toISOString(),records:[{kind:'agenda',url,fields:{id:a.ai_id,reference:a.vorlagennummer,title:text(a.title),result,consultationStatus:a.counselling_status?.name||'',committees:(m.committees||[]).map(c=>({id:c.id,name:c.name}))}}]},sourceUrl:url,identityRecords:[{authority:new URL(source.base).origin,kind:'agenda',id:String(a.ai_id)},...(/^\d+$/.test(a.vorlagennummer)?[{authority:new URL(source.base).origin,kind:'paper',id:String(a.vorlagennummer)}]:[])],relevanceReason:'Öffentlicher Vorgang: '+source.name,sourceText:text(a.title)+'\n'+result};
  });

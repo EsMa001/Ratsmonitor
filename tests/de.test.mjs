@@ -35,7 +35,9 @@ test('the other 14 states: districts, municipalities and associations with uniqu
  /* Einwohner: bis auf wenige Gemeinden ohne Angabe in Wikidata */
  assert.ok(catalog.filter(r=>!(population[r.id]>0)).length<=10);
  /* Länder: 16 im Katalog, die Quellensuche ist für zwei gelaufen */
- assert.equal(new Set(ALL_LANDS.map(l=>l.id)).size,16);assert.deepEqual(LANDS.map(l=>l.id),['05','03']);
+ assert.equal(new Set(ALL_LANDS.map(l=>l.id)).size,16);
+ /* Die Quellensuche ist in allen Ländern gelaufen außer Berlin und Hamburg, deren Bezirke noch keine Gebiete sind */
+ assert.equal(LANDS.length,14);assert.ok(!LANDS.some(l=>['11','02'].includes(l.id)));
  const lands=new Set(CATALOG.map(landOf));assert.deepEqual([...lands].sort(),ALL_LANDS.map(l=>l.id).sort());
  /* Baden-Württemberg: Mitgliedsgemeinden bleiben eigene Gebiete; Berlin und Hamburg sind je ein Gebiet */
  assert.equal(catalog.filter(r=>r.ags.startsWith('08')&&r.members).length,0);
@@ -94,6 +96,20 @@ test('the radius of the search names only areas with reports, as the shorter of 
  const cities=CATALOG.filter(r=>r.kind==='city'),everywhere=new Set(cities.flatMap(areaKeys)),north=new Set([...everywhere].filter(key=>key<'07'));
  const [name,keys]=radiusParam(cities,north,everywhere);assert.ok(keys.split(',').length<=cities.length/2);assert.ok(['within','without'].includes(name));
 });
+test('every source of the other states belongs to exactly one catalog area, is verified and has its server recorded',async()=>{
+ const {default:sources}=await import('../server/integrations/de-sources.json',{with:{type:'json'}});
+ const byId=new Map(catalog.map(r=>[r.id,r])),addresses=new Set();
+ for(const s of sources){
+  const r=byId.get(s.id);assert.ok(r,s.id);assert.equal(s.name,r.name);assert.equal(s.kind,r.kind);
+  /* Berlin und Hamburg: Die Bezirke führen die Vertretungen; ihre Systeme gehören nicht der ganzen Stadt */
+  assert.ok(!['11000000','02000000'].includes(r.ags),s.id);
+  assert.ok(['oparl','scraper','official-api'].includes(s.method),s.id);assert.match(s.verifiedAt,/^\d{4}-\d{2}-\d{2}$/);
+  const key=(s.system||s.base)+'|'+(s.body||'');assert.ok(!addresses.has(key),'address used twice: '+key);addresses.add(key);
+  assert.ok(hostOf(s) in recorded.hosts,'node scripts/source-discovery/servers.mjs ausführen: '+hostOf(s));
+ }
+ /* Keine Quelle der übrigen Länder steht zugleich in den Dateien von NRW oder Niedersachsen */
+ const elsewhere=new Set(NRW_SOURCES.filter(s=>!s.id.startsWith('de-')).map(s=>s.id));assert.ok(sources.every(s=>!elsewhere.has(s.id)));
+});
 test('servers: hosts of one operator or on one address form a group; every source host is recorded',()=>{
  const groups=serverGroups(['a.rim.example','b.rim.example','rat.stadt-a.example','rat.stadt-b.example','c.rim.example','allein.example'],{'a.rim.example':'10.0.0.1','b.rim.example':'10.0.0.2','rat.stadt-a.example':'10.0.0.9','rat.stadt-b.example':'10.0.0.9','c.rim.example':null,'allein.example':null});
  assert.equal(groups.get('a.rim.example'),'rim.example');assert.equal(groups.get('b.rim.example'),'rim.example');assert.equal(groups.get('c.rim.example'),'rim.example','no address: the operator\'s domain');
@@ -107,6 +123,7 @@ test('servers: hosts of one operator or on one address form a group; every sourc
  /* Gemeinsame Adressen fassen Gebiete zusammen, die der Domainname trennt */
  const connected=NRW_SOURCES.filter(s=>s.method!=='pending'),domains=new Set(connected.map(s=>hostOf(s).split('.').slice(-2).join('.'))),servers=new Set(connected.map(s=>provider(s.id)));
  assert.ok(servers.size<domains.size);assert.equal(PER_PROVIDER,2);
- assert.equal(serverOf('https://neu.sitzung-online.de/public/'),'sitzung-online.de');assert.equal(serverOf('https://ris.unbekannt.example/'),'unbekannt.example');assert.equal(serverOf('kein Verweis'),null);
+ /* Ein neuer Rechner eines Betreibers gehört zu dessen Gruppe, wie immer sie heißt */
+ assert.equal(serverOf('https://neu.sitzung-online.de/public/'),serverOf('https://www.ahlen.sitzung-online.de/public/'));assert.equal(serverOf('https://ris.unbekannt.example/'),'unbekannt.example');assert.equal(serverOf('kein Verweis'),null);
  assert.equal(provider('nicht-im-katalog'),'area:nicht-im-katalog');
 });

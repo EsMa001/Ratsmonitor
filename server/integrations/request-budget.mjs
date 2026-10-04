@@ -1,4 +1,31 @@
 export const BUDGET_REACHED = 'Zeitbudget der Quelle erreicht';
+/** A server that answers a burst of requests with a rejection page (sent with HTTP 200) refused this request for now. */
+export const REFUSED = 'Quelle antwortet mit HTTP 429: Abruf vom Server vorübergehend abgewiesen';
+/**
+ * Rejection pages of web application firewalls in front of council systems, e.g. "… mit Angabe der folgenden
+ * Fehler-Nummer: 7571357861314030815" or "Your support ID is: 123…". Only short pages count.
+ */
+export const isRejectionPage = (html) => html.length < 8000 && /(?:Fehler-Nummer|support ID(?: is)?)\D{0,40}\d{10,}/i.test(html);
+/**
+ * After a rejection the source is asked more slowly for the rest of the import: at least `spacingMs` between two
+ * requests, whatever the number of parallel workers. The rejection itself is passed on.
+ */
+export function paced(get, { spacingMs = 600 } = {}) {
+ let spacing = 0, next = 0;
+ return async (...args) => {
+  if (spacing) {
+   const at = Math.max(Date.now(), next);
+   next = at + spacing;
+   if (at > Date.now()) await sleep(at - Date.now());
+  }
+  try {
+   return await get(...args);
+  } catch (e) {
+   if (String(e?.message || e).includes(REFUSED)) spacing = spacingMs;
+   throw e;
+  }
+ };
+}
 /* Vorübergehende Fehler: eigene Zeitüberschreitung, Überlastung oder Serverfehler der Quelle */
 const TRANSIENT = /aborted|timeout|timed out|HTTP (429|502|503|504)\b/i;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

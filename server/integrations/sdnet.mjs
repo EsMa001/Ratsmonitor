@@ -1,4 +1,4 @@
-import {sourceDecision} from './source-fields.mjs';
+import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart,historyWindow,windowYears} from './history-window.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
@@ -72,7 +72,7 @@ export function resultStatus(result,committee){
  if(/vertagt|zurückgestellt|abgesetzt|verwiesen/i.test(result))return 'postponed';
  if(/kenntnis/i.test(result))return 'info';
  if(/empfohl/i.test(result))return 'recommended';
- if(/beschlossen|zugestimmt|angenommen|abgelehnt|\b(?:einstimmig|mehrheitlich) (?:dafür|dagegen)\b/i.test(result))return /^(Rat|Gemeinderat|Stadtrat|Stadtverordnetenversammlung|Kreistag)(\s|$)/i.test(committee)?(/abgelehnt|dagegen/i.test(result)?'rejected':'approved'):'recommended';
+ if(/beschlossen|zugestimmt|angenommen|abgelehnt|\b(?:einstimmig|mehrheitlich) (?:dafür|dagegen)\b/i.test(result))return DECIDING_BODY.test(committee)?(/abgelehnt|dagegen/i.test(result)?'rejected':'approved'):'recommended';
  return null;
 }
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs. A mark counts only for the import

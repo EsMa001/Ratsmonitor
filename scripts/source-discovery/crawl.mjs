@@ -1,7 +1,7 @@
 // Stage 1: find links to the council information system (RIS) on each official municipal website.
 // Reads only public pages, follows normal links, identifies itself and never retries a refused request.
 import fs from 'node:fs';
-import {loadAreas} from './areas.mjs';
+import {loadAreas,skipReason} from './areas.mjs';
 // DIR, LAND and AREAS let the same search run over another list of areas (another state, or the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -11,7 +11,7 @@ const configured=new Set(['muenster','billerbeck','coesfeld','steinfurt','borken
 const outFile=dir+(process.env.OUT||'candidates.json');
 const done=fs.existsSync(outFile)?JSON.parse(fs.readFileSync(outFile,'utf8')):{};
 const only=process.argv[2]?new Set(process.argv[2].split(',')):null;
-const todo=regions.filter(r=>only?only.has(r.id):!configured.has(r.id)&&!done[r.id]);
+const todo=regions.filter(r=>only?only.has(r.id):!configured.has(r.id)&&!done[r.id]&&!skipReason(r));
 
 export const RIS_HREF=/(sessionnet|si00\d\d\.(?:asp|php)|\/info\.(?:asp|php)|\/bi\/|buergerinfo|ratsinfo|allris|sitzung-online\.de|gremien\.info|more-rubin|ratsinfomanagement\.net|sdnetrim|kdz-ws\.net|sessionweb|\/\/session\.|\/\/ris[.-]|\/ris\/|sitzungsdienst|ratsportal|\/oparl|rim\d{4}|gremieninfo|ratsinformation|kreistagsinfo|\/\/rim\.|\/\/sd\.|pv-rat|provox|\/\/politik\.|\/\/rat\.|session\.[a-z0-9-]+\.de|tagesordnung|sitzungskalender)/i;
 const RIS_TEXT=/(ratsinfo|rats- und bürgerinfo|bürgerinfo|buergerinfo|ratsinformation|kreistagsinfo|kreistagsinformation|sitzungskalender|sitzungsdienst|gremieninfo|sitzungstermine|allris|session ?net|ratsportal|rats- und ausschuss|sitzungen)/i;
@@ -35,9 +35,16 @@ function anchors(html,base){
  for(const m of html.matchAll(/<(?:iframe|frame)\b[^>]*src\s*=\s*["']([^"']+)["']/gi)){try{out.push({url:new URL(m[1],base).href,text:'(eingebettet)'});}catch{}}
  return out;
 }
-const skip=/\.(pdf|jpe?g|png|gif|svg|zip|docx?|xlsx?|ics|mp[34])(\?|$)|mailto:|facebook|instagram|youtube|twitter|linkedin|google\.|wikipedia|\/(impressum|datenschutz|kontakt|barrierefrei)/i;
+const skip=/\.(pdf|jpe?g|png|gif|svg|zip|docx?|xlsx?|ics|mp[34])(\?|$)|mailto:|facebook|instagram|youtube|twitter|linkedin|google\.|wikipedia|readspeaker\.com|whatsapp\.com|\/\/wa\.me\/|xing\.com|\/\/t\.me\/|\/(impressum|datenschutz|kontakt|barrierefrei)/i;
 async function crawl(region){
- const sites=[...new Set(wikidata.filter(w=>w.kind===region.kind&&w.ags===region.ags&&w.website).map(w=>w.website))];
+ let sites=[...new Set(wikidata.filter(w=>w.kind===region.kind&&w.ags===region.ags&&w.website).map(w=>w.website))];
+ // A municipal association without a website of its own: the website of its member of the same name (an "erfüllende
+ // Gemeinde" carries out the tasks of the others), otherwise those of its first members. The system found there still
+ // has to name the association itself (verify.mjs).
+ if(!sites.length&&Array.isArray(region.members)){
+  const named=region.members.filter(m=>m.name===region.shortName),members=[...named,...region.members.filter(m=>!named.includes(m))];
+  sites=[...new Set(members.flatMap(m=>wikidata.filter(w=>w.kind==='city'&&w.ags===m.ags&&w.website).map(w=>w.website)))].slice(0,3);
+ }
  const found=new Map(),visited=new Set(),log=[];let budget=20;
  const bare=h=>h.replace(/^www\./,'');
  const IN_SITE=/sessionnet|si00[0-9][0-9][.](asp|php)|[/]bi[/]|[/]info[.](asp|php)/i;
