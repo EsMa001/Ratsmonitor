@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nachgebildet (nicht live): RSS-Feed "Aktuelles" der fiktiven Gemeinde Musterbach -->
+<rss version="2.0"><channel><title>Gemeinde Musterbach - Aktuelles</title><link>https://www.musterbach.example.test/aktuelles/</link>
+<item><title>Einladung zur Sitzung des Bauausschusses am 21.10.2026</title><link>https://www.musterbach.example.test/aktuelles/einladung-bauausschuss-21-10-2026.html</link><pubDate>Wed, 14 Oct 2026 08:00:00 +0200</pubDate>
+<description><![CDATA[<p>Am Mittwoch, 21.10.2026, 18:30 Uhr, findet im Rathaus Musterbach eine öffentliche Sitzung des Bauausschusses statt.</p><p><strong>Tagesordnung – öffentlicher Teil</strong></p><p>1. Bauantrag: Neubau eines Wohnhauses mit Garage, Am Mühlbach 3</p><p>2. Bauvoranfrage: Umnutzung einer Scheune</p><p><strong>Nichtöffentlicher Teil</strong></p><p>3. Vergabe Straßensanierung Lindenweg</p>]]></description></item>
+<item><title>Einladung zur öffentlichen Sitzung des Gemeinderates am 14.10.2026</title><link>https://www.musterbach.example.test/fileadmin/bekanntmachungen/2026/einladung-gemeinderat-2026-10-14.pdf</link><pubDate>Wed, 07 Oct 2026 10:00:00 +0200</pubDate><description>Die Einladung steht als PDF bereit.</description></item>
+<item><title>Weihnachtsmarkt 2026</title><link>https://www.musterbach.example.test/aktuelles/weihnachtsmarkt-2026.html</link><description>Der Weihnachtsmarkt findet am ersten Adventswochenende statt.</description></item>
+</channel></rss>

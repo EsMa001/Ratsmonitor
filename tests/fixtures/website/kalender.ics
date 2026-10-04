@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Nachgebildet (nicht live)//Musterbach//DE
+BEGIN:VEVENT
+UID:gr-2026-11-11@musterbach.example.test
+DTSTART;TZID=Europe/Berlin:20261111T190000
+SUMMARY:Sitzung des Gemeinderates
+DESCRIPTION:Öffentliche Sitzung\n1. Haushaltsplan 2027 – Einbringung\n2. Anfragen aus dem Gemeinderat
+LOCATION:Rathaus Musterbach
+END:VEVENT
+BEGIN:VEVENT
+UID:senioren-2026-10-20@musterbach.example.test
+DTSTART;VALUE=DATE:20261020
+SUMMARY:Seniorennachmittag
+END:VEVENT
+END:VCALENDAR

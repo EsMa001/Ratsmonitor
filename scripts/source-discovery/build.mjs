@@ -9,7 +9,12 @@ const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const regions=loadAreas(),verified=read(dir+'verified.json');
 // Results for guessed addresses (guess.mjs, guess-platforms.mjs) and for OParl addresses from the register
 // (oparl-register.mjs) are kept in their own files and only add sources.
-for(const file of ['verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-fix.json'])if(fs.existsSync(dir+file))for(const row of Object.values(read(dir+file)))if(row.accepted&&!verified[row.id]?.accepted)verified[row.id]=row;
+// verified-website.json (website.mjs: notices on the official website of an area without RIS) comes last: it adds an
+// area only where no check of a council information system accepted one.
+for(const file of ['verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-fix.json','verified-website.json'])if(fs.existsSync(dir+file))for(const row of Object.values(read(dir+file)))if(row.accepted&&!verified[row.id]?.accepted)verified[row.id]=row;
+// Website checks that took nothing: their reason completes "no link found" in the report (see reason()).
+const websiteChecks=new Map(fs.existsSync(dir+'verified-website.json')?Object.values(read(dir+'verified-website.json')).filter(r=>!r.accepted&&r.reason).map(r=>[r.id,r]):[]);
+const germanDay=ms=>new Date(ms).toISOString().slice(0,10).split('-').reverse().join('.');
 // An area without a link on its website whose guessed address led to a system, or stopped at robots.txt: that check
 // says more than "no link found". A guessed page without a system is no finding and changes nothing.
 for(const file of ['verified-guessed-own.json','verified-guessed.json'])if(fs.existsSync(dir+file))for(const row of Object.values(read(dir+file)))if(!verified[row.id]&&((row.tried||[]).some(t=>t.robots==='verboten')||(row.systems||[]).some(s=>s!=='unknown')))verified[row.id]=row;
@@ -66,7 +71,8 @@ const PLATFORMS=[
 ];
 const reason=(row,area)=>{
  if(area&&skipReason(area))return skipReason(area);
- if(!row)return 'Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden';
+ // The date stands in brackets at the end, which the summary below cuts off: it groups by the website's reason.
+ if(!row)return 'Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden'+(area&&websiteChecks.has(area.id)?`; Website geprüft: ${websiteChecks.get(area.id).reason}`+(websiteChecks.get(area.id).checkedAt?` (${germanDay(websiteChecks.get(area.id).checkedAt)})`:''):'');
  if(dropped.includes(row.id))return 'Adresse mehreren Gebieten zugeordnet';
  if(placeholder.has(row.id))return 'Verlinktes System führt nur einen Demo-Mandanten des Herstellers (z. B. „Stadt Musterstadt“)';
  if(foreign.has(row.id))return `Mitbenutztes System von ${foreign.get(row.id)}; die Leser trennen die Gremien eines gemeinsamen Systems nicht`;

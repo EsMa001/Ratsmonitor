@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Nachgebildet (nicht live): sitemap.xml der fiktiven Gemeinde Musterbach -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://www.musterbach.example.test/rathaus/gremien/gemeinderat/niederschrift-2026-07-22.html</loc><lastmod>2026-07-30</lastmod></url>
+<url><loc>https://www.musterbach.example.test/rathaus/gremien/gemeinderat/niederschrift-2023-05-10.html</loc><lastmod>2023-05-20</lastmod></url>
+<url><loc>https://www.musterbach.example.test/leben/abfallkalender-2026.html</loc><lastmod>2026-01-05</lastmod></url>
+<url><loc>https://www.musterbach.example.test/intern/sitzung-gemeinderat-2026-08-19.html</loc><lastmod>2026-08-20</lastmod></url>
+<url><loc>https://www.musterbach.example.test/fileadmin/bekanntmachungen/2026/einladung-gemeinderat-2026-10-14.pdf</loc><lastmod>2026-10-07</lastmod></url>
+</urlset>

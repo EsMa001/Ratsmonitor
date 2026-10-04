@@ -1,0 +1,6 @@
+# Nachgebildet (nicht live): robots.txt der fiktiven Gemeinde Musterbach
+User-agent: *
+Disallow: /intern/
+Disallow: /suche
+
+Sitemap: https://www.musterbach.example.test/sitemap.xml

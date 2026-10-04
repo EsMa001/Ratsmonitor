@@ -10,6 +10,15 @@ import {collectCronRatsinfo,detectCronRatsinfo} from './cron-ratsinfo.mjs';
 import {collectMuenchenRisi,detectMuenchenRisi} from './muenchen-risi.mjs';
 import {collectPiwi,detectPiwi} from './piwi.mjs';
 import {collectPio,detectPio} from './pio.mjs';
+import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
+// collect-region.mjs hands every reader the council-system fetch (sessionnet fetchText, wrapped by the trace of a
+// metadata import). The website reader needs its own: fetchSiteText/fetchSiteBytes check robots.txt for every redirect
+// target and accept the origins of alsoFrom. With a trace both are recorded, documents included.
+function collectSite(source,options={}){
+ const own={...options};delete own.get;delete own.getBytes;
+ if(options.trace){own.get=options.trace.wrap(fetchSiteText);own.getBytes=options.trace.wrap(fetchSiteBytes);}
+ return collectWebsite(source,own);
+}
 const pick=(found,keys)=>found?Object.fromEntries(keys.filter(k=>found[k]!==undefined&&found[k]!==null&&found[k]!=='').map(k=>[k,found[k]])):null;
 export const READERS={
  // ALLRIS 3 (…/si010_e.asp …). The reader asks the system's own OParl address first, like the ALLRIS 4 reader.
@@ -22,4 +31,7 @@ export const READERS={
  'muenchen-risi':{name:'RIS München (öffentliche Seiten)',collect:collectMuenchenRisi,detect:async(url,html)=>pick(detectMuenchenRisi(url,html),['base'])},
  piwi:{name:'PIWi Wiesbaden (öffentliche Seiten)',collect:collectPiwi,detect:async(url,html)=>pick(detectPiwi(url,html),['base'])},
  pio:{name:'PIO Offenbach (öffentliche Seiten)',collect:collectPio,detect:async(url,html)=>pick(detectPio(url,html),['base'])},
+ // Website of a municipality without council system (notices, minutes, feeds of its CMS). No page of a council system
+ // is one, so verify.mjs never recognises it; only the website search (scripts/source-discovery/website.mjs) assigns it.
+ website:{name:WEBSITE_READER_NAME,collect:collectSite,detect:async()=>null},
 };
