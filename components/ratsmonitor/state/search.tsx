@@ -1,4 +1,4 @@
-import {REGIONS} from '@/shared/regions';
+import {REGIONS,mapKeys} from '@/shared/regions';
 import {useSearchParams} from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
 import { STATUS } from "../lib/constants";
@@ -59,7 +59,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const { geo, place } = useData();
   const [state, setState] = useState<SearchState>(INITIAL_SEARCH);
   const params=useSearchParams();
-  useEffect(()=>{const region=REGIONS.find(r=>r.id===params.get("region"));if(region)setState(s=>({...s,area:region.ags,areaSrc:"ui",level:region.kind}));},[params.get("region")]);
+  // Die Karte kennt Samtgemeinden und neue Fusionsgemeinden nicht: sie werden über eine Mitglieds- bzw. frühere
+  // Gemeinde gewählt, die Suche ordnet diese ihnen zu.
+  useEffect(()=>{const region=REGIONS.find(r=>r.id===params.get("region"));if(region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));},[params.get("region")]);
   const derived=useDerivedResults(state);
   const [popup, setPopupState] = useState("");
   const ref = useRef(state);
@@ -247,7 +249,7 @@ function useDerivedResults(state:SearchState):SearchResults {
   const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level};
   const params=new URLSearchParams({q:text,area:state.area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:state.area?state.scope:"with",status:state.status,level:state.level,sort:state.sort});
   if(more.length)params.set('more',more.map(m=>m.ags+':'+m.scope).join(','));
-  if(state.radius)params.set('within',within?REGIONS.filter(r=>r.kind===state.level&&within.set.has(r.ags)).map(r=>r.ags).join(','):'');
+  if(state.radius)params.set('within',within?REGIONS.filter(r=>r.kind===state.level).flatMap(r=>r.kind==='district'?(within.set.has(r.ags)?[r.ags]:[]):mapKeys(r).filter(a=>within.set.has(a))).join(','):'');
   const spec:FilterSpec={area:state.area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
   return {pq,placeActive,liveHits,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString()};
  },[state,geo,place]);

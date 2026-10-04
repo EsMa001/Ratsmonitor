@@ -1,7 +1,8 @@
 'use client';
 import {DatabaseAdmin} from '@/components/database-admin';
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {RefreshCw,Download,ArrowUpRight,ShieldCheck,AlertCircle} from 'lucide-react';
+import {RefreshCw,Download,ArrowUpRight,AlertCircle} from 'lucide-react';
+import {AdminHeader} from '@/components/admin-chrome';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
@@ -44,9 +45,7 @@ export function AdminDashboardView({initial,displayName,signOutPath}:{initial:Ad
  const pendingAnalysis=analysisRegion==='all'?data.counts.pendingAnalysis:data.sources.find(s=>s.id===analysisRegion)?.pendingAnalysis||0;
  const busy=!!importing||!!analysing||!!data.importBusyUntil;
  function sourceFocus(next:string){setFilter(next);setQuery('');}
- return <main id="inhalt" className="admin-shell">
-  <header className="admin-topbar"><a className="admin-back" href="/" aria-label="Zurück zur Übersicht"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Zurück</a><a className="wordmark" href="/">Ratsmonitor<span className="wordmark__dot">.</span></a><span className="admin-access"><ShieldCheck size={16}/> Administration</span><a target="_top" href={signOutPath}>Abmelden</a></header>
-  <nav className="admin-pages" aria-label="Adminseiten"><a href="/admin">1 <span>Daten & Verarbeitung</span></a><a href="/admin?seite=2" aria-current="page">2 <span>Qualität & Betrieb</span></a><a href="/admin?seite=3">3 <span>Hochrechnung</span></a><a href="/admin?seite=4">4 <span>Stichwörter</span></a></nav>
+ return <div className="admin-app"><AdminHeader page={2} displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell">
   <div className="admin-heading"><div><p className="eyebrow">BESTAND & BETRIEB</p><h1>Qualität & Betrieb.</h1><p>{displayName} · Datenbankstand {date(data.asOf)} Uhr</p></div><Button className="admin-refresh" variant="outline" onClick={()=>refresh()} disabled={refreshing||!!importing||!!analysing}><RefreshCw size={16} className={refreshing?'admin-spin':''}/>{refreshing?'Wird geladen …':'Zahlen aktualisieren'}</Button></div>
   {error&&<p className="admin-error" role="alert">{error} Der letzte geladene Stand bleibt sichtbar.</p>}
   {message&&<p role="status" className="admin-notice">{message}</p>}
@@ -75,5 +74,5 @@ export function AdminDashboardView({initial,displayName,signOutPath}:{initial:Ad
   <section className="admin-section"><h2>Weitere Analysewerkzeuge</h2><p>Das feste Billerbeck-Testpaket bleibt für frühere Datenstände verfügbar. Neue Claude-Aufträge werden auf Seite 1 vorbereitet.</p><Button variant="outline" disabled={busy} onClick={importPrepared}>Vorbereitete Billerbeck-Ergebnisse übernehmen (bis 75)</Button>{data.operations.aiConfigured&&<><Choice id="legacy-ai-region" label="Gebiet für API-Zusammenfassungen" value={analysisRegion} onChange={setAnalysisRegion} items={populated.map(s=>({id:s.id,name:s.name}))}/><Button disabled={busy||analysisRegion==='all'} onClick={()=>startAnalysis('summaries')}>API-Zusammenfassungen erstellen (bis 8)</Button></>}</section>
   <section id="admin-betrieb" className="admin-section"><p className="eyebrow">04 / BETRIEB</p><h2>Was ist eingerichtet?</h2><dl className="admin-operations"><div><dt>Datenbank</dt><dd>Erreichbar · {n(data.counts.versions)} archivierte Fassungen · {n(data.counts.analysisVersions)} Analysefassungen · {n(data.counts.aliases)} zusammengeführte Verweise</dd></div><div><dt>Automatische Importe</dt><dd>{data.lastScheduledAt?'Letzter protokollierter geplanter Start: '+date(data.lastScheduledAt):'Kein geplanter Lauf protokolliert'}<small>Ein manueller Abruf aktiviert keinen Zeitplan. Ein früherer Lauf bestätigt keine dauerhaft aktive Planung.</small></dd></div><div><dt>Laufende KI-Zusammenfassungen</dt><dd>{data.operations.aiConfigured?'API-Zugang eingerichtet':'API-Zugang nicht eingerichtet'}<small>Nur ein ausdrücklicher Start über die separate Schaltfläche verarbeitet neue Texte.</small></dd></div><div><dt>Push für Münster</dt><dd>{data.operations.pushConfigured?'Versand konfiguriert':'Versand nicht konfiguriert'} · {n(data.counts.pushSubscriptions)} gespeicherte Abonnements<small>Ein gespeichertes Abonnement ist kein Nachweis einer zugestellten Nachricht.</small></dd></div><div><dt>Besucherzahlen</dt><dd>Werden bisher nicht erfasst.</dd></div></dl></section>
   <footer className="admin-footer">Kennzahlen aus der aktuellen Datenbank. Artikelzahlen schließen zusammengeführte Verweise aus. <a href="/">Zur öffentlichen Website</a></footer>
- </main>;
+ </main></div>;
 }

@@ -1,5 +1,4 @@
-import regions from '../../shared/nrw-regions.json' with {type:'json'};
-import population from '../../shared/nrw-population.json' with {type:'json'};
+import {CATALOG as regions,POPULATION as population,LANDS,landOf} from '../../shared/catalog.mjs';
 import frame from '../../shared/germany-population.json' with {type:'json'};
 import sample from '../../shared/estimate-samples.json' with {type:'json'};
 import size from '../../shared/document-size-sample.json' with {type:'json'};
@@ -8,8 +7,10 @@ import {estimateVolume,SIZE_RULES} from '../../shared/estimate-size.mjs';
 import {rangeStart} from '../../shared/timeline.mjs';
 import {adminTimeline} from './admin-timeline.mjs';
 import {canImport} from './pipeline-jobs.mjs';
-// Classes with fewer complete NRW examples than this get suggestions for a twelve-month import.
+// Classes with fewer complete examples of the connected states than this get suggestions for a twelve-month import.
 const WANTED_SAMPLES=8;
+// Level in the population frame: Lower Saxon Samtgemeinden are associations, their members belong to them.
+const levelOf=r=>r.kind==='district'?'district':r.members?'association':'municipality';
 const readJson=text=>{try{return JSON.parse(text||'{}');}catch{return {};}};
 const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
 // Per area and for the period: reports with at least one PDF, linked PDFs, and how often reports return to an agenda.
@@ -17,42 +18,44 @@ const DETAILS_SQL=`SELECT area,sum(pdfs>0) AS withDocuments,sum(pdfs) AS links,s
 const ratio=(list,a,b)=>{const total=list.reduce((n,x)=>n+(x[b]||0),0);return total?list.reduce((n,x)=>n+(x[a]||0),0)/total:null;};
 /**
  * Germany-wide estimate of new reports per year and day, and of the documents behind them. Read-only.
- * Examples are the stored NRW areas with a complete year (read from the database on every call) and the measured
- * random sample outside NRW (shared/estimate-samples.json, built by scripts/estimate). A report counts on the day
+ * Examples are the stored areas of the connected states with a complete year (read from the database on every call)
+ * and the measured random sample (shared/estimate-samples.json, built by scripts/estimate). A report counts on the day
  * it first appeared on an agenda; the period is the last twelve months.
  */
 export async function adminEstimate(db,{now=new Date(),replicates=SAMPLE_RULES.replicates}={}){
  const timeline=await adminTimeline(db,{basis:'event',now}),to=timeline.today,from=rangeStart('12m',to,new Map());
  const coverage=new Map((await db.prepare('SELECT region_id,payload FROM source_coverage').all()).results.map(r=>[r.region_id,readJson(r.payload)]));
  const details=new Map((await db.prepare(DETAILS_SQL).bind(from,to).all()).results.map(r=>[r.area,r]));
- // --- candidates: stored NRW areas and the units of the sample ---
+ // --- candidates: stored areas of the connected states and the units of the sample ---
  const stored=[];
  for(const region of regions){
   const days=(timeline.areas[region.id]||[]).map(([index,count])=>[timeline.days[index],count]).filter(([day])=>day>=from&&day<=to);
   if(!days.length)continue;
   const sorted=days.map(([day])=>day).sort(),d=details.get(region.id)||{};
-  stored.push({id:region.id,name:region.name,origin:'stored',level:region.kind==='district'?'district':'municipality',state:'05',population:population[region.id]||0,reports:days.reduce((n,[,count])=>n+count,0),months:new Set(sorted.map(day=>day.slice(0,7))).size,meetingDays:sorted.length,firstDay:sorted[0],lastDay:sorted.at(-1),
+  stored.push({id:region.id,name:region.name,origin:'stored',level:levelOf(region),state:landOf(region),population:population[region.id]||0,reports:days.reduce((n,[,count])=>n+count,0),months:new Set(sorted.map(day=>day.slice(0,7))).size,meetingDays:sorted.length,firstDay:sorted[0],lastDay:sorted.at(-1),
    withDocuments:Number(d.withDocuments||0),links:Number(d.links||0),followUps:Number(d.followUps||0),consultations:Number(d.consultations||0),notes:Array.isArray(coverage.get(region.id)?.issues)?coverage.get(region.id).issues.map(String):[],...profile(days,from)});
  }
  // The sample was counted for its own period; its figures are a year as well and are used as they are.
- const counted=sample.units.filter(u=>u.reports!==undefined||u.error).map(u=>({...u,origin:'sample',measured:true}));
+ // A sample unit that is stored as well counts once, with the stored figures.
+ const storedIds=new Set(stored.map(a=>a.id));
+ const counted=sample.units.filter(u=>(u.reports!==undefined||u.error)&&!storedIds.has(u.id.replace(/^de-/,'nds-'))).map(u=>({...u,origin:'sample',measured:true}));
  const judged=[...stored.map(a=>({...a,...sampleQuality(a,{from,to})})),...counted.map(u=>({...u,...sampleQuality(u,sample)}))];
  const examples=judged.filter(a=>a.complete&&a.population>0),excluded=judged.filter(a=>!a.complete);
  // --- count ---
  const estimate=estimateGermany({samples:examples,frame,replicates}),models=Object.fromEntries(estimate.levels.map(l=>[l.id,l.model]));
- const known=regions.map(r=>({level:r.kind==='district'?'district':'municipality',state:'05',population:population[r.id]||0,connected:canImport(r.id)}));
- const captured=capture({units:sample.units,known,models,cells:estimate.cells});
+ const known=regions.map(r=>({level:levelOf(r),state:landOf(r),population:population[r.id]||0,connected:canImport(r.id)}));
+ const captured=capture({units:sample.units,known,models,cells:estimate.cells,knownStates:LANDS.map(l=>l.id)});
  // --- documents and their size ---
  const share={all:ratio(examples,'withDocuments','reports')||0,classes:{}};
  for(const c of SIZE_CLASSES){const own=examples.filter(a=>areaClass(a)===c.id);if(own.length>=SIZE_RULES.minAreas)share.classes[c.id]=ratio(own,'withDocuments','reports');}
  const volume=size.reports.length?estimateVolume({size,cells:estimate.cells,runs:estimate.replicates,share}):null;
  // --- distribution over the year ---
  const season=seasonality(examples),peakDay=estimate.total.perYear/52*season.strongWeek*season.peakWeekday;
- // Connected NRW areas of a thinly covered class that could become examples: up to eight, spread over the range of sizes.
+ // Connected areas of a thinly covered class that could become examples: up to eight, spread over the range of sizes.
  const candidates={};
  for(const c of SIZE_CLASSES){
   const have=new Set(examples.filter(a=>a.origin==='stored'&&areaClass(a)===c.id).map(a=>a.id));
-  const open=have.size>=WANTED_SAMPLES?[]:regions.filter(r=>population[r.id]&&areaClass({level:r.kind==='district'?'district':'municipality',population:population[r.id]})===c.id&&canImport(r.id)&&!have.has(r.id)).sort((a,b)=>population[b.id]-population[a.id]);
+  const open=have.size>=WANTED_SAMPLES?[]:regions.filter(r=>population[r.id]&&areaClass({level:levelOf(r),population:population[r.id]})===c.id&&canImport(r.id)&&!have.has(r.id)).sort((a,b)=>population[b.id]-population[a.id]);
   const step=Math.max(1,open.length/WANTED_SAMPLES);
   candidates[c.id]=Array.from({length:Math.min(WANTED_SAMPLES,open.length)},(_,i)=>open[Math.floor(i*step)]).map(r=>({id:r.id,name:r.name,population:population[r.id]}));
  }

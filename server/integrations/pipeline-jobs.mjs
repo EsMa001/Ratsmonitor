@@ -1,5 +1,5 @@
 import {AdminError} from './admin-access.mjs';
-import regions from '../../shared/nrw-regions.json' with {type:'json'};
+import {CATALOG as regions} from '../../shared/catalog.mjs';
 import {NRW_SOURCES} from './source-catalog.mjs';
 import {SOURCES} from './regions.mjs';
 import {historyWindow,windowYears} from '../../shared/history-window.mjs';

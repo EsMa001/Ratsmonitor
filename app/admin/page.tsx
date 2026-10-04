@@ -4,20 +4,22 @@ import {getChatGPTUser,chatGPTSignInPath,chatGPTSignOutPath} from '@/app/chatgpt
 import {adminAccess} from '@/server/integrations/admin-access.mjs';
 import {getAdminDashboard} from '@/server/repositories/admin';
 import {AdminActivation} from '@/components/admin-activation';
+import {AdminBar} from '@/components/admin-chrome';
+import {BRAND_NAME,DEFAULT_BRAND} from '@/components/ratsmonitor/lib/brands';
 import {AdminProcessing} from '@/components/admin-processing';
 import {AdminDashboardView} from '@/components/admin-dashboard';
 import {AdminForecast} from '@/components/admin-forecast';
 import {AdminKeywords} from '@/components/admin-keywords';
-import {validRegion} from '@/shared/regions';
+import {validRegion,REGIONS} from '@/shared/regions';
 export const dynamic='force-dynamic';
-export const metadata={title:'Administration · vor Ort',robots:{index:false,follow:false}};
+export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robots:{index:false,follow:false}};
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string}>}){const {seite,auswahl}=await searchParams;
  // "auswahl" preselects areas on page 1; only known area ids are accepted.
- const selection=[...new Set(String(auswahl||'').split(',').filter(id=>id&&validRegion(id)))].slice(0,450);
+ const selection=[...new Set(String(auswahl||'').split(',').filter(id=>id&&validRegion(id)))].slice(0,REGIONS.length);
  return <AdminContent page={seite==='2'?2:seite==='3'?3:seite==='4'?4:1} selection={selection}/>;}
 async function AdminContent({page,selection}:{page:number;selection:string[]}){
  const user=await getChatGPTUser();
- const frame=(children:React.ReactNode)=><main id="inhalt" className="admin-gate"><a className="admin-back" href="/" aria-label="Zurück zur Übersicht"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Zurück</a><a className="wordmark mt-4 block" href="/">Ratsmonitor<span className="wordmark__dot">.</span></a><p className="eyebrow">ADMINISTRATION</p>{children}<a className="text-link" href="/">Zur öffentlichen Website</a></main>;
+ const frame=(children:React.ReactNode)=><div className="admin-app"><AdminBar/><main id="inhalt" className="admin-gate"><p className="eyebrow">ADMINISTRATION</p>{children}<a className="text-link" href="/">Zur öffentlichen Website</a></main></div>;
  if(!user)return frame(<><h1>Geschützter Bereich</h1><p>Melde dich mit ChatGPT an, um die Administration zu öffnen.</p><Button asChild className="admin-gate-action"><a target="_top" href={chatGPTSignInPath('/admin')}>Mit ChatGPT anmelden</a></Button></>);
  try{
   const access=await adminAccess(env.DB,user);

@@ -214,20 +214,22 @@ export function estimateGermany({samples,frame,replicates=SAMPLE_RULES.replicate
 }
 /**
  * How much of the estimated volume can be read today?
- * units: the random sample outside NRW with the outcome of the source search (connected, unreadable, link, none)
- * known: areas whose state is known exactly (NRW catalog): {level,state,population,connected}
+ * units: the random sample with the outcome of the source search (connected, unreadable, link, none); units of
+ *   the known states are left out, there the catalog answers exactly
+ * known: areas whose state is known exactly (catalog of the connected states): {level,state,population,connected}
  * Shares are weighted by the expected reports of each unit, so a large city counts more than a village.
  */
-export function capture({units,known,models,cells,knownState='05'}){
+export function capture({units:all,known,models,cells,knownStates=['05']}){
+ const isKnown=new Set(knownStates),units=all.filter(u=>!isKnown.has(u.state));
  const expected=u=>predict(models[u.level]||models.municipality,u.population,u.state)||1;
  const classes=SIZE_CLASSES.map(c=>{
   const own=units.filter(u=>areaClass(u)===c.id),weight=own.reduce((n,u)=>n+expected(u),0),share=outcomes=>weight?own.filter(u=>outcomes.includes(u.outcome)).reduce((n,u)=>n+expected(u),0)/weight:null;
-  const elsewhere=Object.entries(cells).reduce((n,[state,cell])=>n+(state===knownState?0:cell[c.id]||0),0),mine=known.filter(a=>areaClass(a)===c.id),knownTotal=cells[knownState]?.[c.id]||0;
+  const elsewhere=Object.entries(cells).reduce((n,[state,cell])=>n+(isKnown.has(state)?0:cell[c.id]||0),0),mine=known.filter(a=>areaClass(a)===c.id),knownTotal=knownStates.reduce((n,state)=>n+(cells[state]?.[c.id]||0),0);
   const knownWeight=mine.reduce((n,a)=>n+expected(a),0),knownConnected=knownWeight?knownTotal*mine.filter(a=>a.connected).reduce((n,a)=>n+expected(a),0)/knownWeight:0;
   const connected=share(['connected']),unreadable=share(['unreadable']);
   return {id:c.id,name:c.name,units:own.length,counts:{connected:own.filter(u=>u.outcome==='connected').length,unreadable:own.filter(u=>u.outcome==='unreadable').length,unknown:own.filter(u=>u.outcome==='link'||u.outcome==='none').length},connected,unreadable,
    known:{areas:mine.length,connected:mine.filter(a=>a.connected).length},
-   // unreadable and unknown describe the sample outside the known state; there the reason is not broken down.
+   // unreadable and unknown describe the sample outside the known states; there the reason is not broken down.
    perYear:{connected:(connected||0)*elsewhere+knownConnected,unreadable:(unreadable||0)*elsewhere,unknown:(1-(connected||0)-(unreadable||0))*elsewhere,knownOpen:knownTotal-knownConnected,total:elsewhere+knownTotal}};
  });
  const keys=['connected','unreadable','unknown','knownOpen','total'],total=Object.fromEntries(keys.map(key=>[key,classes.reduce((n,c)=>n+c.perYear[key],0)]));

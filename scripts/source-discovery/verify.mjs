@@ -80,14 +80,14 @@ function oparlGuesses(url,sn){
 function identity(region,url,html){
  // "Hennef (Sieg)" and "Mülheim an der Ruhr" appear as "hennef" and "muelheim" in addresses.
  const plain=n=>n.replace(/\(.*?\)/g,'').replace(/\s+(an der|am|a\.\s?d\.|im|in der|bei|vor der|ob der)\s+.*$/i,'').trim();
- const names=[region.shortName,region.name.replace(/^(Stadt|Gemeinde|Kreis|Städteregion|Rhein-Kreis|Landkreis)\s+/,'')].flatMap(n=>[n,plain(n)]);
+ const names=[region.shortName,region.name.replace(/^(Stadt|Gemeinde|Samtgemeinde|Kreis|Städteregion|Rhein-Kreis|Landkreis|Region)\s+/,'')].flatMap(n=>[n,plain(n)]);
  const slugs=[...new Set(names.flatMap(n=>[norm(n),normPlain(n)]))].filter(s=>s.length>=3);
  const hay=norm(new URL(url).hostname+new URL(url).pathname),hayPlain=normPlain(new URL(url).hostname+new URL(url).pathname);
  const inUrl=slugs.some(s=>hay.includes(s)||hayPlain.includes(s));
  const body=norm(title(html)+' '+text(html).slice(0,6000));const inText=slugs.some(s=>body.includes(s));
  const t=title(html)+' '+text(html).slice(0,1500);
  const kreisPage=/\b(kreistag|kreisverwaltung|kreisausschuss|landrat)\b/i.test(t)||/kreis/i.test(new URL(url).hostname.split('.').slice(0,-1).join('.'));
- if(region.kind==='city'&&kreisPage&&!/\b(stadtrat|gemeinderat|rat der (stadt|gemeinde))\b/i.test(t)&&!inUrl)return {ok:false,why:'Seite gehört erkennbar zu einem Kreis'};
+ if(region.kind==='city'&&kreisPage&&!/\b(stadtrat|gemeinderat|samtgemeinderat|rat der (stadt|gemeinde|samtgemeinde))\b/i.test(t)&&!inUrl)return {ok:false,why:'Seite gehört erkennbar zu einem Kreis'};
  if(region.kind==='district'&&!kreisPage&&!/kreis|region/i.test(t+url))return {ok:false,why:'Kreisbezug nicht erkennbar'};
  // A district council system linked from the district's own website needs no further name match (e.g. "obk").
  if(region.kind==='district'&&/\b(kreistag|kreistagsinformation\w*|kreisausschuss)\b/i.test(t))return {ok:true,by:'Kreistagsseite, von der offiziellen Website verlinkt'};
@@ -103,8 +103,9 @@ async function verify(region,row){
  const tryOparl=async(url,sn,note,verifiedSource,trusted=true)=>{
   for(const guess of oparlGuesses(url,sn)){
    const system0=await withHost(guess,()=>probeOparl(guess));if(!system0)continue;note.oparl=guess;
-   // Areas outside the NRW catalog carry their official key explicitly, so the body can be matched by it.
-   let source={id:region.id,name:region.name,kind:region.kind,...(process.env.AREAS&&/^[0-9]{5}([0-9]{3})?$/.test(region.ags||'')?{ags:region.ags}:{}),system:guess,method:'oparl',...(String(system0.id||'').startsWith('http://')||String(system0.body||'').startsWith('http://')?{upgradeHttpLinks:true}:{})};
+   // Areas outside the NRW catalog carry their official key explicitly, so the body can be matched by it
+   // (Lower Saxon Samtgemeinden: 9-digit regional key).
+   let source={id:region.id,name:region.name,kind:region.kind,...(process.env.AREAS&&/^[0-9]{5}([0-9]{3,4})?$/.test(region.ags||'')?{ags:region.ags}:{}),system:guess,method:'oparl',...(String(system0.id||'').startsWith('http://')||String(system0.body||'').startsWith('http://')?{upgradeHttpLinks:true}:{})};
    const collect=async()=>{const d=await withHost(guess,()=>collectRegionalOparl(source,{window:WINDOW,maxDurationMs:150000}));note.oparlTopics=d.topics.length;note.oparlIssues=d.coverage.issues.slice(0,4);
     // The list method that delivered the meetings is fixed in the entry, so every import uses the verified one.
     return d.topics.length?{...source,...(['filter','end','forward'].includes(d.coverage.listStrategy)?{meetingScan:d.coverage.listStrategy}:{}),state:'system-verified',verifiedSource,verifiedAt:today,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,body:d.coverage.body}}:null;};

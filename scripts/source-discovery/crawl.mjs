@@ -6,7 +6,7 @@ const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
 const regions=JSON.parse(fs.readFileSync(process.env.AREAS||'shared/nrw-regions.json','utf8'));
 const wikidata=JSON.parse(fs.readFileSync(dir+'wikidata.json','utf8'));
-const configured=new Set(['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen',...['nrw-sources','nearby-sources','expanded-sources','statewide-sources'].flatMap(f=>{try{return JSON.parse(fs.readFileSync('server/integrations/'+f+'.json','utf8')).map(s=>s.id);}catch{return [];}})]);
+const configured=new Set(['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen',...['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources'].flatMap(f=>{try{return JSON.parse(fs.readFileSync('server/integrations/'+f+'.json','utf8')).map(s=>s.id);}catch{return [];}})]);
 const outFile=dir+(process.env.OUT||'candidates.json');
 const done=fs.existsSync(outFile)?JSON.parse(fs.readFileSync(outFile,'utf8')):{};
 const only=process.argv[2]?new Set(process.argv[2].split(',')):null;

@@ -36,6 +36,20 @@ Alle Schritte lassen sich mit einer kommagetrennten Liste von Gebiets-IDs auf ei
 
 `nrw-sources.json` entsteht aus dem OParl-Verzeichnis (`scripts/build-nrw.py`). Geänderte Adressen und abgeschaltete Quellen stehen in `server/integrations/source-overrides.json`; `node scripts/apply-source-overrides.mjs` überträgt sie. `"method": "pending"` schaltet eine Quelle ab: Sie wird nicht mehr abgerufen und im Adminbereich als nicht angebunden gezeigt.
 
+## Niedersachsen
+
+Der Gebietskatalog entsteht mit `node scripts/build-nds.mjs` (Gemeinden auf Verwaltungsebene: Einheits- und Samtgemeinden, kreisfreie Städte, Landkreise). Die Quellensuche läuft mit eigenem Arbeitsordner und schreibt nach `server/integrations/nds-sources.json`:
+
+```
+export LAND=03 DIR=tmp/source-discovery-nds/ AREAS=shared/nds-regions.json
+node scripts/source-discovery/wikidata.mjs
+node scripts/source-discovery/crawl.mjs
+node scripts/source-discovery/verify.mjs
+TARGET=server/integrations/nds-sources.json REPORT=requirements/nds-sources-report.md TITLE="Quellen für Niedersachsen" node scripts/source-discovery/build.mjs
+```
+
+Samtgemeinden werden über ihren 9-stelligen Regionalschlüssel gefunden (Wikidata P1388). Das System einer Samtgemeinde führt meist auch die Räte ihrer Mitgliedsgemeinden; alle Vorgänge zählen zum Gebiet der Samtgemeinde.
+
 ## Andere Gebietslisten
 
 `crawl.mjs` und `verify.mjs` arbeiten ohne weitere Angaben auf den NRW-Gebieten in `tmp/source-discovery/`. Für die Stichprobe der Hochrechnung (siehe `scripts/estimate/README.md`) lassen sie sich umstellen:

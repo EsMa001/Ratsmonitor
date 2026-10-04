@@ -54,7 +54,7 @@ test('real admin SQL counts canonical articles, separate quality states and sour
  const result=await loadAdminData(db,{now:new Date('2026-09-27T12:00:00Z')});
  assert.equal(result.counts.online,2);assert.equal(result.counts.aliases,1);assert.equal(result.counts.unlabelled,1);
  for(const key of ['aiSummaries','qualityPassed','pdfArticles','conflicts','textIssues','pushSubscriptions'])assert.equal(result.counts[key],1,key);
- assert.equal(result.counts.updated7d,2);assert.equal(result.sources.length,427);
+ assert.equal(result.counts.updated7d,2);assert.equal(result.sources.length,427+440);assert.equal(result.sources.filter(s=>s.land==='03').length,440);
  assert.equal(result.sources.find(s=>s.id==='billerbeck').count,1);
  assert.equal(result.sources.find(s=>s.id==='billerbeck').stale,true);
  assert.equal(result.sources.find(s=>s.id==='borken').configured,true);

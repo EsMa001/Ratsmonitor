@@ -1,0 +1,57 @@
+/* Adminbereich im Quorumo-Design: Kopfzeile wie die App, weiße Karten auf Slate-50, Teal als Akzent.
+   Jede Regel beginnt mit .admin-app, damit sie die älteren Adminregeln in globals.css überstimmt. */
+.admin-app{min-height:100vh;background:#f8fafc;color:#0f172a}
+.admin-app .admin-bar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e2e8f0}
+.admin-app .admin-bar__inner{display:flex;align-items:center;gap:16px;height:72px;padding:0 16px}
+.admin-app .admin-bar .admin-access{padding-left:16px;border-left:1px solid #e2e8f0;color:#475569;font-weight:500}
+.admin-app .admin-bar__account{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:.875rem;color:#64748b;min-width:0}
+.admin-app .admin-bar__account>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-app .admin-bar__account a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border:1px solid #e2e8f0;border-radius:9999px;background:#fff;color:#0f172a;font-weight:500;text-decoration:none;white-space:nowrap}
+.admin-app .admin-bar__account a:hover{border-color:#0d9488;color:#0f766e}
+
+/* Seitenwahl als Reiter unter der Kopfzeile, auf der Breite des Inhalts */
+.admin-app .admin-pages{max-width:1320px;margin:0 auto;padding:12px 24px 0;gap:6px;border-bottom:0}
+.admin-app .admin-pages a{gap:8px;padding:9px 14px;border:1px solid transparent;border-radius:9999px;color:#475569;font-size:.9375rem;text-decoration:none}
+.admin-app .admin-pages a b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:9999px;background:#e2e8f0;color:#334155;font-size:.75rem;font-weight:600}
+.admin-app .admin-pages a:hover{background:#fff;border-color:#e2e8f0;color:#0f172a}
+.admin-app .admin-pages a[aria-current=page]{background:#fff;border-color:#e2e8f0;color:#0f766e;font-weight:600;box-shadow:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d}
+.admin-app .admin-pages a[aria-current=page] b{background:#0d9488;color:#fff}
+
+.admin-app .admin-shell{max-width:1320px;margin:0 auto;padding:0 24px 56px;background:transparent;border-radius:0;color:#0f172a}
+.admin-app .admin-heading h1{letter-spacing:-.02em}
+.admin-app .eyebrow{color:#0f766e;letter-spacing:.08em}
+
+/* Kennzahlen als einzelne Karten */
+.admin-app .admin-kpis{gap:12px;border:0}
+.admin-app .admin-kpi{padding:18px 18px 20px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;box-shadow:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d}
+.admin-app .admin-kpi:first-child{padding-left:18px}
+.admin-app .admin-kpi:last-child{border-right:1px solid #e2e8f0}
+.admin-app .admin-kpi-primary>strong{color:#0f766e}
+.admin-app a.admin-kpi:hover{border-color:#99f6e4;background:#fff}
+
+/* Abschnitte als Karten statt schwarzer Trennlinien */
+.admin-app .admin-section,.admin-app .admin-territories,.admin-app .admin-pipeline,.admin-app .admin-job,.admin-app .admin-storage-status,.admin-app .admin-timeline,.admin-app .admin-estimate{margin:20px 0;padding:24px;border:1px solid #e2e8f0;border-radius:16px;background:#fff;box-shadow:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d}
+.admin-app .admin-job{background:#f0fdfa;border-color:#99f6e4}
+.admin-app .admin-stage{border-radius:12px;background:#fff}
+.admin-app .admin-stage-ai{background:#f0fdfa;border-color:#99f6e4}
+.admin-app .admin-map{border-radius:12px}
+
+/* Hinweise und Leerzustände im Kartenstil */
+.admin-app .admin-notice,.admin-app .admin-error,.admin-app .admin-attention{border-radius:10px;border-left-width:4px}
+.admin-app .admin-empty,.admin-app .admin-explainer{border-radius:10px}
+
+/* Anmeldung: Karte unter der Kopfzeile */
+.admin-app .admin-gate{margin:48px auto}
+.admin-app .admin-gate>.eyebrow{margin-top:0}
+.admin-app .admin-gate .text-link{color:#0f766e}
+
+@media(max-width:700px){
+ .admin-app .admin-bar__inner{gap:10px;padding:0 12px}
+ .admin-app .admin-bar .admin-access{display:none}
+ .admin-app .admin-bar__account>span{display:none}
+ .admin-app .admin-pages{padding:10px 12px 0;overflow-x:auto;flex-wrap:nowrap}
+ .admin-app .admin-pages a span{white-space:nowrap}
+ .admin-app .admin-shell{padding:0 12px 40px}
+ .admin-app .admin-section,.admin-app .admin-territories,.admin-app .admin-pipeline,.admin-app .admin-job,.admin-app .admin-storage-status,.admin-app .admin-timeline,.admin-app .admin-estimate{padding:16px;border-radius:12px}
+ .admin-app .admin-kpis{grid-template-columns:1fr 1fr}
+}

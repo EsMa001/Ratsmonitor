@@ -13,7 +13,7 @@ export function parseMonitorSearch(params){
  /* Tiefe Seiten sind teuer (OFFSET) und für Menschen nutzlos: ab hier Suche eingrenzen */
  if(Number(raw)>MAX_PAGE)throw new SearchError('Bitte grenze die Suche ein, um weitere Treffer zu sehen.');
  const within=params.has('within')?params.get('within').split(',').filter(Boolean):null;
- if(within&&(within.length>500||within.some(a=>!/^\d{5}(\d{3})?$/.test(a))))throw new SearchError('Ungültiger Umkreis.');
+ if(within&&(within.length>2000||within.some(a=>!/^\d{5}(\d{3})?$/.test(a))))throw new SearchError('Ungültiger Umkreis.');
  const revision=params.get('revision');if(revision!==null&&!/^\d+$/.test(revision))throw new SearchError('Ungültiger Datenstand.');
  /* Weitere Orte aus der Suche: "AGS:only|with" kommagetrennt, zusätzlich zu area (ODER-Verknüpfung) */
  const more=(params.get('more')||'').split(',').filter(Boolean).map(x=>{const [ags,sc]=x.split(':');return {ags,scope:sc==='with'?'with':'only'};});
@@ -33,10 +33,12 @@ export async function searchMonitor(db,catalog,params){
  /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */
  const regions=places.length?catalog:catalog.filter(r=>r.kind===f.level);
  const byId=new Map(regions.map(r=>[r.id,r]));
- /* Regionen eines Orts je nach Umfang: nur das Gebiet oder inklusive Kreis bzw. Gemeinden */
- const inPlace=(r,{ags,scope})=>ags.length===2?r.ags.startsWith(ags):scope==='only'?r.ags===ags:ags.length===5?r.ags.startsWith(ags):r.ags===ags||r.ags===ags.slice(0,5);
+ /* Regionen eines Orts je nach Umfang: nur das Gebiet oder inklusive Kreis bzw. Gemeinden.
+    Eine niedersächsische Mitgliedsgemeinde liegt in ihrer Samtgemeinde: deren Rat und System führen ihre Vorgänge. */
+ const isPlace=(r,ags)=>r.ags===ags||!!r.members?.some(m=>m.ags===ags)||!!r.formerAgs?.includes(ags);
+ const inPlace=(r,{ags,scope})=>ags.length===2?r.ags.startsWith(ags):scope==='only'?isPlace(r,ags):ags.length===5?r.ags.startsWith(ags):isPlace(r,ags)||r.ags===ags.slice(0,5);
  let scoped=places.length?regions.filter(r=>places.some(p=>inPlace(r,p))):regions;
- if(f.within){const w=new Set(f.within);scoped=scoped.filter(r=>w.has(r.ags));}
+ if(f.within){const w=new Set(f.within);scoped=scoped.filter(r=>w.has(r.ags)||r.members?.some(m=>w.has(m.ags))||r.formerAgs?.some(a=>w.has(a)));}
  const allIds=JSON.stringify(regions.map(r=>r.id)),scopedIds=JSON.stringify(scoped.map(r=>r.id));
  /* Begriff trifft auch den Gemeindenamen: passende Regionen vorab in JS ermitteln */
  const nameHits=term=>JSON.stringify(regions.filter(r=>norm(r.name).includes(term)).map(r=>r.id));
@@ -65,8 +67,10 @@ export async function searchMonitor(db,catalog,params){
  const revision=String(rev.results[0].revision);
  if(f.revision!==null&&f.revision!==revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);
  const areaCounts={};
- for(const r of areas.results){const ags=byId.get(r.rid)?.ags;if(ags===undefined)continue;for(const key of new Set([ags,ags.slice(0,5),ags.slice(0,2),'']))areaCounts[key]=(areaCounts[key]||0)+r.n;}
- return {articles:rows.results.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'})),total:total.results[0].n,page:f.page,pageSize:limit,revision,areaCounts,themaCounts:Object.fromEntries(labels.results.map(r=>[LABELS.find(l=>l.id===r.label)?.name||'Noch nicht eingeordnet',r.n])),monatCounts:{},statusCounts:Object.fromEntries(statuses.results.map(r=>[r.status,r.n])),coverage:coverage.results.filter(r=>byId.has(r.region_id)).map(r=>({ags:byId.get(r.region_id).ags,name:byId.get(r.region_id).name,count:r.n,complete:!!r.complete})),storageAvailable:true};
+ for(const r of areas.results){const region=byId.get(r.rid);if(!region)continue;const ags=region.ags;for(const key of new Set([ags,ags.slice(0,5),ags.slice(0,2),'']))areaCounts[key]=(areaCounts[key]||0)+r.n;
+  /* Die Karte kennt nur Gemeinden: jede Mitgliedsgemeinde zeigt die Berichte ihrer Samtgemeinde */
+  for(const key of [...(region.members||[]).map(m=>m.ags),...(region.formerAgs||[])])areaCounts[key]=(areaCounts[key]||0)+r.n;}
+ return {articles:rows.results.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'})),total:total.results[0].n,page:f.page,pageSize:limit,revision,areaCounts,themaCounts:Object.fromEntries(labels.results.map(r=>[LABELS.find(l=>l.id===r.label)?.name||'Noch nicht eingeordnet',r.n])),monatCounts:{},statusCounts:Object.fromEntries(statuses.results.map(r=>[r.status,r.n])),coverage:coverage.results.filter(r=>byId.has(r.region_id)).flatMap(r=>{const region=byId.get(r.region_id),entry={count:r.n,complete:!!r.complete};return region.members?region.members.map(m=>({ags:m.ags,name:m.name+' ('+region.name+')',...entry})):[{ags:region.ags,name:region.name,...entry},...(region.formerAgs||[]).map(ags=>({ags,name:region.name,...entry}))];}),storageAvailable:true};
 }
 
 /** Nur Stationen aus derselben Kommune: gleiche Quelle (Host) wie der Vorgang */

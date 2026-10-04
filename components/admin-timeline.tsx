@@ -26,7 +26,7 @@ function Chart({points,value,kind,bucket,color,unit,hover,onHover}:{points:Point
   {points.map((p,i)=><rect key={p.start} x={x(i)} y={T} width={step} height={h} fill="transparent" onMouseEnter={()=>onHover(i)}><title>{bucketLabel(p.start,bucket)+': '+n(value(p))+' '+unit}</title></rect>)}
  </svg>;
 }
-/** Stock and inflow of stored reports over time, for the map selection or all of NRW. Reads only. */
+/** Stock and inflow of stored reports over time, for the map selection or all areas. Reads only. */
 export function AdminTimeline({selected,revision,initial}:{selected:Set<string>;revision:number;initial?:Dataset}){
  const [scope,setScope]=useState('selection'),[basis,setBasis]=useState('event'),[bucket,setBucket]=useState('week'),[range,setRange]=useState('12m');
  const [loaded,setLoaded]=useState<Record<string,Dataset>>(initial?{[initial.basis+':'+revision]:initial}:{}),[failed,setFailed]=useState<Record<string,string>>({}),[hover,setHover]=useState<number|null>(null);
@@ -43,16 +43,16 @@ export function AdminTimeline({selected,revision,initial}:{selected:Set<string>;
  },[dataset,scope,selected,range,bucket]);
  const point=view&&hover!==null?view.series.points[hover]:null;
  return <section className="admin-timeline" id="admin-verlauf">
-  <div className="admin-section-heading"><div><p className="eyebrow">BESTAND & ZULAUF</p><h2>Wie viele Berichte sind gespeichert, wie viele kommen neu hinzu?</h2></div>{view&&<span>{scope==='all'?'Ganz NRW':n(selected.size)+' ausgewählte Gebiete'} · {n(view.merged.areas)} mit Berichten</span>}</div>
+  <div className="admin-section-heading"><div><p className="eyebrow">BESTAND & ZULAUF</p><h2>Wie viele Berichte sind gespeichert, wie viele kommen neu hinzu?</h2></div>{view&&<span>{scope==='all'?'Alle Gebiete':n(selected.size)+' ausgewählte Gebiete'} · {n(view.merged.areas)} mit Berichten</span>}</div>
   <div className="admin-timeline-controls">
-   <Choice label="Gebiete" value={scope} onChange={setScope} items={[["selection",`Auswahl der Karte (${n(selected.size)})`],["all","Ganz NRW"]]}/>
+   <Choice label="Gebiete" value={scope} onChange={setScope} items={[["selection",`Auswahl der Karte (${n(selected.size)})`],["all","Alle Gebiete"]]}/>
    <Choice label="Zeitraum" value={range} onChange={s=>{setRange(s);setHover(null);}} items={Object.entries(TIMELINE_RANGES).map(([id,r])=>[id,r.label]) as [string,string][]}/>
    <Choice label="Zeitraster" value={bucket} onChange={s=>{setBucket(s);setHover(null);}} items={Object.entries(TIMELINE_BUCKETS).map(([id,name])=>[id,'je '+name]) as [string,string][]}/>
    <Choice label="Zeitbezug" value={basis} onChange={s=>{setBasis(s);setHover(null);}} items={Object.entries(TIMELINE_BASES) as [string,string][]}/>
   </div>
   {error&&<p role="alert" className="admin-error">{error} <button type="button" className="admin-timeline-retry" onClick={()=>setFailed(prev=>{const next={...prev};delete next[key];return next;})}>Erneut laden</button></p>}
   {!view&&!error&&<p role="status" className="admin-note">Verlauf wird aus der Datenbank gelesen …</p>}
-  {view&&(scope==='selection'&&!selected.size?<p className="admin-empty">Keine Gebiete ausgewählt. Gebiete auf der Karte oder in der Liste auswählen, oder oben „Ganz NRW“ einstellen.</p>:<>
+  {view&&(scope==='selection'&&!selected.size?<p className="admin-empty">Keine Gebiete ausgewählt. Gebiete auf der Karte oder in der Liste auswählen, oder oben „Alle Gebiete“ einstellen.</p>:<>
    <div className="admin-kpis">
     <div className="admin-kpi admin-kpi-primary"><span>Bestand heute</span><strong>{n(view.series.total)}</strong><small>{view.series.after?`dazu ${n(view.series.after)} für kommende Sitzungen bereits erfasst`:'Berichte bis einschließlich heute'}</small></div>
     <div className="admin-kpi"><span>Neu pro Tag</span><strong>{n(view.stats.perDay,1)}</strong><small>Durchschnitt über {n(view.stats.days)} Kalendertage · {n(view.stats.perActiveDay,1)} an den {n(view.stats.activeDays)} Tagen mit Zulauf</small></div>
@@ -61,8 +61,8 @@ export function AdminTimeline({selected,revision,initial}:{selected:Set<string>;
    </div>
    <p className="admin-note">{n(view.stats.total)} neue Berichte vom {day(view.from)} bis {day(view.to)}. {basis==='event'?'Ein Bericht zählt an dem Tag, an dem er erstmals auf einer Tagesordnung stand. So fällt der Zulauf auch im laufenden Betrieb an.':`Ein Bericht zählt am Tag seiner ersten Speicherung. Dieses Datum wird erst seit Oktober 2026 erfasst: ${n(view.merged.undated)} Berichte der Auswahl haben keines und stehen nur im Bestand, nicht im Zulauf.`} Der Durchschnitt unterschätzt den künftigen Zulauf, wenn Gebiete der Auswahl nicht für den ganzen Zeitraum eingelesen sind.</p>
    <div className="admin-timeline-charts">
-    <figure><figcaption>Neue Berichte je {TIMELINE_BUCKETS[bucket as keyof typeof TIMELINE_BUCKETS]}</figcaption><Chart points={view.series.points} value={p=>p.count} kind="bars" bucket={bucket} color="#2352ad" unit="neue Berichte" hover={hover} onHover={setHover}/></figure>
-    <figure><figcaption>Gesamtzahl der gespeicherten Berichte</figcaption><Chart points={view.series.points} value={p=>p.total} kind="line" bucket={bucket} color="#2352ad" unit="Berichte im Bestand" hover={hover} onHover={setHover}/></figure>
+    <figure><figcaption>Neue Berichte je {TIMELINE_BUCKETS[bucket as keyof typeof TIMELINE_BUCKETS]}</figcaption><Chart points={view.series.points} value={p=>p.count} kind="bars" bucket={bucket} color="#0d9488" unit="neue Berichte" hover={hover} onHover={setHover}/></figure>
+    <figure><figcaption>Gesamtzahl der gespeicherten Berichte</figcaption><Chart points={view.series.points} value={p=>p.total} kind="line" bucket={bucket} color="#0d9488" unit="Berichte im Bestand" hover={hover} onHover={setHover}/></figure>
    </div>
    <p className="admin-map-hover" aria-live="polite">{point?<><strong>{bucketLabel(point.start,bucket)}</strong> · {n(point.count)} neue Berichte · Bestand {n(point.total)}</>:<>Mit der Maus über ein Diagramm fahren, um die Werte eines Zeitabschnitts zu lesen.</>}</p>
    <details><summary>Werte als Tabelle</summary><div className="admin-timeline-table"><table><thead><tr><th scope="col">Zeitabschnitt</th><th scope="col">Neue Berichte</th><th scope="col">Bestand</th></tr></thead><tbody>{[...view.series.points].reverse().map(p=><tr key={p.start}><td>{bucketLabel(p.start,bucket)}</td><td>{n(p.count)}</td><td>{n(p.total)}</td></tr>)}</tbody></table></div></details>

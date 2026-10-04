@@ -1,6 +1,9 @@
-import catalog from './nrw-regions.json';
-export interface Region {id:string;name:string;shortName:string;kind:'city'|'district';district:string|null;ags:string;municipalityType?:string;independent?:boolean}
-export const REGIONS=catalog as Region[];
+import {CATALOG} from './catalog.mjs';
+/** ags: 8 Stellen je Gemeinde, 5 je Kreis, 9 (Regionalschlüssel) je niedersächsischer Samtgemeinde mit members */
+export interface Region {id:string;name:string;shortName:string;kind:'city'|'district';district:string|null;ags:string;municipalityType?:string;independent?:boolean;members?:{ags:string;name:string}[];formerAgs?:string[]}
+/** Gemeindeschlüssel, unter denen die öffentliche Karte (Stand 2018) das Gebiet zeigt */
+export const mapKeys=(r:Region)=>r.members?r.members.map(m=>m.ags):r.formerAgs??[r.ags];
+export const REGIONS=CATALOG as Region[];
 export type RegionId=string;
 export function regionName(id?:string){return REGIONS.find(r=>r.id===(id||'muenster'))?.name||'Unbekanntes Gebiet'}
 export function validRegion(id:string){return REGIONS.some(r=>r.id===id)}

@@ -1,6 +1,6 @@
 # Ratsmonitor · Kommunalpolitik entdecken
 
-Responsive MVP zum Lesen öffentlicher Kommunalpolitik. 396 NRW-Städte und Gemeinden sowie 31 Kreise / Städteregionen zur Auswahl; zwölf Monate angefragter Rückblick plus veröffentlichte anstehende Beratungen. Keine Kommentare oder Beteiligungshinweise.
+Responsive MVP zum Lesen öffentlicher Kommunalpolitik. 396 NRW-Städte und Gemeinden sowie 31 Kreise / Städteregionen und in Niedersachsen 403 Städte, Einheits- und Samtgemeinden sowie 37 Landkreise einschließlich Region Hannover zur Auswahl; zwölf Monate angefragter Rückblick plus veröffentlichte anstehende Beratungen. Keine Kommentare oder Beteiligungshinweise.
 
 ## Aktuelle Oberfläche (28.09.2026)
 
@@ -125,6 +125,8 @@ Die Veränderungskarte vergleicht zwei gleich lange Tagesabschnitte innerhalb de
 
 
 ## NRW-Verzeichnis und portable Importjobs
+
+Alle Programme lesen die Gebiete über `shared/catalog.mjs` (NRW und Niedersachsen, Länder in `shared/lands.mjs`). Niedersachsen (`shared/nds-regions.json`, erzeugt mit `node scripts/build-nds.mjs`) wird auf Verwaltungsebene geführt: kreisfreie Städte, Einheitsgemeinden und Samtgemeinden. Eine Samtgemeinde hat den 9-stelligen Regionalschlüssel als `ags` und ihre Mitgliedsgemeinden in `members`; die Suche ordnet eine gewählte Mitgliedsgemeinde ihrer Samtgemeinde zu. Gefundene Quellen stehen in `server/integrations/nds-sources.json` (Ablauf: `scripts/source-discovery/README.md`).
 
 `shared/nrw-regions.json` enthält 396 Gemeinden und 31 Kreise einschließlich Städteregion Aachen. Amtliche Schlüssel sind eindeutig; bisherige URLs behalten ihre IDs. `city` umfasst technisch auch Gemeinden. Gemeinde- und Kreisdaten dürfen nicht addiert werden, als seien sie dieselbe Verwaltungsebene.
 

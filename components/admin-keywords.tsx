@@ -1,6 +1,7 @@
 'use client';
+import {AdminHeader} from '@/components/admin-chrome';
 import {useEffect,useMemo,useState} from 'react';
-import {ShieldCheck,RefreshCw} from 'lucide-react';
+import {RefreshCw} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
@@ -50,9 +51,7 @@ export function AdminKeywords({displayName,signOutPath,initial}:{displayName:str
   .map(i=>({term:i.term,metric:order==='weight'?i.weight:i.articles,value:order==='weight'?n(i.weight)+' Punkte':n(i.articles),cells:[n(i.articles),n(i.weight),n(i.weight/i.articles,1)]})),[data,basis,order]);
  const labels=useMemo(()=>[...new Set((data?.rule.words||[]).map(w=>w.label))].map(id=>({id,name:labelName(id)})).sort((a,b)=>a.name.localeCompare(b.name,'de')),[data]);
  const cut=(delivered:number,total:number)=>delivered<total?`Die Liste zeigt die ${n(delivered)} häufigsten von ${n(total)}.`:undefined;
- return <main id="inhalt" className="admin-shell admin-workspace">
-  <header className="admin-topbar"><a className="admin-back" href="/" aria-label="Zurück zur Übersicht"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Zurück</a><a className="wordmark" href="/">Ratsmonitor<span className="wordmark__dot">.</span></a><span className="admin-access"><ShieldCheck size={16}/> Administration</span><a target="_top" href={signOutPath}>Abmelden</a></header>
-  <nav className="admin-pages" aria-label="Adminseiten"><a href="/admin">1 <span>Daten & Verarbeitung</span></a><a href="/admin?seite=2">2 <span>Qualität & Betrieb</span></a><a href="/admin?seite=3">3 <span>Hochrechnung</span></a><a href="/admin?seite=4" aria-current="page">4 <span>Stichwörter</span></a></nav>
+ return <div className="admin-app"><AdminHeader page={4} displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
   <div className="admin-heading"><div><p className="eyebrow">REGELN & KI</p><h1>Stichwörter.</h1><p>{displayName}{data&&<> · Datenbankstand {date(data.asOf)} Uhr</>}</p></div><Button className="admin-refresh" variant="outline" onClick={()=>load()} disabled={busy}><RefreshCw size={16} className={busy?'admin-spin':''}/>{busy?'Wird gezählt …':'Neu zählen'}</Button></div>
   {error&&<p className="admin-error" role="alert">{error}{data&&' Der letzte geladene Stand bleibt sichtbar.'}</p>}
   {!data?!error&&<p className="admin-empty" role="status">Stichwörter werden aus dem gespeicherten Bestand gezählt …</p>:<>
@@ -84,5 +83,5 @@ export function AdminKeywords({displayName,signOutPath,initial}:{displayName:str
    </section>
   </>}
   <footer className="admin-footer">Die Übersicht liest nur den gespeicherten Bestand. <a href="/admin">Regel-Labels und KI-Aufträge starten: Daten & Verarbeitung →</a></footer>
- </main>;
+ </main></div>;
 }

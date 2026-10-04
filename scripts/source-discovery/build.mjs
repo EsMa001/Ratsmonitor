@@ -1,13 +1,14 @@
 // Stage 3: write the verified sources to server/integrations/statewide-sources.json and a report.
 // Existing entries are never deleted; entries with an explicitly assigned body are curated and stay as they are.
+// Another state: DIR, AREAS, TARGET, REPORT and TITLE (e.g. Niedersachsen → nds-sources.json, see README).
 import fs from 'node:fs';
-const dir='tmp/source-discovery/',target='server/integrations/statewide-sources.json',reportFile='requirements/statewide-sources-report.md';
+const dir=process.env.DIR||'tmp/source-discovery/',target=process.env.TARGET||'server/integrations/statewide-sources.json',reportFile=process.env.REPORT||'requirements/statewide-sources-report.md',title=process.env.TITLE||'Quellen für ganz NRW';
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
-const regions=read('shared/nrw-regions.json'),verified=read(dir+'verified.json');
+const regions=read(process.env.AREAS||'shared/nrw-regions.json'),verified=read(dir+'verified.json');
 // Results for guessed addresses (guess.mjs) are kept in their own file and only add sources.
 if(fs.existsSync(dir+'verified-guessed.json'))for(const row of Object.values(read(dir+'verified-guessed.json')))if(row.accepted&&!verified[row.id]?.accepted)verified[row.id]=row;
 const candidates=fs.existsSync(dir+'candidates.json')?read(dir+'candidates.json'):{};
-const other=['nrw-sources','nearby-sources','expanded-sources'].flatMap(f=>read('server/integrations/'+f+'.json'));
+const other=['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources'].map(f=>'server/integrations/'+f+'.json').filter(f=>f!==target&&fs.existsSync(f)).flatMap(read);
 const core=['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen'];
 const elsewhere=new Set([...core,...other.map(s=>s.id)]);
 // Sources that are switched off (method "pending") stay in their file but do not count as connected.
@@ -30,7 +31,9 @@ const sources=[...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));
 for(const s of sources){const r=regions.find(r=>r.id===s.id);if(!r||r.name!==s.name||r.kind!==s.kind)throw Error('Gebiet passt nicht: '+s.id);}
 fs.writeFileSync(target,JSON.stringify(sources,null,2)+String.fromCharCode(10));
 
-const connected=new Set([...[...elsewhere].filter(id=>!switchedOff.has(id)),...sources.map(s=>s.id)]);
+// Only areas of this list count; the other files also hold sources of other states.
+const listed=new Set(regions.map(r=>r.id));
+const connected=new Set([...[...elsewhere].filter(id=>!switchedOff.has(id)),...sources.map(s=>s.id)].filter(id=>listed.has(id)));
 const reason=row=>{
  if(!row)return 'Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden';
  if(dropped.includes(row.id))return 'Adresse mehreren Gebieten zugeordnet';
@@ -56,9 +59,9 @@ const open=regions.filter(r=>!connected.has(r.id)).map(r=>({...r,reason:switched
 const count=(list,key)=>Object.entries(list.reduce((a,x)=>(a[key(x)]=(a[key(x)]||0)+1,a),{})).sort((a,b)=>b[1]-a[1]);
 const methodName=s=>s.method==='oparl'?'OParl':s.method==='official-api'?'More! Rubin (Kalender-API)':s.adapter==='sdnet'?'SD.NET (öffentliche Seiten)':s.adapter==='allris'?'ALLRIS 4 (öffentliche Seiten)':'SessionNet (öffentliche Seiten)';
 const today=new Date().toISOString().slice(0,10).split('-').reverse().join('.');
-const lines=['# Quellen für ganz NRW: Ergebnis der automatischen Suche','',
+const lines=['# '+title+': Ergebnis der automatischen Suche','',
  `Stand: ${today}. Erzeugt von \`scripts/source-discovery/\` (Ablauf siehe README dort).`,'',
- `Von ${regions.length} auswählbaren Gebieten sind ${connected.size} angebunden, ${open.length} nicht. Diese Datei beschreibt die ${sources.length} Quellen in \`server/integrations/statewide-sources.json\` und nennt für jedes nicht angebundene Gebiet den Grund.`,'',
+ `Von ${regions.length} auswählbaren Gebieten sind ${connected.size} angebunden, ${open.length} nicht. Diese Datei beschreibt die ${sources.length} Quellen in \`${target}\` und nennt für jedes nicht angebundene Gebiet den Grund.`,'',
  'Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.','',
  '## Übernommene Quellen','',...count(sources,methodName).map(([k,n])=>`- ${n} × ${k}`),'',
  '| Gebiet | Verfahren | Adresse | Artikel bei der Prüfung (3 Monate) |','|---|---|---|---|',

@@ -52,7 +52,7 @@ const STOP = new Set(
 );
 
 const ALIAS: Record<string, string> = {
-  nrw: "05", bw: "08", rlp: "07", mv: "13", mvp: "13", sh: "01", bayern: "09", hessen: "06", sachsen: "14",
+  nrw: "05", nds: "03", ni: "03", bw: "08", rlp: "07", mv: "13", mvp: "13", sh: "01", bayern: "09", hessen: "06", sachsen: "14",
   berlin: "11", hamburg: "02", bremen: "04", saarland: "10", thueringen: "16", thuringen: "16",
 };
 
@@ -135,7 +135,8 @@ export class PlaceIndex {
     let s = KIND_SCORE[e.kind];
     if (alias) s -= 30;
     if (rawLower && e.name.toLowerCase() === rawLower) s += 25;
-    if (e.ags.startsWith("05")) s += 15;
+    /* Angebundene Länder zuerst: gleichnamige Orte dort sind gemeint */
+    if (e.ags.startsWith("05") || e.ags.startsWith("03")) s += 15;
     return s + Math.min(10, Math.log10(1 + this.geo.areaSize(e.ags)) * 3);
   }
 
