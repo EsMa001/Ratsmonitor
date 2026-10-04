@@ -28,10 +28,12 @@ interface Props {
   terms: string[];
   onOpen: (a: Article) => void;
   onHover: (ags: string) => void;
+  /** kompakte Ansicht: nur Datum, Titel, Ort und Gremium */
+  compact?: boolean;
 }
 
 /** Eintrag der Ergebnisliste: Überschrift, Unterzeile, Zusammenfassung; die ganze Karte ist klickbar */
-export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, onOpen, onHover }: Props) {
+export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, onOpen, onHover, compact = false }: Props) {
   const [y, m, d] = a.date.split("-");
   const sub = [a.gemeinde, a.gremium].filter(Boolean).join(" · ");
   return (
@@ -68,10 +70,10 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
       <p className="mb-1.5 mt-0.5 text-[13px] font-medium text-slate-500">
         <Highlight text={sub} terms={terms} />
       </p>
-      <p className="m-0 max-w-[96ch] text-[14px] leading-[1.6] text-slate-600">
+      {!compact && <p className="m-0 max-w-[96ch] text-[14px] leading-[1.6] text-slate-600">
         <Highlight text={a.teaser} terms={terms} />
-      </p>
-      {a.steps && a.steps.length > 1 && a.steps[0].d < new Date().toISOString().slice(0, 10) && <StepTimeline steps={a.steps} />}
+      </p>}
+      {!compact && a.steps && a.steps.length > 1 && a.steps[0].d < new Date().toISOString().slice(0, 10) && <StepTimeline steps={a.steps} />}
       </div>
       {/* Eigene Spalte fürs Lesezeichen: der Text endet bündig mit dem Suchfeld (rechts davon Filter und Herz) */}
       <div className="flex w-[56px] justify-end">

@@ -37,6 +37,7 @@ export function SavedArticlesPage() {
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Artikel</h2>
           <p className="m-0 max-w-[44ch] text-slate-500">Tippen Sie bei einem Artikel auf das Lesezeichen, um ihn hier zu sammeln.</p>
+          <p className="m-0 mt-2 max-w-[48ch] text-[14px] text-slate-500">Mit der Glocke folgen Sie einem Vorgang: Sie werden benachrichtigt, sobald er weiter beraten oder beschlossen wird.</p>
           <Link className="btn-primary mt-5" href="/">
             Artikel entdecken
           </Link>

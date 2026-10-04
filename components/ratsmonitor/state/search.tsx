@@ -230,7 +230,9 @@ export function useSearch(): SearchValue {
 /* ---------- Abgeleitete Werte: Treffer, Zähler, erkannter Ort ---------- */
 export interface CoverageEntry {ags:string;name:string;count:number;complete:boolean}
 export interface SearchResults {
- total:number;coverage:CoverageEntry[];loading:boolean;error:string;page:number;setPage:(page:number)=>void;retry:()=>void;
+ total:number;coverage:CoverageEntry[];
+  /** jüngster erfolgreicher Datenabruf (ISO) */
+  updatedAt:string|null;loading:boolean;error:string;page:number;setPage:(page:number)=>void;retry:()=>void;
   pq: ParseResult;
   /** Ort aus der Suche ist als Gebiet aktiv */
   placeActive: boolean;
@@ -274,7 +276,7 @@ function useDerivedResults(state:SearchState):SearchResults {
  const revision=useRef({key:'',value:''});
  /* Gebiete mit Berichten je Ebene, aus der jeweils letzten Antwort */
  const covered=useRef<Record<string,Set<string>>>({});
- type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;coverage:CoverageEntry[];revision:string};
+ type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;coverage:CoverageEntry[];revision:string;updatedAt?:string|null};
  const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string}>({key:'',data:null,error:''});
  const requestKey=local.key+'&page='+page+'&attempt='+attempt;
  useEffect(()=>{
@@ -313,6 +315,6 @@ function useDerivedResults(state:SearchState):SearchResults {
  const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
  const error=loading?'':remote.error;
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:data?.coverage??EMPTY_COVERAGE,loading,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry]);
+ return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:data?.coverage??EMPTY_COVERAGE,updatedAt:data?.updatedAt??null,loading,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

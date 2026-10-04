@@ -1,3 +1,4 @@
+import { useListView } from "../../lib/listView";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { filterChips } from "../../lib/savedSearch";
 import { useData } from "../../state/data";
@@ -13,6 +14,7 @@ export function ResultsPanel() {
   const search = useSearch();
   const { state, mapRef } = search;
   const res = useSearchResults();
+  const view = useListView();
   const articlesReady=!res.loading;
   const { push } = useAppNav();
   const { allowFeature, limits } = useEntitlements();
@@ -92,6 +94,7 @@ export function ResultsPanel() {
               terms={terms}
               onOpen={onOpen}
               onHover={onHover}
+              compact={view === "compact"}
             />
           ))}
           {articlesReady && !res.error && n === 0 && (

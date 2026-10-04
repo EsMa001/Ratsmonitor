@@ -43,9 +43,9 @@ export function AreaBar() {
           {name}
         </span>
         {scoped && (
-          <div role="group" aria-label="Gebietsumfang" title={km ? "Im Umkreis werden alle Gebiete im Kreis durchsucht" : undefined} className={`flex gap-0.5 rounded-[10px] bg-slate-100 p-[3px] ${km ? "opacity-40" : ""}`}>
+          <div role="group" aria-label="Gebietsumfang" title={km ? "Im Umkreis werden alle Gebiete im Kreis durchsucht" : undefined} className={`flex items-center gap-4 ${km ? "opacity-40" : ""}`}>
             {scopes.map(([v, label]) => (
-              <button key={v} type="button" disabled={!!km} aria-pressed={state.scope === v} onClick={() => search.setScope(v)} className={`h-[30px] whitespace-nowrap rounded-[7px] px-[11px] disabled:cursor-not-allowed ${state.scope === v ? "bg-white text-slate-900 shadow-seg" : "text-slate-600 hover:text-slate-900"}`}>
+              <button key={v} type="button" disabled={!!km} aria-pressed={state.scope === v} onClick={() => search.setScope(v)} className={`whitespace-nowrap py-1 text-[14px] disabled:cursor-not-allowed ${state.scope === v ? "border-b-2 border-teal-600 text-teal-600" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
                 {label}
               </button>
             ))}

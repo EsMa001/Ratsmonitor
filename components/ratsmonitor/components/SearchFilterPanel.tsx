@@ -10,7 +10,8 @@ import { FilterSelect } from "./FilterSelect";
 import { GeoFilter } from "./GeoFilter";
 import { AreaBar } from "./AreaBar";
 import { DateRangeFilter } from "./DateRangeFilter";
-import { IconHeart, IconFilter, IconX } from "./icons";
+import { setListView, useListView } from "../lib/listView";
+import { IconHeart, IconFilter, IconViewCompact, IconViewFull, IconX } from "./icons";
 import { useEffect, useState } from "react";
 import { useEntitlements } from "../lib/entitlements";
 import { SearchBox } from "./SearchBox";
@@ -22,6 +23,7 @@ export function SearchFilterPanel() {
   const search = useSearch();
   const { state } = search;
   const res = useSearchResults();
+  const listView = useListView();
   const { signatures } = useSavedStats();
   const { openKonto } = useAppNav();
   const { openSaveDialog, setFlashSaved } = useUi();
@@ -118,12 +120,12 @@ export function SearchFilterPanel() {
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="flex min-w-0 flex-col gap-1">
           <span className="text-[12px] font-semibold uppercase tracking-wide text-slate-500">Ebene</span>
-          <div role="group" aria-label="Verwaltungsebene" className="flex h-11 gap-0.5 rounded-[10px] bg-slate-100 p-[3px]">
+          <div role="group" aria-label="Verwaltungsebene" className="flex h-11 items-center gap-4">
             {([
               ["city", "Städte & Gemeinden"],
               ["district", "Kreise"],
             ] as const).map(([v, label]) => (
-              <button key={v} type="button" aria-pressed={state.level === v} onClick={() => search.setLevel(v)} className={`flex-1 whitespace-nowrap rounded-[7px] px-2 text-[13px] ${state.level === v ? "bg-white text-slate-900 shadow-seg" : "text-slate-600 hover:text-slate-900"}`}>
+              <button key={v} type="button" aria-pressed={state.level === v} onClick={() => search.setLevel(v)} className={`whitespace-nowrap py-1.5 text-[14px] ${state.level === v ? "border-b-2 border-teal-600 text-teal-600" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
                 {label}
               </button>
             ))}
@@ -140,7 +142,13 @@ export function SearchFilterPanel() {
       {/* Trefferzahl, aktive Filter und Sortierung: immer sichtbar */}
       <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-200 pt-3">
           <span aria-live="polite" className="mr-1.5 text-[14px] text-slate-600">
-            <strong className="font-semibold text-slate-900">{res.loading ? "…" : res.total.toLocaleString("de-DE")}</strong> Treffer
+            {res.loading ? "…" : res.total.toLocaleString("de-DE")} Treffer
+            {res.updatedAt && (
+              <span className="text-slate-500">
+                {" · Datenstand "}
+                {new Date(res.updatedAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })} Uhr
+              </span>
+            )}
           </span>
           {chips.map((c) => (
             <button
@@ -160,6 +168,17 @@ export function SearchFilterPanel() {
               Alle zurücksetzen
             </button>
           )}
+          {/* Ein Icon-Umschalter wie in Finder/Explorer: zeigt die Ansicht, zu der gewechselt wird */}
+          <button
+            type="button"
+            aria-pressed={listView === "compact"}
+            aria-label={listView === "compact" ? "Ausführliche Ansicht" : "Kompakte Ansicht"}
+            title={listView === "compact" ? "Ausführliche Ansicht" : "Kompakte Ansicht"}
+            onClick={() => setListView(listView === "compact" ? "full" : "compact")}
+            className="ml-auto grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+          >
+            {listView === "compact" ? <IconViewFull size={20} /> : <IconViewCompact size={20} />}
+          </button>
           <FilterSelect
             id="f-sort"
             label="Sortierung"
@@ -172,7 +191,7 @@ export function SearchFilterPanel() {
             onChange={(v) => search.setSort(v as "asc" | "desc")}
             size="sm"
             highlight={false}
-            className="ml-auto [&_select]:!border-transparent [&_select]:!bg-transparent [&_select]:!shadow-none [&_select:hover]:!bg-slate-100"
+            className="[&_select]:!border-transparent [&_select]:!bg-transparent [&_select]:!shadow-none [&_select:hover]:!bg-slate-100"
           />
       </div>
     </section>

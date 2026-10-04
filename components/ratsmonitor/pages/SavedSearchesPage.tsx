@@ -239,6 +239,21 @@ export function SavedSearchesPage() {
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Suchen</h2>
           <p className="m-0 max-w-[44ch] text-slate-500">Suchen oder filtern Sie in der Übersicht und tippen Sie auf das Herz neben dem Suchfeld.</p>
+          {/* Beispiele, wie eine nützliche gespeicherte Suche aussieht */}
+          <div className="mt-5 w-full max-w-[520px] text-left">
+            <p className="m-0 text-[12px] font-semibold uppercase tracking-wide text-slate-500">Beispiele</p>
+            <ul className="m-0 mt-2 flex list-none flex-col p-0 text-[14px] text-slate-600">
+              {[
+                ["„Bebauungsplan“", "im Kreis Coesfeld, Status: Beschlossen"],
+                ["„Windenergie, Photovoltaik“", "im Umkreis von 30 km um Münster"],
+                ["Thema Bildung & Betreuung", "in der Stadt Köln, letzte 3 Monate"],
+              ].map(([what, where]) => (
+                <li key={what} className="border-b border-slate-200 py-2.5 last:border-b-0">
+                  <span className="text-slate-900">{what}</span> {where}
+                </li>
+              ))}
+            </ul>
+          </div>
           <Link className="btn-primary mt-5" href="/">
             Zur Suche
           </Link>

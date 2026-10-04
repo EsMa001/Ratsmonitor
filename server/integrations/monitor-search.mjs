@@ -60,14 +60,16 @@ export async function searchMonitor(db,catalog,params){
   return {where:where.join(' AND '),args};
  };
  const query=(select,skip,tail='',extra=[])=>{const {where,args}=conditions(skip);return db.prepare(`${select} FROM search_cards WHERE ${where} ${tail}`).bind(...args,...extra);};
- const [rev,total,rows,areas,labels,statuses,coverage]=await db.batch([
+ const [rev,total,rows,areas,labels,statuses,coverage,stand]=await db.batch([
   db.prepare("SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision"),
   query('SELECT count(*) n'),
   query("SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src",undefined,`ORDER BY date ${f.sort==='asc'?'ASC':'DESC'},id ASC LIMIT ? OFFSET ?`,[limit,(f.page-1)*limit]),
   query('SELECT region_id rid,count(*) n','area','GROUP BY region_id'),
   query('SELECT label,count(*) n','label','GROUP BY label'),
   query('SELECT status,count(*) n','status','GROUP BY status'),
-  db.prepare("SELECT sc.region_id,count(*) n,coalesce(json_extract(c.payload,'$.complete'),0) complete FROM search_cards sc LEFT JOIN source_coverage c ON c.region_id=sc.region_id GROUP BY sc.region_id")
+  db.prepare("SELECT sc.region_id,count(*) n,coalesce(json_extract(c.payload,'$.complete'),0) complete FROM search_cards sc LEFT JOIN source_coverage c ON c.region_id=sc.region_id GROUP BY sc.region_id"),
+  /* Datenstand: jüngster erfolgreicher Abruf über alle Quellen */
+  db.prepare("SELECT max(json_extract(payload,'$.importedAt')) at FROM source_coverage")
  ]);
  const revision=String(rev.results[0].revision);
  if(f.revision!==null&&f.revision!==revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);
@@ -75,7 +77,7 @@ export async function searchMonitor(db,catalog,params){
  for(const r of areas.results){const region=byId.get(r.rid);if(!region)continue;const ags=region.ags;for(const key of new Set([ags,ags.slice(0,5),ags.slice(0,2),'']))areaCounts[key]=(areaCounts[key]||0)+r.n;
   /* Die Karte kennt nur Gemeinden: jede Mitgliedsgemeinde zeigt die Berichte ihrer Samtgemeinde */
   for(const key of [...(region.members||[]).map(m=>m.ags),...(region.formerAgs||[])])areaCounts[key]=(areaCounts[key]||0)+r.n;}
- return {articles:rows.results.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'})),total:total.results[0].n,page:f.page,pageSize:limit,revision,areaCounts,themaCounts:Object.fromEntries(labels.results.map(r=>[LABELS.find(l=>l.id===r.label)?.name||'Noch nicht eingeordnet',r.n])),monatCounts:{},statusCounts:Object.fromEntries(statuses.results.map(r=>[r.status,r.n])),coverage:coverage.results.filter(r=>byId.has(r.region_id)).flatMap(r=>{const region=byId.get(r.region_id),entry={count:r.n,complete:!!r.complete};return region.members?region.members.map(m=>({ags:m.ags,name:m.name+' ('+region.name+')',...entry})):[{ags:region.ags,name:region.name,...entry},...(region.formerAgs||[]).map(ags=>({ags,name:region.name,...entry}))];}),storageAvailable:true};
+ return {articles:rows.results.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'})),total:total.results[0].n,page:f.page,pageSize:limit,revision,areaCounts,themaCounts:Object.fromEntries(labels.results.map(r=>[LABELS.find(l=>l.id===r.label)?.name||'Noch nicht eingeordnet',r.n])),monatCounts:{},statusCounts:Object.fromEntries(statuses.results.map(r=>[r.status,r.n])),coverage:coverage.results.filter(r=>byId.has(r.region_id)).flatMap(r=>{const region=byId.get(r.region_id),entry={count:r.n,complete:!!r.complete};return region.members?region.members.map(m=>({ags:m.ags,name:m.name+' ('+region.name+')',...entry})):[{ags:region.ags,name:region.name,...entry},...(region.formerAgs||[]).map(ags=>({ags,name:region.name,...entry}))];}),storageAvailable:true,updatedAt:stand.results[0]?.at||null};
 }
 
 /** Nur Stationen aus derselben Kommune: gleiche Quelle (Host) wie der Vorgang */
