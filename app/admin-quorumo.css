@@ -1,13 +1,13 @@
 /* Adminbereich im Quorumo-Design: Kopfzeile wie die App, weiße Karten auf Slate-50, Teal als Akzent.
    Jede Regel beginnt mit .admin-app, damit sie die älteren Adminregeln in globals.css überstimmt. */
 .admin-app{min-height:100vh;background:#f8fafc;color:#0f172a}
-.admin-app .admin-bar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e2e8f0}
-.admin-app .admin-bar__inner{display:flex;align-items:center;gap:16px;height:72px;padding:0 16px}
-.admin-app .admin-bar .admin-access{padding-left:16px;border-left:1px solid #e2e8f0;color:#475569;font-weight:500}
-.admin-app .admin-bar__account{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:.875rem;color:#64748b;min-width:0}
-.admin-app .admin-bar__account>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.admin-app .admin-bar__account a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border:1px solid #e2e8f0;border-radius:9999px;background:#fff;color:#0f172a;font-weight:500;text-decoration:none;white-space:nowrap}
-.admin-app .admin-bar__account a:hover{border-color:#0d9488;color:#0f766e}
+.admin-app .admin-masthead{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e2e8f0}
+.admin-app .admin-masthead__inner{display:flex;align-items:center;gap:16px;height:72px;padding:0 16px}
+.admin-app .admin-masthead .admin-access{padding-left:16px;border-left:1px solid #e2e8f0;color:#475569;font-weight:500}
+.admin-app .admin-masthead__account{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:.875rem;color:#64748b;min-width:0}
+.admin-app .admin-masthead__account>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-app .admin-masthead__account a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border:1px solid #e2e8f0;border-radius:9999px;background:#fff;color:#0f172a;font-weight:500;text-decoration:none;white-space:nowrap}
+.admin-app .admin-masthead__account a:hover{border-color:#0d9488;color:#0f766e}
 
 /* Seitenwahl als Reiter unter der Kopfzeile, auf der Breite des Inhalts */
 .admin-app .admin-pages{max-width:1320px;margin:0 auto;padding:12px 24px 0;gap:6px;border-bottom:0}
@@ -46,9 +46,9 @@
 .admin-app .admin-gate .text-link{color:#0f766e}
 
 @media(max-width:700px){
- .admin-app .admin-bar__inner{gap:10px;padding:0 12px}
- .admin-app .admin-bar .admin-access{display:none}
- .admin-app .admin-bar__account>span{display:none}
+ .admin-app .admin-masthead__inner{gap:10px;padding:0 12px}
+ .admin-app .admin-masthead .admin-access{display:none}
+ .admin-app .admin-masthead__account>span{display:none}
  .admin-app .admin-pages{padding:10px 12px 0;overflow-x:auto;flex-wrap:nowrap}
  .admin-app .admin-pages a span{white-space:nowrap}
  .admin-app .admin-shell{padding:0 12px 40px}

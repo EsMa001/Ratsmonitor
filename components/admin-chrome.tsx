@@ -6,10 +6,10 @@ import {Brand} from '@/components/ratsmonitor/components/Brand';
 const PAGES:[number,string,string][]=[[1,'/admin','Daten & Verarbeitung'],[2,'/admin?seite=2','Qualität & Betrieb'],[3,'/admin?seite=3','Hochrechnung'],[4,'/admin?seite=4','Stichwörter']];
 
 export function AdminBar({displayName,signOutPath}:{displayName?:string;signOutPath?:string}){
- return <header className="admin-bar"><div className="admin-bar__inner">
+ return <header className="admin-masthead"><div className="admin-masthead__inner">
   <Brand/>
   <span className="admin-access"><ShieldCheck size={16}/> Administration</span>
-  {signOutPath&&<div className="admin-bar__account">{displayName&&<span>{displayName}</span>}<a target="_top" href={signOutPath}>Abmelden</a></div>}
+  {signOutPath&&<div className="admin-masthead__account">{displayName&&<span>{displayName}</span>}<a target="_top" href={signOutPath}>Abmelden</a></div>}
  </div></header>;
 }
 
