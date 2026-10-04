@@ -6,7 +6,7 @@ export type Parse = (q: string, s: SearchState) => ParseResult;
 type Scope = "only" | "with";
 
 /** Ortsfilter steht fest (aus Karte, Gebietsfilter oder übernommen) und hängt nicht mehr am Suchtext */
-export const isCommitted = (s: SearchState) => !!s.area && s.areaSrc !== "search" && !s.radius;
+export const isCommitted = (s: SearchState) => !!s.area && s.areaSrc !== "search";
 
 /**
  * Neuer Suchtext. Ist noch kein fester Ortsfilter gesetzt, wird der erste erkannte Ort live als Gebiet
@@ -21,7 +21,6 @@ export function applySearchState(s: SearchState, value: string, parse: Parse): {
     if (!committed && (s.area !== pq.place.ags || s.areaSrc !== "search")) {
       next.area = pq.place.ags;
       next.areaSrc = "search";
-      next.radius = null;
       return { next, focus: pq.place.ags };
     }
   } else if (s.areaSrc === "search") {
@@ -57,7 +56,7 @@ export function commitPlacesState(s: SearchState, sep: boolean, parse: Parse): S
     if (!more.some((m) => m.ags === p.ags)) more.push({ ags: p.ags, scope: s.placeScopes?.[p.ags] ?? "only" });
   }
   const rest = pq.restAll ?? "";
-  return { ...s, area, areaSrc, scope, level, radius: area ? null : s.radius, morePlaces: more, q: sep && rest ? rest + ", " : rest };
+  return { ...s, area, areaSrc, scope, level, morePlaces: more, q: sep && rest ? rest + ", " : rest };
 }
 
 /**

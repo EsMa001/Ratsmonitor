@@ -11,7 +11,7 @@ const BETREIBER = {
 };
 
 function H2({ children }: { children: ReactNode }) {
-  return <h2 className="mb-2 mt-7 text-lg font-semibold text-slate-900">{children}</h2>;
+  return <h2 className="mb-2 mt-7 text-[18px] font-semibold text-slate-900">{children}</h2>;
 }
 function P({ children }: { children: ReactNode }) {
   return <p className="mb-3 leading-relaxed text-slate-700">{children}</p>;
@@ -46,7 +46,7 @@ function Impressum() {
   const { name } = useBrand();
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tight">Impressum</h1>
+      <h1 className="text-[28px] font-bold tracking-tight">Impressum</h1>
       <H2>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)</H2>
       <Anschrift />
       <H2>Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV)</H2>
@@ -79,7 +79,7 @@ function Datenschutz() {
   const { name } = useBrand();
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tight">Datenschutzerklärung</h1>
+      <h1 className="text-[28px] font-bold tracking-tight">Datenschutzerklärung</h1>
       <P>Stand: Oktober 2026</P>
 
       <H2>1. Verantwortlicher</H2>
@@ -91,9 +91,9 @@ function Datenschutz() {
         items={[
           "Für die Nutzung ist kein Benutzerkonto nötig.",
           "Wir setzen keine Analyse- oder Tracking-Werkzeuge und keine Werbe-Cookies ein.",
-          "Gespeicherte Suchen bleiben ausschließlich in deinem Browser.",
+          "Gespeicherte Suchen bleiben ausschließlich in Ihrem Browser.",
           "Schriftarten und Kartendaten werden von unserem eigenen Server ausgeliefert; beim Aufruf der Seite werden keine Daten an Google Fonts oder Kartendienste übertragen.",
-          "Personenbezogene Daten werden an Dritte nur übermittelt, soweit es für den Betrieb technisch erforderlich ist oder du es selbst auslöst (z. B. Push-Mitteilungen).",
+          "Personenbezogene Daten werden an Dritte nur übermittelt, soweit es für den Betrieb technisch erforderlich ist oder Sie es selbst auslösen (z. B. Push-Mitteilungen).",
         ]}
       />
 
@@ -113,38 +113,38 @@ function Datenschutz() {
 
       <H2>4. Suche und Filter</H2>
       <P>
-        Deine Suchbegriffe, gewählten Gebiete, Zeiträume und Filter werden an unseren Server übermittelt, um passende Einträge aus unserer Datenbank zu ermitteln. Wir
-        speichern diese Anfragen nicht dauerhaft und verknüpfen sie nicht mit deiner Person. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Bereitstellung der von dir
+        Ihre Suchbegriffe, gewählten Gebiete, Zeiträume und Filter werden an unseren Server übermittelt, um passende Einträge aus unserer Datenbank zu ermitteln. Wir
+        speichern diese Anfragen nicht dauerhaft und verknüpfen sie nicht mit Ihrer Person. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Bereitstellung der von Ihnen
         angeforderten Funktion).
       </P>
 
-      <H2>5. Gespeicherte Suchen (lokaler Speicher deines Browsers)</H2>
+      <H2>5. Gespeicherte Suchen (lokaler Speicher Ihres Browsers)</H2>
       <P>
-        Wenn du eine Suche speicherst (Herz-Symbol), wird sie im lokalen Speicher (localStorage) deines Browsers abgelegt. Diese Daten verlassen dein Gerät nicht und
-        werden nicht an uns übertragen. Die Speicherung ist für die von dir ausdrücklich gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2
-        Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz, TDDDG). Du kannst gespeicherte Suchen jederzeit unter „Konto → Gespeicherte Suchen“ entfernen oder den
-        Website-Speicher in deinen Browser-Einstellungen löschen.
+        Wenn Sie eine Suche speichern (Herz-Symbol), wird sie im lokalen Speicher (localStorage) Ihres Browsers abgelegt. Diese Daten verlassen Ihr Gerät nicht und
+        werden nicht an uns übertragen. Die Speicherung ist für die von Ihnen ausdrücklich gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2
+        Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz, TDDDG). Sie können gespeicherte Suchen jederzeit unter „Konto → Gespeicherte Suchen“ entfernen oder den
+        Website-Speicher in Ihren Browser-Einstellungen löschen.
       </P>
 
       <H2>6. Push-Mitteilungen</H2>
       <P>
-        Du kannst Push-Mitteilungen freiwillig aktivieren. Dazu registriert die Website einen Service Worker in deinem Browser und fragt deine Erlaubnis ab. Bei Zustimmung
-        erzeugt dein Browser eine Push-Adresse (Endpoint) mit zugehörigen Schlüsseln, die wir auf unserem Server speichern, um dir Mitteilungen senden zu können.
+        Sie können Push-Mitteilungen freiwillig aktivieren. Dazu registriert die Website einen Service Worker in Ihrem Browser und fragt Ihre Erlaubnis ab. Bei Zustimmung
+        erzeugt Ihr Browser eine Push-Adresse (Endpoint) mit zugehörigen Schlüsseln, die wir auf unserem Server speichern, um Ihnen Mitteilungen senden zu können.
       </P>
       <P>
-        Die Zustellung erfolgt technisch über den Push-Dienst deines Browserherstellers, z. B. Google Firebase Cloud Messaging (Google Ireland Ltd., für Chrome/Edge auf
+        Die Zustellung erfolgt technisch über den Push-Dienst Ihres Browserherstellers, z. B. Google Firebase Cloud Messaging (Google Ireland Ltd., für Chrome/Edge auf
         Android), Mozilla Push Service (Mozilla Corporation, für Firefox), Apple Push Notification Service (Apple Inc., für Safari) oder Windows Push Notification
         Services (Microsoft Corp.). Diese Anbieter erhalten dabei die Push-Adresse und den verschlüsselten Inhalt der Mitteilung; Übermittlungen in Drittländer (USA) sind
         möglich und auf Grundlage des EU-U.S. Data Privacy Framework abgesichert.
       </P>
       <P>
-        Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit widerrufen, indem du die Mitteilungen auf der
-        Seite „Push-Mitteilungen“ ausschaltest oder die Berechtigung im Browser entziehst. Die gespeicherte Push-Adresse wird dann gelöscht; ungültig gewordene Adressen
+        Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Sie können sie jederzeit widerrufen, indem Sie die Mitteilungen auf der
+        Seite „Push-Mitteilungen“ ausschalten oder die Berechtigung im Browser entziehen. Die gespeicherte Push-Adresse wird dann gelöscht; ungültig gewordene Adressen
         entfernen wir automatisch.
       </P>
 
       <H2>7. Datenquellen und genutzte Schnittstellen (APIs)</H2>
-      <P>Für die Inhalte von {name} greift ausschließlich unser Server auf folgende Schnittstellen zu. Dein Browser stellt dabei keine Verbindung zu diesen Diensten her.</P>
+      <P>Für die Inhalte von {name} greift ausschließlich unser Server auf folgende Schnittstellen zu. Ihr Browser stellt dabei keine Verbindung zu diesen Diensten her.</P>
       <Ul
         items={[
           <>
@@ -170,11 +170,11 @@ function Datenschutz() {
 
       <H2>8. Links zu Originalquellen und Teilen</H2>
       <P>
-        Artikel verlinken auf Sitzungen und Dokumente in den Ratsinformationssystemen der jeweiligen Kommune. Erst wenn du einen solchen Link anklickst, baut dein Browser
+        Artikel verlinken auf Sitzungen und Dokumente in den Ratsinformationssystemen der jeweiligen Kommune. Erst wenn Sie einen solchen Link anklicken, baut Ihr Browser
         eine Verbindung zum Server dieser Kommune bzw. ihres IT-Dienstleisters auf; dort gelten deren Datenschutzbestimmungen.
       </P>
       <P>
-        Über die Schaltfläche „Link teilen“ wird die Adresse des Artikels an das Teilen-Menü deines Geräts übergeben oder in die Zwischenablage kopiert. Wir erhalten dabei keine Daten; an wen du den Link weitergibst, entscheidest du selbst in der jeweiligen App.
+        Über die Schaltfläche „Link teilen“ wird die Adresse des Artikels an das Teilen-Menü Ihres Geräts übergeben oder in die Zwischenablage kopiert. Wir erhalten dabei keine Daten; an wen Sie den Link weitergeben, entscheiden Sie selbst in der jeweiligen App.
       </P>
 
       <H2>9. Anmeldung zur Administration</H2>
@@ -191,20 +191,20 @@ function Datenschutz() {
         oder bis die Kommune sie zurückzieht.
       </P>
 
-      <H2>11. Deine Rechte</H2>
-      <P>Du hast im Rahmen der gesetzlichen Vorgaben jederzeit das Recht auf</P>
+      <H2>11. Ihre Rechte</H2>
+      <P>Sie haben im Rahmen der gesetzlichen Vorgaben jederzeit das Recht auf</P>
       <Ul
         items={[
-          "Auskunft über die zu deiner Person gespeicherten Daten (Art. 15 DSGVO),",
+          "Auskunft über die zu Ihrer Person gespeicherten Daten (Art. 15 DSGVO),",
           "Berichtigung unrichtiger Daten (Art. 16 DSGVO),",
           "Löschung (Art. 17 DSGVO) und Einschränkung der Verarbeitung (Art. 18 DSGVO),",
           "Datenübertragbarkeit (Art. 20 DSGVO),",
-          "Widerspruch gegen Verarbeitungen auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO aus Gründen, die sich aus deiner besonderen Situation ergeben (Art. 21 DSGVO),",
+          "Widerspruch gegen Verarbeitungen auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO aus Gründen, die sich aus Ihrer besonderen Situation ergeben (Art. 21 DSGVO),",
           "Widerruf einer erteilten Einwilligung mit Wirkung für die Zukunft (Art. 7 Abs. 3 DSGVO).",
         ]}
       />
       <P>
-        Wende dich dazu an die oben genannte Kontaktadresse. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO), etwa bei der
+        Wenden Sie sich dazu an die oben genannte Kontaktadresse. Außerdem können Sie sich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO), etwa bei der
         Landesbeauftragten für Datenschutz und Informationsfreiheit Nordrhein-Westfalen, Kavalleriestraße 2–4, 40213 Düsseldorf.
       </P>
 
@@ -219,7 +219,7 @@ function Datenschutz() {
 
 export function LegalPage({ kind }: { kind: "impressum" | "datenschutz" }) {
   return (
-    <main id="inhalt" className="mx-auto max-w-page py-[max(0.3vw,6px)]">
+    <main id="inhalt" className="mx-auto max-w-page py-[12px]">
       <article className="card-shell px-4 py-6 sm:px-8">
         <div className="max-w-[80ch]">{kind === "impressum" ? <Impressum /> : <Datenschutz />}</div>
       </article>

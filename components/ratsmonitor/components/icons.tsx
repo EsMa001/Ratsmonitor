@@ -50,6 +50,17 @@ export const IconChevronDown = (p: IconProps) => (
     <path d="m6 9 6 6 6-6" />
   </Svg>
 );
+export const IconChevronUp = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="m6 15 6-6 6 6" />
+  </Svg>
+);
+export const IconMap = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" />
+    <path d="M9 4v14M15 6v14" />
+  </Svg>
+);
 export const IconChevronRight = (p: IconProps) => (
   <Svg {...p}>
     <path d="m9 6 6 6-6 6" />
@@ -73,6 +84,12 @@ export const IconPlus = (p: IconProps) => (
 export const IconMinus = (p: IconProps) => (
   <Svg {...p}>
     <path d="M5 12h14" />
+  </Svg>
+);
+export const IconCenter = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4" />
+    <circle cx="12" cy="12" r="2.5" />
   </Svg>
 );
 export const IconReset = (p: IconProps) => (

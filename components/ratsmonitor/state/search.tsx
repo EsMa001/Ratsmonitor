@@ -21,7 +21,7 @@ interface SearchActions {
   applySearch: (value: string, extra?: Partial<SearchState>) => void;
   /** Gebiet setzen; src bestimmt, ob ein Ort aus der Suche entfernt wird */
   setArea: (ags: string, src: AreaSource, opts?: { zoom?: boolean; clearRadius?: boolean; keepPopup?: boolean }) => void;
-  startRadius: (ags: string) => void;
+  /** Umkreis um das gewählte Gebiet (Kreis oder Gemeinde); 0 km hebt ihn auf */
   setRadiusKm: (km: number) => void;
   clearRadius: () => void;
   setThema: (v: string) => void;
@@ -56,6 +56,14 @@ interface SearchValue extends SearchActions {
 
 const SearchContext = createContext<SearchValue | null>(null);
 
+/** Der Umkreis hängt am gewählten Kreis bzw. an der Gemeinde: wechselt das Gebiet, wandert er mit; ohne passendes Gebiet entfällt er */
+function tieRadius(s: SearchState, geo: { center: (ags: string) => { x: number; y: number } | null } | null): SearchState {
+  const r = s.radius;
+  if (!r || r.ags === s.area) return s;
+  const c = s.area.length >= 5 ? geo?.center(s.area) : null;
+  return { ...s, radius: c ? { ags: s.area, x: c.x, y: c.y, km: r.km } : null, morePlaces: c ? [] : s.morePlaces };
+}
+
 export function SearchProvider({ children }: { children: ReactNode }) {
   const { geo, place } = useData();
   const [state, setState] = useState<SearchState>(INITIAL_SEARCH);
@@ -69,8 +77,11 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   ref.current = state;
   const mapRef = useRef<MapEngine | null>(null);
   const focusTimer = useRef(0);
+  const geoRef = useRef(geo);
+  geoRef.current = geo;
 
-  const commit = useCallback((next: SearchState) => {
+  const commit = useCallback((value: SearchState) => {
+    const next = tieRadius(value, geoRef.current);
     ref.current = next;
     setState(next);
   }, []);
@@ -106,25 +117,24 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       setArea(ags, src, opts = {}) {
         const s = ref.current;
         const next: SearchState = { ...s, ...(src !== "search" ? stripPlace(s) : {}), area: ags, areaSrc: ags ? src : "", level:ags.length===8?"city":s.level };
-        if (ags || opts.clearRadius) next.radius = null;
+        if (opts.clearRadius) next.radius = null;
         if (src !== "map" && !opts.keepPopup) setPopupState("");
         clearTimeout(focusTimer.current);
         commit(next);
         if (opts.zoom) mapRef.current?.focusArea(ags);
       },
-      startRadius(ags) {
-        const c = geo?.center(ags);
-        if (!c) return;
-        const s = ref.current;
-        const r: Radius = { ags, x: c.x, y: c.y, km: s.radius ? s.radius.km : 20 };
-        const moving = !!s.radius;
-        commit({ ...s, ...stripPlace(s), radius: r, area: "", areaSrc: "", morePlaces: [] });
-        setPopupState("");
-        mapRef.current?.fitCircle(r, moving);
-      },
       setRadiusKm(km) {
         const s = ref.current;
-        if (s.radius && s.radius.km !== km) commit({ ...s, radius: { ...s.radius, km } });
+        if (km <= 0) {
+          if (s.radius) commit({ ...s, radius: null });
+          return;
+        }
+        if (s.radius) {
+          if (s.radius.km !== km) commit({ ...s, radius: { ...s.radius, km } });
+          return;
+        }
+        const c = s.area.length >= 5 ? geo?.center(s.area) : null;
+        if (c) commit({ ...s, radius: { ags: s.area, x: c.x, y: c.y, km }, morePlaces: [] });
       },
       clearRadius() {
         commit({ ...ref.current, radius: null });
@@ -176,13 +186,15 @@ export function SearchProvider({ children }: { children: ReactNode }) {
           radius = { ags: sv.radius.ags, km: sv.radius.km, x: c.x, y: c.y };
         }
         let q = sv.q || "";
-        let areaSrc: AreaSource = sv.area ? sv.areaSrc || "ui" : "";
+        /* Ältere gespeicherte Umkreise hatten kein Gebiet: das Zentrum wird zum Gebiet */
+        const area = sv.area || radius?.ags || "";
+        let areaSrc: AreaSource = sv.area ? sv.areaSrc || "ui" : area ? "ui" : "";
         const overrides: Record<string, string> = {};
         const ignored: Record<string, true> = {};
         const pq = q && place ? place.parse(q, {}, {}) : null;
         if (areaSrc === "search") {
           if (pq?.place) {
-            if (pq.place.ags !== sv.area && pq.key) overrides[pq.key] = sv.area;
+            if (pq.place.ags !== area && pq.key) overrides[pq.key] = area;
           } else {
             q = sv.text || "";
             areaSrc = "ui";
@@ -190,12 +202,12 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         } else if (pq?.place && pq.key) ignored[pq.key] = true;
         clearTimeout(focusTimer.current);
         commit({
-          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area: sv.area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status,
-          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: (sv.more || []).filter((m) => m.ags !== sv.area),
+          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status,
+          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: radius ? [] : (sv.more || []).filter((m) => m.ags !== area),
         });
         setPopupState("");
         if (radius) mapRef.current?.fitCircle(radius);
-        else mapRef.current?.focusArea(sv.area);
+        else mapRef.current?.focusArea(area);
         return true;
       },
       setPopup: (ags) => setPopupState(ags),
@@ -248,11 +260,13 @@ function useDerivedResults(state:SearchState):SearchResults {
   const {placeActive,liveHits,text,more}=deriveFilters(state,pq,ags=>hasScope(ags,geo));
   const within=state.radius&&geo?geo.within(state.radius):null;
   const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level};
-  const params=new URLSearchParams({q:text,area:state.area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:state.area?state.scope:"with",status:state.status,level:state.level,sort:state.sort});
-  if(more.length)params.set('more',more.map(m=>m.ags+':'+m.scope).join(','));
+  /* Mit Umkreis ist das Gebiet nur dessen Mittelpunkt; gesucht wird in allen Gebieten im Umkreis */
+  const area=state.radius?'':state.area;
+  const params=new URLSearchParams({q:text,area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:area?state.scope:"with",status:state.status,level:state.level,sort:state.sort});
+  if(more.length&&!state.radius)params.set('more',more.map(m=>m.ags+':'+m.scope).join(','));
   /* Umkreis: Der Schlüssel der Anfrage nennt nur den Kreis; welche Gebiete darin liegen, setzt der Abruf selbst ein (siehe unten) */
   if(state.radius)params.set('around',[state.radius.ags,state.radius.km,Math.round(state.radius.x??0),Math.round(state.radius.y??0),within?within.set.size:'-'].join(':'));
-  const spec:FilterSpec={area:state.area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
+  const spec:FilterSpec={area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
   return {pq,placeActive,liveHits,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString(),around:state.radius?{set:within?.set??null,level:state.level}:null};
  },[state,geo,place]);
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);

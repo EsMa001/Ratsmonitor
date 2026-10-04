@@ -4,6 +4,8 @@ import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
 import { STATUS_LABEL, type Example, type Qa, type Rich as RichText, type Status } from "./content";
 import { Icon, type IconName } from "./icons";
+import { IconChevronLeft } from "../components/icons";
+import { useRouter } from "next/navigation";
 
 /** Öffnet die echte Suche der Startseite, optional mit vorbelegtem Begriff */
 export function useOpenSearch() {
@@ -43,29 +45,38 @@ export function PageHead({
   icon: IconName;
   label: string;
   name: string;
-  title: ReactNode;
+  /** ohne Titel wird der Name zur Überschrift (kompakter Kopf, z. B. Kontoseiten) */
+  title?: ReactNode;
   lead?: ReactNode;
   small?: boolean;
   aside?: ReactNode;
   top?: boolean;
   children?: ReactNode;
 }) {
+  const router = useRouter();
+  const { goOverview } = useAppNav();
+  /* Dezenter Zurück-Pfeil auf allen Info- und Kontoseiten; ohne Vorgeschichte zur Übersicht */
+  const back = () => (window.history.length > 1 ? router.back() : goOverview());
   const main = (
     <div>
+      <button type="button" onClick={back} className="back-btn -ml-1.5 mb-4">
+        <IconChevronLeft />
+        Zurück
+      </button>
       <div className="ri-bid">
         <Icon name={icon} size={52} className="ri-bid__icon" />
         <div>
           <span className="ri-bid__label">{label}</span>
-          <span className="ri-bid__name">{name}</span>
+          {title ? <span className="ri-bid__name">{name}</span> : <h1 className="ri-bid__name m-0">{name}</h1>}
         </div>
       </div>
-      <h1 className={"ri-h1" + (small ? " ri-h1--sm" : "")}>{title}</h1>
+      {title && <h1 className={"ri-h1" + (small ? " ri-h1--sm" : "")}>{title}</h1>}
       {lead && <p className="ri-lead">{lead}</p>}
       {children}
     </div>
   );
   return (
-    <section className="ri-head">
+    <section className={"ri-head" + (title ? "" : " ri-head--compact")}>
       {aside ? (
         <div className={"ri-head__grid" + (top ? " ri-head__grid--top" : "")}>
           {main}

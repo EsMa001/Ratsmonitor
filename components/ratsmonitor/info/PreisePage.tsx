@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { DarkCta, PageHead, QaItem, Rich } from "./blocks";
+import { DarkCta, PageHead, QaItem } from "./blocks";
 import { COMPARE, PLANS, PRICE_FAQ } from "./content";
-import { Icon } from "./icons";
+import { PlanCards } from "../components/PlanCards";
 
 export function PreisePage() {
   return (
@@ -20,51 +20,8 @@ export function PreisePage() {
         lead="Durchsuchen Sie über 4.500 Ratsinformationssysteme und lassen Sie sich per E-Mail informieren, sobald zu Ihrem Thema etwas beschlossen wird."
       />
       <section className="ri-sec ri-sec--prices">
-        <div className="ri-prices">
-          {PLANS.map((p) => {
-            const hl = p.id === "pro";
-            return (
-              <article key={p.id} className={"ri-pk" + (hl ? " ri-pk--hl" : "")}>
-                {hl && <span className="ri-pk__badge">Beliebt</span>}
-                <h2>{p.name}</h2>
-                <p className="ri-pk__desc">{p.desc}</p>
-                <div className="ri-pk__price">
-                  <span className="ri-pk__amount">{p.amount}</span>
-                  <span className="ri-pk__unit">{p.unit}</span>
-                </div>
-                <span className="ri-pk__note">{p.note}</span>
-                <hr className="ri-pk__hr" />
-                <ul className="ri-pk__items">
-                  {p.items.map(([icon, text]) => (
-                    <li key={text}>
-                      <Icon name={icon} size={15} />
-                      <span>
-                        <Rich text={text} />
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <hr className="ri-pk__hr" />
-                <h3 className="ri-pk__label">Features</h3>
-                <ul className="ri-checks">
-                  {p.features.map((f) => (
-                    <li key={f.text}>
-                      <Icon name={f.plus ? "plus" : "check"} size={14} />
-                      <span>
-                        <Rich text={f.text} />
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="ri-pk__cta">
-                  <Link href={`/registrieren?tarif=${p.id}`} className={"ri-btn ri-btn--block " + (hl ? "ri-btn--dark" : "ri-btn--light")}>
-                    {p.cta} →
-                  </Link>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+        {/* Gleiche Tarifkarten wie im Konto */}
+        <PlanCards publicPage />
 
         <h2 className="ri-h2 ri-h2--md ri-h2--gap">Alle Leistungen im Vergleich</h2>
         <table className="ri-table">
