@@ -1,4 +1,5 @@
 import {REGIONS,mapKeys} from '@/shared/regions';
+import {radiusParam} from '@/shared/radius-areas.mjs';
 import {useSearchParams} from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
 import { STATUS } from "../lib/constants";
@@ -249,26 +250,41 @@ function useDerivedResults(state:SearchState):SearchResults {
   const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level};
   const params=new URLSearchParams({q:text,area:state.area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:state.area?state.scope:"with",status:state.status,level:state.level,sort:state.sort});
   if(more.length)params.set('more',more.map(m=>m.ags+':'+m.scope).join(','));
-  if(state.radius)params.set('within',within?REGIONS.filter(r=>r.kind===state.level).flatMap(r=>r.kind==='district'?(within.set.has(r.ags)?[r.ags]:[]):mapKeys(r).filter(a=>within.set.has(a))).join(','):'');
+  /* Umkreis: Der Schlüssel der Anfrage nennt nur den Kreis; welche Gebiete darin liegen, setzt der Abruf selbst ein (siehe unten) */
+  if(state.radius)params.set('around',[state.radius.ags,state.radius.km,Math.round(state.radius.x??0),Math.round(state.radius.y??0),within?within.set.size:'-'].join(':'));
   const spec:FilterSpec={area:state.area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
-  return {pq,placeActive,liveHits,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString()};
+  return {pq,placeActive,liveHits,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString(),around:state.radius?{set:within?.set??null,level:state.level}:null};
  },[state,geo,place]);
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);
  const page=navigation.key===local.key?navigation.page:1;
  const revision=useRef({key:'',value:''});
+ /* Gebiete mit Berichten je Ebene, aus der jeweils letzten Antwort */
+ const covered=useRef<Record<string,Set<string>>>({});
  type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;coverage:CoverageEntry[];revision:string};
  const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string}>({key:'',data:null,error:''});
  const requestKey=local.key+'&page='+page+'&attempt='+attempt;
  useEffect(()=>{
   const abort=new AbortController(),timer=setTimeout(async()=>{
-   const params=new URLSearchParams(local.key);params.set('page',String(page));
+   const params=new URLSearchParams(local.key);params.delete('around');params.set('page',String(page));
    if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);
    try{
+    /* Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs). Welche Gebiete
+       Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
+    if(local.around){
+     const {set,level}=local.around;
+     if(!set)params.set('within','');
+     else{
+      let known=covered.current[level];
+      if(!known){const first=await fetch('/api/search?level='+level,{signal:abort.signal});if(first.ok)known=covered.current[level]=new Set(((await first.json()) as ResponseData).coverage.map(c=>c.ags));}
+      const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
+     }
+    }
     const response=await fetch('/api/search?'+params,{signal:abort.signal});
     const data=await response.json() as ResponseData & {error?:string};
     if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
     if(abort.signal.aborted)return;
     revision.current={key:local.key,value:data.revision};
+    covered.current[params.get('level')||'city']=new Set(data.coverage.map(c=>c.ags));
     setRemote({key:requestKey,data:{...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))},error:''});
    }catch(e){if(!abort.signal.aborted)setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.'});}
   },180);

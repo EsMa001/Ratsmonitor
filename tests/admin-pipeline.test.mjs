@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {pipelineAction,selectedRegions,canImport,provider,PARALLEL,PER_PROVIDER} from '../server/integrations/pipeline-jobs.mjs';
+import {mergeJob} from '../shared/pipeline-job.mjs';
 import {createAiJob,applyAiResults,cancelAiJob,getAiJob} from '../server/integrations/ai-jobs.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
 import {keywordWeights,articleResult,AI_METHOD,LEGACY_AI_METHOD,sourceRole,needsQuickCheck} from '../shared/ai-job.mjs';
@@ -11,7 +12,9 @@ function fixture(){const sql=new DatabaseSync(':memory:');for(const f of fs.read
 const checks=['source_read','process','numbers','neutrality'].map(name=>({name,passed:true}));
 async function output(job){const quote='Im Rat wird der Schulneubau beraten.',url='https://example.org/paper',e={url,quote};return {format:'ratsmonitor-ai-results-v1',jobId:job.id,articles:job.articles.map(a=>({id:a.id,expectedPayloadHash:a.payloadHash,agent:'Example Agent',model:'test-model',sources:[{url,hash:'a'.repeat(64),fetchedAt:'2026-09-27T19:00:00Z',excerpts:[quote]}],summary:{status:'completed',shortSummary:quote,longSummary:[quote],evidence:[e],checks},aiLabel:{status:'completed',primary:'bildung',secondary:[],reason:'Schulneubau',evidence:[e],checks},keywords:{status:'completed',items:Array.from({length:10},(_,i)=>({term:'Begriff '+i,score:1+i%5,reason:'Testbegründung',evidence:e})),evidence:[e],checks}}))};}
 
-test('selection validates IDs, distinguishes districts, and covers the complete catalogue of NRW and Niedersachsen',()=>{assert.equal(selectedRegions('all').length,427+440);assert.ok(selectedRegions(['nds-033585401']).length===1);assert.deepEqual(selectedRegions(['billerbeck','billerbeck','coesfeld']),['billerbeck','coesfeld']);assert.throws(()=>selectedRegions(['x\' OR 1=1']));assert.throws(()=>selectedRegions([]));assert.equal(canImport('billerbeck'),true);});
+test('selection validates IDs, distinguishes districts, and covers the complete catalogue of all states',()=>{assert.equal(selectedRegions('all').length,427+440+4457);assert.ok(selectedRegions(['nds-033585401']).length===1);assert.ok(selectedRegions(['de-09162000']).length===1);
+ // 'sources': every area with a connected source and no other.
+ const connected=selectedRegions('sources');assert.ok(connected.length>500&&connected.length<selectedRegions('all').length);assert.ok(connected.every(canImport));assert.equal(connected.length,selectedRegions('all').filter(canImport).length);assert.deepEqual(selectedRegions(['billerbeck','billerbeck','coesfeld']),['billerbeck','coesfeld']);assert.throws(()=>selectedRegions(['x\' OR 1=1']));assert.throws(()=>selectedRegions([]));assert.equal(canImport('billerbeck'),true);});
 test('persistent queue handles partial sources, unavailable territory, cancellation and interrupted steps without replay',async()=>{
  const {sql,db}=fixture();const unavailable=selectedRegions('all').find(id=>!canImport(id));let calls=0;
  let job=await pipelineAction(db,{action:'create',stage:'metadata',regions:['billerbeck',unavailable]},()=>{throw Error('must not run');});assert.equal(job.items[1].status,'unavailable');assert.equal(calls,0);
@@ -151,32 +154,35 @@ test('job creation failure does not advance dispatches or replace the previous m
   }
  }finally{sql.close();}
 });
-// Four areas of one operator and six of six other operators, all with a connected source.
+// Four areas of one server and thirty areas of thirty other servers, all with a connected source.
 function parallelAreas(){
  const groups=new Map();for(const id of selectedRegions('all').filter(canImport))groups.set(provider(id),[...(groups.get(provider(id))||[]),id]);
- const shared=[...groups.values()].find(ids=>ids.length>=4).slice(0,4),single=[...groups.values()].filter(ids=>ids[0]!==shared[0]).map(ids=>ids[0]).slice(0,6);
+ const shared=[...groups.values()].find(ids=>ids.length>=4).slice(0,4),single=[...groups.values()].filter(ids=>ids[0]!==shared[0]).map(ids=>ids[0]).slice(0,30);
  return {shared,single};
 }
 const wait=ms=>new Promise(done=>setTimeout(done,ms));
 const stored=sql=>JSON.parse(sql.prepare("SELECT value FROM system_state WHERE key='admin-pipeline-job'").get().value);
 const done={status:200,data:{topics:1,coverage:{complete:true,issues:[]}}};
-test('import steps run side by side: at most six, at most two of one operator, every area exactly once',async()=>{
+test('import steps run side by side: at most 24, at most two on one server, the largest server first, every area exactly once',async()=>{
  const {sql,db}=fixture(),{shared,single}=parallelAreas();
- assert.equal(new Set(shared.map(provider)).size,1);assert.equal(new Set([...shared,...single].map(provider)).size,7);assert.equal(PARALLEL.metadata,6);assert.equal(PARALLEL.analysis,1);assert.equal(PER_PROVIDER,2);
- const job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[...shared,...single],window:'1w'},()=>{});
+ assert.equal(new Set(shared.map(provider)).size,1);assert.equal(new Set([...shared,...single].map(provider)).size,31);assert.equal(PARALLEL.metadata,24);assert.equal(PARALLEL.analysis,1);assert.equal(PER_PROVIDER,2);
+ // The areas of the shared server stand last in the list and are still taken first.
+ const job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[...single.slice(0,26),...shared],window:'1w'},()=>{});
+ assert.ok(job.items.every(i=>i.server===provider(i.region)));assert.equal(job.counts.queued,30);
  const active=new Set(),seen=[];let most=0,mostShared=0;
  const run=async(stage,region,window)=>{
   assert.equal(stage,'metadata');assert.equal(window,'1w');
   active.add(region);most=Math.max(most,active.size);mostShared=Math.max(mostShared,[...active].filter(other=>provider(other)===provider(shared[0])).length);
-  // Long enough for six callers to get their turn at the stored job while the first imports still run.
-  seen.push(region);await wait(350);active.delete(region);
+  // Long enough for 24 callers to get their turn at the stored job while the first imports still run.
+  seen.push(region);await wait(1500);active.delete(region);
   return {status:200,data:{topics:2,coverage:{complete:true,issues:[]}}};
  };
- // Nine callers, more than the server allows: the surplus is told to wait and asks again.
+ // Thirty callers, more than the server allows: the surplus is told to wait and asks again.
  let waits=0;
  const worker=async()=>{for(;;){const state=await pipelineAction(db,{action:'step',id:job.id},run);if(state.status==='completed')return state;if(state.wait){waits++;await wait(4);}}};
- const finished=await Promise.all(Array.from({length:9},worker));
- assert.equal(most,6);assert.equal(mostShared,2,'two of one operator at once, never three');assert.ok(waits>0);assert.equal(seen.length,10);assert.equal(new Set(seen).size,10,'no area is imported twice');
+ const finished=await Promise.all(Array.from({length:30},worker));
+ assert.equal(most,24);assert.equal(mostShared,2,'two on one server at once, never three');assert.ok(waits>0);assert.equal(seen.length,30);assert.equal(new Set(seen).size,30,'no area is imported twice');
+ assert.ok(seen.slice(0,2).every(region=>shared.includes(region)),'the server with the most open areas starts first');
  const final=stored(sql);assert.equal(final.status,'completed');assert.ok(finished.every(f=>f.status==='completed'));
  assert.ok(final.items.every(i=>i.status==='completed'&&i.processed===2&&!i.startedAt));assert.equal(final.wait,undefined,'wait is an answer, not part of the stored job');
  assert.equal(sql.prepare("SELECT count(*) n FROM system_state WHERE key='pipeline-lease'").get().n,0);sql.close();
@@ -246,6 +252,77 @@ test('an import cut off by the time limit continues in the same job, but not wit
  // An attempt that read nothing further is not continued.
  job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[single[2]]},()=>{});
  job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{...cut.data,resume:false}}));assert.equal(job.items[0].status,'partial');sql.close();
+});
+test('one request runs several lanes; pause holds further areas until resume; answers can list only what changed',async()=>{
+ const {sql,db}=fixture(),{single}=parallelAreas();
+ const active=new Set(),calls=[];let most=0;
+ const run=async(stage,region)=>{calls.push(region);active.add(region);most=Math.max(most,active.size);await wait(40);active.delete(region);return done;};
+ // Three lanes take area after area until the job is done.
+ let job=await pipelineAction(db,{action:'create',stage:'metadata',regions:single.slice(0,8),window:'1w'},()=>{});
+ job=await pipelineAction(db,{action:'run',id:job.id,lanes:3},run);
+ assert.equal(job.status,'completed');assert.equal(job.counts.completed,8);assert.equal(most,3);assert.equal(new Set(calls).size,8);assert.equal(job.wait,undefined);
+ // More lanes than allowed are cut to eight. The imports last long enough for every lane to get its turn at the stored job.
+ most=0;job=await pipelineAction(db,{action:'create',stage:'metadata',regions:single.slice(0,12)},()=>{});
+ job=await pipelineAction(db,{action:'run',id:job.id,lanes:99},async(stage,region)=>{active.add(region);most=Math.max(most,active.size);await wait(900);active.delete(region);return done;});assert.equal(most,8);assert.equal(job.status,'completed');
+ // Rule labelling stays one at a time, whatever the number of lanes.
+ most=0;job=await pipelineAction(db,{action:'create',stage:'analysis',regions:['billerbeck','coesfeld','steinfurt']},()=>{});
+ job=await pipelineAction(db,{action:'run',id:job.id,lanes:4},async(stage,region)=>{active.add(region);most=Math.max(most,active.size);await wait(20);active.delete(region);return {status:200,data:{processed:5,remaining:0}};});
+ assert.equal(most,1);assert.equal(job.status,'completed');
+ // since: only the areas changed from that moment on are listed, the numbers cover the whole job.
+ const created=await pipelineAction(db,{action:'create',stage:'metadata',regions:single.slice(0,3)},()=>{});
+ assert.equal(created.delta,undefined);assert.equal(created.items.length,3);
+ await wait(5);
+ const first=await pipelineAction(db,{action:'step',id:created.id,since:created.updatedAt},async()=>done);
+ assert.equal(first.delta,true);assert.deepEqual(first.items.map(i=>i.status),['completed']);assert.deepEqual(first.counts,{completed:1,queued:2});
+ const status=await pipelineAction(db,{action:'status',id:created.id,since:first.updatedAt},()=>{throw Error('status only reads');});
+ assert.equal(status.updatedAt,first.updatedAt);assert.equal(status.items.length,1);assert.equal(stored(sql).counts,undefined,'the numbers are part of the answer, not of the stored job');
+ // pause: nothing further is claimed, neither by a step nor by lanes; resume continues.
+ job=await pipelineAction(db,{action:'pause',id:created.id},()=>{});assert.equal(job.paused,true);
+ const refused=()=>{throw Error('a paused job claims nothing');};
+ job=await pipelineAction(db,{action:'step',id:created.id},refused);assert.equal(job.wait,undefined);assert.equal(job.counts.queued,2);
+ job=await pipelineAction(db,{action:'run',id:created.id,lanes:4},refused);assert.equal(job.paused,true);assert.equal(job.wait,undefined);
+ job=await pipelineAction(db,{action:'resume',id:created.id},()=>{});assert.equal(job.paused,undefined);
+ job=await pipelineAction(db,{action:'run',id:created.id,lanes:4},run);assert.equal(job.status,'completed');
+ // An import refused because another process holds the stock pauses the job instead of asking again and again.
+ job=await pipelineAction(db,{action:'create',stage:'metadata',regions:single.slice(0,4)},()=>{});
+ let asked=0;job=await pipelineAction(db,{action:'run',id:job.id,lanes:1},async()=>{asked++;return {status:409,data:{error:'Import läuft bereits'}};});
+ assert.equal(asked,1);assert.equal(job.paused,true);assert.equal(job.counts.queued,4);assert.match(job.items.find(i=>i.message).message,/läuft bereits/);
+ await assert.rejects(pipelineAction(db,{action:'run',id:'other',lanes:2},run),/inzwischen geändert/);
+ await pipelineAction(db,{action:'cancel',id:job.id},()=>{});
+ // The nationwide job: every connected source, no area without one, named by its scope.
+ job=await pipelineAction(db,{action:'create',stage:'metadata',regions:'sources',window:'1w'},()=>{});
+ assert.equal(job.scope,'sources');assert.equal(job.items.length,selectedRegions('sources').length);assert.equal(job.counts.unavailable,undefined);assert.equal(job.window,'1w');
+ assert.ok(JSON.stringify(stored(sql)).length<400*job.items.length,'the stored job stays small');sql.close();
+});
+test('the page follows a job through parallel requests: its merged answers equal the stored job',async()=>{
+ const {sql,db}=fixture(),{shared,single}=parallelAreas();
+ const number=text=>[...text].reduce((n,c)=>(n*31+c.charCodeAt(0))%9973,7);
+ // Imports of different length and outcome: complete, partial, failed, cut off once and continued.
+ const cut=new Set();
+ const run=async(stage,region)=>{
+  await wait(5+number(region)%60);
+  if(number(region)%7===0)return {status:502,data:{error:'Import fehlgeschlagen',cause:'HTTP 503'}};
+  if(number(region)%5===0&&!cut.has(region)){cut.add(region);return {status:200,data:{topics:4,resume:true,attemptComplete:false,coverage:{complete:false,issues:['Zeitbudget der Quelle erreicht']}}};}
+  return {status:200,data:{topics:3,coverage:{complete:number(region)%3!==0,issues:number(region)%3?[]:['Begrenzter Abruf']}}};
+ };
+ let latest=await pipelineAction(db,{action:'create',stage:'metadata',regions:[...single.slice(0,26),...shared],window:'1w'},()=>{});
+ // As the page does: four requests with six lanes each, and a status question in between; every answer names `since`.
+ let watching=true,answers=0,deltas=0;
+ const call=async(action,extra={})=>{const next=await pipelineAction(db,{action,id:latest.id,since:latest.updatedAt,...extra},run);answers++;if(next.delta)deltas++;latest=mergeJob(latest,next);return next;};
+ const worker=async()=>{while(!['completed','cancelled'].includes(latest.status)){const next=await call('run',{lanes:6});if(next.wait)await wait(5);}};
+ const watch=async()=>{while(watching){await wait(9);await call('status');}};
+ const watcher=watch();await Promise.all(Array.from({length:4},worker));watching=false;await watcher;
+ const final=stored(sql);
+ assert.equal(latest.status,'completed');assert.deepEqual(latest.items,final.items);assert.equal(latest.updatedAt,final.updatedAt);
+ assert.ok(deltas>3&&deltas===answers,'every answer listed only changes');assert.equal(latest.delta,undefined);assert.equal(latest.wait,undefined);
+ assert.ok(final.items.some(i=>i.status==='failed')&&final.items.some(i=>i.status==='partial')&&final.items.some(i=>i.status==='completed')&&final.items.some(i=>i.resumes===1));
+ // An older answer that arrives late changes nothing; a whole job replaces the held one only if it is not older.
+ const area=final.items[0],stale={...final,updatedAt:'2000-01-01T00:00:00.000Z',delta:true,items:[{...area,status:'running',at:'2000-01-01T00:00:00.000Z'}]};
+ assert.deepEqual(mergeJob(latest,stale),latest);
+ assert.deepEqual(mergeJob(latest,{...final,updatedAt:'2000-01-01T00:00:00.000Z',items:[]}).items,latest.items);
+ assert.equal(mergeJob(latest,{...final,id:'another job',items:[]}),latest);
+ const newer={...final,updatedAt:'2999-01-01T00:00:00.000Z',status:'cancelled',delta:true,items:[{...area,status:'unknown',at:'2999-01-01T00:00:00.000Z'}]},merged=mergeJob(latest,newer);
+ assert.equal(merged.status,'cancelled');assert.equal(merged.items[0].status,'unknown');assert.equal(merged.items.length,final.items.length);assert.deepEqual(merged.items.slice(1),final.items.slice(1));sql.close();
 });
 
 test('agent usage, words and attachments are stored once per article; missing figures stay unknown',async()=>{

@@ -38,13 +38,15 @@ export async function adminEstimate(db,{now=new Date(),replicates=SAMPLE_RULES.r
  // The sample was counted for its own period; its figures are a year as well and are used as they are.
  // A sample unit that is stored as well counts once, with the stored figures.
  const storedIds=new Set(stored.map(a=>a.id));
- const counted=sample.units.filter(u=>(u.reports!==undefined||u.error)&&!storedIds.has(u.id.replace(/^de-/,'nds-'))).map(u=>({...u,origin:'sample',measured:true}));
+ const counted=sample.units.filter(u=>(u.reports!==undefined||u.error)&&!storedIds.has(u.id)&&!storedIds.has(u.id.replace(/^de-/,'nds-'))).map(u=>({...u,origin:'sample',measured:true}));
  const judged=[...stored.map(a=>({...a,...sampleQuality(a,{from,to})})),...counted.map(u=>({...u,...sampleQuality(u,sample)}))];
  const examples=judged.filter(a=>a.complete&&a.population>0),excluded=judged.filter(a=>!a.complete);
  // --- count ---
  const estimate=estimateGermany({samples:examples,frame,replicates}),models=Object.fromEntries(estimate.levels.map(l=>[l.id,l.model]));
- const known=regions.map(r=>({level:levelOf(r),state:landOf(r),population:population[r.id]||0,connected:canImport(r.id)}));
- const captured=capture({units:sample.units,known,models,cells:estimate.cells,knownStates:LANDS.map(l=>l.id)});
+ // Only in the connected states has the source search run; elsewhere the catalog lists areas but cannot say which are readable.
+ const knownStates=LANDS.map(l=>l.id);
+ const known=regions.filter(r=>knownStates.includes(landOf(r))).map(r=>({level:levelOf(r),state:landOf(r),population:population[r.id]||0,connected:canImport(r.id)}));
+ const captured=capture({units:sample.units,known,models,cells:estimate.cells,knownStates});
  // --- documents and their size ---
  const share={all:ratio(examples,'withDocuments','reports')||0,classes:{}};
  for(const c of SIZE_CLASSES){const own=examples.filter(a=>areaClass(a)===c.id);if(own.length>=SIZE_RULES.minAreas)share.classes[c.id]=ratio(own,'withDocuments','reports');}

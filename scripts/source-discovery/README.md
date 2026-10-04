@@ -9,6 +9,7 @@ node scripts/source-discovery/wikidata.mjs   # offizielle Websites je amtlichem 
 node scripts/source-discovery/crawl.mjs      # Links zum Ratsinformationssystem auf den offiziellen Websites
 node scripts/source-discovery/verify.mjs     # Systemart bestimmen, mit den Abrufprogrammen prüfen (3 Monate)
 node scripts/source-discovery/build.mjs      # Katalogdatei und requirements/statewide-sources-report.md schreiben
+node scripts/source-discovery/servers.mjs    # Adressen der Quellenrechner festhalten (Abrufplaner: höchstens zwei je Server)
 node --test tests/*.test.mjs
 ```
 
@@ -50,11 +51,29 @@ TARGET=server/integrations/nds-sources.json REPORT=requirements/nds-sources-repo
 
 Samtgemeinden werden über ihren 9-stelligen Regionalschlüssel gefunden (Wikidata P1388). Das System einer Samtgemeinde führt meist auch die Räte ihrer Mitgliedsgemeinden; alle Vorgänge zählen zum Gebiet der Samtgemeinde.
 
+## Übrige Länder
+
+Der Gebietskatalog der 14 Länder außer NRW und Niedersachsen entsteht mit `node scripts/build-de.mjs` (`shared/de-regions.json`). `LAND` wählt die Gebiete aus dem Katalog: `de` für alle 14 Länder, ein Länderschlüssel (`09`) oder mehrere (`01,13`). Die Suche schreibt nach `server/integrations/de-sources.json`:
+
+```
+export LAND=de DIR=tmp/source-discovery-de/
+node scripts/source-discovery/wikidata.mjs   # eine Abfrage je Land
+node scripts/source-discovery/crawl.mjs
+node scripts/source-discovery/verify.mjs
+TARGET=server/integrations/de-sources.json REPORT=requirements/de-sources-report.md TITLE="Quellen für die übrigen Länder" node scripts/source-discovery/build.mjs
+node scripts/source-discovery/servers.mjs
+```
+
+- Ein Land nach dem anderen ist möglich (`LAND=09`), nötig ist es nicht: Die Begrenzung gilt je Server, und die großen Betreiber arbeiten bundesweit. `build.mjs` behält vorhandene Einträge; ein späterer Lauf über weitere Länder ergänzt die Datei.
+- Die Prüfung hält höchstens zwei Anfragen gleichzeitig je Server (Domain des Betreibers und IP-Adresse), wie der Abruf. Rund 4.500 Gebiete brauchen damit etwa eineinhalb bis zwei Stunden.
+- Ist die Suche für ein Land abgeschlossen, gehört es in `LANDS` (`shared/lands.mjs`): Erst dann wertet die Hochrechnung dort den Katalog aus statt der Stichprobe.
+- Berlin und Hamburg sind je ein Gebiet; ihre Bezirke mit eigenen Systemen fehlen im Katalog noch.
+
 ## Andere Gebietslisten
 
 `crawl.mjs` und `verify.mjs` arbeiten ohne weitere Angaben auf den NRW-Gebieten in `tmp/source-discovery/`. Für die Stichprobe der Hochrechnung (siehe `scripts/estimate/README.md`) lassen sie sich umstellen:
 
 - `DIR=tmp/sample/` – Arbeitsordner für Eingaben und Ergebnisse
-- `AREAS=tmp/sample/areas.json` – Gebietsliste statt `shared/nrw-regions.json`
+- `AREAS=tmp/sample/areas.json` – eigene Gebietsliste statt der Gebiete des Katalogs (`LAND`, ohne Angabe NRW)
 - `CANDIDATES=…` und `OUT=…` – abweichende Dateinamen für die Kandidaten und das Prüfergebnis (nur `verify.mjs`)
 - `TRUST_LINK=1` – der Verweis von der offiziellen Website genügt als Zuordnung, wenn das System den Gebietsnamen nicht nennt (für Gemeindeverbände, die über eine Mitgliedsgemeinde gefunden wurden). Seiten, die erkennbar zu einem Kreis gehören, werden weiterhin keiner Stadt zugeordnet. Für den Katalog des Betriebs wird diese Einstellung nicht verwendet.

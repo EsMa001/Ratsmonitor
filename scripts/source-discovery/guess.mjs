@@ -3,10 +3,11 @@
 // proves the assignment itself: a link back to the official website, or the official key (AGS) in OParl.
 // Reads only public addresses, identifies itself and never retries a refused request.
 import fs from 'node:fs';
+import {loadAreas} from './areas.mjs';
 const dir='tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
-const regions=read('shared/nrw-regions.json'),wikidata=read(dir+'wikidata.json');
+const regions=loadAreas(),wikidata=read(dir+'wikidata.json');
 const connected=new Set(['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen',...['nrw-sources','nearby-sources','expanded-sources','statewide-sources'].flatMap(f=>{try{return read('server/integrations/'+f+'.json').filter(s=>s.method!=='pending').map(s=>s.id);}catch{return [];}})]);
 const verified=fs.existsSync(dir+'verified.json')?read(dir+'verified.json'):{};
 const outFile=dir+(process.env.OUT||'candidates-guessed.json');

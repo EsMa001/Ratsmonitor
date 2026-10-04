@@ -1,14 +1,15 @@
 // Stage 3: write the verified sources to server/integrations/statewide-sources.json and a report.
 // Existing entries are never deleted; entries with an explicitly assigned body are curated and stay as they are.
-// Another state: DIR, AREAS, TARGET, REPORT and TITLE (e.g. Niedersachsen → nds-sources.json, see README).
+// Another state: DIR, LAND or AREAS, TARGET, REPORT and TITLE (e.g. Niedersachsen → nds-sources.json, see README).
 import fs from 'node:fs';
+import {loadAreas} from './areas.mjs';
 const dir=process.env.DIR||'tmp/source-discovery/',target=process.env.TARGET||'server/integrations/statewide-sources.json',reportFile=process.env.REPORT||'requirements/statewide-sources-report.md',title=process.env.TITLE||'Quellen für ganz NRW';
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
-const regions=read(process.env.AREAS||'shared/nrw-regions.json'),verified=read(dir+'verified.json');
+const regions=loadAreas(),verified=read(dir+'verified.json');
 // Results for guessed addresses (guess.mjs) are kept in their own file and only add sources.
 if(fs.existsSync(dir+'verified-guessed.json'))for(const row of Object.values(read(dir+'verified-guessed.json')))if(row.accepted&&!verified[row.id]?.accepted)verified[row.id]=row;
 const candidates=fs.existsSync(dir+'candidates.json')?read(dir+'candidates.json'):{};
-const other=['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources'].map(f=>'server/integrations/'+f+'.json').filter(f=>f!==target&&fs.existsSync(f)).flatMap(read);
+const other=['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources','de-sources'].map(f=>'server/integrations/'+f+'.json').filter(f=>f!==target&&fs.existsSync(f)).flatMap(read);
 const core=['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen'];
 const elsewhere=new Set([...core,...other.map(s=>s.id)]);
 // Sources that are switched off (method "pending") stay in their file but do not count as connected.

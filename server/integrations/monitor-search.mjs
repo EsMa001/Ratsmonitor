@@ -12,15 +12,18 @@ export function parseMonitorSearch(params){
  const raw=params.get('page')||'1';if(!/^\d+$/.test(raw)||Number(raw)<1)throw new SearchError('Ungültige Seite.');
  /* Tiefe Seiten sind teuer (OFFSET) und für Menschen nutzlos: ab hier Suche eingrenzen */
  if(Number(raw)>MAX_PAGE)throw new SearchError('Bitte grenze die Suche ein, um weitere Treffer zu sehen.');
- const within=params.has('within')?params.get('within').split(',').filter(Boolean):null;
- if(within&&(within.length>2000||within.some(a=>!/^\d{5}(\d{3})?$/.test(a))))throw new SearchError('Ungültiger Umkreis.');
+ /* Umkreis: Schlüssel der Gebiete darin (within) oder, wenn das die kürzere Liste ist, der Gebiete außerhalb (without).
+    Kreis 5, Gemeinde 8, Gemeindeverband 9 Stellen */
+ const keys=name=>params.has(name)?params.get(name).split(',').filter(Boolean):null;
+ const within=keys('within'),without=keys('without');
+ if([within,without].some(list=>list&&(list.length>2000||list.some(a=>!/^\d{5}(\d{3,4})?$/.test(a)))))throw new SearchError('Ungültiger Umkreis.');
  const revision=params.get('revision');if(revision!==null&&!/^\d+$/.test(revision))throw new SearchError('Ungültiger Datenstand.');
  /* Weitere Orte aus der Suche: "AGS:only|with" kommagetrennt, zusätzlich zu area (ODER-Verknüpfung) */
  const more=(params.get('more')||'').split(',').filter(Boolean).map(x=>{const [ags,sc]=x.split(':');return {ags,scope:sc==='with'?'with':'only'};});
  if(more.length>8||more.some(m=>!/^(\d{2}|\d{5}|\d{8})$/.test(m.ags)))throw new SearchError('Ungültige Ortsauswahl.');
  /* Komma, Semikolon, | und "oder" trennen Alternativen; Füllwörter tragen nichts zur Suche bei */
  const groups=q.split(/[,;|]|\s+oder\s+/i).map(g=>norm(g).split(/\s+/).filter(w=>w&&!FILLER.has(w))).filter(g=>g.length).slice(0,8).map(g=>g.slice(0,12));
- return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),within,revision};
+ return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),within,without,revision};
 }
 
 // Liest ausschließlich aus search_cards (per Trigger gepflegt, drizzle/0006): flache Spalten,
@@ -38,7 +41,9 @@ export async function searchMonitor(db,catalog,params){
  const isPlace=(r,ags)=>r.ags===ags||!!r.members?.some(m=>m.ags===ags)||!!r.formerAgs?.includes(ags);
  const inPlace=(r,{ags,scope})=>ags.length===2?r.ags.startsWith(ags):scope==='only'?isPlace(r,ags):ags.length===5?r.ags.startsWith(ags):isPlace(r,ags)||r.ags===ags.slice(0,5);
  let scoped=places.length?regions.filter(r=>places.some(p=>inPlace(r,p))):regions;
- if(f.within){const w=new Set(f.within);scoped=scoped.filter(r=>w.has(r.ags)||r.members?.some(m=>w.has(m.ags))||r.formerAgs?.some(a=>w.has(a)));}
+ const listed=list=>{const w=new Set(list);return r=>w.has(r.ags)||!!r.members?.some(m=>w.has(m.ags))||!!r.formerAgs?.some(a=>w.has(a));};
+ if(f.within)scoped=scoped.filter(listed(f.within));
+ if(f.without){const outside=listed(f.without);scoped=scoped.filter(r=>!outside(r));}
  const allIds=JSON.stringify(regions.map(r=>r.id)),scopedIds=JSON.stringify(scoped.map(r=>r.id));
  /* Begriff trifft auch den Gemeindenamen: passende Regionen vorab in JS ermitteln */
  const nameHits=term=>JSON.stringify(regions.filter(r=>norm(r.name).includes(term)).map(r=>r.id));

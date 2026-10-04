@@ -2,7 +2,7 @@ import {clean} from './oparl.mjs';
 // "Stadt Duesseldorf" and "Stadt Düsseldorf" are the same name; providers transliterate umlauts.
 const fold=value=>value.replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
 const sameAddress=(a,b)=>String(a).replace(/^http:/,'https:')===String(b).replace(/^http:/,'https:');
-const normalizedName=value=>fold(clean(value).toLocaleLowerCase('de-DE')).replace(/^(?:(?:stadt|gemeinde|samtgemeinde|einheitsgemeinde|kreis|kreisverwaltung|landkreis|landeshauptstadt|bundesstadt|hansestadt|kolpingstadt|klingenstadt|universitaetsstadt)\s+)+/,'');
+const normalizedName=value=>fold(clean(value).toLocaleLowerCase('de-DE')).replace(/^(?:(?:stadt|gemeinde|markt|samtgemeinde|einheitsgemeinde|verbandsgemeinde|verwaltungsgemeinschaft|verwaltungsverband|erfuellende gemeinde|amt|kreis|kreisverwaltung|landkreis|landeshauptstadt|bundesstadt|hansestadt|kolpingstadt|klingenstadt|universitaetsstadt)\s+)+/,'');
 // Providers that store the official key as a number drop the leading zero of the state key (NRW: 05…).
 // 7 digits are a municipal key, 4 digits a district key, 8 digits with an impossible state prefix a 9-digit key,
 // 11 digits a 12-digit regional key.
@@ -15,8 +15,8 @@ export function matchesBody(body,source){
  const name=clean(body.name).toLocaleLowerCase('de-DE');
  if(source.kind==='city'&&/^(?:kreis|kreisverwaltung|landkreis)\s/.test(name))return false;
  if(source.kind==='district'&&/^(?:stadt|gemeinde|landeshauptstadt|bundesstadt|hansestadt)\s/.test(name))return false;
- // Niedersächsische Samtgemeinden erwarten ihren 9-stelligen Regionalschlüssel.
- const expected=source.ags||source.id?.match(/^(?:nrw|nds)-(\d{5}|\d{8,9})$/)?.[1];
+ // Gemeindeverbände (Samtgemeinde, Amt, Verbandsgemeinde …) erwarten ihren 9-stelligen Regionalschlüssel.
+ const expected=source.ags||source.id?.match(/^(?:nrw|nds|de)-(\d{5}|\d{8,9})$/)?.[1];
  const raw=officialKey(String(body.ags||'').replace(/\D/g,''));
  if(expected&&raw){
   // 12 Stellen: Regionalschlüssel (Kreis 5, Verband 4, Gemeinde 3); daraus Verband (9) bzw. Gemeinde (8)

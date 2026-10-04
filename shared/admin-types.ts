@@ -1,6 +1,9 @@
 export type ProcessingCounts={total:number;rules:number;summary:number;aiLabel:number;keywords:number;insufficient:number;stale:number;blocked_summary:number;blocked_aiLabel:number;blocked_keywords:number;fetchedAt:string|null;processedAt:string|null};
 // wait: this step found no area to claim while others are still running; the caller asks again shortly.
-export type PipelineJob={id:string;stage:string;window?:string;createdAt:string;updatedAt:string;status:string;wait?:boolean;items:{region:string;status:string;processed:number;message:string;startedAt?:string}[]};
+// scope: 'sources' for the import of every connected source. paused: no further areas are claimed until the job is resumed.
+// delta: items lists only the areas changed since the moment the caller named; counts covers all areas.
+export type PipelineItem={region:string;status:string;processed:number;message:string;startedAt?:string;at?:string;server?:string;resumes?:number};
+export type PipelineJob={id:string;stage:string;window?:string;scope?:string;createdAt:string;updatedAt:string;status:string;wait?:boolean;paused?:boolean;delta?:boolean;counts?:Record<string,number>;items:PipelineItem[]};
 export type AdminSource={processing:ProcessingCounts;attemptStatus:string|null;id:string;name:string;ags:string;land:string;kind:string;count:number;pendingAnalysis:number;method:string;configured:boolean;canImport:boolean;stale:boolean;partial:boolean;attention:boolean;state:string;lastSuccessAt:string|null;lastAttemptAt:string|null;issues:string[];warnings:string[];sourceUrl:string|null;complete:boolean;nextRetryAt:string|null};
 export type AdminArticle={id:string;regionId:string;title:string;status:string;updatedAt:string;label:string;generatedBy:string};
 export type AdminRun={id:string;startedAt:string;finishedAt:string|null;status:string;region:string;mode:string;trigger:string;count:number|null;issueCount:number;abandoned:boolean};

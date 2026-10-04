@@ -1,6 +1,8 @@
 // Stage 2: classify the links found in stage 1 and verify each proposed source with the real collectors.
 // A source is accepted only if the collector returns public agenda items from it. No database writes.
 import fs from 'node:fs';
+import dns from 'node:dns/promises';
+import {loadAreas} from './areas.mjs';
 import {collectSessionNet} from '../../server/integrations/sessionnet.mjs';
 import {collectRegionalOparl} from '../../server/integrations/oparl-regional.mjs';
 import {collectRubin} from '../../server/integrations/more-rubin.mjs';
@@ -17,8 +19,15 @@ const WINDOW=process.env.WINDOW||'3m';
 const today=new Date().toISOString().slice(0,10);
 const norm=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').normalize('NFKD').replace(/[^a-z0-9]/g,'');
 const normPlain=s=>String(s).toLowerCase().replace(/ß/g,'ss').normalize('NFKD').replace(/[^a-z0-9]/g,'');
-const locks=new Map();
-const withHost=(url,fn)=>{const host=new URL(url).hostname;const prev=locks.get(host)||Promise.resolve();const next=prev.then(fn,fn);locks.set(host,next.catch(()=>{}));return next;};
+// At most two requests or checks at a time on one server, as in the import (pipeline-jobs.mjs). A server is told apart
+// like there: by the registrable domain of its operator and by its address. A lock per host name would let every
+// worker reach another subdomain of one operator at once; operators such as sitzung-online.de then block the network.
+const PER_SERVER=2,slots=new Map(),addresses=new Map();
+const addressOf=host=>{if(!addresses.has(host))addresses.set(host,dns.resolve4(host).then(found=>found.sort()[0],()=>null));return addresses.get(host);};
+const acquire=key=>{const slot=slots.get(key)||{busy:0,waiting:[]};slots.set(key,slot);if(slot.busy<PER_SERVER){slot.busy++;return Promise.resolve();}return new Promise(turn=>slot.waiting.push(turn));};
+const release=key=>{const slot=slots.get(key),turn=slot.waiting.shift();if(turn)turn();else slot.busy--;};
+// Always the domain first and the address second, so two checks never wait for each other.
+const withHost=async(url,fn)=>{const host=new URL(url).hostname,address=await addressOf(host),keys=['domain:'+host.split('.').slice(-2).join('.'),...(address?['ip:'+address]:[])];for(const key of keys)await acquire(key);try{return await fn();}finally{for(const key of keys.reverse())release(key);}};
 async function page(url,timeout=15000){
  const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(timeout),headers:{'User-Agent':UA,Accept:'text/html,application/xhtml+xml'}});
  if(!r.ok){await r.body?.cancel();return {status:r.status,url:r.url,html:''};}
@@ -77,17 +86,19 @@ function oparlGuesses(url,sn){
  return [...new Set(out.map(x=>x.replace(/^http:/,'https:')))];
 }
 // The linked system must name the area itself; a city page linking to its district's system is not a source for the city.
+// Names of municipal councils; they differ between the states (Stadtverordnetenversammlung, Gemeindevertretung, Amtsausschuss …).
+const COUNCIL=/\b(stadtrat|gemeinderat|marktgemeinderat|samtgemeinderat|verbandsgemeinderat|stadtverordnetenversammlung|gemeindevertretung|stadtvertretung|amtsausschuss|gemeinschaftsversammlung|rat der (stadt|gemeinde|samtgemeinde|verbandsgemeinde))\b/i;
 function identity(region,url,html){
  // "Hennef (Sieg)" and "Mülheim an der Ruhr" appear as "hennef" and "muelheim" in addresses.
  const plain=n=>n.replace(/\(.*?\)/g,'').replace(/\s+(an der|am|a\.\s?d\.|im|in der|bei|vor der|ob der)\s+.*$/i,'').trim();
- const names=[region.shortName,region.name.replace(/^(Stadt|Gemeinde|Samtgemeinde|Kreis|Städteregion|Rhein-Kreis|Landkreis|Region)\s+/,'')].flatMap(n=>[n,plain(n)]);
+ const names=[region.shortName,region.name.replace(/^(Stadt|Gemeinde|Samtgemeinde|Verbandsgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband|Erfüllende Gemeinde|Amt|Kreis|Städteregion|Rhein-Kreis|Landkreis|Regionalverband|Region)\s+/,'')].flatMap(n=>[n,plain(n)]);
  const slugs=[...new Set(names.flatMap(n=>[norm(n),normPlain(n)]))].filter(s=>s.length>=3);
  const hay=norm(new URL(url).hostname+new URL(url).pathname),hayPlain=normPlain(new URL(url).hostname+new URL(url).pathname);
  const inUrl=slugs.some(s=>hay.includes(s)||hayPlain.includes(s));
  const body=norm(title(html)+' '+text(html).slice(0,6000));const inText=slugs.some(s=>body.includes(s));
  const t=title(html)+' '+text(html).slice(0,1500);
  const kreisPage=/\b(kreistag|kreisverwaltung|kreisausschuss|landrat)\b/i.test(t)||/kreis/i.test(new URL(url).hostname.split('.').slice(0,-1).join('.'));
- if(region.kind==='city'&&kreisPage&&!/\b(stadtrat|gemeinderat|samtgemeinderat|rat der (stadt|gemeinde|samtgemeinde))\b/i.test(t)&&!inUrl)return {ok:false,why:'Seite gehört erkennbar zu einem Kreis'};
+ if(region.kind==='city'&&kreisPage&&!COUNCIL.test(t)&&!inUrl)return {ok:false,why:'Seite gehört erkennbar zu einem Kreis'};
  if(region.kind==='district'&&!kreisPage&&!/kreis|region/i.test(t+url))return {ok:false,why:'Kreisbezug nicht erkennbar'};
  // A district council system linked from the district's own website needs no further name match (e.g. "obk").
  if(region.kind==='district'&&/\b(kreistag|kreistagsinformation\w*|kreisausschuss)\b/i.test(t))return {ok:true,by:'Kreistagsseite, von der offiziellen Website verlinkt'};
@@ -201,12 +212,13 @@ async function verify(region,row){
  }
  return result;
 }
-const regions=JSON.parse(fs.readFileSync(process.env.AREAS||'shared/nrw-regions.json','utf8'));
+const regions=loadAreas();
 const todo=Object.values(candidates).filter(r=>r.candidates?.length&&(only?only.has(r.id):!done[r.id]));
 const queue=[...todo];let n=0;
 // AbortSignal.timeout uses an unreferenced timer; without this interval Node may exit while requests are still pending.
 const keepAlive=setInterval(()=>{},1000);
-await Promise.all(Array.from({length:10},async()=>{for(let row;(row=queue.shift());){
+// More workers than before reach more servers at once; each server still sees at most PER_SERVER of them.
+await Promise.all(Array.from({length:24},async()=>{for(let row;(row=queue.shift());){
  const region=regions.find(r=>r.id===row.id);let res;
  try{res=await verify(region,row);}catch(e){res={id:row.id,name:row.name,kind:row.kind,tried:[],systems:[],error:e.message};}
  done[row.id]=res;n++;if(n%5===0||!queue.length)fs.writeFileSync(outFile,JSON.stringify(done,null,1));
