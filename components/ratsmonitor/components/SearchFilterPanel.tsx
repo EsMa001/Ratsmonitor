@@ -11,6 +11,7 @@ import { GeoFilter } from "./GeoFilter";
 import { AreaBar } from "./AreaBar";
 import { DateRangeFilter } from "./DateRangeFilter";
 import { setListView, useListView } from "../lib/listView";
+import { setFiltersOpen, useFiltersOpen } from "../lib/filtersOpen";
 import { IconHeart, IconFilter, IconViewCompact, IconViewFull, IconX } from "./icons";
 import { useEffect, useState } from "react";
 import { useEntitlements } from "../lib/entitlements";
@@ -30,7 +31,9 @@ export function SearchFilterPanel() {
   const chips = filterChips(res.snapshot, geo);
   const active = chips.length > 0;
   const savedHit = signatures.get(res.signature);
-  const [open, setOpen] = useState(false);
+  /* Aufgeklappt über den runden Filter-Knopf auf der Karte */
+  const open = useFiltersOpen();
+  const setOpen = setFiltersOpen;
   const { saved, addSaved, removeSaved } = useAccount();
   const toast = useToast();
   const { allow, allowFeature, limits } = useEntitlements();
@@ -86,61 +89,8 @@ export function SearchFilterPanel() {
 
   return (
     <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[12px]">
-      <div role="search" className="flex min-w-0 items-center gap-1">
-        <div className="min-w-0 flex-1"><SearchBox /></div>
-        <button type="button" aria-expanded={open} aria-controls="filter-body" title={open ? "Filter einklappen" : "Filter anzeigen"} onClick={() => {
-            if (!open && !allowFeature("filters")) return;
-            setOpen((o) => !o);
-          }} className={`relative grid h-11 w-9 flex-none place-items-center rounded-xl transition-colors ${open || filterCount ? "text-teal-700 hover:bg-slate-100" : "text-slate-600 hover:bg-slate-100"}`}>
-          <IconFilter size={20} />
-          {filterCount > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-teal-600 px-1 text-[12px] font-semibold text-white">{filterCount}</span>}
-        </button>
-        <button type="button" disabled={!active && !savedHit} onClick={toggleSave} aria-pressed={!!savedHit} title={savedHit ? "Gespeicherte Suche entfernen" : active ? "Suche speichern" : "Erst suchen oder filtern, dann speichern"} aria-label={savedHit ? "Gespeicherte Suche entfernen" : "Suche speichern"} className={`grid h-11 w-9 flex-none place-items-center rounded-xl transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${savedHit ? "text-teal-600 hover:bg-slate-100" : "text-slate-600 hover:bg-slate-100 hover:text-teal-600"}`}>
-          <IconHeart size={20} filled={!!savedHit} />
-        </button>
-      </div>
-      {/* Alles zum Ort in einer Zeile: Umfang und Umkreis (nur um Kreis oder Gemeinde) */}
-      {state.area.length >= 5 && geo && <AreaBar />}
-      {open && (
-        <div id="filter-body" className="flex flex-col gap-4 border-t border-slate-200 pt-4">
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-[12px] font-semibold uppercase tracking-wide text-slate-500">Gebiet</span>
-          <GeoFilter />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-[12px] font-semibold uppercase tracking-wide text-slate-500">Zeitraum</span>
-          <DateRangeFilter />
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-[12px] font-semibold uppercase tracking-wide text-slate-500">Thema</span>
-          <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className="[&_select]:!w-full [&_select]:!max-w-none" />
-        </div>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-[12px] font-semibold uppercase tracking-wide text-slate-500">Ebene</span>
-          <div role="group" aria-label="Verwaltungsebene" className="flex h-11 items-center gap-4">
-            {([
-              ["city", "Städte & Gemeinden"],
-              ["district", "Kreise"],
-            ] as const).map(([v, label]) => (
-              <button key={v} type="button" aria-pressed={state.level === v} onClick={() => search.setLevel(v)} className={`whitespace-nowrap py-1.5 text-[14px] ${state.level === v ? "border-b-2 border-teal-600 text-teal-600" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-[12px] font-semibold uppercase tracking-wide text-slate-500">Status</span>
-          <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className="[&_select]:!w-full [&_select]:!max-w-none" />
-        </div>
-      </div>
-        </div>
-      )}
-
-      {/* Trefferzahl, aktive Filter und Sortierung: immer sichtbar */}
-      <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-200 pt-3">
+      {/* Trefferzahl, Datenstand und Sortierung; aktive Filter und Filter selbst liegen auf der Karte */}
+      <div className="flex flex-wrap items-center gap-1.5">
           <span aria-live="polite" className="mr-1.5 text-[14px] text-slate-600">
             {res.loading ? "…" : res.total.toLocaleString("de-DE")} Treffer
             {res.updatedAt && (
@@ -150,24 +100,6 @@ export function SearchFilterPanel() {
               </span>
             )}
           </span>
-          {chips.map((c) => (
-            <button
-              key={c.key + (c.term ?? "")}
-              type="button"
-              aria-label={`Filter ${c.label} entfernen`}
-              onClick={() => clearChip(c.key, c.term)}
-              className="group inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 pl-2.5 pr-1.5 text-[12px] font-medium text-teal-700"
-            >
-              <span className="font-normal text-slate-500">{c.label}:</span>
-              {c.value}
-              <IconX size={14} className="opacity-70 group-hover:opacity-100" />
-            </button>
-          ))}
-          {chips.length > 1 && (
-            <button type="button" onClick={search.resetAll} className="px-1.5 py-1 text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-900">
-              Alle zurücksetzen
-            </button>
-          )}
           <FilterSelect
             id="f-sort"
             label="Sortierung"

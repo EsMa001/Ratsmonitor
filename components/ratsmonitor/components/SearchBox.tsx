@@ -14,8 +14,10 @@ type Row =
   | { kind: "text"; label: string; pick: () => void }
   | { kind: "scope"; label: string; sub: string; sel: boolean; pick: () => void };
 
-/** Suchfeld mit Ortserkennung und Vorschlagsliste */
-export function SearchBox() {
+/** Suchfeld mit Ortserkennung und Vorschlagsliste.
+ *  glass: Milchglas-Pille (auf der Karte); listMax/listUp: Vorschlagsliste begrenzen bzw. nach oben öffnen,
+ *  damit sie nicht über die Karte hinausragt; onSubmit: Suche mit Enter bestätigt */
+export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void } = {}) {
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
@@ -24,6 +26,11 @@ export function SearchBox() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  /* Bestätigte Suche (base) bleibt als Chips unter der Leiste; das Feld zeigt nur, was neu dazukommt */
+  const [focused, setFocused] = useState(false);
+  const [base, setBase] = useState("");
+  const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
+  const join = (d: string) => (base && state.q.startsWith(base) ? (d ? `${base.replace(/[,;|]\s*$/, "")}, ${d}` : base) : d);
 
   const apply = (value: string, extra?: Parameters<typeof search.applySearch>[1]) => {
     search.applySearch(value, extra);
@@ -157,9 +164,9 @@ export function SearchBox() {
       else {
         search.commitPlaces();
         setOpen(false);
-        /* Suche bestätigt: Feld verlassen, damit der Rand wieder in den Ruhezustand geht */
         inputRef.current?.blur();
       }
+      onSubmit?.();
     } else if (e.key === "Escape") {
       if (showList) {
         e.preventDefault();
@@ -174,7 +181,7 @@ export function SearchBox() {
 
   let pickIndex = -1;
   return (
-    <div className="rm-glow relative z-[4] min-w-0">
+    <div className={`relative z-[4] min-w-0 ${glass ? "rm-glass rounded-full" : ""}`}>
       <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
       <label htmlFor="q" className="sr-only">
         Beschlüsse und Artikel durchsuchen
@@ -185,30 +192,35 @@ export function SearchBox() {
         type="search"
         autoComplete="off"
         spellCheck={false}
-        placeholder="Suchbegriffe, mehrere mit Komma trennen (z. B. Kita, Schule) …"
+        placeholder="Suchen Sie hier."
         role="combobox"
         aria-expanded={showList}
         aria-controls="search-assist"
         aria-autocomplete="list"
         aria-activedescendant={active >= 0 ? `sa-${active}` : undefined}
-        value={state.q}
+        value={draft}
         onChange={(e) => {
           setOpen(true);
-          const value = e.target.value.replace(/^\s+/, "");
+          const value = join(e.target.value.replace(/^\s+/, ""));
           /* Erkannten Ort überschrieben (statt gelöscht): Ort bleibt als Filter erhalten */
           if (liveHits.length && isReplacement(state.q, value)) search.commitPlaces();
           apply(value);
           /* Komma nach einem Ort: Ort wird fester Filter, weiterschreiben mit dem nächsten Begriff */
           if (/[,;|]\s*$/.test(value)) search.commitPlaces(true);
         }}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          setBase(state.q);
+          setFocused(true);
+          setOpen(true);
+        }}
         onBlur={() => {
+          setFocused(false);
           setOpen(false);
           setActive(-1);
           search.commitPlaces();
         }}
         onKeyDown={onKeyDown}
-        className={`h-11 w-full rounded-xl border border-transparent bg-white pl-[42px] text-[16px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-slate-400 ${
+        className={`h-11 w-full border border-transparent bg-transparent pl-[42px] ${glass ? "rounded-full" : "rounded-xl"} text-[16px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-slate-400 ${
           placeOn ? "pr-[128px]" : "pr-11"
         }`}
       />
@@ -218,15 +230,16 @@ export function SearchBox() {
           Ort erkannt
         </span>
       )}
-      {state.q ? (
+      {draft ? (
         <button
           type="button"
-          aria-label="Suche leeren"
+          aria-label="Eingabe leeren"
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() => {
-            apply("");
+            apply(join(""));
             inputRef.current?.focus();
           }}
-          className="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+          className="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900"
         >
           <IconX />
         </button>
@@ -237,7 +250,8 @@ export function SearchBox() {
           role="listbox"
           aria-label="Erkannte Orte und Vorschläge"
           onMouseDown={(e) => e.preventDefault()}
-          className="popover scroll-thin absolute left-0 right-0 top-[calc(100%+6px)] z-[1200] max-h-[380px] min-w-[320px] overflow-y-auto p-1.5"
+          style={{ maxHeight: listMax ?? 380 }}
+          className={`popover scroll-thin absolute left-0 right-0 z-[1200] min-w-[280px] overflow-y-auto p-1.5 ${listUp ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}
         >
           {rows.map((r, i) => {
             if (r.kind === "head")

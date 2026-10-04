@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { IconChevronDown } from "./icons";
 
 interface Option {
@@ -19,31 +21,48 @@ interface Props {
   highlight?: boolean;
 }
 
-/** Auswahlliste im Stil der Kopfzeile; aktive Auswahl in Teal, Zähler in Klammern */
+/** Eigene Auswahlliste (kein Browser-Dropdown); aktive Auswahl in Teal, Zähler rechts */
 export function FilterSelect({ id, label, allLabel, value, options, counts, onChange, size = "md", className = "", highlight = true }: Props) {
   const sm = size === "sm";
+  const [open, setOpen] = useState(false);
+  const all = allLabel ? [{ value: "", label: allLabel }, ...options] : options;
+  const current = all.find((o) => o.value === value)?.label ?? allLabel;
   return (
     <div className={`relative ${className}`}>
-      <label htmlFor={id} className="sr-only">
-        {label}
-      </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`select-base w-full text-ellipsis ${sm ? "!h-9 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${
-          value && highlight ? "select-active" : ""
-        }`}
-      >
-        {allLabel && <option value="">{allLabel}</option>}
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-            {counts ? ` (${counts[o.value] || 0})` : ""}
-          </option>
-        ))}
-      </select>
-      <IconChevronDown size={14} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            id={id}
+            type="button"
+            aria-label={`${label}: ${current}`}
+            className={`select-base relative flex w-full items-center text-left ${sm ? "!h-9 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${value && highlight ? "select-active" : ""}`}
+          >
+            <span className="truncate">{current}</span>
+            <IconChevronDown size={14} className={`pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="max-h-[320px] w-[--radix-popover-trigger-width] min-w-[200px] overflow-y-auto rm-glass rm-glass-pop rounded-2xl p-1.5 text-slate-900">
+          <ul role="listbox" aria-label={label} className="m-0 list-none p-0">
+            {all.map((o) => {
+              const on = o.value === value;
+              return (
+                <li key={o.value}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={on}
+                    onClick={() => (onChange(o.value), setOpen(false))}
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[14px] ${on ? "bg-teal-50 text-teal-700" : "text-slate-700 hover:bg-slate-100"}`}
+                  >
+                    <span className="min-w-0 flex-1 truncate">{o.label}</span>
+                    {counts && o.value && <span className="flex-none text-[12px] tabular-nums text-slate-500">{counts[o.value] || 0}</span>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

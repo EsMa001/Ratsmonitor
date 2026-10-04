@@ -5,14 +5,15 @@ import { useTier } from "../lib/tier";
 import { useBrand, useBrandText } from "../lib/brand";
 
 const GROUPS: { title: string; links: [string, string][] }[] = [
-  { title: "Produkt", links: [["/", "Suche"], ["/ueber-ratsmonitor", "Das kann Ratsmonitor"], ["/preise", "Preise & Tarife"], ["/branchen", "Branchen & Anwendungsfälle"]] },
-  { title: "Informationen", links: [["/faq", "FAQ"], ["/quellen", "Quellen & Abdeckung"], ["/ueber-uns", "Über uns"]] },
+  { title: "Funktionen", links: [["/funktionen/suche", "Suche"], ["/konto/suchen", "Gespeicherte Suchen"], ["/konto/artikel", "Gespeicherte Artikel"], ["/funktionen/benachrichtigungen", "Benachrichtigungen"], ["/konto/kalender", "Kalender"]] },
+  { title: "Produkt", links: [["/branchen/bauwesen", "Use Cases"], ["/preise", "Preismodelle"]] },
+  { title: "Informationen", links: [["/faq", "FAQ"], ["/quellen", "Datenabdeckung"], ["/ueber-uns", "Über Ratsmonitor"]] },
   { title: "Rechtliches", links: [["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"]] },
 ];
 
 /** Fußzeile auf allen Seiten: Marke, Linkgruppen, Hinweis auf die Originalquellen */
 /* Seiten mit eigener, inhaltlich passender Petrol-Kachel */
-const OWN_CTA = (p: string) => p === "/preise" || p === "/faq" || p === "/quellen" || p === "/ueber-uns" || p === "/ueber-ratsmonitor" || p.startsWith("/branchen");
+const OWN_CTA = (p: string) => p.startsWith("/funktionen/") || p === "/preise" || p === "/faq" || p === "/quellen" || p === "/ueber-uns" || p === "/ueber-ratsmonitor" || p.startsWith("/branchen");
 
 export function Footer() {
   const { name } = useBrand();
@@ -29,7 +30,7 @@ export function Footer() {
         <DarkCta title="Fragen oder Anregungen?" sub={`Wir freuen uns über Ihr Feedback zu ${name}.`} action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
       )}</div>}
     <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto grid max-w-page gap-8 py-10 sm:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
+      <div className="mx-auto grid max-w-page gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))]">
         <div>
           <p className="m-0 text-[16px] font-semibold text-slate-900">{name}</p>
           <p className="m-0 mt-2 max-w-[36ch] text-[14px] leading-relaxed text-slate-500">

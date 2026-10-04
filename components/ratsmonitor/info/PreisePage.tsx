@@ -22,7 +22,7 @@ export function PreisePage() {
       <PageHead
         icon="tag"
         label="Tarife"
-        name="Preise & Tarife"
+        name="Preismodelle"
         title={
           <>
             Einfache Preise.

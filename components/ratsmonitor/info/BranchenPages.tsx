@@ -5,38 +5,6 @@ import { DarkCta, HitPreview, PageHead, SearchTermButton, useOpenSearch } from "
 import { BRANCHEN, NOTIFY_STAT, type Branche } from "./content";
 import { Icon } from "./icons";
 
-export function BranchenPage() {
-  const openSearch = useOpenSearch();
-  const { name } = useBrand();
-  return (
-    <>
-      <PageHead icon="layoutGrid" label="Übersicht" name="Branchen & Anwendungsfälle" title={`Wer ${name} nutzt`} lead="Acht Branchen. Wählen Sie Ihre, um zu sehen, welche Beschlüsse für Sie zählen." />
-      <section className="ri-band">
-        <div className="ri-grid4">
-          {BRANCHEN.map((b) => (
-            <Link key={b.slug} href={`/branchen/${b.slug}`} className="ri-bc">
-              <Icon name={b.icon} size={28} className="ri-bc__icon" />
-              <h3>{b.name}</h3>
-              <p className="ri-bc__benefit">{b.benefits[0][1]}</p>
-              <p className="ri-bc__for">Für {b.audience}</p>
-              <span className="ri-bc__more">Mehr erfahren →</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-      <DarkCta
-        title="Ihre Branche ist nicht dabei?"
-        sub="Die Suche funktioniert für jedes kommunale Thema. Starten Sie einfach mit einem eigenen Begriff."
-        action={
-          <button type="button" className="ri-btn ri-btn--inv" onClick={() => openSearch()}>
-            Suche starten
-          </button>
-        }
-      />
-    </>
-  );
-}
-
 function Timeline({ b }: { b: Branche }) {
   const { name } = useBrand();
   const first = Math.min(...b.reported);
@@ -65,7 +33,7 @@ export function BranchePage({ b }: { b: Branche }) {
   const openBenefit = useOpenSearch();
   return (
     <>
-      <PageHead icon={b.icon} label="Branche" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview term={term} example={b.example} />}>
+      <PageHead icon={b.icon} label="Use Case" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview term={term} example={b.example} />}>
         <div className="ri-actions">
           <SearchTermButton term={term} />
         </div>

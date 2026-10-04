@@ -110,16 +110,18 @@ body h1,body h2,body h3{font-weight:600}
 /* Hauptaktion: schwarze Pille mit Pfeil; Nebenaktionen: Petrol-Text ohne Rahmen */
 .btn-primary::after{content:"→";transition:transform .15s}
 .btn-primary:hover::after{transform:translateX(2px)}
-/* Suchfeld ohne Hintergrund mit feiner, umlaufender Petrol-Mint-Kante (wie der Abschluss der Seiten).
-   Beim Hineinklicken kommt ein weicher Schein dazu. Der Winkel des Verlaufs dreht sich langsam im Kreis. */
-@property --rm-a{syntax:"<angle>";inherits:false;initial-value:0deg}
-.rm-glow{isolation:isolate}
-.rm-glow::before,.rm-glow::after{content:"";position:absolute;left:0;right:0;top:0;height:44px;border-radius:12px;pointer-events:none;
-  background:conic-gradient(from var(--rm-a),#0d9488,#6ebfb8,#e6f6f3,#6ebfb8,#0d9488);animation:rmSpin 5s linear infinite}
-/* feine Kante: nur ein 1,5-px-Ring sichtbar */
-.rm-glow::after{z-index:1;padding:2px;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:1}
-/* Schein beim Hineinklicken */
-.rm-glow::before{z-index:-1;inset:-4px -4px auto -4px;height:52px;border-radius:16px;filter:blur(10px);opacity:.12;transition:opacity .8s ease}
-.rm-glow:focus-within::before{opacity:.32}
-@keyframes rmSpin{to{--rm-a:360deg}}
-@media (prefers-reduced-motion:reduce){.rm-glow::before,.rm-glow::after{animation:none}}
+
+/* Milchglas (Liquid Glass) für Suchleiste und runde Knöpfe auf der Karte */
+.rm-glass{background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(240,253,250,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(15,23,42,.1),inset 0 1px 0 rgba(255,255,255,.75)}
+.rm-glass:hover{background:linear-gradient(135deg,rgba(255,255,255,.65),rgba(240,253,250,.55))}
+#filter-body .select-base,#filter-body .rm-field{height:40px;border-radius:12px;background:rgba(255,255,255,.6);border-color:rgba(255,255,255,.85);box-shadow:inset 0 1px 2px rgba(15,23,42,.04)}
+#filter-body .select-base:hover,#filter-body .rm-field:hover{background:rgba(255,255,255,.8)}
+#filter-body .select-active{background:rgba(240,253,250,.85);border-color:#99f6e4;color:#0f766e}
+#filter-body .select-base{height:36px;font-size:14px}
+/* Filter: Felder und aufklappende Listen ebenfalls Milchglas */
+#filter-body .select-base,#filter-body .rm-field{background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#filter-body .select-base:hover{background:rgba(255,255,255,.55)}
+#filter-body .select-active{background:rgba(204,251,241,.45);border-color:rgba(153,246,228,.9)}
+.rm-glass-pop,.rm-glass-pop:hover{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(240,253,250,.55))!important;border-color:rgba(255,255,255,.8)!important;-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
+.rm-glass-pop button:not([aria-selected=true]):not(.bg-teal-50):hover{background:rgba(255,255,255,.6)}
+#filter-body .select-base{padding-left:12px;padding-right:28px}#filter-body .select-base svg{right:10px}

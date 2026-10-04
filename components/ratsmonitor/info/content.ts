@@ -242,7 +242,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
         q: "Was ist Ratsmonitor?",
         a: "Ratsmonitor bündelt die Ratsinformationssysteme der Kommunen in einer Suche. Vorlagen, Tagesordnungen und Beschlüsse finden Sie an einem Ort, jeweils mit Kommune, Gremium, Datum und Link zu den Originalunterlagen. Die Abdeckung wird laufend auf ganz Deutschland ausgebaut.",
       },
-      { q: "Wie aktuell sind die Daten?", a: "Die Daten werden regelmäßig direkt aus den offiziellen Ratsinformationssystemen abgerufen. Den genauen Stand sehen Sie in der Suche neben der Trefferzahl („Datenstand“ mit Datum und Uhrzeit). Welche Kommunen erfasst sind und wo es Lücken gibt, steht unter „Quellen & Abdeckung“." },
+      { q: "Wie aktuell sind die Daten?", a: "Die Daten werden regelmäßig direkt aus den offiziellen Ratsinformationssystemen abgerufen. Den genauen Stand sehen Sie in der Suche neben der Trefferzahl („Datenstand“ mit Datum und Uhrzeit). Welche Kommunen erfasst sind und wo es Lücken gibt, steht unter „Datenabdeckung“." },
       { q: "Wie finde ich gezielt Dokumente aus meiner Heimatstadt oder Region?", a: "Tippen Sie den Ortsnamen ins Suchfeld oder klicken Sie die Gemeinde auf der Karte an. Danach können Sie wählen, ob nur die Gemeinde oder auch der Kreis durchsucht wird, und mit dem Umkreis-Regler Nachbarorte einbeziehen." },
       { q: "Wie formuliere ich Suchanfragen am besten (z. B. für Bebauungspläne oder Satzungen)?", a: "Verwenden Sie Fachbegriffe, wie sie in Vorlagen stehen, z. B. „Bebauungsplan“, „Aufstellungsbeschluss“ oder „Satzung“. Mehrere Begriffe trennen Sie mit Komma, dann genügt einer davon (z. B. „Windenergie, Photovoltaik“). Mit den Filtern grenzen Sie nach Thema, Zeitraum und Status ein." },
     ],

@@ -62,6 +62,12 @@ export const IconViewCompact = (p: IconProps) => (
     <path d="M4 5h16M4 9.67h16M4 14.33h16M4 19h16" />
   </Svg>
 );
+export const IconCalendar = (p: IconProps) => (
+  <Svg {...p}>
+    <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+    <path d="M3.5 10h17M8 3v4M16 3v4" />
+  </Svg>
+);
 export const IconChevronUp = (p: IconProps) => (
   <Svg {...p}>
     <path d="m6 15 6-6 6 6" />

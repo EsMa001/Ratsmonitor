@@ -94,7 +94,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
 
   const schedFocus = useCallback((ags: string) => {
     clearTimeout(focusTimer.current);
-    focusTimer.current = window.setTimeout(() => mapRef.current?.focusArea(ags), 450);
+    /* Zentrieren übernimmt die Karte selbst (MapPanel), auch bei mehreren Orten */
+    void ags;
   }, []);
 
   const actions = useMemo<SearchActions>(() => {
@@ -262,10 +263,10 @@ function useDerivedResults(state:SearchState):SearchResults {
   const {placeActive,liveHits,text,more}=deriveFilters(state,pq,ags=>hasScope(ags,geo));
   const within=state.radius&&geo?geo.within(state.radius):null;
   const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level};
-  /* Mit Umkreis ist das Gebiet nur dessen Mittelpunkt; gesucht wird in allen Gebieten im Umkreis */
+  /* Kreisfreie Städte (Kreisschlüssel ohne Umfangwahl) zählen immer mit ihrer Stadt; mit Umkreis ist das Gebiet nur dessen Mittelpunkt; gesucht wird in allen Gebieten im Umkreis */
   const area=state.radius?'':state.area;
-  const params=new URLSearchParams({q:text,area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:area?state.scope:"with",status:state.status,level:state.level,sort:state.sort});
-  if(more.length&&!state.radius)params.set('more',more.map(m=>m.ags+':'+m.scope).join(','));
+  const params=new URLSearchParams({q:text,area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
+  if(more.length&&!state.radius)params.set('more',more.map(m=>m.ags+':'+(m.ags.length===5&&!hasScope(m.ags,geo)?'with':m.scope)).join(','));
   /* Umkreis: Der Schlüssel der Anfrage nennt nur den Kreis; welche Gebiete darin liegen, setzt der Abruf selbst ein (siehe unten) */
   if(state.radius)params.set('around',[state.radius.ags,state.radius.km,Math.round(state.radius.x??0),Math.round(state.radius.y??0),within?within.set.size:'-'].join(':'));
   const spec:FilterSpec={area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};

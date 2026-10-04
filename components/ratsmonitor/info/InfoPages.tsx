@@ -1,11 +1,12 @@
 import { useSearchParams } from "next/navigation";
 import { QuellenPage } from "./QuellenPage";
 import { UeberUnsPage } from "./UeberUnsPage";
+import { BenachrichtigungenPage } from "./BenachrichtigungenPage";
 import { useEffect, type ComponentType } from "react";
 import { AboutPage } from "./AboutPage";
 import { KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
 import { PageHead } from "./blocks";
-import { BranchePage, BranchenPage } from "./BranchenPages";
+import { BranchePage } from "./BranchenPages";
 import { AGB_SECTIONS, brancheBySlug } from "./content";
 import { FaqPage } from "./FaqPage";
 import { PreisePage } from "./PreisePage";
@@ -36,7 +37,8 @@ const PAGES: Record<string, ComponentType> = {
   "/faq": FaqPage,
   "/quellen": QuellenPage,
   "/ueber-uns": UeberUnsPage,
-  "/branchen": BranchenPage,
+  "/funktionen/suche": AboutPage,
+  "/funktionen/benachrichtigungen": BenachrichtigungenPage,
   "/preise": PreisePage,
   "/anmelden": LoginPage,
   "/kontakt": KontaktPage,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useBrand, useBrandText } from "../lib/brand";
 import { DarkCta, PageHead, PlacePill, StatusPill, useOpenSearch } from "./blocks";
@@ -13,11 +13,22 @@ const HITS: { place: string; status: Status; title: string; meta: string }[] = [
 ];
 
 /* TODO: „4.500+“ und „16 Bundesländer“ bestätigen (Doku Kap. 8) */
-const STATS: [string, string][] = [
-  ["4.500+", "Ratsinformationssysteme"],
-  ["16", "Bundesländer"],
-  ["1", "Suche für alles"],
-];
+/* Echte Zahlen zur Abdeckung (aus /api/sources), keine festen Werbezahlen */
+function useCoverageStats(): [string, string][] {
+  const [t, setT] = useState<{ withArticles: number; connected: number; articles: number; areas: number } | null>(null);
+  useEffect(() => {
+    fetch("/api/sources")
+      .then((r) => r.json() as Promise<{ totals?: { withArticles: number; connected: number; articles: number; areas: number } }>)
+      .then((d) => d.totals && setT(d.totals))
+      .catch(() => {});
+  }, []);
+  const n = (v?: number) => (v == null ? "…" : v.toLocaleString("de-DE"));
+  return [
+    [n(t?.articles), "Vorgänge in einer Suche"],
+    [n(t?.withArticles), "Kommunen und Kreise mit Daten"],
+    [n(t?.areas), "Gebiete auswählbar, laufend erweitert"],
+  ];
+}
 
 const POINTS: [string, string][] = [
   ["Informationsvorsprung", "Sie sehen Entscheidungen, sobald sie auf einer Tagesordnung stehen, nicht erst, wenn sie in der Zeitung sind."],
@@ -62,12 +73,13 @@ export function AboutPage() {
   const openSearch = useOpenSearch();
   const { name } = useBrand();
   const brandText = useBrandText();
+  const STATS = useCoverageStats();
   return (
     <>
       <PageHead
-        icon="landmark"
-        label="Produkt"
-        name={`Das kann ${name}`}
+        icon="search"
+        label="Funktionen"
+        name="Suche"
         title={
           <>
             Kommunale Entscheidungen.
@@ -75,15 +87,15 @@ export function AboutPage() {
             Endlich durchsuchbar.
           </>
         }
-        lead={`${name} bündelt verstreute Ratsinformationssysteme zu einer einzigen, durchsuchbaren Datenbank, Schritt für Schritt für ganz Deutschland.`}
+        lead={`Eine Suche statt hunderter Ratsinformationssysteme: ${name} durchsucht alle angebundenen Kommunen gleichzeitig, nach Begriff, Ort, Umkreis, Thema, Zeitraum und Stand. Was früher Tage dauerte, dauert jetzt Sekunden.`}
         aside={<SearchPreview />}
       >
         <div className="ri-actions">
           <button type="button" className="ri-btn ri-btn--dark" onClick={() => openSearch()}>
             Suche starten
           </button>
-          <Link href="/branchen" className="ri-btn ri-btn--light">
-            Branchen ansehen
+          <Link href="/preise" className="ri-btn ri-btn--light">
+            Preismodelle ansehen
           </Link>
         </div>
       </PageHead>
@@ -141,8 +153,8 @@ export function AboutPage() {
         title="Welche Beschlüsse zählen in Ihrer Branche?"
         sub="Acht Branchen, jeweils mit typischem Ablauf und passenden Suchbegriffen."
         action={
-          <Link href="/branchen" className="ri-btn ri-btn--inv">
-            Zu den Branchen
+          <Link href="/branchen/bauwesen" className="ri-btn ri-btn--inv">
+            Zu den Use Cases
           </Link>
         }
       />

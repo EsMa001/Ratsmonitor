@@ -35,7 +35,7 @@ export function QuellenPage() {
       <PageHead
         icon="layers"
         label="Daten"
-        name="Quellen & Abdeckung"
+        name="Datenabdeckung"
         title={<>Woher die Daten<br />kommen.</>}
         lead="Alle Vorgänge stammen aus den offiziellen Ratsinformationssystemen der Kommunen. Offizielle Schnittstellen haben Vorrang, sonst werden die öffentlichen Ratsinformationsseiten gelesen. Die Abdeckung wird laufend ausgebaut."
       />

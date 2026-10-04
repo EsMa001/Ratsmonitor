@@ -102,7 +102,7 @@ export class MapEngine {
     const first = !this.view;
     this.W = nW;
     this.H = nH;
-    this.view = first ? this.fitView(this.geo.germany.bb) : { ...this.view!, k: this.clampK(this.view!.k) };
+    this.view = first ? this.germanyView() : { ...this.view!, k: this.clampK(this.view!.k) };
     this.snapView = null;
     this.drawAll();
   }
@@ -143,7 +143,7 @@ export class MapEngine {
   focusArea(ags: string) {
     if (!this.view) return;
     if (!ags) {
-      this.flyTo(this.fitView(this.geo.germany.bb), 700);
+      this.flyTo(this.germanyView(), 700);
       return;
     }
     const b = this.geo.bbox(ags);
@@ -185,6 +185,13 @@ export class MapEngine {
     const bb = this.geo.germany.bb;
     const kmin = 0.92 * Math.min((this.W - 32) / Math.max(bb[2] - bb[0], 1), (this.H - 32) / Math.max(bb[3] - bb[1], 1));
     return Math.max(kmin, Math.min(0.6, k));
+  }
+
+  /** Deutschland passt gerade noch vollständig hinein (kleiner Rand, mittig) */
+  private germanyView(): View {
+    const bb = this.geo.germany.bb;
+    const k = Math.min((this.W - 16) / Math.max(bb[2] - bb[0], 1), (this.H - 16) / Math.max(bb[3] - bb[1], 1));
+    return { cx: (bb[0] + bb[2]) / 2, cy: (bb[1] + bb[3]) / 2, k };
   }
 
   private fitView(bb: BBox, pad?: number): View {
@@ -341,7 +348,8 @@ export class MapEngine {
     ctx.lineWidth = px(1);
     ctx.stroke(G.neighbours);
     const fp = G.germany.path;
-    ctx.fillStyle = "#ffffff";
+    /* Gebiete ohne Treffer in der Farbe der Landmasse außerhalb Deutschlands */
+    ctx.fillStyle = C.neighbour;
     ctx.fill(fp);
     const L = this.level === "district" ? G.krs : G.gem;
     for (const ags of this.coverage) {
@@ -349,34 +357,15 @@ export class MapEngine {
       ctx.fillStyle = colorForCoverage(this.counts[L.ags[i]] || 0);
       ctx.fill(L.path[i]);
     }
-    if (pxkm >= 3) {
-      ctx.strokeStyle = C.line;
-      ctx.lineWidth = px(0.6);
-      ctx.stroke(G.mesh[0]);
-    }
-    if (pxkm >= 1.2) {
-      ctx.strokeStyle = C.line;
-      ctx.lineWidth = px(0.7);
-      ctx.stroke(G.mesh[1]);
-    }
-    ctx.strokeStyle = "#c3c9d1";
-    ctx.lineWidth = px(1);
-    ctx.stroke(G.mesh[2]);
+    /* Alle Grenzen weiß: Gemeinden fein, Kreise mittel, Länder am kräftigsten */
     ctx.save();
     ctx.clip(fp);
-    /* Halbtransparente Linien: auf weißen und auf eingefärbten Gebieten gleichermaßen sichtbar */
-    ctx.strokeStyle = pxkm < 1.2 ? "rgba(30,41,59,.28)" : pxkm < 4 ? "rgba(30,41,59,.42)" : "rgba(30,41,59,.52)";
-    ctx.lineWidth = px(Math.max(0.25, Math.min(1.1, 0.2 + pxkm * 0.18)));
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = px(Math.max(0.35, Math.min(1.1, 0.25 + pxkm * 0.18)));
     ctx.stroke(G.mesh[0]);
-    ctx.restore();
-    /* Kreis- und Ländergrenzen zuletzt und mit dem Zoom kräftiger, damit sie sich immer von den Gemeindegrenzen abheben */
-    ctx.save();
-    ctx.clip(fp);
-    ctx.strokeStyle = pxkm < 1.2 ? "rgba(30,41,59,.36)" : "rgba(30,41,59,.62)";
-    ctx.lineWidth = px(pxkm < 1.2 ? 0.5 : Math.min(1.9, 1 + pxkm * 0.08));
+    ctx.lineWidth = px(pxkm < 1.2 ? 0.9 : Math.min(2, 1.1 + pxkm * 0.08));
     ctx.stroke(G.mesh[1]);
-    ctx.strokeStyle = "rgba(30,41,59,.72)";
-    ctx.lineWidth = px(Math.min(2.6, 1.2 + pxkm * 0.12));
+    ctx.lineWidth = px(Math.min(3, 1.6 + pxkm * 0.12));
     ctx.stroke(G.mesh[2]);
     ctx.restore();
     ctx.strokeStyle = C.national;
@@ -407,17 +396,16 @@ export class MapEngine {
       if (!this.inView(b)) continue;
       const [sx, sy] = this.toScreen(L.lp[2 * i], L.lp[2 * i + 1]);
       const strong = covSet.has(i);
-      ctx.font = (strong ? "600 12px " : "500 12px ") + fam;
       const label = L.name[i];
+      /* Treffergebiete: weiße Schrift, wenn sie in die Fläche passt */
+      ctx.font = "500 12px " + fam;
+      const hit = (this.counts[L.ags[i]] || 0) > 0 && (b[2] - b[0]) * this.view!.k > ctx.measureText(label).width * 1.2;
       const tw = ctx.measureText(label).width;
       if (!strong && (b[2] - b[0]) * this.view!.k < tw * 0.9) continue;
       const r = [sx - tw / 2 - 3, sy - 8, sx + tw / 2 + 3, sy + 8];
       if (placed.some((q) => !(r[2] < q[0] || r[0] > q[2] || r[3] < q[1] || r[1] > q[3]))) continue;
       placed.push(r);
-      ctx.strokeStyle = "rgba(255,255,255,.92)";
-      ctx.lineWidth = 3.5;
-      ctx.strokeText(label, sx, sy);
-      ctx.fillStyle = strong ? "#0f172a" : "#475569";
+      ctx.fillStyle = hit ? "#ffffff" : "#475569";
       ctx.fillText(label, sx, sy);
     }
   }
@@ -490,18 +478,7 @@ export class MapEngine {
         ctx.stroke(L.path[i]);
       }
     }
-    if (this.area) {
-      const L = G.layerOf(this.area);
-      const i = L?.idx.get(this.area);
-      if (L && i != null) {
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 5 / k;
-        ctx.stroke(L.path[i]);
-        ctx.strokeStyle = C.selection;
-        ctx.lineWidth = 2.6 / k;
-        ctx.stroke(L.path[i]);
-      }
-    }
+    /* Ausgewähltes Gebiet ohne Umrandung: die Färbung genügt */
     this.cb.onViewChange();
   }
 

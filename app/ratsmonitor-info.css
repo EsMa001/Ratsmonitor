@@ -355,3 +355,7 @@ select.ri-input{padding-right:12px;cursor:pointer}
   background-size:170% 130%;animation:riGlow 9s ease-in-out infinite alternate}
 @keyframes riGlow{0%{background-position:0% 40%}50%{background-position:60% 70%}100%{background-position:100% 45%}}
 @media (prefers-reduced-motion:reduce){.ri-dark::before{animation:none}}
+/* Einklappbare Menügruppen (Funktionen, Use Cases) */
+.ri-menu__group{display:flex;width:100%;align-items:center;justify-content:space-between;border:0;background:transparent;font:inherit;font-size:14px;line-height:20px;color:#0f172a;text-align:left;cursor:pointer}
+.ri-menu__group:hover{background:#f8fafc}
+.ri-menu__chev{color:#64748b;transition:transform .15s}

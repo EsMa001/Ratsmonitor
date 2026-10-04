@@ -121,7 +121,7 @@ export function GeoFilter() {
         aria-controls="geo-panel"
         title={state.radius ? "Umkreisfilter aktiv" : state.area && geo ? geo.pathText(state.area) : "Gebiet wählen: Bundesland, Kreis, Kommune"}
         onClick={() => (open ? close() : openPanel())}
-        className={`flex h-11 w-full items-center gap-2 rounded-[10px] border px-3 text-left text-[14px] font-normal transition-[border-color,box-shadow,background-color] desk:w-full ${
+        className={`rm-field flex h-11 w-full items-center gap-2 rounded-[10px] border px-3 text-left text-[14px] font-normal transition-[border-color,box-shadow,background-color] desk:w-full ${
           open ? "border-teal-600 shadow-focus" : activeFilter ? "border-teal-200" : "border-slate-200 hover:border-slate-300"
         } ${activeFilter ? "bg-teal-50 text-teal-700" : "bg-white text-slate-900"}`}
       >

@@ -40,7 +40,7 @@ export function DateRangeFilter() {
           <IconChevronDown size={14} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto rounded-2xl border-slate-200 bg-white p-2 text-slate-900 shadow-pop [--primary:#0d9488] [--primary-foreground:#fff] [--accent:#f0fdfa] [--accent-foreground:#0d9488]">
+      <PopoverContent align="start" className="rm-glass rm-glass-pop w-auto rounded-2xl p-2 text-slate-900 [--primary:#0d9488] [--primary-foreground:#fff] [--accent:#f0fdfa] [--accent-foreground:#0d9488]">
         <div className="flex flex-col gap-2 sm:flex-row">
           <div className="flex flex-row flex-wrap gap-1 sm:w-[150px] sm:flex-col">
             <button type="button" className={item(!von && !bis)} onClick={() => (search.setZeitraum("", ""), setOpen(false))}>

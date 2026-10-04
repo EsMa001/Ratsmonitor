@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { IconHeart, IconX } from "../components/icons";
+import { IconBell, IconHeart, IconX } from "../components/icons";
+import { REGIONS } from "@/shared/regions";
 import { filterChips } from "../lib/savedSearch";
-import { fmtDate } from "../lib/text";
 import { useAccount } from "../state/account";
 import { readProfile } from "./ProfilePage";
 import { useEntitlements } from "../lib/entitlements";
@@ -12,20 +12,19 @@ import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
 import type { Article, NotifyFreq, SavedSearch } from "../types";
-import { StatusBadge } from "../components/results/ArticleCard";
 import { MONTH_SHORT } from "../lib/text";
 
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
 type Preview = { total: number; items: Item[] } | null;
 
 /** Die drei neuesten Treffer einer gespeicherten Suche (Umkreissuchen ohne Umkreis-Einschränkung) */
-function usePreview(s: SavedSearch): Preview | "error" {
+function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
   const [data, setData] = useState<Preview | "error">(null);
   useEffect(() => {
     const ctrl = new AbortController();
     const p = new URLSearchParams({
       q: s.text || "",
-      area: s.area || "",
+      area: within != null ? "" : s.area || "",
       scope: s.scope || "only",
       label: s.thema || "",
       month: s.monat || "",
@@ -36,28 +35,15 @@ function usePreview(s: SavedSearch): Preview | "error" {
       sort: "desc",
       page: "1",
     });
+    /* Umkreissuche: alle Gebiete im Kreis, wie in der Übersicht */
+    if (within != null) p.set("within", within);
     fetch("/api/search?" + p, { signal: ctrl.signal })
       .then((r) => r.json() as Promise<{ total?: number; articles?: Item[] }>)
       .then((r) => setData({ total: r.total ?? 0, items: (r.articles ?? []).slice(0, 10) }))
       .catch(() => !ctrl.signal.aborted && setData("error"));
     return () => ctrl.abort();
-  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level]);
+  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level, within]);
   return data;
-}
-
-/** Ein/Aus-Schalter im Stil von iOS */
-function Switch({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      onClick={() => onChange(!on)}
-      className={`relative h-[26px] w-[44px] flex-none rounded-full transition-colors duration-200 ${on ? "bg-teal-600" : "bg-slate-300"}`}
-    >
-      <span className={`absolute left-[3px] top-[3px] h-5 w-5 rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,.3)] transition-transform duration-200 ${on ? "translate-x-[18px]" : ""}`} />
-    </button>
-  );
 }
 
 function SavedCard({ s }: { s: SavedSearch }) {
@@ -65,7 +51,14 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const { updateSaved, removeSaved } = useAccount();
   const search = useSearch();
   const { goOverview } = useAppNav();
-  const preview = usePreview(s);
+  /* Umkreis in Gebietsschlüssel umrechnen (Karte geladen) */
+  const within = s.radius && geo ? (() => {
+    const c = s.radius.x != null && s.radius.y != null ? { x: s.radius.x, y: s.radius.y } : geo.center(s.radius.ags);
+    if (!c) return null;
+    const set = geo.within({ x: c.x, y: c.y, km: s.radius.km }).set;
+    return REGIONS.filter((r) => r.kind === (s.level || "city") && set.has(r.ags)).map((r) => r.ags).join(",");
+  })() : null;
+  const preview = usePreview(s, within);
   const n = s.notify;
   const set = (patch: Partial<SavedSearch["notify"]>) => updateSaved(s.id, { notify: { ...n, ...patch } });
   const { allow, limits } = useEntitlements();
@@ -73,7 +66,6 @@ function SavedCard({ s }: { s: SavedSearch }) {
   /* Weitere Empfänger gelten je Suche; ältere Einstellungen aus dem Konto werden übernommen */
   const extra = limits.emails > 1 ? (n.recipients ?? profile.recipients ?? []) : [];
   const [draft, setDraft] = useState("");
-  const [showList, setShowList] = useState(false);
   const addRecipient = () => {
     const v = draft.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || extra.includes(v) || extra.length >= limits.emails - 1) return;
@@ -89,122 +81,94 @@ function SavedCard({ s }: { s: SavedSearch }) {
       goOverview();
     }
   };
-  const iconBtn = "grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900";
+  const iconBtn = "grid h-9 w-9 flex-none place-items-center rounded-full transition-colors hover:bg-slate-100";
 
   return (
-    <article className="flex flex-col border-b border-slate-200 py-2 last:border-b-0">
-      <header className="flex items-start gap-3 px-5 pb-3 pt-4">
-        <IconHeart size={20} filled className="mt-0.5 flex-none text-teal-600" />
+    <article className="border-b border-slate-200 py-4 last:border-b-0">
+      {/* Kopf wie bei gespeicherten Artikeln: Herz entfernt die Suche, Glocke schaltet Benachrichtigungen */}
+      <div className="flex items-start gap-3">
+        <button type="button" onClick={() => removeSaved(s.id)} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-600`}>
+          <IconHeart size={20} filled />
+        </button>
         <div className="min-w-0 flex-1">
-          <button type="button" onClick={open} className="block max-w-full truncate text-left text-[16px] font-semibold text-slate-900 hover:text-teal-700">
+          <button type="button" onClick={open} className="block max-w-full truncate text-left text-[16px] font-semibold text-slate-900 hover:text-teal-600">
             {s.name}
           </button>
-          <p className="m-0 mt-0.5 flex items-center gap-2 text-[14px] text-slate-500">
+          <p className="m-0 mt-0.5 text-[14px] text-slate-500">
             {ok ? `${ok.total.toLocaleString("de-DE")} Treffer` : preview === "error" ? "Treffer nicht verfügbar" : "Lädt …"}
-            {fresh > 0 && <span className="text-teal-600">· {fresh} neu seit Ihrem letzten Besuch</span>}
+            {fresh > 0 && <span className="text-teal-600"> · {fresh} neu</span>}
+            {chips.length > 0 && <> · {chips.map((c) => c.value).join(" · ")}</>}
           </p>
         </div>
-        <div className="flex flex-none items-center">
-          <button type="button" onClick={() => removeSaved(s.id)} title="Entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} hover:!bg-rose-50 hover:!text-rose-600`}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      {chips.length > 0 && (
-        <p className="m-0 px-5 pb-3 text-[14px] text-slate-500">{chips.map((c) => `${c.label}: ${c.value}`).join(" · ")}</p>
-      )}
-
-      {/* Aktionen: Suche öffnen und Vorschau der Treffer aufklappen */}
-      <div className="flex flex-wrap items-center gap-1 px-2 py-1">
-        <button type="button" onClick={open} className="btn-secondary btn-sm">
-          Suche öffnen
+        <button
+          type="button"
+          aria-pressed={!!n.mail}
+          title={n.mail ? "Benachrichtigung ausschalten" : "Bei neuen Treffern benachrichtigen"}
+          aria-label={n.mail ? "Benachrichtigung ausschalten" : "Bei neuen Treffern benachrichtigen"}
+          onClick={() => {
+            if (!n.mail && !allow("notifications")) return;
+            set({ mail: !n.mail, email: n.email || profile.email });
+          }}
+          className={`${iconBtn} -mr-2 ${n.mail ? "text-teal-600" : "text-slate-500"}`}
+        >
+          <IconBell size={20} filled={!!n.mail} />
         </button>
-        {ok && ok.items.length > 0 && (
-          <button type="button" aria-expanded={showList} onClick={() => setShowList((v) => !v)} className="btn-secondary btn-sm !text-slate-600">
-            {showList ? "Vorschau ausblenden" : `Neueste Treffer anzeigen`}
-          </button>
-        )}
       </div>
-      {/* Vorschau wie die Startseite im Kleinen: Artikelkarten in einem scrollbaren Bereich */}
-      {(showList || !ok || !ok.items.length) && <div className="scroll-thin flex max-h-[340px] flex-col overflow-y-auto border-t border-slate-100 px-[12px]">
-        {preview === null && <p className="m-0 px-3 py-2 text-[14px] text-slate-400">Vorschau wird geladen …</p>}
-        {ok && !ok.items.length && <p className="m-0 px-3 py-2 text-[14px] text-slate-400">Aktuell keine Treffer.</p>}
-        {ok?.items.map((a) => {
-          const [y, m, d] = a.date.split("-");
-          return (
-            <Link
-              key={a.id}
-              href={`/beschluss/${a.id}`}
-              className="grid grid-cols-[46px_minmax(0,1fr)] gap-3 rounded-lg border-b border-slate-200 px-3 py-3 no-underline transition-colors last:border-b-0 hover:bg-slate-50"
-            >
-              <div className="flex flex-col items-center border-r border-slate-200 pr-3 pt-0.5 text-center">
-                <span className="text-[18px] font-semibold leading-none text-slate-900">{Number(d) || "—"}</span>
-                <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-600">{MONTH_SHORT[Number(m) - 1]}</span>
-                <span className="text-[12px] text-slate-500">{y}</span>
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-start gap-2">
-                  <h3 className="m-0 min-w-0 flex-1 text-[16px] font-semibold leading-snug text-slate-900">{a.title}</h3>
-                  {a.date > s.lastSeen && <span className="badge-new">neu</span>}
-                </div>
-                <p className="m-0 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] font-medium text-slate-500">
-                  {[a.gemeinde, a.gremium].filter(Boolean).join(" · ")}
-                  <StatusBadge status={a.status} />
-                </p>
-                {a.teaser && <p className="m-0 mt-1 line-clamp-2 text-[14px] leading-relaxed text-slate-600">{a.teaser}</p>}
-              </div>
-            </Link>
-          );
-        })}
-      </div>}
 
-      <footer className="flex flex-wrap items-center gap-3 px-5 pb-3 pt-1">
-        <label className="flex cursor-pointer items-center gap-3 text-[14px] font-medium text-slate-700">
-          <Switch on={!!n.mail} onChange={(v) => { if (v && !allow("notifications")) return; set({ mail: v, email: n.email || profile.email }); }} />
-          E-Mail bei neuen Treffern
-        </label>
-        {n.mail && (
-          <select
-            aria-label="Häufigkeit"
-            value={n.freq}
-            onChange={(e) => set({ freq: e.target.value as NotifyFreq })}
-            className="h-8 rounded-full border border-slate-200 bg-white px-3 text-[14px] font-medium text-slate-700 outline-none focus:border-teal-600"
-          >
+      {/* Drei aktuelle Treffer im Stil der Trefferliste, nur kleiner */}
+      {ok && ok.items.length > 0 && (
+        <ul className="m-0 mt-3 list-none p-0 pl-9">
+          {ok.items.slice(0, 3).map((a) => (
+            <li key={a.id} className="border-t border-slate-100 first:border-t-0">
+              <Link href={`/beschluss/${a.id}`} className="group flex gap-3 py-2.5 no-underline">
+                <span className="flex w-9 flex-none flex-col items-center border-r border-slate-200 pr-3 leading-tight">
+                  <span className="text-[16px] font-semibold text-slate-900">{Number(a.date.slice(8, 10))}</span>
+                  <span className="text-[12px] font-semibold uppercase text-teal-600">{MONTH_SHORT[Number(a.date.slice(5, 7)) - 1]}</span>
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-baseline gap-2">
+                    <span className="min-w-0 flex-1 truncate text-[14px] font-semibold text-slate-900 group-hover:text-teal-600">{a.title}</span>
+                    {a.date > s.lastSeen && <span className="flex-none text-[12px] text-teal-600">neu</span>}
+                  </span>
+                  <span className="block truncate text-[12px] text-slate-500">
+                    {[a.gemeinde, a.gremium].filter(Boolean).join(" · ")}
+                  </span>
+                  {a.teaser && <span className="mt-0.5 line-clamp-2 block text-[12px] leading-snug text-slate-500">{a.teaser}</span>}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      {ok && !ok.items.length && <p className="m-0 mt-2 pl-9 text-[14px] text-slate-500">Aktuell keine Treffer.</p>}
+
+      {/* Einstellungen der Benachrichtigung nur, wenn sie an ist */}
+      {n.mail && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 pl-9 text-[14px] text-slate-500">
+          <select aria-label="Häufigkeit" value={n.freq} onChange={(e) => set({ freq: e.target.value as NotifyFreq })} className="h-8 cursor-pointer rounded-full bg-[#f8f9fa] px-3 text-[14px] text-slate-600 outline-none">
             <option value="instant">Sofort</option>
             <option value="daily">Täglich</option>
             <option value="weekly">Wöchentlich</option>
           </select>
-        )}
-        {n.mail && profile.email && <span className="text-[12px] text-slate-500">an {profile.email}</span>}
-        {n.mail && limits.emails > 1 && (
-          <div className="flex w-full flex-wrap items-center gap-1.5">
-            <span className="text-[12px] text-slate-500">Weitere Empfänger:</span>
-            {extra.map((r) => (
-              <button key={r} type="button" aria-label={`Empfänger ${r} entfernen`} onClick={() => set({ recipients: extra.filter((x) => x !== r) })} className="group inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 pl-2.5 pr-1.5 text-[12px] font-medium text-teal-700">
-                {r}
-                <IconX size={14} className="opacity-70 group-hover:opacity-100" />
-              </button>
-            ))}
-            {extra.length < limits.emails - 1 && (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  addRecipient();
-                }}
-                className="flex items-center gap-1"
-              >
-                <input type="email" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="z. B. team@firma.de" aria-label="Weitere E-Mail-Adresse" className="h-9 w-[200px] rounded-lg border border-slate-200 bg-white px-3 text-[14px] outline-none focus:border-teal-600 focus:shadow-focus" />
-                <button type="submit" className="btn-secondary btn-sm">
-                  Hinzufügen
+          {profile.email && <span>an {profile.email}</span>}
+          {limits.emails > 1 && (
+            <>
+              {extra.map((r) => (
+                <button key={r} type="button" aria-label={`Empfänger ${r} entfernen`} onClick={() => set({ recipients: extra.filter((x) => x !== r) })} className="inline-flex h-7 items-center gap-1.5 rounded-full bg-teal-50 pl-2.5 pr-1.5 text-[12px] text-teal-600">
+                  {r}
+                  <IconX size={14} />
                 </button>
-              </form>
-            )}
-          </div>
-        )}
-      </footer>
+              ))}
+              {extra.length < limits.emails - 1 && (
+                <form onSubmit={(e) => { e.preventDefault(); addRecipient(); }} className="flex items-center gap-1">
+                  <input type="email" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="weitere E-Mail" aria-label="Weitere E-Mail-Adresse" className="h-8 w-[170px] rounded-full bg-[#f8f9fa] px-3 text-[14px] outline-none focus:shadow-focus" />
+                  <button type="submit" className="h-8 rounded-full px-2.5 text-[14px] text-teal-600 hover:bg-slate-100">Hinzufügen</button>
+                </form>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </article>
   );
 }

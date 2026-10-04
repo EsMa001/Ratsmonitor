@@ -94,7 +94,7 @@ function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
         return (
           <li key={i} className="relative flex min-w-[96px] max-w-[170px] flex-1 flex-col gap-0.5 pr-2">
             <div className="flex items-center">
-              <span className={`h-2.5 w-2.5 flex-none rounded-full ${last ? "bg-teal-600 ring-4 ring-teal-100" : "bg-slate-300"}`} />
+              <span className={`h-2.5 w-2.5 flex-none rounded-full ${last ? "bg-teal-600" : "bg-slate-300"}`} />
               {!last && <span className="h-px flex-1 bg-slate-300" />}
             </div>
             <span className="text-[12px] font-semibold tabular-nums text-slate-600">{fmtDate(st.d)}</span>

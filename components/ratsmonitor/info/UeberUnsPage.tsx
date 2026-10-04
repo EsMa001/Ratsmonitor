@@ -16,7 +16,7 @@ export function UeberUnsPage() {
       <PageHead
         icon="users"
         label="Informationen"
-        name="Über uns"
+        name={`Über ${name}`}
         title={<>Die Menschen<br />hinter {name}.</>}
         lead={`${name} wurde von zwei Gründern ins Leben gerufen, die kommunale Entscheidungen für alle früh sichtbar machen wollen.`}
       />

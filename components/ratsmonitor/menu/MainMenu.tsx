@@ -6,11 +6,20 @@ import { BRANCHEN } from "../info/content";
 import { useBrandText } from "../lib/brand";
 import { Icon } from "../info/icons";
 import { useTier } from "../lib/tier";
+import { IconChevronDown } from "../components/icons";
+
+/* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
+const FUNKTIONEN: { href: string; label: string; icon: "search" | "clipboardList" | "bell" | "calendar" | "fileText" }[] = [
+  { href: "/funktionen/suche", label: "Suche", icon: "search" },
+  { href: "/konto/suchen", label: "Gespeicherte Suchen", icon: "clipboardList" },
+  { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
+  { href: "/funktionen/benachrichtigungen", label: "Benachrichtigungen", icon: "bell" },
+  { href: "/konto/kalender", label: "Kalender", icon: "calendar" },
+];
 
 const MAIN_TOP = [
   { href: "/ueber-ratsmonitor", label: "Über uns" },
   { href: "/faq", label: "FAQ" },
-  { href: "/branchen", label: "Branchen & Anwendungsfälle" },
 ];
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */
@@ -20,6 +29,8 @@ export function MainMenu() {
   const path = usePathname();
   const brandText = useBrandText();
   const { tier } = useTier();
+  /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
+  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -88,31 +99,47 @@ export function MainMenu() {
               {/* Gleiche Gruppen wie in der Fußzeile; Linien statt Kästen. Gespeichertes und Konto erreicht man über die Icons in der Kopfzeile */}
               <nav className="ri-menu__nav" aria-label="Menü">
                 <p className="ri-menu__label">Produkt</p>
-                <Link href="/" className="ri-menu__main" aria-current={current("/")} onClick={pick}>Suche</Link>
-                <Link href="/ueber-ratsmonitor" className="ri-menu__main" aria-current={current("/ueber-ratsmonitor")} onClick={pick}>{brandText("Das kann Ratsmonitor")}</Link>
-                <Link href="/preise" className="ri-menu__main" aria-current={current("/preise")} onClick={pick}>Preise & Tarife</Link>
-                <Link href="/branchen" className="ri-menu__main" aria-current={current("/branchen")} onClick={pick}>Branchen & Anwendungsfälle</Link>
-                <ul className="ri-menu__subs">
-                  {BRANCHEN.map((b) => {
-                    const href = `/branchen/${b.slug}`;
-                    return (
-                      <li key={b.slug}>
-                        <Link href={href} className="ri-menu__sub" aria-current={current(href)} onClick={pick}>
-                          <Icon name={b.icon} size={15} />
-                          {b.name}
+                {/* Funktionen und Use Cases sind einklappbar; die Gruppen selbst sind keine Seiten */}
+                <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "funktionen"} onClick={() => setOpenGroup(openGroup === "funktionen" ? "" : "funktionen")}>
+                  Funktionen
+                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "funktionen" ? "rotate-180" : ""}`} />
+                </button>
+                {openGroup === "funktionen" && (
+                  <ul className="ri-menu__subs">
+                    {FUNKTIONEN.map((f) => (
+                      <li key={f.href}>
+                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
+                          <Icon name={f.icon} size={15} />
+                          {f.label}
                         </Link>
                       </li>
-                    );
-                  })}
-                </ul>
+                    ))}
+                  </ul>
+                )}
+                <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "usecases"} onClick={() => setOpenGroup(openGroup === "usecases" ? "" : "usecases")}>
+                  Use Cases
+                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "usecases" ? "rotate-180" : ""}`} />
+                </button>
+                {openGroup === "usecases" && (
+                  <ul className="ri-menu__subs">
+                    {BRANCHEN.map((b) => {
+                      const href = `/branchen/${b.slug}`;
+                      return (
+                        <li key={b.slug}>
+                          <Link href={href} className="ri-menu__sub" aria-current={current(href)} onClick={pick}>
+                            <Icon name={b.icon} size={15} />
+                            {b.name}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+                <Link href="/preise" className="ri-menu__main" aria-current={current("/preise")} onClick={pick}>Preismodelle</Link>
                 <p className="ri-menu__label ri-menu__label--sep">Informationen</p>
-                {MAIN_TOP.filter((m) => m.href === "/faq").map((m) => (
-                  <Link key={m.href} href={m.href} className="ri-menu__main" aria-current={current(m.href)} onClick={pick}>
-                    {brandText(m.label)}
-                  </Link>
-                ))}
-                <Link href="/quellen" className="ri-menu__main" aria-current={current("/quellen")} onClick={pick}>Quellen & Abdeckung</Link>
-                <Link href="/ueber-uns" className="ri-menu__main" aria-current={current("/ueber-uns")} onClick={pick}>Über uns</Link>
+                <Link href="/faq" className="ri-menu__main" aria-current={current("/faq")} onClick={pick}>FAQ</Link>
+                <Link href="/quellen" className="ri-menu__main" aria-current={current("/quellen")} onClick={pick}>Datenabdeckung</Link>
+                <Link href="/ueber-uns" className="ri-menu__main" aria-current={current("/ueber-uns")} onClick={pick}>{brandText("Über Ratsmonitor")}</Link>
               </nav>
               {tier === "guest" && (
                 <div className="ri-menu__start">
