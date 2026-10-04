@@ -119,8 +119,7 @@ body h1,body h2,body h3{font-weight:600}
 /* feine Kante: nur ein 1,5-px-Ring sichtbar */
 .rm-glow::after{z-index:1;padding:2px;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:1}
 /* Schein beim Hineinklicken */
-.rm-glow::before{z-index:-1;inset:-4px -4px auto -4px;height:52px;border-radius:16px;filter:blur(10px);opacity:.12;transition:opacity .35s}
+.rm-glow::before{z-index:-1;inset:-4px -4px auto -4px;height:52px;border-radius:16px;filter:blur(10px);opacity:.12;transition:opacity .8s ease}
 .rm-glow:focus-within::before{opacity:.32}
-.rm-glow:focus-within::before,.rm-glow:focus-within::after{animation-duration:3s}
 @keyframes rmSpin{to{--rm-a:360deg}}
 @media (prefers-reduced-motion:reduce){.rm-glow::before,.rm-glow::after{animation:none}}

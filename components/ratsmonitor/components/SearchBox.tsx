@@ -157,6 +157,8 @@ export function SearchBox() {
       else {
         search.commitPlaces();
         setOpen(false);
+        /* Suche bestätigt: Feld verlassen, damit der Rand wieder in den Ruhezustand geht */
+        inputRef.current?.blur();
       }
     } else if (e.key === "Escape") {
       if (showList) {
