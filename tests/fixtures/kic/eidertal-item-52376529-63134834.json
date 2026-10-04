@@ -1,0 +1,86 @@
+{
+ "textsanddocsvisible": true,
+ "meetingstate": 0,
+ "meetingname": "Gemeindevertretung Rumohr",
+ "meetingnum": "",
+ "id": "52376529-63134834",
+ "clientname": "Gemeinde Rumohr",
+ "name": "Jahresabschluss 2025 (SV)",
+ "meetingid": 52376529,
+ "committeeid": 29707207,
+ "committeename": "Gemeindevertretung Rumohr",
+ "numbering": "7",
+ "conordertype": "",
+ "restricted": false,
+ "conorderid": 57902543,
+ "conorder_order": 2,
+ "editor": null,
+ "orderinmeeting": 7,
+ "agendaitemtype": "",
+ "meetingdate": "2026-10-05T00:00:00",
+ "numberingsnapshot": "",
+ "numberingsnapshotorder": 0,
+ "pageno": "",
+ "globalid": "",
+ "inpart": 0,
+ "attendee": null,
+ "entitledToVote": null,
+ "consultants": null,
+ "publizierungsumfang": 0,
+ "nameadditional": "",
+ "bereitstellungsumfang": true,
+ "op": 2,
+ "opdatetime": "2026-09-25T08:23:00",
+ "downloadallowed": true,
+ "unreadop": null,
+ "textblocks": [
+  {
+   "caption": "Rechtliche Bedeutung",
+   "content": "PGZvbnQgc2l6ZT0yPg0KPGRpdiBhbGlnbj1qdXN0aWZ5Pjxmb250IHNpemU9Mz5HZXNldHpsaWNoZSBWZXJwZmxpY2h0dW5nIGdlbSZhdW1sOyZzemxpZzsgJnNlY3Q7IDkyIEdlbWVpbmRlb3JkbnVuZyBTY2hs",
+   "mmsdataid2": "52376529-63134834-63134839"
+  }
+ ],
+ "documents": [
+  {
+   "id": "52376529-63134834-63124689",
+   "name": "06-RUM - Jahresabschluss 2025 kpl. finale Endfassung Stand 8. Jul 26",
+   "fileext": ".pdf",
+   "guestvisible": true,
+   "clientname": "Gemeinde Rumohr"
+  },
+  {
+   "id": "52376529-63134834-66194843",
+   "name": "unterz. Schlussbericht Prüfung des JA 2025 für 06-RUM für Belegprüfung am 25. Aug 26",
+   "fileext": ".pdf",
+   "guestvisible": true,
+   "clientname": "Gemeinde Rumohr"
+  }
+ ],
+ "conorderitems": [
+  {
+   "agendaitemid": "52376165-57902542",
+   "meetingid": 52376165,
+   "meetingname": "Finanzausschuss Rumohr",
+   "committeeid": 29707315,
+   "committeename": "Finanzausschuss Rumohr",
+   "meetingdate": "2026-09-21T00:00:00",
+   "numbering": "4",
+   "restricted": "ö",
+   "clientname": "Gemeinde Rumohr",
+   "conordertypename": null
+  },
+  {
+   "agendaitemid": "52376529-63134834",
+   "meetingid": 52376529,
+   "meetingname": "Gemeindevertretung Rumohr",
+   "committeeid": 29707207,
+   "committeename": "Gemeindevertretung Rumohr",
+   "meetingdate": "2026-10-05T00:00:00",
+   "numbering": "7",
+   "restricted": "ö",
+   "clientname": "Gemeinde Rumohr",
+   "conordertypename": null
+  }
+ ],
+ "votings": []
+}

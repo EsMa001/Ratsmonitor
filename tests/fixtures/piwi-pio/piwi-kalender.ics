@@ -1,0 +1,90 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:PIWi-LHW
+X-WR-CALNAME:Alle Gremien
+X-WR-CALDESC:Sitzungstermine Sitzungstermine aller Gremien
+X-WR-RELCALID:SitzKal-Cal-Alle
+BEGIN:VEVENT
+DTSTAMP:20261004T175756Z
+DTSTART:20260113T180000Z
+DURATION:PT1H
+SUMMARY:Sitzung Ortsbeirat Kastel
+UID:sitzung-3585879@piwi.wiesbaden.de
+LOCATION:Ortsverwaltung Kastel/Kostheim\, Sitzungssaal\, St. Veiter Platz
+  1\, Mainz-Kostheim
+URL:https://piwi.wiesbaden.de/sitzung/detail/3585879
+LAST-MODIFIED:20260311T155811Z
+SEQUENCE:14
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261004T175756Z
+DTSTART:20260827T163000Z
+DURATION:PT1H
+SUMMARY:Sitzung Ortsbeirat Mitte (Entfällt)
+UID:sitzung-3509343@piwi.wiesbaden.de
+LOCATION:Rathaus\, Raum 22 (EG)\, Schlossplatz 6\, Wiesbaden
+STATUS:CANCELLED
+URL:https://piwi.wiesbaden.de/sitzung/detail/3509343
+LAST-MODIFIED:20260630T155329Z
+SEQUENCE:9
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261004T175756Z
+DTSTART:20260930T130000Z
+DURATION:PT1H
+SUMMARY:Sitzung Ausschuss für Finanzen und Beteiligungen
+UID:sitzung-3823664@piwi.wiesbaden.de
+LOCATION:Rathaus\, Raum 22 (EG)\, Schlossplatz 6\, Wiesbaden
+URL:https://piwi.wiesbaden.de/sitzung/detail/3823664
+LAST-MODIFIED:20260930T142503Z
+SEQUENCE:11
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261004T175756Z
+DTSTART:20260930T130000Z
+DURATION:PT1H
+SUMMARY:Sitzung Ausschuss für Frauen\, Gleichstellung\, Gesundheit und Pf
+ lege
+UID:sitzung-3823682@piwi.wiesbaden.de
+LOCATION:Rathaus\, Raum 22 (EG)\, Schlossplatz 6\, Wiesbaden
+URL:https://piwi.wiesbaden.de/sitzung/detail/3823682
+LAST-MODIFIED:20260924T113213Z
+SEQUENCE:22
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261004T175756Z
+DTSTART:20260930T140000Z
+DURATION:PT1H
+SUMMARY:Sitzung Stadtverordnetenversammlung
+UID:sitzung-3710849@piwi.wiesbaden.de
+LOCATION:Rathaus\, Stadtverordnetensitzungssaal (1. Stock)\, Schlossplatz
+  6\, Wiesbaden
+URL:https://piwi.wiesbaden.de/sitzung/detail/3710849
+LAST-MODIFIED:20261001T114606Z
+SEQUENCE:10
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261004T175756Z
+DTSTART:20261001T163000Z
+DURATION:PT1H
+SUMMARY:Sitzung Ortsbeirat Biebrich
+UID:sitzung-3547929@piwi.wiesbaden.de
+LOCATION:Ortsverwaltung Biebrich\, Sitzungssaal (1. Stock)\, Rathausstraß
+ e 63\, Wiesbaden-Biebrich
+URL:https://piwi.wiesbaden.de/sitzung/detail/3547929
+LAST-MODIFIED:20260928T123913Z
+SEQUENCE:15
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261004T175756Z
+DTSTART:20261210T150000Z
+DURATION:PT1H
+SUMMARY:Sitzung Stadtverordnetenversammlung
+UID:sitzung-3710949@piwi.wiesbaden.de
+LOCATION:Rathaus\, Stadtverordnetensitzungssaal (1. Stock)\, Schlossplatz
+  6\, Wiesbaden
+URL:https://piwi.wiesbaden.de/sitzung/detail/3710949
+LAST-MODIFIED:20261001T095842Z
+SEQUENCE:4
+END:VEVENT
+END:VCALENDAR

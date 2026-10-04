@@ -1,0 +1,25 @@
+// Readers of council systems besides OParl, SessionNet, SD.NET, ALLRIS 4 and More! Rubin, by the adapter name of a
+// catalog entry. collect-region.mjs reads a source with them; scripts/source-discovery/verify.mjs recognises them.
+// detect(url, html, {get}) gives the fields of a catalog entry (base and what the reader needs besides) or null. Only
+// KIC asks one more address (its public webconfig.json); all others decide from the page alone.
+import {collectAllris3,detectAllris3} from './allris3.mjs';
+import {collectKic,detectKic,kicShell} from './kic.mjs';
+import {collectTiGenerator,detectTiGenerator} from './ti-generator.mjs';
+import {collectSessionNet6,detectSessionNet6} from './sessionnet6.mjs';
+import {collectCronRatsinfo,detectCronRatsinfo} from './cron-ratsinfo.mjs';
+import {collectMuenchenRisi,detectMuenchenRisi} from './muenchen-risi.mjs';
+import {collectPiwi,detectPiwi} from './piwi.mjs';
+import {collectPio,detectPio} from './pio.mjs';
+const pick=(found,keys)=>found?Object.fromEntries(keys.filter(k=>found[k]!==undefined&&found[k]!==null&&found[k]!=='').map(k=>[k,found[k]])):null;
+export const READERS={
+ // ALLRIS 3 (…/si010_e.asp …). The reader asks the system's own OParl address first, like the ALLRIS 4 reader.
+ allris3:{name:'ALLRIS 3 (öffentliche Seiten)',collect:collectAllris3,detect:async(url,html)=>pick(detectAllris3(url,html),['base','calendar']),oparlCheck:true},
+ // KIC Software (React app with a public guest API): the app's webconfig.json names the API and the organisation.
+ kic:{name:'KIC-RIS (öffentliche Gast-Schnittstelle)',collect:collectKic,detect:async(url,html,{get}={})=>kicShell(url,html)?pick(await detectKic(url,html,get?{get}:{}),['base','api','client']):null},
+ 'ti-generator':{name:'TI-Generator (öffentliche Seiten)',collect:collectTiGenerator,detect:async(url,html)=>{const found=detectTiGenerator(url,html);return found&&found.invitationLists>0?pick(found,['base']):null;}},
+ sessionnet6:{name:'SessionNet 6 (öffentliche Schnittstelle)',collect:collectSessionNet6,detect:async(url,html)=>pick(detectSessionNet6(url,html),['base'])},
+ 'cron-ratsinfo':{name:'cron Ratsinfo für TYPO3 (öffentliche Seiten)',collect:collectCronRatsinfo,detect:async(url,html)=>pick(detectCronRatsinfo(url,html),['base','start'])},
+ 'muenchen-risi':{name:'RIS München (öffentliche Seiten)',collect:collectMuenchenRisi,detect:async(url,html)=>pick(detectMuenchenRisi(url,html),['base'])},
+ piwi:{name:'PIWi Wiesbaden (öffentliche Seiten)',collect:collectPiwi,detect:async(url,html)=>pick(detectPiwi(url,html),['base'])},
+ pio:{name:'PIO Offenbach (öffentliche Seiten)',collect:collectPio,detect:async(url,html)=>pick(detectPio(url,html),['base'])},
+};

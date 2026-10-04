@@ -1,0 +1,59 @@
+[
+ {
+  "nummer": "HA/038/2026",
+  "ort": "Sangerhausen",
+  "ende": "2026-09-09T17:30:00Z",
+  "oSt": 4,
+  "siNr": 2207,
+  "name": "38. Sitzung des Hauptausschusses",
+  "raum": "Neues Rathaus, Beratungsraum \"Goldener Saal\", Markt 7 A, 06526 Sangerhausen",
+  "beginn": "2026-09-09T16:00:00Z",
+  "dat": "2026-09-09",
+  "sb": "18:00",
+  "se": "19:30",
+  "typ": 0,
+  "freigabeDatum": "2026-08-26"
+ },
+ {
+  "nummer": "SR/019/2026",
+  "ort": "Sangerhausen",
+  "ende": "2026-09-10T16:00:00Z",
+  "oSt": 4,
+  "siNr": 2217,
+  "name": "19. Ratssitzung",
+  "raum": "Neues Rathaus, Beratungsraum \"Goldener Saal\", Markt 7 A, 06526 Sangerhausen",
+  "beginn": "2026-09-10T14:00:00Z",
+  "dat": "2026-09-10",
+  "sb": "16:00",
+  "se": "18:00",
+  "typ": 0,
+  "freigabeDatum": "2026-09-24"
+ },
+ {
+  "nummer": "SA/019/2026",
+  "ort": "Sangerhausen",
+  "oSt": 4,
+  "siNr": 2413,
+  "name": "Sitzung des Sanierungsausschusses",
+  "raum": "Vor-Ort-Termin: Kirchberg 15 und Ulrichkirche; Treffpunkt: Kriegerdenkmal\r\nanschließend: Neues Rathaus, \"Goldener Saal\", Markt 7 A, 06526 Sangerhausen",
+  "beginn": "2026-10-07T15:00:00Z",
+  "dat": "2026-10-07",
+  "sb": "17:00",
+  "typ": 0,
+  "freigabeDatum": "2026-10-01"
+ },
+ {
+  "nummer": "KT 7",
+  "ort": "Halberstadt",
+  "ende": "2026-10-09T17:00:00Z",
+  "oSt": 4,
+  "siNr": 2580,
+  "name": "Klausurtagung",
+  "raum": "K6 Seminarhotel GmbH, Kirschallee 6, 38820 Halberstadt",
+  "beginn": "2026-10-09T14:00:00Z",
+  "dat": "2026-10-09",
+  "sb": "16:00",
+  "se": "19:00",
+  "typ": 0
+ }
+]

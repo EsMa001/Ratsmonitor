@@ -15,7 +15,8 @@ export const readPath=source=>{const u=new URL(source.system||source.base);retur
 const sources=[...SOURCES,...NRW_SOURCES.filter(s=>s.method!=='pending'),MUENSTER];
 const file='server/integrations/source-robots.json',previous=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')).sources:{};
 // ONLY_NEW=1 asks only the hosts of sources without a verdict (after build.mjs added sources); all others keep theirs.
-const asked=s=>!process.env.ONLY_NEW||!previous[s.id];
+// ONLY_UNCLEAR=1 also asks again where the last run got no answer (a platform that refused connections for a while).
+const asked=s=>process.env.ONLY_UNCLEAR?!previous[s.id]||previous[s.id]==='unklar':!process.env.ONLY_NEW||!previous[s.id];
 const origins=new Map();
 for(const s of sources.filter(asked)){let u;try{u=new URL(s.system||s.base);}catch{continue;}if(!origins.has(u.origin))origins.set(u.origin,{origin:u.origin,server:serverOf(u.origin+'/')||u.origin});}
 // Platforms such as komm.one give every municipality its own host; at least GAP between two requests to one server

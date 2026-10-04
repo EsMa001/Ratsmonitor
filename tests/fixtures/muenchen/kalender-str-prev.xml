@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><ajax-response><component id="id7c" ><![CDATA[<div class="titlearea" id="id7c">
+<div class="d-flex ml-2">
+<div class="page-title">
+<img class="svg-icon pr-3" src="../../images/Kalender.svg" alt=""/>
+</div>
+<div>
+<h1 class="page-title">
+<span class="d-inline-block">StR-Sitzungskalender <span class="d-inline-block page-additionaltitle"><span>September 2026</span></span></span>
+</h1>
+</div>
+</div>
+</div>]]></component><component id="id7f" ><![CDATA[<div class="colors_sitzung mt-3" id="id7f">
+<div class="keyvalue-container keyvalue-minimumkeywidth" >
+<div class="keyvalue-row keyvalue-row-form">
+<div class="keyvalue-key">
+<label class="col-form-label" style="width: 5.5em;" >Zeitraum:</label>
+</div>
+<div class="keyvalue-value">
+<fieldset>
+<legend class="sr-only">Zeitraum</legend>
+<div class="period-selector mb-2">
+<button class="btn btn-link p-0 period-prev" id="id74" type="button"><img class="svg-icon" style="height: 32px;" src="../../images/Blaettern_Zurueck.svg" alt="Eine Seite zurück gehen"></button>
+<div class="period-choice">
+<button class="btn font-weight-bold btn-primary" style="white-space: normal; width: 100%" id="id81" type="button">Juli 2026</button>
+</div><div class="period-choice">
+<button class="btn font-weight-bold btn-primary" style="white-space: normal; width: 100%" id="id82" type="button">August 2026</button>
+</div><div class="period-choice">
+<button class="btn font-weight-bold btn-selected" style="white-space: normal; width: 100%" id="id83" type="button">September 2026</button>
+</div><div class="period-choice">
+<button class="btn font-weight-bold btn-primary" style="white-space: normal; width: 100%" id="id84" type="button">Oktober 2026</button>
+</div><div class="period-choice">
+<button class="btn font-weight-bold btn-primary" style="white-space: normal; width: 100%" id="id85" type="button">November 2026</button>
+</div>
+<button class="btn btn-link p-0 period-next" id="id75" type="button"><img class="svg-icon" style="height: 32px;" src="../../images/Blaettern_Vor.svg" alt="Eine Seite vorwärts gehen"></button>
+</div>
+</fieldset>
+</div>
+</div>
+</div>
+<section class="card mt-3" aria-labelledby="sectionheader-month">
+<div class="card-header">
+<h2 class="text-center" id="sectionheader-month">September 2026</h2>
+</div>
+<ul class="list-unstyled list-group list-group-flush">
+<li class="list-group-item even">
+<div class="kalender-row">
+<div class="kalender-date font-size-big font-weight-bold">
+<div class="text-center text-md-left ">
+<span>Mi. 09.</span>
+</div>
+<div class="d-md-none divider"></div>
+</div>
+<div class="kalender-info">
+<div class="row no-gutters">
+<div class="col-12 col-lg">
+<div class="d-flex font-size-big">
+<div class="mr-2">
+<img class="svg-icon" src="../../images/Vorgang_Sitzung.svg" alt="">
+</div>
+<div class="flex-grow-1 align-items-baseline">
+<h3 class="font-size-big"><a class="headline-link text-keepwhitespace" href="../detail/9140252"><span class="sr-only">9. September 2026</span>09:00 Uhr - Verwaltungs- und Personalausschuss als Feriensenat</a></h3>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-2 pb-1">
+<div class="d-flex">
+<div class="mr-3">
+<img class="svg-icon" src="../../images/Oeffentlich.svg" alt=""> <a href="../detail/9140252/tagesordnung/oeffentlich">Öffentliche TO</a>
+</div>
+<div>
+<img class="svg-icon" src="../../images/Nichtoeffentlich.svg" alt=""> <a href="../detail/9140252/tagesordnung/nichtoeffentlich">Nichtöffentliche TO</a>
+</div>
+</div>
+</div>
+<div class="keyvalue-container keyvalue-minimumkeywidth mt-1">
+<div class="keyvalue-row">
+<div class="keyvalue-key">Status:</div>
+<div class="keyvalue-value">Niederschrift</div>
+</div>
+<div class="keyvalue-row">
+<div class="keyvalue-key">Sitzungsort:</div>
+<div class="keyvalue-value">Großer Sitzungssaal</div>
+</div>
+</div>
+</div>
+</div>
+</li><li class="list-group-item odd">
+<div class="kalender-row">
+<div class="kalender-date font-size-big font-weight-bold">
+<div class="text-center text-md-left ">
+<span>Di. 29.</span>
+</div>
+<div class="d-md-none divider"></div>
+</div>
+<div class="kalender-info">
+<div class="row no-gutters">
+<div class="col-12 col-lg">
+<div class="d-flex font-size-big">
+<div class="mr-2">
+<img class="svg-icon" src="../../images/Entfaellt.svg" alt="">
+</div>
+<div class="flex-grow-1 align-items-baseline">
+<h3 class="font-size-big"><a class="headline-link text-keepwhitespace text-danger" href="../detail/9141129"><span class="sr-only">29. September 2026</span>09:30 Uhr - Kreisverwaltungsausschuss</a></h3>
+<span class="ml-2 font-size-medium">
+<span class="font-weight-medium text-danger">(entfällt)</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+<div class="keyvalue-container keyvalue-minimumkeywidth mt-1">
+</div>
+</div>
+</div>
+</li><li class="list-group-item even">
+<div class="kalender-row">
+<div class="kalender-date font-size-big font-weight-bold">
+</div>
+<div class="kalender-info">
+<div class="row no-gutters">
+<div class="col-12 col-lg">
+<div class="d-flex font-size-big">
+<div class="mr-2">
+<img class="svg-icon" src="../../images/Vorgang_Sitzung.svg" alt="">
+</div>
+<div class="flex-grow-1 align-items-baseline">
+<h3 class="font-size-big"><a class="headline-link text-keepwhitespace" href="../detail/9141158"><span class="sr-only">29. September 2026</span>14:00 Uhr - Finanzausschuss</a></h3>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-2 pb-1">
+<div class="d-flex">
+<div class="mr-3">
+<img class="svg-icon" src="../../images/Oeffentlich.svg" alt=""> <a href="../detail/9141158/tagesordnung/oeffentlich">Öffentliche TO</a>
+</div>
+</div>
+</div>
+<div class="keyvalue-container keyvalue-minimumkeywidth mt-1">
+<div class="keyvalue-row">
+<div class="keyvalue-key">Status:</div>
+<div class="keyvalue-value">TO freigegeben</div>
+</div>
+<div class="keyvalue-row">
+<div class="keyvalue-key">Sitzungsort:</div>
+<div class="keyvalue-value">Großer Sitzungssaal</div>
+</div>
+</div>
+</div>
+</div>
+</li><li class="list-group-item odd">
+<div class="kalender-row">
+<div class="kalender-date font-size-big font-weight-bold">
+<div class="text-center text-md-left ">
+<span>Mi. 30.</span>
+</div>
+<div class="d-md-none divider"></div>
+</div>
+<div class="kalender-info">
+<div class="row no-gutters">
+<div class="col-12 col-lg">
+<div class="d-flex font-size-big">
+<div class="mr-2">
+<img class="svg-icon" src="../../images/Vorgang_Sitzung.svg" alt="">
+</div>
+<div class="flex-grow-1 align-items-baseline">
+<h3 class="font-size-big"><a class="headline-link text-keepwhitespace" href="../detail/9141186"><span class="sr-only">30. September 2026</span>09:00 Uhr - Vollversammlung</a></h3>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-2 pb-1">
+<div class="d-flex">
+<div class="mr-3">
+<img class="svg-icon" src="../../images/Oeffentlich.svg" alt=""> <a href="../detail/9141186/tagesordnung/oeffentlich">Öffentliche TO</a>
+</div>
+<div>
+<img class="svg-icon" src="../../images/Nichtoeffentlich.svg" alt=""> <a href="../detail/9141186/tagesordnung/nichtoeffentlich">Nichtöffentliche TO</a>
+</div>
+</div>
+</div>
+<div class="keyvalue-container keyvalue-minimumkeywidth mt-1">
+<div class="keyvalue-row">
+<div class="keyvalue-key">Status:</div>
+<div class="keyvalue-value">TO freigegeben</div>
+</div>
+<div class="keyvalue-row">
+<div class="keyvalue-key">Sitzungsort:</div>
+<div class="keyvalue-value">Großer Sitzungssaal</div>
+</div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</section>
+</div>]]></component><evaluate><![CDATA[<head xmlns:wicket="http://wicket.apache.org"><script type="text/javascript">
+/*<![CDATA[*/
+(function(){Wicket.Ajax.ajax({"u":"./str?3-1.0-kalender-prev","c":"id74","e":"click","pd":true});})();(function(){Wicket.Ajax.ajax({"u":"./str?3-1.0-kalender-next","c":"id75","e":"click","pd":true});})();(function(){Wicket.Ajax.ajax({"u":"./str?3-1.0-kalender-period~choice-0-link","c":"id81","e":"click","pd":true});})();(function(){Wicket.Ajax.ajax({"u":"./str?3-1.0-kalender-period~choice-1-link","c":"id82","e":"click","pd":true});})();(function(){Wicket.Ajax.ajax({"u":"./str?3-1.0-kalender-period~choice-2-link","c":"id83","e":"click","pd":true});})();(function(){Wicket.Ajax.ajax({"u":"./str?3-1.0-kalender-period~choice-3-link","c":"id84","e":"click","pd":true});})();(function(){Wicket.Ajax.ajax({"u":"./str?3-1.0-kalender-period~choice-4-link","c":"id85","e":"click","pd":true});})();
+/*]]]]><![CDATA[>*/
+</script>
+</head>]]></evaluate></ajax-response>

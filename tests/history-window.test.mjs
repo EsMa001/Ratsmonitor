@@ -18,7 +18,7 @@ test('twelve-month calendar window clamps leap day and preserves month ends',()=
  assert.equal(historyStart(new Date('2024-02-29T12:00:00Z')).toISOString(),'2023-02-28T12:00:00.000Z');
 });
 test('SessionNet requests thirteen overlapping calendar months plus next month',async()=>{
- const calls=[];const result=await collectSessionNet(source,{now,get:async url=>{calls.push(url);return 'sessionnet';}});
+ const calls=[];const result=await collectSessionNet(source,{now,get:async url=>{calls.push(url);return '<meta name="sessionnet" content="V:050500"/>';}});
  assert.equal(calls.length,14);assert.ok(calls.some(u=>u.includes('__cjahr=2025&__cmonat=9')));assert.equal(result.coverage.from,'2025-09-27');assert.equal(result.coverage.complete,false);
 });
 test('selectable look-back windows resolve to exact start dates and reject unknown values',()=>{
@@ -37,7 +37,7 @@ test('selectable look-back windows resolve to exact start dates and reject unkno
  const october=new Date('2026-10-03T12:00:00Z');assert.equal(calendarMonthsBack(october,windowStart(october,'1w')),1);
 });
 test('SessionNet requests only the calendar months of the selected window',async()=>{
- const run=async(window,at=now)=>{const calls=[];const result=await collectSessionNet(source,{now:at,window,get:async url=>{calls.push(url);return 'sessionnet';}});return {calls,result};};
+ const run=async(window,at=now)=>{const calls=[];const result=await collectSessionNet(source,{now:at,window,get:async url=>{calls.push(url);return '<meta name="sessionnet" content="V:050500"/>';}});return {calls,result};};
  const week=await run('1w');
  assert.equal(week.calls.length,2);assert.ok(week.calls.some(u=>u.includes('__cjahr=2026&__cmonat=10')));assert.ok(week.calls.some(u=>u.includes('__cjahr=2026&__cmonat=9')));
  assert.equal(week.result.coverage.from,'2026-09-20');assert.equal(week.result.coverage.quiet,true);

@@ -10,6 +10,7 @@ import regions from '../shared/nrw-regions.json' with {type:'json'};
 import {NRW_SOURCES} from '../server/integrations/source-catalog.mjs';
 import {SOURCES} from '../server/integrations/regions.mjs';
 import {canImport} from '../server/integrations/pipeline-jobs.mjs';
+import {READERS} from '../server/integrations/readers.mjs';
 import {collectRegion} from '../server/integrations/collect-region.mjs';
 const https=value=>typeof value==='string'&&value.startsWith('https://');
 test('every statewide source belongs to exactly one catalogued area and is addressed over https',()=>{
@@ -23,8 +24,8 @@ test('every statewide source belongs to exactly one catalogued area and is addre
   if(s.method==='oparl'){assert.ok(https(s.system),s.name);if(s.body)assert.ok(https(s.body)&&new URL(s.body).origin===new URL(s.system).origin,s.name);}
   else if(s.method==='official-api'){assert.equal(s.adapter,'more-rubin');assert.ok(https(s.base)&&s.base.endsWith('/'),s.name);}
   else {assert.equal(s.method,'scraper');assert.ok(https(s.base)&&s.base.endsWith('/'),s.name);
-   // Three page scrapers: SD.NET and ALLRIS sources name their adapter, SessionNet sources their page extension.
-   if(s.adapter){assert.match(s.adapter,/^(sdnet|allris)$/);assert.equal(s.extension,undefined,s.name);if(s.adapter==='sdnet')assert.equal(new URL(s.base).pathname,'/',s.name);}
+   // Page scrapers name their adapter (SD.NET, ALLRIS and the readers of readers.mjs), SessionNet sources their page extension.
+   if(s.adapter){assert.ok(['sdnet','allris',...Object.keys(READERS)].includes(s.adapter),s.name);assert.equal(s.extension,undefined,s.name);if(s.adapter==='sdnet')assert.equal(new URL(s.base).pathname,'/',s.name);}
    else assert.match(s.extension,/^(asp|php)$/);}
  }
  assert.ok(sources.filter(s=>s.adapter==='sdnet').length>40,'the SD.NET sources are part of the catalog');

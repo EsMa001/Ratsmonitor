@@ -1,0 +1,61 @@
+{
+ "id": 11973843,
+ "clientid": 32,
+ "name": "Marktgemeinderatssitzung",
+ "meetingdate": "2026-09-14T00:00:00",
+ "publicpart": true,
+ "nonepublicpart": true,
+ "clientname": "Markt Buttenheim",
+ "state": 0,
+ "committeeid": 17018,
+ "committeename": "Marktgemeinderat",
+ "committeeid2": null,
+ "committeename2": null,
+ "committeeid3": null,
+ "committeename3": null,
+ "num": "",
+ "visibilityoe": 2,
+ "visibilitynoe": 0,
+ "snapdatetime": "2026-09-10T08:45:00",
+ "op": 2,
+ "opdatetime": "2026-09-09T12:13:00",
+ "parts": [],
+ "documents": [
+  {
+   "id": "11973843-12163627",
+   "name": "2026-07-17_Steckbriefe_Bedarfsverkehr",
+   "isprotected": false,
+   "fileext": ".pdf"
+  },
+  {
+   "id": "11973843-12163630",
+   "name": "2026-07-17_FAQ_Bedarfsverkehr im Landkreis Bamberg",
+   "isprotected": false,
+   "fileext": ".pdf"
+  },
+  {
+   "id": "11973843-12163633",
+   "name": "2026-07-17_Taktverkehr_beschlossenes Liniennetz_Linienverlaufspläne",
+   "isprotected": false,
+   "fileext": ".pdf"
+  },
+  {
+   "id": "11973843-12163636",
+   "name": "2026-07-17_Rückmeldebogen_Bedarfsverkehr_Gemeinden_Landkreis_Bamberg",
+   "isprotected": false,
+   "fileext": ".pdf"
+  },
+  {
+   "id": "11973843-12163639",
+   "name": "2026-07-17_ÖPNV-Konzept 2028 Bamberg_Bedarfsverkehr_Präsentation",
+   "isprotected": false,
+   "fileext": ".pdf"
+  },
+  {
+   "id": "11973843-12165270",
+   "name": "Bekanntmachung MGR Sitzung vom 14.09.2026",
+   "isprotected": false,
+   "fileext": ".pdf"
+  }
+ ]
+}

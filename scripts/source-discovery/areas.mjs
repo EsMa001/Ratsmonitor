@@ -37,8 +37,10 @@ const tenantOf=url=>{const u=new URL(url),first=u.pathname.split('/').filter(Boo
  * councils of a shared system.
  */
 export function foreignOwner(area,url,areas){
- let tenant;try{tenant=tenantOf(url);}catch{return null;}
- if(nameSlugs(area).some(s=>tenant.includes(s)))return null;
+ let tenant,whole;try{tenant=tenantOf(url);const u=new URL(url);whole=norm(u.hostname+u.pathname);}catch{return null;}
+ // The own name anywhere in the address counts: a host may sort its municipalities under a folder of their district
+ // (sessionnet.owl-it.de/kreis_steinfurt/wettringen/bi/).
+ if(nameSlugs(area).some(s=>whole.includes(s)))return null;
  // The owner named: preferably in the same district and by its own name rather than by one of its members.
  const own=o=>{const s=norm(plain(o.shortName||o.name));return s.length>=5&&tenant.includes(s);};
  const score=o=>(o.ags.slice(0,5)===area.ags.slice(0,5)?2:0)+(own(o)?1:0);

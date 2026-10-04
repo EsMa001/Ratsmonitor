@@ -1,0 +1,63 @@
+[
+ {
+  "toNr": 2404,
+  "oSt": 1,
+  "nummer": "1",
+  "ebene": 1,
+  "text": "Eröffnung der Sitzung",
+  "textLang": "Eröffnung der Sitzung",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 0,
+  "sort": 10
+ },
+ {
+  "toNr": 2405,
+  "oSt": 1,
+  "nummer": "1.1",
+  "ebene": 2,
+  "text": "Feststellung der Ordnungsmäßigkeit der Ladung, der Anwesenheit und der Beschlussfähigkeit",
+  "textLang": "Feststellung der Ordnungsmäßigkeit der Ladung, der Anwesenheit und der Beschlussfähigkeit",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 0,
+  "sort": 20
+ },
+ {
+  "toNr": 2406,
+  "oSt": 1,
+  "nummer": "1.2",
+  "ebene": 2,
+  "text": "Bestätigung der Niederschrift der letzten öffentlichen Sitzung",
+  "textLang": "Bestätigung der Niederschrift der letzten öffentlichen Sitzung",
+  "voNr": 0,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "abstimmungErgebnis": {
+   "ja": 11,
+   "nein": 0,
+   "enthaltung": 1,
+   "befangen": 0
+  },
+  "sort": 30
+ },
+ {
+  "toNr": 2412,
+  "oSt": 1,
+  "nummer": "6",
+  "ebene": 1,
+  "text": "Neugestaltung der Entgeltordnung für die Nutzung von kommunalen Räumen der Stadt Liebenwalde",
+  "textLang": "Neugestaltung der Entgeltordnung für die Nutzung von kommunalen Räumen der Stadt Liebenwalde",
+  "voNr": 1143,
+  "grNr": 2,
+  "abstimmungTyp": 1,
+  "abstimmungErgebnis": {
+   "ja": 13,
+   "nein": 0,
+   "enthaltung": 0,
+   "befangen": 0
+  },
+  "beschluss": "einstimmig beschlossen",
+  "sort": 90
+ }
+]

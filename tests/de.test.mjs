@@ -127,3 +127,13 @@ test('servers: hosts of one operator or on one address form a group; every sourc
  assert.equal(serverOf('https://neu.sitzung-online.de/public/'),serverOf('https://www.ahlen.sitzung-online.de/public/'));assert.equal(serverOf('https://ris.unbekannt.example/'),'unbekannt.example');assert.equal(serverOf('kein Verweis'),null);
  assert.equal(provider('nicht-im-katalog'),'area:nicht-im-katalog');
 });
+
+test('a shared system is recognised by the name in its address, also below a folder of the district',async()=>{
+ const {foreignOwner}=await import('../scripts/source-discovery/areas.mjs');
+ const area=id=>CATALOG.find(a=>a.id===id);
+ // Fleischwangen links the system of its neighbour Altshausen: not its own.
+ assert.equal(foreignOwner(area('de-08436032'),'https://sessionnet.owl-it.de/altshausen/bi/',CATALOG),'Gemeinde Altshausen');
+ // Wettringen's own tenant lies in the folder of its district (named after the town of Steinfurt as well).
+ assert.equal(foreignOwner(area('nrw-05566096'),'https://sessionnet.owl-it.de/kreis_steinfurt/wettringen/bi/',CATALOG),null);
+ assert.equal(foreignOwner(area('de-08436005'),'https://sessionnet.owl-it.de/altshausen/bi/',CATALOG),null);
+});

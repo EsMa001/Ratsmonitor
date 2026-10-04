@@ -21,7 +21,7 @@ test('SessionNet reads a list longer than the limit in parts: meetings read a mo
  // 403 meetings from January to June 2026, one public item without a paper each.
  const meetings=Array.from({length:MAX_MEETINGS+3},(_,i)=>({id:i+1,date:new Date(Date.UTC(2026,0,5+Math.floor(i*170/(MAX_MEETINGS+3)))).toISOString().slice(0,10)})),read=[];
  const get=async url=>{const u=new URL(url),file=u.pathname.split('/').pop();
-  if(file==='si0040.asp'){const month=u.searchParams.get('__cjahr')+'-'+String(u.searchParams.get('__cmonat')).padStart(2,'0');return '<html>SessionNet '+meetings.filter(m=>m.date.startsWith(month)).map(m=>`<a href="si0057.asp?__ksinr=${m.id}" title="Details anzeigen: Rat ${german(m.date)}">Sitzung</a>`).join('')+'</html>';}
+  if(file==='si0040.asp'){const month=u.searchParams.get('__cjahr')+'-'+String(u.searchParams.get('__cmonat')).padStart(2,'0');return '<html><meta name="sessionnet" content="V:050500"/>SessionNet '+meetings.filter(m=>m.date.startsWith(month)).map(m=>`<a href="si0057.asp?__ksinr=${m.id}" title="Details anzeigen: Rat ${german(m.date)}">Sitzung</a>`).join('')+'</html>';}
   const id=Number(u.searchParams.get('__ksinr'));read.push(id);return `<table><tr><td class="tofnum">Ö 1</td><td class="tobetr"><div class="smc-card-header-title">Thema ${id}</div></td></tr></table>`;};
  const first=await collectSessionNet(source,{now,get,window:'12m'});
  assert.equal(read.length,MAX_MEETINGS);assert.equal(first.readMeetings,MAX_MEETINGS);assert.equal(first.topics.length,MAX_MEETINGS);assert.equal(first.coverage.resumable,true);assert.ok(first.coverage.issues.includes('Sitzungslimit erreicht; weiterer Import erforderlich.'));

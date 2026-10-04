@@ -3,12 +3,13 @@
 // Another state: DIR, LAND or AREAS, TARGET, REPORT and TITLE (e.g. Niedersachsen → nds-sources.json, see README).
 import fs from 'node:fs';
 import {loadAreas,skipReason,foreignOwner} from './areas.mjs';
+import {READERS} from '../../server/integrations/readers.mjs';
 const dir=process.env.DIR||'tmp/source-discovery/',target=process.env.TARGET||'server/integrations/statewide-sources.json',reportFile=process.env.REPORT||'requirements/statewide-sources-report.md',title=process.env.TITLE||'Quellen für ganz NRW';
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const regions=loadAreas(),verified=read(dir+'verified.json');
 // Results for guessed addresses (guess.mjs, guess-platforms.mjs) and for OParl addresses from the register
 // (oparl-register.mjs) are kept in their own files and only add sources.
-for(const file of ['verified-guessed.json','verified-guessed-own.json','verified-oparl.json'])if(fs.existsSync(dir+file))for(const row of Object.values(read(dir+file)))if(row.accepted&&!verified[row.id]?.accepted)verified[row.id]=row;
+for(const file of ['verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-fix.json'])if(fs.existsSync(dir+file))for(const row of Object.values(read(dir+file)))if(row.accepted&&!verified[row.id]?.accepted)verified[row.id]=row;
 // An area without a link on its website whose guessed address led to a system, or stopped at robots.txt: that check
 // says more than "no link found". A guessed page without a system is no finding and changes nothing.
 for(const file of ['verified-guessed-own.json','verified-guessed.json'])if(fs.existsSync(dir+file))for(const row of Object.values(read(dir+file)))if(!verified[row.id]&&((row.tried||[]).some(t=>t.robots==='verboten')||(row.systems||[]).some(s=>s!=='unknown')))verified[row.id]=row;
@@ -48,7 +49,9 @@ for(const s of other.filter(s=>s.method!=='pending'))if(seen.has(address(s)))see
 for(const [key,ids] of seen)if(ids.length>1){for(const id of ids){if(id.startsWith('elsewhere:'))continue;byId.delete(id);if(!foreign.has(id))dropped.push(id);}console.log('Mehrfach zugeordnet, nicht übernommen:',key,ids.join(', '));}
 const sources=[...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));
 // The name comes from the area catalog: it may have been corrected since the check (the key stays the same).
-for(const s of sources){const r=regions.find(r=>r.id===s.id);if(!r||r.kind!==s.kind)throw Error('Gebiet passt nicht: '+s.id);s.name=r.name;}
+for(const s of sources){const r=regions.find(r=>r.id===s.id);if(!r||r.kind!==s.kind)throw Error('Gebiet passt nicht: '+s.id);s.name=r.name;
+ // Found by web search, not by a link of the official website: the system's own address stands as the source.
+ if(!/^https?:\/\//.test(s.verifiedSource||'')){s.foundBy=s.verifiedSource||'Websuche';s.verifiedSource=s.system||s.base;}}
 fs.writeFileSync(target,JSON.stringify(sources,null,2)+String.fromCharCode(10));
 
 // Only areas of this list count; the other files also hold sources of other states.
@@ -88,6 +91,7 @@ const reason=(row,area)=>{
  if(tried.some(t=>(t.allrisIssues||[]).some(i=>/Zugriffsprüfung/.test(i))))return 'ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert';
  if(tried.some(t=>(t.allrisIssues||[]).some(i=>/zu viele Zugriffe/.test(i))))return 'ALLRIS 4 gefunden; das System meldete bei der Prüfung zu viele Zugriffe und sperrte vorübergehend. Erneut prüfen';
  if(tried.some(t=>t.allrisTopics===0||t.allrisError))return 'ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte'+(tried.find(t=>t.allrisError||t.allrisIssues?.length)?' ('+(tried.find(t=>t.allrisError)?.allrisError||tried.find(t=>t.allrisIssues?.length).allrisIssues[0])+')':'');
+ if(tried.some(t=>t.reader&&(t.readerError||t.readerTopics===0))){const t=tried.find(t=>t.reader&&(t.readerError||t.readerTopics===0));return `${READERS[t.reader]?.name||t.reader} gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte`+(t.readerIssues?.length?' ('+t.readerIssues[0]+')':'');}
  if(tried.some(t=>t.allrisGeneration===3))return 'ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser';
  if(systems.includes('allris'))return 'ALLRIS ohne erreichbare OParl-Schnittstelle';
  if(tried.some(t=>t.identity&&!t.identity.ok)&&!tried.some(t=>t.identity?.ok))return 'Gefundenes System nicht eindeutig dem Gebiet zuzuordnen';
@@ -95,7 +99,7 @@ const reason=(row,area)=>{
 };
 const open=regions.filter(r=>!connected.has(r.id)).map(r=>({...r,reason:switchedOff.get(r.id)?.note||reason(verified[r.id]||(candidates[r.id]?.candidates?.length?{tried:[],systems:[]}:null),r),link:switchedOff.get(r.id)?.system||(verified[r.id]?.tried||[]).find(t=>t.url)?.url||candidates[r.id]?.candidates?.[0]?.url||''}));
 const count=(list,key)=>Object.entries(list.reduce((a,x)=>(a[key(x)]=(a[key(x)]||0)+1,a),{})).sort((a,b)=>b[1]-a[1]);
-const methodName=s=>s.method==='oparl'?'OParl':s.method==='official-api'?'More! Rubin (Kalender-API)':s.adapter==='sdnet'?'SD.NET (öffentliche Seiten)':s.adapter==='allris'?'ALLRIS 4 (öffentliche Seiten)':'SessionNet (öffentliche Seiten)';
+const methodName=s=>READERS[s.adapter]?READERS[s.adapter].name:s.method==='oparl'?'OParl':s.method==='official-api'?'More! Rubin (Kalender-API)':s.adapter==='sdnet'?'SD.NET (öffentliche Seiten)':s.adapter==='allris'?'ALLRIS 4 (öffentliche Seiten)':'SessionNet (öffentliche Seiten)';
 const today=new Date().toISOString().slice(0,10).split('-').reverse().join('.');
 const lines=['# '+title+': Ergebnis der automatischen Suche','',
  `Stand: ${today}. Erzeugt von \`scripts/source-discovery/\` (Ablauf siehe README dort).`,'',
@@ -107,4 +111,6 @@ const lines=['# '+title+': Ergebnis der automatischen Suche','',
  '## Nicht angebundene Gebiete','',...count(open,o=>o.reason.replace(/ \(.*\)$/,'').replace(/^Prüfung abgebrochen.*/,'Prüfung abgebrochen')).map(([k,n])=>`- ${n} × ${k}`),'',
  '| Gebiet | Grund | Gefundene Adresse |','|---|---|---|',...open.map(o=>`| ${o.name} | ${o.reason} | ${o.link} |`),''];
 fs.writeFileSync(reportFile,lines.join(String.fromCharCode(10)));
+// The open areas with their reason, for further steps of the search (work lists); a working file, not part of the repository.
+fs.writeFileSync(dir+'open.json',JSON.stringify(open.map(o=>({id:o.id,name:o.name,kind:o.kind,ags:o.ags,reason:o.reason,link:o.link})),null,1));
 console.log(sources.length+' Quellen in '+target+'; '+connected.size+' von '+regions.length+' Gebieten angebunden; Bericht: '+reportFile);

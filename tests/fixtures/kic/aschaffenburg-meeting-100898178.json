@@ -1,0 +1,48 @@
+{
+ "id": 100898178,
+ "clientid": 32,
+ "name": "4. Sitzung des Umwelt-, Klima- und Verwaltungssenates",
+ "meetingdate": "2026-07-15T00:00:00",
+ "publicpart": true,
+ "nonepublicpart": false,
+ "clientname": "Stadt Aschaffenburg",
+ "state": 2,
+ "committeeid": 54530596,
+ "committeename": "Umwelt-, Klima- und Verwaltungssenat",
+ "committeeid2": null,
+ "committeename2": null,
+ "committeeid3": null,
+ "committeename3": null,
+ "num": "4.",
+ "visibilityoe": 6,
+ "visibilitynoe": 0,
+ "snapdatetime": "2026-10-01T10:11:00",
+ "op": 2,
+ "opdatetime": "2026-10-01T10:11:00",
+ "parts": [
+  {
+   "protectedpart": false,
+   "agendaitems": [
+    {
+     "id": "100898178-105945990",
+     "numbering": "1",
+     "name": "SPNR. vor TOP 1 ö (Beschließend)",
+     "restricted": false,
+     "documentcount": 0,
+     "downloadallowed": true,
+     "globalid": "UKVS/4/1/26"
+    },
+    {
+     "id": "100898178-104869054",
+     "numbering": "2",
+     "name": "Neubau von 2 Mehrfamilienhäusern (je 11 WE) und Tiefgarage auf den Baugrundstücken Fl.-Nrn. xxx und xxx, Gemarkung Aschaffenburg, Röderweg xxx, 63739 Aschaffenburg, durch die Bauherrengemeinschaft BHG Elsesser Röderweg xxx, BV-Nr. xxx (Beschließend)",
+     "restricted": false,
+     "documentcount": 0,
+     "downloadallowed": true,
+     "globalid": "UKVS/4/2/26"
+    }
+   ]
+  }
+ ],
+ "documents": []
+}

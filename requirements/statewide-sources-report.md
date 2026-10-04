@@ -1,6 +1,6 @@
 # Quellen für ganz NRW: Ergebnis der automatischen Suche
 
-Stand: 02.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
+Stand: 04.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
 Von 427 auswählbaren Gebieten sind 333 angebunden, 94 nicht. Diese Datei beschreibt die 240 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
@@ -261,9 +261,10 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 - 49 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
 - 15 × SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden
-- 15 × Kein unterstütztes Ratsinformationssystem erkannt
+- 12 × Kein unterstütztes Ratsinformationssystem erkannt
 - 4 × ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser
 - 3 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden
+- 3 × RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen
 - 2 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
 - 2 × ALLRIS 4 gefunden; das System meldete bei der Prüfung zu viele Zugriffe und sperrte vorübergehend. Erneut prüfen
 - 1 × Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar.
@@ -329,7 +330,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Kreis Märkischer Kreis | ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser | https://www.sitzungsdienst-maerkischer-kreis.de/bi2/si018_a.asp |
 | Gemeinde Nachrodt-Wiblingwerde | Kein unterstütztes Ratsinformationssystem erkannt | https://www.nachrodt-wiblingwerde.de/Mitteilungen-der-Gemeindeverwaltung.htm/Seiten/Informationen-zu-Strassensperrungen.html? |
 | Gemeinde Neuenkirchen | Kein unterstütztes Ratsinformationssystem erkannt | https://neuenkirchen.ratsinfomanagement.net/ |
-| Stadt Neuenrade | Kein unterstütztes Ratsinformationssystem erkannt | http://www.maerkischer-kreis.de/buergerinfo/infoseiten/soziales/Pflegeberatung-vor-Ort.php?ajaxsearch=1 |
+| Stadt Neuenrade | RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen | http://www.maerkischer-kreis.de/buergerinfo/infoseiten/soziales/Pflegeberatung-vor-Ort.php?ajaxsearch=1 |
 | Gemeinde Nordwalde | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://nordwalde.ratsinfomanagement.net/termine |
 | Stadt Oberhausen | ALLRIS 4; die Bürgerinformation war bei der Prüfung wegen Wartungsarbeiten nicht verfügbar. Erneut prüfen | https://ratsinfo.oberhausen.de/ |
 | Stadt Olsberg | ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser | https://olsberg.allris-online.de/bi-r/pa020_r.asp |
@@ -357,13 +358,13 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Velbert | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://velbert.ratsinfomanagement.net/ |
 | Stadt Vreden | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://vreden.ratsinfomanagement.net/ |
 | Stadt Warburg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://warburg.ratsinfomanagement.net/ |
-| Gemeinde Welver | Kein unterstütztes Ratsinformationssystem erkannt | https://welver.ris-portal.de/web/ratsinformation/sitzungen |
+| Gemeinde Welver | RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen | https://welver.ris-portal.de/web/ratsinformation/sitzungen |
 | Stadt Werdohl | Kein unterstütztes Ratsinformationssystem erkannt | https://werdohl.ratsinfomanagement.net/ |
 | Stadt Wermelskirchen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://wermelskirchen.ratsinfomanagement.net/ |
 | Stadt Werther (Westf.) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://werther.ratsinfomanagement.net/ |
 | Stadt Wesel | SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ris.wesel.de/ |
 | Gemeinde Westerkappeln | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://westerkappeln.ratsinfomanagement.net/ |
 | Stadt Wetter (Ruhr) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://wetter.ratsinfomanagement.net/ |
-| Gemeinde Wickede (Ruhr) | Kein unterstütztes Ratsinformationssystem erkannt | https://wickede.ris-portal.de/ |
+| Gemeinde Wickede (Ruhr) | RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen | https://wickede.ris-portal.de/ |
 | Stadt Winterberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
 | Stadt Wülfrath | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://wuelfrath.ratsinfomanagement.net/startseite |

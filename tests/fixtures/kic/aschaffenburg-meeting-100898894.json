@@ -1,0 +1,57 @@
+{
+ "id": 100898894,
+ "clientid": 32,
+ "name": "7. Sitzung des Planungs- und Verkehrssenates",
+ "meetingdate": "2026-09-22T00:00:00",
+ "publicpart": true,
+ "nonepublicpart": false,
+ "clientname": "Stadt Aschaffenburg",
+ "state": 0,
+ "committeeid": 20670,
+ "committeename": "Planungs- und Verkehrssenat",
+ "committeeid2": null,
+ "committeename2": null,
+ "committeeid3": null,
+ "committeename3": null,
+ "num": "7.",
+ "visibilityoe": 6,
+ "visibilitynoe": 0,
+ "snapdatetime": "2026-09-22T13:50:00",
+ "op": 2,
+ "opdatetime": "2026-09-21T16:07:00",
+ "parts": [
+  {
+   "protectedpart": false,
+   "agendaitems": [
+    {
+     "id": "100898894-101579760",
+     "numbering": "1",
+     "name": "Klärwerk: 4. Reinigungsstufe\r\n- Aktualisierung der Machbarkeitsstudie zur Elimination von anthropogenen Spurenstoffen\r\n- Bericht der Verwaltung / Vorstellung durch die Dr.-Steinle Ing.GmbH, Weyarn (Beschließend)",
+     "restricted": false,
+     "documentcount": 0,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "100898894-105768989",
+     "numbering": "2",
+     "name": "Erlass einer Veränderungssperre für das Gebiet \"Südlich Bismarckallee - Mitte\" zwischen Bismarckallee, Gneisenaustraße, Bechtoldstraße, Ludwigsallee, Yorckstraße und Scharnhorststraße (Nr. 3/28) (Vorberatend)",
+     "restricted": false,
+     "documentcount": 0,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "100898894-105769028",
+     "numbering": "3",
+     "name": "Erlass einer Veränderungssperre für das Gebiet \"Südlich Bismarckallee - Ost\" zwischen Bismarckallee, Fußweg Fl.-Nr. 4347/2, entlang der westlichen Grenze der Grundstücke Fl.-Nrn. 4319, 4382, 4381, 4319/2 und 4338 bis zur nördlichen Grenze der Grünanlage Fl.-Nr. 4473/2, entlang der westlichen Grenze des Grundstücks Fl.-Nr. 4343/14, Lug ins Land (nordöstliche Grenze), Fußweg Fl.-Nr. 4386/4 (nördliche Grenze), Yorckstraße und Gneisenaustraße (Nr. 3/29) (Vorberatend)",
+     "restricted": false,
+     "documentcount": 0,
+     "downloadallowed": true,
+     "globalid": ""
+    }
+   ]
+  }
+ ],
+ "documents": []
+}

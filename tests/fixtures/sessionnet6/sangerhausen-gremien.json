@@ -1,0 +1,30 @@
+[
+ {
+  "grNr": 1,
+  "name": "Stadtrat",
+  "paNr": 1,
+  "sort": 9000,
+  "anzahlMitglieder": 37
+ },
+ {
+  "grNr": 2,
+  "name": "Hauptausschuss",
+  "paNr": 1,
+  "sort": 8500,
+  "anzahlMitglieder": 10
+ },
+ {
+  "grNr": 4,
+  "name": "Hauptausschuss Verweisung",
+  "paNr": 1,
+  "sort": 8000,
+  "anzahlMitglieder": 10
+ },
+ {
+  "grNr": 5,
+  "name": "Sanierungsausschuss",
+  "paNr": 1,
+  "sort": 7500,
+  "anzahlMitglieder": 10
+ }
+]

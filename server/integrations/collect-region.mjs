@@ -7,6 +7,7 @@ import {collectSessionNet,fetchText} from './sessionnet.mjs';
 import {collectSdnet} from './sdnet.mjs';
 import {collectAllris} from './allris.mjs';
 import {collectOparl,requestJson} from './oparl.mjs';
+import {READERS} from './readers.mjs';
 /**
  * options.window selects the look-back period ('1w' | '1m' | '3m' | '12m' | '24m'); it is validated before any request and recorded with the source status.
  * options.trace (import-trace.mjs) records every request to the source, whichever adapter reads it.
@@ -35,6 +36,9 @@ async function collect(id,options){
   // The reader asks the system's own OParl address itself, in the one session it keeps for the whole import.
   const d=await collectAllris(source,{...pages,checkOparl:!checked});d.coverage.apiCheck=checked||'OParl-Adresse des Systems (oparl/system) liefert kein OParl-System.';d.coverage.apiCheckedAt=new Date().toISOString();return d;
  }
+ // Further readers (readers.mjs). ALLRIS 3 asks the system's own OParl address first, like ALLRIS 4.
+ const reader=READERS[source.adapter];
+ if(reader){const d=await reader.collect(source,{...pages,...(reader.oparlCheck?{checkOparl:!checked}:{})});if(checked)d.coverage.apiCheck=checked;d.coverage.apiCheckedAt=new Date().toISOString();return d;}
  if(source.extension){
   // Probe the vendor's public OParl endpoint. Failures do not masquerade as API data.
   await vendorOparlOff(source.base+`oparl/1.0/system.${source.extension}`);

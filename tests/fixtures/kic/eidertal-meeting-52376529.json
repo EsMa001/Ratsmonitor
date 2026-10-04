@@ -1,0 +1,150 @@
+{
+ "id": 52376529,
+ "clientid": 29566812,
+ "name": "Gemeindevertretung Rumohr",
+ "meetingdate": "2026-10-05T00:00:00",
+ "publicpart": true,
+ "nonepublicpart": true,
+ "clientname": "Gemeinde Rumohr",
+ "state": 0,
+ "committeeid": 29707207,
+ "committeename": "Gemeindevertretung Rumohr",
+ "committeeid2": null,
+ "committeename2": null,
+ "committeeid3": null,
+ "committeename3": null,
+ "num": "",
+ "visibilityoe": 6,
+ "visibilitynoe": 3,
+ "snapdatetime": "2026-09-25T08:40:00",
+ "op": 2,
+ "opdatetime": "2026-09-25T08:40:00",
+ "parts": [
+  {
+   "protectedpart": false,
+   "agendaitems": [
+    {
+     "id": "52376529-52376538",
+     "numbering": "1",
+     "name": "Entscheidung über Einwendungen gegen die Niederschrift der letzten öffentlichen Sitzung der Gemeindevertretung vom 22.06.2026",
+     "restricted": false,
+     "documentcount": 1,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "52376529-52376568",
+     "numbering": "2",
+     "name": "Mitteilungen des Bürgermeisters",
+     "restricted": false,
+     "documentcount": 0,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "52376529-52376583",
+     "numbering": "3",
+     "name": "Mitteilungen aus den Ausschüssen",
+     "restricted": false,
+     "documentcount": 0,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "52376529-65560919",
+     "numbering": "4",
+     "name": "Neubau Feuerwehrgerätehaus Rumohr mit der aktuellen Gesetzgebung und Möglichkeiten alternativer Umsetzungsmöglichkeiten zum Projekt Neubau (SV)",
+     "restricted": false,
+     "documentcount": 1,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "52376529-63986097",
+     "numbering": "5",
+     "name": "Neufassung der Satzung für den Betrieb und die Erhebung von Benutzungsgebühren für die Kindertageseinrichtung und Kindertagespflege der Gemeinde Rumohr zum 01.11.2026 (SV)",
+     "restricted": false,
+     "documentcount": 1,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "52376529-63986134",
+     "numbering": "6",
+     "name": "Sachstandsbericht über die Belegungssituation in der Wunderkiste Rumohr (SV)",
+     "restricted": false,
+     "documentcount": 1,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "52376529-63134834",
+     "numbering": "7",
+     "name": "Jahresabschluss 2025 (SV)",
+     "restricted": false,
+     "documentcount": 2,
+     "downloadallowed": true,
+     "globalid": ""
+    },
+    {
+     "id": "52376529-52376553",
+     "numbering": "8",
+     "name": "Einwohnerfragestunde",
+     "restricted": false,
+     "documentcount": 0,
+     "downloadallowed": true,
+     "globalid": ""
+    }
+   ]
+  },
+  {
+   "protectedpart": true,
+   "agendaitems": [
+    {
+     "id": "52376529-52376598",
+     "numbering": "9",
+     "name": "Entscheidung über Einwendungen gegen die Niederschrift der letzten nichtöffentlichen Sitzung der Gemeindevertretung vom 22.06.2026",
+     "restricted": true,
+     "documentcount": 0,
+     "downloadallowed": false,
+     "globalid": ""
+    },
+    {
+     "id": "52376529-63461883",
+     "numbering": "10",
+     "name": "Verkauf der DHH \"Dorfstraße 64\" in Rumohr (SV)",
+     "restricted": true,
+     "documentcount": 0,
+     "downloadallowed": false,
+     "globalid": ""
+    }
+   ]
+  }
+ ],
+ "documents": [
+  {
+   "id": "52376529-65837713",
+   "name": "Nur Tagesordnung",
+   "isprotected": false,
+   "fileext": ".pdf"
+  },
+  {
+   "id": "52376529-65838183",
+   "name": "Bekanntmachung",
+   "isprotected": false,
+   "fileext": ".pdf"
+  },
+  {
+   "id": "52376529-65838200",
+   "name": "Einladung",
+   "isprotected": false,
+   "fileext": ".pdf"
+  },
+  {
+   "id": "52376529-66211415",
+   "name": "GV Rum 26.10.05 Beschlussvorlagen gesamt öffentlich Stand 25.09.2026",
+   "isprotected": false,
+   "fileext": ".pdf"
+  }
+ ]
+}

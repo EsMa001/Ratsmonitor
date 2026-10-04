@@ -1,0 +1,64 @@
+{
+ "items": [
+  {
+   "id": 100898951,
+   "name": "14. Sitzung des Stadtrates (Plenum)",
+   "clientname": "Stadt Aschaffenburg",
+   "committeename": "Stadtrat (Plenum)",
+   "meetingdate": "2026-10-19T00:00:00",
+   "state": 0,
+   "visibility": 0,
+   "documentcount": 0
+  },
+  {
+   "id": 100898937,
+   "name": "2. Sitzung des Digitalisierungs- und Organisationssenates",
+   "clientname": "Stadt Aschaffenburg",
+   "committeename": "Digitalisierungs- und Organisationssenat",
+   "meetingdate": "2026-10-08T00:00:00",
+   "state": 0,
+   "visibility": 3,
+   "documentcount": 0
+  },
+  {
+   "id": 100898916,
+   "name": "13. Sitzung des Stadtrates (Plenum)",
+   "clientname": "Stadt Aschaffenburg",
+   "committeename": "Stadtrat (Plenum)",
+   "meetingdate": "2026-10-05T00:00:00",
+   "state": 0,
+   "visibility": 3,
+   "documentcount": 0
+  },
+  {
+   "id": 100898894,
+   "name": "7. Sitzung des Planungs- und Verkehrssenates",
+   "clientname": "Stadt Aschaffenburg",
+   "committeename": "Planungs- und Verkehrssenat",
+   "meetingdate": "2026-09-22T00:00:00",
+   "state": 0,
+   "visibility": 1,
+   "documentcount": 0
+  },
+  {
+   "id": 100898178,
+   "name": "4. Sitzung des Umwelt-, Klima- und Verwaltungssenates",
+   "clientname": "Stadt Aschaffenburg",
+   "committeename": "Umwelt-, Klima- und Verwaltungssenat",
+   "meetingdate": "2026-07-15T00:00:00",
+   "state": 2,
+   "visibility": 1,
+   "documentcount": 0
+  },
+  {
+   "id": 100898171,
+   "name": "6. Sitzung des Planungs- und Verkehrssenates",
+   "clientname": "Stadt Aschaffenburg",
+   "committeename": "Planungs- und Verkehrssenat",
+   "meetingdate": "2026-07-14T00:00:00",
+   "state": 0,
+   "visibility": 1,
+   "documentcount": 0
+  }
+ ]
+}

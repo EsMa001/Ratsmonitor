@@ -1,0 +1,77 @@
+{
+ "textsanddocsvisible": true,
+ "meetingstate": 2,
+ "meetingname": "4. Sitzung des Umwelt-, Klima- und Verwaltungssenates",
+ "meetingnum": "4.",
+ "id": "100898178-104869054",
+ "clientname": "Stadt Aschaffenburg",
+ "name": "Neubau von 2 Mehrfamilienhäusern (je 11 WE) und Tiefgarage auf den Baugrundstücken Fl.-Nrn. xxx und xxx, Gemarkung Aschaffenburg, Röderweg xxx, 63739 Aschaffenburg, durch die Bauherrengemeinschaft BHG Elsesser Röderweg xxx, BV-Nr. xxx (Beschließend)",
+ "meetingid": 100898178,
+ "committeeid": 54530596,
+ "committeename": "Umwelt-, Klima- und Verwaltungssenat",
+ "numbering": "2",
+ "conordertype": "Beschließend",
+ "restricted": false,
+ "conorderid": 104869055,
+ "conorder_order": 1,
+ "editor": null,
+ "orderinmeeting": 2,
+ "agendaitemtype": "",
+ "meetingdate": "2026-07-15T00:00:00",
+ "numberingsnapshot": "1",
+ "numberingsnapshotorder": 1,
+ "pageno": "",
+ "globalid": "UKVS/4/2/26",
+ "inpart": 0,
+ "attendee": 0,
+ "entitledToVote": 0,
+ "consultants": 0,
+ "publizierungsumfang": 0,
+ "nameadditional": "",
+ "bereitstellungsumfang": true,
+ "op": 0,
+ "opdatetime": "2026-08-12T10:03:00",
+ "downloadallowed": true,
+ "unreadop": null,
+ "textblocks": [
+  {
+   "caption": ".Begründung / Sachverhalt zum Zeitpunkt der Sitzungseinladung.",
+   "content": "PGZvbnQgc2l6ZT0yPg0KPGRpdj48Zm9udCBzaXplPTM+PGI+SS48L2I+PC9mb250PjwvZGl2Pg0KPGRpdj48Zm9udCBzaXplPTM+PGJyPjwvZm9udD48L2Rpdj4NCjxkaXY+PGZvbnQgc2l6ZT0zPk1pdCBkZW0g",
+   "mmsdataid2": "100898178-104869054-104869062"
+  }
+ ],
+ "documents": [],
+ "conorderitems": [
+  {
+   "agendaitemid": "100898178-104869054",
+   "meetingid": 100898178,
+   "meetingname": "4. Sitzung des Umwelt-, Klima- und Verwaltungssenates",
+   "committeeid": 54530596,
+   "committeename": "Umwelt-, Klima- und Verwaltungssenat",
+   "meetingdate": "2026-07-15T00:00:00",
+   "numbering": "2",
+   "restricted": "ö",
+   "clientname": "Stadt Aschaffenburg",
+   "conordertypename": "Beschließend"
+  }
+ ],
+ "votings": [
+  {
+   "description": "",
+   "resultno": 0,
+   "resultyes": 0,
+   "resultnone": null,
+   "attendeecount": 15,
+   "entitledtovotecount": 0,
+   "consultantscount": 0,
+   "votingkind": 3,
+   "textblocks": [
+    {
+     "caption": ".Beschluss:",
+     "content": "PGZvbnQgc2l6ZT0yPg0KPGRpdj48Zm9udCBzaXplPTM+SS4gRGVtIEFudHJhZyBkZXIgWFhYIHp1bSBOZXViYXUgZWluZXMgTWVocmZhbWlsaWVuaGF1c2VzIG1pdCAxMSBXb2huZWluaGVpdGVuIHVuZCBUaWVm",
+     "mmsdataid2": "100898178-104869054-106125297"
+    }
+   ]
+  }
+ ]
+}

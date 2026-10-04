@@ -86,7 +86,7 @@ test('a lost connection gets one more attempt; an answer of the source is not re
 test('a page collector records its requests through the trace it is given',async()=>{
  const source={id:'teststadt',name:'Stadt Test',kind:'city',base:'https://ris.example.org/bi/',extension:'asp'},trace=createTrace('teststadt',{window:'1w'});
  const pages=async url=>{const file=new URL(url).pathname.split('/').pop();
-  if(file==='si0040.asp')return '<html>SessionNet '+(url.includes('__cmonat=9')?'<a href="si0057.asp?__ksinr=1" title="Details anzeigen: Rat 29.09.2026">Sitzung</a>':'')+'</html>';
+  if(file==='si0040.asp')return '<html><meta name="sessionnet" content="V:050500"/>SessionNet '+(url.includes('__cmonat=9')?'<a href="si0057.asp?__ksinr=1" title="Details anzeigen: Rat 29.09.2026">Sitzung</a>':'')+'</html>';
   if(file==='si0057.asp')return '<table><tr><td class="tofnum">Ö 1</td><td class="tobetr"><div class="smc-card-header-title">Thema</div><a href="vo0050.asp?__kvonr=5">V/5</a></td></tr></table>';
   throw Error('Quelle antwortet mit HTTP 500');};
  const result=await collectSessionNet(source,{now,window:'1w',get:trace.wrap(pages)}),record=trace.finish({reports:result.topics.length});

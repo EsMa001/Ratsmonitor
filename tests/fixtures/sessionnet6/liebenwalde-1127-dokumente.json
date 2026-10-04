@@ -1,0 +1,18 @@
+[
+ {
+  "toNr": 2412,
+  "doNr": 3135,
+  "name": "Beschlussvorlage",
+  "ref": "/buergerportal/api/v1/dokumente/3135/datei",
+  "sort": 0,
+  "freigabeDatum": "2026-06-09"
+ },
+ {
+  "toNr": 2412,
+  "doNr": 3173,
+  "name": "Entgeltordnung für die Nutzung von kommunalen Räumen der Stadt Liebenwalde",
+  "ref": "/buergerportal/api/v1/dokumente/3173/datei",
+  "sort": 0,
+  "freigabeDatum": "2026-06-09"
+ }
+]
