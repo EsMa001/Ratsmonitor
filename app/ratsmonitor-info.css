@@ -14,7 +14,7 @@
 .ri{--ri-pad:max(1vw,16px);background:#fff;color:#64748b;font-size:16px;line-height:1.55}
 :where(.ri) :where(h1,h2,h3,p,ul,ol){margin:0}
 :where(.ri) :where(ul,ol){padding:0;list-style:none}
-.ri :focus-visible,.ri-menu :focus-visible{outline:2px solid #0d9488;outline-offset:2px}
+.ri :focus-visible,.ri-menu a:focus-visible,.ri-menu button:focus-visible{outline:2px solid #0d9488;outline-offset:2px}.ri-menu [tabindex="-1"]:focus,.ri-menu__panel:focus{outline:none}
 .ri svg,.ri-menu svg{flex:none}
 
 /* Knöpfe */
@@ -359,3 +359,4 @@ select.ri-input{padding-right:12px;cursor:pointer}
 .ri-menu__group{display:flex;width:100%;align-items:center;justify-content:space-between;border:0;background:transparent;font:inherit;font-size:14px;line-height:20px;color:#0f172a;text-align:left;cursor:pointer}
 .ri-menu__group:hover{background:#f8fafc}
 .ri-menu__chev{color:#64748b;transition:transform .15s}
+@media (max-width:640px){.ri-h1,.ri-h1--sm{font-size:28px;line-height:1.1}.ri-stat__num{font-size:28px}}

@@ -107,12 +107,13 @@ export function SearchFilterPanel() {
             value={state.sort}
             options={[
               { value: "desc", label: "Neueste zuerst" },
+              { value: "relevance", label: "Nach Relevanz" },
               { value: "asc", label: "Älteste zuerst" },
             ]}
-            onChange={(v) => search.setSort(v as "asc" | "desc")}
+            onChange={(v) => search.setSort(v as "asc" | "desc" | "relevance")}
             size="sm"
             highlight={false}
-            className="ml-auto [&>svg]:!right-[9px] [&_select]:!border-transparent [&_select]:!bg-transparent [&_select]:!font-normal [&_select]:!text-slate-500 [&_select]:!shadow-none [&_select:hover]:!bg-slate-100 [&_select:hover]:!text-slate-900"
+            className="ml-auto [&_button]:!w-auto [&_button]:!min-w-0 [&_button]:!border-transparent [&_button]:!bg-transparent [&_button]:!font-normal [&_button]:!text-slate-500 [&_button]:!shadow-none [&_button:hover]:!text-slate-900"
           />
           {/* Ein Umschalter rechts neben der Sortierung: Icon und Bezeichnung der Ansicht, zu der gewechselt wird */}
           <button

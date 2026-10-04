@@ -140,8 +140,8 @@ export function KalenderPage() {
                 <button type="button" aria-label="Vorheriger Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
                   <IconChevronLeft size={20} />
                 </button>
-                <button type="button" onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setDay(today); }} className="h-9 rounded-full px-3 text-[14px] text-teal-600 hover:bg-slate-100" title="Zum aktuellen Monat">
-                  {new Date(today + "T00:00:00").toLocaleDateString("de-DE", { month: "long" })}
+                <button type="button" onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setDay(today); }} className="h-9 w-[92px] rounded-full text-center text-[14px] text-teal-600 hover:bg-slate-100" title="Zurück zu heute">
+                  {month.toLocaleDateString("de-DE", { month: "long" })}
                 </button>
                 <button type="button" aria-label="Nächster Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
                   <IconChevronRight size={20} />

@@ -45,7 +45,7 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
         {scoped && !compact && (
           <div role="group" aria-label="Gebietsumfang" title={km ? "Im Umkreis werden alle Gebiete im Kreis durchsucht" : undefined} className={`flex items-center gap-4 ${km ? "opacity-40" : ""}`}>
             {scopes.map(([v, label]) => (
-              <button key={v} type="button" disabled={!!km} aria-pressed={state.scope === v} onClick={() => search.setScope(v)} className={`whitespace-nowrap py-1 text-[14px] disabled:cursor-not-allowed ${state.scope === v ? "border-b-2 border-teal-600 text-teal-600" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
+              <button key={v} type="button" disabled={!!km} aria-pressed={state.scope === v} onClick={() => search.setScope(v)} className={`whitespace-nowrap py-1 text-[14px] disabled:cursor-default ${state.scope === v ? "border-b-2 border-teal-600 text-teal-600" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
                 {label}
               </button>
             ))}

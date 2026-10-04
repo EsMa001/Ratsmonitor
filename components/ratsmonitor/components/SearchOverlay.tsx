@@ -43,7 +43,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
     }
   };
 
-  const round = "rm-glass relative grid h-11 w-11 flex-none place-items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+  const round = "rm-glass relative grid h-11 w-11 flex-none place-items-center rounded-full transition-colors disabled:cursor-default disabled:opacity-50";
   const filterBtn = (
       <button
         type="button"

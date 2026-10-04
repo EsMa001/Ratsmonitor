@@ -5,7 +5,7 @@ export function DevTierSwitcher() {
   const { tier } = useTier();
   if (!IS_DEV) return null;
   return (
-    <label title="Nur Entwicklung: Account-Zustand simulieren" className="flex items-center gap-1.5 rounded-lg border border-dashed border-amber-300 bg-amber-50/70 py-1 pl-2 pr-1 text-[12px] font-semibold text-amber-800">
+    <label title="Nur Entwicklung: Account-Zustand simulieren" className="hidden items-center gap-1.5 rounded-lg border border-dashed border-amber-300 md:flex bg-amber-50/70 py-1 pl-2 pr-1 text-[12px] font-semibold text-amber-800">
       DEV
       <select
         aria-label="Account-Zustand simulieren"

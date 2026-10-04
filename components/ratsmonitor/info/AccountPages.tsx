@@ -4,6 +4,8 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useBrand } from "../lib/brand";
 import { PageHead, Rich, useOpenSearch } from "./blocks";
 import { PLANS, type PlanId } from "./content";
+import { useRouter } from "next/navigation";
+import { login, register, requestReset, TEST_PASSWORD } from "../lib/testAuth";
 import { Icon } from "./icons";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,7 +70,7 @@ export function DoneScreen({ title, children }: { title: string; children: React
       <button type="button" className="ri-btn ri-btn--dark" onClick={() => openSearch()}>
         Zur Suche
       </button>
-      <span className="ri-proto">Prototyp: Es wurden keine Daten gespeichert oder versendet.</span>
+      <span className="ri-proto">Testmodus: Gespeichert nur in diesem Browser, es wurde nichts versendet.</span>
     </section>
   );
 }
@@ -85,7 +87,7 @@ export function RegisterPage() {
   const p = PLANS.find((x) => x.id === plan)!;
   const set = (k: keyof typeof f) => (v: string | boolean) => setF((s) => ({ ...s, [k]: v }));
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     const err: Record<string, string> = {};
     if (!f.name.trim()) err.name = "Bitte geben Sie Ihren Namen ein.";
@@ -98,12 +100,18 @@ export function RegisterPage() {
       document.getElementById("reg-" + Object.keys(err)[0])?.focus();
       return;
     }
+    /* Testmodus: Konto in diesem Browser anlegen, Bestätigungs-Mail ins Test-Postfach */
+    const fail = await register({ name: f.name, org: f.org, email: f.email, password: f.password, tier: plan === "free" ? "basic" : plan });
+    if (fail) {
+      setErrors({ email: fail });
+      return document.getElementById("reg-email")?.focus();
+    }
     setDone(true);
     window.scrollTo(0, 0);
   };
 
   if (done)
-    return <DoneScreen title="Fast geschafft">Wir haben Ihnen eine E-Mail geschickt. Bestätigen Sie Ihre Adresse, dann ist Ihr Konto aktiv.</DoneScreen>;
+    return <DoneScreen title="Konto angelegt">Sie sind angemeldet. Die Bestätigungs-E-Mail liegt im <Link href="/konto/postfach" className="ri-link">Test-Postfach</Link>.</DoneScreen>;
 
   const form = (
     <form className="ri-form" noValidate onSubmit={submit} aria-label="Registrierung">
@@ -179,21 +187,34 @@ export function RegisterPage() {
   );
 }
 
-/* TODO: Anmeldung an das Backend anbinden; „Passwort vergessen?“ hat noch kein Ziel (Doku Kap. 8) */
+/* Testmodus: Anmeldung gegen Testkonten in diesem Browser (lib/testAuth.ts), keine echten E-Mails */
 export function LoginPage() {
+  const router = useRouter();
   const [f, setF] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [sent, setSent] = useState(false);
+  const [note, setNote] = useState("");
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     const err: Record<string, string> = {};
     if (!EMAIL.test(f.email.trim())) err.email = "Bitte geben Sie eine gültige E-Mail-Adresse ein.";
     if (!f.password) err.password = "Bitte geben Sie Ihr Passwort ein.";
+    if (!Object.keys(err).length) {
+      const fail = await login(f.email, f.password);
+      if (!fail) return router.push("/");
+      err.password = fail;
+    }
     setErrors(err);
-    setSent(!Object.keys(err).length);
     if (err.email) document.getElementById("login-email")?.focus();
     else if (err.password) document.getElementById("login-password")?.focus();
+  };
+  const reset = async () => {
+    if (!EMAIL.test(f.email.trim())) {
+      setErrors({ email: "Bitte geben Sie zuerst Ihre E-Mail-Adresse ein." });
+      return document.getElementById("login-email")?.focus();
+    }
+    await requestReset(f.email);
+    setNote("Falls es ein Konto gibt, liegt die E-Mail jetzt im Test-Postfach.");
   };
 
   return (
@@ -206,19 +227,22 @@ export function LoginPage() {
           <button type="submit" className="ri-btn ri-btn--dark ri-btn--block ri-submit">
             Anmelden
           </button>
-          {sent && (
+          {note && (
             <p role="status" className="ri-help">
-              Prototyp: Die Anmeldung ist noch nicht angebunden.
+              {note} <Link href="/konto/postfach" className="ri-link">Zum Test-Postfach</Link>
             </p>
           )}
           <p className="ri-form__foot">
-            <a href="#" className="ri-link" onClick={(e) => e.preventDefault()}>
+            <button type="button" className="ri-link" onClick={reset}>
               Passwort vergessen?
-            </a>{" "}
+            </button>{" "}
             · Noch kein Konto?{" "}
             <Link href="/registrieren?tarif=free" className="ri-link">
               Registrieren
             </Link>
+          </p>
+          <p className="ri-help">
+            Testmodus: basic@parlamo.test, pro@parlamo.test oder enterprise@parlamo.test, Passwort „{TEST_PASSWORD}“. Alles bleibt in diesem Browser, es werden keine E-Mails verschickt.
           </p>
         </form>
       </section>
@@ -236,7 +260,7 @@ export function KontaktPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     const err: Record<string, string> = {};
     if (!f.name.trim()) err.name = "Bitte geben Sie Ihren Namen ein.";

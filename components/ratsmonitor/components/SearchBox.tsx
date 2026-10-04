@@ -136,14 +136,22 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   const showList = open && rows.length > 0;
   const placeOn = state.areaSrc === "search" && !!state.area;
 
-  /* „/“ setzt den Cursor in die Suche */
+  /* Strg+K bzw. ⌘K setzt den Cursor in die Suche */
+  const [mac, setMac] = useState(false);
+  useEffect(() => setMac(/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)), []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const tag = (document.activeElement?.tagName ?? "").toUpperCase();
-      if (e.key !== "/" || e.metaKey || e.ctrlKey || /^(INPUT|TEXTAREA|SELECT)$/.test(tag) || document.querySelector("dialog[open]")) return;
-      e.preventDefault();
-      inputRef.current?.focus();
-      inputRef.current?.select();
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+        return;
+      }
+      /* Umschalt+Esc: Suche und alle Filter zurücksetzen, überall auf der Seite */
+      if (e.key === "Escape" && e.shiftKey && !document.querySelector("dialog[open]")) {
+        e.preventDefault();
+        search.resetAll();
+        setOpen(false);
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -167,14 +175,17 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
         inputRef.current?.blur();
       }
       onSubmit?.();
-    } else if (e.key === "Escape") {
+    } else if (e.key === "Escape" && !e.shiftKey) {
       if (showList) {
         e.preventDefault();
         setOpen(false);
         setActive(-1);
-      } else if (state.q) {
+      } else if (draft) {
         e.preventDefault();
-        apply("");
+        apply(join(""));
+      } else {
+        /* Esc ohne Eingabe: Suche verlassen */
+        inputRef.current?.blur();
       }
     }
   };
@@ -230,10 +241,15 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           Ort erkannt
         </span>
       )}
+      {!focused && !placeOn && (
+        <span aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 text-[12px] text-slate-400 sm:block">
+          {mac ? "⌘K" : "Strg K"}
+        </span>
+      )}
       {draft ? (
         <button
           type="button"
-          aria-label="Eingabe leeren"
+          aria-label="Eingabe leeren (Esc)" title="Eingabe leeren (Esc)"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => {
             apply(join(""));

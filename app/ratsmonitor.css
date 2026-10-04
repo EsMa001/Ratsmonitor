@@ -1,5 +1,5 @@
 @theme {--breakpoint-tab:901px;--breakpoint-desk:1121px;--container-page:calc(100% - 2 * max(1vw,16px));--color-map-ground:#ffffff;--color-map-zero:#d7dce3;--color-map-s1:#b3dfda;--color-map-s2:#8ccdc7;--color-map-s3:#6ebfb8;--color-map-s4:#0f766e;--color-map-hatch:#c3c9d1;--shadow-card:0 1px 2px #0f172a0a,0 6px 20px #0f172a0d;--shadow-pop:0 16px 40px #0f172a24,0 2px 6px #0f172a0f;--shadow-seg:0 1px 2px #0f172a14;--shadow-focus:0 0 0 4px #0d948833;--animate-menuIn:menuIn .14s ease-out;--animate-cardIn:cardIn .28s ease-out both;@keyframes menuIn {from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes cardIn {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
-@layer base {.ratsmonitor{min-height:100vh;background:#fff;color:#0f172a;font-size:16px;line-height:1.5}.ratsmonitor a{color:inherit}.ratsmonitor button{cursor:pointer}.ratsmonitor button:disabled{cursor:not-allowed}.ratsmonitor :focus-visible{outline:2px solid #0d9488;outline-offset:3px}.ratsmonitor mark{background:#fef3c7;color:inherit;border-radius:3px}.ratsmonitor dialog{margin:auto}.ratsmonitor p{overflow-wrap:anywhere}}
+@layer base {.ratsmonitor{min-height:100vh;background:#fff;color:#0f172a;font-size:16px;line-height:1.5}.ratsmonitor a{color:inherit}.ratsmonitor button{cursor:pointer}.ratsmonitor button:disabled{cursor:default}.ratsmonitor :focus-visible{outline:2px solid #0d9488;outline-offset:3px}.ratsmonitor mark{background:#fef3c7;color:inherit;border-radius:3px}.ratsmonitor dialog{margin:auto}.ratsmonitor p{overflow-wrap:anywhere}}
 @layer components {
   /* Schaltflächen */
   .btn-primary {
@@ -125,3 +125,4 @@ body h1,body h2,body h3{font-weight:600}
 .rm-glass-pop,.rm-glass-pop:hover{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(240,253,250,.55))!important;border-color:rgba(255,255,255,.8)!important;-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
 .rm-glass-pop button:not([aria-selected=true]):not(.bg-teal-50):hover{background:rgba(255,255,255,.6)}
 #filter-body .select-base{padding-left:12px;padding-right:28px}#filter-body .select-base svg{right:10px}
+html,html body{background:#fff;overscroll-behavior-y:none}

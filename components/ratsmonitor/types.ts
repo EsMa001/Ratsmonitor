@@ -67,7 +67,7 @@ export interface SearchState {
   /** Gebietsumfang: nur das Gebiet oder inklusive (Kreis mit Gemeinden bzw. Gemeinde mit Kreis) */
   scope: "only" | "with";
   status: StatusId | "";
-  sort: "desc" | "asc";
+  sort: "desc" | "asc" | "relevance";
   level: "city" | "district";
   /** Vom Nutzer gewählte Alternativen der Ortserkennung (Suchphrase → AGS) */
   placeOverrides: Record<string, string>;

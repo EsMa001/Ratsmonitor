@@ -8,11 +8,13 @@ import {SavedSearchesPage} from './SavedSearchesPage';
 import {ProfilePage} from './ProfilePage';
 import {SavedArticlesPage} from './SavedArticlesPage';
 import {KalenderPage} from './KalenderPage';
+import {PostfachPage} from './PostfachPage';
 export function PersonalPage(){
  const path=usePathname(),savedPage=path.endsWith('/suchen'),{saved,ready,removeSaved}=useAccount(),search=useSearch(),{goOverview}=useAppNav(),[error,setError]=useState('');
  /* Kontoseiten im Layout der Info- und Branchenseiten: Kopfbereich und Band */
  if(path.endsWith('/artikel'))return <main id="inhalt" className="ri"><SavedArticlesPage/></main>;
  if(path.endsWith('/profil'))return <main id="inhalt" className="ri"><ProfilePage/></main>;
+ if(path.endsWith('/postfach'))return <main id="inhalt" className="ri"><PostfachPage/></main>;
  if(path.endsWith('/kalender'))return <main id="inhalt" className="ri"><KalenderPage/></main>;
  if(savedPage)return <main id="inhalt" className="ri"><SavedSearchesPage/></main>;
  return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><section>

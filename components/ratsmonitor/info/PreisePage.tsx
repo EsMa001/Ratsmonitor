@@ -38,6 +38,7 @@ export function PreisePage() {
 
         <h2 className="ri-h2 ri-h2--md ri-h2--gap">Alle Leistungen im Vergleich</h2>
         {/* Aus denselben Tarif-Grenzen wie die Karten erzeugt (lib/tier.ts), damit beides übereinstimmt */}
+        <div className="-mx-4 overflow-x-auto px-4">
         <table className="ri-table">
           <thead>
             <tr>
@@ -62,6 +63,7 @@ export function PreisePage() {
             ))}
           </tbody>
         </table>
+        </div>
 
         <h2 className="ri-h2 ri-h2--md ri-h2--gap">Fragen zu Preisen</h2>
         <div className="ri-faq-list ri-faq-list--top">

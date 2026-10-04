@@ -16,12 +16,12 @@ export function Header() {
 
   return (
     <header className="relative top-0 z-[1100] border-b border-slate-200 bg-white sm:sticky">
-      <div className="flex h-[56px] items-center justify-between gap-4 px-4">
-        <div className="flex items-center gap-[14px]">
+      <div className="flex h-[56px] items-center justify-between gap-2 px-4 sm:gap-4">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-[14px]">
           <MainMenu />
           <Brand onClick={leave} />
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-none items-center gap-3">
           <DevTierSwitcher />
           <AccountMenu currentPage={kontoPage} />
         </div>

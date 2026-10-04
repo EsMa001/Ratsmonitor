@@ -40,7 +40,7 @@ interface SearchActions {
   removeMorePlace: (ags: string) => void;
   setStatus: (v: StatusId | "") => void;
   setLevel: (v:"city"|"district")=>void;
-  setSort: (v: "asc" | "desc") => void;
+  setSort: (v: SearchState["sort"]) => void;
   resetAll: () => void;
   /** Gespeicherte Suche anwenden; false, solange die Karte für einen Umkreis noch lädt */
   applySaved: (s: SavedSearch) => boolean;

@@ -70,7 +70,7 @@ export function ActiveFilters() {
         </button>
       ))}
       {chips.length > 1 && (
-        <button type="button" onClick={search.resetAll} className="inline-flex h-7 items-center px-1.5 text-[14px] text-teal-600 hover:underline">
+        <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="inline-flex h-7 items-center px-1.5 text-[14px] text-teal-600 hover:underline">
           Alle entfernen
         </button>
       )}

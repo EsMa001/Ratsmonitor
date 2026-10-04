@@ -90,6 +90,7 @@ export function BranchePage({ b }: { b: Branche }) {
         {/* Gleiche Überschrift wie die anderen Abschnitte; Themen als Zeile mit Häkchen, nicht auf die volle Breite gestreckt */}
         <h2 className="ri-h2">Worauf {name} für Sie achtet</h2>
         {/* Je Thema ein konkreter Anwendungsfall: zwei Spalten, nur Zeilenlinien */}
+        <div className="-mx-4 overflow-x-auto px-4">
         <table className="w-full border-collapse text-left" style={{ marginTop: 24 }}>
           <thead>
             <tr className="border-b border-slate-200">
@@ -111,6 +112,7 @@ export function BranchePage({ b }: { b: Branche }) {
             ))}
           </tbody>
         </table>
+        </div>
       </section>
 
       <DarkCta title={b.closing} pills={b.keywords} />
