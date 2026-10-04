@@ -3,9 +3,9 @@ import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {pipelineAction,selectedRegions,canImport,provider,PARALLEL,PER_PROVIDER} from '../server/integrations/pipeline-jobs.mjs';
 import {createAiJob,applyAiResults,cancelAiJob,getAiJob} from '../server/integrations/ai-jobs.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
-import {keywordWeights,articleResult,AI_METHOD,LEGACY_AI_METHOD} from '../shared/ai-job.mjs';
+import {keywordWeights,articleResult,AI_METHOD,LEGACY_AI_METHOD,sourceRole,needsQuickCheck} from '../shared/ai-job.mjs';
 import {hashText} from '../shared/database-transfer.mjs';
-import {preserveArticleContent} from '../shared/article-record.mjs';
+import {preserveArticleContent,analysisSignature} from '../shared/article-record.mjs';
 import {compactOparl,publicParticipants} from '../server/integrations/source-fields.mjs';
 function fixture(){const sql=new DatabaseSync(':memory:');for(const f of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+f,import.meta.url),'utf8'));const db=sqliteAdapter(sql);const put=(id,region='billerbeck',extra={})=>{const t={id,regionId:region,title:'Schulbau',officialTitle:'Schulbau',status:'consulting',sourceUrl:'https://example.org/paper',documents:[],events:[],classification:{primary:'bildung',method:'title-rules-v2',version:'labels-v2',evidence:'Schulbau'},labelAssessments:{rule:{primary:'bildung',method:'rules'}},metadata:{firstImportedAt:'2026-09-01'},...extra};sql.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run(id,region,'city','2026-09-27','2026-09-27','consulting',JSON.stringify(t));return t;};return {sql,db,put};}
 const checks=['source_read','process','numbers','neutrality'].map(name=>({name,passed:true}));
@@ -37,7 +37,8 @@ test('AI rejects invalid labels, evidence, tampering and stale snapshots; failur
  const {sql,db,put}=fixture();put('a','billerbeck',{shortSummary:'Gute alte Zusammenfassung',longSummary:['Bisheriger Text'],contentAnalysis:{status:'completed',evidence:[{}]}});
  const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel','keywords']});let result=await output(job);
  result.articles[0].aiLabel.primary='invented';await assert.rejects(applyAiResults(db,job,result),/Label/);assert.equal(sql.prepare('SELECT count(*) n FROM article_analyses').get().n,0);
- result=await output(job);result.articles[0].summary.evidence[0]={url:'https://evil.example',quote:'not read'};await assert.rejects(applyAiResults(db,job,result),/Beleg/);
+ assert.deepEqual(job.articles[0].kinds,['aiLabel','keywords']); // Zusammenfassung ist schon vorhanden
+ result=await output(job);result.articles[0].aiLabel.evidence[0]={url:'https://evil.example',quote:'not read'};await assert.rejects(applyAiResults(db,job,result),/Beleg/);
  result=await output(job);sql.prepare("UPDATE topics SET payload=json_set(payload,'$.reference','new') WHERE id='a'").run();assert.deepEqual((await applyAiResults(db,job,result)).conflicts,['a']);assert.equal(sql.prepare('SELECT count(*) n FROM article_versions').get().n,0);
  await cancelAiJob(db,job.id);await assert.rejects(applyAiResults(db,job,result),/aktiv/);
  const next=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel']});result=await output(next);for(const k of next.kinds)result.articles[0][k]={status:'insufficient_source',reason:'Nur Titel öffentlich verfügbar'};result.articles[0].sources=[];
@@ -262,4 +263,76 @@ test('agent usage, words and attachments are stored once per article; missing fi
  assert.deepEqual([rows[1].token_basis,rows[1].total_tokens,rows[1].word_count],['unknown',null,null]);
  await assert.rejects(articleResult(job,job.articles[0],{...one,usage:{basis:'measured',inputTokens:'x',outputTokens:1}}),/usage/);
  sql.close();
+});
+test('exports request only missing steps and remember unsuccessful attempts until the sources change',async()=>{
+ const {sql,db,put}=fixture();try{
+  put('done','billerbeck',{shortSummary:'Fertig',longSummary:['Text'],contentAnalysis:{status:'completed',evidence:[{}]}});put('thin');put('broken');
+  const all={regions:['billerbeck'],kinds:['summary','aiLabel'],limit:'all'};
+  const first=await createAiJob(db,all),kindsOf=Object.fromEntries(first.articles.map(a=>[a.id,a.kinds]));
+  assert.deepEqual(kindsOf,{broken:['summary','aiLabel'],done:['aiLabel'],thin:['summary','aiLabel']});assert.equal(first.requestedSteps,5);
+  assert.deepEqual(sql.prepare("SELECT kind FROM ai_dispatches WHERE topic_id='done'").all().map(r=>r.kind),['aiLabel']);
+  const result=await output(first),fail=(a,status,reason)=>{a.summary={status,reason};a.aiLabel={status,reason};};
+  for(const a of result.articles){if(a.id==='thin')fail(a,'insufficient_source','Nur Tagesordnung');if(a.id==='broken')fail(a,'failed','Abruf scheiterte');}
+  const receipt=await applyAiResults(db,first,result);
+  assert.equal(receipt.applied,3);assert.equal(receipt.ignored,4); // nicht angeforderte Schritte werden nicht gespeichert
+  assert.equal(JSON.parse(sql.prepare("SELECT payload FROM topics WHERE id='done'").get().payload).shortSummary,'Fertig');
+  // failed: ein weiterer Versuch; insufficient_source: keiner, solange die Quelldaten gleich bleiben
+  const second=await createAiJob(db,all);assert.deepEqual(second.articles.map(a=>a.id),['broken']);assert.equal(second.blocked,1);
+  const again=await output(second);fail(again.articles[0],'failed','Abruf scheiterte erneut');
+  assert.equal((await applyAiResults(db,second,again)).applied,1);
+  const third=await createAiJob(db,all);assert.equal(third.articleCount,0);assert.equal(third.blocked,2);
+  assert.equal((await processingStatus(db)).regions.find(r=>r.region_id==='billerbeck').blocked_summary,2);
+  const forced=await createAiJob(db,{...all,retryBlocked:true});assert.deepEqual(forced.articles.map(a=>a.id).sort(),['broken','thin']);await cancelAiJob(db,forced.id);
+  // Geänderte Quelldaten heben die Sperre auf
+  const old=JSON.parse(sql.prepare("SELECT payload FROM topics WHERE id='thin'").get().payload),{aiAttempts,...incoming}=old;
+  assert.equal(aiAttempts.summary.retry,false);
+  const changed=preserveArticleContent(old,{...incoming,documents:[{url:'https://example.org/vorlage.pdf'}]});assert.equal(changed.aiAttempts,undefined);
+  sql.prepare("UPDATE topics SET payload=? WHERE id='thin'").run(JSON.stringify(changed));
+  const fourth=await createAiJob(db,all);assert.deepEqual(fourth.articles.map(a=>a.id),['thin']);
+ }finally{sql.close();}
+});
+test('earlier unsuccessful agent results are recognised only while the sources are unchanged',async()=>{
+ const {sql,db,put}=fixture();try{
+  const same=put('same'),moved=put('moved');
+  const add=(t,signature)=>sql.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').run('x-'+t.id,t.id,'summary',AI_METHOD,'h','2026-09-30T10:00:00Z',JSON.stringify({status:'insufficient_source',reason:'Nur Titel',method:AI_METHOD,model:'m',generatedAt:'2026-09-30T10:00:00Z',sourceSignature:signature}));
+  add(same,analysisSignature(same));add(moved,'{"old":true}');
+  const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:'all'});
+  assert.deepEqual(job.articles.map(a=>a.id),['moved']);assert.equal(job.blocked,1);
+  assert.equal(JSON.parse(sql.prepare("SELECT payload FROM topics WHERE id='same'").get().payload).aiAttempts.summary.retry,false);
+ }finally{sql.close();}
+});
+test('source roles steer reading order and flag articles without own paper for a quick check',()=>{
+ const session='https://ris.example/bi/si0057.asp?__ksinr=1';
+ assert.equal(sourceRole('https://ris.example/bi/to0050.asp?__ktonr=2','Vorlage / Öffentliche Tagesordnung'),'item');
+ assert.equal(sourceRole('https://ris.example/bi/vo0050.asp?__kvonr=3','Vorlage / Öffentliche Tagesordnung'),'paper');
+ assert.equal(sourceRole(session,'',new Set([session])),'session');
+ assert.equal(sourceRole('https://ris.example/public/si010?SILFDNR=4'),'session');
+ assert.equal(sourceRole('https://ris.example/oparl/bodies/1/agendaitems/5'),'item');
+ assert.equal(sourceRole('https://ris.example/meeting?id=6','Öffentliche Sitzung'),'session');
+ assert.equal(sourceRole('https://ris.example/getfile.asp?id=7','Öffentliche Niederschrift (Rat)'),'minutes');
+ assert.equal(sourceRole('https://ris.example/doc?id=8','Sammeldokument öffentlich'),'bundle');
+ assert.equal(sourceRole('https://ris.example/getfile.asp?id=9','Sitzungskalender 2026'),'agenda');
+ assert.equal(sourceRole('https://ris.example/getfile.asp?id=10','Beschlussvorlage'),'paper');
+ assert.equal(needsQuickCheck([{role:'item'},{role:'session'},{role:'agenda'}]),true);
+ assert.equal(needsQuickCheck([{role:'item'},{role:'minutes'}]),false);
+});
+test('jobs list each source with its role once, group articles by session and keep internal fields out of the download',async()=>{
+ const {sql,db,put}=fixture();try{
+  const s1='https://ris.example/bi/si0057.asp?__ksinr=1',s2='https://ris.example/bi/si0057.asp?__ksinr=2',minutes='https://ris.example/bi/getfile.asp?id=99';
+  const ev=url=>({date:'2026-09-01',committee:'Rat',status:'announced',description:'Öffentlich auf der Tagesordnung.',decision:{kind:'unknown',text:''},url});
+  put('a1','billerbeck',{sourceUrl:'https://ris.example/bi/to0050.asp?__ktonr=1',documents:[{url:'https://ris.example/bi/to0050.asp?__ktonr=1',title:'Vorlage / Öffentliche Tagesordnung'}],events:[ev(s2)]});
+  put('b1','billerbeck',{sourceUrl:'https://ris.example/bi/vo0050.asp?__kvonr=1',documents:[{url:minutes,title:'Öffentliche Niederschrift (Rat)'}],events:[ev(s1)]});
+  put('c1','billerbeck',{sourceUrl:'https://ris.example/bi/vo0050.asp?__kvonr=2',documents:[{url:minutes,title:'Öffentliche Niederschrift (Rat)'}],events:[ev(s2)]});
+  const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:'all'});
+  assert.deepEqual(job.articles.map(a=>a.id),['b1','a1','c1']); // nach Sitzung gruppiert
+  const a1=job.articles.find(a=>a.id==='a1'),b1=job.articles.find(a=>a.id==='b1');
+  assert.equal(a1.quickCheck,true);assert.equal(b1.quickCheck,undefined);
+  assert.deepEqual(b1.sources.map(x=>x.role),['paper','minutes','session']);
+  assert.equal(a1.sourceSignature,undefined);assert.equal(a1.events[0].description,undefined);assert.equal(a1.events[0].decision,undefined);
+  assert.ok(JSON.parse(sql.prepare("SELECT payload FROM ai_job_articles WHERE topic_id='a1'").get().payload).sourceSignature);
+  assert.deepEqual(job.sharedSources.map(x=>[x.url,x.role,x.articles]),[[minutes,'minutes',2],[s2,'session',2]]);
+  assert.equal(job.quickChecks,1);
+  const ok=await output(job);for(const a of ok.articles){const url=job.articles.find(x=>x.id===a.id).sources[0].url;a.sources[0].url=url;a.summary.evidence=[{url,quote:a.summary.evidence[0].quote}];}
+  assert.equal((await applyAiResults(db,job,ok)).applied,3);
+ }finally{sql.close();}
 });

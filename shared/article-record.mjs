@@ -10,6 +10,8 @@ export function preserveArticleContent(old,incoming,source=incoming){
   for(const key of ['title','shortSummary','longSummary','generatedBy','summaryGeneratedAt','summaryMethod','summaryModel','summaryEvidence','quality'])if(old[key]!==undefined)next[key]=old[key];
   if(old.contentAnalysis){const stale=old.contentAnalysis.sourceSignature!==analysisSignature(next);next.contentAnalysis={...old.contentAnalysis,...(stale?{status:'stale',reason:'Die Quelldaten haben sich seit dieser Auswertung geändert. Eine erneute Analyse muss manuell gestartet werden.'}:{})};}
  }
+ // Erfolglose KI-Versuche gelten nur für unveränderte Quelldaten; nach einer Änderung wird wieder angefragt.
+ if(old.aiAttempts&&!next.aiAttempts){const signature=analysisSignature(next),kept=Object.fromEntries(Object.entries(old.aiAttempts).filter(([,a])=>a?.sourceSignature===signature));if(Object.keys(kept).length)next.aiAttempts=kept;}
  if(old.officialTitle!==next.officialTitle&&old.weightedKeywords&&next.weightedKeywords===old.weightedKeywords)next.weightedKeywords={...old.weightedKeywords,status:'stale'};
  if((next.contentAnalysis?.status==='stale'||next.labelAssessments?.ai?.sourceSignature&&next.labelAssessments.ai.sourceSignature!==analysisSignature(next))&&next.labelAssessments?.ai)next.labelAssessments={...next.labelAssessments,ai:{...next.labelAssessments.ai,status:'stale'}};
  if(next.weightedKeywords?.inputBasis==='content'&&next.weightedKeywords.sourceSignature&&next.weightedKeywords.sourceSignature!==analysisSignature(next))next.weightedKeywords={...next.weightedKeywords,status:'stale'};

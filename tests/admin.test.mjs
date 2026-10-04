@@ -81,7 +81,7 @@ test('the overview reads the stored reports once; its figures per area equal the
  const status=await processingStatus(db);assert.equal(status.regions.length,2);
  for(const area of status.regions){const shown=full.sources.find(s=>s.id===area.region_id);assert.equal(shown.count,area.total);assert.deepEqual(shown.processing,{...area},area.region_id);assert.equal(shown.pendingAnalysis,area.total-area.rules);}
  const muenster=full.sources.find(s=>s.id==='muenster').processing;assert.equal(muenster.total,3);assert.equal(muenster.stale,1);assert.equal(muenster.insufficient,1);assert.equal(muenster.fetchedAt,'2026-09-27T10:00:00Z');assert.equal(muenster.processedAt,'2026-09-27T11:00:00Z');
- assert.deepEqual(full.sources.find(s=>s.id==='borken').processing,{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,fetchedAt:null,processedAt:null});
+ assert.deepEqual(full.sources.find(s=>s.id==='borken').processing,{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,blocked_summary:0,blocked_aiLabel:0,blocked_keywords:0,fetchedAt:null,processedAt:null});
 });
 test('review filters stay parameterized, exclude aliases, constrain region and cap result rows',async()=>{
  reset();for(let i=0;i<30;i++)insert('open-'+i,{classification:{primary:'unklar'}});

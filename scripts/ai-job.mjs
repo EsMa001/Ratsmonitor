@@ -29,8 +29,10 @@ export async function main(){
  const [action,jobFile,resultFile,...rest]=process.argv.slice(2);if(!['validate','apply'].includes(action)||!jobFile||!resultFile||rest.length)throw Error('Aufruf: node scripts/ai-job.mjs validate|apply <Auftrag.json> <Ergebnisse.json>');
  const job=JSON.parse(fs.readFileSync(jobFile,'utf8')),output=JSON.parse(fs.readFileSync(resultFile,'utf8'));
  if(job.format!=='ratsmonitor-ai-job-v1'||output.format!=='ratsmonitor-ai-results-v1'||job.id!==output.jobId||!Array.isArray(output.articles)||!output.articles.length||new Set(output.articles.map(a=>a.id)).size!==output.articles.length)throw Error('Ungültiger Auftrag oder Ergebnisdatei.');
- for(const result of output.articles){const article=job.articles.find(a=>a.id===result.id);if(!article)throw Error('Artikel außerhalb des Auftrags.');await articleResult(job,article,result);}
- console.log(output.articles.length+' Artikel strukturell geprüft. Keine unabhängige Inhaltsfreigabe.');if(action==='validate')return;
+ let ignored=0;
+ for(const result of output.articles){const article=job.articles.find(a=>a.id===result.id);if(!article)throw Error('Artikel außerhalb des Auftrags.');ignored+=(await articleResult(job,article,result)).ignored.length;}
+ console.log(output.articles.length+' Artikel strukturell geprüft. Keine unabhängige Inhaltsfreigabe.');
+ if(ignored)console.warn(ignored+' Einzelergebnisse betreffen Schritte, die für den jeweiligen Artikel nicht angefordert waren (article.kinds). Sie werden nicht gespeichert.');if(action==='validate')return;
  const filename=findDatabase(),sql=new DatabaseSync(filename);sql.exec('PRAGMA busy_timeout=1000');
  try{
   const db=sqliteAdapter(sql),registered=await getAiJob(db);if(!registered||registered.id!==job.id)throw Error('Dieser Auftrag wurde nicht in der lokalen Adminseite vorbereitet. Für lokale Verarbeitung dort einen Auftrag erstellen.');
