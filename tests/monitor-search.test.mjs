@@ -47,3 +47,20 @@ test('several places, alternatives and filler words combine as expected',async()
  for(const bad of ['more=abc:only','more='+Array(9).fill('05558008:only').join(',')])assert.throws(()=>parseMonitorSearch(new URLSearchParams(bad)));
  }finally{sql.close();}
 });
+test('search finds KI keywords and the long KI summary, not the automatic long text',async()=>{
+ const {sql,db,put}=fixture();try{
+ const total=q=>searchMonitor(db,catalog,new URLSearchParams(q)).then(r=>r.total);
+ put('auto','billerbeck',{generatedBy:'Automatischer Quellenüberblick',longSummary:['Das Thema wird in Billerbeck behandelt. Zuschauertribüne']});
+ put('ai','billerbeck',{generatedBy:'KI-Zusammenfassung',longSummary:['Der Zuschuss wurde ausgezahlt.','Die Einweihung plant der Sportverein.']});
+ assert.equal(await total('q=sportverein'),1);assert.equal(await total('q=zuschauertribune'),0);
+ /* Stichwörter zählen erst mit status completed und werden bei Änderung nachgezogen */
+ const kw=status=>JSON.stringify({status,items:[{term:'Sportzentrum Helker Berg',weight:60},{term:'Kostenkalkulation',weight:40}]});
+ sql.prepare("UPDATE topics SET payload=json_set(payload,'$.weightedKeywords',json(?)) WHERE id='auto'").run(kw('stale'));
+ assert.equal(await total('q=kostenkalkulation'),0);
+ sql.prepare("UPDATE topics SET payload=json_set(payload,'$.weightedKeywords',json(?)) WHERE id='auto'").run(kw('completed'));
+ assert.equal(await total('q=kostenkalkulation'),1);assert.equal(await total('q=helker%20berg'),1);
+ /* Neu gelieferte KI-Langfassung wird ebenfalls nachgezogen */
+ sql.prepare("UPDATE topics SET payload=json_set(payload,'$.generatedBy','KI-Zusammenfassung','$.longSummary',json('[\"Neue Fußgängerbrücke\"]')) WHERE id='auto'").run();
+ assert.equal(await total('q=fussgangerbrucke'),1);
+ }finally{sql.close();}
+});

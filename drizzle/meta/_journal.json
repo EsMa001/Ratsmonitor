@@ -64,6 +64,13 @@
       "when": 1791028184807,
       "tag": "0008_search_cards_trigger",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1791103083195,
+      "tag": "0009_search_keywords",
+      "breakpoints": true
     }
   ]
 }
