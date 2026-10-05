@@ -18,8 +18,8 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
           Kostenlos registrieren
         </Link>
         {IS_DEV && (
-          <button type="button" onClick={() => setTier("basic")} className="text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
-            Dev: als Basic anmelden
+          <button type="button" onClick={() => setTier("enterprise")} className="text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
+            Dev: als Enterprise anmelden
           </button>
         )}
       </div>

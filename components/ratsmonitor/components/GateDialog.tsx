@@ -110,12 +110,12 @@ export function GateDialog() {
               <button
                 type="button"
                 onClick={() => {
-                  setTier(g.needs);
+                  setTier("enterprise");
                   closeGate();
                 }}
                 className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700"
               >
-                Dev: als {g.needs === "basic" ? "Basic" : g.needs === "pro" ? "Pro" : "Enterprise"} fortfahren
+                Dev: als Enterprise fortfahren
               </button>
             )}
           </div>
