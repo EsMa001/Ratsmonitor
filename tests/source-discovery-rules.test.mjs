@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors,sharedBodies} from '../scripts/source-discovery/rules.mjs';
+import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors,sharedBodies,nameTwins,namesDistinctly} from '../scripts/source-discovery/rules.mjs';
 import {foreignOwner,aliasInAddress,nameParts,ALIASES} from '../scripts/source-discovery/areas.mjs';
 import {CATALOG} from '../shared/catalog.mjs';
 const area=id=>CATALOG.find(a=>a.id===id);
@@ -193,6 +193,25 @@ test('hosted platforms: KOMFA per Land and komuna by path, each recognised from 
  assert.deepEqual(HOSTED.find(p=>p.name==='ratsinfo-online').hosts('brieselang'),['ratsinfo-online.de/brieselang-bi','ratsinfo-online.net/brieselang-bi']);
  assert.deepEqual(HOSTED.find(p=>p.name==='OWL-IT'&&p.land==='01').hosts('heide'),['sessionnet.owl-it.de/heide/bi']);assert.equal(HOSTED.find(p=>p.name==='OWL-IT').path,'/info.asp');
  assert.deepEqual(komuna.slugs(town),['aschauainn']);assert.deepEqual(komuna.slugs({name:'Gemeinde Neufahrn i.NB',shortName:'Neufahrn i.NB'}),['neufahrninb']);
+});
+
+test('a guessed address counts only where no other area bears the name, or where the page names the area distinctly',()=>{
+ // Found by guessing on 05./06.10.2026: sessionnet.owl-it.de/borken is the town in North Rhine-Westphalia.
+ const borkenHessen=area('de-06634001'),donau=area('de-08327036'),main=area('de-06438008');
+ assert.ok(nameTwins(borkenHessen).some(a=>a.id==='nrw-05554008'||/Borken/.test(a.name)&&a.id!=='de-06634001'));
+ assert.equal(namesDistinctly('<title>SessionNet | Bürgerinfoportal</title><h1>Stadt Borken</h1>',borkenHessen,nameTwins(borkenHessen)),false);
+ assert.equal(namesDistinctly('<h1>Stadt Borken (Hessen)</h1>',borkenHessen,nameTwins(borkenHessen)),true);
+ // Mühlheim: the addition decides, in either direction.
+ assert.equal(namesDistinctly('Bürgerinfoportal der Stadt M&uuml;hlheim an der Donau',donau,nameTwins(donau)),true);
+ assert.equal(namesDistinctly('Bürgerinfoportal der Stadt Mühlheim an der Donau',main,nameTwins(main)),false);
+ // Two areas of the same name (Rimbach in Bavaria and in Hesse): no page can tell them apart by the name alone.
+ const rimbach=area('de-09372151');
+ assert.ok(nameTwins(rimbach).length>0);assert.equal(namesDistinctly('Mandant der Schnittstelle: Gemeinde Rimbach',rimbach,nameTwins(rimbach)),false);
+ // An association by all its members (komuna: the interface names the municipalities of the Verwaltungsgemeinschaft).
+ const vg={id:'x',name:'Verwaltungsgemeinschaft Königstein',shortName:'Königstein',members:[{name:'Königstein'},{name:'Hirschbach'}]};
+ assert.equal(namesDistinctly('Mandant der Schnittstelle: Gemeinde Hirschbach, Markt Königstein',vg,nameTwins(vg)),true);
+ // A name no other area bears has no twins.
+ assert.deepEqual(nameTwins(area('de-09189111')),[]);
 });
 
 test('links of a page: in quotes or without them, with the title as text, frames as embedded; no script or mail links',()=>{

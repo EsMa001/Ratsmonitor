@@ -216,6 +216,26 @@ export const HOSTED=[
   path:'/',wildcard:true,manual:true,marker:/<title>\s*Ratsinformationssystem\s*<\/title>/i,confirm:'kic-clients'},
 ];
 const ascii=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+/**
+ * Areas of the whole catalog that share a host label with the area (hostSlugs): a guessed address of a platform may
+ * belong to any of them ("borken" on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse).
+ */
+export function nameTwins(area,areas=CATALOG){
+ const own=new Set(hostSlugs(area.shortName||area.name));if(!own.size)return [];
+ return areas.filter(a=>a.id!==area.id&&hostSlugs(a.shortName||a.name).some(s=>own.has(s)));
+}
+/**
+ * Whether a page (or the evidence of a platform) names the area so that none of its twins is meant: by its full name
+ * with the addition no twin shares ("Mühlheim an der Donau", "Borken (Hessen)"), or an association by all its members.
+ */
+export function namesDistinctly(page,area,twins){
+ const fold=s=>' '+ascii(text(String(s||''))).replace(/[^a-z0-9]+/g,' ').trim()+' ';
+ const said=fold(page),core=n=>fold(String(n||'').replace(/^(?:Stadt|Gemeinde|Markt|Marktgemeinde|Große Kreisstadt|Hansestadt|Ortsgemeinde|Samtgemeinde|Verbandsgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband|Erfüllende Gemeinde|Amt|Kreis|Landkreis)\s+/,''));
+ const full=core(area.name);
+ if(full.trim()&&!twins.some(t=>core(t.name).includes(full))&&said.includes(full))return true;
+ const members=(area.members||[]).map(m=>core(m.name));
+ return members.length>1&&members.every(m=>said.includes(m));
+}
 /** Host labels for a name: "Bayerisch Gmain" → bayerisch-gmain, bayerischgmain; additions and brackets left out. */
 export function hostSlugs(name){
  const b=ascii(name).replace(/\(.*?\)/g,'').replace(/\/.*$/,'').replace(/\s+[a-z]{1,3}\.\s?(?:[a-z]{1,3}\.\s?)?\S.*$/,'').replace(/\s+(an der|am|im|in der|in|bei|vor der|ob der|unter|über|ueber|auf der|auf dem)\s+.*$/,'').trim();
