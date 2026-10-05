@@ -9,6 +9,14 @@ import { IconArrowUp, IconEmptySearch, IconChevronLeft, IconChevronRight } from 
 import { ArticleCard } from "./ArticleCard";
 import { useEntitlements } from "../../lib/entitlements";
 
+/** Beim Blättern: die Zeile mit der Trefferzahl (Suche und Filter) an den oberen Rand direkt unter der angehefteten Kopfzeile, darunter beginnen die Artikel */
+function scrollToResultsTop() {
+  const row = document.querySelector<HTMLElement>('section[aria-label="Suche und Filter"]');
+  if (!row) return;
+  const head = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
+  window.scrollTo({ top: Math.max(0, row.getBoundingClientRect().top + window.scrollY - head), behavior: "smooth" });
+}
+
 export function ResultsPanel() {
   const { geo } = useData();
   const search = useSearch();
@@ -25,7 +33,7 @@ export function ResultsPanel() {
   const goPage = (p: number) => {
     if (p > 1 && !allowFeature("results", res.total)) return;
     res.setPage(p);
-    listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollToResultsTop();
   };
   const pageNow = res.page, setPageNow = res.setPage;
   useEffect(() => {
