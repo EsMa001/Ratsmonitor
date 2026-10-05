@@ -280,6 +280,8 @@ export const PRICE_FAQ: Qa[] = [
   { q: "Brauche ich für Basic Zahlungsdaten?", a: "Nein. Basic ist kostenlos und ohne Zahlungsdaten nutzbar." },
   { q: "Sind die Preise inklusive Mehrwertsteuer?", a: "Ja, alle angegebenen Preise verstehen sich inklusive Mehrwertsteuer." },
   { q: "Kann ich später upgraden?", a: "Ja, ein Wechsel auf einen höheren Tarif ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
+  { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit Basic eine Suche, einen Artikel und eine Benachrichtigung. Mit Pro und Enterprise jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },
+  { q: "Welcher Tarif enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist nur im Tarif Enterprise enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
 ];
 
 export type PlanId = "free" | "pro" | "enterprise";
@@ -331,9 +333,9 @@ export const PLANS: Plan[] = [
     items: [["map", "Suche in ganz Deutschland"], ["user", "E-Mail-Benachrichtigungen an Ihre Adresse"]],
     features: [
       { plus: true, text: "**Alles aus Basic**, zusätzlich:" },
-      { text: "**Unbegrenzt** Suchen speichern" },
-      { text: "**Unbegrenzt** Artikel speichern" },
-      { text: "**Unbegrenzt** E-Mail-Benachrichtigungen" },
+      { text: "Bis zu **100** Suchen speichern" },
+      { text: "Bis zu **100** Artikel speichern" },
+      { text: "Bis zu **100** E-Mail-Benachrichtigungen" },
     ],
     cta: "Pro wählen",
     submit: "Pro starten",
@@ -355,14 +357,6 @@ export const PLANS: Plan[] = [
     cta: "Enterprise wählen",
     submit: "Enterprise starten",
   },
-];
-
-export const COMPARE: [string, string, string, string][] = [
-  ["Ratsinformationssysteme durchsuchen", "✓", "✓", "✓"],
-  ["Gespeicherte Suchen", "1", "5", "5"],
-  ["Bookmarks (gespeicherte Artikel)", "1", "5", "5"],
-  ["E-Mail-Benachrichtigungen", "–", "✓", "✓"],
-  ["Weitere Empfänger der Benachrichtigungen (z. B. Kollegen)", "–", "–", "bis zu 5"],
 ];
 
 export const AGB_SECTIONS = [

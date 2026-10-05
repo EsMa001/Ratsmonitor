@@ -22,11 +22,13 @@ export interface TierLimits {
 }
 
 const INF = Number.POSITIVE_INFINITY;
+/** Pro und Enterprise: gespeicherte Suchen, Artikel und aktive Benachrichtigungen je bis zu 100 */
+export const PLAN_MAX = 100;
 export const LIMITS: Record<Tier, TierLimits> = {
   guest: { maxResults: 10, filters: false, bookmarks: 0, savedSearches: 0, notifications: 0, emails: 0, calendar: false },
   basic: { maxResults: INF, filters: true, bookmarks: 1, savedSearches: 1, notifications: 1, emails: 1, calendar: false },
-  pro: { maxResults: INF, filters: true, bookmarks: INF, savedSearches: INF, notifications: INF, emails: 1, calendar: false },
-  enterprise: { maxResults: INF, filters: true, bookmarks: INF, savedSearches: INF, notifications: INF, emails: 5, calendar: true },
+  pro: { maxResults: INF, filters: true, bookmarks: PLAN_MAX, savedSearches: PLAN_MAX, notifications: PLAN_MAX, emails: 1, calendar: false },
+  enterprise: { maxResults: INF, filters: true, bookmarks: PLAN_MAX, savedSearches: PLAN_MAX, notifications: PLAN_MAX, emails: 5, calendar: true },
 };
 
 export const TIER_LABEL: Record<Tier, string> = { guest: "Gast", basic: "Basic", pro: "Pro", enterprise: "Enterprise" };
@@ -75,7 +77,7 @@ export function useTier(): { tier: Tier; limits: TierLimits } {
   return { tier, limits: LIMITS[tier] };
 }
 
-/** Anzeige eines Limits, z. B. „1 von 1“ oder „3“ bei unbegrenzt */
+/** Anzeige eines Limits, z. B. „1 von 1“ oder „3“ ohne feste Grenze (Treffer je Suche) */
 export function usage(used: number, max: number): string {
   return Number.isFinite(max) ? `${used} von ${max}` : String(used);
 }

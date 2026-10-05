@@ -5,7 +5,7 @@ import { LIMITS, PRO_PRICE, TIER_LABEL, type Tier } from "../lib/tier";
 import { PlanCards } from "../components/PlanCards";
 
 const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
-const count = (n: number) => (n === 0 ? "–" : Number.isFinite(n) ? String(n) : "unbegrenzt");
+const count = (n: number) => (n === 0 ? "–" : n > 1 ? `bis zu ${n}` : String(n));
 const COMPARE_ROWS: [string, (t: Tier) => string][] = [
   ["Preis", (t) => (t === "guest" ? "0 €" : t === "basic" ? "0 €" : t === "pro" ? PRO_PRICE : "49,99 € / Monat")],
   ["Treffer je Suche", (t) => (Number.isFinite(LIMITS[t].maxResults) ? String(LIMITS[t].maxResults) : "alle")],

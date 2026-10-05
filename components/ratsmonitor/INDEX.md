@@ -688,7 +688,7 @@ wordmark__dot design-styles.css:61
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - ExportMenu.tsx (55, ⚠1): ExportOption, ExportMenu
-- FilterPanel.tsx (100, ⚠1): FilterPanel
+- FilterPanel.tsx (102, ⚠1): FilterPanel
 - FilterSelect.tsx (98): FilterSelect
 - FollowButton.tsx (30): FollowButton
 - Footer.tsx (59): Footer
@@ -723,7 +723,7 @@ wordmark__dot design-styles.css:61
 - QuellenPage.tsx (107, ⚠1): QuellenPage
 - UeberUnsPage.tsx (65): UeberUnsPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- content.ts (379, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, COMPARE, AGB_SECTIONS, brancheBySlug
+- content.ts (373, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, AGB_SECTIONS, brancheBySlug
 - icons.tsx (110): IconName, Icon
 
 ### components/ratsmonitor/lib/
@@ -752,7 +752,8 @@ wordmark__dot design-styles.css:61
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - testAuth.ts (142): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
-- tier.ts (82): Tier, TierLimits, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
+- tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
+- usePhone.ts (15): usePhone
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
@@ -776,7 +777,7 @@ wordmark__dot design-styles.css:61
 - account.tsx (16, ⚠1): AccountProvider, useAccount, useSavedStats
 - data.tsx (34, ⚠1): DataProvider, useData
 - nav.ts (13): View, viewOf, overviewScroll, useAppNav
-- search.tsx (346, ⚠2): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (353, ⚠2): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

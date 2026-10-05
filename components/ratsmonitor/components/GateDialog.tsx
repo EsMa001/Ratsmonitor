@@ -41,17 +41,17 @@ const FEATURE: Record<GateFeature, { title: string; login: string; upgrade: stri
   bookmarks: {
     title: "Artikel speichern",
     login: "Melden Sie sich kostenlos an, um Artikel zu speichern und später wiederzufinden.",
-    upgrade: "Mit Basic können Sie 1 Artikel speichern. Mit Pro speichern Sie unbegrenzt viele Artikel.",
+    upgrade: "Mit Basic können Sie 1 Artikel speichern. Mit Pro speichern Sie bis zu 100 Artikel.",
   },
   searches: {
     title: "Suchen speichern",
     login: "Melden Sie sich kostenlos an, um Suchen zu speichern und neue Treffer im Blick zu behalten.",
-    upgrade: "Mit Basic können Sie 1 Suche speichern. Mit Pro speichern Sie unbegrenzt viele Suchen.",
+    upgrade: "Mit Basic können Sie 1 Suche speichern. Mit Pro speichern Sie bis zu 100 Suchen.",
   },
   notifications: {
     title: "Benachrichtigungen",
     login: "Melden Sie sich kostenlos an, um bei Neuigkeiten benachrichtigt zu werden.",
-    upgrade: "Mit Basic ist 1 Benachrichtigung gleichzeitig aktiv. Mit Pro erhalten Sie unbegrenzt viele Benachrichtigungen.",
+    upgrade: "Mit Basic ist 1 Benachrichtigung gleichzeitig aktiv. Mit Pro sind bis zu 100 Benachrichtigungen gleichzeitig aktiv.",
   },
   emails: {
     title: "Mehrere Empfänger",
