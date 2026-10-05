@@ -14,6 +14,8 @@ export function parseMonitorSearch(params){
  const raw=params.get('page')||'1';if(!/^\d+$/.test(raw)||Number(raw)<1)throw new SearchError('Ungültige Seite.');
  /* Tiefe Seiten sind teuer (OFFSET) und für Menschen nutzlos: ab hier Suche eingrenzen */
  if(Number(raw)>MAX_PAGE)throw new SearchError('Bitte grenze die Suche ein, um weitere Treffer zu sehen.');
+ /* Treffer je Seite: 20 (Standard) oder 15 (Handy) */
+ const sizeRaw=params.get('size');if(sizeRaw!==null&&!['15','20'].includes(sizeRaw))throw new SearchError('Ungültige Seitengröße.');
  /* Umkreis: Schlüssel der Gebiete darin (within) oder, wenn das die kürzere Liste ist, der Gebiete außerhalb (without).
     Kreis 5, Gemeinde 8, Gemeindeverband 9 Stellen */
  const keys=name=>params.has(name)?params.get(name).split(',').filter(Boolean):null;
@@ -27,7 +29,7 @@ export function parseMonitorSearch(params){
  const groups=q.split(/[,;|]|\s+oder\s+/i).map(g=>norm(g).split(/\s+/).filter(w=>w&&!FILLER.has(w))).filter(g=>g.length).slice(0,8).map(g=>g.slice(0,12));
  /* Jeder Begriff bindet zwei Parameter; D1 erlaubt höchstens 100 je Abfrage */
  if(groups.flat().length>30)throw new SearchError('Bitte höchstens 30 Suchwörter verwenden.');
- return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),within,without,revision,noformal:params.get('noformal')==='1'};
+ return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),size:Number(sizeRaw||20),within,without,revision,noformal:params.get('noformal')==='1'};
 }
 
 const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision";
@@ -51,7 +53,7 @@ function regionCondition(ids,catalog){
 // idx_search_cards_facets (drizzle/0010) deckt sie ab: rund 150 ms statt vier Läufen über alle Karten.
 // Die Abdeckung (Gebiete mit Berichten, Stand des letzten Abrufs) hängt an keinem Filter: searchCoverage.
 export async function searchMonitor(db,catalog,params){
- const f=parseMonitorSearch(params),limit=20;
+ const f=parseMonitorSearch(params),limit=f.size;
  /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
  const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...f.more];
  /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */

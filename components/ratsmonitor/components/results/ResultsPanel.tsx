@@ -26,7 +26,7 @@ export function ResultsPanel() {
   const articlesReady=!res.loading;
   const { push } = useAppNav();
   const { allowFeature, limits } = useEntitlements();
-  const pages = Math.max(1, Math.ceil(res.total / 20));
+  const pages = Math.max(1, Math.ceil(res.total / res.pageSize));
   /* Gleiche Grenze wie der Server (MAX_PAGE in monitor-search.mjs) */
   const MAX_PAGE = 250;
   /* Gäste sehen nur die erste Seite; Blättern öffnet den Hinweis zur Anmeldung */

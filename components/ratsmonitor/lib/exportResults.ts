@@ -18,6 +18,7 @@ export async function exportResults(key: string, withinAgs: string[] | null, tot
     const p = new URLSearchParams(key);
     p.delete("around");
     if (withinAgs) p.set("within", withinAgs.join(","));
+    p.set("size", "20"); /* Export immer in Seiten zu 20, auch wenn die Suche am Handy 15 je Seite zeigt */
     p.set("page", String(page));
     const r = await fetch("/api/search?" + p);
     if (!r.ok) break;

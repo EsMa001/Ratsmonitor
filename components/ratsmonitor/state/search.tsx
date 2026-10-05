@@ -82,7 +82,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const filtersOpen=useFiltersOpen(),phone=usePhone(),hold=filtersOpen&&phone;
   const frozen=useRef(state);
   if(!hold)frozen.current=state;
-  const derived=useDerivedResults(hold?frozen.current:state,usePathname()==='/');
+  /* Handy: 15 statt 20 Treffer je Seite */
+  const derived=useDerivedResults(hold?frozen.current:state,usePathname()==='/',phone?15:20);
   const [popup, setPopupState] = useState("");
   const ref = useRef(state);
   ref.current = state;
@@ -258,6 +259,8 @@ export interface SearchResults {
   liveHits: PlaceHit[];
   text: string;
   terms: string[];
+  /** Treffer je Seite (Handy 15, sonst 20) */
+  pageSize: number;
   spec: FilterSpec;
   results: Article[];
   areaCounts: Record<string, number>;
@@ -272,7 +275,7 @@ export interface SearchResults {
 
 
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
-function useDerivedResults(state:SearchState,active:boolean):SearchResults {
+function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchResults {
  const {geo,place}=useData();
  const local=useMemo(()=>{
   const pq:ParseResult=place?place.parse(state.q,state.placeOverrides,state.placeIgnored):{place:null,alts:[],rest:state.q.trim(),key:'',phraseRaw:''};
@@ -286,12 +289,13 @@ function useDerivedResults(state:SearchState,active:boolean):SearchResults {
   const today=new Date().toISOString().slice(0,10),to=state.bis||(state.future?'':today);
   const params=new URLSearchParams({q:queryText(text,state.allterms),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
   if(state.noformal)params.set('noformal','1');
+  if(pageSize!==20)params.set('size',String(pageSize));
   if(more.length&&!state.radius)params.set('more',more.map(m=>m.ags+':'+(m.ags.length===5&&!hasScope(m.ags,geo)?'with':m.scope)).join(','));
   /* Umkreis: Der Schlüssel der Anfrage nennt nur den Kreis; welche Gebiete darin liegen, setzt der Abruf selbst ein (siehe unten) */
   if(state.radius)params.set('around',[state.radius.ags,state.radius.km,Math.round(state.radius.x??0),Math.round(state.radius.y??0),within?within.set.size:'-'].join(':'));
   const spec:FilterSpec={area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
-  return {pq,placeActive,liveHits,text,terms:toTerms(text),snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString(),around:state.radius?{set:within?.set??null,level:state.level}:null};
- },[state,geo,place]);
+  return {pq,placeActive,liveHits,text,terms:toTerms(text),pageSize,snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString(),around:state.radius?{set:within?.set??null,level:state.level}:null};
+ },[state,geo,place,pageSize]);
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);
  const page=navigation.key===local.key?navigation.page:1;
  const revision=useRef({key:'',value:''});
