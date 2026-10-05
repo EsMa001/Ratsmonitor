@@ -83,7 +83,7 @@ export function ResultsPanel() {
           aria-label="Ergebnisliste"
           onScroll={updateFades}
           onMouseLeave={() => onHover("")}
-          className={`flex flex-col px-[12px] max-sm:px-1 py-[12px] outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
+          className={`flex flex-col px-[12px] max-sm:px-1 py-[12px] max-sm:py-0 outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
         >
           {!articlesReady && res.results.length===0 && <ResultsSkeleton />}
           {(Number.isFinite(limits.maxResults) ? res.results.slice(0, limits.maxResults) : res.results).map((a, i) => (
