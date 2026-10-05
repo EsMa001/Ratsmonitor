@@ -83,7 +83,7 @@ export function ResultsPanel() {
           aria-label="Ergebnisliste"
           onScroll={updateFades}
           onMouseLeave={() => onHover("")}
-          className={`flex flex-col px-[12px] py-[12px] outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
+          className={`flex flex-col px-[12px] max-sm:px-1 py-[12px] outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
         >
           {!articlesReady && res.results.length===0 && <ResultsSkeleton />}
           {(Number.isFinite(limits.maxResults) ? res.results.slice(0, limits.maxResults) : res.results).map((a, i) => (
@@ -183,7 +183,7 @@ function ResultsSkeleton() {
     <div role="status" aria-live="polite" className="flex flex-col">
       <span className="sr-only">Einträge werden geladen …</span>
       {[0, 1, 2, 3, 4, 5].map((i) => (
-        <div key={i} aria-hidden="true" className="grid grid-cols-[44px_minmax(0,1fr)_auto] gap-2.5 border-b border-slate-200 px-3 py-3 last:border-b-0 sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-3 sm:px-3.5 sm:py-4">
+        <div key={i} aria-hidden="true" className="grid grid-cols-[44px_minmax(0,1fr)_auto] gap-2.5 border-b border-slate-200 px-3 max-sm:px-2 py-3 last:border-b-0 sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-3 sm:px-3.5 sm:py-4">
           <div className="flex flex-col items-center gap-1.5 border-r border-slate-200 pr-2.5 pt-0.5 sm:pr-3">
             <span className={`${bar} h-[22px] w-7`} />
             <span className={`${bar} h-3 w-8`} />
@@ -193,7 +193,7 @@ function ResultsSkeleton() {
             <span className={`${bar} mt-2.5 block h-3 w-2/5`} />
             <span className={`${bar} mt-2 hidden h-3 w-11/12 sm:block`} />
           </div>
-          <span className="w-7 sm:w-[56px]" />
+          <span className="w-6 sm:w-[56px]" />
         </div>
       ))}
     </div>

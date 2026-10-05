@@ -44,6 +44,7 @@ export function SearchFilterPanel() {
             className="ml-auto [&_button]:!w-auto [&_button]:!min-w-0 [&_button]:!border-transparent [&_button]:!bg-transparent [&_button]:!font-normal [&_button]:!text-slate-500 [&_button]:!shadow-none [&_button:hover]:!text-slate-900"
           />
           {/* Export der Trefferliste: Format wählen, Hinweis auf die Höchstzahl */}
+          <div className="max-sm:hidden">
           <ExportMenu
             title="Exportieren"
             disabled={!res.total}
@@ -62,6 +63,7 @@ export function SearchFilterPanel() {
               }
             }}
           />
+          </div>
           {/* Ein Umschalter rechts neben der Sortierung: Icon und Bezeichnung der Ansicht, zu der gewechselt wird */}
           <button
             type="button"
