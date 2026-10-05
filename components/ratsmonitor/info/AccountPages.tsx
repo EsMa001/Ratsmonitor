@@ -7,6 +7,7 @@ import { PLANS, type PlanId } from "./content";
 import { FilterSelect } from "../components/FilterSelect";
 import { useRouter } from "next/navigation";
 import { login, register, requestReset, TEST_PASSWORD } from "../lib/testAuth";
+import { IS_DEV } from "../lib/tier";
 import { Icon } from "./icons";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -269,6 +270,20 @@ export function LoginPage() {
               Registrieren
             </Link>
           </p>
+          {IS_DEV && (
+            <p className="ri-form__foot">
+              {/* Nur Entwicklung: ohne Zugangsdaten als Enterprise-Testkonto anmelden */}
+              <button
+                type="button"
+                className="ri-link max-sm:py-[10px]"
+                onClick={async () => {
+                  if (!(await login("enterprise@parlamo.test", TEST_PASSWORD))) router.push("/");
+                }}
+              >
+                Dev: als Enterprise fortfahren
+              </button>
+            </p>
+          )}
           <p className="ri-help">
             Testmodus: basic@parlamo.test, pro@parlamo.test oder enterprise@parlamo.test, Passwort „{TEST_PASSWORD}“. Alles bleibt in diesem Browser, es werden keine E-Mails verschickt.
           </p>

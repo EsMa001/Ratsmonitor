@@ -713,7 +713,7 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/info/
 - AboutPage.tsx (164): AboutPage
-- AccountPages.tsx (361, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
+- AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenPages.tsx (86): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
