@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import {loadAreas,skipReason,foreignOwner} from './areas.mjs';
 import {READERS} from '../../server/integrations/readers.mjs';
+import {consentFor,robotsOverride} from '../../server/integrations/consents.mjs';
 import {mergeChecks,openReason,foundLink,sourceAddress,fixedBody,ACCEPTED_FILES,TARGETED_FILES,GUESSED_FILES,CANDIDATE_FILES} from './reasons.mjs';
 const dir=process.env.DIR||'tmp/source-discovery/',target=process.env.TARGET||'server/integrations/statewide-sources.json',reportFile=process.env.REPORT||'requirements/statewide-sources-report.md',title=process.env.TITLE||'Quellen für ganz NRW';
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
@@ -58,6 +59,9 @@ const sources=[...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));
 for(const s of sources){const r=regions.find(r=>r.id===s.id);if(!r||r.kind!==s.kind)throw Error('Gebiet passt nicht: '+s.id);s.name=r.name;
  // Found by web search, not by a link of the official website: the system's own address stands as the source.
  if(!/^https?:\/\//.test(s.verifiedSource||'')){s.foundBy=s.verifiedSource||'Websuche';s.verifiedSource=s.system||s.base;}}
+// A source covered by a written consent carries it (source-consents.json, concept section 6.2); the admin and the
+// atlas show it, robots.mjs keeps recording what robots.txt itself says.
+for(const s of sources){const c=consentFor(s.system||s.base);if(c)s.robotsOverride=robotsOverride(c);else delete s.robotsOverride;}
 fs.writeFileSync(target,JSON.stringify(sources,null,2)+String.fromCharCode(10));
 
 // Only areas of this list count; the other files also hold sources of other states.

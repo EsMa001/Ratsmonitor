@@ -4,7 +4,7 @@ import entries from '../server/integrations/citystate-sources.json' with {type:'
 import {NRW_SOURCES} from '../server/integrations/source-catalog.mjs';
 import {READERS} from '../server/integrations/readers.mjs';
 import {collectRegion} from '../server/integrations/collect-region.mjs';
-import {hamburgPaper,hamburgQuery,collectHamburgTransparenz,collectOparlDistricts,consentValid,eligibleSystems,BERLIN_CONSENT_MISSING,HAMBURG_DISTRICTS} from '../server/integrations/citystates.mjs';
+import {pardokProcedure,pardokBlocks,collectPardok,collectBerlin,hamburgPaper,hamburgQuery,collectHamburgTransparenz,collectOparlDistricts,consentValid,eligibleSystems,BERLIN_CONSENT_MISSING,HAMBURG_DISTRICTS} from '../server/integrations/citystates.mjs';
 
 /* Nachgebildete Antworten im Format der CKAN-Schnittstelle (package_search); echte Antworten waren aus der
    Entwicklungsumgebung nicht abrufbar. */
@@ -66,7 +66,7 @@ test('Hamburg: a refusal in robots.txt, an unreadable robots.txt or an unknown a
  assert.equal(odd.topics.length,0);assert.ok(odd.coverage.issues.some(i=>/Unbekanntes Antwortformat/.test(i)));assert.equal(odd.coverage.complete,false);
 });
 
-const berlin=entries.find(e=>e.adapter==='oparl-bezirke');
+const berlin=entries.find(e=>e.id==='de-11000000');
 test('Berlin: without consent nothing is read where robots.txt refuses; a consent needs who, when and scope',async()=>{
  assert.equal(consentValid(null),false);assert.equal(consentValid({by:'ITDZ',date:'2026-11-01'}),false);
  assert.equal(consentValid({by:'ITDZ Berlin',date:'2026-11-01',scope:'OParl-Schnittstellen aller BVV'}),true);
@@ -89,9 +89,51 @@ test('city-state entries: switched off until checked, readers registered, no req
   assert.ok(READERS[e.adapter],e.adapter);
   assert.ok(NRW_SOURCES.some(s=>s.id===e.id),e.id+' in the catalog');
   if(e.method==='pending')assert.ok(e.note,e.id+' names why it is switched off');
-  if(e.adapter==='oparl-bezirke'&&e.method!=='pending')assert.ok(eligibleSystems(e).length,'Berlin is switched on only with a readable district');
+  if(e.method!=='pending')assert.ok(e.checkPending||e.verifiedAt,e.id+' says whether it was checked live');
  }
  const original=globalThis.fetch;globalThis.fetch=()=>{throw Error('unexpected request');};
  try{for(const e of entries.filter(e=>e.method==='pending')){const d=await collectRegion(e.id,{window:'1w'});assert.equal(d.coverage.method,'pending');assert.equal(d.topics.length,0);assert.equal(d.coverage.issues[0],e.note);}}
  finally{globalThis.fetch=original;}
+});
+
+/* Nachgebildeter Ausschnitt im Aufbau der PARDOK-Exportdatei (Vorgang mit Dokumenten); die echte Datei war aus der
+   Entwicklungsumgebung nicht abrufbar. */
+const doc=(art,nr,dat,titel)=>`<Dokument><Wp>19</Wp><DokArt>${art}</DokArt><DokNr>${nr}</DokNr><DokDat>${dat}</DokDat><Titel>${titel}</Titel><LokURL>https://pardok.parlament-berlin.de/starweb/adis/citat/VT/19/DruckSachen/d19-${nr.replace('/','')}.pdf</LokURL></Dokument>`;
+const vorgang=(id,typ,docs)=>`<Vorgang><VID>${id}</VID><VNr>${id}</VNr><ReihNr>0000</ReihNr><VTyp>${typ}</VTyp><VTypL>${typ}</VTypL><VSysL>Verkehr</VSysL><Desk>Radverkehr</Desk><Desk>Parkraum</Desk>${docs}</Vorgang>`;
+const xml='<?xml version="1.0" encoding="UTF-8"?><Export>'+vorgang('V1','Antrag',doc('Drs','19/2400','01.09.2026','Mehr Radwege &amp; Parkraum')+doc('PlPr','19/80','24.09.2026','Plenarprotokoll'))+vorgang('V2','Schriftliche Anfrage',doc('Drs','19/9999','20.09.2026','Frage zu Bänken'))+vorgang('V3','Vorlage',doc('Drs','19/100','01.01.2025','Alt'))+'</Export>';
+const be={id:'de-11000000',name:'Stadt Berlin',kind:'city',adapter:'berlin',pardok:{base:'https://www.parlament-berlin.de/',periods:[19,20]},systems:[],consent:null};
+
+test('Berlin: a procedure of the open-data file with its documents; blocks are found across chunks',async()=>{
+ const p=pardokProcedure(vorgang('V1','Antrag',doc('Drs','19/2400','01.09.2026','Mehr Radwege &amp; Parkraum')));
+ assert.equal(p.id,'V1');assert.equal(p.type,'Antrag');assert.deepEqual(p.descriptors,['Radverkehr','Parkraum']);
+ assert.equal(p.documents[0].date,'2026-09-01');assert.equal(p.documents[0].title,'Mehr Radwege & Parkraum');assert.match(p.documents[0].url,/^https:\/\/pardok/);
+ assert.equal(pardokProcedure('<Vorgang><VID>X</VID></Vorgang>'),null);
+ const seen=[];const parts=[];for(let i=0;i<xml.length;i+=37)parts.push(xml.slice(i,i+37));
+ assert.equal(await pardokBlocks(parts,b=>seen.push(pardokProcedure(b).id)),3);assert.deepEqual(seen,['V1','V2','V3']);
+});
+
+test('Berlin: robots.txt first; procedures with a document in the period; inquiries left out; a missing period is no error',async()=>{
+ const asked=[];
+ const stream=async function*(url){asked.push(url);if(url.endsWith('wp20.xml'))throw Error('Quelle antwortet mit HTTP 404');yield xml.slice(0,500);yield xml.slice(500);};
+ const d=await collectPardok(be,{now,window:'1m',get:async()=>'User-agent: *\nDisallow: /intern/\n',stream});
+ assert.deepEqual(asked,['https://www.parlament-berlin.de/opendata/pardok-wp20.xml','https://www.parlament-berlin.de/opendata/pardok-wp19.xml'],'newest period first');
+ assert.equal(d.topics.length,1);const t=d.topics[0];
+ assert.equal(t.id,'de-11000000-pardok-v1');assert.equal(t.title,'Mehr Radwege & Parkraum');assert.equal(t.committee,'Abgeordnetenhaus');assert.equal(t.eventDate,'2026-09-24');
+ /* Ein Monat: nur das Plenarprotokoll liegt im Zeitraum, beide Dokumente bleiben verlinkt */
+ assert.equal(t.events.length,1);assert.match(t.events[0].description,/Plenarprotokoll · 19\/80/);assert.equal(t.documents.length,2);
+ assert.equal(d.coverage.complete,true);assert.ok(d.coverage.warnings.some(w=>/Anfragen ausgelassen/.test(w)));assert.ok(d.coverage.warnings.some(w=>/ohne Datei/.test(w)));
+ /* robots.txt verbietet: keine Datei wird geladen */
+ const none=[];const refused=await collectPardok(be,{now,get:async()=>'User-agent: *\nDisallow: /opendata/\n',stream:async function*(url){none.push(url);}});
+ assert.deepEqual(none,[]);assert.equal(refused.topics.length,0);assert.match(refused.coverage.issues[0],/robots\.txt/);
+ /* Unbekanntes Format: keine Vorgänge erkannt */
+ const odd=await collectPardok({...be,pardok:{...be.pardok,periods:[19]}},{now,get:async()=>'',stream:async function*(){yield '<html>Wartung</html>';}});
+ assert.equal(odd.topics.length,0);assert.match(odd.coverage.issues[0],/Unbekanntes Format/);
+});
+
+test('Berlin: the Abgeordnetenhaus is read without consent; the district assemblies are not',async()=>{
+ const original=globalThis.fetch;globalThis.fetch=()=>{throw Error('unexpected request');};
+ try{
+  const d=await collectBerlin({...be,systems:[{district:'Pankow',system:'https://pankow.example.berlin.de/oparl/system',robots:'verboten'}]},{now,window:'1m',get:async()=>'',stream:async function*(url){if(url.endsWith('wp19.xml'))yield xml;else throw Error('Quelle antwortet mit HTTP 404');}});
+  assert.equal(d.topics.length,1);assert.ok(d.coverage.warnings.some(w=>/Bezirksverordnetenversammlungen nicht gelesen/.test(w)));
+ }finally{globalThis.fetch=original;}
 });

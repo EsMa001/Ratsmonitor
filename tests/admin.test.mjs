@@ -81,12 +81,26 @@ test('the overview reads the stored reports once; its figures per area equal the
  assert.deepEqual(full.labels.filter(l=>l.count).map(l=>[l.id,l.count]),[['bildung',1],['bauen',1],['unklar',2]]);
  const status=await processingStatus(db);assert.equal(status.regions.length,2);
  for(const area of status.regions){const shown=full.sources.find(s=>s.id===area.region_id);assert.equal(shown.count,area.total);assert.deepEqual(shown.processing,{...area},area.region_id);assert.equal(shown.pendingAnalysis,area.total-area.rules);}
- // A changed report is read again, and so is the next hour: "updated in the last seven days" moves with the clock.
+ // A changed report is read again, only its area; "updated in the last seven days" moves with the clock without a scan.
  asked.length=0;insert('e');const changed=await loadAdminData(watched,{now:at,review:false});assert.equal(scans(),1);assert.equal(changed.counts.online,5);
- asked.length=0;await loadAdminData(watched,{now:new Date('2026-09-27T13:00:00Z'),review:false});assert.equal(scans(),1);
- asked.length=0;await loadAdminData(watched,{now:new Date('2026-09-27T13:30:00Z'),review:false});assert.equal(scans(),0);
+ assert.ok(asked.some(q=>/region_id IN \(\?\)/.test(q)),'only the changed area is read');
+ asked.length=0;const later=await loadAdminData(watched,{now:new Date('2026-10-30T13:00:00Z'),review:false});assert.equal(scans(),0);
+ assert.equal(later.counts.updated7d,0);assert.equal(later.counts.online,5);assert.equal(changed.counts.updated7d,5);
  const muenster=full.sources.find(s=>s.id==='muenster').processing;assert.equal(muenster.total,3);assert.equal(muenster.stale,1);assert.equal(muenster.insufficient,1);assert.equal(muenster.fetchedAt,'2026-09-27T10:00:00Z');assert.equal(muenster.processedAt,'2026-09-27T11:00:00Z');
  assert.deepEqual(full.sources.find(s=>s.id==='borken').processing,{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,blocked_summary:0,blocked_aiLabel:0,blocked_keywords:0,fetchedAt:null,processedAt:null});
+});
+test('figures per area are computed step by step within a budget and fall back to one scan without the tables',async()=>{
+ reset();const at=new Date('2026-09-27T12:00:00Z');
+ insert('a');insert('b',{regionId:'muenster'});insert('c',{regionId:'coesfeld',classification:{primary:'unklar'}});
+ /* Kein Budget: nichts wird gelesen, alle drei Gebiete stehen aus; die Zahl der Berichte stimmt trotzdem */
+ const first=await loadAdminData(db,{now:at,review:false,statsBudgetMs:0});
+ assert.equal(first.statsPending,3);assert.equal(first.counts.online,3);
+ const second=await loadAdminData(db,{now:at,review:false});
+ assert.equal(second.statsPending,undefined);assert.equal(second.counts.unlabelled,1);assert.equal(second.sources.find(s=>s.id==='coesfeld').count,1);
+ /* Ohne Migration 0011: der frühere Lauf über alle Berichte */
+ const legacy={prepare(sql){if(/region_revisions|region_stats/.test(sql))return {bind(){return this;},async all(){throw Error('D1_ERROR: no such table: region_revisions');}};return db.prepare(sql);},batch:statements=>Promise.all(statements.map(s=>s.all()))};
+ const old=await loadAdminData(legacy,{now:new Date('2026-09-28T12:00:00Z'),review:false});
+ assert.equal(old.counts.online,3);assert.equal(old.counts.unlabelled,1);assert.equal(old.statsPending,undefined);
 });
 test('review filters stay parameterized, exclude aliases, constrain region and cap result rows',async()=>{
  reset();for(let i=0;i<30;i++)insert('open-'+i,{classification:{primary:'unklar'}});

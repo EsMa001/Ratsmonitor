@@ -1,0 +1,13 @@
+# Cache-Regeln der statischen Dateien (Cloudflare Workers Static Assets).
+# vinext legt diese Datei nur an, wenn es sie noch nicht gibt; seine Regel für die gehashten Pakete steht deshalb hier.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Kartendaten (de_map.json, 2,4 MB): ohne Hash im Namen. Einen Tag frisch, danach eine Woche im Hintergrund erneuert
+# statt bei jedem Besuch neu angefragt. Eine geänderte Karte bekommt eine neue Version in der Adresse (state/data.tsx).
+/data/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Schriften ändern sich praktisch nie.
+/fonts/*
+  Cache-Control: public, max-age=2592000

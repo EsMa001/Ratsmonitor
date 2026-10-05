@@ -15,7 +15,7 @@ Stand 05.10.2026. Entwurf zur Anpassung und zum Versand durch den Projektinhaber
 
 Sehr geehrte Damen und Herren,
 
-wir betreiben Ratsmonitor, ein <gemeinnütziges/privates> Projekt, das öffentliche Vorgänge aus Gemeinderäten, Kreistagen und Bezirksvertretungen in ganz Deutschland verständlich zusammenfasst und nach Orten durchsuchbar macht. Heute lesen wir die öffentlichen Unterlagen von rund 2.100 Städten, Gemeinden, Gemeindeverbänden und Kreisen. Berlin fehlt bislang ganz.
+wir betreiben Ratsmonitor, ein <gemeinnütziges/privates> Projekt, das öffentliche Vorgänge aus Gemeinderäten, Kreistagen und Bezirksvertretungen in ganz Deutschland verständlich zusammenfasst und nach Orten durchsuchbar macht. Heute lesen wir die öffentlichen Unterlagen von rund 2.100 Städten, Gemeinden, Gemeindeverbänden und Kreisen. Für Berlin nutzen wir die offenen Daten des Abgeordnetenhauses; die Bezirksverordnetenversammlungen fehlen bislang.
 
 Die Bezirke veröffentlichen die OParl-Schnittstellen ihrer Bezirksverordnetenversammlungen dankenswerterweise als offene Daten auf daten.berlin.de („Schnittstelle zum Informationssystem der BVV …“). Dieselben Rechner untersagen Programmen den Abruf jedoch per robots.txt und antworten mit HTTP 403. Wir halten uns an robots.txt und umgehen keine Zugriffssperren. Deshalb können wir die veröffentlichten Schnittstellen derzeit nicht nutzen.
 

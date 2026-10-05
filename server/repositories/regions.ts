@@ -12,9 +12,13 @@ import type {TopicDetail} from '@/shared/types';
 export async function getRegionCoverage(){
  let coverage:any[]=[{...seed.coverage,regionId:'muenster',method:'oparl',sourceUrl:'https://oparl.stadt-muenster.de/system'},...regional.coverage,...nrw.coverage];
  const counts=new Map<string,number>(Object.entries(nrw.counts));for(const t of activeTopics([...seed.topics.map(t=>({...t,regionId:'muenster'})),...regional.topics] as unknown as StoredTopic[])){const id=t.regionId||'muenster';counts.set(id,(counts.get(id)||0)+1);}
- try {if(env.DB){const r=await env.DB.prepare("SELECT c.payload,coalesce(t.article_count,0) AS article_count FROM source_coverage c LEFT JOIN (SELECT region_id,count(*) AS article_count FROM topics WHERE json_extract(payload,'$.identity.mergedInto') IS NULL GROUP BY region_id) t ON t.region_id=c.region_id").all<{payload:string;article_count:number}>();coverage=r.results.map(x=>{const c=JSON.parse(x.payload);counts.set(c.regionId,x.article_count);return c;});}}catch{}
+ try {if(env.DB){const r=await env.DB.prepare("SELECT c.payload,coalesce(t.article_count,0) AS article_count FROM source_coverage c LEFT JOIN (SELECT region_id,count(*) AS article_count FROM search_cards GROUP BY region_id) t ON t.region_id=c.region_id").all<{payload:string;article_count:number}>();coverage=r.results.map(x=>{const c=JSON.parse(x.payload);counts.set(c.regionId,x.article_count);return c;});}}catch{}
+ // Berichte je Gebiet aus search_cards: eine Zeile je kanonischem Vorgang, gezählt über den Index statt über die
+ // 6-GB-Tabelle topics. Katalog und Abdeckung als Map statt 5.324-mal find über je 2.000 Einträge.
  // A source switched off in the catalog (method "pending") counts as not connected, whatever an earlier attempt stored.
- return REGIONS.map(r=>{const entry=sources.find(s=>s.id===r.id),off=entry?.method==='pending',source=off?undefined:entry;const c=coverage.find(c=>c.regionId===r.id)||(source?{...pendingCoverage(r.id),method:source.method,sourceUrl:'system' in source?source.system:source.base,issues:['Öffentliche Quelle konfiguriert; noch kein erfolgreicher Import.']}:pendingCoverage(r.id));return {...c,...(off?{method:'pending'}:{}),articleCount:counts.get(r.id)||0};});
+ // Wie zuvor find: bei doppelten Einträgen gilt der erste.
+ const sourceById=new Map([...sources].reverse().map(s=>[s.id,s])),coverageById=new Map([...coverage].reverse().map((c:any)=>[c.regionId,c]));
+ return REGIONS.map(r=>{const entry=sourceById.get(r.id),off=entry?.method==='pending',source=off?undefined:entry;const c=coverageById.get(r.id)||(source?{...pendingCoverage(r.id),method:source.method,sourceUrl:'system' in source?source.system:source.base,issues:['Öffentliche Quelle konfiguriert; noch kein erfolgreicher Import.']}:pendingCoverage(r.id));return {...c,...(off?{method:'pending'}:{}),articleCount:counts.get(r.id)||0};});
 }
 export async function getRelated(topic:TopicDetail){
  let coverage:any[]=[];try{coverage=await getRegionCoverage();}catch{coverage=regional.coverage;}let candidates:any[]=[...regional.topics];let storageAvailable=true;

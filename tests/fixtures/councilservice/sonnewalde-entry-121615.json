@@ -1,0 +1,176 @@
+{
+ "status": "OK",
+ "data": {
+  "entry": {
+   "id": 121615,
+   "entry_id": 121617,
+   "title": "Sondersitzung der Stadtverordnetenversammlung der Stadt Sonnewalde",
+   "description": "<div>Sehr geehrte Einwohnerinnen und Einwohner,</div><div>hiermit werden Sie zur öffentlichen Sitzung eingeladen.</div>",
+   "recurrence_start": "2026-09-30",
+   "recurrence_end": "2026-09-30",
+   "has_recurrence": 0,
+   "deactivated": 0,
+   "entry_start": "2026-09-30",
+   "entry_start_time": "19:30",
+   "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+   "visibility": 1,
+   "display_contents": 1,
+   "resource": "councilservice",
+   "edited": "2026-10-01 11:05:54",
+   "topics": [
+    {
+     "id": 1775,
+     "session_id": 121615,
+     "position": 1,
+     "label": "Ö: Eröffnung der Sitzung mit Feststellung der ordnungsmäßigen Ladung und der Anwesenheit",
+     "custom_numeration": "1",
+     "numeration": "1",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 1,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1776,
+     "session_id": 121615,
+     "position": 2,
+     "label": "Ö: Feststellung der öffentlichen Tagesordnung und Änderungsanträge dazu",
+     "custom_numeration": "2",
+     "numeration": "2",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 2,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1777,
+     "session_id": 121615,
+     "position": 3,
+     "label": "Ö: Informationen des Stadtverordnetenvorsitzenden",
+     "custom_numeration": "3",
+     "numeration": "3",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 3,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1778,
+     "session_id": 121615,
+     "position": 4,
+     "label": "Ö: Informationen des hauptamtlichen Bürgermeisters",
+     "custom_numeration": "4",
+     "numeration": "4",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 4,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1779,
+     "session_id": 121615,
+     "position": 5,
+     "label": "Ö: Einwohnerfragestunde",
+     "custom_numeration": "5",
+     "numeration": "5",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 5,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1780,
+     "session_id": 121615,
+     "position": 6,
+     "label": "Ö: Beschluss zur Vergabe von Bauleistungen Bau/Neuanlage von 4 Stück Löschwasserentnahmestellen (3 Flachspiegelbrunnen und 1 Tiefbrunnen) in den Gemarkungen der Stadt Sonnewalde (BV 43/2026)",
+     "custom_numeration": "6",
+     "numeration": "6",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [
+      {
+       "id": 5543,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 06_BV 43_2026_Beschluss Vergabe Bau von Löschwasserbrunnen.pdf",
+       "field_1": 4,
+       "field_2": 1,
+       "path": "councilservice/1/7/8/0/",
+       "filename": "TOP_06_BV_43_2026_Beschluss_Vergabe_Bau_von_Loeschwasserbrunnen.pdf",
+       "filename_original": "TOP 06_BV 43_2026_Beschluss Vergabe Bau von Löschwasserbrunnen.pdf",
+       "position": 0,
+       "size": 119474,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/8/0/TOP_06_BV_43_2026_Beschluss_Vergabe_Bau_von_Loeschwasserbrunnen.pdf"
+       },
+       "link": "councilservice/1/7/8/0/TOP_06_BV_43_2026_Beschluss_Vergabe_Bau_von_Loeschwasserbrunnen.pdf",
+       "session_id": 121615
+      },
+      {
+       "id": 5551,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "Beschluss 43_2026.pdf",
+       "field_1": 6,
+       "field_2": 1,
+       "path": "councilservice/1/7/8/0/",
+       "filename": "Beschluss_43_2026.pdf",
+       "filename_original": "Beschluss 43_2026.pdf",
+       "position": 1,
+       "size": 811595,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/8/0/Beschluss_43_2026.pdf"
+       },
+       "link": "councilservice/1/7/8/0/Beschluss_43_2026.pdf",
+       "session_id": 121615
+      }
+     ],
+     "index": 6,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1781,
+     "session_id": 121615,
+     "position": 7,
+     "label": "Ö: Anfragen der Mitglieder der Stadtverordnetenversammlung zu öffentlichen Angelegenheiten, Sonstiges und Schließung der öffentlichen Sitzung",
+     "custom_numeration": "7",
+     "numeration": "7",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 7,
+     "index_parent": 0,
+     "children": []
+    }
+   ],
+   "documents": [],
+   "counts": {
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 7,
+    "cnt_topics_docs": 2
+   },
+   "groups": [
+    19845,
+    11096
+   ]
+  }
+ }
+}

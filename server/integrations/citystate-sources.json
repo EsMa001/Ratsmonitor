@@ -6,20 +6,129 @@
     "method": "pending",
     "adapter": "hamburg-transparenz",
     "base": "https://suche.transparenz.hamburg.de/",
-    "districts": ["Altona", "Bergedorf", "Eimsbüttel", "Hamburg-Mitte", "Hamburg-Nord", "Harburg", "Wandsbek"],
+    "districts": [
+      "Altona",
+      "Bergedorf",
+      "Eimsbüttel",
+      "Hamburg-Mitte",
+      "Hamburg-Nord",
+      "Harburg",
+      "Wandsbek"
+    ],
     "verifiedSource": "https://transparenz.hamburg.de/api-796358",
     "license": "dl-de/by-2.0",
-    "note": "Leser für das Transparenzportal gebaut (Drucksachen der sieben Bezirksversammlungen); Prüflauf vom Rechner des Projektinhabers ausstehend (robots.txt des Portals, Felder der Datensätze): node scripts/source-discovery/stadtstaaten.mjs hamburg"
+    "checkPending": "Eingeschaltet ohne Live-Prüfung (Entwicklungsumgebung ohne Zugang zum Portal). Der erste Import ist der Test: robots.txt des Portals und Felder der Datensätze; findet er nichts, nennt der Abruf den Grund. Prüfen: node scripts/source-discovery/stadtstaaten.mjs hamburg",
+    "note": "robots.txt des Transparenzportals (verboten) erlaubt die Suchschnittstelle nicht; geprüft am 2026-10-05. Freigabe beim Portal anfragen."
   },
   {
     "id": "de-11000000",
     "name": "Stadt Berlin",
     "kind": "city",
     "method": "pending",
-    "adapter": "oparl-bezirke",
-    "base": "https://daten.berlin.de/",
+    "adapter": "berlin",
+    "base": "https://www.parlament-berlin.de/",
+    "pardok": {
+      "base": "https://www.parlament-berlin.de/",
+      "periods": [
+        19,
+        20
+      ]
+    },
+    "verifiedSource": "https://www.parlament-berlin.de/dokumente/open-data",
+    "checkPending": "Abgeordnetenhaus eingeschaltet ohne Live-Prüfung (Entwicklungsumgebung ohne Zugang). Der erste Import ist der Test: robots.txt und Aufbau der XML-Datei. Bezirksverordnetenversammlungen nur mit Freigabe (requirements/berlin-freigabe-anfrage.md). Prüfen: node scripts/source-discovery/stadtstaaten.mjs berlin",
     "consent": null,
-    "systems": [],
-    "note": "Freigabe fehlt: Die Bezirksverordnetenversammlungen veröffentlichen ihre OParl-Schnittstellen als Open Data, untersagen Programmen den Abruf aber per robots.txt und HTTP 403. Leser gebaut; er ruft erst mit eingetragener Freigabe ab (Anfrage: requirements/berlin-freigabe-anfrage.md)."
+    "systems": [
+      {
+        "district": "Charlottenburg-Wilmersdorf",
+        "system": "https://www.sitzungsdienst-charlottenburg-wilmersdorf.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/bvv-charlottenburg-wilmersdorf",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Friedrichshain-Kreuzberg",
+        "system": "https://www.sitzungsdienst-friedrichshain-kreuzberg.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-friedrichshain-kreuzberg",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Lichtenberg",
+        "system": "https://www.sitzungsdienst-lichtenberg.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-lichtenberg-von-berlin",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Mitte",
+        "system": "https://www.sitzungsdienst-mitte.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-berlin-mitte",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Neukölln",
+        "system": "https://www.sitzungsdienst-neukoelln.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-neukolln",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Pankow",
+        "system": "https://www.sitzungsdienst-pankow.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-pankow-von-berlin",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Reinickendorf",
+        "system": "https://www.sitzungsdienst-reinickendorf.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-reinickendorf",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Steglitz-Zehlendorf",
+        "system": "https://www.sitzungsdienst-steglitz-zehlendorf.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-steglitz-zehlendorf",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Tempelhof-Schöneberg",
+        "system": "https://www.sitzungsdienst-tempelhof-schoeneberg.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-tempelhof-schoneberg",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      },
+      {
+        "district": "Treptow-Köpenick",
+        "system": "https://www.sitzungsdienst-treptow-koepenick.de/oi/oparl/1.0/system.asp",
+        "dataset": "https://daten.berlin.de/datensaetze/schnittstelle-zum-informationssystem-der-bvv-treptow-kopenick",
+        "robots": "unbrauchbar",
+        "checkedAt": "2026-10-05",
+        "oparl": false,
+        "error": "Quelle antwortet mit HTTP 403"
+      }
+    ],
+    "note": "Prüflauf am 2026-10-05: Abgeordnetenhaus ohne Vorgänge (robots.txt untersagt den Abruf von https://www.parlament-berlin.de/opendata/pardok-wp20.xml; nichts gelesen. robots.txt untersagt den Abruf von https://www.parlament-berlin.de/opendata/pardok-wp19.xml; nichts gelesen. Noch keine Artikel erfolgreich erfasst.); Bezirke nur mit Freigabe."
   }
 ]

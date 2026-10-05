@@ -1,0 +1,380 @@
+{
+ "de-120665601": {
+  "id": "de-120665601",
+  "name": "Amt Altdöbern",
+  "kind": "city",
+  "ags": "120665601",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://altdoebern.allris.cloud/public/",
+    "from": "altdoebern.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-16071001": {
+  "id": "de-16071001",
+  "name": "Stadt Apolda",
+  "kind": "city",
+  "ags": "16071001",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://apolda.allris.cloud/public/",
+    "from": "apolda.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12067120": {
+  "id": "de-12067120",
+  "name": "Stadt Eisenhüttenstadt",
+  "kind": "city",
+  "ags": "12067120",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://eisenhuettenstadt.allris.cloud/public/",
+    "from": "eisenhuettenstadt.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12068181": {
+  "id": "de-12068181",
+  "name": "Gemeinde Heiligengrabe",
+  "kind": "city",
+  "ags": "12068181",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://heiligengrabe.allris.cloud/public/",
+    "from": "heiligengrabe.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12065144": {
+  "id": "de-12065144",
+  "name": "Stadt Hohen Neuendorf",
+  "kind": "city",
+  "ags": "12065144",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://hohenneuendorf.allris.cloud/public/",
+    "from": "hohenneuendorf.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12063148": {
+  "id": "de-12063148",
+  "name": "Stadt Ketzin/Havel",
+  "kind": "city",
+  "ags": "12063148",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ketzin.allris.cloud/public/",
+    "from": "ketzin.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12069306": {
+  "id": "de-12069306",
+  "name": "Gemeinde Kloster Lehnin",
+  "kind": "city",
+  "ags": "12069306",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://klosterlehnin.allris.cloud/public/",
+    "from": "klosterlehnin.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12072240": {
+  "id": "de-12072240",
+  "name": "Stadt Ludwigsfelde",
+  "kind": "city",
+  "ags": "12072240",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ludwigsfelde.allris.cloud/public/",
+    "from": "ludwigsfelde.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12069397": {
+  "id": "de-12069397",
+  "name": "Gemeinde Michendorf",
+  "kind": "city",
+  "ags": "12069397",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://michendorf.allris.cloud/public/",
+    "from": "michendorf.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12063273": {
+  "id": "de-12063273",
+  "name": "Gemeinde Schönwalde-Glien",
+  "kind": "city",
+  "ags": "12063273",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://schoenwaldeglien.allris.cloud/public/",
+    "from": "schoenwaldeglien.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12066296": {
+  "id": "de-12066296",
+  "name": "Stadt Schwarzheide",
+  "kind": "city",
+  "ags": "12066296",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://schwarzheide.allris.cloud/public/",
+    "from": "schwarzheide.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12069590": {
+  "id": "de-12069590",
+  "name": "Gemeinde Schwielowsee",
+  "kind": "city",
+  "ags": "12069590",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://schwielowsee.allris.cloud/public/",
+    "from": "schwielowsee.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12064448": {
+  "id": "de-12064448",
+  "name": "Stadt Seelow",
+  "kind": "city",
+  "ags": "12064448",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://seelow.allris.cloud/public/",
+    "from": "seelow.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-14626530": {
+  "id": "de-14626530",
+  "name": "Stadt Seifhennersdorf",
+  "kind": "city",
+  "ags": "14626530",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://seifhennersdorf.allris.cloud/public/",
+    "from": "seifhennersdorf.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12069604": {
+  "id": "de-12069604",
+  "name": "Gemeinde Stahnsdorf",
+  "kind": "city",
+  "ags": "12069604",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://stahnsdorf.allris.cloud/public/",
+    "from": "stahnsdorf.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-15084490": {
+  "id": "de-15084490",
+  "name": "Stadt Teuchern",
+  "kind": "city",
+  "ags": "15084490",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://teuchern.allris.cloud/public/",
+    "from": "teuchern.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120695917": {
+  "id": "de-120695917",
+  "name": "Amt Wusterwitz",
+  "kind": "city",
+  "ags": "120695917",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://wusterwitz.allris.cloud/public/",
+    "from": "wusterwitz.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-145215138": {
+  "id": "de-145215138",
+  "name": "Verwaltungsgemeinschaft Zschopau",
+  "kind": "city",
+  "ags": "145215138",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://zschopau.allris.cloud/public/",
+    "from": "zschopau.allris.cloud",
+    "byHref": true,
+    "guessed": "allris.cloud-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "allris.cloud: Rechnername existiert (DNS, 05.10.2026); robots.txt: verboten bei allen 22 angebundenen Mandanten",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ }
+}

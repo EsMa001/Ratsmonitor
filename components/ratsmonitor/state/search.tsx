@@ -1,6 +1,6 @@
 import {REGIONS,mapKeys} from '@/shared/regions';
 import {radiusParam} from '@/shared/radius-areas.mjs';
-import {useSearchParams} from 'next/navigation';
+import {usePathname,useSearchParams} from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
 import type { FilterSpec } from "../lib/filter";
 import type { MapEngine } from "../lib/geo/mapEngine";
@@ -72,7 +72,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   // Die Karte kennt Samtgemeinden und neue Fusionsgemeinden nicht: sie werden über eine Mitglieds- bzw. frühere
   // Gemeinde gewählt, die Suche ordnet diese ihnen zu.
   useEffect(()=>{const region=REGIONS.find(r=>r.id===params.get("region"));if(region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));},[params.get("region")]);
-  const derived=useDerivedResults(state);
+  // Gesucht wird nur, solange die Übersicht zu sehen ist. Sie bleibt auf allen Seiten versteckt eingebunden (Karte und
+  // Suchstand bleiben erhalten); ohne diese Bedingung löste jede Detail-, Info- und Kontoseite die volle Suche aus.
+  const derived=useDerivedResults(state,usePathname()==='/');
   const [popup, setPopupState] = useState("");
   const ref = useRef(state);
   ref.current = state;
@@ -261,7 +263,7 @@ export interface SearchResults {
 
 
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
-function useDerivedResults(state:SearchState):SearchResults {
+function useDerivedResults(state:SearchState,active:boolean):SearchResults {
  const {geo,place}=useData();
  const local=useMemo(()=>{
   const pq:ParseResult=place?place.parse(state.q,state.placeOverrides,state.placeIgnored):{place:null,alts:[],rest:state.q.trim(),key:'',phraseRaw:''};
@@ -284,12 +286,24 @@ function useDerivedResults(state:SearchState):SearchResults {
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);
  const page=navigation.key===local.key?navigation.page:1;
  const revision=useRef({key:'',value:''});
- /* Gebiete mit Berichten je Ebene, aus der jeweils letzten Antwort */
+ /* Gebiete mit Berichten je Ebene und der jüngste Abruf: ein eigener Abruf je Ebene (/api/search/coverage), den der
+    Browser zwischenspeichern darf. Früher kamen sie mit jeder Suche (rund 400 KB je Anfrage und Tastendruck). */
  const covered=useRef<Record<string,Set<string>>>({});
- type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;coverage:CoverageEntry[];revision:string;updatedAt?:string|null};
+ const [cover,setCover]=useState<Record<string,{coverage:CoverageEntry[];updatedAt:string|null}>>({});
+ const loadCover=useCallback(async(level:string,signal?:AbortSignal)=>{
+  const response=await fetch('/api/search/coverage?level='+level,{signal});if(!response.ok)return null;
+  const data=await response.json() as {coverage:CoverageEntry[];updatedAt:string|null};
+  covered.current[level]=new Set(data.coverage.map(c=>c.ags));setCover(c=>({...c,[level]:data}));return data;
+ },[]);
+ useEffect(()=>{if(!active||cover[state.level])return;const abort=new AbortController();loadCover(state.level,abort.signal).catch(()=>{});return()=>abort.abort();},[active,state.level,cover,loadCover]);
+ type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
  const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string}>({key:'',data:null,error:''});
  const requestKey=local.key+'&page='+page+'&attempt='+attempt;
+ /* Die erste Suche geht sofort hinaus; danach wartet jede neue 180 ms, ob noch getippt wird */
+ const sent=useRef(false);
  useEffect(()=>{
+  if(!active)return;
+  const delay=sent.current?180:0;sent.current=true;
   const abort=new AbortController(),timer=setTimeout(async()=>{
    const params=new URLSearchParams(local.key);params.delete('around');params.set('page',String(page));
    if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);
@@ -301,7 +315,7 @@ function useDerivedResults(state:SearchState):SearchResults {
      if(!set)params.set('within','');
      else{
       let known=covered.current[level];
-      if(!known){const first=await fetch('/api/search?level='+level,{signal:abort.signal});if(first.ok)known=covered.current[level]=new Set(((await first.json()) as ResponseData).coverage.map(c=>c.ags));}
+      if(!known&&await loadCover(level,abort.signal))known=covered.current[level];
       const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
      }
     }
@@ -310,12 +324,11 @@ function useDerivedResults(state:SearchState):SearchResults {
     if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
     if(abort.signal.aborted)return;
     revision.current={key:local.key,value:data.revision};
-    covered.current[params.get('level')||'city']=new Set(data.coverage.map(c=>c.ags));
     setRemote({key:requestKey,data:{...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))},error:''});
    }catch(e){if(!abort.signal.aborted)setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.'});}
-  },180);
+  },delay);
   return()=>{clearTimeout(timer);abort.abort();};
- },[local.key,page,attempt,requestKey]);
+ },[active,local.key,page,attempt,requestKey,loadCover]);
  const loading=remote.key!==requestKey;
  const lastGood=useRef<ResponseData|null>(null);
  if(!loading&&remote.data)lastGood.current=remote.data;
@@ -325,6 +338,6 @@ function useDerivedResults(state:SearchState):SearchResults {
  const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
  const error=loading?'':remote.error;
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:data?.coverage??EMPTY_COVERAGE,updatedAt:data?.updatedAt??null,loading,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry]);
+ return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

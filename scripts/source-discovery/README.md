@@ -44,7 +44,11 @@ CANDIDATES=candidates-oparl.json OUT=verified-oparl.json node scripts/source-dis
 
 Ein Leser-Ergebnis geht dem ALLRIS-4-Fehler vor, ein Zuordnungsfehler den Gründen „SD.NET erwähnt …“ und „ALLRIS ohne erreichbare OParl-Schnittstelle“. Einträge mit fester Körperschaft (`body`, `bodies`) gelten nicht als mitbenutzt; Einträge eines Systems mit verschiedenen `bodies` sind verschiedene Adressen.
 
-**Weitere Leser** (`server/integrations/readers.mjs`): ALLRIS 3, KIC-RIS (öffentliche Gast-Schnittstelle der React-App), TI-Generator, SessionNet 6 (öffentliche JSON-Schnittstelle), cron Ratsinfo für TYPO3, RIS München, PIWi Wiesbaden und PIO Offenbach. Jeder Leser hat eine Erkennung (`detect`), die aus Adresse und Seite die Felder des Katalogeintrags bildet; `verify.mjs` probiert sie als sechsten Schritt nach OParl, More! Rubin, SessionNet, SD.NET und ALLRIS 4, `collect-region.mjs` liest die Quellen damit.
+**Weitere Leser** (`server/integrations/readers.mjs`): ALLRIS 3, KIC-RIS (öffentliche Gast-Schnittstelle der React-App), TI-Generator, SessionNet 6 (öffentliche JSON-Schnittstelle), cron Ratsinfo für TYPO3, RIS München, PIWi Wiesbaden, PIO Offenbach und der Sitzungsdienst von mein-intra.net (`councilservice`). Jeder Leser hat eine Erkennung (`detect`), die aus Adresse und Seite die Felder des Katalogeintrags bildet; `verify.mjs` probiert sie als sechsten Schritt nach OParl, More! Rubin, SessionNet, SD.NET und ALLRIS 4, `collect-region.mjs` liest die Quellen damit.
+
+**Eingebetteter Sitzungsdienst (mein-intra.net, `councilservice`).** Viele kleine Gemeinden (vor allem in Sachsen, Thüringen, Brandenburg und Hessen, häufig mit einer Website von verwaltungsportal.de) zeigen ihre Sitzungen auf einer Seite der eigenen Website, die das System per Skript lädt (`<mandant>.mein-intra.net/export/js/initialize.js`, `initializeExport("<token>")`); verlinkt ist nur diese Seite (`…/ris.html?href=/councilservice/session/list`). `crawl.mjs` zählt deshalb einen Link mit `councilservice` auf der eigenen Website als Treffer und eine Seite, die das Skript einbettet, selbst als Kandidaten. Erkannt wird das System auf dieser Seite der Website (`detectCouncilservice`); der Katalogeintrag nennt System (`base`), Export-Schlüssel (`token`) und die Seite (`page`), auf die die Berichte verlinken. Vor dem 05.10.2026 übersah die Suche diese Gemeinden (Grund „kein Link“), etwa Sonnewalde.
+
+**Höchstens zwei Anfragen je Server auch in der Linksuche.** Viele Gemeinde-Websites liegen bei wenigen Hostern (verwaltungsportal.de: rund 350 der offenen Gebiete auf zwei Adressen). Ohne Begrenzung antworteten sie dem Lauf vom 04.10.2026 für 110 Gebiete mit HTTP 403, die einzeln abgefragt erreichbar waren. `crawl.mjs` begrenzt deshalb wie `verify.mjs` je Domain und IP-Adresse. Auch das reichte verwaltungsportal.de nicht: Nach dem Lauf über die 1.598 Gebiete „kein Link“ (bis zu 21 Seiten je Website) antworteten seine Rechner unserer Kennung stundenlang mit „Zugriff verweigert“. Für solche Hoster gibt es einen behutsamen Modus: `HOME_ONLY=1` (nur die Startseite, auf der diese Websites den Sitzungsdienst im Menü verlinken), `SERVER_LIMIT=1` und `SERVER_PAUSE_MS=4000` (eine Anfrage je Server zur Zeit, danach eine Pause); `verify.mjs` versteht `SERVER_LIMIT` und `SERVER_PAUSE_MS` ebenso. Beispiel: `tmp/source-discovery-de/gentle-cs.ps1`.
 
 **Kandidaten ohne Link der Website** (`candidates-search.json`): Adressen aus einer Websuche oder aus der Diagnose einzelner Gebiete. Sie tragen `guessed:'Websuche'`, wenn kein Link der offiziellen Website sie belegt; dann muss das System das Gebiet selbst nennen, und eine OParl-Körperschaft wird nicht allein deshalb zugeordnet, weil sie die einzige ist. Ein Kandidat mit `reader` wird direkt von diesem Leser geprüft (RIS München: die Anwendung antwortet auf Seitenabrufe mit Sitzungsadressen, die ihre robots.txt untersagt; der Leser hält die Sitzung als Cookie). `build.mjs` setzt bei solchen Quellen die Systemadresse als `verifiedSource` und vermerkt `foundBy`.
 
@@ -144,7 +148,7 @@ node scripts/source-discovery/servers.mjs
 - Ein Land nach dem anderen ist möglich (`LAND=09`), nötig ist es nicht: Die Begrenzung gilt je Server, und die großen Betreiber arbeiten bundesweit. `build.mjs` behält vorhandene Einträge; ein späterer Lauf über weitere Länder ergänzt die Datei.
 - Die Prüfung hält höchstens zwei Anfragen gleichzeitig je Server (Domain des Betreibers und IP-Adresse), wie der Abruf. Der Lauf über 4.455 Gebiete am 04.10.2026 brauchte rund 45 Minuten (Linksuche 20, Prüfung 25).
 - Ist die Suche für ein Land abgeschlossen, gehört es in `LANDS` (`shared/lands.mjs`): Erst dann wertet die Hochrechnung dort den Katalog aus statt der Stichprobe. Seit dem 04.10.2026 sind das alle Länder außer Berlin und Hamburg.
-- Berlin und Hamburg sind je ein Gebiet und werden nicht durchsucht (`skipReason` in `areas.mjs`): Ein von der Stadt verlinktes System gehört einer Bezirksversammlung, nicht der ganzen Stadt. Beide stehen von Hand in `server/integrations/citystate-sources.json` und werden mit `stadtstaaten.mjs` geprüft: Hamburg über das Transparenzportal, Berlin über die OParl-Schnittstellen der Bezirke, soweit robots.txt oder eine Freigabe es erlaubt (README des Projekts, Abschnitt „Berlin und Hamburg“).
+- Berlin und Hamburg sind je ein Gebiet und werden nicht durchsucht (`skipReason` in `areas.mjs`): Ein von der Stadt verlinktes System gehört einer Bezirksversammlung, nicht der ganzen Stadt. Beide stehen von Hand in `server/integrations/citystate-sources.json` und werden mit `stadtstaaten.mjs` geprüft: Hamburg über das Transparenzportal, Berlin über die offenen Daten des Abgeordnetenhauses und die OParl-Schnittstellen der Bezirke, soweit robots.txt oder eine Freigabe es erlaubt (README des Projekts, Abschnitt „Berlin und Hamburg“).
 - Lange Läufe stürzen auf manchen Rechnern ohne Meldung ab. `crawl.mjs` und `verify.mjs` setzen fort; ein Wächter wie `tmp/source-discovery-de/run.ps1` startet sie neu. Nie zwei `verify.mjs` gleichzeitig: Beide schreiben `verified.json`.
 - Eine einzelne Liste nachprüfen: `node scripts/source-discovery/verify.mjs <id,id,…>` (prüft auch bereits geprüfte Gebiete erneut).
 - **Plattform-Adressen raten** (`guess-platforms.mjs`): komm.one (`<name>-sitzungsdienst.komm.one`) und KISA (`ris-<name>.zv-kisa.de`) beantworten DNS nur für vorhandene Mandanten; die Suche kommt deshalb ohne Last auf den Plattformen aus. Beide Systeme verlinken die Website der Gemeinde nicht. Eine geratene Adresse wird nur Kandidat, wenn der Name im Land eindeutig ist; `verify.mjs` muss dann wie immer den Gebietsnamen im System finden und öffentliche Tagesordnungspunkte lesen. Aufruf: `LAND=de DIR=… node scripts/source-discovery/guess-platforms.mjs`, danach `CANDIDATES=candidates-guessed.json OUT=verified-guessed.json` für `verify.mjs`; `build.mjs` übernimmt `verified-guessed.json` von selbst.
@@ -176,6 +180,34 @@ ONLY_FILE=scripts/source-discovery/candidates/neupruefung-2026-10-de.txt node sc
 ```
 
 Danach wie oben `build.mjs`, `servers.mjs`, `robots.mjs` und die Tests. Für Systeme bei `sitzung-online.de` gilt „ALLRIS behutsam prüfen“: ein Lauf, nach einer Sperre erst am nächsten Tag weiter. komm.one-Gebiete, deren Prüfung „keine öffentlichen Tagesordnungspunkte“ meldet, sind eine Leserfrage, keine neue Adresse.
+
+## Freigaben, Funde von Hand und Plattform-Mandanten (05.10.2026)
+
+**Freigaben einspielen** (Konzept Abschnitt 6, Welle 0). Schriftliche Freigaben von Kommunen oder Betreibern stehen in `server/integrations/source-consents.json` (Logik: `server/integrations/consents.mjs`, Tests: `tests/consents.test.mjs`), ohne Personendaten: `grantedBy` ist eine Rolle, `evidence` eine Registernummer, die Belege liegen beim Projektinhaber. Eine Freigabe mit Umfang `robots` erlaubt der Prüfung, das genannte System trotz robots-Sperre zu lesen (`robotsAllow` in `verify.mjs`); sie deckt nur die genannte Adresse (bei Plattformen den Ordner der Gemeinde, nie die anderen Mandanten). Bei HTTP 403 oder einer Zugriffsprüfung ändert sie technisch nichts (`freischaltung`: der Betreiber muss freischalten). `build.mjs` schreibt einer gedeckten Quelle `robotsOverride` ins Verzeichnis; der Lückenatlas zeigt sie als angebunden und offene Gebiete mit Freigabe als „Freigabe liegt vor, Prüfung ausstehend“.
+
+```
+export LAND=de DIR=tmp/source-discovery-de/
+node scripts/source-discovery/consents.mjs freigaben.csv
+CANDIDATES=candidates-consents.json OUT=verified-consents.json ONLY_FILE=$DIR/consents-<datum>.txt node scripts/source-discovery/verify.mjs
+```
+
+Die Liste: CSV mit Semikolon und Kopfzeile `Gebiet;Land;Datum;Umfang;Kanal;Stelle;Adresse;Betreiber` (Kopf im Skript beschrieben). Zeilen ohne eindeutiges Gebiet, ohne Datum oder mit unbekanntem Umfang werden aufgelistet und nicht übernommen; das Register wird nur ergänzt.
+
+**Von Hand gefundene Systeme**: CSV `Gebiet;Land;Adresse`, eine Zeile je Fund. `manual.mjs` legt sie als gezielte Kandidaten an (`candidates-fix.json`); die Prüfung nimmt sie nur, wenn das System das Gebiet nennt, öffentliche Tagesordnungspunkte zeigt und robots.txt es erlaubt (oder eine Freigabe es deckt).
+
+```
+node scripts/source-discovery/manual.mjs funde.csv
+CANDIDATES=candidates-fix.json OUT=verified-fix.json ONLY_FILE=$DIR/manuell-<datum>.txt node scripts/source-discovery/verify.mjs
+```
+
+**Plattform-Mandanten ohne Link** (`guess-hosted.mjs`, `HOSTED` in `rules.mjs`): digitalfabriX (Bayern, `buergerinfo-<ort>.digitalfabrix.de`, 230 Quellen angebunden), sitzung-mv.de (Mecklenburg-Vorpommern, `<ort>.sitzung-mv.de`, `amt-<ort>.sitzung-mv.de`) und itebo (Niedersachsen, `<ort>ris.itebo.de`). digitalfabriX und sitzung-mv.de beantworten DNS für jeden Namen; eine Adresse zählt daher nur, wenn ihre Seite ein Ratsinformationssystem zeigt und das Gebiet im Titel oder Text nennt, und der Name im Land eindeutig ist. Eine Anfrage pro Sekunde, robots.txt je Rechner vorher, keine Wiederholung.
+
+```
+LAND=09 DIR=tmp/source-discovery-de/ node scripts/source-discovery/guess-hosted.mjs
+CANDIDATES=candidates-hosted.json OUT=verified-hosted.json LAND=09 DIR=tmp/source-discovery-de/ node scripts/source-discovery/verify.mjs
+```
+
+Aus der Entwicklungsumgebung per DNS gefunden (05.10.2026, keine Seite abgerufen): `candidates/hosted-2026-10-nds.json` (Samtgemeinde Baddeckenstedt bei itebo) und `candidates/hosted-2026-10-de.json` (18 Gebiete in Brandenburg, Sachsen, Sachsen-Anhalt und Thüringen bei allris.cloud, Name bundesweit eindeutig). allris.cloud untersagt Programmen den Abruf bei allen 22 schon angebundenen Mandanten; diese Gebiete wechseln nach der Prüfung voraussichtlich von „kein Link“ zu „robots.txt sperrt“ und werden mit einer Freigabe lesbar. Prüfen: Datei als `$DIR/candidates-hosted.json` ablegen (vorhandene Datei vorher zusammenführen) und wie oben `verify.mjs` mit `OUT=verified-hosted.json`.
 
 ## Andere Gebietslisten
 

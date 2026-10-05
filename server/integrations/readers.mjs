@@ -1,7 +1,8 @@
 // Readers of council systems besides OParl, SessionNet, SD.NET, ALLRIS 4 and More! Rubin, by the adapter name of a
 // catalog entry. collect-region.mjs reads a source with them; scripts/source-discovery/verify.mjs recognises them.
 // detect(url, html, {get}) gives the fields of a catalog entry (base and what the reader needs besides) or null. Only
-// KIC asks one more address (its public webconfig.json); all others decide from the page alone.
+// KIC asks one more address (its public webconfig.json); all others decide from the page alone. councilservice is
+// recognised on the municipality's website page that embeds it, not on a page of the system itself.
 import {collectAllris3,detectAllris3} from './allris3.mjs';
 import {collectKic,detectKic,kicShell} from './kic.mjs';
 import {collectTiGenerator,detectTiGenerator} from './ti-generator.mjs';
@@ -10,8 +11,9 @@ import {collectCronRatsinfo,detectCronRatsinfo} from './cron-ratsinfo.mjs';
 import {collectMuenchenRisi,detectMuenchenRisi} from './muenchen-risi.mjs';
 import {collectPiwi,detectPiwi} from './piwi.mjs';
 import {collectPio,detectPio} from './pio.mjs';
+import {collectCouncilservice,detectCouncilservice} from './councilservice.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
-import {collectHamburgTransparenz,collectOparlDistricts} from './citystates.mjs';
+import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 // collect-region.mjs hands every reader the council-system fetch (sessionnet fetchText, wrapped by the trace of a
 // metadata import). The website reader needs its own: fetchSiteText/fetchSiteBytes check robots.txt for every redirect
 // target and accept the origins of alsoFrom. With a trace both are recorded, documents included.
@@ -32,10 +34,14 @@ export const READERS={
  'muenchen-risi':{name:'RIS München (öffentliche Seiten)',collect:collectMuenchenRisi,detect:async(url,html)=>pick(detectMuenchenRisi(url,html),['base'])},
  piwi:{name:'PIWi Wiesbaden (öffentliche Seiten)',collect:collectPiwi,detect:async(url,html)=>pick(detectPiwi(url,html),['base'])},
  pio:{name:'PIO Offenbach (öffentliche Seiten)',collect:collectPio,detect:async(url,html)=>pick(detectPio(url,html),['base'])},
+ // Sitzungsdienst of mein-intra.net embedded in the municipality's website: recognised from the website page that
+ // embeds it (export script and token); the entry names the system, the token and that page.
+ councilservice:{name:'Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website)',collect:collectCouncilservice,detect:async(url,html)=>pick(detectCouncilservice(url,html),['base','token','page'])},
  // Website of a municipality without council system (notices, minutes, feeds of its CMS). No page of a council system
  // is one, so verify.mjs never recognises it; only the website search (scripts/source-discovery/website.mjs) assigns it.
  website:{name:WEBSITE_READER_NAME,collect:collectSite,detect:async()=>null},
  // City states (citystates.mjs, entries in citystate-sources.json). Neither is recognised from a page.
  'hamburg-transparenz':{name:'Transparenzportal Hamburg (Drucksachen der Bezirksversammlungen)',collect:collectHamburgTransparenz,detect:async()=>null},
  'oparl-bezirke':{name:'OParl der Bezirksverordnetenversammlungen (nur mit Freigabe)',collect:collectOparlDistricts,detect:async()=>null},
+ berlin:{name:'Abgeordnetenhaus Berlin (Parlamentsdokumentation, offene Daten) und Bezirke mit Freigabe',collect:collectBerlin,detect:async()=>null},
 };

@@ -1,6 +1,7 @@
 // Stage 1: find links to the council information system (RIS) on each official municipal website.
 // Reads only public pages, follows normal links, identifies itself and never retries a refused request.
 import fs from 'node:fs';
+import dns from 'node:dns/promises';
 import {loadAreas,skipReason} from './areas.mjs';
 import {CRAWL_SKIP,unwrapLink} from './rules.mjs';
 // DIR, LAND and AREAS let the same search run over another list of areas (another state, or the random sample of the estimate).
@@ -15,13 +16,27 @@ const done=fs.existsSync(outFile)?JSON.parse(fs.readFileSync(outFile,'utf8')):{}
 const only=process.env.ONLY_FILE?new Set(fs.readFileSync(process.env.ONLY_FILE,'utf8').split(/\s+/).filter(Boolean)):process.argv[2]?new Set(process.argv[2].split(',')):null;
 const todo=regions.filter(r=>only?only.has(r.id):!configured.has(r.id)&&!done[r.id]&&!skipReason(r));
 
-export const RIS_HREF=/(sessionnet|si00\d\d\.(?:asp|php)|\/info\.(?:asp|php)|\/bi\/|buergerinfo|ratsinfo|allris|sitzung-online\.de|gremien\.info|more-rubin|ratsinfomanagement\.net|sdnetrim|kdz-ws\.net|sessionweb|\/\/session\.|\/\/ris[.-]|\/ris\/|sitzungsdienst|ratsportal|\/oparl|rim\d{4}|gremieninfo|ratsinformation|kreistagsinfo|\/\/rim\.|\/\/sd\.|pv-rat|provox|\/\/politik\.|\/\/rat\.|session\.[a-z0-9-]+\.de|tagesordnung|sitzungskalender)/i;
+export const RIS_HREF=/(sessionnet|councilservice|si00\d\d\.(?:asp|php)|\/info\.(?:asp|php)|\/bi\/|buergerinfo|ratsinfo|allris|sitzung-online\.de|gremien\.info|more-rubin|ratsinfomanagement\.net|sdnetrim|kdz-ws\.net|sessionweb|\/\/session\.|\/\/ris[.-]|\/ris\/|sitzungsdienst|ratsportal|\/oparl|rim\d{4}|gremieninfo|ratsinformation|kreistagsinfo|\/\/rim\.|\/\/sd\.|pv-rat|provox|\/\/politik\.|\/\/rat\.|session\.[a-z0-9-]+\.de|tagesordnung|sitzungskalender)/i;
 const RIS_TEXT=/(ratsinfo|rats- und bürgerinfo|bürgerinfo|buergerinfo|ratsinformation|kreistagsinfo|kreistagsinformation|sitzungskalender|sitzungsdienst|gremieninfo|sitzungstermine|allris|session ?net|ratsportal|rats- und ausschuss|sitzungen)/i;
 // Brochures ("Bürgerinfobroschüre"), magazines, forms, livestreams and budget pages share words with council systems.
 const NOT_RIS_TEXT=/broschüre|magazin|formular|livestream|video|haushalt|newsletter|app\b/i;
 const NAV=/(politik|stadtrat|gemeinderat|kreistag|\brat\b|gremien|rathaus|verwaltung|kommunalpolitik|ortsrecht|sitzung)/i;
+// Export script of a mein-intra.net system on a page of the website (Sitzungsdienst "councilservice" and other modules).
+const EMBEDDED_COUNCILSERVICE=/<script\b[^>]*\bsrc=["']https:\/\/[a-z0-9-]+\.mein-intra\.net\/export\/js\/initialize\.js["']/i;
 
-async function get(url,timeout=15000){
+// At most two requests at a time on one server, told apart as in verify.mjs by the registrable domain and the address.
+// Hosts of municipal websites serve hundreds of them from one address (verwaltungsportal.de: about 350 open areas on two
+// addresses) and answered the earlier runs without this limit with HTTP 403 for most of their websites.
+// Even so verwaltungsportal.de refused every request for hours after a run on 05.10.2026 (21 pages per website).
+// A gentle run over such hosts: SERVER_LIMIT=1 SERVER_PAUSE_MS=3000 (one request at a time, a pause after each) and
+// HOME_ONLY=1 (only the start page, where these websites link their council service in the menu).
+const PER_SERVER=Number(process.env.SERVER_LIMIT||2),PAUSE=Number(process.env.SERVER_PAUSE_MS||0),slots=new Map(),addresses=new Map();
+const addressOf=host=>{if(!addresses.has(host))addresses.set(host,dns.resolve4(host).then(found=>found.sort()[0],()=>null));return addresses.get(host);};
+const acquire=key=>{const slot=slots.get(key)||{busy:0,waiting:[]};slots.set(key,slot);if(slot.busy<PER_SERVER){slot.busy++;return Promise.resolve();}return new Promise(turn=>slot.waiting.push(turn));};
+const release=key=>{const slot=slots.get(key),turn=slot.waiting.shift();if(turn)turn();else slot.busy--;};
+const withHost=async(url,fn)=>{const host=new URL(url).hostname,address=await addressOf(host),keys=['domain:'+host.split('.').slice(-2).join('.'),...(address?['ip:'+address]:[])];for(const key of keys)await acquire(key);try{return await fn();}finally{if(PAUSE)await new Promise(r=>setTimeout(r,PAUSE));for(const key of keys.reverse())release(key);}};
+const get=(url,timeout)=>withHost(url,()=>fetchPage(url,timeout));
+async function fetchPage(url,timeout=15000){
  const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(timeout),headers:{'User-Agent':UA,Accept:'text/html,application/xhtml+xml'}});
  const type=r.headers.get('content-type')||'';
  if(!r.ok){await r.body?.cancel();return {status:r.status,url:r.url,html:''};}
@@ -50,12 +65,19 @@ async function crawl(region){
   const named=region.members.filter(m=>m.name===region.shortName),members=[...named,...region.members.filter(m=>!named.includes(m))];
   sites=[...new Set(members.flatMap(m=>wikidata.filter(w=>w.kind==='city'&&w.ags===m.ags&&w.website).map(w=>w.website)))].slice(0,3);
  }
- const found=new Map(),visited=new Set(),log=[];let budget=20;
+ const found=new Map(),visited=new Set(),log=[];let budget=process.env.HOME_ONLY==='1'?0:20;
  const bare=h=>h.replace(/^www\./,'');
- const IN_SITE=/sessionnet|si00[0-9][0-9][.](asp|php)|[/]bi[/]|[/]info[.](asp|php)|[/]allris[/]|[/](si010|si018|gr010|to010|vo020|kp040)([?]|$)/i;
- // A hit is a link that leaves the municipal site (or is an embedded SessionNet path). Internal pages about the council are explored further.
+ const IN_SITE=/sessionnet|councilservice|si00[0-9][0-9][.](asp|php)|[/]bi[/]|[/]info[.](asp|php)|[/]allris[/]|[/](si010|si018|gr010|to010|vo020|kp040)([?]|$)/i;
+ // A hit is a link that leaves the municipal site (or is an embedded SessionNet path or the council service of
+ // mein-intra.net, which the website shows on a page of its own: …/ris.html?href=/councilservice/session/list).
+ // Internal pages about the council are explored further.
  // A read-aloud or sharing link counts as the page of the website it carries (readspeaker …&url=…/Ratsinfosystem/).
- const scan=(page,host)=>{const nav=[];for(const link of anchors(page.html,page.url)){const inner=unwrapLink(link.url,host),a=inner?{...link,url:inner}:link;if(skip.test(a.url))continue;let u;try{u=new URL(a.url);}catch{continue;}
+ const scan=(page,host)=>{const nav=[];
+  // A page that embeds the council service by script and links none of its addresses: the page itself, opened on the
+  // list of meetings, is the hit (verify.mjs recognises the system there, server/integrations/councilservice.mjs).
+  // The page keeps its own query (index.php?id=438); only the address of the embedded system is replaced.
+  if(EMBEDDED_COUNCILSERVICE.test(page.html)&&/councilservice/i.test(page.html)){try{const u=new URL(page.url);for(const key of [...u.searchParams.keys()])if(/^href(?:_|$)/.test(key))u.searchParams.delete(key);u.hash='';const k=u.href+(u.search?'&':'?')+'href=/councilservice/session/list';if(!found.has(k))found.set(k,{url:k,text:'(eingebetteter Sitzungsdienst)',from:page.url,byHref:true});}catch{}}
+  for(const link of anchors(page.html,page.url)){const inner=unwrapLink(link.url,host),a=inner?{...link,url:inner}:link;if(skip.test(a.url))continue;let u;try{u=new URL(a.url);}catch{continue;}
    const external=bare(u.hostname)!==host,href=RIS_HREF.test(a.url),text=RIS_TEXT.test(a.text)&&!NOT_RIS_TEXT.test(a.text);
    if((external&&(href||text))||(!external&&IN_SITE.test(a.url))){const k=a.url.split('#')[0];if(!found.has(k))found.set(k,{url:k,text:a.text,from:page.url,byHref:href,byText:text});}
    else if(!external&&(href||text||NAV.test(a.text)||NAV.test(u.pathname)))nav.push({...a,hot:href||text,from:page.url});}

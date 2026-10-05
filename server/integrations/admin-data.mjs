@@ -27,18 +27,61 @@ export async function adminReview(db,issue='labels',region='all',{total}={}){
 }
 // Figures of the reports that are added up over all areas. Each name is a column of the scan below.
 const TOTALS=['contentSummaries','insufficient','stale','aiLabels','weightedKeywords','aiSummaries','qualityPassed','updated7d','pdfArticles','conflicts','textIssues','pendingAnalysis'];
+// Figures of one area from its stored reports; every one is a sum over the area's canonical reports.
+const FIGURES=`coalesce(sum(json_extract(payload,'$.contentAnalysis.status')='completed'),0) contentSummaries,coalesce(sum(json_extract(payload,'$.labelAssessments.ai.primary') IS NOT NULL),0) aiLabels,coalesce(sum(json_extract(payload,'$.weightedKeywords.status')='completed'),0) weightedKeywords,coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) aiSummaries,coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) qualityPassed,coalesce(sum(EXISTS(SELECT 1 FROM json_each(json_extract(topics.payload,'$.documents')) d WHERE json_extract(d.value,'$.kind')='application/pdf')),0) pdfArticles,coalesce(sum(json_extract(payload,'$.identity.conflict')=1),0) conflicts,coalesce(sum((${conditions.summaries})),0) textIssues,coalesce(sum(${ANALYSIS_PENDING_SQL}),0) pendingAnalysis,${stageColumns({withRules:false})},${LABELS.map(l=>`coalesce(sum(${label}='${l.id}'),0) AS label_${l.id}`).join(',')}`;
+/**
+ * Figures per area for the overview, from region_stats. Every change of a report raises the revision of its area
+ * (triggers of migration 0011); only areas whose revision differs from the one their figures were computed at are read
+ * again, a few areas at a time until budgetMs is spent. Areas left over keep their previous figures and are counted in
+ * pending; the next call continues with them. The number of reports and "updated in the last seven days" come from
+ * indexes on every call and are always current.
+ * Returns null if the tables are missing (migration not applied): the caller then scans all reports as before.
+ */
+export async function regionFigures(db,{now=new Date(),budgetMs=8000,chunkRows=25000}={}){
+ const started=Date.now(),week=new Date(now.getTime()-7*86400000).toISOString();
+ let revisions,stored,sizes,recent;
+ try{
+  [revisions,stored,sizes,recent]=await db.batch([
+   db.prepare('SELECT region_id,revision FROM region_revisions'),
+   db.prepare('SELECT region_id,revision,stats FROM region_stats'),
+   db.prepare(`SELECT region_id,count(*) n FROM topics WHERE ${canonical} GROUP BY region_id`),
+   db.prepare(`SELECT region_id,count(*) n FROM topics WHERE ${canonical} AND updated_at>=? AND updated_at<=? GROUP BY region_id`).bind(week,now.toISOString())
+  ]);
+ }catch(e){if(/no such table/i.test(String(e?.message||e)))return null;throw e;}
+ const kept=new Map(stored.results.map(r=>[r.region_id,{revision:Number(r.revision),row:readJson(r.stats)}]));
+ const size=new Map(sizes.results.map(r=>[r.region_id,Number(r.n)])),week7=new Map(recent.results.map(r=>[r.region_id,Number(r.n)]));
+ // Smallest areas first: most areas are done within the first call, the largest get a query of their own.
+ const stale=revisions.results.filter(r=>kept.get(r.region_id)?.revision!==Number(r.revision)).map(r=>({id:r.region_id,revision:Number(r.revision),rows:size.get(r.region_id)||0})).sort((a,b)=>a.rows-b.rows||a.id.localeCompare(b.id));
+ let done=0;
+ while(done<stale.length&&Date.now()-started<budgetMs){
+  const chunk=[];let rows=0;
+  while(done+chunk.length<stale.length&&chunk.length<200&&(chunk.length===0||rows+stale[done+chunk.length].rows<=chunkRows)){const next=stale[done+chunk.length];chunk.push(next);rows+=next.rows;}
+  const scan=await db.prepare(`SELECT region_id,count(*) count,${FIGURES} FROM topics WHERE ${canonical} AND region_id IN (${chunk.map(()=>'?').join(',')}) GROUP BY region_id`).bind(...chunk.map(c=>c.id)).all();
+  const found=new Map(scan.results.map(r=>[r.region_id,r])),at=now.toISOString();
+  // An area without canonical reports gets empty figures, so it is not read again until it changes.
+  await db.batch(chunk.map(c=>{const row=found.get(c.id)||{region_id:c.id,count:0};kept.set(c.id,{revision:c.revision,row});return db.prepare('INSERT OR REPLACE INTO region_stats(region_id,revision,computed_at,stats) VALUES(?,?,?,?)').bind(c.id,c.revision,at,JSON.stringify(row));}));
+  done+=chunk.length;
+ }
+ const rows=[];
+ for(const [id,n] of size){const row=kept.get(id)?.row||{};rows.push({...row,region_id:id,count:n,updated7d:week7.get(id)||0});}
+ return {rows,pending:stale.length-done};
+}
 /**
  * The reports are read once, grouped by area in the order of an index; every figure of the overview is a sum of that
  * one scan (totals, per area, per label, processing stages). Reading the stored reports is what costs time, so each
  * further scan would add about as much again. Grouping by anything that is not in the index would sort whole rows.
  * review:false leaves out the review list, which needs a scan of its own and is shown on page 2 only.
  */
-export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushConfigured=false,review=true}={}){
+export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushConfigured=false,review=true,statsBudgetMs=8000}={}){
  const week=new Date(now.getTime()-7*86400000).toISOString();
  // The scan of the reports is kept until the reports change (revision-cache.mjs); "updated in the last seven days" moves
  // with the clock, so a kept result also ends with the hour.
+ // Figures per area from region_stats (computed for changed areas only, see regionFigures); without that table (migration
+ // 0011 not applied) the former single scan over all reports, kept until the reports change. The count by status reads
+ // the partial index of migration 0002 (forced: left alone, SQLite reads the whole table, 0.5 s per 100,000 reports).
+ const figures=await regionFigures(db,{now,budgetMs:statsBudgetMs});
  const scanned=()=>db.batch([
-  db.prepare(`SELECT region_id,count(*) count,coalesce(sum(json_extract(payload,'$.contentAnalysis.status')='completed'),0) contentSummaries,coalesce(sum(json_extract(payload,'$.labelAssessments.ai.primary') IS NOT NULL),0) aiLabels,coalesce(sum(json_extract(payload,'$.weightedKeywords.status')='completed'),0) weightedKeywords,coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) aiSummaries,coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) qualityPassed,coalesce(sum(updated_at>=? AND updated_at<=?),0) updated7d,coalesce(sum(EXISTS(SELECT 1 FROM json_each(json_extract(topics.payload,'$.documents')) d WHERE json_extract(d.value,'$.kind')='application/pdf')),0) pdfArticles,coalesce(sum(json_extract(payload,'$.identity.conflict')=1),0) conflicts,coalesce(sum((${conditions.summaries})),0) textIssues,coalesce(sum(${ANALYSIS_PENDING_SQL}),0) pendingAnalysis,${stageColumns({withRules:false})},${LABELS.map(l=>`coalesce(sum(${label}='${l.id}'),0) AS label_${l.id}`).join(',')} FROM topics WHERE ${canonical} GROUP BY region_id`).bind(week,now.toISOString()),
+  db.prepare(`SELECT region_id,count(*) count,coalesce(sum(updated_at>=? AND updated_at<=?),0) updated7d,${FIGURES} FROM topics WHERE ${canonical} GROUP BY region_id`).bind(week,now.toISOString()),
   db.prepare(`SELECT status AS id,count(*) count FROM topics WHERE ${canonical} GROUP BY status`)
  ]);
  const queries=[
@@ -48,7 +91,7 @@ export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushCo
   db.prepare("SELECT key,value FROM system_state WHERE key='import-lock'"),
   db.prepare("SELECT max(started_at) lastScheduledAt FROM import_runs WHERE json_extract(details,'$.trigger')='scheduled'")
  ];
- const [[scan,statuses],[coverage,runRows,extra,lockRows,scheduled],state]=await Promise.all([atRevision(db,'overview|'+now.toISOString().slice(0,13),scanned),db.batch(queries),processingState(db)]);
+ const [[scan,statuses],[coverage,runRows,extra,lockRows,scheduled],state]=await Promise.all([figures?db.batch([db.prepare(`SELECT status AS id,count(*) count FROM topics INDEXED BY idx_topics_canonical_region_status WHERE ${canonical} GROUP BY status`)]).then(([statuses])=>[{results:figures.rows},statuses]):atRevision(db,'overview|'+now.toISOString().slice(0,13),scanned),db.batch(queries),processingState(db)]);
  const areas=new Map(scan.results.map(r=>[r.region_id,r])),sum=key=>scan.results.reduce((n,r)=>n+Number(r[key]||0),0),online=sum('count');
  const {stored,...other}=extra.results[0];
  // Merged reports are all stored rows that are not articles of their own.
@@ -59,5 +102,5 @@ export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushCo
  const runs=runRows.results.map(r=>{const d=readJson(r.details);return {id:r.id,startedAt:r.started_at,finishedAt:r.finished_at,status:r.status,region:d.region||'muenster',mode:d.mode||'metadata',trigger:d.trigger||'unbekannt',count:typeof(d.count??d.processed)==='number'?(d.count??d.processed):null,issueCount:Array.isArray(d.issues)?d.issues.length:0,abandoned:r.status==='running'&&Date.parse(r.started_at)<now.getTime()-600000};});
  const until=lockedUntil(lockRows.results[0]?.value);
  // The default review list shows the reports without a label; their number is known from the scan.
- return {asOf:now.toISOString(),processing:{...state,regions:undefined},counts,sources,statuses:statuses.results,labels:LABELS.map(l=>({id:l.id,name:l.name,count:sum('label_'+l.id)})),runs,lastScheduledAt:scheduled.results[0]?.lastScheduledAt||null,importBusyUntil:until>now.getTime()?new Date(until).toISOString():null,operations:{aiConfigured,pushConfigured},review:review?await adminReview(db,'labels','all',{total:counts.unlabelled}):{issue:'labels',total:counts.unlabelled,articles:[]}};
+ return {asOf:now.toISOString(),...(figures?.pending?{statsPending:figures.pending}:{}),processing:{...state,regions:undefined},counts,sources,statuses:statuses.results,labels:LABELS.map(l=>({id:l.id,name:l.name,count:sum('label_'+l.id)})),runs,lastScheduledAt:scheduled.results[0]?.lastScheduledAt||null,importBusyUntil:until>now.getTime()?new Date(until).toISOString():null,operations:{aiConfigured,pushConfigured},review:review?await adminReview(db,'labels','all',{total:counts.unlabelled}):{issue:'labels',total:counts.unlabelled,articles:[]}};
 }

@@ -4,6 +4,8 @@ import {GeoModel} from '../lib/geo/geoModel';
 import {PlaceIndex} from '../lib/place';
 import type {MapData} from '../types';
 const DataContext=createContext<{geo:GeoModel|null;place:PlaceIndex|null;geoError:boolean}>({geo:null,place:null,geoError:false});
+// Der Browser hält die Karte einen Tag (public/_headers). Nach einer Änderung von de_map.json die Version erhöhen.
+const MAP_URL='/data/de_map.json?v=2018-1';
 
 /**
  * Karten- und Ortsdaten (de_map.json, ca. 1,2 MB komprimiert). Auf der Startseite sofort geladen;
@@ -23,7 +25,7 @@ export function DataProvider({children}:{children:ReactNode}){
  useEffect(()=>{
   if(!wanted)return;
   const ctrl=new AbortController();
-  fetch('/data/de_map.json',{signal:ctrl.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<MapData>}).then(d=>{if(ctrl.signal.aborted)return;const geo=new GeoModel(d);setData({geo,place:new PlaceIndex(d,geo),geoError:false});}).catch(()=>{if(!ctrl.signal.aborted)setData({geo:null,place:null,geoError:true});});
+  fetch(MAP_URL,{signal:ctrl.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<MapData>}).then(d=>{if(ctrl.signal.aborted)return;const geo=new GeoModel(d);setData({geo,place:new PlaceIndex(d,geo),geoError:false});}).catch(()=>{if(!ctrl.signal.aborted)setData({geo:null,place:null,geoError:true});});
   return()=>ctrl.abort();
  },[wanted]);
  return <DataContext.Provider value={data}>{children}</DataContext.Provider>;
