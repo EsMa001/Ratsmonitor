@@ -142,7 +142,8 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
       {!compact && <p className="m-0 mt-1.5 line-clamp-4 max-w-[96ch] text-[14px] leading-[1.5] text-slate-600 sm:mt-0 sm:line-clamp-none sm:leading-[1.6]">
         <Highlight text={a.teaser} terms={terms} />
       </p>}
-      {!compact && a.steps && a.steps.length > 1 && a.steps[0].d < new Date().toISOString().slice(0, 10) && <StepTimeline steps={a.steps} />}
+      {/* Verlauf: auch in der kompakten Ansicht auf dem Handy */}
+      {a.steps && a.steps.length > 1 && a.steps[0].d < new Date().toISOString().slice(0, 10) && <StepTimeline steps={a.steps} className={compact ? "max-sm:flex sm:hidden" : ""} />}
       </div>
       {/* Eigene Spalte fürs Lesezeichen: der Text endet bündig mit dem Suchfeld (rechts davon Filter und Herz) */}
       <div className="flex w-6 justify-end sm:w-[56px]">
@@ -153,10 +154,10 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
 });
 
 /** Kleine Timeline der bisherigen Beratungen eines Vorgangs */
-export function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
+export function StepTimeline({ steps, className = "" }: { steps: NonNullable<Article["steps"]>; className?: string }) {
   const shown = steps.slice(-5);
   return (
-    <ol aria-label="Verlauf des Vorgangs" className="mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none]">
+    <ol aria-label="Verlauf des Vorgangs" className={`mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none] ${className}`}>
       {steps.length > shown.length && <li className="mr-2 self-center text-[12px] text-slate-500">+{steps.length - shown.length}</li>}
       {shown.map((st, i) => {
         const last = i === shown.length - 1;
