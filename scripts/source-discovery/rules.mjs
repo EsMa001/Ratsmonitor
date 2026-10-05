@@ -217,12 +217,25 @@ export const HOSTED=[
 ];
 const ascii=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
 /**
- * Areas of the whole catalog that share a host label with the area (hostSlugs): a guessed address of a platform may
- * belong to any of them ("borken" on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse).
+ * Areas of the catalog that share a host label with the area (hostSlugs): a guessed address of a platform may belong
+ * to any of them ("borken" on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse). lands:
+ * the Länder the platform serves (platformLands); twins elsewhere do not count. Without lands every Land counts.
  */
-export function nameTwins(area,areas=CATALOG){
+export function nameTwins(area,areas=CATALOG,lands=null){
  const own=new Set(hostSlugs(area.shortName||area.name));if(!own.size)return [];
- return areas.filter(a=>a.id!==area.id&&hostSlugs(a.shortName||a.name).some(s=>own.has(s)));
+ return areas.filter(a=>a.id!==area.id&&(!lands||lands.includes(String(a.ags||'').slice(0,2)))&&hostSlugs(a.shortName||a.name).some(s=>own.has(s)));
+}
+// Platforms of guess-platforms.mjs (regional providers, one Land each).
+const REGIONAL={'komm.one':['08'],KISA:['14']};
+/**
+ * The Länder a platform serves, from the evidence a guess wrote ("OWL-IT-Adresse, Seite nennt das Gebiet"): its
+ * entries in HOSTED or REGIONAL; null (every Land) for a platform of all Länder or one not known here.
+ */
+export function platformLands(guessed){
+ const name=String(guessed||'').match(/^(.+?)-Adresse\b/)?.[1];if(!name)return null;
+ if(REGIONAL[name])return REGIONAL[name];
+ const entries=HOSTED.filter(p=>p.name===name);
+ return entries.length&&entries.every(p=>p.land)?[...new Set(entries.map(p=>p.land))]:null;
 }
 /**
  * Whether a page (or the evidence of a platform) names the area so that none of its twins is meant: by its full name

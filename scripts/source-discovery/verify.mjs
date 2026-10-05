@@ -11,7 +11,7 @@ import {collectAllris} from '../../server/integrations/allris.mjs';
 import {robotsVerdict} from '../../server/integrations/robots.mjs';
 import {READERS} from '../../server/integrations/readers.mjs';
 import {fetchText} from '../../server/integrations/sessionnet.mjs';
-import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,hrefs,title,identity,sharedBodies,nameTwins,namesDistinctly} from './rules.mjs';
+import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,hrefs,title,identity,sharedBodies,nameTwins,namesDistinctly,platformLands} from './rules.mjs';
 import {consentAllows} from '../../server/integrations/consents.mjs';
 import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 // DIR and AREAS let the same check run over another list of areas (e.g. the random sample of the estimate).
@@ -286,8 +286,9 @@ async function verify(region,row){
   if(part&&trusted(c)&&naming.length)who=partNames(region,naming.join(' · '))?{ok:true,by:'Teil des gemeinsamen Systems: '+naming.join(', ')}:{ok:false,why:'Teil des gemeinsamen Systems nennt das Gebiet nicht'};
   // A guessed address of a platform (one name per municipality) is evidence only where no other area of the catalog
   // bears that name, or where the page (or the platform's evidence) names the area by its distinguishing name: "borken"
-  // on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse (rules.mjs nameTwins).
-  if(who.ok&&c.guessed&&c.guessed!=='eigene Domain'){const twins=nameTwins(region);if(twins.length&&!namesDistinctly([p.html,c.guessed].join(' '),region,twins))who={ok:false,why:'Geratene Adresse; gleichnamige Gebiete ('+twins.slice(0,3).map(t=>t.name).join(', ')+(twins.length>3?' u. a.':'')+'), die Seite nennt keinen unterscheidenden Namen'};}
+  // on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse (rules.mjs nameTwins). Only the
+  // Länder the platform serves count (komuna: Bavaria; komm.one: Baden-Württemberg).
+  if(who.ok&&c.guessed&&c.guessed!=='eigene Domain'){const twins=nameTwins(region,undefined,platformLands(c.guessed));if(twins.length&&!namesDistinctly([p.html,c.guessed].join(' '),region,twins))who={ok:false,why:'Geratene Adresse; gleichnamige Gebiete ('+twins.slice(0,3).map(t=>t.name).join(', ')+(twins.length>3?' u. a.':'')+'), die Seite nennt keinen unterscheidenden Namen'};}
   const note={url:p.url,system,title:title(p.html),identity:who,from:c.from,...(part?{part}:{})};
   // The address read can lie elsewhere than the candidate: after a redirect, or the public part of SessionNet next to
   // the members' area (ratsinfo.kyritz.de → buergerinfo.kyritz.de). Its robots.txt decides as well.
