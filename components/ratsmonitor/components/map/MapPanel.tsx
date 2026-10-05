@@ -19,6 +19,12 @@ function hitLevel(c: number, t: [number, number], graded: boolean) {
  *  Normal ist sie nur Anzeige mit mittiger Suchleiste. Ein Klick darauf startet den Kartenmodus: Suchleiste unten,
  *  Ziehen und Zoomen frei, Trefferzahlen unter den Gemeindenamen, rechts Zoom, Zentrieren und Neu laden
  *  (Neu laden setzt alle Filter zurück und beendet den Kartenmodus). */
+/* Handy: rechte Spalte auf der Achse des Filter-Knopfs, von unten nach oben: Filter-Knopf (48), Abstand, Darstellungs-Knopf, Abstand, Zoom-Leiste.
+ * Maße in px vom unteren Kartenrand: Leiste liegt 20 px über dem Rand, der Filter-Knopf ist 48 hoch. */
+const PHONE_GAP = 12;
+const PHONE_LAYERS_H = 46;
+const PHONE_STACK_LAYERS = 20 + 48 + PHONE_GAP;
+
 export function MapPanel({ active }: { active: boolean }) {
   /* Offene Filter liegen über den Karten-Knöpfen (Darstellung, Zoom), nicht dahinter */
   const filtersOpen = useFiltersOpen();
@@ -269,16 +275,16 @@ export function MapPanel({ active }: { active: boolean }) {
       </div>
 
       {explore && (
-        <div className="rm-glass absolute right-4 z-[6] flex flex-col overflow-hidden rounded-full max-sm:right-[21px]" style={mobile ? { bottom: barH + 32 } : { top: 16 + topShift }}>
+        <div className={`rm-glass absolute z-[6] flex flex-col overflow-hidden rounded-full ${mobile ? "right-[21px]" : "right-4"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS + PHONE_LAYERS_H + PHONE_GAP } : { top: 16 + topShift }}>
           <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctlSm}><IconPlus size={16} /></button>
           <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctlSm}><IconMinus size={16} /></button>
           <button type="button" title="Auf Treffer zentrieren" aria-label="Auf Treffer zentrieren" onClick={() => center(true)} className={ctlSm}><IconCenter size={16} /></button>
           <button type="button" title="Karte neu laden" aria-label="Karte neu laden" onClick={refresh} className={ctlSm}><IconReset size={16} /></button>
         </div>
       )}
-      {/* Darstellung oben links (rückt unter der Kopfzeile mit), klappt nach unten auf; Handy: unten links, mittig über dem Herz-Knopf der Suchleiste (Zoom-Leiste rechts über dem Filter-Knopf), klappt nach oben auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
+      {/* Darstellung oben links (rückt unter der Kopfzeile mit), klappt nach unten auf; Handy: rechts direkt über dem Filter-Knopf der Suchleiste, darüber die Zoom-Leiste (alle drei auf einer Achse), klappt nach oben auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
       {explore && (
-        <div className={`rm-glass absolute left-4 z-[7] flex rounded-full max-sm:left-[17px] ${mobile ? "flex-col-reverse" : "flex-col"}`} style={mobile ? { bottom: barH + 32 } : { top: 16 + topShift }}>
+        <div className={`rm-glass absolute z-[7] flex rounded-full ${mobile ? "right-[17px] flex-col-reverse" : "left-4 flex-col"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS } : { top: 16 + topShift }}>
           <button type="button" title="Darstellung" aria-label="Darstellung der Karte" aria-expanded={styleOpen} onClick={() => setStyleOpen((o) => !o)} className={`${ctl} ${styleOpen ? "!text-slate-900" : ""}`}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 13 9 5 9-5" /></svg>
           </button>
