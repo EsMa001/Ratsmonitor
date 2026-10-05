@@ -361,12 +361,13 @@ select.ri-input{padding-right:12px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.ri-dark::before{animation:none}}
 /* Abschlusskachel und Fußzeile wirken wie eine Fläche: die Kachel blendet unten in einen Mintton aus, die Fußzeile
    beginnt genau in diesem Ton ohne Linie und wird nach unten kräftiger. Ohne Abschlusskachel beginnt sie weiß, endet aber im selben Mint. */
-.ratsmonitor footer{border-top:0;background:
+.ratsmonitor footer{border-top:0;background-color:#fff;background-repeat:no-repeat;background-size:170% 130%,170% 130%,100% 100%;animation:riGlow 9s ease-in-out infinite alternate;background-image:
   radial-gradient(80% 60% at 20% 105%,rgba(13,148,136,.22),transparent 70%),
   radial-gradient(80% 60% at 85% 105%,rgba(110,191,184,.45),transparent 70%),
   linear-gradient(#fff,#c4e5e0)}
+@media (prefers-reduced-motion:reduce){.ratsmonitor footer{animation:none}}
 .ri-dark:last-child::after{content:"";position:absolute;inset:auto 0 0;height:55%;z-index:-1;background:linear-gradient(rgba(230,243,241,0),#e6f3f1)}
-:has(> .ri-dark:last-child)+footer{border-top:0;background:
+:has(> .ri-dark:last-child)+footer{background-image:
   radial-gradient(80% 60% at 20% 105%,rgba(13,148,136,.22),transparent 70%),
   radial-gradient(80% 60% at 85% 105%,rgba(110,191,184,.45),transparent 70%),
   linear-gradient(#e6f3f1,#c4e5e0)}
