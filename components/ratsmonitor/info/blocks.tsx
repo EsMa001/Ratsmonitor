@@ -108,7 +108,8 @@ export function SearchTermButton({ term, light }: { term: string; light?: boolea
 }
 
 export function StatusPill({ status }: { status: Status }) {
-  return <span className={"ri-st ri-st--" + status}>{STATUS_LABEL[status]}</span>;
+  /* Stand als schlichter grauer Text (keine bunten Abzeichen) */
+  return <span style={{ fontSize: 12, color: "#64748b", whiteSpace: "nowrap" }}>{STATUS_LABEL[status]}</span>;
 }
 
 export function PlacePill({ place }: { place: string }) {

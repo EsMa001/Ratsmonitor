@@ -4,10 +4,13 @@ import { DarkCta } from "../info/blocks";
 import { useTier } from "../lib/tier";
 import { useBrand, useBrandText } from "../lib/brand";
 
+import { BRANCHEN } from "../info/content";
+
 const GROUPS: { title: string; links: [string, string][] }[] = [
   { title: "Funktionen", links: [["/funktionen/suche", "Suche"], ["/konto/suchen", "Gespeicherte Suchen"], ["/konto/artikel", "Gespeicherte Artikel"], ["/funktionen/benachrichtigungen", "Benachrichtigungen"], ["/konto/kalender", "Kalender"]] },
-  { title: "Produkt", links: [["/branchen/bauwesen", "Use Cases"], ["/preise", "Preismodelle"]] },
-  { title: "Informationen", links: [["/faq", "FAQ"], ["/quellen", "Datenabdeckung"], ["/ueber-uns", "Über Ratsmonitor"]] },
+  /* Keine Übersichtsseite für Use Cases: alle Branchen direkt verlinkt */
+  { title: "Use Cases", links: BRANCHEN.map((b) => [`/branchen/${b.slug}`, b.name] as [string, string]) },
+  { title: "Informationen", links: [["/preise", "Preismodelle"], ["/faq", "FAQ"], ["/quellen", "Datenabdeckung"], ["/ueber-uns", "Über Ratsmonitor"]] },
   { title: "Rechtliches", links: [["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"]] },
 ];
 
@@ -31,20 +34,20 @@ export function Footer() {
         <DarkCta title="Fragen oder Anregungen?" sub={`Wir freuen uns über Ihr Feedback zu ${name}.`} action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
       )}</div>}
     <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto grid max-w-page gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))]">
-        <div>
+      <div className="mx-auto grid max-w-page grid-cols-2 gap-x-6 gap-y-6 py-8 sm:gap-8 sm:py-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))]">
+        <div className="col-span-2 sm:col-span-1">
           <p className="m-0 text-[16px] font-semibold text-slate-900">{name}</p>
-          <p className="m-0 mt-2 max-w-[36ch] text-[14px] leading-relaxed text-slate-500">
+          <p className="m-0 mt-2 max-w-[36ch] text-[12px] leading-relaxed sm:text-[14px] text-slate-500">
             Beschlüsse und Beratungen aus den offiziellen Ratsinformationssystemen der Kommunen. Maßgeblich sind stets die verlinkten Originalunterlagen.
           </p>
         </div>
         {GROUPS.map((g) => (
-          <nav key={g.title} aria-label={g.title}>
+          <nav key={g.title} aria-label={g.title} className="min-w-0">
             <p className="m-0 text-[12px] font-semibold uppercase tracking-wide text-slate-500">{g.title}</p>
-            <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0">
+            <ul className="m-0 mt-2 flex list-none flex-col gap-1.5 p-0 sm:mt-3 sm:gap-2">
               {g.links.map(([href, label]) => (
                 <li key={href}>
-                  <Link href={href} className="text-[14px] text-slate-600 no-underline hover:text-teal-600">
+                  <Link href={href} lang="de" className="hyphens-auto break-words text-[14px] text-slate-600 no-underline hover:text-teal-600">
                     {brandText(label)}
                   </Link>
                 </li>

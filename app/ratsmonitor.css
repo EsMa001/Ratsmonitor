@@ -128,3 +128,6 @@ html,html body{background:#fff;overscroll-behavior-y:none}
 /* Suchfeld: keine gelbe Autofill-Färbung (Safari/Chrome am Handy) und keine Systemdarstellung */
 #q{-webkit-appearance:none;appearance:none}
 #q:-webkit-autofill,#q:-webkit-autofill:hover,#q:-webkit-autofill:focus,#q:autofill{-webkit-text-fill-color:#0f172a;caret-color:#0f172a;transition:background-color 100000s ease-out 0s;-webkit-box-shadow:0 0 0 0 transparent inset;background-color:transparent!important}
+/* Chips auf der Karte: weißes Milchglas, dunkle Schrift für Lesbarkeit */
+.rm-chip{color:#0f172a;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 14px rgba(15,23,42,.12),inset 0 1px 0 rgba(255,255,255,.95)}
+.rm-chip:hover{background:rgba(255,255,255,.88)}

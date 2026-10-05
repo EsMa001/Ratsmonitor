@@ -26,7 +26,7 @@ export interface MapEngineCallbacks {
  * Zwei Canvas-Ebenen (Basis und Overlay), beim Verschieben und Zoomen wird ein Schnappschuss
  * skaliert und nach 180 ms Ruhe vollständig neu gezeichnet.
  */
-export type MapStyle = "flaechen" | "heat" | "blasen";
+export type MapStyle = "flaechen" | "heat" | "punkte" | "blasen";
 
 export class MapEngine {
   private geo: GeoModel;
@@ -43,6 +43,8 @@ export class MapEngine {
   private drawnView: View | null = null;
   private snap: HTMLCanvasElement | null = null;
   private snapView: View | null = null;
+  /** Zuletzt fertig gezeichnete Ansichten: füllen beim Heraus-/Verschieben die Ränder, statt kurz leer zu zeigen */
+  private cache: { c: HTMLCanvasElement; v: View }[] = [];
   private anim = 0;
   private settleTimer = 0;
   private fastQueued = false;
@@ -134,6 +136,7 @@ export class MapEngine {
     this.H = nH;
     this.view = first ? this.germanyView() : { ...this.view!, k: this.clampK(this.view!.k) };
     this.snapView = null;
+    this.cache = [];
     this.drawAll();
   }
 
@@ -332,6 +335,13 @@ export class MapEngine {
     ctx.fillStyle = C.ground;
     ctx.fillRect(0, 0, this.base.width, this.base.height);
     ctx.imageSmoothingEnabled = true;
+    /* Erst gespeicherte Ansichten (weit heraus zuerst), darüber die aktuelle */
+    for (const e of this.cache) {
+      const es = v.k / e.v.k;
+      const ex = this.W / 2 - (this.W / 2) * es + (e.v.cx - v.cx) * v.k;
+      const ey = this.H / 2 - (this.H / 2) * es + (v.cy - e.v.cy) * v.k;
+      ctx.drawImage(e.c, ex * this.dpr, ey * this.dpr, e.c.width * es, e.c.height * es);
+    }
     ctx.drawImage(this.snap, tx * this.dpr, ty * this.dpr, this.snap.width * s, this.snap.height * s);
     this.drawOver();
   }
@@ -340,6 +350,21 @@ export class MapEngine {
     clearTimeout(this.settleTimer);
     this.snapView = null;
     this.drawAll();
+    this.remember();
+  }
+
+  /** Fertige Ansicht merken (höchstens 4; die am weitesten herausgezoomte bleibt immer) */
+  private remember() {
+    if (!this.base || !this.drawnView) return;
+    const v = this.drawnView;
+    const old = this.cache.findIndex((e) => Math.abs(Math.log(e.v.k / v.k)) < 0.2);
+    const c = old >= 0 ? this.cache.splice(old, 1)[0].c : document.createElement("canvas");
+    c.width = this.base.width;
+    c.height = this.base.height;
+    c.getContext("2d")!.drawImage(this.base, 0, 0);
+    this.cache.push({ c, v: { ...v } });
+    this.cache.sort((a, b) => a.v.k - b.v.k);
+    while (this.cache.length > 4) this.cache.splice(1, 1);
   }
 
   private drawAll() {
@@ -353,11 +378,13 @@ export class MapEngine {
   }
 
   private requestDraw() {
+    this.cache = [];
     if (this.drawQueued) return;
     this.drawQueued = true;
     requestAnimationFrame(() => {
       this.drawQueued = false;
       this.drawAll();
+      if (!this.snapView) this.remember();
     });
   }
 
@@ -413,6 +440,7 @@ export class MapEngine {
     ctx.lineWidth = px(1.1);
     ctx.stroke(G.mesh[3]);
     if (points && this.style === "heat") this.drawHeat(ctx);
+    if (points && this.style === "punkte") this.drawDots(ctx);
     this.drawLabels(ctx);
     /* Blasen über den Ortsnamen, damit die Zahlen lesbar bleiben */
     if (points && this.style === "blasen") this.drawBubbles(ctx);
@@ -420,14 +448,19 @@ export class MapEngine {
     this.drawnView = { ...this.view! };
   }
 
-  /** Abzeichen wie in der Kopfzeile: Petrol-Pille mit weißer Zahl und weißem Rand */
-  private pill(ctx: CanvasRenderingContext2D, n: number, x: number, y: number, fam: string) {
+  /** Radius des Trefferzahl-Kreises: wächst mit der Trefferzahl (Fläche ~ Anzahl), mindestens so groß wie die Zahl */
+  private pillR(_ctx: CanvasRenderingContext2D, n: number, max: number) {
+    const t = n > 9999 ? Math.round(n / 1000) + "k" : n.toLocaleString("de-DE");
+    return Math.max(10, t.length * 3.6 + 4, 10 + 14 * Math.sqrt(n / Math.max(1, max)));
+  }
+
+  /** Abzeichen: Petrol-Kreis mit weißer Zahl und weißem Rand; je mehr Treffer, desto größer */
+  private pill(ctx: CanvasRenderingContext2D, n: number, x: number, y: number, fam: string, max = n) {
     const t = n > 9999 ? Math.round(n / 1000) + "k" : n.toLocaleString("de-DE");
     ctx.font = "600 12px " + fam;
-    /* Immer ein Kreis, der mit der Zahl mitwächst */
-    const bw = Math.max(20, ctx.measureText(t).width + 8);
+    const r = this.pillR(ctx, n, max);
     ctx.beginPath();
-    ctx.arc(x, y, bw / 2, 0, Math.PI * 2);
+    ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fillStyle = "#0d9488";
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 1.5;
@@ -435,13 +468,13 @@ export class MapEngine {
     ctx.stroke();
     ctx.fillStyle = "#ffffff";
     ctx.fillText(t, x, y + 0.5);
-    return bw;
+    return 2 * r;
   }
 
-  /** Flächen eingefärbt: in „Flächen“ immer, bei Blasen ab Gemeindeebene (dann steht jede Blase für genau eine Gemeinde) */
+  /** Flächen eingefärbt: in „Flächen“ und „Blasen“ immer, bei der Heatmap nicht */
   private filled() {
     if (!this.badges || this.style === "flaechen") return true;
-    return this.style === "blasen" && this.view!.k * 100 >= 3.2;
+    return this.style === "blasen";
   }
 
   /** Bildschirmpunkte der Gemeinden mit Treffern (für Heatmap und Blasen) */
@@ -471,8 +504,8 @@ export class MapEngine {
     const o = off.getContext("2d", { willReadFrequently: true })!;
     o.setTransform(1, 0, 0, 1, 0, 0);
     o.clearRect(0, 0, w, h);
-    /* Nah herangezoomt bleibt die Wärme innerhalb der Gemeindegrenze und füllt sie aus */
-    const inside = this.view!.k * 100 >= 14;
+    /* Gemeindegrenzen beeinflussen die Heatmap auf keiner Zoomstufe */
+    const inside = false;
     const G = this.geo.gem;
     for (const p of pts) {
       const i = inside ? G.idx.get(p.ags) : undefined;
@@ -481,6 +514,8 @@ export class MapEngine {
       const gi = G.idx.get(p.ags), gb = gi !== undefined ? G.bb[gi] : null;
       const size = gb ? Math.max(gb[2] - gb[0], gb[3] - gb[1]) * this.view!.k : 0;
       const r = (b ? Math.max(12, size / 1.4) : Math.max(16, Math.min(160, size * 0.9))) * d;
+      /* Außerhalb des Bildes nichts zeichnen (spart Zeit beim Verschieben) */
+      if (p.x * d + r < 0 || p.y * d + r < 0 || p.x * d - r > w || p.y * d - r > h) continue;
       const g = o.createRadialGradient(p.x * d, p.y * d, 0, p.x * d, p.y * d, r);
       /* Einzelner Fleck höchstens Orange; Rot entsteht erst, wo sich viele Treffer überlagern */
       const a = 0.15 + 0.55 * Math.sqrt(p.n / max);
@@ -515,6 +550,78 @@ export class MapEngine {
     ctx.restore();
   }
 
+  /** Punktlagen je Gebiet (Datenkoordinaten), einmal berechnet und gemerkt – so springen die Punkte beim Zoomen nicht */
+  private dotCache = new Map<string, Float64Array>();
+  private dotsFor(ags: string, n: number): Float64Array | null {
+    const key = ags + ":" + n;
+    const hit = this.dotCache.get(key);
+    if (hit) return hit;
+    const L = ags.length <= 5 ? this.geo.krs : this.geo.gem;
+    const i = L.idx.get(ags);
+    if (i === undefined) return null;
+    const b = L.bb[i];
+    const test = (this.dotCtx ??= document.createElement("canvas").getContext("2d")!);
+    test.setTransform(1, 0, 0, 1, 0, 0);
+    /* Fester Zufall je Gebiet (gleiche Lage bei jedem Zeichnen) */
+    let seed = 0;
+    for (const ch of ags) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+    const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+    const out = new Float64Array(n * 2);
+    let k = 0;
+    for (let tries = 0; k < n && tries < n * 40; tries++) {
+      /* Mittelwert zweier Zufallszahlen: zur Mitte hin häufiger, am Rand seltener */
+      const x = b[0] + ((rnd() + rnd()) / 2) * (b[2] - b[0]), y = b[1] + ((rnd() + rnd()) / 2) * (b[3] - b[1]);
+      if (!test.isPointInPath(L.path[i], x, y)) continue;
+      out[k * 2] = x;
+      out[k * 2 + 1] = y;
+      k++;
+    }
+    const res = out.subarray(0, k * 2);
+    this.dotCache.set(key, res);
+    return res;
+  }
+  private dotCtx: CanvasRenderingContext2D | null = null;
+
+  /** Punktekarte: ein gleich großer Punkt je Treffer, verstreut innerhalb der Gemeinde (höchstens 1.500 je Gemeinde) */
+  private drawDots(ctx: CanvasRenderingContext2D) {
+    /* Gemeinden mit Treffern petrolfarben umrandet */
+    ctx.save();
+    this.applyT(ctx);
+    ctx.strokeStyle = "#0d9488";
+    ctx.lineWidth = 1.2 / this.view!.k;
+    ctx.lineJoin = "round";
+    for (const [ags, n] of Object.entries(this.badges ?? {})) {
+      if (!n) continue;
+      const L = ags.length <= 5 ? this.geo.krs : this.geo.gem;
+      const i = L.idx.get(ags);
+      if (i !== undefined && this.inView(L.bb[i])) ctx.stroke(L.path[i]);
+    }
+    ctx.restore();
+    ctx.save();
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.fillStyle = "rgba(13,148,136,0.9)";
+    /* Gut sichtbar: mindestens 2,5 px, wächst beim Hineinzoomen bis 5 px; auf einer Zoomstufe alle gleich groß */
+    const r = Math.max(2.5, Math.min(5, 1.5 + this.view!.k * 100 * 0.35));
+    ctx.beginPath();
+    for (const [ags, n] of Object.entries(this.badges ?? {})) {
+      if (!n) continue;
+      const bb = this.geo.bbox(ags);
+      if (bb) {
+        const [x0, y0] = this.toScreen(bb[0], bb[3]), [x1, y1] = this.toScreen(bb[2], bb[1]);
+        if (Math.max(x0, x1) < 0 || Math.min(x0, x1) > this.W || Math.max(y0, y1) < 0 || Math.min(y0, y1) > this.H) continue;
+      }
+      const pts = this.dotsFor(ags, Math.min(n, 1500));
+      if (!pts) continue;
+      for (let j = 0; j < pts.length; j += 2) {
+        const [x, y] = this.toScreen(pts[j], pts[j + 1]);
+        ctx.moveTo(x + r, y);
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+      }
+    }
+    ctx.fill();
+    ctx.restore();
+  }
+
   /** Treffer je Land, Kreis oder Gemeinde – je nach Zoomstufe zusammengefasst, mit Bildschirmposition */
   private aggregated() {
     const pxkm = this.view!.k * 100;
@@ -543,27 +650,35 @@ export class MapEngine {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "600 12px " + fam;
+    ctx.shadowColor = "rgba(15,23,42,0.18)";
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 1;
     /* Kleine zuletzt, damit sie auf großen Blasen sichtbar bleiben */
     for (const p of pts) {
+      if (p.x < -50 || p.y < -50 || p.x > this.W + 50 || p.y > this.H + 50) continue;
       const t = p.n > 9999 ? Math.round(p.n / 1000) + "k" : p.n.toLocaleString("de-DE");
       /* Größte Blase wächst mit der Trefferzahl (bei wenigen Treffern klein), höchstens 40 px Radius */
       const r = Math.max(ctx.measureText(t).width / 2 + 6, Math.min(40, 10 + 3 * Math.sqrt(max)) * Math.sqrt(p.n / max));
       ctx.beginPath();
       ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(13,148,136,0.78)";
+      /* Farbe nach Anteil: wenige Treffer helles Petrol, viele dunkles */
+      const f = Math.sqrt(p.n / max);
+      ctx.fillStyle = `rgba(${Math.round(20 - 3 * f)},${Math.round(184 - 90 * f)},${Math.round(166 - 77 * f)},0.88)`;
       ctx.strokeStyle = "#ffffff";
       ctx.lineWidth = 1.5;
       ctx.fill();
+      ctx.shadowColor = "transparent";
       ctx.stroke();
       ctx.fillStyle = "#ffffff";
       ctx.fillText(t, p.x, p.y + 0.5);
+      ctx.shadowColor = "rgba(15,23,42,0.18)";
     }
     ctx.restore();
   }
 
   /** Weit herausgezoomt: Trefferzahlen je Land bzw. Kreis zusammengefasst (Gemeinden haben ihre Zahl am Namen) */
   private drawSums(ctx: CanvasRenderingContext2D) {
-    if (!this.badges || this.style === "blasen") return;
+    if (!this.badges || this.style !== "flaechen") return;
     const pxkm = this.view!.k * 100;
     if (pxkm >= 3.2) return;
     const len = pxkm < 1.2 ? 2 : 5;
@@ -574,6 +689,8 @@ export class MapEngine {
     ctx.textBaseline = "middle";
     const fam = getComputedStyle(document.body).fontFamily;
     const placed: number[][] = [];
+    const maxSum = Math.max(1, ...Object.values(sums));
+    ctx.font = "600 12px " + fam;
     /* Größte zuerst, damit sie bei Überlappung sichtbar bleiben */
     for (const [ags, n] of Object.entries(sums).sort((a, b) => b[1] - a[1])) {
       const b = this.geo.bbox(ags);
@@ -581,10 +698,11 @@ export class MapEngine {
       if (!c) continue;
       const [x, y] = this.toScreen(c.x, c.y);
       if (x < 0 || y < 0 || x > this.W || y > this.H) continue;
-      const r = [x - 20, y - 20, x + 20, y + 20];
+      const pr = this.pillR(ctx, n, maxSum) + 2;
+      const r = [x - pr, y - pr, x + pr, y + pr];
       if (placed.some((q) => !(r[2] < q[0] || r[0] > q[2] || r[3] < q[1] || r[1] > q[3]))) continue;
       placed.push(r);
-      this.pill(ctx, n, x, y, fam);
+      this.pill(ctx, n, x, y, fam, maxSum);
     }
   }
 
@@ -593,6 +711,7 @@ export class MapEngine {
     const L = G.gem;
     const pxkm = this.view!.k * 100;
     if (pxkm < 3.2 || !L.lp) return;
+    const maxHit = Math.max(1, ...Object.values(this.badges ?? {}));
     const showAll = pxkm >= 7;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.textAlign = "center";
@@ -617,13 +736,18 @@ export class MapEngine {
       const hit = this.filled() && this.style !== "blasen" && (this.counts[L.ags[i]] || 0) > 0 && (b[2] - b[0]) * this.view!.k > ctx.measureText(label).width * 1.2;
       const tw = ctx.measureText(label).width;
       if (!strong && (b[2] - b[0]) * this.view!.k < tw * 0.9) continue;
-      const n = this.style === "blasen" ? 0 : this.badges?.[L.ags[i]] || 0;
-      const r = [sx - tw / 2 - 3, sy - 8, sx + tw / 2 + 3, sy + (n ? 30 : 8)];
+      const n = this.style !== "flaechen" ? 0 : this.badges?.[L.ags[i]] || 0;
+      const pr = n ? this.pillR(ctx, n, maxHit) : 0;
+      const r = [Math.min(sx - tw / 2 - 3, sx - pr), sy - 8, Math.max(sx + tw / 2 + 3, sx + pr), sy + (n ? 9 + 2 * pr : 8)];
       if (placed.some((q) => !(r[2] < q[0] || r[0] > q[2] || r[3] < q[1] || r[1] > q[3]))) continue;
       placed.push(r);
       ctx.fillStyle = hit ? "#ffffff" : "#475569";
       ctx.fillText(label, sx, sy);
-      if (n) this.pill(ctx, n, sx, sy + 19, fam);
+      if (n) {
+        const f = ctx.font;
+        this.pill(ctx, n, sx, sy + 9 + pr, fam, maxHit);
+        ctx.font = f;
+      }
     }
   }
 

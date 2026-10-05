@@ -20,14 +20,22 @@ export interface SearchSnapshot {
   level?: "city" | "district";
   future?: boolean;
   noformal?: boolean;
+  allterms?: boolean;
 }
 
 
 /** Signatur einer Suche, um gespeicherte Suchen wiederzuerkennen */
-export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more"> & { future?: boolean; noformal?: boolean }): string {
+export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more"> & { future?: boolean; noformal?: boolean; allterms?: boolean }): string {
   const t = norm(s.text || "").split(/\s+/).filter(Boolean).sort().join(" ");
   const more = (s.more || []).map((m) => `${m.ags}:${m.scope}`).sort().join(",");
-  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|") + (s.future ? "|future" : "") + (s.noformal ? "|noformal" : "");
+  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|") + (s.future ? "|future" : "") + (s.noformal ? "|noformal" : "") + (s.allterms ? "|all" : "");
+}
+
+/** Suchtext für die Abfrage. Das Backend verknüpft Kommas (zwischen Chips) mit ODER, Leerzeichen mit UND.
+ *  Standard: Begriffe mit ODER (Text unverändert); „alle Begriffe“: jedes Wort muss vorkommen (nur Leerzeichen).
+ *  Orte/Gebiete sind nicht Teil des Texts und davon unberührt. */
+export function queryText(text: string, all?: boolean): string {
+  return all ? text.replace(/[,;|]/g, " ").split(/\s+/).filter(Boolean).join(" ") : text;
 }
 
 export function hasFilters(s: SearchSnapshot): boolean {

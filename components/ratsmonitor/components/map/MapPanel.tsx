@@ -24,12 +24,33 @@ export function MapPanel({ active }: { active: boolean }) {
   const { state, mapRef } = search;
   const { areaCounts, coverage, snapshot, loading } = useSearchResults();
   const filtered = hasFilters(snapshot);
+  /* Kartenmodus (Suchleiste unten) erst, wenn die Suche bestätigt ist (Enter, Vorschlag gewählt oder Feld verlassen); während des Tippens bleibt sie stehen */
+  const [typing, setTyping] = useState(false);
+  const [settled, setSettled] = useState(filtered);
+  useEffect(() => {
+    const on = (e: FocusEvent) => setTyping((e.target as HTMLElement | null)?.id === "q");
+    const off = () => setTyping(false);
+    const input = (e: Event) => (e.target as HTMLElement | null)?.id === "q" && setTyping(true);
+    document.addEventListener("focusin", on);
+    document.addEventListener("focusout", off);
+    document.addEventListener("input", input);
+    window.addEventListener("rm:search-confirmed", off);
+    return () => {
+      document.removeEventListener("focusin", on);
+      document.removeEventListener("focusout", off);
+      document.removeEventListener("input", input);
+      window.removeEventListener("rm:search-confirmed", off);
+    };
+  }, []);
+  useEffect(() => {
+    if (!typing) setSettled(filtered);
+  }, [typing, filtered]);
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const baseRef = useRef<HTMLCanvasElement>(null);
   const overRef = useRef<HTMLCanvasElement>(null);
   const [mapH, setMapH] = useState(520);
-  const [mapW, setMapW] = useState(1200);
+  const [mapW, setMapW] = useState(() => (typeof window === "undefined" ? 1200 : window.innerWidth));
   const [explore, setExplore] = useState(false);
   /* Darstellung im Kartenmodus (oben links wählbar) */
   const [style, setStyle] = useState<MapStyle>("flaechen");
@@ -109,10 +130,10 @@ export function MapPanel({ active }: { active: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope]);
 
-  /* Kartenmodus nur mit Suche oder Filter; sind alle entfernt, gilt wieder der normale Modus */
+  /* Kartenmodus, sobald eine Suche oder ein Filter bestätigt ist; sind alle entfernt, wieder der normale Modus */
   useEffect(() => {
-    if (!filtered) setExplore(false);
-  }, [filtered]);
+    setExplore(settled && filtered);
+  }, [settled, filtered]);
 
   /* Normaler Modus: Karte gesperrt. Tippen, Zwei-Finger-Zoom oder Mausrad (nur mit Suche/Filter) starten den Kartenmodus */
   useEffect(() => {
@@ -161,7 +182,9 @@ export function MapPanel({ active }: { active: boolean }) {
   }, [engine, loading, hitsKey, state.area, state.scope, state.radius, moreKey, filtered]);
 
   /* Platz für Vorschläge und Filter innerhalb der Karte (unterhalb der mittigen Suchleiste, im Kartenmodus oberhalb) */
-  const below = explore ? mapH - 44 - 32 : Math.round(mapH / 2) - 22 - 16;
+  /* Suchleiste unten: im Kartenmodus und auf dem Handy, sobald gesucht oder gefiltert wurde */
+  const low = explore;
+  const below = low ? mapH - 44 - 32 : Math.round(mapH / 2) - 22 - 16;
   /* Neu laden: wie eine frische Karte, alle Filter weg und zurück in den normalen Modus */
   const refresh = () => {
     search.resetAll();
@@ -169,10 +192,11 @@ export function MapPanel({ active }: { active: boolean }) {
     engine?.focusArea("");
   };
   const ctl = "grid h-11 w-11 place-items-center rounded-full text-slate-600 hover:bg-white/60 hover:text-slate-900";
+  const ctlSm = "grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-white/60 hover:text-slate-900";
   const STYLES: { id: MapStyle; label: string; icon: ReactNode }[] = [
     { id: "flaechen", label: "Flächen", icon: <path d="m4 7 5-3 6 3 5-3v13l-5 3-6-3-5 3zM9 4v13M15 7v13" /> },
     { id: "heat", label: "Heatmap", icon: <path d="M12 21c-3.9 0-7-2.8-7-6.6 0-3.4 2.6-5.3 3.6-8.4 2 1.1 2.7 3 2.7 4.4C13 9 13.9 6.4 13.4 3c3.5 2 5.6 6.4 5.6 10.8 0 4-3.1 7.2-7 7.2z" /> },
-    { id: "blasen", label: "Blasen", icon: <><circle cx="8.5" cy="14.5" r="5" /><circle cx="17" cy="8" r="3.5" /><circle cx="17.5" cy="17.5" r="2" /></> },
+    { id: "punkte", label: "Punkte", icon: <><circle cx="7" cy="8" r="1.4" /><circle cx="13" cy="6" r="1.4" /><circle cx="17" cy="12" r="1.4" /><circle cx="10" cy="13" r="1.4" /><circle cx="6" cy="17" r="1.4" /><circle cx="14" cy="18" r="1.4" /></> },
   ];
   const si = STYLES.findIndex((x) => x.id === style);
 
@@ -186,27 +210,27 @@ export function MapPanel({ active }: { active: boolean }) {
       </div>
 
 
-      {/* Suchleiste mittig, im Kartenmodus am unteren Rand (Filter-Chips dann darüber); dazu die aktiven Filter und, wenn geöffnet, die Filter selbst (alles Milchglas) */}
+      {/* Suchleiste mittig, im Kartenmodus und auf dem Handy am unteren Rand (Filter-Chips dann darüber); dazu die aktiven Filter und, wenn geöffnet, die Filter selbst (alles Milchglas) */}
       <div
         ref={overlayRef}
-        className={`pointer-events-none absolute inset-x-0 z-[6] flex items-center gap-2 px-4 transition-[top] duration-500 ease-in-out motion-reduce:transition-none ${explore ? "flex-col-reverse" : "flex-col"}`}
-        style={{ top: explore ? mapH - 20 - barH : mapH / 2 - 22 }}
+        className={`pointer-events-none absolute inset-x-0 z-[6] flex items-center gap-2 px-4 transition-[top] duration-500 ease-in-out motion-reduce:transition-none ${low ? "flex-col-reverse" : "flex-col"}`}
+        style={{ top: low ? mapH - 20 - barH : mapH / 2 - 22 }}
       >
-        <SearchOverlay listMax={below} listUp={explore} />
+        <SearchOverlay listMax={below} listUp={low} />
         <ActiveFilters />
       </div>
 
       {explore && (
-        <div className="rm-glass absolute right-4 z-[6] flex flex-col overflow-hidden rounded-full" style={{ bottom: mapW < 768 ? barH + 32 : 20 }}>
-          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctl}><IconPlus size={18} /></button>
-          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctl}><IconMinus size={18} /></button>
-          <button type="button" title="Auf Treffer zentrieren" aria-label="Auf Treffer zentrieren" onClick={() => center(true)} className={ctl}><IconCenter size={18} /></button>
-          <button type="button" title="Karte neu laden" aria-label="Karte neu laden" onClick={refresh} className={ctl}><IconReset size={18} /></button>
+        <div className="rm-glass absolute right-4 top-4 z-[6] flex flex-col overflow-hidden rounded-full">
+          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctlSm}><IconPlus size={16} /></button>
+          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctlSm}><IconMinus size={16} /></button>
+          <button type="button" title="Auf Treffer zentrieren" aria-label="Auf Treffer zentrieren" onClick={() => center(true)} className={ctlSm}><IconCenter size={16} /></button>
+          <button type="button" title="Karte neu laden" aria-label="Karte neu laden" onClick={refresh} className={ctlSm}><IconReset size={16} /></button>
         </div>
       )}
-      {/* Darstellung oben links: das runde Symbol klappt nach unten auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
+      {/* Darstellung oben links (Handy: unten links über der Suchleiste, klappt nach oben auf); eine weiße Kugel gleitet zur gewählten Darstellung */}
       {explore && (
-        <div className="rm-glass absolute left-4 top-4 z-[7] flex flex-col rounded-full">
+        <div className={`rm-glass absolute left-4 z-[7] flex rounded-full ${mapW < 768 ? "flex-col-reverse" : "flex-col"}`} style={mapW < 768 ? { bottom: barH + 32 } : { top: 16 }}>
           <button type="button" title="Darstellung" aria-label="Darstellung der Karte" aria-expanded={styleOpen} onClick={() => setStyleOpen((o) => !o)} className={`${ctl} ${styleOpen ? "!text-slate-900" : ""}`}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 13 9 5 9-5" /></svg>
           </button>

@@ -5,7 +5,7 @@ import Link from "next/link";
 interface Source { id: string; name: string; kind: "city" | "district"; method: string; lastImport: string | null; articles: number; meetings: number; from: string | null; complete: boolean; failed: boolean }
 interface Data { totals: { areas: number; connected: number; withArticles: number; articles: number; latest: string | null }; sources: Source[] }
 
-const stamp = (v: string | null) => (v ? new Date(v).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) + " Uhr" : "noch kein Abruf");
+const stamp = (v: string | null) => (v ? new Date(v).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" }) + " Uhr" : "noch kein Abruf");
 const n = (v: number) => v.toLocaleString("de-DE");
 const TAB_ON = "border-b-2 border-teal-600 text-teal-600";
 const TAB_OFF = "border-b-2 border-transparent text-slate-500 hover:text-slate-900";
@@ -82,8 +82,7 @@ export function QuellenPage() {
                   </div>
                   <p className="m-0 text-[14px] text-slate-500">{s.articles ? `${n(s.articles)} Vorgänge · ${n(s.meetings)} Sitzungen` : "noch keine Vorgänge"}</p>
                   <p className="m-0 text-[14px] text-slate-500">Abruf: {stamp(s.lastImport)}</p>
-                  <p className={`m-0 inline-flex items-center gap-1.5 text-[14px] ${s.failed ? "text-rose-700" : "text-slate-500"}`}>
-                    <i aria-hidden="true" className={`h-2 w-2 rounded-full ${s.failed ? "bg-rose-600" : s.complete ? "bg-teal-600" : "bg-amber-500"}`} />
+                  <p className={`m-0 text-[14px] ${s.failed ? "text-rose-700" : "text-slate-500"}`}>
                     {s.failed ? "Abruf fehlgeschlagen" : s.complete ? "vollständig" : "mit Lücken"}
                   </p>
                 </li>

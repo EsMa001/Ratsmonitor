@@ -18,6 +18,9 @@ type Row =
 /** Suchfeld mit Ortserkennung und Vorschlagsliste.
  *  glass: Milchglas-Pille (auf der Karte); listMax/listUp: Vorschlagsliste begrenzen bzw. nach oben öffnen,
  *  damit sie nicht über die Karte hinausragt; onSubmit: Suche mit Enter bestätigt */
+/** Meldet „Suche bestätigt“ (Enter oder Vorschlag gewählt) – z. B. damit die Suchleiste auf dem Handy nach unten wandert */
+const confirmed = () => window.dispatchEvent(new Event("rm:search-confirmed"));
+
 export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void } = {}) {
   const { geo, place } = useData();
   const search = useSearch();
@@ -199,6 +202,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
         setOpen(false);
         inputRef.current?.blur();
       }
+      confirmed();
       onSubmit?.();
     } else if (e.key === "Escape" && !e.shiftKey) {
       if (showList) {
@@ -259,7 +263,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           search.commitPlaces();
         }}
         onKeyDown={onKeyDown}
-        className={`h-11 w-full border border-transparent bg-transparent pl-[42px] ${glass ? "rounded-full" : "rounded-xl"} text-[16px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-slate-400 ${
+        className={`h-11 w-full border border-transparent bg-transparent pl-[42px] max-sm:h-12 ${glass ? "rounded-full" : "rounded-xl"} text-[16px] outline-none transition-[border-color,box-shadow,background-color] placeholder:text-slate-400 ${
           placeOn ? "pr-[128px]" : "pr-11"
         }`}
       />
@@ -314,7 +318,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
                   type="button"
                   role="option"
                   aria-selected={r.sel}
-                  onClick={r.pick}
+                  onClick={() => { r.pick(); confirmed(); }}
                   className={`grid min-h-10 w-full grid-cols-[18px_minmax(0,1fr)] items-center gap-2 rounded-lg px-2 py-1.5 text-left ${r.sel ? "bg-teal-50" : idx === active ? "bg-slate-100" : "hover:bg-slate-100"}`}
                 >
                   <span className={`h-3.5 w-3.5 rounded-full border-2 ${r.sel ? "border-teal-600 bg-teal-600 shadow-[inset_0_0_0_2px_white]" : "border-slate-400"}`} />
@@ -330,7 +334,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
                   key={"t" + i}
                   id={`sa-${idx}`}
                   type="button"
-                  onClick={r.pick}
+                  onClick={() => { r.pick(); confirmed(); }}
                   className={`mt-1 w-full border-0 border-t border-slate-200 bg-transparent px-2 pb-[5px] pt-[9px] text-left text-[12px] text-slate-500 hover:text-slate-900 hover:underline hover:underline-offset-2 ${
                     idx === active ? "text-slate-900 underline underline-offset-2" : ""
                   }`}
@@ -346,7 +350,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
                 type="button"
                 role="option"
                 aria-selected={r.sel}
-                onClick={r.pick}
+                onClick={() => { r.pick(); confirmed(); }}
                 className={`grid min-h-10 w-full grid-cols-[18px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg px-2 py-1.5 text-left ${
                   r.sel ? "bg-teal-50" : idx === active ? "bg-slate-100" : "hover:bg-slate-100"
                 }`}

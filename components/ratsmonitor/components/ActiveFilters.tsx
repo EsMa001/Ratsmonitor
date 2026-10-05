@@ -39,8 +39,9 @@ export function ActiveFilters() {
   const chips = all.filter((c) => !((c.key === "area" && inRegion.has(state.area)) || (c.key === "more" && c.term && inRegion.has(c.term))));
   /* Eingeschaltete Schalter als Chips wie die übrigen Filter; × schaltet sie wieder aus */
   const toggles: { key: string; label: string; off: () => void }[] = [
-    ...(state.future ? [{ key: "future", label: "inkl. Zukunft", off: () => search.setFuture(false) }] : []),
-    ...(state.noformal ? [{ key: "noformal", label: "ohne Formalien", off: () => search.setNoformal(false) }] : []),
+    ...(state.future ? [{ key: "future", label: "mit künftigen Sitzungen", off: () => search.setFuture(false) }] : []),
+    ...(state.noformal ? [{ key: "noformal", label: "Formalien ausgeblendet", off: () => search.setNoformal(false) }] : []),
+    ...(state.allterms ? [{ key: "allterms", label: "Begriffe kombiniert", off: () => search.setAllterms(false) }] : []),
   ];
   if (!all.length && !toggles.length) return null;
 
@@ -64,7 +65,7 @@ export function ActiveFilters() {
     key === "area" || key === "more" ? <IconPin size={14} /> : key === "radius" ? RADIUS : key === "thema" ? TAG : key === "monat" || key === "zeitraum" ? <IconCalendar size={14} /> : key === "status" ? STATUS_ICON : <IconSearch size={14} />;
 
   return (
-    <div className="pointer-events-auto flex w-full max-w-[720px] flex-wrap justify-start gap-1.5 pl-[52px] pr-[52px]">
+    <div className="pointer-events-auto flex w-full max-w-[720px] flex-wrap justify-start gap-1.5 pl-[52px] pr-[52px] max-sm:px-[56px]">
       {regions.map((r) => (
         <button
           key={"region" + r.name}
@@ -77,11 +78,11 @@ export function ActiveFilters() {
             if (r.ags.includes(state.area)) search.clearArea();
             if (!rest.length && res.placeActive) search.applySearch(removePhrase(state.q, res.pq.phraseRaw));
           }}
-          className="group relative inline-flex h-7 items-center gap-1.5 rounded-full before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm hover:bg-teal-100/90"
+          className="group relative inline-flex h-7 items-center gap-1.5 rounded-full before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] rm-chip pl-2.5 pr-1.5 text-[14px] font-medium "
         >
-          <span className="text-teal-600/80"><IconPin size={14} /></span>
+          <span className="text-slate-500"><IconPin size={14} /></span>
           {r.name}
-          <IconX size={14} className="text-teal-600/60 group-hover:text-teal-700" />
+          <IconX size={14} className="text-slate-400 group-hover:text-slate-900" />
         </button>
       ))}
       {chips.map((c) => (
@@ -91,21 +92,21 @@ export function ActiveFilters() {
           aria-label={`Filter ${c.label} ${c.value} entfernen`}
           title={c.label}
           onClick={() => clearChip(c.key, c.term)}
-          className="group relative inline-flex h-7 items-center gap-1.5 rounded-full before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm hover:bg-teal-100/90"
+          className="group relative inline-flex h-7 items-center gap-1.5 rounded-full before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] rm-chip pl-2.5 pr-1.5 text-[14px] font-medium "
         >
-          <span className="text-teal-600/80">{icon(c.key)}</span>
+          <span className="text-slate-500">{icon(c.key)}</span>
           {c.value}
-          <IconX size={14} className="text-teal-600/60 group-hover:text-teal-700" />
+          <IconX size={14} className="text-slate-400 group-hover:text-slate-900" />
         </button>
       ))}
       {toggles.map((d) => (
-        <button key={d.key} type="button" aria-label={`Filter ${d.label} entfernen`} onClick={d.off} className="group relative inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] hover:bg-teal-100/90">
+        <button key={d.key} type="button" aria-label={`Filter ${d.label} entfernen`} onClick={d.off} className="group relative inline-flex h-7 items-center gap-1.5 rounded-full rm-chip pl-2.5 pr-1.5 text-[14px] font-medium before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] ">
           {d.label}
-          <IconX size={14} className="text-teal-600/60 group-hover:text-teal-700" />
+          <IconX size={14} className="text-slate-400 group-hover:text-slate-900" />
         </button>
       ))}
       {chips.length + regions.length + toggles.length > 1 && (
-        <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="inline-flex h-7 items-center px-1.5 text-[14px] text-teal-600 hover:underline">
+        <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="inline-flex h-7 items-center rm-chip rounded-full px-2.5 text-[14px] font-medium hover:underline">
           Alle entfernen
         </button>
       )}

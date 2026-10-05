@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IconBell, IconHeart, IconX } from "../components/icons";
 import { REGIONS } from "@/shared/regions";
-import { filterChips } from "../lib/savedSearch";
+import { filterChips, queryText } from "../lib/savedSearch";
 import { useAccount } from "../state/account";
 import { readProfile } from "./ProfilePage";
 import { useEntitlements } from "../lib/entitlements";
@@ -38,6 +38,7 @@ function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
       page: "1",
     });
     if (s.noformal) p.set("noformal", "1");
+    p.set("q", queryText(s.text || "", s.allterms));
     /* Umkreissuche: alle Gebiete im Kreis, wie in der Übersicht */
     if (within != null) p.set("within", within);
     fetch("/api/search?" + p, { signal: ctrl.signal })
@@ -45,7 +46,7 @@ function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
       .then((r) => setData({ total: r.total ?? 0, items: (r.articles ?? []).slice(0, 10) }))
       .catch(() => !ctrl.signal.aborted && setData("error"));
     return () => ctrl.abort();
-  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level, s.future, s.noformal, within]);
+  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level, s.future, s.noformal, s.allterms, within]);
   return data;
 }
 
@@ -262,6 +263,7 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
     for (const s of saved) {
       const p = new URLSearchParams({ q: s.text || "", area: s.area || "", scope: s.scope || "only", label: s.thema || "", status: s.status || "", level: s.level || "city", from: day(7), to: day(0), sort: "desc", page: "1" });
       if (s.noformal) p.set("noformal", "1");
+      p.set("q", queryText(s.text || "", s.allterms));
       try {
         const r = (await (await fetch("/api/search?" + p)).json()) as { total?: number; articles?: MailItem[] };
         parts.push({ id: s.id, name: s.name, total: r.total ?? 0, top: (r.articles ?? []).slice(0, 3) });

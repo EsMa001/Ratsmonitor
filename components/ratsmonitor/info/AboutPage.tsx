@@ -7,9 +7,9 @@ import { Icon } from "./icons";
 
 /* TODO: fiktive Beispiel-Treffer (Doku Kap. 8) */
 const HITS: { place: string; status: Status; title: string; meta: string }[] = [
-  { place: "Lindenau", status: "ok", title: "Aufstellungsbeschluss zum Bebauungsplan Nr. 14 „Am Mühlgraben“", meta: "Bauausschuss · 24.09.2026" },
-  { place: "Birkenfeld-Ost", status: "ok", title: "Kommunale Wärmeplanung: Eignungsgebiete für Fernwärme festgelegt", meta: "Gemeinderat · 17.09.2026" },
-  { place: "Rothenfels", status: "wait", title: "Neues Radwegekonzept und Änderung der Parkraumbewirtschaftung", meta: "Hauptausschuss · 10.09.2026" },
+  { place: "Lindenau", status: "ok", title: "Aufstellungsbeschluss zum Bebauungsplan Nr. 14 „Am Mühlgraben“", meta: "Bauausschuss · 24.09.26" },
+  { place: "Birkenfeld-Ost", status: "ok", title: "Kommunale Wärmeplanung: Eignungsgebiete für Fernwärme festgelegt", meta: "Gemeinderat · 17.09.26" },
+  { place: "Rothenfels", status: "wait", title: "Neues Radwegekonzept und Änderung der Parkraumbewirtschaftung", meta: "Hauptausschuss · 10.09.26" },
 ];
 
 /* TODO: „4.500+“ und „16 Bundesländer“ bestätigen (Doku Kap. 8) */

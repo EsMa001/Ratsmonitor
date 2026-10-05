@@ -139,16 +139,16 @@ export function KalenderPage() {
       <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine.<br />In Ihren Gebieten.</>} lead="Rats- und Ausschusssitzungen in den Orten, die Sie beobachten, auch mit Umkreis, etwa für Ihr Vertriebsgebiet." />
       {!today ? <section className="ri-sec ri-sec--tight"><p className="text-slate-500">Kalender wird geladen …</p></section> : (
       <section className="ri-sec ri-sec--tight">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           {/* Monatsansicht */}
-          <div>
-            <div className="flex items-center justify-between">
-              <h2 className="m-0 text-[22px] font-semibold capitalize text-slate-900">{monthLabel}</h2>
+          <div className="min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="m-0 min-w-0 truncate text-[22px] max-sm:text-[18px] font-semibold capitalize text-slate-900">{monthLabel}</h2>
               <div className="flex items-center gap-1">
                 <button type="button" aria-label="Vorheriger Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
                   <IconChevronLeft size={20} />
                 </button>
-                <button type="button" onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setDay(today); }} className="h-9 w-[92px] rounded-full text-center text-[14px] text-teal-600 hover:bg-slate-100" title="Zurück zu heute">
+                <button type="button" onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setDay(today); }} className="h-9 w-[92px] max-sm:w-[76px] rounded-full text-center text-[14px] text-teal-600 hover:bg-slate-100" title="Zurück zu heute">
                   {month.toLocaleDateString("de-DE", { month: "long" })}
                 </button>
                 <button type="button" aria-label="Nächster Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100">

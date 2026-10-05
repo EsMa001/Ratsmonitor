@@ -24,7 +24,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
   const active = chips.length > 0;
   const savedHit = signatures.get(res.signature);
   /* Zähler am Filter-Knopf: nur was im Filterfenster einstellbar ist (Orte stehen als Chips unter der Leiste) */
-  const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0);
+  const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0);
 
   /* Ein Klick speichert die Suche unter einem automatisch erzeugten Namen; erneuter Klick entfernt sie */
   const toggleSave = () => {
@@ -44,7 +44,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
     }
   };
 
-  const round = "rm-glass relative grid h-11 w-11 flex-none place-items-center rounded-full transition-colors disabled:cursor-default disabled:opacity-50";
+  const round = "rm-glass relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12 transition-colors disabled:cursor-default disabled:opacity-50";
   const filterBtn = (
       <button
         type="button"
@@ -56,10 +56,10 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
           if (!open && !allowFeature("filters")) return;
           setFiltersOpen(!open);
         }}
-        className={`${open ? "relative grid h-11 w-11 flex-none place-items-center rounded-full" : round} ${open || filterCount ? "text-teal-600" : "text-slate-700 hover:text-teal-600"}`}
+        className={`${open ? "relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12" : round} ${open || filterCount ? "text-teal-600" : "text-slate-700 hover:text-teal-600"}`}
       >
         <IconFilter size={20} />
-        {filterCount > 0 && <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-600 px-1 text-[12px] font-semibold leading-none text-white">{filterCount}</span>}
+        {filterCount > 0 && !open && <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-600 px-1 text-[12px] font-semibold leading-none text-white">{filterCount}</span>}
       </button>
   );
   return (
@@ -78,8 +78,8 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
       <div className="min-w-0 flex-1">
         <SearchBox glass listMax={listMax} listUp={listUp} onSubmit={onSubmit} />
       </div>
-      <div className="relative z-10 h-11 w-11 flex-none">
-        {open ? <FilterPanel toggle={filterBtn} /> : filterBtn}
+      <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">
+        {open ? <FilterPanel toggle={filterBtn} up={listUp} maxH={listUp && listMax ? listMax + 44 : undefined} /> : filterBtn}
       </div>
     </div>
   );
