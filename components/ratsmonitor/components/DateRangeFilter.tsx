@@ -92,7 +92,7 @@ export function DateRangeFields() {
   const setVon = (v: string) => search.setZeitraum(v, bis && v && v > bis ? v : bis);
   const setBis = (v: string) => search.setZeitraum(von && v && v < von ? v : von, v);
   const field =
-    "h-8 min-w-0 flex-1 rounded-xl border border-white/80 bg-white/40 px-2 text-[14px] text-slate-900 outline-none focus:border-teal-600 max-sm:h-9";
+    "h-8 min-w-0 flex-1 rounded-xl border border-white/80 bg-white/40 px-2 text-[14px] text-slate-900 outline-none focus:border-teal-600 max-sm:h-9 max-sm:border-teal-300 max-sm:bg-teal-100/70";
   return (
     <div className="flex items-center gap-1.5">
       <input type="date" aria-label="Von" value={von} max={bis || undefined} onChange={(e) => setVon(e.target.value)} className={field} />
