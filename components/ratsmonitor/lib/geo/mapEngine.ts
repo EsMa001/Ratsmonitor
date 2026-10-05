@@ -26,6 +26,9 @@ export interface MapEngineCallbacks {
  * Zwei Canvas-Ebenen (Basis und Overlay), beim Verschieben und Zoomen wird ein Schnappschuss
  * skaliert und nach 180 ms Ruhe vollständig neu gezeichnet.
  */
+/** Ab dieser Zoomstufe (Pixel je km) erscheinen alle Gemeindenamen zugleich */
+const LABEL_PXKM = 7.5;
+
 export type MapStyle = "flaechen" | "heat" | "punkte" | "blasen";
 
 export class MapEngine {
@@ -238,9 +241,10 @@ export class MapEngine {
 
   private fitView(bb: BBox, pad?: number): View {
     const small = this.W < 640;
-    const pt = small ? 64 : 24;
-    const pb = small ? 64 : 72;
-    const ps = pad ?? (small ? 16 : 28);
+    /* Handy: unten mehr Rand, dort liegen Suchleiste und Chips über der Karte */
+    const pt = small ? 24 : 24;
+    const pb = small ? 120 : 72;
+    const ps = pad ?? (small ? 4 : 28);
     const w = Math.max(bb[2] - bb[0], 1);
     const h = Math.max(bb[3] - bb[1], 1);
     const k = this.clampK(Math.min((this.W - 2 * ps) / w, (this.H - pt - pb) / h));
@@ -680,8 +684,9 @@ export class MapEngine {
   private drawSums(ctx: CanvasRenderingContext2D) {
     if (!this.badges || this.style !== "flaechen") return;
     const pxkm = this.view!.k * 100;
-    if (pxkm >= 3.2) return;
-    const len = pxkm < 1.2 ? 2 : 5;
+    /* Ab LABEL_PXKM stehen die Zahlen unter den Namen; davor je Land, Kreis bzw. Gemeinde ohne Namen */
+    if (pxkm >= LABEL_PXKM) return;
+    const len = pxkm < 1.2 ? 2 : pxkm < 3.2 ? 5 : 8;
     const sums: Record<string, number> = {};
     for (const [ags, n] of Object.entries(this.badges)) if (n) sums[ags.slice(0, len)] = (sums[ags.slice(0, len)] || 0) + n;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
@@ -710,9 +715,9 @@ export class MapEngine {
     const G = this.geo;
     const L = G.gem;
     const pxkm = this.view!.k * 100;
-    if (pxkm < 3.2 || !L.lp) return;
+    /* Alle Namen erscheinen gemeinsam erst, wenn sie in so gut wie alle Gemeinden passen */
+    if (pxkm < LABEL_PXKM || !L.lp) return;
     const maxHit = Math.max(1, ...Object.values(this.badges ?? {}));
-    const showAll = pxkm >= 7;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -722,20 +727,18 @@ export class MapEngine {
     const cand = cov.slice();
     const placed: number[][] = [];
     const fam = getComputedStyle(document.body).fontFamily;
-    if (showAll) for (let i = 0; i < L.n; i++) if (!covSet.has(i) && this.inView(L.bb[i])) cand.push(i);
+    for (let i = 0; i < L.n; i++) if (!covSet.has(i) && this.inView(L.bb[i])) cand.push(i);
     for (const i of cand) {
       const b = L.bb[i];
       if (!this.inView(b)) continue;
       const [sx, sy0] = this.toScreen(L.lp[2 * i], L.lp[2 * i + 1]);
       /* Blasen: Name über der Blase statt darunter versteckt */
       const sy = this.style === "blasen" && this.badges?.[L.ags[i]] ? sy0 - 24 : sy0;
-      const strong = covSet.has(i);
       const label = L.name[i];
-      /* Treffergebiete: weiße Schrift, wenn sie in die Fläche passt */
+      /* Eingefärbte Treffergebiete immer weiße Schrift, sonst grau – unabhängig von der Breite, damit nichts umspringt */
       ctx.font = "500 12px " + fam;
-      const hit = this.filled() && this.style !== "blasen" && (this.counts[L.ags[i]] || 0) > 0 && (b[2] - b[0]) * this.view!.k > ctx.measureText(label).width * 1.2;
+      const hit = this.filled() && this.style !== "blasen" && (this.counts[L.ags[i]] || 0) > 0;
       const tw = ctx.measureText(label).width;
-      if (!strong && (b[2] - b[0]) * this.view!.k < tw * 0.9) continue;
       const n = this.style !== "flaechen" ? 0 : this.badges?.[L.ags[i]] || 0;
       const pr = n ? this.pillR(ctx, n, maxHit) : 0;
       const r = [Math.min(sx - tw / 2 - 3, sx - pr), sy - 8, Math.max(sx + tw / 2 + 3, sx + pr), sy + (n ? 9 + 2 * pr : 8)];

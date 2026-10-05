@@ -22,7 +22,7 @@ export function SearchFilterPanel() {
           <span aria-live="polite" className="mr-1.5 text-[14px] text-slate-600">
             {res.loading ? "…" : res.total.toLocaleString("de-DE")} Treffer
             {res.updatedAt && (
-              <span className="text-slate-500">
+              <span className="text-slate-500 max-sm:hidden">
                 {" · Stand "}
                 {new Date(res.updatedAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })} Uhr
               </span>

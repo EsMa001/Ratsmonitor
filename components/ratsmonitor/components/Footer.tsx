@@ -4,12 +4,7 @@ import { DarkCta } from "../info/blocks";
 import { useTier } from "../lib/tier";
 import { useBrand, useBrandText } from "../lib/brand";
 
-import { BRANCHEN } from "../info/content";
-
 const GROUPS: { title: string; links: [string, string][] }[] = [
-  { title: "Funktionen", links: [["/funktionen/suche", "Suche"], ["/konto/suchen", "Gespeicherte Suchen"], ["/konto/artikel", "Gespeicherte Artikel"], ["/funktionen/benachrichtigungen", "Benachrichtigungen"], ["/konto/kalender", "Kalender"]] },
-  /* Keine Übersichtsseite für Use Cases: alle Branchen direkt verlinkt */
-  { title: "Use Cases", links: BRANCHEN.map((b) => [`/branchen/${b.slug}`, b.name] as [string, string]) },
   { title: "Informationen", links: [["/preise", "Preismodelle"], ["/faq", "FAQ"], ["/quellen", "Datenabdeckung"], ["/ueber-uns", "Über Ratsmonitor"]] },
   { title: "Rechtliches", links: [["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"]] },
 ];
@@ -34,7 +29,7 @@ export function Footer() {
         <DarkCta title="Fragen oder Anregungen?" sub={`Wir freuen uns über Ihr Feedback zu ${name}.`} action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
       )}</div>}
     <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto grid max-w-page grid-cols-2 gap-x-6 gap-y-6 py-8 sm:gap-8 sm:py-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))]">
+      <div className="mx-auto grid max-w-page grid-cols-2 gap-x-6 gap-y-6 py-8 sm:gap-8 sm:py-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(2,minmax(0,1fr))]">
         <div className="col-span-2 sm:col-span-1">
           <p className="m-0 text-[16px] font-semibold text-slate-900">{name}</p>
           <p className="m-0 mt-2 max-w-[36ch] text-[12px] leading-relaxed sm:text-[14px] text-slate-500">

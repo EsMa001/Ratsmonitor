@@ -71,7 +71,8 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
         aria-pressed={!!savedHit}
         title={savedHit ? "Gespeicherte Suche entfernen" : active ? "Suche speichern" : "Erst suchen oder filtern, dann speichern"}
         aria-label={savedHit ? "Gespeicherte Suche entfernen" : "Suche speichern"}
-        className={`${round} ${savedHit ? "text-teal-600" : "text-slate-700 hover:text-teal-600"}`}
+        /* Nicht ausgegraut: ohne Suche nur nicht klickbar, damit das Herz sichtbar bleibt */
+        className={`${round} disabled:!opacity-100 ${savedHit ? "text-teal-600" : "text-slate-700 enabled:hover:text-teal-600"}`}
       >
         <IconHeart size={20} filled={!!savedHit} />
       </button>

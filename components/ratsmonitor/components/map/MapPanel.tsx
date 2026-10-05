@@ -46,6 +46,47 @@ export function MapPanel({ active }: { active: boolean }) {
     if (!typing) setSettled(filtered);
   }, [typing, filtered]);
   const sectionRef = useRef<HTMLElement>(null);
+  /* Ist die Karte oben unter der angehefteten Kopfzeile verschwunden, rücken die Schalter oben mit nach unten */
+  const [hidden, setHidden] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = sectionRef.current;
+      if (!el) return;
+      const head = document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+      setHidden(Math.max(0, Math.round(head - el.getBoundingClientRect().top)));
+    };
+    const on = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    /* Handy: Safari schiebt die Seite beim Tippen über die Tastatur und scrollt danach nicht zurück.
+       Nach dem Bestätigen der Suche die Karte wieder ganz unter die Kopfzeile holen. */
+    let t = 0;
+    const back = (e: Event) => {
+      if (e.type === "focusout" && (e.target as HTMLElement | null)?.id !== "q") return;
+      if (window.innerWidth >= 768) return;
+      clearTimeout(t);
+      t = window.setTimeout(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const head = document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+        const off = el.getBoundingClientRect().top - head;
+        if (off < -1) window.scrollBy({ top: off, behavior: "smooth" });
+      }, 350);
+    };
+    window.addEventListener("rm:search-confirmed", back);
+    document.addEventListener("focusout", back);
+    window.addEventListener("scroll", on, { passive: true });
+    window.addEventListener("resize", on);
+    return () => {
+      window.removeEventListener("scroll", on);
+      window.removeEventListener("resize", on);
+      window.removeEventListener("rm:search-confirmed", back);
+      document.removeEventListener("focusout", back);
+      clearTimeout(t);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
   const stageRef = useRef<HTMLDivElement>(null);
   const baseRef = useRef<HTMLCanvasElement>(null);
   const overRef = useRef<HTMLCanvasElement>(null);
@@ -184,6 +225,10 @@ export function MapPanel({ active }: { active: boolean }) {
   /* Platz für Vorschläge und Filter innerhalb der Karte (unterhalb der mittigen Suchleiste, im Kartenmodus oberhalb) */
   /* Suchleiste unten: im Kartenmodus und auf dem Handy, sobald gesucht oder gefiltert wurde */
   const low = explore;
+  /* Handy: Schalter unten links (Darstellung, klappt nach oben auf) und unten rechts (Zoom usw.) über der Suchleiste */
+  const mobile = mapW < 768;
+  /* Nicht weiter als bis kurz über die Suchleiste rücken */
+  const topShift = Math.min(hidden, Math.max(0, mapH - barH - 230));
   const below = low ? mapH - 44 - 32 : Math.round(mapH / 2) - 22 - 16;
   /* Neu laden: wie eine frische Karte, alle Filter weg und zurück in den normalen Modus */
   const refresh = () => {
@@ -221,16 +266,16 @@ export function MapPanel({ active }: { active: boolean }) {
       </div>
 
       {explore && (
-        <div className="rm-glass absolute right-4 top-4 z-[6] flex flex-col overflow-hidden rounded-full">
+        <div className="rm-glass absolute right-4 z-[6] flex flex-col overflow-hidden rounded-full" style={mobile ? { bottom: barH + 32 } : { top: 16 + topShift }}>
           <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctlSm}><IconPlus size={16} /></button>
           <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctlSm}><IconMinus size={16} /></button>
           <button type="button" title="Auf Treffer zentrieren" aria-label="Auf Treffer zentrieren" onClick={() => center(true)} className={ctlSm}><IconCenter size={16} /></button>
           <button type="button" title="Karte neu laden" aria-label="Karte neu laden" onClick={refresh} className={ctlSm}><IconReset size={16} /></button>
         </div>
       )}
-      {/* Darstellung oben links (Handy: unten links über der Suchleiste, klappt nach oben auf); eine weiße Kugel gleitet zur gewählten Darstellung */}
+      {/* Darstellung oben links (rückt unter der Kopfzeile mit), klappt nach unten auf; Handy: unten links, klappt nach oben auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
       {explore && (
-        <div className={`rm-glass absolute left-4 z-[7] flex rounded-full ${mapW < 768 ? "flex-col-reverse" : "flex-col"}`} style={mapW < 768 ? { bottom: barH + 32 } : { top: 16 }}>
+        <div className={`rm-glass absolute left-4 z-[7] flex rounded-full ${mobile ? "flex-col-reverse" : "flex-col"}`} style={mobile ? { bottom: barH + 32 } : { top: 16 + topShift }}>
           <button type="button" title="Darstellung" aria-label="Darstellung der Karte" aria-expanded={styleOpen} onClick={() => setStyleOpen((o) => !o)} className={`${ctl} ${styleOpen ? "!text-slate-900" : ""}`}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 13 9 5 9-5" /></svg>
           </button>
