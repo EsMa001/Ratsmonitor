@@ -9,7 +9,7 @@
 // Gebiet: name as in the catalog, catalog id or official key; Land: name or two-digit key where a name occurs twice;
 // Adresse: the page of the system (https://buergerinfo-ort.digitalfabrix.de/, https://ort.gremien.info/ …).
 // A found address is no proof: verify.mjs reads it like every link and takes it only if the system names the area,
-// shows public agenda items of the last three months and robots.txt allows it (or a consent covers it).
+// shows public agenda items of the last three months (robots.txt is recorded, not obeyed: robots-policy.mjs).
 import fs from 'node:fs';
 import {CATALOG,landName} from '../../shared/catalog.mjs';
 import {loadAreas} from './areas.mjs';

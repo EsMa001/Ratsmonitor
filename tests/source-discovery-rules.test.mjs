@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
-import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity} from '../scripts/source-discovery/rules.mjs';
+import {fileURLToPath} from 'node:url';
+import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors} from '../scripts/source-discovery/rules.mjs';
 import {foreignOwner,aliasInAddress,nameParts,ALIASES} from '../scripts/source-discovery/areas.mjs';
 import {CATALOG} from '../shared/catalog.mjs';
 const area=id=>CATALOG.find(a=>a.id===id);
@@ -160,5 +161,27 @@ test('crawl.mjs and verify.mjs apply these rules: no search next to a refused pa
  // findSessionNet asks robots.txt before every entry page.
  const nearby=verify.slice(verify.indexOf('async function findSessionNet'),verify.indexOf('return null;',verify.indexOf('async function findSessionNet')));
  assert.ok(nearby.indexOf("robotsAllow(base+'si0040.'+extension)")>0&&nearby.indexOf("robotsAllow(base+'si0040.'+extension)")<nearby.indexOf("page(base+'si0040.'+extension"));
- for(const file of ['crawl.mjs','verify.mjs','rules.mjs','areas.mjs'])execFileSync(process.execPath,['--check',new URL('../scripts/source-discovery/'+file,import.meta.url).pathname]);
+ for(const file of ['crawl.mjs','verify.mjs','rules.mjs','areas.mjs'])execFileSync(process.execPath,['--check',fileURLToPath(new URL('../scripts/source-discovery/'+file,import.meta.url))]);
+});
+
+test('hosted platforms: digitalfabriX is asked on its info page; a page names its area in text, title or the logo title',()=>{
+ // Nachgebildet nach den öffentlichen Seiten vom 05.10.2026: die Startseite von digitalfabriX leitet nur weiter, die
+ // Infoseite nennt den Mandanten; ALLRIS bei sitzung-mv.de nennt das Amt nur im Titel des Logos.
+ assert.equal(HOSTED.find(p=>p.name==='digitalfabriX').path,'/info.asp');
+ const aholming=area('de-09271111'),goldberg=area('de-130765656');
+ const redirect='<html><head><meta http-equiv="REFRESH" content="0; URL=default.asp"><meta name="sessionnet" content="1"><title></title></head><body><a href="default.asp">WEITERLEITUNG</a></body></html>';
+ assert.equal(pageNamesArea(redirect,aholming),false);
+ assert.equal(pageNamesArea('<title>SessionNet | B&uuml;rgerinfoportal der Gemeinde Aholming</title>',aholming),true);
+ const allris='<title>ALLRIS - Sitzungen Kalender</title><body><span id="logo" title="Amt Goldberg-Mildenitz"></span><a href="si010">Kalender</a></body>';
+ assert.equal(pageNamesArea(allris,goldberg),true);
+ assert.equal(pageNamesArea(allris.replace('Goldberg-Mildenitz','Usedom-Nord'),goldberg),false,'another Amt on the same platform');
+});
+
+test('links of a page: in quotes or without them, with the title as text, frames as embedded; no script or mail links',()=>{
+ // Nachgebildet: Rödermark schreibt den Link auf sein ALLRIS ohne Anführungszeichen.
+ const html='<a href=https://www.roedermark.sitzung-online.de/public/ class=nav>Ratsinformation</a> <a href="/rathaus/politik" title="Gremien">Politik</a> <a href="javascript:void(0)">x</a> <a href="mailto:a@b.de">Mail</a> <iframe src="https://ris.beispiel.de/bi/"></iframe>';
+ assert.deepEqual(anchors(html,'https://www.roedermark.de/'),[
+  {url:'https://www.roedermark.sitzung-online.de/public/',text:'Ratsinformation'},
+  {url:'https://www.roedermark.de/rathaus/politik',text:'Politik Gremien'},
+  {url:'https://ris.beispiel.de/bi/',text:'(eingebettet)'}]);
 });

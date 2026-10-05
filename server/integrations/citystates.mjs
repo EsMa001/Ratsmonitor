@@ -1,19 +1,22 @@
 // Readers for the two city states. Both are one area in the catalog; their district assemblies keep their own systems.
 //
+// robots.txt is recorded, not obeyed (robots-policy.mjs, decision of 05.10.2026); robotsGate opens every address unless
+// ROBOTS_POLICY=obey. A technical refusal (HTTP 401/403, a firewall) still ends the reading of that system.
+//
 // Hamburg (adapter "hamburg-transparenz"): the systems of the seven Bezirksversammlungen (sitzungsdienst-<bezirk>.hamburg.de)
 // refuse programs in robots.txt. The Transparenzportal publishes their papers (Drucksachen) under the Hamburg
 // Transparency Act (HmbTG) as datasets of an open CKAN interface, licence dl-de/by-2.0. This reader asks only that
-// interface (package_search), after robots.txt of the portal allowed it. Links into the district systems are kept as
-// links and never requested. The portal lists papers, not meetings: a topic carries the paper and its date of
-// publication, no agenda and no result.
+// interface (package_search). Links into the district systems are kept as links and never requested. The portal lists
+// papers, not meetings: a topic carries the paper and its date of publication, no agenda and no result.
 //
 // Berlin (adapter "oparl-bezirke"): the twelve Bezirksverordnetenversammlungen publish their OParl interfaces as open
-// data (daten.berlin.de) but refuse programs in robots.txt and with HTTP 403. Without a consent recorded in the catalog
-// entry (consent: {by, date, scope}) it reads only districts whose robots.txt allows the OParl path (recorded by
-// scripts/source-discovery/stadtstaaten.mjs and checked again before each import); with one, every listed district
-// system. Each is read with the regional OParl reader; the district is named in each committee.
+// data (daten.berlin.de); their systems answered programs with HTTP 403 (05.10.2026). With a consent recorded in the
+// catalog entry (consent: {by, date, scope}) every listed district system is read, without one every system that does
+// not refuse technically (eligibleSystems). Each is read with the regional OParl reader; the district is named in each
+// committee.
 import {fetchText,text} from './sessionnet.mjs';
 import {robotsGate} from './website.mjs';
+import {obeyRobots} from './robots-policy.mjs';
 import {windowStart} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
 import {sourceDecision} from './source-fields.mjs';
@@ -23,7 +26,7 @@ import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 
 export const HAMBURG_DISTRICTS=['Altona','Bergedorf','Eimsbüttel','Hamburg-Mitte','Hamburg-Nord','Harburg','Wandsbek'];
 export const HAMBURG_NOTE='Drucksachen der Bezirksversammlungen aus dem Transparenzportal; ohne Sitzungskalender, Tagesordnung und Ergebnis.';
-export const BERLIN_CONSENT_MISSING='Freigabe fehlt: Die Systeme der Bezirksverordnetenversammlungen untersagen Programmen den Abruf (robots.txt, HTTP 403). Ohne eingetragene Freigabe wird nichts abgerufen.';
+export const BERLIN_CONSENT_MISSING='Freigabe fehlt: Die Systeme der Bezirksverordnetenversammlungen sperren Programme technisch aus (HTTP 403). Ohne eingetragene Freigabe wird nichts abgerufen.';
 const API='api/3/action/package_search';
 const ROWS=100,MAX_PAGES=10;
 const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
@@ -61,6 +64,10 @@ export function hamburgPaper(pkg,district,source){
  return {district,reference,title:subject||`Drucksache ${reference}`,notes:notes.slice(0,4000),date,url:page||documents[0].url,documents,modified:isoDay(pkg.metadata_modified)};
 }
 
+// A refusal (HTTP 401/403, or 429 after the budget's one retry) ends the reading of that server for this import: no
+// further request goes there, also not for the next district or period.
+const refusedBy=e=>/HTTP (?:401|403|429)\b/.test(String(e?.message||e));
+
 export async function collectHamburgTransparenz(source,{now=new Date(),get=fetchText,maxDurationMs=240000,onProgress=()=>{},window:lookback}={}){
  const fromDay=windowStart(now,lookback).toISOString().slice(0,10),today=now.toISOString().slice(0,10);
  const read=budgeted(get,maxDurationMs,2),issues=[],warnings=[],papers=new Map();
@@ -83,7 +90,10 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
     if(page===MAX_PAGES-1&&Number(body.result.count)>(page+1)*ROWS)limited=true;
    }
    if(!found)warnings.push(`Keine Drucksache der Bezirksversammlung ${district} im Zeitraum gefunden.`);
-  }catch(e){issues.push(`Bezirk ${district}: ${e.message}`);}
+  }catch(e){
+   issues.push(`Bezirk ${district}: ${e.message}`);
+   if(refusedBy(e)){issues.push('Das Transparenzportal hat den Abruf abgewiesen; in diesem Import keine weiteren Anfragen dorthin.');break;}
+  }
   onProgress(`${source.id}: Bezirk ${district}, ${found} Drucksachen`);
  }
  if(limited)issues.push(`Mehr als ${ROWS*MAX_PAGES} geänderte Datensätze je Bezirk; ein kürzerer Zeitraum liest sie vollständig.`);
@@ -110,12 +120,16 @@ export function consentValid(consent){
 }
 
 /**
- * Districts that may be read: with a valid consent every listed system; without one only those whose robots.txt the
- * check script found to allow the OParl path (robots: 'erlaubt'). robots.txt is read again before each import.
+ * Districts that may be read: with a valid consent every listed system. Without one, robots.txt is recorded, not
+ * obeyed (robots-policy.mjs): every system that does not refuse technically, i.e. the check script saw no HTTP 403 and
+ * did not find it to be no OParl system (oparl:false). With ROBOTS_POLICY=obey only those whose robots.txt allows the
+ * OParl path (robots: 'erlaubt'), read again before each import.
  */
 export function eligibleSystems(source){
  const systems=(source.systems||[]).filter(s=>s&&s.district&&https(s.system));
- return consentValid(source.consent)?systems:systems.filter(s=>s.robots==='erlaubt');
+ if(consentValid(source.consent))return systems;
+ if(!obeyRobots())return systems.filter(s=>s.oparl!==false&&!/HTTP 40[13]\b/.test(String(s.error||'')));
+ return systems.filter(s=>s.robots==='erlaubt');
 }
 export async function collectOparlDistricts(source,options={}){
  const now=options.now||new Date(),fromDay=windowStart(now,options.window).toISOString().slice(0,10),get=options.get||fetchText;
@@ -127,7 +141,8 @@ export async function collectOparlDistricts(source,options={}){
  const topics=[],marks={},issues=[],warnings=[];let meetings=0,read=0,complete=true,resumable=false,used=0;
  for(const s of systems){
   try{
-   // Without consent robots.txt decides again before the first request to the district system.
+   // Without consent and with ROBOTS_POLICY=obey robots.txt decides again before the first request (robotsGate is open
+   // otherwise; a 403 of the system ends its reading below).
    if(!consent){const origin=new URL(s.system).origin,allows=await robotsGate(get,{base:origin+'/'});if(!(await allows(s.system))){issues.push(`BVV ${s.district}: `+(allows.issues[0]||'robots.txt untersagt den Abruf der OParl-Schnittstelle; nichts gelesen.'));complete=false;continue;}}
    const d=await collectRegionalOparl({...source,name:'BVV '+s.district,system:s.system,...(s.body?{body:s.body}:{})},options);used++;
    for(const t of d.topics){t.committee=prefix(s.district,t.committee);for(const e of t.events||[])e.committee=prefix(s.district,e.committee);topics.push(t);}
@@ -136,7 +151,7 @@ export async function collectOparlDistricts(source,options={}){
    issues.push(...(d.coverage.issues||[]).filter(i=>!/^Noch keine Artikel/.test(i)).map(i=>`BVV ${s.district}: ${i}`));
   }catch(e){complete=false;issues.push(`BVV ${s.district}: ${e.message}`);}
  }
- const left=12-systems.length;if(left>0)warnings.push(`${left} von 12 Bezirken nicht gelesen (${consent?'keine OParl-Adresse eingetragen':'ohne Freigabe; robots.txt untersagt den Abruf oder keine Adresse'}).`);
+ const left=12-systems.length;if(left>0)warnings.push(`${left} von 12 Bezirken nicht gelesen (${consent?'keine OParl-Adresse eingetragen':'ohne Freigabe; technische Sperre (HTTP 403), robots.txt oder keine Adresse'}).`);
  return {topics,marks,readMeetings:read,coverage:{regionId:source.id,method:'oparl',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings,sourceCount:used,...(resumable?{resumable:true}:{}),...(warnings.length?{warnings}:{}),...(consent?{consent:{by:source.consent.by,date:source.consent.date}}:{}),quiet:topics.length===0&&issues.length===0,complete:complete&&issues.length===0&&topics.length>0&&left===0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:systems[0].system}};
 }
 const prefix=(district,committee)=>{const c=String(committee||'').trim();return norm(c).includes(norm(district))?c:`BVV ${district}: ${c||'Öffentliche Sitzung'}`;};
@@ -211,6 +226,7 @@ export async function collectPardok(source,{now=new Date(),get=fetchText,stream=
    // The file of a period that has not begun yet does not exist.
    if(/HTTP 404/.test(e.message)){missing++;continue;}
    issues.push(`Wahlperiode ${period}: `+(/abort|timeout/i.test(e.message)?'Zeitbudget der Quelle erreicht; die Datei wurde nicht vollständig geladen.':e.message));
+   if(refusedBy(e))break;
   }
  }
  if(!read&&!issues.length)issues.push('Keine Datei der Parlamentsdokumentation gefunden ('+periods.map(p=>'pardok-wp'+p+'.xml').join(', ')+').');
@@ -232,11 +248,11 @@ export async function collectPardok(source,{now=new Date(),get=fetchText,stream=
  return {topics,marks:{},readMeetings:0,coverage:coverage({papers:topics.length,...(warnings.length?{warnings}:{}),quiet:topics.length===0&&issues.length===0,complete:issues.length===0&&topics.length>0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.']})};
 }
 
-/** Berlin: the Abgeordnetenhaus always; the district assemblies where robots.txt or a consent allows it. */
+/** Berlin: the Abgeordnetenhaus always; the district assemblies where no technical refusal stands in the way or a consent allows it. */
 export async function collectBerlin(source,options={}){
  const house=await collectPardok(source,options);
  if(!eligibleSystems(source).length){
-  const note=(source.systems||[]).length?'Bezirksverordnetenversammlungen nicht gelesen: '+BERLIN_CONSENT_MISSING:'Bezirksverordnetenversammlungen nicht gelesen: Freigabe fehlt (robots.txt, HTTP 403).';
+  const note=(source.systems||[]).length?'Bezirksverordnetenversammlungen nicht gelesen: '+BERLIN_CONSENT_MISSING:'Bezirksverordnetenversammlungen nicht gelesen: Freigabe fehlt (HTTP 403).';
   house.coverage.warnings=[...(house.coverage.warnings||[]),note];return house;
  }
  const districts=await collectOparlDistricts(source,options);

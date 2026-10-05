@@ -5,17 +5,19 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted,isRejectionPage,REFUSED} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {parseRobots,robotsAllow} from './robots.mjs';
+import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf} from './website-feeds.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST} from './website-feeds.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
 // its CMS offers anyway (RSS/Atom, iCal, WordPress REST, JSON-LD events, sitemap.xml). The catalog entry names the pages
 // and feeds (scripts/source-discovery/website.mjs finds them); this reader guesses no addresses.
 // - Only the site itself: https on the origin of base and of alsoFrom (same registrable domain). Redirects are followed
 //   by hand and only within those origins; hosts of publishers, cloud storage and share services are never asked.
-// - robots.txt of each origin is read before its first other request (RFC 9309). 4xx: no robots.txt, all allowed;
-//   5xx or no answer: nothing is read from that origin. Forms, the site's search, logins and browser disguise are never
+// - robots.txt is recorded, not obeyed (robots-policy.mjs, decision of 05.10.2026). With ROBOTS_POLICY=obey: robots.txt
+//   of each origin is read before its first other request (RFC 9309); 4xx: no robots.txt, all allowed; 5xx or no
+//   answer: nothing is read from that origin. Either way: forms, the site's search, logins and browser disguise are never
 //   used; a refused request is not repeated except by the budget's own retry of transient errors, and after HTTP 403
 //   or 429 that origin is not asked again in this import. Pages of a council information system are never read, also
 //   not on the town's own domain (isRisLink): an area may be here because its RIS forbids programs.
@@ -37,7 +39,8 @@ const related=(a,b)=>a===b||a.endsWith('.'+b)||b.endsWith('.'+a);
 function origins(source){
  let base;try{base=new URL(source.base);}catch{return [];}
  const out=base.protocol==='https:'?[base.origin]:[];
- for(const extra of source.alsoFrom||[]){try{const u=new URL(extra);if(u.protocol==='https:'&&related(siteHost(u.hostname),siteHost(base.hostname))&&!out.includes(u.origin))out.push(u.origin);}catch{/* not an address */}}
+ // The file storage of the website's CMS (CMS_FILE_HOST) counts as well, but only where the entry names it.
+ for(const extra of source.alsoFrom||[]){try{const u=new URL(extra);if(u.protocol==='https:'&&(related(siteHost(u.hostname),siteHost(base.hostname))||CMS_FILE_HOST.test(u.hostname))&&!out.includes(u.origin))out.push(u.origin);}catch{/* not an address */}}
  return out;
 }
 /** The address without fragment if it is https on the origin of base or of alsoFrom and carries no credentials. */
@@ -121,6 +124,10 @@ export async function readPdfText(bytes){
  * Returns allows(url) → Promise<boolean>; allows.issues names origins that could not be checked.
  */
 export async function robotsGate(get,source){
+ // robots.txt is recorded, not obeyed (robots-policy.mjs): every address is open here. Refusals still close an origin
+ // (HTTP 403/429 in fetchSite and the reader), and pages of a council system, the search and the non-public part stay
+ // closed as before. scripts/source-discovery/robots.mjs records what robots.txt says.
+ if(!obeyRobots()){const open=async()=>true;open.issues=[];return open;}
  const files=new Map(),issues=[];
  const load=origin=>{
   if(!files.has(origin))files.set(origin,(async()=>{

@@ -230,3 +230,11 @@ test('detectRubin recognises the hosting, the older pages and the empty single-p
  assert.equal(detectRubin('https://ris.amt.gremien.info/').base,'https://ris.amt.gremien.info/');
  assert.equal(detectRubin('not a url'),null);
 });
+
+test('rubinBodyMatch: the "Nationalparkverbandsgemeinde" Herrstein-Rhaunen is the Verbandsgemeinde, its Ortsgemeinden belong to it',()=>{
+ /* Nachgebildet im Aufbau der Körperschaftsliste von herrstein-rhaunen.gremien.info (Namen wie im System, Kennungen erfunden) */
+ const vg=area('de-071345005'),list=[{id:'NLPVG',name:'Nationalparkverbandsgemeinde Herrstein-Rhaunen'},...vg.members.slice(0,3).map((m,i)=>({id:'OG'+i,name:'Ortsgemeinde '+m.name})),{id:'ZV',name:'Zweckverband Wasserversorgung Hunsrück'}];
+ assert.deepEqual(rubinBodyMatch(list,vg),['NLPVG','OG0','OG1','OG2']);
+ /* Ohne die eigene Verbandsgemeinde bleibt es bei der bisherigen Regel: nichts zuordnen */
+ assert.deepEqual(rubinBodyMatch(list.filter(b=>b.id!=='NLPVG').concat([{id:'VGX',name:'Verbandsgemeinde Kirner Land'}]),vg),[]);
+});

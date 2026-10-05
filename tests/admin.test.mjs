@@ -7,7 +7,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
 import ts from 'typescript';
 import {adminAccess,claimAdmin,requireAdminAccess,requireSameOrigin} from '../server/integrations/admin-access.mjs';
-import {loadAdminData,adminReview} from '../server/integrations/admin-data.mjs';
+import {loadAdminData,adminReview,D1_MAX_PARAMETERS} from '../server/integrations/admin-data.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
 import {filterAdminSources,sourcesCsv} from '../shared/admin.mjs';
 
@@ -102,6 +102,16 @@ test('figures per area are computed step by step within a budget and fall back t
  const old=await loadAdminData(legacy,{now:new Date('2026-09-28T12:00:00Z'),review:false});
  assert.equal(old.counts.online,3);assert.equal(old.counts.unlabelled,1);assert.equal(old.statsPending,undefined);
 });
+
+test('figures per area bind at most 100 parameters per statement, as D1 allows',async()=>{
+ reset();const at=new Date('2026-09-27T12:00:00Z');
+ for(let i=0;i<150;i++)insert('t'+i,{regionId:'area-'+String(i).padStart(3,'0')});
+ // D1 refuses a statement with more than 100 bound parameters ("too many SQL variables"); node:sqlite allows 32766.
+ const counted=[],strict={prepare(sql){const s=db.prepare(sql),bind=s.bind;s.bind=(...v)=>{counted.push(v.length);if(v.length>D1_MAX_PARAMETERS)throw Error('D1_ERROR: too many SQL variables');return bind.apply(s,v);};return s;},batch:statements=>db.batch(statements)};
+ const data=await loadAdminData(strict,{now:at,review:false});
+ assert.equal(data.statsPending,undefined);assert.equal(data.counts.online,150);
+ assert.ok(Math.max(...counted)<=D1_MAX_PARAMETERS&&counted.some(n=>n===D1_MAX_PARAMETERS),'the chunks fill the limit and stay within it');
+});
 test('review filters stay parameterized, exclude aliases, constrain region and cap result rows',async()=>{
  reset();for(let i=0;i<30;i++)insert('open-'+i,{classification:{primary:'unklar'}});
  insert('elsewhere',{regionId:'muenster',classification:{primary:'unklar'},status:'unknown'});
@@ -111,6 +121,33 @@ test('review filters stay parameterized, exclude aliases, constrain region and c
  // A total the caller already knows is taken as given; the list is still read.
  const known=await adminReview(db,'labels','all',{total:31});assert.equal(known.total,31);assert.equal(known.articles.length,25);
  await assert.rejects(adminReview(db,'labels',"' OR 1=1 --"));
+});
+
+test('review totals come from the figures per area; changed areas are counted exactly; no full scan over all areas',async()=>{
+ reset();for(const t of ['region_stats','region_revisions'])sqlite.exec('DELETE FROM '+t);
+ for(let i=0;i<4;i++)insert('lab-'+i,{classification:{primary:'unklar'}});
+ insert('done',{classification:{primary:'bildung'}});insert('ms',{regionId:'muenster',classification:{primary:'unklar'}});
+ const asked=[],watched={prepare(sql){asked.push(sql);return db.prepare(sql);},batch:statements=>db.batch(statements)};
+ const scans=()=>asked.filter(q=>/FROM topics WHERE/.test(q)&&!/region_id IN|region_id=\?/.test(q)&&!/INDEXED BY/.test(q));
+ /* Noch keine Kennzahlen: beide Gebiete werden einzeln gezählt, die Summe stimmt */
+ assert.equal((await adminReview(watched,'labels','all')).total,5);
+ await loadAdminData(db,{now:new Date('2026-09-27T12:00:00Z'),review:false});
+ asked.length=0;
+ const fresh=await adminReview(watched,'labels','all');
+ assert.equal(fresh.total,5);assert.equal(fresh.articles.length,5);assert.deepEqual(scans(),[],'no scan of all reports');
+ /* Ein Gebiet ändert sich nach der Berechnung: es wird exakt nachgezählt */
+ insert('lab-new',{classification:{primary:'unklar'}});
+ assert.equal((await adminReview(watched,'labels','all')).total,6);
+ /* Kein Treffer: keine Listenabfrage */
+ asked.length=0;
+ assert.deepEqual(await adminReview(watched,'identity','all'),{issue:'identity',total:0,articles:[]});
+ assert.ok(!asked.some(q=>/ORDER BY updated_at/.test(q)));
+ /* Häufiger Grund über alle Gebiete: vom neuesten Vorgang an über den Index; seltener Grund: nur in seinen Gebieten */
+ insert('open-status',{status:'unknown'});
+ asked.length=0;assert.equal((await adminReview(watched,'status','all')).total,1);
+ assert.ok(asked.some(q=>/INDEXED BY idx_topics_canonical_updated/.test(q)&&/ORDER BY updated_at DESC/.test(q)));
+ asked.length=0;await adminReview(watched,'labels','all');
+ assert.ok(asked.some(q=>/region_id IN \(\?,\?\)/.test(q)&&/ORDER BY updated_at DESC/.test(q)),'5 matches in two areas: read there');
 });
 test('CSV export neutralizes spreadsheet formulas and escapes delimiters and quotes',()=>{
  const csv=sourcesCsv([{name:'=HYPERLINK("x")',ags:'055',kind:'city',count:1,state:'Teilstand',issues:['note; "quoted"']}]);

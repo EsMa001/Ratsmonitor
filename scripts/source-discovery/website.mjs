@@ -3,21 +3,24 @@
 // calendars, WordPress API, sitemap) and checks them with the reader "website" (server/integrations/website.mjs).
 // A source is accepted only if the reader returns public agenda items and the notices name the area. No database writes.
 //
-// Areas whose RIS forbids programs (robots.txt, HTTP 403, web firewall) are checked as well: the municipality's website
-// is a publication of its own on another machine, and the notices are published there by law. Reading them works
-// around no block of the RIS operator as long as the website's robots.txt allows it and no page of the blocked system
-// is read; links to an RIS (host or path of a known system, also on the municipality's own domain) are never followed.
+// Areas whose RIS refuses programs (HTTP 403, web firewall) are checked as well: the municipality's website is a
+// publication of its own on another machine, and the notices are published there by law. Reading them works around no
+// block of the RIS operator as long as no page of the blocked system is read; links to an RIS (host or path of a known
+// system, also on the municipality's own domain) are never followed.
 //
 // Rules: only the website itself: the host of its start page, its subdomains and parent hosts on one registrable domain
 // (redirects followed by hand and only there; a sibling under a shared domain is another website); robots.txt of every
-// origin before its first page (RFC 9309; no answer: nothing from that origin); no forms, no site search, no login, no
-// browser identity; no repetition after HTTP 403 or 429, the origin is then left for the rest of the run. At most two
+// origin is read before its first page, for its sitemaps and as record, but not obeyed (robots-policy.mjs; with
+// ROBOTS_POLICY=obey a disallowed path or a robots.txt without answer is not read); a robots.txt answered with 429
+// closes the origin; no forms, no site search, no login, no browser identity; no repetition after HTTP 403 or 429, the
+// origin is then left for the rest of the run. At most two
 // requests at a time per server (domain and IP address, as verify.mjs) and at least one second between two of them;
 // this holds for every single request of the reader's check too, which asks with the identity of the search.
 //
 // Run: node scripts/source-discovery/website.mjs [id,id,…]   (DIR, LAND, AREAS as the other steps)
 //  ONLY_FILE=<one id per line>, REASONS='kein Link|Kein unterstütztes' (regular expression on the reason in <DIR>open.json),
-//  WINDOW (3m), MAX_PAGES (25 pages of best-first search per website), WORKERS (12 areas at once).
+//  WINDOW (3m), MAX_PAGES (25 pages of best-first search per website), WORKERS (12 areas at once), SERVER_LIMIT (2) and
+//  SERVER_PAUSE_MS (1000, at least) for a gentler run.
 // Writes <DIR>candidates-website.json (what was found per website) and <DIR>verified-website.json (format of verify.mjs);
 // build.mjs takes the accepted ones where no other check accepted the area.
 import fs from 'node:fs';
@@ -25,7 +28,8 @@ import dns from 'node:dns/promises';
 import {loadAreas,skipReason} from './areas.mjs';
 import {NRW_SOURCES} from '../../server/integrations/source-catalog.mjs';
 import {robotsVerdict} from '../../server/integrations/robots.mjs';
-import {listPageScore,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,jsonLdEvents,generatorOf,sessionScore,SESSION_THRESHOLD} from '../../server/integrations/website-feeds.mjs';
+import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
+import {listPageScore,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,jsonLdEvents,generatorOf,sessionScore,SESSION_THRESHOLD,documentLinks,isCmsFileUrl} from '../../server/integrations/website-feeds.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes} from '../../server/integrations/website.mjs';
 import {registrableDomain,sameSite,isRisLink,serverGate,readerFetch,robotsRefused,navLinks,pickListPages,orderSitemaps,sessionUrls,sitemapPages,selectAreas,sitesOf,expectNames,buildSource,hasMaterial,checkOf,acceptedEntry,reasonOf,bestReason,summary,REASONS} from './website-plan.mjs';
 const dir=process.env.DIR||'tmp/source-discovery/';
@@ -49,7 +53,8 @@ const todo=selectAreas(regions,{connected,done,only,reasons,open,skip:skipReason
 // --- consideration per server ------------------------------------------------------------------------------------------
 // Many small municipal websites share one hosting machine; only its address reveals that. Locks per registrable domain
 // and per IP address, always in this order, so two requests never wait for each other.
-const PER_SERVER=2,GAP=1000,addresses=new Map();
+// SERVER_LIMIT and SERVER_PAUSE_MS make a run gentler for hosts that refuse busier ones (verwaltungsportal.de).
+const PER_SERVER=Math.min(2,Number(process.env.SERVER_LIMIT)||2),GAP=Math.max(1000,Number(process.env.SERVER_PAUSE_MS)||1000),addresses=new Map();
 const addressOf=host=>{if(!addresses.has(host))addresses.set(host,dns.resolve4(host).then(list=>list.sort()[0],()=>null));return addresses.get(host);};
 const withHost=serverGate({perServer:PER_SERVER,gap:GAP,keysOf:async url=>{const host=new URL(url).hostname,address=await addressOf(host);return ['domain:'+registrableDomain(host),...(address?['ip:'+address]:[])];}});
 
@@ -96,7 +101,9 @@ async function get(url,host,{accept='text/html,application/xhtml+xml',types=/htm
   const origin=new URL(url).origin;
   if(blocked.has(origin))return {status:blocked.get(origin),url,body:'',blocked:true};
   const robots=await robotsOf(url);
-  if(robots==='verboten'||robots==='unklar')return {status:0,url,body:'',robots};
+  // A refusal of robots.txt itself (429) closed the origin; otherwise robots.txt decides only with ROBOTS_POLICY=obey.
+  if(blocked.has(origin))return {status:blocked.get(origin),url,body:'',blocked:true};
+  if(obeyRobots()&&(robots==='verboten'||robots==='unklar'))return {status:0,url,body:'',robots};
   let r;
   try{r=await withHost(url,async()=>{
    const res=await fetch(url,{redirect:'manual',signal:AbortSignal.timeout(TIMEOUT),headers:{'User-Agent':UA,Accept:accept}});
@@ -133,8 +140,10 @@ async function searchSite(site){
  if(home.status!==200)return row;
  const origin=new URL(home.url).origin,host=new URL(home.url).hostname;
  row.base=origin+'/';row.generator=generatorOf(home.body);
- const scored=new Map(),feeds=new Map(),visited=new Set([home.url,secure(site)]);let wp=null;
+ const scored=new Map(),feeds=new Map(),visited=new Set([home.url,secure(site)]),files=new Map();let wp=null;
  const look=page=>{
+  // Documents of meetings that the page links on the file storage of the website's CMS (daten2.verwaltungsportal.de).
+  files.set(page.url,documentLinks(page.body,page.url).filter(l=>isCmsFileUrl(l.url)&&sessionScore(l)>=SESSION_THRESHOLD).map(l=>l.url).slice(0,3));
   const events=jsonLdEvents(page.body,page.url).filter(e=>isSession(e.url,e.name)).length;row.events+=events;
   scored.set(page.url,listPageScore(page.body,page.url)+events);
   for(const f of feedLinks(page.body,page.url))if(sameSite(f.url,host)&&!isRisLink(f.url)&&!feeds.has(secure(f.url)))feeds.set(secure(f.url),f);
@@ -162,6 +171,7 @@ async function searchSite(site){
  }
  row.pages=[...scored].map(([url,score])=>({url,score})).sort((a,b)=>b.score-a.score).slice(0,10);
  row.listPages=pickListPages(row.pages);
+ row.files=[...new Set(row.listPages.flatMap(u=>files.get(u)||[]))];
  // Feeds and calendars count only if one of their entries looks like a meeting.
  const list=[...feeds.values()];
  for(const f of list.filter(f=>f.type!=='ics').slice(0,MAX_FEEDS)){
@@ -173,7 +183,7 @@ async function searchSite(site){
   const events=parseIcs(p.body);row.ics.push({url:p.url,events:events.length,sessionEvents:events.filter(e=>isSession(e.url,e.summary)).length});
  }
  // The WordPress API only where the site announces it and robots.txt allows its path.
- if(wp&&sameSite(wp,host)&&!isRisLink(wp)){const v=await robotsOf(secure(wp));if(v==='erlaubt'||v==='keine')row.wp=secure(wp);else row.log.push('WordPress-API: robots.txt '+v);}
+ if(wp&&sameSite(wp,host)&&!isRisLink(wp)){const v=await robotsOf(secure(wp));if(!blocked.has(new URL(secure(wp)).origin)&&(!obeyRobots()||v==='erlaubt'||v==='keine'))row.wp=secure(wp);else row.log.push('WordPress-API: robots.txt '+v);}
  if(blocked.has(origin))row.log.push('Abbruch: HTTP '+blocked.get(origin));
  row.log=row.log.slice(0,12);
  return row;
@@ -189,7 +199,7 @@ async function searchArea(area){
   cand.found.push(row);
   const note={site,base:row.base,status:row.status,...(row.robots?{robots:row.robots}:{}),...(row.error?{error:row.error}:{}),generator:row.generator||null};
   if(row.status!==200){why.push(reasonOf({robots:row.robots,status:row.status}));result.tried.push(note);continue;}
-  const source=buildSource({area,base:row.base,pages:row.listPages,feeds:row.feeds.filter(f=>f.sessionEntries>0).map(f=>f.url),ics:row.ics.filter(f=>f.sessionEvents>0).map(f=>f.url),wp:row.wp,sitemap:row.sitemaps.map(s=>s.url)});
+  const source=buildSource({area,base:row.base,pages:row.listPages,feeds:row.feeds.filter(f=>f.sessionEntries>0).map(f=>f.url),ics:row.ics.filter(f=>f.sessionEvents>0).map(f=>f.url),wp:row.wp,sitemap:row.sitemaps.map(s=>s.url),files:row.files||[]});
   note.source=source;
   if(!hasMaterial(source)){why.push(REASONS.nothing);result.tried.push(note);continue;}
   let check=null,error=null;

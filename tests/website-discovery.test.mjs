@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {registrableDomain,sameSite,isRisLink,serverGate,readerFetch,robotsRefused,navScore,navLinks,listKey,pickListPages,orderSitemaps,sessionUrls,sitemapPages,selectAreas,sitesOf,expectNames,buildSource,hasMaterial,checkOf,isAccepted,acceptedEntry,reasonOf,bestReason,cmsOf,summary,REASONS,API_CHECK,MIN_LIST_SCORE} from '../scripts/source-discovery/website-plan.mjs';
 // Nachgebildete Startseite (nicht live): Gemeinde Musterdorf unter erfundenen Adressen *.example.test, mit Navigation,
 // einem Link auf ein RIS (auf eigener Unterdomain und im eigenen Pfad), einem Verlag, einer Amtsblatt-Unterdomain und
@@ -151,7 +152,7 @@ test('website search: a check is taken only with public items that name the area
  assert.deepEqual(checkOf(undefined),{topics:0,meetings:0,documents:0,namesArea:false,unparsed:0,unreadable:0,issues:[]});
  const source=buildSource({area,base:site,pages:[at('/rathaus/bekanntmachungen/')]});
  assert.deepEqual(acceptedEntry(source,{website:'http://www.gemeinde-musterdorf.example.test',today:'2026-10-04',window:'3m',check}),{...source,verifiedSource:'http://www.gemeinde-musterdorf.example.test',verifiedAt:'2026-10-04',apiCheck:API_CHECK,evidence:{window:'3m',topics:3,meetings:2,documents:4}});
- assert.equal(API_CHECK,'Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website (robots.txt erlaubt den Abruf).');
+ assert.equal(API_CHECK,'Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.');
 });
 
 test('website search: reasons follow the furthest step reached; the best of several websites wins',()=>{
@@ -197,7 +198,7 @@ test('website search: the plan module touches neither network nor files, and the
  const feeds=readFileSync(new URL('../server/integrations/website-feeds.mjs',import.meta.url),'utf8');
  assert.doesNotMatch(feeds,/^import\s/m);
  // Syntax check only: the script itself reads files and asks the network, so it is not run.
- execFileSync(process.execPath,['--check',new URL('../scripts/source-discovery/website.mjs',import.meta.url).pathname]);
+ execFileSync(process.execPath,['--check',fileURLToPath(new URL('../scripts/source-discovery/website.mjs',import.meta.url))]);
 });
 
 test('website search: the reader check asks request by request with the consideration of the search (two per server, one second apart)',async()=>{
@@ -214,4 +215,10 @@ test('website search: the reader check asks request by request with the consider
  const before=starts.length;assert.equal((await ask(at('/b/later.html'))).status,403);assert.equal(starts.length,before,'no request after 403');
  await assert.rejects(ask('https://www.anderer-ort.example.test/buergerinfo/to0040.asp?__ksinr=1'),/Ratsinformationssystems/);
  assert.equal(robotsRefused(429),true);assert.equal(robotsRefused(404),false);
+});
+
+test('website search: the CMS file storage that the list pages link goes into alsoFrom, other foreign hosts do not',()=>{
+ const s=buildSource({area,base:site,pages:[at('/seite/1/bekanntmachungen.html')],files:['https://daten2.verwaltungsportal.de/dateien/seitengenerator/abc/Einladung.pdf','https://www.amtsblatt-verlag.example.test/a.pdf']});
+ assert.deepEqual(s.alsoFrom,['https://daten2.verwaltungsportal.de']);
+ assert.equal(buildSource({area,base:site,pages:[at('/seite/1/bekanntmachungen.html')]}).alsoFrom,undefined);
 });

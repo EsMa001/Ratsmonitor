@@ -3,8 +3,9 @@
 // proves the assignment itself: a link back to the official website, or the official key (AGS) in OParl.
 // Reads only public addresses, identifies itself and never retries a refused request.
 // OWN_ONLY=1 asks only the area's own domain. The shared hosts below are one server each for every area of a state;
-// guessing names there sends thousands of requests to one operator, and owl-it, sitzung-online.de and most tenants of
-// ratsinfomanagement.net disallow programs in robots.txt. Use it for runs over many areas (all states outside NRW).
+// guessing names there sends thousands of requests to one operator (owl-it, sitzung-online.de and most tenants of
+// ratsinfomanagement.net also disallow programs in robots.txt, recorded but not obeyed since 05.10.2026). Use it for
+// runs over many areas (all states outside NRW).
 import fs from 'node:fs';
 import {loadAreas,skipReason} from './areas.mjs';
 const dir=process.env.DIR||'tmp/source-discovery/';

@@ -227,3 +227,31 @@ test('KIC topic id does not depend on whether guests see the consultation sequen
  // visibility "0" is the upcoming meeting without an agenda: not asked.
  assert.ok(!s.calls.some(u=>u.includes('100898951')));assert.equal(d.coverage.upcomingWithoutAgenda,2);assert.deepEqual(d.coverage.issues,[]);
 });
+
+// komuna (ris.komuna.net/<name>/, interface risapi1.komuna.net) is this app: shell, configuration and guest answers of
+// Gemeinde Ainring and Stadt Abenberg as served on 05.10.2026. Its robots.txt asks programs to stay away; since
+// 05.10.2026 that is recorded, not obeyed (server/integrations/robots-policy.mjs), so verify.mjs now reaches the app.
+test('komuna systems are KIC apps below a path of the shared host; the guest view names its municipality',async()=>{
+ const page='https://ris.komuna.net/ainring/app/kalender',html=fixture('komuna-ainring-shell.html');
+ assert.deepEqual(kicShell(page,html),{base:'https://ris.komuna.net/ainring/',version:'51b',uniqueId:'ris.komuna.net/ainring',customName:'ainring'});
+ assert.deepEqual(kicConfig(fixture('komuna-webconfig.json')),{api:'https://risapi1.komuna.net/',orgKey:'RIS51'});
+ // The headers name the system on the shared interface: host and path name, as the app sends them.
+ assert.deepEqual(kicHeaders({orgKey:'RIS51',uniqueId:'ris.komuna.net/ainring',customName:'ainring'}),{'x-orgkey':'RIS51','x-uniqueid':'ris.komuna.net/ainring','x-customname':'ainring',Accept:'application/json'});
+ const asked=[];
+ const found=await detectKic(page,html,{get:async url=>{asked.push(url);return fixture('komuna-webconfig.json');}});
+ assert.deepEqual(asked,['https://ris.komuna.net/51b/webconfig.json']);
+ assert.equal(found.base,'https://ris.komuna.net/ainring/');assert.equal(found.api,'https://risapi1.komuna.net/');
+ const komuna={id:'de-09172111',name:'Gemeinde Ainring',kind:'city',method:'scraper',adapter:'kic',base:'https://ris.komuna.net/ainring/',api:'https://risapi1.komuna.net/'};
+ for(const [name,meeting,count] of [['ainring','279901463',12],['abenberg','83799918',15]]){
+  const list=kicMeetings(json(`komuna-${name}-meetings.json`),{...komuna,base:`https://ris.komuna.net/${name}/`});
+  // The interface answers for the system the headers name: every meeting belongs to that municipality.
+  assert.ok(list.length>0&&list.every(m=>m.client===(name==='ainring'?'Gemeinde Ainring':'Stadt Abenberg')),name);
+  const m=list.find(x=>x.id===meeting);assert.ok(m,name+' '+meeting);
+  assert.equal(m.url,`https://ris.komuna.net/${name}/app/sitzungen/${meeting}`);
+  // The guest view holds the public part only (one part, not protected); every item of it is released.
+  const raw=json(`komuna-${name}-meeting-${meeting}.json`);
+  assert.equal(raw.parts.length,1);assert.equal(raw.parts[0].protectedpart,false);
+  const agenda=parseKicMeeting(raw,m);
+  assert.equal(agenda.items.length,count);assert.equal(agenda.unclear,0);
+ }
+});

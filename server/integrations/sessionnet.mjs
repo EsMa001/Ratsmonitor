@@ -8,7 +8,8 @@ import {hash,category,sourceSummary,parallel} from './oparl.mjs';
 const entities={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',ouml:'ö',auml:'ä',uuml:'ü',Ouml:'Ö',Auml:'Ä',Uuml:'Ü',szlig:'ß',ndash:'-',mdash:'-'};
 export function decode(s){return String(s||'').replace(/&(#x[0-9a-f]+|#\d+|\w+);/gi,(m,k)=>k[0]==='#'?String.fromCodePoint(k[1].toLowerCase()==='x'?parseInt(k.slice(2),16):Number(k.slice(1))):entities[k]??m)}
 export function text(s){return decode(String(s||'').replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim()}
-export function links(h,base){return [...h.matchAll(/<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi)].map(m=>({url:new URL(decode(m[2]),base).href,label:text(m[4]),title:decode((m[1]+m[3]).match(/(?:aria-label|title)=["']([^"']*)/)?.[1]||'')}));}
+// A link that is no valid address (a broken "http://" in a template) is left out; it does not end the reading of a page.
+export function links(h,base){return [...h.matchAll(/<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi)].flatMap(m=>{let url;try{url=new URL(decode(m[2]),base).href;}catch{return [];}return [{url,label:text(m[4]),title:decode((m[1]+m[3]).match(/(?:aria-label|title)=["']([^"']*)/)?.[1]||'')}];});}
 export function allowed(url,source){const u=new URL(url),b=new URL(source.base);if(u.protocol!=='https:'||u.origin!==b.origin||!u.pathname.toLowerCase().startsWith(b.pathname.toLowerCase())||u.username||u.password)throw Error('Nicht freigegebene Quelladresse');return u.href;}
 export const SESSIONNET_LOGIN='Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil',SESSIONNET_ERROR='SessionNet-Fehlerseite',SESSIONNET_SOURCE='SessionNet-Installation liefert Programmquelltext statt Seiten';
 const UNKNOWN_CALENDAR='Unbekanntes Kalenderformat',SESSIONNET_PAGE=/\/(?:[a-z]{2}\d{4}|info)\.(?:asp|php)$/i,closedPage=e=>e.message===SESSIONNET_LOGIN||e.message===SESSIONNET_ERROR;
@@ -72,6 +73,19 @@ export function missingAgendaIssue(html,url){return /Zu dieser Sitzung wurden no
 // Some installations link the calendar to the meeting overview (si0056); the agenda of the same meeting is si0057.
 // Older layouts (SessionNet 4.9, 5.3) link their agenda page to0040 instead.
 const ksinr=url=>new URL(url).searchParams.get('__ksinr');
+/**
+ * The client (Mandant) of each meeting in a calendar of a system that serves several (sessionnet.owl-it.de/altshausen:
+ * the GVV and its member municipalities): ksinr → {panr, name} from the row's cell data-label="Mandant" (class pagel<n>).
+ */
+export function meetingClients(h){
+ const out=new Map();
+ for(const row of String(h||'').matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){
+  const cell=row[1].match(/<td\b[^>]*data-label=["']Mandant["'][^>]*class=["'][^"']*\bpagel(\d+)\b[^"']*["'][^>]*>([\s\S]*?)<\/td>/i)||row[1].match(/<td\b[^>]*class=["'][^"']*\bpagel(\d+)\b[^"']*["'][^>]*data-label=["']Mandant["'][^>]*>([\s\S]*?)<\/td>/i);
+  if(!cell)continue;
+  for(const link of row[1].matchAll(/(?:si005[67]|to0040)\.(?:asp|php)\?[^"']*__ksinr=(\d+)/gi))out.set(link[1],{panr:cell[1],name:text(cell[2])});
+ }
+ return out;
+}
 export function meetingRows(h,base){
  const rows=links(h,base).filter(l=>/(?:si005[67]|to0040)\.(asp|php)/.test(l.url)&&/\d{2}\.\d{2}\.\d{4}/.test(l.title)).map(l=>{const date=l.title.match(/(\d{2})\.(\d{2})\.(\d{4})/);return {...l,url:l.url.replace(/si0056\.(asp|php)/,'si0057.$1'),date:`${date[3]}-${date[2]}-${date[1]}`,committee:l.title.replace(/^Details anzeigen:\s*/,'').replace(/\s*\d{2}\.\d{2}\.\d{4}.*/,'')};});
  // Only a meeting number joins two links; links without one are never taken for the same meeting.
@@ -162,6 +176,7 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
  const from=windowStart(now,lookback);const fromDay=from.toISOString().slice(0,10),issues=[],meetings=new Map();
  // Calendar months cover the selected look-back window (default: rolling twelve months) and already published next-month meetings.
  let denied=false,readable=0,failing=0;
+ const panr=new URLSearchParams(source.calendarQuery||'').get('__cpanr'),otherClients=new Set();
  await parallel(Array.from({length:calendarMonthsBack(now,from)+2},(_,i)=>1-i),async offset=>{
   if(denied)return;
   // calendarQuery (optional): selects the client of a system that serves several, e.g. "__cpanr=2" (see sessionNetClients).
@@ -169,7 +184,11 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
   const url=source.base+`si0040.${source.extension}?`+query;
   // A login, error or broken page is said as such; a page without the landmark of SessionNet itself (a CMS page that
   // echoes the address or links the system) is no calendar, even if it names the product.
-  try{const html=await get(url,source),closed=sessionNetPageIssue(html);if(closed)throw Error(closed);if(!sessionNetLandmark(html))throw Error(UNKNOWN_CALENDAR);readable++;for(const m of meetingRows(html,source.base))if(m.date>=fromDay)meetings.set(m.url,m);}
+  try{const html=await get(url,source),closed=sessionNetPageIssue(html);if(closed)throw Error(closed);if(!sessionNetLandmark(html))throw Error(UNKNOWN_CALENDAR);readable++;
+   // With a client selected (__cpanr), only meetings whose row names that client are taken; a meeting without the cell
+   // (a list of next meetings, another layout) is left out: the part of a shared system is read fail closed.
+   const owners=panr?meetingClients(html):null;
+   for(const m of meetingRows(html,source.base)){if(m.date<fromDay)continue;if(owners&&owners.get(ksinr(m.url))?.panr!==panr){otherClients.add(m.url);continue;}meetings.set(m.url,m);}}
   // Each named reason is said once. A login page or program code holds for every month; an error page or an unknown page
   // may concern one month only, so the other months are still read, unless the first three were all of that kind.
   catch(e){const named=[SESSIONNET_LOGIN,SESSIONNET_ERROR,SESSIONNET_SOURCE,UNKNOWN_CALENDAR].includes(e.message);if(!named||!issues.includes(e.message))issues.push(e.message);

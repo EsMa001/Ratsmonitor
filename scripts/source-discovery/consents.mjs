@@ -1,5 +1,6 @@
-// Brings a list of written consents into the register (server/integrations/source-consents.json) and prepares the
-// check of the areas it covers (concept section 6.4). No request is made here.
+// Brings a list of consents into the register and prepares the check of the areas it covers (concept section 6.4). No
+// request is made here. The register stays outside the source code (decision of the owner, 05.10.2026): by default
+// tmp/freigaben/register.json, or the file CONSENTS_REGISTER names; server/integrations/source-consents.json stays empty.
 //
 //   export LAND=de DIR=tmp/source-discovery-de/
 //   node scripts/source-discovery/consents.mjs freigaben.csv     # DRY=1: only show what would change
@@ -13,7 +14,7 @@
 // the system the consent is for; on hosted platforms with the municipality's folder (https://sessionnet.owl-it.de/ort/bi/).
 // Without an address the link the search found for the area is used, if there is one.
 // The register is only added to: no line is removed or changed. Lines that match no area or more than one are listed
-// and not taken over.
+// and not taken over. ONLY_OPEN=1 puts only areas into the check list that are open in <DIR>open.json.
 import fs from 'node:fs';
 import {CATALOG,landName} from '../../shared/catalog.mjs';
 import {loadAreas} from './areas.mjs';
@@ -21,9 +22,9 @@ import {parseConsentCsv,mergeConsents,validConsent} from '../../server/integrati
 
 const file=process.argv[2];
 if(!file){console.log('Aufruf: node scripts/source-discovery/consents.mjs <liste.csv>');process.exit(1);}
-const dir=process.env.DIR||'tmp/source-discovery/',REGISTER='server/integrations/source-consents.json';
+const dir=process.env.DIR||'tmp/source-discovery/',REGISTER=process.env.CONSENTS_REGISTER||'tmp/freigaben/register.json';
 const read=f=>JSON.parse(fs.readFileSync(f,'utf8'));
-const register=read(REGISTER);
+const register=fs.existsSync(REGISTER)?read(REGISTER):{about:'Register der Freigaben, außerhalb des Quellcodes (scripts/source-discovery/consents.mjs)',consents:[]};
 const {consents,problems}=parseConsentCsv(fs.readFileSync(file,'utf8'),CATALOG,{landName});
 const {list,added}=mergeConsents(register.consents,consents);
 for(const p of problems)console.log(' !',p);
@@ -33,7 +34,8 @@ console.log(`${consents.length} Zeilen erkannt, ${added.length} neu im Register,
 const open=fs.existsSync(dir+'open.json')?new Map(read(dir+'open.json').map(o=>[o.id,o.link])):new Map();
 const areas=new Set(loadAreas().map(r=>r.id)),today=new Date().toISOString().slice(0,10);
 const candidates={},check=[];
-for(const c of list.filter(validConsent).filter(c=>areas.has(c.area))){
+const onlyOpen=process.env.ONLY_OPEN?new Set(open.keys()):null;
+for(const c of list.filter(validConsent).filter(c=>areas.has(c.area)&&(!onlyOpen||onlyOpen.has(c.area)))){
  // "freischaltung" changes nothing until the operator acts; it is not checked again here.
  if(!c.scope.some(s=>['robots','adresse','oparl'].includes(s)))continue;
  const url=c.system||(/^https?:/.test(open.get(c.area)||'')?open.get(c.area):null);
@@ -43,6 +45,7 @@ for(const c of list.filter(validConsent).filter(c=>areas.has(c.area))){
  check.push(c.area);
 }
 if(process.env.DRY){console.log('DRY: nichts geschrieben.',check.length,'Gebiete wären zu prüfen.');process.exit(0);}
+fs.mkdirSync(REGISTER.replace(/[^/\\]*$/,'')||'.',{recursive:true});
 fs.writeFileSync(REGISTER,JSON.stringify({...register,consents:list},null,1)+'\n');
 fs.mkdirSync(dir,{recursive:true});
 fs.writeFileSync(dir+'candidates-consents.json',JSON.stringify(candidates,null,1));

@@ -3,8 +3,10 @@
 // digitalfabriX and sitzung-mv.de answer DNS for any name, so only the page decides: it is kept as a candidate if it
 // shows a council system and names the area in its title or text. The name has to be unique among the areas of the
 // state, as in guess-platforms.mjs. verify.mjs then checks the system and its public agenda items as for every link.
-// Each platform is one operator: one request at a time and at most one per second, robots.txt of every host first,
-// no retries, our own name in the User-Agent. Resumable: areas in the output file are not asked again.
+// Each platform is one operator: one request at a time and at most one per second, no retries, our own name in the
+// User-Agent; after HTTP 401, 403 or 429 the platform is not asked again in this run. robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs); with ROBOTS_POLICY=obey
+// robots.txt of every host is read first and a disallowed path is not asked. Resumable: areas in the output file are
+// not asked again.
 // Run: LAND=09 DIR=tmp/source-discovery-de/ node scripts/source-discovery/guess-hosted.mjs
 //      CANDIDATES=candidates-hosted.json OUT=verified-hosted.json LAND=09 DIR=… node scripts/source-discovery/verify.mjs
 import fs from 'node:fs';
@@ -12,7 +14,9 @@ import dns from 'node:dns/promises';
 import {loadAreas,skipReason} from './areas.mjs';
 import {HOSTED,hostSlugs,pageNamesArea} from './rules.mjs';
 import {robotsVerdict} from '../../server/integrations/robots.mjs';
+import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 import {NRW_SOURCES} from '../../server/integrations/source-catalog.mjs';
+import {CATALOG} from '../../shared/catalog.mjs';
 const dir=process.env.DIR||'tmp/source-discovery/';
 const outFile=dir+(process.env.OUT||'candidates-hosted.json');
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -31,33 +35,46 @@ async function get(url){
 }
 const robots=new Map();
 async function allowed(url){
+ if(!obeyRobots())return true;
  const u=new URL(url);
  if(!robots.has(u.origin)){const r=await get(u.origin+'/robots.txt');robots.set(u.origin,{status:r.status,text:r.body});}
  const {status,text}=robots.get(u.origin);
  return ['erlaubt','keine'].includes(robotsVerdict(status,text,u.pathname,TOKENS));
 }
 let found=0,refused=0,asked=0;
-for(const p of HOSTED){
+// PLATFORMS: names of HOSTED entries to ask (comma-separated); without it every entry.
+const chosen=process.env.PLATFORMS?new Set(process.env.PLATFORMS.split(',').map(s=>s.trim())):null;
+for(const p of HOSTED.filter(p=>!chosen||chosen.has(p.name))){
  const inLand=regions.filter(r=>r.ags.startsWith(p.land));
- // A label that two areas of the state share never counts: the host could belong to either.
- const owners=new Map();for(const r of inLand)for(const s of hostSlugs(r.shortName||r.name))owners.set(s,[...(owners.get(s)||[]),r.id]);
- const queue=inLand.filter(r=>!connected.has(r.id)&&!skipReason(r)&&!done[r.id]);
+ // A label that two areas of the state share never counts: the host could belong to either. A platform of all Länder
+ // (land '') compares with every area of the catalog, also those of other working folders.
+ const owners=new Map();for(const r of p.land?inLand:CATALOG)for(const s of hostSlugs(r.shortName||r.name))owners.set(s,[...(owners.get(s)||[]),r.id]);
+ // Resumable: an area in the output file is not asked again. A DNS-only platform records which platforms asked an area
+ // (asked), so the next DNS platform still asks it; use a file of its own for them (OUT=candidates-hosted-dns.json).
+ const fresh=r=>p.dnsOnly?!done[r.id]?.candidates?.length&&!(done[r.id]?.asked||[]).includes(p.name):!done[r.id];
+ const queue=inLand.filter(r=>!connected.has(r.id)&&!skipReason(r)&&fresh(r));
  console.log(`${p.name}: ${queue.length} offene Gebiete`);
+ let refusal=0;
  for(const r of queue){
-  const row={id:r.id,name:r.name,kind:r.kind,ags:r.ags,sites:[],candidates:[],log:[]};
+  const row=p.dnsOnly&&done[r.id]?done[r.id]:{id:r.id,name:r.name,kind:r.kind,ags:r.ags,sites:[],candidates:[],log:[]};
+  if(p.dnsOnly)row.asked=[...new Set([...(row.asked||[]),p.name])];
   for(const slug of hostSlugs(r.shortName||r.name)){
    if(owners.get(slug)?.length>1){row.log.push(slug+': Name im Land mehrdeutig');continue;}
    for(const host of p.hosts(slug)){
     if(!p.wildcard){try{await dns.resolve4(host);}catch{continue;}}
     const url=`https://${host}${p.path}`;
+    if(p.dnsOnly){row.candidates.push({url,from:host,byHref:true,guessed:`${p.name}-Adresse (DNS), Name eindeutig`});row.log.push(url+' DNS');found++;break;}
     if(!(await allowed(url))){refused++;row.log.push(url+': robots.txt untersagt den Abruf');continue;}
     const page=await get(url);asked++;row.log.push(url+' '+(page.status||page.error));
+    if([401,403,429].includes(page.status)){refusal=page.status;break;}
     if(page.status===200&&/sessionnet|si0040|allris|sitzungsdienst|bürgerinfo|buergerinfo/i.test(page.body)&&pageNamesArea(page.body,r)){
      row.candidates.push({url:page.url,from:host,byHref:true,guessed:`${p.name}-Adresse, Seite nennt das Gebiet`});found++;break;
     }
    }
-   if(row.candidates.length)break;
+   if(row.candidates.length||refusal)break;
   }
+  // An area whose question met the refusal is not recorded: a later run asks it again.
+  if(refusal){console.log(`${p.name}: HTTP ${refusal} bei ${r.name}; diese Plattform wird in diesem Lauf nicht weiter gefragt.`);break;}
   done[r.id]=row;
   if(Object.keys(done).length%20===0)fs.writeFileSync(outFile,JSON.stringify(done,null,1));
   if(row.candidates.length)console.log(' +',r.name,'→',row.candidates[0].url);

@@ -15,6 +15,10 @@ import {SOURCE_USER_AGENT} from '../server/integrations/no-redirect.mjs';
 // (pdfText is injected), the network by functions that answer from the fixtures and record every address asked.
 // The folder the fixtures' robots.txt excludes is read as "/gesperrt/": a folder "/intern/" names the non-public part (never asked
 // at all), so it would not show the robots.txt rule.
+// These tests check the old rule (robots.txt obeyed, ROBOTS_POLICY=obey); the tests marked "standard rule" switch to
+// the rule of server/integrations/robots-policy.mjs: robots.txt is recorded, not obeyed, and a refusal stays final.
+process.env.ROBOTS_POLICY='obey';
+const standardRule=async fn=>{const was=process.env.ROBOTS_POLICY;delete process.env.ROBOTS_POLICY;try{return await fn();}finally{process.env.ROBOTS_POLICY=was;}};
 const fixture=name=>readFileSync(new URL(`./fixtures/website/${name}`,import.meta.url),'utf8').replace(/\/intern\//g,'/gesperrt/');
 const base='https://www.musterbach.example.test/';
 const now=new Date('2026-10-04T10:00:00Z'),fromDay=windowStart(now,'12m').toISOString().slice(0,10);
@@ -507,4 +511,40 @@ Am Dienstag, 20.10.2026, 18.00 Uhr, findet eine öffentliche Sitzung des Werkaus
 1. Jahresabschluss 2025`;
  const {d}=await run({source:oberdorf,pdfText:async()=>text},listed({'b/mitteilungsblatt-2026-20.pdf':['Mitteilungsblatt Nr. 20/2026 – Sitzungen',pdf('vg')]}));
  assert.deepEqual(d.topics.map(t=>[t.eventDate,t.committee,t.title]),[['2026-10-14','Gemeinderat','Bauantrag Neubau Scheune']]);
+});
+
+test('standard rule: robotsGate asks nothing and opens every address',()=>standardRule(async()=>{
+ const asked=[];const allows=await robotsGate(async url=>{asked.push(url);return 'User-agent: *\nDisallow: /\n';},{base});
+ assert.equal(await allows(base+'gesperrt/a.pdf'),true);assert.equal(await allows('https://archiv.musterbach.example.test/x.pdf'),true);
+ assert.deepEqual(asked,[]);assert.deepEqual(allows.issues,[]);
+}));
+
+test('standard rule: collectWebsite reads what robots.txt excludes, never the non-public part, the search or a foreign host',()=>standardRule(async()=>{
+ const {web:{calls},d}=await run();
+ assert.ok(!calls.some(u=>u.endsWith('robots.txt')),'robots.txt is recorded by robots.mjs, not asked by the reader');
+ assert.ok(calls.includes(U.robots),'a path robots.txt excludes is read');
+ for(const url of [U.closed,U.publisher,U.old,U.waste,U.job,base+'suche?q=Gemeinderat',base+'impressum.html'])assert.ok(!calls.includes(url),'never read: '+url);
+ assert.ok(calls.every(u=>u.startsWith(base)),'only the site itself');
+ assert.ok(!calls.some(u=>/[?&](?:search|q|s)=/.test(u)),'the search of the site is never used');
+ assert.ok(!d.coverage.issues.some(i=>/robots\.txt/.test(i))&&!(d.coverage.warnings||[]).some(w=>/robots\.txt/.test(w)));
+}));
+
+test('standard rule: HTTP 403 stays final; the origin is not asked again in this import',()=>standardRule(async()=>{
+ const refused=new Error('Quelle antwortet mit HTTP 403');
+ const web=site({[base+'rathaus/bekanntmachungen/']:refused,[base+'aktuelles/feed.rss']:refused,[base+'veranstaltungen/kalender.ics']:refused,[wp.posts]:refused,[wp.media]:refused,[base+'sitemap.xml']:refused});
+ const {d}=await run({},web);
+ const first=web.calls.findIndex(u=>u.startsWith(base));
+ assert.ok(first>=0);
+ // At most the requests already under way when the first refusal came (two per server); none after them.
+ assert.ok(web.calls.length<=2,'no request after the refusal: '+web.calls.join(', '));
+ assert.equal(d.topics.length,0);assert.equal(d.coverage.complete,false);
+ assert.ok(d.coverage.issues.some(i=>/HTTP 403/.test(i)));
+}));
+
+test('the file storage of a website CMS is read only where the entry names it; other hosts stay foreign',()=>{
+ // Websites of verwaltungsportal.de link their notices as PDF on daten2.verwaltungsportal.de (www.lychen.de, 05.10.2026).
+ const s={base:'https://www.lychen.de/',alsoFrom:['https://daten2.verwaltungsportal.de','https://www.elsewhere.example.test']};
+ assert.equal(siteAllowed('https://daten2.verwaltungsportal.de/dateien/seitengenerator/abc/Einladung.pdf',s),'https://daten2.verwaltungsportal.de/dateien/seitengenerator/abc/Einladung.pdf');
+ for(const url of ['https://www.elsewhere.example.test/a.pdf','https://daten2.verwaltungsportal.de.example.test/a.pdf','http://daten2.verwaltungsportal.de/a.pdf'])assert.throws(()=>siteAllowed(url,s),/Nicht freigegebene/,url);
+ assert.throws(()=>siteAllowed('https://daten2.verwaltungsportal.de/a.pdf',{base:'https://www.lychen.de/'}),/Nicht freigegebene/,'not without alsoFrom');
 });

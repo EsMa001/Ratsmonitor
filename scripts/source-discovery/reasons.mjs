@@ -2,6 +2,7 @@
 // Pure functions: no file is read, nothing is written; build.mjs hands in the check results and the lists it builds.
 // The report groups areas by these texts (its summary cuts a detail in brackets at the end), and later steps select
 // areas by them (website.mjs REASONS); a text is changed only together with its meaning.
+import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 
 // Check results of other stages besides verified.json. Accepted sources count in this order; verified-website.json
 // (website.mjs) comes last, so it adds an area only where no check of a council information system accepted one.
@@ -30,10 +31,9 @@ export function mergeChecks(verified,files={}){
 }
 
 export const PLATFORMS=[
- // robots.txt of both platforms forbids every program but search engines ("User-agent: * Disallow: /"); there is no OParl.
- // komuna is run by komuna GmbH; a part of AKDB or kiC in it is not documented.
- [/(^|\.)komuna\.net$/,'komuna (komuna GmbH): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen'],
- [/(^|\.)ris-portal\.de$/,'RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen'],
+ // RIS-Portal (regisafe) and komuna forbid every program but search engines in robots.txt and offer no OParl. Since
+ // 05.10.2026 robots.txt is recorded, not obeyed (robots-policy.mjs), and both have a reader (ris-portal.mjs; komuna is
+ // a KIC app, kic.mjs): their reason comes from the check like that of any other system.
  [/(^|\.)kommune-aktiv\.de$/,'Kommune aktiv: antwortet Programmen mit HTTP 403'],
  [/(^|\.)ekom21\.de$/,'ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um'],
 ];
@@ -65,6 +65,9 @@ export function foundLink(row,candidateRows=[]){
  for(const c of candidateRows){const url=c?.candidates?.find(x=>x.url)?.url;if(url)return url;}
  return '';
 }
+
+/** Reason of an area whose last check obeyed robots.txt (before 05.10.2026); the dashboard shows it as "Neuprüfung ausstehend". */
+export const ROBOTS_RECHECK='robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten)';
 
 export const germanDay=ms=>new Date(ms).toISOString().slice(0,10).split('-').reverse().join('.');
 // Addresses of council systems. An unrecognised page on such an address is a system that could not be assigned, not
@@ -108,6 +111,8 @@ export function openReason(area,row,crawl,ctx={}){
  if(has(ctx.placeholder,row.id))return 'Verlinktes System führt nur einen Demo-Mandanten des Herstellers (z. B. „Stadt Musterstadt“)';
  if(has(ctx.foreign,row.id))return `Mitbenutztes System von ${ctx.foreign.get(row.id)}; die Leser trennen die Gremien eines gemeinsamen Systems nicht`;
  if(row.error)return 'Prüfung abgebrochen: '+row.error;
+ // verify.mjs stops asking an operator that refused three times in one run; the area waits for a later run.
+ if((row.tried||[]).some(t=>/wiederholt ab \(HTTP 403\/429\)/.test(t.error||t.readerError||''))&&!(row.tried||[]).some(t=>t.identity?.ok&&(t.readerTopics||t.snTopics||t.allrisTopics||t.sdTopics||t.rubinTopics)))return 'Betreiber wies Programme bei der Prüfung wiederholt ab (HTTP 403/429); Neuprüfung später';
  const tried=row.tried||[],systems=(row.systems||[]).filter(s=>s!=='unknown'),readerName=ctx.readerName||(a=>a);
  // verify.mjs checked the area but tried nothing: every link was one of its services (read-aloud, sharing, app
  // stores, e-paper, vendor pages). An e-paper or a shared calendar page still shows where the meetings stand.
@@ -118,8 +123,10 @@ export function openReason(area,row,crawl,ctx={}){
  const platform=main?platformOf(main.url):null;
  if(platform&&/^ekom21/.test(platform[1])&&has(ctx.oparlAsked,row.id))return platform[1]+'; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen';
  if(platform)return platform[1];
- // verify.mjs does not read a path that the system's robots.txt disallows for programs.
- if(main&&forbidden(main))return 'robots.txt des gefundenen Systems untersagt Programmen den Abruf; Freigabe beim Betreiber anfragen';
+ // With ROBOTS_POLICY=obey verify.mjs does not read a path that the system's robots.txt disallows for programs. Under
+ // the standard rule such a refusal comes from a check made before 05.10.2026: the area waits for its new check.
+ if(main&&forbidden(main))return obeyRobots()?'robots.txt des gefundenen Systems untersagt Programmen den Abruf; Freigabe beim Betreiber anfragen'
+  :ROBOTS_RECHECK;
  const several=tried.find(t=>/^Mehrere Körperschaften/.test(t.rubinError||''));
  if(several)return several.rubinError.replace(/; Zuordnung nur mit fester Körperschaft$/,'')+'; der Leser trennt sie noch nicht';
  const sn=tried.find(t=>t.snError||t.snTopics===0);
@@ -159,6 +166,9 @@ export function openReason(area,row,crawl,ctx={}){
 }
 
 /** Address key of a catalog entry: one address serves one area, unless the entries fix different bodies. */
-export const sourceAddress=s=>(s.system||s.base)+'|'+(s.body||'')+'|'+[...(s.bodies||[])].sort().join(',');
-/** An entry that reads only fixed bodies of a shared system (OParl body, More! Rubin bodies) takes no meetings of another area. */
-export const fixedBody=s=>Boolean(s.method==='oparl'||s.body||s.bodies?.length);
+export const sourceAddress=s=>(s.system||s.base)+'|'+(s.body||'')+'|'+[...(s.bodies||[])].sort().join(',')+(s.client!==undefined?'|client:'+s.client:'')+(s.organizations?'|organizations:'+JSON.stringify(s.organizations):'')+(s.calendarQuery?'|'+s.calendarQuery:'');
+/**
+ * An entry that reads only a fixed part of a shared system (OParl body, More! Rubin bodies, the municipality of a KIC
+ * app, the bodies of a filter, the client of a SessionNet calendar) takes no meetings of another area.
+ */
+export const fixedBody=s=>Boolean(s.method==='oparl'||s.body||s.bodies?.length||s.client!==undefined||s.organizations?.include?.length||s.calendarQuery);

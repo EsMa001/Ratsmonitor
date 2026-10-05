@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {collectSessionNet,fetchText,meetingRows,parseAgenda,parseAgendaCards,parseAgendaTopTable,sessionNetLandmark,sessionNetPageIssue,sessionNetClients,SESSIONNET_LOGIN,SESSIONNET_ERROR,SESSIONNET_SOURCE} from '../server/integrations/sessionnet.mjs';
+import {collectSessionNet,fetchText,meetingRows,parseAgenda,parseAgendaCards,parseAgendaTopTable,sessionNetLandmark,sessionNetPageIssue,sessionNetClients,meetingClients,SESSIONNET_LOGIN,SESSIONNET_ERROR,SESSIONNET_SOURCE} from '../server/integrations/sessionnet.mjs';
 // Excerpts of live pages, 04.10.2026 (see the comment at the top of each file).
 const page=name=>fs.readFileSync(new URL('./fixtures/sessionnet-fixes/'+name,import.meta.url),'utf8');
 const now=new Date('2026-10-04T12:00:00Z');
@@ -217,4 +217,20 @@ test('a paper page behind the error or login page is noted with its item and doe
  const result=await collectSessionNet(source,{now,window:'1w',get});
  assert.deepEqual(result.coverage.issues,[]);assert.equal(result.coverage.complete,true);assert.equal(result.readMeetings,1);assert.equal(Object.keys(result.marks).length,1);
  assert.deepEqual(result.topics.map(t=>[t.id,t.sourceData.detailStatus,t.sourceData.issues]),[['t-vo-5','partial',[SESSIONNET_ERROR]],['t-vo-6','partial',[SESSIONNET_LOGIN]]]);
+});
+
+test('a client of a shared system: only meetings whose calendar row names that client are read (fail closed)',async()=>{
+ // Nachgebildet nach sessionnet.owl-it.de/altshausen (05.10.2026): die Kalenderzeilen nennen den Mandanten in der Zelle
+ // "Mandant" (Klasse pagel<Nummer>); die Ausschüsse tragen keinen Gemeindenamen.
+ const row=(ksinr,title,panr,name)=>`<tr><td data-label="Sitzung" class="smc-t-cl991 silink"><a href="si0057.asp?__ksinr=${ksinr}" title="Details anzeigen: ${title}">${title}</a></td><td data-label="Mandant" class="smc-t-cl991 pagel pagel${panr}">${name}</td></tr>`;
+ const calendar='<html>'+MARK+'<table>'+row(301,'Technischer Ausschuss 15.09.2026',3,'Gemeinde Altshausen')+row(302,'Gemeinderat 16.09.2026',2,'Gemeinde Boms')+'</table>'
+  +'<div class="next"><a href="si0057.asp?__ksinr=303" title="Details anzeigen: Gemeinderat 17.09.2026">Nächste Sitzung</a></div></html>';
+ assert.deepEqual([...meetingClients(calendar)],[['301',{panr:'3',name:'Gemeinde Altshausen'}],['302',{panr:'2',name:'Gemeinde Boms'}]]);
+ const agendas=[];
+ const get=async url=>{const f=file(url);if(f==='si0040.asp')return new URL(url).searchParams.get('__cmonat')==='9'?calendar:'<html>'+MARK+'</html>';agendas.push(new URL(url).searchParams.get('__ksinr'));return '<table></table>';};
+ await collectSessionNet({id:'de-08436005',name:'Gemeinde Altshausen',kind:'city',base:'https://sessionnet.owl-it.de/altshausen/bi/',extension:'asp',calendarQuery:'__cpanr=3'},{now,window:'1m',get});
+ assert.deepEqual([...new Set(agendas)],['301'],'the meeting of Boms and the meeting without client cell are not read');
+ // Without a client every meeting of the calendar is read, as before.
+ agendas.length=0;await collectSessionNet({id:'x',name:'GVV',kind:'city',base:'https://sessionnet.owl-it.de/altshausen/bi/',extension:'asp'},{now,window:'1m',get});
+ assert.deepEqual([...new Set(agendas)].sort(),['301','302','303']);
 });

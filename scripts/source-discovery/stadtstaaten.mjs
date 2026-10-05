@@ -1,22 +1,24 @@
-// Check of the city-state sources (server/integrations/citystate-sources.json) from the owner's machine. Requests go
-// only where robots.txt allows them; nothing is read from a district system whose robots.txt refuses programs.
+// Check of the city-state sources (server/integrations/citystate-sources.json) from the owner's machine. robots.txt is
+// read and recorded for every address, but not obeyed (server/integrations/robots-policy.mjs, decision of 05.10.2026;
+// ROBOTS_POLICY=obey restores the old rule). A technical refusal (HTTP 401/403) still keeps a system out.
 //
 //   node scripts/source-discovery/stadtstaaten.mjs hamburg   # robots.txt of the Transparenzportal, one month of papers
 //   node scripts/source-discovery/stadtstaaten.mjs berlin    # OParl addresses of the BVV from daten.berlin.de, robots.txt of each
 //   DRY=1 …                                                  # print only, change nothing
 //
-// hamburg: switches the entry on (method "scraper") when robots.txt allows the search interface and the reader found
-// papers of the districts; otherwise it stays switched off with the reason as note.
+// hamburg: switches the entry on (method "scraper") when the reader found papers of the districts; otherwise it stays
+// switched off with the reason as note. The robots.txt verdict of the search interface is printed and recorded.
 // berlin: reads one month of the open data of the Abgeordnetenhaus (PARDOK) and records the district systems with
-// their robots.txt verdict. The entry stays on when the Abgeordnetenhaus delivered procedures; districts are read only
-// where robots.txt allows it or a consent is recorded (field consent: {by, date, scope}); see
-// requirements/berlin-freigabe-anfrage.md.
+// their robots.txt verdict and whether they answer as OParl system. The entry stays on when the Abgeordnetenhaus
+// delivered procedures; districts are read where they do not refuse technically (HTTP 403) or a consent is recorded
+// (field consent: {by, date, scope}); see requirements/berlin-freigabe-anfrage.md.
 // Afterwards: node scripts/source-discovery/servers.mjs; ONLY_UNCLEAR=1 node scripts/source-discovery/robots.mjs;
 // node scripts/dashboard/build.mjs; node --test tests/*.test.mjs
 import fs from 'node:fs';
 import {fetchText} from '../../server/integrations/sessionnet.mjs';
 import {robotsVerdict} from '../../server/integrations/robots.mjs';
 import {collectHamburgTransparenz,collectPardok,consentValid,eligibleSystems} from '../../server/integrations/citystates.mjs';
+import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 
 const FILE='server/integrations/citystate-sources.json';
 const TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'];
@@ -32,12 +34,14 @@ async function robotsFor(url){
  const {status,text}=await robotsCache.get(u.origin);
  return robotsVerdict(status,text,u.pathname+u.search,TOKENS);
 }
-const readable=v=>v==='erlaubt'||v==='keine';
+// Under the standard rule every address may be asked; the verdict is only recorded.
+const readable=v=>!obeyRobots()||v==='erlaubt'||v==='keine';
 
 async function hamburg(){
  const entry=entries.find(e=>e.adapter==='hamburg-transparenz');
  const api=entry.base+'api/3/action/package_search',verdict=await robotsFor(api);
  console.log('robots.txt Transparenzportal für',api+':',verdict);
+ entry.robots={verdict,checkedAt:today};
  if(!readable(verdict)){entry.method='pending';entry.note=`robots.txt des Transparenzportals (${verdict}) erlaubt die Suchschnittstelle nicht; geprüft am ${today}. Freigabe beim Portal anfragen.`;return save();}
  const d=await collectHamburgTransparenz({...entry,method:'scraper'},{window:'1m',onProgress:m=>console.log(' ',m)});
  const by={};for(const t of d.topics)by[t.committee]=(by[t.committee]||0)+1;
@@ -74,16 +78,21 @@ async function berlin(){
  const found=new Map((entry.systems||[]).map(s=>[s.district,s]));
  for(const pkg of packages||[]){const district=districtOf(pkg.title),system=oparlUrl(pkg);if(district&&system)found.set(district,{...found.get(district),district,system,dataset:pkg.name?'https://daten.berlin.de/datensaetze/'+pkg.name:undefined});}
  for(const s of found.values()){
-  s.robots=await robotsFor(s.system);s.checkedAt=today;
-  // The system is asked once, and only where robots.txt allows it, to confirm that the address is an OParl system.
+  // A system that refused this day (HTTP 401/403) is not asked again on the same day: no repetition after a refusal.
+  if(s.checkedAt===today&&/HTTP 40[13]\b/.test(String(s.error||''))){console.log(' ',s.district.padEnd(28),'heute schon abgewiesen ('+s.error+'), nicht erneut gefragt');continue;}
+  s.robots=await robotsFor(s.system);s.checkedAt=today;delete s.error;delete s.oparl;
+  // The system is asked once to confirm that the address is an OParl system (with ROBOTS_POLICY=obey only where
+  // robots.txt allows it). A refusal (HTTP 403) is recorded as error and keeps the district out.
   if(readable(s.robots)){try{const body=JSON.parse(await fetchText(s.system,{base:new URL(s.system).origin+'/'}));s.oparl=String(body?.type||'').endsWith('/System');}catch(e){s.oparl=false;s.error=e.message;}}
   console.log(' ',s.district.padEnd(28),s.robots.padEnd(9),s.oparl===undefined?'':s.oparl?'OParl':'kein OParl ('+(s.error||'Typ')+')',s.system);
  }
  entry.systems=[...found.values()].sort((a,b)=>a.district.localeCompare(b.district,'de'));
  for(const s of entry.systems)if(s.robots==='keine')s.robots='erlaubt';
- for(const s of entry.systems)if(s.oparl===false&&s.robots==='erlaubt')s.robots='unbrauchbar';
+ // With ROBOTS_POLICY=obey eligibleSystems reads robots 'erlaubt' only: a system that is no OParl system is marked so.
+ // Under the standard rule the verdict stays as recorded; eligibleSystems reads oparl and error.
+ if(obeyRobots())for(const s of entry.systems)if(s.oparl===false&&s.robots==='erlaubt')s.robots='unbrauchbar';
  const eligible=eligibleSystems(entry);
- console.log(`${entry.systems.length} Bezirke mit Adresse, davon lesbar: ${eligible.length}${consentValid(entry.consent)?' (Freigabe eingetragen)':' (ohne Freigabe nur, wo robots.txt erlaubt)'}`);
+ console.log(`${entry.systems.length} Bezirke mit Adresse, davon lesbar: ${eligible.length}${consentValid(entry.consent)?' (Freigabe eingetragen)':' (ohne Freigabe alle, die nicht technisch sperren)'}`);
  if(house.topics.length){entry.method='scraper';entry.verifiedAt=today;entry.verifiedEvidence={procedures:house.topics.length,window:'1m',districts:eligible.length};delete entry.note;delete entry.checkPending;}
  else if(eligible.length){entry.method='scraper';entry.verifiedAt=today;delete entry.note;}
  else{entry.method='pending';entry.note=`Prüflauf am ${today}: Abgeordnetenhaus ohne Vorgänge (${house.coverage.issues.join(' ')}); Bezirke nur mit Freigabe.`;}

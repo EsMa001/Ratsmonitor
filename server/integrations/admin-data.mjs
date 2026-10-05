@@ -14,16 +14,46 @@ const configuredSources=[...SOURCES.map(s=>({...s,method:s.id==='recklinghausen'
 const configuredById=new Map([...configuredSources].reverse().map(s=>[s.id,s]));
 const readJson=s=>{try{return JSON.parse(s||'{}');}catch{return {};}};
 const label="coalesce(json_extract(payload,'$.classification.primary'),'unklar')";
+// Figure of region_stats that counts the reports of a review filter. "status" has none: it is counted on its index.
+const REVIEW_FIGURES={labels:'label_unklar',identity:'conflicts',summaries:'textIssues'};
+// Up to this many matches over all areas a reason counts as rare: it is read in the areas that hold it.
+const RARE_REVIEW=1000;
+/**
+ * Matching reports of a review filter and the areas that hold them, from the figures of region_stats instead of a scan
+ * of all reports (13 s at 900,000). An area changed since its figures were computed is counted on its own, so the
+ * total is exact. null without the tables (migration 0011), for "status", or with more than 100 such areas.
+ */
+async function reviewScope(db,issue,region){
+ const figure=REVIEW_FIGURES[issue];if(!figure)return null;
+ const one=region!=='all',args=one?[region]:[];
+ let rows;
+ try{rows=(await db.prepare(`SELECT r.region_id,CASE WHEN s.revision=r.revision THEN coalesce(json_extract(s.stats,'$.${figure}'),0) END n FROM region_revisions r LEFT JOIN region_stats s ON s.region_id=r.region_id WHERE (s.revision IS NOT r.revision OR json_extract(s.stats,'$.${figure}')>0)${one?' AND r.region_id=?':''}`).bind(...args).all()).results;}
+ catch(e){if(/no such table/i.test(String(e?.message||e)))return null;throw e;}
+ const stale=rows.filter(r=>r.n===null).map(r=>r.region_id);
+ if(stale.length>D1_MAX_PARAMETERS)return null;
+ let changed=0;
+ if(stale.length)changed=Number((await db.prepare(`SELECT count(*) n FROM topics WHERE ${canonical} AND (${conditions[issue]}) AND region_id IN (${stale.map(()=>'?').join(',')})`).bind(...stale).first())?.n||0);
+ return {total:rows.reduce((n,r)=>n+Number(r.n||0),0)+changed,regions:rows.map(r=>r.region_id)};
+}
 // total: the number of matching reports if the caller knows it already; the count query is then left out.
 export async function adminReview(db,issue='labels',region='all',{total}={}){
  if(!REVIEW_FILTERS.some(f=>f.id===issue)||region!=='all'&&!regions.some(r=>r.id===region))throw Error('Ungültiger Prüffilter');
- const where=`${canonical} AND (${conditions[issue]})`+(region!=='all'?' AND region_id=?':'');
- const args=region!=='all'?[region]:[];
- const [items,count]=await db.batch([
-  db.prepare(`SELECT id,region_id AS regionId,status,updated_at AS updatedAt,json_extract(payload,'$.title') AS title,${label} AS label,json_extract(payload,'$.generatedBy') AS generatedBy FROM topics WHERE ${where} ORDER BY updated_at DESC,id LIMIT 25`).bind(...args),
-  ...(total===undefined?[db.prepare(`SELECT count(*) total FROM topics WHERE ${where}`).bind(...args)]:[])
- ]);
- return {issue,total:Number(total??count.results[0].total),articles:items.results};
+ const all=region==='all';
+ let where=`${canonical} AND (${conditions[issue]})`+(all?'':' AND region_id=?'),args=all?[]:[region];
+ const scope=total===undefined||all?await reviewScope(db,issue,region):null;
+ let known=total??scope?.total;
+ if(known===undefined&&issue==='status')known=Number((await db.prepare(`SELECT count(*) total FROM topics INDEXED BY idx_topics_canonical_region_status WHERE ${where}`).bind(...args).first())?.total||0);
+ if(known===0)return {issue,total:0,articles:[]};
+ // Over all areas a rare reason is read in the areas that hold it; a frequent one from the newest report on (index of
+ // migration 0012), which stops after 25 hits instead of sorting every report.
+ let from='topics';
+ if(all&&scope&&scope.total<=RARE_REVIEW&&scope.regions.length<=D1_MAX_PARAMETERS){where+=` AND region_id IN (${scope.regions.map(()=>'?').join(',')})`;args=scope.regions;}
+ else if(all)from='topics INDEXED BY idx_topics_canonical_updated';
+ const list=table=>db.prepare(`SELECT id,region_id AS regionId,status,updated_at AS updatedAt,json_extract(payload,'$.title') AS title,${label} AS label,json_extract(payload,'$.generatedBy') AS generatedBy FROM ${table} WHERE ${where} ORDER BY updated_at DESC,id LIMIT 25`).bind(...args).all();
+ // Without migration 0012 the index is missing: then the former plan.
+ const items=await list(from).catch(e=>{if(from!=='topics'&&/no such index/i.test(String(e?.message||e)))return list('topics');throw e;});
+ if(known===undefined)known=Number((await db.prepare(`SELECT count(*) total FROM topics WHERE ${where}`).bind(...args).first())?.total||0);
+ return {issue,total:Number(known),articles:items.results};
 }
 // Figures of the reports that are added up over all areas. Each name is a column of the scan below.
 const TOTALS=['contentSummaries','insufficient','stale','aiLabels','weightedKeywords','aiSummaries','qualityPassed','updated7d','pdfArticles','conflicts','textIssues','pendingAnalysis'];
@@ -37,6 +67,7 @@ const FIGURES=`coalesce(sum(json_extract(payload,'$.contentAnalysis.status')='co
  * indexes on every call and are always current.
  * Returns null if the tables are missing (migration not applied): the caller then scans all reports as before.
  */
+export const D1_MAX_PARAMETERS=100;
 export async function regionFigures(db,{now=new Date(),budgetMs=8000,chunkRows=25000}={}){
  const started=Date.now(),week=new Date(now.getTime()-7*86400000).toISOString();
  let revisions,stored,sizes,recent;
@@ -54,8 +85,9 @@ export async function regionFigures(db,{now=new Date(),budgetMs=8000,chunkRows=2
  const stale=revisions.results.filter(r=>kept.get(r.region_id)?.revision!==Number(r.revision)).map(r=>({id:r.region_id,revision:Number(r.revision),rows:size.get(r.region_id)||0})).sort((a,b)=>a.rows-b.rows||a.id.localeCompare(b.id));
  let done=0;
  while(done<stale.length&&Date.now()-started<budgetMs){
+  // D1 binds at most 100 parameters per statement: the ids of one chunk are bound in its IN list.
   const chunk=[];let rows=0;
-  while(done+chunk.length<stale.length&&chunk.length<200&&(chunk.length===0||rows+stale[done+chunk.length].rows<=chunkRows)){const next=stale[done+chunk.length];chunk.push(next);rows+=next.rows;}
+  while(done+chunk.length<stale.length&&chunk.length<D1_MAX_PARAMETERS&&(chunk.length===0||rows+stale[done+chunk.length].rows<=chunkRows)){const next=stale[done+chunk.length];chunk.push(next);rows+=next.rows;}
   const scan=await db.prepare(`SELECT region_id,count(*) count,${FIGURES} FROM topics WHERE ${canonical} AND region_id IN (${chunk.map(()=>'?').join(',')}) GROUP BY region_id`).bind(...chunk.map(c=>c.id)).all();
   const found=new Map(scan.results.map(r=>[r.region_id,r])),at=now.toISOString();
   // An area without canonical reports gets empty figures, so it is not read again until it changes.

@@ -50,8 +50,8 @@ export const RUBIN_HOST=/(?:^|\.)(?:gremien\.info|more-rubin1\.de|zv-kisa\.de)$/
  *   system next to it.
  * - root: the root of a More! Rubin host as a further candidate, after 404 or 0 of a deeper path (/users, an old
  *   calendar month); the system itself answers at the root.
- * Never after 401 or 403 or when robots.txt disallows the address or a redirect target: a refusal is not worked around
- * (README, "Keine Umgehung"); only the official OParl address is asked then.
+ * Never after 401 or 403 or (with ROBOTS_POLICY=obey) when robots.txt disallows the address or a redirect target: a
+ * refusal is not worked around (README, "Keine Umgehung"); only the official OParl address is asked then.
  */
 export function followUpsAfterFailure(url,page={}){
  const none={nearby:false,root:null};let u;try{u=new URL(url);}catch{return none;}
@@ -149,9 +149,19 @@ export function identity(region,url,html,{aliases=ALIASES,areas=CATALOG}={}){
 // lookup proves nothing: guess-hosted.mjs asks the page and keeps it only if the page names the area. itebo answers
 // DNS for existing tenants only; its lookup comes first and saves the request. path: where the public part starts.
 export const HOSTED=[
- {name:'digitalfabriX',land:'09',hosts:s=>[`buergerinfo-${s}.digitalfabrix.de`],path:'/',wildcard:true},
+ // digitalfabriX: the start page only redirects (meta refresh to default.asp) and names nobody; the SessionNet info page
+ // names the client ("Bürgerinfoportal der Gemeinde Aholming"). A name without a tenant answers 503.
+ {name:'digitalfabriX',land:'09',hosts:s=>[`buergerinfo-${s}.digitalfabrix.de`],path:'/info.asp',wildcard:true},
  {name:'sitzung-mv.de',land:'13',hosts:s=>[`${s}.sitzung-mv.de`,`amt-${s}.sitzung-mv.de`],path:'/public/',wildcard:true},
  {name:'itebo',land:'03',hosts:s=>[`${s}ris.itebo.de`],path:'/bi/',wildcard:false},
+ // Platforms whose DNS knows existing tenants only (checked 05.10.2026 with an invented name: NXDOMAIN/NODATA): the
+ // lookup alone makes a candidate, no page of the platform is asked here (dnsOnly); verify.mjs checks it like every
+ // link. All Länder (land ''); a name that two areas share is never taken. ratsinfomanagement.net answers every name
+ // and is not guessed.
+ {name:'allris.cloud',land:'',hosts:s=>[`${s}.allris.cloud`],path:'/public/',wildcard:false,dnsOnly:true},
+ // RIS-Portal: /startseite answers on both kinds of tenant (council site at the root or below /web/ratsinformation/).
+ {name:'RIS-Portal',land:'',hosts:s=>[`${s}.ris-portal.de`],path:'/startseite',wildcard:false,dnsOnly:true},
+ {name:'sitzung-online.de',land:'',hosts:s=>[`www.${s}.sitzung-online.de`],path:'/public/',wildcard:false,dnsOnly:true},
 ];
 const ascii=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
 /** Host labels for a name: "Bayerisch Gmain" → bayerisch-gmain, bayerischgmain; additions and brackets left out. */
@@ -160,8 +170,24 @@ export function hostSlugs(name){
  const dash=b.replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),flat=dash.replace(/-/g,'');
  return [...new Set([dash,flat])].filter(s=>s.length>=4);
 }
-/** Whether a page names the area itself (title or text), not only in its address: the test for wildcard hosts. */
+/**
+ * Whether a page names the area itself (title, text, or the title and alt attributes, where ALLRIS names its client:
+ * <span id="logo" title="Amt Goldberg-Mildenitz">), not only in its address: the test for wildcard hosts.
+ */
 export function pageNamesArea(html,area){
- const page=ascii(title(html)+' '+text(html).slice(0,8000)).replace(/Ã¤/g,'ae').replace(/Ã¶/g,'oe').replace(/Ã¼/g,'ue').replace(/ÃŸ/g,'ss').replace(/[^a-z0-9]/g,'');
+ const attributes=[...String(html||'').matchAll(/\b(?:title|alt)=["']([^"'<>]{3,160})["']/gi)].map(m=>m[1]).join(' ');
+ const page=ascii(title(html)+' '+text(html).slice(0,8000)+' '+text(attributes)).replace(/Ã¤/g,'ae').replace(/Ã¶/g,'oe').replace(/Ã¼/g,'ue').replace(/ÃŸ/g,'ss').replace(/[^a-z0-9]/g,'');
  return hostSlugs(area.shortName||area.name).some(s=>s.replace(/-/g,'').length>=5&&page.includes(s.replace(/-/g,'')));
+}
+
+/** Links of a page as crawl.mjs reads them: address and text (with the title attribute), plus frames. */
+const stripLink=s=>s.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&uuml;/g,'ü').replace(/&auml;/g,'ä').replace(/&ouml;/g,'ö').replace(/\s+/g,' ').trim();
+// Links in quotes, and without them as some CMS write them (href=https://www.roedermark.sitzung-online.de/public/).
+export function anchors(html,base){
+ const out=[];
+ for(const m of html.matchAll(/<a\b([^>]*?)href\s*=\s*(?:["']([^"'#]+)[^"']*["']|([^\s>"'#]+)[^\s>]*)([^>]*)>([\s\S]{0,400}?)<\/a>/gi)){
+  try{const u=new URL((m[2]||m[3]).replace(/&amp;/g,'&').trim(),base);if(!/^https?:$/.test(u.protocol))continue;out.push({url:u.href,text:(stripLink(m[5])+' '+((m[1]+m[4]).match(/title\s*=\s*["']([^"']*)/i)?.[1]||'')).trim().slice(0,120)});}catch{}
+ }
+ for(const m of html.matchAll(/<(?:iframe|frame)\b[^>]*src\s*=\s*["']([^"']+)["']/gi)){try{out.push({url:new URL(m[1],base).href,text:'(eingebettet)'});}catch{}}
+ return out;
 }
