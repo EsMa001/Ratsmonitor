@@ -5,6 +5,8 @@ Kurzübersicht, damit Änderungen ohne langes Suchen gehen. Alles unter `compone
 
 ## Wo ist was?
 
+Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – nur per `grep` benutzen, nicht ganz lesen. Neu erzeugen: `node scripts/frontend-index.mjs`.
+
 | Bereich | Datei |
 |---|---|
 | Kopfzeile, Logo, Kontomenü | `components/Header.tsx`, `components/Brand.tsx`, `components/AccountMenu.tsx` |
