@@ -1,6 +1,8 @@
 const OWNER_KEY='admin-owner-v1';
 export class AdminError extends Error{constructor(status,message){super(message);this.status=status;}}
 export async function adminAccess(db,user){
+ // Nur im lokalen Dev-Server: kein Login und keine Besitzer-Prüfung (im Produktions-Build ist DEV immer false).
+ if(import.meta.env?.DEV===true)return {kind:'owner'};
  if(!user?.userId)return {kind:'anonymous'};
  if(!db)throw new AdminError(503,'Die Datenbank ist momentan nicht erreichbar.');
  const row=await db.prepare('SELECT value FROM system_state WHERE key=?').bind(OWNER_KEY).first();

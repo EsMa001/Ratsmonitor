@@ -19,6 +19,10 @@ const SIGN_OUT_PATH = "/signout-with-chatgpt";
 const CALLBACK_PATH = "/callback";
 
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
+  // Nur im lokalen Dev-Server: Admin ohne Anmeldung (im Produktions-Build ist DEV immer false).
+  if (import.meta.env?.DEV === true) {
+    return { userId: "dev-local", displayName: "Lokal (Dev)", email: "dev@localhost", fullName: null };
+  }
   const requestHeaders = await headers();
   const userId = requestHeaders.get(USER_ID_HEADER);
   const email = requestHeaders.get(USER_EMAIL_HEADER);
