@@ -18,7 +18,7 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
           Kostenlos registrieren
         </Link>
         {IS_DEV && (
-          <button type="button" onClick={() => setTier("basic")} className="text-[12px] text-slate-400 underline underline-offset-2 hover:text-slate-700">
+          <button type="button" onClick={() => setTier("basic")} className="text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">
             Dev: als Basic anmelden
           </button>
         )}
@@ -34,7 +34,7 @@ export function UsagePill({ label, used, max }: { label: string; used: number; m
   return (
     <span className={`inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[12px] font-medium ${full ? "border-amber-200 bg-amber-50 text-amber-800" : "border-slate-200 bg-white text-slate-600"}`}>
       {label}: {usage(used, max)}
-      <span className="text-slate-400">· {TIER_LABEL[tier]}</span>
+      <span className="text-slate-500">· {TIER_LABEL[tier]}</span>
       {full && (
         <Link href="/konto/profil#tarif" className="font-semibold text-amber-900 underline underline-offset-2">
           Upgrade

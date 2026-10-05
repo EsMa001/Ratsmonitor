@@ -3,6 +3,8 @@ import {LABELS} from '../../shared/labels.mjs';
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
 export class SearchError extends Error { constructor(message,status=400){super(message);this.status=status;} }
+/* Typische Formalien einer Sitzung (Muster für LIKE auf den kleingeschriebenen Titel) */
+const FORMAL=['%niederschrift%','%mitteilungen%','%anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','%verpflichtung%','%anträge der fraktionen%'];
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 const FILLER=new Set(['und','oder','der','die','das','den','dem','des','ein','eine','einer','in','im','am','an','zu','zum','zur','von','vom','fur','mit','bei','auf','aus','nach']);
 export function parseMonitorSearch(params){
@@ -23,7 +25,7 @@ export function parseMonitorSearch(params){
  if(more.length>8||more.some(m=>!/^(\d{2}|\d{5}|\d{8})$/.test(m.ags)))throw new SearchError('Ungültige Ortsauswahl.');
  /* Komma, Semikolon, | und "oder" trennen Alternativen; Füllwörter tragen nichts zur Suche bei */
  const groups=q.split(/[,;|]|\s+oder\s+/i).map(g=>norm(g).split(/\s+/).filter(w=>w&&!FILLER.has(w))).filter(g=>g.length).slice(0,8).map(g=>g.slice(0,12));
- return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),within,without,revision};
+ return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),within,without,revision,noformal:params.get('noformal')==='1'};
 }
 
 // Liest ausschließlich aus search_cards (per Trigger gepflegt, drizzle/0006): flache Spalten,
@@ -54,6 +56,8 @@ export async function searchMonitor(db,catalog,params){
   if(f.from&&skip!=='month'){where.push('date>=?');args.push(f.from);}
   if(f.to&&skip!=='month'){where.push('date<=?');args.push(f.to);}
   if(f.status&&skip!=='status'){where.push('status=?');args.push(f.status);}
+  /* Formalien ausblenden: Niederschriften, Mitteilungen, Anfragen, Eröffnung usw. (Titelanfang bzw. Titel) */
+  if(f.noformal){where.push('NOT ('+FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+')');args.push(...FORMAL);}
   /* Mehrere Suchbegriffe: Komma trennt Alternativen (ODER), Wörter innerhalb eines Begriffs müssen alle vorkommen */
   const groups=(f.groups||[f.terms]).filter(g=>g.length);
   if(groups.length){where.push('('+groups.map(g=>'('+g.map(()=>'(instr(search,?)>0 OR region_id IN (SELECT value FROM json_each(?)))').join(' AND ')+')').join(' OR ')+')');for(const g of groups)for(const term of g)args.push(term,nameHits(term));}

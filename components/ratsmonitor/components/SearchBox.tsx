@@ -1,3 +1,4 @@
+import { regionSuggest } from "../lib/place";
 import { useEffect, useRef, useState } from "react";
 import { PlaceIndex, type PlaceEntry } from "../lib/place";
 import { norm } from "../lib/text";
@@ -96,6 +97,21 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
     const lastTok = norm(sg.toks.length ? PlaceIndex.clean(sg.toks[sg.toks.length - 1]) : "");
     /* Keine Vorschläge für ein Wort, das schon zu einem erkannten Ort gehört */
     const recognized = liveHits.map((h) => h.key);
+    /* Regionen (z. B. „Münsterland“) als eigene Vorschläge */
+    const regs = lastTok ? regionSuggest(lastTok) : [];
+    if (regs.length) {
+      out.push({ kind: "head", label: "Regionen" });
+      for (const name of regs)
+        out.push({
+          kind: "text",
+          label: name,
+          pick: () => {
+            apply(sg.toks.slice(0, sg.toks.length - 1).concat([name]).join(" "));
+            search.commitPlaces();
+            setOpen(false);
+          },
+        });
+    }
     if (sg.items.length && !(lastTok && recognized.some((k) => k.split(" ").includes(lastTok)))) {
       out.push({ kind: "head", label: "Orte" });
       for (const e of sg.items)
@@ -203,7 +219,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
         type="search"
         autoComplete="off"
         spellCheck={false}
-        placeholder="Suchen Sie hier."
+        placeholder="Thema, Ort oder Region suchen"
         role="combobox"
         aria-expanded={showList}
         aria-controls="search-assist"
@@ -242,7 +258,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
         </span>
       )}
       {!focused && !placeOn && (
-        <span aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 text-[12px] text-slate-400 sm:block">
+        <span aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 text-[12px] text-slate-500 sm:block">
           {mac ? "⌘K" : "Strg K"}
         </span>
       )}

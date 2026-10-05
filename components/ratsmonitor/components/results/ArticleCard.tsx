@@ -91,11 +91,11 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
 });
 
 /** Kleine Timeline der bisherigen Beratungen eines Vorgangs */
-function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
+export function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
   const shown = steps.slice(-5);
   return (
     <ol aria-label="Verlauf des Vorgangs" className="mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none]">
-      {steps.length > shown.length && <li className="mr-2 self-center text-[12px] text-slate-400">+{steps.length - shown.length}</li>}
+      {steps.length > shown.length && <li className="mr-2 self-center text-[12px] text-slate-500">+{steps.length - shown.length}</li>}
       {shown.map((st, i) => {
         const last = i === shown.length - 1;
         return (
@@ -106,7 +106,7 @@ function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
             </div>
             <span className="text-[12px] font-semibold tabular-nums text-slate-600">{fmtDate(st.d)}</span>
             <span className="truncate text-[12px] text-slate-500" title={st.c}>{st.c || "Gremium offen"}</span>
-            <span className="truncate text-[12px] text-slate-400">{STATUS_BY_ID[st.s as Article["status"]]?.label || ""}</span>
+            <span className="truncate text-[12px] text-slate-500">{STATUS_BY_ID[st.s as Article["status"]]?.label || ""}</span>
           </li>
         );
       })}

@@ -35,14 +35,43 @@ export function FilterSelect({ id, label, allLabel, value, options, counts, onCh
             id={id}
             type="button"
             aria-label={`${label}: ${current}`}
+            aria-haspopup="listbox"
+            onKeyDown={(e) => {
+              if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                e.preventDefault();
+                setOpen(true);
+              }
+            }}
             className={`select-base relative flex w-full items-center text-left ${sm ? "!h-9 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${value && highlight ? "select-active" : ""}`}
           >
             <span className="truncate">{current}</span>
             <IconChevronDown size={14} className={`pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="max-h-[320px] w-[--radix-popover-trigger-width] min-w-[200px] overflow-y-auto rm-glass rm-glass-pop rounded-2xl p-1.5 text-slate-900">
-          <ul role="listbox" aria-label={label} className="m-0 list-none p-0">
+        <PopoverContent
+          align="start"
+          /* Tastatur: beim Öffnen steht der Fokus auf der aktuellen Auswahl */
+          onOpenAutoFocus={(e) => {
+            e.preventDefault();
+            const el = e.currentTarget as HTMLElement;
+            (el.querySelector<HTMLElement>('[aria-selected="true"]') ?? el.querySelector<HTMLElement>('[role="option"]'))?.focus();
+          }}
+          className="max-h-[320px] w-[--radix-popover-trigger-width] min-w-[200px] overflow-y-auto rm-glass rm-glass-pop rounded-2xl p-1.5 text-slate-900">
+          <ul
+            role="listbox"
+            aria-label={label}
+            className="m-0 list-none p-0"
+            onKeyDown={(e) => {
+              /* Pfeiltasten, Pos1 und Ende bewegen den Fokus durch die Optionen */
+              const opts = [...e.currentTarget.querySelectorAll<HTMLElement>('[role="option"]')];
+              const i = opts.indexOf(document.activeElement as HTMLElement);
+              const go = (n: number) => (e.preventDefault(), opts[(n + opts.length) % opts.length]?.focus());
+              if (e.key === "ArrowDown") go(i + 1);
+              else if (e.key === "ArrowUp") go(i - 1);
+              else if (e.key === "Home") go(0);
+              else if (e.key === "End") go(opts.length - 1);
+            }}
+          >
             {all.map((o) => {
               const on = o.value === value;
               return (

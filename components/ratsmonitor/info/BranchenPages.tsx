@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { useBrand } from "../lib/brand";
 import { DarkCta, HitPreview, PageHead, SearchTermButton, useOpenSearch } from "./blocks";
-import { BRANCHEN, NOTIFY_STAT, type Branche } from "./content";
+import { BRANCHEN, type Branche } from "./content";
 import { Icon } from "./icons";
 
 function Timeline({ b }: { b: Branche }) {
@@ -40,78 +40,43 @@ export function BranchePage({ b }: { b: Branche }) {
         <p className="ri-for">Für {b.audience}</p>
       </PageHead>
 
-      <section className="ri-band">
-        <div className="ri-grid3">
-          {/* Jede Kachel startet eine echte Suche mit einem passenden Begriff der Branche */}
-          {b.benefits.map(([icon, title, text, term]) => {
-            return (
-              <button key={title} type="button" onClick={() => openBenefit(term)} className="ri-bcard flex cursor-pointer flex-col text-left">
-                <Icon name={icon} size={28} className="ri-bcard__icon" />
-                <h3>{title}</h3>
-                <p>{text}</p>
-                {/* Sieht aus wie die kleinen Such-Buttons; die ganze Kachel startet die Suche */}
-                <span className="mt-auto pt-4">
-                  <span className="inline-flex h-10 items-center gap-2 rounded-lg bg-white pl-3 pr-2.5 shadow-card">
-                    <Icon name="search" size={15} className="flex-none text-slate-500" />
-                    <span className="text-[14px] text-slate-900">{term}</span>
-                    <span className="text-[14px] text-teal-600">→</span>
-                  </span>
-                </span>
-              </button>
-            );
-          })}
+      {/* Nutzen und Themen im gleichen Dreier-Raster: Linie oben, Titel, Text */}
+      <section className="ri-sec ri-sec--tight">
+        <h2 className="ri-h2">Ihr Nutzen</h2>
+        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
+          {b.benefits.map(([, title, text, term]) => (
+            <div key={title} className="border-t border-slate-200 pt-5">
+              <h3 className="m-0 text-[16px] font-semibold text-slate-900">{title}</h3>
+              <div>
+                <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{text}</p>
+                <button type="button" onClick={() => openBenefit(term)} className="mt-1 text-[14px] text-teal-600 hover:underline">
+                  Suche „{term}“ →
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="ri-sec">
+      {/* Ablauf als hell mintfarbenes Band: trennt die beiden Dreier-Raster */}
+      <section className="ri-sec bg-teal-50/40">
         <h2 className="ri-h2">{b.flowTitle}</h2>
         <p className="ri-sub">{name} meldet bei jedem Schritt, zu dem die Kommune ein Dokument veröffentlicht.</p>
         <Timeline b={b} />
-        <div className="ri-vp">
-          <h3 className="ri-vp__label">Ihr Vorsprung</h3>
-          <div>
-            <p className="ri-vp__text">{b.advantage}</p>
-            <div className="ri-vp__stats">
-              <div>
-                <span className="ri-vp__num">{b.stat[0]}</span>
-                <span className="ri-vp__lab">{b.stat[1]}</span>
-                <span className="ri-vp__note">Beispielwerte, fiktive Testdaten</span>
-              </div>
-              <div>
-                <span className="ri-vp__num">{NOTIFY_STAT[0]}</span>
-                <span className="ri-vp__lab">{NOTIFY_STAT[1]}</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       <section className="ri-sec ri-sec--tight">
         {/* Gleiche Überschrift wie die anderen Abschnitte; Themen als Zeile mit Häkchen, nicht auf die volle Breite gestreckt */}
         <h2 className="ri-h2">Worauf {name} für Sie achtet</h2>
-        {/* Je Thema ein konkreter Anwendungsfall: zwei Spalten, nur Zeilenlinien */}
-        <div className="-mx-4 overflow-x-auto px-4">
-        <table className="w-full border-collapse text-left" style={{ marginTop: 24 }}>
-          <thead>
-            <tr className="border-b border-slate-200">
-              <th scope="col" className="w-[34%] py-3 pr-6 text-[12px] font-normal uppercase tracking-wide text-slate-500">Thema</th>
-              <th scope="col" className="py-3 text-[12px] font-normal uppercase tracking-wide text-slate-500">Ihr Nutzen mit {name}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {b.watch.map((w, i) => (
-              <tr key={w} className="border-b border-slate-200 align-top last:border-b-0">
-                <th scope="row" className="py-4 pr-6 text-[16px] font-semibold text-slate-900">
-                  <span className="inline-flex items-start gap-2.5">
-                    <Icon name="check" size={18} className="mt-0.5 flex-none text-teal-600" />
-                    {w}
-                  </span>
-                </th>
-                <td className="py-4 text-[16px] leading-relaxed text-slate-500">{b.useCases?.[i] ?? ""}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* Gleiches Raster wie „Ihr Nutzen“ */}
+        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
+          {b.watch.map((w, i) => (
+            <div key={w} className="border-t border-slate-200 pt-5">
+              {b.watchIcons?.[i] && <Icon name={b.watchIcons[i]} size={22} className="mb-3 text-teal-600" />}
+              <h3 className="m-0 text-[16px] font-semibold text-slate-900">{w}</h3>
+              <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{b.useCases?.[i] ?? ""}</p>
+            </div>
+          ))}
         </div>
       </section>
 

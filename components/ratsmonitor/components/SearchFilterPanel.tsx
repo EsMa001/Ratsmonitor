@@ -12,7 +12,8 @@ import { AreaBar } from "./AreaBar";
 import { DateRangeFilter } from "./DateRangeFilter";
 import { setListView, useListView } from "../lib/listView";
 import { setFiltersOpen, useFiltersOpen } from "../lib/filtersOpen";
-import { IconHeart, IconFilter, IconViewCompact, IconViewFull, IconX } from "./icons";
+import { IconDownload, IconHeart, IconFilter, IconViewCompact, IconViewFull, IconX } from "./icons";
+import { exportResults } from "../lib/exportResults";
 import { useEffect, useState } from "react";
 import { useEntitlements } from "../lib/entitlements";
 import { SearchBox } from "./SearchBox";
@@ -20,6 +21,7 @@ import { removePhrase } from "../lib/place";
 
 /** Suche und alle Filter als eigene Kachel zwischen Karte und Ergebnisliste */
 export function SearchFilterPanel() {
+  const [exporting, setExporting] = useState(false);
   const { geo } = useData();
   const search = useSearch();
   const { state } = search;
@@ -115,6 +117,28 @@ export function SearchFilterPanel() {
             highlight={false}
             className="ml-auto [&_button]:!w-auto [&_button]:!min-w-0 [&_button]:!border-transparent [&_button]:!bg-transparent [&_button]:!font-normal [&_button]:!text-slate-500 [&_button]:!shadow-none [&_button:hover]:!text-slate-900"
           />
+          {/* Export der Trefferliste als CSV (höchstens 500 Treffer) */}
+          <button
+            type="button"
+            disabled={exporting || !res.total}
+            title={`Trefferliste exportieren (CSV, ${res.total > 500 ? "die ersten 500" : "alle"} Treffer)`}
+            aria-label="Trefferliste exportieren"
+            onClick={async () => {
+              setExporting(true);
+              try {
+                const within = res.around?.set ? [...res.around.set] : null;
+                const n = await exportResults(res.key, within, res.total);
+                toast(`${n.toLocaleString("de-DE")} Treffer exportiert.`);
+              } catch {
+                toast("Der Export ist gerade nicht möglich.");
+              } finally {
+                setExporting(false);
+              }
+            }}
+            className="grid h-9 w-9 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40"
+          >
+            <IconDownload size={20} />
+          </button>
           {/* Ein Umschalter rechts neben der Sortierung: Icon und Bezeichnung der Ansicht, zu der gewechselt wird */}
           <button
             type="button"

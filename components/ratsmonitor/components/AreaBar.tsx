@@ -77,7 +77,7 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
             onKeyUp={fit}
             className={`min-w-0 flex-1 cursor-pointer ${compact ? "h-5 accent-teal-600" : "h-7 accent-[#d1665a]"}`}
           />
-          <output className={`min-w-[52px] text-right text-[14px] tabular-nums ${compact ? "" : "font-bold"} ${km ? (compact ? "text-teal-600" : "text-[#b4493e]") : "text-slate-400"}`}>{km ? `${km} km` : "aus"}</output>
+          <output className={`min-w-[52px] text-right text-[14px] tabular-nums ${compact ? "" : "font-bold"} ${km ? (compact ? "text-teal-600" : "text-[#b4493e]") : "text-slate-500"}`}>{km ? `${km} km` : "aus"}</output>
         </div>
       </div>
       {km > 0 && (

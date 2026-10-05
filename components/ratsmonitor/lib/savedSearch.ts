@@ -18,14 +18,16 @@ export interface SearchSnapshot {
   more?: { ags: string; scope: "only" | "with" }[];
   status: StatusId | "";
   level?: "city" | "district";
+  future?: boolean;
+  formal?: boolean;
 }
 
 
 /** Signatur einer Suche, um gespeicherte Suchen wiederzuerkennen */
-export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more">): string {
+export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more"> & { future?: boolean; formal?: boolean }): string {
   const t = norm(s.text || "").split(/\s+/).filter(Boolean).sort().join(" ");
   const more = (s.more || []).map((m) => `${m.ags}:${m.scope}`).sort().join(",");
-  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|");
+  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|") + (s.future ? "|future" : "") + (s.formal ? "|formal" : "");
 }
 
 export function hasFilters(s: SearchSnapshot): boolean {

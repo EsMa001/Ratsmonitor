@@ -13,6 +13,8 @@ import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
 import type { Article, NotifyFreq, SavedSearch } from "../types";
 import { MONTH_SHORT } from "../lib/text";
+import { sendTestMail } from "../lib/testAuth";
+import { useToast } from "../state/toast";
 
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
 type Preview = { total: number; items: Item[] } | null;
@@ -29,12 +31,13 @@ function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
       label: s.thema || "",
       month: s.monat || "",
       from: s.von || "",
-      to: s.bis || "",
+      to: s.bis || (s.future ? "" : new Date().toISOString().slice(0, 10)),
       status: s.status || "",
       level: s.level || "city",
       sort: "desc",
       page: "1",
     });
+    if (!s.formal) p.set("noformal", "1");
     /* Umkreissuche: alle Gebiete im Kreis, wie in der Übersicht */
     if (within != null) p.set("within", within);
     fetch("/api/search?" + p, { signal: ctrl.signal })
@@ -42,7 +45,7 @@ function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
       .then((r) => setData({ total: r.total ?? 0, items: (r.articles ?? []).slice(0, 10) }))
       .catch(() => !ctrl.signal.aborted && setData("error"));
     return () => ctrl.abort();
-  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level, within]);
+  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level, s.future, s.formal, within]);
   return data;
 }
 
@@ -194,6 +197,7 @@ export function SavedSearchesPage() {
         </div>
       </PageHead>
       <section className="ri-sec ri-sec--tight">
+      {ready && saved.length > 0 && <WeeklyReport saved={saved} />}
 
       {ready && !saved.length && (
         <div className="flex flex-col items-center px-6 py-10 text-center">
@@ -230,5 +234,57 @@ export function SavedSearchesPage() {
       </div>
       </section>
     </>
+  );
+}
+
+const WEEKLY = "ratsmonitor:weekly:v1";
+/** Wochenbericht: jeden Montag eine Mail mit den neuen Treffern aller gespeicherten Suchen der letzten 7 Tage.
+ *  Im Testmodus landet der Bericht im Test-Postfach (Knopf „Jetzt erzeugen“). */
+function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
+  const [on, setOn] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const toast = useToast();
+  useEffect(() => {
+    try {
+      setOn(localStorage.getItem(WEEKLY) === "1");
+    } catch {}
+  }, []);
+  const toggle = () => {
+    setOn(!on);
+    try {
+      localStorage.setItem(WEEKLY, on ? "0" : "1");
+    } catch {}
+  };
+  const build = async () => {
+    setBusy(true);
+    const day = (n: number) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+    const parts: string[] = [];
+    for (const s of saved) {
+      const p = new URLSearchParams({ q: s.text || "", area: s.area || "", scope: s.scope || "only", label: s.thema || "", status: s.status || "", level: s.level || "city", from: day(7), to: day(0), sort: "desc", page: "1" });
+      if (!s.formal) p.set("noformal", "1");
+      try {
+        const r = (await (await fetch("/api/search?" + p)).json()) as { total?: number; articles?: { id: string; title: string; date: string; gemeinde: string }[] };
+        const top = (r.articles ?? []).slice(0, 5).map((a) => `  • ${a.title} (${a.gemeinde}, ${a.date})\n    ${location.origin}/beschluss/${a.id}`);
+        parts.push(`${s.name}: ${r.total ?? 0} neue Treffer${top.length ? "\n" + top.join("\n") : ""}`);
+      } catch {
+        parts.push(`${s.name}: nicht verfügbar`);
+      }
+    }
+    const to = readProfile().email || "Ihre Adresse";
+    sendTestMail(to, `Ihr Wochenbericht: ${day(7)} bis ${day(0)}`, `Guten Morgen,\n\ndas ist neu in Ihren gespeicherten Suchen der letzten 7 Tage:\n\n${parts.join("\n\n")}`);
+    setBusy(false);
+    toast("Wochenbericht liegt im Test-Postfach.");
+  };
+  return (
+    <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-200 pb-5 text-[14px]">
+      <span className="font-semibold text-slate-900">Wochenbericht</span>
+      <span className="text-slate-500">Jeden Montag alle neuen Treffer Ihrer Suchen in einer E-Mail.</span>
+      <button type="button" role="switch" aria-checked={on} aria-label="Wochenbericht" onClick={toggle} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${on ? "bg-teal-600" : "bg-slate-300/80"}`}>
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${on ? "left-[18px]" : "left-0.5"}`} />
+      </button>
+      <button type="button" disabled={busy} onClick={build} className="text-teal-600 hover:underline disabled:opacity-50">
+        {busy ? "Wird erstellt …" : "Jetzt erzeugen (Test-Postfach) →"}
+      </button>
+    </div>
   );
 }

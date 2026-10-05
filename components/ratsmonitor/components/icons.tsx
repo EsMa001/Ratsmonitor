@@ -207,3 +207,22 @@ export const IconHeart = (p: IconProps) => (
     <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z" />
   </Svg>
 );
+
+export const IconDownload = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M12 4v11" />
+    <path d="m7 10 5 5 5-5" />
+    <path d="M5 20h14" />
+  </Svg>
+);
+
+/** Kalender mit Pfeilkreis: Abo, das sich selbst aktualisiert */
+export const IconCalendarSync = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M20 11V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5" />
+    <path d="M4 9h16M8 2v4M16 2v4" />
+    <path d="M21 16a4 4 0 0 0-7-2.5L13 15" />
+    <path d="M13 12v3h3" />
+    <path d="M14 20a4 4 0 0 0 6-1.5" />
+  </Svg>
+);

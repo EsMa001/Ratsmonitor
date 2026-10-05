@@ -72,7 +72,7 @@ export function ActiveFilters() {
             if (r.ags.includes(state.area)) search.clearArea();
             if (!rest.length && res.placeActive) search.applySearch(removePhrase(state.q, res.pq.phraseRaw));
           }}
-          className="group inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm hover:bg-teal-100/90"
+          className="group relative inline-flex h-7 items-center gap-1.5 rounded-full before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm hover:bg-teal-100/90"
         >
           <span className="text-teal-600/80"><IconPin size={14} /></span>
           {r.name}
@@ -86,7 +86,7 @@ export function ActiveFilters() {
           aria-label={`Filter ${c.label} ${c.value} entfernen`}
           title={c.label}
           onClick={() => clearChip(c.key, c.term)}
-          className="group inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm hover:bg-teal-100/90"
+          className="group relative inline-flex h-7 items-center gap-1.5 rounded-full before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm hover:bg-teal-100/90"
         >
           <span className="text-teal-600/80">{icon(c.key)}</span>
           {c.value}

@@ -41,6 +41,8 @@ interface SearchActions {
   setStatus: (v: StatusId | "") => void;
   setLevel: (v:"city"|"district")=>void;
   setSort: (v: SearchState["sort"]) => void;
+  setFuture: (v: boolean) => void;
+  setFormal: (v: boolean) => void;
   resetAll: () => void;
   /** Gespeicherte Suche anwenden; false, solange die Karte für einen Umkreis noch lädt */
   applySaved: (s: SavedSearch) => boolean;
@@ -173,6 +175,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         setPopupState('');
       },
       setSort: (v) => commit({ ...ref.current, sort: v }),
+      setFuture: (v) => commit({ ...ref.current, future: v }),
+      setFormal: (v) => commit({ ...ref.current, formal: v }),
       resetAll() {
         clearTimeout(focusTimer.current);
         commit({ ...INITIAL_SEARCH, sort: ref.current.sort });
@@ -203,7 +207,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         } else if (pq?.place && pq.key) ignored[pq.key] = true;
         clearTimeout(focusTimer.current);
         commit({
-          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status,
+          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status, future: !!sv.future, formal: !!sv.formal,
           placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: radius ? [] : (sv.more || []).filter((m) => m.ags !== area),
         });
         setPopupState("");
@@ -232,6 +236,9 @@ export function useSearch(): SearchValue {
 export interface CoverageEntry {ags:string;name:string;count:number;complete:boolean}
 export interface SearchResults {
  total:number;coverage:CoverageEntry[];
+  /** Abfrage der aktuellen Suche (für Export), ohne Seite */
+  key:string;
+  around:{set:Set<string>|null;level:string}|null;
   /** jüngster erfolgreicher Datenabruf (ISO) */
   updatedAt:string|null;loading:boolean;error:string;page:number;setPage:(page:number)=>void;retry:()=>void;
   pq: ParseResult;
@@ -262,10 +269,13 @@ function useDerivedResults(state:SearchState):SearchResults {
   /* Ortsfilter: fester erster Ort (state.area), feste weitere Orte (morePlaces) und live im Text erkannte Orte */
   const {placeActive,liveHits,text,more}=deriveFilters(state,pq,ags=>hasScope(ags,geo));
   const within=state.radius&&geo?geo.within(state.radius):null;
-  const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level};
+  const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level,future:!!state.future,formal:!!state.formal};
   /* Kreisfreie Städte (Kreisschlüssel ohne Umfangwahl) zählen immer mit ihrer Stadt; mit Umkreis ist das Gebiet nur dessen Mittelpunkt; gesucht wird in allen Gebieten im Umkreis */
   const area=state.radius?'':state.area;
-  const params=new URLSearchParams({q:text,area,label:state.thema,month:state.monat,from:state.von,to:state.bis,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
+  /* Ohne „inkl. Zukunft“ endet der Zeitraum heute (sofern kein eigenes Enddatum gesetzt ist) */
+  const today=new Date().toISOString().slice(0,10),to=state.bis||(state.future?'':today);
+  const params=new URLSearchParams({q:text,area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
+  if(!state.formal)params.set('noformal','1');
   if(more.length&&!state.radius)params.set('more',more.map(m=>m.ags+':'+(m.ags.length===5&&!hasScope(m.ags,geo)?'with':m.scope)).join(','));
   /* Umkreis: Der Schlüssel der Anfrage nennt nur den Kreis; welche Gebiete darin liegen, setzt der Abruf selbst ein (siehe unten) */
   if(state.radius)params.set('around',[state.radius.ags,state.radius.km,Math.round(state.radius.x??0),Math.round(state.radius.y??0),within?within.set.size:'-'].join(':'));

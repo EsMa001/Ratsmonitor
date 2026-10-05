@@ -7,12 +7,13 @@ import { PlanCards } from "../components/PlanCards";
 const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
 const count = (n: number) => (n === 0 ? "–" : Number.isFinite(n) ? String(n) : "unbegrenzt");
 const COMPARE_ROWS: [string, (t: Tier) => string][] = [
-  ["Preis", (t) => (t === "guest" ? "0 €" : t === "basic" ? "kostenlos" : t === "pro" ? PRO_PRICE : "auf Anfrage")],
+  ["Preis", (t) => (t === "guest" ? "0 €" : t === "basic" ? "kostenlos" : t === "pro" ? PRO_PRICE : "49,99 € / Monat")],
   ["Treffer je Suche", (t) => (Number.isFinite(LIMITS[t].maxResults) ? String(LIMITS[t].maxResults) : "alle")],
   ["Filter (Gebiet, Zeitraum, Thema, Status)", (t) => (LIMITS[t].filters ? "✓" : "–")],
   ["Gespeicherte Suchen", (t) => count(LIMITS[t].savedSearches)],
   ["Gespeicherte Artikel", (t) => count(LIMITS[t].bookmarks)],
   ["Aktive Benachrichtigungen", (t) => count(LIMITS[t].notifications)],
+  ["Sitzungskalender", (t) => (LIMITS[t].calendar ? "✓" : "–")],
   ["E-Mail-Empfänger je Benachrichtigung", (t) => (LIMITS[t].emails > 1 ? `bis zu ${LIMITS[t].emails}` : count(LIMITS[t].emails))],
 ];
 

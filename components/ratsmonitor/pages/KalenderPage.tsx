@@ -1,3 +1,6 @@
+import { useTier } from "../lib/tier";
+import { IconCalendarSync, IconDownload } from "../components/icons";
+import { FilterSelect } from "../components/FilterSelect";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { REGIONS } from "@/shared/regions";
@@ -29,6 +32,7 @@ const AREA_COLORS = ["#0d9488", "#6366f1", "#f59e0b", "#e11d48", "#0ea5e9", "#8b
 
 /** Kalender: alle Sitzungstermine in den eigenen Gebieten (Orte, optional mit Umkreis), schlicht als Monatsansicht */
 export function KalenderPage() {
+  const { limits } = useTier();
   const { geo } = useData();
   const { saved } = useAccount();
   const [cfg, setCfg] = useState<CalSettings>(EMPTY);
@@ -42,6 +46,8 @@ export function KalenderPage() {
 
   /* Monat und gewählter Tag; erst im Browser bestimmen (Server kennt die Zeitzone der Nutzer nicht) */
   const [today, setToday] = useState("");
+  const [host, setHost] = useState("");
+  useEffect(() => setHost(window.location.host), []);
   const [month, setMonth] = useState(() => new Date(2000, 0, 1));
   const [day, setDay] = useState("");
   useEffect(() => {
@@ -126,6 +132,8 @@ export function KalenderPage() {
   const dayLabel = day ? new Date(day + "T00:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" }) : "";
   const regionName = (ags: string) => geo?.info(ags).name ?? REGIONS.find((r) => r.ags === ags)?.name ?? ags;
 
+  /* Nur Enterprise: alle anderen sehen, was der Kalender kann, und den Weg zum Tarif */
+  if (!limits.calendar) return <KalenderTeaser />;
   return (
     <>
       <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine.<br />In Ihren Gebieten.</>} lead="Rats- und Ausschusssitzungen in den Orten, die Sie beobachten, auch mit Umkreis, etwa für Ihr Vertriebsgebiet." />
@@ -178,7 +186,14 @@ export function KalenderPage() {
           {/* Termine des Tages */}
           <div>
             <h2 className="m-0 text-[18px] font-semibold text-slate-900">{dayLabel}</h2>
-            {!cfg.areas.length && <p className="mt-3 text-slate-500">Fügen Sie unten Gebiete hinzu, um deren Termine zu sehen.</p>}
+            {!cfg.areas.length && (
+              <p className="mt-3 text-slate-500">
+                Noch keine Gebiete gewählt.{" "}
+                <button type="button" onClick={() => document.querySelector<HTMLInputElement>('[aria-label="Ort oder Kreis hinzufügen"]')?.focus()} className="text-teal-600 hover:underline">
+                  Erstes Gebiet hinzufügen →
+                </button>
+              </p>
+            )}
             {cfg.areas.length > 0 && !dayEvents.length && <p className="mt-3 text-slate-500">An diesem Tag keine Sitzungen in Ihren Gebieten.</p>}
             <ul className="m-0 mt-3 list-none p-0">
               {dayEvents.map((e) => (
@@ -203,9 +218,9 @@ export function KalenderPage() {
       </section>
       )}
 
-      {/* Gebiete und Benachrichtigung */}
+      {/* Meine Gebiete */}
       <section className="ri-sec ri-sec--tight">
-        <div className="grid gap-10 lg:grid-cols-2">
+        <div className="max-w-[640px]">
           <div>
             <h2 className="m-0 text-[18px] font-semibold text-slate-900">Meine Gebiete</h2>
             <ul className="m-0 mt-3 list-none p-0">
@@ -250,24 +265,91 @@ export function KalenderPage() {
               </div>
             )}
           </div>
-          <div>
-            <h2 className="m-0 text-[18px] font-semibold text-slate-900">Benachrichtigung</h2>
-            <p className="mt-2 text-slate-500">Lassen Sie sich per E-Mail über neue Termine in Ihren Gebieten informieren.</p>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <button type="button" aria-pressed={cfg.mail} onClick={() => save({ ...cfg, mail: !cfg.mail })} className={`inline-flex h-10 items-center gap-2 rounded-full px-4 text-[14px] transition-colors ${cfg.mail ? "bg-teal-50 text-teal-600" : "text-slate-600 hover:bg-slate-100"}`}>
-                <IconBell size={18} />
-                {cfg.mail ? "Benachrichtigung an" : "Benachrichtigung aus"}
-              </button>
-              {cfg.mail && (
-                <select aria-label="Häufigkeit" value={cfg.freq} onChange={(e) => save({ ...cfg, freq: e.target.value as NotifyFreq })} className="h-10 cursor-pointer rounded-full bg-[#f8f9fa] px-4 text-[14px] text-slate-600 outline-none">
-                  <option value="instant">Sofort</option>
-                  <option value="daily">Täglich</option>
-                  <option value="weekly">Wöchentlich</option>
-                </select>
-              )}
+        </div>
+      </section>
+
+      {/* Benachrichtigung, Abo (aktualisiert sich) oder einmalige Datei: drei gleich aufgebaute Spalten */}
+      {agsList.length > 0 && (
+        <section className="ri-sec ri-sec--tight">
+          <h2 className="m-0 text-[18px] font-semibold text-slate-900">Auf dem Laufenden bleiben</h2>
+          <p className="m-0 mt-1 text-slate-500">Per E-Mail informiert werden oder alle Sitzungen Ihrer Gebiete in Apple Kalender, Outlook oder Google Kalender übernehmen.</p>
+          <div className="mt-6 grid gap-x-10 gap-y-8 md:grid-cols-3">
+            <div className="border-t border-slate-200 pt-5">
+              <IconBell size={28} className="text-teal-600" />
+              <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Per E-Mail benachrichtigen</h3>
+              <p className="m-0 mt-1.5 text-[16px] leading-relaxed text-slate-500">
+                Sie erhalten eine E-Mail, sobald in Ihren Gebieten <strong className="font-semibold text-slate-900">neue Sitzungen angesetzt</strong> werden, sofort, täglich oder wöchentlich.
+              </p>
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-[14px]">
+                <button type="button" role="switch" aria-checked={cfg.mail} aria-label="Benachrichtigung per E-Mail" onClick={() => save({ ...cfg, mail: !cfg.mail })} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${cfg.mail ? "bg-teal-600" : "bg-slate-300/80"}`}>
+                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${cfg.mail ? "left-[18px]" : "left-0.5"}`} />
+                </button>
+                <span className="text-slate-900">{cfg.mail ? "An" : "Aus"}</span>
+                {cfg.mail && (
+                  <FilterSelect id="cal-freq" label="Häufigkeit" allLabel="" value={cfg.freq} options={[{ value: "instant", label: "Sofort" }, { value: "daily", label: "Täglich" }, { value: "weekly", label: "Wöchentlich" }]} onChange={(v) => save({ ...cfg, freq: v as NotifyFreq })} size="sm" highlight={false} />
+                )}
+              </div>
+              <p className="m-0 mt-3 text-[12px] text-slate-500">Der E-Mail-Versand startet in Kürze; Ihre Auswahl ist gespeichert.</p>
             </div>
-            <p className="mt-3 text-[12px] text-slate-500">Hinweis: Der E-Mail-Versand ist noch nicht eingerichtet. Ihre Auswahl wird gespeichert und gilt, sobald er startet.</p>
+
+            <div className="border-t border-slate-200 pt-5">
+              <IconCalendarSync size={28} className="text-teal-600" />
+              <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Kalender abonnieren</h3>
+              <p className="m-0 mt-1.5 text-[16px] leading-relaxed text-slate-500">
+                Ihre Sitzungen erscheinen als eigener Kalender in Ihrer App und <strong className="font-semibold text-slate-900">aktualisieren sich automatisch</strong>: neue oder verschobene Termine kommen von selbst dazu. Empfohlen.
+              </p>
+              <a href={`webcal://${host}/api/calendar/ics?ags=${agsList.join(",")}`} className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white no-underline hover:opacity-85">
+                Kalender abonnieren →
+              </a>
+            </div>
+            <div className="border-t border-slate-200 pt-5">
+              <IconDownload size={28} className="text-teal-600" />
+              <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Als Datei herunterladen</h3>
+              <p className="m-0 mt-1.5 text-[16px] leading-relaxed text-slate-500">
+                Eine .ics-Datei mit den Terminen der letzten 30 Tage und der nächsten sechs Monate, zum einmaligen Import oder Weitergeben. Sie aktualisiert sich nicht; erneut importiert entstehen keine doppelten Termine.
+              </p>
+              <a href={`/api/calendar/ics?download=1&ags=${agsList.join(",")}`} className="mt-4 inline-flex h-11 items-center gap-1.5 text-[14px] font-medium text-teal-600 no-underline hover:underline">
+                Datei herunterladen →
+              </a>
+            </div>
           </div>
+        </section>
+      )}
+
+    </>
+  );
+}
+
+const CAL_POINTS: [string, string][] = [
+  ["Alle Sitzungen auf einen Blick", "Rats- und Ausschusssitzungen aller Orte, die Sie beobachten, in einer Monatsansicht."],
+  ["Gebiete mit Umkreis", "Legen Sie Orte oder Kreise fest, auf Wunsch mit Umkreis, etwa Ihr ganzes Vertriebsgebiet."],
+  ["Farbe je Gebiet", "Jedes Gebiet hat eine eigene Farbe, so sehen Sie sofort, wo etwas ansteht."],
+  ["Tagesordnung vorab", "Zu jedem Termin die beratenen Vorgänge, bevor entschieden wird."],
+];
+
+/** Kalender für Tarife ohne Kalender: was er kann, und der Weg zu Enterprise */
+function KalenderTeaser() {
+  return (
+    <>
+      <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine.<br />In Ihren Gebieten.</>} lead="Der Sitzungskalender ist Teil des Enterprise-Tarifs." />
+      <section className="ri-sec ri-sec--tight">
+        <h2 className="ri-h2">Was der Kalender kann</h2>
+        <div className="ri-points ri-points--2">
+          {CAL_POINTS.map(([t, p], i) => (
+            <div key={t} className="ri-point">
+              <span className="ri-point__num">0{i + 1}</span>
+              <h3>{t}</h3>
+              <p>{p}</p>
+            </div>
+          ))}
+        </div>
+        <div className="ri-actions" style={{ marginTop: 40 }}>
+          <Link href="/registrieren?tarif=enterprise" className="ri-btn ri-btn--dark">
+            Enterprise wählen
+          </Link>
+          <Link href="/preise" className="ri-btn ri-btn--light">
+            Preismodelle vergleichen
+          </Link>
         </div>
       </section>
     </>

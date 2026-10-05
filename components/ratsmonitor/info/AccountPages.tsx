@@ -4,6 +4,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useBrand } from "../lib/brand";
 import { PageHead, Rich, useOpenSearch } from "./blocks";
 import { PLANS, type PlanId } from "./content";
+import { FilterSelect } from "../components/FilterSelect";
 import { useRouter } from "next/navigation";
 import { login, register, requestReset, TEST_PASSWORD } from "../lib/testAuth";
 import { Icon } from "./icons";
@@ -303,11 +304,8 @@ export function KontaktPage() {
           <Field id="kontakt-email" label="E-Mail-Adresse" type="email" value={f.email} onChange={(v) => setF((s) => ({ ...s, email: v }))} error={errors.email} autoComplete="email" />
           <div className="ri-field">
             <label htmlFor="kontakt-subject">Betreff</label>
-            <select id="kontakt-subject" className="ri-input" value={f.subject} onChange={(e) => setF((s) => ({ ...s, subject: e.target.value }))}>
-              {SUBJECTS.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
+            {/* Eigene Auswahlliste statt Browser-Dropdown */}
+            <FilterSelect id="kontakt-subject" label="Betreff" allLabel="" value={f.subject} options={SUBJECTS.map((x) => ({ value: x, label: x }))} onChange={(v) => setF((s) => ({ ...s, subject: v }))} highlight={false} className="[&_button]:!h-12 [&_button]:!w-full [&_button]:!max-w-none [&_button]:!text-[16px]" />
           </div>
           <div className="ri-field">
             <label htmlFor="kontakt-message">Nachricht</label>

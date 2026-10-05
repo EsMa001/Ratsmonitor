@@ -1,6 +1,9 @@
 import Link from "next/link";
-import { IconBookmark, IconChevronDown } from "../components/icons";
-import { useState } from "react";
+import { IconBookmark } from "../components/icons";
+import { useEffect, useState } from "react";
+import { FilterSelect } from "../components/FilterSelect";
+import { StepTimeline } from "../components/results/ArticleCard";
+import type { Article } from "../types";
 import { removeSavedArticle, useSavedArticles } from "../lib/savedArticles";
 import { FollowButton } from "../components/FollowButton";
 import { MONTH_SHORT } from "../lib/text";
@@ -49,14 +52,7 @@ export function SavedArticlesPage() {
               </button>
             ))}
           </div>
-          <label className="relative">
-            <span className="sr-only">Sortierung</span>
-            <select value={sort} onChange={(e) => setSort(e.target.value as "saved" | "date")} className="h-9 cursor-pointer appearance-none rounded-lg bg-transparent pl-3 pr-8 text-[14px] text-slate-600 outline-none hover:bg-slate-100">
-              <option value="saved">Zuletzt gespeichert</option>
-              <option value="date">Nach Sitzungsdatum</option>
-            </select>
-            <IconChevronDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
-          </label>
+          <FilterSelect id="sa-sort" label="Sortierung" allLabel="" value={sort} options={[{ value: "saved", label: "Zuletzt gespeichert" }, { value: "date", label: "Nach Sitzungsdatum" }]} onChange={(v) => setSort(v as "saved" | "date")} size="sm" highlight={false} className="[&_button]:!border-transparent [&_button]:!bg-transparent [&_button]:!text-slate-500" />
         </div>
       )}
       {list.length > 0 && !shown.length && <p className="m-0 py-6 text-slate-500">Keine gespeicherten Artikel passen zu Ihrer Suche.</p>}
@@ -88,8 +84,9 @@ export function SavedArticlesPage() {
                 {a.title}
               </Link>
               <p className="m-0 mt-0.5 text-[14px] font-medium text-slate-500">{a.gemeinde}</p>
-              {a.follow && <p className="m-0 mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-2 py-0.5 text-[12px] font-medium text-teal-700">Sie werden über Neuigkeiten informiert</p>}
-              {a.teaser && <p className="m-0 mt-1.5 line-clamp-2 text-[14px] leading-[1.6] text-slate-600">{a.teaser}</p>}
+              {a.follow && <p className="m-0 mt-1 text-[12px] text-teal-600">Sie werden über Neuigkeiten informiert</p>}
+              {/* Vorgangsverlauf: alle bisherigen Beratungen, der aktuelle Schritt rechts */}
+              <Verlauf id={a.id} fallback={a.teaser} />
             </div>
             <FollowButton article={a} />
             <button
@@ -107,4 +104,20 @@ export function SavedArticlesPage() {
       </section>
     </>
   );
+}
+
+type Step = NonNullable<Article["steps"]>[number];
+/** Lädt den Verlauf eines gespeicherten Vorgangs (Sitzungen mit Datum, Gremium und Stand) */
+function Verlauf({ id, fallback }: { id: string; fallback?: string }) {
+  const [steps, setSteps] = useState<Step[] | null>(null);
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetch("/api/topics/" + encodeURIComponent(id), { signal: ctrl.signal })
+      .then((r) => (r.ok ? (r.json() as Promise<{ events?: { date?: string; status?: string; committee?: string }[] }>) : null))
+      .then((t) => setSteps((t?.events ?? []).filter((e) => e.date).map((e) => ({ d: e.date!.slice(0, 10), s: e.status ?? "", c: e.committee ?? "" })).sort((x, y) => (x.d < y.d ? -1 : 1))))
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [id]);
+  if (steps && steps.length) return <StepTimeline steps={steps} />;
+  return fallback ? <p className="m-0 mt-1.5 line-clamp-2 text-[14px] leading-[1.6] text-slate-500">{fallback}</p> : null;
 }

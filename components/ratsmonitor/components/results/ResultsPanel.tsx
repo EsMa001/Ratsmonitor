@@ -99,13 +99,26 @@ export function ResultsPanel() {
           ))}
           {articlesReady && !res.error && n === 0 && (
             <div className="flex flex-col items-center gap-2 px-5 py-12 text-center text-slate-600">
-              <div className="mb-1.5 grid h-12 w-12 place-items-center rounded-xl bg-slate-100 text-slate-500">
+              <div className="mb-1.5 grid h-12 w-12 place-items-center text-slate-500">
                 <IconEmptySearch size={22} />
               </div>
               <h3 className="m-0 text-[16px] text-slate-900">Keine Vorgänge gefunden{emptyWhere}</h3>
-              <p className="m-0 text-[14px]">Für diese Kombination aus Gebiet, Suchbegriff und Filtern gibt es keine Einträge.</p>
-              <button type="button" onClick={search.resetAll} className="btn-primary mt-2.5">
-                Alle Filter zurücksetzen
+              <p className="m-0 text-[14px]">Für diese Kombination aus Gebiet, Suchbegriff und Filtern gibt es keine Einträge. Versuchen Sie:</p>
+              {/* Konkrete nächste Schritte statt nur „zurücksetzen“ */}
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[14px]">
+                {!search.state.future && !search.state.bis && (
+                  <button type="button" onClick={() => search.setFuture(true)} className="text-teal-600 hover:underline">
+                    Auch künftige Termine zeigen →
+                  </button>
+                )}
+                {search.state.area.length >= 5 && !search.state.radius && (
+                  <button type="button" onClick={() => search.setRadiusKm(25)} className="text-teal-600 hover:underline">
+                    Umkreis 25 km einbeziehen →
+                  </button>
+                )}
+              </div>
+              <button type="button" onClick={search.resetAll} className="mt-2.5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white hover:opacity-85">
+                Alle Filter zurücksetzen →
               </button>
             </div>
           )}

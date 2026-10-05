@@ -130,7 +130,8 @@ const getMails = () => {
 };
 
 export const useTestSession = () => useSyncExternalStore(subscribe, getSession, () => null);
-export const useTestMails = () => useSyncExternalStore(subscribe, getMails, () => [] as TestMail[]);
+const NO_MAILS: TestMail[] = [];
+export const useTestMails = () => useSyncExternalStore(subscribe, getMails, () => NO_MAILS);
 export function markMailsRead() {
   store(MAILS, getMails().map((m) => ({ ...m, read: true })));
 }

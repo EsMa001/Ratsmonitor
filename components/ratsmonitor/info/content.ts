@@ -29,6 +29,8 @@ export interface Branche {
   watch: string[];
   /** Anwendungsfall je Thema aus „watch“ (gleiche Reihenfolge) */
   useCases?: string[];
+  /** Symbol je Thema aus „watch“ (gleiche Reihenfolge) */
+  watchIcons?: IconName[];
   closing: string;
   /** Suchbegriffe; der erste ist der Haupt-Suchbegriff */
   keywords: string[];
@@ -56,8 +58,9 @@ export const BRANCHEN: Branche[] = [
     reported: [0, 1, 2, 3],
     advantage: "Sie erfahren von einer Fläche, wenn sie zum ersten Mal in einem Gremium auftaucht, oft Jahre vor dem Baubeginn.",
     stat: ["312", "neue Aufstellungsbeschlüsse im letzten Monat"],
-    watch: ["Aufstellungsbeschlüsse", "Offenlegungen", "Veränderungssperren", "Städtebauliche Verträge"],
-    useCases: ["Sie erfahren, dass eine Kommune ein neues Baugebiet plant, Monate bevor die Flächen auf den Markt kommen, und können früh Kontakt zu Eigentümern und Verwaltung aufnehmen.", "Sie sehen, wann Planentwürfe öffentlich ausliegen, und können Fristen für Stellungnahmen und Einwendungen rechtzeitig einplanen.", "Sie erkennen Risiken vor einem Grundstückskauf: Eine Veränderungssperre kann Bauanträge in einem Gebiet für Jahre blockieren.", "Sie sehen, welche Kosten und Pflichten Kommunen Vorhabenträgern auferlegen, etwa für Erschließung, Kitas oder Sozialwohnungen."],
+    watch: ["Aufstellungsbeschlüsse", "Offenlegungen", "Veränderungssperren", "Städtebauliche Verträge", "Bebauungspläne", "Grundstücksverkäufe"],
+    useCases: ["Sie erfahren, dass eine Kommune ein neues Baugebiet plant, Monate bevor die Flächen auf den Markt kommen, und können früh Kontakt zu Eigentümern und Verwaltung aufnehmen.", "Sie sehen, wann Planentwürfe öffentlich ausliegen, und können Fristen für Stellungnahmen und Einwendungen rechtzeitig einplanen.", "Sie erkennen Risiken vor einem Grundstückskauf: Eine Veränderungssperre kann Bauanträge in einem Gebiet für Jahre blockieren.", "Sie sehen, welche Kosten und Pflichten Kommunen Vorhabenträgern auferlegen, etwa für Erschließung, Kitas oder Sozialwohnungen.", "Sie verfolgen jeden Plan vom ersten Entwurf bis zur Satzung und wissen, was auf einer Fläche künftig erlaubt ist.", "Sie erfahren, wenn Kommunen eigene Grundstücke verkaufen oder in Erbpacht vergeben, oft mit Bewerbungsfrist."],
+    watchIcons: ["fileText", "eye", "shieldCheck", "handshake", "map", "house"],
     closing: "Ihr nächstes Grundstück steht schon auf einer Tagesordnung.",
     keywords: ["Aufstellungsbeschluss", "Bebauungsplan", "Veränderungssperre", "Offenlegung", "städtebaulicher Vertrag"],
   },
@@ -79,8 +82,9 @@ export const BRANCHEN: Branche[] = [
     reported: [0, 1, 2, 3],
     advantage: "Sie sehen das Auslaufen einer Konzession, wenn es im Hauptausschuss angekündigt wird, und haben Zeit für ein Angebot.",
     stat: ["148", "Beschlüsse zu Wärmeplanung und Konzessionen im letzten Monat"],
-    watch: ["Wärmeplanung", "Konzessionsverträge", "Netzausbau", "Städtische Beteiligungen"],
-    useCases: ["Sie erfahren, wo Kommunen Wärmenetze vorsehen und wo nicht, und können Angebote, Netzausbau und Kundenberatung danach ausrichten.", "Sie sehen, wann Strom- und Gaskonzessionen auslaufen und neu vergeben werden, und können sich rechtzeitig bewerben.", "Sie verfolgen Beschlüsse zu Leitungen, Umspannwerken und Ladeinfrastruktur und erkennen frühzeitig Bedarf und Partner vor Ort.", "Sie sehen, wenn Kommunen Anteile an Stadtwerken kaufen oder verkaufen oder neue Gesellschaften gründen, und damit, wo sich Kooperationen ergeben."],
+    watch: ["Wärmeplanung", "Konzessionsverträge", "Netzausbau", "Städtische Beteiligungen", "Photovoltaik und Windkraft", "Förderprogramme"],
+    useCases: ["Sie erfahren, wo Kommunen Wärmenetze vorsehen und wo nicht, und können Angebote, Netzausbau und Kundenberatung danach ausrichten.", "Sie sehen, wann Strom- und Gaskonzessionen auslaufen und neu vergeben werden, und können sich rechtzeitig bewerben.", "Sie verfolgen Beschlüsse zu Leitungen, Umspannwerken und Ladeinfrastruktur und erkennen frühzeitig Bedarf und Partner vor Ort.", "Sie sehen, wenn Kommunen Anteile an Stadtwerken kaufen oder verkaufen oder neue Gesellschaften gründen, und damit, wo sich Kooperationen ergeben.", "Sie sehen, wo Kommunen Flächen für Solar- und Windparks ausweisen oder eigene Anlagen planen.", "Sie erfahren, welche Klimaschutz- und Energieförderungen Kommunen beantragen und wo daraus Aufträge entstehen."],
+    watchIcons: ["zap", "handshake", "layers", "landmark", "target", "euro"],
     closing: "Die nächste Konzession wird gerade beraten.",
     keywords: ["Wärmeplanung", "Konzessionsvertrag", "Fernwärme", "Stadtwerke", "Netzausbau"],
   },
@@ -102,8 +106,9 @@ export const BRANCHEN: Branche[] = [
     reported: [0, 1, 2, 3],
     advantage: "Sie erfahren von auslaufenden Verträgen und neuen Anlagen, sobald sie im Ausschuss beraten werden, Monate vor der Ausschreibung.",
     stat: ["226", "Beschlüsse zu Entsorgung und Vergaben im letzten Monat"],
-    watch: ["Entsorgungsverträge", "Abfallwirtschaftskonzepte", "Anlagen und Wertstoffhöfe", "Kläranlagen und Kanalnetz"],
-    useCases: ["Sie erfahren, wann Verträge für Abfallsammlung oder Verwertung auslaufen, und können sich auf die kommende Ausschreibung vorbereiten.", "Sie sehen, wie Kommunen ihre Abfallwirtschaft neu ordnen, etwa mit neuen Tonnen, Gebühren oder Sammelsystemen, und welche Leistungen künftig gebraucht werden.", "Sie erkennen Neubau, Erweiterung oder Schließung von Anlagen und Wertstoffhöfen und damit Bedarf an Bau, Technik und Betrieb.", "Sie verfolgen Sanierungs- und Investitionsbeschlüsse für Abwasseranlagen und erkennen Projekte lange vor der Vergabe."],
+    watch: ["Entsorgungsverträge", "Abfallwirtschaftskonzepte", "Anlagen und Wertstoffhöfe", "Kläranlagen und Kanalnetz", "Gebührensatzungen", "Straßenreinigung und Winterdienst"],
+    useCases: ["Sie erfahren, wann Verträge für Abfallsammlung oder Verwertung auslaufen, und können sich auf die kommende Ausschreibung vorbereiten.", "Sie sehen, wie Kommunen ihre Abfallwirtschaft neu ordnen, etwa mit neuen Tonnen, Gebühren oder Sammelsystemen, und welche Leistungen künftig gebraucht werden.", "Sie erkennen Neubau, Erweiterung oder Schließung von Anlagen und Wertstoffhöfen und damit Bedarf an Bau, Technik und Betrieb.", "Sie verfolgen Sanierungs- und Investitionsbeschlüsse für Abwasseranlagen und erkennen Projekte lange vor der Vergabe.", "Sie sehen, wie sich Müll- und Abwassergebühren entwickeln, und erkennen daraus Kosten- und Leistungsänderungen.", "Sie verfolgen Neuvergaben und Änderungen bei Reinigung und Winterdienst, die häufig ausgeschrieben werden."],
+    watchIcons: ["clipboardList", "layers", "house", "droplet", "euro", "road"],
     closing: "Ihr nächster Auftrag wird gerade beschlossen.",
     keywords: ["Entsorgungsvertrag", "Abfallsammlung", "Abfallwirtschaftskonzept", "Wertstoffhof", "Kläranlage"],
   },
@@ -125,8 +130,9 @@ export const BRANCHEN: Branche[] = [
     reported: [0, 1, 2, 3],
     advantage: "Sie sehen geplante Hebesatz-Erhöhungen schon im Haushaltsentwurf, bevor der Rat entscheidet.",
     stat: ["540", "Haushalts- und Vergabebeschlüsse im letzten Monat"],
-    watch: ["Ausschreibungen", "Hebesätze", "Gewerbeflächen", "Sondernutzung und Märkte"],
-    useCases: ["Sie sehen, welche Aufträge eine Kommune plant, schon wenn der Rat das Projekt beschließt, nicht erst, wenn es im Vergabeportal steht.", "Sie erfahren früh, wenn Gewerbe- oder Grundsteuer steigen sollen, und können sich vor der Entscheidung einbringen.", "Sie sehen, wo neue Gewerbegebiete entstehen oder Flächen vergeben werden, und können Standortentscheidungen früher treffen.", "Sie verfolgen Regeln und Gebühren für Außengastronomie, Wochenmärkte und Veranstaltungen im öffentlichen Raum."],
+    watch: ["Ausschreibungen", "Hebesätze", "Gewerbeflächen", "Sondernutzung und Märkte", "Wirtschaftsförderung", "Innenstadtentwicklung"],
+    useCases: ["Sie sehen, welche Aufträge eine Kommune plant, schon wenn der Rat das Projekt beschließt, nicht erst, wenn es im Vergabeportal steht.", "Sie erfahren früh, wenn Gewerbe- oder Grundsteuer steigen sollen, und können sich vor der Entscheidung einbringen.", "Sie sehen, wo neue Gewerbegebiete entstehen oder Flächen vergeben werden, und können Standortentscheidungen früher treffen.", "Sie verfolgen Regeln und Gebühren für Außengastronomie, Wochenmärkte und Veranstaltungen im öffentlichen Raum.", "Sie erfahren von Förderprogrammen, Gründerzentren und Ansiedlungsprojekten, bevor sie öffentlich beworben werden.", "Sie sehen Pläne für Leerstände, Fußgängerzonen und Citymanagement, die Lage und Frequenz Ihres Standorts verändern."],
+    watchIcons: ["clipboardList", "euro", "briefcase", "tag", "trendingUp", "landmark"],
     closing: "Die nächste Entscheidung steht schon auf der Tagesordnung.",
     keywords: ["Ausschreibung", "Hebesatz", "Gewerbefläche", "Sondernutzung", "Marktgebühren"],
   },
@@ -148,8 +154,9 @@ export const BRANCHEN: Branche[] = [
     reported: [0, 1, 2, 3],
     advantage: "Sie sehen Sanierungs- und Ausbauvorhaben, sobald sie im Ausschuss beraten werden, lange bevor ausgeschrieben wird.",
     stat: ["410", "Beschlüsse zu Straßen, Radwegen und ÖPNV im letzten Monat"],
-    watch: ["Straßensanierung", "Parkraum", "ÖPNV", "Radwege und Verkehrsschauen"],
-    useCases: ["Sie sehen, welche Straßen in den nächsten Jahren saniert werden, für Planung, Angebote oder um Anlieger rechtzeitig zu informieren.", "Sie erfahren, wo Parkgebühren, Anwohnerparken oder Parkhäuser geplant sind, und welche Auswirkungen das auf Kunden und Mitarbeitende hat.", "Sie verfolgen Nahverkehrspläne, neue Linien und Taktänderungen und erkennen, wie sich die Erreichbarkeit von Standorten verändert.", "Sie sehen geplante Radwege, Tempo-30-Zonen und Ergebnisse von Verkehrsschauen, bevor sie umgesetzt werden."],
+    watch: ["Straßensanierung", "Parkraum", "ÖPNV", "Radwege und Verkehrsschauen", "Baustellen und Sperrungen", "Ladeinfrastruktur"],
+    useCases: ["Sie sehen, welche Straßen in den nächsten Jahren saniert werden, für Planung, Angebote oder um Anlieger rechtzeitig zu informieren.", "Sie erfahren, wo Parkgebühren, Anwohnerparken oder Parkhäuser geplant sind, und welche Auswirkungen das auf Kunden und Mitarbeitende hat.", "Sie verfolgen Nahverkehrspläne, neue Linien und Taktänderungen und erkennen, wie sich die Erreichbarkeit von Standorten verändert.", "Sie sehen geplante Radwege, Tempo-30-Zonen und Ergebnisse von Verkehrsschauen, bevor sie umgesetzt werden.", "Sie erfahren früh von größeren Baumaßnahmen und Sperrungen, die Lieferwege, Kunden oder Einsätze betreffen.", "Sie sehen, wo Ladesäulen und Mobilitätsstationen geplant werden, als Auftrag oder Standortfaktor."],
+    watchIcons: ["road", "mapPin", "bus", "target", "clock", "zap"],
     closing: "Ihr nächstes Projekt steht schon im Ausschuss.",
     keywords: ["Straßensanierung", "Radwegekonzept", "ÖPNV", "Parkraumbewirtschaftung", "Verkehrsentwicklungsplan"],
   },
@@ -171,8 +178,9 @@ export const BRANCHEN: Branche[] = [
     reported: [0, 1, 2, 3],
     advantage: "Sie sehen, wo Gutachten und Ausgleichsflächen gebraucht werden, solange der Plan noch im Entwurf ist.",
     stat: ["135", "Landschaftspläne und Ausgleichsbeschlüsse im letzten Monat"],
-    watch: ["Landschafts- und Grünordnungspläne", "Baumschutzsatzungen", "Immissionsschutz", "Ausgleichsmaßnahmen"],
-    useCases: ["Sie erkennen, wo Flächen geschützt, aufgewertet oder für Bebauung geöffnet werden sollen.", "Sie erfahren, wenn Kommunen Regeln zu Baumfällungen einführen oder ändern, wichtig für Bauvorhaben und Grundstückspflege.", "Sie verfolgen Beratungen zu Lärm, Geruch und Luftqualität, etwa bei Gewerbe, Verkehr oder Windkraft.", "Sie sehen, wo Ausgleichsflächen für Eingriffe in die Natur geplant werden, als Auftrag, Flächenangebot oder Planungsgrundlage."],
+    watch: ["Landschafts- und Grünordnungspläne", "Baumschutzsatzungen", "Immissionsschutz", "Ausgleichsmaßnahmen", "Gewässer und Hochwasserschutz", "Klimaanpassung"],
+    useCases: ["Sie erkennen, wo Flächen geschützt, aufgewertet oder für Bebauung geöffnet werden sollen.", "Sie erfahren, wenn Kommunen Regeln zu Baumfällungen einführen oder ändern, wichtig für Bauvorhaben und Grundstückspflege.", "Sie verfolgen Beratungen zu Lärm, Geruch und Luftqualität, etwa bei Gewerbe, Verkehr oder Windkraft.", "Sie sehen, wo Ausgleichsflächen für Eingriffe in die Natur geplant werden, als Auftrag, Flächenangebot oder Planungsgrundlage.", "Sie verfolgen Renaturierungen, Deichbau und Starkregenvorsorge, als Planungsgrundlage oder Auftrag.", "Sie sehen Hitzeaktionspläne, Entsiegelung und Begrünung, die Kommunen beschließen und finanzieren."],
+    watchIcons: ["map", "tree", "megaphone", "layers", "droplet", "shieldCheck"],
     closing: "Der nächste Plan braucht schon ein Gutachten.",
     keywords: ["Ausgleichsmaßnahme", "Umweltbericht", "Artenschutzgutachten", "Landschaftsplan", "Grünordnungsplan"],
   },
@@ -194,8 +202,9 @@ export const BRANCHEN: Branche[] = [
     reported: [0, 1, 2, 3],
     advantage: "Sie sehen ein Thema, sobald die Vorlage veröffentlicht ist, und können recherchieren, bevor die Sitzung stattfindet.",
     stat: ["9.400", "neue Beschlussvorlagen im letzten Monat"],
-    watch: ["Beschlussvorlagen", "Tagesordnungen", "Fördergelder", "Haushalte"],
-    useCases: ["Sie finden Vorlagen zu jedem Thema, bevor im Rat abgestimmt wird, und haben Zeit für Recherche, Nachfragen und Berichterstattung.", "Sie sehen auf einen Blick, was in den nächsten Sitzungen von Rat und Ausschüssen verhandelt wird, und können Termine planen.", "Sie verfolgen, welche Förderprogramme Kommunen beantragen oder vergeben und wofür das Geld eingesetzt wird.", "Sie erkennen Schwerpunkte, Kürzungen und Investitionen im kommunalen Haushalt und können sie über Jahre vergleichen."],
+    watch: ["Beschlussvorlagen", "Tagesordnungen", "Fördergelder", "Haushalte", "Anfragen und Anträge", "Personalien"],
+    useCases: ["Sie finden Vorlagen zu jedem Thema, bevor im Rat abgestimmt wird, und haben Zeit für Recherche, Nachfragen und Berichterstattung.", "Sie sehen auf einen Blick, was in den nächsten Sitzungen von Rat und Ausschüssen verhandelt wird, und können Termine planen.", "Sie verfolgen, welche Förderprogramme Kommunen beantragen oder vergeben und wofür das Geld eingesetzt wird.", "Sie erkennen Schwerpunkte, Kürzungen und Investitionen im kommunalen Haushalt und können sie über Jahre vergleichen.", "Sie sehen, welche Fragen Fraktionen stellen und welche Anträge sie einbringen, oft der Anfang einer Debatte.", "Sie erfahren von Wahlen, Besetzungen und Wechseln in Verwaltung, Aufsichtsräten und Gremien."],
+    watchIcons: ["fileText", "calendar", "euro", "newspaper", "megaphone", "users"],
     closing: "Die nächste Geschichte steht schon in einer Vorlage.",
     keywords: ["Beschlussvorlage", "Tagesordnung", "Zuschuss", "Gutachten", "Haushalt"],
   },
@@ -217,8 +226,9 @@ export const BRANCHEN: Branche[] = [
     reported: [1, 2, 3],
     advantage: "Sie sehen, ob Ihr Zuschuss im Haushaltsentwurf steht, und können reagieren, bevor er beschlossen ist.",
     stat: ["870", "Haushalts- und Förderbeschlüsse im letzten Monat"],
-    watch: ["Haushaltspläne", "Kitas und Schulen", "Sport und Kultur", "Investitionsprogramme"],
-    useCases: ["Sie sehen früh, wo Zuschüsse gekürzt oder erhöht werden sollen, und können sich einbringen, bevor der Haushalt beschlossen ist.", "Sie verfolgen Bedarfspläne, Neubauten, Trägerwechsel und Betreuungsangebote in Ihrer Kommune.", "Sie erfahren von Hallennutzung, Sanierungen, Zuschüssen und Veranstaltungen, die Ihren Verein oder Ihre Einrichtung betreffen.", "Sie sehen, welche Projekte die Kommune in den nächsten Jahren finanzieren will, und wo sich Ihr Vorhaben einordnen lässt."],
+    watch: ["Haushaltspläne", "Kitas und Schulen", "Sport und Kultur", "Investitionsprogramme", "Ehrenamt und Förderrichtlinien", "Bürgerbeteiligung"],
+    useCases: ["Sie sehen früh, wo Zuschüsse gekürzt oder erhöht werden sollen, und können sich einbringen, bevor der Haushalt beschlossen ist.", "Sie verfolgen Bedarfspläne, Neubauten, Trägerwechsel und Betreuungsangebote in Ihrer Kommune.", "Sie erfahren von Hallennutzung, Sanierungen, Zuschüssen und Veranstaltungen, die Ihren Verein oder Ihre Einrichtung betreffen.", "Sie sehen, welche Projekte die Kommune in den nächsten Jahren finanzieren will, und wo sich Ihr Vorhaben einordnen lässt.", "Sie erkennen Änderungen an Zuschussregeln und Förderprogrammen für Ehrenamt, Vereine und Initiativen.", "Sie erfahren, wann Kommunen Beteiligungsverfahren starten, und können sich mit Ihrem Anliegen einbringen."],
+    watchIcons: ["euro", "house", "users", "trendingUp", "handshake", "megaphone"],
     closing: "Ihr Zuschuss wird gerade beraten.",
     keywords: ["Haushaltsplan", "Kita-Gebühren", "Schulentwicklungsplanung", "Sportförderung", "Investitionsprogramm"],
   },
@@ -233,7 +243,6 @@ export interface Qa {
   a: string | null;
 }
 
-/* TODO: Antworten außer zur ersten Frage aus Ratsmonitor-Unterseiten.html übernehmen (im PDF nicht abgebildet) */
 export const FAQ: { group: string; items: Qa[] }[] = [
   {
     group: "Grundlagen",
@@ -243,7 +252,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
         a: "Ratsmonitor bündelt die Ratsinformationssysteme der Kommunen in einer Suche. Vorlagen, Tagesordnungen und Beschlüsse finden Sie an einem Ort, jeweils mit Kommune, Gremium, Datum und Link zu den Originalunterlagen. Die Abdeckung wird laufend auf ganz Deutschland ausgebaut.",
       },
       { q: "Wie aktuell sind die Daten?", a: "Die Daten werden regelmäßig direkt aus den offiziellen Ratsinformationssystemen abgerufen. Den genauen Stand sehen Sie in der Suche neben der Trefferzahl („Datenstand“ mit Datum und Uhrzeit). Welche Kommunen erfasst sind und wo es Lücken gibt, steht unter „Datenabdeckung“." },
-      { q: "Wie finde ich gezielt Dokumente aus meiner Heimatstadt oder Region?", a: "Tippen Sie den Ortsnamen ins Suchfeld oder klicken Sie die Gemeinde auf der Karte an. Danach können Sie wählen, ob nur die Gemeinde oder auch der Kreis durchsucht wird, und mit dem Umkreis-Regler Nachbarorte einbeziehen." },
+      { q: "Wie finde ich gezielt Dokumente aus meiner Heimatstadt oder Region?", a: "Tippen Sie den Ortsnamen, den Kreis oder eine Region wie „Münsterland“ ins Suchfeld. In den Vorschlägen wählen Sie, ob nur die Gemeinde oder auch der Kreis durchsucht wird. Im Filter beziehen Sie mit dem Umkreis Nachbarorte ein." },
       { q: "Wie formuliere ich Suchanfragen am besten (z. B. für Bebauungspläne oder Satzungen)?", a: "Verwenden Sie Fachbegriffe, wie sie in Vorlagen stehen, z. B. „Bebauungsplan“, „Aufstellungsbeschluss“ oder „Satzung“. Mehrere Begriffe trennen Sie mit Komma, dann genügt einer davon (z. B. „Windenergie, Photovoltaik“). Mit den Filtern grenzen Sie nach Thema, Zeitraum und Status ein." },
     ],
   },
@@ -293,7 +302,7 @@ export interface Plan {
 export const PLANS: Plan[] = [
   {
     id: "free",
-    name: "Free",
+    name: "Basic",
     desc: "Zum Ausprobieren und für gelegentliche Recherchen.",
     amount: "0 €",
     unit: "dauerhaft kostenlos",
@@ -305,7 +314,8 @@ export const PLANS: Plan[] = [
       { text: "Filter nach Gebiet, Thema und Zeitraum" },
       { text: "Kartenansicht der Treffer" },
       { text: "**1** gespeicherte Suche" },
-      { text: "**1** Bookmark" },
+      { text: "**1** gespeicherter Artikel" },
+      { text: "**1** aktive Benachrichtigung" },
     ],
     cta: "Kostenlos registrieren",
     submit: "Kostenlos registrieren",
@@ -320,10 +330,10 @@ export const PLANS: Plan[] = [
     short: "9,99 € / Monat",
     items: [["map", "Suche in ganz Deutschland"], ["user", "E-Mail-Benachrichtigungen an Ihre Adresse"]],
     features: [
-      { plus: true, text: "**Alles aus Free**, zusätzlich:" },
-      { text: "Bis zu **5** gespeicherte Suchen" },
-      { text: "Bis zu **5** Bookmarks" },
-      { text: "**E-Mail-Benachrichtigung** bei neuen Treffern" },
+      { plus: true, text: "**Alles aus Basic**, zusätzlich:" },
+      { text: "**Unbegrenzt** Suchen speichern" },
+      { text: "**Unbegrenzt** Artikel speichern" },
+      { text: "**Unbegrenzt** E-Mail-Benachrichtigungen" },
     ],
     cta: "Pro wählen",
     submit: "Pro starten",
@@ -339,6 +349,7 @@ export const PLANS: Plan[] = [
     items: [["map", "Suche in ganz Deutschland"], ["user", "Ihre Adresse + bis zu 5 weitere Empfänger"]],
     features: [
       { plus: true, text: "**Alles aus Pro**, zusätzlich:" },
+      { text: "**Sitzungskalender** für Ihre Gebiete, auch mit Umkreis" },
       { text: "Benachrichtigungen an **bis zu 5 Kolleginnen und Kollegen**" },
     ],
     cta: "Enterprise wählen",

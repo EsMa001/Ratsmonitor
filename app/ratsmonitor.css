@@ -126,3 +126,5 @@ body h1,body h2,body h3{font-weight:600}
 .rm-glass-pop button:not([aria-selected=true]):not(.bg-teal-50):hover{background:rgba(255,255,255,.6)}
 #filter-body .select-base{padding-left:12px;padding-right:28px}#filter-body .select-base svg{right:10px}
 html,html body{background:#fff;overscroll-behavior-y:none}
+/* Bewegung reduzieren: alle Animationen und Übergänge praktisch aus */
+@media (prefers-reduced-motion:reduce){.ratsmonitor *,.ratsmonitor *::before,.ratsmonitor *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

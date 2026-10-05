@@ -77,6 +77,13 @@ const REGIONS: Record<string, { name: string; ags: string[] }> = {
   "osnabrucker land": { name: "Osnabrücker Land", ags: ["03404", "03459"] },
 };
 
+/** Regionen, deren Name mit dem getippten Wort beginnt (für die Vorschlagsliste) */
+export function regionSuggest(tok: string): string[] {
+  const t = norm(tok);
+  if (t.length < 3) return [];
+  return [...new Set(Object.entries(REGIONS).filter(([k]) => k.startsWith(t) && k !== t).map(([, r]) => r.name))];
+}
+
 /** Regionen, deren Kreise alle in der Liste stehen (für einen gemeinsamen Chip) */
 export function regionsIn(ags: string[]): { name: string; ags: string[] }[] {
   const set = new Set(ags), out: { name: string; ags: string[] }[] = [];

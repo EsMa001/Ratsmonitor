@@ -113,7 +113,7 @@ export function GateDialog() {
                   setTier(g.needs);
                   closeGate();
                 }}
-                className="ml-auto text-[12px] text-slate-400 underline underline-offset-2 hover:text-slate-700"
+                className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700"
               >
                 Dev: als {g.needs === "basic" ? "Basic" : g.needs === "pro" ? "Pro" : "Enterprise"} fortfahren
               </button>

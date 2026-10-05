@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useBrand } from "../lib/brand";
+import { PageHead } from "../info/blocks";
 
 /* Platzhalter: vor Veröffentlichung durch die echten Angaben des Betreibers ersetzen */
 const BETREIBER = {
@@ -14,11 +15,11 @@ function H2({ children }: { children: ReactNode }) {
   return <h2 className="mb-2 mt-7 text-[18px] font-semibold text-slate-900">{children}</h2>;
 }
 function P({ children }: { children: ReactNode }) {
-  return <p className="mb-3 leading-relaxed text-slate-700">{children}</p>;
+  return <p className="mb-3 leading-relaxed text-slate-500">{children}</p>;
 }
 function Ul({ items }: { items: ReactNode[] }) {
   return (
-    <ul className="mb-3 list-disc space-y-1 pl-5 leading-relaxed text-slate-700">
+    <ul className="mb-3 list-disc space-y-1 pl-5 leading-relaxed text-slate-500">
       {items.map((x, i) => (
         <li key={i}>{x}</li>
       ))}
@@ -46,7 +47,6 @@ function Impressum() {
   const { name } = useBrand();
   return (
     <>
-      <h1 className="text-[28px] font-bold tracking-tight">Impressum</h1>
       <H2>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)</H2>
       <Anschrift />
       <H2>Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV)</H2>
@@ -79,7 +79,6 @@ function Datenschutz() {
   const { name } = useBrand();
   return (
     <>
-      <h1 className="text-[28px] font-bold tracking-tight">Datenschutzerklärung</h1>
       <P>Stand: Oktober 2026</P>
 
       <H2>1. Verantwortlicher</H2>
@@ -218,11 +217,14 @@ function Datenschutz() {
 }
 
 export function LegalPage({ kind }: { kind: "impressum" | "datenschutz" }) {
+  /* Gleicher Aufbau wie die Info-Seiten: Kopf mit Zurück-Link, Text ohne Rahmen */
+  const imp = kind === "impressum";
   return (
-    <main id="inhalt" className="mx-auto max-w-page py-[12px]">
-      <article className="card-shell px-4 py-6 sm:px-8">
-        <div className="max-w-[80ch]">{kind === "impressum" ? <Impressum /> : <Datenschutz />}</div>
-      </article>
+    <main id="inhalt" className="ri">
+      <PageHead icon={imp ? "fileText" : "shieldCheck"} label="Rechtliches" name={imp ? "Impressum" : "Datenschutz"} title={imp ? "Impressum" : "Datenschutzerklärung"} />
+      <section className="ri-sec ri-sec--tight">
+        <div className="max-w-[80ch] [&>h2:first-child]:mt-0">{imp ? <Impressum /> : <Datenschutz />}</div>
+      </section>
     </main>
   );
 }

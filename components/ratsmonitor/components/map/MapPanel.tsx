@@ -84,6 +84,14 @@ export function MapPanel({ active }: { active: boolean }) {
 
   /* Suchgesteuertes Zentrieren: Umkreis → Kreis; Ort → Ort bzw. Kreis bei „inkl. Kreis“; sonst alle Treffer; ohne Suche Deutschland */
   const hitsKey = hits.join(",");
+  /* Textalternative der Karte für Bildschirmleser: wie viele Gebiete, die stärksten zuerst */
+  const mapLabel = !hits.length
+    ? "Karte von Deutschland, keine Gebiete mit Treffern"
+    : `Karte: Treffer in ${hits.length} ${hits.length === 1 ? "Gebiet" : "Gebieten"}, am meisten in ${[...hits]
+        .sort((a, b) => (areaCounts[b] || 0) - (areaCounts[a] || 0))
+        .slice(0, 3)
+        .map((a) => `${geo?.info(a).name ?? a} (${areaCounts[a]})`)
+        .join(", ")}`;
   const moreKey = (snapshot.more ?? []).map((m) => m.ags).join(",");
   useEffect(() => {
     if (!engine || loading) return;
@@ -107,7 +115,7 @@ export function MapPanel({ active }: { active: boolean }) {
       {/* Nur Anzeige: die Karte reagiert nicht auf Maus oder Touch */}
       <div ref={stageRef} className="pointer-events-none absolute inset-0 select-none overflow-hidden rounded-2xl bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
-        <canvas ref={overRef} role="img" aria-label="Karte der Gemeinden mit Treffern zur aktuellen Suche" className="absolute left-0 top-0 block h-full w-full" />
+        <canvas ref={overRef} role="img" aria-label={mapLabel} className="absolute left-0 top-0 block h-full w-full" />
         {!geo && <div className="absolute inset-0 grid place-items-center text-[14px] text-slate-500">{geoError ? "Kartendaten konnten nicht geladen werden." : "Karte wird aufgebaut …"}</div>}
       </div>
 

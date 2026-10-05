@@ -17,14 +17,16 @@ export interface TierLimits {
   notifications: number;
   /** E-Mail-Empfänger für Benachrichtigungen */
   emails: number;
+  /** Sitzungskalender (nur Enterprise) */
+  calendar: boolean;
 }
 
 const INF = Number.POSITIVE_INFINITY;
 export const LIMITS: Record<Tier, TierLimits> = {
-  guest: { maxResults: 10, filters: false, bookmarks: 0, savedSearches: 0, notifications: 0, emails: 0 },
-  basic: { maxResults: INF, filters: true, bookmarks: 1, savedSearches: 1, notifications: 1, emails: 1 },
-  pro: { maxResults: INF, filters: true, bookmarks: INF, savedSearches: INF, notifications: INF, emails: 1 },
-  enterprise: { maxResults: INF, filters: true, bookmarks: INF, savedSearches: INF, notifications: INF, emails: 5 },
+  guest: { maxResults: 10, filters: false, bookmarks: 0, savedSearches: 0, notifications: 0, emails: 0, calendar: false },
+  basic: { maxResults: INF, filters: true, bookmarks: 1, savedSearches: 1, notifications: 1, emails: 1, calendar: false },
+  pro: { maxResults: INF, filters: true, bookmarks: INF, savedSearches: INF, notifications: INF, emails: 1, calendar: false },
+  enterprise: { maxResults: INF, filters: true, bookmarks: INF, savedSearches: INF, notifications: INF, emails: 5, calendar: true },
 };
 
 export const TIER_LABEL: Record<Tier, string> = { guest: "Gast", basic: "Basic", pro: "Pro", enterprise: "Enterprise" };
