@@ -266,16 +266,16 @@ export function MapPanel({ active }: { active: boolean }) {
       </div>
 
       {explore && (
-        <div className="rm-glass absolute right-4 z-[6] flex flex-col overflow-hidden rounded-full" style={mobile ? { bottom: barH + 32 } : { top: 16 + topShift }}>
+        <div className="rm-glass absolute right-4 z-[6] flex flex-col overflow-hidden rounded-full max-sm:right-[21px]" style={mobile ? { bottom: barH + 32 } : { top: 16 + topShift }}>
           <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctlSm}><IconPlus size={16} /></button>
           <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctlSm}><IconMinus size={16} /></button>
           <button type="button" title="Auf Treffer zentrieren" aria-label="Auf Treffer zentrieren" onClick={() => center(true)} className={ctlSm}><IconCenter size={16} /></button>
           <button type="button" title="Karte neu laden" aria-label="Karte neu laden" onClick={refresh} className={ctlSm}><IconReset size={16} /></button>
         </div>
       )}
-      {/* Darstellung oben links (rückt unter der Kopfzeile mit), klappt nach unten auf; Handy: unten links, klappt nach oben auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
+      {/* Darstellung oben links (rückt unter der Kopfzeile mit), klappt nach unten auf; Handy: unten links, mittig über dem Herz-Knopf der Suchleiste (Zoom-Leiste rechts über dem Filter-Knopf), klappt nach oben auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
       {explore && (
-        <div className={`rm-glass absolute left-4 z-[7] flex rounded-full ${mobile ? "flex-col-reverse" : "flex-col"}`} style={mobile ? { bottom: barH + 32 } : { top: 16 + topShift }}>
+        <div className={`rm-glass absolute left-4 z-[7] flex rounded-full max-sm:left-[17px] ${mobile ? "flex-col-reverse" : "flex-col"}`} style={mobile ? { bottom: barH + 32 } : { top: 16 + topShift }}>
           <button type="button" title="Darstellung" aria-label="Darstellung der Karte" aria-expanded={styleOpen} onClick={() => setStyleOpen((o) => !o)} className={`${ctl} ${styleOpen ? "!text-slate-900" : ""}`}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 13 9 5 9-5" /></svg>
           </button>

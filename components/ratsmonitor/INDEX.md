@@ -695,7 +695,7 @@ wordmark__dot design-styles.css:61
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
 - SearchBox.tsx (481): SearchBox
-- SearchFilterPanel.tsx (80): SearchFilterPanel
+- SearchFilterPanel.tsx (82): SearchFilterPanel
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (39): ShareButton
 - TierNotice.tsx (46): LoginRequired, UsagePill
@@ -705,7 +705,7 @@ wordmark__dot design-styles.css:61
 - MapPanel.tsx (299, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
-- ArticleCard.tsx (179, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
+- ArticleCard.tsx (178, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
 - ResultsPanel.tsx (202): ResultsPanel
 
 ### components/ratsmonitor/info/
@@ -740,7 +740,7 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
-- listView.ts (34): ListView, setListView, useListView
+- listView.ts (46): ListView, setListView, useListView
 - mails.ts (134, ⚠1): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - recentSearches.ts (28): readRecent, addRecent, clearRecent
