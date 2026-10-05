@@ -1,4 +1,5 @@
 import { usePathname } from "next/navigation";
+import { usePhone } from "../lib/usePhone";
 import { MainMenu } from "../menu/MainMenu";
 import { useAppNav } from "../state/nav";
 import { AccountMenu } from "./AccountMenu";
@@ -10,8 +11,16 @@ export function Header() {
   const pathname = usePathname();
   const kontoPage = pathname.startsWith("/konto/") ? pathname.split("/")[2] : "";
 
+  const phone = usePhone();
+
+  /* Logo: zur Übersicht; auf dem Handy dazu an den Seitenanfang. Suche und Filter bleiben dabei unverändert. */
   const leave = () => {
-    if (view !== "overview") goOverview();
+    if (view !== "overview") {
+      goOverview();
+      if (phone) window.scrollTo({ top: 0 });
+    } else if (phone) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (
