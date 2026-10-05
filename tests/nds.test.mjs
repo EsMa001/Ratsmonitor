@@ -8,7 +8,7 @@ import map from '../public/geo/germany.json' with {type:'json'};
 import {CATALOG,LANDS} from '../shared/catalog.mjs';
 import {matchesBody} from '../server/integrations/body-identity.mjs';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
-import {searchMonitor} from '../server/integrations/monitor-search.mjs';
+import {searchMonitor,searchCoverage} from '../server/integrations/monitor-search.mjs';
 import {sourceAddress} from '../scripts/source-discovery/reasons.mjs';
 
 test('Niedersachsen: 403 administrative units and 37 districts with unique keys, parents, geometry and population',()=>{
@@ -47,11 +47,11 @@ test('a member municipality finds the reports of its Samtgemeinde, and the map s
   assert.equal((await total('area=03&scope=with')).total,3);
   assert.equal((await total('within=03358014,03101000')).total,3);
   const all=await total('level=city');assert.equal(all.areaCounts['03358014'],2);assert.equal(all.areaCounts['03358'],2);assert.equal(all.areaCounts['03'],3);
-  assert.ok(all.coverage.some(c=>c.ags==='03358014'&&c.count===2&&/Samtgemeinde Ahlden/.test(c.name)));
+  assert.ok((await searchCoverage(db,CATALOG,'city')).coverage.some(c=>c.ags==='03358014'&&c.count===2&&/Samtgemeinde Ahlden/.test(c.name)));
   /* Langelsheim (seit 2021 mit Hahausen, Lutter, Wallmoden) steht auf der Karte noch unter den früheren Schlüsseln */
   put('d','nds-03153019');
   assert.equal((await total('area=03153009&scope=only')).total,1);
-  const merged=await total('level=city');assert.equal(merged.areaCounts['03153007'],1);assert.ok(merged.coverage.some(c=>c.ags==='03153014'));
+  const merged=await total('level=city');assert.equal(merged.areaCounts['03153007'],1);assert.ok((await searchCoverage(db,CATALOG,'city')).coverage.some(c=>c.ags==='03153014'));
  }finally{sql.close();}
 });
 test('every Lower Saxon source belongs to exactly one catalog area and is verified',async()=>{

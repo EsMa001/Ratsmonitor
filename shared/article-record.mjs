@@ -20,6 +20,12 @@ export function preserveArticleContent(old,incoming,source=incoming){
  else if(!next.documentText&&!next.hasDocumentText)next.hasDocumentText=false;
  return next;
 }
+// Zeitpunkte eines Abrufs oder einer Prüfung (attendance.fetchedAt jedes Termins, sourceData.fetchedAt,
+// quality.checkedAt) ändern sich bei jedem Import. Sie sind keine Änderung am Vorgang: Verglichen damit entstand bei
+// jedem erneut gelesenen Termin eine Version und ein vollständiger Neuschrieb (die Hälfte aller Versionen bis 05.10.2026).
+const FETCH_TIMES=new Set(['fetchedAt','lastFetchedAt','checkedAt']);
+/** JSON eines Feldes ohne Abruf- und Prüfzeitpunkte, für den Vergleich „hat sich etwas geändert?“. */
+export const stableJson=value=>JSON.stringify(value,(key,v)=>FETCH_TIMES.has(key)?undefined:v);
 /** Hat sich an den Metadaten mehr geändert als der reine Abrufzeitpunkt? Nur dann lohnt ein Schreibvorgang. */
 export function metadataChanged(prior,next){
  const strip=m=>{if(!m)return null;const {lastFetchedAt,...rest}=m;return rest;};

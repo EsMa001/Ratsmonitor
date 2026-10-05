@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
-import {parseMonitorSearch,searchMonitor} from '../server/integrations/monitor-search.mjs';
+import {parseMonitorSearch,searchMonitor,searchCoverage,cachedSearch} from '../server/integrations/monitor-search.mjs';
 
 const catalog=[{id:'billerbeck',kind:'city',name:'Billerbeck',ags:'05558008'},{id:'coesfeld',kind:'district',name:'Kreis Coesfeld',ags:'05558'},{id:'other',kind:'city',name:'Anderer Ort',ags:'05558012'}];
 function fixture(){const sql=new DatabaseSync(':memory:');for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8'));const put=(id,region='billerbeck',extra={})=>{const t={title:'Schulbau in Dülmen',officialTitle:'Schulbau in Dülmen',shortSummary:'Öffentliche Beratung',committee:'Rat',classification:{method:'title-rules-v2',version:'labels-v2',primary:'bildung',evidence:'Schulbau in Dülmen'},sourceText:'private raw text',documentText:'never expose',...extra};sql.prepare('INSERT INTO topics VALUES(?,?,?,?,?,?,?)').run(id,'city','2026-09-20','2026-09-20','consulting',JSON.stringify(t),region);};return {sql,db:sqliteAdapter(sql),put};}
@@ -18,7 +18,12 @@ test('real SQL search pages canonicals, separates levels, excludes raw text and 
  const before=sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision;
  const first=await searchMonitor(db,catalog,new URLSearchParams('area=05558008&scope=only&q=dulmen'));
  /* Mit Gebiet werden Gemeinde- und Kreisebene gemeinsam betrachtet: drei Regionen in der Abdeckung */
- assert.equal(first.total,35);assert.equal(first.articles.length,20);assert.equal(first.areaCounts['05558'],37);assert.equal(first.statusCounts.consulting,35);assert.equal(first.themaCounts['Bildung & Betreuung'],35);assert.equal(first.coverage.length,3);
+ assert.equal(first.total,35);assert.equal(first.articles.length,20);assert.equal(first.areaCounts['05558'],37);assert.equal(first.statusCounts.consulting,35);assert.equal(first.themaCounts['Bildung & Betreuung'],35);
+ /* Die Abdeckung kommt nicht mehr mit jeder Suche, sondern je Ebene aus searchCoverage */
+ assert.equal(first.coverage,undefined);
+ const cities=await searchCoverage(db,catalog,'city');assert.deepEqual(cities.coverage.map(c=>[c.ags,c.count]).sort(),[['05558008',35],['05558012',1]]);assert.equal(cities.level,'city');
+ assert.deepEqual((await searchCoverage(db,catalog,'district')).coverage.map(c=>c.ags),['05558']);
+ await assert.rejects(searchCoverage(db,catalog,'all'),/Ungültige Ebene/);
  assert.ok(!JSON.stringify(first).includes('private raw text'));assert.ok(!JSON.stringify(first).includes('documentText'));
  const second=await searchMonitor(db,catalog,new URLSearchParams('area=05558008&scope=only&page=2&revision='+first.revision));assert.equal(second.articles.length,15);assert.equal(new Set([...first.articles,...second.articles].map(a=>a.id)).size,35);
  const county=await searchMonitor(db,catalog,new URLSearchParams('level=district'));assert.equal(county.total,1);assert.equal(county.areaCounts['05558'],1);assert.equal(county.areaCounts[''],1);
@@ -62,5 +67,41 @@ test('search finds KI keywords and the long KI summary, not the automatic long t
  /* Neu gelieferte KI-Langfassung wird ebenfalls nachgezogen */
  sql.prepare("UPDATE topics SET payload=json_set(payload,'$.generatedBy','KI-Zusammenfassung','$.longSummary',json('[\"Neue Fußgängerbrücke\"]')) WHERE id='auto'").run();
  assert.equal(await total('q=fussgangerbrucke'),1);
+ }finally{sql.close();}
+});
+test('every facet counts with all filters but its own, from one grouping',async()=>{
+ const {sql,db,put}=fixture();try{
+ const bau={classification:{method:'title-rules-v2',version:'labels-v2',primary:'bauen',evidence:'Neubau Feuerwehrhaus'},title:'Neubau Feuerwehrhaus',officialTitle:'Neubau Feuerwehrhaus'};
+ for(let i=0;i<4;i++)put('s'+i);for(let i=0;i<3;i++)put('b'+i,'billerbeck',bau);put('o1','other');put('o2','other',bau);
+ sql.prepare("UPDATE topics SET status='approved' WHERE id IN ('s0','b0','o2')").run();
+ const run=q=>searchMonitor(db,catalog,new URLSearchParams(q));
+ const all=await run('');
+ assert.equal(all.total,9);assert.deepEqual(all.statusCounts,{approved:3,consulting:6});assert.deepEqual(all.themaCounts,{'Bildung & Betreuung':5,'Bauen & Wohnen':4});
+ assert.equal(all.areaCounts['05558008'],7);assert.equal(all.areaCounts['05558012'],2);assert.equal(all.areaCounts[''],9);
+ /* Thema gewählt: Gesamtzahl, Status und Gebiete mit Thema; die Themenzähler zeigen alle Themen (ohne den Themenfilter) */
+ const bauen=await run('label=Bauen%20%26%20Wohnen');
+ assert.equal(bauen.total,4);assert.deepEqual(bauen.statusCounts,{approved:2,consulting:2});assert.deepEqual(bauen.themaCounts,{'Bildung & Betreuung':5,'Bauen & Wohnen':4});assert.equal(bauen.areaCounts['05558008'],3);
+ /* Status gewählt: die Statuszähler zeigen alle Status */
+ const approved=await run('status=approved');
+ assert.equal(approved.total,3);assert.deepEqual(approved.statusCounts,{approved:3,consulting:6});assert.deepEqual(approved.themaCounts,{'Bildung & Betreuung':1,'Bauen & Wohnen':2});
+ /* Gebiet gewählt: die Gebietszähler zeigen alle Gebiete, die übrigen Zähler nur das Gebiet */
+ const one=await run('area=05558012&scope=only');
+ assert.equal(one.total,2);assert.equal(one.areaCounts['05558008'],7);assert.deepEqual(one.statusCounts,{approved:1,consulting:1});
+ assert.deepEqual(one.articles.map(a=>a.id).sort(),['o1','o2']);
+ /* Ergebnisseite mit großer Auswahl (Ausschluss der Kreise) und mit kleiner (Einschluss) liefert dieselben Treffer */
+ assert.deepEqual(all.articles.map(a=>a.id).sort(),['b0','b1','b2','o1','o2','s0','s1','s2','s3']);
+ }finally{sql.close();}
+});
+test('search results are kept while the data revision stays the same',async()=>{
+ const {sql,db,put}=fixture();try{
+ for(let i=0;i<3;i++)put('k'+i);
+ let calls=0;const counted={...db,prepare:(...a)=>{calls++;return db.prepare(...a);},batch:(...a)=>db.batch(...a)};
+ const params=new URLSearchParams('q=dulmen&level=city');
+ const first=await cachedSearch(counted,catalog,params);const afterFirst=calls;
+ const second=await cachedSearch(counted,catalog,new URLSearchParams('level=city&q=dulmen'));
+ assert.equal(second,first);assert.equal(calls-afterFirst,1);
+ put('k9');
+ const third=await cachedSearch(counted,catalog,params);
+ assert.notEqual(third,first);assert.equal(third.total,4);
  }finally{sql.close();}
 });

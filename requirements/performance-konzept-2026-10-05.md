@@ -14,6 +14,36 @@ Alle Zeiten sind lokal gemessen (Dev-Server, D1 in Miniflare). In der Produktion
 
 Mit Stufe 0 des Fahrplans (Abschnitt 4, etwa zwei Arbeitstage) sind erreichbar: Suche unter 1 Sekunde und 50 KB, erste Treffer nach 2 bis 3 Sekunden, halbiertes Datenbankwachstum, keine abstürzenden Endpunkte.
 
+## Umsetzungsstand (05.10.2026, Stufe 0)
+
+| Maßnahme | Umsetzung | Gemessen (lokal) |
+|---|---|---|
+| A1 Zeitstempel erzeugen keine Version mehr | `stableJson` in `shared/article-record.mjs`, genutzt in `server/services/sync.ts` und `apply-backfill.mjs` | Altbestand: 145.958 von 268.853 Versionen (54 %, 1,05 GB) sind reine Zeitstempel-Kopien; `scripts/prune-versions.mjs` zählt sie und löscht sie mit `--apply` (noch nicht ausgeführt) |
+| B1 Ergebnisseite ohne Einschlussliste | `regionCondition` in `monitor-search.mjs`: bei großer Auswahl Ausschluss der übrigen Gebiete | erste Seite 730 → 6 ms (SQL) |
+| B3/B4 Gesamtzahl und Facetten aus einer Gruppierung, abdeckender Index | `monitor-search.mjs`, `drizzle/0010_search_facets_index.sql` (ersetzt `idx_search_cards_region`) | vier Läufe (zusammen rund 4 s) → 156 ms |
+| B2 Abdeckung aus der Suchantwort genommen | neuer Endpunkt `/api/search/coverage?level=…`, im Browser je Ebene einmal geladen | Suchantwort 484 → 86 KB (ohne Begriff), 470 → 30–75 KB (mit Begriff) |
+| B9 Datenstand vor der Abfrage prüfen, höchstens 30 Suchwörter | `monitor-search.mjs` | |
+| C2 (Teil) Zwischenspeicher für Suche, Abdeckung, Quellen, Stichwörter | Ergebnisse je Anfrage und Datenstand im Worker (`cachedSearch`, `cachedCoverage`, `atRevision`), `Cache-Control` für Browser | wiederholte Suche 16–29 ms, `/api/sources` warm 600 → 40 ms |
+| C3 Kartendaten im Browser halten | `public/_headers` (`/data/*` einen Tag, Hintergrunderneuerung eine Woche), Version in der Adresse (`state/data.tsx`) | – (wirkt erst in der Produktion) |
+| D1 Suche nur auf der Übersicht | `state/search.tsx` (`usePathname()==='/'`) | Detailseite: keine Suche mehr, nur der Vorgang (34 ms, 3 KB) |
+| D2 erste Suche ohne Wartezeit | `state/search.tsx` | |
+| F1 gefährliche ungenutzte Endpunkte entfernt | `/api/analytics`, `/api/analytics/articles`, `/api/topics`, `/api/topics/<id>/related` gelöscht, `/analysen` leitet auf `/` | kein Absturz mehr möglich |
+| `/api/sources` | Zählung über `search_cards`, Maps statt `find` | siehe C2 |
+| E5 (vorgezogen) | Stichwörter im Admin per `atRevision` | 61 s nur beim ersten Aufruf je Datenstand |
+
+Vorher und nachher, gleiche Anfragen am lokalen Dev-Server:
+
+| Anfrage | vorher | erster Aufruf | wiederholt |
+|---|---:|---:|---:|
+| Suche ganz Deutschland, ohne Begriff | 4.437 ms, 484 KB | 872 ms, 86 KB | 29 ms |
+| Suche mit Begriff | 5.300–5.900 ms | ~1.100 ms | ~18 ms |
+| Suche Seite 50 | 4.700 ms | 329 ms | 19 ms |
+| Suche mit Gebiet oder Thema | 1.150–1.400 ms | 211–243 ms | ~20 ms |
+| Erste Treffer auf der Startseite (Browser, Dev-Modus) | ~8,5 s | 3,3 s | |
+| Detailseite | Vorgang plus Suche (4–5 s) | nur Vorgang, 34 ms | |
+
+Offen bleiben die Begriffssuche über den Volltext (gut 1 Sekunde, Abhilfe B7 nach Konzept A), der erste Aufruf nach einem Serverstart (eingebettete Startdaten, D11) und alles aus Stufe 1 und 2. Für die Produktion muss die Migration `0010` angewendet werden (`wrangler d1 migrations apply --remote`).
+
 ## 1. Messungen
 
 ### Datenbank

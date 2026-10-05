@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {metadataChanged} from '../shared/article-record.mjs';
+import {metadataChanged,stableJson} from '../shared/article-record.mjs';
 import {batches} from '../server/integrations/batches.mjs';
 
 test('a new fetch time alone is no reason to rewrite a stored topic',()=>{
@@ -10,6 +10,21 @@ test('a new fetch time alone is no reason to rewrite a stored topic',()=>{
  assert.equal(metadataChanged(prior,{...prior,lastFetchedAt:'2026-10-03'}),false);
  assert.equal(metadataChanged(prior,{...prior,sourceModifiedAt:'2026-03-01'}),true);
  assert.equal(metadataChanged(undefined,{lastFetchedAt:'2026-10-03'}),true);
+});
+
+test('fetch and check times inside events and records are no change of a topic (no new version)',()=>{
+ const event=at=>({date:'2026-09-15',committee:'Stadtrat',status:'approved',result:'einstimmig',url:'https://ratsinfo.example/si0057?k=1',attendance:{status:'not_collected',sourceUrl:'https://ratsinfo.example/si0057?k=1',fetchedAt:at,people:[]}});
+ const records=at=>({fetchedAt:at,records:[{kind:'agenda',url:'https://ratsinfo.example/to0040?k=1',fields:{number:'3',title:'Haushalt'}}]});
+ assert.equal(stableJson([event('2026-10-01T10:00:00Z')]),stableJson([event('2026-10-05T12:00:00Z')]));
+ assert.equal(stableJson(records('2026-10-01')),stableJson(records('2026-10-05')));
+ assert.equal(stableJson({passed:true,checkedAt:'a'}),stableJson({passed:true,checkedAt:'b'}));
+ // A real change still counts: result, date, people.
+ assert.notEqual(stableJson([event('x')]),stableJson([{...event('x'),result:'abgelehnt'}]));
+ assert.notEqual(stableJson([event('x')]),stableJson([{...event('x'),date:'2026-09-16'}]));
+ assert.notEqual(stableJson([event('x')]),stableJson([{...event('x'),attendance:{...event('x').attendance,people:[{name:'A'}]}}]));
+ // Both import paths compare with it.
+ assert.match(fs.readFileSync(new URL('../server/services/sync.ts',import.meta.url),'utf8'),/stableJson\(p\.events\)===stableJson\(t\.events\)/);
+ assert.match(fs.readFileSync(new URL('../server/integrations/apply-backfill.mjs',import.meta.url),'utf8'),/stableJson\(prior\[k\]\)===stableJson\(incoming\[k\]\)/);
 });
 
 test('statement groups are bundled into batches without splitting a group',()=>{
