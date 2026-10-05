@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {htmlToLines,pdfLines,normalizeLine,germanDates,timeOf,committeeOf,isSpecialPurposeBody,documentKind,isPublicHeading,isNonPublicHeading,parseItemLine,outcomeOf,parseSessionText,closedLine,isNonPublicText,SESSION_WORDS,NONPUBLIC_WORDS} from '../server/integrations/website-text.mjs';
+import {htmlToLines,pdfLines,normalizeLine,germanDates,timeOf,committeeOf,isSpecialPurposeBody,documentKind,isPublicHeading,isNonPublicHeading,parseItemLine,outcomeOf,parseSessionText,closedLine,isNonPublicText,mentionsNonPublic,repairMojibake,decodeEntities,SESSION_WORDS,NONPUBLIC_WORDS} from '../server/integrations/website-text.mjs';
 // All pages and PDF texts below are NACHGEBILDET (made up for these tests, not live pages): they copy the way small
 // towns write invitations, minutes and Amtsblatt pages, with invented places (Musterbach, Oberdorf) and no real names.
 
@@ -306,9 +306,10 @@ test('parseSessionText: dates of signature, notice and earlier minutes are not t
  assert.deepEqual([t.date,t.committee],['2026-10-14','Gemeinderat']);
 });
 
-test('parseSessionText keeps the first of two items with one number and says so',()=>{
+test('parseSessionText keeps the first of two items with one number, says so and takes nothing after it',()=>{
+ // A list numbered anew may be another meeting's (a collective notice whose second head was not recognised).
  const {meetings,issues}=parseSessionText(['Öffentliche Sitzung des Gemeinderates am 14.10.2026','1. Bauantrag Scheune','2. Haushalt','2. Friedhofssatzung','3. Anfragen'],{});
- assert.deepEqual(meetings[0].items.map(i=>[i.number,i.title]),[['1','Bauantrag Scheune'],['2','Haushalt'],['3','Anfragen']]);
+ assert.deepEqual(meetings[0].items.map(i=>[i.number,i.title]),[['1','Bauantrag Scheune'],['2','Haushalt']]);
  assert.deepEqual(issues,['Punkt 2 doppelt (Gemeinderat 14.10.2026); nur der erste übernommen.']);
 });
 
@@ -385,10 +386,16 @@ test('parseSessionText: any line naming the non-public part after the first item
  }
  // The same in HTML: "<b>Nicht</b><br>öffentlicher Teil".
  assert.deepEqual(titles(htmlToLines(`<main><p>${head.join('</p><p>')}</p><p><b>Nicht</b><br>öffentlicher Teil</p><p>3. Grundstücksverkauf Lindenweg</p></main>`)),[['Bauantrag Kita','Haushalt 2027']]);
- // A note after the agenda that names items already read: which are public is not known, nothing is taken.
- const late=parseSessionText(['Am 14.10.2026 findet eine öffentliche Sitzung des Gemeinderates statt.','1. Bauantrag Kita','2. Haushalt 2027','3. Grundstücksverkauf','4. Personalangelegenheit Bauhof','Die Punkte 3 und 4 werden in nichtöffentlicher Sitzung beraten.'],{});
- assert.deepEqual([late.meetings[0].items,late.meetings[0].unclear],[[],true]);
- assert.match(late.issues[0],/^Nichtöffentliche Punkte erst nach der Tagesordnung benannt \(Gemeinderat 14\.10\.2026\)/);
+ // A note after the agenda that names items already read by their numbers: those and all after them are not taken.
+ const agenda=['Am 14.10.2026 findet eine öffentliche Sitzung des Gemeinderates statt.','1. Bauantrag Kita','2. Haushalt 2027','3. Grundstücksverkauf','4. Personalangelegenheit Bauhof'];
+ const late=parseSessionText([...agenda,'Die Punkte 3 und 4 werden in nichtöffentlicher Sitzung beraten.'],{});
+ assert.deepEqual(late.meetings[0].items.map(i=>i.title),['Bauantrag Kita','Haushalt 2027']);
+ // A note that does not name them exactly: which are public is not known, nothing is taken.
+ for(const note of ['Die beiden letzten Punkte werden unter Ausschluss der Öffentlichkeit behandelt.','Die mit * gekennzeichneten Punkte werden nichtöffentlich beraten.','Die Punkte 1 und 2 sind öffentlich, alle anderen nichtöffentlich.','Die Punkte 4 und 5 werden nichtöffentlich beraten.']){
+  const vague=parseSessionText([...agenda,note],{});
+  assert.deepEqual([vague.meetings[0].items,vague.meetings[0].unclear],[[],true],note);
+  assert.match(vague.issues[0],/^Nichtöffentliche Punkte erst nach der Tagesordnung benannt \(Gemeinderat 14\.10\.2026\)/,note);
+ }
 });
 
 test('parseSessionText: a head inside the non-public part starts no public meeting',()=>{
@@ -462,4 +469,124 @@ test('normalizeLine and NONPUBLIC_WORDS read umlauts in any Unicode form and the
  assert.equal(normalizeLine('Nichtöffentlicher Teil'.normalize('NFD')),'Nichtöffentlicher Teil');
  for(const t of ['Niederschrift nichtöffentliche Sitzung Gemeinderat'.normalize('NFD'),'Protokoll (nö) Gemeinderat','Niederschrift N.Ö. Sitzung','dl/nichtoeff-gr-2026-09-16.pdf','dl/protokoll_noe_2026-09-16.pdf'])assert.equal(isNonPublicText(t),true,t);
  for(const t of ['Noether-Straße','Ö 1 Bauantrag','Tagesordnung öffentliche Sitzung'])assert.equal(isNonPublicText(t),false,t);
+});
+
+// --- hardening round 1: the structural rule of the public part (texts NACHGEBILDET) ----------------------------------
+test('mentionsNonPublic reads the non-public part in every spelling, but not a report from it',()=>{
+ for(const t of ['Nichtöffentlicher Teil','nichtöf- fentlicher Teil','N i c h t ö f - f e n t l i c h e r','Nichtöfentlicher Teil','nicht öffentl. Teil','nichtöfftl.','(n.öff.)','nöff. Teil','(NÖS)','Nicht\ufffdffentlicher Teil','Nicht?ffentlicher Teil',
+  'unter Ausschluß der Öffentlichkeit','Für die folgenden Punkte wird die Öffentlichkeit ausgeschlossen.','Vertraulich','Geschlossene Sitzung','geschl. Sitzung','Schluss der öffentlichen Sitzung','Ende des öffentlichen Teils: 20:15 Uhr',
+  'Der öffentliche Teil endet um 20:45 Uhr.','Interne Beratung','Information zu TOP 3 und 4: Die Beratung erfolgt in nichtöffentlicher Sitzung.','Bericht der Verwaltung in nichtöffentlicher Sitzung:'])assert.equal(mentionsNonPublic(t),true,t);
+ for(const t of ['Bekanntgabe von Beschlüssen aus nichtöffentlicher Sitzung','Bekanntgabe der in nichtöffentlicher Sitzung gefassten Beschlüsse','Öffentlicher Teil','Herstellung der Öffentlichkeit','Bauantrag Noether-Straße','Die Tür ist nicht offen','nicht öffnen'])assert.equal(mentionsNonPublic(t),false,t);
+});
+
+test('repairMojibake and decodeEntities undo text read in the wrong charset or escaped more than once',()=>{
+ assert.equal(repairMojibake('NichtÃ¶ffentlicher Teil â€“ GrundstÃ¼cke'),'Nichtöffentlicher Teil – Grundstücke');
+ assert.equal(repairMojibake(repairMojibake('Ã–ffentlich')),'Öffentlich');
+ assert.equal(repairMojibake('NichtÃƒÂ¶ffentlich'),'Nichtöffentlich','read wrongly twice');
+ assert.equal(repairMojibake('Ärger über Öl'),'Ärger über Öl','correct text stays');
+ assert.equal(decodeEntities('Nicht&amp;ouml;ffentlich &amp;amp;#246; Nicht&ZeroWidthSpace;öffentlich'),'Nichtöffentlich ö Nichtöffentlich');
+ assert.equal(normalizeLine('NichtÃ¶ffentlicher Teil'),'Nichtöffentlicher Teil');
+ assert.equal(normalizeLine('Nicht – öffentlicher Teil'),'Nicht-öffentlicher Teil');
+});
+
+test('htmlToLines keeps buttons, summaries, icon titles and image alternatives as text and separates inline cells',()=>{
+ const lines=htmlToLines('<main><h2><button>Nichtöffentlicher Teil</button></h2><details><summary>Teil B</summary></details><ul><li><span>TOP 2</span><span>Lindenweg</span><span class="badge">NÖ</span></li></ul><p>Grundstück <i class="fa fa-lock" title="nichtöffentlich"></i></p><p><img src="x.png" alt="nicht öffentlich"></p><p><abbr title="nichtöffentlich">N</abbr></p><p>Kita <i class="icon-lock"></i></p><p>A<br/>B</p><p><strong>T</strong>agesordnung</p></main>');
+ assert.deepEqual(lines,['Nichtöffentlicher Teil','Teil B','TOP 2 Lindenweg NÖ','Grundstück nichtöffentlich','nicht öffentlich','nichtöffentlich N','Kita (nichtöffentlich)','A','B','Tagesordnung']);
+ // Without main: the body without its frame, also the headings of a part between articles; a frame that names the
+ // non-public part (tabs in <nav>) stays.
+ assert.deepEqual(htmlToLines('<body><header>Gemeinde</header><h2>Öffentlicher Teil</h2><article><h3>TOP 1 Kita</h3></article><h2>Nichtöffentlicher Teil</h2><article><h3>TOP 2 Lindenweg</h3></article><footer>Impressum</footer></body>'),['Öffentlicher Teil','TOP 1 Kita','Nichtöffentlicher Teil','TOP 2 Lindenweg']);
+ assert.deepEqual(htmlToLines('<main><nav><a href="#a">Öffentliche Sitzung</a><a href="#b">Nichtöffentliche Sitzung</a></nav><nav><a href="/">Start</a></nav><p>TOP 1 Kita</p></main>'),['Öffentliche Sitzung Nichtöffentliche Sitzung','TOP 1 Kita']);
+});
+
+test('parseSessionText: a mark of the non-public part next to an item drops that item and all after it',()=>{
+ const head=['Einladung zur öffentlichen Sitzung des Gemeinderates am Mittwoch, 14.10.2026','Tagesordnung','1. Bauantrag Kita','2. Haushalt 2027','3. Grundstücksverkauf Lindenweg'];
+ for(const mark of ['(nichtöffentlich)','– nicht öffentlich –','Status: nicht öffentlich','N','wird nichtöffentlich beraten'])
+  for(const wrapped of [false,true])assert.deepEqual(titles([...head,mark,'4. Verschiedenes'],{wrapped}),[['Bauantrag Kita','Haushalt 2027']],mark);
+ // A column of marks at the end of each row, or a status below each item.
+ assert.deepEqual(titles(['Öffentliche Sitzung des Gemeinderates am 14.10.2026','Nr. Gegenstand Ö/N','1 Bauantrag Kita Ö','2 Haushalt 2027 ö','3 Lindenweg N','4 Verschiedenes Ö']),[['Bauantrag Kita','Haushalt 2027']]);
+ assert.deepEqual(titles(['Öffentliche Sitzung des Gemeinderates am 14.10.2026','TOP Gegenstand öffentlich','1 Bauantrag Kita ja','2 Lindenweg nein','3 Verschiedenes ja']),[['Bauantrag Kita']]);
+ assert.deepEqual(titles(['Öffentliche Sitzung des Gemeinderates am 14.10.2026','TOP Gegenstand öffentlich','1 Bauantrag Kita ja','2 Lindenweg']),[[]],'a row without its mark: nothing');
+ assert.deepEqual(titles(['Öffentliche Sitzung des Gemeinderates am 14.10.2026','TOP 1 Bauantrag Kita','öffentlich','TOP 2 Haushalt 2027','TOP 3 Verschiedenes','öffentlich']),[[]],'a status below some items only: nothing');
+ // An item marked Ö keeps its mark; the bare N on the next line belongs to the next item.
+ assert.deepEqual(titles(['Öffentliche Sitzung des Gemeinderates am 14.10.2026','Ö 1 Bauantrag Kita','Ö 2 Haushalt 2027','N','3 Lindenweg']),[['Bauantrag Kita','Haushalt 2027']]);
+});
+
+test('parseSessionText: footnote marks, vague notes and an unclassified mention drop the whole meeting',()=>{
+ const head=['Am Mittwoch, 14.10.2026 findet eine öffentliche Sitzung des Gemeinderates statt.','1. Bauantrag Kita','2. Haushalt 2027'];
+ for(const rows of [['3. Lindenweg*','*) nichtöffentlich'],['3. Lindenweg¹','¹ nichtöffentliche Beratung'],['3. Lindenweg (1)','(1) nicht öffentlich'],['3. Lindenweg','Die beiden letzten Punkte werden unter Ausschluss der Öffentlichkeit behandelt.'],
+  ['3. Lindenweg','Die Unterlagen liegen im Rathaus aus.','Zu diesem Zeitpunkt wird über die Sache auch im Kreis der Mitglieder nichtöffentlich gesprochen werden, wie in der Geschäftsordnung vorgesehen.']]){
+  const r=parseSessionText([...head,...rows],{});
+  assert.deepEqual([r.meetings[0].items,r.meetings[0].unclear],[[],true],rows.join(' / '));
+ }
+ // A note that names its items exactly drops those and all after them.
+ assert.deepEqual(titles([...head,'3. Lindenweg','4. Personal','Ab Ziffer 3 nichtöffentlich.']),[['Bauantrag Kita','Haushalt 2027']]);
+ assert.deepEqual(titles([...head,'3. Lindenweg','TOP 3 bis 4 nichtöffentlich','4. Personal']),[['Bauantrag Kita','Haushalt 2027']]);
+});
+
+test('parseSessionText: another heading of a part ends the public block, and a legend must agree with it',()=>{
+ const head=['Am Montag, 20.10.2026, 18.00 Uhr findet die öffentliche Sitzung des Gemeinderates statt.','Tagesordnung','Teil A','1. Einwohnerfragestunde','2. Haushaltssatzung 2027','Teil B','3. Vergabe Schulbus'];
+ assert.deepEqual(titles(head),[['Einwohnerfragestunde','Haushaltssatzung 2027']]);
+ assert.deepEqual(titles([...head,'Teil A: öffentlich, Teil B: nicht öffentlich']),[['Einwohnerfragestunde','Haushaltssatzung 2027']]);
+ assert.deepEqual(titles([...head,'Teil A: nicht öffentlich, Teil B: öffentlich']),[[]],'a legend that contradicts the parts: nothing');
+ assert.deepEqual(titles(['Öffentliche Sitzung des Marktgemeinderates am 14.10.2026','I. Öffentliche Sitzung','1. Bauantrag Kita','II.','2. Lindenweg']),[['Bauantrag Kita']]);
+});
+
+test('parseSessionText joins a heading broken by hyphenation, letter spacing and a page break before it reads it',()=>{
+ const head=['Am Dienstag, 14.10.2026, 19.00 Uhr, findet eine öffentliche Sitzung des Gemeinderates statt.','1. Bauantrag Kita','2. Haushalt 2027'];
+ for(const broken of [['Nichtöf-','fentlicher Teil'],['Nicht-','Gemeinde Adorf – Einladung Gemeinderat 14.10.2026','öffentlicher Teil'],['Nichtöffent-','- 2 -','Gemeinde Adorf','Einladung','licher Teil'],['N i c h t ö f -','f e n t l i c h e r   T e i l'],['Nicht-','Gemeinde Adorf']])
+  assert.deepEqual(titles(pdfLines([...head,...broken,'3. Grundstücksverkauf Lindenweg'].join('\n')),{wrapped:true}).flat().filter(t=>/Lindenweg/.test(t)),[],broken.join(' / '));
+ // In the head: "… eine nichtöffent-" / "liche Sitzung statt." names the non-public part; the agenda does not mark it.
+ const r=parseSessionText(pdfLines('Am Dienstag, 14.10.2026, findet eine öffentliche Sitzung des Gemeinderates statt; im Anschluss\ndaran findet eine nichtöffent-\nliche Sitzung statt.\n1. Bauantrag Kita\n2. Lindenweg'),{wrapped:true});
+ assert.deepEqual([r.meetings[0].items,r.meetings[0].unclear],[[],true]);
+});
+
+test('parseSessionText: the day is not that of a letter head, a gazette issue, a cancelled meeting or a report without year',()=>{
+ const day=(lines,title='')=>parseSessionText(lines,{title}).meetings[0].date;
+ assert.equal(day(['Gemeinde Adorf','Datum: 07.10.2026','Einladung','Gremium: Gemeinderat','Sitzungstermin: 14.10.2026','Öffentlicher Teil','1. Bauantrag Kita']),'2026-10-14');
+ assert.equal(day(['Amt Fdorf','Datum: Dienstag, 07.10.2026','Einladung zur Sitzung','der Gemeindevertretung Gdorf','Sitzungsdatum: 14.10.2026','Öffentlicher Teil','1. Bauantrag Kita']),'2026-10-14');
+ const cancelled=parseSessionText(['Einladung','Datum: 14.10.2026','Beginn: 19:00 Uhr','Die für Montag, 13.10.2026, 18 Uhr angesetzte Sitzung des Bauausschusses entfällt.','Öffentlicher Teil','1. Bauantrag Kita'],{title:'Einladung Gemeinderat'}).meetings[0];
+ assert.deepEqual([cancelled.date,cancelled.committee,cancelled.time],['2026-10-14','Gemeinderat','19:00']);
+ assert.equal(day(['Sitzung des Bauausschusses','am Montag, 20.10.2026, 18.00 Uhr','(Ersatz für die ausgefallene Sitzung vom Montag, 13.10.2026, 18.00 Uhr)','Öffentlicher Teil','1. Bauantrag Kita']),'2026-10-20');
+ assert.equal(day(['Die für den 07.10.2026 geplante öffentliche Sitzung des Gemeinderates wird auf Mittwoch, 14.10.2026, 19:30 Uhr, verlegt.','1. Bauantrag Kita']),'2026-10-14');
+ assert.equal(day(['Mitteilungsblatt der Gemeinde Musterbach','Freitag, 2. Oktober 2026 Nr. 40','Die nächste öffentliche Sitzung des Gemeinderates findet am Mittwoch, 14. Oktober, um 19.30 Uhr statt.','1. Bauantrag Kita']),'2026-10-14');
+ assert.equal(day(['Gemeindeblatt Musterbach · Ausgabe 41 · 9. Oktober 2026','Öffentliche Sitzung des Gemeinderates','am Mittwoch, 14.10., 19:30 Uhr, im Rathaus','1. Bauantrag Kita']),'2026-10-14');
+ assert.equal(day(['20.10.2026','Aus dem Gemeinderat','In seiner öffentlichen Sitzung am 14. Oktober hat sich der Gemeinderat befasst:','TOP 1 Bauantrag Kita'],'Aus dem Gemeinderat'),null);
+ assert.equal(day(['20.10.2026 | Rathaus','Die öffentliche Sitzung des Gemeinderates fand am Mittwoch statt.','TOP 1 Bauantrag Kita'],'Aus dem Gemeinderat'),null);
+});
+
+test('parseSessionText splits a page of dates at each day with its body',()=>{
+ const {meetings}=parseSessionText(htmlToLines('<main><h1>Termine</h1><h3>Mittwoch, 14.10.2026</h3><p>19:00 Uhr Gemeinderat, Sitzungssaal Rathaus</p><p>Öffentliche Tagesordnung</p><p>TOP 1 Bauantrag Kita</p><h3>Dienstag, 20.10.2026</h3><p>18:00 Uhr Bauausschuss, Rathaus</p><p>Öffentliche Tagesordnung</p><p>TOP 1 Bauvoranfrage</p><p>TOP 2 Vergabe Kanalarbeiten</p></main>'),{title:'Sitzungstermine'});
+ assert.deepEqual(meetings.map(m=>[m.date,m.time,m.committee,m.items.map(i=>i.title)]),[['2026-10-14','19:00','Gemeinderat',['Bauantrag Kita']],['2026-10-20','18:00','Bauausschuss',['Bauvoranfrage','Vergabe Kanalarbeiten']]]);
+});
+
+test('parseSessionText: members, roles and those elected before or inside the agenda are no items',()=>{
+ assert.deepEqual(titles(['Niederschrift über die öffentliche Sitzung des Gemeinderates am 14.10.2026','Gemeinderatsmitglieder:','1. Huber Josef','2. Maier Anna','Tagesordnung','1. Genehmigung der Niederschrift','2. Bauantrag Kita']),[['Genehmigung der Niederschrift','Bauantrag Kita']]);
+ assert.deepEqual(titles(['Niederschrift über die öffentliche Sitzung des Gemeinderates am 14.10.2026','1. Vorsitzender: Erster Bürgermeister Max Muster','2. Gemeinderäte: Hans Probe, Erika Beispiel','3. Verwaltung: Kämmerer Fritz Zahl','Tagesordnung','1. Bauantrag Kita']),[['Bauantrag Kita']]);
+ assert.deepEqual(titles(['Niederschrift über die öffentliche Sitzung des Gemeinderates am 14.10.2026','Öffentlicher Teil','1. Wahl des Zweiten Bürgermeisters','Gewählt wurde:','1. Gemeinderat Hans Maier mit 9 Stimmen','2. Gemeinderätin Petra Schulz mit 4 Stimmen','2. Bauantrag Kita','Abstimmung: 11:1']),[['Wahl des Zweiten Bürgermeisters','Bauantrag Kita']]);
+ for(const line of ['1. Huber, Josef (CSU)','2. Maier Hans CSU','3. Max Mustermann (SPD)','4. Huber, Anna Erste Bürgermeisterin','5. Gemeinderat Hans Maier mit 9 Stimmen','6. Gemeinderäte: Hans Probe, Erika Beispiel'])assert.equal(parseItemLine(line),null,line);
+ assert.deepEqual(parseItemLine('3. Verschiedenes, Anfragen'),{prefix:null,number:'3',title:'Verschiedenes, Anfragen'});
+});
+
+test('outcomeOf reads refusals and a motion whose wording holds "nicht zu" (round 2)',()=>{
+ const cases=[
+  ['Der Gemeinderat stimmt dem Antrag der CSU-Fraktion, die Hebesätze nicht zu erhöhen, einstimmig zu.','approved'],
+  ['Beschluss: Der Gemeinderat beschließt, dem Antrag nicht stattzugeben.\nAbstimmung: 12 : 3','rejected'],
+  ['Beschluss: Das gemeindliche Einvernehmen wird nicht hergestellt.\nAbstimmung: einstimmig','rejected'],
+  ['Beschluss: Das gemeindliche Einvernehmen wird nicht erteilt.\nAbstimmung: 9 : 4','rejected'],
+  ['Beschluss: Dem Antrag wird nicht entsprochen.\nAbstimmung: 10 : 3','rejected'],
+  ['Beschluss: Ein Zuschuss wird nicht gewährt.\nAbstimmung: einstimmig','rejected'],
+  ['Das Einvernehmen wurde nicht in Aussicht gestellt. Der Bauwerber wird informiert.\nAbstimmung: 12 : 1','rejected'],
+  ['Der Gemeinderat stimmt dem Antrag nicht zu.','rejected'],
+  ['Der Gemeinderat stimmt dem Antrag zu.','approved'],
+ ];
+ for(const [text,status] of cases)assert.equal(outcomeOf(text).status,status,text);
+});
+
+test('outcomeOf reads votes "dafür/dagegen" and a refusal that is negated (round 3)',()=>{
+ const a=outcomeOf('Beschluss: Der Gemeinderat stimmt dem Antrag zu.\nAbstimmungsergebnis: 3 dafür, 9 dagegen');
+ assert.deepEqual(a.votes,{yes:3,no:9,abstentions:null});
+ assert.notEqual(a.status,'approved');
+ assert.deepEqual(outcomeOf('Abstimmung: dafür: 9, dagegen: 3, Enthaltungen: 1').votes,{yes:9,no:3,abstentions:1});
+ assert.notEqual(outcomeOf('Beschluss: Das gemeindliche Einvernehmen wird nicht verweigert. Einstimmig.').status,'rejected');
+ assert.notEqual(outcomeOf('Beschluss: Die Genehmigung wird nicht versagt. Abstimmung: 12:0').status,'rejected');
 });

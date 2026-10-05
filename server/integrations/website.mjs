@@ -6,7 +6,7 @@ import {budgeted,isRejectionPage,REFUSED} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {parseRobots,robotsAllow} from './robots.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts} from './website-text.mjs';
+import {htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix} from './website-text.mjs';
 import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink} from './website-feeds.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
@@ -54,9 +54,16 @@ async function bodyBytes(r,limit){
  for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>limit){await reader.cancel();throw Error('Quelldokument zu groß');}parts.push(value);}
  const out=new Uint8Array(size);let at=0;for(const p of parts){out.set(p,at);at+=p.byteLength;}return out;
 }
-/** Text of bytes in the encoding the answer or the page names (Latin-1/Windows-1252 or UTF-8). */
+/**
+ * Text of bytes as UTF-8 or Windows-1252/Latin-1. The bytes decide where answer and page contradict each other (a page
+ * moved to another CMS keeps its old charset): bytes that are valid UTF-8 with characters beyond ASCII are UTF-8, bytes
+ * that are not valid UTF-8 are Windows-1252, whatever is declared. Text of plain ASCII reads the same either way.
+ */
 export function decodeText(bytes,type=''){
- const probe=new TextDecoder().decode(bytes.slice(0,2000)),latin=/(?:charset|encoding)\s*=\s*["']?(?:iso-8859-1|iso-8859-15|latin-?1|windows-1252)/i;
+ let utf8=null;try{utf8=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{/* not UTF-8 */}
+ if(utf8!==null&&/[^\x00-\x7f]/.test(utf8))return utf8.replace(/^\ufeff/,'');
+ if(utf8===null)return new TextDecoder('windows-1252').decode(bytes);
+ const probe=utf8.slice(0,2000),latin=/(?:charset|encoding)\s*=\s*["']?(?:iso-8859-1|iso-8859-15|latin-?1|windows-1252)/i;
  return new TextDecoder(latin.test(type)||!/charset\s*=\s*["']?utf-?8/i.test(type)&&latin.test(probe)?'windows-1252':'utf-8').decode(bytes);
 }
 async function fetchSite(url,source,timeoutMs,request,accept,limit){
@@ -139,7 +146,9 @@ const slug=s=>fold(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const words=s=>' '+fold(s).replace(/[^a-z0-9]+/g,' ').trim()+' ';
 const safeDecode=s=>{try{return decodeURIComponent(s);}catch{return s;}};
 const ddmmyyyy=iso=>iso.split('-').reverse().join('.');
-const closed=(label,url)=>isNonPublicText(label||'')||isNonPublicText(url||'')||isNonPublicText(safeDecode(url||''));
+// Also what the score of links reads as the non-public part ("…_vertr.pdf", "N-Teil", "-N.pdf"), so that a redirect target is
+// checked as strictly as a link.
+const closed=(label,url)=>isNonPublicText(label||'')||isNonPublicText(url||'')||isNonPublicText(safeDecode(url||''))||sessionScore({url:url||'',label:label||''})<=-100;
 const escape=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 // Date and kind of one address with its text, read as documentLinks reads a link.
 const asLink=(url,label)=>documentLinks(`<a href="${escape(url)}">${escape(label||'')}</a>`,url)[0]||null;
@@ -148,6 +157,22 @@ const asLink=(url,label)=>documentLinks(`<a href="${escape(url)}">${escape(label
 const PART_NOUN=/((?:nicht\s*-?\s*)?öffentliche[rnms]?)(Teil|Sitzung|Sitzungsteil|Tagesordnung|Beratung|Punkte)(?!\p{L})/giu;
 const repair=line=>{const l=normalizeLine(line);return l.length>90?l:l.replace(PART_NOUN,'$1 $2').replace(/^unterausschlu(ss|ß)deröffentlichkeit$/iu,'Unter Ausschluss der Öffentlichkeit');};
 const PLACE_KIND=/^(?:Gemeinde|Stadt|Markt|Marktgemeinde|Hansestadt|Große Kreisstadt|Kreisstadt|Ortsgemeinde|Samtgemeinde|Verbandsgemeinde|Amt|Landkreis|Kreis)\s+/i;
+// Titles every agenda has in both parts ("Genehmigung der Niederschrift", "Anfragen"): no sign of the same item. Only a title
+// of nothing but such words; "Information zum Rechtsstreit mit der Baufirma Huber GmbH" names a matter.
+const STANDARD_WORDS=/(?<![a-z])(?:genehmigung|feststellung|der|des|die|das|den|dem|niederschrift(?:en)?|protokoll[se]*|sitzung(?:en)?|letzten|vorherigen|oeffentlichen|oeffentlicher|mitteilung(?:en)?|bekanntgabe(?:n)?|bekanntgaben|anfrage(?:n)?|verschiedenes|sonstiges|wuensche|antraege|anregungen|information(?:en)?|eroeffnung|begruessung|ordnungsgemaessen|ladung|beschlussfaehigkeit|bericht(?:e)?|buergermeister(?:s|in)?|verwaltung|vorsitzenden|gemeinderat(?:e?s)?|stadtrat(?:e?s)?|ratsmitglieder|und|u|sowie|aus|von|vom|zur|zum|einwohnerfragestunde|buergerfragestunde|fragestunde|tagesordnung|einwaende|gegen|ueber|am|nr|top|[0-9.]+)(?![a-z])/g;
+const standardTitle=t=>!/[a-z]/.test(fold(t).replace(STANDARD_WORDS,' '));
+// Two wordings of one item where one names a plot more precisely ("Fl.Nr. 412" and "Fl.Nr. 412/3").
+const closeTitles=(a,b)=>similarTitles(a,b)||similarTitles(String(a).replace(/(\d+)\/\d+/g,'$1'),String(b).replace(/(\d+)\/\d+/g,'$1'));
+// The same body under two names: a council (Marktgemeinderat, Marktrat), or committees that share a word ("Bau- und
+// Umweltausschuss", "Ausschuss für Bauen und Umwelt").
+const COUNCIL_NAME=/^(?:gemeinderat|stadtrat|marktgemeinderat|marktrat|gemeindevertretung|stadtvertretung|stadtverordnetenversammlung|rat der (?:stadt|gemeinde)|ortsgemeinderat)/;
+const bodyWords=c=>fold(c).split(/[^a-z]+/).filter(w=>w.length>=4&&!/^(?:ausschuss\w*|fuer|und|sowie|der|des|rat\w*)$/.test(w));
+const sameBodies=(a,b)=>!a||!b||slug(a)===slug(b)||COUNCIL_NAME.test(fold(a))&&COUNCIL_NAME.test(fold(b))||bodyWords(a).some(x=>bodyWords(b).some(y=>x.slice(0,4)===y.slice(0,4)));
+const mainNumber=n=>Number(String(n).split('.')[0]);
+const SMALL_WORDS=new Set('der die das des den dem und oder fuer von vom zur zum auf aus mit bei einer eines einem eine ein ueber im in am an zu nach sowie bzw'.split(' '));
+const stemsOf=t=>new Set(fold(t).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!SMALL_WORDS.has(w)).map(w=>w.slice(0,6)));
+// One item in two wordings for the outcome: similar, and the words of one are all in the other.
+const sameItem=(a,b)=>{if(!similarTitles(a,b))return false;const x=stemsOf(a),y=stemsOf(b);return [...x].every(w=>y.has(w))||[...y].every(w=>x.has(w));};
 
 // Status of an item: ahead → announced; an outcome of minutes; only a deciding body decides, a committee's approval or
 // rejection is its recommendation (as the other readers have it).
@@ -156,31 +181,78 @@ function itemStatus(item,meeting,today){
  if(meeting.kind!=='minutes'||!item.status)return 'unknown';
  return (item.status==='approved'||item.status==='rejected')&&!DECIDING_BODY.test(meeting.committee)?'recommended':item.status;
 }
-// Bodies that are not the area's own: a special-purpose association, a county body on a town's site, an association's
-// assembly on a member's site, the council of another town. The head of the meeting (its first lines) counts, not only
-// the body's name ("Umweltausschuss des Kreistages", "Werkausschuss des Abwasserverbandes").
+// Bodies that are not the area's own: a special-purpose association, a county body on a town's site, a body of the
+// Verbandsgemeinde, Samtgemeinde, Amt or Verwaltungsgemeinschaft on a member's site, the council of another town. The
+// head of the meeting (its first lines), the line above it that names who gives notice ("Zweckverband …", "Landkreis …",
+// "Gemeinde Bdorf") and the body's name count ("Umweltausschuss des Kreistages", "Gemeindevertretung der Gemeinde X").
 const ASSOCIATION=/Verwaltungsgemeinschaft|Verwaltungsverband|Gemeindeverwaltungsverband|Verbandsgemeinde|Samtgemeinde|(?<!\p{L})Amt(?!\p{L})/u;
-const COUNTY_HEAD=/(?<!\p{L})(?:des|der|beim)\s+(?:Kreistag(?:e?s)?|Landkreis(?:es)?|Kreis(?:es)?|Bezirkstag(?:e?s)?)(?!\p{L})/u;
-const TOWN_COUNCIL=/^(?:Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung)\s+(\p{Lu}.*)$/u;
-function foreignBody(m,committee,source,names){
- const head=String(m.context||'');
- if(isSpecialPurposeBody(m.committee)||isSpecialPurposeBody(head))return 'Zweckverband';
+const COUNTY_HEAD=/(?<!\p{L})(?:des|der|beim|im)\s+(?:Kreistag(?:e?s)?|Landkreis(?:es)?|Kreis(?:es)?|Bezirkstag(?:e?s)?|Landratsamt(?:e?s)?|Kreishaus(?:es)?)(?!\p{L})/u;
+const TOWN_COUNCIL=/^(?:Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung|Ortsgemeinderat)\s+(\p{Lu}.*)$/u;
+// Bodies of a municipality (or of its districts and associations), never of a county.
+const MUNICIPAL_BODY=/^(?:Gemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung|Ortsgemeinderat|Ortschaftsrat|Ortsrat|Ortsbeirat|Stadtbezirksrat|Verbandsgemeinderat|Samtgemeinderat|Amtsausschuss|Gemeinschaftsversammlung|Gemeinschaftsausschuss|Rat\s+der\s+(?:Stadt|Gemeinde))(?!\p{L})/u;
+// Bodies of a special-purpose association, never those of an Amt, Verbandsgemeinde or Verwaltungsgemeinschaft.
+const SPECIAL_BODY=/^(?:Verbandsversammlung|Verbandsausschuss|Verbandsvorstand|Verbandsrat)(?!\p{L})/u;
+const ASSOCIATION_BODY=/^(?:Verbandsgemeinderat|Samtgemeinderat|Amtsausschuss|Gemeinschaftsausschuss|Gemeinschaftsversammlung|Verbandsausschuss|Verbandsversammlung|Verbandsrat|Amtsvertretung|Samtgemeinde\p{L}*|Verbandsgemeinde\p{L}*|Verwaltungsgemeinschafts\p{L}*|Amts\p{L}*ausschuss)(?!\p{L})/u;
+// A body of the association named by its genitive, also without the association's name ("Haupt- und Finanzausschuss der
+// Verbandsgemeinde", "Feuerwehrausschuss der Samtgemeinde", "Finanzausschuss des Amtes").
+const BODY_OF_ASSOCIATION=/(?:ausschuss|ausschusses|rat|rates|versammlung|vertretung|beirat|beirates)\s+(?:der|des)\s+(?:Verbandsgemeinde|Samtgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband(?:e?s)?|Gemeindeverwaltungsverband(?:e?s)?|Amt(?:e?s)?)(?!\p{L})/iu;
+const ASSOCIATION_HEAD=/(?<!\p{L})(?:der|des)\s+(?:Verbandsgemeinde|Samtgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband(?:e?s)?|Gemeindeverwaltungsverband(?:e?s)?|Amt(?:e?s)?)\s+\p{Lu}/u;
+const NOTICE='^(?:(?:Öffentliche\\s+)?Bekanntmachung\\s+(?:des|der)\\s+)?';
+// Also "Wasser- und Bodenverband …".
+const ISSUER_SPECIAL=new RegExp(`${NOTICE}(?:\\p{L}+-\\s+(?:und|u\\.)\\s+)?(?!Verwaltungsverband|Gemeindeverwaltungsverband)\\p{L}*verband(?:e?s)?(?!\\p{L})`,'u');
+const ISSUER_COUNTY=new RegExp(`${NOTICE}(?:Landkreis(?:es)?|Landratsamt(?:e?s)?|Kreis(?:es)?|Kreisverwaltung)(?!\\p{L})`,'u');
+const ISSUER_ASSOCIATION=new RegExp(`${NOTICE}(?:Amt(?:e?s)?|Amtsverwaltung|Verbandsgemeinde|Verbandsgemeindeverwaltung|Samtgemeinde|Samtgemeindeverwaltung|Verwaltungsgemeinschaft|Verwaltungsverband|Gemeindeverwaltungsverband)(?!\\p{L})`,'u');
+const ISSUER_TOWN=new RegExp(`${NOTICE}(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Hansestadt|Große\\s+Kreisstadt|Kreisstadt|Universitätsstadt|Landeshauptstadt)\\s+(\\p{Lu}[\\p{L}.-]*(?:\\s+\\p{Lu}[\\p{L}.-]*)?)`,'u');
+const HEAD_TOWN=/(?<!\p{L})(?:der|des)\s+(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Hansestadt)\s+(\p{Lu}[\p{L}-]+(?:\s+\p{Lu}[\p{L}-]+)?)/gu;
+// A place is compared by its first word, by two for "Bad …", "Sankt …", "Neu …".
+const TWO_PART=/^(?:bad|sankt|st|gross|klein|alt|neu|ober|unter|nieder|hohen)$/;
+const placeKey=name=>{const w=words(name).trim().split(' ').filter(Boolean);return w.length>1&&TWO_PART.test(w[0])?` ${w[0]} ${w[1]} `:w.length?` ${w[0]} `:'';};
+// The heading of a section of a gazette that names a municipality ("Bdorf", "BDORF", "Aus der Gemeinde Bdorf",
+// "Amtliche Bekanntmachungen der Gemeinde Bdorf", "Mitgliedsgemeinde Bdorf").
+const SECTION_PLACE=/^(?:(?:(?:Amtliche\s+)?Bekanntmachungen?\s+|Aus\s+|Nachrichten\s+|Mitteilungen\s+)(?:der|dem|des)\s+)?(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Mitgliedsgemeinde|Ortsteil|Ortschaft)\s+(\p{Lu}[\p{L}-]+(?:\s+\p{Lu}[\p{L}-]+)?)$|^((?:(?:Bad|Sankt|St\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\s+)?\p{Lu}[\p{Ll}-]+|\p{Lu}{3,}(?:-\p{Lu}+)?)$/u;
+const NOT_SECTION=/^(?:landkreis|kreis|kreistag|kreisausschuss|landratsamt|kreisverwaltung|ausschuesse|gremien|sitzungstermine|tagesordnungen|staedte|gemeinden|amtliche[rns]?|bekanntmachung(?:en)?|oeffentliche[rns]?|tagesordnung|sitzung(?:en)?|einladung|inhalt|inhaltsverzeichnis|nichtamtliche[rns]?|teil|hinweis(?:e)?|termine|veranstaltungen|rathaus|verwaltung|impressum|aktuelles|nachrichten|mitteilungen|niederschrift|protokoll|beschluesse|gemeinderat|stadtrat|bauausschuss|amtsblatt|mitteilungsblatt|ende|fortsetzung|seite|vereine|kirchen|schulen)$/;
+// A gazette of several municipalities by its head.
+const SHARED_GAZETTE=/Verwaltungsgemeinschaft|Verbandsgemeinde|Samtgemeinde|Verwaltungsverband|(?<!\p{L})Amt(?:e?s)?(?!\p{L})|Mitgliedsgemeinden|kreisangehörig/u;
+// A gazette that belongs to one municipality ("Amtsblatt der Gemeinde Musterbach").
+const GAZETTE_OWNER=/(?<!\p{L})(?:der|des)\s+(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Hansestadt)\s+(\p{Lu}[\p{L}-]+(?:\s+\p{Lu}[\p{L}-]+)?)/u;
+// The council of a town in the link text ("Bekanntmachung Sitzung Ortsgemeinderat Nachbarhausen").
+const TITLE_TOWN=/(?<!\p{L})(?:Gemeinderat|Ortsgemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung)(?:e?s)?\s+((?:(?:Bad|Sankt|St\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\s+)?\p{Lu}[\p{Ll}-]+)(?!\p{L})/u;
+const NOT_TOWN=/^(?:sitzung\w*|tagesordnung|einladung|bekanntmachung|niederschrift|protokoll|beschluss\w*|oeffentlich\w*|nichtoeffentlich\w*|am|vom|im|in|der|die|das|des|und|termin\w*|januar|februar|maerz|april|mai|juni|juli|august|september|oktober|november|dezember|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|sonnabend|teil|top|nr|ergebnis\w*|bericht|aktuell|ausschuss\w*|haushalt\w*)$/;
+function foreignBody(m,committee,source,names,title=''){
+ const head=String(m.context||''),issuer=capsFix(String(m.issuer||'')),trailer=[].concat(m.trailer||[]).map(capsFix);
+ const own=place=>{const k=placeKey(place);return !k||names.some(n=>n.includes(k));};
  const association=ASSOCIATION.test(source.name||'');
+ if(isSpecialPurposeBody(m.committee)||isSpecialPurposeBody(head)||isSpecialPurposeBody(issuer)||ISSUER_SPECIAL.test(issuer))return 'Zweckverband';
+ // An Amt or a Verbandsgemeinde has no Verbandsversammlung; a Gemeindeverwaltungsverband has.
+ if(association&&!/Verwaltungsverband/u.test(source.name||'')&&SPECIAL_BODY.test(committee))return 'Zweckverband';
+ // A county's gazette carries notices of its towns: their councils are never the county's.
+ if(source.kind==='district'&&MUNICIPAL_BODY.test(committee))return 'Gemeinde';
+ // A county's gazette: a meeting under the section or notice of a town ("STADT MUSTERSTADT", "Musterstadt") is the town's.
+ if(source.kind==='district'&&m.gazette){
+  const sections=[].concat(m.lead||[]).map(capsFix).map(l=>l.match(SECTION_PLACE)).filter(Boolean).map(x=>x[1]||x[2]).filter(p=>!words(p).trim().split(' ').some(w=>NOT_SECTION.test(w))&&!/(?:tag|rat|ausschuss|beirat|versammlung|vertretung|amt)$/iu.test(p));
+  if(sections.some(p=>!own(p))||ISSUER_TOWN.test(issuer))return 'Gemeinde';
+ }
+ // A gazette of several municipalities (of a Verwaltungsgemeinschaft, an Amt, a Verbandsgemeinde): a town's meeting in it
+ // is the area's only where its section, head or issuer names the area, or the gazette is the area's own.
+ if(m.gazette&&source.kind!=='district'&&!association){
+  const owner=String(m.gazette).match(GAZETTE_OWNER)?.[1],lead=[].concat(m.lead||[]).map(capsFix),text=words(`${lead.join(' ')} ${m.headText||''} ${issuer}`);
+  const sections=lead.map(l=>l.match(SECTION_PLACE)).filter(Boolean).map(x=>x[1]||x[2]).filter(p=>!words(p).trim().split(' ').some(w=>NOT_SECTION.test(w)));
+  if(sections.some(p=>!own(p)))return 'andere Gemeinde';
+  if(!names.some(n=>text.includes(n))&&!(owner&&own(owner))&&SHARED_GAZETTE.test(m.gazette))return 'andere Gemeinde';
+ }
  if(!association&&(/^(?:Verbandsversammlung|Gemeinschaftsversammlung)(?!\p{L})/u.test(committee)||/Verwaltungsgemeinschaft|\p{L}*verband(?:e?s)?(?!\p{L})/u.test(head)))return 'Verband';
- if(source.kind==='city'&&(/^Kreis(?:tag|ausschuss)(?!\p{L})/iu.test(committee)||COUNTY_HEAD.test(head)))return 'Landkreis';
- const town=committee.match(TOWN_COUNCIL)?.[1];
- if(town&&!association&&!names.some(n=>n.includes(words(town))))return 'andere Gemeinde';
+ if(source.kind==='city'&&(/^Kreis(?:tag|ausschuss)(?!\p{L})/iu.test(committee)||COUNTY_HEAD.test(head)||ISSUER_COUNTY.test(issuer)))return 'Landkreis';
+ if(association)return null;
+ // A member's own council may be announced by its Amt or Verbandsgemeinde ("Amt Musterland" / "Gemeindevertretung Musterbach").
+ const council=committee.match(TOWN_COUNCIL)?.[1],ownCouncil=!!council&&own(council);
+ if(ASSOCIATION_BODY.test(committee)||BODY_OF_ASSOCIATION.test(head)||!ownCouncil&&(ASSOCIATION_HEAD.test(head)||ISSUER_ASSOCIATION.test(issuer)))return 'Verband';
+ // Every town the head, the signature below the items or the link text names for the meeting must be the area's own.
+ const titleTown=String(title).match(TITLE_TOWN)?.[1];
+ const towns=[council,...[...head.matchAll(HEAD_TOWN)].map(t=>t[1]),issuer.match(ISSUER_TOWN)?.[1],...trailer.flatMap(l=>[l.match(ISSUER_TOWN)?.[1],...[...l.matchAll(HEAD_TOWN)].map(t=>t[1])]),titleTown&&!NOT_TOWN.test(fold(titleTown))?titleTown:null].filter(Boolean);
+ if(towns.some(t=>!own(t)))return 'andere Gemeinde';
  return null;
 }
-// Words of a title for comparing the agenda's and the minutes' wording: stems of six letters, without small words.
-const SMALL=new Set('der die das des den dem und oder fuer von vom zur zum auf aus mit bei einer eines einem eine ein ueber im in am an zu nach sowie bzw'.split(' '));
-const stems=t=>new Set(fold(t).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!SMALL.has(w)).map(w=>w.slice(0,6)));
-/** Whether two titles name the same item: most words of the shorter one are in the other. */
-export function similarTitles(a,b){
- const x=stems(a),y=stems(b);if(!x.size||!y.size)return false;
- let shared=0;for(const w of x)if(y.has(w))shared++;
- return shared/Math.min(x.size,y.size)>=0.6;
-}
+export {similarTitles};
 
 // A refusal (HTTP 403, 429 or a firewall's rejection page) closes that origin for the rest of the import: no further
 // request goes there, also not the budget's retry. The error tells which origin was closed.
@@ -287,7 +359,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   if(!ev.date||!inWindow(ev.date)||!relevant(ev.url,ev.name))continue;
   let own=null;try{own=ev.url&&siteAllowed(ev.url,source);}catch{/* elsewhere */}
   const head=`${ev.name} am ${ddmmyyyy(ev.date)}${ev.time?`, ${ev.time} Uhr`:''}`;
-  texts.push({url:own||ev.from,title:ev.name,lines:[head,...String(ev.description||'').split(/\n/)],kind:'html',wrapped:false,order:-1,event:true});
+  texts.push({url:own||ev.from,title:ev.name,lines:[head,...String(ev.description||'').split(/\n/)],kind:'html',wrapped:false,order:-1,event:true,eventDate:ev.date});
   if(own)offer(asLink(own,ev.name));
  }
  // 3. Which candidates are read: only the site, only paths robots.txt leaves open, never the non-public part, an RIS
@@ -307,7 +379,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const take=ranked.slice(0,LIMITS.documents),rest=ranked.slice(take.length);
  // Documents left out whose meetings are marked count as read; only the others are still to be read.
  const heldBack=rest.filter(c=>c.marked);let left=rest.length-heldBack.length;
- // 4. Documents. HTML pages that yield no item may link the notice as PDF; those are read in a second round.
+ // 4. Documents. HTML pages that yield no item may link the notice as PDF, pages with items the notice of the same day; those
+ // are read in a second round.
  const unreadable=[],unparsed=[];let documents=0;
  const readDocument=async(c,order,deeper)=>{
   let got;try{got=await getBytes(c.url,site);}catch(e){fail('Dokument '+c.url,e);return;}
@@ -327,8 +400,10 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  await parallel(take,(c,i)=>readDocument(c,i,true),2);
  const second=[],seen=new Set([...candidates.keys(),...listed,...direct]);
  for(const t of texts.filter(t=>t.links).sort((a,b)=>a.order-b.order)){
-  if(parseSessionText(t.lines,{title:t.title}).meetings.some(m=>m.items.length))continue;
-  for(const l of t.links)if(l.kind==='pdf'&&!seen.has(l.url)&&!closed(l.label,l.url)&&sessionScore(l)>=SESSION_THRESHOLD&&!(l.date&&!inWindow(l.date))){seen.add(l.url);try{siteAllowed(l.url,source);second.push({...l,label:l.label||t.title});}catch{/* elsewhere */}}
+  // A page with items may type off the agenda without its parts and link the official notice: the notice of the same day is
+  // read too, so that what it puts in the non-public part never comes out of the page.
+  const days=new Set(parseSessionText(t.lines,{title:t.title}).meetings.filter(m=>m.items.length).map(m=>m.date));
+  for(const l of t.links)if(l.kind==='pdf'&&(!days.size||l.date&&days.has(l.date))&&!seen.has(l.url)&&!closed(l.label,l.url)&&sessionScore(l)>=SESSION_THRESHOLD&&!(l.date&&!inWindow(l.date))){seen.add(l.url);try{siteAllowed(l.url,source);second.push({...l,label:l.label||t.title});}catch{/* elsewhere */}}
  }
  const room=LIMITS.documents-take.length,more=[];for(const c of second){if(more.length>=room){left++;continue;}if(await permitted(c.url))more.push(c);}
  await parallel(more,(c,i)=>readDocument(c,take.length+i,false),2);
@@ -339,19 +414,34 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const body=c=>place&&c.endsWith(' '+place)?c.slice(0,-place.length-1):c;
  const sessions=[],keys=new Set(),withItems=new Set(),upcoming=new Set(),names=(expectNames||[]).map(words).filter(n=>n.trim());let named=false;
  const ownNames=[words(place),words(source.name),...names].filter(n=>n.trim());
+ // Every text is read first: an item one document of a meeting puts in the non-public part (the invitation) never comes
+ // out of another document of that meeting (minutes that copy the whole agenda, a page without its headings).
+ const parsedOf=new Map(),closedOf=new Map();
  for(const t of texts.sort((a,b)=>a.order-b.order)){
+  const parsed=parseSessionText(t.lines,{title:t.title,wrapped:t.wrapped});parsedOf.set(t,parsed);
+  // By day: the same body may be named otherwise in another document. An item numbered on after the public items of its
+  // document (3 and 4 after 1 and 2) closes that number for the same body also where another document words it otherwise.
+  for(const m of parsed.meetings)if(m.date)for(const c of m.closedItems||[])closedOf.set(m.date,[...closedOf.get(m.date)||[],{...c,url:t.url,committee:m.committee?body(m.committee):'',standard:standardTitle(c.title),continues:m.lastPublic>0&&mainNumber(c.number)>m.lastPublic}]);
+ }
+ for(const t of texts){
   if(names.length&&!named){const all=words(t.title+' '+t.lines.join(' '));named=names.some(n=>all.includes(n));}
-  const parsed=parseSessionText(t.lines,{title:t.title,wrapped:t.wrapped});
+  const parsed=parsedOf.get(t);
   for(const note of parsed.issues)warnings.push(`${note} (${t.url})`);
   const known=parsed.meetings.filter(m=>m.date&&m.committee);
   if(!known.length){if(!t.event){issues.push('Keine Sitzung erkannt, nicht übernommen: '+t.url);if(unparsed.length<LIMITS.unparsed)unparsed.push(t.url);}continue;}
   if(parsed.meetings.some(m=>(!m.date||!m.committee)&&(m.items.length||m.unclear)))issues.push('Sitzung ohne erkennbares Datum oder Gremium, nicht übernommen: '+t.url);
-  for(const m of known){
+  for(let m of known){
    if(!inWindow(m.date))continue;
-   const committee=body(m.committee),foreign=foreignBody(m,committee,source,ownNames);
+   // A calendar entry names its day in DTSTART/startDate; a meeting the text gives another day is not taken.
+   if(t.event&&m.date!==t.eventDate){if(m.items.length)issues.push(`Kalendereintrag nennt einen anderen Sitzungstag als sein Text (${ddmmyyyy(t.eventDate)}), nicht übernommen: ${t.url}`);continue;}
+   const committee=body(m.committee),foreign=foreignBody(m,committee,source,ownNames,t.title);
    if(foreign){if(foreign==='andere Gemeinde'&&m.items.length)issues.push(`Sitzung eines Gremiums einer anderen Gemeinde (${committee}), nicht übernommen: ${t.url}`);continue;}
    const key=`${m.date}|${slug(committee)}`;keys.add(key);
    if(m.unclear){issues.push('Tagesordnung nicht eindeutig als öffentlich erkennbar, nicht übernommen: '+t.url);continue;}
+   // An item another document of the same meeting puts in the non-public part goes, with all items after it.
+   const elsewhere=(closedOf.get(m.date)||[]).filter(c=>c.url!==t.url);
+   const cut=m.items.findIndex(it=>elsewhere.some(c=>!c.standard&&closeTitles(c.title,it.title)||c.continues&&sameBodies(c.committee,committee)&&mainNumber(it.number)>=mainNumber(c.number)));
+   if(cut>=0){warnings.push(`Punkt ${m.items[cut].number} (${committee} ${ddmmyyyy(m.date)}) steht in einem anderen Dokument dieser Sitzung im nichtöffentlichen Teil; ${m.items.length-cut} ${m.items.length-cut===1?'Punkt':'Punkte'} nicht übernommen (${t.url}).`);m={...m,items:m.items.slice(0,cut)};}
    if(!m.items.length){if(m.date>today)upcoming.add(key);continue;}
    withItems.add(key);
    sessions.push({...m,committee,key,url:`${t.url}#sitzung-${m.date}-${slug(committee)}`,doc:t});
@@ -377,7 +467,10 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   const offered=invitation?invitation.items.map(item=>({item,id:idOf(invitation,item)})):[];
   ids.set(s,s.items.map(item=>{
    if(!invitation)return idOf(s,item);
-   const same=offered.find(o=>o.item.number===item.number&&similarTitles(o.item.title,item.title))||(()=>{const like=offered.filter(o=>similarTitles(o.item.title,item.title));return like.length===1?like[0]:null;})();
+   // The same wording first, then the same number with one wording inside the other, then one such wording alone: two
+   // building applications of one meeting ("… Am Hang", "… Lindenweg") are not the same item because most words agree.
+   const exact=offered.filter(o=>slug(o.item.title)===slug(item.title));
+   const same=(exact.length===1?exact[0]:null)||offered.find(o=>o.item.number===item.number&&sameItem(o.item.title,item.title))||(()=>{const like=offered.filter(o=>sameItem(o.item.title,item.title));return like.length===1?like[0]:null;})();
    if(same){offered.splice(offered.indexOf(same),1);return same.id;}
    if(offered.some(o=>o.item.number===item.number))warnings.push(`Punkt ${item.number} (${s.committee} ${ddmmyyyy(s.date)}): Einladung und Niederschrift nennen verschiedene Titel; getrennt geführt.`);
    return idOf(s,item);

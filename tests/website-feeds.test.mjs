@@ -246,3 +246,12 @@ test('website sessionScore closes short forms of the non-public part and umlauts
  for(const l of [{url:'https://www.stadt.example.test/dl/protokoll_noe_2026-09-16.pdf',label:''},{url:'https://www.stadt.example.test/dl/nichtoeff-gr-2026-09-16.pdf',label:''},{url:'https://www.stadt.example.test/a.pdf',label:'Protokoll (nö) Gemeinderat 16.09.2026'},{url:'https://www.stadt.example.test/a.pdf',label:'Niederschrift N.Ö. Sitzung Gemeinderat'},{url:'https://www.stadt.example.test/a.pdf',label:'Niederschrift nichtöffentliche Sitzung Gemeinderat'.normalize('NFD')}])assert.equal(sessionScore(l),-100,l.label||l.url);
  assert.ok(sessionScore({url:'https://www.stadt.example.test/a.pdf',label:'Niederschrift öffentliche Sitzung Gemeinderat'.normalize('NFD')})>=SESSION_THRESHOLD);
 });
+
+test('website sessionScore gives -100 to the short forms, typos and encodings of the non-public part (hardening round 1)',()=>{
+ for(const label of ['Protokoll Gemeinderatssitzung 16.09.2026 (n.öff.)','Protokoll Gemeinderatssitzung 16.09.2026 nöff. Teil','Niederschrift Gemeinderat 16.09.2026 (NÖS)','Niederschrift Gemeinderat 16.09.2026 (geschl. Sitzung)',
+  'Niederschrift Gemeinderat 16.09.2026 – nichtöfftl.','Niederschrift Gemeinderat 16.09.2026 (vertr.)','Niederschrift Gemeinderat 16.09.2026 – Teil N','Niederschrift Gemeinderat 16.09.2026 Nichtöfentlich','Niederschrift Gemeinderat 16.09.2026 Nicht&amp;ouml;ffentlich'])
+  assert.equal(sessionScore({url:'https://www.gemeinde-musterdorf.example.test/f/a.pdf',label}),-100,label);
+ for(const path of ['/f/Protokoll_GR_2026-09-16_nicht%F6ffentlich.pdf','/f/protokoll-gr-16-09-2026-nichtoef.pdf','/f/protokoll_gr_20260916_noeS.pdf','/f/gr-2026-09-16-n-oeff.pdf'])
+  assert.equal(sessionScore({url:'https://www.gemeinde-musterdorf.example.test'+path,label:'Niederschrift Gemeinderat 16.09.2026'}),-100,path);
+ assert.ok(sessionScore({url:'https://www.gemeinde-musterdorf.example.test/f/a.pdf',label:'Niederschrift Gemeinderat 16.09.2026'})>=SESSION_THRESHOLD);
+});

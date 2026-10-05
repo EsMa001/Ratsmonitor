@@ -449,3 +449,60 @@ test('readPdfText reads a real PDF page by page and refuses more than 150 pages'
  assert.equal(text,'Einladung zur Sitzung des Gemeinderates\n1. Bauantrag Scheune\nN i c h t o e f f e n t l i c h e r T e i l\n2. Personalangelegenheit');
  await assert.rejects(readPdfText(makePdf(Array.from({length:151},(_,i)=>[`Seite ${i+1}`]))),/zu umfangreich/);
 });
+
+// --- hardening round 1 (texts NACHGEBILDET) ---------------------------------------------------------------------------
+test('collectWebsite: minutes of a renumbered agenda join the item with the same plot number, not the one with the same number',async()=>{
+ const docs={
+  'b/einladung-gemeinderat-2026-09-16.html':['Einladung Sitzung Gemeinderat 16.09.2026',html('<p>Einladung zur öffentlichen Sitzung des Gemeinderates am 16.09.2026</p><p>1. Genehmigung der Niederschrift</p><p>2. Bauantrag Neubau eines Einfamilienhauses, Fl.Nr. 12, Gemarkung Oberdorf</p><p>3. Bauantrag Neubau eines Einfamilienhauses, Fl.Nr. 13, Gemarkung Oberdorf</p><p>4. Anfragen</p>')],
+  'b/niederschrift-gemeinderat-2026-09-16.html':['Niederschrift Sitzung Gemeinderat 16.09.2026',html('<p>Niederschrift über die öffentliche Sitzung des Gemeinderates am 16.09.2026</p><p>TOP 2 wurde abgesetzt; die folgenden Punkte wurden neu nummeriert.</p><p>1. Genehmigung der Niederschrift</p><p>Die Niederschrift wird genehmigt. Abstimmung: 12:0</p><p>2. Bauantrag Neubau eines Einfamilienhauses, Fl.Nr. 13, Gemarkung Oberdorf</p><p>Beschluss: Das gemeindliche Einvernehmen wird nicht erteilt. Abstimmung: 3:9</p>')],
+ };
+ const {d}=await run({source:oberdorf},listed(docs));
+ const by=plot=>d.topics.find(t=>t.title.includes(`Fl.Nr. ${plot},`));
+ assert.equal(by(12).status,'unknown','the outcome of Fl.Nr. 13 never lands on Fl.Nr. 12');
+ assert.equal(by(13).status,'rejected');
+ assert.equal(similarTitles('Bauantrag Einfamilienhaus, Fl.Nr. 12','Bauantrag Einfamilienhaus, Fl.Nr. 13'),false);
+ assert.equal(similarTitles('Genehmigung der Niederschrift vom 15.07.2026','Genehmigung der Niederschrift'),true);
+});
+
+test('fetchSiteText refuses redirect targets that name the non-public part in any spelling or encoding',async()=>{
+ for(const to of ['/protokolle/Protokoll_GR_2026-09-16_nicht%F6ffentlich.pdf','/protokolle/gr-2026-09-16-n.oeff.pdf','/protokolle/2026/geschlossen/gr-2026-09-16.pdf','/x/nichtoef/gr.pdf','/gr-2026-09-16-noeS.pdf','/gr-2026-09-16-nicht-oeffentlich.pdf']){
+  const request=fakeFetch({[base+'a']:{status:302,headers:{location:to}},[new URL(to,base).href]:{body:'<p>geheim</p>',headers:{'content-type':'text/html'}}});
+  await assert.rejects(fetchSiteText(base+'a',{base},5000,request),/nichtöffentlichen Teils/,to);
+  assert.equal(request.seen.length,1,`${to} is never asked`);
+ }
+});
+
+test('decodeText follows the bytes where answer and page name another charset',()=>{
+ const page='<meta charset="iso-8859-1"><h2>Nichtöffentlicher Teil</h2>';
+ assert.equal(decodeText(new TextEncoder().encode(page),'text/html'),page,'UTF-8 bytes declared as Latin-1');
+ assert.equal(decodeText(Uint8Array.from([...page].map(c=>c.charCodeAt(0))),'text/html; charset=utf-8'),page,'Latin-1 bytes declared as UTF-8');
+ assert.equal(decodeText(new TextEncoder().encode('Tagesordnung'),'text/html; charset=iso-8859-1'),'Tagesordnung');
+});
+
+test('collectWebsite takes a calendar entry only for the day of its DTSTART',async()=>{
+ const ics=base+'veranstaltungen/kalender.ics',text='BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:a\r\nDTSTART;TZID=Europe/Berlin:20261014T190000\r\nSUMMARY:Öffentliche Sitzung des Gemeinderates am 07.10.2026\r\nDESCRIPTION:Tagesordnung:\\n1. Bauantrag Neubau Carport\\n2. Vergabe Straßenbeleuchtung\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n';
+ const web=site({[ics]:text});
+ const d=await collectWebsite({...oberdorf,pages:[],ics:[ics]},{now,window:'12m',get:web.get,getBytes:web.getBytes,pdfText});
+ assert.deepEqual(d.topics.map(t=>t.eventDate),[]);
+ assert.ok(d.coverage.issues.some(i=>/Kalendereintrag nennt einen anderen Sitzungstag/.test(i)));
+});
+
+test('collectWebsite leaves out meetings of another member municipality, an Amt, a Verbandsgemeinde, a county or a Zweckverband named above the head',async()=>{
+ const text=`Mitteilungsblatt der Verwaltungsgemeinschaft Oberland Nr. 20/2026
+Gemeinde Oberdorf
+Am Dienstag, 14.10.2026, 19.30 Uhr, findet eine öffentliche Sitzung des Gemeinderates statt.
+Tagesordnung
+1. Bauantrag Neubau Scheune
+Nichtöffentlicher Teil
+2. Grundstücksangelegenheit
+Gemeinde Unterdorf
+Am Donnerstag, 16.10.2026, 20.00 Uhr, findet eine öffentliche Sitzung des Gemeinderates statt.
+Tagesordnung
+1. Feuerwehrbedarfsplan Unterdorf
+Zweckverband Wasserversorgung Oberland
+Am Dienstag, 20.10.2026, 18.00 Uhr, findet eine öffentliche Sitzung des Werkausschusses statt.
+Öffentlicher Teil
+1. Jahresabschluss 2025`;
+ const {d}=await run({source:oberdorf,pdfText:async()=>text},listed({'b/mitteilungsblatt-2026-20.pdf':['Mitteilungsblatt Nr. 20/2026 – Sitzungen',pdf('vg')]}));
+ assert.deepEqual(d.topics.map(t=>[t.eventDate,t.committee,t.title]),[['2026-10-14','Gemeinderat','Bauantrag Neubau Scheune']]);
+});

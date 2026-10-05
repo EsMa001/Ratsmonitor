@@ -7,7 +7,9 @@
 //   German local time, because a meeting at 00:30 local time stands as 22:30Z on the previous day in a feed.
 // - The WordPress endpoints never use the search parameter: the search service of a site is not used.
 const ENT={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' ',auml:'ä',ouml:'ö',uuml:'ü',Auml:'Ä',Ouml:'Ö',Uuml:'Ü',szlig:'ß',ndash:'–',mdash:'—',sbquo:'‚',bdquo:'„',ldquo:'“',rdquo:'”',lsquo:'‘',rsquo:'’',laquo:'«',raquo:'»',lsaquo:'‹',rsaquo:'›',sect:'§',euro:'€',hellip:'…',middot:'·',bull:'•',shy:'',eacute:'é',egrave:'è',aacute:'á',agrave:'à',ccedil:'ç',deg:'°',copy:'©',reg:'®',times:'×',minus:'−'};
-const decode=s=>String(s??'').replace(/&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]*);/gi,(m,k)=>{if(k[0]!=='#')return ENT[k]??m;const n=/^#x/i.test(k)?parseInt(k.slice(2),16):Number(k.slice(1));return n>0&&n<=0x10ffff?String.fromCodePoint(n):m;});
+const decodeStep=s=>String(s??'').replace(/&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]*);/gi,(m,k)=>{if(k[0]!=='#')return ENT[k]??m;const n=/^#x/i.test(k)?parseInt(k.slice(2),16):Number(k.slice(1));return n>0&&n<=0x10ffff?String.fromCodePoint(n):m;});
+// Entities escaped once or twice more ("Nicht&amp;ouml;ffentlich") are decoded until nothing changes.
+const decode=s=>{let t=String(s??'');for(let k=0;k<5;k++){const n=decodeStep(t);if(n===t)break;t=n;}return t;};
 const strip=html=>decode(String(html??'').replace(/<!--[\s\S]*?-->/g,' ').replace(/<(script|style|noscript)\b[\s\S]*?<\/\1\s*>/gi,' ').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();
 const attr=(attrs,name)=>{const m=String(attrs).match(new RegExp(`(?:^|\\s)${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`,'i'));return m?decode(m[1]??m[2]??m[3]):null;};
 const safeDecode=s=>{try{return decodeURIComponent(s);}catch{return s;}};
@@ -85,14 +87,20 @@ export function documentLinks(html,base){
 // NFC first: pdf.js and some editors write "ö" as "o" with a combining or spacing diaeresis.
 const norm=s=>String(s??'').replace(/\u00a8\s?([AOUaou])/g,'$1\u0308').replace(/([AOUaou])\u00a8/g,'$1\u0308').normalize('NFC').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,' ').trim();
 // Also the short forms of labels and file names: "(nö)", "N.Ö.", "protokoll_noe_…", "nichtoeff-…".
-const NONPUBLIC=/nicht ?oeffentl|nicht ?oeff\b|vertraulich|geschlossene[nr]? (?:sitzung|teil)|\bn ?oe\b/;
+// Also typos and abbreviations: "nichtöfentlich", "nichtöfftl.", "n.öff.", "nöff.", "NÖS", "geschl. Sitzung", "(vertr.)".
+// Also "NÖT"/"NOeT" (nichtöffentlicher Teil), "(geschl.)", "geheim" and a name part "np" (gr-2026-09-16-np.pdf).
+// Also "NS", "NOS", "N-Teil", "N-Sitzung", "Teil B", a name part "-N" before the extension, "intern", "nur für Ratsmitglieder" and
+// typos ("Nichföffentlich", "Nicht öffentich").
+const NONPUBLIC=/nicht ?o?e?ff?(?:entl|tl\b|\b)|\bnich[a-z]? ?oe?ff?entl|\bnicht ?o?e?ff?enti?ch\b|vertraulich|\bvertr\b|geschlossene[nr]? (?:sitzung|teil)|\bgeschl\b|\bgeheim\b|\bnp\b|\bn ?oe(?: ?ff?(?: ?tl)?)?(?: ?[st])?\b|unter ausschluss (?:der|von) (?:presse und (?:der )?)?oeffentlichkeit|\bteil ?[nb]\b|\bn (?:teil|sitzung)\b|\bns\b|\bnos\b|\b(?:n|intern) (?:pdf|html?|php|aspx?|docx?)\b|\bnur fuer (?:die )?(?:[a-z]+ )?(?:[a-z]*mitglieder|[a-z]*raete)\b/;
+// Old servers write umlauts of addresses in Latin-1 ("nicht%F6ffentlich").
+const latinUmlauts=s=>String(s??'').replace(/%(?:f6|d6)/gi,'oe').replace(/%(?:e4|c4)/gi,'ae').replace(/%(?:fc|dc)/gi,'ue').replace(/%df/gi,'ss');
 const BODY=/gemeinderat|stadtrat|marktrat|ortschaftsrat|ortsrat|ortsbeirat|beirat\b|bezirksrat|kreistag|gemeindevertret|stadtverordnet|stadtvertretung|ausschuss|ausschuess|\brat der (?:stadt|gemeinde|verbandsgemeinde|samtgemeinde)|ratssitzung|gemeindeversammlung/;
 /** Links whose score reaches this count as documents of meetings. */
 export const SESSION_THRESHOLD=3;
 /** How much a link looks like a document of a meeting: -100 for the non-public part, below 0 for noise. */
 export function sessionScore({url,label}={}){
- const t=norm(`${label??''} ${Object.values(pathOf(url)).join(' ')}`);
- if(NONPUBLIC.test(t))return -100;
+ const t=norm(`${decode(label??'')} ${Object.values(pathOf(url)).join(' ')}`);
+ if(NONPUBLIC.test(t)||NONPUBLIC.test(norm(latinUmlauts(url))))return -100;
  const sitting=/sitzung/.test(t),body=BODY.test(t);
  let n=sitting&&body?3:sitting||body?1:0;
  if(/tagesordnung/.test(t))n+=3;
@@ -161,7 +169,7 @@ const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const elements=(block,name)=>[...String(block).matchAll(new RegExp(`<${esc(name)}(?=[\\s>/])([^>]*?)(?:/>|>([\\s\\S]*?)</${esc(name)}\\s*>)`,'gi'))].map(m=>({attrs:m[1]??'',body:m[2]??''}));
 const element=(block,name)=>elements(block,name)[0]??null;
 // CDATA is taken as written; everything else is entity-decoded once, which turns escaped HTML into HTML.
-const xmlText=body=>{const s=String(body??'');let out='',last=0;for(const m of s.matchAll(/<!\[CDATA\[([\s\S]*?)\]\]>/g)){out+=decode(s.slice(last,m.index))+m[1];last=m.index+m[0].length;}return (out+decode(s.slice(last))).trim();};
+const xmlText=body=>{const s=String(body??'');let out='',last=0;for(const m of s.matchAll(/<!\[CDATA\[([\s\S]*?)\]\]>/g)){out+=decodeStep(s.slice(last,m.index))+m[1];last=m.index+m[0].length;}return (out+decodeStep(s.slice(last))).trim();};
 const firstText=(block,names)=>{for(const n of names){const e=element(block,n);const v=e&&xmlText(e.body);if(v)return v;}return '';};
 /** Entries of an RSS 2.0 or Atom feed: [{title,url,date,html}]. */
 export function parseFeed(xml,base){
