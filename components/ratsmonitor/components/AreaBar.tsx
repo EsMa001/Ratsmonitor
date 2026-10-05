@@ -5,11 +5,24 @@ import { useData } from "../state/data";
 import { useSearch, useSearchResults } from "../state/search";
 import { IconPin } from "./icons";
 
-/* Regler quadratisch skaliert: feine Schritte im Nahbereich, bis 500 km am Ende */
-const kmFromPos = (p: number) => Math.round(500 * Math.pow(p / 1000, 2));
-const posFromKm = (km: number) => Math.round(Math.sqrt(km / 500) * 1000);
+/* Regler quadratisch skaliert: feine Schritte im Nahbereich, bis 500 km am Ende (Handy: 200 km) */
+const kmFromPos = (p: number, max = 500) => Math.round(max * Math.pow(p / 1000, 2));
+const posFromKm = (km: number, max = 500) => Math.min(1000, Math.round(Math.sqrt(km / max) * 1000));
 
 /** Gewähltes Gebiet in einer Zeile: Umfang (nur/inklusive) und Umkreis; 0 km = nur das Gebiet selbst */
+/** Handybreite (wie Tailwind max-sm) */
+function usePhone() {
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const on = () => setPhone(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return phone;
+}
+
 export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
   const { geo } = useData();
   const search = useSearch();
@@ -17,10 +30,16 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
   const km = state.radius?.km ?? 0;
   const { total, kommunenInRadius, loading } = useSearchResults();
   /* Reglerposition lokal halten: kleine Schritte ändern den gerundeten km-Wert nicht sofort */
-  const [pos, setPos] = useState(() => posFromKm(km));
+  const maxKm = usePhone() ? 200 : 500;
+  const [pos, setPos] = useState(() => posFromKm(km, maxKm));
   useEffect(() => {
-    setPos((p) => (kmFromPos(p) === km ? p : posFromKm(km)));
-  }, [km]);
+    setPos((p) => (kmFromPos(p, maxKm) === km ? p : posFromKm(km, maxKm)));
+  }, [km, maxKm]);
+  /* Handy: ein größerer, anderswo gewählter Umkreis wird auf 200 km begrenzt */
+  useEffect(() => {
+    if (km > maxKm) search.setRadiusKm(maxKm);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [km, maxKm]);
   /* Nach dem Loslassen den ganzen Kreis auf der Karte zeigen */
   const fit = () => {
     const r = search.state.radius;
@@ -71,7 +90,7 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
             onChange={(e) => {
               const p = +e.target.value;
               setPos(p);
-              search.setRadiusKm(kmFromPos(p));
+              search.setRadiusKm(kmFromPos(p, maxKm));
             }}
             onPointerUp={fit}
             onKeyUp={fit}

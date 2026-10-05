@@ -298,7 +298,9 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
 
   let pickIndex = -1;
   return (
-    <div className={`relative z-[4] min-w-0 ${glass ? "rm-glass rounded-full" : ""}`}>
+    <div className="relative z-[4] min-w-0">
+      {/* Glas nur um das Feld: die Vorschlagsliste liegt daneben, damit ihre eigene Unschärfe die Karte dahinter sieht (verschachtelt wäre sie flach) */}
+      <div className={`relative ${glass ? "rm-glass rounded-full" : ""}`}>
       <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
       <label htmlFor="q" className="sr-only">
         Beschlüsse und Artikel durchsuchen
@@ -370,6 +372,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           <IconX />
         </button>
       ) : null}
+      </div>
       {showList && (
         <div
           id="search-assist"
@@ -377,7 +380,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           aria-label="Erkannte Orte und Vorschläge"
           onMouseDown={(e) => e.preventDefault()}
           style={{ maxHeight: listMax ?? 380 }}
-          className={`popover scroll-thin absolute left-0 right-0 z-[1200] min-w-[280px] overflow-y-auto p-1.5 ${listUp ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}
+          className={`popover scroll-thin absolute left-0 right-0 z-[1200] min-w-[280px] overflow-y-auto p-1.5 ${glass ? "rm-glass rm-glass-pop !rounded-2xl" : ""} ${listUp ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}
         >
           {rows.map((r, i) => {
             if (r.kind === "head")

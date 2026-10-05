@@ -3,6 +3,7 @@ import { MapEngine, type MapStyle } from "../../lib/geo/mapEngine";
 import { hasFilters, hasScope } from "../../lib/savedSearch";
 import { useData } from "../../state/data";
 import { useSearch, useSearchResults } from "../../state/search";
+import { useFiltersOpen } from "../../lib/filtersOpen";
 import { SearchOverlay } from "../SearchOverlay";
 import { ActiveFilters } from "../ActiveFilters";
 import { IconCenter, IconMinus, IconPlus, IconReset } from "../icons";
@@ -19,6 +20,8 @@ function hitLevel(c: number, t: [number, number], graded: boolean) {
  *  Ziehen und Zoomen frei, Trefferzahlen unter den Gemeindenamen, rechts Zoom, Zentrieren und Neu laden
  *  (Neu laden setzt alle Filter zurück und beendet den Kartenmodus). */
 export function MapPanel({ active }: { active: boolean }) {
+  /* Offene Filter liegen über den Karten-Knöpfen (Darstellung, Zoom), nicht dahinter */
+  const filtersOpen = useFiltersOpen();
   const { geo, geoError } = useData();
   const search = useSearch();
   const { state, mapRef } = search;
@@ -258,7 +261,7 @@ export function MapPanel({ active }: { active: boolean }) {
       {/* Suchleiste mittig, im Kartenmodus und auf dem Handy am unteren Rand (Filter-Chips dann darüber); dazu die aktiven Filter und, wenn geöffnet, die Filter selbst (alles Milchglas) */}
       <div
         ref={overlayRef}
-        className={`pointer-events-none absolute inset-x-0 z-[6] flex items-center gap-2 px-4 transition-[top] duration-500 ease-in-out motion-reduce:transition-none ${low ? "flex-col-reverse" : "flex-col"}`}
+        className={`pointer-events-none absolute inset-x-0 ${filtersOpen ? "z-[8]" : "z-[6]"} flex items-center gap-2 px-4 transition-[top] duration-500 ease-in-out motion-reduce:transition-none ${low ? "flex-col-reverse" : "flex-col"}`}
         style={{ top: low ? mapH - 20 - barH : mapH / 2 - 22 }}
       >
         <SearchOverlay listMax={below} listUp={low} />

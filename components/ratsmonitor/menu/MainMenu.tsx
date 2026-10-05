@@ -19,6 +19,9 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
 
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */
+/** Abstand des Menüfensters zur Kopfzeile (etwa wie der seitliche Rand) */
+const MENU_GAP = 10;
+
 export function MainMenu() {
   /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
   const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases">(false);
@@ -87,7 +90,7 @@ export function MainMenu() {
     if (open === which) return close();
     const btn = el?.getBoundingClientRect();
     const head = btnRef.current?.closest("header")?.getBoundingClientRect();
-    setPos({ top: Math.max(0, Math.round(head?.bottom ?? 60)), left: Math.max(8, Math.round(btn?.left ?? 8)) });
+    setPos({ top: Math.max(0, Math.round((head?.bottom ?? 52) + MENU_GAP)), left: Math.max(8, Math.round(btn?.left ?? 8)) });
     setOpen(which);
   };
   const show = (g: string) => (open === "all" ? openGroup === g : open === g);

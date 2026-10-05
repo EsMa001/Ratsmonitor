@@ -678,7 +678,7 @@ wordmark__dot design-styles.css:61
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (62, ⚠1): AccountMenu
 - ActiveFilters.tsx (116): ActiveFilters
-- AreaBar.tsx (91, ⚠1): AreaBar
+- AreaBar.tsx (110, ⚠1): AreaBar
 - Brand.tsx (236): Brand
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - DateRangeFilter.tsx (71): DateRangeFilter
@@ -694,7 +694,7 @@ wordmark__dot design-styles.css:61
 - PlanCards.tsx (116): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
-- SearchBox.tsx (481): SearchBox
+- SearchBox.tsx (484): SearchBox
 - SearchFilterPanel.tsx (82): SearchFilterPanel
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (39): ShareButton
@@ -702,7 +702,7 @@ wordmark__dot design-styles.css:61
 - icons.tsx (229): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (299, ⚠2): MapPanel
+- MapPanel.tsx (302, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (178, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
@@ -753,7 +753,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (183): MainMenu
+- MainMenu.tsx (186): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (116, ⚠4): DetailPage
