@@ -199,6 +199,14 @@ export const HOSTED=[
  // far are in Brandenburg, Mecklenburg-Vorpommern, Sachsen, Sachsen-Anhalt and Thüringen (one entry per Land, so that a
  // name only has to be unique in its Land). marker: what shows the system on the page (default: SessionNet, ALLRIS).
  ...['12','13','14','15','16'].map(land=>({name:'KOMFA',land,hosts:s=>[`ris-${s}.komfa.de`],path:'/index.php?module=komfaris&action=main',wildcard:true,marker:/module=komfaris/})),
+ // komuna (KIC app, 291 of 293 known systems in Bavaria): one path per system on one host (ris.komuna.net/<name>/); a
+ // name without a system is redirected to a maintenance page, so redirects are not followed (manual). The app page names
+ // nobody: the municipalities its interface names (web/clients) must name the area (confirm, guess-hosted.mjs).
+ // Names of komuna systems besides the usual labels (of 202 known ones, 168 are such a label): a Verwaltungsgemeinschaft
+ // with "vg" in front (vgassling), a name with its addition in one word (aschauainn, neufahrninb).
+ {name:'komuna',land:'09',hosts:(s,area)=>[`ris.komuna.net/${s}`,...(area?.municipalityType==='Verwaltungsgemeinschaft'?[`ris.komuna.net/vg${s}`]:[])],
+  slugs:area=>{const whole=ascii(area.shortName||area.name).replace(/[^a-z0-9]+/g,'');return whole?[whole]:[];},
+  path:'/',wildcard:true,manual:true,marker:/<title>\s*Ratsinformationssystem\s*<\/title>/i,confirm:'kic-clients'},
 ];
 const ascii=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
 /** Host labels for a name: "Bayerisch Gmain" → bayerisch-gmain, bayerischgmain; additions and brackets left out. */

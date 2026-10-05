@@ -177,6 +177,21 @@ test('hosted platforms: digitalfabriX is asked on its info page; a page names it
  assert.equal(pageNamesArea(allris.replace('Goldberg-Mildenitz','Usedom-Nord'),goldberg),false,'another Amt on the same platform');
 });
 
+test('hosted platforms: KOMFA per Land and komuna by path, each recognised from its page, komuna with its own names',()=>{
+ const komfa=HOSTED.filter(p=>p.name==='KOMFA');
+ assert.deepEqual(komfa.map(p=>p.land),['12','13','14','15','16']);
+ assert.deepEqual(komfa[0].hosts('woldegk'),['ris-woldegk.komfa.de']);
+ assert.ok(komfa[0].marker.test(readFileSync(new URL('./fixtures/komfa/delitzsch-cal-2026-09.html',import.meta.url),'utf8')));
+ const komuna=HOSTED.find(p=>p.name==='komuna');
+ assert.equal(komuna.land,'09');assert.equal(komuna.manual,true,'a name without a system is redirected; the redirect is not followed');assert.equal(komuna.confirm,'kic-clients');
+ assert.ok(komuna.marker.test(readFileSync(new URL('./fixtures/kic/komuna-ainring-shell.html',import.meta.url),'utf8')));
+ // A Verwaltungsgemeinschaft is asked under "vg<name>" as well; a name with its addition also in one word.
+ const vg={name:'Verwaltungsgemeinschaft Aidenbach',shortName:'Aidenbach',municipalityType:'Verwaltungsgemeinschaft'},town={name:'Gemeinde Aschau a.Inn',shortName:'Aschau a.Inn',municipalityType:'Gemeinde'};
+ assert.deepEqual(komuna.hosts('aidenbach',vg),['ris.komuna.net/aidenbach','ris.komuna.net/vgaidenbach']);
+ assert.deepEqual(komuna.hosts('aschauainn',town),['ris.komuna.net/aschauainn']);
+ assert.deepEqual(komuna.slugs(town),['aschauainn']);assert.deepEqual(komuna.slugs({name:'Gemeinde Neufahrn i.NB',shortName:'Neufahrn i.NB'}),['neufahrninb']);
+});
+
 test('links of a page: in quotes or without them, with the title as text, frames as embedded; no script or mail links',()=>{
  // Nachgebildet: Rödermark schreibt den Link auf sein ALLRIS ohne Anführungszeichen.
  const html='<a href=https://www.roedermark.sitzung-online.de/public/ class=nav>Ratsinformation</a> <a href="/rathaus/politik" title="Gremien">Politik</a> <a href="javascript:void(0)">x</a> <a href="mailto:a@b.de">Mail</a> <iframe src="https://ris.beispiel.de/bi/"></iframe>';
