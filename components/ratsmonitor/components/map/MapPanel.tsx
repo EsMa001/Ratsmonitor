@@ -275,11 +275,12 @@ export function MapPanel({ active }: { active: boolean }) {
       </div>
 
       {explore && (
-        <div className={`rm-glass absolute z-[6] flex flex-col overflow-hidden rounded-full ${mobile ? "right-[21px]" : "right-4"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS + PHONE_LAYERS_H + PHONE_GAP } : { top: 16 + topShift }}>
-          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctlSm}><IconPlus size={16} /></button>
-          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctlSm}><IconMinus size={16} /></button>
-          <button type="button" title="Auf Treffer zentrieren" aria-label="Auf Treffer zentrieren" onClick={() => center(true)} className={ctlSm}><IconCenter size={16} /></button>
-          <button type="button" title="Karte neu laden" aria-label="Karte neu laden" onClick={refresh} className={ctlSm}><IconReset size={16} /></button>
+        <div className={`rm-glass absolute z-[6] flex flex-col overflow-hidden rounded-full ${mobile ? "right-[17px]" : "right-4"}`} style={mobile ? { bottom: PHONE_STACK_LAYERS + PHONE_LAYERS_H + PHONE_GAP } : { top: 16 + topShift }}>
+          {/* Handy: kein Plus/Minus, gezoomt wird mit zwei Fingern; die zwei übrigen Knöpfe so breit wie die Knöpfe daneben */}
+          {!mobile && <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctlSm}><IconPlus size={16} /></button>}
+          {!mobile && <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctlSm}><IconMinus size={16} /></button>}
+          <button type="button" title="Auf Treffer zentrieren" aria-label="Auf Treffer zentrieren" onClick={() => center(true)} className={mobile ? ctl : ctlSm}><IconCenter size={mobile ? 18 : 16} /></button>
+          <button type="button" title="Karte neu laden" aria-label="Karte neu laden" onClick={refresh} className={mobile ? ctl : ctlSm}><IconReset size={mobile ? 18 : 16} /></button>
         </div>
       )}
       {/* Darstellung oben links (rückt unter der Kopfzeile mit), klappt nach unten auf; Handy: rechts direkt über dem Filter-Knopf der Suchleiste, darüber die Zoom-Leiste (alle drei auf einer Achse), klappt nach oben auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
