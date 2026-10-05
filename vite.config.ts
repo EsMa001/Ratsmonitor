@@ -58,7 +58,13 @@ export default defineConfig(async () => {
       // weitergeleitet wird: Endlosschleife "can't access property 'send' of undefined".
       forwardConsole: false,
       ...(managedLinux ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
-      ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
+      // Arbeitsdateien der Quellensuche (tmp/), der erzeugte Lückenatlas (dashboard/) und Berichte (requirements/)
+      // sind kein Code. Ihre Änderungen lösten Neuladevorgänge aus, nach denen der Worker hängen blieb
+      // ("Network connection lost", /admin antwortete erst nach einer Minute oder mit 500).
+      watch: {
+        ignored: ["**/tmp/**", "**/dashboard/**", "**/requirements/**"],
+        ...(isCodexSeatbeltSandbox ? { useFsEvents: false, usePolling: true } : {}),
+      },
     },
     plugins: [
       vinext(),

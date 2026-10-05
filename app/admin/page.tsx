@@ -2,12 +2,10 @@ import {Button} from '@/components/ui/button';
 import {env} from 'cloudflare:workers';
 import {getChatGPTUser,chatGPTSignInPath,chatGPTSignOutPath} from '@/app/chatgpt-auth';
 import {adminAccess} from '@/server/integrations/admin-access.mjs';
-import {getAdminDashboard} from '@/server/repositories/admin';
 import {AdminActivation} from '@/components/admin-activation';
 import {AdminBar} from '@/components/admin-chrome';
 import {BRAND_NAME,DEFAULT_BRAND} from '@/components/ratsmonitor/lib/brands';
-import {AdminProcessing} from '@/components/admin-processing';
-import {AdminDashboardView} from '@/components/admin-dashboard';
+import {AdminLoader} from '@/components/admin-loader';
 import {AdminForecast} from '@/components/admin-forecast';
 import {AdminKeywords} from '@/components/admin-keywords';
 import {validRegion,REGIONS} from '@/shared/regions';
@@ -27,7 +25,7 @@ async function AdminContent({page,selection}:{page:number;selection:string[]}){
   if(access.kind!=='owner')return frame(<><h1>Kein Admin-Zugriff</h1><p>Dieses ChatGPT-Konto ist nicht für die Administration freigeschaltet.</p><a className="text-link" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln</a></>);
   if(page===4)return <AdminKeywords displayName={user.displayName} signOutPath={chatGPTSignOutPath('/')}/>;
   if(page===3)return <AdminForecast displayName={user.displayName} signOutPath={chatGPTSignOutPath('/')}/>;
-  if(page===2)return <AdminDashboardView initial={await getAdminDashboard()} displayName={user.displayName} signOutPath={chatGPTSignOutPath('/')}/>;
-  return <AdminProcessing initial={await getAdminDashboard({review:false})} displayName={user.displayName} signOutPath={chatGPTSignOutPath('/')} initialSelection={selection}/>;
+  // Pages 1 and 2: the browser loads the dashboard (several MB) itself, see components/admin-loader.tsx.
+  return <AdminLoader page={page===2?2:1} displayName={user.displayName} signOutPath={chatGPTSignOutPath('/')} initialSelection={selection}/>;
  }catch{return frame(<><h1>Administration nicht erreichbar</h1><p role="alert">Der Datenbankstand konnte gerade nicht geladen werden. Es werden keine Ersatzzahlen angezeigt.</p><Button asChild className="admin-gate-action"><a href="/admin">Erneut versuchen</a></Button></>);}
 }
