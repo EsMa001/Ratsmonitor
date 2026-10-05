@@ -18,7 +18,7 @@ Mit Stufe 0 des Fahrplans (Abschnitt 4, etwa zwei Arbeitstage) sind erreichbar: 
 
 | Maßnahme | Umsetzung | Gemessen (lokal) |
 |---|---|---|
-| A1 Zeitstempel erzeugen keine Version mehr | `stableJson` in `shared/article-record.mjs`, genutzt in `server/services/sync.ts` und `apply-backfill.mjs` | Altbestand: 145.958 von 268.853 Versionen (54 %, 1,05 GB) sind reine Zeitstempel-Kopien; `scripts/prune-versions.mjs` zählt sie und löscht sie mit `--apply` (noch nicht ausgeführt) |
+| A1 Zeitstempel erzeugen keine Version mehr | `stableJson` in `shared/article-record.mjs`, genutzt in `server/services/sync.ts` und `apply-backfill.mjs` | Altbestand: 145.958 von 268.853 Versionen (54 %, 1,05 GB) sind reine Zeitstempel-Kopien; `scripts/prune-versions.mjs --apply --vacuum` hat sie lokal gelöscht: Datenbank 9,17 → 7,87 GB (Prüfung und Zeilenzahlen bestanden); in der Produktion steht das Bereinigen noch aus |
 | B1 Ergebnisseite ohne Einschlussliste | `regionCondition` in `monitor-search.mjs`: bei großer Auswahl Ausschluss der übrigen Gebiete | erste Seite 730 → 6 ms (SQL) |
 | B3/B4 Gesamtzahl und Facetten aus einer Gruppierung, abdeckender Index | `monitor-search.mjs`, `drizzle/0010_search_facets_index.sql` (ersetzt `idx_search_cards_region`) | vier Läufe (zusammen rund 4 s) → 156 ms |
 | B2 Abdeckung aus der Suchantwort genommen | neuer Endpunkt `/api/search/coverage?level=…`, im Browser je Ebene einmal geladen | Suchantwort 484 → 86 KB (ohne Begriff), 470 → 30–75 KB (mit Begriff) |
