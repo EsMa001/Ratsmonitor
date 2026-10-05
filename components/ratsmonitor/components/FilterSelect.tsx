@@ -25,11 +25,28 @@ interface Props {
 export function FilterSelect({ id, label, allLabel, value, options, counts, onChange, size = "md", className = "", highlight = true }: Props) {
   const sm = size === "sm";
   const [open, setOpen] = useState(false);
+  /* Im Filterfenster auf der Karte: die Liste bleibt innerhalb der Karte (nach unten, sonst nach oben) und scrollt, wenn sie nicht ganz hineinpasst */
+  const [place, setPlace] = useState<{ side: "bottom" | "top"; maxH?: number }>({ side: "bottom" });
+  const measure = () => {
+    const t = document.getElementById(id);
+    const map = t?.closest("#filter-body")?.closest("section");
+    if (!t || !map) return setPlace({ side: "bottom" });
+    const tr = t.getBoundingClientRect();
+    const mr = map.getBoundingClientRect();
+    const below = mr.bottom - tr.bottom - 12;
+    const above = tr.top - mr.top - 12;
+    if (below >= 160 || below >= above) setPlace({ side: "bottom", maxH: Math.max(96, Math.floor(below)) });
+    else setPlace({ side: "top", maxH: Math.max(96, Math.floor(above)) });
+  };
+  const toggle = (o: boolean) => {
+    if (o) measure();
+    setOpen(o);
+  };
   const all = allLabel ? [{ value: "", label: allLabel }, ...options] : options;
   const current = all.find((o) => o.value === value)?.label ?? allLabel;
   return (
     <div className={`relative ${className}`}>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={toggle}>
         <PopoverTrigger asChild>
           <button
             id={id}
@@ -39,7 +56,7 @@ export function FilterSelect({ id, label, allLabel, value, options, counts, onCh
             onKeyDown={(e) => {
               if (e.key === "ArrowDown" || e.key === "ArrowUp") {
                 e.preventDefault();
-                setOpen(true);
+                toggle(true);
               }
             }}
             className={`select-base relative flex w-full items-center text-left ${sm ? "!h-9 max-sm:!h-11 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${value && highlight ? "select-active" : ""}`}
@@ -50,13 +67,15 @@ export function FilterSelect({ id, label, allLabel, value, options, counts, onCh
         </PopoverTrigger>
         <PopoverContent
           align="start"
+          side={place.side}
+          style={place.maxH ? { maxHeight: place.maxH } : undefined}
           /* Tastatur: beim Öffnen steht der Fokus auf der aktuellen Auswahl */
           onOpenAutoFocus={(e) => {
             e.preventDefault();
             const el = e.currentTarget as HTMLElement;
             (el.querySelector<HTMLElement>('[aria-selected="true"]') ?? el.querySelector<HTMLElement>('[role="option"]'))?.focus();
           }}
-          className="max-h-[320px] w-[--radix-popover-trigger-width] min-w-[200px] overflow-y-auto rm-glass rm-glass-pop rounded-2xl p-1.5 text-slate-900">
+          className="max-h-[320px] w-[--radix-popover-trigger-width] min-w-[200px] overflow-y-auto overscroll-contain rm-glass rm-glass-pop rounded-2xl p-1.5 text-slate-900">
           <ul
             role="listbox"
             aria-label={label}
