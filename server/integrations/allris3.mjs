@@ -41,6 +41,8 @@ const closed=program=>`Programm ${program} ist auf dieser Installation nicht fre
  */
 export function refusedProgram(html){html=String(html||'');const named=html.length<2000&&html.match(/Zugriff verweigert \(Programm ([^)\s]+?)\.?\)/i)?.[1];return named?named.split('/').pop():null;}
 const folder=u=>new URL('./',u).href.toLowerCase();
+// Public folder next to the members' area: bi/ for ri/, <name>-bi/ for <name>-ri/ (also with "_").
+const publicFolder=href=>href.replace(/(\/|[-_])ri\/$/i,'$1bi/');
 /**
  * First calendar program among the links of a page (menu or month navigation); null if the page names none. With base,
  * only a program in that folder counts: pages inside a municipality's website may also link an older installation.
@@ -58,10 +60,12 @@ export function calendarProgram(html,base,page=base){
  * ALLRIS 3 behind an address. url: the linked page; html: its content as received.
  * Returns null if the page is not ALLRIS 3, otherwise {base, calendar}:
  * - base: folder of the ALLRIS programs, ending in "/". It is the folder of the page itself when the page is an ALLRIS
- *   program (si010_r.asp, allris.net.asp, …); for the members' login ri/logon.asp it is the public sibling folder bi/.
- *   For a page that is no program (a folder address, a frameset, a page of the municipality's website), it is the
- *   folder of the calendar or start page it links (else of the first ALLRIS program it links), on the same host only.
- *   Such a page counts without ALLRIS markers if it links a calendar program.
+ *   program (si010_r.asp, allris.net.asp, …). For a page that is no program (a folder address, a frameset, a page of the
+ *   municipality's website), it is the folder of the calendar or start page it links (else of the first ALLRIS program
+ *   it links), on the same host only. Such a page counts without ALLRIS markers if it links a calendar program.
+ *   The members' area is never the base: for the login (ri/logon.asp, <name>-ri/logon.asp of the ratsinfo-online
+ *   hosting) and for a folder address in it (ri/, <name>-ri/) it is the public sibling folder bi/ or <name>-bi/, as for
+ *   SessionNet (scripts/source-discovery/README.md, "Anmeldebereich").
  * - calendar: the calendar program (si010.asp, si010_e.asp, si010_j.asp or si010_r.asp) the page is or links in base,
  *   or null when the page names none, or when it is the refusal of a calendar program. collectAllris3 then reads
  *   <base>allris.net.asp once and takes the program from its menu.
@@ -70,9 +74,10 @@ export function detectAllris3(url,html=''){
  let page;try{page=new URL(url);}catch{return null;}
  html=String(html||'');
  const program=page.pathname.match(/\/((?:[a-z]{2}\d{3}(?:_[a-z])?|allris\.net|logon)\.asp)$/i)?.[1]||null,refused=refusedProgram(html);
- const linked=[...html.matchAll(/(?:href|action|src)=["']([^"']*?(?:[a-z]{2}\d{3}(?:_[a-z])?|allris\.net)\.asp)(?=[?#"'])/gi)].map(m=>{try{return new URL(decode(m[1]),page);}catch{return null;}}).filter(u=>u?.origin===page.origin);
+ // The login counts among the links of a folder address (a frame or link to logon.asp in ri/), never as its base.
+ const linked=[...html.matchAll(/(?:href|action|src)=["']([^"']*?(?:[a-z]{2}\d{3}(?:_[a-z])?|allris\.net|logon)\.asp)(?=[?#"'])/gi)].map(m=>{try{return new URL(decode(m[1]),page);}catch{return null;}}).filter(u=>u?.origin===page.origin);
  if(!(MARKER.test(html)||refused||!program&&linked.some(u=>CALENDAR.test(u.pathname.split('/').pop())))||!program&&!linked.length)return null;
- const base=program?new URL(/^logon\.asp$/i.test(program)&&/\/ri\/logon\.asp$/i.test(page.pathname)?'../bi/':'./',page).href:new URL('./',linked.find(u=>/\/(?:si010(?:_[a-z])?|allris\.net)\.asp$/i.test(u.pathname))||linked[0]).href;
+ const base=program?(/^logon\.asp$/i.test(program)?publicFolder(new URL('./',page).href):new URL('./',page).href):publicFolder(new URL('./',linked.find(u=>/\/(?:si010(?:_[a-z])?|allris\.net)\.asp$/i.test(u.pathname))||linked[0]).href);
  const own=program&&CALENDAR.test(program)&&!refused&&/calenderView|class=["']tl1["']/i.test(html)?program:null;
  return {base,calendar:own||calendarProgram(html,base,page.href)};
 }

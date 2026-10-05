@@ -1,0 +1,146 @@
+// Pure decisions of the link search (crawl.mjs) and of the check (verify.mjs): which links are no candidates, which
+// address a wrapper link carries, what is asked after a page failed, where the public part of a system lies, which
+// ALLRIS generation a page belongs to and whether an address names the area. Importing this file asks no network;
+// tests/source-discovery-rules.test.mjs checks it.
+import {CATALOG} from '../../shared/catalog.mjs';
+import {detectAllris3} from '../../server/integrations/allris3.mjs';
+import {nameParts,aliasInAddress,ALIASES} from './areas.mjs';
+
+// --- links that are no candidates ------------------------------------------------------------------------------------
+/** Links the link search never opens or keeps: files, mail, social media, read-aloud, sharing, app stores, directories. */
+export const CRAWL_SKIP=/\.(pdf|jpe?g|png|gif|svg|zip|docx?|xlsx?|ics|mp[34])(\?|$)|mailto:|facebook|instagram|youtube|twitter|linkedin|google\.|wikipedia|readspeaker\.com|whatsapp\.com|\/\/wa\.me\/|xing\.com|\/\/t\.me\/|total-lokal\.de|findcity\.de|buergerservice-portal\.de|heimat-info\.de|lifesizecloud|oksh\.de|\.social\/@|x\.com\/intent|twitter\.com\/(?:intent|share)|facebook\.com\/(?:share|sharer)|linkedin\.com\/(?:share|uas)|acrobat\.adobe\.com|atlas\.bayern\.de|\/\/epaper\.|apps\.apple\.com|apps\.microsoft\.com|play\.google\.com|www\.sitzungsdienst\.net|\/\/www\.ratsinfomanagement\.net|somacos\.de|cc-egov\.de|\/(impressum|datenschutz|kontakt|barrierefrei)/i;
+/** Links to read-aloud and sharing services, directories and vendor pages; they are no council systems (verify.mjs). */
+export const SERVICE=/total-lokal\.de|findcity\.de|buergerservice-portal\.de|heimat-info\.de|lifesizecloud|oksh\.de|\.social\/@|x\.com\/intent|twitter\.com\/(?:intent|share)|facebook\.com\/(?:share|sharer)|linkedin\.com\/(?:share|uas)|acrobat\.adobe\.com|atlas\.bayern\.de|\/\/epaper\.|apps\.apple\.com|apps\.microsoft\.com|play\.google\.com|www\.sitzungsdienst\.net|\/\/www\.ratsinfomanagement\.net|somacos\.de|cc-egov\.de|readspeaker\.com|api\.whatsapp\.com|\/\/wa\.me\/|xing\.com|\/\/t\.me\/|threads\.net|bsky\.app|pinterest\.|reddit\.com|tiktok\.com|mastodon/i;
+
+// --- wrapper links ---------------------------------------------------------------------------------------------------
+const registrable=host=>String(host||'').toLowerCase().replace(/\.$/,'').split('.').slice(-2).join('.');
+// Read-aloud (readspeaker: …&url=<page>) and sharing links (x.com/intent/tweet?url=…, xing …/share?url=…, Facebook's
+// sharer ?u=…) carry the address of a page of the website in their query.
+const WRAPPER=/(?:^|\.)(?:readspeaker\.com|x\.com|twitter\.com|xing\.com|facebook\.com|linkedin\.com)$/i;
+/**
+ * The address a read-aloud or sharing link carries, if it lies on the website of the area (same registrable domain as
+ * siteHost, the host of the website or of the page that linked it); null otherwise. The enclosed address is an ordinary
+ * candidate or page of the website (readspeaker on enzkreis.de reads …/Ratsinfosystem/); an address elsewhere is not
+ * proof of anything the area links.
+ */
+export function unwrapLink(url,siteHost){
+ let u,inner;try{u=new URL(url);}catch{return null;}
+ if(!siteHost||!WRAPPER.test(u.hostname))return null;
+ const carried=u.searchParams.get('url')||u.searchParams.get('u');if(!carried)return null;
+ try{inner=new URL(carried);}catch{return null;}
+ if(!/^https?:$/.test(inner.protocol)||inner.username||inner.password||WRAPPER.test(inner.hostname))return null;
+ if(registrable(inner.hostname)!==registrable(String(siteHost).replace(/^www\./i,'')))return null;
+ inner.hash='';return inner.href;
+}
+
+// --- after a page failed ---------------------------------------------------------------------------------------------
+// Folders and host names of SessionNet (README: ratsinfo., buergerinfo., sessionnet., session., sitzungsdienst.; komm.one
+// tenants <name>-sitzungsdienst.komm.one).
+const SESSIONNET_PATH=/\/sessionnet\/|\/bi\/|buergerinfo/i,SESSIONNET_HOST=/^(?:www\.)?(?:ratsinfo|buergerinfo|sessionnet|session|sitzungsdienst)\.|-sitzungsdienst\.|buergerinfo/i;
+// ALLRIS lives in /bi/ folders as well. Its hosts (sitzung-online.de) block a network after a few requests without a
+// session cookie, and a SessionNet entry page is never there: no search next to an ALLRIS address.
+const ALLRIS_ADDRESS=/sitzung-online\.de|ratsinfo-online\.(?:de|net)|allris|\/(?:[a-z]{2}\d{3}(?:_[a-z])?|allris\.net|logon)\.asp$/i;
+/** Hosts of More! Rubin (gremien.info, more-rubin1.de, KISA's zv-kisa.de). */
+export const RUBIN_HOST=/(?:^|\.)(?:gremien\.info|more-rubin1\.de|zv-kisa\.de)$/i;
+/**
+ * What the check asks after a candidate address did not answer with a page. page: {status, error, robots} as from
+ * page() in verify.mjs (status 0: time limit or network error; 3xx: redirect chain broken off).
+ * - nearby: look for the SessionNet entry page next to the address (findSessionNet), after 404, 0 or a broken redirect
+ *   chain of a SessionNet folder or host. A folder that moved or a start page that times out says nothing about the
+ *   system next to it.
+ * - root: the root of a More! Rubin host as a further candidate, after 404 or 0 of a deeper path (/users, an old
+ *   calendar month); the system itself answers at the root.
+ * Never after 401 or 403 or when robots.txt disallows the address or a redirect target: a refusal is not worked around
+ * (README, "Keine Umgehung"); only the official OParl address is asked then.
+ */
+export function followUpsAfterFailure(url,page={}){
+ const none={nearby:false,root:null};let u;try{u=new URL(url);}catch{return none;}
+ const {status,error,robots}=page;
+ if(robots==='verboten'||/robots/i.test(String(error||''))||status===401||status===403)return none;
+ const gone=status===404||status===0,broken=status>=300&&status<400;
+ const nearby=(gone||broken)&&!ALLRIS_ADDRESS.test(u.href)&&(SESSIONNET_PATH.test(u.pathname)||SESSIONNET_HOST.test(u.hostname));
+ const root=gone&&RUBIN_HOST.test(u.hostname)&&(u.pathname!=='/'||!!u.search)?u.origin+'/':null;
+ return {nearby,root};
+}
+
+// --- members' area and public part -----------------------------------------------------------------------------------
+/** An address of SessionNet that names the members' area (gi/, ri/, suelze_ri/, ratsinfo, sessionnetri). */
+export const MEMBERS_AREA=/(?:\/|[_-])(?:gi|ri)\/$|ratsinfo|sessionnetri/i;
+/**
+ * The public part of a system lies next to its members' area under another name: bi/ for gi/ or ri/ (also as the suffix
+ * of a tenant folder, suelze_ri/ → suelze_bi/), buergerinfo for ratsinfo (folder or host name), sessionnetbi for
+ * sessionnetri. Addresses to ask, the given base last among those of its host.
+ */
+export function publicSiblings(base){
+ const u=new URL(base),paths=[u.pathname.replace(/\/(gi|ri)\/$/i,'/bi/'),u.pathname.replace(/([_-])(gi|ri)\/$/i,'$1bi/'),u.pathname.replace(/ratsinfo\/$/i,'buergerinfo/'),u.pathname.replace(/sessionnetri\/$/i,'sessionnetbi/'),u.pathname],hosts=[u.hostname,u.hostname.replace(/^ratsinfo(?=[.-])/i,'buergerinfo')];
+ return [...new Set(hosts.flatMap(host=>paths.map(path=>'https://'+host+path)))];
+}
+
+// --- ALLRIS ----------------------------------------------------------------------------------------------------------
+/** Absolute http(s) addresses of the links, frames and forms of a page. */
+export const hrefs=(html,base)=>[...String(html||'').matchAll(/(?:href|src|action)\s*=\s*["']([^"'#]+)/gi)].map(m=>{try{const u=new URL(m[1].replace(/&amp;/g,'&'),base);return /^https?:$/.test(u.protocol)?u.href:null;}catch{return null;}}).filter(Boolean);
+const ALLRIS4_PAGE=/^(https?:\/\/[^?#]*\/)(?:si010|si018|to010|vo020|vo040|gr010|gr020|kp040|tr010)(?:[?#]|$)/;
+const ALLRIS3_PAGE=/\/(?:[a-z]{2}\d{3}(?:_[a-z])?|allris\.net|logon)\.asp$/i;
+// Links of a page on its own host: folders of ALLRIS 4 programs, and whether ALLRIS 3 programs (.asp) are linked.
+function allrisLinks(url,html){
+ const host=new URL(url).hostname,own=hrefs(html,url).filter(h=>new URL(h).hostname===host);
+ return {folders:own.map(h=>h.match(ALLRIS4_PAGE)?.[1]).filter(Boolean),asp:own.some(h=>ALLRIS3_PAGE.test(new URL(h).pathname))};
+}
+/**
+ * ALLRIS 4 serves its public pages from one folder, usually /public/. A page of the system names that folder, a page of
+ * the official website links pages in it (same host, e.g. /allris/si010); a link to the host alone is answered from
+ * /public/. Addresses ending in .asp belong to the older ALLRIS 3, and so does a page that links only .asp programs:
+ * /public/ is then not asked (ratsinfo-online.net/<name>-bi/ answered it with 404).
+ */
+export function allrisBases(url,html){
+ const u=new URL(url);if(/\.asp$/i.test(u.pathname))return [];
+ const wicket=/wicket/i.test(html||''),{folders,asp}=allrisLinks(url,html);
+ return [...new Set([wicket?u.origin+u.pathname.replace(/[^/]*$/,''):null,...folders,asp&&!wicket&&!folders.length?null:u.origin+'/public/'].filter(Boolean))].map(b=>b.replace(/^http:/,'https:')).slice(0,3);
+}
+/**
+ * 3 if a page belongs to ALLRIS 3 (an .asp address, a page detectAllris3 recognises, or a page that links only .asp
+ * programs), else 4. Wicket pages and links to ALLRIS 4 programs decide for 4. The check then skips the ALLRIS 4 reader
+ * and leaves the page to the ALLRIS 3 reader (readers.mjs), which saves a session and the 404 of the next month.
+ */
+export function allrisGeneration(url,html=''){
+ let u;try{u=new URL(url);}catch{return 4;}
+ if(/\.asp$/i.test(u.pathname))return 3;
+ const {folders,asp}=allrisLinks(url,html);
+ if(/wicket/i.test(html)||folders.length)return 4;
+ return detectAllris3(url,html)||asp?3:4;
+}
+
+// --- does the system name the area? ----------------------------------------------------------------------------------
+const norm=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').normalize('NFKD').replace(/[^a-z0-9]/g,'');
+const normPlain=s=>String(s).toLowerCase().replace(/ß/g,'ss').normalize('NFKD').replace(/[^a-z0-9]/g,'');
+/** Title of a page, at most 160 characters. */
+export const title=html=>(String(html||'').match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]||'').replace(/\s+/g,' ').trim().slice(0,160);
+const text=html=>String(html||'').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&uuml;/g,'ü').replace(/&auml;/g,'ä').replace(/&ouml;/g,'ö').replace(/&szlig;/g,'ß').replace(/&#(\d+);/g,(m,n)=>String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi,(m,n)=>String.fromCodePoint(parseInt(n,16))).replace(/\s+/g,' ');
+// Names of municipal councils; they differ between the states (Stadtverordnetenversammlung, Gemeindevertretung, Amtsausschuss …).
+const COUNCIL=/\b(stadtrat|gemeinderat|marktgemeinderat|samtgemeinderat|verbandsgemeinderat|stadtverordnetenversammlung|gemeindevertretung|stadtvertretung|amtsausschuss|gemeinschaftsversammlung|rat der (stadt|gemeinde|samtgemeinde|verbandsgemeinde))\b/i;
+/**
+ * Whether the linked system names the area: {ok, by} or {ok:false, why}. A city page linking to its district's system is
+ * not a source for the city. aliases: short names by area id (identity-aliases.json); areas: the list that decides
+ * whether a part of a hyphenated name names another area.
+ */
+export function identity(region,url,html,{aliases=ALIASES,areas=CATALOG}={}){
+ // "Hennef (Sieg)" and "Mülheim an der Ruhr" appear as "hennef" and "muelheim" in addresses.
+ // "Dillingen a.d.Donau", "Neumarkt i.d.OPf." and "Bad Homburg v.d.Höhe" appear without their addition as well.
+ // "Neukirchen/Erzgeb." and "Lahr/Schwarzwald" without the part after the slash.
+ const plain=n=>n.replace(/\(.*?\)/g,'').replace(/\s+(an der|am|im|in der|in|bei|vor der|ob der|unter|über|auf der|auf dem)\s+.*$/i,'').replace(/\s+[a-zäöü]{1,3}\.\s?(?:[a-zäöü]{1,3}\.\s?)?\S.*$/i,'').replace(/\/.*$/,'').trim();
+ // A municipal association's system is often named after its seat, one of its members (ris-crimmitschau for the
+ // Verwaltungsgemeinschaft Crimmitschau-Dennheritz); the members are part of the area.
+ const names=[region.shortName,region.name.replace(/^(Stadt|Gemeinde|Samtgemeinde|Verbandsgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband|Erfüllende Gemeinde|Amt|Kreis|Städteregion|Rhein-Kreis|Landkreis|Regionalverband|Region)\s+/,''),...(Array.isArray(region.members)?region.members.map(m=>m.name):[])].filter(Boolean).flatMap(n=>[n,plain(n)]);
+ // "Schladen-Werla" also by "schladen": each part of six letters or more that is not the name of another area.
+ const slugs=[...new Set([...names.flatMap(n=>[norm(n),normPlain(n)]),...names.flatMap(n=>nameParts(n,region,areas))])].filter(s=>s.length>=3);
+ const u=new URL(url),hay=norm(u.hostname+u.pathname),hayPlain=normPlain(u.hostname+u.pathname);
+ const named=slugs.some(s=>hay.includes(s)||hayPlain.includes(s)),alias=named?null:aliasInAddress(region,url,aliases),inUrl=named||!!alias;
+ const body=norm(title(html)+' '+text(html).slice(0,6000));const inText=slugs.some(s=>body.includes(s));
+ const t=title(html)+' '+text(html).slice(0,1500);
+ const kreisPage=/\b(kreistag|kreisverwaltung|kreisausschuss|landrat)\b/i.test(t)||/kreis/i.test(u.hostname.split('.').slice(0,-1).join('.'));
+ if(region.kind==='city'&&kreisPage&&!COUNCIL.test(t)&&!inUrl)return {ok:false,why:'Seite gehört erkennbar zu einem Kreis'};
+ if(region.kind==='district'&&!kreisPage&&!/kreis|region/i.test(t+url))return {ok:false,why:'Kreisbezug nicht erkennbar'};
+ // A district council system linked from the district's own website needs no further name match (e.g. "obk").
+ if(region.kind==='district'&&/\b(kreistag|kreistagsinformation\w*|kreisausschuss)\b/i.test(t))return {ok:true,by:'Kreistagsseite, von der offiziellen Website verlinkt'};
+ return inUrl||inText?{ok:true,by:named?'Adresse':alias?'Adresse (Alias)':'Seitentext'}:{ok:false,why:'Gebietsname weder in Adresse noch im Seitentext'};
+}

@@ -15,6 +15,7 @@ import {provider,PER_PROVIDER} from '../server/integrations/pipeline-jobs.mjs';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {searchMonitor} from '../server/integrations/monitor-search.mjs';
 import {radiusParam,areaKeys} from '../shared/radius-areas.mjs';
+import {sourceAddress} from '../scripts/source-discovery/reasons.mjs';
 
 const catalog=CATALOG.filter(r=>r.id.startsWith('de-'));
 test('the other 14 states: districts, municipalities and associations with unique keys, parents, geometry and population',()=>{
@@ -104,7 +105,8 @@ test('every source of the other states belongs to exactly one catalog area, is v
   /* Berlin und Hamburg: Die Bezirke führen die Vertretungen; ihre Systeme gehören nicht der ganzen Stadt */
   assert.ok(!['11000000','02000000'].includes(r.ags),s.id);
   assert.ok(['oparl','scraper','official-api'].includes(s.method),s.id);assert.match(s.verifiedAt,/^\d{4}-\d{2}-\d{2}$/);
-  const key=(s.system||s.base)+'|'+(s.body||'');assert.ok(!addresses.has(key),'address used twice: '+key);addresses.add(key);
+  /* Wie build.mjs: Einträge eines geteilten Systems mit verschiedenen festen Körperschaften (bodies) sind verschiedene Adressen */
+  const key=sourceAddress(s);assert.ok(!addresses.has(key),'address used twice: '+key);addresses.add(key);
   assert.ok(hostOf(s) in recorded.hosts,'node scripts/source-discovery/servers.mjs ausführen: '+hostOf(s));
  }
  /* Keine Quelle der übrigen Länder steht zugleich in den Dateien von NRW oder Niedersachsen */

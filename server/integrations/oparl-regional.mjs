@@ -6,10 +6,30 @@ import {publicAgenda} from './public-agenda.mjs';
 import {clean,hash,statusOf,sourceSummary,category,parallel} from './oparl.mjs';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 const FILTER_MARGIN_DAYS=31,FILTER_PATIENCE_MS=30000;
+// Catalog field organizations {include:[…],exclude:[…]}: one OParl body can hold several councils (Bremen: Landtag and
+// Stadtbürgerschaft). A pattern is part of an organization's name or short name (case and umlaut spelling ignored) or
+// its full address. A meeting is read only if one of its organizations is included, none is excluded and all are known.
+const foldName=value=>clean(value).normalize('NFC').toLocaleLowerCase('de-DE').replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+const sameId=(a,b)=>String(a).replace(/^http:/,'https:')===String(b).replace(/^http:/,'https:');
+/** Returns organizations=>'kept'|'filtered'|'mixed'|'unassigned' for [{id,name,shortName}] of one meeting. */
+export function organizationFilter(spec){
+ if(!spec||typeof spec!=='object'||Array.isArray(spec))throw Error('Gremienfilter: Angabe muss ein Objekt mit include/exclude sein');
+ const patterns=key=>{const v=spec[key];if(v===undefined)return [];if(!Array.isArray(v)||v.some(p=>typeof p!=='string'||!p.trim()))throw Error('Gremienfilter: '+key+' muss eine Liste von Namensmustern sein');return v.map(p=>p.trim());};
+ const include=patterns('include'),exclude=patterns('exclude');if(!include.length&&!exclude.length)throw Error('Gremienfilter ohne Namensmuster');
+ const hits=(list,o)=>list.some(p=>/^https?:\/\//i.test(p)?Boolean(o.id)&&sameId(o.id,p):[o.name,o.shortName].some(n=>n&&foldName(n).includes(foldName(p))));
+ return organizations=>{
+  // Fail closed: without a committee, or with one that is neither named nor addressed by a pattern, nothing is read.
+  if(!organizations.length||organizations.some(o=>!clean(o.name)&&!clean(o.shortName)&&!hits([...include,...exclude],o)))return 'unassigned';
+  const out=organizations.filter(o=>hits(exclude,o)),own=organizations.filter(o=>!hits(exclude,o)&&(!include.length||hits(include,o)));
+  // A joint meeting with an excluded committee (staatliche and städtische Deputation) is not read either.
+  return !own.length?'filtered':out.length?'mixed':'kept';
+ };
+}
 /** A provider-configured, portable collector. No Cloudflare or app dependencies. */
 export async function collectRegionalOparl(source,{now=new Date(),getJson=null,maxRequests=350,maxPages=Math.min(24,source.maxPages||6),maxDurationMs=300000,onProgress=()=>{},window:lookback,trace=null,marks}={}){
  // The page limits were set for a year of meetings; a longer period gets as many for each of its years.
  const years=windowYears(lookback),pageLimit=maxPages*years,sortedLimit=Math.max(maxPages,24)*years;
+ const filter=source.organizations?organizationFilter(source.organizations):null,skipped={filtered:0,mixed:0,unassigned:0};
  const since=windowStart(now,lookback);const from=since.toISOString().slice(0,10),issues=[];let requests=0;const cache=new Map();const base=new URL(source.system);const deadline=Date.now()+maxDurationMs;let strategy='plain';
  const allowed=value=>{const u=new URL(value);if(source.upgradeHttpLinks&&u.protocol==='http:'&&u.hostname===base.hostname&&!u.port&&!base.port)u.protocol='https:';if(u.protocol!=='https:'||u.origin!==base.origin||u.username||u.password)throw Error('Quelle außerhalb der freigegebenen OParl-Adresse');return u.href;};
  const load=async(url,patience)=>{if(getJson)return getJson(url);const r=await fetchNoRedirect(url,{signal:AbortSignal.timeout(Math.max(1,Math.min(patience,deadline-Date.now()))),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok)throw Error('OParl HTTP '+r.status);const raw=await r.text();if(raw.length>Math.min(7e6,Math.max(5e6,source.maxResponseChars||5e6)))throw Error('Antwort überschreitet Größenlimit');return JSON.parse(raw);};
@@ -125,11 +145,16 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
   // items without their papers.
   if(spent||Date.now()>=deadline){spent=true;unread++;return;}
   if(m.listed){try{m=await get(m.id);}catch(e){if(exhausted(e.message)){spent=true;unread++;}issues.push(e.message);return;}if(m.deleted||!m.start)return;}
+  // Committee filter: decided before the agenda is asked. Organizations are fetched once per address (cache of get).
+  // A skipped meeting gets no mark, so a changed filter reads it at the next import.
+  let org=null;
+  if(filter){const found=[];for(const o of [].concat(m.organization||[])){const id=typeof o==='string'?o:o?.id||'';try{const x=await object(o);found.push({id:x?.id||id,name:clean(x?.name),shortName:clean(x?.shortName)});}catch(e){if(exhausted(e.message)){spent=true;unread++;issues.push(e.message);return;}found.push({id,name:'',shortName:''});}}
+   const verdict=filter(found);if(verdict!=='kept'){skipped[verdict]++;return;}org=found.map(o=>o.name||o.shortName||'Gremium laut Originalquelle');}
   const print=(await hash(JSON.stringify([m.modified||'',(m.agendaItem||[]).map(a=>typeof a==='string'?a:[a.id,a.modified||'',a.result||''])]))).slice(0,16);
   if(known?.print===print){held[meeting.url]=marks.known[meeting.url];unchanged++;return;}
   // What went wrong while reading this meeting; a meeting with a failure is read again next time.
   let failed=0,cut=false,events=0;const fail=text=>{failed++;if(exhausted(text))cut=spent=true;issues.push(text);};
-  let org=[];for(const o of m.organization||[]){try{org.push(clean((await object(o))?.name||'Gremium'));}catch{org.push('Gremium laut Originalquelle');}}
+  if(!org){org=[];for(const o of m.organization||[]){try{org.push(clean((await object(o))?.name||'Gremium'));}catch{org.push('Gremium laut Originalquelle');}}}
   const attendance=await publicParticipants(m,object,now.toISOString());
   const committee=org.join(', ')||clean(m.name)||'Öffentliche Sitzung';
   const resolved=await parallel(m.agendaItem||[],async a=>{try{return await object(a)}catch(e){fail('Tagesordnungspunkt: '+e.message);return {public:false};}},3);
@@ -149,5 +174,5 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  onProgress(source.name+': '+topics.length+' Artikel');
  // Unchanged meetings are a successful reading: their reports are in the database already.
  if(spent&&!issues.some(exhausted))issues.push('Zeitbudget der Quelle erreicht');
- return {topics,marks:held,...(kept?{list:kept}:{}),readMeetings:done,coverage:{regionId:source.id,method:'oparl',from:meetings.length?from:null,to:meetings.length?now.toISOString().slice(0,10):null,importedAt:meetings.length?now.toISOString():null,lastAttemptAt:now.toISOString(),meetings:meetings.length,...(unchanged?{unchangedMeetings:unchanged}:{}),...(issues.some(exhausted)?{resumable:true}:{}),sourceCount:1,quiet:meetings.length===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:[...new Set(issues)],sourceUrl:source.system,body:body.id,listStrategy:strategy}};
+ return {topics,marks:held,...(kept?{list:kept}:{}),readMeetings:done,coverage:{regionId:source.id,method:'oparl',from:meetings.length?from:null,to:meetings.length?now.toISOString().slice(0,10):null,importedAt:meetings.length?now.toISOString():null,lastAttemptAt:now.toISOString(),meetings:meetings.length,...(unchanged?{unchangedMeetings:unchanged}:{}),...(filter?{filteredMeetings:skipped.filtered+skipped.mixed,unassignedMeetings:skipped.unassigned,...(skipped.mixed?{mixedMeetings:skipped.mixed}:{})}:{}),...(issues.some(exhausted)?{resumable:true}:{}),sourceCount:1,quiet:meetings.length===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:[...new Set(issues)],sourceUrl:source.system,body:body.id,listStrategy:strategy}};
 }

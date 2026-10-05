@@ -1,0 +1,139 @@
+{
+ "nds-03155013": {
+  "id": "nds-03155013",
+  "name": "Stadt Einbeck",
+  "kind": "city",
+  "ags": "03155013",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris.kdgoe.de/EIN_public/",
+    "from": "Arbeitsliste",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Einbeck: Dienstleister-Plattform KDG Göttingen, ALLRIS-4-Leser vorhanden -> Mandantenzuordnung/Leserfehler beheben (Konzept DE5), keine Dritten",
+     "beleg": "Arbeitsliste (E: Lesen scheiterte); gleicher Rechner liefert LK Northeim (LKNOM_public) und SG Hattorf (HAT_public) im Bestand (nds-sources-report.md); kdgoe.de: ALLRIS 4 aus der Cloud"
+    }
+   }
+  ],
+  "log": []
+ },
+ "nds-03155003": {
+  "id": "nds-03155003",
+  "name": "Stadt Dassel",
+  "kind": "city",
+  "ags": "03155003",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris.kdgoe.de/DAS_public/si018",
+    "from": "Arbeitsliste",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Dassel: Dienstleister-Plattform KDG Göttingen, ALLRIS-4-Leser vorhanden -> Mandantenzuordnung/Leserfehler beheben (Konzept DE5), keine Dritten",
+     "beleg": "Arbeitsliste (E: Lesen scheiterte); gleicher Rechner liefert LK Northeim (LKNOM_public) und SG Hattorf (HAT_public) im Bestand (nds-sources-report.md); kdgoe.de: ALLRIS 4 aus der Cloud"
+    }
+   }
+  ],
+  "log": []
+ },
+ "nds-03155009": {
+  "id": "nds-03155009",
+  "name": "Stadt Moringen",
+  "kind": "city",
+  "ags": "03155009",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris.kdgoe.de/MOR_public/",
+    "from": "Arbeitsliste",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Moringen: Dienstleister-Plattform KDG Göttingen, ALLRIS-4-Leser vorhanden -> Mandantenzuordnung/Leserfehler beheben (Konzept DE5), keine Dritten",
+     "beleg": "Arbeitsliste (E: Lesen scheiterte); gleicher Rechner liefert LK Northeim (LKNOM_public) und SG Hattorf (HAT_public) im Bestand (nds-sources-report.md); kdgoe.de: ALLRIS 4 aus der Cloud"
+    }
+   }
+  ],
+  "log": []
+ },
+ "nds-03159004": {
+  "id": "nds-03159004",
+  "name": "Stadt Bad Sachsa",
+  "kind": "city",
+  "ags": "03159004",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris.kdgoe.de/SAC_public/",
+    "from": "Arbeitsliste",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Bad Sachsa: Dienstleister-Plattform KDG Göttingen, ALLRIS-4-Leser vorhanden -> Mandantenzuordnung/Leserfehler beheben (Konzept DE5), keine Dritten",
+     "beleg": "Arbeitsliste (E: Lesen scheiterte); gleicher Rechner liefert LK Northeim (LKNOM_public) und SG Hattorf (HAT_public) im Bestand (nds-sources-report.md); kdgoe.de: ALLRIS 4 aus der Cloud"
+    }
+   }
+  ],
+  "log": []
+ },
+ "nds-03459019": {
+  "id": "nds-03459019",
+  "name": "Stadt Georgsmarienhütte",
+  "kind": "city",
+  "ags": "03459019",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://gmh.ris.itebo.de/bi/",
+    "from": "Arbeitsliste",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Georgsmarienhütte; Mandant auf ITEBO-Plattform, Zuordnung prüfen",
+     "beleg": "Arbeitsliste (F: Zuordnung unklar, gmh.ris.itebo.de/bi/info.asp); itebo-SessionNet im Bestand gelesen (Langelsheim, Elm-Asse)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "nds-03159019": {
+  "id": "nds-03159019",
+  "name": "Stadt Herzberg am Harz",
+  "kind": "city",
+  "ags": "03159019",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.herzberg.de/portal/seiten/hinweise-zum-ratsinformationssystem-sessionnet-900000009-25580.html",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "owl-it-Mandant (robots-gesperrt); offener Weg evtl. sessionnet-oparl.krz.de (Body-Nr. unbekannt, robots ungeprüft)",
+     "beleg": "Websuche 05.10.2026: Herzberg nutzt SessionNet seit 2006; Konzept-Quellenliste: sessionnet.owl-it.de/herzberg/"
+    }
+   },
+   {
+    "url": "https://sessionnet.krz.de/kreis_goettingen/bi/info.asp",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "Kreis angebunden (sessionnet.landkreisgoettingen.de); ob Gemeinden (Rosdorf, Friedland, Adelebsen, Duderstadt, Dransfeld) Mandanten haben, ungeprüft",
+     "beleg": "Websuche 05.10.2026: SessionNet des Landkreises Göttingen beim krz"
+    }
+   }
+  ],
+  "log": []
+ }
+}

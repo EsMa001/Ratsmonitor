@@ -1,0 +1,1991 @@
+{
+ "de-130715151": {
+  "id": "de-130715151",
+  "name": "Amt Demmin-Land",
+  "kind": "city",
+  "ags": "130715151",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://amt-demmin-land.sitzung-mv.de/public/",
+    "from": "https://amt-demmin-land.sitzung-mv.de/public/gr020?GRLFDNR=3",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Amtsausschuss und Gemeindevertretungen (Siedenbrünzow, Schönfeld) im Suchindex.",
+     "beleg": "https://amt-demmin-land.sitzung-mv.de/public/gr020?GRLFDNR=3 ; https://amt-demmin-land.sitzung-mv.de/public/si019?SILFDNR=1000646"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130715161": {
+  "id": "de-130715161",
+  "name": "Amt Stargarder Land",
+  "kind": "city",
+  "ags": "130715161",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://amt-stargarder-land.sitzung-mv.de/public/",
+    "from": "https://amt-stargarder-land.sitzung-mv.de/public/gr020?GRLFDNR=1",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Amtsausschuss und GV Groß Nemerow belegt.",
+     "beleg": "https://amt-stargarder-land.sitzung-mv.de/public/gr020?GRLFDNR=1 ; https://amt-stargarder-land.sitzung-mv.de/public/gr020?GRLFDNR=13"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130715157": {
+  "id": "de-130715157",
+  "name": "Amt Neverin",
+  "kind": "city",
+  "ags": "130715157",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://amtneverin.sitzung-mv.de/public/",
+    "from": "https://amtneverin.sitzung-mv.de/public/gr020?GRLFDNR=13",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. GV Wulkenzin belegt.",
+     "beleg": "https://amtneverin.sitzung-mv.de/public/gr020?GRLFDNR=13 ; https://amtneverin.de/das-amt/sitzungsdienst"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130715159": {
+  "id": "de-130715159",
+  "name": "Amt Röbel-Müritz",
+  "kind": "city",
+  "ags": "130715159",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://roebelmueritz.sitzung-mv.de/public/",
+    "from": "https://roebelmueritz.sitzung-mv.de/public/gr020?GRLFDNR=22",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. GV Rechlin belegt.",
+     "beleg": "https://roebelmueritz.sitzung-mv.de/public/gr020?GRLFDNR=22"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130745454": {
+  "id": "de-130745454",
+  "name": "Amt Klützer Winkel",
+  "kind": "city",
+  "ags": "130745454",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://kluetzer-winkel.sitzung-mv.de/public/",
+    "from": "https://kluetzer-winkel.sitzung-mv.de/public/to020?TOLFDNR=41156",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Gefundene Treffer sind alt (2008, 2014); ob der Mandant noch gepflegt wird, ist offen",
+     "beleg": "https://kluetzer-winkel.sitzung-mv.de/public/to020?TOLFDNR=41156 ; https://kluetzer-winkel.sitzung-mv.de/public/to020?TOLFDNR=69255&SILFDNR=2520"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130765663": {
+  "id": "de-130765663",
+  "name": "Amt Plau am See",
+  "kind": "city",
+  "ags": "130765663",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://plau.sitzung-mv.de/public/",
+    "from": "https://plau.sitzung-mv.de/public/gr020?GRLFDNR=1",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Amtsausschuss Plau am See belegt.",
+     "beleg": "https://plau.sitzung-mv.de/public/gr020?GRLFDNR=1"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130715163": {
+  "id": "de-130715163",
+  "name": "Amt Treptower Tollensewinkel",
+  "kind": "city",
+  "ags": "130715163",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://altentreptow.sitzung-mv.de/public/",
+    "from": "https://altentreptow.sitzung-mv.de/public/gr020?GRLFDNR=3",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Mandantname nach Amtssitz Altentreptow; Sitzungsdienst-Seite des Amtes nennt ALLRIS n",
+     "beleg": "https://altentreptow.sitzung-mv.de/public/gr020?GRLFDNR=3 ; https://www.altentreptow.de/amt-treptower-tollensewinkel/sitzungsdienst.html ; https://poliscope.de/ratsinformationssystem/treptower-tollensewinkel/130715163"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130765664": {
+  "id": "de-130765664",
+  "name": "Amt Sternberger Seenlandschaft",
+  "kind": "city",
+  "ags": "130765664",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sternberg.sitzung-mv.de/public/",
+    "from": "https://sternberg.sitzung-mv.de/public/si019?SILFDNR=1000520",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Bisher gefundener Link war die Anmeldeseite /ratsinfo/logon; der öffentliche Teil /pu",
+     "beleg": "https://sternberg.sitzung-mv.de/public/si019?SILFDNR=1000520 ; https://sternberg.sitzung-mv.de/public/to020?TOLFDNR=1008838"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130735359": {
+  "id": "de-130735359",
+  "name": "Amt Nord-Rügen",
+  "kind": "city",
+  "ags": "130735359",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://nordruegen.sitzung-mv.de/public/",
+    "from": "https://nordruegen.sitzung-mv.de/public/to010?SILFDNR=223&TOLFDNR=3717",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Amtsausschuss Nord-Rügen belegt.",
+     "beleg": "https://nordruegen.sitzung-mv.de/public/to010?SILFDNR=223&TOLFDNR=3717 ; https://nordruegen.sitzung-mv.de/public/to020?TOLFDNR=17623"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-13073080": {
+  "id": "de-13073080",
+  "name": "Stadt Sassnitz",
+  "kind": "city",
+  "ags": "13073080",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sassnitz.sitzung-mv.de/public/",
+    "from": "https://sassnitz.sitzung-mv.de/public/to020?TOLFDNR=1399",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. ",
+     "beleg": "https://sassnitz.sitzung-mv.de/public/to020?TOLFDNR=1399"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130725253": {
+  "id": "de-130725253",
+  "name": "Amt Carbäk",
+  "kind": "city",
+  "ags": "130725253",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://carbaek.sitzung-mv.de/public/",
+    "from": "https://carbaek.sitzung-mv.de/public/vo020?VOLFDNR=1000940&refresh=false&TOLFDNR=1008345",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. ",
+     "beleg": "https://carbaek.sitzung-mv.de/public/vo020?VOLFDNR=1000940&refresh=false&TOLFDNR=1008345"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130765659": {
+  "id": "de-130765659",
+  "name": "Amt Ludwigslust-Land",
+  "kind": "city",
+  "ags": "130765659",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ludwigslustland.sitzung-mv.de/public/",
+    "from": "https://ludwigslustland.sitzung-mv.de/public/vo020?VOLFDNR=6784&refresh=false&TOLFDNR=24747",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. ",
+     "beleg": "https://ludwigslustland.sitzung-mv.de/public/vo020?VOLFDNR=6784&refresh=false&TOLFDNR=24747 ; https://ludwigslustland.sitzung-mv.de/public/vo020?VOLFDNR=3814&refresh=false"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130745453": {
+  "id": "de-130745453",
+  "name": "Amt Grevesmühlen-Land",
+  "kind": "city",
+  "ags": "130745453",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://grevesmuehlen.sitzung-mv.de/public/",
+    "from": "https://grevesmuehlen.sitzung-mv.de/public/vo020?VOLFDNR=6012&refresh=false&TOLFDNR=41594",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Mitbenutzt: dieselbe Instanz ist für Stadt Grevesmühlen (de-13074026) angebunden. Zuo",
+     "beleg": "https://grevesmuehlen.sitzung-mv.de/public/vo020?VOLFDNR=6012&refresh=false&TOLFDNR=41594 (Vorlage VO/14GV/2020-258) ; Adresse aus der eigenen Quellensuche (bb_mv_sh.tsv)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-13071033": {
+  "id": "de-13071033",
+  "name": "Gemeinde Feldberger Seenlandschaft",
+  "kind": "city",
+  "ags": "13071033",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://feldberg.sitzung-mv.de/ratsinfo/logon",
+    "from": "Adresse",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-mv.de (Rahmenvertrag Zweckverband eGo-MV mit CC e-gov); Leser allris vorhanden, robots.txt laut README erlaubt; OParl unter /public/oparl/system bei anderen Mandanten am 04.10.2026 nicht aktiv. Gefunden wurde nur der Anmeldebereich; öffentlicher Teil vermutlich unter /public/ wi",
+     "beleg": "Adresse aus der eigenen Quellensuche (bb_mv_sh.tsv) ; https://poliscope.de/ratsinformationssystem/feldberger-seenlandschaft/130710033"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130715154": {
+  "id": "de-130715154",
+  "name": "Amt Malchow",
+  "kind": "city",
+  "ags": "130715154",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-4/",
+    "from": "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-4/",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "TI-Generator (Leser ti-generator vorhanden). Instanz der Inselstadt Malchow für das Amt Malchow (Gemeinde Fünfseen sichtbar). Nur http; ob Teile nur für Mandatsträger sind, ist offen; robots.txt nicht geprüft.",
+     "beleg": "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-4/ (Suchtreffer 'Gemeinde Fünfseen')"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130715153": {
+  "id": "de-130715153",
+  "name": "Amt Malchin am Kummerower See",
+  "kind": "city",
+  "ags": "130715153",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-malchin-am-kummerower-see.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-malchin-am-kummerower-see.de/politik/sitzungskalender.php?a=view&gremium=2914&id=126657",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. Amt meldete im März 2026 technische Pro",
+     "beleg": "https://www.amt-malchin-am-kummerower-see.de/politik/sitzungskalender.php?a=view&gremium=2914&id=126657 ; https://www.amt-malchin-am-kummerower-see.de/news/index.php?news=1206622"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130755557": {
+  "id": "de-130755557",
+  "name": "Amt Lubmin",
+  "kind": "city",
+  "ags": "130755557",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amtlubmin.de/politik/sitzungskalender.php",
+    "from": "https://www.amtlubmin.de/politik/sitzungskalender.php?a=view&gremium=3600&id=39592",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. GV Loissin belegt.",
+     "beleg": "https://www.amtlubmin.de/politik/sitzungskalender.php?a=view&gremium=3600&id=39592"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130735356": {
+  "id": "de-130735356",
+  "name": "Amt Miltzow",
+  "kind": "city",
+  "ags": "130735356",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-miltzow.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-miltzow.de/politik/sitzungskalender.php?ebene=5452",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. ",
+     "beleg": "https://www.amt-miltzow.de/politik/sitzungskalender.php?ebene=5452"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130715160": {
+  "id": "de-130715160",
+  "name": "Amt Seenlandschaft Waren",
+  "kind": "city",
+  "ags": "130715160",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-slw.de/seite/271499/gremien-sitzungskalender.html",
+    "from": "https://www.amt-slw.de/seite/271499/gremien-sitzungskalender.html",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. Seite 'Gremien/Sitzungskalender' im sel",
+     "beleg": "https://www.amt-slw.de/seite/271499/gremien-sitzungskalender.html"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130715158": {
+  "id": "de-130715158",
+  "name": "Amt Penzliner Land",
+  "kind": "city",
+  "ags": "130715158",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://amt-penzliner-land.ratsinfomanagement.net/termine",
+    "from": "https://amt-penzliner-land.ratsinfomanagement.net/startseite",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SD.NET RIM 4 auf ratsinfomanagement.net: laut README Wildcard-Hosting mit robots-Sperre bzw. HTTP 403; nur mit Freigabe von Sternberg Software/Kommune. Termine Okt./Nov. 2026 im Index.",
+     "beleg": "https://amt-penzliner-land.ratsinfomanagement.net/startseite ; https://www.amt-penzliner-land.de/Ratsinfo/"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-13075": {
+  "id": "de-13075",
+  "name": "Landkreis Vorpommern-Greifswald",
+  "kind": "district",
+  "ags": "13075",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://kreis-vg.ratsinfomanagement.net/",
+    "from": "requirements/anbindungskonzept.md",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "SD.NET RIM 4 auf ratsinfomanagement.net (robots/403 laut README). Führt nur Kreisgremien, keine Gemeinden.",
+     "beleg": "requirements/anbindungskonzept.md (Einzelne Systeme)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120695904": {
+  "id": "de-120695904",
+  "name": "Amt Brück",
+  "kind": "city",
+  "ags": "120695904",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-brueck.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-brueck.de/politik/sitzungskalender.php?a=view",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. Amt mit Brück, Borkheide, Borkwalde, Go",
+     "beleg": "https://www.amt-brueck.de/politik/sitzungskalender.php?a=view"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120695917": {
+  "id": "de-120695917",
+  "name": "Amt Wusterwitz",
+  "kind": "city",
+  "ags": "120695917",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-wusterwitz.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-wusterwitz.de/politik/sitzungskalender.php",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. ",
+     "beleg": "https://www.amt-wusterwitz.de/politik/sitzungskalender.php"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120665601": {
+  "id": "de-120665601",
+  "name": "Amt Altdöbern",
+  "kind": "city",
+  "ags": "120665601",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-altdoebern.de/politik/gremium.php?id=3370",
+    "from": "https://www.amt-altdoebern.de/politik/gremium.php?id=3370",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. ",
+     "beleg": "https://www.amt-altdoebern.de/politik/gremium.php?id=3370 (GV Bronkow)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120735303": {
+  "id": "de-120735303",
+  "name": "Amt Brüssow (Uckermark)",
+  "kind": "city",
+  "ags": "120735303",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-bruessow.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-bruessow.de/politik/sitzungskalender.php",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. ",
+     "beleg": "https://www.amt-bruessow.de/politik/sitzungskalender.php"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120735306": {
+  "id": "de-120735306",
+  "name": "Amt Gramzow",
+  "kind": "city",
+  "ags": "120735306",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-gramzow.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-gramzow.de/politik/sitzungskalender.php",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. ",
+     "beleg": "https://www.amt-gramzow.de/politik/sitzungskalender.php"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120735305": {
+  "id": "de-120735305",
+  "name": "Amt Gerswalde",
+  "kind": "city",
+  "ags": "120735305",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-gerswalde.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-gerswalde.de/politik/sitzungskalender.php?a=view&gremium=124&id=45915",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. GV Mittenwalde belegt.",
+     "beleg": "https://www.amt-gerswalde.de/politik/sitzungskalender.php?a=view&gremium=124&id=45915 ; https://www.amt-gerswalde.de/politik/sitzungskalender.php"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120635302": {
+  "id": "de-120635302",
+  "name": "Amt Friesack",
+  "kind": "city",
+  "ags": "120635302",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-friesack.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-friesack.de/politik/sitzungskalender.php?a=view&gremium=7862&id=125273",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. GV Retzow und Mühlenberge belegt.",
+     "beleg": "https://www.amt-friesack.de/politik/sitzungskalender.php?a=view&gremium=7862&id=125273 ; https://www.amt-friesack.de/politik/sitzungskalender.php?a=view&gremium=7858&id=104724"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120675708": {
+  "id": "de-120675708",
+  "name": "Amt Schlaubetal",
+  "kind": "city",
+  "ags": "120675708",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-schlaubetal.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-schlaubetal.de/politik/sitzungskalender.php?a=view&gremium=5847&id=130882",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. GV Grunow-Dammendorf belegt.",
+     "beleg": "https://www.amt-schlaubetal.de/politik/sitzungskalender.php?a=view&gremium=5847&id=130882"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120625207": {
+  "id": "de-120625207",
+  "name": "Amt Plessa",
+  "kind": "city",
+  "ags": "120625207",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.plessa.de/ratsinfo/sitzungen/dokumente.php",
+    "from": "https://www.plessa.de/ratsinfo/sitzungen/dokumente.php",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. Variante mit Pfad /ratsinfo/; Gemeinden",
+     "beleg": "https://www.plessa.de/ratsinfo/sitzungen/dokumente.php ; https://www.plessa.de/politik/gremium.php?id=1100 ; https://www.plessa.de/ratsinfo/gremium/1101/seitever/4/amtsausschuss.html ; https://poliscope.de/ratsinformationssystem/plessa/120625207"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-120675707": {
+  "id": "de-120675707",
+  "name": "Amt Scharmützelsee",
+  "kind": "city",
+  "ags": "120675707",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-scharmuetzelsee.de/seite/297573/",
+    "from": "https://amt-scharmuetzelsee.mein-intra.net/data/file/councilservice/3/5/9/02._GV_BS_09-09-2019_NS_Buerger.pdf",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "Ratsinformationsdienst als CMS-Modul 'councilservice', Dateien auf amt-scharmuetzelsee.mein-intra.net (gleiches Modul wie Sondershausen, TH). Seit 09.09.2019 werden Vorlagen und Niederschriften des öffentlichen Teils eingestellt (Bad Saarow u. a.). Neuer Leser nötig; robots.txt nicht geprüft.",
+     "beleg": "https://amt-scharmuetzelsee.mein-intra.net/data/file/councilservice/3/5/9/02._GV_BS_09-09-2019_NS_Buerger.pdf ; https://poliscope.de/ratsinformationssystem/scharm%C3%BCtzelsee/120675707"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12064": {
+  "id": "de-12064",
+  "name": "Landkreis Märkisch-Oderland",
+  "kind": "district",
+  "ags": "12064",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.ratsinfo-online.net/landkreis-mol-bi/to010.asp?SILFDNR=2075",
+    "from": "requirements/anbindungskonzept.md",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "ALLRIS 3 bei CC e-gov (ratsinfo-online.net): robots-Sperre laut README; nur Kreisgremien.",
+     "beleg": "requirements/anbindungskonzept.md (Einzelne Systeme)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-010615153": {
+  "id": "de-010615153",
+  "name": "Amt Krempermarsch",
+  "kind": "city",
+  "ags": "010615153",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.amt-krempermarsch.de/politik/sitzungskalender.php",
+    "from": "https://www.amt-krempermarsch.de/politik/sitzungskalender.php?a=view&gremium=5483&id=100800",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo-Modul (politik/sitzungskalender.php, politik/gremium.php; Sitzung mit Einladung/Protokoll je Gremium, alle Gemeindevertretungen des Amtes). Kein Standard-RIS, kein OParl belegt; braucht neuen Leser oder den Website-Leser; robots.txt nicht geprüft. Auch die Website der amtsangehörigen Ge",
+     "beleg": "https://www.amt-krempermarsch.de/politik/sitzungskalender.php?a=view&gremium=5483&id=100800 ; https://www.daegeling.de/politik/sitzungskalender.php?a=view&gremium=5486&id=82809"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-010595974": {
+  "id": "de-010595974",
+  "name": "Amt Süderbrarup",
+  "kind": "city",
+  "ags": "010595974",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ratsinfo.amt-suederbrarup.de/ratsinfo/sitzungen/114515/sitzung-der-gemeindevertretung-steinfeld.html",
+    "from": "https://ratsinfo.amt-suederbrarup.de/ratsinfo/sitzungen/114515/sitzung-der-gemeindevertretung-steinfeld.html",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "CMS-Ratsinfo (Pfad /ratsinfo/sitzungen/<id>/…html, Variante wie Plessa) neben dem bisher gefundenen RIS-Portal (regisafe, robots). Aktualität nicht geprüft; möglicherweise Altbestand vor dem Wechsel.",
+     "beleg": "https://ratsinfo.amt-suederbrarup.de/ratsinfo/sitzungen/114515/sitzung-der-gemeindevertretung-steinfeld.html"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-01059": {
+  "id": "de-01059",
+  "name": "Kreis Schleswig-Flensburg",
+  "kind": "district",
+  "ags": "01059",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://kreisinfo.schleswig-flensburg.de/startseite",
+    "from": "requirements/anbindungskonzept.md",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "Kreis-RIS (Produkt laut URL-Muster vermutlich SD.NET RIM); robots/Lesbarkeit offen; nur Kreisgremien.",
+     "beleg": "requirements/anbindungskonzept.md (Einzelne Systeme)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436019": {
+  "id": "de-08436019",
+  "name": "Gemeinde Boms",
+  "kind": "city",
+  "ags": "08436019",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436024": {
+  "id": "de-08436024",
+  "name": "Gemeinde Ebenweiler",
+  "kind": "city",
+  "ags": "08436024",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436093": {
+  "id": "de-08436093",
+  "name": "Gemeinde Ebersbach-Musbach",
+  "kind": "city",
+  "ags": "08436093",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436027": {
+  "id": "de-08436027",
+  "name": "Gemeinde Eichstegen",
+  "kind": "city",
+  "ags": "08436027",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436040": {
+  "id": "de-08436040",
+  "name": "Gemeinde Guggenhausen",
+  "kind": "city",
+  "ags": "08436040",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436047": {
+  "id": "de-08436047",
+  "name": "Gemeinde Hoßkirch",
+  "kind": "city",
+  "ags": "08436047",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436067": {
+  "id": "de-08436067",
+  "name": "Gemeinde Riedhausen",
+  "kind": "city",
+  "ags": "08436067",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436077": {
+  "id": "de-08436077",
+  "name": "Gemeinde Unterwaldhausen",
+  "kind": "city",
+  "ags": "08436077",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436005": {
+  "id": "de-08436005",
+  "name": "Gemeinde Altshausen",
+  "kind": "city",
+  "ags": "08436005",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436032": {
+  "id": "de-08436032",
+  "name": "Gemeinde Fleischwangen",
+  "kind": "city",
+  "ags": "08436032",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08436053": {
+  "id": "de-08436053",
+  "name": "Gemeinde Königseggwald",
+  "kind": "city",
+  "ags": "08436053",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.krz.de/altshausen/bi/info.asp",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames SessionNet des GVV Altshausen (KRZ/owl-it-Hosting, gleicher Mandant wie sessionnet.owl-it.de/altshausen); Leser muss Gremien je Mitgliedsgemeinde trennen (heute Kategorie F); robots.txt von sessionnet.krz.de vor Aufnahme prüfen (owl-it sperrt sonst alles außer freigegebenen Mandanten). B",
+     "beleg": "WebSearch-Treffer: SessionNet unter sessionnet.krz.de/altshausen führt Gemeinderäte von Altshausen, Boms, Ebenweiler, Ebersbach-Musbach, Eichstegen, Fleischwangen, Guggenhausen, Hoßkirch, Königseggwald, Riedhausen, Unterwaldhausen (GVV Altshausen); poliscope.de/ratsinformationssystem/altshausen/084365001005"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08425011": {
+  "id": "de-08425011",
+  "name": "Gemeinde Asselfingen",
+  "kind": "city",
+  "ags": "08425011",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://vv-langenau.ris-portal.de/startseite",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "RIS-Portal (regisafe) des Verwaltungsverbands: robots-Sperre wie die übrigen 266 regisafe-Fälle, kein OParl. Nur über regisafe-Freigabe (B12) lesbar; eine Freigabe für vv-langenau trägt auch diese bisher linklosen Mitglieder. Asselfingen, Gemeinderat im Portal belegt",
+     "beleg": "WebSearch-Treffer: vv-langenau.ris-portal.de zeigt Sitzungen 'Gemeinderat Nerenstetten' (29.06.2026) und 'Gemeinderat Asselfingen' (16.07.2026) sowie Gemeinderäte weiterer Mitglieder des Verwaltungsverbands Langenau (u. a. Weidenstetten); Mitgliederliste laut vv-langenau.de/breitingen.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08425085": {
+  "id": "de-08425085",
+  "name": "Gemeinde Nerenstetten",
+  "kind": "city",
+  "ags": "08425085",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://vv-langenau.ris-portal.de/startseite",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "RIS-Portal (regisafe) des Verwaltungsverbands: robots-Sperre wie die übrigen 266 regisafe-Fälle, kein OParl. Nur über regisafe-Freigabe (B12) lesbar; eine Freigabe für vv-langenau trägt auch diese bisher linklosen Mitglieder. Nerenstetten, Gemeinderat im Portal belegt",
+     "beleg": "WebSearch-Treffer: vv-langenau.ris-portal.de zeigt Sitzungen 'Gemeinderat Nerenstetten' (29.06.2026) und 'Gemeinderat Asselfingen' (16.07.2026) sowie Gemeinderäte weiterer Mitglieder des Verwaltungsverbands Langenau (u. a. Weidenstetten); Mitgliederliste laut vv-langenau.de/breitingen.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08425130": {
+  "id": "de-08425130",
+  "name": "Gemeinde Weidenstetten",
+  "kind": "city",
+  "ags": "08425130",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://vv-langenau.ris-portal.de/startseite",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "RIS-Portal (regisafe) des Verwaltungsverbands: robots-Sperre wie die übrigen 266 regisafe-Fälle, kein OParl. Nur über regisafe-Freigabe (B12) lesbar; eine Freigabe für vv-langenau trägt auch diese bisher linklosen Mitglieder. Weidenstetten, im Suchtreffer genannt",
+     "beleg": "WebSearch-Treffer: vv-langenau.ris-portal.de zeigt Sitzungen 'Gemeinderat Nerenstetten' (29.06.2026) und 'Gemeinderat Asselfingen' (16.07.2026) sowie Gemeinderäte weiterer Mitglieder des Verwaltungsverbands Langenau (u. a. Weidenstetten); Mitgliederliste laut vv-langenau.de/breitingen.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08425022": {
+  "id": "de-08425022",
+  "name": "Gemeinde Börslingen",
+  "kind": "city",
+  "ags": "08425022",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://vv-langenau.ris-portal.de/startseite",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "RIS-Portal (regisafe) des Verwaltungsverbands: robots-Sperre wie die übrigen 266 regisafe-Fälle, kein OParl. Nur über regisafe-Freigabe (B12) lesbar; eine Freigabe für vv-langenau trägt auch diese bisher linklosen Mitglieder. Börslingen, Mitglied; eigenes Gremium im Portal nicht einzeln belegt",
+     "beleg": "WebSearch-Treffer: vv-langenau.ris-portal.de zeigt Sitzungen 'Gemeinderat Nerenstetten' (29.06.2026) und 'Gemeinderat Asselfingen' (16.07.2026) sowie Gemeinderäte weiterer Mitglieder des Verwaltungsverbands Langenau (u. a. Weidenstetten); Mitgliederliste laut vv-langenau.de/breitingen.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08425024": {
+  "id": "de-08425024",
+  "name": "Gemeinde Breitingen",
+  "kind": "city",
+  "ags": "08425024",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://vv-langenau.ris-portal.de/startseite",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "RIS-Portal (regisafe) des Verwaltungsverbands: robots-Sperre wie die übrigen 266 regisafe-Fälle, kein OParl. Nur über regisafe-Freigabe (B12) lesbar; eine Freigabe für vv-langenau trägt auch diese bisher linklosen Mitglieder. Breitingen, Mitglied; eigenes Gremium nicht einzeln belegt",
+     "beleg": "WebSearch-Treffer: vv-langenau.ris-portal.de zeigt Sitzungen 'Gemeinderat Nerenstetten' (29.06.2026) und 'Gemeinderat Asselfingen' (16.07.2026) sowie Gemeinderäte weiterer Mitglieder des Verwaltungsverbands Langenau (u. a. Weidenstetten); Mitgliederliste laut vv-langenau.de/breitingen.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08425062": {
+  "id": "de-08425062",
+  "name": "Gemeinde Holzkirch",
+  "kind": "city",
+  "ags": "08425062",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://vv-langenau.ris-portal.de/startseite",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "RIS-Portal (regisafe) des Verwaltungsverbands: robots-Sperre wie die übrigen 266 regisafe-Fälle, kein OParl. Nur über regisafe-Freigabe (B12) lesbar; eine Freigabe für vv-langenau trägt auch diese bisher linklosen Mitglieder. Holzkirch, Mitglied; eigenes Gremium nicht einzeln belegt",
+     "beleg": "WebSearch-Treffer: vv-langenau.ris-portal.de zeigt Sitzungen 'Gemeinderat Nerenstetten' (29.06.2026) und 'Gemeinderat Asselfingen' (16.07.2026) sowie Gemeinderäte weiterer Mitglieder des Verwaltungsverbands Langenau (u. a. Weidenstetten); Mitgliederliste laut vv-langenau.de/breitingen.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08425083": {
+  "id": "de-08425083",
+  "name": "Gemeinde Neenstetten",
+  "kind": "city",
+  "ags": "08425083",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://vv-langenau.ris-portal.de/startseite",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "RIS-Portal (regisafe) des Verwaltungsverbands: robots-Sperre wie die übrigen 266 regisafe-Fälle, kein OParl. Nur über regisafe-Freigabe (B12) lesbar; eine Freigabe für vv-langenau trägt auch diese bisher linklosen Mitglieder. Neenstetten, Mitglied; in Tagesordnung erwähnt",
+     "beleg": "WebSearch-Treffer: vv-langenau.ris-portal.de zeigt Sitzungen 'Gemeinderat Nerenstetten' (29.06.2026) und 'Gemeinderat Asselfingen' (16.07.2026) sowie Gemeinderäte weiterer Mitglieder des Verwaltungsverbands Langenau (u. a. Weidenstetten); Mitgliederliste laut vv-langenau.de/breitingen.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08425112": {
+  "id": "de-08425112",
+  "name": "Gemeinde Setzingen",
+  "kind": "city",
+  "ags": "08425112",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://vv-langenau.ris-portal.de/startseite",
+    "from": "WebSearch-Treffer:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "RIS-Portal (regisafe) des Verwaltungsverbands: robots-Sperre wie die übrigen 266 regisafe-Fälle, kein OParl. Nur über regisafe-Freigabe (B12) lesbar; eine Freigabe für vv-langenau trägt auch diese bisher linklosen Mitglieder. Setzingen, Mitglied; eigenes Gremium nicht einzeln belegt",
+     "beleg": "WebSearch-Treffer: vv-langenau.ris-portal.de zeigt Sitzungen 'Gemeinderat Nerenstetten' (29.06.2026) und 'Gemeinderat Asselfingen' (16.07.2026) sowie Gemeinderäte weiterer Mitglieder des Verwaltungsverbands Langenau (u. a. Weidenstetten); Mitgliederliste laut vv-langenau.de/breitingen.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-094745420": {
+  "id": "de-094745420",
+  "name": "Verwaltungsgemeinschaft Ebermannstadt",
+  "kind": "city",
+  "ags": "094745420",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-vg-ebermannstadt.digitalfabrix.de/",
+    "from": "https://buergerinfo-vg-ebermannstadt.digitalfabrix.de/ebermannstadt/si0057.asp?__ksinr=1326",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden. VG-RIS mit Unterpfaden je Mitglied (/ebermannstadt/, /unterleinleiter/), dazu Gemeinschaftsversammlung.",
+     "beleg": "https://buergerinfo-vg-ebermannstadt.digitalfabrix.de/ebermannstadt/si0057.asp?__ksinr=1326"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-095715506": {
+  "id": "de-095715506",
+  "name": "Verwaltungsgemeinschaft Triesdorf",
+  "kind": "city",
+  "ags": "095715506",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-vg-triesdorf.digitalfabrix.de/",
+    "from": "https://buergerinfo-vg-triesdorf.digitalfabrix.de/weidenbach/si0056.asp?__ksinr=328",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden. Unterpfad je Mitglied (belegt: /weidenbach/).",
+     "beleg": "https://buergerinfo-vg-triesdorf.digitalfabrix.de/weidenbach/si0056.asp?__ksinr=328"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-096725608": {
+  "id": "de-096725608",
+  "name": "Verwaltungsgemeinschaft Euerdorf",
+  "kind": "city",
+  "ags": "096725608",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-vg-euerdorf.digitalfabrix.de/",
+    "from": "https://buergerinfo-vg-euerdorf.digitalfabrix.de/gr0040.asp",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden.",
+     "beleg": "https://buergerinfo-vg-euerdorf.digitalfabrix.de/gr0040.asp"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-095775535": {
+  "id": "de-095775535",
+  "name": "Verwaltungsgemeinschaft Nennslingen",
+  "kind": "city",
+  "ags": "095775535",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-vg-nennslingen.digitalfabrix.de/",
+    "from": "https://buergerinfo-vg-nennslingen.digitalfabrix.de/si0056.asp?__ksinr=345",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden. Gremienliste: https://buergerinfo-vg-nennslingen.digitalfabrix.de/gr0040.asp?__cpanr=2",
+     "beleg": "https://buergerinfo-vg-nennslingen.digitalfabrix.de/si0056.asp?__ksinr=345"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-096725606": {
+  "id": "de-096725606",
+  "name": "Verwaltungsgemeinschaft Bad Brückenau",
+  "kind": "city",
+  "ags": "096725606",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-vgem-bad-brueckenau.digitalfabrix.de/",
+    "from": "https://buergerinfo-vgem-bad-brueckenau.digitalfabrix.de/info.asp",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden. Gilt für die VG; die Stadt Bad Brückenau (de-09672113) ist nicht Mitglied und nicht abgedeckt.",
+     "beleg": "https://buergerinfo-vgem-bad-brueckenau.digitalfabrix.de/info.asp"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-092785252": {
+  "id": "de-092785252",
+  "name": "Verwaltungsgemeinschaft Schwarzach",
+  "kind": "city",
+  "ags": "092785252",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-vgem-schwarzach.digitalfabrix.de/",
+    "from": "https://buergerinfo-vgem-schwarzach.digitalfabrix.de/info.asp",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden. Zuordnung prüfen: Präfix 'vgem' spricht für die VG Schwarzach (Lkr. Straubing-Bogen), nicht für Markt Schwarzach a.Mai",
+     "beleg": "https://buergerinfo-vgem-schwarzach.digitalfabrix.de/info.asp"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-095745528": {
+  "id": "de-095745528",
+  "name": "Verwaltungsgemeinschaft Happurg",
+  "kind": "city",
+  "ags": "095745528",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-vg-happurg.digitalfabrix.de/",
+    "from": "https://buergerinfo-vg-happurg.digitalfabrix.de/kp0041.asp",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "SessionNet bei digitalfabriX; in der Liste als 'D Unbekanntes System' mit Website-Adresse geführt.",
+     "beleg": "https://buergerinfo-vg-happurg.digitalfabrix.de/kp0041.asp"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-09176139": {
+  "id": "de-09176139",
+  "name": "Gemeinde Kösching",
+  "kind": "city",
+  "ags": "09176139",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-koesching.digitalfabrix.de/",
+    "from": "https://buergerinfo-koesching.digitalfabrix.de/si0057.asp?__ksinr=88",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden.",
+     "beleg": "https://buergerinfo-koesching.digitalfabrix.de/si0057.asp?__ksinr=88"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-09174136": {
+  "id": "de-09174136",
+  "name": "Gemeinde Petershausen",
+  "kind": "city",
+  "ags": "09174136",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-petershausen.digitalfabrix.de/",
+    "from": "https://buergerinfo-petershausen.digitalfabrix.de/infobi.asp",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden.",
+     "beleg": "https://buergerinfo-petershausen.digitalfabrix.de/infobi.asp"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-09574157": {
+  "id": "de-09574157",
+  "name": "Gemeinde Schwarzenbruck",
+  "kind": "city",
+  "ags": "09574157",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://buergerinfo-schwarzenbruck.digitalfabrix.de/",
+    "from": "https://buergerinfo-schwarzenbruck.digitalfabrix.de/info.asp",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SessionNet bei digitalfabriX (gleiche Plattform wie 457 schon angebundene Bayern-Quellen, Leser vorhanden, ggf. Kartenformat si0056); auf der Website der Kommune kein Link gefunden.",
+     "beleg": "https://buergerinfo-schwarzenbruck.digitalfabrix.de/info.asp"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-097735715": {
+  "id": "de-097735715",
+  "name": "Verwaltungsgemeinschaft Wittislingen",
+  "kind": "city",
+  "ags": "097735715",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.vg-wittislingen.de/die-verwaltungsgemeinschaft/ris-portal",
+    "from": "https://www.vg-wittislingen.de/die-verwaltungsgemeinschaft/ris-portal",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "VG-Seite verweist auf RIS-Portal (regisafe/comundus); Mandantenadresse nicht belegt. RIS-Portal sperrt Programme per robots.txt, kein OParl: gehört damit zu Gruppe B, nicht A.",
+     "beleg": "https://www.vg-wittislingen.de/die-verwaltungsgemeinschaft/ris-portal"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-091815143": {
+  "id": "de-091815143",
+  "name": "Verwaltungsgemeinschaft Schondorf am Ammersee",
+  "kind": "city",
+  "ags": "091815143",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.eching-ammersee.de/rathaus-verwaltung/rastinformationssystem-ris",
+    "from": "https://www.eching-ammersee.de/rathaus-verwaltung/rastinformationssystem-ris",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Gemeinsames RIS von Eching a.Ammersee, Greifenberg, Schondorf und der VG Schondorf, laut Suchtreffer bei komuna gehostet: robots-Sperre, also Gruppe B. Mandantenadresse nicht belegt.",
+     "beleg": "https://www.eching-ammersee.de/rathaus-verwaltung/rastinformationssystem-ris"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-10046117": {
+  "id": "de-10046117",
+  "name": "Stadt St. Wendel",
+  "kind": "city",
+  "ags": "10046117",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://biwnd.rznk.de/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SessionNet auf dem rznk-Server 212.88.143.117, auf dem schon 9 Saar-Quellen angebunden sind (bifri, bimer, biotw ...); vorhandener SessionNet-Leser sollte passen. Zuordnung Stadt (nicht Landkreis, der hat ratsinformation.lkwnd.de) vor Übernahme prüfen.",
+     "beleg": "Websuche: SessionNet-Seiten https://biwnd.rznk.de/info.php und https://biwnd.rznk.de/kp0050.php?__cwpnr=1&__cselect=0&__kpenr=41 (Kreisstadt St. Wendel)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-07137": {
+  "id": "de-07137",
+  "name": "Landkreis Mayen-Koblenz",
+  "kind": "district",
+  "ags": "07137",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris.kvmyk.de/bi/",
+    "from": "requirements/anbindungskonzept.md",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "SessionNet (gr0040.php); robots.txt und öffentliche Seiten noch nicht geprüft. Website-Link vermutlich nur per Skript, daher 'kein Link'.",
+     "beleg": "requirements/anbindungskonzept.md Anhang B nennt https://ris.kvmyk.de/bi/gr0040.php; Websuche: Seite 'Kreistagsinformationssystem' https://www.kvmyk.de/landkreis/politik/kreistagsinformationssystem/"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-07339": {
+  "id": "de-07339",
+  "name": "Landkreis Mainz-Bingen",
+  "kind": "district",
+  "ags": "07339",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.landkreis-mainz-bingen.sitzung-online.de/bi/",
+    "from": "requirements/anbindungskonzept.md",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "ALLRIS 3 (to010.asp); Leser ALLRIS 3 vorhanden. sitzung-online.de sperrt teils per robots.txt, vorher lesen.",
+     "beleg": "requirements/anbindungskonzept.md Anhang B: https://www.landkreis-mainz-bingen.sitzung-online.de/bi/to010.asp?SILFDNR=5385"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-07331": {
+  "id": "de-07331",
+  "name": "Landkreis Alzey-Worms",
+  "kind": "district",
+  "ags": "07331",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://alzey-worms.gremien.info/",
+    "from": "requirements/anbindungskonzept.md",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "more! rubin auf gremien.info (66 RLP-Quellen dort schon angebunden); vorhandener Leser. Nur noch Zuordnung/Körperschaft prüfen.",
+     "beleg": "requirements/anbindungskonzept.md Anhang B: https://alzey-worms.gremien.info/"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-06436": {
+  "id": "de-06436",
+  "name": "Main-Taunus-Kreis",
+  "kind": "district",
+  "ags": "06436",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.mtk.org/Burgerinfoportal-3725.htm",
+    "from": "requirements/anbindungskonzept.md",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "Produkt hinter dem Portal unbekannt; Ziel des Links vom Rechner des Inhabers ablesen.",
+     "beleg": "requirements/anbindungskonzept.md Anhang B; Websuche: Politikseite https://www.mtk.org/Politik-18.htm beschreibt Bürgerinfoportal (Unterlagen ca. 5 Tage vor Sitzung)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-06534": {
+  "id": "de-06534",
+  "name": "Landkreis Marburg-Biedenkopf",
+  "kind": "district",
+  "ags": "06534",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://marburg-biedenkopf.ratsinfomanagement.net/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "ratsinfomanagement.net (CC e-gov/SD.NET) antwortet uns mit 403. OParl je Mandant prüfen: /webservice/oparl/v1.1/system (beim Landkreis Fulda auf demselben Dienst aktiv).",
+     "beleg": "Websuche: Kreisseite verweist auf 'Ratsinformationssystem des Kreises unter https://marburg-biedenkopf.ratsinfomanagement.net/'"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-06631009": {
+  "id": "de-06631009",
+  "name": "Stadt Fulda",
+  "kind": "city",
+  "ags": "06631009",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://fulda.ratsinfomanagement.net/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ratsinfomanagement.net (403 für unseren Abruf); OParl-Mandant /webservice/oparl/v1.1/system prüfen.",
+     "beleg": "Websuche: 'Gremieninformationssystem - Ratsinfosystem' https://fulda.ratsinfomanagement.net/; auch in anbindungskonzept.md Anhang B"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-06434005": {
+  "id": "de-06434005",
+  "name": "Stadt Königstein im Taunus",
+  "kind": "city",
+  "ags": "06434005",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://rim.ekom21.de/koenigstein/webservice/oparl/v1.1/system",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "oparlOnly": true,
+    "research": {
+     "art": "oparl",
+     "hinweis": "ekom21-Mandant 'koenigstein' mit offenbar aktivem OParl; Gebiet steht bisher als 'kein Link'. /system abrufen, wie die 22 angebundenen ekom21-OParl-Quellen.",
+     "beleg": "Websuche indexiert OParl-Dateien unter https://rim.ekom21.de/koenigstein/webservice/oparl/v1.1/body/1/files/... (Niederschrift StVV 23.03.2023, Plan zu Vorlage 232/2024)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-06434007": {
+  "id": "de-06434007",
+  "name": "Stadt Neu-Anspach",
+  "kind": "city",
+  "ags": "06434007",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://rim.ekom21.de/neu-anspach/webservice/oparl/v1.1/system",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "oparlOnly": true,
+    "research": {
+     "art": "oparl",
+     "hinweis": "Liste meldet 'OParl nicht aktiv'; die Datei-URLs zeigen, dass OParl zumindest zeitweise lief. Erneut prüfen.",
+     "beleg": "Websuche indexiert OParl-Dateien unter https://rim.ekom21.de/neu-anspach/webservice/oparl/v1.1/body/1/files/... (Beschlusstext StVV 17.02.2022, Bericht AG Klima und Umwelt)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-06635011": {
+  "id": "de-06635011",
+  "name": "Stadt Frankenberg (Eder)",
+  "kind": "city",
+  "ags": "06635011",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://rim.ekom21.de/frankenberg/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ekom21-Mandant (Web-Firewall); nur OParl /frankenberg/webservice/oparl/v1.1/system prüfen. Zuordnung zu Frankenberg (Eder) plausibel (Landkreis Waldeck-Frankenberg hat eigenen Mandanten).",
+     "beleg": "Websuche: 'Startseite - Bürgerinfosystem' https://rim.ekom21.de/frankenberg/"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-06435011": {
+  "id": "de-06435011",
+  "name": "Gemeinde Großkrotzenburg",
+  "kind": "city",
+  "ags": "06435011",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.grosskrotzenburg.de/rathaus-politik/rats-und-buergerinformationssystem/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "more! rubin; Mandantenadresse (gremien.info oder more-rubin1.de) von der Gemeindeseite ablesen, vorhandener Leser.",
+     "beleg": "Websuche: Seite 'Rats- und Bürgerinformationssystem' der Gemeinde; Vorsprung Online: 'Bürgerinformationssystem „MoreRubin“ steht online zur Verfügung' (https://vorsprung-online.de/mkk/grosskrotzenburg/375-grosskrotzenburg/162954-...)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-06412000": {
+  "id": "de-06412000",
+  "name": "Stadt Frankfurt am Main",
+  "kind": "city",
+  "ags": "06412000",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.stvv.frankfurt.de/parlis2/parlis.html",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "PARLIS (eigenes System, inkl. Ortsbeiräte). robots.txt untersagt die Pfade der Tagesordnungen und Vorlagen: nicht nutzbar ohne Vereinbarung.",
+     "beleg": "Websuche: 'PARLamentsInformationsSystem der Stadt Frankfurt am Main'; README 'Weiter offen'"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-071415010": {
+  "id": "de-071415010",
+  "name": "Verbandsgemeinde Bad Ems-Nassau",
+  "kind": "city",
+  "ags": "071415010",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.vgben.de/ratsinfo/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "In die VG-Website eingebettete Ratsinfo (Pfad /ratsinfo/sitzungstermin|gremium/<id>/), dieselbe Form wie Westerburg, Wirges, Wöllstein (more!-rubin-Kunden). VG- und Ortsgemeinderäte. robots.txt prüfen; neuer Leser oder Mandant auf gremien.info ermitteln.",
+     "beleg": "Websuche: Sitzungsseiten z. B. https://www.vgben.de/ratsinfo/sitzungstermin/hVfWxEDOV8bAfh2E/1-oeffentliche-konstituierende-sitzung-des-verbandsgemeinderates/ und Ortsgemeinderäte (https://www.vgben.de/ratsinfo/gremium/WyuBhRjgRRg6GTmu/ortsgemeinderat-dausenau/)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-073345005": {
+  "id": "de-073345005",
+  "name": "Verbandsgemeinde Lingenfeld",
+  "kind": "city",
+  "ags": "073345005",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.vg-lingenfeld.de/ratsinfo/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Eingebettete Ratsinfo wie vgben.de; VG- und Ortsgemeinderäte. Amtsblatt der VG Lingenfeld zusätzlich als Wittich-ePaper (epaper.wittich.de/frontend/catalogs/552675/1/pdf/complete.pdf).",
+     "beleg": "Websuche: https://www.vg-lingenfeld.de/ratsinfo/gremium/pApTS16AhlcSxBeT/verbandsgemeinderat-lingenfeld/, https://www.vg-lingenfeld.de/ratsinfo/sitzungstermin/nyLJdqH1qlWwAlc2/sitzung-des-ortsgemeinderates-lingenfeld/"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-073315005": {
+  "id": "de-073315005",
+  "name": "Verbandsgemeinde Wöllstein",
+  "kind": "city",
+  "ags": "073315005",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.woellstein.de/ratsinfo/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Alternative zum nicht gelesenen woellstein.more-rubin1.de (Kategorie D).",
+     "beleg": "Websuche: https://www.woellstein.de/ratsinfo/sitzungstermin/QfofZpdo0N9I4PmX/23-sitzung-des-verbandsgemeinderates/, Ortsgemeinderäte Gau-Bickelheim, Siefersheim"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-02000000": {
+  "id": "de-02000000",
+  "name": "Stadt Hamburg",
+  "kind": "city",
+  "ags": "02000000",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sitzungsdienst-altona.hamburg.de/bi/allris.net.asp",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "laut README robots-gesperrt; nur mit Freigabe (Anfrage R2); Bergedorf und Eimsbüttel nicht als Treffer gesehen",
+     "beleg": "Websuche 05.10.2026: ALLRIS-BürgerInfo der Bezirksversammlung"
+    }
+   },
+   {
+    "url": "https://sitzungsdienst-harburg.hamburg.de/bi/allris.net.asp",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "laut README robots-gesperrt; nur mit Freigabe (Anfrage R2); Bergedorf und Eimsbüttel nicht als Treffer gesehen",
+     "beleg": "Websuche 05.10.2026: ALLRIS-BürgerInfo der Bezirksversammlung"
+    }
+   },
+   {
+    "url": "https://sitzungsdienst-wandsbek.hamburg.de/bi/allris.net.asp",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "laut README robots-gesperrt; nur mit Freigabe (Anfrage R2); Bergedorf und Eimsbüttel nicht als Treffer gesehen",
+     "beleg": "Websuche 05.10.2026: ALLRIS-BürgerInfo der Bezirksversammlung"
+    }
+   },
+   {
+    "url": "https://sitzungsdienst-hamburg-nord.hamburg.de/bi/allris.net.asp",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "laut README robots-gesperrt; nur mit Freigabe (Anfrage R2); Bergedorf und Eimsbüttel nicht als Treffer gesehen",
+     "beleg": "Websuche 05.10.2026: ALLRIS-BürgerInfo der Bezirksversammlung"
+    }
+   },
+   {
+    "url": "https://sitzungsdienst-hamburg-mitte.hamburg.de/bi/allris.net.asp",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "laut README robots-gesperrt; nur mit Freigabe (Anfrage R2); Bergedorf und Eimsbüttel nicht als Treffer gesehen",
+     "beleg": "Websuche 05.10.2026: ALLRIS-BürgerInfo der Bezirksversammlung"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-04011000": {
+  "id": "de-04011000",
+  "name": "Stadt Bremen",
+  "kind": "city",
+  "ags": "04011000",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sd.bremische-buergerschaft.de/",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "OParl der Bürgerschaft führt Landtag+Stadtbürgerschaft als eine Körperschaft (README) -> Gremien nach Namen filtern ('Stadtbürgerschaft', 'Städtische Deputation'); robots des OParl-Pfads prüfen",
+     "beleg": "Websuche 05.10.2026: SD.NET (Sternberg) der Bürgerschaft mit Stadtbürgerschaft und städtischen Deputationen, Dokumente ab 11/2017"
+    }
+   },
+   {
+    "url": "https://paris.bremische-buergerschaft.de/",
+    "from": "Websuche",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "Ergänzung/Abgleich; keine API belegt",
+     "beleg": "Websuche 05.10.2026: Parlamentsdokumentation PARIS mit Drucksachen/Protokollen von Landtag und Stadtbürgerschaft"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-160655055": {
+  "id": "de-160655055",
+  "name": "Erfüllende Gemeinde Artern",
+  "kind": "city",
+  "ags": "160655055",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://bi.lrakyf.de/",
+    "from": "Projektbestand:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "kreis-ris",
+     "hinweis": "Ob das Kreissystem Gremien der Stadt Artern oder anderer Gemeinden führt, ist nicht belegt; die Websuche fand keinen Hinweis darauf. Gremienliste des Kreissystems prüfen, bevor zugeordnet wird.",
+     "beleg": "Projektbestand: SessionNet des Kyffhäuserkreises (de-16065), robots „keine“, 28 Berichte; Quellensuche ordnete bi.lrakyf.de/info.asp Artern zu (Kategorie F)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-150835051": {
+  "id": "de-150835051",
+  "name": "Verbandsgemeinde Elbe-Heide",
+  "kind": "city",
+  "ags": "150835051",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ratsinfo.kitu-genossenschaft.de/elbeheide_bi/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "SessionNet auf KITU-Server; andere KITU-Mandanten im Bestand haben robots „erlaubt“ und werden vom SessionNet-Leser gelesen. Prüfen, ob Gemeinderäte der Mitgliedsgemeinden (Colbitz, Zielitz, Westheide …) mitgeführt werden.",
+     "beleg": "Websuche: SessionNet-Seiten elbeheide_bi/info.asp, kp0040.asp?__kgrnr=1 (Verbandsgemeinderat, Wahlperiode 2024-2029); Meldung „Verbandsgemeinde Elbe-Heide ist neu in der KITU“ (server-lesen.de)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-15088365": {
+  "id": "de-15088365",
+  "name": "Gemeinde Teutschenthal",
+  "kind": "city",
+  "ags": "15088365",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ratsinfo.kitu-genossenschaft.de/teutschenthal_bi/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "bisher als „Unbekanntes System“ geführt (Link über Vorleser readspeaker); KITU-SessionNet, öffentlicher Teil _bi.",
+     "beleg": "Websuche: SessionNet-Seite teutschenthal_bi/si0056.asp?__ksinr=17393"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-15083490": {
+  "id": "de-15083490",
+  "name": "Gemeinde Sülzetal",
+  "kind": "city",
+  "ags": "15083490",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ratsinfo.kitu-genossenschaft.de/suelze_bi/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "Quellensuche fand nur den Anmeldebereich suelze_ri (Kategorie F); öffentlicher Teil ist suelze_bi.",
+     "beleg": "Websuche: SessionNet-Seiten suelze_bi/si0042.asp, kp0040.asp, kp0050.asp"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-150875051": {
+  "id": "de-150875051",
+  "name": "Verbandsgemeinde Goldene Aue",
+  "kind": "city",
+  "ags": "150875051",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris-goldene-aue.komfa.de/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "komfa (Kommunalfabrik), kein Leser vorhanden (Anbindungskonzept DE21); robots nicht geprüft. Mitgliedsgemeinden Berga, Brücken-Hackpfüffel, Edersleben, Kelbra, Wallhausen.",
+     "beleg": "Websuche: „Terminliste - Ratsinformationssystem \"Goldene Aue\"“ (komfa); Gremienseite https://www.vwg-goldene-aue.de/politik/gremium.php?id=558"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-15085145": {
+  "id": "de-15085145",
+  "name": "Stadt Harzgerode",
+  "kind": "city",
+  "ags": "15085145",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris-harzgerode.komfa.de/",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "komfa-Leser nötig; mit Delitzsch, Raguhn-Jeßnitz, Aken (schon in der Liste mit komfa-Adresse) und Goldene Aue fünf Gebiete in SN/ST.",
+     "beleg": "Websuche: „Terminliste - Ratsinformationssystem Harzgerode“ auf komfa.de"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-150815051": {
+  "id": "de-150815051",
+  "name": "Verbandsgemeinde Beetzendorf-Diesdorf",
+  "kind": "city",
+  "ags": "150815051",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.beetzendorf-diesdorf.de/seite/689140/b%C3%BCrger-und-ratsinformationssystem-sitzungskalender.html",
+    "from": "Websuche:",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "vg-ris",
+     "hinweis": "Adresse des eigentlichen Systems auf der Seite ablesen; Mandatos ist kein bekanntes lesbares Produkt im Projekt (Leser/OParl prüfen).",
+     "beleg": "Websuche: Seite „Bürger- und Ratsinformationssystem / Sitzungskalender“ der VG; System Mandatos (SOMACOS)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-14628410": {
+  "id": "de-14628410",
+  "name": "Stadt Wilsdruff",
+  "kind": "city",
+  "ags": "14628410",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris-wilsdruff.zv-kisa.de/",
+    "from": "Linkfund",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "KISA-Leser existiert (api.php); Erkennung scheiterte -> Startseite/Weiterleitung prüfen.",
+     "beleg": "Linkfund der Quellensuche (Kategorie D „Unbekanntes System“); Muster ris-<name>.zv-kisa.de = KISA/More! Rubin"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-14627200": {
+  "id": "de-14627200",
+  "name": "Gemeinde Priestewitz",
+  "kind": "city",
+  "ags": "14627200",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://ris-priestewitz.zv-kisa.de/",
+    "from": "Linkfund",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "wie Wilsdruff: vorhandener More!-Rubin-Leser, Erkennung prüfen.",
+     "beleg": "Linkfund der Quellensuche (Kategorie D); KISA-Muster"
+    }
+   }
+  ],
+  "log": []
+ }
+}

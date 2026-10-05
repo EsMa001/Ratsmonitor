@@ -1,0 +1,136 @@
+nrw-05962 DE7 | Kreis Märkischer Kreis | https://www.sitzungsdienst-maerkischer-kreis.de/bi2/si018_a.asp
+nds-03459 DE7 | Landkreis Osnabrück | https://kis.lkos.de/bi/si010_r.asp
+de-14522 DE7 | Landkreis Mittelsachsen | https://ratsinfo-online.net/landkreismittelsachsen-bi/
+de-01002000 DE3 | Stadt Kiel | https://www.oksh.de/ki/sehen/kiel-tv-livestream-2-2/
+nds-03251 DE7 | Landkreis Diepholz | https://www.sitzungsdienst-landkreis-diepholz.de/ri/logon.asp
+de-08236 DE3 | Enzkreis | https://app-eu.readspeaker.com/cgi-bin/rsent?customerid=5069&lang=de_de&readid=readthis&url=https%3A%2F%2Fwww.enzkreis.de%2F%2FEnzkreis-digital%2FRatsinfosystem%2F
+de-09178 DE3 | Landkreis Freising | https://app-eu.readspeaker.com/cgi-bin/rsent?customerid=10782&lang=de_de&readid=webmaincontent&url=https://www.kreis-freising.de/buergerservice/abteilungen-und-sachgebiete/sitzungsdienst.html
+de-15084 DE7 | Burgenlandkreis | https://www.ratsinfo-online.de/blk-bi/allris.net.asp
+de-09774 DE3 | Landkreis Günzburg | https://app-eu.readspeaker.com/cgi-bin/rsent?customerid=10913&lang=de_de&readid=page-main&url=https%3A%2F%2Fwww.landkreis-guenzburg.de%2Flandkreis%2Fkreispolitik%2Fsitzungskalender%2F
+de-07231 DE10 | Landkreis Bernkastel-Wittlich | https://bernkastel-wittlich.more-rubin1.de/
+de-09773 DE10 | Landkreis Dillingen a.d.Donau | https://landkreis-dillingen.gremien.info/
+de-09182 DE7 | Landkreis Miesbach | https://www.sitzungsdienst-lra-miesbach.de/bi/si010.asp
+de-16074 DE7 | Saale-Holzland-Kreis | https://ssl.ratsinfo-online.net/landkreisshk-ri/logon.asp
+nds-03401000 DE7 | Stadt Delmenhorst | https://www.sitzungsdienst-delmenhorst.de/bi-r/home.asp
+de-12051000 DE7 | Stadt Brandenburg an der Havel | https://ctx1.stadt-brandenburg.de/bi/si010.asp
+de-09178124 DE3 | Stadt Freising | https://app-eu.readspeaker.com/cgi-bin/rsent?customerid=9645&lang=de_de&readid=webmaincontent&abc&url=https://www.freising.de/rathaus/politik/sitzungskalender
+de-16062041 DE7 | Stadt Nordhausen | https://ratsinfo-online.de/nordhausen-bi/
+nds-03352062 DE7 | Stadt Geestland | https://sitzungsdienst.geestland.eu/bi/si010_r.asp
+de-01062060 DE7 | Stadt Reinbek | https://www.sitzungsdienst-reinbek.de/pi/si010_e.asp
+de-06431011 DE6 | Stadt Heppenheim (Bergstraße) | https://www.heppenheim.de/sessionnet/
+de-12069656 DE7 | Stadt Werder (Havel) | https://ratsinfo-online.de/werder-havel-bi/
+de-12065144 DE7 | Stadt Hohen Neuendorf | https://ratsinfo-online.net/hohenneuendorf-bi/pa021.asp
+nrw-05978032 DE7 | Stadt Selm | https://www.sitzungsdienst-selm.de/bi/si010_r.asp
+de-09175132 DE7 | Gemeinde Vaterstetten | https://www.sitzungsdienst-vaterstetten.de/bi2/si010.asp?PALFDNR=1
+de-14522080 DE7 | Stadt Döbeln | https://www.ratsinfo-online.net/doebeln-bi/si010_e.asp
+nds-03241016 DE7 | Stadt Sehnde | https://www.sehnde.de/bi/allris.net.asp
+de-073385007 DE6 | Verbandsgemeinde Römerberg-Dudenhofen | https://www.vgrd.de/sessionnet/
+de-14627010 DE7 | Stadt Coswig | https://ratsinfo-online.de/coswig-bi/
+de-01056044 DE7 | Stadt Schenefeld | https://www.sitzungsdienst-schenefeld.de/bi/fr010_r.asp
+de-01056049 DE6 | Stadt Uetersen | https://ratsinfo.uetersen.de/
+de-01060005 DE7 | Stadt Bad Segeberg | https://www.sitzungsdienst-bad-segeberg.de/bi2/si010_e.asp
+nds-033595409 DE7 | Samtgemeinde Oldendorf-Himmelpforten | https://www.oldendorf-himmelpforten.de/bi/
+de-01062006 DE7 | Stadt Bargteheide | https://bargteheide.ratsportal.net/pi-r/si010_r.asp
+de-12069604 DE7 | Gemeinde Stahnsdorf | https://ratsinfo-online.net/stahnsdorf-bi/allris.net.asp
+de-12064428 DE7 | Gemeinde Rüdersdorf bei Berlin | https://ratsinfo-online.net/ruedersdorf-bi/allris.net.asp
+nrw-05958036 DE7 | Stadt Olsberg | https://olsberg.allris-online.de/bi-r/pa020_r.asp
+de-14628410 DE10 | Stadt Wilsdruff | https://ris-wilsdruff.zv-kisa.de/
+de-12060005 DE7 | Gemeinde Ahrensfelde | https://ratsinfo-online.de/ahrensfelde-bi/si010_e.asp
+de-150845053 DE7 | Verbandsgemeinde Unstruttal | https://ratsinfo-online.net/vgunstruttal-bi/si018_a.asp?GRA=1
+de-15091145 DE6 | Stadt Jessen (Elster) | http://ratsinfo.jessen.de/
+de-073385001 DE10 | Verbandsgemeinde Dannstadt-Schauernheim | https://dannstadt-schauernheim.more-rubin1.de/
+de-12063036 DE7 | Gemeinde Brieselang | https://ratsinfo-online.de/brieselang-bi/
+de-15088365 DE3 | Gemeinde Teutschenthal | https://app-eu.readspeaker.com/cgi-bin/rsent?customerid=12045&lang=de_de&readclass=readThis&url=https://www.gemeinde-teutschenthal.de/de/sitzungskalender.html
+de-15083411 DE7 | Stadt Oebisfelde-Weferlingen | https://ratsinfo-online.de/oebisfelde-weferlingen-bi/si010_e.asp
+de-10041516 DE3 | Gemeinde Quierschied | https://apps.apple.com/de/app/allris/id547591986
+de-06633028 DE3 | Stadt Wolfhagen | https://www.findcity.de/?m=stadt-wolfhagen-buergerinfo-34466a
+nds-03453005 DE10 | Gemeinde Emstek | https://emstek.gremien.info/users
+de-09574152 DE3 | Stadt Röthenbach a.d.Pegnitz | https://app-eu.readspeaker.com/cgi-bin/rsent?customerid=6298&lang=de_de&readid=readspeakerContentLeseBereich&url=https%3A%2F%2Fwww.roethenbach.de%2F%2Frathaus-ortsrecht%3Bheizoelverbraucheranlagen-buergerinfo%3B830%3B19%3B1.html
+nds-032515402 DE7 | Samtgemeinde Barnstorf | https://www.sitzungsdienst-barnstorf.de/ri/logon.asp
+nds-03452012 DE3 | Gemeinde Ihlow | https://www.findcity.de/?m=gemeinde-ihlow-buergerinfo-26632b
+de-130725251 DE3 | Amt Bad Doberan-Land | https://www.findcity.de/?m=amt-bad-doberan-land-buergerinfo-18209e
+de-12065096 DE7 | Gemeinde Glienicke/Nordbahn | https://ratsinfo-online.de/glienicke-ri/
+nds-03457017 DE3 | Gemeinde Ostrhauderfehn | https://www.findcity.de/?m=gemeinde-ostrhauderfehn-buergerinfo-26842b
+de-14729140 DE7 | Stadt Frohburg | https://ratsinfo-online.net/frohburg-bi/pa021.asp
+de-073315005 DE10 | Verbandsgemeinde Wöllstein | https://woellstein.more-rubin1.de/
+de-15088020 DE3 | Stadt Bad Dürrenberg | https://www.findcity.de/?m=stadt-bad-d%FCrrenberg-buergerinfo-06231a
+de-08416048 DE3 | Gemeinde Ammerbuch | https://xn--baw-joa.social/@Ammerbuch
+de-08335022 DE6 | Stadt Engen | https://session.engen.de/buergerinfo/
+nds-033515402 DE7 | Samtgemeinde Flotwedel | https://www.sitzungsdienst-flotwedel.de/bi2/si010_e.asp
+de-14628050 DE7 | Gemeinde Bannewitz | http://www.ratsinfo-online.de/bannewitz-bi/
+de-15091110 DE7 | Stadt Gräfenhainichen | https://ratsinfo-online.de/graefenhainichen-bi/si010_e.asp
+de-14521450 DE7 | Stadt Oelsnitz/Erzgeb. | https://ratsinfo-online.de/oelsnitzerzgebirge-bi/to010.asp?SILFDNR=618
+de-12069590 DE7 | Gemeinde Schwielowsee | https://ssl.ratsinfo-online.net/schwielowsee-bi/pa021.asp
+de-12060198 DE7 | Gemeinde Schorfheide | https://www.ratsinfo-online.net/schorfheide-bi/si010_e.asp
+de-12063273 DE7 | Gemeinde Schönwalde-Glien | https://www.ratsinfo-online.net/schoenwaldeglien-bi/to010.asp?SILFDNR=1190
+de-10046112 DE3 | Gemeinde Marpingen | https://www.findcity.de/?m=gemeinde-marpingen-buergerinfo-66646b
+de-15088065 DE7 | Stadt Braunsbedra | https://ratsinfo-online.de/braunsbedra-bi/si010_e.asp
+de-15086055 DE10 | Stadt Gommern | https://gommern.more-rubin1.de/calendar.php?month=2022-08
+de-01055033 DE3 | Stadt Oldenburg in Holstein | https://app-eu.readspeaker.com/cgi-bin/rsent?customerid=10892&lang=de_de&readid=readthis&url=https%3A%2F%2Fwww.oldenburg-holstein.de%2F%2FVerwaltung-Politik%2FVerwaltung-und-Politik%2FPolitik%2FRatsinformationssystem%2F
+de-12064029 DE7 | Stadt Altlandsberg | https://ratsinfo-online.net/altlandsberg-bi/filelist.asp?id=1
+de-01055021 DE3 | Stadt Heiligenhafen | https://stream.lifesizecloud.com/extension/16533589/323e3161-61a3-416a-911c-a746cef79fc7
+de-12072120 DE7 | Gemeinde Großbeeren | https://ratsinfo-online.de/grossbeeren-bi/si010_e.asp
+de-12069249 DE7 | Gemeinde Groß Kreutz (Havel) | https://ratsinfo-online.de/grosskreutz-ri/logon.asp
+de-06534021 DE3 | Stadt Wetter (Hessen) | https://www.total-lokal.de/city/wetter/data/35083_50_07_25/index.html
+nrw-05754004 DE3 | Stadt Borgholzhausen | https://www.findcity.de/?m=stadt-borgholzhausen-buergerinfo-33829a
+de-15086005 Anmeldebereich | Gemeinde Biederitz | https://ratsinfo.kitu-genossenschaft.de/biederitz_ri/ylogon.asp?smcpn=info&smclom=1
+de-150845052 DE7 | Verbandsgemeinde Droyßiger-Zeitzer Forst | https://ratsinfo-online.net/vgem-dzf-bi/si010_e.asp
+de-13072106 DE3 | Stadt Teterow | https://app-eu.readspeaker.com/cgi-bin/rsent?customerid=11476&lang=de_de&readid=contentcontainer&url=https://www.teterow.de/stadtvertretung/sitzungskalender
+de-09187128 DE10 | Gemeinde Bad Endorf | https://bad-endorf.gremien.info/
+de-15084315 DE7 | Stadt Lützen | https://www.ratsinfo-online.de/luetzen-bi/si010_e.asp
+de-09474154 DE6 | Gemeinde Neunkirchen a.Brand | https://www.neunkirchen-am-brand.de/sessionnet/
+de-12065036 DE7 | Gemeinde Birkenwerder | https://ratsinfo-online.de/birkenwerder-bi/si010_e.asp
+de-09373155 DE6 | Gemeinde Postbauer-Heng | https://www.postbauer-heng.de/sessionnet/
+de-09373151 DE6 | Stadt Parsberg | https://www.parsberg.de/sessionnet/bi/
+nds-03155010 DE7 | Gemeinde Nörten-Hardenberg | https://www.noerten-hardenberg.de/bi/
+nds-03351023 DE7 | Gemeinde Wietze | https://www.wietze.sitzung-online.com/pi2/allris.net.asp
+de-120665607 DE7 | Amt Ruhland | https://ratsinfo-online.de/ruhland-bi/
+de-145215139 DE7 | Verwaltungsgemeinschaft Zschorlau | http://ratsinfo-online.de/bockau-bi/
+de-094745427 DE3 | Verwaltungsgemeinschaft Gräfenberg | https://www.total-lokal.de/publikationen/buergerinformationsbroschuere-verwaltungsgemeinschaft-graefenberg-auflage-4-.html
+nds-032575401 DE3 | Samtgemeinde Eilsen | https://www.findcity.de/?m=samtgemeinde-eilsen-buergerinfo-3170702
+de-160635057 DE10 | Erfüllende Gemeinde Ruhla | https://ruhla.more-rubin1.de/?&from&
+de-06431006 DE10 | Gemeinde Einhausen | https://einhausen.gremien.info/
+de-146265214 DE6 | Verwaltungsgemeinschaft Großschönau-Hainewalde | https://www.grossschoenau.de/sessionnet/
+de-130755560 DE3 | Amt Uecker-Randow-Tal | https://apps.apple.com/de/app/allris/id547591986
+nds-033575403 DE3 | Samtgemeinde Geestequelle | https://www.sitzungsdienst.net/sdnet-rich-sitzungsapps/
+de-06432003 DE10 | Gemeinde Bickenbach | https://bickenbach.gremien.info/calendar
+de-120665606 DE7 | Amt Ortrand | https://ratsinfo-online.de/ortrand-bi/si010_e.asp
+de-09571135 DE3 | Gemeinde Dietenhofen | https://www.buergerservice-portal.de/bayern/dietenhofen
+de-14625525 DE7 | Stadt Schirgiswalde-Kirschau | https://ratsinfo-online.net/schirgiswaldekirschau-bi/
+de-091875184 DE7 | Verwaltungsgemeinschaft Pfaffing | https://www.sitzungsdienst-vgpfaffing.de/pi-pfaffing/pa020.asp?PALFDNR=3
+de-09188144 DE7 | Gemeinde Weßling | https://www.sitzungsdienst-wessling.de/pi/si010_r.asp
+de-14627360 DE7 | Gemeinde Zeithain | https://ratsinfo-online.net/zeithain-bi/pa021.asp
+de-091875162 DE3 | Verwaltungsgemeinschaft Halfing | https://www.total-lokal.de/publikationen/buergerinformationsbroschuere-der-gemeinde-halfing-auflage-1-.html
+de-14625330 DE7 | Gemeinde Lohsa | https://ratsinfo-online.de/lohsa-bi/si010_e.asp
+de-14521500 DE3 | Gemeinde Raschau-Markersbach | https://www.findcity.de/?m=gemeinde-raschau-markersbach-buergerinfo-08352b
+de-08426038 DE3 | Gemeinde Eberhardzell | https://www.total-lokal.de/publikationen/buergerinformationsbroschuere-gemeinde-eberhardzell-auflage-1-.html
+de-08326060 DE6 | Stadt Triberg im Schwarzwald | https://triberg-sitzungsdienst.komm.one/bi/
+de-14625090 DE7 | Gemeinde Cunewalde | https://ratsinfo-online.net/cunewalde-bi/
+de-09679142 DE3 | Gemeinde Güntersleben | https://www.xing.com/spi/shares/new?url=https%3A%2F%2Fwww.guentersleben.de%2Fbuergerservice-politik%2Fpolitik%2Fsitzungskalender%2Fsitzung%2Fgemeinderatssitzung-8
+de-08125096 DE6 | Gemeinde Untereisesheim | https://untereisesheim-sitzungsdienst.komm.one/bi/
+de-14522020 DE3 | Stadt Augustusburg | https://www.total-lokal.de/publikationen/buergerinformationsbroschuere-augustusburg-auflage-3-.html
+de-06636007 DE6 | Gemeinde Meinhard | https://www.meinhard.de/sessionnet/
+de-09190130 DE10 | Gemeinde Hohenpeißenberg | https://hohenpeissenberg.gremien.info/users
+de-09187113 DE3 | Gemeinde Amerang | https://www.heimat-info.de/embeddings/events/v1/?bgc=%23ffffff&acbc=%23e42312&acfc=%23ffffff&ct=48bf4cfb-d543-4270-9062-fcd0eda5cb32
+de-14521670 DE7 | Stadt Wolkenstein | https://ratsinfo-online.net/wolkenstein-bi/
+de-12064274 DE7 | Gemeinde Letschin | https://www.ratsinfo-online.net/letschin-bi/si010_e.asp
+de-16077028 DE6 | Stadt Lucka | https://www.lucka.de/sessionnet/
+de-09571171 DE3 | Gemeinde Lehrberg | https://www.total-lokal.de/publikationen/markt-lehrberg-buergerinformationsbroschuere-auflage-2-.html
+de-14627200 DE10 | Gemeinde Priestewitz | https://ris-priestewitz.zv-kisa.de/
+de-14625490 DE6 | Gemeinde Radibor | https://www.radibor.de/sessionnet/
+de-06632010 DE6 | Gemeinde Hohenroda | https://www.hohenroda.de/sessionnet/
+de-14521600 DE3 | Gemeinde Stützengrün | https://www.total-lokal.de/publikationen/buergerinformationsbroschuere-der-gemeinde-stuetzengruen-auflage-1-.html?titel=1
+de-06634021 DE3 | Gemeinde Schrecksbach | https://www.total-lokal.de/publikationen/buergerinformationsbroschuere-der-gemeinde-schrecksbach.html
+de-08136034 DE6 | Gemeinde Iggingen | https://iggingen-sitzungsdienst.komm.one/bi/
+de-14523380 DE3 | Gemeinde Steinberg | https://www.total-lokal.de/publikationen/buergerinformationsbroschuere-der-gemeinde-steinberg-auflage-8.html?titel=1
+de-09187156 DE3 | Gemeinde Nußdorf a.Inn | https://www.xing.com/spi/shares/new?url=https%3A%2F%2Fwww.nussdorf.de%2Funsere-gemeinde%2Fgemeinderat%2Fsitzungskalender%2Fsitzung%2Fgemeinderatssitzung-bauausschuss-9
+de-09473138 DE6 | Gemeinde Itzgrund | https://www.itzgrund.de/sessionnet/
+de-08136062 DE6 | Gemeinde Schechingen | https://schechingen-sitzungsdienst.komm.one/bi/
+de-08128137 DE3 | Gemeinde Wittighausen | https://www.xing.com/social_plugins/share/new?sc_p=xing-share&h=1&url=https%3A%2F%2Fwww.wittighausen.de%2Fverwaltung%2Fgemeinderat%2Fsitzungsdienst.html
+de-08417052 DE6 | Gemeinde Ratshausen | https://www.ratshausen.de/sessionnet/
+de-15083490 Anmeldebereich,FG4 | Gemeinde Sülzetal | https://ratsinfo.kitu-genossenschaft.de/suelze_ri/
+nds-03461001 DE3 | Gemeinde Berne | https://x.com/intent/tweet?url=https%3A%2F%2Fwww.berne.de%2Fseite%2F177679%2Fsitzungskalender-halbjahr.html
+de-08315048 DE3 | Gemeinde Hartheim am Rhein | https://epaper.buergerinformation.de/epaper-Breisgau_2025-2026/page2.html
+nds-03459019 FG4 | Stadt Georgsmarienhütte | https://gmh.ris.itebo.de/bi/info.asp
+nds-03158039 FG4 | Gemeinde Schladen-Werla | https://session.schladen.de/buergerinfo/info.php
+nds-031545401 FG4 | Samtgemeinde Grasleben | https://ris-sg-gl-migration.edv-helmstedt.de/index.php?id=349&no_cache=1

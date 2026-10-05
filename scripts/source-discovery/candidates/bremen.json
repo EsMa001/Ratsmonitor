@@ -1,0 +1,63 @@
+{
+ "de-04011000": {
+  "id": "de-04011000",
+  "name": "Stadt Bremen",
+  "kind": "city",
+  "ags": "04011000",
+  "status": "Vorschlag vom 05.10.2026, ungeprüft: nicht in den Katalog übernommen. Der Prüflauf muss vom Rechner des Inhabers laufen.",
+  "begruendung": [
+   "Die Stadtbürgerschaft ist der Rat der Stadtgemeinde Bremen (Gebiet de-04011000). Sie besteht aus den in der Stadt Bremen gewählten Mitgliedern der Bremischen Bürgerschaft und tagt im selben Haus wie der Landtag.",
+   "Das Sitzungssystem der Bürgerschaft ist SD.NET (Sternberg) unter https://sd.bremische-buergerschaft.de/ und für Bürger ohne Anmeldung lesbar. Laut viertem Durchgang (README.md, „Weiter offen“) führt seine OParl-Schnittstelle Landtag und Stadtbürgerschaft als eine Körperschaft; deshalb filtert der Eintrag nach Gremien (Feld organizations, server/integrations/oparl-regional.mjs).",
+   "OParl-Adresse: der übliche SD.NET-Pfad webservice/oparl/v1.1/system (v1.0 als zweiter Kandidat). Das OParl-Verzeichnis (github.com/OParl/resources, endpoints.yml) führt Bremen nicht; die Adresse ist zu prüfen. Beide Kandidaten tragen oparlOnly: Fragt verify.mjs die Seiten von SD.NET, würde der SD.NET-Leser ohne Gremienfilter Landtag und Stadt zusammen übernehmen.",
+   "Städtische Gremien laut Websuche (bremische-buergerschaft.de, 21. Wahlperiode): Stadtbürgerschaft; Haushalts- und Finanzausschuss (Stadt), Controllingausschuss (Stadt), Rechnungsprüfungsausschuss (Stadt), Ausschuss für Petitionen und Bürgerbeteiligung (Stadt); städtische Deputationen, darunter für Inneres, für Kinder und Bildung, für Soziales, Jugend und Integration, für Mobilität, Bau und Stadtentwicklung sowie für Gesundheit, Pflege und Verbraucherschutz. Gleichnamige Gremien des Landes tragen „(Land)“ oder heißen „Staatliche Deputation …“; nur das Land hat Petitionsausschuss (Land), Verfassungs- und Geschäftsordnungsausschuss, Rechtsausschuss, Ausschuss für Angelegenheiten der Häfen im Lande Bremen, Ausschuss für Bundes- und Europaangelegenheiten u. a. Sie passen auf kein include-Muster und werden nicht gelesen; der gemeinsame Vorstand der Bürgerschaft ebenso nicht.",
+   "Die Muster sind Teile der Namen (Groß-/Kleinschreibung und ä/ae gleich). Wie die Gremien in der OParl-Schnittstelle genau heißen (etwa „Stadtbürgerschaft“ oder „Bremische Bürgerschaft (Stadt)“), ist ungeprüft: Schritt 1 des Prüfaufrufs liest sie ab; passt die Vollversammlung der Stadtbürgerschaft auf kein Muster, ist include zu ergänzen.",
+   "Fehlt ein Gremium, ist eines nicht lesbar oder ist bei einer gemeinsamen Sitzung ein ausgeschlossenes Gremium dabei (staatliche und städtische Deputation zusammen), wird die Sitzung nicht übernommen. coverage zählt das als unassignedMeetings bzw. filteredMeetings und mixedMeetings. Ist mixedMeetings im Probeabruf groß, gehen städtische Punkte verloren; das wäre eine eigene Folgeaufgabe (Trennung nach Tagesordnungspunkten).",
+   "Zuordnung der Körperschaft: Der Kandidat stammt aus einer Websuche (guessed), deshalb ordnet verify.mjs die einzige Körperschaft nicht von selbst zu, und ihr Name („Bremische Bürgerschaft“ o. ä.) nennt die Stadt nicht. Ihre Adresse kommt nach Schritt 1 als body in beide Kandidaten; verify.mjs übernimmt body und organizations des Kandidaten in den Eintrag (tryOparl, Aufbau von source)."
+  ],
+  "pruefaufruf": [
+   "0. robots.txt ansehen (laut viertem Durchgang erlaubt; verify.mjs prüft erneut): curl -s -A \"Ratsmonitor-SourceCatalog/1.0\" https://sd.bremische-buergerschaft.de/robots.txt",
+   "1. Körperschaft und Gremiennamen ablesen (3 Abrufe): node -e \"const H={headers:{Accept:'application/json','User-Agent':'Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)'}};const j=u=>fetch(u,H).then(r=>r.json());(async()=>{const s=await j('https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/system');let b=typeof s.body==='string'?(await j(s.body)).data:s.body;b=await Promise.all(b.map(x=>typeof x==='string'?j(x):x));for(const x of b)console.log('Körperschaft',x.id,'|',x.name,'|',x.ags||'');const o=await j(b[0].organization);for(const x of o.data)console.log('  ',x.name,'|',x.id)})()\"",
+   "2. Die Adresse der Körperschaft als \"body\" in beide Kandidaten dieser Datei eintragen; Muster in organizations an die abgelesenen Namen anpassen, falls nötig.",
+   "3. Probeabruf mit Stichprobe (20 Punkte; kein Gremium des Landtags darf erscheinen): node -e \"import('./server/integrations/oparl-regional.mjs').then(async m=>{const c=require('./scripts/source-discovery/candidates/bremen.json')['de-04011000'].candidates[0];const r=await m.collectRegionalOparl({id:'de-04011000',name:'Stadt Bremen',kind:'city',method:'oparl',system:c.url,body:c.body,organizations:c.organizations},{window:'3m'});console.log(JSON.stringify(r.coverage,null,1));for(const t of r.topics.slice(0,20))console.log(t.committee,'|',t.title)})\"",
+   "4. Prüflauf: LAND=de DIR=tmp/source-discovery-de/ CANDIDATES=../../scripts/source-discovery/candidates/bremen.json OUT=verified-search.json node scripts/source-discovery/verify.mjs de-04011000",
+   "5. Übernahme: TARGET=server/integrations/de-sources.json REPORT=requirements/de-sources-report.md TITLE=\"Quellen für die übrigen Länder\" DIR=tmp/source-discovery-de/ LAND=de node scripts/source-discovery/build.mjs; danach DIR=tmp/source-discovery-de/ LAND=de node scripts/source-discovery/servers.mjs, ONLY_NEW=1 node scripts/source-discovery/robots.mjs und node --test tests/*.test.mjs. Der Eintrag in de-sources.json muss organizations und body tragen."
+  ],
+  "quellen": [
+   "https://sd.bremische-buergerschaft.de/",
+   "https://www.bremische-buergerschaft.de/index.php?id=85",
+   "https://www.bremische-buergerschaft.de/index.php?id=87",
+   "https://www.bremische-buergerschaft.de/index.php?id=613",
+   "https://www.bremische-buergerschaft.de/index.php?id=641",
+   "https://m.bremische-buergerschaft.de/index.php?id=382&gremium_id=1678",
+   "https://www.buergerschaft.bremen.de/index.php?id=672"
+  ],
+  "sites": [],
+  "log": [],
+  "candidates": [
+   {
+    "url": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/system",
+    "from": "https://sd.bremische-buergerschaft.de/",
+    "guessed": "Websuche",
+    "byHref": true,
+    "oparlOnly": true,
+    "register": "SD.NET-Standardpfad (Websuche)",
+    "organizations": {
+     "include": ["Stadtbürgerschaft", "(Stadt)", "Städtische Deputation"],
+     "exclude": ["Landtag", "(Land)", "Staatliche Deputation"]
+    }
+   },
+   {
+    "url": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.0/system",
+    "from": "https://sd.bremische-buergerschaft.de/",
+    "guessed": "Websuche",
+    "byHref": true,
+    "oparlOnly": true,
+    "register": "SD.NET-Standardpfad (Websuche)",
+    "organizations": {
+     "include": ["Stadtbürgerschaft", "(Stadt)", "Städtische Deputation"],
+     "exclude": ["Landtag", "(Land)", "Staatliche Deputation"]
+    }
+   }
+  ]
+ }
+}

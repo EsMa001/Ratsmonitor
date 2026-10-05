@@ -9,6 +9,7 @@ import {CATALOG,LANDS} from '../shared/catalog.mjs';
 import {matchesBody} from '../server/integrations/body-identity.mjs';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {searchMonitor} from '../server/integrations/monitor-search.mjs';
+import {sourceAddress} from '../scripts/source-discovery/reasons.mjs';
 
 test('Niedersachsen: 403 administrative units and 37 districts with unique keys, parents, geometry and population',()=>{
  const cities=catalog.filter(r=>r.kind==='city'),districts=catalog.filter(r=>r.kind==='district');
@@ -60,6 +61,6 @@ test('every Lower Saxon source belongs to exactly one catalog area and is verifi
  for(const s of sources){
   const r=catalog.find(x=>x.id===s.id);assert.ok(r,s.id);assert.equal(s.name,r.name);assert.equal(s.kind,r.kind);
   assert.ok(['oparl','scraper','official-api'].includes(s.method),s.id);assert.match(s.verifiedAt,/^\d{4}-\d{2}-\d{2}$/);
-  const key=(s.system||s.base)+'|'+(s.body||'');assert.ok(!addresses.has(key),'address used twice: '+key);addresses.add(key);
+  const key=sourceAddress(s);assert.ok(!addresses.has(key),'address used twice: '+key);addresses.add(key);
  }
 });

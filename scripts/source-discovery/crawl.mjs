@@ -2,6 +2,7 @@
 // Reads only public pages, follows normal links, identifies itself and never retries a refused request.
 import fs from 'node:fs';
 import {loadAreas,skipReason} from './areas.mjs';
+import {CRAWL_SKIP,unwrapLink} from './rules.mjs';
 // DIR, LAND and AREAS let the same search run over another list of areas (another state, or the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -38,7 +39,8 @@ function anchors(html,base){
  for(const m of html.matchAll(/<(?:iframe|frame)\b[^>]*src\s*=\s*["']([^"']+)["']/gi)){try{out.push({url:new URL(m[1],base).href,text:'(eingebettet)'});}catch{}}
  return out;
 }
-const skip=/\.(pdf|jpe?g|png|gif|svg|zip|docx?|xlsx?|ics|mp[34])(\?|$)|mailto:|facebook|instagram|youtube|twitter|linkedin|google\.|wikipedia|readspeaker\.com|whatsapp\.com|\/\/wa\.me\/|xing\.com|\/\/t\.me\/|total-lokal\.de|buergerservice-portal\.de|heimat-info\.de|lifesizecloud|oksh\.de|\.social\/@|x\.com\/intent|twitter\.com\/(?:intent|share)|facebook\.com\/(?:share|sharer)|linkedin\.com\/(?:share|uas)|acrobat\.adobe\.com|atlas\.bayern\.de|\/\/epaper\.|apps\.apple\.com|apps\.microsoft\.com|play\.google\.com|www\.sitzungsdienst\.net|\/\/www\.ratsinfomanagement\.net|somacos\.de|cc-egov\.de|\/(impressum|datenschutz|kontakt|barrierefrei)/i;
+// Files, social media, read-aloud and sharing services, app stores, directories (findcity.de) and vendor pages: rules.mjs.
+const skip=CRAWL_SKIP;
 async function crawl(region){
  let sites=[...new Set(wikidata.filter(w=>w.kind===region.kind&&w.ags===region.ags&&w.website).map(w=>w.website))];
  // A municipal association without a website of its own: the website of its member of the same name (an "erfüllende
@@ -52,7 +54,8 @@ async function crawl(region){
  const bare=h=>h.replace(/^www\./,'');
  const IN_SITE=/sessionnet|si00[0-9][0-9][.](asp|php)|[/]bi[/]|[/]info[.](asp|php)|[/]allris[/]|[/](si010|si018|gr010|to010|vo020|kp040)([?]|$)/i;
  // A hit is a link that leaves the municipal site (or is an embedded SessionNet path). Internal pages about the council are explored further.
- const scan=(page,host)=>{const nav=[];for(const a of anchors(page.html,page.url)){if(skip.test(a.url))continue;let u;try{u=new URL(a.url);}catch{continue;}
+ // A read-aloud or sharing link counts as the page of the website it carries (readspeaker …&url=…/Ratsinfosystem/).
+ const scan=(page,host)=>{const nav=[];for(const link of anchors(page.html,page.url)){const inner=unwrapLink(link.url,host),a=inner?{...link,url:inner}:link;if(skip.test(a.url))continue;let u;try{u=new URL(a.url);}catch{continue;}
    const external=bare(u.hostname)!==host,href=RIS_HREF.test(a.url),text=RIS_TEXT.test(a.text)&&!NOT_RIS_TEXT.test(a.text);
    if((external&&(href||text))||(!external&&IN_SITE.test(a.url))){const k=a.url.split('#')[0];if(!found.has(k))found.set(k,{url:k,text:a.text,from:page.url,byHref:href,byText:text});}
    else if(!external&&(href||text||NAV.test(a.text)||NAV.test(u.pathname)))nav.push({...a,hot:href||text,from:page.url});}

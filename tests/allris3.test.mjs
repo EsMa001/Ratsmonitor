@@ -40,6 +40,24 @@ test('ALLRIS 3 is recognised from the linked page; the calendar program is the o
  assert.equal(detectAllris3('https://www.example.test/politik/','<html><a href="https://other.example.test/bi/allris.net.asp">ALLRIS net</a></html>'),null);
  assert.equal(detectAllris3('https://www.example.test/bi/si010.asp','<html><h1>Seite nicht gefunden</h1></html>'),null);
 });
+test('ALLRIS 3 at folder addresses of a tenant; the members\' area leads to the public folder next to it',()=>{
+ // Modelled on the Westerstede start page: a tenant folder of the ratsinfo-online hosting answers with the start page.
+ const folder='https://ratsinfo-online.net/landkreismittelsachsen-bi/',start=page('wst-allris.net.html').replaceAll('/bi/allris.net.asp','/landkreismittelsachsen-bi/allris.net.asp');
+ assert.deepEqual(detectAllris3(folder,start),{base:folder,calendar:'si010_e.asp'});
+ // Login of a tenant (Saale-Holzland-Kreis) and of a plain ri/ folder: the public part is <name>-bi/ or bi/.
+ const login='<html><title>ALLRIS net</title><link rel="shortcut icon" href="images/ALLRIS.ico" /><form action="logon.asp" method="post"></form></html>';
+ assert.deepEqual(detectAllris3('https://ssl.ratsinfo-online.net/landkreisshk-ri/logon.asp',login),{base:'https://ssl.ratsinfo-online.net/landkreisshk-bi/',calendar:null});
+ assert.deepEqual(detectAllris3('https://www.harsefeld.sitzung-online.de/ri/logon.asp',login),{base:'https://www.harsefeld.sitzung-online.de/bi/',calendar:null});
+ assert.deepEqual(detectAllris3('https://www.example.test/rat_ri/logon.asp',login),{base:'https://www.example.test/rat_bi/',calendar:null});
+ // A folder address in the members' area that frames the login or the start page (Glienicke/Nordbahn, Diekholzen type).
+ assert.deepEqual(detectAllris3('https://ratsinfo-online.de/glienicke-ri/','<html><title>ALLRIS net</title><frameset><frame src="logon.asp" name="main"></frameset></html>'),{base:'https://ratsinfo-online.de/glienicke-bi/',calendar:null});
+ assert.deepEqual(detectAllris3('https://www.example.test/ri/','<html><frameset><frame src="allris.net.asp" name="main"></frameset><link rel="shortcut icon" href="images/ALLRIS.ico" /></html>'),{base:'https://www.example.test/bi/',calendar:null});
+ // A public page whose menu offers the members' login keeps its own folder; a login link alone without ALLRIS marks is nothing.
+ assert.deepEqual(detectAllris3('https://ris.westerstede.de/bi/allris.net.asp',page('wst-allris.net.html').replace('</ul>\n</div>','<li><a href="../ri/logon.asp">Anmelden</a></li></ul>\n</div>')),{base:'https://ris.westerstede.de/bi/',calendar:'si010_e.asp'});
+ assert.equal(detectAllris3('https://www.example.test/politik/','<html><a href="https://www.example.test/ri/logon.asp">Login für Ratsmitglieder</a></html>'),null);
+ // A folder name that only ends in "ri" (…/bri/) is no members' area.
+ assert.deepEqual(detectAllris3('https://www.example.test/bri/allris.net.asp',page('wst-allris.net.html')),{base:'https://www.example.test/bri/',calendar:'si010_e.asp'});
+});
 test('ALLRIS 3 calendar: classic and responsive months, further meetings of a day, only meetings with a public agenda',()=>{
  const url=(source,n,program='to010_r.asp')=>source.base+program+'?SILFDNR='+n;
  assert.deepEqual(parseAllris3Calendar(page('lkos-si010_r.html'),lkos,{year:2026,month:9}),[

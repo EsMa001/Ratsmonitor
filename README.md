@@ -348,6 +348,20 @@ Viele kleine Gemeinden und Gemeindeverbände haben kein Ratsinformationssystem, 
 - **Ideen und Rechtsrahmen:** [requirements/website-leser-ideen.md](requirements/website-leser-ideen.md) (Bekanntmachungspflicht je Land, Redaktionssysteme und ihre Ausgänge, Amtsblatt-Verlage, weitere Quellen).
 - **Stand:** Kommunale Websites waren aus der Entwicklungsumgebung nicht erreichbar. Leser und Suche sind mit nachgebildeten Seiten getestet; ihre Trefferquote zeigt erst der erste Lauf vom Rechner des Projektinhabers. Noch kein Gebiet ist über den Leser angebunden. Fünf Angriffsrunden mit rund 1.600 nachgebildeten Eingaben fanden je Runde noch neue Wege, nichtöffentliche Punkte durchzubringen (zuletzt 7 schwere, alle behoben); der Parser ist damit nicht nachweislich dicht. Bevor die erste Website-Quelle in den Katalog kommt, braucht es deshalb eine Freigabeprüfung: Berichte aus dem Leser erst nach Sichtprüfung oder zweiter, unabhängiger Prüfung veröffentlichen.
 
+## Lücken ohne Dritte (05.10.2026)
+
+**Recherche je Land:** [requirements/laender-recherche.md](requirements/laender-recherche.md) (Einzelberichte in [requirements/laender-recherche/](requirements/laender-recherche/)). Kreise dokumentieren die Sitzungen ihrer Gemeinden nicht; die tragende Ebene ist der Gemeindeverband (VG, Amt, Verbandsgemeinde, Samtgemeinde, GVV). Die Suche übersieht Systeme, die die Website nicht verlinkt (digitalfabriX, sitzung-mv.de, KITU, kdgoe, rznk.de, ekom21-OParl). Mitteilungsblätter der Verlage (LINUS WITTICH, NUSSBAUM) sind die breiteste Quelle, werden ohne Vereinbarung aber nicht genutzt. Hamburg ist über das Transparenzportal erreichbar (Entscheidung über die Bezirke offen), Berlin nur mit Freigabe, Bremen über einen Gremienfilter. Die Recherche beruht auf Suchtreffern; die Cloud-Umgebung erreicht keine kommunalen Server.
+
+Umgesetzt, jeweils mit Tests:
+
+- **Kandidaten für 100 offene Gebiete** (106 Adressen) in `scripts/source-discovery/candidates/research-2026-10-*.json`, dazu ein Vorschlag für Bremen. Sie sind ungeprüft; Ablauf im Abschnitt „Kandidaten aus der Länderrecherche“ von [scripts/source-discovery/README.md](scripts/source-discovery/README.md).
+- **Gremienfilter für OParl** (`organizations` im Katalog, `server/integrations/oparl-regional.mjs`): liest aus einem System mit mehreren Räten nur die Sitzungen der gewählten Gremien; im Zweifel nichts.
+- **Suche und Prüfung** (`scripts/source-discovery/rules.mjs`): öffentlicher Bereich neben Anmeldeadressen (auch ALLRIS 3), Vorlese-, Teilen- und Verzeichnislinks verworfen, Namenszusätze, Bindestrich- und Kurznamen (`identity-aliases.json`), mitbenutzte Systeme anderer Gemeinden erkannt.
+- **Gründe im Bericht** (`scripts/source-discovery/reasons.mjs`): „kein Link“ aufgeteilt nach fehlender Website, gesperrter Website und durchsuchter Website; eigene Gründe für ALLRIS 3, SD.NET, More! Rubin und Gebiete mit Sitzungen nur als Webseite oder PDF (Kandidaten für den Website-Leser).
+- **Neuprüfliste** für 136 Gebiete, deren Ergebnis sich durch die Korrekturen ändern kann.
+
+**Stand:** Noch kein Gebiet ist neu angebunden. Die Wirkung zeigt erst der Prüflauf vom Rechner des Projektinhabers. Offen ohne Dritte bleiben die Gremientrennung für gemeinsame Systeme (GVV Altshausen, GVV Schönau), die Suche nach Plattform-Mandanten über Zertifikatsprotokolle, Hamburg und ein Leser für komfa.
+
 ## Gespeicherte Inhaltsanalyse · Billerbeck (v0.21)
 
 402 Artikel sind direkt durch Codex anhand öffentlicher Quellen bearbeitet: 310 Inhaltszusammenfassungen und 92 klar bezeichnete Quellenlücken. Kurz-/Langfassung, Belegzitate, Quellenprüfsummen, getrennte Labels, titelbasierte gewichtete Stichwörter sowie belegte Sitzungsdaten stehen im versionierten, etwa 3 MB großen Serverpaket `server/data/billerbeck-content-v1.json`. Es enthält keine neu archivierten Originalvolltexte. Die Langfassung erscheint auf der Artikelseite mit Quellenbasis und Bearbeitungsstatus. Die normale Kartenanalyse verwendet weiterhin Regel-Labels; die zusätzliche KI-Einordnung ersetzt diese nicht heimlich.

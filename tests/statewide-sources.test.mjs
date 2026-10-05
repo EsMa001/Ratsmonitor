@@ -12,6 +12,7 @@ import {SOURCES} from '../server/integrations/regions.mjs';
 import {canImport} from '../server/integrations/pipeline-jobs.mjs';
 import {READERS} from '../server/integrations/readers.mjs';
 import {collectRegion} from '../server/integrations/collect-region.mjs';
+import {sourceAddress} from '../scripts/source-discovery/reasons.mjs';
 const https=value=>typeof value==='string'&&value.startsWith('https://');
 test('every statewide source belongs to exactly one catalogued area and is addressed over https',()=>{
  assert.ok(sources.length>100,'the discovery run connected more than a hundred areas');
@@ -47,7 +48,7 @@ test('an SD.NET source is read through its own collector and only while the vend
 });
 test('one address serves one area; a shared system needs an explicitly assigned body',()=>{
  const seen=new Map();
- for(const s of NRW_SOURCES.filter(s=>s.method!=='pending')){const key=(s.system||s.base)+'|'+(s.body||'');assert.ok(!seen.has(key),s.name+' shares '+key+' with '+seen.get(key));seen.set(key,s.name);}
+ for(const s of NRW_SOURCES.filter(s=>s.method!=='pending')){const key=sourceAddress(s);assert.ok(!seen.has(key),s.name+' shares '+key+' with '+seen.get(key));seen.set(key,s.name);}
  const systems=new Map();for(const s of NRW_SOURCES.filter(s=>s.method==='oparl'))systems.set(s.system,[...(systems.get(s.system)||[]),s]);
  for(const [system,list] of systems)if(list.length>1)for(const s of list)assert.ok(s.body,s.name+' shares '+system+' without an assigned body');
 });
