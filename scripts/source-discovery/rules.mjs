@@ -144,3 +144,24 @@ export function identity(region,url,html,{aliases=ALIASES,areas=CATALOG}={}){
  if(region.kind==='district'&&/\b(kreistag|kreistagsinformation\w*|kreisausschuss)\b/i.test(t))return {ok:true,by:'Kreistagsseite, von der offiziellen Website verlinkt'};
  return inUrl||inText?{ok:true,by:named?'Adresse':alias?'Adresse (Alias)':'Seitentext'}:{ok:false,why:'Gebietsname weder in Adresse noch im Seitentext'};
 }
+
+// Platforms that give each municipality a host name of its own but answer DNS for every name (wildcard), so a
+// lookup proves nothing: guess-hosted.mjs asks the page and keeps it only if the page names the area. itebo answers
+// DNS for existing tenants only; its lookup comes first and saves the request. path: where the public part starts.
+export const HOSTED=[
+ {name:'digitalfabriX',land:'09',hosts:s=>[`buergerinfo-${s}.digitalfabrix.de`],path:'/',wildcard:true},
+ {name:'sitzung-mv.de',land:'13',hosts:s=>[`${s}.sitzung-mv.de`,`amt-${s}.sitzung-mv.de`],path:'/public/',wildcard:true},
+ {name:'itebo',land:'03',hosts:s=>[`${s}ris.itebo.de`],path:'/bi/',wildcard:false},
+];
+const ascii=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+/** Host labels for a name: "Bayerisch Gmain" → bayerisch-gmain, bayerischgmain; additions and brackets left out. */
+export function hostSlugs(name){
+ const b=ascii(name).replace(/\(.*?\)/g,'').replace(/\/.*$/,'').replace(/\s+[a-z]{1,3}\.\s?(?:[a-z]{1,3}\.\s?)?\S.*$/,'').replace(/\s+(an der|am|im|in der|in|bei|vor der|ob der|unter|über|ueber|auf der|auf dem)\s+.*$/,'').trim();
+ const dash=b.replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),flat=dash.replace(/-/g,'');
+ return [...new Set([dash,flat])].filter(s=>s.length>=4);
+}
+/** Whether a page names the area itself (title or text), not only in its address: the test for wildcard hosts. */
+export function pageNamesArea(html,area){
+ const page=ascii(title(html)+' '+text(html).slice(0,8000)).replace(/Ã¤/g,'ae').replace(/Ã¶/g,'oe').replace(/Ã¼/g,'ue').replace(/ÃŸ/g,'ss').replace(/[^a-z0-9]/g,'');
+ return hostSlugs(area.shortName||area.name).some(s=>s.replace(/-/g,'').length>=5&&page.includes(s.replace(/-/g,'')));
+}

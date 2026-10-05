@@ -13,6 +13,7 @@ import {fileURLToPath} from 'node:url';
 import {CATALOG,POPULATION,landName} from '../../shared/catalog.mjs';
 import {NRW_SOURCES} from '../../server/integrations/source-catalog.mjs';
 import {SOURCES} from '../../server/integrations/regions.mjs';
+import {consentFor,consentsOf} from '../../server/integrations/consents.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
@@ -50,7 +51,7 @@ for(const [file,lands] of [['requirements/statewide-sources-report.md',['05']],[
 const CATEGORY=[
  ['ready',/Prüflauf vom Rechner des Projektinhabers ausstehend/],
  ['special',/^Stadtstaat/],
- ['shared',/Mitbenutztes System|nicht eindeutig|mehreren Gebieten|Demo-Mandanten/],
+ ['shared',/Mitbenutztes System|nicht eindeutig|mehreren Gebieten|Demo-Mandanten|Mehrere Körperschaften/],
  ['robots',/robots\.txt/],
  ['blocked',/HTTP 403|Web-Firewall|Zugriffsprüfung|Zugriffsschutz/],
  ['website',/Sitzungen nur als Webseite oder PDF|Vorlese-, Teilen-/],
@@ -85,7 +86,10 @@ const areas=CATALOG.map(r=>{
  if(r.members?.length)a.m=r.members.length;
  // Switched on without a live check (citystate-sources.json: checkPending): shown apart from checked sources.
  if(s&&s.checkPending){a.c='ready';a.r=s.checkPending;a.v=methodOf(s);}
- else if(s){a.c=robots[r.id]==='verboten'?'okRobots':'ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.at=s.verifiedAt||'';}
+ // A written consent (source-consents.json) makes a source whose robots.txt refuses programs a regular one.
+ else if(s){const c=robots[r.id]==='verboten'?consentFor(s.system||s.base):null;a.c=robots[r.id]==='verboten'&&!c?'okRobots':'ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.at=s.verifiedAt||'';if(c)a.cs=c.date;}
+ // An open area with a consent waits for its check (consents.mjs, then verify.mjs).
+ else if(o&&consentsOf(r.id).length){const c=consentsOf(r.id)[0];a.c='consent';a.r=`Freigabe (${c.scope.join(', ')}) vom ${c.date.split('-').reverse().join('.')} liegt vor; Prüflauf ausstehend. Vorher: ${o.reason}`;a.cs=c.date;}
  else if(o){a.c=categoryOf(o.reason);a.r=o.reason;}
  else{a.c='other';a.r='Kein Prüfergebnis im Bericht';}
  if(research.has(r.id))a.rs=research.get(r.id);

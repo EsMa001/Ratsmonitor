@@ -12,6 +12,7 @@ import {robotsVerdict} from '../../server/integrations/robots.mjs';
 import {READERS} from '../../server/integrations/readers.mjs';
 import {fetchText} from '../../server/integrations/sessionnet.mjs';
 import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,hrefs,title,identity} from './rules.mjs';
+import {consentAllows} from '../../server/integrations/consents.mjs';
 // DIR and AREAS let the same check run over another list of areas (e.g. the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -37,9 +38,11 @@ const withHost=async(url,fn)=>{const host=new URL(url).hostname,address=await ad
 // IGNORE_ROBOTS=1 switches the check off.
 const TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'],robotsFiles=new Map();
 const robotsFile=u=>{if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,(async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}})());return robotsFiles.get(u.origin);};
-async function robotsAllowFree(url){if(process.env.IGNORE_ROBOTS==='1')return true;const u=new URL(url),file=await robotsFile(u);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';}
+// A written consent of the municipality or operator for this system (source-consents.json) is a permission:
+// robots.txt is not asked for the addresses it covers (concept section 6.2).
+async function robotsAllowFree(url){if(process.env.IGNORE_ROBOTS==='1'||consentAllows(url))return true;const u=new URL(url),file=await robotsFile(u);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';}
 async function robotsAllow(url){
- if(process.env.IGNORE_ROBOTS==='1')return true;
+ if(process.env.IGNORE_ROBOTS==='1'||consentAllows(url))return true;
  const u=new URL(url);
  if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,withHost(url,async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}}));
  const file=await robotsFiles.get(u.origin);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';

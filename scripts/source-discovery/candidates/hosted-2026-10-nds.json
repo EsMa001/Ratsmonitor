@@ -1,0 +1,23 @@
+{
+ "nds-031585402": {
+  "id": "nds-031585402",
+  "name": "Samtgemeinde Baddeckenstedt",
+  "kind": "city",
+  "ags": "031585402",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://baddeckenstedtris.itebo.de/bi/",
+    "from": "baddeckenstedtris.itebo.de",
+    "byHref": true,
+    "guessed": "itebo-Adresse (DNS), Name bundesweit eindeutig",
+    "research": {
+     "art": "plattform-dns",
+     "hinweis": "itebo: Rechnername existiert (DNS, 05.10.2026); robots.txt: erlaubt (andere itebo-Mandanten angebunden)",
+     "beleg": "DNS-Abfrage aus der Entwicklungsumgebung, keine Seite abgerufen"
+    }
+   }
+  ],
+  "log": []
+ }
+}

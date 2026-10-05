@@ -181,6 +181,34 @@ ONLY_FILE=scripts/source-discovery/candidates/neupruefung-2026-10-de.txt node sc
 
 Danach wie oben `build.mjs`, `servers.mjs`, `robots.mjs` und die Tests. Für Systeme bei `sitzung-online.de` gilt „ALLRIS behutsam prüfen“: ein Lauf, nach einer Sperre erst am nächsten Tag weiter. komm.one-Gebiete, deren Prüfung „keine öffentlichen Tagesordnungspunkte“ meldet, sind eine Leserfrage, keine neue Adresse.
 
+## Freigaben, Funde von Hand und Plattform-Mandanten (05.10.2026)
+
+**Freigaben einspielen** (Konzept Abschnitt 6, Welle 0). Schriftliche Freigaben von Kommunen oder Betreibern stehen in `server/integrations/source-consents.json` (Logik: `server/integrations/consents.mjs`, Tests: `tests/consents.test.mjs`), ohne Personendaten: `grantedBy` ist eine Rolle, `evidence` eine Registernummer, die Belege liegen beim Projektinhaber. Eine Freigabe mit Umfang `robots` erlaubt der Prüfung, das genannte System trotz robots-Sperre zu lesen (`robotsAllow` in `verify.mjs`); sie deckt nur die genannte Adresse (bei Plattformen den Ordner der Gemeinde, nie die anderen Mandanten). Bei HTTP 403 oder einer Zugriffsprüfung ändert sie technisch nichts (`freischaltung`: der Betreiber muss freischalten). `build.mjs` schreibt einer gedeckten Quelle `robotsOverride` ins Verzeichnis; der Lückenatlas zeigt sie als angebunden und offene Gebiete mit Freigabe als „Freigabe liegt vor, Prüfung ausstehend“.
+
+```
+export LAND=de DIR=tmp/source-discovery-de/
+node scripts/source-discovery/consents.mjs freigaben.csv
+CANDIDATES=candidates-consents.json OUT=verified-consents.json ONLY_FILE=$DIR/consents-<datum>.txt node scripts/source-discovery/verify.mjs
+```
+
+Die Liste: CSV mit Semikolon und Kopfzeile `Gebiet;Land;Datum;Umfang;Kanal;Stelle;Adresse;Betreiber` (Kopf im Skript beschrieben). Zeilen ohne eindeutiges Gebiet, ohne Datum oder mit unbekanntem Umfang werden aufgelistet und nicht übernommen; das Register wird nur ergänzt.
+
+**Von Hand gefundene Systeme**: CSV `Gebiet;Land;Adresse`, eine Zeile je Fund. `manual.mjs` legt sie als gezielte Kandidaten an (`candidates-fix.json`); die Prüfung nimmt sie nur, wenn das System das Gebiet nennt, öffentliche Tagesordnungspunkte zeigt und robots.txt es erlaubt (oder eine Freigabe es deckt).
+
+```
+node scripts/source-discovery/manual.mjs funde.csv
+CANDIDATES=candidates-fix.json OUT=verified-fix.json ONLY_FILE=$DIR/manuell-<datum>.txt node scripts/source-discovery/verify.mjs
+```
+
+**Plattform-Mandanten ohne Link** (`guess-hosted.mjs`, `HOSTED` in `rules.mjs`): digitalfabriX (Bayern, `buergerinfo-<ort>.digitalfabrix.de`, 230 Quellen angebunden), sitzung-mv.de (Mecklenburg-Vorpommern, `<ort>.sitzung-mv.de`, `amt-<ort>.sitzung-mv.de`) und itebo (Niedersachsen, `<ort>ris.itebo.de`). digitalfabriX und sitzung-mv.de beantworten DNS für jeden Namen; eine Adresse zählt daher nur, wenn ihre Seite ein Ratsinformationssystem zeigt und das Gebiet im Titel oder Text nennt, und der Name im Land eindeutig ist. Eine Anfrage pro Sekunde, robots.txt je Rechner vorher, keine Wiederholung.
+
+```
+LAND=09 DIR=tmp/source-discovery-de/ node scripts/source-discovery/guess-hosted.mjs
+CANDIDATES=candidates-hosted.json OUT=verified-hosted.json LAND=09 DIR=tmp/source-discovery-de/ node scripts/source-discovery/verify.mjs
+```
+
+Aus der Entwicklungsumgebung per DNS gefunden (05.10.2026, keine Seite abgerufen): `candidates/hosted-2026-10-nds.json` (Samtgemeinde Baddeckenstedt bei itebo) und `candidates/hosted-2026-10-de.json` (18 Gebiete in Brandenburg, Sachsen, Sachsen-Anhalt und Thüringen bei allris.cloud, Name bundesweit eindeutig). allris.cloud untersagt Programmen den Abruf bei allen 22 schon angebundenen Mandanten; diese Gebiete wechseln nach der Prüfung voraussichtlich von „kein Link“ zu „robots.txt sperrt“ und werden mit einer Freigabe lesbar. Prüfen: Datei als `$DIR/candidates-hosted.json` ablegen (vorhandene Datei vorher zusammenführen) und wie oben `verify.mjs` mit `OUT=verified-hosted.json`.
+
 ## Andere Gebietslisten
 
 `crawl.mjs` und `verify.mjs` arbeiten ohne weitere Angaben auf den NRW-Gebieten in `tmp/source-discovery/`. Für die Stichprobe der Hochrechnung (siehe `scripts/estimate/README.md`) lassen sie sich umstellen:

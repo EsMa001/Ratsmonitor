@@ -403,6 +403,14 @@ Entscheidungsvorlage: [requirements/performance-konzept-2026-10-05.md](requireme
 
 **Stufe 0 umgesetzt (05.10.2026):** Zeitstempel erzeugen keine Versionen mehr (`stableJson`). Die Suche liest mit zwei statt sieben Abfragen und einem neuen Index (`drizzle/0010_search_facets_index.sql`), die Abdeckung kommt aus `/api/search/coverage`, gesucht wird nur auf der Übersicht. Lokal: Suche ohne Begriff 4,4 s → 0,9 s (wiederholt 29 ms) und 484 → 86 KB, mit Begriff 5,5 s → 1,1 s, erste Treffer auf der Startseite 8,5 s → 3,3 s, Detailseiten ohne Suche. `/api/analytics*`, `/api/topics` und `/api/topics/<id>/related` sind entfernt, `/analysen` leitet auf `/`. `scripts/prune-versions.mjs` zählt die Versionen, die nur aus Zeitstempeln entstanden (lokal 145.958 von 268.853, 1,05 GB), und löscht sie mit `--apply`. Für die Produktion: Migration `0010` anwenden. Einzelheiten im Abschnitt „Umsetzungsstand“ des Konzepts.
 
+**Admin-Übersicht mit Kennzahlen je Gebiet (05.10.2026, E1 des Konzepts):** Die Übersicht las bei jedem Aufruf alle Vorgänge (12 bis 60 Sekunden bei 902.310 Vorgängen; während eines Abrufs ohne Zwischenspeicher) und brach als „Administration nicht erreichbar … Erneut versuchen“ ab. Jetzt hält `region_stats` die Kennzahlen je Gebiet; Trigger zählen in `region_revisions` jede Änderung eines Vorgangs für sein Gebiet (`drizzle/0011_region_stats.sql`). `regionFigures` in `server/integrations/admin-data.mjs` rechnet nur geänderte Gebiete neu, kleine zuerst, höchstens etwa acht Sekunden je Aufruf; den Rest setzt der nächste Aufruf fort, die Adminseite fragt bis dahin selbst nach und zeigt „Kennzahlen werden berechnet: noch … Gebiete“. Zahl der Vorgänge, Status und „in den letzten sieben Tagen geändert“ kommen aus Indizes und sind immer aktuell. Ohne die Migration rechnet die Übersicht wie bisher. Einspielen (einmalig, das Anlegen des Index liest alle Vorgänge einmal und dauert bei 900.000 Vorgängen etwa eine Minute; Server vorher beenden):
+
+```
+pnpm exec wrangler d1 migrations apply DB --local --config .\wrangler.local.json --persist-to .\.wrangler\state
+```
+
+Der erste Aufruf der Adminseite danach berechnet alle Gebiete einmal (einige Aufrufe zu je acht Sekunden), jeder weitere nur die geänderten. Tests: `tests/admin.test.mjs`.
+
 ## Gespeicherte Inhaltsanalyse · Billerbeck (v0.21)
 
 402 Artikel sind direkt durch Codex anhand öffentlicher Quellen bearbeitet: 310 Inhaltszusammenfassungen und 92 klar bezeichnete Quellenlücken. Kurz-/Langfassung, Belegzitate, Quellenprüfsummen, getrennte Labels, titelbasierte gewichtete Stichwörter sowie belegte Sitzungsdaten stehen im versionierten, etwa 3 MB großen Serverpaket `server/data/billerbeck-content-v1.json`. Es enthält keine neu archivierten Originalvolltexte. Die Langfassung erscheint auf der Artikelseite mit Quellenbasis und Bearbeitungsstatus. Die normale Kartenanalyse verwendet weiterhin Regel-Labels; die zusätzliche KI-Einordnung ersetzt diese nicht heimlich.

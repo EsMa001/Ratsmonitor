@@ -5,17 +5,17 @@
 
 // Check results of other stages besides verified.json. Accepted sources count in this order; verified-website.json
 // (website.mjs) comes last, so it adds an area only where no check of a council information system accepted one.
-export const ACCEPTED_FILES=['verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-research.json','verified-fix.json','verified-website.json'];
+export const ACCEPTED_FILES=['verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-research.json','verified-hosted.json','verified-consents.json','verified-fix.json','verified-website.json'];
 // Candidates set on purpose for one area (web search, diagnosis, correction): a check of them without a source still
 // says more than the check of the links of the website, so it stands in the report (the later file wins).
 // verified-research.json holds the checks of the candidates from the research per Land (candidates/research-*.json).
-export const TARGETED_FILES=['verified-search.json','verified-research.json','verified-fix.json'];
+export const TARGETED_FILES=['verified-search.json','verified-research.json','verified-consents.json','verified-fix.json'];
 // Guessed addresses: only a system found there or a refusal by robots.txt is a finding; a guessed page without a
 // system changes nothing.
-export const GUESSED_FILES=['verified-guessed-own.json','verified-guessed.json'];
+export const GUESSED_FILES=['verified-guessed-own.json','verified-guessed.json','verified-hosted.json'];
 // Candidate files whose first address the report shows when no check names one (guessed platform addresses on shared
 // hosts are no evidence and are left out).
-export const CANDIDATE_FILES=['candidates.json','candidates-search.json','candidates-research.json','candidates-guessed-own.json','candidates-fix.json'];
+export const CANDIDATE_FILES=['candidates.json','candidates-search.json','candidates-research.json','candidates-hosted.json','candidates-consents.json','candidates-guessed-own.json','candidates-fix.json'];
 
 /**
  * The check results that the report uses, by area id: verified.json, completed by the other files ({file: rows}).

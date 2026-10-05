@@ -1,0 +1,4 @@
+{
+ "note": "Schriftliche Freigaben von Kommunen und Betreibern (Konzept Abschnitt 6, Welle 0). Ohne Personendaten: grantedBy ist eine Rolle, evidence eine Registernummer; Belege liegen beim Projektinhaber. Einspielen: node scripts/source-discovery/consents.mjs <liste.csv>",
+ "consents": []
+}
