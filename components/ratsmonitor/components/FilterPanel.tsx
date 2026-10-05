@@ -11,7 +11,7 @@ import { setFiltersOpen } from "../lib/filtersOpen";
 
 function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boolean; set: (v: boolean) => void }) {
   return (
-    <div className="flex items-center justify-between gap-3 py-0.5 text-[14px] text-slate-900 max-sm:min-h-11 sm:py-0" title={hint}>
+    <div className="flex items-center justify-between gap-3 py-0.5 text-[14px] text-slate-900 max-sm:min-h-8 max-sm:py-0 sm:py-0" title={hint}>
       <span id={`t-${label.replace(/\W+/g, "-")}`}>{label}</span>
       <button
         type="button"
@@ -59,17 +59,17 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         setFiltersOpen(false);
         requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-controls="filter-body"]')?.focus());
       }}
-      className={`rm-glass absolute z-20 flex w-[300px] max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 sm:pt-2.5" : "top-0 flex-col pb-3.5 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
+      className={`rm-glass absolute z-20 flex w-[300px] max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
       <div className={`flex items-center gap-2 ${flip ? "flex-row-reverse" : ""}`}>
         {toggle}
-        <span className="text-[16px] font-semibold text-slate-900">Filter</span>
+        <span className="text-[16px] font-semibold text-slate-900 max-sm:hidden">Filter</span>
         {active && (
           <button type="button" onClick={() => { search.resetAll(); setFiltersOpen(false); }} className={`text-[14px] text-teal-600 hover:underline ${flip ? "mr-auto ml-4" : "ml-auto mr-4"}`}>
             Zurücksetzen
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-2.5 px-4 sm:gap-1.5">
+      <div className="flex flex-col gap-2.5 px-4 max-sm:gap-[3px] sm:gap-1.5">
         {state.area.length >= 5 && geo && <AreaBar compact />}
         <DateRangeFilter />
         {/* Schalter wie am iPhone */}

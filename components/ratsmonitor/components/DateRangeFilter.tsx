@@ -53,7 +53,7 @@ export function DateRangeFilter() {
   const setBis = (v: string) => search.setZeitraum(von && v && v < von ? v : von, v);
 
   const field =
-    "h-8 min-w-0 flex-1 rounded-xl border border-white/80 bg-white/40 px-2 text-[14px] text-slate-900 outline-none focus:border-teal-600 max-sm:h-11 [&:not(:placeholder-shown)]:text-slate-900";
+    "h-8 min-w-0 flex-1 rounded-xl border border-white/80 bg-white/40 px-2 text-[14px] text-slate-900 outline-none focus:border-teal-600 max-sm:h-9 [&:not(:placeholder-shown)]:text-slate-900";
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center gap-2">
