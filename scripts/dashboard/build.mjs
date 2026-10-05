@@ -24,7 +24,7 @@ const robots=read('server/integrations/source-robots.json').sources;
 const sources=new Map(NRW_SOURCES.filter(s=>s.method!=='pending').map(s=>[s.id,s]));
 for(const id of ['billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen','muenster'])if(!sources.has(id))sources.set(id,SOURCES.find(s=>s.id===id)||{id});
 
-const METHOD={sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'};
+const METHOD={sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra','ris-portal':'RIS-Portal',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'};
 const methodOf=s=>s.method==='oparl'?'OParl':METHOD[s.adapter]||(s.base||s.system?'SessionNet':'Stammquelle');
 
 // Open areas with their reason.
@@ -52,11 +52,12 @@ const CATEGORY=[
  ['ready',/Prüflauf vom Rechner des Projektinhabers ausstehend/],
  ['special',/^Stadtstaat/],
  ['shared',/Mitbenutztes System|nicht eindeutig|mehreren Gebieten|Demo-Mandanten|Mehrere Körperschaften/],
+ // A reason with robots.txt comes from a check that still obeyed it (before 05.10.2026): "Neuprüfung ausstehend".
  ['robots',/robots\.txt/],
  ['blocked',/HTTP 403|Web-Firewall|Zugriffsprüfung|Zugriffsschutz/],
  ['website',/Sitzungen nur als Webseite oder PDF|Vorlese-, Teilen-/],
  ['nolink',/kein Link|Keine offizielle Website|antwortet Programmen nicht|Link auf der Website gefunden, noch nicht geprüft/i],
- ['noreader',/^ALLRIS 3|Kein unterstütztes|^SessionNet 6$|^KIC-RIS$|komfa|ohne erreichbare OParl/],
+ ['noreader',/^ALLRIS 3|Kein unterstütztes|^SessionNet 6$|^KIC-RIS$|komfa|ohne erreichbare OParl|noch kein Leser/],
  ['readfail',/lieferte keine|keine verwertbaren|zu viele Zugriffe|Wartungsarbeiten|erwähnt|nicht erreichbar|antwortet Programmen mit HTTP|Vorlagenliste|HTTP 404|abgebrochen/],
 ];
 const categoryOf=reason=>(CATEGORY.find(([,re])=>re.test(reason))||['other'])[0];
@@ -86,8 +87,9 @@ const areas=CATALOG.map(r=>{
  if(r.members?.length)a.m=r.members.length;
  // Switched on without a live check (citystate-sources.json: checkPending): shown apart from checked sources.
  if(s&&s.checkPending){a.c='ready';a.r=s.checkPending;a.v=methodOf(s);}
- // A written consent (source-consents.json) makes a source whose robots.txt refuses programs a regular one.
- else if(s){const c=robots[r.id]==='verboten'?consentFor(s.system||s.base):null;a.c=robots[r.id]==='verboten'&&!c?'okRobots':'ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.at=s.verifiedAt||'';if(c)a.cs=c.date;}
+ // robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs): its verdict stands in the detail view
+ // only; a written consent (source-consents.json) is shown there as well.
+ else if(s){const c=robots[r.id]==='verboten'?consentFor(s.system||s.base):null;a.c='ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.at=s.verifiedAt||'';if(c)a.cs=c.date;}
  // An open area with a consent waits for its check (consents.mjs, then verify.mjs).
  else if(o&&consentsOf(r.id).length){const c=consentsOf(r.id)[0];a.c='consent';a.r=`Freigabe (${c.scope.join(', ')}) vom ${c.date.split('-').reverse().join('.')} liegt vor; Prüflauf ausstehend. Vorher: ${o.reason}`;a.cs=c.date;}
  else if(o){a.c=categoryOf(o.reason);a.r=o.reason;}

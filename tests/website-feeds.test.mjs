@@ -238,6 +238,9 @@ test('website jsonLdEvents finds events nested in lists and pages, and none in a
 test('website isRisLink knows the council systems the project has readers for; isSearchLink the site search',()=>{
  for(const u of ['https://www.stadt.example.test/pio/index.php?aktiv=tagesordnungen&id=5','https://risi.stadt.example.test/risi/sitzung/detail/123','https://www.stadt.example.test/piwi/sitzung/detail/123','https://www.stadt.example.test/sitzungsdienst/sitzung/123','https://www.stadt.example.test/gremieninfo/sitzung.php?id=3','https://www.stadt.example.test/buergerinfo/to0040.asp?__ksinr=1'])assert.equal(isRisLink(u),true,u);
  for(const u of ['https://www.stadt.example.test/rathaus/bekanntmachungen/','https://www.stadt.example.test/politik/sitzungen/2026/'])assert.equal(isRisLink(u),false,u);
+ // "Sitzungsdienst" as a section of a CMS (lg-uder.de) is no system; a folder of that name at the root of a domain is.
+ for(const u of ['https://www.lg-uder.de/buergerservice/sitzungsdienst/sitzungen','https://www.lg-uder.de/buergerservice/sitzungsdienst/2026','https://www.lg-uder.de/buergerservice/sitzungsdienst'])assert.equal(isRisLink(u),false,u);
+ for(const u of ['https://www.stadt.example.test/sitzungsdienst/','https://www.stadt.example.test/sitzungsdienst','https://www.stadt.example.test/verwaltung/sitzungsdienst/gremium/4'])assert.equal(isRisLink(u),true,u);
  for(const u of ['https://www.stadt.example.test/suche?q=Sitzung','https://www.stadt.example.test/search/?query=Gemeinderat','https://www.stadt.example.test/index.php?id=5&tx_kesearch_pi1%5Bsword%5D=Sitzung','https://www.stadt.example.test/?s=Gemeinderat','https://www.stadt.example.test/seite?tx_solr[q]=rat'])assert.equal(isSearchLink(u),true,u);
  for(const u of ['https://www.stadt.example.test/rathaus/bekanntmachungen/?seite=2','https://www.stadt.example.test/aktuelles/sitzung-gemeinderat.html'])assert.equal(isSearchLink(u),false,u);
 });

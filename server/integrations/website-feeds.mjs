@@ -55,9 +55,17 @@ const dayOf=value=>stamp(value)?.date??null;
 // A council information system, also one on the municipality's own domain (ratsinfo.<domain>, /buergerinfo/, si0040.asp,
 // PIO, PIWi, RISI, the council service of mein-intra.net that a website embeds on a page of its own,
 // …?href=/councilservice/…). An area may be searched because its RIS forbids programs or is not supported; neither the search nor
-// the reader reads that system through another door.
+// the reader reads that system through another door. "/sitzungsdienst" counts as a system at the root of a domain and with
+// a system's paths below it (sitzung/, gremium/ …), not as a section of a CMS (lg-uder.de/buergerservice/sitzungsdienst/sitzungen
+// lists the invitations as PDF).
 const RIS_HOST=/^(?:ratsinfo|ratsinformation|buergerinfo|bürgerinfo|sessionnet|session|ris|risi|rim|sd|sdnet|allris|gremien|gremieninfo|sitzungsdienst|kreistagsinfo|bi|sitzungen|piwi|pio)[.-]/i;
-const RIS_ADDRESS=/sessionnet|\bsi00\d\d\b|\/(?:si|to|vo|kp|gr|pa|au|yw|do)0\d{3}\.(?:asp|php)|\/(?:si|to|vo|kp|gr)0\d0(?:[?#]|$)|allris|buergerinfo|bürgerinfo|ratsinfo|sdnet|ris-portal\.de|komuna\.net|gremien\.info|more-rubin|kdz-ws\.net|sitzung-online\.de|ratsinfomanagement|cm-ratsinfos|komm\.one|zv-kisa\.de|\/oparl\b|\/bi\/|\/ris\/|\/risi(?:[/;?]|$)|\/piwi(?:[/;?]|$)|\/sitzung\/detail(?:[/;?]|$)|[?&]aktiv=tagesordnungen|\/sitzungsdienst(?:[/;?]|$)|\/gremieninfo(?:[/;?.]|$)|sessionweb|provox|\/ti_\d+|ekom21|kommune-aktiv\.de|councilservice|mein-intra\.net/i;
+const RIS_ADDRESS=/sessionnet|\bsi00\d\d\b|\/(?:si|to|vo|kp|gr|pa|au|yw|do)0\d{3}\.(?:asp|php)|\/(?:si|to|vo|kp|gr)0\d0(?:[?#]|$)|allris|buergerinfo|bürgerinfo|ratsinfo|sdnet|ris-portal\.de|komuna\.net|gremien\.info|more-rubin|kdz-ws\.net|sitzung-online\.de|ratsinfomanagement|cm-ratsinfos|komm\.one|zv-kisa\.de|\/oparl\b|\/bi\/|\/ris\/|\/risi(?:[/;?]|$)|\/piwi(?:[/;?]|$)|\/sitzung\/detail(?:[/;?]|$)|[?&]aktiv=tagesordnungen|\.[a-z]+\/sitzungsdienst(?:[/;?]|$)|\/sitzungsdienst\/(?:sitzung|gremium|vorlage|person|recherche)(?:[/;?.]|$)|\/gremieninfo(?:[/;?.]|$)|sessionweb|provox|\/ti_\d+|ekom21|kommune-aktiv\.de|councilservice|mein-intra\.net/i;
+// File storage of a website CMS on a host of its provider: the municipality's own pages link their notices there
+// (daten2.verwaltungsportal.de for the websites that verwaltungsportal.de runs). Such an origin is read only as a
+// document origin that an entry names in alsoFrom, because the municipality's list pages link it; never as a website.
+export const CMS_FILE_HOST=/^daten\d*\.verwaltungsportal\.de$/i;
+/** Whether an address lies on the file storage of a website CMS (CMS_FILE_HOST), over https. */
+export const isCmsFileUrl=url=>{try{const u=new URL(url);return u.protocol==='https:'&&CMS_FILE_HOST.test(u.hostname)&&!u.username&&!u.password;}catch{return false;}};
 /** Whether an address belongs to a council information system (host name or a path typical of one). */
 export function isRisLink(url){try{const u=new URL(url);return RIS_HOST.test(u.hostname)||RIS_ADDRESS.test(u.hostname+u.pathname+u.search);}catch{return true;}}
 // The site's own search: its pages and its query parameters (TYPO3 ke_search and Solr, WordPress "s", Joomla "q").

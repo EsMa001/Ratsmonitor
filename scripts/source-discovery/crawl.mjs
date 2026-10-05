@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import dns from 'node:dns/promises';
 import {loadAreas,skipReason} from './areas.mjs';
-import {CRAWL_SKIP,unwrapLink} from './rules.mjs';
+import {CRAWL_SKIP,unwrapLink,anchors} from './rules.mjs';
 // DIR, LAND and AREAS let the same search run over another list of areas (another state, or the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -44,15 +44,6 @@ async function fetchPage(url,timeout=15000){
  const b=await r.arrayBuffer();const probe=new TextDecoder().decode(b.slice(0,3000));
  const latin=/charset=["']?(?:iso-8859-1|windows-1252)/i.test(type+probe);
  return {status:r.status,url:r.url,html:new TextDecoder(latin?'windows-1252':'utf-8').decode(b.slice(0,3e6))};
-}
-const strip=s=>s.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&uuml;/g,'ü').replace(/&auml;/g,'ä').replace(/&ouml;/g,'ö').replace(/\s+/g,' ').trim();
-function anchors(html,base){
- const out=[];
- for(const m of html.matchAll(/<a\b([^>]*?)href\s*=\s*["']([^"'#]+)[^"']*["']([^>]*)>([\s\S]{0,400}?)<\/a>/gi)){
-  try{const u=new URL(m[2].replace(/&amp;/g,'&').trim(),base);if(!/^https?:$/.test(u.protocol))continue;out.push({url:u.href,text:(strip(m[4])+' '+((m[1]+m[3]).match(/title\s*=\s*["']([^"']*)/i)?.[1]||'')).trim().slice(0,120)});}catch{}
- }
- for(const m of html.matchAll(/<(?:iframe|frame)\b[^>]*src\s*=\s*["']([^"']+)["']/gi)){try{out.push({url:new URL(m[1],base).href,text:'(eingebettet)'});}catch{}}
- return out;
 }
 // Files, social media, read-aloud and sharing services, app stores, directories (findcity.de) and vendor pages: rules.mjs.
 const skip=CRAWL_SKIP;

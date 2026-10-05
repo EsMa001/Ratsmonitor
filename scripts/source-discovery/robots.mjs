@@ -18,6 +18,8 @@ export const readUrl=source=>source.adapter==='website'?source.pages?.[0]||sourc
 // its query, which robots.txt rules match as well; '/' without list page), the others the base or OParl system address.
 export const readPath=source=>{
  if(source.adapter==='website'){if(!source.pages?.[0])return '/';const u=new URL(source.pages[0]);return (u.pathname||'/')+u.search;}
+ // The city-state readers ask an address of their own (search interface, open-data file, district system).
+ if(['hamburg-transparenz','berlin','oparl-bezirke'].includes(source.adapter)){const u=new URL(readUrl(source));return (u.pathname||'/')+u.search;}
  const u=new URL(source.system||source.base);return source.adapter==='more-rubin'?u.pathname.replace(/[^/]*$/,'')+'api.php':u.pathname||'/';
 };
 const sources=[...SOURCES,...NRW_SOURCES.filter(s=>s.method!=='pending'),MUENSTER];

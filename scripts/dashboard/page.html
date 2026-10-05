@@ -7,15 +7,15 @@
    analysis by Land and by operator below. Status colours are semantic and separate from the blue accent. */
 :root{
  --paper:#eef1f4;--panel:#ffffff;--ink:#16202b;--muted:#596577;--line:#d5dce4;--soft:#e4e9ef;--accent:#1d4f8f;--accent-ink:#ffffff;--dim:#e3e8ed;--water:#f7f9fb;--shadow:0 1px 2px rgba(20,32,48,.06),0 4px 16px rgba(20,32,48,.06);
- --c-ok:#2b8a57;--c-consent:#3f7fbf;--c-okRobots:#a5bd45;--c-nolink:#bcc4ce;--c-website:#86b6dd;--c-robots:#7a5aa8;--c-blocked:#c4433a;--c-noreader:#e0862a;--c-readfail:#e6c041;--c-shared:#279a96;--c-special:#33415a;--c-ready:#c2558e;--c-other:#9c9387;
+ --c-ok:#2b8a57;--c-consent:#3f7fbf;--c-nolink:#bcc4ce;--c-website:#86b6dd;--c-robots:#7a5aa8;--c-blocked:#c4433a;--c-noreader:#e0862a;--c-readfail:#e6c041;--c-shared:#279a96;--c-special:#33415a;--c-ready:#c2558e;--c-other:#9c9387;
  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;--f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
  --paper:#0f141a;--panel:#161d26;--ink:#e5eaf0;--muted:#98a3b2;--line:#2a3441;--soft:#1e2631;--accent:#82b1ea;--accent-ink:#0f141a;--dim:#1d242d;--water:#12181f;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
- --c-ok:#3daa6c;--c-consent:#6fa8e0;--c-okRobots:#95ad3d;--c-nolink:#4a5462;--c-website:#5590c0;--c-robots:#9c7fd4;--c-blocked:#e25a4e;--c-noreader:#e8953e;--c-readfail:#d2b03c;--c-shared:#35b4ae;--c-special:#8e9eb8;--c-ready:#e07ab0;--c-other:#857d73;color-scheme:dark}}
+ --c-ok:#3daa6c;--c-consent:#6fa8e0;--c-nolink:#4a5462;--c-website:#5590c0;--c-robots:#9c7fd4;--c-blocked:#e25a4e;--c-noreader:#e8953e;--c-readfail:#d2b03c;--c-shared:#35b4ae;--c-special:#8e9eb8;--c-ready:#e07ab0;--c-other:#857d73;color-scheme:dark}}
 :root[data-theme="dark"]{
  --paper:#0f141a;--panel:#161d26;--ink:#e5eaf0;--muted:#98a3b2;--line:#2a3441;--soft:#1e2631;--accent:#82b1ea;--accent-ink:#0f141a;--dim:#1d242d;--water:#12181f;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
- --c-ok:#3daa6c;--c-consent:#6fa8e0;--c-okRobots:#95ad3d;--c-nolink:#4a5462;--c-website:#5590c0;--c-robots:#9c7fd4;--c-blocked:#e25a4e;--c-noreader:#e8953e;--c-readfail:#d2b03c;--c-shared:#35b4ae;--c-special:#8e9eb8;--c-ready:#e07ab0;--c-other:#857d73;color-scheme:dark}
+ --c-ok:#3daa6c;--c-consent:#6fa8e0;--c-nolink:#4a5462;--c-website:#5590c0;--c-robots:#9c7fd4;--c-blocked:#e25a4e;--c-noreader:#e8953e;--c-readfail:#d2b03c;--c-shared:#35b4ae;--c-special:#8e9eb8;--c-ready:#e07ab0;--c-other:#857d73;color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font:14px/1.5 var(--f-body);margin:0}
@@ -301,13 +301,12 @@ const $=id=>document.getElementById(id);
 
 const LAND_SHORT={'01':'SH','02':'HH','03':'NI','04':'HB','05':'NW','06':'HE','07':'RP','08':'BW','09':'BY','10':'SL','11':'BE','12':'BB','13':'MV','14':'SN','15':'ST','16':'TH'};
 const CAT={
- ok:{label:'Angebunden',open:false,why:'Die Quelle ist geprüft: Sie lieferte bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate, und robots.txt erlaubt den Abruf oder fehlt.',help:'Nichts zu tun. Regelmäßiger Import und Nachprüfung laufen.'},
- okRobots:{label:'Angebunden, robots.txt sperrt',open:false,why:'Die Quelle liefert Daten, aber robots.txt des Systems untersagt Programmen den Abruf. Nach dem Grundsatz des Projekts braucht der Dauerbetrieb eine Freigabe.',help:'Vorhandene Freigaben der Kommunen eintragen (Welle 0) oder den Betreiber um Freigabe oder OParl bitten.'},
+ ok:{label:'Angebunden',open:false,why:'Die Quelle ist geprüft: Sie lieferte bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate. Was robots.txt sagt, wird festgehalten (Angaben unten), aber seit dem 05.10.2026 nicht mehr befolgt.',help:'Nichts zu tun. Regelmäßiger Import und Nachprüfung laufen.'},
  nolink:{label:'Kein Link gefunden',open:true,why:'Die Suche fand auf der offiziellen Website keinen Link zu einem Ratsinformationssystem. Das heißt nicht, dass es keins gibt: Systeme bei Dienstleistern sind oft nicht verlinkt, und viele kleine Gemeinden veröffentlichen nur im Amtsblatt oder auf der eigenen Website.',help:'Neuprüfung mit den korrigierten Suchregeln, Kandidaten der Länderrecherche prüfen, Plattform-Mandanten über Zertifikatsprotokolle finden, Website-Leser.'},
  website:{label:'Nur Webseite oder PDF',open:true,why:'Kein Ratsinformationssystem erkennbar; Sitzungen stehen nur als Webseite oder PDF, oder die Website verlinkt nur Vorlese-, Teilen- und Herstellerseiten.',help:'Website-Leser nach der Freigabeprüfung.'},
- robots:{label:'robots.txt sperrt',open:true,why:'Das System ist gefunden, aber robots.txt untersagt Programmen den Abruf, und es gibt keine OParl-Schnittstelle. Das betrifft vor allem RIS-Portal (regisafe) und komuna.',help:'Freigabe oder OParl beim Anbieter anfragen; vorhandene Freigaben der Kommunen eintragen (Welle 0).'},
+ robots:{label:'Neuprüfung ausstehend',open:true,why:'Die letzte Prüfung hat robots.txt befolgt und das gefundene System deshalb nicht gelesen. Seit dem 05.10.2026 wird robots.txt nur festgehalten; technische Sperren (HTTP 403, Web-Firewall, Login) gelten weiter.',help:'Neuprüfung mit verify.mjs (Gebiete mit robots-Grund).'},
  blocked:{label:'Zugriffsschutz',open:true,why:'Das System antwortet Programmen mit HTTP 403, leitet sie über eine Web-Firewall um oder verlangt eine Zugriffsprüfung im Browser. Solche Sperren umgeht das Projekt nicht.',help:'OParl-Freischaltung bei Kommune oder Dienstleister anfragen (ratsinfomanagement.net, Kommune aktiv, ekom21).'},
- noreader:{label:'System ohne Leser',open:true,why:'Ein System ist gefunden, aber nicht erkannt, oder sein Leser wurde noch nicht angewendet. ALLRIS 3 hat inzwischen einen Leser; diese Gebiete brauchen eine Neuprüfung.',help:'Neuprüfung (ALLRIS 3, korrigierte Linksuche); Leser für wiederkehrende unbekannte Systeme.'},
+ noreader:{label:'System ohne Leser',open:true,why:'Ein System ist gefunden, aber nicht erkannt, es gibt noch keinen Leser dafür (RIS-Portal, komuna), oder sein Leser wurde noch nicht angewendet. ALLRIS 3 hat inzwischen einen Leser; diese Gebiete brauchen eine Neuprüfung.',help:'Leser für RIS-Portal und komuna; Neuprüfung (ALLRIS 3, korrigierte Linksuche); Leser für wiederkehrende unbekannte Systeme.'},
  readfail:{label:'Lesen scheiterte',open:true,why:'Das System ist bekannt, die Prüfung fand aber keine öffentlichen Tagesordnungspunkte: leerer Zeitraum, falscher Mandant, Wartung, vorübergehende Sperre oder ein System, das nur erwähnt war.',help:'Erneut prüfen, Mandant oder Pfad korrigieren.'},
  shared:{label:'Gemeinsames System',open:true,why:'Das gefundene System gehört einer Nachbargemeinde oder einem Verband und führt mehrere Räte, oder die Adresse passt zu mehreren Gebieten. Die Leser trennen die Gremien eines gemeinsamen Systems noch nicht.',help:'Gremientrennung, wie sie der OParl-Gremienfilter für Bremen schon kann.'},
  consent:{label:'Freigabe liegt vor, Prüfung ausstehend',open:true,why:'Die Gemeinde oder der Betreiber hat schriftlich zugestimmt (Freigaberegister). Die Prüfung mit dieser Freigabe ist noch nicht gelaufen.',help:'Prüfliste aus consents.mjs mit verify.mjs prüfen; bei einer Freischaltung zuerst den Betreiber abwarten.'},
@@ -333,13 +332,12 @@ let matches=new Array(A.length).fill(true);
 $('stamp').innerHTML='Prüfberichte vom '+esc(D.reportDate)+'<br>Atlas erzeugt am '+esc(D.builtAt.split('-').reverse().join('.'));
 $('attr').textContent=D.attribution+' · Verwaltungsgrenzen VG250/VG2500';
 (function summary(){
- const conn=A.filter(a=>a.c==='ok'||a.c==='okRobots'),open=A.filter(a=>CAT[a.c].open);
- const city=A.filter(isCityLevel),popAll=city.reduce((s,a)=>s+a.p,0),popOk=city.filter(a=>a.c==='ok').reduce((s,a)=>s+a.p,0),popRob=city.filter(a=>a.c==='okRobots').reduce((s,a)=>s+a.p,0);
+ const conn=A.filter(a=>a.c==='ok'),open=A.filter(a=>CAT[a.c].open);
+ const city=A.filter(isCityLevel),popAll=city.reduce((s,a)=>s+a.p,0),popOk=city.filter(a=>a.c==='ok').reduce((s,a)=>s+a.p,0);
  const res=A.filter(a=>a.rs).length,rc=A.filter(a=>a.nc).length,work=A.filter(a=>a.rs||a.nc).length;
  $('summary').innerHTML=[
-  ['Gebiete angebunden',fmt(conn.length),'von '+fmt(A.length)+' Gebieten ('+pct(conn.length,A.length)+')',[['ok',A.filter(a=>a.c==='ok').length],['okRobots',A.filter(a=>a.c==='okRobots').length]],A.length],
-  ['Einwohner erreicht',pct(popOk+popRob,popAll),mio(popOk+popRob)+' von '+mio(popAll)+' auf der Gemeindeebene',[['ok',popOk],['okRobots',popRob]],popAll],
-  ['davon robots.txt sperrt',fmt(A.filter(a=>a.c==='okRobots').length),'angebunden, aber für den Dauerbetrieb ohne Freigabe',null],
+  ['Gebiete angebunden',fmt(conn.length),'von '+fmt(A.length)+' Gebieten ('+pct(conn.length,A.length)+')',[['ok',conn.length]],A.length],
+  ['Einwohner erreicht',pct(popOk,popAll),mio(popOk)+' von '+mio(popAll)+' auf der Gemeindeebene',[['ok',popOk]],popAll],
   ['Gebiete offen',fmt(open.length),mio(open.filter(isCityLevel).reduce((s,a)=>s+a.p,0))+' Einwohner auf der Gemeindeebene',null],
   ['In Arbeit',fmt(work),'Gebiete: '+fmt(res)+' mit Recherche-Kandidaten, '+fmt(rc)+' zur Neuprüfung',null],
  ].map(([t,b,s,bar,tot])=>'<div class="kpi"><span class="eyebrow">'+t+'</span><b>'+b+'</b><span>'+s+'</span>'+(bar?'<div class="bar">'+bar.map(([c,v])=>'<i style="width:'+(100*v/tot)+'%;background:'+col(c)+'" title="'+esc(CAT[c].label)+'"></i>').join('')+'</div>':'')+'</div>').join('');
@@ -451,7 +449,7 @@ let filtered=[],shown=0;const PAGE=120;
 const rowsEl=$('rows');
 function rowHtml(a){
  const flags=(a.rs?'<span class="flag" title="Kandidat aus der Länderrecherche">Recherche</span>':'')+(a.nc?'<span class="flag" title="Neuprüfung vorgesehen">Neuprüfung</span>':'');
- const meta=CAT[a.c].open?(a.r||''):(a.v||'')+(a.c==='okRobots'?' · robots.txt sperrt':'')+(a.u?' · '+a.o:'');
+ const meta=CAT[a.c].open?(a.r||''):(a.v||'')+(a.u?' · '+a.o:'');
  return '<button type="button" class="row" role="listitem" data-i="'+a.i+'"'+(state.sel===a.i?' aria-current="true"':'')+' style="--c:'+col(a.c)+'"><span class="dot"></span><span class="nm">'+esc(a.n)+flags+'</span><span class="pop">'+LAND_SHORT[a.l]+(isCityLevel(a)&&a.p?' · '+fmt(a.p):'')+'</span><span class="meta">'+esc(typeLabel(a))+' · '+esc(CAT[a.c].label)+(meta?' · '+esc(meta):'')+'</span></button>';
 }
 function renderMore(){
@@ -472,7 +470,7 @@ function select(i,zoom){
  if(a.k==='d'&&state.layer==='city')setLayer('district');
  if(a.k==='c'&&state.layer==='district')setLayer('city');
  const C=CAT[a.c],facts=[['Art',typeLabel(a)+(a.m?' mit '+a.m+' Mitgliedsgemeinden':'')],['Land',D.lands[a.l]],['Schlüssel','<span class="mono">'+esc(a.g)+'</span>'],['Einwohner',a.p?fmt(a.p)+(a.k==='d'?' (Kreis, umfasst seine Gemeinden)':''):'–']];
- if(!C.open){facts.push(['Verfahren',esc(a.v||'–')]);if(a.rb)facts.push(['robots.txt',a.rb==='verboten'?'untersagt Programmen den Abruf':a.rb==='erlaubt'?'erlaubt den Abruf':'keine Datei']);if(a.at)facts.push(['Geprüft',esc(a.at.split('-').reverse().join('.'))]);}
+ if(!C.open){facts.push(['Verfahren',esc(a.v||'–')]);if(a.rb)facts.push(['robots.txt',(a.rb==='verboten'?'untersagt Programmen den Abruf':a.rb==='erlaubt'?'erlaubt den Abruf':'keine Datei')+' (festgehalten, nicht befolgt)']);if(a.cs)facts.push(['Freigabe','vom '+esc(a.cs.split('-').reverse().join('.'))]);if(a.at)facts.push(['Geprüft',esc(a.at.split('-').reverse().join('.'))]);}
  if(a.u)facts.push([C.open?'Gefundene Adresse':'Adresse','<a href="'+esc(a.u)+'" target="_blank" rel="noreferrer noopener" class="mono">'+esc(a.u)+'</a>']);
  let html='<div class="detail-head"><div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="eyebrow">'+esc(typeLabel(a))+' · '+esc(D.lands[a.l])+'</span><h2 style="overflow-wrap:anywhere">'+esc(a.n)+'</h2><span class="pill" style="--c:'+col(a.c)+'"><i></i>'+esc(C.label)+'</span></div><button type="button" class="close" id="close">Zur Liste</button></div><div class="detail-body">';
  html+='<dl class="facts">'+facts.map(([k,v])=>'<dt>'+k+'</dt><dd>'+v+'</dd>').join('')+'</dl>';

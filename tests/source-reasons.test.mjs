@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mergeChecks,openReason,foundLink,mainEntry,sourceAddress,fixedBody,PLATFORMS} from '../scripts/source-discovery/reasons.mjs';
+import {mergeChecks,openReason,foundLink,mainEntry,sourceAddress,fixedBody,PLATFORMS,ROBOTS_RECHECK} from '../scripts/source-discovery/reasons.mjs';
+// These tests check the old rule (robots.txt obeyed, ROBOTS_POLICY=obey); the tests marked "standard rule" switch to
+// the rule of server/integrations/robots-policy.mjs: robots.txt is recorded, not obeyed, and a refusal stays final.
+process.env.ROBOTS_POLICY='obey';
+const standardRule=async fn=>{const was=process.env.ROBOTS_POLICY;delete process.env.ROBOTS_POLICY;try{return await fn();}finally{process.env.ROBOTS_POLICY=was;}};
 
 /* Synthetische Prüfergebnisse im Format von verify.mjs (tried-Einträge) und crawl.mjs (candidates.json) */
 const area={id:'de-1',name:'Gemeinde Beispielort',kind:'city',ags:'09999001'};
@@ -61,8 +65,8 @@ test('B1: a municipality linking the RIS-Portal of its district besides its own 
  const old=[{url:KREIS_PORTAL,system:'sessionnet',identity:{ok:false,why:'Seite gehört erkennbar zu einem Kreis'}},{url:'https://beispielort.gremien.info/',system:'more-rubin',identity:ok}];
  assert.doesNotMatch(reason(row(old)),/RIS-Portal/);
  assert.equal(mainEntry(old).url,'https://beispielort.gremien.info/');
- /* Nur das Portal verlinkt: dann bleibt es beim Plattform-Grund */
- assert.match(reason(row([{url:KREIS_PORTAL,robots:'verboten'}])),/^RIS-Portal \(regisafe\)/);
+ /* Nur das Portal verlinkt: dessen robots-Sperre entscheidet (alte Regel) */
+ assert.match(reason(row([{url:KREIS_PORTAL,robots:'verboten'}])),/^robots\.txt des gefundenen Systems untersagt/);
 });
 
 test('B1: a robots.txt refusal on ratsinfo.<ort>.de decides reason and address',()=>{
@@ -76,9 +80,8 @@ test('B1: a robots.txt refusal on ratsinfo.<ort>.de decides reason and address',
  assert.equal(foundLink(row(two)),'https://www.sitzung-online.de/beispielort/');
 });
 
-test('B1: komuna is labelled with its operator only; the platforms still match pages that answer with errors',()=>{
- const komuna=reason(row([{url:'https://ris.komuna.net/beispielort/',robots:'verboten'}]));
- assert.match(komuna,/^komuna \(komuna GmbH\): robots\.txt untersagt/);assert.doesNotMatch(komuna,/AKDB|kiC/);
+test('B1: RIS-Portal and komuna have readers and are no platform reason; the platforms still match pages that answer with errors',()=>{
+ assert.ok(!PLATFORMS.some(([host])=>host.test('ris.komuna.net')||host.test('beispielort.ris-portal.de')));
  assert.ok(PLATFORMS.every(([,text])=>!/AKDB/.test(text)));
  assert.equal(reason(row([{url:'https://www.beispielort.de/x',status:404},{url:'https://beispielort.kommune-aktiv.de/',status:403}])),'Kommune aktiv: antwortet Programmen mit HTTP 403');
  const ekom=row([{url:'https://rim.ekom21.de/beispielort/webservice/oparl/v1.1/system',register:'ekom21'}]);
@@ -167,3 +170,17 @@ test('FG2: entries with fixed bodies are no foreign owners and have their own ad
  assert.equal(fixedBody(town),true);assert.equal(fixedBody({method:'scraper',base:'https://x/',body:'b'}),true);assert.equal(fixedBody({method:'oparl',system:'https://o/'}),true);
  assert.equal(fixedBody({method:'scraper',base:'https://x/'}),false);assert.equal(fixedBody({method:'official-api',base:'https://x/',bodies:[]}),false);
 });
+
+test('standard rule: a robots.txt refusal of an older check waits for its new check, on RIS-Portal and komuna as well',()=>standardRule(()=>{
+ const tried=[{url:'https://www.beispielort.de/rathaus/politik',system:'unknown',identity:ok},{url:'https://ratsinfo.beispielort.de/bi/',robots:'verboten'}];
+ assert.equal(reason(row(tried)),ROBOTS_RECHECK);assert.match(ROBOTS_RECHECK,/Neuprüfung ausstehend/);
+ assert.equal(foundLink(row(tried)),'https://ratsinfo.beispielort.de/bi/');
+ // RIS-Portal and komuna: an older check that obeyed robots.txt waits for its new check like any other.
+ assert.equal(reason(row([{url:KREIS_PORTAL,robots:'verboten'}])),ROBOTS_RECHECK);
+ assert.equal(reason(row([{url:'https://ris.komuna.net/beispielort/',robots:'verboten'}])),ROBOTS_RECHECK);
+ // A check that ended because the operator refused repeatedly in that run.
+ assert.equal(reason(row([{url:'https://www.beispielort.sitzung-online.de/bi/',status:0,error:'Betreiber wies Programme in diesem Lauf wiederholt ab (HTTP 403/429); nicht gefragt'}])),'Betreiber wies Programme bei der Prüfung wiederholt ab (HTTP 403/429); Neuprüfung später');
+ // Technical refusals stay what they are.
+ assert.equal(reason(row([{url:'https://beispielort.kommune-aktiv.de/',status:403}])),'Kommune aktiv: antwortet Programmen mit HTTP 403');
+ assert.equal(reason(row([{url:'https://ratsinfo.beispielort.de/bi/',status:403},{url:'https://ratsinfo.beispielort.de/',status:403}])),'Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert');
+}));

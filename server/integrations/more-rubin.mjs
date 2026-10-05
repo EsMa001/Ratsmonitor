@@ -111,7 +111,8 @@ export function rubinBodyMatch(bodies,area){
  const seat=members.filter(m=>own.some(o=>same(m,o)==='exact'));
  let associations=0,ownAssociation=false,ownSeat=false;
  const found=(Array.isArray(bodies)?bodies:[]).flatMap(b=>{
-  const name=String(b?.name||'').replace(/\s+/g,' ').trim();if(!b?.id||!name)return [];
+  // "Nationalparkverbandsgemeinde Herrstein-Rhaunen" is a Verbandsgemeinde by its official name.
+  const name=String(b?.name||'').replace(/\s+/g,' ').trim().replace(/^Nationalpark-?verbandsgemeinde(?=\s)/i,'Verbandsgemeinde');if(!b?.id||!name)return [];
   const kind=name.match(KIND)?.[1].toLowerCase(),core=name.replace(OFFICE,'').replace(PART,'').replace(KIND,''),at=place(core);
   const level=DISTRICT.test(name)||!kind&&/kreis$/i.test(core)?'district':ASSOCIATION[kind]?'association':kind?'municipal':null;
   const member=level==='municipal'&&association&&(kind!=='ortsgemeinde'||type==='Verbandsgemeinde');

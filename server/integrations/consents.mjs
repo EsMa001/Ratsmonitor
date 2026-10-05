@@ -1,7 +1,8 @@
 // Register of written consents of municipalities and operators (server/integrations/source-consents.json, concept
 // section 6 "Welle 0"). A consent with scope "robots" is a permission: the source search may read a system whose
-// robots.txt refuses programs, but only the system the consent names. It changes nothing for a system that refuses
-// programs technically (HTTP 403, firewall, access check): that needs the operator ("freischaltung").
+// robots.txt refuses programs, but only the system the consent names. Since 05.10.2026 robots.txt is recorded, not
+// obeyed (robots-policy.mjs), so the scope matters only with ROBOTS_POLICY=obey. It changes nothing for a system that
+// refuses programs technically (HTTP 403, firewall, access check): that needs the operator ("freischaltung").
 // No personal data: grantedBy is a role (Ratsbüro, Hauptamt …), evidence a register number; letters and names stay
 // with the owner outside the repository.
 import register from './source-consents.json' with {type:'json'};

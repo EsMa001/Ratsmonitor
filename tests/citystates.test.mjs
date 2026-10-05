@@ -6,6 +6,11 @@ import {READERS} from '../server/integrations/readers.mjs';
 import {collectRegion} from '../server/integrations/collect-region.mjs';
 import {pardokProcedure,pardokBlocks,collectPardok,collectBerlin,hamburgPaper,hamburgQuery,collectHamburgTransparenz,collectOparlDistricts,consentValid,eligibleSystems,BERLIN_CONSENT_MISSING,HAMBURG_DISTRICTS} from '../server/integrations/citystates.mjs';
 
+// These tests check the old rule (robots.txt obeyed, ROBOTS_POLICY=obey); the tests marked "standard rule" switch to
+// the rule of server/integrations/robots-policy.mjs: robots.txt is recorded, not obeyed, and a refusal stays final.
+process.env.ROBOTS_POLICY='obey';
+const standardRule=async fn=>{const was=process.env.ROBOTS_POLICY;delete process.env.ROBOTS_POLICY;try{return await fn();}finally{process.env.ROBOTS_POLICY=was;}};
+
 /* Nachgebildete Antworten im Format der CKAN-Schnittstelle (package_search); echte Antworten waren aus der
    Entwicklungsumgebung nicht abrufbar. */
 const hh={id:'de-02000000',name:'Stadt Hamburg',kind:'city',method:'scraper',adapter:'hamburg-transparenz',base:'https://suche.transparenz.hamburg.de/',districts:['Wandsbek','Altona']};
@@ -137,3 +142,37 @@ test('Berlin: the Abgeordnetenhaus is read without consent; the district assembl
   assert.equal(d.topics.length,1);assert.ok(d.coverage.warnings.some(w=>/Bezirksverordnetenversammlungen nicht gelesen/.test(w)));
  }finally{globalThis.fetch=original;}
 });
+
+test('standard rule: Hamburg reads the portal although robots.txt refuses programs; HTTP 403 ends every request',()=>standardRule(async()=>{
+ const calls=[];
+ const get=async url=>{calls.push(url);if(url.endsWith('/robots.txt'))return 'User-agent: *\nDisallow: /\n';const q=new URL(url).searchParams.get('q');if(q.includes('Wandsbek'))return answer([pkg()]);return answer([]);};
+ const d=await collectHamburgTransparenz(hh,{now,get,window:'1m'});
+ assert.ok(!calls.some(u=>u.endsWith('/robots.txt')),'robots.txt is recorded by robots.mjs, not asked by the reader');
+ assert.ok(calls.every(u=>u.startsWith('https://suche.transparenz.hamburg.de/')),'no request outside the portal');
+ assert.equal(d.topics.length,1);assert.equal(d.topics[0].committee,'Bezirksversammlung Wandsbek');
+ const refused=[];
+ const shut=await collectHamburgTransparenz(hh,{now,get:async url=>{refused.push(url);throw Error('Quelle antwortet mit HTTP 403');}});
+ assert.equal(refused.length,1,'no request after HTTP 403, also not for the next district');
+ assert.equal(shut.topics.length,0);assert.ok(shut.coverage.issues.some(i=>/HTTP 403/.test(i)));assert.equal(shut.coverage.complete,false);
+}));
+
+test('standard rule: Berlin districts are read unless they refuse technically; the PARDOK file although robots.txt refuses',()=>standardRule(async()=>{
+ const systems=[{district:'Pankow',system:'https://pankow.example.berlin.de/oparl/system',robots:'verboten'},{district:'Mitte',system:'https://mitte.example.berlin.de/oparl/system',robots:'erlaubt'},
+  {district:'Spandau',system:'https://spandau.example.berlin.de/oparl/system',robots:'unbrauchbar',error:'Quelle antwortet mit HTTP 403',oparl:false},{district:'Neukölln',system:'https://neukoelln.example.berlin.de/oparl/system',oparl:false}];
+ assert.deepEqual(eligibleSystems({systems}).map(s=>s.district),['Pankow','Mitte']);
+ assert.equal(eligibleSystems({systems,consent:{by:'ITDZ Berlin',date:'2026-11-01',scope:'oparl'}}).length,4);
+ // The live check of 05.10.2026: all ten district systems answered with HTTP 403; they stay out.
+ assert.deepEqual(eligibleSystems(berlin),[]);
+ // A district whose robots.txt refuses is asked without reading robots.txt; its 403 ends its reading.
+ const asked=[],robots=[];
+ const pankow=await collectOparlDistricts({...berlin,systems:systems.slice(0,1)},{now,window:'1m',get:async url=>{robots.push(url);return '';},getJson:async url=>{asked.push(url);throw Error('Quelle antwortet mit HTTP 403');}});
+ assert.deepEqual(robots,[]);assert.equal(asked[0],'https://pankow.example.berlin.de/oparl/system');
+ assert.equal(pankow.topics.length,0);assert.match(pankow.coverage.issues.join(' '),/BVV Pankow: .*HTTP 403/);
+ // PARDOK: robots.txt disallows /opendata/; the file is read anyway; a 403 ends the reading of every period.
+ const files=[];
+ const d=await collectPardok(be,{now,window:'1m',get:async()=>'User-agent: *\nDisallow: /opendata/\n',stream:async function*(url){files.push(url);if(url.endsWith('wp20.xml'))throw Error('Quelle antwortet mit HTTP 404');yield xml;}});
+ assert.equal(files.length,2);assert.equal(d.topics.length,1);
+ const shut=[];
+ const refused=await collectPardok(be,{now,window:'1m',get:async()=>'',stream:async function*(url){shut.push(url);throw Error('Quelle antwortet mit HTTP 403');}});
+ assert.equal(shut.length,1,'no second file after HTTP 403');assert.equal(refused.topics.length,0);assert.match(refused.coverage.issues[0],/HTTP 403/);
+}));

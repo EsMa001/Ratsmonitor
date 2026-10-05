@@ -30,6 +30,8 @@ Mit Stufe 0 des Fahrplans (Abschnitt 4, etwa zwei Arbeitstage) sind erreichbar: 
 | F1 gefährliche ungenutzte Endpunkte entfernt | `/api/analytics`, `/api/analytics/articles`, `/api/topics`, `/api/topics/<id>/related` gelöscht, `/analysen` leitet auf `/` | kein Absturz mehr möglich |
 | `/api/sources` | Zählung über `search_cards`, Maps statt `find` | siehe C2 |
 | E5 (vorgezogen) | Stichwörter im Admin per `atRevision` | 61 s nur beim ersten Aufruf je Datenstand |
+| E1 Kennzahlen je Gebiet | `region_stats` und `region_revisions` (Migration 0011), schrittweise Berechnung in `admin-data.mjs`; Abschnitte höchstens 100 Gebiete (D1-Grenze) | Übersicht warm 12 s → 0,8–1,7 s (siehe „Nachmessung“ unter 1.) |
+| Prüfliste | Trefferzahl aus `region_stats`, Teilindex `idx_topics_canonical_updated` (Migration 0012) | alle Gebiete 29 s → 0,03–0,13 s |
 
 Vorher und nachher, gleiche Anfragen am lokalen Dev-Server:
 
@@ -108,6 +110,30 @@ Zusammen mit den Kartendaten überträgt der erste Besuch rund 1,6 MB komprimier
 |---|---:|---:|
 | `/api/admin/overview` | 12 s warm, 59 s kalt | 4,7 MB |
 | `/api/admin/keywords` | 61 s | 260 KB |
+
+#### Nachmessung mit echten Daten (05.10.2026, Migration 0011)
+
+Lokaler Dev-Server, 903.737 kanonische Vorgänge in 2.070 Gebieten, Migration `0011_region_stats` lokal angewendet (24 s).
+
+| Aufruf | nach Migration, Kennzahlen werden berechnet | warm | während eines Imports (Billerbeck, 122 s) |
+|---|---:|---:|---:|
+| `/api/admin/overview?review=0` (Seite 1) | erst HTTP 503, nach Behebung 22–30 s je Aufruf; nach 7 Aufrufen alle Gebiete berechnet | 0,76–1,7 s | 0,78–1,65 s |
+| `/api/admin/overview` (Seite 2, mit Prüfliste) | | 13,5–15,3 s → **0,8–1,2 s** | |
+| `/api/admin/review`, alle Gebiete | | 28,8–29,8 s → **0,03–0,13 s** | |
+| `/api/admin/review`, ein Gebiet | | 0,04–0,06 s | |
+| Antwort der Übersicht | | 4,7 MB (Quellentabelle 4,1 MB, Verarbeitungsstand 0,5 MB) | |
+
+Die Seite zeigt beim ersten Aufruf „Kennzahlen werden berechnet: noch … Gebiete“ (1.088, dann 853, 556, 345, 248, 121, 38, 0).
+
+Ursachen und Abhilfe:
+
+1. **HTTP 503 nach der Migration:** `regionFigures` band bis zu 200 Gebietskennungen in einer `IN`-Liste; D1 erlaubt 100 Parameter je Abfrage („too many SQL variables“). Node (32.766) zeigte den Fehler nicht. Abschnitte jetzt höchstens `D1_MAX_PARAMETERS` (100) groß, Test mit einer Datenbank, die wie D1 mehr als 100 Parameter ablehnt. Die Ursache steht seitdem im Server-Log (`admin-auth.ts`, nur die Meldung).
+2. **Kalt 22–30 s:** gewollt einmalig. Jeder Aufruf berechnet Kennzahlen für höchstens 8 s und zeigt den Rest als ausstehend.
+3. **Seite 2 über 3 s:** Die Prüfliste las alle Vorgänge zweimal: die 25 neuesten Treffer ohne passenden Index (`SCAN topics / USE TEMP B-TREE FOR ORDER BY`, 13,3 s) und die Trefferzahl (`SCAN topics`, 13,2 s). Jetzt kommt die Zahl aus `region_stats`; Gebiete, die sich seit der Berechnung geändert haben, werden einzeln exakt gezählt. „Verfahrensstand unklar“ wird auf dem Index von Migration 0002 gezählt (53 ms). Bei null Treffern gibt es keine Listenabfrage mehr. Ein häufiger Grund wird über den neuen Teilindex `idx_topics_canonical_updated` (Migration `0012`) vom neuesten Vorgang an gelesen (13,3 s → 2 ms), ein seltener (bis 1.000 Treffer) nur in den Gebieten, die ihn haben.
+4. **SQL im Worker ist nicht der Engpass:** `meta.duration` in workerd: Status 269 ms, Größe je Gebiet 99 ms, sieben Tage 131 ms, `region_stats` 9 ms, `source_coverage` 9 ms. Warm in Node ohne Prüfliste: 0,59 s.
+5. **Offen: 4,7 MB Antwort** (E2). Die Quellentabelle schickt alle 5.324 Gebiete mit Platzhaltern. Teilen und Verschlanken bleibt Stufe 1.
+
+Für die Produktion: Migrationen `0010`, `0011` und `0012` anwenden (`wrangler d1 migrations apply DB --remote`). Die beiden Indizes auf `topics` brauchten lokal 24 s und 15 s.
 
 ## 2. Ursachen
 

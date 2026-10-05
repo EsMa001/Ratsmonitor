@@ -1,7 +1,7 @@
 // Pure decisions of the website search (website.mjs): which areas to search, which links to follow, which pages count
 // as lists of meeting notices, how the catalog entry looks and why an area is not taken. Importing this file asks no
 // network and reads no file; tests/website-discovery.test.mjs checks it.
-import {sessionScore,SESSION_THRESHOLD,documentLinks,isRisLink,isSearchLink} from '../../server/integrations/website-feeds.mjs';
+import {sessionScore,SESSION_THRESHOLD,documentLinks,isRisLink,isSearchLink,isCmsFileUrl} from '../../server/integrations/website-feeds.mjs';
 
 /** A page counts as a list of meeting notices from this score of listPageScore (one heading and one notice, or three notices). */
 export const MIN_LIST_SCORE=3;
@@ -15,7 +15,8 @@ export const REASONS={
  unreadable:'Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar',
  foreign:'Gefundene Bekanntmachungen nennen das Gebiet nicht',
 };
-export const API_CHECK='Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website (robots.txt erlaubt den Abruf).';
+// robots.txt is recorded, not obeyed (robots-policy.mjs); the check says nothing about it.
+export const API_CHECK='Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website.';
 
 const norm=s=>String(s??'').normalize('NFC').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,' ').trim();
 const pathText=url=>{try{const u=new URL(url);let p=u.pathname+' '+u.search;try{p=decodeURIComponent(p);}catch{/* keep as written */}return p;}catch{return '';}};
@@ -163,15 +164,16 @@ const originOf=url=>{try{return new URL(url).origin;}catch{return null;}};
 /**
  * The catalog entry the reader is checked with. Only fields with content are written: pages, feeds and ics as lists,
  * wp (API root) and sitemap (one file; the reader follows an index itself) as one address. alsoFrom lists the other
- * https origins of the base host's family that any of them lie on.
+ * https origins of the base host's family that any of them lie on, and the file storage of the website's CMS where the
+ * list pages link documents of meetings (files: their addresses).
  */
-export function buildSource({area,base,pages=[],feeds=[],ics=[],wp=null,sitemap=null}){
+export function buildSource({area,base,pages=[],feeds=[],ics=[],wp=null,sitemap=null,files=[]}){
  const root=new URL(base),inSite=u=>/^https:/i.test(String(u))&&sameSite(u,root.hostname);
  const list=v=>[...new Set((v||[]).filter(inSite))];
  const source={id:area.id,name:area.name,kind:area.kind,method:'scraper',adapter:'website',base:root.origin+'/',pages:list(pages)};
  const f=list(feeds),c=list(ics),map=[].concat(sitemap??[]).find(inSite);
  if(f.length)source.feeds=f;if(c.length)source.ics=c;if(wp&&inSite(wp))source.wp=wp;if(map)source.sitemap=map;
- const others=[...new Set([...source.pages,...f,...c,...(map?[map]:[]),...(source.wp?[source.wp]:[])].map(originOf).filter(o=>o&&o!==root.origin))].sort();
+ const others=[...new Set([...source.pages,...f,...c,...(map?[map]:[]),...(source.wp?[source.wp]:[]),...files.filter(isCmsFileUrl)].map(originOf).filter(o=>o&&o!==root.origin))].sort();
  if(others.length)source.alsoFrom=others;
  return source;
 }

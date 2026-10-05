@@ -12,11 +12,12 @@ import {collectMuenchenRisi,detectMuenchenRisi} from './muenchen-risi.mjs';
 import {collectPiwi,detectPiwi} from './piwi.mjs';
 import {collectPio,detectPio} from './pio.mjs';
 import {collectCouncilservice,detectCouncilservice} from './councilservice.mjs';
+import {collectRisPortal,detectRisPortal} from './ris-portal.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 // collect-region.mjs hands every reader the council-system fetch (sessionnet fetchText, wrapped by the trace of a
-// metadata import). The website reader needs its own: fetchSiteText/fetchSiteBytes check robots.txt for every redirect
-// target and accept the origins of alsoFrom. With a trace both are recorded, documents included.
+// metadata import). The website reader needs its own: fetchSiteText/fetchSiteBytes follow redirects by hand (with
+// ROBOTS_POLICY=obey every target is checked against robots.txt) and accept the origins of alsoFrom. With a trace both are recorded, documents included.
 function collectSite(source,options={}){
  const own={...options};delete own.get;delete own.getBytes;
  if(options.trace){own.get=options.trace.wrap(fetchSiteText);own.getBytes=options.trace.wrap(fetchSiteBytes);}
@@ -26,7 +27,8 @@ const pick=(found,keys)=>found?Object.fromEntries(keys.filter(k=>found[k]!==unde
 export const READERS={
  // ALLRIS 3 (…/si010_e.asp …). The reader asks the system's own OParl address first, like the ALLRIS 4 reader.
  allris3:{name:'ALLRIS 3 (öffentliche Seiten)',collect:collectAllris3,detect:async(url,html)=>pick(detectAllris3(url,html),['base','calendar']),oparlCheck:true},
- // KIC Software (React app with a public guest API): the app's webconfig.json names the API and the organisation.
+ // KIC Software (React app with a public guest API): the app's webconfig.json names the API and the organisation. The
+ // systems of komuna (ris.komuna.net/<name>/, interface risapi1.komuna.net) are this app as well.
  kic:{name:'KIC-RIS (öffentliche Gast-Schnittstelle)',collect:collectKic,detect:async(url,html,{get}={})=>kicShell(url,html)?pick(await detectKic(url,html,get?{get}:{}),['base','api','client']):null},
  'ti-generator':{name:'TI-Generator (öffentliche Seiten)',collect:collectTiGenerator,detect:async(url,html)=>{const found=detectTiGenerator(url,html);return found&&found.invitationLists>0?pick(found,['base']):null;}},
  sessionnet6:{name:'SessionNet 6 (öffentliche Schnittstelle)',collect:collectSessionNet6,detect:async(url,html)=>pick(detectSessionNet6(url,html),['base'])},
@@ -34,6 +36,9 @@ export const READERS={
  'muenchen-risi':{name:'RIS München (öffentliche Seiten)',collect:collectMuenchenRisi,detect:async(url,html)=>pick(detectMuenchenRisi(url,html),['base'])},
  piwi:{name:'PIWi Wiesbaden (öffentliche Seiten)',collect:collectPiwi,detect:async(url,html)=>pick(detectPiwi(url,html),['base'])},
  pio:{name:'PIO Offenbach (öffentliche Seiten)',collect:collectPio,detect:async(url,html)=>pick(detectPio(url,html),['base'])},
+ // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
+ // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
+ 'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},
  // Sitzungsdienst of mein-intra.net embedded in the municipality's website: recognised from the website page that
  // embeds it (export script and token); the entry names the system, the token and that page.
  councilservice:{name:'Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website)',collect:collectCouncilservice,detect:async(url,html)=>pick(detectCouncilservice(url,html),['base','token','page'])},

@@ -3,7 +3,7 @@
     "id": "de-02000000",
     "name": "Stadt Hamburg",
     "kind": "city",
-    "method": "pending",
+    "method": "scraper",
     "adapter": "hamburg-transparenz",
     "base": "https://suche.transparenz.hamburg.de/",
     "districts": [
@@ -17,14 +17,22 @@
     ],
     "verifiedSource": "https://transparenz.hamburg.de/api-796358",
     "license": "dl-de/by-2.0",
-    "checkPending": "Eingeschaltet ohne Live-Prüfung (Entwicklungsumgebung ohne Zugang zum Portal). Der erste Import ist der Test: robots.txt des Portals und Felder der Datensätze; findet er nichts, nennt der Abruf den Grund. Prüfen: node scripts/source-discovery/stadtstaaten.mjs hamburg",
-    "note": "robots.txt des Transparenzportals (verboten) erlaubt die Suchschnittstelle nicht; geprüft am 2026-10-05. Freigabe beim Portal anfragen."
+    "robots": {
+      "verdict": "verboten",
+      "checkedAt": "2026-10-05"
+    },
+    "verifiedAt": "2026-10-05",
+    "verifiedEvidence": {
+      "papers": 903,
+      "window": "1m",
+      "districts": 7
+    }
   },
   {
     "id": "de-11000000",
     "name": "Stadt Berlin",
     "kind": "city",
-    "method": "pending",
+    "method": "scraper",
     "adapter": "berlin",
     "base": "https://www.parlament-berlin.de/",
     "pardok": {
@@ -35,7 +43,6 @@
       ]
     },
     "verifiedSource": "https://www.parlament-berlin.de/dokumente/open-data",
-    "checkPending": "Abgeordnetenhaus eingeschaltet ohne Live-Prüfung (Entwicklungsumgebung ohne Zugang). Der erste Import ist der Test: robots.txt und Aufbau der XML-Datei. Bezirksverordnetenversammlungen nur mit Freigabe (requirements/berlin-freigabe-anfrage.md). Prüfen: node scripts/source-discovery/stadtstaaten.mjs berlin",
     "consent": null,
     "systems": [
       {
@@ -129,6 +136,11 @@
         "error": "Quelle antwortet mit HTTP 403"
       }
     ],
-    "note": "Prüflauf am 2026-10-05: Abgeordnetenhaus ohne Vorgänge (robots.txt untersagt den Abruf von https://www.parlament-berlin.de/opendata/pardok-wp20.xml; nichts gelesen. robots.txt untersagt den Abruf von https://www.parlament-berlin.de/opendata/pardok-wp19.xml; nichts gelesen. Noch keine Artikel erfolgreich erfasst.); Bezirke nur mit Freigabe."
+    "verifiedAt": "2026-10-05",
+    "verifiedEvidence": {
+      "procedures": 301,
+      "window": "1m",
+      "districts": 0
+    }
   }
 ]

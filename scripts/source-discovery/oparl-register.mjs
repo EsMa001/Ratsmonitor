@@ -5,7 +5,8 @@
 // 2. Tenants of ekom21 (Hesse, SD.NET RIM). The municipal websites link rim.ekom21.de/<tenant>/, whose pages a web
 //    firewall closes to programs. The vendor's interface rim.ekom21.de/<tenant>/webservice/oparl/v1.1/system is open
 //    where the municipality has activated it.
-// robots.txt of every host is read once; a host that disallows the interface path is left out and not asked further.
+// robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs). With ROBOTS_POLICY=obey robots.txt of every
+// host is read once and a host that disallows the interface path is left out and not asked further.
 // verify.mjs then asks only the address found here (oparlOnly) and accepts it only if the collector reads public agenda
 // items from it, as for every other candidate.
 // Run: LAND=de DIR=tmp/source-discovery-de/ node scripts/source-discovery/oparl-register.mjs
@@ -14,6 +15,7 @@ import fs from 'node:fs';
 import {loadAreas,skipReason} from './areas.mjs';
 import {NRW_SOURCES} from '../../server/integrations/source-catalog.mjs';
 import {robotsVerdict} from '../../server/integrations/robots.mjs';
+import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 const dir=process.env.DIR||'tmp/source-discovery/';
 const outFile=dir+(process.env.OUT||'candidates-oparl.json');
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -52,13 +54,13 @@ for(const region of open){
 }
 // robots.txt once per host, one host at a time with a pause: the addresses are few and partly on one server.
 const verdicts=new Map();
-for(const origin of new Set([...found.values()].flatMap(r=>r.list.map(c=>new URL(c.url).origin)))){
+if(obeyRobots())for(const origin of new Set([...found.values()].flatMap(r=>r.list.map(c=>new URL(c.url).origin)))){
  let status=0,body='';try{const r=await fetch(origin+'/robots.txt',{headers:{'User-Agent':UA},signal:AbortSignal.timeout(15000)});status=r.status;body=r.ok?(await r.text()).slice(0,20000):'';}catch{}
  verdicts.set(origin,{status,body});await new Promise(d=>setTimeout(d,500));
 }
 const out={},left=[];
 for(const {region,list} of found.values()){
- const allowed=list.filter(c=>{const u=new URL(c.url),v=verdicts.get(u.origin);const verdict=robotsVerdict(v.status,v.body,u.pathname,TOKENS);if(verdict==='verboten'||verdict==='unklar'){left.push(`${region.name}: ${c.url} (robots.txt ${verdict==='verboten'?'untersagt den Abruf':'nicht lesbar, Rechner antwortet nicht'})`);return false;}return true;});
+ const allowed=list.filter(c=>{const u=new URL(c.url),v=verdicts.get(u.origin);const verdict=v?robotsVerdict(v.status,v.body,u.pathname,TOKENS):'erlaubt';if(verdict==='verboten'||verdict==='unklar'){left.push(`${region.name}: ${c.url} (robots.txt ${verdict==='verboten'?'untersagt den Abruf':'nicht lesbar, Rechner antwortet nicht'})`);return false;}return true;});
  if(allowed.length)out[region.id]={id:region.id,name:region.name,kind:region.kind,ags:region.ags,sites:[],candidates:allowed,log:[]};
 }
 fs.writeFileSync(outFile,JSON.stringify(out,null,1));

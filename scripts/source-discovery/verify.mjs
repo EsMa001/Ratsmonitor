@@ -13,6 +13,7 @@ import {READERS} from '../../server/integrations/readers.mjs';
 import {fetchText} from '../../server/integrations/sessionnet.mjs';
 import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,hrefs,title,identity} from './rules.mjs';
 import {consentAllows} from '../../server/integrations/consents.mjs';
+import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 // DIR and AREAS let the same check run over another list of areas (e.g. the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -32,19 +33,54 @@ const addressOf=host=>{if(!addresses.has(host))addresses.set(host,dns.resolve4(h
 const acquire=key=>{const slot=slots.get(key)||{busy:0,waiting:[]};slots.set(key,slot);if(slot.busy<PER_SERVER){slot.busy++;return Promise.resolve();}return new Promise(turn=>slot.waiting.push(turn));};
 const release=key=>{const slot=slots.get(key),turn=slot.waiting.shift();if(turn)turn();else slot.busy--;};
 // Always the domain first and the address second, so two checks never wait for each other.
-const withHost=async(url,fn)=>{const host=new URL(url).hostname,address=await addressOf(host),keys=['domain:'+host.split('.').slice(-2).join('.'),...(address?['ip:'+address]:[])];for(const key of keys)await acquire(key);try{return await fn();}finally{if(PAUSE)await new Promise(r=>setTimeout(r,PAUSE));for(const key of keys.reverse())release(key);}};
-// robots.txt of a host is read before its first page (one request per host); a path it disallows for the programs of
-// this project is not asked, the candidate is recorded with robots:'verboten' (verdicts as in source-robots.json).
-// IGNORE_ROBOTS=1 switches the check off.
+// An operator (registrable domain) whose systems refused programs on three different hosts in this run, with HTTP 403
+// or 429 on a candidate page or inside a reader, is not asked again in this run. A probe of a path that may not exist
+// there (robots.txt, the SessionNet entry page next to a link, the SD.NET list, OParl standard paths, a reader's
+// configuration) does not count: a forbidden path is no refusal of programs (RIS-Portal answers 403 for si0040.asp).
+// So: no repetition after a refusal, also not with its
+// next tenant (sitzung-online.de blocks a network that keeps asking). One system that refuses several addresses (page,
+// list of papers, OParl paths) counts once. Further candidates of that operator end with REFUSED_RUN and wait for a
+// later run.
+const REFUSALS=3,refusals=new Map();
+// Readers of readers.mjs that read one part of a shared system, and the fields that name it.
+const PART_READERS={kic:['client'],'ris-portal':['organizations']};
+// Whether the name of a part (a municipality of a KIC app, name patterns of bodies) names the area as a whole word:
+// "Gemeinderat Au" names Au, "Ausschuss" does not.
+const foldPart=s=>String(s||'').normalize('NFC').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+const partNames=(region,text)=>{
+ const names=[region.shortName,String(region.name||'').replace(/^(?:Gemeinde|Stadt|Markt|Marktgemeinde|Große Kreisstadt|Hansestadt|Ortsgemeinde|Verbandsgemeinde|Samtgemeinde|Amt|Landkreis|Kreis)\s+/,'')].filter(Boolean).map(foldPart);
+ const folded=foldPart(text);
+ return names.some(n=>new RegExp('(?:^|[^a-z0-9])'+n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?:$|[^a-z0-9])').test(folded));
+};
+export const REFUSED_RUN='Betreiber wies Programme in diesem Lauf wiederholt ab (HTTP 403/429); nicht gefragt';
+// A reader that delivered items despite a refused document or page counts as an answer, not as a refusal.
+const refusedAnswer=r=>Boolean(r&&(r.status===403||r.status===429||r.coverage&&!r.topics?.length&&(r.coverage.issues||[]).some(i=>/HTTP (?:403|429)\b/.test(String(i)))));
+const withHost=async(url,fn,probe=false)=>{
+ const host=new URL(url).hostname,domain=host.split('.').slice(-2).join('.');
+ if((refusals.get(domain)?.size||0)>=REFUSALS)throw Error(REFUSED_RUN);
+ const address=await addressOf(host),keys=['domain:'+domain,...(address?['ip:'+address]:[])];for(const key of keys)await acquire(key);
+ const refused=why=>{
+  const hosts=refusals.get(domain)||new Set();if(hosts.has(host))return;hosts.add(host);refusals.set(domain,hosts);
+  console.log(`  ${host}: abgewiesen (${why})`+(hosts.size===REFUSALS?`; ${domain} in diesem Lauf nicht weiter gefragt`:''));
+ };
+ try{const result=await fn();if(!probe&&refusedAnswer(result))refused(result.status?'HTTP '+result.status+' '+url:'Leser: '+String((result.coverage?.issues||[]).find(i=>/HTTP (?:403|429)\b/.test(String(i)))).slice(0,120));return result;}
+ catch(e){if(!probe&&/HTTP (?:403|429)\b/.test(String(e?.message)))refused(String(e.message).slice(0,80)+' '+url);throw e;}
+ finally{if(PAUSE)await new Promise(r=>setTimeout(r,PAUSE));for(const key of keys.reverse())release(key);}
+};
+// robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs, decision of 05.10.2026): the check reads
+// every candidate; robots.mjs keeps recording the verdict of each connected source. With ROBOTS_POLICY=obey the old
+// rule applies: robots.txt of a host is read before its first page (one request per host), a path it disallows for
+// the programs of this project is not asked and the candidate is recorded with robots:'verboten'.
+// Unchanged either way: no repetition after 401/403, no way around a firewall, an access check or a login (rules.mjs).
 const TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'],robotsFiles=new Map();
 const robotsFile=u=>{if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,(async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}})());return robotsFiles.get(u.origin);};
 // A written consent of the municipality or operator for this system (source-consents.json) is a permission:
 // robots.txt is not asked for the addresses it covers (concept section 6.2).
-async function robotsAllowFree(url){if(process.env.IGNORE_ROBOTS==='1'||consentAllows(url))return true;const u=new URL(url),file=await robotsFile(u);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';}
+async function robotsAllowFree(url){if(!obeyRobots()||consentAllows(url))return true;const u=new URL(url),file=await robotsFile(u);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';}
 async function robotsAllow(url){
- if(process.env.IGNORE_ROBOTS==='1'||consentAllows(url))return true;
+ if(!obeyRobots()||consentAllows(url))return true;
  const u=new URL(url);
- if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,withHost(url,async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}}));
+ if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,withHost(url,async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}},true));
  const file=await robotsFiles.get(u.origin);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';
 }
 async function page(url,timeout=15000,hops=1){
@@ -89,7 +125,7 @@ async function findSessionNet(url){
   if(silent.has(new URL(base).origin))continue;
   // robots.txt decides for every address asked here as well; the search next to a failed page asks several.
   if(!await robotsAllow(base+'si0040.'+extension))continue;
-  let p;try{p=await withHost(base,()=>page(base+'si0040.'+extension,12000));}catch{silent.add(new URL(base).origin);continue;}
+  let p;try{p=await withHost(base,()=>page(base+'si0040.'+extension,12000),true);}catch{silent.add(new URL(base).origin);continue;}
   const mark=p.status===200&&!loginPage(p)?sessionNetLandmark(p.html):null;if(mark&&!mark.issue&&/si005[67]\.|smc-|kalender|to0040\./i.test(p.html))return {base:new URL(p.url).href.replace(/si0040\.(asp|php).*$/i,'').replace(/^http:/,'https:'),extension};
  }
  return null;
@@ -101,7 +137,7 @@ async function findSessionNet(url){
 const sdnetBase=url=>{const u=new URL(url);return u.origin+'/'+(u.pathname.match(/^\/((?:sdnet\d*|rim\d{4})\/)/i)?.[1]||'');};
 // SD.NET on a host of its own does not always name the product on its start page; its list of papers does.
 async function isSdnet(url){
- try{const p=await withHost(url,()=>page(sdnetBase(url)+'vorlagen',12000));return p.status===200&&/SD\.NET|sdnet/i.test(p.html);}catch{return false;}
+ try{const p=await withHost(url,()=>page(sdnetBase(url)+'vorlagen',12000),true);return p.status===200&&/SD\.NET|sdnet/i.test(p.html);}catch{return false;}
 }
 // ALLRIS 4 folders (allrisBases) and the generation of an ALLRIS page (allrisGeneration): rules.mjs.
 function systemOf(url,html){
@@ -125,7 +161,7 @@ function oparlGuesses(url,sn,html){
  return [...new Set(out.map(x=>x.replace(/^http:/,'https:')))];
 }
 async function infoIdentity(region,sn){
- try{const info=await withHost(sn.base,()=>page(sn.base+'info.'+sn.extension,12000));if(info.status!==200||loginPage(info))return null;
+ try{const info=await withHost(sn.base,()=>page(sn.base+'info.'+sn.extension,12000),true);if(info.status!==200||loginPage(info))return null;
   const clients=info.html.match(/<a\b[^>]*smcfiltermenumandant[^>]*>[\s\S]*?<\/a>/gi)||[],own=clients.length>1?clients.reduce((h,a)=>h.replace(a,' '),info.html):info.html;
   const who=identity(region,sn.base,own);return who.ok?{ok:true,by:'Infoseite des Systems ('+who.by+')'}:null;}catch{return null;}
 }
@@ -146,7 +182,7 @@ async function verify(region,row){
   for(const guess of exact?[url.replace(/^http:/,'https:')]:oparlGuesses(url,sn,html)){
    // robots.txt decides for every address asked, also for the vendor's standard paths.
    if(!await robotsAllow(guess))continue;
-   const system0=await withHost(guess,()=>probeOparl(guess));if(!system0)continue;note.oparl=guess;
+   const system0=await withHost(guess,()=>probeOparl(guess),true);if(!system0)continue;note.oparl=guess;
    // Areas outside the NRW catalog carry their official key explicitly, so the body can be matched by it
    // (Lower Saxon Samtgemeinden: 9-digit regional key).
    let source={id:region.id,name:region.name,kind:region.kind,...(process.env.AREAS&&/^[0-9]{5}([0-9]{3,4})?$/.test(region.ags||'')?{ags:region.ags}:{}),system:guess,method:'oparl',...Object.fromEntries(['body','organizations'].map(k=>[k,row.candidates.find(x=>x.url===url)?.[k]]).filter(([,v])=>v)),...(String(system0.id||'').startsWith('http://')||String(system0.body||'').startsWith('http://')?{upgradeHttpLinks:true}:{})};
@@ -161,7 +197,7 @@ async function verify(region,row){
     // The system is linked from the official website and serves exactly one body whose name or key differs
     // (e.g. "Stadt Emmerich" for Emmerich am Rhein, "Instance 0001"): that body is assigned explicitly.
     if(trusted&&/nicht eindeutig/.test(e.message)){
-     try{const body=await withHost(guess,()=>onlyBody(system0));
+     try{const body=await withHost(guess,()=>onlyBody(system0),true);
       if(body&&!(region.kind==='city'&&/^(kreis|landkreis|kreisverwaltung)\s/i.test(body.name||''))&&!(region.kind==='district'&&/^(stadt|gemeinde)\s/i.test(body.name||''))){
        source={...source,body:String(body.id).replace(/^http:/,'https:'),note:`Einzige Körperschaft des von der offiziellen Website verlinkten Systems („${body.name||''}“); fest zugeordnet.`};
        const got=await collect();if(got){delete note.oparlError;return got;}}
@@ -231,7 +267,12 @@ async function verify(region,row){
   if(!who.ok&&process.env.TRUST_LINK&&!c.guessed&&who.why!=='Seite gehört erkennbar zu einem Kreis')who={ok:true,by:'Verweis von der offiziellen Website'};
   // The address names another municipality and not this one: a shared system whose councils the readers cannot separate.
   if(who.ok&&region.kind==='city'){const owner=foreignOwner(region,sn?.base||p.url,regions);if(owner)who={ok:false,why:'Adresse nennt '+owner+' (mitbenutztes System)'};}
-  const note={url:p.url,system,title:title(p.html),identity:who,from:c.from};
+  // A candidate set by hand for one member of a shared system names its part of that system: the municipality of a KIC
+  // app (client, clientName) or the bodies of the area (organizations, as in oparl-regional.mjs). The reader reads only
+  // that part (fail closed); the area is named by the part, never by a page that names the whole association.
+  const part=c.client!==undefined||c.organizations||c.calendarQuery?{...(c.client!==undefined?{client:c.client}:{}),...(c.organizations?{organizations:c.organizations}:{}),...(c.calendarQuery?{calendarQuery:c.calendarQuery}:{})}:null;
+  if(part&&trusted(c))who=partNames(region,[c.clientName,...(c.organizations?.include||[])].filter(Boolean).join(' · '))?{ok:true,by:'Teil des gemeinsamen Systems: '+(c.clientName||c.organizations.include.join(', '))}:{ok:false,why:'Teil des gemeinsamen Systems nennt das Gebiet nicht'};
+  const note={url:p.url,system,title:title(p.html),identity:who,from:c.from,...(part?{part}:{})};
   // The address read can lie elsewhere than the candidate: after a redirect, or the public part of SessionNet next to
   // the members' area (ratsinfo.kyritz.de → buergerinfo.kyritz.de). Its robots.txt decides as well.
   if(!await robotsAllow(sn?.base||p.url)){note.robots='verboten';result.tried.push(note);continue;}
@@ -254,6 +295,10 @@ async function verify(region,row){
   // 1. Official OParl interface, if one answers and the body is unambiguous.
   {const got=await tryOparl(p.url,sn,note,verifiedSource,trusted(c),false,p.html);if(got){result.accepted=got;result.tried.push(note);return result;}}
   if(!who.ok&&!byCommittees){result.tried.push(note);continue;}
+  // A part of a shared system is read only by a reader that separates it (PART_READERS); SessionNet, SD.NET, ALLRIS
+  // and More! Rubin pages of a part are not read here (More! Rubin separates by its list of bodies on its own).
+  // SessionNet separates a client by its calendar query (__cpanr) and the client cell of each calendar row.
+  if(part&&system!=='unknown'&&!(sn&&Object.keys(part).every(k=>k==='calendarQuery'))){note.partError='Leser trennt diesen Teil des gemeinsamen Systems nicht';result.tried.push(note);continue;}
   // 2. More! Rubin public calendar interface.
   if(system==='more-rubin'){
    const source={id:region.id,name:region.name,kind:region.kind,method:'official-api',adapter:'more-rubin',base:rubin.base,...(rubin.endpoint==='webservice'?{endpoint:'webservice'}:{})};
@@ -273,7 +318,7 @@ async function verify(region,row){
   const fallbackCheck=note.oparl?`OParl-Adresse ${note.oparl} antwortete am ${germanDate}, lieferte aber keine verwertbaren Sitzungen (${fallback.oparlFallback.reason}); deshalb öffentliche Seiten.`:null;
   // 3. Public SessionNet pages.
   if(sn){
-   const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',base:sn.base,extension:sn.extension};
+   const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',base:sn.base,extension:sn.extension,...(part?.calendarQuery?{calendarQuery:part.calendarQuery}:{})};
    try{const d=await withHost(sn.base,()=>collectSessionNet(source,{window:WINDOW,maxDurationMs:150000}));note.snTopics=d.topics.length;note.snMeetings=d.coverage.meetings;note.snIssues=[...new Set(d.coverage.issues)].slice(0,4);
     if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`Öffentlicher Hersteller-Standardpfad oparl/1.0/system.${sn.extension} lieferte am ${germanDate} kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
    }catch(e){note.snError=e.message.slice(0,160);}
@@ -300,10 +345,11 @@ async function verify(region,row){
   }
   // 6. Further readers (server/integrations/readers.mjs): the first that recognises the page reads it.
   for(const [adapter,reader] of Object.entries(READERS)){
-   let fields;try{fields=await reader.detect(p.url,p.html,{get:(u,src)=>withHost(u,()=>fetchText(u,src))});}catch(e){note.readerError=adapter+': '+e.message.slice(0,140);continue;}
+   let fields;try{fields=await reader.detect(p.url,p.html,{get:(u,src)=>withHost(u,()=>fetchText(u,src),true)});}catch(e){note.readerError=adapter+': '+e.message.slice(0,140);continue;}
    if(!fields?.base)continue;
    if(!result.systems.includes(adapter))result.systems.push(adapter);note.reader=adapter;
-   const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter,...fields};
+   if(part&&!Object.keys(part).every(k=>PART_READERS[adapter]?.includes(k))){note.partError=adapter+': Leser trennt diesen Teil des gemeinsamen Systems nicht';break;}
+   const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter,...fields,...(part||{})};
    if(!await robotsAllow(source.base)){note.robots='verboten';break;}
    try{const d=await withHost(source.base,()=>reader.collect(source,{window:WINDOW,maxDurationMs:150000,...(reader.oparlCheck?{checkOparl:!note.oparl}:{})}));note.readerTopics=d.topics.length;note.readerMeetings=d.coverage.meetings;note.readerIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);
     if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ${reader.name} erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
