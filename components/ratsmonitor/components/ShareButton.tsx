@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { copyText } from "../lib/clipboard";
 
 /** Link teilen: Teilen-Menü des Geräts, sonst Link in die Zwischenablage (kurz Haken als Bestätigung) */
 export function ShareButton({ title, url, className = "", label = false }: { title: string; url: string; className?: string; /** Beschriftung neben dem Symbol (am Desktop) */ label?: boolean }) {
@@ -6,7 +7,7 @@ export function ShareButton({ title, url, className = "", label = false }: { tit
   const share = async () => {
     try {
       if (navigator.share) return await navigator.share({ title, url });
-      await navigator.clipboard.writeText(url);
+      if (!(await copyText(url))) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch {

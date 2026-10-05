@@ -1,3 +1,4 @@
+import { sha256Hex } from "./sha256";
 import { useSyncExternalStore } from "react";
 import { resetMail, welcomeMail } from "./mails";
 import { setTier, type Tier } from "./tier";
@@ -34,10 +35,8 @@ const MAILS = "ratsmonitor:test-mails:v1";
 const PROFILE = "ratsmonitor:profile:v1";
 export const TEST_PASSWORD = "test1234";
 
-async function sha(text: string): Promise<string> {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
+/* crypto.subtle fehlt außerhalb von https/localhost (z. B. Handy im WLAN): sha256Hex hat dafür einen Ersatz */
+const sha = sha256Hex;
 
 const load = <T,>(key: string, fallback: T): T => {
   try {
