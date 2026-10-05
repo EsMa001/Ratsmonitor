@@ -17,8 +17,10 @@ out.push("# Frontend-Index (erzeugt, nicht von Hand ändern)", "");
 out.push("Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist was?) um Dateien, Exporte und CSS-Klassen mit Zeilennummer.");
 out.push("`⚠N` = N Zeilen über 300 Zeichen: dort nicht ganze Zeilen lesen, sondern mit `grep -o` oder `grep -n` gezielt suchen.", "");
 
-// CSS: Klasse:erste Zeile
-out.push("## CSS-Klassen (Klasse:Zeile)", "");
+// CSS: eine Klasse pro Zeile, damit grep nur die Treffer-Zeile liefert
+out.push("## CSS-Klassen (Klasse Datei:Zeile)", "");
+const cssRows = [];
+const cssFiles = [];
 for (const f of files.filter((f) => f.endsWith(".css"))) {
   const src = readFileSync(f, "utf8");
   const first = new Map();
@@ -42,9 +44,11 @@ for (const f of files.filter((f) => f.endsWith(".css"))) {
     }
   }
   const lang = longLines(src);
-  out.push(`### ${f} (${src.split("\n").length} Zeilen${lang ? `, ⚠${lang}` : ""})`);
-  out.push([...first].map(([c, l]) => `${c}:${l}`).join(" "), "");
+  cssFiles.push(`- ${f} (${src.split("\n").length} Zeilen${lang ? `, ⚠${lang}` : ""})`);
+  for (const [c, l] of first) cssRows.push([c, `${f.slice(f.lastIndexOf("/") + 1)}:${l}`]);
 }
+out.push(...cssFiles, "");
+out.push(...cssRows.sort((x, y) => (x[0] < y[0] ? -1 : x[0] > y[0] ? 1 : 0)).map(([c, w]) => `${c} ${w}`), "");
 
 // TS/TSX: Datei, Zeilen, Exporte
 out.push("## Dateien (Zeilen, Exporte)", "");
