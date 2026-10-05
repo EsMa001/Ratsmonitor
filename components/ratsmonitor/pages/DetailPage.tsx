@@ -22,7 +22,8 @@ export function DetailPage(){
   const article={id:t.id,title:t.title,date:(t.eventDate||'').slice(0,10),gemeinde:region?.name||'',teaser:t.shortSummary||''};
   /* Rohdaten der OParl-Schnittstelle (maschinenlesbares JSON) sind keine Unterlage für Menschen: ausblenden */
   const isOparlData=(u?:string,title?:string)=>/oparl-datensatz/i.test(title||'')||/\/oparl\/.*\/(papers|meetings|agendaitems|consultations)\//i.test(u||'');
-  const docs=t.documents.filter(d=>!isOparlData(d.url,d.title));
+  /* Unterlagen über den eigenen Durchreicher öffnen: PDFs erscheinen im Browser statt als Download */
+  const docs=t.documents.map((d,i)=>({...d,url:`${typeof window!=='undefined'?window.location.origin:''}/api/dokument?t=${encodeURIComponent(t.id)}&i=${i}`,src:d.url})).filter(d=>!isOparlData(d.src,d.title));
   const sorted=[...events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   const facts:[string,string][]=[['Sitzung',formatDate(t.eventDate)],['Gremium',t.committee||'Nicht dokumentiert'],['Vorlage',t.reference||'Nicht dokumentiert'],['Gebiet',region?.name||'Unbekannt'],['Stand',status.label],['Quellenstand',formatDate(t.updatedAt)]];
   return (
