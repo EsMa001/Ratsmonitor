@@ -4,7 +4,8 @@
 // shows a council system and names the area in its title or text. The name has to be unique among the areas of the
 // state, as in guess-platforms.mjs. verify.mjs then checks the system and its public agenda items as for every link.
 // Each platform is one operator: one request at a time and at most one per second, no retries, our own name in the
-// User-Agent; after HTTP 401, 403 or 429 the platform is not asked again in this run. robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs); with ROBOTS_POLICY=obey
+// User-Agent; after HTTP 403 or 429 the platform is not asked again in this run. HTTP 401 is the login of one system
+// (ratsinfo-online.de/lauta-bi, 05.10.2026): that area is recorded with it and not asked again, the others are. robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs); with ROBOTS_POLICY=obey
 // robots.txt of every host is read first and a disallowed path is not asked. Resumable: areas in the output file are
 // not asked again.
 // Run: LAND=09 DIR=tmp/source-discovery-de/ node scripts/source-discovery/guess-hosted.mjs
@@ -85,7 +86,8 @@ for(const p of HOSTED.filter(p=>!chosen||chosen.has(p.name))){
     if(p.dnsOnly){row.candidates.push({url,from:host,byHref:true,guessed:`${p.name}-Adresse (DNS), Name eindeutig`});row.log.push(url+' DNS');found++;break;}
     if(!(await allowed(url))){refused++;row.log.push(url+': robots.txt untersagt den Abruf');continue;}
     const page=await get(url,{manual:p.manual});asked++;row.log.push(url+' '+(page.status||page.error));
-    if([401,403,429].includes(page.status)){refusal=page.status;break;}
+    if(page.status===401){row.log.push(url+': Anmeldung verlangt (HTTP 401); nicht weiter gefragt');row.login=true;break;}
+    if([403,429].includes(page.status)){refusal=page.status;break;}
     if(page.status===200&&(p.marker||/sessionnet|si0040|allris|sitzungsdienst|bürgerinfo|buergerinfo/i).test(page.body)){
      let evidence=null;
      try{evidence=p.confirm?await CONFIRM[p.confirm](page,r):pageNamesArea(page.body,r)?'Seite nennt das Gebiet':null;}
@@ -93,7 +95,7 @@ for(const p of HOSTED.filter(p=>!chosen||chosen.has(p.name))){
      if(evidence){row.candidates.push({url:page.url,from:host,byHref:true,guessed:`${p.name}-Adresse, ${evidence}`});found++;break;}
     }
    }
-   if(row.candidates.length||refusal)break;
+   if(row.candidates.length||refusal||row.login)break;
   }
   // An area whose question met the refusal is not recorded: a later run asks it again.
   if(refusal){console.log(`${p.name}: HTTP ${refusal} bei ${r.name}; diese Plattform wird in diesem Lauf nicht weiter gefragt.`);break;}
