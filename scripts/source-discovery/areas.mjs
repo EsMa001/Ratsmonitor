@@ -64,7 +64,7 @@ const GENERIC=/^(bi|ri|gi|public|buergerinfo|buergerinformationssystem\d*|ratsin
 const tenantOf=url=>{const u=new URL(url),first=u.pathname.split('/').filter(Boolean)[0]||'';return norm(first&&!GENERIC.test(first)?first:u.hostname.replace(/^www\./,''));};
 // The system of an address: its host without "www." and the first folder that names a tenant (sessionnet.owl-it.de/altshausen).
 const systemKey=url=>{try{const u=new URL(url),folder=u.pathname.replace(/[^/]*$/,'').split('/').filter(Boolean).find(f=>!GENERIC.test(f))||'';return u.hostname.replace(/^www\./,'').toLowerCase()+'/'+folder.toLowerCase();}catch{return null;}};
-const SOURCE_FILES=['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources','de-sources'];
+const SOURCE_FILES=['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources','de-sources','citystate-sources'];
 let usesRead=null;
 /** Addresses of the connected sources (not switched off) of the source files, by area id; read once. */
 export function sourceUses(){

@@ -7,15 +7,15 @@
    analysis by Land and by operator below. Status colours are semantic and separate from the blue accent. */
 :root{
  --paper:#eef1f4;--panel:#ffffff;--ink:#16202b;--muted:#596577;--line:#d5dce4;--soft:#e4e9ef;--accent:#1d4f8f;--accent-ink:#ffffff;--dim:#e3e8ed;--water:#f7f9fb;--shadow:0 1px 2px rgba(20,32,48,.06),0 4px 16px rgba(20,32,48,.06);
- --c-ok:#2b8a57;--c-okRobots:#a5bd45;--c-nolink:#bcc4ce;--c-website:#86b6dd;--c-robots:#7a5aa8;--c-blocked:#c4433a;--c-noreader:#e0862a;--c-readfail:#e6c041;--c-shared:#279a96;--c-special:#33415a;--c-other:#9c9387;
+ --c-ok:#2b8a57;--c-okRobots:#a5bd45;--c-nolink:#bcc4ce;--c-website:#86b6dd;--c-robots:#7a5aa8;--c-blocked:#c4433a;--c-noreader:#e0862a;--c-readfail:#e6c041;--c-shared:#279a96;--c-special:#33415a;--c-ready:#c2558e;--c-other:#9c9387;
  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;--f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
  --paper:#0f141a;--panel:#161d26;--ink:#e5eaf0;--muted:#98a3b2;--line:#2a3441;--soft:#1e2631;--accent:#82b1ea;--accent-ink:#0f141a;--dim:#1d242d;--water:#12181f;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
- --c-ok:#3daa6c;--c-okRobots:#95ad3d;--c-nolink:#4a5462;--c-website:#5590c0;--c-robots:#9c7fd4;--c-blocked:#e25a4e;--c-noreader:#e8953e;--c-readfail:#d2b03c;--c-shared:#35b4ae;--c-special:#8e9eb8;--c-other:#857d73;color-scheme:dark}}
+ --c-ok:#3daa6c;--c-okRobots:#95ad3d;--c-nolink:#4a5462;--c-website:#5590c0;--c-robots:#9c7fd4;--c-blocked:#e25a4e;--c-noreader:#e8953e;--c-readfail:#d2b03c;--c-shared:#35b4ae;--c-special:#8e9eb8;--c-ready:#e07ab0;--c-other:#857d73;color-scheme:dark}}
 :root[data-theme="dark"]{
  --paper:#0f141a;--panel:#161d26;--ink:#e5eaf0;--muted:#98a3b2;--line:#2a3441;--soft:#1e2631;--accent:#82b1ea;--accent-ink:#0f141a;--dim:#1d242d;--water:#12181f;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
- --c-ok:#3daa6c;--c-okRobots:#95ad3d;--c-nolink:#4a5462;--c-website:#5590c0;--c-robots:#9c7fd4;--c-blocked:#e25a4e;--c-noreader:#e8953e;--c-readfail:#d2b03c;--c-shared:#35b4ae;--c-special:#8e9eb8;--c-other:#857d73;color-scheme:dark}
+ --c-ok:#3daa6c;--c-okRobots:#95ad3d;--c-nolink:#4a5462;--c-website:#5590c0;--c-robots:#9c7fd4;--c-blocked:#e25a4e;--c-noreader:#e8953e;--c-readfail:#d2b03c;--c-shared:#35b4ae;--c-special:#8e9eb8;--c-ready:#e07ab0;--c-other:#857d73;color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font:14px/1.5 var(--f-body);margin:0}
@@ -310,6 +310,7 @@ const CAT={
  noreader:{label:'System ohne Leser',open:true,why:'Ein System ist gefunden, aber nicht erkannt, oder sein Leser wurde noch nicht angewendet. ALLRIS 3 hat inzwischen einen Leser; diese Gebiete brauchen eine Neuprüfung.',help:'Neuprüfung (ALLRIS 3, korrigierte Linksuche); Leser für wiederkehrende unbekannte Systeme.'},
  readfail:{label:'Lesen scheiterte',open:true,why:'Das System ist bekannt, die Prüfung fand aber keine öffentlichen Tagesordnungspunkte: leerer Zeitraum, falscher Mandant, Wartung, vorübergehende Sperre oder ein System, das nur erwähnt war.',help:'Erneut prüfen, Mandant oder Pfad korrigieren.'},
  shared:{label:'Gemeinsames System',open:true,why:'Das gefundene System gehört einer Nachbargemeinde oder einem Verband und führt mehrere Räte, oder die Adresse passt zu mehreren Gebieten. Die Leser trennen die Gremien eines gemeinsamen Systems noch nicht.',help:'Gremientrennung, wie sie der OParl-Gremienfilter für Bremen schon kann.'},
+ ready:{label:'Leser gebaut, Prüfung ausstehend',open:true,why:'Der Leser für diese Quelle ist gebaut und getestet, die Prüfung gegen die echte Quelle steht aus (robots.txt, Felder der Datensätze). Sie läuft vom Rechner des Projektinhabers, weil die Entwicklungsumgebung keine kommunalen Server erreicht.',help:'Prüfskript ausführen; es schaltet die Quelle bei Erfolg selbst ein (Befehl im Grund).'},
  special:{label:'Stadtstaat',open:true,why:'Berlin und Hamburg sind je ein Gebiet; ihre Bezirke führen eigene Vertretungen und Systeme.',help:'Berlin: Freigabe der Bezirke bzw. des ITDZ. Hamburg: Transparenzportal, sobald entschieden ist, ob die Bezirke eigene Gebiete werden.'},
  other:{label:'Ohne Prüfergebnis',open:true,why:'Für dieses Gebiet steht kein Ergebnis im Prüfbericht.',help:'Suche für das Gebiet ausführen.'},
 };

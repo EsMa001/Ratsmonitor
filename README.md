@@ -368,6 +368,24 @@ Umgesetzt, jeweils mit Tests:
 
 Neu erzeugen nach einem Prüflauf: `node scripts/dashboard/build.mjs`. Der Generator liest Katalog, Quellen, robots-Urteile, die Prüfberichte (oder, falls vorhanden, die genaueren `tmp/source-discovery*/open.json`) und `scripts/source-discovery/candidates/`. Die Einordnung der Gründe steht in `CATEGORY` des Generators, die Erklärungen in `scripts/dashboard/page.html`.
 
+## Berlin und Hamburg (05.10.2026)
+
+Beide Stadtstaaten sind je ein Gebiet; ihre Bezirksvertretungen führen eigene Systeme, die Programmen den Abruf untersagen. Die Einträge stehen von Hand in `server/integrations/citystate-sources.json`, die Leser in `server/integrations/citystates.mjs` (Tests: `tests/citystates.test.mjs`). Ein abgeschalteter Eintrag (`method: "pending"`) wird nie abgefragt, welchen Leser er auch nennt (`collect-region.mjs`).
+
+- **Hamburg** (`hamburg-transparenz`, 1,87 Mio. Einwohner): Das Transparenzportal veröffentlicht die Drucksachen der sieben Bezirksversammlungen nach dem Transparenzgesetz über eine offene CKAN-Schnittstelle (dl-de/by-2.0). Der Leser fragt nur diese Schnittstelle, nachdem robots.txt des Portals sie erlaubt hat; Links in die gesperrten Bezirkssysteme bleiben Links. Er liefert Drucksachen mit Veröffentlichungsdatum, aber keinen Sitzungskalender, keine Tagesordnung und kein Ergebnis (`coverage.note`). Die Bezirke bleiben Teil des Gebiets Hamburg; das Gremium nennt die Bezirksversammlung.
+- **Berlin** (`oparl-bezirke`, 3,70 Mio. Einwohner): Die zwölf Bezirksverordnetenversammlungen veröffentlichen ihre OParl-Schnittstellen auf daten.berlin.de, sperren dieselben Rechner aber per robots.txt und HTTP 403. Der Leser liest ohne Freigabe nur Bezirke, deren robots.txt den OParl-Pfad erlaubt, und prüft das vor jedem Import erneut. Mit einer eingetragenen Freigabe (`consent: {by, date, scope}`) liest er alle eingetragenen Bezirke mit dem OParl-Leser und nennt den Bezirk im Gremium. Entwurf der Anfrage: [requirements/berlin-freigabe-anfrage.md](requirements/berlin-freigabe-anfrage.md).
+
+**Stand:** Beide Einträge sind abgeschaltet, weil die Entwicklungsumgebung weder das Transparenzportal noch daten.berlin.de erreicht. Der Leser für Hamburg ist gegen nachgebildete Antworten der CKAN-Schnittstelle getestet. Prüfen und einschalten vom Rechner des Projektinhabers:
+
+```
+node scripts/source-discovery/stadtstaaten.mjs hamburg   # robots.txt des Portals, ein Monat Drucksachen; schaltet bei Erfolg ein
+node scripts/source-discovery/stadtstaaten.mjs berlin    # OParl-Adressen von daten.berlin.de, robots.txt je Bezirk
+node scripts/source-discovery/servers.mjs
+ONLY_NEW=1 node scripts/source-discovery/robots.mjs
+node scripts/dashboard/build.mjs
+node --test tests/*.test.mjs
+```
+
 ## Gespeicherte Inhaltsanalyse · Billerbeck (v0.21)
 
 402 Artikel sind direkt durch Codex anhand öffentlicher Quellen bearbeitet: 310 Inhaltszusammenfassungen und 92 klar bezeichnete Quellenlücken. Kurz-/Langfassung, Belegzitate, Quellenprüfsummen, getrennte Labels, titelbasierte gewichtete Stichwörter sowie belegte Sitzungsdaten stehen im versionierten, etwa 3 MB großen Serverpaket `server/data/billerbeck-content-v1.json`. Es enthält keine neu archivierten Originalvolltexte. Die Langfassung erscheint auf der Artikelseite mit Quellenbasis und Bearbeitungsstatus. Die normale Kartenanalyse verwendet weiterhin Regel-Labels; die zusätzliche KI-Einordnung ersetzt diese nicht heimlich.

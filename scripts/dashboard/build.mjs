@@ -31,20 +31,24 @@ const reasons=new Map();
 for(const dir of ['tmp/source-discovery/','tmp/source-discovery-nds/','tmp/source-discovery-de/'])
  if(exists(dir+'open.json'))for(const o of read(dir+'open.json'))reasons.set(o.id,{reason:o.reason,url:o.link||''});
 let reportDate='';const unmatched=[];
+// Switched-off entries of the catalog (method "pending") name their reason in the note, as in the report of build.mjs.
+const switchedOff=new Set();
+for(const s of NRW_SOURCES)if(s.method==='pending'&&s.note){reasons.set(s.id,{reason:s.note,url:s.system||s.base||''});switchedOff.add(s.id);}
 for(const [file,lands] of [['requirements/statewide-sources-report.md',['05']],['requirements/nds-sources-report.md',['03']],['requirements/de-sources-report.md',null]]){
  const text=fs.readFileSync(path.join(root,file),'utf8');
  reportDate=reportDate||(text.match(/Stand: ([0-9.]+)/)||[])[1]||'';
  const rows=text.slice(text.indexOf('## Nicht angebundene Gebiete')).split('\n').filter(l=>l.startsWith('| ')&&!l.startsWith('| Gebiet')).map(l=>l.split('|').map(c=>c.trim()));
  for(const c of rows){
   const list=CATALOG.filter(r=>r.name===c[1]&&(lands?lands.includes(r.ags.slice(0,2)):!['03','05'].includes(r.ags.slice(0,2)))&&!sources.has(r.id));
-  const r=list.find(x=>!reasons.has(x.id));
+  const r=list.find(x=>!reasons.has(x.id))||list.find(x=>switchedOff.has(x.id));
   if(!r){unmatched.push(c[1]);continue;}
-  reasons.set(r.id,{reason:c[2],url:c[3]||''});
+  if(!switchedOff.has(r.id))reasons.set(r.id,{reason:c[2],url:c[3]||''});
  }
 }
 
 // Why an area is open. The texts cover the reasons of the reports and the newer ones of reasons.mjs.
 const CATEGORY=[
+ ['ready',/Prüflauf vom Rechner des Projektinhabers ausstehend/],
  ['special',/^Stadtstaat/],
  ['shared',/Mitbenutztes System|nicht eindeutig|mehreren Gebieten|Demo-Mandanten/],
  ['robots',/robots\.txt/],

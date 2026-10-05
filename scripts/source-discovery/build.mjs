@@ -21,7 +21,7 @@ const websiteChecks=new Map(Object.values(checkFiles['verified-website.json']||{
 const oparlAsked=new Set(fs.existsSync(dir+'verified-oparl.json')?Object.values(read(dir+'verified-oparl.json')).filter(r=>!r.accepted).map(r=>r.id):[]);
 // Crawl results (candidates.json: sites, pages, log) and the other candidate files, for the reason and the address shown.
 const candidateFiles=CANDIDATE_FILES.map(f=>fs.existsSync(dir+f)?read(dir+f):{}),candidates=candidateFiles[0];
-const other=['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources','de-sources'].map(f=>'server/integrations/'+f+'.json').filter(f=>f!==target&&fs.existsSync(f)).flatMap(read);
+const other=['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources','de-sources','citystate-sources'].map(f=>'server/integrations/'+f+'.json').filter(f=>f!==target&&fs.existsSync(f)).flatMap(read);
 const core=['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen'];
 const elsewhere=new Set([...core,...other.map(s=>s.id)]);
 // Sources that are switched off (method "pending") stay in their file but do not count as connected.

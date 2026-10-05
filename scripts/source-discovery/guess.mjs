@@ -11,7 +11,7 @@ const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const regions=loadAreas(),wikidata=read(dir+'wikidata.json');
-const connected=new Set(['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen',...['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources','de-sources'].flatMap(f=>{try{return read('server/integrations/'+f+'.json').filter(s=>s.method!=='pending').map(s=>s.id);}catch{return [];}})]);
+const connected=new Set(['muenster','billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen',...['nrw-sources','nearby-sources','expanded-sources','statewide-sources','nds-sources','de-sources','citystate-sources'].flatMap(f=>{try{return read('server/integrations/'+f+'.json').filter(s=>s.method!=='pending').map(s=>s.id);}catch{return [];}})]);
 const verified=fs.existsSync(dir+'verified.json')?read(dir+'verified.json'):{};
 const outFile=dir+(process.env.OUT||'candidates-guessed.json');
 const only=process.argv[2]?new Set(process.argv[2].split(',')):null;

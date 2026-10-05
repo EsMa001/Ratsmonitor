@@ -11,6 +11,7 @@ import {collectMuenchenRisi,detectMuenchenRisi} from './muenchen-risi.mjs';
 import {collectPiwi,detectPiwi} from './piwi.mjs';
 import {collectPio,detectPio} from './pio.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
+import {collectHamburgTransparenz,collectOparlDistricts} from './citystates.mjs';
 // collect-region.mjs hands every reader the council-system fetch (sessionnet fetchText, wrapped by the trace of a
 // metadata import). The website reader needs its own: fetchSiteText/fetchSiteBytes check robots.txt for every redirect
 // target and accept the origins of alsoFrom. With a trace both are recorded, documents included.
@@ -34,4 +35,7 @@ export const READERS={
  // Website of a municipality without council system (notices, minutes, feeds of its CMS). No page of a council system
  // is one, so verify.mjs never recognises it; only the website search (scripts/source-discovery/website.mjs) assigns it.
  website:{name:WEBSITE_READER_NAME,collect:collectSite,detect:async()=>null},
+ // City states (citystates.mjs, entries in citystate-sources.json). Neither is recognised from a page.
+ 'hamburg-transparenz':{name:'Transparenzportal Hamburg (Drucksachen der Bezirksversammlungen)',collect:collectHamburgTransparenz,detect:async()=>null},
+ 'oparl-bezirke':{name:'OParl der Bezirksverordnetenversammlungen (nur mit Freigabe)',collect:collectOparlDistricts,detect:async()=>null},
 };

@@ -22,6 +22,8 @@ async function collect(id,options){
  if(id==='muenster'){const d=await collectOparl(trace?{...options,getJson:trace.wrap(requestJson)}:options);return {...d,topics:d.topics.map(t=>({...t,regionId:id})),coverage:{...d.coverage,regionId:id,method:'oparl'}};}
  const nrw=NRW_SOURCES.find(s=>s.id===id);if(nrw?.method==='oparl')return collectRegionalOparl(nrw,options);
  const source=nrw||SOURCES.find(s=>s.id===id);if(!source)throw Error('Unbekanntes Gebiet');
+ // A switched-off source is never asked, whichever reader it names (citystate-sources.json: reader built, check or consent missing).
+ if(source.method==='pending'){const now=new Date(),from=windowStart(now,options.window);return {topics:[],coverage:{regionId:id,method:'pending',from:from.toISOString().slice(0,10),to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:0,sourceCount:1,complete:false,issues:[source.note||'Quelle abgeschaltet; es wird nichts abgerufen.'],sourceUrl:source.base||source.system||''}};}
  if(id==='recklinghausen'||source.adapter==='more-rubin')return collectRubin(source,pages);
  // Order of sources: OParl where it works, otherwise the public pages. A page scraper therefore runs only while
  // the vendor's OParl endpoint is switched off, or when the catalog records that OParl was checked and is not
