@@ -89,8 +89,8 @@ export const BRANCHEN: Branche[] = [
     keywords: ["Wärmeplanung", "Konzessionsvertrag", "Fernwärme", "Stadtwerke", "Netzausbau"],
   },
   {
-    slug: "kreislaufwirtschaft",
-    name: "Kreislaufwirtschaft, Abfall & Wasser",
+    slug: "entsorgung-und-wasser",
+    name: "Entsorgung und Wasser",
     icon: "droplet",
     title: "Aufträge kennen, bevor sie ausgeschrieben sind.",
     intro: "Entsorgungsverträge, neue Anlagen, Sanierungen: In den Räten entscheidet sich, wer die nächsten Aufträge bekommt.",

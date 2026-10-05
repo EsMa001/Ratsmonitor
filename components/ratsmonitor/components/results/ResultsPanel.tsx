@@ -183,8 +183,8 @@ function ResultsSkeleton() {
     <div role="status" aria-live="polite" className="flex flex-col">
       <span className="sr-only">Einträge werden geladen …</span>
       {[0, 1, 2, 3, 4, 5].map((i) => (
-        <div key={i} aria-hidden="true" className="grid grid-cols-[minmax(0,1fr)_auto] gap-2.5 border-b border-slate-200 px-3 py-3 last:border-b-0 sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-3 sm:px-3.5 sm:py-4">
-          <div className="hidden flex-col items-center gap-1.5 border-r border-slate-200 pr-3 pt-0.5 sm:flex">
+        <div key={i} aria-hidden="true" className="grid grid-cols-[44px_minmax(0,1fr)_auto] gap-2.5 border-b border-slate-200 px-3 py-3 last:border-b-0 sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-3 sm:px-3.5 sm:py-4">
+          <div className="flex flex-col items-center gap-1.5 border-r border-slate-200 pr-2.5 pt-0.5 sm:pr-3">
             <span className={`${bar} h-[22px] w-7`} />
             <span className={`${bar} h-3 w-8`} />
           </div>
