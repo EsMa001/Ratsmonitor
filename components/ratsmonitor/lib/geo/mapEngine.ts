@@ -232,11 +232,13 @@ export class MapEngine {
     return Math.max(kmin, Math.min(0.6, k));
   }
 
-  /** Deutschland passt gerade noch vollständig hinein (kleiner Rand, mittig) */
+  /** Deutschland passt gerade noch vollständig hinein (kleiner Rand, mittig); unten etwas mehr Rand, damit der Quellentext der Karte (© GeoBasis-DE …) die Südspitze nicht überdeckt */
   private germanyView(): View {
     const bb = this.geo.germany.bb;
-    const k = Math.min((this.W - 16) / Math.max(bb[2] - bb[0], 1), (this.H - 16) / Math.max(bb[3] - bb[1], 1));
-    return { cx: (bb[0] + bb[2]) / 2, cy: (bb[1] + bb[3]) / 2, k };
+    const pt = 8;
+    const pb = 28;
+    const k = Math.min((this.W - 16) / Math.max(bb[2] - bb[0], 1), (this.H - pt - pb) / Math.max(bb[3] - bb[1], 1));
+    return { cx: (bb[0] + bb[2]) / 2, cy: (bb[1] + bb[3]) / 2 + (pt - pb) / 2 / k, k };
   }
 
   private fitView(bb: BBox, pad?: number): View {
