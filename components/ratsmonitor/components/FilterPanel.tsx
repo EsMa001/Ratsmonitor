@@ -37,7 +37,9 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
   const search = useSearch();
   const { state } = search;
   const res = useSearchResults();
-  const active = filterChips(res.snapshot, geo).length > 0;
+  /* auch aus dem Live-Zustand: auf dem Handy bleibt res.snapshot bis zum Schließen auf dem Stand beim Öffnen */
+  const liveActive = !!(state.thema || state.status || state.von || state.bis || state.monat || state.noformal || state.allterms || state.future || state.radius);
+  const active = filterChips(res.snapshot, geo).length > 0 || liveActive;
   /* Reicht der Platz rechts nicht (schmale Karte), öffnet das Fenster nach links; der Knopf sitzt dann oben rechts */
   const ref = useRef<HTMLDivElement>(null);
   const [flip, setFlip] = useState(false);

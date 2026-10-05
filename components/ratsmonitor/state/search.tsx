@@ -10,6 +10,8 @@ import { hasScope, queryText, signature, type SearchSnapshot } from "../lib/save
 import { terms as toTerms } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
+import { useFiltersOpen } from "../lib/filtersOpen";
+import { usePhone } from "../lib/usePhone";
 
 export const INITIAL_SEARCH: SearchState = {
   level:"city", q: "", area: "", areaSrc: "", radius: null, thema: "", monat: "", von: "", bis: "", scope: "only", status: "", sort: "desc", placeOverrides: {}, placeIgnored: {}, placeScopes: {}, morePlaces: [],
@@ -75,7 +77,12 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   useEffect(()=>{const region=REGIONS.find(r=>r.id===params.get("region"));if(region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));},[params.get("region")]);
   // Gesucht wird nur, solange die Übersicht zu sehen ist. Sie bleibt auf allen Seiten versteckt eingebunden (Karte und
   // Suchstand bleiben erhalten); ohne diese Bedingung löste jede Detail-, Info- und Kontoseite die volle Suche aus.
-  const derived=useDerivedResults(state,usePathname()==='/');
+  /* Handy: Ändert man Filter im offenen Filterfenster, wird die Suche erst beim Schließen neu ausgeführt
+     (die Ergebnisse bleiben bis dahin auf dem Stand beim Öffnen) */
+  const filtersOpen=useFiltersOpen(),phone=usePhone(),hold=filtersOpen&&phone;
+  const frozen=useRef(state);
+  if(!hold)frozen.current=state;
+  const derived=useDerivedResults(hold?frozen.current:state,usePathname()==='/');
   const [popup, setPopupState] = useState("");
   const ref = useRef(state);
   ref.current = state;

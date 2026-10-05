@@ -65,7 +65,7 @@ export function ActiveFilters() {
     key === "area" || key === "more" ? <IconPin size={14} /> : key === "radius" ? RADIUS : key === "thema" ? TAG : key === "monat" || key === "zeitraum" ? <IconCalendar size={14} /> : key === "status" ? STATUS_ICON : <IconSearch size={14} />;
 
   return (
-    <div className="pointer-events-auto flex w-full max-w-[720px] flex-wrap justify-start gap-1.5 pl-[52px] pr-[52px] max-sm:px-[56px]">
+    <div className="pointer-events-auto flex w-full max-w-[720px] flex-wrap justify-start gap-1.5 pl-[52px] pr-[52px] max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-[56px] max-sm:[scrollbar-width:none] max-sm:[&>*]:shrink-0 max-sm:[&>*]:whitespace-nowrap sm:max-h-[96px] sm:overflow-y-auto">
       {regions.map((r) => (
         <button
           key={"region" + r.name}
@@ -106,7 +106,7 @@ export function ActiveFilters() {
         </button>
       ))}
       {chips.length + regions.length + toggles.length > 1 && (
-        <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="inline-flex h-7 items-center rm-chip rounded-full px-2.5 text-[14px] font-medium hover:underline">
+        <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="inline-flex h-7 items-center rm-chip rounded-full px-2.5 text-[14px] font-medium hover:underline max-sm:order-first">
           Alle entfernen
         </button>
       )}
