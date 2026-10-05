@@ -202,6 +202,13 @@ export const HOSTED=[
  // komuna (KIC app, 291 of 293 known systems in Bavaria): one path per system on one host (ris.komuna.net/<name>/); a
  // name without a system is redirected to a maintenance page, so redirects are not followed (manual). The app page names
  // nobody: the municipalities its interface names (web/clients) must name the area (confirm, guess-hosted.mjs).
+ // ALLRIS 3 of ratsinfo-online.de and .net (one folder per system, "<name>-bi"; 40 known systems, 21 of them in
+ // Brandenburg, the others in Sachsen, Sachsen-Anhalt and Thüringen): a folder without a system answers HTTP 404; the
+ // page home.asp names the municipality (coat of arms, text).
+ ...['12','14','15','16'].map(land=>({name:'ratsinfo-online',land,hosts:s=>[`ratsinfo-online.de/${s}-bi`,`ratsinfo-online.net/${s}-bi`],path:'/home.asp',wildcard:true})),
+ // SessionNet of OWL-IT (sessionnet.owl-it.de/<name>/bi/; 229 known systems in twelve Länder): a folder without a system
+ // answers HTTP 404; the info page names the client ("Bürgerinfoportal der Stadt Heide").
+ ...['01','03','05','06','07','08','09','10','12','13','14','15','16'].map(land=>({name:'OWL-IT',land,hosts:s=>[`sessionnet.owl-it.de/${s}/bi`],path:'/info.asp',wildcard:true})),
  // Names of komuna systems besides the usual labels (of 202 known ones, 168 are such a label): a Verwaltungsgemeinschaft
  // with "vg" in front (vgassling), a name with its addition in one word (aschauainn, neufahrninb).
  {name:'komuna',land:'09',hosts:(s,area)=>[`ris.komuna.net/${s}`,...(area?.municipalityType==='Verwaltungsgemeinschaft'?[`ris.komuna.net/vg${s}`]:[])],

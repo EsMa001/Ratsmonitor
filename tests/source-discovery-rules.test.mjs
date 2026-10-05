@@ -189,6 +189,9 @@ test('hosted platforms: KOMFA per Land and komuna by path, each recognised from 
  const vg={name:'Verwaltungsgemeinschaft Aidenbach',shortName:'Aidenbach',municipalityType:'Verwaltungsgemeinschaft'},town={name:'Gemeinde Aschau a.Inn',shortName:'Aschau a.Inn',municipalityType:'Gemeinde'};
  assert.deepEqual(komuna.hosts('aidenbach',vg),['ris.komuna.net/aidenbach','ris.komuna.net/vgaidenbach']);
  assert.deepEqual(komuna.hosts('aschauainn',town),['ris.komuna.net/aschauainn']);
+ assert.deepEqual(HOSTED.filter(p=>p.name==='ratsinfo-online').map(p=>p.land),['12','14','15','16']);
+ assert.deepEqual(HOSTED.find(p=>p.name==='ratsinfo-online').hosts('brieselang'),['ratsinfo-online.de/brieselang-bi','ratsinfo-online.net/brieselang-bi']);
+ assert.deepEqual(HOSTED.find(p=>p.name==='OWL-IT'&&p.land==='01').hosts('heide'),['sessionnet.owl-it.de/heide/bi']);assert.equal(HOSTED.find(p=>p.name==='OWL-IT').path,'/info.asp');
  assert.deepEqual(komuna.slugs(town),['aschauainn']);assert.deepEqual(komuna.slugs({name:'Gemeinde Neufahrn i.NB',shortName:'Neufahrn i.NB'}),['neufahrninb']);
 });
 
