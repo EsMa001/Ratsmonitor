@@ -219,11 +219,12 @@ const ascii=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').r
 /**
  * Areas of the catalog that share a host label with the area (hostSlugs): a guessed address of a platform may belong
  * to any of them ("borken" on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse). lands:
- * the Länder the platform serves (platformLands); twins elsewhere do not count. Without lands every Land counts.
+ * the Länder the platform serves (platformLands); twins elsewhere do not count. Without lands every Land counts. Only
+ * areas of the same kind are twins: a town and the district of its name are told apart by identity() (Kreistag).
  */
 export function nameTwins(area,areas=CATALOG,lands=null){
  const own=new Set(hostSlugs(area.shortName||area.name));if(!own.size)return [];
- return areas.filter(a=>a.id!==area.id&&(!lands||lands.includes(String(a.ags||'').slice(0,2)))&&hostSlugs(a.shortName||a.name).some(s=>own.has(s)));
+ return areas.filter(a=>a.id!==area.id&&a.kind===area.kind&&(!lands||lands.includes(String(a.ags||'').slice(0,2)))&&hostSlugs(a.shortName||a.name).some(s=>own.has(s)));
 }
 // Platforms of guess-platforms.mjs (regional providers, one Land each).
 const REGIONAL={'komm.one':['08'],KISA:['14']};

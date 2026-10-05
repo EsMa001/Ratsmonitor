@@ -288,7 +288,8 @@ async function verify(region,row){
   // bears that name, or where the page (or the platform's evidence) names the area by its distinguishing name: "borken"
   // on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse (rules.mjs nameTwins). Only the
   // Länder the platform serves count (komuna: Bavaria; komm.one: Baden-Württemberg).
-  if(who.ok&&c.guessed&&c.guessed!=='eigene Domain'){const twins=nameTwins(region,undefined,platformLands(c.guessed));if(twins.length&&!namesDistinctly([p.html,c.guessed].join(' '),region,twins))who={ok:false,why:'Geratene Adresse; gleichnamige Gebiete ('+twins.slice(0,3).map(t=>t.name).join(', ')+(twins.length>3?' u. a.':'')+'), die Seite nennt keinen unterscheidenden Namen'};}
+  // Only addresses guessed on a platform ("<platform>-Adresse …"); a report by hand or a web search names its area itself.
+  if(who.ok&&/^.+?-Adresse\b/.test(c.guessed||'')){const twins=nameTwins(region,undefined,platformLands(c.guessed));if(twins.length&&!namesDistinctly([p.html,c.guessed].join(' '),region,twins))who={ok:false,why:'Geratene Adresse; gleichnamige Gebiete ('+twins.slice(0,3).map(t=>t.name).join(', ')+(twins.length>3?' u. a.':'')+'), die Seite nennt keinen unterscheidenden Namen'};}
   const note={url:p.url,system,title:title(p.html),identity:who,from:c.from,...(part?{part}:{})};
   // The address read can lie elsewhere than the candidate: after a redirect, or the public part of SessionNet next to
   // the members' area (ratsinfo.kyritz.de → buergerinfo.kyritz.de). Its robots.txt decides as well.

@@ -219,6 +219,8 @@ test('a guessed address counts only where no other area bears the name, or where
  assert.deepEqual(platformLands('KISA-Adresse (DNS), Name im Land eindeutig'),['14']);
  assert.equal(platformLands('RIS-Portal-Adresse (DNS), Name eindeutig'),null,'a platform of all Länder');
  assert.equal(platformLands('eigene Domain'),null);
+ // A town and the district of its name are no twins (Stadt Rosenheim, Landkreis Rosenheim): identity() tells them apart.
+ assert.ok(!nameTwins(area('de-09163000')).some(a=>a.kind!=='city'));
 });
 
 test('links of a page: in quotes or without them, with the title as text, frames as embedded; no script or mail links',()=>{
