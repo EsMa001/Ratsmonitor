@@ -41,4 +41,21 @@ db.exec('BEGIN');
 for (let i = 0; i < doomed.length; i++) { del.run(doomed[i]); if (i % 10000 === 9999) { db.exec('COMMIT'); db.exec('BEGIN'); console.log(`${i + 1}/${doomed.length} gelöscht`); } }
 db.exec('COMMIT');
 console.log(`${doomed.length} Versionen gelöscht.`);
-if (vacuum) { const s = Date.now(); db.exec('VACUUM'); console.log(`VACUUM in ${((Date.now() - s) / 1000).toFixed(0)} s, Datei jetzt ${(fs.statSync(file).size / 1e9).toFixed(2)} GB`); }
+if (vacuum) {
+  // VACUUM INTO schreibt eine verkleinerte Kopie (braucht so viel Platz wie die neue Datei); ein VACUUM an Ort und Stelle
+  // bräuchte zeitweise fast das Doppelte. Die Kopie ersetzt das Original erst nach Prüfung und gleichen Zeilenzahlen.
+  const s = Date.now(), compact = file + '.compact';
+  if (fs.existsSync(compact)) fs.unlinkSync(compact);
+  db.exec(`VACUUM INTO '${compact.replace(/'/g, "''")}'`);
+  const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%'").all().map(r => r.name);
+  const counts = d => Object.fromEntries(tables.map(t => [t, d.prepare(`SELECT count(*) n FROM "${t}"`).get().n]));
+  const before = counts(db);
+  const copy = new DatabaseSync(compact, {readOnly: true});
+  const check = copy.prepare('PRAGMA quick_check').get(), after = counts(copy);
+  copy.close();
+  if (Object.values(check)[0] !== 'ok' || JSON.stringify(before) !== JSON.stringify(after)) { console.log('Kopie fehlerhaft, Original bleibt:', check, before, after); process.exit(1); }
+  db.close();
+  fs.renameSync(file, file + '.old'); fs.renameSync(compact, file); fs.unlinkSync(file + '.old');
+  for (const extra of ['-wal', '-shm']) if (fs.existsSync(file + extra)) fs.unlinkSync(file + extra);
+  console.log(`VACUUM INTO in ${((Date.now() - s) / 1000).toFixed(0)} s, Datei jetzt ${(fs.statSync(file).size / 1e9).toFixed(2)} GB; Zeilenzahlen geprüft.`);
+}
