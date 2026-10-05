@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (388 Zeilen, ⚠9)
+- app/ratsmonitor-info.css (390 Zeilen, ⚠9)
 - app/ratsmonitor.css (136 Zeilen, ⚠5)
 
 admin-access analyse-admin.css:66
@@ -581,7 +581,7 @@ wordmark__dot design-styles.css:61
 - page.tsx (21): generateMetadata, Page
 
 ### app/(monitor)/branchen/[slug]/
-- page.tsx (2): Page
+- page.tsx (9): Page
 
 ### app/(monitor)/datenschutz/
 - page.tsx (2): Page
@@ -606,6 +606,7 @@ wordmark__dot design-styles.css:61
 
 ### app/(monitor)/
 - layout.tsx (3): MonitorLayout
+- not-found.tsx (4): metadata, NotFound
 - page.tsx (2): Page
 
 ### app/(monitor)/preise/
@@ -685,7 +686,7 @@ wordmark__dot design-styles.css:61
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - ExportMenu.tsx (55, ⚠1): ExportOption, ExportMenu
-- FilterPanel.tsx (93): FilterPanel
+- FilterPanel.tsx (93, ⚠1): FilterPanel
 - FilterSelect.tsx (98): FilterSelect
 - FollowButton.tsx (30): FollowButton
 - Footer.tsx (59): Footer
@@ -702,7 +703,7 @@ wordmark__dot design-styles.css:61
 - icons.tsx (229): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (302, ⚠2): MapPanel
+- MapPanel.tsx (308, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (178, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
