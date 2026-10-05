@@ -6,13 +6,12 @@ import { useSearch, useSearchResults } from "../state/search";
 import { AreaBar } from "./AreaBar";
 import { DateRangeFilter } from "./DateRangeFilter";
 import { FilterSelect } from "./FilterSelect";
-import { IconCalendar } from "./icons";
 import { setFiltersOpen } from "../lib/filtersOpen";
 
 
 function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boolean; set: (v: boolean) => void }) {
   return (
-    <div className="flex items-center justify-between gap-3 py-0.5 text-[14px] text-slate-900 max-sm:min-h-11" title={hint}>
+    <div className="flex items-center justify-between gap-3 py-0.5 text-[14px] text-slate-900 max-sm:min-h-11 sm:py-0" title={hint}>
       <span id={`t-${label.replace(/\W+/g, "-")}`}>{label}</span>
       <button
         type="button"
@@ -60,7 +59,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         setFiltersOpen(false);
         requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-controls="filter-body"]')?.focus());
       }}
-      className={`rm-glass absolute z-20 flex w-[300px] max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5" : "top-0 flex-col pb-3.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
+      className={`rm-glass absolute z-20 flex w-[300px] max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 sm:pt-2.5" : "top-0 flex-col pb-3.5 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
       <div className={`flex items-center gap-2 ${flip ? "flex-row-reverse" : ""}`}>
         {toggle}
         <span className="text-[16px] font-semibold text-slate-900">Filter</span>
@@ -70,14 +69,9 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-2.5 px-4">
+      <div className="flex flex-col gap-2.5 px-4 sm:gap-1.5">
         {state.area.length >= 5 && geo && <AreaBar compact />}
-        <div className="flex items-center gap-2">
-          <IconCalendar size={18} className="flex-none text-slate-500" />
-          <div className="min-w-0 flex-1">
-            <DateRangeFilter />
-          </div>
-        </div>
+        <DateRangeFilter />
         {/* Schalter wie am iPhone */}
         <Toggle label="Künftige Sitzungen zeigen" hint="Auch Termine, die noch anstehen" on={!!state.future} set={search.setFuture} />
         <Toggle label="Formalien ausblenden" hint="Ohne Niederschriften, Mitteilungen und Anfragen" on={!!state.noformal} set={search.setNoformal} />

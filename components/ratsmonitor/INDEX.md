@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (390 Zeilen, ⚠9)
+- app/ratsmonitor-info.css (392 Zeilen, ⚠9)
 - app/ratsmonitor.css (136 Zeilen, ⚠5)
 
 admin-access analyse-admin.css:66
@@ -319,7 +319,7 @@ process__step--open design-styles.css:129
 prose analyse-admin.css:15
 prose design-styles.css:257
 prose ratsmonitor.css:67
-ratsmonitor ratsmonitor-info.css:254
+ratsmonitor ratsmonitor-info.css:257
 ratsmonitor ratsmonitor.css:2
 region-data-badge analyse-admin.css:55
 region-data-hint analyse-admin.css:59
@@ -354,7 +354,7 @@ ri-btn--block ratsmonitor-info.css:28
 ri-btn--dark ratsmonitor-info.css:22
 ri-btn--inv ratsmonitor-info.css:26
 ri-btn--light ratsmonitor-info.css:24
-ri-burger ratsmonitor-info.css:251
+ri-burger ratsmonitor-info.css:254
 ri-check ratsmonitor-info.css:212
 ri-checks ratsmonitor-info.css:182
 ri-chosen ratsmonitor-info.css:224
@@ -388,7 +388,7 @@ ri-h2 ratsmonitor-info.css:48
 ri-h2--gap ratsmonitor-info.css:190
 ri-h2--md ratsmonitor-info.css:49
 ri-head ratsmonitor-info.css:32
-ri-head--compact ratsmonitor-info.css:327
+ri-head--compact ratsmonitor-info.css:330
 ri-head__grid ratsmonitor-info.css:33
 ri-head__grid--top ratsmonitor-info.css:34
 ri-help ratsmonitor-info.css:210
@@ -396,23 +396,23 @@ ri-input ratsmonitor-info.css:204
 ri-lead ratsmonitor-info.css:41
 ri-legal ratsmonitor-info.css:241
 ri-link ratsmonitor-info.css:214
-ri-logo ratsmonitor-info.css:259
-ri-logo__mark ratsmonitor-info.css:260
+ri-logo ratsmonitor-info.css:262
+ri-logo__mark ratsmonitor-info.css:263
 ri-menu ratsmonitor-info.css:13
-ri-menu__bg ratsmonitor-info.css:256
-ri-menu__chev ratsmonitor-info.css:362
-ri-menu__close ratsmonitor-info.css:261
-ri-menu__group ratsmonitor-info.css:360
-ri-menu__head ratsmonitor-info.css:258
-ri-menu__label ratsmonitor-info.css:264
-ri-menu__label--sep ratsmonitor-info.css:337
-ri-menu__main ratsmonitor-info.css:265
-ri-menu__nav ratsmonitor-info.css:263
+ri-menu__bg ratsmonitor-info.css:259
+ri-menu__chev ratsmonitor-info.css:365
+ri-menu__close ratsmonitor-info.css:264
+ri-menu__group ratsmonitor-info.css:363
+ri-menu__head ratsmonitor-info.css:261
+ri-menu__label ratsmonitor-info.css:267
+ri-menu__label--sep ratsmonitor-info.css:340
+ri-menu__main ratsmonitor-info.css:268
+ri-menu__nav ratsmonitor-info.css:266
 ri-menu__panel ratsmonitor-info.css:17
-ri-menu__panel--flyout ratsmonitor-info.css:385
-ri-menu__start ratsmonitor-info.css:338
-ri-menu__sub ratsmonitor-info.css:269
-ri-menu__subs ratsmonitor-info.css:268
+ri-menu__panel--flyout ratsmonitor-info.css:388
+ri-menu__start ratsmonitor-info.css:341
+ri-menu__sub ratsmonitor-info.css:272
+ri-menu__subs ratsmonitor-info.css:271
 ri-mint ratsmonitor-info.css:140
 ri-pill ratsmonitor-info.css:91
 ri-pills ratsmonitor-info.css:90
@@ -436,7 +436,7 @@ ri-plans ratsmonitor-info.css:218
 ri-point ratsmonitor-info.css:136
 ri-point__num ratsmonitor-info.css:137
 ri-points ratsmonitor-info.css:135
-ri-points--2 ratsmonitor-info.css:340
+ri-points--2 ratsmonitor-info.css:343
 ri-prices ratsmonitor-info.css:170
 ri-proto ratsmonitor-info.css:238
 ri-pv ratsmonitor-info.css:98
@@ -483,7 +483,7 @@ ri-tl__label ratsmonitor-info.css:67
 ri-tl__step ratsmonitor-info.css:64
 ri-tl__step--out ratsmonitor-info.css:66
 ri-tl__title ratsmonitor-info.css:69
-ri-topnav ratsmonitor-info.css:380
+ri-topnav ratsmonitor-info.css:383
 ri-two ratsmonitor-info.css:133
 ri-vp ratsmonitor-info.css:73
 ri-vp__lab ratsmonitor-info.css:78
@@ -499,6 +499,8 @@ rm-flat ratsmonitor.css:106
 rm-glass ratsmonitor.css:115
 rm-glass-pop ratsmonitor.css:124
 rm-logo ratsmonitor-info.css:246
+rm-logo__mark ratsmonitor-info.css:250
+rm-logo__mark--p ratsmonitor-info.css:251
 rm-logo__text ratsmonitor-info.css:248
 screen analyse-admin.css:84
 screen design-styles.css:32
@@ -680,13 +682,13 @@ wordmark__dot design-styles.css:61
 - AccountMenu.tsx (62, ⚠1): AccountMenu
 - ActiveFilters.tsx (116): ActiveFilters
 - AreaBar.tsx (110, ⚠1): AreaBar
-- Brand.tsx (236): Brand
+- Brand.tsx (242): Brand
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
-- DateRangeFilter.tsx (71): DateRangeFilter
+- DateRangeFilter.tsx (83): DateRangeFilter
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - ExportMenu.tsx (55, ⚠1): ExportOption, ExportMenu
-- FilterPanel.tsx (93, ⚠1): FilterPanel
+- FilterPanel.tsx (87, ⚠1): FilterPanel
 - FilterSelect.tsx (98): FilterSelect
 - FollowButton.tsx (30): FollowButton
 - Footer.tsx (59): Footer
