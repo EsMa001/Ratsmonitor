@@ -100,7 +100,7 @@ export function GateDialog() {
             {g.feature === "results" && g.total ? ` Insgesamt gibt es ${g.total.toLocaleString("de-DE")} Treffer.` : ""}
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-2">
-            <Link href="/konto/profil#tarif" onClick={closeGate} className="btn-primary">
+            <Link href="/preise#tarif" onClick={closeGate} className="btn-primary">
               {login ? "Kostenlos registrieren" : g.needs === "enterprise" ? "Enterprise anfragen" : "Auf Pro upgraden"}
             </Link>
             <button type="button" onClick={closeGate} className="btn-secondary">

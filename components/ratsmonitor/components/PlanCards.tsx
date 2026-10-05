@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { IS_DEV, PRO_PRICE, setTier, TIER_LABEL, useTier, type Tier } from "../lib/tier";
 
-/* Leistungen je Tarif: Text, wenn enthalten (je Stufe auch abweichend), sonst null = grau durchgestrichen */
+/* Leistungen je Tarif: Text, wenn enthalten (je Stufe auch abweichend), sonst null = nicht aufgeführt (steht in der Vergleichstabelle) */
 const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
   { label: "Suche in allen Gebieten", tiers: { guest: "Suche in allen Gebieten", basic: "Suche in allen Gebieten", pro: "Suche in allen Gebieten", enterprise: "Suche in allen Gebieten" } },
   { label: "Alle Treffer", tiers: { guest: "10 Treffer je Suche", basic: "Alle Treffer", pro: "Alle Treffer", enterprise: "Alle Treffer" } },
@@ -15,7 +15,7 @@ const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
 ];
 const PLANS: { tier: Tier; price: string; note: string }[] = [
   { tier: "guest", price: "0 €", note: "Ohne Anmeldung" },
-  { tier: "basic", price: "kostenlos", note: "Für den Einstieg" },
+  { tier: "basic", price: "0 €", note: "Mit kostenlosem Konto" },
   { tier: "pro", price: PRO_PRICE, note: "inkl. MwSt." },
   { tier: "enterprise", price: "49,99 € / Monat", note: "inkl. MwSt. · für Teams" },
 ];
@@ -59,14 +59,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                       <span aria-hidden="true" className="text-teal-600">✓</span>
                       {text}
                     </li>
-                  ) : (
-                    /* Nicht enthalten: grau und durchgestrichen */
-                    <li key={f.label} className="flex gap-2 text-slate-400">
-                      <span aria-hidden="true">✕</span>
-                      <span className="line-through">{f.label}</span>
-                      <span className="sr-only">(nicht enthalten)</span>
-                    </li>
-                  );
+                  ) : null;
                 })}
               </ul>
               {publicPage ? (
@@ -91,6 +84,32 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
           );
         })}
       </div>
+    </section>
+  );
+}
+
+/** Konto: nur der eigene Tarif mit seinen Leistungen; alle Tarife stehen auf der Preisseite */
+export function PlanSummary() {
+  const { tier } = useTier();
+  const plan = PLANS.find((p) => p.tier === tier) ?? PLANS[0];
+  return (
+    <section id="tarif" aria-labelledby="tarif-title" className="mt-6 scroll-mt-20">
+      <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Tarif</h2>
+      <p className="m-0 mt-3 text-[16px] font-semibold">
+        {tier === "guest" ? "Ohne Konto" : TIER_LABEL[tier]} <span className="font-normal text-slate-500">· {plan.price} · {plan.note}</span>
+      </p>
+      <ul className="m-0 mt-3 list-none space-y-1.5 p-0 text-[14px]">
+        {FEATURES.map((f) => {
+          const text = f.tiers[tier];
+          return text ? (
+            <li key={f.label} className="flex gap-2 text-slate-900">
+              <span aria-hidden="true" className="text-teal-600">✓</span>
+              {text}
+            </li>
+          ) : null;
+        })}
+      </ul>
+      <Link href="/preise" className={SECONDARY}>Alle Tarife ansehen</Link>
     </section>
   );
 }

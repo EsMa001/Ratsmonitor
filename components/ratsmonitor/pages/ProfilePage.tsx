@@ -3,7 +3,7 @@ import { useAccount } from "../state/account";
 import { useToast } from "../state/toast";
 import type { NotifyFreq } from "../types";
 import { useTier } from "../lib/tier";
-import { PlanCards } from "../components/PlanCards";
+import { PlanSummary } from "../components/PlanCards";
 import { LoginRequired } from "../components/TierNotice";
 import { PageHead } from "../info/blocks";
 
@@ -61,7 +61,7 @@ export function ProfilePage() {
         <PageHead icon="user" label="Konto" name="Mein Konto" title={<>Sie sind nicht<br />angemeldet.</>} lead="Ohne Konto sehen Sie 10 Treffer je Suche. Mit einem kostenlosen Konto nutzen Sie alle Treffer und Filter und können speichern." />
         <section className="ri-sec ri-sec--tight">
         <LoginRequired title="Kostenlos anmelden" text="Mit einem kostenlosen Konto sehen Sie alle Treffer, nutzen die Filter und können Artikel, Suchen und Benachrichtigungen speichern." />
-        <PlanCards />
+        <PlanSummary />
         </section>
       </>
     );
@@ -97,7 +97,7 @@ export function ProfilePage() {
           </button>
         </div>
       </form>
-      <PlanCards />
+      <PlanSummary />
       </section>
     </>
   );

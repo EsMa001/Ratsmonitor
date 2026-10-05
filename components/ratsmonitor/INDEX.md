@@ -689,7 +689,7 @@ wordmark__dot design-styles.css:61
 - Footer.tsx (59): Footer
 - GateDialog.tsx (127): GateFeature, openGate, GateDialog
 - Header.tsx (32): Header
-- PlanCards.tsx (97): PlanCards
+- PlanCards.tsx (116): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
 - SearchBox.tsx (377): SearchBox

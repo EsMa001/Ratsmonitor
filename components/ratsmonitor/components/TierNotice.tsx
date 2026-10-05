@@ -14,7 +14,7 @@ export function LoginRequired({ title, text }: { title: string; text: string }) 
       <h2 className="mb-1 mt-4 text-[18px] font-semibold">{title}</h2>
       <p className="m-0 max-w-[48ch] text-slate-500">{text}</p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-        <Link className="btn-primary" href="/konto/profil#tarif">
+        <Link className="btn-primary" href="/preise#tarif">
           Kostenlos registrieren
         </Link>
         {IS_DEV && (
@@ -36,7 +36,7 @@ export function UsagePill({ label, used, max }: { label: string; used: number; m
       {label}: {usage(used, max)}
       <span className="text-slate-500">· {TIER_LABEL[tier]}</span>
       {full && (
-        <Link href="/konto/profil#tarif" className="font-semibold text-amber-900 underline underline-offset-2">
+        <Link href="/preise#tarif" className="font-semibold text-amber-900 underline underline-offset-2">
           Upgrade
         </Link>
       )}

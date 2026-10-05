@@ -7,7 +7,7 @@ import { PlanCards } from "../components/PlanCards";
 const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
 const count = (n: number) => (n === 0 ? "–" : Number.isFinite(n) ? String(n) : "unbegrenzt");
 const COMPARE_ROWS: [string, (t: Tier) => string][] = [
-  ["Preis", (t) => (t === "guest" ? "0 €" : t === "basic" ? "kostenlos" : t === "pro" ? PRO_PRICE : "49,99 € / Monat")],
+  ["Preis", (t) => (t === "guest" ? "0 €" : t === "basic" ? "0 €" : t === "pro" ? PRO_PRICE : "49,99 € / Monat")],
   ["Treffer je Suche", (t) => (Number.isFinite(LIMITS[t].maxResults) ? String(LIMITS[t].maxResults) : "alle")],
   ["Filter (Gebiet, Zeitraum, Thema, Status)", (t) => (LIMITS[t].filters ? "✓" : "–")],
   ["Gespeicherte Suchen", (t) => count(LIMITS[t].savedSearches)],

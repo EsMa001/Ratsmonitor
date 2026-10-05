@@ -10,8 +10,8 @@ const GROUPS: { title: string; links: [string, string][] }[] = [
 ];
 
 /** Fußzeile auf allen Seiten: Marke, Linkgruppen, Hinweis auf die Originalquellen */
-/* Seiten mit eigener, inhaltlich passender Petrol-Kachel */
-const OWN_CTA = (p: string) => p.startsWith("/funktionen/") || p === "/preise" || p === "/faq" || p === "/quellen" || p === "/ueber-uns" || p === "/ueber-ratsmonitor" || p.startsWith("/branchen");
+/* Seiten mit eigener, inhaltlich passender Petrol-Kachel; Kontoseiten ganz ohne Abschlussband */
+const OWN_CTA = (p: string) => p.startsWith("/konto/") || p.startsWith("/funktionen/") || p === "/preise" || p === "/faq" || p === "/quellen" || p === "/ueber-uns" || p === "/ueber-ratsmonitor" || p.startsWith("/branchen");
 
 export function Footer() {
   const { name } = useBrand();
