@@ -54,10 +54,16 @@ const foldText=s=>s.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replac
 // Also "unter Ausschluss von Presse und Öffentlichkeit", "der Zuhörer", "(unter Ausschluss d. Ö.)", "(Ausschluss Öff.)", "(o. Öff.)",
 // "Die Öffentlichkeit ist nicht zugelassen", a column "Öffentlichkeit: ausgeschl.".
 const AUDIENCE='(?:oeffentlichkeit|oeff\\b|oe\\b|zuhoerer\\w*|zuhoerenden|presse|publikum|besucher\\w*|gaeste|einwohner\\w*|buerger\\w*)';
-const EXCLUDED_F=new RegExp(`ausschlu(?:ss|s)\\s+der\\s+oeffentlichkeit|ausschl(?:uss|\\.)?\\s*(?:der|d\\.?)\\s*oeff|ausschl\\w*\\.?\\s+(?:von\\s+|der\\s+|des\\s+|d\\.\\s*)?(?:${AUDIENCE}\\s+(?:und|u\\.|sowie)\\s+(?:der\\s+|des\\s+)?)?${AUDIENCE}|oeffentlichkeit\\b[^.;]{0,120}?\\b(?:ausgeschlossen|ausgeschl\\b|auszuschliessen|ausschliessen|ausschliesst|ausschloss)|\\b(?:ausgeschlossen|auszuschliessen|ausschliessen)\\b[^.;]{0,40}?\\boeffentlichkeit|ohne\\s+oeffentlichkeit|nicht\\s+fuer\\s+die\\s+oeffentlichkeit|oeffentlichkeit\\b[^.;]{0,60}?\\bnicht\\s+(?:zugelassen|gestattet|erlaubt|zulaessig|vorgesehen|gegeben)|\\bo\\.\\s*oeff|\\bohne\\s+oeff\\.`);
-const END_PUBLIC_F=/(?:schluss|ende|abschluss|beendigung)\s+(?:der\s+|des\s+)?oeffentlichen?\s+(?:sitzung|teil|sitzungsteil|beratung|tagesordnung)|\b(?:schliesst|schloss|schliessen|beendet|beendete|beenden|endet|endete|geschlossen)\b[^.;]{0,80}?\b(?:den|die|der)\s+oeffentlichen?\s+(?:teil|sitzung|sitzungsteil|sitzungsabschnitt|beratung)|\b(?:der|die)\s+oeffentliche[rn]?\s+(?:teil|sitzung|sitzungsteil|sitzungsabschnitt)\b[^.;]{0,80}?\b(?:endet|endete|beendet|beendete|geschlossen|schliesst|schloss|zu\s+ende)\b/;
+// Also listeners, guests or the press not admitted ("Besucher sind zu den folgenden Punkten nicht zugelassen", "Presse und Zuhörer
+// sind ausgeschlossen", "zu dem Zuhörer keinen Zutritt hatten", "mussten die Zuhörer draußen bleiben"), "schließt die Öffentlichkeit
+// … aus", "(u. A. d. Ö.)", "wurde unter sich weiterberaten".
+const LISTENERS='(?:oeffentlichkeit|zuhoerer\\w*|zuhoerenden|presse|publikum|besucher(?:innen|n)?|gaeste[n]?|gaestinnen)';
+const EXCLUDED_F=new RegExp(`\\b${LISTENERS}\\b[^.;]{0,80}?\\b(?:ausgeschlossen|ausgeschl\\b|nicht\\s+(?:zugelassen|gestattet|erlaubt|zulaessig|anwesend|teilnahmeberechtigt|zugegen)|keinen?\\s+(?:zutritt|zugang|einlass)|draussen\\s+bleiben|nicht\\s+(?:teilnehmen|beiwohnen))|\\bkeinen?\\s+(?:zutritt|zugang|einlass)\\b[^.;]{0,40}?\\b${LISTENERS}\\b|\\bkeine\\s+${LISTENERS}\\s+(?:zugelassen|erlaubt|gestattet|erwuenscht)|\\b(?:schliesst|schloss|schliessen|schlossen)\\b[^.;]{0,80}?\\b${LISTENERS}\\b[^.;]{0,80}?\\baus\\b|\\bu\\.\\s*a\\.\\s*d\\.\\s*oe\\b|\\bunter\\s+sich\\b[^.;]{0,40}?\\b(?:weiter)?(?:berat|beriet|besproch|verhandel)|ausschlu(?:ss|s)\\s+der\\s+oeffentlichkeit|ausschl(?:uss|\\.)?\\s*(?:der|d\\.?)\\s*oeff|ausschl\\w*\\.?\\s+(?:von\\s+|der\\s+|des\\s+|d\\.\\s*)?(?:${AUDIENCE}\\s+(?:und|u\\.|sowie)\\s+(?:der\\s+|des\\s+)?)?${AUDIENCE}|oeffentlichkeit\\b[^.;]{0,120}?\\b(?:ausgeschlossen|ausgeschl\\b|auszuschliessen|ausschliessen|ausschliesst|ausschloss)|\\b(?:ausgeschlossen|auszuschliessen|ausschliessen)\\b[^.;]{0,40}?\\boeffentlichkeit|ohne\\s+oeffentlichkeit|nicht\\s+fuer\\s+die\\s+oeffentlichkeit|oeffentlichkeit\\b[^.;]{0,60}?\\bnicht\\s+(?:zugelassen|gestattet|erlaubt|zulaessig|vorgesehen|gegeben)|\\bo\\.\\s*oeff|\\bohne\\s+oeff\\.`);
+// Also "Ende der Sitzung (öffentlicher Teil): 20:15 Uhr", "Öffentliche Sitzung Ende: 20:15 Uhr", "Ende ÖT 20:15 Uhr", "Öffentlicher Sitzungsteil:
+// 19:00 Uhr bis 20:15 Uhr", "Im Anschluss an den öffentlichen Teil wurde weiter beraten".
+const END_PUBLIC_F=/\bende\b[^.;]{0,30}?\(\s*oeffentliche[rn]?\s+(?:teil|sitzung|sitzungsteil)|\boeffentliche[rn]?\s+(?:teil|sitzung|sitzungsteil)\w*\s*[:(,–-]?\s*(?:ende|beendet|geschlossen)\b|\bende\s+(?:des\s+|der\s+)?oe-?t\b|\boeffentliche[rn]?\s+(?:teil|sitzungsteil|sitzung)\s*:?\s*(?:von\s+)?\d{1,2}[:.]\d{2}\s*(?:uhr\s*)?(?:bis|–|-)\s*\d|(?:im\s+anschluss\s+an|nach)\s+(?:den|dem|die|der)\s+oeffentlichen?\s+(?:teil|sitzungsteil|sitzung|beratung)|(?:schluss|ende|abschluss|beendigung)\s+(?:der\s+|des\s+)?oeffentlichen?\s+(?:sitzung|teil|sitzungsteil|beratung|tagesordnung)|\b(?:schliesst|schloss|schliessen|beendet|beendete|beenden|endet|endete|geschlossen)\b[^.;]{0,80}?\b(?:den|die|der)\s+oeffentlichen?\s+(?:teil|sitzung|sitzungsteil|sitzungsabschnitt|beratung)|\b(?:der|die)\s+oeffentliche[rn]?\s+(?:teil|sitzung|sitzungsteil|sitzungsabschnitt)\b[^.;]{0,80}?\b(?:endet|endete|beendet|beendete|geschlossen|schliesst|schloss|zu\s+ende)\b/;
 // Also "Die Zuhörer mussten den Saal räumen", "wurden hinausgebeten", "ohne Publikum".
-const LEAVE_F=/\b(?:zuhoerer\w*|zuhoerenden|besucher\w*|gaeste|presse\w*|oeffentlichkeit|publikum)\b[^.;]{0,80}?\b(?:verlassen|verlaesst|verliessen|verliess|raeumen|raeumten|raeumte|geraeumt|hinausgebeten|hinaus|gehen)\b|\b(?:saal|sitzungssaal|raum|sitzungsraum)\b[^.;]{0,40}?\b(?:raeumen|raeumten|raeumte|geraeumt)\b|\bhinausgebeten\b|\bohne\s+(?:die\s+)?(?:zuhoerer\w*|oeffentlichkeit|presse|gaeste|besucher\w*|publikum)\b/;
+const LEAVE_F=/\b(?:zuhoerer\w*|zuhoerenden|besucher\w*|gaeste|presse\w*|oeffentlichkeit|publikum)\b[^.;]{0,80}?\b(?:verlassen|verlaesst|verliessen|verliess|raeumen|raeumten|raeumte|geraeumt|hinausgebeten|hinaus|gehen)\b|\b(?:saal|sitzungssaal|raum|sitzungsraum)\b[^.;]{0,40}?\b(?:raeumen|raeumten|raeumte|geraeumt)\b|\bhinausgebeten\b|\bohne\s+(?:die\s+)?(?:beteiligung|anwesenheit|teilnahme|zulassung|zutritt|zugang)\s+(?:der\s+|des\s+|von\s+)?(?:oeffentlichkeit|zuhoerer\w*|presse|gaeste|besucher\w*|publikum)\b|\bohne\s+(?:die\s+)?(?:zuhoerer\w*|oeffentlichkeit|presse|gaeste|besucher\w*|publikum|buerger(?:innen|n)?|einwohner(?:innen|n)?|zuschauer\w*)\b/;
 const NP_SPACED=[
  // nichtöffentlich, nicht-öffentl., nichtöff., nichtöfftl., nichtöfentlich, nicht?ffentlich, nichtoef
  /nicht[\s\-_./–]{0,3}(?:oe|o|e|ae|#|\?)?f{1,2}(?:entl|enl|etl|tl|l(?![a-z])|\.|(?![a-z]))/,
@@ -67,20 +73,30 @@ const NP_SPACED=[
  // nichtö., nicht ö.
  /nicht[\s\-]{0,2}oe(?![a-z])/,
  /vertraul|\(vertr\.?\)/,
- /geschlossene[nrms]?\s+(?:sitzung|teil|sitzungsteil|beratung)|geschl\.\s*(?:sitzung|teil)/,
+ /geschlossene[nrms]?\s+(?:sitzung|teil|sitzungsteil|beratung|runde|gesellschaft|kreis)|geschl\.\s*(?:sitzung|teil)/,
+ // "N-Sitzung", "N-Teil" (the closed session of an agenda in parts Ö/N), "Unöffentliche Sitzung", a closed meeting ("Klausur").
+ /(?<![a-z0-9])n\s*-\s*(?:sitzung|teil|sitzungsteil)\b|\bunoeffentlich|\bklausur/,
  EXCLUDED_F,
  END_PUBLIC_F,
  LEAVE_F,
  // a meeting expressly not public ("keine öffentliche Sitzung", "nicht in öffentlicher Sitzung"), a field "Öffentlich: nein"
  /\b(?:kein|keine|keiner|keinen|nicht\s+in)\s+oeffentliche[rnms]?\s+(?:\w*sitzung|beratung|teil|tagung)/,
  /\boeffentlich\w*(?:\s+(?:sitzung|beratung|teil|sitzungsteil))?\s*[:?]?\s*(?:nein|no)\b/,
- /(?<![a-z])interne[rnms]?\s+(?:beratung|sitzung|teil|sitzungsteil|angelegenheit)|\(intern\)|\bintern\s+(?:beraten|behandelt|besprochen|beraten)\b/,
+ /(?<![a-z])interne[rnms]?\s+(?:beratung|sitzung|teil|sitzungsteil|angelegenheit)|\(intern\)|\bintern\s+(?:beraten|behandelt|besprochen|fortgesetzt|weitergefuehrt|weiterberaten|diskutiert|eroertert|verhandelt)\b|(?:^|\s)intern\s*$/,
  // "Geheime Sitzung", "(geheim)" (not a secret ballot, not a secrecy that has ended), "hinter verschlossenen Türen",
  // "Nur für Ratsmitglieder", "(geschlossen)".
  /\bgeheim(?!e?[rnms]?\s+(?:wahl|abstimmung|stimmabgabe)|haltung\w*\s+(?:\w+\s+){0,3}(?:weggefallen|entfallen|aufgehoben))/,
  /hinter\s+(?:geschlossenen|verschlossenen)\s+tuer/,
- /\bnur\s+fuer\s+(?:die\s+)?(?:\w*mitglieder|gemeinderaete|stadtraete|marktgemeinderaete|\w*raete)\b/,
- /\(\s*geschlossene?[rnms]?\s*\)|^\s*geschlossen\s*$/,
+ /\bnur\s+(?:fuer\s+)?(?:die\s+)?(?:\w*mitglieder|gemeinderaete|stadtraete|marktgemeinderaete|\w*raete|mandatstraeger\w*|mandatsinhaber\w*)\b/,
+ // A status "privat" as a word of its own.
+ /^\s*\(?privat\)?\s*$|\(privat\)/,
+ /\(\s*geschlossene?[rnms]?\s*\)|^\s*geschlossen\s*$|\(\s*geschl\.?\s*\)/,
+ // The secrecy that binds the members on the matters of the non-public part ("unterliegt der Verschwiegenheitspflicht").
+ /verschwiegenheit/,
+ // In other words of a report: "Danach blieb der Rat unter sich", "tagte intern weiter", "nicht vor Publikum", "im kleinen Kreis".
+ /\bunter\s+sich\b|\bim\s+(?:kleinen|kleineren|engsten|engeren)\s+kreis\b/,
+ /\b(?:tagt\w*|beriet\w*|berat\w*|weiter\w*|fortgesetzt|fort)\b[^.;]{0,30}\bintern\b|\bintern\b[^.;]{0,30}\b(?:weiter\w*|fort\w*|getagt|beraten)\b/,
+ /\bnicht\s+vor\s+(?:publikum|zuhoerer\w*|zuschauer\w*|oeffentlichkeit|presse|gaeste\w*|besucher\w*|buerger\w*|einwohner\w*)/,
 ];
 // The paragraph of a municipal code that excludes the public (§ 35 GemO, Art. 52 GO, § 52 HGO, § 40 ThürKO, § 29 KV M-V,
 // § 48 GO NRW, § 64 NKomVG, § 40 KSVG, § 37 SächsGemO, § 52 KVG LSA, § 35 GO SH, § 36 BbgKVerf): an item that cites it
@@ -88,18 +104,56 @@ const NP_SPACED=[
 // Also a paragraph of the rules of procedure (GeschO), which lists the matters of the non-public part, and a Roman paragraph
 // ("Art. 52 II GO", "§ 35 I GemO").
 const RULES_NP=/(?:§|Paragraph|Art\.?|Artikel)\s*\d+[^()]{0,30}?(?:GeschO|Geschäftsordnung|GO\s*-?\s*GR|GeschOGR|GOGR)(?!\p{L})/u;
-const LAW_NP=/(?:§|Paragraph|Art\.?|Artikel)\s*(?:35|52|40|29|48|64|37|36)(?:\s*(?:Abs\.?|Absatz)\s*(?:\d+|[IVX]{1,4})|\s+[IVX]{1,4}(?=\s))?(?:\s*(?:Satz|S\.)\s*\d+)?(?:\s*(?:Nr\.?|Ziff\.?)\s*\d+)?\s*(?:der\s+|des\s+)?(?:GemO|GO|HGO|ThürKO|Thür\.?\s*KO|KV\s*M-?V|KVMV|NKomVG|KSVG|SächsGemO|KVG\s*LSA|BbgKVerf|BayGO|Gemeindeordnung|Kommunalverfassung|Kommunalselbstverwaltungsgesetz)(?![\p{L}])/u;
+// Also a paragraph written "(1)" or with Roman number and sentence ("§ 35 (1) GemO", "§ 35 I 2 GemO"), and the codes of counties and
+// districts (Art. 46 LKrO, § 30 LKrO, § 33 KrO NRW, § 32 HKO, § 33 SächsLKrO, § 28 LKO, Art. 41 BezO).
+const LAW_REF='(?:\\s*(?:(?:Abs\\.?|Absatz)\\s*(?:\\d+|[IVX]{1,4})|\\(\\d{1,2}\\)|[IVX]{1,4}(?=[\\s,)])|(?:Satz|S\\.|Nr\\.?|Ziff\\.?)\\s*\\d+|\\d{1,2}(?=\\s)))*\\s*(?:der\\s+|des\\s+)?';
+// The code also with the Land written before it, short or in full ("Sächs. GemO", "Bbg. KVerf", "Bayerische Gemeindeordnung", "der
+// Sächsischen Gemeindeordnung", "Thüringer Kommunalordnung", "Kommunalverfassungsgesetz").
+const LAW_LAND='(?:(?:Sächs|Bay|Bbg|Brandenb|Thür|Hess|Nds|Nieders|Meckl|Saarl|Schl|Rh)\\p{L}{0,14}\\.?\\s*-?\\s*|\\p{Lu}\\p{Ll}+(?:ische[nrs]?|er)\\s+)?';
+const LAW_MUNICIPAL='(?:GemO|GO(?:\\s*(?:NRW|SH|BW))?|HGO|KO|KV(?:\\s*M-?V)?|KVMV|KVerf|NKomVG|KSVG|KVG(?:\\s*LSA)?|SächsGemO|BbgKVerf|BayGO|ThürKO|Gemeindeordnung|Kommunalordnung|Kommunalverfassung(?:sgesetz)?|Kommunalselbstverwaltungsgesetz)';
+const LAW_COUNTY='(?:LKrO|KrO(?:\\s*NRW)?|HKO|SächsLKrO|BezO|LKO|NKomVG|ThürKO|BbgKVerf|KVerf|Landkreisordnung|Kreisordnung|Bezirksordnung)';
+const LAW_NP=new RegExp(`(?:§§?|Paragraph|Art\\.?|Artikel)\\s*(?:(?:35|52|40|29|48|64|37|36)${LAW_REF}${LAW_LAND}${LAW_MUNICIPAL}|(?:28|30|32|33|41|46|64|40|36)${LAW_REF}${LAW_LAND}${LAW_COUNTY})(?![\\p{L}])`,'u');
 // Hyphenated, letter-spaced or split words read without anything but letters.
 // Also words read by OCR or without the ligature "ff" ("Nichtöffentiiche", "Nichtöentliche").
 const NP_COMPACT=/nicht(?:oe|o|e|ae|#)?ff?entl|nicht(?:oe|o|e|ae|#)?f{0,2}ent[il]{1,2}ch|unterausschlu(?:ss|s)deroeffentlichkeit|geschlossene(?:sitzung|rteil|nteil)|vertraulich/;
+// Typing errors of "nichtöffentlich" that no pattern foresees ("Nichöffentliche", "Nichtöfffentliche", "Nichtöffetnliche", "Nciht
+// öffentliche", "Nichttöffentliche"): a word that begins like it is at most two edits (optimal string alignment) from it.
+function editDistance(a,b,max){
+ if(Math.abs(a.length-b.length)>max)return max+1;
+ let prev2=null,prev=Array.from({length:b.length+1},(x,j)=>j);
+ for(let i=1;i<=a.length;i++){
+  const row=[i];let low=i;
+  for(let j=1;j<=b.length;j++){
+   let v=Math.min(prev[j]+1,row[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+   if(prev2&&i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])v=Math.min(v,prev2[j-2]+1);
+   row.push(v);low=Math.min(low,v);
+  }
+  if(low>max)return max+1;prev2=prev;prev=row;
+ }
+ return prev[b.length];
+}
+const NP_WORD='nichtoeffentlich';
+const typoNonPublic=folded=>{
+ const words=folded.split(/[^a-z#]+/).filter(Boolean);
+ for(let i=0;i<words.length;i++){
+  const w=words[i],candidates=[w];
+  // "Nciht öffentliche": a first word close to "nicht" with the next one.
+  if(w.length>=4&&w.length<=6&&words[i+1]&&editDistance(w,'nicht',1)<=1)candidates.push(w+words[i+1]);
+  for(const c of candidates){
+   if(c[0]!=='n'||c.length<13)continue;
+   for(let l=13;l<=Math.min(18,c.length);l++)if(editDistance(c.slice(0,l),NP_WORD,2)<=2)return true;
+  }
+ }
+ return false;
+};
 /** Whether a line names the non-public part in any spelling (reports on it from the public part excepted). */
 export function mentionsNonPublic(s){
  const n=normalizeLine(s),t=foldText(n.replace(PUBLIC_REPORT,' '));
- return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n)||RULES_NP.test(n);
+ return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n)||RULES_NP.test(n)||typoNonPublic(t);
 }
 // Labels and addresses only: "Teil N", "(intern)", "interner Teil", a folder or name part "geschlossen".
 // Also "(geschl.)", "geheim" and a name part "np" (gr-2026-09-16-np.pdf).
-const LABEL_ONLY=/(?<![a-z0-9])(?:teil[\s\-_]*n|geschlossen(?:e[rns]?)?|geschl\.?|geheim|np)(?![a-z0-9])|\(intern\)|(?<![a-z0-9])interne[rns]?[\s\-_]+(?:teil|sitzung|sitzungsteil|beratung)/;
+const LABEL_ONLY=/(?<![a-z0-9])(?:teil[\s\-_]*n|geschlossen(?:e[rns]?)?|geschl\.?|geheim|np|interna?)(?![a-z0-9])|\(intern\)|(?<![a-z0-9])interne[rns]?[\s\-_]+(?:teil|sitzung|sitzungsteil|beratung)/;
 const latinPercent=s=>s.replace(/%([0-9a-f]{2})/gi,(m,h)=>String.fromCharCode(parseInt(h,16)));
 const safeDecode=s=>{try{return decodeURIComponent(s);}catch{return s;}};
 /** Whether a label, title, address or line names the non-public part (in any Unicode form, encoding or spelling). */
@@ -112,11 +166,14 @@ export const isNonPublicText=s=>{
 export function normalizeLine(line){
  let s=String(line??'');
  if(/&(?:#x?[0-9a-f]+|[a-z]+);/i.test(s))s=decodeEntities(s);
- s=composeUmlauts(repairMojibake(s)).replace(/[  -   　\t]/g,' ').replace(/[­​-‍⁠﻿]/g,'');
+ // Full-width letters of an IME or a converter ("ＮＩＣＨＴÖＦＦＥＮＴＬＩＣＨ") are the letters themselves.
+ s=composeUmlauts(repairMojibake(s)).replace(/[\uff01-\uff5e]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xfee0)).replace(/[  -   　\t]/g,' ').replace(/[­​-‍⁠﻿]/g,'');
  s=s.replace(/[‐‑]/g,'-').replace(/[‒-―−⸺⸻﹘﹣－]/g,'–').replace(/[„“”‟″«»＂]/g,'"').replace(/[‚‘’‛′`´]/g,"'");
  // Letter-spaced headings ("T a g e s o r d n u n g"): single letters with single spaces form one word; the words of
  // such a heading are set apart by two or more spaces, which stay a word break.
  s=s.replace(/(?<![\p{L}\p{N}])\p{L}(?: \p{L}){2,}(?![\p{L}\p{N}])/gu,m=>m.replace(/ /g,''));
+ // A part's key glued to its noun ("TeilB" of a calendar folded by wordwrap or a PDF without the space) is "Teil B".
+ s=s.replace(/(?<!\p{L})(Teil|Sitzungsteil|Abschnitt)([A-H]|I{1,3}|IV|VI{0,3}|[1-9])(?![\p{L}\d])/gu,'$1 $2');
  // "Nicht – öffentlicher Teil" (a dash set by a word processor) is "Nicht-öffentlicher Teil".
  s=s.replace(/(?<!\p{L})(nicht)\s*[–-]\s*(?=[öÖ])/giu,'$1-');
  return s.replace(/\s+/g,' ').trim();
@@ -158,13 +215,28 @@ function stripPageFrame(html){
 }
 const attrOf=(attrs,name)=>{const m=String(attrs).match(new RegExp(`(?:^|\\s)${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`,'i'));return m?(m[1]??m[2]??m[3]).trim():'';};
 const altText=attrs=>['alt','title','aria-label','data-title','data-tooltip','data-original-title'].map(n=>attrOf(attrs,n)).find(Boolean)||'';
-// A class that is a lock, a crossed-out eye or names the non-public part ("fa-lock", "fa-eye-slash", "top--np", "nichtoeffentlich").
-const NP_CLASS_PARTS=new Set(['np','noe','noet','nichtoeffentlich','nichtöffentlich','nichtoeff','nonpublic','vertraulich','lock','locked','schloss','geschlossen']);
-const npClass=attrs=>{const c=attrOf(attrs,'class').toLowerCase();return /eye-slash|non-public|nicht-oeffentlich|nicht-öffentlich|not-public/.test(c)||c.split(/[\s_-]+/).some(p=>NP_CLASS_PARTS.has(p));};
+// Words of an element's class, id and data attributes and of an image's file name, camelCase and umlauts written out
+// ("topNichtOeffentlich" → "top-nicht-oeffentlich", "status-nö" → "status-noe", data-status="nichtoeffentlich").
+const attrWords=attrs=>{const values=[...String(attrs).matchAll(/(?:^|\s)(class|id|data-[\w-]+|aria-(?:labelledby|controls|describedby))\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))/gi)].map(m=>m[2]??m[3]??m[4]??'');values.push(safeDecode(attrOf(attrs,'src').split('?')[0].split('/').pop()||''));return values.join(' ').replace(/([a-zäöü])([A-ZÄÖÜ])/g,'$1-$2').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[_+]|%20/g,'-');};
+// Words that name the non-public part on any element; words of a symbol only on an element without text (an icon).
+const NP_ATTR=/(?:^|[^a-z])(?:nicht-?oe?ff\w*|noeff\w*|non-?public|not-?public|nicht-?oeffentlich\w*|vertraulich\w*|confidential|geheim|secret|n-?oe(?:t|s)?|np)(?:$|[^a-z])/;
+const NP_SYMBOL=/(?:^|[^a-z])(?:lock|locked|schloss|key|eye-(?:off|slash)|visibility-off|private?|closed|geschlossen|restricted|n)(?:$|[^a-z])/;
+const npClass=attrs=>{const c=attrOf(attrs,'class').toLowerCase();return /eye-slash|non-public|nicht-oeffentlich|nicht-öffentlich|not-public/.test(c)||c.split(/[\s_-]+/).some(p=>NP_CLASS_PARTS.has(p))||NP_ATTR.test(attrWords(attrs));};
 // An image without text whose file is such an icon ("/Icons/schloss.svg", "lock_closed.gif").
 const npSource=attrs=>/(?:^|[/_.-])(?:lock|locked|schloss|nichtoeffentlich|nicht-oeffentlich|nonpublic|noe|np|vertraulich|eye-slash)(?=[/_.-]|$)/i.test(attrOf(attrs,'src').split('?')[0].split('/').pop()||'');
-// An icon without text whose class or file is a lock or names the non-public part marks an item as a word would.
-const iconText=attrs=>altText(attrs)||(npClass(attrs)||npSource(attrs)?'(nichtöffentlich)':'');
+const NP_CLASS_PARTS=new Set(['np','noe','noet','nichtoeffentlich','nichtöffentlich','nichtoeff','nonpublic','vertraulich','lock','locked','schloss','geschlossen']);
+// Symbols whose meaning is plain: a file, a link, an arrow, a decoration; the mark of the public part.
+const PLAIN_SYMBOL=/(?:^|[^a-z])(?:pdf|docx?|xlsx?|odt|download|file|datei|dokument|document|attachment|paperclip|print|drucken|mail|email|envelope|calendar|kalender|ical|ics|rss|feed|external|extern|link|arrow|pfeil|chevron|angle|caret|plus|minus|search|lupe|home|phone|telefon|map|karte|marker|location|clock|uhr|time|info|share|facebook|twitter|instagram|youtube|xing|linkedin|whatsapp|spacer|blank|pixel|transparent|logo|wappen|bullet|dot|line|trenner|oeffentlich|public|photo|foto|bild|image|thumb\w*|teaser\w*)(?:$|[^a-z])/;
+// Also an empty cell or badge of a status column drawn by a style ("status status-2", "badge", "flag", "ampel").
+const ICONISH=/(?:^|[\s_-])(?:fa[srlbdt]?|fa-solid|fa-regular|mdi|icon|icons|ico|glyphicon|bi|dashicons|ion|ionicons|las|lar|lab|feather|ti|uk-icon|svg-icon|material-icons\S*|material-symbols\S*|symbol|status|state|badge|flag|indicator|kennzeichen|kennzeichnung|ampel|zugang|access|visibility|sichtbarkeit)(?:$|[\s_-])/i;
+/** The character that stands for a symbol whose meaning the page does not tell (an icon without text in a column). */
+export const SYMBOL='￼';
+// An icon without text whose class or file is a lock or names the non-public part marks an item as a word would; any other
+// symbol of unknown meaning stands as SYMBOL, which the parser treats as a mark of unknown meaning (rule 4).
+const iconText=(attrs,symbol=true)=>{const t=altText(attrs);if(t)return t;if(npClass(attrs)||npSource(attrs)||NP_SYMBOL.test(attrWords(attrs)))return '(nichtöffentlich)';return symbol&&!PLAIN_SYMBOL.test(attrWords(attrs))?SYMBOL:'';};
+// Ligature icon fonts draw the symbol from its name ("lock", "visibility_off").
+const MATERIAL_NP=/^(?:lock|lock_outline|lock_person|https|vpn_key|key|password|visibility_off|no_accounts|block|do_not_disturb\w*|shield|security|enhanced_encryption|private_connectivity|gpp_\w+)$/;
+const MATERIAL_PLAIN=/^(?:picture_as_pdf|download|file_download|description|article|event|calendar_\w+|today|schedule|access_time|place|location_on|map|attach_file|attachment|open_in_new|link|launch|arrow_\w+|chevron_\w+|expand_\w+|navigate_\w+|info|mail|email|print|home|search|public|visibility|check)$/;
 const SUPERSCRIPT={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'};
 const CONTAINER=/^(?:div|section|article|tbody|thead|tfoot|table|ul|ol|dl|details|fieldset|main|aside)$/i;
 const VOID=/^(?:img|input|area|br|hr|meta|link|source|wbr|col|embed|param|track)$/i;
@@ -178,23 +250,60 @@ function markClasses(h){
  }
  return h;
 }
+// Struck text may go unless it names the non-public part or a part of the meeting.
+const struck=inner=>{const t=normalizeLine(entities(inner.replace(/<[^>]+>/g,' ')));return !mentionsNonPublic(t)&&!closedLine(t)&&!/(?<!\p{L})(?:Teil|Sitzungsteil|Abschnitt)(?!\p{L})/u.test(t);};
+// The lines of a piece of markup, as htmlToLines makes them.
+const quickLines=x=>entities(x.replace(/\s+/g,' ').replace(/<br\b[^>]*>/gi,'\n').replace(new RegExp(`</?(?:${BLOCK})\\b[^>]*>`,'gi'),'\n').replace(/<\/?(?:t[dh]|span|a|b|i|button|label)\b[^>]*>/gi,' ').replace(new RegExp(`</?(?:${INLINE})\\b[^>]*>`,'gi'),'').replace(/<[^>]+>/g,' ')).split('\n').map(normalizeLine).filter(Boolean);
+// A line in the card of an item that may say it is not public: a mention, a heading or key of a later part, a symbol.
+const cardMark=l=>mentionsNonPublic(l)&&!isPublicReport(l)||closedLine(l)||isNonPublicHeading(l)||BARE_N.test(l)||l.includes(SYMBOL)||PART_KEY.test(l)||
+ l.length<=40&&PART_WORD.test(l)&&!isPublicHeading(l)&&!/(?<!\p{L})(?:A|I|1|Erster|öffentlich\p{L}*)(?!\p{L})/u.test(l)||(()=>{const p=l.length<=40&&l.match(PART_HEADING);return !!p&&!/^(?:A|I|1|Erster|1\.|Ö)/u.test(partKey(p)||'')&&!isPublicHeading(l);})();
+// Cards and accordions hold one item each with its fields and badges ("TOP 3 …" / "Vorlage 2026/043" / "N-Teil"): where an
+// element holds exactly one item and, after it, a line that may say it is not public, that line is the item's (its mark
+// "(nichtöffentlich)" is put at the end of the element).
+const CARD_TAGS='div|li|article|section|details|tr|dl|fieldset|tbody|table|ul|ol';
+/** The line htmlToLines puts at the end of an item's card that may say the item is not public; it belongs to that item. */
+export const CARD_NP='(nichtöffentlich: Kennzeichnung dieses Punktes)';
+function markCards(h){
+ if(!/\d/.test(h))return h;
+ const ends=[];
+ for(const m of h.matchAll(new RegExp(`<(${CARD_TAGS})\\b[^>]*>`,'gi'))){
+  // A wrapper of the whole page is no card (and is not read twice).
+  const whole=element(h,m.index,m[1]),close=whole.match(/<\/[a-z][a-z0-9]*\s*>$/i);if(!close||whole.length>100000)continue;
+  const lines=quickLines(whole),at=lines.map((l,k)=>itemOfLine(l)?k:-1).filter(k=>k>=0);
+  if(at.length!==1||isPublicReport(lines[at[0]]))continue;
+  if(lines.slice(at[0]+1).some(cardMark))ends.push(m.index+whole.length-close[0].length);
+ }
+ for(const e of [...new Set(ends)].sort((a,b)=>b-a))h=h.slice(0,e)+`<p>${CARD_NP}</p>`+h.slice(e);
+ return h;
+}
 /** Lines of the main content of a page: main or [role=main], otherwise the body without its frame. */
 export function htmlToLines(html){
  let h=String(html||'').replace(/<!--[\s\S]*?-->/g,' ').replace(/<!\[CDATA\[[\s\S]*?\]\]>/g,' ');
- // Text alternatives are text: an icon or image with title/alt "nichtöffentlich" marks an item like a word.
- h=h.replace(/<svg\b([^>]*)>([\s\S]*?)<\/svg\s*>/gi,(m,a,body)=>` ${[altText(a),body.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]??''].filter(Boolean).join(' ')} `);
+ // Struck text is withdrawn (the old day of a moved meeting, an item taken off), unless it names the non-public part.
+ h=h.replace(/<(del|s|strike)(?=[\s>])[^>]*>([\s\S]*?)<\/\1\s*>/gi,(m,tag,inner)=>struck(inner)?' ':m);
+ h=h.replace(/<([a-z][a-z0-9]*)\b([^>]*\bstyle\s*=\s*["'][^"']*line-through[^"']*["'][^>]*)>([\s\S]*?)<\/\1\s*>/gi,(m,tag,a,inner)=>struck(inner)?' ':m);
+ // Symbols inside a link or button belong to it (a file icon, an arrow), not to an item.
+ h=h.replace(/<(a|button)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,m=>m.replace(/<svg\b([^>]*)>([\s\S]*?)<\/svg\s*>/gi,(x,a,body)=>` ${altText(a)||body.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]||''} `).replace(/<(?:img|input|area)\b([^>]*)>/gi,(x,a)=>` ${iconText(a,false)} `).replace(/<(i|span)\b([^>]*?)\s*(?:\/>|>\s*<\/\1\s*>)/gi,(x,tag,a)=>` ${iconText(a,false)} `));
+ // Text alternatives are text: an icon or image with title/alt "nichtöffentlich" marks an item like a word; a symbol without
+ // text stands as SYMBOL.
+ h=h.replace(/<svg\b([^>]*)>([\s\S]*?)<\/svg\s*>/gi,(m,a,body)=>{const t=[altText(a),body.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]??''].filter(Boolean).join(' ');return ` ${t||iconText(a)} `;});
  h=h.replace(/<(?:img|input|area)\b([^>]*)>/gi,(m,a)=>` ${iconText(a)} `);
+ h=h.replace(/<(span|i)\b([^>]*\bclass\s*=\s*["'][^"']*material-(?:icons|symbols)[^"']*["'][^>]*)>\s*([a-z_0-9]{1,40})\s*<\/\1\s*>/gi,(m,tag,a,name)=>` ${altText(a.replace(/\saria-hidden\s*=\s*["']?\w+["']?/i,''))||(MATERIAL_NP.test(name)?'(nichtöffentlich)':MATERIAL_PLAIN.test(name)?'':SYMBOL)} `);
  // Superscripts: a number or star is a footnote mark ("Grundstück¹"), letters are a mark of their own ("Grundstück NÖ").
  h=h.replace(/<(sup|sub)\b[^>]*>([\s\S]*?)<\/\1\s*>/gi,(m,tag,inner)=>{const t=inner.replace(/<[^>]+>/g,'').trim();return tag.toLowerCase()==='sup'&&/^\d{1,2}\)?$/.test(t)?t.replace(/\d/g,d=>SUPERSCRIPT[d]):/^[*†‡]+\)?$/.test(t)?t:` ${inner} `;});
+ h=labelPanels(h);
  h=markClasses(h);
  // An empty element (an icon font's <i>, a <span> badge) is read by its title; another element only where its title
  // names the non-public part (<abbr title="nichtöffentlich">N</abbr>).
- h=h.replace(/<(i|span|em|b|strong|abbr|a|div|td|th|li|button|small|sup|sub|mark|font|u|s|p|dd|dt)\b([^>]*?)\s*(?:\/>|>\s*<\/\1\s*>)/gi,(m,tag,a)=>{const t=iconText(a);return t?`${m} ${t} `:m;});
+ h=h.replace(/<(i|span|em|b|strong|abbr|a|div|td|th|li|button|small|sup|sub|mark|font|u|s|p|dd|dt)\b([^>]*?)\s*(?:\/>|>\s*<\/\1\s*>)/gi,(m,tag,a)=>{const t=iconText(a,/^i$/i.test(tag)&&/\bclass\s*=/i.test(a)||ICONISH.test(attrOf(a,'class')));return t?`${m} ${t} `:m;});
  h=h.replace(/<([a-z][a-z0-9]*)\b([^>]*?)(?<!\/)>(?!\s*<\/\1\s*>)/gi,(m,tag,a)=>{const t=altText(a);return t&&!/^(?:img|input|area|script|style)$/i.test(tag)&&mentionsNonPublic(t)?`${m} ${t} `:m;});
  h=strip(h,'script|style|noscript|template|svg|iframe|object|canvas');
  const main=h.search(/<main\b/i),role=h.match(/<([a-z][a-z0-9]*)\b[^>]*\brole\s*=\s*["']?main\b[^>]*>/i);
- if(main>=0)h=element(h,main,'main');
- else if(role)h=element(h,role.index,role[1]);
+ // A legend outside the main content (in the footer or a side box of the template) still tells what the marks of the items mean.
+ let legends=[];
+ const outside=part=>quickLines(strip(part,'a|nav|form|select|button')).filter(l=>formatLegend(l)||LEGEND.test(l)||mentionsNonPublic(l)&&/(?<!\p{L})(?:Punkte?|TOPs?|Tagesordnungspunkte?|markiert\p{L}*|gekennzeichnet\p{L}*|dargestellt\p{L}*|Kennzeichnung)(?!\p{L})/u.test(l));
+ if(main>=0){const m=element(h,main,'main');legends=outside(h.slice(0,main)+' '+h.slice(main+m.length));h=m;}
+ else if(role){const m=element(h,role.index,role[1]);legends=outside(h.slice(0,role.index)+' '+h.slice(role.index+m.length));h=m;}
  // Without main the body without its frame: headings of a part between the articles of single items stay, as do the
  // heads of articles and sections (<section><header><h2>Teil B</h2></header>) and headers between texts.
  else h=stripPageFrame(h.match(/<body\b[^>]*>([\s\S]*)<\/body>/i)?.[1]??h);
@@ -202,17 +311,47 @@ export function htmlToLines(html){
  // Buttons, summaries and labels are text (the heading of a part may be the button of an accordion or a tab).
  h=stripFrame(h,'nav|aside');
  h=strip(h,'form|select|dialog');
+ h=markCards(h);
  // Line breaks of the source are spaces, except inside <pre>.
  h=h.replace(/<pre\b[^>]*>([\s\S]*?)<\/pre>/gi,(m,body)=>'\n'+body.replace(/\r?\n/g,'<br>')+'\n');
  h=h.replace(/\s+/g,' ').replace(/<br\b[^>]*>/gi,'\n').replace(new RegExp(`</?(?:${BLOCK})\\b[^>]*>`,'gi'),'\n').replace(/<\/?(?:t[dh]|span|a|b|i|button|label)\b[^>]*>/gi,' ');
  // Other inline markup sits inside words ("<strong>T</strong>agesordnung"); any other tag is a space.
  h=h.replace(new RegExp(`</?(?:${INLINE})\\b[^>]*>`,'gi'),'').replace(/<[^>]+>/g,' ');
- return entities(h).split('\n').map(normalizeLine).filter(Boolean);
+ return [...entities(h).split('\n').map(normalizeLine).filter(Boolean),...legends];
+}
+// Tabs and accordions whose labels stand apart from their panels (a tab bar below the panels, set on top by a style): each label
+// that names a part is put at the start of the panel it opens (href="#…", aria-controls, data-target), and the label a panel names
+// by aria-labelledby likewise.
+function labelPanels(h){
+ const labels=new Map();
+ const add=(id,text)=>{const t=normalizeLine(entities(String(text).replace(/<[^>]+>/g,' ')));if(id&&t&&t.length<=60&&(isPublicHeading(t)||isNonPublicHeading(t)||mentionsNonPublic(t)||closedLine(t)||PART_HEADING.test(t)))labels.set(id,t);};
+ for(const m of h.matchAll(/<([a-z][a-z0-9]*)\b([^>]*?)(?<!\/)>/gi)){
+  const a=m[2],target=(attrOf(a,'href').match(/^#([\w:.-]+)$/)?.[1])||attrOf(a,'aria-controls')||(attrOf(a,'data-target')||attrOf(a,'data-bs-target')).replace(/^#/,''),id=attrOf(a,'id');
+  if(!target&&!id||VOID.test(m[1]))continue;
+  const inner=element(h,m.index,m[1]).slice(m[0].length).slice(0,2000);
+  if(target)add(target,inner);
+  if(id&&/^(?:a|button|li|span|label|h[1-6])$/i.test(m[1]))labels.set('@'+id,inner);
+ }
+ if(!labels.size)return h;
+ return h.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi,(m,tag,a)=>{
+  const id=attrOf(a,'id'),by=attrOf(a,'aria-labelledby');
+  let t=id&&labels.get(id);
+  if(!t&&by){const raw=labels.get('@'+by);if(raw!==undefined){const x=normalizeLine(entities(String(raw).replace(/<[^>]+>/g,' ')));if(x&&x.length<=60&&(isPublicHeading(x)||isNonPublicHeading(x)||mentionsNonPublic(x)||closedLine(x)))t=x;}}
+  return t&&!VOID.test(tag)?`${m}<p>${t}</p>`:m;
+ });
 }
 const PAGE_ONLY=/^(?:[-–]\s*)?\d{1,3}(?:\s*[-–])?$|^\d{1,3}\s*\/\s*\d{1,3}$|^Seite\s+\d{1,3}(?:\s*(?:von|\/)\s*\d{1,3})?$/i;
+const PAGE_MARK=/\bSeite\s+\d{1,3}\s*(?:von|\/)\s*\d{1,3}\b/gi;
+// What a running head says besides the page number, where it names a part of the meeting ("Nichtöffentlicher Teil Seite 2 von 2",
+// "Einladung GR 14.10.2026 – nichtöffentlicher Teil Seite 2 / 2"): kept, so that the part is not lost with the number.
+const partOfHead=rest=>mentionsNonPublic(rest)||isNonPublicHeading(rest)||closedLine(rest)||PART_HEADING.test(rest)||/(?<!\p{L})(?:Teil|Sitzungsteil|Abschnitt)\s+(?:[B-H]|II|III|IV|[2-9])(?![\p{L}\d])/u.test(rest);
 /** Lines of the text of a PDF (unpdf, pages joined by line breaks) without page numbers and "Seite 2 von 5" lines. */
 export function pdfLines(text){
- return String(text||'').split(/\r\n|\r|\n|\f/).map(normalizeLine).filter(l=>l&&!PAGE_ONLY.test(l)&&!(l.length<=100&&/\bSeite\s+\d{1,3}\s+(?:von|\/)\s+\d{1,3}\b/i.test(l)));
+ return String(text||'').split(/\r\n|\r|\n|\f/).map(normalizeLine).map(l=>{
+  if(l.length>100||!new RegExp(PAGE_MARK.source,'i').test(l))return l;
+  const rest=l.replace(PAGE_MARK,' ').replace(/\s+/g,' ').replace(/^[\s|–·-]+|[\s|–·-]+$/g,'').trim();
+  return rest&&partOfHead(rest)?rest:'';
+ }).filter(l=>l&&!PAGE_ONLY.test(l));
 }
 
 const MONTH='(Januar|Jänner|Jan\\.?|Februar|Feb\\.?|März|Maerz|Mär\\.?|Mrz\\.?|April|Apr\\.?|Mai|Juni|Jun\\.?|Juli|Jul\\.?|August|Aug\\.?|September|Sept\\.?|Sep\\.?|Oktober|Okt\\.?|November|Nov\\.?|Dezember|Dez\\.?)';
@@ -292,7 +431,7 @@ export function committeeOf(s){
  return name;
 }
 /** Bodies of special-purpose associations (Zweck-, Schul-, Abwasserverband), which are not the town's own bodies. */
-export function isSpecialPurposeBody(name){return /(?:zweck|schul|abwasser|wasser|boden|abfall|planungs|unterhaltungs|deich|wege|forst|gewässer|verkehrs|tourismus|sparkassen|kultur|landschaftspflege|krankenhaus|friedhofs|breitband|erschließungs|gewerbe|industrie|regional)\p{L}{0,25}verband/iu.test(String(name||''));}
+export function isSpecialPurposeBody(name){return /(?:wasserversorgungs|abwasser|wasser|klärwerks)gruppe|gruppenwasserversorgung|gruppenklär\p{L}+|fernwasserversorgung|zweckvereinbarung|^(?:Wasserversorgung|Abwasserbeseitigung|Abwasserentsorgung|Wasserbeschaffung)\s+\p{Lu}|(?:zweck|schul|abwasser|wasser|boden|abfall|planungs|unterhaltungs|deich|wege|forst|gewässer|verkehrs|tourismus|sparkassen|kultur|landschaftspflege|krankenhaus|friedhofs|breitband|erschließungs|gewerbe|industrie|regional)\p{L}{0,25}verband|(?<!\p{L})ZV(?=\s+\p{Lu})/iu.test(String(name||''));}
 
 const MINUTES=/Niederschrift|Protokoll|Sitzungsbericht|Bericht\s+(?:aus|über|von)\s|(?<!\p{L})Aus\s+(?:dem|der|den)\s+(?:Sitzung|\p{L}*(?:rat|ausschuss|vertretung|versammlung|tag|beirat)(?:e?s)?(?!\p{L})|\p{L}*sitzung)|Beschlüsse(?!n)|Beschlussübersicht|Beschlussfassungen|Ergebniss?e?\s+(?:der|aus\s+der)\s+\p{L}*sitzung|(?<!\p{L})fand\s.{0,100}(?:Sitzung|Tagung)/iu;
 const INVITATION=/Einladung|Bekanntmachung|Tagesordnung|(?<!\p{L})Ladung|(?<!\p{L})findet\s.{0,100}(?:Sitzung|Tagung)|(?:Sitzung|Tagung)\s.{0,100}(?<!\p{L})findet\s.{0,60}statt|(?<!\p{L})lade\s.{0,80}(?<!\p{L})ein(?!\p{L})/iu;
@@ -419,7 +558,17 @@ function personLine(raw){
  while(j<words.length-1&&PARTICLE.test(words[j]))j++;
  return j===words.length-1&&SURNAME.test(words[j]);
 }
-const person=t=>OFFICE.test(t)||MEMBER.test(t)||NAMED_PERSON.test(t)||ELECTED.test(t)||ROLE_LIST.test(t)||CLUB_OFFICE.test(t)||/(?<!\p{L})a\.\s?D\.\s+(?:(?:Dr|Prof)\.\s+)?\p{Lu}/u.test(t)||personLine(t);
+// "Yilmaz, Ayse, Verkäuferin, Musterbach": name, first name (of any origin), occupation and place, as lists of lay judges have them.
+const OCCUPATION=/^\p{Lu}\p{Ll}+(?:in|er|ent|ant|eur|frau|mann|kraft|wirt|te|ter)$/u;
+const commaPerson=t=>{const p=String(t).split(/\s*,\s*/);return p.length>=3&&p.length<=5&&/^\p{Lu}[\p{Ll}'’-]+(?:-\p{Lu}[\p{Ll}'’-]+)?$/u.test(p[0])&&/^\p{Lu}[\p{Ll}'’-]+(?:[\s-]\p{Lu}[\p{Ll}'’-]+)?$/u.test(p[1])&&!/(?:ung|ungen|heit|keit|schaft|tion|nis|tät|ismus)$/u.test(p[1])&&(OCCUPATION.test(p[2].split(/\s+/)[0])||/^(?:Dr\.|geb\.)/u.test(p[2]));};
+const onePerson=t=>commaPerson(t)||OFFICE.test(t)||MEMBER.test(t)||NAMED_PERSON.test(t)||ELECTED.test(t)||ROLE_LIST.test(t)||CLUB_OFFICE.test(t)||/(?<!\p{L})a\.\s?D\.\s+(?:(?:Dr|Prof)\.\s+)?\p{Lu}/u.test(t)||personLine(t);
+// A name with its office, occupation or place after commas ("Hans Huber, Erster Bürgermeister", "Anna Maier, Hausfrau, Musterbach").
+const TAIL_PART=/^(?:\p{Lu}[\p{L}.'-]*|\d\.)(?:\s+(?:\p{Lu}[\p{L}.'-]*|a\.|d\.|i\.|an|am|im|in|der|den|dem|ob|bei|von|vom|zu|\([^)]{1,30}\))){0,4}$/u;
+const namedWithTail=t=>{const m=t.match(/^([^,]{3,50}?),\s*(.+)$/u);return !!m&&onePerson(m[1].trim())&&m[2].split(/\s*,\s*/).every(p=>TAIL_PART.test(p.trim()));};
+// Two or more persons in one line, as a table of members and deputies has them ("Anna Maier (CSU) Josef Bauer (CSU)", "GR Anna
+// Maier GR Josef Bauer").
+const personRow=t=>{const parts=t.split(/(?<=\))\s+|\s+(?=(?:GR|GRin|GRÄ|StR|StRin|MGR|KR|KRin|Herr|Frau|Dr\.)\s)|\s*[|;]\s*/u).map(p=>p.trim()).filter(Boolean);return parts.length>=2&&parts.every(p=>onePerson(p)||namedWithTail(p));};
+const person=t=>onePerson(t)||namedWithTail(t)||personRow(t);
 function itemOf(raw){
  const line=normalizeLine(raw);let m;
  const titleOk=t=>!t||/^[\p{Lu}„"'(§]/u.test(t)||/^\d{1,2}\.\s+\p{Lu}/u.test(t);
@@ -480,10 +629,10 @@ const OUTCOMES=[
 const NEGATED=/(?<!\p{L})(?:nicht|kein(?:e|en)?)\s+(?:\p{L}+\s+)?$/iu;
 // "beschließt, den Antrag abzulehnen": the decision is a rejection, its votes count for rejecting.
 // Also a decision to refuse what was asked ("beschließt, dem Antrag nicht stattzugeben"): a majority for it rejects the item.
-const DECIDED_AGAINST=/(?<!\p{L})(?:abzulehnen|zu\s+versagen|zurückzuweisen|nicht\s+zu\s+erteilen|nicht\s+stattzugeben|nicht\s+zu\s+entsprechen|nicht\s+zu\s+gewähren|nicht\s+herzustellen|nicht\s+zu\s+genehmigen|nicht\s+zuzustimmen)(?!\p{L})/iu;
+const DECIDED_AGAINST=/(?<!\p{L})(?:(?:sieht|sehen|sah|sahen)\s+keine\s+Möglichkeit|keine\s+Möglichkeit\s+(?:\p{L}+\s+){0,4}?zu|sieht\s+sich\s+(?:nicht\s+in\s+der\s+Lage|außerstande)|abzulehnen|zu\s+versagen|zurückzuweisen|nicht\s+zu\s+erteilen|nicht\s+stattzugeben|nicht\s+zu\s+entsprechen|nicht\s+zu\s+gewähren|nicht\s+herzustellen|nicht\s+zu\s+genehmigen|nicht\s+zuzustimmen)(?!\p{L})/iu;
 // The result stated as a refusal ("Das Einvernehmen wird nicht erteilt", "Dem Antrag wird nicht entsprochen", "nicht in
 // Aussicht gestellt"): with a vote or a decision it is a rejection, whichever way the vote is counted.
-const REFUSED=/(?<!\p{L})nicht\s+(?:\p{L}+\s+){0,2}?(?:erteilt|hergestellt|gewährt|entsprochen|stattgegeben|in\s+Aussicht\s+gestellt)(?!\p{L})/iu;
+const REFUSED=/(?<!\p{L})nicht\s+(?:\p{L}+\s+){0,2}?(?:erteilt|hergestellt|gewährt|entsprochen|stattgegeben|in\s+Aussicht\s+gestellt|genehmigt|gegeben|befürwortet|zugelassen|angenommen|beschlossen)(?!\p{L})/iu;
 const DECIDE_WORD=/^(?:beschlossen|beschließt|beschloss|beschließen)$/i;
 // A vote on a motion about the procedure ("Antrag auf Ablehnung/Vertagung … angenommen") says nothing clear about the item.
 const PROCEDURE=/Antrag\s+auf\s+(?:Ablehnung|Vertagung|Zurückstellung|Absetzung|Nichtbefassung|Schluss\s+der\s+(?:Debatte|Beratung))/iu;
@@ -526,15 +675,21 @@ function resultText(text,index){
 /** Outcome of an item from the text of its minutes: status, the sentence or "Beschluss: …" paragraph, vote counts. */
 export function outcomeOf(blockText){
  const text=String(blockText||'').split('\n').map(normalizeLine).join('\n');
- const hits=[];
+ const hits=[];let postNegated=false;
  for(const [status,re] of OUTCOMES)for(const m of text.matchAll(re)){
   const before=text.slice(Math.max(0,m.index-30),m.index);
+  // "erteilt das gemeindliche Einvernehmen nicht", "befürwortet den Antrag nicht", "erteilt keine Zustimmung": the negation after
+  // the verb, at the end of its clause or before the object.
+  if(status==='approved'&&!/^stimm/i.test(m[0])){const tail=text.slice(m.index+m[0].length).split(/[.;!?\n]|,\s+(?:die|der|das|den|dem|da|weil|wenn|sofern|so\s+dass|und|aber|jedoch)\s/u)[0];if(/(?<!\p{L})nicht\s*$/u.test(tail)||/^\s+(?:\p{L}+\s+)?kein(?:e|en|er|em)?(?!\p{L})/u.test(tail)){postNegated=true;hits.push({status:'rejected',index:m.index});continue;}}
   // "stimmt dem Antrag nicht zu" rejects; "stimmt dem Antrag, die Hebesätze nicht zu erhöhen, zu" approves.
   if(status==='approved'&&/^stimm/i.test(m[0])&&/(?<!\p{L})nicht\s+(?:\p{L}+\s+)?zu$/iu.test(m[0])){hits.push({status:'rejected',index:m.index});continue;}
   // "lehnt den Antrag nicht ab" is no rejection.
   if(status==='rejected'&&/^lehn/i.test(m[0])&&/(?<!\p{L})nicht(?!\p{L})/iu.test(m[0]))continue;
   // "wird nicht verweigert/versagt" refuses nothing.
-  if((status==='approved'||status==='rejected'&&/^(?:abgelehnt|lehn|versagt|verweigert|zurückgewiesen)/i.test(m[0]))&&NEGATED.test(before))continue;
+  // "Der Antrag wird nicht genehmigt": an approval negated is a refusal.
+  // With a vote or a decision it is a rejection (below), whichever way the vote is counted.
+  if(status==='approved'&&NEGATED.test(before)){postNegated=true;continue;}
+  if(status==='rejected'&&/^(?:abgelehnt|lehn|versagt|verweigert|zurückgewiesen)/i.test(m[0])&&NEGATED.test(before))continue;
   hits.push({status,index:m.index});
  }
  let votes=null,voteAt=-1;
@@ -545,7 +700,7 @@ export function outcomeOf(blockText){
  // A tie rejects the motion; a majority for "abzulehnen" rejects the item, a majority against it leaves it open.
  if(votes&&votes.yes===votes.no&&votes.yes>0){found.delete('approved');found.add('rejected');hits.push({status:'rejected',index:voteAt});}
  else if(votes&&votes.yes!==votes.no&&!(against&&votes.yes<votes.no)){const s=votes.yes>votes.no&&!against?'approved':'rejected';found.add(s);hits.push({status:s,index:voteAt});}
- if(REFUSED.test(text)&&(votes||/(?<!\p{L})einstimmig(?!\p{L})/iu.test(text)||/^(?:Beschluss|Beschlussfassung)\b/imu.test(text))){found.delete('approved');found.add('rejected');hits.push({status:'rejected',index:text.search(REFUSED)});}
+ if((REFUSED.test(text)||postNegated)&&(votes||/(?<!\p{L})einstimmig(?!\p{L})/iu.test(text)||/^(?:Beschluss|Beschlussfassung)\b/imu.test(text))){found.delete('approved');found.add('rejected');hits.push({status:'rejected',index:text.search(REFUSED)});}
  if(PROCEDURE.test(text))found.clear();
  // Taking note or postponing is itself decided ("beschließt, den Punkt zu vertagen"; "12:0"): no contradiction.
  if(found.has('info')||found.has('postponed'))found.delete('approved');
@@ -568,7 +723,7 @@ const signed=line=>SIGNATURE.test(line)&&(line.length<=60||/^(?:gez|Mit\s)/i.tes
 const signature=(lines,i)=>signed(lines[i])||PLACE_DATE.test(lines[i])||/^den\s+\d{1,2}\./i.test(lines[i])||/(?<!\p{L})gez\./u.test(lines[i])||/^gez\./i.test(lines[i-1]||'')||/^gez\./i.test(lines[i+1]||'');
 // Dates that are not the day of the meeting: of the notice, the issue of a paper, its posting, a deadline, a period of
 // public display, a paper ("Vorlage vom").
-const NOT_MEETING_DAY=/(?:Bekanntmachung|veröffentlicht|Veröffentlichung|aktualisiert|Aktualisierung|geändert|Änderung|zuletzt|publiziert|eingestellt|ausgehängt|Aushang|angeschlagen|abgenommen|Stand|erstellt|Ausgabe|Amtsblatt|Mitteilungsblatt|Nr\.(?:\s*[\d/]+)?|gedruckt|Schreiben|Einladung|Ladungsfrist|Erscheinungstag|Vorlage|Drucksache|Auslegung|ausgelegt|Einwendungen|Stellungnahmen?|Frist|Fristablauf)\s*(?:vom|am|:|den)?\s*(?:\p{L}+,?\s+)?$|(?<!\p{L})(?:bis|spätestens)(?:\s+(?:zum|spätestens|einschließlich))?\s*(?:\p{L}+,?\s+)?$/iu;
+const NOT_MEETING_DAY=/(?:Bekanntmachung|veröffentlicht|Veröffentlichung|aktualisiert|Aktualisierung|geändert|Änderung|zuletzt|publiziert|eingestellt|ausgehängt|Aushang|angeschlagen|abgenommen|Stand|erstellt|Ausgabe|Amtsblatt|Mitteilungsblatt|Nr\.(?:\s*[\d/]+)?|gedruckt|Schreiben|Einladung|Ladungsfrist|Erscheinungstag|Vorlage|Drucksache|Auslegung|ausgelegt|Einwendungen|Stellungnahmen?|Frist|Fristablauf)\s*(?:vom|am|:|den)?\s*(?:\p{L}+,?\s+)?$|(?<!\p{L})(?:bis|spätestens)(?:\s+(?:zum|spätestens|einschließlich))?\s*(?:\p{L}+,?\s+)?$|(?<!\p{L})(?:letzten|vorigen|vorherigen|vergangenen|früheren|vorangegangenen)\s+(?:\p{L}+\s+){0,2}Sitzung\p{L}*\s+(?:vom|am)\s*(?:\p{L}+,?\s+)?$|(?<!\p{L})Anschluss\s+an\s+(?:die|den)\s+(?:\p{L}+\s+){0,2}(?:Sitzung|Teil)\p{L}*\s+(?:vom|am)\s*(?:\p{L}+,?\s+)?$/iu;
 const RANGE_NEXT=/^\s*(?:–|-|bis)\s*(?:\p{L}+,?\s+)?/u;
 // A notice of a cancelled, postponed, replaced or continued meeting: the old day it names is not the day.
 const CANCEL=/(?<!\p{L})(?:entf[äa]llt|entfallen|ausgefallen\p{L}*|abgesagt|f[äa]llt\s+aus|verlegt|verschoben|Ersatz|Ersatztermin|Fortsetzung|ursprünglich|geplante[n]?|angesetzte[n]?|vorgesehene[n]?)(?!\p{L})/iu;
@@ -576,6 +731,25 @@ const OLD_DAY=/(?<!\p{L})(?:für|vom|von|statt|anstatt|anstelle|ursprünglich|ni
 // The old day named after its date ("die am 07.10.2026 geplante Sitzung"), the new one after a word that moves it.
 const OLD_AFTER=/^\s*[,)]?\s*(?:geplante|vorgesehene|angesetzte|anberaumte|terminierte|ursprünglich)/iu;
 const NEW_DAY=/(?<!\p{L})(?:auf|sondern|nunmehr|jetzt|neu|neuer\s+Termin\s*:?)\s+(?:den\s+|dem\s+|am\s+)?(?:\p{L}+,?\s+)?$/iu;
+/**
+ * Meetings a text moves or cancels: [{from, to, committee}] for "Die für Mittwoch, 07.10.2026 angesetzte Sitzung des
+ * Gemeinderates wird auf Mittwoch, 14.10.2026 verlegt" (to null for "… entfällt", "… ist abgesagt"). The days of the
+ * sentence decide: one old day and at most one new one.
+ */
+export function meetingMoves(lines){
+ const out=[];
+ for(const raw of (lines||[]).map(normalizeLine)){
+  for(const sentence of raw.split(/(?<=[.!?])\s+(?=\p{Lu})/u)){
+   if(!CANCEL.test(sentence)||!SESSION_WORD.test(sentence))continue;
+   const days=germanDates(sentence);if(!days.length||days.length>2)continue;
+   const old=days.filter(d=>OLD_DAY.test(sentence.slice(Math.max(0,d.index-60),d.index))||OLD_AFTER.test(sentence.slice(d.index+d.text.length))),fresh=days.filter(d=>NEW_DAY.test(sentence.slice(Math.max(0,d.index-40),d.index)));
+   const committee=committeeOf(sentence);
+   if(old.length===1&&fresh.length===1&&old[0].iso!==fresh[0].iso)out.push({from:old[0].iso,to:fresh[0].iso,committee});
+   else if(days.length===1&&!fresh.length&&/(?<!\p{L})(?:entf[äa]llt|entfallen|ausgefallen|abgesagt|f[äa]llt\s+aus|findet\s+nicht\s+statt|verlegt|verschoben)(?!\p{L})/iu.test(sentence))out.push({from:days[0].iso,to:null,committee});
+  }
+ }
+ return out;
+}
 // The head of a gazette (its issue, number, edition): the day it names is the day of the issue.
 const ISSUE_LINE=/(?:Amtsblatt|Mitteilungsblatt|Gemeindeblatt|Nachrichtenblatt|Wochenblatt|Amtsbote|Gemeindebote|Heimatblatt|Ausgabe|Jahrgang|(?<!\p{L})Nr\.\s*\d|(?<!\p{L})KW\s*\d)/iu;
 // The date field of a letter head ("Datum: 07.10.2026") names the day of the letter where another line names the meeting's.
@@ -630,14 +804,28 @@ function meetingDates(lines,i,ctx){
 // A report that names its day without year or by weekday only ("in seiner Sitzung am 14. Oktober", "fand am Mittwoch
 // statt"): a bare date elsewhere (of the publication) is not the day.
 const PAST_WEEKDAY=/(?<!\p{L})(?:fand|tagte|traf\s+sich|beriet|befasste\s+sich)\s+(?:\p{L}+\s+){0,4}am\s+(?:vergangenen\s+|letzten\s+|gestrigen\s+)?(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend|Sonntag)(?!\s*,?\s*(?:den\s+)?\d)/iu;
-const RELATIVE_DAY=/(?<!\p{L})(?:kommenden|nächsten|diesen|morgigen|heutigen|folgenden|übernächsten)\s+(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend|Sonntag|Woche)(?!\p{L})|(?<!\p{L})(?:morgen|übermorgen|heute)\s+(?:Abend|um|ab)(?!\p{L})/iu;
+// Appointments other than the meeting named in its head ("Am Vortag findet eine Ortsbesichtigung statt", "Zuvor … Bürgerversammlung",
+// "Vorbesprechung der Fraktionen"): their days are not the meeting's.
+const OTHER_EVENT=/(?<!\p{L})(?:Ortsbesichtigung\p{L}*|Ortstermin\p{L}*|Ortsbegehung\p{L}*|Besichtigung\p{L}*|Begehung\p{L}*|Bereisung\p{L}*|Rundgang|Bürgerversammlung\p{L}*|Einwohnerversammlung\p{L}*|Informationsveranstaltung\p{L}*|Infoveranstaltung\p{L}*|Vorbesprechung\p{L}*|Fraktionssitzung\p{L}*|Fraktionen|Vortag|Zuvor|Vorher|Vorab)(?!\p{L})/iu;
+// A note set before or above a head ("Hinweis: Die Sitzung … beginnt bereits um 18.00 Uhr") is no head of a meeting.
+const DATED_WEEKDAY=/(?<!\p{L})(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend|Sonntag),?\s+(?:den\s+)?\d{1,2}\.\s?(?:\d{1,2}\.|\p{L})/u;
+const NOTE_LINE=/^(?:Hinweis|Achtung|Wichtig|Bitte\s+beachten|Anmerkung|Info)\s*:/iu;
+// A weekday not followed by its date ("am Mittwoch um 19 Uhr", "am Mittwoch, 19 Uhr").
+const BARE_WEEKDAY=/(?<!\p{L})(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend|Sonntag)(?!\p{L})(?!\s*,?\s*(?:den\s+)?\d{1,2}\.\s?(?:\d{1,2}\.|\p{L}))/gu;
+const RELATIVE_DAY=/(?<!\p{L})(?:kommenden|nächsten|diesen|morgigen|heutigen|folgenden|übernächsten)\s+(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend|Sonntag|Woche)(?!\p{L})|(?<!\p{L})(?:nächster|kommender|dieser|übernächster)\s+Woche(?!\p{L})|(?<!\p{L})(?:morgen|übermorgen|heute)\s+(?:Abend|um|ab)(?!\p{L})/iu;
+// A row of a table of dates that holds the first item of an agenda ("21.10.2026 Bauausschuss 1. Bauvoranfrage").
+const ROW_ITEM=/(?<![\d.])\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}(?:\s*[,|–-]?\s*\p{L}[\p{L}\s,-]{0,60}?)?\s+(?:TOP\s*)?\d{1,2}[.)]?\s+\p{Lu}/u;
+const RELATIVE_PAST=/(?<!\p{L})(?:vergangenen|letzten|gestrigen|vorigen|vorletzten|zurückliegenden)\s+(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonnabend|Sonntag)(?!\s*,?\s*(?:den\s+)?\d)/iu;
 const unresolvedDay=(lines,from,to,ctx)=>{for(let i=from;i<to;i++){const l=lines[i];if(signature(lines,i))continue;if(MEETING_WORD.test(l)&&yearlessDates(l,ctx.years).some(d=>!d.iso)||PAST_WEEKDAY.test(l))return true;}return false;};
 // The date of the line that names the day best; on a tie the first.
 // Several days named as a meeting's (a list of dates above an agenda): the heading of the agenda names the day, else none.
 function pickDate(lines,from,to,ctx){
  let best=null;const strong=[];
- for(let i=from;i<to;i++)for(const d of meetingDates(lines,i,ctx)){const score=dateScore(lines[i],d);if(score>=3)strong.push({...d,score,line:i});if(!best||score>best.score)best={...d,score,line:i};}
+ for(let i=from;i<to;i++)for(const d of OTHER_EVENT.test(lines[i])?[]:meetingDates(lines,i,ctx)){const score=dateScore(lines[i],d);if(score>=3)strong.push({...d,score,line:i});if(!best||score>best.score)best={...d,score,line:i};}
  if(best&&best.score<=1&&unresolvedDay(lines,from,to,ctx))return null;
+ // The text names the day only as a past weekday ("am vergangenen Mittwoch"): a day in a line that names no session (the
+ // publication of an article) is not the day of the meeting.
+ if(best&&!MEETING_WORD.test(lines[best.line])&&lines.slice(from,to).some(l=>RELATIVE_PAST.test(l)||PAST_WEEKDAY.test(l)))return null;
  if(new Set(strong.map(d=>d.iso)).size>1){const agenda=strong.filter(d=>/Tagesordnung/i.test(lines[d.line]));return new Set(agenda.map(d=>d.iso)).size===1?agenda.at(-1):null;}
  return best;
 }
@@ -666,7 +854,10 @@ function meetingHeader(lines,i,ctx){
  // A day of its own, also without weekday where the next line names a body's session ("14.10.2026" / "Gemeinderat –
  // öffentliche Sitzung"); that line is part of this head, not a head of its own.
  if(dayLine(line)||DATE_ONLY.test(line)&&SESSION_WORD.test(next)){
-  const c=next.length<=100&&!itemOf(next)&&!NOT_HEADER.test(next)&&committeeOf(next),d=meetingDates(lines,i,ctx)[0];
+  // The next line names the body and its session and nothing else ("Gemeinderat – öffentliche Sitzung"); a headline ("Gemeinderats-
+  // sitzung: Kita-Neubau beschlossen") below the day of an article does not make that day the meeting's.
+  const rest=next.replace(new RegExp(BODY.source,'giu'),' ').replace(/(?<!\p{L})(?:(?:nicht\s*-?\s*)?öffentliche[rnms]?|ordentliche[rnms]?|außerordentliche[rnms]?|konstituierende[rnms]?|Sitzung|Tagung|des|der|im|am|um|Uhr|Beginn|Ort|Rathaus|Sitzungssaal)(?!\p{L})/giu,' ').replace(/[^\p{L}]+/gu,' ').trim();
+  const c=next.length<=100&&!itemOf(next)&&!NOT_HEADER.test(next)&&rest.split(' ').filter(Boolean).length<=1&&committeeOf(next),d=meetingDates(lines,i,ctx)[0];
   if(c&&d)return {date:d.iso,committee:c,day:{...d,score:dateScore(line,d),line:i},own:true};
  }
  if(i>0&&DATE_ONLY.test(prev)&&!itemOf(prev)&&SESSION_WORD.test(line)&&committeeOf(line))return null;
@@ -678,7 +869,7 @@ function meetingHeader(lines,i,ctx){
   const d=meetingDates(lines,i,ctx),committee=committeeOf(line)||ctx.committee;
   if(committee&&new Set(d.map(x=>x.iso)).size===1)return {date:d[0].iso,committee,day:{...d[0],score:dateScore(line,d[0]),line:i},own:true};
  }
- if(line.length>160||NOT_HEADER.test(line))return null;
+ if(line.length>160||NOT_HEADER.test(line)||NOTE_LINE.test(line))return null;
  // "Bauausschuss" on a line of its own, "Sitzung am Dienstag, 21.10.2026", "Dienstag, 20. Oktober 2026, 18 Uhr" or
  // "Termin: 21.10.2026" below it.
  const alone=!SESSION_WORD.test(line)&&!it&&line.length<=80&&/^\p{Lu}/u.test(line);
@@ -689,12 +880,17 @@ function meetingHeader(lines,i,ctx){
  if(it&&!/^(?:(?:nicht\s*-?\s*)?öffentliche\s+|ordentliche\s+|konstituierende\s+|\d+\.\s+)?(?:Sitzung|Tagung)(?!\p{L})/iu.test(it.title))return null;
  const committee=committeeOf(line);if(!committee)return null;
  // The day within two lines, or further through short lines of the head (place, beginning) up to "Sitzungstag: …".
- let best=null;
+ let best=null;const strong=[];
  for(let k=i;k<Math.min(lines.length,i+7);k++){
   if(k>i&&(itemOf(lines[k])||lines[k].length>100&&k>i+2||k>i+1&&SESSION_WORD.test(lines[k])&&committeeOf(lines[k])||DATE_ONLY.test(lines[k])&&SESSION_WORD.test(lines[k+1]||'')))break;
   if(k>i+2&&best)break;
-  for(const d of meetingDates(lines,k,ctx)){const score=dateScore(lines[k],d);if(!best||score>best.score)best={...d,score,line:k};}
+  // The day of another appointment (a site visit the day before, a citizens' meeting before it) is not the meeting's.
+  if(k!==i&&OTHER_EVENT.test(lines[k]))continue;
+  for(const d of meetingDates(lines,k,ctx)){const score=dateScore(lines[k],d);strong.push({...d,score,line:k});if(!best||score>best.score)best={...d,score,line:k};}
  }
+ // Several days named strongly: only the one of the head line or of a line that names the session; otherwise none.
+ const many=strong.filter(d=>d.score>=3);
+ if(new Set(many.map(d=>d.iso)).size>1){const here=many.filter(d=>d.line===i),own=here.length?here:many.filter(d=>SESSION_WORD.test(lines[d.line]));best=new Set(own.map(d=>d.iso)).size===1?own.sort((a,b)=>b.score-a.score)[0]:null;}
  return best?{date:best.iso,committee,day:best,own:AGENDA_HEAD.test(line)||/^(?:(?:nicht\s*-?\s*)?öffentliche\s+|ordentliche\s+|konstituierende\s+|\d+\.\s+)?(?:Sitzung|Tagung|Niederschrift|Protokoll|Sitzungsbericht|Bericht)(?!\p{L})/iu.test(line)||twoLines||inline}:null;
 }
 // The same body with or without the name of the place ("Gemeinderat Musterbach", "Gemeinderat").
@@ -720,18 +916,18 @@ export function similarTitles(a,b){
 // Letters run together ("NichtöffentlicherTeil"), framed ("– Nichtöffentlicher Teil –") or numbered: a short line that
 // is nothing but a heading of the non-public part.
 const fold=s=>s.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
-const CLOSED_LINE=/^[-–*•_.:\s]*(?:[a-h]|[ivx]{1,4}|\d{1,2})?[.):]?(?:tagesordnung|teil[a-h]?)?[-–:]?(?:nicht-?oeffentliche?[rnms]?|unterausschlussderoeffentlichkeit|vertraulich|geschlossenesitzung|noet|noe|n\.oe\.?t?|n-?teil)(?:teil|sitzung|sitzungsteil|tagesordnung|beratung|punkte|angelegenheiten)?[-–.:*•_]*$/;
+const CLOSED_LINE=/^[-–*•_.:\s]*(?:[a-h]|[ivx]{1,4}|\d{1,2})?[.):]?(?:tagesordnung|teil[a-h]?)?[-–:]?(?:nicht-?oeffentliche?[rnms]?|unterausschlussderoeffentlichkeit|vertraulich|geschlossenesitzung|noet|noe|n\.oe\.?t?|n-?teil|n-sitzung)(?:teil|sitzung|sitzungsteil|tagesordnung|beratung|punkte|angelegenheiten)?[-–.:*•_]*$/;
 /** A short line that, read without spaces, is a heading of the non-public part (also one that names "NÖT" among others). */
 export const closedLine=line=>{const l=canonNP(normalizeLine(line));return l.length<=60&&CLOSED_LINE.test(fold(l).replace(/\s+/g,''))||l.length<=30&&/(?:^|[^a-z])no-?e?t(?:[^a-z]|$)/.test(fold(l))&&/(?:^|[^\p{L}])N(?:Ö|OE|Oe|ö)T(?!\p{L})/iu.test(l);};
 // Lists of those present in minutes ("Anwesend:", "Es waren anwesend:", "Gemeinderatsmitglieder:", "Gewählt wurde:"):
 // their numbered lines are persons, not items.
 // Also a sentence that introduces such a list ("Die Feuerwehrversammlung hat gewählt:", "In den Bauausschuss werden
 // entsandt:", "folgende Besetzung des Bauausschusses:").
-const LIST_INTRO=/(?<!\p{L})(?:gewählt|geehrt|entsandt|entsendet|bestellt|berufen|benannt|vorgeschlagen|nominiert|ernannt|verpflichtet|vereidigt|verabschiedet|ausgezeichnet|Besetzung|besetzt|Mitglieder|Vertreter(?:innen)?|Stellvertreter(?:innen)?|Sitzverteilung|Wahlvorschl\p{L}*|Kandidat\p{L}*|Bewerber\p{L}*|Ehrung\p{L}*)(?!\p{L})[^:]{0,80}:\s*$/iu;
+const LIST_INTRO=/(?<!\p{L})(?:aufgenommen|eingetragen|gemeldet|bestimmt|gewählt|geehrt|entsandt|entsendet|bestellt|berufen|benannt|vorgeschlagen|nominiert|ernannt|verpflichtet|vereidigt|verabschiedet|ausgezeichnet|Besetzung|besetzt|Mitglieder|Vertreter(?:innen)?|Stellvertreter(?:innen)?|Sitzverteilung|Wahlvorschl\p{L}*|Kandidat\p{L}*|Bewerber\p{L}*|Ehrung\p{L}*)(?!\p{L})[^:]{0,80}:\s*$/iu;
 // A numbered line of such a list: a person with or without office ("Herr Hans Maier", "Kassierer Tim Test", "Mitglied: GR
 // Hans Huber, Vertreter: GR Tim Test", "Bürgermeister a. D. Fritz Alt").
 const personish=t=>isPerson(t)||/^(?:Herr|Frau)\s/u.test(t)||/(?:^|\s)(?:Mitglied|Vertreter(?:in)?|Stellvertreter(?:in)?|Vorsitz(?:ende[rn]?)?|Beisitzer(?:in)?|Ersatzmitglied)\s*:/u.test(t)||/^(?:\p{Lu}[\p{L}.-]*\s+){1,3}(?:(?:Dr|Prof)\.\s+)?\p{Lu}\p{Ll}+(?:-\p{Lu}\p{Ll}+)?\s+\p{Lu}\p{Ll}+(?:-\p{Lu}\p{Ll}+)?(?:\s*\([^)]*\))?$/u.test(t);
-const ATTENDANCE=/^(?:Anwesend|Anwesenheit|Anwesende|Abwesend|Entschuldigt|Es\s+(?:waren|sind)\s+(?:anwesend|erschienen)|Es\s+fehlt(?:e|en)?|Erschienen|Teilnehmer(?:innen)?|Teilnehmende|Sitzungsteilnehmer|Stimmberechtigt|\p{L}*[Mm]itglieder|Gemeinderäte|Gemeinderätinnen|Stadträte|Stadträtinnen|Gewählt\s+(?:wurde|wurden|ist|sind)|Geehrt\s+(?:wurde|wurden)|Es\s+wurden\s+(?:gewählt|geehrt)|Vorgeschlagen\s+(?:wurde|wurden)|Bewerber(?:innen)?|Kandidat(?:en|innen)?)\p{L}*(?:\s+(?:waren|sind|wurden))?(?:\s+(?:\p{L}+|des|der)){0,3}\s*(?::|$)/iu;
+const ATTENDANCE=/^(?:(?:Zur|Zu\s+der|In\s+der|Bei\s+der)\s+Sitzung\s+(?:waren|sind|ist|war)\s+(?:\p{L}+\s+)?(?:anwesend|erschienen|zugegen)|(?:Anwesend|Erschienen|Zugegen)\s+(?:waren|sind)|Anwesend|Anwesenheit|Anwesende|Abwesend|Entschuldigt|Es\s+(?:waren|sind)\s+(?:anwesend|erschienen)|Es\s+fehlt(?:e|en)?|Erschienen|Teilnehmer(?:innen)?|Teilnehmende|Sitzungsteilnehmer|Stimmberechtigt|\p{L}*[Mm]itglieder|Gemeinderäte|Gemeinderätinnen|Stadträte|Stadträtinnen|Gewählt\s+(?:wurde|wurden|ist|sind)|Geehrt\s+(?:wurde|wurden)|Es\s+wurden\s+(?:gewählt|geehrt)|Vorgeschlagen\s+(?:wurde|wurden)|Bewerber(?:innen)?|Kandidat(?:en|innen)?)\p{L}*(?:\s+(?:waren|sind|wurden))?(?:\s+(?:\p{L}+|des|der)){0,3}\s*(?::|$)/iu;
 const END_ATTENDANCE=/^(?:Tagesordnung|Sitzungsverlauf|Verlauf|Beginn|Eröffnung|Beratung|TOP\s*\d|Punkt\s*\d|Der\s|Die\s|Das\s)/iu;
 const PERSON=new RegExp(`^(?:Herr|Frau|Dr\\.|Prof\\.)\\s|^\\p{Lu}[\\p{Ll}'-]+(?:-\\p{Lu}[\\p{Ll}'-]+)?,?\\s+\\p{Lu}[\\p{Ll}'.-]+(?:\\s*\\([^)]{1,30}\\))?$|^${NAME},?\\s+${NAME}\\s+(?:${PARTY}|${OFFICE_TAIL})$`,'u');
 const isPerson=t=>PERSON.test(t)||person(t);
@@ -744,9 +940,14 @@ const where=(committee,date,title)=>[committee,ddmmyyyy(date)].filter(Boolean).j
 // line that goes on with it, also across a page break with a running head between (up to four lines, never an item).
 const NP_FRAGMENT=/(?<![a-z])n\s?i\s?c\s?h\s?t(?:[\s\-–]*(?:o\s?e|o)(?:\s?f){0,2}(?:\s?e)?(?:\s?n)?(?:\s?t)?(?:\s?l)?(?:\s?i)?(?:\s?c)?(?:\s?h)?)?\s*([-–])?\s*$/;
 const NP_BROKEN=/(?<![a-z])nicht\s?[-–]?\s?(?:o\s?e|o)?(?:\s?f){0,2}(?:\s?e)?(?:\s?n)?(?:\s?t)?(?:\s?l)?\s*[-–]\s*$/;
+const DAY_REST=new RegExp(`^(?:${MONTH}\\s*\\d{4}|\\d{1,2}\\.\\s?\\d{2,4})(?!\\d)`,'iu');
 function prepareLines(lines){
  const src=(lines||[]).map(normalizeLine).filter(Boolean),out=[];
  for(let i=0;i<src.length;i++){
+  // A day broken between day and month ("am Mittwoch, 14." / "Oktober 2026, um 19.00 Uhr") is one line.
+  if(/(?<![\d.])\d{1,2}\.$/.test(src[i])&&DAY_REST.test(src[i+1]||'')){src.splice(i,2,src[i]+' '+src[i+1]);}
+  // A body's name wrapped at its hyphen in a narrow column ("Öffentliche Sitzung des Bau-" / "und Umweltausschusses") is one line.
+  if(/\p{L}-$/u.test(src[i])&&src[i+1]&&!itemOf(src[i])&&!itemOf(src[i+1])){const j=join(src[i],src[i+1]),c=committeeOf(j);if(c&&c!==committeeOf(src[i])&&c!==committeeOf(src[i+1]))src.splice(i,2,j);}
   const l=src[i],f=fold(l).match(NP_FRAGMENT);
   // A field and its value on two lines (<dt>Öffentliche Sitzung</dt><dd>nein</dd>) are one line.
   if(l.length<=40&&/öffentlich/iu.test(l)&&!/:\s*\S/.test(l)&&/^(?:ja|nein|no|yes|x|-|–)$/iu.test(src[i+1]||'')){out.push(`${l.replace(/:\s*$/,'')}: ${src[i+1]}`);i++;continue;}
@@ -778,9 +979,21 @@ function prepareLines(lines){
 const NP_TAIL=/^(?:l|li|lich|liche[rnms]?|ich|iche[rnms]?|ntlich\p{Ll}*|tlich\p{Ll}*|entlich\p{Ll}*|fentlich\p{Ll}*|ffentlich\p{Ll}*)(?:\s+(?:Sitzung|Teil|Sitzungsteil|Beratung|Tagesordnung|Punkte|Angelegenheiten|Behandlung))?\s*[:.]?$/u;
 // Words of a line between the items of an invitation that speak of the public, listeners, the press or secrecy; such a line
 // that is not read as anything else is a mention of the non-public part (folded text). Invitations to the public are not.
-const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\./;
-const SUSPECT_OK=/beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeitsbeteiligung|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)/;
+const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bgaeste|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\.|mandatstraeger|\bzutritt|\bklausur|\bprivat\b|draussen/;
+const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeitsbeteiligung|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)/;
 // A short line without a sentence ("Geheime Sitzung", "Fortsetzung ohne Publikum"): a heading.
+const suspect=l=>{const f=foldText(normalizeLine(l));return SUSPECT.test(f)&&!SUSPECT_OK.test(f);};
+// A note that refers to items or to the rest of the agenda ("Die weiteren Punkte …", "ab hier", "Öffentlich sind die Tagesordnungspunkte 1 und 2").
+const REFERS=/(?<!\p{L})(?:Tagesordnungspunkt\p{L}*|Punkte|Punkten|TOP|TOPs)(?!\p{L})/u;
+const FORWARD=/(?<!\p{L})(?:(?:weitere[n]?|folgende[n]?|nachfolgende[n]?|restliche[n]?|übrige[n]?|anschließende[n]?|sich\s+anschließende[n]?)\s+(?:Tagesordnungs)?(?:punkte[n]?|Themen|Beratungen|Beratungsgegenstände[n]?|Gegenstände[n]?)|ab\s+hier|von\s+(?:hier|nun)\s+an|ab\s+(?:jetzt|sofort))(?!\p{L})/iu;
+// A field of an item's card ("Öffentlichkeit: nein", "Sitzungsart: nichtöffentlich", "Zugang: nicht öffentlich").
+const FIELD=/^[\p{L}][\p{L}\s./-]{0,40}?\s*:\s*\S.{0,60}$/u;
+// The lines of an item's card ("Vorlage: 2026/043", "Drucksache Nr. 12/2026", "Berichterstatter: Kämmerer").
+const CARD_FIELD=/^(?:Vorlage|Vorlagen?-?Nr\.?|Beschlussvorlage|Drucksache|Az\.?|Aktenzeichen|Berichterstatt\p{L}*|Referent\p{L}*|Sachbearbeit\p{L}*|Federführung|Zuständig\p{L}*|Anlagen?|Dokumente?|Beratungsfolge|Antragsteller\p{L}*)(?!\p{L})/iu;
+// A part named by its key alone ("II", "B"), as a badge has it; the first part ("I", "A") is none.
+const PART_KEY=/^(?:[B-H]|I{2,3}|IV|V|VI{1,3}|[2-9])$/u;
+// A sentence that introduces a decision ("Der Gemeinderat beschließt:", "fasst folgenden Beschluss:").
+const DECISION_INTRO=/(?<!\p{L})(?:beschließt|beschloss|beschließen|beschlossen|fasst\s+(?:folgenden|nachstehenden)\s+Beschluss|ergeht\s+folgender\s+Beschluss|Beschlussvorschlag|Beschlusstext|Beschluss|empfiehlt|stimmt\s+(?:folgendem|folgenden|wie\s+folgt)|wie\s+folgt)(?!\p{L})/iu;
 const headingLike=l=>l.length<=70&&/^\p{Lu}\p{L}{3}/u.test(l)&&!/[.!?;,]$/.test(l)&&!/(?<!\p{L})(?:wird|werden|wurde|wurden|ist|sind|war|waren|erfolgt|erfolgen|findet|bleibt|bleiben|soll|sollen|kann|können|muss|müssen|mussten|musste|hat|haben)(?!\p{L})/iu.test(l);
 // A note right after an item that points to it ("Die Beratung erfolgt nichtöffentlich", "Dieser Punkt wird …", "Wird …").
 const DEICTIC=/^[\s(]*(?:(?:Dieser|Diese|Der|Die|Das)\s+(?:Punkt|Tagesordnungspunkt|TOP|Beratung|Behandlung|Vorlage|Angelegenheit|Gegenstand)|Beratung|Behandlung|Wird|Werden|Erfolgt|Hierzu|Dazu)(?!\p{L})/iu;
@@ -798,19 +1011,31 @@ const SEPARATOR=[
  /^(?:Im\s+Anschluss|Anschließend|Anschl\.|Danach|Es\s+folgt|Nachfolgend|Hierauf|Sodann)(?!\p{L})/iu,
  /(?:für|bei|zu)\s+(?:den\s+|die\s+)?(?:nach)?folgenden\s+(?:Tagesordnungs)?punkte|mit\s+(?:den\s+)?folgenden\s+(?:Tagesordnungs)?punkten|folgende\s+(?:Tagesordnungs)?punkte/iu,
  /Öffentlichkeit\s+(?:wird|wurde|ist)\s+(?:\S+\s+){0,3}ausgeschlossen/iu,
+ // "Die Sitzung wird intern fortgesetzt."
+ /(?<!\p{L})(?:Sitzung|Beratung)\s+(?:wird|wurde)\s+(?:\S+\s+){0,4}(?:fortgesetzt|weitergeführt)/iu,
 ];
 // Notes on items: "Die Punkte 3 und 4 …", "TOP 3 bis 4 nichtöffentlich", "Ab Ziffer 3 …"; numbers are only resolved
 // where the note names them and nothing vague ("die beiden letzten", "die mit * gekennzeichneten", "alle anderen").
 const REF_LIST=/(?<!\p{L})(?:TOP|Top|TO-Punkte?n?|Tagesordnungspunkte?n?|Punkte?n?|Pkt\.|Nrn?\.|Nummern?|Ziffern?|Ziff\.)\s*((?:\d{1,2}(?:\.\d{1,2})?)(?:\s*(?:,|und|u\.|sowie|bis|-|–|\/|&)\s*\d{1,2}(?:\.\d{1,2})?)*)/giu;
 const VAGUE=/(?<!\p{L})(?:letzte[nrms]?|vorletzte[nrms]?|beide[nrms]?|zwei|drei|vier|übrige[nrms]?|restliche[nrms]?|sonstige[nrms]?|andere[nrms]?|weitere[nrms]?|gekennzeichnet\p{L}*|markiert\p{L}*|Stern\p{L}*|kursiv\p{L}*|fett\p{L}*|unterstrichen\p{L}*|außer|ausgenommen|Ausnahme|bis\s+auf|obige[nrms]?|vorstehende[nrms]?|oben|genannte[nrms]?|aufgeführte[nrms]?|einige[nrms]?|manche[nrms]?|mehrere[nrms]?|alle|sämtliche[nrms]?)(?!\p{L})|[*¹²³⁴⁵⁶⁷⁸⁹†‡]/iu;
+const ROMAN_REF=/(?<!\p{L})(?:TOP|Top|TO-Punkte?n?|Tagesordnungspunkte?n?|Punkte?n?|Pkt\.|Nrn?\.|Ziffern?|Ziff\.)\s*[IVX]{1,5}(?![\p{L}\d])/u;
+// A legend that tells the part of items by their type or colour ("Kursiv: nichtöffentliche Punkte", "Grau dargestellte Punkte werden
+// nichtöffentlich beraten", "Fett gedruckte Punkte werden öffentlich beraten"): the lines lost that formatting (rule 4).
+const FORMAT=/(?<!\p{L})(?:kursiv\p{L}*|fett\p{L}*|grau\p{L}*|rot(?:e[nrs]?)?|blau\p{L}*|grün\p{L}*|gelb\p{L}*|orange\p{L}*|farbig\p{L}*|farblich\p{L}*|eingefärbt\p{L}*|ausgegraut\p{L}*|hervorgehoben\p{L}*|unterstrichen\p{L}*|markiert\p{L}*|Schrift(?:art|farbe)?|Farbe|hinterlegt\p{L}*)(?!\p{L})/iu;
+const FORMAT_TARGET=/(?<!\p{L})(?:öffentlich\p{L}*|nichtöffentlich\p{L}*|nicht\s*-?\s*öffentlich\p{L}*|Punkte?|TOPs?|Tagesordnungspunkte?)(?!\p{L})/iu;
+const formatLegend=line=>{const l=canonNP(normalizeLine(line));return l.length<=200&&FORMAT.test(l)&&FORMAT_TARGET.test(l)&&!/^(?:hinterlegt|Farbe)/iu.test(l)&&(!/(?<!\p{L})hinterlegt/iu.test(l)||/(?<!\p{L})(?:grau|rot|blau|grün|gelb|orange|farbig|farblich)/iu.test(l));};
+// Notes that move or cancel the meeting ("Die Sitzung wird auf Mittwoch, 21.10.2026 verschoben", "Terminänderung: neuer Termin 21.10.2026").
+const MOVE=/(?<!\p{L})(?:verschoben|verlegt|abgesagt|entf[äa]llt|entfallen|f[äa]llt\s+aus|findet\s+nicht\s+statt|Terminänderung|Terminverschiebung|Verlegung|Absage|neuer\s+Termin|Ersatztermin|neu\s+terminiert)(?!\p{L})/iu;
 function refsOf(line){
  const nums=[];for(const m of line.matchAll(REF_LIST))for(const n of m[1].match(/\d{1,2}(?:\.\d{1,2})?/g))nums.push(mainNumber(n));
  const rest=canonNP(line.replace(REF_LIST,' ')).replace(/nichtöffentlich\p{L}*/giu,' ');
- const vague=VAGUE.test(line)||nums.length>0&&/(?<!\p{L})öffentlich(?!keit)/iu.test(rest);
+ // Items named by Roman numbers where the agenda counts otherwise ("TOP III und IV"): which ones is not certain.
+ const vague=VAGUE.test(line)||ROMAN_REF.test(line)||nums.length>0&&/(?<!\p{L})öffentlich(?!keit)/iu.test(rest);
  return {nums,vague,any:nums.length>0||vague};
 }
 // Footnote marks at an item ("Grundstücke*", "Personal¹", "Haushalt (1)", "Kita2"): what they mean is told elsewhere.
-const FOOTNOTE={test:t=>/[*†‡¹⁴⁵⁶⁷⁸⁹⁰]|(?<!m)[²³]|\(\d\)\s*$|\p{Ll}\d{1,2}$/u.test(t)||/(?<=\s)\d\)\s*$/.test(t)&&!t.includes('(')};
+// Also a letter as mark ("Grundstück a)", "Personal (a)"), as Word numbers its footnotes.
+const FOOTNOTE={test:t=>/[*†‡¹⁴⁵⁶⁷⁸⁹⁰￼]|(?<!m)[²³]|\(\d\)\s*$|\p{Ll}\d{1,2}$|(?:^|\s)\(?\p{Ll}\)\s*$/u.test(t)||/(?<=\s)\d\)\s*$/.test(t)&&!t.includes('(')};
 // A past report in the block of an item that reports from the non-public part ("In der nichtöffentlichen Sitzung vom
 // 16.09.2026 wurde … beschlossen").
 const PAST_REPORT=/(?<!\p{L})(?:wurde|wurden|hat|hatte|haben|hatten|gefasst\p{L}*|beschloss\p{L}*|beschlossen|vergeben|gibt|gab|teilt|teilte)(?!\p{L})/iu;
@@ -828,7 +1053,7 @@ const PART_WORD=/(?<!\p{L})(?:Teil|Sitzungsteil|Abschnitt|Sitzungsabschnitt)(?!\
 const ITEM_LIKE=/^(?:(?:TOP|Top|TO|Tagesordnungspunkt|Punkt)\s*(?:Nr\.?\s*)?[\p{L}./()-]{0,5}\s*\d{1,2}|(?:NÖ|Nö|nö|N|Ö)\s*[-/.:]?\s*\d{1,2}|\d{1,2}(?:\.\d{1,2})*[.)]?\s+\S)/u;
 // A legend of a mark ("■ = nichtöffentlich", "# nichtöffentlich", "(+) = nichtöffentliche Beratung", "V = vertraulich",
 // "*) nichtöffentlich", "¹ nichtöffentliche Beratung").
-const LEGEND=/^\s*(?:(?:[^\p{L}\p{N}\s]{1,3}|[¹²³⁴⁵⁶⁷⁸⁹]|\([^)\s]{1,3}\)|\d{1,2}\)?)\s*(?:[=:–…-]\s*)?|[A-ZÄÖÜ]{1,2}\s*[=:]\s*)(?:[Nn]icht\s*-?\s*[öÖ]|[Nn]ichtö|[Vv]ertraul|[Uu]nter\s+[Aa]usschl|[Gg]eschlossen|[Nn]\.?\s?[öÖ]\.?(?!\p{L}))/u;
+const LEGEND=/^\s*(?:(?:[^\p{L}\p{N}\s]{1,3}|[¹²³⁴⁵⁶⁷⁸⁹]|\([^)\s]{1,3}\)|\d{1,2}\)?|\p{Ll}\))\s*(?:[=:–…-]\s*)?|[A-ZÄÖÜ]{1,2}\s*[=:]\s*)(?:[Nn]icht\s*-?\s*[öÖ]|[Nn]ichtö|[Vv]ertraul|[Uu]nter\s+[Aa]usschl|[Gg]eschlossen|[Nn]\.?\s?[öÖ]\.?(?!\p{L}))/u;
 // A head that names a non-public part generally ("Im Anschluss findet eine nichtöffentliche Sitzung statt", "öffentliche
 // und nichtöffentliche Sitzung"); any other mention in the head names something in particular.
 const GENERIC_HEAD=line=>{const l=canonNP(normalizeLine(line));return /(?<!\p{L})(?:im\s+Anschluss|anschließend|anschl\.|danach|daran|es\s+folgt|nachfolgend|schließt\s+sich|sich\s+anschließend|nach\s+(?:dem|der)\s+öffentlichen|vor\s+(?:dem|der)\s+öffentlichen|zuvor|vorher|ab\s+\d{1,2}(?:[:.]\d{2})?\s*Uhr)(?!\p{L})/iu.test(l)&&/nichtöffentlich\p{L}*\s+(?:Sitzung|Teil|Sitzungsteil|Beratung)|Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit/iu.test(l)||/(?<!\p{L})öffentliche[rn]?\s+(?:Sitzung\s+|Teil\s+)?und\s+(?:anschließend\s+)?(?:eine[rn]?\s+)?nichtöffentliche[rn]?\s+(?:Sitzung|Teil|Sitzungsteil)/iu.test(l);};
@@ -840,6 +1065,10 @@ const STRUCTURE_WORDS=new Set('sitzung sitzungen oeffentlich oeffentliche oeffen
 const titleWords=t=>fold(t).split(/[^a-z0-9]+/).filter(w=>w.length>=6&&!STRUCTURE_WORDS.has(w));
 // Text that lost its characters: a replacement character, mojibake not undone, a "?" for an umlaut.
 const BROKEN=/\ufffd|[ÃÂ][\u0080-\u00bf]|(?:^|[\s("„])\p{L}+\?\p{Ll}{2,}/u;
+// A line cut short by a teaser or excerpt ("Grundstücksverkauf Fl.Nr. 412 (nich…", "[...]", "Weiterlesen »").
+const TRUNCATED_LINE=/(?:…|\.{3}|\[\s*(?:…|\.{2,3})\s*\])\s*[»›>→"']?\s*$|^\s*(?:…\s*)?(?:weiterlesen|weiter\s+lesen|mehr\s+lesen|mehr\s+erfahren|mehr\s+dazu|read\s+more|zum\s+(?:vollständigen\s+)?(?:artikel|beitrag|text)|vollständige[rn]?\s+(?:text|artikel|beitrag|meldung)|mehr|weiter)\s*(?:[»›>→"']|\.\.\.|…)?\s*$/iu;
+/** Whether the lines of an excerpt are cut short (a teaser of a feed or calendar entry). */
+export const truncatedText=lines=>(lines||[]).some(l=>TRUNCATED_LINE.test(normalizeLine(l)));
 const PUBLIC_MARK=/^(?:ja|j|x|✓|✔|öffentlich|Ö)$/iu,NONPUBLIC_MARK=/^(?:nein|-|–)$/iu;
 // The status of one item on the line below it ("öffentlich", "Status: öffentlich", "(Ö)").
 const PUBLIC_STATUS=/^[\s([–-]*(?:(?:Status|Art|Sitzungsteil)\s*:\s*)?(?:öffentlich|Ö|ö)[\s)\]–.-]*$/u;
@@ -880,7 +1109,8 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
  const ctx={years:[...new Set([...all,title].flatMap(l=>germanDates(l).map(d=>Number(d.iso.slice(0,4)))))],committee:committeeOf(title)};
  // A gazette (Amtsblatt, Mitteilungsblatt): its head lines (before the link text, which may only say "Amtsblatt Nr. 41"),
  // which may name the one municipality or the association it belongs to.
- const gazette=[...all.slice(0,3),title].filter(l=>GAZETTE_TITLE.test(l)).join(' | ');
+ const issueAt=all.slice(0,4).findIndex(l=>ISSUE_HEAD.test(l)&&germanDates(l).length>0);
+ const gazette=[...all.slice(0,3),title].filter(l=>GAZETTE_TITLE.test(l)).join(' | ')||(issueAt>=0?all.slice(0,issueAt+1).join(' | '):'');
  // Who gives notice just above a line (a municipality, an association; also in capitals).
  const issuerAt=i=>{for(let k=i-1;k>=0&&k>=i-4&&!items[k];k--){const l=capsFix(all[k]);if(l.length<=100&&ISSUER.test(l)&&!GAZETTE.test(l))return fold(l);}return '';};
  // 1. Meetings: a text of several (Amtsblatt, list of dates) is cut at each header of another meeting. Headers before
@@ -912,7 +1142,12 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   // Numbered lines before the heading of the agenda are lists of the head (those present, offices), not items. A day or
   // body named between them and that heading is the head of another meeting: then nothing is clear.
   const agendaAt=all.findIndex((l,i)=>i>first&&i<end&&!items[i]&&AGENDA_LINE.test(l));
-  const listsBefore=agendaAt>first&&items.slice(agendaAt+1,end).some(Boolean)?agendaAt:-1;
+  let listsBefore=agendaAt>first&&items.slice(agendaAt+1,end).some(Boolean)?agendaAt:-1;
+  // A list there whose items carry the marks Ö/N is an agenda itself (a short agenda before the reports on its items, an overview
+  // before the minutes): it is read, so that its marks count.
+  if(listsBefore>=0&&items.slice(first,listsBefore).some(it=>it&&it.prefix))listsBefore=-1;
+  // Any other list left out there that names the non-public part cannot be matched to the agenda (rule 2).
+  const skippedNP=listsBefore>=0&&all.slice(first,listsBefore).some(l=>mentionsNonPublic(l)&&!isPublicReport(l)||isNonPublicHeading(l)||closedLine(l)||BARE_N.test(l)||NP_BROKEN.test(fold(l))||formatLegend(l));
   const skipped=listsBefore>=0?[first,listsBefore]:null;
   if(listsBefore>=0){first=listsBefore+1;while(first<end&&!items[first])first++;}
   const itemAt=i=>i>=first&&items[i]?items[i]:null;
@@ -921,9 +1156,15 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   const day=seg.header?.day??pickDate(all,seg.start,first,ctx);
   // The title's day only for a single meeting, never the day of its notice or posting ("Aushang vom 02.10.2026: Einladung …"),
   // and not where the text names the day only relatively ("am kommenden Mittwoch").
-  const relative=all.slice(seg.start,Math.max(first,Math.min(end,seg.start+12))).some(l=>RELATIVE_DAY.test(l));
+  const relative=all.slice(seg.start,Math.max(first,Math.min(end,seg.start+12))).some(l=>RELATIVE_DAY.test(l)||RELATIVE_PAST.test(l));
   const titleDay=germanDates(title).find(d=>!NOT_MEETING_DAY.test(title.slice(Math.max(0,d.index-45),d.index)))?.iso;
-  const date=day?.iso??(segments.length===1&&!relative?titleDay:null)??null;
+  let date=day?.iso??(segments.length===1&&!relative?titleDay:null)??null;
+  // A weekday the head names without its date ("am Mittwoch um 19 Uhr", "am kommenden Mittwoch") must be the weekday of the day found
+  // (the day above a post is often that of its publication); a relative day counts only where the line of the day names its weekday.
+  const headWin=all.slice(seg.start,Math.max(first,Math.min(end,seg.start+12))).filter((l,k)=>!items[seg.start+k]&&!OTHER_EVENT.test(l));
+  const bare=[...headWin,...(segments.length===1?[title]:[])].filter(l=>MEETING_WORD.test(l)||timeOf(l)).flatMap(l=>[...l.matchAll(BARE_WEEKDAY)].map(m=>WEEKDAYS[m[1].toLowerCase()]));
+  if(date&&bare.length&&!bare.includes(new Date(date+'T00:00:00Z').getUTCDay())){issues.push(`Wochentag im Kopf passt nicht zum Datum ${ddmmyyyy(date)}; Sitzungstag nicht sicher, nichts übernommen.`);date=null;}
+  if(date&&headWin.some(l=>RELATIVE_DAY.test(l))&&!(day&&day.iso===date&&DATED_WEEKDAY.test(all[day.line])))date=null;
   let time=day?timeOf(all[day.line]):null;
   for(let i=seg.start;!time&&i<first;i++)if(!signature(all,i)&&!CANCEL.test(all[i]))time=timeOf(all[i]);
   if(!time&&segments.length===1)time=timeOf(title);
@@ -943,6 +1184,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   const headText=at>=0?all.slice(at,Math.min(first,at+3)).join(' '):'';
   const context=[issuer,headText,title].filter(Boolean).join(' ');
   // 2. Public part: none → public → nonpublic. Each meeting starts anew; the title counts only for a single meeting.
+  let latePublic=false;
   let state='none',evidence='',restricted=false,unclear=0,mixed=false,delimited=false,headMention=false,headSpecific=false,footnote=false,whole=null;
   if(segments.length===1&&titleClosed){state='nonpublic';restricted=true;delimited=true;}
   else if(segments.length===1&&titlePublic){state='public';evidence=`Titel „${title}“`;}
@@ -956,9 +1198,16 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   const taken=[],seen=new Map(),cuts=[],parts=new Map(),read=new Set();let cur=null,seenItem=false,absent=false,listed=false,present=0,lastItem=-1,lastItemEnd=-1,lastPrefix=null,partSeen=false,statusStyle=false,itemOpen=false,oeSeen=false,unmarked=-1,npFirst=null;
   const endBlock=()=>{state='nonpublic';restricted=true;cur=null;};
   const discard=(reason,detail='')=>{whole??=[reason,detail];};
+  if(skippedNP)discard('Erwähnung des nichtöffentlichen Teils in einer Aufzählung vor der Tagesordnung','sie ist keinem Punkt zuzuordnen');
+  // Rows of a table of dates with the agenda in the row ("14.10.2026 Gemeinderat 1. Bauantrag Kita"): with another day than the
+  // meeting's, or several days, which row an item belongs to is not known.
+  const rowDays=all.slice(seg.start,end).filter(l=>ROW_ITEM.test(l)).map(l=>germanDates(l)[0]?.iso).filter(Boolean);
+  if(rowDays.length&&(new Set(rowDays).size>1||rowDays.some(d=>d!==date)))discard('Tabelle mit mehreren Sitzungen','welche Punkte zu welchem Tag und Gremium gehören, ist nicht eindeutig');
   // A column of the marks that is not the last one, or two of them: the marks of a line cannot be told apart.
   if(headLines.some(l=>l.length<=100&&COLUMN_ANY.test(l)&&(!COLUMN_HEAD.test(l)||TWO_COLUMNS.test(l))))discard('Spalte „öffentlich/nichtöffentlich“ der Tagesordnung nicht lesbar','sie steht nicht am Ende der Zeile');
   // The item a mark belongs to (the item read last, or the one whose report this is) and all after it are dropped.
+  // The lines between the item just read and line i are fields of its card only.
+  const cardBlock=i=>{if(lastItemEnd<0||i-lastItemEnd>4)return false;const block=all.slice(lastItemEnd,i);return block.length>0&&block.every(l=>l.length<=60&&CARD_FIELD.test(l));};
   const dropLast=()=>{const k=cur?taken.indexOf(cur):-1;if(k>=0)cuts.push(k);else if(taken.length&&taken.at(-1).line===lastItem)cuts.push(taken.length-1);endBlock();};
   // An item read again in the non-public part (an agenda repeated as a list of the parts) goes, with all after it.
   // Items this text puts in the non-public part: another document of the same meeting must not give them out.
@@ -967,14 +1216,30 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   const applyRefs=r=>{if(r.vague||!r.nums.length||r.nums.some(n=>!numbers.has(n)))discard('Nichtöffentliche Punkte erst nach der Tagesordnung benannt','welche Punkte öffentlich sind, ist nicht eindeutig');else{const min=Math.min(...r.nums),k=taken.findIndex(x=>mainNumber(x.number)>=min);if(k>=0)cuts.push(k);}};
   // Which items read so far a line names by their title (quoted text that is no title counts as naming another).
   const namesItems=line=>{const words=new Set(titleWords(line)),named=taken.filter(x=>titleWords(x.title).some(w=>words.has(w)));const quoted=/[„"“”»«]/.test(line);return {named,other:named.some(x=>x!==(cur||taken.at(-1)))||quoted&&!named.length};};
-  const continues=(j)=>{const line=all[j];return !itemOfLine(line)&&!headerLines.has(j)&&!headerLines.has(j+1)&&!isPublicHeading(line)&&!isNonPublicHeading(line)&&!closedLine(line)&&!mentionsNonPublic(line)&&!isPublicReport(line)&&!BARE_N.test(line)&&!NP_BROKEN.test(fold(line))&&!PART_HEADING.test(line)&&!(line.length<=40&&PART_WORD.test(line))&&!LEGEND.test(line)&&!/^[*¹²³(■#]/u.test(line)&&!signed(line)&&!PLACE_DATE.test(line)&&!HINT.test(line)&&!STOP.test(line)&&!STOP_SENTENCE.test(line)&&!ATTENDANCE.test(line)&&!LIST_INTRO.test(line)&&!(germanDates(line).length&&(timeOf(line)||WEEKDAY_WORD.test(line)||SHORT_WEEKDAY.test(line)))&&/[\p{L}\d]/u.test(line)&&!(committeeOf(line)&&SESSION_ON.test(all[j+1]||''));};
+  const continues=(j)=>{const line=all[j];return !itemOfLine(line)&&!headerLines.has(j)&&!headerLines.has(j+1)&&!isPublicHeading(line)&&!isNonPublicHeading(line)&&!closedLine(line)&&!mentionsNonPublic(line)&&!isPublicReport(line)&&!BARE_N.test(line)&&!NP_BROKEN.test(fold(line))&&!PART_HEADING.test(line)&&!(line.length<=40&&PART_WORD.test(line))&&!LEGEND.test(line)&&!/^[*¹²³(■#]/u.test(line)&&!signed(line)&&!PLACE_DATE.test(line)&&!HINT.test(line)&&!STOP.test(line)&&!STOP_SENTENCE.test(line)&&!ATTENDANCE.test(line)&&!LIST_INTRO.test(line)&&!(germanDates(line).length&&(timeOf(line)||WEEKDAY_WORD.test(line)||SHORT_WEEKDAY.test(line)))&&/[\p{L}\d]/u.test(line)&&!(committeeOf(line)&&SESSION_ON.test(all[j+1]||''))&&
+   // Never a line that speaks of the public, listeners or secrecy, refers to items or the rest of the agenda, or is the name above an office.
+   !suspect(line)&&!separator(line)&&!REFERS.test(line)&&!FORWARD.test(line)&&!personLine(line)&&!(line.length<=40&&signed(all[j+1]||''));};
   for(let i=seg.start;i<end;){
    const line=all[i],raw=itemAt(i),after=i===lastItemEnd;
    if(BROKEN.test(line))discard('Zeichenkodierung des Textes fehlerhaft');
+   // A legend by type or colour (rule 4), wherever it stands.
+   if(!raw&&formatLegend(line))discard('Kennzeichnung der Punkte durch Schriftart oder Farbe','welche Punkte öffentlich sind, ist nicht eindeutig');
+   // A note that moves or cancels the meeting to or from another day ("Achtung: Die Sitzung wird auf Mittwoch, 21.10.2026 verschoben",
+   // "Terminänderung: neuer Termin 21.10.2026"): the day of the items is not certain.
+   if(!raw&&date&&(kind!=='minutes'||i<first)&&MOVE.test(line)&&(SESSION_WORD.test(line)||/Termin/iu.test(line))&&!(committeeOf(line)&&committee&&!sameBody(committeeOf(line),committee))){
+    const found=germanDates(line),other=found.filter(d=>d.iso!==date&&!OLD_DAY.test(line.slice(Math.max(0,d.index-60),d.index))&&!OLD_AFTER.test(line.slice(d.index+d.text.length)));
+    if(other.length||!found.length&&/(?<!\p{L})(?:abgesagt|entf[äa]llt|entfallen|f[äa]llt\s+aus|findet\s+nicht\s+statt|Absage)(?!\p{L})/iu.test(line))discard('Hinweis auf Verlegung oder Absage der Sitzung','der Tag der Sitzung ist nicht sicher');
+   }
    if(raw&&FOOTNOTE.test(raw.title))footnote=true;
+   // A symbol of unknown meaning in a line of the agenda (a status column drawn as icon) is a mark too (rule 4).
+   if(!raw&&i>=first&&line.includes(SYMBOL)&&/[\p{L}\d]/u.test(line.replace(SYMBOL,'')))footnote=true;
+   // A text cut short ("…", "[...]", "Weiterlesen"): what the rest says is not known.
+   if(i>=first&&TRUNCATED_LINE.test(line))discard('Text gekürzt','der Rest der Tagesordnung ist nicht gelesen');
    if(!raw&&i>=first&&seenItem&&dayLine(line)&&germanDates(line)[0]?.iso!==date)mixed=true;
    // A numbered line not read as an item (a title without letters, a person) still fills its place in the numbering.
    if(!raw&&i>=first&&state==='public'){const n=line.match(/^(?:TOP\s*)?(\d{1,2})(?:[.)]|\s)/u);if(n)read.add(Number(n[1]));}
+   // The mark htmlToLines put at the end of an item's card: that item (the last one read) and all after it go.
+   if(!raw&&line===CARD_NP){const k=taken.findIndex(x=>x.line===lastItem);if(k>=0)cuts.push(k);endBlock();delimited=true;itemOpen=false;i++;continue;}
    if(!raw){
     // A report on decisions of the non-public part as a heading ("In nichtöffentlicher Sitzung gefasste Beschlüsse") is
     // a mention as well, except as the text of the item that announces it.
@@ -989,10 +1254,21 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
      const heading=isNonPublicHeading(line)||closedLine(line)||startsNonPublic(line)||report&&line.length<=110&&!/[.!?]$/.test(line)||line.length<=120&&/:\s*$/.test(line)&&!names.named.length&&!/[„"“”»«]/.test(line);
      const part=canonNP(line).match(PART_HEADING);
      // A legend of a mark: what the marked items are is told only here (rule 4).
+     const forward=FORWARD.test(line)&&!refsOf(line).nums.length&&!VAGUE.test(line.replace(new RegExp(FORWARD.source,'giu'),' '));
      if(LEGEND.test(line)&&!isNonPublicHeading(line)&&!closedLine(line)&&!startsNonPublic(line))discard('Markierung von Punkten mit Legende „nichtöffentlich“','welche Punkte gemeint sind, ist nicht eindeutig');
-     // A status in the lines of an item (accordion, card: "Sitzungsteil: nichtöffentlich" below "Vorlage: …") is that item's.
-     else if(mark&&(after||itemOpen)){if(lastPrefix==='Ö'&&after)endBlock();else dropLast();delimited=true;}
-     else if(heading){const r=refsOf(line.replace(/^[\s*•_–-]+|[\s*•_–-]+$/g,''));if(r.any)applyRefs(r);if(part)parts.set(partKey(part),'closed');endBlock();delimited=true;itemOpen=false;}
+     // A note after the items that names items ("Hinweis: TOP 3 und 4 nichtöffentlich") is read as such, never as a field of the last item.
+     else if(i>=first&&!heading&&!mark&&!forward&&!ITEM_LIKE.test(line)&&refsOf(line).any){applyRefs(refsOf(line));endBlock();delimited=true;itemOpen=false;}
+     // A status in the lines of an item (accordion, card: "Sitzungsteil: nichtöffentlich" below "Vorlage: …") is that item's,
+     // also as a field of any name ("Öffentlichkeit: nein", "Zugang: nicht öffentlich", "Beratungsart: vertraulich").
+     else if((mark&&(after||itemOpen)||state==='public'&&FIELD.test(line)&&(after||itemOpen&&cardBlock(i))&&!names.named.length&&!names.other)){if(lastPrefix==='Ö'&&after&&mark)endBlock();else dropLast();delimited=true;itemOpen=false;}
+     // A badge or heading of a part below the fields of an item's card ("Vorlage 2026/043" / "N-Teil"): it may be that item's.
+     else if(heading&&itemOpen&&!after&&cardBlock(i)){dropLast();if(part)parts.set(partKey(part),'closed');delimited=true;itemOpen=false;}
+     else if(heading){
+      const r=refsOf(line.replace(/^[\s*•_–-]+|[\s*•_–-]+$/g,''));if(r.any)applyRefs(r);if(part)parts.set(partKey(part),'closed');
+      // Labels of the parts after all the items (a tab bar set below its panels): which items they belong to is not known.
+      if(latePublic&&!items.slice(i+1,end).some(Boolean))discard('Bezeichnungen der Sitzungsteile erst nach den Punkten','welche Punkte öffentlich sind, ist nicht eindeutig');
+      endBlock();delimited=true;itemOpen=false;
+     }
      else if(i<first){
       headMention=true;const r=refsOf(line);
       if(r.any)applyRefs(r);
@@ -1005,6 +1281,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
       for(const m of canonNP(line).matchAll(/(?:Teil|Abschnitt)\s+([A-H]|[IVX]{1,4}|\d)\s*[:=–-]?\s*(nichtöffentlich|öffentlich)/giu)){const was=parts.get(m[1]);if(/^nicht/i.test(m[2])?was!=='closed':was==='closed')discard('Legende der Sitzungsteile passt nicht zur Gliederung der Tagesordnung');}
       endBlock();
      }
+     // A note on all items after it ("Die weiteren Punkte werden ohne Beteiligung der Öffentlichkeit beraten.", "Presse und Zuhörer
+     // sind ab hier ausgeschlossen") between items is a heading in other words; after the agenda it is a note (rule 3).
+     else if(forward&&items.slice(i+1,end).some(Boolean)){if(itemOpen&&!after&&cardBlock(i))dropLast();endBlock();delimited=true;itemOpen=false;}
      // A line that starts like an item not read yet ("TOP 3 nichtöffentlich: …") is that item.
      else if(ITEM_LIKE.test(line)&&!taken.some(x=>mainNumber(x.number)===Number(line.match(/\d{1,2}/)[0]))){endBlock();delimited=true;}
      else if(refsOf(line).any){applyRefs(refsOf(line));endBlock();}
@@ -1015,7 +1294,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
      else if(separator(line)){endBlock();delimited=true;}
      else if(kind==='minutes'&&cur&&isPublicReport(cur.title)&&PAST_REPORT.test(line)){/* the report the item announces */}
      // A short heading in other words ("Geheime Sitzung", "Fortsetzung ohne Publikum") ends the block.
-     else if(headingLike(line)&&!refsOf(line).any){endBlock();delimited=true;itemOpen=false;}
+     else if(headingLike(line)&&!refsOf(line).any){if(itemOpen&&!after&&cardBlock(i))dropLast();endBlock();delimited=true;itemOpen=false;}
      // Right after an item a note that points to it ("Die Beratung erfolgt nichtöffentlich.") is that item's; one that names a
      // matter in other words ("Die Grundstücksangelegenheit wird nichtöffentlich beraten.") cannot be matched (rule 2).
      else if(after&&DEICTIC.test(line))dropLast();
@@ -1039,11 +1318,14 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
     // Sitzung vom 16.09.2026", "Die nächste Sitzung … am 11.11.2026 … Auf der Tagesordnung stehen:", "Bereits in der Sitzung am
     // 16.09.2026 hatte der Gemeinderat beschlossen:"): what follows is not known to belong to this meeting.
     if(state==='public'&&seenItem&&i>=first&&line.length<=240&&(SESSION_WORD.test(line)||MEETING_WORD.test(line)||DATE_ONLY.test(line))&&(/:\s*$/.test(line)||!/[.!?]$/.test(line)&&line.length<=100)&&meetingDates(all,i,ctx).some(d=>d.iso!==date)){issues.push(`Anderer Sitzungstag nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
-    if(isPublicHeading(line)){if(state==='none'){state='public';evidence=`Überschrift „${line}“`;}const p=line.match(PART_HEADING);if(p)parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;absent=false;itemOpen=false;i++;continue;}
+    if(isPublicHeading(line)){if(state==='public'&&taken.length)latePublic=true;if(state==='none'){state='public';evidence=`Überschrift „${line}“`;}const p=line.match(PART_HEADING);if(p)parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;absent=false;itemOpen=false;i++;continue;}
     // Another heading of a part after the public block ends it ("Teil B", "II.", "B.", "Zweiter Teil", "N-Teil", "B Sitzung").
     const p=line.length<=80&&line.match(PART_HEADING);
-    if(p){if(state==='public'&&(partSeen||taken.length)){endBlock();delimited=true;parts.set(partKey(p),'closed');}else parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;itemOpen=false;i++;continue;}
-    if(state==='public'&&taken.length&&line.length<=40&&PART_WORD.test(line)&&!PUBLIC_STATUS.test(line)){endBlock();delimited=true;itemOpen=false;i++;continue;}
+    if(p){if(state==='public'&&(partSeen||taken.length)){if(itemOpen&&!after&&cardBlock(i))dropLast();endBlock();delimited=true;parts.set(partKey(p),'closed');}else parts.set(partKey(p),state==='public'?'public':'none');partSeen=true;cur=null;itemOpen=false;i++;continue;}
+    if(state==='public'&&taken.length&&(line.length<=40&&PART_WORD.test(line)||PART_KEY.test(line))&&!PUBLIC_STATUS.test(line)){if(itemOpen&&!after&&cardBlock(i))dropLast();endBlock();delimited=true;itemOpen=false;i++;continue;}
+    // After the items another line that introduces a list ("Außerdem standen auf der Tagesordnung:", "Anschließend ging es
+    // um:"): a block whose part the text does not name; nothing after it is taken (rule 1).
+    if(state==='public'&&taken.length&&i>=first&&/:\s*$/.test(line)&&line.length<=200&&itemAt(i+1)&&!itemAt(i+1).number.includes('.')&&!(kind==='minutes'&&[...seen.keys()].some(n=>mainNumber(n)>=mainNumber(itemAt(i+1).number)))&&!publicClause(line)&&!DECISION_INTRO.test(line)&&!ATTENDANCE.test(line)&&!LIST_INTRO.test(line)&&!AGENDA_LINE.test(line)&&!/^(?:Beschluss|Beschlussfassung|Ergebnis|Abstimmung|Zu\s+(?:den\s+|dem\s+)?(?:TOP|Punkt|Tagesordnungspunkt)|Tagesordnung|Sachverhalt|Begründung)/iu.test(line)){issues.push(`Weitere Aufzählung nach den Punkten (${where(committee,date,title)}): „${line.length>80?line.slice(0,79)+'…':line}“; folgende Punkte nicht übernommen.`);endBlock();itemOpen=false;i++;continue;}
     if(ATTENDANCE.test(line)||LIST_INTRO.test(line)){absent=true;listed=LIST_INTRO.test(line);present=0;i++;continue;}
    }
    if(absent){
@@ -1077,7 +1359,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    else if(it&&kind==='minutes'&&cur&&state==='public'&&it.form==='plain'&&cur.deciding)it=null;
    if(!it){
     if(state==='none'&&!seenItem&&publicSentence(line)){state='public';evidence=`Satz „${line.length>120?line.slice(0,119)+'…':line}“`;}
-    if(cur&&kind==='minutes'){cur.block.push(line);if(/^Beschluss/i.test(line))cur.deciding=true;if(/Abstimmung|(?<!\p{L})Ja(?!\p{L}).*Nein|einstimmig|\d\s*:\s*\d|Stimmen/i.test(line))cur.deciding=false;}
+    if(cur&&kind==='minutes'){cur.block.push(line);if(/^Beschluss/i.test(line)||DECISION_INTRO.test(line)&&/:\s*$/.test(line))cur.deciding=true;if(/Abstimmung|(?<!\p{L})Ja(?!\p{L}).*Nein|einstimmig|\d\s*:\s*\d|Stimmen/i.test(line))cur.deciding=false;}
     i++;continue;
    }
    seenItem=true;lastItem=i;lastPrefix=it.prefix;itemOpen=true;
@@ -1091,7 +1373,12 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    t=t.replace(/\s+/g,' ').replace(/\s*[,;:–]$/,'').trim();
    i=j;lastItemEnd=j;
    if(!/\p{L}/u.test(t)||t.length<3||t.length>400){cur=null;continue;}
+   // A title that ends in an open bracket ("Grundstücksangelegenheit Fl.Nr. 412 (nicht") was cut short: what it said is not known.
+   if(/\([^()]*$/u.test(t))discard('Text gekürzt','ein Titel endet in einer offenen Klammer');
    if(FOOTNOTE.test(t))footnote=true;
+   // The next items run on in the title ("Genehmigung der Niederschrift 2. Bauantrag Kita 3. …", a description without line
+   // breaks): where one item ends is not known.
+   if(!it.number.includes('.')&&new RegExp(`(?:^|\\s)${mainNumber(it.number)+1}[.)]\\s+\\p{Lu}`,'u').test(t))discard('Mehrere Punkte in einer Zeile','wo ein Punkt endet, ist nicht erkennbar');
    // A mark at the end of a wrapped title, or in the last column of a table.
    const tail=withMark(it.prefix,t);
    // A narrow column "nicht-/öffent-/lich" wrapped together with the title: the ends of its lines read as one word.
@@ -1154,16 +1441,26 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   const trailer=[];
   if(lastAt>=0)for(let k=lastAt+1,sig=false,prevSig=false;k<end&&k<=lastAt+12&&!items[k];k++){
    const l=all[k],starts=PLACE_DATE.test(l)||/^gez\.|^Mit\s+freundliche/iu.test(l)||signed(l),office=/(?:bürgermeister|vorsteher|vorsitzende|landrat|landrätin|amtsdirektor)/iu.test(l)&&l.length<=100;
-   if(starts||office||sig&&prevSig&&l.length<=80){trailer.push(l);sig=true;prevSig=starts;}else prevSig=false;
+   // A line below the office goes with it ("Verbandsvorsitzender" / "Zweckverband Wasserversorgung Oberland").
+   if(starts||office||sig&&prevSig&&l.length<=80){trailer.push(l);sig=true;prevSig=starts||office;}else prevSig=false;
   }
-  meetings.push({date,time,committee,kind,trailer,lastPublic:Math.max(0,...[...seen.keys()].map(mainNumber)),items:taken.map(x=>{const o=kind==='minutes'?outcomeOf(x.block.join('\n')):{status:null,result:'',votes:null};return {prefix:x.prefix,number:x.number,title:x.title,status:o.status,result:o.result,votes:o.votes};}),restricted,unclear:unclear>0,publicEvidence:evidence,heading,context,issuer,lead,headText,gazette,closedItems});
+  // Who gives notice anywhere above the head in the whole text (an Amt or a Verwaltungsgemeinschaft whose collective notice names
+  // itself only above its first meeting).
+  const docTop=Math.min(top,segments.find(x=>x.header)?.header.line??top);
+  const docIssuers=[];for(let k=0;k<docTop;k++){const l=capsFix(all[k]);if(!items[k]&&l.length<=100&&ISSUER.test(l)&&!GAZETTE.test(l))docIssuers.push(l);}
+  meetings.push({date,time,committee,kind,trailer,docIssuers,lastPublic:Math.max(0,...[...seen.keys()].map(mainNumber)),items:taken.map(x=>{const o=kind==='minutes'?outcomeOf(x.block.join('\n')):{status:null,result:'',votes:null};return {prefix:x.prefix,number:x.number,title:x.title,status:o.status,result:o.result,votes:o.votes};}),restricted,unclear:unclear>0,publicEvidence:evidence,heading,context,issuer,lead,headText,headLines:all.slice(at>=0?at:seg.start,first).filter(l=>!GAZETTE_TITLE.test(l)&&!GAZETTE.test(l)&&!ISSUE_HEAD.test(l)).slice(0,20),gazette,closedItems});
  });
  return {meetings,issues};
 }
 /** A line set in capitals ("ZWECKVERBAND WASSERVERSORGUNG OBERLAND") as it is written otherwise ("Zweckverband Wasserversorgung Oberland"). */
 export const capsFix=l=>{const s=String(l??'');return /\p{Lu}{3}/u.test(s)&&!/\p{Ll}/u.test(s)?s.replace(/\p{L}+/gu,w=>w[0]+w.slice(1).toLowerCase()):s;};
 // Who gives notice of a meeting, as a line of its own above its head.
-const ISSUER=/^(?:(?:Öffentliche\s+)?Bekanntmachung\s+(?:des|der)\s+)?(?:\p{L}+-\s+(?:und|u\.)\s+\p{L}*verband(?:e?s)?|Verbandsgemeindeverwaltung|Samtgemeindeverwaltung|Amtsverwaltung|Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Hansestadt|Große\s+Kreisstadt|Kreisstadt|Universitätsstadt|Landeshauptstadt|Landkreis(?:es)?|Landratsamt(?:es)?|Kreis(?:es)?|Kreisverwaltung|Amt(?:es)?|Verbandsgemeinde|Samtgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband|Gemeindeverwaltungsverband|\p{L}*verband(?:e?s)?)(?!\p{L})/u;
+// Also "Der Landrat des Landkreises …", "ZV Wasserversorgung …", "Verbandsgemeindewerke …".
+const ISSUER=/^(?:(?:Öffentliche\s+)?Bekanntmachung\s+(?:des|der)\s+)?(?:\p{L}+-\s+(?:und|u\.)\s+\p{L}*verband(?:e?s)?|(?:Der\s+|Die\s+)?(?:Landrat|Landrätin)(?=\s+(?:des|der)\s)|ZV(?=\s+\p{Lu})|Verbandsgemeinde\p{L}+|Samtgemeinde\p{L}+|Verbandsgemeindeverwaltung|Samtgemeindeverwaltung|Amtsverwaltung|Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Hansestadt|Große\s+Kreisstadt|Kreisstadt|Universitätsstadt|Landeshauptstadt|Landkreis(?:es)?|Landratsamt(?:es)?|Kreis(?:es)?|Kreisverwaltung|Amt(?:es)?|Verbandsgemeinde|Samtgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband|Gemeindeverwaltungsverband|\p{L}*verband(?:e?s)?|Wasserversorgungsgruppe|Gruppenwasserversorgung|Fernwasserversorgung)(?!\p{L})|^(?:Wasserversorgung|Abwasserbeseitigung|Abwasserentsorgung|Wasserbeschaffung)(?=\s+\p{Lu})/u;
 // A gazette as the title of a document or its first lines (not "Amtliche Bekanntmachungen", a heading of any notice page).
-const GAZETTE_TITLE=/(?:Mitteilungsblatt|Amtsblatt|Gemeindeblatt|Wochenblatt|Nachrichtenblatt|Amtsbote|Gemeindebote|Heimatblatt|Amtsanzeiger|Gemeindeanzeiger)(?!\p{L})/iu;
-const GAZETTE=/^(?:Mitteilungsblatt|Amtsblatt|Gemeindeblatt|Wochenblatt|Nachrichtenblatt|Amtsbote|Gemeindebote|Heimatblatt|Amtliche\s+(?:Bekanntmachungen|Nachrichten|Mitteilungen)|Amtliches\s+Mitteilungsblatt)(?!\p{L})/iu;
+// Also the names of local papers ("Gemeindezeitung", "Oberland-Rundschau", "Heimatzeitung", "Gemeindenachrichten").
+const PAPER='Mitteilungsblatt|Amtsblatt|Gemeindeblatt|Wochenblatt|Nachrichtenblatt|Amtsbote|Gemeindebote|Heimatblatt|Amtsanzeiger|Gemeindeanzeiger|Gemeindezeitung|Stadtzeitung|Heimatzeitung|Bürgerzeitung|Dorfzeitung|Rundschau|Gemeindenachrichten|Stadtnachrichten|Bürgerblatt|Ortsblatt|Gemeindebrief|Stadtanzeiger|Infoblatt|Kurier|Heimatbote|Bote';
+const GAZETTE_TITLE=new RegExp(`(?:${PAPER})(?!\\p{L})`,'iu');
+const GAZETTE=new RegExp(`^(?:${PAPER}|Amtliche\\s+(?:Bekanntmachungen|Nachrichten|Mitteilungen)|Amtliches\\s+Mitteilungsblatt)(?!\\p{L})`,'iu');
+// The line of an issue ("Jahrgang 32 · Freitag, 9. Oktober 2026 · Nr. 41"): its head is a gazette's, whatever it is called.
+const ISSUE_HEAD=/(?<!\p{L})(?:Jahrgang|Ausgabe)(?!\p{L})|(?<!\p{L})Nr\.\s*\d{1,3}(?![\d.])/u;

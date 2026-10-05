@@ -6,8 +6,8 @@ import {budgeted,isRejectionPage,REFUSED} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {parseRobots,robotsAllow} from './robots.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix} from './website-text.mjs';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink} from './website-feeds.mjs';
+import {htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf} from './website-feeds.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
 // its CMS offers anyway (RSS/Atom, iCal, WordPress REST, JSON-LD events, sitemap.xml). The catalog entry names the pages
@@ -169,6 +169,15 @@ const COUNCIL_NAME=/^(?:gemeinderat|stadtrat|marktgemeinderat|marktrat|gemeindev
 const bodyWords=c=>fold(c).split(/[^a-z]+/).filter(w=>w.length>=4&&!/^(?:ausschuss\w*|fuer|und|sowie|der|des|rat\w*)$/.test(w));
 const sameBodies=(a,b)=>!a||!b||slug(a)===slug(b)||COUNCIL_NAME.test(fold(a))&&COUNCIL_NAME.test(fold(b))||bodyWords(a).some(x=>bodyWords(b).some(y=>x.slice(0,4)===y.slice(0,4)));
 const mainNumber=n=>Number(String(n).split('.')[0]);
+const firstDay=s=>germanDates(String(s||''))[0]?.iso??null;
+const dayDiff=(a,b)=>(Date.parse(b)-Date.parse(a))/864e5;
+// Items run together in one line ("Tagesordnung: 1. Genehmigung … 2. Bauantrag …"), numbered one after the other: each on a line.
+const splitRunOn=line=>{
+ const s=String(line),at=[...s.matchAll(/(?:^|\s)(\d{1,2})[.)]\s+(?=\p{Lu})/gu)];
+ if(at.length<2||!at.every((m,k)=>k===0||Number(m[1])===Number(at[k-1][1])+1))return [s];
+ const out=[];let prev=0;for(const m of at){const i=m.index+(/^\s/.test(m[0])?1:0);if(i>prev)out.push(s.slice(prev,i).trim());prev=i;}
+ out.push(s.slice(prev).trim());return out.filter(Boolean);
+};
 const SMALL_WORDS=new Set('der die das des den dem und oder fuer von vom zur zum auf aus mit bei einer eines einem eine ein ueber im in am an zu nach sowie bzw'.split(' '));
 const stemsOf=t=>new Set(fold(t).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!SMALL_WORDS.has(w)).map(w=>w.slice(0,6)));
 // One item in two wordings for the outcome: similar, and the words of one are all in the other.
@@ -200,8 +209,22 @@ const ASSOCIATION_HEAD=/(?<!\p{L})(?:der|des)\s+(?:Verbandsgemeinde|Samtgemeinde
 const NOTICE='^(?:(?:Öffentliche\\s+)?Bekanntmachung\\s+(?:des|der)\\s+)?';
 // Also "Wasser- und Bodenverband …".
 const ISSUER_SPECIAL=new RegExp(`${NOTICE}(?:\\p{L}+-\\s+(?:und|u\\.)\\s+)?(?!Verwaltungsverband|Gemeindeverwaltungsverband)\\p{L}*verband(?:e?s)?(?!\\p{L})`,'u');
-const ISSUER_COUNTY=new RegExp(`${NOTICE}(?:Landkreis(?:es)?|Landratsamt(?:e?s)?|Kreis(?:es)?|Kreisverwaltung)(?!\\p{L})`,'u');
-const ISSUER_ASSOCIATION=new RegExp(`${NOTICE}(?:Amt(?:e?s)?|Amtsverwaltung|Verbandsgemeinde|Verbandsgemeindeverwaltung|Samtgemeinde|Samtgemeindeverwaltung|Verwaltungsgemeinschaft|Verwaltungsverband|Gemeindeverwaltungsverband)(?!\\p{L})`,'u');
+const ISSUER_COUNTY=new RegExp(`${NOTICE}(?:Landkreis(?:es)?|Landratsamt(?:e?s)?|Kreis(?:es)?|Kreisverwaltung|(?:Der\\s+|Die\\s+)?(?:Landrat|Landrätin)(?=\\s+(?:des|der)\\s))(?!\\p{L})`,'u');
+// Also the works and offices of an association ("Verbandsgemeindewerke Musterland", "Samtgemeindeverwaltung").
+const ISSUER_ASSOCIATION=new RegExp(`${NOTICE}(?:Amt(?:e?s)?|Amtsverwaltung|Verbandsgemeinde\\p{L}*|Samtgemeinde\\p{L}*|Verwaltungsgemeinschaft|Verwaltungsverband|Gemeindeverwaltungsverband)(?!\\p{L})`,'u');
+// A county's offices or its head in the head or signature of a meeting ("Ort: Landratsamt Musterkreis", "Landrat"), and the county
+// in the link text ("Kreistag – Ausschuss für Umwelt").
+const COUNTY_PLACE=/(?<!\p{L})(?:Landratsamt(?:e?s)?|Kreisverwaltung|Kreishaus(?:es)?|Kreistag(?:e?s)?|Kreisausschuss(?:es)?|Bezirkstag(?:e?s)?)(?!\p{L})/u;
+const COUNTY_SIGNATURE=/^(?:(?:Der|Die)\s+)?(?:Landrat|Landrätin|Erste[rn]?\s+Kreisbeigeordnete[rn]?|Kreisbeigeordnete[rn]?|Oberkreisdirektor(?:in)?|Bezirkstagspräsident(?:in)?)(?!\p{L})/u;
+const COUNTY_TITLE=/(?<!\p{L})(?:Kreistag\p{L}*|Kreisausschuss\p{L}*|Landkreis\p{L}*|Landratsamt\p{L}*|Kreisverwaltung|Bezirkstag\p{L}*)(?!\p{L})/u;
+// The office of a special-purpose association below the items ("Verbandsvorsitzender", "Verbandsvorsteher", "Werkleiter des Zweckverbands").
+const SPECIAL_SIGNATURE=/(?<!\p{L})(?:Verbandsvorsitzende[rn]?|Verbandsvorsteher(?:in)?|Zweckverband\p{L}*|Schulverband\p{L}*|Wasserverband\p{L}*|Abwasserverband\p{L}*)(?!\p{L})/u;
+// Places named for the meeting: the venue ("im Sitzungssaal des Rathauses Bdorf") and the place of the signature ("Bdorf, 07.10.2026").
+const VENUE_TOWN=/(?<!\p{L})(?:Rathaus(?:es)?|Bürgerhaus(?:es)?|Gemeindehaus(?:es)?|Dorfgemeinschaftshaus(?:es)?|Gemeinschaftshaus(?:es)?|Dorfhaus(?:es)?|Feuerwehrhaus(?:es)?|Bürgersaal(?:s|es)?|Gemeindesaal(?:s|es)?|Gemeindezentrum(?:s)?|Bürgerzentrum(?:s)?|Kulturhaus(?:es)?|Kulturzentrum(?:s)?|Vereinsheim(?:s|es)?|Sporthalle|Turnhalle|Festhalle|Mehrzweckhalle|Mehrzweckgebäude(?:s)?|Grundschule|Schule)\s+(?:in\s+)?((?:(?:Bad|Sankt|St\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\s+)?\p{Lu}[\p{Ll}-]+)(?!\p{L})/gu;
+const SIGN_PLACE=/^((?:(?:Bad|Sankt|St\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\s+)?\p{Lu}[\p{L}-]+)(?:\s+(?:a\.|am|an|im|in|ob|bei|vor)\s[^,]{1,30})?,\s*(?:den\s+|am\s+)?\d{1,2}\./u;
+// A venue in the head names where the meeting is held, not whose it is ("findet im Rathaus Musterbach eine Sitzung des
+// Werkausschusses statt": associations meet in the Rathaus of a member).
+const VENUE=/(?<!\p{L})(?:im|in\s+der|in\s+dem|in\s+die|ins)\s+(?:\p{L}+\s+){0,3}?(?:Rathaus(?:es)?|Grundschule|Mittelschule|Schule|Feuerwehrhaus(?:es)?|Sitzungssaal|Bürgerhaus(?:es)?|Gemeindehaus(?:es)?|Dorfgemeinschaftshaus(?:es)?|Mehrzweckhalle|Turnhalle|Halle|Verbandsgebäude|Amtsgebäude)(?:\s+(?:des\s+)?(?:Rathauses\s+)?(?:(?:Bad|Sankt|St\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\s+)?\p{Lu}[\p{L}-]+)?/gu;
 const ISSUER_TOWN=new RegExp(`${NOTICE}(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Hansestadt|Große\\s+Kreisstadt|Kreisstadt|Universitätsstadt|Landeshauptstadt)\\s+(\\p{Lu}[\\p{L}.-]*(?:\\s+\\p{Lu}[\\p{L}.-]*)?)`,'u');
 const HEAD_TOWN=/(?<!\p{L})(?:der|des)\s+(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Hansestadt)\s+(\p{Lu}[\p{L}-]+(?:\s+\p{Lu}[\p{L}-]+)?)/gu;
 // A place is compared by its first word, by two for "Bad …", "Sankt …", "Neu …".
@@ -217,12 +240,29 @@ const SHARED_GAZETTE=/Verwaltungsgemeinschaft|Verbandsgemeinde|Samtgemeinde|Verw
 const GAZETTE_OWNER=/(?<!\p{L})(?:der|des)\s+(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Hansestadt)\s+(\p{Lu}[\p{L}-]+(?:\s+\p{Lu}[\p{L}-]+)?)/u;
 // The council of a town in the link text ("Bekanntmachung Sitzung Ortsgemeinderat Nachbarhausen").
 const TITLE_TOWN=/(?<!\p{L})(?:Gemeinderat|Ortsgemeinderat|Stadtrat|Marktgemeinderat|Marktrat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung)(?:e?s)?\s+((?:(?:Bad|Sankt|St\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\s+)?\p{Lu}[\p{Ll}-]+)(?!\p{L})/u;
+// The place of a postal address ("Kirchplatz 2, 99999 Nachbarhausen").
+const POSTAL_PLACE=/(?<!\d)\d{5}\s+((?:(?:Bad|Sankt|St\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\s+)?\p{Lu}[\p{Ll}-]+)(?!\p{L})/gu;
+// A heading that names the town of the meeting in other ways: "Gemeinde Nachbarhausen – Sitzung des Gemeinderates", "Nachbarhausen: Sitzung
+// des Gemeinderates", "Sitzung des Gemeinderates (Nachbarhausen)", "Öffentliche Gemeinderatssitzung in Nachbarhausen".
+const PLACE_NAME='((?:(?:Bad|Sankt|St\\.|Groß|Klein|Alt|Neu|Ober|Unter|Nieder|Hohen)\\s+)?\\p{Lu}[\\p{Ll}-]+)';
+const HEADING_TOWNS=[new RegExp(`^${PLACE_NAME}\\s*:\\s*(?:(?:Öffentliche|Nichtöffentliche|Ordentliche|Außerordentliche|Konstituierende)\\s+)?(?:\\p{L}*[Ss]itzung|Einladung|Tagesordnung|Bekanntmachung|Gemeinderat|Stadtrat|Marktgemeinderat|Gemeindevertretung|Stadtverordnetenversammlung|Ortschaftsrat|\\p{L}*[Aa]usschuss)`,'u'),new RegExp(`\\(\\s*${PLACE_NAME}\\s*\\)`,'gu'),new RegExp(`(?:sitzung|rat(?:e?s)?|ausschuss(?:es)?|vertretung|versammlung|beirat(?:e?s)?)\\s+in\\s+${PLACE_NAME}(?!\\p{L})`,'giu')];
+const NOT_PLACE_WORD=/^(?:rathaus\w*|sitzungssaal\w*|saal|buergerhaus\w*|gemeindehaus\w*|turnhalle|schule|grundschule|aula|fortsetzung|sondersitzung|ersatztermin|nachtrag|entwurf|hybrid\w*|online|praesenz\w*|video\w*|livestream|hinweis|achtung|wichtig|info|anmerkung|ort|termin\w*|beginn|ende|uhrzeit|datum|tagesordnung|einladung|bekanntmachung|niederschrift|protokoll|teil|top|ausschuss\w*|gemeinderat\w*|stadtrat\w*|kreistag\w*|sitzung\w*|oeffentlich\w*|nichtoeffentlich\w*|neu|aktuell\w*|update|korrektur|geaendert|verlegt|verschoben|abgesagt|ersatz|form|ortsteil|ortschaft|gemeinde|stadt|markt|zeit|wann|wo|thema|betreff|vorsitz|kuerze|news|meldung|pressemitteilung|amtlich\w*|gremium|status|art|typ)$/;
 const NOT_TOWN=/^(?:sitzung\w*|tagesordnung|einladung|bekanntmachung|niederschrift|protokoll|beschluss\w*|oeffentlich\w*|nichtoeffentlich\w*|am|vom|im|in|der|die|das|des|und|termin\w*|januar|februar|maerz|april|mai|juni|juli|august|september|oktober|november|dezember|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|sonnabend|teil|top|nr|ergebnis\w*|bericht|aktuell|ausschuss\w*|haushalt\w*)$/;
 function foreignBody(m,committee,source,names,title=''){
- const head=String(m.context||''),issuer=capsFix(String(m.issuer||'')),trailer=[].concat(m.trailer||[]).map(capsFix);
+ const head=String(m.context||''),issuer=capsFix(String(m.issuer||'')),trailer=[].concat(m.trailer||[]).map(capsFix),headLines=[].concat(m.headLines||[]).map(capsFix),lead=[].concat(m.lead||[]).map(capsFix);
  const own=place=>{const k=placeKey(place);return !k||names.some(n=>n.includes(k));};
  const association=ASSOCIATION.test(source.name||'');
- if(isSpecialPurposeBody(m.committee)||isSpecialPurposeBody(head)||isSpecialPurposeBody(issuer)||ISSUER_SPECIAL.test(issuer))return 'Zweckverband';
+ if(isSpecialPurposeBody(m.committee)||isSpecialPurposeBody(head)||isSpecialPurposeBody(issuer)||ISSUER_SPECIAL.test(issuer)||isSpecialPurposeBody(title)||lead.some(l=>l.length<=100&&isSpecialPurposeBody(l)))return 'Zweckverband';
+ // Sections of a collective notice set in capitals or named "Gemeinde X" ("NACHBARHAUSEN" above the second meeting): another member's.
+ const sectionsOf=lines=>lines.filter(l=>/^\p{Lu}{3,}(?:[\s-]\p{Lu}{2,})*$/u.test(l)||/^(?:(?:(?:Amtliche\s+)?Bekanntmachungen?\s+|Aus\s+|Nachrichten\s+|Mitteilungen\s+)(?:der|dem|des)\s+)?(?:Gemeinde|Stadt|Markt|Marktgemeinde|Ortsgemeinde|Mitgliedsgemeinde)\s+\p{Lu}[\p{L}-]+(?:\s+\p{Lu}[\p{L}-]+)?$/u.test(l)).map(capsFix).map(l=>l.match(SECTION_PLACE)).filter(Boolean).map(x=>x[1]||x[2]).filter(p=>!words(p).trim().split(' ').some(w=>NOT_SECTION.test(w))&&!/(?:tag|rat|ausschuss|beirat|versammlung|vertretung|amt|ung|heit|keit|schaft|ordnung)$/iu.test(p));
+ const sections=sectionsOf([].concat(m.lead||[]));
+ if(!m.gazette&&source.kind!=='district'&&sections.some(p=>!own(p)))return 'andere Gemeinde';
+ // Who gives notice of the whole text (an Amt, a Verwaltungsgemeinschaft, a Zweckverband or a county above its first meeting) gives notice
+ // of a later meeting that names no issuer and no section of the area's own.
+ const inherited=!issuer&&!sections.some(own)?[].concat(m.docIssuers||[]).map(capsFix):[];
+ if(inherited.some(l=>ISSUER_SPECIAL.test(l)||isSpecialPurposeBody(l)))return 'Zweckverband';
+ // The office or name of a special-purpose association in the signature (its chair is often the mayor of a member).
+ if(!association&&trailer.some(l=>SPECIAL_SIGNATURE.test(l)||isSpecialPurposeBody(l)))return 'Zweckverband';
  // An Amt or a Verbandsgemeinde has no Verbandsversammlung; a Gemeindeverwaltungsverband has.
  if(association&&!/Verwaltungsverband/u.test(source.name||'')&&SPECIAL_BODY.test(committee))return 'Zweckverband';
  // A county's gazette carries notices of its towns: their councils are never the county's.
@@ -235,21 +275,29 @@ function foreignBody(m,committee,source,names,title=''){
  // A gazette of several municipalities (of a Verwaltungsgemeinschaft, an Amt, a Verbandsgemeinde): a town's meeting in it
  // is the area's only where its section, head or issuer names the area, or the gazette is the area's own.
  if(m.gazette&&source.kind!=='district'&&!association){
-  const owner=String(m.gazette).match(GAZETTE_OWNER)?.[1],lead=[].concat(m.lead||[]).map(capsFix),text=words(`${lead.join(' ')} ${m.headText||''} ${issuer}`);
+  const owner=String(m.gazette).match(GAZETTE_OWNER)?.[1],lead=[].concat(m.lead||[]).map(capsFix),text=words(`${lead.join(' ')} ${m.headText||''} ${issuer}`.replace(VENUE,' '));
   const sections=lead.map(l=>l.match(SECTION_PLACE)).filter(Boolean).map(x=>x[1]||x[2]).filter(p=>!words(p).trim().split(' ').some(w=>NOT_SECTION.test(w)));
   if(sections.some(p=>!own(p)))return 'andere Gemeinde';
   if(!names.some(n=>text.includes(n))&&!(owner&&own(owner))&&SHARED_GAZETTE.test(m.gazette))return 'andere Gemeinde';
  }
  if(!association&&(/^(?:Verbandsversammlung|Gemeinschaftsversammlung)(?!\p{L})/u.test(committee)||/Verwaltungsgemeinschaft|\p{L}*verband(?:e?s)?(?!\p{L})/u.test(head)))return 'Verband';
- if(source.kind==='city'&&(/^Kreis(?:tag|ausschuss)(?!\p{L})/iu.test(committee)||COUNTY_HEAD.test(head)||ISSUER_COUNTY.test(issuer)))return 'Landkreis';
+ if(source.kind==='city'&&(/^Kreis(?:tag|ausschuss)(?!\p{L})/iu.test(committee)||COUNTY_HEAD.test(head)||ISSUER_COUNTY.test(issuer)||inherited.some(l=>ISSUER_COUNTY.test(l))||COUNTY_TITLE.test(String(title))||headLines.some(l=>COUNTY_PLACE.test(l)||ISSUER_COUNTY.test(capsFix(l)))||trailer.some(l=>COUNTY_SIGNATURE.test(l)||ISSUER_COUNTY.test(l))))return 'Landkreis';
  if(association)return null;
  // A member's own council may be announced by its Amt or Verbandsgemeinde ("Amt Musterland" / "Gemeindevertretung Musterbach").
  const council=committee.match(TOWN_COUNCIL)?.[1],ownCouncil=!!council&&own(council);
- if(ASSOCIATION_BODY.test(committee)||BODY_OF_ASSOCIATION.test(head)||!ownCouncil&&(ASSOCIATION_HEAD.test(head)||ISSUER_ASSOCIATION.test(issuer)))return 'Verband';
+ if(ASSOCIATION_BODY.test(committee)||BODY_OF_ASSOCIATION.test(head)||!ownCouncil&&(ASSOCIATION_HEAD.test(head)||ISSUER_ASSOCIATION.test(issuer)||inherited.some(l=>ISSUER_ASSOCIATION.test(l))||headLines.some(l=>/(?<!\p{L})(?:der|des)\s+(?:Verbandsgemeinde|Samtgemeinde|Verwaltungsgemeinschaft)\p{L}*/u.test(l)||ISSUER_ASSOCIATION.test(capsFix(l)))))return 'Verband';
  // Every town the head, the signature below the items or the link text names for the meeting must be the area's own.
  const titleTown=String(title).match(TITLE_TOWN)?.[1];
- const towns=[council,...[...head.matchAll(HEAD_TOWN)].map(t=>t[1]),issuer.match(ISSUER_TOWN)?.[1],...trailer.flatMap(l=>[l.match(ISSUER_TOWN)?.[1],...[...l.matchAll(HEAD_TOWN)].map(t=>t[1])]),titleTown&&!NOT_TOWN.test(fold(titleTown))?titleTown:null].filter(Boolean);
+ // The town a heading names in other ways (its first line, the link text or summary).
+ const headingTowns=[...headLines.slice(0,3),String(m.heading||''),String(title)].flatMap(l=>[l.match(ISSUER_TOWN)?.[1],...HEADING_TOWNS.flatMap(re=>re.global?[...l.matchAll(re)].map(t=>t[1]):[l.match(re)?.[1]])]).filter(p=>p&&!NOT_TOWN.test(fold(p))&&!NOT_PLACE_WORD.test(fold(p))&&!/(?:ung|heit|keit|schaft|tion|sitzung|termin|halle|haus|saal|zentrum|heim|gebäude|schule|kirche|raum|stube)$/iu.test(p));
+ const towns=[...headingTowns,council,...[...head.matchAll(HEAD_TOWN)].map(t=>t[1]),issuer.match(ISSUER_TOWN)?.[1],...trailer.flatMap(l=>[l.match(ISSUER_TOWN)?.[1],...[...l.matchAll(HEAD_TOWN)].map(t=>t[1])]),titleTown&&!NOT_TOWN.test(fold(titleTown))?titleTown:null].filter(Boolean);
  if(towns.some(t=>!own(t)))return 'andere Gemeinde';
+ // A meeting held in the Rathaus of another town and signed there ("im Sitzungssaal des Rathauses Bdorf", "Bdorf, 07.10.2026"),
+ // as the notice page of a Verwaltungsgemeinschaft lists those of all its members; unless the head or signature names the area.
+ const places=[...headLines.flatMap(l=>[...[...l.matchAll(VENUE_TOWN)].map(t=>t[1]),...[...l.matchAll(POSTAL_PLACE)].map(t=>t[1])]),...trailer.map(l=>l.match(SIGN_PLACE)?.[1])].filter(p=>p&&!NOT_TOWN.test(fold(p))&&!/^(?:Gemeinde|Stadt|Markt|Rathaus|Sitzungssaal)$/u.test(p));
+ // The district a district body is named after is where it meets ("Ortschaftsrat Unterdorf" in the Dorfgemeinschaftshaus Unterdorf).
+ const district=committee.match(/^(?:Ortschaftsrat|Ortsrat|Ortsbeirat|Stadtbezirksrat|Bezirksbeirat|Bezirksausschuss)\s+(\p{Lu}.*)$/u)?.[1];
+ if(places.some(p=>!own(p)&&!(district&&placeKey(p)===placeKey(district)))&&!names.some(n=>words([...headLines,...trailer].join(' ')).includes(n)))return 'andere Gemeinde';
  return null;
 }
 export {similarTitles};
@@ -287,15 +335,20 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const read=async(url,what)=>{const u=await permitted(url);if(!u)return null;try{return await get(u,site);}catch(e){fail(`${what} ${u}`,e);return null;}};
  // 2. Sources of candidates. texts: what is parsed (documents read, entries with text of their own); candidates:
  // addresses of documents that may be read; events: calendar entries (iCal, JSON-LD).
- const candidates=new Map(),texts=[],events=[],listed=new Set(),direct=new Set();let listReads=0,listLeft=0;
+ const candidates=new Map(),texts=[],events=[],listed=new Set(),direct=new Set(),listRead=new Set(),cancels=[];let listReads=0,listLeft=0;
  const offer=link=>{
   if(!link?.url)return;const seen=candidates.get(link.url);
   if(!seen){candidates.set(link.url,{...link,label:link.label||''});return;}
+  if(link.force)seen.force=true;
   if(link.label&&!seen.label.toLowerCase().includes(link.label.toLowerCase()))seen.label=`${seen.label} ${link.label}`.trim();
   seen.date??=link.date;if(link.kind==='pdf')seen.kind='pdf';
  };
  const relevant=(url,label)=>!closed(label,url)&&sessionScore({url:url||'',label:label||''})>=SESSION_THRESHOLD;
- const addText=(url,title,lines,kind,order)=>{texts.push({url,title,lines:lines.map(repair),kind,wrapped:kind==='application/pdf',order});direct.add(url);};
+ // A copy of a notice (a feed entry, a post, a calendar entry) gives items only where the documents it stands for were read: the page
+ // it links (an article, the page of a calendar entry) and the PDF files it links (the official notice with the parts of the meeting).
+ // Those are read whatever their links say; one that cannot be read keeps the copy from giving items.
+ const needed=(links,label)=>{const out=[];for(const l of links){if(!l?.url||closed(l.label||label,l.url))continue;let u=l.url;try{u=siteAllowed(l.url,source);offer({...asLink(u,l.label||label)||{url:u,label:l.label||label,date:null,kind:l.kind||'pdf'},force:true});}catch{/* another host: never read, so the copy gives nothing */}out.push(u);}return [...new Set(out)];};
+ const addText=(url,title,lines,kind,order,needs=[],copy=false)=>{texts.push({url,title,lines:lines.map(repair),kind,wrapped:kind==='application/pdf',order,needs});if(!copy)direct.add(url);};
  // List pages and their following pages (at most three per list, twelve in all).
  await parallel((source.pages||[]).map(String),async start=>{
   const queue=[start];let follow=0;
@@ -304,6 +357,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    const u=await permitted(url);if(!u)continue;
    if(listReads>=LIMITS.listPages){listLeft++;continue;}listReads++;
    let html;try{html=await get(u,site);}catch(e){fail('Listenseite '+u,e);continue;}
+   listRead.add(u);
    onProgress(`${source.id}: ${listReads} Listenseiten`);
    for(const l of documentLinks(html,u))offer(l);
    for(const ev of jsonLdEvents(html,u))events.push({...ev,from:u});
@@ -317,14 +371,23 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   for(const entry of parseFeed(xml,feed)){
    if(!relevant(entry.url,entry.title))continue;
    const lines=htmlToLines(entry.html);
-   if(lines.join(' ').length>=200){let own=null;try{own=entry.url&&siteAllowed(entry.url,source);}catch{/* the entry links elsewhere */}addText(own||feed,entry.title,lines,'html',-1);}
+   // A teaser cut short ("…", "Weiterlesen") is not the text: its article is read instead.
+   // An entry with text of its own needs the PDF files it links, and its article where its text ends on an item of a public part
+   // (a teaser may be cut after any word without a mark).
+   if(lines.join(' ').length>=200&&!truncatedText(lines)){
+    let own=null;try{own=entry.url&&siteAllowed(entry.url,source);}catch{/* the entry links elsewhere */}
+    const cut=!!parseItemLine(lines.at(-1))&&!parseSessionText(lines.map(repair),{title:entry.title}).meetings.some(m=>m.restricted);
+    addText(own||feed,entry.title,lines,'html',-1,needed([...(own&&cut?[{url:own,label:entry.title,kind:'html'}]:[]),...pdfLinksOf(entry.html,entry.url||feed)],entry.title),true);
+    // The entry's own address stays out of the documents unless the entry needs it.
+    if(own&&!cut)direct.add(own);
+   }
    else if(entry.url)offer(asLink(entry.url,entry.title));
   }
  },2);
  // Calendars: events of a body's meeting in the period.
  await parallel((source.ics||[]).slice(0,LIMITS.ics),async ics=>{
   const text=await read(ics,'Kalender');if(text===null)return;
-  for(const ev of parseIcs(text))events.push({name:ev.summary,date:ev.date,time:ev.time,description:ev.description,url:ev.url,from:ics});
+  for(const ev of parseIcs(text))events.push({name:ev.summary,date:ev.date,time:ev.time,description:ev.description,url:ev.url,from:ics,location:ev.location,organizer:ev.organizer,cancelled:ev.cancelled,links:[...ev.attachments,...pdfLinksOf(ev.description,ev.url||ics).map(l=>l.url)]});
  },2);
  // WordPress: posts are read from the API, PDF media are candidates. Never the search parameter.
  if(source.wp){
@@ -334,7 +397,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
     const json=await read(page>1?`${address}&page=${page}`:address,'WordPress');if(json===null)return;
     let list;try{list=JSON.parse(json);}catch{issues.push(`WordPress ${address}: keine JSON-Antwort`);return;}
     if(!Array.isArray(list))return;
-    if(what==='posts'){for(const p of parseWpPosts(list))if(relevant(p.url,p.title)){let own=null;try{own=siteAllowed(p.url,source);}catch{/* elsewhere */}addText(own||address,p.title,htmlToLines(p.html),'html',-1);}}
+    if(what==='posts'){for(const p of parseWpPosts(list))if(relevant(p.url,p.title)){let own=null;try{own=siteAllowed(p.url,source);}catch{/* elsewhere */}addText(own||address,p.title,htmlToLines(p.html),'html',-1,needed(pdfLinksOf(p.html,p.url),p.title));}}
     else for(const m of parseWpMedia(list)){const l=asLink(m.url,m.title);if(l)offer({...l,kind:'pdf'});}
     if(list.length<50)return;
    }
@@ -357,10 +420,20 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  // Calendar entries of a meeting: head line from summary, day and time, then the description.
  for(const ev of events){
   if(!ev.date||!inWindow(ev.date)||!relevant(ev.url,ev.name))continue;
+  // A cancelled entry (STATUS:CANCELLED, METHOD:CANCEL, EventCancelled/EventPostponed) names a day without that meeting.
+  if(ev.cancelled){cancels.push({from:ev.date,to:null,committee:committeeOf(ev.name)});continue;}
   let own=null;try{own=ev.url&&siteAllowed(ev.url,source);}catch{/* elsewhere */}
-  const head=`${ev.name} am ${ddmmyyyy(ev.date)}${ev.time?`, ${ev.time} Uhr`:''}`;
-  texts.push({url:own||ev.from,title:ev.name,lines:[head,...String(ev.description||'').split(/\n/)],kind:'html',wrapped:false,order:-1,event:true,eventDate:ev.date});
-  if(own)offer(asLink(own,ev.name));
+  // The entry stands on its own day: "(verlegt)" in its summary says it was moved here, not away.
+  const name=String(ev.name||'').replace(/\s*[([]\s*(?:verlegt|verschoben|neuer\s+Termin|Terminänderung|geändert|Ersatztermin)\s*[)\]]/giu,' ').trim();
+  const head=`${name} am ${ddmmyyyy(ev.date)}${ev.time?`, ${ev.time} Uhr`:''}`;
+  // A description without line breaks (JSON-LD, a cropped calendar text) has its items in one line: they are put on lines of
+  // their own. A description cut short is not read; the page it links is. Who organises it stands above the head, where it is held
+  // below it, as a notice has them.
+  const description=String(ev.description||'').split(/\n/).flatMap(splitRunOn);
+  const lines=[...(ev.organizer?[ev.organizer]:[]),head,...(ev.location?[`Ort: ${ev.location}`]:[]),...description];
+  const needs=needed([...(own?[{url:own,label:ev.name,kind:'html'}]:[]),...(ev.links||[]).map(url=>({url,label:ev.name,kind:'pdf'}))],ev.name);
+  if(!truncatedText(description))texts.push({url:own||ev.from,title:ev.name,lines,kind:'html',wrapped:false,order:-1,event:true,eventDate:ev.date,needs});
+  else if(own)offer(asLink(own,ev.name));
  }
  // 3. Which candidates are read: only the site, only paths robots.txt leaves open, never the non-public part, an RIS
  // or the search, only links that look like a meeting's document, never a date outside the period. Documents whose
@@ -368,20 +441,20 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  // import goes on with what it has not read yet; then dated before undated, the newest first, then by score.
  const chosen=[];
  for(const c of candidates.values()){
-  if(listed.has(c.url)||direct.has(c.url)||!['html','pdf'].includes(c.kind)||closed(c.label,c.url))continue;
-  const score=sessionScore(c);if(score<SESSION_THRESHOLD||c.date&&!inWindow(c.date))continue;
+  if(listed.has(c.url)||direct.has(c.url)&&!c.force||!['html','pdf'].includes(c.kind)||closed(c.label,c.url))continue;
+  const score=sessionScore(c);if(!c.force&&(score<SESSION_THRESHOLD||c.date&&!inWindow(c.date)))continue;
   try{siteAllowed(c.url,source);}catch{continue;}
   chosen.push({...c,score});
  }
  const markedOf=url=>{const keys=Object.keys(marks?.known||{}).filter(k=>k.startsWith(url+'#sitzung-'));return keys.length&&keys.every(k=>Array.isArray(marks.known[k])&&usableMark(marks,{url:k,date:marks.known[k][0]},now))?keys:null;};
  const ranked=[];for(const c of chosen)if(await permitted(c.url))ranked.push({...c,marked:markedOf(c.url)});
- ranked.sort((a,b)=>(a.marked?1:0)-(b.marked?1:0)||(a.date?0:1)-(b.date?0:1)||String(b.date??'').localeCompare(String(a.date??''))||b.score-a.score);
- const take=ranked.slice(0,LIMITS.documents),rest=ranked.slice(take.length);
- // Documents left out whose meetings are marked count as read; only the others are still to be read.
- const heldBack=rest.filter(c=>c.marked);let left=rest.length-heldBack.length;
- // 4. Documents. HTML pages that yield no item may link the notice as PDF, pages with items the notice of the same day; those
- // are read in a second round.
- const unreadable=[],unparsed=[];let documents=0;
+ ranked.sort((a,b)=>(a.force?0:1)-(b.force?0:1)||(a.marked?1:0)-(b.marked?1:0)||(a.date?0:1)-(b.date?0:1)||String(b.date??'').localeCompare(String(a.date??''))||b.score-a.score);
+ // 4. Documents, at most LIMITS.documents in all. A page that yields no item may link the notice as PDF; a page with items may
+ // type off the agenda without its parts and link the official notice. Such PDFs are read right after their page (within the
+ // same limit); a page with items whose linked notice is not read (robots.txt, an error, a scan, another host, the limit)
+ // gives no items, so that what the notice puts in the non-public part never comes out of the page.
+ const unreadable=[],unparsed=[];let documents=0,budget=LIMITS.documents;const reading=new Map();
+ const readOnce=(c,order,deeper)=>{if(reading.has(c.url))return reading.get(c.url);if(budget<=0)return null;budget--;const p=readDocument(c,order,deeper);reading.set(c.url,p);return p;};
  const readDocument=async(c,order,deeper)=>{
   let got;try{got=await getBytes(c.url,site);}catch(e){fail('Dokument '+c.url,e);return;}
   documents++;onProgress(`${source.id}: ${documents} Dokumente`);
@@ -391,22 +464,41 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    if(bytes.byteLength>LIMITS.pdfBytes){issues.push(`Dokument ${c.url}: Quelldokument zu groß`);return;}
    let text;try{text=await pdfText(bytes);}catch(e){fail('Dokument '+c.url,e);return;}
    if(String(text||'').replace(/\s+/g,' ').trim().length<80){issues.push('PDF ohne lesbaren Text (vermutlich eingescannt): '+c.url);if(unreadable.length<LIMITS.unreadable)unreadable.push(c.url);return;}
-   texts.push({url:c.url,title:c.label,lines:pdfLines(text).map(repair),kind:'application/pdf',wrapped:true,order});return;
+   texts.push({url:c.url,title:c.label,lines:pdfLines(text).map(repair),kind:'application/pdf',wrapped:true,order,fetched:true});return;
   }
   if(bytes.byteLength>LIMITS.htmlBytes){issues.push(`Dokument ${c.url}: Quelldokument zu groß`);return;}
-  const html=decodeText(bytes,type);
-  texts.push({url:c.url,title:c.label,lines:htmlToLines(html).map(repair),kind:'html',wrapped:false,order,links:deeper?documentLinks(html,c.url):null});
- };
- await parallel(take,(c,i)=>readDocument(c,i,true),2);
- const second=[],seen=new Set([...candidates.keys(),...listed,...direct]);
- for(const t of texts.filter(t=>t.links).sort((a,b)=>a.order-b.order)){
-  // A page with items may type off the agenda without its parts and link the official notice: the notice of the same day is
-  // read too, so that what it puts in the non-public part never comes out of the page.
+  const html=decodeText(bytes,type),t={url:c.url,title:c.label,lines:htmlToLines(html).map(repair),kind:'html',wrapped:false,order,fetched:true};
+  texts.push(t);
+  if(!deeper)return;
   const days=new Set(parseSessionText(t.lines,{title:t.title}).meetings.filter(m=>m.items.length).map(m=>m.date));
-  for(const l of t.links)if(l.kind==='pdf'&&(!days.size||l.date&&days.has(l.date))&&!seen.has(l.url)&&!closed(l.label,l.url)&&sessionScore(l)>=SESSION_THRESHOLD&&!(l.date&&!inWindow(l.date))){seen.add(l.url);try{siteAllowed(l.url,source);second.push({...l,label:l.label||t.title});}catch{/* elsewhere */}}
- }
- const room=LIMITS.documents-take.length,more=[];for(const c of second){if(more.length>=room){left++;continue;}if(await permitted(c.url))more.push(c);}
- await parallel(more,(c,i)=>readDocument(c,take.length+i,false),2);
+  const notices=[];
+  for(const l of documentLinks(html,c.url)){
+   // A page with items: every PDF of the site it links counts as its notice, whatever the link says ("Amtliche Bekanntmachung (PDF,
+   // 85 KB)", "Download", an icon, "Aushang vom …"). A page without items: only links that look like a meeting's document.
+   if(l.kind!=='pdf'||closed(l.label,l.url)||!days.size&&sessionScore({url:l.url,label:l.label||t.title})<SESSION_THRESHOLD||l.date&&!inWindow(l.date)&&!days.size)continue;
+   // The notice of a page with items: of its day, without a day, or dated by its posting shortly before ("2026-10-07_einladung.pdf").
+   // A label that names another meeting's day leaves the PDF out; the day of a posting ("Aushang vom 07.10.2026") does not.
+   const labelDay=firstDay(l.label)&&/sitzung|niederschrift|protokoll|einladung|tagesordnung|beschl|rat(?:es|s)?\b|ausschuss|kreistag|vertretung|versammlung/i.test(l.label);
+   if(days.size&&l.date&&!days.has(l.date)&&(labelDay||![...days].some(d=>d&&dayDiff(l.date,d)>=0&&dayDiff(l.date,d)<=35)))continue;
+   notices.push(l);
+  }
+  if(days.size)t.requires=notices.map(l=>l.url);
+  for(const l of notices){
+   let u;try{u=siteAllowed(l.url,source);}catch{continue;}
+   if(!await permitted(u))continue;
+   const p=readOnce({...l,url:u,label:l.label||t.title},order+0.5,false);if(p)await p;else if(days.size)limitedNotices++;
+  }
+ };
+ let limitedNotices=0;
+ await parallel(ranked,async(c,i)=>{const p=readOnce(c,i,true);if(p)await p;},2);
+ const rest=ranked.filter(c=>!reading.has(c.url));
+ // Documents left out whose meetings are marked count as read; only the others are still to be read.
+ const heldBack=rest.filter(c=>c.marked);let left=rest.length-heldBack.length+limitedNotices;
+ // A page with items whose linked notice was not read gives nothing.
+ const readUrls=new Set([...texts.filter(t=>t.fetched).map(t=>t.url),...listRead]);
+ for(const t of texts)if(t.requires?.some(u=>!readUrls.has(u))){t.missingNotice=t.requires.find(u=>!readUrls.has(u));}
+ // A copy gives nothing where a document it stands for was not read, or gave nothing itself for want of its notice.
+ for(const t of texts)if(!t.fetched&&t.needs?.length){const miss=t.needs.find(u=>!readUrls.has(u)||texts.some(x=>x.fetched&&x.url===u&&x.missingNotice));if(miss)t.missingNotice=miss;}
  if(left)issues.push(`Dokumentlimit erreicht; ${left} ${left===1?'Dokument':'Dokumente'} noch nicht gelesen, weiterer Import erforderlich.`);
  if(heldBack.length)warnings.push(`Dokumentlimit erreicht; ${heldBack.length} bereits vollständig gelesene ${heldBack.length===1?'Dokument':'Dokumente'} diesmal nicht erneut gelesen.`);
  // 5. Meetings of each text.
@@ -416,13 +508,35 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
  const ownNames=[words(place),words(source.name),...names].filter(n=>n.trim());
  // Every text is read first: an item one document of a meeting puts in the non-public part (the invitation) never comes
  // out of another document of that meeting (minutes that copy the whole agenda, a page without its headings).
- const parsedOf=new Map(),closedOf=new Map();
+ // Each document is told apart by itself, not by its address: entries of a feed, posts of an API and a calendar entry may share
+ // the address of the feed or of the page they link.
+ const parsedOf=new Map(),closedOf=new Map(),publicOf=new Map(),moves=[];
  for(const t of texts.sort((a,b)=>a.order-b.order)){
   const parsed=parseSessionText(t.lines,{title:t.title,wrapped:t.wrapped});parsedOf.set(t,parsed);
+  moves.push(...meetingMoves(t.lines));
   // By day: the same body may be named otherwise in another document. An item numbered on after the public items of its
   // document (3 and 4 after 1 and 2) closes that number for the same body also where another document words it otherwise.
-  for(const m of parsed.meetings)if(m.date)for(const c of m.closedItems||[])closedOf.set(m.date,[...closedOf.get(m.date)||[],{...c,url:t.url,committee:m.committee?body(m.committee):'',standard:standardTitle(c.title),continues:m.lastPublic>0&&mainNumber(c.number)>m.lastPublic}]);
+  for(const m of parsed.meetings)if(m.date){
+   const committee=m.committee?body(m.committee):'';
+   for(const c of m.closedItems||[])closedOf.set(m.date,[...closedOf.get(m.date)||[],{...c,text:t,url:t.url,committee,standard:standardTitle(c.title),continues:m.lastPublic>0&&mainNumber(c.number)>m.lastPublic}]);
+   // The public items of a document that marks its non-public part: an item another document of the meeting gives beyond these
+   // (minutes numbered anew after an item was taken off) is not shown to be public.
+   if(m.closedItems?.length&&!m.unclear)publicOf.set(m.date,[...publicOf.get(m.date)||[],{text:t,committee,items:m.items}]);
+  }
  }
+ // A meeting moved to another day (by a notice of its own): what its invitation puts in the non-public part holds for the new
+ // day; the old day and a cancelled day have no meeting of that body.
+ const movedFrom=[];
+ moves.push(...cancels);
+ for(const mv of moves){
+  movedFrom.push(mv);if(!mv.to)continue;
+  const same=c=>!mv.committee||!c.committee||sameBodies(c.committee,body(mv.committee));
+  closedOf.set(mv.to,[...closedOf.get(mv.to)||[],...(closedOf.get(mv.from)||[]).filter(same)]);
+  publicOf.set(mv.to,[...publicOf.get(mv.to)||[],...(publicOf.get(mv.from)||[]).filter(same)]);
+ }
+ // Items of the non-public part of the same body on other days (within six weeks), by title only: a meeting moved without a
+ // notice the reader found.
+ const closedNear=(date,committee)=>[...closedOf.entries()].filter(([d])=>d!==date&&Math.abs(dayDiff(d,date))<=45).flatMap(([,list])=>list).filter(c=>!c.standard&&sameBodies(c.committee,committee));
  for(const t of texts){
   if(names.length&&!named){const all=words(t.title+' '+t.lines.join(' '));named=names.some(n=>all.includes(n));}
   const parsed=parsedOf.get(t);
@@ -430,6 +544,7 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   const known=parsed.meetings.filter(m=>m.date&&m.committee);
   if(!known.length){if(!t.event){issues.push('Keine Sitzung erkannt, nicht übernommen: '+t.url);if(unparsed.length<LIMITS.unparsed)unparsed.push(t.url);}continue;}
   if(parsed.meetings.some(m=>(!m.date||!m.committee)&&(m.items.length||m.unclear)))issues.push('Sitzung ohne erkennbares Datum oder Gremium, nicht übernommen: '+t.url);
+  if(t.missingNotice&&parsed.meetings.some(m=>m.items.length)){issues.push(`Verlinkte Bekanntmachung ${t.missingNotice} nicht gelesen; Punkte der Seite nicht übernommen: ${t.url}`);continue;}
   for(let m of known){
    if(!inWindow(m.date))continue;
    // A calendar entry names its day in DTSTART/startDate; a meeting the text gives another day is not taken.
@@ -438,9 +553,17 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
    if(foreign){if(foreign==='andere Gemeinde'&&m.items.length)issues.push(`Sitzung eines Gremiums einer anderen Gemeinde (${committee}), nicht übernommen: ${t.url}`);continue;}
    const key=`${m.date}|${slug(committee)}`;keys.add(key);
    if(m.unclear){issues.push('Tagesordnung nicht eindeutig als öffentlich erkennbar, nicht übernommen: '+t.url);continue;}
+   // A meeting on a day a notice moved or cancelled.
+   if(movedFrom.some(mv=>mv.from===m.date&&(!mv.committee||sameBodies(body(mv.committee),committee))&&!(mv.to===m.date))){if(m.items.length)issues.push(`Sitzung ${committee} ${ddmmyyyy(m.date)} laut Bekanntmachung verlegt oder abgesagt, nicht übernommen: ${t.url}`);continue;}
    // An item another document of the same meeting puts in the non-public part goes, with all items after it.
-   const elsewhere=(closedOf.get(m.date)||[]).filter(c=>c.url!==t.url);
-   const cut=m.items.findIndex(it=>elsewhere.some(c=>!c.standard&&closeTitles(c.title,it.title)||c.continues&&sameBodies(c.committee,committee)&&mainNumber(it.number)>=mainNumber(c.number)));
+   const elsewhere=(closedOf.get(m.date)||[]).filter(c=>c.text!==t);
+   const near=closedNear(m.date,committee).filter(c=>c.text!==t);
+   let cut=m.items.findIndex(it=>elsewhere.some(c=>!c.standard&&closeTitles(c.title,it.title)||c.continues&&sameBodies(c.committee,committee)&&mainNumber(it.number)>=mainNumber(c.number))||near.some(c=>closeTitles(c.title,it.title)));
+   // An item that is none of the public items of another document of the meeting that marks its non-public part.
+   for(const other of (publicOf.get(m.date)||[]).filter(o=>o.text!==t&&sameBodies(o.committee,committee))){
+    const k=m.items.findIndex(it=>!other.items.some(o=>slug(o.title)===slug(it.title)||closeTitles(o.title,it.title)));
+    if(k>=0&&(cut<0||k<cut))cut=k;
+   }
    if(cut>=0){warnings.push(`Punkt ${m.items[cut].number} (${committee} ${ddmmyyyy(m.date)}) steht in einem anderen Dokument dieser Sitzung im nichtöffentlichen Teil; ${m.items.length-cut} ${m.items.length-cut===1?'Punkt':'Punkte'} nicht übernommen (${t.url}).`);m={...m,items:m.items.slice(0,cut)};}
    if(!m.items.length){if(m.date>today)upcoming.add(key);continue;}
    withItems.add(key);

@@ -9,7 +9,9 @@
 // - allow: if given, every item that comes out starts with one of these titles (nothing else may come out),
 // - collectAllow: the same for the reader only (e.g. [] for a foreign body, whose meeting the parser may still read),
 // - date / committee: the day and body of every meeting that yields items.
-// round: 'r0' = leaks found before the hardening rounds (also pinned in website-text/website tests), 'r1' = round 1.
+// round: 'r0' = leaks found before the hardening rounds (also pinned in website-text/website tests), 'r1'…'r5' = rounds 1 to 5
+// (rounds 4 and 5 also in tests/website-leaks.test.mjs: documents of one meeting read together, feeds, calendars, WordPress,
+// JSON-LD events and the documents such copies link).
 
 const page=main=>`<!doctype html><html><head><meta charset="utf-8"><title>Gemeinde Musterbach</title></head><body><header><nav><a href="/">Start</a><a href="/rathaus">Rathaus</a></nav></header><main>${main}</main><footer>Impressum</footer></body></html>`;
 const ADORF_HEAD=`Gemeinde Adorf
@@ -1445,3 +1447,412 @@ closedRedirects.push('fileadmin/protokolle/2026/gr_0916_vertr.pdf','fileadmin/pr
 closedLabels.push('Niederschrift GR 16.09.2026 (NS)','Niederschrift GR 16.09.2026 N-Sitzung','Niederschrift GR 16.09.2026 (Ö-Teil) und (N-Teil)','Niederschrift Gemeinderat 16.09.2026 – nur für Ratsmitglieder',
  'Niederschrift Gemeinderat 16.09.2026 Nichföffentlich','Niederschrift Gemeinderat 16.09.2026 Nicht öffentich');
 closedPaths.push('/fileadmin/protokolle/2026/gr-2026-09-16-N.pdf','/fileadmin/protokolle/2026/gr_2026-09-16_TeilB_N.pdf','/fileadmin/protokolle/2026/gr_2026-09-16_intern.pdf','/fileadmin/protokolle/2026/gr_2026-09-16_ns.pdf','/fileadmin/protokolle/2026/gr_2026-09-16_NOS.pdf');
+
+// --- round 4 -----------------------------------------------------------------------------------------------------------
+const SIGN4=`Musterbach, 07.10.2026
+gez. Hans Huber
+Erster Bürgermeister`;
+// Words of a sentence or mark between the items that must never be read as part of a title.
+const NP4=['Grundstück','Personal','Zuhörer','Presse','Besucher','Gäste','ausgeschlossen','zugelassen','Öffentlichkeit','öffentlich','Sitzung','Runde','Mandat','intern','Punkte','N-'];
+const r4pdf=(id,text,more={})=>({id,round:'r4',doc:'pdf',label:'Einladung Gemeinderat',text,forbid:NP4,allow:GNK,date:'2026-10-14',...more});
+const between=(id,sentence,more={})=>r4pdf(id,`${MB_HEAD}
+1. Genehmigung der Niederschrift
+2. Bauantrag Kita
+${sentence}
+3. Grundstücksverkauf Fl.Nr. 412
+4. Personalangelegenheit
+${SIGN4}`,more);
+const NIED4=sep=>`Gemeinde Musterbach
+Niederschrift über die öffentliche Sitzung des Gemeinderates
+am Mittwoch, 16.09.2026, 19.00 Uhr, im Sitzungssaal des Rathauses
+1. Genehmigung der Niederschrift
+Die Niederschrift wird einstimmig genehmigt.
+2. Bauantrag Kita
+Der Gemeinderat erteilt das Einvernehmen. Abstimmung: 12:0
+${sep}
+3. Grundstücksverkauf Fl.Nr. 412
+Der Gemeinderat stimmt dem Verkauf an die Huber GmbH zu. Abstimmung: 11:1
+4. Personalangelegenheit
+Der Einstellung wird zugestimmt. Abstimmung: 12:0`;
+const nied4=(id,sep)=>({id,round:'r4',doc:'pdf',label:'Niederschrift Gemeinderat 16.09.2026',text:NIED4(sep),forbid:NP4,allow:GNK,date:'2026-09-16',now:'2026-10-04'});
+const H1R4='<h1>Öffentliche Sitzung des Gemeinderates am 14.10.2026, 19:00 Uhr</h1>';
+const r4html=(id,main,more={})=>({id,round:'r4',doc:'html',label:'Tagesordnung Gemeinderat 14.10.2026',text:page(main),forbid:NP,date:'2026-10-14',...more});
+const OPEN_SESSION='<h1>Sitzung des Gemeinderates am 14.10.2026, 19:00 Uhr</h1><p>Die Sitzung ist öffentlich.</p>';
+
+cases.push(
+ // sentences between the items of an invitation that end the public part (PDF lines, read as wrapped)
+ between('r4-between-presse-zuhoerer-colon','Für die folgenden Punkte sind Presse und Zuhörer ausgeschlossen:'),
+ between('r4-between-besucher-not-admitted','Besucher sind zu den folgenden Punkten nicht zugelassen.'),
+ between('r4-between-gaeste-not-admitted','Gäste sind bei den folgenden Punkten nicht zugelassen.'),
+ between('r4-between-zuhoerer-hyphen','Für die folgenden Punkte sind Zuhö-\nrer nicht zugelassen.'),
+ between('r4-between-ohne-beteiligung','Die weiteren Punkte werden ohne Beteiligung der Öffentlichkeit beraten.'),
+ between('r4-between-presse-zuhoerer-short','Presse und Zuhörer sind ausgeschlossen'),
+ ...['Nichöffentliche Sitzung','Nichtöfffentliche Sitzung','Nichtöffenttliche Sitzung','Nichtöffetnliche Sitzung','Nciht öffentliche Sitzung','Nichttöffentliche Sitzung','NICHÖFFENTLICHE SITZUNG','Unöffentliche Sitzung'].map((h,n)=>between(`r4-between-typo-${n+1}`,h)),
+ between('r4-between-n-sitzung','N-Sitzung'),
+ between('r4-between-geschlossene-runde','Weitere Punkte in geschlossener Runde'),
+ between('r4-between-mandatstraeger','Sitzungsfortsetzung nur für Mandatsträger'),
+ between('r4-between-public-numbers','Öffentlich sind die Tagesordnungspunkte 1 und 2.'),
+ between('r4-between-public-range','Die Punkte 1 bis 2 werden öffentlich beraten.'),
+ // a note in the head that names the items by number without the word "nichtöffentlich"
+ ...['Zu den Tagesordnungspunkten 3 und 4 sind Zuhörer nicht zugelassen.','Besucher sind zu TOP 3 und 4 nicht zugelassen.','Bei TOP 3 und 4 sind Presse und Zuhörer ausgeschlossen.'].map((s,n)=>r4pdf(`r4-head-note-${n+1}`,`Gemeinde Musterbach
+Am Mittwoch, 14.10.2026, 19.00 Uhr, findet im Sitzungssaal des Rathauses eine öffentliche Sitzung des Gemeinderates statt.
+${s}
+Tagesordnung
+1. Genehmigung der Niederschrift
+2. Bauantrag Kita
+3. Grundstücksverkauf Fl.Nr. 412
+4. Personalangelegenheit`)),
+ // a mark at the item
+ ...['(Zuhörer ausgeschlossen)','(§ 35 (1) GemO)','(Art. 52 (2) GO)','(gem. § 35 I 2 GemO)','(nichöffentlich)','(Ausschluss Presse)','intern'].map((m,n)=>r4pdf(`r4-item-mark-${n+1}`,`${MB_HEAD}
+1. Genehmigung der Niederschrift
+2. Bauantrag Kita
+3. Grundstücksverkauf Fl.Nr. 412 ${m}
+4. Anfragen
+${SIGN4}`,{forbid:[...NP4,'Anfragen']})),
+ // footnote letters
+ ...['a)','(a)'].map((m,n)=>r4pdf(`r4-footnote-letter-${n+1}`,`Gemeinde Musterbach
+Öffentliche Bekanntmachung
+Am Mittwoch, 14.10.2026, 19.00 Uhr, findet im Sitzungssaal des Rathauses eine öffentliche Sitzung des Gemeinderates statt.
+Tagesordnung
+1. Fragestunde für Einwohner
+2. Bauantrag Kita
+3. Grundstücksverkauf Fl.Nr. 412 ${m}
+4. Personalangelegenheit ${m}
+${m} nichtöffentlich
+Musterbach, 07.10.2026
+Hans Huber, Bürgermeister`,{allow:['Fragestunde für Einwohner','Bauantrag Kita']})),
+ // minutes: sentences that close the public
+ ...['Der Vorsitzende schließt die Öffentlichkeit für die weiteren Tagesordnungspunkte aus.','Die anwesenden Zuhörer werden für die weiteren Punkte ausgeschlossen.','Presse und Zuhörer sind ab hier ausgeschlossen',
+  'Die Sitzung wird intern fortgesetzt.','Der Vorsitzende stellt die Nichtöffentlichkeit her.','Die Zuhörer werden gebeten, den Saal zu verlassen.'].map((s,n)=>nied4(`r4-minutes-sentence-${n+1}`,s)),
+ // the day of the meeting wrapped between day and month
+ r4pdf('r4-date-wrapped',`Gemeinde Musterbach
+Einladung
+zur öffentlichen Sitzung des Gemeinderates
+Die Sitzung findet statt am Mittwoch, 14.
+Oktober 2026, um 19.00 Uhr im Rathaus.
+Die Niederschrift der letzten Sitzung vom 16.09.2026 liegt zur Einsicht aus.
+Tagesordnung
+1. Genehmigung der Niederschrift
+2. Bauantrag Kita`,{label:'Einladung'}),
+ r4pdf('r4-date-wrapped-anschluss',`Gemeinde Musterbach
+Im Anschluss an die Sitzung vom 16.09.2026 lade ich Sie zur öffentlichen Sitzung des Gemeinderates am Mittwoch, 14.
+Oktober 2026, um 19.00 Uhr in den Sitzungssaal ein.
+Tagesordnung
+1. Genehmigung der Niederschrift
+2. Bauantrag Kita`,{label:'Einladung'}),
+ // foreign bodies
+ {id:'r4-county-youth-committee',round:'r4',doc:'pdf',label:'Einladung Jugendhilfeausschuss',text:`Einladung zur öffentlichen Sitzung des Jugendhilfeausschusses
+Datum: Mittwoch, 14.10.2026
+Beginn: 14:00 Uhr
+Ort: Landratsamt Musterkreis, Großer Sitzungssaal
+Tagesordnung
+1. Jugendhilfeplanung 2027
+2. Kita-Bedarfsplanung im Landkreis
+Max Mustermann
+Landrat`,forbid:['Mustermann','Landrat'],collectAllow:[]},
+ {id:'r4-county-title',round:'r4',doc:'pdf',label:'Kreistag – Ausschuss für Umwelt 14.10.2026',text:`Einladung
+zur öffentlichen Sitzung des Ausschusses für Umwelt und Landwirtschaft
+am Mittwoch, 14.10.2026, 14.00 Uhr
+Tagesordnung
+1. Abfallwirtschaftskonzept 2027
+2. Naturschutzgebiet Moorwiesen`,collectAllow:[]},
+ {id:'r4-zv-in-signature',round:'r4',doc:'pdf',label:'Einladung Werkausschuss',text:`Einladung
+zur öffentlichen Sitzung des Werkausschusses
+am Mittwoch, 21.10.2026, 17.00 Uhr
+im Sitzungssaal des Rathauses Musterbach
+Tagesordnung
+1. Wasserpreis 2027
+2. Erneuerung Hochbehälter Oberland
+Musterbach, 07.10.2026
+Hans Huber
+Verbandsvorsitzender
+Zweckverband Wasserversorgung Oberland`,collectAllow:[]},
+ {id:'r4-vg-werke',round:'r4',doc:'pdf',label:'Einladung Werkausschuss',source:{name:'Ortsgemeinde Musterbach'},text:`Verbandsgemeindewerke Musterland
+Einladung
+zur öffentlichen Sitzung des Werkausschusses
+am Dienstag, 20.10.2026, 17.00 Uhr, Sitzungssaal der Verbandsgemeindeverwaltung
+Tagesordnung
+1. Wirtschaftsplan 2027 der Abwasserbeseitigung
+2. Kanalsanierung Hauptstraße
+Musterland, 07.10.2026
+Erika Beispiel
+Bürgermeisterin`,collectAllow:[]},
+ {id:'r4-other-member-place',round:'r4',doc:'pdf',label:'Sitzung Gemeinderat 14.10.2026',text:`Bekanntmachung
+Am Mittwoch, 14.10.2026, 19.30 Uhr, findet im Sitzungssaal des Rathauses Bdorf eine öffentliche Sitzung des Gemeinderates statt.
+Tagesordnung
+1. Bauantrag Fl.Nr. 77, Gemarkung Bdorf
+2. Feuerwehrhaus Bdorf
+Bdorf, 07.10.2026
+Max Muster
+Erster Bürgermeister`,collectAllow:[]},
+ // gazettes of a Verwaltungsgemeinschaft under other names; associations in the Rathaus of a member; the Landrat as issuer
+ ...[['Gemeindezeitung der Verwaltungsgemeinschaft Oberland\nJahrgang 32 · Freitag, 9. Oktober 2026 · Nr. 41\nAmtliche Bekanntmachungen\nNACHBARHAUSEN'],
+  ['Oberland-Rundschau\nJahrgang 32 · Freitag, 9. Oktober 2026 · Nr. 41\nAmtliche Bekanntmachungen\nAus der Gemeinde Nachbarhausen'],
+  ['Heimatzeitung Oberland\nFreitag, 9. Oktober 2026 · Nr. 41\nAmtliche Bekanntmachungen\nNachbarhausen']].map(([head],n)=>({id:`r4-gazette-member-${n+1}`,round:'r4',doc:'pdf',label:'Sitzungsbekanntmachungen KW 41',text:`${head}
+Öffentliche Sitzung des Gemeinderates
+Am Dienstag, 13.10.2026, 19.30 Uhr, findet im Sitzungssaal eine öffentliche Sitzung des Gemeinderates statt.
+Tagesordnung
+1. Genehmigung der Niederschrift
+2. Bauantrag Neubau Feuerwehrhaus Nachbarhausen
+3. Kanalsanierung Bachstraße`,collectAllow:[]})),
+ ...[['ZV Wasserversorgung Oberland-Gruppe','im Rathaus Musterbach','Werkausschusses','1. Wasserpreise 2027\n2. Erneuerung Hochbehälter'],
+  ['Grund- und Mittelschule Oberland','in der Grundschule Musterbach','Schulausschusses','1. Schülerbeförderung\n2. Digitalpakt']].map(([issuer,venue,body,items],n)=>({id:`r4-gazette-association-venue-${n+1}`,round:'r4',doc:'pdf',label:'Sitzungsbekanntmachungen KW 41',text:`Mitteilungsblatt der Verwaltungsgemeinschaft Oberland
+Freitag, 9. Oktober 2026 Nr. 41
+Amtliche Bekanntmachungen
+${issuer}
+Am Dienstag, 13.10.2026, 17.00 Uhr, findet ${venue} eine öffentliche Sitzung des ${body} statt.
+Tagesordnung
+${items}
+Gemeinde Musterbach
+Am Mittwoch, 14.10.2026, 19.00 Uhr, findet im Rathaus Musterbach eine öffentliche Sitzung des Gemeinderates statt.
+Tagesordnung
+1. Bauantrag Kita
+2. Haushalt 2027`,collectForbid:['Wasserpreis','Hochbehälter','Schülerbeförderung','Digitalpakt']})),
+ {id:'r4-gazette-landrat',round:'r4',doc:'pdf',label:'Sitzungsbekanntmachungen KW 41',text:`Amtliche Bekanntmachungen
+Der Landrat des Landkreises Musterkreis
+Bekanntmachung
+Am Montag, 19.10.2026, 14.00 Uhr, findet im großen Sitzungssaal eine öffentliche Sitzung des Jugendhilfeausschusses statt.
+Tagesordnung
+1. Bedarfsplanung Kindertagesstätten 2027
+2. Jugendsozialarbeit an Schulen`,collectAllow:[]},
+ // HTML: a status line, a field or a badge inside the card of one item
+ ...['<p>Sitzungsart: nichtöffentlich</p>','<p>Öffentlichkeit: nein</p>','<p>Öffentlichkeit: ausgeschlossen</p>','<p>Teil: nichtöffentlich</p>','<p>Zugang: nicht öffentlich</p>','<p>Beratungsart: vertraulich</p>'].map((f,n)=>r4html(`r4-html-card-field-${n+1}`,`${H1R4}<div class=top><h3>TOP 1 Bauantrag Kita</h3><p>Vorlage: 2026/041</p></div><div class=top><h3>TOP 2 Haushalt 2027</h3><p>Vorlage: 2026/042</p></div><div class=top><h3>TOP 3 Grundstücksverkauf Fl.Nr. 412</h3><p>Vorlage: 2026/043</p>${f}</div><div class=top><h3>TOP 4 Personalangelegenheit</h3>${f}</div>`,{allow:KITA})),
+ r4html('r4-html-dl-public-field',`${H1R4}<dl><dt>TOP 1</dt><dd>Bauantrag Kita</dd><dt>Öffentlich</dt><dd>ja</dd><dt>TOP 2</dt><dd>Grundstücksverkauf</dd><dt>Öffentlich</dt><dd>nein</dd></dl>`,{allow:['Bauantrag Kita']}),
+ ...['N-Teil','Geheim','Teil B','Sitzungsteil B','Teil 2','II','privat'].map((b,n)=>r4html(`r4-html-card-badge-${n+1}`,`${H1R4}<div class=card><h3>TOP 1 Bauantrag Kita</h3><p>Vorlage 2026/041</p></div><div class=card><h3>TOP 2 Haushalt 2027</h3><p>Vorlage 2026/042</p></div><div class=card><h3>TOP 3 Grundstücksverkauf</h3><p>Vorlage 2026/043</p><span class=badge>${b}</span></div>`,{allow:KITA})),
+ r4html('r4-html-card-badge-after-title',`${H1R4}<div class=card><h3>TOP 1 Bauantrag Kita</h3></div><div class=card><h3>TOP 2 Haushalt 2027</h3></div><div class=card><h3>TOP 3 Grundstücksverkauf</h3><span class=badge>N-Teil</span></div>`,{allow:KITA}),
+ // reports of a meeting that go on in its closed part in other words
+ ...['Anschließend befasste sich der Gemeinderat in geschlossener Runde mit den folgenden Themen:','Folgende Themen wurden anschließend intern diskutiert:','Im zweiten Teil der Sitzung, zu dem Zuhörer keinen Zutritt hatten, ging es um:',
+  'Im Anschluss an den öffentlichen Teil wurde weiter beraten über:','Bei den folgenden Punkten mussten die Zuhörer draußen bleiben:','Nach einer kurzen Pause wurde unter sich weiterberaten über:','In der sich anschließenden Klausur des Gremiums ging es um:',
+  'Außerdem standen auf der Tagesordnung:'].map((s,n)=>({id:`r4-report-closed-${n+1}`,round:'r4',doc:'html',label:'Bericht aus der Gemeinderatssitzung',now:'2026-10-20',date:'2026-10-14',text:page(`<article><h1>Bericht aus der Gemeinderatssitzung vom 14.10.2026</h1><p>In öffentlicher Sitzung befasste sich der Gemeinderat mit folgenden Themen:</p><p>1. Bauantrag Kita</p><p>Der Gemeinderat erteilte das Einvernehmen einstimmig.</p><p>2. Haushalt 2027</p><p>Der Kämmerer stellte den Entwurf vor.</p><p>${s}</p><p>3. Grundstücksverkauf Fl.Nr. 412</p><p>4. Personalangelegenheit</p></article>`),forbid:NP,allow:KITA})),
+ // the end of the public part in the lines of minutes
+ ...['Ende der Sitzung (öffentlicher Teil): 20:15 Uhr','Öffentliche Sitzung Ende: 20:15 Uhr','Ende ÖT 20:15 Uhr','Öffentlicher Sitzungsteil: 19:00 Uhr bis 20:15 Uhr','Ende des öffentlichen Sitzungsteils um 20:15 Uhr'].map((s,n)=>({id:`r4-minutes-end-${n+1}`,round:'r4',doc:'html',label:'Niederschrift Gemeinderat 16.09.2026',now:'2026-10-04',date:'2026-09-16',text:page(`<h1>Niederschrift über die öffentliche Sitzung des Gemeinderates am 16.09.2026</h1><p>Beginn: 19:00 Uhr</p><p>1. Bauantrag Kita</p><p>Beschluss: Das Einvernehmen wird erteilt. Abstimmung: 12:0</p><p>2. Haushalt 2027</p><p>Der Gemeinderat nimmt den Bericht zur Kenntnis.</p><p>${s}</p><p>3. Grundstücksverkauf Fl.Nr. 412</p><p>Der Gemeinderat stimmt dem Verkauf zu.</p><p>4. Personalangelegenheit</p>`),forbid:NP,allow:KITA})),
+ // the norm of a county code that excludes the public
+ ...['(Art. 46 Abs. 2 LKrO)','(§ 30 LKrO)','(§ 33 Abs. 2 KrO NRW)','(§ 32 HKO)','(§ 33 SächsLKrO)','(Art. 41 Abs. 2 BezO)','(u. A. d. Ö.)'].map((m,n)=>({id:`r4-county-law-${n+1}`,round:'r4',doc:'html',label:'Tagesordnung Kreisausschuss 14.10.2026',source:{name:'Landkreis Musterkreis',kind:'district'},date:'2026-10-14',text:page(`<h1>Öffentliche Sitzung des Kreisausschusses am 14.10.2026, 14:00 Uhr</h1><p>1. Kreishaushalt 2027</p><p>2. Schulbau Gymnasium</p><p>3. Personalangelegenheit ${m}</p><p>4. Grundstückserwerb ${m}</p>`),forbid:NP,allow:['Kreishaushalt 2027','Schulbau Gymnasium']})),
+ // symbols, icon fonts, classes and data attributes in a status column
+ ...['<img src="/fileadmin/icons/nicht_oeffentlich.png" alt="">','<img src="/fileadmin/icons/nichtoeff.gif" alt="">','<img src="/fileadmin/icons/closed.png" alt="">','<img src="/fileadmin/icons/status_n.gif" alt="">','<img src="/fileadmin/icons/key.svg" alt="">','<img src="/fileadmin/icons/privat.png" alt="">',
+  '<i class="mdi mdi-eye-off"></i>','<i class="fa fa-key"></i>','<span class="ico_noeff"></span>','<span class="status-nö"></span>','<span class="topNichtOeffentlich"></span>','<span class="badge-private"></span>','<span class="status-closed"></span>','<i class="icon-confidential"></i>',
+  '<span class="material-icons" aria-hidden="true">lock</span>','<span class="material-symbols-outlined">visibility_off</span>','<svg viewBox="0 0 10 10"><path d="M0 0h10v10z"/></svg>'].map((icon,n)=>r4html(`r4-html-status-symbol-${n+1}`,`${OPEN_SESSION}<table><tr><td>1</td><td>Bauantrag Kita</td><td><img src="/fileadmin/icons/oeffentlich.png" alt=""></td></tr><tr><td>2</td><td>Grundstücksverkauf</td><td>${icon}</td></tr></table>`,{allow:['Bauantrag Kita'],forbid:[...NP,'lock','visibility']})),
+ r4html('r4-html-li-data-status',`${OPEN_SESSION}<ul><li>1. Bauantrag Kita</li><li data-status="nichtoeffentlich">2. Grundstücksverkauf</li></ul>`,{allow:['Bauantrag Kita']}),
+ r4html('r4-html-tr-class-camel',`${OPEN_SESSION}<table><tr><td>1</td><td>Bauantrag Kita</td></tr><tr class="rowNonPublic"><td>2</td><td>Grundstücksverkauf</td></tr></table>`,{allow:['Bauantrag Kita']}),
+ r4html('r4-html-status-intern',`${OPEN_SESSION}<table><tr><td>1</td><td>Bauantrag Kita</td><td>öffentlich</td></tr><tr><td>2</td><td>Grundstücksverkauf</td><td>intern</td></tr></table>`,{allow:['Bauantrag Kita']}),
+ // persons in minutes
+ nied3('r4-minutes-present-name-office',`<p>Beginn: 19:00 Uhr</p><p>Zur Sitzung waren erschienen:</p><p>1. Hans Huber, Erster Bürgermeister<br>2. Anna Maier, Gemeinderätin<br>3. Josef Bauer, Gemeinderat<br>4. Erika Probe, Gemeinderätin</p><h2>Öffentlicher Teil</h2><p>1. Bauantrag Kita</p><p>Beschluss: Das Einvernehmen wird erteilt. Abstimmung: 12:0</p><p>2. Haushalt 2027</p><p>Zur Kenntnis genommen.</p><h2>Nichtöffentlicher Teil</h2><p>3. Grundstücksverkauf</p>`,{forbid:[...PERSONS,'Bauer','Probe','Grundstück'],allow:KITA}),
+ nied3('r4-minutes-lay-judges-numbered-on',`<p>1. Genehmigung der Niederschrift</p><p>Die Niederschrift wird genehmigt.</p><p>2. Aufstellung der Vorschlagsliste für Schöffen</p><p>In die Vorschlagsliste werden aufgenommen:</p><p>3. Anna Maier, Hausfrau, Musterbach<br>4. Josef Bauer, Landwirt, Oberdorf<br>5. Erika Probe, Lehrerin, Musterbach</p><p>Abstimmung: 12:0</p>`,{forbid:[...PERSONS,'Bauer','Probe']}),
+ ...['<p>Der Bauausschuss wird wie folgt besetzt:</p>',''].map((intro,n)=>nied3(`r4-minutes-committee-table-${n+1}`,`<p>1. Genehmigung der Niederschrift</p><p>Die Niederschrift wird genehmigt.</p><p>2. Besetzung des Bauausschusses</p>${intro}<table><tr><th>Nr.</th><th>Mitglied</th><th>Stellvertreter</th></tr><tr><td>1</td><td>${n?'GR ':''}Anna Maier${n?'':' (CSU)'}</td><td>${n?'GR ':''}Josef Bauer${n?'':' (CSU)'}</td></tr><tr><td>2</td><td>${n?'GRin ':''}Erika Probe${n?'':' (SPD)'}</td><td>${n?'GR ':''}Tim Test${n?'':' (SPD)'}</td></tr><tr><td>3</td><td>${n?'GR ':''}Karl Klein${n?'':' (FW)'}</td><td>${n?'GR ':''}Fritz Zahl${n?'':' (FW)'}</td></tr><tr><td>4</td><td>${n?'GRin ':''}Lena Lang${n?'':' (Grüne)'}</td><td>${n?'GR ':''}Paul Post${n?'':' (Grüne)'}</td></tr></table><p>Abstimmung: 12:0</p><p>3. Haushalt 2027</p><p>Zur Kenntnis genommen.</p>`,{forbid:[...PERSONS,'Bauer','Probe','Klein','Zahl','Post','Test']})),
+ // the day of an article's publication is not the day of the meeting
+ {id:'r4-article-date-headline',round:'r4',doc:'html',label:'Gemeinderatssitzung: Kita-Neubau beschlossen',now:'2026-10-21',text:page('<article><p class="date">Dienstag, 20.10.2026</p><h2>Gemeinderatssitzung: Kita-Neubau beschlossen</h2><p>In der öffentlichen Sitzung am vergangenen Mittwoch standen auf der Tagesordnung:</p><p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p></article>'),date:'2026-10-14'},
+ {id:'r4-article-date-past-weekday',round:'r4',doc:'html',label:'Aus dem Gemeinderat',now:'2026-10-21',text:page('<article><p class="date">Dienstag, 20. Oktober 2026</p><h1>Aus dem Gemeinderat</h1><p>Der Gemeinderat tagte am vergangenen Mittwoch in öffentlicher Sitzung. Behandelt wurden:</p><p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p></article>'),date:'2026-10-14'},
+ // a struck day of a moved meeting
+ ...['<h1>Öffentliche Sitzung des Gemeinderates am <del>07.10.2026</del> 14.10.2026, 19:00 Uhr</h1>','<h1>Öffentliche Sitzung des Gemeinderates</h1><p>am Mittwoch, <s>07.10.2026</s> 14.10.2026</p>',
+  '<h1>Öffentliche Sitzung des Gemeinderates</h1><p>Termin: <span style="text-decoration:line-through">Mittwoch, 07.10.2026</span> <strong>NEU: Mittwoch, 14.10.2026</strong></p>','<h1>Öffentliche Sitzung des Gemeinderates</h1><p><del>am Mittwoch, 07.10.2026, 19:00 Uhr</del></p><p>am Mittwoch, 14.10.2026, 19:00 Uhr</p>'].map((h,n)=>({id:`r4-struck-date-${n+1}`,round:'r4',doc:'html',label:'Sitzung des Gemeinderates (verlegt)',date:'2026-10-14',text:page(`${h}<p>Tagesordnung</p><p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p>`)})),
+ // a table of dates with the bodies and agendas in one row each
+ ...[['<th>Datum</th><th>Gremium</th><th>Tagesordnung der öffentlichen Sitzung</th>','<td>14.10.2026</td><td>Gemeinderat</td>','<td>21.10.2026</td><td>Bauausschuss</td>'],
+  ['<th>Sitzung</th><th>Öffentliche Sitzung – Tagesordnung</th>','<td>Gemeinderat<br>14.10.2026</td>','<td>Bauausschuss<br>21.10.2026</td>']].map(([th,a,b],n)=>({id:`r4-dates-table-${n+1}`,round:'r4',doc:'html',label:'Tagesordnungen Gemeinderat und Ausschüsse',text:page(`<h1>Sitzungstermine</h1><table><tr>${th}</tr><tr>${a}<td>1. Bauantrag Kita</td></tr><tr>${b}<td>1. Bauvoranfrage Hauptstraße 5<br>2. Straßenbau Lindenweg</td></tr></table>`),expect:[['Bauantrag Kita','2026-10-14','Gemeinderat'],['Bauvoranfrage','2026-10-21','Bauausschuss'],['Straßenbau','2026-10-21','Bauausschuss']]})),
+);
+closedLabels.push('Niederschrift GR 16.09.2026 (o. Ö.)','Niederschrift GR 16.09.2026 nichtöffntl.','Niederschrift_GR_16.09.2026_ohneÖff');
+closedPaths.push('/fileadmin/protokolle/GR-2026-09-16_ohne_Oeffentlichkeit.pdf','/fileadmin/protokolle/gr-2026-09-16-ohne-oeffentlichkeit.pdf');
+closedRedirects.push('fileadmin/protokolle/GR-2026-09-16_ohne_Oeffentlichkeit.pdf');
+// Round 4, found while repairing: the same causes in other forms.
+cases.push(
+ between('r4-between-keine-zuhoerer','Bei den weiteren Beratungsgegenständen sind keine Zuhörer zugelassen.'),
+ between('r4-between-anschliessende-punkte','Für die anschließenden Tagesordnungspunkte ist die Öffentlichkeit nicht zugelassen.'),
+ between('r4-between-gaeste-field','Gäste: nein'),
+ r4pdf('r4-pdf-card-badge',`${MB_HEAD}
+TOP 1 Genehmigung der Niederschrift
+Vorlage: 2026/040
+TOP 2 Bauantrag Kita
+Vorlage: 2026/041
+TOP 3 Grundstücksverkauf Fl.Nr. 412
+Vorlage: 2026/043
+N-Teil
+TOP 4 Personalangelegenheit`),
+ r4html('r4-html-status-cell-style',`${OPEN_SESSION}<table><tr><td>1</td><td>Bauantrag Kita</td><td class="status"></td></tr><tr><td>2</td><td>Grundstücksverkauf</td><td class="status status-2"></td></tr></table>`,{allow:['Bauantrag Kita']}),
+ r4html('r4-html-details-status',`${H1R4}<details><summary>TOP 1 Bauantrag Kita</summary><p>Status: öffentlich</p></details><details><summary>TOP 2 Grundstücksverkauf</summary><p>Status: NÖ</p></details><details><summary>TOP 3 Personalangelegenheit</summary><p>Status: öffentlich</p></details>`,{allow:['Bauantrag Kita']}),
+);
+
+// --- round 5 -----------------------------------------------------------------------------------------------------------
+const r5pdf=(id,text,more={})=>({id,round:'r5',doc:'pdf',label:'Einladung Gemeinderat',text,forbid:NP4,allow:KITA,date:'2026-10-14',...more});
+const BY_ITEMS=tail=>`${MB_HEAD}
+1. Bauantrag Kita
+2. Haushalt 2027
+3. Grundstücksverkauf Fl.Nr. 412${tail}`;
+const OVERVIEW_INV=`Gemeinde Musterbach
+Einladung zur Sitzung des Gemeinderates am Mittwoch, 14.10.2026, 19.00 Uhr, im Rathaus
+Die Sitzung ist öffentlich, ausgenommen die mit N gekennzeichneten Punkte.
+Tagesordnung
+Ö 1 Genehmigung der Niederschrift
+Ö 2 Bauantrag Kita
+N 3 Grundstücksverkauf Fl.Nr. 412
+N 4 Personalangelegenheit
+gez. Huber
+Erster Bürgermeister
+Tagesordnung
+1. Genehmigung der Niederschrift
+Sachvortrag: Die Niederschrift lag aus.
+2. Bauantrag Kita
+Sachvortrag: Der Bauantrag liegt vor.
+3. Grundstücksverkauf Fl.Nr. 412
+Sachvortrag: Ein Kaufangebot liegt vor.
+4. Personalangelegenheit
+Sachvortrag: Siehe Vorlage.`;
+const PAGE_HEAD_SPLIT=head=>`Gemeinde Musterbach
+Am Mittwoch, 14.10.2026, 19.00 Uhr, findet im Sitzungssaal des Rathauses eine öffentliche Sitzung des Gemeinderates statt.
+Tagesordnung
+1. Bauantrag Kita
+2. Haushalt 2027
+\f${head}
+3. Grundstücksverkauf Fl.Nr. 412
+4. Personalangelegenheit`;
+const R5_OPEN='<h1>Sitzung des Gemeinderates am 14.10.2026, 19:00 Uhr</h1><p>Die Sitzung ist öffentlich.</p>';
+const r5html=(id,main,more={})=>({id,round:'r5',doc:'html',label:'Sitzung Gemeinderat',text:page(main),forbid:NP4,allow:KITA,date:'2026-10-14',...more});
+const SCHOEFFEN=(colon,names)=>`Gemeinde Musterbach
+Niederschrift über die öffentliche Sitzung des Gemeinderates
+am Mittwoch, 16.09.2026, 19.00 Uhr
+1. Genehmigung der Niederschrift
+Die Niederschrift wird genehmigt. Abstimmung: 12:0
+2. Aufstellung der Vorschlagsliste für Schöffen
+Folgende Personen werden in die Vorschlagsliste aufgenommen${colon}
+${names.map((n,k)=>`${k+1}. ${n}`).join('\n')}
+Abstimmung: 12:0`;
+const NAMES5=['Yilmaz, Ayse, Verkäuferin, Musterbach','Kowalski, Piotr, Schlosser, Musterbach','Brandl, Wiebke, Erzieherin, Musterbach','Gruber, Hiltrud, Rentnerin, Musterbach'];
+const NEWS5=sep=>`<main><article><h1>Aus dem Gemeinderat</h1><p>Bericht aus der öffentlichen Sitzung des Gemeinderates vom 14.10.2026</p><p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p><p>${sep}</p><p>3. Grundstücksverkauf Fl.Nr. 412</p><p>4. Vergabe Feuerwehrfahrzeug</p></article></main>`;
+cases.push(
+ // a short agenda marked Ö/N, then the agenda again with the reports (Sachvortrag) under a second "Tagesordnung"
+ r5pdf('r5-marked-overview-invitation',OVERVIEW_INV,{label:'Einladung öffentliche Sitzung Gemeinderat 14.10.2026',allow:GNK}),
+ {id:'r5-marked-overview-minutes',round:'r5',doc:'pdf',label:'Niederschrift Gemeinderat 16.09.2026',text:`Gemeinde Musterbach
+Niederschrift über die Sitzung des Gemeinderates
+am Mittwoch, 16.09.2026, 19.00 Uhr, im Rathaus
+Übersicht
+Ö 1 Genehmigung der Niederschrift
+Ö 2 Bauantrag Kita
+N 3 Grundstücksverkauf Fl.Nr. 412
+Tagesordnung – öffentlicher Teil
+1. Genehmigung der Niederschrift
+Die Niederschrift wird genehmigt. Abstimmung: 12:0
+2. Bauantrag Kita
+Das Einvernehmen wird erteilt. Abstimmung: 11:1
+3. Grundstücksverkauf Fl.Nr. 412
+Dem Verkauf wird zugestimmt. Abstimmung: 12:0`,forbid:NP4,allow:GNK,date:'2026-09-16'},
+ // the heading of the non-public part on the line of the page number (running head of a section)
+ ...['Nichtöffentlicher Teil Seite 2 von 2','Nichtöffentlicher Teil Seite 2 / 2','Einladung GR 14.10.2026 – nichtöffentlicher Teil Seite 2 von 2','Gemeinde Musterbach – Nichtöffentliche Sitzung – Seite 2 von 2','Seite 2 von 2 Nichtöffentlicher Teil'].map((h,n)=>r5pdf(`r5-page-number-heading-${n+1}`,PAGE_HEAD_SPLIT(h))),
+ // the paragraph that excludes the public in other spellings
+ ...[' (§ 37 Abs. 1 Satz 1 Sächs. GemO)',' (§ 37 Abs. 1 Satz 1 Sächs GemO)',' gemäß § 36 Abs. 2 Bbg. KVerf',' gemäß § 36 Abs. 2 KVerf',' (Art. 52 Abs. 2 Bayerische Gemeindeordnung)',' – Beratung gem. § 40 Abs. 1 Thüringer Kommunalordnung',' (gem. § 52 Abs. 2 Kommunalverfassungsgesetz)',' (§ 52 Abs. 1 Hessische Gemeindeordnung)',' (nach § 37 Absatz 1 der Sächsischen Gemeindeordnung)',' (geschl.)'].map((m,n)=>r5pdf(`r5-item-law-${n+1}`,BY_ITEMS(m)+'\n4. Personalangelegenheit'+m)),
+ r5pdf('r5-head-verschwiegenheit',`${MB_HEAD}
+Die Beratung der Tagesordnungspunkte 3 und 4 unterliegt der Verschwiegenheitspflicht.
+1. Bauantrag Kita
+2. Haushalt 2027
+3. Grundstücksverkauf Fl.Nr. 412
+4. Personalangelegenheit`),
+ ...['Teilnahme nur Gemeinderatsmitglieder','Nur Ratsmitglieder','Danach blieb der Rat unter sich','Im Anschluss tagte das Gremium intern weiter.','Die folgenden Beratungen fanden nicht vor Publikum statt','Folgende Punkte wurden ohne Bürger beraten','Im kleinen Kreis wurde anschließend beraten'].map((s,n)=>r5pdf(`r5-between-${n+1}`,`${MB_HEAD}
+1. Bauantrag Kita
+2. Haushalt 2027
+${s}
+3. Grundstücksverkauf Fl.Nr. 412
+4. Personalangelegenheit`,{forbid:[...NP4,'Teilnahme','Rat','Gremium','Publikum','Bürger','Kreis']})),
+ // foreign bodies in collective notices of a VG or an Amt, a Zweckverband named otherwise
+ {id:'r5-vg-sections-caps',round:'r5',doc:'pdf',label:'Sitzungsbekanntmachungen KW 42',text:`Verwaltungsgemeinschaft Oberland
+Amtliche Bekanntmachungen
+MUSTERBACH
+Öffentliche Sitzung des Gemeinderates
+am Mittwoch, 14.10.2026, 19.00 Uhr, im Sitzungssaal des Rathauses
+Tagesordnung
+1. Bauantrag Kita
+2. Haushalt 2027
+NACHBARHAUSEN
+Öffentliche Sitzung des Bauausschusses
+am Donnerstag, 15.10.2026, 19.30 Uhr, im Sitzungssaal des Rathauses
+Tagesordnung
+1. Bauantrag Fl.Nr. 99 Gemarkung Nachbarhausen
+2. Bauvoranfrage Lindenweg`,collectForbid:['Fl.Nr. 99','Lindenweg']},
+ {id:'r5-amt-two-notices',round:'r5',doc:'pdf',label:'Sitzungsbekanntmachungen Amt Oktober',text:`Amt Musterland
+Der Amtsdirektor
+Bekanntmachung
+Einladung zur Sitzung des Amtsausschusses
+am Montag, 19.10.2026, 18.00 Uhr, im Amtsgebäude
+Die Sitzung ist öffentlich.
+Tagesordnung
+1. Haushaltssatzung des Amtes 2027
+2. Amtsumlage
+Einladung zur Sitzung des Finanzausschusses
+am Dienstag, 20.10.2026, 18.00 Uhr, im Amtsgebäude
+Die Sitzung ist öffentlich.
+Tagesordnung
+1. Prüfung der Jahresrechnung 2025
+2. Kreditaufnahme Schulsanierung`,collectAllow:[]},
+ {id:'r5-amt-member-venue',round:'r5',doc:'pdf',label:'Bekanntmachungen Sitzungen Oktober',text:`Amt Musterland
+Öffentliche Bekanntmachungen
+Gemeinde Musterbach
+Sitzung der Gemeindevertretung am Donnerstag, 15.10.2026, 19.00 Uhr, im Bürgerhaus
+Die Sitzung ist öffentlich.
+1. Bauantrag Kita
+2. Haushalt 2027
+Sitzung des Hauptausschusses am Montag, 19.10.2026, 19.00 Uhr, im Gemeindezentrum Nachbarhausen
+Die Sitzung ist öffentlich.
+1. Vergabe Winterdienst Nachbarhausen
+2. Friedhofsgebühren Nachbarhausen`,collectForbid:['Nachbarhausen']},
+ ...['Wasserversorgungsgruppe Oberland','Gruppenwasserversorgung Oberland','Fernwasserversorgung Oberland','Abwasserbeseitigung Oberland'].map((issuer,n)=>({id:`r5-zv-named-${n+1}`,round:'r5',doc:'pdf',label:'Einladung Werkausschuss',text:`${issuer}
+Einladung zur öffentlichen Sitzung des Werkausschusses
+am Dienstag, 20.10.2026, 17.00 Uhr, im Rathaus Musterbach
+Tagesordnung
+1. Wirtschaftsplan 2027
+2. Wassergebühren`,collectAllow:[]})),
+ // the day of another appointment in the head
+ ...[['am Mittwoch, 14.10.2026, 18.30 Uhr, im Rathaus','Am Vortag, Dienstag, 13.10.2026, findet um 17.00 Uhr eine Ortsbesichtigung statt.'],
+  ['am Mittwoch, 14.10.2026, 18.30 Uhr, im Rathaus','Zuvor findet am Montag, 12.10.2026, um 19.00 Uhr die Bürgerversammlung statt.'],
+  ['Datum: Mittwoch, 14.10.2026','Vorbesprechung der Fraktionen am Montag, 12.10.2026, 19:00 Uhr'],
+  ['Datum: Mittwoch, 14.10.2026, 18:30 Uhr','Ortsbesichtigung am Dienstag, 13.10.2026, 17:00 Uhr'],
+  ['Beginn der Ortsbesichtigung: Dienstag, 13.10.2026, 17.00 Uhr','Sitzungsbeginn: Mittwoch, 14.10.2026, 18.00 Uhr']].map(([a,b],n)=>({id:`r5-date-other-appointment-${n+1}`,round:'r5',doc:'pdf',label:'Einladung Bauausschuss',text:`Gemeinde Musterbach
+Einladung zur öffentlichen Sitzung des Bauausschusses
+${a}
+${b}
+Tagesordnung
+1. Bauantrag Kita
+2. Bauvoranfrage Lindenweg`,date:'2026-10-14',committee:'Bauausschuss'})),
+ {id:'r5-date-hyphenated-body',round:'r5',doc:'pdf',label:'Mitteilungsblatt Nr. 41',text:`Mitteilungsblatt der Gemeinde Musterbach
+Freitag, 9. Oktober 2026 Nr. 41
+Amtliche Bekanntmachungen
+Hinweis: Die Sitzung des Gemeinderates am Mittwoch, 14.10.2026 beginnt bereits um 18.00 Uhr.
+Öffentliche Sitzung des Bau-
+und Umweltausschusses
+am Dienstag, 20.10.2026, 18.00 Uhr, im Rathaus
+Tagesordnung
+1. Bauantrag Kita
+2. Bauvoranfrage Lindenweg`,date:'2026-10-20',committee:'Bau- und Umweltausschuss'},
+ // a list of lay judges with first names the reader does not know
+ {id:'r5-schoeffen-colon',round:'r5',doc:'pdf',label:'Niederschrift Gemeinderat 16.09.2026',text:SCHOEFFEN(':',NAMES5),forbid:['Yilmaz','Kowalski','Brandl','Gruber','Öztürk'],date:'2026-09-16'},
+ {id:'r5-schoeffen-no-colon',round:'r5',doc:'pdf',label:'Niederschrift Gemeinderat 16.09.2026',text:SCHOEFFEN('',[...NAMES5,'Öztürk, Mehmet, Techniker, Musterbach']),forbid:['Yilmaz','Kowalski','Brandl','Gruber','Öztürk'],date:'2026-09-16'},
+ // legends by formatting, also outside main, tab bars after their panels, roman references, full-width letters
+ ...['Kursiv: nichtöffentliche Punkte','grau hinterlegt: nichtöffentlicher Teil','Rot markierte Tagesordnungspunkte: nicht öffentlich','Anmerkung: kursive TOPs nichtöffentlich'].map((l,n)=>r5html(`r5-html-format-legend-${n+1}`,`${R5_OPEN}<p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p><p><em>3. Grundstücksverkauf</em></p><p><em>4. Personalangelegenheit</em></p><p>${l}</p>`,{allow:[]})),
+ r5html('r5-html-format-legend-bold-public',`${R5_OPEN}<p><b>1. Bauantrag Kita</b></p><p><b>2. Haushalt 2027</b></p><p>3. Grundstücksverkauf</p><p>4. Personalangelegenheit</p><p>Fett gedruckte Punkte werden öffentlich beraten.</p>`),
+ {id:'r5-html-legend-in-footer',round:'r5',doc:'html',label:'Sitzung Gemeinderat',text:`<html><body><main>${R5_OPEN}<p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p><p class="grau">3. Grundstücksverkauf</p><p class="grau">4. Personalangelegenheit</p></main><footer><p>Grau dargestellte Punkte werden nichtöffentlich beraten.</p></footer></body></html>`,forbid:NP4,allow:[],date:'2026-10-14'},
+ r5html('r5-html-legend-in-aside',`${R5_OPEN}<p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p><p><em>3. Grundstücksverkauf</em></p><p><em>4. Personalangelegenheit</em></p><aside><p>Kursiv: nichtöffentliche Punkte</p></aside>`,{allow:[]}),
+ ...[R5_OPEN,'<h1>Öffentliche Sitzung des Gemeinderates am 14.10.2026, 19:00 Uhr</h1>'].map((h,n)=>r5html(`r5-html-tabs-after-panels-${n+1}`,`${h}<div class="tab-content"><div class="tab-pane active" id="tab1"><p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p></div><div class="tab-pane" id="tab2"><p>3. Grundstücksverkauf Fl.Nr. 412</p><p>4. Personalangelegenheit</p></div></div><ul class="nav-tabs"><li><a href="#tab1">Öffentlich</a></li><li><a href="#tab2">Nichtöffentlich</a></li></ul>`)),
+ r5html('r5-html-tabs-aria',`${R5_OPEN}<div class="tab-content"><div class="tab-pane" id="p1" role="tabpanel" aria-labelledby="tab-oe"><p>1. Bauantrag Kita</p><p>2. Haushalt 2027</p></div><div class="tab-pane" id="p2" role="tabpanel" aria-labelledby="tab-noe"><p>3. Grundstücksverkauf</p><p>4. Personalangelegenheit</p></div></div>`),
+ ...['Danach blieb der Rat unter sich','Im Anschluss tagte das Gremium intern weiter.','Danach tagte der Rat unter sich','Die folgenden Beratungen fanden nicht vor Publikum statt','Folgende Punkte wurden ohne Bürger beraten','Im kleinen Kreis wurde anschließend beraten','Nur Ratsmitglieder'].map((s,n)=>({id:`r5-news-colloquial-${n+1}`,round:'r5',doc:'html',label:'Sitzung Gemeinderat',now:n%2?'2026-10-21':'2026-10-05',text:page(NEWS5(s).replace(/^<main>|<\/main>$/g,'')),forbid:['Grundstück','Feuerwehrfahrzeug'],allow:KITA,date:'2026-10-14'})),
+ r5html('r5-html-roman-refs',`${R5_OPEN}<p>1. Bauantrag Kita<br>2. Haushalt 2027<br>3. Grundstücksverkauf<br>4. Personalangelegenheit</p><p>Hinweis: TOP III und IV nichtöffentlich</p>`),
+ r5html('r5-html-fullwidth-heading','<h1>Öffentliche Sitzung des Gemeinderates am 14.10.2026, 19:00 Uhr</h1><p>1. Bauantrag Kita<br>2. Haushalt 2027</p><h3>ＮＩＣＨＴÖＦＦＥＮＴＬＩＣＨＥＲ ＴＥＩＬ</h3><p>3. Grundstücksverkauf<br>4. Personalangelegenheit</p>'),
+ // the day of the post above an article that names the meeting by its weekday only
+ ...['<article><p class="date">09.10.2026</p><h1>Gemeinderat tagt</h1><p>Der Gemeinderat tritt am kommenden Mittwoch um 19 Uhr zu einer öffentlichen Sitzung zusammen.</p><p>1. Bauantrag Kita<br>2. Haushalt 2027</p></article>',
+  '<article><header><time>09.10.2026</time></header><h1>Gemeinderat tagt</h1><p>Der Gemeinderat tritt am kommenden Mittwoch um 19 Uhr zu einer öffentlichen Sitzung zusammen.</p><p>1. Bauantrag Kita<br>2. Haushalt 2027</p></article>',
+  '<div class="news-list-date">09.10.2026</div><h1>Gemeinderat</h1><p>Am Mittwoch um 19:00 Uhr findet im Rathaus eine öffentliche Sitzung des Gemeinderates statt.</p><p>1. Bauantrag Kita<br>2. Haushalt 2027</p>',
+  '<h1>09.10.2026: Einladung zur öffentlichen Sitzung des Gemeinderates</h1><p>am Mittwoch, 19 Uhr</p><p>1. Bauantrag Kita<br>2. Haushalt 2027</p>',
+  '<ol class="breadcrumb"><li>Start</li><li>09.10.2026</li></ol><h1>Gemeinderat tagt</h1><p>Der Gemeinderat tritt am kommenden Mittwoch um 19 Uhr zu einer öffentlichen Sitzung zusammen.</p><p>1. Bauantrag Kita<br>2. Haushalt 2027</p>',
+  '<article><p class="date">09.10.2026</p><h1>Bauausschuss</h1><p>Der Bauausschuss tagt am Dienstag nächster Woche um 18 Uhr in öffentlicher Sitzung.</p><p>1. Bauantrag Kita<br>2. Haushalt 2027</p></article>'].map((main,n)=>({id:`r5-news-posting-date-${n+1}`,round:'r5',doc:'html',label:'Sitzung Gemeinderat',text:page(main),forbid:[],date:'2026-10-14'})),
+ // a note that moves the meeting, below the items or in a box above the heading
+ ...['<h1>Öffentliche Sitzung des Gemeinderates am 14.10.2026, 19:00 Uhr</h1><p>1. Bauantrag Kita<br>2. Haushalt 2027</p><p><strong>Achtung: Die Sitzung wird auf Mittwoch, 21.10.2026 verschoben.</strong></p>',
+  '<div class="alert">Terminänderung: neuer Termin 21.10.2026</div><h1>Öffentliche Sitzung des Gemeinderates am 14.10.2026, 19:00 Uhr</h1><p>1. Bauantrag Kita<br>2. Haushalt 2027</p>'].map((main,n)=>({id:`r5-moved-note-${n+1}`,round:'r5',doc:'html',label:'Sitzung Gemeinderat',text:page(main),forbid:[],date:'2026-10-21'})),
+);
+closedLabels.push('Niederschrift GR 16.09.2026 (nur Ratsmitglieder)','Sitzungsprotokoll Gemeinderat 16.09.2026 (GR-intern)','Niederschrift GR 16.09.2026 (Interna)');
+closedPaths.push('/fileadmin/protokolle/gr-2026-09-16_nur-ratsmitglieder.pdf','/fileadmin/protokolle/intern/gr-2026-09-16.pdf','/ratsmitglieder/protokolle/gr-2026-09-16.pdf');
+closedRedirects.push('fileadmin/protokolle/gr-2026-09-16_nur-ratsmitglieder.pdf','fileadmin/protokolle/intern/gr-2026-09-16.pdf','ratsmitglieder/protokolle/gr-2026-09-16.pdf');
+cases.push(
+ // a part heading written by unpdf without its space ("TeilB")
+ r5pdf('r5-pdf-teilb',`Gemeinde Musterbach
+Einladung zur Sitzung des Gemeinderates am Mittwoch, 14.10.2026, 19:00 Uhr
+Teil A (öffentlich)
+1. Genehmigung der Niederschrift
+2. Bauantrag Kita
+TeilB
+3. Grundstücksverkauf Fl.Nr. 412
+4. Personalangelegenheit`,{allow:GNK,forbid:[...NP4,'Teil']}),
+);

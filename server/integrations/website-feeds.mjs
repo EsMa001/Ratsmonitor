@@ -10,6 +10,10 @@ const ENT={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' ',auml:'ä',ouml:'ö',
 const decodeStep=s=>String(s??'').replace(/&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]*);/gi,(m,k)=>{if(k[0]!=='#')return ENT[k]??m;const n=/^#x/i.test(k)?parseInt(k.slice(2),16):Number(k.slice(1));return n>0&&n<=0x10ffff?String.fromCodePoint(n):m;});
 // Entities escaped once or twice more ("Nicht&amp;ouml;ffentlich") are decoded until nothing changes.
 const decode=s=>{let t=String(s??'');for(let k=0;k<5;k++){const n=decodeStep(t);if(n===t)break;t=n;}return t;};
+// Text with its line breaks (<br>, ends of paragraphs and list items, written breaks): the head of a part ("Teil B") or a signature
+// below the items stays a line of its own.
+const BLOCKS='p|div|li|ul|ol|tr|table|h[1-6]|dt|dd|dl|section|article|header|footer|blockquote|pre|hr|address|details|summary';
+const stripLines=html=>decode((/&lt;\/?[a-z]/i.test(String(html??''))?decode(html):String(html??'')).replace(/<!--[\s\S]*?-->/g,' ').replace(/<(script|style|noscript)\b[\s\S]*?<\/\1\s*>/gi,' ').replace(/<br\b[^>]*>/gi,'\n').replace(new RegExp(`</?(?:${BLOCKS})\\b[^>]*>`,'gi'),'\n').replace(/<[^>]+>/g,' ')).split(/\r?\n/).map(l=>l.replace(/[ \t\u00a0]+/g,' ').trim()).filter(Boolean).join('\n');
 const strip=html=>decode(String(html??'').replace(/<!--[\s\S]*?-->/g,' ').replace(/<(script|style|noscript)\b[\s\S]*?<\/\1\s*>/gi,' ').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();
 const attr=(attrs,name)=>{const m=String(attrs).match(new RegExp(`(?:^|\\s)${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`,'i'));return m?decode(m[1]??m[2]??m[3]):null;};
 const safeDecode=s=>{try{return decodeURIComponent(s);}catch{return s;}};
@@ -72,6 +76,13 @@ const kindOf=(url,type)=>{const t=String(type??'').toLowerCase();if(t.includes('
 // A link that holds only an image is named by the image's alt text.
 const labelOf=({attrs,inner})=>{const img=String(inner).match(/<img\b([^>]*)>/i)?.[1];const parts=[strip(inner)||(img?attr(img,'alt'):''),attr(attrs,'title'),attr(attrs,'aria-label')].map(p=>String(p??'').replace(/\s+/g,' ').trim()).filter(Boolean);
  return parts.filter((p,i)=>parts.findIndex(q=>q.toLowerCase()===p.toLowerCase())===i).join(' ');};
+/** Addresses of PDF files a text names (links of its markup, plain addresses in a calendar text): [{url,label,date,kind:'pdf'}]. */
+export function pdfLinksOf(text,base){
+ const out=new Map();
+ for(const l of documentLinks(text,base))if(l.kind==='pdf')out.set(l.url,l);
+ for(const m of String(text??'').replace(/<[^>]+>/g,' ').matchAll(/https?:\/\/[^\s"'<>()]+/gi)){const url=resolve(m[0].replace(/[.,;:]+$/,''),base);if(url&&kindOf(url)==='pdf'&&!out.has(url))out.set(url,{url,label:'',date:urlDate(url),kind:'pdf'});}
+ return [...out.values()];
+}
 /** Links of a page: [{url,label,date,kind}], fragments removed, relative addresses resolved, one entry per address. */
 export function documentLinks(html,base){
  const out=new Map();
@@ -91,7 +102,9 @@ const norm=s=>String(s??'').replace(/\u00a8\s?([AOUaou])/g,'$1\u0308').replace(/
 // Also "NÖT"/"NOeT" (nichtöffentlicher Teil), "(geschl.)", "geheim" and a name part "np" (gr-2026-09-16-np.pdf).
 // Also "NS", "NOS", "N-Teil", "N-Sitzung", "Teil B", a name part "-N" before the extension, "intern", "nur für Ratsmitglieder" and
 // typos ("Nichföffentlich", "Nicht öffentich").
-const NONPUBLIC=/nicht ?o?e?ff?(?:entl|tl\b|\b)|\bnich[a-z]? ?oe?ff?entl|\bnicht ?o?e?ff?enti?ch\b|vertraulich|\bvertr\b|geschlossene[nr]? (?:sitzung|teil)|\bgeschl\b|\bgeheim\b|\bnp\b|\bn ?oe(?: ?ff?(?: ?tl)?)?(?: ?[st])?\b|unter ausschluss (?:der|von) (?:presse und (?:der )?)?oeffentlichkeit|\bteil ?[nb]\b|\bn (?:teil|sitzung)\b|\bns\b|\bnos\b|\b(?:n|intern) (?:pdf|html?|php|aspx?|docx?)\b|\bnur fuer (?:die )?(?:[a-z]+ )?(?:[a-z]*mitglieder|[a-z]*raete)\b/;
+// Also "(o. Ö.)", "nichtöffntl.", "ohneÖff", "…_ohne_Oeffentlichkeit.pdf".
+// Also "(nur Ratsmitglieder)", "(GR-intern)", "(Interna)", a folder "/intern/" and "/ratsmitglieder/protokolle/".
+const NONPUBLIC=/nicht ?o?e?ff?(?:entl|n?tl\b|\b)|\bo oe\b|\bohne ?o?e?ff|\bnich[a-z]? ?oe?ff?entl|\bnicht ?o?e?ff?enti?ch\b|vertraulich|\bvertr\b|geschlossene[nr]? (?:sitzung|teil)|\bgeschl\b|\bgeheim\b|\bnp\b|\bn ?oe(?: ?ff?(?: ?tl)?)?(?: ?[st])?\b|unter ausschluss (?:der|von) (?:presse und (?:der )?)?oeffentlichkeit|\bteil ?[nb]\b|\bn (?:teil|sitzung)\b|\bns\b|\bnos\b|\b(?:n|intern) (?:pdf|html?|php|aspx?|docx?)\b|\bnur (?:fuer )?(?:die )?(?:[a-z]+ )?(?:[a-z]*mitglieder|[a-z]*raete)\b|\binterna?\b|\b[a-z]*mitglieder (?:[a-z]+ )?(?:protokoll\w*|niederschrift\w*|unterlagen|sitzungsunterlagen)\b/;
 // Old servers write umlauts of addresses in Latin-1 ("nicht%F6ffentlich").
 const latinUmlauts=s=>String(s??'').replace(/%(?:f6|d6)/gi,'oe').replace(/%(?:e4|c4)/gi,'ae').replace(/%(?:fc|dc)/gi,'ue').replace(/%df/gi,'ss');
 const BODY=/gemeinderat|stadtrat|marktrat|ortschaftsrat|ortsrat|ortsbeirat|beirat\b|bezirksrat|kreistag|gemeindevertret|stadtverordnet|stadtvertretung|ausschuss|ausschuess|\brat der (?:stadt|gemeinde|verbandsgemeinde|samtgemeinde)|ratssitzung|gemeindeversammlung/;
@@ -182,11 +195,15 @@ export function parseFeed(xml,base){
  return out;
 }
 const unescapeIcs=v=>v.replace(/\\([nN,;\\])/g,(m,c)=>c==='n'||c==='N'?'\n':c);
-/** Events of an iCalendar file: [{uid,summary,date,time,description,url,location}]; recurrence rules are not expanded. */
+/**
+ * Events of an iCalendar file: [{uid,summary,date,time,description,url,location,organizer,cancelled,attachments}]; recurrence rules
+ * are not expanded. cancelled: STATUS:CANCELLED, or a calendar of METHOD:CANCEL.
+ */
 export function parseIcs(text){
  const lines=String(text??'').replace(/\r\n?/g,'\n').replace(/\n[ \t]/g,'').split('\n'),out=[];let ev=null,nested=0;
+ const cancelAll=/^METHOD:\s*CANCEL\s*$/im.test(lines.join('\n'));
  for(const line of lines){const m=line.match(/^([A-Za-z0-9-]+)((?:"[^"]*"|[^":])*):(.*)$/);if(!m)continue;const name=m[1].toUpperCase(),value=m[3];
-  if(name==='BEGIN'){if(value.trim().toUpperCase()==='VEVENT'&&!ev){ev={uid:'',summary:'',date:null,time:null,description:'',url:null,location:''};nested=0;}else if(ev)nested++;continue;}
+  if(name==='BEGIN'){if(value.trim().toUpperCase()==='VEVENT'&&!ev){ev={uid:'',summary:'',date:null,time:null,description:'',url:null,location:'',organizer:'',cancelled:cancelAll,attachments:[]};nested=0;}else if(ev)nested++;continue;}
   if(name==='END'){if(!ev)continue;if(nested){nested--;continue;}if(value.trim().toUpperCase()==='VEVENT'){if(ev.date)out.push(ev);ev=null;}continue;}
   if(!ev||nested)continue;
   const params=Object.fromEntries([...m[2].matchAll(/;([A-Za-z0-9-]+)=("[^"]*"|[^;]*)/g)].map(p=>[p[1].toUpperCase(),p[2].replace(/^"|"$/g,'')]));
@@ -196,7 +213,10 @@ export function parseIcs(text){
    else if(d[6]||/^(?:utc|etc\/utc|gmt|z)$/i.test(params.TZID??''))Object.assign(ev,iso(d[1],d[2],d[3])?berlin(Date.UTC(+d[1],d[2]-1,+d[3],+d[4],+d[5])):{date:null,time:null});
    else Object.assign(ev,{date:iso(d[1],d[2],d[3]),time:`${d[4]}:${d[5]}`});}
   else if(name==='UID')ev.uid=value.trim();else if(name==='SUMMARY')ev.summary=unescapeIcs(value).trim();else if(name==='DESCRIPTION')ev.description=unescapeIcs(value).trim();
-  else if(name==='LOCATION')ev.location=unescapeIcs(value).trim();else if(name==='URL')ev.url=resolve(value)??null;}
+  else if(name==='LOCATION')ev.location=unescapeIcs(value).trim();else if(name==='URL')ev.url=resolve(value)??null;
+  else if(name==='ORGANIZER')ev.organizer=String(params.CN??unescapeIcs(value).replace(/^mailto:/i,'')).trim();
+  else if(name==='STATUS'){if(/^CANCELL?ED$/i.test(value.trim()))ev.cancelled=true;}
+  else if(name==='ATTACH'){const u=resolve(value.trim());if(u)ev.attachments.push(u);}}
  return out;
 }
 
@@ -238,13 +258,17 @@ export function parseWpMedia(json){
 }
 
 // --- page metadata ---------------------------------------------------------------------------------------------------
+// The place of an event as one line: its name and address ("Rathaus Nachbarhausen, Kirchplatz 2, 99999 Nachbarhausen").
+const placeOf=v=>[].concat(v??[]).map(p=>typeof p==='string'?strip(p):p&&typeof p==='object'?[p.name,...(typeof p.address==='string'?[p.address]:[p.address?.streetAddress,[p.address?.postalCode,p.address?.addressLocality].filter(Boolean).join(' ')])].map(x=>strip(x)).filter(Boolean).join(', '):'').filter(Boolean).join('; ');
 const isEvent=n=>[].concat(n['@type']??[]).some(t=>/(?:^|[:/])\w*Event$/.test(String(t)));
 /** schema.org events of a page (JSON-LD, also inside @graph and arrays): [{name,date,time,description,url}]. */
 export function jsonLdEvents(html,base){
  const out=[],seen=new Set();
  const walk=(n,depth)=>{if(!n||typeof n!=='object'||depth>8)return;if(Array.isArray(n)){for(const x of n)walk(x,depth+1);return;}
   if(isEvent(n)){const at=stamp(n.startDate);if(!at)return;const id=typeof n['@id']==='string'&&/^https?:/i.test(n['@id'])?n['@id']:null;
-   const ev={name:strip(n.name),date:at.date,time:at.time,description:strip(n.description),url:resolve(typeof n.url==='string'?n.url:id,base)};const key=`${ev.name}|${ev.date}|${ev.url}`;if(!seen.has(key)){seen.add(key);out.push(ev);}return;}
+   const ev={name:strip(n.name),date:at.date,time:at.time,description:stripLines(n.description),url:resolve(typeof n.url==='string'?n.url:id,base),
+    location:placeOf(n.location),organizer:[].concat(n.organizer??[]).map(o=>typeof o==='string'?o:o?.name).filter(Boolean).map(strip).join(', '),
+    cancelled:/(?:Cancelled|Postponed)$/i.test(String(n.eventStatus?.['@id']??n.eventStatus??'')),links:pdfLinksOf(String(n.description??''),base).map(l=>l.url)};const key=`${ev.name}|${ev.date}|${ev.url}`;if(!seen.has(key)){seen.add(key);out.push(ev);}return;}
   for(const v of Object.values(n))walk(v,depth+1);};
  for(const m of String(html??'').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)){if(!/ld\+json/i.test(attr(m[1],'type')??''))continue;
   try{walk(JSON.parse(m[2].trim().replace(/^<!--|-->$/g,'').replace(/^\/\/\s*<!\[CDATA\[|\/\/\s*\]\]>$/g,'').trim()),0);}catch{/* broken JSON-LD names no event */}}

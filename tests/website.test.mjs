@@ -13,7 +13,9 @@ import {SOURCE_USER_AGENT} from '../server/integrations/no-redirect.mjs';
 // the website of an invented municipality Musterbach on www.musterbach.example.test, written the way small towns publish
 // notices, minutes, feeds and calendars. No real places or persons. PDF files are stood in for by their extracted text
 // (pdfText is injected), the network by functions that answer from the fixtures and record every address asked.
-const fixture=name=>readFileSync(new URL(`./fixtures/website/${name}`,import.meta.url),'utf8');
+// The folder the fixtures' robots.txt excludes is read as "/gesperrt/": a folder "/intern/" names the non-public part (never asked
+// at all), so it would not show the robots.txt rule.
+const fixture=name=>readFileSync(new URL(`./fixtures/website/${name}`,import.meta.url),'utf8').replace(/\/intern\//g,'/gesperrt/');
 const base='https://www.musterbach.example.test/';
 const now=new Date('2026-10-04T10:00:00Z'),fromDay=windowStart(now,'12m').toISOString().slice(0,10);
 const source={id:'de-09999001',name:'Gemeinde Musterbach',kind:'city',method:'scraper',adapter:'website',base,pages:[base+'rathaus/bekanntmachungen/'],feeds:[base+'aktuelles/feed.rss'],ics:[base+'veranstaltungen/kalender.ics'],wp:base+'wp-json/',sitemap:base+'sitemap.xml',verifiedSource:base+'rathaus/bekanntmachungen/',verifiedAt:'2026-10-04'};
@@ -25,7 +27,7 @@ const U={
  sitemapMinutes:base+'rathaus/gremien/gemeinderat/niederschrift-2026-07-22.html',scan:base+'wp-content/uploads/2026/10/tagesordnung-gemeinderat-2026-11-25.pdf',
  closed:base+'fileadmin/bekanntmachungen/2026/niederschrift-gemeinderat-nichtoeffentlich-2026-09-16.pdf',statute:base+'fileadmin/bekanntmachungen/2026/haushaltssatzung-2026.pdf',
  publisher:'https://www.amtsblatt-verlag.example.test/musterbach/einladung-bauausschuss-2026-10-21.pdf',old:base+'fileadmin/bekanntmachungen/2024/einladung-gemeinderat-2024-03-12.pdf',
- robots:base+'intern/protokoll-gemeinderat-2026-07-08.pdf',robotsSitemap:base+'intern/sitzung-gemeinderat-2026-08-19.html',feedArticle:base+'aktuelles/einladung-bauausschuss-21-10-2026.html',
+ robots:base+'gesperrt/protokoll-gemeinderat-2026-07-08.pdf',robotsSitemap:base+'gesperrt/sitzung-gemeinderat-2026-08-19.html',feedArticle:base+'aktuelles/einladung-bauausschuss-21-10-2026.html',
  oldSitemap:base+'rathaus/gremien/gemeinderat/niederschrift-2023-05-10.html',waste:base+'leben/abfallkalender-2026.html',job:base+'aktuelles/stellenausschreibung-bauhof.html',
 };
 const enc=s=>new TextEncoder().encode(s);
@@ -75,10 +77,10 @@ test('fetchSiteText follows redirects by hand within the site and refuses a redi
 });
 
 test('fetchSiteText checks every redirect target against robots.txt; fetchSiteBytes keeps the size limit',async()=>{
- const request=fakeFetch({[base+'open']:{status:302,headers:{location:'/intern/einladung.html'}},[base+'intern/einladung.html']:{body:'geheim'},[base+'big.pdf']:{headers:{'content-length':String(13e6),'content-type':'application/pdf'},body:'%PDF'},[base+'ok.pdf']:{headers:{'content-type':'application/pdf'},body:'%PDF-1.7 x'}});
- const gated={base,[ROBOTS]:async url=>!new URL(url).pathname.startsWith('/intern/')};
+ const request=fakeFetch({[base+'open']:{status:302,headers:{location:'/gesperrt/einladung.html'}},[base+'gesperrt/einladung.html']:{body:'geheim'},[base+'big.pdf']:{headers:{'content-length':String(13e6),'content-type':'application/pdf'},body:'%PDF'},[base+'ok.pdf']:{headers:{'content-type':'application/pdf'},body:'%PDF-1.7 x'}});
+ const gated={base,[ROBOTS]:async url=>!new URL(url).pathname.startsWith('/gesperrt/')};
  await assert.rejects(fetchSiteText(base+'open',gated,5000,request),{message:ROBOTS_BLOCKED});
- assert.ok(!request.seen.some(r=>r.url.includes('/intern/')));
+ assert.ok(!request.seen.some(r=>r.url.includes('/gesperrt/')));
  await assert.rejects(fetchSiteBytes(base+'big.pdf',{base},5000,request),/zu groß/);
  const got=await fetchSiteBytes(base+'ok.pdf',{base},5000,request);
  assert.equal(got.type,'application/pdf');assert.equal(new TextDecoder().decode(got.bytes),'%PDF-1.7 x');
@@ -194,7 +196,7 @@ test('collectWebsite reads nothing when robots.txt answers with a server error',
  assert.equal(d.topics.length,0);assert.equal(d.coverage.complete,false);
  assert.match(d.coverage.issues[0],/^robots\.txt von https:\/\/www\.musterbach\.example\.test nicht lesbar \(Quelle antwortet mit HTTP 500\)/);
  assert.equal(d.coverage.issues.at(-1),'Noch keine Artikel erfolgreich erfasst.');
- // Without robots.txt (404) everything is allowed, also /intern/.
+ // Without robots.txt (404) everything is allowed, also /gesperrt/.
  const open=site({[base+'robots.txt']:new Error('Quelle antwortet mit HTTP 404')});await run({},open);
  assert.ok(open.calls.includes(U.robots));
 });

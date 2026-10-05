@@ -144,7 +144,7 @@ test('website parseIcs unfolds lines, unescapes text and reads TZID, VALUE=DATE 
   'BEGIN:VTODO','DTSTART:20261001T080000','SUMMARY:Aufgabe','END:VTODO','BEGIN:VEVENT','UID:kaputt','DTSTART:2026-10-01','END:VEVENT','END:VCALENDAR'].join('\r\n');
  const events=parseIcs(ics);
  assert.deepEqual(events[0],{uid:'gr-2026-10-14@gemeinde-musterdorf.example.test',summary:'Sitzung des Gemeinderates, öffentlich',date:'2026-10-14',time:'19:00',
-  description:'Tagesordnung:\n1. Eröffnung\n2. Bauanträge; Vorbescheide\nPfad C:\\Daten und weiter',url:'https://www.gemeinde-musterdorf.example.test/termine/gr-14-10/',location:'Rathaus, Sitzungssaal'});
+  description:'Tagesordnung:\n1. Eröffnung\n2. Bauanträge; Vorbescheide\nPfad C:\\Daten und weiter',url:'https://www.gemeinde-musterdorf.example.test/termine/gr-14-10/',location:'Rathaus, Sitzungssaal',organizer:'',cancelled:false,attachments:[]});
  assert.deepEqual(events.slice(1).map(e=>[e.uid,e.date,e.time]),[['ha-1','2026-10-20',null],['ba-1','2026-09-30','00:30'],['ba-2','2026-12-01','19:30'],['ba-3','2026-10-25','02:59']]);
 });
 test('website parseSitemap reads a sitemap index and a URL set; robotsSitemaps reads Sitemap lines',()=>{
@@ -183,9 +183,9 @@ test('website jsonLdEvents reads schema.org events, also in @graph and arrays',(
 <script type="application/ld+json">[{"@type":["Event"],"name":"Bauausschuss","startDate":"2026-09-29T22:30:00Z","@id":"${origin}/termine/ba#event"},{"@type":"EducationEvent","name":"Kurs","startDate":"2026-11-02"},{"@type":"Event","name":"ohne Datum"}]</script>
 <script type="application/ld+json">{ kaputt </script><script>var x={"@type":"Event","name":"kein JSON-LD","startDate":"2026-10-01"};</script>`;
  assert.deepEqual(jsonLdEvents(html,origin+'/termine/'),[
-  {name:'Sitzung des Gemeinderates & Ortsbeirates',date:'2026-10-14',time:'19:00',description:'Öffentliche Sitzung',url:origin+'/termine/gr-14-10/'},
-  {name:'Bauausschuss',date:'2026-09-30',time:'00:30',description:'',url:origin+'/termine/ba'},
-  {name:'Kurs',date:'2026-11-02',time:null,description:'',url:null}]);
+  {name:'Sitzung des Gemeinderates & Ortsbeirates',date:'2026-10-14',time:'19:00',description:'Öffentliche Sitzung',url:origin+'/termine/gr-14-10/',location:'',organizer:'',cancelled:false,links:[]},
+  {name:'Bauausschuss',date:'2026-09-30',time:'00:30',description:'',url:origin+'/termine/ba',location:'',organizer:'',cancelled:false,links:[]},
+  {name:'Kurs',date:'2026-11-02',time:null,description:'',url:null,location:'',organizer:'',cancelled:false,links:[]}]);
 });
 test('website generatorOf names the CMS of a page',()=>{
  assert.equal(generatorOf('<meta name="generator" content="TYPO3 CMS">'),'TYPO3 CMS');
@@ -231,7 +231,7 @@ test('website parseFeed reads Atom XHTML content and RSS dates in ISO form',()=>
 });
 test('website jsonLdEvents finds events nested in lists and pages, and none in an empty page',()=>{
  const html=`<script type="application/ld+json">{"@type":"ItemList","itemListElement":[{"@type":"ListItem","item":{"@type":"Event","name":"Ortschaftsrat","startDate":"2026-10-21 18:30","url":"${origin}/t/or"}}]}</script>`;
- assert.deepEqual(jsonLdEvents(html,origin),[{name:'Ortschaftsrat',date:'2026-10-21',time:'18:30',description:'',url:origin+'/t/or'}]);
+ assert.deepEqual(jsonLdEvents(html,origin),[{name:'Ortschaftsrat',date:'2026-10-21',time:'18:30',description:'',url:origin+'/t/or',location:'',organizer:'',cancelled:false,links:[]}]);
  assert.deepEqual(jsonLdEvents('',origin),[]);assert.deepEqual(robotsSitemaps(''),[]);assert.deepEqual(parseSitemap('',origin),{sitemaps:[],urls:[]});
 });
 

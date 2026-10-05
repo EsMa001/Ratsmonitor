@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {htmlToLines,pdfLines,normalizeLine,germanDates,timeOf,committeeOf,isSpecialPurposeBody,documentKind,isPublicHeading,isNonPublicHeading,parseItemLine,outcomeOf,parseSessionText,closedLine,isNonPublicText,mentionsNonPublic,repairMojibake,decodeEntities,SESSION_WORDS,NONPUBLIC_WORDS} from '../server/integrations/website-text.mjs';
+import {meetingMoves,truncatedText,CARD_NP,SYMBOL,htmlToLines,pdfLines,normalizeLine,germanDates,timeOf,committeeOf,isSpecialPurposeBody,documentKind,isPublicHeading,isNonPublicHeading,parseItemLine,outcomeOf,parseSessionText,closedLine,isNonPublicText,mentionsNonPublic,repairMojibake,decodeEntities,SESSION_WORDS,NONPUBLIC_WORDS} from '../server/integrations/website-text.mjs';
 // All pages and PDF texts below are NACHGEBILDET (made up for these tests, not live pages): they copy the way small
 // towns write invitations, minutes and Amtsblatt pages, with invented places (Musterbach, Oberdorf) and no real names.
 
@@ -589,4 +589,65 @@ test('outcomeOf reads votes "dafür/dagegen" and a refusal that is negated (roun
  assert.deepEqual(outcomeOf('Abstimmung: dafür: 9, dagegen: 3, Enthaltungen: 1').votes,{yes:9,no:3,abstentions:1});
  assert.notEqual(outcomeOf('Beschluss: Das gemeindliche Einvernehmen wird nicht verweigert. Einstimmig.').status,'rejected');
  assert.notEqual(outcomeOf('Beschluss: Die Genehmigung wird nicht versagt. Abstimmung: 12:0').status,'rejected');
+});
+
+// Round 4: regressions of leaks found by the hardening agents (texts NACHGEBILDET).
+test('outcomeOf: a negation after the verb or before the object rejects',()=>{
+ for(const t of ['Der Bauausschuss erteilt das gemeindliche Einvernehmen nicht.','Der Gemeinderat befürwortet den Antrag nicht.','Der Gemeinderat genehmigt die Niederschrift nicht.','Der Gemeinderat erteilt keine Zustimmung.','Der Bauausschuss erteilt das gemeindliche Einvernehmen nicht. Abstimmung: 10:2'])
+  assert.equal(outcomeOf(t).status,'rejected',t);
+ for(const t of ['Der Gemeinderat erteilt das Einvernehmen. Abstimmung: 12:0','Der Gemeinderat beschließt den Haushalt, der keine neuen Schulden vorsieht.','Der Gemeinderat genehmigt die Niederschrift. Herr Maier war nicht anwesend.'])
+  assert.equal(outcomeOf(t).status,'approved',t);
+});
+
+test('parseSessionText: a numbered list of decisions after "Der Gemeinderat beschließt:" is the text of its item',()=>{
+ const html='<main><h1>Niederschrift über die öffentliche Sitzung des Gemeinderates am 16.09.2026</h1><p>1. Bebauungsplan "Am Mühlbach" – Satzungsbeschluss</p><p>Der Gemeinderat beschließt:</p><p>1. Die Abwägung wird gebilligt.<br>2. Der Bebauungsplan wird als Satzung beschlossen.<br>3. Die Verwaltung wird beauftragt, den Satzungsbeschluss bekannt zu machen.</p><p>Abstimmung: 12:0</p><p>2. Haushalt 2027</p><p>Der Antrag wird mit 4:9 Stimmen abgelehnt.</p><p>3. Kita-Gebühren</p><p>Der Gemeinderat lehnt die Erhöhung ab.</p></main>';
+ const m=parseSessionText(htmlToLines(html),{title:'Niederschrift Gemeinderat 16.09.2026'}).meetings[0];
+ assert.deepEqual(m.items.map(i=>[i.number,i.title,i.status]),[['1','Bebauungsplan "Am Mühlbach" – Satzungsbeschluss','approved'],['2','Haushalt 2027','rejected'],['3','Kita-Gebühren','rejected']]);
+});
+
+test('mentionsNonPublic: listeners not admitted, typing errors, county codes and the end of the public part in other words',()=>{
+ for(const t of ['Besucher sind zu den folgenden Punkten nicht zugelassen.','Presse und Zuhörer sind ausgeschlossen','Der Vorsitzende schließt die Öffentlichkeit für die weiteren Tagesordnungspunkte aus.','Die weiteren Punkte werden ohne Beteiligung der Öffentlichkeit beraten.',
+  'Im zweiten Teil der Sitzung, zu dem Zuhörer keinen Zutritt hatten, ging es um:','Bei den folgenden Punkten mussten die Zuhörer draußen bleiben:','Nach einer kurzen Pause wurde unter sich weiterberaten über:','Die Sitzung wird intern fortgesetzt.',
+  'Nichöffentliche Sitzung','Nichtöffetnliche Sitzung','Nciht öffentliche Sitzung','NICHÖFFENTLICHE SITZUNG','Unöffentliche Sitzung','N-Sitzung','Weitere Punkte in geschlossener Runde','Sitzungsfortsetzung nur für Mandatsträger',
+  'Grundstücksverkauf (§ 35 (1) GemO)','(gem. § 35 I 2 GemO)','(Art. 46 Abs. 2 LKrO)','(§ 33 Abs. 2 KrO NRW)','(§ 32 HKO)','(Art. 41 Abs. 2 BezO)','(u. A. d. Ö.)',
+  'Ende der Sitzung (öffentlicher Teil): 20:15 Uhr','Öffentliche Sitzung Ende: 20:15 Uhr','Ende ÖT 20:15 Uhr','Öffentlicher Sitzungsteil: 19:00 Uhr bis 20:15 Uhr','Im Anschluss an den öffentlichen Teil wurde weiter beraten über:'])
+  assert.ok(mentionsNonPublic(t),t);
+ for(const t of ['Bebauungsplan Nr. 12 – frühzeitige Beteiligung der Öffentlichkeit','Unterlagen sind noch öffentlich ausgelegt','Bericht über Besucherzahlen im Freibad','Breitbandausbau Internet','Nichtigkeitsklage gegen Bescheid'])
+  assert.ok(!mentionsNonPublic(t),t);
+});
+
+test('htmlToLines: struck days go, symbols of unknown meaning stand as SYMBOL, the badge of an item\'s card marks it',()=>{
+ assert.deepEqual(htmlToLines('<main><h1>Sitzung des Gemeinderates am <del>07.10.2026</del> 14.10.2026</h1><p><span style="text-decoration: line-through">Mittwoch, 07.10.2026</span> NEU</p></main>'),['Sitzung des Gemeinderates am 14.10.2026','NEU']);
+ assert.deepEqual(htmlToLines('<main><p><del>Nichtöffentlicher Teil</del></p></main>'),['Nichtöffentlicher Teil'],'struck text that names the non-public part stays');
+ assert.deepEqual(htmlToLines('<main><table><tr><td>2</td><td>Grundstück</td><td><img src="/i/status.gif" alt=""></td></tr><tr><td>3</td><td>Kita</td><td><i class="mdi mdi-eye-off"></i></td></tr><tr><td>4</td><td>Haushalt <span class="material-icons">lock</span></td></tr></table></main>'),[`2 Grundstück ${SYMBOL}`,'3 Kita (nichtöffentlich)','4 Haushalt (nichtöffentlich)']);
+ assert.deepEqual(htmlToLines('<main><ul><li data-status="nichtoeffentlich">2. Grundstück</li></ul><table><tr class="rowNonPublic"><td>3</td><td>Kita</td></tr></table></main>'),['2. Grundstück (nichtöffentlich)','3 Kita (nichtöffentlich)']);
+ assert.deepEqual(htmlToLines('<main><div class=card><h3>TOP 3 Grundstück</h3><p>Vorlage 2026/043</p><span class=badge>II</span></div></main>').at(-1),CARD_NP);
+ assert.deepEqual(htmlToLines('<main><p>1. Bauantrag <a href="/v.pdf"><img src="/i/pdf.gif" alt=""></a> <i class="fa fa-chevron-right"></i></p></main>'),['1. Bauantrag'],'symbols of a link or of plain meaning are none');
+});
+
+test('meetingMoves and truncatedText read notices of moved meetings and cropped teasers',()=>{
+ assert.deepEqual(meetingMoves(['Die für Mittwoch, 07.10.2026 angesetzte Sitzung des Gemeinderates wird auf Mittwoch, 14.10.2026, 19:00 Uhr verlegt.','Die Sitzung des Bauausschusses am 13.10.2026 entfällt.']),[{from:'2026-10-07',to:'2026-10-14',committee:'Gemeinderat'},{from:'2026-10-13',to:null,committee:'Bauausschuss'}]);
+ assert.deepEqual(meetingMoves(['Öffentliche Sitzung des Gemeinderates (Fortsetzung der Sitzung vom 07.10.2026)']),[]);
+ for(const l of [['4. Grundstücksverkauf Fl.Nr. 412 …'],['4. Grundstück (n...'],['Weiterlesen »'],['[…]']])assert.ok(truncatedText(l),l[0]);
+ assert.ok(!truncatedText(['1. Bauantrag Kita','2. Haushalt 2027']));
+});
+
+// --- round 5 (texts NACHGEBILDET) -------------------------------------------------------------------------------------
+test('outcomeOf: a decision that refuses ("nicht genehmigt", "nicht gegeben", "keine Möglichkeit … zuzustimmen") is a rejection whatever the count',()=>{
+ for(const t of ['Beschluss: Der Antrag wird nicht genehmigt.\nAbstimmung: 13:0','Beschluss: Die Zustimmung zum Bauvorhaben wird nicht gegeben.\nAbstimmung: 13:0','Der Gemeinderat sieht keine Möglichkeit, dem Antrag zuzustimmen.\nAbstimmung: 13:0'])assert.equal(outcomeOf(t).status,'rejected',t);
+ assert.equal(outcomeOf('Der Antrag wird genehmigt. Abstimmung: 13:0').status,'approved');
+});
+test('pdfLines keeps a heading of a part that shares its line with the page number; normalizeLine reads full-width letters and "TeilB"',()=>{
+ assert.deepEqual(pdfLines('1. Bauantrag Kita\nNichtöffentlicher Teil Seite 2 von 2\nSeite 2 / 3\nGemeinde Musterbach Seite 1 von 2\nEinladung GR – nichtöffentlicher Teil Seite 2 / 2'),['1. Bauantrag Kita','Nichtöffentlicher Teil','Einladung GR – nichtöffentlicher Teil']);
+ assert.equal(normalizeLine('ＮＩＣＨＴÖＦＦＥＮＴＬＩＣＨＥＲ ＴＥＩＬ'),'NICHTÖFFENTLICHER TEIL');
+ assert.equal(normalizeLine('TeilB'),'Teil B');assert.equal(normalizeLine('Teilnahme'),'Teilnahme');
+});
+test('mentionsNonPublic reads the paragraph that excludes the public with the Land before the code, and other words of the closed part',()=>{
+ for(const t of ['(§ 37 Abs. 1 Satz 1 Sächs. GemO)','gemäß § 36 Abs. 2 Bbg. KVerf','(Art. 52 Abs. 2 Bayerische Gemeindeordnung)','gem. § 40 Abs. 1 Thüringer Kommunalordnung','(gem. § 52 Abs. 2 Kommunalverfassungsgesetz)','(§ 52 Abs. 1 Hessische Gemeindeordnung)','(nach § 37 Absatz 1 der Sächsischen Gemeindeordnung)','Grundstück (geschl.)','unterliegt der Verschwiegenheitspflicht','Teilnahme nur Gemeinderatsmitglieder','Danach blieb der Rat unter sich','tagte intern weiter','nicht vor Publikum','ohne Bürger beraten','Im kleinen Kreis'])assert.ok(mentionsNonPublic(t),t);
+ for(const t of ['Einvernehmen nach § 36 BauGB','Bauvorhaben im Außenbereich nach § 35 BauGB','Antrag auf Zuschuss für die Bürgerstiftung'])assert.ok(!mentionsNonPublic(t),t);
+});
+test('htmlToLines puts the label of a tab at the start of its panel and keeps a legend of the template outside main',()=>{
+ const tabs=htmlToLines('<main><div id="t1"><p>1. Bauantrag Kita</p></div><div id="t2"><p>3. Grundstück</p></div><ul class="nav-tabs"><li><a href="#t1">Öffentlich</a></li><li><a href="#t2">Nichtöffentlich</a></li></ul></main>');
+ assert.deepEqual(tabs.slice(0,4),['Öffentlich','1. Bauantrag Kita','Nichtöffentlich','3. Grundstück']);
+ assert.ok(htmlToLines('<html><body><main><p>1. Bauantrag Kita</p></main><footer><p>Grau dargestellte Punkte werden nichtöffentlich beraten.</p><p>Impressum</p></footer></body></html>').includes('Grau dargestellte Punkte werden nichtöffentlich beraten.'));
 });
