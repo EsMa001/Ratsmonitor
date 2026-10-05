@@ -1,0 +1,1005 @@
+{
+ "status": "OK",
+ "data": {
+  "entry": {
+   "id": 121559,
+   "entry_id": 121561,
+   "title": "Sitzung der Stadtverordnetenversammlung der Stadt Sonnewalde",
+   "description": "<div>Sehr geehrte Einwohnerinnen und Einwohner,</div><div>hiermit werden Sie zur öffentlichen Sitzung eingeladen.</div>",
+   "recurrence_start": "2026-06-24",
+   "recurrence_end": "2026-06-24",
+   "has_recurrence": 0,
+   "deactivated": 0,
+   "entry_start": "2026-06-24",
+   "entry_start_time": "19:00",
+   "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+   "visibility": 1,
+   "display_contents": 1,
+   "resource": "councilservice",
+   "edited": "2026-09-15 11:12:39",
+   "topics": [
+    {
+     "id": 1721,
+     "session_id": 121559,
+     "position": 1,
+     "label": "Ö: Eröffnung der Sitzung mit Feststellung der ordnungsmäßigen Ladung und der Anwesenheit",
+     "custom_numeration": "1",
+     "numeration": "1",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 1,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1722,
+     "session_id": 121559,
+     "position": 2,
+     "label": "Ö: Feststellung der öffentlichen Tagesordnung und Änderungsanträge dazu",
+     "custom_numeration": "2",
+     "numeration": "2",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 2,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1723,
+     "session_id": 121559,
+     "position": 3,
+     "label": "Ö: Einwände gegen die Niederschrift über den öffentlichen Teil der Sitzung vom 27.05.2026 und Entscheidungen gem. § 42 Abs. 3 S. 2 BbgKVerf",
+     "custom_numeration": "3",
+     "numeration": "3",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [
+      {
+       "id": 5352,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "260527_Niederschrift SVV öffentlich_unbestätigt.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/2/3/",
+       "filename": "260527_Niederschrift_SVV_oeffentlich_unbestaetigt.pdf",
+       "filename_original": "260527_Niederschrift SVV öffentlich_unbestätigt.pdf",
+       "position": 0,
+       "size": 6399605,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/2/3/260527_Niederschrift_SVV_oeffentlich_unbestaetigt.pdf"
+       },
+       "link": "councilservice/1/7/2/3/260527_Niederschrift_SVV_oeffentlich_unbestaetigt.pdf",
+       "session_id": 121559
+      }
+     ],
+     "index": 3,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1724,
+     "session_id": 121559,
+     "position": 4,
+     "label": "Ö: Beantwortung, Bearbeitungsstand der Einwohneranfragen aus den letzten Sitzungen der Stadtverordneten; Informationen des Stadtverordnetenvorsitzenden",
+     "custom_numeration": "4",
+     "numeration": "4",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 4,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1725,
+     "session_id": 121559,
+     "position": 5,
+     "label": "Ö: Informationen aus den Ausschüssen",
+     "custom_numeration": "5",
+     "numeration": "5",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 5,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1726,
+     "session_id": 121559,
+     "position": 6,
+     "label": "Ö: Informationen des hauptamtlichen Bürgermeisters",
+     "custom_numeration": "6",
+     "numeration": "6",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 6,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1727,
+     "session_id": 121559,
+     "position": 7,
+     "label": "Ö: Einwohnerfragestunde",
+     "custom_numeration": "7",
+     "numeration": "7",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 7,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1728,
+     "session_id": 121559,
+     "position": 8,
+     "label": "Ö: Beschluss über den Vorschlag zur Festlegung des Wahltages für die Wahl der hauptamtlichen Bürgermeisterin/des hauptamtlichen Bürgermeisters und einer etwaig notwendigen Stichwahl 2027 (BV 33/2026)",
+     "custom_numeration": "8",
+     "numeration": "8",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [
+      {
+       "id": 5354,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 08_BV 33_2026_Beschluss Datum BGM-Wahl.pdf",
+       "field_1": 4,
+       "field_2": 1,
+       "path": "councilservice/1/7/2/8/",
+       "filename": "TOP_08_BV_33_2026_Beschluss_Datum_BGM-Wahl.pdf",
+       "filename_original": "TOP 08_BV 33_2026_Beschluss Datum BGM-Wahl.pdf",
+       "position": 0,
+       "size": 76324,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/2/8/TOP_08_BV_33_2026_Beschluss_Datum_BGM-Wahl.pdf"
+       },
+       "link": "councilservice/1/7/2/8/TOP_08_BV_33_2026_Beschluss_Datum_BGM-Wahl.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5405,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "Beschluss 33_2026.pdf",
+       "field_1": 6,
+       "field_2": 1,
+       "path": "councilservice/1/7/2/8/",
+       "filename": "Beschluss_33_2026.pdf",
+       "filename_original": "Beschluss 33_2026.pdf",
+       "position": 1,
+       "size": 453103,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/2/8/Beschluss_33_2026.pdf"
+       },
+       "link": "councilservice/1/7/2/8/Beschluss_33_2026.pdf",
+       "session_id": 121559
+      }
+     ],
+     "index": 8,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1729,
+     "session_id": 121559,
+     "position": 9,
+     "label": "Ö: Beschluss zur Bestellung der Wehrführung der Freiwilligen Feuerwehr und ihrer Stellvertretung gemäß § 28 Abs. 1 Nr. 2 Brandenburgisches Brand- u. Katastrophenschutzgesetz (BbgBKG) (BV 34/2026)",
+     "custom_numeration": "9",
+     "numeration": "9",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [
+      {
+       "id": 5412,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 09_BV 34_2026_Beschluss Wehrführung u. Stellv_Adressen geschwärzt.pdf",
+       "field_1": 4,
+       "field_2": 1,
+       "path": "councilservice/1/7/2/9/",
+       "filename": "TOP_09_BV_34_2026_Beschluss_Wehrfuehrung_u._Stellv_Adressen_geschwaerzt.pdf",
+       "filename_original": "TOP 09_BV 34_2026_Beschluss Wehrführung u. Stellv_Adressen geschwärzt.pdf",
+       "position": 3,
+       "size": 81750,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/2/9/TOP_09_BV_34_2026_Beschluss_Wehrfuehrung_u._Stellv_Adressen_geschwaerzt.pdf"
+       },
+       "link": "councilservice/1/7/2/9/TOP_09_BV_34_2026_Beschluss_Wehrfuehrung_u._Stellv_Adressen_geschwaerzt.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5413,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "Beschluss 34_2026 Adressen geschwärzt.pdf",
+       "field_1": 6,
+       "field_2": 1,
+       "path": "councilservice/1/7/2/9/",
+       "filename": "1782472556_Beschluss_34_2026_Adressen_geschwaerzt.pdf",
+       "filename_original": "Beschluss 34_2026 Adressen geschwärzt.pdf",
+       "position": 4,
+       "size": 971899,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/2/9/1782472556_Beschluss_34_2026_Adressen_geschwaerzt.pdf"
+       },
+       "link": "councilservice/1/7/2/9/1782472556_Beschluss_34_2026_Adressen_geschwaerzt.pdf",
+       "session_id": 121559
+      }
+     ],
+     "index": 9,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1730,
+     "session_id": 121559,
+     "position": 10,
+     "label": "Ö: Beschluss zur Richtigstellung der Haushaltssatzung 2026/2027 (BV 35/2026)",
+     "custom_numeration": "10",
+     "numeration": "10",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [
+      {
+       "id": 5356,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 10_Anl.1 HH-Satzung neu.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/0/",
+       "filename": "TOP_10_Anl.1_HH-Satzung_neu.pdf",
+       "filename_original": "TOP 10_Anl.1 HH-Satzung neu.pdf",
+       "position": 0,
+       "size": 52025,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/0/TOP_10_Anl.1_HH-Satzung_neu.pdf"
+       },
+       "link": "councilservice/1/7/3/0/TOP_10_Anl.1_HH-Satzung_neu.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5357,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 10_Anl.2 HH-Satzung 26.02.2026.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/0/",
+       "filename": "TOP_10_Anl.2_HH-Satzung_26.02.2026.pdf",
+       "filename_original": "TOP 10_Anl.2 HH-Satzung 26.02.2026.pdf",
+       "position": 1,
+       "size": 698301,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/0/TOP_10_Anl.2_HH-Satzung_26.02.2026.pdf"
+       },
+       "link": "councilservice/1/7/3/0/TOP_10_Anl.2_HH-Satzung_26.02.2026.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5358,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 10_Anl.3 Synopse.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/0/",
+       "filename": "TOP_10_Anl.3_Synopse.pdf",
+       "filename_original": "TOP 10_Anl.3 Synopse.pdf",
+       "position": 2,
+       "size": 69763,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/0/TOP_10_Anl.3_Synopse.pdf"
+       },
+       "link": "councilservice/1/7/3/0/TOP_10_Anl.3_Synopse.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5359,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 10_BV 35_2026_Beschluss Richtigstellung HH-Satzung 2026 2027.pdf",
+       "field_1": 4,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/0/",
+       "filename": "TOP_10_BV_35_2026_Beschluss_Richtigstellung_HH-Satzung_2026_2027.pdf",
+       "filename_original": "TOP 10_BV 35_2026_Beschluss Richtigstellung HH-Satzung 2026 2027.pdf",
+       "position": 3,
+       "size": 76965,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/0/TOP_10_BV_35_2026_Beschluss_Richtigstellung_HH-Satzung_2026_2027.pdf"
+       },
+       "link": "councilservice/1/7/3/0/TOP_10_BV_35_2026_Beschluss_Richtigstellung_HH-Satzung_2026_2027.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5407,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "Beschluss 35_2026.pdf",
+       "field_1": 6,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/0/",
+       "filename": "Beschluss_35_2026.pdf",
+       "filename_original": "Beschluss 35_2026.pdf",
+       "position": 4,
+       "size": 436978,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/0/Beschluss_35_2026.pdf"
+       },
+       "link": "councilservice/1/7/3/0/Beschluss_35_2026.pdf",
+       "session_id": 121559
+      }
+     ],
+     "index": 10,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1731,
+     "session_id": 121559,
+     "position": 11,
+     "label": "Ö: Beschluss zur 1. Nachtragssatzung 2026/2027 (BV 36/2026)",
+     "custom_numeration": "11",
+     "numeration": "11",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [
+      {
+       "id": 5360,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 0 Haushaltssatzung 2026 2027n.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._0_Haushaltssatzung_2026_2027n.pdf",
+       "filename_original": "TOP 11_Anl. 0 Haushaltssatzung 2026 2027n.pdf",
+       "position": 0,
+       "size": 98514,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._0_Haushaltssatzung_2026_2027n.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._0_Haushaltssatzung_2026_2027n.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5361,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 1 Ergebnishaushaltn_§3 Abs. 1 KomHKV - 2026 2027end.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._1_Ergebnishaushaltn_3_Abs._1_KomHKV_-_2026_2027end.pdf",
+       "filename_original": "TOP 11_Anl. 1 Ergebnishaushaltn_§3 Abs. 1 KomHKV - 2026 2027end.pdf",
+       "position": 1,
+       "size": 108009,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._1_Ergebnishaushaltn_3_Abs._1_KomHKV_-_2026_2027end.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._1_Ergebnishaushaltn_3_Abs._1_KomHKV_-_2026_2027end.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5362,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 2 Finanzhaushaltn_§3 Abs. 1 KomHKV - 2026 2027end.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._2_Finanzhaushaltn_3_Abs._1_KomHKV_-_2026_2027end.pdf",
+       "filename_original": "TOP 11_Anl. 2 Finanzhaushaltn_§3 Abs. 1 KomHKV - 2026 2027end.pdf",
+       "position": 2,
+       "size": 146663,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._2_Finanzhaushaltn_3_Abs._1_KomHKV_-_2026_2027end.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._2_Finanzhaushaltn_3_Abs._1_KomHKV_-_2026_2027end.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5363,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 3 Teilhaushalten mit Erläuter_§ 3 Abs. 1 Nr. 3_2026 2027end.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._3_Teilhaushalten_mit_Erlaeuter_3_Abs._1_Nr._3_2026_2027end.pdf",
+       "filename_original": "TOP 11_Anl. 3 Teilhaushalten mit Erläuter_§ 3 Abs. 1 Nr. 3_2026 2027end.pdf",
+       "position": 3,
+       "size": 4705903,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._3_Teilhaushalten_mit_Erlaeuter_3_Abs._1_Nr._3_2026_2027end.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._3_Teilhaushalten_mit_Erlaeuter_3_Abs._1_Nr._3_2026_2027end.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5364,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 4 Azubiplan 2026 Stadt SoWa.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._4_Azubiplan_2026_Stadt_SoWa.pdf",
+       "filename_original": "TOP 11_Anl. 4 Azubiplan 2026 Stadt SoWa.pdf",
+       "position": 4,
+       "size": 12612,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._4_Azubiplan_2026_Stadt_SoWa.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._4_Azubiplan_2026_Stadt_SoWa.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5365,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 4 Azubiplan 2027 Stadt SoWa.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._4_Azubiplan_2027_Stadt_SoWa.pdf",
+       "filename_original": "TOP 11_Anl. 4 Azubiplan 2027 Stadt SoWa.pdf",
+       "position": 5,
+       "size": 12575,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._4_Azubiplan_2027_Stadt_SoWa.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._4_Azubiplan_2027_Stadt_SoWa.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5366,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 4 Stellenplan 2026 Stadt SoWaend (2).pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._4_Stellenplan_2026_Stadt_SoWaend_2_.pdf",
+       "filename_original": "TOP 11_Anl. 4 Stellenplan 2026 Stadt SoWaend (2).pdf",
+       "position": 6,
+       "size": 113897,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._4_Stellenplan_2026_Stadt_SoWaend_2_.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._4_Stellenplan_2026_Stadt_SoWaend_2_.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5367,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 4 Stellenplan 2027 Stadt SoWaend (1).pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._4_Stellenplan_2027_Stadt_SoWaend_1_.pdf",
+       "filename_original": "TOP 11_Anl. 4 Stellenplan 2027 Stadt SoWaend (1).pdf",
+       "position": 7,
+       "size": 115875,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._4_Stellenplan_2027_Stadt_SoWaend_1_.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._4_Stellenplan_2027_Stadt_SoWaend_1_.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5368,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 11 Vorbericht_§ 3 Abs. 2 Nr. 1 KomHKVn.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._11_Vorbericht_3_Abs._2_Nr._1_KomHKVn.pdf",
+       "filename_original": "TOP 11_Anl. 11 Vorbericht_§ 3 Abs. 2 Nr. 1 KomHKVn.pdf",
+       "position": 8,
+       "size": 706948,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._11_Vorbericht_3_Abs._2_Nr._1_KomHKVn.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._11_Vorbericht_3_Abs._2_Nr._1_KomHKVn.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5369,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 12 dauernde Leistungsfähigkeit_§ 3 Abs. 2 Nr. 2 KomHKV_5.8.1n.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._12_dauernde_Leistungsfaehigkeit_3_Abs._2_Nr._2_KomHKV_5.8.1n.pdf",
+       "filename_original": "TOP 11_Anl. 12 dauernde Leistungsfähigkeit_§ 3 Abs. 2 Nr. 2 KomHKV_5.8.1n.pdf",
+       "position": 9,
+       "size": 92074,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._12_dauernde_Leistungsfaehigkeit_3_Abs._2_Nr._2_KomHKV_5.8.1n.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._12_dauernde_Leistungsfaehigkeit_3_Abs._2_Nr._2_KomHKV_5.8.1n.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5370,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 13 Verpflichtungsermächtigung_§ 3 Abs. 2 Nr. 3 KomHKVn.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._13_Verpflichtungsermaechtigung_3_Abs._2_Nr._3_KomHKVn.pdf",
+       "filename_original": "TOP 11_Anl. 13 Verpflichtungsermächtigung_§ 3 Abs. 2 Nr. 3 KomHKVn.pdf",
+       "position": 10,
+       "size": 110231,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._13_Verpflichtungsermaechtigung_3_Abs._2_Nr._3_KomHKVn.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._13_Verpflichtungsermaechtigung_3_Abs._2_Nr._3_KomHKVn.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5371,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 14 Übersicht Rückl_Rückstell_§3 Abs. 2 Nr. 4 KomHKV_5.11_5.12n.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._14_Uebersicht_Rueckl_Rueckstell_3_Abs._2_Nr._4_KomHKV_5.11_5.12n.pdf",
+       "filename_original": "TOP 11_Anl. 14 Übersicht Rückl_Rückstell_§3 Abs. 2 Nr. 4 KomHKV_5.11_5.12n.pdf",
+       "position": 11,
+       "size": 97539,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._14_Uebersicht_Rueckl_Rueckstell_3_Abs._2_Nr._4_KomHKV_5.11_5.12n.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._14_Uebersicht_Rueckl_Rueckstell_3_Abs._2_Nr._4_KomHKV_5.11_5.12n.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5372,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 14 Verbindlichkeitenübersicht_§ 3 Abs. 2 Nr. 4 KomHKV_5.10n.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._14_Verbindlichkeitenuebersicht_3_Abs._2_Nr._4_KomHKV_5.10n.pdf",
+       "filename_original": "TOP 11_Anl. 14 Verbindlichkeitenübersicht_§ 3 Abs. 2 Nr. 4 KomHKV_5.10n.pdf",
+       "position": 12,
+       "size": 22262,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._14_Verbindlichkeitenuebersicht_3_Abs._2_Nr._4_KomHKV_5.10n.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._14_Verbindlichkeitenuebersicht_3_Abs._2_Nr._4_KomHKV_5.10n.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5373,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 15 Sonderposten_§ 3 Abs. 2 Nr. 5 KomHKV_5.13n.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._15_Sonderposten_3_Abs._2_Nr._5_KomHKV_5.13n.pdf",
+       "filename_original": "TOP 11_Anl. 15 Sonderposten_§ 3 Abs. 2 Nr. 5 KomHKV_5.13n.pdf",
+       "position": 13,
+       "size": 73507,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._15_Sonderposten_3_Abs._2_Nr._5_KomHKV_5.13n.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._15_Sonderposten_3_Abs._2_Nr._5_KomHKV_5.13n.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5374,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 16 Umlagenübersicht_§ 3 Abs. 2 Nr. 6 KomHKV_5.14n.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._16_Umlagenuebersicht_3_Abs._2_Nr._6_KomHKV_5.14n.pdf",
+       "filename_original": "TOP 11_Anl. 16 Umlagenübersicht_§ 3 Abs. 2 Nr. 6 KomHKV_5.14n.pdf",
+       "position": 14,
+       "size": 73967,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._16_Umlagenuebersicht_3_Abs._2_Nr._6_KomHKV_5.14n.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._16_Umlagenuebersicht_3_Abs._2_Nr._6_KomHKV_5.14n.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5375,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 17 Übersicht Entwicklung Gesamtergebnisses_§ 3 Abs. 2 Nr. 7 KomHKV_5.15n.1.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._17_Uebersicht_Entwicklung_Gesamtergebnisses_3_Abs._2_Nr._7_KomHKV_5.15n.1.pdf",
+       "filename_original": "TOP 11_Anl. 17 Übersicht Entwicklung Gesamtergebnisses_§ 3 Abs. 2 Nr. 7 KomHKV_5.15n.1.pdf",
+       "position": 15,
+       "size": 117386,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._17_Uebersicht_Entwicklung_Gesamtergebnisses_3_Abs._2_Nr._7_KomHKV_5.15n.1.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._17_Uebersicht_Entwicklung_Gesamtergebnisses_3_Abs._2_Nr._7_KomHKV_5.15n.1.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5376,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 18 Investitionen_§ 3 Abs. 2 Nr. 8 KomHK_5.16n.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._18_Investitionen_3_Abs._2_Nr._8_KomHK_5.16n.pdf",
+       "filename_original": "TOP 11_Anl. 18 Investitionen_§ 3 Abs. 2 Nr. 8 KomHK_5.16n.pdf",
+       "position": 16,
+       "size": 352669,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._18_Investitionen_3_Abs._2_Nr._8_KomHK_5.16n.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._18_Investitionen_3_Abs._2_Nr._8_KomHK_5.16n.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5377,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_Anl. 111 Budgets_§ 3 Abs. 2 Nr. 11 KomHKV_5.17n.pdf",
+       "field_1": 5,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_Anl._111_Budgets_3_Abs._2_Nr._11_KomHKV_5.17n.pdf",
+       "filename_original": "TOP 11_Anl. 111 Budgets_§ 3 Abs. 2 Nr. 11 KomHKV_5.17n.pdf",
+       "position": 17,
+       "size": 15523,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_Anl._111_Budgets_3_Abs._2_Nr._11_KomHKV_5.17n.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_Anl._111_Budgets_3_Abs._2_Nr._11_KomHKV_5.17n.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5378,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "TOP 11_BV 36_2026_Beschluss Nachtragssatzung 2026 2027.pdf",
+       "field_1": 4,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "TOP_11_BV_36_2026_Beschluss_Nachtragssatzung_2026_2027.pdf",
+       "filename_original": "TOP 11_BV 36_2026_Beschluss Nachtragssatzung 2026 2027.pdf",
+       "position": 18,
+       "size": 82694,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/TOP_11_BV_36_2026_Beschluss_Nachtragssatzung_2026_2027.pdf"
+       },
+       "link": "councilservice/1/7/3/1/TOP_11_BV_36_2026_Beschluss_Nachtragssatzung_2026_2027.pdf",
+       "session_id": 121559
+      },
+      {
+       "id": 5410,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "Beschluss 36_2026.pdf",
+       "field_1": 6,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/1/",
+       "filename": "Beschluss_36_2026.pdf",
+       "filename_original": "Beschluss 36_2026.pdf",
+       "position": 19,
+       "size": 780661,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/1/Beschluss_36_2026.pdf"
+       },
+       "link": "councilservice/1/7/3/1/Beschluss_36_2026.pdf",
+       "session_id": 121559
+      }
+     ],
+     "index": 11,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1739,
+     "session_id": 121559,
+     "position": 12,
+     "label": "in der Sitzung aufgenommen: Ö: Beschluss zur Unterzeichnung einer öffentlich-rechtlichen Vereinbarung über die Zusammenarbeit der Freiwilligen Feuerwehren der Stadt Doberlug-Kirchhain und der Stadt Sonnewalde",
+     "custom_numeration": "12",
+     "numeration": "12",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [
+      {
+       "id": 5408,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "Beschluss 37_2026.pdf",
+       "field_1": 6,
+       "field_2": 1,
+       "path": "councilservice/1/7/3/9/",
+       "filename": "Beschluss_37_2026.pdf",
+       "filename_original": "Beschluss 37_2026.pdf",
+       "position": 0,
+       "size": 449618,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/3/9/Beschluss_37_2026.pdf"
+       },
+       "link": "councilservice/1/7/3/9/Beschluss_37_2026.pdf",
+       "session_id": 121559
+      }
+     ],
+     "index": 12,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1740,
+     "session_id": 121559,
+     "position": 13,
+     "label": "in der Sitzung aufgenommen: Ö: Beratung und Beschlussfassung zur Vergabe einer Investitionsmaßnahme zur energetischen Sanierung des Dorfgemeinschaftshauses Münchhausen, Erneuerung Heizungsanlage",
+     "custom_numeration": "13",
+     "numeration": "13",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [
+      {
+       "id": 5409,
+       "module": "councilservice",
+       "namespace": "documents-topic",
+       "type": 0,
+       "description": "Beschluss 38_2026.pdf",
+       "field_1": 6,
+       "field_2": 1,
+       "path": "councilservice/1/7/4/0/",
+       "filename": "Beschluss_38_2026.pdf",
+       "filename_original": "Beschluss 38_2026.pdf",
+       "position": 0,
+       "size": 1019821,
+       "is_deleted": 0,
+       "paths": {
+        "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/7/4/0/Beschluss_38_2026.pdf"
+       },
+       "link": "councilservice/1/7/4/0/Beschluss_38_2026.pdf",
+       "session_id": 121559
+      }
+     ],
+     "index": 13,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1732,
+     "session_id": 121559,
+     "position": 14,
+     "label": "Ö: Unterjährige Berichterstattung gemäß § 27 KomHKV",
+     "custom_numeration": "14",
+     "numeration": "14",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 14,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1733,
+     "session_id": 121559,
+     "position": 15,
+     "label": "Ö: Anfragen der Mitglieder der Stadtverordnetenversammlung zu öffentlichen Angelegenheiten, Sonstiges und Schließung der öffentlichen Sitzung",
+     "custom_numeration": "15",
+     "numeration": "15",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 15,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1734,
+     "session_id": 121559,
+     "position": 16,
+     "label": "NÖ: Feststellung der nicht öffentlichen Tagesordnung und Änderungsanträge dazu",
+     "custom_numeration": "16",
+     "numeration": "16",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 16,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1735,
+     "session_id": 121559,
+     "position": 17,
+     "label": "NÖ: Einwände gegen die Niederschrift über den nicht öffentlichen Teil der Sitzung vom 27.05.2026 und Entscheidungen gem. § 42 Abs. 3 S. 2 BbgKVerf",
+     "custom_numeration": "17",
+     "numeration": "17",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 17,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1736,
+     "session_id": 121559,
+     "position": 18,
+     "label": "NÖ: Beantwortung, Bearbeitungsstand der Anfragen aus den letzten Sitzungen der Stadtverordneten; Informationen des Stadtverordnetenvorsitzenden",
+     "custom_numeration": "18",
+     "numeration": "18",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 18,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1737,
+     "session_id": 121559,
+     "position": 19,
+     "label": "NÖ: Allgemeine Informationen zur Sitzungsvorbereitung mit KI",
+     "custom_numeration": "19",
+     "numeration": "19",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 19,
+     "index_parent": 0,
+     "children": []
+    },
+    {
+     "id": 1738,
+     "session_id": 121559,
+     "position": 20,
+     "label": "NÖ: Anfragen der Mitglieder der Stadtverordnetenversammlung zu nicht öffentlichen Angelegenheiten, Sonstiges und Schließung der Sitzung",
+     "custom_numeration": "20",
+     "numeration": "20",
+     "visibility": 1,
+     "description": null,
+     "documents-topic": [],
+     "index": 20,
+     "index_parent": 0,
+     "children": []
+    }
+   ],
+   "documents": [
+    {
+     "id": 4808,
+     "module": "councilservice",
+     "namespace": "documents",
+     "type": 0,
+     "description": null,
+     "field_1": 3,
+     "field_2": 1,
+     "path": "councilservice/1/2/1/5/5/9/",
+     "filename": "SVV_24.06.2026.ics",
+     "filename_original": "SVV 24.06.2026.ics",
+     "position": 0,
+     "size": 1378,
+     "is_deleted": 0,
+     "paths": {
+      "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/2/1/5/5/9/SVV_24.06.2026.ics"
+     },
+     "link": "councilservice/1/2/1/5/5/9/SVV_24.06.2026.ics",
+     "session_id": 121559
+    },
+    {
+     "id": 5485,
+     "module": "councilservice",
+     "namespace": "documents",
+     "type": 0,
+     "description": null,
+     "field_1": 5,
+     "field_2": 1,
+     "path": "councilservice/1/2/1/5/5/9/",
+     "filename": "260624_Niederschrift_SVV_oeffentlich_Anl._TOP14_Praesentation_Unterjaehrige_Berichterstattung.pdf",
+     "filename_original": "260624_Niederschrift SVV öffentlich Anl. TOP14_Präsentation Unterjährige Berichterstattung.pdf",
+     "position": 12,
+     "size": 827470,
+     "is_deleted": 0,
+     "paths": {
+      "data": "https://stadt-sonnewalde.mein-intra.net/export/auth/f163309a-069112b6-c1e2efe3-35282a5d/data/file/councilservice/1/2/1/5/5/9/260624_Niederschrift_SVV_oeffentlich_Anl._TOP14_Praesentation_Unterjaehrige_Berichterstattung.pdf"
+     },
+     "link": "councilservice/1/2/1/5/5/9/260624_Niederschrift_SVV_oeffentlich_Anl._TOP14_Praesentation_Unterjaehrige_Berichterstattung.pdf",
+     "session_id": 121559
+    }
+   ],
+   "counts": {
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 2,
+    "cnt_topics": 20,
+    "cnt_topics_docs": 32
+   },
+   "groups": [
+    19845,
+    11096
+   ]
+  }
+ }
+}

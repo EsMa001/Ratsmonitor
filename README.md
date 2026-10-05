@@ -386,6 +386,17 @@ node scripts/dashboard/build.mjs
 node --test tests/*.test.mjs
 ```
 
+## Sitzungsdienst mein-intra und gründlichere Linksuche (05.10.2026)
+
+Anlass: Für die Stadt Sonnewalde meldete der Bericht „kein Link“, obwohl ihre Website im Hauptmenü einen Sitzungskalender mit Tagesordnungen und Vorlagen seit 2020 zeigt. Zwei Ursachen, beide behoben:
+
+- **Eingebettetes System nicht erkannt.** Viele kleine Gemeinden zeigen ihre Sitzungen auf einer Seite der eigenen Website, die den Sitzungsdienst von mein-intra.net („councilservice“) per Skript lädt. Die Linksuche zählte nur Links, die die Website verlassen. Neuer Leser `councilservice` (`server/integrations/councilservice.mjs`, Tests: `tests/councilservice.test.mjs`): Er erkennt das System auf der Seite der Website und liest dieselbe Schnittstelle, die diese Seite für jeden Besucher abfragt (Sitzungsliste, Sitzung mit Tagesordnung und Dateien), mit dem Export-Schlüssel der Seite und ohne Anmeldung. Berichte verlinken auf die Seite der Website.
+- **Websites beim Hoster gesperrt.** Rund 350 der offenen Gebiete haben eine Website bei verwaltungsportal.de auf zwei IP-Adressen. Ohne Begrenzung je Server antworteten sie dem Suchlauf vom 04.10.2026 mit HTTP 403, im Bericht stand dann „kein Link“. Die Linksuche fragt jetzt höchstens zwei Seiten je Server gleichzeitig; für Hoster, die auch das sperren, gibt es einen behutsamen Modus (nur Startseite, eine Anfrage je Server, Pause; README der Quellensuche).
+
+**Öffentlich und nichtöffentlich.** Die meisten Systeme blenden nichtöffentliche Punkte aus (`visibility: 0`, „Nicht-öffentlicher Tagesordnungspunkt“). Manche zeigen alle Punkte und kennzeichnen nur den Titel („Ö:“/„NÖ:“, Sonnewalde). Der Leser übernimmt nur Punkte einer freigegebenen Sitzung mit `visibility: 1`, deren Titel den nichtöffentlichen Teil in keiner Schreibweise nennt (dieselbe Erkennung wie der Website-Leser); kennzeichnet eine Tagesordnung ihre öffentlichen Punkte, nur so gekennzeichnete. Nach einer Überschrift, die den öffentlichen Teil beendet, wird nichts mehr übernommen; Dateien, deren Name oder Adresse den nichtöffentlichen Teil nennt, werden nicht verlinkt. Ein zweiter Prüfer hat den Leser angegriffen (unter anderem 33 Schreibweisen von Kennzeichnungen und 31 Überschriften); alle Funde sind behoben und als Tests aufgenommen.
+
+**Ergebnis des ersten Laufs** über die 1.598 Gebiete „kein Link“: 84 Gebiete mit Link auf ein System (40 councilservice, 44 andere), 21 neu angebunden (5 councilservice, 16 More! Rubin, TI-Generator, ALLRIS 4 und SessionNet). Der Katalog der übrigen Länder hat damit 1.517 Quellen. Danach sperrte verwaltungsportal.de unsere Kennung; 202 Gebiete mit Sitzungsdienst auf der Startseite (darunter Sonnewalde) prüft der behutsame Nachlauf `tmp/source-discovery-de/gentle-cs.ps1`.
+
 ## Gespeicherte Inhaltsanalyse · Billerbeck (v0.21)
 
 402 Artikel sind direkt durch Codex anhand öffentlicher Quellen bearbeitet: 310 Inhaltszusammenfassungen und 92 klar bezeichnete Quellenlücken. Kurz-/Langfassung, Belegzitate, Quellenprüfsummen, getrennte Labels, titelbasierte gewichtete Stichwörter sowie belegte Sitzungsdaten stehen im versionierten, etwa 3 MB großen Serverpaket `server/data/billerbeck-content-v1.json`. Es enthält keine neu archivierten Originalvolltexte. Die Langfassung erscheint auf der Artikelseite mit Quellenbasis und Bearbeitungsstatus. Die normale Kartenanalyse verwendet weiterhin Regel-Labels; die zusätzliche KI-Einordnung ersetzt diese nicht heimlich.

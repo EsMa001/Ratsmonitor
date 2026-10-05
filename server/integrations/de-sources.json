@@ -115,6 +115,20 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.herzogtum-lauenburg.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-01053083",
+    "name": "Stadt Lauenburg/Elbe",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://lauenburg.gremien.info/",
+    "bodies": [
+      "Stadt"
+    ],
+    "verifiedSource": "https://lauenburg.gremien.info/meeting?id=2026-BP-218",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "de-01053090",
     "name": "Stadt Mölln",
     "kind": "city",
@@ -179,6 +193,30 @@
     "verifiedSource": "https://www.amt-hohe-elbgeest.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.amt-hohe-elbgeest.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-010535343",
+    "name": "Amt Lütau",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://lauenburg.gremien.info/",
+    "bodies": [
+      "Amt",
+      "Basedow",
+      "Buch",
+      "Dall",
+      "Juli",
+      "Kruk",
+      "Kruez",
+      "Lanze",
+      "Luetau",
+      "Skb",
+      "Wange"
+    ],
+    "verifiedSource": "https://lauenburg.gremien.info/meeting?id=2026-BP-218",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
     "id": "de-010535358",
@@ -489,6 +527,17 @@
     "verifiedSource": "https://www.gemeinde-boenebuettel.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-01057009",
+    "name": "Gemeinde Bösdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.ploen.de/buergerinformationssystem/",
+    "verifiedSource": "https://www.boesdorf-holstein.de/politik/buerger-und-ratsinformationssystem",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "OParl-Adresse des Systems (https://www.ploen.de/buergerinformationssystem/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "de-01057057",
@@ -2045,6 +2094,19 @@
     "foundBy": "OParl-Register: Homberg (Ohm)"
   },
   {
+    "id": "de-06535012",
+    "name": "Gemeinde Lautertal (Vogelsberg)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://lautertal-vogelsberg.mein-intra.net/",
+    "token": "b3bdb4e4-fcf9ebe2-86cf9ffd-82257609",
+    "page": "https://www.lautertal-vogelsberg.de/rathaus-politik/gremien-beiraete/gremien-und-sitzungsdienst.html",
+    "verifiedSource": "https://www.lautertal-vogelsberg.de/rathaus-politik/gremien-beiraete/gremien-und-sitzungsdienst.html",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
+  },
+  {
     "id": "de-06535013",
     "name": "Gemeinde Mücke",
     "kind": "city",
@@ -3259,6 +3321,65 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-072315008",
+    "name": "Verbandsgemeinde Wittlich-Land",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://vg-wittlich.gremien.info/",
+    "bodies": [
+      "01",
+      "02",
+      "03",
+      "25",
+      "04",
+      "05",
+      "26",
+      "06",
+      "07",
+      "08",
+      "27",
+      "28",
+      "09",
+      "29",
+      "10",
+      "30",
+      "31",
+      "32",
+      "11",
+      "12",
+      "13",
+      "14",
+      "33",
+      "15",
+      "16",
+      "34",
+      "36",
+      "17",
+      "37",
+      "38",
+      "39",
+      "18",
+      "40",
+      "41",
+      "19",
+      "42",
+      "20",
+      "21",
+      "22",
+      "23",
+      "43",
+      "44",
+      "24",
+      "45",
+      "35",
+      "VG"
+    ],
+    "verifiedSource": "https://vg-wittlich.gremien.info/",
+    "verifiedAt": "2026-10-04",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "de-072315009",
     "name": "Verbandsgemeinde Traben-Trarbach",
     "kind": "city",
@@ -3601,6 +3722,17 @@
     "verifiedSource": "https://www.zweibruecken.de/de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-07331",
+    "name": "Landkreis Alzey-Worms",
+    "kind": "district",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://alzey-worms.gremien.info/",
+    "verifiedSource": "https://www.kreis-alzey-worms.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
     "id": "de-07331003",
@@ -5949,6 +6081,17 @@
     "verifiedSource": "https://www.mannheim.de/de",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08225",
+    "name": "Neckar-Odenwald-Kreis",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://lranok-sitzungsdienst.komm.one/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.neckar-odenwald-kreis.de/Kreistag/Infosystem+Kreistag.html",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 05.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-08225001",
@@ -10728,6 +10871,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09472131",
+    "name": "Gemeinde Eckersdorf",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-eckersdorf.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://www.eckersdorf.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 05.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-09472143",
+    "name": "Stadt Goldkronach",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-goldkronach.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://www.goldkronach.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 05.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "de-09472175",
     "name": "Stadt Pegnitz",
     "kind": "city",
@@ -11958,6 +12123,19 @@
     "verifiedSource": "https://www.bad-neustadt-vgem.de/die-verwaltungsgemeinschaft/entscheidungsgremium/sitzungen-beschluesse",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-09674",
+    "name": "Landkreis Haßberge",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://hassberge.mein-intra.net/",
+    "token": "db04b4ac-460e5721-7b98f56f-ae9760c4",
+    "page": "https://www.hassberge.de/landkreis-hassberge/kreistag.html",
+    "verifiedSource": "https://www.hassberge.de/landkreis-hassberge/kreistag.html",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
     "id": "de-096745611",
@@ -13265,6 +13443,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://lkee.allris.cloud/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-12062092",
+    "name": "Stadt Doberlug-Kirchhain",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://ratsinfo.doberlug-kirchhain.de/ti-1/",
+    "verifiedSource": "https://www.doberlug-kirchhain.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "de-12062124",
     "name": "Stadt Elsterwerda",
     "kind": "city",
@@ -13285,6 +13474,17 @@
     "verifiedSource": "https://www.havelland.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://havelland.allris.cloud/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-12063056",
+    "name": "Gemeinde Dallgow-Döberitz",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://dallgow.gremien.info/",
+    "verifiedSource": "https://www.dallgow.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
     "id": "de-12063080",
@@ -13318,6 +13518,17 @@
     "verifiedSource": "https://www.rathenow.de/verwaltung-politik/stadtpolitik/gemeindevertretung/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-120635302",
+    "name": "Amt Friesack",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://ratsinfo.amt-friesack.de/ti-1/",
+    "verifiedSource": "https://www.amt-friesack.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar."
   },
   {
     "id": "de-120635309",
@@ -13674,6 +13885,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-12071057",
+    "name": "Stadt Drebkau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://ris.drebkau.de/ti-1/",
+    "verifiedSource": "https://www.drebkau.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "de-12071160",
     "name": "Stadt Guben",
     "kind": "city",
@@ -13839,6 +14061,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-120735303",
+    "name": "Amt Brüssow (Uckermark)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://www.amt-bruessow-uckermark.de/ris/ti-1/",
+    "verifiedSource": "https://www.amt-bruessow.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "de-12073579",
     "name": "Gemeinde Uckerland",
     "kind": "city",
@@ -13904,6 +14137,17 @@
     "verifiedSource": "https://www.neustrelitz.de/de/home",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://neustrelitz.sitzung-mv.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-130715151",
+    "name": "Amt Demmin-Land",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://amt-demmin-land.sitzung-mv.de/public/",
+    "verifiedSource": "https://www.amt-demmin-land.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "OParl-Adresse des Systems (https://amt-demmin-land.sitzung-mv.de/public/oparl/system) lieferte am 05.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "de-130715152",
@@ -14038,6 +14282,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-130725253",
+    "name": "Amt Carbäk",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://carbaek.sitzung-mv.de/public/",
+    "verifiedSource": "https://www.amtcarbaek.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "OParl-Adresse des Systems (https://carbaek.sitzung-mv.de/public/oparl/system) lieferte am 05.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "de-130725254",
     "name": "Amt Gnoien",
     "kind": "city",
@@ -14146,6 +14401,17 @@
     "verifiedSource": "https://www.darss-fischland.de/de/gut-zu-wissen/buerger-und-ratsinformation/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-130735355",
+    "name": "Amt Franzburg-Richtenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://franzburg-richtenberg.sitzung-mv.de/public/",
+    "verifiedSource": "https://www.amt-franzburg-richtenberg.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "OParl-Adresse des Systems (https://franzburg-richtenberg.sitzung-mv.de/public/oparl/system) lieferte am 05.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "de-130735358",
@@ -14748,6 +15014,19 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-14523360",
+    "name": "Stadt Rodewisch",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://rodewisch.mein-intra.net/",
+    "token": "178e3600-51442347-fd9306fc-588b9b1a",
+    "page": "https://www.rodewisch.de/rathaus/stadtrat/ratsinfosystem",
+    "verifiedSource": "https://www.rodewisch.de/rathaus/stadtrat/ratsinfosystem",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
+  },
+  {
     "id": "de-14523365",
     "name": "Gemeinde Rosenbach/Vogtl.",
     "kind": "city",
@@ -15126,6 +15405,19 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-146265233",
+    "name": "Verwaltungsgemeinschaft Rietschen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://rietschen-online.mein-intra.net/",
+    "token": "d66c3e5d-1ab13f10-1807009f-ec40de10",
+    "page": "https://www.rietschen-online.de/sitzungskalender",
+    "verifiedSource": "https://www.rietschen-online.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
+  },
+  {
     "id": "de-146265242",
     "name": "Verwaltungsgemeinschaft Weißwasser/O.L.",
     "kind": "city",
@@ -15357,6 +15649,19 @@
     "verifiedSource": "https://www.neustadt-sachsen.de/buergerservice/rats_buergerinfo.php",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://neustadt.allris.cloud/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-14628300",
+    "name": "Stadt Rabenau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://rabenau.mein-intra.net/",
+    "token": "ad642103-92d44e9b-9bb1deb8-4d464ad5",
+    "page": "https://rabenau.net/rathaus/kommunalpolitik/",
+    "verifiedSource": "https://rabenau.net/rathaus/kommunalpolitik/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
     "id": "de-146285204",
@@ -15984,6 +16289,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-15085110",
+    "name": "Stadt Falkenstein/Harz",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.kitu-genossenschaft.de/falkensteinharz_bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.falkenstein-harz.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 05.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "de-15085135",
     "name": "Stadt Halberstadt",
     "kind": "city",
@@ -16105,6 +16421,17 @@
     "verifiedSource": "https://elbe-parey.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar."
+  },
+  {
+    "id": "de-15086040",
+    "name": "Stadt Genthin",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ris.stadt-genthin.de/sessionnet/bi/",
+    "extension": "php",
+    "verifiedSource": "https://www.stadt-genthin.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 05.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-15086145",
@@ -16691,6 +17018,20 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-160695051",
+    "name": "Erfüllende Gemeinde Auengrund",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://auengrund.gremien.info/",
+    "bodies": [
+      "Auengrund"
+    ],
+    "verifiedSource": "https://www.auengrund.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "de-16070004",
     "name": "Stadt Arnstadt",
     "kind": "city",
@@ -16755,6 +17096,32 @@
     "verifiedSource": "https://www.vg-hermsdorf.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://hermsdorf.allris.cloud/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-160745015",
+    "name": "Verwaltungsgemeinschaft Dornburg-Camburg",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://dornburg-camburg.gremien.info/",
+    "bodies": [
+      "15",
+      "03",
+      "04",
+      "11",
+      "05",
+      "06",
+      "07",
+      "08",
+      "16",
+      "17",
+      "18",
+      "09",
+      "20"
+    ],
+    "verifiedSource": "https://www.vg-dornburg-camburg.eu/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
     "id": "de-160745052",

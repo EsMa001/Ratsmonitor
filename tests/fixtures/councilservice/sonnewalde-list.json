@@ -1,0 +1,947 @@
+{
+ "status": "OK",
+ "data": {
+  "entries": [
+   {
+    "recurrence_start": "2026-12-15",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Goßmar",
+    "id": 121613,
+    "location": "Gemeindezentrum Goßmar",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11095,
+      "group_name": "Ortsbeirat (Sonnewalde OT Goßmar)"
+     },
+     {
+      "group_id": 19851,
+      "group_name": "OT-Verantwortlicher Goßmar (Sonnewalde OT Goßmar)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-12-02",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Kleinbahren",
+    "id": 121610,
+    "location": "Gemeindehaus in Kleinbahren",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11094,
+      "group_name": "Ortsbeirat (Sonnewalde OT Kleinbahren)"
+     },
+     {
+      "group_id": 19853,
+      "group_name": "OT-Verantwortlicher Kleinbahren (Sonnewalde OT Kleinbahren)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-11-25",
+    "has_recurrence": 0,
+    "title": "Sitzung der Stadtverordnetenversammlung der Stadt Sonnewalde",
+    "id": 121562,
+    "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 1,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11096,
+      "group_name": "Stadtverordnetenversammlung (Sonnewalde)"
+     },
+     {
+      "group_id": 19845,
+      "group_name": "Amtsleiter Stadtverwaltung (Sonnewalde)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-11-05",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Großkrausnik",
+    "id": 121616,
+    "location": "Mehrzweckgebäude Großkrausnik",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19852,
+      "group_name": "OT-Verantwortlicher Großkrausnik (Sonnewalde OT Großkrausnik)"
+     },
+     {
+      "group_id": 11093,
+      "group_name": "Ortsbeirat (Sonnewalde OT Großkrausnik)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-10-28",
+    "has_recurrence": 0,
+    "title": "Sitzung der Stadtverordnetenversammlung der Stadt Sonnewalde",
+    "id": 121561,
+    "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 1,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11096,
+      "group_name": "Stadtverordnetenversammlung (Sonnewalde)"
+     },
+     {
+      "group_id": 19845,
+      "group_name": "Amtsleiter Stadtverwaltung (Sonnewalde)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-10-12",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Friedersdorf",
+    "id": 121617,
+    "location": "Heimatstube",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "18:30:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19860,
+      "group_name": "OT-Verantwortlicher Friedersdorf (Sonnewalde OT Friedersdorf)"
+     },
+     {
+      "group_id": 11088,
+      "group_name": "Ortsbeirat (Sonnewalde OT Friedersdorf)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-10-12",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Brenitz",
+    "id": 121614,
+    "location": "Gemeindehaus in Brenitz",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19848,
+      "group_name": "OT-Verantwortlicher Brenitz (Sonnewalde OT Brenitz)"
+     },
+     {
+      "group_id": 11089,
+      "group_name": "Ortsbeirat (Sonnewalde OT Brenitz)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-10-09",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Friedersdorf - verschoben auf den 12.10.2026",
+    "id": 121611,
+    "location": "Sportplatz Friedersdorf",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "18:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19860,
+      "group_name": "OT-Verantwortlicher Friedersdorf (Sonnewalde OT Friedersdorf)"
+     },
+     {
+      "group_id": 11088,
+      "group_name": "Ortsbeirat (Sonnewalde OT Friedersdorf)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-30",
+    "has_recurrence": 0,
+    "title": "Sondersitzung der Stadtverordnetenversammlung der Stadt Sonnewalde",
+    "id": 121615,
+    "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 7,
+    "cnt_topics_docs": 2,
+    "entry_start_time": "19:30:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11096,
+      "group_name": "Stadtverordnetenversammlung (Sonnewalde)"
+     },
+     {
+      "group_id": 19845,
+      "group_name": "Amtsleiter Stadtverwaltung (Sonnewalde)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-30",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Sonnewalde",
+    "id": 121608,
+    "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "18:30:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19858,
+      "group_name": "OT-Verantwortlicher Sonnewalde (Sonnewalde OT Sonnewalde)"
+     },
+     {
+      "group_id": 11092,
+      "group_name": "Ortsbeirat (Sonnewalde OT Sonnewalde)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-29",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Zeckerin",
+    "id": 121603,
+    "location": "Mehrzweckgebäude Zeckerin",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11090,
+      "group_name": "Ortsbeirat (Sonnewalde OT Zeckerin)"
+     },
+     {
+      "group_id": 19859,
+      "group_name": "OT-Verantwortlicher Zeckerin (Sonnewalde OT Zeckerin)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-28",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Pießig",
+    "id": 121612,
+    "location": "ehem. Gaststätte Kollesser",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19857,
+      "group_name": "OT-Verantwortlicher Pießig (Sonnewalde OT Pießig)"
+     },
+     {
+      "group_id": 11192,
+      "group_name": "Ortsbeirat (Sonnewalde OT Pießig)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-24",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Großkrausnik",
+    "id": 121607,
+    "location": "Mehrzweckgebäude Großkrausnik",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19852,
+      "group_name": "OT-Verantwortlicher Großkrausnik (Sonnewalde OT Großkrausnik)"
+     },
+     {
+      "group_id": 11093,
+      "group_name": "Ortsbeirat (Sonnewalde OT Großkrausnik)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-23",
+    "has_recurrence": 0,
+    "title": "Sitzung der Stadtverordnetenversammlung der Stadt Sonnewalde",
+    "id": 121560,
+    "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 1,
+    "cnt_topics": 20,
+    "cnt_topics_docs": 23,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11096,
+      "group_name": "Stadtverordnetenversammlung (Sonnewalde)"
+     },
+     {
+      "group_id": 19845,
+      "group_name": "Amtsleiter Stadtverwaltung (Sonnewalde)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-18",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Münchhausen-Ossak",
+    "id": 121609,
+    "location": "Bauernstube Münchhausen",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19856,
+      "group_name": "OT-Verantwortlicher Münchhausen-Ossak (Sonnewalde OT Münchhausen-Ossak)"
+     },
+     {
+      "group_id": 11189,
+      "group_name": "Ortsbeirat (Sonnewalde OT Münchhausen-Ossak)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-16",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ausschusses für Bau, Stadtentwicklung und Wirtschaft",
+    "id": 121606,
+    "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 1,
+    "cnt_documents": 2,
+    "cnt_topics": 14,
+    "cnt_topics_docs": 1,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11096,
+      "group_name": "Stadtverordnetenversammlung (Sonnewalde)"
+     },
+     {
+      "group_id": 19844,
+      "group_name": "Ausschuss für Bau, Stadtentwicklung und Wirtschaft (Sonnewalde)"
+     },
+     {
+      "group_id": 19845,
+      "group_name": "Amtsleiter Stadtverwaltung (Sonnewalde)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-08",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Goßmar",
+    "id": 121605,
+    "location": "Gemeindezentrum Goßmar",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11095,
+      "group_name": "Ortsbeirat (Sonnewalde OT Goßmar)"
+     },
+     {
+      "group_id": 19851,
+      "group_name": "OT-Verantwortlicher Goßmar (Sonnewalde OT Goßmar)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-09-02",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Kleinbahren",
+    "id": 121599,
+    "location": "Gemeindehaus in Kleinbahren",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11094,
+      "group_name": "Ortsbeirat (Sonnewalde OT Kleinbahren)"
+     },
+     {
+      "group_id": 19853,
+      "group_name": "OT-Verantwortlicher Kleinbahren (Sonnewalde OT Kleinbahren)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-08-27",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Friedersdorf",
+    "id": 121601,
+    "location": "Heimatstube",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19860,
+      "group_name": "OT-Verantwortlicher Friedersdorf (Sonnewalde OT Friedersdorf)"
+     },
+     {
+      "group_id": 11088,
+      "group_name": "Ortsbeirat (Sonnewalde OT Friedersdorf)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-08-12",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Dabern",
+    "id": 121602,
+    "location": "Gemeinderaum in Dabern",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19849,
+      "group_name": "OT-Verantwortlicher Dabern (Sonnewalde OT Dabern)"
+     },
+     {
+      "group_id": 11186,
+      "group_name": "Ortsbeirat (Sonnewalde OT Dabern)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-08-07",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Kleinkrausnik",
+    "id": 121604,
+    "location": "Gemeindehaus in Kleinkrausnik",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19854,
+      "group_name": "OT-Verantwortlicher Kleinkrausnik (Sonnewalde OT Kleinkrausnik)"
+     },
+     {
+      "group_id": 11091,
+      "group_name": "Ortsbeirat (Sonnewalde OT Kleinkrausnik)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-30",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Zeckerin",
+    "id": 121598,
+    "location": "Mehrzweckgebäude Zeckerin",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11090,
+      "group_name": "Ortsbeirat (Sonnewalde OT Zeckerin)"
+     },
+     {
+      "group_id": 19859,
+      "group_name": "OT-Verantwortlicher Zeckerin (Sonnewalde OT Zeckerin)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-24",
+    "has_recurrence": 0,
+    "title": "Sitzung der Stadtverordnetenversammlung der Stadt Sonnewalde",
+    "id": 121559,
+    "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 2,
+    "cnt_topics": 20,
+    "cnt_topics_docs": 32,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11096,
+      "group_name": "Stadtverordnetenversammlung (Sonnewalde)"
+     },
+     {
+      "group_id": 19845,
+      "group_name": "Amtsleiter Stadtverwaltung (Sonnewalde)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-24",
+    "has_recurrence": 0,
+    "title": "Sitzung aller Ortsbeiräte",
+    "id": 121600,
+    "location": "Aula der Grundschule Sonnewalde, Schulstr. 3a, 03249 Sonnewalde",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "18:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11096,
+      "group_name": "Stadtverordnetenversammlung (Sonnewalde)"
+     },
+     {
+      "group_id": 11090,
+      "group_name": "Ortsbeirat (Sonnewalde OT Zeckerin)"
+     },
+     {
+      "group_id": 19845,
+      "group_name": "Amtsleiter Stadtverwaltung (Sonnewalde)"
+     },
+     {
+      "group_id": 19632,
+      "group_name": "Ortsbeirat (Sonnewalde OT Birkwalde)"
+     },
+     {
+      "group_id": 11185,
+      "group_name": "Ortsbeirat (Sonnewalde OT Breitenau)"
+     },
+     {
+      "group_id": 11089,
+      "group_name": "Ortsbeirat (Sonnewalde OT Brenitz)"
+     },
+     {
+      "group_id": 11193,
+      "group_name": "Ortsbeirat (Sonnewalde OT Schönewalde)"
+     },
+     {
+      "group_id": 11192,
+      "group_name": "Ortsbeirat (Sonnewalde OT Pießig)"
+     },
+     {
+      "group_id": 11189,
+      "group_name": "Ortsbeirat (Sonnewalde OT Münchhausen-Ossak)"
+     },
+     {
+      "group_id": 11188,
+      "group_name": "Ortsbeirat (Sonnewalde OT Möllendorf)"
+     },
+     {
+      "group_id": 11091,
+      "group_name": "Ortsbeirat (Sonnewalde OT Kleinkrausnik)"
+     },
+     {
+      "group_id": 11094,
+      "group_name": "Ortsbeirat (Sonnewalde OT Kleinbahren)"
+     },
+     {
+      "group_id": 11092,
+      "group_name": "Ortsbeirat (Sonnewalde OT Sonnewalde)"
+     },
+     {
+      "group_id": 11088,
+      "group_name": "Ortsbeirat (Sonnewalde OT Friedersdorf)"
+     },
+     {
+      "group_id": 11095,
+      "group_name": "Ortsbeirat (Sonnewalde OT Goßmar)"
+     },
+     {
+      "group_id": 11093,
+      "group_name": "Ortsbeirat (Sonnewalde OT Großkrausnik)"
+     },
+     {
+      "group_id": 11186,
+      "group_name": "Ortsbeirat (Sonnewalde OT Dabern)"
+     },
+     {
+      "group_id": 11187,
+      "group_name": "Ortsbeirat (Sonnewalde OT Großbahren)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-19",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Großbahren",
+    "id": 121589,
+    "location": "Gaststätte \"Lindenkrug\" in Großbahren",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11187,
+      "group_name": "Ortsbeirat (Sonnewalde OT Großbahren)"
+     },
+     {
+      "group_id": 19850,
+      "group_name": "OT-Verantwortlicher Großbahren (Sonnewalde OT Großbahren)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-16",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Friedersdorf",
+    "id": 121593,
+    "location": "Heimatstube",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19860,
+      "group_name": "OT-Verantwortlicher Friedersdorf (Sonnewalde OT Friedersdorf)"
+     },
+     {
+      "group_id": 11088,
+      "group_name": "Ortsbeirat (Sonnewalde OT Friedersdorf)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-09",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Pießig",
+    "id": 121596,
+    "location": "ehem. Gaststätte Kollesser",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19857,
+      "group_name": "OT-Verantwortlicher Pießig (Sonnewalde OT Pießig)"
+     },
+     {
+      "group_id": 11192,
+      "group_name": "Ortsbeirat (Sonnewalde OT Pießig)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-04",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Kleinbahren - Termin geändert auf Mi, den 03.06.2026",
+    "id": 121587,
+    "location": "Gemeindehaus in Kleinbahren",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 11094,
+      "group_name": "Ortsbeirat (Sonnewalde OT Kleinbahren)"
+     },
+     {
+      "group_id": 19853,
+      "group_name": "OT-Verantwortlicher Kleinbahren (Sonnewalde OT Kleinbahren)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-03",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Kleinbahren",
+    "id": 121595,
+    "location": "Gemeindehaus in Kleinbahren",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19853,
+      "group_name": "OT-Verantwortlicher Kleinbahren (Sonnewalde OT Kleinbahren)"
+     },
+     {
+      "group_id": 11094,
+      "group_name": "Ortsbeirat (Sonnewalde OT Kleinbahren)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   },
+   {
+    "recurrence_start": "2026-06-02",
+    "has_recurrence": 0,
+    "title": "Sitzung des Ortsbeirates Birkwalde",
+    "id": 121597,
+    "location": "Zur alten Feuerwehr",
+    "cnt_emails": 0,
+    "cnt_invitations": 0,
+    "cnt_protocol": 0,
+    "cnt_documents": 0,
+    "cnt_topics": 0,
+    "cnt_topics_docs": 0,
+    "entry_start_time": "19:00:00",
+    "deactivated": 0,
+    "groups": [
+     {
+      "group_id": 19846,
+      "group_name": "OT-Verantwortlicher Birkwalde (Sonnewalde OT Birkwalde)"
+     },
+     {
+      "group_id": 19632,
+      "group_name": "Ortsbeirat (Sonnewalde OT Birkwalde)"
+     }
+    ],
+    "archived": false,
+    "editable": false,
+    "has_disabled_groups": false,
+    "location_type": "default"
+   }
+  ],
+  "count": 30,
+  "filteredCount": 30
+ }
+}

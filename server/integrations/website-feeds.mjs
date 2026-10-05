@@ -53,10 +53,11 @@ const dayOf=value=>stamp(value)?.date??null;
 
 // --- addresses that are never read ------------------------------------------------------------------------------------
 // A council information system, also one on the municipality's own domain (ratsinfo.<domain>, /buergerinfo/, si0040.asp,
-// PIO, PIWi, RISI). An area may be searched because its RIS forbids programs or is not supported; neither the search nor
+// PIO, PIWi, RISI, the council service of mein-intra.net that a website embeds on a page of its own,
+// …?href=/councilservice/…). An area may be searched because its RIS forbids programs or is not supported; neither the search nor
 // the reader reads that system through another door.
 const RIS_HOST=/^(?:ratsinfo|ratsinformation|buergerinfo|bürgerinfo|sessionnet|session|ris|risi|rim|sd|sdnet|allris|gremien|gremieninfo|sitzungsdienst|kreistagsinfo|bi|sitzungen|piwi|pio)[.-]/i;
-const RIS_ADDRESS=/sessionnet|\bsi00\d\d\b|\/(?:si|to|vo|kp|gr|pa|au|yw|do)0\d{3}\.(?:asp|php)|\/(?:si|to|vo|kp|gr)0\d0(?:[?#]|$)|allris|buergerinfo|bürgerinfo|ratsinfo|sdnet|ris-portal\.de|komuna\.net|gremien\.info|more-rubin|kdz-ws\.net|sitzung-online\.de|ratsinfomanagement|cm-ratsinfos|komm\.one|zv-kisa\.de|\/oparl\b|\/bi\/|\/ris\/|\/risi(?:[/;?]|$)|\/piwi(?:[/;?]|$)|\/sitzung\/detail(?:[/;?]|$)|[?&]aktiv=tagesordnungen|\/sitzungsdienst(?:[/;?]|$)|\/gremieninfo(?:[/;?.]|$)|sessionweb|provox|\/ti_\d+|ekom21|kommune-aktiv\.de/i;
+const RIS_ADDRESS=/sessionnet|\bsi00\d\d\b|\/(?:si|to|vo|kp|gr|pa|au|yw|do)0\d{3}\.(?:asp|php)|\/(?:si|to|vo|kp|gr)0\d0(?:[?#]|$)|allris|buergerinfo|bürgerinfo|ratsinfo|sdnet|ris-portal\.de|komuna\.net|gremien\.info|more-rubin|kdz-ws\.net|sitzung-online\.de|ratsinfomanagement|cm-ratsinfos|komm\.one|zv-kisa\.de|\/oparl\b|\/bi\/|\/ris\/|\/risi(?:[/;?]|$)|\/piwi(?:[/;?]|$)|\/sitzung\/detail(?:[/;?]|$)|[?&]aktiv=tagesordnungen|\/sitzungsdienst(?:[/;?]|$)|\/gremieninfo(?:[/;?.]|$)|sessionweb|provox|\/ti_\d+|ekom21|kommune-aktiv\.de|councilservice|mein-intra\.net/i;
 /** Whether an address belongs to a council information system (host name or a path typical of one). */
 export function isRisLink(url){try{const u=new URL(url);return RIS_HOST.test(u.hostname)||RIS_ADDRESS.test(u.hostname+u.pathname+u.search);}catch{return true;}}
 // The site's own search: its pages and its query parameters (TYPO3 ke_search and Solr, WordPress "s", Joomla "q").

@@ -25,12 +25,13 @@ const today=new Date().toISOString().slice(0,10);
 // At most two requests or checks at a time on one server, as in the import (pipeline-jobs.mjs). A server is told apart
 // like there: by the registrable domain of its operator and by its address. A lock per host name would let every
 // worker reach another subdomain of one operator at once; operators such as sitzung-online.de then block the network.
-const PER_SERVER=2,slots=new Map(),addresses=new Map();
+// SERVER_LIMIT and SERVER_PAUSE_MS (a pause after each request or check) for hosts that refuse busier runs (crawl.mjs).
+const PER_SERVER=Number(process.env.SERVER_LIMIT||2),PAUSE=Number(process.env.SERVER_PAUSE_MS||0),slots=new Map(),addresses=new Map();
 const addressOf=host=>{if(!addresses.has(host))addresses.set(host,dns.resolve4(host).then(found=>found.sort()[0],()=>null));return addresses.get(host);};
 const acquire=key=>{const slot=slots.get(key)||{busy:0,waiting:[]};slots.set(key,slot);if(slot.busy<PER_SERVER){slot.busy++;return Promise.resolve();}return new Promise(turn=>slot.waiting.push(turn));};
 const release=key=>{const slot=slots.get(key),turn=slot.waiting.shift();if(turn)turn();else slot.busy--;};
 // Always the domain first and the address second, so two checks never wait for each other.
-const withHost=async(url,fn)=>{const host=new URL(url).hostname,address=await addressOf(host),keys=['domain:'+host.split('.').slice(-2).join('.'),...(address?['ip:'+address]:[])];for(const key of keys)await acquire(key);try{return await fn();}finally{for(const key of keys.reverse())release(key);}};
+const withHost=async(url,fn)=>{const host=new URL(url).hostname,address=await addressOf(host),keys=['domain:'+host.split('.').slice(-2).join('.'),...(address?['ip:'+address]:[])];for(const key of keys)await acquire(key);try{return await fn();}finally{if(PAUSE)await new Promise(r=>setTimeout(r,PAUSE));for(const key of keys.reverse())release(key);}};
 // robots.txt of a host is read before its first page (one request per host); a path it disallows for the programs of
 // this project is not asked, the candidate is recorded with robots:'verboten' (verdicts as in source-robots.json).
 // IGNORE_ROBOTS=1 switches the check off.
