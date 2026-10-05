@@ -10,6 +10,8 @@ import {useAppNav} from '../state/nav';
 import {ShareButton} from '../components/ShareButton';
 import {SaveArticleButton} from '../components/SaveArticleButton';
 import {FollowButton} from '../components/FollowButton';
+import {ExportMenu} from '../components/ExportMenu';
+import {exportArticlePdf,exportArticleTable,printArticle} from '../lib/exportArticle';
 export function DetailPage(){
  const router=useRouter(),params=useParams(),id=String(params.id||''),{goBack}=useAppNav();
  const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>({id:'',topic:null,error:''}),[attempt,setAttempt]=useState(0);
@@ -20,7 +22,7 @@ export function DetailPage(){
   const article={id:t.id,title:t.title,date:(t.eventDate||'').slice(0,10),gemeinde:region?.name||'',teaser:t.shortSummary||''};
   /* Rohdaten der OParl-Schnittstelle (maschinenlesbares JSON) sind keine Unterlage für Menschen: ausblenden */
   const isOparlData=(u?:string,title?:string)=>/oparl-datensatz/i.test(title||'')||/\/oparl\/.*\/(papers|meetings|agendaitems|consultations)\//i.test(u||'');
-  const docs=t.documents.filter(d=>!isOparlData(d.url,d.title)),source=t.sourceUrl&&!isOparlData(t.sourceUrl)?t.sourceUrl:'';
+  const docs=t.documents.filter(d=>!isOparlData(d.url,d.title));
   const sorted=[...events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   const facts:[string,string][]=[['Sitzung',formatDate(t.eventDate)],['Gremium',t.committee||'Nicht dokumentiert'],['Vorlage',t.reference||'Nicht dokumentiert'],['Gebiet',region?.name||'Unbekannt'],['Stand',status.label],['Quellenstand',formatDate(t.updatedAt)]];
   return (
@@ -31,10 +33,22 @@ export function DetailPage(){
         {/* Kopf: Ort, Thema, Stand als Textzeile; Aktionen rechts */}
         <div className="flex flex-wrap items-center gap-2 text-[14px] text-slate-500">
           <span>{region?.name||'Gebiet nicht zugeordnet'} · {t.category} · <span className="text-teal-600">{status.label}</span></span>
-          <span className="ml-auto flex items-center gap-1">
+          {/* Aktionen als Symbole: Teilen, Folgen, Speichern, Exportieren */}
+          <span className="ml-auto flex flex-wrap items-center gap-1">
             <ShareButton title={t.title} url={typeof window!=='undefined'?window.location.origin+'/beschluss/'+t.id:''}/>
-            <FollowButton article={article} size={22}/>
-            <SaveArticleButton article={article} size={22}/>
+            <FollowButton article={article} size={20}/>
+            <SaveArticleButton article={article} size={20}/>
+            <ExportMenu
+              title="Exportieren"
+              tone="text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+              options={[
+                {id:'pdf',label:'PDF',desc:'Übersicht mit Logo als Datei zum Weitergeben oder Ablegen'},
+                {id:'print',label:'Drucken',desc:'Druckfertige Seite mit Logo, direkt zum Drucker'},
+                {id:'xlsx',label:'Excel (.xlsx)',desc:'Eckdaten, Verlauf und Unterlagen als Tabelle'},
+                {id:'csv',label:'CSV (.csv)',desc:'Für andere Programme, z. B. CRM'},
+              ]}
+              onExport={async f=>{const a={t,place:region?.name||'',docs,events:sorted};if(f==='pdf')await exportArticlePdf(a);else if(f==='print')printArticle(a);else exportArticleTable(a,f as 'csv'|'xlsx');}}
+            />
           </span>
         </div>
         <h1 lang="de" className="mb-3 mt-3 max-w-[38ch] hyphens-auto text-[22px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-[28px]">{t.title}</h1>
@@ -82,7 +96,6 @@ export function DetailPage(){
                   {docs.map((d,i)=><li key={i} className="border-b border-slate-200"><a href={d.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 py-3 text-[16px] text-slate-900 no-underline"><IconDoc size={28} className="flex-none text-teal-600"/><span className="min-w-0 flex-1 break-words group-hover:text-teal-600">{d.title||'Dokument'}</span><span aria-hidden="true" className="flex-none text-teal-600">↗</span></a></li>)}
                 </ul>
               ):<p className="text-[14px] text-slate-500">Keine Unterlagen verlinkt.</p>}
-              {source&&<a className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white no-underline hover:opacity-85" href={source} target="_blank" rel="noopener noreferrer">Im Ratsinformationssystem öffnen ↗</a>}
             </section>
           </div>
 

@@ -70,8 +70,8 @@ export interface SearchState {
   sort: "desc" | "asc" | "relevance";
   /** Auch künftige Termine zeigen; sonst nur bis heute */
   future?: boolean;
-  /** Auch Formalien zeigen (Niederschriften, Mitteilungen …); sonst ausgeblendet */
-  formal?: boolean;
+  /** Formalien ausblenden (Niederschriften, Mitteilungen …); Standard: alles zeigen */
+  noformal?: boolean;
   level: "city" | "district";
   /** Vom Nutzer gewählte Alternativen der Ortserkennung (Suchphrase → AGS) */
   placeOverrides: Record<string, string>;
@@ -105,8 +105,8 @@ export interface SavedSearch {
   level?: "city" | "district";
   /** Auch künftige Termine („inkl. Zukunft“) */
   future?: boolean;
-  /** Auch Formalien („inkl. Formalien“) */
-  formal?: boolean;
+  /** Formalien ausgeblendet („ohne Formalien“) */
+  noformal?: boolean;
   /** Benachrichtigung: on = Push, mail = E-Mail an email; freq gilt für beide */
   notify: { on: boolean; freq: NotifyFreq; mail?: boolean; email?: string; /** weitere Empfänger dieser Suche (Enterprise) */ recipients?: string[] };
   created: string; // ISO

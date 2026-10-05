@@ -1,17 +1,19 @@
 import type { Article } from "../types";
 import { STATUS_BY_ID } from "./constants";
+import { download, makeCsv, makeXlsx } from "./xlsx";
 
-const MAX_PAGES = 25; // 25 × 20 = höchstens 500 Treffer je Export
+/** Höchstzahl je Export: 25 Seiten × 20 Treffer */
+export const EXPORT_MAX = 500;
+export type ExportFormat = "csv" | "xlsx";
 
-const cell = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+const HEAD = ["Datum", "Titel", "Ort", "Gremium", "Stand", "Thema", "Link"];
+const row = (a: Article & { gremium?: string }) => [a.date, a.title, a.gemeinde, a.gremium ?? "", STATUS_BY_ID[a.status]?.label ?? a.status, a.thema, `${window.location.origin}/beschluss/${a.id}`];
+const stamp = () => new Date().toISOString().slice(0, 10);
 
-/**
- * Trefferliste der aktuellen Suche als CSV (Excel-tauglich: Semikolon, UTF-8 mit BOM).
- * key: Abfrage der Suche; withinAgs: Gebiete eines Umkreises (sonst leer).
- */
-export async function exportResults(key: string, withinAgs: string[] | null, total: number): Promise<number> {
+/** Trefferliste der aktuellen Suche als CSV oder Excel; key: Abfrage der Suche, withinAgs: Gebiete eines Umkreises */
+export async function exportResults(key: string, withinAgs: string[] | null, total: number, format: ExportFormat): Promise<number> {
   const rows: Article[] = [];
-  const pages = Math.min(MAX_PAGES, Math.ceil(total / 20));
+  const pages = Math.min(EXPORT_MAX / 20, Math.ceil(total / 20));
   for (let page = 1; page <= pages; page++) {
     const p = new URLSearchParams(key);
     p.delete("around");
@@ -23,17 +25,7 @@ export async function exportResults(key: string, withinAgs: string[] | null, tot
     rows.push(...(d.articles ?? []));
     if (!d.articles?.length) break;
   }
-  const head = ["Datum", "Titel", "Ort", "Gremium", "Stand", "Thema", "Link"];
-  const origin = window.location.origin;
-  const lines = rows.map((a) =>
-    [a.date, a.title, a.gemeinde, (a as Article & { gremium?: string }).gremium, STATUS_BY_ID[a.status]?.label ?? a.status, a.thema, `${origin}/beschluss/${a.id}`].map(cell).join(";"),
-  );
-  const blob = new Blob(["﻿" + [head.map(cell).join(";"), ...lines].join("\r\n")], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `treffer-${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
+  const table = [HEAD, ...rows.map(row)];
+  download(format === "xlsx" ? makeXlsx(table) : makeCsv(table), `treffer-${stamp()}.${format}`);
   return rows.length;
 }

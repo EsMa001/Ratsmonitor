@@ -37,7 +37,7 @@ function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
       sort: "desc",
       page: "1",
     });
-    if (!s.formal) p.set("noformal", "1");
+    if (s.noformal) p.set("noformal", "1");
     /* Umkreissuche: alle Gebiete im Kreis, wie in der Übersicht */
     if (within != null) p.set("within", within);
     fetch("/api/search?" + p, { signal: ctrl.signal })
@@ -45,7 +45,7 @@ function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
       .then((r) => setData({ total: r.total ?? 0, items: (r.articles ?? []).slice(0, 10) }))
       .catch(() => !ctrl.signal.aborted && setData("error"));
     return () => ctrl.abort();
-  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level, s.future, s.formal, within]);
+  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level, s.future, s.noformal, within]);
   return data;
 }
 
@@ -261,7 +261,7 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
     const parts: string[] = [];
     for (const s of saved) {
       const p = new URLSearchParams({ q: s.text || "", area: s.area || "", scope: s.scope || "only", label: s.thema || "", status: s.status || "", level: s.level || "city", from: day(7), to: day(0), sort: "desc", page: "1" });
-      if (!s.formal) p.set("noformal", "1");
+      if (s.noformal) p.set("noformal", "1");
       try {
         const r = (await (await fetch("/api/search?" + p)).json()) as { total?: number; articles?: { id: string; title: string; date: string; gemeinde: string }[] };
         const top = (r.articles ?? []).slice(0, 5).map((a) => `  • ${a.title} (${a.gemeinde}, ${a.date})\n    ${location.origin}/beschluss/${a.id}`);

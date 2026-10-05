@@ -79,7 +79,7 @@ export function FilterPanel({ toggle }: { toggle: ReactNode }) {
         </div>
         {/* Schalter wie am iPhone */}
         <Toggle label="inkl. Zukunft" hint="Auch künftige Termine zeigen" on={!!state.future} set={search.setFuture} />
-        <Toggle label="inkl. Formalien" hint="Auch Niederschriften, Mitteilungen, Anfragen und Ähnliches zeigen" on={!!state.formal} set={search.setFormal} />
+        <Toggle label="ohne Formalien" hint="Niederschriften, Mitteilungen, Anfragen und Ähnliches ausblenden" on={!!state.noformal} set={search.setNoformal} />
         <div className="grid grid-cols-2 gap-2">
           <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />
           <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className={full} />

@@ -37,7 +37,12 @@ export function ActiveFilters() {
   const regions = regionsIn(placeAgs);
   const inRegion = new Set(regions.flatMap((r) => r.ags));
   const chips = all.filter((c) => !((c.key === "area" && inRegion.has(state.area)) || (c.key === "more" && c.term && inRegion.has(c.term))));
-  if (!all.length) return null;
+  /* Eingeschaltete Schalter als Chips wie die übrigen Filter; × schaltet sie wieder aus */
+  const toggles: { key: string; label: string; off: () => void }[] = [
+    ...(state.future ? [{ key: "future", label: "inkl. Zukunft", off: () => search.setFuture(false) }] : []),
+    ...(state.noformal ? [{ key: "noformal", label: "ohne Formalien", off: () => search.setNoformal(false) }] : []),
+  ];
+  if (!all.length && !toggles.length) return null;
 
   const clearChip = (key: (typeof chips)[number]["key"], term?: string) => {
     if (key === "q" && term && splitTerms(res.text).length > 1) return search.applySearch(removePhrase(state.q, term));
@@ -93,7 +98,13 @@ export function ActiveFilters() {
           <IconX size={14} className="text-teal-600/60 group-hover:text-teal-700" />
         </button>
       ))}
-      {chips.length + regions.length > 1 && (
+      {toggles.map((d) => (
+        <button key={d.key} type="button" aria-label={`Filter ${d.label} entfernen`} onClick={d.off} className="group relative inline-flex h-7 items-center gap-1.5 rounded-full border border-teal-100 bg-teal-50/85 pl-2.5 pr-1.5 text-[14px] text-teal-700 backdrop-blur-sm before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] hover:bg-teal-100/90">
+          {d.label}
+          <IconX size={14} className="text-teal-600/60 group-hover:text-teal-700" />
+        </button>
+      ))}
+      {chips.length + regions.length + toggles.length > 1 && (
         <button type="button" title="Alle entfernen (Umschalt+Esc)" onClick={search.resetAll} className="inline-flex h-7 items-center px-1.5 text-[14px] text-teal-600 hover:underline">
           Alle entfernen
         </button>

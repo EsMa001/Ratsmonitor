@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 /** Link teilen: Teilen-Menü des Geräts, sonst Link in die Zwischenablage (kurz Haken als Bestätigung) */
-export function ShareButton({ title, url, className = "" }: { title: string; url: string; className?: string }) {
+export function ShareButton({ title, url, className = "", label = false }: { title: string; url: string; className?: string; /** Beschriftung neben dem Symbol (am Desktop) */ label?: boolean }) {
   const [copied, setCopied] = useState(false);
   const share = async () => {
     try {
@@ -19,7 +19,7 @@ export function ShareButton({ title, url, className = "" }: { title: string; url
       onClick={share}
       title={copied ? "Link kopiert" : "Link teilen"}
       aria-label={copied ? "Link kopiert" : "Link teilen"}
-      className={`grid h-9 w-9 flex-none place-items-center text-teal-600 transition-colors hover:text-teal-800 ${className}`}
+      className={`${label ? "inline-flex items-center gap-1.5 px-2" : "grid w-9 place-items-center"} h-9 flex-none text-teal-600 transition-colors hover:text-teal-800 ${className}`}
     >
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         {copied ? (
@@ -32,6 +32,7 @@ export function ShareButton({ title, url, className = "" }: { title: string; url
           </>
         )}
       </svg>
+      {label && <span className="hidden text-[14px] sm:inline">{copied ? "Kopiert" : "Teilen"}</span>}
     </button>
   );
 }
