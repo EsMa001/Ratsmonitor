@@ -359,11 +359,13 @@ select.ri-input{padding-right:12px;cursor:pointer}
   background-size:170% 130%;animation:riGlow 9s ease-in-out infinite alternate}
 @keyframes riGlow{0%{background-position:0% 40%}50%{background-position:60% 70%}100%{background-position:100% 45%}}
 @media (prefers-reduced-motion:reduce){.ri-dark::before{animation:none}}
-/* Der Verlauf läuft in die Fußzeile weiter und wird nach unten kräftiger; ohne Abschlusskachel bleibt die Fußzeile weiß */
-:has(> .ri-dark:last-child)+footer{border-top-color:transparent;background:
-  radial-gradient(70% 90% at 15% 110%,rgba(13,148,136,.28),transparent 70%),
-  radial-gradient(70% 90% at 85% 110%,rgba(110,191,184,.5),transparent 70%),
-  linear-gradient(#eaf6f4,#cfeae6)}
+/* Abschlusskachel und Fußzeile wirken wie eine Fläche: die Kachel blendet unten in einen Mintton aus, die Fußzeile
+   beginnt genau in diesem Ton ohne Linie und wird nach unten kräftiger. Ohne Abschlusskachel bleibt die Fußzeile weiß. */
+.ri-dark:last-child::after{content:"";position:absolute;inset:auto 0 0;height:55%;z-index:-1;background:linear-gradient(rgba(230,243,241,0),#e6f3f1)}
+:has(> .ri-dark:last-child)+footer{border-top:0;background:
+  radial-gradient(80% 60% at 20% 105%,rgba(13,148,136,.22),transparent 70%),
+  radial-gradient(80% 60% at 85% 105%,rgba(110,191,184,.45),transparent 70%),
+  linear-gradient(#e6f3f1,#c4e5e0)}
 /* Einklappbare Menügruppen (Funktionen, Use Cases) */
 .ri-menu__group{display:flex;width:100%;align-items:center;justify-content:space-between;border:0;background:transparent;font:inherit;font-size:14px;line-height:20px;color:#0f172a;text-align:left;cursor:pointer}
 .ri-menu__group:hover{background:#f8fafc}
