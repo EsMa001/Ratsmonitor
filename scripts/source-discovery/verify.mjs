@@ -46,7 +46,7 @@ const release=key=>{const slot=slots.get(key),turn=slot.waiting.shift();if(turn)
 // a firewall may still serve) are no answer here.
 const REFUSALS=3,refusals=new Map();
 // Readers of readers.mjs that read one part of a shared system, and the fields that name it.
-const PART_READERS={kic:['client'],'ris-portal':['organizations'],allris3:['organizations']};
+const PART_READERS={kic:['client'],'ris-portal':['organizations'],allris3:['organizations'],komfa:['organizations']};
 // Whether the name of a part (a municipality of a KIC app, name patterns of bodies) names the area as a whole word:
 // "Gemeinderat Au" names Au, "Ausschuss" does not.
 const foldPart=s=>String(s||'').normalize('NFC').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');

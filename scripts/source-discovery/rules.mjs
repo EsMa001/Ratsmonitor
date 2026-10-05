@@ -195,6 +195,10 @@ export const HOSTED=[
  // RIS-Portal: /startseite answers on both kinds of tenant (council site at the root or below /web/ratsinformation/).
  {name:'RIS-Portal',land:'',hosts:s=>[`${s}.ris-portal.de`],path:'/startseite',wildcard:false,dnsOnly:true},
  {name:'sitzung-online.de',land:'',hosts:s=>[`www.${s}.sitzung-online.de`],path:'/public/',wildcard:false,dnsOnly:true},
+ // KOMFA-RIS (kommunalfabrik): DNS answers every name, a host without a tenant answers HTTP 404. Its customers found so
+ // far are in Brandenburg, Mecklenburg-Vorpommern, Sachsen, Sachsen-Anhalt and Thüringen (one entry per Land, so that a
+ // name only has to be unique in its Land). marker: what shows the system on the page (default: SessionNet, ALLRIS).
+ ...['12','13','14','15','16'].map(land=>({name:'KOMFA',land,hosts:s=>[`ris-${s}.komfa.de`],path:'/index.php?module=komfaris&action=main',wildcard:true,marker:/module=komfaris/})),
 ];
 const ascii=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
 /** Host labels for a name: "Bayerisch Gmain" → bayerisch-gmain, bayerischgmain; additions and brackets left out. */

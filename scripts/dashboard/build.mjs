@@ -24,7 +24,7 @@ const robots=read('server/integrations/source-robots.json').sources;
 const sources=new Map(NRW_SOURCES.filter(s=>s.method!=='pending').map(s=>[s.id,s]));
 for(const id of ['billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen','muenster'])if(!sources.has(id))sources.set(id,SOURCES.find(s=>s.id===id)||{id});
 
-const METHOD={sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra','ris-portal':'RIS-Portal',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'};
+const METHOD={sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra','ris-portal':'RIS-Portal',komfa:'KOMFA-RIS',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'};
 const methodOf=s=>s.method==='oparl'?'OParl':METHOD[s.adapter]||(s.base||s.system?'SessionNet':'Stammquelle');
 
 // Open areas with their reason.

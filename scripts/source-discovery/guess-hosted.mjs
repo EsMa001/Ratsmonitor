@@ -67,7 +67,7 @@ for(const p of HOSTED.filter(p=>!chosen||chosen.has(p.name))){
     if(!(await allowed(url))){refused++;row.log.push(url+': robots.txt untersagt den Abruf');continue;}
     const page=await get(url);asked++;row.log.push(url+' '+(page.status||page.error));
     if([401,403,429].includes(page.status)){refusal=page.status;break;}
-    if(page.status===200&&/sessionnet|si0040|allris|sitzungsdienst|bürgerinfo|buergerinfo/i.test(page.body)&&pageNamesArea(page.body,r)){
+    if(page.status===200&&(p.marker||/sessionnet|si0040|allris|sitzungsdienst|bürgerinfo|buergerinfo/i).test(page.body)&&pageNamesArea(page.body,r)){
      row.candidates.push({url:page.url,from:host,byHref:true,guessed:`${p.name}-Adresse, Seite nennt das Gebiet`});found++;break;
     }
    }

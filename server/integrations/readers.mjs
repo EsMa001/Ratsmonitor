@@ -13,6 +13,7 @@ import {collectPiwi,detectPiwi} from './piwi.mjs';
 import {collectPio,detectPio} from './pio.mjs';
 import {collectCouncilservice,detectCouncilservice} from './councilservice.mjs';
 import {collectRisPortal,detectRisPortal} from './ris-portal.mjs';
+import {collectKomfa,detectKomfa} from './komfa.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 // collect-region.mjs hands every reader the council-system fetch (sessionnet fetchText, wrapped by the trace of a
@@ -39,6 +40,9 @@ export const READERS={
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
  'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},
+ // KOMFA-RIS of kommunalfabrik (ris-<name>.komfa.de): the month views of its calendar and the public part of each
+ // agenda page. A system of an Amt names each meeting with its municipality; a member needs organizations.
+ komfa:{name:'KOMFA-RIS (öffentliche Seiten)',collect:collectKomfa,detect:async(url,html)=>pick(detectKomfa(url,html),['base'])},
  // Sitzungsdienst of mein-intra.net embedded in the municipality's website: recognised from the website page that
  // embeds it (export script and token); the entry names the system, the token and that page.
  councilservice:{name:'Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website)',collect:collectCouncilservice,detect:async(url,html)=>pick(detectCouncilservice(url,html),['base','token','page'])},
