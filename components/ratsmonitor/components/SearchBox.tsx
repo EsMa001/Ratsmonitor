@@ -13,6 +13,7 @@ type Row =
   | { kind: "head"; label: string }
   | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void; scope?: "only" | "with" }
   | { kind: "text"; label: string; pick: () => void }
+  | { kind: "query"; label: string; pick: () => void }
   | { kind: "scope"; label: string; sub: string; sel: boolean; pick: () => void };
 
 /** Suchfeld mit Ortserkennung und Vorschlagsliste.
@@ -153,6 +154,17 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           },
         });
     }
+    /* Erste Zeile: den eingetippten Text als Suche bestätigen (wie Enter), auch wenn kein Ort passt */
+    if (draft.trim())
+      out.unshift({
+        kind: "query",
+        label: draft.trim(),
+        pick: () => {
+          search.commitPlaces();
+          setOpen(false);
+          inputRef.current?.blur();
+        },
+      });
     return out;
   })();
 
@@ -331,6 +343,22 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
                     <span className={`block truncate text-[14px] ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{r.label}</span>
                     <span className="block text-[12px] text-slate-500">{r.sub}</span>
                   </span>
+                </button>
+              );
+            if (r.kind === "query")
+              return (
+                <button
+                  key={"q" + i}
+                  id={`sa-${idx}`}
+                  type="button"
+                  role="option"
+                  aria-selected={idx === active}
+                  onClick={() => { r.pick(); confirmed(); dropKeyboard(); onSubmit?.(); }}
+                  className={`grid min-h-10 w-full grid-cols-[18px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg px-2 py-1.5 text-left max-sm:min-h-11 ${idx === active ? "bg-slate-100" : "hover:bg-slate-100"}`}
+                >
+                  <IconSearch size={16} className="text-slate-500" />
+                  <span className="block truncate text-[14px] font-medium">Nach „{r.label}“ suchen</span>
+                  <span aria-hidden="true" className="text-[12px] text-slate-500 max-sm:hidden">Enter</span>
                 </button>
               );
             if (r.kind === "text")

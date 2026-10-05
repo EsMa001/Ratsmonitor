@@ -198,7 +198,7 @@
 
 /* Formulare (.rf/.ff) */
 .ri-form{padding:32px;border:1px solid #e8edf2;border-radius:20px;background:#fff;box-shadow:0 24px 60px rgba(15,23,42,.08)}
-.ri-form--center{max-width:620px;margin:0 auto}
+.ri-form--center{max-width:620px}
 .ri-field+.ri-field{margin-top:18px}
 .ri-field label,.ri-field__label{display:block;margin-bottom:8px;font-size:16px;font-weight:600;color:#0f172a}
 .ri-input{display:block;width:100%;height:46px;padding:0 14px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;font:inherit;font-size:16px;color:#0f172a;outline:none;transition:border-color .15s,box-shadow .15s}
