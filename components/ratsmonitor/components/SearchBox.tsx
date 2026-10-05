@@ -152,6 +152,15 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   const showList = open && rows.length > 0;
   const placeOn = state.areaSrc === "search" && !!state.area;
 
+  /* Schmale Bildschirme: kürzerer Platzhalter, damit er nicht abgeschnitten wird */
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 480px)");
+    const on = () => setNarrow(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   /* Strg+K bzw. ⌘K setzt den Cursor in die Suche */
   const [mac, setMac] = useState(false);
   useEffect(() => setMac(/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)), []);
@@ -219,7 +228,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
         type="search"
         autoComplete="off"
         spellCheck={false}
-        placeholder="Thema, Ort oder Region suchen"
+        placeholder={narrow ? "Thema oder Ort" : "Thema, Ort oder Region suchen"}
         role="combobox"
         aria-expanded={showList}
         aria-controls="search-assist"

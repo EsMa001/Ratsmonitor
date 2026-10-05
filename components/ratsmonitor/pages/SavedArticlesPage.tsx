@@ -77,7 +77,7 @@ export function SavedArticlesPage() {
             <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-3 pt-0.5 text-center">
               <span className="text-[22px] font-semibold leading-none tracking-[-.02em]">{Number(a.date?.slice(8, 10)) || "—"}</span>
               <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-600">{a.date ? MONTH_SHORT[Number(a.date.slice(5, 7)) - 1] : ""}</span>
-              <span className="text-[12px] text-slate-500">{a.date?.slice(0, 4)}</span>
+              <span className="text-[12px] text-slate-500">{a.date?.slice(2, 4)}</span>
             </div>
             <div className="min-w-0">
               <Link href={`/beschluss/${a.id}`} className="line-clamp-2 text-[16px] font-semibold leading-[1.35] tracking-[-.01em] text-slate-900 no-underline hover:text-teal-700">

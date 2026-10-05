@@ -37,6 +37,8 @@ export function PreisePage() {
         {/* Gleiche Tarifkarten wie im Konto */}
         <PlanCards publicPage />
 
+        {/* Vergleichstabelle nur ab Tablet; am Handy zeigen die Tarif-Reiter dieselben Leistungen */}
+        <div className="hidden sm:block">
         <h2 className="ri-h2 ri-h2--md ri-h2--gap">Alle Leistungen im Vergleich</h2>
         {/* Aus denselben Tarif-Grenzen wie die Karten erzeugt (lib/tier.ts), damit beides übereinstimmt */}
         <div className="-mx-4 overflow-x-auto px-4">
@@ -64,6 +66,7 @@ export function PreisePage() {
             ))}
           </tbody>
         </table>
+        </div>
         </div>
 
         <h2 className="ri-h2 ri-h2--md ri-h2--gap">Fragen zu Preisen</h2>

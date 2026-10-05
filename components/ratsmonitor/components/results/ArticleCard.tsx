@@ -51,7 +51,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
       <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-2.5 pt-0.5 text-center sm:pr-3">
         <span className="text-[22px] font-semibold leading-none tracking-[-.02em]">{Number(d) || "—"}</span>
         <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-600">{MONTH_SHORT[Number(m) - 1]}</span>
-        <span className="text-[12px] text-slate-500">{y}</span>
+        <span className="text-[12px] text-slate-500">{y?.slice(2)}</span>
       </div>
       <div className="min-w-0">
       <h3 lang="de" className="m-0 hyphens-auto text-[16px] font-semibold leading-[1.35] tracking-[-.01em]">

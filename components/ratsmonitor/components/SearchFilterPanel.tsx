@@ -97,8 +97,8 @@ export function SearchFilterPanel() {
             {res.loading ? "…" : res.total.toLocaleString("de-DE")} Treffer
             {res.updatedAt && (
               <span className="text-slate-500">
-                {" · Datenstand "}
-                {new Date(res.updatedAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })} Uhr
+                {" · Stand "}
+                {new Date(res.updatedAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })} Uhr
               </span>
             )}
           </span>

@@ -81,7 +81,7 @@ export function parseDate(iso: string): Date {
 
 export function fmtDate(iso: string): string {
   const [y, m, d] = iso.split("-");
-  return `${d}.${m}.${y}`;
+  return `${d}.${m}.${y.slice(2)}`;
 }
 
 export function isoDay(d: Date): string {
