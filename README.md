@@ -362,6 +362,12 @@ Umgesetzt, jeweils mit Tests:
 
 **Stand:** Noch kein Gebiet ist neu angebunden. Die Wirkung zeigt erst der Prüflauf vom Rechner des Projektinhabers. Offen ohne Dritte bleiben die Gremientrennung für gemeinsame Systeme (GVV Altshausen, GVV Schönau), die Suche nach Plattform-Mandanten über Zertifikatsprotokolle, Hamburg und ein Leser für komfa.
 
+## Lückenatlas (05.10.2026)
+
+`dashboard/luecken.html` ist eine eigenständige Seite ohne Website und Server: Datei im Browser öffnen. Sie zeigt alle 5.324 Gebiete auf der Karte und in einer durchsuchbaren Liste, eingefärbt nach Status (angebunden, angebunden mit robots-Sperre, offen nach Grund). Filter nach Land, Art, Betreiber oder Rechner, Recherche-Kandidaten und Neuprüfung; je Gebiet Grund laut Prüfbericht, was er bedeutet und was die Lücke schließen könnte; dazu Lücken je Land und die Rechner mit den meisten offenen Gebieten.
+
+Neu erzeugen nach einem Prüflauf: `node scripts/dashboard/build.mjs`. Der Generator liest Katalog, Quellen, robots-Urteile, die Prüfberichte (oder, falls vorhanden, die genaueren `tmp/source-discovery*/open.json`) und `scripts/source-discovery/candidates/`. Die Einordnung der Gründe steht in `CATEGORY` des Generators, die Erklärungen in `scripts/dashboard/page.html`.
+
 ## Gespeicherte Inhaltsanalyse · Billerbeck (v0.21)
 
 402 Artikel sind direkt durch Codex anhand öffentlicher Quellen bearbeitet: 310 Inhaltszusammenfassungen und 92 klar bezeichnete Quellenlücken. Kurz-/Langfassung, Belegzitate, Quellenprüfsummen, getrennte Labels, titelbasierte gewichtete Stichwörter sowie belegte Sitzungsdaten stehen im versionierten, etwa 3 MB großen Serverpaket `server/data/billerbeck-content-v1.json`. Es enthält keine neu archivierten Originalvolltexte. Die Langfassung erscheint auf der Artikelseite mit Quellenbasis und Bearbeitungsstatus. Die normale Kartenanalyse verwendet weiterhin Regel-Labels; die zusätzliche KI-Einordnung ersetzt diese nicht heimlich.
