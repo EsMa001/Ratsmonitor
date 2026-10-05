@@ -45,8 +45,8 @@
 .ri-sec{padding:76px var(--ri-pad) 78px;border-bottom:1px solid #eef1f4}
 .ri-sec--tight{padding-top:48px;padding-bottom:50px}
 .ri-sec--faq{padding-top:56px;padding-bottom:42px}
-.ri-h2{max-width:760px;font-size:28px;font-weight:600;line-height:1.15;letter-spacing:-.02em;color:#0f172a}
-.ri-h2--md{font-size:28px}
+.ri-h2{max-width:760px;font-size:22px;font-weight:600;line-height:1.25;letter-spacing:-.02em;color:#0f172a}
+.ri-h2--md{font-size:22px}
 .ri-sub{margin-top:12px;font-size:16px;color:#64748b}
 .ri-eyebrow{font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#0d9488}
 
@@ -367,16 +367,20 @@ select.ri-input{padding-right:12px;cursor:pointer}
 .ri-bc:hover,.ri-bcard:hover{border-color:#0d9488;box-shadow:none;transform:none}
 @media(max-width:760px){.ri-form{padding:0}}
 .ri-bcard__icon,.ri-bc__icon{padding:0;border-radius:0;background:none}
-/* Ruhigere Gliederung: Abschnittsüberschriften 22 px, Zeitleisten-Hinweis ohne Großbuchstaben und Fettdruck */
-.ri-h2,.ri-h2--md{font-size:22px;line-height:1.25}
-.ri-tl__label{font-size:12px;font-weight:400;letter-spacing:0;text-transform:none}
 /* Registrierung ohne Kästen: Tarifwahl als Reiter mit Linie, Zusammenfassung nur mit Linie oben */
 .ri-chosen{padding:20px 0 0;border:0;border-top:1px solid #e2e8f0;border-radius:0;background:none;box-shadow:none}
 .ri-plans{gap:0;border-bottom:1px solid #e2e8f0}
 .ri-plan,.ri-plan:hover{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;box-shadow:none;margin-bottom:-1px}
 .ri-plan[aria-pressed=true]{border:0;border-bottom:2px solid #0d9488;background:none;box-shadow:none}
 .ri-plan[aria-pressed=true] .ri-plan__name{color:#0d9488}
-/* Hauptmenü im gleichen Milchglas wie Suche und Kontomenü */
-.ri-menu__panel{border-color:rgba(255,255,255,.8);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(240,253,250,.74));-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);box-shadow:0 8px 28px rgba(15,23,42,.1)}
-/* Menüs weiß, ohne Farbverlauf */
-.ri-menu__panel{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;border-color:#e2e8f0}
+/* Hauptmenü: weiß, runde Ecken, leichter Schatten */
+.ri-menu__panel{border-radius:18px;box-shadow:0 8px 28px rgba(15,23,42,.1)}
+/* Hauptmenü in der breiten Kopfzeile (ab 1280 px, darunter Dreistrichmenü) */
+.ri-topnav{align-items:center;gap:12px;margin-left:40px;font-family:'IBM Plex Sans','Segoe UI',system-ui,sans-serif}
+.ri-topnav>a,.ri-topnav>button{display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:#64748b;font-size:14px;text-decoration:none;cursor:pointer;white-space:nowrap}
+.ri-topnav>a:hover,.ri-topnav>button:hover,.ri-topnav>button[aria-expanded=true]{background:#f1f5f9;color:#0f172a}
+.ri-topnav>a[aria-current=page]{color:#0f172a;font-weight:500}
+/* Aufklappliste der breiten Kopfzeile: wie das Menü, nur die Punkte nebeneinander in höchstens zwei Reihen */
+.ri-menu__panel--flyout{width:auto;max-width:calc(100vw - 16px);padding:10px}
+.ri-menu__panel--flyout .ri-menu__subs{display:grid;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:max-content;gap:2px 8px;margin:0;padding:0;border:0}
+.ri-menu__panel--flyout .ri-menu__sub{padding:8px 12px}

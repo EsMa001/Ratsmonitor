@@ -13,7 +13,7 @@ import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
 import type { Article, NotifyFreq, SavedSearch } from "../types";
 import { MONTH_SHORT } from "../lib/text";
-import { sendTestMail } from "../lib/testAuth";
+import { digestMail, type DigestPart, type MailItem } from "../lib/mails";
 import { useToast } from "../state/toast";
 
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
@@ -258,20 +258,16 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
   const build = async () => {
     setBusy(true);
     const day = (n: number) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
-    const parts: string[] = [];
+    const parts: DigestPart[] = [];
     for (const s of saved) {
       const p = new URLSearchParams({ q: s.text || "", area: s.area || "", scope: s.scope || "only", label: s.thema || "", status: s.status || "", level: s.level || "city", from: day(7), to: day(0), sort: "desc", page: "1" });
       if (s.noformal) p.set("noformal", "1");
       try {
-        const r = (await (await fetch("/api/search?" + p)).json()) as { total?: number; articles?: { id: string; title: string; date: string; gemeinde: string }[] };
-        const top = (r.articles ?? []).slice(0, 5).map((a) => `  • ${a.title} (${a.gemeinde}, ${a.date})\n    ${location.origin}/beschluss/${a.id}`);
-        parts.push(`${s.name}: ${r.total ?? 0} neue Treffer${top.length ? "\n" + top.join("\n") : ""}`);
-      } catch {
-        parts.push(`${s.name}: nicht verfügbar`);
-      }
+        const r = (await (await fetch("/api/search?" + p)).json()) as { total?: number; articles?: MailItem[] };
+        parts.push({ id: s.id, name: s.name, total: r.total ?? 0, top: (r.articles ?? []).slice(0, 3) });
+      } catch {}
     }
-    const to = readProfile().email || "Ihre Adresse";
-    sendTestMail(to, `Ihr Wochenbericht: ${day(7)} bis ${day(0)}`, `Guten Morgen,\n\ndas ist neu in Ihren gespeicherten Suchen der letzten 7 Tage:\n\n${parts.join("\n\n")}`);
+    digestMail(readProfile().email || "Ihre Adresse", day(7), day(0), parts);
     setBusy(false);
     toast("Wochenbericht liegt im Test-Postfach.");
   };

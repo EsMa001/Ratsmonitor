@@ -114,17 +114,17 @@ body h1,body h2,body h3{font-weight:600}
 /* Milchglas (Liquid Glass) für Suchleiste und runde Knöpfe auf der Karte */
 .rm-glass{background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(240,253,250,.42));-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(15,23,42,.1),inset 0 1px 0 rgba(255,255,255,.75)}
 .rm-glass:hover{background:linear-gradient(135deg,rgba(255,255,255,.65),rgba(240,253,250,.55))}
-#filter-body .select-base,#filter-body .rm-field{height:40px;border-radius:12px;background:rgba(255,255,255,.6);border-color:rgba(255,255,255,.85);box-shadow:inset 0 1px 2px rgba(15,23,42,.04)}
-#filter-body .select-base:hover,#filter-body .rm-field:hover{background:rgba(255,255,255,.8)}
-#filter-body .select-active{background:rgba(240,253,250,.85);border-color:#99f6e4;color:#0f766e}
-#filter-body .select-base{height:36px;font-size:14px}
-/* Filter: Felder und aufklappende Listen ebenfalls Milchglas */
-#filter-body .select-base,#filter-body .rm-field{background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+/* Filterfenster: Felder und aufklappende Listen ebenfalls Milchglas */
+#filter-body .select-base{height:36px;padding-left:12px;padding-right:28px;border-radius:12px;font-size:14px;background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.75);box-shadow:inset 0 1px 2px rgba(15,23,42,.04);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 #filter-body .select-base:hover{background:rgba(255,255,255,.55)}
-#filter-body .select-active{background:rgba(204,251,241,.45);border-color:rgba(153,246,228,.9)}
+#filter-body .select-base svg{right:10px}
+#filter-body .select-active{background:rgba(204,251,241,.45);border-color:rgba(153,246,228,.9);color:#0f766e}
 .rm-glass-pop,.rm-glass-pop:hover{background:linear-gradient(135deg,rgba(255,255,255,.6),rgba(240,253,250,.55))!important;border-color:rgba(255,255,255,.8)!important;-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
 .rm-glass-pop button:not([aria-selected=true]):not(.bg-teal-50):hover{background:rgba(255,255,255,.6)}
-#filter-body .select-base{padding-left:12px;padding-right:28px}#filter-body .select-base svg{right:10px}
+/* Seite: weißer Hintergrund, kein Nachfedern am oberen/unteren Rand */
 html,html body{background:#fff;overscroll-behavior-y:none}
 /* Bewegung reduzieren: alle Animationen und Übergänge praktisch aus */
 @media (prefers-reduced-motion:reduce){.ratsmonitor *,.ratsmonitor *::before,.ratsmonitor *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+/* Suchfeld: keine gelbe Autofill-Färbung (Safari/Chrome am Handy) und keine Systemdarstellung */
+#q{-webkit-appearance:none;appearance:none}
+#q:-webkit-autofill,#q:-webkit-autofill:hover,#q:-webkit-autofill:focus,#q:autofill{-webkit-text-fill-color:#0f172a;caret-color:#0f172a;transition:background-color 100000s ease-out 0s;-webkit-box-shadow:0 0 0 0 transparent inset;background-color:transparent!important}

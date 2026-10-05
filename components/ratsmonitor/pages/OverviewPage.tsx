@@ -2,7 +2,9 @@ import { useEffect, useRef } from "react";
 import { MapPanel } from "../components/map/MapPanel";
 import { SearchFilterPanel } from "../components/SearchFilterPanel";
 import { ResultsPanel } from "../components/results/ResultsPanel";
+import { useAccount } from "../state/account";
 import { overviewScroll } from "../state/nav";
+import { useSearch } from "../state/search";
 
 /**
  * Übersicht mit Karte und Ergebnisliste. Bleibt beim Wechsel auf Detail- und Kontoseiten
@@ -10,6 +12,18 @@ import { overviewScroll } from "../state/nav";
  */
 export function OverviewPage({ active }: { active: boolean }) {
   const wasActive = useRef(active);
+  const search = useSearch();
+  const { saved, ready } = useAccount();
+  /* Links aus E-Mails: /?suche=<id> öffnet eine gespeicherte Suche mit allen Einstellungen, /?q=… startet eine Suche */
+  const fromMail = useRef<URLSearchParams | null>(typeof location === "undefined" ? null : new URLSearchParams(location.search));
+  useEffect(() => {
+    const p = fromMail.current;
+    if (!p || (!p.get("suche") && !p.get("q")) || (p.get("suche") && !ready)) return;
+    const sv = saved.find((x) => x.id === p.get("suche"));
+    if (sv ? !search.applySaved(sv) : p.get("q") ? (search.applySearch(p.get("q")!), false) : false) return;
+    fromMail.current = null;
+    history.replaceState(history.state, "", location.pathname);
+  }, [saved, ready, search]);
 
   useEffect(() => {
     if (active && !wasActive.current) {

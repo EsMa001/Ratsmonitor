@@ -1,8 +1,7 @@
-import Link from "next/link";
 import type { CSSProperties } from "react";
 import { useBrand } from "../lib/brand";
 import { DarkCta, HitPreview, PageHead, SearchTermButton, useOpenSearch } from "./blocks";
-import { BRANCHEN, type Branche } from "./content";
+import type { Branche } from "./content";
 import { Icon } from "./icons";
 
 function Timeline({ b }: { b: Branche }) {

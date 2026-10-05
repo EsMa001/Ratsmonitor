@@ -9,22 +9,19 @@ import { useTier } from "../lib/tier";
 import { IconChevronDown } from "../components/icons";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
-const FUNKTIONEN: { href: string; label: string; icon: "search" | "clipboardList" | "bell" | "calendar" | "fileText" }[] = [
+const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" }[] = [
   { href: "/funktionen/suche", label: "Suche", icon: "search" },
-  { href: "/konto/suchen", label: "Gespeicherte Suchen", icon: "clipboardList" },
+  { href: "/konto/suchen", label: "Gespeicherte Suchen", icon: "heart" },
   { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
   { href: "/funktionen/benachrichtigungen", label: "Benachrichtigungen", icon: "bell" },
   { href: "/konto/kalender", label: "Kalender", icon: "calendar" },
 ];
 
-const MAIN_TOP = [
-  { href: "/ueber-ratsmonitor", label: "Über uns" },
-  { href: "/faq", label: "FAQ" },
-];
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */
 export function MainMenu() {
-  const [open, setOpen] = useState(false);
+  /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
+  const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
   const brandText = useBrandText();
@@ -39,8 +36,18 @@ export function MainMenu() {
     btnRef.current?.focus();
   }, []);
 
+  /* Seitenwechsel (z. B. über die Symbole rechts) schließt das Menü */
+  useEffect(() => setOpen(false), [path]);
+
   useEffect(() => {
     if (!open) return;
+    /* Klick in die Kopfzeile außerhalb des Menüs (Logo, Herz, Kalender …) schließt es; die Kopfzeile liegt über dem Hintergrund */
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (panelRef.current?.contains(t) || (t instanceof Element && t.closest("[data-menu-trigger]"))) return;
+      setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
     /* Fokus auf das Menü selbst, nicht auf den ersten Eintrag: sonst sähe „Suche“ wie ausgewählt aus */
     panelRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
@@ -51,6 +58,7 @@ export function MainMenu() {
     };
     document.addEventListener("keydown", onKey);
     return () => {
+      document.removeEventListener("pointerdown", onDown);
       document.removeEventListener("keydown", onKey);
     };
   }, [open, close]);
@@ -75,36 +83,50 @@ export function MainMenu() {
     close();
     window.scrollTo(0, 0);
   };
-  const toggle = () => {
-    if (open) return close();
-    const btn = btnRef.current?.getBoundingClientRect();
+  const toggle = (which: "all" | "funktionen" | "usecases", el: HTMLElement | null) => {
+    if (open === which) return close();
+    const btn = el?.getBoundingClientRect();
     const head = btnRef.current?.closest("header")?.getBoundingClientRect();
     setPos({ top: Math.max(0, Math.round(head?.bottom ?? 60)), left: Math.max(8, Math.round(btn?.left ?? 8)) });
-    setOpen(true);
+    setOpen(which);
   };
+  const show = (g: string) => (open === "all" ? openGroup === g : open === g);
   const current = (href: string) => (path === href ? "page" : undefined);
 
   return (
     <>
-      <button ref={btnRef} type="button" className="ri-burger" aria-label={open ? "Menü schließen" : "Menü öffnen"} aria-expanded={open} aria-controls="hauptmenue" onClick={toggle}>
+      <button ref={btnRef} type="button" data-menu-trigger className="ri-burger xl:!hidden" aria-label={open === "all" ? "Menü schließen" : "Menü öffnen"} aria-expanded={open === "all"} aria-controls="hauptmenue" onClick={(e) => toggle("all", e.currentTarget)}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden="true">
           <path d="M4 6.5h16M4 12h12M4 17.5h8" />
         </svg>
       </button>
+      {/* Breite Bildschirme: Menüpunkte direkt in der Kopfzeile, Funktionen und Use Cases klappen auf */}
+      <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
+        {(["funktionen", "usecases"] as const).map((g) => (
+          <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
+            {g === "funktionen" ? "Funktionen" : "Use Cases"}
+            <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
+          </button>
+        ))}
+        <Link href="/preise" aria-current={current("/preise")}>Preise</Link>
+        <Link href="/faq" aria-current={current("/faq")}>FAQ</Link>
+        <Link href="/quellen" aria-current={current("/quellen")}>Datenabdeckung</Link>
+        <Link href="/ueber-uns" aria-current={current("/ueber-uns")}>{brandText("Über Ratsmonitor")}</Link>
+      </nav>
       {open &&
         createPortal(
           <div className="ri-menu">
             <div className="ri-menu__bg" onClick={close} aria-hidden="true" />
-            <div ref={panelRef} id="hauptmenue" tabIndex={-1} className="ri-menu__panel outline-none" role="dialog" aria-label="Hauptmenü" style={{ top: pos.top, left: pos.left, maxHeight: `calc(100dvh - ${pos.top}px - 12px)` }} onKeyDown={trap}>
+            <div ref={panelRef} id="hauptmenue" tabIndex={-1} className={`ri-menu__panel outline-none ${open !== "all" ? "ri-menu__panel--flyout" : ""}`} role="dialog" aria-label="Hauptmenü" style={{ top: pos.top, left: pos.left, maxHeight: `calc(100dvh - ${pos.top}px - 12px)` }} onKeyDown={trap}>
               {/* Gleiche Gruppen wie in der Fußzeile; Linien statt Kästen. Gespeichertes und Konto erreicht man über die Icons in der Kopfzeile */}
               <nav className="ri-menu__nav" aria-label="Menü">
-                <p className="ri-menu__label">Produkt</p>
+                {open === "all" && <p className="ri-menu__label">Produkt</p>}
                 {/* Funktionen und Use Cases sind einklappbar; die Gruppen selbst sind keine Seiten */}
-                <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "funktionen"} onClick={() => setOpenGroup(openGroup === "funktionen" ? "" : "funktionen")}>
+                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "funktionen"} onClick={() => setOpenGroup(openGroup === "funktionen" ? "" : "funktionen")}>
                   Funktionen
                   <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "funktionen" ? "rotate-180" : ""}`} />
-                </button>
-                {openGroup === "funktionen" && (
+                </button>}
+                {show("funktionen") && (
                   <ul className="ri-menu__subs">
                     {FUNKTIONEN.map((f) => (
                       <li key={f.href}>
@@ -116,11 +138,11 @@ export function MainMenu() {
                     ))}
                   </ul>
                 )}
-                <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "usecases"} onClick={() => setOpenGroup(openGroup === "usecases" ? "" : "usecases")}>
+                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "usecases"} onClick={() => setOpenGroup(openGroup === "usecases" ? "" : "usecases")}>
                   Use Cases
                   <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "usecases" ? "rotate-180" : ""}`} />
-                </button>
-                {openGroup === "usecases" && (
+                </button>}
+                {show("usecases") && (
                   <ul className="ri-menu__subs">
                     {BRANCHEN.map((b) => {
                       const href = `/branchen/${b.slug}`;
@@ -135,13 +157,15 @@ export function MainMenu() {
                     })}
                   </ul>
                 )}
+                {open === "all" && <>
                 <Link href="/preise" className="ri-menu__main" aria-current={current("/preise")} onClick={pick}>Preismodelle</Link>
                 <p className="ri-menu__label ri-menu__label--sep">Informationen</p>
                 <Link href="/faq" className="ri-menu__main" aria-current={current("/faq")} onClick={pick}>FAQ</Link>
                 <Link href="/quellen" className="ri-menu__main" aria-current={current("/quellen")} onClick={pick}>Datenabdeckung</Link>
                 <Link href="/ueber-uns" className="ri-menu__main" aria-current={current("/ueber-uns")} onClick={pick}>{brandText("Über Ratsmonitor")}</Link>
+                </>}
               </nav>
-              {tier === "guest" && (
+              {open === "all" && tier === "guest" && (
                 <div className="ri-menu__start">
                   <Link href="/registrieren?tarif=free" className="btn-primary w-full" onClick={pick}>
                     Kostenlos starten

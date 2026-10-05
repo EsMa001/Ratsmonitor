@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { resetMail, welcomeMail } from "./mails";
 import { setTier, type Tier } from "./tier";
 
 /**
@@ -21,6 +22,8 @@ export interface TestMail {
   to: string;
   subject: string;
   body: string;
+  /** Gestaltete Fassung (Links hinter Knöpfen und Titeln) */
+  html?: string;
   date: string;
   read?: boolean;
 }
@@ -75,9 +78,9 @@ function startSession(a: TestAccount) {
   store(PROFILE, { ...p, name: a.name, email: a.email });
 }
 
-export function sendTestMail(to: string, subject: string, body: string) {
+export function sendTestMail(to: string, subject: string, body: string, html?: string) {
   const list = load<TestMail[]>(MAILS, []);
-  store(MAILS, [{ id: Date.now().toString(36), to, subject, body, date: new Date().toISOString() }, ...list].slice(0, 100));
+  store(MAILS, [{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), to, subject, body, html, date: new Date().toISOString() }, ...list].slice(0, 100));
 }
 
 export async function login(email: string, password: string): Promise<string | null> {
@@ -94,13 +97,13 @@ export async function register(data: { name: string; org?: string; email: string
   const a: TestAccount = { email, name: data.name.trim(), org: data.org?.trim() || undefined, tier: data.tier, hash: await sha(data.password) };
   store(ACCOUNTS, [...list, a]);
   startSession(a);
-  sendTestMail(email, "Willkommen! Bitte bestätigen Sie Ihre E-Mail-Adresse", `Hallo ${a.name},\n\nvielen Dank für Ihre Registrierung. Im echten Betrieb stünde hier ein Bestätigungslink.\n\nIm Testmodus ist Ihr Konto sofort aktiv.`);
+  welcomeMail(email, a.name);
   return null;
 }
 
 export async function requestReset(email: string) {
   const a = (await accounts()).find((x) => x.email === email.trim().toLowerCase());
-  if (a) sendTestMail(a.email, "Passwort zurücksetzen", `Hallo ${a.name},\n\nim echten Betrieb stünde hier ein Link zum Zurücksetzen.\n\nIm Testmodus gilt für die vorbereiteten Konten das Passwort „${TEST_PASSWORD}“.`);
+  if (a) resetMail(a.email, a.name, `(Testmodus: Die vorbereiteten Konten nutzen „${TEST_PASSWORD}“.)`);
 }
 
 export function logout() {

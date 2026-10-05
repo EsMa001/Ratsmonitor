@@ -227,6 +227,9 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
         id="q"
         type="search"
         autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="none"
+        enterKeyHint="search"
         spellCheck={false}
         placeholder={narrow ? "Thema oder Ort" : "Thema, Ort oder Region suchen"}
         role="combobox"

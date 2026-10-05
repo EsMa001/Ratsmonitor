@@ -1,93 +1,19 @@
-import { STATUS, THEMEN } from "../lib/constants";
-import { filterChips, splitTerms, suggestName } from "../lib/savedSearch";
-import { useAccount, useSavedStats } from "../state/account";
-import { useToast } from "../state/toast";
-import { useData } from "../state/data";
-import { useAppNav } from "../state/nav";
-import { useSearch, useSearchResults } from "../state/search";
-import { useUi } from "../state/ui";
-import { FilterSelect } from "./FilterSelect";
-import { GeoFilter } from "./GeoFilter";
-import { AreaBar } from "./AreaBar";
-import { DateRangeFilter } from "./DateRangeFilter";
 import { setListView, useListView } from "../lib/listView";
-import { setFiltersOpen, useFiltersOpen } from "../lib/filtersOpen";
-import { IconHeart, IconFilter, IconViewCompact, IconViewFull, IconX } from "./icons";
 import { EXPORT_MAX, exportResults, type ExportFormat } from "../lib/exportResults";
+import { useSearch, useSearchResults } from "../state/search";
+import { useToast } from "../state/toast";
 import { ExportMenu } from "./ExportMenu";
-import { useEffect, useState } from "react";
-import { useEntitlements } from "../lib/entitlements";
-import { SearchBox } from "./SearchBox";
-import { removePhrase } from "../lib/place";
+import { FilterSelect } from "./FilterSelect";
+import { IconViewCompact, IconViewFull } from "./icons";
 
-/** Suche und alle Filter als eigene Kachel zwischen Karte und Ergebnisliste */
+/** Zeile über der Trefferliste: Trefferzahl und Stand, Sortierung, Export, Ansicht.
+ *  Suche, Filter und aktive Filter liegen auf der Karte (SearchOverlay, FilterPanel, ActiveFilters). */
 export function SearchFilterPanel() {
-  const { geo } = useData();
   const search = useSearch();
   const { state } = search;
   const res = useSearchResults();
   const listView = useListView();
-  const { signatures } = useSavedStats();
-  const { openKonto } = useAppNav();
-  const { openSaveDialog, setFlashSaved } = useUi();
-  const chips = filterChips(res.snapshot, geo);
-  const active = chips.length > 0;
-  const savedHit = signatures.get(res.signature);
-  /* Aufgeklappt über den runden Filter-Knopf auf der Karte */
-  const open = useFiltersOpen();
-  const setOpen = setFiltersOpen;
-  const { saved, addSaved, removeSaved } = useAccount();
   const toast = useToast();
-  const { allow, allowFeature, limits } = useEntitlements();
-  /* Gäste haben keine Filter: Panel schließen und gesetzte Filter zurücknehmen */
-  useEffect(() => {
-    if (limits.filters) return;
-    setOpen(false);
-    if (state.thema) search.setThema("");
-    if (state.status) search.setStatus("");
-    if (state.monat) search.setMonat("");
-    if (state.von || state.bis) search.setZeitraum("", "");
-  }, [limits.filters, state.thema, state.status, state.monat, state.von, state.bis, search]);
-  /* Ein Klick speichert die Suche unter einem automatisch erzeugten Namen; erneuter Klick entfernt sie */
-  const toggleSave = () => {
-    try {
-      if (savedHit) {
-        removeSaved(savedHit.id);
-        return toast("Gespeicherte Suche entfernt.");
-      }
-      if (!allow("searches")) return;
-      const base = suggestName(res.snapshot, geo);
-      let name = base;
-      for (let i = 2; saved.some((x) => x.name === name); i++) name = `${base} (${i})`;
-      addSaved(res.snapshot, name);
-      toast(`Gespeichert: ${name}`);
-    } catch {
-      toast("Der Browser erlaubt derzeit keine dauerhafte Speicherung.");
-    }
-  };
-  const filterCount = chips.filter((c) => c.key !== "q").length;
-
-  const clearChip = (key: (typeof chips)[number]["key"], term?: string) => {
-    /* Einzelnen Suchbegriff entfernen; Orte und andere Begriffe bleiben stehen */
-    if (key === "q" && term && splitTerms(res.text).length > 1) return search.applySearch(removePhrase(state.q, term));
-    if (key === "q") {
-      /* Nur den Text entfernen, noch nicht übernommene Orte bleiben in der Eingabe */
-      return search.applySearch(res.liveHits.map((h) => h.phraseRaw).join(", "));
-    }
-    /* Ort aus dem Suchtext: dort entfernen; fester Ortsfilter: direkt entfernen, ein weiterer Ort rückt nach */
-    if (key === "area") return res.placeActive ? search.applySearch(removePhrase(state.q, res.pq.phraseRaw)) : search.clearArea();
-    if (key === "more" && term) {
-      const hit = res.liveHits.find((h) => h.place.ags === term);
-      if (state.morePlaces?.some((m) => m.ags === term)) search.removeMorePlace(term);
-      if (hit) search.applySearch(removePhrase(state.q, hit.phraseRaw));
-      return;
-    }
-    if (key === "radius") return search.clearRadius();
-    if (key === "thema") return search.setThema("");
-    if (key === "monat") return search.setMonat("");
-    if (key === "zeitraum") return search.setZeitraum("", "");
-    if (key === "status") return search.setStatus("");
-  };
 
   return (
     <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[12px]">

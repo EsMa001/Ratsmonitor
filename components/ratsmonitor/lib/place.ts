@@ -1,5 +1,4 @@
 import type { MapData } from "../types";
-import { isCovered } from "./constants";
 import type { GeoModel } from "./geo/geoModel";
 import { norm } from "./text";
 
