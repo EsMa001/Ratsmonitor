@@ -13,7 +13,7 @@ const TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'];
 // The address a reader asks first: the website reader its first list page (which may lie on another origin of the
 // municipality's domain, alsoFrom), the others the base or OParl system address.
 // The city states (citystates.mjs): Hamburg reads the search interface of the portal, Berlin the district systems.
-export const readUrl=source=>source.adapter==='website'?source.pages?.[0]||source.base:source.adapter==='hamburg-transparenz'?source.base+'api/3/action/package_search':source.adapter==='oparl-bezirke'?(source.systems?.find(s=>s.robots==='erlaubt')||source.systems?.[0])?.system||source.base:source.system||source.base;
+export const readUrl=source=>source.adapter==='website'?source.pages?.[0]||source.base:source.adapter==='hamburg-transparenz'?source.base+'api/3/action/package_search':source.adapter==='berlin'?new URL(`opendata/pardok-wp${(source.pardok?.periods||[19])[0]}.xml`,source.pardok?.base||'https://www.parlament-berlin.de/').href:source.adapter==='oparl-bezirke'?(source.systems?.find(s=>s.robots==='erlaubt')||source.systems?.[0])?.system||source.base:source.system||source.base;
 // The path a reader asks for: More! Rubin reads api.php next to its base, the website reader its first list page (with
 // its query, which robots.txt rules match as well; '/' without list page), the others the base or OParl system address.
 export const readPath=source=>{

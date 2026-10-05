@@ -3,23 +3,39 @@
     "id": "de-02000000",
     "name": "Stadt Hamburg",
     "kind": "city",
-    "method": "pending",
+    "method": "scraper",
     "adapter": "hamburg-transparenz",
     "base": "https://suche.transparenz.hamburg.de/",
-    "districts": ["Altona", "Bergedorf", "Eimsbüttel", "Hamburg-Mitte", "Hamburg-Nord", "Harburg", "Wandsbek"],
+    "districts": [
+      "Altona",
+      "Bergedorf",
+      "Eimsbüttel",
+      "Hamburg-Mitte",
+      "Hamburg-Nord",
+      "Harburg",
+      "Wandsbek"
+    ],
     "verifiedSource": "https://transparenz.hamburg.de/api-796358",
     "license": "dl-de/by-2.0",
-    "note": "Leser für das Transparenzportal gebaut (Drucksachen der sieben Bezirksversammlungen); Prüflauf vom Rechner des Projektinhabers ausstehend (robots.txt des Portals, Felder der Datensätze): node scripts/source-discovery/stadtstaaten.mjs hamburg"
+    "checkPending": "Eingeschaltet ohne Live-Prüfung (Entwicklungsumgebung ohne Zugang zum Portal). Der erste Import ist der Test: robots.txt des Portals und Felder der Datensätze; findet er nichts, nennt der Abruf den Grund. Prüfen: node scripts/source-discovery/stadtstaaten.mjs hamburg"
   },
   {
     "id": "de-11000000",
     "name": "Stadt Berlin",
     "kind": "city",
-    "method": "pending",
-    "adapter": "oparl-bezirke",
-    "base": "https://daten.berlin.de/",
+    "method": "scraper",
+    "adapter": "berlin",
+    "base": "https://www.parlament-berlin.de/",
+    "pardok": {
+      "base": "https://www.parlament-berlin.de/",
+      "periods": [
+        19,
+        20
+      ]
+    },
+    "verifiedSource": "https://www.parlament-berlin.de/dokumente/open-data",
+    "checkPending": "Abgeordnetenhaus eingeschaltet ohne Live-Prüfung (Entwicklungsumgebung ohne Zugang). Der erste Import ist der Test: robots.txt und Aufbau der XML-Datei. Bezirksverordnetenversammlungen nur mit Freigabe (requirements/berlin-freigabe-anfrage.md). Prüfen: node scripts/source-discovery/stadtstaaten.mjs berlin",
     "consent": null,
-    "systems": [],
-    "note": "Freigabe fehlt: Die Bezirksverordnetenversammlungen veröffentlichen ihre OParl-Schnittstellen als Open Data, untersagen Programmen den Abruf aber per robots.txt und HTTP 403. Leser gebaut; er ruft erst mit eingetragener Freigabe ab (Anfrage: requirements/berlin-freigabe-anfrage.md)."
+    "systems": []
   }
 ]
