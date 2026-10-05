@@ -11,7 +11,7 @@ Kurzübersicht, damit Änderungen ohne langes Suchen gehen. Alles unter `compone
 | Hauptmenü (☰ unter 1280 px, darüber Punkte in der Kopfzeile `.ri-topnav`) | `menu/MainMenu.tsx` |
 | Fußzeile + Abschlussband | `components/Footer.tsx` |
 | Startseite (Aufbau) | `pages/OverviewPage.tsx` |
-| Karte | `components/map/MapPanel.tsx`, Zeichnen: `lib/geo/mapEngine.ts` |
+| Karte + Kartenmodus (Klick/Zoom auf Karte: Darstellung Flächen/Heatmap/Blasen, Zoom, Zentrieren, Neu laden, Trefferzahlen) | `components/map/MapPanel.tsx`, Zeichnen/Abzeichen: `lib/geo/mapEngine.ts` |
 | Suchleiste auf der Karte (Herz, Feld, Filter-Knopf) | `components/SearchOverlay.tsx`, Feld + Vorschläge: `components/SearchBox.tsx` |
 | Chips unter der Suchleiste | `components/ActiveFilters.tsx` |
 | Filterfenster (Umkreis, Zeitraum, Thema, Status, Schalter) | `components/FilterPanel.tsx`, Umkreis: `components/AreaBar.tsx`, Zeitraum: `components/DateRangeFilter.tsx` |

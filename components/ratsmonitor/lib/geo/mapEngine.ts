@@ -15,6 +15,8 @@ export interface MapEngineCallbacks {
   onHover: (ags: string, x: number, y: number) => void;
   /** Nach jedem Neuzeichnen, z. B. um ein Popup neu zu positionieren */
   onViewChange: () => void;
+  /** Gesperrte Karte wurde angetippt, gezoomt oder mit dem Mausrad bedient (Kartenmodus starten) */
+  onUnlock?: () => void;
   /** Mausrad ohne Strg: Hinweis anzeigen */
   onWheelHint: () => void;
 }
@@ -24,6 +26,8 @@ export interface MapEngineCallbacks {
  * Zwei Canvas-Ebenen (Basis und Overlay), beim Verschieben und Zoomen wird ein Schnappschuss
  * skaliert und nach 180 ms Ruhe vollständig neu gezeichnet.
  */
+export type MapStyle = "flaechen" | "heat" | "blasen";
+
 export class MapEngine {
   private geo: GeoModel;
   private cb: MapEngineCallbacks;
@@ -53,6 +57,32 @@ export class MapEngine {
   private hoverAgs = "";
   private extHover = "";
   private cleanup: (() => void) | null = null;
+  /** Kartenmodus: Mausrad zoomt ohne vorherigen Klick */
+  private freeWheel = false;
+  /** Trefferzahl je Gemeinde als Abzeichen unter dem Namen (nur im Kartenmodus) */
+  private badges: Record<string, number> | null = null;
+  /** Darstellung im Kartenmodus: Flächen einfärben, Heatmap oder Blasen je Gemeinde */
+  private style: MapStyle = "flaechen";
+  private heatCanvas: HTMLCanvasElement | null = null;
+
+  setStyle(v: MapStyle) {
+    if (v === this.style) return;
+    this.style = v;
+    this.requestDraw();
+  }
+
+  /** Gesperrt (normaler Modus): kein Verschieben, kein Hover; Tippen, Zwei-Finger-Zoom oder Mausrad entsperren */
+  private locked = false;
+
+  setLocked(v: boolean) {
+    this.locked = v;
+  }
+
+  private unlock() {
+    if (!this.locked) return;
+    this.locked = false;
+    this.cb.onUnlock?.();
+  }
 
   constructor(geo: GeoModel, cb: MapEngineCallbacks) {
     this.geo = geo;
@@ -119,6 +149,15 @@ export class MapEngine {
     this.radius = radius;
     if (changed) this.requestDraw();
     else this.requestOver();
+  }
+
+  /** Kartenmodus an/aus: freies Zoomen mit dem Mausrad und Trefferzahlen unter den Gemeindenamen */
+  setExplore(on: boolean, badges: Record<string, number> | null) {
+    const key = JSON.stringify(badges);
+    const changed = on !== this.freeWheel || key !== JSON.stringify(this.badges);
+    this.freeWheel = on;
+    this.badges = on ? badges : null;
+    if (changed) this.requestDraw();
   }
 
   setExternalHover(ags: string) {
@@ -249,7 +288,8 @@ export class MapEngine {
     this.anim = requestAnimationFrame(step);
   }
 
-  private zoomAt(sx: number, sy: number, f: number) {
+  /** Zoomen um einen Bildschirmpunkt (auch von außen: Zwei-Finger-Geste, die den Kartenmodus startet) */
+  zoomAt(sx: number, sy: number, f: number) {
     const [x, y] = this.toData(sx, sy);
     const k = this.clampK(this.view!.k * f);
     this.view = { k, cx: x - (sx - this.W / 2) / k, cy: y + (sy - this.H / 2) / k };
@@ -352,7 +392,8 @@ export class MapEngine {
     ctx.fillStyle = C.neighbour;
     ctx.fill(fp);
     const L = this.level === "district" ? G.krs : G.gem;
-    for (const ags of this.coverage) {
+    const points = this.badges && this.style !== "flaechen";
+    if (this.filled()) for (const ags of this.coverage) {
       const i=L.idx.get(ags);if(i===undefined||!this.counts[L.ags[i]])continue;
       ctx.fillStyle = colorForCoverage(this.counts[L.ags[i]] || 0);
       ctx.fill(L.path[i]);
@@ -371,8 +412,180 @@ export class MapEngine {
     ctx.strokeStyle = C.national;
     ctx.lineWidth = px(1.1);
     ctx.stroke(G.mesh[3]);
+    if (points && this.style === "heat") this.drawHeat(ctx);
     this.drawLabels(ctx);
+    /* Blasen über den Ortsnamen, damit die Zahlen lesbar bleiben */
+    if (points && this.style === "blasen") this.drawBubbles(ctx);
+    this.drawSums(ctx);
     this.drawnView = { ...this.view! };
+  }
+
+  /** Abzeichen wie in der Kopfzeile: Petrol-Pille mit weißer Zahl und weißem Rand */
+  private pill(ctx: CanvasRenderingContext2D, n: number, x: number, y: number, fam: string) {
+    const t = n > 9999 ? Math.round(n / 1000) + "k" : n.toLocaleString("de-DE");
+    ctx.font = "600 12px " + fam;
+    /* Immer ein Kreis, der mit der Zahl mitwächst */
+    const bw = Math.max(20, ctx.measureText(t).width + 8);
+    ctx.beginPath();
+    ctx.arc(x, y, bw / 2, 0, Math.PI * 2);
+    ctx.fillStyle = "#0d9488";
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.5;
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(t, x, y + 0.5);
+    return bw;
+  }
+
+  /** Flächen eingefärbt: in „Flächen“ immer, bei Blasen ab Gemeindeebene (dann steht jede Blase für genau eine Gemeinde) */
+  private filled() {
+    if (!this.badges || this.style === "flaechen") return true;
+    return this.style === "blasen" && this.view!.k * 100 >= 3.2;
+  }
+
+  /** Bildschirmpunkte der Gemeinden mit Treffern (für Heatmap und Blasen) */
+  private hitPoints() {
+    const out: { ags: string; x: number; y: number; n: number }[] = [];
+    for (const [ags, n] of Object.entries(this.badges ?? {})) {
+      const c = n ? this.geo.center(ags) : null;
+      if (c) {
+        const [x, y] = this.toScreen(c.x, c.y);
+        out.push({ ags, x, y, n });
+      }
+    }
+    return out;
+  }
+
+  /** Heatmap: weiche Flecken je Gemeinde aufsummiert, dann eingefärbt (Petrol → Gelb → Rot) */
+  private drawHeat(ctx: CanvasRenderingContext2D) {
+    const pts = this.hitPoints();
+    if (!pts.length) return;
+    const max = Math.max(...pts.map((p) => p.n));
+    const w = this.base!.width, h = this.base!.height, d = this.dpr;
+    const off = (this.heatCanvas ??= document.createElement("canvas"));
+    if (off.width !== w || off.height !== h) {
+      off.width = w;
+      off.height = h;
+    }
+    const o = off.getContext("2d", { willReadFrequently: true })!;
+    o.setTransform(1, 0, 0, 1, 0, 0);
+    o.clearRect(0, 0, w, h);
+    /* Nah herangezoomt bleibt die Wärme innerhalb der Gemeindegrenze und füllt sie aus */
+    const inside = this.view!.k * 100 >= 14;
+    const G = this.geo.gem;
+    for (const p of pts) {
+      const i = inside ? G.idx.get(p.ags) : undefined;
+      const b = i !== undefined ? G.bb[i] : null;
+      /* Fleck so groß wie die Gemeinde (große Gemeinden größere Flecken), mindestens 16 px */
+      const gi = G.idx.get(p.ags), gb = gi !== undefined ? G.bb[gi] : null;
+      const size = gb ? Math.max(gb[2] - gb[0], gb[3] - gb[1]) * this.view!.k : 0;
+      const r = (b ? Math.max(12, size / 1.4) : Math.max(16, Math.min(160, size * 0.9))) * d;
+      const g = o.createRadialGradient(p.x * d, p.y * d, 0, p.x * d, p.y * d, r);
+      /* Einzelner Fleck höchstens Orange; Rot entsteht erst, wo sich viele Treffer überlagern */
+      const a = 0.15 + 0.55 * Math.sqrt(p.n / max);
+      g.addColorStop(0, `rgba(0,0,0,${a})`);
+      g.addColorStop(1, `rgba(0,0,0,${b ? a * 0.15 : 0})`);
+      o.save();
+      if (b) {
+        this.applyT(o);
+        o.clip(G.path[i!]);
+        o.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      o.fillStyle = g;
+      o.fillRect(p.x * d - r, p.y * d - r, 2 * r, 2 * r);
+      o.restore();
+    }
+    const img = o.getImageData(0, 0, w, h), px = img.data;
+    const ramp = [[13, 148, 136], [250, 204, 21], [234, 88, 12], [220, 38, 38]];
+    for (let i = 3; i < px.length; i += 4) {
+      const v = px[i] / 255;
+      if (!v) continue;
+      const t = Math.min(0.999, v) * (ramp.length - 1), j = Math.floor(t), f = t - j;
+      px[i - 3] = ramp[j][0] + (ramp[j + 1][0] - ramp[j][0]) * f;
+      px[i - 2] = ramp[j][1] + (ramp[j + 1][1] - ramp[j][1]) * f;
+      px[i - 1] = ramp[j][2] + (ramp[j + 1][2] - ramp[j][2]) * f;
+      /* Ränder laufen weich aus (keine harten Scheiben), Kern bleibt leicht durchscheinend */
+      px[i] = Math.min(215, Math.pow(v, 0.7) * 300);
+    }
+    o.putImageData(img, 0, 0);
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(off, 0, 0);
+    ctx.restore();
+  }
+
+  /** Treffer je Land, Kreis oder Gemeinde – je nach Zoomstufe zusammengefasst, mit Bildschirmposition */
+  private aggregated() {
+    const pxkm = this.view!.k * 100;
+    const len = pxkm < 1.2 ? 2 : pxkm < 3.2 ? 5 : 8;
+    const sums: Record<string, number> = {};
+    for (const [ags, n] of Object.entries(this.badges ?? {})) if (n) sums[ags.slice(0, len)] = (sums[ags.slice(0, len)] || 0) + n;
+    const out: { ags: string; n: number; x: number; y: number }[] = [];
+    for (const [ags, n] of Object.entries(sums)) {
+      const b = this.geo.bbox(ags);
+      const c = this.geo.center(ags) ?? (b ? { x: (b[0] + b[2]) / 2, y: (b[1] + b[3]) / 2 } : null);
+      if (!c) continue;
+      const [x, y] = this.toScreen(c.x, c.y);
+      out.push({ ags, n, x, y });
+    }
+    return out.sort((a, b) => b.n - a.n);
+  }
+
+  /** Blasen: Kreis je Gebiet (zusammengefasst wie die Zahlen), Fläche proportional zur Trefferzahl, Zahl in der Blase */
+  private drawBubbles(ctx: CanvasRenderingContext2D) {
+    const pts = this.aggregated();
+    if (!pts.length) return;
+    const max = pts[0].n;
+    const fam = getComputedStyle(document.body).fontFamily;
+    ctx.save();
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "600 12px " + fam;
+    /* Kleine zuletzt, damit sie auf großen Blasen sichtbar bleiben */
+    for (const p of pts) {
+      const t = p.n > 9999 ? Math.round(p.n / 1000) + "k" : p.n.toLocaleString("de-DE");
+      /* Größte Blase wächst mit der Trefferzahl (bei wenigen Treffern klein), höchstens 40 px Radius */
+      const r = Math.max(ctx.measureText(t).width / 2 + 6, Math.min(40, 10 + 3 * Math.sqrt(max)) * Math.sqrt(p.n / max));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(13,148,136,0.78)";
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 1.5;
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(t, p.x, p.y + 0.5);
+    }
+    ctx.restore();
+  }
+
+  /** Weit herausgezoomt: Trefferzahlen je Land bzw. Kreis zusammengefasst (Gemeinden haben ihre Zahl am Namen) */
+  private drawSums(ctx: CanvasRenderingContext2D) {
+    if (!this.badges || this.style === "blasen") return;
+    const pxkm = this.view!.k * 100;
+    if (pxkm >= 3.2) return;
+    const len = pxkm < 1.2 ? 2 : 5;
+    const sums: Record<string, number> = {};
+    for (const [ags, n] of Object.entries(this.badges)) if (n) sums[ags.slice(0, len)] = (sums[ags.slice(0, len)] || 0) + n;
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const fam = getComputedStyle(document.body).fontFamily;
+    const placed: number[][] = [];
+    /* Größte zuerst, damit sie bei Überlappung sichtbar bleiben */
+    for (const [ags, n] of Object.entries(sums).sort((a, b) => b[1] - a[1])) {
+      const b = this.geo.bbox(ags);
+      const c = this.geo.center(ags) ?? (b ? { x: (b[0] + b[2]) / 2, y: (b[1] + b[3]) / 2 } : null);
+      if (!c) continue;
+      const [x, y] = this.toScreen(c.x, c.y);
+      if (x < 0 || y < 0 || x > this.W || y > this.H) continue;
+      const r = [x - 20, y - 20, x + 20, y + 20];
+      if (placed.some((q) => !(r[2] < q[0] || r[0] > q[2] || r[3] < q[1] || r[1] > q[3]))) continue;
+      placed.push(r);
+      this.pill(ctx, n, x, y, fam);
+    }
   }
 
   private drawLabels(ctx: CanvasRenderingContext2D) {
@@ -394,19 +607,23 @@ export class MapEngine {
     for (const i of cand) {
       const b = L.bb[i];
       if (!this.inView(b)) continue;
-      const [sx, sy] = this.toScreen(L.lp[2 * i], L.lp[2 * i + 1]);
+      const [sx, sy0] = this.toScreen(L.lp[2 * i], L.lp[2 * i + 1]);
+      /* Blasen: Name über der Blase statt darunter versteckt */
+      const sy = this.style === "blasen" && this.badges?.[L.ags[i]] ? sy0 - 24 : sy0;
       const strong = covSet.has(i);
       const label = L.name[i];
       /* Treffergebiete: weiße Schrift, wenn sie in die Fläche passt */
       ctx.font = "500 12px " + fam;
-      const hit = (this.counts[L.ags[i]] || 0) > 0 && (b[2] - b[0]) * this.view!.k > ctx.measureText(label).width * 1.2;
+      const hit = this.filled() && this.style !== "blasen" && (this.counts[L.ags[i]] || 0) > 0 && (b[2] - b[0]) * this.view!.k > ctx.measureText(label).width * 1.2;
       const tw = ctx.measureText(label).width;
       if (!strong && (b[2] - b[0]) * this.view!.k < tw * 0.9) continue;
-      const r = [sx - tw / 2 - 3, sy - 8, sx + tw / 2 + 3, sy + 8];
+      const n = this.style === "blasen" ? 0 : this.badges?.[L.ags[i]] || 0;
+      const r = [sx - tw / 2 - 3, sy - 8, sx + tw / 2 + 3, sy + (n ? 30 : 8)];
       if (placed.some((q) => !(r[2] < q[0] || r[0] > q[2] || r[3] < q[1] || r[1] > q[3]))) continue;
       placed.push(r);
       ctx.fillStyle = hit ? "#ffffff" : "#475569";
       ctx.fillText(label, sx, sy);
+      if (n) this.pill(ctx, n, sx, sy + 19, fam);
     }
   }
 
@@ -493,6 +710,7 @@ export class MapEngine {
       return [e.clientX - r.left, e.clientY - r.top];
     };
     const setHover = (h: string, x: number, y: number) => {
+      if (this.badges && !this.badges[h]) h = "";
       if (this.stage && !drag?.moved) this.stage.style.cursor = h ? "pointer" : "";
       if (h !== this.hoverAgs) {
         this.hoverAgs = h;
@@ -510,6 +728,8 @@ export class MapEngine {
         const [a, b] = [...pointers.values()];
         pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), k: this.view.k };
         drag = null;
+        /* Zwei-Finger-Zoom auf der gesperrten Karte: Kartenmodus starten, die Geste zoomt direkt weiter */
+        this.unlock();
       }
     };
     const move = (e: PointerEvent) => {
@@ -525,6 +745,10 @@ export class MapEngine {
       if (drag && pointers.size === 1) {
         const dx = p[0] - drag.x;
         const dy = p[1] - drag.y;
+        if (this.locked) {
+          if (Math.hypot(dx, dy) > 4) drag.moved = true;
+          return;
+        }
         if (!drag.moved && Math.hypot(dx, dy) > 4) {
           drag.moved = true;
           if (this.stage) this.stage.style.cursor = "grabbing";
@@ -537,7 +761,7 @@ export class MapEngine {
           return;
         }
       }
-      if (e.pointerType === "touch") return;
+      if (e.pointerType === "touch" || this.locked) return;
       cancelAnimationFrame(hoverRaf);
       hoverRaf = requestAnimationFrame(() => {
         if (!this.view) return;
@@ -550,9 +774,12 @@ export class MapEngine {
       const wasDrag = drag?.moved;
       pointers.delete(e.pointerId);
       if (pointers.size < 2) pinch = null;
-      if (drag && !wasDrag && pointers.size === 0 && this.view) {
+      if (drag && !wasDrag && pointers.size === 0 && this.view && this.locked) {
+        this.unlock();
+      } else if (drag && !wasDrag && pointers.size === 0 && this.view) {
         const [x, y] = this.toData(p[0], p[1]);
-        this.cb.onSelect(this.geo.hit(x, y, this.level));
+        const h = this.geo.hit(x, y, this.level);
+        if (!this.badges || this.badges[h]) this.cb.onSelect(h);
       }
       if (pointers.size === 0) {
         drag = null;
@@ -575,7 +802,11 @@ export class MapEngine {
       if (!el.contains(e.target as Node)) engaged = false;
     };
     const wheel = (e: WheelEvent) => {
-      if (engaged || e.ctrlKey || e.metaKey) {
+      if (this.locked) {
+        e.preventDefault();
+        this.unlock();
+      }
+      if (engaged || this.freeWheel || !this.locked || e.ctrlKey || e.metaKey) {
         e.preventDefault();
         const p = rel(e);
         this.zoomAt(p[0], p[1], Math.exp(-e.deltaY * (e.deltaMode === 1 ? 0.05 : 0.0022)));

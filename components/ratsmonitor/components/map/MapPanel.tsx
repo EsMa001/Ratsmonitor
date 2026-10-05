@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { MapEngine } from "../../lib/geo/mapEngine";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { MapEngine, type MapStyle } from "../../lib/geo/mapEngine";
 import { hasFilters, hasScope } from "../../lib/savedSearch";
 import { useData } from "../../state/data";
 import { useSearch, useSearchResults } from "../../state/search";
 import { SearchOverlay } from "../SearchOverlay";
 import { ActiveFilters } from "../ActiveFilters";
+import { IconCenter, IconMinus, IconPlus, IconReset } from "../icons";
 
 /** Trefferstufe: 0 keine, 1 wenige, 2 mittel, 3 viele (ohne Suche nur 0 oder 3) */
 function hitLevel(c: number, t: [number, number], graded: boolean) {
@@ -13,9 +14,10 @@ function hitLevel(c: number, t: [number, number], graded: boolean) {
   return c <= t[0] ? 1 : c <= t[1] ? 2 : 3;
 }
 
-/** Karte rein suchgesteuert: keine Bedienung durch Nutzer (kein Klicken, Ziehen oder Zoomen).
- *  Sie zeigt Deutschland, solange nichts gesucht ist, und zentriert sich sonst auf die Treffer bzw. das gesuchte Gebiet.
- *  Darauf liegt die Milchglas-Suchleiste: mittig, nach Enter am unteren Kartenrand. */
+/** Karte suchgesteuert: Sie zeigt Deutschland, solange nichts gesucht ist, und zentriert sich sonst auf die Treffer.
+ *  Normal ist sie nur Anzeige mit mittiger Suchleiste. Ein Klick darauf startet den Kartenmodus: Suchleiste unten,
+ *  Ziehen und Zoomen frei, Trefferzahlen unter den Gemeindenamen, rechts Zoom, Zentrieren und Neu laden
+ *  (Neu laden setzt alle Filter zurück und beendet den Kartenmodus). */
 export function MapPanel({ active }: { active: boolean }) {
   const { geo, geoError } = useData();
   const search = useSearch();
@@ -27,11 +29,33 @@ export function MapPanel({ active }: { active: boolean }) {
   const baseRef = useRef<HTMLCanvasElement>(null);
   const overRef = useRef<HTMLCanvasElement>(null);
   const [mapH, setMapH] = useState(520);
+  const [mapW, setMapW] = useState(1200);
+  const [explore, setExplore] = useState(false);
+  /* Darstellung im Kartenmodus (oben links wählbar) */
+  const [style, setStyle] = useState<MapStyle>("flaechen");
+  const [styleOpen, setStyleOpen] = useState(false);
+  /* Klick im Kartenmodus auf eine Gemeinde mit Treffern: diese Stadt (ohne Kreis) als Ort in die Suche übernehmen */
+  const selectRef = useRef<(ags: string) => void>(() => {});
+  selectRef.current = (ags: string) => {
+    if (!ags) return;
+    search.setScope("only");
+    search.setArea(ags, "map");
+  };
+  const [barH, setBarH] = useState(44);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  /* Höhe von Suchleiste + Chips, damit die Leiste im Kartenmodus genau am unteren Rand landet */
+  useEffect(() => {
+    const el = overlayRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setBarH(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const engine = useMemo(
     () =>
       geo
-        ? new MapEngine(geo, { onSelect: () => {}, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} })
+        ? new MapEngine(geo, { onSelect: (ags) => selectRef.current(ags), onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {}, onUnlock: () => setExplore(true) })
         : null,
     [geo],
   );
@@ -49,7 +73,10 @@ export function MapPanel({ active }: { active: boolean }) {
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => setMapH(el.clientHeight));
+    const ro = new ResizeObserver(() => {
+      setMapH(el.clientHeight);
+      setMapW(el.clientWidth);
+    });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -82,6 +109,29 @@ export function MapPanel({ active }: { active: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope]);
 
+  /* Kartenmodus nur mit Suche oder Filter; sind alle entfernt, gilt wieder der normale Modus */
+  useEffect(() => {
+    if (!filtered) setExplore(false);
+  }, [filtered]);
+
+  /* Normaler Modus: Karte gesperrt. Tippen, Zwei-Finger-Zoom oder Mausrad (nur mit Suche/Filter) starten den Kartenmodus */
+  useEffect(() => {
+    engine?.setLocked(!explore);
+    if (!explore) {
+      setStyle("flaechen");
+      setStyleOpen(false);
+    }
+  }, [engine, explore]);
+  useEffect(() => {
+    engine?.setStyle(style);
+  }, [engine, style]);
+
+  /* Kartenmodus: Abzeichen mit der Trefferzahl je Gemeinde */
+  useEffect(() => {
+    engine?.setExplore(explore, explore ? Object.fromEntries(hits.map((a) => [a, areaCounts[a]])) : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine, explore, hits.join(","), areaCounts]);
+
   /* Suchgesteuertes Zentrieren: Umkreis → Kreis; Ort → Ort bzw. Kreis bei „inkl. Kreis“; sonst alle Treffer; ohne Suche Deutschland */
   const hitsKey = hits.join(",");
   /* Textalternative der Karte für Bildschirmleser: wie viele Gebiete, die stärksten zuerst */
@@ -93,8 +143,8 @@ export function MapPanel({ active }: { active: boolean }) {
         .map((a) => `${geo?.info(a).name ?? a} (${areaCounts[a]})`)
         .join(", ")}`;
   const moreKey = (snapshot.more ?? []).map((m) => m.ags).join(",");
-  useEffect(() => {
-    if (!engine || loading) return;
+  const center = (toHits = false) => {
+    if (!engine) return;
     if (state.radius) return engine.fitCircle(state.radius);
     /* Mehrere Orte: auf alle gesuchten Orte zentrieren */
     if (state.area && snapshot.more?.length) return engine.focusMany([state.area, ...snapshot.more.map((m) => m.ags)]);
@@ -102,28 +152,76 @@ export function MapPanel({ active }: { active: boolean }) {
       const target = state.area.length === 8 && state.scope === "with" && hasScope(state.area, geo) ? state.area.slice(0, 5) : state.area;
       return engine.focusArea(target);
     }
-    if (filtered && hits.length) return engine.focusMany(hits);
+    if ((filtered || toHits) && hits.length) return engine.focusMany(hits);
     engine.focusArea("");
+  };
+  useEffect(() => {
+    if (!loading) center();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine, loading, hitsKey, state.area, state.scope, state.radius, moreKey, filtered]);
 
-  /* Platz für Vorschläge und Filter innerhalb der Karte (unterhalb der mittigen Suchleiste) */
-  const below = Math.round(mapH / 2) - 22 - 16;
+  /* Platz für Vorschläge und Filter innerhalb der Karte (unterhalb der mittigen Suchleiste, im Kartenmodus oberhalb) */
+  const below = explore ? mapH - 44 - 32 : Math.round(mapH / 2) - 22 - 16;
+  /* Neu laden: wie eine frische Karte, alle Filter weg und zurück in den normalen Modus */
+  const refresh = () => {
+    search.resetAll();
+    setExplore(false);
+    engine?.focusArea("");
+  };
+  const ctl = "grid h-11 w-11 place-items-center rounded-full text-slate-600 hover:bg-white/60 hover:text-slate-900";
+  const STYLES: { id: MapStyle; label: string; icon: ReactNode }[] = [
+    { id: "flaechen", label: "Flächen", icon: <path d="m4 7 5-3 6 3 5-3v13l-5 3-6-3-5 3zM9 4v13M15 7v13" /> },
+    { id: "heat", label: "Heatmap", icon: <path d="M12 21c-3.9 0-7-2.8-7-6.6 0-3.4 2.6-5.3 3.6-8.4 2 1.1 2.7 3 2.7 4.4C13 9 13.9 6.4 13.4 3c3.5 2 5.6 6.4 5.6 10.8 0 4-3.1 7.2-7 7.2z" /> },
+    { id: "blasen", label: "Blasen", icon: <><circle cx="8.5" cy="14.5" r="5" /><circle cx="17" cy="8" r="3.5" /><circle cx="17.5" cy="17.5" r="2" /></> },
+  ];
+  const si = STYLES.findIndex((x) => x.id === style);
 
   return (
     <section ref={sectionRef} aria-label="Karte der Treffer" className="relative h-[460px] sm:h-[520px]">
-      {/* Nur Anzeige: die Karte reagiert nicht auf Maus oder Touch */}
-      <div ref={stageRef} className="pointer-events-none absolute inset-0 select-none overflow-hidden bg-map-ground">
+      {/* Normal nur Anzeige; im Kartenmodus reagiert die Karte auf Ziehen, Zoomen und Mausrad */}
+      <div ref={stageRef} className={`absolute inset-0 select-none overflow-hidden bg-map-ground ${explore ? "touch-none" : filtered ? "cursor-pointer touch-pan-y" : "pointer-events-none"}`}>
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={overRef} role="img" aria-label={mapLabel} className="absolute left-0 top-0 block h-full w-full" />
         {!geo && <div className="absolute inset-0 grid place-items-center text-[14px] text-slate-500">{geoError ? "Kartendaten konnten nicht geladen werden." : "Karte wird aufgebaut …"}</div>}
       </div>
 
-      {/* Suchleiste bleibt mittig; darunter die aktiven Filter und, wenn geöffnet, die Filter selbst (alles Milchglas) */}
-      <div className="pointer-events-none absolute inset-x-0 z-[6] flex flex-col items-center gap-2 px-4" style={{ top: "calc(50% - 22px)" }}>
-        <SearchOverlay listMax={below} />
+
+      {/* Suchleiste mittig, im Kartenmodus am unteren Rand (Filter-Chips dann darüber); dazu die aktiven Filter und, wenn geöffnet, die Filter selbst (alles Milchglas) */}
+      <div
+        ref={overlayRef}
+        className={`pointer-events-none absolute inset-x-0 z-[6] flex items-center gap-2 px-4 transition-[top] duration-500 ease-in-out motion-reduce:transition-none ${explore ? "flex-col-reverse" : "flex-col"}`}
+        style={{ top: explore ? mapH - 20 - barH : mapH / 2 - 22 }}
+      >
+        <SearchOverlay listMax={below} listUp={explore} />
         <ActiveFilters />
       </div>
+
+      {explore && (
+        <div className="rm-glass absolute right-4 z-[6] flex flex-col overflow-hidden rounded-full" style={{ bottom: mapW < 768 ? barH + 32 : 20 }}>
+          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className={ctl}><IconPlus size={18} /></button>
+          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className={ctl}><IconMinus size={18} /></button>
+          <button type="button" title="Auf Treffer zentrieren" aria-label="Auf Treffer zentrieren" onClick={() => center(true)} className={ctl}><IconCenter size={18} /></button>
+          <button type="button" title="Karte neu laden" aria-label="Karte neu laden" onClick={refresh} className={ctl}><IconReset size={18} /></button>
+        </div>
+      )}
+      {/* Darstellung oben links: das runde Symbol klappt nach unten auf; eine weiße Kugel gleitet zur gewählten Darstellung */}
+      {explore && (
+        <div className="rm-glass absolute left-4 top-4 z-[7] flex flex-col rounded-full">
+          <button type="button" title="Darstellung" aria-label="Darstellung der Karte" aria-expanded={styleOpen} onClick={() => setStyleOpen((o) => !o)} className={`${ctl} ${styleOpen ? "!text-slate-900" : ""}`}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 13 9 5 9-5" /></svg>
+          </button>
+          {styleOpen && (
+            <div role="radiogroup" aria-label="Darstellung" className="relative flex flex-col">
+              <span aria-hidden="true" className="absolute left-1 h-9 w-9 rounded-full bg-white shadow transition-[top] duration-300 ease-out" style={{ top: si * 44 + 4 }} />
+              {STYLES.map((o) => (
+                <button key={o.id} type="button" role="radio" title={o.label} aria-label={o.label} aria-checked={style === o.id} onClick={() => setStyle(o.id)} className={`relative grid h-11 w-11 place-items-center rounded-full ${style === o.id ? "text-teal-700" : "text-slate-600 hover:text-slate-900"}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{o.icon}</svg>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <span className="pointer-events-auto absolute bottom-1 right-2 z-[5] text-[12px] text-slate-500">© GeoBasis-DE / BKG 2019, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="underline">dl-de/by-2-0</a></span>
     </section>

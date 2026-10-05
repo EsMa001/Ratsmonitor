@@ -249,7 +249,8 @@ select.ri-input{padding-right:12px;cursor:pointer}
 
 /* Dreistrichmenü (nav, .nh3, .nf3) */
 .ri-burger{display:grid;place-items:center;width:44px;height:44px;flex:none;border:0;border-radius:10px;background:transparent;color:#64748b;cursor:pointer;transition:box-shadow .15s,background-color .15s,color .15s}
-.ri-burger:hover,.ri-burger[aria-expanded=true]{background:#f1f5f9;color:#0f172a}
+.ri-burger[aria-expanded=true]{background:#f1f5f9;color:#0f172a}
+@media(hover:hover){.ri-burger:hover{background:#f1f5f9;color:#0f172a}}
 .ratsmonitor .ri-burger:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(13,148,136,.2)}
 .ri-menu{position:fixed;inset:0;z-index:1050;font-size:16px;line-height:1.4;color:#0f172a}
 .ri-menu__bg{position:absolute;inset:0;background:transparent}
@@ -378,7 +379,7 @@ select.ri-input{padding-right:12px;cursor:pointer}
 /* Hauptmenü in der breiten Kopfzeile (ab 1280 px, darunter Dreistrichmenü) */
 .ri-topnav{align-items:center;gap:12px;margin-left:40px;font-family:'IBM Plex Sans','Segoe UI',system-ui,sans-serif}
 .ri-topnav>a,.ri-topnav>button{display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:#64748b;font-size:14px;text-decoration:none;cursor:pointer;white-space:nowrap}
-.ri-topnav>a:hover,.ri-topnav>button:hover,.ri-topnav>button[aria-expanded=true]{background:#f1f5f9;color:#0f172a}
+.ri-topnav>button[aria-expanded=true],.ri-topnav>a:hover,.ri-topnav>button:hover{background:#f1f5f9;color:#0f172a}
 .ri-topnav>a[aria-current=page]{color:#0f172a;font-weight:500}
 /* Aufklappliste der breiten Kopfzeile: wie das Menü, nur die Punkte nebeneinander in höchstens zwei Reihen */
 .ri-menu__panel--flyout{width:auto;max-width:calc(100vw - 16px);padding:10px}
