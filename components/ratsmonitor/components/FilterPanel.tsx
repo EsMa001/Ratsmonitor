@@ -60,7 +60,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         setFiltersOpen(false);
         requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-controls="filter-body"]')?.focus());
       }}
-      className={`rm-glass absolute z-20 flex w-[300px] max-w-[calc(100vw-32px)] gap-2 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5" : "top-0 flex-col pb-3.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
+      className={`rm-glass absolute z-20 flex w-[300px] max-sm:w-[calc(100vw-32px)] max-w-[calc(100vw-32px)] gap-2 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5" : "top-0 flex-col pb-3.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
       <div className={`flex items-center gap-2 ${flip ? "flex-row-reverse" : ""}`}>
         {toggle}
         <span className="text-[16px] font-semibold text-slate-900">Filter</span>

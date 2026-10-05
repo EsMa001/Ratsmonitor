@@ -385,3 +385,5 @@ select.ri-input{padding-right:12px;cursor:pointer}
 .ri-menu__panel--flyout{width:auto;max-width:calc(100vw - 16px);padding:10px}
 .ri-menu__panel--flyout .ri-menu__subs{display:grid;grid-auto-flow:row;grid-auto-columns:max-content;gap:2px 8px;margin:0;padding:0;border:0}
 .ri-menu__panel--flyout .ri-menu__sub{padding:8px 12px}
+/* Handy: Dreistrich-Menü 20 % schmaler (320 auf 256 px) */
+@media(max-width:639px){.ri-menu__panel:not(.ri-menu__panel--flyout){width:min(256px,calc(100vw - 16px))}}
