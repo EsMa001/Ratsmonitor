@@ -238,3 +238,18 @@ test('rubinBodyMatch: the "Nationalparkverbandsgemeinde" Herrstein-Rhaunen is th
  /* Ohne die eigene Verbandsgemeinde bleibt es bei der bisherigen Regel: nichts zuordnen */
  assert.deepEqual(rubinBodyMatch(list.filter(b=>b.id!=='NLPVG').concat([{id:'VGX',name:'Verbandsgemeinde Kirner Land'}]),vg),[]);
 });
+
+test('organizations: a member of a system that keeps several municipalities in one body, by the titles of the calendar',async()=>{
+ // As denzlingen.gremien.info (the councils of Denzlingen and Vörstetten in one body), with the Lauenburg calendar.
+ const l=json('lauenburg.json');
+ const detail=id=>id==='2026-GV3-77'?l.meetings[id]:{...l.meetings['2026-ST-124'],nummer:id};
+ const {get,calls}=server([[/id=calendar/,l.calendarAll],[/id=meetings/,url=>detail(meetingId(url))]]);
+ const d=await collectRubin(source('de-010535343','lauenburg.gremien.info',{organizations:{include:['Buchhorst']}}),{now,get,window:'1m'});
+ assert.deepEqual(calls.slice(1).map(meetingId),['2026-GV3-77'],'only the meeting whose title names the member is asked');
+ assert.deepEqual(d.coverage.warnings,['2 Sitzungen anderer Gremien des gemeinsamen Systems ausgelassen.']);
+ assert.ok(d.topics.length&&d.topics.every(t=>t.committee==='Gemeindevertretung Buchhorst'));
+ // Excluded by name: the other meetings are read, the member's is not.
+ const other=server([[/id=calendar/,l.calendarAll],[/id=meetings/,url=>detail(meetingId(url))]]);
+ await collectRubin(source('de-010535343','lauenburg.gremien.info',{organizations:{exclude:['Buchhorst']}}),{now,get:other.get,window:'1m'});
+ assert.deepEqual(other.calls.slice(1).map(meetingId).sort(),['2026-HA-194','2026-ST-124']);
+});

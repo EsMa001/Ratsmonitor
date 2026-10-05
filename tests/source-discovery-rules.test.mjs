@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors} from '../scripts/source-discovery/rules.mjs';
+import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors,sharedBodies} from '../scripts/source-discovery/rules.mjs';
 import {foreignOwner,aliasInAddress,nameParts,ALIASES} from '../scripts/source-discovery/areas.mjs';
 import {CATALOG} from '../shared/catalog.mjs';
 const area=id=>CATALOG.find(a=>a.id===id);
@@ -184,4 +184,31 @@ test('links of a page: in quotes or without them, with the title as text, frames
   {url:'https://www.roedermark.sitzung-online.de/public/',text:'Ratsinformation'},
   {url:'https://www.roedermark.de/rathaus/politik',text:'Politik Gremien'},
   {url:'https://ris.beispiel.de/bi/',text:'(eingebettet)'}]);
+});
+
+test('a system with the councils of other municipalities of the district is shared; joint bodies, localities and members are not',()=>{
+ // Bodies of vv-langenau.ris-portal.de (05.10.2026), checked for Altheim (Alb) with the real catalog.
+ const altheim=area('de-08425005');
+ const langenau=['Gemeinderat Altheim (Alb)','Gemeinderat Asselfingen','Gemeinderat Stadt Langenau','Ausschuss für Technik und Umwelt Stadt Langenau','Ortschaftsrat Göttingen','Verbandsversammlung Zweckverband Grundschulverband Altheim (Alb) – Weidenstetten','Verwaltungsrat Verwaltungsverband Langenau'];
+ const shared=sharedBodies(altheim,langenau);
+ assert.deepEqual(shared.own,['Gemeinderat Altheim (Alb)','Verbandsversammlung Zweckverband Grundschulverband Altheim (Alb) – Weidenstetten']);
+ assert.deepEqual(shared.others,['Gemeinde Asselfingen','Stadt Langenau']);
+ assert.deepEqual(shared.foreign.map(x=>x.area),['de-08425011','de-08425072']);
+ // Its own bodies only, a joint body and a locality that bears another municipality's name: no shared system.
+ assert.equal(sharedBodies(altheim,['Gemeinderat Altheim (Alb)','Verbandsversammlung Zweckverband Grundschulverband Altheim (Alb) – Weidenstetten','Ortschaftsrat Asselfingen']),null);
+ // The members of an Amt are its own, also where a catalog area bears a member's name.
+ const amt={id:'de-120665607',name:'Amt Ruhland',shortName:'Ruhland',kind:'city',district:'de-12066',members:[{name:'Hermsdorf'},{name:'Guteborn'}]};
+ const areas=[amt,{id:'de-12066999',name:'Gemeinde Hermsdorf',shortName:'Hermsdorf',kind:'city',district:'de-12066'},{id:'de-12066998',name:'Stadt Lauchhammer',shortName:'Lauchhammer',kind:'city',district:'de-12066'}];
+ assert.equal(sharedBodies(amt,['Amtsausschuss Ruhland','Gemeindevertretung Hermsdorf','Gemeindevertretung Guteborn'],areas),null);
+ assert.deepEqual(sharedBodies(amt,['Amtsausschuss Ruhland','Stadtverordnetenversammlung Lauchhammer'],areas).others,['Stadt Lauchhammer']);
+ // A district's system with the council of one of its municipalities is shared as well; the Kreistag alone is not.
+ const kreis={id:'de-12066',name:'Landkreis Oberspreewald-Lausitz',kind:'district'};
+ assert.equal(sharedBodies(kreis,['Kreistag','Ausschuss für Umwelt'],areas),null);
+ assert.deepEqual(sharedBodies(kreis,['Kreistag','Stadtverordnetenversammlung Lauchhammer'],areas).others,['Stadt Lauchhammer']);
+ // The councils of the members of another area (an Amt run by the town) are that area's.
+ const town={id:'de-13075105',name:'Stadt Pasewalk',shortName:'Pasewalk',kind:'city',district:'de-13075'},urt={id:'de-130755560',name:'Amt Uecker-Randow-Tal',shortName:'Uecker-Randow-Tal',kind:'city',district:'de-13075',members:[{name:'Jatznick'},{name:'Polzow'}]};
+ assert.deepEqual(sharedBodies(town,['Stadtvertretung der Stadt Pasewalk','Gemeindevertretung Jatznick'],[town,urt]).foreign,[{committee:'Gemeindevertretung Jatznick',area:'de-130755560',name:'Amt Uecker-Randow-Tal'}]);
+ assert.equal(sharedBodies(urt,['Amtsausschuss Uecker-Randow-Tal','Gemeindevertretung Jatznick'],[town,urt]),null);
+ // An area without a district is not checked.
+ assert.equal(sharedBodies({id:'x',name:'Stadt X',kind:'city'},['Gemeinderat Asselfingen'],areas),null);
 });

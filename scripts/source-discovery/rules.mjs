@@ -145,6 +145,39 @@ export function identity(region,url,html,{aliases=ALIASES,areas=CATALOG}={}){
  return inUrl||inText?{ok:true,by:named?'Adresse':alias?'Adresse (Alias)':'Seitentext'}:{ok:false,why:'Gebietsname weder in Adresse noch im Seitentext'};
 }
 
+// --- a system that several areas share -------------------------------------------------------------------------------
+// The council of another municipality among the bodies a system delivered for an area shows a system that several areas
+// share (vv-langenau.ris-portal.de: the councils of all members of the Verwaltungsverband). Without its part (client,
+// calendarQuery, organizations) each member would get the bodies of all. Joint bodies (Zweckverband, Verbandsversammlung)
+// and the councils of localities (Ortschaftsrat, Ortsrat: a locality may bear the name of another municipality) are no
+// sign. Members listed with an area (an Amt, a Samtgemeinde) are its own; those of another area count for that area
+// (pasewalk.de/allris: the town and the Amt Uecker-Randow-Tal with the councils of its members).
+const OTHER_COUNCIL=/(?:^|[^a-z])(?:stadtrat|gemeinderat|marktgemeinderat|marktrat|gemeindevertretung|stadtverordnetenversammlung|stadtvertretung|ratsversammlung|ortsgemeinderat|samtgemeinderat|verbandsgemeinderat|amtsausschuss|rat der (?:stadt|gemeinde|samtgemeinde|verbandsgemeinde))(?:$|[^a-z])/;
+const foldName=s=>String(s||'').normalize('NFC').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+const coreName=n=>foldName(String(n||'').replace(/^(?:Stadt|Gemeinde|Markt|Marktgemeinde|Große Kreisstadt|Hansestadt|Ortsgemeinde|Samtgemeinde|Verbandsgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband|Erfüllende Gemeinde|Amt|Kreis|Landkreis)\s+/,'')).trim();
+const wordOf=n=>new RegExp('(?:^|[^a-z0-9])'+n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?:$|[^a-z0-9])');
+/**
+ * Councils of other areas of the area's district among the bodies a system delivered for it: {own, others, foreign} or
+ * null. own: the bodies that name the area (its part of the system); others: the names of the other areas.
+ */
+export function sharedBodies(area,committees,areas=CATALOG){
+ const district=area.kind==='district'?area.id:area.district;if(!district)return null;
+ const ownNames=[...new Set([area.shortName,area.name,...(area.members||[]).map(m=>m.name)].filter(Boolean).map(coreName))].filter(Boolean);
+ const own=ownNames.map(wordOf);
+ const others=areas.filter(a=>a.id!==area.id&&a.kind!=='district'&&a.district===district)
+  .map(a=>({a,names:[...new Set([a.shortName,a.name,...(a.members||[]).map(m=>m.name)].filter(Boolean).map(coreName))].filter(n=>n&&!ownNames.some(o=>o===n||wordOf(n).test(o))).map(wordOf)}))
+  .filter(o=>o.names.length);
+ const mine=[],foreign=[];
+ for(const c of [...new Set(committees.filter(Boolean).map(String))]){
+  const f=foldName(c);
+  if(own.some(n=>n.test(f))){mine.push(c);continue;}
+  if(!OTHER_COUNCIL.test(f))continue;
+  const hit=others.find(o=>o.names.some(n=>n.test(f)));
+  if(hit)foreign.push({committee:c,area:hit.a.id,name:hit.a.name});
+ }
+ return foreign.length?{own:mine,others:[...new Set(foreign.map(f=>f.name))],foreign:foreign.slice(0,12)}:null;
+}
+
 // Platforms that give each municipality a host name of its own but answer DNS for every name (wildcard), so a
 // lookup proves nothing: guess-hosted.mjs asks the page and keeps it only if the page names the area. itebo answers
 // DNS for existing tenants only; its lookup comes first and saves the request. path: where the public part starts.

@@ -18,13 +18,22 @@ export const GUESSED_FILES=['verified-guessed-own.json','verified-guessed.json',
 // hosts are no evidence and are left out).
 export const CANDIDATE_FILES=['candidates.json','candidates-search.json','candidates-research.json','candidates-hosted.json','candidates-consents.json','candidates-guessed-own.json','candidates-fix.json'];
 
+// The part of a shared system: the municipality of a KIC app, the client of SessionNet, name patterns of bodies, the
+// bodies of More! Rubin.
+const PART_FIELDS=['client','calendarQuery','organizations','bodies'];
+const hasPart=source=>Boolean(source)&&PART_FIELDS.some(k=>source[k]!==undefined);
 /**
  * The check results that the report uses, by area id: verified.json, completed by the other files ({file: rows}).
  * An accepted source always wins; then a targeted check that tried something; then a guessed address with a finding.
+ * One exception: a targeted check that took only the area's part of a shared system replaces a source that took the
+ * whole system (each member would show the bodies of all; rules.mjs sharedBodies).
  */
 export function mergeChecks(verified,files={}){
  const out={...verified},rows=file=>Object.values(files[file]||{});
- for(const file of ACCEPTED_FILES)for(const row of rows(file))if(row.accepted&&!out[row.id]?.accepted)out[row.id]=row;
+ for(const file of ACCEPTED_FILES)for(const row of rows(file)){
+  const was=out[row.id]?.accepted;
+  if(row.accepted&&(!was||TARGETED_FILES.includes(file)&&hasPart(row.accepted)&&!hasPart(was)))out[row.id]=row;
+ }
  for(const file of TARGETED_FILES)for(const row of rows(file))if(!row.accepted&&(row.tried||[]).length&&!out[row.id]?.accepted)out[row.id]=row;
  for(const file of GUESSED_FILES)for(const row of rows(file))if(!out[row.id]&&((row.tried||[]).some(forbidden)||(row.systems||[]).some(s=>s!=='unknown')))out[row.id]=row;
  return out;
@@ -129,6 +138,9 @@ export function openReason(area,row,crawl,ctx={}){
   :ROBOTS_RECHECK;
  const several=tried.find(t=>/^Mehrere Körperschaften/.test(t.rubinError||''));
  if(several)return several.rubinError.replace(/; Zuordnung nur mit fester Körperschaft$/,'')+'; der Leser trennt sie noch nicht';
+ // A system with the councils of other areas of the district: taken only with the part of this area (verify.mjs).
+ const shared=tried.find(t=>t.sharedSystem?.others?.length);
+ if(shared){const others=shared.sharedSystem.others;return `Gemeinsames System mehrerer Gemeinden (auch ${others.slice(0,3).join(', ')}${others.length>3?' u. a.':''}); der Teil des Gebiets ist noch nicht festgelegt`;}
  const sn=tried.find(t=>t.snError||t.snTopics===0);
  if(sn)return 'SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte'+(sn.snError?` (${sn.snError})`:sn.snIssues?.length?` (${sn.snIssues[0]})`:'');
  // The list of bodies is read before the assignment; its error counts only on a system that names the area.

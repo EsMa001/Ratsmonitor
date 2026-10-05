@@ -234,3 +234,23 @@ test('a client of a shared system: only meetings whose calendar row names that c
  agendas.length=0;await collectSessionNet({id:'x',name:'GVV',kind:'city',base:'https://sessionnet.owl-it.de/altshausen/bi/',extension:'asp'},{now,window:'1m',get});
  assert.deepEqual([...new Set(agendas)].sort(),['301','302','303']);
 });
+
+test('a member of a shared system without clients: only meetings of the bodies its patterns name are read (fail closed)',async()=>{
+ // Eine Verwaltungsgemeinschaft mit einem SessionNet für alle Mitglieder: die Gremien tragen den Namen der Gemeinde.
+ const row=(ksinr,title)=>`<tr><td data-label="Sitzung"><a href="si0057.asp?__ksinr=${ksinr}" title="Details anzeigen: ${title}">${title}</a></td></tr>`;
+ const calendar='<html>'+MARK+'<table>'+row(401,'Gemeinderat Ainring 15.09.2026')+row(402,'Gemeinderat Teisendorf 16.09.2026')+row(403,'Bauausschuss Ainring 17.09.2026')+row(404,'18.09.2026')+'</table></html>';
+ const agendas=[];
+ const get=async url=>{const f=file(url);if(f==='si0040.asp')return new URL(url).searchParams.get('__cmonat')==='9'?calendar:'<html>'+MARK+'</html>';agendas.push(new URL(url).searchParams.get('__ksinr'));return '<table></table>';};
+ const vg={id:'de-09172111',name:'Gemeinde Ainring',kind:'city',base:'https://vg.example.test/bi/',extension:'asp'};
+ const d=await collectSessionNet({...vg,organizations:{include:['Ainring']}},{now,window:'1m',get});
+ assert.deepEqual([...new Set(agendas)].sort(),['401','403'],'Teisendorf and the meeting without a body are not read');
+ assert.deepEqual(d.coverage.warnings,['1 Sitzungen anderer Gremien des gemeinsamen Systems ausgelassen.','1 Sitzungen ohne zuordenbares Gremium ausgelassen.']);
+ // Exclusion only: everything but the named bodies; a meeting without a body still stays out.
+ agendas.length=0;await collectSessionNet({...vg,organizations:{exclude:['Teisendorf']}},{now,window:'1m',get});
+ assert.deepEqual([...new Set(agendas)].sort(),['401','403']);
+ // A filter without patterns is an error of the catalog entry, not a silent "read everything".
+ await assert.rejects(collectSessionNet({...vg,organizations:{include:[]}},{now,window:'1m',get}),/Gremienfilter/);
+ // Without the field every meeting is read, as before, and nothing is said about parts.
+ agendas.length=0;const all=await collectSessionNet(vg,{now,window:'1m',get});
+ assert.deepEqual([...new Set(agendas)].sort(),['401','402','403','404']);assert.equal(all.coverage.warnings,undefined);
+});

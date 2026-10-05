@@ -4,6 +4,7 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {committeePart} from './oparl-regional.mjs';
 // Public interface of More! Rubin (more! software), read anonymously; only agenda items with the public status are taken.
 // - api.php (gremien.info, KISA and the other installations of the single-page interface "Ratsinfosystem"): calendar
 //   and meetings with their agenda as JSON.
@@ -175,6 +176,10 @@ export async function collectRubin(source,{now=new Date(),get=fetchText,maxDurat
  get=budgeted(get,maxDurationMs,2);
  const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),next=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,1));
  const bodies=(Array.isArray(source.bodies)?source.bodies:[]).map(String).filter(Boolean);
+ // organizations (optional): the bodies of one member where the system keeps several municipalities in one body
+ // (denzlingen.gremien.info: the councils of Denzlingen and Vörstetten), by the title the calendar gives each meeting
+ // ("3. Sitzung der Gemeindevertretung Lanze"); a meeting the patterns do not assign is not read.
+ const part=committeePart(source.organizations);
  const issues=[],grouped=new Map(),held={},owner=new Map(),seen=new Set();
  let page=source.endpoint==='webservice'?WEBSERVICE:'api.php';
  const api=async params=>JSON.parse(await get(source.base+query(page,params),source));
@@ -186,6 +191,7 @@ export async function collectRubin(source,{now=new Date(),get=fetchText,maxDurat
  const listed=[];
  for(const m of calendar.meetings){
   if(!(m.datum>=fromDay)||yes(m.is_draft)||yes(m.fraktionssitzung)||/^\s*(?:abgesagt|entf(?:ä|ae)llt)\b/i.test(m.titel||''))continue;
+  if(!part.keep(String(m.titel||'').replace(/^\s*\d+\.\s*/,''),m.nummer))continue;
   try{listed.push({url:rubinMeetingUrl(m,source),date:m.datum,nummer:m.nummer,codes:[1,2,3,4,5].map(i=>m['gremium_'+i]).filter(Boolean).map(String)});}
   catch(e){issues.push((m.full_url||m.fullUrl||m.nummer)+': '+e.message);}
  }
@@ -227,5 +233,6 @@ export async function collectRubin(source,{now=new Date(),get=fetchText,maxDurat
  }
  const meetings=listed.length-other-unknown;
  // Unchanged meetings are a successful reading: their reports are in the database already.
- return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'official-api',from:fromDay,to:today,importedAt:now.toISOString(),meetings,...(other?{otherBodyMeetings:other}:{}),...(unknown?{unknownBodyMeetings:unknown}:{}),...(empty?{meetingsWithoutPublicItems:empty}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||beyond?{resumable:true}:{}),...(seen.size?{seenBodies:[...seen].sort()}:{}),...(page===WEBSERVICE?{endpoint:'webservice'}:{}),sourceCount:1,quiet:meetings===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged||!meetings?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ const warnings=part.warnings();
+ return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'official-api',from:fromDay,to:today,importedAt:now.toISOString(),meetings,...(warnings.length?{warnings}:{}),...(other?{otherBodyMeetings:other}:{}),...(unknown?{unknownBodyMeetings:unknown}:{}),...(empty?{meetingsWithoutPublicItems:empty}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||beyond?{resumable:true}:{}),...(seen.size?{seenBodies:[...seen].sort()}:{}),...(page===WEBSERVICE?{endpoint:'webservice'}:{}),sourceCount:1,quiet:meetings===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged||!meetings?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }

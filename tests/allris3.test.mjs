@@ -227,3 +227,12 @@ test('ALLRIS 3 collector through fetchText: one session, the project\'s user age
  assert.equal(sent[0].cookie,undefined);assert.ok(sent.slice(1).every(s=>s.cookie==='ASPSESSIONIDCUDBTSDD=HGOF'));
  assert.deepEqual(d.topics.map(t=>[t.id,t.title,t.committee]),[['nds-03254017-top-900','Bürgerfragestunde','Ortsrat Groß Förste']]);assert.deepEqual(d.coverage.issues,[]);
 });
+
+test('ALLRIS 3 collector reads only the bodies of one member of a shared system, by the name the calendar gives each meeting',async()=>{
+ const web=lkosWeb();const d=await collectAllris3({...lkos,organizations:{exclude:['Kreistag']}},{now,get:web.get,window:'1m'});
+ assert.ok(!web.calls.includes(web.meeting(1543)),'the meeting of the excluded body is not asked');
+ // The Kreisausschuss of 20.10. is asked and has no agenda yet.
+ assert.ok(web.calls.includes(web.meeting(1650)));assert.equal(d.coverage.meetings,0);assert.equal(d.coverage.upcomingWithoutAgenda,1);
+ assert.ok(d.coverage.warnings.includes('1 Sitzungen anderer Gremien des gemeinsamen Systems ausgelassen.'));
+ assert.ok(!d.topics.some(t=>t.events.some(e=>/Kreistag/.test(e.committee))));
+});

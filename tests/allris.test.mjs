@@ -157,3 +157,12 @@ test('an ALLRIS source is read only while its own OParl address does not answer 
   await assert.rejects(collectRegion(entry.id,{window:'1w'}),/Adapterfreigabe/);assert.equal(requests.length,1);
  }finally{globalThis.fetch=original;}
 });
+
+test('ALLRIS collector reads only the bodies of one member of a shared system, by the name the calendar gives each meeting',async()=>{
+ const {calls,get}=web();
+ const d=await collectAllris({...source,organizations:{include:['des Rates']}},{now,get,window:'1m'});
+ assert.ok(!calls.includes(meetingUrl(4))&&!calls.includes(meetingUrl(6)),'the meetings of other bodies are not asked');
+ assert.ok(calls.includes(meetingUrl(5)));assert.equal(d.coverage.meetings,1);
+ assert.ok(d.coverage.warnings.includes('2 Sitzungen anderer Gremien des gemeinsamen Systems ausgelassen.'));
+ assert.ok(d.topics.every(t=>t.events.every(e=>e.committee==='Rat der Stadt'||e.description.startsWith('Ergebnis laut Beratungsfolge'))));
+});

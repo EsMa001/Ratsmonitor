@@ -25,6 +25,25 @@ export function organizationFilter(spec){
   return !own.length?'filtered':out.length?'mixed':'kept';
  };
 }
+/**
+ * One part of a shared system for readers whose meeting lists name a meeting only by its body (SessionNet, ALLRIS): the
+ * catalog field organizations as above, applied to that name. keep(name, key) says whether a meeting is read; a meeting
+ * without a name, or one no pattern assigns, is not (fail closed). warnings() names what was left out, each meeting once.
+ */
+export function committeePart(spec){
+ const filter=spec?organizationFilter(spec):null,skipped={filtered:new Set(),unassigned:new Set()};
+ return {
+  keep(name,key=name){
+   if(!filter)return true;
+   const verdict=filter([{name:String(name||'')}]);if(verdict==='kept')return true;
+   skipped[verdict==='filtered'?'filtered':'unassigned'].add(String(key));return false;
+  },
+  warnings:()=>[
+   ...(skipped.filtered.size?[`${skipped.filtered.size} Sitzungen anderer Gremien des gemeinsamen Systems ausgelassen.`]:[]),
+   ...(skipped.unassigned.size?[`${skipped.unassigned.size} Sitzungen ohne zuordenbares Gremium ausgelassen.`]:[]),
+  ],
+ };
+}
 /** A provider-configured, portable collector. No Cloudflare or app dependencies. */
 export async function collectRegionalOparl(source,{now=new Date(),getJson=null,maxRequests=350,maxPages=Math.min(24,source.maxPages||6),maxDurationMs=300000,onProgress=()=>{},window:lookback,trace=null,marks}={}){
  // The page limits were set for a year of meetings; a longer period gets as many for each of its years.

@@ -35,6 +35,14 @@ test('mergeChecks: accepted sources first, then targeted checks that tried somet
  /* Kandidaten aus der Länderrecherche zählen wie die Websuche, die Korrekturdatei kommt danach */
  const research=mergeChecks({},{'verified-research.json':{i:{id:'i',tried:[{url:'https://r.de/',robots:'verboten'}]},j:{id:'j',accepted:{method:'sessionnet'},tried:[]}},'verified-fix.json':{i:{id:'i',tried:[{url:'https://f.de/',status:404}]}}});
  assert.equal(research.i.tried[0].url,'https://f.de/');assert.ok(research.j.accepted);
+ /* Der Teil eines gemeinsamen Systems ersetzt eine Quelle, die das ganze System nahm; sonst bleibt die erste Annahme */
+ const whole={id:'k',accepted:{id:'k',method:'scraper',adapter:'allris',base:'https://www.eutin.sitzung-online.de/public/'},tried:[]};
+ const part={id:'k',accepted:{...whole.accepted,organizations:{exclude:['Süsel']}},tried:[]};
+ assert.deepEqual(mergeChecks({k:whole},{'verified-fix.json':{k:part}}).k.accepted.organizations,{exclude:['Süsel']});
+ assert.equal(mergeChecks({k:part},{'verified-fix.json':{k:whole}}).k.accepted.organizations.exclude[0],'Süsel','a later source without a part does not replace a part');
+ assert.equal(mergeChecks({k:whole},{'verified-guessed.json':{k:part}}).k.accepted.organizations,undefined,'a guessed address is no correction');
+ const client={id:'k',accepted:{id:'k',method:'scraper',adapter:'kic',base:'https://ris.gvvschoenau.de/',client:36},tried:[]};
+ assert.equal(mergeChecks({},{'verified-search.json':{k:{...whole,accepted:{...client.accepted,client:undefined}}},'verified-fix.json':{k:client}}).k.accepted.client,36);
 });
 
 test('no link on the website: the crawl result says why',()=>{
