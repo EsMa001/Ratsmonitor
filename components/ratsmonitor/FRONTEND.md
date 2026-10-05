@@ -35,7 +35,7 @@ Kurzübersicht, damit Änderungen ohne langes Suchen gehen. Alles unter `compone
 
 - `app/ratsmonitor.css`: App (Startseite, Karte, Milchglas `.rm-glass`, Filterfenster `#filter-body`).
 - `app/ratsmonitor-info.css`: Info- und Kontoseiten (Klassen `ri-…`). Achtung: Die Datei setzt Grundstile zurück; Tailwind-Klassen greifen dort manchmal nicht → dann Inline-Style.
-- Sonst Tailwind direkt im JSX. `app/globals.css` gehört zu Admin/Analysen – nicht ändern.
+- Sonst Tailwind direkt im JSX. `app/analyse-admin.css` (Analyse-Seiten, Quellen, Admin) und `app/globals.css` (nur Einstieg und Theme) gehören nicht zum Ratsmonitor-Frontend – nicht ändern. `app/design-styles.css` wirkt auch auf Admin/Analysen: Änderungen dort immer auch dort prüfen.
 
 ## Designregeln (vereinbart)
 
