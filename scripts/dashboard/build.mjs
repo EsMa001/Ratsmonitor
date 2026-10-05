@@ -23,7 +23,7 @@ const robots=read('server/integrations/source-robots.json').sources;
 const sources=new Map(NRW_SOURCES.filter(s=>s.method!=='pending').map(s=>[s.id,s]));
 for(const id of ['billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen','muenster'])if(!sources.has(id))sources.set(id,SOURCES.find(s=>s.id===id)||{id});
 
-const METHOD={sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra',website:'Website'};
+const METHOD={sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'};
 const methodOf=s=>s.method==='oparl'?'OParl':METHOD[s.adapter]||(s.base||s.system?'SessionNet':'Stammquelle');
 
 // Open areas with their reason.
@@ -83,7 +83,9 @@ const areas=CATALOG.map(r=>{
  const s=sources.get(r.id),o=reasons.get(r.id),url=s?(s.system||s.base||s.api||''):o?.url||'';
  const a={id:r.id,n:r.name,l:r.ags.slice(0,2),g:r.ags,t:TYPE[r.kind]||r.municipalityType||'Gemeinde',k:r.kind==='district'?'d':r.independent?'i':'c',p:POPULATION[r.id]||0,u:/^https?:/.test(url)?url:'',o:operator(url)};
  if(r.members?.length)a.m=r.members.length;
- if(s){a.c=robots[r.id]==='verboten'?'okRobots':'ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.at=s.verifiedAt||'';}
+ // Switched on without a live check (citystate-sources.json: checkPending): shown apart from checked sources.
+ if(s&&s.checkPending){a.c='ready';a.r=s.checkPending;a.v=methodOf(s);}
+ else if(s){a.c=robots[r.id]==='verboten'?'okRobots':'ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.at=s.verifiedAt||'';}
  else if(o){a.c=categoryOf(o.reason);a.r=o.reason;}
  else{a.c='other';a.r='Kein Prüfergebnis im Bericht';}
  if(research.has(r.id))a.rs=research.get(r.id);

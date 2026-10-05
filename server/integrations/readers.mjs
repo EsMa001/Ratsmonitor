@@ -13,7 +13,7 @@ import {collectPiwi,detectPiwi} from './piwi.mjs';
 import {collectPio,detectPio} from './pio.mjs';
 import {collectCouncilservice,detectCouncilservice} from './councilservice.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
-import {collectHamburgTransparenz,collectOparlDistricts} from './citystates.mjs';
+import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 // collect-region.mjs hands every reader the council-system fetch (sessionnet fetchText, wrapped by the trace of a
 // metadata import). The website reader needs its own: fetchSiteText/fetchSiteBytes check robots.txt for every redirect
 // target and accept the origins of alsoFrom. With a trace both are recorded, documents included.
@@ -43,4 +43,5 @@ export const READERS={
  // City states (citystates.mjs, entries in citystate-sources.json). Neither is recognised from a page.
  'hamburg-transparenz':{name:'Transparenzportal Hamburg (Drucksachen der Bezirksversammlungen)',collect:collectHamburgTransparenz,detect:async()=>null},
  'oparl-bezirke':{name:'OParl der Bezirksverordnetenversammlungen (nur mit Freigabe)',collect:collectOparlDistricts,detect:async()=>null},
+ berlin:{name:'Abgeordnetenhaus Berlin (Parlamentsdokumentation, offene Daten) und Bezirke mit Freigabe',collect:collectBerlin,detect:async()=>null},
 };

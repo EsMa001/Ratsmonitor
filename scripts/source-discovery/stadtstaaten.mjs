@@ -7,15 +7,16 @@
 //
 // hamburg: switches the entry on (method "scraper") when robots.txt allows the search interface and the reader found
 // papers of the districts; otherwise it stays switched off with the reason as note.
-// berlin: records the district systems with their robots.txt verdict. The entry is switched on when at least one
-// district allows the OParl path, or when a consent is recorded (field consent: {by, date, scope}); see
+// berlin: reads one month of the open data of the Abgeordnetenhaus (PARDOK) and records the district systems with
+// their robots.txt verdict. The entry stays on when the Abgeordnetenhaus delivered procedures; districts are read only
+// where robots.txt allows it or a consent is recorded (field consent: {by, date, scope}); see
 // requirements/berlin-freigabe-anfrage.md.
-// Afterwards: node scripts/source-discovery/servers.mjs; ONLY_NEW=1 node scripts/source-discovery/robots.mjs;
+// Afterwards: node scripts/source-discovery/servers.mjs; ONLY_UNCLEAR=1 node scripts/source-discovery/robots.mjs;
 // node scripts/dashboard/build.mjs; node --test tests/*.test.mjs
 import fs from 'node:fs';
 import {fetchText} from '../../server/integrations/sessionnet.mjs';
 import {robotsVerdict} from '../../server/integrations/robots.mjs';
-import {collectHamburgTransparenz,consentValid,eligibleSystems} from '../../server/integrations/citystates.mjs';
+import {collectHamburgTransparenz,collectPardok,consentValid,eligibleSystems} from '../../server/integrations/citystates.mjs';
 
 const FILE='server/integrations/citystate-sources.json';
 const TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'];
@@ -44,7 +45,7 @@ async function hamburg(){
  for(const t of d.topics.slice(0,3))console.log(' -',t.eventDate,t.committee,t.reference,'|',t.title.slice(0,90),'|',t.sourceUrl);
  for(const i of [...d.coverage.issues,...(d.coverage.warnings||[])])console.log(' !',i);
  if(!d.topics.length){entry.method='pending';entry.note=`Prüflauf am ${today} ohne Drucksachen: ${d.coverage.issues.join(' ')}`.trim();return save();}
- entry.method='scraper';entry.verifiedAt=today;entry.verifiedEvidence={papers:d.topics.length,window:'1m',districts:Object.keys(by).length};delete entry.note;
+ entry.method='scraper';entry.verifiedAt=today;entry.verifiedEvidence={papers:d.topics.length,window:'1m',districts:Object.keys(by).length};delete entry.note;delete entry.checkPending;
  return save();
 }
 
@@ -56,7 +57,13 @@ const oparlUrl=pkg=>{
  return (urls.find(x=>/oparl/i.test(x.url)||/oparl/i.test(x.format))||null)?.url?.replace(/^http:/,'https:')||null;
 };
 async function berlin(){
- const entry=entries.find(e=>e.adapter==='oparl-bezirke');
+ const entry=entries.find(e=>e.id==='de-11000000');
+ // 1. Abgeordnetenhaus: robots.txt of the site and one month of procedures from the open-data file.
+ const house=await collectPardok(entry,{window:'1m',onProgress:m=>console.log(' ',m)});
+ console.log('Abgeordnetenhaus, Vorgänge im letzten Monat:',house.topics.length);
+ for(const t of house.topics.slice(0,3))console.log(' -',t.eventDate,t.reference,'|',t.title.slice(0,90),'|',t.sourceUrl);
+ for(const i of [...house.coverage.issues,...(house.coverage.warnings||[])])console.log(' !',i);
+ // 2. District assemblies: OParl addresses from daten.berlin.de and robots.txt of each.
  let packages=null;
  for(const api of BERLIN_APIS){
   const verdict=await robotsFor(api);console.log('robots.txt',api+':',verdict);if(!readable(verdict))continue;
@@ -77,8 +84,9 @@ async function berlin(){
  for(const s of entry.systems)if(s.oparl===false&&s.robots==='erlaubt')s.robots='unbrauchbar';
  const eligible=eligibleSystems(entry);
  console.log(`${entry.systems.length} Bezirke mit Adresse, davon lesbar: ${eligible.length}${consentValid(entry.consent)?' (Freigabe eingetragen)':' (ohne Freigabe nur, wo robots.txt erlaubt)'}`);
- if(eligible.length){entry.method='scraper';entry.verifiedAt=today;entry.note=eligible.length<12?`${eligible.length} von 12 Bezirken lesbar; für die übrigen fehlt eine Freigabe.`:undefined;if(!entry.note)delete entry.note;}
- else{entry.method='pending';entry.note=`Freigabe fehlt: ${entry.systems.length} OParl-Adressen der Bezirksverordnetenversammlungen bekannt (geprüft am ${today}); robots.txt untersagt Programmen den Abruf. Leser gebaut; er ruft erst mit eingetragener Freigabe ab (Anfrage: requirements/berlin-freigabe-anfrage.md).`;}
+ if(house.topics.length){entry.method='scraper';entry.verifiedAt=today;entry.verifiedEvidence={procedures:house.topics.length,window:'1m',districts:eligible.length};delete entry.note;delete entry.checkPending;}
+ else if(eligible.length){entry.method='scraper';entry.verifiedAt=today;delete entry.note;}
+ else{entry.method='pending';entry.note=`Prüflauf am ${today}: Abgeordnetenhaus ohne Vorgänge (${house.coverage.issues.join(' ')}); Bezirke nur mit Freigabe.`;}
  return save();
 }
 
