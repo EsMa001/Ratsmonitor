@@ -19,8 +19,8 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
 
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */
-/** Abstand des Menüfensters zur Kopfzeile (etwa wie der seitliche Rand) */
-const MENU_GAP = 10;
+/** Abstand des Menüfensters zur Kopfzeile (klein gehalten) */
+const MENU_GAP = 6;
 
 export function MainMenu() {
   /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
