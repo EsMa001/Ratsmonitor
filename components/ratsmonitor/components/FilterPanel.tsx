@@ -4,7 +4,8 @@ import { filterChips } from "../lib/savedSearch";
 import { useData } from "../state/data";
 import { useSearch, useSearchResults } from "../state/search";
 import { AreaBar } from "./AreaBar";
-import { DateRangeFilter } from "./DateRangeFilter";
+import { DateRangeFields, DateRangeFilter, DateRangeSelect } from "./DateRangeFilter";
+import { usePhone } from "../lib/usePhone";
 import { FilterSelect } from "./FilterSelect";
 import { setFiltersOpen } from "../lib/filtersOpen";
 
@@ -45,6 +46,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
     const box = el?.closest("section")?.getBoundingClientRect();
     if (el && box) setFlip(el.getBoundingClientRect().right > box.right - 12);
   }, []);
+  const phone = usePhone();
   const full = "min-w-0 [&_button]:!w-full [&_button]:!min-w-0 [&_button]:!max-w-none";
   return (
     <div
@@ -60,10 +62,15 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-controls="filter-body"]')?.focus());
       }}
       className={`rm-glass absolute z-20 flex w-[300px] max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
-      <div className={`flex items-center gap-2 ${flip ? "flex-row-reverse" : ""}`}>
+      <div className={`flex items-center gap-2 max-sm:pl-4 ${flip ? "flex-row-reverse" : ""}`}>
         {toggle}
+        {phone && (
+          <div className="min-w-0 flex-1">
+            <DateRangeSelect withIcon={false} />
+          </div>
+        )}
         <span className="text-[16px] font-semibold text-slate-900 max-sm:hidden">Filter</span>
-        {active && (
+        {active && !phone && (
           <button type="button" onClick={() => { search.resetAll(); setFiltersOpen(false); }} className={`text-[14px] text-teal-600 hover:underline ${flip ? "mr-auto ml-4" : "ml-auto mr-4"}`}>
             Zurücksetzen
           </button>
@@ -71,7 +78,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
       </div>
       <div className="flex flex-col gap-2.5 px-4 max-sm:gap-[3px] sm:gap-1.5">
         {state.area.length >= 5 && geo && <AreaBar compact />}
-        <DateRangeFilter />
+        {phone ? <DateRangeFields /> : <DateRangeFilter />}
         {/* Schalter wie am iPhone */}
         <Toggle label="Künftige Sitzungen zeigen" hint="Auch Termine, die noch anstehen" on={!!state.future} set={search.setFuture} />
         <Toggle label="Formalien ausblenden" hint="Ohne Niederschriften, Mitteilungen und Anfragen" on={!!state.noformal} set={search.setNoformal} />
@@ -80,6 +87,12 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
           <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />
           <FilterSelect id="f-status" label="Status" allLabel="Alle Stände" value={state.status} options={STATUS.map((s) => ({ value: s.id, label: s.label }))} counts={active ? res.statusCounts : undefined} onChange={(v) => search.setStatus(v as typeof state.status)} className={full} />
         </div>
+        {/* Handy: „Zurücksetzen“ nicht in der Kopfzeile (dort sitzt die Zeitraum-Auswahl), sondern unten */}
+        {phone && active && (
+          <button type="button" onClick={() => { search.resetAll(); setFiltersOpen(false); }} className="self-end text-[14px] text-teal-600 hover:underline">
+            Zurücksetzen
+          </button>
+        )}
       </div>
     </div>
   );

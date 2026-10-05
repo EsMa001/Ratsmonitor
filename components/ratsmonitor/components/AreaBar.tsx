@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePhone } from "../lib/usePhone";
 import { hasScope } from "../lib/savedSearch";
 import { plural } from "../lib/text";
 import { useData } from "../state/data";
@@ -10,19 +11,6 @@ const kmFromPos = (p: number, max = 500) => Math.round(max * Math.pow(p / 1000, 
 const posFromKm = (km: number, max = 500) => Math.min(1000, Math.round(Math.sqrt(km / max) * 1000));
 
 /** Gewähltes Gebiet in einer Zeile: Umfang (nur/inklusive) und Umkreis; 0 km = nur das Gebiet selbst */
-/** Handybreite (wie Tailwind max-sm) */
-function usePhone() {
-  const [phone, setPhone] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 639px)");
-    const on = () => setPhone(mq.matches);
-    on();
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
-  return phone;
-}
-
 export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
   const { geo } = useData();
   const search = useSearch();
