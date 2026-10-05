@@ -85,7 +85,7 @@ export function ResultsPanel() {
           onMouseLeave={() => onHover("")}
           className={`flex flex-col px-[12px] py-[12px] outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
         >
-          {!articlesReady && res.results.length===0 && <div className="p-8 text-center text-[14px] text-slate-500">Einträge werden geladen …</div>}
+          {!articlesReady && res.results.length===0 && <ResultsSkeleton />}
           {(Number.isFinite(limits.maxResults) ? res.results.slice(0, limits.maxResults) : res.results).map((a, i) => (
             <ArticleCard
               key={a.id}
@@ -109,6 +109,26 @@ export function ResultsPanel() {
                 {!search.state.future && !search.state.bis && (
                   <button type="button" onClick={() => search.setFuture(true)} className="text-teal-600 hover:underline">
                     Auch künftige Termine zeigen →
+                  </button>
+                )}
+                {search.state.allterms && (
+                  <button type="button" onClick={() => search.setAllterms(false)} className="text-teal-600 hover:underline">
+                    Begriffe nicht mehr kombinieren →
+                  </button>
+                )}
+                {search.state.noformal && (
+                  <button type="button" onClick={() => search.setNoformal(false)} className="text-teal-600 hover:underline">
+                    Formalien wieder zeigen →
+                  </button>
+                )}
+                {search.state.thema && (
+                  <button type="button" onClick={() => search.setThema("")} className="text-teal-600 hover:underline">
+                    Thema-Filter entfernen →
+                  </button>
+                )}
+                {search.state.status && (
+                  <button type="button" onClick={() => search.setStatus("")} className="text-teal-600 hover:underline">
+                    Status-Filter entfernen →
                   </button>
                 )}
                 {search.state.area.length >= 5 && !search.state.radius && (
@@ -153,5 +173,29 @@ export function ResultsPanel() {
         {res.page >= MAX_PAGE && pages > MAX_PAGE && <span className="w-full text-center text-[14px] text-slate-500">Für weitere Treffer bitte die Suche eingrenzen.</span>}
       </nav>
     </section>
+  );
+}
+
+/** Graue Platzhalterzeilen in der Form der Treffer, solange die ersten Ergebnisse laden (kein Springen beim Eintreffen) */
+function ResultsSkeleton() {
+  const bar = "rounded bg-slate-100 motion-safe:animate-pulse";
+  return (
+    <div role="status" aria-live="polite" className="flex flex-col">
+      <span className="sr-only">Einträge werden geladen …</span>
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <div key={i} aria-hidden="true" className="grid grid-cols-[minmax(0,1fr)_auto] gap-2.5 border-b border-slate-200 px-3 py-3 last:border-b-0 sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-3 sm:px-3.5 sm:py-4">
+          <div className="hidden flex-col items-center gap-1.5 border-r border-slate-200 pr-3 pt-0.5 sm:flex">
+            <span className={`${bar} h-[22px] w-7`} />
+            <span className={`${bar} h-3 w-8`} />
+          </div>
+          <div className="min-w-0">
+            <span className={`${bar} block h-4 ${i % 2 ? "w-3/5" : "w-4/5"}`} />
+            <span className={`${bar} mt-2.5 block h-3 w-2/5`} />
+            <span className={`${bar} mt-2 hidden h-3 w-11/12 sm:block`} />
+          </div>
+          <span className="w-7 sm:w-[56px]" />
+        </div>
+      ))}
+    </div>
   );
 }

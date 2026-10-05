@@ -236,12 +236,17 @@ export function KalenderPage() {
             </ul>
             <div className="relative mt-4 flex flex-wrap items-center gap-2">
               <input value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort oder Kreis hinzufügen …" aria-label="Ort oder Kreis hinzufügen" className="h-11 min-w-0 flex-1 basis-[220px] rounded-xl bg-[#f8f9fa] px-4 text-[16px] outline-none placeholder:text-slate-400 focus:bg-white focus:shadow-focus" />
-              <label className="relative">
-                <span className="sr-only">Umkreis</span>
-                <select value={km} onChange={(e) => setKm(+e.target.value)} className="h-11 cursor-pointer appearance-none rounded-xl bg-[#f8f9fa] px-4 text-[14px] text-slate-600 outline-none">
-                  {RADII.map((r) => <option key={r} value={r}>{r ? `+ ${r} km Umkreis` : "Ohne Umkreis"}</option>)}
-                </select>
-              </label>
+              <FilterSelect
+                id="k-umkreis"
+                label="Umkreis"
+                allLabel=""
+                value={String(km)}
+                options={RADII.map((r) => ({ value: String(r), label: r ? `+ ${r} km Umkreis` : "Ohne Umkreis" }))}
+                onChange={(v) => setKm(+v)}
+                size="sm"
+                highlight={false}
+                className="[&_button]:!h-11 [&_button]:!w-auto [&_button]:!min-w-[170px]"
+              />
               {matches.length > 0 && (
                 <div className="popover absolute left-0 right-0 top-[calc(100%+6px)] z-10 p-1.5">
                   {matches.map((r) => (

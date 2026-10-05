@@ -78,7 +78,7 @@ export function DetailPage(){
                           <time className="tabular-nums text-slate-500">{formatDate(e.date)}</time>
                           <strong className="font-semibold text-slate-900">{e.committee||'Gremium nicht dokumentiert'}</strong>
                           <span className={last?'text-teal-600':'text-slate-500'}>{STATUS[e.status]?.label||'Stand offen'}</span>
-                          {e.url&&!isOparlData(e.url)&&<a className="ml-auto text-teal-600 no-underline hover:underline" href={e.url} target="_blank" rel="noopener noreferrer" title="Öffentliche Sitzung öffnen">Sitzung ↗</a>}
+                          {e.url&&!isOparlData(e.url)&&<a className="relative ml-auto text-teal-600 no-underline hover:underline max-sm:after:absolute max-sm:after:-inset-x-2 max-sm:after:-inset-y-3.5 max-sm:after:content-['']" href={e.url} target="_blank" rel="noopener noreferrer" title="Öffentliche Sitzung öffnen">Sitzung ↗</a>}
                         </div>
                         {e.description&&<p className="m-0 mt-1 text-[14px] text-slate-500">{e.description}</p>}
                         <div className="mt-1 text-[14px]"><SessionDetails event={e}/></div>

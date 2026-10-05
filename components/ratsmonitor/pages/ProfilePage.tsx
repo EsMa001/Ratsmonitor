@@ -3,6 +3,7 @@ import { useAccount } from "../state/account";
 import { useToast } from "../state/toast";
 import type { NotifyFreq } from "../types";
 import { useTier } from "../lib/tier";
+import { confirmDialog } from "../components/ConfirmDialog";
 import { PlanSummary } from "../components/PlanCards";
 import { LoginRequired } from "../components/TierNotice";
 import { PageHead } from "../info/blocks";
@@ -45,8 +46,13 @@ export function ProfilePage() {
       toast("Der Browser erlaubt derzeit keine dauerhafte Speicherung.");
     }
   };
-  const wipe = () => {
-    if (!confirm("Alle gespeicherten Suchen und Kontoeinstellungen in diesem Browser löschen?")) return;
+  const wipe = async () => {
+    const ok = await confirmDialog({
+      title: "Alle Daten löschen?",
+      text: "Alle gespeicherten Suchen und Kontoeinstellungen in diesem Browser werden gelöscht. Das lässt sich nicht rückgängig machen.",
+      confirmLabel: "Alles löschen",
+    });
+    if (!ok) return;
     saved.forEach((s) => removeSaved(s.id));
     try {
       localStorage.removeItem(KEY);

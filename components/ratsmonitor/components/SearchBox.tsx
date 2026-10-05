@@ -7,13 +7,16 @@ import { isReplacement } from "../lib/searchLogic";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { useSearch, useSearchResults } from "../state/search";
-import { IconCheck, IconPin, IconSearch, IconX } from "./icons";
+import { useAccount } from "../state/account";
+import { addRecent, clearRecent, readRecent } from "../lib/recentSearches";
+import { IconCheck, IconHeart, IconPin, IconSearch, IconX } from "./icons";
 
 type Row =
   | { kind: "head"; label: string }
   | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void; scope?: "only" | "with" }
-  | { kind: "text"; label: string; pick: () => void }
+  | { kind: "text"; label: string; silent?: boolean; pick: () => void }
   | { kind: "query"; label: string; pick: () => void }
+  | { kind: "recent"; label: string; saved?: boolean; pick: () => void }
   | { kind: "scope"; label: string; sub: string; sel: boolean; pick: () => void };
 
 /** Suchfeld mit Ortserkennung und Vorschlagsliste.
@@ -39,6 +42,16 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   /* Bestätigte Suche (base) bleibt als Chips unter der Leiste; das Feld zeigt nur, was neu dazukommt */
   const [focused, setFocused] = useState(false);
   const [base, setBase] = useState("");
+  const { saved } = useAccount();
+  const [recent, setRecent] = useState<string[]>([]);
+  /* Bestätigte Suche merken (nach dem Anwenden, daher kurz verzögert) */
+  const qRef = useRef(state.q);
+  qRef.current = state.q;
+  useEffect(() => {
+    const on = () => window.setTimeout(() => addRecent(qRef.current), 80);
+    window.addEventListener("rm:search-confirmed", on);
+    return () => window.removeEventListener("rm:search-confirmed", on);
+  }, []);
   const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
   const join = (d: string) => (base && state.q.startsWith(base) ? (d ? `${base.replace(/[,;|]\s*$/, "")}, ${d}` : base) : d);
 
@@ -57,6 +70,53 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   };
 
   const rows = ((): Row[] => {
+    /* Leere Suche, Feld im Fokus: zuletzt gesucht und gespeicherte Suchen */
+    if (open && focused && !state.q.trim()) {
+      const out: Row[] = [];
+      const closeAndBlur = () => {
+        setOpen(false);
+        inputRef.current?.blur();
+      };
+      if (recent.length) {
+        out.push({ kind: "head", label: "Zuletzt gesucht" });
+        for (const q of recent)
+          out.push({
+            kind: "recent",
+            label: q,
+            pick: () => {
+              apply(q);
+              search.commitPlaces();
+              closeAndBlur();
+            },
+          });
+      }
+      if (saved.length) {
+        out.push({ kind: "head", label: "Gespeicherte Suchen" });
+        for (const sv of saved.slice(0, 5))
+          out.push({
+            kind: "recent",
+            label: sv.name,
+            saved: true,
+            pick: () => {
+              if (search.applySaved(sv)) {
+                if (view !== "overview") goOverview();
+                closeAndBlur();
+              }
+            },
+          });
+      }
+      if (recent.length)
+        out.push({
+          kind: "text",
+          label: "Verlauf löschen",
+          silent: true,
+          pick: () => {
+            clearRecent();
+            setRecent([]);
+          },
+        });
+      return out;
+    }
     if (!open || !state.q.trim() || !place || !geo) return [];
     const out: Row[] = [];
     if (placeActive && pq.place) {
@@ -271,6 +331,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
         onFocus={() => {
           setBase(state.q);
           setFocused(true);
+          setRecent(readRecent());
           setOpen(true);
         }}
         onBlur={() => {
@@ -361,13 +422,28 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
                   <span aria-hidden="true" className="text-[12px] text-slate-500 max-sm:hidden">Enter</span>
                 </button>
               );
+            if (r.kind === "recent")
+              return (
+                <button
+                  key={"r" + i}
+                  id={`sa-${idx}`}
+                  type="button"
+                  role="option"
+                  aria-selected={idx === active}
+                  onClick={() => { r.pick(); confirmed(); dropKeyboard(); onSubmit?.(); }}
+                  className={`grid min-h-10 w-full grid-cols-[18px_minmax(0,1fr)] items-center gap-2 rounded-lg px-2 py-1.5 text-left max-sm:min-h-11 ${idx === active ? "bg-slate-100" : "hover:bg-slate-100"}`}
+                >
+                  {r.saved ? <IconHeart size={16} className="text-slate-500" /> : <IconSearch size={16} className="text-slate-500" />}
+                  <span className="block truncate text-[14px] font-medium">{r.label}</span>
+                </button>
+              );
             if (r.kind === "text")
               return (
                 <button
                   key={"t" + i}
                   id={`sa-${idx}`}
                   type="button"
-                  onClick={() => { r.pick(); confirmed(); dropKeyboard(); }}
+                  onClick={() => { r.pick(); if (!r.silent) { confirmed(); dropKeyboard(); } }}
                   className={`mt-1 w-full border-0 border-t border-slate-200 bg-transparent px-2 pb-[5px] pt-[9px] text-left text-[12px] text-slate-500 hover:text-slate-900 hover:underline hover:underline-offset-2 ${
                     idx === active ? "text-slate-900 underline underline-offset-2" : ""
                   }`}

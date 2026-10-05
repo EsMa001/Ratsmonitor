@@ -1,3 +1,4 @@
+import { FilterSelect } from "../components/FilterSelect";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IconBell, IconHeart, IconX } from "../components/icons";
@@ -149,11 +150,20 @@ function SavedCard({ s }: { s: SavedSearch }) {
       {/* Einstellungen der Benachrichtigung nur, wenn sie an ist */}
       {n.mail && (
         <div className="mt-3 flex flex-wrap items-center gap-2 pl-9 text-[14px] text-slate-500">
-          <select aria-label="Häufigkeit" value={n.freq} onChange={(e) => set({ freq: e.target.value as NotifyFreq })} className="h-8 cursor-pointer rounded-full bg-[#f8f9fa] px-3 text-[14px] text-slate-600 outline-none">
-            <option value="instant">Sofort</option>
-            <option value="daily">Täglich</option>
-            <option value="weekly">Wöchentlich</option>
-          </select>
+          <FilterSelect
+            id={`freq-${s.id}`}
+            label="Häufigkeit"
+            allLabel=""
+            value={n.freq}
+            options={[
+              { value: "instant", label: "Sofort" },
+              { value: "daily", label: "Täglich" },
+              { value: "weekly", label: "Wöchentlich" },
+            ]}
+            onChange={(v) => set({ freq: v as NotifyFreq })}
+            size="sm"
+            highlight={false}
+          />
           {profile.email && <span>an {profile.email}</span>}
           {limits.emails > 1 && (
             <>

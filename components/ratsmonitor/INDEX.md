@@ -640,6 +640,7 @@ wordmark__dot design-styles.css:61
 - error.tsx (7, ⚠1): PageError
 - global-error.tsx (9, ⚠1): GlobalError
 - layout.tsx (6, ⚠1): metadata, RootLayout
+- not-found.tsx (4): metadata, NotFound
 
 ### app/thema/[id]/
 - related-topics.tsx (11, ⚠3): RelatedTopics
@@ -672,13 +673,14 @@ wordmark__dot design-styles.css:61
 - process-progress.tsx (8, ⚠1): ProcessProgress
 
 ### components/ratsmonitor/
-- App.tsx (25, ⚠1): MonitorApp
+- App.tsx (43, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (62, ⚠1): AccountMenu
 - ActiveFilters.tsx (116): ActiveFilters
 - AreaBar.tsx (91, ⚠1): AreaBar
 - Brand.tsx (236): Brand
+- ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - DateRangeFilter.tsx (71): DateRangeFilter
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
@@ -692,7 +694,7 @@ wordmark__dot design-styles.css:61
 - PlanCards.tsx (116): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
-- SearchBox.tsx (405): SearchBox
+- SearchBox.tsx (481): SearchBox
 - SearchFilterPanel.tsx (80): SearchFilterPanel
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (39): ShareButton
@@ -700,19 +702,20 @@ wordmark__dot design-styles.css:61
 - icons.tsx (229): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (299, ⚠1): MapPanel
+- MapPanel.tsx (299, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (179, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
-- ResultsPanel.tsx (158): ResultsPanel
+- ResultsPanel.tsx (202): ResultsPanel
 
 ### components/ratsmonitor/info/
 - AboutPage.tsx (164): AboutPage
-- AccountPages.tsx (334, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
+- AccountPages.tsx (361, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenPages.tsx (86): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (65): isInfoPath, InfoPages
+- NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (107, ⚠1): QuellenPage
 - UeberUnsPage.tsx (65): UeberUnsPage
@@ -727,6 +730,7 @@ wordmark__dot design-styles.css:61
 - entitlements.ts (41): useEntitlements
 - exportArticle.ts (403): ArticleExport, exportArticleTable, printArticle, exportArticlePdf
 - exportResults.ts (32): EXPORT_MAX, ExportFormat, exportResults
+- favicon.ts (37, ⚠1): faviconHref, setFavicon
 - filter.ts (35): FilterSpec, FilterKey, matches, addCount, countBy
 - filtersOpen.ts (19): setFiltersOpen, useFiltersOpen
 
@@ -739,6 +743,7 @@ wordmark__dot design-styles.css:61
 - listView.ts (34): ListView, setListView, useListView
 - mails.ts (134, ⚠1): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
+- recentSearches.ts (28): readRecent, addRecent, clearRecent
 - savedArticles.ts (65): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, useSavedArticles
 - savedSearch.ts (118): SearchSnapshot, signature, queryText, hasFilters, FilterChip, placeLabel, filterChips, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
@@ -751,15 +756,15 @@ wordmark__dot design-styles.css:61
 - MainMenu.tsx (183): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (116, ⚠3): DetailPage
-- KalenderPage.tsx (358, ⚠3): KalenderPage
+- DetailPage.tsx (116, ⚠4): DetailPage
+- KalenderPage.tsx (363, ⚠3): KalenderPage
 - LegalPage.tsx (232): LegalPage
 - OverviewPage.tsx (55): OverviewPage
 - PersonalPage.tsx (30, ⚠4): PersonalPage
 - PostfachPage.tsx (81): PostfachPage
-- ProfilePage.tsx (105): ProfileSettings, readProfile, ProfilePage
+- ProfilePage.tsx (111): ProfileSettings, readProfile, ProfilePage
 - SavedArticlesPage.tsx (124, ⚠2): SavedArticlesPage
-- SavedSearchesPage.tsx (289): SavedSearchesPage
+- SavedSearchesPage.tsx (299): SavedSearchesPage
 
 ### components/ratsmonitor/services/
 - api.ts (7, ⚠1): readSavedSearches, writeSavedSearches
