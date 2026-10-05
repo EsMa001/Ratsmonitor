@@ -80,16 +80,18 @@ const Square = () => <span style={{ display: "inline-block", width: ".15em", hei
 function Quorumo() {
   return (
     <span style={{ fontSize: 28, letterSpacing: "-0.42px" }}>
-      <svg viewBox="14 14 76 76" aria-hidden="true" style={{ ...INLINE, height: ".86em", width: ".86em", verticalAlign: "-0.16em", marginRight: ".01em" }}>
+      <svg className="rm-logo__mark" viewBox="14 14 76 76" aria-hidden="true" style={{ ...INLINE, height: ".86em", width: ".86em", verticalAlign: "-0.16em", marginRight: ".01em" }}>
         <circle cx="50" cy="50" r="30" stroke={TEAL} strokeWidth="8.5" fill="none" />
         <path d="M62 62L84 84" stroke={TEAL} strokeWidth="9.775" strokeLinecap="round" />
         <path d="M30.3 44.7A20.4 20.4 0 0 1 43.0 30.8" stroke={TEAL} strokeWidth="5" fill="none" strokeLinecap="round" />
       </svg>
-      <span>uorum</span>
-      <svg viewBox="8 8 84 84" aria-hidden="true" style={{ ...INLINE, height: "0.84em", width: "0.84em", verticalAlign: "-0.2em", marginLeft: ".04em" }}>
-        <Dots dots={QUORUMO_O} />
-        <rect x="42" y="78" width="16" height="4.5" rx="2.2" fill={TEAL} />
-      </svg>
+      <span className="rm-logo__text">
+        <span>uorum</span>
+        <svg viewBox="8 8 84 84" aria-hidden="true" style={{ ...INLINE, height: "0.84em", width: "0.84em", verticalAlign: "-0.2em", marginLeft: ".04em" }}>
+          <Dots dots={QUORUMO_O} />
+          <rect x="42" y="78" width="16" height="4.5" rx="2.2" fill={TEAL} />
+        </svg>
+      </span>
     </span>
   );
 }
@@ -98,7 +100,7 @@ function Quorumo() {
 function QuorumoSeats({ v3, square }: { v3?: boolean; square?: boolean }) {
   return (
     <span style={{ fontSize: 28, letterSpacing: "-.015em" }}>
-      <svg viewBox="8 8 84 84" overflow="visible" aria-hidden="true" style={{ ...INLINE, height: ".86em", width: ".86em", verticalAlign: "-0.16em", marginRight: ".02em" }}>
+      <svg className="rm-logo__mark" viewBox="8 8 84 84" overflow="visible" aria-hidden="true" style={{ ...INLINE, height: ".86em", width: ".86em", verticalAlign: "-0.16em", marginRight: ".02em" }}>
         {v3 ? (
           <>
             <Dots dots={QUORUMO_Q3} />
@@ -111,16 +113,18 @@ function QuorumoSeats({ v3, square }: { v3?: boolean; square?: boolean }) {
           </>
         )}
       </svg>
-      {square ? (
-        <>
-          uorumo
-          <Square />
-        </>
-      ) : (
-        <>
-          uorum<span style={{ color: TEAL }}>o</span>
-        </>
-      )}
+      <span className="rm-logo__text">
+        {square ? (
+          <>
+            uorumo
+            <Square />
+          </>
+        ) : (
+          <>
+            uorum<span style={{ color: TEAL }}>o</span>
+          </>
+        )}
+      </span>
     </span>
   );
 }
@@ -146,20 +150,22 @@ function Plenara() {
 function PlenaraV2({ square }: { square?: boolean }) {
   return (
     <span style={{ fontSize: 28, letterSpacing: "-.015em" }}>
-      <svg viewBox="15 15 70 70" overflow="visible" aria-hidden="true" style={{ ...INLINE, height: ".66em", width: ".66em", verticalAlign: "-0.07em", marginRight: ".01em" }}>
+      <svg className="rm-logo__mark rm-logo__mark--p" viewBox="15 15 70 70" overflow="visible" aria-hidden="true" style={{ ...INLINE, height: ".66em", width: ".66em", verticalAlign: "-0.07em", marginRight: ".01em" }}>
         <Dots dots={PLENARA_P} />
         <path d="M22 108V50A28 28 0 0 1 38.2 24.6" stroke={TEAL} strokeWidth="7" fill="none" strokeLinecap="round" />
       </svg>
-      {square ? (
-        <>
-          lenara
-          <Square />
-        </>
-      ) : (
-        <>
-          lenar<span style={{ color: TEAL }}>a</span>
-        </>
-      )}
+      <span className="rm-logo__text">
+        {square ? (
+          <>
+            lenara
+            <Square />
+          </>
+        ) : (
+          <>
+            lenar<span style={{ color: TEAL }}>a</span>
+          </>
+        )}
+      </span>
     </span>
   );
 }

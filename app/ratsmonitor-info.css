@@ -245,7 +245,10 @@ select.ri-input{padding-right:12px;cursor:pointer}
 /* Logo links in der Kopfzeile (Vorgabe „Kopfzeile-Logos“) */
 .rm-logo{display:flex;align-items:center;color:#0f172a;text-decoration:none;font-family:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;font-weight:400;line-height:1;white-space:nowrap;-webkit-font-smoothing:antialiased}
 /* Schmale Handys: Bildmarke ohne Schriftzug, damit die Symbole rechts Platz behalten */
-@media (max-width:439px){.rm-logo__text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}}
+@media (max-width:439px){.rm-logo__text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+/* ohne Schriftzug trägt die Bildmarke allein: etwas größer, mittig in der Zeile */
+.rm-logo__mark{height:1.3em!important;width:1.3em!important;margin:0!important;vertical-align:middle!important}
+.rm-logo__mark--p{height:1em!important;width:1em!important;vertical-align:-.12em!important}}
 
 /* Dreistrichmenü (nav, .nh3, .nf3) */
 .ri-burger{display:grid;place-items:center;width:44px;height:44px;flex:none;border:0;border-radius:10px;background:transparent;color:#64748b;cursor:pointer;transition:box-shadow .15s,background-color .15s,color .15s}
