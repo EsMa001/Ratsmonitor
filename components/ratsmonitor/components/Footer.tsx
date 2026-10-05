@@ -39,10 +39,10 @@ export function Footer() {
         {GROUPS.map((g) => (
           <nav key={g.title} aria-label={g.title} className="min-w-0">
             <p className="m-0 text-[12px] font-semibold uppercase tracking-wide text-slate-500">{g.title}</p>
-            <ul className="m-0 mt-2 flex list-none flex-col gap-1.5 p-0 sm:mt-3 sm:gap-2">
+            <ul className="m-0 mt-2 flex list-none flex-col gap-0 p-0 sm:mt-3 sm:gap-2">
               {g.links.map(([href, label]) => (
                 <li key={href}>
-                  <Link href={href} lang="de" className="hyphens-auto break-words text-[14px] text-slate-600 no-underline hover:text-teal-600">
+                  <Link href={href} lang="de" className="block max-sm:py-[13px] hyphens-auto break-words text-[14px] text-slate-600 no-underline hover:text-teal-600">
                     {brandText(label)}
                   </Link>
                 </li>

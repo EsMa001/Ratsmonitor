@@ -19,7 +19,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   document.addEventListener('mousedown',down);document.addEventListener('keydown',key);
   return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',key);};
  },[open]);
- const base='relative grid h-9 w-9 place-items-center rounded-lg transition-colors';
+ const base='relative grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-lg transition-colors';
  const cls=(on:boolean)=>`${base} ${on?'bg-teal-50 text-teal-700':'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`;
  const badge='absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-600 px-[3px] text-[12px] font-semibold leading-none text-white';
  const item='block rounded-lg px-3 py-2 text-[14px] text-slate-900 no-underline hover:bg-slate-100';

@@ -12,7 +12,7 @@ import { setFiltersOpen } from "../lib/filtersOpen";
 
 function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boolean; set: (v: boolean) => void }) {
   return (
-    <div className="flex items-center justify-between gap-3 py-0.5 text-[14px] text-slate-900" title={hint}>
+    <div className="flex items-center justify-between gap-3 py-0.5 text-[14px] text-slate-900 max-sm:min-h-11" title={hint}>
       <span id={`t-${label.replace(/\W+/g, "-")}`}>{label}</span>
       <button
         type="button"
@@ -21,7 +21,7 @@ function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boo
         aria-labelledby={`t-${label.replace(/\W+/g, "-")}`}
         aria-description={hint}
         onClick={() => set(!on)}
-        className={`relative h-6 w-10 flex-none rounded-full transition-colors ${on ? "bg-teal-600" : "bg-slate-300/80"}`}
+        className={`relative h-6 w-10 flex-none rounded-full transition-colors max-sm:after:absolute max-sm:after:-inset-x-2.5 max-sm:after:-inset-y-2.5 max-sm:after:content-[''] ${on ? "bg-teal-600" : "bg-slate-300/80"}`}
       >
         <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${on ? "left-[18px]" : "left-0.5"}`} />
       </button>

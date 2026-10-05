@@ -101,9 +101,9 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
         onOpen(a);
       }}
       style={{ animationDelay: `${Math.min(index * 30, 240)}ms` }}
-      className="group relative grid shrink-0 animate-cardIn grid-cols-[44px_minmax(0,1fr)_auto] gap-2.5 sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-3 cursor-pointer rounded-lg border-b border-slate-200 bg-white px-3 py-3 sm:py-4 transition-colors last:border-b-0 hover:bg-slate-50 has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-teal-600 sm:px-3.5"
+      className="group relative grid shrink-0 animate-cardIn grid-cols-[minmax(0,1fr)_auto] gap-2.5 sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-3 cursor-pointer rounded-lg border-b border-slate-200 bg-white px-3 py-3 sm:py-4 transition-colors last:border-b-0 hover:bg-slate-50 has-[a:focus-visible]:outline has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-teal-600 sm:px-3.5"
     >
-      <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-2.5 pt-0.5 text-center sm:pr-3">
+      <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-2.5 pt-0.5 text-center max-sm:hidden sm:pr-3">
         <span className="text-[22px] font-semibold leading-none tracking-[-.02em]">{Number(d) || "—"}</span>
         <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-600">{MONTH_SHORT[Number(m) - 1]}</span>
         <span className="text-[12px] text-slate-500">{y?.slice(2)}</span>
@@ -125,6 +125,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
       </h3>
       {/* Handy: Stadt, Gremium und Status untereinander */}
       <div className="mt-1 text-[12px] leading-[1.45] text-slate-500 sm:hidden">
+        <p className="m-0 font-semibold text-teal-600">{`${d}.${m}.${y?.slice(2)}`}</p>
         {[a.gemeinde, a.gremium, STATUS_BY_ID[a.status]?.label].filter(Boolean).map((t, i) => (
           <p key={i} className="m-0 truncate"><Highlight text={t!} terms={terms} /></p>
         ))}

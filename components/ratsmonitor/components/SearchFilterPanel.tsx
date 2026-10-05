@@ -18,8 +18,8 @@ export function SearchFilterPanel() {
   return (
     <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[12px]">
       {/* Trefferzahl, Datenstand und Sortierung; aktive Filter und Filter selbst liegen auf der Karte */}
-      <div className="flex flex-wrap items-center gap-1.5">
-          <span aria-live="polite" className="mr-1.5 text-[14px] text-slate-600">
+      <div className="flex items-center gap-1 sm:flex-wrap sm:gap-1.5">
+          <span aria-live="polite" className="mr-1 whitespace-nowrap text-[14px] text-slate-600 sm:mr-1.5">
             {res.loading ? "…" : res.total.toLocaleString("de-DE")} Treffer
             {res.updatedAt && (
               <span className="text-slate-500 max-sm:hidden">
@@ -69,7 +69,7 @@ export function SearchFilterPanel() {
             title={listView === "compact" ? "Zur ausführlichen Ansicht wechseln" : "Zur kompakten Ansicht wechseln"}
             onClick={() => setListView(listView === "compact" ? "full" : "compact")}
             aria-label={listView === "compact" ? "Ausführliche Ansicht" : "Kompakte Ansicht"}
-            className="grid h-9 w-9 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            className="grid h-9 w-9 max-sm:h-11 max-sm:w-10 max-sm:shrink-0 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900"
           >
             {listView === "compact" ? <IconViewCompact size={20} /> : <IconViewFull size={20} />}
           </button>

@@ -145,13 +145,13 @@ export function KalenderPage() {
             <div className="flex items-center justify-between gap-2">
               <h2 className="m-0 min-w-0 truncate text-[22px] max-sm:text-[18px] font-semibold capitalize text-slate-900">{monthLabel}</h2>
               <div className="flex items-center gap-1">
-                <button type="button" aria-label="Vorheriger Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
+                <button type="button" aria-label="Vorheriger Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} className="grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
                   <IconChevronLeft size={20} />
                 </button>
                 <button type="button" onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setDay(today); }} className="h-9 w-[92px] max-sm:w-[76px] rounded-full text-center text-[14px] text-teal-600 hover:bg-slate-100" title="Zurück zu heute">
                   {month.toLocaleDateString("de-DE", { month: "long" })}
                 </button>
-                <button type="button" aria-label="Nächster Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
+                <button type="button" aria-label="Nächster Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} className="grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
                   <IconChevronRight size={20} />
                 </button>
               </div>
@@ -228,7 +228,7 @@ export function KalenderPage() {
                 <li key={a.ags + a.km} className="flex items-center gap-3 border-b border-slate-200 py-2.5">
                   <i aria-hidden="true" className="h-2.5 w-2.5 flex-none rounded-full" style={{ background: AREA_COLORS[i % AREA_COLORS.length] }} />
                   <span className="min-w-0 flex-1 text-slate-900">{a.name}{a.km ? <span className="text-slate-500"> · Umkreis {a.km} km</span> : null}</span>
-                  <button type="button" aria-label={`${a.name} entfernen`} onClick={() => save({ ...cfg, areas: cfg.areas.filter((_, k) => k !== i) })} className="grid h-8 w-8 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900">
+                  <button type="button" aria-label={`${a.name} entfernen`} onClick={() => save({ ...cfg, areas: cfg.areas.filter((_, k) => k !== i) })} className="grid h-8 w-8 max-sm:h-11 max-sm:w-11 place-items-center rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900">
                     <IconX />
                   </button>
                 </li>
@@ -281,7 +281,7 @@ export function KalenderPage() {
                 Sie erhalten eine E-Mail, sobald in Ihren Gebieten <strong className="font-semibold text-slate-900">neue Sitzungen angesetzt</strong> werden, sofort, täglich oder wöchentlich.
               </p>
               <div className="mt-4 flex flex-wrap items-center gap-3 text-[14px]">
-                <button type="button" role="switch" aria-checked={cfg.mail} aria-label="Benachrichtigung per E-Mail" onClick={() => save({ ...cfg, mail: !cfg.mail })} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${cfg.mail ? "bg-teal-600" : "bg-slate-300/80"}`}>
+                <button type="button" role="switch" aria-checked={cfg.mail} aria-label="Benachrichtigung per E-Mail" onClick={() => save({ ...cfg, mail: !cfg.mail })} className={`relative h-6 w-10 flex-none rounded-full transition-colors max-sm:after:absolute max-sm:after:-inset-2.5 max-sm:after:content-[''] ${cfg.mail ? "bg-teal-600" : "bg-slate-300/80"}`}>
                   <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${cfg.mail ? "left-[18px]" : "left-0.5"}`} />
                 </button>
                 <span className="text-slate-900">{cfg.mail ? "An" : "Aus"}</span>

@@ -25,7 +25,7 @@ export function ExportMenu({ options, note, onExport, disabled = false, title = 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button type="button" disabled={disabled} aria-label={title} title={title} className={`grid h-9 w-9 place-items-center rounded-lg disabled:opacity-40 ${tone}`}>
+        <button type="button" disabled={disabled} aria-label={title} title={title} className={`grid h-9 w-9 max-sm:h-11 max-sm:w-10 max-sm:shrink-0 place-items-center rounded-lg disabled:opacity-40 ${tone}`}>
           <IconDownload size={20} />
         </button>
       </PopoverTrigger>

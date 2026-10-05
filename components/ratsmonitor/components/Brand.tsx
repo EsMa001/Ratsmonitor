@@ -227,7 +227,7 @@ export function Brand({ onClick, asLink = true }: { onClick?: () => void; asLink
           onClick();
         }
       }}
-      className="rm-logo [grid-area:brand]"
+      className="rm-logo max-sm:py-2 [grid-area:brand]"
     >
       <Logo />
     </Link>

@@ -42,7 +42,7 @@ export function FilterSelect({ id, label, allLabel, value, options, counts, onCh
                 setOpen(true);
               }
             }}
-            className={`select-base relative flex w-full items-center text-left ${sm ? "!h-9 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${value && highlight ? "select-active" : ""}`}
+            className={`select-base relative flex w-full items-center text-left ${sm ? "!h-9 max-sm:!h-11 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${value && highlight ? "select-active" : ""}`}
           >
             <span className="truncate">{current}</span>
             <IconChevronDown size={14} className={`pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />

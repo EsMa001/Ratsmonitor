@@ -234,7 +234,7 @@ export function LoginPage() {
             </p>
           )}
           <p className="ri-form__foot">
-            <button type="button" className="ri-link" onClick={reset}>
+            <button type="button" className="ri-link max-sm:py-[10px]" onClick={reset}>
               Passwort vergessen?
             </button>{" "}
             · Noch kein Konto?{" "}
