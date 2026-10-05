@@ -254,7 +254,7 @@ select.ri-input{padding-right:12px;cursor:pointer}
 .ratsmonitor .ri-burger:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(13,148,136,.2)}
 .ri-menu{position:fixed;inset:0;z-index:1050;font-size:16px;line-height:1.4;color:#0f172a}
 .ri-menu__bg{position:absolute;inset:0;background:transparent}
-.ri-menu__panel{position:absolute;display:flex;flex-direction:column;width:min(320px,calc(100vw - 16px));overflow-y:auto;border:1px solid #e2e8f0;border-radius:14px;background:#fff;box-shadow:0 12px 32px rgba(11,18,32,.16);animation:riDrop .16s ease-out;transform-origin:top left}
+.ri-menu__panel{position:absolute;display:flex;flex-direction:column;width:min(288px,calc(100vw - 16px));overflow-y:auto;border:1px solid #e2e8f0;border-radius:14px;background:#fff;box-shadow:0 12px 32px rgba(11,18,32,.16);animation:riDrop .16s ease-out;transform-origin:top left}
 .ri-menu__head{display:flex;flex:none;align-items:center;justify-content:space-between;height:72px;padding:0 14px 0 18px;border-bottom:1px solid #eef1f4;background:radial-gradient(ellipse 280px 130px at 0% 0%,rgba(13,148,136,.09),rgba(13,148,136,0) 72%),#fff}
 .ri-logo{display:flex;align-items:center;gap:10px;color:#0f172a;text-decoration:none;font-size:16px;font-weight:600}
 .ri-logo__mark{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#14b8a6,#0f766e);color:#fff}
@@ -382,8 +382,7 @@ select.ri-input{padding-right:12px;cursor:pointer}
 .ri-topnav>button[aria-expanded=true],.ri-topnav>a:hover,.ri-topnav>button:hover{background:#f1f5f9;color:#0f172a}
 .ri-topnav>a[aria-current=page]{color:#0f172a;font-weight:500}
 /* Aufklappliste der breiten Kopfzeile: wie das Menü, nur die Punkte nebeneinander in höchstens zwei Reihen */
-.ri-menu__panel--flyout{width:auto;max-width:calc(100vw - 16px);padding:10px}
-.ri-menu__panel--flyout .ri-menu__subs{display:grid;grid-auto-flow:row;grid-auto-columns:max-content;gap:2px 8px;margin:0;padding:0;border:0}
-.ri-menu__panel--flyout .ri-menu__sub{padding:8px 12px}
-/* Handy: Dreistrich-Menü 20 % schmaler (320 auf 256 px) */
+.ri-menu__panel--flyout{width:auto;max-width:calc(100vw - 16px)}
+.ri-menu__panel--flyout .ri-menu__subs{display:grid;grid-auto-flow:row;grid-auto-columns:max-content;margin:0;padding:0;border:0}
+/* Handy: Dreistrich-Menü noch schmaler (Web 288 px = 10 % weniger als früher 320, Handy 256 px = 20 % weniger) */
 @media(max-width:639px){.ri-menu__panel:not(.ri-menu__panel--flyout){width:min(256px,calc(100vw - 16px))}}
