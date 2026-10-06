@@ -317,35 +317,57 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
  type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
  const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string}>({key:'',data:null,error:''});
  const requestKey=local.key+'&page='+page+'&attempt='+attempt;
- /* Die erste Suche geht sofort hinaus; danach wartet jede neue 180 ms, ob noch getippt wird */
- const sent=useRef(false);
+ /* Wann gesucht wird: Die erste Suche geht sofort hinaus. Beim Tippen wird erst nach 400 ms Ruhe und erst ab 3 Buchstaben
+    im Voraus gesucht (die Kurzsuchen sind am teuersten und bleiben unsichtbar, die Seite wechselt erst nach Enter). Enter
+    oder die Auswahl aus der Liste starten die Suche sofort bzw. nutzen die schon laufende Vorab-Suche. Filter und Sortierung
+    warten 180 ms. Fertige Antworten merkt sich der Browser 5 Minuten, damit Löschen und Zurückgehen sofort gehen. */
+ const sent=useRef(false),lastText=useRef(''),flush=useRef<(()=>void)|null>(null);
+ const cache=useRef(new Map<string,{at:number;data:ResponseData}>());
+ useEffect(()=>{
+  const on=()=>flush.current?.();
+  window.addEventListener('rm:search-confirmed',on);
+  return()=>window.removeEventListener('rm:search-confirmed',on);
+ },[]);
  useEffect(()=>{
   if(!active)return;
-  const delay=sent.current?180:0;sent.current=true;
-  const abort=new AbortController(),timer=setTimeout(async()=>{
-   const params=new URLSearchParams(local.key);params.delete('around');params.set('page',String(page));
-   if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);
-   try{
-    /* Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs). Welche Gebiete
-       Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
-    if(local.around){
-     const {set,level}=local.around;
-     if(!set)params.set('within','');
-     else{
-      let known=covered.current[level];
-      if(!known&&await loadCover(level,abort.signal))known=covered.current[level];
-      const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
+  const hit=cache.current.get(requestKey);
+  if(hit&&Date.now()-hit.at<300000){lastText.current=local.text;setRemote({key:requestKey,data:hit.data,error:''});return;}
+  const abort=new AbortController();let timer=0,started=false;
+  const start=()=>{
+   if(started)return;
+   started=true;clearTimeout(timer);flush.current=null;lastText.current=local.text;sent.current=true;
+   (async()=>{
+    const params=new URLSearchParams(local.key);params.delete('around');params.set('page',String(page));
+    if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);
+    try{
+     /* Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs). Welche Gebiete
+        Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
+     if(local.around){
+      const {set,level}=local.around;
+      if(!set)params.set('within','');
+      else{
+       let known=covered.current[level];
+       if(!known&&await loadCover(level,abort.signal))known=covered.current[level];
+       const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
+      }
      }
-    }
-    const response=await fetch('/api/search?'+params,{signal:abort.signal});
-    const data=await response.json() as ResponseData & {error?:string};
-    if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
-    if(abort.signal.aborted)return;
-    revision.current={key:local.key,value:data.revision};
-    setRemote({key:requestKey,data:{...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))},error:''});
-   }catch(e){if(!abort.signal.aborted)setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.'});}
-  },delay);
-  return()=>{clearTimeout(timer);abort.abort();};
+     const response=await fetch('/api/search?'+params,{signal:abort.signal});
+     const data=await response.json() as ResponseData & {error?:string};
+     if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
+     if(abort.signal.aborted)return;
+     revision.current={key:local.key,value:data.revision};
+     const ready={...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))};
+     cache.current.set(requestKey,{at:Date.now(),data:ready});
+     if(cache.current.size>40)cache.current.delete(cache.current.keys().next().value as string);
+     setRemote({key:requestKey,data:ready,error:''});
+    }catch(e){if(!abort.signal.aborted)setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.'});}
+   })();
+  };
+  const typing=local.text!==lastText.current,t=local.text.trim();
+  flush.current=start;
+  /* 1 bis 2 neue Buchstaben: noch nicht suchen, nur bei Enter oder Auswahl (flush) */
+  if(!(typing&&t.length>0&&t.length<3))timer=window.setTimeout(start,!sent.current?0:typing&&t?400:180);
+  return()=>{clearTimeout(timer);abort.abort();if(flush.current===start)flush.current=null;};
  },[active,local.key,page,attempt,requestKey,loadCover]);
  const loading=remote.key!==requestKey;
  const lastGood=useRef<ResponseData|null>(null);
