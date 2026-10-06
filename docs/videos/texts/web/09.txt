@@ -1,0 +1,7 @@
+Im Kalender sehen Sie anstehende Sitzungen auf einen Blick.
+Sie erreichen ihn über das Kalendersymbol oben in der Kopfzeile.
+Zuerst wählen Sie Ihre Gebiete.
+Geben Sie dazu unter Meine Gebiete einen Ort oder Kreis ein.
+Danach zeigt der Kalender die Sitzungen dieser Gebiete.
+Jeder Tag mit einer Sitzung ist markiert, und ein Klick zeigt Gremium und Themen.
+Mit Kalender abonnieren übernehmen Sie die Termine in Ihren eigenen Kalender.
