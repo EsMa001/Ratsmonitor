@@ -59,14 +59,15 @@ const insertPostings=(db,pairs)=>{const out=[];for(let i=0;i<pairs.length;i+=150
 /**
  * Wortliste auf den Stand der Karten bringen. Ohne Angaben nur das Neue seit dem letzten Lauf.
  * @param {{prepare:Function,batch:Function}} db D1-Datenbank
- * @param {{full?:boolean,chunk?:number,onlyIfBuilt?:boolean,maxCards?:number,kinds?:Map<string,string>,postingMax?:number}} options
+ * @param {{full?:boolean,chunk?:number,onlyIfBuilt?:boolean,maxCards?:number,kinds?:Map<string,string>,names?:Map<string,string>,postingMax?:number,blockedMin?:number}} options
  *   full: alles neu aufbauen; onlyIfBuilt: nur nachführen, nie den ersten Aufbau machen (für den Import im Worker);
  *   maxCards: höchstens so viele Karten je Lauf (der Rest folgt beim nächsten; bis dahin gilt die Liste als veraltet);
+ *   names: Gebiets-ID -> Name; Wörter, die in Gebietsnamen stecken, zählen die Karten dieser Gebiete mit (die Suche findet sie über den Namen)
  *   kinds: Gebiets-ID -> 'city'|'district' für die vorberechneten Trefferzahlen (ohne sie gibt es keine);
  *   blockedMin: ab wie vielen Karten ein seltenes Wort, das in einem häufigen steckt, vorberechnet wird (Standard 6)
  *   postingMax: ab wie vielen Karten ein Wort als häufig gilt (Standard 500; für Tests kleiner)
  */
-export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity,kinds=null,postingMax=POSTING_MAX,blockedMin=BLOCKED_MIN_CARDS}={}){
+export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity,kinds=null,names=null,postingMax=POSTING_MAX,blockedMin=BLOCKED_MIN_CARDS}={}){
  await ensureSchema(db);
  const state=await readState(db);
  if(onlyIfBuilt&&!full&&!state?.complete)return {skipped:true};
@@ -75,7 +76,7 @@ export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=f
  /* Steht an der zuletzt gelesenen rowid nicht mehr dieselbe Karte, wurden rowids neu vergeben: neue Karten würden
     übersprungen, also alles neu */
  const same=state?.complete&&(state.rowid===0||(await db.prepare('SELECT id FROM search_cards WHERE rowid=?').bind(state.rowid).first())?.id===state.topId);
- if(full||!state?.complete||!same||!(await schemaOk(db)))return buildAll(db,revision,chunk,kinds,postingMax,blockedMin);
+ if(full||!state?.complete||!same||!(await schemaOk(db)))return buildAll(db,revision,chunk,kinds,postingMax,blockedMin,names);
  return refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax);
 }
 
@@ -89,7 +90,7 @@ function commonTermsIn(word,commonSet,cache){
 }
 
 /** Voller Aufbau: zählt alle Wörter, behält die IDs der seltenen und rechnet die Trefferzahl der häufigen aus */
-async function buildAll(db,revision,chunk,kinds,postingMax,blockedMin){
+async function buildAll(db,revision,chunk,kinds,postingMax,blockedMin,names){
  await writeState(db,{rowid:0,topId:null,revision:null,complete:false,words:0});
  await db.prepare('DROP TABLE IF EXISTS search_postings').run();
  await db.prepare('DROP TABLE IF EXISTS search_word_areas').run();
@@ -118,6 +119,29 @@ async function buildAll(db,revision,chunk,kinds,postingMax,blockedMin){
  /* Seltene Wörter, die in einem häufigen stecken: für sie gibt es keine Karten-IDs-Abkürzung, also auch vorberechnen */
  const blocked=new Set();
  for(const c of common)for(let i=0;i<c.length-2;i++)for(let j=i+3;j<=c.length;j++){const part=c.slice(i,j),ids=map.get(part);if(ids&&ids.length>=blockedMin)blocked.add(part);}
+ /* Seltene Wörter, die in sehr vielen oder zusammen sehr kartenreichen Wörtern stecken (z. B. wolf, kur, bach): die Karten-IDs würden
+    zu viele (über WORDS_PER_TERM_MAX Wörter oder CANDIDATE_MAX Karten), also auch vorberechnen */
+ {
+  const wordCount=new Map(),cardSum=new Map();
+  for(const [w,ids] of map){
+   const c=ids?ids.length:TOO_COMMON,seen=new Set();
+   for(let i=0;i<w.length-2;i++)for(let j=i+3;j<=w.length;j++){const part=w.slice(i,j);if(map.has(part))seen.add(part);}
+   for(const part of seen){wordCount.set(part,(wordCount.get(part)||0)+1);cardSum.set(part,(cardSum.get(part)||0)+c);}
+  }
+  /* Karten der Gebiete, in deren Namen ein Wort steckt (die Suche nimmt sie über den Namen dazu) */
+  const nameCards=new Map();
+  if(names){
+   const {results:perRegion}=await db.prepare('SELECT region_id,count(*) n FROM search_cards GROUP BY region_id').all();
+   const counts=new Map(perRegion.map(r=>[r.region_id,r.n]));
+   for(const [id,name] of names){
+    const n=counts.get(id);if(!n)continue;
+    const norm=String(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('ß','ss'),seen=new Set();
+    for(let i=0;i<norm.length-2;i++)for(let j=i+3;j<=norm.length;j++){const part=norm.slice(i,j);if(map.has(part))seen.add(part);}
+    for(const part of seen)nameCards.set(part,(nameCards.get(part)||0)+n);
+   }
+  }
+  for(const [w,ids] of map)if(ids&&ids.length>=blockedMin&&(wordCount.get(w)>WORDS_PER_TERM_MAX||cardSum.get(w)+(nameCards.get(w)||0)>CANDIDATE_MAX))blocked.add(w);
+ }
  const target=new Set([...common,...blocked]);
  if(kinds&&target.size){
   const cache=new Map();let at=0;
