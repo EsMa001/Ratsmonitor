@@ -34,7 +34,7 @@ function useBrandTitle(p:string,notFound:boolean){
  useEffect(()=>{
   document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):pageTitle(brand);
  },[brand,name,p,notFound,what,count]);
- useEffect(()=>{setFavicon(logo);},[logo]);
+ useEffect(()=>{setFavicon(logo);},[logo,p]);
 }
 /** Adressen, die eine der Seiten unten bedient; alles andere zeigt die 404-Seite */
 const isKnownPath=(p:string)=>p==='/'||p.startsWith('/beschluss/')||p.startsWith('/thema/')||p.startsWith('/konto')||p==='/impressum'||p==='/datenschutz'||isInfoPath(p);
