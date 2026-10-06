@@ -1,5 +1,5 @@
 import {LABELS} from '../../shared/labels.mjs';
-import {knownWords,candidateCards,precomputedTotal} from './search-words.mjs';
+import {knownWords,candidateCards,precomputedTotal,precomputedFacets} from './search-words.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
@@ -153,10 +153,15 @@ export async function searchMonitor(db,catalog,params){
  if(f.revision!==null){const now=String((await db.prepare(REVISION_SQL).first())?.revision??0);if(now!==f.revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);}
  const pageSql=db.prepare(`${ROW_SELECT} WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit+(f.part==='page'?1:0),(f.page-1)*limit);
  const facetSql=db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args);
+ /* Häufiges Wort ohne Filter: die Zahlen je Gebiet, Thema und Status stehen vorberechnet in der Wortliste, dann entfällt die
+    Gruppierung über alle Einträge. null: wie gewohnt gruppieren. */
+ const plainSearch=!f.area&&!f.label&&!f.status&&!f.month&&!f.from&&!f.more.length&&!f.within&&!f.without&&!f.noformal;
+ const pre=(f.part==='facets'||f.part==='')&&plainSearch&&f.groups.length===1&&f.groups[0].length===1&&!cand
+  ?await precomputedFacets(db,f.groups[0][0],{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameHit}):null;
  /* Reihenfolge der Antwort: Datenstand, dann je nach part die Seite und/oder die Zähler (Gruppierung) */
- const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'?[]:[facetSql])];
+ const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'||pre?[]:[facetSql])];
  const answers=await db.batch(statements);
- const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],groups=answers[answers.length-1];
+ const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],groups=pre?{results:[]}:answers[answers.length-1];
  const revision=String(rev.results[0].revision);
  const mapRows=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
  if(f.revision!==null&&f.revision!==revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);
@@ -168,6 +173,14 @@ export async function searchMonitor(db,catalog,params){
   /* Die Karte kennt nur Gemeinden: jede Mitgliedsgemeinde zeigt die Berichte ihrer Samtgemeinde */
   for(const key of [...(region.members||[]).map(m=>m.ags),...(region.formerAgs||[])])areaCounts[key]=(areaCounts[key]||0)+n;};
  const perRegion=new Map();
+ if(pre){
+  /* Vorberechnet: ohne Filter liegt jedes Gebiet der Ebene im Umfang, Thema und Status sind die Summen der Wortliste */
+  for(const [rid,n] of pre.regions){if(!byId.has(rid))continue;perRegion.set(rid,n);total+=n;}
+  for(const r of pre.facets){
+   const name=LABELS.find(l=>l.id===r.label)?.name||'Noch nicht eingeordnet';
+   labelCounts[name]=(labelCounts[name]||0)+r.n;statusCounts[r.status]=(statusCounts[r.status]||0)+r.n;
+  }
+ }
  for(const r of groups.results){
   const region=byId.get(r.rid);if(!region)continue;
   const inScope=scopedIds.has(r.rid),labelOk=!labelId||r.label===labelId,statusOk=!f.status||r.status===f.status;

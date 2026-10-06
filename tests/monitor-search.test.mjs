@@ -123,3 +123,24 @@ test('searching through the word list gives exactly the result of searching all 
   assert.deepEqual(streamed.map(a=>a.id),before[0].ids);
  }finally{sql.close();}
 });
+
+test('precomputed facets of common words equal the grouping over all cards, per level and with a cut-off date',async()=>{
+ const {sql,db,put}=fixture();try{
+  const titles=['Windpark Planung','Windpark Bürgerbeteiligung','Kita Neubau','Kita Sanierung Turnhalle','Radweg Brücke','Bürgerwindpark Erweiterung','Planung Radweg','Schulbau Planung Kita','Parkplatz am Rathaus','Windkraft Radweg'];
+  titles.forEach((t,i)=>put('c'+i,['billerbeck','other','coesfeld'][i%3],{title:t,officialTitle:t}));
+  const queries=['q=windpark','q=kita','q=radweg','q=planung','q=park','q=kita&level=district','q=planung&level=district','q=windpark&to=2026-09-10','q=kita&to=2026-09-30','q=radweg&sort=asc'];
+  const run=async q=>{const r=await searchMonitor(db,catalog,new URLSearchParams(q));return {ids:r.articles.map(a=>a.id),total:r.total,area:r.areaCounts,thema:r.themaCounts,status:r.statusCounts,badge:r.badgeCounts};};
+  const before=[];for(const q of queries)before.push(await run(q));
+  const kinds=new Map(catalog.map(r=>[r.id,r.kind]));
+  await refreshSearchWords(db,{full:true,kinds,postingMax:1});   // alle Wörter mit mehr als einer Karte gelten als häufig
+  const common=sql.prepare('SELECT count(*) n FROM search_words WHERE cards>200').get().n;
+  assert.ok(common>0&&sql.prepare('SELECT count(*) n FROM search_word_areas').get().n>0,'there are common words with precomputed numbers');
+  for(const [i,q] of queries.entries())assert.deepEqual(await run(q),before[i],q);
+  /* neue Karte (nur eingefügt): die Zahlen werden fortgeschrieben und stimmen weiter */
+  put('new1','billerbeck',{title:'Kita Windpark Radweg',officialTitle:'Kita Windpark Radweg'});
+  await refreshSearchWords(db,{kinds,postingMax:1});
+  const expected=[];for(const q of ['q=kita','q=windpark','q=radweg'])expected.push(await run(q));
+  sql.exec("DELETE FROM search_word_areas;DELETE FROM search_word_facets;UPDATE search_words SET hits_city=NULL,hits_district=NULL");
+  let k=0;for(const q of ['q=kita','q=windpark','q=radweg'])assert.deepEqual(await run(q),expected[k++],q+' (nach Fortschreibung)');
+ }finally{sql.close();}
+});

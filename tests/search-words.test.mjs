@@ -6,7 +6,7 @@ import {wordsOf,refreshSearchWords,knownWords,candidateCards,precomputedTotal,PO
 /* Kleine D1-Hülle um node:sqlite: genug für prepare/bind/first/all/run und batch */
 function d1(){
  const db=new DatabaseSync(':memory:');
- db.exec("CREATE TABLE search_cards(id TEXT PRIMARY KEY NOT NULL,region_id TEXT NOT NULL DEFAULT 'r1',date TEXT NOT NULL DEFAULT '2026-09-01',search TEXT NOT NULL);CREATE INDEX idx_search_cards_date ON search_cards(date);CREATE TABLE data_revisions(id TEXT PRIMARY KEY,revision INTEGER);INSERT INTO data_revisions VALUES('content',1);CREATE TABLE system_state(key TEXT PRIMARY KEY NOT NULL,value TEXT NOT NULL)");
+ db.exec("CREATE TABLE search_cards(id TEXT PRIMARY KEY NOT NULL,region_id TEXT NOT NULL DEFAULT 'r1',date TEXT NOT NULL DEFAULT '2026-09-01',label TEXT NOT NULL DEFAULT 'bildung',status TEXT NOT NULL DEFAULT 'consulting',search TEXT NOT NULL);CREATE INDEX idx_search_cards_date ON search_cards(date);CREATE TABLE data_revisions(id TEXT PRIMARY KEY,revision INTEGER);INSERT INTO data_revisions VALUES('content',1);CREATE TABLE system_state(key TEXT PRIMARY KEY NOT NULL,value TEXT NOT NULL)");
  return {raw:db,
   prepare(sql){const st=db.prepare(sql);let args=[];const o={bind(...a){args=a;return o;},async first(){return st.get(...args)??null;},async all(){return {results:st.all(...args)};},async run(){st.run(...args);return {};}};return o;},
   async batch(list){for(const s of list)await s.run();return list.map(()=>({}));}};
