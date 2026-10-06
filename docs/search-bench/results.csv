@@ -29,3 +29,13 @@ timestamp,label,term,part,cold_ms,warm_ms,bytes,total,articles
 2026-10-06T14:09:04.428Z,split-page-facets,"Schule",facets,2982,14,72165,26828,0
 2026-10-06T14:09:04.428Z,split-page-facets,"Photovoltaik",full,3146,27,54420,2084,20
 2026-10-06T14:09:04.428Z,split-page-facets,"Photovoltaik",page,1013,15,15345,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Photovoltaik",facets,2302,8,39257,2084,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Feuerwehr",full,1024,9,86000,13719,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Feuerwehr",page,24,203,12479,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Feuerwehr",facets,992,9,73703,13719,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Windkraft oder Solar",full,831,7,52085,2326,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Windkraft oder Solar",page,90,7,14440,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Windkraft oder Solar",facets,925,8,37827,2326,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Gewerbegebiet",full,668,7,48586,2479,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Gewerbegebiet",page,53,6,14857,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Gewerbegebiet",facets,1037,8,33911,2479,0
