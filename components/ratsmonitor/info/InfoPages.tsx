@@ -9,6 +9,7 @@ import { PageHead } from "./blocks";
 import { BranchePage } from "./BranchenPages";
 import { AGB_SECTIONS, brancheBySlug } from "./content";
 import { FaqPage } from "./FaqPage";
+import { VideosPage } from "./VideosPage";
 import { PreisePage } from "./PreisePage";
 
 /* TODO: Rechtstext vom Betreiber (Doku Kap. 8) */
@@ -35,6 +36,7 @@ function AgbPage() {
 const PAGES: Record<string, ComponentType> = {
   "/ueber-ratsmonitor": AboutPage,
   "/faq": FaqPage,
+  "/videos": VideosPage,
   "/quellen": QuellenPage,
   "/ueber-uns": UeberUnsPage,
   "/funktionen/suche": AboutPage,

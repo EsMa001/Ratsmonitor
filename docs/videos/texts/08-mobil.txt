@@ -1,0 +1,9 @@
+Möchten Sie einen Beschluss außerhalb von Plenarra nutzen?
+Dann exportieren Sie ihn.
+Öffnen Sie dazu den Artikel.
+Oben im Artikel finden Sie das Symbol zum Herunterladen.
+Dort wählen Sie das Format.
+Zur Wahl stehen P-D-F, Drucken, Excel und C-S-V.
+Das P-D-F eignet sich zum Weitergeben oder Ablegen.
+Excel und C-S-V helfen Ihnen, wenn Sie die Daten weiter auswerten möchten.
+Die ganze Trefferliste exportieren Sie am Computer.

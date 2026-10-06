@@ -720,14 +720,14 @@ wordmark__dot design-styles.css:61
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenPages.tsx (86): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (65): isInfoPath, InfoPages
+- InfoPages.tsx (67): isInfoPath, InfoPages
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (107, ⚠1): QuellenPage
 - UeberUnsPage.tsx (65): UeberUnsPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - content.ts (373, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, AGB_SECTIONS, brancheBySlug
-- icons.tsx (110): IconName, Icon
+- icons.tsx (112): IconName, Icon
 
 ### components/ratsmonitor/lib/
 - brand.ts (54): setLogo, useBrand, useBrandText, brandName
@@ -737,7 +737,7 @@ wordmark__dot design-styles.css:61
 - entitlements.ts (41): useEntitlements
 - exportArticle.ts (403): ArticleExport, exportArticleTable, printArticle, exportArticlePdf
 - exportResults.ts (33): EXPORT_MAX, ExportFormat, exportResults
-- favicon.ts (37, ⚠1): faviconHref, setFavicon
+- favicon.ts (39, ⚠1): faviconHref, setFavicon
 - filter.ts (35): FilterSpec, FilterKey, matches, addCount, countBy
 - filtersOpen.ts (19): setFiltersOpen, useFiltersOpen
 
@@ -763,7 +763,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (186): MainMenu
+- MainMenu.tsx (188): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (116, ⚠4): DetailPage
