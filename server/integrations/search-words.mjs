@@ -25,6 +25,9 @@ const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE i
 export const POSTING_MAX=200;
 /** Zählstand für „zu häufig“ */
 export const TOO_COMMON=POSTING_MAX+1;
+/** Seltene Wörter, die in einem häufigen stecken, werden nur ab dieser Länge vorberechnet: kürzere („ach“, „ber“) sucht niemand
+    und sie machen den größten Teil der Zeilen aus */
+export const BLOCKED_MIN_LENGTH=5;
 /** Mehr Kandidaten als hier lohnen sich nicht: dann wird wie gewohnt gesucht */
 export const CANDIDATE_MAX=3000;
 const WORDS_PER_TERM_MAX=300;
@@ -113,7 +116,7 @@ async function buildAll(db,revision,chunk,kinds,postingMax){
  const common=new Set([...map].filter(([,ids])=>ids===null).map(([w])=>w));
  /* Seltene Wörter, die in einem häufigen stecken: für sie gibt es keine Karten-IDs-Abkürzung, also auch vorberechnen */
  const blocked=new Set();
- for(const c of common)for(let i=0;i<c.length-2;i++)for(let j=i+3;j<=c.length;j++){const part=c.slice(i,j),ids=map.get(part);if(ids)blocked.add(part);}
+ for(const c of common)for(let i=0;i<c.length-2;i++)for(let j=i+3;j<=c.length;j++){const part=c.slice(i,j),ids=map.get(part);if(ids&&part.length>=BLOCKED_MIN_LENGTH)blocked.add(part);}
  const target=new Set([...common,...blocked]);
  if(kinds&&target.size){
   const cache=new Map();let at=0;
