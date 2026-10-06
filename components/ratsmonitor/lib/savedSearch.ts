@@ -21,14 +21,15 @@ export interface SearchSnapshot {
   future?: boolean;
   noformal?: boolean;
   allterms?: boolean;
+  exact?: boolean;
 }
 
 
 /** Signatur einer Suche, um gespeicherte Suchen wiederzuerkennen */
-export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more"> & { future?: boolean; noformal?: boolean; allterms?: boolean }): string {
+export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more"> & { future?: boolean; noformal?: boolean; allterms?: boolean; exact?: boolean }): string {
   const t = norm(s.text || "").split(/\s+/).filter(Boolean).sort().join(" ");
   const more = (s.more || []).map((m) => `${m.ags}:${m.scope}`).sort().join(",");
-  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|") + (s.future ? "|future" : "") + (s.noformal ? "|noformal" : "") + (s.allterms ? "|all" : "");
+  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|") + (s.future ? "|future" : "") + (s.noformal ? "|noformal" : "") + (s.allterms ? "|all" : "") + (s.exact ? "|exact" : "");
 }
 
 /** Suchtext für die Abfrage. Das Backend verknüpft Kommas (zwischen Chips) mit ODER, Leerzeichen mit UND.

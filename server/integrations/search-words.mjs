@@ -270,14 +270,15 @@ export async function knownWords(db,groups,{nameHit=()=>false,plain=false}={}){
  * Je Begriff die Vereinigung der Karten aller Wörter, die ihn enthalten; je UND-Gruppe genügt der Begriff mit den wenigsten
  * Karten; über die ODER-Gruppen die Vereinigung.
  */
-export async function candidateCards(db,groups,{nameIds=()=>[]}={}){
+export async function candidateCards(db,groups,{nameIds=()=>[],exact=false}={}){
  const terms=[...new Set(groups.flat())];
  if(!groups.length||!searchable(terms))return null;
  try{
   if(!(await listCurrent(db)))return null;
   const byTerm=new Map();
   for(const t of terms){
-   const {results:words}=await db.prepare('SELECT word,cards FROM search_words WHERE instr(word,?)>0 LIMIT ?').bind(t,WORDS_PER_TERM_MAX+1).all();
+   /* Exakter Begriff: nur das Wort selbst, nicht die Wörter, in denen er steckt */
+   const {results:words}=exact?await db.prepare('SELECT word,cards FROM search_words WHERE word=?').bind(t).all():await db.prepare('SELECT word,cards FROM search_words WHERE instr(word,?)>0 LIMIT ?').bind(t,WORDS_PER_TERM_MAX+1).all();
    if(words.length>WORDS_PER_TERM_MAX||words.some(w=>w.cards>POSTING_MAX)){byTerm.set(t,null);continue;}
    const ids=new Set();
    /* Steckt der Begriff in einem Gebietsnamen, gehören auch alle Karten dieser Gebiete dazu (zu viele: wie gewohnt über alle suchen) */

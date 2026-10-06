@@ -111,7 +111,7 @@ test('searching through the word list gives exactly the result of searching all 
  const {sql,db,put}=fixture();try{
   const titles=['Windpark Planung','Windpark Bürgerbeteiligung','Kita Neubau','Kita Sanierung Turnhalle','Radweg Brücke','Bürgerwindpark Erweiterung','Planung Radweg','Schulbau Planung Kita','Parkplatz am Rathaus','Windkraft Radweg','Anderer Weg'];
   titles.forEach((t,i)=>put('c'+i,['billerbeck','other','coesfeld'][i%3],{title:t,officialTitle:t}));
-  const queries=['q=anderer','q=anderer+oder+kita','q=anderer&sort=asc','q=windpark','q=park','q=windpark+planung','q=windpark+oder+kita','q=radweg&sort=asc','q=planung&sort=relevance','q=kita&noformal=1','q=windpark&area=05558008&scope=only','q=radweg&area=05558&scope=with','q=planung&level=district','q=kita&status=consulting','q=windpark&month=2026-09','q=windpark&size=15&page=1','q=kalorien','q=bau+planung','q=windpark,radweg'];
+  const queries=['q=anderer','q=anderer+oder+kita','q=windpark&exact=1','q=windpark&level=district','q=windpark&level=district&exact=1','q=park&exact=1','q=windpark+planung&exact=1','q=anderer&exact=1','q=planung&exact=1&level=district','q=anderer&sort=asc','q=windpark','q=park','q=windpark+planung','q=windpark+oder+kita','q=radweg&sort=asc','q=planung&sort=relevance','q=kita&noformal=1','q=windpark&area=05558008&scope=only','q=radweg&area=05558&scope=with','q=planung&level=district','q=kita&status=consulting','q=windpark&month=2026-09','q=windpark&size=15&page=1','q=kalorien','q=bau+planung','q=windpark,radweg'];
   const run=async q=>{const r=await searchMonitor(db,catalog,new URLSearchParams(q));return {ids:r.articles.map(a=>a.id),total:r.total,area:r.areaCounts,thema:r.themaCounts,status:r.statusCounts,badge:r.badgeCounts};};
   const before=[];for(const q of queries)before.push(await run(q));
   await refreshSearchWords(db,{full:true});
@@ -119,10 +119,13 @@ test('searching through the word list gives exactly the result of searching all 
   const named=await candidateCards(db,[['anderer']],{nameIds:t=>t==='anderer'?['other']:[]});
   assert.ok(named&&named.length>=before[0].total,'rare word inside a region name: cards of that region are candidates too');
   for(const [i,q] of queries.entries())assert.deepEqual(await run(q),before[i],q);
-  assert.ok(before[3].total>0&&before[6].total>0&&before[0].total>0,'the queries find something');
+  const at=q=>before[queries.indexOf(q)];
+  assert.ok(at('q=windpark').total>0&&at('q=windpark+oder+kita').total>0&&at('q=anderer').total>0,'the queries find something');
+  assert.ok(at('q=windpark&exact=1').total>0&&at('q=windpark&level=district&exact=1').total<at('q=windpark&level=district').total,'exact matches only whole words (not Bürgerwindpark)');
+  assert.equal(at('q=park&exact=1').total,0,'park is no whole word here');
   /* Strom und Seite liefern über die Liste dieselben Treffer wie über alle Karten */
   const streamed=[];for await(const part of (await searchMonitor(db,catalog,new URLSearchParams('q=windpark&part=stream'))).stream)streamed.push(...(part.articles??[]));
-  assert.deepEqual(streamed.map(a=>a.id),before[3].ids);
+  assert.deepEqual(streamed.map(a=>a.id),at('q=windpark').ids);
  }finally{sql.close();}
 });
 

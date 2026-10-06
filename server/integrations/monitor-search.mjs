@@ -7,6 +7,8 @@ export class SearchError extends Error { constructor(message,status=400){super(m
 /* Typische Formalien einer Sitzung (Muster für LIKE auf den kleingeschriebenen Titel) */
 const FORMAL=['%niederschrift%','%mitteilungen%','%anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','%verpflichtung%','%anträge der fraktionen%'];
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
+/* Ganzes Wort in der Suchspalte (nur a–z, 0–9, sonst Trenner): Muster für GLOB am Anfang, in der Mitte und am Ende; Sonderzeichen des Begriffs in [ ] gefasst */
+const wholeWord=t=>{const e=t.replace(/[*?[]/g,c=>'['+c+']');return [e+'[^a-z0-9]*','*[^a-z0-9]'+e+'[^a-z0-9]*','*[^a-z0-9]'+e];};
 const FILLER=new Set(['und','oder','der','die','das','den','dem','des','ein','eine','einer','in','im','am','an','zu','zum','zur','von','vom','fur','mit','bei','auf','aus','nach']);
 export function parseMonitorSearch(params){
  const q=params.get('q')||'',area=params.get('area')||'',label=params.get('label')||'',month=params.get('month')||'',status=params.get('status')||'',level=params.get('level')||'city',sort=params.get('sort')||'desc',from=params.get('from')||'',to=params.get('to')||'',scope=params.get('scope')==='only'?'only':'with';
@@ -32,7 +34,7 @@ export function parseMonitorSearch(params){
  const groups=q.split(/[,;|]|\s+oder\s+/i).map(g=>norm(g).split(/\s+/).filter(w=>w&&!FILLER.has(w))).filter(g=>g.length).slice(0,8).map(g=>g.slice(0,12));
  /* Jeder Begriff bindet zwei Parameter; D1 erlaubt höchstens 100 je Abfrage */
  if(groups.flat().length>30)throw new SearchError('Bitte höchstens 30 Suchwörter verwenden.');
- return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),size:Number(sizeRaw||20),part,within,without,revision,noformal:params.get('noformal')==='1'};
+ return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),size:Number(sizeRaw||20),part,within,without,revision,noformal:params.get('noformal')==='1',exact:params.get('exact')==='1'};
 }
 
 /* Spalten einer Ergebniszeile (mit den Stationen des Vorgangs), gemeinsam für Seite und Strom */
@@ -77,7 +79,9 @@ export async function searchMonitor(db,catalog,params){
  const scopedIds=new Set(scoped.map(r=>r.id));
  /* Begriff trifft auch den Gemeindenamen: passende Regionen vorab in JS ermitteln (je Begriff einmal) */
  const names=regions.map(r=>[r.id,norm(r.name)]),hits=new Map();
- const nameHits=term=>{if(!hits.has(term))hits.set(term,JSON.stringify(names.filter(([,n])=>n.includes(term)).map(([id])=>id)));return hits.get(term);};
+ /* Exakter Begriff: nur ganze Wörter des Namens zählen */
+ const nameMatch=(n,term)=>f.exact?n.split(/[^a-z0-9]+/).includes(term):n.includes(term);
+ const nameHits=term=>{if(!hits.has(term))hits.set(term,JSON.stringify(names.filter(([,n])=>nameMatch(n,term)).map(([id])=>id)));return hits.get(term);};
  /* Grundfilter: alles außer Gebiet, Thema und Status (die zählen die Facetten jeweils ohne sich selbst) */
  const base=()=>{
   const where=[],args=[];
@@ -88,14 +92,14 @@ export async function searchMonitor(db,catalog,params){
   if(f.noformal){where.push('NOT ('+FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+')');args.push(...FORMAL);}
   /* Mehrere Suchbegriffe: Komma trennt Alternativen (ODER), Wörter innerhalb eines Begriffs müssen alle vorkommen */
   const groups=(f.groups||[f.terms]).filter(g=>g.length);
-  if(groups.length){where.push('('+groups.map(g=>'('+g.map(()=>'(instr(search,?)>0 OR region_id IN (SELECT value FROM json_each(?)))').join(' AND ')+')').join(' OR ')+')');for(const g of groups)for(const term of g)args.push(term,nameHits(term));}
+  if(groups.length){where.push('('+groups.map(g=>'('+g.map(()=>(f.exact?'((instr(search,?)>0 AND (search GLOB ? OR search GLOB ? OR search GLOB ?))':'(instr(search,?)>0')+' OR region_id IN (SELECT value FROM json_each(?)))').join(' AND ')+')').join(' OR ')+')');for(const g of groups)for(const term of g)args.push(...(f.exact?[term,...wholeWord(term)]:[term]),nameHits(term));}
   return {where,args};
  };
  /* Seltene Wörter: die Wortliste nennt die Karten, in denen sie vorkommen. Dann werden Seite, Zähler und Strom nur über diese Karten
     gefragt (mit denselben Bedingungen wie sonst, das Ergebnis bleibt gleich), statt über alle. null: wie gewohnt über alle. */
- const nameHit=t=>catalog.some(r=>norm(r.name).includes(t));
- const nameIds=t=>catalog.filter(r=>norm(r.name).includes(t)).map(r=>r.id);
- const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part===''?await candidateCards(db,f.groups,{nameIds}):null;
+ const nameHit=t=>catalog.some(r=>nameMatch(norm(r.name),t));
+ const nameIds=t=>catalog.filter(r=>nameMatch(norm(r.name),t)).map(r=>r.id);
+ const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part===''?await candidateCards(db,f.groups,{nameIds,exact:f.exact}):null;
  const candidates=cand?{sql:'id IN (SELECT value FROM json_each(?))',arg:JSON.stringify(cand)}:null;
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
  /* Ergebnisseite: Gebiet, Thema und Status als Bedingung */
@@ -129,9 +133,9 @@ export async function searchMonitor(db,catalog,params){
    }
    /* Vorab: kann der Begriff Treffer haben? „nein“ beendet die Suche sofort, „ja“ erlaubt der Oberfläche, ohne Warten loszulegen */
    const plain=!f.area&&!f.label&&!f.status&&!f.month&&!f.from&&!f.more.length&&!f.within&&!f.without&&!f.noformal;
-   const known=await knownWords(db,f.groups,{plain,nameHit});
+   const known=await knownWords(db,f.groups,{plain:plain&&!f.exact,nameHit});
    /* Häufiges Wort ohne Filter: die Trefferzahl steht vorberechnet in der Wortliste und geht gleich mit */
-   const single=plain&&f.groups.length===1&&f.groups[0].length===1?f.groups[0][0]:null;
+   const single=plain&&!f.exact&&f.groups.length===1&&f.groups[0].length===1?f.groups[0][0]:null;
    const total=single?await precomputedTotal(db,single,{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameIds}):null;
    yield total===null?{known}:{known,total};
    if(known==='no'){yield {end:true,hasMore:false,revision,pageSize:limit};return;}
@@ -157,7 +161,7 @@ export async function searchMonitor(db,catalog,params){
  /* Häufiges Wort ohne Filter: die Zahlen je Gebiet, Thema und Status stehen vorberechnet in der Wortliste, dann entfällt die
     Gruppierung über alle Einträge. null: wie gewohnt gruppieren. */
  const plainSearch=!f.area&&!f.label&&!f.status&&!f.month&&!f.from&&!f.more.length&&!f.within&&!f.without&&!f.noformal;
- const pre=(f.part==='facets'||f.part==='')&&plainSearch&&f.groups.length===1&&f.groups[0].length===1&&!cand
+ const pre=(f.part==='facets'||f.part==='')&&plainSearch&&!f.exact&&f.groups.length===1&&f.groups[0].length===1&&!cand
   ?await precomputedFacets(db,f.groups[0][0],{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameIds}):null;
  /* Reihenfolge der Antwort: Datenstand, dann je nach part die Seite und/oder die Zähler (Gruppierung) */
  const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'||pre?[]:[facetSql])];

@@ -24,7 +24,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
   const active = chips.length > 0;
   const savedHit = signatures.get(res.signature);
   /* Zähler am Filter-Knopf: nur was im Filterfenster einstellbar ist (Orte stehen als Chips unter der Leiste) */
-  const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0);
+  const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
 
   /* Ein Klick speichert die Suche unter einem automatisch erzeugten Namen; erneuter Klick entfernt sie */
   const toggleSave = () => {

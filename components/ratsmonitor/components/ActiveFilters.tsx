@@ -41,6 +41,7 @@ export function ActiveFilters() {
   const toggles: { key: string; label: string; off: () => void }[] = [
     ...(state.future ? [{ key: "future", label: "mit künftigen Sitzungen", off: () => search.setFuture(false) }] : []),
     ...(state.noformal ? [{ key: "noformal", label: "Formalien ausgeblendet", off: () => search.setNoformal(false) }] : []),
+    ...(state.exact ? [{ key: "exact", label: "Exakter Begriff", off: () => search.setExact(false) }] : []),
     ...(state.allterms ? [{ key: "allterms", label: "Begriffe kombiniert", off: () => search.setAllterms(false) }] : []),
   ];
   if (!all.length && !toggles.length) return null;
