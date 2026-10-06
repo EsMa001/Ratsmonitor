@@ -132,13 +132,15 @@ test('precomputed facets of common words equal the grouping over all cards, per 
   const run=async q=>{const r=await searchMonitor(db,catalog,new URLSearchParams(q));return {ids:r.articles.map(a=>a.id),total:r.total,area:r.areaCounts,thema:r.themaCounts,status:r.statusCounts,badge:r.badgeCounts};};
   const before=[];for(const q of queries)before.push(await run(q));
   const kinds=new Map(catalog.map(r=>[r.id,r.kind]));
-  await refreshSearchWords(db,{full:true,kinds,postingMax:1});   // alle Wörter mit mehr als einer Karte gelten als häufig
+  await refreshSearchWords(db,{full:true,kinds,postingMax:1,blockedMin:1});   // alle Wörter mit mehr als einer Karte gelten als häufig
   const common=sql.prepare('SELECT count(*) n FROM search_words WHERE cards>200').get().n;
   assert.ok(common>0&&sql.prepare('SELECT count(*) n FROM search_word_areas').get().n>0,'there are common words with precomputed numbers');
-  /* „platz“ ist selten (1 Karte), steckt aber im häufigen „parkplatz“: die Karten-IDs greifen dort nicht, also auch vorberechnet; kurze Wörter (unter 5 Buchstaben) nicht */
+  /* „platz“ ist selten (1 Karte), steckt aber im häufigen „parkplatz“: die Karten-IDs greifen dort nicht, also auch vorberechnet; Standard: erst ab 6 Karten */
   const blocked=sql.prepare("SELECT cards,hits_city FROM search_words WHERE word='platz'").get();
   assert.ok(blocked.cards<=200&&blocked.hits_city!==null,'rare word inside a common word is precomputed');
-  assert.equal(sql.prepare("SELECT count(*) n FROM search_words WHERE cards<=200 AND hits_city IS NOT NULL AND length(word)<5").get().n,0,'short rare words are not precomputed');
+  await refreshSearchWords(db,{full:true,kinds,postingMax:1});
+  assert.equal(sql.prepare("SELECT count(*) n FROM search_words WHERE cards<=200 AND hits_city IS NOT NULL").get().n,0,'rare words with fewer than 6 cards are not precomputed');
+  await refreshSearchWords(db,{full:true,kinds,postingMax:1,blockedMin:1});
   for(const [i,q] of queries.entries())assert.deepEqual(await run(q),before[i],q);
   /* neue Karte (nur eingefügt): die Zahlen werden fortgeschrieben und stimmen weiter */
   put('new1','billerbeck',{title:'Kita Windpark Radweg',officialTitle:'Kita Windpark Radweg'});

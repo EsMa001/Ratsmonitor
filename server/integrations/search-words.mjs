@@ -27,7 +27,7 @@ export const POSTING_MAX=200;
 export const TOO_COMMON=POSTING_MAX+1;
 /** Seltene Wörter, die in einem häufigen stecken, werden nur ab dieser Länge vorberechnet: kürzere („ach“, „ber“) sucht niemand
     und sie machen den größten Teil der Zeilen aus */
-export const BLOCKED_MIN_LENGTH=5;
+export const BLOCKED_MIN_CARDS=6;
 /** Mehr Kandidaten als hier lohnen sich nicht: dann wird wie gewohnt gesucht */
 export const CANDIDATE_MAX=3000;
 const WORDS_PER_TERM_MAX=300;
@@ -63,9 +63,10 @@ const insertPostings=(db,pairs)=>{const out=[];for(let i=0;i<pairs.length;i+=150
  *   full: alles neu aufbauen; onlyIfBuilt: nur nachführen, nie den ersten Aufbau machen (für den Import im Worker);
  *   maxCards: höchstens so viele Karten je Lauf (der Rest folgt beim nächsten; bis dahin gilt die Liste als veraltet);
  *   kinds: Gebiets-ID -> 'city'|'district' für die vorberechneten Trefferzahlen (ohne sie gibt es keine);
+ *   blockedMin: ab wie vielen Karten ein seltenes Wort, das in einem häufigen steckt, vorberechnet wird (Standard 6)
  *   postingMax: ab wie vielen Karten ein Wort als häufig gilt (Standard 200; für Tests kleiner)
  */
-export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity,kinds=null,postingMax=POSTING_MAX}={}){
+export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity,kinds=null,postingMax=POSTING_MAX,blockedMin=BLOCKED_MIN_CARDS}={}){
  await ensureSchema(db);
  const state=await readState(db);
  if(onlyIfBuilt&&!full&&!state?.complete)return {skipped:true};
@@ -74,7 +75,7 @@ export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=f
  /* Steht an der zuletzt gelesenen rowid nicht mehr dieselbe Karte, wurden rowids neu vergeben: neue Karten würden
     übersprungen, also alles neu */
  const same=state?.complete&&(state.rowid===0||(await db.prepare('SELECT id FROM search_cards WHERE rowid=?').bind(state.rowid).first())?.id===state.topId);
- if(full||!state?.complete||!same||!(await schemaOk(db)))return buildAll(db,revision,chunk,kinds,postingMax);
+ if(full||!state?.complete||!same||!(await schemaOk(db)))return buildAll(db,revision,chunk,kinds,postingMax,blockedMin);
  return refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax);
 }
 
@@ -88,7 +89,7 @@ function commonTermsIn(word,commonSet,cache){
 }
 
 /** Voller Aufbau: zählt alle Wörter, behält die IDs der seltenen und rechnet die Trefferzahl der häufigen aus */
-async function buildAll(db,revision,chunk,kinds,postingMax){
+async function buildAll(db,revision,chunk,kinds,postingMax,blockedMin){
  await writeState(db,{rowid:0,topId:null,revision:null,complete:false,words:0});
  await db.prepare('DROP TABLE IF EXISTS search_postings').run();
  await db.prepare('DROP TABLE IF EXISTS search_word_areas').run();
@@ -116,7 +117,7 @@ async function buildAll(db,revision,chunk,kinds,postingMax){
  const common=new Set([...map].filter(([,ids])=>ids===null).map(([w])=>w));
  /* Seltene Wörter, die in einem häufigen stecken: für sie gibt es keine Karten-IDs-Abkürzung, also auch vorberechnen */
  const blocked=new Set();
- for(const c of common)for(let i=0;i<c.length-2;i++)for(let j=i+3;j<=c.length;j++){const part=c.slice(i,j),ids=map.get(part);if(ids&&part.length>=BLOCKED_MIN_LENGTH)blocked.add(part);}
+ for(const c of common)for(let i=0;i<c.length-2;i++)for(let j=i+3;j<=c.length;j++){const part=c.slice(i,j),ids=map.get(part);if(ids&&ids.length>=blockedMin)blocked.add(part);}
  const target=new Set([...common,...blocked]);
  if(kinds&&target.size){
   const cache=new Map();let at=0;
