@@ -276,7 +276,7 @@ export function useSearch(): SearchValue {
 /* ---------- Abgeleitete Werte: Treffer, Zähler, erkannter Ort ---------- */
 export interface CoverageEntry {ags:string;name:string;count:number;complete:boolean}
 export interface SearchResults {
- total:number;/** Zähler noch nicht da: total ist nur „mehr als 100“ */totalCapped:boolean;/** Anzeige der Trefferzahl: „>100“ oder die genaue Zahl */totalLabel:string;coverage:CoverageEntry[];
+ total:number;/** Zähler noch nicht da: total ist nur „mehr als 100“ */totalCapped:boolean;/** Genaue Trefferzahl noch unterwegs: stattdessen drei wandernde Punkte zeigen */totalPending:boolean;coverage:CoverageEntry[];
   /** Abfrage der aktuellen Suche (für Export), ohne Seite */
   key:string;
   around:{set:Set<string>|null;level:string}|null;
@@ -421,7 +421,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
   if(!(typing&&t.length>0&&t.length<3))timer=window.setTimeout(start,!sent.current?0:typing&&t?400:180);
   return()=>{clearTimeout(timer);abort.abort();if(flush.current===start)flush.current=null;};
  },[active,local.key,page,attempt,requestKey,buildQuery]);
- /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht); bis sie da sind, bleiben die vorigen stehen */
+ /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht) */
  const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});
  const pageReady=remote.key===requestKey&&!!remote.data;
  useEffect(()=>{
@@ -440,10 +440,9 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
   })();
   return()=>abort.abort();
  },[active,pageReady,local.key,attempt,buildQuery]);
- const lastFacets=useRef<Facets|null>(null);
+ /* Zähler der vorigen Suche wären falsch: bis die neuen da sind, bleiben Karte und Filter ohne Zahlen */
  const exact=facets.key===local.key?facets.data:null;
- if(exact)lastFacets.current=exact;
- const fx=exact??lastFacets.current;
+ const fx=exact;
  /* Liegt die Antwort schon im Zwischenspeicher, gilt sie sofort als fertig: kein „lädt“, kein Ring, kein Aufblitzen */
  const cached=active?freshSearch(requestKey):null;
  const loading=!cached&&remote.key!==requestKey;
@@ -457,6 +456,6 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
  const error=loading||cached?'':remote.error;
  /* Genaue Zahl, sobald die Zähler da sind; davor die gedeckelte Zählung der Seite */
  const total=exact?exact.total:data?.total??0,capped=!exact&&!!data?.totalCapped;
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total,totalCapped:capped,totalLabel:capped?'>100':total.toLocaleString('de-DE'),areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,capped,fx,loading,error,page,setPage,retry,cover,state.level]);
+ return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total,totalCapped:capped,totalPending:capped,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,capped,fx,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

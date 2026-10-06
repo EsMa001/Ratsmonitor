@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (404 Zeilen, ⚠9)
-- app/ratsmonitor.css (136 Zeilen, ⚠5)
+- app/ratsmonitor.css (145 Zeilen, ⚠6)
 
 admin-access analyse-admin.css:66
 admin-activation analyse-admin.css:66
@@ -495,6 +495,7 @@ ri-vp__text ratsmonitor-info.css:75
 ri-wr ratsmonitor-info.css:82
 ri-wr__sep ratsmonitor-info.css:83
 rm-chip ratsmonitor.css:134
+rm-dots ratsmonitor.css:140
 rm-flat ratsmonitor.css:106
 rm-glass ratsmonitor.css:115
 rm-glass-pop ratsmonitor.css:124
@@ -502,6 +503,7 @@ rm-logo ratsmonitor-info.css:246
 rm-logo__mark ratsmonitor-info.css:250
 rm-logo__mark--p ratsmonitor-info.css:251
 rm-logo__text ratsmonitor-info.css:248
+rm-spinner ratsmonitor.css:137
 screen analyse-admin.css:84
 screen design-styles.css:32
 scroll-thin ratsmonitor.css:60
@@ -697,8 +699,8 @@ wordmark__dot design-styles.css:61
 - PlanCards.tsx (116): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
-- SearchBox.tsx (484): SearchBox
-- SearchFilterPanel.tsx (82): SearchFilterPanel
+- SearchBox.tsx (533): SearchBox
+- SearchFilterPanel.tsx (83): SearchFilterPanel
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (40): ShareButton
 - TierNotice.tsx (46): LoginRequired, UsagePill
@@ -709,7 +711,7 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (179, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
-- ResultsPanel.tsx (210): ResultsPanel
+- ResultsPanel.tsx (211): ResultsPanel
 
 ### components/ratsmonitor/info/
 - AboutPage.tsx (164): AboutPage
@@ -747,9 +749,9 @@ wordmark__dot design-styles.css:61
 - listView.ts (46): ListView, setListView, useListView
 - mails.ts (134, ⚠1): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
-- recentSearches.ts (28): readRecent, addRecent, clearRecent
+- recentSearches.ts (32): readRecent, addRecent, clearRecent
 - savedArticles.ts (65): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, useSavedArticles
-- savedSearch.ts (118): SearchSnapshot, signature, queryText, hasFilters, FilterChip, placeLabel, filterChips, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
+- savedSearch.ts (133): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - sha256.ts (47): sha256Fallback, sha256Hex
 - testAuth.ts (141): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
@@ -780,7 +782,7 @@ wordmark__dot design-styles.css:61
 - account.tsx (17, ⚠1): AccountProvider, useAccount, useSavedStats
 - data.tsx (34, ⚠1): DataProvider, useData
 - nav.ts (13): View, viewOf, overviewScroll, useAppNav
-- search.tsx (357, ⚠2): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (463, ⚠2): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

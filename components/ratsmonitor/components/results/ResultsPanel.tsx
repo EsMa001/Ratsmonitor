@@ -8,6 +8,7 @@ import type { Article } from "../../types";
 import { IconArrowUp, IconEmptySearch, IconChevronLeft, IconChevronRight } from "../icons";
 import { ArticleCard } from "./ArticleCard";
 import { useEntitlements } from "../../lib/entitlements";
+import { CountDots } from "../CountDots";
 
 /** Beim Blättern: die Zeile mit der Trefferzahl (Suche und Filter) an den oberen Rand direkt unter der angehefteten Kopfzeile, darunter beginnen die Artikel */
 function scrollToResultsTop() {
@@ -171,7 +172,7 @@ export function ResultsPanel() {
           </button>
         )}
         <span className="text-[14px] text-slate-500">
-          {active ? `${res.totalLabel} Treffer · Seite ${res.page} von ${pages}` : `Seite ${res.page}`}
+          {active ? <>{res.totalPending ? <CountDots /> : res.total.toLocaleString("de-DE")} Treffer · Seite {res.page}{res.totalPending ? "" : ` von ${pages}`}</> : `Seite ${res.page}`}
         </span>
         {res.page < Math.min(pages, MAX_PAGE) && (
           <button type="button" aria-label="Nächste Seite" title="Nächste Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-600 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
