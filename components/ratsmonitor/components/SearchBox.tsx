@@ -34,7 +34,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
-  const { pq, placeActive, liveHits } = useSearchResults();
+  const { pq, placeActive, liveHits, pending } = useSearchResults();
   const { view, goOverview } = useAppNav();
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -52,7 +52,20 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
     window.addEventListener("rm:search-confirmed", on);
     return () => window.removeEventListener("rm:search-confirmed", on);
   }, []);
+  /* Neue Suche läuft: der abgeschickte Text bleibt im Feld stehen, bis auch der Chip erscheint */
+  const [hold, setHold] = useState("");
+  const draftRef = useRef("");
+  useEffect(() => {
+    const on = () => setHold(draftRef.current);
+    window.addEventListener("rm:search-confirmed", on);
+    return () => window.removeEventListener("rm:search-confirmed", on);
+  }, []);
+  useEffect(() => {
+    if (!pending && hold) setHold("");
+  }, [pending, hold]);
   const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
+  draftRef.current = draft;
+  const shownDraft = !focused && pending && hold ? hold : draft;
   const join = (d: string) => (base && state.q.startsWith(base) ? (d ? `${base.replace(/[,;|]\s*$/, "")}, ${d}` : base) : d);
 
   const apply = (value: string, extra?: Parameters<typeof search.applySearch>[1]) => {
@@ -301,7 +314,12 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
     <div className="relative z-[4] min-w-0">
       {/* Glas nur um das Feld: die Vorschlagsliste liegt daneben, damit ihre eigene Unschärfe die Karte dahinter sieht (verschachtelt wäre sie flach) */}
       <div className={`relative ${glass ? "rm-glass rounded-full" : ""}`}>
-      <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+      {/* Läuft eine Suche, steht an Stelle der Lupe ein kleiner Ladering */}
+      {pending ? (
+        <span role="status" aria-label="Suche läuft" className="rm-spinner pointer-events-none absolute left-3.5 top-1/2 -mt-[9px]" />
+      ) : (
+        <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+      )}
       <label htmlFor="q" className="sr-only">
         Beschlüsse und Artikel durchsuchen
       </label>
@@ -320,7 +338,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
         aria-controls="search-assist"
         aria-autocomplete="list"
         aria-activedescendant={active >= 0 ? `sa-${active}` : undefined}
-        value={draft}
+        value={shownDraft}
         onChange={(e) => {
           setOpen(true);
           const value = join(e.target.value.replace(/^\s+/, ""));

@@ -133,6 +133,6 @@ html,html body{background:#fff;overscroll-behavior-y:none}
 /* Chips auf der Karte: weißes Milchglas, dunkle Schrift für Lesbarkeit */
 .rm-chip{color:#0f172a;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 14px rgba(15,23,42,.12),inset 0 1px 0 rgba(255,255,255,.95)}
 .rm-chip:hover{background:rgba(255,255,255,.88)}
-/* Ladebalken oben an der Karte, solange eine neue Suche läuft */
-.rm-pending{background:linear-gradient(90deg,transparent,#0d9488,transparent) no-repeat;background-size:40% 100%;animation:rmPending 1.1s ease-in-out infinite}
-@keyframes rmPending{0%{background-position:-40% 0}100%{background-position:140% 0}}
+/* Ladering im Suchfeld, solange eine neue Suche läuft: Ring mit Loch, dessen Farbverlauf sich dreht */
+.rm-spinner{width:18px;height:18px;border-radius:50%;background:conic-gradient(from 0deg,rgba(13,148,136,0),#0d9488);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));animation:rmSpin .8s linear infinite}
+@keyframes rmSpin{to{transform:rotate(360deg)}}
