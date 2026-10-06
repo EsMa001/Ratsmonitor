@@ -1047,6 +1047,27 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-010595949",
+    "name": "Amt Mittelangeln",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.amt-mittelangeln.de/",
+    "pages": [
+      "https://www.amt-mittelangeln.de/bekanntmachungen",
+      "https://www.amt-mittelangeln.de/bekanntmachungen/index.php?id=97667",
+      "https://www.amt-mittelangeln.de/bekanntmachungen/index.php?id=98357",
+      "https://www.amt-mittelangeln.de/seite/467530/auftragsbekanntmachung.html",
+      "https://www.amt-mittelangeln.de/contact/index/link/?referrer=https://www.amt-mittelangeln.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "http://www.amt-mittelangeln.de",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-010595974",
     "name": "Amt Süderbrarup",
     "kind": "city",
@@ -2244,6 +2265,24 @@
     "sitemap": "https://www.breuberg.de/sitemap.xml",
     "verifiedSource": "https://www.breuberg.de/",
     "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06437005",
+    "name": "Gemeinde Brombachtal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.brombachtal.de/",
+    "pages": [
+      "https://www.brombachtal.de/seite/830967/2026-amtliche-bekanntmachungen.html",
+      "https://www.brombachtal.de/seite/830967/2026-amtliche-bekanntmachungen.html?modus=drucken"
+    ],
+    "alsoFrom": [
+      "https://daten2.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.brombachtal.de/",
+    "verifiedAt": "2026-10-06",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
@@ -3701,6 +3740,25 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
+    "id": "de-06632007",
+    "name": "Gemeinde Hauneck",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hauneck.de/",
+    "pages": [
+      "https://www.hauneck.de/seite/754410/niederschriften-der-gemeindevertretung.html",
+      "https://www.hauneck.de/seite/754410/niederschriften-der-gemeindevertretung.html?modus=drucken"
+    ],
+    "sitemap": "https://www.hauneck.de/sitemap.xml",
+    "alsoFrom": [
+      "https://daten2.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.hauneck.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-06632011",
     "name": "Gemeinde Kirchheim",
     "kind": "city",
@@ -3889,6 +3947,24 @@
     "sitemap": "https://www.hofgeismar.de/sitemap.xml",
     "verifiedSource": "https://www.hofgeismar.de/",
     "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06633014",
+    "name": "Stadt Immenhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.immenhausen.de/",
+    "pages": [
+      "https://www.immenhausen.de/bekanntmachungen/",
+      "https://www.immenhausen.de/bekanntmachungen/?modus=drucken"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.immenhausen.de/",
+    "verifiedAt": "2026-10-06",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
@@ -4319,6 +4395,58 @@
     "foundBy": "OParl-Register: Hessisch Lichtenau"
   },
   {
+    "id": "de-06636008",
+    "name": "Gemeinde Meißner",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-meissner.de/",
+    "pages": [
+      "https://www.gemeinde-meissner.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.gemeinde-meissner.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06636009",
+    "name": "Gemeinde Neu-Eichenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.neu-eichenberg.de/",
+    "pages": [
+      "https://www.neu-eichenberg.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.neu-eichenberg.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06636010",
+    "name": "Gemeinde Ringgau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ringgau.de/",
+    "pages": [
+      "https://www.ringgau.de/bekanntmachungen/index.php",
+      "https://www.ringgau.de/bekanntmachungen/index.php?modus=drucken"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.ringgau.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-06636011",
     "name": "Stadt Sontra",
     "kind": "city",
@@ -4360,6 +4488,23 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "wanfried.ris-portal.de"
+  },
+  {
+    "id": "de-06636014",
+    "name": "Gemeinde Wehretal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wehretal.de/",
+    "pages": [
+      "https://www.wehretal.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.wehretal.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "de-06636015",
@@ -10282,6 +10427,27 @@
     "foundBy": "heddesheim-sitzungsdienst.komm.one"
   },
   {
+    "id": "de-08226029",
+    "name": "Gemeinde Heiligkreuzsteinach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.heiligkreuzsteinach.de/",
+    "pages": [
+      "https://www.heiligkreuzsteinach.de/bekanntmachungen",
+      "https://www.heiligkreuzsteinach.de/",
+      "https://www.heiligkreuzsteinach.de/bekanntmachungen/index.php?id=98568",
+      "https://www.heiligkreuzsteinach.de/seite/721890/standesamtliche-nachrichten.html",
+      "https://www.heiligkreuzsteinach.de/seite/783593/%C3%B6ffentliche-bekanntmachung.html"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "http://www.heiligkreuzsteinach.de",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-08226031",
     "name": "Stadt Hemsbach",
     "kind": "city",
@@ -11566,6 +11732,23 @@
     "verifiedSource": "https://voerstetten.gremien.info/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "de-08316051",
+    "name": "Gemeinde Wyhl am Kaiserstuhl",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wyhl.de/",
+    "pages": [
+      "https://www.wyhl.de/seite/496673/%C3%B6ffentliche-bekanntmachung.html"
+    ],
+    "alsoFrom": [
+      "https://daten2.verwaltungsportal.de"
+    ],
+    "verifiedSource": "http://www.wyhl.de",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "de-08316055",
@@ -13217,6 +13400,23 @@
     "verifiedSource": "https://www.lottstetten.de/rathaus/gemeinderat/ratsinformationsseite",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08337076",
+    "name": "Gemeinde Murg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.murg.de/",
+    "pages": [
+      "https://www.murg.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.murg.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "de-08337090",
@@ -21560,6 +21760,26 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
+    "id": "de-094725412",
+    "name": "Verwaltungsgemeinschaft Hollfeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.hollfeld.de/",
+    "pages": [
+      "https://www.hollfeld.de/seite/849820/sitzungsprotokolle.html",
+      "https://www.hollfeld.de/bekanntmachungen/index.php",
+      "https://www.hollfeld.de/seite/793438/sitzungskalender.html"
+    ],
+    "sitemap": "https://www.hollfeld.de/sitemap.xml",
+    "alsoFrom": [
+      "https://daten2.verwaltungsportal.de"
+    ],
+    "verifiedSource": "http://www.hollfeld.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-094725413",
     "name": "Verwaltungsgemeinschaft Mistelgau",
     "kind": "city",
@@ -26655,6 +26875,23 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar."
   },
   {
+    "id": "de-10045116",
+    "name": "Gemeinde Mandelbachtal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.mandelbachtal.de/",
+    "pages": [
+      "https://www.mandelbachtal.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.mandelbachtal.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-10045117",
     "name": "Stadt St. Ingbert",
     "kind": "city",
@@ -27496,6 +27733,23 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar."
   },
   {
+    "id": "de-12065198",
+    "name": "Gemeinde Löwenberger Land",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.loewenberger-land.de/",
+    "pages": [
+      "https://www.loewenberger-land.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.loewenberger-land.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-12065251",
     "name": "Gemeinde Oberkrämer",
     "kind": "city",
@@ -27693,6 +27947,23 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 05.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-12067201",
+    "name": "Gemeinde Grünheide (Mark)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gruenheide-mark.de/",
+    "pages": [
+      "https://www.gruenheide-mark.de/seite/722890/bekanntmachungen.html"
+    ],
+    "alsoFrom": [
+      "https://daten2.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.gruenheide-mark.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-12067426",
     "name": "Gemeinde Rietz-Neuendorf",
     "kind": "city",
@@ -27796,6 +28067,23 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-12068468",
+    "name": "Stadt Wittstock/Dosse",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wittstock.de/",
+    "pages": [
+      "https://www.wittstock.de/bekanntmachungen/index.php"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.wittstock.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-12068477",
     "name": "Gemeinde Wusterhausen/Dosse",
     "kind": "city",
@@ -27895,6 +28183,26 @@
     "verifiedSource": "https://www.schwielowsee.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-120695902",
+    "name": "Amt Beetzsee",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.amt-beetzsee.de/",
+    "pages": [
+      "https://www.amt-beetzsee.de/",
+      "https://www.amt-beetzsee.de/politik/sitzungskalender.php",
+      "https://www.amt-beetzsee.de/politik/gremium/10254/ortsbeirat-gortz",
+      "https://www.amt-beetzsee.de/politik/sitzungskalender/gremium/10254/ortsbeirat-gortz"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "http://www.amt-beetzsee.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "de-120695904",
@@ -29663,6 +29971,27 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
+    "id": "de-14522210",
+    "name": "Stadt Großschirma",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.grossschirma.de/",
+    "pages": [
+      "https://www.grossschirma.de/rathaus-politik/bekanntmachungen/elektronisches-amtsblatt/",
+      "https://www.grossschirma.de/rathaus-politik/bekanntmachungen/elektronische-sitzungseinladungen/",
+      "https://www.grossschirma.de/news/4324/1289720/kategorie/ausgabe-41-2026e-einladung-zur-%C3%B6ffentlichen-sitzung-des-technischen-ausschusses-am-05.-oktober-2026.html",
+      "https://www.grossschirma.de/news/4324/1271120/kategorie/ausgabe-35-2026e-einladung-zur-%C3%B6ffentlichen-sitzung-des-technischen-ausschusses-am-17.-august-2026.html",
+      "https://www.grossschirma.de/news/4324/1254681/kategorie/ausgabe-31-2026e-einladung-zur-sondersitzung-des-verwaltungsausschusses-am-29.-juni-2026.html"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.grossschirma.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-14522230",
     "name": "Stadt Hainichen",
     "kind": "city",
@@ -30247,6 +30576,26 @@
     "verifiedSource": "https://www.kamenz.de/stadtrat.html",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://kamenz.allris.cloud/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-14625290",
+    "name": "Gemeinde Kubschütz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-kubschuetz.de/",
+    "pages": [
+      "https://www.gemeinde-kubschuetz.de/bekanntmachungen/index.php",
+      "https://www.gemeinde-kubschuetz.de/bekanntmachung/75641/133-kw42-einladung-zur-%C3%B6ffentlichen-sitzung-des-gemeinderates-kubsch%C3%BCtz.html",
+      "https://www.gemeinde-kubschuetz.de/politik/mitglieder.php?gremium=2878"
+    ],
+    "sitemap": "https://www.gemeinde-kubschuetz.de/sitemap.xml",
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.gemeinde-kubschuetz.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "de-14625330",
@@ -32812,6 +33161,21 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-160635051",
+    "name": "Erfüllende Gemeinde Bad Salzungen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.badsalzungen.de/",
+    "pages": [
+      "https://www.badsalzungen.de/bekanntmachungen",
+      "https://www.badsalzungen.de/news/3558/1260989/kategorie/einladung-zur-%C3%B6ffentlichen-sitzung-des-stadtrates-am-15.-juli-2026.html"
+    ],
+    "verifiedSource": "https://www.badsalzungen.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-160635059",
     "name": "Erfüllende Gemeinde Dermbach",
     "kind": "city",
@@ -33357,6 +33721,26 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-16070058",
+    "name": "Stadt Großbreitenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.lg-grossbreitenbach.de/",
+    "pages": [
+      "https://www.lg-grossbreitenbach.de/seite/519726/sitzungen-ortschaftsr%C3%A4te.html",
+      "https://www.lg-grossbreitenbach.de/seite/462631/sitzungen-stadtrat-und-aussch%C3%BCsse.html",
+      "https://www.lg-grossbreitenbach.de/seite/462631/sitzungen-stadtrat-und-aussch%C3%BCsse.html?modus=drucken"
+    ],
+    "sitemap": "https://www.lg-grossbreitenbach.de/sitemap.xml",
+    "alsoFrom": [
+      "https://daten2.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.lg-grossbreitenbach.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "de-16071001",
     "name": "Stadt Apolda",
     "kind": "city",
@@ -33667,6 +34051,23 @@
     "verifiedSource": "https://www.mohlsdorf-teichwolframsdorf.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-160765006",
+    "name": "Verwaltungsgemeinschaft Münchenbernsdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://muenchenbernsdorf.de/",
+    "pages": [
+      "https://muenchenbernsdorf.de/stadt/stadtratssitzungen%20und%20aussch%C3%BCsse",
+      "https://muenchenbernsdorf.de/stadt/stadtratssitzungen%20und%20aussch%C3%BCsse/1",
+      "https://muenchenbernsdorf.de/stadt/stadtratssitzungen%20und%20aussch%C3%BCsse/139"
+    ],
+    "sitemap": "https://muenchenbernsdorf.de/sitemap.xml",
+    "verifiedSource": "https://muenchenbernsdorf.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "de-160765053",
