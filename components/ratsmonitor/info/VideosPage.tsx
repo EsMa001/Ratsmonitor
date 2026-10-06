@@ -8,7 +8,15 @@ type Video = { title: string; text: string; file?: string; mobile?: string };
 /* Videos hier eintragen: file = Dateiname ohne Endung. Ohne file zeigt die Karte „Video folgt“. */
 const GROUPS: { group: string; lead: string; items: Video[] }[] = [
   {
-    group: "Erklärvideos",
+    group: "Vorstellung",
+    lead: "Kurz gezeigt, was die Plattform für Ihre Region leistet.",
+    items: [
+      { title: "Politik vor Ort im Blick", text: "Der Überblick in unter einer Minute.", mobile: "politik-vor-ort-mobil" },
+      { title: "Für Unternehmen und Verbände", text: "Frühzeitig wissen, was in den Räten beraten wird.", mobile: "unternehmen-verbaende-mobil" },
+    ],
+  },
+  {
+    group: "Videos zu Funktionen",
     lead: "So nutzen Sie die Plattform Schritt für Schritt.",
     items: [
       { title: "Erste Suche und Karte", text: "Nach einem Begriff suchen, Treffer auf der Karte sehen, filtern und Artikel öffnen.", file: "erste-suche", mobile: "erste-suche-mobil" },
@@ -23,14 +31,6 @@ const GROUPS: { group: string; lead: string; items: Video[] }[] = [
       { title: "Postfach und Wochenbericht", text: "Benachrichtigungen lesen und den Wochenbericht verstehen.", mobile: "postfach-wochenbericht-mobil" },
       { title: "Konto und Profil", text: "Anmelden, Profil pflegen und Einstellungen anpassen.", mobile: "konto-profil-mobil" },
       { title: "Datenabdeckung prüfen", text: "Sehen, welche Orte und Gremien enthalten sind und wie aktuell der Stand ist.", mobile: "datenabdeckung-mobil" },
-    ],
-  },
-  {
-    group: "Vorstellung",
-    lead: "Kurz gezeigt, was die Plattform für Ihre Region leistet.",
-    items: [
-      { title: "Politik vor Ort im Blick", text: "Der Überblick in unter einer Minute.", mobile: "politik-vor-ort-mobil" },
-      { title: "Für Unternehmen und Verbände", text: "Frühzeitig wissen, was in den Räten beraten wird.", mobile: "unternehmen-verbaende-mobil" },
     ],
   },
 ];
@@ -63,13 +63,29 @@ function Clip({ base, next, onNext, className }: { base: string; next?: Video; o
   );
 }
 
-function Card({ v, active, phone, next, onPlay, onNext }: { v: Video; active: boolean; phone: boolean; next?: Video; onPlay: () => void; onNext: () => void }) {
+function Card({ v, active, phone, next, onPlay, onNext, onClose }: { v: Video; active: boolean; phone: boolean; next?: Video; onPlay: () => void; onNext: () => void; onClose: () => void }) {
   const box = useRef<HTMLElement>(null);
+  const media = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (active && phone) box.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [active, phone]);
   const onlyMobile = !v.file && !!v.mobile;
   const open = active && hasVideo(v, phone);
+  /* Klick neben das Video schließt es wieder (Vorschau); `click` statt `pointerdown`, damit Scrollen auf dem Handy nichts schließt */
+  useEffect(() => {
+    if (!open) return;
+    const start = performance.now();
+    /* der Klick, der das Video geöffnet hat, ist noch unterwegs und zählt nicht */
+    const away = (e: MouseEvent) => {
+      if (e.timeStamp <= start) return;
+      /* gezählt wird die sichtbare Fläche des Videos, nicht der breitere Kasten drumherum (Hochformat-Video hat links und rechts Platz) */
+      const r = media.current?.querySelector("video")?.getBoundingClientRect();
+      const inside = !!r && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (!inside) onClose();
+    };
+    document.addEventListener("click", away);
+    return () => document.removeEventListener("click", away);
+  }, [open, onClose]);
   /* Nur Handy-Video vorhanden: am Computer „Video folgt“, auf dem Handy die Vorschau */
   const placeholder = <div className={`flex aspect-video w-full items-center justify-center rounded-xl bg-[#f8f9fa] text-[14px] text-slate-500 max-md:aspect-square max-md:text-[12px] ${onlyMobile ? "max-md:hidden" : ""}`}>Video folgt</div>;
   const thumb = (
@@ -86,7 +102,7 @@ function Card({ v, active, phone, next, onPlay, onNext }: { v: Video; active: bo
   );
   return (
     <figure ref={box} className={`m-0 scroll-mt-20 ${open ? "" : "max-md:flex max-md:items-start max-md:gap-4"}`}>
-      <div className={open ? "" : "max-md:w-24 max-md:shrink-0"}>
+      <div ref={media} className={open ? "" : "max-md:w-24 max-md:shrink-0"}>
         {!v.file && !v.mobile ? (
           placeholder
         ) : open ? (
@@ -116,7 +132,7 @@ export function VideosPage() {
   const nextOf = (title: string) => playable[playable.findIndex((v) => v.title === title) + 1];
   return (
     <>
-      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="Videos" lead="Erklärvideos zur Nutzung und kurze Vorstellungsvideos." />
+      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="Videos" lead="Kurze Vorstellungsvideos und Videos zu den Funktionen." />
       <section className="ri-sec">
         {GROUPS.map((g) => (
           <div key={g.group} className="mb-12">
@@ -124,7 +140,7 @@ export function VideosPage() {
             <p className="mb-6 mt-1 text-[16px] text-slate-500">{g.lead}</p>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {g.items.map((v) => (
-                <Card key={v.title} v={v} active={active === v.title} phone={phone} next={nextOf(v.title)} onPlay={() => play(v.title)} onNext={() => { const n = nextOf(v.title); if (n) play(n.title); }} />
+                <Card key={v.title} v={v} active={active === v.title} phone={phone} next={nextOf(v.title)} onPlay={() => play(v.title)} onNext={() => { const n = nextOf(v.title); if (n) play(n.title); }} onClose={() => setActive((cur) => (cur === v.title ? null : cur))} />
               ))}
             </div>
           </div>

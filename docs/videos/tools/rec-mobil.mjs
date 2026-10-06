@@ -25,6 +25,7 @@ await ctx.addInitScript(() => {
 });
 const page = await ctx.newPage();
 page.setDefaultTimeout(15000);
+page.setDefaultNavigationTimeout(40000);
 
 /* Hilfen */
 const loaded = async () => { await page.waitForFunction(() => { const el = [...document.querySelectorAll("span")].find((x) => /Treffer/.test(x.textContent || "")); return !!el && !(el.textContent || "").trim().startsWith("…") && !document.querySelector('[aria-busy="true"]'); }, null, { timeout: 40000 }); };
