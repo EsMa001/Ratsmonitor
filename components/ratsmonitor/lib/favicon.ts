@@ -20,17 +20,19 @@ const MARKS = {
 /** Adresse des Tab-Symbols für die gewählte Logo-Variante */
 export const faviconHref = (logo: LogoId) => `data:image/svg+xml,${encodeURIComponent(MARKS[LOGOS[logo].brand])}`;
 
-/** Setzt das Tab-Symbol (ersetzt vorhandene rel=icon-Einträge) */
+/** Setzt das Tab-Symbol. Vom Framework verwaltete rel=icon-Einträge (Metadaten im Layout) werden nur umgeschrieben, nie entfernt: React löscht sie bei der Navigation selbst und stürzt sonst ab (removeChild von null). */
 export function setFavicon(logo: LogoId) {
   const href = faviconHref(logo);
-  document.querySelectorAll<HTMLLinkElement>('link[rel~="icon"]').forEach((l) => l.id !== "rm-favicon" && l.remove());
-  let link = document.getElementById("rm-favicon") as HTMLLinkElement | null;
-  if (!link) {
-    link = document.createElement("link");
-    link.id = "rm-favicon";
+  let links = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel~="icon"], link[rel="shortcut icon"]'));
+  if (!links.length) {
+    const link = document.createElement("link");
     link.rel = "icon";
-    link.type = "image/svg+xml";
     document.head.appendChild(link);
+    links = [link];
   }
-  if (link.href !== href) link.href = href;
+  for (const l of links) {
+    if (l.getAttribute("href") !== href) l.setAttribute("href", href);
+    l.setAttribute("type", "image/svg+xml");
+    l.removeAttribute("sizes");
+  }
 }
