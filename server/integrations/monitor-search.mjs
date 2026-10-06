@@ -22,7 +22,7 @@ export function parseMonitorSearch(params){
  const within=keys('within'),without=keys('without');
  if([within,without].some(list=>list&&(list.length>2000||list.some(a=>!/^\d{5}(\d{3,4})?$/.test(a)))))throw new SearchError('Ungültiger Umkreis.');
  /* part: nur die Ergebnisseite (mit gedeckelter Zählung) oder nur die Zähler; ohne Angabe beides wie bisher */
- const part=params.get('part')||'';if(!['','page','facets'].includes(part))throw new SearchError('Ungültiger Antwortteil.');
+ const part=params.get('part')||'';if(!['','page','facets','stream'].includes(part))throw new SearchError('Ungültiger Antwortteil.');
  const revision=params.get('revision');if(revision!==null&&!/^\d+$/.test(revision))throw new SearchError('Ungültiger Datenstand.');
  /* Weitere Orte aus der Suche: "AGS:only|with" kommagetrennt, zusätzlich zu area (ODER-Verknüpfung) */
  const more=(params.get('more')||'').split(',').filter(Boolean).map(x=>{const [ags,sc]=x.split(':');return {ags,scope:sc==='with'?'with':'only'};});
@@ -34,6 +34,10 @@ export function parseMonitorSearch(params){
  return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),size:Number(sizeRaw||20),part,within,without,revision,noformal:params.get('noformal')==='1'};
 }
 
+/* Spalten einer Ergebniszeile (mit den Stationen des Vorgangs), gemeinsam für Seite und Strom */
+const ROW_SELECT=`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards`;
+/* Strom: Karten in Stücken nach Datum durchsuchen (erstes Stück klein, dann wachsend) */
+const STREAM_FIRST=2000,STREAM_MAX=150000;
 const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision";
 /*
  * Gebiet als SQL-Bedingung. Eine lange Einschlussliste (ohne Ort: alle 5.030 Gemeinden) zwingt SQLite, über den
@@ -99,9 +103,31 @@ export async function searchMonitor(db,catalog,params){
  const facet=(()=>{const b=base(),where=[...b.where],args=[...b.args];
   if(regions.length<catalog.length){where.unshift('region_id IN (SELECT value FROM json_each(?))');args.unshift(JSON.stringify(regions.map(r=>r.id)));}
   return {where:where.length?'WHERE '+where.join(' AND '):'',args};})();
+ /* Strom: erste Seite (neueste zuerst) in Etappen. Jede Etappe sucht ein Datumsfenster ab und liefert ihre Treffer sofort;
+    es endet, sobald die Seite voll ist und ein weiterer Treffer zeigt, dass es weitergeht (oder alles gelesen ist). */
+ if(f.part==='stream'){
+  if(f.sort!=='desc'||f.page!==1)throw new SearchError('Der Strom liefert nur die erste Seite, neueste zuerst.');
+  const mapStream=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
+  return {stream:(async function*(){
+   const revision=String((await db.prepare(REVISION_SQL).first())?.revision??0);
+   let found=0,upper='9999-12-31~',size=STREAM_FIRST,more=false;
+   while(true){
+    const edge=await db.prepare('SELECT date FROM search_cards WHERE date<? ORDER BY date DESC LIMIT 1 OFFSET ?').bind(upper,size).first();
+    const lower=edge?.date??'';
+    const res=await db.prepare(`${ROW_SELECT} WHERE date>=? AND date<? AND ${page.where} ORDER BY date DESC,id ASC LIMIT ?`).bind(lower,upper,...page.args,limit+1-found).all();
+    const rows=res.results.slice(0,limit-found);
+    if(rows.length)yield {articles:mapStream(rows)};
+    found+=res.results.length;
+    if(found>limit){more=true;break;}
+    if(!edge)break;
+    upper=lower;size=Math.min(size*2,STREAM_MAX);
+   }
+   yield {end:true,hasMore:more,revision,pageSize:limit};
+  })()};
+ }
  /* Veralteter Datenstand beim Blättern: vor der Arbeit melden, nicht danach */
  if(f.revision!==null){const now=String((await db.prepare(REVISION_SQL).first())?.revision??0);if(now!==f.revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);}
- const pageSql=db.prepare(`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit+(f.part==='page'?1:0),(f.page-1)*limit);
+ const pageSql=db.prepare(`${ROW_SELECT} WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit+(f.part==='page'?1:0),(f.page-1)*limit);
  const facetSql=db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args);
  /* Reihenfolge der Antwort: Datenstand, dann je nach part die Seite und/oder die Zähler (Gruppierung) */
  const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'?[]:[facetSql])];
@@ -153,6 +179,7 @@ export async function searchCoverage(db,catalog,level){
  */
 const results=new WeakMap();
 export async function cachedSearch(db,catalog,params,{max=200}={}){
+ if(new URLSearchParams(params).get('part')==='stream')return searchMonitor(db,catalog,params);
  const query=new URLSearchParams(params);query.sort();const key=query.toString();
  let entries=results.get(db);if(!entries){entries=new Map();results.set(db,entries);}
  const hit=entries.get(key);
