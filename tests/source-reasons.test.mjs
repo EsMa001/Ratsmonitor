@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mergeChecks,openReason,foundLink,mainEntry,sourceAddress,fixedBody,PLATFORMS,ROBOTS_RECHECK} from '../scripts/source-discovery/reasons.mjs';
+import {CKAN_NO_PROFILE} from '../server/integrations/ckan.mjs';
+import {accessOfReason} from '../shared/source-access.mjs';
 // These tests check the old rule (robots.txt obeyed, ROBOTS_POLICY=obey); the tests marked "standard rule" switch to
 // the rule of server/integrations/robots-policy.mjs: robots.txt is recorded, not obeyed, and a refusal stays final.
 process.env.ROBOTS_POLICY='obey';
@@ -74,15 +76,15 @@ test('B1: a municipality linking the RIS-Portal of its district besides its own 
  assert.doesNotMatch(reason(row(old)),/RIS-Portal/);
  assert.equal(mainEntry(old).url,'https://beispielort.gremien.info/');
  /* Nur das Portal verlinkt: dessen robots-Sperre entscheidet (alte Regel) */
- assert.match(reason(row([{url:KREIS_PORTAL,robots:'verboten'}])),/^robots\.txt des gefundenen Systems untersagt/);
+ assert.match(reason(row([{url:KREIS_PORTAL,robots:'verboten'}])),/^robots\.txt sperrt den HTML-Zugriff auf das gefundene System/);
 });
 
 test('B1: a robots.txt refusal on ratsinfo.<ort>.de decides reason and address',()=>{
  const tried=[{url:'https://www.beispielort.de/rathaus/politik',system:'unknown',identity:ok},{url:'https://ratsinfo.beispielort.de/bi/',robots:'verboten'},{url:'https://www.kreis-x.de/kreistag',system:'unknown',identity:fails}];
- assert.equal(reason(row(tried)),'robots.txt des gefundenen Systems untersagt Programmen den Abruf; Freigabe beim Betreiber anfragen');
+ assert.equal(reason(row(tried)),'robots.txt sperrt den HTML-Zugriff auf das gefundene System (keine OParl-Schnittstelle oder API gefunden); Freigabe beim Betreiber anfragen');
  assert.equal(foundLink(row(tried)),'https://ratsinfo.beispielort.de/bi/');
  /* Auch eine Weiterleitung, die robots.txt untersagt (verify.mjs: Fehler statt robots-Feld) */
- assert.match(reason(row([{url:'https://ris.beispielort.de/',status:0,error:'robots.txt untersagt die Weiterleitungsadresse'}])),/^robots\.txt des gefundenen Systems/);
+ assert.match(reason(row([{url:'https://ris.beispielort.de/',status:0,error:'robots.txt untersagt die Weiterleitungsadresse'}])),/^robots\.txt sperrt den HTML-Zugriff/);
  /* Erkanntes System mit robots-Sperre vor einer ersten robots-Sperre ohne System */
  const two=[{url:'https://www.other.de/',robots:'verboten'},{url:'https://www.sitzung-online.de/beispielort/',system:'allris',identity:fails,robots:'verboten'}];
  assert.equal(foundLink(row(two)),'https://www.sitzung-online.de/beispielort/');
@@ -192,3 +194,9 @@ test('standard rule: a robots.txt refusal of an older check waits for its new ch
  assert.equal(reason(row([{url:'https://beispielort.kommune-aktiv.de/',status:403}])),'Kommune aktiv: antwortet Programmen mit HTTP 403');
  assert.equal(reason(row([{url:'https://ratsinfo.beispielort.de/bi/',status:403},{url:'https://ratsinfo.beispielort.de/',status:403}])),'Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert');
 }));
+
+test('a CKAN portal without query profile: the interface is there, the reader needs the profile (API verfügbar, Leser/Connector fehlt)',()=>{
+ const tried=[{url:'https://www.beispielort.de/rathaus/politik',system:'unknown',identity:ok},{url:'https://opendata.beispielort.de/',system:'unknown',identity:ok,reader:'ckan',readerTopics:0,readerIssues:[CKAN_NO_PROFILE]}];
+ assert.equal(reason(row(tried)),CKAN_NO_PROFILE);
+ assert.equal(accessOfReason(reason(row(tried)),'https://opendata.beispielort.de/'),'api-noreader');
+});

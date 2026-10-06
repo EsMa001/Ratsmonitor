@@ -1,7 +1,9 @@
 // Readers for the two city states. Both are one area in the catalog; their district assemblies keep their own systems.
 //
-// robots.txt is recorded, not obeyed (robots-policy.mjs, decision of 05.10.2026); robotsGate opens every address unless
-// ROBOTS_POLICY=obey. A technical refusal (HTTP 401/403, a firewall) still ends the reading of that system.
+// Both read interfaces offered for programs: the CKAN API of the Transparenzportal (ckan.mjs), the open-data file of the
+// Abgeordnetenhaus and the OParl interfaces of the Berlin districts. robots.txt governs the crawling of HTML pages and
+// never decides over them, not even with ROBOTS_POLICY=obey (shared/source-access.mjs; robots.mjs records its verdict).
+// A technical refusal (HTTP 401/403, a firewall) still ends the reading of that system.
 //
 // Hamburg (adapter "hamburg-transparenz"): the systems of the seven Bezirksversammlungen (sitzungsdienst-<bezirk>.hamburg.de)
 // refuse programs in robots.txt. The Transparenzportal publishes under the Hamburg Transparency Act (HmbTG) as datasets of
@@ -18,9 +20,8 @@
 // not refuse technically (eligibleSystems). Each is read with the regional OParl reader; the district is named in each
 // committee.
 import {fetchText,text} from './sessionnet.mjs';
-import {robotsGate} from './website.mjs';
 import {isNonPublicText} from './website-text.mjs';
-import {obeyRobots} from './robots-policy.mjs';
+import {ckanSearchUrl,ckanExtra,ckanLinks,ckanActive,ckanSession,CKAN_ROWS,CKAN_MAX_PAGES} from './ckan.mjs';
 import {windowStart} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
 import {sourceDecision} from './source-fields.mjs';
@@ -31,13 +32,11 @@ import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 export const HAMBURG_DISTRICTS=['Altona','Bergedorf','Eimsbüttel','Hamburg-Mitte','Hamburg-Nord','Harburg','Wandsbek'];
 export const HAMBURG_NOTE='Drucksachen und Sitzungen mit öffentlicher Tagesordnung der Bezirksversammlungen sowie Mitteilungen des Senats an die Bürgerschaft aus dem Transparenzportal; Sitzungen erst mit der Niederschrift, ohne Ergebnis.';
 export const BERLIN_CONSENT_MISSING='Freigabe fehlt: Die Systeme der Bezirksverordnetenversammlungen sperren Programme technisch aus (HTTP 403). Ohne eingetragene Freigabe wird nichts abgerufen.';
-const API='api/3/action/package_search';
-const ROWS=100,MAX_PAGES=10;
 const RESTRICTED=/nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich/i;
 const norm=s=>String(s||'').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9]/g,'');
 const slug=s=>norm(s)||'x';
 const isoDay=value=>{const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:null;};
-const extra=(pkg,keys)=>{for(const k of keys){const e=(pkg.extras||[]).find(x=>x&&x.key===k);if(e&&e.value)return String(e.value);if(pkg[k])return String(pkg[k]);}return '';};
+const extra=ckanExtra;
 const https=url=>{try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}};
 const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 
@@ -47,25 +46,18 @@ const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value
  * registerobject_type, filter fq as the portal's API notes describe: transparenz.hamburg.de/api-796358).
  */
 export function hamburgQuery(source,district,fromDay,start=0,kind='Drucksache'){
- const p=new URLSearchParams({q:`title:"Bezirk ${district}" AND title:${kind}`,fq:`extras_registerobject_type:beschluss AND metadata_modified:[${fromDay}T00:00:00Z TO *]`,sort:'metadata_modified desc',rows:String(ROWS),start:String(start)});
- return new URL(API+'?'+p,source.base).href;
+ return ckanSearchUrl(source.base,{q:`title:"Bezirk ${district}" AND title:${kind}`,fq:`extras_registerobject_type:beschluss AND metadata_modified:[${fromDay}T00:00:00Z TO *]`,start});
 }
 /** Query of one page of communications of the Senate to the Bürgerschaft (type "senatmitteil") changed in the period. */
 export function hamburgSenateQuery(source,fromDay,start=0){
- const p=new URLSearchParams({q:'*:*',fq:`extras_registerobject_type:senatmitteil AND metadata_modified:[${fromDay}T00:00:00Z TO *]`,sort:'metadata_modified desc',rows:String(ROWS),start:String(start)});
- return new URL(API+'?'+p,source.base).href;
+ return ckanSearchUrl(source.base,{q:'*:*',fq:`extras_registerobject_type:senatmitteil AND metadata_modified:[${fromDay}T00:00:00Z TO *]`,start});
 }
 // Links of a dataset: the page of the dataset in the portal first, then its resources (only https addresses; documents in
 // the district systems and in the Bürgerschaft's database are linked, never requested).
-const links=(pkg,source,fallback)=>{
- const page=pkg.name?new URL('dataset/'+encodeURIComponent(pkg.name),source.base).href:null,documents=[];
- for(const r of pkg.resources||[]){const url=https(r?.url);if(url)documents.push({title:String(r.name||r.description||fallback).replace(/\s+/g,' ').trim().slice(0,160)||fallback,url,kind:String(r.format||'').toLowerCase().includes('pdf')?'application/pdf':'html'});}
- if(page)documents.unshift({title:'Datensatz im Transparenzportal Hamburg',url:page,kind:'html'});
- return {page,documents};
-};
+const links=(pkg,source,fallback)=>ckanLinks(pkg,source.base,{fallback,pageTitle:'Datensatz im Transparenzportal Hamburg'});
 // A public, active dataset whose register object is of the type asked for, where it names one: the portal stores
 // "beschluesse" and "senatmitteilungen" and indexes them stemmed ("beschluss", "senatmitteil" in the queries).
-const usable=(pkg,type)=>{if(!pkg||typeof pkg!=='object'||pkg.private===true||pkg.state&&pkg.state!=='active')return false;const t=extra(pkg,['registerobject_type']);return !t||type.test(t);};
+const usable=(pkg,type)=>{if(!ckanActive(pkg))return false;const t=extra(pkg,['registerobject_type']);return !t||type.test(t);};
 
 /**
  * One dataset of the portal as a paper of the district, or null if it is none: the title names the district and a
@@ -145,42 +137,27 @@ const refusedBy=e=>/HTTP (?:401|403|429)\b/.test(String(e?.message||e));
 
 export async function collectHamburgTransparenz(source,{now=new Date(),get=fetchText,maxDurationMs=240000,onProgress=()=>{},window:lookback}={}){
  const fromDay=windowStart(now,lookback).toISOString().slice(0,10),today=now.toISOString().slice(0,10);
- const read=budgeted(get,maxDurationMs,2),issues=[],warnings=[],papers=new Map(),meetings=new Map(),senate=new Map();
+ const read=budgeted(get,maxDurationMs,2),warnings=[],papers=new Map(),meetings=new Map(),senate=new Map();
  const coverage=extra=>({regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:0,sourceCount:1,sourceUrl:source.base,note:HAMBURG_NOTE,...extra});
- // robots.txt of the portal decides before the first query; if it cannot be read, nothing is read.
- const allows=await robotsGate(read,source);
- if(!(await allows(new URL(API,source.base).href))){
-  const why=allows.issues[0]||'robots.txt des Transparenzportals untersagt Programmen die Suchschnittstelle.';
-  return {topics:[],marks:{},readMeetings:0,coverage:coverage({complete:false,quiet:false,issues:[why]})};
- }
- let foreign=0,limited=false,shut=false;
- // All pages of one query; each dataset goes to take (true: it was one of the kind asked for).
- const query=async(label,url,take)=>{
-  for(let page=0;page<MAX_PAGES&&!shut;page++){
-   let body;
-   try{body=JSON.parse(await read(url(page*ROWS),source));}
-   catch(e){issues.push(`${label}: ${e.message}`);if(refusedBy(e)){shut=true;issues.push('Das Transparenzportal hat den Abruf abgewiesen; in diesem Import keine weiteren Anfragen dorthin.');}return;}
-   if(body?.success!==true||!Array.isArray(body?.result?.results)){issues.push(`${label}: Unbekanntes Antwortformat der Suchschnittstelle`);return;}
-   for(const pkg of body.result.results)if(!take(pkg))foreign++;
-   if(body.result.results.length<ROWS)return;
-   if(page===MAX_PAGES-1&&Number(body.result.count)>(page+1)*ROWS)limited=true;
-  }
- };
+ // The portal documents its search interface for automated retrieval (transparenz.hamburg.de/api-796358); robots.txt,
+ // which disallows it for crawlers, does not decide over it (shared/source-access.mjs). All pages of one query; each
+ // dataset goes to take (true: it was one of the kind asked for); a refusal ends every request to the portal.
+ const {search:query,state}=ckanSession(source.base,read,source,{portal:'Das Transparenzportal'}),issues=state.issues;
  const districts=source.districts?.length?source.districts:HAMBURG_DISTRICTS,quietDistricts=[];
  for(const district of districts){
-  if(shut)break;
+  if(state.shut)break;
   let found=0,held=0;
   await query(`Bezirk ${district}`,start=>hamburgQuery(source,district,fromDay,start),pkg=>{const p=hamburgPaper(pkg,district,source);if(!p)return false;if(p.date>=fromDay&&p.date<=today){found++;papers.set(slug(p.district)+'-'+p.reference,p);}return true;});
-  if(!shut&&!found&&!issues.some(i=>i.startsWith(`Bezirk ${district}:`)))warnings.push(`Keine Drucksache der Bezirksversammlung ${district} im Zeitraum gefunden.`);
+  if(!state.shut&&!found&&!issues.some(i=>i.startsWith(`Bezirk ${district}:`)))warnings.push(`Keine Drucksache der Bezirksversammlung ${district} im Zeitraum gefunden.`);
   // Meetings published in the period (after their minutes were approved); the event is the day of the meeting.
-  if(!shut)await query(`Sitzungen Bezirk ${district}`,start=>hamburgQuery(source,district,fromDay,start,'Sitzung'),pkg=>{const s=hamburgMeeting(pkg,district,source);if(!s)return false;if(s.published>=fromDay&&s.published<=today&&s.date<=today&&s.items.length){held++;meetings.set(slug(district)+'-'+slug(s.number),s);}return true;});
-  if(!shut&&!held&&!issues.some(i=>i.startsWith(`Sitzungen Bezirk ${district}:`)))quietDistricts.push(district);
+  if(!state.shut)await query(`Sitzungen Bezirk ${district}`,start=>hamburgQuery(source,district,fromDay,start,'Sitzung'),pkg=>{const s=hamburgMeeting(pkg,district,source);if(!s)return false;if(s.published>=fromDay&&s.published<=today&&s.date<=today&&s.items.length){held++;meetings.set(slug(district)+'-'+slug(s.number),s);}return true;});
+  if(!state.shut&&!held&&!issues.some(i=>i.startsWith(`Sitzungen Bezirk ${district}:`)))quietDistricts.push(district);
   onProgress(`${source.id}: Bezirk ${district}, ${found} Drucksachen, ${held} Sitzungen`);
  }
  if(quietDistricts.length)warnings.push(`Keine Sitzung mit öffentlicher Tagesordnung im Zeitraum veröffentlicht: ${quietDistricts.join(', ')}.`);
  // The communications of the Senate to the Bürgerschaft (papers of the city-state's parliament).
- if(!shut)await query('Mitteilungen des Senats',start=>hamburgSenateQuery(source,fromDay,start),pkg=>{const p=hamburgSenatePaper(pkg,source);if(!p)return false;if(p.date>=fromDay&&p.date<=today)senate.set(slug(p.reference),p);return true;});
- if(limited)issues.push(`Mehr als ${ROWS*MAX_PAGES} geänderte Datensätze je Abfrage; ein kürzerer Zeitraum liest sie vollständig.`);
+ if(!state.shut)await query('Mitteilungen des Senats',start=>hamburgSenateQuery(source,fromDay,start),pkg=>{const p=hamburgSenatePaper(pkg,source);if(!p)return false;if(p.date>=fromDay&&p.date<=today)senate.set(slug(p.reference),p);return true;});
+ if(state.limited)issues.push(`Mehr als ${CKAN_ROWS*CKAN_MAX_PAGES} geänderte Datensätze je Abfrage; ein kürzerer Zeitraum liest sie vollständig.`);
  const topics=[],fetchedAt=now.toISOString(),checks=detail=>[{name:'Originalquelle',passed:true,detail},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}];
  const topic=async(t,place,detail)=>{
   t.events.forEach(e=>{e.attendance={status:'not_collected',sourceUrl:e.url,fetchedAt,people:[]};e.decision=sourceDecision(e);});
@@ -218,6 +195,7 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
    sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'paper',url:p.url,fields:{reference:p.reference,body:'Bürgerschaft',published:p.date,modified:p.modified}}],detailStatus:'completed',issues:[]}},
    'Hamburg','Transparenzportal Hamburg; Mitteilungen des Senats an die Bürgerschaft (Drucksachen der Bürgerschaft).');
  }
+ const foreign=state.foreign;
  if(foreign)warnings.push(`${foreign} Treffer der Suche ${foreign===1?'gehört':'gehören'} nicht zur Abfrage (anderer Bezirk, anderes Registerobjekt, Mitteilung ohne Drucksachennummer) und ${foreign===1?'wurde':'wurden'} ausgelassen.`);
  return {topics,marks:{},readMeetings:meetings.size,coverage:coverage({meetings:meetings.size,papers:papers.size+senate.size,...(warnings.length?{warnings}:{}),quiet:topics.length===0&&issues.length===0,complete:issues.length===0&&topics.length>0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.']})};
 }
@@ -228,16 +206,15 @@ export function consentValid(consent){
 }
 
 /**
- * Districts that may be read: with a valid consent every listed system. Without one, robots.txt is recorded, not
- * obeyed (robots-policy.mjs): every system that does not refuse technically, i.e. the check script saw no HTTP 403 and
- * did not find it to be no OParl system (oparl:false). With ROBOTS_POLICY=obey only those whose robots.txt allows the
- * OParl path (robots: 'erlaubt'), read again before each import.
+ * Districts that may be read: with a valid consent every listed system; without one every system that does not refuse
+ * technically, i.e. the check script saw no HTTP 401/403 and did not find it to be no OParl system (oparl:false).
+ * robots.txt does not decide (OParl is an interface for programs; shared/source-access.mjs), also not with
+ * ROBOTS_POLICY=obey; its verdict stays recorded in the entry.
  */
 export function eligibleSystems(source){
  const systems=(source.systems||[]).filter(s=>s&&s.district&&https(s.system));
  if(consentValid(source.consent))return systems;
- if(!obeyRobots())return systems.filter(s=>s.oparl!==false&&!/HTTP 40[13]\b/.test(String(s.error||'')));
- return systems.filter(s=>s.robots==='erlaubt');
+ return systems.filter(s=>s.oparl!==false&&!/HTTP 40[13]\b/.test(String(s.error||'')));
 }
 export async function collectOparlDistricts(source,options={}){
  const now=options.now||new Date(),fromDay=windowStart(now,options.window).toISOString().slice(0,10),get=options.get||fetchText;
@@ -249,9 +226,7 @@ export async function collectOparlDistricts(source,options={}){
  const topics=[],marks={},issues=[],warnings=[];let meetings=0,read=0,complete=true,resumable=false,used=0;
  for(const s of systems){
   try{
-   // Without consent and with ROBOTS_POLICY=obey robots.txt decides again before the first request (robotsGate is open
-   // otherwise; a 403 of the system ends its reading below).
-   if(!consent){const origin=new URL(s.system).origin,allows=await robotsGate(get,{base:origin+'/'});if(!(await allows(s.system))){issues.push(`BVV ${s.district}: `+(allows.issues[0]||'robots.txt untersagt den Abruf der OParl-Schnittstelle; nichts gelesen.'));complete=false;continue;}}
+   // A 403 of the system ends its reading (collectRegionalOparl); robots.txt does not decide over OParl.
    const d=await collectRegionalOparl({...source,name:'BVV '+s.district,system:s.system,...(s.body?{body:s.body}:{})},options);used++;
    for(const t of d.topics){t.committee=prefix(s.district,t.committee);for(const e of t.events||[])e.committee=prefix(s.district,e.committee);topics.push(t);}
    Object.assign(marks,d.marks||{});meetings+=d.coverage.meetings||0;read+=d.readMeetings||0;
@@ -259,7 +234,7 @@ export async function collectOparlDistricts(source,options={}){
    issues.push(...(d.coverage.issues||[]).filter(i=>!/^Noch keine Artikel/.test(i)).map(i=>`BVV ${s.district}: ${i}`));
   }catch(e){complete=false;issues.push(`BVV ${s.district}: ${e.message}`);}
  }
- const left=12-systems.length;if(left>0)warnings.push(`${left} von 12 Bezirken nicht gelesen (${consent?'keine OParl-Adresse eingetragen':'ohne Freigabe; technische Sperre (HTTP 403), robots.txt oder keine Adresse'}).`);
+ const left=12-systems.length;if(left>0)warnings.push(`${left} von 12 Bezirken nicht gelesen (${consent?'keine OParl-Adresse eingetragen':'ohne Freigabe; technische Sperre (HTTP 403) oder keine Adresse'}).`);
  return {topics,marks,readMeetings:read,coverage:{regionId:source.id,method:'oparl',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings,sourceCount:used,...(resumable?{resumable:true}:{}),...(warnings.length?{warnings}:{}),...(consent?{consent:{by:source.consent.by,date:source.consent.date}}:{}),quiet:topics.length===0&&issues.length===0,complete:complete&&issues.length===0&&topics.length>0&&left===0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:systems[0].system}};
 }
 const prefix=(district,committee)=>{const c=String(committee||'').trim();return norm(c).includes(norm(district))?c:`BVV ${district}: ${c||'Öffentliche Sitzung'}`;};
@@ -312,13 +287,11 @@ export async function collectPardok(source,{now=new Date(),get=fetchText,stream=
  const fromDay=windowStart(now,lookback).toISOString().slice(0,10),today=now.toISOString().slice(0,10),pardok=source.pardok||{};
  const base=pardok.base||'https://www.parlament-berlin.de/',issues=[],warnings=[],kept=new Map();
  const coverage=extra=>({regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:0,sourceCount:1,sourceUrl:base+'dokumente/open-data',note:PARDOK_NOTE,...extra});
- const allows=await robotsGate(budgeted(get,60000,2),{base});
  // Newest period first: after an election its file is small and holds the current procedures.
  const periods=(pardok.periods||[19,20]).map(Number).filter(n=>n>0).sort((a,b)=>b-a);
  let read=0,missing=0,inquiries=0;
  for(const period of periods){
   const url=new URL(`opendata/pardok-wp${period}.xml`,base).href;
-  if(!(await allows(url))){issues.push(allows.issues[0]||`robots.txt untersagt den Abruf von ${url}; nichts gelesen.`);continue;}
   const timeoutMs=Math.min(pardok.timeoutMs||150000,deadline-Date.now());
   if(timeoutMs<5000){issues.push(`Zeitbudget der Quelle erreicht; Wahlperiode ${period} nicht gelesen.`);continue;}
   try{

@@ -182,8 +182,9 @@ async function searchSite(site){
   const p=await get(secure(f.url),host,{accept:'text/calendar',types:/calendar|text|octet/i});if(p.status!==200)continue;
   const events=parseIcs(p.body);row.ics.push({url:p.url,events:events.length,sessionEvents:events.filter(e=>isSession(e.url,e.summary)).length});
  }
- // The WordPress API only where the site announces it and robots.txt allows its path.
- if(wp&&sameSite(wp,host)&&!isRisLink(wp)){const v=await robotsOf(secure(wp));if(!blocked.has(new URL(secure(wp)).origin)&&(!obeyRobots()||v==='erlaubt'||v==='keine'))row.wp=secure(wp);else row.log.push('WordPress-API: robots.txt '+v);}
+ // The WordPress API where the site announces it. It is an interface for programs: robots.txt (recorded in the log)
+ // does not decide over it, also not with ROBOTS_POLICY=obey (shared/source-access.mjs); a refusal of the host does.
+ if(wp&&sameSite(wp,host)&&!isRisLink(wp)){const v=await robotsOf(secure(wp));if(!blocked.has(new URL(secure(wp)).origin))row.wp=secure(wp);else row.log.push('WordPress-API: Rechner weist Programme ab');if(v==='verboten')row.log.push('WordPress-API: robots.txt nennt den Pfad (gilt nicht für die Schnittstelle)');}
  if(blocked.has(origin))row.log.push('Abbruch: HTTP '+blocked.get(origin));
  row.log=row.log.slice(0,12);
  return row;

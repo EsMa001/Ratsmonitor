@@ -14,6 +14,7 @@ import {fetchText} from '../../server/integrations/sessionnet.mjs';
 import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,hrefs,title,identity,sharedBodies,nameTwins,namesDistinctly,platformLands} from './rules.mjs';
 import {consentAllows} from '../../server/integrations/consents.mjs';
 import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
+import {channelOf} from '../../shared/source-access.mjs';
 // DIR and AREAS let the same check run over another list of areas (e.g. the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -78,16 +79,19 @@ const withHost=async(url,fn,probe=false)=>{
 };
 // robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs, decision of 05.10.2026): the check reads
 // every candidate; robots.mjs keeps recording the verdict of each connected source. With ROBOTS_POLICY=obey the old
-// rule applies: robots.txt of a host is read before its first page (one request per host), a path it disallows for
-// the programs of this project is not asked and the candidate is recorded with robots:'verboten'.
+// rule applies to HTML pages: robots.txt of a host is read before its first page (one request per host), a path it
+// disallows for the programs of this project is not asked and the candidate is recorded with robots:'verboten'.
+// robots.txt never decides over OParl or the interface of a reader (shared/source-access.mjs: OParl, then API, then
+// HTML pages): those are asked under either rule; next to an HTML page that robots.txt disallows, OParl is still tried.
 // Unchanged either way: no repetition after 401/403, no way around a firewall, an access check or a login (rules.mjs).
 const TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'],robotsFiles=new Map();
 const robotsFile=u=>{if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,(async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}})());return robotsFiles.get(u.origin);};
 // A written consent of the municipality or operator for this system (source-consents.json) is a permission:
 // robots.txt is not asked for the addresses it covers (concept section 6.2).
 async function robotsAllowFree(url){if(!obeyRobots()||consentAllows(url))return true;const u=new URL(url),file=await robotsFile(u);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';}
-async function robotsAllow(url){
- if(!obeyRobots()||consentAllows(url))return true;
+// kind: the channel of the address (channelOf in shared/source-access.mjs); only 'html' is decided by robots.txt.
+async function robotsAllow(url,kind='html'){
+ if(kind!=='html'||!obeyRobots()||consentAllows(url))return true;
  const u=new URL(url);
  if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,withHost(url,async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}},true));
  const file=await robotsFiles.get(u.origin);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';
@@ -189,8 +193,7 @@ async function verify(region,row){
  // exact: only the given address (an OParl address known from the register or the vendor, oparl-register.mjs).
  const tryOparl=async(url,sn,note,verifiedSource,trusted=true,exact=false,html='')=>{
   for(const guess of exact?[url.replace(/^http:/,'https:')]:oparlGuesses(url,sn,html)){
-   // robots.txt decides for every address asked, also for the vendor's standard paths.
-   if(!await robotsAllow(guess))continue;
+   // OParl is an interface for programs: robots.txt does not decide over it, also not over the vendor's standard paths.
    const system0=await withHost(guess,()=>probeOparl(guess),true);if(!system0)continue;note.oparl=guess;
    // Areas outside the NRW catalog carry their official key explicitly, so the body can be matched by it
    // (Lower Saxon Samtgemeinden: 9-digit regional key).
@@ -231,7 +234,7 @@ async function verify(region,row){
   // application answers with session addresses that robots.txt disallows): the reader is asked directly.
   if(c.reader&&READERS[c.reader]){
    const reader=READERS[c.reader],note={url:c.url,from:c.from,reader:c.reader},fields=await reader.detect(c.url,'',{}).catch(()=>null),who=identity(region,c.url,'');note.identity=who;
-   if(fields?.base&&who.ok&&await robotsAllow(fields.base)){
+   if(fields?.base&&who.ok&&await robotsAllow(fields.base,channelOf({adapter:c.reader}).kind)){
     const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter:c.reader,...fields};
     try{const d=await withHost(source.base,()=>reader.collect(source,{window:WINDOW,maxDurationMs:150000}));note.readerTopics=d.topics.length;note.readerMeetings=d.coverage.meetings;note.readerIssues=[...new Set(d.coverage.issues)].slice(0,4);
      if(d.topics.length){result.accepted={...source,verifiedSource:/^https?:/.test(c.from||'')?c.from:c.url,verifiedAt:today,apiCheck:`Keine offizielle OParl-Schnittstelle gefunden; ${reader.name} erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
@@ -239,7 +242,13 @@ async function verify(region,row){
    }
    result.tried.push(note);continue;
   }
-  if(!await robotsAllow(c.finalUrl||c.url)){result.tried.push({url:c.url,robots:'verboten',from:c.from});continue;}
+  // robots.txt disallows the page (ROBOTS_POLICY=obey): it governs the HTML pages only, so an OParl interface next to
+  // them is still asked, as after a page that did not answer.
+  if(!await robotsAllow(c.finalUrl||c.url)){
+   const note={url:c.url,robots:'verboten',from:c.from},key=new URL(c.url).origin+'|oparl-only';
+   if(!seenBases.has(key)&&strong.test(c.url)){seenBases.add(key);const got=await tryOparl(c.url,null,note,c.from||c.url,trusted(c));if(got){result.accepted=got;result.tried.push(note);return result;}}
+   result.tried.push(note);continue;
+  }
   let p;try{p=await withHost(c.url,()=>page(c.finalUrl||c.url));}catch(e){p={status:0,url:c.url,html:'',error:e.message};}
   // Many official websites still link with http://; the systems themselves answer only on https://.
   if(p.status!==200&&/^http:/.test(c.finalUrl||c.url)){const secure=(c.finalUrl||c.url).replace(/^http:/,'https:');try{const again=await withHost(secure,()=>page(secure));if(again.status===200)p=again;}catch{}}
@@ -375,7 +384,7 @@ async function verify(region,row){
    if(!result.systems.includes(adapter))result.systems.push(adapter);note.reader=adapter;
    if(part&&!Object.keys(part).every(k=>PART_READERS[adapter]?.includes(k))){note.partError=adapter+': Leser trennt diesen Teil des gemeinsamen Systems nicht';break;}
    const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter,...fields,...(part||{})};
-   if(!await robotsAllow(source.base)){note.robots='verboten';break;}
+   if(!await robotsAllow(source.base,channelOf(source).kind)){note.robots='verboten';break;}
    try{const d=await withHost(source.base,()=>reader.collect(source,{window:WINDOW,maxDurationMs:150000,...(reader.oparlCheck?{checkOparl:!note.oparl}:{})}));note.readerTopics=d.topics.length;note.readerMeetings=d.coverage.meetings;note.readerIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);
     if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ${reader.name} erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
    }catch(e){note.readerError=adapter+': '+e.message.slice(0,140);}

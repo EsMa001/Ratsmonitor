@@ -12,14 +12,16 @@ import {robotsVerdict} from '../../server/integrations/robots.mjs';
 const TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'];
 // The address a reader asks first: the website reader its first list page (which may lie on another origin of the
 // municipality's domain, alsoFrom), the others the base or OParl system address.
-// The city states (citystates.mjs): Hamburg reads the search interface of the portal, Berlin the district systems.
-export const readUrl=source=>source.adapter==='website'?source.pages?.[0]||source.base:source.adapter==='hamburg-transparenz'?source.base+'api/3/action/package_search':source.adapter==='berlin'?new URL(`opendata/pardok-wp${(source.pardok?.periods||[19])[0]}.xml`,source.pardok?.base||'https://www.parlament-berlin.de/').href:source.adapter==='oparl-bezirke'?(source.systems?.find(s=>s.robots==='erlaubt')||source.systems?.[0])?.system||source.base:source.system||source.base;
+// The city states (citystates.mjs): Hamburg reads the search interface of the portal, Berlin the district systems; a
+// CKAN portal (ckan.mjs) its search interface. The verdict is recorded; for an interface it is not binding
+// (shared/source-access.mjs).
+export const readUrl=source=>source.adapter==='website'?source.pages?.[0]||source.base:['hamburg-transparenz','ckan'].includes(source.adapter)?source.base+'api/3/action/package_search':source.adapter==='berlin'?new URL(`opendata/pardok-wp${(source.pardok?.periods||[19])[0]}.xml`,source.pardok?.base||'https://www.parlament-berlin.de/').href:source.adapter==='oparl-bezirke'?(source.systems?.find(s=>s.robots==='erlaubt')||source.systems?.[0])?.system||source.base:source.system||source.base;
 // The path a reader asks for: More! Rubin reads api.php next to its base, the website reader its first list page (with
 // its query, which robots.txt rules match as well; '/' without list page), the others the base or OParl system address.
 export const readPath=source=>{
  if(source.adapter==='website'){if(!source.pages?.[0])return '/';const u=new URL(source.pages[0]);return (u.pathname||'/')+u.search;}
  // The city-state readers ask an address of their own (search interface, open-data file, district system).
- if(['hamburg-transparenz','berlin','oparl-bezirke'].includes(source.adapter)){const u=new URL(readUrl(source));return (u.pathname||'/')+u.search;}
+ if(['hamburg-transparenz','ckan','berlin','oparl-bezirke'].includes(source.adapter)){const u=new URL(readUrl(source));return (u.pathname||'/')+u.search;}
  const u=new URL(source.system||source.base);return source.adapter==='more-rubin'?u.pathname.replace(/[^/]*$/,'')+'api.php':u.pathname||'/';
 };
 const sources=[...SOURCES,...NRW_SOURCES.filter(s=>s.method!=='pending'),MUENSTER];

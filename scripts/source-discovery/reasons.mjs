@@ -134,7 +134,7 @@ export function openReason(area,row,crawl,ctx={}){
  if(platform)return platform[1];
  // With ROBOTS_POLICY=obey verify.mjs does not read a path that the system's robots.txt disallows for programs. Under
  // the standard rule such a refusal comes from a check made before 05.10.2026: the area waits for its new check.
- if(main&&forbidden(main))return obeyRobots()?'robots.txt des gefundenen Systems untersagt Programmen den Abruf; Freigabe beim Betreiber anfragen'
+ if(main&&forbidden(main))return obeyRobots()?'robots.txt sperrt den HTML-Zugriff auf das gefundene System (keine OParl-Schnittstelle oder API gefunden); Freigabe beim Betreiber anfragen'
   :ROBOTS_RECHECK;
  const several=tried.find(t=>/^Mehrere Körperschaften/.test(t.rubinError||''));
  if(several)return several.rubinError.replace(/; Zuordnung nur mit fester Körperschaft$/,'')+'; der Leser trennt sie noch nicht';
@@ -166,6 +166,9 @@ export function openReason(area,row,crawl,ctx={}){
  if(tried.some(t=>(t.allrisIssues||[]).some(i=>/Zugriffsprüfung/.test(i))))return 'ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert';
  if(tried.some(t=>(t.allrisIssues||[]).some(i=>/zu viele Zugriffe/.test(i))))return 'ALLRIS 4 gefunden; das System meldete bei der Prüfung zu viele Zugriffe und sperrte vorübergehend. Erneut prüfen';
  // A reader of readers.mjs that read the page decides before the ALLRIS 4 reader (an ALLRIS 3 page is read by allris3).
+ // A CKAN portal (server/integrations/ckan.mjs) without query profile: its interface is there, the reader needs the profile.
+ const ckan=tried.find(t=>t.reader==='ckan'&&(t.readerIssues||[]).some(i=>/Leser\/Connector fehlt/.test(i)));
+ if(ckan)return ckan.readerIssues.find(i=>/Leser\/Connector fehlt/.test(i));
  const reader=tried.find(t=>t.reader&&(t.readerError||t.readerTopics===0));
  if(reader)return `${readerName(reader.reader)} gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte`+(reader.readerIssues?.length?' ('+reader.readerIssues[0]+')':'');
  if(tried.some(t=>t.allrisTopics===0||t.allrisError))return 'ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte'+(tried.find(t=>t.allrisError||t.allrisIssues?.length)?' ('+(tried.find(t=>t.allrisError)?.allrisError||tried.find(t=>t.allrisIssues?.length).allrisIssues[0])+')':'');

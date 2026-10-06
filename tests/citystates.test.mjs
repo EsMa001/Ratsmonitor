@@ -10,8 +10,10 @@ import SITZUNGEN from './fixtures/citystates/hh-sitzungen.json' with {type:'json
 import DRUCKSACHEN from './fixtures/citystates/hh-drucksachen.json' with {type:'json'};
 import SENAT from './fixtures/citystates/hh-senat.json' with {type:'json'};
 
-// These tests check the old rule (robots.txt obeyed, ROBOTS_POLICY=obey); the tests marked "standard rule" switch to
+// These tests run with the old rule (robots.txt obeyed, ROBOTS_POLICY=obey); the tests marked "standard rule" switch to
 // the rule of server/integrations/robots-policy.mjs: robots.txt is recorded, not obeyed, and a refusal stays final.
+// The city-state readers read interfaces (CKAN, open data, OParl): robots.txt decides over them under neither rule
+// (shared/source-access.mjs); a technical refusal (HTTP 401/403) does under both.
 process.env.ROBOTS_POLICY='obey';
 const standardRule=async fn=>{const was=process.env.ROBOTS_POLICY;delete process.env.ROBOTS_POLICY;try{return await fn();}finally{process.env.ROBOTS_POLICY=was;}};
 
@@ -111,7 +113,7 @@ test('Hamburg (real answers): papers, meetings and communications of the Senate 
  };
  const d=await collectHamburgTransparenz(src,{now,get,window:'1m'});
  assert.ok(calls.every(u=>u.startsWith('https://suche.transparenz.hamburg.de/')),'no request outside the portal');
- assert.equal(calls.length,6,'robots.txt, papers and meetings of two districts, the communications of the Senate');
+ assert.equal(calls.length,5,'papers and meetings of two districts, the communications of the Senate; robots.txt is not asked');
  assert.equal(new Set(d.topics.map(t=>t.id)).size,d.topics.length,'every id once');
  /* Drucksachen im Zeitraum: 22-2671 (Hamburg-Nord) und 22-4111.2 (Wandsbek); 22-4443 erscheint erst morgen */
  const papers=d.topics.filter(t=>t.sourceData.records[0].kind==='paper'&&t.committee.startsWith('Bezirksversammlung'));
@@ -133,12 +135,12 @@ test('Hamburg (real answers): papers, meetings and communications of the Senate 
  assert.match(d.coverage.note,/Sitzungen mit öffentlicher Tagesordnung/);assert.equal(d.coverage.complete,true);
 });
 
-test('Hamburg: robots.txt decides first; only the portal is asked; papers become topics of their district',async()=>{
+test('Hamburg: the documented API is read without asking robots.txt (also with ROBOTS_POLICY=obey); papers become topics of their district',async()=>{
  const calls=[];
  const get=async url=>{calls.push(url);if(url.endsWith('/robots.txt'))return 'User-agent: *\nDisallow: /dataset/private\n';const q=new URL(url).searchParams.get('q');if(q.includes('Wandsbek'))return answer([pkg(),pkg({name:'altona-x',title:'Bezirk Altona, Drucksache 21-3944'})]);return answer([]);};
  const d=await collectHamburgTransparenz(hh,{now,get,window:'1m'});
- assert.ok(calls.every(u=>u.startsWith('https://suche.transparenz.hamburg.de/')),'no request outside the portal');
- assert.equal(calls[0],'https://suche.transparenz.hamburg.de/robots.txt');
+ assert.ok(calls.every(u=>u.startsWith('https://suche.transparenz.hamburg.de/api/3/action/package_search?')),'only the search interface of the portal');
+ assert.ok(!calls.some(u=>u.endsWith('/robots.txt')),'robots.txt does not decide over the documented API');
  assert.equal(d.topics.length,1);const t=d.topics[0];
  assert.equal(t.committee,'Bezirksversammlung Wandsbek');assert.equal(t.eventDate,'2026-09-19');assert.equal(t.public,true);assert.equal(t.status,'unknown');
  assert.equal(t.id,'de-02000000-hh-wandsbek-22-3451');assert.equal(t.events[0].result,'');
@@ -149,32 +151,33 @@ test('Hamburg: robots.txt decides first; only the portal is asked; papers become
  assert.equal(d.coverage.complete,true);
 });
 
-test('Hamburg: a refusal in robots.txt, an unreadable robots.txt or an unknown answer reads nothing',async()=>{
- let calls=[];
- const refused=await collectHamburgTransparenz(hh,{now,get:async url=>{calls.push(url);return 'User-agent: *\nDisallow: /api/\n';}});
- assert.deepEqual(calls,['https://suche.transparenz.hamburg.de/robots.txt']);assert.equal(refused.topics.length,0);assert.match(refused.coverage.issues[0],/robots\.txt/);
- calls=[];
- const unknown=await collectHamburgTransparenz(hh,{now,get:async url=>{calls.push(url);if(url.endsWith('/robots.txt'))throw Error('Quelle antwortet mit HTTP 503');return answer([pkg()]);},maxDurationMs:2000});
- assert.ok(calls.every(u=>u.endsWith('/robots.txt')),'no query without a readable robots.txt');assert.equal(unknown.topics.length,0);
+test('Hamburg: robots.txt that disallows the API or cannot be read does not stop the reader; an unknown answer reads nothing',async()=>{
+ const calls=[];
+ const answerFor=url=>{const q=new URL(url).searchParams.get('q');return answer(q.includes('Wandsbek')&&q.endsWith('Drucksache')?[pkg()]:[]);};
+ const disallowed=await collectHamburgTransparenz(hh,{now,window:'1m',get:async url=>{calls.push(url);if(url.endsWith('/robots.txt'))return 'User-agent: *\nDisallow: /api/\n';return answerFor(url);}});
+ assert.equal(disallowed.topics.length,1);assert.ok(!calls.some(u=>u.endsWith('/robots.txt')),'robots.txt is not asked');
+ const unreadable=await collectHamburgTransparenz(hh,{now,window:'1m',get:async url=>{if(url.endsWith('/robots.txt'))throw Error('Quelle antwortet mit HTTP 503');return answerFor(url);}});
+ assert.equal(unreadable.topics.length,1);
  const odd=await collectHamburgTransparenz(hh,{now,get:async url=>url.endsWith('/robots.txt')?'':'{"help":"x"}'});
  assert.equal(odd.topics.length,0);assert.ok(odd.coverage.issues.some(i=>/Unbekanntes Antwortformat/.test(i)));assert.equal(odd.coverage.complete,false);
 });
 
 const berlin=entries.find(e=>e.id==='de-11000000');
-test('Berlin: without consent nothing is read where robots.txt refuses; a consent needs who, when and scope',async()=>{
+test('Berlin: robots.txt does not decide over the OParl of the districts (also with ROBOTS_POLICY=obey); a technical refusal does; a consent needs who, when and scope',async()=>{
  assert.equal(consentValid(null),false);assert.equal(consentValid({by:'ITDZ',date:'2026-11-01'}),false);
  assert.equal(consentValid({by:'ITDZ Berlin',date:'2026-11-01',scope:'OParl-Schnittstellen aller BVV'}),true);
- const systems=[{district:'Pankow',system:'https://pankow.example.berlin.de/oparl/system',robots:'verboten'},{district:'Mitte',system:'https://mitte.example.berlin.de/oparl/system',robots:'erlaubt'}];
- assert.deepEqual(eligibleSystems({systems}).map(s=>s.district),['Mitte']);
- assert.equal(eligibleSystems({systems,consent:{by:'ITDZ Berlin',date:'2026-11-01',scope:'oparl'}}).length,2);
+ const systems=[{district:'Pankow',system:'https://pankow.example.berlin.de/oparl/system',robots:'verboten'},{district:'Mitte',system:'https://mitte.example.berlin.de/oparl/system',robots:'erlaubt'},
+  {district:'Spandau',system:'https://spandau.example.berlin.de/oparl/system',robots:'erlaubt',error:'Quelle antwortet mit HTTP 403'}];
+ assert.deepEqual(eligibleSystems({systems}).map(s=>s.district),['Pankow','Mitte']);
+ assert.equal(eligibleSystems({systems,consent:{by:'ITDZ Berlin',date:'2026-11-01',scope:'oparl'}}).length,3);
  const original=globalThis.fetch;globalThis.fetch=()=>{throw Error('unexpected request');};
  try{
-  const none=await collectOparlDistricts({...berlin,systems:systems.slice(0,1)},{now});
+  const none=await collectOparlDistricts({...berlin,systems:systems.slice(2)},{now});
   assert.equal(none.topics.length,0);assert.equal(none.coverage.issues[0],BERLIN_CONSENT_MISSING);
-  /* robots.txt erlaubte bei der Prüfung, verbietet aber heute: der Bezirk wird nicht gelesen */
-  const calls=[];
-  const changed=await collectOparlDistricts({...berlin,systems:systems.slice(1)},{now,get:async url=>{calls.push(url);return 'User-agent: *\nDisallow: /\n';}});
-  assert.deepEqual(calls,['https://mitte.example.berlin.de/robots.txt']);assert.equal(changed.topics.length,0);assert.match(changed.coverage.issues[0],/BVV Mitte/);
+  /* robots.txt verbietet alles: die OParl-Schnittstelle wird trotzdem gefragt, robots.txt nicht; ihr 403 beendet das Lesen */
+  const asked=[],robots=[];
+  const pankow=await collectOparlDistricts({...berlin,systems:systems.slice(0,1)},{now,window:'1m',get:async url=>{robots.push(url);return 'User-agent: *\nDisallow: /\n';},getJson:async url=>{asked.push(url);throw Error('Quelle antwortet mit HTTP 403');}});
+  assert.deepEqual(robots,[]);assert.equal(asked[0],'https://pankow.example.berlin.de/oparl/system');assert.match(pankow.coverage.issues.join(' '),/BVV Pankow: .*HTTP 403/);
  }finally{globalThis.fetch=original;}
 });
 
@@ -206,7 +209,7 @@ test('Berlin: a procedure of the open-data file with its documents; blocks are f
  assert.equal(await pardokBlocks(parts,b=>seen.push(pardokProcedure(b).id)),3);assert.deepEqual(seen,['V1','V2','V3']);
 });
 
-test('Berlin: robots.txt first; procedures with a document in the period; inquiries left out; a missing period is no error',async()=>{
+test('Berlin: the open-data file without asking robots.txt; procedures with a document in the period; inquiries left out; a missing period is no error',async()=>{
  const asked=[];
  const stream=async function*(url){asked.push(url);if(url.endsWith('wp20.xml'))throw Error('Quelle antwortet mit HTTP 404');yield xml.slice(0,500);yield xml.slice(500);};
  const d=await collectPardok(be,{now,window:'1m',get:async()=>'User-agent: *\nDisallow: /intern/\n',stream});
@@ -216,9 +219,10 @@ test('Berlin: robots.txt first; procedures with a document in the period; inquir
  /* Ein Monat: nur das Plenarprotokoll liegt im Zeitraum, beide Dokumente bleiben verlinkt */
  assert.equal(t.events.length,1);assert.match(t.events[0].description,/Plenarprotokoll · 19\/80/);assert.equal(t.documents.length,2);
  assert.equal(d.coverage.complete,true);assert.ok(d.coverage.warnings.some(w=>/Anfragen ausgelassen/.test(w)));assert.ok(d.coverage.warnings.some(w=>/ohne Datei/.test(w)));
- /* robots.txt verbietet: keine Datei wird geladen */
- const none=[];const refused=await collectPardok(be,{now,get:async()=>'User-agent: *\nDisallow: /opendata/\n',stream:async function*(url){none.push(url);}});
- assert.deepEqual(none,[]);assert.equal(refused.topics.length,0);assert.match(refused.coverage.issues[0],/robots\.txt/);
+ /* robots.txt verbietet /opendata/ (auch mit ROBOTS_POLICY=obey): die Datei für Programme wird trotzdem geladen, robots.txt nicht gefragt */
+ const files=[],robots=[];
+ const anyway=await collectPardok({...be,pardok:{...be.pardok,periods:[19]}},{now,window:'1m',get:async url=>{robots.push(url);return 'User-agent: *\nDisallow: /opendata/\n';},stream:async function*(url){files.push(url);yield xml;}});
+ assert.deepEqual(robots,[]);assert.deepEqual(files,['https://www.parlament-berlin.de/opendata/pardok-wp19.xml']);assert.equal(anyway.topics.length,1);
  /* Unbekanntes Format: keine Vorgänge erkannt */
  const odd=await collectPardok({...be,pardok:{...be.pardok,periods:[19]}},{now,get:async()=>'',stream:async function*(){yield '<html>Wartung</html>';}});
  assert.equal(odd.topics.length,0);assert.match(odd.coverage.issues[0],/Unbekanntes Format/);
@@ -227,7 +231,7 @@ test('Berlin: robots.txt first; procedures with a document in the period; inquir
 test('Berlin: the Abgeordnetenhaus is read without consent; the district assemblies are not',async()=>{
  const original=globalThis.fetch;globalThis.fetch=()=>{throw Error('unexpected request');};
  try{
-  const d=await collectBerlin({...be,systems:[{district:'Pankow',system:'https://pankow.example.berlin.de/oparl/system',robots:'verboten'}]},{now,window:'1m',get:async()=>'',stream:async function*(url){if(url.endsWith('wp19.xml'))yield xml;else throw Error('Quelle antwortet mit HTTP 404');}});
+  const d=await collectBerlin({...be,systems:[{district:'Pankow',system:'https://pankow.example.berlin.de/oparl/system',robots:'verboten',error:'Quelle antwortet mit HTTP 403'}]},{now,window:'1m',get:async()=>'',stream:async function*(url){if(url.endsWith('wp19.xml'))yield xml;else throw Error('Quelle antwortet mit HTTP 404');}});
   assert.equal(d.topics.length,1);assert.ok(d.coverage.warnings.some(w=>/Bezirksverordnetenversammlungen nicht gelesen/.test(w)));
  }finally{globalThis.fetch=original;}
 });

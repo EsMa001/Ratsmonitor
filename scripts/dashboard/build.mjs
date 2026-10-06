@@ -4,6 +4,11 @@
 //   node scripts/dashboard/build.mjs                 # writes dashboard/luecken.html
 //   OUT=pfad.html FRAGMENT=1 node scripts/dashboard/build.mjs   # page body only (for hosting inside another page)
 //
+// Access of every area (shared/source-access.mjs: OParl, then API, then HTML pages, where robots.txt gives the label;
+// then a technical block, then nothing found): of a connected source from its reader and the robots.txt verdict, of an
+// open area from the reason of its last check. The status of the areas without source is written to
+// server/integrations/source-access.json (default run only) for the admin view.
+//
 // Reasons of open areas: the working files open.json of a search run (exact ids) where they exist
 // (tmp/source-discovery*/open.json, see scripts/source-discovery/build.mjs), otherwise the tables of the reports in
 // requirements/*-sources-report.md, matched by name within the Land.
@@ -14,6 +19,7 @@ import {CATALOG,POPULATION,landName} from '../../shared/catalog.mjs';
 import {NRW_SOURCES} from '../../server/integrations/source-catalog.mjs';
 import {SOURCES} from '../../server/integrations/regions.mjs';
 import {consentFor,consentsOf} from '../../server/integrations/consents.mjs';
+import {ACCESS_STATUSES,accessOfSource,accessOfReason,channelOf,robotsNote} from '../../shared/source-access.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
@@ -24,7 +30,7 @@ const robots=read('server/integrations/source-robots.json').sources;
 const sources=new Map(NRW_SOURCES.filter(s=>s.method!=='pending').map(s=>[s.id,s]));
 for(const id of ['billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen','muenster'])if(!sources.has(id))sources.set(id,SOURCES.find(s=>s.id===id)||{id});
 
-const METHOD={sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra','ris-portal':'RIS-Portal',komfa:'KOMFA-RIS',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'};
+const METHOD={sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra','ris-portal':'RIS-Portal',komfa:'KOMFA-RIS',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',ckan:'CKAN-Portal',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'};
 const methodOf=s=>s.method==='oparl'?'OParl':METHOD[s.adapter]||(s.base||s.system?'SessionNet':'Stammquelle');
 
 // Open areas with their reason.
@@ -34,7 +40,7 @@ for(const dir of ['tmp/source-discovery/','tmp/source-discovery-nds/','tmp/sourc
 let reportDate='';const unmatched=[];
 // Switched-off entries of the catalog (method "pending") name their reason in the note, as in the report of build.mjs.
 const switchedOff=new Set();
-for(const s of NRW_SOURCES)if(s.method==='pending'&&s.note){reasons.set(s.id,{reason:s.note,url:s.system||s.base||''});switchedOff.add(s.id);}
+for(const s of NRW_SOURCES)if(s.method==='pending'&&s.note){reasons.set(s.id,{reason:s.note,url:s.system||s.base||'',kind:s.adapter?channelOf(s).kind:''});switchedOff.add(s.id);}
 for(const [file,lands] of [['requirements/statewide-sources-report.md',['05']],['requirements/nds-sources-report.md',['03']],['requirements/de-sources-report.md',null]]){
  const text=fs.readFileSync(path.join(root,file),'utf8');
  reportDate=reportDate||(text.match(/Stand: ([0-9.]+)/)||[])[1]||'';
@@ -86,15 +92,18 @@ const areas=CATALOG.map(r=>{
  const a={id:r.id,n:r.name,l:r.ags.slice(0,2),g:r.ags,t:TYPE[r.kind]||r.municipalityType||'Gemeinde',k:r.kind==='district'?'d':r.independent?'i':'c',p:POPULATION[r.id]||0,u:/^https?:/.test(url)?url:'',o:operator(url)};
  if(r.members?.length)a.m=r.members.length;
  // Switched on without a live check (citystate-sources.json: checkPending): shown apart from checked sources.
- if(s&&s.checkPending){a.c='ready';a.r=s.checkPending;a.v=methodOf(s);}
+ if(s&&s.checkPending){a.c='ready';a.r=s.checkPending;a.v=methodOf(s);a.z=accessOfSource(s,robots[r.id]);a.zc=channelOf(s).name;}
  // robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs): its verdict stands in the detail view
- // only; a written consent (source-consents.json) is shown there as well.
- else if(s){const c=robots[r.id]==='verboten'?consentFor(s.system||s.base):null;a.c='ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.at=s.verifiedAt||'';if(c)a.cs=c.date;}
+ // only, in words that say whether it concerns HTML pages or an interface (for which it is not binding); a written
+ // consent (source-consents.json) is shown there as well.
+ else if(s){const c=robots[r.id]==='verboten'?consentFor(s.system||s.base):null;a.c='ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.rn=robotsNote(s,robots[r.id]);a.z=accessOfSource(s,robots[r.id]);a.zc=channelOf(s).name;a.at=s.verifiedAt||'';if(c)a.cs=c.date;}
  // An open area with a consent waits for its check (consents.mjs, then verify.mjs).
- else if(o&&consentsOf(r.id).length){const c=consentsOf(r.id)[0];a.c='consent';a.r=`Freigabe (${c.scope.join(', ')}) vom ${c.date.split('-').reverse().join('.')} liegt vor; Prüflauf ausstehend. Vorher: ${o.reason}`;a.cs=c.date;}
- else if(o){a.c=categoryOf(o.reason);a.r=o.reason;}
- else{a.c='other';a.r='Kein Prüfergebnis im Bericht';}
- if(research.has(r.id))a.rs=research.get(r.id);
+ else if(o&&consentsOf(r.id).length){const c=consentsOf(r.id)[0];a.c='consent';a.r=`Freigabe (${c.scope.join(', ')}) vom ${c.date.split('-').reverse().join('.')} liegt vor; Prüflauf ausstehend. Vorher: ${o.reason}`;a.cs=c.date;a.z=accessOfReason(o.reason,o.url,o.kind);}
+ else if(o){a.c=categoryOf(o.reason);a.r=o.reason;a.z=accessOfReason(o.reason,o.url,o.kind);}
+ else{a.c='other';a.r='Kein Prüfergebnis im Bericht';a.z='none';}
+ // Candidates of the research help an open area only; a connected area has its source (its candidates would only
+ // repeat old notes, such as the robots.txt of the Hamburg district systems that the CKAN interface does not need).
+ if(research.has(r.id)&&!s)a.rs=research.get(r.id);
  if(recheck.has(r.id))a.nc=recheck.get(r.id);
  if(shapes.has(r.id))a.b=bbox(shapes.get(r.id));
  return a;
@@ -104,6 +113,7 @@ const data={
  builtAt:new Date().toISOString().slice(0,10),reportDate,
  lands:Object.fromEntries([...new Set(CATALOG.map(r=>r.ags.slice(0,2)))].sort().map(l=>[l,landName(l)])),
  areas,
+ access:ACCESS_STATUSES.map(({id,label,group,automated,explain})=>({id,label,group,automated,explain})),
  shapes:Object.fromEntries(areas.filter(a=>shapes.has(a.id)).map(a=>[a.id,shapes.get(a.id)])),
  states:germany.states.map(s=>s.path),
  attribution:'© BKG (2026), dl-de/by-2-0',
@@ -113,5 +123,10 @@ const page=fs.readFileSync(path.join(root,'scripts/dashboard/page.html'),'utf8')
 const out=process.env.OUT||'dashboard/luecken.html';
 fs.mkdirSync(path.dirname(path.resolve(root,out)),{recursive:true});
 fs.writeFileSync(path.resolve(root,out),process.env.FRAGMENT?page:'<!doctype html>\n<html lang="de">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n'+page+'\n</body>\n</html>\n');
-const count=areas.reduce((m,a)=>(m[a.c]=(m[a.c]||0)+1,m),{});
-console.log(out+': '+areas.length+' Gebiete',JSON.stringify(count),'ohne Kartenform '+missing,'Berichtszeilen ohne Gebiet '+unmatched.length,(fs.statSync(path.resolve(root,out)).size/1e6).toFixed(1)+' MB');
+if(!process.env.OUT){
+ const target='server/integrations/source-access.json',open=Object.fromEntries(areas.filter(a=>!sources.has(a.id)).map(a=>[a.id,a.z]));
+ fs.writeFileSync(path.join(root,target),JSON.stringify({builtAt:data.builtAt,note:'Zugangsstatus der Gebiete ohne Quelle (shared/source-access.mjs); erzeugt von scripts/dashboard/build.mjs.',areas:open},null,1)+'\n');
+ console.log(target+': '+Object.keys(open).length+' Gebiete ohne Quelle');
+}
+const count=areas.reduce((m,a)=>(m[a.c]=(m[a.c]||0)+1,m),{}),access=areas.reduce((m,a)=>(m[a.z]=(m[a.z]||0)+1,m),{});
+console.log(out+': '+areas.length+' Gebiete',JSON.stringify(count),'Zugang '+JSON.stringify(access),'ohne Kartenform '+missing,'Berichtszeilen ohne Gebiet '+unmatched.length,(fs.statSync(path.resolve(root,out)).size/1e6).toFixed(1)+' MB');
