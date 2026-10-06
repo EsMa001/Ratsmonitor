@@ -2,6 +2,8 @@ import {LABELS} from '../../shared/labels.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
+/** Ergebnisseite ohne Zähler: Treffer nur bis hierher zählen (101 heißt „mehr als 100“) */
+export const COUNT_CAP=101;
 export class SearchError extends Error { constructor(message,status=400){super(message);this.status=status;} }
 /* Typische Formalien einer Sitzung (Muster für LIKE auf den kleingeschriebenen Titel) */
 const FORMAL=['%niederschrift%','%mitteilungen%','%anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','%verpflichtung%','%anträge der fraktionen%'];
@@ -21,6 +23,8 @@ export function parseMonitorSearch(params){
  const keys=name=>params.has(name)?params.get(name).split(',').filter(Boolean):null;
  const within=keys('within'),without=keys('without');
  if([within,without].some(list=>list&&(list.length>2000||list.some(a=>!/^\d{5}(\d{3,4})?$/.test(a)))))throw new SearchError('Ungültiger Umkreis.');
+ /* part: nur die Ergebnisseite (mit gedeckelter Zählung) oder nur die Zähler; ohne Angabe beides wie bisher */
+ const part=params.get('part')||'';if(!['','page','facets'].includes(part))throw new SearchError('Ungültiger Antwortteil.');
  const revision=params.get('revision');if(revision!==null&&!/^\d+$/.test(revision))throw new SearchError('Ungültiger Datenstand.');
  /* Weitere Orte aus der Suche: "AGS:only|with" kommagetrennt, zusätzlich zu area (ODER-Verknüpfung) */
  const more=(params.get('more')||'').split(',').filter(Boolean).map(x=>{const [ags,sc]=x.split(':');return {ags,scope:sc==='with'?'with':'only'};});
@@ -29,7 +33,7 @@ export function parseMonitorSearch(params){
  const groups=q.split(/[,;|]|\s+oder\s+/i).map(g=>norm(g).split(/\s+/).filter(w=>w&&!FILLER.has(w))).filter(g=>g.length).slice(0,8).map(g=>g.slice(0,12));
  /* Jeder Begriff bindet zwei Parameter; D1 erlaubt höchstens 100 je Abfrage */
  if(groups.flat().length>30)throw new SearchError('Bitte höchstens 30 Suchwörter verwenden.');
- return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),size:Number(sizeRaw||20),within,without,revision,noformal:params.get('noformal')==='1'};
+ return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),size:Number(sizeRaw||20),part,within,without,revision,noformal:params.get('noformal')==='1'};
 }
 
 const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision";
@@ -99,13 +103,18 @@ export async function searchMonitor(db,catalog,params){
   return {where:where.length?'WHERE '+where.join(' AND '):'',args};})();
  /* Veralteter Datenstand beim Blättern: vor der Arbeit melden, nicht danach */
  if(f.revision!==null){const now=String((await db.prepare(REVISION_SQL).first())?.revision??0);if(now!==f.revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);}
- const [rev,rows,groups]=await db.batch([
-  db.prepare(REVISION_SQL),
-  db.prepare(`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit,(f.page-1)*limit),
-  db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args),
- ]);
+ const pageSql=db.prepare(`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit,(f.page-1)*limit);
+ const facetSql=db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args);
+ /* Gedeckelte Zählung über denselben Zugriff wie die Seite (Datumsindex): liest nur bis 101 Treffer */
+ const capSql=db.prepare(`SELECT count(*) n FROM (SELECT 1 FROM search_cards WHERE ${page.where} ORDER BY date DESC LIMIT ${COUNT_CAP})`).bind(...page.args);
+ /* Reihenfolge der Antwort: Datenstand, dann je nach part Seite und/oder Zähler (Zählung bzw. Gruppierung) */
+ const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),f.part==='page'?capSql:facetSql];
+ const answers=await db.batch(statements);
+ const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],groups=answers[answers.length-1];
  const revision=String(rev.results[0].revision);
+ const mapRows=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
  if(f.revision!==null&&f.revision!==revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);
+ if(f.part==='page'){const n=groups.results[0].n;return {articles:mapRows(rows.results),total:n,totalCapped:n>=COUNT_CAP,page:f.page,pageSize:limit,revision,areaCounts:{},themaCounts:{},monatCounts:{},statusCounts:{},storageAvailable:true};}
  /* Jede Facette zählt mit allen Filtern außer ihrem eigenen, wie zuvor die getrennten Abfragen */
  let total=0;const areaCounts={},labelCounts={},statusCounts={};
  const addArea=(region,n)=>{const ags=region.ags;for(const key of new Set([ags,ags.slice(0,5),ags.slice(0,2),'']))areaCounts[key]=(areaCounts[key]||0)+n;
@@ -121,7 +130,7 @@ export async function searchMonitor(db,catalog,params){
   if(inScope&&labelOk)statusCounts[r.status]=(statusCounts[r.status]||0)+r.n;
  }
  for(const [rid,n] of perRegion)addArea(byId.get(rid),n);
- return {articles:rows.results.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'})),total,page:f.page,pageSize:limit,revision,areaCounts,themaCounts:labelCounts,monatCounts:{},statusCounts,storageAvailable:true};
+ return {articles:mapRows(rows.results),total,page:f.page,pageSize:limit,revision,areaCounts,themaCounts:labelCounts,monatCounts:{},statusCounts,storageAvailable:true};
 }
 
 /**

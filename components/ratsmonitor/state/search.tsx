@@ -276,7 +276,7 @@ export function useSearch(): SearchValue {
 /* ---------- Abgeleitete Werte: Treffer, Zähler, erkannter Ort ---------- */
 export interface CoverageEntry {ags:string;name:string;count:number;complete:boolean}
 export interface SearchResults {
- total:number;coverage:CoverageEntry[];
+ total:number;/** Zähler noch nicht da: total ist nur „mehr als 100“ */totalCapped:boolean;/** Anzeige der Trefferzahl: „>100“ oder die genaue Zahl */totalLabel:string;coverage:CoverageEntry[];
   /** Abfrage der aktuellen Suche (für Export), ohne Seite */
   key:string;
   around:{set:Set<string>|null;level:string}|null;
@@ -305,11 +305,15 @@ export interface SearchResults {
 
 
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
-type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
+type ResponseData={articles:Article[];total:number;totalCapped?:boolean;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
 type DataValue=ReturnType<typeof useData>;
 /* Fertige Antworten (5 Minuten) und laufende Anfragen, geteilt von der Übersicht und dem Vorausladen (z. B. beim Überfahren
    eines Vorschlags): gleiche Suche = eine Anfrage, und ein Klick trifft oft schon die fertige Antwort */
 const SEARCH_CACHE=new Map<string,{at:number;data:ResponseData}>(),INFLIGHT=new Map<string,Promise<ResponseData>>();
+/* Zähler (Gebiete, Themen, Status, Gesamtzahl) kommen getrennt von der Ergebnisseite und gelten für die ganze Suche, nicht je Seite */
+type Facets=Pick<ResponseData,'total'|'areaCounts'|'themaCounts'|'monatCounts'|'statusCounts'|'revision'>;
+const FACETS_CACHE=new Map<string,{at:number;data:Facets}>();
+const freshFacets=(key:string)=>{const hit=FACETS_CACHE.get(key);return hit&&Date.now()-hit.at<300000?hit.data:null;};
 const searchKey=(key:string,page=1,attempt=0)=>key+'&page='+page+'&attempt='+attempt;
 const freshSearch=(requestKey:string)=>{const hit=SEARCH_CACHE.get(requestKey);return hit&&Date.now()-hit.at<300000?hit.data:null;};
 function rememberSearch(requestKey:string,data:ResponseData){SEARCH_CACHE.delete(requestKey);SEARCH_CACHE.set(requestKey,{at:Date.now(),data});if(SEARCH_CACHE.size>40)SEARCH_CACHE.delete(SEARCH_CACHE.keys().next().value as string);}
@@ -324,7 +328,7 @@ function warmSearch(local:{key:string;around:unknown}){
  if(local.around)return;
  const requestKey=searchKey(local.key);
  if(freshSearch(requestKey)||INFLIGHT.has(requestKey))return;
- const params=new URLSearchParams(local.key);params.delete('around');params.set('page','1');
+ const params=new URLSearchParams(local.key);params.delete('around');params.set('page','1');params.set('part','page');
  const job=fetchSearch(params.toString()).then(data=>{rememberSearch(requestKey,data);return data;}).finally(()=>INFLIGHT.delete(requestKey));
  INFLIGHT.set(requestKey,job);job.catch(()=>{});
 }
@@ -363,6 +367,22 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
   covered.current[level]=new Set(data.coverage.map(c=>c.ags));setCover(c=>({...c,[level]:data}));return data;
  },[]);
  useEffect(()=>{if(!active||cover[state.level])return;const abort=new AbortController();loadCover(state.level,abort.signal).catch(()=>{});return()=>abort.abort();},[active,state.level,cover,loadCover]);
+ /* Abfrage für Seite oder Zähler. Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs).
+    Welche Gebiete Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
+ const buildQuery=useCallback(async(page:number,part:'page'|'facets',signal:AbortSignal)=>{
+  const params=new URLSearchParams(local.key);params.delete('around');params.set('part',part);
+  if(part==='page'){params.set('page',String(page));if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);}
+  if(local.around){
+   const {set,level}=local.around;
+   if(!set)params.set('within','');
+   else{
+    let known=covered.current[level];
+    if(!known&&await loadCover(level,signal))known=covered.current[level];
+    const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
+   }
+  }
+  return params.toString();
+ },[local,loadCover]);
  const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string}>({key:'',data:null,error:''});
  const requestKey=searchKey(local.key,page,attempt);
  /* Wann gesucht wird: Die erste Suche geht sofort hinaus. Beim Tippen wird erst nach 400 ms Ruhe und erst ab 3 Buchstaben
@@ -384,22 +404,10 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
    if(started)return;
    started=true;clearTimeout(timer);flush.current=null;lastText.current=local.text;sent.current=true;
    (async()=>{
-    const params=new URLSearchParams(local.key);params.delete('around');params.set('page',String(page));
-    if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);
     try{
-     /* Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs). Welche Gebiete
-        Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
-     if(local.around){
-      const {set,level}=local.around;
-      if(!set)params.set('within','');
-      else{
-       let known=covered.current[level];
-       if(!known&&await loadCover(level,abort.signal))known=covered.current[level];
-       const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
-      }
-     }
+     const query=await buildQuery(page,'page',abort.signal);
      /* Läuft für dieselbe Suche schon eine Vorab-Anfrage (Tippen, Überfahren eines Vorschlags), wird deren Antwort genutzt */
-     const ready=await (INFLIGHT.get(requestKey)??fetchSearch(params.toString(),abort.signal));
+     const ready=await (INFLIGHT.get(requestKey)??fetchSearch(query,abort.signal));
      if(abort.signal.aborted)return;
      revision.current={key:local.key,value:ready.revision};
      rememberSearch(requestKey,ready);
@@ -412,16 +420,43 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
   /* 1 bis 2 neue Buchstaben: noch nicht suchen, nur bei Enter oder Auswahl (flush) */
   if(!(typing&&t.length>0&&t.length<3))timer=window.setTimeout(start,!sent.current?0:typing&&t?400:180);
   return()=>{clearTimeout(timer);abort.abort();if(flush.current===start)flush.current=null;};
- },[active,local.key,page,attempt,requestKey,loadCover]);
- const loading=remote.key!==requestKey;
+ },[active,local.key,page,attempt,requestKey,buildQuery]);
+ /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht); bis sie da sind, bleiben die vorigen stehen */
+ const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});
+ const pageReady=remote.key===requestKey&&!!remote.data;
+ useEffect(()=>{
+  if(!active||!pageReady)return;
+  const hit=freshFacets(local.key);
+  if(hit){setFacets({key:local.key,data:hit});return;}
+  const abort=new AbortController();
+  (async()=>{
+   try{
+    const query=await buildQuery(1,'facets',abort.signal);
+    const data=await fetchSearch(query,abort.signal) as Facets;
+    if(abort.signal.aborted)return;
+    FACETS_CACHE.delete(local.key);FACETS_CACHE.set(local.key,{at:Date.now(),data});if(FACETS_CACHE.size>40)FACETS_CACHE.delete(FACETS_CACHE.keys().next().value as string);
+    setFacets({key:local.key,data});
+   }catch{/* Zähler fehlen, die Treffer bleiben nutzbar */}
+  })();
+  return()=>abort.abort();
+ },[active,pageReady,local.key,attempt,buildQuery]);
+ const lastFacets=useRef<Facets|null>(null);
+ const exact=facets.key===local.key?facets.data:null;
+ if(exact)lastFacets.current=exact;
+ const fx=exact??lastFacets.current;
+ /* Liegt die Antwort schon im Zwischenspeicher, gilt sie sofort als fertig: kein „lädt“, kein Ring, kein Aufblitzen */
+ const cached=active?freshSearch(requestKey):null;
+ const loading=!cached&&remote.key!==requestKey;
  const lastGood=useRef<ResponseData|null>(null);
- if(!loading&&remote.data)lastGood.current=remote.data;
+ if(!loading&&(cached||remote.data))lastGood.current=cached??remote.data;
  /* Beim Nachladen die bisherigen Treffer stehen lassen, statt die Liste zu leeren */
- const data=loading?lastGood.current:remote.data;
+ const data=loading?lastGood.current:(cached??remote.data);
  const setPage=useCallback((p:number)=>setNavigation({key:local.key,page:p}),[local.key]);
  const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
- const error=loading?'':remote.error;
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry,cover,state.level]);
+ const error=loading||cached?'':remote.error;
+ /* Genaue Zahl, sobald die Zähler da sind; davor die gedeckelte Zählung der Seite */
+ const total=exact?exact.total:data?.total??0,capped=!exact&&!!data?.totalCapped;
+ return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total,totalCapped:capped,totalLabel:capped?'>100':total.toLocaleString('de-DE'),areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,capped,fx,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

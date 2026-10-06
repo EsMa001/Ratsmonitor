@@ -30,7 +30,7 @@ function useBrandTitle(p:string,notFound:boolean){
  const text=res.snapshot.text.trim(),area=res.snapshot.area;
  const place=area&&geo?geo.info(area).name:'';
  const what=[text&&`„${text}“`,place&&(text?`in ${place}`:place)].filter(Boolean).join(' ');
- const count=!res.loading&&what?`${res.total.toLocaleString('de-DE')} Treffer`:'';
+ const count=!res.loading&&what?`${res.totalLabel} Treffer`:'';
  useEffect(()=>{
   document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):pageTitle(brand);
  },[brand,name,p,notFound,what,count]);

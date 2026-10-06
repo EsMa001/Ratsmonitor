@@ -20,7 +20,7 @@ export function SearchFilterPanel() {
       {/* Trefferzahl, Datenstand und Sortierung; aktive Filter und Filter selbst liegen auf der Karte */}
       <div className="flex items-center gap-1 sm:flex-wrap sm:gap-1.5">
           <span aria-live="polite" className="mr-1 whitespace-nowrap text-[14px] text-slate-600 sm:mr-1.5">
-            {res.loading ? "…" : res.total.toLocaleString("de-DE")} Treffer
+            {res.loading ? "…" : res.totalLabel} Treffer
             {res.updatedAt && (
               <span className="text-slate-500 max-sm:hidden">
                 {" · Stand "}
