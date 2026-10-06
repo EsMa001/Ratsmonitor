@@ -225,7 +225,7 @@ export class MapEngine {
   }
 
   /* ---------- Ansicht ---------- */
-  private clampK(k: number, reserve = this.bottomInset ? this.bottomInset + 40 : 0) {
+  private clampK(k: number, reserve = this.bottomInset ? this.bottomInset - 8 : 0) {
     /* Höchstens so weit herauszoomen, dass Deutschland vollständig sichtbar ist */
     const bb = this.geo.germany.bb;
     const kmin = 0.92 * Math.min((this.W - 32) / Math.max(bb[2] - bb[0], 1), (this.H - 32 - reserve) / Math.max(bb[3] - bb[1], 1));
@@ -248,7 +248,7 @@ export class MapEngine {
     const small = this.W < 640;
     /* Handy: unten mehr Rand, dort liegen Suchleiste und Chips über der Karte */
     const pt = small ? 24 : 24;
-    const pb = Math.max(small ? 120 : 72, this.bottomInset ? this.bottomInset + 48 : 0);
+    const pb = Math.max(small ? 120 : 72, this.bottomInset ? this.bottomInset + 8 : 0);
     const ps = pad ?? (small ? 4 : 28);
     const w = Math.max(bb[2] - bb[0], 1);
     const h = Math.max(bb[3] - bb[1], 1);
