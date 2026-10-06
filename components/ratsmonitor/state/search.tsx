@@ -496,7 +496,9 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Zähler abgeschlossen (auch fehlgeschlagen): erst dann zeigt eine lange Suche („ring“) ihre Treffer */
  const settled=facets.key===local.key;
  const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final?!(modeNow==='ring'&&!settled):(modeNow==='partial'&&rd.data.articles.length>0))));
- const loading=!cached&&!adoptable;
+ /* Eine Antwort aus dem Zwischenspeicher gilt sofort als fertig, außer sie stammt aus dieser lang laufenden Suche selbst (Ring): dann erst mit den Zählern */
+ const cachedReady=!!cached&&!(modeNow==='ring'&&!settled);
+ const loading=!cachedReady&&!adoptable;
  const lastGood=useRef<ResponseData|null>(null);
  if(!loading&&(cached||remote.data))lastGood.current=cached??remote.data;
  /* Beim Nachladen die bisherigen Treffer stehen lassen, statt die Liste zu leeren */
