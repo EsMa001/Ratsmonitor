@@ -173,12 +173,13 @@ export function MapPanel({ active }: { active: boolean }) {
 
   useEffect(() => {
     const set = new Set(hits);
-    const levels = Object.fromEntries(coverage.map((c) => [c.ags, set.has(c.ags) ? hitLevel(areaCounts[c.ags] || 0, [t1, t2], filtered) : 0]));
+    /* Startseite (Kartenmodus noch nicht gestartet): Gemeinden unverändert eingefärbt, erst nach bestätigter Suche (Enter) nur die mit Treffern */
+    const levels = Object.fromEntries(coverage.map((c) => [c.ags, !explore ? 3 : set.has(c.ags) ? hitLevel(areaCounts[c.ags] || 0, [t1, t2], filtered) : 0]));
     /* „inkl. Kreis“ bei einer Gemeinde: den ganzen Kreis einfärben (Kreisebene), sonst die gewählte Ebene */
     const level = state.area.length === 8 && state.scope === "with" && !state.radius ? "district" : state.level;
     engine?.update(levels, state.area, state.radius, coverage.map((c) => c.ags), level);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope]);
+  }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope, explore]);
 
   /* Kartenmodus, sobald eine Suche oder ein Filter bestätigt ist; sind alle entfernt, wieder der normale Modus */
   useEffect(() => {
