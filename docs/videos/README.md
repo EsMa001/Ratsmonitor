@@ -2,7 +2,7 @@
 
 Videos zu Funktionen (12) und Vorstellungsvideos (2) für Plenara. Diese Anleitung beschreibt, **was im Repository liegt, woher Stimme und Bilder kommen und wie man ein Video neu erzeugt.**
 
-Stand: Alle 14 Videos gibt es als **Handy-Fassung** (Hochformat). Von den **Web-Fassungen** (Querformat 1280×720) ist bisher nur Video 1 neu aufgenommen (mit dem neuen Text, `texts/web/01.txt`). Für die übrigen sind die Web-Texte und die Szenen (`tools/scenes-web.mjs`) angelegt, aber noch nicht aufgenommen. Auf der Seite zeigen Handys die Handy-Fassung, am Computer steht bei den übrigen „Video folgt“.
+Stand: Alle 14 Videos gibt es als **Handy-Fassung** (Hochformat). Auch von allen 14 **Web-Fassungen** (Querformat 1280×720) gibt es Videos. Die Handy-Tonspuren wurden bei den Videos 3, 4, 5, 6, 7, 9, 10 und 11 wiederverwendet (gleicher Text), neu gesprochen sind 2, 8, 12, 13 und 14. Auf der Seite zeigen Handys die Handy-Fassung, Computer die Web-Fassung.
 
 ## Was wo liegt
 
@@ -142,4 +142,4 @@ Wie es zusammenhängt:
 
 ## Größe
 
-Die Videos in `public/videos/` sind zusammen rund 26 MB. Jede neu erzeugte Fassung bleibt in der Git-Historie. Wenn das zu viel wird, können die Dateien später in einen Speicher außerhalb von Git (z. B. Cloudflare R2) umziehen, dann ändert sich nur die Adresse der Dateien in `VideosPage.tsx`.
+Die Videos in `public/videos/` sind zusammen rund 42 MB. Jede neu erzeugte Fassung bleibt in der Git-Historie. Wenn das zu viel wird, können die Dateien später in einen Speicher außerhalb von Git (z. B. Cloudflare R2) umziehen, dann ändert sich nur die Adresse der Dateien in `VideosPage.tsx`.

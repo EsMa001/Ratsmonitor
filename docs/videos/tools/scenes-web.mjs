@@ -22,9 +22,9 @@ export const SCENES = {
     setup: async (H) => { await H.search("Kita"); },
     steps: [
       [1, 0.3, "filter", (H) => H.filterBtn()],
-      [2, 0.2, "zeitraum", async (H) => { await H.clickRole("button", /Zeitraum/); await H.sleep(900); await H.clickText("Letzte 12 Monate"); }],
-      [2, 2.4, "thema", async (H) => { await H.clickRole("button", /Alle Themen/); await H.sleep(900); await opt(H, 1); }],
-      [2, 4.4, "stand", async (H) => { await H.clickRole("button", /Alle Stände/); await H.sleep(900); await opt(H, 1); }],
+      [2, 0.2, "zeitraum", async (H) => { await H.clickRole("button", /Zeitraum/); await H.sleep(900); await H.clickText("Letzte 12 Monate"); await H.loaded().catch(() => {}); }],
+      [2, 2.4, "thema", async (H) => { await H.loaded().catch(() => {}); await H.clickRole("button", /Alle Themen/); await H.sleep(900); await opt(H, 1); await H.loaded().catch(() => {}); }],
+      [2, 4.4, "stand", async (H) => { await H.loaded().catch(() => {}); await H.sleep(500); await H.clickRole("button", /Alle Stände/); await H.sleep(900); await opt(H, 1); }],
       [3, 0.2, "zu", async (H) => { await H.page.keyboard.press("Escape"); await H.loaded(); }],
       [5, 0.3, "marke", async (H) => { await H.click(H.page.getByRole("button", { name: /entfernen/ })); await H.loaded(); }],
     ],
@@ -111,7 +111,7 @@ export const SCENES = {
   },
   /* 10 Postfach und Wochenbericht */
   "10": {
-    setup: async (H) => { await H.search("Radweg"); await H.clickRole("button", /Suche speichern/); await H.sleep(800); },
+    setup: async (H) => { await H.search("Radweg"); await H.sleep(1500); await H.clickRole("button", /Suche speichern/); await H.sleep(1500); },
     steps: [
       [2, 0.3, "postfach", async (H) => { await H.page.goto(H.BASE + "/konto/postfach", { waitUntil: "load" }); await H.sleep(1500); }],
       [3, 0.2, "beispiele", async (H) => { await H.clickText(/Beispiel-Benachrichtigungen erzeugen/); await H.sleep(1500); }],
