@@ -418,9 +418,11 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
     im Voraus gesucht (die Kurzsuchen sind am teuersten und bleiben unsichtbar, die Seite wechselt erst nach Enter). Enter
     oder die Auswahl aus der Liste starten die Suche sofort bzw. nutzen die schon laufende Vorab-Suche. Filter und Sortierung
     warten 180 ms. Fertige Antworten merkt sich der Browser 5 Minuten, damit Löschen und Zurückgehen sofort gehen. */
- const sent=useRef(false),lastText=useRef(''),flush=useRef<(()=>void)|null>(null);
+ const sent=useRef(false),lastText=useRef(''),flush=useRef<(()=>void)|null>(null),confirm=useRef<(()=>void)|null>(null);
+ /* Enter ist der Startpunkt der 0,5-s-Regel: läuft die Suche schon (Vorab-Suche beim Tippen), zeigt Enter vorhandene Treffer
+    sofort und zählt die 0,5 s ab jetzt; sonst startet Enter die Suche (flush) */
  useEffect(()=>{
-  const on=()=>flush.current?.();
+  const on=()=>{if(flush.current)flush.current();else confirm.current?.();};
   window.addEventListener('rm:search-confirmed',on);
   return()=>window.removeEventListener('rm:search-confirmed',on);
  },[]);
@@ -428,14 +430,23 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   if(!active)return;
   const hit=freshSearch(requestKey);
   if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};setRemote({key:requestKey,data:hit,error:'',final:true});return;}
-  const abort=new AbortController();let timer=0,decide=0,started=false;
+  const abort=new AbortController();let timer=0,decide=0,started=false,streamed=false,finished=false;
+  const acc:Article[]=[];
+  /* Nach 0,5 s: schon Treffer da (Strom): zeigen und weitere einfliegen lassen; sonst Ring bis alles fertig ist */
+  const decideNow=()=>{if(!finished&&!abort.signal.aborted)setMode({key:requestKey,value:streamed&&acc.length?'partial':'ring'});};
+  const onConfirm=()=>{
+   if(!started||finished||abort.signal.aborted)return;
+   clearTimeout(decide);
+   if(streamed&&acc.length)setMode({key:requestKey,value:'partial'});
+   else{setMode({key:'',value:'partial'});decide=window.setTimeout(decideNow,500);}
+  };
+  confirm.current=onConfirm;
   const start=()=>{
    if(started)return;
    started=true;clearTimeout(timer);flush.current=null;lastText.current=local.text;sent.current=true;
    /* Strom nur für die erste Seite, neueste zuerst, und wenn nicht schon eine Vorab-Anfrage dafür läuft */
-   const streamed=page===1&&new URLSearchParams(local.key).get('sort')==='desc'&&!INFLIGHT.has(requestKey);
-   const acc:Article[]=[];let finished=false;
-   decide=window.setTimeout(()=>{if(!finished&&!abort.signal.aborted)setMode({key:requestKey,value:streamed&&acc.length?'partial':'ring'});},500);
+   streamed=page===1&&new URLSearchParams(local.key).get('sort')==='desc'&&!INFLIGHT.has(requestKey);
+   decide=window.setTimeout(decideNow,500);
    (async()=>{
     try{
      const query=await buildQuery(page,streamed?'stream':'page',abort.signal);
@@ -464,7 +475,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   flush.current=start;
   /* 1 bis 2 neue Buchstaben: noch nicht suchen, nur bei Enter oder Auswahl (flush) */
   if(!(typing&&t.length>0&&t.length<3))timer=window.setTimeout(start,!sent.current?0:typing&&t?400:180);
-  return()=>{clearTimeout(timer);clearTimeout(decide);abort.abort();if(flush.current===start)flush.current=null;};
+  return()=>{clearTimeout(timer);clearTimeout(decide);abort.abort();if(flush.current===start)flush.current=null;if(confirm.current===onConfirm)confirm.current=null;};
  },[active,local.key,page,attempt,requestKey,buildQuery]);
  /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht) */
  const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});
