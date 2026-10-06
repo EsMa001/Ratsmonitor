@@ -69,22 +69,22 @@ test('knownWords stays unknown for terms the list could not contain',async()=>{
  assert.equal(await knownWords(empty,[['kalorien']],{}),'unknown');
 });
 
-test('rare words keep the ids of their cards, words above 200 cards only a count',async()=>{
+test('rare words keep the ids of their cards, words above 500 cards only a count',async()=>{
  const db=d1();
- for(let i=0;i<=POSTING_MAX;i++)add(db,'h'+String(i).padStart(3,'0'),'haushalt plan');   // 201 Karten
+ for(let i=0;i<=POSTING_MAX;i++)add(db,'h'+String(i).padStart(3,'0'),'haushalt plan');   // 501 Karten
  add(db,'h000','haushalt plan');add(db,'x','selten kormoran');add(db,'y','kormoran im haushalt');
  await refreshSearchWords(db,{full:true});
  assert.equal(cardsOf(db,'haushalt'),TOO_COMMON);assert.deepEqual(postings(db,'haushalt'),[]);
  assert.equal(cardsOf(db,'kormoran'),2);assert.deepEqual(postings(db,'kormoran'),['x','y']);
 });
 
-test('later runs add ids, a word that grows past 200 cards loses its ids',async()=>{
+test('later runs add ids, a word that grows past 500 cards loses its ids',async()=>{
  const db=d1();
- for(let i=0;i<199;i++)add(db,'a'+String(i).padStart(3,'0'),'wort gemeinsam');
+ for(let i=0;i<POSTING_MAX-1;i++)add(db,'a'+String(i).padStart(3,'0'),'wort gemeinsam');
  await refreshSearchWords(db,{full:true});
- assert.equal(cardsOf(db,'gemeinsam'),199);
+ assert.equal(cardsOf(db,'gemeinsam'),POSTING_MAX-1);
  add(db,'b1','gemeinsam neu');bump(db);await refreshSearchWords(db);
- assert.equal(cardsOf(db,'gemeinsam'),200);assert.equal(postings(db,'gemeinsam').length,200);assert.deepEqual(postings(db,'neu'),['b1']);
+ assert.equal(cardsOf(db,'gemeinsam'),POSTING_MAX);assert.equal(postings(db,'gemeinsam').length,POSTING_MAX);assert.deepEqual(postings(db,'neu'),['b1']);
  add(db,'b2','gemeinsam');bump(db);await refreshSearchWords(db);
  assert.equal(cardsOf(db,'gemeinsam'),TOO_COMMON);assert.deepEqual(postings(db,'gemeinsam'),[]);
  /* eine geänderte Karte wird nicht doppelt gezählt */

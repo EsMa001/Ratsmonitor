@@ -1,9 +1,9 @@
 /*
  * Wortliste der Suche (Tabellen search_words und search_postings, drizzle/0013).
  *
- * search_words    jedes Wort aus search_cards.search (ab 3 Zeichen) mit der Zahl seiner Karten; TOO_COMMON (201) heißt
- *                 „mehr als 200 Karten“, dann gibt es keine Karten-IDs.
- * search_postings zu jedem Wort mit höchstens 200 Karten die IDs dieser Karten.
+ * search_words    jedes Wort aus search_cards.search (ab 3 Zeichen) mit der Zahl seiner Karten; TOO_COMMON (501) heißt
+ *                 „mehr als 500 Karten“, dann gibt es keine Karten-IDs.
+ * search_postings zu jedem Wort mit höchstens 500 Karten die IDs dieser Karten.
  * hits_city/_district bei den häufigen Wörtern und bei seltenen, die in einem häufigen Wort stecken (z. B. „schwul“ in „schwulper“;
  *                 dort greifen die Karten-IDs nicht, weil ein häufiges Wort den Begriff enthält): die genaue Trefferzahl der Suche nach diesem Wort (mit Teilwörtern, je Karte
  *                 einmal), getrennt nach Ebene. Gilt nur ohne Filter und nur solange sich die Daten nicht ändern.
@@ -22,7 +22,7 @@
 const STATE_KEY='search-words';
 const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision";
 /** Wörter mit höchstens so vielen Karten bekommen Karten-IDs */
-export const POSTING_MAX=200;
+export const POSTING_MAX=500;
 /** Zählstand für „zu häufig“ */
 export const TOO_COMMON=POSTING_MAX+1;
 /** Seltene Wörter, die in einem häufigen stecken, werden nur ab dieser Länge vorberechnet: kürzere („ach“, „ber“) sucht niemand
@@ -64,7 +64,7 @@ const insertPostings=(db,pairs)=>{const out=[];for(let i=0;i<pairs.length;i+=150
  *   maxCards: höchstens so viele Karten je Lauf (der Rest folgt beim nächsten; bis dahin gilt die Liste als veraltet);
  *   kinds: Gebiets-ID -> 'city'|'district' für die vorberechneten Trefferzahlen (ohne sie gibt es keine);
  *   blockedMin: ab wie vielen Karten ein seltenes Wort, das in einem häufigen steckt, vorberechnet wird (Standard 6)
- *   postingMax: ab wie vielen Karten ein Wort als häufig gilt (Standard 200; für Tests kleiner)
+ *   postingMax: ab wie vielen Karten ein Wort als häufig gilt (Standard 500; für Tests kleiner)
  */
 export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity,kinds=null,postingMax=POSTING_MAX,blockedMin=BLOCKED_MIN_CARDS}={}){
  await ensureSchema(db);
@@ -154,7 +154,7 @@ async function buildAll(db,revision,chunk,kinds,postingMax,blockedMin){
  return {cards,words:words.length,postings:pairs.length,hitsWords:hits.size,blocked:blocked.size,areaRows:areaRows.length,facetRows:facetRows.length,revision,full:true,reachedEnd:true};
 }
 
-/** Nur Karten seit dem letzten Lauf: neue Wörter anlegen, IDs der seltenen ergänzen, Wörter über 200 Karten kappen */
+/** Nur Karten seit dem letzten Lauf: neue Wörter anlegen, IDs der seltenen ergänzen, Wörter über 500 Karten kappen */
 async function refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax){
  let rowid=state.rowid,topId=state.topId??null,cards=0,reachedEnd=false;
  /* Die vorberechneten Trefferzahlen lassen sich nur fortschreiben, wenn nichts gelöscht oder ersetzt wurde: dann sind die
@@ -207,7 +207,7 @@ async function refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax){
   statements.push(...insertRows(db,'search_word_facets',['word','kind','label','status','n'],upF,'ON CONFLICT(word,kind,label,status) DO UPDATE SET n=n+excluded.n'));
   for(const [t,b] of bump)statements.push(db.prepare('UPDATE search_words SET hits_city=hits_city+?,hits_district=hits_district+? WHERE word=? AND hits_city IS NOT NULL').bind(b.city,b.district,t));
   await runBatches(db,statements);
-  /* Wörter, die jetzt über 200 Karten haben, verlieren ihre IDs (ihre Trefferzahl gibt es erst nach dem nächsten vollen Aufbau) */
+  /* Wörter, die jetzt über 500 Karten haben, verlieren ihre IDs (ihre Trefferzahl gibt es erst nach dem nächsten vollen Aufbau) */
   const over=[...capped];
   for(let i=0;i<touched.length;i+=1500){
    const {results:rows}=await db.prepare('SELECT word FROM search_words WHERE cards>? AND word IN (SELECT value FROM json_each(?))').bind(postingMax,JSON.stringify(touched.slice(i,i+1500))).all();
