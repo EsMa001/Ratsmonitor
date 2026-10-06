@@ -1931,6 +1931,24 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06433012",
+    "name": "Stadt Rüsselsheim am Main",
+    "kind": "city",
+    "system": "https://rim.ekom21.de/ruesselsheim/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "body": "https://rim.ekom21.de/ruesselsheim/webservice/oparl/v1.1/body/1",
+    "note": "Einzige Körperschaft des von der offiziellen Website verlinkten Systems („Stadt Rüsselsheim“); fest zugeordnet.",
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://rim.ekom21.de/ruesselsheim/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-06",
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
+  },
+  {
     "id": "de-06433013",
     "name": "Gemeinde Stockstadt am Rhein",
     "kind": "city",
@@ -1981,20 +1999,36 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-06434006",
+    "name": "Stadt Kronberg im Taunus",
+    "kind": "city",
+    "system": "https://kronberg.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://kronberg.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-06",
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
+  },
+  {
     "id": "de-06434007",
     "name": "Stadt Neu-Anspach",
     "kind": "city",
-    "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.neu-anspach.de/",
-    "pages": [
-      "https://www.neu-anspach.de/rathaus-politik/aktuelles/bekanntmachungen-2026/bekanntmachungen-2025/",
-      "https://www.neu-anspach.de/rathaus-politik/aktuelles/bekanntmachungen-2026/"
-    ],
-    "sitemap": "https://www.neu-anspach.de/sitemap.xml",
-    "verifiedSource": "https://www.neu-anspach.de/",
+    "system": "https://rim.ekom21.de/neu-anspach/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://rim.ekom21.de/neu-anspach/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-06",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
   },
   {
     "id": "de-06434009",
@@ -2440,6 +2474,24 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-06437009",
+    "name": "Gemeinde Höchst i.Odw.",
+    "kind": "city",
+    "system": "https://rim.ekom21.de/hoechst/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "body": "https://rim.ekom21.de/hoechst/webservice/oparl/v1.1/body/1",
+    "note": "Einzige Körperschaft des von der offiziellen Website verlinkten Systems („Gemeinde Höchst“); fest zugeordnet.",
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://rim.ekom21.de/hoechst/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-06",
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
+  },
+  {
     "id": "de-06437012",
     "name": "Gemeinde Mossautal",
     "kind": "city",
@@ -2741,6 +2793,22 @@
     "verifiedSource": "https://www.bad-nauheim.de/de/buergernah/politik",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-06440003",
+    "name": "Stadt Bad Vilbel",
+    "kind": "city",
+    "system": "https://rim.ekom21.de/bad-vilbel/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://rim.ekom21.de/bad-vilbel/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-06",
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
   },
   {
     "id": "de-06440005",
@@ -3173,6 +3241,22 @@
     "verifiedSource": "https://www.wetzlar.de/rathaus/politik/gremien-portal.php",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-06533",
+    "name": "Landkreis Limburg-Weilburg",
+    "kind": "district",
+    "system": "https://rim.ekom21.de/limburg-weilburg/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://rim.ekom21.de/limburg-weilburg/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-06",
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
   },
   {
     "id": "de-06533001",
@@ -3802,6 +3886,24 @@
     "foundBy": "flieden.ris-portal.de"
   },
   {
+    "id": "de-06631009",
+    "name": "Stadt Fulda",
+    "kind": "city",
+    "system": "https://fulda.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "body": "https://fulda.ratsinfomanagement.net/webservice/oparl/v1.1/body/1",
+    "note": "Einzige Körperschaft des von der offiziellen Website verlinkten Systems („Magistrat der Stadt Fulda“); fest zugeordnet.",
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://fulda.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-06",
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
+  },
+  {
     "id": "de-06631010",
     "name": "Stadt Gersfeld (Rhön)",
     "kind": "city",
@@ -3884,17 +3986,17 @@
     "id": "de-06631020",
     "name": "Gemeinde Petersberg",
     "kind": "city",
-    "method": "scraper",
-    "adapter": "website",
-    "base": "https://www.petersberg.de/",
-    "pages": [
-      "https://www.petersberg.de/index.html?modules=news",
-      "https://www.petersberg.de/ausschuesse-0509.html",
-      "https://www.petersberg.de/gemeindevertretung-0508.html"
-    ],
-    "verifiedSource": "https://www.petersberg.de/",
+    "system": "https://petersberg.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://petersberg.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-06",
-    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
   },
   {
     "id": "de-06631022",
@@ -3932,6 +4034,22 @@
     "verifiedSource": "https://www.bad-hersfeld.de/poltik/sitzungswesen",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-06632003",
+    "name": "Stadt Bebra",
+    "kind": "city",
+    "system": "https://bebra.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "reason": "SD.NET RIM gibt per OParl nur öffentliche Tagesordnungspunkte aus (Entscheidung des Projektinhabers vom 06.10.2026; Lücken in der Nummerierung)"
+    },
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://bebra.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-06",
+    "foundBy": "SD.NET-RIM-Webservice des Mandanten"
   },
   {
     "id": "de-06632004",

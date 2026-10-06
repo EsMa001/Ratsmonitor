@@ -197,7 +197,7 @@ async function verify(region,row){
    const system0=await withHost(guess,()=>probeOparl(guess),true);if(!system0)continue;note.oparl=guess;
    // Areas outside the NRW catalog carry their official key explicitly, so the body can be matched by it
    // (Lower Saxon Samtgemeinden: 9-digit regional key).
-   let source={id:region.id,name:region.name,kind:region.kind,...(process.env.AREAS&&/^[0-9]{5}([0-9]{3,4})?$/.test(region.ags||'')?{ags:region.ags}:{}),system:guess,method:'oparl',...Object.fromEntries(['body','organizations'].map(k=>[k,row.candidates.find(x=>x.url===url)?.[k]]).filter(([,v])=>v)),...(String(system0.id||'').startsWith('http://')||String(system0.body||'').startsWith('http://')?{upgradeHttpLinks:true}:{})};
+   let source={id:region.id,name:region.name,kind:region.kind,...(process.env.AREAS&&/^[0-9]{5}([0-9]{3,4})?$/.test(region.ags||'')?{ags:region.ags}:{}),system:guess,method:'oparl',...Object.fromEntries(['body','organizations','assumePublicAgenda'].map(k=>[k,row.candidates.find(x=>x.url===url)?.[k]]).filter(([,v])=>v)),...(String(system0.id||'').startsWith('http://')||String(system0.body||'').startsWith('http://')?{upgradeHttpLinks:true}:{})};
    const collect=async()=>{let d=await withHost(guess,()=>collectRegionalOparl(source,{window:WINDOW,maxDurationMs:150000}));
     // A large system (Karlsruhe) answers the date filter too slowly for its time box; the reader then lists from the end
     // and stops at its list limit before a recent meeting. Asked once more with the filter and without the time box.
