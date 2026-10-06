@@ -34,7 +34,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
-  const { pq, placeActive, liveHits, pending, searching, showRing, noHits } = useSearchResults();
+  const { pq, placeActive, liveHits, pending, searching, showRing } = useSearchResults();
   const { view, goOverview } = useAppNav();
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -83,8 +83,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   const ring = armed && showRing;
   const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
   draftRef.current = draft;
-  /* Reine Textsuche ohne Treffer: das Wort bleibt im Feld stehen (kein Chip, keine Kartenansicht) */
-  const shownDraft = noHits && !focused ? state.q : pending && hold && (!focused || !draft) ? hold : draft;
+  const shownDraft = pending && hold && (!focused || !draft) ? hold : draft;
   const join = (d: string) => (base && state.q.startsWith(base) ? (d ? `${base.replace(/[,;|]\s*$/, "")}, ${d}` : base) : d);
 
   const apply = (value: string, extra?: Parameters<typeof search.applySearch>[1]) => {
@@ -377,7 +376,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           if (/[,;|]\s*$/.test(value)) search.commitPlaces(true);
         }}
         onFocus={() => {
-          setBase(noHits ? "" : state.q);
+          setBase(state.q);
           setFocused(true);
           setRecent(readRecent());
           setOpen(true);
@@ -399,12 +398,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           Ort erkannt
         </span>
       )}
-      {noHits && !placeOn && (
-        <span role="status" className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 whitespace-nowrap text-[12px] text-slate-500">
-          Keine Treffer
-        </span>
-      )}
-      {!focused && !placeOn && !noHits && (
+      {!focused && !placeOn && (
         <span aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 text-[12px] text-slate-500 sm:block">
           {mac ? "⌘K" : "Strg K"}
         </span>
