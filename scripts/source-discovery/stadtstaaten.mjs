@@ -2,12 +2,13 @@
 // read and recorded for every address, but not obeyed (server/integrations/robots-policy.mjs, decision of 05.10.2026;
 // ROBOTS_POLICY=obey restores the old rule). A technical refusal (HTTP 401/403) still keeps a system out.
 //
-//   node scripts/source-discovery/stadtstaaten.mjs hamburg   # robots.txt of the Transparenzportal, one month of papers
+//   node scripts/source-discovery/stadtstaaten.mjs hamburg   # robots.txt of the Transparenzportal, one month of papers, meetings, communications
 //   node scripts/source-discovery/stadtstaaten.mjs berlin    # OParl addresses of the BVV from daten.berlin.de, robots.txt of each
 //   DRY=1 …                                                  # print only, change nothing
 //
-// hamburg: switches the entry on (method "scraper") when the reader found papers of the districts; otherwise it stays
-// switched off with the reason as note. The robots.txt verdict of the search interface is printed and recorded.
+// hamburg: switches the entry on (method "scraper") when the reader found topics (papers and meetings of the districts,
+// communications of the Senate); otherwise it stays switched off with the reason as note. The robots.txt verdict of the
+// search interface is printed and recorded.
 // berlin: reads one month of the open data of the Abgeordnetenhaus (PARDOK) and records the district systems with
 // their robots.txt verdict and whether they answer as OParl system. The entry stays on when the Abgeordnetenhaus
 // delivered procedures; districts are read where they do not refuse technically (HTTP 403) or a consent is recorded
@@ -44,12 +45,15 @@ async function hamburg(){
  entry.robots={verdict,checkedAt:today};
  if(!readable(verdict)){entry.method='pending';entry.note=`robots.txt des Transparenzportals (${verdict}) erlaubt die Suchschnittstelle nicht; geprüft am ${today}. Freigabe beim Portal anfragen.`;return save();}
  const d=await collectHamburgTransparenz({...entry,method:'scraper'},{window:'1m',onProgress:m=>console.log(' ',m)});
- const by={};for(const t of d.topics)by[t.committee]=(by[t.committee]||0)+1;
- console.log('Drucksachen im letzten Monat:',d.topics.length,by);
- for(const t of d.topics.slice(0,3))console.log(' -',t.eventDate,t.committee,t.reference,'|',t.title.slice(0,90),'|',t.sourceUrl);
+ // Three kinds of topics: papers of the districts, public agenda items of their meetings, communications of the Senate.
+ const kind=t=>t.sourceData?.records?.[0]?.kind==='agenda'?'agenda':t.committee.startsWith('Bürgerschaft')?'senate':'paper';
+ const count={paper:0,agenda:0,senate:0},districts=new Set();
+ for(const t of d.topics){count[kind(t)]++;const district=t.sourceData?.records?.[0]?.fields?.district;if(district)districts.add(district);}
+ console.log(`Im letzten Monat: ${count.paper} Drucksachen der Bezirksversammlungen, ${d.coverage.meetings} Sitzungen mit ${count.agenda} öffentlichen Tagesordnungspunkten, ${count.senate} Mitteilungen des Senats; Bezirke: ${[...districts].sort().join(', ')}`);
+ for(const k of ['paper','agenda','senate'])for(const t of d.topics.filter(t=>kind(t)===k).slice(0,3))console.log(' -',t.eventDate,t.committee,t.reference,'|',t.title.slice(0,90),'|',t.sourceUrl);
  for(const i of [...d.coverage.issues,...(d.coverage.warnings||[])])console.log(' !',i);
  if(!d.topics.length){entry.method='pending';entry.note=`Prüflauf am ${today} ohne Drucksachen: ${d.coverage.issues.join(' ')}`.trim();return save();}
- entry.method='scraper';entry.verifiedAt=today;entry.verifiedEvidence={papers:d.topics.length,window:'1m',districts:Object.keys(by).length};delete entry.note;delete entry.checkPending;
+ entry.method='scraper';entry.verifiedAt=today;entry.verifiedEvidence={papers:count.paper,meetings:d.coverage.meetings,agendaItems:count.agenda,senatePapers:count.senate,window:'1m',districts:districts.size};delete entry.note;delete entry.checkPending;
  return save();
 }
 

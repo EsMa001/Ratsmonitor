@@ -1,0 +1,143 @@
+{
+ "_quelle": "Auszug aus echten Antworten von https://suche.transparenz.hamburg.de/api/3/action/package_search (abgerufen am 06.10.2026, Lizenz dl-de/by-2.0); auf die vom Leser genutzten Felder gekürzt.",
+ "help": "https://suche.transparenz.hamburg.de/api/3/action/help_show?name=package_search",
+ "success": true,
+ "result": {
+  "count": 3,
+  "results": [
+   {
+    "name": "bezirk-wandsbek-drucksache-22-4111-2",
+    "title": "Bezirk Wandsbek, Drucksache 22-4111.2",
+    "notes": "Bebauungsplanverfahren Steilshoop 12 (Fritz-Flinte Ring)\n- Kenntnisnahme über die Änderung des Flächennutzungsplans und des Landschaftsprogramms",
+    "state": "active",
+    "private": false,
+    "license_id": "dl-de-by-2.0",
+    "metadata_created": "2026-10-03T04:47:33.392160",
+    "metadata_modified": "2026-10-06T05:01:03.147675",
+    "extras": [
+     {
+      "key": "inforeg_id",
+      "value": "Allris_W:VO_1026195"
+     },
+     {
+      "key": "number",
+      "value": "22-4111.2"
+     },
+     {
+      "key": "publishing_date",
+      "value": "2026-10-03T00:00:00"
+     },
+     {
+      "key": "registerobject_type",
+      "value": "beschluesse"
+     },
+     {
+      "key": "source",
+      "value": "Allris_W"
+     },
+     {
+      "key": "temporal_coverage_from",
+      "value": "2026-10-05T00:00:00"
+     },
+     {
+      "key": "harvest_source_title",
+      "value": "Allrisbezirk-Wandsbek"
+     }
+    ],
+    "resources": [
+     {
+      "name": "Drucksache 22-4111.2 (Onlinekontext)",
+      "url": "https://sitzungsdienst-wandsbek.hamburg.de/bi/vo020.asp?VOLFDNR=1026195",
+      "format": "HTML"
+     }
+    ]
+   },
+   {
+    "name": "bezirk-wandsbek-drucksache-22-4443",
+    "title": "Bezirk Wandsbek, Drucksache 22-4443",
+    "notes": "Den Antrag \"Kinderschutz in sozialen Netzwerken fängt auf dem Spielplatz an - QR-Codes auf Spielplätzen\" umsetzen\nBeschluss der Bezirksversammlung vom 29.02.2024 (Drs. 21-8546)",
+    "state": "active",
+    "private": false,
+    "license_id": "dl-de-by-2.0",
+    "metadata_created": "2026-10-06T05:03:48.981240",
+    "metadata_modified": "2026-10-06T05:03:48.981244",
+    "extras": [
+     {
+      "key": "inforeg_id",
+      "value": "Allris_W:VO_1026156"
+     },
+     {
+      "key": "number",
+      "value": "22-4443"
+     },
+     {
+      "key": "publishing_date",
+      "value": "2026-10-06T00:00:00"
+     },
+     {
+      "key": "registerobject_type",
+      "value": "beschluesse"
+     },
+     {
+      "key": "source",
+      "value": "Allris_W"
+     },
+     {
+      "key": "temporal_coverage_from",
+      "value": "2026-10-05T00:00:00"
+     }
+    ],
+    "resources": [
+     {
+      "name": "Drucksache 22-4443 (Onlinekontext)",
+      "url": "https://sitzungsdienst-wandsbek.hamburg.de/bi/vo020.asp?VOLFDNR=1026156",
+      "format": "HTML"
+     }
+    ]
+   },
+   {
+    "name": "bezirk-hamburg-nord-drucksache-22-2671",
+    "title": "Bezirk Hamburg-Nord, Drucksache 22-2671",
+    "notes": "Schilderwald roden - \"RESPEKT!\"-Schilder bezirksweit entfernen\nAntrag der Volt-Fraktion",
+    "state": "active",
+    "private": false,
+    "license_id": "dl-de-by-2.0",
+    "metadata_created": "2026-10-05T17:12:11.682679",
+    "metadata_modified": "2026-10-05T17:12:11.682684",
+    "extras": [
+     {
+      "key": "inforeg_id",
+      "value": "Allris_N:VO_1017153"
+     },
+     {
+      "key": "number",
+      "value": "22-2671"
+     },
+     {
+      "key": "publishing_date",
+      "value": "2026-10-05T00:00:00"
+     },
+     {
+      "key": "registerobject_type",
+      "value": "beschluesse"
+     },
+     {
+      "key": "source",
+      "value": "Allris_N"
+     },
+     {
+      "key": "temporal_coverage_from",
+      "value": "2026-10-05T00:00:00"
+     }
+    ],
+    "resources": [
+     {
+      "name": "Drucksache 22-2671 (Onlinekontext)",
+      "url": "https://sitzungsdienst-hamburg-nord.hamburg.de/bi/vo020.asp?VOLFDNR=1017153",
+      "format": "HTML"
+     }
+    ]
+   }
+  ]
+ }
+}

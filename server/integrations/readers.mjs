@@ -50,7 +50,7 @@ export const READERS={
  // is one, so verify.mjs never recognises it; only the website search (scripts/source-discovery/website.mjs) assigns it.
  website:{name:WEBSITE_READER_NAME,collect:collectSite,detect:async()=>null},
  // City states (citystates.mjs, entries in citystate-sources.json). Neither is recognised from a page.
- 'hamburg-transparenz':{name:'Transparenzportal Hamburg (Drucksachen der Bezirksversammlungen)',collect:collectHamburgTransparenz,detect:async()=>null},
+ 'hamburg-transparenz':{name:'Transparenzportal Hamburg (Drucksachen und Sitzungen der Bezirksversammlungen, Mitteilungen des Senats)',collect:collectHamburgTransparenz,detect:async()=>null},
  'oparl-bezirke':{name:'OParl der Bezirksverordnetenversammlungen (nur mit Freigabe)',collect:collectOparlDistricts,detect:async()=>null},
  berlin:{name:'Abgeordnetenhaus Berlin (Parlamentsdokumentation, offene Daten) und Bezirke mit Freigabe',collect:collectBerlin,detect:async()=>null},
 };

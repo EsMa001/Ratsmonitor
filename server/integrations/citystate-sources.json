@@ -19,11 +19,14 @@
     "license": "dl-de/by-2.0",
     "robots": {
       "verdict": "verboten",
-      "checkedAt": "2026-10-05"
+      "checkedAt": "2026-10-06"
     },
-    "verifiedAt": "2026-10-05",
+    "verifiedAt": "2026-10-06",
     "verifiedEvidence": {
-      "papers": 903,
+      "papers": 805,
+      "meetings": 54,
+      "agendaItems": 1181,
+      "senatePapers": 33,
       "window": "1m",
       "districts": 7
     }

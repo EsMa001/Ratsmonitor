@@ -4,10 +4,13 @@
 // ROBOTS_POLICY=obey. A technical refusal (HTTP 401/403, a firewall) still ends the reading of that system.
 //
 // Hamburg (adapter "hamburg-transparenz"): the systems of the seven Bezirksversammlungen (sitzungsdienst-<bezirk>.hamburg.de)
-// refuse programs in robots.txt. The Transparenzportal publishes their papers (Drucksachen) under the Hamburg
-// Transparency Act (HmbTG) as datasets of an open CKAN interface, licence dl-de/by-2.0. This reader asks only that
-// interface (package_search). Links into the district systems are kept as links and never requested. The portal lists
-// papers, not meetings: a topic carries the paper and its date of publication, no agenda and no result.
+// refuse programs in robots.txt. The Transparenzportal publishes under the Hamburg Transparency Act (HmbTG) as datasets of
+// an open CKAN interface, licence dl-de/by-2.0 (notes on the interface: transparenz.hamburg.de/api-796358): the papers
+// (Drucksachen) of the district assemblies, their meetings with the public items of the agenda (published with the
+// minutes, weeks after the meeting) and the communications of the Senate to the Bürgerschaft. This reader asks only that
+// interface (package_search, filtered by the type of register object). Links into the district systems and to the
+// Bürgerschaft's database are kept as links and never requested. A paper carries its date of publication, an agenda item
+// the day of its meeting; neither carries a result. Decisions and minutes of the Senate (senatpetitum) are not read.
 //
 // Berlin (adapter "oparl-bezirke"): the twelve Bezirksverordnetenversammlungen publish their OParl interfaces as open
 // data (daten.berlin.de); their systems answered programs with HTTP 403 (05.10.2026). With a consent recorded in the
@@ -16,6 +19,7 @@
 // committee.
 import {fetchText,text} from './sessionnet.mjs';
 import {robotsGate} from './website.mjs';
+import {isNonPublicText} from './website-text.mjs';
 import {obeyRobots} from './robots-policy.mjs';
 import {windowStart} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
@@ -25,7 +29,7 @@ import {collectRegionalOparl} from './oparl-regional.mjs';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 
 export const HAMBURG_DISTRICTS=['Altona','Bergedorf','Eimsbüttel','Hamburg-Mitte','Hamburg-Nord','Harburg','Wandsbek'];
-export const HAMBURG_NOTE='Drucksachen der Bezirksversammlungen aus dem Transparenzportal; ohne Sitzungskalender, Tagesordnung und Ergebnis.';
+export const HAMBURG_NOTE='Drucksachen und Sitzungen mit öffentlicher Tagesordnung der Bezirksversammlungen sowie Mitteilungen des Senats an die Bürgerschaft aus dem Transparenzportal; Sitzungen erst mit der Niederschrift, ohne Ergebnis.';
 export const BERLIN_CONSENT_MISSING='Freigabe fehlt: Die Systeme der Bezirksverordnetenversammlungen sperren Programme technisch aus (HTTP 403). Ohne eingetragene Freigabe wird nichts abgerufen.';
 const API='api/3/action/package_search';
 const ROWS=100,MAX_PAGES=10;
@@ -35,12 +39,33 @@ const slug=s=>norm(s)||'x';
 const isoDay=value=>{const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:null;};
 const extra=(pkg,keys)=>{for(const k of keys){const e=(pkg.extras||[]).find(x=>x&&x.key===k);if(e&&e.value)return String(e.value);if(pkg[k])return String(pkg[k]);}return '';};
 const https=url=>{try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}};
+const fnv=value=>{let h=0x811c9dc5;for(const c of new TextEncoder().encode(value)){h^=c;h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');};
 
-/** Query of one page of papers of a district, changed since the start of the period (CKAN/Solr syntax). */
-export function hamburgQuery(source,district,fromDay,start=0){
- const p=new URLSearchParams({q:`title:"Bezirk ${district}" AND title:Drucksache`,fq:`metadata_modified:[${fromDay}T00:00:00Z TO *]`,sort:'metadata_modified desc',rows:String(ROWS),start:String(start)});
+/**
+ * Query of one page of register objects of a district, changed since the start of the period (CKAN/Solr syntax):
+ * papers (kind "Drucksache") or meetings (kind "Sitzung"). Both are register objects of the type "beschluss" (field
+ * registerobject_type, filter fq as the portal's API notes describe: transparenz.hamburg.de/api-796358).
+ */
+export function hamburgQuery(source,district,fromDay,start=0,kind='Drucksache'){
+ const p=new URLSearchParams({q:`title:"Bezirk ${district}" AND title:${kind}`,fq:`extras_registerobject_type:beschluss AND metadata_modified:[${fromDay}T00:00:00Z TO *]`,sort:'metadata_modified desc',rows:String(ROWS),start:String(start)});
  return new URL(API+'?'+p,source.base).href;
 }
+/** Query of one page of communications of the Senate to the Bürgerschaft (type "senatmitteil") changed in the period. */
+export function hamburgSenateQuery(source,fromDay,start=0){
+ const p=new URLSearchParams({q:'*:*',fq:`extras_registerobject_type:senatmitteil AND metadata_modified:[${fromDay}T00:00:00Z TO *]`,sort:'metadata_modified desc',rows:String(ROWS),start:String(start)});
+ return new URL(API+'?'+p,source.base).href;
+}
+// Links of a dataset: the page of the dataset in the portal first, then its resources (only https addresses; documents in
+// the district systems and in the Bürgerschaft's database are linked, never requested).
+const links=(pkg,source,fallback)=>{
+ const page=pkg.name?new URL('dataset/'+encodeURIComponent(pkg.name),source.base).href:null,documents=[];
+ for(const r of pkg.resources||[]){const url=https(r?.url);if(url)documents.push({title:String(r.name||r.description||fallback).replace(/\s+/g,' ').trim().slice(0,160)||fallback,url,kind:String(r.format||'').toLowerCase().includes('pdf')?'application/pdf':'html'});}
+ if(page)documents.unshift({title:'Datensatz im Transparenzportal Hamburg',url:page,kind:'html'});
+ return {page,documents};
+};
+// A public, active dataset whose register object is of the type asked for, where it names one: the portal stores
+// "beschluesse" and "senatmitteilungen" and indexes them stemmed ("beschluss", "senatmitteil" in the queries).
+const usable=(pkg,type)=>{if(!pkg||typeof pkg!=='object'||pkg.private===true||pkg.state&&pkg.state!=='active')return false;const t=extra(pkg,['registerobject_type']);return !t||type.test(t);};
 
 /**
  * One dataset of the portal as a paper of the district, or null if it is none: the title names the district and a
@@ -48,7 +73,7 @@ export function hamburgQuery(source,district,fromDay,start=0){
  * Date: date of publication of the register object where given, otherwise the creation of the dataset.
  */
 export function hamburgPaper(pkg,district,source){
- if(!pkg||typeof pkg!=='object'||pkg.private===true||pkg.state&&pkg.state!=='active')return null;
+ if(!usable(pkg,/^beschl/i))return null;
  const title=String(pkg.title||'').replace(/\s+/g,' ').trim(),m=title.match(/^Bezirk\s+(.+?)\s*[,:]\s*Drucksache\s+(?:Nr\.?\s*)?(\d{1,2}-\d{1,6}(?:\.\d+)?)\b\s*[:,–-]?\s*(.*)$/i);
  if(!m||norm(m[1])!==norm(district))return null;
  const notes=text(pkg.notes||'');
@@ -56,12 +81,62 @@ export function hamburgPaper(pkg,district,source){
  const date=isoDay(extra(pkg,['publishing_date','date_published','temporal_coverage_from']))||isoDay(pkg.metadata_created);
  if(!date)return null;
  const reference=m[2],subject=(m[3]||'').trim()||(notes&&notes.length<=300?notes:'');
- const page=pkg.name?new URL('dataset/'+encodeURIComponent(pkg.name),source.base).href:null;
- const documents=[];
- for(const r of pkg.resources||[]){const url=https(r?.url);if(url)documents.push({title:String(r.name||r.description||'Drucksache').replace(/\s+/g,' ').trim().slice(0,160)||'Drucksache',url,kind:String(r.format||'').toLowerCase().includes('pdf')?'application/pdf':'html'});}
- if(page)documents.unshift({title:'Datensatz im Transparenzportal Hamburg',url:page,kind:'html'});
+ const {page,documents}=links(pkg,source,'Drucksache');
  if(!documents.length)return null;
  return {district,reference,title:subject||`Drucksache ${reference}`,notes:notes.slice(0,4000),date,url:page||documents[0].url,documents,modified:isoDay(pkg.metadata_modified)};
+}
+
+// A meeting of a district body: "Bezirk Hamburg-Nord, SI/2026/576 Sitzung des Hauptausschusses vom 25.08.2026" (the
+// date in the title is used only where the dataset has no period). The body is named in the genitive; the reader names
+// it as such: "Hauptausschuss", "Regionalausschuss Kerngebiet Wandsbek", the assembly itself as "Bezirksversammlung <district>".
+const MEETING=/^Bezirk\s+(.+?)\s*,\s*(\S+)\s+Sitzung\s+(?:des|der)\s+(.+?)(?:\s+vom\s+(\d{1,2}\.\d{1,2}\.(?:\d{4})?)\s*)?$/i;
+const bodyName=(phrase,district)=>{
+ // Only the head noun: "Unterausschusses für Bauangelegenheiten des Regionalausschusses Rahlstedt" names the
+ // "Unterausschuss … des Regionalausschusses Rahlstedt". A leading abbreviation ("(EWi) Unterausschuss …") is dropped.
+ const b=phrase.replace(/\s+-\s+DIGITAL\b.*$/i,'').replace(/\s+/g,' ').trim().replace(/^\([^)]{1,12}\)\s*/,'').replace(/(ausschuss|beirat|rat)(?:es|s)\b/i,'$1');
+ return /^Bezirksversammlung\b/i.test(b)?'Bezirksversammlung '+district:`${b} (Bezirk ${district})`;
+};
+// The list of agenda items names an item of the non-public part only as "(nichtöffentlich)" or "(vertraulich)"; such an
+// entry, and any title that names the non-public part, is left out (website-text.mjs isNonPublicText).
+const PLACEHOLDER=/^\(?\s*(?:nicht\s*[-–]?\s*(?:ö|oe)ffentlich|vertraulich)\s*\)?\.?$/i;
+/**
+ * One dataset of the portal as a meeting of a district body with the public items of its agenda, or null if it is none:
+ * the title names the district, a meeting number and the body; the date of the meeting is the start of the dataset's
+ * period (temporal_coverage_from) or the date in the title; the items stand in its description ("Tagesordnungspunkte: …;
+ * …"). The portal publishes a meeting once its minutes are approved; date: the publication of the dataset.
+ */
+export function hamburgMeeting(pkg,district,source){
+ if(!usable(pkg,/^beschl/i))return null;
+ const title=String(pkg.title||'').replace(/\s+/g,' ').trim(),m=title.match(MEETING);
+ if(!m||norm(m[1])!==norm(district)||RESTRICTED.test(m[3]))return null;
+ const meetingDay=isoDay(extra(pkg,['temporal_coverage_from']))||(m[4]&&/\.\d{4}$/.test(m[4])?m[4].split('.').reverse().map(x=>x.padStart(2,'0')).join('-'):null);
+ const published=isoDay(extra(pkg,['publishing_date','date_published']))||isoDay(pkg.metadata_created);
+ if(!meetingDay||!published)return null;
+ const number=extra(pkg,['number']).trim()||m[2];
+ let left=0;const items=[],seen=new Set();
+ for(const raw of text(String(pkg.notes||'').replace(/^\s*Tagesordnungspunkte\s*:\s*/i,'')).split(/\s*;\s*/)){
+  const item=raw.replace(/\s+/g,' ').trim();if(!item)continue;
+  if(PLACEHOLDER.test(item)||isNonPublicText(item)){left++;continue;}
+  if(!seen.has(item)){seen.add(item);items.push(item);}
+ }
+ const {page,documents}=links(pkg,source,'Sitzungsprotokoll');
+ if(!documents.length)return null;
+ return {district,number,committee:bodyName(m[3],district),date:meetingDay,published,items,left,url:page||documents[0].url,documents,modified:isoDay(pkg.metadata_modified)};
+}
+
+/**
+ * One dataset of the portal as a communication of the Senate to the Bürgerschaft (a paper of the Bürgerschaft), or null
+ * if it is none: it carries the number of a paper of the Bürgerschaft ("23/5267"); other communications of the Senate
+ * (the Bundesrat votes) have none and are left out. Date: publication of the register object.
+ */
+export function hamburgSenatePaper(pkg,source){
+ if(!usable(pkg,/^senatmitteil/i))return null;
+ const reference=extra(pkg,['number']).trim();if(!/^\d{1,2}\/\d{1,6}$/.test(reference))return null;
+ const title=String(pkg.title||'').replace(/\s+/g,' ').trim();if(!title||RESTRICTED.test(title))return null;
+ const date=isoDay(extra(pkg,['publishing_date','date_published']))||isoDay(pkg.metadata_created);if(!date)return null;
+ const {page,documents}=links(pkg,source,'Drucksache '+reference);
+ if(!documents.length)return null;
+ return {reference,title,notes:text(pkg.notes||'').slice(0,4000),date,url:page||documents[0].url,documents,modified:isoDay(pkg.metadata_modified)};
 }
 
 // A refusal (HTTP 401/403, or 429 after the budget's one retry) ends the reading of that server for this import: no
@@ -70,7 +145,7 @@ const refusedBy=e=>/HTTP (?:401|403|429)\b/.test(String(e?.message||e));
 
 export async function collectHamburgTransparenz(source,{now=new Date(),get=fetchText,maxDurationMs=240000,onProgress=()=>{},window:lookback}={}){
  const fromDay=windowStart(now,lookback).toISOString().slice(0,10),today=now.toISOString().slice(0,10);
- const read=budgeted(get,maxDurationMs,2),issues=[],warnings=[],papers=new Map();
+ const read=budgeted(get,maxDurationMs,2),issues=[],warnings=[],papers=new Map(),meetings=new Map(),senate=new Map();
  const coverage=extra=>({regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:0,sourceCount:1,sourceUrl:source.base,note:HAMBURG_NOTE,...extra});
  // robots.txt of the portal decides before the first query; if it cannot be read, nothing is read.
  const allows=await robotsGate(read,source);
@@ -78,40 +153,73 @@ export async function collectHamburgTransparenz(source,{now=new Date(),get=fetch
   const why=allows.issues[0]||'robots.txt des Transparenzportals untersagt Programmen die Suchschnittstelle.';
   return {topics:[],marks:{},readMeetings:0,coverage:coverage({complete:false,quiet:false,issues:[why]})};
  }
- const districts=source.districts?.length?source.districts:HAMBURG_DISTRICTS;let foreign=0,limited=false;
- for(const district of districts){
-  let found=0;
-  try{
-   for(let page=0;page<MAX_PAGES;page++){
-    const body=JSON.parse(await read(hamburgQuery(source,district,fromDay,page*ROWS),source));
-    if(body?.success!==true||!Array.isArray(body?.result?.results))throw Error('Unbekanntes Antwortformat der Suchschnittstelle');
-    for(const pkg of body.result.results){const p=hamburgPaper(pkg,district,source);if(!p){foreign++;continue;}if(p.date<fromDay||p.date>today)continue;found++;papers.set(slug(p.district)+'-'+p.reference,p);}
-    if(body.result.results.length<ROWS)break;
-    if(page===MAX_PAGES-1&&Number(body.result.count)>(page+1)*ROWS)limited=true;
-   }
-   if(!found)warnings.push(`Keine Drucksache der Bezirksversammlung ${district} im Zeitraum gefunden.`);
-  }catch(e){
-   issues.push(`Bezirk ${district}: ${e.message}`);
-   if(refusedBy(e)){issues.push('Das Transparenzportal hat den Abruf abgewiesen; in diesem Import keine weiteren Anfragen dorthin.');break;}
+ let foreign=0,limited=false,shut=false;
+ // All pages of one query; each dataset goes to take (true: it was one of the kind asked for).
+ const query=async(label,url,take)=>{
+  for(let page=0;page<MAX_PAGES&&!shut;page++){
+   let body;
+   try{body=JSON.parse(await read(url(page*ROWS),source));}
+   catch(e){issues.push(`${label}: ${e.message}`);if(refusedBy(e)){shut=true;issues.push('Das Transparenzportal hat den Abruf abgewiesen; in diesem Import keine weiteren Anfragen dorthin.');}return;}
+   if(body?.success!==true||!Array.isArray(body?.result?.results)){issues.push(`${label}: Unbekanntes Antwortformat der Suchschnittstelle`);return;}
+   for(const pkg of body.result.results)if(!take(pkg))foreign++;
+   if(body.result.results.length<ROWS)return;
+   if(page===MAX_PAGES-1&&Number(body.result.count)>(page+1)*ROWS)limited=true;
   }
-  onProgress(`${source.id}: Bezirk ${district}, ${found} Drucksachen`);
+ };
+ const districts=source.districts?.length?source.districts:HAMBURG_DISTRICTS,quietDistricts=[];
+ for(const district of districts){
+  if(shut)break;
+  let found=0,held=0;
+  await query(`Bezirk ${district}`,start=>hamburgQuery(source,district,fromDay,start),pkg=>{const p=hamburgPaper(pkg,district,source);if(!p)return false;if(p.date>=fromDay&&p.date<=today){found++;papers.set(slug(p.district)+'-'+p.reference,p);}return true;});
+  if(!shut&&!found&&!issues.some(i=>i.startsWith(`Bezirk ${district}:`)))warnings.push(`Keine Drucksache der Bezirksversammlung ${district} im Zeitraum gefunden.`);
+  // Meetings published in the period (after their minutes were approved); the event is the day of the meeting.
+  if(!shut)await query(`Sitzungen Bezirk ${district}`,start=>hamburgQuery(source,district,fromDay,start,'Sitzung'),pkg=>{const s=hamburgMeeting(pkg,district,source);if(!s)return false;if(s.published>=fromDay&&s.published<=today&&s.date<=today&&s.items.length){held++;meetings.set(slug(district)+'-'+slug(s.number),s);}return true;});
+  if(!shut&&!held&&!issues.some(i=>i.startsWith(`Sitzungen Bezirk ${district}:`)))quietDistricts.push(district);
+  onProgress(`${source.id}: Bezirk ${district}, ${found} Drucksachen, ${held} Sitzungen`);
  }
- if(limited)issues.push(`Mehr als ${ROWS*MAX_PAGES} geänderte Datensätze je Bezirk; ein kürzerer Zeitraum liest sie vollständig.`);
- const topics=[];
+ if(quietDistricts.length)warnings.push(`Keine Sitzung mit öffentlicher Tagesordnung im Zeitraum veröffentlicht: ${quietDistricts.join(', ')}.`);
+ // The communications of the Senate to the Bürgerschaft (papers of the city-state's parliament).
+ if(!shut)await query('Mitteilungen des Senats',start=>hamburgSenateQuery(source,fromDay,start),pkg=>{const p=hamburgSenatePaper(pkg,source);if(!p)return false;if(p.date>=fromDay&&p.date<=today)senate.set(slug(p.reference),p);return true;});
+ if(limited)issues.push(`Mehr als ${ROWS*MAX_PAGES} geänderte Datensätze je Abfrage; ein kürzerer Zeitraum liest sie vollständig.`);
+ const topics=[],fetchedAt=now.toISOString(),checks=detail=>[{name:'Originalquelle',passed:true,detail},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}];
+ const topic=async(t,place,detail)=>{
+  t.events.forEach(e=>{e.attendance={status:'not_collected',sourceUrl:e.url,fetchedAt,people:[]};e.decision=sourceDecision(e);});
+  Object.assign(t,sourceSummary(t));if(t.longSummary?.[0])t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+place);
+  t.quality={passed:false,checks:checks(detail),checkedAt:fetchedAt,sourceHash:await hash(t.sourceText)};topics.push(t);
+ };
  for(const [key,p] of papers){
   const committee='Bezirksversammlung '+p.district,status='unknown';
-  const event={date:p.date,committee,status,description:'Drucksache im Transparenzportal veröffentlicht; Sitzung und Ergebnis sind dort nicht angegeben.',result:'',url:p.url,publicEvidence:'Veröffentlicht im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0)',attendance:{status:'not_collected',sourceUrl:p.url,fetchedAt:now.toISOString(),people:[]}};
-  event.decision=sourceDecision(event);
-  const t={id:`${source.id}-hh-${key}`,regionId:source.id,source:source.kind,public:true,title:p.title,officialTitle:p.title,reference:p.reference,category:category(p.title),status,committee,eventDate:p.date,updatedAt:now.toISOString(),
+  const event={date:p.date,committee,status,description:'Drucksache im Transparenzportal veröffentlicht; Sitzung und Ergebnis sind dort nicht angegeben.',result:'',url:p.url,publicEvidence:'Veröffentlicht im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0)'};
+  await topic({id:`${source.id}-hh-${key}`,regionId:source.id,source:source.kind,public:true,title:p.title,officialTitle:p.title,reference:p.reference,category:category(p.title),status,committee,eventDate:p.date,updatedAt:fetchedAt,
    relevanceReason:'Öffentliche Drucksache: Bezirksversammlung '+p.district,sourceText:[p.title,'Drucksache '+p.reference+' der Bezirksversammlung '+p.district,p.notes].filter(Boolean).join('\n'),
    identityLinks:[p.url],events:[event],documents:p.documents,sourceUrl:p.url,
-   sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt:now.toISOString(),records:[{kind:'paper',url:p.url,fields:{reference:p.reference,district:p.district,published:p.date,modified:p.modified}}],detailStatus:'completed',issues:[]}};
-  Object.assign(t,sourceSummary(t));if(t.longSummary?.[0])t.longSummary[0]=t.longSummary[0].replace('in Münster','in Hamburg-'+p.district.replace(/^Hamburg-/,''));
-  t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Transparenzportal Hamburg; nur veröffentlichte Drucksachen der Bezirksversammlungen.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};
-  topics.push(t);
+   sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'paper',url:p.url,fields:{reference:p.reference,district:p.district,published:p.date,modified:p.modified}}],detailStatus:'completed',issues:[]}},
+   'Hamburg-'+p.district.replace(/^Hamburg-/,''),'Transparenzportal Hamburg; nur veröffentlichte Drucksachen der Bezirksversammlungen.');
  }
- if(foreign)warnings.push(`${foreign} Treffer der Suche sind keine Drucksache des gesuchten Bezirks und wurden ausgelassen.`);
- return {topics,marks:{},readMeetings:0,coverage:coverage({papers:topics.length,...(warnings.length?{warnings}:{}),quiet:topics.length===0&&issues.length===0,complete:issues.length===0&&topics.length>0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.']})};
+ let left=0;
+ for(const [key,s] of meetings){
+  left+=s.left;
+  for(const item of s.items){
+   const status='unknown',event={date:s.date,committee:s.committee,status,description:`Öffentlicher Tagesordnungspunkt; das Ergebnis steht im Protokoll der Sitzung (${s.number}), verlinkt, nicht eingelesen.`,result:'',url:s.url,publicEvidence:'Öffentliche Tagesordnung im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0); Punkte des nichtöffentlichen Teils fehlen dort oder stehen nur als „(nichtöffentlich)“'};
+   await topic({id:`${source.id}-hh-${key}-${fnv(item)}`,regionId:source.id,source:source.kind,public:true,title:item,officialTitle:item,reference:'',category:category(item),status,committee:s.committee,eventDate:s.date,updatedAt:fetchedAt,
+    relevanceReason:'Öffentlicher Tagesordnungspunkt: '+s.committee,sourceText:[item,`Sitzung ${s.number}: ${s.committee}, ${s.date}`].join('\n'),
+    identityLinks:[s.url],events:[event],documents:s.documents,sourceUrl:s.url,
+    sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'agenda',url:s.url,fields:{meeting:s.number,district:s.district,date:s.date,committee:s.committee,title:item,published:s.published}}],detailStatus:'completed',issues:[]}},
+    'Hamburg-'+s.district.replace(/^Hamburg-/,''),'Transparenzportal Hamburg; öffentliche Tagesordnung einer Sitzung der Bezirksversammlung oder ihrer Ausschüsse.');
+  }
+ }
+ if(left)warnings.push(`${left} Tagesordnungspunkte des nichtöffentlichen Teils (oder mit Titeln, die ihn nennen) ausgelassen.`);
+ for(const [key,p] of senate){
+  const committee='Bürgerschaft (Mitteilung des Senats)',status='unknown';
+  const event={date:p.date,committee,status,description:`Mitteilung des Senats an die Bürgerschaft (Drucksache ${p.reference}) im Transparenzportal veröffentlicht; Beratung und Beschluss der Bürgerschaft sind dort nicht angegeben.`,result:'',url:p.url,publicEvidence:'Veröffentlicht im Transparenzportal Hamburg (HmbTG, dl-de/by-2.0)'};
+  await topic({id:`${source.id}-hh-bs-${key}`,regionId:source.id,source:source.kind,public:true,title:p.title,officialTitle:p.title,reference:p.reference,category:category(p.title),status,committee,eventDate:p.date,updatedAt:fetchedAt,
+   relevanceReason:'Mitteilung des Senats an die Bürgerschaft',sourceText:[p.title,'Drucksache '+p.reference+' der Bürgerschaft (Mitteilung des Senats)',p.notes].filter(Boolean).join('\n'),
+   identityLinks:[p.url],events:[event],documents:p.documents,sourceUrl:p.url,
+   sourceData:{version:'public-source-fields-v1',method:'hamburg-transparenz',fetchedAt,records:[{kind:'paper',url:p.url,fields:{reference:p.reference,body:'Bürgerschaft',published:p.date,modified:p.modified}}],detailStatus:'completed',issues:[]}},
+   'Hamburg','Transparenzportal Hamburg; Mitteilungen des Senats an die Bürgerschaft (Drucksachen der Bürgerschaft).');
+ }
+ if(foreign)warnings.push(`${foreign} Treffer der Suche ${foreign===1?'gehört':'gehören'} nicht zur Abfrage (anderer Bezirk, anderes Registerobjekt, Mitteilung ohne Drucksachennummer) und ${foreign===1?'wurde':'wurden'} ausgelassen.`);
+ return {topics,marks:{},readMeetings:meetings.size,coverage:coverage({meetings:meetings.size,papers:papers.size+senate.size,...(warnings.length?{warnings}:{}),quiet:topics.length===0&&issues.length===0,complete:issues.length===0&&topics.length>0,issues:topics.length?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.']})};
 }
 
 /** A consent recorded in the catalog entry: who gave it, when, and that it covers the OParl interfaces. */

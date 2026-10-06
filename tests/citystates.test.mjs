@@ -4,15 +4,19 @@ import entries from '../server/integrations/citystate-sources.json' with {type:'
 import {NRW_SOURCES} from '../server/integrations/source-catalog.mjs';
 import {READERS} from '../server/integrations/readers.mjs';
 import {collectRegion} from '../server/integrations/collect-region.mjs';
-import {pardokProcedure,pardokBlocks,collectPardok,collectBerlin,hamburgPaper,hamburgQuery,collectHamburgTransparenz,collectOparlDistricts,consentValid,eligibleSystems,BERLIN_CONSENT_MISSING,HAMBURG_DISTRICTS} from '../server/integrations/citystates.mjs';
+import {pardokProcedure,pardokBlocks,collectPardok,collectBerlin,hamburgPaper,hamburgQuery,hamburgMeeting,hamburgSenateQuery,hamburgSenatePaper,collectHamburgTransparenz,collectOparlDistricts,consentValid,eligibleSystems,BERLIN_CONSENT_MISSING,HAMBURG_DISTRICTS} from '../server/integrations/citystates.mjs';
+// Real answers of the Transparenzportal Hamburg (06.10.2026), reduced to the fields the reader uses.
+import SITZUNGEN from './fixtures/citystates/hh-sitzungen.json' with {type:'json'};
+import DRUCKSACHEN from './fixtures/citystates/hh-drucksachen.json' with {type:'json'};
+import SENAT from './fixtures/citystates/hh-senat.json' with {type:'json'};
 
 // These tests check the old rule (robots.txt obeyed, ROBOTS_POLICY=obey); the tests marked "standard rule" switch to
 // the rule of server/integrations/robots-policy.mjs: robots.txt is recorded, not obeyed, and a refusal stays final.
 process.env.ROBOTS_POLICY='obey';
 const standardRule=async fn=>{const was=process.env.ROBOTS_POLICY;delete process.env.ROBOTS_POLICY;try{return await fn();}finally{process.env.ROBOTS_POLICY=was;}};
 
-/* Nachgebildete Antworten im Format der CKAN-Schnittstelle (package_search); echte Antworten waren aus der
-   Entwicklungsumgebung nicht abrufbar. */
+/* Nachgebildete Antworten im Format der CKAN-Schnittstelle (package_search) für Grenzfälle; die echten Antworten
+   liegen unter tests/fixtures/citystates/. */
 const hh={id:'de-02000000',name:'Stadt Hamburg',kind:'city',method:'scraper',adapter:'hamburg-transparenz',base:'https://suche.transparenz.hamburg.de/',districts:['Wandsbek','Altona']};
 const now=new Date('2026-10-05T10:00:00Z');
 const pkg=(over={})=>({name:'bezirk-wandsbek-drucksache-22-3451',title:'Bezirk Wandsbek, Drucksache 22-3451: Mehr Fahrradbügel am Markt',notes:'<p>Antrag der Fraktion …</p>',state:'active',private:false,metadata_created:'2026-09-20T08:00:00',metadata_modified:'2026-09-21T08:00:00',extras:[{key:'registerobject_type',value:'beschluss'},{key:'publishing_date',value:'2026-09-19'}],resources:[{name:'Drucksache 22-3451',url:'https://sitzungsdienst-wandsbek.hamburg.de/bi/vo020.asp?VOLFDNR=1',format:'HTML'}],...over});
@@ -38,11 +42,95 @@ test('a dataset of the portal becomes a paper of its district only with district
  assert.deepEqual(HAMBURG_DISTRICTS.length,7);
 });
 
-test('the query asks the search interface for papers of one district changed in the period',()=>{
+test('the queries ask the search interface by type of register object: papers and meetings of one district, communications of the Senate',()=>{
  const u=new URL(hamburgQuery(hh,'Wandsbek','2026-09-05'));
  assert.equal(u.origin+u.pathname,'https://suche.transparenz.hamburg.de/api/3/action/package_search');
  assert.equal(u.searchParams.get('q'),'title:"Bezirk Wandsbek" AND title:Drucksache');
- assert.equal(u.searchParams.get('fq'),'metadata_modified:[2026-09-05T00:00:00Z TO *]');
+ assert.equal(u.searchParams.get('fq'),'extras_registerobject_type:beschluss AND metadata_modified:[2026-09-05T00:00:00Z TO *]');
+ const m=new URL(hamburgQuery(hh,'Hamburg-Nord','2026-09-05',100,'Sitzung'));
+ assert.equal(m.searchParams.get('q'),'title:"Bezirk Hamburg-Nord" AND title:Sitzung');assert.equal(m.searchParams.get('start'),'100');
+ assert.equal(m.searchParams.get('fq'),'extras_registerobject_type:beschluss AND metadata_modified:[2026-09-05T00:00:00Z TO *]');
+ const s=new URL(hamburgSenateQuery(hh,'2026-09-05'));
+ assert.equal(s.origin+s.pathname,'https://suche.transparenz.hamburg.de/api/3/action/package_search');
+ assert.equal(s.searchParams.get('fq'),'extras_registerobject_type:senatmitteil AND metadata_modified:[2026-09-05T00:00:00Z TO *]');
+});
+
+const [hauptausschuss,versammlung,unterausschuss,bau2020,bau2014,geschlossen]=SITZUNGEN.result.results;
+test('a meeting of the portal (real answers): the public items of its agenda, the body in the nominative, the day of the meeting',()=>{
+ const m=hamburgMeeting(hauptausschuss,'Hamburg-Nord',hh);
+ assert.equal(m.number,'SI/2026/576');assert.equal(m.committee,'Hauptausschuss (Bezirk Hamburg-Nord)');
+ assert.equal(m.date,'2026-08-25','the day of the meeting');assert.equal(m.published,'2026-10-01','published with the minutes');
+ assert.equal(m.items.length,15);assert.equal(m.items[14],'Verschiedenes');assert.equal(m.left,0);
+ assert.equal(m.url,'https://suche.transparenz.hamburg.de/dataset/bezirk-hamburg-nord-si-2026-576-sitzung-des-hauptausschusses-vom-25-08-2026');
+ assert.deepEqual(m.documents.map(d=>d.url),[m.url,'https://sitzungsdienst-hamburg-nord.hamburg.de/bi//to010.asp?silfdnr=1003442'],'the minutes are linked, not read; the http print version is left out');
+ /* Gremium im Nominativ: die Versammlung selbst, ein Unterausschuss eines Regionalausschusses, ein Kürzel davor */
+ assert.equal(hamburgMeeting(versammlung,'Hamburg-Nord',hh).committee,'Bezirksversammlung Hamburg-Nord');
+ assert.equal(hamburgMeeting(unterausschuss,'Wandsbek',hh).committee,'Unterausschuss für Bauangelegenheiten des Regionalausschusses Rahlstedt (Bezirk Wandsbek)');
+ assert.equal(hamburgMeeting(geschlossen,'Hamburg-Nord',hh).committee,'Unterausschuss Bau des Regionalausschusses Eppendorf-Winterhude (Bezirk Hamburg-Nord)');
+ /* Nichtöffentlicher Teil: die Platzhalter und jeder Titel, der ihn nennt, werden ausgelassen */
+ const old=hamburgMeeting(bau2014,'Hamburg-Mitte',hh);
+ assert.deepEqual([old.items.length,old.left],[3,18]);assert.ok(old.items.every(i=>!/nicht\s*-?\s*öffentlich|vertraulich/i.test(i)));
+ assert.deepEqual(hamburgMeeting(bau2020,'Hamburg-Mitte',hh).items,['Begrüßung'],'"Beschluss über Vertraulichkeit und Nicht-Öffentlichkeit …" is left out');
+ assert.deepEqual(hamburgMeeting(geschlossen,'Hamburg-Nord',hh).items,[]);
+ /* Ohne Zeitraum im Datensatz: das Datum aus dem Titel */
+ assert.equal(hamburgMeeting({...hauptausschuss,extras:hauptausschuss.extras.filter(e=>e.key!=='temporal_coverage_from')},'Hamburg-Nord',hh).date,'2026-08-25');
+ /* Fremder Bezirk, Drucksache statt Sitzung, anderes Registerobjekt, gelöscht: nichts; eine Sitzung ist keine Drucksache */
+ assert.equal(hamburgMeeting(hauptausschuss,'Wandsbek',hh),null);
+ assert.equal(hamburgMeeting(pkg(),'Wandsbek',hh),null);
+ assert.equal(hamburgMeeting({...hauptausschuss,extras:[...hauptausschuss.extras.filter(e=>e.key!=='registerobject_type'),{key:'registerobject_type',value:'senatpetitum'}]},'Hamburg-Nord',hh),null);
+ assert.equal(hamburgMeeting({...hauptausschuss,state:'deleted'},'Hamburg-Nord',hh),null);
+ assert.equal(hamburgPaper(hauptausschuss,'Hamburg-Nord',hh),null);
+});
+
+test('a paper (real answer): without subject in the title the short description names it; the stored type "beschluesse" is accepted',()=>{
+ const [steilshoop]=DRUCKSACHEN.result.results;
+ const p=hamburgPaper(steilshoop,'Wandsbek',hh);
+ assert.equal(p.reference,'22-4111.2');assert.equal(p.date,'2026-10-03');assert.match(p.title,/^Bebauungsplanverfahren Steilshoop 12/);
+ assert.ok(p.documents.some(d=>d.url==='https://sitzungsdienst-wandsbek.hamburg.de/bi/vo020.asp?VOLFDNR=1026195'));
+});
+
+const [klinik,techCity,bundesrat,juli]=SENAT.result.results;
+test('a communication of the Senate (real answers) becomes a paper of the Bürgerschaft only with its paper number',()=>{
+ const p=hamburgSenatePaper(klinik,hh);
+ assert.equal(p.reference,'23/5267');assert.equal(p.title,'Neubau der Asklepios Klinik Altona');assert.equal(p.date,'2026-09-10');
+ assert.equal(p.url,'https://suche.transparenz.hamburg.de/dataset/neubau-der-asklepios-klinik-altona');
+ assert.ok(p.documents.some(d=>d.url==='https://www.buergerschaft-hh.de/parldok/dokument/23/art/Drucksache/num/5267'&&d.kind==='application/pdf'),'the paper of the Bürgerschaft is linked, not read');
+ assert.equal(hamburgSenatePaper(techCity,hh).reference,'23/5353');assert.equal(hamburgSenatePaper(juli,hh).date,'2026-07-03');
+ assert.equal(hamburgSenatePaper(bundesrat,hh),null,'the Bundesrat votes carry no paper number');
+ assert.equal(hamburgSenatePaper(hauptausschuss,hh),null,'a meeting of a district is no communication of the Senate');
+ assert.equal(hamburgSenatePaper({...klinik,title:'Vertrauliche Mitteilung'},hh),null);
+});
+
+test('Hamburg (real answers): papers, meetings and communications of the Senate in one import; each public agenda item is a topic of its body and day',async()=>{
+ const src={...hh,districts:['Hamburg-Nord','Wandsbek']},calls=[];
+ const own=(list,district)=>JSON.stringify({...list,result:{...list.result,results:list.result.results.filter(x=>x.title.startsWith(`Bezirk ${district},`))}});
+ const get=async url=>{
+  calls.push(url);if(url.endsWith('/robots.txt'))return 'User-agent: *\nDisallow: /dataset/private\n';
+  const p=new URL(url).searchParams;if(p.get('fq').startsWith('extras_registerobject_type:senatmitteil'))return JSON.stringify(SENAT);
+  const district=p.get('q').match(/"Bezirk ([^"]+)"/)[1];return own(p.get('q').endsWith('title:Sitzung')?SITZUNGEN:DRUCKSACHEN,district);
+ };
+ const d=await collectHamburgTransparenz(src,{now,get,window:'1m'});
+ assert.ok(calls.every(u=>u.startsWith('https://suche.transparenz.hamburg.de/')),'no request outside the portal');
+ assert.equal(calls.length,6,'robots.txt, papers and meetings of two districts, the communications of the Senate');
+ assert.equal(new Set(d.topics.map(t=>t.id)).size,d.topics.length,'every id once');
+ /* Drucksachen im Zeitraum: 22-2671 (Hamburg-Nord) und 22-4111.2 (Wandsbek); 22-4443 erscheint erst morgen */
+ const papers=d.topics.filter(t=>t.sourceData.records[0].kind==='paper'&&t.committee.startsWith('Bezirksversammlung'));
+ assert.deepEqual(papers.map(t=>t.id).sort(),['de-02000000-hh-hamburgnord-22-2671','de-02000000-hh-wandsbek-22-4111.2']);
+ /* Sitzungen, im Zeitraum veröffentlicht: 15 + 24 + 2 öffentliche Punkte; die Sitzung von 2014 nicht */
+ const items=d.topics.filter(t=>t.sourceData.records[0].kind==='agenda');
+ assert.equal(items.length,41);assert.equal(d.coverage.meetings,3);assert.equal(d.readMeetings,3);
+ const visit=items.find(t=>t.title==='Verschiedenes'&&t.committee==='Hauptausschuss (Bezirk Hamburg-Nord)');
+ assert.equal(visit.eventDate,'2026-08-25');assert.equal(visit.status,'unknown');assert.equal(visit.events[0].result,'');assert.equal(visit.public,true);
+ assert.match(visit.id,/^de-02000000-hh-hamburgnord-si2026576-[0-9a-f]{8}$/);
+ assert.ok(visit.documents.some(x=>x.url==='https://sitzungsdienst-hamburg-nord.hamburg.de/bi//to010.asp?silfdnr=1003442'));
+ assert.ok(items.some(t=>t.committee==='Bezirksversammlung Hamburg-Nord'&&t.eventDate==='2026-05-21'));
+ /* Mitteilungen des Senats im Zeitraum: 23/5267 und 23/5353; die vom Juli nicht, die ohne Nummer nicht */
+ const senate=d.topics.filter(t=>t.committee==='Bürgerschaft (Mitteilung des Senats)');
+ assert.deepEqual(senate.map(t=>t.id).sort(),['de-02000000-hh-bs-235267','de-02000000-hh-bs-235353']);
+ assert.equal(senate.find(t=>t.reference==='23/5267').eventDate,'2026-09-10');
+ assert.equal(d.coverage.papers,4);assert.equal(d.topics.length,45);
+ assert.ok(d.coverage.warnings.some(w=>/^1 Treffer der Suche gehört nicht zur Abfrage/.test(w)),'the Bundesrat votes');
+ assert.match(d.coverage.note,/Sitzungen mit öffentlicher Tagesordnung/);assert.equal(d.coverage.complete,true);
 });
 
 test('Hamburg: robots.txt decides first; only the portal is asked; papers become topics of their district',async()=>{
@@ -54,9 +142,10 @@ test('Hamburg: robots.txt decides first; only the portal is asked; papers become
  assert.equal(d.topics.length,1);const t=d.topics[0];
  assert.equal(t.committee,'Bezirksversammlung Wandsbek');assert.equal(t.eventDate,'2026-09-19');assert.equal(t.public,true);assert.equal(t.status,'unknown');
  assert.equal(t.id,'de-02000000-hh-wandsbek-22-3451');assert.equal(t.events[0].result,'');
- assert.match(d.coverage.note,/ohne Sitzungskalender/);assert.equal(d.coverage.meetings,0);
- assert.ok(d.coverage.warnings.some(w=>/Altona/.test(w)),'a district without papers is named');
- assert.ok(d.coverage.warnings.some(w=>/keine Drucksache des gesuchten Bezirks/.test(w)));
+ assert.match(d.coverage.note,/Sitzungen mit öffentlicher Tagesordnung/);assert.equal(d.coverage.meetings,0);
+ assert.ok(d.coverage.warnings.some(w=>/Drucksache der Bezirksversammlung Altona/.test(w)),'a district without papers is named');
+ assert.ok(d.coverage.warnings.some(w=>/Keine Sitzung .*: Wandsbek, Altona/.test(w)),'districts without meetings are named');
+ assert.ok(d.coverage.warnings.some(w=>/^3 Treffer der Suche gehören nicht zur Abfrage/.test(w)),'the Altona paper and both papers in the answer to the meeting query');
  assert.equal(d.coverage.complete,true);
 });
 
