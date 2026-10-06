@@ -16,7 +16,7 @@ export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robo
 // Pages by name; the numbers of the first version still lead to their page. "auswahl" (areas handed over by the
 // estimate) and "filter" (a list filter) open the import page.
 const PAGES:Record<string,AdminPage>={uebersicht:'uebersicht',abruf:'abruf',atlas:'atlas',qualitaet:'qualitaet',hochrechnung:'hochrechnung',stichwoerter:'stichwoerter','1':'abruf','2':'qualitaet','3':'hochrechnung','4':'stichwoerter'};
-const FILTERS=['all','connected','data','empty','issues','selected'];
+const FILTERS=['all','connected','data','empty','issues','shallow','quiet','selected'];
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string}>}){const {seite,auswahl,filter}=await searchParams;
  // "auswahl" preselects areas on the import page; only known area ids are accepted.
  const selection=[...new Set(String(auswahl||'').split(',').filter(id=>id&&validRegion(id)))].slice(0,REGIONS.length);

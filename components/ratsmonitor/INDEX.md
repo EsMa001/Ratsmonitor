@@ -5,7 +5,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/analyse-admin.css (270 Zeilen, ⚠24)
+- app/analyse-admin.css (275 Zeilen, ⚠24)
 - app/design-fonts.css (71 Zeilen)
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
@@ -270,6 +270,7 @@ is-open analyse-admin.css:94
 is-sample analyse-admin.css:88
 is-selected analyse-admin.css:29
 is-selected ratsmonitor.css:76
+is-static analyse-admin.css:271
 is-stored analyse-admin.css:88
 is-thin analyse-admin.css:87
 keyword-list analyse-admin.css:76
@@ -690,14 +691,16 @@ wordmark__dot design-styles.css:61
 
 ### components/
 - admin-activation.tsx (9, ⚠1): AdminActivation
+- admin-atlas.tsx (166, ⚠33): AdminAtlas
 - admin-chrome.tsx (26): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
 - admin-dashboard.tsx (73, ⚠17): AdminDashboardView
 - admin-estimate.tsx (332, ⚠51): AdminEstimate
 - admin-forecast.tsx (12): AdminForecast
 - admin-keywords.tsx (88, ⚠13): AdminKeywords
 - admin-loader.tsx (30, ⚠1): AdminLoader
-- admin-processing-map.tsx (34, ⚠4): AdminProcessingMap
-- admin-processing.tsx (152, ⚠18): AdminProcessing
+- admin-overview.tsx (135, ⚠17): AdminOverview
+- admin-processing-map.tsx (39, ⚠4): AdminProcessingMap
+- admin-processing.tsx (156, ⚠20): AdminProcessing
 - admin-run-debug.tsx (67, ⚠3): RunDebugView, AdminRunDebug
 - admin-timeline.tsx (72, ⚠6): AdminTimeline
 - analysis-article-list.tsx (34, ⚠1): AnalysisArticleList

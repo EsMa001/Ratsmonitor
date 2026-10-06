@@ -267,3 +267,8 @@ button:disabled{cursor:wait;opacity:.6}.article__status{flex-wrap:wrap}
 .admin-app .admin-legacy .admin-field{max-width:420px;margin:12px 0}
 @media(max-width:1100px){.admin-app .admin-stage-grid{grid-template-columns:1fr}.admin-app .admin-overview-charts,.admin-app .admin-atlas-why,.admin-app .admin-atlas-main,.admin-app .admin-next{grid-template-columns:1fr}.admin-app .admin-atlas-map,.admin-app .admin-atlas-list{height:auto;min-height:0}.admin-app .admin-atlas-canvas{height:60vh}.admin-app .admin-atlas-rows{max-height:60vh}}
 @media(max-width:700px){.admin-app .admin-atlas-facts{grid-template-columns:1fr}.admin-app .admin-atlas-list .admin-source-controls{grid-template-columns:1fr}}
+/* Reichweite und Aktualität: feste Balken und Chips der Übersicht (im Atlas sind sie Filter), Monatsdiagramm. */
+.admin-app .admin-atlas-stack.is-static i{display:block;height:100%}
+.admin-app .admin-chip.is-static{cursor:default}
+.admin-app .admin-overview-charts figure .admin-note{margin-top:10px}
+.admin-app .admin-overview-charts figure .admin-atlas-chips{margin-top:0}

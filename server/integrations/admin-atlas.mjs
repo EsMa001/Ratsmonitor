@@ -9,9 +9,7 @@ import atlas from './source-atlas.json' with {type:'json'};
 import robots from './source-robots.json' with {type:'json'};
 import {ACCESS_STATUSES,accessOfSource,channelOf,robotsNote,methodName} from '../../shared/source-access.mjs';
 import {ATLAS_CATEGORIES} from '../../shared/atlas-categories.mjs';
-import {regionFigures} from './admin-data.mjs';
-import {atRevision} from './revision-cache.mjs';
-const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
+import {areaFigures} from './area-figures.mjs';
 const TYPE={city:null,district:'Kreis'};
 let base=null;
 /** The part of every area that does not change between requests: catalog, catalog entry, atlas data. */
@@ -38,21 +36,15 @@ function staticAreas(){
  });
  return base;
 }
-/** Reports per area: from region_stats where present, else one scan kept until the stock changes. */
-async function reportCounts(db,now){
- const figures=await regionFigures(db,{now,budgetMs:4000});
- if(figures)return {counts:new Map(figures.rows.map(r=>[r.region_id,Number(r.count||0)])),pending:figures.pending};
- const rows=await atRevision(db,'atlas-counts',async()=>(await db.prepare(`SELECT region_id,count(*) n FROM topics WHERE ${canonical} GROUP BY region_id`).all()).results);
- return {counts:new Map(rows.map(r=>[r.region_id,Number(r.n)])),pending:0};
-}
 const readJson=s=>{try{return JSON.parse(s||'{}');}catch{return {};}};
 export async function adminAtlas(db,{now=new Date()}={}){
- const [{counts,pending},coverage]=await Promise.all([reportCounts(db,now),db.prepare('SELECT region_id,payload FROM source_coverage').all()]);
+ const [{rows:figures,pending},coverage]=await Promise.all([areaFigures(db,{now,budgetMs:4000}),db.prepare('SELECT region_id,payload FROM source_coverage').all()]);
  const cov=new Map(coverage.results.map(r=>[r.region_id,readJson(r.payload)]));
  let reports=0;
  const areas=staticAreas().map(a=>{
-  const row={...a},n=counts.get(a.id)||0,c=cov.get(a.id);
-  if(n){row.cnt=n;reports+=n;}
+  const row={...a},f=figures.get(a.id),n=f?.count||0,c=cov.get(a.id);
+  // Reports with their first agenda day and latest meeting day: reach and freshness of the area.
+  if(n){row.cnt=n;reports+=n;if(f.first)row.fe=f.first;if(f.last)row.le=f.last;}
   if(c){const last=c.lastSuccessAt||c.importedAt;if(last)row.last=last;if(c.attemptStatus==='failed')row.st='failed';else if(n&&c.complete===false)row.st='partial';}
   return row;
  });
