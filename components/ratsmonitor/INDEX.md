@@ -631,6 +631,9 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/ueber-uns/
 - page.tsx (2): Page
 
+### app/(monitor)/videos/
+- page.tsx (2): Page
+
 ### app/abgemeldet/
 - page.tsx (2)
 
@@ -725,6 +728,7 @@ wordmark__dot design-styles.css:61
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (107, ⚠1): QuellenPage
 - UeberUnsPage.tsx (65): UeberUnsPage
+- VideosPage.tsx (153): VideosPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - content.ts (373, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, AGB_SECTIONS, brancheBySlug
 - icons.tsx (112): IconName, Icon
