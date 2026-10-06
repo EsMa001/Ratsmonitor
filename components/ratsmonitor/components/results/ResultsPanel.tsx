@@ -172,7 +172,7 @@ export function ResultsPanel() {
           </button>
         )}
         <span className="text-[14px] text-slate-500">
-          {active ? <>{res.totalPending ? <CountDots /> : res.total.toLocaleString("de-DE")} Treffer · Seite {res.page}{res.totalPending ? "" : ` von ${pages}`}</> : `Seite ${res.page}`}
+          {active ? <>{res.totalPending ? (res.showDots ? <CountDots /> : "…") : res.total.toLocaleString("de-DE")} Treffer · Seite {res.page}{res.totalPending ? "" : ` von ${pages}`}</> : `Seite ${res.page}`}
         </span>
         {res.page < Math.min(pages, MAX_PAGE) && (
           <button type="button" aria-label="Nächste Seite" title="Nächste Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-600 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page + 1)}>

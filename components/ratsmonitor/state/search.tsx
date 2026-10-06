@@ -92,6 +92,20 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const shown=useRef(live);
   if(!live.loading)shown.current=live;
   const derived=useMemo(()=>live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true}:live,[live]);
+  /* Wann was zu sehen ist: In den ersten 0,5 s passiert nichts. Sind die ersten Treffer bis dahin da, wechseln Karte und
+     Liste sofort und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl feststeht. Fehlen sie nach 0,5 s noch,
+     steht der Ladering im Suchfeld, bis auch die genaue Zahl da ist (dann keine Punkte). Nie beides zugleich. */
+  const searching=derived.pending||derived.totalPending;
+  const pendingNow=useRef(false);
+  pendingNow.current=derived.pending;
+  const [slow,setSlow]=useState(false);
+  useEffect(()=>{
+    setSlow(false);
+    const t=window.setTimeout(()=>{if(pendingNow.current)setSlow(true);},500);
+    return()=>window.clearTimeout(t);
+  },[live.key,live.page]);
+  useEffect(()=>{if(!searching)setSlow(false);},[searching]);
+  const results=useMemo<SearchResults>(()=>({...derived,searching,showRing:slow&&searching,showDots:!slow&&!derived.pending&&derived.totalPending}),[derived,searching,slow]);
   const [popup, setPopupState] = useState("");
   const ref = useRef(state);
   ref.current = state;
@@ -263,7 +277,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => () => clearTimeout(focusTimer.current), []);
 
-  const value = useMemo<SearchValue>(() => ({ ...actions, state, popup, mapRef,derived }), [actions, state, popup,derived]);
+  const value = useMemo<SearchValue>(() => ({ ...actions, state, popup, mapRef,derived:results }), [actions, state, popup,results]);
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>;
 }
 
@@ -275,7 +289,10 @@ export function useSearch(): SearchValue {
 
 /* ---------- Abgeleitete Werte: Treffer, Zähler, erkannter Ort ---------- */
 export interface CoverageEntry {ags:string;name:string;count:number;complete:boolean}
+/** Was die Hook selbst liefert; Ring und Punkte kommen aus dem Provider (siehe dort) */
+type LiveResults=Omit<SearchResults,'showRing'|'showDots'|'searching'>;
 export interface SearchResults {
+ /** Suche läuft noch: neue Treffer oder genaue Zahl fehlen */searching:boolean;/** Ladering im Suchfeld (Suche dauert über 0,5 s) */showRing:boolean;/** Punkte an der Trefferzahl (erste Treffer schnell da, Zahl noch nicht) */showDots:boolean;
  total:number;/** Zähler noch nicht da: total ist nur „mehr als 100“ */totalCapped:boolean;/** Genaue Trefferzahl noch unterwegs: stattdessen drei wandernde Punkte zeigen */totalPending:boolean;coverage:CoverageEntry[];
   /** Abfrage der aktuellen Suche (für Export), ohne Seite */
   key:string;
@@ -351,7 +368,7 @@ function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['pl
   const spec:FilterSpec={area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
   return {pq,placeActive,liveHits,text,terms:toTerms(text),pageSize,snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString(),around:state.radius?{set:within?.set??null,level:state.level}:null};
  }
-function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchResults {
+function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveResults {
  const {geo,place}=useData();
  const local=useMemo(()=>computeLocal(state,geo,place,pageSize),[state,geo,place,pageSize]);
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);

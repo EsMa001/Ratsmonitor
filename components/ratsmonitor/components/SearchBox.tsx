@@ -34,7 +34,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
-  const { pq, placeActive, liveHits, pending } = useSearchResults();
+  const { pq, placeActive, liveHits, pending, searching, showRing } = useSearchResults();
   const { view, goOverview } = useAppNav();
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -63,6 +63,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
       setHold(pickText.current || draftRef.current);
       pickText.current = "";
       setAwaiting(true);
+      setArmed(true);
     };
     window.addEventListener("rm:search-confirmed", on);
     return () => window.removeEventListener("rm:search-confirmed", on);
@@ -73,16 +74,13 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
       setAwaiting(false);
     }
   }, [pending, hold, awaiting]);
-  /* Ring erst nach 0,2 s: schnelle Suchen bleiben ruhig, nur längere zeigen, dass gesucht wird */
-  const [ring, setRing] = useState(false);
+  /* Ring: nur nach Bestätigen (Enter oder Auswahl), erst wenn die Suche über 0,5 s dauert (Provider: showRing) und bis auch
+     die genaue Trefferzahl da ist. Beim bloßen Tippen bleibt er aus. */
+  const [armed, setArmed] = useState(false);
   useEffect(() => {
-    if (!(pending && awaiting)) {
-      setRing(false);
-      return;
-    }
-    const t = window.setTimeout(() => setRing(true), 200);
-    return () => window.clearTimeout(t);
-  }, [pending, awaiting]);
+    if (armed && !searching) setArmed(false);
+  }, [armed, searching]);
+  const ring = armed && showRing;
   const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
   draftRef.current = draft;
   const shownDraft = pending && hold && (!focused || !draft) ? hold : draft;
