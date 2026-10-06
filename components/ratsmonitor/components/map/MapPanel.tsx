@@ -214,6 +214,8 @@ export function MapPanel({ active }: { active: boolean }) {
         .slice(0, 3)
         .map((a) => `${geo?.info(a).name ?? a} (${areaCounts[a]})`)
         .join(", ")}`;
+  /* Im Kartenmodus liegt die Suchleiste unten (20 px Abstand): beim Zentrieren bleibt dieser Streifen frei, die Gemeinden mit Treffern liegen darüber */
+  if (engine) engine.bottomInset = explore ? barH + 20 : 0;
   const moreKey = (snapshot.more ?? []).map((m) => m.ags).join(",");
   const center = (toHits = false) => {
     if (!engine) return;

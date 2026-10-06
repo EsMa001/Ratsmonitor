@@ -241,11 +241,14 @@ export class MapEngine {
     return { cx: (bb[0] + bb[2]) / 2, cy: (bb[1] + bb[3]) / 2 + (pt - pb) / 2 / k, k };
   }
 
+  /** Unten verdeckter Streifen (px, z. B. Suchleiste mit Chips im Kartenmodus): beim Einpassen bleibt er frei, die Gebiete liegen darüber */
+  bottomInset = 0;
+
   private fitView(bb: BBox, pad?: number): View {
     const small = this.W < 640;
     /* Handy: unten mehr Rand, dort liegen Suchleiste und Chips über der Karte */
     const pt = small ? 24 : 24;
-    const pb = small ? 120 : 72;
+    const pb = Math.max(small ? 120 : 72, this.bottomInset ? this.bottomInset + 48 : 0);
     const ps = pad ?? (small ? 4 : 28);
     const w = Math.max(bb[2] - bb[0], 1);
     const h = Math.max(bb[3] - bb[1], 1);
