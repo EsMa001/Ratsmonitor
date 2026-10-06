@@ -54,18 +54,26 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   }, []);
   /* Neue Suche läuft: der abgeschickte Text bleibt im Feld stehen, bis auch der Chip erscheint */
   const [hold, setHold] = useState("");
+  /* Ladering erst nach Bestätigen (Enter oder Auswahl aus der Liste), nicht schon beim Tippen */
+  const [awaiting, setAwaiting] = useState(false);
   const draftRef = useRef("");
   useEffect(() => {
-    const on = () => setHold(draftRef.current);
+    const on = () => {
+      setHold(draftRef.current);
+      setAwaiting(true);
+    };
     window.addEventListener("rm:search-confirmed", on);
     return () => window.removeEventListener("rm:search-confirmed", on);
   }, []);
   useEffect(() => {
-    if (!pending && hold) setHold("");
-  }, [pending, hold]);
+    if (!pending && (hold || awaiting)) {
+      setHold("");
+      setAwaiting(false);
+    }
+  }, [pending, hold, awaiting]);
   const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
   draftRef.current = draft;
-  const shownDraft = !focused && pending && hold ? hold : draft;
+  const shownDraft = pending && hold && (!focused || !draft) ? hold : draft;
   const join = (d: string) => (base && state.q.startsWith(base) ? (d ? `${base.replace(/[,;|]\s*$/, "")}, ${d}` : base) : d);
 
   const apply = (value: string, extra?: Parameters<typeof search.applySearch>[1]) => {
@@ -315,7 +323,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
       {/* Glas nur um das Feld: die Vorschlagsliste liegt daneben, damit ihre eigene Unschärfe die Karte dahinter sieht (verschachtelt wäre sie flach) */}
       <div className={`relative ${glass ? "rm-glass rounded-full" : ""}`}>
       {/* Läuft eine Suche, steht an Stelle der Lupe ein kleiner Ladering */}
-      {pending ? (
+      {pending && awaiting ? (
         <span role="status" aria-label="Suche läuft" className="rm-spinner pointer-events-none absolute left-3.5 top-1/2 -mt-[9px]" />
       ) : (
         <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
