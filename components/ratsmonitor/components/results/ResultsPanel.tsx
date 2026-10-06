@@ -106,7 +106,7 @@ export function ResultsPanel() {
               compact={view === "compact"}
             />
           ))}
-          {articlesReady && !res.error && n === 0 && (
+          {articlesReady && !res.error && !res.totalPending && n === 0 && (
             <div className="flex flex-col items-center gap-2 px-5 py-12 text-center text-slate-600">
               <div className="mb-1.5 grid h-12 w-12 place-items-center text-slate-500">
                 <IconEmptySearch size={22} />
@@ -174,7 +174,7 @@ export function ResultsPanel() {
         <span className="text-[14px] text-slate-500">
           {active ? <>{res.totalPending ? (res.showDots ? <CountDots /> : "…") : res.total.toLocaleString("de-DE")} Treffer · Seite {res.page}{res.totalPending ? "" : ` von ${pages}`}</> : `Seite ${res.page}`}
         </span>
-        {res.page < Math.min(pages, MAX_PAGE) && (
+        {res.hasMore && res.page < MAX_PAGE && (
           <button type="button" aria-label="Nächste Seite" title="Nächste Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-600 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
             <IconChevronRight size={20} />
           </button>

@@ -2,8 +2,6 @@ import {LABELS} from '../../shared/labels.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
-/** Ergebnisseite ohne Zähler: Treffer nur bis hierher zählen (101 heißt „mehr als 100“) */
-export const COUNT_CAP=101;
 export class SearchError extends Error { constructor(message,status=400){super(message);this.status=status;} }
 /* Typische Formalien einer Sitzung (Muster für LIKE auf den kleingeschriebenen Titel) */
 const FORMAL=['%niederschrift%','%mitteilungen%','%anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','%verpflichtung%','%anträge der fraktionen%'];
@@ -103,18 +101,17 @@ export async function searchMonitor(db,catalog,params){
   return {where:where.length?'WHERE '+where.join(' AND '):'',args};})();
  /* Veralteter Datenstand beim Blättern: vor der Arbeit melden, nicht danach */
  if(f.revision!==null){const now=String((await db.prepare(REVISION_SQL).first())?.revision??0);if(now!==f.revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);}
- const pageSql=db.prepare(`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit,(f.page-1)*limit);
+ const pageSql=db.prepare(`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit+(f.part==='page'?1:0),(f.page-1)*limit);
  const facetSql=db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args);
- /* Gedeckelte Zählung über denselben Zugriff wie die Seite (Datumsindex): liest nur bis 101 Treffer */
- const capSql=db.prepare(`SELECT count(*) n FROM (SELECT 1 FROM search_cards WHERE ${page.where} ORDER BY date DESC LIMIT ${COUNT_CAP})`).bind(...page.args);
- /* Reihenfolge der Antwort: Datenstand, dann je nach part Seite und/oder Zähler (Zählung bzw. Gruppierung) */
- const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),f.part==='page'?capSql:facetSql];
+ /* Reihenfolge der Antwort: Datenstand, dann je nach part die Seite und/oder die Zähler (Gruppierung) */
+ const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'?[]:[facetSql])];
  const answers=await db.batch(statements);
  const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],groups=answers[answers.length-1];
  const revision=String(rev.results[0].revision);
  const mapRows=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
  if(f.revision!==null&&f.revision!==revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);
- if(f.part==='page'){const n=groups.results[0].n;return {articles:mapRows(rows.results),total:n,totalCapped:n>=COUNT_CAP,page:f.page,pageSize:limit,revision,areaCounts:{},themaCounts:{},monatCounts:{},statusCounts:{},storageAvailable:true};}
+ /* Ergebnisseite ohne Gesamtzahl: einen Treffer mehr gelesen als angezeigt, daran erkennt „Weiter“, ob es weitergeht */
+ if(f.part==='page')return {articles:mapRows(rows.results.slice(0,limit)),hasMore:rows.results.length>limit,page:f.page,pageSize:limit,revision,storageAvailable:true};
  /* Jede Facette zählt mit allen Filtern außer ihrem eigenen, wie zuvor die getrennten Abfragen */
  let total=0;const areaCounts={},labelCounts={},statusCounts={};
  const addArea=(region,n)=>{const ags=region.ags;for(const key of new Set([ags,ags.slice(0,5),ags.slice(0,2),'']))areaCounts[key]=(areaCounts[key]||0)+n;

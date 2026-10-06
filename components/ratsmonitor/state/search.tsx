@@ -293,7 +293,7 @@ export interface CoverageEntry {ags:string;name:string;count:number;complete:boo
 type LiveResults=Omit<SearchResults,'showRing'|'showDots'|'searching'>;
 export interface SearchResults {
  /** Suche läuft noch: neue Treffer oder genaue Zahl fehlen */searching:boolean;/** Ladering im Suchfeld (Suche dauert über 0,5 s) */showRing:boolean;/** Punkte an der Trefferzahl (erste Treffer schnell da, Zahl noch nicht) */showDots:boolean;
- total:number;/** Zähler noch nicht da: total ist nur „mehr als 100“ */totalCapped:boolean;/** Genaue Trefferzahl noch unterwegs: stattdessen drei wandernde Punkte zeigen */totalPending:boolean;coverage:CoverageEntry[];
+ total:number;/** Genaue Trefferzahl noch unterwegs */totalPending:boolean;/** Es gibt eine weitere Seite (auch ohne die genaue Gesamtzahl) */hasMore:boolean;coverage:CoverageEntry[];
   /** Abfrage der aktuellen Suche (für Export), ohne Seite */
   key:string;
   around:{set:Set<string>|null;level:string}|null;
@@ -322,7 +322,7 @@ export interface SearchResults {
 
 
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
-type ResponseData={articles:Article[];total:number;totalCapped?:boolean;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
+type ResponseData={articles:Article[];total:number;hasMore?:boolean;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
 type DataValue=ReturnType<typeof useData>;
 /* Fertige Antworten (5 Minuten) und laufende Anfragen, geteilt von der Übersicht und dem Vorausladen (z. B. beim Überfahren
    eines Vorschlags): gleiche Suche = eine Anfrage, und ein Klick trifft oft schon die fertige Antwort */
@@ -472,7 +472,27 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
  const error=loading||cached?'':remote.error;
  /* Genaue Zahl, sobald die Zähler da sind; davor die gedeckelte Zählung der Seite */
- const total=exact?exact.total:data?.total??0,capped=!exact&&!!data?.totalCapped;
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total,totalCapped:capped,totalPending:capped,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,capped,fx,loading,error,page,setPage,retry,cover,state.level]);
+ /* Gibt es keine weitere Seite, ist die Zahl auch ohne die Zähler bekannt; sonst fehlt sie, bis die Zähler da sind */
+ const known=data&&data.hasMore===false?(page-1)*pageSize+data.articles.length:null;
+ const total=exact?exact.total:known??0,pendingTotal=!exact&&known===null;
+ /* Mit genauer Zahl zählt die Seitenzahl, davor meldet die Antwort selbst, ob noch eine Seite folgt */
+ const hasMore=exact?page<Math.ceil(exact.total/pageSize):!!data?.hasMore;
+ /* Nächste Seite still im Hintergrund holen, damit „Weiter“ sofort geht (die Anfrage nutzt dieselbe laufende Abfrage wie der Klick) */
+ useEffect(()=>{
+  if(!active||!pageReady||!hasMore||loading)return;
+  const next=searchKey(local.key,page+1,attempt);
+  if(freshSearch(next)||INFLIGHT.has(next))return;
+  const abort=new AbortController();
+  (async()=>{
+   try{
+    const query=await buildQuery(page+1,'page',abort.signal);
+    if(abort.signal.aborted||freshSearch(next)||INFLIGHT.has(next))return;
+    const job=fetchSearch(query).then(d=>{rememberSearch(next,d);return d;}).finally(()=>INFLIGHT.delete(next));
+    INFLIGHT.set(next,job);job.catch(()=>{});
+   }catch{/* Vorladen ist nur eine Hilfe */}
+  })();
+  return()=>abort.abort();
+ },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
+ return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}
