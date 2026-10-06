@@ -1,4 +1,5 @@
 import {LABELS} from '../../shared/labels.mjs';
+import {knownWords} from './search-words.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
@@ -110,6 +111,11 @@ export async function searchMonitor(db,catalog,params){
   const mapStream=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
   return {stream:(async function*(){
    const revision=String((await db.prepare(REVISION_SQL).first())?.revision??0);
+   /* Vorab: kann der Begriff Treffer haben? „nein“ beendet die Suche sofort, „ja“ erlaubt der Oberfläche, ohne Warten loszulegen */
+   const plain=!f.area&&!f.label&&!f.status&&!f.month&&!f.from&&!f.more.length&&!f.within&&!f.without&&!f.noformal;
+   const known=await knownWords(db,f.groups,{plain,nameHit:t=>catalog.some(r=>norm(r.name).includes(t))});
+   yield {known};
+   if(known==='no'){yield {end:true,hasMore:false,revision,pageSize:limit};return;}
    let found=0,upper='9999-12-31~',size=STREAM_FIRST,more=false;
    while(true){
     const edge=await db.prepare('SELECT date FROM search_cards WHERE date<? ORDER BY date DESC LIMIT 1 OFFSET ?').bind(upper,size).first();
