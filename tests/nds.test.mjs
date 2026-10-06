@@ -46,6 +46,9 @@ test('a member municipality finds the reports of its Samtgemeinde, and the map s
   assert.equal((await total('area=03358&scope=with')).total,2);
   assert.equal((await total('area=03&scope=with')).total,3);
   assert.equal((await total('within=03358014,03101000')).total,3);
+  /* Abzeichen der Karte: jede Karte einmal, die Zahlen ergeben zusammen immer die Trefferzahl */
+  for(const query of ['level=city','area=03358014&scope=only','area=03358&scope=with','area=03&scope=with','within=03358014,03101000'])
+   {const r=await total(query);assert.equal(Object.values(r.badgeCounts).reduce((x,y)=>x+y,0),r.total,query);}
   const all=await total('level=city');assert.equal(all.areaCounts['03358014'],2);assert.equal(all.areaCounts['03358'],2);assert.equal(all.areaCounts['03'],3);
   assert.ok((await searchCoverage(db,CATALOG,'city')).coverage.some(c=>c.ags==='03358014'&&c.count===2&&/Samtgemeinde Ahlden/.test(c.name)));
   /* Langelsheim (seit 2021 mit Hahausen, Lutter, Wallmoden) steht auf der Karte noch unter den früheren Schlüsseln */

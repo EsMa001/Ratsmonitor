@@ -159,7 +159,13 @@ export async function searchMonitor(db,catalog,params){
   if(inScope&&labelOk)statusCounts[r.status]=(statusCounts[r.status]||0)+r.n;
  }
  for(const [rid,n] of perRegion)addArea(byId.get(rid),n);
- return {articles:mapRows(rows.results),total,page:f.page,pageSize:limit,revision,areaCounts,themaCounts:labelCounts,monatCounts:{},statusCounts,storageAvailable:true};
+ /* Abzeichen der Karte: jede Karte genau einmal, damit die Zahlen auf der Karte zusammen die Trefferzahl ergeben (areaCounts
+    zählt einen Bericht einer Samtgemeinde bei jeder Mitgliedsgemeinde, das färbt die Karte, summiert aber zu viel). Der
+    Bericht steht bei einer Mitgliedsgemeinde, bevorzugt bei einer, die zur Auswahl gehört. Nur Gebiete der Auswahl. */
+ const chosen=ags=>f.within?f.within.includes(ags):places.length?places.some(p=>p.ags.length===8?ags===p.ags||(p.scope==='with'&&ags===p.ags.slice(0,5)):ags.startsWith(p.ags)):true;
+ const badgeCounts={};
+ for(const [rid,n] of perRegion){if(!scopedIds.has(rid))continue;const region=byId.get(rid),keys=region.members?region.members.map(m=>m.ags):[region.ags,...(region.formerAgs||[])],key=keys.find(chosen)??keys[0];badgeCounts[key]=(badgeCounts[key]||0)+n;}
+ return {articles:mapRows(rows.results),total,page:f.page,pageSize:limit,revision,areaCounts,badgeCounts,themaCounts:labelCounts,monatCounts:{},statusCounts,storageAvailable:true};
 }
 
 /**

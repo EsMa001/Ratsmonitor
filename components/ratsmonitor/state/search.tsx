@@ -305,6 +305,8 @@ export interface SearchResults {
   spec: FilterSpec;
   results: Article[];
   areaCounts: Record<string, number>;
+  /** Abzeichen der Karte: jede Karte einmal gezählt, Summe = Trefferzahl */
+  badgeCounts: Record<string, number>;
   themaCounts: Record<string, number>;
   monatCounts: Record<string, number>;
   statusCounts: Record<string, number>;
@@ -316,13 +318,13 @@ export interface SearchResults {
 
 
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
-type ResponseData={articles:Article[];total:number;hasMore?:boolean;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
+type ResponseData={articles:Article[];total:number;hasMore?:boolean;areaCounts:Record<string,number>;badgeCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
 type DataValue=ReturnType<typeof useData>;
 /* Fertige Antworten (5 Minuten) und laufende Anfragen, geteilt von der Übersicht und dem Vorausladen (z. B. beim Überfahren
    eines Vorschlags): gleiche Suche = eine Anfrage, und ein Klick trifft oft schon die fertige Antwort */
 const SEARCH_CACHE=new Map<string,{at:number;data:ResponseData}>(),INFLIGHT=new Map<string,Promise<ResponseData>>();
 /* Zähler (Gebiete, Themen, Status, Gesamtzahl) kommen getrennt von der Ergebnisseite und gelten für die ganze Suche, nicht je Seite */
-type Facets=Pick<ResponseData,'total'|'areaCounts'|'themaCounts'|'monatCounts'|'statusCounts'|'revision'>;
+type Facets=Pick<ResponseData,'total'|'areaCounts'|'badgeCounts'|'themaCounts'|'monatCounts'|'statusCounts'|'revision'>;
 const FACETS_CACHE=new Map<string,{at:number;data:Facets}>();
 const freshFacets=(key:string)=>{const hit=FACETS_CACHE.get(key);return hit&&Date.now()-hit.at<300000?hit.data:null;};
 const searchKey=(key:string,page=1,attempt=0)=>key+'&page='+page+'&attempt='+attempt;
@@ -549,6 +551,6 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
  /* Gibt es Treffer? ja: mindestens einer ist da; nein: die Suche ist zu Ende ohne Treffer; unbekannt: sie läuft noch */
  const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0||(rd?.known==='yes'&&!rd.final)?'yes':(cached||rd?.final)?'no':'unknown';
- return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
+ return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,badgeCounts:fx?.badgeCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

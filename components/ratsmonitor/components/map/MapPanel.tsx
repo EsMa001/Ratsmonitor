@@ -31,7 +31,7 @@ export function MapPanel({ active }: { active: boolean }) {
   const { geo, geoError } = useData();
   const search = useSearch();
   const { state, mapRef } = search;
-  const { areaCounts, coverage, snapshot, loading, pending } = useSearchResults();
+  const { areaCounts, badgeCounts, coverage, snapshot, loading, pending } = useSearchResults();
   const filtered = hasFilters(snapshot);
   /* Kartenmodus (Suchleiste unten) erst, wenn die Suche bestätigt ist (Enter, Vorschlag gewählt oder Feld verlassen); während des Tippens bleibt sie stehen */
   const [typing, setTyping] = useState(false);
@@ -197,11 +197,12 @@ export function MapPanel({ active }: { active: boolean }) {
     engine?.setStyle(style);
   }, [engine, style]);
 
-  /* Kartenmodus: Abzeichen mit der Trefferzahl je Gemeinde */
+  /* Kartenmodus: Abzeichen mit der Trefferzahl. Jede Karte zählt genau einmal (badgeCounts), damit die Zahlen auf der Karte
+     zusammen die Trefferzahl ergeben; die Färbung nutzt weiter areaCounts, dort steht ein Samtgemeinde-Bericht bei jeder Mitgliedsgemeinde. */
   useEffect(() => {
-    engine?.setExplore(explore, explore ? Object.fromEntries(hits.map((a) => [a, areaCounts[a]])) : null);
+    engine?.setExplore(explore, explore ? { ...badgeCounts } : null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, explore, hits.join(","), areaCounts]);
+  }, [engine, explore, badgeCounts]);
 
   /* Suchgesteuertes Zentrieren: Umkreis → Kreis; Ort → Ort bzw. Kreis bei „inkl. Kreis“; sonst alle Treffer; ohne Suche Deutschland */
   const hitsKey = hits.join(",");
