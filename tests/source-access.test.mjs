@@ -10,11 +10,12 @@ import atlas from '../server/integrations/source-atlas.json' with {type:'json'};
 // The hierarchy of shared/source-access.mjs: OParl → API → HTML pages (robots.txt gives the label only here) →
 // technical block → nothing found.
 
-test('the statuses: eight, with the labels of the decision of 06.10.2026, and which allow automated access',()=>{
- assert.deepEqual(ACCESS_STATUSES.map(s=>s.label),['OParl verfügbar','API verfügbar','API verfügbar, Leser/Connector fehlt','Scraping erlaubt','robots.txt sperrt HTML-Zugriff','Zugriffsschutz','System ohne Leser','Kein maschinenlesbarer Zugriff gefunden']);
- assert.equal(accessLabel('api'),'API verfügbar');assert.equal(accessLabel('x'),'');
+test('the statuses: seven, answering whether data arrives (yes, later, no), and which allow automated access',()=>{
+ assert.deepEqual(ACCESS_STATUSES.map(s=>s.label),['Ja · OParl','Ja · Schnittstelle (API)','Ja · HTML-Seiten','Noch nicht · Schnittstelle ohne Leser','Noch nicht · System ohne Leser','Nein · Zugriffsschutz','Nein · kein Zugang gefunden']);
+ assert.deepEqual(ACCESS_STATUSES.map(s=>s.data),['yes','yes','yes','later','later','no','no']);
+ assert.equal(accessLabel('api'),'Ja · Schnittstelle (API)');assert.equal(accessLabel('x'),'');assert.ok(!ACCESS_STATUSES.some(s=>s.id==='robots'),'robots.txt is a note, not a status');
  // Only HTML crawling is restricted (robots) versus no automated access at all (blocked, none).
- assert.equal(automatedAccess('robots'),true);assert.equal(automatedAccess('blocked'),false);assert.equal(automatedAccess('none'),false);
+ assert.equal(automatedAccess('scraping'),true);assert.equal(automatedAccess('blocked'),false);assert.equal(automatedAccess('none'),false);
  for(const s of ACCESS_STATUSES)assert.match(s.color,/^#[0-9a-f]{6}$/,s.id);
 });
 
@@ -47,9 +48,9 @@ test('case 3: no API, crawling allowed by robots.txt (or no robots.txt) → Scra
 });
 
 test('case 4: no API, robots.txt disallows the HTML pages → robots.txt sperrt HTML-Zugriff (only crawling restricted)',()=>{
- assert.equal(accessStatus({html:{found:true,robots:'verboten'}}),'robots');
- assert.equal(accessOfSource({method:'scraper',adapter:'ris-portal'},'verboten'),'robots');
- assert.equal(accessOfSource({method:'scraper',adapter:'website'},'verboten'),'robots');
+ assert.equal(accessStatus({html:{found:true,robots:'verboten'}}),'scraping','robots.txt is recorded, not a status');
+ assert.equal(accessOfSource({method:'scraper',adapter:'ris-portal'},'verboten'),'scraping');
+ assert.equal(accessOfSource({method:'scraper',adapter:'website'},'verboten'),'scraping');
  assert.match(robotsNote({method:'scraper'},'verboten'),/sperrt die HTML-Seiten/);
  assert.equal(automatedAccess(accessStatus({html:{found:true,robots:'verboten'}})),true);
 });
@@ -59,7 +60,7 @@ test('case 5: technical block (HTTP 401/403, firewall, login) → Zugriffsschutz
  assert.equal(accessStatus({blocked:true}),'blocked');
  assert.equal(accessStatus({oparl:{found:true,blocked:true}}),'blocked');
  // An OParl interface that refuses, next to HTML pages that answer: the HTML pages decide.
- assert.equal(accessStatus({oparl:{found:true,blocked:true},html:{found:true,robots:'verboten'}}),'robots');
+ assert.equal(accessStatus({oparl:{found:true,blocked:true},html:{found:true,robots:'verboten'}}),'scraping');
  assert.equal(automatedAccess('blocked'),false);
 });
 
@@ -74,7 +75,7 @@ test('case 6: a system recognised without reader or connector → System ohne Le
 test('areas without source: the status from the reason of the last check (texts of the reports)',()=>{
  const R=(reason,url,kind)=>accessOfReason(reason,url,kind);
  const robotsRecheck='robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten)';
- assert.equal(R(robotsRecheck,'https://beispielort.ratsinfomanagement.net/'),'robots');
+ assert.equal(R(robotsRecheck,'https://beispielort.ratsinfomanagement.net/'),'scraping');
  // robots.txt does not decide over an interface: an OParl address or an API platform found there keeps its status.
  assert.equal(R(robotsRecheck,'https://ris.example.de/oparl/v1/system'),'oparl');
  assert.equal(R(robotsRecheck,'https://ris.komuna.net/beispielort/'),'api');
@@ -102,7 +103,7 @@ test('catalog: no connected OParl or API source is labelled by robots.txt; sourc
  for(const s of connected){
   const status=accessOfSource(s,robots.sources[s.id]);
   assert.ok(ACCESS_BY_ID[status],s.id);
-  if(channelOf(s).kind!=='html')assert.notEqual(status,'robots',s.id+' reads an interface');
+  if(channelOf(s).kind!=='html')assert.notEqual(status,'scraping',s.id+' reads an interface');
  }
  const ids=new Set(CATALOG.map(r=>r.id));
  for(const [id,row] of Object.entries(atlas.areas)){assert.ok(ids.has(id),id+' is an area of the catalog');assert.ok(ACCESS_BY_ID[row.z],id+': '+row.z);if(row.r!==undefined)assert.equal(typeof atlas.texts[row.r],'string',id+' reason text');}

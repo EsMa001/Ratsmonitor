@@ -62,10 +62,10 @@ test('real admin SQL counts canonical articles, separate quality states and sour
  assert.equal(filterAdminSources(result.sources,'data','Münster').length,1);
  // Access of programs (shared/source-access.mjs): every area has a status; robots.txt never labels an interface.
  const muenster=result.sources.find(s=>s.id==='muenster'),hamburg=result.sources.find(s=>s.id==='de-02000000');
- assert.deepEqual([muenster.access,muenster.accessLabel],['oparl','OParl verfügbar']);
- assert.deepEqual([hamburg.access,hamburg.accessLabel,hamburg.channel],['api','API verfügbar','CKAN']);
+ assert.deepEqual([muenster.access,muenster.accessLabel],['oparl','Ja · OParl']);
+ assert.deepEqual([hamburg.access,hamburg.accessLabel,hamburg.channel],['api','Ja · Schnittstelle (API)','CKAN']);
  assert.ok(result.sources.every(s=>s.access&&s.accessLabel),'a status for every area');
- assert.ok(filterAdminSources(result.sources,'robots').every(s=>s.access==='robots'));
+ assert.ok(filterAdminSources(result.sources,'html').every(s=>s.access==='scraping'));
  assert.ok(filterAdminSources(result.sources,'closed').length>0);
  assert.ok(filterAdminSources(result.sources,'closed').every(s=>['blocked','none'].includes(s.access)&&!s.canImport),'no automated access only where no source is connected');
  assert.equal(result.runs[0].abandoned,true);assert.equal(result.lastScheduledAt,'2026-09-27T00:00:00Z');
