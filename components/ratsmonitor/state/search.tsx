@@ -335,7 +335,8 @@ async function fetchSearch(query:string,signal?:AbortSignal):Promise<ResponseDat
  return {...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))};
 }
 /** Erste Seite als Strom (NDJSON): jede Etappe ruft onChunk auf, am Ende kommt end mit hasMore und Datenstand */
-async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string}|null)=>void){
+type Known='yes'|'no'|'unknown';
+async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string}|null,known?:Known)=>void){
  const response=await fetch('/api/search?'+query,{signal});
  if(!response.ok||!response.body){const d=await response.json().catch(()=>({})) as {error?:string};throw Error(d.error||'Die Suche konnte nicht geladen werden.');}
  const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='';
@@ -343,8 +344,9 @@ async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Articl
   const {done,value}=await reader.read();if(done)break;
   buffer+=decoder.decode(value,{stream:true});
   for(let i=buffer.indexOf('\n');i>=0;i=buffer.indexOf('\n')){
-   const line=JSON.parse(buffer.slice(0,i)) as {articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string};buffer=buffer.slice(i+1);
+   const line=JSON.parse(buffer.slice(0,i)) as {articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string;known?:Known};buffer=buffer.slice(i+1);
    if(line.error)throw Error(line.error);
+   if(line.known)onChunk([],null,line.known);
    if(line.articles)onChunk(line.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''})),null);
    if(line.end)onChunk([],{hasMore:!!line.hasMore,revision:line.revision??''});
   }
@@ -410,7 +412,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   }
   return params.toString();
  },[local,loadCover]);
- const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string;final:boolean}>({key:'',data:null,error:'',final:true});
+ const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string;final:boolean;known?:Known}>({key:'',data:null,error:'',final:true});
  /* Dauert die Suche über 0,5 s: sind schon Treffer da („partial“), erscheinen sie und weitere fliegen ein; sonst („ring“) steht
     der Ladering und alles erscheint erst auf einmal, wenn die Suche samt genauer Zahl fertig ist. Vorher passiert nichts. */
  const [mode,setMode]=useState<{key:string;value:'ring'|'partial'}>({key:'',value:'partial'});
@@ -432,13 +434,13 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   const hit=freshSearch(requestKey);
   if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};setRemote({key:requestKey,data:hit,error:'',final:true});return;}
   const abort=new AbortController();let timer=0,decide=0,started=false,streamed=false,finished=false;
-  const acc:Article[]=[];
+  const acc:Article[]=[];let knownNow:Known='unknown';
   /* Nach 0,5 s: schon Treffer da (Strom): zeigen und weitere einfliegen lassen; sonst Ring bis alles fertig ist */
-  const decideNow=()=>{if(!finished&&!abort.signal.aborted)setMode({key:requestKey,value:streamed&&acc.length?'partial':'ring'});};
+  const decideNow=()=>{if(!finished&&!abort.signal.aborted)setMode({key:requestKey,value:streamed&&(acc.length||knownNow==='yes')?'partial':'ring'});};
   const onConfirm=()=>{
    if(!started||finished||abort.signal.aborted)return;
    clearTimeout(decide);
-   if(streamed&&acc.length)setMode({key:requestKey,value:'partial'});
+   if(streamed&&(acc.length||knownNow==='yes'))setMode({key:requestKey,value:'partial'});
    else{setMode({key:'',value:'partial'});decide=window.setTimeout(decideNow,500);}
   };
   confirm.current=onConfirm;
@@ -454,10 +456,12 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
      let ready:ResponseData;
      if(streamed){
       let end={hasMore:false,revision:''};
-      await fetchStream(query,abort.signal,(items,last)=>{
+      await fetchStream(query,abort.signal,(items,last,known)=>{
        if(last){end=last;return;}
+       /* Vorab-Prüfung der Wortliste: „ja“ heißt, es kommen Treffer, auch wenn noch keiner da ist */
+       if(known)knownNow=known;
        acc.push(...items);
-       if(!abort.signal.aborted)setRemote({key:requestKey,data:{articles:[...acc],total:0,revision:''} as unknown as ResponseData,error:'',final:false});
+       if(!abort.signal.aborted)setRemote({key:requestKey,data:{articles:[...acc],total:0,revision:''} as unknown as ResponseData,error:'',final:false,known:knownNow});
       });
       ready={articles:acc,total:0,hasMore:end.hasMore,revision:end.revision} as unknown as ResponseData;
      }else{
@@ -468,7 +472,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
      finished=true;
      revision.current={key:local.key,value:ready.revision};
      rememberSearch(requestKey,ready);
-     setRemote({key:requestKey,data:ready,error:'',final:true});
+     setRemote({key:requestKey,data:ready,error:'',final:true,known:knownNow});
     }catch(e){if(!abort.signal.aborted){finished=true;setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.',final:true});}}
    })();
   };
@@ -481,9 +485,9 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht) */
  const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});
  const modeNow=mode.key===requestKey?mode.value:null;
- /* Zähler starten, sobald die Seite fertig ist; kommen Treffer schon in Etappen (nach 0,5 s), gleich mit. Im Ring-Fall erst danach:
-    die Zählabfrage teilt sich die Datenbank mit dem Strom und würde die Suche nach dem ersten Treffer ausbremsen. */
- const pageReady=(remote.key===requestKey&&remote.final&&!!remote.data)||(active&&!!freshSearch(requestKey))||(active&&modeNow==='partial');
+ /* Zähler starten erst, wenn die Seite fertig ist: die Zählabfrage teilt sich die Datenbank mit dem Strom und würde die Suche
+    nach weiteren Treffern ausbremsen */
+ const pageReady=(remote.key===requestKey&&remote.final&&!!remote.data)||(active&&!!freshSearch(requestKey));
  useEffect(()=>{
   if(!active||!pageReady)return;
   const hit=freshFacets(local.key);
@@ -509,7 +513,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Zähler abgeschlossen (auch fehlgeschlagen): erst dann zeigt eine lange Suche („ring“) ihre Treffer */
  const settled=facets.key===local.key;
  /* Ring-Fall: Treffer erst mit den Zählern zeigen. Ohne einen einzigen Treffer gibt es nichts zu zählen: sofort „keine Treffer“ */
- const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final?!(modeNow==='ring'&&!settled&&rd.data.articles.length>0):(modeNow==='partial'&&rd.data.articles.length>0))));
+ const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final?!(modeNow==='ring'&&!settled&&rd.data.articles.length>0):(modeNow==='partial'&&(rd.data.articles.length>0||rd.known==='yes')))));
  /* Eine Antwort aus dem Zwischenspeicher gilt sofort als fertig, außer sie stammt aus dieser lang laufenden Suche selbst (Ring): dann erst mit den Zählern */
  const cachedReady=!!cached&&!(modeNow==='ring'&&!settled&&cached.articles.length>0);
  const loading=!cachedReady&&!adoptable;
@@ -544,7 +548,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   return()=>abort.abort();
  },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
  /* Gibt es Treffer? ja: mindestens einer ist da; nein: die Suche ist zu Ende ohne Treffer; unbekannt: sie läuft noch */
- const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0?'yes':(cached||rd?.final)?'no':'unknown';
+ const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0||(rd?.known==='yes'&&!rd.final)?'yes':(cached||rd?.final)?'no':'unknown';
  return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}
