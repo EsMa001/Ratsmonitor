@@ -11,9 +11,9 @@ const file=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='
 if(!file){say('Keine lokale Datenbank gefunden, nichts zu tun.');process.exit(0);}
 const db=new DatabaseSync(dir+file);db.exec('PRAGMA busy_timeout=60000');
 /* Ohne Gebietsarten gibt es keine vorberechneten Zahlen, Wörter und Karten-IDs funktionieren trotzdem (z. B. ältere Node-Version ohne .ts-Import) */
-let kinds=null;
-try{const {REGIONS}=await import('../shared/regions.ts');kinds=new Map(REGIONS.map(r=>[r.id,r.kind]));}catch{say('Gebietsarten nicht ladbar: keine vorberechneten Zahlen.');}
+let kinds=null,names=null;
+try{const {REGIONS}=await import('../shared/regions.ts');kinds=new Map(REGIONS.map(r=>[r.id,r.kind]));names=new Map(REGIONS.map(r=>[r.id,r.name]));}catch{say('Gebietsarten nicht ladbar: keine vorberechneten Zahlen.');}
 try{
- const t0=Date.now(),result=await refreshSearchWords(sqliteAdapter(db),{full:process.argv.includes('--full'),kinds});
+ const t0=Date.now(),result=await refreshSearchWords(sqliteAdapter(db),{full:process.argv.includes('--full'),kinds,names});
  say(JSON.stringify({...result,seconds:Math.round((Date.now()-t0)/100)/10}));
 }catch(e){say('Wortliste nicht aufgebaut:',e instanceof Error?e.message:e);process.exit(0);}

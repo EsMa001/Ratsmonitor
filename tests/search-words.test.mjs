@@ -147,3 +147,17 @@ test('hit counts follow new cards, and vanish when a card was replaced',async()=
  await refreshSearchWords(db,{full:true,postingMax:2});
  assert.equal(await total('haushalt'),null);
 });
+
+test('a rare word inside very many words (too many for card ids) is precomputed too',async()=>{
+ const db=d1();
+ for(let i=0;i<6;i++)add(db,'w'+i,'wolf plan');
+ for(let i=0;i<301;i++)add(db,'v'+i,'wolf'+String.fromCharCode(97+Math.floor(i/26)%26)+String.fromCharCode(97+i%26)+'x'+i);   // 301 Wörter mit wolf darin
+ add(db,'x1','kleinesding');
+ await refreshSearchWords(db,{full:true,kinds:KINDS});
+ assert.ok(cardsOf(db,'wolf')<=POSTING_MAX&&cardsOf(db,'wolf')>=6,'wolf is rare');
+ assert.equal(await candidateCards(db,[['wolf']]),null,'too many words for card ids');
+ const row=db.raw.prepare("SELECT hits_city FROM search_words WHERE word='wolf'").get();
+ assert.ok(row.hits_city!==null,'wolf is precomputed');
+ db.raw.exec("UPDATE data_revisions SET revision=revision");
+ assert.equal(await precomputedTotal(db,'wolf',{levelIds:['r1','r2']}),real(db,'wolf','city',''));
+});
