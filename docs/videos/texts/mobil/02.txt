@@ -1,6 +1,6 @@
 Wenn Ihre Suche zu viele Treffer liefert, grenzen Sie sie mit Filtern ein.
 Öffnen Sie dazu das Filterfenster neben der Suchleiste.
-Dort stellen Sie den Umkreis ein, also wie weit um Ihren Ort gesucht wird.
+Dort finden Sie Schalter, zum Beispiel für künftige Sitzungen.
 Außerdem wählen Sie einen Zeitraum, ein Thema und einen Status, zum Beispiel beschlossen oder in Beratung.
 Wenn Sie bestätigen, passen sich die Karte und die Liste an.
 Ihre Auswahl erscheint als kleine Marken unter der Suchleiste.

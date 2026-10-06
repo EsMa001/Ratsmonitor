@@ -1,7 +1,6 @@
 Wenn Ihre Suche zu viele Treffer liefert, grenzen Sie sie mit Filtern ein.
 Öffnen Sie dazu das Filterfenster neben der Suchleiste.
-Dort stellen Sie den Umkreis ein, also wie weit um Ihren Ort gesucht wird.
-Außerdem wählen Sie einen Zeitraum, ein Thema und einen Status, zum Beispiel beschlossen oder in Beratung.
+Dort wählen Sie einen Zeitraum, ein Thema und einen Status, zum Beispiel beschlossen oder in Beratung.
 Wenn Sie bestätigen, passen sich die Karte und die Liste an.
 Ihre Auswahl erscheint als kleine Marken unter der Suchleiste.
 Mit einem Klick auf eine Marke entfernen Sie den Filter wieder.
