@@ -83,7 +83,12 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const frozen=useRef(state);
   if(!hold)frozen.current=state;
   /* Handy: 15 statt 20 Treffer je Seite */
-  const derived=useDerivedResults(hold?frozen.current:state,usePathname()==='/',phone?15:20);
+  const live=useDerivedResults(hold?frozen.current:state,usePathname()==='/',phone?15:20);
+  /* Läuft eine Suche, bleibt die Übersicht auf dem letzten fertigen Stand (Leiste, Chips, Karte, Zahl, Liste) und
+     wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */
+  const shown=useRef(live);
+  if(!live.loading)shown.current=live;
+  const derived=useMemo(()=>live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true}:live,[live]);
   const [popup, setPopupState] = useState("");
   const ref = useRef(state);
   ref.current = state;
@@ -251,7 +256,7 @@ export interface SearchResults {
   key:string;
   around:{set:Set<string>|null;level:string}|null;
   /** jüngster erfolgreicher Datenabruf (ISO) */
-  updatedAt:string|null;loading:boolean;error:string;page:number;setPage:(page:number)=>void;retry:()=>void;
+  updatedAt:string|null;loading:boolean;/** neue Suche läuft, angezeigt wird noch der letzte fertige Stand */pending:boolean;error:string;page:number;setPage:(page:number)=>void;retry:()=>void;
   pq: ParseResult;
   /** Ort aus der Suche ist als Gebiet aktiv */
   placeActive: boolean;
@@ -351,6 +356,6 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
  const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
  const error=loading?'':remote.error;
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry,cover,state.level]);
+ return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

@@ -31,7 +31,7 @@ export function MapPanel({ active }: { active: boolean }) {
   const { geo, geoError } = useData();
   const search = useSearch();
   const { state, mapRef } = search;
-  const { areaCounts, coverage, snapshot, loading } = useSearchResults();
+  const { areaCounts, coverage, snapshot, loading, pending } = useSearchResults();
   const filtered = hasFilters(snapshot);
   /* Kartenmodus (Suchleiste unten) erst, wenn die Suche bestätigt ist (Enter, Vorschlag gewählt oder Feld verlassen); während des Tippens bleibt sie stehen */
   const [typing, setTyping] = useState(false);
@@ -227,9 +227,9 @@ export function MapPanel({ active }: { active: boolean }) {
     engine.focusArea("");
   };
   useEffect(() => {
-    if (!loading) center();
+    if (!loading && !pending) center();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, loading, hitsKey, state.area, state.scope, state.radius, moreKey, filtered]);
+  }, [engine, loading, pending, hitsKey, state.area, state.scope, state.radius, moreKey, filtered]);
 
   /* Platz für Vorschläge und Filter innerhalb der Karte (unterhalb der mittigen Suchleiste, im Kartenmodus oberhalb) */
   /* Suchleiste unten: im Kartenmodus und auf dem Handy, sobald gesucht oder gefiltert wurde */
@@ -302,6 +302,8 @@ export function MapPanel({ active }: { active: boolean }) {
         </div>
       )}
 
+      {/* Neue Suche läuft: dünner Ladebalken, die Anzeige bleibt bis zum Ergebnis unverändert */}
+      {pending && <div aria-hidden="true" className="rm-pending pointer-events-none absolute inset-x-0 top-0 z-[6] h-[2px]" />}
       <span className="pointer-events-auto absolute bottom-1 right-2 z-[5] text-[12px] text-slate-500">© GeoBasis-DE / BKG 2019, <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer" className="relative underline max-sm:after:absolute max-sm:after:-inset-x-2 max-sm:after:-inset-y-4 max-sm:after:content-['']">dl-de/by-2-0</a></span>
     </section>
   );
