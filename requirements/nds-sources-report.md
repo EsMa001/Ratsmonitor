@@ -2,13 +2,13 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 440 auswählbaren Gebieten sind 301 angebunden, 139 nicht. Diese Datei beschreibt die 301 Quellen in `server/integrations/nds-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 440 auswählbaren Gebieten sind 302 angebunden, 138 nicht. Diese Datei beschreibt die 302 Quellen in `server/integrations/nds-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
 ## Übernommene Quellen
 
-- 124 × SessionNet (öffentliche Seiten)
+- 125 × SessionNet (öffentliche Seiten)
 - 93 × ALLRIS 4 (öffentliche Seiten)
 - 29 × More! Rubin (Kalender-API)
 - 25 × OParl
@@ -69,6 +69,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Bad Grund (Harz) | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/bad_grund/bi/ | 13 |
 | Stadt Bad Lauterberg im Harz | SessionNet (öffentliche Seiten) | https://ratsinformationssystem.badlauterberg.de/bi/ | 9 |
 | Gemeinde Bovenden | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/bovenden/bi/ | 97 |
+| Stadt Duderstadt | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/duderstadt/bi/ | 243 |
 | Gemeinde Gleichen | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/gleichen/bi/ | 208 |
 | Stadt Hann.Münden | ALLRIS 4 (öffentliche Seiten) | https://allris.hann.muenden.de/public/ | 46 |
 | Stadt Herzberg am Harz | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/herzberg/bi/ | 68 |
@@ -327,10 +328,10 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 40 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
 - 21 × ALLRIS 3
 - 19 × SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen
-- 8 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
+- 9 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
 - 6 × Gefundenes System nicht eindeutig dem Gebiet zuzuordnen
 - 6 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
-- 5 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
+- 4 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
 - 4 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
 - 4 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
 - 4 × SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
@@ -338,13 +339,13 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 3 × Verlinkte Seite antwortet Programmen mit HTTP 403 oder gar nicht
 - 3 × ALLRIS 3 erkannt; Leser noch nicht angewendet
 - 2 × SessionNet 6
-- 2 × Verlinkte Seite antwortet Programmen nicht
 - 2 × Kein unterstütztes Ratsinformationssystem erkannt
 - 2 × OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen
 - 1 × Kein Ratsinformationssystem erkennbar; Sitzungen nur als Webseite oder PDF; Website geprüft: Website antwortet Programmen mit HTTP 403
 - 1 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar
 - 1 × More! Rubin gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
 - 1 × Verlinktes System führt nur einen Demo-Mandanten des Herstellers
+- 1 × Verlinkte Seite antwortet Programmen nicht
 - 1 × SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
 
 | Gebiet | Grund | Gefundene Adresse |
@@ -400,7 +401,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Dissen am Teutoburger Wald | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://dissen.ratsinfomanagement.net/ |
 | Gemeinde Dörverden | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Samtgemeinde Dransfeld | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
-| Stadt Duderstadt | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Edemissen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://ratsinfo.edemissen.de/public/ |
 | Samtgemeinde Eilsen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://samtgemeinde-eilsen.ratsinfomanagement.net/ |
 | Stadt Einbeck | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.kdgoe.de/EIN_public/ |
@@ -417,7 +417,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Ganderkesee | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://ganderkesee.ratsinfomanagement.net/ |
 | Samtgemeinde Geestequelle | Verlinktes System führt nur einen Demo-Mandanten des Herstellers (z. B. „Stadt Musterstadt“) | https://www.ratsinfomanagement.net/ |
 | Stadt Geestland | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://sitzungsdienst.geestland.eu/bi/si010_r.asp |
-| Stadt Goslar | Verlinkte Seite antwortet Programmen nicht (Zeitüberschreitung) | https://www.goslar.de/stadt/politik/allris/si010_r.asp |
+| Stadt Goslar | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.goslar.de/stadt/politik/allris/ |
 | Stadt Göttingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ris.goettingen.de/public/ |
 | Gemeinde Grasberg | Kein unterstütztes Ratsinformationssystem erkannt | https://online.grasberg.de/buergerservice/verwaltung/buergerinformation-900000036-21010.html |
 | Gemeinde Hagen im Bremischen | Verlinkte Seite antwortet Programmen mit HTTP 403 oder gar nicht (keine Verbindung) | https://hagen-cux.ratsinfomanagement.net/gremien |

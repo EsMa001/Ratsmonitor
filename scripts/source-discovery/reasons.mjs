@@ -8,14 +8,14 @@ import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 // to blocked or empty systems come first (verified-api.json: vendor OParl paths, verified-api-register.json: the OParl
 // project's directory; tmp/api-search/, 06.10.2026). verified-website.json
 // (website.mjs) comes last, so it adds an area only where no check of a council information system accepted one.
-export const ACCEPTED_FILES=['verified-api.json','verified-api-register.json','verified-api-rim.json','verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-research.json','verified-hosted.json','verified-consents.json','verified-fix.json','verified-website.json'];
+export const ACCEPTED_FILES=['verified-api.json','verified-api-register.json','verified-api-rim.json','verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-research.json','verified-hosted.json','verified-consents.json','verified-fix.json','verified-nolink.json','verified-website.json'];
 // Candidates set on purpose for one area (web search, diagnosis, correction): a check of them without a source still
 // says more than the check of the links of the website, so it stands in the report (the later file wins).
 // verified-research.json holds the checks of the candidates from the research per Land (candidates/research-*.json).
 // Last, so they replace checks that still obeyed robots.txt: verified-robots-recheck.json (new check of those areas,
 // 06.10.2026) and verified-rim-status.json (SD.NET RIM tenants: pages answer 403, OParl webservice not activated,
 // asked on 06.10.2026; tmp/api-search/rim-status.mjs).
-export const TARGETED_FILES=['verified-search.json','verified-research.json','verified-consents.json','verified-fix.json','verified-robots-recheck.json','verified-rim-status.json'];
+export const TARGETED_FILES=['verified-search.json','verified-research.json','verified-consents.json','verified-fix.json','verified-robots-recheck.json','verified-rim-status.json','verified-nolink.json'];
 // Guessed addresses: only a system found there or a refusal by robots.txt is a finding; a guessed page without a
 // system changes nothing.
 export const GUESSED_FILES=['verified-guessed-own.json','verified-guessed.json','verified-hosted.json'];
@@ -171,7 +171,8 @@ export function openReason(area,row,crawl,ctx={}){
  }
  if(systems.includes('sdnet'))return 'SD.NET erwähnt, System selbst nicht erreichbar oder nicht gefunden';
  if(tried.some(t=>t.system==='allris'&&/Wartungsarbeiten/i.test(t.title||'')))return 'ALLRIS 4; die Bürgerinformation war bei der Prüfung wegen Wartungsarbeiten nicht verfügbar. Erneut prüfen';
- if(tried.some(t=>(t.allrisIssues||[]).some(i=>/Zugriffsprüfung/.test(i))))return 'ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert';
+ // The check page ("Zugriff prüfen") may answer the calendar with HTTP 200 and the reader sees no topics: the title tells.
+ if(tried.some(t=>(t.allrisIssues||[]).some(i=>/Zugriffsprüfung/.test(i))||/^Zugriff prüfen$/.test(t.title||'')))return 'ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert';
  if(tried.some(t=>(t.allrisIssues||[]).some(i=>/zu viele Zugriffe/.test(i))))return 'ALLRIS 4 gefunden; das System meldete bei der Prüfung zu viele Zugriffe und sperrte vorübergehend. Erneut prüfen';
  // A reader of readers.mjs that read the page decides before the ALLRIS 4 reader (an ALLRIS 3 page is read by allris3).
  // A CKAN portal (server/integrations/ckan.mjs) without query profile: its interface is there, the reader needs the profile.

@@ -11476,6 +11476,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.bad-teinach-zavelstein.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-08235085",
+    "name": "Stadt Calw",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.calw.sitzung-online.de/public/",
+    "verifiedSource": "https://rathauscalw.de/gemeinderat/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "OParl-Adresse des Systems (https://www.calw.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "de-08236011",
     "name": "Gemeinde Eisingen",
     "kind": "city",
@@ -29194,6 +29205,17 @@
     "verifiedSource": "https://www.schenkendoebern.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-12071372",
+    "name": "Stadt Spremberg",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://spremberg.gremien.info/",
+    "verifiedSource": "https://spremberg.de/rathaus/stadtpolitik",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "OParl-Adresse antwortet, lieferte aber keine verwertbaren Sitzungen; öffentliche Kalender-API erreichbar."
   },
   {
     "id": "de-12071408",

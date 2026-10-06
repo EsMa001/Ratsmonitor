@@ -369,6 +369,17 @@ Umgesetzt, jeweils mit Tests:
 
 **Stand (06.10.2026):** Die Kandidaten sind geprüft (Zahlen im Abschnitt „Ausweitung vom 05./06.10.2026“). Umgesetzt sind inzwischen auch die Gremientrennung gemeinsamer Systeme (GVV Altshausen, GVV Schönau und weitere), Hamburg und ein Leser für KOMFA. Offen ohne Dritte bleibt die Suche nach Plattform-Mandanten über Zertifikatsprotokolle.
 
+## Nachrecherche: die größten Gebiete ohne gefundenen Link (06.10.2026, abends)
+
+„Kein Link gefunden“ betraf 804 Gebiete, aber nur 4,3 Mio. Einwohner: 800 Gemeinden, davon 746 unter 10.000 Einwohnern, vor allem in Bayern (334), Baden-Württemberg (183), Sachsen (96) und Thüringen (67); 792 davon waren schon zweifach geprüft (Linksuche und Website-Durchsuchung). Die 13 Gebiete ab 20.000 Einwohnern wurden von Hand recherchiert (Websuche, Seitenabruf; Kandidaten in `scripts/source-discovery/candidates/nolink-2026-10-{de,nds}.json`, Prüflauf `verify.mjs` mit `ONLY_FILE`, Ergebnis `verified-nolink.json`, Vorrang in `reasons.mjs`):
+
+- **Angebunden (3):** Spremberg (More! Rubin, `spremberg.gremien.info`, Navigation der Website per Skript, deshalb vom Crawl nicht gesehen), Calw (ALLRIS 4 bei `calw.sitzung-online.de`, verlinkt nur von `rathauscalw.de`, nicht von `calw.de`), Duderstadt (SessionNet bei owl-it, Link auf der Seite „Kommunalpolitik / Gremien“). Stand danach: 3.552 von 5.324 Gebieten, 66,3 Mio. Einwohner.
+- **Zugriffsschutz (4):** Goslar (ALLRIS mit „Zugriff prüfen“, auch vor dem OParl-Pfad; `reasons.mjs` erkennt die Prüfseite jetzt am Titel), Unterschleißheim, Landkreis Ansbach und Landkreis Saalfeld-Rudolstadt (SD.NET RIM bei ratsinfomanagement.net, Rechner antwortet Programmen mit 403 „Verifying Browser“).
+- **Nur Webseite oder PDF (4):** Bad Homburg (Sitzungsdienst intern in der Fabasoft eGov-Suite, öffentlich nur Sitzungskalender und Rednerlisten als PDF), Sonneberg (Terminseite nennt die öffentlichen Tagesordnungspunkte als Text „1ö … 8ö“ unter der Überschrift „öffentlich“; der Leser `website` erkennt den öffentlichen Teil in dieser Form noch nicht), Landkreis Hildburghausen (Unterlagen je Sitzung als PDF-Liste), Landkreis Neumarkt i.d.OPf. (nur Protokolle als PDF).
+- **Nicht erreichbar (2):** Garmisch-Partenkirchen (`markt.gapa.de` antwortete den ganzen Tag mit 504; laut Suchindex gibt es ein Ratsinformationssystem und ein digitales Amtsblatt mit Sitzungsbekanntmachungen, erneut prüfen), Amt Bergen auf Rügen (TI-Generator unter `stadt-bergen-auf-ruegen.org/ris/ti-bergen-4/`, Rechner antwortet nicht; die Stadt Bergen hat `ti-bergen-1`, auch unter `sv-stadt-bergen.de`).
+
+Kreis- oder Verbandssysteme, die eine dieser Gemeinden mitführen, gab es nicht; die Kreise selbst (Ansbach, Saalfeld-Rudolstadt) sitzen hinter derselben Web-Firewall wie ihre RIM-Mandanten. Für die 791 kleinen Gebiete bleibt nur die Nachfrage bei der Kommune.
+
 ## Administration: Übersicht, Lückenatlas und Verlauf (06.10.2026)
 
 Die Administration hat sechs Seiten mit eigenen Namen in der Adresse (`components/admin-chrome.tsx`, `app/admin/page.tsx`); Knöpfe, die dasselbe in anderer Kombination taten, sind zusammengelegt:

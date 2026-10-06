@@ -579,6 +579,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03159010",
+    "name": "Stadt Duderstadt",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/duderstadt/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.duderstadt.de/portal/seiten/kommunalpolitik-gremien-900000043-25420.html",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nds-03159015",
     "name": "Gemeinde Gleichen",
     "kind": "city",
