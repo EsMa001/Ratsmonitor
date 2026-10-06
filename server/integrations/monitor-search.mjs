@@ -8,7 +8,7 @@ export class SearchError extends Error { constructor(message,status=400){super(m
 const FORMAL=['%niederschrift%','%mitteilungen%','%anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','%verpflichtung%','%anträge der fraktionen%'];
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 /* Ganzes Wort in der Suchspalte (nur a–z, 0–9, sonst Trenner): Muster für GLOB am Anfang, in der Mitte und am Ende; Sonderzeichen des Begriffs in [ ] gefasst */
-const wholeWord=t=>{const e=t.replace(/[*?[]/g,c=>'['+c+']');return [e+'[^a-z0-9]*','*[^a-z0-9]'+e+'[^a-z0-9]*','*[^a-z0-9]'+e];};
+const wholeWord=t=>{const e=t.replace(/[*?[]/g,c=>'['+c+']');return [e+'[^a-z0-9à-ÿ]*','*[^a-z0-9à-ÿ]'+e+'[^a-z0-9à-ÿ]*','*[^a-z0-9à-ÿ]'+e];};
 const FILLER=new Set(['und','oder','der','die','das','den','dem','des','ein','eine','einer','in','im','am','an','zu','zum','zur','von','vom','fur','mit','bei','auf','aus','nach']);
 export function parseMonitorSearch(params){
  const q=params.get('q')||'',area=params.get('area')||'',label=params.get('label')||'',month=params.get('month')||'',status=params.get('status')||'',level=params.get('level')||'city',sort=params.get('sort')||'desc',from=params.get('from')||'',to=params.get('to')||'',scope=params.get('scope')==='only'?'only':'with';
@@ -32,9 +32,12 @@ export function parseMonitorSearch(params){
  if(more.length>8||more.some(m=>!/^(\d{2}|\d{5}|\d{8})$/.test(m.ags)))throw new SearchError('Ungültige Ortsauswahl.');
  /* Komma, Semikolon, | und "oder" trennen Alternativen; Füllwörter tragen nichts zur Suche bei */
  const groups=q.split(/[,;|]|\s+oder\s+/i).map(g=>norm(g).split(/\s+/).filter(w=>w&&!FILLER.has(w))).filter(g=>g.length).slice(0,8).map(g=>g.slice(0,12));
+ /* Exakter Begriff: dieselben Wörter mit Umlauten (nur kleingeschrieben), gleiche Form wie groups */
+ const egroups=q.split(/[,;|]|\s+oder\s+/i).map(g=>g.toLowerCase().split(/\s+/).filter(w=>w&&!FILLER.has(norm(w)))).filter(g=>g.length).slice(0,8).map(g=>g.slice(0,12));
  /* Jeder Begriff bindet zwei Parameter; D1 erlaubt höchstens 100 je Abfrage */
  if(groups.flat().length>30)throw new SearchError('Bitte höchstens 30 Suchwörter verwenden.');
- return {q,terms:groups.flat(),groups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),size:Number(sizeRaw||20),part,within,without,revision,noformal:params.get('noformal')==='1',exact:params.get('exact')==='1'};
+ if(params.get('exact')==='1'&&groups.flat().length>12)throw new SearchError('Bei „Exakter Begriff“ bitte höchstens 12 Suchwörter verwenden.');
+ return {q,terms:groups.flat(),groups,egroups,area,scope,more,label,month,from,to,status,level,sort,page:Number(raw),size:Number(sizeRaw||20),part,within,without,revision,noformal:params.get('noformal')==='1',exact:params.get('exact')==='1'};
 }
 
 /* Spalten einer Ergebniszeile (mit den Stationen des Vorgangs), gemeinsam für Seite und Strom */
@@ -81,6 +84,8 @@ export async function searchMonitor(db,catalog,params){
  const names=regions.map(r=>[r.id,norm(r.name)]),hits=new Map();
  /* Exakter Begriff: nur ganze Wörter des Namens zählen */
  const nameMatch=(n,term)=>f.exact?n.split(/[^a-z0-9]+/).includes(term):n.includes(term);
+ const exactHits=new Map();
+ const exactNameHits=e=>{if(!exactHits.has(e))exactHits.set(e,JSON.stringify(regions.filter(r=>r.name.toLowerCase().split(/[^a-z0-9à-ÿ]+/).includes(e)).map(r=>r.id)));return exactHits.get(e);};
  const nameHits=term=>{if(!hits.has(term))hits.set(term,JSON.stringify(names.filter(([,n])=>nameMatch(n,term)).map(([id])=>id)));return hits.get(term);};
  /* Grundfilter: alles außer Gebiet, Thema und Status (die zählen die Facetten jeweils ohne sich selbst) */
  const base=()=>{
@@ -92,7 +97,15 @@ export async function searchMonitor(db,catalog,params){
   if(f.noformal){where.push('NOT ('+FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+')');args.push(...FORMAL);}
   /* Mehrere Suchbegriffe: Komma trennt Alternativen (ODER), Wörter innerhalb eines Begriffs müssen alle vorkommen */
   const groups=(f.groups||[f.terms]).filter(g=>g.length);
-  if(groups.length){where.push('('+groups.map(g=>'('+g.map(()=>(f.exact?'((instr(search,?)>0 AND (search GLOB ? OR search GLOB ? OR search GLOB ?))':'(instr(search,?)>0')+' OR region_id IN (SELECT value FROM json_each(?)))').join(' AND ')+')').join(' OR ')+')');for(const g of groups)for(const term of g)args.push(...(f.exact?[term,...wholeWord(term)]:[term]),nameHits(term));}
+  if(groups.length){
+   /* Exakter Begriff: erst grob über search (schnell), dann ganzes Wort in search_exact (mit Umlauten); Gebiete nur bei ganzem Wort im Namen */
+   where.push('('+groups.map(g=>'('+g.map(()=>(f.exact?'((instr(search,?)>0 AND (search_exact GLOB ? OR search_exact GLOB ? OR search_exact GLOB ?))':'(instr(search,?)>0')+' OR region_id IN (SELECT value FROM json_each(?)))').join(' AND ')+')').join(' OR ')+')');
+   groups.forEach((g,gi)=>g.forEach((t,ti)=>{
+    if(!f.exact){args.push(t,nameHits(t));return;}
+    const e=f.egroups[gi][ti];
+    args.push(t,...wholeWord(e),exactNameHits(e));
+   }));
+  }
   return {where,args};
  };
  /* Seltene Wörter: die Wortliste nennt die Karten, in denen sie vorkommen. Dann werden Seite, Zähler und Strom nur über diese Karten
