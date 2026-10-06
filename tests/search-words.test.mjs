@@ -1,17 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
-import {wordsOf,refreshSearchWords,knownWords,candidateCards,POSTING_MAX,TOO_COMMON} from '../server/integrations/search-words.mjs';
+import {wordsOf,refreshSearchWords,knownWords,candidateCards,precomputedTotal,POSTING_MAX,TOO_COMMON} from '../server/integrations/search-words.mjs';
 
 /* Kleine D1-Hülle um node:sqlite: genug für prepare/bind/first/all/run und batch */
 function d1(){
  const db=new DatabaseSync(':memory:');
- db.exec("CREATE TABLE search_cards(id TEXT PRIMARY KEY NOT NULL,search TEXT NOT NULL);CREATE TABLE data_revisions(id TEXT PRIMARY KEY,revision INTEGER);INSERT INTO data_revisions VALUES('content',1);CREATE TABLE system_state(key TEXT PRIMARY KEY NOT NULL,value TEXT NOT NULL)");
+ db.exec("CREATE TABLE search_cards(id TEXT PRIMARY KEY NOT NULL,region_id TEXT NOT NULL DEFAULT 'r1',date TEXT NOT NULL DEFAULT '2026-09-01',search TEXT NOT NULL);CREATE INDEX idx_search_cards_date ON search_cards(date);CREATE TABLE data_revisions(id TEXT PRIMARY KEY,revision INTEGER);INSERT INTO data_revisions VALUES('content',1);CREATE TABLE system_state(key TEXT PRIMARY KEY NOT NULL,value TEXT NOT NULL)");
  return {raw:db,
   prepare(sql){const st=db.prepare(sql);let args=[];const o={bind(...a){args=a;return o;},async first(){return st.get(...args)??null;},async all(){return {results:st.all(...args)};},async run(){st.run(...args);return {};}};return o;},
   async batch(list){for(const s of list)await s.run();return list.map(()=>({}));}};
 }
-const add=(db,id,text)=>db.raw.prepare('INSERT OR REPLACE INTO search_cards(id,search) VALUES(?,?)').run(id,text);
+const add=(db,id,text,region='r1',date='2026-09-01')=>db.raw.prepare('INSERT OR REPLACE INTO search_cards(id,region_id,date,search) VALUES(?,?,?,?)').run(id,region,date,text);
 const bump=db=>db.raw.exec("UPDATE data_revisions SET revision=revision+1 WHERE id='content'");
 const words=db=>db.raw.prepare('SELECT word FROM search_words ORDER BY word').all().map(r=>r.word);
 const postings=(db,word)=>db.raw.prepare('SELECT card_id FROM search_postings WHERE word=? ORDER BY card_id').all(word).map(r=>r.card_id);
@@ -108,4 +108,40 @@ test('candidateCards: union over matching words, smallest term of an AND group, 
  assert.equal(await candidateCards(db,[['s-bahn']]),null);
  bump(db);                                                                                       // Liste nicht mehr aktuell
  assert.equal(await candidateCards(db,[['windpark']]),null);
+});
+
+const KINDS=new Map([['r1','city'],['r2','city'],['k1','district']]);
+const real=(db,term,kind,to)=>db.raw.prepare("SELECT count(*) n FROM search_cards WHERE instr(search,?)>0 AND region_id IN (SELECT key FROM (SELECT 'r1' key,'city' kind UNION SELECT 'r2','city' UNION SELECT 'k1','district') WHERE kind=?) AND (?='' OR date<=?)").get(term,kind,to,to).n;
+
+test('common words get the exact hit count of the search for them, per level, each card once',async()=>{
+ const db=d1();
+ add(db,'a','haushalt plan');add(db,'b','haushalts beratung haushalt');add(db,'c','haushaltsplan kita','r2');add(db,'d','haushalt kreis','k1');add(db,'e','kita neubau');
+ add(db,'f','kita im haushalt','r1','2026-12-24');                                  // später als heute
+ await refreshSearchWords(db,{full:true,kinds:KINDS,postingMax:2});               // haushalt und kita gelten als häufig
+ assert.equal(cardsOf(db,'haushalt'),TOO_COMMON);
+ db.raw.exec("UPDATE data_revisions SET revision=revision");                        // gleicher Datenstand
+ const total=(term,level='city',to='')=>precomputedTotal(db,term,{level,to,levelIds:level==='city'?['r1','r2']:['k1']});
+ for(const term of ['haushalt','kita'])for(const level of ['city','district'])for(const to of ['','2026-10-06'])
+  assert.equal(await total(term,level,to),real(db,term,level,to),term+' '+level+' '+to);
+ assert.equal(await total('haushalt'),4);                                           // a, b, c (haushaltsplan) und f; d liegt auf Kreisebene
+ assert.equal(await total('kita','city','2026-10-06'),2);                           // f liegt nach dem Stichtag
+ assert.equal(await total('windpark'),null);                                        // kein häufiges Wort
+ assert.equal(await precomputedTotal(db,'haushalt',{levelIds:['r1','r2'],nameHit:()=>true}),null); // Gebietsname: gezählt wird anders
+});
+
+test('hit counts follow new cards, and vanish when a card was replaced',async()=>{
+ const db=d1();
+ for(const id of ['a','b','c','d'])add(db,id,'haushalt plan');
+ await refreshSearchWords(db,{full:true,kinds:KINDS,postingMax:2});
+ const total=term=>precomputedTotal(db,term,{levelIds:['r1','r2']});
+ assert.equal(await total('haushalt'),4);
+ add(db,'e','haushaltsplan neu','r2');bump(db);await refreshSearchWords(db,{kinds:KINDS,postingMax:2});
+ assert.equal(await total('haushalt'),5);assert.equal(await total('haushalt'),real(db,'haushalt','city',''));
+ add(db,'a','nur noch plan');bump(db);await refreshSearchWords(db,{kinds:KINDS,postingMax:2});   // geändert: Zahl nicht mehr verlässlich
+ assert.equal(await total('haushalt'),null);
+ await refreshSearchWords(db,{full:true,kinds:KINDS,postingMax:2});
+ assert.equal(await total('haushalt'),real(db,'haushalt','city',''));
+ /* ohne Gebietsarten gibt es keine Zahlen */
+ await refreshSearchWords(db,{full:true,postingMax:2});
+ assert.equal(await total('haushalt'),null);
 });

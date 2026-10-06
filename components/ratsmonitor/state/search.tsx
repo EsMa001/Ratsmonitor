@@ -338,7 +338,7 @@ async function fetchSearch(query:string,signal?:AbortSignal):Promise<ResponseDat
 }
 /** Erste Seite als Strom (NDJSON): jede Etappe ruft onChunk auf, am Ende kommt end mit hasMore und Datenstand */
 type Known='yes'|'no'|'unknown';
-async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string}|null,known?:Known)=>void){
+async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string}|null,known?:Known,total?:number)=>void){
  const response=await fetch('/api/search?'+query,{signal});
  if(!response.ok||!response.body){const d=await response.json().catch(()=>({})) as {error?:string};throw Error(d.error||'Die Suche konnte nicht geladen werden.');}
  const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='';
@@ -346,9 +346,9 @@ async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Articl
   const {done,value}=await reader.read();if(done)break;
   buffer+=decoder.decode(value,{stream:true});
   for(let i=buffer.indexOf('\n');i>=0;i=buffer.indexOf('\n')){
-   const line=JSON.parse(buffer.slice(0,i)) as {articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string;known?:Known};buffer=buffer.slice(i+1);
+   const line=JSON.parse(buffer.slice(0,i)) as {articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string;known?:Known;total?:number};buffer=buffer.slice(i+1);
    if(line.error)throw Error(line.error);
-   if(line.known)onChunk([],null,line.known);
+   if(line.known)onChunk([],null,line.known,line.total);
    if(line.articles)onChunk(line.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''})),null);
    if(line.end)onChunk([],{hasMore:!!line.hasMore,revision:line.revision??''});
   }
@@ -414,7 +414,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   }
   return params.toString();
  },[local,loadCover]);
- const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string;final:boolean;known?:Known}>({key:'',data:null,error:'',final:true});
+ const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string;final:boolean;known?:Known;knownTotal?:number}>({key:'',data:null,error:'',final:true});
  /* Dauert die Suche über 0,5 s: sind schon Treffer da („partial“), erscheinen sie und weitere fliegen ein; sonst („ring“) steht
     der Ladering und alles erscheint erst auf einmal, wenn die Suche samt genauer Zahl fertig ist. Vorher passiert nichts. */
  const [mode,setMode]=useState<{key:string;value:'ring'|'partial'}>({key:'',value:'partial'});
@@ -436,7 +436,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   const hit=freshSearch(requestKey);
   if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};setRemote({key:requestKey,data:hit,error:'',final:true});return;}
   const abort=new AbortController();let timer=0,decide=0,started=false,streamed=false,finished=false;
-  const acc:Article[]=[];let knownNow:Known='unknown';
+  const acc:Article[]=[];let knownNow:Known='unknown',knownTotal:number|undefined;
   /* Nach 0,5 s: schon Treffer da (Strom): zeigen und weitere einfliegen lassen; sonst Ring bis alles fertig ist */
   const decideNow=()=>{if(!finished&&!abort.signal.aborted)setMode({key:requestKey,value:streamed&&(acc.length||knownNow==='yes')?'partial':'ring'});};
   const onConfirm=()=>{
@@ -458,12 +458,14 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
      let ready:ResponseData;
      if(streamed){
       let end={hasMore:false,revision:''};
-      await fetchStream(query,abort.signal,(items,last,known)=>{
+      await fetchStream(query,abort.signal,(items,last,known,total)=>{
        if(last){end=last;return;}
-       /* Vorab-Prüfung der Wortliste: „ja“ heißt, es kommen Treffer, auch wenn noch keiner da ist */
+       /* Vorab-Prüfung der Wortliste: „ja“ heißt, es kommen Treffer, auch wenn noch keiner da ist; bei häufigen Wörtern ohne
+          Filter kommt die genaue Trefferzahl gleich mit */
        if(known)knownNow=known;
+       if(total!==undefined)knownTotal=total;
        acc.push(...items);
-       if(!abort.signal.aborted)setRemote({key:requestKey,data:{articles:[...acc],total:0,revision:''} as unknown as ResponseData,error:'',final:false,known:knownNow});
+       if(!abort.signal.aborted)setRemote({key:requestKey,data:{articles:[...acc],total:0,revision:''} as unknown as ResponseData,error:'',final:false,known:knownNow,knownTotal});
       });
       ready={articles:acc,total:0,hasMore:end.hasMore,revision:end.revision} as unknown as ResponseData;
      }else{
@@ -474,7 +476,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
      finished=true;
      revision.current={key:local.key,value:ready.revision};
      rememberSearch(requestKey,ready);
-     setRemote({key:requestKey,data:ready,error:'',final:true,known:knownNow});
+     setRemote({key:requestKey,data:ready,error:'',final:true,known:knownNow,knownTotal});
     }catch(e){if(!abort.signal.aborted){finished=true;setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.',final:true});}}
    })();
   };
@@ -530,7 +532,9 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Genaue Zahl, sobald die Zähler da sind; davor die gedeckelte Zählung der Seite */
  /* Gibt es keine weitere Seite, ist die Zahl auch ohne die Zähler bekannt; sonst fehlt sie, bis die Zähler da sind */
  const known=data&&data.hasMore===false?(page-1)*pageSize+data.articles.length:null;
- const total=exact?exact.total:known??0,pendingTotal=!exact&&known===null;
+ /* Bei häufigen Wörtern ohne Filter nennt der Server die genaue Zahl vorab (Wortliste), Karte und Filterzähler folgen */
+ const preTotal=rd?.knownTotal;
+ const total=exact?exact.total:known??preTotal??0,pendingTotal=!exact&&known===null&&preTotal===undefined;
  /* Mit genauer Zahl zählt die Seitenzahl, davor meldet die Antwort selbst, ob noch eine Seite folgt */
  const hasMore=exact?page<Math.ceil(exact.total/pageSize):!!data?.hasMore;
  /* Nächste Seite still im Hintergrund holen, damit „Weiter“ sofort geht (die Anfrage nutzt dieselbe laufende Abfrage wie der Klick) */

@@ -1,5 +1,5 @@
 import {LABELS} from '../../shared/labels.mjs';
-import {knownWords,candidateCards} from './search-words.mjs';
+import {knownWords,candidateCards,precomputedTotal} from './search-words.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
@@ -129,7 +129,10 @@ export async function searchMonitor(db,catalog,params){
    /* Vorab: kann der Begriff Treffer haben? „nein“ beendet die Suche sofort, „ja“ erlaubt der Oberfläche, ohne Warten loszulegen */
    const plain=!f.area&&!f.label&&!f.status&&!f.month&&!f.from&&!f.more.length&&!f.within&&!f.without&&!f.noformal;
    const known=await knownWords(db,f.groups,{plain,nameHit});
-   yield {known};
+   /* Häufiges Wort ohne Filter: die Trefferzahl steht vorberechnet in der Wortliste und geht gleich mit */
+   const single=plain&&f.groups.length===1&&f.groups[0].length===1?f.groups[0][0]:null;
+   const total=single?await precomputedTotal(db,single,{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameHit}):null;
+   yield total===null?{known}:{known,total};
    if(known==='no'){yield {end:true,hasMore:false,revision,pageSize:limit};return;}
    let found=0,upper='9999-12-31~',size=STREAM_FIRST,more=false;
    while(true){

@@ -4,6 +4,8 @@
  * search_words    jedes Wort aus search_cards.search (ab 3 Zeichen) mit der Zahl seiner Karten; TOO_COMMON (201) heißt
  *                 „mehr als 200 Karten“, dann gibt es keine Karten-IDs.
  * search_postings zu jedem Wort mit höchstens 200 Karten die IDs dieser Karten.
+ * hits_city/_district bei den häufigen Wörtern: die genaue Trefferzahl der Suche nach diesem Wort (mit Teilwörtern, je Karte
+ *                 einmal), getrennt nach Ebene. Gilt nur ohne Filter und nur solange sich die Daten nicht ändern.
  *
  * Damit beantwortet die Suche vor dem Durchsuchen aller Karten:
  *   knownWords      kann der Begriff Treffer haben? ja / nein / unbekannt (siehe dort);
@@ -34,25 +36,27 @@ const readState=async db=>{try{const row=await db.prepare('SELECT value FROM sys
 const writeState=(db,state)=>db.prepare('INSERT OR REPLACE INTO system_state(key,value) VALUES(?,?)').bind(STATE_KEY,JSON.stringify(state)).run();
 const currentRevision=async db=>String((await db.prepare(REVISION_SQL).first())?.revision??0);
 const SCHEMA=[
- 'CREATE TABLE IF NOT EXISTS search_words (word TEXT PRIMARY KEY NOT NULL, cards INTEGER NOT NULL DEFAULT 0) WITHOUT ROWID',
+ 'CREATE TABLE IF NOT EXISTS search_words (word TEXT PRIMARY KEY NOT NULL, cards INTEGER NOT NULL DEFAULT 0, hits_city INTEGER, hits_district INTEGER) WITHOUT ROWID',
  'CREATE TABLE IF NOT EXISTS search_postings (word TEXT NOT NULL, card_id TEXT NOT NULL, PRIMARY KEY (word,card_id)) WITHOUT ROWID',
 ];
 const ensureSchema=async db=>{for(const sql of SCHEMA)await db.prepare(sql).run();};
 /** Ältere Fassung der Tabelle (ohne Zählspalte): dann muss neu aufgebaut werden */
-const schemaOk=async db=>{try{await db.prepare('SELECT cards FROM search_words LIMIT 1').first();await db.prepare('SELECT card_id FROM search_postings LIMIT 1').first();return true;}catch{return false;}};
+const schemaOk=async db=>{try{await db.prepare('SELECT cards,hits_city,hits_district FROM search_words LIMIT 1').first();await db.prepare('SELECT card_id FROM search_postings LIMIT 1').first();return true;}catch{return false;}};
 /** D1 erlaubt höchstens 100 Parameter und 100 KB je gebundenem Wert: Daten als JSON-Liste in einem Wert */
 const runBatches=async(db,statements)=>{for(let i=0;i<statements.length;i+=20)await db.batch(statements.slice(i,i+20));};
-const insertWords=(db,rows)=>{const out=[];for(let i=0;i<rows.length;i+=1500)out.push(db.prepare("INSERT OR REPLACE INTO search_words(word,cards) SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]') FROM json_each(?)").bind(JSON.stringify(rows.slice(i,i+1500))));return out;};
+const insertWords=(db,rows)=>{const out=[];for(let i=0;i<rows.length;i+=1500)out.push(db.prepare("INSERT OR REPLACE INTO search_words(word,cards,hits_city,hits_district) SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]'),json_extract(value,'$[2]'),json_extract(value,'$[3]') FROM json_each(?)").bind(JSON.stringify(rows.slice(i,i+1500))));return out;};
 const insertPostings=(db,pairs)=>{const out=[];for(let i=0;i<pairs.length;i+=1500)out.push(db.prepare("INSERT OR IGNORE INTO search_postings(word,card_id) SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]') FROM json_each(?)").bind(JSON.stringify(pairs.slice(i,i+1500))));return out;};
 
 /**
  * Wortliste auf den Stand der Karten bringen. Ohne Angaben nur das Neue seit dem letzten Lauf.
  * @param {{prepare:Function,batch:Function}} db D1-Datenbank
- * @param {{full?:boolean,chunk?:number,onlyIfBuilt?:boolean,maxCards?:number}} options full: alles neu aufbauen;
- *   onlyIfBuilt: nur nachführen, nie den ersten Aufbau machen (für den Import im Worker); maxCards: höchstens so viele Karten
- *   je Lauf (der Rest folgt beim nächsten; bis dahin gilt die Liste als veraltet)
+ * @param {{full?:boolean,chunk?:number,onlyIfBuilt?:boolean,maxCards?:number,kinds?:Map<string,string>,postingMax?:number}} options
+ *   full: alles neu aufbauen; onlyIfBuilt: nur nachführen, nie den ersten Aufbau machen (für den Import im Worker);
+ *   maxCards: höchstens so viele Karten je Lauf (der Rest folgt beim nächsten; bis dahin gilt die Liste als veraltet);
+ *   kinds: Gebiets-ID -> 'city'|'district' für die vorberechneten Trefferzahlen (ohne sie gibt es keine);
+ *   postingMax: ab wie vielen Karten ein Wort als häufig gilt (Standard 200; für Tests kleiner)
  */
-export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity}={}){
+export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity,kinds=null,postingMax=POSTING_MAX}={}){
  await ensureSchema(db);
  const state=await readState(db);
  if(onlyIfBuilt&&!full&&!state?.complete)return {skipped:true};
@@ -61,12 +65,21 @@ export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=f
  /* Steht an der zuletzt gelesenen rowid nicht mehr dieselbe Karte, wurden rowids neu vergeben: neue Karten würden
     übersprungen, also alles neu */
  const same=state?.complete&&(state.rowid===0||(await db.prepare('SELECT id FROM search_cards WHERE rowid=?').bind(state.rowid).first())?.id===state.topId);
- if(full||!state?.complete||!same||!(await schemaOk(db)))return buildAll(db,revision,chunk);
- return refreshNew(db,state,revision,chunk,maxCards);
+ if(full||!state?.complete||!same||!(await schemaOk(db)))return buildAll(db,revision,chunk,kinds,postingMax);
+ return refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax);
 }
 
-/** Voller Aufbau in einem Durchlauf: zählt alle Wörter, behält die IDs der seltenen */
-async function buildAll(db,revision,chunk){
+/** Alle Teilstücke eines Worts (ab 3 Zeichen), die ein häufiger Begriff sind */
+function commonTermsIn(word,commonSet,cache){
+ let found=cache.get(word);
+ if(found)return found;
+ const terms=new Set();
+ for(let i=0;i<word.length-2;i++)for(let j=i+3;j<=word.length;j++){const part=word.slice(i,j);if(commonSet.has(part))terms.add(part);}
+ found=[...terms];cache.set(word,found);return found;
+}
+
+/** Voller Aufbau: zählt alle Wörter, behält die IDs der seltenen und rechnet die Trefferzahl der häufigen aus */
+async function buildAll(db,revision,chunk,kinds,postingMax){
  await writeState(db,{rowid:0,topId:null,revision:null,complete:false,words:0});
  await db.prepare('DROP TABLE IF EXISTS search_postings').run();
  await db.prepare('DROP TABLE IF EXISTS search_words').run();
@@ -81,29 +94,62 @@ async function buildAll(db,revision,chunk){
    for(const w of wordsOf(row.search)){
     const ids=map.get(w);
     if(ids===undefined)map.set(w,[row.id]);
-    else if(ids!==null){if(ids.length>=POSTING_MAX)map.set(w,null);else ids.push(row.id);}
+    else if(ids!==null){if(ids.length>=postingMax)map.set(w,null);else ids.push(row.id);}
    }
   }
   cards+=results.length;
  }
+ /* Trefferzahl der Suche nach einem häufigen Wort (mit Teilwörtern, je Karte einmal), getrennt nach Ebene: zweiter Durchlauf,
+    je Karte die häufigen Begriffe, die in einem ihrer Wörter stecken */
+ const hits=new Map();
+ const common=new Set([...map].filter(([,ids])=>ids===null).map(([w])=>w));
+ if(kinds&&common.size){
+  const cache=new Map();let at=0;
+  for(;;){
+   const {results}=await db.prepare('SELECT rowid r,region_id,search FROM search_cards WHERE rowid>? ORDER BY rowid LIMIT ?').bind(at,20000).all();
+   if(!results.length)break;
+   for(const row of results){
+    at=row.r;const kind=kinds.get(row.region_id);if(kind!=='city'&&kind!=='district')continue;
+    const terms=new Set();
+    for(const w of wordsOf(row.search))for(const t of commonTermsIn(w,common,cache))terms.add(t);
+    for(const t of terms){let h=hits.get(t);if(!h){h={city:0,district:0};hits.set(t,h);}h[kind]++;}
+   }
+  }
+ }
  const words=[],pairs=[];
- for(const [w,ids] of map){words.push([w,ids?ids.length:TOO_COMMON]);if(ids)for(const id of ids)pairs.push([w,id]);}
+ for(const [w,ids] of map){
+  const h=hits.get(w);
+  words.push([w,ids?ids.length:TOO_COMMON,ids?null:(kinds?h?.city??0:null),ids?null:(kinds?h?.district??0:null)]);
+  if(ids)for(const id of ids)pairs.push([w,id]);
+ }
  await runBatches(db,insertWords(db,words));
  await runBatches(db,insertPostings(db,pairs));
- await writeState(db,{rowid,topId,revision,complete:true,words:words.length,postings:pairs.length,at:new Date().toISOString()});
- return {cards,words:words.length,postings:pairs.length,revision,full:true,reachedEnd:true};
+ await writeState(db,{rowid,topId,revision,complete:true,counted:cards,hasHits:!!kinds,words:words.length,postings:pairs.length,at:new Date().toISOString()});
+ return {cards,words:words.length,postings:pairs.length,hitsWords:hits.size,revision,full:true,reachedEnd:true};
 }
 
 /** Nur Karten seit dem letzten Lauf: neue Wörter anlegen, IDs der seltenen ergänzen, Wörter über 200 Karten kappen */
-async function refreshNew(db,state,revision,chunk,maxCards){
+async function refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax){
  let rowid=state.rowid,topId=state.topId??null,cards=0,reachedEnd=false;
+ /* Die vorberechneten Trefferzahlen lassen sich nur fortschreiben, wenn nichts gelöscht oder ersetzt wurde: dann sind die
+    Karten bis zur letzten rowid noch genau die gezählten. Sonst verfallen sie bis zum nächsten vollen Aufbau. */
+ let hitsOk=!!state.hasHits&&!!kinds;
+ if(hitsOk){const old=(await db.prepare('SELECT count(*) n FROM search_cards WHERE rowid<=?').bind(state.rowid).first())?.n;hitsOk=old===state.counted;}
+ const common=new Set();
+ if(hitsOk){const {results}=await db.prepare('SELECT word FROM search_words WHERE cards>?').bind(POSTING_MAX).all();for(const r of results)common.add(r.word);}
+ const termCache=new Map();
  while(cards<maxCards){
-  const {results}=await db.prepare('SELECT rowid r,id,search FROM search_cards WHERE rowid>? ORDER BY rowid LIMIT ?').bind(rowid,chunk).all();
+  const {results}=await db.prepare('SELECT rowid r,id,region_id,search FROM search_cards WHERE rowid>? ORDER BY rowid LIMIT ?').bind(rowid,chunk).all();
   if(!results.length){reachedEnd=true;break;}
-  const pending=new Map();
+  const pending=new Map(),bump=new Map();
   for(const row of results){
    rowid=row.r;topId=row.id;
-   for(const w of wordsOf(row.search)){const list=pending.get(w);if(list)list.push(row.id);else pending.set(w,[row.id]);}
+   const kind=kinds?.get(row.region_id),terms=new Set();
+   for(const w of wordsOf(row.search)){
+    const list=pending.get(w);if(list)list.push(row.id);else pending.set(w,[row.id]);
+    if(hitsOk&&(kind==='city'||kind==='district'))for(const t of commonTermsIn(w,common,termCache))terms.add(t);
+   }
+   for(const t of terms){let b=bump.get(t);if(!b){b={city:0,district:0};bump.set(t,b);}b[kind]++;}
   }
   cards+=results.length;
   /* Bekannte Zählstände der betroffenen Wörter */
@@ -117,7 +163,7 @@ async function refreshNew(db,state,revision,chunk,maxCards){
    const had=current.get(w);
    if(had>=TOO_COMMON)continue;
    if(had===undefined)fresh.push([w,0]);
-   if(ids.length>POSTING_MAX){capped.push(w);continue;}
+   if(ids.length>postingMax){capped.push(w);continue;}
    touched.push(w);for(const id of ids)pairs.push([w,id]);
   }
   const statements=[...insertWordsIgnore(db,fresh),...insertPostings(db,pairs)];
@@ -125,11 +171,12 @@ async function refreshNew(db,state,revision,chunk,maxCards){
    const json=JSON.stringify(touched.slice(i,i+1500));
    statements.push(db.prepare('UPDATE search_words SET cards=(SELECT count(*) FROM search_postings p WHERE p.word=search_words.word) WHERE word IN (SELECT value FROM json_each(?))').bind(json));
   }
+  for(const [t,b] of bump)statements.push(db.prepare('UPDATE search_words SET hits_city=hits_city+?,hits_district=hits_district+? WHERE word=? AND hits_city IS NOT NULL').bind(b.city,b.district,t));
   await runBatches(db,statements);
-  /* Wörter, die jetzt über 200 Karten haben, verlieren ihre IDs */
+  /* Wörter, die jetzt über 200 Karten haben, verlieren ihre IDs (ihre Trefferzahl gibt es erst nach dem nächsten vollen Aufbau) */
   const over=[...capped];
   for(let i=0;i<touched.length;i+=1500){
-   const {results:rows}=await db.prepare('SELECT word FROM search_words WHERE cards>? AND word IN (SELECT value FROM json_each(?))').bind(POSTING_MAX,JSON.stringify(touched.slice(i,i+1500))).all();
+   const {results:rows}=await db.prepare('SELECT word FROM search_words WHERE cards>? AND word IN (SELECT value FROM json_each(?))').bind(postingMax,JSON.stringify(touched.slice(i,i+1500))).all();
    for(const r of rows)over.push(r.word);
   }
   const cleanup=[];
@@ -140,8 +187,9 @@ async function refreshNew(db,state,revision,chunk,maxCards){
   }
   await runBatches(db,cleanup);
  }
+ if(state.hasHits&&!hitsOk)await db.prepare('UPDATE search_words SET hits_city=NULL,hits_district=NULL').run();
  const words=(await db.prepare('SELECT count(*) n FROM search_words').first())?.n??0;
- await writeState(db,{rowid,topId,revision:reachedEnd?revision:null,complete:true,words,at:new Date().toISOString()});
+ await writeState(db,{rowid,topId,revision:reachedEnd?revision:null,complete:true,counted:(state.counted??0)+cards,hasHits:hitsOk,words,at:new Date().toISOString()});
  return {cards,words,revision,reachedEnd};
 }
 const insertWordsIgnore=(db,rows)=>{const out=[];for(let i=0;i<rows.length;i+=1500)out.push(db.prepare("INSERT OR IGNORE INTO search_words(word,cards) SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]') FROM json_each(?)").bind(JSON.stringify(rows.slice(i,i+1500))));return out;};
@@ -210,5 +258,26 @@ export async function candidateCards(db,groups,{nameHit=()=>false}={}){
    if(union.size>CANDIDATE_MAX)return null;
   }
   return [...union];
+ }catch{return null;}
+}
+
+/**
+ * Genaue Trefferzahl der Suche nach genau einem häufigen Wort, sofort aus der Wortliste (sonst null: dann wird gezählt).
+ * Gilt nur ohne weitere Filter, bei aktueller Liste und wenn der Begriff keinen Gebietsnamen trifft. Karten mit Datum nach
+ * `to` (die Oberfläche setzt das heutige Datum) zählen nicht mit und werden abgezogen.
+ * @param term der einzige Suchbegriff
+ * @param level 'city' | 'district'; levelIds: Gebiets-IDs dieser Ebene; to: 'JJJJ-MM-TT' oder ''
+ */
+export async function precomputedTotal(db,term,{level='city',to='',levelIds=[],nameHit=()=>false}={}){
+ if(!searchable([term])||nameHit(term))return null;
+ try{
+  const state=await readState(db);
+  if(!state?.complete||!state.hasHits||state.revision!==await currentRevision(db))return null;
+  const row=await db.prepare('SELECT hits_city,hits_district FROM search_words WHERE word=?').bind(term).first();
+  const n=level==='district'?row?.hits_district:row?.hits_city;
+  if(n==null)return null;
+  if(!to)return n;
+  const later=(await db.prepare('SELECT count(*) n FROM search_cards INDEXED BY idx_search_cards_date WHERE date>? AND region_id IN (SELECT value FROM json_each(?)) AND instr(search,?)>0').bind(to,JSON.stringify(levelIds),term).first())?.n??0;
+  return n-later;
  }catch{return null;}
 }
