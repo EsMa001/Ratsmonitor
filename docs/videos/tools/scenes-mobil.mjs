@@ -128,39 +128,29 @@ export const SCENES = {
       [6, 0.3, "kontakt", async (H) => { await H.page.getByRole("link", { name: /Kontakt aufnehmen/ }).first().scrollIntoViewIfNeeded().catch(() => {}); await H.scrollTo(await H.page.evaluate(() => document.body.scrollHeight)); }],
     ],
   },
-  /* 13 Politik vor Ort im Blick (Vorstellung, mit Vorteilen am Ende) */
+  /* 13 Politik vor Ort im Blick (Vorstellung) */
   "13": {
-    setup: async (H) => { await H.page.goto(H.BASE + "/quellen", { waitUntil: "load" }); await H.sleep(10000); await H.page.goto(H.BASE + "/", { waitUntil: "load" }); await H.sleep(1500); },
+    setup: async (H) => { },
     steps: [
       [2, 0.3, "karte", async (H) => { await H.page.mouse.move(195, 300); }],
       [3, 0.5, "suche", async (H) => { await H.page.tap("#q"); await H.page.keyboard.type("Kita", { delay: 170 }); await H.page.keyboard.press("Enter"); await H.loaded(); await H.scrollTo(0); }],
       [4, 0.4, "karte2", async (H) => { await H.page.mouse.move(150, 200); }],
       [5, 0.2, "liste", async (H) => { await H.scrollTo(560); await H.sleep(2200); await H.scrollTo(900); }],
       [6, 0.2, "speichern", async (H) => { await H.scrollTo(0); await H.sleep(1100); await tap(H, "button", /Suche speichern/); }],
-      /* Vorteile: viele Systeme, früh informiert, Sitzungen, Originalquelle, Handy */
-      [8, 0.1, "systeme", async (H) => { await H.page.goto(H.BASE + "/quellen", { waitUntil: "load" }); await H.sleep(2200); await H.scrollTo(420); }],
-      [9, 0.1, "frueh", async (H) => { await H.page.locator('a[href="/konto/suchen"]').first().tap(); await H.sleep(1500); await H.page.getByRole("button", { name: /Bei neuen Treffern benachrichtigen/ }).first().tap(); }],
-      [10, 0.1, "sitzung", async (H) => { await H.page.locator('a[href="/konto/kalender"]').first().tap(); await H.sleep(1500); await H.scrollTo(300); }],
-      [11, 0.1, "quelle", async (H) => { await H.page.goto(H.BASE + "/", { waitUntil: "load" }); await H.sleep(1500); await H.openFirstArticle(); await H.scrollTo(1100); }],
-      [12, 0.1, "handy", async (H) => { await H.page.goto(H.BASE + "/", { waitUntil: "load" }); }],
+      [8, 0.0, "ende", async (H) => { await H.page.locator('a[href="/konto/suchen"]').first().tap(); }],
     ],
   },
-  /* 14 Für Unternehmen und Verbände (Vorstellung, mit Vorteilen am Ende) */
+  /* 14 Für Unternehmen und Verbände (Vorstellung) */
   "14": {
-    setup: async (H) => { await H.page.goto(H.BASE + "/quellen", { waitUntil: "load" }); await H.sleep(10000); await H.page.goto(H.BASE + "/", { waitUntil: "load" }); await H.sleep(1500); },
+    setup: async (H) => { },
     steps: [
       [2, 0.3, "suche", async (H) => { await H.page.tap("#q"); await H.page.keyboard.type("Bebauungsplan", { delay: 110 }); await H.page.keyboard.press("Enter"); await H.loaded(); await H.scrollTo(0); }],
       [3, 0.3, "liste", async (H) => { await H.scrollTo(560); }],
       [4, 0.3, "artikel", async (H) => { await H.openFirstArticle(); await H.scrollTo(520); }],
-      [5, 0.4, "alarm", async (H) => { await H.page.goto(H.BASE + "/", { waitUntil: "load" }); await H.sleep(1500); await H.search("Bebauungsplan"); await tap(H, "button", /Suche speichern/); }],
+      [5, 0.4, "alarm", async (H) => { await H.page.goto(H.BASE + "/", { waitUntil: "networkidle" }); await H.sleep(800); await H.search("Bebauungsplan"); await tap(H, "button", /Suche speichern/); }],
       [6, 0.3, "filter", async (H) => { await H.filterBtn(); }],
       [7, 0.3, "export", async (H) => { await H.filterBtn(); await H.sleep(500); await H.openFirstArticle(); await H.scrollTo(0); await H.sleep(500); await tap(H, "button", "Exportieren"); }],
-      /* Vorteile: viele Systeme, früh informiert, Team, Originalquelle */
-      [9, 0.1, "systeme", async (H) => { await H.page.keyboard.press("Escape"); await H.page.goto(H.BASE + "/quellen", { waitUntil: "load" }); await H.sleep(2200); await H.scrollTo(420); }],
-      [10, 0.1, "frueh", async (H) => { await H.page.locator('a[href="/konto/suchen"]').first().tap(); await H.sleep(1500); await H.page.getByRole("button", { name: /Bei neuen Treffern benachrichtigen/ }).first().tap(); }],
-      [11, 0.1, "team", async (H) => { await H.page.goto(H.BASE + "/konto/profil", { waitUntil: "load" }); await H.sleep(1200); await H.scrollTo(700); }],
-      [12, 0.1, "quelle", async (H) => { await H.page.goto(H.BASE + "/", { waitUntil: "load" }); await H.sleep(1500); await H.openFirstArticle(); await H.scrollTo(1100); }],
-      [13, 0.2, "preise", async (H) => { await H.page.goto(H.BASE + "/", { waitUntil: "load" }); await H.sleep(800); await H.page.locator("header button").first().tap(); await H.sleep(1000); await H.page.getByRole("link", { name: "Preismodelle" }).last().tap().catch(() => {}); }],
+      [8, 0.2, "preise", async (H) => { await H.page.keyboard.press("Escape"); await H.page.goto(H.BASE + "/", { waitUntil: "load" }); await H.sleep(800); await H.page.locator("header button").first().tap(); await H.sleep(1000); await H.page.getByRole("link", { name: "Preismodelle" }).last().tap().catch(() => {}); }],
     ],
   },
 };

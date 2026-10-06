@@ -2,7 +2,7 @@
 
 Videos zu Funktionen (12) und Vorstellungsvideos (2) für Plenara. Diese Anleitung beschreibt, **was im Repository liegt, woher Stimme und Bilder kommen und wie man ein Video neu erzeugt.**
 
-Stand: Alle 14 Videos gibt es als **Handy-Fassung** (Hochformat). Die Videos 13 und 14 (Vorstellung) enden mit den Vorteilen von Plenara. Von den **Web-Fassungen** (Querformat) gibt es nur Video 1, und das ist ein älterer Stand mit altem Text. Auf der Seite zeigen Handys die Handy-Fassung, am Computer steht bei den übrigen „Video folgt“.
+Stand: Alle 14 Videos gibt es als **Handy-Fassung** (Hochformat). Von den **Web-Fassungen** (Querformat) gibt es nur Video 1, und das ist ein älterer Stand mit altem Text. Auf der Seite zeigen Handys die Handy-Fassung, am Computer steht bei den übrigen „Video folgt“.
 
 ## Was wo liegt
 
@@ -42,17 +42,10 @@ Das Endstück `-mobil` kennzeichnet die Handy-Fassung. Die Vorschaubilder sind a
 | 10 | Postfach und Wochenbericht | `postfach-wochenbericht-mobil` | `10.txt` | 34 s |
 | 11 | Konto und Profil | `konto-profil-mobil` | `11.txt` | 36 s |
 | 12 | Datenabdeckung prüfen | `datenabdeckung-mobil` | `12.txt` | 32 s |
-| 13 | Politik vor Ort im Blick (Vorstellung, mit Vorteilen) | `politik-vor-ort-mobil` | `13.txt` | 58 s |
-| 14 | Für Unternehmen und Verbände (Vorstellung, mit Vorteilen) | `unternehmen-verbaende-mobil` | `14.txt` | 63 s |
+| 13 | Politik vor Ort im Blick (Vorstellung) | `politik-vor-ort-mobil` | `13.txt` | 40 s |
+| 14 | Für Unternehmen und Verbände (Vorstellung) | `unternehmen-verbaende-mobil` | `14.txt` | 48 s |
 
 Die Texte 02 bis 12 sind für Handy und Web gedacht, haben aber nur auf dem Handy eine Aufnahme. Ausnahme `08-mobil.txt`: Auf dem Handy gibt es keinen Export der Trefferliste (nur den Export im Artikel). Alle Texte sagen „klicken“; nur Video 1 (Handy) sagt noch „Tippen Sie“.
-
-## Vorteile am Ende der Vorstellungsvideos
-
-Beide Vorstellungsvideos enden mit „Das bringt Ihnen Plenarra:“ und den Vorteilen (nach dem Vorbild des ersten Erklärvideos aus `~/code/video-tools/skript.md`, Szene „Vorteile“):
-
-- Video 13: Suche in vielen einzelnen Systemen gespart, früh von neuen Vorgängen erfahren, keine Sitzung verpassen, alles an der Originalquelle prüfbar, funktioniert auch auf dem Handy.
-- Video 14 (für Unternehmen): gleiche Vorteile, dazu „Ihr Team erhält dieselben Benachrichtigungen“ (Tarif: bis zu 5 E-Mail-Empfänger je Benachrichtigung), danach Hinweis auf Anwendungsfälle und Preise.
 
 ## Die Stimme
 
