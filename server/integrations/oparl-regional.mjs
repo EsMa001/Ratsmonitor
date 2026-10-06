@@ -25,6 +25,33 @@ export function organizationFilter(spec){
   return !own.length?'filtered':out.length?'mixed':'kept';
  };
 }
+/**
+ * One part of a shared system for readers whose meeting lists name a meeting only by its body (SessionNet, ALLRIS): the
+ * catalog field organizations as above, applied to that name. keep(name, key) says whether a meeting is read; a meeting
+ * without a name, or one no pattern assigns, is not (fail closed). warnings() names what was left out, each meeting once.
+ */
+export function committeePart(spec){
+ const filter=spec?organizationFilter(spec):null,skipped={filtered:new Set(),unassigned:new Set()};
+ const excludes=(spec?.exclude||[]).filter(p=>!/^https?:\/\//i.test(p)).map(foldName);
+ return {
+  // A meeting kept by the name its calendar gives it is still left out when the body its own page names is excluded:
+  // Eutin's ALLRIS lists a meeting of the council of Süsel as "Gemeindevertretung", its page says "Gemeindevertretung
+  // Süsel". (Included bodies keep the calendar's decision: a page may name a member's body without the member.)
+  excluded(name,key=name){
+   const f=foldName(String(name||''));if(!excludes.some(p=>f.includes(p)))return false;
+   skipped.filtered.add(String(key));return true;
+  },
+  keep(name,key=name){
+   if(!filter)return true;
+   const verdict=filter([{name:String(name||'')}]);if(verdict==='kept')return true;
+   skipped[verdict==='filtered'?'filtered':'unassigned'].add(String(key));return false;
+  },
+  warnings:()=>[
+   ...(skipped.filtered.size?[`${skipped.filtered.size} Sitzungen anderer Gremien des gemeinsamen Systems ausgelassen.`]:[]),
+   ...(skipped.unassigned.size?[`${skipped.unassigned.size} Sitzungen ohne zuordenbares Gremium ausgelassen.`]:[]),
+  ],
+ };
+}
 /** A provider-configured, portable collector. No Cloudflare or app dependencies. */
 export async function collectRegionalOparl(source,{now=new Date(),getJson=null,maxRequests=350,maxPages=Math.min(24,source.maxPages||6),maxDurationMs=300000,onProgress=()=>{},window:lookback,trace=null,marks}={}){
  // The page limits were set for a year of meetings; a longer period gets as many for each of its years.

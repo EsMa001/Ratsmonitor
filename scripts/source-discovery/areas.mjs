@@ -81,6 +81,11 @@ export function sourceUses(){
  * entry reads another system is no owner of this one (Grasleben's ris-sg-gl-migration.edv-helmstedt.de, while the town
  * of Helmstedt reads ris.stadt-helmstedt.de). One without an entry stays a possible owner: nothing shows it is not.
  */
+/** Whether the address of a system names the area (its name, a member or an alias anywhere in host and path). */
+export function addressNames(area,url){
+ let whole;try{const u=new URL(url);whole=norm(u.hostname+u.pathname);}catch{return false;}
+ return nameSlugs(area).some(s=>whole.includes(s))||Boolean(aliasInAddress(area,url));
+}
 export function foreignOwner(area,url,areas,uses=sourceUses()){
  let tenant,whole;try{tenant=tenantOf(url);const u=new URL(url);whole=norm(u.hostname+u.pathname);}catch{return null;}
  // The own name anywhere in the address counts: a host may sort its municipalities under a folder of their district

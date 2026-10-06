@@ -1242,6 +1242,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05378024",
+    "name": "Stadt Overath",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://overath.ris-portal.de/",
+    "verifiedSource": "https://www.overath.de/rathaus-politik/politik/ratsinformationssystem/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "nrw-05378028",
     "name": "Stadt Rösrath",
     "kind": "city",
@@ -1559,6 +1570,43 @@
     "verifiedSource": "https://www.recklinghausen.de/Inhalte/Startseite/index.asp",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nrw-05566028",
+    "name": "Stadt Ibbenbüren",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ibbenbueren.de/",
+    "pages": [
+      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=A",
+      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=B",
+      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=D",
+      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=E",
+      "https://www.ibbenbueren.de/%C3%9Cber-uns/Virtuelles-Rathaus/Dienstleistungskatalog/Sitzungsdienst-Sportausschuss.php?ModID=10&NavID=3030.183&such=Sitzungsdienst%25Sportausschuss&object=tx%7C3030.2.1&alpha=F"
+    ],
+    "sitemap": "https://www.ibbenbueren.de/sitemap.xml",
+    "verifiedSource": "https://www.ibbenbueren.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "nrw-05566088",
+    "name": "Stadt Tecklenburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.tecklenburg.de/",
+    "pages": [
+      "https://www.tecklenburg.de/de/aktuelles/bekanntmachungen.php",
+      "https://www.tecklenburg.de/de/aktuelles/bekanntmachungen.php?pageId=1",
+      "https://www.tecklenburg.de/de/aktuelles/bekanntmachungen.php?pageId=5",
+      "https://www.tecklenburg.de/de/aktuelles/bekanntmachungen.php?pageId=6",
+      "https://www.tecklenburg.de/de/aktuelles/bekanntmachungen.php?pageId=9"
+    ],
+    "verifiedSource": "https://tecklenburg.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "nrw-05566096",
@@ -1880,6 +1928,20 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05770028",
+    "name": "Stadt Petershagen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.petershagen.de/",
+    "pages": [
+      "https://www.petershagen.de/Rathaus-I-Politik/Rathaus/%C3%96ffentliche-Bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.petershagen.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nrw-05774",
     "name": "Kreis Paderborn",
     "kind": "district",
@@ -2188,6 +2250,20 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05962012",
+    "name": "Stadt Halver",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.halver.de/",
+    "pages": [
+      "https://www.halver.de/rathaus-und-politik/uebersicht-rathaus-und-politik/bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.halver.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nrw-05962016",
     "name": "Stadt Hemer",
     "kind": "city",
@@ -2210,6 +2286,33 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05962024",
+    "name": "Stadt Iserlohn",
+    "kind": "city",
+    "system": "https://www.iserlohn.sitzung-online.de/public/oparl/system",
+    "method": "oparl",
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://www.iserlohn.sitzung-online.de/public/oparl/system",
+    "verifiedAt": "2026-10-05",
+    "foundBy": "Freigabe fr-2026-0063"
+  },
+  {
+    "id": "nrw-05962028",
+    "name": "Stadt Kierspe",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kierspe.de/",
+    "pages": [
+      "https://www.kierspe.de/de/rathaus/bekanntmachungen/archiv.php?moreId049aca1b=2",
+      "https://www.kierspe.de/de/rathaus/bekanntmachungen/archiv.php"
+    ],
+    "verifiedSource": "https://www.kierspe.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nrw-05962032",
     "name": "Stadt Lüdenscheid",
     "kind": "city",
@@ -2221,6 +2324,21 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 02.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nrw-05962036",
+    "name": "Stadt Meinerzhagen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.meinerzhagen.de/",
+    "pages": [
+      "https://www.meinerzhagen.de/aktuelle-infos/news/bekanntmachungen",
+      "https://www.meinerzhagen.de/aktuelle-infos/news/bekanntmachungen?tx_news_pi1%5Bcontroller%5D=News&tx_news_pi1%5BcurrentPage%5D=1&cHash=4c43664cef6312e62410855b1c805321"
+    ],
+    "verifiedSource": "https://www.meinerzhagen.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nrw-05962040",
     "name": "Stadt Menden (Sauerland)",
     "kind": "city",
@@ -2230,6 +2348,17 @@
     "verifiedSource": "https://www.menden.de/",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05962048",
+    "name": "Stadt Neuenrade",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://neuenrade.ris-portal.de/",
+    "verifiedSource": "https://www.neuenrade.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
     "id": "nrw-05966",
@@ -2567,6 +2696,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "nrw-05974048",
+    "name": "Gemeinde Welver",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://welver.ris-portal.de/web/ratsinformation/",
+    "verifiedSource": "https://www.welver.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "nrw-05974052",
     "name": "Stadt Werl",
     "kind": "city",
@@ -2576,6 +2716,17 @@
     "verifiedSource": "https://www.werl.de/rathaus-politik-buerger/zentrale-dienste-buergerservice/rat-politik",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05974056",
+    "name": "Gemeinde Wickede (Ruhr)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://wickede.ris-portal.de/",
+    "verifiedSource": "https://www.wickede.de/",
+    "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
     "id": "nrw-05978",

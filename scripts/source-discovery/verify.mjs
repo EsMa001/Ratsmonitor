@@ -11,9 +11,10 @@ import {collectAllris} from '../../server/integrations/allris.mjs';
 import {robotsVerdict} from '../../server/integrations/robots.mjs';
 import {READERS} from '../../server/integrations/readers.mjs';
 import {fetchText} from '../../server/integrations/sessionnet.mjs';
-import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,hrefs,title,identity} from './rules.mjs';
+import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,hrefs,title,identity,sharedBodies,nameTwins,namesDistinctly,platformLands} from './rules.mjs';
 import {consentAllows} from '../../server/integrations/consents.mjs';
 import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
+import {channelOf} from '../../shared/source-access.mjs';
 // DIR and AREAS let the same check run over another list of areas (e.g. the random sample of the estimate).
 const dir=process.env.DIR||'tmp/source-discovery/';
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -40,10 +41,13 @@ const release=key=>{const slot=slots.get(key),turn=slot.waiting.shift();if(turn)
 // So: no repetition after a refusal, also not with its
 // next tenant (sitzung-online.de blocks a network that keeps asking). One system that refuses several addresses (page,
 // list of papers, OParl paths) counts once. Further candidates of that operator end with REFUSED_RUN and wait for a
-// later run.
+// later run. Only refusals without an answer of that operator in between count: a tenant that closes its own calendar
+// (RIS-Portal answers 403 for the month list of a tenant that shows it to members only) is no refusal of programs while
+// the operator's other hosts answer; that tenant stays "Zugriffsschutz" and is not asked again. Probes (robots.txt, which
+// a firewall may still serve) are no answer here.
 const REFUSALS=3,refusals=new Map();
 // Readers of readers.mjs that read one part of a shared system, and the fields that name it.
-const PART_READERS={kic:['client'],'ris-portal':['organizations']};
+const PART_READERS={kic:['client'],'ris-portal':['organizations'],allris3:['organizations'],komfa:['organizations']};
 // Whether the name of a part (a municipality of a KIC app, name patterns of bodies) names the area as a whole word:
 // "Gemeinderat Au" names Au, "Ausschuss" does not.
 const foldPart=s=>String(s||'').normalize('NFC').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
@@ -55,6 +59,7 @@ const partNames=(region,text)=>{
 export const REFUSED_RUN='Betreiber wies Programme in diesem Lauf wiederholt ab (HTTP 403/429); nicht gefragt';
 // A reader that delivered items despite a refused document or page counts as an answer, not as a refusal.
 const refusedAnswer=r=>Boolean(r&&(r.status===403||r.status===429||r.coverage&&!r.topics?.length&&(r.coverage.issues||[]).some(i=>/HTTP (?:403|429)\b/.test(String(i)))));
+const answered=r=>Boolean(r&&(r.status>=200&&r.status<400||r.topics?.length||r.coverage?.meetings));
 const withHost=async(url,fn,probe=false)=>{
  const host=new URL(url).hostname,domain=host.split('.').slice(-2).join('.');
  if((refusals.get(domain)?.size||0)>=REFUSALS)throw Error(REFUSED_RUN);
@@ -63,22 +68,30 @@ const withHost=async(url,fn,probe=false)=>{
   const hosts=refusals.get(domain)||new Set();if(hosts.has(host))return;hosts.add(host);refusals.set(domain,hosts);
   console.log(`  ${host}: abgewiesen (${why})`+(hosts.size===REFUSALS?`; ${domain} in diesem Lauf nicht weiter gefragt`:''));
  };
- try{const result=await fn();if(!probe&&refusedAnswer(result))refused(result.status?'HTTP '+result.status+' '+url:'Leser: '+String((result.coverage?.issues||[]).find(i=>/HTTP (?:403|429)\b/.test(String(i)))).slice(0,120));return result;}
+ try{
+  const result=await fn();
+  if(!probe&&refusedAnswer(result))refused(result.status?'HTTP '+result.status+' '+url:'Leser: '+String((result.coverage?.issues||[]).find(i=>/HTTP (?:403|429)\b/.test(String(i)))).slice(0,120));
+  else if(!probe&&answered(result)&&(refusals.get(domain)?.size||0)<REFUSALS)refusals.delete(domain);
+  return result;
+ }
  catch(e){if(!probe&&/HTTP (?:403|429)\b/.test(String(e?.message)))refused(String(e.message).slice(0,80)+' '+url);throw e;}
  finally{if(PAUSE)await new Promise(r=>setTimeout(r,PAUSE));for(const key of keys.reverse())release(key);}
 };
 // robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs, decision of 05.10.2026): the check reads
 // every candidate; robots.mjs keeps recording the verdict of each connected source. With ROBOTS_POLICY=obey the old
-// rule applies: robots.txt of a host is read before its first page (one request per host), a path it disallows for
-// the programs of this project is not asked and the candidate is recorded with robots:'verboten'.
+// rule applies to HTML pages: robots.txt of a host is read before its first page (one request per host), a path it
+// disallows for the programs of this project is not asked and the candidate is recorded with robots:'verboten'.
+// robots.txt never decides over OParl or the interface of a reader (shared/source-access.mjs: OParl, then API, then
+// HTML pages): those are asked under either rule; next to an HTML page that robots.txt disallows, OParl is still tried.
 // Unchanged either way: no repetition after 401/403, no way around a firewall, an access check or a login (rules.mjs).
 const TOKENS=['vorort-politicaltopics','ratsmonitor-sourcecatalog'],robotsFiles=new Map();
 const robotsFile=u=>{if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,(async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}})());return robotsFiles.get(u.origin);};
 // A written consent of the municipality or operator for this system (source-consents.json) is a permission:
 // robots.txt is not asked for the addresses it covers (concept section 6.2).
 async function robotsAllowFree(url){if(!obeyRobots()||consentAllows(url))return true;const u=new URL(url),file=await robotsFile(u);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';}
-async function robotsAllow(url){
- if(!obeyRobots()||consentAllows(url))return true;
+// kind: the channel of the address (channelOf in shared/source-access.mjs); only 'html' is decided by robots.txt.
+async function robotsAllow(url,kind='html'){
+ if(kind!=='html'||!obeyRobots()||consentAllows(url))return true;
  const u=new URL(url);
  if(!robotsFiles.has(u.origin))robotsFiles.set(u.origin,withHost(url,async()=>{try{const r=await fetch(u.origin+'/robots.txt',{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA}});return {status:r.status,text:r.ok?(await r.text()).slice(0,20000):''};}catch{return {status:0,text:''};}},true));
  const file=await robotsFiles.get(u.origin);return robotsVerdict(file.status,file.text,u.pathname,TOKENS)!=='verboten';
@@ -180,8 +193,7 @@ async function verify(region,row){
  // exact: only the given address (an OParl address known from the register or the vendor, oparl-register.mjs).
  const tryOparl=async(url,sn,note,verifiedSource,trusted=true,exact=false,html='')=>{
   for(const guess of exact?[url.replace(/^http:/,'https:')]:oparlGuesses(url,sn,html)){
-   // robots.txt decides for every address asked, also for the vendor's standard paths.
-   if(!await robotsAllow(guess))continue;
+   // OParl is an interface for programs: robots.txt does not decide over it, also not over the vendor's standard paths.
    const system0=await withHost(guess,()=>probeOparl(guess),true);if(!system0)continue;note.oparl=guess;
    // Areas outside the NRW catalog carry their official key explicitly, so the body can be matched by it
    // (Lower Saxon Samtgemeinden: 9-digit regional key).
@@ -222,7 +234,7 @@ async function verify(region,row){
   // application answers with session addresses that robots.txt disallows): the reader is asked directly.
   if(c.reader&&READERS[c.reader]){
    const reader=READERS[c.reader],note={url:c.url,from:c.from,reader:c.reader},fields=await reader.detect(c.url,'',{}).catch(()=>null),who=identity(region,c.url,'');note.identity=who;
-   if(fields?.base&&who.ok&&await robotsAllow(fields.base)){
+   if(fields?.base&&who.ok&&await robotsAllow(fields.base,channelOf({adapter:c.reader}).kind)){
     const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter:c.reader,...fields};
     try{const d=await withHost(source.base,()=>reader.collect(source,{window:WINDOW,maxDurationMs:150000}));note.readerTopics=d.topics.length;note.readerMeetings=d.coverage.meetings;note.readerIssues=[...new Set(d.coverage.issues)].slice(0,4);
      if(d.topics.length){result.accepted={...source,verifiedSource:/^https?:/.test(c.from||'')?c.from:c.url,verifiedAt:today,apiCheck:`Keine offizielle OParl-Schnittstelle gefunden; ${reader.name} erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
@@ -230,7 +242,13 @@ async function verify(region,row){
    }
    result.tried.push(note);continue;
   }
-  if(!await robotsAllow(c.finalUrl||c.url)){result.tried.push({url:c.url,robots:'verboten',from:c.from});continue;}
+  // robots.txt disallows the page (ROBOTS_POLICY=obey): it governs the HTML pages only, so an OParl interface next to
+  // them is still asked, as after a page that did not answer.
+  if(!await robotsAllow(c.finalUrl||c.url)){
+   const note={url:c.url,robots:'verboten',from:c.from},key=new URL(c.url).origin+'|oparl-only';
+   if(!seenBases.has(key)&&strong.test(c.url)){seenBases.add(key);const got=await tryOparl(c.url,null,note,c.from||c.url,trusted(c));if(got){result.accepted=got;result.tried.push(note);return result;}}
+   result.tried.push(note);continue;
+  }
   let p;try{p=await withHost(c.url,()=>page(c.finalUrl||c.url));}catch(e){p={status:0,url:c.url,html:'',error:e.message};}
   // Many official websites still link with http://; the systems themselves answer only on https://.
   if(p.status!==200&&/^http:/.test(c.finalUrl||c.url)){const secure=(c.finalUrl||c.url).replace(/^http:/,'https:');try{const again=await withHost(secure,()=>page(secure));if(again.status===200)p=again;}catch{}}
@@ -271,7 +289,16 @@ async function verify(region,row){
   // app (client, clientName) or the bodies of the area (organizations, as in oparl-regional.mjs). The reader reads only
   // that part (fail closed); the area is named by the part, never by a page that names the whole association.
   const part=c.client!==undefined||c.organizations||c.calendarQuery?{...(c.client!==undefined?{client:c.client}:{}),...(c.organizations?{organizations:c.organizations}:{}),...(c.calendarQuery?{calendarQuery:c.calendarQuery}:{})}:null;
-  if(part&&trusted(c))who=partNames(region,[c.clientName,...(c.organizations?.include||[])].filter(Boolean).join(' · '))?{ok:true,by:'Teil des gemeinsamen Systems: '+(c.clientName||c.organizations.include.join(', '))}:{ok:false,why:'Teil des gemeinsamen Systems nennt das Gebiet nicht'};
+  // A part that only leaves out the bodies of others (organizations.exclude: Eutin without Süsel) names nobody: the page
+  // itself must name the area, as for any candidate.
+  const naming=[c.clientName,...(c.organizations?.include||[])].filter(Boolean);
+  if(part&&trusted(c)&&naming.length)who=partNames(region,naming.join(' · '))?{ok:true,by:'Teil des gemeinsamen Systems: '+naming.join(', ')}:{ok:false,why:'Teil des gemeinsamen Systems nennt das Gebiet nicht'};
+  // A guessed address of a platform (one name per municipality) is evidence only where no other area of the catalog
+  // bears that name, or where the page (or the platform's evidence) names the area by its distinguishing name: "borken"
+  // on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse (rules.mjs nameTwins). Only the
+  // Länder the platform serves count (komuna: Bavaria; komm.one: Baden-Württemberg).
+  // Only addresses guessed on a platform ("<platform>-Adresse …"); a report by hand or a web search names its area itself.
+  if(who.ok&&/^.+?-Adresse\b/.test(c.guessed||'')){const twins=nameTwins(region,undefined,platformLands(c.guessed));if(twins.length&&!namesDistinctly([p.html,c.guessed].join(' '),region,twins))who={ok:false,why:'Geratene Adresse; gleichnamige Gebiete ('+twins.slice(0,3).map(t=>t.name).join(', ')+(twins.length>3?' u. a.':'')+'), die Seite nennt keinen unterscheidenden Namen'};}
   const note={url:p.url,system,title:title(p.html),identity:who,from:c.from,...(part?{part}:{})};
   // The address read can lie elsewhere than the candidate: after a redirect, or the public part of SessionNet next to
   // the members' area (ratsinfo.kyritz.de → buergerinfo.kyritz.de). Its robots.txt decides as well.
@@ -291,17 +318,24 @@ async function verify(region,row){
     if(!who.ok&&trusted(c)&&rubin.own.length&&/^(Gebietsname|Kreisbezug)/.test(who.why||'')){who={ok:true,by:'Körperschaft im System ('+rubin.bodies.filter(b=>rubin.own.includes(b.id)).map(b=>b.name).join(', ').slice(0,80)+')'};note.identity=who;}}
   }
   const verifiedSource=(c.from||c.url);
-  const confirmed=d=>{if(who.ok)return true;if(!byCommittees||!districtCommittees(d.topics))return false;who={ok:true,by:'Gremien des Kreises (Kreistag, Kreisausschuss) in den gelesenen Sitzungen; System von der offiziellen Website verlinkt'};note.identity=who;return true;};
+  const confirmed=d=>{
+   // A system with the councils of other areas of the district is taken for this one only with its part (rules.mjs);
+   // note.sharedSystem names the bodies that name the area, for a candidate with that part. What a part delivered is
+   // checked as well: a council of another area left in it means the part is incomplete.
+   {const shared=sharedBodies(region,d.topics.flatMap(t=>[t.committee,...(t.events||[]).map(e=>e.committee)]),regions);if(shared){note.sharedSystem=shared;return false;}}
+   if(who.ok)return true;if(!byCommittees||!districtCommittees(d.topics))return false;who={ok:true,by:'Gremien des Kreises (Kreistag, Kreisausschuss) in den gelesenen Sitzungen; System von der offiziellen Website verlinkt'};note.identity=who;return true;};
   // 1. Official OParl interface, if one answers and the body is unambiguous.
   {const got=await tryOparl(p.url,sn,note,verifiedSource,trusted(c),false,p.html);if(got){result.accepted=got;result.tried.push(note);return result;}}
   if(!who.ok&&!byCommittees){result.tried.push(note);continue;}
-  // A part of a shared system is read only by a reader that separates it (PART_READERS); SessionNet, SD.NET, ALLRIS
-  // and More! Rubin pages of a part are not read here (More! Rubin separates by its list of bodies on its own).
-  // SessionNet separates a client by its calendar query (__cpanr) and the client cell of each calendar row.
-  if(part&&system!=='unknown'&&!(sn&&Object.keys(part).every(k=>k==='calendarQuery'))){note.partError='Leser trennt diesen Teil des gemeinsamen Systems nicht';result.tried.push(note);continue;}
+  // A part of a shared system is read only by a reader that separates it: SessionNet by its calendar query (__cpanr)
+  // and the client cell of each calendar row, or by the names of the bodies (organizations); ALLRIS 4 and ALLRIS 3 by
+  // the names of the bodies; More! Rubin by the titles of its meetings (besides its list of bodies, below); the readers of
+  // step 6 as PART_READERS says. SD.NET pages of a part are not read here.
+  const separates=sn?Object.keys(part||{}).every(k=>k==='calendarQuery'||k==='organizations'):(system==='allris'||system==='more-rubin')&&Object.keys(part||{}).every(k=>k==='organizations');
+  if(part&&system!=='unknown'&&!separates){note.partError='Leser trennt diesen Teil des gemeinsamen Systems nicht';result.tried.push(note);continue;}
   // 2. More! Rubin public calendar interface.
   if(system==='more-rubin'){
-   const source={id:region.id,name:region.name,kind:region.kind,method:'official-api',adapter:'more-rubin',base:rubin.base,...(rubin.endpoint==='webservice'?{endpoint:'webservice'}:{})};
+   const source={id:region.id,name:region.name,kind:region.kind,method:'official-api',adapter:'more-rubin',base:rubin.base,...(rubin.endpoint==='webservice'?{endpoint:'webservice'}:{}),...(part?.organizations?{organizations:part.organizations}:{})};
    try{
     // One system may serve several bodies (KISA: Crimmitschau and Dennheritz; lauenburg.gremien.info: the town and the
     // Amt Lütau). The reader then reads only the bodies of this area; without a readable list of bodies nothing is taken.
@@ -318,7 +352,7 @@ async function verify(region,row){
   const fallbackCheck=note.oparl?`OParl-Adresse ${note.oparl} antwortete am ${germanDate}, lieferte aber keine verwertbaren Sitzungen (${fallback.oparlFallback.reason}); deshalb öffentliche Seiten.`:null;
   // 3. Public SessionNet pages.
   if(sn){
-   const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',base:sn.base,extension:sn.extension,...(part?.calendarQuery?{calendarQuery:part.calendarQuery}:{})};
+   const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',base:sn.base,extension:sn.extension,...(part?.calendarQuery?{calendarQuery:part.calendarQuery}:{}),...(part?.organizations?{organizations:part.organizations}:{})};
    try{const d=await withHost(sn.base,()=>collectSessionNet(source,{window:WINDOW,maxDurationMs:150000}));note.snTopics=d.topics.length;note.snMeetings=d.coverage.meetings;note.snIssues=[...new Set(d.coverage.issues)].slice(0,4);
     if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`Öffentlicher Hersteller-Standardpfad oparl/1.0/system.${sn.extension} lieferte am ${germanDate} kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
    }catch(e){note.snError=e.message.slice(0,160);}
@@ -335,7 +369,7 @@ async function verify(region,row){
   if(system==='allris'&&allrisGeneration(p.url,p.html)===3)note.allrisGeneration=3;
   else if(system==='allris'){
    for(const base of allrisBases(p.url,p.html)){
-    const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter:'allris',base};
+    const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter:'allris',base,...(part?.organizations?{organizations:part.organizations}:{})};
     try{const d=await withHost(base,()=>collectAllris(source,{window:WINDOW,maxDurationMs:150000,checkOparl:!note.oparl}));note.allrisTopics=d.topics.length;note.allrisMeetings=d.coverage.meetings;note.allrisIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);delete note.allrisError;
      if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`OParl-Adresse des Systems (${base}oparl/system) lieferte am ${germanDate} kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
      // The system asked not to be read by programs (or not right now): no further address of it is tried.
@@ -350,7 +384,7 @@ async function verify(region,row){
    if(!result.systems.includes(adapter))result.systems.push(adapter);note.reader=adapter;
    if(part&&!Object.keys(part).every(k=>PART_READERS[adapter]?.includes(k))){note.partError=adapter+': Leser trennt diesen Teil des gemeinsamen Systems nicht';break;}
    const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter,...fields,...(part||{})};
-   if(!await robotsAllow(source.base)){note.robots='verboten';break;}
+   if(!await robotsAllow(source.base,channelOf(source).kind)){note.robots='verboten';break;}
    try{const d=await withHost(source.base,()=>reader.collect(source,{window:WINDOW,maxDurationMs:150000,...(reader.oparlCheck?{checkOparl:!note.oparl}:{})}));note.readerTopics=d.topics.length;note.readerMeetings=d.coverage.meetings;note.readerIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);
     if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ${reader.name} erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
    }catch(e){note.readerError=adapter+': '+e.message.slice(0,140);}

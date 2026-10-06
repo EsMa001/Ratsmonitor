@@ -4,7 +4,8 @@
 // shows a council system and names the area in its title or text. The name has to be unique among the areas of the
 // state, as in guess-platforms.mjs. verify.mjs then checks the system and its public agenda items as for every link.
 // Each platform is one operator: one request at a time and at most one per second, no retries, our own name in the
-// User-Agent; after HTTP 401, 403 or 429 the platform is not asked again in this run. robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs); with ROBOTS_POLICY=obey
+// User-Agent; after HTTP 403 or 429 the platform is not asked again in this run. HTTP 401 is the login of one system
+// (ratsinfo-online.de/lauta-bi, 05.10.2026): that area is recorded with it and not asked again, the others are. robots.txt is recorded, not obeyed (server/integrations/robots-policy.mjs); with ROBOTS_POLICY=obey
 // robots.txt of every host is read first and a disallowed path is not asked. Resumable: areas in the output file are
 // not asked again.
 // Run: LAND=09 DIR=tmp/source-discovery-de/ node scripts/source-discovery/guess-hosted.mjs
@@ -17,6 +18,8 @@ import {robotsVerdict} from '../../server/integrations/robots.mjs';
 import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 import {NRW_SOURCES} from '../../server/integrations/source-catalog.mjs';
 import {CATALOG} from '../../shared/catalog.mjs';
+import {detectKic} from '../../server/integrations/kic.mjs';
+import {fetchText} from '../../server/integrations/sessionnet.mjs';
 const dir=process.env.DIR||'tmp/source-discovery/';
 const outFile=dir+(process.env.OUT||'candidates-hosted.json');
 const UA='Ratsmonitor-SourceCatalog/1.0 (public council information; https://github.com/EsMa001/Ratsmonitor)';
@@ -26,9 +29,9 @@ const regions=loadAreas(),connected=new Set(NRW_SOURCES.filter(s=>s.method!=='pe
 const done=fs.existsSync(outFile)?JSON.parse(fs.readFileSync(outFile,'utf8')):{};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let last=0;
-async function get(url){
+async function get(url,{manual=false}={}){
  const wait=last+SPACING-Date.now();if(wait>0)await sleep(wait);last=Date.now();
- try{const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA,Accept:'text/html'}});
+ try{const r=await fetch(url,{redirect:manual?'manual':'follow',signal:AbortSignal.timeout(15000),headers:{'User-Agent':UA,Accept:'text/html'}});
   const body=r.ok?new TextDecoder('utf-8').decode((await r.arrayBuffer()).slice(0,800000)):(await r.body?.cancel(),'');
   return {status:r.status,url:r.url,body};}
  catch(e){return {status:0,url,body:'',error:e.cause?.code||e.message};}
@@ -41,6 +44,22 @@ async function allowed(url){
  const {status,text}=robots.get(u.origin);
  return ['erlaubt','keine'].includes(robotsVerdict(status,text,u.pathname,TOKENS));
 }
+// Evidence for platforms whose page names nobody (confirm in HOSTED). kic-clients: the municipalities the KIC interface
+// names (web/clients, two requests on the platform) must name the area: a municipality by its own name, an association
+// with members (a Verwaltungsgemeinschaft) by its own name or by every member; otherwise no candidate (fail closed).
+const plainName=n=>String(n||'').normalize('NFC').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+ .replace(/^(?:gemeinde|stadt|markt|marktgemeinde|grosse kreisstadt|verwaltungsgemeinschaft|vg)\s+/,'').replace(/\s*\(.*?\)\s*$/,'').replace(/[^a-z0-9]+/g,' ').trim();
+const CONFIRM={
+ 'kic-clients':async(page,area)=>{
+  // The reader's own requests (fetchText: the project's user agent), at the pace of this search.
+  const paced=async(u,init={})=>{const wait=last+SPACING-Date.now();if(wait>0)await sleep(wait);last=Date.now();return fetch(u,init);};
+  const found=await detectKic(page.url,page.body,{clients:true,get:(u,source,timeout,request)=>fetchText(u,source,15000,request||paced),request:paced});
+  const names=(found?.clients||[]).map(c=>c.name);if(!names.length)return null;
+  const named=new Set(names.map(plainName)),own=plainName(area.shortName||area.name),members=(area.members||[]).map(m=>plainName(m.name));
+  const ok=members.length?names.some(n=>/^(?:verwaltungsgemeinschaft|vg)\s/i.test(n)&&plainName(n)===own)||members.every(m=>named.has(m)):named.has(own);
+  return ok?'Mandant der Schnittstelle: '+names.join(', ').slice(0,100):null;
+ },
+};
 let found=0,refused=0,asked=0;
 // PLATFORMS: names of HOSTED entries to ask (comma-separated); without it every entry.
 const chosen=process.env.PLATFORMS?new Set(process.env.PLATFORMS.split(',').map(s=>s.trim())):null;
@@ -58,20 +77,25 @@ for(const p of HOSTED.filter(p=>!chosen||chosen.has(p.name))){
  for(const r of queue){
   const row=p.dnsOnly&&done[r.id]?done[r.id]:{id:r.id,name:r.name,kind:r.kind,ags:r.ags,sites:[],candidates:[],log:[]};
   if(p.dnsOnly)row.asked=[...new Set([...(row.asked||[]),p.name])];
-  for(const slug of hostSlugs(r.shortName||r.name)){
-   if(owners.get(slug)?.length>1){row.log.push(slug+': Name im Land mehrdeutig');continue;}
-   for(const host of p.hosts(slug)){
+  // Further names a platform uses (slugs in HOSTED) count only where no other area of the state has them as a label.
+  for(const slug of [...new Set([...hostSlugs(r.shortName||r.name),...(p.slugs?p.slugs(r):[])])]){
+   if(owners.get(slug)?.length>1||owners.get(slug)?.length===1&&owners.get(slug)[0]!==r.id){row.log.push(slug+': Name im Land mehrdeutig');continue;}
+   for(const host of p.hosts(slug,r)){
     if(!p.wildcard){try{await dns.resolve4(host);}catch{continue;}}
     const url=`https://${host}${p.path}`;
     if(p.dnsOnly){row.candidates.push({url,from:host,byHref:true,guessed:`${p.name}-Adresse (DNS), Name eindeutig`});row.log.push(url+' DNS');found++;break;}
     if(!(await allowed(url))){refused++;row.log.push(url+': robots.txt untersagt den Abruf');continue;}
-    const page=await get(url);asked++;row.log.push(url+' '+(page.status||page.error));
-    if([401,403,429].includes(page.status)){refusal=page.status;break;}
-    if(page.status===200&&/sessionnet|si0040|allris|sitzungsdienst|bürgerinfo|buergerinfo/i.test(page.body)&&pageNamesArea(page.body,r)){
-     row.candidates.push({url:page.url,from:host,byHref:true,guessed:`${p.name}-Adresse, Seite nennt das Gebiet`});found++;break;
+    const page=await get(url,{manual:p.manual});asked++;row.log.push(url+' '+(page.status||page.error));
+    if(page.status===401){row.log.push(url+': Anmeldung verlangt (HTTP 401); nicht weiter gefragt');row.login=true;break;}
+    if([403,429].includes(page.status)){refusal=page.status;break;}
+    if(page.status===200&&(p.marker||/sessionnet|si0040|allris|sitzungsdienst|bürgerinfo|buergerinfo/i).test(page.body)){
+     let evidence=null;
+     try{evidence=p.confirm?await CONFIRM[p.confirm](page,r):pageNamesArea(page.body,r)?'Seite nennt das Gebiet':null;}
+     catch(e){row.log.push(url+': '+e.message.slice(0,80));if(/HTTP (?:401|403|429)\b/.test(e.message)){refusal=Number(e.message.match(/HTTP (\d+)/)[1]);break;}}
+     if(evidence){row.candidates.push({url:page.url,from:host,byHref:true,guessed:`${p.name}-Adresse, ${evidence}`});found++;break;}
     }
    }
-   if(row.candidates.length||refusal)break;
+   if(row.candidates.length||refusal||row.login)break;
   }
   // An area whose question met the refusal is not recorded: a later run asks it again.
   if(refusal){console.log(`${p.name}: HTTP ${refusal} bei ${r.name}; diese Plattform wird in diesem Lauf nicht weiter gefragt.`);break;}

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors} from '../scripts/source-discovery/rules.mjs';
-import {foreignOwner,aliasInAddress,nameParts,ALIASES} from '../scripts/source-discovery/areas.mjs';
+import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors,sharedBodies,nameTwins,namesDistinctly,platformLands} from '../scripts/source-discovery/rules.mjs';
+import {foreignOwner,aliasInAddress,nameParts,ALIASES,addressNames} from '../scripts/source-discovery/areas.mjs';
 import {CATALOG} from '../shared/catalog.mjs';
 const area=id=>CATALOG.find(a=>a.id===id);
 const fixture=name=>readFileSync(new URL('./fixtures/allris3/'+name,import.meta.url),'utf8');
@@ -177,6 +177,55 @@ test('hosted platforms: digitalfabriX is asked on its info page; a page names it
  assert.equal(pageNamesArea(allris.replace('Goldberg-Mildenitz','Usedom-Nord'),goldberg),false,'another Amt on the same platform');
 });
 
+test('hosted platforms: KOMFA per Land and komuna by path, each recognised from its page, komuna with its own names',()=>{
+ const komfa=HOSTED.filter(p=>p.name==='KOMFA');
+ assert.deepEqual(komfa.map(p=>p.land),['12','13','14','15','16']);
+ assert.deepEqual(komfa[0].hosts('woldegk'),['ris-woldegk.komfa.de']);
+ assert.ok(komfa[0].marker.test(readFileSync(new URL('./fixtures/komfa/delitzsch-cal-2026-09.html',import.meta.url),'utf8')));
+ const komuna=HOSTED.find(p=>p.name==='komuna');
+ assert.equal(komuna.land,'09');assert.equal(komuna.manual,true,'a name without a system is redirected; the redirect is not followed');assert.equal(komuna.confirm,'kic-clients');
+ assert.ok(komuna.marker.test(readFileSync(new URL('./fixtures/kic/komuna-ainring-shell.html',import.meta.url),'utf8')));
+ // A Verwaltungsgemeinschaft is asked under "vg<name>" as well; a name with its addition also in one word.
+ const vg={name:'Verwaltungsgemeinschaft Aidenbach',shortName:'Aidenbach',municipalityType:'Verwaltungsgemeinschaft'},town={name:'Gemeinde Aschau a.Inn',shortName:'Aschau a.Inn',municipalityType:'Gemeinde'};
+ assert.deepEqual(komuna.hosts('aidenbach',vg),['ris.komuna.net/aidenbach','ris.komuna.net/vgaidenbach']);
+ assert.deepEqual(komuna.hosts('aschauainn',town),['ris.komuna.net/aschauainn']);
+ assert.deepEqual(HOSTED.filter(p=>p.name==='ratsinfo-online').map(p=>p.land),['12','14','15','16']);
+ assert.deepEqual(HOSTED.find(p=>p.name==='ratsinfo-online').hosts('brieselang'),['ratsinfo-online.de/brieselang-bi','ratsinfo-online.net/brieselang-bi']);
+ assert.deepEqual(HOSTED.find(p=>p.name==='OWL-IT'&&p.land==='01').hosts('heide'),['sessionnet.owl-it.de/heide/bi']);assert.equal(HOSTED.find(p=>p.name==='OWL-IT').path,'/info.asp');
+ assert.deepEqual(komuna.slugs(town),['aschauainn']);assert.deepEqual(komuna.slugs({name:'Gemeinde Neufahrn i.NB',shortName:'Neufahrn i.NB'}),['neufahrninb']);
+});
+
+test('a guessed address counts only where no other area bears the name, or where the page names the area distinctly',()=>{
+ // Found by guessing on 05./06.10.2026: sessionnet.owl-it.de/borken is the town in North Rhine-Westphalia.
+ const borkenHessen=area('de-06634001'),donau=area('de-08327036'),main=area('de-06438008');
+ assert.ok(nameTwins(borkenHessen).some(a=>a.id==='nrw-05554008'||/Borken/.test(a.name)&&a.id!=='de-06634001'));
+ assert.equal(namesDistinctly('<title>SessionNet | Bürgerinfoportal</title><h1>Stadt Borken</h1>',borkenHessen,nameTwins(borkenHessen)),false);
+ assert.equal(namesDistinctly('<h1>Stadt Borken (Hessen)</h1>',borkenHessen,nameTwins(borkenHessen)),true);
+ // Mühlheim: the addition decides, in either direction.
+ assert.equal(namesDistinctly('Bürgerinfoportal der Stadt M&uuml;hlheim an der Donau',donau,nameTwins(donau)),true);
+ assert.equal(namesDistinctly('Bürgerinfoportal der Stadt Mühlheim an der Donau',main,nameTwins(main)),false);
+ // Two areas of the same name (Rimbach in Bavaria and in Hesse): no page can tell them apart by the name alone.
+ const rimbach=area('de-09372151');
+ assert.ok(nameTwins(rimbach).length>0);assert.equal(namesDistinctly('Mandant der Schnittstelle: Gemeinde Rimbach',rimbach,nameTwins(rimbach)),false);
+ // An association by all its members (komuna: the interface names the municipalities of the Verwaltungsgemeinschaft).
+ const vg={id:'x',name:'Verwaltungsgemeinschaft Königstein',shortName:'Königstein',members:[{name:'Königstein'},{name:'Hirschbach'}]};
+ assert.equal(namesDistinctly('Mandant der Schnittstelle: Gemeinde Hirschbach, Markt Königstein',vg,nameTwins(vg)),true);
+ // A name no other area bears has no twins.
+ assert.deepEqual(nameTwins(area('de-09189111')),[]);
+ // An address claimed from two Länder: it names the town of Seligenstadt (Hesse), not Karlstein a.Main (Bavaria).
+ assert.equal(addressNames(area('de-06438013'),'https://www.seligenstadt.sitzung-online.de/public/'),true);
+ assert.equal(addressNames(area('de-09671114'),'https://www.seligenstadt.sitzung-online.de/public/'),false);
+ // Only the Länder of the platform count: komuna serves Bavaria (Rimbach in Hesse is no twin there), OWL-IT nearly all.
+ assert.deepEqual(platformLands('komuna-Adresse, Mandant der Schnittstelle: Gemeinde Rimbach'),['09']);
+ assert.equal(nameTwins(rimbach,undefined,platformLands('komuna-Adresse, Mandant der Schnittstelle: Gemeinde Rimbach')).length,0);
+ assert.ok(nameTwins(rimbach,undefined,platformLands('OWL-IT-Adresse, Seite nennt das Gebiet')).some(a=>a.ags.startsWith('06')));
+ assert.deepEqual(platformLands('KISA-Adresse (DNS), Name im Land eindeutig'),['14']);
+ assert.equal(platformLands('RIS-Portal-Adresse (DNS), Name eindeutig'),null,'a platform of all Länder');
+ assert.equal(platformLands('eigene Domain'),null);
+ // A town and the district of its name are no twins (Stadt Rosenheim, Landkreis Rosenheim): identity() tells them apart.
+ assert.ok(!nameTwins(area('de-09163000')).some(a=>a.kind!=='city'));
+});
+
 test('links of a page: in quotes or without them, with the title as text, frames as embedded; no script or mail links',()=>{
  // Nachgebildet: Rödermark schreibt den Link auf sein ALLRIS ohne Anführungszeichen.
  const html='<a href=https://www.roedermark.sitzung-online.de/public/ class=nav>Ratsinformation</a> <a href="/rathaus/politik" title="Gremien">Politik</a> <a href="javascript:void(0)">x</a> <a href="mailto:a@b.de">Mail</a> <iframe src="https://ris.beispiel.de/bi/"></iframe>';
@@ -184,4 +233,31 @@ test('links of a page: in quotes or without them, with the title as text, frames
   {url:'https://www.roedermark.sitzung-online.de/public/',text:'Ratsinformation'},
   {url:'https://www.roedermark.de/rathaus/politik',text:'Politik Gremien'},
   {url:'https://ris.beispiel.de/bi/',text:'(eingebettet)'}]);
+});
+
+test('a system with the councils of other municipalities of the district is shared; joint bodies, localities and members are not',()=>{
+ // Bodies of vv-langenau.ris-portal.de (05.10.2026), checked for Altheim (Alb) with the real catalog.
+ const altheim=area('de-08425005');
+ const langenau=['Gemeinderat Altheim (Alb)','Gemeinderat Asselfingen','Gemeinderat Stadt Langenau','Ausschuss für Technik und Umwelt Stadt Langenau','Ortschaftsrat Göttingen','Verbandsversammlung Zweckverband Grundschulverband Altheim (Alb) – Weidenstetten','Verwaltungsrat Verwaltungsverband Langenau'];
+ const shared=sharedBodies(altheim,langenau);
+ assert.deepEqual(shared.own,['Gemeinderat Altheim (Alb)','Verbandsversammlung Zweckverband Grundschulverband Altheim (Alb) – Weidenstetten']);
+ assert.deepEqual(shared.others,['Gemeinde Asselfingen','Stadt Langenau']);
+ assert.deepEqual(shared.foreign.map(x=>x.area),['de-08425011','de-08425072']);
+ // Its own bodies only, a joint body and a locality that bears another municipality's name: no shared system.
+ assert.equal(sharedBodies(altheim,['Gemeinderat Altheim (Alb)','Verbandsversammlung Zweckverband Grundschulverband Altheim (Alb) – Weidenstetten','Ortschaftsrat Asselfingen']),null);
+ // The members of an Amt are its own, also where a catalog area bears a member's name.
+ const amt={id:'de-120665607',name:'Amt Ruhland',shortName:'Ruhland',kind:'city',district:'de-12066',members:[{name:'Hermsdorf'},{name:'Guteborn'}]};
+ const areas=[amt,{id:'de-12066999',name:'Gemeinde Hermsdorf',shortName:'Hermsdorf',kind:'city',district:'de-12066'},{id:'de-12066998',name:'Stadt Lauchhammer',shortName:'Lauchhammer',kind:'city',district:'de-12066'}];
+ assert.equal(sharedBodies(amt,['Amtsausschuss Ruhland','Gemeindevertretung Hermsdorf','Gemeindevertretung Guteborn'],areas),null);
+ assert.deepEqual(sharedBodies(amt,['Amtsausschuss Ruhland','Stadtverordnetenversammlung Lauchhammer'],areas).others,['Stadt Lauchhammer']);
+ // A district's system with the council of one of its municipalities is shared as well; the Kreistag alone is not.
+ const kreis={id:'de-12066',name:'Landkreis Oberspreewald-Lausitz',kind:'district'};
+ assert.equal(sharedBodies(kreis,['Kreistag','Ausschuss für Umwelt'],areas),null);
+ assert.deepEqual(sharedBodies(kreis,['Kreistag','Stadtverordnetenversammlung Lauchhammer'],areas).others,['Stadt Lauchhammer']);
+ // The councils of the members of another area (an Amt run by the town) are that area's.
+ const town={id:'de-13075105',name:'Stadt Pasewalk',shortName:'Pasewalk',kind:'city',district:'de-13075'},urt={id:'de-130755560',name:'Amt Uecker-Randow-Tal',shortName:'Uecker-Randow-Tal',kind:'city',district:'de-13075',members:[{name:'Jatznick'},{name:'Polzow'}]};
+ assert.deepEqual(sharedBodies(town,['Stadtvertretung der Stadt Pasewalk','Gemeindevertretung Jatznick'],[town,urt]).foreign,[{committee:'Gemeindevertretung Jatznick',area:'de-130755560',name:'Amt Uecker-Randow-Tal'}]);
+ assert.equal(sharedBodies(urt,['Amtsausschuss Uecker-Randow-Tal','Gemeindevertretung Jatznick'],[town,urt]),null);
+ // An area without a district is not checked.
+ assert.equal(sharedBodies({id:'x',name:'Stadt X',kind:'city'},['Gemeinderat Asselfingen'],areas),null);
 });

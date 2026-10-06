@@ -5,6 +5,7 @@ import {budgeted,paced,isRejectionPage,REFUSED} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {hash,category,sourceSummary,parallel} from './oparl.mjs';
+import {committeePart} from './oparl-regional.mjs';
 const entities={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',ouml:'ö',auml:'ä',uuml:'ü',Ouml:'Ö',Auml:'Ä',Uuml:'Ü',szlig:'ß',ndash:'-',mdash:'-'};
 export function decode(s){return String(s||'').replace(/&(#x[0-9a-f]+|#\d+|\w+);/gi,(m,k)=>k[0]==='#'?String.fromCodePoint(k[1].toLowerCase()==='x'?parseInt(k.slice(2),16):Number(k.slice(1))):entities[k]??m)}
 export function text(s){return decode(String(s||'').replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim()}
@@ -177,6 +178,9 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
  // Calendar months cover the selected look-back window (default: rolling twelve months) and already published next-month meetings.
  let denied=false,readable=0,failing=0;
  const panr=new URLSearchParams(source.calendarQuery||'').get('__cpanr'),otherClients=new Set();
+ // organizations (optional): the bodies of one member in a system that serves several without clients, by the name the
+ // calendar gives each meeting (oparl-regional.mjs); a meeting the patterns do not assign is not read.
+ const part=committeePart(source.organizations);
  await parallel(Array.from({length:calendarMonthsBack(now,from)+2},(_,i)=>1-i),async offset=>{
   if(denied)return;
   // calendarQuery (optional): selects the client of a system that serves several, e.g. "__cpanr=2" (see sessionNetClients).
@@ -188,7 +192,7 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
    // With a client selected (__cpanr), only meetings whose row names that client are taken; a meeting without the cell
    // (a list of next meetings, another layout) is left out: the part of a shared system is read fail closed.
    const owners=panr?meetingClients(html):null;
-   for(const m of meetingRows(html,source.base)){if(m.date<fromDay)continue;if(owners&&owners.get(ksinr(m.url))?.panr!==panr){otherClients.add(m.url);continue;}meetings.set(m.url,m);}}
+   for(const m of meetingRows(html,source.base)){if(m.date<fromDay)continue;if(owners&&owners.get(ksinr(m.url))?.panr!==panr){otherClients.add(m.url);continue;}if(!part.keep(m.committee,m.url))continue;meetings.set(m.url,m);}}
   // Each named reason is said once. A login page or program code holds for every month; an error page or an unknown page
   // may concern one month only, so the other months are still read, unless the first three were all of that kind.
   catch(e){const named=[SESSIONNET_LOGIN,SESSIONNET_ERROR,SESSIONNET_SOURCE,UNKNOWN_CALENDAR].includes(e.message);if(!named||!issues.includes(e.message))issues.push(e.message);
@@ -255,5 +259,6 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
   Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche SessionNet-Seite; konservative Statusauswertung.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
  // Unchanged meetings are a successful reading: their reports are in the database already.
- return {topics,marks:held,readMeetings:read,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size,...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||beyond||refused?{resumable:true}:{}),sourceCount:1,quiet:meetings.size===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ const warnings=[...(otherClients.size?[`${otherClients.size} Sitzungen anderer Mandanten des gemeinsamen Systems ausgelassen.`]:[]),...part.warnings()];
+ return {topics,marks:held,readMeetings:read,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:meetings.size,...(warnings.length?{warnings}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||beyond||refused?{resumable:true}:{}),sourceCount:1,quiet:meetings.size===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }

@@ -89,7 +89,8 @@ test('active import lock rejects competing calls without new run or writes',asyn
 });
 
 test('upcoming-session SQL returns only two distinct dated meetings without transferring every event',async()=>{
- reset();const today=new Date().toISOString().slice(0,10);
+ // The day as the repository counts it (Europe/Berlin): between midnight and 2 a.m. the UTC date is still yesterday.
+ reset();const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Berlin'}).format(new Date());
  const event=(date,committee,status='announced')=>({date,committee,status});
  insert({...make('a'),events:[event(today,'Rat'),event(today,'Rat'),event('2099-01-01','Ausschuss'),event('2099-02-01','Rat')]});
  insert({...make('b'),events:[event(today,'Rat'),event('2099-01-01','Ausschuss')]});

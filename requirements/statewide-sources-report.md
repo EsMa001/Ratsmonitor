@@ -1,8 +1,8 @@
 # Quellen für ganz NRW: Ergebnis der automatischen Suche
 
-Stand: 04.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
+Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 333 angebunden, 94 nicht. Diese Datei beschreibt die 240 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 344 angebunden, 83 nicht. Diese Datei beschreibt die 251 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -10,9 +10,11 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 - 97 × SessionNet (öffentliche Seiten)
 - 76 × SD.NET (öffentliche Seiten)
-- 34 × OParl
+- 35 × OParl
 - 18 × More! Rubin (Kalender-API)
 - 15 × ALLRIS 4 (öffentliche Seiten)
+- 6 × Website der Kommune (öffentliche Bekanntmachungen)
+- 4 × RIS-Portal regisafe (öffentliche Seiten)
 
 | Gebiet | Verfahren | Adresse | Artikel bei der Prüfung (3 Monate) |
 |---|---|---|---|
@@ -126,6 +128,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Kürten | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/kuerten/bi/ | 155 |
 | Stadt Leichlingen (Rhld.) | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/leichlingen/bi/ | 174 |
 | Gemeinde Odenthal | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/odenthal/bi/ | 81 |
+| Stadt Overath | RIS-Portal regisafe (öffentliche Seiten) | https://overath.ris-portal.de/ | 104 |
 | Stadt Rösrath | SD.NET (öffentliche Seiten) | https://ratsinfo.roesrath.de/ | 135 |
 | Kreis Rhein-Sieg-Kreis | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/rhein-sieg-kreis/bi// | 178 |
 | Stadt Bad Honnef | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/badhonnef/bi/ | 206 |
@@ -155,6 +158,8 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Gladbeck | OParl | https://gladbeck.gremien.info/oparl/system | 244 |
 | Stadt Oer-Erkenschwick | More! Rubin (Kalender-API) | https://oer-erkenschwick.gremien.info/ | 83 |
 | Stadt Recklinghausen | More! Rubin (Kalender-API) | https://stadt-recklinghausen.gremien.info/ | 181 |
+| Stadt Ibbenbüren | Website der Kommune (öffentliche Bekanntmachungen) | https://www.ibbenbueren.de/ | 13 |
+| Stadt Tecklenburg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.tecklenburg.de/ | 30 |
 | Gemeinde Wettringen | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/kreis_steinfurt/wettringen/bi/ | 8 |
 | Stadt Ahlen | OParl | https://www.ahlen.sitzung-online.de/oparl/system | 6 |
 | Stadt Drensteinfurt | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/drensteinfurt/bi/ | 73 |
@@ -184,6 +189,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Oerlinghausen | SD.NET (öffentliche Seiten) | https://ratsinfo.oerlinghausen.de/ | 101 |
 | Stadt Schieder-Schwalenberg | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/schieder_schwalenberg/bi/ | 43 |
 | Gemeinde Hille | SD.NET (öffentliche Seiten) | https://ratsinfo.hille.de/ | 92 |
+| Stadt Petershagen | Website der Kommune (öffentliche Bekanntmachungen) | https://www.petershagen.de/ | 24 |
 | Kreis Paderborn | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/kreis_paderborn/bi/ | 117 |
 | Gemeinde Altenbeken | OParl | https://altenbeken.gremien.info/oparl/system | 47 |
 | Stadt Bad Lippspringe | More! Rubin (Kalender-API) | https://badlippspringe.gremien.info/ | 64 |
@@ -212,10 +218,15 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Medebach | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/medebach/bi/ | 59 |
 | Stadt Meschede | ALLRIS 4 (öffentliche Seiten) | https://www.meschede.sitzung-online.de/public/ | 75 |
 | Stadt Schmallenberg | SD.NET (öffentliche Seiten) | https://ratsinfo.schmallenberg.de/ | 83 |
+| Stadt Halver | Website der Kommune (öffentliche Bekanntmachungen) | https://www.halver.de/ | 24 |
 | Stadt Hemer | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/Hemer/bi/ | 99 |
 | Gemeinde Herscheid | SD.NET (öffentliche Seiten) | https://ratsinfo.herscheid.de/ | 17 |
+| Stadt Iserlohn | OParl | https://www.iserlohn.sitzung-online.de/public/oparl/system | 528 |
+| Stadt Kierspe | Website der Kommune (öffentliche Bekanntmachungen) | https://www.kierspe.de/ | 1 |
 | Stadt Lüdenscheid | SessionNet (öffentliche Seiten) | https://buergerinfo.luedenscheid.de/ | 330 |
+| Stadt Meinerzhagen | Website der Kommune (öffentliche Bekanntmachungen) | https://www.meinerzhagen.de/ | 4 |
 | Stadt Menden (Sauerland) | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/menden/bi/ | 202 |
+| Stadt Neuenrade | RIS-Portal regisafe (öffentliche Seiten) | https://neuenrade.ris-portal.de/ | 80 |
 | Kreis Olpe | SD.NET (öffentliche Seiten) | https://gremien.kreis-olpe.de/ | 92 |
 | Stadt Attendorn | SD.NET (öffentliche Seiten) | https://ratsinfo.attendorn.de/ | 110 |
 | Stadt Drolshagen | SD.NET (öffentliche Seiten) | https://ratsinfo.drolshagen.de/ | 105 |
@@ -246,7 +257,9 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Rüthen | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/ruethen/bi/ | 45 |
 | Stadt Soest | ALLRIS 4 (öffentliche Seiten) | https://www.soest.sitzung-online.de/public/ | 116 |
 | Stadt Warstein | More! Rubin (Kalender-API) | https://warstein.gremien.info/ | 59 |
+| Gemeinde Welver | RIS-Portal regisafe (öffentliche Seiten) | https://welver.ris-portal.de/web/ratsinformation/ | 36 |
 | Stadt Werl | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/werl/BI/ | 78 |
+| Gemeinde Wickede (Ruhr) | RIS-Portal regisafe (öffentliche Seiten) | https://wickede.ris-portal.de/ | 48 |
 | Kreis Unna | SessionNet (öffentliche Seiten) | https://sessionnet.kreis-unna.de/sessionnet/bi/ | 107 |
 | Stadt Bergkamen | SessionNet (öffentliche Seiten) | https://ris.bergkamen.de/bi/ | 87 |
 | Gemeinde Bönen | SD.NET (öffentliche Seiten) | https://rim.boenen.de/ | 86 |
@@ -259,112 +272,101 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 ## Nicht angebundene Gebiete
 
-- 49 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
-- 15 × SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden
-- 12 × Kein unterstütztes Ratsinformationssystem erkannt
-- 4 × ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser
-- 3 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden
-- 3 × RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen
-- 2 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
-- 2 × ALLRIS 4 gefunden; das System meldete bei der Prüfung zu viele Zugriffe und sperrte vorübergehend. Erneut prüfen
+- 36 × robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend
+- 14 × SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404
+- 13 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
+- 8 × Kein unterstütztes Ratsinformationssystem erkannt
+- 4 × ALLRIS 3
+- 2 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
+- 1 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
 - 1 × Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar.
-- 1 × ALLRIS 4; die Bürgerinformation war bei der Prüfung wegen Wartungsarbeiten nicht verfügbar. Erneut prüfen
 - 1 × Gefundenes System nicht eindeutig dem Gebiet zuzuordnen
+- 1 × Verlinkte Seite antwortet Programmen mit HTTP 403/404
 - 1 × SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
+- 1 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
 
 | Gebiet | Grund | Gefundene Adresse |
 |---|---|---|
-| Gemeinde Alfter | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://alfter.ratsinfomanagement.net/startseite |
-| Stadt Altena | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://altena.ratsinfomanagement.net/ |
-| Gemeinde Altenberge | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://altenberge.ratsinfomanagement.net/ |
+| Gemeinde Alfter | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://alfter.ratsinfomanagement.net/startseite |
+| Stadt Altena | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://altena.ratsinfomanagement.net/ |
+| Gemeinde Altenberge | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.altenberge.de/de/rathaus/politik/ratsinformationssystem.php |
 | Stadt Arnsberg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.arnsberg.de/termine |
-| Stadt Bad Oeynhausen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.badoeynhausen.sitzung-online.de/integration/rss/sifuture |
-| Stadt Bad Salzuflen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://bad-salzuflen.ratsinfomanagement.net/ |
-| Stadt Balve | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://balve.ratsinfomanagement.net/ |
-| Stadt Barntrup | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://barntrup.ratsinfomanagement.net/ |
-| Gemeinde Blankenheim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://blankenheim.ratsinfomanagement.net/ |
-| Stadt Borgholzhausen | Kein unterstütztes Ratsinformationssystem erkannt | https://www.findcity.de/?m=stadt-borgholzhausen-buergerinfo-33829a |
-| Stadt Breckerfeld | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://breckerfeld.ratsinfomanagement.net/ |
-| Stadt Bünde | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://buende.ratsinfomanagement.net/startseite |
+| Stadt Bad Oeynhausen | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 404) | https://www.badoeynhausen.de/rathaus-service-politik/ratsinformationssystem |
+| Stadt Bad Salzuflen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://bad-salzuflen.ratsinfomanagement.net/ |
+| Stadt Balve | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.balve.de/leben-in-balve/buergerinformationen/notfallrettung-sicherstellung |
+| Stadt Barntrup | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.barntrup.de/Veranstaltungen/Buergerinformationsveranstaltung-Solarbatteriekraftwerk-Barntrup.html?extlink_img=0&target=2&extlink_txt=1 |
+| Gemeinde Blankenheim | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://blankenheim.ratsinfomanagement.net/ |
+| Stadt Borgholzhausen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.borgholzhausen.de/ |
+| Stadt Breckerfeld | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://breckerfeld.ratsinfomanagement.net/ |
+| Stadt Bünde | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.buende.de/redirect.phtml?extlink=1&La=1&url_fid=2619.882.1 |
 | Gemeinde Dörentrup | Kein unterstütztes Ratsinformationssystem erkannt | https://doerentrup.ratsinfomanagement.net/ |
-| Gemeinde Engelskirchen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.engelskirchen.de/bi/ |
+| Gemeinde Engelskirchen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.engelskirchen.de/portal/seiten/ratsinfo-900000119-23501.html?titel=Ratsinformation |
 | Gemeinde Eslohe (Sauerland) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.eslohe.de/ |
 | Stadt Espelkamp | Kein unterstütztes Ratsinformationssystem erkannt | https://www.espelkamp.de/Politik/Ratsinformation/ |
-| Gemeinde Extertal | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://extertal.ratsinfomanagement.net/ |
-| Stadt Gescher | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://gescher.ratsinfomanagement.net/gremien |
-| Stadt Greven | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://greven.ratsinfomanagement.net/ |
+| Gemeinde Extertal | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | http://extertal.ratsinfomanagement.net/ |
+| Stadt Gescher | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | http://gescher.ratsinfomanagement.net/gremien |
+| Stadt Greven | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://greven.ratsinfomanagement.net/ |
 | Stadt Hagen | Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar. | https://www.hagen.de/buergerinfo/oparl/1.0/system.asp |
-| Stadt Halle (Westf.) | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
-| Stadt Halver | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://halver.ratsinfomanagement.net/ |
-| Stadt Harsewinkel | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.harsewinkel.de/ |
-| Gemeinde Heek | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://heek.ratsinfomanagement.net/ |
-| Gemeinde Heiden | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://heiden.ratsinfomanagement.net/ |
-| Kreis Herford | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://kreis-herford.ratsinfomanagement.net/ |
-| Stadt Herne | ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser | https://www.herne.de/allris/si010_j.asp |
-| Kreis Hochsauerlandkreis | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://hochsauerlandkreis.ratsinfomanagement.net/ |
-| Gemeinde Hopsten | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://hopsten.ratsinfomanagement.net/ |
-| Stadt Horstmar | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://horstmar.ratsinfomanagement.net/ |
-| Stadt Hörstel | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://hoerstel.ratsinfomanagement.net/ |
-| Gemeinde Hüllhorst | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://huellhorst.ratsinfomanagement.net/ |
-| Stadt Ibbenbüren | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ibbenbueren.ratsinfomanagement.net/ |
-| Stadt Iserlohn | ALLRIS 4 gefunden; das System meldete bei der Prüfung zu viele Zugriffe und sperrte vorübergehend. Erneut prüfen | https://www.iserlohn.sitzung-online.de/public/ |
+| Stadt Halle (Westf.) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://hallewestfalen.ratsinfomanagement.net/ |
+| Stadt Harsewinkel | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ratsinfo.harsewinkel.de/ |
+| Gemeinde Heek | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://heek.ratsinfomanagement.net/ |
+| Gemeinde Heiden | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://heiden.ratsinfomanagement.net/ |
+| Kreis Herford | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.kreis-herford.de/KREIS-HERFORD/Politik-Recht-und-Demokratie/Kreistag-Virtueller-Sitzungsdienst-und-Gremienarbeit/ |
+| Stadt Herne | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://herne.allris.net/ri/logon.asp |
+| Kreis Hochsauerlandkreis | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.hochsauerlandkreis.de/hochsauerlandkreis/politik-und-verwaltung/kreistagsinformationssystem |
+| Gemeinde Hopsten | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://hopsten.ratsinfomanagement.net/ |
+| Stadt Horstmar | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://horstmar.ratsinfomanagement.net/ |
+| Stadt Hörstel | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.hoerstel.de/freizeit-leben/informationen/neubuergerinformationen/ |
+| Gemeinde Hüllhorst | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.huellhorst.de/redirect.phtml?extlink=1&La=1&url_fid=2124.49.1 |
 | Stadt Isselburg | Kein unterstütztes Ratsinformationssystem erkannt | https://isselburg.ratsinfomanagement.net/ |
-| Gemeinde Kalletal | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://kalletal.ratsinfomanagement.net/ |
-| Stadt Kierspe | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://kierspe.ratsinfomanagement.net/ |
-| Gemeinde Laer | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://laer.ratsinfomanagement.net/login |
-| Gemeinde Legden | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://legden.ratsinfomanagement.net/ |
-| Stadt Lemgo | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lemgo.ratsinfomanagement.net/ |
-| Stadt Lengerich | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lengerich.ratsinfomanagement.net/ |
-| Gemeinde Lienen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lienen.ratsinfomanagement.net/ |
-| Gemeinde Lotte | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lotte.ratsinfomanagement.net/ |
+| Gemeinde Kalletal | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | http://kalletal.ratsinfomanagement.net/ |
+| Gemeinde Laer | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.laer.de/de/rathaus-und-politik/ratsinformationssystem.php |
+| Gemeinde Legden | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://legden.ratsinfomanagement.net/ |
+| Stadt Lemgo | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://lemgo.ratsinfomanagement.net/ |
+| Stadt Lengerich | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://lengerich.ratsinfomanagement.net/ |
+| Gemeinde Lienen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://lienen.ratsinfomanagement.net/ |
+| Gemeinde Lotte | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://lotte.ratsinfomanagement.net/ |
 | Stadt Löhne | Kein unterstütztes Ratsinformationssystem erkannt | https://loehne.ratsinfomanagement.net/ |
-| Stadt Lübbecke | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://luebbecke.ratsinfomanagement.net/ |
+| Stadt Lübbecke | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://luebbecke.ratsinfomanagement.net/ |
 | Stadt Lünen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://luenen.ratsinfomanagement.net/ |
-| Stadt Meinerzhagen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://meinerzhagen.ratsinfomanagement.net/ |
-| Gemeinde Metelen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://metelen.ratsinfomanagement.net/ |
-| Gemeinde Mettingen | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://www.mettingen.de/gemeinde/rathaus/ratsinformations-system/ |
-| Stadt Minden | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://minden.ratsinfomanagement.net/startseite |
-| Kreis Minden-Lübbecke | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://minden-luebbecke.ratsinfomanagement.net/ |
+| Gemeinde Metelen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://metelen.ratsinfomanagement.net/ |
+| Gemeinde Mettingen | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.mettingen.de/gemeinde/rathaus/ratsinformations-system/ |
+| Stadt Minden | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://minden.ratsinfomanagement.net/startseite |
+| Kreis Minden-Lübbecke | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://minden-luebbecke.ratsinfomanagement.net/ |
 | Stadt Monheim am Rhein | Kein unterstütztes Ratsinformationssystem erkannt | https://stadtrat.monheim.de/bi |
-| Gemeinde Morsbach | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://morsbach.ratsinfomanagement.net/termine |
-| Kreis Märkischer Kreis | ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser | https://www.sitzungsdienst-maerkischer-kreis.de/bi2/si018_a.asp |
+| Gemeinde Morsbach | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.morsbach.de/rathaus-buergerservice/ratsinformationssystem-politik/ |
+| Kreis Märkischer Kreis | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-maerkischer-kreis.de/bi2/pa020.asp?&PALFDNR=1 |
 | Gemeinde Nachrodt-Wiblingwerde | Kein unterstütztes Ratsinformationssystem erkannt | https://www.nachrodt-wiblingwerde.de/Mitteilungen-der-Gemeindeverwaltung.htm/Seiten/Informationen-zu-Strassensperrungen.html? |
 | Gemeinde Neuenkirchen | Kein unterstütztes Ratsinformationssystem erkannt | https://neuenkirchen.ratsinfomanagement.net/ |
-| Stadt Neuenrade | RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen | http://www.maerkischer-kreis.de/buergerinfo/infoseiten/soziales/Pflegeberatung-vor-Ort.php?ajaxsearch=1 |
-| Gemeinde Nordwalde | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://nordwalde.ratsinfomanagement.net/termine |
-| Stadt Oberhausen | ALLRIS 4; die Bürgerinformation war bei der Prüfung wegen Wartungsarbeiten nicht verfügbar. Erneut prüfen | https://ratsinfo.oberhausen.de/ |
-| Stadt Olsberg | ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser | https://olsberg.allris-online.de/bi-r/pa020_r.asp |
-| Stadt Overath | Kein unterstütztes Ratsinformationssystem erkannt | https://www.overath.de/rathaus-politik/politik/ratsinformationssystem/ |
-| Stadt Petershagen | Kein unterstütztes Ratsinformationssystem erkannt | https://petershagen.ratsinfomanagement.net/ |
-| Stadt Plettenberg | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://plettenberg.ratsinfomanagement.net/ |
+| Gemeinde Nordwalde | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://nordwalde.ratsinfomanagement.net/termine |
+| Stadt Oberhausen | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Nicht freigegebene Quelladresse) | https://www.oberhausen.de/de/index/rathaus/politik/ratsinformationssystem.php |
+| Stadt Olsberg | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.olsberg.de/politik-verwaltung/rats-und-buergerinformationssystem-der-stadt-olsberg |
+| Stadt Plettenberg | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.plettenberg.de/soziales/soziales/fluechtlingshilfe-buergerinfo |
 | Stadt Porta Westfalica | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sitzungsdienst.portawestfalica.de/ |
 | Stadt Preußisch Oldendorf | Kein unterstütztes Ratsinformationssystem erkannt | https://www.preussischoldendorf.de/Rathaus-Politik/Haushalt-Finanzen/St%C3%A4dtischer-Haushaltsplan-2017.php?object=tx,2864.4&ModID=7&FID=391.2651.1&NavID=2863.28&La=1 |
-| Gemeinde Raesfeld | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://raesfeld.ratsinfomanagement.net/ |
-| Gemeinde Recke | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://recke.ratsinfomanagement.net/ |
-| Gemeinde Reken | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://reken.ratsinfomanagement.net/ |
-| Stadt Rietberg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://rietberg.ratsinfomanagement.net/amtsblatt/ |
-| Gemeinde Saerbeck | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://saerbeck.ratsinfomanagement.net/ |
+| Gemeinde Raesfeld | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://raesfeld.ratsinfomanagement.net/ |
+| Gemeinde Recke | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://recke.ratsinfomanagement.net/ |
+| Gemeinde Reken | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://reken.ratsinfomanagement.net/ |
+| Stadt Rietberg | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://rietberg.ratsinfomanagement.net/amtsblatt/ |
+| Gemeinde Saerbeck | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.saerbeck.de/Buergerinfo/Maengelmeldung.htm? |
 | Gemeinde Schalksmühle | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schalksmuehle.ratsinfomanagement.net/ |
 | Gemeinde Schlangen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schlangen.ratsinfomanagement.net/ |
-| Stadt Schloß Holte-Stukenbrock | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
-| Gemeinde Schöppingen | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://schoeppingen.ratsinfomanagement.net/ |
-| Stadt Selm | ALLRIS 3 (ältere Generation) ohne OParl-Schnittstelle; für diese Generation gibt es keinen Leser | https://www.sitzungsdienst-selm.de/bi/si010_r.asp |
-| Kreis Soest | ALLRIS 4 gefunden; das System meldete bei der Prüfung zu viele Zugriffe und sperrte vorübergehend. Erneut prüfen | https://www.kreis-soest.sitzung-online.de/public/ |
-| Stadt Sprockhövel | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://sessionnet.owl-it.de/en-kreis/bi/info.asp |
-| Stadt Stadtlohn | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://stadtlohn.ratsinfomanagement.net/ |
-| Stadt Steinfurt | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://steinfurt.ratsinfomanagement.net/aemter |
+| Stadt Schloß Holte-Stukenbrock | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schlossholtestukenbrock.ratsinfomanagement.net/ |
+| Gemeinde Schöppingen | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.schoeppingen.de/rathaus-politik/politik/sitzungstermine/ |
+| Stadt Selm | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-selm.de/bi/si010_r.asp |
+| Kreis Soest | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.kreis-soest.sitzung-online.de/public/ |
+| Stadt Sprockhövel | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://somacos.de/loesungen/sitzungsmanagement/session/ |
+| Stadt Stadtlohn | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://stadtlohn.ratsinfomanagement.net/ |
+| Stadt Steinfurt | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://steinfurt.ratsinfomanagement.net/aemter |
 | Stadt Sundern (Sauerland) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sundern.ratsinfomanagement.net/ |
-| Stadt Tecklenburg | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://tecklenburg.ratsinfomanagement.net/ |
-| Stadt Velbert | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://velbert.ratsinfomanagement.net/ |
-| Stadt Vreden | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://vreden.ratsinfomanagement.net/ |
-| Stadt Warburg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://warburg.ratsinfomanagement.net/ |
-| Gemeinde Welver | RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen | https://welver.ris-portal.de/web/ratsinformation/sitzungen |
-| Stadt Werdohl | Kein unterstütztes Ratsinformationssystem erkannt | https://werdohl.ratsinfomanagement.net/ |
+| Stadt Velbert | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.velbert.de/rathaus-politik/rathaus/online-services/ratsinformationssytem-rats-tv |
+| Stadt Vreden | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://vreden.ratsinfomanagement.net/ |
+| Stadt Warburg | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.warburg.de/redirect.phtml?extlink=1&La=1&url_fid=3890.3.1 |
+| Stadt Werdohl | Verlinkte Seite antwortet Programmen mit HTTP 403/404 | https://werdohl.ratsinfomanagement.net/ |
 | Stadt Wermelskirchen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://wermelskirchen.ratsinfomanagement.net/ |
-| Stadt Werther (Westf.) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://werther.ratsinfomanagement.net/ |
+| Stadt Werther (Westf.) | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://werther.ratsinfomanagement.net/ |
 | Stadt Wesel | SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ris.wesel.de/ |
-| Gemeinde Westerkappeln | SD.NET auf der Website erwähnt; das System selbst wurde dort nicht gefunden | https://westerkappeln.ratsinfomanagement.net/ |
+| Gemeinde Westerkappeln | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.gemeinde-westerkappeln.de/Politik/Politik/Ratsinformationssystem/BuergerApp.htm? |
 | Stadt Wetter (Ruhr) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://wetter.ratsinfomanagement.net/ |
-| Gemeinde Wickede (Ruhr) | RIS-Portal (regisafe): robots.txt untersagt Programmen den Abruf, keine OParl-Schnittstelle; Freigabe oder OParl beim Anbieter anfragen | https://wickede.ris-portal.de/ |
-| Stadt Winterberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Stadt Winterberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Wülfrath | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://wuelfrath.ratsinfomanagement.net/startseite |

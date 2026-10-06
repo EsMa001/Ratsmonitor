@@ -27,8 +27,13 @@ const attribute=(tag,name)=>decode(tag.match(new RegExp(`\\b${name}=["']([^"']*)
 // Titles keep the line breaks of the source as spaces ("… (RLG)<br>hier: …").
 const plain=html=>text(String(html||'').replace(/<br\s*\/?>/gi,' '));
 const CANCELLED=/\b(?:abgesagt|entfällt|entfaellt|ausgefallen|fällt aus)\b/i;
-// The heading of the public part, in the forms the portal writes; any other heading ends the public agenda.
-const PUBLIC_PART=/^(?:öffentlich|oeffentlich)(?:e[rs]?)?(?:\s+(?:teil|sitzung|tagesordnung))?$/i;
+// The heading of the public part. Each tenant words it itself: "Öffentlich", "- öffentlich -", "ÖFFENTLICHER TEIL:",
+// "I. Öffentlicher Teil", "A.) Öffentlicher Teil", "Tagesordnung: öffentlich", "Tagesordnung - öffentlicher Teil",
+// "Öffentliche Tagesordnungspunkte". Compared without case, a leading number and surrounding dashes or colons; any other
+// heading ends the public agenda. A heading that is only "Tagesordnung" is the public agenda when it is the only part on
+// the page: tenants that publish a non-public part show it under a heading of its own (Welver, Hexental).
+const PUBLIC_PART=/^(?:tagesordnung\s*[-–:]?\s*)?(?:öffentlich|oeffentlich)(?:e[rs]?)?(?:\s+(?:teil|sitzung|sitzungsteil|tagesordnung|tagesordnungspunkte))?$/;
+const partTitle=title=>title.toLowerCase().replace(/\s+/g,' ').replace(/^\s*(?:[a-z]|[ivx]+|\d+)\s*[.)]+\s*/,'').replace(/^[\s\-–—:.*]+|[\s\-–—:.*]+$/g,'');
 export const NOT_PUBLIC='Sitzung ohne öffentlichen Teil auf der Seite';
 /**
  * A page of the portal: the theme of comundus (obis-theme) and the portlets of com.comundus.ris. base: the site of the
@@ -88,8 +93,8 @@ export function parseRisPortalMeeting(html,meeting,source,now=new Date()){
  const parts=page.split(/<h3 class=["']h4 accordion-list-header["'][^>]*>/i).slice(1);
  let publicPart=null;
  for(const part of parts){
-  const title=plain(part.slice(0,part.search(/<\/h3>/i)));
-  if(PUBLIC_PART.test(title)&&!publicPart){publicPart=part;continue;}
+  const title=partTitle(plain(part.slice(0,part.search(/<\/h3>/i))));
+  if((PUBLIC_PART.test(title)||title==='tagesordnung'&&parts.length===1)&&!publicPart){publicPart=part;continue;}
   // The non-public part, or any heading the reader does not know, ends the public agenda.
   break;
  }

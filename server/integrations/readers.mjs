@@ -13,8 +13,10 @@ import {collectPiwi,detectPiwi} from './piwi.mjs';
 import {collectPio,detectPio} from './pio.mjs';
 import {collectCouncilservice,detectCouncilservice} from './councilservice.mjs';
 import {collectRisPortal,detectRisPortal} from './ris-portal.mjs';
+import {collectKomfa,detectKomfa} from './komfa.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
+import {collectCkan,detectCkan} from './ckan.mjs';
 // collect-region.mjs hands every reader the council-system fetch (sessionnet fetchText, wrapped by the trace of a
 // metadata import). The website reader needs its own: fetchSiteText/fetchSiteBytes follow redirects by hand (with
 // ROBOTS_POLICY=obey every target is checked against robots.txt) and accept the origins of alsoFrom. With a trace both are recorded, documents included.
@@ -39,14 +41,21 @@ export const READERS={
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
  'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},
+ // KOMFA-RIS of kommunalfabrik (ris-<name>.komfa.de): the month views of its calendar and the public part of each
+ // agenda page. A system of an Amt names each meeting with its municipality; a member needs organizations.
+ komfa:{name:'KOMFA-RIS (öffentliche Seiten)',collect:collectKomfa,detect:async(url,html)=>pick(detectKomfa(url,html),['base'])},
  // Sitzungsdienst of mein-intra.net embedded in the municipality's website: recognised from the website page that
  // embeds it (export script and token); the entry names the system, the token and that page.
  councilservice:{name:'Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website)',collect:collectCouncilservice,detect:async(url,html)=>pick(detectCouncilservice(url,html),['base','token','page'])},
  // Website of a municipality without council system (notices, minutes, feeds of its CMS). No page of a council system
  // is one, so verify.mjs never recognises it; only the website search (scripts/source-discovery/website.mjs) assigns it.
+ // CKAN portal of open data (ckan.mjs), like OParl a generic interface: recognised from a page of the portal, read by
+ // the query profile of its entry (ckan: {queries, committee}). Without a profile it reads nothing, and the check names
+ // the area "API verfügbar, Leser/Connector fehlt" (shared/source-access.mjs).
+ ckan:{name:'CKAN-Portal (offene Schnittstelle)',collect:collectCkan,detect:async(url,html)=>detectCkan(url,html)},
  website:{name:WEBSITE_READER_NAME,collect:collectSite,detect:async()=>null},
  // City states (citystates.mjs, entries in citystate-sources.json). Neither is recognised from a page.
- 'hamburg-transparenz':{name:'Transparenzportal Hamburg (Drucksachen der Bezirksversammlungen)',collect:collectHamburgTransparenz,detect:async()=>null},
+ 'hamburg-transparenz':{name:'Transparenzportal Hamburg (Drucksachen und Sitzungen der Bezirksversammlungen, Mitteilungen des Senats)',collect:collectHamburgTransparenz,detect:async()=>null},
  'oparl-bezirke':{name:'OParl der Bezirksverordnetenversammlungen (nur mit Freigabe)',collect:collectOparlDistricts,detect:async()=>null},
  berlin:{name:'Abgeordnetenhaus Berlin (Parlamentsdokumentation, offene Daten) und Bezirke mit Freigabe',collect:collectBerlin,detect:async()=>null},
 };

@@ -1,0 +1,186 @@
+{
+ "_quelle": "Auszug aus echten Antworten von https://suche.transparenz.hamburg.de/api/3/action/package_search (abgerufen am 06.10.2026, Lizenz dl-de/by-2.0); auf die vom Leser genutzten Felder gekürzt.",
+ "help": "https://suche.transparenz.hamburg.de/api/3/action/help_show?name=package_search",
+ "success": true,
+ "result": {
+  "count": 4,
+  "results": [
+   {
+    "name": "neubau-der-asklepios-klinik-altona",
+    "title": "Neubau der Asklepios Klinik Altona",
+    "notes": "Planungsstand für einen Neubau der Asklepios Klinik Altona (AKA); Vergabeverfahren; Grundstücksbereitstellung; Verwendung der Bestandsbauten; Kostenermittlung und geplante Finanzierung",
+    "state": "active",
+    "private": false,
+    "license_id": "dl-de-by-2.0",
+    "metadata_created": "2026-09-10T16:00:20.734621",
+    "metadata_modified": "2026-10-05T16:00:31.251103",
+    "extras": [
+     {
+      "key": "number",
+      "value": "23/5267"
+     },
+     {
+      "key": "official_title",
+      "value": "Bürgerschaft der Freien und Hansestadt Hamburg"
+     },
+     {
+      "key": "publishing_date",
+      "value": "2026-09-10T00:00:00"
+     },
+     {
+      "key": "registerobject_type",
+      "value": "senatmitteilungen"
+     },
+     {
+      "key": "source",
+      "value": "Dokrates"
+     },
+     {
+      "key": "temporal_coverage_from",
+      "value": "2026-09-08T00:00:00"
+     },
+     {
+      "key": "harvest_source_title",
+      "value": "ParlaDB"
+     }
+    ],
+    "resources": [
+     {
+      "name": "Neubau der Asklepios Klinik Altona",
+      "url": "https://www.buergerschaft-hh.de/parldok/dokument/23/art/Drucksache/num/5267",
+      "format": "PDF"
+     }
+    ]
+   },
+   {
+    "name": "entwicklung-der-tech-city-hamburg-harburg-im-rahmen-des-hamburger-innovationsparkkonzepts",
+    "title": "Entwicklung der Tech City Hamburg Harburg im Rahmen des Hamburger Innovationsparkkonzepts",
+    "notes": "Umbenennung des Innovationsquartiers Harburg in Tech City; Vernetzung der Technischen Universität mit Forschungseinrichtungen, privaten Initiativen, Startups, Scaleups und innovativen Unternehmen sowie dem industriellen Kern Harburgs",
+    "state": "active",
+    "private": false,
+    "license_id": "dl-de-by-2.0",
+    "metadata_created": "2026-09-17T16:00:22.656360",
+    "metadata_modified": "2026-10-05T16:00:26.474633",
+    "extras": [
+     {
+      "key": "number",
+      "value": "23/5353"
+     },
+     {
+      "key": "official_title",
+      "value": "Bürgerschaft der Freien und Hansestadt Hamburg"
+     },
+     {
+      "key": "publishing_date",
+      "value": "2026-09-17T00:00:00"
+     },
+     {
+      "key": "registerobject_type",
+      "value": "senatmitteilungen"
+     },
+     {
+      "key": "source",
+      "value": "Dokrates"
+     },
+     {
+      "key": "temporal_coverage_from",
+      "value": "2026-09-15T00:00:00"
+     },
+     {
+      "key": "harvest_source_title",
+      "value": "ParlaDB"
+     }
+    ],
+    "resources": [
+     {
+      "name": "Entwicklung der Tech City Hamburg Harburg im Rahmen des Hamburger Innovationsparkkonzepts",
+      "url": "https://www.buergerschaft-hh.de/parldok/dokument/23/art/Drucksache/num/5353",
+      "format": "PDF"
+     }
+    ]
+   },
+   {
+    "name": "abstimmverhalten-hamburgs-im-bundesrat-1068-sitzung-am-25-09-2026",
+    "title": "Abstimmverhalten Hamburgs im Bundesrat -1068.Sitzung am 25.09.2026",
+    "notes": "Abstimmverhalten Hamburgs im Bundesrat -1068.Sitzung am 25.09.2026",
+    "state": "active",
+    "private": false,
+    "license_id": "cc-zero",
+    "metadata_created": "2026-10-05T16:03:30.188186",
+    "metadata_modified": "2026-10-05T16:03:30.188191",
+    "extras": [
+     {
+      "key": "publishing_date",
+      "value": "2026-10-05T00:00:00"
+     },
+     {
+      "key": "registerobject_type",
+      "value": "senatmitteilungen"
+     },
+     {
+      "key": "source",
+      "value": "ELDORADO_"
+     },
+     {
+      "key": "temporal_coverage_from",
+      "value": "2026-10-05T00:00:00"
+     }
+    ],
+    "resources": [
+     {
+      "name": "Upload: Abstimmverhalten HH - 2026.09.25",
+      "url": "https://daten.transparenz.hamburg.de/Dataport.HmbTG.ZS.Webservice.GetRessource100/GetRessource100.svc/616b3eb6-ef98-4e52-8adc-91f38c79f597/Upload__Abstimmverhalten_HH_-_2026.09.25.PDF",
+      "format": "PDF"
+     }
+    ]
+   },
+   {
+    "name": "haushaltsplan-2025-2026-nachbewilligung-nach-35-landeshaushaltsordnung-fuer-das-haushaltsjahr-222",
+    "title": "Haushaltsplan 2025/2026 Nachbewilligung nach §35 Landeshaushaltsordnung für das Haushaltsjahr 2026 Einzelplan 3.1 - Behörde für Schule, Familie und Berufsbildung Einzelplan 9.1 - Behörde für Finanzen und Bezirke Einzelplan 9.2 - Allgemeine Finanzwirtschaft Hamburger Investitions-Booster 2030 - Förderung ausgewählter Schul- und Bildungsbaumaßnahmen aus dem Länderanteil des Sondervermögens \"Infrastruktur und Klimaneutralität\" gemäß dem Länder- und Kommunalinfrastrukturfinanzierungsgesetz (LuKIFG)",
+    "notes": "Anlage 1: Änderungen von Ansätzen im Haushaltsplan 2025/2026;  Anlage 2: Gesamtkosten Schulbaumaßnahmen; Anlage 3: Wirtschaftsplan 2026 des Sondervermögens Schulimmobilien",
+    "state": "active",
+    "private": false,
+    "license_id": "dl-de-by-2.0",
+    "metadata_created": "2026-07-03T16:00:20.965198",
+    "metadata_modified": "2026-10-05T16:00:34.171875",
+    "extras": [
+     {
+      "key": "number",
+      "value": "23/4647"
+     },
+     {
+      "key": "official_title",
+      "value": "Bürgerschaft der Freien und Hansestadt Hamburg"
+     },
+     {
+      "key": "publishing_date",
+      "value": "2026-07-03T00:00:00"
+     },
+     {
+      "key": "registerobject_type",
+      "value": "senatmitteilungen"
+     },
+     {
+      "key": "source",
+      "value": "Dokrates"
+     },
+     {
+      "key": "temporal_coverage_from",
+      "value": "2026-06-30T00:00:00"
+     },
+     {
+      "key": "harvest_source_title",
+      "value": "ParlaDB"
+     }
+    ],
+    "resources": [
+     {
+      "name": "Haushaltsplan 2025/2026 Nachbewilligung nach §35 Landeshaushaltsordnung für das Haushaltsjahr 2026 Einzelplan 3.1 - Behörde für Schule, Familie und Berufsbildung Einzelplan 9.1 - Behörde für Finanzen und Bezirke Einzelplan 9.2 - Allgemeine Finanzwirtschaft Hamburger Investitions-Booster 2030 - Förderung ausgewählter Schul- und Bildungsbaumaßnahmen aus dem Länderanteil des Sondervermögens \"Infrastruktur und Klimaneutralität\" gemäß dem Länder- und Kommunalinfrastrukturfinanzierungsgesetz (LuKIFG)",
+      "url": "https://www.buergerschaft-hh.de/parldok/dokument/23/art/Drucksache/num/4647",
+      "format": "PDF"
+     }
+    ]
+   }
+  ]
+ }
+}

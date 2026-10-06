@@ -145,6 +145,39 @@ export function identity(region,url,html,{aliases=ALIASES,areas=CATALOG}={}){
  return inUrl||inText?{ok:true,by:named?'Adresse':alias?'Adresse (Alias)':'Seitentext'}:{ok:false,why:'Gebietsname weder in Adresse noch im Seitentext'};
 }
 
+// --- a system that several areas share -------------------------------------------------------------------------------
+// The council of another municipality among the bodies a system delivered for an area shows a system that several areas
+// share (vv-langenau.ris-portal.de: the councils of all members of the Verwaltungsverband). Without its part (client,
+// calendarQuery, organizations) each member would get the bodies of all. Joint bodies (Zweckverband, Verbandsversammlung)
+// and the councils of localities (Ortschaftsrat, Ortsrat: a locality may bear the name of another municipality) are no
+// sign. Members listed with an area (an Amt, a Samtgemeinde) are its own; those of another area count for that area
+// (pasewalk.de/allris: the town and the Amt Uecker-Randow-Tal with the councils of its members).
+const OTHER_COUNCIL=/(?:^|[^a-z])(?:stadtrat|gemeinderat|marktgemeinderat|marktrat|gemeindevertretung|stadtverordnetenversammlung|stadtvertretung|ratsversammlung|ortsgemeinderat|samtgemeinderat|verbandsgemeinderat|amtsausschuss|rat der (?:stadt|gemeinde|samtgemeinde|verbandsgemeinde))(?:$|[^a-z])/;
+const foldName=s=>String(s||'').normalize('NFC').toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+const coreName=n=>foldName(String(n||'').replace(/^(?:Stadt|Gemeinde|Markt|Marktgemeinde|Große Kreisstadt|Hansestadt|Ortsgemeinde|Samtgemeinde|Verbandsgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband|Erfüllende Gemeinde|Amt|Kreis|Landkreis)\s+/,'')).trim();
+const wordOf=n=>new RegExp('(?:^|[^a-z0-9])'+n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?:$|[^a-z0-9])');
+/**
+ * Councils of other areas of the area's district among the bodies a system delivered for it: {own, others, foreign} or
+ * null. own: the bodies that name the area (its part of the system); others: the names of the other areas.
+ */
+export function sharedBodies(area,committees,areas=CATALOG){
+ const district=area.kind==='district'?area.id:area.district;if(!district)return null;
+ const ownNames=[...new Set([area.shortName,area.name,...(area.members||[]).map(m=>m.name)].filter(Boolean).map(coreName))].filter(Boolean);
+ const own=ownNames.map(wordOf);
+ const others=areas.filter(a=>a.id!==area.id&&a.kind!=='district'&&a.district===district)
+  .map(a=>({a,names:[...new Set([a.shortName,a.name,...(a.members||[]).map(m=>m.name)].filter(Boolean).map(coreName))].filter(n=>n&&!ownNames.some(o=>o===n||wordOf(n).test(o))).map(wordOf)}))
+  .filter(o=>o.names.length);
+ const mine=[],foreign=[];
+ for(const c of [...new Set(committees.filter(Boolean).map(String))]){
+  const f=foldName(c);
+  if(own.some(n=>n.test(f))){mine.push(c);continue;}
+  if(!OTHER_COUNCIL.test(f))continue;
+  const hit=others.find(o=>o.names.some(n=>n.test(f)));
+  if(hit)foreign.push({committee:c,area:hit.a.id,name:hit.a.name});
+ }
+ return foreign.length?{own:mine,others:[...new Set(foreign.map(f=>f.name))],foreign:foreign.slice(0,12)}:null;
+}
+
 // Platforms that give each municipality a host name of its own but answer DNS for every name (wildcard), so a
 // lookup proves nothing: guess-hosted.mjs asks the page and keeps it only if the page names the area. itebo answers
 // DNS for existing tenants only; its lookup comes first and saves the request. path: where the public part starts.
@@ -162,8 +195,61 @@ export const HOSTED=[
  // RIS-Portal: /startseite answers on both kinds of tenant (council site at the root or below /web/ratsinformation/).
  {name:'RIS-Portal',land:'',hosts:s=>[`${s}.ris-portal.de`],path:'/startseite',wildcard:false,dnsOnly:true},
  {name:'sitzung-online.de',land:'',hosts:s=>[`www.${s}.sitzung-online.de`],path:'/public/',wildcard:false,dnsOnly:true},
+ // KOMFA-RIS (kommunalfabrik): DNS answers every name, a host without a tenant answers HTTP 404. Its customers found so
+ // far are in Brandenburg, Mecklenburg-Vorpommern, Sachsen, Sachsen-Anhalt and Thüringen (one entry per Land, so that a
+ // name only has to be unique in its Land). marker: what shows the system on the page (default: SessionNet, ALLRIS).
+ ...['12','13','14','15','16'].map(land=>({name:'KOMFA',land,hosts:s=>[`ris-${s}.komfa.de`],path:'/index.php?module=komfaris&action=main',wildcard:true,marker:/module=komfaris/})),
+ // komuna (KIC app, 291 of 293 known systems in Bavaria): one path per system on one host (ris.komuna.net/<name>/); a
+ // name without a system is redirected to a maintenance page, so redirects are not followed (manual). The app page names
+ // nobody: the municipalities its interface names (web/clients) must name the area (confirm, guess-hosted.mjs).
+ // ALLRIS 3 of ratsinfo-online.de and .net (one folder per system, "<name>-bi"; 40 known systems, 21 of them in
+ // Brandenburg, the others in Sachsen, Sachsen-Anhalt and Thüringen): a folder without a system answers HTTP 404; the
+ // page home.asp names the municipality (coat of arms, text).
+ ...['12','14','15','16'].map(land=>({name:'ratsinfo-online',land,hosts:s=>[`ratsinfo-online.de/${s}-bi`,`ratsinfo-online.net/${s}-bi`],path:'/home.asp',wildcard:true})),
+ // SessionNet of OWL-IT (sessionnet.owl-it.de/<name>/bi/; 229 known systems in twelve Länder): a folder without a system
+ // answers HTTP 404; the info page names the client ("Bürgerinfoportal der Stadt Heide").
+ ...['01','03','05','06','07','08','09','10','12','13','14','15','16'].map(land=>({name:'OWL-IT',land,hosts:s=>[`sessionnet.owl-it.de/${s}/bi`],path:'/info.asp',wildcard:true})),
+ // Names of komuna systems besides the usual labels (of 202 known ones, 168 are such a label): a Verwaltungsgemeinschaft
+ // with "vg" in front (vgassling), a name with its addition in one word (aschauainn, neufahrninb).
+ {name:'komuna',land:'09',hosts:(s,area)=>[`ris.komuna.net/${s}`,...(area?.municipalityType==='Verwaltungsgemeinschaft'?[`ris.komuna.net/vg${s}`]:[])],
+  slugs:area=>{const whole=ascii(area.shortName||area.name).replace(/[^a-z0-9]+/g,'');return whole?[whole]:[];},
+  path:'/',wildcard:true,manual:true,marker:/<title>\s*Ratsinformationssystem\s*<\/title>/i,confirm:'kic-clients'},
 ];
 const ascii=s=>String(s).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss');
+/**
+ * Areas of the catalog that share a host label with the area (hostSlugs): a guessed address of a platform may belong
+ * to any of them ("borken" on sessionnet.owl-it.de is the town in North Rhine-Westphalia, not Borken in Hesse). lands:
+ * the Länder the platform serves (platformLands); twins elsewhere do not count. Without lands every Land counts. Only
+ * areas of the same kind are twins: a town and the district of its name are told apart by identity() (Kreistag).
+ */
+export function nameTwins(area,areas=CATALOG,lands=null){
+ const own=new Set(hostSlugs(area.shortName||area.name));if(!own.size)return [];
+ return areas.filter(a=>a.id!==area.id&&a.kind===area.kind&&(!lands||lands.includes(String(a.ags||'').slice(0,2)))&&hostSlugs(a.shortName||a.name).some(s=>own.has(s)));
+}
+// Platforms of guess-platforms.mjs (regional providers, one Land each).
+const REGIONAL={'komm.one':['08'],KISA:['14']};
+/**
+ * The Länder a platform serves, from the evidence a guess wrote ("OWL-IT-Adresse, Seite nennt das Gebiet"): its
+ * entries in HOSTED or REGIONAL; null (every Land) for a platform of all Länder or one not known here.
+ */
+export function platformLands(guessed){
+ const name=String(guessed||'').match(/^(.+?)-Adresse\b/)?.[1];if(!name)return null;
+ if(REGIONAL[name])return REGIONAL[name];
+ const entries=HOSTED.filter(p=>p.name===name);
+ return entries.length&&entries.every(p=>p.land)?[...new Set(entries.map(p=>p.land))]:null;
+}
+/**
+ * Whether a page (or the evidence of a platform) names the area so that none of its twins is meant: by its full name
+ * with the addition no twin shares ("Mühlheim an der Donau", "Borken (Hessen)"), or an association by all its members.
+ */
+export function namesDistinctly(page,area,twins){
+ const fold=s=>' '+ascii(text(String(s||''))).replace(/[^a-z0-9]+/g,' ').trim()+' ';
+ const said=fold(page),core=n=>fold(String(n||'').replace(/^(?:Stadt|Gemeinde|Markt|Marktgemeinde|Große Kreisstadt|Hansestadt|Ortsgemeinde|Samtgemeinde|Verbandsgemeinde|Verwaltungsgemeinschaft|Verwaltungsverband|Erfüllende Gemeinde|Amt|Kreis|Landkreis)\s+/,''));
+ const full=core(area.name);
+ if(full.trim()&&!twins.some(t=>core(t.name).includes(full))&&said.includes(full))return true;
+ const members=(area.members||[]).map(m=>core(m.name));
+ return members.length>1&&members.every(m=>said.includes(m));
+}
 /** Host labels for a name: "Bayerisch Gmain" → bayerisch-gmain, bayerischgmain; additions and brackets left out. */
 export function hostSlugs(name){
  const b=ascii(name).replace(/\(.*?\)/g,'').replace(/\/.*$/,'').replace(/\s+[a-z]{1,3}\.\s?(?:[a-z]{1,3}\.\s?)?\S.*$/,'').replace(/\s+(an der|am|im|in der|in|bei|vor der|ob der|unter|über|ueber|auf der|auf dem)\s+.*$/,'').trim();

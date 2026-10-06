@@ -82,7 +82,11 @@ test('RIS-Portal meeting fails closed: no public heading, a non-public or unknow
  const list=(heading,title)=>`<h3 class="h4 accordion-list-header">${heading}</h3><ul><li class="rp-lis-item" data-top-number="1."><div class="top-item"><div class="top-item-content"><p><span>1.</span><span>${title}</span></p></div></div></li></ul>`;
  assert.equal(parseRisPortalMeeting('<h2 class="h1">Sitzung Rat am 03.09.2026</h2><p>Die Tagesordnung ist noch nicht veröffentlicht.</p>',m,welver,now),null);
  assert.equal(parseRisPortalMeeting(list('Nichtöffentlicher Teil','Grundstücksangelegenheit'),m,welver,now),null);
- assert.equal(parseRisPortalMeeting(list('Tagesordnung','Bebauungsplan Nord'),m,welver,now),null);
+ // "Tagesordnung" alone names no part: the public agenda only when it is the page's only part.
+ assert.deepEqual(parseRisPortalMeeting(list('Tagesordnung','Bebauungsplan Nord'),m,welver,now).items.map(i=>i.title),['Bebauungsplan Nord']);
+ assert.equal(parseRisPortalMeeting(list('Tagesordnung','Bebauungsplan Nord')+list('Teil B','Personalsache Müller'),m,welver,now),null);
+ for(const heading of ['Nicht öffentlicher Teil','- nichtöffentlich -','II. Nichtöffentlicher Teil','Tagesordnung: nichtöffentlich','Tagesordnung - Nichtöffentlich','Öffentlichkeitsarbeit','Teil A'])
+  assert.equal(parseRisPortalMeeting(list(heading,'Bebauungsplan Nord'),m,welver,now),null,heading);
  // After the public part every further part ends the agenda, whatever it is called.
  const two=parseRisPortalMeeting(list('Öffentlicher Teil','Bebauungsplan Nord')+list('Teil B','Personalsache Müller'),m,welver,now);
  assert.deepEqual(two.items.map(i=>i.title),['Bebauungsplan Nord']);
@@ -98,6 +102,17 @@ function portal(source,months,pages){
   const id=u.searchParams.get('sitzungId');if(id&&pages[id])return pages[id];throw Error('Quelle antwortet mit HTTP 404');};
  return {asked,get};
 }
+test('RIS-Portal meeting: the public heading in the wordings of the tenants',()=>{
+ const m={id:'1',url:welver.base+'sitzungen?sitzungId=1',date:'2026-09-03',committee:'Rat'};
+ const list=(heading,title)=>`<h3 class="h4 accordion-list-header">${heading}</h3><ul><li class="rp-lis-item" data-top-number="1."><div class="top-item"><div class="top-item-content"><p><span>1.</span><span>${title}</span></p></div></div></li></ul>`;
+ // Bad Tennstedt, Landkreis Rastatt, Bad Soden-Salmünster, Bad Tabarz, Buggingen, Elchesheim-Illingen, Föritztal,
+ // Gechingen, Harztor, Haßmersheim (05.10.2026).
+ for(const heading of ['- öffentlich -','Tagesordnung öffentlich','Öffentliche Tagesordnungspunkte','Tagesordnung - öffentlicher Teil','Tagesordnung - Öffentlich','A.) Öffentlicher Teil','ÖFFENTLICHER TEIL:','Tagesordnung: öffentlich','I. Öffentlicher Teil','I. öffentlich']){
+  const agenda=parseRisPortalMeeting(list(heading,'Bebauungsplan Nord')+list('Nichtöffentlicher Teil','Grundstücksangelegenheit'),m,welver,now);
+  assert.deepEqual(agenda?.items.map(i=>i.title),['Bebauungsplan Nord'],heading);
+ }
+});
+
 test('collectRisPortal reads the months of the period and the public part of each meeting, nothing else',async()=>{
  const web=portal(welver,{'2026-8':fixture('welver-sessions-2026-09.json')},{'216451':fixture('welver-sitzung-216451.html')});
  const d=await collectRisPortal(welver,{now,get:web.get,window:'1m'});

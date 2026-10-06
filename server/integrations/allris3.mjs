@@ -6,6 +6,7 @@ import {resultStatus} from './sdnet.mjs';
 import {createSession} from './allris.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {committeePart} from './oparl-regional.mjs';
 // Public pages of ALLRIS net, the older ALLRIS generation (ALLRIS 3): .asp programs in one folder. Read are the monthly
 // calendar (si010, si010_e, si010_j or the responsive si010_r), the agenda of each meeting (to010) and the page of each
 // paper on a public agenda (vo020).
@@ -189,7 +190,7 @@ export function parseAllris3Paper(html,source){
 export async function collectAllris3(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks,checkOparl=false}={}){
  if(source.calendar&&!CALENDAR.test(source.calendar))throw Error('Unbekanntes Kalenderprogramm: '+source.calendar);
  get=budgeted(get,maxDurationMs,2);const deadline=Date.now()+maxDurationMs;
- const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),issues=[],warnings=[],meetings=new Map();
+ const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),issues=[],warnings=[],meetings=new Map(),part=committeePart(source.organizations);
  // One session per import, as a browser holds it; every answer opens one (ASPSESSIONID) for requests without it.
  const send=declaredCharset(createSession(request).plain),refused=new Set();
  // halt: the reason why the system must not be asked any further in this import.
@@ -215,7 +216,7 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
   try{
    const found=parseAllris3Calendar(await read(source.base+`${calendar}?MM=${number}&YY=${year}`),source,{year,month:number});
    if(!found)throw Error('Unbekanntes Kalenderformat');
-   for(const m of found)if(m.date>=fromDay)meetings.set(m.url,m);
+   for(const m of found)if(m.date>=fromDay&&part.keep(m.name,m.url))meetings.set(m.url,m);
   // A refusal, an unknown page or a missing program is not going to differ for the other months.
   }catch(e){if(e.message!==halt)issues.push(`Kalender ${number}/${year}: ${e.message}`);if(/HTTP 4\d\d|Kalenderformat|nicht freigegeben/.test(e.message))denied=true;}
  };
@@ -235,6 +236,7 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
   if(fetched>=MAX_MEETINGS){beyond++;return;}fetched++;
   try{
    const html=await read(m.url),agenda=parseAllris3Agenda(html,m,source,now);
+   if(agenda&&part.excluded(agenda.committee,m.url)){count++;return;}
    // A scheduled meeting without an agenda has nothing public to read yet. A past meeting shown with its basic data
    // but without an agenda was published that way: a remark, not a gap. An unrecognisable page is a gap.
    if(!agenda){if(m.date>today)upcoming++;else if(/id=["']si(?:datum|gremium)["']|class=["']kb1["'][^>]*>\s*(?:Gremium|Datum):/i.test(html))warnings.push('Sitzung ohne veröffentlichte Tagesordnung: '+m.url);else issues.push('Keine lesbare öffentliche Tagesordnung: '+m.url);return;}
@@ -273,5 +275,6 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
  const listed=meetings.size-upcoming,found=[...new Set(issues)];
  // Unchanged meetings are a successful reading: their reports are in the database already.
  // After a halt nothing is resumed automatically: the next import is the next attempt.
+ warnings.push(...part.warnings());
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:listed,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...((unread||beyond)&&!halt?{resumable:true}:{}),...(warnings.length?{warnings}:{}),sourceCount:1,quiet:listed===0&&found.length===0,complete:found.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?found:[...found,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }
