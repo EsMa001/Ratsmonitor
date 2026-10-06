@@ -12,7 +12,10 @@ export const ACCEPTED_FILES=['verified-api.json','verified-api-register.json','v
 // Candidates set on purpose for one area (web search, diagnosis, correction): a check of them without a source still
 // says more than the check of the links of the website, so it stands in the report (the later file wins).
 // verified-research.json holds the checks of the candidates from the research per Land (candidates/research-*.json).
-export const TARGETED_FILES=['verified-search.json','verified-research.json','verified-consents.json','verified-fix.json'];
+// Last, so they replace checks that still obeyed robots.txt: verified-robots-recheck.json (new check of those areas,
+// 06.10.2026) and verified-rim-status.json (SD.NET RIM tenants: pages answer 403, OParl webservice not activated,
+// asked on 06.10.2026; tmp/api-search/rim-status.mjs).
+export const TARGETED_FILES=['verified-search.json','verified-research.json','verified-consents.json','verified-fix.json','verified-robots-recheck.json','verified-rim-status.json'];
 // Guessed addresses: only a system found there or a refusal by robots.txt is a finding; a guessed page without a
 // system changes nothing.
 export const GUESSED_FILES=['verified-guessed-own.json','verified-guessed.json','verified-hosted.json'];
@@ -128,6 +131,9 @@ export function openReason(area,row,crawl,ctx={}){
  // verify.mjs checked the area but tried nothing: every link was one of its services (read-aloud, sharing, app
  // stores, e-paper, vendor pages). An e-paper or a shared calendar page still shows where the meetings stand.
  if(!tried.length&&crawl?.candidates?.length)return withSite(crawl.candidates.some(c=>PUBLICATION.test(decoded(c.url||'')))?NO_RIS:'Nur Links auf Vorlese-, Teilen-, App- oder Herstellerseiten gefunden, kein Ratsinformationssystem');
+ // SD.NET RIM tenant asked again on 06.10.2026 (verified-rim-status.json): its pages refuse programs, its OParl
+ // webservice answers but is not activated for the municipality.
+ if(tried.some(t=>t.oparlInactive))return 'SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen';
  const main=mainEntry(tried);
  // Platforms that serve many areas outside NRW and cannot be read: their name says what would open them up. They
  // come first: a page of such a platform can look like another system (RIS-Portal was taken for SessionNet once).
