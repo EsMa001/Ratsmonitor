@@ -90,8 +90,13 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   /* Läuft eine Suche, bleibt die Übersicht auf dem letzten fertigen Stand (Leiste, Chips, Karte, Zahl, Liste) und
      wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */
   const shown=useRef(live);
-  if(!live.loading)shown.current=live;
-  const derived=useMemo(()=>live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live]);
+  /* Reine Textsuche ohne einen einzigen Treffer: steht das fest, wird sie gar nicht erst übernommen. Die Übersicht bleibt
+     wie sie war (Suchleiste mittig, kein Chip, kein Kartenmodus), das Wort bleibt im Feld stehen (noHits). Mit Filtern gilt
+     weiter die Ansicht „Keine Vorgänge gefunden“, damit man sie lösen kann. */
+  const s=live.snapshot,onlyText=!!s.text&&!s.area&&!s.radius&&!s.thema&&!s.monat&&!s.von&&!s.bis&&!s.status&&!(s.more?.length)&&!s.noformal&&!s.future;
+  const zero=!live.loading&&live.hits==='no'&&onlyText;
+  if(!live.loading&&!zero)shown.current=live;
+  const derived=useMemo(()=>zero?{...shown.current,setPage:live.setPage,retry:live.retry,pending:false,ringMode:false,noHits:s.text}:live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live,zero,s.text]);
   /* Wann was zu sehen ist (siehe useDerivedResults): In den ersten 0,5 s passiert nichts. Sind die Treffer bis dahin da
      oder wenigstens schon im Kommen, wechseln Karte und Liste, und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl
      feststeht. Ist nach 0,5 s noch kein Treffer da, steht der Ladering, und alles erscheint erst, wenn die Suche samt
@@ -285,6 +290,7 @@ export interface CoverageEntry {ags:string;name:string;count:number;complete:boo
 type LiveResults=Omit<SearchResults,'showRing'|'showDots'|'searching'>;
 export interface SearchResults {
  /** Suche dauert über 0,5 s und hat noch keinen Treffer gezeigt: Ladering bis alles fertig ist */ringMode:boolean;
+ /** Reine Textsuche ohne Treffer: der Text bleibt im Feld stehen, angezeigt wird weiter die vorige Übersicht ('' sonst) */noHits:string;
  /** Gibt es Treffer? ja: mindestens einer ist da; nein: Suche zu Ende ohne Treffer; unbekannt: sie läuft noch */hits:'yes'|'no'|'unknown';
  /** Suche läuft noch: neue Treffer oder genaue Zahl fehlen */searching:boolean;/** Ladering im Suchfeld (Suche dauert über 0,5 s) */showRing:boolean;/** Punkte an der Trefferzahl (erste Treffer schnell da, Zahl noch nicht) */showDots:boolean;
  total:number;/** Genaue Trefferzahl noch unterwegs */totalPending:boolean;/** Es gibt eine weitere Seite (auch ohne die genaue Gesamtzahl) */hasMore:boolean;coverage:CoverageEntry[];
@@ -555,6 +561,6 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
  /* Gibt es Treffer? ja: mindestens einer ist da; nein: die Suche ist zu Ende ohne Treffer; unbekannt: sie läuft noch */
  const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0||(rd?.known==='yes'&&!rd.final)?'yes':(cached||rd?.final)?'no':'unknown';
- return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,badgeCounts:fx?.badgeCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
+ return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,noHits:'',results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,badgeCounts:fx?.badgeCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}
