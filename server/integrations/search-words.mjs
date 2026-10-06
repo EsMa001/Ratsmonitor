@@ -299,6 +299,14 @@ export async function candidateCards(db,groups,{nameHit=()=>false}={}){
  }catch{return null;}
 }
 
+/** Karten in Gebieten, deren Name den Begriff enthält, aber nicht den Begriff im Text: die Suche findet sie über den Gebietsnamen,
+ *  die vorberechneten Zahlen (nur Text) kennen sie nicht. Je Gebiet, Thema und Status gezählt, nur Datum bis `to`. */
+async function nameOnly(db,term,ids,to){
+ if(!ids.length)return [];
+ const {results}=await db.prepare('SELECT region_id,label,status,count(*) n FROM search_cards WHERE region_id IN (SELECT value FROM json_each(?))'+(to?' AND date<=?':'')+' AND instr(search,?)=0 GROUP BY region_id,label,status').bind(...[JSON.stringify(ids),...(to?[to]:[]),term]).all();
+ return results;
+}
+
 /**
  * Genaue Trefferzahl der Suche nach genau einem häufigen Wort, sofort aus der Wortliste (sonst null: dann wird gezählt).
  * Gilt nur ohne weitere Filter, bei aktueller Liste und wenn der Begriff keinen Gebietsnamen trifft. Karten mit Datum nach
@@ -306,17 +314,18 @@ export async function candidateCards(db,groups,{nameHit=()=>false}={}){
  * @param term der einzige Suchbegriff
  * @param level 'city' | 'district'; levelIds: Gebiets-IDs dieser Ebene; to: 'JJJJ-MM-TT' oder ''
  */
-export async function precomputedTotal(db,term,{level='city',to='',levelIds=[],nameHit=()=>false}={}){
- if(!searchable([term])||nameHit(term))return null;
+export async function precomputedTotal(db,term,{level='city',to='',levelIds=[],nameIds=()=>[]}={}){
+ if(!searchable([term]))return null;
  try{
   const state=await readState(db);
   if(!state?.complete||!state.hasHits||state.revision!==await currentRevision(db))return null;
   const row=await db.prepare('SELECT hits_city,hits_district FROM search_words WHERE word=?').bind(term).first();
   const n=level==='district'?row?.hits_district:row?.hits_city;
   if(n==null)return null;
-  if(!to)return n;
+  const inLevel=new Set(levelIds),extra=(await nameOnly(db,term,nameIds(term).filter(id=>inLevel.has(id)),to)).reduce((a,r)=>a+r.n,0);
+  if(!to)return n+extra;
   const later=(await db.prepare('SELECT count(*) n FROM search_cards INDEXED BY idx_search_cards_date WHERE date>? AND region_id IN (SELECT value FROM json_each(?)) AND instr(search,?)>0').bind(to,JSON.stringify(levelIds),term).first())?.n??0;
-  return n-later;
+  return n-later+extra;
  }catch{return null;}
 }
 
@@ -326,8 +335,8 @@ export async function precomputedTotal(db,term,{level='city',to='',levelIds=[],n
  * und wenn der Begriff keinen Gebietsnamen trifft. Karten mit Datum nach `to` werden abgezogen.
  * @returns {Promise<{regions:Map<string,number>,facets:{label:string,status:string,n:number}[]}|null>}
  */
-export async function precomputedFacets(db,term,{level='city',to='',levelIds=[],nameHit=()=>false}={}){
- if(!searchable([term])||nameHit(term))return null;
+export async function precomputedFacets(db,term,{level='city',to='',levelIds=[],nameIds=()=>[]}={}){
+ if(!searchable([term]))return null;
  try{
   const state=await readState(db);
   if(!state?.complete||!state.hasHits||state.revision!==await currentRevision(db))return null;
@@ -343,6 +352,10 @@ export async function precomputedFacets(db,term,{level='city',to='',levelIds=[],
     regions.set(r.region_id,(regions.get(r.region_id)||0)-r.n);
     const f=facets.get(r.label+'|'+r.status);if(f)f.n-=r.n;
    }
+  }
+  for(const r of await nameOnly(db,term,nameIds(term).filter(id=>inLevel.has(id)),to)){
+   regions.set(r.region_id,(regions.get(r.region_id)||0)+r.n);
+   const k=r.label+'|'+r.status,f=facets.get(k);if(f)f.n+=r.n;else facets.set(k,{label:r.label,status:r.status,n:r.n});
   }
   for(const [id,n] of regions)if(n<=0)regions.delete(id);
   return {regions,facets:[...facets.values()].filter(f=>f.n>0)};

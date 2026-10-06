@@ -126,9 +126,9 @@ test('searching through the word list gives exactly the result of searching all 
 
 test('precomputed facets of common words equal the grouping over all cards, per level and with a cut-off date',async()=>{
  const {sql,db,put}=fixture();try{
-  const titles=['Windpark Planung','Windpark Bürgerbeteiligung','Kita Neubau','Kita Sanierung Turnhalle','Radweg Brücke','Bürgerwindpark Erweiterung','Planung Radweg','Schulbau Planung Kita','Parkplatz am Rathaus','Windkraft Radweg','Parkplatz Nord','Platz'];
+  const titles=['Windpark Planung','Windpark Bürgerbeteiligung','Kita Neubau','Kita Sanierung Turnhalle','Radweg Brücke','Bürgerwindpark Erweiterung','Planung Radweg','Schulbau Planung Kita','Parkplatz am Rathaus','Windkraft Radweg','Parkplatz Nord','Platz','Anderer Weg Kita','Anderer Weg'];
   titles.forEach((t,i)=>put('c'+i,['billerbeck','other','coesfeld'][i%3],{title:t,officialTitle:t}));
-  const queries=['q=windpark','q=kita','q=radweg','q=planung','q=park','q=platz','q=parkplatz','q=kita&level=district','q=planung&level=district','q=windpark&to=2026-09-10','q=kita&to=2026-09-30','q=radweg&sort=asc'];
+  const queries=['q=windpark','q=kita','q=radweg','q=planung','q=park','q=platz','q=parkplatz','q=kita&level=district','q=planung&level=district','q=windpark&to=2026-09-10','q=kita&to=2026-09-30','q=radweg&sort=asc','q=anderer','q=anderer&to=2026-09-10','q=anderer&level=district','q=ander'];
   const run=async q=>{const r=await searchMonitor(db,catalog,new URLSearchParams(q));return {ids:r.articles.map(a=>a.id),total:r.total,area:r.areaCounts,thema:r.themaCounts,status:r.statusCounts,badge:r.badgeCounts};};
   const before=[];for(const q of queries)before.push(await run(q));
   const kinds=new Map(catalog.map(r=>[r.id,r.kind]));

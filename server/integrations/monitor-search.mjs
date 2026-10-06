@@ -94,6 +94,7 @@ export async function searchMonitor(db,catalog,params){
  /* Seltene Wörter: die Wortliste nennt die Karten, in denen sie vorkommen. Dann werden Seite, Zähler und Strom nur über diese Karten
     gefragt (mit denselben Bedingungen wie sonst, das Ergebnis bleibt gleich), statt über alle. null: wie gewohnt über alle. */
  const nameHit=t=>catalog.some(r=>norm(r.name).includes(t));
+ const nameIds=t=>catalog.filter(r=>norm(r.name).includes(t)).map(r=>r.id);
  const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part===''?await candidateCards(db,f.groups,{nameHit}):null;
  const candidates=cand?{sql:'id IN (SELECT value FROM json_each(?))',arg:JSON.stringify(cand)}:null;
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
@@ -131,7 +132,7 @@ export async function searchMonitor(db,catalog,params){
    const known=await knownWords(db,f.groups,{plain,nameHit});
    /* Häufiges Wort ohne Filter: die Trefferzahl steht vorberechnet in der Wortliste und geht gleich mit */
    const single=plain&&f.groups.length===1&&f.groups[0].length===1?f.groups[0][0]:null;
-   const total=single?await precomputedTotal(db,single,{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameHit}):null;
+   const total=single?await precomputedTotal(db,single,{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameIds}):null;
    yield total===null?{known}:{known,total};
    if(known==='no'){yield {end:true,hasMore:false,revision,pageSize:limit};return;}
    let found=0,upper='9999-12-31~',size=STREAM_FIRST,more=false;
@@ -157,7 +158,7 @@ export async function searchMonitor(db,catalog,params){
     Gruppierung über alle Einträge. null: wie gewohnt gruppieren. */
  const plainSearch=!f.area&&!f.label&&!f.status&&!f.month&&!f.from&&!f.more.length&&!f.within&&!f.without&&!f.noformal;
  const pre=(f.part==='facets'||f.part==='')&&plainSearch&&f.groups.length===1&&f.groups[0].length===1&&!cand
-  ?await precomputedFacets(db,f.groups[0][0],{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameHit}):null;
+  ?await precomputedFacets(db,f.groups[0][0],{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameIds}):null;
  /* Reihenfolge der Antwort: Datenstand, dann je nach part die Seite und/oder die Zähler (Gruppierung) */
  const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'||pre?[]:[facetSql])];
  const answers=await db.batch(statements);

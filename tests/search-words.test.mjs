@@ -126,7 +126,9 @@ test('common words get the exact hit count of the search for them, per level, ea
  assert.equal(await total('haushalt'),4);                                           // a, b, c (haushaltsplan) und f; d liegt auf Kreisebene
  assert.equal(await total('kita','city','2026-10-06'),2);                           // f liegt nach dem Stichtag
  assert.equal(await total('windpark'),null);                                        // kein häufiges Wort
- assert.equal(await precomputedTotal(db,'haushalt',{levelIds:['r1','r2'],nameHit:()=>true}),null); // Gebietsname: gezählt wird anders
+ /* Begriff steckt im Namen von r1: alle Karten von r1 zählen mit (auch ohne den Begriff im Text), jede Karte einmal */
+ assert.equal(await precomputedTotal(db,'haushalt',{levelIds:['r1','r2'],nameIds:()=>['r1']}),5);
+ assert.equal(await precomputedTotal(db,'haushalt',{levelIds:['r1','r2'],to:'2026-10-06',nameIds:()=>['r1']}),4);
 });
 
 test('hit counts follow new cards, and vanish when a card was replaced',async()=>{
