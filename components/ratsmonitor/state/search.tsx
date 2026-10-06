@@ -276,7 +276,7 @@ export function useSearch(): SearchValue {
 /* ---------- Abgeleitete Werte: Treffer, Zähler, erkannter Ort ---------- */
 export interface CoverageEntry {ags:string;name:string;count:number;complete:boolean}
 export interface SearchResults {
- total:number;/** Zähler noch nicht da: total ist die Grenze plus 1 („mehr als N“) */totalCapped:boolean;/** Anzeige der Trefferzahl: 100, 200, … während gezählt wird, danach die genaue Zahl */totalLabel:string;coverage:CoverageEntry[];
+ total:number;/** Zähler noch nicht da: total ist nur „mehr als 100“ */totalCapped:boolean;/** Anzeige der Trefferzahl: „>100“ oder die genaue Zahl */totalLabel:string;coverage:CoverageEntry[];
   /** Abfrage der aktuellen Suche (für Export), ohne Seite */
   key:string;
   around:{set:Set<string>|null;level:string}|null;
@@ -311,8 +311,6 @@ type DataValue=ReturnType<typeof useData>;
    eines Vorschlags): gleiche Suche = eine Anfrage, und ein Klick trifft oft schon die fertige Antwort */
 const SEARCH_CACHE=new Map<string,{at:number;data:ResponseData}>(),INFLIGHT=new Map<string,Promise<ResponseData>>();
 /* Zähler (Gebiete, Themen, Status, Gesamtzahl) kommen getrennt von der Ergebnisseite und gelten für die ganze Suche, nicht je Seite */
-/** Weiter als bis hierher wird in 100er-Schritten nicht gezählt */
-const COUNT_STEPS_MAX=2000;
 type Facets=Pick<ResponseData,'total'|'areaCounts'|'themaCounts'|'monatCounts'|'statusCounts'|'revision'>;
 const FACETS_CACHE=new Map<string,{at:number;data:Facets}>();
 const freshFacets=(key:string)=>{const hit=FACETS_CACHE.get(key);return hit&&Date.now()-hit.at<300000?hit.data:null;};
@@ -371,8 +369,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
  useEffect(()=>{if(!active||cover[state.level])return;const abort=new AbortController();loadCover(state.level,abort.signal).catch(()=>{});return()=>abort.abort();},[active,state.level,cover,loadCover]);
  /* Abfrage für Seite oder Zähler. Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs).
     Welche Gebiete Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
- const buildQuery=useCallback(async(page:number,part:'page'|'facets'|'count',signal:AbortSignal,cap?:number)=>{
-  const params=new URLSearchParams(local.key);params.delete('around');params.set('part',part);if(cap)params.set('cap',String(cap));
+ const buildQuery=useCallback(async(page:number,part:'page'|'facets',signal:AbortSignal)=>{
+  const params=new URLSearchParams(local.key);params.delete('around');params.set('part',part);
   if(part==='page'){params.set('page',String(page));if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);}
   if(local.around){
    const {set,level}=local.around;
@@ -425,7 +423,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
  },[active,local.key,page,attempt,requestKey,buildQuery]);
  /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht); bis sie da sind, bleiben die vorigen stehen */
  const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});
- const pageReady=(remote.key===requestKey&&!!remote.data)||(active&&!!freshSearch(requestKey));
+ const pageReady=remote.key===requestKey&&!!remote.data;
  useEffect(()=>{
   if(!active||!pageReady)return;
   const hit=freshFacets(local.key);
@@ -457,29 +455,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
  const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
  const error=loading||cached?'':remote.error;
- /* Trefferzahl in 100er-Schritten hochzählen (100, 200, …), solange die Zähler laden: je Schritt eine gedeckelte Zählung */
- const [counted,setCounted]=useState<{key:string;total:number;capped:boolean}|null>(null);
- const pageCapped=!!data?.totalCapped;
- useEffect(()=>{
-  if(!active||!pageReady||!pageCapped||exact)return;
-  const abort=new AbortController();
-  (async()=>{
-   try{
-    for(let cap=200;cap<=COUNT_STEPS_MAX;cap+=100){
-     const query=await buildQuery(1,'count',abort.signal,cap);
-     const r=await fetchSearch(query,abort.signal);
-     if(abort.signal.aborted)return;
-     setCounted({key:local.key,total:r.total,capped:!!r.totalCapped});
-     if(!r.totalCapped)return;
-    }
-   }catch{/* bleibt bei der letzten Stufe, bis die Zähler da sind */}
-  })();
-  return()=>abort.abort();
- },[active,pageReady,pageCapped,!!exact,local.key,buildQuery]);
- /* Genaue Zahl, sobald die Zähler da sind; davor die zuletzt gezählte Stufe (bei „mehr als N“ ist total N+1, angezeigt wird N) */
- const step=counted?.key===local.key?counted:null;
- const shown=exact?{total:exact.total,capped:false}:step??{total:data?.total??0,capped:pageCapped};
- const total=shown.total,capped=shown.capped;
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total,totalCapped:capped,totalLabel:(capped?total-1:total).toLocaleString('de-DE'),areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,capped,fx,loading,error,page,setPage,retry,cover,state.level]);
+ /* Genaue Zahl, sobald die Zähler da sind; davor die gedeckelte Zählung der Seite */
+ const total=exact?exact.total:data?.total??0,capped=!exact&&!!data?.totalCapped;
+ return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total,totalCapped:capped,totalLabel:capped?'>100':total.toLocaleString('de-DE'),areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,capped,fx,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}
