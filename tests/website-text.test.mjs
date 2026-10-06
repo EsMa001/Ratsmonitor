@@ -425,6 +425,9 @@ test('parseSessionText: the list of those present is no agenda, and offices and 
  assert.deepEqual(parseSessionText(plain,{}).meetings[0].items.map(i=>i.title),['Bauantrag Kita']);
  for(const line of ['1. Ortsbürgermeister Muster','1. Bgm. Muster','1. Stadtrat Muster','1. Kämmerin Beispiel','2. Gemeinderätin Probe','1. Hauptamtsleiter Muster','3. GR Beispiel'])assert.equal(parseItemLine(line),null,line);
  assert.deepEqual(parseItemLine('5. Stadtrat – Umbesetzung der Ausschüsse'),{prefix:null,number:'5',title:'Stadtrat – Umbesetzung der Ausschüsse'});
+ // A mark glued to the number (Sonneberg: "1ö", "3nö").
+ assert.deepEqual(parseItemLine('1ö Beschluss über die Änderung der Feuerwehrsatzung'),{prefix:'Ö',number:'1',title:'Beschluss über die Änderung der Feuerwehrsatzung'});
+ assert.deepEqual(parseItemLine('3nö Grundstücksangelegenheit'),{prefix:'N',number:'3',title:'Grundstücksangelegenheit'});
 });
 
 test('parseSessionText: deadlines, periods and papers are not the day of the meeting',()=>{

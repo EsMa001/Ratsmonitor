@@ -1507,6 +1507,35 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.trittau.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-04011000",
+    "name": "Stadt Bremen",
+    "kind": "city",
+    "system": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "body": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/body/1",
+    "organizations": {
+      "include": [
+        "Stadtbürgerschaft",
+        "(Stadt)",
+        "Städtische Deputation"
+      ],
+      "exclude": [
+        "Landtag",
+        "(Land)",
+        "Staatliche Deputation"
+      ]
+    },
+    "assumePublicAgenda": {
+      "decided": "2026-10-06",
+      "by": "Inhaber",
+      "note": "SD.NET RIM ohne Kennzeichnung öffentlich; Annahme: die Schnittstelle liefert nur den öffentlichen Teil (wie bei den neun Mandanten vom 06.10.2026)"
+    },
+    "meetingScan": "end",
+    "state": "system-verified",
+    "verifiedSource": "https://sd.bremische-buergerschaft.de/",
+    "verifiedAt": "2026-10-06"
+  },
+  {
     "id": "de-04012000",
     "name": "Stadt Bremerhaven",
     "kind": "city",

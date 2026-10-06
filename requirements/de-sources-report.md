@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 4457 auswählbaren Gebieten sind 2904 angebunden, 1553 nicht. Diese Datei beschreibt die 2902 Quellen in `server/integrations/de-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 4457 auswählbaren Gebieten sind 2905 angebunden, 1552 nicht. Diese Datei beschreibt die 2903 Quellen in `server/integrations/de-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -14,7 +14,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 262 × More! Rubin (Kalender-API)
 - 237 × ALLRIS 4 (öffentliche Seiten)
 - 202 × Website der Kommune (öffentliche Bekanntmachungen)
-- 134 × OParl
+- 135 × OParl
 - 69 × ALLRIS 3 (öffentliche Seiten)
 - 43 × Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website)
 - 17 × TI-Generator (öffentliche Seiten)
@@ -151,6 +151,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Amt Bad Oldesloe-Land | RIS-Portal regisafe (öffentliche Seiten) | https://amt-bad-oldesloe-land.ris-portal.de/ | 291 |
 | Amt Siek | ALLRIS 4 (öffentliche Seiten) | https://www.amtsiek.de/allris/ | 423 |
 | Amt Trittau | ALLRIS 4 (öffentliche Seiten) | https://www.trittau.sitzung-online.de/public/ | 327 |
+| Stadt Bremen | OParl | https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/system | 46 |
 | Stadt Bremerhaven | SessionNet (öffentliche Seiten) | https://sessionnet.bremerhaven.de/bi/ | 234 |
 | Stadt Darmstadt | More! Rubin (Kalender-API) | https://darmstadt.gremien.info/ | 203 |
 | Stadt Offenbach am Main | PIO Offenbach (öffentliche Seiten) | https://pio.offenbach.de/ | 71 |
@@ -2945,10 +2946,10 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 38 × ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um
 - 34 × ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen
 - 25 × Gefundenes System nicht eindeutig dem Gebiet zuzuordnen
-- 22 × ALLRIS 3 erkannt; Leser noch nicht angewendet
+- 18 × ALLRIS 3 erkannt; Leser noch nicht angewendet
+- 17 × ALLRIS 3
 - 16 × Sitzungsdienst mein-intra
 - 14 × RIS-Portal regisafe
-- 13 × ALLRIS 3
 - 13 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar
 - 10 × KIC-RIS
 - 9 × More! Rubin gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
@@ -2971,7 +2972,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 1 × Nur Links auf Vorlese-, Teilen-, App- oder Herstellerseiten gefunden, kein Ratsinformationssystem; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
 - 1 × Link auf der Website gefunden, noch nicht geprüft
 - 1 × Kein Ratsinformationssystem erkennbar; Sitzungen nur als Webseite oder PDF; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
-- 1 × SD.NET mit antwortender OParl-Schnittstelle, die keine verwertbaren Sitzungen lieferte; öffentliche Seiten werden dann nicht gelesen
 - 1 × Mitbenutztes System von Gemeinde Altshausen; die Leser trennen die Gremien eines gemeinsamen Systems nicht
 - 1 × Gemeinsames System mehrerer Gemeinden (auch Amt Fockbek); der Teil des Gebiets ist noch nicht festgelegt
 - 1 × Gemeinsames System mehrerer Gemeinden (auch Amt Kappeln-Land); der Teil des Gebiets ist noch nicht festgelegt
@@ -3139,7 +3139,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Amt Bargteheide-Land | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.bargteheide-land.sitzung-online.de/bi/si010_e.asp |
 | Stadt Barmstedt | Adresse mehreren Gebieten zugeordnet | https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/ |
 | Stadt Bärnau | Kommune aktiv: antwortet Programmen mit HTTP 403 | http://baernau.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html |
-| Gemeinde Barsbüttel | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.sitzungsdienst-barsbuettel.de/ri/logonc.asp?sessionId=495325452 |
+| Gemeinde Barsbüttel | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.sitzungsdienst-barsbuettel.de/ri/logonc.asp?sessionId=702927048 |
 | Amt Barth | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://session.amt-barth.de/bi/info.asp |
 | Gemeinde Bartholomä | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Battenberg (Eder) | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
@@ -3220,7 +3220,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Breitingen | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://vv-langenau.ris-portal.de/startseite |
 | Gemeinde Breitnau | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://breitnau.ris.kommune-aktiv.de/ |
 | Gemeinde Breitscheid | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/breitscheid/termine |
-| Stadt Bremen | SD.NET mit antwortender OParl-Schnittstelle, die keine verwertbaren Sitzungen lieferte; öffentliche Seiten werden dann nicht gelesen (Freigabe erforderlich) | https://sd.bremische-buergerschaft.de/ |
 | Gemeinde Brensbach | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/brensbach/termine |
 | Amt Brieskow-Finkenheerd | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://brieskow-finkenheerd.ratsinfomanagement.net/termine |
 | Stadt Bruchköbel | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/bruchkoebel/gremien/?__=UGhVM0hpd2NXNFdFcExjZXyXfpjY97fUGxT5zlghMS8 |
@@ -3233,7 +3232,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Budenheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (5 ohne erkennbaren öffentlichen Teil, 5 nicht lesbar) (05.10.2026) |  |
 | Stadt Büdingen | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/error_path/503.html?al_req_id=asJJ29tKzShy9ShaiZdBegAAAG4 |
 | Gemeinde Bühlertann | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://buehlertann.ratsinformationsdienst.de/ |
-| Amt Burg-St. Michaelisdonn | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.burg-st-michaelisdonn.sitzung-online.de/pi/si010_e.asp |
+| Amt Burg-St. Michaelisdonn | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.burg-st-michaelisdonn.sitzung-online.de/pi/si010_e.asp |
 | Verwaltungsgemeinschaft Burgbernheim | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 404) (05.10.2026) | https://www.burgbernheim.de/ratsinfo/ |
 | Verwaltungsgemeinschaft Burgebrach | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://buergerinfo-vg-burgebrach.digitalfabrix.de/info.asp |
 | Erfüllende Gemeinde Bürgel | Kein unterstütztes Ratsinformationssystem erkannt | https://stadt-buergel.mein-intra.net/login |
@@ -3263,7 +3262,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Dachsberg (Südschwarzwald) | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Dahlen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Dahme | Mitbenutztes System von Gemeinde Grömitz; die Leser trennen die Gremien eines gemeinsamen Systems nicht | https://www.groemitz.sitzung-online.de/integration/gr010?1&menu=Gemeindevertretung |
-| Amt Dänischer Wohld | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.amt-daenischer-wohld.sitzung-online.de/ri/logon.asp |
+| Amt Dänischer Wohld | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 404) | https://www.amt-daenischer-wohld.sitzung-online.de/ri/logon.asp |
 | Verbandsgemeinde Dannstadt-Schauernheim | Verlinkte Seite antwortet Programmen nicht (keine Verbindung) | https://dannstadt-schauernheim.more-rubin1.de/ |
 | Verwaltungsgemeinschaft Dasing | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Dautmergen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3992,7 +3991,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Nordhalben | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://nordhalben.ris.kommune-aktiv.de/ |
 | Gemeinde Nordrach | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://nordrach.ratsinfomanagement.net/startseite |
 | Amt Nordsee-Treene | Gemeinsames System mehrerer Gemeinden (auch Stadt Friedrichstadt); der Teil des Gebiets ist noch nicht festgelegt | https://amtnt.ris-portal.de/web/ratsinformation/startseite |
-| Amt Nordstormarn | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.amtnordstormarn.sitzung-online.de/ri/logon.asp |
+| Amt Nordstormarn | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.amtnordstormarn.sitzung-online.de/ri/logon.asp |
 | Gemeinde Nordwestuckermark | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Erfüllende Gemeinde Nottertal-Heilinger Höhen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Nüdlingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
@@ -4070,7 +4069,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Pentling | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Penzing | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://penzing.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html |
 | Amt Penzliner Land | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://amt-penzliner-land.ratsinfomanagement.net/termine |
-| Gemeinde Perl | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.perl.sitzung-online.de/bi-r/si010_r.asp |
+| Gemeinde Perl | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.perl.sitzung-online.de/bi-r/si010_r.asp |
 | Gemeinde Pfaffenhofen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) | https://www.pfaffenhofen-wuertt.de/ris/ |
 | Verwaltungsgemeinschaft Pfaffing | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.sitzungsdienst-vgpfaffing.de/pi-pfaffing/pa020.asp?PALFDNR=3 |
 | Gemeinde Pfatter | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 2 nicht lesbar) (05.10.2026) |  |

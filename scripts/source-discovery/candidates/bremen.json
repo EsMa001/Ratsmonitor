@@ -4,7 +4,7 @@
   "name": "Stadt Bremen",
   "kind": "city",
   "ags": "04011000",
-  "status": "Vorschlag vom 05.10.2026, ungeprüft: nicht in den Katalog übernommen. Der Prüflauf muss vom Rechner des Inhabers laufen.",
+  "status": "Vorschlag vom 05.10.2026; Prüflauf vom Rechner des Inhabers am 06.10.2026 (Annahme öffentlich seit 06.10.2026)",
   "begruendung": [
    "Die Stadtbürgerschaft ist der Rat der Stadtgemeinde Bremen (Gebiet de-04011000). Sie besteht aus den in der Stadt Bremen gewählten Mitgliedern der Bremischen Bürgerschaft und tagt im selben Haus wie der Landtag.",
    "Das Sitzungssystem der Bürgerschaft ist SD.NET (Sternberg) unter https://sd.bremische-buergerschaft.de/ und für Bürger ohne Anmeldung lesbar. Laut viertem Durchgang (README.md, „Weiter offen“) führt seine OParl-Schnittstelle Landtag und Stadtbürgerschaft als eine Körperschaft; deshalb filtert der Eintrag nach Gremien (Feld organizations, server/integrations/oparl-regional.mjs).",
@@ -42,9 +42,23 @@
     "oparlOnly": true,
     "register": "SD.NET-Standardpfad (Websuche)",
     "organizations": {
-     "include": ["Stadtbürgerschaft", "(Stadt)", "Städtische Deputation"],
-     "exclude": ["Landtag", "(Land)", "Staatliche Deputation"]
-    }
+     "include": [
+      "Stadtbürgerschaft",
+      "(Stadt)",
+      "Städtische Deputation"
+     ],
+     "exclude": [
+      "Landtag",
+      "(Land)",
+      "Staatliche Deputation"
+     ]
+    },
+    "assumePublicAgenda": {
+     "decided": "2026-10-06",
+     "by": "Inhaber",
+     "note": "SD.NET RIM ohne Kennzeichnung öffentlich; Annahme: die Schnittstelle liefert nur den öffentlichen Teil (wie bei den neun Mandanten vom 06.10.2026)"
+    },
+    "body": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/body/1"
    },
    {
     "url": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.0/system",
@@ -54,9 +68,23 @@
     "oparlOnly": true,
     "register": "SD.NET-Standardpfad (Websuche)",
     "organizations": {
-     "include": ["Stadtbürgerschaft", "(Stadt)", "Städtische Deputation"],
-     "exclude": ["Landtag", "(Land)", "Staatliche Deputation"]
-    }
+     "include": [
+      "Stadtbürgerschaft",
+      "(Stadt)",
+      "Städtische Deputation"
+     ],
+     "exclude": [
+      "Landtag",
+      "(Land)",
+      "Staatliche Deputation"
+     ]
+    },
+    "assumePublicAgenda": {
+     "decided": "2026-10-06",
+     "by": "Inhaber",
+     "note": "SD.NET RIM ohne Kennzeichnung öffentlich; Annahme: die Schnittstelle liefert nur den öffentlichen Teil (wie bei den neun Mandanten vom 06.10.2026)"
+    },
+    "body": "https://sd.bremische-buergerschaft.de/webservice/oparl/v1.0/body/1"
    }
   ]
  }

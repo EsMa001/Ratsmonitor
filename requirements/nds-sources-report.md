@@ -397,7 +397,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Dassel | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.kdgoe.de/DAS_public/si018 |
 | Gemeinde Delligsen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://delligsen.ratsinfomanagement.net/startseite |
 | Stadt Delmenhorst | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-delmenhorst.de/bi-r/home.asp |
-| Gemeinde Diekholzen | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.diekholzen.sitzung-online.de/ri/logonc.asp?sessionId=417576865 |
+| Gemeinde Diekholzen | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.diekholzen.sitzung-online.de/ri/logonc.asp?sessionId=595713541 |
 | Stadt Dissen am Teutoburger Wald | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://dissen.ratsinfomanagement.net/ |
 | Gemeinde Dörverden | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Samtgemeinde Dransfeld | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
@@ -441,7 +441,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Samtgemeinde Land Hadeln | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://land-hadeln.ratsinfomanagement.net/ |
 | Stadt Langenhagen | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen | https://www.langenhagen.sitzung-online.de/public/ |
 | Gemeinde Langwedel | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://flecken-langwedel.ratsinfomanagement.net/ |
-| Samtgemeinde Leinebergland | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.gronau-leine.sitzung-online.de/ri/logonc.asp?sessionId=575435182 |
+| Samtgemeinde Leinebergland | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.gronau-leine.sitzung-online.de/ri/logonc.asp?sessionId=687225900 |
 | Gemeinde Liebenburg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Lilienthal | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lilienthal.ratsinfomanagement.net/ |
 | Gemeinde Lindern (Oldenburg) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lindern.ratsinfomanagement.net/ |
