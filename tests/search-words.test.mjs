@@ -104,7 +104,7 @@ test('candidateCards: union over matching words, smallest term of an AND group, 
  assert.equal(await candidateCards(db,[['stadt']]),null);                                        // zu häufig
  assert.deepEqual((await candidateCards(db,[['stadt','planung']])).sort(),['a','d']);            // seltener Begriff der Gruppe genügt
  assert.equal(await candidateCards(db,[['kalorien'],['stadt']]),null);                           // eine Alternative ohne Liste
- assert.equal(await candidateCards(db,[['windpark']],{nameHit:()=>true}),null);                  // Gebietsname: Karten unbekannt
+ assert.deepEqual((await candidateCards(db,[['windpark']],{nameIds:()=>['r2']})).sort(),[...new Set(['a','b','c',...(await db.prepare("SELECT id FROM search_cards WHERE region_id='r2'").all()).results.map(r=>r.id)])].sort()); // Gebietsname: Karten des Gebiets kommen dazu
  assert.equal(await candidateCards(db,[['s-bahn']]),null);
  bump(db);                                                                                       // Liste nicht mehr aktuell
  assert.equal(await candidateCards(db,[['windpark']]),null);

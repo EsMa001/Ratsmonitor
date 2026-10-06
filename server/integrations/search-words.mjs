@@ -266,22 +266,28 @@ export async function knownWords(db,groups,{nameHit=()=>false,plain=false}={}){
 /**
  * Karten-IDs, unter denen alle Treffer des Suchbegriffs liegen (ein Obermengen-Ergebnis: die Suche prüft sie mit den
  * üblichen Bedingungen nach), oder null, wenn die Liste dafür nicht reicht (Liste veraltet, Begriff zu häufig oder
- * zu allgemein, Gebietsname) und wie gewohnt gesucht wird.
+ * zu allgemein, Gebiete des Namens zu groß) und wie gewohnt gesucht wird.
  * Je Begriff die Vereinigung der Karten aller Wörter, die ihn enthalten; je UND-Gruppe genügt der Begriff mit den wenigsten
  * Karten; über die ODER-Gruppen die Vereinigung.
  */
-export async function candidateCards(db,groups,{nameHit=()=>false}={}){
+export async function candidateCards(db,groups,{nameIds=()=>[]}={}){
  const terms=[...new Set(groups.flat())];
  if(!groups.length||!searchable(terms))return null;
  try{
   if(!(await listCurrent(db)))return null;
   const byTerm=new Map();
   for(const t of terms){
-   if(nameHit(t)){byTerm.set(t,null);continue;}
    const {results:words}=await db.prepare('SELECT word,cards FROM search_words WHERE instr(word,?)>0 LIMIT ?').bind(t,WORDS_PER_TERM_MAX+1).all();
    if(words.length>WORDS_PER_TERM_MAX||words.some(w=>w.cards>POSTING_MAX)){byTerm.set(t,null);continue;}
-   if(!words.length){byTerm.set(t,[]);continue;}
    const ids=new Set();
+   /* Steckt der Begriff in einem Gebietsnamen, gehören auch alle Karten dieser Gebiete dazu (zu viele: wie gewohnt über alle suchen) */
+   const named=nameIds(t);
+   if(named.length){
+    const {results:rows}=await db.prepare('SELECT id FROM search_cards WHERE region_id IN (SELECT value FROM json_each(?)) LIMIT ?').bind(JSON.stringify(named),CANDIDATE_MAX+1).all();
+    if(rows.length>CANDIDATE_MAX){byTerm.set(t,null);continue;}
+    for(const r of rows)ids.add(r.id);
+   }
+   if(!words.length){byTerm.set(t,[...ids]);continue;}
    for(let i=0;i<words.length;i+=1500){
     const {results:rows}=await db.prepare('SELECT card_id FROM search_postings WHERE word IN (SELECT value FROM json_each(?))').bind(JSON.stringify(words.slice(i,i+1500).map(w=>w.word))).all();
     for(const r of rows)ids.add(r.card_id);

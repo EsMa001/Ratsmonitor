@@ -95,7 +95,7 @@ export async function searchMonitor(db,catalog,params){
     gefragt (mit denselben Bedingungen wie sonst, das Ergebnis bleibt gleich), statt über alle. null: wie gewohnt über alle. */
  const nameHit=t=>catalog.some(r=>norm(r.name).includes(t));
  const nameIds=t=>catalog.filter(r=>norm(r.name).includes(t)).map(r=>r.id);
- const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part===''?await candidateCards(db,f.groups,{nameHit}):null;
+ const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part===''?await candidateCards(db,f.groups,{nameIds}):null;
  const candidates=cand?{sql:'id IN (SELECT value FROM json_each(?))',arg:JSON.stringify(cand)}:null;
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
  /* Ergebnisseite: Gebiet, Thema und Status als Bedingung */
