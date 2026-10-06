@@ -1,0 +1,8 @@
+Möchten Sie Ihre Ergebnisse außerhalb von Plenarra nutzen?
+Dann exportieren Sie sie.
+Öffnen Sie dafür über der Trefferliste das Export-Fenster.
+Dort wählen Sie das Format, zum Beispiel Excel oder C-S-V für eine Tabelle.
+Auch einen einzelnen Artikel können Sie ausgeben.
+Im Artikel wählen Sie dazu zwischen P-D-F, Drucken, Excel und C-S-V.
+Das P-D-F eignet sich zum Weitergeben oder Ablegen.
+Excel und C-S-V helfen Ihnen, wenn Sie die Daten weiter auswerten möchten.
