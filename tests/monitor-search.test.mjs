@@ -126,7 +126,7 @@ test('searching through the word list gives exactly the result of searching all 
 
 test('precomputed facets of common words equal the grouping over all cards, per level and with a cut-off date',async()=>{
  const {sql,db,put}=fixture();try{
-  const titles=['Windpark Planung','Windpark Bürgerbeteiligung','Kita Neubau','Kita Sanierung Turnhalle','Radweg Brücke','Bürgerwindpark Erweiterung','Planung Radweg','Schulbau Planung Kita','Parkplatz am Rathaus','Windkraft Radweg'];
+  const titles=['Windpark Planung','Windpark Bürgerbeteiligung','Kita Neubau','Kita Sanierung Turnhalle','Radweg Brücke','Bürgerwindpark Erweiterung','Planung Radweg','Schulbau Planung Kita','Parkplatz am Rathaus','Windkraft Radweg','Park'];
   titles.forEach((t,i)=>put('c'+i,['billerbeck','other','coesfeld'][i%3],{title:t,officialTitle:t}));
   const queries=['q=windpark','q=kita','q=radweg','q=planung','q=park','q=kita&level=district','q=planung&level=district','q=windpark&to=2026-09-10','q=kita&to=2026-09-30','q=radweg&sort=asc'];
   const run=async q=>{const r=await searchMonitor(db,catalog,new URLSearchParams(q));return {ids:r.articles.map(a=>a.id),total:r.total,area:r.areaCounts,thema:r.themaCounts,status:r.statusCounts,badge:r.badgeCounts};};
@@ -135,6 +135,9 @@ test('precomputed facets of common words equal the grouping over all cards, per 
   await refreshSearchWords(db,{full:true,kinds,postingMax:1});   // alle Wörter mit mehr als einer Karte gelten als häufig
   const common=sql.prepare('SELECT count(*) n FROM search_words WHERE cards>200').get().n;
   assert.ok(common>0&&sql.prepare('SELECT count(*) n FROM search_word_areas').get().n>0,'there are common words with precomputed numbers');
+  /* „park“ ist selten (1 Karte), steckt aber im häufigen „windpark“: die Karten-IDs greifen dort nicht, also auch vorberechnet */
+  const blocked=sql.prepare("SELECT cards,hits_city FROM search_words WHERE word='park'").get();
+  assert.ok(blocked.cards<=200&&blocked.hits_city!==null,'rare word inside a common word is precomputed');
   for(const [i,q] of queries.entries())assert.deepEqual(await run(q),before[i],q);
   /* neue Karte (nur eingefügt): die Zahlen werden fortgeschrieben und stimmen weiter */
   put('new1','billerbeck',{title:'Kita Windpark Radweg',officialTitle:'Kita Windpark Radweg'});
