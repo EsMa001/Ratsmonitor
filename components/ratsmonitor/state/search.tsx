@@ -285,6 +285,7 @@ export interface CoverageEntry {ags:string;name:string;count:number;complete:boo
 type LiveResults=Omit<SearchResults,'showRing'|'showDots'|'searching'>;
 export interface SearchResults {
  /** Suche dauert über 0,5 s und hat noch keinen Treffer gezeigt: Ladering bis alles fertig ist */ringMode:boolean;
+ /** Gibt es Treffer? ja: mindestens einer ist da; nein: Suche zu Ende ohne Treffer; unbekannt: sie läuft noch */hits:'yes'|'no'|'unknown';
  /** Suche läuft noch: neue Treffer oder genaue Zahl fehlen */searching:boolean;/** Ladering im Suchfeld (Suche dauert über 0,5 s) */showRing:boolean;/** Punkte an der Trefferzahl (erste Treffer schnell da, Zahl noch nicht) */showDots:boolean;
  total:number;/** Genaue Trefferzahl noch unterwegs */totalPending:boolean;/** Es gibt eine weitere Seite (auch ohne die genaue Gesamtzahl) */hasMore:boolean;coverage:CoverageEntry[];
   /** Abfrage der aktuellen Suche (für Export), ohne Seite */
@@ -480,8 +481,9 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht) */
  const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});
  const modeNow=mode.key===requestKey?mode.value:null;
- /* Zähler starten, sobald die Seite fertig ist; bei langer Suche (nach 0,5 s) sofort, damit die genaue Zahl früh da ist */
- const pageReady=(remote.key===requestKey&&remote.final&&!!remote.data)||(active&&!!freshSearch(requestKey))||(active&&modeNow!==null);
+ /* Zähler starten, sobald die Seite fertig ist; kommen Treffer schon in Etappen (nach 0,5 s), gleich mit. Im Ring-Fall erst danach:
+    die Zählabfrage teilt sich die Datenbank mit dem Strom und würde die Suche nach dem ersten Treffer ausbremsen. */
+ const pageReady=(remote.key===requestKey&&remote.final&&!!remote.data)||(active&&!!freshSearch(requestKey))||(active&&modeNow==='partial');
  useEffect(()=>{
   if(!active||!pageReady)return;
   const hit=freshFacets(local.key);
@@ -506,9 +508,10 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  const rd=remote.key===requestKey?remote:null;
  /* Zähler abgeschlossen (auch fehlgeschlagen): erst dann zeigt eine lange Suche („ring“) ihre Treffer */
  const settled=facets.key===local.key;
- const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final?!(modeNow==='ring'&&!settled):(modeNow==='partial'&&rd.data.articles.length>0))));
+ /* Ring-Fall: Treffer erst mit den Zählern zeigen. Ohne einen einzigen Treffer gibt es nichts zu zählen: sofort „keine Treffer“ */
+ const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final?!(modeNow==='ring'&&!settled&&rd.data.articles.length>0):(modeNow==='partial'&&rd.data.articles.length>0))));
  /* Eine Antwort aus dem Zwischenspeicher gilt sofort als fertig, außer sie stammt aus dieser lang laufenden Suche selbst (Ring): dann erst mit den Zählern */
- const cachedReady=!!cached&&!(modeNow==='ring'&&!settled);
+ const cachedReady=!!cached&&!(modeNow==='ring'&&!settled&&cached.articles.length>0);
  const loading=!cachedReady&&!adoptable;
  const lastGood=useRef<ResponseData|null>(null);
  if(!loading&&(cached||remote.data))lastGood.current=cached??remote.data;
@@ -540,6 +543,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   })();
   return()=>abort.abort();
  },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
- return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,loading,error,page,setPage,retry,cover,state.level]);
+ /* Gibt es Treffer? ja: mindestens einer ist da; nein: die Suche ist zu Ende ohne Treffer; unbekannt: sie läuft noch */
+ const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0?'yes':(cached||rd?.final)?'no':'unknown';
+ return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}
