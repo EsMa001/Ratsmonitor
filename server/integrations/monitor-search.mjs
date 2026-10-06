@@ -1,5 +1,5 @@
 import {LABELS} from '../../shared/labels.mjs';
-import {knownWords} from './search-words.mjs';
+import {knownWords,candidateCards} from './search-words.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
@@ -91,9 +91,15 @@ export async function searchMonitor(db,catalog,params){
   if(groups.length){where.push('('+groups.map(g=>'('+g.map(()=>'(instr(search,?)>0 OR region_id IN (SELECT value FROM json_each(?)))').join(' AND ')+')').join(' OR ')+')');for(const g of groups)for(const term of g)args.push(term,nameHits(term));}
   return {where,args};
  };
+ /* Seltene Wörter: die Wortliste nennt die Karten, in denen sie vorkommen. Dann werden Seite, Zähler und Strom nur über diese Karten
+    gefragt (mit denselben Bedingungen wie sonst, das Ergebnis bleibt gleich), statt über alle. null: wie gewohnt über alle. */
+ const nameHit=t=>catalog.some(r=>norm(r.name).includes(t));
+ const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part===''?await candidateCards(db,f.groups,{nameHit}):null;
+ const candidates=cand?{sql:'id IN (SELECT value FROM json_each(?))',arg:JSON.stringify(cand)}:null;
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
  /* Ergebnisseite: Gebiet, Thema und Status als Bedingung */
  const page=(()=>{const b=base(),region=regionCondition([...scopedIds],catalog),where=[region.sql,...b.where],args=[region.arg,...b.args];
+  if(candidates){where.unshift(candidates.sql);args.unshift(candidates.arg);}
   if(labelId){where.push('label=?');args.push(labelId);}
   if(f.status){where.push('status=?');args.push(f.status);}
   return {where:where.join(' AND '),args};})();
@@ -103,6 +109,7 @@ export async function searchMonitor(db,catalog,params){
  /* Facetten: alle Gebiete der Ebene (mit Ort der ganze Katalog, dann ohne Gebietsbedingung) */
  const facet=(()=>{const b=base(),where=[...b.where],args=[...b.args];
   if(regions.length<catalog.length){where.unshift('region_id IN (SELECT value FROM json_each(?))');args.unshift(JSON.stringify(regions.map(r=>r.id)));}
+  if(candidates){where.unshift(candidates.sql);args.unshift(candidates.arg);}
   return {where:where.length?'WHERE '+where.join(' AND '):'',args};})();
  /* Strom: erste Seite (neueste zuerst) in Etappen. Jede Etappe sucht ein Datumsfenster ab und liefert ihre Treffer sofort;
     es endet, sobald die Seite voll ist und ein weiterer Treffer zeigt, dass es weitergeht (oder alles gelesen ist). */
@@ -111,9 +118,17 @@ export async function searchMonitor(db,catalog,params){
   const mapStream=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
   return {stream:(async function*(){
    const revision=String((await db.prepare(REVISION_SQL).first())?.revision??0);
+   /* Seltenes Wort: alle Treffer stehen in der Kandidatenliste, eine einzige Abfrage genügt */
+   if(candidates){
+    const res=await db.prepare(`${ROW_SELECT} WHERE ${page.where} ORDER BY date DESC,id ASC LIMIT ?`).bind(...page.args,limit+1).all();
+    yield {known:res.results.length?'yes':'no'};
+    if(res.results.length)yield {articles:mapStream(res.results.slice(0,limit))};
+    yield {end:true,hasMore:res.results.length>limit,revision,pageSize:limit};
+    return;
+   }
    /* Vorab: kann der Begriff Treffer haben? „nein“ beendet die Suche sofort, „ja“ erlaubt der Oberfläche, ohne Warten loszulegen */
    const plain=!f.area&&!f.label&&!f.status&&!f.month&&!f.from&&!f.more.length&&!f.within&&!f.without&&!f.noformal;
-   const known=await knownWords(db,f.groups,{plain,nameHit:t=>catalog.some(r=>norm(r.name).includes(t))});
+   const known=await knownWords(db,f.groups,{plain,nameHit});
    yield {known};
    if(known==='no'){yield {end:true,hasMore:false,revision,pageSize:limit};return;}
    let found=0,upper='9999-12-31~',size=STREAM_FIRST,more=false;
