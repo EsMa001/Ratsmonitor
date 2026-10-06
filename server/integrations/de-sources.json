@@ -214,6 +214,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.wentorf.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-010535313",
+    "name": "Amt Breitenfelde",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.amt-breitenfelde.sitzung-online.de/public/",
+    "verifiedSource": "https://www.amt-breitenfelde.de/startseite",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "OParl-Adresse des Systems (https://www.amt-breitenfelde.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "de-010535318",
     "name": "Amt Büchen",
     "kind": "city",
@@ -657,6 +668,17 @@
     "verifiedSource": "https://www.wedel.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.wedel.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-010565616",
+    "name": "Amt Elmshorn-Land",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.amt-elmshorn-land.sitzung-online.de/public/",
+    "verifiedSource": "https://www.elmshorn-land.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "OParl-Adresse des Systems (https://www.amt-elmshorn-land.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "de-01057",
@@ -3574,6 +3596,17 @@
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "burghaun.ris-portal.de"
+  },
+  {
+    "id": "de-06631004",
+    "name": "Gemeinde Ebersburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.ebersburg.sitzung-online.de/public/",
+    "verifiedSource": "https://www.ebersburg.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "OParl-Adresse des Systems (https://www.ebersburg.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "de-06631006",
@@ -22439,6 +22472,18 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-094775437",
+    "name": "Verwaltungsgemeinschaft Untersteinach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/vguntersteinach/",
+    "api": "https://risapi1.komuna.net/",
+    "verifiedSource": "https://www.vg-untersteinach.de/home",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
     "id": "de-09478",
     "name": "Landkreis Lichtenfels",
     "kind": "district",
@@ -22623,6 +22668,17 @@
     "verifiedSource": "https://erlangen.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-09563000",
+    "name": "Stadt Fürth",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.fuerth.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://fuerth.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-09564000",

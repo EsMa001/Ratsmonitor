@@ -2575,6 +2575,17 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 01.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05974",
+    "name": "Kreis Soest",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.kreis-soest.sitzung-online.de/public/",
+    "verifiedSource": "https://www.kreis-soest.de/politik-verwaltung/politik/kreistag/kreistag",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "OParl-Adresse des Systems (https://www.kreis-soest.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nrw-05974004",
     "name": "Gemeinde Anröchte",
     "kind": "city",

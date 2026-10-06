@@ -1243,6 +1243,24 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.stadthagen.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-032575402",
+    "name": "Samtgemeinde Lindhorst",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.sg-lindhorst.de/",
+    "pages": [
+      "https://www.sg-lindhorst.de/bekanntmachungen/index.php",
+      "https://www.sg-lindhorst.de/seite/324784/bekanntmachung.html"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.sg-lindhorst.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nds-032575403",
     "name": "Samtgemeinde Nenndorf",
     "kind": "city",
@@ -2299,6 +2317,27 @@
     "verifiedSource": "https://www.gemeinde-dornum.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nds-034525401",
+    "name": "Samtgemeinde Brookmerland",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.marienhafe.de/",
+    "pages": [
+      "https://www.marienhafe.de/news/1/1291232",
+      "https://www.marienhafe.de/news/1/1294223",
+      "https://www.marienhafe.de/news/index.php?rubrik=1",
+      "https://www.marienhafe.de/news/1/1294223/nachrichten/sitzung-gemeinderat-marienhafe-13.10.html",
+      "https://www.marienhafe.de/news/1/1291232/nachrichten/sitzung-des-gemeinderates-upgant-schott.html"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "http://www.marienhafe.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "nds-034525403",

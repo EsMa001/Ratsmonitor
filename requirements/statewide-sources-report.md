@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 344 angebunden, 83 nicht. Diese Datei beschreibt die 251 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 345 angebunden, 82 nicht. Diese Datei beschreibt die 252 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -12,7 +12,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 76 × SD.NET (öffentliche Seiten)
 - 35 × OParl
 - 18 × More! Rubin (Kalender-API)
-- 15 × ALLRIS 4 (öffentliche Seiten)
+- 16 × ALLRIS 4 (öffentliche Seiten)
 - 6 × Website der Kommune (öffentliche Bekanntmachungen)
 - 4 × RIS-Portal regisafe (öffentliche Seiten)
 
@@ -246,6 +246,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Neunkirchen | SD.NET (öffentliche Seiten) | https://ratsinfo.neunkirchen-siegerland.de/ | 51 |
 | Stadt Siegen | SD.NET (öffentliche Seiten) | https://ratsinfo.siegen.de/ | 297 |
 | Gemeinde Wilnsdorf | SD.NET (öffentliche Seiten) | https://ratsinfo.wilnsdorf.de/ | 70 |
+| Kreis Soest | ALLRIS 4 (öffentliche Seiten) | https://www.kreis-soest.sitzung-online.de/public/ | 17 |
 | Gemeinde Anröchte | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/anroechte/bi/ | 69 |
 | Gemeinde Bad Sassendorf | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/badsassendorf/bi/ | 64 |
 | Gemeinde Ense | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/ense/bi/ | 35 |
@@ -272,14 +273,15 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 ## Nicht angebundene Gebiete
 
-- 36 × robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend
-- 14 × SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404
+- 35 × robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend
+- 13 × SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404
 - 13 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
 - 8 × Kein unterstütztes Ratsinformationssystem erkannt
 - 4 × ALLRIS 3
 - 2 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
 - 1 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
 - 1 × Die Adresse aus dem OParl-Verzeichnis antwortet mit HTTP 404. Das neue System (allris.hagen.de) verlangt eine Zugriffsprüfung im Browser und ist für Programme nicht lesbar.
+- 1 × Prüfung abgebrochen
 - 1 × Gefundenes System nicht eindeutig dem Gebiet zuzuordnen
 - 1 × Verlinkte Seite antwortet Programmen mit HTTP 403/404
 - 1 × SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
@@ -334,7 +336,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Minden | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://minden.ratsinfomanagement.net/startseite |
 | Kreis Minden-Lübbecke | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://minden-luebbecke.ratsinfomanagement.net/ |
 | Stadt Monheim am Rhein | Kein unterstütztes Ratsinformationssystem erkannt | https://stadtrat.monheim.de/bi |
-| Gemeinde Morsbach | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.morsbach.de/rathaus-buergerservice/ratsinformationssystem-politik/ |
+| Gemeinde Morsbach | Prüfung abgebrochen: Betreiber wies Programme in diesem Lauf wiederholt ab (HTTP 403/429); nicht gefragt | https://morsbach.ratsinfomanagement.net/termine |
 | Kreis Märkischer Kreis | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-maerkischer-kreis.de/bi2/pa020.asp?&PALFDNR=1 |
 | Gemeinde Nachrodt-Wiblingwerde | Kein unterstütztes Ratsinformationssystem erkannt | https://www.nachrodt-wiblingwerde.de/Mitteilungen-der-Gemeindeverwaltung.htm/Seiten/Informationen-zu-Strassensperrungen.html? |
 | Gemeinde Neuenkirchen | Kein unterstütztes Ratsinformationssystem erkannt | https://neuenkirchen.ratsinfomanagement.net/ |
@@ -354,7 +356,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Schloß Holte-Stukenbrock | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schlossholtestukenbrock.ratsinfomanagement.net/ |
 | Gemeinde Schöppingen | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.schoeppingen.de/rathaus-politik/politik/sitzungstermine/ |
 | Stadt Selm | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-selm.de/bi/si010_r.asp |
-| Kreis Soest | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.kreis-soest.sitzung-online.de/public/ |
 | Stadt Sprockhövel | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://somacos.de/loesungen/sitzungsmanagement/session/ |
 | Stadt Stadtlohn | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://stadtlohn.ratsinfomanagement.net/ |
 | Stadt Steinfurt | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://steinfurt.ratsinfomanagement.net/aemter |
