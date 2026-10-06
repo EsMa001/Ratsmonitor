@@ -16,7 +16,7 @@ type Row =
   | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void; scope?: "only" | "with" }
   | { kind: "text"; label: string; silent?: boolean; pick: () => void }
   | { kind: "query"; label: string; pick: () => void }
-  | { kind: "recent"; label: string; saved?: boolean; pick: () => void }
+  | { kind: "recent"; label: string; saved?: boolean; pick: () => void; prefetch?: () => void }
   | { kind: "scope"; label: string; sub: string; sel: boolean; pick: () => void };
 
 /** Suchfeld mit Ortserkennung und Vorschlagsliste.
@@ -104,6 +104,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           out.push({
             kind: "recent",
             label: q,
+            prefetch: () => search.prefetchText(q),
             pick: () => {
               apply(q);
               search.commitPlaces();
@@ -118,6 +119,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
             kind: "recent",
             label: sv.name,
             saved: true,
+            prefetch: () => search.prefetchSaved(sv),
             pick: () => {
               if (search.applySaved(sv)) {
                 if (view !== "overview") goOverview();
@@ -317,6 +319,13 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
     }
   };
 
+  /* Mit Pfeiltasten markierter Vorschlag: Suche schon vorab starten */
+  const activePick = active >= 0 ? picks[active] : undefined;
+  useEffect(() => {
+    if (activePick && "prefetch" in activePick) activePick.prefetch?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, open]);
+
   let pickIndex = -1;
   return (
     <div className="relative z-[4] min-w-0">
@@ -459,6 +468,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
                   type="button"
                   role="option"
                   aria-selected={idx === active}
+                  onMouseEnter={() => r.prefetch?.()}
+                  onTouchStart={() => r.prefetch?.()}
                   onClick={() => { r.pick(); confirmed(); dropKeyboard(); onSubmit?.(); }}
                   className={`grid min-h-10 w-full grid-cols-[18px_minmax(0,1fr)] items-center gap-2 rounded-lg px-2 py-1.5 text-left max-sm:min-h-11 ${idx === active ? "bg-slate-100" : "hover:bg-slate-100"}`}
                 >

@@ -6,7 +6,7 @@ import type { FilterSpec } from "../lib/filter";
 import type { MapEngine } from "../lib/geo/mapEngine";
 import type { ParseResult, PlaceHit } from "../lib/place";
 import { applySearchState, clearAreaState, commitPlacesState, deriveFilters } from "../lib/searchLogic";
-import { hasScope, queryText, signature, type SearchSnapshot } from "../lib/savedSearch";
+import { canonicalQuery, hasScope, queryText, signature, type SearchSnapshot } from "../lib/savedSearch";
 import { terms as toTerms } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
@@ -48,6 +48,9 @@ interface SearchActions {
   resetAll: () => void;
   /** Gespeicherte Suche anwenden; false, solange die Karte für einen Umkreis noch lädt */
   applySaved: (s: SavedSearch) => boolean;
+  /** Sucht im Voraus (ohne Anzeige), z. B. beim Überfahren eines Vorschlags */
+  prefetchText: (value: string) => void;
+  prefetchSaved: (s: SavedSearch) => void;
   setPopup: (ags: string) => void;
 }
 
@@ -115,12 +118,48 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     void ags;
   }, []);
 
+  /* Vorausladen: erste Seite der Suche für einen möglichen nächsten Zustand holen (Umkreissuchen ausgenommen) */
+  const prefetchState = useCallback(
+    (next: SearchState | null) => {
+      if (next) warmSearch(computeLocal(next, geo, place, phone ? 15 : 20));
+    },
+    [geo, place, phone],
+  );
+
   const actions = useMemo<SearchActions>(() => {
     /* Entfernt einen als Gebiet übernommenen Ort aus dem Suchtext */
     const stripPlace = (s: SearchState): Partial<SearchState> => {
       if (s.areaSrc !== "search") return {};
       const pq = parse(s.q, s);
       return pq.place ? { q: pq.rest } : {};
+    };
+    /* Zustand einer gespeicherten Suche (ohne ihn anzuwenden), auch zum Vorausladen */
+    const savedState = (sv: SavedSearch): SearchState | null => {
+        let radius: Radius | null = null;
+        if (sv.radius) {
+          const c = sv.radius.x != null && sv.radius.y != null ? { x: sv.radius.x, y: sv.radius.y } : geo?.center(sv.radius.ags);
+          if (!c) return null;
+          radius = { ags: sv.radius.ags, km: sv.radius.km, x: c.x, y: c.y };
+        }
+        let q = sv.q || "";
+        /* Ältere gespeicherte Umkreise hatten kein Gebiet: das Zentrum wird zum Gebiet */
+        const area = sv.area || radius?.ags || "";
+        let areaSrc: AreaSource = sv.area ? sv.areaSrc || "ui" : area ? "ui" : "";
+        const overrides: Record<string, string> = {};
+        const ignored: Record<string, true> = {};
+        const pq = q && place ? place.parse(q, {}, {}) : null;
+        if (areaSrc === "search") {
+          if (pq?.place) {
+            if (pq.place.ags !== area && pq.key) overrides[pq.key] = area;
+          } else {
+            q = sv.text || "";
+            areaSrc = "ui";
+          }
+        } else if (pq?.place && pq.key) ignored[pq.key] = true;
+      return {
+          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status, future: !!sv.future, noformal: !!sv.noformal, allterms: !!sv.allterms,
+          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: radius ? [] : (sv.more || []).filter((m) => m.ags !== area),
+        };
     };
     const a: SearchActions = {
       applySearch(value, extra) {
@@ -200,41 +239,27 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         mapRef.current?.focusArea("");
       },
       applySaved(sv) {
-        let radius: Radius | null = null;
-        if (sv.radius) {
-          const c = sv.radius.x != null && sv.radius.y != null ? { x: sv.radius.x, y: sv.radius.y } : geo?.center(sv.radius.ags);
-          if (!c) return false;
-          radius = { ags: sv.radius.ags, km: sv.radius.km, x: c.x, y: c.y };
-        }
-        let q = sv.q || "";
-        /* Ältere gespeicherte Umkreise hatten kein Gebiet: das Zentrum wird zum Gebiet */
-        const area = sv.area || radius?.ags || "";
-        let areaSrc: AreaSource = sv.area ? sv.areaSrc || "ui" : area ? "ui" : "";
-        const overrides: Record<string, string> = {};
-        const ignored: Record<string, true> = {};
-        const pq = q && place ? place.parse(q, {}, {}) : null;
-        if (areaSrc === "search") {
-          if (pq?.place) {
-            if (pq.place.ags !== area && pq.key) overrides[pq.key] = area;
-          } else {
-            q = sv.text || "";
-            areaSrc = "ui";
-          }
-        } else if (pq?.place && pq.key) ignored[pq.key] = true;
+        const next = savedState(sv);
+        if (!next) return false;
         clearTimeout(focusTimer.current);
-        commit({
-          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status, future: !!sv.future, noformal: !!sv.noformal, allterms: !!sv.allterms,
-          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: radius ? [] : (sv.more || []).filter((m) => m.ags !== area),
-        });
+        commit(next);
         setPopupState("");
-        if (radius) mapRef.current?.fitCircle(radius);
-        else mapRef.current?.focusArea(area);
+        if (next.radius) mapRef.current?.fitCircle(next.radius);
+        else mapRef.current?.focusArea(next.area);
         return true;
+      },
+      /* Vorausladen beim Überfahren eines Vorschlags: Suche starten, ohne etwas anzuzeigen */
+      prefetchText(value) {
+        const { next } = applySearchState({ ...ref.current }, value, parse);
+        prefetchState(commitPlacesState(next, false, parse) ?? next);
+      },
+      prefetchSaved(sv) {
+        prefetchState(savedState(sv));
       },
       setPopup: (ags) => setPopupState(ags),
     };
     return a;
-  }, [commit, geo, parse, place, schedFocus]);
+  }, [commit, geo, parse, place, prefetchState, schedFocus]);
 
   useEffect(() => () => clearTimeout(focusTimer.current), []);
 
@@ -280,9 +305,30 @@ export interface SearchResults {
 
 
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
-function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchResults {
- const {geo,place}=useData();
- const local=useMemo(()=>{
+type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
+type DataValue=ReturnType<typeof useData>;
+/* Fertige Antworten (5 Minuten) und laufende Anfragen, geteilt von der Übersicht und dem Vorausladen (z. B. beim Überfahren
+   eines Vorschlags): gleiche Suche = eine Anfrage, und ein Klick trifft oft schon die fertige Antwort */
+const SEARCH_CACHE=new Map<string,{at:number;data:ResponseData}>(),INFLIGHT=new Map<string,Promise<ResponseData>>();
+const searchKey=(key:string,page=1,attempt=0)=>key+'&page='+page+'&attempt='+attempt;
+const freshSearch=(requestKey:string)=>{const hit=SEARCH_CACHE.get(requestKey);return hit&&Date.now()-hit.at<300000?hit.data:null;};
+function rememberSearch(requestKey:string,data:ResponseData){SEARCH_CACHE.delete(requestKey);SEARCH_CACHE.set(requestKey,{at:Date.now(),data});if(SEARCH_CACHE.size>40)SEARCH_CACHE.delete(SEARCH_CACHE.keys().next().value as string);}
+async function fetchSearch(query:string,signal?:AbortSignal):Promise<ResponseData>{
+ const response=await fetch('/api/search?'+query,{signal});
+ const data=await response.json() as ResponseData & {error?:string};
+ if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
+ return {...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))};
+}
+/** Sucht im Voraus (erste Seite), ohne etwas anzuzeigen; Umkreissuchen und bereits Vorhandenes werden übersprungen */
+function warmSearch(local:{key:string;around:unknown}){
+ if(local.around)return;
+ const requestKey=searchKey(local.key);
+ if(freshSearch(requestKey)||INFLIGHT.has(requestKey))return;
+ const params=new URLSearchParams(local.key);params.delete('around');params.set('page','1');
+ const job=fetchSearch(params.toString()).then(data=>{rememberSearch(requestKey,data);return data;}).finally(()=>INFLIGHT.delete(requestKey));
+ INFLIGHT.set(requestKey,job);job.catch(()=>{});
+}
+function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['place'],pageSize:number){
   const pq:ParseResult=place?place.parse(state.q,state.placeOverrides,state.placeIgnored):{place:null,alts:[],rest:state.q.trim(),key:'',phraseRaw:''};
   /* Ortsfilter: fester erster Ort (state.area), feste weitere Orte (morePlaces) und live im Text erkannte Orte */
   const {placeActive,liveHits,text,more}=deriveFilters(state,pq,ags=>hasScope(ags,geo));
@@ -292,7 +338,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
   const area=state.radius?'':state.area;
   /* Ohne „inkl. Zukunft“ endet der Zeitraum heute (sofern kein eigenes Enddatum gesetzt ist) */
   const today=new Date().toISOString().slice(0,10),to=state.bis||(state.future?'':today);
-  const params=new URLSearchParams({q:queryText(text,state.allterms),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
+  const params=new URLSearchParams({q:canonicalQuery(queryText(text,state.allterms)),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
   if(state.noformal)params.set('noformal','1');
   if(pageSize!==20)params.set('size',String(pageSize));
   if(more.length&&!state.radius)params.set('more',more.map(m=>m.ags+':'+(m.ags.length===5&&!hasScope(m.ags,geo)?'with':m.scope)).join(','));
@@ -300,7 +346,10 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
   if(state.radius)params.set('around',[state.radius.ags,state.radius.km,Math.round(state.radius.x??0),Math.round(state.radius.y??0),within?within.set.size:'-'].join(':'));
   const spec:FilterSpec={area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
   return {pq,placeActive,liveHits,text,terms:toTerms(text),pageSize,snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString(),around:state.radius?{set:within?.set??null,level:state.level}:null};
- },[state,geo,place,pageSize]);
+ }
+function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchResults {
+ const {geo,place}=useData();
+ const local=useMemo(()=>computeLocal(state,geo,place,pageSize),[state,geo,place,pageSize]);
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);
  const page=navigation.key===local.key?navigation.page:1;
  const revision=useRef({key:'',value:''});
@@ -314,15 +363,13 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
   covered.current[level]=new Set(data.coverage.map(c=>c.ags));setCover(c=>({...c,[level]:data}));return data;
  },[]);
  useEffect(()=>{if(!active||cover[state.level])return;const abort=new AbortController();loadCover(state.level,abort.signal).catch(()=>{});return()=>abort.abort();},[active,state.level,cover,loadCover]);
- type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
  const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string}>({key:'',data:null,error:''});
- const requestKey=local.key+'&page='+page+'&attempt='+attempt;
+ const requestKey=searchKey(local.key,page,attempt);
  /* Wann gesucht wird: Die erste Suche geht sofort hinaus. Beim Tippen wird erst nach 400 ms Ruhe und erst ab 3 Buchstaben
     im Voraus gesucht (die Kurzsuchen sind am teuersten und bleiben unsichtbar, die Seite wechselt erst nach Enter). Enter
     oder die Auswahl aus der Liste starten die Suche sofort bzw. nutzen die schon laufende Vorab-Suche. Filter und Sortierung
     warten 180 ms. Fertige Antworten merkt sich der Browser 5 Minuten, damit Löschen und Zurückgehen sofort gehen. */
  const sent=useRef(false),lastText=useRef(''),flush=useRef<(()=>void)|null>(null);
- const cache=useRef(new Map<string,{at:number;data:ResponseData}>());
  useEffect(()=>{
   const on=()=>flush.current?.();
   window.addEventListener('rm:search-confirmed',on);
@@ -330,8 +377,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
  },[]);
  useEffect(()=>{
   if(!active)return;
-  const hit=cache.current.get(requestKey);
-  if(hit&&Date.now()-hit.at<300000){lastText.current=local.text;setRemote({key:requestKey,data:hit.data,error:''});return;}
+  const hit=freshSearch(requestKey);
+  if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};setRemote({key:requestKey,data:hit,error:''});return;}
   const abort=new AbortController();let timer=0,started=false;
   const start=()=>{
    if(started)return;
@@ -351,14 +398,11 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
        const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
       }
      }
-     const response=await fetch('/api/search?'+params,{signal:abort.signal});
-     const data=await response.json() as ResponseData & {error?:string};
-     if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
+     /* Läuft für dieselbe Suche schon eine Vorab-Anfrage (Tippen, Überfahren eines Vorschlags), wird deren Antwort genutzt */
+     const ready=await (INFLIGHT.get(requestKey)??fetchSearch(params.toString(),abort.signal));
      if(abort.signal.aborted)return;
-     revision.current={key:local.key,value:data.revision};
-     const ready={...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))};
-     cache.current.set(requestKey,{at:Date.now(),data:ready});
-     if(cache.current.size>40)cache.current.delete(cache.current.keys().next().value as string);
+     revision.current={key:local.key,value:ready.revision};
+     rememberSearch(requestKey,ready);
      setRemote({key:requestKey,data:ready,error:''});
     }catch(e){if(!abort.signal.aborted)setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.'});}
    })();
