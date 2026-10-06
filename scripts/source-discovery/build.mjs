@@ -2,7 +2,7 @@
 // Existing entries are never deleted; entries with an explicitly assigned body are curated and stay as they are.
 // Another state: DIR, LAND or AREAS, TARGET, REPORT and TITLE (e.g. Niedersachsen → nds-sources.json, see README).
 import fs from 'node:fs';
-import {loadAreas,skipReason,foreignOwner} from './areas.mjs';
+import {loadAreas,skipReason,foreignOwner,addressNames} from './areas.mjs';
 import {READERS} from '../../server/integrations/readers.mjs';
 import {consentFor,robotsOverride} from '../../server/integrations/consents.mjs';
 import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
@@ -54,7 +54,19 @@ const seen=new Map(),dropped=[];
 for(const s of [...byId.values(),...claims])seen.set(address(s),[...(seen.get(address(s))||[]),s.id]);
 // Addresses connected in the files of the other states count as well; only this file is changed.
 for(const s of other.filter(s=>s.method!=='pending'))if(seen.has(address(s)))seen.get(address(s)).push('elsewhere:'+s.id);
-for(const [key,ids] of seen)if(ids.length>1){for(const id of ids){if(id.startsWith('elsewhere:'))continue;byId.delete(id);if(!foreign.has(id))dropped.push(id);}console.log('Mehrfach zugeordnet, nicht übernommen:',key,ids.join(', '));}
+// Claimed from several Länder, where the address names exactly one of them, that one keeps it: seligenstadt.sitzung-
+// online.de is the town of Seligenstadt (Hesse), not its Bavarian neighbour Karlstein a.Main whose earlier check took
+// it. Within one Land a system that several areas claim is a shared one and stays with none (each needs its part).
+const ownerOf=(key,ids)=>{
+ const areas=ids.filter(id=>!id.startsWith('elsewhere:')).map(id=>regions.find(r=>r.id===id)).filter(Boolean);
+ if(areas.length!==ids.length||new Set(areas.map(a=>a.ags.slice(0,2))).size<areas.length)return null;
+ const named=areas.filter(a=>addressNames(a,key.split('|')[0]));return named.length===1?named[0].id:null;
+};
+for(const [key,ids] of seen)if(ids.length>1){
+ const keep=ownerOf(key,ids);
+ for(const id of ids){if(id.startsWith('elsewhere:')||id===keep)continue;byId.delete(id);if(!foreign.has(id))dropped.push(id);}
+ console.log(keep?'Mehrfach zugeordnet, übernommen für das Gebiet, das die Adresse nennt:':'Mehrfach zugeordnet, nicht übernommen:',key,ids.join(', ')+(keep?' → '+keep:''));
+}
 const sources=[...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));
 // The name comes from the area catalog: it may have been corrected since the check (the key stays the same).
 for(const s of sources){const r=regions.find(r=>r.id===s.id);if(!r||r.kind!==s.kind)throw Error('Gebiet passt nicht: '+s.id);s.name=r.name;

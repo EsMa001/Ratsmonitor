@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors,sharedBodies,nameTwins,namesDistinctly,platformLands} from '../scripts/source-discovery/rules.mjs';
-import {foreignOwner,aliasInAddress,nameParts,ALIASES} from '../scripts/source-discovery/areas.mjs';
+import {foreignOwner,aliasInAddress,nameParts,ALIASES,addressNames} from '../scripts/source-discovery/areas.mjs';
 import {CATALOG} from '../shared/catalog.mjs';
 const area=id=>CATALOG.find(a=>a.id===id);
 const fixture=name=>readFileSync(new URL('./fixtures/allris3/'+name,import.meta.url),'utf8');
@@ -212,6 +212,9 @@ test('a guessed address counts only where no other area bears the name, or where
  assert.equal(namesDistinctly('Mandant der Schnittstelle: Gemeinde Hirschbach, Markt Königstein',vg,nameTwins(vg)),true);
  // A name no other area bears has no twins.
  assert.deepEqual(nameTwins(area('de-09189111')),[]);
+ // An address claimed from two Länder: it names the town of Seligenstadt (Hesse), not Karlstein a.Main (Bavaria).
+ assert.equal(addressNames(area('de-06438013'),'https://www.seligenstadt.sitzung-online.de/public/'),true);
+ assert.equal(addressNames(area('de-09671114'),'https://www.seligenstadt.sitzung-online.de/public/'),false);
  // Only the Länder of the platform count: komuna serves Bavaria (Rimbach in Hesse is no twin there), OWL-IT nearly all.
  assert.deepEqual(platformLands('komuna-Adresse, Mandant der Schnittstelle: Gemeinde Rimbach'),['09']);
  assert.equal(nameTwins(rimbach,undefined,platformLands('komuna-Adresse, Mandant der Schnittstelle: Gemeinde Rimbach')).length,0);
