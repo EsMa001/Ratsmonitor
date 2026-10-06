@@ -71,6 +71,16 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
       setAwaiting(false);
     }
   }, [pending, hold, awaiting]);
+  /* Ring erst nach 0,2 s: schnelle Suchen bleiben ruhig, nur längere zeigen, dass gesucht wird */
+  const [ring, setRing] = useState(false);
+  useEffect(() => {
+    if (!(pending && awaiting)) {
+      setRing(false);
+      return;
+    }
+    const t = window.setTimeout(() => setRing(true), 200);
+    return () => window.clearTimeout(t);
+  }, [pending, awaiting]);
   const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
   draftRef.current = draft;
   const shownDraft = pending && hold && (!focused || !draft) ? hold : draft;
@@ -332,7 +342,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
       {/* Glas nur um das Feld: die Vorschlagsliste liegt daneben, damit ihre eigene Unschärfe die Karte dahinter sieht (verschachtelt wäre sie flach) */}
       <div className={`relative ${glass ? "rm-glass rounded-full" : ""}`}>
       {/* Läuft eine Suche, steht an Stelle der Lupe ein kleiner Ladering */}
-      {pending && awaiting ? (
+      {ring ? (
         <span role="status" aria-label="Suche läuft" className="rm-spinner pointer-events-none absolute left-3.5 top-1/2 -mt-[9px]" />
       ) : (
         <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
