@@ -9,7 +9,7 @@ Stand: Alle 14 Videos gibt es als **Handy-Fassung** (Hochformat). Von den **Web-
 | Pfad | Inhalt |
 |---|---|
 | `public/videos/` | Fertige Dateien, die die Seite ausliefert (siehe Benennung unten) |
-| `docs/videos/texts/` | Sprechtexte, ein Satz pro Zeile |
+| `docs/videos/texts/mobil/` und `texts/web/` | Sprechtexte, ein Satz pro Zeile, **getrennt für Handy und Web**. Sie dürfen auseinanderlaufen, sind aber im Moment bis auf 01 und 08 gleich. `web/01.txt` ist noch der alte Text mit Ort und Region |
 | `docs/videos/tools/` | Skripte: Sprache erzeugen, Bildschirm aufnehmen, Video zusammensetzen |
 | `docs/videos/tools/alt-web/` | Skripte der alten Web-Fassung von Video 1 (nur zur Nachvollziehbarkeit) |
 | `components/ratsmonitor/info/VideosPage.tsx` | Die Seite selbst; hier stehen Titel, Beschreibung und die Dateinamen |
@@ -30,22 +30,22 @@ Das Endstück `-mobil` kennzeichnet die Handy-Fassung. Die Vorschaubilder sind a
 
 | Nr. | Titel | Dateiname (Handy) | Text | Länge |
 |---|---|---|---|---|
-| 1 | Erste Suche und Karte | `erste-suche-mobil` (Web: `erste-suche`, alter Stand) | `01-mobil.txt` / `01-web.txt` | 47 s |
-| 2 | Filter und Zeitraum | `filter-zeitraum-mobil` | `02.txt` | 33 s |
-| 3 | Alarme einrichten | `alarme-einrichten-mobil` | `03.txt` | 32 s |
-| 4 | Exakter Begriff und mehrere Wörter | `exakter-begriff-mobil` | `04.txt` | 34 s |
-| 5 | Die Karte im Detail | `karte-im-detail-mobil` | `05.txt` | 37 s |
-| 6 | Trefferliste und Sortierung | `trefferliste-sortierung-mobil` | `06.txt` | 34 s |
-| 7 | Artikel speichern und teilen | `artikel-speichern-teilen-mobil` | `07.txt` | 33 s |
-| 8 | Export als PDF, Excel und CSV | `export-mobil` | `08-mobil.txt` (Web: `08.txt`) | 33 s |
-| 9 | Kalender und Sitzungen | `kalender-sitzungen-mobil` | `09.txt` | 29 s |
-| 10 | Postfach und Wochenbericht | `postfach-wochenbericht-mobil` | `10.txt` | 34 s |
-| 11 | Konto und Profil | `konto-profil-mobil` | `11.txt` | 36 s |
-| 12 | Datenabdeckung prüfen | `datenabdeckung-mobil` | `12.txt` | 32 s |
-| 13 | Politik vor Ort im Blick (Vorstellung) | `politik-vor-ort-mobil` | `13.txt` | 40 s |
-| 14 | Für Unternehmen und Verbände (Vorstellung) | `unternehmen-verbaende-mobil` | `14.txt` | 48 s |
+| 1 | Erste Suche und Karte | `erste-suche-mobil` (Web: `erste-suche`, alter Stand) | `mobil/01.txt` / `web/01.txt` | 47 s |
+| 2 | Filter und Zeitraum | `filter-zeitraum-mobil` | `mobil/02.txt` | 33 s |
+| 3 | Alarme einrichten | `alarme-einrichten-mobil` | `mobil/03.txt` | 32 s |
+| 4 | Exakter Begriff und mehrere Wörter | `exakter-begriff-mobil` | `mobil/04.txt` | 34 s |
+| 5 | Die Karte im Detail | `karte-im-detail-mobil` | `mobil/05.txt` | 37 s |
+| 6 | Trefferliste und Sortierung | `trefferliste-sortierung-mobil` | `mobil/06.txt` | 34 s |
+| 7 | Artikel speichern und teilen | `artikel-speichern-teilen-mobil` | `mobil/07.txt` | 33 s |
+| 8 | Export als PDF, Excel und CSV | `export-mobil` | `mobil/08.txt` (Web: `web/08.txt`) | 33 s |
+| 9 | Kalender und Sitzungen | `kalender-sitzungen-mobil` | `mobil/09.txt` | 29 s |
+| 10 | Postfach und Wochenbericht | `postfach-wochenbericht-mobil` | `mobil/10.txt` | 34 s |
+| 11 | Konto und Profil | `konto-profil-mobil` | `mobil/11.txt` | 36 s |
+| 12 | Datenabdeckung prüfen | `datenabdeckung-mobil` | `mobil/12.txt` | 32 s |
+| 13 | Politik vor Ort im Blick (Vorstellung) | `politik-vor-ort-mobil` | `mobil/13.txt` | 40 s |
+| 14 | Für Unternehmen und Verbände (Vorstellung) | `unternehmen-verbaende-mobil` | `mobil/14.txt` | 48 s |
 
-Die Texte 02 bis 12 sind für Handy und Web gedacht, haben aber nur auf dem Handy eine Aufnahme. Ausnahme `08-mobil.txt`: Auf dem Handy gibt es keinen Export der Trefferliste (nur den Export im Artikel). Alle Texte sagen „klicken“; nur Video 1 (Handy) sagt noch „Tippen Sie“.
+Handy und Web haben getrennte Textordner. Die Web-Texte 02 bis 07 und 09 bis 14 sind im Moment Kopien der Handy-Texte, Aufnahmen gibt es nur für das Handy. Unterschied bei 08: Auf dem Handy gibt es keinen Export der Trefferliste (nur den Export im Artikel), im Web kommen beide Exporte vor. Alle Texte sagen „klicken“.
 
 ## Die Stimme
 
@@ -85,7 +85,7 @@ R=/pfad/zum/Ratsmonitor
 mkdir -p out/NN
 
 # 1. Ton und Satzzeiten: out/NN/audio.wav und audio.json
-python3 $R/docs/videos/tools/speak.py $R/docs/videos/texts/NN.txt out/NN/audio.wav 0.8 0.1
+python3 $R/docs/videos/tools/speak.py $R/docs/videos/texts/mobil/NN.txt out/NN/audio.wav 0.8 0.1
 
 # 2. Bildschirm im Handy-Format aufnehmen (Schritte stehen in scenes-mobil.mjs)
 node $R/docs/videos/tools/rec-mobil.mjs NN

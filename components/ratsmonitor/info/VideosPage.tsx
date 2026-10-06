@@ -89,7 +89,7 @@ function Card({ v, active, phone, next, onPlay, onNext, onClose }: { v: Video; a
   /* Nur Handy-Video vorhanden: am Computer „Video folgt“, auf dem Handy die Vorschau */
   const placeholder = <div className={`flex aspect-video w-full items-center justify-center rounded-xl bg-[#f8f9fa] text-[14px] text-slate-500 max-md:aspect-square max-md:text-[12px] ${onlyMobile ? "max-md:hidden" : ""}`}>Video folgt</div>;
   const thumb = (
-    <button type="button" onClick={onPlay} aria-label={`Video abspielen: ${v.title}`} className={`group relative block aspect-video w-full cursor-pointer overflow-hidden rounded-xl border-0 bg-slate-900 p-0 max-md:aspect-square ${onlyMobile ? "md:hidden" : ""}`}>
+    <button type="button" onClick={onPlay} aria-label={`Video abspielen: ${v.title}`} className={`group relative block aspect-video w-full cursor-pointer overflow-hidden rounded-xl border-0 bg-slate-900 p-0 max-md:aspect-square ${onlyMobile ? "md:hidden" : ""} ${open ? "!hidden" : ""}`}>
       <picture>
         {v.mobile && v.file && <source media="(max-width: 767px)" srcSet={`/videos/${v.mobile}.jpg`} />}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -105,15 +105,13 @@ function Card({ v, active, phone, next, onPlay, onNext, onClose }: { v: Video; a
       <div ref={media} className={open ? "" : "max-md:w-24 max-md:shrink-0"}>
         {!v.file && !v.mobile ? (
           placeholder
-        ) : open ? (
-          <Clip base={baseOf(v, phone)} next={next} onNext={onNext} className="mx-auto block aspect-video w-full rounded-xl bg-slate-900 max-md:aspect-auto max-md:max-h-[78vh] max-md:w-auto max-md:max-w-full" />
-        ) : onlyMobile ? (
+        ) : (
           <>
-            {placeholder}
+            {open && <Clip base={baseOf(v, phone)} next={next} onNext={onNext} className="mx-auto block aspect-video w-full rounded-xl bg-slate-900 max-md:aspect-auto max-md:max-h-[78vh] max-md:w-auto max-md:max-w-full" />}
+            {onlyMobile && placeholder}
+            {/* bleibt eingehängt (nur ausgeblendet), damit das Vorschaubild beim Schließen sofort da ist und nicht neu lädt */}
             {thumb}
           </>
-        ) : (
-          thumb
         )}
       </div>
       <figcaption className={`mt-3 ${open ? "" : "max-md:mt-0"}`}>
