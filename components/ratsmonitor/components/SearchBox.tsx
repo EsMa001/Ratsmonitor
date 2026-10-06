@@ -57,9 +57,11 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   /* Ladering erst nach Bestätigen (Enter oder Auswahl aus der Liste), nicht schon beim Tippen */
   const [awaiting, setAwaiting] = useState(false);
   const draftRef = useRef("");
+  const pickText = useRef("");
   useEffect(() => {
     const on = () => {
-      setHold(draftRef.current);
+      setHold(pickText.current || draftRef.current);
+      pickText.current = "";
       setAwaiting(true);
     };
     window.addEventListener("rm:search-confirmed", on);
@@ -116,6 +118,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
             label: q,
             prefetch: () => search.prefetchText(q),
             pick: () => {
+              pickText.current = q;
               apply(q);
               search.commitPlaces();
               closeAndBlur();
@@ -131,6 +134,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
             saved: true,
             prefetch: () => search.prefetchSaved(sv),
             pick: () => {
+              pickText.current = sv.text || sv.q || sv.name;
               if (search.applySaved(sv)) {
                 if (view !== "overview") goOverview();
                 closeAndBlur();
@@ -189,12 +193,6 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           },
         });
     }
-    for (const h of liveHits)
-      out.push({
-        kind: "text",
-        label: `„${h.phraseRaw}“ nur als Suchbegriff verwenden`,
-        pick: () => apply(state.q, { placeIgnored: { ...state.placeIgnored, [h.key]: true } }),
-      });
     const sg = place.suggest(state.q, placeActive && pq.place ? pq.place.ags : "");
     const lastTok = norm(sg.toks.length ? PlaceIndex.clean(sg.toks[sg.toks.length - 1]) : "");
     /* Keine Vorschläge für ein Wort, das schon zu einem erkannten Ort gehört */
@@ -247,12 +245,16 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           },
         });
     }
-    /* Erste Zeile: den eingetippten Text als Suche bestätigen (wie Enter), auch wenn kein Ort passt */
+    /* Erste Zeile „Nach … suchen“: der eingetippte Text wird als Suchbegriff verwendet, auch wenn er wie ein Ort heißt
+       (Orte wählt man in den Zeilen darunter; Enter ohne Auswahl übernimmt erkannte Orte weiterhin als Filter) */
     if (draft.trim())
       out.unshift({
         kind: "query",
         label: draft.trim(),
         pick: () => {
+          /* Erkannte Orte im Text (auch der schon live übernommene) nicht als Ort, sondern als Suchbegriff nehmen */
+          const keys = [pq.key, ...(pq.extra ?? []).map((h) => h.key)].filter(Boolean);
+          if (keys.length) apply(state.q, { placeIgnored: { ...state.placeIgnored, ...Object.fromEntries(keys.map((k) => [k, true as const])) } });
           search.commitPlaces();
           setOpen(false);
           inputRef.current?.blur();
