@@ -9,7 +9,7 @@ import {SOURCES} from './regions.mjs';
 import {ANALYSIS_PENDING_SQL} from './manual-analysis.mjs';
 import {accessOfSource,accessLabel,channelOf} from '../../shared/source-access.mjs';
 import robotsVerdicts from './source-robots.json' with {type:'json'};
-import openAccess from './source-access.json' with {type:'json'};
+import atlas from './source-atlas.json' with {type:'json'};
 const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
 const conditions={labels:"coalesce(json_extract(payload,'$.classification.primary'),'unklar')='unklar'",status:"status='unknown'",identity:"json_extract(payload,'$.identity.conflict')=1",summaries:"coalesce(json_extract(payload,'$.documentIssue'),'')!='' OR coalesce(json_extract(payload,'$.summaryIssue'),'')!='' OR json_extract(payload,'$.contentAnalysis.status') IN ('insufficient_source','failed','stale') OR json_extract(payload,'$.contentAnalysis.reason') IS NOT NULL"};
 const configuredSources=[...SOURCES.map(s=>({...s,method:s.id==='recklinghausen'?'official-api':'scraper'})),...NRW_SOURCES,{id:'muenster',method:'oparl',system:'https://oparl.stadt-muenster.de/system'}];
@@ -17,8 +17,8 @@ const configuredSources=[...SOURCES.map(s=>({...s,method:s.id==='recklinghausen'
 const configuredById=new Map([...configuredSources].reverse().map(s=>[s.id,s]));
 // Access of programs per area (shared/source-access.mjs: OParl, then API, then HTML pages, where robots.txt gives the
 // label; then a technical block): of a connected source from its reader and the robots.txt verdict of its path
-// (source-robots.json), of an area without source from its last check (source-access.json, scripts/dashboard/build.mjs).
-const accessFields=(id,config)=>{const connected=!!config&&config.method!=='pending',access=connected?accessOfSource(config,robotsVerdicts.sources?.[id]):openAccess.areas?.[id]||'none';return {access,accessLabel:accessLabel(access),channel:connected?channelOf(config).name:''};};
+// (source-robots.json), of an area without source from its last check (source-atlas.json, scripts/dashboard/build.mjs).
+const accessFields=(id,config)=>{const connected=!!config&&config.method!=='pending',access=connected?accessOfSource(config,robotsVerdicts.sources?.[id]):atlas.areas?.[id]?.z||'none';return {access,accessLabel:accessLabel(access),channel:connected?channelOf(config).name:''};};
 const readJson=s=>{try{return JSON.parse(s||'{}');}catch{return {};}};
 const label="coalesce(json_extract(payload,'$.classification.primary'),'unklar')";
 // Figure of region_stats that counts the reports of a review filter. "status" has none: it is counted on its index.

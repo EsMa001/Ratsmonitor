@@ -173,3 +173,97 @@ button:disabled{cursor:wait;opacity:.6}.article__status{flex-wrap:wrap}
 .admin-app .admin-germany-action button{white-space:normal;height:auto;padding:12px;line-height:1.35}
 .admin-app .admin-germany-action small{font-size:.85rem;line-height:1.5;color:#475569}
 @media (max-width:860px){.admin-app .admin-germany{grid-template-columns:1fr;padding:16px;border-radius:12px}}
+
+/* Übersicht, Lückenatlas und aufgeräumte Seiten (06.10.2026): Seitenreiter ohne Nummern, drei Stufen, Verlaufskarten,
+   Karte mit Zoom im Atlas. Alle Regeln beginnen mit .admin-app. */
+.admin-app .admin-pages a span{white-space:nowrap}
+.admin-app .admin-stage-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.admin-app .admin-selection-actions .admin-note{margin:0}
+.admin-app .admin-overview-charts{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:8px}
+.admin-app .admin-overview-charts figure{margin:0;min-width:0}
+.admin-app .admin-overview-charts figcaption{font-size:.95rem;font-weight:500;margin-bottom:8px}
+.admin-app .admin-overview-charts svg{display:block;width:100%;height:auto}
+.admin-app .admin-trend-legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.875rem;color:#475569}
+.admin-app .admin-trend-legend span{display:inline-flex;align-items:center;gap:7px}
+.admin-app .admin-trend-legend i{width:18px;height:3px;border-radius:2px;display:inline-block}
+.admin-app .admin-overview-trend .admin-timeline-table{margin-top:10px}
+.admin-app .admin-overview-trend details{margin-top:8px;font-size:.875rem}
+.admin-app .admin-overview-trend summary{cursor:pointer;color:#0f766e}
+.admin-app .admin-lands{overflow:auto;border:1px solid #e2e8f0;border-radius:10px;background:#fff}
+.admin-app .admin-lands table{width:100%;border-collapse:collapse;font-size:.875rem;font-variant-numeric:tabular-nums}
+.admin-app .admin-lands th,.admin-app .admin-lands td{padding:9px 12px;text-align:right;border-bottom:1px solid #f1f5f9;white-space:nowrap}
+.admin-app .admin-lands th:first-child,.admin-app .admin-lands td:first-child{text-align:left;font-weight:500}
+.admin-app .admin-lands thead th{position:sticky;top:0;background:#f8fafc;font-weight:600;color:#475569}
+.admin-app .admin-lands tfoot th,.admin-app .admin-lands tfoot td{font-weight:600;border-top:2px solid #e2e8f0;border-bottom:0}
+.admin-app .admin-lands small{color:#64748b;margin-left:4px}
+.admin-app .admin-share{display:inline-block;vertical-align:middle;width:70px;height:8px;background:#e2e8f0;border-radius:4px;margin-right:10px;overflow:hidden}
+.admin-app .admin-share i{display:block;height:100%;background:#0f766e}
+.admin-app .admin-share.is-data i{background:#2352ad}
+.admin-app .admin-next{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.admin-app .admin-next-link{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid #e2e8f0;border-radius:12px;color:#0f172a;text-decoration:none;min-width:0}
+.admin-app .admin-next-link:hover{border-color:#99f6e4;background:#f0fdfa}
+.admin-app .admin-next-link>span{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.admin-app .admin-next-link strong{font-weight:600}
+.admin-app .admin-next-link small{font-size:.85rem;color:#64748b;line-height:1.45}
+.admin-app .admin-next-link>svg:first-child{color:#0f766e;flex:none}
+/* Lückenatlas */
+.admin-app .admin-atlas-why{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.admin-app .admin-atlas-why .admin-section{margin:0}
+.admin-app .admin-atlas-why .admin-section-heading .admin-note{margin:0}
+.admin-app .admin-atlas-stack{display:flex;height:22px;border-radius:6px;overflow:hidden;background:#e2e8f0;margin:14px 0 10px}
+.admin-app .admin-atlas-stack button{border:0;padding:0;height:100%;cursor:pointer;min-width:2px;min-height:0}
+.admin-app .admin-atlas-stack button:hover{filter:brightness(1.1)}
+.admin-app .admin-atlas-chips{display:flex;flex-wrap:wrap;gap:6px}
+.admin-app .admin-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #e2e8f0;background:#fff;border-radius:999px;padding:5px 11px 5px 8px;cursor:pointer;font-size:.8125rem;line-height:1.3;min-height:0;color:#0f172a}
+.admin-app .admin-chip i{width:11px;height:11px;border-radius:3px;flex:none}
+.admin-app .admin-chip span{color:#64748b;font-variant-numeric:tabular-nums}
+.admin-app .admin-chip[aria-pressed=false]{opacity:.45}
+.admin-app .admin-chip[aria-pressed=false] i{filter:grayscale(1)}
+.admin-app .admin-chip.is-group{font-weight:600;background:#f1f5f9}
+.admin-app .admin-atlas-main{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:stretch;margin-top:16px}
+.admin-app .admin-atlas-main .admin-section{margin:0;display:flex;flex-direction:column;min-height:0}
+.admin-app .admin-atlas-map{height:min(82vh,900px);min-height:520px}
+.admin-app .admin-atlas-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.admin-app .admin-seg{display:inline-flex;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;background:#fff}
+.admin-app .admin-seg button{border:0;background:transparent;padding:6px 12px;cursor:pointer;font-size:.8125rem;min-height:34px;color:#334155}
+.admin-app .admin-seg button[aria-pressed=true]{background:#0f766e;color:#fff}
+.admin-app .admin-zoom{display:inline-flex;gap:4px}
+.admin-app .admin-zoom button{min-width:34px;min-height:34px;border:1px solid #e2e8f0;background:#fff;border-radius:8px;cursor:pointer;font-size:1rem;line-height:1;padding:0 10px;color:#334155}
+.admin-app .admin-atlas-canvas{flex:1;min-height:0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;display:grid;place-items:center}
+.admin-app .admin-atlas-canvas svg{width:100%;height:100%;touch-action:none;cursor:grab}
+.admin-app .admin-atlas-canvas svg:active{cursor:grabbing}
+.admin-app .admin-atlas-reason{color:#64748b}
+.admin-app .admin-atlas-list{position:relative;height:min(82vh,900px);min-height:520px}
+.admin-app .admin-atlas-list .admin-source-controls{grid-template-columns:1fr 1fr;margin:0 0 8px}
+.admin-app .admin-atlas-list .admin-source-controls>label:first-child{grid-column:1/-1}
+.admin-app .admin-atlas-rows{flex:1;min-height:0;overflow:auto;border-block:1px solid #e2e8f0;scrollbar-gutter:stable}
+.admin-app .admin-atlas-rows>button:not(.admin-atlas-row){display:block;width:auto;margin:12px auto}
+.admin-app .admin-atlas-row{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:3px 10px;width:100%;padding:9px 10px;border:0;border-bottom:1px solid #f1f5f9;background:#fff;text-align:left;cursor:pointer;font:inherit;color:#0f172a;min-height:0;align-items:start;border-radius:0}
+.admin-app .admin-atlas-row:hover{background:#f8fafc}
+.admin-app .admin-atlas-row[aria-current=true]{background:#f0fdfa}
+.admin-app .admin-atlas-dot{width:10px;height:10px;border-radius:3px;margin-top:5px;background:var(--c)}
+.admin-app .admin-atlas-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9375rem}
+.admin-app .admin-atlas-pop{font-size:.8125rem;color:#64748b;font-variant-numeric:tabular-nums;white-space:nowrap}
+.admin-app .admin-atlas-meta{grid-column:2/4;font-size:.8125rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-app .admin-atlas-flag{display:inline-block;font-style:normal;font-size:.6875rem;font-weight:600;letter-spacing:.03em;border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:1px;background:#f1f5f9;color:#0f172a}
+.admin-app .admin-atlas-detail{position:absolute;inset:0;background:#fff;border-radius:16px;z-index:4;display:flex;flex-direction:column;overflow:auto;padding:22px 24px 28px}
+.admin-app .admin-atlas-detail-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:14px}
+.admin-app .admin-atlas-detail-head h2{font-size:1.5rem;font-weight:600;line-height:1.2;margin:4px 0 10px;overflow-wrap:anywhere}
+.admin-app .admin-atlas-close{border:1px solid #e2e8f0;background:#fff;border-radius:999px;width:36px;height:36px;min-height:0;display:grid;place-items:center;cursor:pointer;flex:none;padding:0}
+.admin-app .admin-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #e2e8f0;border-radius:999px;padding:3px 10px 3px 7px;font-size:.8125rem;background:#fff}
+.admin-app .admin-pill i{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.admin-app .admin-atlas-facts{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 14px;font-size:.9rem;margin:0 0 6px}
+.admin-app .admin-atlas-facts>div{display:contents}
+.admin-app .admin-atlas-facts dt{color:#64748b}
+.admin-app .admin-atlas-facts dd{margin:0;overflow-wrap:anywhere}
+.admin-app .admin-atlas-facts a,.admin-app .admin-atlas-block a,.admin-app .admin-atlas-detail>p a{color:#0f766e;text-decoration:underline;text-underline-offset:3px}
+.admin-app .admin-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.8125rem}
+.admin-app .admin-atlas-block{margin-top:14px;font-size:.9375rem;line-height:1.55}
+.admin-app .admin-atlas-block .eyebrow{margin-bottom:6px}
+.admin-app .admin-atlas-block blockquote{margin:0;padding:10px 14px;border-left:4px solid var(--c);background:#f8fafc;border-radius:0 8px 8px 0}
+.admin-app .admin-atlas-block p+p{margin-top:8px}
+.admin-app .admin-legacy{margin-top:18px;font-size:.9375rem}
+.admin-app .admin-legacy summary{cursor:pointer;color:#0f766e;min-height:40px;padding:8px 0}
+.admin-app .admin-legacy .admin-field{max-width:420px;margin:12px 0}
+@media(max-width:1100px){.admin-app .admin-stage-grid{grid-template-columns:1fr}.admin-app .admin-overview-charts,.admin-app .admin-atlas-why,.admin-app .admin-atlas-main,.admin-app .admin-next{grid-template-columns:1fr}.admin-app .admin-atlas-map,.admin-app .admin-atlas-list{height:auto;min-height:0}.admin-app .admin-atlas-canvas{height:60vh}.admin-app .admin-atlas-rows{max-height:60vh}}
+@media(max-width:700px){.admin-app .admin-atlas-facts{grid-template-columns:1fr}.admin-app .admin-atlas-list .admin-source-controls{grid-template-columns:1fr}}

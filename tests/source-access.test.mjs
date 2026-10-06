@@ -5,7 +5,7 @@ import {NRW_SOURCES} from '../server/integrations/source-catalog.mjs';
 import {CATALOG} from '../shared/catalog.mjs';
 import {CKAN_NO_PROFILE} from '../server/integrations/ckan.mjs';
 import robots from '../server/integrations/source-robots.json' with {type:'json'};
-import openAccess from '../server/integrations/source-access.json' with {type:'json'};
+import atlas from '../server/integrations/source-atlas.json' with {type:'json'};
 
 // The hierarchy of shared/source-access.mjs: OParl → API → HTML pages (robots.txt gives the label only here) →
 // technical block → nothing found.
@@ -97,7 +97,7 @@ test('areas without source: the status from the reason of the last check (texts 
  assert.equal(R('Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 403) (05.10.2026)'),'blocked');
 });
 
-test('catalog: no connected OParl or API source is labelled by robots.txt; source-access.json names areas without source',()=>{
+test('catalog: no connected OParl or API source is labelled by robots.txt; source-atlas.json names every area with a status',()=>{
  const connected=NRW_SOURCES.filter(s=>s.method!=='pending');
  for(const s of connected){
   const status=accessOfSource(s,robots.sources[s.id]);
@@ -105,5 +105,6 @@ test('catalog: no connected OParl or API source is labelled by robots.txt; sourc
   if(channelOf(s).kind!=='html')assert.notEqual(status,'robots',s.id+' reads an interface');
  }
  const ids=new Set(CATALOG.map(r=>r.id));
- for(const [id,status] of Object.entries(openAccess.areas)){assert.ok(ids.has(id),id+' is an area of the catalog');assert.ok(ACCESS_BY_ID[status],id+': '+status);}
+ for(const [id,row] of Object.entries(atlas.areas)){assert.ok(ids.has(id),id+' is an area of the catalog');assert.ok(ACCESS_BY_ID[row.z],id+': '+row.z);if(row.r!==undefined)assert.equal(typeof atlas.texts[row.r],'string',id+' reason text');}
+ assert.equal(Object.keys(atlas.areas).length,CATALOG.length,'one row per area');
 });

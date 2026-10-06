@@ -2,6 +2,8 @@ import 'server-only';
 import {env} from 'cloudflare:workers';
 import {loadAdminData,adminReview} from '../integrations/admin-data.mjs';
 import {adminTimeline} from '../integrations/admin-timeline.mjs';
+import {adminCoverage} from '../integrations/admin-coverage.mjs';
+import {adminAtlas} from '../integrations/admin-atlas.mjs';
 import {adminEstimate} from '../integrations/admin-estimate.mjs';
 import {adminKeywords} from '../integrations/admin-keywords.mjs';
 import {readDebug} from '../integrations/import-trace.mjs';
@@ -14,6 +16,8 @@ export async function getAdminDashboard({review=true}:{review?:boolean}={}):Prom
 }
 export async function getAdminReview(issue:string,region:string){if(!env.DB)throw Error('Datenbank fehlt');return adminReview(env.DB,issue,region);}
 export async function getAdminTimeline(basis:string){if(!env.DB)throw Error('Datenbank fehlt');return adminTimeline(env.DB,{basis});}
+export async function getAdminCoverage(){if(!env.DB)throw Error('Datenbank fehlt');return adminCoverage(env.DB);}
+export async function getAdminAtlas(){if(!env.DB)throw Error('Datenbank fehlt');return adminAtlas(env.DB);}
 export async function getAdminEstimate(){if(!env.DB)throw Error('Datenbank fehlt');return adminEstimate(env.DB);}
 // Fünf Läufe über alle Vorgänge (61 s bei 900.000): gehalten, solange sich der Datenstand nicht ändert.
 export async function getAdminKeywords(){if(!env.DB)throw Error('Datenbank fehlt');const db=env.DB;return atRevision(db,'keywords',()=>adminKeywords(db));}
