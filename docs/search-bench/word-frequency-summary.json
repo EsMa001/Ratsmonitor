@@ -1,0 +1,73 @@
+{
+ "cards": 941027,
+ "distinctWords": 206713,
+ "seconds": 5,
+ "bands": [
+  {
+   "from": 1,
+   "to": 1,
+   "words": 98923,
+   "postings": 98923
+  },
+  {
+   "from": 2,
+   "to": 2,
+   "words": 32337,
+   "postings": 64674
+  },
+  {
+   "from": 3,
+   "to": 5,
+   "words": 31291,
+   "postings": 115947
+  },
+  {
+   "from": 6,
+   "to": 10,
+   "words": 15430,
+   "postings": 116928
+  },
+  {
+   "from": 11,
+   "to": 24,
+   "words": 11863,
+   "postings": 188124
+  },
+  {
+   "from": 25,
+   "to": 50,
+   "words": 6766,
+   "postings": 239484
+  },
+  {
+   "from": 51,
+   "to": 100,
+   "words": 4496,
+   "postings": 318660
+  },
+  {
+   "from": 101,
+   "to": 200,
+   "words": 2633,
+   "postings": 367992
+  },
+  {
+   "from": 201,
+   "to": 500,
+   "words": 1652,
+   "postings": 506539
+  },
+  {
+   "from": 501,
+   "to": 1000,
+   "words": 571,
+   "postings": 398414
+  },
+  {
+   "from": 1001,
+   "to": null,
+   "words": 751,
+   "postings": 16331124
+  }
+ ]
+}

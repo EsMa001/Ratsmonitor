@@ -1,0 +1,83 @@
+timestamp,label,term,kind,run,first_hit_ms,hits_20_ms,end_ms,hits,has_more,chunks
+2026-10-06T15:26:27.573Z,stream-baseline,"Haushalt",haeufig,1,114,114,115,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Haushalt",haeufig,2,18,18,18,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Bebauungsplan",haeufig,1,26,26,26,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Bebauungsplan",haeufig,2,13,13,13,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Schule",haeufig,1,90,90,90,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Schule",haeufig,2,15,15,15,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Kita",haeufig,1,17,86,86,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Kita",haeufig,2,14,17,18,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Feuerwehr",haeufig,1,25,25,25,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Feuerwehr",haeufig,2,19,19,19,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Straße",haeufig,1,18,18,18,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Straße",haeufig,2,11,11,11,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Verwaltung",haeufig,1,13,13,13,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Verwaltung",haeufig,2,10,10,10,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Bürgermeister",haeufig,1,12,12,12,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Bürgermeister",haeufig,2,21,21,21,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Radweg",mittel,1,14,20,20,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Radweg",mittel,2,12,15,15,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Photovoltaik",mittel,1,15,114,114,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Photovoltaik",mittel,2,12,19,19,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Windpark",mittel,1,13,199,199,20,true,3
+2026-10-06T15:26:27.573Z,stream-baseline,"Windpark",mittel,2,15,32,32,20,true,3
+2026-10-06T15:26:27.573Z,stream-baseline,"Gewerbegebiet",mittel,1,23,34,34,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Gewerbegebiet",mittel,2,12,19,19,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Spielplatz",mittel,1,16,16,16,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Spielplatz",mittel,2,12,12,12,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Friedhof",mittel,1,16,16,22,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Friedhof",mittel,2,13,13,16,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Bibliothek",mittel,1,12,122,122,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Bibliothek",mittel,2,12,35,35,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Hochwasser",mittel,1,13,37,37,20,true,3
+2026-10-06T15:26:27.573Z,stream-baseline,"Hochwasser",mittel,2,15,32,32,20,true,3
+2026-10-06T15:26:27.573Z,stream-baseline,"Jugendhilfe",mittel,1,13,22,22,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Jugendhilfe",mittel,2,13,19,19,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Sporthalle",mittel,1,20,55,55,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Sporthalle",mittel,2,22,47,47,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Apfel",selten,1,19,1894,1894,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Apfel",selten,2,20,193,193,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Streuobstwiese",selten,1,29,191,191,20,true,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Streuobstwiese",selten,2,29,184,184,20,true,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Wärmepumpe",selten,1,28,111,111,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Wärmepumpe",selten,2,27,103,103,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Glasfaser",selten,1,15,48,48,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Glasfaser",selten,2,14,43,43,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Kormoran",selten,1,3047,3047,5051,2,false,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Kormoran",selten,2,508,508,811,2,false,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Eisdiele",selten,1,41,886,936,11,false,6
+2026-10-06T15:26:27.573Z,stream-baseline,"Eisdiele",selten,2,21,862,913,11,false,6
+2026-10-06T15:26:27.573Z,stream-baseline,"Bienenhotel",selten,1,379,788,835,3,false,3
+2026-10-06T15:26:27.573Z,stream-baseline,"Bienenhotel",selten,2,380,776,821,3,false,3
+2026-10-06T15:26:27.573Z,stream-baseline,"Schwimmbad",selten,1,13,61,61,20,true,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Schwimmbad",selten,2,12,53,53,20,true,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Marktplatz",selten,1,13,98,107,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Marktplatz",selten,2,13,45,53,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Bahnhofsvorplatz",selten,1,13,239,239,20,true,7
+2026-10-06T15:26:27.573Z,stream-baseline,"Bahnhofsvorplatz",selten,2,14,217,217,20,true,7
+2026-10-06T15:26:27.573Z,stream-baseline,"Zeppelin",sehr_selten,1,30,106,106,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Zeppelin",sehr_selten,2,31,104,104,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Kalorien",sehr_selten,1,,,822,0,false,0
+2026-10-06T15:26:27.573Z,stream-baseline,"Kalorien",sehr_selten,2,,,807,0,false,0
+2026-10-06T15:26:27.573Z,stream-baseline,"Motorrad",sehr_selten,1,18,382,382,20,true,6
+2026-10-06T15:26:27.573Z,stream-baseline,"Motorrad",sehr_selten,2,19,369,369,20,true,6
+2026-10-06T15:26:27.573Z,stream-baseline,"Lastenrad",sehr_selten,1,19,606,606,20,true,6
+2026-10-06T15:26:27.573Z,stream-baseline,"Lastenrad",sehr_selten,2,19,618,618,20,true,6
+2026-10-06T15:26:27.573Z,stream-baseline,"Biberdamm",sehr_selten,1,463,914,914,6,false,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Biberdamm",sehr_selten,2,987,1492,1492,6,false,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Weihnachtsmarkt",sehr_selten,1,14,49,49,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Weihnachtsmarkt",sehr_selten,2,18,46,46,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Kita Neubau",mehrere,1,14,72,72,20,true,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Kita Neubau",mehrere,2,12,62,62,20,true,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Windpark Bürgerbeteiligung",mehrere,1,42,623,790,2,false,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Windpark Bürgerbeteiligung",mehrere,2,45,622,789,2,false,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Radweg Brücke",mehrere,1,13,149,149,20,true,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Radweg Brücke",mehrere,2,12,138,138,20,true,5
+2026-10-06T15:26:27.573Z,stream-baseline,"Schule Sanierung Turnhalle",mehrere,1,83,242,242,20,true,3
+2026-10-06T15:26:27.573Z,stream-baseline,"Schule Sanierung Turnhalle",mehrere,2,81,230,230,20,true,3
+2026-10-06T15:26:27.573Z,stream-baseline,"Windkraft oder Solar",oder,1,16,32,32,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Windkraft oder Solar",oder,2,22,32,32,20,true,2
+2026-10-06T15:26:27.573Z,stream-baseline,"Kita oder Schule",oder,1,15,15,15,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Kita oder Schule",oder,2,12,12,12,20,true,1
+2026-10-06T15:26:27.573Z,stream-baseline,"Apfel oder Birne",oder,1,20,178,178,20,true,4
+2026-10-06T15:26:27.573Z,stream-baseline,"Apfel oder Birne",oder,2,21,177,177,20,true,4
