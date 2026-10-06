@@ -236,6 +236,7 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
   if(fetched>=MAX_MEETINGS){beyond++;return;}fetched++;
   try{
    const html=await read(m.url),agenda=parseAllris3Agenda(html,m,source,now);
+   if(agenda&&part.excluded(agenda.committee,m.url)){count++;return;}
    // A scheduled meeting without an agenda has nothing public to read yet. A past meeting shown with its basic data
    // but without an agenda was published that way: a remark, not a gap. An unrecognisable page is a gap.
    if(!agenda){if(m.date>today)upcoming++;else if(/id=["']si(?:datum|gremium)["']|class=["']kb1["'][^>]*>\s*(?:Gremium|Datum):/i.test(html))warnings.push('Sitzung ohne veröffentlichte Tagesordnung: '+m.url);else issues.push('Keine lesbare öffentliche Tagesordnung: '+m.url);return;}

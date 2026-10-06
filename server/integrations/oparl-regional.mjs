@@ -32,7 +32,15 @@ export function organizationFilter(spec){
  */
 export function committeePart(spec){
  const filter=spec?organizationFilter(spec):null,skipped={filtered:new Set(),unassigned:new Set()};
+ const excludes=(spec?.exclude||[]).filter(p=>!/^https?:\/\//i.test(p)).map(foldName);
  return {
+  // A meeting kept by the name its calendar gives it is still left out when the body its own page names is excluded:
+  // Eutin's ALLRIS lists a meeting of the council of Süsel as "Gemeindevertretung", its page says "Gemeindevertretung
+  // Süsel". (Included bodies keep the calendar's decision: a page may name a member's body without the member.)
+  excluded(name,key=name){
+   const f=foldName(String(name||''));if(!excludes.some(p=>f.includes(p)))return false;
+   skipped.filtered.add(String(key));return true;
+  },
   keep(name,key=name){
    if(!filter)return true;
    const verdict=filter([{name:String(name||'')}]);if(verdict==='kept')return true;

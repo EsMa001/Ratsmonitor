@@ -158,6 +158,16 @@ test('an ALLRIS source is read only while its own OParl address does not answer 
  }finally{globalThis.fetch=original;}
 });
 
+test('ALLRIS collector leaves out a meeting whose own page names an excluded body, also when the calendar does not',async()=>{
+ // As Eutin's ALLRIS: the calendar says "Sitzung des Rates", the meeting page "Rat der Stadt" (there: Gemeindevertretung Süsel).
+ const {calls,get}=web();
+ const d=await collectAllris({...source,organizations:{exclude:['Rat der Stadt']}},{now,get,window:'1m'});
+ assert.ok(calls.includes(meetingUrl(5)),'the calendar keeps the meeting, its page is read');
+ assert.ok(d.topics.every(t=>t.events.every(e=>e.url!==meetingUrl(5)&&e.committee!=='Rat der Stadt'||e.description.startsWith('Ergebnis laut Beratungsfolge'))));
+ assert.ok(!d.topics.some(t=>t.id==='nrw-05513000-top-13'),'the items of the excluded body are not taken');
+ assert.ok(d.coverage.warnings.includes('1 Sitzungen anderer Gremien des gemeinsamen Systems ausgelassen.'));
+});
+
 test('ALLRIS collector reads only the bodies of one member of a shared system, by the name the calendar gives each meeting',async()=>{
  const {calls,get}=web();
  const d=await collectAllris({...source,organizations:{include:['des Rates']}},{now,get,window:'1m'});

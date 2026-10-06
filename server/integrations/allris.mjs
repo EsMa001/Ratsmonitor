@@ -159,6 +159,7 @@ export async function collectAllris(source,{now=new Date(),get=fetchText,request
   if(fetched>=MAX_MEETINGS){beyond++;return;}fetched++;
   try{
    const html=await read(m.url),agenda=parseAllrisAgenda(html,m,source,now);
+   if(agenda&&part.excluded(agenda.committee,m.url)){count++;return;}
    // A scheduled meeting without an agenda has nothing public to read yet. A past meeting that the system shows with
    // its basic data but without an agenda was published that way (some committees never publish one): a remark,
    // not a gap. A page that is not recognisable as a meeting page is a gap.
