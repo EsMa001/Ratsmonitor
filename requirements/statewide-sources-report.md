@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 345 angebunden, 82 nicht. Diese Datei beschreibt die 252 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 346 angebunden, 81 nicht. Diese Datei beschreibt die 253 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -10,7 +10,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 - 97 × SessionNet (öffentliche Seiten)
 - 76 × SD.NET (öffentliche Seiten)
-- 35 × OParl
+- 36 × OParl
 - 18 × More! Rubin (Kalender-API)
 - 16 × ALLRIS 4 (öffentliche Seiten)
 - 6 × Website der Kommune (öffentliche Bekanntmachungen)
@@ -190,6 +190,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Schieder-Schwalenberg | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/schieder_schwalenberg/bi/ | 43 |
 | Gemeinde Hille | SD.NET (öffentliche Seiten) | https://ratsinfo.hille.de/ | 92 |
 | Stadt Petershagen | Website der Kommune (öffentliche Bekanntmachungen) | https://www.petershagen.de/ | 24 |
+| Stadt Porta Westfalica | OParl | https://sitzungsdienst.portawestfalica.de/webservice/oparl/v1.1/system | 271 |
 | Kreis Paderborn | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/kreis_paderborn/bi/ | 117 |
 | Gemeinde Altenbeken | OParl | https://altenbeken.gremien.info/oparl/system | 47 |
 | Stadt Bad Lippspringe | More! Rubin (Kalender-API) | https://badlippspringe.gremien.info/ | 64 |
@@ -275,7 +276,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 - 35 × robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend
 - 13 × SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404
-- 13 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
+- 12 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
 - 8 × Kein unterstütztes Ratsinformationssystem erkannt
 - 4 × ALLRIS 3
 - 2 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
@@ -344,7 +345,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Oberhausen | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Nicht freigegebene Quelladresse) | https://www.oberhausen.de/de/index/rathaus/politik/ratsinformationssystem.php |
 | Stadt Olsberg | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.olsberg.de/politik-verwaltung/rats-und-buergerinformationssystem-der-stadt-olsberg |
 | Stadt Plettenberg | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.plettenberg.de/soziales/soziales/fluechtlingshilfe-buergerinfo |
-| Stadt Porta Westfalica | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sitzungsdienst.portawestfalica.de/ |
 | Stadt Preußisch Oldendorf | Kein unterstütztes Ratsinformationssystem erkannt | https://www.preussischoldendorf.de/Rathaus-Politik/Haushalt-Finanzen/St%C3%A4dtischer-Haushaltsplan-2017.php?object=tx,2864.4&ModID=7&FID=391.2651.1&NavID=2863.28&La=1 |
 | Gemeinde Raesfeld | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://raesfeld.ratsinfomanagement.net/ |
 | Gemeinde Recke | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://recke.ratsinfomanagement.net/ |

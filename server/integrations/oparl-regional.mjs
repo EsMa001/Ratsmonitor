@@ -76,7 +76,14 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  const exhausted=text=>/Zeitbudget|Abrufbudget/.test(text)||/aborted due to timeout/.test(text)&&Date.now()>=deadline-1000;
  // Page of a filtered meeting list at which reading stopped for lack of time; the next step continues there.
  let listCursor=null;
- const list=async(url,recent=false,resumeAt=null)=>{if(Array.isArray(url))return url;const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false,chronological=false,laterPageFirst='';
+ // A server that stamps every object with the same placeholder date (ALLRIS at sitzung-online.de: created and modified
+ // "2000-01-01") cannot answer modified_since meaningfully; its meeting list is read from the end instead.
+ let unreliableModified=false;
+ const list=async(url,recent=false,resumeAt=null)=>{if(Array.isArray(url))return url;
+ // Such a server (unreliableModified) pages its lists by 10 records by default; 100 a page keep the reading from the end
+ // within the page limit.
+ if(unreliableModified&&!resumeAt){const u=new URL(allowed(url));if(!u.searchParams.has('size')){u.searchParams.set('size','100');url=u.href;}}
+const out=[],seen=new Set();let next=url,pages=0,reverse=false,newestFirst=false,chronological=false,laterPageFirst='';
  const wholeListRead=()=>{const at=issues.indexOf(fromEnd);if(at>=0)issues.splice(at,1);};
  // OParl filter "modified_since". Servers that honour it (e.g. SD.NET) return only the meetings changed lately.
  // Their lists follow the record number, not the date, and a year of planned meetings fills the last pages, so
@@ -87,7 +94,7 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  // list, so in automatic mode its first page must arrive within FILTER_PATIENCE_MS; otherwise the list is read
  // from its end as before. The catalog can fix the method that was verified for a source:
  // meetingScan "filter" (no time box, no fallback), "end" (never ask for the filter) or "forward".
- if(recent&&(resumeAt||source.meetingScan!=='forward'&&source.meetingScan!=='end')){
+ if(recent&&!unreliableModified&&(resumeAt||source.meetingScan!=='forward'&&source.meetingScan!=='end')){
   const forced=source.meetingScan==='filter'||Boolean(resumeAt);let read=false,asking=null;
   try{
    const withFilter=value=>{const u=new URL(allowed(url));u.searchParams.set('modified_since',value);return u.href;};
@@ -134,6 +141,7 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  }
  }catch(e){issues.push(e.message);break;}}return out;};
  let body;const entry=await get(source.system);
+ unreliableModified=/^2000-01-01T00:00:00/.test(String(entry.created||''))&&/^2000-01-01T00:00:00/.test(String(entry.modified||''));
  if(entry.type?.endsWith('/Body'))body=chooseBody([entry],source);else {
   if(!entry.type?.endsWith('/System'))throw Error('Kein OParl-System');
   const rawBodies=await list(entry.body);
@@ -161,6 +169,34 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
   // filtered list: then its beginning is kept together with the page to continue at.
   if(meetings.every(m=>m.id)&&(listCursor||issues.length===before&&meetings.length))kept={window:period,readAt:now.getTime(),body:body.id,strategy,rows:meetings.map(row),...(listCursor?{next:listCursor}:{})};
  }
+ // ALLRIS 4 at sitzung-online.de (OParl since 2026) lists no agenda in its meetings; the body keeps one list of all
+ // agenda items (body.agendaItem), each naming its meeting and carrying an explicit public flag (non-public items only
+ // as "(nichtöffentlich)", public:false). That list is read from its end, 100 records a page, until five pages in a row
+ // after the first match hold no item of a meeting of the period (items are added late, also to older meetings, so the
+ // record order says little about the meeting), at most 60 pages; the items are attached to their meetings. Servers
+ // that embed the agenda in the meeting object are not affected.
+ let agendaOf=null;
+ if(typeof body.agendaItem==='string'&&meetings.some(m=>m.id)){
+  let probe=meetings.find(m=>m.id&&!m.listed)||null;
+  if(!probe){try{probe=await get(meetings.find(m=>m.id).id);}catch(e){issues.push(e.message);}}
+  if(probe&&!('agendaItem' in probe)){
+   const wanted=new Set(meetings.filter(m=>m.id).map(m=>allowed(m.id))),own=u=>{try{return allowed(u);}catch{return null;}};
+   agendaOf=new Map();let matched=0,miss=0;
+   // true: reading can stop (five pages in a row without an item of the period, after the first page that had some).
+   const take=page=>{let hit=0;for(const a of page.data||[]){const m=a?.meeting?own(a.meeting):null;if(m&&wanted.has(m)){hit++;agendaOf.set(m,[...(agendaOf.get(m)||[]),a]);}}matched+=hit;miss=hit?0:miss+1;return matched>0&&miss>=5;};
+   try{
+    const firstUrl=new URL(body.agendaItem);firstUrl.searchParams.set('size','100');
+    const first=await get(firstUrl.href),last=first.links?.last,pageOf=u=>Number(new URL(u).searchParams.get('page'));
+    if(!last||!Number.isFinite(pageOf(last))||pageOf(last)<=1)take(first);
+    else{
+     let read=0,complete=false;
+     for(let p=pageOf(last);p>=1&&read<60;p--,read++){const u=new URL(last);u.searchParams.set('page',String(p));const page=p===1?first:await get(u.href);if(take(page)){complete=true;break;}if(p===1)complete=true;}
+     if(!complete)issues.push('Tagesordnungsliste der Körperschaft nur teilweise gelesen (60 Seiten).');
+    }
+   }catch(e){issues.push('Tagesordnungsliste: '+e.message);}
+   for(const [m,list] of agendaOf)list.sort((a,b)=>Number(a.order??0)-Number(b.order??0));
+  }
+ }
  // marks (optional): what earlier imports read completely, see meeting-marks.mjs. The meeting object says when it
  // was last modified and lists its agenda; if that is unchanged, the items, papers and files behind it are not
  // asked again. An import that ran out of time or requests continues behind the meetings it read.
@@ -177,6 +213,7 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
   let org=null;
   if(filter){const found=[];for(const o of [].concat(m.organization||[])){const id=typeof o==='string'?o:o?.id||'';try{const x=await object(o);found.push({id:x?.id||id,name:clean(x?.name),shortName:clean(x?.shortName)});}catch(e){if(exhausted(e.message)){spent=true;unread++;issues.push(e.message);return;}found.push({id,name:'',shortName:''});}}
    const verdict=filter(found);if(verdict!=='kept'){skipped[verdict]++;return;}org=found.map(o=>o.name||o.shortName||'Gremium laut Originalquelle');}
+  if(agendaOf&&!m.agendaItem&&m.id)m={...m,agendaItem:agendaOf.get(allowed(m.id))||[]};
   const print=(await hash(JSON.stringify([m.modified||'',(m.agendaItem||[]).map(a=>typeof a==='string'?a:[a.id,a.modified||'',a.result||''])]))).slice(0,16);
   if(known?.print===print){held[meeting.url]=marks.known[meeting.url];unchanged++;return;}
   // What went wrong while reading this meeting; a meeting with a failure is read again next time.

@@ -387,7 +387,7 @@ Bisher stand bei jeder angebundenen Quelle nur das robots-Urteil ihres Pfades, g
 
 robots.txt gilt nur für HTML-Seiten; über OParl oder eine Schnittstelle entscheidet es nie, auch nicht mit `ROBOTS_POLICY=obey`. Geändert wurde dafür, was bisher mit der alten Regel zu früh an robots.txt hing: Die Leser für Hamburg (CKAN) und für die offenen Daten des Abgeordnetenhauses fragen robots.txt nicht mehr; die OParl-Systeme der Berliner Bezirke hält nur noch HTTP 401/403 ab (`eligibleSystems`); `verify.mjs` sperrt mit `ROBOTS_POLICY=obey` nur HTML-Pfade (OParl-Probeadressen und Leser, die eine Schnittstelle lesen, laufen immer; neben einer gesperrten HTML-Seite wird OParl trotzdem geprüft); `oparl-register.mjs` und die WordPress-Schnittstelle der Website-Suche filtern nicht mehr nach robots.txt; `stadtstaaten.mjs` schaltet Hamburg nicht mehr wegen robots.txt ab; der Grund einer robots-Sperre heißt „robots.txt sperrt den HTML-Zugriff auf das gefundene System (keine OParl-Schnittstelle oder API gefunden)“. Welcher Leser welchen Kanal liest, steht in `READER_CHANNELS`: OParl (Methode `oparl`, Berliner Bezirke), Schnittstelle (CKAN: Hamburg und `ckan`; offene Daten: Berlin; JSON: KIC/komuna, SessionNet 6, More! Rubin, mein-intra; `official-api`), alle übrigen lesen HTML-Seiten.
 
-**Stand (06.10.2026, 15:00), alle 5.324 Gebiete:** 244 OParl verfügbar, 796 API verfügbar, 1.509 Scraping erlaubt, 1.252 robots.txt sperrt HTML-Zugriff (davon 1.187 angebunden, weil robots.txt seit dem 05.10.2026 nicht befolgt wird), 608 Zugriffsschutz, 96 System ohne Leser, 819 kein maschinenlesbarer Zugriff gefunden. Ohne automatisierten Zugriff sind 1.427 Gebiete (Zugriffsschutz oder nichts gefunden); bei allen übrigen ist höchstens der HTML-Zugriff durch robots.txt eingeschränkt. Offene Gebiete werden aus dem Grund ihrer letzten Prüfung eingeordnet (`accessOfReason`), angebundene aus ihrem Leser und dem robots-Urteil.
+**Stand (06.10.2026, 16:00), alle 5.324 Gebiete:** 251 OParl verfügbar, 796 API verfügbar, 1.531 Scraping erlaubt, 1.252 robots.txt sperrt HTML-Zugriff (davon 1.187 angebunden, weil robots.txt seit dem 05.10.2026 nicht befolgt wird), 592 Zugriffsschutz, 91 System ohne Leser, 811 kein maschinenlesbarer Zugriff gefunden. Ohne automatisierten Zugriff sind 1.403 Gebiete (Zugriffsschutz oder nichts gefunden); bei allen übrigen ist höchstens der HTML-Zugriff durch robots.txt eingeschränkt. Offene Gebiete werden aus dem Grund ihrer letzten Prüfung eingeordnet (`accessOfReason`), angebundene aus ihrem Leser und dem robots-Urteil.
 
 **Anzeige.** Lückenatlas: Bereich „Wie Programme die Gebiete lesen können“ (Balken und Filter je Status, Gruppen „Maschinell lesbar“ und „Kein automatisierter Zugriff“), Kartenfarbe umschaltbar „Anbindung | Zugang“, in der Detailansicht Zugang mit Kanal und das robots-Urteil in Worten („gilt aber nicht für die Schnittstelle“ bzw. „sperrt die HTML-Seiten“). Recherche-Kandidaten stehen nur noch bei offenen Gebieten. Administration: Zugang je Gebiet in der Quellenliste, als Kartenfarbe „Zugang“, als CSV-Spalte und als Filter („Nur HTML-Zugriff durch robots.txt eingeschränkt“, „Kein automatisierter Zugriff“). Angebundene Quellen bekommen den Status beim Laden der Admin-Daten aus Katalog und `source-robots.json`, offene Gebiete aus `server/integrations/source-access.json`; diese Datei schreibt `node scripts/dashboard/build.mjs` (jeder Lauf ohne `OUT`).
 
@@ -435,31 +435,40 @@ Anlass: Für die Stadt Sonnewalde meldete der Bericht „kein Link“, obwohl ih
 
 ## Ausweitung vom 05./06.10.2026
 
-Aufträge vom 05.10.2026: Teil 1 (robots.txt festhalten statt befolgen, Neuprüfung, Leser für RIS-Portal und komuna), Teil 2 (Adminseite, Freigaben, Funde von Hand, Website-Leser, gemeinsame Systeme, Qualitätsprüfung). Angebunden sind jetzt **3.498 von 5.324 Gebieten (65,7 %)**, vorher 2.117 (39,8 %):
+Aufträge vom 05.10.2026: Teil 1 (robots.txt festhalten statt befolgen, Neuprüfung, Leser für RIS-Portal und komuna), Teil 2 (Adminseite, Freigaben, Funde von Hand, Website-Leser, gemeinsame Systeme, Qualitätsprüfung). Angebunden sind jetzt **3.542 von 5.324 Gebieten (66,5 %)**, vorher 2.117 (39,8 %):
 
 | Land | vorher | nachher | neu | Gebiete |
 |---|---:|---:|---:|---:|
-| Schleswig-Holstein | 86 (47,8 %) | 120 (66,7 %) | +34 | 180 |
+| Schleswig-Holstein | 86 (47,8 %) | 124 (68,9 %) | +38 | 180 |
 | Hamburg | 0 (0,0 %) | 1 (100,0 %) | +1 | 1 |
-| Niedersachsen | 267 (60,7 %) | 298 (67,7 %) | +31 | 440 |
+| Niedersachsen | 267 (60,7 %) | 301 (68,4 %) | +34 | 440 |
 | Bremen | 1 (50,0 %) | 1 (50,0 %) | +0 | 2 |
-| Nordrhein-Westfalen | 333 (78,0 %) | 345 (80,8 %) | +12 | 427 |
-| Hessen | 129 (29,2 %) | 251 (56,8 %) | +122 | 442 |
-| Rheinland-Pfalz | 154 (79,4 %) | 163 (84,0 %) | +9 | 194 |
-| Baden-Württemberg | 364 (32,0 %) | 756 (66,5 %) | +392 | 1.136 |
-| Bayern | 393 (27,0 %) | 915 (62,8 %) | +522 | 1.456 |
-| Saarland | 34 (58,6 %) | 40 (69,0 %) | +6 | 58 |
+| Nordrhein-Westfalen | 333 (78,0 %) | 346 (81,0 %) | +13 | 427 |
+| Hessen | 129 (29,2 %) | 262 (59,3 %) | +133 | 442 |
+| Rheinland-Pfalz | 154 (79,4 %) | 168 (86,6 %) | +14 | 194 |
+| Baden-Württemberg | 364 (32,0 %) | 761 (67,0 %) | +397 | 1.136 |
+| Bayern | 393 (27,0 %) | 923 (63,4 %) | +530 | 1.456 |
+| Saarland | 34 (58,6 %) | 41 (70,7 %) | +7 | 58 |
 | Berlin | 0 (0,0 %) | 1 (100,0 %) | +1 | 1 |
-| Brandenburg | 74 (35,7 %) | 146 (70,5 %) | +72 | 207 |
-| Mecklenburg-Vorpommern | 55 (45,1 %) | 77 (63,1 %) | +22 | 122 |
+| Brandenburg | 74 (35,7 %) | 147 (71,0 %) | +73 | 207 |
+| Mecklenburg-Vorpommern | 55 (45,1 %) | 80 (65,6 %) | +25 | 122 |
 | Sachsen | 116 (36,4 %) | 174 (54,5 %) | +58 | 319 |
 | Sachsen-Anhalt | 74 (55,6 %) | 108 (81,2 %) | +34 | 133 |
-| Thüringen | 37 (18,0 %) | 102 (49,5 %) | +65 | 206 |
-| **Deutschland** | **2.117 (39,8 %)** | **3.498 (65,7 %)** | **+1.381** | **5.324** |
+| Thüringen | 37 (18,0 %) | 104 (50,5 %) | +67 | 206 |
+| **Deutschland** | **2.117 (39,8 %)** | **3.542 (66,5 %)** | **+1.425** | **5.324** |
 
 „vorher“: Stand vor Teil 1 (Commit 67e80f3), „nachher“: Builds vom 06.10.2026, 07:30, und der Build der übrigen Länder nach dem behutsamen Website-Lauf für die 264 Gemeinden auf verwaltungsportal.de (06.10.2026, 14:00; `node tmp/quality/coverage.mjs` zählt beides). Dieser Lauf brachte 22 Gebiete hinzu (Hessen 7, Brandenburg 4, Baden-Württemberg 3, Thüringen 3, Sachsen 2, je eins in Schleswig-Holstein, Bayern und im Saarland), alle über den Website-Leser. 21 davon liegen auf einem Rechner des Anbieters (144.76.55.199); der Abruf liest sie als eine Rechnergruppe mit höchstens zwei gleichzeitigen Anfragen. Der Anbieter sperrte am 05.10.2026 einen dichteren Suchlauf; weist er Programme wieder ab, endet der Abruf dort ohne Wiederholung.
 
 **Neuprüfung vom 06.10.2026, 15:00** (`tmp/recheck-2026-10-06/`): Die 180 Gebiete, deren Lesen scheiterte, und die 71 Gebiete, deren letzte Prüfung robots.txt befolgt hatte, wurden mit den heutigen Lesern erneut geprüft, jeweils in dem Prüfdurchgang, aus dem ihr Ergebnis stammt (18 Läufe, 321 Prüfungen). 8 Gebiete sind neu angebunden (ALLRIS 4: Kreis Soest, Amt Breitenfelde, Amt Elmshorn-Land, Ebersburg; SessionNet: Stadt Fürth; KIC: VG Untersteinach; Website: Samtgemeinden Lindhorst und Brookmerland), 10 stehen jetzt richtig unter „Zugriffsschutz“. Die übrigen scheitern auch heute, und zwar nicht am Leser: Stichproben (Rems-Murr-Kreis bei komm.one, die Mitgliedsgemeinden des GVV Altshausen, die SessionNet-Systeme bei digitalfabrix.de) zeigen leere öffentliche Kalender und Gremienlisten; 13 der 16 „SD.NET“-Gebiete verlinken in Wahrheit ein System bei ratsinfomanagement.net, das Programmen mit HTTP 403 antwortet; ALLRIS bei sitzung-online.de verlangt teils eine Zugriffsprüfung (Bad Oeynhausen), die nicht umgangen wird.
+
+**Schnittstellen neben gesperrten Systemen, 06.10.2026, 16:00** (`tmp/api-search/`): Alle offenen Gebiete wurden darauf geprüft, ob neben ihrem gesperrten, leeren oder unbekannten System eine Schnittstelle bereitsteht; robots.txt spielte dabei keine Rolle, technische Sperren wurden nicht umgangen. +44 Gebiete:
+- **OParl an den Herstellerpfaden** (je Rechner eine Anfrage zur Zeit; `oparl-probe.mjs`): ALLRIS 4 `/oparl/system` (bei sitzung-online.de seit 2026 außerhalb der Zugriffsprüfung der HTML-Seiten), ALLRIS 3 `/bi/oparl/1.0/system.asp`, SD.NET `/webservice/oparl/v1.1/system`. Angebunden: Porta Westfalica, Coburg, Wadern, VG Bad Ems-Nassau, VG Höhr-Grenzhausen (Körperschaft von Hand bestimmt, das System führt auch die Ortsgemeinden).
+- **SD.NET RIM bei ratsinfomanagement.net und ekom21** (`rim-oparl.mjs`, alle 376 offenen Mandanten je einmal): der Webservice antwortet Programmen auch dort, wo die HTML-Seiten 403 liefern, meldet aber bei 349 „Webservice OParl ist nicht aktiviert“. Freigeschaltet bei 17; angebunden: Glashütten, Jossgrund, Lichtenfels, Ludwigsau, Ranstadt, Frankenberg (Eder), Mengerskirchen. Neun weitere (u. a. Rüsselsheim, Fulda, Bad Vilbel, Landkreis Limburg-Weilburg, Kronberg) liefern Tagesordnungen ohne Kennzeichnung öffentlicher Punkte; die Lücken in der Nummerierung deuten darauf, dass die Schnittstelle nichtöffentliche Punkte gar nicht ausgibt, belegt ist das nicht. Sie bleiben offen, bis der Hersteller das bestätigt.
+- **Verzeichnisse:** GovData (143 Datensätze zu Ratsinformationen; die OParl-Einträge betreffen nur schon angebundene Städte), das Endpunktverzeichnis des OParl-Projekts (dev.oparl.org, 127 Einträge, 9 offene Gebiete; die Einträge von Itzstedt, Boppard, Trave-Land, Hagenbach, Ludwigslust-Parchim, Eschwege und Hagen antworten nicht oder mit 403), die zentrale OParl-Schnittstelle von KRZ Lemgo/OWL-IT (28 Mandanten, keiner offen).
+- **Websites** der 360 offenen Gebiete, deren Website noch nie geprüft war (gesperrtes, leeres oder unbekanntes System; behutsam: eine Anfrage je Server, 2,5 s Pause): 32 Gebiete über den Website-Leser, u. a. Konstanz, Freising, Pfaffenhofen a.d.Ilm, Vellmar, Templin, Landkreise Günzburg, Vorpommern-Greifswald und Bernkastel-Wittlich. Die Ratssysteme dieser Gebiete werden dabei nie gelesen.
+- **Leser:** `public-agenda.mjs` erkennt die Abschnitte von SD.NET („Sitzungsteil öffentlich“, „Sitzungsteil nicht öffentlich“; „nicht“ irgendwo in der Überschrift schließt den öffentlichen Teil). `oparl-regional.mjs` liest die Tagesordnung aus der Liste der Körperschaft (`body.agendaItem`), wenn die Sitzungen keine enthalten (ALLRIS bei sitzung-online.de), und nutzt den Filter `modified_since` nicht, wenn das System überall das Platzhalterdatum 01.01.2000 trägt (dann 100 Einträge je Seite, vom Ende der Liste).
+- **Stichprobe** (`tmp/quality/check.mjs`, 16 neue Quellen, ein Monat): keine falsche Quelle; zwei Gremien mit Ortsteilnamen (Konstanz: Dettingen-Wallhausen, Templin: Storkow) sind Fehlalarme, Titel mit „nicht öffentlich“ sind Bekanntgaben nichtöffentlicher Beschlüsse.
+- **Ohne Lösung:** Kommune aktiv (135 Gebiete; keine Schnittstelle bekannt), OParl der Stadt Langenhagen (Daten seit 22.06.2026 nicht nachgeführt), ALLRIS bei sitzung-online.de mit Zugriffsprüfung auch vor der OParl-Adresse (Itzstedt, Boppard, Bitburg-Prüm, Tangstedt: 403).
 
 **Neu angebunden nach Weg (1.374):** RIS-Portal 503, komuna (KIC) 347, Website der Kommune 188, SessionNet 124, ALLRIS 3 62, ALLRIS 4 59, Sitzungsdienst mein-intra (councilservice) 38, More! Rubin 14, OParl 12, KOMFA-RIS 11, KIC 8, SessionNet 6 2, TI-Generator 2, cron Ratsinfo 1, SD.NET 1, Hamburg und Berlin. 31 Einträge lesen nur ihren Teil eines gemeinsamen Systems.
 

@@ -4,9 +4,11 @@
 // areas by them (website.mjs REASONS); a text is changed only together with its meaning.
 import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 
-// Check results of other stages besides verified.json. Accepted sources count in this order; verified-website.json
+// Check results of other stages besides verified.json. Accepted sources count in this order; the interfaces found next
+// to blocked or empty systems come first (verified-api.json: vendor OParl paths, verified-api-register.json: the OParl
+// project's directory; tmp/api-search/, 06.10.2026). verified-website.json
 // (website.mjs) comes last, so it adds an area only where no check of a council information system accepted one.
-export const ACCEPTED_FILES=['verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-research.json','verified-hosted.json','verified-consents.json','verified-fix.json','verified-website.json'];
+export const ACCEPTED_FILES=['verified-api.json','verified-api-register.json','verified-api-rim.json','verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-research.json','verified-hosted.json','verified-consents.json','verified-fix.json','verified-website.json'];
 // Candidates set on purpose for one area (web search, diagnosis, correction): a check of them without a source still
 // says more than the check of the links of the website, so it stands in the report (the later file wins).
 // verified-research.json holds the checks of the candidates from the research per Land (candidates/research-*.json).

@@ -330,6 +330,25 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.katlenburglindau.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03155009",
+    "name": "Stadt Moringen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.moringen.de/",
+    "pages": [
+      "https://www.moringen.de/stadt-moringen/aktuelles-archiv/bericht-der-buergermeisterin-ueber-wichtige-angelegenheiten-und-ueber-beschluesse-des-verwaltungsausschuss/",
+      "https://www.moringen.de/stadt-moringen/aktuelles-archiv/bericht-der-buergermeisterin-ueber-wichtige-angelegenheiten-und-ueber-beschluesse-des-verwaltungsausschuss-oktober/",
+      "https://www.moringen.de/stadt-moringen/rathaus/bekanntmachungen/",
+      "https://www.moringen.de/stadt-moringen/aktuelles-archiv/bericht-der-buergermeisterin-ueber-wichtige-angelegenheiten-und-ueber-beschluesse-des-verwaltungsausschuss-oktober-1/",
+      "https://www.moringen.de/stadt-moringen/aktuelles-archiv/umlaufbeschluss-des-stadtrates-zur-aufnahme-in-das-sofortprogramm-perspektive-innenstadt/"
+    ],
+    "sitemap": "https://www.moringen.de/sitemap.xml",
+    "verifiedSource": "http://www.moringen.de",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nds-03155011",
     "name": "Stadt Northeim",
     "kind": "city",
@@ -938,6 +957,24 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.aerzen.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03252002",
+    "name": "Stadt Bad Münder am Deister",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bad-muender.de/",
+    "pages": [
+      "https://www.bad-muender.de/rathaus/service/bekanntmachungen.html?start=11"
+    ],
+    "feeds": [
+      "https://www.bad-muender.de/rathaus/service/bekanntmachungen.feed?type=rss",
+      "https://www.bad-muender.de/rathaus/service/bekanntmachungen.feed?type=atom"
+    ],
+    "verifiedSource": "https://www.bad-muender.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nds-03252003",
     "name": "Stadt Bad Pyrmont",
     "kind": "city",
@@ -1207,6 +1244,20 @@
     "verifiedSource": "https://www.weser-aue.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.weser-aue.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03257009",
+    "name": "Stadt Bückeburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bueckeburg.de/",
+    "pages": [
+      "https://www.bueckeburg.de/willkommen"
+    ],
+    "verifiedSource": "https://www.bueckeburg.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "nds-03257028",

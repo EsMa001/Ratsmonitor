@@ -1942,6 +1942,18 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "nrw-05770032",
+    "name": "Stadt Porta Westfalica",
+    "kind": "city",
+    "system": "https://sitzungsdienst.portawestfalica.de/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://sitzungsdienst.portawestfalica.de/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-06",
+    "foundBy": "OParl-Pfad des Herstellers"
+  },
+  {
     "id": "nrw-05774",
     "name": "Kreis Paderborn",
     "kind": "district",
