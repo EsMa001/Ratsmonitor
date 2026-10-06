@@ -20,6 +20,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | Eigene Auswahlliste (statt `<select>`) | `components/FilterSelect.tsx` |
 | Rückfrage-Fenster (statt `confirm`): `confirmDialog({title,text,confirmLabel})` | `components/ConfirmDialog.tsx` |
 | Zuletzt gesucht (Verlauf im Browser) | `lib/recentSearches.ts`, angezeigt in `components/SearchBox.tsx` |
+| Marke: Standard ist Plenara, Logo „Plenara v2 ■“ (`lib/brands.ts` → `DEFAULT_LOGO`); alle Logo-Varianten in `components/Brand.tsx`, Wechsel-Logik `lib/brand.ts` (`setLogo`), Umschalter `components/DevBrandSwitcher.tsx` ist nicht eingebunden (in `App.tsx` wieder rendern, um ihn zu nutzen) |
 | Tab-Titel und Tab-Symbol je Marke | `App.tsx` (`useBrandTitle`), `lib/favicon.ts` |
 | 404-Seite | `info/NotFoundPage.tsx`, erkannt über `isKnownPath` in `App.tsx` |
 | Zeile über Trefferliste (Anzahl, Sortierung, Export, Ansicht) | `components/SearchFilterPanel.tsx` |

@@ -36,8 +36,8 @@ export const LOGOS: Record<LogoId, { brand: BrandId; label: string }> = {
 };
 export const LOGO_IDS = Object.keys(LOGOS) as LogoId[];
 
-/** Variante im Produktivbetrieb und ohne gespeicherte Auswahl */
-export const DEFAULT_LOGO: LogoId = "quorumo-v2o";
+/** Variante im Produktivbetrieb und ohne gespeicherte Auswahl: Name „Plenara“, Logo „Plenara v2 ■“ (quadratischer Punkt). Alle anderen Varianten und der Umschalter (setLogo, DevBrandSwitcher) bleiben erhalten. */
+export const DEFAULT_LOGO: LogoId = "plenara-v2sq";
 export const DEFAULT_BRAND: BrandId = LOGOS[DEFAULT_LOGO].brand;
 
 export const PAGE_TAGLINE = "Politik für Ihre Region";
