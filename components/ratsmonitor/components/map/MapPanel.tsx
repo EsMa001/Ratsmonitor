@@ -230,9 +230,10 @@ export function MapPanel({ active }: { active: boolean }) {
     engine.focusArea("");
   };
   useEffect(() => {
-    if (!loading && !pending) center();
+    /* Erst nach Enter (Kartenmodus) auf die Treffer zentrieren; ohne Suche und Filter zurück auf Deutschland */
+    if (!loading && !pending && (explore || !filtered)) center();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, loading, pending, hitsKey, state.area, state.scope, state.radius, moreKey, filtered]);
+  }, [engine, loading, pending, hitsKey, state.area, state.scope, state.radius, moreKey, filtered, explore]);
 
   /* Platz für Vorschläge und Filter innerhalb der Karte (unterhalb der mittigen Suchleiste, im Kartenmodus oberhalb) */
   /* Suchleiste unten: im Kartenmodus und auf dem Handy, sobald gesucht oder gefiltert wurde */
