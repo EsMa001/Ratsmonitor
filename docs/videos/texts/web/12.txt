@@ -1,6 +1,6 @@
 Welche Orte und Gremien sind bei Plenarra enthalten?
 Das zeigt die Seite Datenabdeckung.
-Sie erreichen sie über das Menü unter Informationen.
+Sie erreichen sie über den Menüpunkt Datenabdeckung oben in der Kopfzeile.
 Oben sehen Sie, wie viele Gebiete schon Daten haben und wie viele Vorgänge erfasst sind.
 Außerdem steht dort, wann die Daten zuletzt abgerufen wurden.
 Mit der Suche finden Sie Ihre Gemeinde oder Ihren Kreis und sehen, wie aktuell der Stand dort ist.
