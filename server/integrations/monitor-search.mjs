@@ -43,7 +43,7 @@ export function parseMonitorSearch(params){
 /* Spalten einer Ergebniszeile (mit den Stationen des Vorgangs), gemeinsam für Seite und Strom */
 const ROW_SELECT=`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards`;
 /* Strom: Karten in Stücken nach Datum durchsuchen (erstes Stück klein, dann wachsend) */
-const STREAM_FIRST=2000,STREAM_MAX=150000;
+const STREAM_FIRST=2000,STREAM_MAX=150000,SMALL_SCOPE=30;
 const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision";
 /*
  * Gebiet als SQL-Bedingung. Eine lange Einschlussliste (ohne Ort: alle 5.030 Gemeinden) zwingt SQLite, über den
@@ -137,7 +137,8 @@ export async function searchMonitor(db,catalog,params){
   return {stream:(async function*(){
    const revision=String((await db.prepare(REVISION_SQL).first())?.revision??0);
    /* Seltenes Wort: alle Treffer stehen in der Kandidatenliste, eine einzige Abfrage genügt */
-   if(candidates){
+   /* Kleiner Ort (wenige Gebiete): der Gebietsindex liefert die Treffer direkt, eine einzige Abfrage genügt auch ohne Kandidatenliste */
+   if(candidates||(places.length||f.within)&&scopedIds.size<=SMALL_SCOPE){
     const res=await db.prepare(`${ROW_SELECT} WHERE ${page.where} ORDER BY date DESC,id ASC LIMIT ?`).bind(...page.args,limit+1).all();
     yield {known:res.results.length?'yes':'no'};
     if(res.results.length)yield {articles:mapStream(res.results.slice(0,limit))};
@@ -173,13 +174,18 @@ export async function searchMonitor(db,catalog,params){
  const facetSql=db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args);
  /* Häufiges Wort ohne Filter: die Zahlen je Gebiet, Thema und Status stehen vorberechnet in der Wortliste, dann entfällt die
     Gruppierung über alle Einträge. null: wie gewohnt gruppieren. */
- const plainSearch=!f.area&&!f.label&&!f.status&&!f.month&&!f.from&&!f.more.length&&!f.within&&!f.without&&!f.noformal;
+ /* Ort und Umkreis zählen nicht als Filter für die Gebietszahlen (die Karte zählt über alle Gebiete): die kommen weiter vorberechnet,
+    nur Thema und Status werden dann im kleinen Ort selbst gezählt (placeSql) */
+ const placeScoped=scopedIds.size<regions.length;
+ const plainSearch=!f.label&&!f.status&&!f.month&&!f.from&&!f.noformal&&(placeScoped||(!f.area&&!f.more.length&&!f.within&&!f.without));
  const pre=(f.part==='facets'||f.part==='')&&plainSearch&&!f.exact&&f.groups.length===1&&f.groups[0].length===1&&!cand
   ?await precomputedFacets(db,f.groups[0][0],{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameIds}):null;
  /* Reihenfolge der Antwort: Datenstand, dann je nach part die Seite und/oder die Zähler (Gruppierung) */
- const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'||pre?[]:[facetSql])];
+ /* Vorberechnete Gebietszahlen mit Ort: Thema und Status nur für die Gebiete des Orts zählen */
+ const placeSql=pre&&placeScoped?(()=>{const b=base(),region=regionCondition([...scopedIds],catalog);return db.prepare(`SELECT label,status,count(*) n FROM search_cards WHERE ${[region.sql,...b.where].join(' AND ')} GROUP BY label,status`).bind(region.arg,...b.args);})():null;
+ const statements=[db.prepare(REVISION_SQL),...(f.part==='facets'?[]:[pageSql]),...(f.part==='page'||pre?[]:[facetSql]),...(placeSql?[placeSql]:[])];
  const answers=await db.batch(statements);
- const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],groups=pre?{results:[]}:answers[answers.length-1];
+ const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],placeRows=placeSql?answers[answers.length-1]:null,groups=pre?{results:[]}:answers[answers.length-1];
  const revision=String(rev.results[0].revision);
  const mapRows=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
  if(f.revision!==null&&f.revision!==revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);
@@ -193,8 +199,8 @@ export async function searchMonitor(db,catalog,params){
  const perRegion=new Map();
  if(pre){
   /* Vorberechnet: ohne Filter liegt jedes Gebiet der Ebene im Umfang, Thema und Status sind die Summen der Wortliste */
-  for(const [rid,n] of pre.regions){if(!byId.has(rid))continue;perRegion.set(rid,n);total+=n;}
-  for(const r of pre.facets){
+  for(const [rid,n] of pre.regions){if(!byId.has(rid))continue;perRegion.set(rid,n);if(scopedIds.has(rid))total+=n;}
+  for(const r of placeRows?placeRows.results:pre.facets){
    const name=LABELS.find(l=>l.id===r.label)?.name||'Noch nicht eingeordnet';
    labelCounts[name]=(labelCounts[name]||0)+r.n;statusCounts[r.status]=(statusCounts[r.status]||0)+r.n;
   }
