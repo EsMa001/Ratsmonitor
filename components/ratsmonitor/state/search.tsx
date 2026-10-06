@@ -91,21 +91,13 @@ export function SearchProvider({ children }: { children: ReactNode }) {
      wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */
   const shown=useRef(live);
   if(!live.loading)shown.current=live;
-  const derived=useMemo(()=>live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true}:live,[live]);
-  /* Wann was zu sehen ist: In den ersten 0,5 s passiert nichts. Sind die ersten Treffer bis dahin da, wechseln Karte und
-     Liste sofort und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl feststeht. Fehlen sie nach 0,5 s noch,
-     steht der Ladering im Suchfeld, bis auch die genaue Zahl da ist (dann keine Punkte). Nie beides zugleich. */
+  const derived=useMemo(()=>live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live]);
+  /* Wann was zu sehen ist (siehe useDerivedResults): In den ersten 0,5 s passiert nichts. Sind die Treffer bis dahin da
+     oder wenigstens schon im Kommen, wechseln Karte und Liste, und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl
+     feststeht. Ist nach 0,5 s noch kein Treffer da, steht der Ladering, und alles erscheint erst, wenn die Suche samt
+     genauer Zahl fertig ist (dann keine Punkte). Nie beides zugleich. */
   const searching=derived.pending||derived.totalPending;
-  const pendingNow=useRef(false);
-  pendingNow.current=derived.pending;
-  const [slow,setSlow]=useState(false);
-  useEffect(()=>{
-    setSlow(false);
-    const t=window.setTimeout(()=>{if(pendingNow.current)setSlow(true);},500);
-    return()=>window.clearTimeout(t);
-  },[live.key,live.page]);
-  useEffect(()=>{if(!searching)setSlow(false);},[searching]);
-  const results=useMemo<SearchResults>(()=>({...derived,searching,showRing:slow&&searching,showDots:!slow&&!derived.pending&&derived.totalPending}),[derived,searching,slow]);
+  const results=useMemo<SearchResults>(()=>({...derived,searching,showRing:derived.pending&&derived.ringMode,showDots:!derived.pending&&derived.totalPending}),[derived,searching]);
   const [popup, setPopupState] = useState("");
   const ref = useRef(state);
   ref.current = state;
@@ -292,6 +284,7 @@ export interface CoverageEntry {ags:string;name:string;count:number;complete:boo
 /** Was die Hook selbst liefert; Ring und Punkte kommen aus dem Provider (siehe dort) */
 type LiveResults=Omit<SearchResults,'showRing'|'showDots'|'searching'>;
 export interface SearchResults {
+ /** Suche dauert über 0,5 s und hat noch keinen Treffer gezeigt: Ladering bis alles fertig ist */ringMode:boolean;
  /** Suche läuft noch: neue Treffer oder genaue Zahl fehlen */searching:boolean;/** Ladering im Suchfeld (Suche dauert über 0,5 s) */showRing:boolean;/** Punkte an der Trefferzahl (erste Treffer schnell da, Zahl noch nicht) */showDots:boolean;
  total:number;/** Genaue Trefferzahl noch unterwegs */totalPending:boolean;/** Es gibt eine weitere Seite (auch ohne die genaue Gesamtzahl) */hasMore:boolean;coverage:CoverageEntry[];
   /** Abfrage der aktuellen Suche (für Export), ohne Seite */
@@ -340,6 +333,22 @@ async function fetchSearch(query:string,signal?:AbortSignal):Promise<ResponseDat
  if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
  return {...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))};
 }
+/** Erste Seite als Strom (NDJSON): jede Etappe ruft onChunk auf, am Ende kommt end mit hasMore und Datenstand */
+async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string}|null)=>void){
+ const response=await fetch('/api/search?'+query,{signal});
+ if(!response.ok||!response.body){const d=await response.json().catch(()=>({})) as {error?:string};throw Error(d.error||'Die Suche konnte nicht geladen werden.');}
+ const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='';
+ for(;;){
+  const {done,value}=await reader.read();if(done)break;
+  buffer+=decoder.decode(value,{stream:true});
+  for(let i=buffer.indexOf('\n');i>=0;i=buffer.indexOf('\n')){
+   const line=JSON.parse(buffer.slice(0,i)) as {articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string};buffer=buffer.slice(i+1);
+   if(line.error)throw Error(line.error);
+   if(line.articles)onChunk(line.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''})),null);
+   if(line.end)onChunk([],{hasMore:!!line.hasMore,revision:line.revision??''});
+  }
+ }
+}
 /** Sucht im Voraus (erste Seite), ohne etwas anzuzeigen; Umkreissuchen und bereits Vorhandenes werden übersprungen */
 function warmSearch(local:{key:string;around:unknown}){
  if(local.around)return;
@@ -386,9 +395,9 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  useEffect(()=>{if(!active||cover[state.level])return;const abort=new AbortController();loadCover(state.level,abort.signal).catch(()=>{});return()=>abort.abort();},[active,state.level,cover,loadCover]);
  /* Abfrage für Seite oder Zähler. Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs).
     Welche Gebiete Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
- const buildQuery=useCallback(async(page:number,part:'page'|'facets',signal:AbortSignal)=>{
+ const buildQuery=useCallback(async(page:number,part:'page'|'facets'|'stream',signal:AbortSignal)=>{
   const params=new URLSearchParams(local.key);params.delete('around');params.set('part',part);
-  if(part==='page'){params.set('page',String(page));if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);}
+  if(part!=='facets'){params.set('page',String(page));if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);}
   if(local.around){
    const {set,level}=local.around;
    if(!set)params.set('within','');
@@ -400,7 +409,10 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   }
   return params.toString();
  },[local,loadCover]);
- const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string}>({key:'',data:null,error:''});
+ const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string;final:boolean}>({key:'',data:null,error:'',final:true});
+ /* Dauert die Suche über 0,5 s: sind schon Treffer da („partial“), erscheinen sie und weitere fliegen ein; sonst („ring“) steht
+    der Ladering und alles erscheint erst auf einmal, wenn die Suche samt genauer Zahl fertig ist. Vorher passiert nichts. */
+ const [mode,setMode]=useState<{key:string;value:'ring'|'partial'}>({key:'',value:'partial'});
  const requestKey=searchKey(local.key,page,attempt);
  /* Wann gesucht wird: Die erste Suche geht sofort hinaus. Beim Tippen wird erst nach 400 ms Ruhe und erst ab 3 Buchstaben
     im Voraus gesucht (die Kurzsuchen sind am teuersten und bleiben unsichtbar, die Seite wechselt erst nach Enter). Enter
@@ -415,32 +427,50 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  useEffect(()=>{
   if(!active)return;
   const hit=freshSearch(requestKey);
-  if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};setRemote({key:requestKey,data:hit,error:''});return;}
-  const abort=new AbortController();let timer=0,started=false;
+  if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};setRemote({key:requestKey,data:hit,error:'',final:true});return;}
+  const abort=new AbortController();let timer=0,decide=0,started=false;
   const start=()=>{
    if(started)return;
    started=true;clearTimeout(timer);flush.current=null;lastText.current=local.text;sent.current=true;
+   /* Strom nur für die erste Seite, neueste zuerst, und wenn nicht schon eine Vorab-Anfrage dafür läuft */
+   const streamed=page===1&&new URLSearchParams(local.key).get('sort')==='desc'&&!INFLIGHT.has(requestKey);
+   const acc:Article[]=[];let finished=false;
+   decide=window.setTimeout(()=>{if(!finished&&!abort.signal.aborted)setMode({key:requestKey,value:streamed&&acc.length?'partial':'ring'});},500);
    (async()=>{
     try{
-     const query=await buildQuery(page,'page',abort.signal);
-     /* Läuft für dieselbe Suche schon eine Vorab-Anfrage (Tippen, Überfahren eines Vorschlags), wird deren Antwort genutzt */
-     const ready=await (INFLIGHT.get(requestKey)??fetchSearch(query,abort.signal));
+     const query=await buildQuery(page,streamed?'stream':'page',abort.signal);
+     let ready:ResponseData;
+     if(streamed){
+      let end={hasMore:false,revision:''};
+      await fetchStream(query,abort.signal,(items,last)=>{
+       if(last){end=last;return;}
+       acc.push(...items);
+       if(!abort.signal.aborted)setRemote({key:requestKey,data:{articles:[...acc],total:0,revision:''} as unknown as ResponseData,error:'',final:false});
+      });
+      ready={articles:acc,total:0,hasMore:end.hasMore,revision:end.revision} as unknown as ResponseData;
+     }else{
+      /* Läuft für dieselbe Suche schon eine Vorab-Anfrage (Tippen, Überfahren eines Vorschlags), wird deren Antwort genutzt */
+      ready=await (INFLIGHT.get(requestKey)??fetchSearch(query,abort.signal));
+     }
      if(abort.signal.aborted)return;
+     finished=true;
      revision.current={key:local.key,value:ready.revision};
      rememberSearch(requestKey,ready);
-     setRemote({key:requestKey,data:ready,error:''});
-    }catch(e){if(!abort.signal.aborted)setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.'});}
+     setRemote({key:requestKey,data:ready,error:'',final:true});
+    }catch(e){if(!abort.signal.aborted){finished=true;setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.',final:true});}}
    })();
   };
   const typing=local.text!==lastText.current,t=local.text.trim();
   flush.current=start;
   /* 1 bis 2 neue Buchstaben: noch nicht suchen, nur bei Enter oder Auswahl (flush) */
   if(!(typing&&t.length>0&&t.length<3))timer=window.setTimeout(start,!sent.current?0:typing&&t?400:180);
-  return()=>{clearTimeout(timer);abort.abort();if(flush.current===start)flush.current=null;};
+  return()=>{clearTimeout(timer);clearTimeout(decide);abort.abort();if(flush.current===start)flush.current=null;};
  },[active,local.key,page,attempt,requestKey,buildQuery]);
  /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht) */
  const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});
- const pageReady=remote.key===requestKey&&!!remote.data;
+ const modeNow=mode.key===requestKey?mode.value:null;
+ /* Zähler starten, sobald die Seite fertig ist; bei langer Suche (nach 0,5 s) sofort, damit die genaue Zahl früh da ist */
+ const pageReady=(remote.key===requestKey&&remote.final&&!!remote.data)||(active&&!!freshSearch(requestKey))||(active&&modeNow!==null);
  useEffect(()=>{
   if(!active||!pageReady)return;
   const hit=freshFacets(local.key);
@@ -453,7 +483,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
     if(abort.signal.aborted)return;
     FACETS_CACHE.delete(local.key);FACETS_CACHE.set(local.key,{at:Date.now(),data});if(FACETS_CACHE.size>40)FACETS_CACHE.delete(FACETS_CACHE.keys().next().value as string);
     setFacets({key:local.key,data});
-   }catch{/* Zähler fehlen, die Treffer bleiben nutzbar */}
+   }catch{/* Zähler fehlen, die Treffer bleiben nutzbar */if(!abort.signal.aborted)setFacets({key:local.key,data:null});}
   })();
   return()=>abort.abort();
  },[active,pageReady,local.key,attempt,buildQuery]);
@@ -462,7 +492,11 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  const fx=exact;
  /* Liegt die Antwort schon im Zwischenspeicher, gilt sie sofort als fertig: kein „lädt“, kein Ring, kein Aufblitzen */
  const cached=active?freshSearch(requestKey):null;
- const loading=!cached&&remote.key!==requestKey;
+ const rd=remote.key===requestKey?remote:null;
+ /* Zähler abgeschlossen (auch fehlgeschlagen): erst dann zeigt eine lange Suche („ring“) ihre Treffer */
+ const settled=facets.key===local.key;
+ const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final?!(modeNow==='ring'&&!settled):(modeNow==='partial'&&rd.data.articles.length>0))));
+ const loading=!cached&&!adoptable;
  const lastGood=useRef<ResponseData|null>(null);
  if(!loading&&(cached||remote.data))lastGood.current=cached??remote.data;
  /* Beim Nachladen die bisherigen Treffer stehen lassen, statt die Liste zu leeren */
@@ -493,6 +527,6 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   })();
   return()=>abort.abort();
  },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,loading,error,page,setPage,retry,cover,state.level]);
+ return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}
