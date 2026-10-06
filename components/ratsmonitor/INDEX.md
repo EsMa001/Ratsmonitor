@@ -694,7 +694,7 @@ wordmark__dot design-styles.css:61
 - admin-atlas.tsx (166, ⚠33): AdminAtlas
 - admin-chrome.tsx (26): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
 - admin-dashboard.tsx (73, ⚠17): AdminDashboardView
-- admin-estimate.tsx (332, ⚠51): AdminEstimate
+- admin-estimate.tsx (334, ⚠53): AdminEstimate
 - admin-forecast.tsx (12): AdminForecast
 - admin-keywords.tsx (88, ⚠13): AdminKeywords
 - admin-loader.tsx (30, ⚠1): AdminLoader

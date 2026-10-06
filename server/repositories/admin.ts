@@ -4,7 +4,7 @@ import {loadAdminData,adminReview} from '../integrations/admin-data.mjs';
 import {adminTimeline} from '../integrations/admin-timeline.mjs';
 import {adminCoverage} from '../integrations/admin-coverage.mjs';
 import {adminAtlas} from '../integrations/admin-atlas.mjs';
-import {adminEstimate} from '../integrations/admin-estimate.mjs';
+import {storedEstimate,computeEstimate} from '../integrations/admin-estimate-store.mjs';
 import {adminKeywords} from '../integrations/admin-keywords.mjs';
 import {readDebug} from '../integrations/import-trace.mjs';
 import {atRevision} from '../integrations/revision-cache.mjs';
@@ -18,7 +18,9 @@ export async function getAdminReview(issue:string,region:string){if(!env.DB)thro
 export async function getAdminTimeline(basis:string){if(!env.DB)throw Error('Datenbank fehlt');return adminTimeline(env.DB,{basis});}
 export async function getAdminCoverage(){if(!env.DB)throw Error('Datenbank fehlt');return adminCoverage(env.DB);}
 export async function getAdminAtlas(){if(!env.DB)throw Error('Datenbank fehlt');return adminAtlas(env.DB);}
-export async function getAdminEstimate(){if(!env.DB)throw Error('Datenbank fehlt');return adminEstimate(env.DB);}
+// The estimate is kept in the database and computed only on request (about a minute): GET reads, POST computes.
+export async function getAdminEstimate(){if(!env.DB)throw Error('Datenbank fehlt');return storedEstimate(env.DB);}
+export async function computeAdminEstimate(){if(!env.DB)throw Error('Datenbank fehlt');return computeEstimate(env.DB);}
 // Fünf Läufe über alle Vorgänge (61 s bei 900.000): gehalten, solange sich der Datenstand nicht ändert.
 export async function getAdminKeywords(){if(!env.DB)throw Error('Datenbank fehlt');const db=env.DB;return atRevision(db,'keywords',()=>adminKeywords(db));}
 export async function getRunDebug(region:string){if(!env.DB)throw Error('Datenbank fehlt');return readDebug(env.DB,region);}
