@@ -87,12 +87,14 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const frozen=useRef(state);
   if(!hold)frozen.current=state;
   /* Handy: 15 statt 20 Treffer je Seite */
-  const live=useDerivedResults(hold?frozen.current:state,usePathname()==='/',phone?15:20);
+  const onHome=usePathname()==='/';
+  const live=useDerivedResults(hold?frozen.current:state,onHome,phone?15:20);
   /* Läuft eine Suche, bleibt die Übersicht auf dem letzten fertigen Stand (Leiste, Chips, Karte, Zahl, Liste) und
      wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */
   const shown=useRef(live);
   if(!live.loading)shown.current=live;
-  const derived=useMemo(()=>live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live]);
+  /* Außerhalb der Startseite wird nicht gesucht (loading bliebe wahr): Suche und Filter (Schlüssel, Chips) gelten live, z. B. für Plenara Analytics */
+  const derived=useMemo(()=>onHome&&live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live,onHome]);
   /* Wann was zu sehen ist (siehe useDerivedResults): In den ersten 0,5 s passiert nichts. Sind die Treffer bis dahin da
      oder wenigstens schon im Kommen, wechseln Karte und Liste, und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl
      feststeht. Ist nach 0,5 s noch kein Treffer da, steht der Ladering, und alles erscheint erst, wenn die Suche samt

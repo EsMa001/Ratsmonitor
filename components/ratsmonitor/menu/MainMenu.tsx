@@ -17,6 +17,11 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
   { href: "/konto/kalender", label: "Kalender", icon: "calendar" },
 ];
 
+/* Unterpunkte von „Plenara Analytics“ (die Gruppe selbst ist keine Seite) */
+const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" }[] = [
+  { href: "/analytics/ueber", label: "Über Plenara Analytics", icon: "fileText" },
+  { href: "/analytics/diffusion", label: "Diffusionsanalyse", icon: "map" },
+];
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */
 /** Abstand des Menüfensters zur Kopfzeile (klein gehalten) */
@@ -24,13 +29,13 @@ const MENU_GAP = 6;
 
 export function MainMenu() {
   /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
-  const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases">(false);
+  const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases" | "analytics">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
   const brandText = useBrandText();
   const { tier } = useTier();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
-  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
+  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/analytics") ? "analytics" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -86,7 +91,7 @@ export function MainMenu() {
     close();
     window.scrollTo(0, 0);
   };
-  const toggle = (which: "all" | "funktionen" | "usecases", el: HTMLElement | null) => {
+  const toggle = (which: "all" | "funktionen" | "usecases" | "analytics", el: HTMLElement | null) => {
     if (open === which) return close();
     const btn = el?.getBoundingClientRect();
     const head = btnRef.current?.closest("header")?.getBoundingClientRect();
@@ -105,16 +110,15 @@ export function MainMenu() {
       </button>
       {/* Breite Bildschirme: Menüpunkte direkt in der Kopfzeile, Funktionen und Use Cases klappen auf */}
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
-        {(["funktionen", "usecases"] as const).map((g) => (
+        {(["funktionen", "usecases", "analytics"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : "Use Cases"}
+            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Use Cases" : "Plenara Analytics"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
         <Link href="/preise" aria-current={current("/preise")}>Preise</Link>
         <Link href="/faq" aria-current={current("/faq")}>FAQ</Link>
         <Link href="/videos" aria-current={current("/videos")}>Videos</Link>
-        <Link href="/analytics" aria-current={current("/analytics")}>Analytics</Link>
         <Link href="/quellen" aria-current={current("/quellen")}>Datenabdeckung</Link>
         <Link href="/ueber-uns" aria-current={current("/ueber-uns")}>{brandText("Über Ratsmonitor")}</Link>
       </nav>
@@ -162,12 +166,27 @@ export function MainMenu() {
                     })}
                   </ul>
                 )}
+                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "analytics"} onClick={() => setOpenGroup(openGroup === "analytics" ? "" : "analytics")}>
+                  Plenara Analytics
+                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "analytics" ? "rotate-180" : ""}`} />
+                </button>}
+                {show("analytics") && (
+                  <ul className="ri-menu__subs">
+                    {ANALYTICS.map((f) => (
+                      <li key={f.href}>
+                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
+                          <Icon name={f.icon} size={15} />
+                          {f.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {open === "all" && <>
                 <Link href="/preise" className="ri-menu__main" aria-current={current("/preise")} onClick={pick}>Preismodelle</Link>
                 <p className="ri-menu__label ri-menu__label--sep">Informationen</p>
                 <Link href="/faq" className="ri-menu__main" aria-current={current("/faq")} onClick={pick}>FAQ</Link>
                 <Link href="/videos" className="ri-menu__main" aria-current={current("/videos")} onClick={pick}>Videos</Link>
-                <Link href="/analytics" className="ri-menu__main" aria-current={current("/analytics")} onClick={pick}>Plenara Analytics</Link>
                 <Link href="/quellen" className="ri-menu__main" aria-current={current("/quellen")} onClick={pick}>Datenabdeckung</Link>
                 <Link href="/ueber-uns" className="ri-menu__main" aria-current={current("/ueber-uns")} onClick={pick}>{brandText("Über Ratsmonitor")}</Link>
                 </>}

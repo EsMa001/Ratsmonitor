@@ -28,5 +28,9 @@ test('diffusion reports first mention per area, spreads Samtgemeinden and builds
   assert.equal(r.stats.regions,4);assert.equal(r.stats.first,'2025-01-05');
   assert.equal((await diffusion(db,catalog,new URLSearchParams('q=Wärmeplanung&from=2025-03-01'))).stats.regions,4);
   assert.equal((await diffusion(db,catalog,new URLSearchParams('q=nichtda'))).regions.length,0);
+  /* gleiche Filter wie die Suche: Gebiet, Status, Zeitraum */
+  assert.deepEqual((await diffusion(db,catalog,new URLSearchParams('q=Wärmeplanung&area=05558012&scope=only'))).regions.map(x=>x.ags),['05558012']);
+  assert.equal((await diffusion(db,catalog,new URLSearchParams('q=Wärmeplanung&status=approved'))).regions.length,0);
+  assert.deepEqual((await diffusion(db,catalog,new URLSearchParams('q=Wärmeplanung&from=2025-03-01&to=2025-03-31'))).regions.map(x=>x.ags),['05558008','05558012']);
  }finally{sql.close();}
 });

@@ -1,9 +1,14 @@
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { REGIONS } from "@/shared/regions";
+import { radiusParam } from "@/shared/radius-areas.mjs";
 import { MapEngine } from "../../lib/geo/mapEngine";
 import { useData } from "../../state/data";
+import { useSearch, useSearchResults } from "../../state/search";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
+import { DiffusionChart } from "./DiffusionChart";
+import { DiffusionSearch, type PlayState } from "./DiffusionSearch";
 
 interface Reg { ags: string; name: string; first: string; last: string; n: number }
 interface Result {
@@ -20,21 +25,25 @@ const toDay = (iso: string) => Math.floor(Date.parse(iso.slice(0, 10) + "T00:00:
 const toIso = (d: number) => new Date(d * DAY).toISOString().slice(0, 10);
 const fmt = (iso: string | null) => (iso ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "–");
 const months = (a: string, b: string) => Math.max(0, Math.round((toDay(b) - toDay(a)) / 30.44));
+const glass = "rm-glass";
+/** Legende und Stufen: je länger die erste Erwähnung her ist, desto dunkler */
+const LEGEND = [["#b3dfda", "bis 1 Monat"], ["#8ccdc7", "bis 3 Monate"], ["#6ebfb8", "bis 6 Monate"], ["#0f766e", "länger"]];
 
-/** Stufe je Gebiet am gewählten Tag: 3 = neu (bis 3 Monate), 2 = bis 12 Monate, 1 = älter, 0 = noch nicht erreicht */
+/** Stufe je Gebiet am gewählten Tag: 0 = noch nicht erreicht, 1 (hell) bis 4 (dunkel) nach Alter der ersten Erwähnung */
 function levelAt(first: string, today: number) {
   const age = today - toDay(first);
-  return age < 0 ? 0 : age <= 92 ? 3 : age <= 365 ? 2 : 1;
+  return age < 0 ? 0 : age <= 31 ? 1 : age <= 92 ? 2 : age <= 183 ? 3 : 4;
 }
 
 export function DiffusionPage() {
-  const router = useRouter();
   const params = useSearchParams();
-  const q = params.get("thema") ?? "";
   const { geo } = useData();
-  const [input, setInput] = useState(q);
+  const search = useSearch();
+  const results = useSearchResults();
   const [res, setRes] = useState<Result | null>(null);
-  const [state, setState] = useState<"idle" | "loading" | "error">("idle");
+  const [ranKey, setRanKey] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [want, setWant] = useState(false);
   const [error, setError] = useState("");
   const [day, setDay] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -45,29 +54,64 @@ export function DiffusionPage() {
   const pickRef = useRef<(a: string) => void>(() => {});
   pickRef.current = (a) => setPicked((p) => (p === a ? "" : a));
 
-  useEffect(() => setInput(q), [q]);
+  /* Abfrage der Analyse: dieselben Filter wie die Suche der Startseite, Gemeindeebene, ohne Sortierung und Seiten */
+  const query = useMemo(() => {
+    const p = new URLSearchParams(results.key);
+    for (const k of ["around", "sort", "size", "page", "part"]) p.delete(k);
+    p.set("level", "city");
+    const r = search.state.radius;
+    if (r && geo) {
+      const set = geo.within(r).set;
+      if (!set) p.set("within", "");
+      else { const [name, keys] = radiusParam(REGIONS.filter((x) => x.kind === "city"), set, null); p.set(name, keys); }
+    }
+    return p.toString();
+  }, [results.key, search.state.radius, geo]);
+  const hasTerm = results.text.trim().length > 0;
 
-  /* Abfrage: bei jeder Änderung des Begriffs frisch aus der Datenbank */
+  /* Beispiel- oder Direktlink (?thema=): Begriff in die Suche setzen und sofort starten */
+  const given = useRef(params.get("thema"));
   useEffect(() => {
+    if (!given.current) return;
+    search.applySearch(given.current);
+    given.current = null;
+    setWant(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    /* wartet, bis der Begriff (z. B. aus einem Beispiel) in der Suche angekommen ist */
+    if (!want || !hasTerm) return;
+    setWant(false);
+    setError("");
+    setLoading(true);
     setPlaying(false);
     setPicked("");
-    if (!q.trim()) { setRes(null); setState("idle"); return; }
     const ctrl = new AbortController();
-    setState("loading");
-    fetch(`/api/analytics/diffusion?q=${encodeURIComponent(q)}`, { signal: ctrl.signal })
+    abortRef.current?.abort();
+    abortRef.current = ctrl;
+    fetch(`/api/analytics/diffusion?${query}`, { signal: ctrl.signal })
       .then(async (r) => {
         const body = (await r.json()) as { error?: string };
         if (!r.ok) throw new Error(body.error || "Die Analyse konnte nicht berechnet werden.");
         return body as unknown as Result;
       })
-      .then((r) => { setRes(r); setState("idle"); setDay(r.stats.last ? toDay(r.stats.last) : 0); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setState("error"); });
-    return () => ctrl.abort();
-  }, [q]);
+      .then((r) => {
+        setRes(r);
+        setRanKey(query);
+        setLoading(false);
+        if (r.stats.first) { setDay(toDay(r.stats.first)); setPlaying(true); }
+      })
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [want, hasTerm]);
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => abortRef.current?.abort(), []);
 
-  const first = res?.stats.first ? toDay(res.stats.first) : 0;
-  const last = res?.stats.last ? toDay(res.stats.last) : 0;
+  const firstDay = res?.stats.first ? toDay(res.stats.first) : 0;
+  const lastDay = res?.stats.last ? toDay(res.stats.last) : 0;
   const byAgs = useMemo(() => new Map((res?.regions ?? []).map((r) => [r.ags, r])), [res]);
+  const firsts = useMemo(() => (res?.regions ?? []).map((r) => toDay(r.first)).sort((a, b) => a - b), [res]);
 
   /* Eigene Karte (eigene Engine, unabhängig von der Startseite) */
   const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: (a) => pickRef.current(a), onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo]);
@@ -76,6 +120,7 @@ export function DiffusionPage() {
     const detach = engine.attach(stageRef.current!, baseRef.current!, overRef.current!);
     engine.setLocked(false);
     engine.setExplore(true, null);
+    engine.bottomInset = 76;
     return detach;
   }, [engine]);
   const allAgs = useMemo(() => (geo ? [...geo.gem.idx.keys()] : []), [geo]);
@@ -86,127 +131,147 @@ export function DiffusionPage() {
     if (res) for (const r of res.regions) levels[r.ags] = levelAt(r.first, day);
     engine.update(levels, picked, null, allAgs, "city");
   }, [engine, res, day, allAgs, picked]);
+  useEffect(() => {
+    if (engine && res) res.regions.length ? engine.focusMany(res.regions.map((r) => r.ags)) : engine.focusArea("");
+  }, [engine, res]);
 
   /* Zeitraffer */
   useEffect(() => {
     if (!playing || !res) return;
-    const step = Math.max(1, Math.round((last - first) / 150));
-    const t = window.setInterval(() => setDay((d) => (d + step >= last ? (setPlaying(false), last) : d + step)), 60);
+    const step = Math.max(1, Math.round((lastDay - firstDay) / 150));
+    const t = window.setInterval(() => setDay((d) => (d + step >= lastDay ? (setPlaying(false), lastDay) : d + step)), 60);
     return () => clearInterval(t);
-  }, [playing, res, first, last]);
+  }, [playing, res, firstDay, lastDay]);
+
+  const stale = !!res && ranKey !== query;
+  const onPlay = () => {
+    if (loading) return;
+    if (!hasTerm) return setError("Bitte zuerst ein Thema in die Suche eingeben.");
+    if (!res || stale) return setWant(true);
+    if (day >= lastDay) setDay(firstDay);
+    setPlaying((p) => !p);
+  };
+  const play: PlayState = loading ? "loading" : playing ? "playing" : res && !stale ? "paused" : "idle";
 
   const reached = res ? res.regions.filter((r) => toDay(r.first) <= day).length : 0;
   const share = res && res.stats.regions ? Math.round((reached / res.stats.regions) * 100) : 0;
   const sel = picked ? byAgs.get(picked) : undefined;
-
-  const submit = (v: string) => {
-    const t = v.trim();
-    router.push(t ? `/analytics/diffusion?thema=${encodeURIComponent(t)}` : "/analytics/diffusion");
-  };
+  const maxLand = Math.max(1, ...(res?.lands.map((l) => l.regions) ?? [1]));
 
   return (
     <main id="inhalt" className="mx-auto w-full max-w-[1100px] px-4 py-10 text-slate-900 sm:px-6">
-      <p className="text-[14px] text-slate-500"><Link href="/analytics" className="text-teal-600">Plenara Analytics</Link> / Diffusionsanalyse</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara Analytics</Link> / Diffusionsanalyse</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Diffusionsanalyse</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte, und wie es sich von dort ausbreitete.</p>
 
-      <form onSubmit={(e) => { e.preventDefault(); submit(input); }} className="mt-6 flex flex-wrap items-center gap-3">
-        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Thema, z. B. Wärmeplanung" aria-label="Thema" maxLength={200} className="h-12 min-w-0 flex-1 rounded-full border border-slate-300 bg-white px-5 text-[16px] outline-none focus:border-teal-600" />
-        <button type="submit" className="h-12 rounded-full bg-slate-900 px-6 text-[14px] font-medium text-white">Analysieren →</button>
-      </form>
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
-        {EXAMPLES.map((x) => <button key={x} type="button" onClick={() => submit(x)} className="text-teal-600">{x}</button>)}
-      </div>
+      <div className="mt-6"><DiffusionSearch play={play} onPlay={onPlay} onSubmit={() => setWant(true)} /></div>
+      {!res && !loading && (
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
+          <span className="text-slate-500">Beispiele:</span>
+          {EXAMPLES.map((x) => <button key={x} type="button" onClick={() => { search.applySearch(x); setWant(true); }} className="text-teal-600">{x}</button>)}
+        </div>
+      )}
+      {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {stale && !loading && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu analysieren.</p>}
 
-      {state === "error" && <p role="alert" className="mt-6 text-[16px] text-slate-900">{error}</p>}
-
-      <section className="relative mt-8 h-[440px] overflow-hidden border-y border-slate-200 sm:h-[560px]" aria-label="Karte der Ausbreitung">
+      <section className="relative mt-6 h-[480px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[600px]" aria-label="Karte der Ausbreitung">
         <div ref={stageRef} className="absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
           <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
           <canvas ref={overRef} role="img" aria-label={res ? `Karte: ${reached} von ${res.stats.regions} Gebieten erreicht` : "Karte von Deutschland"} className="absolute left-0 top-0 block h-full w-full" />
           {!geo && <div className="absolute inset-0 grid place-items-center text-[14px] text-slate-500">Karte wird aufgebaut …</div>}
         </div>
-        <div className="absolute right-3 top-3 flex flex-col overflow-hidden rounded-full border border-slate-200 bg-white">
-          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center"><IconPlus size={16} /></button>
-          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-10 w-10 place-items-center"><IconMinus size={16} /></button>
-          <button type="button" title="Ganz Deutschland" aria-label="Ganz Deutschland" onClick={() => engine?.focusArea("")} className="grid h-10 w-10 place-items-center"><IconCenter size={16} /></button>
+
+        {/* Legende oben links */}
+        <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
+          <p className="mb-1 font-medium text-slate-900">Erste Erwähnung vor</p>
+          <ul className="m-0 flex list-none flex-col gap-1 p-0">
+            {LEGEND.map(([c, l]) => <li key={l} className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: c }} />{l}</li>)}
+            <li className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: "#d7dce3" }} />noch nicht</li>
+          </ul>
         </div>
-        {state === "loading" && <div className="absolute inset-x-0 top-3 text-center text-[14px] text-slate-500">Analyse wird berechnet …</div>}
-        {state === "idle" && !res && !q && <div className="pointer-events-none absolute inset-x-0 top-3 text-center text-[14px] text-slate-500">Thema eingeben, um die Ausbreitung zu sehen.</div>}
-        {res && res.stats.regions === 0 && <div className="pointer-events-none absolute inset-x-0 top-3 text-center text-[14px] text-slate-900">Zu „{res.q}“ gibt es keine Treffer.</div>}
-        <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex flex-wrap items-center gap-x-3 gap-y-1 bg-white/90 px-3 py-2 sm:right-auto text-[12px] text-slate-500">
-          {[["#0f766e", "neu (bis 3 Monate)"], ["#6ebfb8", "bis 1 Jahr"], ["#b3dfda", "länger her"], ["#d7dce3", "noch nicht"]].map(([c, l]) => (
-            <span key={l} className="flex items-center gap-1.5 whitespace-nowrap"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</span>
-          ))}
+
+        {/* Zoom oben rechts */}
+        <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
+          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconPlus size={16} /></button>
+          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconMinus size={16} /></button>
+          <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (res?.regions.length ? engine?.focusMany(res.regions.map((r) => r.ags)) : engine?.focusArea(""))} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconCenter size={16} /></button>
         </div>
+
+        {/* Hinweise und Auswahl oben in der Mitte */}
+        <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:top-auto max-sm:bottom-[88px]">
+          {loading ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Analyse wird berechnet …</span>
+            : res && res.stats.regions === 0 ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-900`}>Keine Treffer für diese Suche.</span>
+            : sel ? <span className={`${glass} rounded-2xl px-4 py-2 text-center text-[14px] text-slate-900`}><b className="font-semibold">{sel.name}</b><br /><span className="text-slate-500">erste Erwähnung {fmt(sel.first)} · {sel.n.toLocaleString("de-DE")} {sel.n === 1 ? "Eintrag" : "Einträge"}</span></span>
+            : !res ? <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Thema suchen und auf Start drücken</span> : null}
+        </div>
+
+        {/* Zeitregler unten */}
+        {res && res.stats.regions > 0 && (
+          <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] flex items-center gap-3 rounded-full px-5 py-3 sm:inset-x-6`}>
+            <span className="w-[64px] shrink-0 text-[16px] font-medium tabular-nums">{fmt(toIso(day))}</span>
+            <input type="range" min={firstDay} max={lastDay} value={day} onChange={(e) => { setPlaying(false); setDay(Number(e.target.value)); }} aria-label="Datum" className="min-w-0 flex-1 accent-teal-600" />
+            <span className="shrink-0 text-right text-[14px] tabular-nums text-slate-700"><b className="font-semibold">{reached.toLocaleString("de-DE")}</b><span className="max-sm:hidden"> / {res.stats.regions.toLocaleString("de-DE")}</span> · {share} %</span>
+          </div>
+        )}
       </section>
 
       {res && res.stats.regions > 0 && (
         <>
-          <div className="mt-5 flex items-center gap-4">
-            <button type="button" onClick={() => { if (day >= last) setDay(first); setPlaying((p) => !p); }} className="h-10 shrink-0 rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white">{playing ? "Pause" : "Zeitraffer →"}</button>
-            <input type="range" min={first} max={last} value={day} onChange={(e) => { setPlaying(false); setDay(Number(e.target.value)); }} aria-label="Datum" className="min-w-0 flex-1 accent-teal-600" />
-            <span className="w-[72px] shrink-0 text-right text-[16px] font-medium tabular-nums">{fmt(toIso(day))}</span>
-          </div>
-          <p className="mt-2 text-[16px]"><b className="font-semibold">{reached.toLocaleString("de-DE")}</b> von {res.stats.regions.toLocaleString("de-DE")} Gebieten erreicht ({share} %)</p>
-          {sel && <p className="mt-1 text-[14px] text-slate-500">{sel.name}: erste Erwähnung {fmt(sel.first)}, zuletzt {fmt(sel.last)}, {sel.n.toLocaleString("de-DE")} {sel.n === 1 ? "Eintrag" : "Einträge"}</p>}
-
-          <Curve res={res} day={day} onPick={(d) => { setPlaying(false); setDay(d); }} />
-
-          <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-slate-200 pt-6 sm:grid-cols-4">
+          <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             {[
               ["Erste Erwähnung", fmt(res.stats.first)],
               ["Hälfte erreicht", fmt(res.stats.median)],
-              ["Von 10 % bis 90 %", res.stats.p10 && res.stats.p90 ? `${months(res.stats.p10, res.stats.p90)} Monate` : "–"],
+              ["Von 10 % auf 90 %", res.stats.p10 && res.stats.p90 ? `${months(res.stats.p10, res.stats.p90)} Monate` : "–"],
               ["Einträge insgesamt", res.stats.cards.toLocaleString("de-DE")],
-            ].map(([k, v]) => (
-              <div key={k}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
+            ].map(([k, v], i) => (
+              <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
             ))}
           </dl>
 
-          <div className="mt-10 grid gap-10 md:grid-cols-2">
-            <div>
-              <h2 className="text-[18px] font-semibold">Vorreiter</h2>
-              <ol className="mt-2 divide-y divide-slate-200 border-y border-slate-200">
-                {res.regions.slice(0, 10).map((r) => (
-                  <li key={r.ags}><button type="button" onClick={() => { setPicked(r.ags); engine?.focusArea(r.ags); }} className="flex w-full justify-between gap-3 py-2 text-left text-[14px]"><span>{r.name}</span><span className="tabular-nums text-slate-500">{fmt(r.first)}</span></button></li>
+          <section className="mt-10">
+            <h2 className="text-[22px] font-semibold">Ausbreitung im Zeitverlauf</h2>
+            <p className="mb-4 mt-1 text-[14px] text-slate-500">Anteil der Gebiete, in denen das Thema bis zum jeweiligen Tag schon vorkam. Ein Klick in das Diagramm setzt die Karte auf dieses Datum.</p>
+            <DiffusionChart firsts={firsts} series={res.series} day={day} onPick={(d) => { setPlaying(false); setDay(Math.min(lastDay, Math.max(firstDay, d))); }} />
+          </section>
+
+          <div className="mt-12 grid gap-12 md:grid-cols-2">
+            <section>
+              <h2 className="text-[22px] font-semibold">Vorreiter</h2>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">Die zehn Gebiete mit der frühesten Erwähnung. Ein Klick zeigt sie auf der Karte.</p>
+              <ol className="m-0 list-none border-t border-slate-200 p-0">
+                {res.regions.slice(0, 10).map((r, i) => (
+                  <li key={r.ags} className="border-b border-slate-200">
+                    <button type="button" onClick={() => { setPicked(r.ags); engine?.focusArea(r.ags); window.scrollTo({ top: (document.querySelector('section[aria-label="Karte der Ausbreitung"]') as HTMLElement).offsetTop - 80, behavior: "smooth" }); }} className="grid w-full grid-cols-[28px_1fr_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
+                      <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-[16px] text-slate-900">{r.name.split(" (")[0]}</span>
+                        <span className="block truncate text-[12px] text-slate-500">{r.name.includes(" (") ? r.name.slice(r.name.indexOf("(") + 1, -1) + " · " : ""}{r.n.toLocaleString("de-DE")} {r.n === 1 ? "Eintrag" : "Einträge"}</span>
+                      </span>
+                      <span className="text-[14px] tabular-nums text-slate-500">{fmt(r.first)}</span>
+                    </button>
+                  </li>
                 ))}
               </ol>
-            </div>
-            <div>
-              <h2 className="text-[18px] font-semibold">Bundesländer</h2>
-              <ol className="mt-2 divide-y divide-slate-200 border-y border-slate-200">
+            </section>
+            <section>
+              <h2 className="text-[22px] font-semibold">Bundesländer</h2>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">Erreichte Gebiete je Land und Datum der ersten Erwähnung.</p>
+              <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {res.lands.map((l) => (
-                  <li key={l.id} className="flex justify-between gap-3 py-2 text-[14px]"><span>{l.name}</span><span className="tabular-nums text-slate-500">{l.regions.toLocaleString("de-DE")} Gebiete · ab {fmt(l.first)}</span></li>
+                  <li key={l.id} className="grid grid-cols-[1fr_auto] items-center gap-3 border-b border-slate-200 py-3">
+                    <span className="min-w-0">
+                      <span className="block truncate text-[16px] text-slate-900">{l.name}</span>
+                      <span className="mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(3, (l.regions / maxLand) * 100)}%` }} /></span>
+                    </span>
+                    <span className="text-right text-[14px] tabular-nums text-slate-500"><b className="font-semibold text-slate-900">{l.regions.toLocaleString("de-DE")}</b> Gebiete<br />ab {fmt(l.first)}</span>
+                  </li>
                 ))}
               </ol>
-            </div>
+            </section>
           </div>
-          <p className="mt-8 text-[12px] text-slate-500">Als erste Erwähnung gilt das Datum des frühesten Eintrags im Datenbestand, der den Begriff enthält. Gebiete ohne vollständigen Datenbestand können später erscheinen, als das Thema dort tatsächlich aufkam. Samtgemeinden zählen für alle ihre Mitgliedsgemeinden.</p>
+          <p className="mt-10 text-[12px] text-slate-500">Als erste Erwähnung gilt das Datum des frühesten Eintrags im Datenbestand, der zur Suche passt. Gebiete mit unvollständigem Datenbestand können später erscheinen, als das Thema dort tatsächlich aufkam. Der Bestand reicht rund ein Jahr zurück: Ein Datum zu Beginn dieses Zeitraums heißt „schon zu Beginn des Bestands“, nicht „zuerst überhaupt“. Samtgemeinden zählen für alle ihre Mitgliedsgemeinden. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </>
       )}
     </main>
-  );
-}
-
-/** Kurve der erreichten Gebiete über die Zeit; Klick setzt den Zeitraffer auf das Datum */
-function Curve({ res, day, onPick }: { res: Result; day: number; onPick: (d: number) => void }) {
-  const W = 1000, H = 160, P = 4;
-  const s = res.series;
-  if (s.length < 2) return null;
-  const t0 = toDay(s[0].month + "-01"), t1 = toDay(res.stats.last!);
-  const x = (d: number) => P + ((d - t0) / Math.max(1, t1 - t0)) * (W - 2 * P);
-  const y = (v: number) => H - P - (v / res.stats.regions) * (H - 2 * P);
-  const pts = s.map((m) => [x(toDay(m.month + "-01")), y(m.total)] as const);
-  const path = "M" + pts.map(([a, b], i) => (i ? `L${a},${pts[i - 1][1]} L${a},${b}` : `${a},${b}`)).join(" ") + ` L${W - P},${pts.at(-1)![1]}`;
-  return (
-    <div className="mt-6">
-      <h2 className="text-[18px] font-semibold">Erreichte Gebiete im Zeitverlauf</h2>
-      <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 h-[160px] w-full cursor-pointer" role="img" aria-label="Kurve der erreichten Gebiete" onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); onPick(Math.round(t0 + ((e.clientX - r.left) / r.width) * (t1 - t0))); }} preserveAspectRatio="none">
-        <path d={path} fill="none" stroke="#0d9488" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-        <line x1={x(Math.min(t1, Math.max(t0, day)))} x2={x(Math.min(t1, Math.max(t0, day)))} y1="0" y2={H} stroke="#0f172a" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-      </svg>
-      <div className="flex justify-between text-[12px] text-slate-500"><span>{fmt(toIso(t0))}</span><span>{fmt(toIso(t1))}</span></div>
-    </div>
   );
 }

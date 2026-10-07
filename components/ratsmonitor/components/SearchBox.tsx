@@ -30,7 +30,8 @@ const dropKeyboard = () => {
   requestAnimationFrame(() => (document.activeElement as HTMLElement | null)?.blur());
 };
 
-export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void } = {}) {
+/** stay: auf der aktuellen Seite bleiben (Plenara Analytics), statt nach einer Suche zur Startseite zu springen */
+export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean } = {}) {
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
@@ -89,7 +90,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   const apply = (value: string, extra?: Parameters<typeof search.applySearch>[1]) => {
     search.applySearch(value, extra);
     setActive(-1);
-    if (view !== "overview") goOverview();
+    if (view !== "overview" && !stay) goOverview();
   };
 
   /* Varianten eines Orts: kreisfreie Städte und Länder nur einmal */
@@ -134,7 +135,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
             pick: () => {
               pickText.current = sv.text || sv.q || sv.name;
               if (search.applySaved(sv)) {
-                if (view !== "overview") goOverview();
+                if (view !== "overview" && !stay) goOverview();
                 closeAndBlur();
               }
             },

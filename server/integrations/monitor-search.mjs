@@ -64,8 +64,8 @@ function regionCondition(ids,catalog){
 // (Zeitraum, Formalien, Begriffe), aus der Gesamtzahl und alle Zähler in JS entstehen. Der Index
 // idx_search_cards_facets (drizzle/0010) deckt sie ab: rund 150 ms statt vier Läufen über alle Karten.
 // Die Abdeckung (Gebiete mit Berichten, Stand des letzten Abrufs) hängt an keinem Filter: searchCoverage.
-export async function searchMonitor(db,catalog,params){
- const f=parseMonitorSearch(params),limit=f.size;
+/** Filter der Suche als SQL-Bedingung auf search_cards (Gebiet, Begriff, Zeitraum, Thema, Status); auch für Plenara Analytics */
+export async function searchFilters(db,catalog,f){
  /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
  const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...f.more];
  /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */
@@ -121,6 +121,11 @@ export async function searchMonitor(db,catalog,params){
   if(labelId){where.push('label=?');args.push(labelId);}
   if(f.status){where.push('status=?');args.push(f.status);}
   return {where:where.join(' AND '),args};})();
+ return {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page};
+}
+export async function searchMonitor(db,catalog,params){
+ const f=parseMonitorSearch(params),limit=f.size;
+ const {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page}=await searchFilters(db,catalog,f);
  /* Relevanz: Treffer im Titel zählen dreifach, im übrigen Text einfach; bei Gleichstand das Neueste zuerst */
  const rterms=f.sort==='relevance'?[...new Set(f.terms||[])]:[];
  const order=rterms.length?{sql:`ORDER BY (${rterms.map(()=>'(instr(lower(title),?)>0)*3+(instr(search,?)>0)').join('+')}) DESC,date DESC,id ASC LIMIT ? OFFSET ?`,args:rterms.flatMap(t=>[t,t])}:{sql:`ORDER BY date ${f.sort==='asc'?'ASC':'DESC'},id ASC LIMIT ? OFFSET ?`,args:[]};
