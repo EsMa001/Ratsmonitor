@@ -7,6 +7,10 @@
   "liste-zeitstrahl",
   "alarm"
  ],
+ "vorteile": [
+  1,
+  2
+ ],
  "einblendungen": [
   {
    "satz": 2,

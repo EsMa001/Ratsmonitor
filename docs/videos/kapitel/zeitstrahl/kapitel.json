@@ -1,1 +1,16 @@
-{ "titel": "Trefferliste und Artikel", "icon": "fileText", "stichpunkte": ["Status als Zeitstrahl", "Artikel mit allen Unterlagen", "Originalquelle"], "szenen": ["liste-zeitstrahl"] }
+{
+ "titel": "Trefferliste und Artikel",
+ "icon": "fileText",
+ "stichpunkte": [
+  "Status als Zeitstrahl",
+  "Artikel mit allen Unterlagen",
+  "Originalquelle"
+ ],
+ "szenen": [
+  "liste-zeitstrahl"
+ ],
+ "vorteile": [
+  6,
+  5
+ ]
+}

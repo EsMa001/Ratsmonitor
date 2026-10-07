@@ -2,6 +2,6 @@
 @einleitung.start Was entscheidet der Rat in Ihrer Gemeinde gerade über Ihre Straße, Ihre Heizung oder Ihr Geschäft?
 *@einleitung.karte Plenarra bringt die Beschlüsse und Beratungen der Räte an einen Ort.
 *@einleitung.suche Ein Begriff genügt, zum Beispiel {{p.thema|text}}, und die Karte zeigt sofort, wo darüber beraten wird.
-@liste-zeitstrahl.zeile,liste-zeitstrahl.zeitstrahl Zu jedem Vorgang sehen Sie den Stand, direkt in der Liste.
+@liste-zeitstrahl.zeile,liste-zeitstrahl.zeitstrahl Bei vielen Vorgängen sehen Sie den Stand direkt in der Liste.
 @liste-zeitstrahl.artikel,liste-zeitstrahl.quelle Jede Angabe führt zur Originalquelle.
 @alarm.herz,alarm.konto,alarm.glocke Und wenn etwas Neues beraten wird, meldet sich Plenarra per E-Mail.

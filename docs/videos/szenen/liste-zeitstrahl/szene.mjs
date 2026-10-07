@@ -9,8 +9,11 @@ export default {
       /* Alles Vorbereiten passiert hier, vor der Aufnahme: Suche, Warten auf einen Vorgang mit Zeitstrahl, sofort (ohne Scroll-Animation) in die Mitte holen */
       await H.search(p.thema);
       await H.page.waitForFunction(() => [...document.querySelectorAll("article")].some((x) => x.querySelector("[class*='h-2.5'][class*='rounded-full']")), null, { timeout: 20000 });
-      await H.page.evaluate(() => { const a = [...document.querySelectorAll("article")].find((x) => x.querySelector("[class*='h-2.5'][class*='rounded-full']")); a.scrollIntoView({ behavior: "instant", block: "center" }); });
-      await H.sleep(1500);
+      /* Die Liste lädt nach und verschiebt sich: erst warten, dann mehrmals in die Mitte holen, bis der Vorgang an derselben Stelle bleibt */
+      await H.sleep(3000);
+      const center = () => H.page.evaluate(() => { const a = [...document.querySelectorAll("article")].find((x) => x.querySelector("[class*='h-2.5'][class*='rounded-full']")); a.scrollIntoView({ behavior: "instant", block: "center" }); const r = a.getBoundingClientRect(); return Math.round(r.top + r.height / 2); });
+      let last = -1; for (let k = 0; k < 6; k++) { const y = await center(); if (Math.abs(y - last) < 3) break; last = y; await H.sleep(1200); }
+      await H.sleep(800);
     },
     beats: [
       /* Ein Vorgang mit Zeitstrahl: mehrere Stationen, erkennbar an den runden Stationspunkten */

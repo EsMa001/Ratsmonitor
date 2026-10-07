@@ -16,6 +16,17 @@ def ts(x):
 def dur(p):
     r=subprocess.run([FF,'-i',p],capture_output=True,text=True).stderr
     m=re.search(r'Duration: (\d+):(\d+):([\d.]+)',r);return int(m[1])*3600+int(m[2])*60+float(m[3])
+ENC=['-ar','22050','-ac','1','-c:v','libx264','-crf',CRF,'-c:a','aac','-b:a','96k']
+def folie(n,wav=None,delay=0.0):
+    # Folie (ohne Ton) mit gesprochenem Text (um delay verzögert) oder Stille zu einem Teil machen
+    v=f'{O}/f-{n}.mp4'
+    if not os.path.exists(v): return None
+    out=f'{O}/p-{n}.mp4'
+    if wav: run('-i',v,'-i',wav,'-map','0:v','-map','1:a','-af',f'adelay={int(delay*1000)}:all=1,apad','-shortest',*ENC,out)
+    else: run('-i',v,'-f','lavfi','-i','anullsrc=r=22050:cl=mono','-map','0:v','-map','1:a','-shortest',*ENC,out)
+    return out
+p=folie('titel')
+if p: parts.append(p); t+=dur(p)
 for c in chs:
     n=f"{c['nr']:02d}"
     ch=f'{O}/c{n}/c{n}.mp4'; aj=json.load(open(f'{O}/c{n}/audio.json'))
@@ -36,6 +47,15 @@ for c in chs:
         vtt.append(f"{ts(t+tc+0.5+s['start'])} --> {ts(t+tc+0.5+s['end']+0.3)}\n{s['text'].replace('Plenarra','Plenara')}\n")
     t+=tc+dur(ch)
     parts+=[card,body]
+def vtt_add(txt,a,b): vtt.append(f"{ts(a)} --> {ts(b)}\n{txt.replace('Plenarra','Plenara')}\n")
+p=folie('vorteile',f'{O}/ende1/audio.wav',0.7)
+if p:
+    for s_ in json.load(open(f'{O}/ende1/audio.json'))['sentences']: vtt_add(s_['text'],t+0.7+s_['start'],t+0.7+s_['end']+0.3)
+    parts.append(p); t+=dur(p)
+p=folie('schluss',f'{O}/ende2/audio.wav',1.9)
+if p:
+    for s_ in json.load(open(f'{O}/ende2/audio.json'))['sentences']: vtt_add(s_['text'],t+1.9+s_['start'],t+1.9+s_['end']+0.3)
+    parts.append(p); t+=dur(p)
 open(f'{O}/list-final.txt','w').write('\n'.join(f"file '{os.path.abspath(p)}'" for p in parts))
 run('-f','concat','-safe','0','-i',f'{O}/list-final.txt','-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-preset',PRESET,'-crf',CRF,'-c:a','aac','-b:a','96k','-movflags','+faststart',f'{O}/{name}.mp4')
 open(f'{O}/{name}.vtt','w',encoding='utf8').write('\n'.join(vtt))

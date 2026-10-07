@@ -56,7 +56,7 @@ for (const [i, k] of def.kapitel.entries()) {
   mkdirSync(`${O}/c${n}`, { recursive: true });
   writeFileSync(`${O}/c${n}.txt`, lines.join("\n") + "\n"); writeFileSync(`${O}/c${n}/beats.json`, JSON.stringify(beats));
   writeFileSync(`${O}/c${n}/clips.json`, JSON.stringify(Object.fromEntries(Object.entries(keys).map(([id, v]) => [id, v.key]))));
-  chapters.push({ nr, name: kj.titel, icon: kj.icon, title: kj.titel, bullets: kj.stichpunkte, keys, format });
+  chapters.push({ vorteile: kj.vorteile || [], nr, name: kj.titel, icon: kj.icon, title: kj.titel, bullets: kj.stichpunkte, keys, format });
 }
 writeFileSync(`${O}/chapters.json`, JSON.stringify(chapters, null, 1));
 const karten = def.karten !== false;
@@ -75,6 +75,18 @@ const queue = [...todo.values()]; let bad = 0;
 await Promise.all(Array.from({ length: Math.min(jobs, queue.length) }, async () => { while (queue.length) { if (await runAsync("node", queue.shift())) bad++; } }));
 if (bad) { console.error(`${bad} Clip(s) fehlgeschlagen, Abbruch`); process.exit(1); }
 for (const c of sel) run("python3", [`${T}compose.py`, `${O}/c${pad(c.nr)}`, `c${pad(c.nr)}`]);
+/* Titelfolie (kurz, ohne Ton), Vorteilsfolie mit Zusammenfassung, Schlussfolie mit Logo und Slogan (docs/produkt/slogan.json); abschaltbar mit "titel": false / "ende": false, Anzahl Vorteile mit "vorteileMax" (Standard 5, 0 = keine Vorteilsfolie) */
+const slogan = JSON.parse(readFileSync(`${V}../produkt/slogan.json`, "utf8")), vt = existsSync(VP) ? JSON.parse(readFileSync(VP, "utf8")).vorteile : [];
+const ranks = [...new Set(sel.flatMap((c) => c.vorteile))].sort((a, b) => a - b).slice(0, def.vorteileMax ?? 5);
+const items = ranks.map((r) => vt.find((x) => x.rang === r)?.titel).filter(Boolean);
+const spec = {}; if (def.titel !== false) spec.titel = { dur: 3.4 };
+if (def.ende !== false) {
+  if (items.length) { mkdirSync(`${O}/ende1`, { recursive: true }); writeFileSync(`${O}/ende1.txt`, items.join("\n") + "\n"); run("python3", [`${T}speak.py`, `${O}/ende1.txt`, `${O}/ende1/audio.wav`, "0.5", "0"]); const a = JSON.parse(readFileSync(`${O}/ende1/audio.json`, "utf8")); spec.vorteile = { items, starts: a.sentences.map((x) => +(x.start + 0.7).toFixed(2)), dur: +(a.total + 0.7 + 1.2).toFixed(2) }; }
+  mkdirSync(`${O}/ende2`, { recursive: true }); writeFileSync(`${O}/ende2.txt`, `Plenarra. ${slogan.sprech}\n`); run("python3", [`${T}speak.py`, `${O}/ende2.txt`, `${O}/ende2/audio.wav`, "0.5", "0"]);
+  const a2 = JSON.parse(readFileSync(`${O}/ende2/audio.json`, "utf8")); spec.schluss = { dur: +Math.max(5, 1.9 + a2.total + 1.3).toFixed(2) };
+}
+writeFileSync(`${O}/folien.json`, JSON.stringify(spec));
+if (Object.keys(spec).length) run("node", [`${T}folien.mjs`, O]);
 run("python3", [`${T}assemble.py`, video, OUTNAME, "3", ...(karten ? [] : ["keine"])]);
 run("python3", [`${T}check.py`, `${O}/${OUTNAME}.mp4`]);
 console.log(`Fertig: ${O}/${OUTNAME}.mp4`);

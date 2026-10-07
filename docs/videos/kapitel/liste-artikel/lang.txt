@@ -1,7 +1,7 @@
 # Liste und Artikel (allgemein). Folgt auf die Suche. Szene zum Aufnehmen: liste-zeitstrahl (Schritte liste, zeile, zeitstrahl, artikel, verlauf, quelle); Sortierung/Ansicht und Kurzfassung brauchen noch Schritte.
-*@liste-zeitstrahl.liste Es gibt {{t.entries|mehrals}} Einträge zu einem Thema. Wie behalten Sie da den Überblick?
+*@liste-zeitstrahl.liste Zu einem Thema gibt es {{t.entries|mehrals}} Einträge, jeder mit Gremium und Datum.
 @liste-zeitstrahl.zeile Jede Zeile sagt Ihnen, worum es geht, wer berät und wann.
-*@liste-zeitstrahl.zeitstrahl Darunter sehen Sie, wie weit ein Vorgang ist, jede Beratung mit Datum und Gremium.
+*@liste-zeitstrahl.zeitstrahl Bei vielen Vorgängen sehen Sie sogar den Stand: jede Beratung mit Datum und Gremium.
 @liste-zeitstrahl.liste Sortieren Sie nach Datum oder Relevanz, kompakt oder ausführlich.
 @liste-zeitstrahl.artikel Ein Klick öffnet den ganzen Artikel.
 @liste-zeitstrahl.artikel Eine Kurzfassung unter dem Titel sagt Ihnen sofort, worum es geht.

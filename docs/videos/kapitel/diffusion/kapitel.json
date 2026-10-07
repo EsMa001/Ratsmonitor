@@ -5,6 +5,11 @@
  "szenen": [
   "diffusion"
  ],
+ "thema": "Wärmeplanung",
+ "thema2": "Hitzeschutz",
+ "vorteile": [
+  8
+ ],
  "einblendungen": [
   {
    "satz": 1,
@@ -36,7 +41,5 @@
    "satz": 8,
    "text": "{{v.82|text}}"
   }
- ],
- "thema": "Wärmeplanung",
- "thema2": "Hitzeschutz"
+ ]
 }

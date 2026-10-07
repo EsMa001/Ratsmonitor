@@ -11,7 +11,7 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 
 | Rang | Stufe | Vorteil | Beleg |
 |---|---|---|---|
-| 1 | A | Ein Ort statt vieler Systeme | über 6.000 Gemeinden, mehr als 900.000 Einträge (docs/videos/facts.json) |
+| 1 | A | Ein System statt vieler Systeme | über 6.000 Gemeinden, mehr als 900.000 Einträge (docs/videos/facts.json) |
 | 2 | A | Früher erfahren, was beraten wird | Beschlüsse stehen vor der Presse in den Ratsinformationssystemen; Zeitraffer der Diffusionsanalyse |
 | 3 | A | Alarme per E-Mail statt tägliches Suchen | Glocke bei gespeicherten Suchen, E-Mail bei neuen Treffern |
 | 4 | A | Ganz Deutschland mit einem Begriff | Suche ohne Ortswahl |
