@@ -16,8 +16,11 @@
  *                   Suche prüft sie mit denselben Bedingungen wie sonst nach), für häufige gibt es keine Liste.
  *
  * Gepflegt wird sie nach Importen: refreshSearchWords liest nur Karten, die seit dem letzten Lauf neu oder geändert sind (neue
- * rowid; die Trigger schreiben search_cards mit INSERT OR REPLACE). Gelöschte oder geänderte Karten lassen Wörter und IDs
- * stehen, das schadet nicht: die Suche prüft jede Karte aus der Liste erneut. Ein voller Neuaufbau (full:true) räumt auf.
+ * rowid; die Trigger schreiben search_cards mit INSERT OR REPLACE). Ersetzte oder gelöschte Karten stehen im Protokoll
+ * search_cards_gone (Trigger aus drizzle/0015, mit dem alten Suchtext): ihre IDs und ihr Beitrag zu den vorberechneten
+ * Zahlen werden abgezogen, bevor Neues dazukommt. Fehlt zu einer Lücke der Eintrag (ältere Trigger, Bestand von Hand
+ * geändert) oder sind es mehr als GONE_MAX, verfallen die vorberechneten Zahlen wie früher bis zum nächsten vollen Aufbau;
+ * liegen gebliebene Wörter und IDs schaden nicht, die Suche prüft jede Karte aus der Liste erneut.
  */
 const STATE_KEY='search-words';
 const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision";
@@ -31,6 +34,8 @@ export const BLOCKED_MIN_CARDS=6;
 /** Mehr Kandidaten als hier lohnen sich nicht: dann wird wie gewohnt gesucht */
 export const CANDIDATE_MAX=3000;
 const WORDS_PER_TERM_MAX=300;
+/** Mehr protokollierte Karten als hier je Lauf werden nicht abgezogen (zu viel für einen Worker-Aufruf): dann wie ohne Protokoll */
+export const GONE_MAX=5000;
 
 /** Wörter eines Suchtexts (je Karte einmal): nur Buchstaben und Ziffern, ab 3 Zeichen, nicht nur Ziffern */
 export function wordsOf(text){
@@ -46,6 +51,8 @@ const SCHEMA=[
  'CREATE TABLE IF NOT EXISTS search_postings (word TEXT NOT NULL, card_id TEXT NOT NULL, PRIMARY KEY (word,card_id)) WITHOUT ROWID',
  'CREATE TABLE IF NOT EXISTS search_word_areas (word TEXT NOT NULL, region_id TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (word,region_id)) WITHOUT ROWID',
  'CREATE TABLE IF NOT EXISTS search_word_facets (word TEXT NOT NULL, kind TEXT NOT NULL, label TEXT NOT NULL, status TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (word,kind,label,status)) WITHOUT ROWID',
+ /* Protokoll ersetzter und gelöschter Karten; geschrieben von den Triggern aus drizzle/0015 (ohne sie bleibt es leer) */
+ 'CREATE TABLE IF NOT EXISTS search_cards_gone (card_rowid INTEGER NOT NULL, id TEXT NOT NULL, region_id TEXT NOT NULL, label TEXT NOT NULL, status TEXT NOT NULL, search TEXT NOT NULL)',
 ];
 const ensureSchema=async db=>{for(const sql of SCHEMA)await db.prepare(sql).run();};
 /** Ältere Fassung der Tabelle (ohne Zählspalte): dann muss neu aufgebaut werden */
@@ -74,8 +81,10 @@ export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=f
  /* Datenstand vor dem Lesen: ändert sich währenddessen etwas, passt die Liste danach nicht mehr und gilt als veraltet */
  const revision=await currentRevision(db);
  /* Steht an der zuletzt gelesenen rowid nicht mehr dieselbe Karte, wurden rowids neu vergeben: neue Karten würden
-    übersprungen, also alles neu */
- const same=state?.complete&&(state.rowid===0||(await db.prepare('SELECT id FROM search_cards WHERE rowid=?').bind(state.rowid).first())?.id===state.topId);
+    übersprungen, also alles neu. Steht die Karte aber als ersetzt oder gelöscht im Protokoll, ist bekannt, was geschah:
+    refreshNew liest die protokollierten rowids erneut. */
+ const same=state?.complete&&(state.rowid===0||(await db.prepare('SELECT id FROM search_cards WHERE rowid=?').bind(state.rowid).first())?.id===state.topId
+  ||!!(await db.prepare('SELECT 1 x FROM search_cards_gone WHERE card_rowid=? AND id=? LIMIT 1').bind(state.rowid,state.topId).first()));
  if(full||!state?.complete||!same||!(await schemaOk(db)))return buildAll(db,revision,chunk,kinds,postingMax,blockedMin,names);
  return refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax);
 }
@@ -178,27 +187,85 @@ async function buildAll(db,revision,chunk,kinds,postingMax,blockedMin,names){
  return {cards,words:words.length,postings:pairs.length,hitsWords:hits.size,blocked:blocked.size,areaRows:areaRows.length,facetRows:facetRows.length,revision,full:true,reachedEnd:true};
 }
 
-/** Nur Karten seit dem letzten Lauf: neue Wörter anlegen, IDs der seltenen ergänzen, Wörter über 500 Karten kappen */
+/**
+ * Ersetzte oder gelöschte Karten seit dem letzten Lauf (search_cards_gone): je rowid bis zur zuletzt gelesenen die zuerst
+ * protokollierte Fassung, denn die war gezählt; spätere Fassungen derselben rowid und Karten hinter der letzten rowid wurden
+ * nie gezählt. tooMany: mehr als GONE_MAX Einträge, dann wird nichts abgezogen (wie ohne Protokoll).
+ */
+async function readGone(db,lastRowid){
+ const n=(await db.prepare('SELECT count(*) n FROM search_cards_gone').first())?.n??0;
+ if(!n)return {rows:[],max:0,tooMany:false};
+ const max=(await db.prepare('SELECT max(rowid) m FROM search_cards_gone').first())?.m??0;
+ if(n>GONE_MAX)return {rows:[],max,tooMany:true};
+ const {results}=await db.prepare('SELECT rowid g,card_rowid,id,region_id,label,status,search FROM search_cards_gone ORDER BY rowid').all();
+ const counted=new Map();
+ for(const r of results)if(r.card_rowid<=lastRowid&&!counted.has(r.card_rowid))counted.set(r.card_rowid,r);
+ return {rows:[...counted.values()],max,tooMany:false};
+}
+
+/** Zieht protokollierte Karten ab: ihre IDs bei den seltenen Wörtern (häufige ohne IDs bleiben häufig bis zum nächsten vollen
+ *  Aufbau), ihren Beitrag zu Trefferzahl, Gebiets- und Themenzahlen der häufigen Begriffe */
+async function subtractCards(db,rows,kinds,termsOf){
+ const pairs=[],touched=new Set(),hits=new Map(),areas=new Map(),facets=new Map();
+ for(const row of rows){
+  for(const w of wordsOf(row.search)){pairs.push([w,row.id]);touched.add(w);}
+  const kind=kinds?.get(row.region_id);
+  for(const t of termsOf(row,kind)){
+   let h=hits.get(t);if(!h){h={city:0,district:0};hits.set(t,h);}h[kind]++;
+   const ka=t+'|'+row.region_id;areas.set(ka,(areas.get(ka)||0)+1);
+   const kf=t+'|'+kind+'|'+row.label+'|'+row.status;facets.set(kf,(facets.get(kf)||0)+1);
+  }
+ }
+ const statements=[];
+ for(let i=0;i<pairs.length;i+=1500)statements.push(db.prepare("DELETE FROM search_postings WHERE (word,card_id) IN (SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]') FROM json_each(?))").bind(JSON.stringify(pairs.slice(i,i+1500))));
+ const words=[...touched];
+ for(let i=0;i<words.length;i+=1500){
+  const json=JSON.stringify(words.slice(i,i+1500));
+  statements.push(db.prepare('UPDATE search_words SET cards=(SELECT count(*) FROM search_postings p WHERE p.word=search_words.word) WHERE cards<? AND word IN (SELECT value FROM json_each(?))').bind(TOO_COMMON,json));
+  statements.push(db.prepare('DELETE FROM search_words WHERE cards=0 AND hits_city IS NULL AND word IN (SELECT value FROM json_each(?))').bind(json));
+ }
+ for(const [t,h] of hits)statements.push(db.prepare('UPDATE search_words SET hits_city=max(hits_city-?,0),hits_district=max(hits_district-?,0) WHERE word=? AND hits_city IS NOT NULL').bind(h.city,h.district,t));
+ const downA=[...areas].map(([k,n])=>{const [t,region]=k.split('|');return [t,region,n];});
+ const downF=[...facets].map(([k,n])=>{const [t,kind,label,status]=k.split('|');return [t,kind,label,status,n];});
+ for(let i=0;i<downA.length;i+=1500){
+  const json=JSON.stringify(downA.slice(i,i+1500));
+  statements.push(db.prepare("UPDATE search_word_areas SET n=n-(SELECT json_extract(j.value,'$[2]') FROM json_each(?) j WHERE json_extract(j.value,'$[0]')=search_word_areas.word AND json_extract(j.value,'$[1]')=search_word_areas.region_id) WHERE (word,region_id) IN (SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]') FROM json_each(?))").bind(json,json));
+  statements.push(db.prepare("DELETE FROM search_word_areas WHERE n<=0 AND (word,region_id) IN (SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]') FROM json_each(?))").bind(json));
+ }
+ for(let i=0;i<downF.length;i+=1500){
+  const json=JSON.stringify(downF.slice(i,i+1500));
+  statements.push(db.prepare("UPDATE search_word_facets SET n=n-(SELECT json_extract(j.value,'$[4]') FROM json_each(?) j WHERE json_extract(j.value,'$[0]')=search_word_facets.word AND json_extract(j.value,'$[1]')=search_word_facets.kind AND json_extract(j.value,'$[2]')=search_word_facets.label AND json_extract(j.value,'$[3]')=search_word_facets.status) WHERE (word,kind,label,status) IN (SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]'),json_extract(value,'$[2]'),json_extract(value,'$[3]') FROM json_each(?))").bind(json,json));
+  statements.push(db.prepare("DELETE FROM search_word_facets WHERE n<=0 AND (word,kind,label,status) IN (SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]'),json_extract(value,'$[2]'),json_extract(value,'$[3]') FROM json_each(?))").bind(json));
+ }
+ await runBatches(db,statements);
+}
+
+/** Nur Karten seit dem letzten Lauf: protokollierte Karten abziehen, neue Wörter anlegen, IDs der seltenen ergänzen, Wörter über
+ *  500 Karten kappen, die vorberechneten Zahlen der häufigen Begriffe fortschreiben */
 async function refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax){
  let rowid=state.rowid,topId=state.topId??null,cards=0,reachedEnd=false;
- /* Die vorberechneten Trefferzahlen lassen sich nur fortschreiben, wenn nichts gelöscht oder ersetzt wurde: dann sind die
-    Karten bis zur letzten rowid noch genau die gezählten. Sonst verfallen sie bis zum nächsten vollen Aufbau. */
- let hitsOk=!!state.hasHits&&!!kinds;
- if(hitsOk){const old=(await db.prepare('SELECT count(*) n FROM search_cards WHERE rowid<=?').bind(state.rowid).first())?.n;hitsOk=old===state.counted;}
+ const gone=await readGone(db,state.rowid);
+ /* Die vorberechneten Trefferzahlen lassen sich nur fortschreiben, wenn jede Lücke bis zur letzten rowid im Protokoll steht:
+    dann sind die Karten bis dahin genau die gezählten ohne die protokollierten. Sonst verfallen sie bis zum nächsten vollen Aufbau. */
+ let hitsOk=!!state.hasHits&&!!kinds&&!gone.tooMany;
+ if(hitsOk){
+  const old=(await db.prepare('SELECT count(*) n FROM search_cards WHERE rowid<=?').bind(state.rowid).first())?.n;
+  /* Protokollierte rowids, an denen keine Karte mehr steht (eine ersetzte Spitze behält ihre rowid und zählt im Bestand weiter) */
+  const freed=gone.rows.length?(await db.prepare('SELECT count(*) n FROM json_each(?) j WHERE NOT EXISTS (SELECT 1 FROM search_cards c WHERE c.rowid=j.value)').bind(JSON.stringify(gone.rows.map(r=>r.card_rowid))).first())?.n:0;
+  hitsOk=old+freed===state.counted;
+ }
  const common=new Set();
  if(hitsOk){const {results}=await db.prepare('SELECT word FROM search_words WHERE cards>? OR hits_city IS NOT NULL').bind(POSTING_MAX).all();for(const r of results)common.add(r.word);}
  const termCache=new Map();
- while(cards<maxCards){
-  const {results}=await db.prepare('SELECT rowid r,id,region_id,label,status,search FROM search_cards WHERE rowid>? ORDER BY rowid LIMIT ?').bind(rowid,chunk).all();
-  if(!results.length){reachedEnd=true;break;}
+ /* Beitrag einer Karte zu den vorberechneten Zahlen: die häufigen Begriffe, die in ihren Wörtern stecken */
+ const termsOf=(row,kind)=>{const terms=new Set();if(hitsOk&&(kind==='city'||kind==='district'))for(const w of wordsOf(row.search))for(const t of commonTermsIn(w,common,termCache))terms.add(t);return terms;};
+ if(gone.rows.length)await subtractCards(db,gone.rows,kinds,termsOf);
+ const addChunk=async results=>{
   const pending=new Map(),bump=new Map(),bumpAreas=new Map(),bumpFacets=new Map();
   for(const row of results){
-   rowid=row.r;topId=row.id;
-   const kind=kinds?.get(row.region_id),terms=new Set();
-   for(const w of wordsOf(row.search)){
-    const list=pending.get(w);if(list)list.push(row.id);else pending.set(w,[row.id]);
-    if(hitsOk&&(kind==='city'||kind==='district'))for(const t of commonTermsIn(w,common,termCache))terms.add(t);
-   }
+   if(row.r>=rowid){rowid=row.r;topId=row.id;}
+   const kind=kinds?.get(row.region_id),terms=termsOf(row,kind);
+   for(const w of wordsOf(row.search)){const list=pending.get(w);if(list)list.push(row.id);else pending.set(w,[row.id]);}
    for(const t of terms){
     let b=bump.get(t);if(!b){b={city:0,district:0};bump.set(t,b);}b[kind]++;
     const ka=t+'|'+row.region_id;bumpAreas.set(ka,(bumpAreas.get(ka)||0)+1);
@@ -244,15 +311,31 @@ async function refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax){
    cleanup.push(db.prepare('UPDATE search_words SET cards=? WHERE word IN (SELECT value FROM json_each(?))').bind(TOO_COMMON,json));
   }
   await runBatches(db,cleanup);
+ };
+ /* Karten an den protokollierten rowids: eine ersetzte Spitze bekommt ihre rowid wieder, freie rowids werden neu vergeben;
+    sie stehen nicht hinter der letzten rowid und werden hier wie neue gelesen */
+ if(gone.rows.length){
+  const ids=gone.rows.map(r=>r.card_rowid);
+  for(let i=0;i<ids.length;i+=1500){
+   const {results}=await db.prepare('SELECT rowid r,id,region_id,label,status,search FROM search_cards WHERE rowid IN (SELECT value FROM json_each(?)) ORDER BY rowid').bind(JSON.stringify(ids.slice(i,i+1500))).all();
+   if(results.length)await addChunk(results);
+  }
  }
+ while(cards<maxCards){
+  const {results}=await db.prepare('SELECT rowid r,id,region_id,label,status,search FROM search_cards WHERE rowid>? ORDER BY rowid LIMIT ?').bind(rowid,chunk).all();
+  if(!results.length){reachedEnd=true;break;}
+  await addChunk(results);
+ }
+ /* Das Protokoll bis zum gelesenen Stand ist verarbeitet; was seither dazukam, bleibt für den nächsten Lauf */
+ if(gone.max)await db.prepare('DELETE FROM search_cards_gone WHERE rowid<=?').bind(gone.max).run();
  if(state.hasHits&&!hitsOk){
   await db.prepare('UPDATE search_words SET hits_city=NULL,hits_district=NULL').run();
   await db.prepare('DELETE FROM search_word_areas').run();
   await db.prepare('DELETE FROM search_word_facets').run();
  }
  const words=(await db.prepare('SELECT count(*) n FROM search_words').first())?.n??0;
- await writeState(db,{rowid,topId,revision:reachedEnd?revision:null,complete:true,counted:(state.counted??0)+cards,hasHits:hitsOk,words,at:new Date().toISOString()});
- return {cards,words,revision,reachedEnd};
+ await writeState(db,{rowid,topId,revision:reachedEnd?revision:null,complete:true,counted:(state.counted??0)-gone.rows.length+cards,hasHits:hitsOk,words,at:new Date().toISOString()});
+ return {cards,gone:gone.rows.length,words,revision,reachedEnd};
 }
 const insertWordsIgnore=(db,rows)=>{const out=[];for(let i=0;i<rows.length;i+=1500)out.push(db.prepare("INSERT OR IGNORE INTO search_words(word,cards) SELECT json_extract(value,'$[0]'),json_extract(value,'$[1]') FROM json_each(?)").bind(JSON.stringify(rows.slice(i,i+1500))));return out;};
 
