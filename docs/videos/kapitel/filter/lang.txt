@@ -1,7 +1,7 @@
 # Gezielt eingrenzen, bis nur das Passende übrig bleibt. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
 *@filter-fenster.offen Zu viele Treffer? Dann grenzen Sie sie ein.
-*@filter-fenster.auswahl Wählen Sie Zeitraum, Thema und Status, zum Beispiel beschlossen oder in Beratung.
-@filter-fenster.auswahl Karte und Liste passen sich sofort an.
+*@filter-fenster.zeitraum,thema,status Wählen Sie Zeitraum, Thema und Status, zum Beispiel beschlossen oder in Beratung.
+@filter-fenster.karte Karte und Liste passen sich sofort an.
 @filter-fenster.marken Ihre Auswahl steht als Marken unter der Suchleiste, ein Klick entfernt sie wieder.
 @filter-fenster.exakt Wollen Sie nur ganze Wörter, schalten Sie den exakten Begriff ein.
 @filter-fenster.kombi Mehrere Begriffe verknüpfen Sie wahlweise mit „alle“ oder „einer davon“.
