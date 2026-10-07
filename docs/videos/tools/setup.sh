@@ -9,3 +9,6 @@ mkdir -p voices out out-web out-clips cache/tts
 B=https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/high
 for f in de_DE-thorsten-high.onnx de_DE-thorsten-high.onnx.json; do [ -f voices/$f ] || curl -L -o voices/$f $B/$f; done
 echo "Fertig. Videos bauen: cd $D && node <Repo>/docs/videos/tools/build-video.mjs <skript> <ordner> <name>"
+# Prüfwerkzeuge, die Tokens sparen: Texterkennung (tesseract.js) und Bildvergleich (imagehash)
+npm install tesseract.js --silent
+./venv/bin/pip install -q imagehash pillow
