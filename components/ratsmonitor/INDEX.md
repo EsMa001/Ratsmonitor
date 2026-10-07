@@ -694,13 +694,13 @@ wordmark__dot design-styles.css:61
 - admin-atlas.tsx (166, ⚠33): AdminAtlas
 - admin-chrome.tsx (26): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
 - admin-dashboard.tsx (73, ⚠17): AdminDashboardView
-- admin-estimate.tsx (334, ⚠53): AdminEstimate
+- admin-estimate.tsx (334, ⚠54): AdminEstimate
 - admin-forecast.tsx (12): AdminForecast
 - admin-keywords.tsx (88, ⚠13): AdminKeywords
 - admin-loader.tsx (30, ⚠1): AdminLoader
 - admin-overview.tsx (135, ⚠17): AdminOverview
 - admin-processing-map.tsx (39, ⚠4): AdminProcessingMap
-- admin-processing.tsx (156, ⚠20): AdminProcessing
+- admin-processing.tsx (168, ⚠21): AdminProcessing
 - admin-run-debug.tsx (67, ⚠3): RunDebugView, AdminRunDebug
 - admin-timeline.tsx (72, ⚠6): AdminTimeline
 - analysis-article-list.tsx (34, ⚠1): AnalysisArticleList

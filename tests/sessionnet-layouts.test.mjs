@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {collectSessionNet,fetchText,meetingRows,parseAgenda,parseAgendaCards,parseAgendaTopTable,sessionNetLandmark,sessionNetPageIssue,sessionNetClients,meetingClients,SESSIONNET_LOGIN,SESSIONNET_ERROR,SESSIONNET_SOURCE} from '../server/integrations/sessionnet.mjs';
 // Excerpts of live pages, 04.10.2026 (see the comment at the top of each file).
-const page=name=>fs.readFileSync(new URL('./fixtures/sessionnet-fixes/'+name,import.meta.url),'utf8');
+// A checkout with core.autocrlf gives the fixtures CRLF line endings; the pages are read as the servers send them (LF).
+const page=name=>fs.readFileSync(new URL('./fixtures/sessionnet-fixes/'+name,import.meta.url),'utf8').replace(/\r\n/g,'\n');
 const now=new Date('2026-10-04T12:00:00Z');
 const halle={id:'de-15002000',name:'Stadt Halle (Saale)',kind:'city',base:'https://buergerinfo.halle.de/',extension:'asp'};
 const schiffweiler={id:'de-10043116',name:'Gemeinde Schiffweiler',kind:'city',base:'https://biswl.rznk.de/',extension:'php'};

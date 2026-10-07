@@ -21,10 +21,29 @@ test('persistent queue handles partial sources, unavailable territory, cancellat
  job=await pipelineAction(db,{action:'step',id:job.id},async()=>{calls++;return {status:200,data:{topics:5,coverage:{complete:false,issues:['Zeitlimit']}}};});assert.equal(job.status,'completed');assert.equal(job.items[0].status,'partial');assert.equal(calls,1);
  await pipelineAction(db,{action:'step',id:job.id},()=>{throw Error('duplicate');});
  job=await pipelineAction(db,{action:'create',stage:'analysis',regions:['billerbeck']},()=>{});
- job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{processed:500,remaining:1}}));assert.equal(job.status,'queued');
+ job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{processed:500,remaining:1,more:true,cursor:'a0499'}}));assert.equal(job.status,'queued');assert.equal(job.items[0].cursor,'a0499');assert.equal(job.items[0].remaining,1);
+ // Rule labelling is repeatable: an interrupted package is queued again, and the next package continues behind the cursor.
  job.items[0].status='running';await db.prepare("UPDATE system_state SET value=? WHERE key='admin-pipeline-job'").bind(JSON.stringify(job)).run();
+ let seen;job=await pipelineAction(db,{action:'step',id:job.id},async(stage,region,window,cursor)=>{seen=[stage,region,cursor];return {status:200,data:{processed:1,remaining:0,more:false,cursor:'a0500'}};});
+ assert.deepEqual(seen,['analysis','billerbeck','a0499']);assert.equal(job.status,'completed');assert.equal(job.items[0].processed,501);assert.equal(job.items[0].cursor,undefined);assert.equal(job.items[0].message,'Alle offenen Berichte bearbeitet.');
+ // An interrupted import is never silently repeated.
+ job=await pipelineAction(db,{action:'create',stage:'metadata',regions:['billerbeck']},()=>{});job.items[0].status='running';await db.prepare("UPDATE system_state SET value=? WHERE key='admin-pipeline-job'").bind(JSON.stringify(job)).run();
  job=await pipelineAction(db,{action:'step',id:job.id},()=>{throw Error('must not replay');});assert.equal(job.items[0].status,'unknown');
  job=await pipelineAction(db,{action:'create',stage:'analysis',regions:['billerbeck']},()=>{});job=await pipelineAction(db,{action:'cancel',id:job.id},()=>{});assert.equal(job.status,'cancelled');sql.close();
+});
+test('rule labelling of the whole stock is one item: package after package behind the cursor, pausable between packages',async()=>{
+ const {sql,db}=fixture();
+ let job=await pipelineAction(db,{action:'create',stage:'analysis',regions:'all'},()=>{});assert.equal(job.scope,'all');assert.deepEqual(job.items.map(i=>i.region),['all']);assert.equal(job.items[0].status,'queued');
+ // The whole stock is not counted after every package: the answer says only whether more may follow.
+ job=await pipelineAction(db,{action:'step',id:job.id},async(stage,region,window,cursor)=>{assert.equal(region,'all');assert.equal(cursor,undefined);return {status:200,data:{processed:500,remaining:null,more:true,cursor:'x1'}};});
+ assert.equal(job.status,'queued');assert.equal(job.items[0].cursor,'x1');assert.equal(job.items[0].remaining,undefined);assert.match(job.items[0].message,/nächste Paket/);
+ // Paused: no package is claimed; the stored packages stay. Resume continues behind the cursor.
+ job=await pipelineAction(db,{action:'pause',id:job.id},()=>{});job=await pipelineAction(db,{action:'step',id:job.id},()=>{throw Error('paused jobs claim nothing');});assert.equal(job.items[0].status,'queued');assert.equal(job.paused,true);
+ job=await pipelineAction(db,{action:'resume',id:job.id},()=>{});
+ job=await pipelineAction(db,{action:'step',id:job.id},async(stage,region,window,cursor)=>({status:200,data:{processed:7,remaining:0,more:false,cursor:cursor+'!'}}));assert.equal(job.status,'completed');assert.equal(job.items[0].processed,507);assert.equal(job.items[0].cursor,undefined);
+ // A package that did not answer (interrupted request) pauses the job instead of marking the stock unknown.
+ job=await pipelineAction(db,{action:'create',stage:'analysis',regions:'all'},()=>{});job=await pipelineAction(db,{action:'step',id:job.id},()=>{throw Error('interrupted');});assert.equal(job.items[0].status,'queued');assert.equal(job.paused,true);
+ const unchanged=await pipelineAction(db,{action:'create',stage:'metadata',regions:'all'},()=>{throw Error('must not run');}).catch(e=>e);assert.equal(unchanged.status,409);sql.close();
 });
 test('integer keyword allocation totals 100 and breaks ties consistently without filling missing terms',()=>{const items=Array.from({length:10},(_,i)=>({term:String(i),score:1+i%4}));const result=keywordWeights(items);assert.equal(result.reduce((n,k)=>n+k.weight,0),100);assert.ok(result.every(k=>Number.isInteger(k.weight)&&k.weight>0));assert.deepEqual(Object.fromEntries(result.map(k=>[k.term,k.weight])),Object.fromEntries(keywordWeights([...items].reverse()).map(k=>[k.term,k.weight])));assert.throws(()=>keywordWeights(items.slice(1)));assert.throws(()=>keywordWeights(items.map(i=>({...i,term:'same'}))));});
 test('AI job applies separate results atomically, preserves rules and owner, counts current state and repeats safely',async()=>{
