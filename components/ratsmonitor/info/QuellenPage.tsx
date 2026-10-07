@@ -69,7 +69,7 @@ export function QuellenPage() {
               <Big value={pct(reach.municipalities.covered, reach.municipalities.total)} label="der Gemeinden Deutschlands sind dabei" sub={`${n(reach.municipalities.covered)} von ${n(reach.municipalities.total)} Gemeinden mit Vorgängen aus ihrem Rat`} />
               <Big value={pct(reach.population.covered, reach.population.total)} label="der Einwohner leben in abgedeckten Orten" sub={`${(reach.population.covered / 1e6).toLocaleString("de-DE", { maximumFractionDigits: 1 })} von ${(reach.population.total / 1e6).toLocaleString("de-DE", { maximumFractionDigits: 1 })} Millionen Menschen`} />
             </div>
-            <dl className="m-0 mt-12 grid grid-cols-2 border-y border-slate-200 sm:grid-cols-4">
+            <dl className="m-0 mt-12 grid grid-cols-2 border-t border-slate-200 sm:grid-cols-4">
               {[
                 [n(data.totals.articles), "Vorgänge durchsuchbar"],
                 [`${n(reach.districts.covered)} von ${n(reach.districts.total)}`, "Landkreise"],
