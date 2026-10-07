@@ -1,1 +1,24 @@
-{ "ausgabe": "plenara-probe", "kapitel": [ { "kapitel": "einleitung", "parameter": { "thema": "Klimaschutz" } }, { "kapitel": "suchen", "parameter": { "thema": "Klimaschutz" } }, { "kapitel": "zeitstrahl", "parameter": { "thema": "Klimaschutz" } } ] }
+{
+ "ausgabe": "plenara-probe",
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "parameter": {
+    "thema": "Klimaschutz"
+   }
+  },
+  {
+   "kapitel": "suchen",
+   "parameter": {
+    "thema": "Klimaschutz",
+    "vorsuche": "ja"
+   }
+  },
+  {
+   "kapitel": "zeitstrahl",
+   "parameter": {
+    "thema": "Klimaschutz"
+   }
+  }
+ ]
+}

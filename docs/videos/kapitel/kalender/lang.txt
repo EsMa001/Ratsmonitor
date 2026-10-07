@@ -4,4 +4,3 @@
 @kalender.gebiete Wählen Sie Ihre Gebiete, einen Ort oder Kreis, auch mehrere zugleich.
 *@kalender.tag Jeder Tag mit einer Sitzung ist markiert, ein Klick zeigt Gremium und Themen.
 @kalender.abo Mit „Kalender abonnieren“ übernehmen Sie die Termine in Ihren eigenen Kalender.
-@kalender.abo Und am Tag der Sitzung kommt eine E-Mail.

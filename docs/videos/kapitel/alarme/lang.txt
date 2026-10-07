@@ -1,8 +1,10 @@
-# Nichts verpassen, ohne zu suchen. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
+# Nichts verpassen, ohne zu suchen. Alles zu Benachrichtigungen steht in diesem einen Kapitel (Alarm, Vorgang, Wochenbericht, Sitzung), in anderen Kapiteln nicht wiederholen.
 @alarm.herz Sie wollen nichts verpassen, aber nicht jeden Tag suchen?
 *@alarm.herz Speichern Sie Ihre Suche mit dem Herz.
 @alarm.konto Im Konto schalten Sie die Glocke ein.
 *@alarm.glocke Ab jetzt kommt eine E-Mail, sobald es zu Ihrer Suche neue Treffer gibt.
 @alarm.glocke Wie oft Sie benachrichtigt werden, legen Sie bei jeder Suche fest.
 @alarm-artikel.glocke Auch zu einem einzelnen Vorgang können Sie sich benachrichtigen lassen.
-@alarm.glocke Sie müssen nicht mehr suchen. Plenarra meldet sich.
+@postfach.wochenbericht Der Wochenbericht fasst alle neuen Treffer Ihrer Suchen zusammen, täglich oder an Ihrem Wunschtag.
+@kalender.abo Und am Tag einer Sitzung in Ihren Gebieten kommt eine E-Mail.
+@postfach.wochenbericht So behalten Sie den Überblick, ohne zu suchen. Plenarra meldet sich.

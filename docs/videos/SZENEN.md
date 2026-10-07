@@ -53,3 +53,7 @@ In `kapitel/<id>/lang.txt` markiert ein `*` vor dem `@` den Kernsatz (1 bis 2 je
 10. **Seitenwechsel und Laden nur in `H.hidden(() => …)`**: alles darin wird nicht aufgenommen, im Clip entsteht ein harter Schnitt statt eines Ladebildschirms. Nie einen Schritt starten, solange die Seite noch lädt oder scrollt.
 
 `build-video` ruft am Ende `tools/check.py` auf. Es meldet jedes Bild, das nur kurz (unter 0,5 s) zwischen zwei Schnitten steht, als WARNUNG mit Zeitpunkt. Eine Warnung bedeutet: Szene korrigieren und neu aufnehmen, bevor das Video gezeigt wird. Neue Szenen immer so prüfen.
+
+## Textregeln für Videos
+- **Keine doppelte Suche im Bild:** Folgt `suchen` auf `einleitung`, steht im Kapitel `"parameter": { "vorsuche": "ja" }`; die Szene `suche-eingabe` tippt den Begriff dann nicht noch einmal.
+- **Benachrichtigungen in einem Rutsch:** Alles dazu steht im einen Kapitel `alarme` (Herz und Glocke, Häufigkeit, Alarm am Vorgang, Wochenbericht, E-Mail am Sitzungstag, „Plenarra meldet sich“). Einleitung, Kalender und Abschluss wiederholen es nicht. Das Test-Postfach kommt in keinem Skript vor, es wird entfernt.

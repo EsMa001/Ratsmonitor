@@ -16,7 +16,8 @@
    "text": "kurz",
    "parameter": {
     "thema": "Wärmeplanung",
-    "ort": "Stuttgart"
+    "ort": "Stuttgart",
+    "vorsuche": "ja"
    }
   },
   {
@@ -44,10 +45,6 @@
   },
   {
    "kapitel": "kalender",
-   "text": "lang"
-  },
-  {
-   "kapitel": "postfach",
    "text": "lang"
   },
   {
