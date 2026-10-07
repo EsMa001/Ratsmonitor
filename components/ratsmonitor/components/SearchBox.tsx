@@ -12,7 +12,7 @@ import { addRecent, clearRecent, readRecent } from "../lib/recentSearches";
 import { IconCheck, IconHeart, IconPin, IconSearch, IconX } from "./icons";
 
 type Row =
-  | { kind: "head"; label: string }
+  | { kind: "head"; label: string; action?: { label: string; run: () => void } }
   | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void; scope?: "only" | "with" }
   | { kind: "text"; label: string; silent?: boolean; pick: () => void }
   | { kind: "query"; label: string; pick: () => void }
@@ -110,7 +110,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
         inputRef.current?.blur();
       };
       if (recent.length) {
-        out.push({ kind: "head", label: "Zuletzt gesucht" });
+        /* „Verlauf löschen“ steht in derselben Zeile rechts */
+        out.push({ kind: "head", label: "Zuletzt gesucht", action: { label: "Verlauf löschen", run: () => { clearRecent(); setRecent([]); } } });
         for (const q of recent)
           out.push({
             kind: "recent",
@@ -141,16 +142,6 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
             },
           });
       }
-      if (recent.length)
-        out.push({
-          kind: "text",
-          label: "Verlauf löschen",
-          silent: true,
-          pick: () => {
-            clearRecent();
-            setRecent([]);
-          },
-        });
       return out;
     }
     if (!open || !state.q.trim() || !place || !geo) return [];
@@ -426,13 +417,18 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
           aria-label="Erkannte Orte und Vorschläge"
           onMouseDown={(e) => e.preventDefault()}
           style={{ maxHeight: listMax ?? 380 }}
-          className={`popover scroll-thin absolute left-0 right-0 z-[1200] min-w-[280px] max-sm:min-w-0 overflow-y-auto p-1.5 ${glass ? "rm-glass rm-glass-pop !rounded-[28px] !p-2.5" : ""} ${listUp ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}
+          className={`popover scroll-thin absolute left-0 right-0 z-[1200] min-w-[280px] max-sm:min-w-0 overflow-y-auto p-1.5 ${glass ? "rm-glass rm-glass-pop !rounded-[28px] !p-2.5" : stay ? "!rounded-[28px] !p-2.5" : ""} ${listUp ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}
         >
           {rows.map((r, i) => {
             if (r.kind === "head")
               return (
-                <div key={"h" + i} className="px-2 pb-1 pt-1.5 text-[12px] font-semibold uppercase tracking-[.04em] text-slate-500">
-                  {r.label}
+                <div key={"h" + i} className="flex items-center justify-between gap-3 px-2 pb-1 pt-1.5 text-[12px] font-semibold uppercase tracking-[.04em] text-slate-500">
+                  <span>{r.label}</span>
+                  {r.action && (
+                    <button type="button" onClick={r.action.run} className="text-[12px] font-medium normal-case tracking-normal text-teal-600 hover:underline">
+                      {r.action.label}
+                    </button>
+                  )}
                 </div>
               );
             pickIndex++;

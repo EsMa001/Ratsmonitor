@@ -40,7 +40,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
   );
   const label = play === "loading" ? "Wird berechnet" : play === "playing" ? "Pause" : startLabel;
   return (
-    <div>
+    <div className="relative z-20">
       <div role="search" className="flex w-full items-center gap-2">
         <div className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white [&_input]:rounded-full">
           <SearchBox stay onSubmit={onSubmit} />

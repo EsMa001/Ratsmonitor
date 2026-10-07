@@ -52,38 +52,43 @@ function TrendThumb() {
   );
 }
 
-/** Vorschaubild des Gebietsvergleichs: zwei Orte als Balkenprofile mit Marke für den Maßstab */
+/** Vorschaubild des Gebietsvergleichs: Schmetterlingsdiagramm, links ein Ort, rechts der andere, in der Mitte die Themen */
 function CompareThumb() {
-  const rows: [number, number][] = [[118, 60], [84, 96], [66, 40], [44, 70], [30, 22]];
+  const rows: [number, number][] = [[96, 40], [64, 88], [44, 52], [78, 24], [30, 70]];
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Gebietsvergleichs: Themenprofile zweier Orte als Balken" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
-      {rows.map(([a, b], i) => (
-        <g key={i} transform={`translate(24 ${18 + i * 26})`}>
-          <rect width="260" height="6" rx="3" fill="#f1f5f9" />
-          <rect width={a * 2} height="6" rx="3" fill="#0d9488" />
-          <rect y="10" width="260" height="6" rx="3" fill="#f1f5f9" />
-          <rect y="10" width={b * 2} height="6" rx="3" fill="#0f172a" />
-          <line x1={(a + b) * 0.75} x2={(a + b) * 0.75} y1="-3" y2="19" stroke="#0f172a" strokeOpacity=".6" />
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Gebietsvergleichs: Balken zweier Orte gegenüber, links der eine, rechts der andere" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+      <line x1="160" x2="160" y1="16" y2="140" stroke="#cbd5e1" />
+      <circle cx="40" cy="18" r="4" fill="#0d9488" /><circle cx="280" cy="18" r="4" fill="#0f172a" />
+      {rows.map(([l, r], i) => (
+        <g key={i} transform={`translate(0 ${34 + i * 22})`}>
+          <rect x={160 - l} width={l - 4} height="12" rx="3" fill="#0d9488" fillOpacity=".9" />
+          <rect x="164" width={r} height="12" rx="3" fill="#0f172a" fillOpacity=".85" />
         </g>
       ))}
     </svg>
   );
 }
 
-/** Vorschaubild von Status und Beschlüssen: gestapelte Balken und eine Linie der Beschlussquote */
+/** Vorschaubild von Status und Beschlüssen: Ring der Beschlussquote und Balken je Gremienebene */
 function DecisionThumb() {
-  const cols: [number, number, number][] = [[52, 6, 2], [70, 8, 3], [92, 9, 2], [60, 10, 4], [80, 7, 3], [74, 12, 3], [96, 8, 2]];
+  const C = 2 * Math.PI * 38, a = 0.82 * C, p = 0.12 * C, r = 0.06 * C;
+  const bars: [number, number, number][] = [[0.94, 0.04, 0.02], [0.52, 0.4, 0.08], [0.34, 0.6, 0.06]];
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau von Status und Beschlüssen: Säulen mit beschlossen, vertagt und abgelehnt, dazu die Beschlussquote als Linie" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
-      <line x1="16" x2="304" y1="136" y2="136" stroke="#e2e8f0" />
-      {cols.map(([a, p, r], i) => (
-        <g key={i} transform={`translate(${26 + i * 40} 136)`}>
-          <rect y={-a} width="24" height={a} fill="#0d9488" fillOpacity=".85" />
-          <rect y={-a - p} width="24" height={p} fill="#94a3b8" />
-          <rect y={-a - p - r} width="24" height={r} fill="#0f172a" />
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau von Status und Beschlüssen: Ring mit der Beschlussquote, daneben Balken je Gremienebene" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+      <g transform="translate(86 78) rotate(-90)">
+        <circle r="38" fill="none" stroke="#0d9488" strokeWidth="14" strokeDasharray={`${a} ${C}`} />
+        <circle r="38" fill="none" stroke="#94a3b8" strokeWidth="14" strokeDasharray={`${p} ${C}`} strokeDashoffset={-a} />
+        <circle r="38" fill="none" stroke="#0f172a" strokeWidth="14" strokeDasharray={`${r} ${C}`} strokeDashoffset={-(a + p)} />
+      </g>
+      <text x="86" y="85" textAnchor="middle" fontSize="20" fontWeight="600" fill="#0f172a">91 %</text>
+      {bars.map(([x, y, z], i) => (
+        <g key={i} transform={`translate(160 ${44 + i * 28})`}>
+          <rect width="140" height="10" rx="5" fill="#f1f5f9" />
+          <rect width={140 * x} height="10" rx="5" fill="#0d9488" />
+          <rect x={140 * x} width={140 * y} height="10" fill="#94a3b8" />
+          <rect x={140 * (x + y)} width={140 * z} height="10" rx="3" fill="#0f172a" />
         </g>
       ))}
-      <polyline points="38,40 78,34 118,30 158,44 198,36 238,46 278,32" fill="none" stroke="#0f172a" strokeWidth="2" strokeDasharray="5 4" />
     </svg>
   );
 }
@@ -112,10 +117,11 @@ export function AnalyticsAbout() {
       <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte. Jede Auswertung wird bei der Abfrage frisch aus der Datenbank berechnet; ändert sich der Bestand, ändert sich das Ergebnis.</p>
 
       <h2 className="mt-14 text-[22px] font-semibold">Funktionen</h2>
-      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+      <article className="border-t border-slate-200 py-8">
+        <h3 className="text-[22px] font-semibold">Diffusionsanalyse</h3>
+        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
         <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen"><DiffusionThumb /></Link>
         <div>
-          <h3 className="text-[22px] font-semibold">Diffusionsanalyse</h3>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie sich ein Thema über die Gebiete ausbreitet: wer zuerst dran war, wie schnell andere folgten und wo es noch fehlt. Als Zeitraffer auf der Karte, mit den gleichen Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
@@ -127,11 +133,13 @@ export function AnalyticsAbout() {
           </details>
           <Link href="/analytics/diffusion" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Diffusionsanalyse öffnen →</Link>
         </div>
+        </div>
       </article>
-      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+      <article className="border-t border-slate-200 py-8">
+        <h3 className="text-[22px] font-semibold">Knowledge Graph</h3>
+        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
         <Link href="/analytics/graph" aria-label="Knowledge Graph öffnen"><GraphThumb /></Link>
         <div>
-          <h3 className="text-[22px] font-semibold">Knowledge Graph</h3>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, womit ein Thema zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz. Knoten lassen sich ziehen und anklicken, mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
@@ -143,11 +151,13 @@ export function AnalyticsAbout() {
           </details>
           <Link href="/analytics/graph" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Knowledge Graph öffnen →</Link>
         </div>
+        </div>
       </article>
-      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+      <article className="border-t border-slate-200 py-8">
+        <h3 className="text-[22px] font-semibold">Trends und Frühindikatoren</h3>
+        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
         <Link href="/analytics/trends" aria-label="Trends öffnen"><TrendThumb /></Link>
         <div>
-          <h3 className="text-[22px] font-semibold">Trends und Frühindikatoren</h3>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, welche Begriffe gerade aufkommen, zunehmen oder verschwinden: der aktuelle Zeitraum im Vergleich zum Zeitraum davor, als Trendkarte, Rangliste mit Verlaufskurven und Themenfeld-Veränderung. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
@@ -159,11 +169,13 @@ export function AnalyticsAbout() {
           </details>
           <Link href="/analytics/trends" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Trends öffnen →</Link>
         </div>
+        </div>
       </article>
-      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+      <article className="border-t border-slate-200 py-8">
+        <h3 className="text-[22px] font-semibold">Gebietsvergleich</h3>
+        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
         <Link href="/analytics/vergleich" aria-label="Gebietsvergleich öffnen"><CompareThumb /></Link>
         <div>
-          <h3 className="text-[22px] font-semibold">Gebietsvergleich</h3>
           <p className="mt-2 text-[16px] text-slate-500">Stellt zwei bis vier Orte nebeneinander: Themenprofil, Stand der Vorlagen, Verlauf, aktivste Gremien sowie typische und gemeinsame Begriffe. Als Maßstab dienen alle Gebiete. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
@@ -175,11 +187,13 @@ export function AnalyticsAbout() {
           </details>
           <Link href="/analytics/vergleich" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gebietsvergleich öffnen →</Link>
         </div>
+        </div>
       </article>
-      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+      <article className="border-t border-slate-200 py-8">
+        <h3 className="text-[22px] font-semibold">Status und Beschlüsse</h3>
+        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
         <Link href="/analytics/beschluesse" aria-label="Status und Beschlüsse öffnen"><DecisionThumb /></Link>
         <div>
-          <h3 className="text-[22px] font-semibold">Status und Beschlüsse</h3>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen und Ablehnungen, wie einig Gremien entscheiden, wie oft Vorlagen geändert werden und wie lange ein Vorgang bis zum Beschluss braucht. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
@@ -191,11 +205,13 @@ export function AnalyticsAbout() {
           </details>
           <Link href="/analytics/beschluesse" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Status und Beschlüsse öffnen →</Link>
         </div>
+        </div>
       </article>
-      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+      <article className="border-t border-slate-200 py-8">
+        <h3 className="text-[22px] font-semibold">Gremiennetz</h3>
+        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
         <Link href="/analytics/gremien" aria-label="Gremiennetz öffnen"><NetThumb /></Link>
         <div>
-          <h3 className="text-[22px] font-semibold">Gremiennetz</h3>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange ein Übergang dauert. Als Netz mit Pfeilen, mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
@@ -207,7 +223,9 @@ export function AnalyticsAbout() {
           </details>
           <Link href="/analytics/gremien" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gremiennetz öffnen →</Link>
         </div>
+        </div>
       </article>
+      <div className="border-t border-slate-200" />
       <p className="mt-8 text-[14px] text-slate-500">Weitere Funktionen sind in Planung.</p>
     </main>
   );

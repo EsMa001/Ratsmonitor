@@ -707,7 +707,7 @@ wordmark__dot design-styles.css:61
 - PlanCards.tsx (116): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
-- SearchBox.tsx (532): SearchBox
+- SearchBox.tsx (528): SearchBox
 - SearchFilterPanel.tsx (83): SearchFilterPanel
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (40): ShareButton
@@ -785,7 +785,7 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (301): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (215, ⚠14): AnalyticsAbout
+- AnalyticsAbout.tsx (233, ⚠14): AnalyticsAbout
 - AnalyticsPages.tsx (32, ⚠1): isAnalyticsPath, AnalyticsPages
 - BeschluessePage.tsx (188, ⚠5): BeschluessePage
 - CompareCharts.tsx (51): PLACE_COLORS, CMonth, CompareLines, TopicRow
@@ -795,7 +795,9 @@ wordmark__dot design-styles.css:61
 - DiffusionPage.tsx (261, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (66): PlayState, DiffusionSearch
 - GraphView.tsx (183, ⚠2): GNode, GEdge, KIND, GraphView
+- GremiennetzPage.tsx (183, ⚠2): GremiennetzPage
 - KnowledgeGraphPage.tsx (195, ⚠1): KnowledgeGraphPage
+- NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
 - TrendViews.tsx (70): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (195, ⚠3): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery
