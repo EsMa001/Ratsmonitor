@@ -8,6 +8,13 @@ type Video = { title: string; text: string; file?: string; mobile?: string };
 /* Videos hier eintragen: file = Dateiname ohne Endung. Ohne file zeigt die Karte „Video folgt“. */
 const GROUPS: { group: string; lead: string; items: Video[] }[] = [
   {
+    group: "Webinar",
+    lead: "Alle Funktionen von Plenara und Plenara.X in einem Video.",
+    items: [
+      { title: "Plenara im Überblick", text: "Suche, Karte, Filter, Alarme, Export und alle Analysen von Plenara.X in rund neun Minuten.", file: "plenara-webinar" },
+    ],
+  },
+  {
     group: "Vorstellung",
     lead: "Kurz gezeigt, was die Plattform für Ihre Region leistet.",
     items: [
@@ -130,7 +137,7 @@ export function VideosPage() {
   const nextOf = (title: string) => playable[playable.findIndex((v) => v.title === title) + 1];
   return (
     <>
-      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="Videos" lead="Kurze Vorstellungsvideos und Videos zu den Funktionen." />
+      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="Videos" lead="Webinar, kurze Vorstellungsvideos und Videos zu den Funktionen." />
       <section className="ri-sec">
         {GROUPS.map((g) => (
           <div key={g.group} className="mb-12">

@@ -120,6 +120,24 @@ Wie es zusammenhängt:
 - **`build.py`** setzt die Bilder mit dem Ton (0,5 s Vorlauf, 1 s Nachlauf) zu einem Video zusammen, erzeugt das Vorschaubild und die Untertitel.
 - **`scenes-mobil.mjs`** ist die Regie: Pro Video eine Liste `[Satznummer ab 0, Verzögerung in s, Name, Funktion]`.
 
+## Webinar (ein Video, ca. 9 Minuten)
+
+Datei auf der Seite: `public/videos/plenara-webinar.{mp4,jpg,vtt}` (Bereich „Webinar“, ganz oben). Skript: `texts/webinar/webinar.txt` (16 Kapitel, je Kapitel eine Zeile `[KAPITELSEITE | Icon | Titel | Stichpunkte]`). Kapitel 4 bis 7 sind die fertigen Funktionsvideos (`[VORHANDENES VIDEO | NN | name]`), alle anderen werden neu vertont und aufgenommen. Die Zahlen im Skript stammen aus dem Datenbestand vom 07.10.2026, vor einer neuen Aufnahme neu abfragen. Im Webinar gibt es **keine Kommapausen** (`speak.py ... 0.8 0`).
+
+Werkzeuge in `tools/webinar/` (alle im Arbeitsordner `~/code/video-tools` starten, `R` = Repository):
+
+```bash
+S=$R/docs/videos
+node $S/tools/webinar/prep.mjs $S/texts/webinar/webinar.txt out-web/w1      # Kapiteltexte und chapters.json
+node $S/tools/webinar/cards.mjs out-web/w1                                  # Kapitelseiten (PNG, Farbverlauf, Icons der Website)
+mkdir -p out-web/w1/c01 && python3 $S/tools/speak.py out-web/w1/c01.txt out-web/w1/c01/audio.wav 0.8 0   # je Kapitel
+bash $S/tools/webinar/rec-all.sh w1 webinar/scenes-teil1.mjs c01 c02 ...    # aufnehmen + bauen (Szenen: tools/webinar/scenes-teil1.mjs)
+# vorhandene Videos: public/videos/<name>.mp4 nach out-web/w1/cNN/cNN.mp4 und out-web/<alteNr>/audio.json nach out-web/w1/cNN/audio.json kopieren
+python3 $S/tools/webinar/assemble.py w1 plenara-webinar                      # Kapitelseiten + Kapitel zu einem Video, mit Untertiteln
+```
+
+Die Kapitelseite steht doppelt so lange wie der erste Satz des Kapitels: erst still (Lesezeit), dann spricht der Satz darüber. Analysen (Graph, Vergleich, Gremiennetz) werden vor der Aufnahme einmal berechnet, damit die Antwort aus dem Browser-Cache sofort erscheint.
+
 ## Hinweise und Stolperstellen
 
 - **Aufgenommen wird eine laufende App** mit echten Daten. Die Treffer (z. B. Zahlen und Einträge) hängen vom Datenstand ab und sehen bei einer neuen Aufnahme anders aus.

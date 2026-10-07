@@ -8,7 +8,7 @@ for line in open(txt,encoding="utf8").read().splitlines():
     line=line.strip()
     if not line: continue
     start=pos
-    parts=re.findall(r'[^,]+,?',line)
+    parts=re.findall(r'[^,]+,?',line) if comma>0 else [line]   # Kommapause 0: ganzer Satz in einem Stück, ohne künstliche Pause
     for i,p in enumerate(parts):
         f="/tmp/_s.wav"; synth(p.strip(),f)
         w=wave.open(f); params=w.getparams(); d=w.readframes(w.getnframes()); n=w.getnframes()/params.framerate; w.close()
