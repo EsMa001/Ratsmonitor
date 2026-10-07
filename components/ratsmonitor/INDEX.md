@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (408 Zeilen, ⚠9)
+- app/ratsmonitor-info.css (417 Zeilen, ⚠9)
 - app/ratsmonitor.css (145 Zeilen, ⚠6)
 
 admin-access analyse-admin.css:66
@@ -346,6 +346,8 @@ onboarding__intro design-styles.css:240
 onboarding__place design-styles.css:231
 onboarding__source design-styles.css:244
 onboarding__title design-styles.css:232
+pa-btn ratsmonitor-info.css:409
+pa-btn__arrow ratsmonitor-info.css:414
 page design-styles.css:41
 page-error-action analyse-admin.css:98
 page-note analyse-admin.css:29
@@ -827,21 +829,21 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (301): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (235, ⚠14): AnalyticsAbout
+- AnalyticsAbout.tsx (238, ⚠14): AnalyticsAbout
 - AnalyticsPages.tsx (32, ⚠1): isAnalyticsPath, AnalyticsPages
-- BeschluessePage.tsx (188, ⚠5): BeschluessePage
+- BeschluessePage.tsx (191, ⚠5): BeschluessePage
 - CompareCharts.tsx (51): PLACE_COLORS, CMonth, CompareLines, TopicRow
-- ComparePage.tsx (201, ⚠5): ComparePage
+- ComparePage.tsx (204, ⚠5): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (61, ⚠1): DiffusionChart
-- DiffusionPage.tsx (261, ⚠4): DiffusionPage
+- DiffusionPage.tsx (264, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (66): PlayState, DiffusionSearch
 - GraphView.tsx (183, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (183, ⚠2): GremiennetzPage
-- KnowledgeGraphPage.tsx (195, ⚠1): KnowledgeGraphPage
+- GremiennetzPage.tsx (186, ⚠2): GremiennetzPage
+- KnowledgeGraphPage.tsx (198, ⚠1): KnowledgeGraphPage
 - NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
 - TrendViews.tsx (70): Trend, TrendKind, Spark, TrendMap
-- TrendsPage.tsx (195, ⚠3): TrendsPage
+- TrendsPage.tsx (198, ⚠3): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery
 
 ### components/ratsmonitor/services/

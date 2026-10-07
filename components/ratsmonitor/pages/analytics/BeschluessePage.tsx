@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageBand } from "./PageBand";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
 import { DEC_COLORS, DecisionRow, MonthColumns, type Cut, type Month } from "./DecisionCharts";
@@ -60,12 +61,14 @@ export function BeschluessePage() {
   const dmax = res?.duration.p90 ?? 1;
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] py-10 text-slate-900">
+    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+      <PageBand>
       <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Status und Beschlüsse</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Status und Beschlüsse</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen und Ablehnungen, wie einig Gremien entscheiden, wie oft Vorlagen geändert werden und wie lange ein Vorgang bis zum Beschluss braucht.</p>
+      </PageBand>
 
-      <div className="mt-6"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
+      <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
         <span className="text-slate-500">Ohne Eingabe gilt der ganze Bestand. Beispiele:</span>
         {EXAMPLES.map((x) => <button key={x} type="button" onClick={() => { search.applySearch(x); setWant(true); }} className="text-teal-600">{x}</button>)}

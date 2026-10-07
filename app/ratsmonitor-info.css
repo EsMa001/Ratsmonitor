@@ -405,3 +405,12 @@ select.ri-input{padding-right:12px;cursor:pointer}
 @media (max-width:439px){.rm-logo--big .rm-logo__text{position:static;width:auto;height:auto;overflow:visible;clip:auto}
 .rm-logo--big .rm-logo__mark{height:.66em!important;width:.66em!important;vertical-align:-.07em!important;margin:0 .01em 0 0!important}
 .rm-logo--big .rm-logo__mark--p{height:.66em!important;width:.66em!important;vertical-align:-.07em!important}}
+/* Plenara.X: Hauptknopf im Farbverlauf der Fußleiste (weicher Mintnebel), abgerundetes Rechteck mit rundem Pfeil */
+.pa-btn{display:inline-flex;align-items:center;gap:14px;min-height:50px;padding:6px 8px 6px 22px;border:1px solid rgba(13,148,136,.28);border-radius:16px;color:#0f172a;font:inherit;font-size:16px;font-weight:500;line-height:1.2;text-decoration:none;cursor:pointer;
+  background-color:#fff;background-repeat:no-repeat;background-size:170% 130%,170% 130%,100% 100%;animation:riGlow 9s ease-in-out infinite alternate;
+  background-image:radial-gradient(80% 140% at 15% 120%,rgba(13,148,136,.34),transparent 70%),radial-gradient(70% 140% at 90% 115%,rgba(110,191,184,.62),transparent 70%),linear-gradient(#fff,#d3ebe7);
+  transition:border-color .15s,box-shadow .15s,transform .15s}
+.pa-btn:hover{border-color:rgba(13,148,136,.55);box-shadow:0 6px 18px rgba(13,148,136,.18)}
+.pa-btn__arrow{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#0f172a;color:#fff;font-size:16px;transition:transform .15s}
+.pa-btn:hover .pa-btn__arrow{transform:translateX(2px)}
+@media (prefers-reduced-motion:reduce){.pa-btn{animation:none}}

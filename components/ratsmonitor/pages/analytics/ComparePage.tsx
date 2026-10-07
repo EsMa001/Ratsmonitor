@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageBand } from "./PageBand";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
 import { useData } from "../../state/data";
@@ -93,12 +94,14 @@ export function ComparePage() {
   const grid = { gridTemplateColumns: `minmax(130px,1.1fr) repeat(${cols}, minmax(0,1fr))` };
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] py-10 text-slate-900">
+    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+      <PageBand>
       <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Gebietsvergleich</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Gebietsvergleich</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Stellt zwei bis vier Orte nebeneinander: womit sie sich beschäftigen, wie Vorlagen ausgehen und was für den jeweiligen Ort typisch ist. Als Maßstab dienen alle Gebiete.</p>
+      </PageBand>
 
-      <div className="mt-6"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Vergleich starten" /></div>
+      <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Vergleich starten" /></div>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
         <span className="text-slate-500">Orte oben im Suchfeld wählen (mit Komma trennen, höchstens vier). Optional ein Thema oder Filter dazu.</span>
         {!res && EXAMPLES.map(([v, l]) => <button key={v} type="button" onClick={() => { search.applySearch(v); setWant(true); }} className="text-teal-600">{l}</button>)}

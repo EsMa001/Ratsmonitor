@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageBand } from "./PageBand";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
@@ -82,12 +83,14 @@ export function KnowledgeGraphPage() {
   const empty = !!res && res.nodes.length <= 1;
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] py-10 text-slate-900">
+    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+      <PageBand>
       <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Knowledge Graph</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Knowledge Graph</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, womit ein Thema in den Räten zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz.</p>
+      </PageBand>
 
-      <div className="mt-6"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Graph erstellen" /></div>
+      <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Graph erstellen" /></div>
       {!res && !loading && (
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
           <span className="text-slate-500">Beispiele:</span>

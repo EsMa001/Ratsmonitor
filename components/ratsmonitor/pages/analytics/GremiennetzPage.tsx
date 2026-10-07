@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageBand } from "./PageBand";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -60,12 +61,14 @@ export function GremiennetzPage() {
   const maxEdge = res?.edges[0]?.n ?? 1;
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] py-10 text-slate-900">
+    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
+      <PageBand>
       <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Gremiennetz</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Gremiennetz</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange der Weg dauert.</p>
+      </PageBand>
 
-      <div className="mt-6"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Netz berechnen" /></div>
+      <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Netz berechnen" /></div>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
         <span className="text-slate-500">Ohne Eingabe gilt der ganze Bestand; mit genau einem Ort erscheinen dessen echte Gremien. Beispiele:</span>
         {EXAMPLES.map((x) => <button key={x} type="button" onClick={() => { search.applySearch(x); setWant(true); }} className="text-teal-600">{x}</button>)}
