@@ -14,6 +14,7 @@ for (const raw of readFileSync(src, "utf8").split("\n")) {
   if (!l || l.startsWith("# ") || l === "#") continue;
   let m;
   if ((m = l.match(/^## (\d+) (.*)$/))) chapters.push({ nr: +m[1], name: m[2], lines: [] });
+  else if ((m = l.match(/^\[SZENE \| ([\w-]+)\]$/))) chapters.at(-1).scene = m[1];
   else if ((m = l.match(/^\[VORHANDENES VIDEO \| (\d+) \| (.*)\]$/))) chapters.at(-1).video = { nn: m[1], name: m[2] };
   else if ((m = l.match(/^\[KAPITELSEITE \| Icon: (\w+) \| Titel: (.*?) \| Stichpunkte: (.*)\]$/))) Object.assign(chapters.at(-1), { icon: m[1], title: m[2], bullets: m[3].split(" · ") });
   else { const b = l.match(/^@([\w,-]+) (.*)$/); chapters.at(-1).lines.push(fill(b ? b[2] : l, facts)); (chapters.at(-1).beats ||= []).push(b ? b[1].split(",") : []); }

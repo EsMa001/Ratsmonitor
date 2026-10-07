@@ -1,5 +1,6 @@
 ## 1 Trefferliste und Artikel
 [KAPITELSEITE | Icon: fileText | Titel: Trefferliste und Artikel | Stichpunkte: Status als Zeitstrahl · Artikel mit allen Unterlagen · Originalquelle]
+[SZENE | treffer-liste]
 @liste Zu einem Thema wie der Wärmeplanung gibt es {{wp.entries|mehrals}} Einträge, alle in einer Liste.
 @zeile Jede Zeile zeigt den Titel, das Gremium und das Datum.
 @zeitstrahl Darunter sehen Sie auf einen Blick, wie weit der Vorgang ist.
