@@ -691,7 +691,7 @@ wordmark__dot design-styles.css:61
 - AccountMenu.tsx (62, ⚠1): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (98, ⚠1): AreaBar
-- Brand.tsx (270): AnalyticsLogo, Brand
+- Brand.tsx (274): AnalyticsLogo, Brand
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - CountDots.tsx (9): CountDots
 - DateRangeFilter.tsx (114): DateRangeSelect, DateRangeFields, DateRangeFilter
@@ -790,6 +790,9 @@ wordmark__dot design-styles.css:61
 - DiffusionChart.tsx (61, ⚠1): DiffusionChart
 - DiffusionPage.tsx (261, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (63): PlayState, DiffusionSearch
+- GraphView.tsx (183, ⚠2): GNode, GEdge, KIND, GraphView
+- KnowledgeGraphPage.tsx (195, ⚠1): KnowledgeGraphPage
+- useAnalyticsQuery.ts (26): useAnalyticsQuery
 
 ### components/ratsmonitor/services/
 - api.ts (7, ⚠1): readSavedSearches, writeSavedSearches

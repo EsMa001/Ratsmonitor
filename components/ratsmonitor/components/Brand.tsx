@@ -147,7 +147,7 @@ function Plenara() {
   );
 }
 
-function PlenaraV2({ square, size = 28 }: { square?: boolean; size?: number }) {
+function PlenaraV2({ square, size = 28, noDot = false }: { square?: boolean; size?: number; noDot?: boolean }) {
   return (
     <span style={{ fontSize: size, letterSpacing: "-.015em" }}>
       <svg className="rm-logo__mark rm-logo__mark--p" viewBox="15 15 70 70" overflow="visible" aria-hidden="true" style={{ ...INLINE, height: ".66em", width: ".66em", verticalAlign: "-0.07em", marginRight: ".01em" }}>
@@ -158,7 +158,7 @@ function PlenaraV2({ square, size = 28 }: { square?: boolean; size?: number }) {
         {square ? (
           <>
             lenara
-            <Square />
+            {!noDot && <Square />}
           </>
         ) : (
           <>
@@ -213,18 +213,22 @@ const LOGO: Record<LogoId, () => ReactElement> = {
   "parlamo-v2sq": () => <Parlamo v2 square />,
 };
 
-/** Dezentes X hinter dem Plenara-Logo: zwei Diagonalen aus kleinen Quadraten (wie der ■), zur Mitte kräftiger, in der Mitte ein voller ■ */
-const X_SQUARES: [number, number, number][] = [0, 1, 2, 3, 4, 5, 6, 7, 8].filter((i) => i !== 4).flatMap((i) => {
-  const t = i / 8, v = 8 + 84 * t, o = 0.25 + 0.75 * (1 - Math.abs(t - 0.5) * 2);
-  return [[v, v, o], [v, 100 - v, o]] as [number, number, number][];
-});
+/** Dezentes X im Plenara-Analytics-Logo: Der ■ (Punkt hinter „plenara“) ist der Mittelpunkt auf der Grundlinie, vier Arme aus je sechs
+ *  kleiner werdenden, verblassenden Quadraten gehen von ihm aus; das X ragt unter die Zeile wie das p */
+const X_H = 1.06;
+const X_SQUARES: [number, number, number, number][] = [1, -1].flatMap((dx) =>
+  [1, -1].flatMap((dy) =>
+    Array.from({ length: 6 }, (_, i) => [50 + dx * (18 + i * 10.5), 50 + dy * (18 + i * 10.5), Math.max(0.12, 0.85 - i * 0.13), Math.max(4, 6.5 - i * 0.5)] as [number, number, number, number]),
+  ),
+);
 function AnalyticsX() {
+  const dot = (0.15 / X_H) * 100;
   return (
-    <svg viewBox="0 0 100 100" aria-hidden="true" style={{ ...INLINE, height: ".68em", width: ".68em", verticalAlign: "-0.07em", marginLeft: ".14em", overflow: "visible" }}>
-      {X_SQUARES.map(([x, y, o]) => (
-        <rect key={`${x}-${y}`} x={x - 4} y={y - 4} width="8" height="8" fill={TEAL} fillOpacity={o} />
+    <svg viewBox="0 0 100 100" aria-hidden="true" style={{ ...INLINE, height: `${X_H}em`, width: `${X_H}em`, verticalAlign: `${-(X_H / 2 - 0.075)}em`, marginLeft: ".05em", overflow: "visible" }}>
+      {X_SQUARES.map(([x, y, o, w]) => (
+        <rect key={`${x}-${y}`} x={x - w / 2} y={y - w / 2} width={w} height={w} fill={TEAL} fillOpacity={o} />
       ))}
-      <rect x="41" y="41" width="18" height="18" fill={TEAL} />
+      <rect x={50 - dot / 2} y={50 - dot / 2} width={dot} height={dot} fill={TEAL} />
     </svg>
   );
 }
@@ -234,7 +238,7 @@ export function AnalyticsLogo({ size = 64 }: { size?: number }) {
   return (
     <div className="rm-logo rm-logo--big" role="img" aria-label="Plenara Analytics" style={{ display: "inline-flex", alignItems: "center", fontSize: size }}>
       <span style={{ fontSize: size }}>
-        <PlenaraV2 square size={size} />
+        <PlenaraV2 square size={size} noDot />
       </span>
       <AnalyticsX />
     </div>
