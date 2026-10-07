@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (417 Zeilen, ⚠9)
+- app/ratsmonitor-info.css (408 Zeilen, ⚠9)
 - app/ratsmonitor.css (145 Zeilen, ⚠6)
 
 admin-access analyse-admin.css:66
@@ -346,8 +346,6 @@ onboarding__intro design-styles.css:240
 onboarding__place design-styles.css:231
 onboarding__source design-styles.css:244
 onboarding__title design-styles.css:232
-pa-btn ratsmonitor-info.css:409
-pa-btn__arrow ratsmonitor-info.css:414
 page design-styles.css:41
 page-error-action analyse-admin.css:98
 page-note analyse-admin.css:29
@@ -837,11 +835,12 @@ wordmark__dot design-styles.css:61
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (61, ⚠1): DiffusionChart
 - DiffusionPage.tsx (264, ⚠4): DiffusionPage
-- DiffusionSearch.tsx (66): PlayState, DiffusionSearch
+- DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
 - GraphView.tsx (183, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (186, ⚠2): GremiennetzPage
 - KnowledgeGraphPage.tsx (198, ⚠1): KnowledgeGraphPage
 - NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
+- PageBand.tsx (14): PageBand
 - TrendViews.tsx (70): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (198, ⚠3): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery
