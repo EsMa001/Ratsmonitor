@@ -1,0 +1,62 @@
+{
+ "ausgabe": "plenara-uebersicht-180s",
+ "karten": false,
+ "vorteileMax": 5,
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Klimaschutz",
+    "ort": "Münster"
+   }
+  },
+  {
+   "kapitel": "suchen",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Klimaschutz",
+    "ort": "Münster"
+   }
+  },
+  {
+   "kapitel": "liste-artikel",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Klimaschutz",
+    "ort": "Münster"
+   }
+  },
+  {
+   "kapitel": "filter",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
+  },
+  {
+   "kapitel": "alarme",
+   "text": "lang"
+  },
+  {
+   "kapitel": "export",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "kalender",
+   "text": "lang"
+  },
+  {
+   "kapitel": "postfach",
+   "text": "lang"
+  },
+  {
+   "kapitel": "konto",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "abdeckung",
+   "text": "kurz"
+  }
+ ]
+}

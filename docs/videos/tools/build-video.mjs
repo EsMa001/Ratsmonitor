@@ -4,7 +4,7 @@
    Szene = docs/videos/szenen/<id>/szene.mjs (Vertrag: docs/videos/SZENEN.md). Ein Clip wird nur aufgenommen, wenn er für Szene, Parameter und Format fehlt, veraltet ist oder mit --refresh.
    Ablauf: Texte und Fakten, Kapitelseiten, Ton (Zwischenspeicher), Clips, Zusammenbau, Gesamtvideo. Ergebnis: out-web/<video>/<ausgabe>.mp4/.vtt/.jpg (bisher nur Format 16x9 fürs Gesamtvideo) */
 import { spawnSync, spawn } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, existsSync, statSync } from "node:fs";
 import { fill } from "./fmt.mjs";
 import { clipState } from "./status.mjs";
 import { loadScene, resolveParams, clipKey } from "./key.mjs";
@@ -52,7 +52,7 @@ for (const [i, k] of def.kapitel.entries()) {
     lines.push(fill(m ? m[2] : l, pf)); beats.push(m ? m[1].split(",") : []);
   }
   const nr = i + 1, n = pad(nr), format = k.format || "16x9", keys = {};
-  for (const id of kj.szenen) { const sc = await loadScene(id); const own = Object.fromEntries(Object.entries(k.parameter || {}).filter(([a]) => a in (sc.parameter || {}))); keys[id] = { key: clipKey(id, sc, resolveParams(sc, own), format), params: own }; }
+  for (const id of kj.szenen) { const sc = await loadScene(id); const own = Object.fromEntries(Object.entries(k.parameter || {}).filter(([a]) => a in (sc.parameter || {}))); const full = resolveParams(sc, own); keys[id] = { key: clipKey(id, sc, full, format), params: own, full, id }; }
   mkdirSync(`${O}/c${n}`, { recursive: true });
   writeFileSync(`${O}/c${n}.txt`, lines.join("\n") + "\n"); writeFileSync(`${O}/c${n}/beats.json`, JSON.stringify(beats));
   writeFileSync(`${O}/c${n}/clips.json`, JSON.stringify(Object.fromEntries(Object.entries(keys).map(([id, v]) => [id, v.key]))));
@@ -65,9 +65,12 @@ if (karten) run("node", [`${T}cards.mjs`, O]);
 const sel = chapters.filter((c) => !only || only.includes(c.nr));
 for (const c of sel) { const n = pad(c.nr); run("python3", [`${T}speak.py`, `${O}/c${n}.txt`, `${O}/c${n}/audio.wav`, "0.8", "0"]); }
 const todo = new Map();
-for (const c of sel) for (const [id, { key, params }] of Object.entries(c.keys)) {
+for (const c of sel) for (const [id, { key, params, full }] of Object.entries(c.keys)) {
   if (todo.has(key)) continue;
-  const st = clipState(key), neu = st.state === "fehlt" || st.state === "veraltet" || refresh || (st.entwurf && !entwurf);  /* Entwurf-Clips gelten für das fertige Video nicht */
+  /* Clip gilt auch als veraltet, wenn er mit anderen Parametern aufgenommen wurde oder die Szene seitdem geändert wurde */
+  const cf = `out-clips/${key}/clip.json`, cj = existsSync(cf) ? JSON.parse(readFileSync(cf, "utf8")) : null;
+  const anders = cj && (JSON.stringify(Object.entries(cj.params || {}).sort()) !== JSON.stringify(Object.entries(full).sort()) || statSync(`${V}szenen/${id}/szene.mjs`).mtimeMs > Date.parse(cj.recorded));
+  const st = clipState(key), neu = st.state === "fehlt" || st.state === "veraltet" || anders || refresh || (st.entwurf && !entwurf);  /* Entwurf-Clips gelten für das fertige Video nicht */
   if (neu) { const p = Object.entries(params).map(([a, b]) => `${a}=${b}`).join(","); const args = [`${T}rec-clip.mjs`, id, "--format", c.format]; todo.set(key, p ? [...args, "--p", p] : args); }
 }
 console.log(`Clips: ${todo.size} neu aufzunehmen (parallel ${jobs}), Rest wird wiederverwendet`);
@@ -79,9 +82,10 @@ for (const c of sel) run("python3", [`${T}compose.py`, `${O}/c${pad(c.nr)}`, `c$
 const slogan = JSON.parse(readFileSync(`${V}../produkt/slogan.json`, "utf8")), vt = existsSync(VP) ? JSON.parse(readFileSync(VP, "utf8")).vorteile : [];
 const ranks = [...new Set(sel.flatMap((c) => c.vorteile))].sort((a, b) => a - b).slice(0, def.vorteileMax ?? 5);
 const items = ranks.map((r) => vt.find((x) => x.rang === r)?.titel).filter(Boolean);
-const spec = {}; if (def.titel !== false) spec.titel = { dur: 3.4 };
+const spec = {}; const sag = `Plenarra. ${slogan.sprech}`;
+if (def.titel !== false) { mkdirSync(`${O}/titel`, { recursive: true }); writeFileSync(`${O}/titel.txt`, sag + "\n"); run("python3", [`${T}speak.py`, `${O}/titel.txt`, `${O}/titel/audio.wav`, "0.5", "0"]); spec.titel = { dur: +Math.max(3.4, 0.4 + JSON.parse(readFileSync(`${O}/titel/audio.json`, "utf8")).total + 0.5).toFixed(2) }; }  /* Titelfolie spricht Name und Slogan */
 if (def.ende !== false) {
-  if (items.length) { mkdirSync(`${O}/ende1`, { recursive: true }); writeFileSync(`${O}/ende1.txt`, items.join("\n") + "\n"); run("python3", [`${T}speak.py`, `${O}/ende1.txt`, `${O}/ende1/audio.wav`, "0.5", "0"]); const a = JSON.parse(readFileSync(`${O}/ende1/audio.json`, "utf8")); spec.vorteile = { items, starts: a.sentences.map((x) => +(x.start + 0.7).toFixed(2)), dur: +(a.total + 0.7 + 1.2).toFixed(2) }; }
+  if (items.length) { mkdirSync(`${O}/ende1`, { recursive: true }); writeFileSync(`${O}/ende1.txt`, ["Das bringt Ihnen Plenarra.", ...items].join("\n") + "\n"); run("python3", [`${T}speak.py`, `${O}/ende1.txt`, `${O}/ende1/audio.wav`, "0.5", "0"]); const a = JSON.parse(readFileSync(`${O}/ende1/audio.json`, "utf8")); spec.vorteile = { items, starts: a.sentences.slice(1).map((x) => +(x.start + 0.7).toFixed(2)), dur: +(a.total + 0.7 + 1.2).toFixed(2) }; }
   mkdirSync(`${O}/ende2`, { recursive: true }); writeFileSync(`${O}/ende2.txt`, `Plenarra. ${slogan.sprech}\n`); run("python3", [`${T}speak.py`, `${O}/ende2.txt`, `${O}/ende2/audio.wav`, "0.5", "0"]);
   const a2 = JSON.parse(readFileSync(`${O}/ende2/audio.json`, "utf8")); spec.schluss = { dur: +Math.max(5, 1.9 + a2.total + 1.3).toFixed(2) };
 }

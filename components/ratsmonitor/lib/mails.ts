@@ -92,7 +92,7 @@ export interface DigestPart {
   total: number;
   top: MailItem[];
 }
-export const digestMail = (to: string, from: string, till: string, parts: DigestPart[]) => {
+export const digestMail = (to: string, from: string, till: string, parts: DigestPart[], weekday = "Montag") => {
   const sum = parts.reduce((n, s) => n + s.total, 0);
   sendMail(
     to,
@@ -104,7 +104,7 @@ export const digestMail = (to: string, from: string, till: string, parts: Digest
         .map((s) => h(`${esc(s.name)} <span style="font-weight:400;color:#64748b">· ${s.total} neu</span>`) + items(s.top) + (s.total > s.top.length ? more(`Alle ${s.total} Treffer ansehen`, searchLink(s)) : ""))
         .join("") +
       button("Zu Ihren Suchen", "/konto/suchen"),
-    `Wochenbericht ${de(from)} bis ${de(till)}. Sie erhalten ihn jeden Montag, weil Sie ihn aktiviert haben.`,
+    `Wochenbericht ${de(from)} bis ${de(till)}. Sie erhalten ihn ${weekday === "Täglich" ? "jeden Tag" : `jeden ${weekday}`}, weil Sie ihn aktiviert haben.`,
   );
 };
 

@@ -20,7 +20,7 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | 7 | A | Sofort sehen, wo etwas passiert | Karte mit Flächen, Heatmap, Punkten |
 | 8 | B | Sehen, wie sich ein Thema ausbreitet | Plenara.X Diffusionsanalyse |
 | 9 | B | Neues früh erkennen | Plenara.X Trends und Frühindikatoren |
-| 10 | B | Wochenbericht jeden Montag | Schalter bei den gespeicherten Suchen |
+| 10 | B | Wochenbericht täglich oder am Wunschtag | Schalter und Rhythmus bei den gespeicherten Suchen |
 | 11 | B | Keine Sitzung verpassen | Kalender mit Abonnieren |
 | 12 | B | Gezielt eingrenzen | Filter: Zeitraum, Thema, Status |
 | 13 | B | Orte vergleichen | Plenara.X Gebietsvergleich, 2 bis 4 Orte |
