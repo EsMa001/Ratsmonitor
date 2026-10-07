@@ -1,0 +1,8 @@
+# Wie Vorgänge ausgehen. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
+@entscheidungen.start Wie gehen Vorgänge aus: beschlossen, vertagt oder abgelehnt?
+@entscheidungen.raten Bei {{p.thema|text}} sind von {{t.decided|zahl}} entschiedenen Vorgängen {{t.approval|fast}} Prozent beschlossen.
+@entscheidungen.raten {{t.postponement|zahl}} Prozent wurden vertagt, {{t.rejection|zahl}} Prozent abgelehnt.
+@entscheidungen.dauer Die Hälfte der Vorgänge war nach {{t.durMedian|zahl}} Tagen entschieden.
+@entscheidungen.votes Wo das Abstimmungsergebnis bekannt ist, waren {{t.unanimous|fast}} Prozent einstimmig.
+@entscheidungen.raten Dabei zählen nur Vorgänge mit bekanntem Status, das sind {{t.statusKnownPct|zahl}} Prozent der Einträge.
+@entscheidungen.raten Das zeigt Plenarra offen an, damit Sie die Zahl richtig einordnen.

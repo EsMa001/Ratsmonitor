@@ -1,0 +1,22 @@
+{
+ "titel": "Jeden Montag alles Neue in einer E-Mail",
+ "icon": "mail",
+ "stichpunkte": [],
+ "szenen": [
+  "postfach"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.10|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.69|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.73|text}}"
+  }
+ ]
+}

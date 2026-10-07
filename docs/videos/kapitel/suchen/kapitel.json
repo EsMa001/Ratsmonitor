@@ -1,1 +1,15 @@
-{ "titel": "Suchen und finden", "icon": "search", "stichpunkte": ["Ein Begriff, ganz Deutschland", "Treffer auf der Karte", "Liste mit Gremium und Datum"], "szenen": ["suche-eingabe"] }
+{
+ "titel": "Ein Begriff. Ganz Deutschland. Sofort auf der Karte.",
+ "icon": "search",
+ "stichpunkte": [],
+ "szenen": ["suche-eingabe", "karte-gebiet", "karte-heatmap", "suche-ort"],
+ "einblendungen": [
+  { "satz": 1, "text": "{{v.4|text}}" },
+  { "satz": 2, "zahl": "{{t.laender|ziffern}}", "label": "Bundesländer" },
+  { "satz": 3, "text": "{{v.26|text}}" },
+  { "satz": 4, "text": "{{v.27|text}}" },
+  { "satz": 5, "text": "{{v.25|text}}" },
+  { "satz": 6, "text": "{{v.22|text}}" },
+  { "satz": 7, "text": "{{v.1|text}}" }
+ ]
+}

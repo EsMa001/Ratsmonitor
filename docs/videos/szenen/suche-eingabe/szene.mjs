@@ -1,7 +1,7 @@
 /* Suche: Thema eingeben, Karte und erste Treffer (Entwurf) */
 export default {
   meta: { bereich: "suche", dauer: "8-12 s", zeigt: "Thema tippen, Karte, erste Treffer", tags: ["anleitung", "webinar"] },
-  parameter: { thema: "Wärmeplanung" },
+  parameter: { thema: "Klimaschutz" },
   start: "Startseite", ende: "Suchergebnis, Liste sichtbar",
   setup: async (H, p) => { await H.sleep(500); },
   beats: (p) => [

@@ -1,0 +1,6 @@
+# Neues früh erkennen. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
+@trends.start Was kommt in den Räten gerade auf?
+@trends.start Die Trendanalyse vergleicht die letzten {{t.trendWindow|zahl}} Tage mit dem Zeitraum davor.
+@trends.rangliste Der Begriff {{t.trend|text}} stieg von {{t.trendPrev|zahl}} auf {{t.trendRegions|zahl}} Gebiete.
+@trends.karte Sie sehen es als Trendkarte, als Rangliste mit Verlaufskurven und als Veränderung der Themenfelder.
+@trends.rangliste Und Sie grenzen es auf Ihr Thema oder Ihr Gebiet ein.

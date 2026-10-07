@@ -4,6 +4,7 @@ import json,subprocess,sys,os,re,glob
 TOOLS=os.environ.get('VIDEO_TOOLS',os.path.expanduser('~/code/video-tools'))
 FF=subprocess.check_output(['node','-p',f"require('{TOOLS}/node_modules/ffmpeg-static')"]).decode().strip()
 O=f'out-web/{sys.argv[1]}'; name=sys.argv[2]; CARD=float(sys.argv[3]) if len(sys.argv)>3 else 3.0
+KARTEN=not (len(sys.argv)>4 and sys.argv[4]=='keine')  # 'keine' = Kapitel ohne Kapitelseite, nahtlos hintereinander
 chs=json.load(open(f'{O}/chapters.json'))
 def run(*a):
     r=subprocess.run([FF,'-y','-loglevel','error',*a],capture_output=True,text=True)
@@ -17,6 +18,12 @@ def dur(p):
 for c in chs:
     n=f"{c['nr']:02d}"
     ch=f'{O}/c{n}/c{n}.mp4'; aj=json.load(open(f'{O}/c{n}/audio.json'))
+    if not KARTEN:
+        body=f'{O}/body{n}.mp4'
+        run('-i',ch,'-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
+        for s in aj['sentences']:
+            vtt.append(f"{ts(t+0.5+s['start'])} --> {ts(t+0.5+s['end']+0.3)}\n{s['text'].replace('Plenarra','Plenara')}\n")
+        t+=dur(ch); parts.append(body); continue
     # Die Kapitelseite bleibt stehen, während der erste Satz gesprochen wird (mindestens CARD Sekunden)
     tc=min(9.0,max(CARD,0.5+aj['sentences'][0]['end']+0.5))
     card=f'{O}/card{n}.mp4'; body=f'{O}/body{n}.mp4'
@@ -31,5 +38,5 @@ for c in chs:
 open(f'{O}/list-final.txt','w').write('\n'.join(f"file '{os.path.abspath(p)}'" for p in parts))
 run('-f','concat','-safe','0','-i',f'{O}/list-final.txt','-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-preset','slow','-crf','24','-c:a','aac','-b:a','96k','-movflags','+faststart',f'{O}/{name}.mp4')
 open(f'{O}/{name}.vtt','w',encoding='utf8').write('\n'.join(vtt))
-run('-i',f'{O}/card01.png','-frames:v','1','-q:v','4',f'{O}/{name}.jpg')
+run('-i',f'{O}/card01.png' if KARTEN else f'{O}/{name}.mp4',*([] if KARTEN else ['-ss','4']),'-frames:v','1','-q:v','4',f'{O}/{name}.jpg')
 print('Länge',round(dur(f'{O}/{name}.mp4')),'s',round(os.path.getsize(f'{O}/{name}.mp4')/1e6,1),'MB')

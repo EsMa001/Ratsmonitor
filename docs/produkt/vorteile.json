@@ -246,7 +246,7 @@
    "rang": 40,
    "stufe": "C",
    "titel": "Kurzfassung zu jedem Eintrag",
-   "beleg": "Kurzfassung unter dem Titel, per KI aus dem Dokumenttext erstellt (ai-summary.mjs), wo ein Dokumenttext vorliegt; in Texten „Kurzfassung“ nennen, „zu jedem Eintrag“ nur mit Einschränkung („wo ein Dokumenttext vorliegt“)"
+   "beleg": "Kurzfassung unter dem Titel; Stand heute nur, wo ein Dokumenttext vorliegt (KI, ai-summary.mjs), vom Nutzer als künftig für jeden Eintrag geplant bestätigt; in Texten „Kurzfassung“ nennen, nicht „KI“"
   },
   {
    "rang": 41,

@@ -1,5 +1,5 @@
 /* Baut ein Video aus Kapiteln: node build-video.mjs <video> [--refresh] [--only 2,3]   (im Ordner ~/code/video-tools starten, BASE = Adresse der App)
-   <video> = docs/videos/videos/<video>.json: { "ausgabe": "dateiname", "kapitel": [{ "kapitel": "suchen", "text": "kurz"|"lang", "parameter": { "thema": "Wärmeplanung" }, "format": "16x9" }] }
+   <video> = docs/videos/videos/<video>.json: { "ausgabe": "dateiname", "karten": false (keine Kapitelseiten), "kapitel": [{ "kapitel": "suchen", "text": "kurz"|"lang", "parameter": { "thema": "Wärmeplanung" }, "format": "16x9" }] }
    Kapitel = docs/videos/kapitel/<id>/ mit kapitel.json (Titel, Icon, Stichpunkte, szenen), kurz.txt / lang.txt (Sätze: "@szene.schritt Satz", Platzhalter {{fakt|format}}, {{p.thema|text}}).
    Szene = docs/videos/szenen/<id>/szene.mjs (Vertrag: docs/videos/SZENEN.md). Ein Clip wird nur aufgenommen, wenn er für Szene, Parameter und Format fehlt, veraltet ist oder mit --refresh.
    Ablauf: Texte und Fakten, Kapitelseiten, Ton (Zwischenspeicher), Clips, Zusammenbau, Gesamtvideo. Ergebnis: out-web/<video>/<ausgabe>.mp4/.vtt/.jpg (bisher nur Format 16x9 fürs Gesamtvideo) */
@@ -15,7 +15,8 @@ const refresh = flags.includes("--refresh");
 const only = flags.includes("--only") ? flags[flags.indexOf("--only") + 1].split(",").map(Number) : null;
 const def = JSON.parse(readFileSync(`${V}videos/${video}.json`, "utf8"));
 const O = `out-web/${video}`, pad = (n) => String(n).padStart(2, "0");
-const facts = existsSync(`${V}facts.json`) ? JSON.parse(readFileSync(`${V}facts.json`, "utf8")).values : {};
+const factsFile = existsSync(`${V}facts.json`) ? JSON.parse(readFileSync(`${V}facts.json`, "utf8")) : { values: {} };
+const facts = factsFile.values;
 /* Produktvorteile (docs/produkt/vorteile.json) als {{v.<rang>|text}} */
 const VP = `${V}../produkt/vorteile.json`;
 if (existsSync(VP)) for (const v of JSON.parse(readFileSync(VP, "utf8")).vorteile) facts[`v.${v.rang}`] = v.titel;
@@ -26,6 +27,7 @@ for (const [i, k] of def.kapitel.entries()) {
   const dir = `${V}kapitel/${k.kapitel}`, kj = JSON.parse(readFileSync(`${dir}/kapitel.json`, "utf8"));
   const file = `${dir}/${k.text || "lang"}.txt`;
   if (!existsSync(file)) throw new Error(`Text fehlt: ${file}`);
+  for (const [a, b] of [["thema", factsFile.thema], ["ort", factsFile.ort]]) if (k.parameter?.[a] && b && k.parameter[a] !== b) throw new Error(`Fakten gelten für ${a} "${b}", das Video braucht "${k.parameter[a]}": THEMA/ORT setzen und node facts.mjs ausführen`);
   const pf = { ...facts, ...Object.fromEntries(Object.entries(k.parameter || {}).map(([a, b]) => [`p.${a}`, b])) };
   const lines = [], beats = [];
   for (const raw of readFileSync(file, "utf8").split("\n")) {
@@ -41,7 +43,8 @@ for (const [i, k] of def.kapitel.entries()) {
   chapters.push({ nr, name: kj.titel, icon: kj.icon, title: kj.titel, bullets: kj.stichpunkte, keys, format });
 }
 writeFileSync(`${O}/chapters.json`, JSON.stringify(chapters, null, 1));
-run("node", [`${T}cards.mjs`, O]);
+const karten = def.karten !== false;
+if (karten) run("node", [`${T}cards.mjs`, O]);
 const done = new Set();
 for (const c of chapters) {
   if (only && !only.includes(c.nr)) continue;
@@ -58,5 +61,5 @@ for (const c of chapters) {
   }
   run("python3", [`${T}compose.py`, d, `c${n}`]);
 }
-run("python3", [`${T}assemble.py`, video, def.ausgabe || video]);
+run("python3", [`${T}assemble.py`, video, def.ausgabe || video, "3", ...(karten ? [] : ["keine"])]);
 console.log(`Fertig: ${O}/${def.ausgabe || video}.mp4`);

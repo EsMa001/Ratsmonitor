@@ -1,0 +1,18 @@
+{
+ "titel": "Aus der Suche wird Ihre Auswertung",
+ "icon": "download",
+ "stichpunkte": [],
+ "szenen": [
+  "export"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.17|text}}"
+  },
+  {
+   "satz": 3,
+   "text": "{{v.18|text}}"
+  }
+ ]
+}

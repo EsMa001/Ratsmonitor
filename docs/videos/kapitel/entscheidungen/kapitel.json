@@ -1,0 +1,35 @@
+{
+ "titel": "Wie Vorgänge ausgehen",
+ "icon": "circle-check",
+ "stichpunkte": [],
+ "szenen": [
+  "entscheidungen"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "zahl": "{{t.approval|ziffern}} %",
+   "label": "beschlossen"
+  },
+  {
+   "satz": 3,
+   "text": "{{v.87|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.90|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.88|text}}"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.98|text}}"
+  },
+  {
+   "satz": 7,
+   "text": "{{v.20|text}}"
+  }
+ ]
+}

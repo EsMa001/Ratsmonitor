@@ -1,0 +1,30 @@
+{
+ "titel": "Gezielt eingrenzen, bis nur das Passende übrig bleibt",
+ "icon": "filter",
+ "stichpunkte": [],
+ "szenen": [
+  "filter-fenster"
+ ],
+ "einblendungen": [
+  {
+   "satz": 1,
+   "text": "{{v.12|text}}"
+  },
+  {
+   "satz": 2,
+   "text": "{{v.37|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.66|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.23|text}}"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.24|text}}"
+  }
+ ]
+}

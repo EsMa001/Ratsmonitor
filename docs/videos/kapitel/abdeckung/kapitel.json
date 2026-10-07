@@ -1,0 +1,35 @@
+{
+ "titel": "Ist Ihre Gemeinde dabei? Das sehen Sie offen",
+ "icon": "shield-check",
+ "stichpunkte": [],
+ "szenen": [
+  "abdeckung"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.44|text}}"
+  },
+  {
+   "satz": 3,
+   "zahl": "{{cov.municipalities|ziffern}}",
+   "label": "Gemeinden im Datenbestand"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.21|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.58|text}}"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.45|text}}"
+  },
+  {
+   "satz": 7,
+   "text": "{{v.20|text}}"
+  }
+ ]
+}

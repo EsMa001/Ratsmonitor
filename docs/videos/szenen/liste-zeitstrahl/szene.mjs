@@ -1,7 +1,7 @@
 /* Trefferliste: Status-Zeitstrahl in der Liste, danach der Artikel in Ruhe */
 export default {
   meta: { bereich: "trefferliste", dauer: "20-25 s", zeigt: "Liste mit Status-Zeitstrahl, Artikel mit Verlauf und Quelle", tags: ["anleitung", "webinar", "wow"] },
-  parameter: { thema: "Wärmeplanung" },
+  parameter: { thema: "Klimaschutz" },
   start: "Startseite", ende: "Artikel, unten (Originalunterlagen)",
     setup: async (H, p) => { await H.search(p.thema); await H.scrollTo(380); await H.sleep(900); },
     beats: [

@@ -1,0 +1,27 @@
+{
+ "titel": "Den Weg durch die Gremien verstehen",
+ "icon": "users",
+ "stichpunkte": [],
+ "szenen": [
+  "gremiennetz"
+ ],
+ "einblendungen": [
+  {
+   "satz": 1,
+   "text": "{{v.15|text}}"
+  },
+  {
+   "satz": 3,
+   "zahl": "{{t.pool|ziffern}}",
+   "label": "Vorgänge durch mindestens zwei Gremien"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.95|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.96|text}}"
+  }
+ ]
+}

@@ -1,1 +1,33 @@
-{ "titel": "Was ist Plenara?", "icon": "landmark", "stichpunkte": ["Beschlüsse der Räte an einem Ort", "Eine Suche für ganz Deutschland", "Jede Angabe mit Originalquelle"], "szenen": ["einleitung"] }
+{
+ "titel": "Wissen, was vor Ort entschieden wird, bevor es bekannt ist",
+ "icon": "landmark",
+ "stichpunkte": [],
+ "szenen": [
+  "einleitung",
+  "liste-zeitstrahl",
+  "alarm"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.1|text}}"
+  },
+  {
+   "satz": 3,
+   "zahl": "{{t.entries|ziffern}}",
+   "label": "Einträge"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.6|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.5|text}}"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.3|text}}"
+  }
+ ]
+}

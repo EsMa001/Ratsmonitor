@@ -1,0 +1,23 @@
+{
+ "titel": "Nichts verpassen, ohne zu suchen",
+ "icon": "bell",
+ "stichpunkte": [],
+ "szenen": [
+  "alarm",
+  "alarm-artikel"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.32|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.3|text}}"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.33|text}}"
+  }
+ ]
+}
