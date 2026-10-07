@@ -17,6 +17,7 @@ import {DetailPage} from './pages/DetailPage';
 import {PersonalPage} from './pages/PersonalPage';
 import {LegalPage} from './pages/LegalPage';
 import {InfoPages,isInfoPath} from './info/InfoPages';
+import {AnalyticsPages,isAnalyticsPath} from './pages/analytics/AnalyticsPages';
 import {NotFoundPage} from './info/NotFoundPage';
 import {DataProvider} from './state/data';
 import {SearchProvider} from './state/search';
@@ -37,6 +38,6 @@ function useBrandTitle(p:string,notFound:boolean){
  useEffect(()=>{setFavicon(logo);},[logo,p]);
 }
 /** Adressen, die eine der Seiten unten bedient; alles andere zeigt die 404-Seite */
-const isKnownPath=(p:string)=>p==='/'||p.startsWith('/beschluss/')||p.startsWith('/thema/')||p.startsWith('/konto')||p==='/impressum'||p==='/datenschutz'||isInfoPath(p);
-function Content(){const p=usePathname();const notFound=!isKnownPath(p);useBrandTitle(p,notFound);return <><Header/>{notFound?<NotFoundPage/>:<OverviewPage active={p==='/'}/>}{(p.startsWith('/beschluss/')||p.startsWith('/thema/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isInfoPath(p)&&<InfoPages path={p}/>}<Footer/><SaveSearchDialog/><GateDialog/><ConfirmDialog/></>;}
+const isKnownPath=(p:string)=>p==='/'||p.startsWith('/beschluss/')||p.startsWith('/thema/')||p.startsWith('/konto')||p==='/impressum'||p==='/datenschutz'||isAnalyticsPath(p)||isInfoPath(p);
+function Content(){const p=usePathname();const notFound=!isKnownPath(p);useBrandTitle(p,notFound);return <><Header/>{notFound?<NotFoundPage/>:<OverviewPage active={p==='/'}/>}{(p.startsWith('/beschluss/')||p.startsWith('/thema/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isAnalyticsPath(p)&&<AnalyticsPages path={p}/>}{isInfoPath(p)&&<InfoPages path={p}/>}<Footer/><SaveSearchDialog/><GateDialog/><ConfirmDialog/></>;}
 export default function MonitorApp(){return <div className="ratsmonitor"><DataProvider><ToastProvider><SearchProvider><AccountProvider><UiProvider><Content/></UiProvider></AccountProvider></SearchProvider></ToastProvider></DataProvider></div>;}

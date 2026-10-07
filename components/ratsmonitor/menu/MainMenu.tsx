@@ -114,6 +114,7 @@ export function MainMenu() {
         <Link href="/preise" aria-current={current("/preise")}>Preise</Link>
         <Link href="/faq" aria-current={current("/faq")}>FAQ</Link>
         <Link href="/videos" aria-current={current("/videos")}>Videos</Link>
+        <Link href="/analytics" aria-current={current("/analytics")}>Analytics</Link>
         <Link href="/quellen" aria-current={current("/quellen")}>Datenabdeckung</Link>
         <Link href="/ueber-uns" aria-current={current("/ueber-uns")}>{brandText("Über Ratsmonitor")}</Link>
       </nav>
@@ -166,6 +167,7 @@ export function MainMenu() {
                 <p className="ri-menu__label ri-menu__label--sep">Informationen</p>
                 <Link href="/faq" className="ri-menu__main" aria-current={current("/faq")} onClick={pick}>FAQ</Link>
                 <Link href="/videos" className="ri-menu__main" aria-current={current("/videos")} onClick={pick}>Videos</Link>
+                <Link href="/analytics" className="ri-menu__main" aria-current={current("/analytics")} onClick={pick}>Plenara Analytics</Link>
                 <Link href="/quellen" className="ri-menu__main" aria-current={current("/quellen")} onClick={pick}>Datenabdeckung</Link>
                 <Link href="/ueber-uns" className="ri-menu__main" aria-current={current("/ueber-uns")} onClick={pick}>{brandText("Über Ratsmonitor")}</Link>
                 </>}

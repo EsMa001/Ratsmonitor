@@ -681,7 +681,7 @@ wordmark__dot design-styles.css:61
 - process-progress.tsx (8, ⚠1): ProcessProgress
 
 ### components/ratsmonitor/
-- App.tsx (43, ⚠1): MonitorApp
+- App.tsx (44, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (62, ⚠1): AccountMenu
@@ -767,7 +767,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (188): MainMenu
+- MainMenu.tsx (190): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (116, ⚠4): DetailPage

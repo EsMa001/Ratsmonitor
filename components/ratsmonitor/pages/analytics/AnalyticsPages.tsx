@@ -1,0 +1,20 @@
+import { useEffect, type ComponentType } from "react";
+import { AnalyticsHome } from "./AnalyticsHome";
+import { DiffusionPage } from "./DiffusionPage";
+
+/** Plenara Analytics: Übersicht und je Funktion eine Unterseite */
+const PAGES: Record<string, ComponentType> = {
+  "/analytics": AnalyticsHome,
+  "/analytics/diffusion": DiffusionPage,
+};
+
+export const isAnalyticsPath = (p: string) => p in PAGES;
+
+export function AnalyticsPages({ path }: { path: string }) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.title = path === "/analytics" ? "Plenara Analytics" : "Diffusionsanalyse · Plenara Analytics";
+  }, [path]);
+  const Page = PAGES[path];
+  return Page ? <Page /> : null;
+}
