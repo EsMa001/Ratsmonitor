@@ -147,9 +147,9 @@ function Plenara() {
   );
 }
 
-function PlenaraV2({ square }: { square?: boolean }) {
+function PlenaraV2({ square, size = 28 }: { square?: boolean; size?: number }) {
   return (
-    <span style={{ fontSize: 28, letterSpacing: "-.015em" }}>
+    <span style={{ fontSize: size, letterSpacing: "-.015em" }}>
       <svg className="rm-logo__mark rm-logo__mark--p" viewBox="15 15 70 70" overflow="visible" aria-hidden="true" style={{ ...INLINE, height: ".66em", width: ".66em", verticalAlign: "-0.07em", marginRight: ".01em" }}>
         <Dots dots={PLENARA_P} />
         <path d="M22 108V50A28 28 0 0 1 38.2 24.6" stroke={TEAL} strokeWidth="7" fill="none" strokeLinecap="round" />
@@ -212,6 +212,36 @@ const LOGO: Record<LogoId, () => ReactElement> = {
   "parlamo-v2dot": () => <Parlamo v2 />,
   "parlamo-v2sq": () => <Parlamo v2 square />,
 };
+
+/** Großes X hinter dem Plenara-Logo: zwei Achsen aus Knoten und Verbindungen (Analyse, Netz, Intelligenz); Punkte verblassen wie die Sitzreihen im Logo */
+function AnalyticsX() {
+  const ends: [number, number][] = [[12, 12], [88, 12], [12, 88], [88, 88]];
+  return (
+    <svg viewBox="0 0 100 100" aria-hidden="true" style={{ ...INLINE, height: "1.3em", width: "1.3em", verticalAlign: "-0.28em", marginLeft: ".1em", overflow: "visible" }}>
+      <path d="M12 12L88 88M88 12L12 88" stroke={TEAL} strokeWidth="9" strokeLinecap="round" />
+      {[[31, 31, 0.55], [69, 31, 0.55], [31, 69, 0.55], [69, 69, 0.55]].map(([cx, cy, o]) => (
+        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4.2" fill="#fff" stroke={TEAL} strokeWidth="3" strokeOpacity={o} />
+      ))}
+      {ends.map(([cx, cy]) => (
+        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="11" fill="#fff" stroke={TEAL} strokeWidth="6" />
+      ))}
+      <circle cx="50" cy="50" r="13" fill={TEAL} />
+      <circle cx="50" cy="50" r="19" fill="none" stroke={TEAL} strokeWidth="2" strokeOpacity=".35" strokeDasharray="2 5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Logo „Plenara ■ X“ für Plenara Analytics (Seitenkopf) */
+export function AnalyticsLogo({ size = 64 }: { size?: number }) {
+  return (
+    <div className="rm-logo rm-logo--big" role="img" aria-label="Plenara Analytics" style={{ display: "inline-flex", alignItems: "center", fontSize: size }}>
+      <span style={{ fontSize: size }}>
+        <PlenaraV2 square size={size} />
+      </span>
+      <AnalyticsX />
+    </div>
+  );
+}
 
 /** Logo der gewählten Variante; führt zur Übersicht */
 export function Brand({ onClick, asLink = true }: { onClick?: () => void; asLink?: boolean }) {

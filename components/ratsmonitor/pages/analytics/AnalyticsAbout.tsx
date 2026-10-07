@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnalyticsLogo } from "../../components/Brand";
 
 /** Vorschaubild der Diffusionsanalyse: Wellen von Punkten um einen Ursprung und die S-Kurve */
 function DiffusionThumb() {
@@ -20,7 +21,7 @@ export function AnalyticsAbout() {
   return (
     <main id="inhalt" className="mx-auto w-full max-w-[1100px] px-4 py-12 text-slate-900 sm:px-6">
       <p className="text-[14px] text-slate-500">Plenara Analytics</p>
-      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Über Plenara Analytics</h1>
+      <h1 className="mb-6 mt-4"><span className="sr-only">Über Plenara Analytics</span><span aria-hidden="true" className="block max-sm:hidden"><AnalyticsLogo size={72} /></span><span aria-hidden="true" className="hidden max-sm:block"><AnalyticsLogo size={44} /></span></h1>
       <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte. Jede Auswertung wird bei der Abfrage frisch aus der Datenbank berechnet; ändert sich der Bestand, ändert sich das Ergebnis.</p>
 
       <h2 className="mt-14 text-[22px] font-semibold">Funktionen</h2>

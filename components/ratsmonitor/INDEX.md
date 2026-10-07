@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (404 Zeilen, ⚠9)
+- app/ratsmonitor-info.css (408 Zeilen, ⚠9)
 - app/ratsmonitor.css (145 Zeilen, ⚠6)
 
 admin-access analyse-admin.css:66
@@ -500,6 +500,7 @@ rm-flat ratsmonitor.css:106
 rm-glass ratsmonitor.css:115
 rm-glass-pop ratsmonitor.css:124
 rm-logo ratsmonitor-info.css:246
+rm-logo--big ratsmonitor-info.css:405
 rm-logo__mark ratsmonitor-info.css:250
 rm-logo__mark--p ratsmonitor-info.css:251
 rm-logo__text ratsmonitor-info.css:248
@@ -690,7 +691,7 @@ wordmark__dot design-styles.css:61
 - AccountMenu.tsx (62, ⚠1): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (98, ⚠1): AreaBar
-- Brand.tsx (242): Brand
+- Brand.tsx (272): AnalyticsLogo, Brand
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - CountDots.tsx (9): CountDots
 - DateRangeFilter.tsx (114): DateRangeSelect, DateRangeFields, DateRangeFilter
@@ -784,7 +785,7 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (301): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (47, ⚠1): AnalyticsAbout
+- AnalyticsAbout.tsx (48, ⚠1): AnalyticsAbout
 - AnalyticsPages.tsx (22): isAnalyticsPath, AnalyticsPages
 - DiffusionChart.tsx (61, ⚠1): DiffusionChart
 - DiffusionPage.tsx (278, ⚠4): DiffusionPage
