@@ -117,10 +117,11 @@ export function AnalyticsAbout() {
       <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte. Jede Auswertung wird bei der Abfrage frisch aus der Datenbank berechnet; ändert sich der Bestand, ändert sich das Ergebnis.</p>
 
       <h2 className="mt-14 text-[22px] font-semibold">Funktionen</h2>
+      <div className="grid xl:grid-cols-2 xl:gap-x-16">
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Diffusionsanalyse</h3>
-        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
-        <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen"><DiffusionThumb /></Link>
+        <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
+        <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen" className="block xl:max-w-[420px]"><DiffusionThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie sich ein Thema über die Gebiete ausbreitet: wer zuerst dran war, wie schnell andere folgten und wo es noch fehlt. Als Zeitraffer auf der Karte, mit den gleichen Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
@@ -137,8 +138,8 @@ export function AnalyticsAbout() {
       </article>
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Knowledge Graph</h3>
-        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
-        <Link href="/analytics/graph" aria-label="Knowledge Graph öffnen"><GraphThumb /></Link>
+        <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
+        <Link href="/analytics/graph" aria-label="Knowledge Graph öffnen" className="block xl:max-w-[420px]"><GraphThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, womit ein Thema zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz. Knoten lassen sich ziehen und anklicken, mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
@@ -155,8 +156,8 @@ export function AnalyticsAbout() {
       </article>
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Trends und Frühindikatoren</h3>
-        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
-        <Link href="/analytics/trends" aria-label="Trends öffnen"><TrendThumb /></Link>
+        <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
+        <Link href="/analytics/trends" aria-label="Trends öffnen" className="block xl:max-w-[420px]"><TrendThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, welche Begriffe gerade aufkommen, zunehmen oder verschwinden: der aktuelle Zeitraum im Vergleich zum Zeitraum davor, als Trendkarte, Rangliste mit Verlaufskurven und Themenfeld-Veränderung. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
@@ -173,8 +174,8 @@ export function AnalyticsAbout() {
       </article>
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Gebietsvergleich</h3>
-        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
-        <Link href="/analytics/vergleich" aria-label="Gebietsvergleich öffnen"><CompareThumb /></Link>
+        <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
+        <Link href="/analytics/vergleich" aria-label="Gebietsvergleich öffnen" className="block xl:max-w-[420px]"><CompareThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Stellt zwei bis vier Orte nebeneinander: Themenprofil, Stand der Vorlagen, Verlauf, aktivste Gremien sowie typische und gemeinsame Begriffe. Als Maßstab dienen alle Gebiete. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
@@ -191,8 +192,8 @@ export function AnalyticsAbout() {
       </article>
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Status und Beschlüsse</h3>
-        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
-        <Link href="/analytics/beschluesse" aria-label="Status und Beschlüsse öffnen"><DecisionThumb /></Link>
+        <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
+        <Link href="/analytics/beschluesse" aria-label="Status und Beschlüsse öffnen" className="block xl:max-w-[420px]"><DecisionThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen und Ablehnungen, wie einig Gremien entscheiden, wie oft Vorlagen geändert werden und wie lange ein Vorgang bis zum Beschluss braucht. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
@@ -209,8 +210,8 @@ export function AnalyticsAbout() {
       </article>
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Gremiennetz</h3>
-        <div className="mt-4 grid items-start gap-8 md:grid-cols-[320px_1fr]">
-        <Link href="/analytics/gremien" aria-label="Gremiennetz öffnen"><NetThumb /></Link>
+        <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
+        <Link href="/analytics/gremien" aria-label="Gremiennetz öffnen" className="block xl:max-w-[420px]"><NetThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange ein Übergang dauert. Als Netz mit Pfeilen, mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <details className="group mt-4 border-t border-slate-200 pt-3">
@@ -225,6 +226,7 @@ export function AnalyticsAbout() {
         </div>
         </div>
       </article>
+      </div>
       <div className="border-t border-slate-200" />
       <p className="mt-8 text-[14px] text-slate-500">Weitere Funktionen sind in Planung.</p>
     </main>

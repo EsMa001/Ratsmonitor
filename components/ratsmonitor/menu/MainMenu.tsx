@@ -3,7 +3,6 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { BRANCHEN } from "../info/content";
-import { useBrandText } from "../lib/brand";
 import { Icon } from "../info/icons";
 import { useTier } from "../lib/tier";
 import { IconChevronDown } from "../components/icons";
@@ -37,7 +36,6 @@ export function MainMenu() {
   const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases" | "analytics">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
-  const brandText = useBrandText();
   const { tier } = useTier();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
   const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/analytics") ? "analytics" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
@@ -125,7 +123,6 @@ export function MainMenu() {
         <Link href="/faq" aria-current={current("/faq")}>FAQ</Link>
         <Link href="/videos" aria-current={current("/videos")}>Videos</Link>
         <Link href="/quellen" aria-current={current("/quellen")}>Datenabdeckung</Link>
-        <Link href="/ueber-uns" aria-current={current("/ueber-uns")}>{brandText("Über Ratsmonitor")}</Link>
       </nav>
       {open &&
         createPortal(
@@ -193,7 +190,6 @@ export function MainMenu() {
                 <Link href="/faq" className="ri-menu__main" aria-current={current("/faq")} onClick={pick}>FAQ</Link>
                 <Link href="/videos" className="ri-menu__main" aria-current={current("/videos")} onClick={pick}>Videos</Link>
                 <Link href="/quellen" className="ri-menu__main" aria-current={current("/quellen")} onClick={pick}>Datenabdeckung</Link>
-                <Link href="/ueber-uns" className="ri-menu__main" aria-current={current("/ueber-uns")} onClick={pick}>{brandText("Über Ratsmonitor")}</Link>
                 </>}
               </nav>
               {open === "all" && tier === "guest" && (

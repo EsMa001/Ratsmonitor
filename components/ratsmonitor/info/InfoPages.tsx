@@ -1,6 +1,5 @@
 import { useSearchParams } from "next/navigation";
 import { QuellenPage } from "./QuellenPage";
-import { UeberUnsPage } from "./UeberUnsPage";
 import { BenachrichtigungenPage } from "./BenachrichtigungenPage";
 import { useEffect, type ComponentType } from "react";
 import { AboutPage } from "./AboutPage";
@@ -38,7 +37,6 @@ const PAGES: Record<string, ComponentType> = {
   "/faq": FaqPage,
   "/videos": VideosPage,
   "/quellen": QuellenPage,
-  "/ueber-uns": UeberUnsPage,
   "/funktionen/suche": AboutPage,
   "/funktionen/benachrichtigungen": BenachrichtigungenPage,
   "/preise": PreisePage,
