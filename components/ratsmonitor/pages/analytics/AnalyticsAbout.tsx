@@ -70,6 +70,24 @@ function CompareThumb() {
   );
 }
 
+/** Vorschaubild von Status und Beschlüssen: gestapelte Balken und eine Linie der Beschlussquote */
+function DecisionThumb() {
+  const cols: [number, number, number][] = [[52, 6, 2], [70, 8, 3], [92, 9, 2], [60, 10, 4], [80, 7, 3], [74, 12, 3], [96, 8, 2]];
+  return (
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau von Status und Beschlüssen: Säulen mit beschlossen, vertagt und abgelehnt, dazu die Beschlussquote als Linie" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+      <line x1="16" x2="304" y1="136" y2="136" stroke="#e2e8f0" />
+      {cols.map(([a, p, r], i) => (
+        <g key={i} transform={`translate(${26 + i * 40} 136)`}>
+          <rect y={-a} width="24" height={a} fill="#0d9488" fillOpacity=".85" />
+          <rect y={-a - p} width="24" height={p} fill="#94a3b8" />
+          <rect y={-a - p - r} width="24" height={r} fill="#0f172a" />
+        </g>
+      ))}
+      <polyline points="38,40 78,34 118,30 158,44 198,36 238,46 278,32" fill="none" stroke="#0f172a" strokeWidth="2" strokeDasharray="5 4" />
+    </svg>
+  );
+}
+
 export function AnalyticsAbout() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] py-12 text-slate-900">
@@ -140,6 +158,22 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Wie vollständig das Ratsinformationssystem eines Ortes im Bestand erfasst ist, wirkt auf alle Zahlen. Die Einträge je Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. Themenprofil, Vorlagenstand und Begriffe stammen aus einer Stichprobe von höchstens 6.000 Einträgen je Ort.</p>
           </details>
           <Link href="/analytics/vergleich" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gebietsvergleich öffnen →</Link>
+        </div>
+      </article>
+      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+        <Link href="/analytics/beschluesse" aria-label="Status und Beschlüsse öffnen"><DecisionThumb /></Link>
+        <div>
+          <h3 className="text-[22px] font-semibold">Status und Beschlüsse</h3>
+          <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen und Ablehnungen, wie einig Gremien entscheiden, wie oft Vorlagen geändert werden und wie lange ein Vorgang bis zum Beschluss braucht. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
+          <details className="group mt-4 border-t border-slate-200 pt-3">
+            <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
+              Wissenschaftlicher Hintergrund
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+          <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Beschlussquote ist der Anteil „beschlossen“ an allen Vorgängen mit Entscheidung (beschlossen, vertagt, abgelehnt). Als Maß für Einigkeit dient der Anteil einstimmiger Beschlüsse; in der Parlamentsforschung gilt die Geschlossenheit von Abstimmungen als Hinweis auf Konfliktlinien (Rice-Index, Rice 1925). Ob und wie ein Beschlussvorschlag geändert wurde, wird aus dem Ergebnistext gelesen („geändert beschlossen“). Die Durchlaufzeit misst die Tage von der ersten Station eines Vorgangs bis zur Entscheidung; Zeiten bis zu einem Ereignis werden üblicherweise mit Überlebenszeitanalysen untersucht (Kaplan und Meier, 1958), die auch noch offene Vorgänge berücksichtigen.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Der Status ist nur bei einem Viertel der Einträge bekannt, Ablehnungen sind in den Quellen selten vermerkt. Ausschüsse empfehlen meist nur, ihre Quote ist mit der des Rats nicht direkt vergleichbar. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt, denn die hier verwendete einfache Messung berücksichtigt sie nicht. Abstimmung, Änderungen und Dauer stammen aus einer Stichprobe von höchstens 4.000 Vorgängen.</p>
+          </details>
+          <Link href="/analytics/beschluesse" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Status und Beschlüsse öffnen →</Link>
         </div>
       </article>
       <p className="mt-8 text-[14px] text-slate-500">Weitere Funktionen sind in Planung.</p>
