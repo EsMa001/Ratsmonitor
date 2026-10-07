@@ -42,3 +42,7 @@ Bauen: `node tools/build-video.mjs <name>` (im Arbeitsordner `~/code/video-tools
 ## Handy
 
 Das Konzept gilt auch für das Handy: Videos fürs Handy entstehen aus denselben Szenen und Kapiteln, nur mit `--format 9x16` (die App wechselt unter 768 px in die Handy-Oberfläche). Eigene Handy-Szenen sind nur nötig, wo sich die Bedienung unterscheidet. Aktuell werden nur Web-Videos (16x9) gebaut; Handy-Videos erst auf Wunsch.
+
+## Kernsätze (kurze Fassung)
+
+In `kapitel/<id>/lang.txt` markiert ein `*` vor dem `@` den Kernsatz (1 bis 2 je Kapitel): `*@szene.schritt Satz`. Die lange Fassung nimmt alle Sätze, die kurze (`"text": "kurz"` in der Videodatei) nur die markierten, wenn es keine eigene `kurz.txt` gibt. So bleibt ein Text für beide Längen, Änderungen gibt es nur an einer Stelle. Neue Kapitel sollen Kernsätze markieren; der erste markierte Satz trägt den Nutzen, der zweite die Funktion oder die Zahl. Die Kernsätze müssen allein verständlich sein, weil die übrigen entfallen.

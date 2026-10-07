@@ -1,7 +1,7 @@
 # Einleitung (allgemein, für alle Zielgruppen). Beginnt mit einer Frage (keine Behauptung), endet ohne Aufruf; der Aufruf kommt im Abschluss des Videos.
 @einleitung.start Was entscheidet der Rat in Ihrer Gemeinde gerade über Ihre Straße, Ihre Heizung oder Ihr Geschäft?
-@einleitung.karte Plenarra bringt die Beschlüsse und Beratungen der Räte an einen Ort.
-@einleitung.suche Ein Begriff genügt, zum Beispiel {{p.thema|text}}, und Sie sehen sofort {{t.entries|mehrals}} Einträge.
+*@einleitung.karte Plenarra bringt die Beschlüsse und Beratungen der Räte an einen Ort.
+*@einleitung.suche Ein Begriff genügt, zum Beispiel {{p.thema|text}}, und Sie sehen sofort {{t.entries|mehrals}} Einträge.
 @liste-zeitstrahl.zeile,liste-zeitstrahl.zeitstrahl Zu jedem Vorgang sehen Sie den Stand, direkt in der Liste.
 @liste-zeitstrahl.artikel,liste-zeitstrahl.quelle Jede Angabe führt zur Originalquelle.
 @alarm.herz,alarm.konto,alarm.glocke Und wenn etwas Neues beraten wird, meldet sich Plenarra per E-Mail.

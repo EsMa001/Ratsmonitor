@@ -1,7 +1,7 @@
 # Den Weg durch die Gremien verstehen. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
 @gremiennetz.start Welchen Weg nimmt ein Vorgang durch die Gremien?
-@gremiennetz.start Das Gremiennetz zeigt, wo Vorgänge beginnen, welche Gremien dazwischen liegen und wo sie entschieden werden.
+*@gremiennetz.start Das Gremiennetz zeigt, wo Vorgänge beginnen, welche Gremien dazwischen liegen und wo sie entschieden werden.
 @gremiennetz.pfeile Ausgewertet sind {{t.pool|zahl}} Vorgänge, die durch mindestens zwei Gremien gingen.
-@gremiennetz.pfeile Die Pfeile zeigen die Übergänge und wie lange ein Übergang dauert.
+*@gremiennetz.pfeile Die Pfeile zeigen die Übergänge und wie lange ein Übergang dauert.
 @gremiennetz.arten Auch Gremienarten können Sie als Knoten zeigen.
 @gremiennetz.pfeile So erkennen Sie, an welcher Stelle Sie sich in ein Thema einbringen können.

@@ -24,6 +24,8 @@ export const FORMATS = {
   fast: (v) => "fast " + words(Math.ceil(v)),
   /* "2025-09-30" -> "dreißigsten September zweitausendfünfundzwanzig" (nach "am") */
   datum: (v) => { const [y, m, d] = String(v).slice(0, 10).split("-").map(Number); return `${ordinal(d)} ${MONTHS[m - 1]} ${words(y)}`; },
+  /* "2026-09-01" -> "September" */
+  monatname: (v) => MONTHS[Number(String(v).slice(5, 7)) - 1],
   /* "2026-02-26" -> "Februar zweitausendsechsundzwanzig" */
   monat: (v) => { const [y, m] = String(v).slice(0, 10).split("-").map(Number); return `${MONTHS[m - 1]} ${words(y)}`; },
 };

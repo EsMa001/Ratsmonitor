@@ -1,5 +1,5 @@
 /* Baut ein Video aus Kapiteln: node build-video.mjs <video> [--refresh] [--only 2,3]   (im Ordner ~/code/video-tools starten, BASE = Adresse der App)
-   <video> = docs/videos/videos/<video>.json: { "ausgabe": "dateiname", "karten": false (keine Kapitelseiten), "kapitel": [{ "kapitel": "suchen", "text": "kurz"|"lang", "parameter": { "thema": "Wärmeplanung" }, "format": "16x9" }] }
+   <video> = docs/videos/videos/<video>.json: { "ausgabe": "dateiname", "karten": false (keine Kapitelseiten), "kapitel": [{ "kapitel": "suchen", "text": "kurz"|"lang" (kurz = kurz.txt, sonst nur die mit * markierten Kernsätze aus lang.txt), "parameter": { "thema": "Wärmeplanung" }, "format": "16x9" }] }
    Kapitel = docs/videos/kapitel/<id>/ mit kapitel.json (Titel, Icon, Stichpunkte, szenen), kurz.txt / lang.txt (Sätze: "@szene.schritt Satz", Platzhalter {{fakt|format}}, {{p.thema|text}}).
    Szene = docs/videos/szenen/<id>/szene.mjs (Vertrag: docs/videos/SZENEN.md). Ein Clip wird nur aufgenommen, wenn er für Szene, Parameter und Format fehlt, veraltet ist oder mit --refresh.
    Ablauf: Texte und Fakten, Kapitelseiten, Ton (Zwischenspeicher), Clips, Zusammenbau, Gesamtvideo. Ergebnis: out-web/<video>/<ausgabe>.mp4/.vtt/.jpg (bisher nur Format 16x9 fürs Gesamtvideo) */
@@ -25,13 +25,23 @@ mkdirSync(O, { recursive: true });
 const chapters = [];
 for (const [i, k] of def.kapitel.entries()) {
   const dir = `${V}kapitel/${k.kapitel}`, kj = JSON.parse(readFileSync(`${dir}/kapitel.json`, "utf8"));
-  const file = `${dir}/${k.text || "lang"}.txt`;
+  const want = k.text || "lang", eigen = existsSync(`${dir}/${want}.txt`), file = eigen ? `${dir}/${want}.txt` : `${dir}/lang.txt`;
+  /* "kurz" ohne eigene kurz.txt: nur die mit * markierten Kernsätze aus lang.txt */
+  const kernOnly = want === "kurz" && !eigen;
   if (!existsSync(file)) throw new Error(`Text fehlt: ${file}`);
-  for (const [a, b] of [["thema", factsFile.thema], ["ort", factsFile.ort]]) if (k.parameter?.[a] && b && k.parameter[a] !== b) throw new Error(`Fakten gelten für ${a} "${b}", das Video braucht "${k.parameter[a]}": THEMA/ORT setzen und node facts.mjs ausführen`);
-  const pf = { ...facts, ...Object.fromEntries(Object.entries(k.parameter || {}).map(([a, b]) => [`p.${a}`, b])) };
+  const thema = k.parameter?.thema || kj.thema || factsFile.thema, ort = k.parameter?.ort || factsFile.ort, set = factsFile.sets?.[thema];
+  if (!set) throw new Error(`Keine Fakten für Thema "${thema}": THEMEN=... node facts.mjs ausführen`);
+  const own = { ...factsFile.cov, ...set, "t.ort": set["t.orte"]?.[ort] ?? 0 };
+  const thema2 = k.parameter?.thema2 || kj.thema2, set2 = thema2 && factsFile.sets?.[thema2];
+  if (thema2 && !set2) throw new Error(`Keine Fakten für Thema "${thema2}": THEMEN=... node facts.mjs ausführen`);
+  const needOrt = readFileSync(file, "utf8").includes("t.ort");
+  if (needOrt && own["t.ort"] < 5) throw new Error(`${ort} hat nur ${own["t.ort"]} Einträge zu ${thema} (unter 5): anderen Ort oder anderes Thema für Kapitel ${k.kapitel} wählen`);
+  const pf = { ...facts, ...own, ...(set2 ? Object.fromEntries(Object.entries(set2).map(([a, v]) => [a.replace(/^t\./, "u."), v])) : {}), "p.thema": thema, "p.ort": ort, ...(thema2 ? { "p.thema2": thema2 } : {}), ...Object.fromEntries(Object.entries(k.parameter || {}).map(([a, v]) => [`p.${a}`, v])) };
   const lines = [], beats = [];
   for (const raw of readFileSync(file, "utf8").split("\n")) {
-    const l = raw.trim(); if (!l || l.startsWith("#")) continue;
+    let l = raw.trim(); if (!l || l.startsWith("#")) continue;
+    const kern = l.startsWith("*"); if (kern) l = l.slice(1).trim();
+    if (kernOnly && !kern) continue;
     const m = l.match(/^@([\w.,-]+) (.*)$/);
     lines.push(fill(m ? m[2] : l, pf)); beats.push(m ? m[1].split(",") : []);
   }

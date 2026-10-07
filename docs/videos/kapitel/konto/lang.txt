@@ -1,6 +1,6 @@
 # Alles Gespeicherte an einem Ort. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
 @konto.menue Ihre Suchen, Artikel und Alarme an einem Ort.
 @konto.menue Über das Personensymbol öffnen Sie Konto, Postfach und Abmeldung.
-@konto.profil Im Profil tragen Sie Name und E-Mail ein und sehen Ihren Tarif.
-@konto.symbole Alles Gespeicherte erreichen Sie über die Symbole in der Kopfzeile: Suchen, Artikel und Kalender.
+*@konto.profil Im Profil tragen Sie Name und E-Mail ein und sehen Ihren Tarif.
+*@konto.symbole Alles Gespeicherte erreichen Sie über die Symbole in der Kopfzeile: Suchen, Artikel und Kalender.
 @konto.symbole Es bleibt erhalten, auch wenn Sie später wiederkommen.
