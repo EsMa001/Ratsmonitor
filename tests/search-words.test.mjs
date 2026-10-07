@@ -131,7 +131,7 @@ test('common words get the exact hit count of the search for them, per level, ea
  assert.equal(await precomputedTotal(db,'haushalt',{levelIds:['r1','r2'],to:'2026-10-06',nameIds:()=>['r1']}),4);
 });
 
-test('hit counts follow new cards, and vanish when a card was replaced',async()=>{
+test('hit counts follow new cards, and vanish when a card was replaced without a log entry (search_cards_gone, drizzle/0015)',async()=>{
  const db=d1();
  for(const id of ['a','b','c','d'])add(db,id,'haushalt plan');
  await refreshSearchWords(db,{full:true,kinds:KINDS,postingMax:2});
