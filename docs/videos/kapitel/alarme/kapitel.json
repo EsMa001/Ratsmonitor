@@ -4,10 +4,13 @@
  "stichpunkte": [],
  "szenen": [
   "alarm",
-  "alarm-artikel"
+  "alarm-artikel",
+  "postfach",
+  "kalender"
  ],
  "vorteile": [
-  3
+  3,
+  10
  ],
  "einblendungen": [
   {
@@ -21,6 +24,14 @@
   {
    "satz": 6,
    "text": "{{v.33|text}}"
+  },
+  {
+   "satz": 7,
+   "text": "{{v.10|text}}"
+  },
+  {
+   "satz": 8,
+   "text": "{{v.70|text}}"
   }
  ]
 }

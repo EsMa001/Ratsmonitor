@@ -4,8 +4,7 @@
  "stichpunkte": [],
  "szenen": [
   "einleitung",
-  "liste-zeitstrahl",
-  "alarm"
+  "liste-zeitstrahl"
  ],
  "vorteile": [
   1,
@@ -28,10 +27,6 @@
   {
    "satz": 5,
    "text": "{{v.5|text}}"
-  },
-  {
-   "satz": 6,
-   "text": "{{v.3|text}}"
   }
  ]
 }
