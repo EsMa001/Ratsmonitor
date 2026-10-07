@@ -82,7 +82,6 @@ export function QuellenPage() {
                 </div>
               ))}
             </dl>
-            <p className="m-0 mt-3 max-w-[760px] text-[14px] text-slate-500">Als abgedeckt zählt jede Gemeinde, aus der mindestens ein Vorgang vorliegt. Bei vielen sind es Hunderte; in manchen Orten ist die Anbindung gerade erst gestartet.</p>
           </>
         )}
       </section>

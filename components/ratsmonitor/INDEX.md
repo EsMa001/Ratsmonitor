@@ -745,8 +745,6 @@ wordmark__dot design-styles.css:61
 - FilterSelect.tsx (117): FilterSelect
 - FollowButton.tsx (30): FollowButton
 - Footer.tsx (59): Footer
-- Footer.tsx (59): Footer
-- Footer.tsx (59): Footer
 - GateDialog.tsx (127): GateFeature, openGate, GateDialog
 - Header.tsx (41): Header
 - PlanCards.tsx (116): PlanCards, PlanSummary
@@ -775,7 +773,7 @@ wordmark__dot design-styles.css:61
 - InfoPages.tsx (65): isInfoPath, InfoPages
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
-- QuellenPage.tsx (143, ⚠4): QuellenPage
+- QuellenPage.tsx (142, ⚠4): QuellenPage
 - VideosPage.tsx (151): VideosPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - content.ts (373, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, AGB_SECTIONS, brancheBySlug
