@@ -1,7 +1,13 @@
-import sys,subprocess,wave,re,json
+import sys,subprocess,wave,re,json,os,hashlib,shutil
 txt,out,sent,comma=sys.argv[1],sys.argv[2],float(sys.argv[3]),float(sys.argv[4])
 M="voices/de_DE-thorsten-high.onnx"
+# Zwischenspeicher: ein Satzteil wird nur einmal gesprochen (Schlüssel = Modell + Text), so braucht eine Textänderung nur den geänderten Satz
+CACHE=os.environ.get('TTS_CACHE','cache/tts'); os.makedirs(CACHE,exist_ok=True)
 def synth(t,f):
+    k=f"{CACHE}/{hashlib.sha1((M+'|'+t).encode()).hexdigest()}.wav"
+    if os.path.exists(k): shutil.copy(k,f); return
+    synth_raw(t,f); shutil.copy(f,k)
+def synth_raw(t,f):
     subprocess.run(["./venv/bin/python","-m","piper","-m",M,"-f",f],input=t.encode(),check=True,capture_output=True)
 frames=[];params=None;pos=0.0;sents=[]
 for line in open(txt,encoding="utf8").read().splitlines():

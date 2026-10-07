@@ -149,6 +149,18 @@ Für künftige Videos gilt: **Aufnahme und Ton sind getrennt.** Eine Textänderu
 
 Veraltete Clips erkennt man am Commit in `clip.json`: `git diff --stat <commit> -- components/ratsmonitor` zeigt, ob sich die Seite seit der Aufnahme geändert hat. Die Clips selbst liegen nicht in Git (Größe), nur Szenen, Skripte und fertige Videos.
 
+### Ein Befehl für ein ganzes Video
+
+```bash
+bash $R/docs/videos/tools/setup.sh            # einmalig: Arbeitsordner, Playwright, Piper, Stimme
+node $R/docs/videos/tools/clips/facts.mjs     # echte Zahlen aus der laufenden App holen
+cd ~/code/video-tools
+node $R/docs/videos/tools/build-video.mjs $R/docs/videos/texts/clips/treffer-liste.txt tl treffer-liste [--refresh] [--only 3,5]
+node $R/docs/videos/tools/clips/status.mjs    # welche Clips fehlen oder sind veraltet
+```
+
+`build-video.mjs` macht Kapitelseiten, Ton, Clips, Zusammenbau und das Gesamtvideo. Im Skript trägt ein Kapitel `[SZENE | id]` (Clip aus `scenes.mjs`) oder `[VORHANDENES VIDEO | NN | name]`. Ton kommt aus einem Zwischenspeicher (`cache/tts`, Schlüssel Modell + Satzteil): bei einer Textänderung wird nur der geänderte Satz neu gesprochen. Ein Clip wird nur aufgenommen, wenn er fehlt, veraltet ist (die Seite hat sich seit der Aufnahme geändert) oder mit `--refresh`. Messung am Beispiel: erster Lauf 21 s, jeder weitere 9 s statt mehrerer Minuten. Kapitel der alten Art (feste Aufnahme je Satz, `scenes-teil1.mjs`) laufen weiter über `rec-all.sh`.
+
 ## Hinweise und Stolperstellen
 
 - **Aufgenommen wird eine laufende App** mit echten Daten. Die Treffer (z. B. Zahlen und Einträge) hängen vom Datenstand ab und sehen bei einer neuen Aufnahme anders aus.
