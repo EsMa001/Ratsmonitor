@@ -20,7 +20,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit }: { play: PlayState; o
   const open = useFiltersOpen();
   const chips = filterChips(res.snapshot, geo);
   const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 1 : 0) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
-  const round = "rm-glass relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12 transition-colors";
+  const round = "relative grid border border-slate-200 bg-white hover:bg-slate-50 h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12 transition-colors";
   const filterBtn = (
     <button
       type="button"
@@ -40,10 +40,10 @@ export function DiffusionSearch({ play, onPlay, onSubmit }: { play: PlayState; o
   );
   const label = play === "loading" ? "Analyse läuft" : play === "playing" ? "Pause" : "Analyse starten";
   return (
-    <div className="rounded-[28px] p-3" style={{ background: "linear-gradient(135deg,#ccfbf1 0%,#e0f2fe 100%)" }}>
+    <div>
       <div role="search" className="flex w-full items-center gap-2">
-        <div className="min-w-0 flex-1">
-          <SearchBox glass stay onSubmit={onSubmit} />
+        <div className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white [&_input]:rounded-full">
+          <SearchBox stay onSubmit={onSubmit} />
         </div>
         <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} /> : filterBtn}</div>
         <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-600 disabled:cursor-default`}>
@@ -56,7 +56,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit }: { play: PlayState; o
           )}
         </button>
       </div>
-      <div className="flex justify-center"><ActiveFilters /></div>
+      <div className="mt-2 flex [&>*]:!px-0 [&_.pointer-events-none]:pointer-events-auto"><ActiveFilters /></div>
     </div>
   );
 }

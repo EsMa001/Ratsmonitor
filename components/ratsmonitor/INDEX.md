@@ -578,6 +578,9 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/agb/
 - page.tsx (2): Page
 
+### app/(monitor)/analytics/[[...section]]/
+- page.tsx (3): Page
+
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
 
@@ -703,7 +706,7 @@ wordmark__dot design-styles.css:61
 - PlanCards.tsx (116): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
-- SearchBox.tsx (531): SearchBox
+- SearchBox.tsx (532): SearchBox
 - SearchFilterPanel.tsx (83): SearchFilterPanel
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (40): ShareButton
@@ -767,7 +770,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (190): MainMenu
+- MainMenu.tsx (209): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (116, ⚠4): DetailPage
@@ -780,6 +783,13 @@ wordmark__dot design-styles.css:61
 - SavedArticlesPage.tsx (124, ⚠2): SavedArticlesPage
 - SavedSearchesPage.tsx (301): SavedSearchesPage
 
+### components/ratsmonitor/pages/analytics/
+- AnalyticsAbout.tsx (47, ⚠1): AnalyticsAbout
+- AnalyticsPages.tsx (22): isAnalyticsPath, AnalyticsPages
+- DiffusionChart.tsx (61, ⚠1): DiffusionChart
+- DiffusionPage.tsx (278, ⚠4): DiffusionPage
+- DiffusionSearch.tsx (63): PlayState, DiffusionSearch
+
 ### components/ratsmonitor/services/
 - api.ts (7, ⚠1): readSavedSearches, writeSavedSearches
 
@@ -787,7 +797,7 @@ wordmark__dot design-styles.css:61
 - account.tsx (17, ⚠1): AccountProvider, useAccount, useSavedStats
 - data.tsx (34, ⚠1): DataProvider, useData
 - nav.ts (13): View, viewOf, overviewScroll, useAppNav
-- search.tsx (564, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (566, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 
