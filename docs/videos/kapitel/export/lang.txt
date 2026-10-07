@@ -1,7 +1,7 @@
 # Aus der Suche wird Ihre Auswertung. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
 @export.fenster Sie brauchen die Treffer in Ihrer eigenen Auswertung oder im Bericht?
-@export.fenster Über der Trefferliste exportieren Sie alle Treffer als Excel oder CSV.
-@export.artikel Auch einen einzelnen Artikel geben Sie aus, als PDF, zum Drucken, als Excel oder CSV.
+*@export.fenster Über der Trefferliste exportieren Sie alle Treffer als Excel oder CSV.
+*@export.artikel Auch einen einzelnen Artikel geben Sie aus, als PDF, zum Drucken, als Excel oder CSV.
 @export.artikel Das PDF eignet sich zum Weitergeben oder Ablegen.
 @export.artikel Excel und CSV helfen, wenn Sie die Daten selbst auswerten wollen.
 @export.fenster Von der Suche zur Datei in wenigen Klicks.

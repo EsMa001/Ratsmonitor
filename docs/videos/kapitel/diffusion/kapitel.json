@@ -29,7 +29,14 @@
   },
   {
    "satz": 7,
+   "zahl": "{{u.peakN|ziffern}}",
+   "label": "neue Gebiete in einem Monat, davor {{u.prev4|ziffern}} in vier Monaten"
+  },
+  {
+   "satz": 8,
    "text": "{{v.82|text}}"
   }
- ]
+ ],
+ "thema": "Wärmeplanung",
+ "thema2": "Hitzeschutz"
 }

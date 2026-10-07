@@ -1,7 +1,7 @@
 # Orte vergleichen. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
 @vergleich.start Wie steht Ihr Ort im Vergleich?
-@vergleich.start Der Gebietsvergleich stellt zwei bis vier Orte nebeneinander, hier {{p.ort|text}} und {{p.ort2|text}}.
-@vergleich.profil Sie vergleichen Themenprofil, Stand der Vorlagen und aktivste Gremien.
+*@vergleich.start Der Gebietsvergleich stellt zwei bis vier Orte nebeneinander, hier {{p.ort|text}} und {{p.ort2|text}}.
+*@vergleich.profil Sie vergleichen Themenprofil, Stand der Vorlagen und aktivste Gremien.
 @vergleich.begriffe Dazu kommen typische und gemeinsame Begriffe.
 @vergleich.profil Als Maßstab dienen alle Gebiete.
 @vergleich.profil Die Zahlen zeigen, was im Bestand steht, nicht automatisch, wie aktiv die Politik vor Ort ist.

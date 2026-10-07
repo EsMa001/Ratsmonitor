@@ -1,6 +1,6 @@
 # Jetzt selbst ausprobieren. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
 @abschluss.suche Suchen Sie jetzt ein Thema, das für Sie wichtig ist.
 @abschluss.herz Speichern Sie die Suche und schalten Sie die Glocke ein.
-@abschluss.herz Ab dann erfahren Sie von neuen Beschlüssen, ohne zu suchen.
+*@abschluss.herz Ab dann erfahren Sie von neuen Beschlüssen, ohne zu suchen.
 @abschluss.suche Die Suche können Sie kostenlos nutzen.
-@abschluss.logo Plenarra. Früher wissen, was vor Ort beraten wird.
+*@abschluss.logo Plenarra. Früher wissen, was vor Ort beraten wird.

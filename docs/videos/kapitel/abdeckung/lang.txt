@@ -1,7 +1,7 @@
 # Ist Ihre Gemeinde dabei? Das sehen Sie offen. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
 @abdeckung.seite Ist Ihre Gemeinde dabei?
-@abdeckung.seite Die Seite Datenabdeckung zeigt es offen.
-@abdeckung.seite Heute sind es {{cov.entries|mehrals}} Einträge aus über {{cov.municipalities|abrunden}} Gemeinden.
+*@abdeckung.seite Die Seite Datenabdeckung zeigt es offen.
+*@abdeckung.seite Heute sind es {{cov.entries|mehrals}} Einträge aus über {{cov.municipalities|abrunden}} Gemeinden.
 @abdeckung.suche Suchen Sie Ihre Gemeinde oder Ihren Kreis und sehen Sie, wie aktuell der Stand dort ist.
 @abdeckung.seite Auch der letzte Abruf der Daten steht dabei.
 @abdeckung.suche Fehlt etwas, melden Sie es uns direkt.
