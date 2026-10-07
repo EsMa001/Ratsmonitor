@@ -30,7 +30,7 @@ await ctx.addInitScript(() => {
 });
 const page = await ctx.newPage(); page.setDefaultTimeout(15000); page.setDefaultNavigationTimeout(40000);
 const loaded = async () => { await page.waitForFunction(() => { const el = [...document.querySelectorAll("span")].find((x) => /Treffer/.test(x.textContent || "")); return !!el && !(el.textContent || "").trim().startsWith("…") && !document.querySelector('[aria-busy="true"]'); }, null, { timeout: 40000 }); };
-const calc = async () => { await page.waitForFunction(() => !/Analyse wird berechnet|Wird berechnet|Graph wird berechnet|Netz wird berechnet|Vergleich wird berechnet/.test(document.body.innerText), null, { timeout: 60000 }).catch(() => {}); await sleep(500); };
+const calc = async () => { await page.waitForFunction(() => !/wird berechnet|werden berechnet|Wird berechnet|wird erstellt|Wird erstellt/.test(document.body.innerText), null, { timeout: 60000 }).catch(() => {}); await sleep(500); };
 const go = async (path) => { await page.goto(BASE + path, { waitUntil: "load" }); await sleep(2200); };
 const home = () => go("/");
 let mx = 640, my = 360;
