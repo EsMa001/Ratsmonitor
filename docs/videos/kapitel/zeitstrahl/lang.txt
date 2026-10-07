@@ -1,4 +1,4 @@
-@liste-zeitstrahl.liste Zu einem Thema wie der Wärmeplanung gibt es {{wp.entries|mehrals}} Einträge, alle in einer Liste.
+@liste-zeitstrahl.liste Zu einem Thema wie der Wärmeplanung gibt es {{t.entries|mehrals}} Einträge, alle in einer Liste.
 @liste-zeitstrahl.zeile Jede Zeile zeigt den Titel, das Gremium und das Datum.
 @liste-zeitstrahl.zeitstrahl Darunter sehen Sie auf einen Blick, wie weit der Vorgang ist.
 @liste-zeitstrahl.zeitstrahl Der Zeitstrahl zeigt jede Beratung bis zum Beschluss, mit Datum und Gremium.

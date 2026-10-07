@@ -1,7 +1,7 @@
 /* Einleitung: Startseite mit Karte, ein Thema eingeben (Entwurf) */
 export default {
   meta: { bereich: "einleitung", dauer: "8-12 s", zeigt: "Startseite, Karte, Thema eingeben, Treffer", tags: ["werbung", "anleitung", "webinar"] },
-  parameter: { thema: "Wärmeplanung" },
+  parameter: { thema: "Klimaschutz" },
   start: "Startseite (leere Karte)", ende: "Karte mit Treffern zum Thema",
   setup: async (H, p) => { await H.sleep(500); },
   beats: (p) => [

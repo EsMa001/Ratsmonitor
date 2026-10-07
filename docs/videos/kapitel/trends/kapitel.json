@@ -1,0 +1,27 @@
+{
+ "titel": "Neues früh erkennen",
+ "icon": "zap",
+ "stichpunkte": [],
+ "szenen": [
+  "trends"
+ ],
+ "einblendungen": [
+  {
+   "satz": 1,
+   "text": "{{v.9|text}}"
+  },
+  {
+   "satz": 2,
+   "text": "{{v.84|text}}"
+  },
+  {
+   "satz": 3,
+   "zahl": "{{t.trendRegions|ziffern}}",
+   "label": "Gebiete, zuvor {{t.trendPrev|ziffern}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.86|text}}"
+  }
+ ]
+}

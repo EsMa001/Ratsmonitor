@@ -1,0 +1,26 @@
+{
+ "titel": "Orte vergleichen",
+ "icon": "map-pin",
+ "stichpunkte": [],
+ "szenen": [
+  "vergleich"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.13|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.91|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.49|text}}"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.92|text}}"
+  }
+ ]
+}

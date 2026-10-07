@@ -1,0 +1,26 @@
+{
+ "titel": "Zusammenhänge entdecken",
+ "icon": "network",
+ "stichpunkte": [],
+ "szenen": [
+  "graph"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.16|text}}"
+  },
+  {
+   "satz": 3,
+   "text": "{{v.93|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.94|text}}"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.98|text}}"
+  }
+ ]
+}

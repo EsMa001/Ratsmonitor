@@ -1,0 +1,22 @@
+{
+ "titel": "Alles Gespeicherte an einem Ort",
+ "icon": "user",
+ "stichpunkte": [],
+ "szenen": [
+  "konto"
+ ],
+ "einblendungen": [
+  {
+   "satz": 3,
+   "text": "{{v.78|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.77|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.76|text}}"
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "titel": "Jetzt selbst ausprobieren",
+ "icon": "arrow-right",
+ "stichpunkte": [],
+ "szenen": [
+  "abschluss"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.3|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.19|text}}"
+  },
+  {
+   "satz": 5,
+   "text": "{{v.2|text}}",
+   "url": "www.plenara.de"
+  }
+ ]
+}

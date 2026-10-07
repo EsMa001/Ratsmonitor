@@ -1,0 +1,7 @@
+# Zusammenhänge entdecken. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
+@graph.start Womit hängt {{p.thema|text}} zusammen?
+@graph.start Der Knowledge Graph zeigt es als Netz aus verwandten Begriffen, Themenfeldern, Gremien und Ländern.
+@graph.knoten Die Knoten ziehen und anklicken können Sie selbst.
+@graph.knoten Auch Länder und Gremien sind Knoten, ein Klick zeigt Details.
+@graph.knoten So entdecken Sie Zusammenhänge, nach denen Sie nie gesucht hätten.
+@graph.start Eine Verbindung bedeutet gemeinsames Vorkommen, keine Ursache.

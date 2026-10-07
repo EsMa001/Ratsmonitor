@@ -1,0 +1,26 @@
+{
+ "titel": "Keine Sitzung verpassen",
+ "icon": "calendar",
+ "stichpunkte": [],
+ "szenen": [
+  "kalender"
+ ],
+ "einblendungen": [
+  {
+   "satz": 2,
+   "text": "{{v.11|text}}"
+  },
+  {
+   "satz": 3,
+   "text": "{{v.74|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.75|text}}"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.70|text}}"
+  }
+ ]
+}

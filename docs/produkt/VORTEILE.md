@@ -50,7 +50,7 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | 37 | C | Statusfilter | Angekündigt, In Beratung, Beschlossen u. a. |
 | 38 | C | Themenfilter mit Themenfeldern | Filter „Alle Themen“; Zuordnung nach Titelregeln (shared/labels.mjs, title-rules-v2): jeder Eintrag bekommt anhand von Schlüsselwörtern im amtlichen Titel ein Themenfeld; nicht erkennbare bleiben ohne Feld |
 | 39 | C | Beispiel-Meldungen im Test-Postfach | zeigt, wie Nachrichten aussehen |
-| 40 | C | Kurzfassung zu jedem Eintrag | Kurzfassung unter dem Titel, per KI aus dem Dokumenttext erstellt (ai-summary.mjs), wo ein Dokumenttext vorliegt; in Texten „Kurzfassung“ nennen, „zu jedem Eintrag“ nur mit Einschränkung („wo ein Dokumenttext vorliegt“) |
+| 40 | C | Kurzfassung zu jedem Eintrag | Kurzfassung unter dem Titel; Stand heute nur, wo ein Dokumenttext vorliegt (KI, ai-summary.mjs), vom Nutzer als künftig für jeden Eintrag geplant bestätigt; in Texten „Kurzfassung“ nennen, nicht „KI“ |
 | 41 | C | Suchvorschläge beim Tippen | Vorschlagsliste unter der Suchleiste: Orte und Regionen ab 3 Buchstaben sowie „Zuletzt gesucht“; keine Vorschläge für Fachbegriffe |
 | 42 | C | Samtgemeinden richtig berücksichtigt | zählen bei jeder Mitgliedsgemeinde |
 | 43 | C | Abdeckung nach Bundesland | Datenabdeckung |

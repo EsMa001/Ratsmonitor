@@ -1,0 +1,15 @@
+{
+ "titel": "Aus über zehntausend Einträgen den Überblick behalten",
+ "icon": "list",
+ "stichpunkte": [],
+ "szenen": ["liste-zeitstrahl"],
+ "einblendungen": [
+  { "satz": 1, "zahl": "{{t.entries|ziffern}}", "label": "Einträge" },
+  { "satz": 2, "text": "{{v.21|text}}" },
+  { "satz": 3, "text": "{{v.15|text}}" },
+  { "satz": 4, "text": "{{v.28|text}}" },
+  { "satz": 6, "text": "{{v.40|text}}" },
+  { "satz": 7, "text": "{{v.30|text}}" },
+  { "satz": 8, "text": "{{v.5|text}}" }
+ ]
+}

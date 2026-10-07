@@ -1,0 +1,35 @@
+{
+ "titel": "Sehen, wie sich ein Thema ausbreitet",
+ "icon": "map",
+ "stichpunkte": [],
+ "szenen": [
+  "diffusion"
+ ],
+ "einblendungen": [
+  {
+   "satz": 1,
+   "text": "{{v.83|text}}"
+  },
+  {
+   "satz": 2,
+   "text": "{{v.8|text}}"
+  },
+  {
+   "satz": 4,
+   "text": "{{v.79|text}}"
+  },
+  {
+   "satz": 5,
+   "zahl": "{{t.d1090|ziffern}}",
+   "label": "Monate von 10 auf 90 % der Gebiete"
+  },
+  {
+   "satz": 6,
+   "text": "{{v.81|text}}"
+  },
+  {
+   "satz": 7,
+   "text": "{{v.82|text}}"
+  }
+ ]
+}
