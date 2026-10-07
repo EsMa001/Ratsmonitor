@@ -1,0 +1,39 @@
+{
+ "ausgabe": "plenara-pitch-60s",
+ "karten": false,
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Münster"
+   }
+  },
+  {
+   "kapitel": "suchen",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Klimaschutz",
+    "ort": "Münster"
+   }
+  },
+  {
+   "kapitel": "liste-artikel",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Münster"
+   }
+  },
+  {
+   "kapitel": "filter",
+   "text": "kurz",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Münster"
+   }
+  }
+ ],
+ "vorteileMax": 3
+}

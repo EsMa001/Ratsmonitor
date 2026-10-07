@@ -1,5 +1,5 @@
 # Suche und Karte (allgemein). Folgt direkt auf die Einleitung.
-*@suche-eingabe.eingabe Die Suche gilt immer für ganz Deutschland. Einen Ort müssen Sie nicht wählen.
+*@suche-eingabe.eingabe Die Suche gilt immer für ganz Deutschland. Einen Ort können Sie aber wählen.
 @suche-eingabe.karte Die Karte zeigt, wo darüber beraten wird: in {{t.laender|zahl}} Bundesländern.
 @suche-eingabe.karte Die Zahl an jedem Gebiet verrät, wie viele Einträge es dort gibt.
 *@karte-gebiet.zoom,karte-gebiet.klick Ein Klick zeigt die Beschlüsse dieses Gebiets. In {{p.ort|text}} sind es {{t.ort|zahl}}.

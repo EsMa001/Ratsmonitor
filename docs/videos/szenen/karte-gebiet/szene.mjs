@@ -1,6 +1,6 @@
 /* Karte: in ein Gebiet hineinzoomen und das Gebiet anklicken, die Liste zeigt dessen Beschlüsse (Ort aus dem Parameter) */
 /* Lage des Ortes in der Deutschlandansicht (1280x720). Münster ist aus Breite/Länge genähert und beim Aufnehmen zu prüfen; Stuttgart ist gemessen. */
-const POS = { Münster: { zoom: [560, 241], klick: [560, 241] }, Stuttgart: { zoom: [605, 387], klick: [563, 358] } };
+const POS = { Münster: { zoom: [569, 243], klick: [569, 243] }, Stuttgart: { zoom: [605, 387], klick: [563, 358] } };
 export default {
   meta: { bereich: "karte", dauer: "8-10 s", zeigt: "Zoom auf den Ort, Klick auf die Zahl, Liste des Gebiets", tags: ["anleitung", "webinar", "werbung"] },
   parameter: { thema: "Klimaschutz", ort: "Münster" },

@@ -5,6 +5,10 @@
  "szenen": [
   "entscheidungen"
  ],
+ "thema": "Wärmeplanung",
+ "vorteile": [
+  14
+ ],
  "einblendungen": [
   {
    "satz": 2,
@@ -31,6 +35,5 @@
    "satz": 7,
    "text": "{{v.20|text}}"
   }
- ],
- "thema": "Wärmeplanung"
+ ]
 }

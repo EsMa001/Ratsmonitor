@@ -1,1 +1,12 @@
-{ "titel": "Messe", "icon": "landmark", "stichpunkte": [], "szenen": ["einleitung"] }
+{
+ "titel": "Messe",
+ "icon": "landmark",
+ "stichpunkte": [],
+ "szenen": [
+  "einleitung"
+ ],
+ "vorteile": [
+  4,
+  2
+ ]
+}
