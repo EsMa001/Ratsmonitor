@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { DarkCta, PageHead } from "./blocks";
+import { Icon } from "./icons";
 
 interface Source { id: string; name: string; kind: "city" | "district"; method: string; lastImport: string | null; articles: number; meetings: number; from: string | null; complete: boolean; failed: boolean }
 interface Land { id: string; name: string; total: number; covered: number; population: number; populationCovered: number }
@@ -88,6 +89,34 @@ export function QuellenPage() {
 
       {data && reach && (
         <section className="ri-sec ri-sec--tight">
+          <div className="grid gap-x-12 gap-y-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start">
+            <div>
+              <h2 className="ri-h2">Ist Ihr Ort dabei?</h2>
+              <p className="m-0 mt-2 max-w-[520px] text-[16px] text-slate-500">Gemeinde, Stadt oder Kreis eingeben und nachsehen.</p>
+            </div>
+            <div>
+              <div className="relative max-w-[640px]">
+                <span className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-500"><Icon name="search" size={18} /></span>
+                <input type="search" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort eingeben, z. B. Münster" aria-label="Ort suchen" className="h-14 w-full rounded-full border border-slate-300 bg-white pl-12 pr-5 text-[16px] text-slate-900 outline-none focus:border-teal-600" />
+              </div>
+              {q.length >= 2 && (
+                <ul className="m-0 mt-4 max-w-[640px] list-none border-t border-slate-200 p-0">
+                  {hits.map((s) => (
+                    <li key={s.id} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-200 py-3">
+                      <span className="font-semibold text-slate-900">{s.name}</span>
+                      <span className="text-[14px] text-slate-500">{s.articles ? `${n(s.articles)} Vorgänge · ${n(s.meetings)} Sitzungen · Abruf ${day(s.lastImport)}` : "angebunden, erste Vorgänge folgen"}</span>
+                    </li>
+                  ))}
+                  {!hits.length && <li className="border-b border-slate-200 py-4 text-slate-600">Zu „{find.trim()}“ liegt noch nichts vor. Orte einer Samtgemeinde oder eines Amtes stehen unter dem Namen des Verbands. <Link href="/kontakt" className="text-teal-600">Sagen Sie uns, was Sie brauchen →</Link></li>}
+                </ul>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {data && reach && (
+        <section className="ri-sec ri-sec--tight">
           <h2 className="ri-h2">Abdeckung nach Bundesland</h2>
           <p className="m-0 mt-2 max-w-[680px] text-[16px] text-slate-500">Anteil der Gemeinden, aus denen Vorgänge vorliegen.</p>
           <ol className="m-0 mt-6 list-none border-t border-slate-200 p-0">
@@ -105,22 +134,6 @@ export function QuellenPage() {
         </section>
       )}
 
-      <section className="ri-sec ri-sec--tight">
-        <h2 className="ri-h2">Ist Ihr Ort dabei?</h2>
-        <p className="m-0 mt-2 max-w-[680px] text-[16px] text-slate-500">Gemeinde, Stadt oder Kreis eingeben und nachsehen.</p>
-        <input type="search" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Ort eingeben, z. B. Münster" aria-label="Ort suchen" className="mt-5 h-12 w-full max-w-[520px] rounded-full border border-slate-300 bg-white px-5 text-[16px] text-slate-900 outline-none focus:border-teal-600" />
-        {q.length >= 2 && data && (
-          <ul className="m-0 mt-4 max-w-[720px] list-none border-t border-slate-200 p-0">
-            {hits.map((s) => (
-              <li key={s.id} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-200 py-3">
-                <span className="font-semibold text-slate-900">{s.name}</span>
-                <span className="text-[14px] text-slate-500">{s.articles ? `${n(s.articles)} Vorgänge · ${n(s.meetings)} Sitzungen · Abruf ${day(s.lastImport)}` : "angebunden, erste Vorgänge folgen"}</span>
-              </li>
-            ))}
-            {!hits.length && <li className="border-b border-slate-200 py-4 text-slate-600">Zu „{find.trim()}“ liegt noch nichts vor. Orte einer Samtgemeinde oder eines Amtes stehen unter dem Namen des Verbands. <Link href="/kontakt" className="text-teal-600">Sagen Sie uns, was Sie brauchen →</Link></li>}
-          </ul>
-        )}
-      </section>
 
       <section className="ri-sec ri-sec--tight">
         <h2 className="ri-h2">Hinter den Kulissen</h2>
