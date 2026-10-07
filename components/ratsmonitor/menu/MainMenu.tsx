@@ -18,13 +18,14 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
 ];
 
 /* Unterpunkte von „Plenara.X“ (die Gruppe selbst ist keine Seite) */
-const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "layers" | "trendingUp" | "mapPin" | "circleCheck" }[] = [
+const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "layers" | "trendingUp" | "mapPin" | "circleCheck" | "users" }[] = [
   { href: "/analytics/ueber", label: "Über Plenara.X", icon: "fileText" },
   { href: "/analytics/diffusion", label: "Diffusionsanalyse", icon: "map" },
   { href: "/analytics/graph", label: "Knowledge Graph", icon: "layers" },
   { href: "/analytics/trends", label: "Trends und Frühindikatoren", icon: "trendingUp" },
   { href: "/analytics/vergleich", label: "Gebietsvergleich", icon: "mapPin" },
   { href: "/analytics/beschluesse", label: "Status und Beschlüsse", icon: "circleCheck" },
+  { href: "/analytics/gremien", label: "Gremiennetz", icon: "users" },
 ];
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */

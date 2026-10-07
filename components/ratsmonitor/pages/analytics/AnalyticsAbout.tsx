@@ -88,6 +88,22 @@ function DecisionThumb() {
   );
 }
 
+/** Vorschaubild des Gremiennetzes: gerichtete Pfeile von Einstiegs-Gremien zu einem Entscheidungs-Gremium */
+function NetThumb() {
+  const nodes: [number, number, number, string, string][] = [[40, 36, 9, "#cbd5e1", "#94a3b8"], [40, 80, 11, "#cbd5e1", "#94a3b8"], [40, 122, 8, "#cbd5e1", "#94a3b8"], [150, 60, 14, "#cbd5e1", "#94a3b8"], [150, 118, 8, "#5eead4", "#0d9488"], [272, 78, 20, "#0f766e", "#0f766e"]];
+  const links: [number, number, number][] = [[0, 3, 2], [1, 3, 3.5], [2, 4, 1.5], [3, 5, 6], [1, 5, 2], [4, 5, 2.5]];
+  return (
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Gremiennetzes: Pfeile von Ausschüssen zum Rat" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+      <defs><marker id="nt" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L9 5L0 9z" fill="#64748b" /></marker></defs>
+      {links.map(([a, b, w]) => {
+        const A = nodes[a], B = nodes[b], dx = B[0] - A[0], dy = B[1] - A[1], d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d;
+        return <path key={`${a}${b}`} d={`M${A[0] + ux * A[2]},${A[1] + uy * A[2]} Q${(A[0] + B[0]) / 2 - uy * d * 0.12},${(A[1] + B[1]) / 2 + ux * d * 0.12} ${B[0] - ux * (B[2] + 4)},${B[1] - uy * (B[2] + 4)}`} fill="none" stroke="#94a3b8" strokeOpacity=".7" strokeWidth={w} strokeLinecap="round" markerEnd="url(#nt)" />;
+      })}
+      {nodes.map(([x, y, r, f, st], i) => <circle key={i} cx={x} cy={y} r={r} fill={f} stroke={st} strokeWidth="2" />)}
+    </svg>
+  );
+}
+
 export function AnalyticsAbout() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] py-12 text-slate-900">
@@ -174,6 +190,22 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Der Status ist nur bei einem Viertel der Einträge bekannt, Ablehnungen sind in den Quellen selten vermerkt. Ausschüsse empfehlen meist nur, ihre Quote ist mit der des Rats nicht direkt vergleichbar. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt, denn die hier verwendete einfache Messung berücksichtigt sie nicht. Abstimmung, Änderungen und Dauer stammen aus einer Stichprobe von höchstens 4.000 Vorgängen.</p>
           </details>
           <Link href="/analytics/beschluesse" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Status und Beschlüsse öffnen →</Link>
+        </div>
+      </article>
+      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+        <Link href="/analytics/gremien" aria-label="Gremiennetz öffnen"><NetThumb /></Link>
+        <div>
+          <h3 className="text-[22px] font-semibold">Gremiennetz</h3>
+          <p className="mt-2 text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange ein Übergang dauert. Als Netz mit Pfeilen, mit denselben Suchen und Filtern wie auf der Startseite.</p>
+          <details className="group mt-4 border-t border-slate-200 pt-3">
+            <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
+              Wissenschaftlicher Hintergrund
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+          <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Beratungswege bilden ein gerichtetes Netz: Gremien sind Knoten, ein Pfeil bedeutet, dass Vorgänge von einem Gremium an das nächste gingen (Newman, „Networks“, 2018). Aus der Zahl eingehender und ausgehender Pfeile ergibt sich die Rolle: Einstieg (überwiegend ausgehend), Entscheidung (überwiegend eingehend) und Durchgang. Der Durchsatz ist eine einfache Form der Zentralität; wer viele Wege verbindet, hat eine Brückenstellung (Freeman, „A Set of Measures of Centrality Based on Betweenness“, 1977). Die Anordnung von links nach rechts folgt der mittleren Stufe im Beratungsweg, ähnlich einer geschichteten Zeichnung hierarchischer Systeme (Sugiyama et al., 1981). Ohne einzelnen Ort werden Gremien nach ihrer Art zusammengefasst, weil jeder Ort seine eigenen Namen hat.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Nur Vorgänge mit Stationen in mindestens zwei verschiedenen Gremien tragen bei, das ist ein kleiner Teil. Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab. Die Gremienart wird aus dem Namen abgeleitet und kann im Einzelfall danebenliegen. Ausgewertet werden höchstens rund 10.000 Vorgänge.</p>
+          </details>
+          <Link href="/analytics/gremien" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gremiennetz öffnen →</Link>
         </div>
       </article>
       <p className="mt-8 text-[14px] text-slate-500">Weitere Funktionen sind in Planung.</p>
