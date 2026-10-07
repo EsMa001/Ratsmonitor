@@ -1,9 +1,9 @@
-/* Baut ein Video aus Kapiteln: node build-video.mjs <video> [--refresh] [--only 2,3]   (im Ordner ~/code/video-tools starten, BASE = Adresse der App)
+/* Baut ein Video aus Kapiteln: node build-video.mjs <video> [--refresh] [--only 2,3] [--entwurf] [--parallel 3]   (im Ordner ~/code/video-tools starten, BASE = Adresse der App)
    <video> = docs/videos/videos/<video>.json: { "ausgabe": "dateiname", "karten": false (keine Kapitelseiten), "kapitel": [{ "kapitel": "suchen", "text": "kurz"|"lang" (kurz = kurz.txt, sonst nur die mit * markierten Kernsätze aus lang.txt), "parameter": { "thema": "Wärmeplanung" }, "format": "16x9" }] }
    Kapitel = docs/videos/kapitel/<id>/ mit kapitel.json (Titel, Icon, Stichpunkte, szenen), kurz.txt / lang.txt (Sätze: "@szene.schritt Satz", Platzhalter {{fakt|format}}, {{p.thema|text}}).
    Szene = docs/videos/szenen/<id>/szene.mjs (Vertrag: docs/videos/SZENEN.md). Ein Clip wird nur aufgenommen, wenn er für Szene, Parameter und Format fehlt, veraltet ist oder mit --refresh.
    Ablauf: Texte und Fakten, Kapitelseiten, Ton (Zwischenspeicher), Clips, Zusammenbau, Gesamtvideo. Ergebnis: out-web/<video>/<ausgabe>.mp4/.vtt/.jpg (bisher nur Format 16x9 fürs Gesamtvideo) */
-import { spawnSync } from "node:child_process";
+import { spawnSync, spawn } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { fill } from "./fmt.mjs";
 import { clipState } from "./status.mjs";
@@ -20,7 +20,12 @@ const facts = factsFile.values;
 /* Produktvorteile (docs/produkt/vorteile.json) als {{v.<rang>|text}} */
 const VP = `${V}../produkt/vorteile.json`;
 if (existsSync(VP)) for (const v of JSON.parse(readFileSync(VP, "utf8")).vorteile) facts[`v.${v.rang}`] = v.titel;
-const run = (cmd, args) => { const r = spawnSync(cmd, args, { stdio: "inherit" }); if (r.status) { console.error(`Fehler bei: ${cmd} ${args.join(" ")}`); process.exit(r.status); } };
+const entwurf = flags.includes("--entwurf"); if (entwurf) process.env.VIDEO_ENTWURF = "1";  /* schnell: veryfast/crf 30, halbe Haltezeiten */
+const jobs = Number(flags.includes("--parallel") ? flags[flags.indexOf("--parallel") + 1] : 3);
+/* Ausgabe knapp: nur Warnungen, Fehler und die letzte Zeile jedes Schritts (spart Tokens beim Lesen) */
+const show = (out) => { const l = out.split("\n").filter(Boolean); const w = l.filter((x) => /WARNUNG|ACHTUNG|fehlgeschlagen|Fehler/.test(x)); return [...new Set([...w, l.at(-1)])].filter(Boolean).join("\n"); };
+const run = (cmd, args) => { const r = spawnSync(cmd, args, { encoding: "utf8", maxBuffer: 1 << 28 }); const out = (r.stdout || "") + (r.stderr || ""); if (out.trim()) console.log(show(out)); if (r.status) { console.error(`Fehler bei: ${cmd} ${args.join(" ")}\n${out.slice(-600)}`); process.exit(r.status); } };
+const runAsync = (cmd, args) => new Promise((res) => { let out = ""; const c = spawn(cmd, args); c.stdout.on("data", (d) => (out += d)); c.stderr.on("data", (d) => (out += d)); c.on("close", (code) => { if (out.trim()) console.log(show(out)); if (code) console.error(`Fehler bei: ${cmd} ${args.join(" ")}\n${out.slice(-600)}`); res(code); }); });
 mkdirSync(O, { recursive: true });
 const chapters = [];
 for (const [i, k] of def.kapitel.entries()) {
@@ -55,22 +60,20 @@ for (const [i, k] of def.kapitel.entries()) {
 writeFileSync(`${O}/chapters.json`, JSON.stringify(chapters, null, 1));
 const karten = def.karten !== false;
 if (karten) run("node", [`${T}cards.mjs`, O]);
-const done = new Set();
-for (const c of chapters) {
-  if (only && !only.includes(c.nr)) continue;
-  const n = pad(c.nr), d = `${O}/c${n}`;
-  run("python3", [`${T}speak.py`, `${O}/c${n}.txt`, `${d}/audio.wav`, "0.8", "0"]);
-  for (const [id, { key, params }] of Object.entries(c.keys)) {
-    if (done.has(key)) continue; done.add(key);
-    const st = clipState(key);
-    if (st.state === "fehlt" || st.state === "veraltet" || refresh) {
-      console.log(`Clip ${key}: ${refresh ? "neu (--refresh)" : st.state}, nehme auf`);
-      const args = [`${T}rec-clip.mjs`, id, "--format", c.format]; const p = Object.entries(params).map(([a, b]) => `${a}=${b}`).join(",");
-      run("node", p ? [...args, "--p", p] : args);
-    } else console.log(`Clip ${key}: ${st.state}, wird wiederverwendet`);
-  }
-  run("python3", [`${T}compose.py`, d, `c${n}`]);
+/* 1. Ton für alle Kapitel (Zwischenspeicher), 2. fehlende Clips parallel aufnehmen, 3. Kapitel zusammensetzen */
+const sel = chapters.filter((c) => !only || only.includes(c.nr));
+for (const c of sel) { const n = pad(c.nr); run("python3", [`${T}speak.py`, `${O}/c${n}.txt`, `${O}/c${n}/audio.wav`, "0.8", "0"]); }
+const todo = new Map();
+for (const c of sel) for (const [id, { key, params }] of Object.entries(c.keys)) {
+  if (todo.has(key)) continue;
+  const st = clipState(key), neu = st.state === "fehlt" || st.state === "veraltet" || refresh || (st.entwurf && !entwurf);  /* Entwurf-Clips gelten für das fertige Video nicht */
+  if (neu) { const p = Object.entries(params).map(([a, b]) => `${a}=${b}`).join(","); const args = [`${T}rec-clip.mjs`, id, "--format", c.format]; todo.set(key, p ? [...args, "--p", p] : args); }
 }
+console.log(`Clips: ${todo.size} neu aufzunehmen (parallel ${jobs}), Rest wird wiederverwendet`);
+const queue = [...todo.values()]; let bad = 0;
+await Promise.all(Array.from({ length: Math.min(jobs, queue.length) }, async () => { while (queue.length) { if (await runAsync("node", queue.shift())) bad++; } }));
+if (bad) { console.error(`${bad} Clip(s) fehlgeschlagen, Abbruch`); process.exit(1); }
+for (const c of sel) run("python3", [`${T}compose.py`, `${O}/c${pad(c.nr)}`, `c${pad(c.nr)}`]);
 run("python3", [`${T}assemble.py`, video, def.ausgabe || video, "3", ...(karten ? [] : ["keine"])]);
 run("python3", [`${T}check.py`, `${O}/${def.ausgabe || video}.mp4`]);
 console.log(`Fertig: ${O}/${def.ausgabe || video}.mp4`);

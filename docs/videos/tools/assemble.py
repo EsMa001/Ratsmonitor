@@ -3,6 +3,7 @@ Schreibt out-web/<ordner>/<name>.mp4, .vtt und .jpg (Vorschaubild = erste Kapite
 import json,subprocess,sys,os,re,glob
 TOOLS=os.environ.get('VIDEO_TOOLS',os.path.expanduser('~/code/video-tools'))
 FF=subprocess.check_output(['node','-p',f"require('{TOOLS}/node_modules/ffmpeg-static')"]).decode().strip()
+PRESET,CRF=('veryfast','30') if os.environ.get('VIDEO_ENTWURF') else ('slow','24')
 O=f'out-web/{sys.argv[1]}'; name=sys.argv[2]; CARD=float(sys.argv[3]) if len(sys.argv)>3 else 3.0
 KARTEN=not (len(sys.argv)>4 and sys.argv[4]=='keine')  # 'keine' = Kapitel ohne Kapitelseite, nahtlos hintereinander
 chs=json.load(open(f'{O}/chapters.json'))
@@ -36,7 +37,7 @@ for c in chs:
     t+=tc+dur(ch)
     parts+=[card,body]
 open(f'{O}/list-final.txt','w').write('\n'.join(f"file '{os.path.abspath(p)}'" for p in parts))
-run('-f','concat','-safe','0','-i',f'{O}/list-final.txt','-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-preset','slow','-crf','24','-c:a','aac','-b:a','96k','-movflags','+faststart',f'{O}/{name}.mp4')
+run('-f','concat','-safe','0','-i',f'{O}/list-final.txt','-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-preset',PRESET,'-crf',CRF,'-c:a','aac','-b:a','96k','-movflags','+faststart',f'{O}/{name}.mp4')
 open(f'{O}/{name}.vtt','w',encoding='utf8').write('\n'.join(vtt))
 run('-i',f'{O}/card01.png' if KARTEN else f'{O}/{name}.mp4',*([] if KARTEN else ['-ss','4']),'-frames:v','1','-q:v','4',f'{O}/{name}.jpg')
 print('Länge',round(dur(f'{O}/{name}.mp4')),'s',round(os.path.getsize(f'{O}/{name}.mp4')/1e6,1),'MB')
