@@ -74,6 +74,8 @@ export interface SearchState {
   noformal?: boolean;
   /** Alle Suchbegriffe müssen vorkommen (UND); Standard: einer genügt (ODER) */
   allterms?: boolean;
+  /** Nur ganze Wörter (Groß-/Kleinschreibung egal), nicht Wortteile */
+  exact?: boolean;
   level: "city" | "district";
   /** Vom Nutzer gewählte Alternativen der Ortserkennung (Suchphrase → AGS) */
   placeOverrides: Record<string, string>;
@@ -111,6 +113,8 @@ export interface SavedSearch {
   noformal?: boolean;
   /** Alle Suchbegriffe müssen vorkommen (UND) */
   allterms?: boolean;
+  /** Nur ganze Wörter */
+  exact?: boolean;
   /** Benachrichtigung: on = Push, mail = E-Mail an email; freq gilt für beide */
   notify: { on: boolean; freq: NotifyFreq; mail?: boolean; email?: string; /** weitere Empfänger dieser Suche (Enterprise) */ recipients?: string[] };
   created: string; // ISO

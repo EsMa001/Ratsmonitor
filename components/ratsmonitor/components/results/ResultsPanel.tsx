@@ -8,6 +8,7 @@ import type { Article } from "../../types";
 import { IconArrowUp, IconEmptySearch, IconChevronLeft, IconChevronRight } from "../icons";
 import { ArticleCard } from "./ArticleCard";
 import { useEntitlements } from "../../lib/entitlements";
+import { CountDots } from "../CountDots";
 
 /** Beim Blättern: die Zeile mit der Trefferzahl (Suche und Filter) an den oberen Rand direkt unter der angehefteten Kopfzeile, darunter beginnen die Artikel */
 function scrollToResultsTop() {
@@ -93,7 +94,7 @@ export function ResultsPanel() {
           onMouseLeave={() => onHover("")}
           className={`flex flex-col px-[12px] max-sm:px-1 py-[12px] max-sm:py-0 outline-none transition-opacity ${articlesReady?"":"opacity-50 delay-300"}`}
         >
-          {!articlesReady && res.results.length===0 && <ResultsSkeleton />}
+          {res.results.length===0 && (!articlesReady || (res.totalPending && !res.error)) && <ResultsSkeleton />}
           {(Number.isFinite(limits.maxResults) ? res.results.slice(0, limits.maxResults) : res.results).map((a, i) => (
             <ArticleCard
               key={a.id}
@@ -105,7 +106,7 @@ export function ResultsPanel() {
               compact={view === "compact"}
             />
           ))}
-          {articlesReady && !res.error && n === 0 && (
+          {articlesReady && !res.error && !res.totalPending && n === 0 && (
             <div className="flex flex-col items-center gap-2 px-5 py-12 text-center text-slate-600">
               <div className="mb-1.5 grid h-12 w-12 place-items-center text-slate-500">
                 <IconEmptySearch size={22} />
@@ -171,9 +172,9 @@ export function ResultsPanel() {
           </button>
         )}
         <span className="text-[14px] text-slate-500">
-          {active ? `${res.total.toLocaleString("de-DE")} Treffer · Seite ${res.page} von ${pages}` : `Seite ${res.page}`}
+          {active ? <>{res.totalPending ? (res.showDots ? <CountDots /> : "…") : res.total.toLocaleString("de-DE")} Treffer · Seite {res.page}{res.totalPending ? "" : ` von ${pages}`}</> : `Seite ${res.page}`}
         </span>
-        {res.page < Math.min(pages, MAX_PAGE) && (
+        {res.hasMore && res.page < MAX_PAGE && (
           <button type="button" aria-label="Nächste Seite" title="Nächste Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-600 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
             <IconChevronRight size={20} />
           </button>

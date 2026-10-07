@@ -1,0 +1,9 @@
+Die Karte zeigt Ihre Treffer auf drei Arten.
+Bei den Flächen färbt sich jedes Gebiet nach der Zahl der Treffer ein.
+Die Heatmap zeigt, wo sich Treffer häufen.
+Und mit Punkten sehen Sie einzelne Orte.
+Zwischen den Darstellungen wechseln Sie direkt an der Karte.
+Zoomen Sie hinein, um genauer hinzusehen.
+Mit dem Zentrieren springt die Karte zurück zu Ihrer Region, und mit dem Neuladen aktualisieren Sie die Ansicht.
+Die kleinen Zahlen an den Gebieten zeigen, wie viele Treffer es dort gibt.
+Ein Klick darauf zeigt Ihnen die Beschlüsse.

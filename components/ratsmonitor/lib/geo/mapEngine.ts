@@ -225,10 +225,10 @@ export class MapEngine {
   }
 
   /* ---------- Ansicht ---------- */
-  private clampK(k: number) {
+  private clampK(k: number, reserve = this.bottomInset ? this.bottomInset - 8 : 0) {
     /* Höchstens so weit herauszoomen, dass Deutschland vollständig sichtbar ist */
     const bb = this.geo.germany.bb;
-    const kmin = 0.92 * Math.min((this.W - 32) / Math.max(bb[2] - bb[0], 1), (this.H - 32) / Math.max(bb[3] - bb[1], 1));
+    const kmin = 0.92 * Math.min((this.W - 32) / Math.max(bb[2] - bb[0], 1), (this.H - 32 - reserve) / Math.max(bb[3] - bb[1], 1));
     return Math.max(kmin, Math.min(0.6, k));
   }
 
@@ -241,15 +241,19 @@ export class MapEngine {
     return { cx: (bb[0] + bb[2]) / 2, cy: (bb[1] + bb[3]) / 2 + (pt - pb) / 2 / k, k };
   }
 
+  /** Unten verdeckter Streifen (px, z. B. Suchleiste mit Chips im Kartenmodus): beim Einpassen bleibt er frei, die Gebiete liegen darüber */
+  bottomInset = 0;
+
   private fitView(bb: BBox, pad?: number): View {
     const small = this.W < 640;
     /* Handy: unten mehr Rand, dort liegen Suchleiste und Chips über der Karte */
     const pt = small ? 24 : 24;
-    const pb = small ? 120 : 72;
+    const pb = Math.max(small ? 120 : 72, this.bottomInset ? this.bottomInset + 8 : 0);
     const ps = pad ?? (small ? 4 : 28);
     const w = Math.max(bb[2] - bb[0], 1);
     const h = Math.max(bb[3] - bb[1], 1);
-    const k = this.clampK(Math.min((this.W - 2 * ps) / w, (this.H - pt - pb) / h));
+    /* Der reservierte Streifen unten (Suchleiste) lässt auch das Herauszoomen bis ganz Deutschland zu, ohne dass oben etwas abgeschnitten wird */
+    const k = this.clampK(Math.min((this.W - 2 * ps) / w, (this.H - pt - pb) / h), Math.max(0, pt + pb - 32));
     return { cx: (bb[0] + bb[2]) / 2, cy: (bb[1] + bb[3]) / 2 + (pt - pb) / 2 / k, k };
   }
 

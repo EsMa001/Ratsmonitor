@@ -6,7 +6,7 @@ import {Header} from './components/Header';
 import {SaveSearchDialog} from './components/SaveSearchDialog';
 import {GateDialog} from './components/GateDialog';
 import {ConfirmDialog} from './components/ConfirmDialog';
-import {DevBrandSwitcher} from './components/DevBrandSwitcher';
+// DevBrandSwitcher (Logo-Umschalter) ist nicht eingebunden; zum Wiedereinschalten importieren und im JSX von Content rendern.
 import {useBrand} from './lib/brand';
 import {pageTitle} from './lib/brands';
 import {setFavicon} from './lib/favicon';
@@ -30,13 +30,13 @@ function useBrandTitle(p:string,notFound:boolean){
  const text=res.snapshot.text.trim(),area=res.snapshot.area;
  const place=area&&geo?geo.info(area).name:'';
  const what=[text&&`„${text}“`,place&&(text?`in ${place}`:place)].filter(Boolean).join(' ');
- const count=!res.loading&&what?`${res.total.toLocaleString('de-DE')} Treffer`:'';
+ const count=!res.loading&&!res.totalPending&&what?`${res.total.toLocaleString('de-DE')} Treffer`:'';
  useEffect(()=>{
   document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):pageTitle(brand);
  },[brand,name,p,notFound,what,count]);
- useEffect(()=>{setFavicon(logo);},[logo]);
+ useEffect(()=>{setFavicon(logo);},[logo,p]);
 }
 /** Adressen, die eine der Seiten unten bedient; alles andere zeigt die 404-Seite */
 const isKnownPath=(p:string)=>p==='/'||p.startsWith('/beschluss/')||p.startsWith('/thema/')||p.startsWith('/konto')||p==='/impressum'||p==='/datenschutz'||isInfoPath(p);
-function Content(){const p=usePathname();const notFound=!isKnownPath(p);useBrandTitle(p,notFound);return <><Header/>{notFound?<NotFoundPage/>:<OverviewPage active={p==='/'}/>}{(p.startsWith('/beschluss/')||p.startsWith('/thema/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isInfoPath(p)&&<InfoPages path={p}/>}<Footer/><SaveSearchDialog/><GateDialog/><ConfirmDialog/><DevBrandSwitcher/></>;}
+function Content(){const p=usePathname();const notFound=!isKnownPath(p);useBrandTitle(p,notFound);return <><Header/>{notFound?<NotFoundPage/>:<OverviewPage active={p==='/'}/>}{(p.startsWith('/beschluss/')||p.startsWith('/thema/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isInfoPath(p)&&<InfoPages path={p}/>}<Footer/><SaveSearchDialog/><GateDialog/><ConfirmDialog/></>;}
 export default function MonitorApp(){return <div className="ratsmonitor"><DataProvider><ToastProvider><SearchProvider><AccountProvider><UiProvider><Content/></UiProvider></AccountProvider></SearchProvider></ToastProvider></DataProvider></div>;}

@@ -1,0 +1,41 @@
+timestamp,label,term,part,cold_ms,warm_ms,bytes,total,articles
+2026-10-06T14:05:10.050Z,baseline,"Windpark",full,4324,8,34849,820,20
+2026-10-06T14:05:10.050Z,baseline,"Bebauungsplan",full,2439,7,80842,19517,20
+2026-10-06T14:05:10.050Z,baseline,"Kita",full,2487,8,60332,5017,20
+2026-10-06T14:05:10.050Z,baseline,"Haushalt",full,2517,10,93161,28354,20
+2026-10-06T14:05:10.050Z,baseline,"Radweg",full,2660,7,54471,2293,20
+2026-10-06T14:05:10.050Z,baseline,"Schule",full,2566,7,84577,26828,20
+2026-10-06T14:05:10.050Z,baseline,"Photovoltaik",full,2550,8,54420,2084,20
+2026-10-06T14:05:10.050Z,baseline,"Feuerwehr",full,2541,8,86000,13719,20
+2026-10-06T14:05:10.050Z,baseline,"Windkraft oder Solar",full,2850,22,52085,2326,20
+2026-10-06T14:05:10.050Z,baseline,"Gewerbegebiet",full,2627,7,48586,2479,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Windpark",full,4838,712,34849,820,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Windpark",page,243,7,16140,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Windpark",facets,3635,9,18891,820,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Bebauungsplan",full,2363,58,80842,19517,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Bebauungsplan",page,106,12,14576,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Bebauungsplan",facets,2339,8,66448,19517,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Kita",full,2494,9,60332,5017,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Kita",page,130,7,14658,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Kita",facets,2284,10,45856,5017,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Haushalt",full,2489,45,93161,28354,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Haushalt",page,58,10,12013,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Haushalt",facets,2584,15,81330,28354,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Radweg",full,2712,9,54471,2293,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Radweg",page,371,11,13141,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Radweg",facets,2624,209,41512,2293,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Schule",full,2615,12,84577,26828,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Schule",page,176,7,12594,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Schule",facets,2982,14,72165,26828,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Photovoltaik",full,3146,27,54420,2084,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Photovoltaik",page,1013,15,15345,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Photovoltaik",facets,2302,8,39257,2084,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Feuerwehr",full,1024,9,86000,13719,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Feuerwehr",page,24,203,12479,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Feuerwehr",facets,992,9,73703,13719,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Windkraft oder Solar",full,831,7,52085,2326,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Windkraft oder Solar",page,90,7,14440,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Windkraft oder Solar",facets,925,8,37827,2326,0
+2026-10-06T14:09:04.428Z,split-page-facets,"Gewerbegebiet",full,668,7,48586,2479,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Gewerbegebiet",page,53,6,14857,101,20
+2026-10-06T14:09:04.428Z,split-page-facets,"Gewerbegebiet",facets,1037,8,33911,2479,0

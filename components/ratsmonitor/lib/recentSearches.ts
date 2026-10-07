@@ -1,4 +1,6 @@
 /** Zuletzt bestätigte Suchen, nur in diesem Browser (höchstens 5, neueste zuerst) */
+import { canonicalQuery } from "./savedSearch";
+
 const KEY = "ratsmonitor:recent:v1";
 const MAX = 5;
 
@@ -14,7 +16,9 @@ export function readRecent(): string[] {
 export function addRecent(q: string) {
   const t = q.trim();
   if (!t) return;
-  const next = [t, ...readRecent().filter((x) => x !== t)].slice(0, MAX);
+  /* Gleiche Suchen in anderer Schreibweise (Groß-/Kleinschreibung, Reihenfolge der Wörter) zählen nur einmal */
+  const same = canonicalQuery(t);
+  const next = [t, ...readRecent().filter((x) => x !== t && canonicalQuery(x) !== same)].slice(0, MAX);
   try {
     localStorage.setItem(KEY, JSON.stringify(next));
   } catch {}

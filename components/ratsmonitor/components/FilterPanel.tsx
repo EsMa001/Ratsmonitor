@@ -38,7 +38,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
   const { state } = search;
   const res = useSearchResults();
   /* auch aus dem Live-Zustand: auf dem Handy bleibt res.snapshot bis zum Schließen auf dem Stand beim Öffnen */
-  const liveActive = !!(state.thema || state.status || state.von || state.bis || state.monat || state.noformal || state.allterms || state.future || state.radius);
+  const liveActive = !!(state.thema || state.status || state.von || state.bis || state.monat || state.noformal || state.allterms || state.exact || state.future || state.radius);
   const active = filterChips(res.snapshot, geo).length > 0 || liveActive;
   /* Reicht der Platz rechts nicht (schmale Karte), öffnet das Fenster nach links; der Knopf sitzt dann oben rechts */
   const ref = useRef<HTMLDivElement>(null);
@@ -84,6 +84,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         {/* Schalter wie am iPhone */}
         <Toggle label="Künftige Sitzungen zeigen" hint="Auch Termine, die noch anstehen" on={!!state.future} set={search.setFuture} />
         <Toggle label="Formalien ausblenden" hint="Ohne Niederschriften, Mitteilungen und Anfragen" on={!!state.noformal} set={search.setNoformal} />
+        <Toggle label="Exakter Begriff" hint="Nur ganze Wörter, keine Wortteile (Groß-/Kleinschreibung egal)" on={!!state.exact} set={search.setExact} />
         <Toggle label="Begriffe kombinieren" hint="Alle Suchbegriffe müssen vorkommen; sonst genügt einer" on={!!state.allterms} set={search.setAllterms} />
         <div className="grid grid-cols-2 gap-2">
           <FilterSelect id="f-thema" label="Thema" allLabel="Alle Themen" value={state.thema} options={THEMEN.map((t) => ({ value: t, label: t }))} counts={active ? res.themaCounts : undefined} onChange={search.setThema} className={full} />

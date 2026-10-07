@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {parseMonitorSearch,searchMonitor,searchCoverage,cachedSearch} from '../server/integrations/monitor-search.mjs';
+import {refreshSearchWords,candidateCards} from '../server/integrations/search-words.mjs';
 
 const catalog=[{id:'billerbeck',kind:'city',name:'Billerbeck',ags:'05558008'},{id:'coesfeld',kind:'district',name:'Kreis Coesfeld',ags:'05558'},{id:'other',kind:'city',name:'Anderer Ort',ags:'05558012'}];
 function fixture(){const sql=new DatabaseSync(':memory:');for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8'));const put=(id,region='billerbeck',extra={})=>{const t={title:'Schulbau in Dülmen',officialTitle:'Schulbau in Dülmen',shortSummary:'Öffentliche Beratung',committee:'Rat',classification:{method:'title-rules-v2',version:'labels-v2',primary:'bildung',evidence:'Schulbau in Dülmen'},sourceText:'private raw text',documentText:'never expose',...extra};sql.prepare('INSERT INTO topics VALUES(?,?,?,?,?,?,?)').run(id,'city','2026-09-20','2026-09-20','consulting',JSON.stringify(t),region);};return {sql,db:sqliteAdapter(sql),put};}
@@ -103,5 +104,59 @@ test('search results are kept while the data revision stays the same',async()=>{
  put('k9');
  const third=await cachedSearch(counted,catalog,params);
  assert.notEqual(third,first);assert.equal(third.total,4);
+ }finally{sql.close();}
+});
+
+test('searching through the word list gives exactly the result of searching all cards',async()=>{
+ const {sql,db,put}=fixture();try{
+  const titles=['Windpark Planung','Windpark Bürgerbeteiligung','Kita Neubau','Kita Sanierung Turnhalle','Radweg Brücke','Bürgerwindpark Erweiterung','Planung Radweg','Schulbau Planung Kita','Parkplatz am Rathaus','Windkraft Radweg','Anderer Weg'];
+  titles.forEach((t,i)=>put('c'+i,['billerbeck','other','coesfeld'][i%3],{title:t,officialTitle:t}));
+  for(const [id,t] of [['u1','Bär im Wald'],['u2','Bar im Hotel'],['u3','BÄR Gehege']])put(id,'billerbeck',{title:t,officialTitle:t});
+  const queries=['q=bär&exact=1','q=bar&exact=1','q=bar','q=BÄR+gehege&exact=1','q=anderer','q=anderer+oder+kita','q=windpark&exact=1','q=windpark&level=district','q=windpark&level=district&exact=1','q=park&exact=1','q=windpark+planung&exact=1','q=anderer&exact=1','q=planung&exact=1&level=district','q=anderer&sort=asc','q=windpark','q=park','q=windpark+planung','q=windpark+oder+kita','q=radweg&sort=asc','q=planung&sort=relevance','q=kita&noformal=1','q=windpark&area=05558008&scope=only','q=radweg&area=05558&scope=with','q=planung&level=district','q=kita&status=consulting','q=windpark&month=2026-09','q=windpark&size=15&page=1','q=kalorien','q=bau+planung','q=windpark,radweg'];
+  const run=async q=>{const r=await searchMonitor(db,catalog,new URLSearchParams(q));return {ids:r.articles.map(a=>a.id),total:r.total,area:r.areaCounts,thema:r.themaCounts,status:r.statusCounts,badge:r.badgeCounts};};
+  const before=[];for(const q of queries)before.push(await run(q));
+  await refreshSearchWords(db,{full:true});
+  assert.ok(await candidateCards(db,[['windpark']]),'the list is used for rare words');
+  const named=await candidateCards(db,[['anderer']],{nameIds:t=>t==='anderer'?['other']:[]});
+  assert.ok(named&&named.length>=before[0].total,'rare word inside a region name: cards of that region are candidates too');
+  for(const [i,q] of queries.entries())assert.deepEqual(await run(q),before[i],q);
+  const at=q=>before[queries.indexOf(q)];
+  assert.ok(at('q=windpark').total>0&&at('q=windpark+oder+kita').total>0&&at('q=anderer').total>0,'the queries find something');
+  assert.ok(at('q=windpark&exact=1').total>0&&at('q=windpark&level=district&exact=1').total<at('q=windpark&level=district').total,'exact matches only whole words (not Bürgerwindpark)');
+  assert.equal(at('q=park&exact=1').total,0,'park is no whole word here');
+  assert.deepEqual(at('q=bär&exact=1').ids.sort(),['u1','u3'],'exact keeps ä: Bär (any case) but not Bar');
+  assert.deepEqual(at('q=bar&exact=1').ids,['u2'],'exact bar does not find Bär');
+  assert.equal(at('q=bar').total,3,'normal search still treats ä like a');
+  assert.deepEqual(at('q=BÄR+gehege&exact=1').ids,['u3']);
+  /* Strom und Seite liefern über die Liste dieselben Treffer wie über alle Karten */
+  const streamed=[];for await(const part of (await searchMonitor(db,catalog,new URLSearchParams('q=windpark&part=stream'))).stream)streamed.push(...(part.articles??[]));
+  assert.deepEqual(streamed.map(a=>a.id),at('q=windpark').ids);
+ }finally{sql.close();}
+});
+
+test('precomputed facets of common words equal the grouping over all cards, per level and with a cut-off date',async()=>{
+ const {sql,db,put}=fixture();try{
+  const titles=['Windpark Planung','Windpark Bürgerbeteiligung','Kita Neubau','Kita Sanierung Turnhalle','Radweg Brücke','Bürgerwindpark Erweiterung','Planung Radweg','Schulbau Planung Kita','Parkplatz am Rathaus','Windkraft Radweg','Parkplatz Nord','Platz','Anderer Weg Kita','Anderer Weg'];
+  titles.forEach((t,i)=>put('c'+i,['billerbeck','other','coesfeld'][i%3],{title:t,officialTitle:t}));
+  const queries=['q=windpark','q=kita','q=radweg','q=planung','q=park','q=platz','q=parkplatz','q=kita&level=district','q=planung&level=district','q=windpark&to=2026-09-10','q=kita&to=2026-09-30','q=radweg&sort=asc','q=anderer','q=anderer&to=2026-09-10','q=anderer&level=district','q=ander','q=kita&area=05558008&scope=only','q=windpark&area=05558008&scope=with','q=planung&area=05558&scope=with','q=planung&area=05558008&scope=only&to=2026-09-10','q=kita&area=05558008&scope=only','q=windpark&area=05558008&scope=with','q=planung&area=05558&scope=with','q=planung&area=05558008&scope=only&to=2026-09-10','q=kita&area=05558008&scope=only&level=district'];
+  const run=async q=>{const r=await searchMonitor(db,catalog,new URLSearchParams(q));return {ids:r.articles.map(a=>a.id),total:r.total,area:r.areaCounts,thema:r.themaCounts,status:r.statusCounts,badge:r.badgeCounts};};
+  const before=[];for(const q of queries)before.push(await run(q));
+  const kinds=new Map(catalog.map(r=>[r.id,r.kind]));
+  await refreshSearchWords(db,{full:true,kinds,postingMax:1,blockedMin:1});   // alle Wörter mit mehr als einer Karte gelten als häufig
+  const common=sql.prepare('SELECT count(*) n FROM search_words WHERE cards>200').get().n;
+  assert.ok(common>0&&sql.prepare('SELECT count(*) n FROM search_word_areas').get().n>0,'there are common words with precomputed numbers');
+  /* „platz“ ist selten (1 Karte), steckt aber im häufigen „parkplatz“: die Karten-IDs greifen dort nicht, also auch vorberechnet; Standard: erst ab 6 Karten */
+  const blocked=sql.prepare("SELECT cards,hits_city FROM search_words WHERE word='platz'").get();
+  assert.ok(blocked.cards<=200&&blocked.hits_city!==null,'rare word inside a common word is precomputed');
+  await refreshSearchWords(db,{full:true,kinds,postingMax:1});
+  assert.equal(sql.prepare("SELECT count(*) n FROM search_words WHERE cards<=200 AND hits_city IS NOT NULL").get().n,0,'rare words with fewer than 6 cards are not precomputed');
+  await refreshSearchWords(db,{full:true,kinds,postingMax:1,blockedMin:1});
+  for(const [i,q] of queries.entries())assert.deepEqual(await run(q),before[i],q);
+  /* neue Karte (nur eingefügt): die Zahlen werden fortgeschrieben und stimmen weiter */
+  put('new1','billerbeck',{title:'Kita Windpark Radweg',officialTitle:'Kita Windpark Radweg'});
+  await refreshSearchWords(db,{kinds,postingMax:1});
+  const expected=[];for(const q of ['q=kita','q=windpark','q=radweg'])expected.push(await run(q));
+  sql.exec("DELETE FROM search_word_areas;DELETE FROM search_word_facets;UPDATE search_words SET hits_city=NULL,hits_district=NULL");
+  let k=0;for(const q of ['q=kita','q=windpark','q=radweg'])assert.deepEqual(await run(q),expected[k++],q+' (nach Fortschreibung)');
  }finally{sql.close();}
 });

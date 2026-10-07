@@ -16,7 +16,7 @@ type Row =
   | { kind: "item"; entry: PlaceEntry; sel: boolean; pick: () => void; scope?: "only" | "with" }
   | { kind: "text"; label: string; silent?: boolean; pick: () => void }
   | { kind: "query"; label: string; pick: () => void }
-  | { kind: "recent"; label: string; saved?: boolean; pick: () => void }
+  | { kind: "recent"; label: string; saved?: boolean; pick: () => void; prefetch?: () => void }
   | { kind: "scope"; label: string; sub: string; sel: boolean; pick: () => void };
 
 /** Suchfeld mit Ortserkennung und Vorschlagsliste.
@@ -34,7 +34,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
-  const { pq, placeActive, liveHits, pending } = useSearchResults();
+  const { pq, placeActive, liveHits, pending, searching, showRing } = useSearchResults();
   const { view, goOverview } = useAppNav();
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -57,10 +57,13 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
   /* Ladering erst nach Bestätigen (Enter oder Auswahl aus der Liste), nicht schon beim Tippen */
   const [awaiting, setAwaiting] = useState(false);
   const draftRef = useRef("");
+  const pickText = useRef("");
   useEffect(() => {
     const on = () => {
-      setHold(draftRef.current);
+      setHold(pickText.current || draftRef.current);
+      pickText.current = "";
       setAwaiting(true);
+      setArmed(true);
     };
     window.addEventListener("rm:search-confirmed", on);
     return () => window.removeEventListener("rm:search-confirmed", on);
@@ -71,6 +74,13 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
       setAwaiting(false);
     }
   }, [pending, hold, awaiting]);
+  /* Ring: nur nach Bestätigen (Enter oder Auswahl), erst wenn die Suche über 0,5 s dauert (Provider: showRing) und bis auch
+     die genaue Trefferzahl da ist. Beim bloßen Tippen bleibt er aus. */
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (armed && !searching) setArmed(false);
+  }, [armed, searching]);
+  const ring = armed && showRing;
   const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
   draftRef.current = draft;
   const shownDraft = pending && hold && (!focused || !draft) ? hold : draft;
@@ -104,7 +114,9 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           out.push({
             kind: "recent",
             label: q,
+            prefetch: () => search.prefetchText(q),
             pick: () => {
+              pickText.current = q;
               apply(q);
               search.commitPlaces();
               closeAndBlur();
@@ -118,7 +130,9 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
             kind: "recent",
             label: sv.name,
             saved: true,
+            prefetch: () => search.prefetchSaved(sv),
             pick: () => {
+              pickText.current = sv.text || sv.q || sv.name;
               if (search.applySaved(sv)) {
                 if (view !== "overview") goOverview();
                 closeAndBlur();
@@ -177,12 +191,6 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           },
         });
     }
-    for (const h of liveHits)
-      out.push({
-        kind: "text",
-        label: `„${h.phraseRaw}“ nur als Suchbegriff verwenden`,
-        pick: () => apply(state.q, { placeIgnored: { ...state.placeIgnored, [h.key]: true } }),
-      });
     const sg = place.suggest(state.q, placeActive && pq.place ? pq.place.ags : "");
     const lastTok = norm(sg.toks.length ? PlaceIndex.clean(sg.toks[sg.toks.length - 1]) : "");
     /* Keine Vorschläge für ein Wort, das schon zu einem erkannten Ort gehört */
@@ -235,12 +243,16 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
           },
         });
     }
-    /* Erste Zeile: den eingetippten Text als Suche bestätigen (wie Enter), auch wenn kein Ort passt */
+    /* Erste Zeile „Nach … suchen“: der eingetippte Text wird als Suchbegriff verwendet, auch wenn er wie ein Ort heißt
+       (Orte wählt man in den Zeilen darunter; Enter ohne Auswahl übernimmt erkannte Orte weiterhin als Filter) */
     if (draft.trim())
       out.unshift({
         kind: "query",
         label: draft.trim(),
         pick: () => {
+          /* Erkannte Orte im Text (auch der schon live übernommene) nicht als Ort, sondern als Suchbegriff nehmen */
+          const keys = [pq.key, ...(pq.extra ?? []).map((h) => h.key)].filter(Boolean);
+          if (keys.length) apply(state.q, { placeIgnored: { ...state.placeIgnored, ...Object.fromEntries(keys.map((k) => [k, true as const])) } });
           search.commitPlaces();
           setOpen(false);
           inputRef.current?.blur();
@@ -317,13 +329,20 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
     }
   };
 
+  /* Mit Pfeiltasten markierter Vorschlag: Suche schon vorab starten */
+  const activePick = active >= 0 ? picks[active] : undefined;
+  useEffect(() => {
+    if (activePick && "prefetch" in activePick) activePick.prefetch?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, open]);
+
   let pickIndex = -1;
   return (
     <div className="relative z-[4] min-w-0">
       {/* Glas nur um das Feld: die Vorschlagsliste liegt daneben, damit ihre eigene Unschärfe die Karte dahinter sieht (verschachtelt wäre sie flach) */}
       <div className={`relative ${glass ? "rm-glass rounded-full" : ""}`}>
       {/* Läuft eine Suche, steht an Stelle der Lupe ein kleiner Ladering */}
-      {pending && awaiting ? (
+      {ring ? (
         <span role="status" aria-label="Suche läuft" className="rm-spinner pointer-events-none absolute left-3.5 top-1/2 -mt-[9px]" />
       ) : (
         <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -459,6 +478,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit }: 
                   type="button"
                   role="option"
                   aria-selected={idx === active}
+                  onMouseEnter={() => r.prefetch?.()}
+                  onTouchStart={() => r.prefetch?.()}
                   onClick={() => { r.pick(); confirmed(); dropKeyboard(); onSubmit?.(); }}
                   className={`grid min-h-10 w-full grid-cols-[18px_minmax(0,1fr)] items-center gap-2 rounded-lg px-2 py-1.5 text-left max-sm:min-h-11 ${idx === active ? "bg-slate-100" : "hover:bg-slate-100"}`}
                 >

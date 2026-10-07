@@ -6,7 +6,7 @@ import type { FilterSpec } from "../lib/filter";
 import type { MapEngine } from "../lib/geo/mapEngine";
 import type { ParseResult, PlaceHit } from "../lib/place";
 import { applySearchState, clearAreaState, commitPlacesState, deriveFilters } from "../lib/searchLogic";
-import { hasScope, queryText, signature, type SearchSnapshot } from "../lib/savedSearch";
+import { canonicalQuery, hasScope, queryText, signature, type SearchSnapshot } from "../lib/savedSearch";
 import { terms as toTerms } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
@@ -45,9 +45,13 @@ interface SearchActions {
   setFuture: (v: boolean) => void;
   setNoformal: (v: boolean) => void;
   setAllterms: (v: boolean) => void;
+  setExact: (v: boolean) => void;
   resetAll: () => void;
   /** Gespeicherte Suche anwenden; false, solange die Karte für einen Umkreis noch lädt */
   applySaved: (s: SavedSearch) => boolean;
+  /** Sucht im Voraus (ohne Anzeige), z. B. beim Überfahren eines Vorschlags */
+  prefetchText: (value: string) => void;
+  prefetchSaved: (s: SavedSearch) => void;
   setPopup: (ags: string) => void;
 }
 
@@ -88,7 +92,13 @@ export function SearchProvider({ children }: { children: ReactNode }) {
      wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */
   const shown=useRef(live);
   if(!live.loading)shown.current=live;
-  const derived=useMemo(()=>live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true}:live,[live]);
+  const derived=useMemo(()=>live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live]);
+  /* Wann was zu sehen ist (siehe useDerivedResults): In den ersten 0,5 s passiert nichts. Sind die Treffer bis dahin da
+     oder wenigstens schon im Kommen, wechseln Karte und Liste, und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl
+     feststeht. Ist nach 0,5 s noch kein Treffer da, steht der Ladering, und alles erscheint erst, wenn die Suche samt
+     genauer Zahl fertig ist (dann keine Punkte). Nie beides zugleich. */
+  const searching=derived.pending||derived.totalPending;
+  const results=useMemo<SearchResults>(()=>({...derived,searching,showRing:derived.pending&&derived.ringMode,showDots:!derived.pending&&derived.totalPending}),[derived,searching]);
   const [popup, setPopupState] = useState("");
   const ref = useRef(state);
   ref.current = state;
@@ -115,12 +125,48 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     void ags;
   }, []);
 
+  /* Vorausladen: erste Seite der Suche für einen möglichen nächsten Zustand holen (Umkreissuchen ausgenommen) */
+  const prefetchState = useCallback(
+    (next: SearchState | null) => {
+      if (next) warmSearch(computeLocal(next, geo, place, phone ? 15 : 20));
+    },
+    [geo, place, phone],
+  );
+
   const actions = useMemo<SearchActions>(() => {
     /* Entfernt einen als Gebiet übernommenen Ort aus dem Suchtext */
     const stripPlace = (s: SearchState): Partial<SearchState> => {
       if (s.areaSrc !== "search") return {};
       const pq = parse(s.q, s);
       return pq.place ? { q: pq.rest } : {};
+    };
+    /* Zustand einer gespeicherten Suche (ohne ihn anzuwenden), auch zum Vorausladen */
+    const savedState = (sv: SavedSearch): SearchState | null => {
+        let radius: Radius | null = null;
+        if (sv.radius) {
+          const c = sv.radius.x != null && sv.radius.y != null ? { x: sv.radius.x, y: sv.radius.y } : geo?.center(sv.radius.ags);
+          if (!c) return null;
+          radius = { ags: sv.radius.ags, km: sv.radius.km, x: c.x, y: c.y };
+        }
+        let q = sv.q || "";
+        /* Ältere gespeicherte Umkreise hatten kein Gebiet: das Zentrum wird zum Gebiet */
+        const area = sv.area || radius?.ags || "";
+        let areaSrc: AreaSource = sv.area ? sv.areaSrc || "ui" : area ? "ui" : "";
+        const overrides: Record<string, string> = {};
+        const ignored: Record<string, true> = {};
+        const pq = q && place ? place.parse(q, {}, {}) : null;
+        if (areaSrc === "search") {
+          if (pq?.place) {
+            if (pq.place.ags !== area && pq.key) overrides[pq.key] = area;
+          } else {
+            q = sv.text || "";
+            areaSrc = "ui";
+          }
+        } else if (pq?.place && pq.key) ignored[pq.key] = true;
+      return {
+          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status, future: !!sv.future, noformal: !!sv.noformal, allterms: !!sv.allterms, exact: !!sv.exact,
+          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: radius ? [] : (sv.more || []).filter((m) => m.ags !== area),
+        };
     };
     const a: SearchActions = {
       applySearch(value, extra) {
@@ -193,6 +239,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       setFuture: (v) => commit({ ...ref.current, future: v }),
       setNoformal: (v) => commit({ ...ref.current, noformal: v }),
       setAllterms: (v) => commit({ ...ref.current, allterms: v }),
+      setExact: (v) => commit({ ...ref.current, exact: v }),
       resetAll() {
         clearTimeout(focusTimer.current);
         commit({ ...INITIAL_SEARCH, sort: ref.current.sort });
@@ -200,45 +247,31 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         mapRef.current?.focusArea("");
       },
       applySaved(sv) {
-        let radius: Radius | null = null;
-        if (sv.radius) {
-          const c = sv.radius.x != null && sv.radius.y != null ? { x: sv.radius.x, y: sv.radius.y } : geo?.center(sv.radius.ags);
-          if (!c) return false;
-          radius = { ags: sv.radius.ags, km: sv.radius.km, x: c.x, y: c.y };
-        }
-        let q = sv.q || "";
-        /* Ältere gespeicherte Umkreise hatten kein Gebiet: das Zentrum wird zum Gebiet */
-        const area = sv.area || radius?.ags || "";
-        let areaSrc: AreaSource = sv.area ? sv.areaSrc || "ui" : area ? "ui" : "";
-        const overrides: Record<string, string> = {};
-        const ignored: Record<string, true> = {};
-        const pq = q && place ? place.parse(q, {}, {}) : null;
-        if (areaSrc === "search") {
-          if (pq?.place) {
-            if (pq.place.ags !== area && pq.key) overrides[pq.key] = area;
-          } else {
-            q = sv.text || "";
-            areaSrc = "ui";
-          }
-        } else if (pq?.place && pq.key) ignored[pq.key] = true;
+        const next = savedState(sv);
+        if (!next) return false;
         clearTimeout(focusTimer.current);
-        commit({
-          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status, future: !!sv.future, noformal: !!sv.noformal, allterms: !!sv.allterms,
-          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: radius ? [] : (sv.more || []).filter((m) => m.ags !== area),
-        });
+        commit(next);
         setPopupState("");
-        if (radius) mapRef.current?.fitCircle(radius);
-        else mapRef.current?.focusArea(area);
+        if (next.radius) mapRef.current?.fitCircle(next.radius);
+        else mapRef.current?.focusArea(next.area);
         return true;
+      },
+      /* Vorausladen beim Überfahren eines Vorschlags: Suche starten, ohne etwas anzuzeigen */
+      prefetchText(value) {
+        const { next } = applySearchState({ ...ref.current }, value, parse);
+        prefetchState(commitPlacesState(next, false, parse) ?? next);
+      },
+      prefetchSaved(sv) {
+        prefetchState(savedState(sv));
       },
       setPopup: (ags) => setPopupState(ags),
     };
     return a;
-  }, [commit, geo, parse, place, schedFocus]);
+  }, [commit, geo, parse, place, prefetchState, schedFocus]);
 
   useEffect(() => () => clearTimeout(focusTimer.current), []);
 
-  const value = useMemo<SearchValue>(() => ({ ...actions, state, popup, mapRef,derived }), [actions, state, popup,derived]);
+  const value = useMemo<SearchValue>(() => ({ ...actions, state, popup, mapRef,derived:results }), [actions, state, popup,results]);
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>;
 }
 
@@ -250,8 +283,13 @@ export function useSearch(): SearchValue {
 
 /* ---------- Abgeleitete Werte: Treffer, Zähler, erkannter Ort ---------- */
 export interface CoverageEntry {ags:string;name:string;count:number;complete:boolean}
+/** Was die Hook selbst liefert; Ring und Punkte kommen aus dem Provider (siehe dort) */
+type LiveResults=Omit<SearchResults,'showRing'|'showDots'|'searching'>;
 export interface SearchResults {
- total:number;coverage:CoverageEntry[];
+ /** Suche dauert über 0,5 s und hat noch keinen Treffer gezeigt: Ladering bis alles fertig ist */ringMode:boolean;
+ /** Gibt es Treffer? ja: mindestens einer ist da; nein: Suche zu Ende ohne Treffer; unbekannt: sie läuft noch */hits:'yes'|'no'|'unknown';
+ /** Suche läuft noch: neue Treffer oder genaue Zahl fehlen */searching:boolean;/** Ladering im Suchfeld (Suche dauert über 0,5 s) */showRing:boolean;/** Punkte an der Trefferzahl (erste Treffer schnell da, Zahl noch nicht) */showDots:boolean;
+ total:number;/** Genaue Trefferzahl noch unterwegs */totalPending:boolean;/** Es gibt eine weitere Seite (auch ohne die genaue Gesamtzahl) */hasMore:boolean;coverage:CoverageEntry[];
   /** Abfrage der aktuellen Suche (für Export), ohne Seite */
   key:string;
   around:{set:Set<string>|null;level:string}|null;
@@ -269,6 +307,8 @@ export interface SearchResults {
   spec: FilterSpec;
   results: Article[];
   areaCounts: Record<string, number>;
+  /** Abzeichen der Karte: jede Karte einmal gezählt, Summe = Trefferzahl */
+  badgeCounts: Record<string, number>;
   themaCounts: Record<string, number>;
   monatCounts: Record<string, number>;
   statusCounts: Record<string, number>;
@@ -280,27 +320,74 @@ export interface SearchResults {
 
 
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
-function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchResults {
- const {geo,place}=useData();
- const local=useMemo(()=>{
+type ResponseData={articles:Article[];total:number;hasMore?:boolean;areaCounts:Record<string,number>;badgeCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
+type DataValue=ReturnType<typeof useData>;
+/* Fertige Antworten (5 Minuten) und laufende Anfragen, geteilt von der Übersicht und dem Vorausladen (z. B. beim Überfahren
+   eines Vorschlags): gleiche Suche = eine Anfrage, und ein Klick trifft oft schon die fertige Antwort */
+const SEARCH_CACHE=new Map<string,{at:number;data:ResponseData}>(),INFLIGHT=new Map<string,Promise<ResponseData>>();
+/* Zähler (Gebiete, Themen, Status, Gesamtzahl) kommen getrennt von der Ergebnisseite und gelten für die ganze Suche, nicht je Seite */
+type Facets=Pick<ResponseData,'total'|'areaCounts'|'badgeCounts'|'themaCounts'|'monatCounts'|'statusCounts'|'revision'>;
+const FACETS_CACHE=new Map<string,{at:number;data:Facets}>();
+const freshFacets=(key:string)=>{const hit=FACETS_CACHE.get(key);return hit&&Date.now()-hit.at<300000?hit.data:null;};
+const searchKey=(key:string,page=1,attempt=0)=>key+'&page='+page+'&attempt='+attempt;
+const freshSearch=(requestKey:string)=>{const hit=SEARCH_CACHE.get(requestKey);return hit&&Date.now()-hit.at<300000?hit.data:null;};
+function rememberSearch(requestKey:string,data:ResponseData){SEARCH_CACHE.delete(requestKey);SEARCH_CACHE.set(requestKey,{at:Date.now(),data});if(SEARCH_CACHE.size>40)SEARCH_CACHE.delete(SEARCH_CACHE.keys().next().value as string);}
+async function fetchSearch(query:string,signal?:AbortSignal):Promise<ResponseData>{
+ const response=await fetch('/api/search?'+query,{signal});
+ const data=await response.json() as ResponseData & {error?:string};
+ if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
+ return {...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))};
+}
+/** Erste Seite als Strom (NDJSON): jede Etappe ruft onChunk auf, am Ende kommt end mit hasMore und Datenstand */
+type Known='yes'|'no'|'unknown';
+async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string}|null,known?:Known,total?:number)=>void){
+ const response=await fetch('/api/search?'+query,{signal});
+ if(!response.ok||!response.body){const d=await response.json().catch(()=>({})) as {error?:string};throw Error(d.error||'Die Suche konnte nicht geladen werden.');}
+ const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='';
+ for(;;){
+  const {done,value}=await reader.read();if(done)break;
+  buffer+=decoder.decode(value,{stream:true});
+  for(let i=buffer.indexOf('\n');i>=0;i=buffer.indexOf('\n')){
+   const line=JSON.parse(buffer.slice(0,i)) as {articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string;known?:Known;total?:number};buffer=buffer.slice(i+1);
+   if(line.error)throw Error(line.error);
+   if(line.known)onChunk([],null,line.known,line.total);
+   if(line.articles)onChunk(line.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''})),null);
+   if(line.end)onChunk([],{hasMore:!!line.hasMore,revision:line.revision??''});
+  }
+ }
+}
+/** Sucht im Voraus (erste Seite), ohne etwas anzuzeigen; Umkreissuchen und bereits Vorhandenes werden übersprungen */
+function warmSearch(local:{key:string;around:unknown}){
+ if(local.around)return;
+ const requestKey=searchKey(local.key);
+ if(freshSearch(requestKey)||INFLIGHT.has(requestKey))return;
+ const params=new URLSearchParams(local.key);params.delete('around');params.set('page','1');params.set('part','page');
+ const job=fetchSearch(params.toString()).then(data=>{rememberSearch(requestKey,data);return data;}).finally(()=>INFLIGHT.delete(requestKey));
+ INFLIGHT.set(requestKey,job);job.catch(()=>{});
+}
+function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['place'],pageSize:number){
   const pq:ParseResult=place?place.parse(state.q,state.placeOverrides,state.placeIgnored):{place:null,alts:[],rest:state.q.trim(),key:'',phraseRaw:''};
   /* Ortsfilter: fester erster Ort (state.area), feste weitere Orte (morePlaces) und live im Text erkannte Orte */
   const {placeActive,liveHits,text,more}=deriveFilters(state,pq,ags=>hasScope(ags,geo));
   const within=state.radius&&geo?geo.within(state.radius):null;
-  const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level,future:!!state.future,noformal:!!state.noformal,allterms:!!state.allterms};
+  const snapshot:SearchSnapshot={q:state.q.trim(),text:text.trim(),area:state.area,areaSrc:state.area?state.areaSrc:'',radius:state.radius?{...state.radius}:null,thema:state.thema,monat:state.monat,von:state.von,bis:state.bis,scope:state.scope,more,status:state.status,level:state.level,future:!!state.future,noformal:!!state.noformal,allterms:!!state.allterms,exact:!!state.exact};
   /* Kreisfreie Städte (Kreisschlüssel ohne Umfangwahl) zählen immer mit ihrer Stadt; mit Umkreis ist das Gebiet nur dessen Mittelpunkt; gesucht wird in allen Gebieten im Umkreis */
   const area=state.radius?'':state.area;
   /* Ohne „inkl. Zukunft“ endet der Zeitraum heute (sofern kein eigenes Enddatum gesetzt ist) */
   const today=new Date().toISOString().slice(0,10),to=state.bis||(state.future?'':today);
-  const params=new URLSearchParams({q:queryText(text,state.allterms),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
+  const params=new URLSearchParams({q:canonicalQuery(queryText(text,state.allterms)),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
   if(state.noformal)params.set('noformal','1');
+  if(state.exact)params.set('exact','1');
   if(pageSize!==20)params.set('size',String(pageSize));
   if(more.length&&!state.radius)params.set('more',more.map(m=>m.ags+':'+(m.ags.length===5&&!hasScope(m.ags,geo)?'with':m.scope)).join(','));
   /* Umkreis: Der Schlüssel der Anfrage nennt nur den Kreis; welche Gebiete darin liegen, setzt der Abruf selbst ein (siehe unten) */
   if(state.radius)params.set('around',[state.radius.ags,state.radius.km,Math.round(state.radius.x??0),Math.round(state.radius.y??0),within?within.set.size:'-'].join(':'));
   const spec:FilterSpec={area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
   return {pq,placeActive,liveHits,text,terms:toTerms(text),pageSize,snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString(),around:state.radius?{set:within?.set??null,level:state.level}:null};
- },[state,geo,place,pageSize]);
+ }
+function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveResults {
+ const {geo,place}=useData();
+ const local=useMemo(()=>computeLocal(state,geo,place,pageSize),[state,geo,place,pageSize]);
  const [navigation,setNavigation]=useState({key:'',page:1}),[attempt,setAttempt]=useState(0);
  const page=navigation.key===local.key?navigation.page:1;
  const revision=useRef({key:'',value:''});
@@ -314,48 +401,163 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):SearchR
   covered.current[level]=new Set(data.coverage.map(c=>c.ags));setCover(c=>({...c,[level]:data}));return data;
  },[]);
  useEffect(()=>{if(!active||cover[state.level])return;const abort=new AbortController();loadCover(state.level,abort.signal).catch(()=>{});return()=>abort.abort();},[active,state.level,cover,loadCover]);
- type ResponseData={articles:Article[];total:number;areaCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
- const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string}>({key:'',data:null,error:''});
- const requestKey=local.key+'&page='+page+'&attempt='+attempt;
- /* Die erste Suche geht sofort hinaus; danach wartet jede neue 180 ms, ob noch getippt wird */
- const sent=useRef(false);
+ /* Abfrage für Seite oder Zähler. Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs).
+    Welche Gebiete Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
+ const buildQuery=useCallback(async(page:number,part:'page'|'facets'|'stream',signal:AbortSignal)=>{
+  const params=new URLSearchParams(local.key);params.delete('around');params.set('part',part);
+  if(part!=='facets'){params.set('page',String(page));if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);}
+  if(local.around){
+   const {set,level}=local.around;
+   if(!set)params.set('within','');
+   else{
+    let known=covered.current[level];
+    if(!known&&await loadCover(level,signal))known=covered.current[level];
+    const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
+   }
+  }
+  return params.toString();
+ },[local,loadCover]);
+ const [remote,setRemote]=useState<{key:string;data:ResponseData|null;error:string;final:boolean;known?:Known;knownTotal?:number}>({key:'',data:null,error:'',final:true});
+ /* Dauert die Suche über 0,5 s: sind schon Treffer da („partial“), erscheinen sie und weitere fliegen ein; sonst („ring“) steht
+    der Ladering und alles erscheint erst auf einmal, wenn die Suche samt genauer Zahl fertig ist. Vorher passiert nichts. */
+ const [mode,setMode]=useState<{key:string;value:'ring'|'partial'}>({key:'',value:'partial'});
+ const requestKey=searchKey(local.key,page,attempt);
+ /* Wann gesucht wird: Die erste Suche geht sofort hinaus. Beim Tippen wird erst nach 400 ms Ruhe und erst ab 3 Buchstaben
+    im Voraus gesucht (die Kurzsuchen sind am teuersten und bleiben unsichtbar, die Seite wechselt erst nach Enter). Enter
+    oder die Auswahl aus der Liste starten die Suche sofort bzw. nutzen die schon laufende Vorab-Suche. Filter und Sortierung
+    warten 180 ms. Fertige Antworten merkt sich der Browser 5 Minuten, damit Löschen und Zurückgehen sofort gehen. */
+ const sent=useRef(false),lastText=useRef(''),flush=useRef<(()=>void)|null>(null),confirm=useRef<(()=>void)|null>(null);
+ /* Enter ist der Startpunkt der 0,5-s-Regel: läuft die Suche schon (Vorab-Suche beim Tippen), zeigt Enter vorhandene Treffer
+    sofort und zählt die 0,5 s ab jetzt; sonst startet Enter die Suche (flush) */
+ useEffect(()=>{
+  const on=()=>{if(flush.current)flush.current();else confirm.current?.();};
+  window.addEventListener('rm:search-confirmed',on);
+  return()=>window.removeEventListener('rm:search-confirmed',on);
+ },[]);
  useEffect(()=>{
   if(!active)return;
-  const delay=sent.current?180:0;sent.current=true;
-  const abort=new AbortController(),timer=setTimeout(async()=>{
-   const params=new URLSearchParams(local.key);params.delete('around');params.set('page',String(page));
-   if(page>1&&revision.current.key===local.key&&revision.current.value)params.set('revision',revision.current.value);
-   try{
-    /* Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs). Welche Gebiete
-       Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
-    if(local.around){
-     const {set,level}=local.around;
-     if(!set)params.set('within','');
-     else{
-      let known=covered.current[level];
-      if(!known&&await loadCover(level,abort.signal))known=covered.current[level];
-      const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
+  const hit=freshSearch(requestKey);
+  if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};setRemote({key:requestKey,data:hit,error:'',final:true});return;}
+  const abort=new AbortController();let timer=0,decide=0,started=false,streamed=false,finished=false;
+  const acc:Article[]=[];let knownNow:Known='unknown',knownTotal:number|undefined;
+  /* Nach 0,5 s: schon Treffer da (Strom): zeigen und weitere einfliegen lassen; sonst Ring bis alles fertig ist */
+  const decideNow=()=>{if(!finished&&!abort.signal.aborted)setMode({key:requestKey,value:streamed&&(acc.length||knownNow==='yes')?'partial':'ring'});};
+  const onConfirm=()=>{
+   if(!started||finished||abort.signal.aborted)return;
+   clearTimeout(decide);
+   if(streamed&&(acc.length||knownNow==='yes'))setMode({key:requestKey,value:'partial'});
+   else{setMode({key:'',value:'partial'});decide=window.setTimeout(decideNow,500);}
+  };
+  confirm.current=onConfirm;
+  const start=()=>{
+   if(started)return;
+   started=true;clearTimeout(timer);flush.current=null;lastText.current=local.text;sent.current=true;
+   /* Strom nur für die erste Seite, neueste zuerst, und wenn nicht schon eine Vorab-Anfrage dafür läuft */
+   streamed=page===1&&new URLSearchParams(local.key).get('sort')==='desc'&&!INFLIGHT.has(requestKey);
+   decide=window.setTimeout(decideNow,500);
+   (async()=>{
+    try{
+     const query=await buildQuery(page,streamed?'stream':'page',abort.signal);
+     let ready:ResponseData;
+     if(streamed){
+      let end={hasMore:false,revision:''};
+      await fetchStream(query,abort.signal,(items,last,known,total)=>{
+       if(last){end=last;return;}
+       /* Vorab-Prüfung der Wortliste: „ja“ heißt, es kommen Treffer, auch wenn noch keiner da ist; bei häufigen Wörtern ohne
+          Filter kommt die genaue Trefferzahl gleich mit */
+       if(known)knownNow=known;
+       if(total!==undefined)knownTotal=total;
+       acc.push(...items);
+       if(!abort.signal.aborted)setRemote({key:requestKey,data:{articles:[...acc],total:0,revision:''} as unknown as ResponseData,error:'',final:false,known:knownNow,knownTotal});
+      });
+      ready={articles:acc,total:0,hasMore:end.hasMore,revision:end.revision} as unknown as ResponseData;
+     }else{
+      /* Läuft für dieselbe Suche schon eine Vorab-Anfrage (Tippen, Überfahren eines Vorschlags), wird deren Antwort genutzt */
+      ready=await (INFLIGHT.get(requestKey)??fetchSearch(query,abort.signal));
      }
-    }
-    const response=await fetch('/api/search?'+params,{signal:abort.signal});
-    const data=await response.json() as ResponseData & {error?:string};
-    if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
+     if(abort.signal.aborted)return;
+     finished=true;
+     revision.current={key:local.key,value:ready.revision};
+     rememberSearch(requestKey,ready);
+     setRemote({key:requestKey,data:ready,error:'',final:true,known:knownNow,knownTotal});
+    }catch(e){if(!abort.signal.aborted){finished=true;setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.',final:true});}}
+   })();
+  };
+  const typing=local.text!==lastText.current,t=local.text.trim();
+  flush.current=start;
+  /* 1 bis 2 neue Buchstaben: noch nicht suchen, nur bei Enter oder Auswahl (flush) */
+  if(!(typing&&t.length>0&&t.length<3))timer=window.setTimeout(start,!sent.current?0:typing&&t?400:180);
+  return()=>{clearTimeout(timer);clearTimeout(decide);abort.abort();if(flush.current===start)flush.current=null;if(confirm.current===onConfirm)confirm.current=null;};
+ },[active,local.key,page,attempt,requestKey,buildQuery]);
+ /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht) */
+ const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});
+ const modeNow=mode.key===requestKey?mode.value:null;
+ /* Zähler starten erst, wenn die Seite fertig ist: die Zählabfrage teilt sich die Datenbank mit dem Strom und würde die Suche
+    nach weiteren Treffern ausbremsen */
+ const pageReady=(remote.key===requestKey&&remote.final&&!!remote.data)||(active&&!!freshSearch(requestKey));
+ useEffect(()=>{
+  if(!active||!pageReady)return;
+  const hit=freshFacets(local.key);
+  if(hit){setFacets({key:local.key,data:hit});return;}
+  const abort=new AbortController();
+  (async()=>{
+   try{
+    const query=await buildQuery(1,'facets',abort.signal);
+    const data=await fetchSearch(query,abort.signal) as Facets;
     if(abort.signal.aborted)return;
-    revision.current={key:local.key,value:data.revision};
-    setRemote({key:requestKey,data:{...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))},error:''});
-   }catch(e){if(!abort.signal.aborted)setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.'});}
-  },delay);
-  return()=>{clearTimeout(timer);abort.abort();};
- },[active,local.key,page,attempt,requestKey,loadCover]);
- const loading=remote.key!==requestKey;
+    FACETS_CACHE.delete(local.key);FACETS_CACHE.set(local.key,{at:Date.now(),data});if(FACETS_CACHE.size>40)FACETS_CACHE.delete(FACETS_CACHE.keys().next().value as string);
+    setFacets({key:local.key,data});
+   }catch{/* Zähler fehlen, die Treffer bleiben nutzbar */if(!abort.signal.aborted)setFacets({key:local.key,data:null});}
+  })();
+  return()=>abort.abort();
+ },[active,pageReady,local.key,attempt,buildQuery]);
+ /* Zähler der vorigen Suche wären falsch: bis die neuen da sind, bleiben Karte und Filter ohne Zahlen */
+ const exact=facets.key===local.key?facets.data:null;
+ const fx=exact;
+ /* Liegt die Antwort schon im Zwischenspeicher, gilt sie sofort als fertig: kein „lädt“, kein Ring, kein Aufblitzen */
+ const cached=active?freshSearch(requestKey):null;
+ const rd=remote.key===requestKey?remote:null;
+ /* Zähler abgeschlossen (auch fehlgeschlagen): erst dann zeigt eine lange Suche („ring“) ihre Treffer */
+ const settled=facets.key===local.key;
+ /* Ring-Fall: Treffer erst mit den Zählern zeigen. Ohne einen einzigen Treffer gibt es nichts zu zählen: sofort „keine Treffer“ */
+ const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final?!(modeNow==='ring'&&!settled&&rd.data.articles.length>0):(modeNow==='partial'&&(rd.data.articles.length>0||rd.known==='yes')))));
+ /* Eine Antwort aus dem Zwischenspeicher gilt sofort als fertig, außer sie stammt aus dieser lang laufenden Suche selbst (Ring): dann erst mit den Zählern */
+ const cachedReady=!!cached&&!(modeNow==='ring'&&!settled&&cached.articles.length>0);
+ const loading=!cachedReady&&!adoptable;
  const lastGood=useRef<ResponseData|null>(null);
- if(!loading&&remote.data)lastGood.current=remote.data;
+ if(!loading&&(cached||remote.data))lastGood.current=cached??remote.data;
  /* Beim Nachladen die bisherigen Treffer stehen lassen, statt die Liste zu leeren */
- const data=loading?lastGood.current:remote.data;
+ const data=loading?lastGood.current:(cached??remote.data);
  const setPage=useCallback((p:number)=>setNavigation({key:local.key,page:p}),[local.key]);
  const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
- const error=loading?'':remote.error;
- return useMemo(()=>({...local,results:data?.articles??EMPTY_LIST,total:data?.total??0,areaCounts:data?.areaCounts??EMPTY_MAP,themaCounts:data?.themaCounts??EMPTY_MAP,monatCounts:data?.monatCounts??EMPTY_MAP,statusCounts:data?.statusCounts??EMPTY_MAP,statusTotal:Object.values(data?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,loading,error,page,setPage,retry,cover,state.level]);
+ const error=loading||cached?'':remote.error;
+ /* Genaue Zahl, sobald die Zähler da sind; davor die gedeckelte Zählung der Seite */
+ /* Gibt es keine weitere Seite, ist die Zahl auch ohne die Zähler bekannt; sonst fehlt sie, bis die Zähler da sind */
+ const known=data&&data.hasMore===false?(page-1)*pageSize+data.articles.length:null;
+ /* Bei häufigen Wörtern ohne Filter nennt der Server die genaue Zahl vorab (Wortliste), Karte und Filterzähler folgen */
+ const preTotal=rd?.knownTotal;
+ const total=exact?exact.total:known??preTotal??0,pendingTotal=!exact&&known===null&&preTotal===undefined;
+ /* Mit genauer Zahl zählt die Seitenzahl, davor meldet die Antwort selbst, ob noch eine Seite folgt */
+ const hasMore=exact?page<Math.ceil(exact.total/pageSize):!!data?.hasMore;
+ /* Nächste Seite still im Hintergrund holen, damit „Weiter“ sofort geht (die Anfrage nutzt dieselbe laufende Abfrage wie der Klick) */
+ useEffect(()=>{
+  if(!active||!pageReady||!hasMore||loading)return;
+  const next=searchKey(local.key,page+1,attempt);
+  if(freshSearch(next)||INFLIGHT.has(next))return;
+  const abort=new AbortController();
+  (async()=>{
+   try{
+    const query=await buildQuery(page+1,'page',abort.signal);
+    if(abort.signal.aborted||freshSearch(next)||INFLIGHT.has(next))return;
+    const job=fetchSearch(query).then(d=>{rememberSearch(next,d);return d;}).finally(()=>INFLIGHT.delete(next));
+    INFLIGHT.set(next,job);job.catch(()=>{});
+   }catch{/* Vorladen ist nur eine Hilfe */}
+  })();
+  return()=>abort.abort();
+ },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
+ /* Gibt es Treffer? ja: mindestens einer ist da; nein: die Suche ist zu Ende ohne Treffer; unbekannt: sie läuft noch */
+ const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0||(rd?.known==='yes'&&!rd.final)?'yes':(cached||rd?.final)?'no':'unknown';
+ return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,badgeCounts:fx?.badgeCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

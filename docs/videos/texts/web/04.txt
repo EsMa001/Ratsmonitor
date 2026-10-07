@@ -1,0 +1,8 @@
+Normalerweise findet die Suche auch Wörter, die Ihren Begriff enthalten.
+Manchmal möchten Sie aber genau dieses Wort.
+Dafür gibt es im Filterfenster die Option Exakter Begriff.
+Sie findet nur ganze Wörter, ohne Wortteile.
+Sie können auch mehrere Begriffe nacheinander eingeben, zum Beispiel Radweg und Fahrradstraße.
+Jeder Begriff erscheint als eigene Marke.
+Normalerweise genügt es, wenn einer der Begriffe vorkommt.
+Mit der Option Begriffe kombinieren müssen alle Begriffe vorkommen.

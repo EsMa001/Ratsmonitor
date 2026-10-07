@@ -31,7 +31,7 @@ export function MapPanel({ active }: { active: boolean }) {
   const { geo, geoError } = useData();
   const search = useSearch();
   const { state, mapRef } = search;
-  const { areaCounts, coverage, snapshot, loading, pending } = useSearchResults();
+  const { areaCounts, badgeCounts, coverage, snapshot, loading, pending } = useSearchResults();
   const filtered = hasFilters(snapshot);
   /* Kartenmodus (Suchleiste unten) erst, wenn die Suche bestätigt ist (Enter, Vorschlag gewählt oder Feld verlassen); während des Tippens bleibt sie stehen */
   const [typing, setTyping] = useState(false);
@@ -173,12 +173,13 @@ export function MapPanel({ active }: { active: boolean }) {
 
   useEffect(() => {
     const set = new Set(hits);
-    const levels = Object.fromEntries(coverage.map((c) => [c.ags, set.has(c.ags) ? hitLevel(areaCounts[c.ags] || 0, [t1, t2], filtered) : 0]));
+    /* Startseite (Kartenmodus noch nicht gestartet): Gemeinden unverändert eingefärbt, erst nach bestätigter Suche (Enter) nur die mit Treffern */
+    const levels = Object.fromEntries(coverage.map((c) => [c.ags, !explore ? 3 : set.has(c.ags) ? hitLevel(areaCounts[c.ags] || 0, [t1, t2], filtered) : 0]));
     /* „inkl. Kreis“ bei einer Gemeinde: den ganzen Kreis einfärben (Kreisebene), sonst die gewählte Ebene */
     const level = state.area.length === 8 && state.scope === "with" && !state.radius ? "district" : state.level;
     engine?.update(levels, state.area, state.radius, coverage.map((c) => c.ags), level);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope]);
+  }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope, explore]);
 
   /* Kartenmodus, sobald eine Suche oder ein Filter bestätigt ist; sind alle entfernt, wieder der normale Modus */
   useEffect(() => {
@@ -197,11 +198,12 @@ export function MapPanel({ active }: { active: boolean }) {
     engine?.setStyle(style);
   }, [engine, style]);
 
-  /* Kartenmodus: Abzeichen mit der Trefferzahl je Gemeinde */
+  /* Kartenmodus: Abzeichen mit der Trefferzahl. Jede Karte zählt genau einmal (badgeCounts), damit die Zahlen auf der Karte
+     zusammen die Trefferzahl ergeben; die Färbung nutzt weiter areaCounts, dort steht ein Samtgemeinde-Bericht bei jeder Mitgliedsgemeinde. */
   useEffect(() => {
-    engine?.setExplore(explore, explore ? Object.fromEntries(hits.map((a) => [a, areaCounts[a]])) : null);
+    engine?.setExplore(explore, explore ? { ...badgeCounts } : null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, explore, hits.join(","), areaCounts]);
+  }, [engine, explore, badgeCounts]);
 
   /* Suchgesteuertes Zentrieren: Umkreis → Kreis; Ort → Ort bzw. Kreis bei „inkl. Kreis“; sonst alle Treffer; ohne Suche Deutschland */
   const hitsKey = hits.join(",");
@@ -213,6 +215,8 @@ export function MapPanel({ active }: { active: boolean }) {
         .slice(0, 3)
         .map((a) => `${geo?.info(a).name ?? a} (${areaCounts[a]})`)
         .join(", ")}`;
+  /* Im Kartenmodus liegt die Suchleiste unten (20 px Abstand): beim Zentrieren bleibt dieser Streifen frei, die Gemeinden mit Treffern liegen darüber */
+  if (engine) engine.bottomInset = explore ? barH + 20 : 0;
   const moreKey = (snapshot.more ?? []).map((m) => m.ags).join(",");
   const center = (toHits = false) => {
     if (!engine) return;
@@ -227,9 +231,10 @@ export function MapPanel({ active }: { active: boolean }) {
     engine.focusArea("");
   };
   useEffect(() => {
-    if (!loading && !pending) center();
+    /* Erst nach Enter (Kartenmodus) auf die Treffer zentrieren; ohne Suche und Filter zurück auf Deutschland */
+    if (!loading && !pending && (explore || !filtered)) center();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, loading, pending, hitsKey, state.area, state.scope, state.radius, moreKey, filtered]);
+  }, [engine, loading, pending, hitsKey, state.area, state.scope, state.radius, moreKey, filtered, explore]);
 
   /* Platz für Vorschläge und Filter innerhalb der Karte (unterhalb der mittigen Suchleiste, im Kartenmodus oberhalb) */
   /* Suchleiste unten: im Kartenmodus und auf dem Handy, sobald gesucht oder gefiltert wurde */

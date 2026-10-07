@@ -21,14 +21,15 @@ export interface SearchSnapshot {
   future?: boolean;
   noformal?: boolean;
   allterms?: boolean;
+  exact?: boolean;
 }
 
 
 /** Signatur einer Suche, um gespeicherte Suchen wiederzuerkennen */
-export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more"> & { future?: boolean; noformal?: boolean; allterms?: boolean }): string {
+export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more"> & { future?: boolean; noformal?: boolean; allterms?: boolean; exact?: boolean }): string {
   const t = norm(s.text || "").split(/\s+/).filter(Boolean).sort().join(" ");
   const more = (s.more || []).map((m) => `${m.ags}:${m.scope}`).sort().join(",");
-  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|") + (s.future ? "|future" : "") + (s.noformal ? "|noformal" : "") + (s.allterms ? "|all" : "");
+  return [t, s.area || "", s.radius ? `${s.radius.ags}@${s.radius.km}` : "", s.thema || "", s.monat || "", (s.von || "") + "~" + (s.bis || ""), s.status || "", s.level || "city", more].join("|") + (s.future ? "|future" : "") + (s.noformal ? "|noformal" : "") + (s.allterms ? "|all" : "") + (s.exact ? "|exact" : "");
 }
 
 /** Suchtext für die Abfrage. Das Backend verknüpft Kommas (zwischen Chips) mit ODER, Leerzeichen mit UND.
@@ -36,6 +37,21 @@ export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "
  *  Orte/Gebiete sind nicht Teil des Texts und davon unberührt. */
 export function queryText(text: string, all?: boolean): string {
   return all ? text.replace(/[,;|]/g, " ").split(/\s+/).filter(Boolean).join(" ") : text;
+}
+
+/* Dieselbe Normalisierung wie im Backend (monitor-search.mjs): klein, ohne Akzente, ß als ss */
+const normQ = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replaceAll("ß", "ss");
+const FILLER_Q = new Set(["und", "oder", "der", "die", "das", "den", "dem", "des", "ein", "eine", "einer", "in", "im", "am", "an", "zu", "zum", "zur", "von", "vom", "fur", "mit", "bei", "auf", "aus", "nach"]);
+/** Kanonische Schreibweise der Abfrage: gleiche Suchen (Groß-/Kleinschreibung, Leerzeichen, Reihenfolge der Wörter und
+ *  der ODER-Teile, Füllwörter) ergeben denselben Schlüssel und treffen damit den Zwischenspeicher im Browser und auf dem Server. */
+export function canonicalQuery(q: string): string {
+  const groups = q
+    .split(/[,;|]|\s+oder\s+/i)
+    .map((g) => normQ(g).split(/\s+/).filter((w) => w && !FILLER_Q.has(w)))
+    .filter((g) => g.length)
+    .slice(0, 8)
+    .map((g) => g.slice(0, 12));
+  return [...new Set(groups.map((g) => [...new Set(g)].sort().join(" ")))].sort().join(", ");
 }
 
 export function hasFilters(s: SearchSnapshot): boolean {
