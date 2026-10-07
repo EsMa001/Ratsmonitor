@@ -37,7 +37,8 @@ const RUNNERS={
   const samples=(await db.prepare(`SELECT region_id regionId,min(${title}) title,event_date date,min(${committee}) committee,count(*) count,group_concat(id,' ') ids ${group} ORDER BY count(*) DESC,region_id,event_date DESC LIMIT ?`).bind(SAMPLES).all()).results;
   return {count:Number(total.extra),groups:Number(total.groups),samples:samples.map(s=>({...s,ids:String(s.ids).split(' ')}))};
  },
- truncatedTitle:rows(`${canonical} AND (${title} GLOB '*;' OR ${title} GLOB '*:' OR ${title} GLOB '*,' OR ${title} GLOB '* -')`),
+ // A title that ends with a dash is a style of some sources ("Protokoll … - öffentlicher Teil -"), not a cut.
+ truncatedTitle:rows(`${canonical} AND (${title} GLOB '*;' OR ${title} GLOB '*:' OR ${title} GLOB '*,')`),
  emptyTitle:rows(`${canonical} AND ${title}=''`),
  noEvents:rows(`${canonical} AND (json_type(payload,'$.events')<>'array' OR json_array_length(payload,'$.events')=0)`),
  badEventDate:rows(`date(event_date) IS NULL OR event_date NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' OR event_date<'1990-01-01' OR event_date>date('now','+2 years')`),

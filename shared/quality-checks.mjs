@@ -7,7 +7,7 @@ export const QUALITY_GROUPS=Object.freeze({duplicates:'Doppelungen',defects:'Def
 export const QUALITY_CHECKS=Object.freeze([
  {id:'dupSharedSystem',group:'duplicates',name:'Derselbe Vorgang unter mehreren Gebieten',explain:'Dieselbe Quelladresse mit demselben Titel ist unter zwei oder mehr Gebieten gespeichert: ein gemeinsam genutztes System (Verband, Amt, Verwaltungsgemeinschaft), dessen Leser die Gremien der Mitglieder nicht trennt. Jedes betroffene Gebiet zeigt den fremden Punkt mit. Zählt die überzähligen Berichte.'},
  {id:'emptyTitle',group:'defects',name:'Ohne Titel',explain:'Weder amtlicher Titel noch Titel vorhanden.'},
- {id:'truncatedTitle',group:'defects',name:'Titel abgeschnitten',explain:'Der Titel endet mit „;“, „:“, „,“ oder „-“: der Leser hat nur den ersten Teil übernommen („Vollzug des Baugesetzbuches (BauGB);“).'},
+ {id:'truncatedTitle',group:'defects',name:'Titel abgeschnitten',explain:'Der Titel endet mit „;“, „:“ oder „,“: der Leser hat nur den ersten Teil übernommen („Vollzug des Baugesetzbuches (BauGB);“, „2. Lesung:“).'},
  {id:'noEvents',group:'defects',name:'Ohne Sitzungstermin',explain:'Kein Sitzungseintrag im Datensatz; der Bericht erscheint in keinem Zeitraum.'},
  {id:'badEventDate',group:'defects',name:'Sitzungsdatum ungültig',explain:'Spaltendatum kein gültiger Tag oder außerhalb von 1990 bis zwei Jahre in der Zukunft.'},
  {id:'eventDateMismatch',group:'defects',name:'Spaltendatum weicht vom Datensatz ab',explain:'Die Spalte event_date (Listen, Zeiträume) nennt einen anderen Tag als der Datensatz selbst.'},
