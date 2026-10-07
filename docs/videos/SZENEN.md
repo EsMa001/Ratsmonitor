@@ -46,3 +46,10 @@ Das Konzept gilt auch für das Handy: Videos fürs Handy entstehen aus denselben
 ## Kernsätze (kurze Fassung)
 
 In `kapitel/<id>/lang.txt` markiert ein `*` vor dem `@` den Kernsatz (1 bis 2 je Kapitel): `*@szene.schritt Satz`. Die lange Fassung nimmt alle Sätze, die kurze (`"text": "kurz"` in der Videodatei) nur die markierten, wenn es keine eigene `kurz.txt` gibt. So bleibt ein Text für beide Längen, Änderungen gibt es nur an einer Stelle. Neue Kapitel sollen Kernsätze markieren; der erste markierte Satz trägt den Nutzen, der zweite die Funktion oder die Zahl. Die Kernsätze müssen allein verständlich sein, weil die übrigen entfallen.
+
+## Keine Blitzbilder (Regeln 9 und 10)
+
+9. **Vorbereiten gehört in `setup`**, nicht in den ersten Schritt: warten, bis die Seite fertig ist, in die Zielposition scrollen (`behavior: "instant"`), Elemente markieren. `setup` wird nicht aufgenommen.
+10. **Seitenwechsel und Laden nur in `H.hidden(() => …)`**: alles darin wird nicht aufgenommen, im Clip entsteht ein harter Schnitt statt eines Ladebildschirms. Nie einen Schritt starten, solange die Seite noch lädt oder scrollt.
+
+`build-video` ruft am Ende `tools/check.py` auf. Es meldet jedes Bild, das nur kurz (unter 0,5 s) zwischen zwei Schnitten steht, als WARNUNG mit Zeitpunkt. Eine Warnung bedeutet: Szene korrigieren und neu aufnehmen, bevor das Video gezeigt wird. Neue Szenen immer so prüfen.

@@ -50,13 +50,15 @@ const openFirstArticle = async () => { const href = await page.locator("article 
 const nodes = async () => { const loc = page.locator("[data-node]"); const n = await loc.count(); const out = []; for (let i = 0; i < n; i++) { const b = await loc.nth(i).boundingBox(); if (b && b.y > 110 && b.y + b.height < 690 && b.x > 60 && b.x + b.width < 1180) out.push({ b, a: b.width * b.height }); } return out.sort((x, y) => y.a - x.a); };
 const tapNode = async (rank) => { const o = (await nodes())[rank]; if (!o) return; await move(o.b.x + o.b.width / 2, o.b.y + o.b.height / 2); await sleep(250); await page.mouse.down(); await sleep(60); await page.mouse.up(); };
 const dragNode = async (rank, dx, dy) => { const o = (await nodes())[rank]; if (!o) return; const x = o.b.x + o.b.width / 2, y = o.b.y + o.b.height / 2; await move(x, y); await sleep(250); await page.mouse.down(); await move(x + dx, y + dy, 36); await page.mouse.up(); };
-const H = { sleep, loaded, calc, go, home, move, click, role, clickRole, clickText, type, search, scrollTo, openFirstArticle, tapNode, dragNode, page, BASE };
+/* hidden(fn): fn läuft, ohne dass Bilder aufgenommen werden (Seitenwechsel, Laden); im Clip entsteht ein harter Schnitt statt eines Ladebildschirms */
+const hidden = async (fn) => { paused = true; await sleep(250); try { await fn(); } finally { await sleep(150); paused = false; } };
+const H = { hidden, sleep, loaded, calc, go, home, move, click, role, clickRole, clickText, type, search, scrollTo, openFirstArticle, tapNode, dragNode, page, BASE };
 
 await home();
 if (sc.setup) await sc.setup(H, P);
 await sleep(1000);
-const frames = []; let capturing = true;
-const cap = (async () => { while (capturing) { const ts = Date.now(); try { const buf = await page.screenshot({ type: "jpeg", quality: 85 }); const n = frames.length; frames.push(ts); writeFileSync(`${OUT}/raw/f${String(n).padStart(5, "0")}.jpg`, buf); } catch {} } })();
+const frames = []; let capturing = true, paused = false;
+const cap = (async () => { while (capturing) { if (paused) { await sleep(20); continue; } const ts = Date.now(); try { const buf = await page.screenshot({ type: "jpeg", quality: 85 }); const n = frames.length; frames.push(ts); writeFileSync(`${OUT}/raw/f${String(n).padStart(5, "0")}.jpg`, buf); } catch {} } })();
 const beats = []; let failed = 0;
 const BEATS = typeof sc.beats === "function" ? sc.beats(P) : sc.beats;
 for (const [name, fn, hold = 1] of BEATS) {
@@ -70,4 +72,4 @@ let commit = ""; try { commit = execSync("git rev-parse --short HEAD", { cwd: ne
 writeFileSync(`${OUT}/clip.json`, JSON.stringify({ id: ID, key: KEY, params: P, format: FORMAT, commit, recorded: new Date().toISOString(), frames, beats }));
 if (failed) console.log(`ACHTUNG: ${failed} Schritt(e) fehlgeschlagen, Clip nicht verwenden`);
 console.log("fertig", KEY, "Bilder", frames.length, "Schritte", beats.map((b) => `${b.name} ${((b.end - b.start) / 1000).toFixed(1)}s`).join(", "));
-if (failed) process.exit(1);
+if (failed) { rmSync(`${OUT}/clip.json`, { force: true }); process.exit(1); }  /* kaputter Clip gilt als fehlend, build-video verwendet ihn nie */

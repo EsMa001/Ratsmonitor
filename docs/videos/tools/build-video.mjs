@@ -72,4 +72,5 @@ for (const c of chapters) {
   run("python3", [`${T}compose.py`, d, `c${n}`]);
 }
 run("python3", [`${T}assemble.py`, video, def.ausgabe || video, "3", ...(karten ? [] : ["keine"])]);
+run("python3", [`${T}check.py`, `${O}/${def.ausgabe || video}.mp4`]);
 console.log(`Fertig: ${O}/${def.ausgabe || video}.mp4`);
