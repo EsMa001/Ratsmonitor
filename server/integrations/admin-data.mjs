@@ -1,6 +1,7 @@
 import {processingState,stageColumns} from './processing-status.mjs';
 import {lockedUntil} from './import-lock.mjs';
 import {atRevision} from './revision-cache.mjs';
+import {FIRST_DAY_SQL,LAST_DAY_SQL} from './admin-timeline.mjs';
 import {CATALOG as regions} from '../../shared/catalog.mjs';
 import {LABELS} from '../../shared/labels.mjs';
 import {sourceHealth,REVIEW_FILTERS} from '../../shared/admin.mjs';
@@ -9,7 +10,7 @@ import {SOURCES} from './regions.mjs';
 import {ANALYSIS_PENDING_SQL} from './manual-analysis.mjs';
 import {accessOfSource,accessLabel,channelOf} from '../../shared/source-access.mjs';
 import robotsVerdicts from './source-robots.json' with {type:'json'};
-import openAccess from './source-access.json' with {type:'json'};
+import atlas from './source-atlas.json' with {type:'json'};
 const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
 const conditions={labels:"coalesce(json_extract(payload,'$.classification.primary'),'unklar')='unklar'",status:"status='unknown'",identity:"json_extract(payload,'$.identity.conflict')=1",summaries:"coalesce(json_extract(payload,'$.documentIssue'),'')!='' OR coalesce(json_extract(payload,'$.summaryIssue'),'')!='' OR json_extract(payload,'$.contentAnalysis.status') IN ('insufficient_source','failed','stale') OR json_extract(payload,'$.contentAnalysis.reason') IS NOT NULL"};
 const configuredSources=[...SOURCES.map(s=>({...s,method:s.id==='recklinghausen'?'official-api':'scraper'})),...NRW_SOURCES,{id:'muenster',method:'oparl',system:'https://oparl.stadt-muenster.de/system'}];
@@ -17,8 +18,8 @@ const configuredSources=[...SOURCES.map(s=>({...s,method:s.id==='recklinghausen'
 const configuredById=new Map([...configuredSources].reverse().map(s=>[s.id,s]));
 // Access of programs per area (shared/source-access.mjs: OParl, then API, then HTML pages, where robots.txt gives the
 // label; then a technical block): of a connected source from its reader and the robots.txt verdict of its path
-// (source-robots.json), of an area without source from its last check (source-access.json, scripts/dashboard/build.mjs).
-const accessFields=(id,config)=>{const connected=!!config&&config.method!=='pending',access=connected?accessOfSource(config,robotsVerdicts.sources?.[id]):openAccess.areas?.[id]||'none';return {access,accessLabel:accessLabel(access),channel:connected?channelOf(config).name:''};};
+// (source-robots.json), of an area without source from its last check (source-atlas.json, scripts/dashboard/build.mjs).
+const accessFields=(id,config)=>{const connected=!!config&&config.method!=='pending',access=connected?accessOfSource(config,robotsVerdicts.sources?.[id]):atlas.areas?.[id]?.z||'none';return {access,accessLabel:accessLabel(access),channel:connected?channelOf(config).name:''};};
 const readJson=s=>{try{return JSON.parse(s||'{}');}catch{return {};}};
 const label="coalesce(json_extract(payload,'$.classification.primary'),'unklar')";
 // Figure of region_stats that counts the reports of a review filter. "status" has none: it is counted on its index.
@@ -65,13 +66,15 @@ export async function adminReview(db,issue='labels',region='all',{total}={}){
 // Figures of the reports that are added up over all areas. Each name is a column of the scan below.
 const TOTALS=['contentSummaries','insufficient','stale','aiLabels','weightedKeywords','aiSummaries','qualityPassed','updated7d','pdfArticles','conflicts','textIssues','pendingAnalysis'];
 // Figures of one area from its stored reports; every one is a sum over the area's canonical reports.
-const FIGURES=`coalesce(sum(json_extract(payload,'$.contentAnalysis.status')='completed'),0) contentSummaries,coalesce(sum(json_extract(payload,'$.labelAssessments.ai.primary') IS NOT NULL),0) aiLabels,coalesce(sum(json_extract(payload,'$.weightedKeywords.status')='completed'),0) weightedKeywords,coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) aiSummaries,coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) qualityPassed,coalesce(sum(EXISTS(SELECT 1 FROM json_each(json_extract(topics.payload,'$.documents')) d WHERE json_extract(d.value,'$.kind')='application/pdf')),0) pdfArticles,coalesce(sum(json_extract(payload,'$.identity.conflict')=1),0) conflicts,coalesce(sum((${conditions.summaries})),0) textIssues,coalesce(sum(${ANALYSIS_PENDING_SQL}),0) pendingAnalysis,${stageColumns({withRules:false})},${LABELS.map(l=>`coalesce(sum(${label}='${l.id}'),0) AS label_${l.id}`).join(',')}`;
+// Version of the stored figures per area: raising it makes every area count again once (new figures).
+const FIGURES_VERSION=2;
+const FIGURES=`min(${FIRST_DAY_SQL}) firstEvent,max(${LAST_DAY_SQL}) lastEvent,coalesce(sum(json_extract(payload,'$.contentAnalysis.status')='completed'),0) contentSummaries,coalesce(sum(json_extract(payload,'$.labelAssessments.ai.primary') IS NOT NULL),0) aiLabels,coalesce(sum(json_extract(payload,'$.weightedKeywords.status')='completed'),0) weightedKeywords,coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) aiSummaries,coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) qualityPassed,coalesce(sum(EXISTS(SELECT 1 FROM json_each(json_extract(topics.payload,'$.documents')) d WHERE json_extract(d.value,'$.kind')='application/pdf')),0) pdfArticles,coalesce(sum(json_extract(payload,'$.identity.conflict')=1),0) conflicts,coalesce(sum((${conditions.summaries})),0) textIssues,coalesce(sum(${ANALYSIS_PENDING_SQL}),0) pendingAnalysis,${stageColumns({withRules:false})},${LABELS.map(l=>`coalesce(sum(${label}='${l.id}'),0) AS label_${l.id}`).join(',')}`;
 /**
  * Figures per area for the overview, from region_stats. Every change of a report raises the revision of its area
  * (triggers of migration 0011); only areas whose revision differs from the one their figures were computed at are read
  * again, a few areas at a time until budgetMs is spent. Areas left over keep their previous figures and are counted in
  * pending; the next call continues with them. The number of reports and "updated in the last seven days" come from
- * indexes on every call and are always current.
+ * indexes on every call and are always current. Figures stored by an older version of FIGURES count as stale.
  * Returns null if the tables are missing (migration not applied): the caller then scans all reports as before.
  */
 export const D1_MAX_PARAMETERS=100;
@@ -89,7 +92,7 @@ export async function regionFigures(db,{now=new Date(),budgetMs=8000,chunkRows=2
  const kept=new Map(stored.results.map(r=>[r.region_id,{revision:Number(r.revision),row:readJson(r.stats)}]));
  const size=new Map(sizes.results.map(r=>[r.region_id,Number(r.n)])),week7=new Map(recent.results.map(r=>[r.region_id,Number(r.n)]));
  // Smallest areas first: most areas are done within the first call, the largest get a query of their own.
- const stale=revisions.results.filter(r=>kept.get(r.region_id)?.revision!==Number(r.revision)).map(r=>({id:r.region_id,revision:Number(r.revision),rows:size.get(r.region_id)||0})).sort((a,b)=>a.rows-b.rows||a.id.localeCompare(b.id));
+ const stale=revisions.results.filter(r=>{const k=kept.get(r.region_id);return k?.revision!==Number(r.revision)||k.row?.v!==FIGURES_VERSION;}).map(r=>({id:r.region_id,revision:Number(r.revision),rows:size.get(r.region_id)||0})).sort((a,b)=>a.rows-b.rows||a.id.localeCompare(b.id));
  let done=0;
  while(done<stale.length&&Date.now()-started<budgetMs){
   // D1 binds at most 100 parameters per statement: the ids of one chunk are bound in its IN list.
@@ -98,7 +101,7 @@ export async function regionFigures(db,{now=new Date(),budgetMs=8000,chunkRows=2
   const scan=await db.prepare(`SELECT region_id,count(*) count,${FIGURES} FROM topics WHERE ${canonical} AND region_id IN (${chunk.map(()=>'?').join(',')}) GROUP BY region_id`).bind(...chunk.map(c=>c.id)).all();
   const found=new Map(scan.results.map(r=>[r.region_id,r])),at=now.toISOString();
   // An area without canonical reports gets empty figures, so it is not read again until it changes.
-  await db.batch(chunk.map(c=>{const row=found.get(c.id)||{region_id:c.id,count:0};kept.set(c.id,{revision:c.revision,row});return db.prepare('INSERT OR REPLACE INTO region_stats(region_id,revision,computed_at,stats) VALUES(?,?,?,?)').bind(c.id,c.revision,at,JSON.stringify(row));}));
+  await db.batch(chunk.map(c=>{const row={...(found.get(c.id)||{region_id:c.id,count:0}),v:FIGURES_VERSION};kept.set(c.id,{revision:c.revision,row});return db.prepare('INSERT OR REPLACE INTO region_stats(region_id,revision,computed_at,stats) VALUES(?,?,?,?)').bind(c.id,c.revision,at,JSON.stringify(row));}));
   done+=chunk.length;
  }
  const rows=[];
@@ -137,7 +140,7 @@ export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushCo
  const counts={online,unlabelled:sum('label_unklar'),...Object.fromEntries(TOTALS.map(key=>[key==='insufficient'?'summaryInsufficient':key==='stale'?'summaryStale':key,sum(key)])),...Object.fromEntries(Object.entries(other).map(([k,v])=>[k,Number(v||0)])),aliases:Number(stored||0)-online};
  const byCoverage=new Map(coverage.results.map(r=>[r.region_id,readJson(r.payload)]));
  const stages=r=>r?{region_id:r.region_id,total:Number(r.count),rules:Number(r.count)-Number(r.pendingAnalysis),summary:r.summary,aiLabel:r.aiLabel,keywords:r.keywords,insufficient:r.insufficient,stale:r.stale,blocked_summary:r.blocked_summary,blocked_aiLabel:r.blocked_aiLabel,blocked_keywords:r.blocked_keywords,fetchedAt:r.fetchedAt,processedAt:r.processedAt}:{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,blocked_summary:0,blocked_aiLabel:0,blocked_keywords:0,fetchedAt:null,processedAt:null};
- const sources=regions.map(r=>{const config=configuredById.get(r.id),c={method:config?.method||'pending',complete:false,issues:[],...byCoverage.get(r.id)},area=areas.get(r.id);const count=Number(area?.count||0),health=sourceHealth(c,count,now);return {id:r.id,name:r.name,ags:r.ags,land:r.ags.slice(0,2),kind:r.kind,count,pendingAnalysis:Number(area?.pendingAnalysis||0),method:c.method||'pending',attemptStatus:c.attemptStatus||null,processing:stages(area),...health,canImport:!!config&&config.method!=='pending',...accessFields(r.id,config),complete:!!c.complete,lastAttemptAt:c.lastAttemptAt||c.importedAt||null,nextRetryAt:c.nextRetryAt||null,sourceUrl:c.sourceUrl||config?.system||config?.base||null,issues:Array.isArray(c.issues)?c.issues.map(String):[],warnings:Array.isArray(c.warnings)?c.warnings.map(String):[]};});
+ const sources=regions.map(r=>{const config=configuredById.get(r.id),c={method:config?.method||'pending',complete:false,issues:[],...byCoverage.get(r.id)},area=areas.get(r.id);const count=Number(area?.count||0),health=sourceHealth(c,count,now);return {id:r.id,name:r.name,ags:r.ags,land:r.ags.slice(0,2),kind:r.kind,count,firstEventAt:area?.firstEvent||null,lastEventAt:area?.lastEvent||null,pendingAnalysis:Number(area?.pendingAnalysis||0),method:c.method||'pending',attemptStatus:c.attemptStatus||null,processing:stages(area),...health,canImport:!!config&&config.method!=='pending',...accessFields(r.id,config),complete:!!c.complete,lastAttemptAt:c.lastAttemptAt||c.importedAt||null,nextRetryAt:c.nextRetryAt||null,sourceUrl:c.sourceUrl||config?.system||config?.base||null,issues:Array.isArray(c.issues)?c.issues.map(String):[],warnings:Array.isArray(c.warnings)?c.warnings.map(String):[]};});
  const runs=runRows.results.map(r=>{const d=readJson(r.details);return {id:r.id,startedAt:r.started_at,finishedAt:r.finished_at,status:r.status,region:d.region||'muenster',mode:d.mode||'metadata',trigger:d.trigger||'unbekannt',count:typeof(d.count??d.processed)==='number'?(d.count??d.processed):null,issueCount:Array.isArray(d.issues)?d.issues.length:0,abandoned:r.status==='running'&&Date.parse(r.started_at)<now.getTime()-600000};});
  const until=lockedUntil(lockRows.results[0]?.value);
  // The default review list shows the reports without a label; their number is known from the scan.

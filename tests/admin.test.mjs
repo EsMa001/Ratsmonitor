@@ -62,10 +62,10 @@ test('real admin SQL counts canonical articles, separate quality states and sour
  assert.equal(filterAdminSources(result.sources,'data','Münster').length,1);
  // Access of programs (shared/source-access.mjs): every area has a status; robots.txt never labels an interface.
  const muenster=result.sources.find(s=>s.id==='muenster'),hamburg=result.sources.find(s=>s.id==='de-02000000');
- assert.deepEqual([muenster.access,muenster.accessLabel],['oparl','OParl verfügbar']);
- assert.deepEqual([hamburg.access,hamburg.accessLabel,hamburg.channel],['api','API verfügbar','CKAN']);
+ assert.deepEqual([muenster.access,muenster.accessLabel],['oparl','Ja · OParl']);
+ assert.deepEqual([hamburg.access,hamburg.accessLabel,hamburg.channel],['api','Ja · Schnittstelle (API)','CKAN']);
  assert.ok(result.sources.every(s=>s.access&&s.accessLabel),'a status for every area');
- assert.ok(filterAdminSources(result.sources,'robots').every(s=>s.access==='robots'));
+ assert.ok(filterAdminSources(result.sources,'html').every(s=>s.access==='scraping'));
  assert.ok(filterAdminSources(result.sources,'closed').length>0);
  assert.ok(filterAdminSources(result.sources,'closed').every(s=>['blocked','none'].includes(s.access)&&!s.canImport),'no automated access only where no source is connected');
  assert.equal(result.runs[0].abandoned,true);assert.equal(result.lastScheduledAt,'2026-09-27T00:00:00Z');
@@ -99,16 +99,24 @@ test('the overview reads the stored reports once; its figures per area equal the
 });
 test('figures per area are computed step by step within a budget and fall back to one scan without the tables',async()=>{
  reset();const at=new Date('2026-09-27T12:00:00Z');
- insert('a');insert('b',{regionId:'muenster'});insert('c',{regionId:'coesfeld',classification:{primary:'unklar'}});
+ insert('a',{events:[{date:'2026-08-01'},{date:'2026-09-20'}]});insert('b',{regionId:'muenster'});insert('c',{regionId:'coesfeld',classification:{primary:'unklar'}});
  /* Kein Budget: nichts wird gelesen, alle drei Gebiete stehen aus; die Zahl der Berichte stimmt trotzdem */
  const first=await loadAdminData(db,{now:at,review:false,statsBudgetMs:0});
  assert.equal(first.statsPending,3);assert.equal(first.counts.online,3);
  const second=await loadAdminData(db,{now:at,review:false});
  assert.equal(second.statsPending,undefined);assert.equal(second.counts.unlabelled,1);assert.equal(second.sources.find(s=>s.id==='coesfeld').count,1);
+ /* Erster Tagesordnungstag und jüngster Sitzungstag je Gebiet; ohne Tagesordnung nur der Sitzungstag der Spalte */
+ const bb=second.sources.find(s=>s.id==='billerbeck');assert.equal(bb.firstEventAt,'2026-08-01');assert.equal(bb.lastEventAt,'2026-09-20');
+ assert.equal(second.sources.find(s=>s.id==='muenster').firstEventAt,null);assert.equal(second.sources.find(s=>s.id==='muenster').lastEventAt,'2026-09-20');
+ /* Kennzahlen einer älteren Fassung gelten als veraltet und werden neu gezählt */
+ sqlite.prepare("UPDATE region_stats SET stats=json_remove(stats,'$.v','$.firstEvent') WHERE region_id='billerbeck'").run();
+ assert.equal((await loadAdminData(db,{now:at,review:false,statsBudgetMs:0})).statsPending,1);
+ assert.equal((await loadAdminData(db,{now:at,review:false})).sources.find(s=>s.id==='billerbeck').firstEventAt,'2026-08-01');
  /* Ohne Migration 0011: der frühere Lauf über alle Berichte */
  const legacy={prepare(sql){if(/region_revisions|region_stats/.test(sql))return {bind(){return this;},async all(){throw Error('D1_ERROR: no such table: region_revisions');}};return db.prepare(sql);},batch:statements=>Promise.all(statements.map(s=>s.all()))};
  const old=await loadAdminData(legacy,{now:new Date('2026-09-28T12:00:00Z'),review:false});
  assert.equal(old.counts.online,3);assert.equal(old.counts.unlabelled,1);assert.equal(old.statsPending,undefined);
+ assert.equal(old.sources.find(s=>s.id==='billerbeck').firstEventAt,'2026-08-01','the single scan carries the days too');
 });
 
 test('figures per area bind at most 100 parameters per statement, as D1 allows',async()=>{

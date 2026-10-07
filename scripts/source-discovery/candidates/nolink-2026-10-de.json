@@ -1,0 +1,149 @@
+{
+ "de-09184149": {
+  "id": "de-09184149",
+  "name": "Stadt Unterschleißheim",
+  "kind": "city",
+  "ags": "09184149",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://unterschleissheim.ratsinfomanagement.net/",
+    "from": "https://www.unterschleissheim.de/rathaus-politik-buergerservice-online/onlinedienste/buergerinformationssystem.html",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SD.NET RIM 4 (Bürgerinformationssystem der Stadt, verlinkt unter unterschleissheim.de/…/buergerinfo…); Rechner antwortet Programmen mit 403 „rescaled WAF · Verifying Browser“; OParl-Pfad prüfen.",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-08235085": {
+  "id": "de-08235085",
+  "name": "Stadt Calw",
+  "kind": "city",
+  "ags": "08235085",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.calw.sitzung-online.de/public/",
+    "from": "https://rathauscalw.de/gemeinderat/",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 bei sitzung-online.de, verlinkt von rathauscalw.de/gemeinderat/ (die Website calw.de verlinkt es nicht); Kalender antwortete am 06.10.2026 mit HTTP 200.",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-12071372": {
+  "id": "de-12071372",
+  "name": "Stadt Spremberg",
+  "kind": "city",
+  "ags": "12071372",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://spremberg.gremien.info/",
+    "from": "https://spremberg.de/rathaus/stadtpolitik",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "More! Rubin (gremien.info), verlinkt unter spremberg.de/rathaus/stadtpolitik „Ratsinformationssystem“ (Navigation per Skript, deshalb vom Crawl nicht gesehen).",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-130735353": {
+  "id": "de-130735353",
+  "name": "Amt Bergen auf Rügen",
+  "kind": "city",
+  "ags": "130735353",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.stadt-bergen-auf-ruegen.org/ris/ti-bergen-4/",
+    "from": "https://www.stadt-bergen-auf-ruegen.org/ris/instanz_4/belege/11_el_2012_000001.htm",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "TI-Generator des Amtes (ti-bergen-4; die Stadt Bergen hat ti-bergen-1, auch unter sv-stadt-bergen.de); der Rechner .org antwortete am 06.10.2026 zweimal nicht (Zeitüberschreitung), die Suchmaschine kennt ihn.",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-09571": {
+  "id": "de-09571",
+  "name": "Landkreis Ansbach",
+  "kind": "district",
+  "ags": "09571",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://landratsamt-ansbach.ratsinfomanagement.net/",
+    "from": "Crawl 2026-10",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SD.NET RIM 4 des Landratsamts; Rechner antwortet Programmen mit 403 „rescaled WAF · Verifying Browser“; OParl-Pfad prüfen.",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-16073": {
+  "id": "de-16073",
+  "name": "Landkreis Saalfeld-Rudolstadt",
+  "kind": "district",
+  "ags": "16073",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://lk-slf-ru.ratsinfomanagement.net/",
+    "from": "Crawl 2026-10",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SD.NET RIM 4 des Landkreises; Rechner antwortet Programmen mit 403 „rescaled WAF · Verifying Browser“; OParl-Pfad prüfen.",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "de-16072018": {
+  "id": "de-16072018",
+  "name": "Stadt Sonneberg",
+  "kind": "city",
+  "ags": "16072018",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sonneberg.de/rathaus/politik/stadtrat/termine-2.html",
+    "from": "https://sonneberg.de/rathaus/politik/stadtrat/termine-2.html",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "website",
+     "hinweis": "Kein System; die Terminseite der Stadt nennt die öffentlichen Tagesordnungspunkte der nächsten Stadtrats- und Ausschusssitzungen im Text (Kandidat für den Leser website).",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ }
+}

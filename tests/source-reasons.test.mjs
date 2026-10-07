@@ -200,3 +200,9 @@ test('a CKAN portal without query profile: the interface is there, the reader ne
  assert.equal(reason(row(tried)),CKAN_NO_PROFILE);
  assert.equal(accessOfReason(reason(row(tried)),'https://opendata.beispielort.de/'),'api-noreader');
 });
+
+test('an SD.NET RIM tenant asked again: pages refuse, OParl webservice not activated (no longer "Neuprüfung ausstehend")',()=>{
+ const tried=[{url:'https://beispielort.ratsinfomanagement.net/',robots:'verboten'},{url:'https://beispielort.ratsinfomanagement.net/webservice/oparl/v1.1/system',status:400,error:'SD.NET RIM: Webservice "OParl" ist nicht aktiviert',oparlInactive:true}];
+ assert.match(reason(row(tried)),/^SD\.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert/);
+ assert.equal(accessOfReason(reason(row(tried)),'https://beispielort.ratsinfomanagement.net/'),'blocked');
+});

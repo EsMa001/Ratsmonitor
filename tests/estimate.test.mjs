@@ -6,6 +6,7 @@ import {SIZE_CLASSES,LEVELS,SAMPLE_RULES,FEDERAL_STATES,MIN_PROJECTED_WEEKS,annu
 import {summarizeSize,areaMeans,estimateVolume,SIZE_FIELDS,SIZE_RULES,VARIANTS,PAGE_BINS} from '../shared/estimate-size.mjs';
 import {documentType,primaryDocument,DOCUMENT_TYPES} from '../shared/document-type.mjs';
 import {adminEstimate} from '../server/integrations/admin-estimate.mjs';
+import {storedEstimate,computeEstimate} from '../server/integrations/admin-estimate-store.mjs';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import frame from '../shared/germany-population.json' with {type:'json'};
 import population from '../shared/nrw-population.json' with {type:'json'};
@@ -266,6 +267,19 @@ test('the admin estimate combines stored NRW areas with the measured sample and 
  const associations=e.sample.strata.find(s=>s.id==='association').candidates;assert.ok(associations.length>0&&associations.length<=8);assert.ok(associations.every(c=>/^(nds|de)-\d{9}$/.test(c.id)&&/^(Samtgemeinde|Verbandsgemeinde|Amt|Verwaltungsgemeinschaft|Verwaltungsverband|Erfüllende Gemeinde) /.test(c.name)));
  // An empty database still gives the estimate of the sample.
  const empty=await adminEstimate(sqlite().db,{now:new Date('2026-10-02T12:00:00Z'),replicates:10});assert.equal(empty.sample.storedWithData,0);assert.ok(empty.total.perYear>0);
+});
+test('the estimate is stored on request and the page learns whether the stock changed since',async()=>{
+ const {raw,db}=sqlite();
+ assert.equal((await storedEstimate(db)).computed,false);
+ const first=await computeEstimate(db,{now:new Date('2026-10-02T12:00:00Z'),replicates:10});
+ assert.equal(first.computed,true);assert.equal(first.stale,false);assert.equal(first.computedAt,'2026-10-02T12:00:00.000Z');assert.ok(first.total.perYear>0);
+ const kept=await storedEstimate(db);assert.equal(kept.stale,false);assert.equal(kept.total.perYear,first.total.perYear);assert.equal(kept.computedAt,first.computedAt);
+ // Stored compressed: the row stays far below the 2 MB a D1 row may hold, however many examples the stock gains.
+ const stored=raw.prepare("SELECT length(value) AS n FROM system_state WHERE key='admin-estimate'").get();assert.ok(stored.n<JSON.stringify(kept).length/2,`stored ${stored.n} bytes for ${JSON.stringify(kept).length} bytes of JSON`);
+ // A stored report raises the content revision: the stored estimate stays, marked as stale, until it is computed again.
+ raw.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run('x','billerbeck','city','2026-09-17','2026-10-01T00:00:00Z','unknown',JSON.stringify({id:'x',title:'X',events:[{date:'2026-09-17'}],documents:[],identity:{}}));
+ const later=await storedEstimate(db);assert.equal(later.stale,true);assert.equal(later.computedAt,first.computedAt);assert.ok(later.currentRevision>later.revision);
+ const again=await computeEstimate(db,{now:new Date('2026-10-03T12:00:00Z'),replicates:10});assert.equal(again.stale,false);assert.equal((await storedEstimate(db)).stale,false);
 });
 test('quantile and the seeded random numbers behave as the range calculation expects',()=>{
  near(quantile([1,2,3,4],.25),1.75);near(quantile([4,1,3,2],.5),2.5);assert.equal(quantile([],.5),0);assert.equal(quantile([7],.9),7);

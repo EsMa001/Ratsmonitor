@@ -88,16 +88,18 @@ async function step(db,id,run){
   if(ended(job))return {job};
   // Interrupted HTTP replies never silently repeat a potentially committed import.
   let changed=false;const now=Date.now(),at=new Date(now).toISOString();
-  for(const i of job.items)if(i.status==='running'&&!(now-Date.parse(i.startedAt||'')<STALE_MS)){i.status='unknown';i.message='Antwort unterbrochen. Quellenstand und Verlauf prüfen; bei Bedarf einen neuen Auftrag starten.';delete i.startedAt;i.at=at;changed=true;}
+  // Rule labelling is repeatable: every package is stored as it is written, and the next one continues behind the cursor.
+  for(const i of job.items)if(i.status==='running'&&!(now-Date.parse(i.startedAt||'')<STALE_MS)){if(job.stage==='analysis'){i.status='queued';i.message='Antwort unterbrochen; gespeicherte Pakete bleiben erhalten, das nächste Paket folgt.';}else{i.status='unknown';i.message='Antwort unterbrochen. Quellenstand und Verlauf prüfen; bei Bedarf einen neuen Auftrag starten.';}delete i.startedAt;i.at=at;changed=true;}
   const item=job.paused?null:next(job);
-  if(item){item.status='running';item.startedAt=at;item.at=at;job.status='running';await save(db,stamp(job,at));return {job,region:item.region};}
+  if(item){item.status='running';item.startedAt=at;item.at=at;job.status='running';await save(db,stamp(job,at));return {job,region:item.region,cursor:item.cursor};}
   const open=job.items.some(i=>i.status==='running'||i.status==='queued');
   if(!open){job.status='completed';changed=true;}
   if(changed)await save(db,stamp(job,at));
   return {job,wait:open&&!job.paused};
  });
  if(!claim.region)return claim;
- let result=null;try{result=await run(claim.job.stage,claim.region,claim.job.window);}catch{}
+ // The cursor (rule labelling) is handed on only when the item has one; imports take their three arguments as before.
+ let result=null;try{result=await run(claim.job.stage,claim.region,claim.job.window,...(claim.cursor!==undefined?[claim.cursor]:[]));}catch{}
  return locked(db,async()=>{
   const job=await read(db);
   // The job was replaced in the meantime. The import itself is stored; there is no item left to report to.
@@ -106,7 +108,7 @@ async function step(db,id,run){
   // A large job keeps short notes: the full notes of an import are stored with the source status.
   const [short,long]=job.items.length>200?[240,320]:[2500,3000];
   delete item.startedAt;item.at=at;
-  if(!result){item.status='unknown';item.message='Ausführung unterbrochen. Gespeicherten Bestand vor einem neuen Auftrag prüfen.';}
+  if(!result){if(job.stage==='analysis'){item.status='queued';item.message='Paket unterbrochen; gespeicherte Pakete bleiben erhalten, das nächste Paket folgt beim Fortsetzen.';job.paused=true;}else{item.status='unknown';item.message='Ausführung unterbrochen. Gespeicherten Bestand vor einem neuen Auftrag prüfen.';}}
   // Another process holds the stock (or this area). The job waits for an explicit continuation instead of asking again and again.
   else if(result.status===409){item.status='queued';item.message=d.error;job.paused=true;}
   else if(result.status!==200){item.status='failed';item.message=((d.error||'Abruf fehlgeschlagen.')+(d.cause?' Ursache: '+String(d.cause).slice(0,300):'')).slice(0,long);}
@@ -114,7 +116,14 @@ async function step(db,id,run){
    // The item reports this attempt; the stored period may still be partial from an earlier, wider import.
    const complete=d.attemptComplete??d.coverage?.complete;
    if(job.stage==='metadata'&&d.resume&&(item.resumes||0)<MAX_RESUMES*windowYears(job.window)){item.resumes=(item.resumes||0)+1;item.status='queued';item.message=`Zeitlimit erreicht; der Abruf wird fortgesetzt (Teil ${item.resumes+1}).`;}
-   else {item.status=job.stage==='analysis'&&d.remaining>0?'queued':d.coverage&&!complete?'partial':'completed';item.message=job.stage==='analysis'?`${d.remaining||0} Artikel noch offen.`:d.quiet?'Keine Sitzungen im gewählten Zeitraum; gespeicherter Bestand unverändert.':d.coverage?.issues?.join(' · ').slice(0,short)||(d.unchanged?`Ergebnis in der Datenbank gespeichert; ${d.unchanged} unveränderte ${d.unchanged===1?'Sitzung':'Sitzungen'} übersprungen.`:'Ergebnis in der Datenbank gespeichert.');
+   else if(job.stage==='analysis'){
+    // The next package continues behind the cursor; remaining is known for one region, for the whole stock only whether more may follow.
+    if(d.cursor)item.cursor=d.cursor;
+    if(typeof d.remaining==='number')item.remaining=d.remaining;else delete item.remaining;
+    const open=d.more||d.remaining>0;
+    item.status=open?'queued':'completed';item.message=!open?'Alle offenen Berichte bearbeitet.':typeof d.remaining==='number'?`${d.remaining} Berichte noch offen; das nächste Paket folgt.`:'Weitere Berichte offen; das nächste Paket folgt.';
+    if(!open)delete item.cursor;}
+   else {item.status=d.coverage&&!complete?'partial':'completed';item.message=d.quiet?'Keine Sitzungen im gewählten Zeitraum; gespeicherter Bestand unverändert.':d.coverage?.issues?.join(' · ').slice(0,short)||(d.unchanged?`Ergebnis in der Datenbank gespeichert; ${d.unchanged} unveränderte ${d.unchanged===1?'Sitzung':'Sitzungen'} übersprungen.`:'Ergebnis in der Datenbank gespeichert.');
     if(d.warnings?.length)item.message=(item.message+` Warnung: ${d.warnings.join(' · ')}`).slice(0,long);}}
   if(job.status!=='cancelled')job.status=job.items.some(i=>i.status==='running')?'running':job.items.some(i=>i.status==='queued')?'queued':'completed';
   await save(db,stamp(job,at));return {job,claimed:true};
@@ -140,7 +149,11 @@ export async function pipelineAction(db,body,run){
    if(job.items.some(i=>i.status==='running'&&Date.now()-Date.parse(i.startedAt||'')<STALE_MS))throw new AdminError(409,'Der offene Auftrag ruft gerade noch Gebiete ab. Bitte pausieren und warten, bis die laufenden Abrufe gespeichert sind.');
   }
   if(!['metadata','analysis'].includes(body.stage))throw new AdminError(400,'Ungültige Verarbeitungsstufe.');
-  const ids=selectedRegions(body.regions),at=new Date().toISOString(),imports=body.stage==='metadata';
+  const at=new Date().toISOString(),imports=body.stage==='metadata';
+  // Rule labelling of the whole stock is one item: package after package over every region in id order, with a cursor
+  // (manual-analysis.mjs); a list of areas labels each area on its own.
+  if(!imports&&body.regions==='all'){const created={id:crypto.randomUUID(),stage:body.stage,scope:'all',createdAt:at,updatedAt:at,status:'queued',items:[{region:'all',status:'queued',processed:0,message:''}]};await save(db,created);return view(created);}
+  const ids=selectedRegions(body.regions);
   // The look-back window is fixed when the job is created, so a resumed job keeps the period the operator chose.
   let lookback;if(imports){try{lookback=historyWindow(body.window);}catch{throw new AdminError(400,'Ungültiger Zeitraum für den Abruf.');}}
   const created={id:crypto.randomUUID(),stage:body.stage,...(lookback?{window:lookback}:{}),...(typeof body.regions==='string'?{scope:body.regions}:{}),createdAt:at,updatedAt:at,status:'queued',items:ids.map(region=>{const open=!imports||canImport(region);return {region,status:open?'queued':'unavailable',processed:0,message:open?'':'Keine angebundene Quelle.',...(imports&&open?{server:provider(region)}:{})};})};

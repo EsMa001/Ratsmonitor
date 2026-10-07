@@ -2,19 +2,19 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 4457 auswählbaren Gebieten sind 2850 angebunden, 1607 nicht. Diese Datei beschreibt die 2848 Quellen in `server/integrations/de-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 4457 auswählbaren Gebieten sind 2905 angebunden, 1552 nicht. Diese Datei beschreibt die 2903 Quellen in `server/integrations/de-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
 ## Übernommene Quellen
 
-- 1028 × SessionNet (öffentliche Seiten)
+- 1029 × SessionNet (öffentliche Seiten)
 - 490 × RIS-Portal regisafe (öffentliche Seiten)
-- 379 × KIC-RIS (öffentliche Gast-Schnittstelle)
-- 261 × More! Rubin (Kalender-API)
-- 233 × ALLRIS 4 (öffentliche Seiten)
-- 175 × Website der Kommune (öffentliche Bekanntmachungen)
-- 114 × OParl
+- 380 × KIC-RIS (öffentliche Gast-Schnittstelle)
+- 262 × More! Rubin (Kalender-API)
+- 237 × ALLRIS 4 (öffentliche Seiten)
+- 202 × Website der Kommune (öffentliche Bekanntmachungen)
+- 135 × OParl
 - 69 × ALLRIS 3 (öffentliche Seiten)
 - 43 × Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website)
 - 17 × TI-Generator (öffentliche Seiten)
@@ -45,6 +45,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Ratzeburg | SessionNet (öffentliche Seiten) | https://session.ratzeburg.de/bi/ | 108 |
 | Stadt Schwarzenbek | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/schwarzenbek/bi/ | 138 |
 | Gemeinde Wentorf bei Hamburg | ALLRIS 4 (öffentliche Seiten) | https://www.wentorf.sitzung-online.de/public/ | 60 |
+| Amt Breitenfelde | ALLRIS 4 (öffentliche Seiten) | https://www.amt-breitenfelde.sitzung-online.de/public/ | 313 |
 | Amt Büchen | SessionNet (öffentliche Seiten) | https://sessionnet.amt-buechen.de/bi/ | 61 |
 | Amt Hohe Elbgeest | ALLRIS 4 (öffentliche Seiten) | https://www.amt-hohe-elbgeest.sitzung-online.de/public/ | 679 |
 | Amt Lütau | More! Rubin (Kalender-API) | https://lauenburg.gremien.info/ | 190 |
@@ -64,6 +65,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Ahrensbök | ALLRIS 4 (öffentliche Seiten) | https://www.ahrensboek.sitzung-online.de/public/ | 76 |
 | Stadt Bad Schwartau | ALLRIS 4 (öffentliche Seiten) | https://www.bad-schwartau.sitzung-online.de/public/ | 92 |
 | Stadt Eutin | ALLRIS 4 (öffentliche Seiten) | https://www.eutin.sitzung-online.de/public/ | 138 |
+| Stadt Heiligenhafen | Website der Kommune (öffentliche Bekanntmachungen) | https://www.heiligenhafen.de/ | 56 |
 | Gemeinde Malente | ALLRIS 4 (öffentliche Seiten) | https://www.malente.sitzung-online.de/public/ | 68 |
 | Stadt Neustadt in Holstein | ALLRIS 3 (öffentliche Seiten) | https://ris.stadt-neustadt.eu/bi/ | 93 |
 | Gemeinde Ratekau | ALLRIS 4 (öffentliche Seiten) | https://www.ratekau.sitzung-online.de/public/ | 86 |
@@ -77,10 +79,12 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Amt Ostholstein-Mitte | ALLRIS 4 (öffentliche Seiten) | https://www.ostholstein-mitte.sitzung-online.de/public/ | 259 |
 | Kreis Pinneberg | ALLRIS 4 (öffentliche Seiten) | https://www.kreis-pinneberg.sitzung-online.de/public/ | 363 |
 | Stadt Elmshorn | ALLRIS 4 (öffentliche Seiten) | https://www.stadt-elmshorn.sitzung-online.de/public/ | 290 |
+| Gemeinde Halstenbek | Website der Kommune (öffentliche Bekanntmachungen) | https://halstenbek.de/ | 31 |
 | Gemeinde Helgoland | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/helgoland/bi/ | 110 |
 | Stadt Pinneberg | ALLRIS 4 (öffentliche Seiten) | https://allris.pinneberg.de/public/ | 267 |
 | Gemeinde Rellingen | ALLRIS 4 (öffentliche Seiten) | https://www.rellingen.sitzung-online.de/integration/ | 142 |
 | Stadt Wedel | ALLRIS 4 (öffentliche Seiten) | https://www.wedel.sitzung-online.de/public/ | 294 |
+| Amt Elmshorn-Land | ALLRIS 4 (öffentliche Seiten) | https://www.amt-elmshorn-land.sitzung-online.de/public/ | 711 |
 | Kreis Plön | SessionNet (öffentliche Seiten) | https://www.kreis-ploe.de/session/buergerinfo/ | 116 |
 | Gemeinde Bönebüttel | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/gemeinde-boenebuettel/bi/ | 48 |
 | Gemeinde Bösdorf | ALLRIS 4 (öffentliche Seiten) | https://www.ploen.sitzung-online.de/public/ | 25 |
@@ -102,6 +106,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Amt Jevenstedt | RIS-Portal regisafe (öffentliche Seiten) | https://amt-jevenstedt.ris-portal.de/web/ratsinformation/ | 140 |
 | Amt Nortorfer Land | ALLRIS 4 (öffentliche Seiten) | https://www.amt-nortorfer-land.sitzung-online.de/public/ | 582 |
 | Amt Eiderkanal | RIS-Portal regisafe (öffentliche Seiten) | https://amt-eiderkanal.ris-portal.de/web/ratsinformation/ | 236 |
+| Amt Bordesholm | Website der Kommune (öffentliche Bekanntmachungen) | https://www.bordesholm.de/ | 10 |
 | Amt Schlei-Ostsee | RIS-Portal regisafe (öffentliche Seiten) | https://amt-schlei-ostsee.ris-portal.de/web/ratsinformation/ | 498 |
 | Amt Mittelholstein | ALLRIS 4 (öffentliche Seiten) | https://www.mittelholstein.sitzung-online.de/public/ | 1184 |
 | Amt Eidertal | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.amt-eidertal.de/ | 388 |
@@ -142,9 +147,11 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Glinde | ALLRIS 4 (öffentliche Seiten) | https://www.glinde.sitzung-online.de/public/ | 212 |
 | Gemeinde Großhansdorf | OParl | https://www.grosshansdorf.sitzung-online.de/public/oparl/system | 67 |
 | Gemeinde Oststeinbek | ALLRIS 4 (öffentliche Seiten) | https://www.oststeinbek.sitzung-online.de/integration/ | 75 |
+| Gemeinde Ammersbek | Website der Kommune (öffentliche Bekanntmachungen) | https://www.ammersbek.de/ | 16 |
 | Amt Bad Oldesloe-Land | RIS-Portal regisafe (öffentliche Seiten) | https://amt-bad-oldesloe-land.ris-portal.de/ | 291 |
 | Amt Siek | ALLRIS 4 (öffentliche Seiten) | https://www.amtsiek.de/allris/ | 423 |
 | Amt Trittau | ALLRIS 4 (öffentliche Seiten) | https://www.trittau.sitzung-online.de/public/ | 327 |
+| Stadt Bremen | OParl | https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/system | 46 |
 | Stadt Bremerhaven | SessionNet (öffentliche Seiten) | https://sessionnet.bremerhaven.de/bi/ | 234 |
 | Stadt Darmstadt | More! Rubin (Kalender-API) | https://darmstadt.gremien.info/ | 203 |
 | Stadt Offenbach am Main | PIO Offenbach (öffentliche Seiten) | https://pio.offenbach.de/ | 71 |
@@ -182,8 +189,13 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Mörfelden-Walldorf | More! Rubin (Kalender-API) | https://ksd.moerfelden-walldorf.de/ | 151 |
 | Gemeinde Nauheim | More! Rubin (Kalender-API) | https://nauheim.gremien.info/ | 248 |
 | Stadt Riedstadt | More! Rubin (Kalender-API) | https://riedstadt.gremien.info/ | 87 |
+| Stadt Rüsselsheim am Main | OParl | https://rim.ekom21.de/ruesselsheim/webservice/oparl/v1.1/system | 126 |
 | Gemeinde Stockstadt am Rhein | More! Rubin (Kalender-API) | https://stockstadtamrhein.gremien.info/ | 18 |
 | Gemeinde Trebur | More! Rubin (Kalender-API) | https://trebur.gremien.info/ | 71 |
+| Gemeinde Glashütten | OParl | https://rim.ekom21.de/glashuetten/webservice/oparl/v1.1/system | 58 |
+| Stadt Königstein im Taunus | Website der Kommune (öffentliche Bekanntmachungen) | https://www.koenigstein.de/ | 1 |
+| Stadt Kronberg im Taunus | OParl | https://kronberg.ratsinfomanagement.net/webservice/oparl/v1.1/system | 152 |
+| Stadt Neu-Anspach | OParl | https://rim.ekom21.de/neu-anspach/webservice/oparl/v1.1/system | 88 |
 | Gemeinde Schmitten im Taunus | OParl | https://rim.ekom21.de/schmitten/webservice/oparl/v1.1/system | 37 |
 | Gemeinde Weilrod | More! Rubin (Kalender-API) | https://weilrod.gremien.info/ | 27 |
 | Main-Kinzig-Kreis | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/main-kinzig/bi/ | 64 |
@@ -195,6 +207,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Großkrotzenburg | More! Rubin (Kalender-API) | https://grosskrotzenburg.gremien.info/ | 62 |
 | Gemeinde Gründau | More! Rubin (Kalender-API) | https://gruendau.gremien.info/ | 24 |
 | Stadt Hanau | ALLRIS 4 (öffentliche Seiten) | https://www.hanau.sitzung-online.de/public/ | 364 |
+| Gemeinde Jossgrund | OParl | https://rim.ekom21.de/jossgrund/webservice/oparl/v1.1/system | 53 |
 | Stadt Langenselbold | ALLRIS 4 (öffentliche Seiten) | https://www.langenselbold.sitzung-online.de/public/ | 40 |
 | Gemeinde Linsengericht | OParl | https://linsengericht.gremien.info/oparl/system | 69 |
 | Stadt Maintal | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/maintal/bi/ | 138 |
@@ -220,6 +233,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Bad König | OParl | https://rim.ekom21.de/bad-koenig/webservice/oparl/v1.1/system | 89 |
 | Stadt Breuberg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.breuberg.de/ | 40 |
 | Gemeinde Brombachtal | Website der Kommune (öffentliche Bekanntmachungen) | https://www.brombachtal.de/ | 6 |
+| Gemeinde Höchst i.Odw. | OParl | https://rim.ekom21.de/hoechst/webservice/oparl/v1.1/system | 111 |
 | Gemeinde Mossautal | RIS-Portal regisafe (öffentliche Seiten) | https://mossautal.ris-portal.de/ | 25 |
 | Stadt Oberzent | Website der Kommune (öffentliche Bekanntmachungen) | https://www.stadt-oberzent.de/ | 104 |
 | Landkreis Offenbach | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/kreis_offenbach/bi/ | 40 |
@@ -245,10 +259,12 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Wetteraukreis | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/wetteraukreis/bi/ | 68 |
 | Gemeinde Altenstadt | More! Rubin (Kalender-API) | https://altenstadt.gremien.info/ | 117 |
 | Stadt Bad Nauheim | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/badnauheim/bi/ | 75 |
+| Stadt Bad Vilbel | OParl | https://rim.ekom21.de/bad-vilbel/webservice/oparl/v1.1/system | 66 |
 | Stadt Butzbach | More! Rubin (Kalender-API) | https://butzbach.gremien.info/ | 177 |
 | Stadt Karben | OParl | https://rim.ekom21.de/karben/webservice/oparl/v1.1/system | 37 |
 | Gemeinde Kefenrod | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) | https://kefenrod.mein-intra.net/ | 75 |
 | Stadt Münzenberg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.muenzenberg.de/ | 1 |
+| Gemeinde Ranstadt | OParl | https://rim.ekom21.de/ranstadt/webservice/oparl/v1.1/system | 84 |
 | Stadt Rosbach v.d.Höhe | ALLRIS 4 (öffentliche Seiten) | https://www.rosbach.sitzung-online.de/public/ | 108 |
 | Gemeinde Wölfersheim | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/woelfersheim/bi/ | 21 |
 | Gemeinde Wöllstadt | ALLRIS 4 (öffentliche Seiten) | https://www.woellstadt.sitzung-online.de/public/ | 59 |
@@ -279,11 +295,13 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Sinn | ALLRIS 4 (öffentliche Seiten) | https://www.sinn.sitzung-online.de/public/ | 21 |
 | Stadt Solms | RIS-Portal regisafe (öffentliche Seiten) | https://solms.ris-portal.de/ | 71 |
 | Stadt Wetzlar | SessionNet (öffentliche Seiten) | https://politik.wetzlar.de/BI/ | 243 |
+| Landkreis Limburg-Weilburg | OParl | https://rim.ekom21.de/limburg-weilburg/webservice/oparl/v1.1/system | 51 |
 | Gemeinde Beselich | More! Rubin (Kalender-API) | https://beselich.gremien.info/ | 20 |
 | Stadt Bad Camberg | More! Rubin (Kalender-API) | https://badcamberg.gremien.info/ | 93 |
 | Gemeinde Elz | More! Rubin (Kalender-API) | https://elz.gremien.info/ | 48 |
 | Gemeinde Hünfelden | SessionNet (öffentliche Seiten) | https://sessionnet-huenfelden.de/buergerinfo/ | 150 |
 | Stadt Limburg a.d.Lahn | More! Rubin (Kalender-API) | https://limburg.gremien.info/ | 143 |
+| Gemeinde Mengerskirchen | OParl | https://rim.ekom21.de/mengerskirchen/webservice/oparl/v1.1/system | 45 |
 | Gemeinde Merenberg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.merenberg.de/ | 11 |
 | Gemeinde Selters (Taunus) | OParl | https://selters-taunus.gremien.info/oparl/system | 64 |
 | Gemeinde Villmar | More! Rubin (Kalender-API) | https://villmar.gremien.info/ | 26 |
@@ -325,21 +343,26 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Landkreis Fulda | OParl | https://landkreis-fulda.ratsinfomanagement.net/webservice/oparl/v1.1/system | 15 |
 | Gemeinde Bad Salzschlirf | RIS-Portal regisafe (öffentliche Seiten) | https://badsalzschlirf.ris-portal.de/ | 35 |
 | Gemeinde Burghaun | RIS-Portal regisafe (öffentliche Seiten) | https://burghaun.ris-portal.de/web/ratsinformation/ | 66 |
+| Gemeinde Ebersburg | ALLRIS 4 (öffentliche Seiten) | https://www.ebersburg.sitzung-online.de/public/ | 74 |
 | Gemeinde Eichenzell | OParl | https://eichenzell.ratsinfomanagement.net/webservice/oparl/v1.1/system | 132 |
 | Gemeinde Eiterfeld | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.eiterfeld.de/ | 28 |
 | Gemeinde Flieden | RIS-Portal regisafe (öffentliche Seiten) | https://flieden.ris-portal.de/ | 40 |
+| Stadt Fulda | OParl | https://fulda.ratsinfomanagement.net/webservice/oparl/v1.1/system | 241 |
 | Stadt Gersfeld (Rhön) | ALLRIS 4 (öffentliche Seiten) | https://www.gersfeld.sitzung-online.de/public/ | 129 |
 | Gemeinde Großenlüder | Website der Kommune (öffentliche Bekanntmachungen) | https://www.grossenlueder.de/ | 46 |
 | Gemeinde Hosenfeld | RIS-Portal regisafe (öffentliche Seiten) | https://gemeinde-hosenfeld.ris-portal.de/ | 40 |
 | Stadt Hünfeld | RIS-Portal regisafe (öffentliche Seiten) | https://huenfeld.ris-portal.de/web/ratsinformation/ | 49 |
 | Gemeinde Neuhof | Website der Kommune (öffentliche Bekanntmachungen) | https://www.neuhof-fulda.de/ | 14 |
 | Gemeinde Nüsttal | RIS-Portal regisafe (öffentliche Seiten) | https://nuesttal.ris-portal.de/ | 22 |
+| Gemeinde Petersberg | OParl | https://petersberg.ratsinfomanagement.net/webservice/oparl/v1.1/system | 150 |
 | Gemeinde Rasdorf | RIS-Portal regisafe (öffentliche Seiten) | https://rasdorf.ris-portal.de/ | 46 |
 | Landkreis Hersfeld-Rotenburg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.hef-rof.de/ | 8 |
 | Stadt Bad Hersfeld | SessionNet (öffentliche Seiten) | https://sessionnet.bad-hersfeld.de/bi/ | 96 |
+| Stadt Bebra | OParl | https://bebra.ratsinfomanagement.net/webservice/oparl/v1.1/system | 28 |
 | Gemeinde Breitenbach a.Herzberg | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) | https://breitenbach-am-herzberg.mein-intra.net/ | 15 |
 | Gemeinde Hauneck | Website der Kommune (öffentliche Bekanntmachungen) | https://www.hauneck.de/ | 3 |
 | Gemeinde Kirchheim | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.kirchheim.de/ | 56 |
+| Gemeinde Ludwigsau | OParl | https://rim.ekom21.de/ludwigsau/webservice/oparl/v1.1/system | 29 |
 | Gemeinde Nentershausen | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) | https://nentershausen.mein-intra.net/ | 29 |
 | Gemeinde Wildeck | Website der Kommune (öffentliche Bekanntmachungen) | https://www.wildeck.de/ | 20 |
 | Landkreis Kassel | SessionNet (öffentliche Seiten) | https://gremien.landkreiskassel.de/bi/ | 65 |
@@ -358,6 +381,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Lohfelden | OParl | https://lohfelden.ratsinfomanagement.net/webservice/oparl/v1.1/system | 30 |
 | Gemeinde Schauenburg | More! Rubin (Kalender-API) | https://schauenburg.gremien.info/ | 35 |
 | Gemeinde Söhrewald | SessionNet (öffentliche Seiten) | https://ratsinfo.soehrewald.eu/bi/ | 13 |
+| Stadt Vellmar | Website der Kommune (öffentliche Bekanntmachungen) | https://www.vellmar.de/ | 15 |
 | Stadt Zierenberg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.stadt-zierenberg.de/ | 6 |
 | Gemeinde Wesertal | Website der Kommune (öffentliche Bekanntmachungen) | https://www.gemeinde-wesertal.de/ | 27 |
 | Schwalm-Eder-Kreis | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/schwalm-eder-kreis/bi/ | 55 |
@@ -380,8 +404,10 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Burgwald | Website der Kommune (öffentliche Bekanntmachungen) | https://www.burgwald.de/ | 16 |
 | Gemeinde Diemelsee | OParl | https://rim.ekom21.de/diemelsee/webservice/oparl/v1.1/system | 19 |
 | Gemeinde Edertal | More! Rubin (Kalender-API) | https://edertal.gremien.info/ | 40 |
+| Stadt Frankenberg (Eder) | OParl | https://rim.ekom21.de/frankenberg/webservice/oparl/v1.1/system | 53 |
 | Stadt Gemünden (Wohra) | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) | https://ris-gemuenden-wohra.mein-intra.net/ | 22 |
 | Stadt Korbach | SessionNet (öffentliche Seiten) | https://buergerinfo.korbach.de/ | 69 |
+| Stadt Lichtenfels | OParl | https://rim.ekom21.de/lichtenfels/webservice/oparl/v1.1/system | 13 |
 | Gemeinde Willingen (Upland) | OParl | https://rim.ekom21.de/willingen/webservice/oparl/v1.1/system | 82 |
 | Werra-Meißner-Kreis | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/werra-meissner-kreis/bi/ | 46 |
 | Stadt Bad Sooden-Allendorf | Website der Kommune (öffentliche Bekanntmachungen) | https://www.bad-sooden-allendorf.de/ | 18 |
@@ -409,7 +435,9 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Landkreis Altenkirchen (Westerwald) | More! Rubin (Kalender-API) | https://altenkirchen.gremien.info/ | 37 |
 | Verbandsgemeinde Daaden-Herdorf | OParl | https://vgdaaden.gremien.info/oparl/system | 25 |
 | Verbandsgemeinde Hamm (Sieg) | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/hamm-sieg/bi/ | 11 |
+| Verbandsgemeinde Kirchen (Sieg) | Website der Kommune (öffentliche Bekanntmachungen) | https://www.kirchen-sieg.de/ | 2 |
 | Verbandsgemeinde Wissen | More! Rubin (Kalender-API) | https://wissen.gremien.info/ | 68 |
+| Verbandsgemeinde Betzdorf-Gebhardshain | Website der Kommune (öffentliche Bekanntmachungen) | https://www.vg-bg.de/ | 14 |
 | Landkreis Bad Kreuznach | ALLRIS 4 (öffentliche Seiten) | https://www.kreis-badkreuznach.sitzung-online.de/public/ | 72 |
 | Stadt Bad Kreuznach | OParl | https://bad-kreuznach-stadt.gremien.info/oparl/system | 171 |
 | Verbandsgemeinde Bad Kreuznach | More! Rubin (Kalender-API) | https://bad-kreuznach.gremien.info/ | 146 |
@@ -453,16 +481,19 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Lahnstein | SessionNet (öffentliche Seiten) | https://session.lahnstein.de/bi/ | 58 |
 | Verbandsgemeinde Diez | ALLRIS 4 (öffentliche Seiten) | https://www.vgdiez.sitzung-online.de/public/ | 481 |
 | Verbandsgemeinde Nastätten | More! Rubin (Kalender-API) | https://vgnastaetten.gremien.info/ | 223 |
+| Verbandsgemeinde Bad Ems-Nassau | OParl | https://ratsinfo.vgben.de/oparl/system | 453 |
 | Verbandsgemeinde Aar-Einrich | More! Rubin (Kalender-API) | https://vg-aar-einrich.gremien.info/ | 631 |
 | Westerwaldkreis | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/westerwaldkreis/bi/ | 34 |
 | Verbandsgemeinde Bad Marienberg (Westerwald) | More! Rubin (Kalender-API) | https://bad-marienberg.gremien.info/ | 275 |
 | Verbandsgemeinde Hachenburg | More! Rubin (Kalender-API) | https://hachenburg.gremien.info/ | 286 |
+| Verbandsgemeinde Höhr-Grenzhausen | OParl | https://hoehr-grenzhausen.gremien.info/oparl/system | 28 |
 | Verbandsgemeinde Montabaur | More! Rubin (Kalender-API) | https://montabaur.gremien.info/ | 341 |
 | Verbandsgemeinde Ransbach-Baumbach | SessionNet (öffentliche Seiten) | https://buergerinfo.ransbach-baumbach.de/ | 6 |
 | Verbandsgemeinde Selters (Westerwald) | More! Rubin (Kalender-API) | https://selters-ww.gremien.info/ | 101 |
 | Verbandsgemeinde Westerburg | More! Rubin (Kalender-API) | https://westerburg.gremien.info/ | 228 |
 | Verbandsgemeinde Wirges | More! Rubin (Kalender-API) | https://wirges.gremien.info/ | 242 |
 | Stadt Trier | ALLRIS 4 (öffentliche Seiten) | https://gremieninfo.trier.de/public/ | 428 |
+| Landkreis Bernkastel-Wittlich | Website der Kommune (öffentliche Bekanntmachungen) | https://www.bernkastel-wittlich.de/ | 27 |
 | Stadt Wittlich | OParl | https://stadt-wittlich.gremien.info/oparl/system | 76 |
 | Verbandsgemeinde Bernkastel-Kues | RIS-Portal regisafe (öffentliche Seiten) | https://bernkastel-kues.ris-portal.de/web/ratsinformation/ | 429 |
 | Verbandsgemeinde Wittlich-Land | More! Rubin (Kalender-API) | https://vg-wittlich.gremien.info/ | 343 |
@@ -675,6 +706,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Walheim | RIS-Portal regisafe (öffentliche Seiten) | https://walheim.ris-portal.de/ | 18 |
 | Gemeinde Ingersheim | RIS-Portal regisafe (öffentliche Seiten) | https://ingersheim.ris-portal.de/ | 52 |
 | Stadt Bietigheim-Bissingen | Website der Kommune (öffentliche Bekanntmachungen) | https://www.bietigheim-bissingen.de/ | 2 |
+| Stadt Korntal-Münchingen | Website der Kommune (öffentliche Bekanntmachungen) | https://www.korntal-muenchingen.de/ | 26 |
 | Stadt Remseck am Neckar | SessionNet (öffentliche Seiten) | https://buergerinfo-remseck.de/buergerinfo/ | 61 |
 | Gemeinde Alfdorf | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/alfdorf/ | 35 |
 | Gemeinde Allmersbach im Tal | SessionNet (öffentliche Seiten) | https://allmersbach-sitzungsdienst.komm.one/bi/ | 38 |
@@ -865,6 +897,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Billigheim | RIS-Portal regisafe (öffentliche Seiten) | https://billigheim.ris-portal.de/ | 41 |
 | Stadt Buchen (Odenwald) | SessionNet (öffentliche Seiten) | https://buchen-sitzungsdienst.komm.one/bi/ | 54 |
 | Gemeinde Haßmersheim | RIS-Portal regisafe (öffentliche Seiten) | https://hassmersheim.ris-portal.de/ | 25 |
+| Gemeinde Hüffenhardt | Website der Kommune (öffentliche Bekanntmachungen) | https://www.hueffenhardt.de/ | 28 |
 | Gemeinde Limbach | ALLRIS 4 (öffentliche Seiten) | https://www.limbach.sitzung-online.de/public/ | 38 |
 | Stadt Mosbach | SessionNet (öffentliche Seiten) | https://www.info-mosbach.de/bi/ | 59 |
 | Gemeinde Mudau | RIS-Portal regisafe (öffentliche Seiten) | https://mudau.ris-portal.de/ | 22 |
@@ -931,6 +964,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Bad Wildbad | SessionNet (öffentliche Seiten) | https://bad-wildbad-sitzungsdienst.komm.one/bi/ | 32 |
 | Stadt Wildberg | SessionNet (öffentliche Seiten) | https://wildberg-sitzungsdienst.komm.one/bi/ | 53 |
 | Stadt Bad Teinach-Zavelstein | ALLRIS 4 (öffentliche Seiten) | https://www.bad-teinach-zavelstein.sitzung-online.de/public/ | 19 |
+| Stadt Calw | ALLRIS 4 (öffentliche Seiten) | https://www.calw.sitzung-online.de/public/ | 123 |
 | Gemeinde Eisingen | OParl | https://eisingen.ratsinfomanagement.net/webservice/oparl/v1.1/system | 26 |
 | Stadt Mühlacker | More! Rubin (Kalender-API) | https://muehlacker.gremien.info/ | 62 |
 | Gemeinde Sternenfels | RIS-Portal regisafe (öffentliche Seiten) | https://sternenfels.ris-portal.de/ | 24 |
@@ -968,6 +1002,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Lenzkirch | RIS-Portal regisafe (öffentliche Seiten) | https://lenzkirch.ris-portal.de/ | 56 |
 | Stadt Löffingen | SessionNet (öffentliche Seiten) | https://loeffingen-sitzungsdienst.komm.one/bi/ | 55 |
 | Gemeinde Merzhausen | RIS-Portal regisafe (öffentliche Seiten) | https://vghexental.ris-portal.de/ | 25 |
+| Stadt Müllheim im Markgräflerland | Website der Kommune (öffentliche Bekanntmachungen) | https://www.muellheim.de/ | 22 |
 | Stadt Neuenburg am Rhein | SessionNet (öffentliche Seiten) | https://neuenburg-sitzungsdienst.komm.one/bi/ | 61 |
 | Gemeinde Oberried | Website der Kommune (öffentliche Bekanntmachungen) | https://www.oberried.de/ | 14 |
 | Gemeinde Pfaffenweiler | RIS-Portal regisafe (öffentliche Seiten) | https://pfaffenweiler.ris-portal.de/ | 24 |
@@ -978,6 +1013,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Umkirch | RIS-Portal regisafe (öffentliche Seiten) | https://umkirch.ris-portal.de/ | 13 |
 | Gemeinde Wittnau | RIS-Portal regisafe (öffentliche Seiten) | https://vghexental.ris-portal.de/ | 9 |
 | Gemeinde Münstertal/Schwarzwald | SessionNet (öffentliche Seiten) | https://muenstertal-sitzungsdienst.komm.one/bi/ | 58 |
+| Gemeinde March | Website der Kommune (öffentliche Bekanntmachungen) | https://www.march.de/ | 9 |
 | Stadt Vogtsburg im Kaiserstuhl | SessionNet (öffentliche Seiten) | https://vogtsburg-sitzungsdienst.komm.one/bi/ | 28 |
 | Landkreis Emmendingen | SessionNet (öffentliche Seiten) | https://lraem-sitzungsdienst.komm.one/bi/ | 56 |
 | Gemeinde Bahlingen am Kaiserstuhl | More! Rubin (Kalender-API) | https://bahlingen.gremien.info/ | 38 |
@@ -1079,6 +1115,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Gailingen am Hochrhein | RIS-Portal regisafe (öffentliche Seiten) | https://gailingen.ris-portal.de/web/ratsinformation/ | 30 |
 | Gemeinde Gottmadingen | SessionNet (öffentliche Seiten) | https://gottmadingen-sitzungsdienst.komm.one/bi/ | 65 |
 | Gemeinde Hilzingen | SessionNet (öffentliche Seiten) | https://hilzingen-sitzungsdienst.komm.one/bi/ | 106 |
+| Stadt Konstanz | Website der Kommune (öffentliche Bekanntmachungen) | https://www.konstanz.de/ | 135 |
 | Gemeinde Moos | RIS-Portal regisafe (öffentliche Seiten) | https://moos.ris-portal.de/ | 40 |
 | Gemeinde Mühlingen | RIS-Portal regisafe (öffentliche Seiten) | https://muehlingen.ris-portal.de/ | 63 |
 | Gemeinde Öhningen | RIS-Portal regisafe (öffentliche Seiten) | https://oehningen.ris-portal.de/ | 41 |
@@ -1398,6 +1435,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Steinkirchen | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/vgsteinkirchen/ | 81 |
 | Gemeinde Eching | SessionNet (öffentliche Seiten) | https://buergerinfo-eching.digitalfabrix.de/ | 125 |
 | Gemeinde Fahrenzhausen | SessionNet (öffentliche Seiten) | https://buergerinfo-fahrenzhausen.digitalfabrix.de/ | 63 |
+| Stadt Freising | Website der Kommune (öffentliche Bekanntmachungen) | https://www.freising.de/ | 7 |
 | Gemeinde Hallbergmoos | SessionNet (öffentliche Seiten) | https://buergerinfo-hallbergmoos.digitalfabrix.de/ | 117 |
 | Gemeinde Hohenkammer | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/hohenkammer/ | 45 |
 | Gemeinde Kirchdorf a.d.Amper | SessionNet (öffentliche Seiten) | https://buergerinfo-kirchdorf.digitalfabrix.de/ | 48 |
@@ -1520,6 +1558,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Gerolsbach | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/gerolsbach/ | 38 |
 | Gemeinde Jetzendorf | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/jetzendorf/ | 6 |
 | Gemeinde Manching | SessionNet (öffentliche Seiten) | https://buergerinfo-manching.digitalfabrix.de/ | 26 |
+| Stadt Pfaffenhofen a.d.Ilm | Website der Kommune (öffentliche Bekanntmachungen) | https://www.pfaffenhofen.de/ | 6 |
 | Gemeinde Reichertshausen | SessionNet (öffentliche Seiten) | https://buergerinfo-reichertshausen.digitalfabrix.de/ | 47 |
 | Gemeinde Rohrbach | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/rohrbach/ | 81 |
 | Gemeinde Scheyern | SessionNet (öffentliche Seiten) | https://buergerinfo-scheyern.digitalfabrix.de/ | 87 |
@@ -1549,6 +1588,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Raubling | SessionNet (öffentliche Seiten) | https://buergerinfo-raubling.digitalfabrix.de/ | 44 |
 | Gemeinde Riedering | RIS-Portal regisafe (öffentliche Seiten) | https://riedering.ris-portal.de/ | 60 |
 | Gemeinde Rimsting | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/rimsting/ | 56 |
+| Gemeinde Samerberg | Website der Kommune (öffentliche Bekanntmachungen) | https://samerberg.de/ | 6 |
 | Gemeinde Stephanskirchen | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/stephanskirchen/ | 75 |
 | Gemeinde Tuntenhausen | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.tuntenhausen.de/ | 20 |
 | Gemeinde Vogtareuth | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/vogtareuth/ | 32 |
@@ -1567,6 +1607,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Seefeld | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/seefeld/ | 54 |
 | Stadt Starnberg | ALLRIS 4 (öffentliche Seiten) | https://www.starnberg.sitzung-online.de/public/ | 86 |
 | Gemeinde Tutzing | SessionNet (öffentliche Seiten) | https://buergerinfo-tutzing.digitalfabrix.de/ | 93 |
+| Gemeinde Weßling | Website der Kommune (öffentliche Bekanntmachungen) | https://www.gemeinde-wessling.de/ | 7 |
 | Gemeinde Wörthsee | SessionNet (öffentliche Seiten) | https://buergerinfo-woerthsee.digitalfabrix.de/ | 34 |
 | Landkreis Traunstein | ALLRIS 4 (öffentliche Seiten) | https://www.landkreis-traunstein.sitzung-online.de/integration/ | 28 |
 | Gemeinde Altenmarkt a.d.Alz | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/altenmarkt/ | 31 |
@@ -1587,6 +1628,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Traunreut | ALLRIS 4 (öffentliche Seiten) | https://www.traunreut.sitzung-online.de/public/ | 58 |
 | Stadt Traunstein | SessionNet (öffentliche Seiten) | https://buergerinfo-traunstein.digitalfabrix.de/ | 16 |
 | Stadt Trostberg | RIS-Portal regisafe (öffentliche Seiten) | https://stadt-trostberg.ris-portal.de/ | 40 |
+| Gemeinde Übersee | Website der Kommune (öffentliche Bekanntmachungen) | https://www.uebersee.com/ | 6 |
 | Gemeinde Unterwössen | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/Unterwoessen/ | 21 |
 | Verwaltungsgemeinschaft Bergen | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/bergen/ | 46 |
 | Verwaltungsgemeinschaft Marquartstein | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/marquartstein/ | 65 |
@@ -1807,6 +1849,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Mitterteich | SessionNet (öffentliche Seiten) | https://buergerinfo.mitterteich.de/ | 118 |
 | Verwaltungsgemeinschaft Wiesau | SessionNet (öffentliche Seiten) | https://buergerinfo-vg-wiesau.digitalfabrix.de/ | 36 |
 | Stadt Bayreuth | SessionNet (öffentliche Seiten) | https://online-dienste.bayreuth.de/sessionnet/buergerinfo/ | 67 |
+| Stadt Coburg | OParl | https://ris.coburg.de/webservice/oparl/v1.1/system | 80 |
 | Stadt Hof | SessionNet (öffentliche Seiten) | https://buergerinfo-hof.digitalfabrix.de/ | 125 |
 | Landkreis Bamberg | SessionNet (öffentliche Seiten) | https://buergerinfo-kreis-ba.digitalfabrix.de/ | 16 |
 | Gemeinde Breitengüßbach | SessionNet (öffentliche Seiten) | https://buergerinfo-breitenguessbach.digitalfabrix.de/ | 31 |
@@ -1890,6 +1933,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Neudrossenfeld | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/neudrossenfeld/ | 21 |
 | Gemeinde Neuenmarkt | Website der Kommune (öffentliche Bekanntmachungen) | https://www.neuenmarkt.de/ | 3 |
 | Verwaltungsgemeinschaft Stadtsteinach | Website der Kommune (öffentliche Bekanntmachungen) | https://www.stadtsteinach.de/ | 6 |
+| Verwaltungsgemeinschaft Untersteinach | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/vguntersteinach/ | 3 |
 | Landkreis Lichtenfels | SessionNet (öffentliche Seiten) | https://buergerinfo-lra-lif.digitalfabrix.de/ | 29 |
 | Gemeinde Ebensfeld | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/ebensfeld/ | 48 |
 | Stadt Bad Staffelstein | SessionNet (öffentliche Seiten) | https://buergerinfo-bad-staffelstein.digitalfabrix.de/ | 51 |
@@ -1906,6 +1950,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Tröstau | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/vgtroestau/ | 68 |
 | Stadt Ansbach | SessionNet (öffentliche Seiten) | https://buergerinfo-ansbach.digitalfabrix.de/ | 55 |
 | Stadt Erlangen | SessionNet (öffentliche Seiten) | https://ratsinfo.erlangen.de/ | 295 |
+| Stadt Fürth | SessionNet (öffentliche Seiten) | https://ratsinfo.fuerth.de/bi/ | 182 |
 | Stadt Nürnberg | SessionNet (öffentliche Seiten) | https://online-service2.nuernberg.de/buergerinfo/ | 139 |
 | Stadt Schwabach | SessionNet (öffentliche Seiten) | https://ratsinfo.schwabach.de/ | 82 |
 | Gemeinde Arberg | SessionNet (öffentliche Seiten) | https://buergerinfo-arberg.digitalfabrix.de/ | 31 |
@@ -2134,6 +2179,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Diedorf | SessionNet (öffentliche Seiten) | https://buergerinfo-diedorf.digitalfabrix.de/ | 80 |
 | Gemeinde Gablingen | SessionNet (öffentliche Seiten) | https://buergerinfo-gablingen.digitalfabrix.de/ | 65 |
 | Stadt Gersthofen | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/gersthofen/ | 84 |
+| Stadt Königsbrunn | Website der Kommune (öffentliche Bekanntmachungen) | https://www.koenigsbrunn.de/ | 27 |
 | Gemeinde Kutzenhausen | SessionNet (öffentliche Seiten) | https://buergerinfo-kutzenhausen.digitalfabrix.de/ | 35 |
 | Gemeinde Langweid a.Lech | SessionNet (öffentliche Seiten) | https://buergerinfo-langweid.digitalfabrix.de/ | 36 |
 | Stadt Neusäß | SessionNet (öffentliche Seiten) | https://www.ris-neusaess.de/bi/ | 97 |
@@ -2152,6 +2198,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Syrgenstein | RIS-Portal regisafe (öffentliche Seiten) | https://vg-syrgenstein.ris-portal.de/ | 56 |
 | Verwaltungsgemeinschaft Wittislingen | RIS-Portal regisafe (öffentliche Seiten) | https://vg-wittislingen.ris-portal.de/ | 70 |
 | Verwaltungsgemeinschaft Höchstädt a.d.Donau | Website der Kommune (öffentliche Bekanntmachungen) | https://www.vg-hoechstaedt.de/ | 3 |
+| Landkreis Günzburg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.landkreis-guenzburg.de/ | 4 |
 | Gemeinde Bibertal | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/bibertal/ | 33 |
 | Stadt Burgau | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/burgau/ | 36 |
 | Stadt Günzburg | KIC-RIS (öffentliche Gast-Schnittstelle) | https://ris.komuna.net/guenzburg/ | 23 |
@@ -2243,6 +2290,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Losheim am See | ALLRIS 4 (öffentliche Seiten) | https://www.losheim.de/rathaus-service/politik/ratsinformation/ | 99 |
 | Stadt Merzig | ALLRIS 4 (öffentliche Seiten) | https://www.ratsinfo-merzig.sitzung-online.de/public/ | 156 |
 | Gemeinde Mettlach | ALLRIS 4 (öffentliche Seiten) | https://www.ratsinfo-mettlach.sitzung-online.de/public/ | 47 |
+| Stadt Wadern | OParl | https://www.wadern.sitzung-online.de/oparl/system | 11 |
 | Landkreis Neunkirchen | SessionNet (öffentliche Seiten) | https://bilknk.rznk.de/ | 41 |
 | Gemeinde Eppelborn | SessionNet (öffentliche Seiten) | https://biepp.rznk.de/ | 5 |
 | Gemeinde Illingen | ALLRIS 4 (öffentliche Seiten) | https://www.illingen.sitzung-online.de/public/ | 128 |
@@ -2395,6 +2443,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Kolkwitz | TI-Generator (öffentliche Seiten) | https://ris.kolkwitz.de/ti-1-gemeinde/ | 155 |
 | Gemeinde Neuhausen/Spree | ALLRIS 3 (öffentliche Seiten) | https://ratsinfo-online.de/neuhausen-bi/ | 120 |
 | Gemeinde Schenkendöbern | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/schenkendoebern/bi/ | 68 |
+| Stadt Spremberg | More! Rubin (Kalender-API) | https://spremberg.gremien.info/ | 256 |
 | Stadt Welzow | TI-Generator (öffentliche Seiten) | https://svv-welzow.de/ris/ti-1/ | 76 |
 | Amt Burg (Spreewald) | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/amt-burg-spreewald/bi/ | 30 |
 | Amt Peitz | SessionNet (öffentliche Seiten) | https://www.amtpeitz.de/sessionnet/buergerinfo/ | 250 |
@@ -2413,6 +2462,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Angermünde | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/angermuende/bi/ | 148 |
 | Verbandsgemeinde Schwedt/Oder | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/schwedt/bi/ | 284 |
 | Amt Brüssow (Uckermark) | TI-Generator (öffentliche Seiten) | https://www.amt-bruessow-uckermark.de/ris/ti-1/ | 12 |
+| Stadt Templin | Website der Kommune (öffentliche Bekanntmachungen) | https://www.templin.de/ | 33 |
 | Gemeinde Uckerland | TI-Generator (öffentliche Seiten) | https://ris.uckerland.de/ti-1/ | 14 |
 | Stadt Rostock | ALLRIS 4 (öffentliche Seiten) | https://ksd.rostock.de/bi/ | 1157 |
 | Landkreis Mecklenburgische Seenplatte | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/lkmse/bi/ | 163 |
@@ -2439,6 +2489,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Kühlungsborn | ALLRIS 4 (öffentliche Seiten) | https://kuehlungsborn.sitzung-mv.de/public/ | 83 |
 | Stadt Neubukow | ALLRIS 4 (öffentliche Seiten) | https://neubukow.sitzung-mv.de/public/ | 14 |
 | Gemeinde Satow | SessionNet (öffentliche Seiten) | https://ratsinfo.gemeinde-satow.de/bi/ | 126 |
+| Stadt Teterow | Website der Kommune (öffentliche Bekanntmachungen) | https://www.teterow.de/ | 9 |
 | Amt Bützow-Land | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/buetzow/bi/ | 89 |
 | Amt Carbäk | ALLRIS 4 (öffentliche Seiten) | https://carbaek.sitzung-mv.de/public/ | 216 |
 | Amt Gnoien | SessionNet 6 (öffentliche Schnittstelle) | https://ratsinfo.amt-gnoien.de/ | 90 |
@@ -2469,6 +2520,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Amt Neukloster-Warin | RIS-Portal regisafe (öffentliche Seiten) | https://neukloster.ris-portal.de/ | 248 |
 | Amt Rehna | ALLRIS 4 (öffentliche Seiten) | https://rehna.sitzung-mv.de/public/ | 231 |
 | Amt Schönberger Land | ALLRIS 4 (öffentliche Seiten) | https://amtschoenbergerland.sitzung-mv.de/public/ | 427 |
+| Landkreis Vorpommern-Greifswald | Website der Kommune (öffentliche Bekanntmachungen) | https://www.kreis-vg.de/ | 63 |
 | Stadt Greifswald | ALLRIS 4 (öffentliche Seiten) | https://greifswald.sitzung-mv.de/public/ | 359 |
 | Gemeinde Heringsdorf | ALLRIS 4 (öffentliche Seiten) | https://heringsdorf.sitzung-mv.de/public/ | 96 |
 | Stadt Pasewalk | ALLRIS 4 (öffentliche Seiten) | https://www.pasewalk.de/allris/ | 70 |
@@ -2490,6 +2542,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Amt Ludwigslust-Land | ALLRIS 4 (öffentliche Seiten) | https://ludwigslustland.sitzung-mv.de/public/ | 216 |
 | Amt Parchimer Umland | SessionNet 6 (öffentliche Schnittstelle) | https://buergerinfo.amt-parchimer-umland.de/ | 253 |
 | Amt Plau am See | ALLRIS 4 (öffentliche Seiten) | https://plau.sitzung-mv.de/public/ | 198 |
+| Amt Wittenburg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.amt-wittenburg.de/ | 90 |
 | Amt Crivitz | ALLRIS 4 (öffentliche Seiten) | https://amt-crivitz.sitzung-mv.de/public/ | 853 |
 | Stadt Chemnitz | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/chemnitz/bi/ | 411 |
 | Erzgebirgskreis | More! Rubin (Kalender-API) | https://ris-erzgebirgskreis.zv-kisa.de/ | 23 |
@@ -2798,12 +2851,14 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Erfüllende Gemeinde Dermbach | Website der Kommune (öffentliche Bekanntmachungen) | https://www.dermbach.de/ | 17 |
 | Unstrut-Hainich-Kreis | SessionNet (öffentliche Seiten) | https://sessionnet.uh-kreis.de/bi/ | 70 |
 | Stadt Mühlhausen/Thüringen | SessionNet (öffentliche Seiten) | https://ris.muehlhausen.de/bi/ | 34 |
+| Gemeinde Südeichsfeld | Website der Kommune (öffentliche Bekanntmachungen) | https://lg-suedeichsfeld.de/ | 4 |
 | Gemeinde Unstrut-Hainich | RIS-Portal regisafe (öffentliche Seiten) | https://lg-unstrut-hainich.ris-portal.de/ | 49 |
 | Verwaltungsgemeinschaft Bad Tennstedt | RIS-Portal regisafe (öffentliche Seiten) | https://badtennstedt.ris-portal.de/ | 226 |
 | Erfüllende Gemeinde Herbsleben | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) | https://gemeinde-herbsleben.mein-intra.net/ | 8 |
 | Kyffhäuserkreis | SessionNet (öffentliche Seiten) | https://bi.lrakyf.de/ | 28 |
 | Stadt Bad Frankenhausen/Kyffhäuser | RIS-Portal regisafe (öffentliche Seiten) | https://bad-frankenhausen.ris-portal.de/ | 112 |
 | Erfüllende Gemeinde Ebeleben | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) | https://ebeleben-stadt.mein-intra.net/ | 55 |
+| Erfüllende Gemeinde Artern | Website der Kommune (öffentliche Bekanntmachungen) | https://www.artern.de/ | 4 |
 | Erfüllende Gemeinde An der Schmücke | RIS-Portal regisafe (öffentliche Seiten) | https://stadtanderschmuecke.ris-portal.de/ | 142 |
 | Landkreis Schmalkalden-Meiningen | SessionNet (öffentliche Seiten) | https://kreistag.lra-sm.de/bi/ | 52 |
 | Gemeinde Floh-Seligenthal | Website der Kommune (öffentliche Bekanntmachungen) | https://www.floh-seligenthal.de/ | 6 |
@@ -2878,48 +2933,45 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 ## Nicht angebundene Gebiete
 
-- 261 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
-- 232 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
-- 185 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
+- 270 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
+- 238 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
+- 187 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
 - 135 × Kommune aktiv: antwortet Programmen mit HTTP 403
-- 115 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
-- 86 × Kein unterstütztes Ratsinformationssystem erkannt
-- 74 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar
-- 65 × SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
+- 116 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
+- 82 × Kein unterstütztes Ratsinformationssystem erkannt
+- 75 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar
+- 64 × SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
 - 56 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
 - 55 × Offizielle Website antwortet Programmen nicht
-- 45 × ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um
-- 40 × ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen
-- 27 × Gefundenes System nicht eindeutig dem Gebiet zuzuordnen
-- 26 × ALLRIS 3 erkannt; Leser noch nicht angewendet
-- 23 × Sitzungsdienst mein-intra
+- 38 × ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um
+- 34 × ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen
+- 25 × Gefundenes System nicht eindeutig dem Gebiet zuzuordnen
+- 18 × ALLRIS 3 erkannt; Leser noch nicht angewendet
+- 17 × ALLRIS 3
+- 16 × Sitzungsdienst mein-intra
 - 14 × RIS-Portal regisafe
-- 14 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden
-- 13 × ALLRIS 3
 - 13 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar
-- 12 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden
-- 11 × KIC-RIS
-- 10 × Verlinkte Seite antwortet Programmen nicht
-- 10 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
-- 10 × OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen
+- 10 × KIC-RIS
 - 9 × More! Rubin gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
+- 9 × Verlinkte Seite antwortet Programmen nicht
 - 8 × Adresse mehreren Gebieten zugeordnet
+- 7 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
 - 6 × Betreiber wies Programme bei der Prüfung wiederholt ab (HTTP 403/429); Neuprüfung später
 - 5 × Verlinkte Seite antwortet Programmen mit HTTP 404
-- 5 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
-- 5 × robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend
+- 4 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
 - 4 × Mitbenutztes System von Stadt Quickborn; die Leser trennen die Gremien eines gemeinsamen Systems nicht
+- 3 × OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen
 - 3 × SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
 - 3 × Mitbenutztes System von Stadt Weinsberg; die Leser trennen die Gremien eines gemeinsamen Systems nicht
 - 3 × ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
 - 2 × Mitbenutztes System von Gemeinde Grömitz; die Leser trennen die Gremien eines gemeinsamen Systems nicht
 - 2 × Verlinkte Seite antwortet Programmen mit HTTP 401
+- 2 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website antwortet Programmen mit HTTP 403
 - 2 × SessionNet 6
 - 2 × SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404
-- 1 × Nur Links auf Vorlese-, Teilen-, App- oder Herstellerseiten gefunden, kein Ratsinformationssystem
+- 1 × Nur Links auf Vorlese-, Teilen-, App- oder Herstellerseiten gefunden, kein Ratsinformationssystem; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
 - 1 × Link auf der Website gefunden, noch nicht geprüft
 - 1 × Kein Ratsinformationssystem erkennbar; Sitzungen nur als Webseite oder PDF; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
-- 1 × SD.NET mit antwortender OParl-Schnittstelle, die keine verwertbaren Sitzungen lieferte; öffentliche Seiten werden dann nicht gelesen
 - 1 × Mitbenutztes System von Gemeinde Altshausen; die Leser trennen die Gremien eines gemeinsamen Systems nicht
 - 1 × Gemeinsames System mehrerer Gemeinden (auch Amt Fockbek); der Teil des Gebiets ist noch nicht festgelegt
 - 1 × Gemeinsames System mehrerer Gemeinden (auch Amt Kappeln-Land); der Teil des Gebiets ist noch nicht festgelegt
@@ -2935,17 +2987,15 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 | Gebiet | Grund | Gefundene Adresse |
 |---|---|---|
-| Landkreis Ansbach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden | https://landratsamt-ansbach.ratsinfomanagement.net/ |
-| Landkreis Bernkastel-Wittlich | Verlinkte Seite antwortet Programmen nicht (keine Verbindung) | https://bernkastel-wittlich.more-rubin1.de/ |
+| Landkreis Ansbach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) | https://landratsamt-ansbach.ratsinfomanagement.net/ |
 | Landkreis Deggendorf | Kein unterstütztes Ratsinformationssystem erkannt | https://ex2.landkreis-deggendorf.de/ |
 | Landkreis Dillingen a.d.Donau | More! Rubin gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://landkreis-dillingen.gremien.info/ |
 | Landkreis Dingolfing-Landau | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://ratsinfo.landkreis-dingolfing-landau.de/ylogon.asp?smcpn=info&smclom=1 |
 | Eifelkreis Bitburg-Prüm | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.bitburg-pruem.sitzung-online.de/bi/au010.asp?T1=Gremien&AU=Gremium&SORTBIS=100 |
-| Enzkreis | Nur Links auf Vorlese-, Teilen-, App- oder Herstellerseiten gefunden, kein Ratsinformationssystem | https://enzkreis.ratsinfomanagement.net/ |
+| Enzkreis | Nur Links auf Vorlese-, Teilen-, App- oder Herstellerseiten gefunden, kein Ratsinformationssystem; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (06.10.2026) | https://enzkreis.ratsinfomanagement.net/ |
 | Landkreis Freising | Kein unterstütztes Ratsinformationssystem erkannt |  |
 | Landkreis Fürth | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://buergerinfo.landkreis-fuerth.de/ |
 | Landkreis Gotha | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | http://buergerinfo.kreis-gth.de/default.php |
-| Landkreis Günzburg | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 401) | https://www.landkreis-guenzburg.sitzung-online.de/ |
 | Landkreis Harz | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://kreis-hz.ratsinfomanagement.net/termine |
 | Landkreis Heilbronn | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://landratsamt-heilbronn.ratsinfomanagement.net/ |
 | Landkreis Hildburghausen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -2953,7 +3003,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Landkreis Karlsruhe | RIS-Portal regisafe (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Sitzungsliste 12/2026: Quelle antwortet mit HTTP 401) | https://lra-karlsruhe.ris-portal.de/anmelden |
 | Lahn-Dill-Kreis | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/lahn-dill-kreis/ |
 | Landkreis Leipzig | More! Rubin gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Körperschaften nicht lesbar: Quelle antwortet mit HTTP 422) | https://www.lk-l.info/ |
-| Landkreis Limburg-Weilburg | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/limburg-weilburg/ |
 | Landkreis Ludwigsburg | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://ratsinfo.kreis-lb.de/default.php |
 | Landkreis Ludwigslust-Parchim | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Quelle antwortet mit HTTP 404) | https://bis.kreis-lup.de/si0040.asp |
 | Main-Taunus-Kreis | Verlinkte Seite antwortet Programmen mit HTTP 404 | https://www.mtk.org/Burgerinfoportal-3725.htm |
@@ -2965,12 +3014,11 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Odenwaldkreis | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sd.odenwaldkreis.de/ |
 | Rems-Murr-Kreis | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://lrarmk-sitzungsdienst.komm.one/bi/default.asp |
 | Landkreis Rottweil | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://landkreis-rottweil.ratsinfomanagement.net/startseite |
-| Landkreis Saalfeld-Rudolstadt | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden | https://lk-slf-ru.ratsinfomanagement.net/ |
+| Landkreis Saalfeld-Rudolstadt | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (06.10.2026) | https://lk-slf-ru.ratsinfomanagement.net/ |
 | Saarpfalz-Kreis | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://ratsinfo.saarpfalz-kreis.de/gremieninfo/ |
 | Landkreis Sigmaringen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://landkreis-sigmaringen.ratsinfomanagement.net/startseite |
 | Landkreis Sonneberg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://kreis-sonneberg.ratsinformationsdienst.de/ |
 | Kreis Steinburg | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 404) | https://www.steinburg.de/politik/kreistag-und-ausschuesse/allris.html |
-| Landkreis Vorpommern-Greifswald | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://kreis-vg.ratsinfomanagement.net/ |
 | Landkreis Weimarer Land | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://weimarerland.ratsinfomanagement.net/ |
 | Stadt Aalen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.aalen.sitzung-online.de/public/ |
 | Stadt Abensberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3007,12 +3055,11 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Altötting | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://altoetting.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html |
 | Stadt Alzenau | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://alzenau.ris.kommune-aktiv.de/ |
 | Verwaltungsgemeinschaft Am Brahmetal | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
-| Erfüllende Gemeinde Am Ettersberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Erfüllende Gemeinde Am Ettersberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
 | Verwaltungsverband Am Klosterwasser | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Am Mellensee | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://am-mellensee.ratsinfomanagement.net/ |
 | Gemeinde Am Ohmberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Amt Am Peenestrom | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
-| Gemeinde Ammersbek | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.ammersbek.sitzung-online.de/bi/allris.net.asp |
 | Gemeinde Ammerthal | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Amöneburg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://amoeneburg.ratsinfomanagement.net/startseite |
 | Stadt Amorbach | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (fetch failed) | http://buergerinfo-amorbach.de/info.php |
@@ -3031,7 +3078,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Arnstein | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://stadtarnstein.de/ansprechpartner/bildstoecke/ |
 | Gemeinde Arnstorf | Kein Ratsinformationssystem erkennbar; Sitzungen nur als Webseite oder PDF; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) | https://www.rottal-inn.de/landkreis-region/kreisentwicklung/gesundheitsregion-plus-landkreis-rottal-inn/buergerinfoportal/ |
 | Gemeinde Arrach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
-| Erfüllende Gemeinde Artern | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://somacos.de/loesungen/sitzungsmanagement/session/ |
 | Verbandsgemeinde Asbach | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.vg-asbach.de/ratsinfo/seite/339316/ratsinformationsdienst.html?href=/councilservice/session/documents |
 | Gemeinde Aschau i.Chiemgau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Ascheberg (Holstein) | Mitbenutztes System von Stadt Quickborn; die Leser trennen die Gremien eines gemeinsamen Systems nicht | https://www.quickborn.sitzung-online.de/public/ |
@@ -3059,10 +3105,9 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Bad Dürkheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Bad Dürrheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Bad Elster | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Verbandsgemeinde Bad Ems-Nassau | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen (Körperschaft nicht eindeutig dem ausgewählten Gebiet zugeordnet) | https://ratsinfo.vgben.de/oparl/system |
 | Gemeinde Bad Endorf | More! Rubin gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte | https://bad-endorf.gremien.info/ |
 | Stadt Bad Freienwalde (Oder) | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Bad Griesbach i.Rottal | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Stadt Bad Griesbach i.Rottal | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Verwaltungsgemeinschaft Bad Grönenbach | Kein unterstütztes Ratsinformationssystem erkannt | https://rathaus.bad-groenenbach.de/kommunalpolitik/marktgemeinderat/sitzungstermine |
 | Gemeinde Bad Heilbrunn | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.bad-heilbrunn.sitzung-online.de/bi/allris.net.asp |
 | Stadt Bad Homburg v.d.Höhe | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3081,7 +3126,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Bad Schussenried | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (fetch failed) | https://service.bad-schussenried.de/buergerinfo/info.php |
 | Stadt Bad Segeberg | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-bad-segeberg.de/bi2/si010_e.asp |
 | Stadt Bad Urach | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://bad-urach.ratsinfomanagement.net/ |
-| Stadt Bad Vilbel | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/bad-vilbel/ |
 | Amt Bad Wilsnack/Weisen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) | https://www.amtbww.de/ris/ |
 | Gemeinde Bad Zwesten | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://badzwesten.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html |
 | Stadt Ballenstedt | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://rats-info.ballenstedt.de/gi/login |
@@ -3095,13 +3139,12 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Amt Bargteheide-Land | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.bargteheide-land.sitzung-online.de/bi/si010_e.asp |
 | Stadt Barmstedt | Adresse mehreren Gebieten zugeordnet | https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/ |
 | Stadt Bärnau | Kommune aktiv: antwortet Programmen mit HTTP 403 | http://baernau.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html |
-| Gemeinde Barsbüttel | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.sitzungsdienst-barsbuettel.de/ri/logonc.asp?sessionId=495325452 |
+| Gemeinde Barsbüttel | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.sitzungsdienst-barsbuettel.de/ri/logonc.asp?sessionId=702927048 |
 | Amt Barth | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://session.amt-barth.de/bi/info.asp |
 | Gemeinde Bartholomä | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Battenberg (Eder) | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Verbandsgemeinde Baumholder | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Bayrischzell | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Bebra | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen | https://bebra.ratsinfomanagement.net/ |
 | Gemeinde Beckingen | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://www.beckingen.de/ratsinfo/default.php |
 | Verbandsgemeinde Beetzendorf-Diesdorf | Kein unterstütztes Ratsinformationssystem erkannt | https://www.beetzendorf-diesdorf.de/seite/689140/b%C3%BCrger-und-ratsinformationssystem-sitzungskalender.html |
 | Verwaltungsgemeinschaft Beilrode | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
@@ -3121,7 +3164,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Bernstadt/Schönau-Berzdorf | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 404) (05.10.2026) |  |
 | Gemeinde Bessenbach | Kommune aktiv: antwortet Programmen mit HTTP 403 | http://bessenbach.ris.kommune-aktiv.de/ |
 | Gemeinde Bestensee | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://bestensee.ratsinfomanagement.net/ |
-| Verbandsgemeinde Betzdorf-Gebhardshain | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.betzdorf.sitzung-online.de/bi/ |
 | Gemeinde Betzenweiler | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Betzigau | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://betzigau.ris.kommune-aktiv.de/intern/ |
 | Gemeinde Beuren | RIS-Portal regisafe (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Sitzungsliste 12/2026: Quelle antwortet mit HTTP 403) | https://beuren.ris-portal.de/startseite |
@@ -3138,7 +3180,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Bischberg | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (fetch failed) | http://www.buergerinfo-bischberg.de/kp0040.php?__kgrnr=1000 |
 | Gemeinde Bischoffen | RIS-Portal regisafe (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Sitzungsliste 12/2026: Quelle antwortet mit HTTP 401) | https://bischoffen.ris-portal.de/anmelden |
 | Gemeinde Bischofsgrün | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Bischofsmais | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden | https://www.bischofsmais.de/poi/biancas-kosmetikstube/ |
+| Gemeinde Bischofsmais | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (2 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (06.10.2026) | https://www.bischofsmais.de/poi/biancas-kosmetikstube/ |
 | Verwaltungsgemeinschaft Bischofswerda | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://bischofswerda.ratsinfomanagement.net/ |
 | Gemeinde Bischofswiesen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Bissingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3158,10 +3200,9 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Bönningstedt | Mitbenutztes System von Stadt Quickborn; die Leser trennen die Gremien eines gemeinsamen Systems nicht | https://www.quickborn.sitzung-online.de/public/ |
 | Verwaltungsgemeinschaft Boos | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://vg-boos.ris.kommune-aktiv.de/?cvg=VGB |
 | Stadt Boppard | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen (OParl HTTP 403) | https://www.boppard.sitzung-online.de/bi/oparl/1.0/system.asp |
-| Gemeinde Bördeland | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
-| Amt Bordesholm | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.amt-bordesholm.sitzung-online.de/bi/allris.net.asp |
+| Gemeinde Bördeland | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Stadt Borken (Hessen) | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/borken/ |
-| Amt Bornhöved | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.bornhoeved.sitzung-online.de/pi/si010_e.asp |
+| Amt Bornhöved | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.bornhoeved.sitzung-online.de/pi/si010_e.asp |
 | Gemeinde Börslingen | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://vv-langenau.ris-portal.de/startseite |
 | Gemeinde Börtlingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Bosau | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://www.agps.sitzung-online.de/public/si010 |
@@ -3176,13 +3217,11 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Breitenbrunn | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Breitenbrunn/Erzgeb. | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
 | Amt Breitenburg | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.breitenburg.sitzung-online.de/bi2/pa020.asp?PALFDNR=1 |
-| Amt Breitenfelde | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.amt-breitenfelde.sitzung-online.de/public/ |
 | Gemeinde Breitingen | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://vv-langenau.ris-portal.de/startseite |
 | Gemeinde Breitnau | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://breitnau.ris.kommune-aktiv.de/ |
 | Gemeinde Breitscheid | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/breitscheid/termine |
-| Stadt Bremen | SD.NET mit antwortender OParl-Schnittstelle, die keine verwertbaren Sitzungen lieferte; öffentliche Seiten werden dann nicht gelesen (Freigabe erforderlich) | https://sd.bremische-buergerschaft.de/ |
 | Gemeinde Brensbach | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/brensbach/termine |
-| Amt Brieskow-Finkenheerd | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://brieskow-finkenheerd.ratsinfomanagement.net/termine |
+| Amt Brieskow-Finkenheerd | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://brieskow-finkenheerd.ratsinfomanagement.net/termine |
 | Stadt Bruchköbel | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/bruchkoebel/gremien/?__=UGhVM0hpd2NXNFdFcExjZXyXfpjY97fUGxT5zlghMS8 |
 | Gemeinde Bruckberg | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://ratsinfo-bruckberg.digitalfabrix.de/ylogon.asp?smcpn=info&smclom=1 |
 | Gemeinde Bubsheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3193,7 +3232,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Budenheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (5 ohne erkennbaren öffentlichen Teil, 5 nicht lesbar) (05.10.2026) |  |
 | Stadt Büdingen | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/error_path/503.html?al_req_id=asJJ29tKzShy9ShaiZdBegAAAG4 |
 | Gemeinde Bühlertann | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://buehlertann.ratsinformationsdienst.de/ |
-| Amt Burg-St. Michaelisdonn | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.burg-st-michaelisdonn.sitzung-online.de/pi/si010_e.asp |
+| Amt Burg-St. Michaelisdonn | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.burg-st-michaelisdonn.sitzung-online.de/pi/si010_e.asp |
 | Verwaltungsgemeinschaft Burgbernheim | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 404) (05.10.2026) | https://www.burgbernheim.de/ratsinfo/ |
 | Verwaltungsgemeinschaft Burgebrach | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://buergerinfo-vg-burgebrach.digitalfabrix.de/info.asp |
 | Erfüllende Gemeinde Bürgel | Kein unterstütztes Ratsinformationssystem erkannt | https://stadt-buergel.mein-intra.net/login |
@@ -3210,13 +3249,11 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Calau | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.calau.de/seite/673766/ris.html?href=/councilservice/session/list |
 | Gemeinde Calden | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Callenberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Calw | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Cavertitz | Kein unterstütztes Ratsinformationssystem erkannt | https://cavertitz.mein-intra.net/login |
 | Stadt Cham | SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Vorlagenliste: Unbekanntes Format der Vorlagenliste) | https://ratsinfo.cham.de/ |
 | Gemeinde Chamerau | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Claußnitz | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://claussnitz.ris.kommune-aktiv.de/ |
 | Gemeinde Cleebronn | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://www.cleebronn.de/ris/ |
-| Stadt Coburg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ris.coburg.de/gremien |
 | Stadt Colditz | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://colditz.ratsinfomanagement.net/ |
 | Gemeinde Cornberg | Kein unterstütztes Ratsinformationssystem erkannt | https://cornberg.ratsinformationsdienst.de/ |
 | Stadt Creglingen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3225,9 +3262,9 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Dachsberg (Südschwarzwald) | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Dahlen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Dahme | Mitbenutztes System von Gemeinde Grömitz; die Leser trennen die Gremien eines gemeinsamen Systems nicht | https://www.groemitz.sitzung-online.de/integration/gr010?1&menu=Gemeindevertretung |
-| Amt Dänischer Wohld | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.amt-daenischer-wohld.sitzung-online.de/ri/logon.asp |
+| Amt Dänischer Wohld | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 404) | https://www.amt-daenischer-wohld.sitzung-online.de/ri/logon.asp |
 | Verbandsgemeinde Dannstadt-Schauernheim | Verlinkte Seite antwortet Programmen nicht (keine Verbindung) | https://dannstadt-schauernheim.more-rubin1.de/ |
-| Verwaltungsgemeinschaft Dasing | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Verwaltungsgemeinschaft Dasing | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Dautmergen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Dautphetal | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/dautphetal/ |
 | Verbandsgemeinde Deidesheim | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Website antwortet Programmen mit HTTP 403 (05.10.2026) |  |
@@ -3261,7 +3298,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Drebach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (7 ohne erkennbaren öffentlichen Teil, 20 nicht lesbar) (05.10.2026) | https://gemeinde-drebach.de/branchenverzeichnis/bid-buergerinitiative-drebach-kommunal-oekologisch-e-v/ |
 | Gemeinde Dummerstorf | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 404) | https://dummerstorf.sitzung-mv.de/ratsinfo/logon |
 | Gemeinde Durbach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
-| Gemeinde Dürbheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Dürbheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Durmersheim | RIS-Portal regisafe (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Sitzungsliste 12/2026: Quelle antwortet mit HTTP 403) | https://durmersheim.ris-portal.de/ |
 | Gemeinde Dürnau | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Dürnau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3271,7 +3308,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Eberdingen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://www.eberdingen.de/ris/ |
 | Stadt Ebersbach an der Fils | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Ebersbach-Musbach | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=6 |
-| Gemeinde Ebersburg | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.ebersburg.sitzung-online.de/public/dooeff |
 | Gemeinde Eberstadt | Mitbenutztes System von Stadt Weinsberg; die Leser trennen die Gremien eines gemeinsamen Systems nicht | https://sdnet.raum-weinsberg.de/termine/?__=UGhVM0hpd2NXNFdFcExjZU5ItcC-ilEYSXseWATcdABh2dc0iPr9X5sEN3RloO96cpSncogV5YqTqQzpO-rEPg |
 | Verwaltungsgemeinschaft Ebrach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Ebsdorfergrund | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3309,7 +3345,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Ellhofen | Mitbenutztes System von Stadt Weinsberg; die Leser trennen die Gremien eines gemeinsamen Systems nicht | https://sdnet.raum-weinsberg.de/termine/?__=UGhVM0hpd2NXNFdFcExjZf61pE5zTSR7IpTda4hTRRpjy6QhnkOJWpcdnYs6q-vsvRmFH1aRheQ7UosJvLKbPA |
 | Stadt Ellrich | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.stadtellrich.de/seite/670799/ris.html?href=/councilservice/session/list |
 | Stadt Ellwangen (Jagst) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ellwangen.ratsinfomanagement.net/ |
-| Amt Elmshorn-Land | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.amt-elmshorn-land.sitzung-online.de/public/dooeff |
 | Gemeinde Elsterheide | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 2 nicht lesbar) (05.10.2026) |  |
 | Stadt Elstra | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Eltmann | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://eltmann.ris.kommune-aktiv.de/kalender/de/rathaus/-/-/calendar_show |
@@ -3317,7 +3352,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Erfüllende Gemeinde Elxleben | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (20 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Emeringen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Emerkingen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Verwaltungsgemeinschaft Emmerting | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden | https://www.gemeinde-emmerting.de/ |
+| Verwaltungsgemeinschaft Emmerting | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) | https://www.gemeinde-emmerting.de/ |
 | Gemeinde Engelsbrand | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://engelsbrand.ratsinfomanagement.net/ |
 | Stadt Engen | Verlinkte Seite antwortet Programmen nicht (keine Verbindung) | https://session.engen.de/buergerinfo/ |
 | Gemeinde Eningen unter Achalm | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://eningen.ratsinfomanagement.net/ |
@@ -3332,7 +3367,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Ering | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://ratsinfo-vg-ering.digitalfabrix.de/ylogon.asp?smcpn=info&smclom=1 |
 | Verwaltungsgemeinschaft Erkheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
 | Stadt Erkner | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://sessionnet.owl-it.de/erkner/bi/info.asp |
-| Gemeinde Erlau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden | https://www.gemeindeerlau.de/de/startseite.html |
+| Gemeinde Erlau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) | https://www.gemeindeerlau.de/de/startseite.html |
 | Stadt Erlensee | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/erlensee/ |
 | Gemeinde Erolzheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Verwaltungsgemeinschaft Ershausen/Geismar | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
@@ -3375,7 +3410,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Forstinning | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://forstinning.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html |
 | Gemeinde Frammersbach | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://frammersbach.ris.kommune-aktiv.de/kalender/de/rathaus/26/-/start |
 | Stadt Frankenau | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.frankenau.de/seite/697078/seite-f%C3%BCr-ris.html?href=/councilservice/session/list |
-| Stadt Frankenberg (Eder) | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/frankenberg/ |
 | Gemeinde Frankenblick | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Frankenhardt | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://frankenhardt.ris.kommune-aktiv.de/?cvg=FR |
 | Stadt Frankfurt am Main | Kein unterstütztes Ratsinformationssystem erkannt | https://www.stvv.frankfurt.de/parlis2/parlis.html |
@@ -3387,7 +3421,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Freiamt | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://freiamt.ratsinfomanagement.net/ |
 | Stadt Freiberg am Neckar | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://freiberg-an.ratsinfomanagement.net/ |
 | Gemeinde Freiensteinau | Kein unterstütztes Ratsinformationssystem erkannt | https://cloud-freiensteinau.de/index.php/s/NYd94OPeLixnSkC |
-| Stadt Freising | Kein unterstütztes Ratsinformationssystem erkannt |  |
 | Gemeinde Fremdingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Freudenberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Friedberg (Hessen) | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/friedberg/ |
@@ -3399,12 +3432,10 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Friesenheim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://friesenheim.ratsinfomanagement.net/termine |
 | Gemeinde Friolzheim | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Fuchsmühl | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Fulda | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen (Körperschaft nicht eindeutig dem ausgewählten Gebiet zugeordnet) | https://fulda.ratsinfomanagement.net/ |
 | Stadt Fürstenberg/Havel | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://fuerstenberg-havel.ratsinfomanagement.net/ |
 | Gemeinde Fürstenzell | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://ratsinfo-fuerstenzell.digitalfabrix.de/default.asp |
 | Verwaltungsgemeinschaft Furth | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Fürth | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/fuerth/ |
-| Stadt Fürth | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (fetch failed) | https://ratsinfo.fuerth.de/ |
 | Stadt Furth im Wald | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Gaiberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Gaißach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3412,7 +3443,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Gammertingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://gammertingen.ratsinfomanagement.net/startseite |
 | Gemeinde Gangkofen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Garching a.d.Alz | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://garching-alz.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html |
-| Gemeinde Garmisch-Partenkirchen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
+| Gemeinde Garmisch-Partenkirchen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (06.10.2026) |  |
 | Amt Gartz (Oder) | Kein unterstütztes Ratsinformationssystem erkannt | https://www.amt-gartz.de/ris/ti-1/index.php |
 | Gemeinde Gaukönigshofen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Gedern | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/gedern/termine |
@@ -3445,7 +3476,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Giengen an der Brenz | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.giengen.sitzung-online.de/bi/si010_j.asp |
 | Stadt Gießen | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/error_path/503.html?al_req_id=asJK_3DlPtCOw6SNS3noiQAAADw |
 | Stadt Ginsheim-Gustavsburg | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://gigu.gremien.info/ |
-| Gemeinde Glashütten | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/glashuetten/webservice/oparl/v1.1/system |
 | Gemeinde Glauburg | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/glauburg/ |
 | Gemeinde Glottertal | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Göda | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.goeda.de/seite/646660/ris.html?href=/councilservice/session/list |
@@ -3457,7 +3487,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Gottenheim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://gottenheim.ratsinfomanagement.net/ |
 | Gemeinde Graben | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://www.graben.de/ansprechpartner/biedermann-julia/ |
 | Gemeinde Graben-Neudorf | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://graben-neudorf.ratsinfomanagement.net/ |
-| Gemeinde Grabenstetten | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Grabenstetten | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Stadt Grafenwöhr | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://grafenwoehr.de/freizeit-kultur/kulturangebot/stadtfuehrungen/bierlohe/ |
 | Gemeinde Grafling | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Grainet | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3473,7 +3503,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Greußen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Amt Grevesmühlen-Land | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://grevesmuehlen.sitzung-mv.de/public/ |
 | Gemeinde Griesingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Grömbach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Grömbach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Grömitz | Adresse mehreren Gebieten zugeordnet | https://www.groemitz.sitzung-online.de/integration/gr010?1&menu=Gemeindevertretung |
 | Stadt Groß-Bieberau | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Website antwortet Programmen mit HTTP 403 (05.10.2026) |  |
 | Stadt Groß-Gerau | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/error_path/503.html?al_req_id=asJLIQNZGgPpNYtL32FaLwAAAjY |
@@ -3522,7 +3552,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Haldenwang | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Verwaltungsgemeinschaft Halfing | Kein unterstütztes Ratsinformationssystem erkannt | https://www.total-lokal.de/publikationen/buergerinformationsbroschuere-der-gemeinde-halfing-auflage-1-.html |
 | Gemeinde Halsbrücke | Kein unterstütztes Ratsinformationssystem erkannt | https://ris-halsbruecke.mein-intra.net/login |
-| Gemeinde Halstenbek | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.halstenbek.sitzung-online.de/bi/si010_e.asp |
 | Stadt Hammelburg | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://hammelburg.ris.kommune-aktiv.de/?cvg=HB |
 | Gemeinde Hammersbach | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/hammersbach/ |
 | Verwaltungsgemeinschaft Hanstein-Rusteberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
@@ -3551,7 +3580,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Heideland-Elstertal-Schkölen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Heidesee | Kein unterstütztes Ratsinformationssystem erkannt | https://politik.gemeinde-heidesee.de/ti-3/ |
 | Verwaltungsgemeinschaft Heigenbrücken | Kommune aktiv: antwortet Programmen mit HTTP 403 | http://vg-heigenbruecken.ris.kommune-aktiv.de/intern |
-| Stadt Heiligenhafen | Kein unterstütztes Ratsinformationssystem erkannt | https://stream.lifesizecloud.com/extension/16533589/323e3161-61a3-416a-911c-a746cef79fc7 |
 | Gemeinde Heiligenstadt i.OFr. | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.markt-heiligenstadt.de/sessionnet/bi/gr0040.php |
 | Gemeinde Heimenkirch | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://heimenkirch.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html |
 | Stadt Heimsheim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://heimsheim.ratsinfomanagement.net/ |
@@ -3579,9 +3607,8 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Hirschberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Hirschhorn (Neckar) | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/hirschhorn/ |
 | Gemeinde Hirschstein | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
-| Gemeinde Hirzenhain | Offizielle Website antwortet Programmen nicht (HTTP 403/503) |  |
+| Gemeinde Hirzenhain | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Website antwortet Programmen mit HTTP 403 (06.10.2026) |  |
 | Gemeinde Hochkirch | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Höchst i.Odw. | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/hoechst/ |
 | Verwaltungsgemeinschaft Höchstadt a.d.Aisch | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://www.vg-hoechstadt.de/ |
 | Gemeinde Hofbieber | RIS-Portal regisafe (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://hofbieber.ris-portal.de/startseite |
 | Gemeinde Höfen an der Enz | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://hoefen-enz.ratsinfomanagement.net/startseite |
@@ -3601,7 +3628,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Hohndorf | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Amt Hohner Harde | Gemeinsames System mehrerer Gemeinden (auch Amt Fockbek); der Teil des Gebiets ist noch nicht festgelegt | https://fockbek.ris-portal.de/web/ratsinformation/gremien |
 | Stadt Hohnstein | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
-| Verbandsgemeinde Höhr-Grenzhausen | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen (Körperschaft nicht eindeutig dem ausgewählten Gebiet zugeordnet) | https://hoehr-grenzhausen.gremien.info/oparl/system |
 | Gemeinde Hollenbach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://www.gemeinde-hollenbach.de/bildung/ |
 | Verwaltungsgemeinschaft Holzheim | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Holzkirch | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://vv-langenau.ris-portal.de/startseite |
@@ -3610,7 +3636,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Amt Hörnerkirchen | Adresse mehreren Gebieten zugeordnet | https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/ |
 | Gemeinde Hörselberg-Hainich | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Hoßkirch | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=9 |
-| Gemeinde Hüffenhardt | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
 | Verwaltungsgemeinschaft Hügelland/Täler | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Verwaltungsgemeinschaft Huglfing | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 302) (05.10.2026) |  |
 | Amt Hürup | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (06.10.2026) |  |
@@ -3653,7 +3678,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Johanngeorgenstadt | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Johanniskirchen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Jöhstadt | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Jossgrund | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/jossgrund/ |
 | Gemeinde Jungingen | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://jungingen.ris.kommune-aktiv.de/seite/de/rathaus/020/-/anmelden.html |
 | Stadt Jüterbog | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
 | Gemeinde Käbschütztal | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3691,9 +3715,8 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Kirchberg i.Wald | Kein unterstütztes Ratsinformationssystem erkannt | https://kirchbergimwald.mein-intra.net/login |
 | Gemeinde Kirchdorf an der Iller | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Kirchdorf i.Wald | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 4 nicht lesbar) (05.10.2026) |  |
-| Verbandsgemeinde Kirchen (Sieg) | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.vgkirchen.sitzung-online.de/bi/pa000.asp?REDIRTO=%2Fbi%2Fdo011%5Fx%2Easp |
 | Gemeinde Kirchensittenbach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Kirchentellinsfurt | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Kirchentellinsfurt | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Verwaltungsgemeinschaft Kirchenthumbach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Kirchham | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 2 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Kirchheim am Neckar | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://kirchheim-neckar.ratsinfomanagement.net/startseite |
@@ -3713,21 +3736,17 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Köngen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://koengen.ratsinfomanagement.net/ |
 | Gemeinde Königsbach-Stein | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://koenigsbach-stein.ratsinfomanagement.net/gremien/?__=UGhVM0hpd2NXNFdFcExjZb0zebbFHxHN4xCDSqBE8T0 |
 | Stadt Königsberg i.Bay. | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://koenigsberg.ris.kommune-aktiv.de/seite/de/rathaus/023/-/Gremien.html |
-| Stadt Königsbrunn | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://koenigsbrunn.ratsinfomanagement.net/ |
 | Erfüllende Gemeinde Königsee | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://vg-schwarzatal.ris-portal.de/ |
 | Gemeinde Königseggwald | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=11 |
 | Gemeinde Königshain-Wiederau | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.xn--knigshain-wiederau-d3b.de/seite/362394/RIS.html%20?href=/councilservice/commission/mayor |
 | Gemeinde Königsheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Königstein im Taunus | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/koenigstein/webservice/oparl/v1.1/system |
 | Verwaltungsgemeinschaft Königstein/Sächs.Schw. | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 2 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Königswartha | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://koenigswartha.ratsinformationsdienst.de/seite/652790/ris.html |
 | Stadt Könnern | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Konnersreuth | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Konstanz | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.konstanz.sitzung-online.de/public/si010 |
 | Gemeinde Konzell | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://konzell.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html |
 | Gemeinde Korb | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://korb.ratsinfomanagement.net/ |
 | Gemeinde Körle | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (12 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Korntal-Münchingen | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://www.km.sitzung-online.de/public/ |
 | Gemeinde Kößlarn | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Kottmar | Kommune aktiv: antwortet Programmen mit HTTP 403 | http://gemeinde-kottmar.ris.kommune-aktiv.de/ |
 | Gemeinde Kraftsdorf | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.kraftsdorf.de/seite/599270/ris.html?href_35b803e7-770f334a-02b243d6-68d11913=/councilservice/group/municipalityRepresentation |
@@ -3738,7 +3757,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Kreuzwertheim | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Kriebstein | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Kronau | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://kronau.ratsinfomanagement.net/ |
-| Stadt Kronberg im Taunus | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen | https://kronberg.ratsinfomanagement.net/webservice/oparl/v1.1/system |
 | Verwaltungsgemeinschaft Krumbach (Schwaben) | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 404) (06.10.2026) |  |
 | Verwaltungsgemeinschaft Krummennaab | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 2 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Kulmain | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
@@ -3764,7 +3782,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Langgöns | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/langgoens/startseite |
 | Gemeinde Lauben | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://lauben.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html |
 | Gemeinde Lauf | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lauf.ratsinfomanagement.net/startseite |
-| Stadt Lauffen am Neckar | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden | https://www.lauffen.de/ris/ |
+| Stadt Lauffen am Neckar | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) | https://www.lauffen.de/ris/ |
 | Stadt Lauscha | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Laußig | KOMFA-RIS (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ris-laussig.komfa.de/index.php?module=komfaris&action=main |
 | Stadt Lauta | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
@@ -3772,7 +3790,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Lauter-Bernsbach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (20 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Lauterach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Lauterbach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Lebach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Stadt Lebach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Lechbruck am See | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://lechbruck.ris.kommune-aktiv.de/ |
 | Verwaltungsgemeinschaft Lechfeld | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://buergerinfo-lechfeld.digitalfabrix.de/info.asp |
 | Gemeinde Lehrensteinsfeld | Mitbenutztes System von Stadt Weinsberg; die Leser trennen die Gremien eines gemeinsamen Systems nicht | https://sdnet.raum-weinsberg.de/termine/?__=UGhVM0hpd2NXNFdFcExjZXOQWhfh1xxPm3WqEa9WGjnMoJHtNU7i1wzUUVutEXjH |
@@ -3795,7 +3813,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Lichtenau | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://lichtenau.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html |
 | Gemeinde Lichtenau | Kommune aktiv: antwortet Programmen mit HTTP 403 | http://markt-lichtenau.ris.kommune-aktiv.de/ |
 | Verwaltungsgemeinschaft Lichtenberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Lichtenfels | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/lichtenfels/ |
 | Stadt Lichtenfels | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://lichtenfels.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html |
 | Gemeinde Lichtenstein | Kein unterstütztes Ratsinformationssystem erkannt | https://meeting-mobile.de/mm/lichtenstein/ris_web.nsf/meeting_period_doc.xsp |
 | Gemeinde Lichtentanne | Kein unterstütztes Ratsinformationssystem erkannt | https://gemeinde-lichtentanne.mein-intra.net/login |
@@ -3819,7 +3836,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Löwenstein | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://loewenstein.ratsinfomanagement.net/ |
 | Amt Lubmin | Kein unterstütztes Ratsinformationssystem erkannt | https://www.amtlubmin.de/politik/sitzungskalender.php |
 | Stadt Lucka | Kein unterstütztes Ratsinformationssystem erkannt | https://www.lucka.de/sessionnet/ |
-| Gemeinde Ludwigsau | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/ludwigsau/termine |
 | Stadt Ludwigslust | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://ris.ludwigslust.de/ylogon.asp?smcpn=info&smclom=1 |
 | Stadt Ludwigsstadt | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Verwaltungsgemeinschaft Lugau | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://lugau.ris.kommune-aktiv.de/seite/de/rathaus/020/-/anmelden.html |
@@ -3837,14 +3853,13 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Mainburg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Amt Malchow | TI-Generator (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite: fetch failed) | http://infosystem.inselstadt-malchow.de/ris/ti-malchow-4/ |
 | Gemeinde Mallersdorf-Pfaffenberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Malsburg-Marzell | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Malsburg-Marzell | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website antwortet Programmen mit HTTP 403 (06.10.2026) |  |
 | Gemeinde Malsch | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Malschwitz | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 20 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Malsfeld | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://malsfeld.ris.kommune-aktiv.de/kalender/de/rathaus/-/-/calendar_show |
 | Verwaltungsgemeinschaft Mamming | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (13 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Mantel | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Marbach am Neckar | Verlinktes System führt nur einen Demo-Mandanten des Herstellers (z. B. „Stadt Musterstadt“) | https://www.ratsinfomanagement.net/ |
-| Gemeinde March | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://march.ratsinfomanagement.net/ |
 | Verwaltungsgemeinschaft Margetshöchheim | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (fetch failed) | http://bis-margetshoechheim.de/info.php |
 | Gemeinde Markersdorf | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Amt Märkische Schweiz | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://amt-maerkische-schweiz.ratsinfomanagement.net/ |
@@ -3856,7 +3871,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Marlow | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Marpingen | Kein unterstütztes Ratsinformationssystem erkannt | https://www.findcity.de/?m=gemeinde-marpingen-buergerinfo-66646b |
 | Gemeinde Marxheim | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
-| Gemeinde Marxzell | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Marxzell | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (2 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Marzling | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://marzling.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html |
 | Verwaltungsgemeinschaft Maßbach | KIC-RIS (öffentliche Gast-Schnittstelle) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ris.komuna.net/massbach/ |
 | Gemeinde Massenbachhausen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
@@ -3872,7 +3887,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verwaltungsgemeinschaft Mellingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
 | Verwaltungsgemeinschaft Memmingerberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Mengen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://mengen.ratsinfomanagement.net/startseite |
-| Gemeinde Mengerskirchen | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/mengerskirchen/ |
 | Gemeinde Merdingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://merdingen.ratsinfomanagement.net/ |
 | Verwaltungsgemeinschaft Mering | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Mettenheim | Betreiber wies Programme bei der Prüfung wiederholt ab (HTTP 403/429); Neuprüfung später | https://www.gemeinde-mettenheim.de/seite/592801/mitglieder-des-gemeinderates.html/?href_47c7e3a3-c596e90e-0b001205-0e2df1f7=/councilservice/group/view/id/7/B%C3%BCrgermeister.html |
@@ -3888,7 +3902,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Mittenaar | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://mittenaar.ris.kommune-aktiv.de/kalender/de/rathaus/-/-/calendar_show |
 | Verwaltungsgemeinschaft Mitterfels | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Verwaltungsgemeinschaft Mitwitz | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Möckern | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Stadt Möckern | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website antwortet Programmen mit HTTP 403 (06.10.2026) |  |
 | Gemeinde Mockrehna | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Möglingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://moeglingen.ratsinfomanagement.net/ |
 | Gemeinde Mömbris | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://moembris.ris.kommune-aktiv.de/ |
@@ -3907,7 +3921,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Mühlhausen im Täle | Gemeinsames System mehrerer Gemeinden (auch Stadt Wiesensteig); der Teil des Gebiets ist noch nicht festgelegt | https://gvv-oberes-filstal.ris-portal.de/sitzungen?verwaltungId=14904 |
 | Gemeinde Muhr a.See | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Muldenhammer | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
-| Stadt Müllheim im Markgräflerland | Kein unterstütztes Ratsinformationssystem erkannt | https://meeting-mobile.de/mm/muellheim/ris_web.nsf/factionOverview_doc.xsp |
 | Stadt Müncheberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Münchhausen | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Münchsmünster | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://www.ratsinfo-muenchsmuenster.de/ylogon.php?smcpn=info& |
@@ -3927,7 +3940,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Nesselwang | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://www.nesselwang-buergerservice.de/ |
 | Erfüllende Gemeinde Nessetal | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Verwaltungsgemeinschaft Netzschkau-Limbach | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://netzschkau.ris.kommune-aktiv.de/ |
-| Stadt Neu-Anspach | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/neu-anspach/ |
 | Amt Neubukow-Salzhaff | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://neubukow-salzhaff.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html |
 | Gemeinde Neuburg a.d.Kammel | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (5 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Neudenau | Kein unterstütztes Ratsinformationssystem erkannt | https://ratsinformationssystem.neudenau.de/ris |
@@ -3964,7 +3976,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Neutraubling | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Amt Neuzelle | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte | https://www.neuzelle.de/seite/345268/ris.html?href_91e05f39-299bcad2-29cbfb74-9aef8180=/councilservice/commission/mayor |
 | Stadt Nidda | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://nidda.ratsinfomanagement.net/ |
-| Stadt Niddatal | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 401) | https://www.niddatal.sitzung-online.de/bi/ |
+| Stadt Niddatal | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.niddatal.sitzung-online.de/bi/si010_r.asp |
 | Gemeinde Niederau | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://gemeinde-niederau.ratsinformationsdienst.de/ratsinfo/sitzungen/liste.php |
 | Gemeinde Niederaula | Kein unterstütztes Ratsinformationssystem erkannt | https://www.niederaula.de/seite/306284?href=/councilservice/commission/mayor |
 | Gemeinde Niederdorfelden | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3979,13 +3991,13 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Nordhalben | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://nordhalben.ris.kommune-aktiv.de/ |
 | Gemeinde Nordrach | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://nordrach.ratsinfomanagement.net/startseite |
 | Amt Nordsee-Treene | Gemeinsames System mehrerer Gemeinden (auch Stadt Friedrichstadt); der Teil des Gebiets ist noch nicht festgelegt | https://amtnt.ris-portal.de/web/ratsinformation/startseite |
-| Amt Nordstormarn | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.amtnordstormarn.sitzung-online.de/ri/logon.asp |
+| Amt Nordstormarn | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.amtnordstormarn.sitzung-online.de/ri/logon.asp |
 | Gemeinde Nordwestuckermark | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Erfüllende Gemeinde Nottertal-Heilinger Höhen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Nüdlingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Nusplingen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Nußdorf a.Inn | Kein unterstütztes Ratsinformationssystem erkannt |  |
-| Gemeinde Nußloch | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Nußloch | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Nuthetal | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Ober-Mörlen | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Ober-Ramstadt | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/ober-ramstadt/gremien |
@@ -4057,10 +4069,8 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Pentling | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Penzing | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://penzing.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html |
 | Amt Penzliner Land | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://amt-penzliner-land.ratsinfomanagement.net/termine |
-| Gemeinde Perl | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.perl.sitzung-online.de/bi-r/si010_r.asp |
-| Gemeinde Petersberg | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen | https://petersberg.ratsinfomanagement.net/webservice/oparl/v1.1/system |
+| Gemeinde Perl | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.perl.sitzung-online.de/bi-r/si010_r.asp |
 | Gemeinde Pfaffenhofen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) | https://www.pfaffenhofen-wuertt.de/ris/ |
-| Stadt Pfaffenhofen a.d.Ilm | Kein unterstütztes Ratsinformationssystem erkannt | https://buergermelder.pafunddu.de/projects/baustellenradar/ |
 | Verwaltungsgemeinschaft Pfaffing | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.sitzungsdienst-vgpfaffing.de/pi-pfaffing/pa020.asp?PALFDNR=3 |
 | Gemeinde Pfatter | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 2 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Pfedelbach | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://pfedelbach.ratsinfomanagement.net/ |
@@ -4101,14 +4111,13 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Ramsau b.Berchtesgaden | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Verbandsgemeinde Ramstein-Miesenbach | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ramstein-miesenbach.ratsinfomanagement.net/ |
 | Gemeinde Randersacker | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://randersacker.ris.kommune-aktiv.de/ |
-| Gemeinde Ranstadt | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/ranstadt/ |
 | Amt Rantzau | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (2 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Raschau-Markersbach | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://raschau-markersbach.ris.kommune-aktiv.de/ |
 | Gemeinde Ratshausen | Kein unterstütztes Ratsinformationssystem erkannt | https://www.ratshausen.de/sessionnet/ |
 | Stadt Raunheim | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Rechenberg-Bienenmühle | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (5 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Rechtenstein | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Amt Recknitz-Trebeltal | Offizielle Website antwortet Programmen nicht (HTTP 403/503) |  |
+| Amt Recknitz-Trebeltal | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Website antwortet Programmen mit HTTP 403 (06.10.2026) |  |
 | Stadt Regen | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://regen.ris.kommune-aktiv.de/ |
 | Stadt Regis-Breitingen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Regnitzlosau | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -4162,10 +4171,10 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Ronsberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Ronshausen | Kein unterstütztes Ratsinformationssystem erkannt | https://ris.ronshausen.de/ |
 | Gemeinde Rosenberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Rosengarten | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://rosengarten-sitzungsdienst.komm.one/bi/ |
+| Gemeinde Rosengarten | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://rosengarten-sitzungsdienst.komm.one/bi/default.asp |
 | Stadt Rosenthal | Kein unterstütztes Ratsinformationssystem erkannt | https://www.rosenthaler.de/seite/298623?href=/councilservice/legal-framework/list/type/1 |
 | Gemeinde Rosenthal am Rennsteig | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 20 nicht lesbar) (05.10.2026) |  |
-| Verwaltungsgemeinschaft Rositz | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.vg-rositz.de/seite/398864/ris.html/?href_a689b277-063795be-affe669c-5fe97c4b=/councilservice/group/view/id/9/Gemeinderat.html |
+| Verwaltungsgemeinschaft Rositz | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.vg-rositz.de/seite/398864/ris.html/?href_a689b277-063795be-affe669c-5fe97c4b=/councilservice/group/view/id/9/Gemeinderat.html |
 | Gemeinde Rossau | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 10 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Roßbach | KIC-RIS (öffentliche Gast-Schnittstelle) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ris.komuna.net/rossbach |
 | Gemeinde Roßdorf | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/rossdorf/ |
@@ -4192,20 +4201,18 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Runding | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Runkel | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Ruppertshofen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Rüsselsheim am Main | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/ruesselsheim/ |
 | Gemeinde Rust | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://kreistag.ortenaukreis.de/ |
 | Verwaltungsgemeinschaft Saal a.d.Donau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://saal-donau.de/adressen/bienenzuchtverein-saal/ |
 | Verwaltungsgemeinschaft Saal a.d.Saale | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Verbandsgemeinde Saale-Wipper | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ratsinfo.kitu-genossenschaft.de/saalewipper_bi/si0046.asp?__cpanr=1 |
 | Stadt Sachsenheim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.sachsenheim.de/gremien |
-| Gemeinde Samerberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden | https://ris.samerberg.de/index.php/login |
 | Amt Sandesneben-Nusse | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Sanitz | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Sankt Englmar | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Sankt Wolfgang | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Sasbach | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sasbach.ratsinfomanagement.net/ |
 | Gemeinde Sasbachwalden | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sasbachwalden.ratsinfomanagement.net/termine |
-| Verwaltungsgemeinschaft Sayda/Dorfchemnitz | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.sayda.eu/seite/463137/ris.html%20?href_03db8303-7d42dd53-6cf01e95-573cc397=/councilservice/session/list |
+| Verwaltungsgemeinschaft Sayda/Dorfchemnitz | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.sayda.eu/seite/463137/ris.html%20?href_03db8303-7d42dd53-6cf01e95-573cc397=/councilservice/session/list |
 | Gemeinde Schaafheim | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://schaafheim.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Rats-und_Buergerinformationssystem.html |
 | Amt Schafflund | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://amt-schafflund.ratsinformationsdienst.de/ |
 | Stadt Schalkau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -4229,7 +4236,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Schlaitdorf | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (3 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Schlangenbad | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/schlangenbad/startseite |
 | Amt Schlaubetal | Kein unterstütztes Ratsinformationssystem erkannt | https://www.amt-schlaubetal.de/politik/sitzungskalender.php |
-| Verwaltungsgemeinschaft Schleife | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.schleife-slepo.de/seite/364681?href=/councilservice/session/list |
+| Verwaltungsgemeinschaft Schleife | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.schleife-slepo.de/seite/364681?href=/councilservice/session/list |
 | Stadt Schleiz | Kein unterstütztes Ratsinformationssystem erkannt | https://schleiz.de/startseite?href=/councilservice/session/list |
 | Gemeinde Schleusegrund | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Amt Schlieben | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) | https://www.amt-schlieben.de/start/ |
@@ -4294,18 +4301,17 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Sinzheim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sinzheim.ratsinfomanagement.net/ |
 | Gemeinde Söchtenau | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://soechtenau.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html |
 | Gemeinde Sohland a.d.Spree | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
-| Gemeinde Sollstedt | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.sollstedt.de/seite/441712/ris.html?href_dd022f7a-6b87152f-4a2bda1b-0f3f0d45=/councilservice/group/municipalityRepresentation |
+| Gemeinde Sollstedt | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.sollstedt.de/seite/441712/ris.html?href_dd022f7a-6b87152f-4a2bda1b-0f3f0d45=/councilservice/group/municipalityRepresentation |
 | Stadt Sondershausen | Kein unterstütztes Ratsinformationssystem erkannt | https://ris-stadt-sondershausen.mein-intra.net/login |
-| Stadt Sonneberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
+| Stadt Sonneberg | Kein unterstütztes Ratsinformationssystem erkannt | https://sonneberg.de/rathaus/politik/stadtrat/termine-2.html |
 | Gemeinde Sonnen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
-| Gemeinde Soyen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden | https://www.soyen.de/termine/buergerinformationsveranstaltung-zur-geplanten-umnutzung-des-ehemaligen-seecafe-in-eine-asylunterkunft/ |
+| Gemeinde Soyen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) | https://www.soyen.de/termine/buergerinformationsveranstaltung-zur-geplanten-umnutzung-des-ehemaligen-seecafe-in-eine-asylunterkunft/ |
 | Stadt Spaichingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (2 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Spangenberg | Betreiber wies Programme bei der Prüfung wiederholt ab (HTTP 403/429); Neuprüfung später | https://spangenberg.ris.kommune-aktiv.de/intern/ |
 | Gemeinde Spechbach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Gefundene Bekanntmachungen nennen das Gebiet nicht (05.10.2026) |  |
 | Gemeinde Spiegelau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Spiegelberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Amt Spreenhagen | Offizielle Website antwortet Programmen nicht (HTTP 403/503); Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
-| Stadt Spremberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt St. Georgen im Schwarzwald | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde St. Leon-Rot | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://st-leon-rot.ratsinfomanagement.net/ |
 | Gemeinde St. Märgen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
@@ -4339,7 +4345,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Striegistal | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Strullendorf | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://strullendorf.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html |
 | Amt Südangeln | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.amt-suedangeln.sitzung-online.de/bi/si010_r.asp |
-| Gemeinde Südeichsfeld | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden | https://ratsinformationssystem.lg-suedeichsfeld.de/index.php/login |
 | Gemeinde Sulzbach (Taunus) | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) | https://www.sulzbach-taunus.de/ |
 | Verwaltungsgemeinschaft Sünching | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Täferrot | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -4349,15 +4354,13 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Tangstedt | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.itzstedt.sitzung-online.de/bi/au010.asp?PALFDNR=10 |
 | Stadt Tann (Rhön) | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.gvv-ulstertal.de/app/liste/?clientid=32 |
 | Gemeinde Tannhausen | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://tannhausen.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html |
-| Gemeinde Tapfheim | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.tapfheim.de/seite/491581/ris.html/?href_af039974-c02a3bc2-ec7d1703-6fa8fcd0=/councilservice/group/view/id/5/Gemeinderat.html |
+| Gemeinde Tapfheim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.tapfheim.de/seite/491581/ris.html/?href_af039974-c02a3bc2-ec7d1703-6fa8fcd0=/councilservice/group/view/id/5/Gemeinderat.html |
 | Gemeinde Taufkirchen (Vils) | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Nur Mitgliederbereich (Anmeldung), kein öffentlicher Teil) | https://buergerinfo.taufkirchen.de/default.php |
 | Stadt Taunusstein | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.taunusstein.de/bi/ |
 | Gemeinde Tegernheim | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://tegernheim.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html |
 | Gemeinde Teising | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://teising.de/ |
 | Gemeinde Teisnach | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Amt Temnitz | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
-| Stadt Templin | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://templin.ratsinfomanagement.net/ |
-| Stadt Teterow | Kein unterstütztes Ratsinformationssystem erkannt |  |
 | Gemeinde Tettau | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 1 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Tettenweis | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Teuchern | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://teuchern.allris.cloud/public/ |
@@ -4395,7 +4398,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Tüßling | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://tuessling.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.htm |
 | Stadt Tuttlingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://tuttlingen.ratsinfomanagement.net/gremien/?__=UGhVM0hpd2NXNFdFcExjZaJTGmSLgaF4laUxxqVhSQs |
 | Gemeinde Twistetal | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
-| Gemeinde Übersee | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
 | Stadt Uetersen | More! Rubin gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (https://uetersen.gremien.info/meeting?id=ni_2026-18-224: Sitzungsadresse auf anderem Host (uetersen.gremien.info): gemeinsames System, Körperschaft der Quelle nicht festgelegt) | https://ratsinfo.uetersen.de/ |
 | Gemeinde Uhlstädt-Kirchhasel | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Unlingen | RIS-Portal regisafe (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://unlingen.ris-portal.de/startseite |
@@ -4406,7 +4408,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Unterreichenbach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Unterschleißheim | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 401) (05.10.2026) |  |
 | Gemeinde Unterstadion | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Verwaltungsgemeinschaft Untersteinach | KIC-RIS (öffentliche Gast-Schnittstelle) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ris.komuna.net/vguntersteinach |
 | Gemeinde Unterwachingen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Gemeinde Unterwaldhausen | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=12 |
 | Gemeinde Ursberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -4418,21 +4419,19 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Vaterstetten | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-vaterstetten.de/bi2/si010.asp?PALFDNR=1 |
 | Verwaltungsgemeinschaft Veitsbronn | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://vg-veitsbronn.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem_der_Verwaltungsgemeinschaft_Veitsbronn.html |
 | Verwaltungsgemeinschaft Velden | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Stadt Vellmar | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://vellmar.ratsinfomanagement.net/ |
 | Stadt Veringenstadt | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://veringenstadt.ratsinfomanagement.net/ |
 | Gemeinde Viereth-Trunstadt | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://viereth-trunstadt.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem_der_Gemeinde_Viereth-Trunstadt.html |
 | Stadt Viernheim | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.viernheim.de/rathaus-politik/lokale-politik/buerger-app-ratsinfo.html |
 | Stadt Vilseck | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://vilseck.ris.kommune-aktiv.de/kalender/de/rathaus/-/-/calendar_show |
-| Erfüllende Gemeinde Vogtei | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.oppershausen.de/seite/589171/ris.html?href=/councilservice/group/municipalityRepresentation |
+| Erfüllende Gemeinde Vogtei | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.gemeinde-vogtei.de/seite/370061/ris.html?href_fb122a3b-71b2ef88-ffda1c9d-fe7c6224=/councilservice/commission/ortsbuergermeister/title/Ortschaftsb%C3%BCrgermeister |
 | Gemeinde Vöhl | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/voehl/ |
 | Stadt Volkmarsen | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/volkmarsen/startseite/ |
 | Verbandsgemeinde Vorharz | Kein unterstütztes Ratsinformationssystem erkannt | http://www.vorharz.online/Ratsmanager/ris/ti-1/ |
 | Gemeinde Wackersberg | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://wackersberg.ris.kommune-aktiv.de/intern/ |
-| Stadt Wadern | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen | https://www.wadern.sitzung-online.de/oparl/system |
 | Gemeinde Wadgassen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Waffenbrunn | Betreiber wies Programme bei der Prüfung wiederholt ab (HTTP 403/429); Neuprüfung später | https://www.waffenbrunn.de/seite/472784/ris.html?href_67d8c0bc-c9fe458e-46971d35-ca30c8b7=%2Fcouncilservice%2Fperson%2Fview%2Fid%2F3%2Fref%2F|https%3A||waffenbrunn.mein-intra.net|councilservice|group|municipalityRepresentation |
 | Stadt Waibstadt | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://waibstadt.ratsinfomanagement.net/ |
-| Gemeinde Wain | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.wain.de/seite/547578/ris.html?href_80f2cdb2-48cea691-f8333556-52e4f67c=/councilservice/session/list |
+| Gemeinde Wain | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.wain.de/seite/547578/ris.html?href_80f2cdb2-48cea691-f8333556-52e4f67c=/councilservice/session/list |
 | Stadt Waischenfeld | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Waldbrunn | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (2 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Waldburg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
@@ -4451,7 +4450,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Walluf | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/walluf/ |
 | Stadt Waltershausen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Wandlitz | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ris.wandlitz.de/bi/ |
-| Gemeinde Warngau | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Warngau | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (3 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Verwaltungsgemeinschaft Wartenberg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) | https://www.wartenberg.de/ |
 | Gemeinde Warthausen | RIS-Portal regisafe (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://warthausen.ris-portal.de/web/ratsinformation/startseite |
 | Gemeinde Wasserburg (Bodensee) | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -4467,7 +4466,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Weimar (Lahn) | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/weimar/gremien |
 | Stadt Weinsberg | Adresse mehreren Gebieten zugeordnet | https://sdnet.raum-weinsberg.de/termine/?__=UGhVM0hpd2NXNFdFcExjZaGS5x69V7nZulP8mr9GnxeAt-IFPVzUCaquE504evAgsVtYdmLu66VcMNAImGg7qDrONwrcP0ziQPYo8aUuOY2HrysMEVwukdSTqxrzn8nPdlBYt0n49IrdsZcJkMPpWmrcXGrCerK0otCiCrNEpoKy8zLh7BtPaF5EsCJbPgWg0wEK7SPB9gqvM98cQFZdHO5H-Oj_8aBtBrrUDvqK_2k |
 | Gemeinde Weisenbach | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (6 ohne erkennbaren öffentlichen Teil, 10 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Weiskirchen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Weiskirchen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Weissach im Tal | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Weißenberg | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://weissenberg.ris.kommune-aktiv.de/ |
 | Stadt Weißensee | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -4480,7 +4479,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Werra-Suhl-Tal | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Werther | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Verwaltungsgemeinschaft Wertingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 404) (05.10.2026) |  |
-| Gemeinde Weßling | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-wessling.de/pi/si010_r.asp |
 | Gemeinde Wessobrunn | KIC-RIS (öffentliche Gast-Schnittstelle) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ris.komuna.net/wessobrunn/Meeting.mvc |
 | Verwaltungsgemeinschaft Westendorf | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Verwaltungsgemeinschaft Westerwald-Obereichsfeld | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
@@ -4504,7 +4502,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Verbandsgemeinde Winnweiler | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.vg-winnweiler.sitzung-online.de/bi/si010_j.asp |
 | Gemeinde Winzer | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://buergerinfo-winzer.digitalfabrix.de/info.asp |
 | Gemeinde Wirsberg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
-| Amt Wittenburg | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.wittenburg.sitzung-online.de/bi/pa010.asp |
 | Stadt Wittichenau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://wittichenau.de/veranstaltung/bibelmobil-der-evangelischen-kirche/ |
 | Gemeinde Wittighausen | Kein unterstütztes Ratsinformationssystem erkannt |  |
 | Gemeinde Wittlingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (3 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -4513,7 +4510,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Wolfratshausen | Kein unterstütztes Ratsinformationssystem erkannt | https://www.sitzungsdienst-wolfratshausen.de/pi2/si010_e.asp |
 | Verbandsgemeinde Wöllstein | Verlinkte Seite antwortet Programmen nicht (keine Verbindung) | https://woellstein.more-rubin1.de/ |
 | Gemeinde Woltersdorf | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
-| Gemeinde Wörnersberg | Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.woernersberg.de/seite/542042/ris.html%20?href=/councilservice/commission/mayor |
+| Gemeinde Wörnersberg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.woernersberg.de/seite/542042/ris.html%20?href=/councilservice/commission/mayor |
 | Gemeinde Wört | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Verwaltungsgemeinschaft Wörth a.d.Donau | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Verwaltungsgemeinschaft Wörth a.d.Isar | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) | https://www.vg.woerth-isar.de/ |

@@ -330,6 +330,25 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.katlenburglindau.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03155009",
+    "name": "Stadt Moringen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.moringen.de/",
+    "pages": [
+      "https://www.moringen.de/stadt-moringen/aktuelles-archiv/bericht-der-buergermeisterin-ueber-wichtige-angelegenheiten-und-ueber-beschluesse-des-verwaltungsausschuss/",
+      "https://www.moringen.de/stadt-moringen/aktuelles-archiv/bericht-der-buergermeisterin-ueber-wichtige-angelegenheiten-und-ueber-beschluesse-des-verwaltungsausschuss-oktober/",
+      "https://www.moringen.de/stadt-moringen/rathaus/bekanntmachungen/",
+      "https://www.moringen.de/stadt-moringen/aktuelles-archiv/bericht-der-buergermeisterin-ueber-wichtige-angelegenheiten-und-ueber-beschluesse-des-verwaltungsausschuss-oktober-1/",
+      "https://www.moringen.de/stadt-moringen/aktuelles-archiv/umlaufbeschluss-des-stadtrates-zur-aufnahme-in-das-sofortprogramm-perspektive-innenstadt/"
+    ],
+    "sitemap": "https://www.moringen.de/sitemap.xml",
+    "verifiedSource": "http://www.moringen.de",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nds-03155011",
     "name": "Stadt Northeim",
     "kind": "city",
@@ -558,6 +577,17 @@
     "verifiedSource": "https://www.bovenden.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03159010",
+    "name": "Stadt Duderstadt",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/duderstadt/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.duderstadt.de/portal/seiten/kommunalpolitik-gremien-900000043-25420.html",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "nds-03159015",
@@ -938,6 +968,24 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.aerzen.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03252002",
+    "name": "Stadt Bad Münder am Deister",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bad-muender.de/",
+    "pages": [
+      "https://www.bad-muender.de/rathaus/service/bekanntmachungen.html?start=11"
+    ],
+    "feeds": [
+      "https://www.bad-muender.de/rathaus/service/bekanntmachungen.feed?type=rss",
+      "https://www.bad-muender.de/rathaus/service/bekanntmachungen.feed?type=atom"
+    ],
+    "verifiedSource": "https://www.bad-muender.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nds-03252003",
     "name": "Stadt Bad Pyrmont",
     "kind": "city",
@@ -1209,6 +1257,20 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.weser-aue.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03257009",
+    "name": "Stadt Bückeburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bueckeburg.de/",
+    "pages": [
+      "https://www.bueckeburg.de/willkommen"
+    ],
+    "verifiedSource": "https://www.bueckeburg.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
     "id": "nds-03257028",
     "name": "Stadt Obernkirchen",
     "kind": "city",
@@ -1241,6 +1303,24 @@
     "verifiedSource": "https://www.stadthagen.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.stadthagen.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-032575402",
+    "name": "Samtgemeinde Lindhorst",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.sg-lindhorst.de/",
+    "pages": [
+      "https://www.sg-lindhorst.de/bekanntmachungen/index.php",
+      "https://www.sg-lindhorst.de/seite/324784/bekanntmachung.html"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.sg-lindhorst.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "nds-032575403",
@@ -2299,6 +2379,27 @@
     "verifiedSource": "https://www.gemeinde-dornum.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nds-034525401",
+    "name": "Samtgemeinde Brookmerland",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.marienhafe.de/",
+    "pages": [
+      "https://www.marienhafe.de/news/1/1291232",
+      "https://www.marienhafe.de/news/1/1294223",
+      "https://www.marienhafe.de/news/index.php?rubrik=1",
+      "https://www.marienhafe.de/news/1/1294223/nachrichten/sitzung-gemeinderat-marienhafe-13.10.html",
+      "https://www.marienhafe.de/news/1/1291232/nachrichten/sitzung-des-gemeinderates-upgant-schott.html"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "http://www.marienhafe.de/",
+    "verifiedAt": "2026-10-06",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
     "id": "nds-034525403",
