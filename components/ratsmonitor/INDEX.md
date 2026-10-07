@@ -5,7 +5,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/analyse-admin.css (275 Zeilen, ⚠24)
+- app/analyse-admin.css (293 Zeilen, ⚠24)
 - app/design-fonts.css (71 Zeilen)
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
@@ -115,6 +115,10 @@ admin-pages analyse-admin.css:79
 admin-pages ratsmonitor.css:67
 admin-pill analyse-admin.css:253
 admin-pipeline analyse-admin.css:79
+admin-quality-checks analyse-admin.css:278
+admin-quality-group analyse-admin.css:276
+admin-quality-head analyse-admin.css:280
+admin-quality-samples analyse-admin.css:288
 admin-quality-stats analyse-admin.css:66
 admin-refresh analyse-admin.css:66
 admin-region-list analyse-admin.css:79
@@ -259,9 +263,11 @@ heading-m ratsmonitor.css:67
 heat-legend analyse-admin.css:29
 icon design-styles.css:22
 is-assumed analyse-admin.css:87
+is-clean analyse-admin.css:281
 is-counted analyse-admin.css:90
 is-data analyse-admin.css:201
 is-failed analyse-admin.css:92
+is-found analyse-admin.css:280
 is-group analyse-admin.css:222
 is-line analyse-admin.css:90
 is-model analyse-admin.css:88
@@ -693,7 +699,7 @@ wordmark__dot design-styles.css:61
 - admin-activation.tsx (9, ⚠1): AdminActivation
 - admin-atlas.tsx (166, ⚠33): AdminAtlas
 - admin-chrome.tsx (26): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
-- admin-dashboard.tsx (73, ⚠17): AdminDashboardView
+- admin-dashboard.tsx (75, ⚠17): AdminDashboardView
 - admin-estimate.tsx (334, ⚠54): AdminEstimate
 - admin-forecast.tsx (12): AdminForecast
 - admin-keywords.tsx (88, ⚠13): AdminKeywords
@@ -701,6 +707,7 @@ wordmark__dot design-styles.css:61
 - admin-overview.tsx (135, ⚠17): AdminOverview
 - admin-processing-map.tsx (39, ⚠4): AdminProcessingMap
 - admin-processing.tsx (168, ⚠21): AdminProcessing
+- admin-quality-check.tsx (49, ⚠5): AdminQualityCheck
 - admin-run-debug.tsx (67, ⚠3): RunDebugView, AdminRunDebug
 - admin-timeline.tsx (72, ⚠6): AdminTimeline
 - analysis-article-list.tsx (34, ⚠1): AnalysisArticleList

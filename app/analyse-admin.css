@@ -272,3 +272,21 @@ button:disabled{cursor:wait;opacity:.6}.article__status{flex-wrap:wrap}
 .admin-app .admin-chip.is-static{cursor:default}
 .admin-app .admin-overview-charts figure .admin-note{margin-top:10px}
 .admin-app .admin-overview-charts figure .admin-atlas-chips{margin-top:0}
+/* Qualitätsseite: Duplikate und Defekte (components/admin-quality-check.tsx) */
+.admin-quality-group{margin-top:22px}
+.admin-quality-group h3{margin-bottom:8px}
+.admin-quality-checks{list-style:none;margin:0;padding:0}
+.admin-quality-checks>li{padding:12px 0;border-top:1px solid #e2e8f0;font-size:.875rem}
+.admin-quality-checks>li.is-found .admin-quality-head span{color:#ad392d;font-weight:600}
+.admin-quality-checks>li.is-clean .admin-quality-head span{color:#0f766e}
+.admin-quality-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.admin-quality-head strong{flex:1 1 260px;font-weight:600}
+.admin-quality-head span{white-space:nowrap}
+.admin-quality-checks small{display:block;margin-top:4px;color:#64748b;overflow-wrap:anywhere}
+.admin-quality-checks details{margin-top:8px}
+.admin-quality-checks summary{cursor:pointer;color:#0f766e}
+.admin-quality-samples{list-style:none;margin:8px 0 0;padding:0;max-height:340px;overflow:auto}
+.admin-quality-samples li{display:grid;gap:2px 12px;padding:8px 0;border-top:1px solid #f1f5f9}
+.admin-quality-samples li span{display:flex;flex-wrap:wrap;gap:4px 12px}
+.admin-quality-samples a{color:#0f766e;text-decoration:none;display:inline-flex;align-items:center;gap:2px}
+.admin-quality-samples a:hover{text-decoration:underline}
