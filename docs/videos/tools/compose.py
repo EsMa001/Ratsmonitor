@@ -5,6 +5,7 @@ letzte Bild stehen, ist er kürzer, läuft der Clip bis auf das Doppelte schnell
 import json,subprocess,sys,os
 TOOLS=os.environ.get('VIDEO_TOOLS',os.path.expanduser('~/code/video-tools'))
 FF=subprocess.check_output(['node','-p',f"require('{TOOLS}/node_modules/ffmpeg-static')"]).decode().strip()
+PRESET,CRF=('veryfast','30') if os.environ.get('VIDEO_ENTWURF') else ('slow','24')
 D,name=sys.argv[1:3]; poster=float(sys.argv[3]) if len(sys.argv)>3 else 1.0
 KEYS=json.load(open(f'{D}/clips.json')); T=json.load(open(f'{D}/audio.json')); B=json.load(open(f'{D}/beats.json'))
 CL={sc:json.load(open(f'out-clips/{k}/clip.json')) for sc,k in KEYS.items()}
@@ -60,7 +61,7 @@ open(f'{D}/list-{name}.txt','w').write('\n'.join(lines))
 vtt=['WEBVTT\n']+[f"{ts(s['start']+LEAD)} --> {ts(s['end']+LEAD+0.3)}\n{s['text'].replace('Plenarra','Plenara')}\n" for s in S]
 open(f'{D}/{name}.vtt','w',encoding='utf8').write('\n'.join(vtt))
 af=f"adelay={int(LEAD*1000)}|{int(LEAD*1000)},apad=whole_dur={total:.2f},atrim=0:{total:.2f}"
-r=subprocess.run([FF,'-y','-f','concat','-safe','0','-i',f'{D}/list-{name}.txt','-i',f'{D}/audio.wav','-vf','fps=30,scale='+SIZE+':flags=lanczos,format=yuv420p','-af',af,'-c:v','libx264','-preset','slow','-crf','24','-c:a','aac','-b:a','96k','-t',f'{total:.2f}','-movflags','+faststart',f'{D}/{name}.mp4'],capture_output=True,text=True)
+r=subprocess.run([FF,'-y','-f','concat','-safe','0','-i',f'{D}/list-{name}.txt','-i',f'{D}/audio.wav','-vf','fps=30,scale='+SIZE+':flags=lanczos,format=yuv420p','-af',af,'-c:v','libx264','-preset',PRESET,'-crf',CRF,'-c:a','aac','-b:a','96k','-t',f'{total:.2f}','-movflags','+faststart',f'{D}/{name}.mp4'],capture_output=True,text=True)
 print(r.returncode,'ok' if r.returncode==0 else r.stderr[-400:])
 subprocess.run([FF,'-y','-loglevel','error','-ss',str(poster),'-i',f'{D}/{name}.mp4','-frames:v','1','-q:v','4',f'{D}/{name}.jpg'])
 print('Clip-Stand',[c['commit'] for c in CL.values()],'Länge',round(total))

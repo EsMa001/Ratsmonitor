@@ -10,6 +10,7 @@ const BASE = process.env.BASE || "http://localhost:5173";
 import { FORMATS, loadScene, resolveParams, clipKey } from "./key.mjs";
 const ID = process.argv[2];
 const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : undefined; };
+const ENTWURF = !!process.env.VIDEO_ENTWURF;  /* Entwurf: Haltezeiten halbiert, Clip nur für Vorschauen */
 const FORMAT = arg("--format") || "16x9";
 if (!FORMATS[FORMAT]) throw new Error("Format unbekannt: " + FORMAT);
 const sc = await loadScene(ID);
@@ -64,12 +65,12 @@ const BEATS = typeof sc.beats === "function" ? sc.beats(P) : sc.beats;
 for (const [name, fn, hold = 1] of BEATS) {
   const start = Date.now();
   try { await fn(H, P); } catch (e) { failed++; console.log("Schritt", name, "fehlgeschlagen:", String(e).split("\n")[0].slice(0, 140)); }
-  await sleep(hold * 1000);
+  await sleep(hold * (ENTWURF ? 500 : 1000));
   beats.push({ name, start, end: Date.now() });
 }
 capturing = false; await cap; await ctx.close(); await browser.close();
 let commit = ""; try { commit = execSync("git rev-parse --short HEAD", { cwd: new URL("../../../", import.meta.url).pathname }).toString().trim(); } catch {}
-writeFileSync(`${OUT}/clip.json`, JSON.stringify({ id: ID, key: KEY, params: P, format: FORMAT, commit, recorded: new Date().toISOString(), frames, beats }));
+writeFileSync(`${OUT}/clip.json`, JSON.stringify({ id: ID, key: KEY, params: P, format: FORMAT, commit, entwurf: ENTWURF, recorded: new Date().toISOString(), frames, beats }));
 if (failed) console.log(`ACHTUNG: ${failed} Schritt(e) fehlgeschlagen, Clip nicht verwenden`);
 console.log("fertig", KEY, "Bilder", frames.length, "Schritte", beats.map((b) => `${b.name} ${((b.end - b.start) / 1000).toFixed(1)}s`).join(", "));
 if (failed) { rmSync(`${OUT}/clip.json`, { force: true }); process.exit(1); }  /* kaputter Clip gilt als fehlend, build-video verwendet ihn nie */
