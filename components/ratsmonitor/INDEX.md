@@ -649,8 +649,8 @@ wordmark__dot design-styles.css:61
 
 ### app/
 - chatgpt-auth.ts (95): ChatGPTUser, getChatGPTUser, requireChatGPTUser, chatGPTSignInPath, chatGPTSignOutPath
-- error.tsx (7, ⚠1): PageError
-- global-error.tsx (9, ⚠1): GlobalError
+- error.tsx (8, ⚠1): PageError
+- global-error.tsx (10, ⚠1): GlobalError
 - layout.tsx (6, ⚠1): metadata, RootLayout
 - not-found.tsx (4): metadata, NotFound
 
@@ -792,6 +792,8 @@ wordmark__dot design-styles.css:61
 - DiffusionSearch.tsx (66): PlayState, DiffusionSearch
 - GraphView.tsx (183, ⚠2): GNode, GEdge, KIND, GraphView
 - KnowledgeGraphPage.tsx (195, ⚠1): KnowledgeGraphPage
+- TrendViews.tsx (70): Trend, TrendKind, Spark, TrendMap
+- TrendsPage.tsx (195, ⚠3): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery
 
 ### components/ratsmonitor/services/
