@@ -138,6 +138,17 @@ python3 $S/tools/webinar/assemble.py w1 plenara-webinar                      # K
 
 Die Kapitelseite steht doppelt so lange wie der erste Satz des Kapitels: erst still (Lesezeit), dann spricht der Satz darüber. Analysen (Graph, Vergleich, Gremiennetz) werden vor der Aufnahme einmal berechnet, damit die Antwort aus dem Browser-Cache sofort erscheint.
 
+## Neue Videos effizient: Clips und Fakten (`tools/clips/`)
+
+Für künftige Videos gilt: **Aufnahme und Ton sind getrennt.** Eine Textänderung braucht nur neuen Ton und einen neuen Zusammenbau, keine neue Aufnahme.
+
+1. **Szene als Clip aufnehmen** (ohne Ton): In `tools/clips/scenes.mjs` steht je Szene eine Liste benannter Schritte `[name, Funktion, Haltezeit]`. `node $R/docs/videos/tools/clips/rec-clip.mjs <szene>` (im Arbeitsordner) schreibt `out-clips/<szene>/` mit Bildern und `clip.json` (Zeiten je Schritt, Commit der Seite). Schlägt ein Schritt fehl, steht „ACHTUNG“ in der Ausgabe und der Befehl endet mit Fehlercode 1: dann Clip nicht verwenden, Szene prüfen.
+2. **Skript mit Schritten:** Eine Zeile `@liste,zeile Satz …` ordnet dem Satz Clip-Schritte zu (Format wie `texts/webinar/webinar.txt`, Beispiel `texts/clips/treffer-liste.txt`). `tools/webinar/prep.mjs` zerlegt es in Kapiteltexte und `beats.json`.
+3. **Zusammenbau:** `python3 $R/docs/videos/tools/clips/compose.py <szene> <kapitelordner> <name>`. Jeder Satz bekommt die Zeit bis zum nächsten Satz: ist sie länger als die Schritte, bleibt das letzte Bild stehen, ist sie kürzer, läuft der Clip bis auf das Doppelte schneller. Folgen mehrere Sätze mit denselben Schritten, laufen sie einmal über alle diese Sätze.
+4. **Fakten statt feste Zahlen:** `node tools/clips/facts.mjs` fragt echte Werte aus der laufenden App ab und schreibt `docs/videos/facts.json` (Wärmeplanung: erste Erwähnung, Hälfte erreicht, Einträge, Beschlussquote; Abdeckung: Einträge, Gemeinden, Einwohneranteil). Im Skript steht `{{wp.first|datum}}`, `{{cov.entries|mehrals}}`, `{{wp.approval|fast}}`, `{{cov.municipalities|abrunden}}` (Formate in `tools/clips/fmt.mjs`: zahl, abrunden, mehrals, fast, datum, monat). So sind Zahlen im Video nie veraltet und nie erfunden. Neue Fakten in `facts.mjs` eintragen. Nach Aktualisierung der Fakten prüfen, ob sich gesprochene Texte geändert haben (dann neu vertonen).
+
+Veraltete Clips erkennt man am Commit in `clip.json`: `git diff --stat <commit> -- components/ratsmonitor` zeigt, ob sich die Seite seit der Aufnahme geändert hat. Die Clips selbst liegen nicht in Git (Größe), nur Szenen, Skripte und fertige Videos.
+
 ## Hinweise und Stolperstellen
 
 - **Aufgenommen wird eine laufende App** mit echten Daten. Die Treffer (z. B. Zahlen und Einträge) hängen vom Datenstand ab und sehen bei einer neuen Aufnahme anders aus.

@@ -1,0 +1,14 @@
+{
+ "asOf": "2026-10-07",
+ "values": {
+  "wp.first": "2025-09-30",
+  "wp.half": "2026-02-26",
+  "wp.entries": 2230,
+  "wp.regions": 2871,
+  "wp.approval": 94.9,
+  "wp.statusKnownPct": 40.6,
+  "cov.entries": 941027,
+  "cov.municipalities": 6113,
+  "cov.populationPct": 64
+ }
+}
