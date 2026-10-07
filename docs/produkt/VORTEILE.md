@@ -29,7 +29,7 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | 16 | B | Zusammenhänge entdecken | Plenara.X Knowledge Graph |
 | 17 | B | Ergebnisse als Excel oder CSV | Export der Trefferliste |
 | 18 | B | Artikel als PDF oder zum Drucken | Export im Artikel |
-| 19 | B | Kostenlos starten, ohne Zahlungsdaten ⚠ | Text auf den Plenara.X-Seiten |
+| 19 | B | Die Suche kostenlos nutzen | Vom Nutzer bestätigt: Suche von Plenara kostenlos mit begrenztem Funktionsumfang; Plenara.X ist nicht kostenlos |
 | 20 | B | Grenzen und Abdeckung offen benannt | Datenabdeckung, Hinweise zu Grenzen bei jeder Analyse |
 | 21 | C | Aktualität sichtbar | Datenstand mit Datum und Uhrzeit über der Trefferliste |
 | 22 | C | Ort direkt erkannt | „Ort erkannt“ in der Suchleiste |
@@ -45,13 +45,13 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | 32 | C | Suchen speichern | Herz in der Suchleiste |
 | 33 | C | Benachrichtigung je Artikel | Glocke im Artikel |
 | 34 | C | Artikel teilen | Teilen-Symbol im Artikel |
-| 35 | C | Auch am Handy ⚠ | angepasste Oberfläche (alte Handyvideos) |
+| 35 | C | Auch am Handy | Oberfläche für Handy angepasst (Layout unter 768 px, eigene Handy-Videos, Handy-Vorschau public/handy.html); geprüft im Code |
 | 36 | C | Künftige Sitzungen und Formalien selbst steuern | Schalter im Filter |
 | 37 | C | Statusfilter | Angekündigt, In Beratung, Beschlossen u. a. |
-| 38 | C | Themenfilter mit Themenfeldern ⚠ | Filter „Alle Themen“; Zuordnung noch prüfen |
+| 38 | C | Themenfilter mit Themenfeldern | Filter „Alle Themen“; Zuordnung nach Titelregeln (shared/labels.mjs, title-rules-v2): jeder Eintrag bekommt anhand von Schlüsselwörtern im amtlichen Titel ein Themenfeld; nicht erkennbare bleiben ohne Feld |
 | 39 | C | Beispiel-Meldungen im Test-Postfach | zeigt, wie Nachrichten aussehen |
-| 40 | C | Kurzfassung zu jedem Eintrag ⚠ | Text unter dem Titel; Herkunft prüfen, nur „Kurzfassung“ nennen, nicht „KI“ |
-| 41 | C | Suchvorschläge beim Tippen ⚠ | Vorschlagsfeld unter der Suchleiste; prüfen |
+| 40 | C | Kurzfassung zu jedem Eintrag | Kurzfassung unter dem Titel, per KI aus dem Dokumenttext erstellt (ai-summary.mjs), wo ein Dokumenttext vorliegt; in Texten „Kurzfassung“ nennen, „zu jedem Eintrag“ nur mit Einschränkung („wo ein Dokumenttext vorliegt“) |
+| 41 | C | Suchvorschläge beim Tippen | Vorschlagsliste unter der Suchleiste: Orte und Regionen ab 3 Buchstaben sowie „Zuletzt gesucht“; keine Vorschläge für Fachbegriffe |
 | 42 | C | Samtgemeinden richtig berücksichtigt | zählen bei jeder Mitgliedsgemeinde |
 | 43 | C | Abdeckung nach Bundesland | Datenabdeckung |
 | 44 | C | „Ist Ihr Ort dabei?“ | Ortsabfrage auf der Datenabdeckung |
@@ -61,13 +61,13 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | 48 | C | Themenprofil im Vergleich | Gebietsvergleich |
 | 49 | C | Alle Gebiete als Maßstab | Gebietsvergleich gegen den Gesamtbestand |
 | 50 | C | Analysen immer frisch berechnet | „bei der Abfrage frisch aus der Datenbank“ (Über Plenara.X) |
-| 51 | D | Schnelle Suche über den ganzen Bestand ⚠ | Treffer erscheinen sofort; Technik unter der Suche prüfen |
+| 51 | D | Schnelle Suche über den ganzen Bestand | Vorberechnete Wortliste (search-words.mjs): „keine Treffer“ sofort, Zähler und Karte häufiger Wörter aus vorberechneten Zahlen; Ergebnis identisch mit der vollen Suche (getestet) |
 | 52 | D | 227 von 294 Kreisen abgedeckt | Datenabdeckung (docs/videos/facts.json, cov) |
 | 53 | D | Daten aus 14 Bundesländern | Datenabdeckung |
-| 54 | D | Verschiedene Ratsinformationssysteme einheitlich dargestellt ⚠ | Anbindung mehrerer Systeme; Formulierung prüfen |
+| 54 | D | Verschiedene Ratsinformationssysteme einheitlich dargestellt | Vom Nutzer bestätigt: stimmt inhaltlich, Formulierung frei (Anbindung mehrerer Systeme) |
 | 55 | D | Einheitliche Statusbezeichnungen | Angekündigt, In Beratung, Beschlossen u. a. |
-| 56 | D | Einheitliche Themenfelder ⚠ | Zuordnung noch prüfen |
-| 57 | D | Gremien nach Art erkennbar ⚠ | laut Analyse-Hinweis aus dem Namen abgeleitet (Grenze nennen) |
+| 56 | D | Einheitliche Themenfelder | Feste Liste von Themenfeldern (LABELS in shared/labels.mjs), für alle Gebiete gleich per Titelregeln vergeben; nicht alle Einträge sind eingeordnet |
+| 57 | D | Gremien nach Art erkennbar | Gremienart wird per Namensmuster aus dem Gremiennamen abgeleitet (analytics-network.mjs, gremiumType); nicht erkennbare = „Sonstige“; die Grenze nennen |
 | 58 | D | Letzter Abruf der Daten sichtbar | Datenabdeckung |
 | 59 | D | „Hinter den Kulissen“: Abdeckung offen erklärt | Datenabdeckung |
 | 60 | D | Fragen und Anregungen jederzeit an das Team | Kontakt am Seitenende |

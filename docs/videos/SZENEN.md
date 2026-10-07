@@ -38,3 +38,7 @@ Clips liegen in `out-clips/<schlüssel>/` (nicht in Git). Schlüssel = `szene[@f
 { "ausgabe": "dateiname", "kapitel": [ { "kapitel": "suchen", "text": "lang", "parameter": { "thema": "Wärmeplanung" }, "format": "16x9" } ] }
 ```
 Bauen: `node tools/build-video.mjs <name>` (im Arbeitsordner `~/code/video-tools`).
+
+## Handy
+
+Das Konzept gilt auch für das Handy: Videos fürs Handy entstehen aus denselben Szenen und Kapiteln, nur mit `--format 9x16` (die App wechselt unter 768 px in die Handy-Oberfläche). Eigene Handy-Szenen sind nur nötig, wo sich die Bedienung unterscheidet. Aktuell werden nur Web-Videos (16x9) gebaut; Handy-Videos erst auf Wunsch.
