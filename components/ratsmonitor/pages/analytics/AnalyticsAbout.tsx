@@ -124,7 +124,8 @@ export function AnalyticsAbout() {
         <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen" className="block xl:max-w-[420px]"><DiffusionThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie sich ein Thema über die Gebiete ausbreitet: wer zuerst dran war, wie schnell andere folgten und wo es noch fehlt. Als Zeitraffer auf der Karte, mit den gleichen Suchen und Filtern wie auf der Startseite.</p>
-          <details className="group mt-4 border-t border-slate-200 pt-3">
+          <Link href="/analytics/diffusion" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-[14px] font-medium text-white transition-colors hover:bg-slate-700">Diffusionsanalyse öffnen <span aria-hidden="true">→</span></Link>
+          <details className="group mt-6 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
               Wissenschaftlicher Hintergrund
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
@@ -132,7 +133,6 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Analyse folgt der Diffusionsforschung (Rogers, „Diffusion of Innovations“, 1962; Hägerstrand zur räumlichen Ausbreitung, 1967): Neuerungen breiten sich in der Regel in einer S-Kurve aus, erst langsam bei wenigen Vorreitern, dann schnell, dann abflachend. Für Politik beschreibt die Policy-Diffusion (Walker 1969; Shipan und Volden 2008), dass Kommunen voneinander lernen, einander nachahmen oder unter Wettbewerbsdruck stehen. Als Zeitpunkt der Übernahme gilt hier die erste Erwähnung des Themas in einem Eintrag des Gebiets. Daraus entstehen die Kurve der erreichten Gebiete, die Zeit von 10 % bis 90 % Verbreitung als Maß für das Tempo sowie die Rangfolge der Vorreiter.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Die erste Erwähnung ist ein Indikator, keine Entscheidung. Gebiete mit unvollständigem Datenbestand erscheinen womöglich zu spät.</p>
           </details>
-          <Link href="/analytics/diffusion" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Diffusionsanalyse öffnen →</Link>
         </div>
         </div>
       </article>
@@ -142,7 +142,8 @@ export function AnalyticsAbout() {
         <Link href="/analytics/graph" aria-label="Knowledge Graph öffnen" className="block xl:max-w-[420px]"><GraphThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, womit ein Thema zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz. Knoten lassen sich ziehen und anklicken, mit denselben Suchen und Filtern wie auf der Startseite.</p>
-          <details className="group mt-4 border-t border-slate-200 pt-3">
+          <Link href="/analytics/graph" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-[14px] font-medium text-white transition-colors hover:bg-slate-700">Knowledge Graph öffnen <span aria-hidden="true">→</span></Link>
+          <details className="group mt-6 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
               Wissenschaftlicher Hintergrund
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
@@ -150,7 +151,6 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ein Wissensgraph beschreibt Dinge als Knoten und ihre Beziehungen als Kanten (Hogan et al., „Knowledge Graphs“, 2021). Hier entsteht er aus den Einträgen, die zur Suche passen: Zwei Dinge sind verbunden, wenn sie im selben Eintrag vorkommen (Ko-Okkurrenz; Newman, „Networks“, 2018). Das Gewicht einer Verbindung ist der Jaccard-Index (Jaccard 1912), also der Anteil gemeinsamer Einträge an allen Einträgen beider Seiten. Begriffe aus den Titeln werden nach ihrer Besonderheit gewichtet: häufig in der Auswahl, aber selten im ganzen Bestand (Inverse Document Frequency, Spärck Jones 1972), damit Füllwörter nicht das Bild bestimmen. Die Anordnung folgt einem Kräftemodell (Fruchterman und Reingold 1991): Verbundene Knoten ziehen sich an, alle stoßen sich ab.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Eine Verbindung bedeutet gemeinsames Vorkommen, keine Ursache. Begriffe stammen aus Titeln, nicht aus dem vollen Text. Ausgewertet werden höchstens die jüngsten 3.000 passenden Einträge.</p>
           </details>
-          <Link href="/analytics/graph" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Knowledge Graph öffnen →</Link>
         </div>
         </div>
       </article>
@@ -160,7 +160,8 @@ export function AnalyticsAbout() {
         <Link href="/analytics/trends" aria-label="Trends öffnen" className="block xl:max-w-[420px]"><TrendThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, welche Begriffe gerade aufkommen, zunehmen oder verschwinden: der aktuelle Zeitraum im Vergleich zum Zeitraum davor, als Trendkarte, Rangliste mit Verlaufskurven und Themenfeld-Veränderung. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
-          <details className="group mt-4 border-t border-slate-200 pt-3">
+          <Link href="/analytics/trends" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-[14px] font-medium text-white transition-colors hover:bg-slate-700">Trends öffnen <span aria-hidden="true">→</span></Link>
+          <details className="group mt-6 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
               Wissenschaftlicher Hintergrund
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
@@ -168,7 +169,6 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Trenderkennung in Textströmen sucht Begriffe, deren Häufigkeit plötzlich ansteigt („Bursts“; Kleinberg, „Bursty and Hierarchical Structure in Streams“, 2002). Hier werden zwei gleich lange Zeitfenster verglichen, die letzten Tage und die Tage davor. Verglichen werden Anteile an allen Einträgen und nicht Rohzahlen, damit mehr oder weniger Einträge insgesamt das Bild nicht verfälschen. Ob ein Unterschied über Zufall hinausgeht, prüft ein Zwei-Stichproben-Test für Anteile; für seltene Begriffe in Textdaten ist das Log-Likelihood-Verfahren üblich (Dunning, „Accurate Methods for the Statistics of Surprise and Coincidence“, 1993). Als Frühindikator gilt ein Begriff, der davor kaum vorkam und jetzt in mehreren Gebieten auftaucht: Breite ist ein stärkeres Signal als bloße Menge. Gleichmäßige Stichproben halten die Abfrage auch bei Millionen Einträgen schnell.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Ein Trend ist ein Hinweis, keine Entscheidung. Begriffe stammen aus Titeln. Saisonale Muster (zum Beispiel Haushaltsberatungen im Herbst) erscheinen als Trend, weil der Vorjahreszeitraum im Bestand fehlt. Je Zeitraum werden höchstens rund 12.000 Einträge ausgewertet.</p>
           </details>
-          <Link href="/analytics/trends" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Trends öffnen →</Link>
         </div>
         </div>
       </article>
@@ -178,7 +178,8 @@ export function AnalyticsAbout() {
         <Link href="/analytics/vergleich" aria-label="Gebietsvergleich öffnen" className="block xl:max-w-[420px]"><CompareThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Stellt zwei bis vier Orte nebeneinander: Themenprofil, Stand der Vorlagen, Verlauf, aktivste Gremien sowie typische und gemeinsame Begriffe. Als Maßstab dienen alle Gebiete. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
-          <details className="group mt-4 border-t border-slate-200 pt-3">
+          <Link href="/analytics/vergleich" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-[14px] font-medium text-white transition-colors hover:bg-slate-700">Gebietsvergleich öffnen <span aria-hidden="true">→</span></Link>
+          <details className="group mt-6 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
               Wissenschaftlicher Hintergrund
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
@@ -186,7 +187,6 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Der Vergleich folgt dem Benchmarking: Ein Ort wird nicht für sich, sondern an einem Maßstab gemessen, hier an allen Gebieten mit denselben Filtern. Das Themenprofil zeigt die Anteile der Themenfelder, ähnlich einem Standortquotienten aus der Regionalökonomie (Anteil im Ort geteilt durch Anteil im Maßstab). Typisch für einen Ort sind Begriffe, die dort deutlich häufiger vorkommen als im Maßstab; ob der Unterschied über den Zufall hinausgeht, prüft ein Zwei-Stichproben-Test für Anteile, bei Wortdaten gebräuchlich als Log-Likelihood-Verfahren (Dunning, 1993). Einträge je 1.000 Einwohner machen Orte unterschiedlicher Größe vergleichbar.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Wie vollständig das Ratsinformationssystem eines Ortes im Bestand erfasst ist, wirkt auf alle Zahlen. Die Einträge je Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. Themenprofil, Vorlagenstand und Begriffe stammen aus einer Stichprobe von höchstens 6.000 Einträgen je Ort.</p>
           </details>
-          <Link href="/analytics/vergleich" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gebietsvergleich öffnen →</Link>
         </div>
         </div>
       </article>
@@ -196,7 +196,8 @@ export function AnalyticsAbout() {
         <Link href="/analytics/beschluesse" aria-label="Status und Beschlüsse öffnen" className="block xl:max-w-[420px]"><DecisionThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen und Ablehnungen, wie einig Gremien entscheiden, wie oft Vorlagen geändert werden und wie lange ein Vorgang bis zum Beschluss braucht. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
-          <details className="group mt-4 border-t border-slate-200 pt-3">
+          <Link href="/analytics/beschluesse" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-[14px] font-medium text-white transition-colors hover:bg-slate-700">Status und Beschlüsse öffnen <span aria-hidden="true">→</span></Link>
+          <details className="group mt-6 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
               Wissenschaftlicher Hintergrund
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
@@ -204,7 +205,6 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Beschlussquote ist der Anteil „beschlossen“ an allen Vorgängen mit Entscheidung (beschlossen, vertagt, abgelehnt). Als Maß für Einigkeit dient der Anteil einstimmiger Beschlüsse; in der Parlamentsforschung gilt die Geschlossenheit von Abstimmungen als Hinweis auf Konfliktlinien (Rice-Index, Rice 1925). Ob und wie ein Beschlussvorschlag geändert wurde, wird aus dem Ergebnistext gelesen („geändert beschlossen“). Die Durchlaufzeit misst die Tage von der ersten Station eines Vorgangs bis zur Entscheidung; Zeiten bis zu einem Ereignis werden üblicherweise mit Überlebenszeitanalysen untersucht (Kaplan und Meier, 1958), die auch noch offene Vorgänge berücksichtigen.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Der Status ist nur bei einem Viertel der Einträge bekannt, Ablehnungen sind in den Quellen selten vermerkt. Ausschüsse empfehlen meist nur, ihre Quote ist mit der des Rats nicht direkt vergleichbar. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt, denn die hier verwendete einfache Messung berücksichtigt sie nicht. Abstimmung, Änderungen und Dauer stammen aus einer Stichprobe von höchstens 4.000 Vorgängen.</p>
           </details>
-          <Link href="/analytics/beschluesse" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Status und Beschlüsse öffnen →</Link>
         </div>
         </div>
       </article>
@@ -214,7 +214,8 @@ export function AnalyticsAbout() {
         <Link href="/analytics/gremien" aria-label="Gremiennetz öffnen" className="block xl:max-w-[420px]"><NetThumb /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange ein Übergang dauert. Als Netz mit Pfeilen, mit denselben Suchen und Filtern wie auf der Startseite.</p>
-          <details className="group mt-4 border-t border-slate-200 pt-3">
+          <Link href="/analytics/gremien" className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-6 text-[14px] font-medium text-white transition-colors hover:bg-slate-700">Gremiennetz öffnen <span aria-hidden="true">→</span></Link>
+          <details className="group mt-6 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
               Wissenschaftlicher Hintergrund
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
@@ -222,7 +223,6 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Beratungswege bilden ein gerichtetes Netz: Gremien sind Knoten, ein Pfeil bedeutet, dass Vorgänge von einem Gremium an das nächste gingen (Newman, „Networks“, 2018). Aus der Zahl eingehender und ausgehender Pfeile ergibt sich die Rolle: Einstieg (überwiegend ausgehend), Entscheidung (überwiegend eingehend) und Durchgang. Der Durchsatz ist eine einfache Form der Zentralität; wer viele Wege verbindet, hat eine Brückenstellung (Freeman, „A Set of Measures of Centrality Based on Betweenness“, 1977). Die Anordnung von links nach rechts folgt der mittleren Stufe im Beratungsweg, ähnlich einer geschichteten Zeichnung hierarchischer Systeme (Sugiyama et al., 1981). Ohne einzelnen Ort werden Gremien nach ihrer Art zusammengefasst, weil jeder Ort seine eigenen Namen hat.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Nur Vorgänge mit Stationen in mindestens zwei verschiedenen Gremien tragen bei, das ist ein kleiner Teil. Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab. Die Gremienart wird aus dem Namen abgeleitet und kann im Einzelfall danebenliegen. Ausgewertet werden höchstens rund 10.000 Vorgänge.</p>
           </details>
-          <Link href="/analytics/gremien" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gremiennetz öffnen →</Link>
         </div>
         </div>
       </article>

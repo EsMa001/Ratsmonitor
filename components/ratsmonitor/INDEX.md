@@ -632,9 +632,6 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/ueber-ratsmonitor/
 - page.tsx (2): Page
 
-### app/(monitor)/ueber-uns/
-- page.tsx (2): Page
-
 ### app/(monitor)/videos/
 - page.tsx (2): Page
 
@@ -727,11 +724,10 @@ wordmark__dot design-styles.css:61
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenPages.tsx (86): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (67): isInfoPath, InfoPages
+- InfoPages.tsx (65): isInfoPath, InfoPages
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
-- QuellenPage.tsx (107, ⚠1): QuellenPage
-- UeberUnsPage.tsx (65): UeberUnsPage
+- QuellenPage.tsx (143, ⚠4): QuellenPage
 - VideosPage.tsx (151): VideosPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - content.ts (373, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, AGB_SECTIONS, brancheBySlug
@@ -771,7 +767,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (214): MainMenu
+- MainMenu.tsx (210): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (116, ⚠4): DetailPage
@@ -785,7 +781,7 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (301): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (233, ⚠14): AnalyticsAbout
+- AnalyticsAbout.tsx (235, ⚠14): AnalyticsAbout
 - AnalyticsPages.tsx (32, ⚠1): isAnalyticsPath, AnalyticsPages
 - BeschluessePage.tsx (188, ⚠5): BeschluessePage
 - CompareCharts.tsx (51): PLACE_COLORS, CMonth, CompareLines, TopicRow
