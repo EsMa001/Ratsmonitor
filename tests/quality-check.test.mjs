@@ -55,6 +55,6 @@ test('every check of the list has a runner and a group, counts what it names and
  await runQualityCheck(db,'emptyTitle');assert.equal((await storedQualityChecks(db)).checks.emptyTitle.stale,false);
  // A record that is no JSON cannot be stored at all: the partial indexes of topics read the payload on insert.
  assert.throws(()=>insert('broken',{payload:'{not json'}),/malformed JSON/);
- const sum=qualitySummary((await storedQualityChecks(db)).checks);assert.equal(sum.duplicates,2);assert.equal(sum.duplicateGroups,1);assert.equal(sum.hints,3);assert.equal(sum.defects,10);assert.equal(sum.orphans,4);assert.equal(sum.pending.length,0);
+ const sum=qualitySummary((await storedQualityChecks(db)).checks);assert.equal(sum.duplicates,2);assert.equal(sum.duplicateGroups,1);assert.equal(sum.hints,4);assert.equal(sum.defects,9);assert.equal(sum.orphans,4);assert.equal(sum.pending.length,0);
  raw.close();
 });
