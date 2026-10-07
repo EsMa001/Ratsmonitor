@@ -17,6 +17,25 @@ function DiffusionThumb() {
   );
 }
 
+/** Vorschaubild des Knowledge Graph: ein Netz aus Knoten um einen Mittelpunkt */
+function GraphThumb() {
+  const hub: [number, number] = [160, 78];
+  const ring: [number, number, number, string][] = [
+    [96, 40, 7, "#0d9488"], [128, 24, 5, "#0d9488"], [200, 30, 8, "#0d9488"], [236, 62, 6, "#0d9488"], [232, 112, 7, "#0d9488"],
+    [190, 134, 5, "#0d9488"], [124, 130, 8, "#0d9488"], [82, 102, 6, "#0d9488"], [60, 66, 4, "#94a3b8"], [268, 36, 5, "#0f172a"], [270, 90, 4, "#94a3b8"],
+  ];
+  const cross: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0], [0, 8], [3, 9], [4, 10], [2, 9], [6, 4]];
+  return (
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Knowledge Graph: Knoten um einen Suchbegriff, durch Linien verbunden" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+      {ring.map(([x, y], i) => <line key={`h${i}`} x1={hub[0]} y1={hub[1]} x2={x} y2={y} stroke="#94a3b8" strokeOpacity=".25" />)}
+      {cross.map(([a, b]) => <line key={`${a}-${b}`} x1={ring[a][0]} y1={ring[a][1]} x2={ring[b][0]} y2={ring[b][1]} stroke="#94a3b8" strokeOpacity=".55" strokeWidth="1.4" />)}
+      {ring.map(([x, y, r, c], i) => <circle key={i} cx={x} cy={y} r={r} fill={c} fillOpacity=".9" />)}
+      <circle cx={hub[0]} cy={hub[1]} r="14" fill="#0f766e" />
+      <rect x={hub[0] - 4.5} y={hub[1] - 4.5} width="9" height="9" fill="#fff" />
+    </svg>
+  );
+}
+
 export function AnalyticsAbout() {
   return (
     <main id="inhalt" className="mx-auto w-full max-w-[1100px] px-4 py-12 text-slate-900 sm:px-6">
@@ -41,7 +60,23 @@ export function AnalyticsAbout() {
           <Link href="/analytics/diffusion" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Diffusionsanalyse öffnen →</Link>
         </div>
       </article>
-      <p className="mt-8 text-[14px] text-slate-500">Weitere Funktionen, etwa ein Knowledge Graph, sind in Planung.</p>
+      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+        <Link href="/analytics/graph" aria-label="Knowledge Graph öffnen"><GraphThumb /></Link>
+        <div>
+          <h3 className="text-[22px] font-semibold">Knowledge Graph</h3>
+          <p className="mt-2 text-[16px] text-slate-500">Zeigt, womit ein Thema zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz. Knoten lassen sich ziehen und anklicken, mit denselben Suchen und Filtern wie auf der Startseite.</p>
+          <details className="group mt-4 border-t border-slate-200 pt-3">
+            <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
+              Wissenschaftlicher Hintergrund
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+          <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ein Wissensgraph beschreibt Dinge als Knoten und ihre Beziehungen als Kanten (Hogan et al., „Knowledge Graphs“, 2021). Hier entsteht er aus den Einträgen, die zur Suche passen: Zwei Dinge sind verbunden, wenn sie im selben Eintrag vorkommen (Ko-Okkurrenz; Newman, „Networks“, 2018). Das Gewicht einer Verbindung ist der Jaccard-Index (Jaccard 1912), also der Anteil gemeinsamer Einträge an allen Einträgen beider Seiten. Begriffe aus den Titeln werden nach ihrer Besonderheit gewichtet: häufig in der Auswahl, aber selten im ganzen Bestand (Inverse Document Frequency, Spärck Jones 1972), damit Füllwörter nicht das Bild bestimmen. Die Anordnung folgt einem Kräftemodell (Fruchterman und Reingold 1991): Verbundene Knoten ziehen sich an, alle stoßen sich ab.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Eine Verbindung bedeutet gemeinsames Vorkommen, keine Ursache. Begriffe stammen aus Titeln, nicht aus dem vollen Text. Ausgewertet werden höchstens die jüngsten 3.000 passenden Einträge.</p>
+          </details>
+          <Link href="/analytics/graph" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Knowledge Graph öffnen →</Link>
+        </div>
+      </article>
+      <p className="mt-8 text-[14px] text-slate-500">Weitere Funktionen sind in Planung.</p>
     </main>
   );
 }

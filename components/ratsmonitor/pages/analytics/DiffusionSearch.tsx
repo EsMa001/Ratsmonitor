@@ -12,7 +12,7 @@ import { ActiveFilters } from "../../components/ActiveFilters";
 export type PlayState = "idle" | "loading" | "playing" | "paused";
 
 /** Suchleiste wie auf der Startseite (gleiche Suche, gleiche Filter), rechts der Start-Knopf der Analyse */
-export function DiffusionSearch({ play, onPlay, onSubmit }: { play: PlayState; onPlay: () => void; /** Enter oder Vorschlag gewählt */ onSubmit: () => void }) {
+export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse starten" }: { play: PlayState; onPlay: () => void; startLabel?: string; /** Enter oder Vorschlag gewählt */ onSubmit: () => void }) {
   const { geo } = useData();
   const search = useSearch();
   const res = useSearchResults();
@@ -38,7 +38,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit }: { play: PlayState; o
       {filterCount > 0 && !open && <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-600 px-1 text-[12px] font-semibold leading-none text-white">{filterCount}</span>}
     </button>
   );
-  const label = play === "loading" ? "Analyse läuft" : play === "playing" ? "Pause" : "Analyse starten";
+  const label = play === "loading" ? "Wird berechnet" : play === "playing" ? "Pause" : startLabel;
   return (
     <div>
       <div role="search" className="flex w-full items-center gap-2">
@@ -48,7 +48,7 @@ export function DiffusionSearch({ play, onPlay, onSubmit }: { play: PlayState; o
         <div className="relative z-10 h-11 w-11 flex-none max-sm:h-12 max-sm:w-12">{open ? <FilterPanel toggle={filterBtn} /> : filterBtn}</div>
         <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-600 disabled:cursor-default`}>
           {play === "loading" ? (
-            <span role="status" aria-label="Analyse läuft" className="rm-spinner" />
+            <span role="status" aria-label="Wird berechnet" className="rm-spinner" />
           ) : play === "playing" ? (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.2" /><rect x="13.8" y="5" width="4.2" height="14" rx="1.2" /></svg>
           ) : (

@@ -18,9 +18,10 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
 ];
 
 /* Unterpunkte von „Plenara Analytics“ (die Gruppe selbst ist keine Seite) */
-const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" }[] = [
+const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "layers" }[] = [
   { href: "/analytics/ueber", label: "Über Plenara Analytics", icon: "fileText" },
   { href: "/analytics/diffusion", label: "Diffusionsanalyse", icon: "map" },
+  { href: "/analytics/graph", label: "Knowledge Graph", icon: "layers" },
 ];
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */

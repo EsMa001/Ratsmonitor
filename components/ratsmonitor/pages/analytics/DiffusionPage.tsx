@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { REGIONS } from "@/shared/regions";
-import { radiusParam } from "@/shared/radius-areas.mjs";
 import { MapEngine } from "../../lib/geo/mapEngine";
 import { useData } from "../../state/data";
-import { useSearch, useSearchResults } from "../../state/search";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionChart } from "./DiffusionChart";
 import { DiffusionSearch, type PlayState } from "./DiffusionSearch";
+import { useAnalyticsQuery } from "./useAnalyticsQuery";
 
 interface Reg { ags: string; name: string; first: string; last: string; n: number }
 interface Result {
@@ -38,8 +36,6 @@ function levelAt(first: string, today: number) {
 export function DiffusionPage() {
   const params = useSearchParams();
   const { geo } = useData();
-  const search = useSearch();
-  const results = useSearchResults();
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,20 +50,7 @@ export function DiffusionPage() {
   const pickRef = useRef<(a: string) => void>(() => {});
   pickRef.current = (a) => setPicked((p) => (p === a ? "" : a));
 
-  /* Abfrage der Analyse: dieselben Filter wie die Suche der Startseite, Gemeindeebene, ohne Sortierung und Seiten */
-  const query = useMemo(() => {
-    const p = new URLSearchParams(results.key);
-    for (const k of ["around", "sort", "size", "page", "part"]) p.delete(k);
-    p.set("level", "city");
-    const r = search.state.radius;
-    if (r && geo) {
-      const set = geo.within(r).set;
-      if (!set) p.set("within", "");
-      else { const [name, keys] = radiusParam(REGIONS.filter((x) => x.kind === "city"), set, null); p.set(name, keys); }
-    }
-    return p.toString();
-  }, [results.key, search.state.radius, geo]);
-  const hasTerm = results.text.trim().length > 0;
+  const { query, hasTerm, search } = useAnalyticsQuery();
 
   /* Beispiel- oder Direktlink (?thema=): Begriff in die Suche setzen und sofort starten */
   const given = useRef(params.get("thema"));

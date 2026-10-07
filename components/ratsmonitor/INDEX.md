@@ -771,7 +771,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (209): MainMenu
+- MainMenu.tsx (210): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (116, ⚠4): DetailPage
@@ -785,10 +785,10 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (301): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (48, ⚠1): AnalyticsAbout
-- AnalyticsPages.tsx (22): isAnalyticsPath, AnalyticsPages
+- AnalyticsAbout.tsx (83, ⚠2): AnalyticsAbout
+- AnalyticsPages.tsx (24): isAnalyticsPath, AnalyticsPages
 - DiffusionChart.tsx (61, ⚠1): DiffusionChart
-- DiffusionPage.tsx (278, ⚠4): DiffusionPage
+- DiffusionPage.tsx (261, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (63): PlayState, DiffusionSearch
 
 ### components/ratsmonitor/services/
