@@ -119,9 +119,8 @@
   {
    "rang": 19,
    "stufe": "B",
-   "titel": "Kostenlos starten, ohne Zahlungsdaten",
-   "beleg": "Text auf den Plenara.X-Seiten",
-   "pruefen": true
+   "titel": "Die Suche kostenlos nutzen",
+   "beleg": "Vom Nutzer bestätigt: Suche von Plenara kostenlos mit begrenztem Funktionsumfang; Plenara.X ist nicht kostenlos"
   },
   {
    "rang": 20,
@@ -217,8 +216,7 @@
    "rang": 35,
    "stufe": "C",
    "titel": "Auch am Handy",
-   "beleg": "angepasste Oberfläche (alte Handyvideos)",
-   "pruefen": true
+   "beleg": "Oberfläche für Handy angepasst (Layout unter 768 px, eigene Handy-Videos, Handy-Vorschau public/handy.html); geprüft im Code"
   },
   {
    "rang": 36,
@@ -236,8 +234,7 @@
    "rang": 38,
    "stufe": "C",
    "titel": "Themenfilter mit Themenfeldern",
-   "beleg": "Filter „Alle Themen“; Zuordnung noch prüfen",
-   "pruefen": true
+   "beleg": "Filter „Alle Themen“; Zuordnung nach Titelregeln (shared/labels.mjs, title-rules-v2): jeder Eintrag bekommt anhand von Schlüsselwörtern im amtlichen Titel ein Themenfeld; nicht erkennbare bleiben ohne Feld"
   },
   {
    "rang": 39,
@@ -249,15 +246,13 @@
    "rang": 40,
    "stufe": "C",
    "titel": "Kurzfassung zu jedem Eintrag",
-   "beleg": "Text unter dem Titel; Herkunft prüfen, nur „Kurzfassung“ nennen, nicht „KI“",
-   "pruefen": true
+   "beleg": "Kurzfassung unter dem Titel, per KI aus dem Dokumenttext erstellt (ai-summary.mjs), wo ein Dokumenttext vorliegt; in Texten „Kurzfassung“ nennen, „zu jedem Eintrag“ nur mit Einschränkung („wo ein Dokumenttext vorliegt“)"
   },
   {
    "rang": 41,
    "stufe": "C",
    "titel": "Suchvorschläge beim Tippen",
-   "beleg": "Vorschlagsfeld unter der Suchleiste; prüfen",
-   "pruefen": true
+   "beleg": "Vorschlagsliste unter der Suchleiste: Orte und Regionen ab 3 Buchstaben sowie „Zuletzt gesucht“; keine Vorschläge für Fachbegriffe"
   },
   {
    "rang": 42,
@@ -317,8 +312,7 @@
    "rang": 51,
    "stufe": "D",
    "titel": "Schnelle Suche über den ganzen Bestand",
-   "beleg": "Treffer erscheinen sofort; Technik unter der Suche prüfen",
-   "pruefen": true
+   "beleg": "Vorberechnete Wortliste (search-words.mjs): „keine Treffer“ sofort, Zähler und Karte häufiger Wörter aus vorberechneten Zahlen; Ergebnis identisch mit der vollen Suche (getestet)"
   },
   {
    "rang": 52,
@@ -336,8 +330,7 @@
    "rang": 54,
    "stufe": "D",
    "titel": "Verschiedene Ratsinformationssysteme einheitlich dargestellt",
-   "beleg": "Anbindung mehrerer Systeme; Formulierung prüfen",
-   "pruefen": true
+   "beleg": "Vom Nutzer bestätigt: stimmt inhaltlich, Formulierung frei (Anbindung mehrerer Systeme)"
   },
   {
    "rang": 55,
@@ -349,15 +342,13 @@
    "rang": 56,
    "stufe": "D",
    "titel": "Einheitliche Themenfelder",
-   "beleg": "Zuordnung noch prüfen",
-   "pruefen": true
+   "beleg": "Feste Liste von Themenfeldern (LABELS in shared/labels.mjs), für alle Gebiete gleich per Titelregeln vergeben; nicht alle Einträge sind eingeordnet"
   },
   {
    "rang": 57,
    "stufe": "D",
    "titel": "Gremien nach Art erkennbar",
-   "beleg": "laut Analyse-Hinweis aus dem Namen abgeleitet (Grenze nennen)",
-   "pruefen": true
+   "beleg": "Gremienart wird per Namensmuster aus dem Gremiennamen abgeleitet (analytics-network.mjs, gremiumType); nicht erkennbare = „Sonstige“; die Grenze nennen"
   },
   {
    "rang": 58,
