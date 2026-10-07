@@ -1,7 +1,7 @@
-# Jeden Montag alles Neue in einer E-Mail. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
-@postfach.wochenbericht Alle Neuigkeiten Ihrer Suchen, jeden Montag in einer E-Mail?
-*@postfach.wochenbericht Das ist der Wochenbericht: Er fasst jeden Montag alle neuen Treffer Ihrer gespeicherten Suchen zusammen.
-@postfach.wochenbericht Sie schalten ihn bei Ihren gespeicherten Suchen ein.
+# Alles Neue in einer E-Mail, an Ihrem Wunschtag. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
+@postfach.wochenbericht Alle Neuigkeiten Ihrer Suchen in einer E-Mail, täglich oder an Ihrem Wunschtag?
+*@postfach.wochenbericht Das ist der Wochenbericht: Er fasst alle neuen Treffer Ihrer gespeicherten Suchen zusammen.
+@postfach.wochenbericht Sie schalten ihn bei Ihren gespeicherten Suchen ein und wählen selbst, ob täglich oder an welchem Wochentag.
 *@postfach.mails Dazu kommen Mails zu neuen Treffern, zu einem Beschluss und zu einer Sitzung heute.
 @postfach.testpostfach Wie diese Nachrichten aussehen, zeigt das Test-Postfach in Ihrem Konto, ganz ohne Risiko.
 @postfach.testpostfach So behalten Sie den Überblick, ohne zu suchen.

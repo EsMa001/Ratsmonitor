@@ -250,17 +250,29 @@ export function SavedSearchesPage() {
 }
 
 const WEEKLY = "ratsmonitor:weekly:v1";
-/** Wochenbericht: jeden Montag eine Mail mit den neuen Treffern aller gespeicherten Suchen der letzten 7 Tage.
+const WEEKLY_DAY = "ratsmonitor:weekly-day:v1";
+const DAYS = ["Täglich", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
+/** Wochenbericht: täglich oder an einem frei wählbaren Wochentag (Standard Montag) eine Mail mit den neuen Treffern aller gespeicherten Suchen der letzten 7 Tage.
  *  Im Testmodus landet der Bericht im Test-Postfach (Knopf „Jetzt erzeugen“). */
 function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
   const [on, setOn] = useState(false);
+  const [day, setDay] = useState("Montag");
   const [busy, setBusy] = useState(false);
   const toast = useToast();
+  const weekday = day;
   useEffect(() => {
     try {
       setOn(localStorage.getItem(WEEKLY) === "1");
+      const d = localStorage.getItem(WEEKLY_DAY);
+      if (d && DAYS.includes(d)) setDay(d);
     } catch {}
   }, []);
+  const pickDay = (d: string) => {
+    setDay(d);
+    try {
+      localStorage.setItem(WEEKLY_DAY, d);
+    } catch {}
+  };
   const toggle = () => {
     setOn(!on);
     try {
@@ -281,14 +293,21 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
         parts.push({ id: s.id, name: s.name, total: r.total ?? 0, top: (r.articles ?? []).slice(0, 3) });
       } catch {}
     }
-    digestMail(readProfile().email || "Ihre Adresse", day(7), day(0), parts);
+    digestMail(readProfile().email || "Ihre Adresse", day(7), day(0), parts, weekday);
     setBusy(false);
     toast("Wochenbericht liegt im Test-Postfach.");
   };
   return (
     <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-200 pb-5 text-[14px]">
       <span className="font-semibold text-slate-900">Wochenbericht</span>
-      <span className="text-slate-500">Jeden Montag alle neuen Treffer Ihrer Suchen in einer E-Mail.</span>
+      <span className="text-slate-500">Alle neuen Treffer Ihrer Suchen in einer E-Mail, täglich oder an dem Wochentag, den Sie wählen:</span>
+      <select aria-label="Rhythmus des Wochenberichts" value={day} onChange={(e) => pickDay(e.target.value)} className="h-8 rounded-md border border-slate-300 bg-white px-2 text-[14px] text-slate-800">
+        {DAYS.map((d) => (
+          <option key={d} value={d}>
+            {d === "Täglich" ? "Jeden Tag" : `Jeden ${d}`}
+          </option>
+        ))}
+      </select>
       <button type="button" role="switch" aria-checked={on} aria-label="Wochenbericht" onClick={toggle} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${on ? "bg-teal-600" : "bg-slate-300/80"}`}>
         <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${on ? "left-[18px]" : "left-0.5"}`} />
       </button>

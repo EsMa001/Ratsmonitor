@@ -25,8 +25,11 @@ def folie(n,wav=None,delay=0.0):
     if wav: run('-i',v,'-i',wav,'-map','0:v','-map','1:a','-af',f'adelay={int(delay*1000)}:all=1,apad','-shortest',*ENC,out)
     else: run('-i',v,'-f','lavfi','-i','anullsrc=r=22050:cl=mono','-map','0:v','-map','1:a','-shortest',*ENC,out)
     return out
-p=folie('titel')
-if p: parts.append(p); t+=dur(p)
+p=folie('titel',f'{O}/titel/audio.wav',0.4) if os.path.exists(f'{O}/titel/audio.wav') else folie('titel')
+if p:
+    if os.path.exists(f'{O}/titel/audio.wav'):
+        for s_ in json.load(open(f'{O}/titel/audio.json'))['sentences']: vtt.append(f"{ts(t+0.4+s_['start'])} --> {ts(t+0.4+s_['end']+0.3)}\n{s_['text'].replace('Plenarra','Plenara')}\n")
+    parts.append(p); t+=dur(p)
 for c in chs:
     n=f"{c['nr']:02d}"
     ch=f'{O}/c{n}/c{n}.mp4'; aj=json.load(open(f'{O}/c{n}/audio.json'))
