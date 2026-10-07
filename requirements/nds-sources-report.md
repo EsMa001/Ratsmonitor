@@ -2,18 +2,18 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 440 auswählbaren Gebieten sind 296 angebunden, 144 nicht. Diese Datei beschreibt die 296 Quellen in `server/integrations/nds-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 440 auswählbaren Gebieten sind 302 angebunden, 138 nicht. Diese Datei beschreibt die 302 Quellen in `server/integrations/nds-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
 ## Übernommene Quellen
 
-- 124 × SessionNet (öffentliche Seiten)
+- 125 × SessionNet (öffentliche Seiten)
 - 93 × ALLRIS 4 (öffentliche Seiten)
 - 29 × More! Rubin (Kalender-API)
 - 25 × OParl
+- 12 × Website der Kommune (öffentliche Bekanntmachungen)
 - 9 × RIS-Portal regisafe (öffentliche Seiten)
-- 7 × Website der Kommune (öffentliche Bekanntmachungen)
 - 6 × cron Ratsinfo für TYPO3 (öffentliche Seiten)
 - 2 × ALLRIS 3 (öffentliche Seiten)
 - 1 × KIC-RIS (öffentliche Gast-Schnittstelle)
@@ -48,6 +48,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Landkreis Northeim | ALLRIS 4 (öffentliche Seiten) | https://ris.kdgoe.de/LKNOM_public/ | 77 |
 | Gemeinde Kalefeld | ALLRIS 4 (öffentliche Seiten) | https://www.kalefeld.sitzung-online.de/public/ | 105 |
 | Gemeinde Katlenburg-Lindau | ALLRIS 4 (öffentliche Seiten) | https://www.katlenburglindau.de/allris/ | 18 |
+| Stadt Moringen | Website der Kommune (öffentliche Bekanntmachungen) | https://www.moringen.de/ | 4 |
 | Stadt Northeim | More! Rubin (Kalender-API) | https://northeim.gremien.info/ | 72 |
 | Stadt Uslar | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/uslar/bi/ | 26 |
 | Landkreis Peine | ALLRIS 4 (öffentliche Seiten) | https://kreistagsinfo.landkreis-peine.de/public/ | 90 |
@@ -68,6 +69,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Bad Grund (Harz) | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/bad_grund/bi/ | 13 |
 | Stadt Bad Lauterberg im Harz | SessionNet (öffentliche Seiten) | https://ratsinformationssystem.badlauterberg.de/bi/ | 9 |
 | Gemeinde Bovenden | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/bovenden/bi/ | 97 |
+| Stadt Duderstadt | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/duderstadt/bi/ | 243 |
 | Gemeinde Gleichen | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/gleichen/bi/ | 208 |
 | Stadt Hann.Münden | ALLRIS 4 (öffentliche Seiten) | https://allris.hann.muenden.de/public/ | 46 |
 | Stadt Herzberg am Harz | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/herzberg/bi/ | 68 |
@@ -102,6 +104,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Samtgemeinde Kirchdorf | More! Rubin (Kalender-API) | https://kirchdorf.gremien.info/ | 24 |
 | Samtgemeinde Siedenburg | ALLRIS 4 (öffentliche Seiten) | https://www.siedenburg.sitzung-online.de/public/ | 130 |
 | Gemeinde Aerzen | ALLRIS 4 (öffentliche Seiten) | https://www.aerzen.sitzung-online.de/public/ | 36 |
+| Stadt Bad Münder am Deister | Website der Kommune (öffentliche Bekanntmachungen) | https://www.bad-muender.de/ | 8 |
 | Stadt Bad Pyrmont | OParl | https://badpyrmont.ratsinfomanagement.net/webservice/oparl/v1.1/system | 31 |
 | Gemeinde Salzhemmendorf | ALLRIS 4 (öffentliche Seiten) | https://www.salzhemmendorf.sitzung-online.de/public/ | 145 |
 | Landkreis Hildesheim | ALLRIS 4 (öffentliche Seiten) | https://kt-info.landkreishildesheim.de/public/ | 138 |
@@ -125,9 +128,11 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Samtgemeinde Grafschaft Hoya | ALLRIS 4 (öffentliche Seiten) | https://www.hoya.sitzung-online.de/public/ | 309 |
 | Samtgemeinde Mittelweser | ALLRIS 4 (öffentliche Seiten) | https://www.sg-mittelweser.sitzung-online.de/public/ | 252 |
 | Samtgemeinde Weser-Aue | ALLRIS 4 (öffentliche Seiten) | https://www.weser-aue.sitzung-online.de/public/ | 214 |
+| Stadt Bückeburg | Website der Kommune (öffentliche Bekanntmachungen) | https://www.bueckeburg.de/ | 30 |
 | Stadt Obernkirchen | SessionNet (öffentliche Seiten) | https://ratsinfo.obernkirchen.de/bi/ | 106 |
 | Stadt Rinteln | OParl | https://rinteln.ratsinfomanagement.net/webservice/oparl/v1.1/system | 155 |
 | Stadt Stadthagen | ALLRIS 4 (öffentliche Seiten) | https://www.stadthagen.sitzung-online.de/public/ | 155 |
+| Samtgemeinde Lindhorst | Website der Kommune (öffentliche Bekanntmachungen) | https://www.sg-lindhorst.de/ | 9 |
 | Samtgemeinde Nenndorf | ALLRIS 4 (öffentliche Seiten) | https://www.nenndorf.sitzung-online.de/public/ | 77 |
 | Samtgemeinde Rodenberg | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/samtgemeinde_rodenberg/bi/ | 31 |
 | Landkreis Celle | ALLRIS 4 (öffentliche Seiten) | https://www.lkcelle.sitzung-online.de/public/ | 30 |
@@ -221,6 +226,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Südbrookmerland | More! Rubin (Kalender-API) | https://suedbrookmerland.gremien.info/ | 77 |
 | Stadt Wiesmoor | SessionNet (öffentliche Seiten) | https://wiesmoor-sessionet.active-city.net/bi/ | 14 |
 | Gemeinde Dornum | More! Rubin (Kalender-API) | https://dornum.gremien.info/ | 21 |
+| Samtgemeinde Brookmerland | Website der Kommune (öffentliche Bekanntmachungen) | https://www.marienhafe.de/ | 43 |
 | Samtgemeinde Hage | RIS-Portal regisafe (öffentliche Seiten) | https://sg-hage.ris-portal.de/ | 50 |
 | Landkreis Cloppenburg | SessionNet (öffentliche Seiten) | https://buergerinfo.lkclp.de/ | 95 |
 | Gemeinde Barßel | More! Rubin (Kalender-API) | https://barssel.gremien.info/ | 46 |
@@ -319,89 +325,83 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 
 ## Nicht angebundene Gebiete
 
-- 39 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
-- 30 × robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend
-- 20 × ALLRIS 3
-- 5 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
-- 5 × Gefundenes System nicht eindeutig dem Gebiet zuzuordnen
-- 5 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
-- 4 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden
-- 4 × SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
+- 40 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
+- 21 × ALLRIS 3
+- 19 × SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen
+- 9 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
+- 6 × Gefundenes System nicht eindeutig dem Gebiet zuzuordnen
+- 6 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
 - 4 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
-- 3 × Verlinkte Seite antwortet Programmen nicht
+- 4 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
+- 4 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
+- 4 × SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
+- 3 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
 - 3 × Verlinkte Seite antwortet Programmen mit HTTP 403 oder gar nicht
-- 3 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
+- 3 × ALLRIS 3 erkannt; Leser noch nicht angewendet
 - 2 × SessionNet 6
-- 2 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden
-- 2 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
-- 2 × ALLRIS 3 erkannt; Leser noch nicht angewendet
 - 2 × Kein unterstütztes Ratsinformationssystem erkannt
 - 2 × OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen
-- 2 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar
-- 1 × Kein Ratsinformationssystem erkennbar; Sitzungen nur als Webseite oder PDF
+- 1 × Kein Ratsinformationssystem erkennbar; Sitzungen nur als Webseite oder PDF; Website geprüft: Website antwortet Programmen mit HTTP 403
 - 1 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar
 - 1 × More! Rubin gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
 - 1 × Verlinktes System führt nur einen Demo-Mandanten des Herstellers
+- 1 × Verlinkte Seite antwortet Programmen nicht
 - 1 × SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
 
 | Gebiet | Grund | Gefundene Adresse |
 |---|---|---|
-| Landkreis Cuxhaven | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://cuxhaven.ratsinfomanagement.net/startseite |
+| Landkreis Cuxhaven | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://cuxhaven.ratsinfomanagement.net/startseite |
 | Landkreis Diepholz | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-landkreis-diepholz.de/ri/logon.asp |
-| Landkreis Emsland | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://landkreis-emsland.ratsinfomanagement.net/sitzungsinfo/ |
-| Landkreis Hameln-Pyrmont | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ktinfo.hameln-pyrmont.de/public/si010 |
+| Landkreis Emsland | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://landkreis-emsland.ratsinfomanagement.net/sitzungsinfo/ |
+| Landkreis Hameln-Pyrmont | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ktinfo.hameln-pyrmont.de/public/si010 |
 | Landkreis Holzminden | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://landkreis-holzminden.ratsinfomanagement.net/gremien/?__=UGhVM0hpd2NXNFdFcExjZcd-QR43pK9vsj3nwLRgAHY |
 | Landkreis Nienburg (Weser) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://buergerinfo.lk-ni.de/infobi.php |
 | Landkreis Oldenburg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://oldenburg-kreis.ratsinfomanagement.net/ |
 | Landkreis Osnabrück | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://kis.lkos.de/bi/si010_r.asp |
-| Landkreis Osterholz | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://landkreis-osterholz.ratsinfomanagement.net/ |
-| Region Hannover | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ris.hannit.de/public/ |
+| Landkreis Osterholz | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://landkreis-osterholz.ratsinfomanagement.net/ |
+| Region Hannover | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.hannit.de/public/ |
 | Landkreis Schaumburg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schaumburg.ratsinfomanagement.net/gremien/?__=UGhVM0hpd2NXNFdFcExjZeiFEFARdy59uTMrLLRgaPA |
-| Landkreis Verden | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://landkreis-verden.ratsinfomanagement.net/ |
+| Landkreis Verden | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://landkreis-verden.ratsinfomanagement.net/ |
 | Stadt Achim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://achim.ratsinfomanagement.net/amtsblatt/ |
-| Gemeinde Adelebsen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Adelebsen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
 | Samtgemeinde Ahlden | SessionNet 6 (öffentliche Schnittstelle) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ratsinfo.ahlden.eu/ |
-| Gemeinde Algermissen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Algermissen | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Samtgemeinde Altes Amt Lemförde | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.lemfoerde.sitzung-online.de/bi-r/si010_r.asp |
-| Samtgemeinde Amelinghausen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Samtgemeinde Amelinghausen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (06.10.2026) |  |
 | Gemeinde Amt Neuhaus | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.amt-neuhaus.sitzung-online.de/public/ |
-| Samtgemeinde Artland | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://artland.ratsinfomanagement.net/personen/?__=UGhVM0hpd2NXNFdFcExjZXPaojF4kfpv2A32DnpBhCjc6qO9kJLmmj-IXmLiKCndNutWyFtoTg06zu237_Ic-g |
-| Gemeinde Auetal | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://auetal.ratsinfomanagement.net/gremien |
-| Stadt Bad Bentheim | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.bad-bentheim.sitzung-online.de/personal/logon |
+| Samtgemeinde Artland | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://artland.ratsinfomanagement.net/personen/?__=UGhVM0hpd2NXNFdFcExjZXPaojF4kfpv2A32DnpBhCjc6qO9kJLmmj-IXmLiKCndNutWyFtoTg06zu237_Ic-g |
+| Gemeinde Auetal | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://auetal.ratsinfomanagement.net/gremien |
+| Stadt Bad Bentheim | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.bad-bentheim.sitzung-online.de/personal/logon |
 | Stadt Bad Gandersheim | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://rat.bad-gandersheim.de/ |
 | Stadt Bad Iburg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://badiburg.ratsinfomanagement.net/ |
-| Stadt Bad Münder am Deister | Verlinkte Seite antwortet Programmen nicht (keine Verbindung) | https://ratsinfoservice.de/ris/badmuender |
 | Stadt Bad Sachsa | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.kdgoe.de/SAC_public/ |
 | Gemeinde Bakum | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ratsinfo.bakum.de/bi/default.asp |
 | Gemeinde Baltrum | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Samtgemeinde Barnstorf | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-barnstorf.de/ri/logon.asp |
-| Gemeinde Berne | Kein Ratsinformationssystem erkennbar; Sitzungen nur als Webseite oder PDF | https://x.com/intent/tweet?url=https%3A%2F%2Fwww.berne.de%2Fseite%2F177679%2Fsitzungskalender-halbjahr.html |
+| Gemeinde Berne | Kein Ratsinformationssystem erkennbar; Sitzungen nur als Webseite oder PDF; Website geprüft: Website antwortet Programmen mit HTTP 403 (06.10.2026) | https://x.com/intent/tweet?url=https%3A%2F%2Fwww.berne.de%2Fseite%2F177679%2Fsitzungskalender-halbjahr.html |
 | Samtgemeinde Bevern | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://samtgemeinde-bevern.ratsinfomanagement.net/startseite |
 | Gemeinde Beverstedt | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://beverstedt.ratsinfomanagement.net/ |
-| Gemeinde Bispingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Bispingen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Gemeinde Bodenfelde | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://bodenfelde.ratsinfomanagement.net/ |
 | Samtgemeinde Bodenwerder-Polle | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://bodenwerder-polle.ratsinfomanagement.net/ |
 | Samtgemeinde Boffzen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://boffzen.ratsinfomanagement.net/news |
 | Samtgemeinde Börde Lamstedt | Verlinkte Seite antwortet Programmen mit HTTP 403 oder gar nicht (keine Verbindung) | https://www.boerde-lamstedt.ratsinfomanagement.net/gremien |
 | Stadt Braunlage | SessionNet 6 (öffentliche Schnittstelle) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ratsinfo.braunlage.city/ |
 | Stadt Bremervörde | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://bremervoerde.ratsinfomanagement.net/gremien/?__=UGhVM0hpd2NXNFdFcExjZf7hfCJ3ICpOn2xCBWx4NUA |
-| Samtgemeinde Brookmerland | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://marienhafe.ratsinfomanagement.net/ |
 | Samtgemeinde Bruchhausen-Vilsen | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.ratsinfo-bruvi.de/buergerinfo/info.php |
-| Stadt Bückeburg | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 404) | https://www.bueckeburg.de/ratsinformationssystem-tpl |
 | Gemeinde Butjadingen | Verlinkte Seite antwortet Programmen mit HTTP 403 oder gar nicht (keine Verbindung) | https://butjadingen.ratsinfomanagement.net/ |
-| Stadt Cloppenburg | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://cloppenburg.ratsinfomanagement.net/ |
+| Stadt Cloppenburg | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://cloppenburg.ratsinfomanagement.net/ |
 | Gemeinde Coppenbrügge | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://coppenbruegge.ratsinformationsdienst.de/ |
 | Stadt Cuxhaven | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://stadt-cuxhaven.ratsinfomanagement.net/ |
 | Samtgemeinde Dahlenburg | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (HTTP 404) (05.10.2026) |  |
 | Stadt Dassel | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.kdgoe.de/DAS_public/si018 |
 | Gemeinde Delligsen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://delligsen.ratsinfomanagement.net/startseite |
 | Stadt Delmenhorst | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-delmenhorst.de/bi-r/home.asp |
-| Gemeinde Diekholzen | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.diekholzen.sitzung-online.de/ri/logonc.asp?sessionId=417576865 |
+| Gemeinde Diekholzen | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.diekholzen.sitzung-online.de/ri/logonc.asp?sessionId=595713541 |
 | Stadt Dissen am Teutoburger Wald | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://dissen.ratsinfomanagement.net/ |
 | Gemeinde Dörverden | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Samtgemeinde Dransfeld | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
-| Stadt Duderstadt | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
-| Gemeinde Edemissen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ratsinfo.edemissen.de/public/ |
+| Gemeinde Edemissen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://ratsinfo.edemissen.de/public/ |
 | Samtgemeinde Eilsen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://samtgemeinde-eilsen.ratsinfomanagement.net/ |
 | Stadt Einbeck | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.kdgoe.de/EIN_public/ |
 | Samtgemeinde Elbmarsch | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
@@ -414,11 +414,11 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Samtgemeinde Flotwedel | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-flotwedel.de/bi2/si010_e.asp |
 | Gemeinde Freden (Leine) | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.freden.sitzung-online.de/ri/logon.asp |
 | Gemeinde Friedland | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
-| Gemeinde Ganderkesee | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ganderkesee.ratsinfomanagement.net/ |
+| Gemeinde Ganderkesee | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://ganderkesee.ratsinfomanagement.net/ |
 | Samtgemeinde Geestequelle | Verlinktes System führt nur einen Demo-Mandanten des Herstellers (z. B. „Stadt Musterstadt“) | https://www.ratsinfomanagement.net/ |
 | Stadt Geestland | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://sitzungsdienst.geestland.eu/bi/si010_r.asp |
-| Stadt Goslar | Verlinkte Seite antwortet Programmen nicht (Zeitüberschreitung) | https://www.goslar.de/stadt/politik/allris/si010_r.asp |
-| Stadt Göttingen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ris.goettingen.de/public/ |
+| Stadt Goslar | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.goslar.de/stadt/politik/allris/ |
+| Stadt Göttingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ris.goettingen.de/public/ |
 | Gemeinde Grasberg | Kein unterstütztes Ratsinformationssystem erkannt | https://online.grasberg.de/buergerservice/verwaltung/buergerinformation-900000036-21010.html |
 | Gemeinde Hagen im Bremischen | Verlinkte Seite antwortet Programmen mit HTTP 403 oder gar nicht (keine Verbindung) | https://hagen-cux.ratsinfomanagement.net/gremien |
 | Samtgemeinde Hambergen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
@@ -427,45 +427,43 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Hannover | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.hannit.de/public/to010?SILFDNR=2003885 |
 | Stadt Hardegsen | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Samtgemeinde Harsefeld | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.harsefeld.sitzung-online.de/ri/logon.asp |
-| Gemeinde Hatten | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://hatten.ratsinfomanagement.net/startseite |
-| Stadt Hemmingen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ratsinfo.stadthemmingen.de/public/ |
-| Samtgemeinde Hemmoor | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://hemmoor.ratsinfomanagement.net/ |
+| Gemeinde Hatten | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://hatten.ratsinfomanagement.net/startseite |
+| Stadt Hemmingen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://ratsinfo.stadthemmingen.de/public/ |
+| Samtgemeinde Hemmoor | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://hemmoor.ratsinfomanagement.net/ |
 | Stadt Hessisch Oldendorf | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://stadt-ho.ratsinfomanagement.net/ |
-| Stadt Hildesheim | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://sitzungsdienst-hildesheim.de/ri |
+| Stadt Hildesheim | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://sitzungsdienst-hildesheim.de/ri/logonc.asp?sessionId=574741625 |
 | Samtgemeinde Hollenstedt | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://www.sg-hollenstedt.sitzung-online.de/public/ |
 | Gemeinde Hude (Oldb) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://ratsinformation2.hude.de/ |
 | Samtgemeinde Jesteburg | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.jesteburg.de/allris/kp040 |
-| Gemeinde Kirchlinteln | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://kirchlinteln.ratsinfomanagement.net/personen/?__=UGhVM0hpd2NXNFdFcExjZZmFyrXL-a34XKXbZ3FEBLBqydlBVNzYbnCnTL-0_ZdWpW4HRx-KHv-FGu7o6I9PZw |
-| Stadt Laatzen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ratsinfo.laatzen.de/personal/logon |
-| Gemeinde Lamspringe | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
+| Gemeinde Kirchlinteln | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://kirchlinteln.ratsinfomanagement.net/personen/?__=UGhVM0hpd2NXNFdFcExjZZmFyrXL-a34XKXbZ3FEBLBqydlBVNzYbnCnTL-0_ZdWpW4HRx-KHv-FGu7o6I9PZw |
+| Stadt Laatzen | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://ratsinfo.laatzen.de/personal/logon |
+| Gemeinde Lamspringe | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (06.10.2026) |  |
 | Samtgemeinde Land Hadeln | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://land-hadeln.ratsinfomanagement.net/ |
 | Stadt Langenhagen | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen | https://www.langenhagen.sitzung-online.de/public/ |
-| Gemeinde Langwedel | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://flecken-langwedel.ratsinfomanagement.net/ |
-| Samtgemeinde Leinebergland | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.gronau-leine.sitzung-online.de/ri/logonc.asp?sessionId=575435182 |
+| Gemeinde Langwedel | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://flecken-langwedel.ratsinfomanagement.net/ |
+| Samtgemeinde Leinebergland | ALLRIS 3 erkannt; Leser noch nicht angewendet (Neuprüfung ausstehend) | https://www.gronau-leine.sitzung-online.de/ri/logonc.asp?sessionId=687225900 |
 | Gemeinde Liebenburg | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (1 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Lilienthal | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lilienthal.ratsinfomanagement.net/ |
 | Gemeinde Lindern (Oldenburg) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lindern.ratsinfomanagement.net/ |
-| Samtgemeinde Lindhorst | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden |  |
 | Stadt Lingen (Ems) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://lingen.ratsinfomanagement.net/ |
 | Stadt Löningen | Verlinkte Seite antwortet Programmen nicht (keine Verbindung) | https://ratsinfoservice.de/ris/loeningen |
 | Gemeinde Loxstedt | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://loxstedt.ratsinfomanagement.net/startseite |
 | Stadt Meppen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://meppen.ratsinfomanagement.net/ |
 | Gemeinde Moormerland | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://moormerland.ratsinfomanagement.net/ |
-| Stadt Moringen | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://ris.kdgoe.de/MOR_public/ |
-| Samtgemeinde Niedernwöhren | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://niedernwoehren.ratsinfomanagement.net/gremien |
+| Samtgemeinde Niedernwöhren | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://niedernwoehren.ratsinfomanagement.net/gremien |
 | Samtgemeinde Nienstädt | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Stadt Nordhorn | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinfo.nordhorn.de/ |
 | Samtgemeinde Nordkehdingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://nordkehdingen.ratsinfomanagement.net/ |
 | Gemeinde Nörten-Hardenberg | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 404) | https://www.noerten-hardenberg.de/bi/ |
 | Samtgemeinde Oldendorf-Himmelpforten | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.oldendorf-himmelpforten.de/bi/ |
 | Gemeinde Ostrhauderfehn | SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ratsinfo.ostrhauderfehn.de/default.asp |
-| Gemeinde Ottersberg | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://flecken-ottersberg.ratsinfomanagement.net/ |
-| Gemeinde Oyten | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://oyten.ratsinfomanagement.net/ |
-| Stadt Peine | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://ratsinfo.stadt-peine.de/public |
+| Gemeinde Ottersberg | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://flecken-ottersberg.ratsinfomanagement.net/ |
+| Gemeinde Oyten | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://oyten.ratsinfomanagement.net/ |
+| Stadt Peine | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://ratsinfo.stadt-peine.de/public |
 | Samtgemeinde Rehden | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.rehden.de/allris/si010_r.asp |
 | Gemeinde Rhauderfehn | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://rhauderfehn.ratsinfomanagement.net/ |
 | Gemeinde Rhede (Ems) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://rhede-ems.ratsinfomanagement.net/gremien |
-| Gemeinde Ritterhude | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | http://ritterhude.ratsinfomanagement.net/termine |
+| Gemeinde Ritterhude | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | http://ritterhude.ratsinfomanagement.net/termine |
 | Stadt Ronnenberg | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://ratsinfo.ronnenberg.de/ |
 | Samtgemeinde Sachsenhagen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | http://sachsenhagen.ratsinfomanagement.net/ |
 | Stadt Sarstedt | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sarstedt.de/allris/si010_r.asp |
@@ -473,20 +471,20 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Schellerten | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden (05.10.2026) |  |
 | Samtgemeinde Schwaförden | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 404) | https://www.schwafoerden.sitzung-online.de/ri/logon.asp |
 | Gemeinde Schwanewede | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schwanewede.ratsinfomanagement.net/ |
-| Stadt Seesen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://seesen.ratsinfomanagement.net/ |
+| Stadt Seesen | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://seesen.ratsinfomanagement.net/ |
 | Stadt Sehnde | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp nennt keinen Sitzungskalender.) | https://www.sehnde.de/bi/allris.net.asp |
 | Samtgemeinde Selsingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://selsingen.ratsinfomanagement.net/tops/?__=UGhVM0hpd2NXNFdFcExjZW9k9-91TOtQjC-VmL-MFFk |
-| Samtgemeinde Thedinghausen | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://thedinghausen.ratsinfomanagement.net/ |
+| Samtgemeinde Thedinghausen | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://thedinghausen.ratsinfomanagement.net/ |
 | Gemeinde Twist | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (5 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Stadt Twistringen | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.twistringen.de/bi/allris.net.asp |
 | Samtgemeinde Velpke | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.velpke.sitzung-online.de/ri/logon.asp |
-| Stadt Verden (Aller) | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | http://verden.ratsinfomanagement.net/ |
+| Stadt Verden (Aller) | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | http://verden.ratsinfomanagement.net/ |
 | Gemeinde Wangerooge | SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Noch keine Artikel erfolgreich erfasst.) | https://ratsinfo.wangerooge.de/ |
 | Gemeinde Wardenburg | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://ratsinformation.wardenburg.de/termine |
-| Gemeinde Wennigsen (Deister) | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://wennigsen.ratsinfomanagement.net/termine |
+| Gemeinde Wennigsen (Deister) | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://wennigsen.ratsinfomanagement.net/termine |
 | Samtgemeinde Werlte | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sgwerlte.ratsinfomanagement.net/personen |
 | Gemeinde Westoverledingen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://westoverledingen.ratsinfomanagement.net/ |
 | Gemeinde Wietze | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.wietze.sitzung-online.com/pi2/allris.net.asp |
-| Gemeinde Winsen (Aller) | robots.txt des gefundenen Systems sperrte bei der letzten Prüfung; Neuprüfung ausstehend (robots.txt wird seit 05.10.2026 nur festgehalten) | https://www.sitzungsdienst-winsen-aller.de/bi/ |
+| Gemeinde Winsen (Aller) | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-winsen-aller.de/bi/allris.net.asp |
 | Stadt Wolfsburg | OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen (OParl HTTP 404) | https://ratsinfor.stadt.wolfsburg.de/logon?1 |
 | Gemeinde Wurster Nordseeküste | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.wurster-nordseekueste.sitzung-online.de/ri/logon.asp |

@@ -11,6 +11,8 @@ node scripts/source-discovery/verify.mjs     # Systemart bestimmen, mit den Abru
 node scripts/source-discovery/build.mjs      # Katalogdatei und requirements/statewide-sources-report.md schreiben
 node scripts/source-discovery/servers.mjs    # Adressen der Quellenrechner festhalten (Abrufplaner: höchstens zwei je Server)
 node scripts/source-discovery/robots.mjs     # je Quelle festhalten, ob robots.txt den gelesenen Pfad erlaubt
+node scripts/dashboard/build.mjs             # Lückenatlas: dashboard/luecken.html und server/integrations/source-atlas.json
+node scripts/coverage-history.mjs            # Verlauf der Abdeckung (Gebiete, Einwohner) für die Admin-Übersicht ergänzen
 node --test tests/*.test.mjs
 ```
 

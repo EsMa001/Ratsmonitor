@@ -37,3 +37,19 @@ test('provider wordings of the public heading are recognised; a private or unkno
  // A normal item that merely starts with the word is no heading.
  const r=publicAgenda([{id:'x',number:'1',name:'Öffentliche Bekanntmachung der Satzung'},{id:'y',number:'2',name:'Öffentlichkeitsarbeit'}]);assert.equal(r.items.length,0);assert.equal(r.unclear,2);
 });
+
+test('SD.NET RIM headings: "Sitzungsteil öffentlich" opens the public section, "Sitzungsteil nicht öffentlich" closes it',()=>{
+ const r=publicAgenda([{id:'h',number:'I.',name:'Sitzungsteil öffentlich'},{id:'a',number:'1',name:'Mitteilungen der Vorsitzenden'},{id:'b',number:'2',name:'Straßenbeleuchtung'},{id:'n',number:'II.',name:'Sitzungsteil nicht öffentlich'},{id:'c',number:'3',name:'Grundstücksangelegenheit'}]);
+ assert.deepEqual(r.items.map(i=>i.id),['a','b']);assert.equal(r.unclear,1);
+ assert.deepEqual(publicAgenda([{id:'h',name:'Öffentlicher Sitzungsteil'},{id:'a',name:'Schulbau'}]).items.map(i=>i.id),['a']);
+ for(const closing of ['Nichtöffentlicher Sitzungsteil','Sitzungsteil nichtöffentlich','Nicht öffentlicher Sitzungsteil'])assert.deepEqual(publicAgenda([{id:'n',name:closing},{id:'c',name:'Personalsache'}]).items,[],closing);
+});
+
+test('assumePublic (SD.NET RIM OParl, decision of 06.10.2026): unmarked items count, never non-public ones',()=>{
+ const items=[{id:'a',number:'1',name:'Mitteilungen'},{id:'b',number:'2',name:'Bebauungsplan Nr. 12'},{id:'c',number:'3',name:'Bekanntgabe der in nichtöffentlicher Sitzung gefassten Beschlüsse'},{id:'d',number:'4',public:false,name:'Grundstück'},{id:'e',number:'5',name:'Personalsache'}];
+ assert.deepEqual(publicAgenda(items).items,[],'without the decision nothing unmarked');
+ const r=publicAgenda(items,{assumePublic:true});
+ assert.deepEqual(r.items.map(i=>i.id),['a','b'],'no title naming the non-public part, nothing after public:false');
+ assert.equal(r.items[0].publicEvidence.method,'interface-public-only');
+ assert.deepEqual(publicAgenda([{id:'n',name:'Sitzungsteil nicht öffentlich'},{id:'x',name:'Vergabe'}],{assumePublic:true}).items,[],'nothing after a non-public heading');
+});

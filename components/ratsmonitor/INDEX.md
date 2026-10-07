@@ -5,7 +5,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/analyse-admin.css (176 Zeilen, ⚠23)
+- app/analyse-admin.css (293 Zeilen, ⚠24)
 - app/design-fonts.css (71 Zeilen)
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
@@ -18,11 +18,33 @@ admin-activation analyse-admin.css:66
 admin-ai-kinds analyse-admin.css:79
 admin-ai-retry analyse-admin.css:79
 admin-app analyse-admin.css:102
+admin-atlas-block analyse-admin.css:259
+admin-atlas-canvas analyse-admin.css:232
+admin-atlas-chips analyse-admin.css:216
+admin-atlas-close analyse-admin.css:252
+admin-atlas-detail analyse-admin.css:249
+admin-atlas-detail-head analyse-admin.css:250
+admin-atlas-dot analyse-admin.css:244
+admin-atlas-facts analyse-admin.css:255
+admin-atlas-flag analyse-admin.css:248
+admin-atlas-list analyse-admin.css:236
+admin-atlas-main analyse-admin.css:223
+admin-atlas-map analyse-admin.css:225
+admin-atlas-meta analyse-admin.css:247
+admin-atlas-name analyse-admin.css:245
+admin-atlas-pop analyse-admin.css:246
+admin-atlas-reason analyse-admin.css:235
+admin-atlas-row analyse-admin.css:240
+admin-atlas-rows analyse-admin.css:239
+admin-atlas-stack analyse-admin.css:213
+admin-atlas-tools analyse-admin.css:226
+admin-atlas-why analyse-admin.css:210
 admin-attention analyse-admin.css:66
 admin-back ratsmonitor.css:92
 admin-bar analyse-admin.css:66
 admin-bar-row analyse-admin.css:66
 admin-charts analyse-admin.css:66
+admin-chip analyse-admin.css:217
 admin-download analyse-admin.css:66
 admin-empty analyse-admin.css:66
 admin-error analyse-admin.css:66
@@ -67,6 +89,8 @@ admin-kpi-primary analyse-admin.css:66
 admin-kpi-primary ratsmonitor.css:73
 admin-kpis analyse-admin.css:66
 admin-kpis ratsmonitor.css:75
+admin-lands analyse-admin.css:192
+admin-legacy analyse-admin.css:265
 admin-list-meta analyse-admin.css:79
 admin-map analyse-admin.css:79
 admin-map ratsmonitor.css:67
@@ -77,14 +101,24 @@ admin-map-region analyse-admin.css:79
 admin-masthead analyse-admin.css:103
 admin-masthead__account analyse-admin.css:106
 admin-masthead__inner analyse-admin.css:104
+admin-mono analyse-admin.css:260
 admin-nav analyse-admin.css:66
+admin-next analyse-admin.css:202
+admin-next-link analyse-admin.css:203
 admin-note analyse-admin.css:66
 admin-notice analyse-admin.css:66
 admin-number analyse-admin.css:66
 admin-operations analyse-admin.css:66
+admin-overview-charts analyse-admin.css:182
+admin-overview-trend analyse-admin.css:189
 admin-pages analyse-admin.css:79
 admin-pages ratsmonitor.css:67
+admin-pill analyse-admin.css:253
 admin-pipeline analyse-admin.css:79
+admin-quality-checks analyse-admin.css:278
+admin-quality-group analyse-admin.css:276
+admin-quality-head analyse-admin.css:280
+admin-quality-samples analyse-admin.css:288
 admin-quality-stats analyse-admin.css:66
 admin-refresh analyse-admin.css:66
 admin-region-list analyse-admin.css:79
@@ -97,7 +131,9 @@ admin-run-debug-panel analyse-admin.css:92
 admin-run-debug-requests analyse-admin.css:92
 admin-section analyse-admin.css:66
 admin-section-heading analyse-admin.css:66
+admin-seg analyse-admin.css:227
 admin-selection-actions analyse-admin.css:79
+admin-share analyse-admin.css:199
 admin-shell analyse-admin.css:65
 admin-shell ratsmonitor.css:67
 admin-source-controls analyse-admin.css:66
@@ -134,8 +170,10 @@ admin-timeline-retry analyse-admin.css:85
 admin-timeline-table analyse-admin.css:85
 admin-topbar analyse-admin.css:66
 admin-topbar ratsmonitor.css:77
+admin-trend-legend analyse-admin.css:186
 admin-workspace analyse-admin.css:79
 admin-workspace ratsmonitor.css:87
+admin-zoom analyse-admin.css:230
 analysis-advanced analyse-admin.css:48
 analysis-advanced-fields analyse-admin.css:48
 analysis-apply analyse-admin.css:29
@@ -225,8 +263,12 @@ heading-m ratsmonitor.css:67
 heat-legend analyse-admin.css:29
 icon design-styles.css:22
 is-assumed analyse-admin.css:87
+is-clean analyse-admin.css:281
 is-counted analyse-admin.css:90
+is-data analyse-admin.css:201
 is-failed analyse-admin.css:92
+is-found analyse-admin.css:280
+is-group analyse-admin.css:222
 is-line analyse-admin.css:90
 is-model analyse-admin.css:88
 is-none analyse-admin.css:87
@@ -234,6 +276,7 @@ is-open analyse-admin.css:94
 is-sample analyse-admin.css:88
 is-selected analyse-admin.css:29
 is-selected ratsmonitor.css:76
+is-static analyse-admin.css:271
 is-stored analyse-admin.css:88
 is-thin analyse-admin.css:87
 keyword-list analyse-admin.css:76
@@ -638,7 +681,7 @@ wordmark__dot design-styles.css:61
 - page.tsx (2)
 
 ### app/admin/
-- page.tsx (32, ⚠1): dynamic, metadata, AdminPage
+- page.tsx (42, ⚠1): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -658,14 +701,17 @@ wordmark__dot design-styles.css:61
 
 ### components/
 - admin-activation.tsx (9, ⚠1): AdminActivation
-- admin-chrome.tsx (22): AdminBar, AdminHeader
-- admin-dashboard.tsx (79, ⚠19): AdminDashboardView
-- admin-estimate.tsx (332, ⚠51): AdminEstimate
+- admin-atlas.tsx (166, ⚠33): AdminAtlas
+- admin-chrome.tsx (26): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
+- admin-dashboard.tsx (75, ⚠17): AdminDashboardView
+- admin-estimate.tsx (334, ⚠53): AdminEstimate
 - admin-forecast.tsx (12): AdminForecast
 - admin-keywords.tsx (88, ⚠13): AdminKeywords
-- admin-loader.tsx (29, ⚠1): AdminLoader
-- admin-processing-map.tsx (34, ⚠4): AdminProcessingMap
-- admin-processing.tsx (157, ⚠25): AdminProcessing
+- admin-loader.tsx (30, ⚠1): AdminLoader
+- admin-overview.tsx (135, ⚠17): AdminOverview
+- admin-processing-map.tsx (39, ⚠4): AdminProcessingMap
+- admin-processing.tsx (168, ⚠21): AdminProcessing
+- admin-quality-check.tsx (49, ⚠5): AdminQualityCheck
 - admin-run-debug.tsx (67, ⚠3): RunDebugView, AdminRunDebug
 - admin-timeline.tsx (72, ⚠6): AdminTimeline
 - analysis-article-list.tsx (34, ⚠1): AnalysisArticleList

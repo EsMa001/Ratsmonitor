@@ -490,6 +490,8 @@ const oddMark=t=>{
  return /(?:^|\s)[([]?[Öö][)\]]?\s+\S/u.test(s)||/(?:^|\s)(?:ja|nein)(?=\s|$)/u.test(s);
 };
 const PLAIN=new RegExp(`^${NUM}(\\.|\\))?\\s+(.+)$`,'u');
+// A mark glued to the number, as Thuringian towns write it ("1ö Beschluss …", "3nö Grundstück"): the mark decides the part.
+const GLUED=new RegExp(`^${NUM}(NÖ|Nö|nö|Ö|ö)\\s+(.+)$`,'u');
 const OFFICE=/^(?:Erste[rn]?\s+|Zweite[rn]?\s+|Dritte[rn]?\s+|Stellvertretende[rn]?\s+)?(?:Ober|Vize|Orts|Kreis)?(?:[Bb]ürgermeister|Vorsitzende|Beigeordnete|Stellvertreter|[Oo]rtsvorsteher|Landrat|Landrätin|Kommandant|Schriftführer|Amtsdirektor|Amtsvorsteher|Verbandsvorsteher|Kämmerer|Kämmerin|Vorstand)(?:in|innen|e[rn]?|r|n|\(in\)|\(r\))?(?!\p{L})|^stellv\.|^Bgm\.?(?!\p{L})/u;
 // Members and staff named in a list of those present ("2. Gemeinderätin Probe", "3. GR Beispiel", "4. Hauptamtsleiter Muster"):
 // a mandate or post followed by a name. "5. Stadtrat – Umbesetzung der Ausschüsse" is an item.
@@ -574,6 +576,7 @@ function itemOf(raw){
  const titleOk=t=>!t||/^[\p{Lu}„"'(§]/u.test(t)||/^\d{1,2}\.\s+\p{Lu}/u.test(t);
  if((m=line.match(KEYWORD))){const n=key(m[2]),w=withMark(markOf(m[1]),m[3].trim());if(Number(n.split('.')[0])<1||Number(n.split('.')[0])>60||!titleOk(w.title))return null;return {prefix:w.prefix,number:n,title:w.title,form:'keyword'};}
  if((m=line.match(PREFIXED))){const n=key(m[2]),w=withMark(markOf(m[1]),m[3].trim());if(Number(n.split('.')[0])<1||Number(n.split('.')[0])>60||!titleOk(w.title))return null;return {prefix:w.prefix,number:n,title:w.title,form:'prefix'};}
+ if((m=line.match(GLUED))){const n=key(m[1]),first=Number(n.split('.')[0]),title=m[3].trim();if(first<1||first>60||!titleOk(title)||!/\p{L}/u.test(title))return null;return {prefix:markOf(m[2]),number:n,title,form:'plain'};}
  if((m=line.match(PLAIN))){
   const n=key(m[1]),first=Number(n.split('.')[0]),{prefix,title}=withMark(null,m[3].trim());
   if(first<1||first>60||!titleOk(title)||!/\p{L}/u.test(title))return null;

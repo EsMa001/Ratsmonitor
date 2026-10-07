@@ -4,8 +4,9 @@
 //   1. An OParl interface that answers → "OParl verfügbar".
 //   2. Otherwise another documented or recognisable API: CKAN of an open-data portal, an open-data file, the JSON
 //      interface of an app → "API verfügbar", or "API verfügbar, Leser/Connector fehlt" while no reader uses it.
-//   3. Otherwise the HTML pages of a system or website: "System ohne Leser" while no reader exists; else robots.txt
-//      gives the label: "robots.txt sperrt HTML-Zugriff" where it disallows the reader's path, else "Scraping erlaubt".
+//   3. Otherwise the HTML pages of a system or website: "System ohne Leser" while no reader exists, else "HTML-Seiten".
+//      What robots.txt says about the pages is recorded with the area (robotsNote), it does not change the status:
+//      since 06.10.2026 (evening) the statuses answer "do we get data?" (data: yes | later | no).
 //   4. Otherwise a technical block (HTTP 401/403, web firewall, access check, login, members' area) → "Zugriffsschutz".
 //   5. Otherwise → "Kein maschinenlesbarer Zugriff gefunden".
 // robots.txt governs the crawling of HTML pages. It never overrides OParl or an API offered for programs, even where
@@ -22,24 +23,26 @@
  * closed (no automated access). color: colour of the admin map (the gap atlas has its own light and dark colours).
  */
 export const ACCESS_STATUSES=Object.freeze([
- {id:'oparl',label:'OParl verfügbar',group:'machine',automated:true,color:'#0f766e',explain:'Die OParl-Schnittstelle antwortet; sie ist für Programme gedacht. robots.txt gilt für sie nicht.'},
- {id:'api',label:'API verfügbar',group:'machine',automated:true,color:'#14b8a6',explain:'Eine dokumentierte oder erkennbare Schnittstelle (CKAN, offene Daten, JSON-Schnittstelle der Anwendung) wird gelesen. robots.txt gilt für sie nicht.'},
- {id:'api-noreader',label:'API verfügbar, Leser/Connector fehlt',group:'machine',automated:true,color:'#99f6e4',explain:'Eine Schnittstelle ist vorhanden, aber noch kein Leser nutzt sie.'},
- {id:'scraping',label:'Scraping erlaubt',group:'html',automated:true,color:'#60a5fa',explain:'Keine Schnittstelle; die öffentlichen HTML-Seiten werden gelesen, robots.txt erlaubt das oder fehlt.'},
- {id:'robots',label:'robots.txt sperrt HTML-Zugriff',group:'html',automated:true,color:'#a78bfa',explain:'Keine Schnittstelle; robots.txt untersagt Programmen die HTML-Seiten. Technisch sind sie erreichbar; seit dem 05.10.2026 wird robots.txt festgehalten, nicht befolgt.'},
- {id:'blocked',label:'Zugriffsschutz',group:'closed',automated:false,color:'#ad392d',explain:'Technische Sperre (HTTP 401/403, Web-Firewall, Zugriffsprüfung, Anmeldung); sie wird nicht umgangen.'},
- {id:'noreader',label:'System ohne Leser',group:'reader',automated:true,color:'#f2ce82',explain:'Ein System ist gefunden, aber für seine Art gibt es noch keinen Leser.'},
- {id:'none',label:'Kein maschinenlesbarer Zugriff gefunden',group:'closed',automated:false,color:'#e4e7eb',explain:'Weder Schnittstelle noch lesbares System gefunden.'},
+ {id:'oparl',label:'Ja · OParl',data:'yes',group:'machine',automated:true,color:'#0f766e',explain:'Die OParl-Schnittstelle antwortet und wird gelesen; sie ist für Programme gedacht. robots.txt gilt für sie nicht.'},
+ {id:'api',label:'Ja · Schnittstelle (API)',data:'yes',group:'machine',automated:true,color:'#14b8a6',explain:'Eine dokumentierte oder erkennbare Schnittstelle (CKAN, offene Daten, JSON-Schnittstelle der Anwendung) wird gelesen. robots.txt gilt für sie nicht.'},
+ {id:'scraping',label:'Ja · HTML-Seiten',data:'yes',group:'html',automated:true,color:'#60a5fa',explain:'Keine Schnittstelle; die öffentlichen HTML-Seiten werden gelesen. Was robots.txt dazu sagt, steht beim Gebiet; es wird seit dem 05.10.2026 festgehalten, nicht befolgt.'},
+ {id:'api-noreader',label:'Noch nicht · Schnittstelle ohne Leser',data:'later',group:'machine',automated:true,color:'#99f6e4',explain:'Eine Schnittstelle ist vorhanden, aber noch kein Leser nutzt sie: ein Leser würde Daten bringen.'},
+ {id:'noreader',label:'Noch nicht · System ohne Leser',data:'later',group:'reader',automated:true,color:'#f2ce82',explain:'Ein System ist gefunden, aber für seine Art gibt es noch keinen Leser: ein Leser würde Daten bringen.'},
+ {id:'blocked',label:'Nein · Zugriffsschutz',data:'no',group:'closed',automated:false,color:'#ad392d',explain:'Technische Sperre (HTTP 401/403, Web-Firewall, Zugriffsprüfung, Anmeldung); sie wird nicht umgangen. Daten nur über eine Freischaltung durch die Kommune.'},
+ {id:'none',label:'Nein · kein Zugang gefunden',data:'no',group:'closed',automated:false,color:'#e4e7eb',explain:'Weder Schnittstelle noch lesbares System gefunden.'},
 ]);
 export const ACCESS_BY_ID=Object.freeze(Object.fromEntries(ACCESS_STATUSES.map(s=>[s.id,s])));
 /** The label of a status id ('' for an unknown id). */
 export const accessLabel=id=>ACCESS_BY_ID[id]?.label||'';
 /** Whether programs can read the area at all: false only for a technical block or nothing found. */
 export const automatedAccess=id=>ACCESS_BY_ID[id]?.automated===true;
+/** Whether data arrives: 'yes' (read today), 'later' (a reader is missing), 'no' (blocked or nothing found). */
+export const accessData=id=>ACCESS_BY_ID[id]?.data||'no';
 
 /**
  * The status from what was found for an area, by the hierarchy above. Each channel: {found, blocked, reader};
- * html also {robots: 'erlaubt'|'verboten'|'keine'|'unklar'}; blocked: a technical block where no channel is known.
+ * html also {robots: 'erlaubt'|'verboten'|'keine'|'unklar'}, which is recorded with the area but does not change the
+ * status (robots.txt is not obeyed); blocked: a technical block where no channel is known.
  * reader defaults to true: a channel without reader is named with reader:false.
  * @param {{oparl?:{found?:boolean,blocked?:boolean},api?:{found?:boolean,blocked?:boolean,reader?:boolean},html?:{found?:boolean,blocked?:boolean,reader?:boolean,robots?:string},blocked?:boolean}} found
  */
@@ -47,7 +50,7 @@ export function accessStatus(found={}){
  const open=c=>!!c?.found&&!c.blocked;
  if(open(found.oparl))return 'oparl';
  if(open(found.api))return found.api.reader===false?'api-noreader':'api';
- if(open(found.html))return found.html.reader===false?'noreader':found.html.robots==='verboten'?'robots':'scraping';
+ if(open(found.html))return found.html.reader===false?'noreader':'scraping';
  if(found.blocked||[found.oparl,found.api,found.html].some(c=>c?.found&&c.blocked))return 'blocked';
  return 'none';
 }
@@ -66,6 +69,9 @@ export const READER_CHANNELS=Object.freeze({
  'more-rubin':{kind:'api',name:'JSON-Schnittstelle (More! Rubin)'},
  councilservice:{kind:'api',name:'JSON-Export (mein-intra)'},
 });
+/** Name of the reader of a catalog entry, as the gap atlas and the administration show it. */
+export const METHOD_NAMES=Object.freeze({sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra','ris-portal':'RIS-Portal',komfa:'KOMFA-RIS',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',ckan:'CKAN-Portal',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'});
+export const methodName=s=>s?.method==='oparl'?'OParl':METHOD_NAMES[s?.adapter]||(s?.base||s?.system?'SessionNet':'Stammquelle');
 /** {kind: 'oparl'|'api'|'html', name, documented?} of a catalog entry. */
 export function channelOf(source){
  if(source?.method==='oparl')return {kind:'oparl',name:'OParl'};

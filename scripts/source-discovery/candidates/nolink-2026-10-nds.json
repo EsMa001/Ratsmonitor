@@ -1,0 +1,44 @@
+{
+ "nds-03153017": {
+  "id": "nds-03153017",
+  "name": "Stadt Goslar",
+  "kind": "city",
+  "ags": "03153017",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.goslar.de/stadt/politik/allris/",
+    "from": "https://www.goslar.de/stadt-und-verwaltung/rat-der-stadt",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 der Stadt (Bürgerinformationssystem); si010_r.asp antwortete am 06.10.2026 mit „Zugriff prüfen“ (Zugriffsprüfung im Browser), beim Crawl Zeitüberschreitung; OParl-Pfad prüfen.",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ },
+ "nds-03159010": {
+  "id": "nds-03159010",
+  "name": "Stadt Duderstadt",
+  "kind": "city",
+  "ags": "03159010",
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://sessionnet.owl-it.de/duderstadt/bi",
+    "from": "https://www.duderstadt.de/portal/seiten/kommunalpolitik-gremien-900000043-25420.html",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "SessionNet bei owl-it (Bürgerinformationssystem), verlinkt von duderstadt.de „Kommunalpolitik / Gremien“; Unterlagen ab September 2014.",
+     "beleg": "Websuche und Seitenabruf am 06.10.2026 (Browser der Entwicklungsumgebung)"
+    }
+   }
+  ],
+  "log": []
+ }
+}

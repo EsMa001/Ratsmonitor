@@ -18,7 +18,7 @@ type Kind={documents:number;pages:number;tokens:number;bytes:number};
 type Size={measuredAt:string;tokenizer:string|null;charsPerToken:number;charsPerTokenOther:number|null;perArea:number;areas:number;reports:number;documents:{tried:number;failed:number;read:number;large:number;largeBytes:number;notPdf:number;scans:number;pages:number;scanPages:number;bytes:number;tokens:number;perDocument:{pages:Stat;tokens:Stat;bytes:Stat};bins:(Kind&{id:string;label:string})[];types:Record<string,Kind>}};
 type Season={weeks:number[];weekdays:number[];monthly:number[];strongWeek:number;quietWeeks:number;peakWeekday:number;followUpShare:number;consultationsPerReport:number;peakDay:number;followUpsPerYear:number};
 type Validation={n:number;medianError:number|null;bias:number|null;within50:number|null;states:{level:string;state:string;name:string;examples:number;actual:number;predicted:number;error:number}[]};
-type Estimate={asOf:string;from:string;to:string;catalogStates?:string[];frame:{source:string;populationYear:string;municipalities:number;population:number;districts:number;associations:number;memberMunicipalities:number;boroughs:number;units:Record<string,number>};
+type Estimate={computed?:boolean;computedAt?:string;revision?:number;currentRevision?:number;stale?:boolean;asOf:string;from:string;to:string;catalogStates?:string[];frame:{source:string;populationYear:string;municipalities:number;population:number;districts:number;associations:number;memberMunicipalities:number;boroughs:number;units:Record<string,number>};
  sample:{builtAt:string;from:string;to:string;design:string;units:number;connected:number;counted:number;storedWithData:number;strata:Stratum[]};examples:Example[];excluded:Example[];provisional:Provisional[];
  classes:SizeClass[];states:FederalState[];levels:Level[];validation:Validation;sampleCount:number;basis:{own:number;typical:number;borrowed:number};total:Range&{perDay:number;lowPerDay:number;highPerDay:number;perWorkday:number};
  capture:Capture;documents:{share:number;byClass:Record<string,number>;linksPerReport:number|null};volume:Volume|null;size:Size|null;season:Season;
@@ -93,12 +93,13 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
   fetch('/api/admin/estimate',{cache:'no-store',signal:c.signal}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}));});
   return()=>c.abort();
  },[revision,loaded,failed]);
- // The figures follow the database: recalculated on request and when the page becomes visible again after a while.
- // No timer runs; nothing is started on the server.
- const reload=()=>{
+ // The server keeps the last estimate (system_state). GET only reads it; POST computes it anew, which reads every
+ // report twice and takes about a minute, so it runs only on request. Coming back to the page re-reads the stored one.
+ const load=(method:'GET'|'POST')=>{
   if(busy)return;setBusy(true);
-  fetch('/api/admin/estimate',{cache:'no-store'}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}))).finally(()=>setBusy(false));
+  fetch('/api/admin/estimate',{method,cache:'no-store',...(method==='POST'?{headers:{'Content-Type':'application/json'},body:'{"action":"compute"}'}:{})}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}))).finally(()=>setBusy(false));
  };
+ const reload=()=>load('GET'),compute=()=>load('POST');
  useEffect(()=>{
   const onVisible=()=>{if(document.visibilityState==='visible'&&loadedAt&&Date.now()-loadedAt>120000)reload();};
   document.addEventListener('visibilitychange',onVisible);return()=>document.removeEventListener('visibilitychange',onVisible);
@@ -109,7 +110,8 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
   const a=document.createElement('a');a.href=url;a.download=`hochrechnung-${data.to}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
  if(error)return <section className="admin-estimate"><p role="alert" className="admin-error">{error} <button type="button" className="admin-timeline-retry" onClick={()=>setFailed(prev=>{const next={...prev};delete next[revision];return next;})}>Erneut laden</button></p></section>;
- if(!data)return <section className="admin-estimate"><p role="status" className="admin-note">Hochrechnung wird berechnet …</p></section>;
+ if(!data)return <section className="admin-estimate"><p role="status" className="admin-note">Gespeicherte Hochrechnung wird geladen …</p></section>;
+ if(data.computed===false)return <section className="admin-estimate"><div className="admin-section-heading"><div><p className="eyebrow">HOCHRECHNUNG DEUTSCHLAND</p><h2>Noch keine Hochrechnung gespeichert.</h2></div></div><p className="admin-note">Die Berechnung liest jeden gespeicherten Bericht zweimal und zieht die Spannen; bei einer Million Berichten dauert das etwa eine Minute. Danach zeigt die Seite das Ergebnis sofort, bis du neu rechnen lässt.</p><p><button type="button" className="admin-timeline-retry" disabled={busy} onClick={compute}>{busy?'Wird berechnet … (etwa eine Minute)':'Jetzt berechnen'}</button></p></section>;
  const d=data,v=d.volume,size=d.size,variant=(id:string)=>v?.variants.find(x=>x.id===id),municipal=d.levels.find(l=>l.id==='municipality')?.model,today=variant('primary'),once=variant('once');
  const sampleStates=[...new Set(d.examples.filter(e=>e.origin==='sample').map(e=>e.state))],stored=d.examples.filter(e=>e.origin==='stored').length;
  const measuredStates=d.states.filter(s=>Object.values(s.factors).some(Boolean));
@@ -119,7 +121,7 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
  const counted=d.examples.reduce((sum,e)=>sum+e.reports,0),countedShare=Math.min(1,counted/d.total.perYear),assumedShare=(d.basis.typical+d.basis.borrowed)/d.total.perYear,modelShare=Math.max(0,1-countedShare-assumedShare);
  const withExamples=d.states.filter(s=>s.samples>0).map(s=>s.name),without=d.states.filter(s=>!s.samples).map(s=>s.name),borrowed=d.levels.filter(l=>l.assumed).map(l=>l.name),units=Object.values(d.frame.units).reduce((a,b)=>a+b,0);
  return <section className="admin-estimate" id="admin-hochrechnung">
-  <div className="admin-section-heading"><div><p className="eyebrow">HOCHRECHNUNG DEUTSCHLAND</p><h2>Wie viele Berichte und wie viel Text fallen bundesweit pro Tag an?</h2></div><span>{n(d.sampleCount)} Beispiele mit vollständigem Jahr · {day(d.from)} bis {day(d.to)}<br/>Stand der Datenbank: {new Date(d.asOf).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'})} · <button type="button" className="admin-timeline-retry" disabled={busy} onClick={reload}>{busy?'Wird neu berechnet …':'Neu berechnen'}</button></span></div>
+  <div className="admin-section-heading"><div><p className="eyebrow">HOCHRECHNUNG DEUTSCHLAND</p><h2>Wie viele Berichte und wie viel Text fallen bundesweit pro Tag an?</h2></div><span>{n(d.sampleCount)} Beispiele mit vollständigem Jahr · {day(d.from)} bis {day(d.to)}<br/>Berechnet {d.computedAt?new Date(d.computedAt).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'}):'–'}{d.stale?<> · <strong>Bestand seit der Berechnung geändert</strong></>:' · Bestand unverändert'} · <button type="button" className="admin-timeline-retry" disabled={busy} onClick={compute}>{busy?'Wird neu berechnet … (etwa eine Minute)':'Neu berechnen'}</button></span></div>
   <div className="admin-kpis">
    <div className="admin-kpi admin-kpi-primary"><span>Neue Berichte pro Tag</span><strong>{round(d.total.perDay)}</strong><small>Spanne {round(d.total.lowPerDay)} bis {round(d.total.highPerDay)} · Durchschnitt über alle Kalendertage</small></div>
    <div className="admin-kpi"><span>Pro Arbeitstag · an einem starken Tag</span><strong>{round(d.total.perWorkday)} <em>· {round(d.season.peakDay)}</em></strong><small>{n(d.rules.workdaysPerYear)} Arbeitstage im Jahr · stärkster Wochentag einer starken Sitzungswoche</small></div>

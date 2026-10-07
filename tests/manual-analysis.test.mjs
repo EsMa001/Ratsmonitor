@@ -29,11 +29,14 @@ test('reads keep new and stale articles pending, preserve labels and do not extr
 test('one explicit run is bounded, skips aliases, isolates region, saves results and resumes only on the next call',async()=>{
  reset();for(let i=0;i<ANALYSIS_BATCH_SIZE+3;i++)insert(topic('a'+String(i).padStart(4,'0')));
  insert(topic('alias',{identity:{mergedInto:'a0000'}}));insert(topic('other',{regionId:'muenster'}));
- const first=await analysePending(db,'billerbeck');assert.equal(first.status,200);assert.equal(first.data.processed,500);assert.equal(first.data.remaining,3);
+ const first=await analysePending(db,'billerbeck');assert.equal(first.status,200);assert.equal(first.data.processed,500);assert.equal(first.data.remaining,3);assert.equal(first.data.more,true);assert.equal(first.data.cursor,'a0499');
  assert.equal(sqlite.prepare("SELECT count(*) n FROM topics WHERE json_extract(payload,'$.analysisFeatures.version') IS NOT NULL").get().n,500);
- const second=await analysePending(db,'billerbeck');assert.equal(second.data.processed,3);assert.equal(second.data.remaining,0);
+ // The next package continues behind the cursor and does not read the labelled reports again; a package that is not full ends the run.
+ const second=await analysePending(db,'billerbeck',{after:first.data.cursor});assert.equal(second.data.processed,3);assert.equal(second.data.remaining,0);assert.equal(second.data.more,false);assert.equal(second.data.cursor,'a0502');
  assert.equal((await analysePending(db,'billerbeck')).data.processed,0);
- assert.equal((await analysePending(db,'all')).data.processed,1);
+ // The whole stock is not counted: remaining stays unknown while a package is full, 0 when it is not; a cursor behind everything reads nothing.
+ const whole=await analysePending(db,'all');assert.equal(whole.data.processed,1);assert.equal(whole.data.remaining,0);assert.equal(whole.data.more,false);
+ assert.deepEqual((await analysePending(db,'all',{after:'zzz'})).data.processed,0);
  const t=JSON.parse(sqlite.prepare("SELECT payload FROM topics WHERE id='a0000'").get().payload);assert.equal(hasCurrentLabel(t),true);assert.ok(storedFeatures(t));
  assert.equal(JSON.parse(sqlite.prepare("SELECT details FROM import_runs ORDER BY started_at LIMIT 1").get().details).trigger,'manual');
  assert.equal(sqlite.prepare("SELECT count(*) n FROM system_state WHERE key='import-lock'").get().n,0);

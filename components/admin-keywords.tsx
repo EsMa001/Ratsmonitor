@@ -51,7 +51,7 @@ export function AdminKeywords({displayName,signOutPath,initial}:{displayName:str
   .map(i=>({term:i.term,metric:order==='weight'?i.weight:i.articles,value:order==='weight'?n(i.weight)+' Punkte':n(i.articles),cells:[n(i.articles),n(i.weight),n(i.weight/i.articles,1)]})),[data,basis,order]);
  const labels=useMemo(()=>[...new Set((data?.rule.words||[]).map(w=>w.label))].map(id=>({id,name:labelName(id)})).sort((a,b)=>a.name.localeCompare(b.name,'de')),[data]);
  const cut=(delivered:number,total:number)=>delivered<total?`Die Liste zeigt die ${n(delivered)} häufigsten von ${n(total)}.`:undefined;
- return <div className="admin-app"><AdminHeader page={4} displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
+ return <div className="admin-app"><AdminHeader page="stichwoerter" displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
   <div className="admin-heading"><div><p className="eyebrow">REGELN & KI</p><h1>Stichwörter.</h1><p>{displayName}{data&&<> · Datenbankstand {date(data.asOf)} Uhr</>}</p></div><Button className="admin-refresh" variant="outline" onClick={()=>load()} disabled={busy}><RefreshCw size={16} className={busy?'admin-spin':''}/>{busy?'Wird gezählt …':'Neu zählen'}</Button></div>
   {error&&<p className="admin-error" role="alert">{error}{data&&' Der letzte geladene Stand bleibt sichtbar.'}</p>}
   {!data?!error&&<p className="admin-empty" role="status">Stichwörter werden aus dem gespeicherten Bestand gezählt …</p>:<>
@@ -82,6 +82,6 @@ export function AdminKeywords({displayName,signOutPath,initial}:{displayName:str
     <div className="admin-terms-columns"><TopList rows={aiRows} title={'Top '+Math.min(TOP,aiRows.length)+(order==='weight'?' nach Gewichtssumme':' nach Berichten')}/><FullList id="keywords-ai" rows={aiRows} title="Alle KI-Stichwörter" headers={['Berichte','Gewichtssumme','Ø Gewicht']} note={basis==='all'?cut(data.ai.items.length,data.ai.distinct):undefined}/></div>
    </section>
   </>}
-  <footer className="admin-footer">Die Übersicht liest nur den gespeicherten Bestand. <a href="/admin">Regel-Labels und KI-Aufträge starten: Daten & Verarbeitung →</a></footer>
+  <footer className="admin-footer">Die Übersicht liest nur den gespeicherten Bestand. <a href="/admin?seite=abruf">Regel-Labels und KI-Aufträge starten: Daten & Verarbeitung →</a></footer>
  </main></div>;
 }
