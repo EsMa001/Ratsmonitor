@@ -2,9 +2,9 @@
    veraltet = seit dem Commit der Aufnahme hat sich die Seite geändert (components/ratsmonitor, app). */
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
-const REPO = new URL("../../../../", import.meta.url).pathname;
+const REPO = new URL("../../../", import.meta.url).pathname;
 export function clipState(id) {
-  const f = `out-clips/${id}/clip.json`;
+  const f = `out-clips/${id}/clip.json`; /* id = Schlüssel des Clips (key.mjs) */
   if (!existsSync(f)) return { id, state: "fehlt" };
   const { commit, recorded } = JSON.parse(readFileSync(f, "utf8"));
   let changed = [];

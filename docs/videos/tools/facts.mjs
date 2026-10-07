@@ -3,7 +3,7 @@
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 const BASE = process.env.BASE || "http://localhost:5173";
-const OUT = fileURLToPath(new URL("../../facts.json", import.meta.url));
+const OUT = fileURLToPath(new URL("../facts.json", import.meta.url));
 const get = async (path) => { const r = await fetch(BASE + path); if (!r.ok) throw new Error(path + " " + r.status); return r.json(); };
 const q = (s) => encodeURIComponent(s);
 const [dif, dec, src] = await Promise.all([get(`/api/analytics/diffusion?q=${q("Wärmeplanung")}`), get(`/api/analytics/decisions?q=${q("Wärmeplanung")}`), get("/api/sources")]);
