@@ -83,7 +83,7 @@ export function KnowledgeGraphPage() {
 
   return (
     <main id="inhalt" className="mx-auto w-full max-w-[1100px] px-4 py-10 text-slate-900 sm:px-6">
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara Analytics</Link> / Knowledge Graph</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Knowledge Graph</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Knowledge Graph</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, womit ein Thema in den Räten zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz.</p>
 

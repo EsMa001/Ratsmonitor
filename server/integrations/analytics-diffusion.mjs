@@ -2,7 +2,7 @@ import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 
 /*
- * Plenara Analytics – Diffusionsanalyse: Wie breitet sich ein Thema über die Gebiete aus?
+ * Plenara.X – Diffusionsanalyse: Wie breitet sich ein Thema über die Gebiete aus?
  * Grundlage ist allein die Datenbank (search_cards), nichts ist vorberechnet: Je Gebiet zählt das Datum der ersten Karte,
  * die den Begriff enthält. Änderungen am Datenbestand wirken so bei der nächsten Abfrage.
  */

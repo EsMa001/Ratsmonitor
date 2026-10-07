@@ -36,11 +36,27 @@ function GraphThumb() {
   );
 }
 
+/** Vorschaubild der Trends: Streudiagramm der Begriffe mit Aufsteigern oben links */
+function TrendThumb() {
+  const dots: [number, number, number, string][] = [
+    [40, 28, 6, "#0f766e"], [62, 36, 5, "#0d9488"], [82, 30, 7, "#0d9488"], [108, 52, 8, "#0d9488"], [150, 62, 6, "#cbd5e1"], [176, 76, 9, "#cbd5e1"],
+    [196, 70, 7, "#cbd5e1"], [220, 80, 10, "#cbd5e1"], [244, 74, 6, "#cbd5e1"], [270, 84, 7, "#cbd5e1"], [136, 98, 6, "#94a3b8"], [96, 118, 5, "#94a3b8"], [200, 112, 7, "#94a3b8"], [60, 126, 4, "#94a3b8"],
+  ];
+  return (
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Trendkarte: Begriffe als Punkte, Aufsteiger oben links, Absteiger unten" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+      <line x1="16" x2="304" y1="82" y2="82" stroke="#94a3b8" strokeOpacity=".6" />
+      <line x1="16" x2="304" y1="42" y2="42" stroke="#e2e8f0" strokeDasharray="3 4" />
+      <line x1="16" x2="304" y1="122" y2="122" stroke="#e2e8f0" strokeDasharray="3 4" />
+      {dots.map(([x, y, r, c]) => <circle key={`${x}-${y}`} cx={x} cy={y} r={r} fill={c} fillOpacity=".85" />)}
+    </svg>
+  );
+}
+
 export function AnalyticsAbout() {
   return (
     <main id="inhalt" className="mx-auto w-full max-w-[1100px] px-4 py-12 text-slate-900 sm:px-6">
-      <p className="text-[14px] text-slate-500">Plenara Analytics</p>
-      <h1 className="mb-6 mt-4"><span className="sr-only">Über Plenara Analytics</span><span aria-hidden="true" className="block max-sm:hidden"><AnalyticsLogo size={72} /></span><span aria-hidden="true" className="hidden max-sm:block"><AnalyticsLogo size={44} /></span></h1>
+      <p className="text-[14px] text-slate-500">Plenara.X</p>
+      <h1 className="mb-6 mt-4"><span className="sr-only">Über Plenara.X</span><span aria-hidden="true" className="block max-sm:hidden"><AnalyticsLogo size={72} /></span><span aria-hidden="true" className="hidden max-sm:block"><AnalyticsLogo size={44} /></span></h1>
       <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte. Jede Auswertung wird bei der Abfrage frisch aus der Datenbank berechnet; ändert sich der Bestand, ändert sich das Ergebnis.</p>
 
       <h2 className="mt-14 text-[22px] font-semibold">Funktionen</h2>
@@ -74,6 +90,22 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Eine Verbindung bedeutet gemeinsames Vorkommen, keine Ursache. Begriffe stammen aus Titeln, nicht aus dem vollen Text. Ausgewertet werden höchstens die jüngsten 3.000 passenden Einträge.</p>
           </details>
           <Link href="/analytics/graph" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Knowledge Graph öffnen →</Link>
+        </div>
+      </article>
+      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+        <Link href="/analytics/trends" aria-label="Trends öffnen"><TrendThumb /></Link>
+        <div>
+          <h3 className="text-[22px] font-semibold">Trends und Frühindikatoren</h3>
+          <p className="mt-2 text-[16px] text-slate-500">Zeigt, welche Begriffe gerade aufkommen, zunehmen oder verschwinden: der aktuelle Zeitraum im Vergleich zum Zeitraum davor, als Trendkarte, Rangliste mit Verlaufskurven und Themenfeld-Veränderung. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
+          <details className="group mt-4 border-t border-slate-200 pt-3">
+            <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
+              Wissenschaftlicher Hintergrund
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+          <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Trenderkennung in Textströmen sucht Begriffe, deren Häufigkeit plötzlich ansteigt („Bursts“; Kleinberg, „Bursty and Hierarchical Structure in Streams“, 2002). Hier werden zwei gleich lange Zeitfenster verglichen, die letzten Tage und die Tage davor. Verglichen werden Anteile an allen Einträgen und nicht Rohzahlen, damit mehr oder weniger Einträge insgesamt das Bild nicht verfälschen. Ob ein Unterschied über Zufall hinausgeht, prüft ein Zwei-Stichproben-Test für Anteile; für seltene Begriffe in Textdaten ist das Log-Likelihood-Verfahren üblich (Dunning, „Accurate Methods for the Statistics of Surprise and Coincidence“, 1993). Als Frühindikator gilt ein Begriff, der davor kaum vorkam und jetzt in mehreren Gebieten auftaucht: Breite ist ein stärkeres Signal als bloße Menge. Gleichmäßige Stichproben halten die Abfrage auch bei Millionen Einträgen schnell.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Ein Trend ist ein Hinweis, keine Entscheidung. Begriffe stammen aus Titeln. Saisonale Muster (zum Beispiel Haushaltsberatungen im Herbst) erscheinen als Trend, weil der Vorjahreszeitraum im Bestand fehlt. Je Zeitraum werden höchstens rund 12.000 Einträge ausgewertet.</p>
+          </details>
+          <Link href="/analytics/trends" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Trends öffnen →</Link>
         </div>
       </article>
       <p className="mt-8 text-[14px] text-slate-500">Weitere Funktionen sind in Planung.</p>

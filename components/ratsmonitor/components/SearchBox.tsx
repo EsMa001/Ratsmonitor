@@ -30,7 +30,7 @@ const dropKeyboard = () => {
   requestAnimationFrame(() => (document.activeElement as HTMLElement | null)?.blur());
 };
 
-/** stay: auf der aktuellen Seite bleiben (Plenara Analytics), statt nach einer Suche zur Startseite zu springen */
+/** stay: auf der aktuellen Seite bleiben (Plenara.X), statt nach einer Suche zur Startseite zu springen */
 export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean } = {}) {
   const { geo, place } = useData();
   const search = useSearch();

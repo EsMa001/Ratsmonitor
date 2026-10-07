@@ -64,7 +64,7 @@ function regionCondition(ids,catalog){
 // (Zeitraum, Formalien, Begriffe), aus der Gesamtzahl und alle Zähler in JS entstehen. Der Index
 // idx_search_cards_facets (drizzle/0010) deckt sie ab: rund 150 ms statt vier Läufen über alle Karten.
 // Die Abdeckung (Gebiete mit Berichten, Stand des letzten Abrufs) hängt an keinem Filter: searchCoverage.
-/** Filter der Suche als SQL-Bedingung auf search_cards (Gebiet, Begriff, Zeitraum, Thema, Status); auch für Plenara Analytics */
+/** Filter der Suche als SQL-Bedingung auf search_cards (Gebiet, Begriff, Zeitraum, Thema, Status); auch für Plenara.X */
 export async function searchFilters(db,catalog,f){
  /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
  const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...f.more];

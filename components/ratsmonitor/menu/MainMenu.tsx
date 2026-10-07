@@ -17,11 +17,12 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
   { href: "/konto/kalender", label: "Kalender", icon: "calendar" },
 ];
 
-/* Unterpunkte von „Plenara Analytics“ (die Gruppe selbst ist keine Seite) */
-const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "layers" }[] = [
-  { href: "/analytics/ueber", label: "Über Plenara Analytics", icon: "fileText" },
+/* Unterpunkte von „Plenara.X“ (die Gruppe selbst ist keine Seite) */
+const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "layers" | "trendingUp" }[] = [
+  { href: "/analytics/ueber", label: "Über Plenara.X", icon: "fileText" },
   { href: "/analytics/diffusion", label: "Diffusionsanalyse", icon: "map" },
   { href: "/analytics/graph", label: "Knowledge Graph", icon: "layers" },
+  { href: "/analytics/trends", label: "Trends und Frühindikatoren", icon: "trendingUp" },
 ];
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */
@@ -113,7 +114,7 @@ export function MainMenu() {
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
         {(["funktionen", "usecases", "analytics"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Use Cases" : "Plenara Analytics"}
+            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Use Cases" : "Plenara.X"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
@@ -168,7 +169,7 @@ export function MainMenu() {
                   </ul>
                 )}
                 {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "analytics"} onClick={() => setOpenGroup(openGroup === "analytics" ? "" : "analytics")}>
-                  Plenara Analytics
+                  Plenara.X
                   <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "analytics" ? "rotate-180" : ""}`} />
                 </button>}
                 {show("analytics") && (

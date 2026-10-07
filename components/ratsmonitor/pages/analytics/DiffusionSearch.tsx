@@ -56,7 +56,10 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
           )}
         </button>
       </div>
-      <div className="mt-2 flex [&>*]:!px-0 [&_.pointer-events-none]:pointer-events-auto"><ActiveFilters /></div>
+      {/* Chips flach statt Milchglas und ohne Scrollbalken: die Zeile bricht um */}
+      <div className="mt-2 flex [&>div]:!my-0 [&>div]:!max-h-none [&>div]:!flex-wrap [&>div]:!overflow-visible [&>div]:!px-0 [&>div]:!py-0 [&_.rm-chip]:!border-slate-200 [&_.rm-chip]:!bg-white [&_.rm-chip]:!shadow-none [&_.rm-chip]:![backdrop-filter:none] [&_.rm-chip:hover]:!bg-slate-50">
+        <ActiveFilters />
+      </div>
     </div>
   );
 }

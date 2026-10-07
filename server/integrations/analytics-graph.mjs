@@ -4,7 +4,7 @@ import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 
 /*
- * Plenara Analytics – Knowledge Graph: Welche Begriffe, Themen, Gremien und Länder hängen mit einem Suchbegriff zusammen?
+ * Plenara.X – Knowledge Graph: Welche Begriffe, Themen, Gremien und Länder hängen mit einem Suchbegriff zusammen?
  * Grundlage sind allein die Karten der Datenbank, die zur Suche passen (dieselben Filter wie die Suche, die jüngsten zuerst).
  * Kanten entstehen, wenn zwei Dinge in derselben Karte vorkommen (Ko-Okkurrenz); ihr Gewicht ist der Jaccard-Index.
  * Begriffe werden nach Häufigkeit in der Auswahl gegenüber der Häufigkeit im ganzen Bestand gewichtet (wie tf-idf), damit
@@ -13,9 +13,9 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
 const SAMPLE=3000,TERMS=22,PER_KIND=6,MIN_DF=3;
 const STOP=new Set('aber alle allen aller alles als also auch auf aus bei beim bis dass dem den der des die diese diesem diesen dieser dieses doch durch ein eine einem einen einer eines für gegen hat haben ihre ihrem ihren ihrer ist kann mit nach nicht noch nur oder ohne sich sind über und unter vom von vor wird wurde zum zur zwischen sowie sowohl weitere weiteren weiterer weiteres neue neuen neuer neues dazu hierzu hierfür dafür dagegen darüber darauf daraus davon damit wegen innerhalb außerhalb bezüglich betreffend gemäß nr nummer vom im am an zu so wie was wer wo wenn dann denn mehr sehr schon bereits'.split(' '));
 /* Formalien tragen nichts zum Thema bei */
-const FORMAL=new Set('sitzung sitzungen niederschrift niederschriften protokoll tagesordnung tagesordnungspunkt mitteilung mitteilungen anfrage anfragen anfragen antrag anträge antrags beschluss beschlüsse beschlussvorlage vorlage vorlagen vorlagenummer verschiedenes bekanntgaben bekanntgabe genehmigung feststellung eröffnung öffentlich öffentliche öffentlichen nichtöffentlich nichtöffentlichen teil ortsrat ortsrates gemeinderat gemeinderates stadtrat stadtrates kreistag kreistages rat rates ausschuss ausschusses fachausschuss einwohnerfragestunde fragestunde top punkt hier änderung beteiligung stellungnahme beratung entwurf gemeinde stadt gmbh sachlichen aufstellung beschlussfassung kenntnisnahme bericht berichte information informationen verfahren'.split(' '));
+const FORMAL=new Set('sitzung sitzungen niederschrift niederschriften protokoll tagesordnung tagesordnungspunkt mitteilung mitteilungen anfrage anfragen anfragen antrag anträge antrags beschluss beschlüsse beschlussvorlage vorlage vorlagen vorlagenummer verschiedenes bekanntgaben bekanntgabe genehmigung feststellung eröffnung öffentlich öffentliche öffentlichen nichtöffentlich nichtöffentlichen teil ortsrat ortsrates gemeinderat gemeinderates stadtrat stadtrates kreistag kreistages rat rates ausschuss ausschusses fachausschuss einwohnerfragestunde fragestunde top punkt hier änderung beteiligung stellungnahme beratung entwurf gemeinde stadt gmbh sachlichen aufstellung beschlussfassung kenntnisnahme bericht berichte information informationen verfahren januar februar märz april mai juni juli august september oktober november dezember montag dienstag mittwoch donnerstag freitag samstag sonntag informativ beschliessend beschließend beschließende beschließender flst'.split(' '));
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
-const tokens=title=>{
+export const tokens=title=>{
  const found=new Map();
  for(const raw of String(title).split(/[^A-Za-zÀ-ÿ]+/)){
   if(raw.length<4)continue;
