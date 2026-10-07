@@ -14,6 +14,7 @@ if (!video) { console.log("Aufruf: node build-video.mjs <video> [--refresh] [--o
 const refresh = flags.includes("--refresh");
 const only = flags.includes("--only") ? flags[flags.indexOf("--only") + 1].split(",").map(Number) : null;
 const def = JSON.parse(readFileSync(`${V}videos/${video}.json`, "utf8"));
+const OUTNAME = (def.ausgabe || video) + (flags.includes("--entwurf") ? "-entwurf" : "");  /* Entwurf überschreibt das fertige Video nicht */
 const O = `out-web/${video}`, pad = (n) => String(n).padStart(2, "0");
 const factsFile = existsSync(`${V}facts.json`) ? JSON.parse(readFileSync(`${V}facts.json`, "utf8")) : { values: {} };
 const facts = factsFile.values;
@@ -74,6 +75,6 @@ const queue = [...todo.values()]; let bad = 0;
 await Promise.all(Array.from({ length: Math.min(jobs, queue.length) }, async () => { while (queue.length) { if (await runAsync("node", queue.shift())) bad++; } }));
 if (bad) { console.error(`${bad} Clip(s) fehlgeschlagen, Abbruch`); process.exit(1); }
 for (const c of sel) run("python3", [`${T}compose.py`, `${O}/c${pad(c.nr)}`, `c${pad(c.nr)}`]);
-run("python3", [`${T}assemble.py`, video, def.ausgabe || video, "3", ...(karten ? [] : ["keine"])]);
-run("python3", [`${T}check.py`, `${O}/${def.ausgabe || video}.mp4`]);
-console.log(`Fertig: ${O}/${def.ausgabe || video}.mp4`);
+run("python3", [`${T}assemble.py`, video, OUTNAME, "3", ...(karten ? [] : ["keine"])]);
+run("python3", [`${T}check.py`, `${O}/${OUTNAME}.mp4`]);
+console.log(`Fertig: ${O}/${OUTNAME}.mp4`);
