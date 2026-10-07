@@ -142,7 +142,7 @@ export function DiffusionPage() {
   const maxLand = Math.max(1, ...(res?.lands.map((l) => l.regions) ?? [1]));
 
   return (
-    <main id="inhalt" className="mx-auto w-full max-w-[1100px] px-4 py-10 text-slate-900 sm:px-6">
+    <main id="inhalt" className="w-full px-[max(1vw,16px)] py-10 text-slate-900">
       <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Diffusionsanalyse</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Diffusionsanalyse</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte, und wie es sich von dort ausbreitete.</p>

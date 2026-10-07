@@ -94,7 +94,7 @@ export function TrendsPage() {
   const maxTopic = res ? Math.max(0.01, ...res.topics.map((t) => Math.abs(t.change))) : 1;
 
   return (
-    <main id="inhalt" className="mx-auto w-full max-w-[1100px] px-4 py-10 text-slate-900 sm:px-6">
+    <main id="inhalt" className="w-full px-[max(1vw,16px)] py-10 text-slate-900">
       <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Trends und Frühindikatoren</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Trends und Frühindikatoren</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, welche Begriffe in den Räten gerade aufkommen, zunehmen oder verschwinden. Verglichen wird der aktuelle Zeitraum mit dem gleich langen davor.</p>

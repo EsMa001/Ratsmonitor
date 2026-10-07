@@ -52,9 +52,27 @@ function TrendThumb() {
   );
 }
 
+/** Vorschaubild des Gebietsvergleichs: zwei Orte als Balkenprofile mit Marke für den Maßstab */
+function CompareThumb() {
+  const rows: [number, number][] = [[118, 60], [84, 96], [66, 40], [44, 70], [30, 22]];
+  return (
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Gebietsvergleichs: Themenprofile zweier Orte als Balken" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+      {rows.map(([a, b], i) => (
+        <g key={i} transform={`translate(24 ${18 + i * 26})`}>
+          <rect width="260" height="6" rx="3" fill="#f1f5f9" />
+          <rect width={a * 2} height="6" rx="3" fill="#0d9488" />
+          <rect y="10" width="260" height="6" rx="3" fill="#f1f5f9" />
+          <rect y="10" width={b * 2} height="6" rx="3" fill="#0f172a" />
+          <line x1={(a + b) * 0.75} x2={(a + b) * 0.75} y1="-3" y2="19" stroke="#0f172a" strokeOpacity=".6" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 export function AnalyticsAbout() {
   return (
-    <main id="inhalt" className="mx-auto w-full max-w-[1100px] px-4 py-12 text-slate-900 sm:px-6">
+    <main id="inhalt" className="w-full px-[max(1vw,16px)] py-12 text-slate-900">
       <p className="text-[14px] text-slate-500">Plenara.X</p>
       <h1 className="mb-6 mt-4"><span className="sr-only">Über Plenara.X</span><span aria-hidden="true" className="block max-sm:hidden"><AnalyticsLogo size={72} /></span><span aria-hidden="true" className="hidden max-sm:block"><AnalyticsLogo size={44} /></span></h1>
       <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte. Jede Auswertung wird bei der Abfrage frisch aus der Datenbank berechnet; ändert sich der Bestand, ändert sich das Ergebnis.</p>
@@ -106,6 +124,22 @@ export function AnalyticsAbout() {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Ein Trend ist ein Hinweis, keine Entscheidung. Begriffe stammen aus Titeln. Saisonale Muster (zum Beispiel Haushaltsberatungen im Herbst) erscheinen als Trend, weil der Vorjahreszeitraum im Bestand fehlt. Je Zeitraum werden höchstens rund 12.000 Einträge ausgewertet.</p>
           </details>
           <Link href="/analytics/trends" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Trends öffnen →</Link>
+        </div>
+      </article>
+      <article className="mt-4 grid items-center gap-8 border-y border-slate-200 py-8 md:grid-cols-[320px_1fr]">
+        <Link href="/analytics/vergleich" aria-label="Gebietsvergleich öffnen"><CompareThumb /></Link>
+        <div>
+          <h3 className="text-[22px] font-semibold">Gebietsvergleich</h3>
+          <p className="mt-2 text-[16px] text-slate-500">Stellt zwei bis vier Orte nebeneinander: Themenprofil, Stand der Vorlagen, Verlauf, aktivste Gremien sowie typische und gemeinsame Begriffe. Als Maßstab dienen alle Gebiete. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
+          <details className="group mt-4 border-t border-slate-200 pt-3">
+            <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
+              Wissenschaftlicher Hintergrund
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+          <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Der Vergleich folgt dem Benchmarking: Ein Ort wird nicht für sich, sondern an einem Maßstab gemessen, hier an allen Gebieten mit denselben Filtern. Das Themenprofil zeigt die Anteile der Themenfelder, ähnlich einem Standortquotienten aus der Regionalökonomie (Anteil im Ort geteilt durch Anteil im Maßstab). Typisch für einen Ort sind Begriffe, die dort deutlich häufiger vorkommen als im Maßstab; ob der Unterschied über den Zufall hinausgeht, prüft ein Zwei-Stichproben-Test für Anteile, bei Wortdaten gebräuchlich als Log-Likelihood-Verfahren (Dunning, 1993). Einträge je 1.000 Einwohner machen Orte unterschiedlicher Größe vergleichbar.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Wie vollständig das Ratsinformationssystem eines Ortes im Bestand erfasst ist, wirkt auf alle Zahlen. Die Einträge je Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. Themenprofil, Vorlagenstand und Begriffe stammen aus einer Stichprobe von höchstens 6.000 Einträgen je Ort.</p>
+          </details>
+          <Link href="/analytics/vergleich" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gebietsvergleich öffnen →</Link>
         </div>
       </article>
       <p className="mt-8 text-[14px] text-slate-500">Weitere Funktionen sind in Planung.</p>
