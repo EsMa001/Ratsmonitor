@@ -15,6 +15,7 @@ export function words(n) {
 export const floorLead = (n) => { const p = 10 ** (String(Math.floor(n)).length - 1); return Math.floor(n / p) * p; };
 const ordinal = (d) => ({ 1: "ersten", 3: "dritten", 7: "siebten", 8: "achten" }[d] || words(d) + (d < 20 ? "ten" : "sten"));
 export const FORMATS = {
+  text: (v) => String(v), /* Parameter des Kapitels: {{p.thema|text}} */
   zahl: (v) => words(v),
   abrunden: (v) => words(floorLead(v)),
   mehrals: (v) => "mehr als " + words(floorLead(v)),

@@ -23,3 +23,10 @@
 - **Nach Änderungen** am Suchtext (Trigger in `drizzle/0006`, `0008`, `0009`, `0014`, `0015`), an `wordsOf` oder an den Gebietsarten die Liste mit `--full` neu aufbauen.
 - **Exakter Begriff (`exact=1`):** nur ganze Wörter; geprüft in `search_cards.search_exact` (wie `search`, aber mit Umlauten, Migration `0014`, Trigger pflegen sie), damit „Bär“ nicht „Bar“ findet. Vorberechnete Zahlen gelten dafür nicht; seltene Wörter laufen über die Karten-IDs. Bei geänderten Triggern `search_exact` wie `search` neu auffüllen.
 - **Karte:** Die Abzeichen (`badgeCounts`) zählen jeden Eintrag genau einmal (Summe = Trefferzahl); die Einfärbung nutzt `areaCounts`, wo ein Samtgemeinde-Bericht bei jeder Mitgliedsgemeinde steht.
+
+## Produktvorteile (zentral, nach Relevanz sortiert)
+
+- **Quelle:** `docs/produkt/vorteile.json` (Lesefassung `docs/produkt/VORTEILE.md`). Rang 1 = wichtigster Vorteil; Stufe A (Rang 1 bis 7) gehört in Einleitungen, Einblendungen und Werbung, B (8 bis 20) in Kapitel und Zielgruppenvideos, C (21 bis 50) in Anleitungen und Kurzclips, D (51 bis 98) sind Details und Belege. Nur belegbare Aussagen, keine Superlative, keine Vergleiche mit anderen Anbietern; `pruefen: true` vor Verwendung bestätigen lassen.
+- **Gilt für alles, was Plenara beschreibt:** neue und geänderte Seiten, Texte, Überschriften, Marketing, Videos, Skripte, E-Mails. Bei der Arbeit daran die Vorteile berücksichtigen, wenn sie an die Stelle passen (zum Beispiel Stufe A in Überschriften und Einleitungen, passende Detailvorteile in Erklärtexten), ohne sie zu erzwingen. Vorher zuerst diese Liste lesen (`node docs/videos/tools/vorteile.mjs 10` zeigt die ersten zehn) und sich daran ausrichten. Änderungen am Ranking nur auf Wunsch; danach `node docs/videos/tools/vorteile.mjs --md` ausführen.
+- **Video-Datenbank** (`docs/videos/`): Kapitel-Texte können Vorteile als `{{v.3|text}}` einsetzen (Rang 3). Neue Kapitel und Einblendungen sollen aus dieser Liste stammen, nicht frei formuliert werden.
+

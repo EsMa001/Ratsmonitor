@@ -1,5 +1,5 @@
 /* Nimmt eine Szene OHNE Ton als Clip auf: node rec-clip.mjs <szene>   (im Ordner ~/code/video-tools starten, BASE = Adresse der App)
-   Szenen mit benannten Schritten stehen in scenes.mjs: [name, Funktion(H), Haltezeit in s]. Ergebnis: out-clips/<szene>/ (Bilder, clip.json mit Zeiten der Schritte
+   Szenen stehen in szenen/<szene>/szene.mjs (Vertrag: SZENEN.md). Aufruf: node rec-clip.mjs <szene> [--format 16x9|1x1|9x16] [--p thema=Bebauungsplan,ort=Münster]. Schritte: [name, Funktion(H), Haltezeit in s]. Ergebnis: out-clips/<szene>/ (Bilder, clip.json mit Zeiten der Schritte
    und dem Commit der Seite). Das Video entsteht später mit compose.py aus Clip und Ton, eine Textänderung braucht deshalb keine neue Aufnahme. */
 import { writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { execSync } from "node:child_process";
@@ -7,13 +7,20 @@ import { homedir } from "node:os";
 const TOOLS = process.env.VIDEO_TOOLS || `${homedir()}/code/video-tools`;
 const { chromium } = await import(`${TOOLS}/node_modules/playwright/index.mjs`);
 const BASE = process.env.BASE || "http://localhost:5173";
+import { FORMATS, loadScene, resolveParams, clipKey } from "./key.mjs";
 const ID = process.argv[2];
-const OUT = `out-clips/${ID}`;
+const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : undefined; };
+const FORMAT = arg("--format") || "16x9";
+if (!FORMATS[FORMAT]) throw new Error("Format unbekannt: " + FORMAT);
+const sc = await loadScene(ID);
+const P = resolveParams(sc, Object.fromEntries((arg("--p") || "").split(",").filter(Boolean).map((kv) => kv.split("=").map((x) => x.trim()))));
+const KEY = clipKey(ID, sc, P, FORMAT);
+const OUT = `out-clips/${KEY}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const cursor = `(()=>{const d=document.createElement('div');d.style.cssText='position:fixed;z-index:2147483647;width:18px;height:18px;border-radius:50%;background:rgba(13,148,136,.55);border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.35);pointer-events:none;left:-40px;top:-40px;transform:translate(-50%,-50%)';const add=()=>document.documentElement.appendChild(d);document.readyState==='loading'?document.addEventListener('DOMContentLoaded',add):add();addEventListener('mousemove',e=>{d.style.left=e.clientX+'px';d.style.top=e.clientY+'px'},true)})()`;
 rmSync(`${OUT}/raw`, { recursive: true, force: true }); mkdirSync(`${OUT}/raw`, { recursive: true });
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1, locale: "de-DE" });
+const ctx = await browser.newContext({ viewport: { width: FORMATS[FORMAT].w, height: FORMATS[FORMAT].h }, deviceScaleFactor: 1, locale: "de-DE" });
 await ctx.addInitScript(cursor);
 await ctx.addInitScript(() => {
   try { localStorage.setItem("ratsmonitor:brand:v1", "plenara-v2sq"); localStorage.setItem("ratsmonitor:tier:v1", "enterprise"); } catch {}
@@ -45,23 +52,22 @@ const tapNode = async (rank) => { const o = (await nodes())[rank]; if (!o) retur
 const dragNode = async (rank, dx, dy) => { const o = (await nodes())[rank]; if (!o) return; const x = o.b.x + o.b.width / 2, y = o.b.y + o.b.height / 2; await move(x, y); await sleep(250); await page.mouse.down(); await move(x + dx, y + dy, 36); await page.mouse.up(); };
 const H = { sleep, loaded, calc, go, home, move, click, role, clickRole, clickText, type, search, scrollTo, openFirstArticle, tapNode, dragNode, page, BASE };
 
-const { SCENES } = await import("./scenes.mjs");
-const sc = SCENES[ID]; if (!sc) throw new Error("Szene fehlt: " + ID);
 await home();
-if (sc.setup) await sc.setup(H);
+if (sc.setup) await sc.setup(H, P);
 await sleep(1000);
 const frames = []; let capturing = true;
 const cap = (async () => { while (capturing) { const ts = Date.now(); try { const buf = await page.screenshot({ type: "jpeg", quality: 85 }); const n = frames.length; frames.push(ts); writeFileSync(`${OUT}/raw/f${String(n).padStart(5, "0")}.jpg`, buf); } catch {} } })();
 const beats = []; let failed = 0;
-for (const [name, fn, hold = 1] of sc.beats) {
+const BEATS = typeof sc.beats === "function" ? sc.beats(P) : sc.beats;
+for (const [name, fn, hold = 1] of BEATS) {
   const start = Date.now();
-  try { await fn(H); } catch (e) { failed++; console.log("Schritt", name, "fehlgeschlagen:", String(e).split("\n")[0].slice(0, 140)); }
+  try { await fn(H, P); } catch (e) { failed++; console.log("Schritt", name, "fehlgeschlagen:", String(e).split("\n")[0].slice(0, 140)); }
   await sleep(hold * 1000);
   beats.push({ name, start, end: Date.now() });
 }
 capturing = false; await cap; await ctx.close(); await browser.close();
-let commit = ""; try { commit = execSync("git rev-parse --short HEAD", { cwd: new URL("../../../../", import.meta.url).pathname }).toString().trim(); } catch {}
-writeFileSync(`${OUT}/clip.json`, JSON.stringify({ id: ID, commit, recorded: new Date().toISOString(), frames, beats }));
+let commit = ""; try { commit = execSync("git rev-parse --short HEAD", { cwd: new URL("../../../", import.meta.url).pathname }).toString().trim(); } catch {}
+writeFileSync(`${OUT}/clip.json`, JSON.stringify({ id: ID, key: KEY, params: P, format: FORMAT, commit, recorded: new Date().toISOString(), frames, beats }));
 if (failed) console.log(`ACHTUNG: ${failed} Schritt(e) fehlgeschlagen, Clip nicht verwenden`);
-console.log("fertig", ID, "Bilder", frames.length, "Schritte", beats.map((b) => `${b.name} ${((b.end - b.start) / 1000).toFixed(1)}s`).join(", "));
+console.log("fertig", KEY, "Bilder", frames.length, "Schritte", beats.map((b) => `${b.name} ${((b.end - b.start) / 1000).toFixed(1)}s`).join(", "));
 if (failed) process.exit(1);

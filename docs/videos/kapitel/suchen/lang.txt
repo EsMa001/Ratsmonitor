@@ -1,0 +1,4 @@
+@suche-eingabe.eingabe Geben Sie ein Thema ein, hier {{p.thema|text}}, und Sie sehen sofort, wo in Deutschland darüber beraten wird.
+@suche-eingabe.eingabe Sie müssen keinen Ort wählen, die Suche gilt für ganz Deutschland.
+@suche-eingabe.karte Auf der Karte erkennen Sie, was in welcher Region passiert.
+@suche-eingabe.liste Darunter steht jeder einzelne Beschluss, mit Gremium und Datum.

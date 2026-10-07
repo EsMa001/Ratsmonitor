@@ -1,0 +1,4 @@
+@einleitung.start Plenarra bringt die Beschlüsse und Beratungen der Räte aus ganz Deutschland an einem Ort zusammen.
+@einleitung.karte Aus den Ratsinformationssystemen von über {{cov.municipalities|abrunden}} Gemeinden wird eine einzige Suche mit Karte.
+@einleitung.suche Sie geben ein Thema ein, und Sie sehen sofort, wo in Deutschland darüber beraten wird.
+@einleitung.suche Jede Angabe führt zur Originalquelle, sodass Sie alles selbst nachprüfen können.
