@@ -10,7 +10,7 @@ Oder erst, wenn es in der Zeitung steht?
 Was in Deutschlands Räten entschieden wird, steht lange vor der Presse in den Ratsinformationssystemen.
 Nur findet man es dort kaum.
 Nehmen wir die kommunale Wärmeplanung.
-Im Datenbestand taucht sie zum ersten Mal am dreißigsten September zweitausendfünfundzwanzig auf, in einem einzigen Rat.
+Im Datenbestand taucht sie zum ersten Mal am {{wp.first|datum}} auf, in einem einzigen Rat.
 Fünf Monate später ist sie schon in der Hälfte aller Gebiete Thema.
 Wer das früh sieht, kann mitreden.
 Wer es spät sieht, kann nur noch reagieren.
@@ -19,7 +19,7 @@ Genau diesen Vorsprung gibt Ihnen Plenarra.
 ## 2 Plenarra in Zahlen
 [KAPITELSEITE | Icon: layers | Titel: Plenarra in Zahlen | Stichpunkte: Mehr als 900.000 Einträge · Über 6.000 Gemeinden · Fast zwei Drittel der Einwohner]
 Plenarra führt die Ratsinformationssysteme zusammen und macht sie durchsuchbar.
-Heute sind es mehr als neunhunderttausend Einträge aus über sechstausend Gemeinden.
+Heute sind es {{cov.entries|mehrals}} Einträge aus über {{cov.municipalities|abrunden}} Gemeinden.
 Fast zwei Drittel der Einwohner Deutschlands leben in Orten, die schon dabei sind.
 Und die Abdeckung wächst.
 Jede Angabe verweist auf die Originalquelle.
@@ -81,7 +81,7 @@ Und Sie können die Suche auf Ihr Thema oder Ihr Gebiet eingrenzen.
 [KAPITELSEITE | Icon: circleCheck | Titel: Status und Beschlüsse | Stichpunkte: Wie gehen Vorgänge aus? · Beschlossen, vertagt, abgelehnt · Wie lange dauert es?]
 Status und Beschlüsse zeigen, wie Vorgänge ausgehen.
 Beschlossen, vertagt oder abgelehnt, und wie lange es bis zur Entscheidung dauert.
-Bei der Wärmeplanung wurden von den entschiedenen Vorgängen fast fünfundneunzig Prozent beschlossen.
+Bei der Wärmeplanung wurden von den entschiedenen Vorgängen {{wp.approval|fast}} Prozent beschlossen.
 Dabei zählen nur Vorgänge, bei denen der Status bekannt ist.
 Das zeigt Plenarra Ihnen offen an, damit Sie die Zahl richtig einordnen.
 
