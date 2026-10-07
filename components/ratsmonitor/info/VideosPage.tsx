@@ -136,7 +136,7 @@ export function VideosPage() {
           <div key={g.group} className="mb-12">
             <h2 className="m-0 text-[22px] font-semibold text-slate-900">{g.group}</h2>
             <p className="mb-6 mt-1 text-[16px] text-slate-500">{g.lead}</p>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-8 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-14 lg:grid-cols-3 lg:gap-x-14 lg:gap-y-16">
               {g.items.map((v) => (
                 <Card key={v.title} v={v} active={active === v.title} phone={phone} next={nextOf(v.title)} onPlay={() => play(v.title)} onNext={() => { const n = nextOf(v.title); if (n) play(n.title); }} onClose={() => setActive((cur) => (cur === v.title ? null : cur))} />
               ))}

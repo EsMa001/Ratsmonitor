@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { DarkCta, PageHead } from "./blocks";
 import { Icon } from "./icons";
+import { useSearch } from "../state/search";
 
 interface Source { id: string; name: string; kind: "city" | "district"; method: string; lastImport: string | null; articles: number; meetings: number; from: string | null; complete: boolean; failed: boolean }
 interface Land { id: string; name: string; total: number; covered: number; population: number; populationCovered: number }
@@ -32,6 +34,12 @@ export function QuellenPage() {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState("");
   const [find, setFind] = useState("");
+  const router = useRouter();
+  const search = useSearch();
+  const open = (id: string) => {
+    search.setArea(id.replace(/^de-/, ""), "ui", { zoom: true });
+    router.push("/");
+  };
   useEffect(() => {
     const ctrl = new AbortController();
     fetch("/api/sources", { signal: ctrl.signal })
@@ -102,9 +110,11 @@ export function QuellenPage() {
               {q.length >= 2 && (
                 <ul className="m-0 mt-4 max-w-[640px] list-none border-t border-slate-200 p-0">
                   {hits.map((s) => (
-                    <li key={s.id} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-200 py-3">
-                      <span className="font-semibold text-slate-900">{s.name}</span>
-                      <span className="text-[14px] text-slate-500">{s.articles ? `${n(s.articles)} Vorgänge · ${n(s.meetings)} Sitzungen · Abruf ${day(s.lastImport)}` : "angebunden, erste Vorgänge folgen"}</span>
+                    <li key={s.id} className="border-b border-slate-200">
+                      <button type="button" onClick={() => open(s.id)} className="flex w-full cursor-pointer flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-0 bg-transparent px-0 py-3 text-left hover:text-teal-600">
+                        <span className="font-semibold text-slate-900">{s.name}</span>
+                        <span className="text-[14px] text-slate-500">{s.articles ? `${n(s.articles)} Vorgänge · ${n(s.meetings)} Sitzungen · Abruf ${day(s.lastImport)}` : "angebunden, erste Vorgänge folgen"}</span>
+                      </button>
                     </li>
                   ))}
                   {!hits.length && <li className="border-b border-slate-200 py-4 text-slate-600">Zu „{find.trim()}“ liegt noch nichts vor. Orte einer Samtgemeinde oder eines Amtes stehen unter dem Namen des Verbands. <Link href="/kontakt" className="text-teal-600">Sagen Sie uns, was Sie brauchen →</Link></li>}
