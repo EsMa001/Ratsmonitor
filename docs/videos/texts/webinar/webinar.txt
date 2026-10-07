@@ -1,0 +1,134 @@
+# Plenara-Webinar (ein Video, ca. 9 Minuten; Kapitel 4 bis 7 sind die vorhandenen Funktionsvideos, unverändert wiederverwendet). Kapitelseiten: ruhiger Farbverlauf in den Plenara-Farben, Nummer, Titel, Stichpunkte, Icon der Website, Fortschrittsleiste; die Seite steht erst still (Lesezeit), dann spricht der erste Satz darüber.
+# FAKTEN (echter Bestand, Abfrage 07.10.2026; vor der Aufnahme neu abfragen und live zeigen): Wärmeplanung erste Erwähnung 30.09.2025, Hälfte der Gebiete erreicht 26.02.2026, 2.230 Einträge, 14 Bundesländer, Status bei 40,6 % bekannt, von 490 entschiedenen Vorgängen 94,9 % beschlossen. Hitzeschutz neue Gebiete je Monat Mai 21, Juni 39, Juli 51, August 106, September 399. Abdeckung: 941.027 Einträge, 6.113 von 10.751 Gemeinden (57 %), 64 % der Einwohner, 227 von 294 Kreisen.
+# Zahlen im Sprechtext gerundet und vorsichtig ("mehr als", "fast"). Keine Tarife. Zahlen und Karten immer live aus der App.
+
+## 1 Die Frage
+[KAPITELSEITE | Icon: circleHelp | Titel: Die Frage | Stichpunkte: Wann erfahren Sie, was beraten wird? · Vor oder nach der Entscheidung? · Ein echtes Beispiel: Wärmeplanung]
+Wann erfahren Sie, was in den Räten Ihrer Region beraten wird?
+Vor der Entscheidung, wenn Sie noch mitreden können?
+Oder erst, wenn es in der Zeitung steht?
+Was in Deutschlands Räten entschieden wird, steht lange vor der Presse in den Ratsinformationssystemen.
+Nur findet man es dort kaum.
+Nehmen wir die kommunale Wärmeplanung.
+Im Datenbestand taucht sie zum ersten Mal am dreißigsten September zweitausendfünfundzwanzig auf, in einem einzigen Rat.
+Fünf Monate später ist sie schon in der Hälfte aller Gebiete Thema.
+Wer das früh sieht, kann mitreden.
+Wer es spät sieht, kann nur noch reagieren.
+Genau diesen Vorsprung gibt Ihnen Plenarra.
+
+## 2 Plenarra in Zahlen
+[KAPITELSEITE | Icon: layers | Titel: Plenarra in Zahlen | Stichpunkte: Mehr als 900.000 Einträge · Über 6.000 Gemeinden · Fast zwei Drittel der Einwohner]
+Plenarra führt die Ratsinformationssysteme zusammen und macht sie durchsuchbar.
+Heute sind es mehr als neunhunderttausend Einträge aus über sechstausend Gemeinden.
+Fast zwei Drittel der Einwohner Deutschlands leben in Orten, die schon dabei sind.
+Und die Abdeckung wächst.
+Jede Angabe verweist auf die Originalquelle.
+
+## 3 Suchen und finden
+[KAPITELSEITE | Icon: search | Titel: Suchen und finden | Stichpunkte: Ein Begriff, ganz Deutschland · Treffer auf der Karte · Zum Artikel mit Originalquelle]
+So einfach ist es.
+Geben Sie ein Thema ein, hier Wärmeplanung, und Sie sehen sofort, wo in Deutschland darüber beraten wird.
+Auf der Karte erkennen Sie, was in welcher Region passiert.
+Darunter zeigt jeder Treffer, wie weit ein Vorgang ist, mit Gremium und Datum.
+Ein Klick öffnet den Artikel, und von dort kommen Sie direkt zur Originalquelle.
+
+## 4 Die Karte im Detail
+[KAPITELSEITE | Icon: map | Titel: Die Karte im Detail | Stichpunkte: Flächen, Heatmap und Punkte · Zoomen und Trefferzahlen je Gebiet]
+[VORHANDENES VIDEO | 05 | karte-im-detail]
+
+## 5 Filter und Zeitraum
+[KAPITELSEITE | Icon: layers | Titel: Filter und Zeitraum | Stichpunkte: Zeitraum, Thema und Status · Ergebnisse gezielt eingrenzen]
+[VORHANDENES VIDEO | 02 | filter-zeitraum]
+
+## 6 Alarme einrichten
+[KAPITELSEITE | Icon: bell | Titel: Alarme einrichten | Stichpunkte: Suchen speichern · E-Mail bei neuen Treffern]
+[VORHANDENES VIDEO | 03 | alarme-einrichten]
+
+## 7 Export
+[KAPITELSEITE | Icon: clipboardList | Titel: Export | Stichpunkte: Excel und CSV · PDF und Drucken]
+[VORHANDENES VIDEO | 08 | export]
+
+## 8 Plenarra X
+[KAPITELSEITE | Icon: trendingUp | Titel: Plenarra X | Stichpunkte: Erkennen statt nur finden · Auswertungen auf dem ganzen Datenbestand · Frisch bei jeder Abfrage]
+Eine Suche zeigt Ihnen einzelne Beschlüsse.
+Aber wie bewegt sich ein Thema im ganzen Land?
+Dafür gibt es Plenarra X.
+Plenarra X wertet nicht einzelne Treffer aus, sondern den gesamten Datenbestand.
+Jede Auswertung wird bei der Abfrage frisch berechnet, mit denselben Suchen und Filtern wie auf der Startseite.
+Ich zeige Ihnen alle sechs.
+
+## 9 Diffusionsanalyse
+[KAPITELSEITE | Icon: map | Titel: Diffusionsanalyse | Stichpunkte: Wo tauchte ein Thema zuerst auf? · Wie schnell breitet es sich aus? · Zeitraffer auf der Karte]
+Die Diffusionsanalyse zeigt, wie sich ein Thema ausbreitet.
+Auf der Karte läuft ein Zeitraffer.
+Sie sehen, wo die Wärmeplanung zuerst aufgetaucht ist und wie sie sich über Deutschland verteilt hat.
+Darunter zeigen Kennzahlen, wann die Hälfte der Gebiete erreicht war und wie lange es von den ersten zu den meisten Gebieten dauerte.
+Und das Diagramm zeigt den Verlauf Monat für Monat.
+Die Wärmeplanung breitet sich stetig aus.
+Ganz anders ein Sommerthema wie der Hitzeschutz.
+Es taucht lange nur vereinzelt auf, und im September erreicht es fast doppelt so viele neue Gebiete wie in den vier Monaten davor zusammen.
+So erkennen Sie, wie ein Thema sich verhält.
+
+## 10 Trends und Frühindikatoren
+[KAPITELSEITE | Icon: zap | Titel: Trends und Frühindikatoren | Stichpunkte: Welche Begriffe legen zu? · Aktueller Zeitraum gegen den davor · Neues früh erkennen]
+Bei Trends und Frühindikatoren sehen Sie, welche Begriffe gerade aufkommen.
+Verglichen wird der aktuelle Zeitraum mit dem Zeitraum davor.
+Als Trendkarte, als Rangliste mit Verlaufskurven und als Veränderung der Themenfelder.
+So sehen Sie, was in den Räten an Bedeutung gewinnt, bevor es alle sehen.
+Und Sie können die Suche auf Ihr Thema oder Ihr Gebiet eingrenzen.
+
+## 11 Status und Beschlüsse
+[KAPITELSEITE | Icon: circleCheck | Titel: Status und Beschlüsse | Stichpunkte: Wie gehen Vorgänge aus? · Beschlossen, vertagt, abgelehnt · Wie lange dauert es?]
+Status und Beschlüsse zeigen, wie Vorgänge ausgehen.
+Beschlossen, vertagt oder abgelehnt, und wie lange es bis zur Entscheidung dauert.
+Bei der Wärmeplanung wurden von den entschiedenen Vorgängen fast fünfundneunzig Prozent beschlossen.
+Dabei zählen nur Vorgänge, bei denen der Status bekannt ist.
+Das zeigt Plenarra Ihnen offen an, damit Sie die Zahl richtig einordnen.
+
+## 12 Gebietsvergleich
+[KAPITELSEITE | Icon: mapPin | Titel: Gebietsvergleich | Stichpunkte: Zwei bis vier Orte nebeneinander · Themenprofil und Stand der Vorlagen · Aktivste Gremien und typische Begriffe]
+Der Gebietsvergleich stellt zwei bis vier Orte nebeneinander.
+Hier sehen Sie Münster und Osnabrück.
+Sie vergleichen das Themenprofil, den Stand der Vorlagen und die aktivsten Gremien.
+Außerdem sehen Sie typische und gemeinsame Begriffe.
+Als Maßstab dienen alle Gebiete.
+Die Zahlen zeigen, wie viel im Bestand steht, nicht automatisch, wie aktiv die Politik vor Ort ist.
+
+## 13 Knowledge Graph
+[KAPITELSEITE | Icon: layers | Titel: Knowledge Graph | Stichpunkte: Womit hängt ein Thema zusammen? · Begriffe, Themenfelder, Gremien, Länder · Knoten ziehen und anklicken]
+Der Knowledge Graph zeigt, womit ein Thema zusammenhängt.
+Aus den Einträgen zur Wärmeplanung entsteht ein Netz aus verwandten Begriffen, Themenfeldern, Gremien und Ländern.
+Die Knoten können Sie ziehen und anklicken.
+So entdecken Sie Zusammenhänge, nach denen Sie nie gesucht hätten.
+Eine Verbindung bedeutet dabei gemeinsames Vorkommen, keine Ursache.
+
+## 14 Gremiennetz
+[KAPITELSEITE | Icon: users | Titel: Gremiennetz | Stichpunkte: Welchen Weg nehmen Vorgänge? · Wo beginnen und wo entscheiden sie? · Wie lange dauert ein Übergang?]
+Das Gremiennetz zeigt, welchen Weg Vorgänge durch die Gremien nehmen.
+Sie sehen, wo Vorgänge beginnen, welche Gremien dazwischen liegen und wo sie entschieden werden.
+Die Pfeile zeigen die Übergänge, und Sie sehen, wie lange ein Übergang dauert.
+Damit erkennen Sie, an welcher Stelle Sie sich in ein Thema einbringen können.
+Ausgewertet werden Vorgänge, die durch mindestens zwei Gremien gingen.
+
+## 15 Verlässlich und offen
+[KAPITELSEITE | Icon: shieldCheck | Titel: Verlässlich und offen | Stichpunkte: Originalquelle bei jeder Angabe · Abdeckung offen einsehbar · Für Verwaltung, Unternehmen und Presse]
+Sie sollen sich auf die Zahlen verlassen können.
+Deshalb führt jede Angabe zur Originalquelle.
+Auf der Seite Datenabdeckung sehen Sie offen, welche Orte schon dabei sind und wie aktuell der Stand ist.
+Und bei jeder Analyse stehen die Grenzen dabei.
+Wir sagen Ihnen lieber, was wir nicht wissen, als etwas zu versprechen.
+Wer plant, baut oder liefert, muss wissen, was in den Räten beraten wird, und zwar früh.
+Verwaltung und Politik sehen, was andere Kommunen beschlossen haben, und können daraus lernen.
+Unternehmen und Verbände erfahren frühzeitig, was beraten wird, und können sich rechtzeitig einbringen.
+Presse und Forschung finden Entwicklungen und Muster, die sonst verborgen bleiben.
+
+## 16 Jetzt starten
+[KAPITELSEITE | Icon: arrowRight | Titel: Jetzt starten | Stichpunkte: Thema suchen · Suche speichern · Glocke einschalten]
+Probieren Sie es gleich aus, kostenlos.
+Suchen Sie ein Thema, das für Sie wichtig ist.
+Speichern Sie die Suche und schalten Sie die Glocke ein.
+Ab dann erfahren Sie von neuen Beschlüssen, ohne zu suchen.
+Im zweiten Teil zeige ich Ihnen alle Funktionen im Einzelnen.
+Plenarra.
+Politik für Ihre Region.
+

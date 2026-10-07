@@ -1,4 +1,5 @@
-/* Nimmt ein Web-Video (Querformat 1280x720, Maus) auf: node rec-web.mjs <NN>  (im Ordner ~/code/video-tools starten)
+/* (Webinar: SCENES=webinar/scenes-teil1.mjs node rec-web.mjs w1/c06)
+   Nimmt ein Web-Video (Querformat 1280x720, Maus) auf: node rec-web.mjs <NN>  (im Ordner ~/code/video-tools starten)
    Liest out-web/<NN>/audio.json (von speak.py) und führt die Schritte aus SCENES (scenes-web.mjs) zum jeweiligen Satz aus.
    Bilder werden als JPG mitgeschnitten (out-web/<NN>/raw), build.py ... web setzt sie mit dem Ton zusammen. */
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
@@ -54,7 +55,7 @@ const openFirstArticle = async () => {
 };
 const H = { sleep, loaded, home, search, scrollTo, click, clickRole, clickText, role, filterBtn, openFirstArticle, move, page, BASE };
 
-const { SCENES } = await import(`./scenes-web.mjs`);
+const { SCENES } = await import(`./${process.env.SCENES || "scenes-web.mjs"}`);
 const sc = SCENES[NN];
 if (!sc) throw new Error("Keine Szenen für " + NN);
 await home();
