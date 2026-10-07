@@ -24,7 +24,8 @@ def ts(x): return f'{int(x//3600):02d}:{int(x%3600//60):02d}:{x%60:06.3f}'
 def beat_frames(sc,b):
     fr=CL[sc]['frames']
     idx=[i for i,t in enumerate(fr) if b['start']<=t<b['end']]
-    return [((sc,i),((fr[i+1] if i+1<len(fr) else b['end'])-fr[i])/1000) for i in idx]
+    # Lücken zwischen Bildern (H.hidden, Laden) nicht halten: höchstens 0,35 s je Bild
+    return [((sc,i),min(((fr[i+1] if i+1<len(fr) else b['end'])-fr[i])/1000,0.35)) for i in idx]
 out=[]; last=None
 # Folgen mehrere Sätze mit denselben Schritten aufeinander, laufen die Schritte einmal über alle diese Sätze
 groups=[]
