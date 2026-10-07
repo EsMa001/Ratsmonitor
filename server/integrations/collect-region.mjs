@@ -24,6 +24,9 @@ async function collect(id,options){
  const source=nrw||SOURCES.find(s=>s.id===id);if(!source)throw Error('Unbekanntes Gebiet');
  // A switched-off source is never asked, whichever reader it names (citystate-sources.json: reader built, check or consent missing).
  if(source.method==='pending'){const now=new Date(),from=windowStart(now,options.window);return {topics:[],coverage:{regionId:id,method:'pending',from:from.toISOString().slice(0,10),to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:0,sourceCount:1,complete:false,issues:[source.note||'Quelle abgeschaltet; es wird nichts abgerufen.'],sourceUrl:source.base||source.system||''}};}
+ // A source of the browser import (transport 'browser') is read only with a browser-backed get (scripts/browser-import);
+ // without one, the Worker's fetch would only meet the browser check, so nothing is asked and the stock stays as it is.
+ if(source.transport==='browser'&&!options.get){const now=new Date(),from=windowStart(now,options.window);return {topics:[],coverage:{regionId:id,method:source.adapter||'browser',transport:'browser',from:from.toISOString().slice(0,10),to:now.toISOString().slice(0,10),importedAt:now.toISOString(),meetings:0,sourceCount:1,complete:false,issues:['Wird über den Browser-Import vom Rechner des Inhabers gelesen (scripts/browser-import); der Server ruft diese Quelle nicht ab.'],sourceUrl:source.base||source.system||''}};}
  if(id==='recklinghausen'||source.adapter==='more-rubin')return collectRubin(source,pages);
  // Order of sources: OParl where it works, otherwise the public pages. A page scraper therefore runs only while
  // the vendor's OParl endpoint is switched off, or when the catalog records that OParl was checked and is not

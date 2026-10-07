@@ -8,7 +8,9 @@ import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 // to blocked or empty systems come first (verified-api.json: vendor OParl paths, verified-api-register.json: the OParl
 // project's directory; tmp/api-search/, 06.10.2026). verified-website.json
 // (website.mjs) comes last, so it adds an area only where no check of a council information system accepted one.
-export const ACCEPTED_FILES=['verified-api.json','verified-api-register.json','verified-api-rim.json','verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-research.json','verified-hosted.json','verified-consents.json','verified-fix.json','verified-nolink.json','verified-website.json'];
+export const ACCEPTED_FILES=['verified-api.json','verified-api-register.json','verified-api-rim.json','verified-guessed.json','verified-guessed-own.json','verified-oparl.json','verified-search.json','verified-research.json','verified-hosted.json','verified-consents.json','verified-fix.json','verified-nolink.json','verified-browser.json','verified-website.json'];
+// verified-browser.json: sources read by the browser import (scripts/browser-import, record step): the public pages
+// behind a browser check, read in a visible browser on the owner's machine; the entry carries transport 'browser'.
 // Candidates set on purpose for one area (web search, diagnosis, correction): a check of them without a source still
 // says more than the check of the links of the website, so it stands in the report (the later file wins).
 // verified-research.json holds the checks of the candidates from the research per Land (candidates/research-*.json).

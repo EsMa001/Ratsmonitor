@@ -5,7 +5,10 @@ import {SOURCES} from './regions.mjs';
 import {serverOf,MUENSTER} from './source-servers.mjs';
 import {historyWindow,windowYears} from '../../shared/history-window.mjs';
 const known=new Set(regions.map(r=>r.id)),legacy=new Map(SOURCES.map(s=>[s.id,s])),catalog=new Map(NRW_SOURCES.map(s=>[s.id,s]));
-export const canImport=id=>id==='muenster'||legacy.has(id)||(catalog.has(id)&&catalog.get(id).method!=='pending');
+// A source read by the browser import (transport 'browser', scripts/browser-import) is connected but never fetched by
+// the Worker: its pages sit behind a browser check that only a visible browser on the owner's machine passes.
+export const browserOnly=id=>catalog.get(id)?.transport==='browser';
+export const canImport=id=>id==='muenster'||legacy.has(id)||(catalog.has(id)&&catalog.get(id).method!=='pending'&&!browserOnly(id));
 /** 'all': every area of the catalog. 'sources': every area with a connected source, whatever its state. Otherwise a list of ids. */
 export function selectedRegions(value){
  if(value==='all')return regions.map(r=>r.id);
@@ -156,7 +159,7 @@ export async function pipelineAction(db,body,run){
   const ids=selectedRegions(body.regions);
   // The look-back window is fixed when the job is created, so a resumed job keeps the period the operator chose.
   let lookback;if(imports){try{lookback=historyWindow(body.window);}catch{throw new AdminError(400,'Ungültiger Zeitraum für den Abruf.');}}
-  const created={id:crypto.randomUUID(),stage:body.stage,...(lookback?{window:lookback}:{}),...(typeof body.regions==='string'?{scope:body.regions}:{}),createdAt:at,updatedAt:at,status:'queued',items:ids.map(region=>{const open=!imports||canImport(region);return {region,status:open?'queued':'unavailable',processed:0,message:open?'':'Keine angebundene Quelle.',...(imports&&open?{server:provider(region)}:{})};})};
+  const created={id:crypto.randomUUID(),stage:body.stage,...(lookback?{window:lookback}:{}),...(typeof body.regions==='string'?{scope:body.regions}:{}),createdAt:at,updatedAt:at,status:'queued',items:ids.map(region=>{const open=!imports||canImport(region);return {region,status:open?'queued':'unavailable',processed:0,message:open?'':browserOnly(region)?'Wird über den Browser-Import vom Rechner des Inhabers gelesen (scripts/browser-import), nicht vom Server.':'Keine angebundene Quelle.',...(imports&&open?{server:provider(region)}:{})};})};
   await save(db,created);return view(created);
  });
  if(body.action==='cancel')return locked(db,async()=>{const job=await current(db,body.id);job.status='cancelled';delete job.paused;await save(db,stamp(job));return view(job,since);});

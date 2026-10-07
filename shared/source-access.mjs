@@ -28,7 +28,7 @@ export const ACCESS_STATUSES=Object.freeze([
  {id:'scraping',label:'Ja · HTML-Seiten',data:'yes',group:'html',automated:true,color:'#60a5fa',explain:'Keine Schnittstelle; die öffentlichen HTML-Seiten werden gelesen. Was robots.txt dazu sagt, steht beim Gebiet; es wird seit dem 05.10.2026 festgehalten, nicht befolgt.'},
  {id:'api-noreader',label:'Noch nicht · Schnittstelle ohne Leser',data:'later',group:'machine',automated:true,color:'#99f6e4',explain:'Eine Schnittstelle ist vorhanden, aber noch kein Leser nutzt sie: ein Leser würde Daten bringen.'},
  {id:'noreader',label:'Noch nicht · System ohne Leser',data:'later',group:'reader',automated:true,color:'#f2ce82',explain:'Ein System ist gefunden, aber für seine Art gibt es noch keinen Leser: ein Leser würde Daten bringen.'},
- {id:'blocked',label:'Nein · Zugriffsschutz',data:'no',group:'closed',automated:false,color:'#ad392d',explain:'Technische Sperre (HTTP 401/403, Web-Firewall, Zugriffsprüfung, Anmeldung); sie wird nicht umgangen. Daten nur über eine Freischaltung durch die Kommune.'},
+ {id:'blocked',label:'Nein · Zugriffsschutz',data:'no',group:'closed',automated:false,color:'#ad392d',explain:'Technische Sperre (HTTP 401/403, Web-Firewall, Zugriffsprüfung, Anmeldung); sie wird nicht umgangen. Daten nur über eine Freischaltung durch die Kommune – oder, bei einer reinen Browserprüfung, über den Browser-Import vom Rechner des Inhabers (scripts/browser-import), der die Prüfung wie jeder Browser durchläuft.'},
  {id:'none',label:'Nein · kein Zugang gefunden',data:'no',group:'closed',automated:false,color:'#e4e7eb',explain:'Weder Schnittstelle noch lesbares System gefunden.'},
 ]);
 export const ACCESS_BY_ID=Object.freeze(Object.fromEntries(ACCESS_STATUSES.map(s=>[s.id,s])));
@@ -76,6 +76,9 @@ export const methodName=s=>s?.method==='oparl'?'OParl':METHOD_NAMES[s?.adapter]|
 export function channelOf(source){
  if(source?.method==='oparl')return {kind:'oparl',name:'OParl'};
  if(source?.method==='official-api')return {kind:'api',name:'Offizielle Schnittstelle',documented:true};
+ // Browser-Import (scripts/browser-import): the public pages are read in a visible browser on the owner's machine,
+ // never by the Worker. The channel stays HTML; the name says how it is read.
+ if(source?.transport==='browser')return {kind:'html',name:'HTML-Seiten (Browser-Import)'};
  return READER_CHANNELS[source?.adapter]||{kind:'html',name:'HTML-Seiten'};
 }
 /** Whether robots.txt can decide over the channel at all: only for HTML pages (ROBOTS_POLICY=obey). */

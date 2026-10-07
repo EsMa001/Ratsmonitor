@@ -50,6 +50,9 @@ test('case 3: no API, crawling allowed by robots.txt (or no robots.txt) → Scra
 test('case 4: no API, robots.txt disallows the HTML pages → robots.txt sperrt HTML-Zugriff (only crawling restricted)',()=>{
  assert.equal(accessStatus({html:{found:true,robots:'verboten'}}),'scraping','robots.txt is recorded, not a status');
  assert.equal(accessOfSource({method:'scraper',adapter:'ris-portal'},'verboten'),'scraping');
+ // A source read by the browser import (scripts/browser-import) is an HTML source too; the channel says how it is read.
+ assert.equal(accessOfSource({method:'scraper',adapter:'sdnet',transport:'browser'},'verboten'),'scraping');
+ assert.deepEqual(channelOf({method:'scraper',adapter:'sdnet',transport:'browser'}),{kind:'html',name:'HTML-Seiten (Browser-Import)'});
  assert.equal(accessOfSource({method:'scraper',adapter:'website'},'verboten'),'scraping');
  assert.match(robotsNote({method:'scraper'},'verboten'),/sperrt die HTML-Seiten/);
  assert.equal(automatedAccess(accessStatus({html:{found:true,robots:'verboten'}})),true);

@@ -12,6 +12,13 @@
 - Tailwind-Klassen im JSX stehen nicht im Index: dafür die Komponente über den Index finden und dort lesen.
 - Nach neuen oder entfernten Dateien/Klassen: `node scripts/frontend-index.mjs` ausführen und die geänderte `INDEX.md` mit committen.
 
+## Browser-Import (`scripts/browser-import/`, lokal, nie im Worker)
+
+- **Wofür:** Ratsinformationssysteme hinter der Browserprüfung einer Web Application Firewall (vor allem SD.NET RIM auf ratsinfomanagement.net, rund 250 Gebiete). Ein sichtbarer, unveränderter Chromium (Playwright, Entwicklungsabhängigkeit) wartet die Prüfung ab; danach holt `transport.mjs` die Seiten aus derselben Sitzung als `get(url, source)` für die vorhandenen Leser (`collectSdnet`). Kein zweiter Crawler je Kommune, kein Stealth, kein Proxy, keine Lösung von Aufgaben; HTTP 401/403/429 oder eine zweite Prüfseite beenden den Lauf.
+- **Ablauf:** `detect` → `import` (Ergebnis je Gebiet im Format einer Nachladung) → `apply` (lokale Datenbank, `applyBackfill`) → `record` (`verified-browser.json`, Quelle mit `transport: "browser"`) → optional `download` (PDF mit Prüfung). Instanzen in `instances/<name>.json`; Ausgaben unter `tmp/browser-import/<instanceId>/`.
+- **Im Projekt:** `transport: "browser"` im Katalog heißt angebunden, aber der Worker fragt die Quelle nie (`collect-region.mjs` ohne eigenes `get`, `canImport`/`browserOnly` in `pipeline-jobs.mjs`); Kanalname „HTML-Seiten (Browser-Import)“ (`shared/source-access.mjs`). Nach Produktion kommen die Berichte über den Datenexport.
+- **Prüfstand:** `tests/browser-import.test.mjs` (offline, Sitzungsattrappe). Der Lauf gegen eine echte Instanz ist nur auf dem Rechner des Inhabers möglich und wird je Instanz in `report.json`/`bericht.txt` belegt; nichts behaupten, was dort nicht steht. Einzelheiten: `scripts/browser-import/README.md`.
+
 ## Suche: Wortliste (Backend, `server/integrations/search-words.mjs`)
 
 - **Was:** Tabellen `search_words` (jedes Wort aus `search_cards.search` ab 3 Zeichen, mit Kartenzahl), `search_postings` (Karten-IDs je Wort bis 500 Karten), `search_word_areas` und `search_word_facets` (vorberechnete Zahlen je Gebiet, Thema, Status für häufige Wörter), Stand in `system_state` `search-words`; `search_cards_gone` (Protokoll ersetzter und gelöschter Karten für das Nachführen). Schema: `drizzle/0013_search_words.sql`, `drizzle/0015_search_cards_gone.sql`. Die Daten selbst liegen nicht im Repo.
