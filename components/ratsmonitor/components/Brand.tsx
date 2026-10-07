@@ -213,20 +213,18 @@ const LOGO: Record<LogoId, () => ReactElement> = {
   "parlamo-v2sq": () => <Parlamo v2 square />,
 };
 
-/** Großes X hinter dem Plenara-Logo: zwei Achsen aus Knoten und Verbindungen (Analyse, Netz, Intelligenz); Punkte verblassen wie die Sitzreihen im Logo */
+/** Dezentes X hinter dem Plenara-Logo: zwei Diagonalen aus kleinen Quadraten (wie der ■), zur Mitte kräftiger, in der Mitte ein voller ■ */
+const X_SQUARES: [number, number, number][] = [0, 1, 2, 3, 4, 5, 6, 7, 8].filter((i) => i !== 4).flatMap((i) => {
+  const t = i / 8, v = 8 + 84 * t, o = 0.25 + 0.75 * (1 - Math.abs(t - 0.5) * 2);
+  return [[v, v, o], [v, 100 - v, o]] as [number, number, number][];
+});
 function AnalyticsX() {
-  const ends: [number, number][] = [[12, 12], [88, 12], [12, 88], [88, 88]];
   return (
-    <svg viewBox="0 0 100 100" aria-hidden="true" style={{ ...INLINE, height: "1.3em", width: "1.3em", verticalAlign: "-0.28em", marginLeft: ".1em", overflow: "visible" }}>
-      <path d="M12 12L88 88M88 12L12 88" stroke={TEAL} strokeWidth="9" strokeLinecap="round" />
-      {[[31, 31, 0.55], [69, 31, 0.55], [31, 69, 0.55], [69, 69, 0.55]].map(([cx, cy, o]) => (
-        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4.2" fill="#fff" stroke={TEAL} strokeWidth="3" strokeOpacity={o} />
+    <svg viewBox="0 0 100 100" aria-hidden="true" style={{ ...INLINE, height: ".68em", width: ".68em", verticalAlign: "-0.07em", marginLeft: ".14em", overflow: "visible" }}>
+      {X_SQUARES.map(([x, y, o]) => (
+        <rect key={`${x}-${y}`} x={x - 4} y={y - 4} width="8" height="8" fill={TEAL} fillOpacity={o} />
       ))}
-      {ends.map(([cx, cy]) => (
-        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="11" fill="#fff" stroke={TEAL} strokeWidth="6" />
-      ))}
-      <circle cx="50" cy="50" r="13" fill={TEAL} />
-      <circle cx="50" cy="50" r="19" fill="none" stroke={TEAL} strokeWidth="2" strokeOpacity=".35" strokeDasharray="2 5" strokeLinecap="round" />
+      <rect x="41" y="41" width="18" height="18" fill={TEAL} />
     </svg>
   );
 }

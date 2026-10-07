@@ -691,7 +691,7 @@ wordmark__dot design-styles.css:61
 - AccountMenu.tsx (62, ⚠1): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (98, ⚠1): AreaBar
-- Brand.tsx (272): AnalyticsLogo, Brand
+- Brand.tsx (270): AnalyticsLogo, Brand
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - CountDots.tsx (9): CountDots
 - DateRangeFilter.tsx (114): DateRangeSelect, DateRangeFields, DateRangeFilter
