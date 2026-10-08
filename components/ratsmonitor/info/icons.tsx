@@ -35,6 +35,7 @@ import {
   TrendingUp,
   User,
   Users,
+  Waypoints,
   X,
   Zap,
   type LucideProps,
@@ -98,6 +99,7 @@ const ICONS = {
   trendingUp: TrendingUp,
   user: User,
   users: Users,
+  network: Waypoints,
   x: X,
   zap: Zap,
 } satisfies Record<string, ComponentType<LucideProps>>;

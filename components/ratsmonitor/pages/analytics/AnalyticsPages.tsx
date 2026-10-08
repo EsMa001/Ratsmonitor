@@ -6,6 +6,8 @@ import { ComparePage } from "./ComparePage";
 import { TrendsPage } from "./TrendsPage";
 import { GremiennetzPage } from "./GremiennetzPage";
 import { KnowledgeGraphPage } from "./KnowledgeGraphPage";
+import { AnalyticsLocked } from "./AnalyticsLocked";
+import { useTier } from "../../lib/tier";
 
 /** Plenara.X: Übersicht und je Funktion eine Unterseite */
 const PAGES: Record<string, ComponentType> = {
@@ -21,11 +23,16 @@ const PAGES: Record<string, ComponentType> = {
 
 export const isAnalyticsPath = (p: string) => p in PAGES;
 
+/** Nur „Über Plenara.X“ ist frei; die Analysen gehören zu Enterprise */
+const FREE = new Set(["/analytics", "/analytics/ueber"]);
+
 export function AnalyticsPages({ path }: { path: string }) {
+  const { tier } = useTier();
   useEffect(() => {
     window.scrollTo(0, 0);
     document.title = path === "/analytics/diffusion" ? "Diffusionsanalyse · Plenara.X" : path === "/analytics/graph" ? "Knowledge Graph · Plenara.X" : path === "/analytics/gremien" ? "Gremiennetz · Plenara.X" : path === "/analytics/beschluesse" ? "Status und Beschlüsse · Plenara.X" : path === "/analytics/vergleich" ? "Gebietsvergleich · Plenara.X" : path === "/analytics/trends" ? "Trends und Frühindikatoren · Plenara.X" : "Über Plenara.X · Plenara";
   }, [path]);
   const Page = PAGES[path];
-  return Page ? <Page /> : null;
+  if (!Page) return null;
+  return FREE.has(path) || tier === "enterprise" ? <Page /> : <AnalyticsLocked />;
 }

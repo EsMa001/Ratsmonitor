@@ -6,7 +6,7 @@ export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschl
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName }> = {
   diffusion: { href: "/analytics/diffusion", name: "Diffusionsanalyse", icon: "map" },
-  graph: { href: "/analytics/graph", name: "Knowledge Graph", icon: "layers" },
+  graph: { href: "/analytics/graph", name: "Knowledge Graph", icon: "network" },
   trends: { href: "/analytics/trends", name: "Trends und Frühindikatoren", icon: "trendingUp" },
   vergleich: { href: "/analytics/vergleich", name: "Gebietsvergleich", icon: "mapPin" },
   beschluesse: { href: "/analytics/beschluesse", name: "Status und Beschlüsse", icon: "circleCheck" },
