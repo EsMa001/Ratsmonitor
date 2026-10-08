@@ -1,8 +1,8 @@
 # Quellen für die übrigen Länder: Ergebnis der automatischen Suche
 
-Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
+Stand: 07.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 4457 auswählbaren Gebieten sind 2905 angebunden, 1552 nicht. Diese Datei beschreibt die 2903 Quellen in `server/integrations/de-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 4457 auswählbaren Gebieten sind 2906 angebunden, 1551 nicht. Diese Datei beschreibt die 2904 Quellen in `server/integrations/de-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -21,6 +21,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 15 × SD.NET (öffentliche Seiten)
 - 11 × KOMFA-RIS (öffentliche Seiten)
 - 10 × SessionNet 6 (öffentliche Schnittstelle)
+- 1 × PARLIS Frankfurt (öffentliche Niederschriften und Tagesordnungen)
 - 1 × PIO Offenbach (öffentliche Seiten)
 - 1 × PIWi Wiesbaden (öffentliche Seiten)
 - 1 × RIS München (öffentliche Seiten)
@@ -154,6 +155,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Bremen | OParl | https://sd.bremische-buergerschaft.de/webservice/oparl/v1.1/system | 46 |
 | Stadt Bremerhaven | SessionNet (öffentliche Seiten) | https://sessionnet.bremerhaven.de/bi/ | 234 |
 | Stadt Darmstadt | More! Rubin (Kalender-API) | https://darmstadt.gremien.info/ | 203 |
+| Stadt Frankfurt am Main | PARLIS Frankfurt (öffentliche Niederschriften und Tagesordnungen) | https://www.stvv.frankfurt.de/ | 1642 |
 | Stadt Offenbach am Main | PIO Offenbach (öffentliche Seiten) | https://pio.offenbach.de/ | 71 |
 | Stadt Wiesbaden | PIWi Wiesbaden (öffentliche Seiten) | https://piwi.wiesbaden.de/ | 1154 |
 | Landkreis Bergstraße | SessionNet (öffentliche Seiten) | https://sessionnet.owl-it.de/kreis-bergstrasse/bi/ | 55 |
@@ -2938,7 +2940,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 187 × Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert
 - 135 × Kommune aktiv: antwortet Programmen mit HTTP 403
 - 116 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
-- 82 × Kein unterstütztes Ratsinformationssystem erkannt
+- 80 × Kein unterstütztes Ratsinformationssystem erkannt
 - 75 × Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar
 - 64 × SessionNet gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte
 - 56 × Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Keine Seite mit Sitzungsbekanntmachungen gefunden
@@ -2958,7 +2960,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 - 7 × ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
 - 6 × Betreiber wies Programme bei der Prüfung wiederholt ab (HTTP 403/429); Neuprüfung später
 - 5 × Verlinkte Seite antwortet Programmen mit HTTP 404
-- 4 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
+- 5 × ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert
 - 4 × Mitbenutztes System von Stadt Quickborn; die Leser trennen die Gremien eines gemeinsamen Systems nicht
 - 3 × OParl-Schnittstelle antwortet, lieferte aber keine verwertbaren Sitzungen
 - 3 × SD.NET gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte
@@ -3412,7 +3414,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Frankenau | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://www.frankenau.de/seite/697078/seite-f%C3%BCr-ris.html?href=/councilservice/session/list |
 | Gemeinde Frankenblick | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Website nicht erreichbar (05.10.2026) |  |
 | Gemeinde Frankenhardt | Kommune aktiv: antwortet Programmen mit HTTP 403 | https://frankenhardt.ris.kommune-aktiv.de/?cvg=FR |
-| Stadt Frankfurt am Main | Kein unterstütztes Ratsinformationssystem erkannt | https://www.stvv.frankfurt.de/parlis2/parlis.html |
 | Gemeinde Fränkisch-Crumbach | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um; die OParl-Schnittstelle des Herstellers ist für diese Kommune nicht aktiviert, Freischaltung bei der Kommune anfragen | https://rim.ekom21.de/fraenkisch-crumbach/gremien/?__=UGhVM0hpd2NXNFdFcExjZR3HHTf9IS1b1lZ8IU7hGmc |
 | Gemeinde Frasdorf | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Frauenau | Auf der offiziellen Website kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
@@ -3703,7 +3704,7 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Kemmern | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Verwaltungsgemeinschaft Kemnath | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Kiedrich | ekom21 (SD.NET): vorgeschaltete Web-Firewall leitet Programme auf eine Fehlerseite um | https://rim.ekom21.de/kiedrich/startseite |
-| Stadt Kiel | Kein unterstütztes Ratsinformationssystem erkannt | https://www.oksh.de/ki/sehen/kiel-tv-livestream-2-2/ |
+| Stadt Kiel | ALLRIS 4 mit Zugriffsprüfung des Herstellers gegen automatisierte Abrufe (wird nicht umgangen); OParl nicht aktiviert | https://www.kiel.sitzung-online.de/public/ |
 | Gemeinde Kieselbronn | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Kinding | Website durchsucht, kein Link zu einem Ratsinformationssystem gefunden; Website geprüft: Bekanntmachungen gefunden, aber keine öffentlichen Tagesordnungspunkte lesbar (0 ohne erkennbaren öffentlichen Teil, 0 nicht lesbar) (05.10.2026) |  |
 | Gemeinde Kippenheim | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://kippenheim.ratsinfomanagement.net/ |

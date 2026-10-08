@@ -1,5 +1,5 @@
 {
- "builtAt": "2026-10-06",
+ "builtAt": "2026-10-07",
  "agent": "VorOrt-PoliticalTopics/0.5 (public council documents)",
  "sources": {
   "billerbeck": "keine",
@@ -133,6 +133,7 @@
   "de-04011000": "erlaubt",
   "de-04012000": "keine",
   "de-06411000": "erlaubt",
+  "de-06412000": "erlaubt",
   "de-06413000": "keine",
   "de-06414000": "erlaubt",
   "de-06431": "verboten",

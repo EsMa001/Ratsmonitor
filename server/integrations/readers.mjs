@@ -14,6 +14,7 @@ import {collectPio,detectPio} from './pio.mjs';
 import {collectCouncilservice,detectCouncilservice} from './councilservice.mjs';
 import {collectRisPortal,detectRisPortal} from './ris-portal.mjs';
 import {collectKomfa,detectKomfa} from './komfa.mjs';
+import {collectParlis,detectParlis} from './parlis.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -38,6 +39,9 @@ export const READERS={
  'muenchen-risi':{name:'RIS München (öffentliche Seiten)',collect:collectMuenchenRisi,detect:async(url,html)=>pick(detectMuenchenRisi(url,html),['base'])},
  piwi:{name:'PIWi Wiesbaden (öffentliche Seiten)',collect:collectPiwi,detect:async(url,html)=>pick(detectPiwi(url,html),['base'])},
  pio:{name:'PIO Offenbach (öffentliche Seiten)',collect:collectPio,detect:async(url,html)=>pick(detectPio(url,html),['base'])},
+ // PARLIS Frankfurt am Main (own development of the city): lists of minutes and current agendas, each document under
+ // its permanent name; the non-public part (/PARLIS2S/) is never requested.
+ parlis:{name:'PARLIS Frankfurt (öffentliche Niederschriften und Tagesordnungen)',collect:collectParlis,detect:async(url,html)=>pick(detectParlis(url,html),['base'])},
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
  'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},

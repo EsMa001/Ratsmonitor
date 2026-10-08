@@ -109,12 +109,52 @@ Mit freundlichen Grüßen
 
 Sehr geehrte Damen und Herren,
 
-viele Kommunen veröffentlichen ihre Sitzungen mit ALLRIS. Bei rund 100 offenen Gebieten verhindert eine Sperre den Abruf durch unser Programm. Dazu gehören die Zugriffsprüfung „Zugriff prüfen“ in ALLRIS 4, die Meldung „zu viele Zugriffe“ und HTTP 403 auf den Kalenderseiten von ALLRIS 3 (sitzung-online.de, ratsinfo-online.de, allris.net). Solche Sperren umgehen wir nicht. Wo ALLRIS eine OParl-Schnittstelle anbietet, lesen wir bevorzugt diese.
+viele Kommunen veröffentlichen ihre Sitzungen mit ALLRIS. Bei rund 100 offenen Gebieten verhindert eine Sperre den Abruf durch unser Programm, darunter die Großstädte Kiel (www.kiel.sitzung-online.de) und Hagen (allris.hagen.de) mit „Zugriff prüfen“ sowie Herne (herne.allris.net), das Programmen auch auf dem OParl-Pfad mit HTTP 403 antwortet (Stand 07.10.2026). Dazu gehören die Zugriffsprüfung „Zugriff prüfen“ in ALLRIS 4, die Meldung „zu viele Zugriffe“ und HTTP 403 auf den Kalenderseiten von ALLRIS 3 (sitzung-online.de, ratsinfo-online.de, allris.net). Solche Sperren umgehen wir nicht. Wo ALLRIS eine OParl-Schnittstelle anbietet, lesen wir bevorzugt diese.
 
 Wir bitten um
 
 1. Auskunft, wie Kommunen die **OParl-Schnittstelle** von ALLRIS für öffentliche Daten freischalten, und gegebenenfalls deren Freischaltung für die gehosteten Systeme;
 2. die **Zulassung unserer Kennung** in der Zugriffsprüfung bzw. Sperre für die öffentlichen Seiten, gern mit Obergrenze; unser Leser hält dabei je Abruf eine Sitzung (Cookie) wie ein Browser.
+
+`<Textbaustein „So rufen wir ab“>`
+
+Mit freundlichen Grüßen
+`<Name, Funktion, Kontakt>`
+
+## 6. hannit (Stadt und Region Hannover)
+
+**Adressat:** hannit, IT-Dienstleister der Region Hannover, `<zuständige Stelle laut Impressum von ris.hannit.de; vor dem Versand bestätigen>`. In Kopie optional die Büros des Rates der Landeshauptstadt und der Regionsversammlung.
+
+**Betreff:** Ratsinformationen von Stadt und Region Hannover: Zulassung eines automatisierten Abrufs
+
+Sehr geehrte Damen und Herren,
+
+Sie betreiben das Ratsinformationssystem von Landeshauptstadt und Region Hannover (ALLRIS unter ris.hannit.de/public/). Seit Anfang Oktober 2026 antwortet es Programmen mit der Zugriffsprüfung „Zugriff prüfen“; eine OParl-Schnittstelle fanden wir nicht (`/oparl/system` antwortet mit HTTP 404, Stand 07.10.2026). Die Zugriffsprüfung umgehen wir nicht. Damit bleiben Stadt und Region, zusammen rund 1,7 Millionen Einwohner, in Ratsmonitor ohne Berichte.
+
+Wir bitten um
+
+1. die Freischaltung der **OParl-Schnittstelle** von ALLRIS für die öffentlichen Daten beider Körperschaften, oder
+2. die **Zulassung unserer Kennung** in der Zugriffsprüfung für die öffentlichen Seiten, gern mit Obergrenze und festem Zeitfenster.
+
+`<Textbaustein „So rufen wir ab“>`
+
+Mit freundlichen Grüßen
+`<Name, Funktion, Kontakt>`
+
+## 7. Einzelne Städte: Herne und Wolfsburg
+
+**Adressat:** das Büro des Rates der jeweiligen Stadt bzw. die für das Ratsinformationssystem zuständige Stelle, `<laut Impressum des Systems; vor dem Versand bestätigen>`.
+
+**Betreff:** Ratsinformationssystem der Stadt `<Herne | Wolfsburg>`: Zugang für einen automatisierten Abruf öffentlicher Unterlagen
+
+Sehr geehrte Damen und Herren,
+
+Ratsmonitor bereitet öffentliche Ratsunterlagen deutscher Kommunen auf und verlinkt jeden Vorgang mit dem Original. Ihr Ratsinformationssystem lässt unseren Abruf derzeit nicht zu:
+
+- **Herne** (herne.allris.net): Die öffentlichen Seiten und der OParl-Pfad antworten Programmen mit HTTP 403.
+- **Wolfsburg** (ratsinfor.stadt.wolfsburg.de): Die OParl-Schnittstelle leitet seit dem 07.10.2026 auf die Anmeldung um; am 06.10.2026 antwortete `/oparl/bodies` noch mit HTTP 500.
+
+Eine Sperre umgehen wir nicht. Wir bitten darum, die OParl-Schnittstelle für die öffentlichen Daten freizuschalten oder unsere Kennung für die öffentlichen Seiten zuzulassen. Falls die Umleitung auf die Anmeldung (Wolfsburg) nicht beabsichtigt ist, genügt ein Hinweis, wann die Schnittstelle wieder erreichbar ist.
 
 `<Textbaustein „So rufen wir ab“>`
 

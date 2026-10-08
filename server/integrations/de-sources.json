@@ -1558,6 +1558,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06412000",
+    "name": "Stadt Frankfurt am Main",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "parlis",
+    "base": "https://www.stvv.frankfurt.de/",
+    "verifiedSource": "https://frankfurt.de/service-und-rathaus/stadtpolitik/stadtverordnetenversammlung",
+    "verifiedAt": "2026-10-07",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; PARLIS Frankfurt (öffentliche Niederschriften und Tagesordnungen) erreichbar."
+  },
+  {
     "id": "de-06413000",
     "name": "Stadt Offenbach am Main",
     "kind": "city",
