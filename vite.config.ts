@@ -59,6 +59,8 @@ export default defineConfig(async () => {
       // weitergeleitet wird: Endlosschleife "can't access property 'send' of undefined".
       forwardConsole: false,
       ...(managedLinux ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
+      // Lokales Handy-Testen im WLAN: RM_DEV_HOST=0.0.0.0 node scripts/run-framework.mjs dev
+      ...(process.env.RM_DEV_HOST ? { host: process.env.RM_DEV_HOST } : {}),
       // Arbeitsdateien der Quellensuche (tmp/), der erzeugte Lückenatlas (dashboard/) und Berichte (requirements/)
       // sind kein Code. Ihre Änderungen lösten Neuladevorgänge aus, nach denen der Worker hängen blieb
       // ("Network connection lost", /admin antwortete erst nach einer Minute oder mit 500).
