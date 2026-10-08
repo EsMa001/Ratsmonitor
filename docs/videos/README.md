@@ -16,7 +16,7 @@ Jeder Bau schreibt `out-web/<video>/<ausgabe>.timeline.json`: je Satz Anfang und
 
 **Kürzere Videos ohne Clips schneiden:** `node tools/schneiden.mjs --sekunden 60 [--kapitel einleitung,suchen,filter] [--name pitch-60]` (im Ordner `~/code/video-tools`) schneidet aus der neuesten Fassung in `fassungen/` (sonst aus dem letzten Bau) ein Video mit Titel- und Schlussfolie, den Kernsätzen jedes Kapitels und, wenn Zeit bleibt, weiteren Sätzen. Es braucht nur ffmpeg, keine Clips, keinen Ton und keine App; die Zeiten stammen aus der Zeitdatei. Ergebnis: `out-web/schnitt/<name>.mp4` und `.vtt`. Mit `--vorteile` kommt die Vorteilsfolie dazu.
 
-**Fassungen in Git:** `node tools/release.mjs` (nach `build-video.mjs komplett`) legt das fertige Video samt Untertiteln und Zeitdatei in `fassungen/` ab und behält nur die **neuesten 3**. Einzelne Bearbeitungsstände kommen nicht in Git; nur freigegebene Fassungen ablegen, weil ältere Fassungen in der Git-Historie bleiben. Clips (`out-clips`, über 1 GB) liegen nicht in Git.
+**Fassungen in Git:** `node tools/release.mjs` (nach `build-video.mjs komplett`) legt das fertige Video samt Untertiteln und Zeitdatei in `fassungen/` ab und behält nur die **neueste**. Einzelne Bearbeitungsstände kommen nicht in Git; nur freigegebene Fassungen ablegen, weil ältere Fassungen in der Git-Historie bleiben. Clips (`out-clips`, über 1 GB) liegen nicht in Git.
 
 ## Aufbau: Szenen, Kapitel, Videos
 
