@@ -22,11 +22,8 @@
         { "id": "fe-ok-infoseiten", "text": "Info-, Branchen- und Preisseiten angelegt", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-plenarax", "text": "Plenara.X-Seiten für tiefere Analysen angelegt", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-konto", "text": "Kontoseiten als Vorschau (Testmodus)", "hinweis": "Läuft bisher nur im Browser, siehe Punkte oben.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "fe-ok-abdeckungszahlen", "text": "Abdeckungszahlen auf der Infoseite live aus der Datenbank", "hinweis": "Festwerte und ungenutzte Konstante entfernt.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
-        { "id": "fe-ok-haftung", "text": "Hinweis „Ohne Gewähr“ auf der Detailseite", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "fe-ok-datenabdeckung", "text": "Seite Datenabdeckung neu: Abdeckung in Prozent, nach Bundesland, Ortsabfrage", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-branchen-enterprise", "text": "Branchenseiten mit Enterprise-Block (Plenara.X-Analysen und Team je Branche)", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "fe-ok-ueberuns", "text": "Über-uns-Seite entfernt, Weiterleitung entfernt", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-todo", "text": "Interne To-Do-Liste angelegt", "hinweis": "Unter /todo-liste, nur im lokalen Dev-Server.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" }
       ]
     },
@@ -95,7 +92,6 @@
         { "id": "ma-kontakte", "text": "Persönliche Kontakte um Weiterleitung an passende Ansprechpartner bitten", "hinweis": "Erst nach der Zustimmung des Arbeitgebers.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-preise", "text": "Preisstufen testen und Einführungspreis kennzeichnen", "hinweis": "Preisanpassungen in den AGB regeln.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-automatisiert", "text": "Regeln für automatisiertes Marketing festlegen", "hinweis": "Keine Werbe-E-Mails an Unbekannte (UWG), Texte stichprobenartig prüfen, nur belegbare Aussagen.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "ma-ok-branchen", "text": "Branchenseiten auf belegbare Aussagen geprüft", "hinweis": "Erfundene Kennzahlen entfernt, Superlative und Versprechen abgeschwächt.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "ma-ok-vorteile", "text": "Produktvorteile nach Relevanz sortiert", "hinweis": "docs/produkt/vorteile.json.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "ma-ok-slogan", "text": "Slogan festgelegt", "hinweis": "„Früher wissen, was vor Ort beraten wird.“", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "ma-ok-webinar", "text": "Webinar (9 Minuten, alle Funktionen inklusive Plenara.X) mit Skript und Anleitung", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
@@ -111,7 +107,6 @@
         { "id": "pr-stufen", "text": "Funktionsumfang je Preisstufe festlegen", "hinweis": "Übersicht aus lib/tier.ts in docs/produkt/stufen.md. Zuordnung zu den Preisen als Vorschlag.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "pr-feedback", "text": "Feedback-Kanal für Nutzer einrichten", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "pr-testbetrieb", "text": "Geschlossenen Testbetrieb mit kleinem Kreis durchführen", "hinweis": "Vor dem öffentlichen Start.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "pr-ok-stufen-uebersicht", "text": "Funktionsumfang je Stufe als Übersicht dokumentiert", "hinweis": "docs/produkt/stufen.md, aus lib/tier.ts abgeleitet. Zuordnung zu den Preisen offen.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "pr-ok-abdeckung", "text": "Abdeckung der Quellen erfasst und Lücken dokumentiert", "hinweis": "requirements/de-sources-report.md.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     },
@@ -133,7 +128,6 @@
       "items": [
         { "id": "bt-kontakt", "text": "Kontaktadresse, Antwortzeiten und Standardantworten festlegen", "hinweis": "Entwurf in docs/betrieb/support.md. E-Mail-Adresse fehlt noch (Marke).", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "bt-ausfall", "text": "Vorgehen bei Ausfall oder fehlerhaften Daten festlegen", "hinweis": "Entwurf in docs/betrieb/support.md. Zuständig: GbR-Gesellschafter (Vorschlag).", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "bt-ok-entwurf", "text": "Entwurf für Support, Ausfälle und Löschwünsche erstellt", "hinweis": "docs/betrieb/support.md. Fristen und Zuständigkeit sind Vorschläge.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "bt-loeschwuensche", "text": "Umgang mit Löschwünschen und Beschwerden regeln", "hinweis": "Entwurf mit Antwortvorlage in docs/betrieb/support.md. Fristen als Vorschlag.", "erledigt": false, "faellig": null, "erledigtAm": null }
       ]
     },
@@ -159,7 +153,6 @@
         { "id": "mk-handles", "text": "Social-Media-Handles reservieren", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-logo", "text": "Corporate Design prüfen und freigeben", "hinweis": "Entwurf liegt vor: docs/design/corporate-design.md und styleguide.html. Offen: Logo-Dateien exportieren, Schutzraum, Kontrast der Akzentfarbe, Vorlagen.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-vorlagen", "text": "Vorlagen für Visitenkarte, E-Mail-Signatur, Social-Media-Profilbild und Präsentation", "hinweis": "Stand Corporate Design, Abschnitt 10. Videos haben ein eigenes System in docs/videos.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "mk-altstyles", "text": "Ältere Design-Tokens (Kobaltblau, Kopfzeile „vor Ort“) aus dem Auftritt heraushalten", "hinweis": "app/design-tokens.css und app/design-styles.css gehören zu Admin und alten Analyseseiten. Vorschlag laut Corporate Design: nicht übernehmen.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-mail", "text": "E-Mail-Adressen einrichten", "hinweis": "Zum Beispiel Kontakt und Datenschutz.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-ok-name", "text": "Name „Plenara“ festgelegt und recherchiert", "hinweis": "Keine Treffer; Anmeldung siehe Rechtliches.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "mk-ok-logo", "text": "Logo festgelegt", "hinweis": "Wortmarke mit Sitzpunkten und Quadrat, wie in der Kopfzeile.", "erledigt": true, "faellig": null, "erledigtAm": null },
@@ -173,7 +166,6 @@
         { "id": "si-zugang", "text": "Zwei-Faktor-Anmeldung und Passwortverwaltung für alle Dienste", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "si-rechte", "text": "Zugriffsrechte und Admin-Zugang prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "si-panne", "text": "Ablauf bei Datenpannen festlegen", "hinweis": "Entwurf in docs/betrieb/datenpanne.md. Behörde und Ansprechperson bei Gründung bestätigen.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "si-ok-panne-entwurf", "text": "Entwurf für Ablauf bei Datenpannen erstellt", "hinweis": "docs/betrieb/datenpanne.md. Behörde und Ansprechperson noch bestätigen.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "si-ok-admin", "text": "Admin-Bereich geschützt", "hinweis": "Einmalige Freischaltung, nur für den Besitzer, nicht indexierbar.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     }
