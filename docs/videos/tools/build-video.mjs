@@ -88,12 +88,15 @@ for (const c of sel) run("python3", [`${T}compose.py`, `${O}/c${pad(c.nr)}`, `c$
 const slogan = JSON.parse(readFileSync(`${V}../produkt/slogan.json`, "utf8")), vt = existsSync(VP) ? JSON.parse(readFileSync(VP, "utf8")).vorteile : [];
 const ranks = [...new Set(sel.flatMap((c) => c.vorteile))].sort((a, b) => a - b).slice(0, def.vorteileMax ?? 5);
 const items = ranks.map((r) => vt.find((x) => x.rang === r)?.titel).filter(Boolean);
-const spec = {}; const sag = `Plenarra. ${slogan.sprech}`;
-if (def.titel !== false) { mkdirSync(`${O}/titel`, { recursive: true }); writeFileSync(`${O}/titel.txt`, sag + "\n"); run("python3", [`${T}speak.py`, `${O}/titel.txt`, `${O}/titel/audio.wav`, "0.5", "0"]); spec.titel = { dur: +Math.max(4.8, 0.8 + JSON.parse(readFileSync(`${O}/titel/audio.json`, "utf8")).total + 1.2).toFixed(2) }; }  /* Titelfolie spricht Name und Slogan */
+const spec = {};
+/* Titel- und Schlussfolie sind gleich: Name, 1 s Pause, Slogan, 1 s Pause; gleiche Länge und gleiches Tempo der Animation */
+const sag = ["Plenarra.", slogan.sprech].join("\n") + "\n";
+const sagen = (dir) => { mkdirSync(`${O}/${dir}`, { recursive: true }); writeFileSync(`${O}/${dir}.txt`, sag); run("python3", [`${T}speak.py`, `${O}/${dir}.txt`, `${O}/${dir}/audio.wav`, "1.0", "0"]); return JSON.parse(readFileSync(`${O}/${dir}/audio.json`, "utf8")).total; };
+const FOLIE_DELAY = 1.0;
+if (def.titel !== false) spec.titel = { dur: +Math.max(7, FOLIE_DELAY + sagen("titel") + 1.0).toFixed(2) };  /* Titelfolie spricht Name und Slogan */
 if (def.ende !== false) {
   if (items.length) { mkdirSync(`${O}/ende1`, { recursive: true }); writeFileSync(`${O}/ende1.txt`, ["Das bringt Ihnen Plenarra.", ...items].join("\n") + "\n"); run("python3", [`${T}speak.py`, `${O}/ende1.txt`, `${O}/ende1/audio.wav`, "0.5", "0"]); const a = JSON.parse(readFileSync(`${O}/ende1/audio.json`, "utf8")); spec.vorteile = { items, starts: a.sentences.slice(1).map((x) => +(x.start + 0.7).toFixed(2)), dur: +(a.total + 0.7 + 1.2).toFixed(2) }; }
-  mkdirSync(`${O}/ende2`, { recursive: true }); writeFileSync(`${O}/ende2.txt`, `Plenarra. ${slogan.sprech}\n`); run("python3", [`${T}speak.py`, `${O}/ende2.txt`, `${O}/ende2/audio.wav`, "0.5", "0"]);
-  const a2 = JSON.parse(readFileSync(`${O}/ende2/audio.json`, "utf8")); spec.schluss = { dur: +Math.max(6.5, 1.9 + a2.total + 2.2).toFixed(2) };
+  spec.schluss = { dur: +Math.max(7, FOLIE_DELAY + sagen("ende2") + 1.0).toFixed(2) };
 }
 writeFileSync(`${O}/folien.json`, JSON.stringify(spec));
 if (Object.keys(spec).length) run("node", [`${T}folien.mjs`, O]);

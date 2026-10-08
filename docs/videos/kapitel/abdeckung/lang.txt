@@ -3,6 +3,6 @@
 *@abdeckung.seite Die Seite Datenabdeckung zeigt es offen.
 *@abdeckung.seite Heute sind es {{cov.entries|mehrals}} Einträge aus über {{cov.municipalities|abrunden}} Gemeinden.
 @abdeckung.suche Suchen Sie Ihre Gemeinde oder Ihren Kreis und sehen Sie, wie aktuell der Stand dort ist.
-@abdeckung.seite Auch der letzte Abruf der Daten steht dabei.
-@abdeckung.suche Fehlt etwas, melden Sie es uns direkt.
-@abdeckung.seite Wir sagen offen, was schon dabei ist und was noch fehlt.
+@abdeckung.abruf Auch der letzte Abruf der Daten steht dabei.
+@abdeckung.melden Fehlt etwas, melden Sie es uns direkt.
+@abdeckung.melden Wir sagen offen, was schon dabei ist und was noch fehlt.

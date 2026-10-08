@@ -19,7 +19,7 @@ def find(n):
     b=next((b for b in CL[sc]['beats'] if b['name']==st),None)
     if not b: sys.exit(f'Schritt "{st}" gibt es in der Szene {sc} nicht')
     return sc,b
-LEAD=0.5; total=T['total']+LEAD+1.0
+LEAD=0.5; total=T['total']+LEAD+0.3  # Ruhe nach dem letzten Satz (zählt die 0,5 s Satzpause mit): knappe Übergänge
 S=T['sentences']
 def ts(x): return f'{int(x//3600):02d}:{int(x%3600//60):02d}:{x%60:06.3f}'
 def beat_frames(sc,b):

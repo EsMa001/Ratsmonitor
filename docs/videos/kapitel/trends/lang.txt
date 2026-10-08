@@ -1,5 +1,5 @@
 # Plenara.X Trends.
-@trends.start Was kommt in den Räten gerade auf?
+@trends.start Was kommt in Ihren Kommunen gerade auf?
 @trends.zeitraum Die Trendanalyse vergleicht die letzten {{t.trendWindow|zahl}} Tage mit dem Zeitraum davor.
 *@trends.karte In der Trendkarte ist jeder Punkt ein Begriff: rechts häufiger, oben stärker gewachsen.
 *@trends.rangliste Die Rangliste zeigt zu jedem Begriff die Verlaufskurve und den Faktor des Anstiegs.

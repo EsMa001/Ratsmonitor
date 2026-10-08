@@ -1,0 +1,2 @@
+# Ein Satz je Kapitel (30-Sekunden-Video)
+@entscheidungen.raten Bei {{p.thema|text}} sind {{t.approval|fast}} Prozent der entschiedenen Vorgänge beschlossen.

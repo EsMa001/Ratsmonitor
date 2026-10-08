@@ -21,7 +21,7 @@ img.logo{display:block}
 .tail{display:flex;align-items:baseline;line-height:1;margin-bottom:29px;margin-left:6px;opacity:0;animation:up .7s var(--td,1.7s) ease-out forwards}.sq{width:24px;height:24px;background:#0d9488;margin-right:8px;flex:none}.de{font-size:163px;letter-spacing:-.015em;line-height:1}`;
 const brand = (td) => `<div class=brand style="--td:${td}s"><div class=lw><img class="logo big" src="${LOGO}"></div><span class=tail><i class=sq></i><span class=de>de</span></span></div>`;
 const check = (d) => `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1;animation:draw .45s ${d + 0.1}s ease-out forwards"/></svg>`;
-const schluss = (k = 1) => `<style>${css}
+const schluss = (k = 1.2) => `<style>${css}
 .lw::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.85),rgba(255,255,255,0));transform:skewX(-18deg);animation:shine ${1.3*k}s ${1.0*k}s ease-in-out forwards}@keyframes shine{to{left:120%}}
 .line{margin-top:44px;height:4px;width:0;border-radius:2px;background:#0d9488;animation:w ${.8*k}s ${1.6*k}s ease-out forwards}@keyframes w{to{width:120px}}
 .s{margin-top:34px;font-size:46px;font-weight:600;letter-spacing:-.015em;max-width:980px;line-height:1.2;opacity:0;animation:up ${.8*k}s ${2.1*k}s ease-out forwards}.lw{animation-duration:${1*k}s}.tail{animation-duration:${.7*k}s}</style>
@@ -33,7 +33,7 @@ ul{position:absolute;left:72px;top:262px;list-style:none;padding:0}
 li{display:flex;align-items:center;gap:24px;font-size:36px;margin-bottom:28px;opacity:0;animation:up .5s ease-out forwards}</style>
 <img class="logo s" src="${LOGO}"><h2>Das bringt Ihnen Plenara</h2>
 <ul>${v.items.map((t, i) => `<li style="animation-delay:${v.starts[i]}s">${check(v.starts[i])}${esc(t)}</li>`).join("")}</ul>`;
-const jobs = [["titel", spec.titel && schluss(0.8), spec.titel?.dur], ["vorteile", spec.vorteile && vorteile(spec.vorteile), spec.vorteile?.dur], ["schluss", spec.schluss && schluss(), spec.schluss?.dur]].filter((j) => j[1] && j[2]);
+const jobs = [["titel", spec.titel && schluss(), spec.titel?.dur], ["vorteile", spec.vorteile && vorteile(spec.vorteile), spec.vorteile?.dur], ["schluss", spec.schluss && schluss(), spec.schluss?.dur]].filter((j) => j[1] && j[2]);
 const cache = `${out}/../_folien`; mkdirSync(cache, { recursive: true });
 let browser, page;
 for (const [n, html, secs] of jobs) {

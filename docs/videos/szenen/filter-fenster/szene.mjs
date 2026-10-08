@@ -15,12 +15,12 @@ export default {
   setup: async (H, p) => { await H.search(p.thema); await H.sleep(500); },
   beats: [
     ["offen", async (H) => { await H.click("[aria-controls='filter-body']"); await H.sleep(800); await H.move(300, 260, 30); }, 2],
+    ["exakt", async (H) => { await H.click(sw(H, "Exakter Begriff")); await H.loaded(); await H.sleep(1800); await H.move(300, 330, 30); await H.sleep(1200); await H.click(sw(H, "Exakter Begriff")); await H.loaded(); }, 1.5],  /* vor den Filtern: exakter Begriff zusammen mit Filtern liefert derzeit 0 Treffer (Fehler im Backend, siehe Notiz) */
     ["zeitraum", async (H) => { await pick(H, "Zeitraum", /12 Monate/); await H.loaded(); }, 1],
     ["thema", async (H) => { await pick(H, "Thema", /Klima/); await H.loaded(); }, 1],
     ["status", async (H) => { await pick(H, "Status", /beschlossen|genehmigt|zugestimmt/i); await H.loaded(); }, 1.5],
     ["karte", async (H) => { await H.move(900, 380, 40); await H.sleep(1200); await H.move(760, 300, 40); }, 2.5],
     ["marken", async (H) => { await H.move(640, 120, 40); }, 3],
-    ["exakt", async (H) => { await H.click(sw(H, "Exakter Begriff")); await H.sleep(1800); await H.click(sw(H, "Exakter Begriff")); await H.loaded(); }, 1.5]  /* exakt liefert hier 0 Treffer: nur kurz zeigen, wieder ausschalten */,
     ["kombi", async (H) => { await H.click(sw(H, "Begriffe kombinieren")); await H.loaded(); }, 2.5],
   ],
 };

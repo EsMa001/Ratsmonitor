@@ -15,15 +15,15 @@
   },
   {
    "satz": 2,
+   "text": "{{v.23|text}}"
+  },
+  {
+   "satz": 3,
    "text": "{{v.37|text}}"
   },
   {
-   "satz": 4,
-   "text": "{{v.66|text}}"
-  },
-  {
    "satz": 5,
-   "text": "{{v.23|text}}"
+   "text": "{{v.66|text}}"
   },
   {
    "satz": 6,

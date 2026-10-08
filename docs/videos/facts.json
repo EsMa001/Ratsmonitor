@@ -1,5 +1,5 @@
 {
- "asOf": "2026-10-07",
+ "asOf": "2026-10-08",
  "thema": "Klimaschutz",
  "ort": "Münster",
  "values": {
@@ -19,8 +19,8 @@
   "t.trendPrev": 1,
   "t.graphTerms": 22,
   "t.graphLinks": 70,
-  "t.paths": 182,
-  "t.pool": 1418,
+  "t.paths": 186,
+  "t.pool": 1447,
   "t.laender": 14,
   "t.orte": {
    "Münster": 49,
@@ -41,13 +41,13 @@
   "t.first": "2025-10-01",
   "t.half": "2025-12-09",
   "t.halfMonate": 2,
-  "t.entries": 10407,
-  "t.regions": 2052,
+  "t.entries": 10492,
+  "t.regions": 2054,
   "t.peakMonat": "2025-11-01",
   "t.peakN": 492,
   "t.prev4": 361,
   "t.approval": 67.6,
-  "t.statusKnownPct": 25.7
+  "t.statusKnownPct": 26.3
  },
  "cov": {
   "cov.entries": 941027,
@@ -69,8 +69,8 @@
    "t.trendPrev": 1,
    "t.graphTerms": 22,
    "t.graphLinks": 70,
-   "t.paths": 182,
-   "t.pool": 1418,
+   "t.paths": 186,
+   "t.pool": 1447,
    "t.laender": 14,
    "t.orte": {
     "Münster": 49,
@@ -91,13 +91,13 @@
    "t.first": "2025-10-01",
    "t.half": "2025-12-09",
    "t.halfMonate": 2,
-   "t.entries": 10407,
-   "t.regions": 2052,
+   "t.entries": 10492,
+   "t.regions": 2054,
    "t.peakMonat": "2025-11-01",
    "t.peakN": 492,
    "t.prev4": 361,
    "t.approval": 67.6,
-   "t.statusKnownPct": 25.7
+   "t.statusKnownPct": 26.3
   },
   "Wärmeplanung": {
    "t.d1090": 11,
@@ -108,13 +108,13 @@
    "t.changed": 9.2,
    "t.durMedian": 17,
    "t.trendWindow": 90,
-   "t.trend": "umsetzung",
+   "t.trend": "ergebnisse",
    "t.trendRegions": 22,
-   "t.trendPrev": 14,
+   "t.trendPrev": 13,
    "t.graphTerms": 22,
    "t.graphLinks": 72,
-   "t.paths": 150,
-   "t.pool": 634,
+   "t.paths": 155,
+   "t.pool": 648,
    "t.laender": 14,
    "t.orte": {
     "Münster": 2,
@@ -135,13 +135,13 @@
    "t.first": "2025-09-30",
    "t.half": "2026-02-26",
    "t.halfMonate": 5,
-   "t.entries": 2230,
-   "t.regions": 2871,
+   "t.entries": 2253,
+   "t.regions": 2900,
    "t.peakMonat": "2026-03-01",
    "t.peakN": 394,
    "t.prev4": 1060,
    "t.approval": 94.9,
-   "t.statusKnownPct": 40.6
+   "t.statusKnownPct": 41.2
   },
   "Hitzeschutz": {
    "t.d1090": 8,
@@ -153,12 +153,12 @@
    "t.durMedian": 17,
    "t.trendWindow": 90,
    "t.trend": "fraktion",
-   "t.trendRegions": 118,
-   "t.trendPrev": 11,
+   "t.trendRegions": 117,
+   "t.trendPrev": 13,
    "t.graphTerms": 22,
    "t.graphLinks": 93,
-   "t.paths": 12,
-   "t.pool": 106,
+   "t.paths": 13,
+   "t.pool": 108,
    "t.laender": 13,
    "t.orte": {
     "Münster": 3,
@@ -179,13 +179,13 @@
    "t.first": "2025-10-06",
    "t.half": "2026-09-09",
    "t.halfMonate": 11,
-   "t.entries": 564,
+   "t.entries": 569,
    "t.regions": 738,
    "t.peakMonat": "2026-09-01",
    "t.peakN": 399,
    "t.prev4": 217,
    "t.approval": 75,
-   "t.statusKnownPct": 31.2
+   "t.statusKnownPct": 31.8
   }
  }
 }

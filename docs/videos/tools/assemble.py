@@ -25,10 +25,10 @@ def folie(n,wav=None,delay=0.0):
     if wav: run('-i',v,'-i',wav,'-map','0:v','-map','1:a','-af',f'adelay={int(delay*1000)}:all=1,apad','-shortest',*ENC,out)
     else: run('-i',v,'-f','lavfi','-i','anullsrc=r=22050:cl=mono','-map','0:v','-map','1:a','-shortest',*ENC,out)
     return out
-p=folie('titel',f'{O}/titel/audio.wav',0.8) if os.path.exists(f'{O}/titel/audio.wav') else folie('titel')
+p=folie('titel',f'{O}/titel/audio.wav',1.0) if os.path.exists(f'{O}/titel/audio.wav') else folie('titel')
 if p:
     if os.path.exists(f'{O}/titel/audio.wav'):
-        for s_ in json.load(open(f'{O}/titel/audio.json'))['sentences']: vtt.append(f"{ts(t+0.8+s_['start'])} --> {ts(t+0.8+s_['end']+0.3)}\n{s_['text'].replace('Plenarra','Plenara')}\n")
+        for s_ in json.load(open(f'{O}/titel/audio.json'))['sentences']: vtt.append(f"{ts(t+1.0+s_['start'])} --> {ts(t+1.0+s_['end']+0.3)}\n{s_['text'].replace('Plenarra','Plenara')}\n")
     parts.append(p); t+=dur(p)
 for c in chs:
     n=f"{c['nr']:02d}"
@@ -67,9 +67,9 @@ p=folie('vorteile',f'{O}/ende1/audio.wav',0.7)
 if p:
     for s_ in json.load(open(f'{O}/ende1/audio.json'))['sentences']: vtt_add(s_['text'],t+0.7+s_['start'],t+0.7+s_['end']+0.3)
     parts.append(p); t+=dur(p)
-p=folie('schluss',f'{O}/ende2/audio.wav',1.9)
+p=folie('schluss',f'{O}/ende2/audio.wav',1.0)
 if p:
-    for s_ in json.load(open(f'{O}/ende2/audio.json'))['sentences']: vtt_add(s_['text'],t+1.9+s_['start'],t+1.9+s_['end']+0.3)
+    for s_ in json.load(open(f'{O}/ende2/audio.json'))['sentences']: vtt_add(s_['text'],t+1.0+s_['start'],t+1.0+s_['end']+0.3)
     parts.append(p); t+=dur(p)
 open(f'{O}/list-final.txt','w').write('\n'.join(f"file '{os.path.abspath(p)}'" for p in parts))
 run('-f','concat','-safe','0','-i',f'{O}/list-final.txt','-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-preset',PRESET,'-crf',CRF,'-c:a','aac','-b:a','96k','-movflags','+faststart',f'{O}/{name}.mp4')
