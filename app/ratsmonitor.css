@@ -64,7 +64,7 @@
 }
 
 /* Shared administration keeps its workflows and follows the new visual identity. */
-@layer base {.admin-shell{max-width:1320px;border-radius:16px;background:var(--rm-white,#fff)}.admin-shell,.admin-gate{--primary:#0f766e;--ring:#0f766e;--color-accent:#0f766e}.admin-stage-number,.admin-pages a[aria-current=page],.admin-shell .eyebrow{color:#0d9488;border-color:#0f766e}.admin-stage,.admin-map,.admin-job{border-radius:12px}.admin-stage-ai,.admin-job{background:#f0fdfa}.admin-shell .wordmark{color:#0d9488}.admin-gate{max-width:640px;margin:48px auto;padding:32px;border:1px solid var(--rm-c200,#e2e8f0);border-radius:16px;background:var(--rm-white,#fff)}.ratsmonitor .analysis-provenance,.ratsmonitor .prose{margin-top:28px}.ratsmonitor .heading-m{font-size:18px;line-height:1.4}.ratsmonitor .facts__row{padding:10px 0}.ratsmonitor .page-note{font-size:14px;line-height:1.6;margin-top:10px}}
+@layer base {.admin-shell{max-width:1320px;border-radius:16px;background:var(--rm-white,#fff)}.admin-shell,.admin-gate{--primary:#0f766e;--ring:#0f766e;--color-accent:#0f766e}.admin-stage-number,.admin-pages a[aria-current=page],.admin-shell .eyebrow{color:#0d9488;border-color:#0f766e}.admin-stage,.admin-map,.admin-job{border-radius:12px}.admin-stage-ai,.admin-job{background:var(--rm-tint,#f0fdfa)}.admin-shell .wordmark{color:#0d9488}.admin-gate{max-width:640px;margin:48px auto;padding:32px;border:1px solid var(--rm-c200,#e2e8f0);border-radius:16px;background:var(--rm-white,#fff)}.ratsmonitor .analysis-provenance,.ratsmonitor .prose{margin-top:28px}.ratsmonitor .heading-m{font-size:18px;line-height:1.4}.ratsmonitor .facts__row{padding:10px 0}.ratsmonitor .page-note{font-size:14px;line-height:1.6;margin-top:10px}}
 @media(prefers-reduced-motion:reduce){.ratsmonitor *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 /* Explicit light controls for the administration workspace. */
@@ -73,7 +73,7 @@
   .admin-shell .admin-kpi-primary>strong,
   .admin-shell .admin-stage-number {color:#0d9488;border-color:#0f766e;}
   .admin-shell .admin-kpis {border-top:2px solid #0f766e;}
-  .admin-shell .admin-source-item.is-selected {background:#f0fdfa;}
+  .admin-shell .admin-source-item.is-selected {background:var(--rm-tint,#f0fdfa);}
   .admin-shell .admin-topbar>a:last-child,
   .admin-shell .admin-source-item summary,
   .admin-shell .admin-footer a {color:#0d9488;}

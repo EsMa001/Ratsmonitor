@@ -131,7 +131,7 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
     <Reveal delay={150}>
     <div className="ri-pv" aria-label="Beispiel eines echten Treffers" style={{ background: "none", border: "none", boxShadow: "none", padding: 0, marginTop: 24 }}>
       <a href={example.href ?? undefined} aria-label={example.title} className="group" style={{ display: "block", color: "inherit", textDecoration: "none" }}>
-      <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ background: "linear-gradient(135deg, var(--rm-white,#ffffff) 0%, #f1fbf9 100%)" }}>
+      <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ background: "linear-gradient(135deg, var(--rm-white,#ffffff) 0%, var(--rm-tint,#f1fbf9) 100%)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "52px minmax(0,1fr)", gap: 12 }}>
           {example.datum && (
             <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200,#e2e8f0)", paddingRight: 10, textAlign: "center" }}>
