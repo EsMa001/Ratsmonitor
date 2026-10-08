@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { BRAND_NAME, DEFAULT_BRAND, pageTitle } from '@/components/ratsmonitor/lib/brands';
-/* Link-Vorschau (Slack, Mail, soziale Netze): absolute Adresse des Bildes braucht die Adresse des Auftritts (SITE_URL) */
-const SITE_URL=process.env.SITE_URL||process.env.NEXT_PUBLIC_SITE_URL;
+/* Link-Vorschau (Slack, Mail, soziale Netze): absolute Adresse des Bildes braucht die Adresse des Auftritts (SITE_URL, sonst www.plenara.de) */
+const SITE_URL=process.env.SITE_URL||process.env.NEXT_PUBLIC_SITE_URL||'https://www.plenara.de';
 const OG_IMAGE={url:'/og.png',width:1200,height:630,alt:'plenara: Früher wissen, was vor Ort beraten wird.'};
 export const metadata:Metadata={...(SITE_URL?{metadataBase:new URL(SITE_URL)}:{}),title:pageTitle(DEFAULT_BRAND),description:'Früher wissen, was vor Ort beraten wird: Sitzungen, Vorlagen und Beschlüsse aus Ratsinformationssystemen durchsuchen, mit Originalquellen.',openGraph:{type:'website',locale:'de_DE',siteName:BRAND_NAME[DEFAULT_BRAND],title:pageTitle(DEFAULT_BRAND),description:'Früher wissen, was vor Ort beraten wird: Sitzungen, Vorlagen und Beschlüsse aus Ratsinformationssystemen durchsuchen, mit Originalquellen.',images:[OG_IMAGE]},twitter:{card:'summary_large_image',title:pageTitle(DEFAULT_BRAND),description:'Früher wissen, was vor Ort beraten wird: Sitzungen, Vorlagen und Beschlüsse aus Ratsinformationssystemen durchsuchen, mit Originalquellen.',images:['/og.png']},manifest:'/manifest.webmanifest',appleWebApp:{capable:true,title:BRAND_NAME[DEFAULT_BRAND]},icons:{icon:[{url:'/favicon.svg',type:'image/svg+xml'},{url:'/favicon-32.png',sizes:'32x32',type:'image/png'},{url:'/icon-192.png',sizes:'192x192',type:'image/png'},{url:'/favicon.ico',sizes:'48x48'}],shortcut:'/favicon.ico',apple:'/apple-touch-icon.png'}};
 export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="de"><body><a className="skip-link" href="#inhalt">Zum Inhalt</a>{children}</body></html>}
