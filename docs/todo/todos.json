@@ -7,7 +7,7 @@
       "items": [
         { "id": "fe-registrierung", "text": "Registrierung ans Backend anbinden", "hinweis": "Bisher nur Validierung im Browser (AccountPages.tsx).", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-kontaktformular", "text": "Kontaktformular ans Backend anbinden", "hinweis": "Bisher nur Validierung im Browser (AccountPages.tsx).", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "fe-platzhalter", "text": "Platzhalterwerte durch echte, belegbare Werte ersetzen", "hinweis": "Kennzahlen, Beispiel-Treffer und Orte, „< 24 Std.“, „4.500+“, „16 Bundesländer“ (content.ts, AboutPage.tsx, blocks.tsx). Belegt: 2.905 von 4.457 auswählbaren Gebieten angebunden (Stand 06.10.26, requirements/de-sources-report.md); „4.500+“ zählt auswählbare Gebiete, nicht die Abdeckung.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-platzhalter", "text": "Platzhalterwerte durch echte, belegbare Werte ersetzen", "hinweis": "Kennzahlen, Beispiel-Treffer und Orte, „< 24 Std.“, „4.500+“, „16 Bundesländer“ (content.ts, AboutPage.tsx, blocks.tsx). „4.500+“ zählt auswählbare Gebiete, nicht die angebundene Abdeckung; mit dem Abdeckungsbericht belegen (requirements/de-sources-report.md).", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-rechtstexte", "text": "Rechtstext-Seiten einbinden", "hinweis": "Entwurf von Impressum, Datenschutz, AGB und Widerruf ist eingebunden und in der Fußzeile verlinkt (08.10.26). Offen: Betreiberdaten, Zahlungsdienstleister, anwaltliche Prüfung.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-tarifseite", "text": "Tarif- und Bezahlseite: Upgrade, Kündigung online, klare Preisangaben", "hinweis": "Erst sinnvoll, wenn die Zahlungsabwicklung im Backend steht.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-kontobereich", "text": "Kontobereich: Tarif ändern, Rechnungen, Datenexport, Konto löschen", "erledigt": false, "faellig": null, "erledigtAm": null },
@@ -17,12 +17,12 @@
         { "id": "fe-onboarding", "text": "Onboarding und Alarm-Einrichtung vereinfachen", "hinweis": "Gebiet und Thema in wenigen Klicks wählen, dabei der Weg von der Einfachstufe zum Upgrade.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-mobil-barriere", "text": "Mobil- und Barrierefreiheitstest", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-zustaende", "text": "Fehler-, Lade- und Leerzustände prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "fe-ok-suche", "text": "Suche, Filter und Kartenansicht", "hinweis": "Suche nach Gebiet, Thema und Zeitraum, Umkreis; Karte mit Flächen, Heatmap und Punkten; Trefferliste und Detailseite.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "fe-ok-export", "text": "Export von Treffern und Artikeln", "hinweis": "PDF/Drucken, Excel und CSV.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "fe-ok-konto", "text": "Kontoseiten im Testmodus", "hinweis": "Gespeicherte Suchen und Artikel, Kalender, Profil, Postfach. Läuft bisher nur im Browser.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "fe-ok-infoseiten", "text": "Info-, Branchen- und Preisseiten", "hinweis": "Über, FAQ, Videos, Quellen, Funktionen, Branchenseiten mit Enterprise-Block, Preise mit Tarifkarten.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "fe-ok-plenarax", "text": "Plenara.X-Seiten", "hinweis": "Diffusionsanalyse, Knowledge Graph, Trends und Gebietsvergleich.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "fe-ok-todo", "text": "Interne To-Do-Liste unter /todo-liste", "hinweis": "Abhaken, Termin eintragen, speichern; nur im lokalen Dev-Server.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" }
+        { "id": "fe-ok-frontend", "text": "Frontend gestaltet und umgesetzt", "hinweis": "Startseite, Karte, Suche, Trefferliste und Detailseiten in einheitlichem Design.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "fe-ok-funktionen", "text": "Funktionen für Nutzer eingebaut", "hinweis": "Suche mit Filtern, Kartenansicht, gespeicherte Suchen und Artikel, Benachrichtigungen, Kalender, Export.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "fe-ok-infoseiten", "text": "Info-, Branchen- und Preisseiten angelegt", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "fe-ok-plenarax", "text": "Plenara.X-Seiten für tiefere Analysen angelegt", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "fe-ok-konto", "text": "Kontoseiten als Vorschau (Testmodus)", "hinweis": "Läuft bisher nur im Browser, siehe Punkte oben.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "fe-ok-todo", "text": "Interne To-Do-Liste angelegt", "hinweis": "Unter /todo-liste, nur im lokalen Dev-Server.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" }
       ]
     },
     {
@@ -40,14 +40,15 @@
         { "id": "be-alarme", "text": "Zuverlässige Alarme und Überwachung", "hinweis": "E-Mail-Zustellung (SPF, DKIM, DMARC), Überwachung der Importe, Warnung bei Quellen ohne neue Daten.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "be-schutz", "text": "Backups, Missbrauchsschutz der API, Logs ohne unnötige Personendaten", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "be-audit", "text": "Code-Audit vor dem Start", "hinweis": "Sicherheit, Fehlerbehandlung, Testabdeckung, Abhängigkeiten.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "be-ok-grundlage", "text": "Technische Grundlage", "hinweis": "Next.js (vinext) auf Cloudflare Workers mit D1-Datenbank.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "be-ok-import", "text": "Abrufprogramme für die gängigen Ratsinformationssysteme", "hinweis": "SessionNet, ALLRIS, KIC-RIS, More! Rubin, OParl u. a.; Import mit Zusammenführen und Nachführen der Suche.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "be-ok-suche", "text": "Suche mit vorberechneter Wortliste", "hinweis": "Schnelle Suche mit Tests (monitor-search, search-words, search-cards-gone).", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "be-ok-ki", "text": "KI-Zusammenfassungen und Themen-Einordnung", "hinweis": "ai-summary.mjs; Auswertungen in requirements/.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "be-ok-analysen", "text": "Auswertungen für Plenara.X", "hinweis": "Diffusion, Trends, Graph, Netzwerk, Vergleich.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "be-ok-push", "text": "Push-Mitteilungen und Kalenderdaten", "hinweis": "app/api/push und app/api/calendar.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "be-ok-admin", "text": "Admin-Bereich", "hinweis": "Abdeckung, Qualität, Importübersicht; Zugang nur für den Betreiber.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "be-ok-tests", "text": "Automatische Tests", "hinweis": "84 Testdateien in tests/.", "erledigt": true, "faellig": null, "erledigtAm": null }
+        { "id": "be-ok-backend", "text": "Backend gebaut", "hinweis": "Next.js auf Cloudflare Workers.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-datenbank", "text": "Datenbank gebaut", "hinweis": "Cloudflare D1 mit Schema und Migrationen.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-gemeinden", "text": "Gemeinden und Ratsinformationssysteme angebunden", "hinweis": "Abrufprogramme für die gängigen Systeme, Import und Nachführen der Daten.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-suche", "text": "Effiziente Suche gebaut", "hinweis": "Vorberechnete Wortliste, getestet.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-ki", "text": "KI-Zusammenfassungen und Themen-Einordnung", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-analysen", "text": "Auswertungen für Plenara.X (tiefere Analysen)", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-push", "text": "Push-Mitteilungen und Kalenderdaten", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-admin", "text": "Admin-Bereich", "hinweis": "Abdeckung, Qualität und Importübersicht, Zugang nur für den Betreiber.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-tests", "text": "Automatische Tests für die wichtigsten Teile", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     },
     {
@@ -72,7 +73,7 @@
         { "id": "re-avv", "text": "Auftragsverarbeitungsverträge (AVV) abschließen und ablegen", "hinweis": "Cloudflare und OpenAI jetzt, später E-Mail-Dienst, Newsletter und Buchhaltung. Liste: docs/recht/pflichten-und-avv.md.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "re-datenschutz-ergaenzen", "text": "Datenschutzerklärung ergänzen, sobald Konten, Zahlung, E-Mail-Versand oder Newsletter live gehen", "hinweis": "Fertige Bausteine in docs/recht/datenschutz-ergaenzungen.md; die Sätze „kein Benutzerkonto nötig“ und „Suchen nur im Browser“ anpassen.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "re-ok-texte", "text": "Entwürfe für Impressum, Datenschutz, AGB und Widerruf erstellt und eingebunden", "hinweis": "Noch offen: Betreiberdaten, anwaltliche Prüfung (siehe Punkte oben).", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
-        { "id": "re-ok-pflichten", "text": "Übersicht über Pflichten, AVV und Datenschutz-Bausteine", "hinweis": "docs/recht/pflichten-und-avv.md und datenschutz-ergaenzungen.md.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" }
+        { "id": "re-ok-pflichten", "text": "Übersicht über Pflichten, AVV und Datenschutz-Bausteine", "hinweis": "docs/recht.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" }
       ]
     },
     {
@@ -88,9 +89,9 @@
         { "id": "ma-kontakte", "text": "Persönliche Kontakte um Weiterleitung an passende Ansprechpartner bitten", "hinweis": "Erst nach der Zustimmung des Arbeitgebers.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-preise", "text": "Preisstufen testen und Einführungspreis kennzeichnen", "hinweis": "Preisanpassungen in den AGB regeln.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-automatisiert", "text": "Regeln für automatisiertes Marketing festlegen", "hinweis": "Keine Werbe-E-Mails an Unbekannte (UWG), Texte stichprobenartig prüfen, nur belegbare Aussagen.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "ma-ok-vorteile", "text": "Produktvorteile nach Relevanz sortiert", "hinweis": "98 Vorteile in Stufen A bis D (docs/produkt/vorteile.json).", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "ma-ok-slogan", "text": "Slogan festgelegt", "hinweis": "„Früher wissen, was vor Ort beraten wird.“ (docs/produkt/slogan.json).", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "ma-ok-videos", "text": "Video-System und erstes vollständiges Video", "hinweis": "16 Kapitel, Szenen-Datenbank, Aufnahme- und Prüfwerkzeuge; Fassung vom 08.10.26 in docs/videos/fassungen.", "erledigt": true, "faellig": null, "erledigtAm": null }
+        { "id": "ma-ok-vorteile", "text": "Produktvorteile nach Relevanz sortiert", "hinweis": "docs/produkt/vorteile.json.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "ma-ok-slogan", "text": "Slogan festgelegt", "hinweis": "„Früher wissen, was vor Ort beraten wird.“", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "ma-ok-videos", "text": "Video-System und erstes vollständiges Video erstellt", "hinweis": "docs/videos.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     },
     {
@@ -102,7 +103,7 @@
         { "id": "pr-stufen", "text": "Funktionsumfang je Preisstufe festlegen", "hinweis": "Einfach (9,99 €), mehr Funktionen (49,99 €), Plenara.X; Preise können später steigen.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "pr-feedback", "text": "Feedback-Kanal für Nutzer einrichten", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "pr-testbetrieb", "text": "Geschlossenen Testbetrieb mit kleinem Kreis durchführen", "hinweis": "Vor dem öffentlichen Start.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "pr-ok-abdeckung", "text": "Abdeckung erfasst", "hinweis": "2.905 von 4.457 auswählbaren Gebieten angebunden (Stand 06.10.26); Lücken mit Gründen in requirements/de-sources-report.md.", "erledigt": true, "faellig": null, "erledigtAm": null }
+        { "id": "pr-ok-abdeckung", "text": "Abdeckung der Quellen erfasst und Lücken dokumentiert", "hinweis": "requirements/de-sources-report.md.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     },
     {
@@ -135,7 +136,7 @@
         { "id": "or-zeit", "text": "Zeitbudget neben dem Hauptjob festlegen", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "or-zugaenge", "text": "Zugänge nicht an eine Person binden", "hinweis": "Domain, Hosting, Zahlungsanbieter, E-Mail, Code.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "or-notfall", "text": "Notfallplan: Zugangsdaten sicher hinterlegen, Vertretung klären", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "or-ok-gbr", "text": "GbR-Vertrag als Entwurf erstellt", "hinweis": "10 Paragrafen, auch als PDF in docs/gesellschaft; nicht anwaltlich geprüft. Unterschrift siehe Punkt oben.", "erledigt": true, "faellig": null, "erledigtAm": null }
+        { "id": "or-ok-gbr", "text": "GbR-Vertrag als Entwurf erstellt", "hinweis": "Auch als PDF in docs/gesellschaft; nicht anwaltlich geprüft. Unterschrift siehe Punkt oben.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     },
     {
@@ -146,7 +147,9 @@
         { "id": "mk-handles", "text": "Social-Media-Handles reservieren", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-logo", "text": "Logo und Corporate Design final festlegen", "hinweis": "Standard ist derzeit „Plenara v2“.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-mail", "text": "E-Mail-Adressen einrichten", "hinweis": "Zum Beispiel Kontakt und Datenschutz.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "mk-ok-name", "text": "Name „Plenara“ festgelegt und Marke recherchiert", "hinweis": "Keine Treffer; Anmeldung siehe Rechtliches.", "erledigt": true, "faellig": null, "erledigtAm": null }
+        { "id": "mk-ok-name", "text": "Name „Plenara“ festgelegt und recherchiert", "hinweis": "Keine Treffer; Anmeldung siehe Rechtliches.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "mk-ok-logo", "text": "Logo erstellt", "hinweis": "Weitere Schritte siehe Punkt oben.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "mk-ok-domain", "text": "Domain registriert", "hinweis": "Weitere Schreibweisen siehe Punkt oben.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     },
     {
@@ -156,7 +159,7 @@
         { "id": "si-zugang", "text": "Zwei-Faktor-Anmeldung und Passwortverwaltung für alle Dienste", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "si-rechte", "text": "Zugriffsrechte und Admin-Zugang prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "si-panne", "text": "Ablauf bei Datenpannen festlegen", "hinweis": "Meldung an die Aufsichtsbehörde binnen 72 Stunden.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "si-ok-admin", "text": "Admin-Bereich geschützt", "hinweis": "Einmalige Freischaltung, Prüfung des Besitzers, Antworten nicht im Cache und nicht indexierbar.", "erledigt": true, "faellig": null, "erledigtAm": null }
+        { "id": "si-ok-admin", "text": "Admin-Bereich geschützt", "hinweis": "Einmalige Freischaltung, nur für den Besitzer, nicht indexierbar.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     }
   ]
