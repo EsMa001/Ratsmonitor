@@ -33,7 +33,7 @@ ul{position:absolute;left:72px;top:262px;list-style:none;padding:0}
 li{display:flex;align-items:center;gap:24px;font-size:36px;margin-bottom:28px;opacity:0;animation:up .5s ease-out forwards}</style>
 <img class="logo s" src="${LOGO}"><h2>Das bringt Ihnen Plenara</h2>
 <ul>${v.items.map((t, i) => `<li style="animation-delay:${v.starts[i]}s">${check(v.starts[i])}${esc(t)}</li>`).join("")}</ul>`;
-const jobs = [["titel", spec.titel && schluss(0.55), spec.titel?.dur], ["vorteile", spec.vorteile && vorteile(spec.vorteile), spec.vorteile?.dur], ["schluss", spec.schluss && schluss(), spec.schluss?.dur]].filter((j) => j[1] && j[2]);
+const jobs = [["titel", spec.titel && schluss(0.8), spec.titel?.dur], ["vorteile", spec.vorteile && vorteile(spec.vorteile), spec.vorteile?.dur], ["schluss", spec.schluss && schluss(), spec.schluss?.dur]].filter((j) => j[1] && j[2]);
 const cache = `${out}/../_folien`; mkdirSync(cache, { recursive: true });
 let browser, page;
 for (const [n, html, secs] of jobs) {

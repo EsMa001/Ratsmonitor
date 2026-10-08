@@ -25,17 +25,29 @@ def folie(n,wav=None,delay=0.0):
     if wav: run('-i',v,'-i',wav,'-map','0:v','-map','1:a','-af',f'adelay={int(delay*1000)}:all=1,apad','-shortest',*ENC,out)
     else: run('-i',v,'-f','lavfi','-i','anullsrc=r=22050:cl=mono','-map','0:v','-map','1:a','-shortest',*ENC,out)
     return out
-p=folie('titel',f'{O}/titel/audio.wav',0.4) if os.path.exists(f'{O}/titel/audio.wav') else folie('titel')
+p=folie('titel',f'{O}/titel/audio.wav',0.8) if os.path.exists(f'{O}/titel/audio.wav') else folie('titel')
 if p:
     if os.path.exists(f'{O}/titel/audio.wav'):
-        for s_ in json.load(open(f'{O}/titel/audio.json'))['sentences']: vtt.append(f"{ts(t+0.4+s_['start'])} --> {ts(t+0.4+s_['end']+0.3)}\n{s_['text'].replace('Plenarra','Plenara')}\n")
+        for s_ in json.load(open(f'{O}/titel/audio.json'))['sentences']: vtt.append(f"{ts(t+0.8+s_['start'])} --> {ts(t+0.8+s_['end']+0.3)}\n{s_['text'].replace('Plenarra','Plenara')}\n")
     parts.append(p); t+=dur(p)
 for c in chs:
     n=f"{c['nr']:02d}"
     ch=f'{O}/c{n}/c{n}.mp4'; aj=json.load(open(f'{O}/c{n}/audio.json'))
+    ovf=f'{O}/c{n}/overlays.json'
+    if os.path.exists(ovf) and json.load(open(ovf)):
+        # Einblendungen (PNG mit Transparenz, einblendungen.mjs) mit weichem Ein- und Ausblenden über das Kapitel legen
+        L=json.load(open(ovf)); ins=[]; fc=[]; cur='[0:v]'
+        for i,o in enumerate(L):
+            d=o['end']-o['start']; ins+=['-loop','1','-t',f'{d+0.1:.2f}','-i',o['png']]
+            fc.append(f"[{i+1}:v]format=rgba,fade=t=in:st=0:d=0.35:alpha=1,fade=t=out:st={d-0.35:.2f}:d=0.35:alpha=1,setpts=PTS+{o['start']}/TB[o{i}]")
+            fc.append(f"{cur}[o{i}]overlay=eof_action=pass[v{i}]"); cur=f'[v{i}]'
+        chov=f'{O}/c{n}/c{n}-ov.mp4'
+        run('-i',ch,*ins,'-filter_complex',';'.join(fc),'-map',cur,'-map','0:a','-c:v','libx264','-preset',PRESET,'-crf',CRF,'-pix_fmt','yuv420p','-c:a','copy',chov)
+        ch=chov
     if not KARTEN:
         body=f'{O}/body{n}.mp4'
-        run('-i',ch,'-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
+        D_=dur(ch)
+        run('-i',ch,'-vf',f'fps=30,scale=1280:720,format=yuv420p,fade=t=in:st=0:d=0.3:color=white,fade=t=out:st={D_-0.3:.2f}:d=0.3:color=white','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
         for s in aj['sentences']:
             vtt.append(f"{ts(t+0.5+s['start'])} --> {ts(t+0.5+s['end']+0.3)}\n{s['text'].replace('Plenarra','Plenara')}\n")
         t+=dur(ch); parts.append(body); continue

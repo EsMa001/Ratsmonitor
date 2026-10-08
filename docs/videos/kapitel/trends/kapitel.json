@@ -19,11 +19,6 @@
   },
   {
    "satz": 3,
-   "zahl": "{{t.trendRegions|ziffern}}",
-   "label": "Gebiete, zuvor {{t.trendPrev|ziffern}}"
-  },
-  {
-   "satz": 4,
    "text": "{{v.86|text}}"
   }
  ]

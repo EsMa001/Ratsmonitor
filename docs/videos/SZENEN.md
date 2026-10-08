@@ -57,3 +57,5 @@ In `kapitel/<id>/lang.txt` markiert ein `*` vor dem `@` den Kernsatz (1 bis 2 je
 ## Textregeln für Videos
 - **Keine doppelte Suche im Bild:** Folgt `suchen` auf `einleitung`, steht im Kapitel `"parameter": { "vorsuche": "ja" }`; die Szene `suche-eingabe` tippt den Begriff dann nicht noch einmal.
 - **Benachrichtigungen in einem Rutsch:** Alles dazu steht im einen Kapitel `alarme` (Herz und Glocke, Häufigkeit, Alarm am Vorgang, Wochenbericht, E-Mail am Sitzungstag, „Plenarra meldet sich“). Einleitung, Kalender und Abschluss wiederholen es nicht. Das Test-Postfach kommt in keinem Skript vor, es wird entfernt.
+- **Einblendungen** (große Zahl oder Stichwort als Karte im Bild) sind abgeschaltet. Einschalten mit `"einblendungen": true` in der Videodatei (`tools/einblendungen.mjs`, Angaben je Kapitel in `kapitel.json`).
+- **Kapitelübergänge:** Ohne Kapitelseiten blendet jedes Kapitel kurz aus Weiß ein und nach Weiß aus.

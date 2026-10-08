@@ -13,7 +13,7 @@
   {
    "satz": 2,
    "zahl": "{{t.approval|ziffern}} %",
-   "label": "beschlossen"
+   "label": "der entschiedenen Vorgänge beschlossen"
   },
   {
    "satz": 3,
@@ -21,7 +21,8 @@
   },
   {
    "satz": 4,
-   "text": "{{v.90|text}}"
+   "zahl": "{{t.durMedian|ziffern}}",
+   "label": "Tage bis zur Entscheidung (Median)"
   },
   {
    "satz": 5,
@@ -30,10 +31,6 @@
   {
    "satz": 6,
    "text": "{{v.98|text}}"
-  },
-  {
-   "satz": 7,
-   "text": "{{v.20|text}}"
   }
  ]
 }

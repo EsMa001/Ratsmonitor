@@ -1,9 +1,9 @@
-# Sehen, wie sich ein Thema ausbreitet. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
+# Plenara.X Diffusionsanalyse. Je Satz höchstens eine Zahl; Daten als Monat.
 *@diffusion.start Eine Suche zeigt einzelne Beschlüsse. Plenarra X zeigt, wie sich ein Thema im ganzen Land bewegt.
 @diffusion.zeitraffer Die Diffusionsanalyse läuft als Zeitraffer auf der Karte.
-@diffusion.zeitraffer Im Datenbestand taucht {{p.thema|text}} am {{t.first|datum}} zum ersten Mal auf.
-*@diffusion.kennzahlen Nach {{t.halfMonate|zahl}} Monaten, am {{t.half|datum}}, war die Hälfte der Gebiete erreicht.
-@diffusion.kennzahlen Von zehn auf neunzig Prozent der Gebiete dauerte es {{t.d1090|zahl}} Monate.
+@diffusion.karte Im Datenbestand taucht {{p.thema|text}} im {{t.first|monat}} zum ersten Mal auf.
+*@diffusion.kennzahlen Nach {{t.halfMonate|zahl}} Monaten war die Hälfte der Gebiete erreicht.
+@diffusion.zehnneunzig Von zehn auf neunzig Prozent der Gebiete dauerte es {{t.d1090|zahl}} Monate.
 @diffusion.diagramm Das Diagramm zeigt den Verlauf Monat für Monat, ein Klick setzt die Karte auf das Datum.
-@diffusion.gegenbeispiel Ganz anders {{p.thema2|text}}: Im {{u.peakMonat|monatname}} kamen {{u.peakN|zahl}} neue Gebiete dazu, in den vier Monaten davor zusammen nur {{u.prev4|zahl}}.
+@diffusion.gegenbeispiel Ganz anders {{p.thema2|text}}: Im {{u.peakMonat|monatname}} kamen {{u.peakN|zahl}} neue Gebiete dazu.
 @diffusion.laender Auch die Bundesländer lassen sich vergleichen.
