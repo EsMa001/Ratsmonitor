@@ -9,8 +9,8 @@ import type { AnalyseId } from "./branchen-enterprise";
    (leer, Gebietsvergleich), bleibt das schematische Vorschaubild. */
 
 const nf = (v: number) => v.toLocaleString("de-DE");
-let snapshot: Promise<{ items: Record<string, any> }> | null = null;
-function load(): Promise<{ items: Record<string, any> }> {
+let snapshot: Promise<{ generated?: string; items: Record<string, any> }> | null = null;
+function load(): Promise<{ generated?: string; items: Record<string, any> }> {
   if (!snapshot) {
     snapshot = fetch("/data/branchen-ausschnitte.json").then((r) => {
       if (!r.ok) throw new Error(String(r.status));
@@ -88,6 +88,7 @@ export function LiveThumb({ id, term }: { id: AnalyseId; term: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
   const [node, setNode] = useState<ReactNode>(null);
+  const [stand, setStand] = useState("");
   const Thumb = ANALYSE_THUMBS[id];
   useEffect(() => {
     if (!ref.current || typeof IntersectionObserver === "undefined") return;
@@ -98,7 +99,7 @@ export function LiveThumb({ id, term }: { id: AnalyseId; term: string }) {
   useEffect(() => {
     if (!seen) return;
     let alive = true;
-    load().then((d) => { if (alive) setNode(mini(id, d.items[`${id}|${term}`])); }).catch((e) => console.error("LiveThumb", id, e));
+    load().then((d) => { if (!alive) return; const m = mini(id, d.items[`${id}|${term}`]); setNode(m); if (m && d.generated) setStand(d.generated.split("-").reverse().join(".")); }).catch((e) => console.error("LiveThumb", id, e));
     return () => { alive = false; };
   }, [seen, id, term]);
   return (
@@ -111,6 +112,7 @@ export function LiveThumb({ id, term }: { id: AnalyseId; term: string }) {
       <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[13px] text-slate-600 shadow-sm">
         {node ? "Daten" : "Beispiel"}: „{term}“
       </span>
+      {node && stand && <p className="m-0 mt-1.5 text-[12px] text-slate-500">Stand {stand}</p>}
     </div>
   );
 }

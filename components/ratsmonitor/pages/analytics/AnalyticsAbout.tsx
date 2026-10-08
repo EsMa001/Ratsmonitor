@@ -1,3 +1,4 @@
+import { LiveThumb } from "../../info/BranchenLive";
 import Link from "next/link";
 import { PageBand } from "./PageBand";
 import { AnalyticsLogo } from "../../components/Brand";
@@ -120,6 +121,9 @@ export const ANALYSE_THUMBS = {
   gremien: NetThumb,
 };
 
+/* Beispielbegriff der Vorschauen; Daten kommen aus dem Schnappschuss (scripts/build-branchen-ausschnitte.mjs) */
+const BEISPIEL = "Wärmeplanung";
+
 export function AnalyticsAbout() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-12 text-slate-900">
@@ -135,7 +139,7 @@ export function AnalyticsAbout() {
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Diffusionsanalyse</h3>
         <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
-        <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen" className="block xl:max-w-[420px]"><DiffusionThumb /></Link>
+        <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen" className="block xl:max-w-[420px]"><LiveThumb id="diffusion" term={BEISPIEL} /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie sich ein Thema über die Gebiete ausbreitet: wer zuerst dran war, wie schnell andere folgten und wo es noch fehlt. Als Zeitraffer auf der Karte, mit den gleichen Suchen und Filtern wie auf der Startseite.</p>
           <Link href="/analytics/diffusion" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Diffusionsanalyse öffnen →</Link>
@@ -153,7 +157,7 @@ export function AnalyticsAbout() {
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Knowledge Graph</h3>
         <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
-        <Link href="/analytics/graph" aria-label="Knowledge Graph öffnen" className="block xl:max-w-[420px]"><GraphThumb /></Link>
+        <Link href="/analytics/graph" aria-label="Knowledge Graph öffnen" className="block xl:max-w-[420px]"><LiveThumb id="graph" term={BEISPIEL} /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, womit ein Thema zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz. Knoten lassen sich ziehen und anklicken, mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <Link href="/analytics/graph" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Knowledge Graph öffnen →</Link>
@@ -171,7 +175,7 @@ export function AnalyticsAbout() {
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Trends und Frühindikatoren</h3>
         <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
-        <Link href="/analytics/trends" aria-label="Trends öffnen" className="block xl:max-w-[420px]"><TrendThumb /></Link>
+        <Link href="/analytics/trends" aria-label="Trends öffnen" className="block xl:max-w-[420px]"><LiveThumb id="trends" term={BEISPIEL} /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, welche Begriffe gerade aufkommen, zunehmen oder verschwinden: der aktuelle Zeitraum im Vergleich zum Zeitraum davor, als Trendkarte, Rangliste mit Verlaufskurven und Themenfeld-Veränderung. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <Link href="/analytics/trends" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Trends öffnen →</Link>
@@ -207,7 +211,7 @@ export function AnalyticsAbout() {
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Status und Beschlüsse</h3>
         <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
-        <Link href="/analytics/beschluesse" aria-label="Status und Beschlüsse öffnen" className="block xl:max-w-[420px]"><DecisionThumb /></Link>
+        <Link href="/analytics/beschluesse" aria-label="Status und Beschlüsse öffnen" className="block xl:max-w-[420px]"><LiveThumb id="beschluesse" term={BEISPIEL} /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen und Ablehnungen, wie einig Gremien entscheiden, wie oft Vorlagen geändert werden und wie lange ein Vorgang bis zum Beschluss braucht. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <Link href="/analytics/beschluesse" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Status und Beschlüsse öffnen →</Link>
@@ -225,7 +229,7 @@ export function AnalyticsAbout() {
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Gremiennetz</h3>
         <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
-        <Link href="/analytics/gremien" aria-label="Gremiennetz öffnen" className="block xl:max-w-[420px]"><NetThumb /></Link>
+        <Link href="/analytics/gremien" aria-label="Gremiennetz öffnen" className="block xl:max-w-[420px]"><LiveThumb id="gremien" term={BEISPIEL} /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange ein Übergang dauert. Als Netz mit Pfeilen, mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <Link href="/analytics/gremien" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gremiennetz öffnen →</Link>

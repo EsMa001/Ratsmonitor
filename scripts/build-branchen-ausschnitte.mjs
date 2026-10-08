@@ -22,11 +22,13 @@ function shrink(id,d){
  if(id==='graph'){const n=(d.nodes||[]).filter(x=>x.type==='term').slice(0,5).map(x=>[x.label,x.count]);return n.length?{terms:n}:null;}
  return null;
 }
+/* Plenara.X-Startseite (AnalyticsAbout): alle Analysen zu einem Beispielbegriff */
+const FEATURED_TERM='Wärmeplanung',FEATURED=['diffusion','graph','trends','gremien','beschluesse'];
 const out={generated:new Date().toISOString().slice(0,10),items:{}};
-for(const b of BRANCHEN){
- const e=ENTERPRISE[b.slug];if(!e)continue;
+for(const b of [{slug:'_start',keywords:[FEATURED_TERM]},...BRANCHEN]){
+ const e=b.slug==='_start'?{analysen:[]}:ENTERPRISE[b.slug];if(!e)continue;
  /* Die drei festen Vorschaukarten (PLENARAX_VORTEILE) zeigen immer den ersten Begriff der Branche, die Analysekarten je Branche Begriff 1 und 2 */
- const jobs=[...PLENARAX_VORTEILE.map(([id])=>[id,b.keywords[0]]),...e.analysen.slice(0,2).map(([id],i)=>[id,b.keywords[i]??b.keywords[0]])];
+ const jobs=b.slug==='_start'?FEATURED.map((id)=>[id,FEATURED_TERM]):[...PLENARAX_VORTEILE.map(([id])=>[id,b.keywords[0]]),...e.analysen.slice(0,2).map(([id],i)=>[id,b.keywords[i]??b.keywords[0]])];
  for(const [id,term] of jobs){
   const api=API[id];
   if(!api){console.log('übersprungen (kein Ausschnitt):',b.slug,id);continue;}
