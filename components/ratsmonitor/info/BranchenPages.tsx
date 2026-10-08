@@ -3,6 +3,8 @@ import { useBrand } from "../lib/brand";
 import { DarkCta, HitPreview, PageHead, SearchTermButton, useOpenSearch } from "./blocks";
 import type { Branche } from "./content";
 import { Icon } from "./icons";
+import { useRouter } from "next/navigation";
+import { ANALYSEN, ENTERPRISE, type EnterpriseBlock } from "./branchen-enterprise";
 
 function Timeline({ b }: { b: Branche }) {
   const { name } = useBrand();
@@ -26,13 +28,49 @@ function Timeline({ b }: { b: Branche }) {
   );
 }
 
+function EnterpriseSection({ e }: { e: EnterpriseBlock }) {
+  const { name } = useBrand();
+  const router = useRouter();
+  const lead = e.layout === "lead" ? e.analysen[0] : null;
+  const rest = e.layout === "lead" ? e.analysen.slice(1) : e.analysen;
+  const card = (id: keyof typeof ANALYSEN, text: string, big = false) => {
+    const a = ANALYSEN[id];
+    return (
+      <button key={id} type="button" onClick={() => router.push(a.href)} className={"border-t border-slate-200 pt-5 text-left " + (big ? "lg:row-span-2 lg:pr-6" : "")}>
+        <Icon name={a.icon} size={22} className="mb-3 text-teal-600" />
+        <h3 className="m-0 text-[16px] font-semibold text-slate-900">{a.name}</h3>
+        <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{text}</p>
+        <span className="mt-1 inline-block text-[14px] text-teal-600">Analyse öffnen →</span>
+      </button>
+    );
+  };
+  return (
+    <section className="ri-sec bg-teal-50/40">
+      <h2 className="ri-h2">{e.title}</h2>
+      <p className="ri-sub">Mit {name}.X und dem Tarif Enterprise, für Organisationen mit mehreren Beteiligten.</p>
+      <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
+        {lead && card(lead[0], lead[1], true)}
+        {rest.map(([id, text]) => card(id, text))}
+        <div className="border-t border-slate-200 pt-5">
+          <Icon name="users" size={22} className="mb-3 text-teal-600" />
+          <h3 className="m-0 text-[16px] font-semibold text-slate-900">{e.team[0]}</h3>
+          <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{e.team[1]}</p>
+          <button type="button" onClick={() => router.push("/preise")} className="mt-1 text-[14px] text-teal-600 hover:underline">
+            Tarife ansehen →
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function BranchePage({ b }: { b: Branche }) {
   const { name } = useBrand();
   const term = b.keywords[0];
   const openBenefit = useOpenSearch();
   return (
     <>
-      <PageHead icon={b.icon} label="Use Case" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview term={term} example={b.example} />}>
+      <PageHead icon={b.icon} label="Für Ihre Branche" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview term={term} example={b.example} />}>
         <div className="ri-actions">
           <SearchTermButton term={term} />
         </div>
@@ -78,6 +116,8 @@ export function BranchePage({ b }: { b: Branche }) {
           ))}
         </div>
       </section>
+
+      {ENTERPRISE[b.slug] && <EnterpriseSection e={ENTERPRISE[b.slug]} />}
 
       <DarkCta title={b.closing} pills={b.keywords} />
     </>
