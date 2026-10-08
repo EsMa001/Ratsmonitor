@@ -216,8 +216,8 @@ export function DiffusionPage() {
 
           <section className="mt-10">
             <h2 className="text-[22px] font-semibold">Ausbreitung im Zeitverlauf</h2>
-            <p className="mb-4 mt-1 text-[14px] text-slate-500">Anteil der Gebiete, in denen das Thema bis zum jeweiligen Tag schon vorkam. Ein Klick in das Diagramm setzt die Karte auf dieses Datum.</p>
-            <DiffusionChart firsts={firsts} series={res.series} day={day} onPick={(d) => { setPlaying(false); setDay(Math.min(lastDay, Math.max(firstDay, d))); }} />
+            <p className="mb-4 mt-1 text-[14px] text-slate-500">Anteil der Gebiete, in denen das Thema bis zum jeweiligen Tag schon vorkam. Klicken oder Ziehen im Diagramm setzt die Karte auf dieses Datum, die Taste startet den Zeitraffer.</p>
+            <DiffusionChart firsts={firsts} series={res.series} day={day} onPick={(d) => { setPlaying(false); setDay(Math.min(lastDay, Math.max(firstDay, d))); }} playing={playing} onToggle={onPlay} />
           </section>
 
           <div className="mt-12 grid gap-12 md:grid-cols-2">
