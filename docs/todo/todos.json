@@ -15,7 +15,7 @@
         { "id": "fe-haftungshinweis", "text": "Hinweis „keine Gewähr, maßgeblich sind die Originalunterlagen“ bei Treffern und in Alarm-E-Mails", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-einwilligungen", "text": "Einwilligungen und Cookie-Banner", "hinweis": "Nur nötig, soweit Tracking oder Analyse eingesetzt wird.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-onboarding", "text": "Onboarding und Alarm-Einrichtung vereinfachen", "hinweis": "Gebiet und Thema in wenigen Klicks wählen, dabei der Weg von der Einfachstufe zum Upgrade.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "fe-mobil-barriere", "text": "Mobil- und Barrierefreiheitstest", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-mobil-barriere", "text": "Mobil- und Barrierefreiheitstest", "hinweis": "Teal #0d9488 hat auf Weiß nur 3,7 : 1; für kleinen Text und weißen Text auf Teal-Flächen #0f766e (5,5 : 1) erwägen (siehe Corporate Design, Abschnitt 3).", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-zustaende", "text": "Fehler-, Lade- und Leerzustände prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-frontend", "text": "Frontend gestaltet und umgesetzt", "hinweis": "Startseite, Karte, Suche, Trefferliste und Detailseiten in einheitlichem Design.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-funktionen", "text": "Funktionen für Nutzer eingebaut", "hinweis": "Suche mit Filtern, Kartenansicht, gespeicherte Suchen und Artikel, Benachrichtigungen, Kalender, Export.", "erledigt": true, "faellig": null, "erledigtAm": null },
@@ -143,13 +143,15 @@
       "id": "marke",
       "name": "Marke und Auftritt",
       "items": [
-        { "id": "mk-domains", "text": "Domains sichern", "hinweis": ".de, .com und ähnliche Schreibweisen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "mk-logodateien", "text": "Logo-Dateien exportieren (SVG, PNG) und Schutzraum festlegen", "hinweis": "Bisher gibt es das Logo nur als Komponente; eine Fassung für dunklen Grund fehlt.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "mk-altbestand", "text": "Altbestand der früheren Marke bereinigen", "hinweis": "Favicon, App-Symbole und Manifest („vor Ort · Münster“) sowie den Seitentitel-Zusatz „Politik für Ihre Region“ auf Plenara und den Slogan umstellen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "mk-domains", "text": "Domains sichern", "hinweis": ".de, .com und ähnliche Schreibweisen.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "mk-handles", "text": "Social-Media-Handles reservieren", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "mk-logo", "text": "Logo und Corporate Design final festlegen", "hinweis": "Standard ist derzeit „Plenara v2“.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "mk-logo", "text": "Corporate Design prüfen und freigeben", "hinweis": "Entwurf liegt vor: docs/design/corporate-design.md und styleguide.html. Offen: Logo-Dateien exportieren, Schutzraum, Kontrast der Akzentfarbe, Vorlagen.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-mail", "text": "E-Mail-Adressen einrichten", "hinweis": "Zum Beispiel Kontakt und Datenschutz.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-ok-name", "text": "Name „Plenara“ festgelegt und recherchiert", "hinweis": "Keine Treffer; Anmeldung siehe Rechtliches.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "mk-ok-logo", "text": "Logo erstellt", "hinweis": "Weitere Schritte siehe Punkt oben.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "mk-ok-domain", "text": "Domain registriert", "hinweis": "Weitere Schreibweisen siehe Punkt oben.", "erledigt": true, "faellig": null, "erledigtAm": null }
+        { "id": "mk-ok-logo", "text": "Logo festgelegt", "hinweis": "Wortmarke mit Sitzpunkten und Quadrat, wie in der Kopfzeile.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "mk-ok-cd", "text": "Corporate Design als Entwurf aus der Webseite abgeleitet", "hinweis": "docs/design/corporate-design.md und styleguide.html.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" }
       ]
     },
     {

@@ -44,6 +44,7 @@ function sections(brand: string): Section[] {
       title: "Registrierung und Vertragsschluss",
       paras: [
         "Für alle Tarife ist ein Benutzerkonto erforderlich. Mit dem Absenden des Registrierungsformulars geben Sie ein Angebot zum Abschluss des Nutzungsvertrags ab. Wir nehmen es an, indem wir Ihr Konto nach Bestätigung Ihrer E-Mail-Adresse freischalten.",
+        "Die Suche ohne Konto ist kostenlos und im Umfang eingeschränkt möglich, zum Beispiel mit einer begrenzten Zahl von Treffern je Suche. Dafür gelten die Abschnitte 2, 7, 8 und 9 entsprechend.",
         "Kostenpflichtige Tarife buchen Sie über den Bestellvorgang. Die Darstellung der Tarife auf der Website ist noch kein verbindliches Angebot. Mit dem Klick auf die Schaltfläche „zahlungspflichtig bestellen“ geben Sie ein verbindliches Angebot ab. Vor dem Absenden können Sie Ihre Eingaben prüfen und über die Schaltflächen im Bestellvorgang oder die Funktionen Ihres Browsers korrigieren. Wir bestätigen den Eingang Ihrer Bestellung per E-Mail. Der Vertrag kommt zustande, wenn wir die Bestellung annehmen oder den Tarif freischalten.",
         "Nach Vertragsschluss senden wir Ihnen die Vertragsdaten und diese AGB per E-Mail zu. Die AGB können Sie jederzeit auf dieser Seite einsehen, speichern und ausdrucken.",
         "Das Angebot richtet sich an Personen ab 18 Jahren. Ihre Angaben bei der Registrierung müssen wahr und vollständig sein. Bitte halten Sie sie aktuell.",
@@ -104,7 +105,7 @@ function sections(brand: string): Section[] {
       paras: [
         "Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit, bei Verletzung von Leben, Körper oder Gesundheit, nach dem Produkthaftungsgesetz, bei arglistig verschwiegenen Mängeln und soweit wir eine Garantie übernommen haben.",
         "Bei leicht fahrlässiger Verletzung einer wesentlichen Vertragspflicht ist unsere Haftung auf den vorhersehbaren, vertragstypischen Schaden begrenzt. Wesentlich sind Pflichten, deren Erfüllung die ordnungsgemäße Durchführung des Vertrags überhaupt erst ermöglicht und auf deren Einhaltung Sie regelmäßig vertrauen dürfen. Im Übrigen ist die Haftung für leichte Fahrlässigkeit ausgeschlossen.",
-        "Für den kostenlosen Tarif Basic haften wir nur bei Vorsatz und grober Fahrlässigkeit. Absatz 1 bleibt unberührt.",
+        "Für die kostenlose Nutzung ohne Konto und den kostenlosen Tarif Basic haften wir nur bei Vorsatz und grober Fahrlässigkeit. Absatz 1 bleibt unberührt.",
         "Für Inhalte Dritter, insbesondere der Kommunen, übernehmen wir keine Gewähr für Richtigkeit, Vollständigkeit und Aktualität. Das gilt nicht in den Fällen der Absätze 1 und 2. Entscheidungen auf Grundlage der Informationen treffen Sie in eigener Verantwortung und prüfen dazu die Originalunterlagen.",
         "Die Haftungsbeschränkungen gelten auch zugunsten unserer Gesellschafter, Mitarbeiter und Erfüllungsgehilfen.",
       ],
