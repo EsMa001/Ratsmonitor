@@ -55,3 +55,34 @@ export function TopicRow({ name, shares, base, max, onPick }: { name: string; sh
     </li>
   );
 }
+
+
+/** Themenzeile als Gegenüberstellung: links der erste Ort, rechts der zweite, in der Mitte das Themenfeld; die Marke zeigt „alle Gebiete“ */
+export function TopicPair({ name, a, b, base, max, onPick }: { name: string; a: number; b: number; base: number; max: number; onPick?: () => void }) {
+  const pct = (v: number) => `${Math.min(100, (v / max) * 100)}%`;
+  const val = (v: number) => `${v.toLocaleString("de-DE", { maximumFractionDigits: 1 })} %`;
+  /* Marke und Balken wachsen am Handy von links, ab sm beim ersten Ort von der Mitte nach links */
+  const side = (v: number, color: string, mirror: boolean) => (
+    <span className={`flex items-center gap-2 ${mirror ? "sm:flex-row-reverse" : ""}`}>
+      <span className="relative block h-[8px] flex-1 rounded-full bg-slate-100">
+        <span className={`absolute top-0 block h-full rounded-full ${mirror ? "left-0 sm:left-auto sm:right-0" : "left-0"}`} style={{ width: pct(v), background: color }} />
+        <span className={`pointer-events-none absolute -bottom-1 -top-1 w-px bg-slate-900/70 ${mirror ? "left-[var(--p)] sm:left-auto sm:right-[var(--p)]" : "left-[var(--p)]"}`} style={{ "--p": pct(base) } as React.CSSProperties} title={`Alle Gebiete: ${val(base)}`} />
+      </span>
+      <span className={`w-[56px] shrink-0 text-[12px] tabular-nums text-slate-500 ${mirror ? "text-right sm:text-left" : "text-right sm:text-left"}`}>{val(v)}</span>
+    </span>
+  );
+  return (
+    <li className="grid grid-cols-1 gap-1.5 border-b border-slate-200 py-3 sm:grid-cols-[minmax(0,1fr)_190px_minmax(0,1fr)] sm:items-center sm:gap-5">
+      <span className="sm:order-2 sm:text-center">
+        {onPick ? (
+          <button type="button" onClick={onPick} title={`Nur „${name}“ vergleichen`} className="group inline-flex max-w-full items-center gap-1.5 text-left text-[16px] text-slate-900 hover:text-teal-600 sm:text-center">
+            <span className="truncate group-hover:underline">{name}</span>
+            <span aria-hidden="true" className="shrink-0 text-teal-600 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100">→</span>
+          </button>
+        ) : <span className="text-[16px] text-slate-900">{name}</span>}
+      </span>
+      <span className="sm:order-1">{side(a, PLACE_COLORS[0], true)}</span>
+      <span className="sm:order-3">{side(b, PLACE_COLORS[1], false)}</span>
+    </li>
+  );
+}

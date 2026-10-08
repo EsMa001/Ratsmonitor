@@ -5,7 +5,7 @@ import { STATUS } from "../../lib/constants";
 import { useData } from "../../state/data";
 import { LABELS } from "@/shared/labels.mjs";
 import { DiffusionSearch } from "./DiffusionSearch";
-import { CompareLines, PLACE_COLORS, TopicRow } from "./CompareCharts";
+import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useSearchResults } from "../../state/search";
 
@@ -67,7 +67,7 @@ export function ComparePage() {
   useEffect(() => {
     /* wartet, bis die gewählten Orte (z. B. aus einem Beispiel) in der Suche angekommen sind */
     if (!want) return;
-    if (placeCount > 2) { setWant(false); return setError(`Der Vergleich nimmt genau zwei Orte. Es sind ${placeCount} gewählt: bitte oben im Suchfeld Orte entfernen.`); }
+    if (placeCount > 2) return setWant(false);
     if (placeCount < 2) return;
     setWant(false);
     setError("");
@@ -90,7 +90,8 @@ export function ComparePage() {
   const stale = !!res && ranKey !== query && !loading;
   const onPlay = () => {
     if (loading) return;
-    if (placeCount !== 2) return setError(placeCount > 2 ? `Der Vergleich nimmt genau zwei Orte. Es sind ${placeCount} gewählt: bitte oben im Suchfeld Orte entfernen.` : "Bitte in der Suche zwei Orte wählen, zum Beispiel „Köln, Dortmund“.");
+    if (placeCount > 2) return;
+    if (placeCount < 2) return setError("Bitte in der Suche zwei Orte wählen, zum Beispiel „Köln, Dortmund“.");
     setError("");
     setWant(true);
   };
@@ -114,8 +115,14 @@ export function ComparePage() {
       {names.map((nm, i) => <li key={nm + i} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-full" style={{ background: PLACE_COLORS[i] }} />{nm}</li>)}
     </ul>
   );
-  const cols = res ? res.places.length : 2;
-  const grid = { gridTemplateColumns: `minmax(130px,1.1fr) repeat(${cols}, minmax(0,1fr))` };
+  /* Beschriftung, zwei Orte, Unterschied */
+  const grid = { gridTemplateColumns: "minmax(130px,1.1fr) repeat(2, minmax(0,1fr)) minmax(120px,.8fr)" };
+  /* Unterschied zweier Zahlen: wer mehr hat und um welchen Faktor */
+  const diff = (a: number | null, b: number | null) => {
+    if (!a || !b) return "–";
+    const r = Math.max(a, b) / Math.min(a, b);
+    return r < 1.2 ? "ähnlich" : `${a > b ? names[0] : names[1]}: ${r.toLocaleString("de-DE", { maximumFractionDigits: 1 })}-fach`;
+  };
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
@@ -130,6 +137,7 @@ export function ComparePage() {
         <span className="text-slate-500">Thema und Orte oben im Suchfeld wählen, zum Beispiel „Schule, Köln, Dortmund“ (genau zwei Orte, mit Komma getrennt). Das Thema ist optional, mit Thema wird der Vergleich aussagekräftiger.{!res && " Beispiele:"}</span>
         {!res && EXAMPLES.map(([v, l]) => <button key={v} type="button" onClick={() => { search.applySearch(v); setWant(true); }} className="text-teal-600">{l}</button>)}
       </div>
+      {placeCount > 2 && <p role="alert" className="mt-3 text-[14px] font-medium text-slate-900">Der Vergleich nimmt genau zwei Orte. Es sind {placeCount} gewählt: bitte oben im Suchfeld einen Ort entfernen (Kreuz am Chip).</p>}
       {placeCount === 1 && !res && <p className="mt-3 text-[14px] text-slate-500">Ein Ort ist gewählt. Es braucht mindestens einen weiteren.</p>}
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche, Orte oder Filter wurden geändert. Mit dem Start-Knopf neu vergleichen.</p>}
@@ -143,25 +151,29 @@ export function ComparePage() {
               <div className="grid items-end gap-4 border-b border-slate-200 py-3" style={grid}>
                 <span />
                 {res.places.map((p, i) => <span key={p.ags + p.scope} className="flex items-center gap-2 font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">{names[i]}</span></span>)}
+                <span className="text-[14px] text-slate-500">Unterschied</span>
               </div>
               {([
-                ["Einträge", (p: Place) => n(p.total)],
-                ["je 1.000 Einwohner", (p: Place) => (p.perThousand === null ? "–" : p.perThousand.toLocaleString("de-DE"))],
-                ["Einwohner", (p: Place) => (p.population ? n(p.population) : "–")],
-              ] as [string, (p: Place) => string][]).map(([k, f]) => (
-                <div key={k} className="grid gap-4 border-b border-slate-200 py-3" style={grid}><span className="text-[14px] text-slate-500">{k}</span>{res.places.map((p) => <b key={p.ags + p.scope} className="font-semibold tabular-nums">{f(p)}</b>)}</div>
+                ["Einträge", (p: Place) => n(p.total), (p: Place) => p.total],
+                ["je 1.000 Einwohner", (p: Place) => (p.perThousand === null ? "–" : p.perThousand.toLocaleString("de-DE")), (p: Place) => p.perThousand],
+                ["Einwohner", (p: Place) => (p.population ? n(p.population) : "–"), (p: Place) => p.population],
+              ] as [string, (p: Place) => string, (p: Place) => number | null][]).map(([k, f, num]) => (
+                <div key={k} className="grid gap-4 border-b border-slate-200 py-3" style={grid}><span className="text-[14px] text-slate-500">{k}</span>{res.places.map((p) => <b key={p.ags + p.scope} className="font-semibold tabular-nums">{f(p)}</b>)}<span className="text-[14px] text-slate-700">{diff(num(res.places[0]), num(res.places[1]))}</span></div>
               ))}
               {res.places.some((p) => datenlage(p).length) && (
                 <div className="grid gap-4 border-b border-slate-200 py-3" style={grid}>
                   <span className="text-[14px] text-slate-500">Datenlage</span>
                   {res.places.map((p) => { const d = datenlage(p); return <span key={p.ags + p.scope} className="text-[14px] text-slate-700">{d.length ? d.join(", ") : "ohne Auffälligkeit"}</span>; })}
+                  <span />
                 </div>
               )}
               <div className="grid gap-4 border-b border-slate-200 py-3" style={grid}>
                 <span className="text-[14px] text-slate-500">Aktivste Gremien</span>
                 {res.places.map((p) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">{p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex justify-between gap-2"><span className="min-w-0 truncate" title={c.name}>{c.name}</span><span className="tabular-nums text-slate-500">{n(c.n)}</span></li>)}{!p.committees.length && <li className="text-slate-500">–</li>}</ul>)}
+                <span />
               </div>
             </div></div>
+            <p className="m-0 mt-3 text-[12px] text-slate-500">Der Unterschied bei den Einträgen zeigt auch, wie vollständig die Quellen der beiden Orte sind. Er ist kein Maß für politische Aktivität.</p>
           </section>
 
           <section className="mt-12">
@@ -169,7 +181,7 @@ export function ComparePage() {
             <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Einträgen. Die senkrechte Marke zeigt den Wert für alle Gebiete. Ein Klick auf ein Themenfeld vergleicht alle gewählten Orte nur in diesem Themenfeld (statt mit dem Suchbegriff).</p>
             {legend}
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-2 text-[14px] text-slate-700"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
-            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicRow key={r.id} name={r.name} shares={r.shares} base={r.base} max={maxTopic} onPick={() => { search.applySearch(results.liveHits.map((h) => h.phraseRaw).join(", "), { thema: r.name }); setWant(true); }} />)}</ol>
+            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => { search.applySearch(results.liveHits.map((h) => h.phraseRaw).join(", "), { thema: r.name }); setWant(true); }} />)}</ol>
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Einträge für ein Themenprofil.</p>}
           </section>
 
@@ -200,31 +212,38 @@ export function ComparePage() {
             <CompareLines months={res.months} series={lines} />
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-[22px] font-semibold">Typisch für den Ort</h2>
-            <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). Ortsnamen und Wörter des Sitzungsbetriebs (zum Beispiel „Anregungen“, „Beantwortung“) sind ausgenommen.</p>
-            <div className="grid gap-x-8 gap-y-8" style={{ gridTemplateColumns: `repeat(auto-fit,minmax(${cols > 2 ? 220 : 280}px,1fr))` }}>
-              {res.places.map((p, i) => (
-                <div key={p.ags + p.scope}>
-                  <h3 className="flex items-center gap-2 text-[16px] font-semibold"><i className="inline-block h-3 w-3 rounded-full" style={{ background: PLACE_COLORS[i] }} />{names[i]}</h3>
-                  <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
-                    {p.typical.filter((t) => inhaltlich(t.term)).slice(0, 10).map((t) => <li key={t.term} className="flex justify-between gap-3 border-b border-slate-200 py-2 text-[14px]"><Link href={`/analytics/trends?thema=${encodeURIComponent(t.term)}`} className="min-w-0 truncate text-slate-900 hover:text-teal-600">{t.term}</Link><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
-                    {!p.typical.some((t) => inhaltlich(t.term)) && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
-                  </ol>
+          {(() => {
+            const typ = res.places.map((p) => p.typical.filter((t) => inhaltlich(t.term)).slice(0, 8));
+            const com = res.common.filter((c) => inhaltlich(c.term)).slice(0, 10);
+            const list = "m-0 mt-2 list-none border-t border-slate-200 p-0";
+            const row = "flex justify-between gap-3 border-b border-slate-200 py-2 text-[14px]";
+            const only = (i: number) => (
+              <div>
+                <h3 className="flex items-center gap-2 text-[16px] font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">Typisch für {names[i]}</span></h3>
+                <ol className={list}>
+                  {typ[i].map((t) => <li key={t.term} className={row}><Link href={`/analytics/trends?thema=${encodeURIComponent(t.term)}`} className="min-w-0 truncate text-slate-900 hover:text-teal-600">{t.term}</Link><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
+                  {!typ[i].length && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
+                </ol>
+              </div>
+            );
+            return (
+              <section className="mt-12">
+                <h2 className="text-[22px] font-semibold">Begriffe im Vergleich</h2>
+                <p className="mb-4 mt-1 text-[14px] text-slate-500">Links und rechts: Begriffe, die im jeweiligen Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). In der Mitte: Begriffe, die in beiden Orten vorkommen (Anteil an den Einträgen je Ort). Ortsnamen und Wörter des Sitzungsbetriebs (zum Beispiel „Anregungen“, „Beantwortung“) sind ausgenommen.</p>
+                <div className="grid gap-x-8 gap-y-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1fr)]">
+                  {only(0)}
+                  <div className="md:order-none">
+                    <h3 className="text-[16px] font-semibold">In beiden Orten</h3>
+                    <ol className={list}>
+                      {com.map((c) => <li key={c.term} className={row}><span className="min-w-0 truncate text-slate-900">{c.term}</span><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
+                      {!com.length && <li className="py-2 text-[14px] text-slate-500">Keine gemeinsamen Begriffe.</li>}
+                    </ol>
+                  </div>
+                  {only(1)}
                 </div>
-              ))}
-            </div>
-          </section>
-
-          {res.common.some((c) => inhaltlich(c.term)) && (
-            <section className="mt-12">
-              <h2 className="text-[22px] font-semibold">Gemeinsame Begriffe</h2>
-              <p className="mb-3 mt-1 text-[14px] text-slate-500">Kommen in allen gewählten Orten vor. Anteil an den Einträgen je Ort.</p>
-              <ol className="m-0 list-none border-t border-slate-200 p-0">
-                {res.common.filter((c) => inhaltlich(c.term)).map((c) => <li key={c.term} className="grid gap-3 border-b border-slate-200 py-2 text-[14px]" style={grid}><span className="truncate text-[16px] text-slate-900">{c.term}</span>{c.shares.map((s, i) => <span key={i} className="tabular-nums text-slate-500">{s.toLocaleString("de-DE")} %</span>)}</li>)}
-              </ol>
-            </section>
-          )}
+              </section>
+            );
+          })()}
 
           <p className="mt-10 text-[12px] text-slate-500">Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Einträge). Zahlen und Verlauf sind exakt; Themenprofil, Stand der Vorlagen, gemeinsame und typische Begriffe stammen aus einer gleichmäßigen Stichprobe von höchstens 6.000 Einträgen je Ort. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Einträge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </div>
