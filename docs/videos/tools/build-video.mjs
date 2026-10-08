@@ -1,6 +1,6 @@
 /* Baut ein Video aus Kapiteln: node build-video.mjs <video> [--refresh] [--only 2,3] [--entwurf] [--parallel 3]   (im Ordner ~/code/video-tools starten, BASE = Adresse der App)
    <video> = docs/videos/videos/<video>.json: { "ausgabe": "dateiname", "karten": false (keine Kapitelseiten), "kapitel": [{ "kapitel": "suchen", "text": "kurz"|"lang" (kurz = kurz.txt, sonst nur die mit * markierten Kernsätze aus lang.txt), "parameter": { "thema": "Wärmeplanung" }, "format": "16x9" }] }
-   Kapitel = docs/videos/kapitel/<id>/ mit kapitel.json (Titel, Icon, Stichpunkte, szenen), kurz.txt / lang.txt (Sätze: "@szene.schritt Satz", Platzhalter {{fakt|format}}, {{p.thema|text}}).
+   Kapitel = docs/videos/kapitel/<id>/ mit kapitel.json (Titel, Icon, Stichpunkte, szenen), lang.txt (Sätze: "@szene.schritt Satz", Platzhalter {{fakt|format}}, {{p.thema|text}}).
    Szene = docs/videos/szenen/<id>/szene.mjs (Vertrag: docs/videos/SZENEN.md). Ein Clip wird nur aufgenommen, wenn er für Szene, Parameter und Format fehlt, veraltet ist oder mit --refresh.
    Ablauf: Texte und Fakten, Kapitelseiten, Ton (Zwischenspeicher), Clips, Zusammenbau, Gesamtvideo. Ergebnis: out-web/<video>/<ausgabe>.mp4/.vtt/.jpg (bisher nur Format 16x9 fürs Gesamtvideo) */
 import { spawnSync, spawn } from "node:child_process";
@@ -29,11 +29,17 @@ const run = (cmd, args) => { const r = spawnSync(cmd, args, { encoding: "utf8", 
 const runAsync = (cmd, args) => new Promise((res) => { let out = ""; const c = spawn(cmd, args); c.stdout.on("data", (d) => (out += d)); c.stderr.on("data", (d) => (out += d)); c.on("close", (code) => { if (out.trim()) console.log(show(out)); if (code) console.error(`Fehler bei: ${cmd} ${args.join(" ")}\n${out.slice(-600)}`); res(code); }); });
 mkdirSync(O, { recursive: true });
 const chapters = [];
-for (const [i, k] of def.kapitel.entries()) {
+/* Es gibt ein vollständiges Video (komplett.json). Kleinere Videos wählen nur Kapitel und Sätze daraus: Parameter und Format stehen allein dort, Texte allein in lang.txt (kein eigener Text je Video), damit keins vom vollständigen abweicht. */
+const MASTER = JSON.parse(readFileSync(`${V}videos/komplett.json`, "utf8")), isMaster = video === "komplett";
+for (const [i, k0] of def.kapitel.entries()) {
+  const mk = MASTER.kapitel.find((x) => x.kapitel === k0.kapitel);
+  if (!mk) throw new Error(`Kapitel "${k0.kapitel}" steht nicht in komplett.json: erst dort aufnehmen`);
+  if (!isMaster && (k0.parameter || k0.format)) throw new Error(`Kapitel "${k0.kapitel}": Parameter und Format stehen nur in komplett.json`);
+  const k = { ...k0, parameter: mk.parameter, format: mk.format };
   const dir = `${V}kapitel/${k.kapitel}`, kj = JSON.parse(readFileSync(`${dir}/kapitel.json`, "utf8"));
-  const want = k.text || "lang", eigen = existsSync(`${dir}/${want}.txt`), file = eigen ? `${dir}/${want}.txt` : `${dir}/lang.txt`;
-  /* "kurz" ohne eigene kurz.txt: nur die mit * markierten Kernsätze aus lang.txt */
-  const kernOnly = want === "kurz" && !eigen;
+  const want = k.text || "lang", file = `${dir}/lang.txt`;
+  if (want !== "lang" && want !== "kurz") throw new Error(`Kapitel "${k.kapitel}": text muss "lang" oder "kurz" sein (kein eigener Text je Video); einzelne Sätze mit "saetze": [2, 4]`);
+  const kernOnly = want === "kurz" && !k.saetze, sel = k.saetze && new Set(k.saetze);  /* kurz = die mit * markierten Kernsätze, saetze = Nummern der Sätze in lang.txt */
   if (!existsSync(file)) throw new Error(`Text fehlt: ${file}`);
   const thema = k.parameter?.thema || kj.thema || factsFile.thema, ort = k.parameter?.ort || factsFile.ort, set = factsFile.sets?.[thema];
   if (!set) throw new Error(`Keine Fakten für Thema "${thema}": THEMEN=... node facts.mjs ausführen`);
@@ -43,13 +49,14 @@ for (const [i, k] of def.kapitel.entries()) {
   const needOrt = readFileSync(file, "utf8").includes("t.ort");
   if (needOrt && own["t.ort"] < 5) throw new Error(`${ort} hat nur ${own["t.ort"]} Einträge zu ${thema} (unter 5): anderen Ort oder anderes Thema für Kapitel ${k.kapitel} wählen`);
   const pf = { ...facts, ...own, ...(set2 ? Object.fromEntries(Object.entries(set2).map(([a, v]) => [a.replace(/^t\./, "u."), v])) : {}), "p.thema": thema, "p.ort": ort, ...(thema2 ? { "p.thema2": thema2 } : {}), ...Object.fromEntries(Object.entries(k.parameter || {}).map(([a, v]) => [`p.${a}`, v])) };
-  const lines = [], beats = [], orig = []; let idx = 0;
+  const lines = [], beats = [], orig = [], kerne = []; let idx = 0;
   for (const raw of readFileSync(file, "utf8").split("\n")) {
     let l = raw.trim(); if (!l || l.startsWith("#")) continue;
     idx++;
     const kern = l.startsWith("*"); if (kern) l = l.slice(1).trim();
     if (kernOnly && !kern) continue;
-    orig.push(idx);
+    if (sel && !sel.has(idx)) continue;
+    orig.push(idx); kerne.push(kern);
     const m = l.match(/^@([\w.,-]+) (.*)$/);
     lines.push(fill(m ? m[2] : l, pf)); beats.push(m ? m[1].split(",") : []);
   }
@@ -60,6 +67,7 @@ for (const [i, k] of def.kapitel.entries()) {
   const eb = (kj.einblendungen || []).map((e) => ({ satz: orig.indexOf(e.satz), text: e.text && fill(e.text, pf), zahl: e.zahl && fill(e.zahl, pf), label: e.label && fill(e.label, pf) })).filter((e) => e.satz >= 0);
   if (def.karten === false) eb.unshift({ kapitel: true, text: kj.titel });  /* ohne Kapitelseiten: Titel kurz am Anfang eingeblendet */
   writeFileSync(`${O}/c${n}/einblendungen.json`, JSON.stringify(eb));
+  writeFileSync(`${O}/c${n}/meta.json`, JSON.stringify({ id: k.kapitel, saetze: orig.map((nr, j) => ({ nr, kern: kerne[j] })) }));  /* für die Zeitdatei (timeline.json) und schneiden.mjs */
   writeFileSync(`${O}/c${n}.txt`, lines.join("\n") + "\n"); writeFileSync(`${O}/c${n}/beats.json`, JSON.stringify(beats));
   writeFileSync(`${O}/c${n}/clips.json`, JSON.stringify(Object.fromEntries(Object.entries(keys).map(([id, v]) => [id, v.key]))));
   chapters.push({ vorteile: kj.vorteile || [], nr, name: kj.titel, icon: kj.icon, title: kj.titel, bullets: kj.stichpunkte, keys, format });

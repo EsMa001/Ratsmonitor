@@ -1,1 +1,9 @@
-{"ausgabe":"test-k4","karten":false,"kapitel":[{"kapitel":"filter","parameter":{"thema":"Wärmeplanung"}}]}
+{
+ "ausgabe": "test-k4",
+ "karten": false,
+ "kapitel": [
+  {
+   "kapitel": "filter"
+  }
+ ]
+}

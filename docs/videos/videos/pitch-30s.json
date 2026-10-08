@@ -1,14 +1,11 @@
 {
- "ausgabe": "plenara-test-40s",
+ "ausgabe": "plenara-pitch-30s",
  "karten": false,
+ "vorteileMax": 0,
  "kapitel": [
   {
    "kapitel": "einleitung",
    "text": "lang"
-  },
-  {
-   "kapitel": "liste-artikel",
-   "text": "kurz"
   }
  ]
 }

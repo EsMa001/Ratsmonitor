@@ -1,15 +1,29 @@
 # Videos der Seite `/videos`
 
-Videos für Plenara (Webinar, Vorstellung, Funktionen). Diese Anleitung beschreibt, **was im Repository liegt, wie Videos aus Szenen entstehen und wie man sie baut.** Die 14 älteren Videos (Handy und Web) und ihre Werkzeuge stehen unverändert unter `legacy/` (Beschreibung: `legacy/README.md`).
+Videos für Plenara. Diese Anleitung beschreibt, **was im Repository liegt, wie Videos aus Szenen entstehen und wie man sie baut.** Die 14 älteren Videos (Handy und Web) und ihre Werkzeuge stehen unverändert unter `legacy/` (Beschreibung: `legacy/README.md`).
 
 **Inhalt der Videos:** Aussagen und Vorteile kommen aus der zentralen Liste `docs/produkt/vorteile.json` (nach Relevanz sortiert, Rang 1 = wichtigster; Lesefassung `docs/produkt/VORTEILE.md`, Abfrage `node tools/vorteile.mjs 10`). Neue Kapitel, Einblendungen und Einleitungen richten sich danach; im Text als `{{v.3|text}}` einsetzbar. Nur belegbare Aussagen, `pruefen: true` vorher bestätigen.
+
+## Das vollständige Video ist die Vorlage
+
+Es gibt **ein vollständiges Video**: `videos/komplett.json` (alle Kapitel in der langen Fassung, mit Thema, Ort und Format je Kapitel). Es ist die einzige Vorlage; das Webinar und die älteren Videos gelten nicht mehr als Vorlage. Kleinere Videos (Pitch, Messe, Kurzfassung) sind **Auswahlen daraus** und dürfen in keiner Szene davon abweichen:
+- Parameter (`thema`, `ort`, …) und Format stehen **nur** in `komplett.json`; andere Videodateien enthalten nur Kapitel und `text` (`lang` oder `kurz` = Kernsätze) oder `"saetze": [2, 4]` (Nummern der Sätze in `lang.txt`). Der Build bricht sonst ab.
+- Texte stehen **nur** in `kapitel/<id>/lang.txt`. Es gibt keine eigenen Kurztexte je Video.
+- Wer etwas für ein kleines Video ändert (Satz, Szene, Parameter), ändert es dort, also im vollständigen Video; dadurch ändert sich jedes Video, das es enthält.
+- Neue Kapitel zuerst in `komplett.json` aufnehmen.
+
+Jeder Bau schreibt `out-web/<video>/<ausgabe>.timeline.json`: je Satz Anfang und Ende im Video (auf 0,1 s gerundet) mit Szene, Schritt und Clip, dazu Titel-, Vorteils- und Schlussfolie. Damit lassen sich Ausschnitte aus dem fertigen Video schneiden.
+
+**Kürzere Videos ohne Clips schneiden:** `node tools/schneiden.mjs --sekunden 60 [--kapitel einleitung,suchen,filter] [--name pitch-60]` (im Ordner `~/code/video-tools`) schneidet aus der neuesten Fassung in `fassungen/` (sonst aus dem letzten Bau) ein Video mit Titel- und Schlussfolie, den Kernsätzen jedes Kapitels und, wenn Zeit bleibt, weiteren Sätzen. Es braucht nur ffmpeg, keine Clips, keinen Ton und keine App; die Zeiten stammen aus der Zeitdatei. Ergebnis: `out-web/schnitt/<name>.mp4` und `.vtt`. Mit `--vorteile` kommt die Vorteilsfolie dazu.
+
+**Fassungen in Git:** `node tools/release.mjs` (nach `build-video.mjs komplett`) legt das fertige Video samt Untertiteln und Zeitdatei in `fassungen/` ab und behält nur die **neuesten 3**. Einzelne Bearbeitungsstände kommen nicht in Git; nur freigegebene Fassungen ablegen, weil ältere Fassungen in der Git-Historie bleiben. Clips (`out-clips`, über 1 GB) liegen nicht in Git.
 
 ## Aufbau: Szenen, Kapitel, Videos
 
 | Ebene | Was | Wo |
 |---|---|---|
 | **Szene** | kleine Aufnahme der App (5 bis 20 s), ohne Text und Ton, mit Parametern (Thema, Ort), Start- und Endzustand und Beschreibung | `szenen/<id>/szene.mjs` |
-| **Kapitel** | Sätze (`kurz.txt`, `lang.txt`) und Kapitelkarte (`kapitel.json`: Titel, Icon, Stichpunkte, Szenen) | `kapitel/<id>/` |
+| **Kapitel** | Sätze (`lang.txt`, Kernsätze mit `*`) und Kapitelkarte (`kapitel.json`: Titel, Icon, Stichpunkte, Szenen) | `kapitel/<id>/` |
 | **Video** | Liste von Kapiteln mit Parametern und Format | `videos/<name>.json` |
 
 Der Vertrag für Szenen steht in `SZENEN.md`. `katalog.md` ist eine automatisch erzeugte Übersicht aller Szenen, Kapitel und Videos (`node tools/katalog.mjs`). Fakten für die Texte (echte Zahlen aus der App) stehen in `facts.json` (`node tools/facts.mjs`).

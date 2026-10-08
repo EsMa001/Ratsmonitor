@@ -1,3 +1,0 @@
-@einleitung.start,einleitung.karte Plenarra bringt die Beschlüsse und Beratungen aus den Kommunen in ganz Deutschland an einem Ort zusammen.
-@einleitung.suche Ein Thema eingeben, und Sie sehen sofort, wo darüber beraten wird.
-@einleitung.suche Jede Angabe führt zur Originalquelle.

@@ -1,1 +1,0 @@
-@trends.karte In der Trendkarte ist jeder Punkt ein Begriff: rechts häufiger, oben stärker gewachsen.

@@ -10,7 +10,7 @@ chs=json.load(open(f'{O}/chapters.json'))
 def run(*a):
     r=subprocess.run([FF,'-y','-loglevel','error',*a],capture_output=True,text=True)
     if r.returncode: print(r.stderr[-500:]); sys.exit(1)
-parts=[];vtt=['WEBVTT\n'];t=0.0
+parts=[];vtt=['WEBVTT\n'];t=0.0;TL={'folien':[],'kapitel':[]}
 def ts(x):
     return f'{int(x//3600):02d}:{int(x%3600//60):02d}:{x%60:06.3f}'
 def dur(p):
@@ -29,7 +29,15 @@ p=folie('titel',f'{O}/titel/audio.wav',1.0) if os.path.exists(f'{O}/titel/audio.
 if p:
     if os.path.exists(f'{O}/titel/audio.wav'):
         for s_ in json.load(open(f'{O}/titel/audio.json'))['sentences']: vtt.append(f"{ts(t+1.0+s_['start'])} --> {ts(t+1.0+s_['end']+0.3)}\n{s_['text'].replace('Plenarra','Plenara')}\n")
-    parts.append(p); t+=dur(p)
+    TL['folien'].append({'name':'titel','start':round(t,1),'ende':round(t+dur(p),1)}); parts.append(p); t+=dur(p)
+def tl_chapter(c,n,aj,t0,off):
+    # Zeiten je Satz (auf 0,1 s gerundet) mit Szene, Schritt und Clip: Grundlage für Ausschnitte aus dem fertigen Video
+    B=json.load(open(f'{O}/c{n}/beats.json')); M=json.load(open(f'{O}/c{n}/meta.json')); keys={sc:v['key'] for sc,v in c['keys'].items()}
+    S=[]
+    for k,sn in enumerate(aj['sentences']):
+        S.append({'nr':M['saetze'][k]['nr'],'kern':M['saetze'][k]['kern'],'text':sn['text'].replace('Plenarra','Plenara'),'start':round(t0+off+sn['start'],1),'ende':round(t0+off+sn['end'],1),
+                  'schritte':[{'szene':b.rpartition('.')[0] or next(iter(keys)),'schritt':b.rpartition('.')[2],'clip':keys.get(b.rpartition('.')[0] or next(iter(keys)))} for b in B[k]]})
+    return S
 for c in chs:
     n=f"{c['nr']:02d}"
     ch=f'{O}/c{n}/c{n}.mp4'; aj=json.load(open(f'{O}/c{n}/audio.json'))
@@ -50,6 +58,7 @@ for c in chs:
         run('-i',ch,'-vf',f'fps=30,scale=1280:720,format=yuv420p,fade=t=in:st=0:d=0.3:color=white,fade=t=out:st={D_-0.3:.2f}:d=0.3:color=white','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
         for s in aj['sentences']:
             vtt.append(f"{ts(t+0.5+s['start'])} --> {ts(t+0.5+s['end']+0.3)}\n{s['text'].replace('Plenarra','Plenara')}\n")
+        TL['kapitel'].append({'nr':c['nr'],'id':json.load(open(f"{O}/c{n}/meta.json"))['id'],'kapitel':c['name'],'start':round(t,1),'ende':round(t+dur(ch),1),'saetze':tl_chapter(c,n,aj,t,0.5)})
         t+=dur(ch); parts.append(body); continue
     # Die Kapitelseite bleibt stehen, während der erste Satz gesprochen wird (mindestens CARD Sekunden)
     tc=min(9.0,max(CARD,0.5+aj['sentences'][0]['end']+0.5))
@@ -60,19 +69,22 @@ for c in chs:
     run('-ss',str(tc),'-i',ch,'-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
     for s in aj['sentences']:
         vtt.append(f"{ts(t+tc+0.5+s['start'])} --> {ts(t+tc+0.5+s['end']+0.3)}\n{s['text'].replace('Plenarra','Plenara')}\n")
+    TL['kapitel'].append({'nr':c['nr'],'id':json.load(open(f"{O}/c{n}/meta.json"))['id'],'kapitel':c['name'],'start':round(t,1),'ende':round(t+tc+dur(ch),1),'saetze':tl_chapter(c,n,aj,t,tc+0.5)})
     t+=tc+dur(ch)
     parts+=[card,body]
 def vtt_add(txt,a,b): vtt.append(f"{ts(a)} --> {ts(b)}\n{txt.replace('Plenarra','Plenara')}\n")
 p=folie('vorteile',f'{O}/ende1/audio.wav',0.7)
 if p:
     for s_ in json.load(open(f'{O}/ende1/audio.json'))['sentences']: vtt_add(s_['text'],t+0.7+s_['start'],t+0.7+s_['end']+0.3)
-    parts.append(p); t+=dur(p)
+    TL['folien'].append({'name':'vorteile','start':round(t,1),'ende':round(t+dur(p),1)}); parts.append(p); t+=dur(p)
 p=folie('schluss',f'{O}/ende2/audio.wav',1.0)
 if p:
     for s_ in json.load(open(f'{O}/ende2/audio.json'))['sentences']: vtt_add(s_['text'],t+1.0+s_['start'],t+1.0+s_['end']+0.3)
-    parts.append(p); t+=dur(p)
+    TL['folien'].append({'name':'schluss','start':round(t,1),'ende':round(t+dur(p),1)}); parts.append(p); t+=dur(p)
 open(f'{O}/list-final.txt','w').write('\n'.join(f"file '{os.path.abspath(p)}'" for p in parts))
 run('-f','concat','-safe','0','-i',f'{O}/list-final.txt','-vf','fps=30,scale=1280:720,format=yuv420p','-ar','22050','-ac','1','-c:v','libx264','-preset',PRESET,'-crf',CRF,'-c:a','aac','-b:a','96k','-movflags','+faststart',f'{O}/{name}.mp4')
+TL['datei']=f'{name}.mp4'; TL['dauer']=round(t,1)
+open(f'{O}/{name}.timeline.json','w',encoding='utf8').write(json.dumps(TL,ensure_ascii=False,indent=1))
 open(f'{O}/{name}.vtt','w',encoding='utf8').write('\n'.join(vtt))
 run('-i',f'{O}/card01.png' if KARTEN else f'{O}/{name}.mp4',*([] if KARTEN else ['-ss','4']),'-frames:v','1','-q:v','4',f'{O}/{name}.jpg')
 print('Länge',round(dur(f'{O}/{name}.mp4')),'s',round(os.path.getsize(f'{O}/{name}.mp4')/1e6,1),'MB')
