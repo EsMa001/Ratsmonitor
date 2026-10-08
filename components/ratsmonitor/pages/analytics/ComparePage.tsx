@@ -24,6 +24,23 @@ interface Result {
 const EXAMPLES: [string, string][] = [["Münster, Osnabrück", "Münster und Osnabrück"], ["Köln, Düsseldorf, Dortmund", "Köln, Düsseldorf, Dortmund"], ["Freiburg, Heidelberg", "Freiburg und Heidelberg"]];
 const n = (v: number) => v.toLocaleString("de-DE");
 const STATUS_COLOR: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0", unknown: "#f1f5f9" };
+/* Wörter des Sitzungsbetriebs (Anfragen, Geschäftsordnung, Rollen), die eher die Schreibweise eines Ratsinformationssystems als die Themen eines Ortes zeigen */
+const SITZUNGSWORT = /^(eingang|eingäng|anregung|beantwort|mündlich|absatz|gemeindeordnung|landes$|land$|geschäftsordnung|regularien|mitunterzeichn|mitwirkungsverbot|nachtrag|hinweis|angelegenheit|benennung|unbesetzt|anhörung|verpflichtung|mitglied|entscheidung|empfehlung|gruppe|ratsmitglied|berichterstatter|entgegennahme|einführung|stadtbezirk|bezirksvertretung|fraktion|unbeantwortet|ausschussmitglied|sitzung|niederschrift|tagesordnung)/;
+const inhaltlich = (term: string) => !SITZUNGSWORT.test(term) && !/(fraktion|gruppe)/.test(term) && !/^(partei|wähler|früher|freie$)/.test(term);
+
+/** Was beim Vergleich der Datenlage zu beachten ist: wenig Themenzuordnung, kaum erfasster Beschlussstatus */
+function datenlage(p: Place): string[] {
+  const out: string[] = [];
+  const sampled = p.sampled || p.total;
+  if (sampled >= 30) {
+    if (p.topics.n === 0) out.push("keinem Thema zugeordnet");
+    else if (p.topics.n / sampled < 0.25) out.push(`nur ${Math.round((p.topics.n / sampled) * 100)} % einem Thema zugeordnet`);
+    const share = (id: string) => p.status.list.find((x) => x.id === id)?.share ?? 0;
+    if (share("approved") + share("rejected") < 1 && share("recommended") + share("consulting") + share("postponed") > 0) out.push("kaum Beschlüsse mit Ausgang erfasst");
+  }
+  return out;
+}
+
 const TOPIC_NAME = new Map<string, string>(LABELS.map((l: { id: string; name: string }) => [l.id, l.name]));
 
 export function ComparePage() {
@@ -127,6 +144,12 @@ export function ComparePage() {
               ] as [string, (p: Place) => string][]).map(([k, f]) => (
                 <div key={k} className="grid gap-4 border-b border-slate-200 py-3" style={grid}><span className="text-[14px] text-slate-500">{k}</span>{res.places.map((p) => <b key={p.ags + p.scope} className="font-semibold tabular-nums">{f(p)}</b>)}</div>
               ))}
+              {res.places.some((p) => datenlage(p).length) && (
+                <div className="grid gap-4 border-b border-slate-200 py-3" style={grid}>
+                  <span className="text-[14px] text-slate-500">Datenlage</span>
+                  {res.places.map((p) => { const d = datenlage(p); return <span key={p.ags + p.scope} className="text-[14px] text-slate-700">{d.length ? d.join(", ") : "ohne Auffälligkeit"}</span>; })}
+                </div>
+              )}
               <div className="grid gap-4 border-b border-slate-200 py-3" style={grid}>
                 <span className="text-[14px] text-slate-500">Aktivste Gremien</span>
                 {res.places.map((p) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">{p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex justify-between gap-2"><span className="min-w-0 truncate" title={c.name}>{c.name}</span><span className="tabular-nums text-slate-500">{n(c.n)}</span></li>)}{!p.committees.length && <li className="text-slate-500">–</li>}</ul>)}
@@ -138,6 +161,7 @@ export function ComparePage() {
             <h2 className="text-[22px] font-semibold">Themenprofil</h2>
             <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Einträgen. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
             {legend}
+            {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-2 text-[14px] text-slate-700"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicRow key={r.id} name={r.name} shares={r.shares} base={r.base} max={maxTopic} />)}</ol>
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Einträge für ein Themenprofil.</p>}
           </section>
@@ -171,26 +195,26 @@ export function ComparePage() {
 
           <section className="mt-12">
             <h2 className="text-[22px] font-semibold">Typisch für den Ort</h2>
-            <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). Ortsnamen sind ausgenommen.</p>
+            <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die im Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). Ortsnamen und Wörter des Sitzungsbetriebs (zum Beispiel „Anregungen“, „Beantwortung“) sind ausgenommen.</p>
             <div className="grid gap-x-8 gap-y-8" style={{ gridTemplateColumns: `repeat(auto-fit,minmax(${cols > 2 ? 220 : 280}px,1fr))` }}>
               {res.places.map((p, i) => (
                 <div key={p.ags + p.scope}>
                   <h3 className="flex items-center gap-2 text-[16px] font-semibold"><i className="inline-block h-3 w-3 rounded-full" style={{ background: PLACE_COLORS[i] }} />{names[i]}</h3>
                   <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
-                    {p.typical.slice(0, 10).map((t) => <li key={t.term} className="flex justify-between gap-3 border-b border-slate-200 py-2 text-[14px]"><Link href={`/analytics/trends?thema=${encodeURIComponent(t.term)}`} className="min-w-0 truncate text-slate-900 hover:text-teal-600">{t.term}</Link><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
-                    {!p.typical.length && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
+                    {p.typical.filter((t) => inhaltlich(t.term)).slice(0, 10).map((t) => <li key={t.term} className="flex justify-between gap-3 border-b border-slate-200 py-2 text-[14px]"><Link href={`/analytics/trends?thema=${encodeURIComponent(t.term)}`} className="min-w-0 truncate text-slate-900 hover:text-teal-600">{t.term}</Link><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
+                    {!p.typical.some((t) => inhaltlich(t.term)) && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
                   </ol>
                 </div>
               ))}
             </div>
           </section>
 
-          {res.common.length > 0 && (
+          {res.common.some((c) => inhaltlich(c.term)) && (
             <section className="mt-12">
               <h2 className="text-[22px] font-semibold">Gemeinsame Begriffe</h2>
               <p className="mb-3 mt-1 text-[14px] text-slate-500">Kommen in allen gewählten Orten vor. Anteil an den Einträgen je Ort.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
-                {res.common.map((c) => <li key={c.term} className="grid gap-3 border-b border-slate-200 py-2 text-[14px]" style={grid}><span className="truncate text-[16px] text-slate-900">{c.term}</span>{c.shares.map((s, i) => <span key={i} className="tabular-nums text-slate-500">{s.toLocaleString("de-DE")} %</span>)}</li>)}
+                {res.common.filter((c) => inhaltlich(c.term)).map((c) => <li key={c.term} className="grid gap-3 border-b border-slate-200 py-2 text-[14px]" style={grid}><span className="truncate text-[16px] text-slate-900">{c.term}</span>{c.shares.map((s, i) => <span key={i} className="tabular-nums text-slate-500">{s.toLocaleString("de-DE")} %</span>)}</li>)}
               </ol>
             </section>
           )}
