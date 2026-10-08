@@ -91,7 +91,8 @@
         { "id": "ma-ok-slogan", "text": "Slogan festgelegt", "hinweis": "„Früher wissen, was vor Ort beraten wird.“", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "ma-ok-webinar", "text": "Webinar (9 Minuten, alle Funktionen inklusive Plenara.X) mit Skript und Anleitung", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "ma-ok-videos", "text": "Video-System und erstes vollständiges Video erstellt", "hinweis": "docs/videos.", "erledigt": true, "faellig": null, "erledigtAm": null },
-        { "id": "ma-kommunen", "text": "Angebote für Kommunen, Verbände und Stadtwerke vorbereiten", "hinweis": "Preise, Vertragsbedingungen, Referenzen (ma-pilotkunden).", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null }
+        { "id": "ma-kommunen", "text": "Angebote für Kommunen, Verbände und Stadtwerke vorbereiten", "hinweis": "Preise, Vertragsbedingungen, Referenzen (ma-pilotkunden).", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-ok-videoseite", "text": "Videoseite auf Kurz- und vollständiges Video reduziert", "hinweis": "Einzelclips aus public/videos entfernt (PR #9). Stand in docs/videos.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" }
       ]
     },
     {
@@ -124,7 +125,10 @@
       "items": [
         { "id": "bt-kontakt", "text": "Kontaktadresse, Antwortzeiten und Standardantworten festlegen", "hinweis": "Entwurf in docs/betrieb/support.md. E-Mail-Adresse fehlt noch (Marke).", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "bt-ausfall", "text": "Vorgehen bei Ausfall oder fehlerhaften Daten festlegen", "hinweis": "Entwurf in docs/betrieb/support.md. Zuständig: GbR-Gesellschafter (Vorschlag).", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "bt-loeschwuensche", "text": "Umgang mit Löschwünschen und Beschwerden regeln", "hinweis": "Entwurf mit Antwortvorlage in docs/betrieb/support.md. Fristen als Vorschlag.", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null }
+        { "id": "bt-loeschwuensche", "text": "Umgang mit Löschwünschen und Beschwerden regeln", "hinweis": "Entwurf mit Antwortvorlage in docs/betrieb/support.md. Fristen als Vorschlag.", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "bt-repo-generiert", "text": "Generierte Dateien aus dem Git nehmen", "hinweis": "dashboard/luecken.html (4,7 MB) und große Datendateien in data/ prüfen; wenn generiert, in .gitignore und aus dem Index nehmen.", "prio": 3, "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "bt-historie", "text": "Git-Historie von entfernten Videos und großen Dateien bereinigen", "hinweis": "Nur mit Abstimmung: Force-Push auf main, alle Klone und Branches müssen neu aufgesetzt werden. Repo rund 119 MB.", "prio": 3, "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "bt-branches", "text": "Veraltete Branches löschen", "hinweis": "Acht Branches sind vollständig in main enthalten. Sechs ältere haben Arbeit, die nicht in main ist (vorher prüfen).", "prio": 3, "erledigt": false, "faellig": null, "erledigtAm": null }
       ]
     },
     {
