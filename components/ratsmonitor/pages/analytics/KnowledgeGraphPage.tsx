@@ -40,9 +40,21 @@ export function KnowledgeGraphPage() {
   const abortRef = useRef<AbortController | null>(null);
 
   const given = useRef(params.get("thema"));
+  const preRef = useRef(false);
+  /* Der vorab berechnete Graph gilt für die Suche, die beim Öffnen gesetzt wurde: nicht als veraltet anzeigen */
+  useEffect(() => { if (preRef.current && hasTerm) { setRanKey(query); preRef.current = false; } }, [query, hasTerm]);
   useEffect(() => {
-    /* Ohne Direktlink und ohne Begriff in der Suche: mit einem Beispiel starten, damit die Seite nicht leer ist */
-    if (!given.current && !hasTerm) given.current = "Windenergie";
+    /* Ohne Direktlink und ohne Begriff in der Suche: mit „Photovoltaik“ starten; der Graph liegt vorab berechnet bereit (kein Warten) */
+    if (!given.current && !hasTerm) {
+      preRef.current = true;
+      search.applySearch("Photovoltaik");
+      setLoading(true);
+      fetch("/data/graph-photovoltaik.json")
+        .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<Result>; })
+        .then((r) => { setRes(r); setLoading(false); })
+        .catch(() => { preRef.current = false; setLoading(false); setWant(true); });
+      return;
+    }
     if (!given.current) { if (hasTerm) setWant(true); return; }
     search.applySearch(given.current);
     given.current = null;

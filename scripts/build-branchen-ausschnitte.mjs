@@ -86,13 +86,13 @@ for(const b of [{slug:'_start',keywords:[FEATURED_TERM]},...BRANCHEN]){
 }
 const pts=[];for(let i=0;i<GEM_AGS.length;i++)pts.push(Math.round((GEM_P[2*i]-minX)/STEP),Math.round((GEM_P[2*i+1]-minY)/STEP));
 writeFileSync(new URL('../public/data/gemeinde-punkte.json',import.meta.url),JSON.stringify({w:Math.round((maxX-minX)/STEP),h:Math.round((maxY-minY)/STEP),pts}));
-/* Gesamtgraph über den ganzen Bestand (Seite „Knowledge Graph“ beim Öffnen), gleichmäßige Stichprobe; braucht all=1 im Backend */
+/* Knowledge Graph für „Photovoltaik“ (Seite „Knowledge Graph“ beim Öffnen), damit nichts lädt */
 try{
- const r=await fetch(`${base}/api/analytics/graph?${new URLSearchParams({q:'',all:'1',level:'city'})}`);
+ const r=await fetch(`${base}/api/analytics/graph?${new URLSearchParams({q:FEATURED_TERM,level:'city'})}`);
  if(!r.ok)throw new Error(r.status);
  const g=await r.json();
- writeFileSync(new URL('../public/data/graph-gesamt.json',import.meta.url),JSON.stringify({generated:out.generated,...g}));
- console.log('graph-gesamt ok:',g.nodes.length,'Knoten,',g.edges.length,'Kanten, Stichprobe',g.total);
-}catch(err){console.log('graph-gesamt Fehler',err.message);}
+ writeFileSync(new URL('../public/data/graph-photovoltaik.json',import.meta.url),JSON.stringify({generated:out.generated,...g}));
+ console.log('graph-photovoltaik ok:',g.nodes.length,'Knoten,',g.edges.length,'Kanten, Einträge',g.total);
+}catch(err){console.log('graph-photovoltaik Fehler',err.message);}
 writeFileSync(new URL('../public/data/branchen-ausschnitte.json',import.meta.url),JSON.stringify(out));
 console.log('geschrieben:',Object.keys(out.items).length,'Einträge');

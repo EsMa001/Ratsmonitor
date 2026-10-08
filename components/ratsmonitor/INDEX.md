@@ -817,6 +817,7 @@ wordmark__dot design-styles.css:61
 - savedSearch.ts (134, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - sha256.ts (47): sha256Fallback, sha256Hex
+- terms.ts (11, ⚠1): isFiller, prettyTerm
 - testAuth.ts (141): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
@@ -843,6 +844,7 @@ wordmark__dot design-styles.css:61
 - AnalyticsAbout.tsx (239, ⚠13): ANALYSE_THUMBS, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
+- Befund.tsx (37): Befund, zuThema
 - BeschluessePage.tsx (218, ⚠5): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
@@ -853,7 +855,8 @@ wordmark__dot design-styles.css:61
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
-- KnowledgeGraphPage.tsx (181, ⚠1): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (193, ⚠1): KnowledgeGraphPage
+- Laden.tsx (15): Laden
 - NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
 - PageBand.tsx (15): PageBand
 - Reveal.tsx (16): Reveal
