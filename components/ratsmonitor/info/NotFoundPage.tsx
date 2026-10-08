@@ -23,7 +23,7 @@ export function NotFoundPage() {
           Zur Startseite
         </Link>
         <Link href="/preise" className="ri-btn ri-btn--light">
-          Preismodelle ansehen
+          Preise ansehen
         </Link>
         <Link href="/kontakt" className="ri-btn ri-btn--light">
           Kontakt aufnehmen

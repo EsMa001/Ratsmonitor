@@ -64,7 +64,7 @@ export function QuellenPage() {
     <>
       <PageHead
         icon="layers"
-        label="Daten"
+        label="Informationen"
         name="Datenabdeckung"
         title={<>Kommunalpolitik aus<br />ganz Deutschland.</>}
         lead="Beschlüsse, Vorlagen und Beratungen aus den offiziellen Ratsinformationssystemen der Kommunen, an einem Ort durchsuchbar und mit Verweis auf die Originalquelle. Die Abdeckung wächst laufend."

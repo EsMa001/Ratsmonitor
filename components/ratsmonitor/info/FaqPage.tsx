@@ -12,7 +12,7 @@ export function FaqPage() {
   const groups = FAQ.map((g) => ({ ...g, items: g.items.filter((qa) => !n || (qa.q + " " + (qa.a ?? "")).toLowerCase().includes(n)) })).filter((g) => g.items.length);
   return (
     <>
-      <PageHead icon="circleHelp" label="Hilfe" name="FAQ" title="Häufige Fragen" lead={`Die wichtigsten Antworten zu ${name}, Alarmen, Tarifen und zur Nutzung im Unternehmen.`} />
+      <PageHead icon="circleHelp" label="Informationen" name="FAQ" title="Häufige Fragen" lead={`Die wichtigsten Antworten zu ${name}, Alarmen, Tarifen und zur Nutzung im Unternehmen.`} />
       <section className="ri-sec ri-sec--faq">
         <label className="relative mb-8 block max-w-[560px]">
           <span className="sr-only">Fragen durchsuchen</span>

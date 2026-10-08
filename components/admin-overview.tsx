@@ -81,7 +81,7 @@ export function AdminOverview({displayName,signOutPath}:{displayName:string;sign
   return {now,areas:series('areas'),population:series('population'),lands,months,reach,fresh,shallow:sum(reach,['w','m1']),deep:sum(reach,['y1','y2']),quiet:sum(fresh,['d180','old']),current:sum(fresh,['ahead','d30'])};
  },[data]);
  return <div className="admin-app"><AdminHeader page="uebersicht" displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
-  <div className="admin-heading"><div><p className="eyebrow">ÜBERSICHT</p><h1>Wie weit reicht Ratsmonitor?</h1><p>{displayName}{data&&<> · Stand {dateTime(data.asOf)}</>}</p></div><Button variant="outline" disabled={!data&&!error} onClick={()=>{setData(null);setAttempt(a=>a+1);}}><RefreshCw size={16}/> Aktualisieren</Button></div>
+  <div className="admin-heading"><div><p className="eyebrow">ÜBERSICHT</p><h1>Wie weit reicht Plenara?</h1><p>{displayName}{data&&<> · Stand {dateTime(data.asOf)}</>}</p></div><Button variant="outline" disabled={!data&&!error} onClick={()=>{setData(null);setAttempt(a=>a+1);}}><RefreshCw size={16}/> Aktualisieren</Button></div>
   {error&&<p role="alert" className="admin-error">{error} <button type="button" className="admin-timeline-retry" onClick={()=>setAttempt(a=>a+1)}>Erneut laden</button></p>}
   {!data&&!error&&<p role="status" className="admin-note">Abdeckung wird aus Katalog und Datenbank gelesen. Beim ersten Aufruf nach einer Änderung des Bestands dauert das bis zu einer Minute.</p>}
   {data&&view&&<>

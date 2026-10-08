@@ -13,7 +13,8 @@ const COMPARE_ROWS: [string, (t: Tier) => string][] = [
   ["Gespeicherte Suchen", (t) => count(LIMITS[t].savedSearches)],
   ["Gespeicherte Artikel", (t) => count(LIMITS[t].bookmarks)],
   ["Aktive Benachrichtigungen", (t) => count(LIMITS[t].notifications)],
-  ["Sitzungskalender", (t) => (LIMITS[t].calendar ? "✓" : "–")],
+  ["Sitzungskalender mit Kalender-Abo", (t) => (LIMITS[t].calendar ? "✓" : "–")],
+  ["Plenara.X (Analysen)", (t) => (t === "enterprise" ? "✓" : "–")],
   ["E-Mail-Empfänger je Benachrichtigung", (t) => (LIMITS[t].emails > 1 ? `bis zu ${LIMITS[t].emails}` : count(LIMITS[t].emails))],
 ];
 
@@ -22,8 +23,8 @@ export function PreisePage() {
     <>
       <PageHead
         icon="tag"
-        label="Tarife"
-        name="Preismodelle"
+        label="Informationen"
+        name="Preise"
         title={
           <>
             Einfache Preise.
@@ -31,7 +32,7 @@ export function PreisePage() {
             Jederzeit kündbar.
           </>
         }
-        lead="Durchsuchen Sie die Ratsinformationssysteme der Kommunen und lassen Sie sich per E-Mail informieren, sobald zu Ihrem Thema etwas beschlossen wird."
+        lead="Früher wissen, was vor Ort beraten wird: Durchsuchen Sie die Ratsinformationssysteme der Kommunen und lassen Sie sich per E-Mail informieren, sobald zu Ihrem Thema etwas auf der Tagesordnung steht oder beschlossen wird. Plenara.X mit den Analysen ist Teil von Enterprise."
       />
       <section className="ri-sec ri-sec--prices">
         {/* Gleiche Tarifkarten wie im Konto */}

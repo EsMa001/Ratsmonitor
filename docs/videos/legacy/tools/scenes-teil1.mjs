@@ -22,7 +22,7 @@ export const SCENES = {
     ] },
   /* 03 Plenara in Zahlen: Datenabdeckung */
   "w1/c02": {
-    setup: async (H) => { await go(H, "/quellen"); },
+    setup: async (H) => { await go(H, "/datenabdeckung"); },
     steps: [
       [1, 0.2, "zahl", (H) => H.scrollTo(120)],
       [2, 0.0, "einwohner", (H) => H.scrollTo(260)],
@@ -106,7 +106,7 @@ export const SCENES = {
     ] },
   /* 15 Verlässlich und offen, Für wen */
   "w1/c15": {
-    setup: async (H) => { await go(H, "/quellen"); },
+    setup: async (H) => { await go(H, "/datenabdeckung"); },
     steps: [
       [2, 0.0, "ort", async (H) => { await H.scrollTo(560); await H.sleep(900); await H.click(H.page.getByPlaceholder(/Ort eingeben/)); await H.page.keyboard.type("Münster", { delay: 120 }); }],
       [3, 0.0, "land", async (H) => { await H.page.keyboard.press("Escape"); await H.scrollTo(1100); }],

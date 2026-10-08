@@ -630,11 +630,14 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
 
+### app/(monitor)/anwender/[slug]/
+- page.tsx (9): Page
+
 ### app/(monitor)/beschluss/[id]/
 - page.tsx (21): generateMetadata, Page
 
-### app/(monitor)/branchen/[slug]/
-- page.tsx (9): Page
+### app/(monitor)/datenabdeckung/
+- page.tsx (2): Page
 
 ### app/(monitor)/datenschutz/
 - page.tsx (2): Page
@@ -665,16 +668,10 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/preise/
 - page.tsx (2): Page
 
-### app/(monitor)/quellen/
-- page.tsx (2): Page
-
 ### app/(monitor)/registrieren/
 - page.tsx (2): Page
 
 ### app/(monitor)/thema/[id]/
-- page.tsx (2): Page
-
-### app/(monitor)/ueber-ratsmonitor/
 - page.tsx (2): Page
 
 ### app/(monitor)/videos/
@@ -753,7 +750,7 @@ wordmark__dot design-styles.css:61
 - Footer.tsx (59): Footer
 - GateDialog.tsx (127): GateFeature, openGate, GateDialog
 - Header.tsx (41): Header
-- PlanCards.tsx (116): PlanCards, PlanSummary
+- PlanCards.tsx (117): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
 - SearchBox.tsx (528): SearchBox
@@ -778,17 +775,18 @@ wordmark__dot design-styles.css:61
 - BranchenLive.tsx (117): LiveThumb
 - BranchenPages.tsx (122): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (46): isInfoPath, InfoPages
+- InfoPages.tsx (45): isInfoPath, InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (36): NotFoundPage
-- PreisePage.tsx (91): PreisePage
+- PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (165, ⚠4): QuellenPage
 - TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
+- anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (209, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (76): AnalyseId, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
-- content.ts (424, ⚠28): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
+- content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 
 ### components/ratsmonitor/lib/
@@ -812,7 +810,7 @@ wordmark__dot design-styles.css:61
 - iconStroke.ts (3): iconStroke
 - listView.ts (46): ListView, setListView, useListView
 - mails.ts (134, ⚠2): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
-- pageTitle.ts (39): pageName, tabTitle
+- pageTitle.ts (38): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - savedArticles.ts (65): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, useSavedArticles
@@ -828,7 +826,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (204): MainMenu
+- MainMenu.tsx (204, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (117, ⚠4): DetailPage

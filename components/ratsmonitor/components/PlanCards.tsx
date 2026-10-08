@@ -11,13 +11,14 @@ const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
   { label: "Gespeicherte Artikel", tiers: { guest: null, basic: "1 gespeicherter Artikel", pro: `Bis zu ${PLAN_MAX} gespeicherte Artikel`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Artikel` } },
   { label: "E-Mail-Benachrichtigungen", tiers: { guest: null, basic: "1 aktive Benachrichtigung", pro: `Bis zu ${PLAN_MAX} Benachrichtigungen`, enterprise: `Bis zu ${PLAN_MAX} Benachrichtigungen` } },
   { label: "Sitzungskalender mit Kalender-Abo", tiers: { guest: null, basic: null, pro: null, enterprise: "Sitzungskalender mit Kalender-Abo" } },
+  { label: "Plenara.X", tiers: { guest: null, basic: null, pro: null, enterprise: "Plenara.X: Analysen zu Ausbreitung, Beschlüssen und Trends" } },
   { label: "Bis zu 5 E-Mail-Empfänger", tiers: { guest: null, basic: null, pro: null, enterprise: "Bis zu 5 E-Mail-Empfänger je Benachrichtigung" } },
 ];
 const PLANS: { tier: Tier; price: string; note: string }[] = [
   { tier: "guest", price: "0 €", note: "Ohne Anmeldung" },
   { tier: "basic", price: "0 €", note: "Mit kostenlosem Konto" },
-  { tier: "pro", price: PRO_PRICE, note: "inkl. MwSt." },
-  { tier: "enterprise", price: "49,99 € / Monat", note: "inkl. MwSt. · für Teams" },
+  { tier: "pro", price: PRO_PRICE, note: "inkl. MwSt. · monatlich kündbar" },
+  { tier: "enterprise", price: "49,99 € / Monat", note: "inkl. MwSt. · für Teams · monatlich kündbar" },
 ];
 
 /* Wie im übrigen Design: schwarze Pille mit Pfeil für die Hauptaktion, sonst Petrol-Text mit Pfeil */
@@ -43,7 +44,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
         {PLANS.map((plan) => {
           const current = !publicPage && plan.tier === tier;
           return (
-            <div key={plan.tier} className={`${pick === plan.tier ? "flex" : "hidden sm:flex"} flex-col border-t-2 pb-2 pt-5 lg:pr-2 ${current ? "border-teal-600" : plan.tier === "pro" && publicPage ? "border-slate-900" : "border-slate-200"}`}>
+            <div key={plan.tier} className={`${pick === plan.tier ? "flex" : "hidden sm:flex"} flex-col border-t-2 pb-2 pt-5 lg:pr-2 ${current ? "border-teal-600" : plan.tier === "pro" && publicPage ? "border-slate-900 bg-slate-50 px-4 sm:-mt-2 sm:pt-7" : "border-slate-200"}`}>
               <div className="flex items-center justify-between gap-2">
                 <h3 className="m-0 text-[16px] font-semibold">{plan.tier === "guest" ? "Ohne Konto" : TIER_LABEL[plan.tier]}</h3>
                 {current && <span className="rounded-full bg-teal-600 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihr Tarif"}</span>}

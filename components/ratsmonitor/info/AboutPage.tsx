@@ -32,7 +32,7 @@ function useCoverageStats(): [string, string][] {
 const POINTS: [string, string][] = [
   ["Informationsvorsprung", "Sie sehen Entscheidungen, sobald sie auf einer Tagesordnung stehen, nicht erst, wenn sie in der Zeitung sind."],
   ["Ganz Deutschland im Blick", "Märkte, Standorte und Wettbewerber über Kommunengrenzen hinweg beobachten."],
-  ["Innovation mitgestalten", "Als früher Nutzer profitieren Sie als Erste von neuen Funktionen und prägen mit Ihrem Feedback, wie Ratsmonitor wächst."],
+  ["Innovation mitgestalten", "Als früher Nutzer profitieren Sie als Erste von neuen Funktionen und prägen mit Ihrem Feedback, wie Plenara wächst."],
 ];
 
 /* Suchbegriffe zu den Beispielen: ein Klick startet eine echte Suche */
@@ -94,7 +94,7 @@ export function AboutPage() {
             Suche starten
           </button>
           <Link href="/preise" className="ri-btn ri-btn--light">
-            Preismodelle ansehen
+            Preise ansehen
           </Link>
         </div>
       </PageHead>
@@ -152,7 +152,7 @@ export function AboutPage() {
         title="Welche Beschlüsse zählen in Ihrer Branche?"
         sub="Acht Branchen, jeweils mit typischem Ablauf und passenden Suchbegriffen."
         action={
-          <Link href="/branchen/immobilien" className="ri-btn ri-btn--inv">
+          <Link href="/anwender/immobilien" className="ri-btn ri-btn--inv">
             Zu den Use Cases
           </Link>
         }

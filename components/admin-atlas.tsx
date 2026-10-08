@@ -151,7 +151,7 @@ export function AdminAtlas({displayName,signOutPath}:{displayName:string;signOut
       <div className="admin-atlas-block"><p className="eyebrow">Zugang für Programme</p><p>{accById.get(detail.z)?.explain}</p></div>
       {detail.nc&&<div className="admin-atlas-block"><p className="eyebrow">Neuprüfung vorgesehen</p>{detail.nc.map(i=><p key={i}>{data.texts[i]}</p>)}</div>}
       {detail.rs&&<div className="admin-atlas-block"><p className="eyebrow">Kandidaten aus der Länderrecherche (ungeprüft)</p>{detail.rs.map(c=><p key={c.url}><a className="admin-mono" href={c.url} target="_blank" rel="noreferrer noopener">{c.url}</a>{c.hint&&<><br/>{c.hint}</>}{c.proof&&<><br/><small>Beleg: {c.proof}</small></>}</p>)}</div>}
-      {detail.cnt?<p><a href={'/quellen?region='+detail.id}>Quellen und Berichte ansehen →</a> · <a href={adminHref('abruf','auswahl='+detail.id)}>Abrufen →</a></p>:catById.get(detail.c)?.open?null:<p><a href={adminHref('abruf','auswahl='+detail.id)}>Abrufen →</a></p>}
+      {detail.cnt?<p><a href={'/datenabdeckung?region='+detail.id}>Quellen und Berichte ansehen →</a> · <a href={adminHref('abruf','auswahl='+detail.id)}>Abrufen →</a></p>:catById.get(detail.c)?.open?null:<p><a href={adminHref('abruf','auswahl='+detail.id)}>Abrufen →</a></p>}
      </div>}
     </section>
    </div>

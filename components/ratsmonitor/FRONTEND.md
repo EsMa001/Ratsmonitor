@@ -1,4 +1,4 @@
-# Frontend-Karte (Ratsmonitor / Plenara)
+# Frontend-Karte (Plenara)
 
 Kurzübersicht, damit Änderungen ohne langes Suchen gehen. Alles unter `components/ratsmonitor/`.
 **Backend nicht anfassen** (`server/`, `shared/`, `app/api/`, `drizzle/`, `tests/`), außer es ist ausdrücklich gewünscht.

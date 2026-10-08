@@ -13,10 +13,9 @@ import { AgbPage } from "./AgbPage";
 import { WiderrufPage } from "./WiderrufPage";
 
 const PAGES: Record<string, ComponentType> = {
-  "/ueber-ratsmonitor": AboutPage,
   "/faq": FaqPage,
   "/videos": VideosPage,
-  "/quellen": QuellenPage,
+  "/datenabdeckung": QuellenPage,
   "/funktionen/suche": AboutPage,
   "/funktionen/benachrichtigungen": BenachrichtigungenPage,
   "/preise": PreisePage,
@@ -27,7 +26,7 @@ const PAGES: Record<string, ComponentType> = {
 };
 
 export const isInfoPath = (p: string) => p in PAGES || p === "/registrieren" || !!brancheOf(p);
-const brancheOf = (p: string) => (p.startsWith("/branchen/") ? brancheBySlug(p.slice(10)) : undefined);
+const brancheOf = (p: string) => (p.startsWith("/anwender/") ? brancheBySlug(p.slice(10)) : undefined);
 
 /** Seiten des Dreistrichmenüs; eingehängt neben Übersicht, Detail- und Kontoseiten */
 export function InfoPages({ path }: { path: string }) {

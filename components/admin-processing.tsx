@@ -109,7 +109,7 @@ export function AdminProcessing({initial,displayName,signOutPath,initialSelectio
    combined.articles.push(...part.articles);offset=combined.articles.length;
    setMessage(`${n(offset)} / ${n(part.articleCount??offset)} Auftragsartikel geladen …`);
   }while(offset<(combined.articleCount??offset));
-  download(combined,'ratsmonitor-ki-auftrag-'+id+'.json');
+  download(combined,'plenara-ki-auftrag-'+id+'.json');
  }
  async function makeAi(){await action('ai',async()=>{
   const next=await api('/api/admin/ai-job',{action:'create',regions:[...selected],kinds,limit:batchSize==='all'?'all':Number(batchSize),retryBlocked});

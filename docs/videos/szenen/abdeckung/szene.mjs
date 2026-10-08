@@ -4,7 +4,7 @@ export default {
   meta: { bereich: "abdeckung", dauer: "16-18 s", zeigt: "Seite Datenabdeckung, Zahlen, Ort prüfen, Stand des letzten Abrufs", tags: ["anleitung", "webinar", "werbung"] },
   parameter: { ort: "Münster" },
   start: "Datenabdeckung", ende: "Suchergebnis für den Ort",
-  setup: async (H) => { await H.go("/quellen"); await H.sleep(800); },
+  setup: async (H) => { await H.go("/datenabdeckung"); await H.sleep(800); },
   beats: [
     ["seite", async (H) => { await H.move(640, 300, 30); await H.sleep(1500); await H.scrollTo(260); }, 8],
     ["abruf", async (H) => { await zu(H, "Ist Ihr Ort dabei?", 420); await H.move(1130, 250, 40); }, 4],

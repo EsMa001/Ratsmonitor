@@ -353,7 +353,7 @@ function KalenderTeaser() {
             Enterprise wählen
           </Link>
           <Link href="/preise" className="ri-btn ri-btn--light">
-            Preismodelle vergleichen
+            Preise vergleichen
           </Link>
         </div>
       </section>

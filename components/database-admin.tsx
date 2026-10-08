@@ -13,7 +13,7 @@ export function DatabaseAdmin({sources=[],disabled=false}:{sources?:{id:string;n
   const {parts}=await downloadDatabase(request,(done:number,total:number)=>setMessage(n(done)+' von '+n(total)+' gespeicherten Datensätzen übertragen.'));
   const raw=new Blob(parts,{type:'application/x-ndjson'});const compressed=typeof CompressionStream!=='undefined';
   const blob=compressed?await new Response(raw.stream().pipeThrough(new CompressionStream('gzip'))).blob():raw;
-  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='ratsmonitor-data-'+new Date().toISOString().slice(0,10)+'.jsonl'+(compressed?'.gz':'');a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);setMessage('Export geprüft und heruntergeladen. Die Anleitung im Projekt beschreibt die lokale Wiederherstellung.');
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='plenara-data-'+new Date().toISOString().slice(0,10)+'.jsonl'+(compressed?'.gz':'');a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);setMessage('Export geprüft und heruntergeladen. Die Anleitung im Projekt beschreibt die lokale Wiederherstellung.');
  }catch(e){setError(e instanceof Error?e.message:'Export fehlgeschlagen');setMessage('');}finally{setBusy('');}}
  return <section id="admin-datenbank" className="admin-section"><p className="eyebrow">DATENBANK & VOLLSTÄNDIGKEIT</p><h2>Was ist wirklich gespeichert?</h2>
  <p>Online und lokal gilt derselbe Mindestdatensatz. Die Prüfung liest ausschließlich vorhandene Daten. Sie erstellt keine Labels oder KI-Texte.</p>

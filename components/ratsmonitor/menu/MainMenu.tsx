@@ -28,7 +28,7 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
 ];const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
   { href: "/preise", label: "Preise", icon: "euro" },
   { href: "/videos", label: "Videos", icon: "circlePlay" },
-  { href: "/quellen", label: "Datenabdeckung", icon: "layers" },
+  { href: "/datenabdeckung", label: "Datenabdeckung", icon: "layers" },
   { href: "/faq", label: "FAQ", icon: "circleHelp" },
 ];
 
@@ -43,7 +43,7 @@ export function MainMenu() {
   const path = usePathname();
   const { tier } = useTier();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
-  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/analytics") ? "funktionen" : ["/preise", "/videos", "/quellen", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
+  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/anwender/") ? "usecases" : path.startsWith("/analytics") ? "funktionen" : ["/preise", "/videos", "/datenabdeckung", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -141,7 +141,7 @@ export function MainMenu() {
                   <ul className="ri-menu__subs">
                     {ANWENDER.map((g) => {
                       const b = BRANCHEN.find((x) => x.slug === g.slug);
-                      const href = `/branchen/${g.slug}`;
+                      const href = `/anwender/${g.slug}`;
                       return (
                         <li key={g.slug}>
                           <Link href={href} className="ri-menu__sub" aria-current={current(href)} onClick={pick}>

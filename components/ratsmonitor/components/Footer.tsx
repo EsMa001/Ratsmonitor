@@ -5,13 +5,13 @@ import { useTier } from "../lib/tier";
 import { useBrand, useBrandText } from "../lib/brand";
 
 const GROUPS: { title: string; links: [string, string][] }[] = [
-  { title: "Informationen", links: [["/preise", "Preismodelle"], ["/faq", "FAQ"], ["/videos", "Videos"], ["/quellen", "Datenabdeckung"]] },
+  { title: "Informationen", links: [["/preise", "Preise"], ["/faq", "FAQ"], ["/videos", "Videos"], ["/datenabdeckung", "Datenabdeckung"]] },
   { title: "Rechtliches", links: [["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"], ["/agb", "AGB"], ["/widerruf", "Widerruf"]] },
 ];
 
 /** Fußzeile auf allen Seiten: Marke, Linkgruppen, Hinweis auf die Originalquellen */
 /* Seiten mit eigener, inhaltlich passender Petrol-Kachel; Kontoseiten ganz ohne Abschlussband */
-const OWN_CTA = (p: string) => p.startsWith("/konto/") || p.startsWith("/funktionen/") || p === "/preise" || p === "/faq" || p === "/videos" || p === "/quellen" || p === "/ueber-ratsmonitor" || p.startsWith("/branchen");
+const OWN_CTA = (p: string) => p.startsWith("/konto/") || p.startsWith("/funktionen/") || p === "/preise" || p === "/faq" || p === "/videos" || p === "/datenabdeckung" || p.startsWith("/anwender");
 
 export function Footer() {
   const { name } = useBrand();
