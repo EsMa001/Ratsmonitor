@@ -17,14 +17,14 @@ const FILTERS: { key: Filter; label: string }[] = [
 /* Überfällig bewusst als einzige Abweichung von der Textpalette (Rot wie bei Fehlermeldungen .ri-err) */
 const STATE_COLOR: Record<TodoKind, string> = {
   done: "#0d9488",
-  overdue: "#be123c",
-  today: "#0f172a",
-  soon: "#0f172a",
-  planned: "#64748b",
-  open: "#64748b",
+  overdue: "var(--rm-rose,#be123c)",
+  today: "var(--rm-c900,#0f172a)",
+  soon: "var(--rm-c900,#0f172a)",
+  planned: "var(--rm-c500,#64748b)",
+  open: "var(--rm-c500,#64748b)",
 };
 
-const PRIO_COLOR: Record<1 | 2 | 3, string> = { 1: "#0f172a", 2: "#475569", 3: "#94a3b8" };
+const PRIO_COLOR: Record<1 | 2 | 3, string> = { 1: "var(--rm-c900,#0f172a)", 2: "var(--rm-c600,#475569)", 3: "var(--rm-c400,#94a3b8)" };
 
 const CLOSED_KEY = "ratsmonitor:todo-closed:v1";
 const readClosed = (): string[] => {
@@ -270,7 +270,7 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
                                   style={{ accentColor: "#0d9488" }}
                                 />
                                 <span className="min-w-0">
-                                  <span className="block text-[16px] font-medium leading-snug" style={{ color: isDone ? "#94a3b8" : "#0f172a", textDecoration: isDone ? "line-through" : "none" }}>
+                                  <span className="block text-[16px] font-medium leading-snug" style={{ color: isDone ? "var(--rm-c400,#94a3b8)" : "var(--rm-c900,#0f172a)", textDecoration: isDone ? "line-through" : "none" }}>
                                     {item.text}
                                   </span>
                                   {item.hinweis && <span className="mt-0.5 block text-[14px] leading-snug text-slate-500">{item.hinweis}</span>}
@@ -278,7 +278,7 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
                               </label>
                               <div className="flex flex-none flex-wrap items-center gap-2.5">
                                 {item.prio && !isDone && (
-                                  <span className="rounded-full px-2 py-0.5 text-[12px] font-semibold" style={{ background: item.prio === 1 ? "#0f172a" : "#f1f5f9", color: item.prio === 1 ? "#fff" : "#475569" }} title={`Priorität ${item.prio}`}>
+                                  <span className="rounded-full px-2 py-0.5 text-[12px] font-semibold" style={{ background: item.prio === 1 ? "var(--rm-c900,#0f172a)" : "#f1f5f9", color: item.prio === 1 ? "#fff" : "var(--rm-c600,#475569)" }} title={`Priorität ${item.prio}`}>
                                     P{item.prio}
                                   </span>
                                 )}

@@ -1,5 +1,6 @@
 'use client';
 import {ShieldCheck} from 'lucide-react';
+import {useDarkMode} from '@/components/ratsmonitor/lib/useDarkMode';
 import {Brand} from '@/components/ratsmonitor/components/Brand';
 
 // Kopfzeile aller Adminseiten im Quorumo-Design: Logo wie in der App (führt zur Übersicht), Bereich, Konto.
@@ -10,9 +11,12 @@ export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'todo',label:'To-do-
 export const adminHref=(page:AdminPage,params='')=>'/admin'+(page==='todo'?(params?'?'+params:''):'?seite='+page+(params?'&'+params:''));
 
 export function AdminBar({displayName,signOutPath}:{displayName?:string;signOutPath?:string}){
+ const [dark,setDark]=useDarkMode();
+ const label=dark?'Heller Modus':'Dunkler Modus';
  return <header className="admin-masthead"><div className="admin-masthead__inner">
   <Brand/>
   <span className="admin-access"><ShieldCheck size={16}/> Administration</span>
+  <button type="button" className="admin-dark-toggle" title={label} aria-label={label} aria-pressed={dark} onClick={()=>setDark(!dark)}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{dark?<><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>:<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>}</svg></button>
   {signOutPath&&<div className="admin-masthead__account">{displayName&&<span>{displayName}</span>}<a target="_top" href={signOutPath}>Abmelden</a></div>}
  </div></header>;
 }
