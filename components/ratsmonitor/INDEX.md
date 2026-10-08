@@ -773,8 +773,8 @@ wordmark__dot design-styles.css:61
 - InfoPages.tsx (65): isInfoPath, InfoPages
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
-- QuellenPage.tsx (155, ⚠4): QuellenPage
-- VideosPage.tsx (151): VideosPage
+- QuellenPage.tsx (165, ⚠4): QuellenPage
+- VideosPage.tsx (150): VideosPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - content.ts (373, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, AGB_SECTIONS, brancheBySlug
 - icons.tsx (112): IconName, Icon
@@ -824,7 +824,7 @@ wordmark__dot design-styles.css:61
 - PostfachPage.tsx (81): PostfachPage
 - ProfilePage.tsx (111): ProfileSettings, readProfile, ProfilePage
 - SavedArticlesPage.tsx (124, ⚠2): SavedArticlesPage
-- SavedSearchesPage.tsx (301): SavedSearchesPage
+- SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (238, ⚠14): AnalyticsAbout
