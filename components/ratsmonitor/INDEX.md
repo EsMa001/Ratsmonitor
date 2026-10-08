@@ -782,7 +782,7 @@ wordmark__dot design-styles.css:61
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (165, ⚠4): QuellenPage
-- TodoPage.tsx (231): TodoPage
+- TodoPage.tsx (236): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
@@ -821,7 +821,7 @@ wordmark__dot design-styles.css:61
 - testAuth.ts (141): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
-- todos.ts (45): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
+- todos.ts (47): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
 - usePhone.ts (15): usePhone
 - uuid.ts (12): newId
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv

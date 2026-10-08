@@ -3,6 +3,8 @@ export type TodoItem = {
   id: string;
   text: string;
   hinweis?: string;
+  /** Priorität offener Punkte: 1 vor dem Start nötig, 2 wichtig, 3 später */
+  prio?: 1 | 2 | 3;
   erledigt: boolean;
   /** geplantes Datum, ISO „JJJJ-MM-TT“ */
   faellig: string | null;
