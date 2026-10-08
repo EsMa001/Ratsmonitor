@@ -21,7 +21,8 @@
   },
   {
    "satz": 4,
-   "text": "{{v.79|text}}"
+   "zahl": "{{t.halfMonate|ziffern}}",
+   "label": "Monate bis zur Hälfte der Gebiete"
   },
   {
    "satz": 5,
@@ -35,7 +36,7 @@
   {
    "satz": 7,
    "zahl": "{{u.peakN|ziffern}}",
-   "label": "neue Gebiete in einem Monat, davor {{u.prev4|ziffern}} in vier Monaten"
+   "label": "neue Gebiete in einem Monat"
   },
   {
    "satz": 8,
