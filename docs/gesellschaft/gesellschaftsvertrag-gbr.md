@@ -1,111 +1,80 @@
-# Gesellschaftsvertrag der Plenara GbR (Entwurf, Übergangs-GbR)
+# Gesellschaftsvertrag der Plenara GbR
 
-> **Entwurf, keine Rechtsberatung.** Offen sind nur die Namen und Anschriften der Gesellschafter. Eckpunkte: [eckpunkte.md](eckpunkte.md).
+> Selbst erstellter Entwurf, nicht anwaltlich oder steuerlich geprüft. Offen sind nur die Namen und Anschriften.
 
 zwischen **[Name A]**, [Anschrift], und **[Name B]**, [Anschrift] (die „Gesellschafter“).
 
-## § 1 Name, Sitz
+## § 1 Name, Sitz, Zweck
 
-Die Gesellschaft heißt **„Plenara GbR“** und hat ihren Sitz in **Billerbeck**.
+1. Die Gesellschaft heißt **Plenara GbR** und hat ihren Sitz in **Billerbeck**.
+2. Zweck ist die gemeinsame Entwicklung und der Betrieb von **Plenara** (bisher „Ratsmonitor“).
+3. Die GbR ist eine **kurze Übergangsphase**. Ziel ist, so bald wie möglich eine UG (haftungsbeschränkt) zu gründen und das Projekt dort weiterzuführen (§ 9), möglichst bevor Kunden zahlen. Das ist ein Ziel, keine Pflicht.
+4. Die Gesellschaft beginnt mit der Unterzeichnung.
 
-## § 2 Zweck und Übergangscharakter
+## § 2 Was der Gesellschaft gehört
 
-1. Zweck ist die gemeinsame Entwicklung und Vorbereitung der Plattform **Plenara** (bisher „Ratsmonitor“) mit allem, was dazugehört.
-2. Die Gesellschaft ist eine **kurze Übergangsphase**. Sie soll bald in eine Unternehmergesellschaft (haftungsbeschränkt) („UG“) übergehen, möglichst **bevor Kunden über die Website Abos abschließen** (§ 12). Das ist ein Ziel, keine Pflicht.
-3. Kunden schließen ihre Abos selbst über die Website ab, die Zahlung läuft über einen Zahlungsdienstleister. Einzelne Kundenverträge werden deshalb nicht beschlossen. Gemeinsam beschlossen werden dafür: der **Zeitpunkt der Freischaltung** der Bezahlfunktion, die Preise, die AGB (mit Haftungsbeschränkung, soweit zulässig), die Datenschutzunterlagen und der Zahlungsdienstleister (§ 6 Abs. 3). Das Konto beim Zahlungsdienstleister läuft auf die Gesellschaft; Auszahlungen gehen nur auf das Geschäftskonto der Gesellschaft (§ 11 Abs. 3).
+1. Alles, was mit Plenara zu tun hat, gehört der Gesellschaft: Code, Daten, Texte, Videos, Name, Logo, Marke, Domains, Server, Konten, Zugänge, Verträge und Geld. Das gilt auch für alles, was die Gesellschafter schon vor der Unterzeichnung dafür geschaffen haben, und für alles, was sie künftig dafür schaffen.
+2. Rechte, die sich nicht übertragen lassen, räumt jeder der Gesellschaft als ausschließliches, unbefristetes, übertragbares Nutzungsrecht ein.
+3. Konten und Zugänge laufen auf die Gesellschaft oder eine gemeinsame Adresse. Wer sie bisher auf seinen Namen hält, hält sie für die Gesellschaft und überträgt sie auf Verlangen. **Beide haben jederzeit Administrator-Zugang zu allem**, die Zugangsdaten liegen in einem gemeinsamen Passwortmanager.
+4. Die Gesellschaft hat ein eigenes Geschäftskonto. Alle Einnahmen (auch vom Zahlungsdienstleister) gehen dorthin, nie auf private Konten.
+5. Geld einzahlen muss niemand. Beide sind **zu je 50 %** an allem beteiligt, an Gewinn und Verlust.
 
-## § 3 Beginn und Dauer
+## § 3 Zusammenarbeit und Entscheidungen
 
-Die Gesellschaft beginnt mit der Unterzeichnung dieses Vertrags. Sie endet mit der Übertragung des Vermögens auf die UG (§ 12) oder durch Auflösung (§ 10).
+1. Beide sind **für alles gemeinsam verantwortlich**, auch wenn sie die Arbeit untereinander aufteilen. Zeiten werden nicht erfasst.
+2. Jeder darf allein für die Gesellschaft handeln, wenn die einzelne Ausgabe höchstens **150 €** und alle Ausgaben zusammen höchstens **300 € im Monat** betragen (zum Beispiel Domain, Server, Werkzeuge). Alles andere entscheiden beide gemeinsam; Zustimmung per Chat oder E-Mail genügt.
+3. Immer gemeinsam: Kredite, Bürgschaften, Mitarbeiter, Verkauf oder Lizenzierung von Code, Marke oder Domains, neue Gesellschafter oder Investoren, Änderungen dieses Vertrags, und bei den Kunden: **wann die Bezahlfunktion freigeschaltet wird**, Preise, AGB, Datenschutzunterlagen und der Zahlungsdienstleister.
+4. Die Kunden schließen ihre Abos selbst über die Website ab. Einzelne Kundenverträge werden deshalb nicht beschlossen. In die AGB kommt eine Haftungsbeschränkung, soweit zulässig.
+5. Jeder informiert den anderen sofort über Wichtiges (Rechnungen, Post, Vorfälle). Bei Gefahr (zum Beispiel Sicherheitsvorfall) darf jeder das Nötige allein tun und sagt sofort Bescheid.
+6. Wer ohne Zustimmung Verpflichtungen für die Gesellschaft eingeht, die über seine Befugnis hinausgehen, stellt die Gesellschaft und den anderen davon frei.
+7. Sobald Kunden zahlen und die UG noch nicht besteht, schließt die Gesellschaft nach Möglichkeit eine Haftpflicht- und Cyberversicherung ab.
 
-## § 4 Gesellschaftsvermögen
+## § 4 Streit
 
-1. Alles, was mit Plenara zu tun hat, gehört der Gesellschaft, insbesondere:
-   a) Quellcode, Daten, Texte, Grafiken, Videos, Name, Marke, Logo,
-   b) Domains, E-Mail-Adressen, Server, Konten und Zugänge bei Diensten (Hosting, Code, Cloud usw.),
-   c) alle Verträge mit Dienstleistern und Lieferanten, Guthaben.
-2. Jeder Gesellschafter bringt seine bisherigen Arbeitsergebnisse zu Plenara ein (Liste in **Anlage 1**). Rechte, die sich nicht übertragen lassen, räumt er der Gesellschaft als ausschließliches, unbefristetes, übertragbares und unterlizenzierbares Nutzungsrecht ein; die Gesellschaft darf sie auf die UG übertragen. Künftige Arbeitsergebnisse zu Plenara gehören mit ihrer Entstehung der Gesellschaft.
-3. Zugänge und Konten werden auf die Gesellschaft oder eine gemeinsame Adresse eingerichtet. **Beide Gesellschafter haben jederzeit Administrator-Zugang zu allen Systemen.** Die Zugangsdaten liegen in einem gemeinsamen Passwortmanager.
-4. Bareinlagen gibt es nicht. Kein Gesellschafter muss Geld nachschießen.
+1. Beschlüsse brauchen **beide Stimmen**, per Chat genügt. Wichtiges halten sie in Textform fest.
+2. Einigen sie sich nicht, reden sie innerhalb von 7 Tagen miteinander. Danach bleibt alles, wie es ist, und jeder kann kündigen (§ 5).
+3. **Übernahmeangebot:** Bei einem wesentlichen Streit (Richtung, Preise, UG) kann jeder dem anderen in Textform einen Preis nennen, zu dem er dessen Anteil kaufen will. Der andere hat **14 Tage** zu wählen: Er verkauft zu diesem Preis oder kauft zum selben Preis den Anteil des Anbietenden. Meldet er sich nicht, verkauft er. Der Käufer zahlt binnen 30 Tagen, danach scheidet der Verkäufer aus (§ 5). Wer einen zu niedrigen Preis nennt, riskiert, dass der andere zu diesem Preis kauft.
+4. **Aufgegebenes Projekt:** Trägt ein Gesellschafter seit mindestens **6 Wochen** praktisch nichts mehr bei (Urlaub und Krankheit zählen nicht) und meldet sich auch nach einer Aufforderung in Textform nicht binnen **14 Tagen** wieder, darf der andere ihm ein Übernahmeangebot nach Absatz 3 machen. Bis dahin entscheidet er laufende Dinge allein, auch über die Ausgabengrenze hinaus, soweit sie für den Betrieb nötig sind.
+5. Niemand kann den anderen aus der Gesellschaft werfen.
 
-## § 5 Anteile, Gewinn und Verlust
+## § 5 Ausscheiden
 
-Beide Gesellschafter sind zu **je 50 %** am Vermögen, Gewinn und Verlust beteiligt. Kosten, die die Gesellschaft hat, tragen sie je zur Hälfte.
+1. Jeder kann mit **14 Tagen** Frist in Textform kündigen, aus wichtigem Grund sofort. Die Gesellschaft endet dadurch nicht: Der andere macht allein weiter, alles wächst ihm an, er führt das Projekt allein fort und übernimmt die Schulden. Dasselbe gilt bei Tod oder Insolvenz eines Gesellschafters. Erben werden in der GbR keine Gesellschafter.
+2. Der Ausscheidende erhält **keine Abfindung** und keine Vergütung (anders beim Verkauf nach § 4 Abs. 3). Er behält keine Rechte an Plenara. Erstattungsfähige Auslagen gegen Beleg werden bezahlt.
+3. Er übergibt sofort alle Zugänge, Daten und Kopien. Der andere darf Zugänge entziehen und Passwörter wechseln.
+4. Der Verbleibende stellt den Ausscheidenden von Schulden frei, die nach dem Ausscheiden entstehen, und im Innenverhältnis auch von älteren, soweit sie seinen hälftigen Anteil übersteigen.
+5. Wer Code, Daten oder Zugänge mitnimmt oder außerhalb der Gesellschaft verwendet, zahlt **5.000 € Vertragsstrafe**; weitere Ansprüche bleiben.
+6. Gegenüber Dritten haften beide persönlich. Untereinander tragen sie Schulden je zur Hälfte; wer mehr gezahlt hat, kann Ausgleich verlangen. Für leichte oder schuldlose Fehler haftet niemand der Gesellschaft gegenüber.
 
-## § 6 Geschäftsführung und Vertretung
+## § 6 Konkurrenz, Vertraulichkeit
 
-1. Beide Gesellschafter sind **gemeinsam für alle Aufgaben verantwortlich**, auch wenn sie die Arbeit untereinander aufteilen (**Anlage 2**). Die Aufteilung ändert nichts an der gemeinsamen Verantwortung.
-2. Im Namen der Gesellschaft darf jeder allein handeln, solange eine einzelne Ausgabe höchstens **150 €** und alle Ausgaben zusammen höchstens **300 € im Monat** betragen (zum Beispiel Domain, Server, Werkzeuge). Alles darüber hinaus, jede Bindung von mehr als einem Monat sowie alle anderen Verträge nur **gemeinsam** oder mit Zustimmung des anderen in Textform (Chat oder E-Mail genügt). Wer ohne diese Zustimmung für die Gesellschaft Verpflichtungen eingeht, stellt die Gesellschaft und den anderen davon frei.
-3. Immer gemeinsam zu entscheiden sind: Kredite, Bürgschaften, **Freischaltung der Bezahlfunktion für Kunden**, Preise und AGB, Wahl des Zahlungsdienstleisters, Einstellung von Mitarbeitern, Verkauf oder Lizenzierung von Code, Marke oder Domains, Aufnahme weiterer Gesellschafter oder Investoren, Änderung dieses Vertrags.
-4. Jeder informiert den anderen unverzüglich über wesentliche Vorgänge (Rechnungen, Post, Vorfälle, Sicherheitsfragen). Bei Gefahr im Verzug (Sicherheitsvorfall) darf jeder das Nötige tun und informiert sofort.
-5. Verträge (und die AGB für Kunden) enthalten den Hinweis, dass die Haftung auf das Gesellschaftsvermögen beschränkt sein soll. Das gilt nur, wenn der Vertragspartner zustimmt; sonst haften die Gesellschafter persönlich. Die Gesellschafter schließen, sobald Kunden zahlen und die UG noch nicht besteht, eine Betriebshaftpflicht- und Cyberversicherung für die Gesellschaft ab, wenn sie bis zu 300 € im Jahr kostet.
+1. Kein Gesellschafter baut, betreibt oder unterstützt allein ein Produkt, das mit Plenara im Wettbewerb steht (Beobachtung, Auswertung und Benachrichtigung zu kommunalen Ratsinformationen). Das gilt während der Gesellschaft und **nach dem Ausscheiden ohne zeitliche Grenze**, solange der andere oder dessen Nachfolger (zum Beispiel die UG) Plenara betreibt. Es endet, wenn auch der andere ausgeschieden ist und niemand Plenara mehr betreibt. Gemeinsam können sie jederzeit anders entscheiden. Gilt das Verbot rechtlich nur eingeschränkt, bleibt es im zulässigen Umfang bestehen. Ein Verstoß kostet die Vertragsstrafe aus § 5 Abs. 5.
+2. Beide schweigen über Zugangsdaten, Geschäftsgeheimnisse und Zahlen, auch nach dem Ausscheiden.
 
-## § 7 Beschlüsse, Streit
+## § 7 Auflösung, wenn das Projekt scheitert
 
-1. Beschlüsse brauchen **beide Stimmen**. Sie können formlos, auch per Chat, gefasst werden; Wichtiges halten die Gesellschafter in Textform fest.
-2. Können sich die Gesellschafter nicht einigen, reden sie innerhalb von 7 Tagen miteinander. Gelingt keine Einigung, bleibt alles, wie es ist. Jeder kann dann nach § 9 kündigen.
-3. **Übernahmeangebot:** Scheitert die Einigung bei einer wesentlichen Frage (zum Beispiel Richtung, Preise, UG), kann jeder Gesellschafter dem anderen in Textform einen Preis nennen, zu dem er dessen Anteil kaufen will. Der andere hat **14 Tage** Zeit zu wählen: Er verkauft zu diesem Preis, oder er kauft stattdessen den Anteil des Anbietenden zum selben Preis. Antwortet er nicht, gilt: Er verkauft. Der Käufer zahlt binnen 30 Tagen, danach scheidet der Verkäufer aus (§ 9 Abs. 2 bis 4, § 8 Abs. 2). Das ist ein Kauf und keine Abfindung nach § 9 Abs. 3. Der Preis muss ehrlich gemeint sein: Wer einen Preis weit unter dem Wert des Projekts nennt, muss damit rechnen, dass der andere kauft.
+1. Beide wollen aufhören, oder beide kündigen: Die Gesellschaft wird aufgelöst. Das gilt auch, wenn beide es in Textform bestätigen oder 6 Monate lang niemand Plenara betreibt und keine Zahlungen laufen.
+2. **Zuerst Übernahme:** Will einer weitermachen, macht er dem anderen ein Übernahmeangebot nach § 4 Abs. 3. Dann bleibt alles bei dem, der übernimmt.
+3. **Sonst:** Beide kündigen gemeinsam alle laufenden Verträge (Server, Domains, Dienste) und löschen Kundendaten, soweit das Gesetz es verlangt. Übriges Geld wird hälftig geteilt, Kosten werden hälftig getragen. **Code, Texte und Marke bleiben bei beiden gemeinsam.** Keiner darf sie allein verkaufen, lizenzieren oder für ein Konkurrenzprodukt verwenden.
+4. Betreibt auch **12 Monate nach der Auflösung** niemand Plenara, darf jeder Code und Texte frei weiterverwenden (nicht ausschließlich, ohne Anspruch gegen den anderen). Die Marke führt dann keiner mehr allein, und das Konkurrenzverbot endet.
 
-## § 8 Vertraulichkeit, Wettbewerb
+## § 8 Buchführung, Steuern
 
-1. Die Gesellschafter schweigen über Zugangsdaten, Geschäftsgeheimnisse und Zahlen, auch nach dem Ausscheiden.
-2. **Kein Konkurrenzprodukt:** Kein Gesellschafter baut, betreibt oder unterstützt allein ein Produkt, das mit Plenara im Wettbewerb steht (Beobachtung, Auswertung und Benachrichtigung zu kommunalen Ratsinformationen). Das gilt während der Gesellschaft **und nach dem Ausscheiden ohne zeitliche Grenze**, solange der andere Gesellschafter oder dessen Nachfolger (zum Beispiel die UG) Plenara betreibt. Das Verbot endet, wenn auch der andere ausgeschieden ist und niemand Plenara mehr betreibt. Gemeinsam dürfen die Gesellschafter jederzeit anders entscheiden.
-3. Gilt das Verbot nach dem Ausscheiden rechtlich nur eingeschränkt, bleibt es in dem Umfang bestehen, der zulässig ist (insbesondere in Zeit, Gebiet und Gegenstand). Wer dagegen verstößt, zahlt die Vertragsstrafe nach § 9 Abs. 7.
+Die Gesellschaft führt einfache Bücher (Einnahmen und Ausgaben). Jeder versteuert seinen Anteil selbst. Sobald die Gesellschaft mit Gewinnabsicht tätig wird, meldet sie das Gewerbe bei der Stadt Billerbeck an. Beide haben jederzeit Einsicht in alle Unterlagen und Konten.
 
-## § 9 Ausscheiden
+## § 9 Wechsel in die UG
 
-1. Jeder Gesellschafter kann mit einer Frist von **14 Tagen** schriftlich (Textform) kündigen. Aus wichtigem Grund jederzeit.
-2. Mit dem Ausscheiden, aus welchem Grund auch immer (Kündigung, Tod, Insolvenz), wird die Gesellschaft **nicht aufgelöst**, sondern vom verbleibenden Gesellschafter allein fortgeführt: Das Vermögen der Gesellschaft wächst ihm an (Anwachsung), er führt das Projekt als Einzelunternehmer weiter und übernimmt die Verbindlichkeiten. Er stellt den Ausscheidenden von Verbindlichkeiten frei, die nach dem Ausscheiden entstehen, und im Innenverhältnis auch von älteren, soweit sie über seinen hälftigen Anteil hinausgehen. Erben werden in der GbR keine Gesellschafter. In der UG können Erbfolge, Abfindung und Ausscheiden ganz anders geregelt werden (§ 12 Abs. 4).
-3. Der Ausscheidende erhält **keine Abfindung** und keine Vergütung. Er behält keine Rechte an Plenara, die er der Gesellschaft eingeräumt hat. Sein Anteil wächst dem anderen zu. Erstattungsfähige Auslagen (§ 11) werden bezahlt.
-4. Der Ausscheidende übergibt unverzüglich alle Zugänge, Daten und Kopien. Der verbleibende Gesellschafter darf Zugänge entziehen und Passwörter wechseln.
-5. **Kein Hinauswurf:** Niemand kann den anderen aus der Gesellschaft ausschließen. Wer nicht mehr mitmachen will, kündigt (Absatz 1) oder verkauft (§ 7 Abs. 3).
-6. **Mitarbeit:** Jeder Gesellschafter arbeitet nach seinen Möglichkeiten an Plenara mit. Zeiten werden nicht erfasst. Hat ein Gesellschafter das Projekt erkennbar aufgegeben, weil er seit mindestens **6 Wochen** praktisch nichts mehr beiträgt (Urlaub und Krankheit zählen nicht) und sich auch nach einer Aufforderung in Textform nicht binnen **14 Tagen** wieder beteiligt, darf der andere ihm ein Übernahmeangebot nach § 7 Abs. 3 machen. Bis dahin entscheidet er laufende Dinge allein (auch über die Grenzen des § 6 Abs. 2 hinaus, soweit sie für den Betrieb nötig sind); alles Grundlegende bleibt gemeinsam.
-7. **Strafe:** Nimmt ein Ausscheidender Code, Daten oder Zugänge mit oder verwendet sie außerhalb der Gesellschaft, zahlt er 5.000 € Vertragsstrafe; weitere Ansprüche bleiben.
-8. Haftungsausgleich: Hat ein Gesellschafter für Schulden der Gesellschaft mehr als die Hälfte bezahlt, kann er vom anderen den Ausgleich verlangen. Für schuldlose oder leicht fahrlässige Fehler haftet niemand der Gesellschaft gegenüber.
+1. **Ziel:** Die Gesellschafter gründen so früh wie möglich eine UG, voraussichtlich bis zum **31.01.2027**, möglichst bevor Kunden über die Website Abos abschließen. Will einer die Gründung, wirkt der andere sofort mit.
+2. **Weg:** Eine GbR wird nicht direkt zur UG. Die Gesellschafter gründen die UG, und die Gesellschaft überträgt ihr das gesamte Vermögen (Rechte, Verträge, Domains, Konten, Zugänge) **per Verkauf oder Übertragung gegen Gegenleistung** (zum Beispiel Gesellschafterdarlehen). Eine Sacheinlage geht bei einer UG mit weniger als 25.000 € Stammkapital nicht. Beide stimmen zu.
+3. **Beteiligung:** Beide halten an der UG wie hier je 50 % und werden Geschäftsführer.
+4. **Neue Regeln:** In der UG gelten eigene, neu zu verhandelnde Regeln, die sich von diesem Vertrag völlig unterscheiden dürfen, insbesondere zu **Erbfolge**, Abfindung beim Ausscheiden, Vesting, Vorkaufsrecht, Wettbewerb und Beschlüssen. Die Regeln dieses Vertrags (gemeinsame Verantwortung, Einstimmigkeit, Vertraulichkeit) sind die Ausgangsbasis. Der Ausschluss von Abfindung und Erbfolge in § 5 gilt nur für die GbR.
+5. Einigen sie sich nicht binnen 30 Tagen auf die Satzung, gilt die gesetzliche Mustersatzung mit 50/50 und beiden als Geschäftsführern.
+6. Mit der Übertragung ist die GbR beendet. Die UG übernimmt die Schulden, soweit die Gläubiger zustimmen. Später kann die UG durch Kapitalerhöhung zur GmbH werden.
 
-## § 10 Auflösung
+## § 10 Schluss
 
-1. Wollen **beide** das Projekt nicht weiterführen (oder kündigen beide), wird die Gesellschaft aufgelöst. Ist das Projekt stillschweigend eingeschlafen, gilt das, wenn beide es in Textform bestätigen oder wenn 6 Monate lang niemand Plenara betreibt und keine Zahlungen laufen.
-2. **Zuerst Übernahme:** Will einer das Projekt (mit Code, Marke, Domains und Daten) weiterführen, gilt § 7 Abs. 3: Er macht dem anderen ein Übernahmeangebot, oder kauft zum gleichen Preis.
-3. **Sonst:** Beide kündigen gemeinsam alle laufenden Verträge (Server, Domains, Dienste) und löschen personenbezogene Daten von Kunden, soweit das Gesetz es verlangt. Das Guthaben wird hälftig verteilt, Kosten werden hälftig getragen. Der **Code, die Texte und die Marke** bleiben bei beiden gemeinsam. Keiner darf sie allein verkaufen, lizenzieren oder für ein Konkurrenzprodukt verwenden.
-4. **Frist:** Betreibt auch **12 Monate nach der Auflösung** niemand Plenara, darf jeder den Code und die Texte frei weiterverwenden (nicht ausschließlich, ohne Anspruch gegen den anderen). Die Marke darf dann keiner mehr allein führen. Das Wettbewerbsverbot (§ 8 Abs. 2) endet ebenfalls.
-
-## § 11 Auslagen, Steuern
-
-1. Notwendige Auslagen für Plenara werden gegen Beleg erstattet. Arbeit wird nicht vergütet.
-2. Die Gesellschaft führt einfache Bücher (Einnahmen/Ausgaben). Jeder Gesellschafter versteuert seinen Anteil selbst. Sobald die Gesellschaft mit Gewinnabsicht tätig wird, meldet sie das Gewerbe bei der Stadt Billerbeck an.
-3. Die Gesellschaft hat ein eigenes Geschäftskonto. Alle Einnahmen (auch von Zahlungsdienstleistern) gehen dorthin, keine auf private Konten. Beide haben Einsicht, Ausgaben über das Konto richten sich nach § 6 Abs. 2.
-
-## § 12 Umwandlung in UG
-
-1. **Ziel:** Die Gesellschafter gründen **so früh wie möglich, möglichst bevor Kunden über die Website Abos abschließen**, eine UG, voraussichtlich bis zum 31.01.2027. Das ist keine zwingende Voraussetzung für die Freischaltung der Bezahlfunktion (§ 2 Abs. 3). Will ein Gesellschafter die Gründung, wirkt der andere unverzüglich mit.
-2. **Weg:** Eine GbR wird nicht unmittelbar zur UG. Die Gesellschafter gründen die UG, und die Gesellschaft überträgt ihr das gesamte Vermögen (Rechte, Verträge, Domains, Konten, Zugänge) **durch Verkauf oder Übertragung gegen Gegenleistung** (zum Beispiel Gesellschafterdarlehen), nicht als Sacheinlage, weil eine UG unter 25.000 € Stammkapital keine Sacheinlagen annehmen darf. Beide stimmen zu. Wie und zu welchem Wert, klären die Gesellschafter vor der Gründung mit Anwalt und Steuerberater.
-3. **Beteiligung:** Die Anteile an der UG entsprechen den Anteilen an der GbR (je 50 %). Beide werden Geschäftsführer.
-4. **Satzung der UG:** In der UG gelten **eigene, neu zu verhandelnde Regeln**, die sich von diesem Vertrag völlig unterscheiden dürfen, insbesondere **Erbfolge** (zum Beispiel Eintritt der Erben oder Übernahme durch den anderen gegen Entschädigung), Abfindung beim Ausscheiden, Vesting, Vorkaufsrecht, Wettbewerbsverbot, Vergütung und Beschlussregeln. Die Regeln dieses Vertrags (Einstimmigkeit, gemeinsame Verantwortung, Vertraulichkeit) sind nur die Ausgangsbasis. Der Ausschluss von Abfindung und Erbfolge in § 9 gilt ausdrücklich nur für die GbR.
-5. Einigen sich die Gesellschafter nicht innerhalb von 30 Tagen auf die Satzung der UG, gilt die gesetzliche Mustersatzung mit 50/50 und beiden als Geschäftsführern.
-6. Die UG kann später durch Kapitalerhöhung zur GmbH werden.
-7. Mit der Übertragung ist die GbR beendet; vorher begründete Verbindlichkeiten übernimmt die UG, soweit die Gläubiger zustimmen.
-
-## § 13 Schlussbestimmungen
-
-1. Änderungen bedürfen der Textform.
-2. Ist eine Bestimmung unwirksam, bleibt der Rest gültig; sie wird durch eine wirksame ersetzt, die dem Gewollten am nächsten kommt.
-3. Es gilt deutsches Recht. Es gelten die gesetzlichen Gerichtsstände.
+Änderungen brauchen die Textform. Ist eine Regel unwirksam, bleibt der Rest gültig, und sie wird durch eine wirksame ersetzt, die dem Gewollten am nächsten kommt. Es gilt deutsches Recht und es gelten die gesetzlichen Gerichtsstände.
 
 Billerbeck, den ________________
 
 ________________ [Name A] &nbsp;&nbsp;&nbsp;&nbsp; ________________ [Name B]
-
----
-
-## Anlage 1: Bestehende Rechte
-
-Zur Gesellschaft gehört alles, was die Gesellschafter bis zur Unterzeichnung zu Plenara (bisher „Ratsmonitor“) geschaffen haben, auch wenn es hier nicht einzeln steht, insbesondere:
-
-- der gesamte Quellcode, die Datenbestände, Texte, Grafiken, Videos und Skripte im Projekt „Ratsmonitor“ / „Plenara“,
-- der Name „Plenara“ mit Logo sowie alle bisherigen Entwürfe dazu,
-- alle Domains, Server, Konten und Zugänge, die für Plenara angelegt wurden, gleich auf wessen Namen sie laufen. Der jeweilige Inhaber hält sie für die Gesellschaft und überträgt sie auf Verlangen.
-
-## Anlage 2: Aufteilung der Arbeit
-
-Die Gesellschafter teilen die Arbeit derzeit untereinander auf. Wer was übernimmt, halten sie formlos in Textform fest und ändern es nach Bedarf. Beide sind für alle Bereiche mitverantwortlich und mit allen Systemen vertraut.
