@@ -234,8 +234,6 @@ export const BRANCHEN: Branche[] = [
   },
 ];
 
-/* TODO: „< 24 Std.“ ist ein Beispielwert (Doku Kap. 8) */
-export const NOTIFY_STAT: [string, string] = ["< 24 Std.", "von der Veröffentlichung bis zu Ihrer Benachrichtigung"];
 
 export interface Qa {
   q: string;

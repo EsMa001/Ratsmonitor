@@ -10,7 +10,7 @@ Jede Verletzung der Sicherheit, die zu Vernichtung, Verlust, Veränderung oder u
 
 - Meldung an die zuständige Aufsichtsbehörde **binnen 72 Stunden** nach Bekanntwerden (Art. 33 DSGVO), auch wenn noch nicht alles geklärt ist. Spätere Angaben werden nachgereicht.
 - Die Meldung ist unterblieben, wenn die Panne voraussichtlich kein Risiko für Rechte und Freiheiten Betroffener hat. Diese Entscheidung wird schriftlich begründet und abgelegt.
-- Zuständige Behörde: **[offen]** (Sitz der Gesellschaft bzw. der GbR; vor Gründung prüfen).
+- Zuständige Behörde: die Landesdatenschutzbehörde am Sitz der Gesellschaft (bei Gründung bestätigen).
 
 ## Ablauf
 
@@ -23,10 +23,10 @@ Jede Verletzung der Sicherheit, die zu Vernichtung, Verlust, Veränderung oder u
 
 ## Verantwortlich
 
-- Erste Ansprechperson: **[offen, Name]**
-- Vertretung: **[offen, Name]**
+- Erste Ansprechperson: **die Gesellschafter der GbR**
+- Vertretung: **der jeweils andere Gesellschafter**
 - Für Auftragsverarbeiter (Cloudflare, OpenAI): deren Meldepflichten gegenüber uns sind im AVV geregelt (siehe `docs/recht/pflichten-und-avv.md`). Sie informieren uns ohne unangemessene Verzögerung.
 
 ## Dokumentation
 
-Jede Panne bekommt einen Eintrag im Vorfallprotokoll, auch wenn sie nicht meldepflichtig ist. Der Eintrag enthält die Bewertung und die Begründung. Aufbewahrung: **[offen]**.
+Jede Panne bekommt einen Eintrag im Vorfallprotokoll, auch wenn sie nicht meldepflichtig ist. Der Eintrag enthält die Bewertung und die Begründung. Aufbewahrung: **3 Jahre** (Vorschlag).
