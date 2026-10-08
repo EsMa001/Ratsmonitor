@@ -1,12 +1,12 @@
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { useBrand } from "../lib/brand";
-import { DarkCta, HitPreview, PageHead, SearchTermButton, useOpenSearch } from "./blocks";
+import { HitPreview, PageHead, SearchTermButton, useOpenSearch } from "./blocks";
 import type { Branche } from "./content";
 import { Icon } from "./icons";
 import { AnalyticsLogo } from "../components/Brand";
 import { LiveThumb } from "./BranchenLive";
 import { useRouter } from "next/navigation";
-import { ANALYSEN, ENTERPRISE, type EnterpriseBlock } from "./branchen-enterprise";
+import { ANALYSEN, ENTERPRISE, PLENARAX_VORTEILE, type EnterpriseBlock } from "./branchen-enterprise";
 
 function Timeline({ b }: { b: Branche }) {
   const { name } = useBrand();
@@ -21,7 +21,7 @@ function Timeline({ b }: { b: Branche }) {
             <span className="ri-tl__icon">
               <Icon name={icon} size={18} />
             </span>
-            <span className="ri-tl__label">{reported ? `${name} meldet` : "Außerhalb des Rats"}</span>
+            {!reported && <span className="ri-tl__label">Außerhalb des Rats</span>}
             <span className="ri-tl__title">{title}</span>
           </li>
         );
@@ -30,7 +30,7 @@ function Timeline({ b }: { b: Branche }) {
   );
 }
 
-function EnterpriseSection({ e, terms }: { e: EnterpriseBlock; terms: string[] }) {
+function EnterpriseSection({ e, terms, slug }: { e: EnterpriseBlock; terms: string[]; slug: string }) {
   const { name } = useBrand();
   const router = useRouter();
   const card = (id: keyof typeof ANALYSEN, text: string, term: string) => {
@@ -44,22 +44,21 @@ function EnterpriseSection({ e, terms }: { e: EnterpriseBlock; terms: string[] }
     );
   };
   return (
-    <section className="ri-sec bg-teal-50/40">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+    <section className="ri-sec" style={{ backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0) 40%, #ffffff 100%), radial-gradient(circle, rgba(13,148,136,0.22) 1.3px, transparent 1.8px)", backgroundSize: "100% 100%, 22px 22px" }}>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2" style={{ marginTop: -40 }}>
         <AnalyticsLogo size={32} />
-        <p className="m-0 text-[14px] text-slate-500">Im Tarif Enterprise, für Organisationen mit mehreren Beteiligten</p>
+        <p className="m-0 text-[14px] text-slate-500">Im Tarif Enterprise</p>
       </div>
-      <h2 className="ri-h2" style={{ marginTop: 16 }}>{e.title}</h2>
-      <div className="grid gap-10 sm:grid-cols-2" style={{ marginTop: 28 }}>
-        {e.analysen.slice(0, 2).map(([id, text], i) => card(id, text, terms[i] ?? terms[0]))}
+      
+      <div className="grid gap-x-10 gap-y-8 sm:grid-cols-3" style={{ marginTop: 24 }}>
+        {PLENARAX_VORTEILE.map(([id, title, text]) => (
+          <button key={title} type="button" onClick={() => router.push(ANALYSEN[id].href)} className="block w-full text-left">
+            <h3 className="m-0 text-[16px] font-semibold text-slate-900">{title}</h3>
+            <div className="mt-3"><LiveThumb id={id} term={terms[0]} /></div>
+            <p className="m-0 mt-4 text-[16px] leading-relaxed text-slate-500">{text}</p>
+          </button>
+        ))}
       </div>
-      <p className="m-0 mt-10 max-w-[760px] border-t border-slate-200 pt-5 text-[16px] leading-relaxed text-slate-500">
-        <strong className="font-semibold text-slate-900">{e.team[0]}: </strong>
-        {e.team[1]}{" "}
-        <button type="button" onClick={() => router.push("/preise")} className="text-teal-600 hover:underline">
-          Tarife ansehen →
-        </button>
-      </p>
     </section>
   );
 }
@@ -68,27 +67,40 @@ export function BranchePage({ b }: { b: Branche }) {
   const { name } = useBrand();
   const term = b.keywords[0];
   const openBenefit = useOpenSearch();
+  const [pick, setPick] = useState(0);
+  const beispiele = b.examples ?? [];
   return (
     <>
-      <PageHead icon={b.icon} label="Für Ihre Branche" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview term={term} example={b.example} />}>
+      <PageHead icon={b.icon} label="Anwender" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview term={term} example={beispiele[pick] ?? b.example} topics={b.watch} active={pick} onPick={setPick} />}>
         <div className="ri-actions">
           <SearchTermButton term={term} />
         </div>
-        <p className="ri-for">Für {b.audience}</p>
       </PageHead>
 
-      {/* Nutzen und Themen im gleichen Dreier-Raster: Linie oben, Titel, Text */}
+      {/* Nutzen je Rolle: Icon und Name der Rolle, darunter ihr konkreter Nutzen */}
       <section className="ri-sec ri-sec--tight">
-        <h2 className="ri-h2">Ihr Nutzen</h2>
-        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
-          {b.benefits.map(([, title, text, term]) => (
-            <div key={title} className="border-t border-slate-200 pt-5">
-              <h3 className="m-0 text-[16px] font-semibold text-slate-900">{title}</h3>
-              <div>
-                <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{text}</p>
-                <button type="button" onClick={() => openBenefit(term)} className="mt-1 text-[14px] text-teal-600 hover:underline">
-                  Suche „{term}“ →
-                </button>
+        <h2 className="ri-h2">Für Ihre Rolle</h2>
+        <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
+          {(b.rollen ?? []).map((rolle) => (
+            <div key={rolle.name}>
+              <div className="flex items-center gap-3">
+                <span className="ri-tl__icon">
+                  <Icon name={rolle.icon} size={18} />
+                </span>
+                <h3 className="m-0 text-[18px] font-semibold text-slate-900">{rolle.name}</h3>
+              </div>
+              <div className="mt-5 space-y-6 border-l-2 border-teal-100 pl-5">
+                {b.benefits
+                  .filter(([, , , , r]) => r === rolle.name)
+                  .map(([, title, text, term]) => (
+                    <div key={title}>
+                      <p className="m-0 text-[16px] font-semibold text-slate-900">{title}</p>
+                      <p className="m-0 mt-1 text-[16px] leading-relaxed text-slate-500">{text}</p>
+                      <button type="button" onClick={() => openBenefit(term)} className="mt-1 text-[14px] text-teal-600 hover:underline">
+                        Suche „{term}“ →
+                      </button>
+                    </div>
+                  ))}
               </div>
             </div>
           ))}
@@ -102,20 +114,8 @@ export function BranchePage({ b }: { b: Branche }) {
         <Timeline b={b} />
       </section>
 
-      <section className="ri-sec ri-sec--tight">
-        <h2 className="ri-h2">Worauf {name} für Sie achtet</h2>
-        <div className="flex flex-wrap gap-2" style={{ marginTop: 24 }}>
-          {b.watch.map((w) => (
-            <button key={w} type="button" onClick={() => openBenefit(w)} className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[16px] text-slate-900 hover:border-teal-600 hover:text-teal-600">
-              {w}
-            </button>
-          ))}
-        </div>
-      </section>
+      {ENTERPRISE[b.slug] && <EnterpriseSection e={ENTERPRISE[b.slug]} terms={b.keywords} slug={b.slug} />}
 
-      {ENTERPRISE[b.slug] && <EnterpriseSection e={ENTERPRISE[b.slug]} terms={b.keywords} />}
-
-      <DarkCta title={b.closing} pills={b.keywords} />
     </>
   );
 }

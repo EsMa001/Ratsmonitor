@@ -60,6 +60,19 @@ function Road(p: LucideProps) {
   );
 }
 
+/* X aus dem Plenara.X-Logo: vier Arme aus verblassenden Quadraten um einen Mittelpunkt (wie components/ratsmonitor/components/Brand.tsx) */
+function PlenaraX(p: LucideProps) {
+  const arms = [1, -1].flatMap((dx) => [1, -1].flatMap((dy) => Array.from({ length: 3 }, (_, i) => [12 + dx * (4.6 + i * 2.3), 12 + dy * (4.6 + i * 2.3), 1 - i * 0.15, 3.4 - i * 0.35] as const)));
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={p.size ?? 24} height={p.size ?? 24} viewBox="0 0 24 24" fill="#0d9488">
+      {arms.map(([x, y, o, w]) => (
+        <rect key={x + "-" + y} x={x - w / 2} y={y - w / 2} width={w} height={w} fillOpacity={o} />
+      ))}
+      <rect x={10.9} y={10.9} width={2.2} height={2.2} />
+    </svg>
+  );
+}
+
 const ICONS = {
   arrowRight: ArrowRight,
   bell: Bell,
@@ -74,6 +87,7 @@ const ICONS = {
   clock: Clock,
   droplet: Droplet,
   euro: Euro,
+  plenaraX: PlenaraX,
   eye: Eye,
   fileText: FileText,
   handshake: Handshake,

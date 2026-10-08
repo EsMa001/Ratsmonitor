@@ -5,6 +5,8 @@ export type TodoItem = {
   hinweis?: string;
   /** Priorität offener Punkte: 1 vor dem Start nötig, 2 wichtig, 3 später */
   prio?: 1 | 2 | 3;
+  /** Art: „code“ = im Repo umsetzbar, „extern“ = Handlung außerhalb des Codes */
+  art?: "code" | "extern";
   erledigt: boolean;
   /** geplantes Datum, ISO „JJJJ-MM-TT“ */
   faellig: string | null;

@@ -152,7 +152,7 @@ export function AboutPage() {
         title="Welche Beschlüsse zählen in Ihrer Branche?"
         sub="Acht Branchen, jeweils mit typischem Ablauf und passenden Suchbegriffen."
         action={
-          <Link href="/branchen/bauwesen" className="ri-btn ri-btn--inv">
+          <Link href="/branchen/immobilien" className="ri-btn ri-btn--inv">
             Zu den Use Cases
           </Link>
         }

@@ -44,7 +44,8 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
   const [edits, setEdits] = useState<Record<string, Edit>>({});
   const [filter, setFilter] = useState<Filter>("offen");
   const [q, setQ] = useState("");
-  const [prio1, setPrio1] = useState(false);
+  const [prioF, setPrioF] = useState<0 | 1 | 2 | 3>(0);
+  const [artF, setArtF] = useState<"alle" | "code" | "extern">("alle");
   const [error, setError] = useState("");
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
@@ -136,9 +137,10 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
   const visible = (item: TodoItem) => {
     const kind = todoState(item, today).kind;
     const byFilter = filter === "alle" || (filter === "offen" && kind !== "done") || (filter === "ueberfaellig" && kind === "overdue") || (filter === "erledigt" && kind === "done");
-    const byPrio = !prio1 || (item.prio === 1 && !item.erledigt);
+    const byPrio = !prioF || (item.prio === prioF && !item.erledigt);
+    const byArt = artF === "alle" || (item.art ?? "extern") === artF;
     const byText = !needle || item.text.toLowerCase().includes(needle) || (item.hinweis ?? "").toLowerCase().includes(needle);
-    return byFilter && byPrio && byText;
+    return byFilter && byPrio && byArt && byText;
   };
 
   /* Termin schnell setzen: heute plus n Tage */
@@ -207,9 +209,16 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
                       <span className={"text-[12px] " + (filter === f.key ? "text-white/80" : "text-slate-400")}>{counts[f.key]}</span>
                     </button>
                   ))}
-                  <button type="button" onClick={() => setPrio1((v) => !v)} aria-pressed={prio1} className={pill(prio1)} title="Nur offene Punkte mit Priorität 1 (vor dem Start nötig)">
-                    Priorität 1
-                  </button>
+                  {([1, 2, 3] as const).map((p) => (
+                    <button key={p} type="button" onClick={() => setPrioF(prioF === p ? 0 : p)} aria-pressed={prioF === p} className={pill(prioF === p)} title={["vor dem Start nötig", "wichtig", "später"][p - 1]}>
+                      Priorität {p}
+                    </button>
+                  ))}
+                  {([["alle", "Alle Arten"], ["code", "Code"], ["extern", "Außerhalb Code"]] as const).map(([k, label]) => (
+                    <button key={k} type="button" onClick={() => setArtF(k)} aria-pressed={artF === k} className={pill(artF === k)}>
+                      {label}
+                    </button>
+                  ))}
                   <button
                     type="button"
                     onClick={() => setClosedSaved(closed.length ? [] : data.kategorien.map((c) => c.id))}

@@ -1,4 +1,5 @@
 import { useCallback, type ReactNode } from "react";
+import { StepTimeline } from "../components/results/ArticleCard";
 import { useBrand, useBrandText } from "../lib/brand";
 import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
@@ -122,34 +123,43 @@ export function PlacePill({ place }: { place: string }) {
 }
 
 /** Dunkle Benachrichtigung über einem Beispiel-Treffer */
-export function HitPreview({ term, example }: { term: string; example: Example }) {
+export function HitPreview({ term, example, topics, active, onPick }: { term: string; example: Example; topics?: string[]; active?: number; onPick?: (i: number) => void }) {
   const { name } = useBrand();
+  const openSearch = useOpenSearch();
   return (
-    <div className="ri-pv" aria-label="Beispiel einer Benachrichtigung">
-      <div className="ri-pv__note">
-        <span className="ri-pv__bell">
-          <Icon name="bell" size={15} />
-        </span>
-        <span>
-          <span className="ri-pv__title">Neue Treffer zu „{term}“</span>
-          <span className="ri-pv__meta">{name} · gerade eben</span>
-        </span>
-      </div>
-      <div className="ri-pv__card">
-        <div className="ri-pv__row">
-          <PlacePill place={example.place} />
-          <span className="ri-pv__comm">{example.committee}</span>
-          <StatusPill status={example.status} />
-        </div>
-        <p className="ri-pv__h">{example.title}</p>
-        <div className="ri-pv__lines" aria-hidden="true">
-          <span />
-          <span />
-          <span />
+    <div className="ri-pv" aria-label="Beispiel eines echten Treffers" style={{ background: "none", border: "none", boxShadow: "none", padding: 0, marginTop: 24 }}>
+      <a href={example.href ?? undefined} aria-label={example.title} style={{ display: "block", color: "inherit", textDecoration: "none" }}>
+      <div className="ri-pv__card" style={{ background: "linear-gradient(135deg, #ffffff 0%, #f1fbf9 100%)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "52px minmax(0,1fr)", gap: 12 }}>
+          {example.datum && (
+            <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid #e2e8f0", paddingRight: 10, textAlign: "center" }}>
+              <span style={{ fontSize: 22, fontWeight: 600, lineHeight: 1 }}>{example.datum[0]}</span>
+              <span style={{ marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: ".06em", color: "#0d9488" }}>{example.datum[1]}</span>
+              <span style={{ fontSize: 12, color: "#64748b" }}>{example.datum[2]}</span>
+            </div>
+          )}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <PlacePill place={example.place} />
+              <span style={{ fontSize: 13, color: "#64748b" }}>{example.committee}</span>
+            </div>
+            <p style={{ margin: "10px 0 0", fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: "#0f172a" }}>{example.title}</p>
+            {example.steps && <div style={{ marginTop: 10 }}><StepTimeline steps={example.steps} /></div>}
+          </div>
         </div>
       </div>
-      {/* TODO: fiktives Beispiel (Doku Kap. 8), optional durch echte Beispiele ersetzen */}
-      <span className="ri-pv__foot">Beispiel mit fiktiven Daten</span>
+      </a>
+      {topics && (
+        <div style={{ marginTop: 16 }}>
+          <span className="ri-pv__topics-label" style={{ display: "block", marginBottom: 8 }}>Auch im Blick</span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {topics.map((t, i) => (
+            <button key={t + i} type="button" aria-pressed={active === i} onClick={() => (onPick ? onPick(i) : openSearch(t))} className={"rounded-full border px-3 py-1 text-[13px] " + (active === i ? "border-teal-600 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-600")}>{t}</button>
+          ))}
+          </div>
+        </div>
+      )}
+      <span className="ri-pv__foot">Echter Treffer aus dem Bestand</span>
     </div>
   );
 }

@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (408 Zeilen, ⚠9)
+- app/ratsmonitor-info.css (411 Zeilen, ⚠9)
 - app/ratsmonitor.css (145 Zeilen, ⚠6)
 
 admin-access analyse-admin.css:66
@@ -362,7 +362,7 @@ process__step--open design-styles.css:129
 prose analyse-admin.css:15
 prose design-styles.css:257
 prose ratsmonitor.css:67
-ratsmonitor ratsmonitor-info.css:257
+ratsmonitor ratsmonitor-info.css:260
 ratsmonitor ratsmonitor.css:2
 region-data-badge analyse-admin.css:55
 region-data-hint analyse-admin.css:59
@@ -381,11 +381,11 @@ related-topics analyse-admin.css:26
 ri ratsmonitor-info.css:13
 ri-actions ratsmonitor-info.css:29
 ri-band ratsmonitor-info.css:54
-ri-bc ratsmonitor-info.css:160
-ri-bc__benefit ratsmonitor-info.css:164
-ri-bc__for ratsmonitor-info.css:165
-ri-bc__icon ratsmonitor-info.css:162
-ri-bc__more ratsmonitor-info.css:166
+ri-bc ratsmonitor-info.css:163
+ri-bc__benefit ratsmonitor-info.css:167
+ri-bc__for ratsmonitor-info.css:168
+ri-bc__icon ratsmonitor-info.css:165
+ri-bc__more ratsmonitor-info.css:169
 ri-bcard ratsmonitor-info.css:56
 ri-bcard__icon ratsmonitor-info.css:57
 ri-bid ratsmonitor-info.css:35
@@ -397,137 +397,139 @@ ri-btn--block ratsmonitor-info.css:28
 ri-btn--dark ratsmonitor-info.css:22
 ri-btn--inv ratsmonitor-info.css:26
 ri-btn--light ratsmonitor-info.css:24
-ri-burger ratsmonitor-info.css:254
-ri-check ratsmonitor-info.css:212
-ri-checks ratsmonitor-info.css:182
-ri-chosen ratsmonitor-info.css:224
-ri-chosen__change ratsmonitor-info.css:230
-ri-chosen__head ratsmonitor-info.css:225
-ri-chosen__name ratsmonitor-info.css:226
-ri-chosen__price ratsmonitor-info.css:227
+ri-burger ratsmonitor-info.css:257
+ri-check ratsmonitor-info.css:215
+ri-checks ratsmonitor-info.css:185
+ri-chosen ratsmonitor-info.css:227
+ri-chosen__change ratsmonitor-info.css:233
+ri-chosen__head ratsmonitor-info.css:228
+ri-chosen__name ratsmonitor-info.css:229
+ri-chosen__price ratsmonitor-info.css:230
 ri-dark ratsmonitor-info.css:86
 ri-dark__row ratsmonitor-info.css:87
 ri-dark__sub ratsmonitor-info.css:89
 ri-darkbox ratsmonitor-info.css:93
-ri-done ratsmonitor-info.css:233
-ri-done__icon ratsmonitor-info.css:234
-ri-err ratsmonitor-info.css:211
+ri-done ratsmonitor-info.css:236
+ri-done__icon ratsmonitor-info.css:237
+ri-err ratsmonitor-info.css:214
 ri-eyebrow ratsmonitor-info.css:51
-ri-faq-group ratsmonitor-info.css:144
-ri-faq-group__label ratsmonitor-info.css:145
-ri-faq-list ratsmonitor-info.css:146
-ri-faq-list--top ratsmonitor-info.css:147
-ri-field ratsmonitor-info.css:202
-ri-field__label ratsmonitor-info.css:203
+ri-faq-group ratsmonitor-info.css:147
+ri-faq-group__label ratsmonitor-info.css:148
+ri-faq-list ratsmonitor-info.css:149
+ri-faq-list--top ratsmonitor-info.css:150
+ri-field ratsmonitor-info.css:205
+ri-field__label ratsmonitor-info.css:206
 ri-for ratsmonitor-info.css:42
-ri-form ratsmonitor-info.css:200
-ri-form--center ratsmonitor-info.css:201
-ri-form__foot ratsmonitor-info.css:217
+ri-form ratsmonitor-info.css:203
+ri-form--center ratsmonitor-info.css:204
+ri-form__foot ratsmonitor-info.css:220
 ri-grid3 ratsmonitor-info.css:55
-ri-grid4 ratsmonitor-info.css:159
+ri-grid4 ratsmonitor-info.css:162
 ri-h1 ratsmonitor-info.css:39
 ri-h1--sm ratsmonitor-info.css:40
 ri-h2 ratsmonitor-info.css:48
-ri-h2--gap ratsmonitor-info.css:190
+ri-h2--gap ratsmonitor-info.css:193
 ri-h2--md ratsmonitor-info.css:49
 ri-head ratsmonitor-info.css:32
-ri-head--compact ratsmonitor-info.css:330
+ri-head--compact ratsmonitor-info.css:333
 ri-head__grid ratsmonitor-info.css:33
 ri-head__grid--top ratsmonitor-info.css:34
-ri-help ratsmonitor-info.css:210
-ri-input ratsmonitor-info.css:204
+ri-help ratsmonitor-info.css:213
+ri-input ratsmonitor-info.css:207
 ri-lead ratsmonitor-info.css:41
-ri-legal ratsmonitor-info.css:241
-ri-link ratsmonitor-info.css:214
-ri-logo ratsmonitor-info.css:262
-ri-logo__mark ratsmonitor-info.css:263
+ri-legal ratsmonitor-info.css:244
+ri-link ratsmonitor-info.css:217
+ri-logo ratsmonitor-info.css:265
+ri-logo__mark ratsmonitor-info.css:266
 ri-menu ratsmonitor-info.css:13
-ri-menu__bg ratsmonitor-info.css:259
-ri-menu__chev ratsmonitor-info.css:377
-ri-menu__close ratsmonitor-info.css:264
-ri-menu__group ratsmonitor-info.css:375
-ri-menu__head ratsmonitor-info.css:261
-ri-menu__label ratsmonitor-info.css:267
-ri-menu__label--sep ratsmonitor-info.css:340
-ri-menu__main ratsmonitor-info.css:268
-ri-menu__nav ratsmonitor-info.css:266
+ri-menu__bg ratsmonitor-info.css:262
+ri-menu__chev ratsmonitor-info.css:380
+ri-menu__close ratsmonitor-info.css:267
+ri-menu__group ratsmonitor-info.css:378
+ri-menu__head ratsmonitor-info.css:264
+ri-menu__label ratsmonitor-info.css:270
+ri-menu__label--sep ratsmonitor-info.css:343
+ri-menu__main ratsmonitor-info.css:271
+ri-menu__nav ratsmonitor-info.css:269
 ri-menu__panel ratsmonitor-info.css:17
-ri-menu__panel--flyout ratsmonitor-info.css:400
-ri-menu__start ratsmonitor-info.css:341
-ri-menu__sub ratsmonitor-info.css:272
-ri-menu__subs ratsmonitor-info.css:271
-ri-mint ratsmonitor-info.css:140
+ri-menu__panel--flyout ratsmonitor-info.css:403
+ri-menu__start ratsmonitor-info.css:344
+ri-menu__sub ratsmonitor-info.css:275
+ri-menu__subs ratsmonitor-info.css:274
+ri-mint ratsmonitor-info.css:143
 ri-pill ratsmonitor-info.css:91
 ri-pills ratsmonitor-info.css:90
-ri-pk ratsmonitor-info.css:171
-ri-pk--hl ratsmonitor-info.css:172
-ri-pk__amount ratsmonitor-info.css:177
-ri-pk__badge ratsmonitor-info.css:173
-ri-pk__cta ratsmonitor-info.css:188
-ri-pk__desc ratsmonitor-info.css:175
-ri-pk__hr ratsmonitor-info.css:180
-ri-pk__items ratsmonitor-info.css:181
-ri-pk__label ratsmonitor-info.css:184
-ri-pk__note ratsmonitor-info.css:179
-ri-pk__price ratsmonitor-info.css:176
-ri-pk__unit ratsmonitor-info.css:178
-ri-place ratsmonitor-info.css:112
-ri-plan ratsmonitor-info.css:219
-ri-plan__name ratsmonitor-info.css:222
-ri-plan__price ratsmonitor-info.css:223
-ri-plans ratsmonitor-info.css:218
-ri-point ratsmonitor-info.css:136
-ri-point__num ratsmonitor-info.css:137
-ri-points ratsmonitor-info.css:135
-ri-points--2 ratsmonitor-info.css:343
-ri-prices ratsmonitor-info.css:170
-ri-proto ratsmonitor-info.css:238
+ri-pk ratsmonitor-info.css:174
+ri-pk--hl ratsmonitor-info.css:175
+ri-pk__amount ratsmonitor-info.css:180
+ri-pk__badge ratsmonitor-info.css:176
+ri-pk__cta ratsmonitor-info.css:191
+ri-pk__desc ratsmonitor-info.css:178
+ri-pk__hr ratsmonitor-info.css:183
+ri-pk__items ratsmonitor-info.css:184
+ri-pk__label ratsmonitor-info.css:187
+ri-pk__note ratsmonitor-info.css:182
+ri-pk__price ratsmonitor-info.css:179
+ri-pk__unit ratsmonitor-info.css:181
+ri-place ratsmonitor-info.css:115
+ri-plan ratsmonitor-info.css:222
+ri-plan__name ratsmonitor-info.css:225
+ri-plan__price ratsmonitor-info.css:226
+ri-plans ratsmonitor-info.css:221
+ri-point ratsmonitor-info.css:139
+ri-point__num ratsmonitor-info.css:140
+ri-points ratsmonitor-info.css:138
+ri-points--2 ratsmonitor-info.css:346
+ri-prices ratsmonitor-info.css:173
+ri-proto ratsmonitor-info.css:241
 ri-pv ratsmonitor-info.css:98
-ri-pv2 ratsmonitor-info.css:119
-ri-pv2__h ratsmonitor-info.css:124
-ri-pv2__item ratsmonitor-info.css:121
-ri-pv2__meta ratsmonitor-info.css:125
-ri-pv2__row ratsmonitor-info.css:123
-ri-pv2__search ratsmonitor-info.css:120
+ri-pv2 ratsmonitor-info.css:122
+ri-pv2__h ratsmonitor-info.css:127
+ri-pv2__item ratsmonitor-info.css:124
+ri-pv2__meta ratsmonitor-info.css:128
+ri-pv2__row ratsmonitor-info.css:126
+ri-pv2__search ratsmonitor-info.css:123
 ri-pv__bell ratsmonitor-info.css:100
 ri-pv__card ratsmonitor-info.css:103
-ri-pv__comm ratsmonitor-info.css:105
-ri-pv__foot ratsmonitor-info.css:111
-ri-pv__h ratsmonitor-info.css:107
-ri-pv__lines ratsmonitor-info.css:108
+ri-pv__comm ratsmonitor-info.css:108
+ri-pv__foot ratsmonitor-info.css:114
+ri-pv__h ratsmonitor-info.css:110
+ri-pv__lines ratsmonitor-info.css:111
 ri-pv__meta ratsmonitor-info.css:102
 ri-pv__note ratsmonitor-info.css:99
-ri-pv__row ratsmonitor-info.css:104
+ri-pv__row ratsmonitor-info.css:107
 ri-pv__title ratsmonitor-info.css:101
-ri-qa ratsmonitor-info.css:148
-ri-qa__a ratsmonitor-info.css:155
-ri-qa__a--todo ratsmonitor-info.css:156
-ri-qa__sign ratsmonitor-info.css:152
-ri-qa__sign--minus ratsmonitor-info.css:153
-ri-qa__sign--plus ratsmonitor-info.css:153
+ri-pv__topics ratsmonitor-info.css:104
+ri-pv__topics-label ratsmonitor-info.css:105
+ri-qa ratsmonitor-info.css:151
+ri-qa__a ratsmonitor-info.css:158
+ri-qa__a--todo ratsmonitor-info.css:159
+ri-qa__sign ratsmonitor-info.css:155
+ri-qa__sign--minus ratsmonitor-info.css:156
+ri-qa__sign--plus ratsmonitor-info.css:156
 ri-sec ratsmonitor-info.css:45
 ri-sec--faq ratsmonitor-info.css:47
-ri-sec--prices ratsmonitor-info.css:169
+ri-sec--prices ratsmonitor-info.css:172
 ri-sec--tight ratsmonitor-info.css:46
-ri-st ratsmonitor-info.css:106
-ri-st--ok ratsmonitor-info.css:115
-ri-st--wait ratsmonitor-info.css:116
-ri-stat ratsmonitor-info.css:130
-ri-stat__lab ratsmonitor-info.css:132
-ri-stat__num ratsmonitor-info.css:131
-ri-stats ratsmonitor-info.css:129
+ri-st ratsmonitor-info.css:109
+ri-st--ok ratsmonitor-info.css:118
+ri-st--wait ratsmonitor-info.css:119
+ri-stat ratsmonitor-info.css:133
+ri-stat__lab ratsmonitor-info.css:135
+ri-stat__num ratsmonitor-info.css:134
+ri-stats ratsmonitor-info.css:132
 ri-sub ratsmonitor-info.css:50
-ri-submit ratsmonitor-info.css:216
-ri-table ratsmonitor-info.css:191
-ri-table__first ratsmonitor-info.css:197
+ri-submit ratsmonitor-info.css:219
+ri-table ratsmonitor-info.css:194
+ri-table__first ratsmonitor-info.css:200
 ri-tl ratsmonitor-info.css:62
 ri-tl__icon ratsmonitor-info.css:65
 ri-tl__label ratsmonitor-info.css:67
 ri-tl__step ratsmonitor-info.css:64
 ri-tl__step--out ratsmonitor-info.css:66
 ri-tl__title ratsmonitor-info.css:69
-ri-topnav ratsmonitor-info.css:395
-ri-two ratsmonitor-info.css:133
+ri-topnav ratsmonitor-info.css:398
+ri-two ratsmonitor-info.css:136
 ri-vp ratsmonitor-info.css:73
 ri-vp__lab ratsmonitor-info.css:78
 ri-vp__label ratsmonitor-info.css:74
@@ -542,11 +544,11 @@ rm-dots ratsmonitor.css:140
 rm-flat ratsmonitor.css:106
 rm-glass ratsmonitor.css:115
 rm-glass-pop ratsmonitor.css:124
-rm-logo ratsmonitor-info.css:246
-rm-logo--big ratsmonitor-info.css:405
-rm-logo__mark ratsmonitor-info.css:250
-rm-logo__mark--p ratsmonitor-info.css:251
-rm-logo__text ratsmonitor-info.css:248
+rm-logo ratsmonitor-info.css:249
+rm-logo--big ratsmonitor-info.css:408
+rm-logo__mark ratsmonitor-info.css:253
+rm-logo__mark--p ratsmonitor-info.css:254
+rm-logo__text ratsmonitor-info.css:251
 rm-spinner ratsmonitor.css:137
 screen analyse-admin.css:84
 screen design-styles.css:32
@@ -718,6 +720,7 @@ wordmark__dot design-styles.css:61
 - admin-quality-check.tsx (49, ⚠5): AdminQualityCheck
 - admin-run-debug.tsx (67, ⚠3): RunDebugView, AdminRunDebug
 - admin-timeline.tsx (72, ⚠6): AdminTimeline
+- admin-todo.tsx (11): AdminTodo
 - analysis-article-list.tsx (34, ⚠1): AnalysisArticleList
 - analysis-controls.tsx (17, ⚠4): AnalysisControls
 - analysis-examples.tsx (16, ⚠5): AnalysisExamples
@@ -780,13 +783,13 @@ wordmark__dot design-styles.css:61
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (165, ⚠4): QuellenPage
-- TodoPage.tsx (324, ⚠1): TodoPage
+- TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
-- blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- branchen-enterprise.ts (106): AnalyseId, ANALYSEN, EnterpriseBlock, ENTERPRISE
-- content.ts (351, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, brancheBySlug
-- icons.tsx (114): IconName, Icon
+- blocks.tsx (209, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- branchen-enterprise.ts (76): AnalyseId, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- content.ts (424, ⚠28): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
+- icons.tsx (128): IconName, Icon
 
 ### components/ratsmonitor/lib/
 - betreiber.ts (20): BETREIBER, betreiberAdresse
@@ -808,7 +811,7 @@ wordmark__dot design-styles.css:61
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
 - listView.ts (46): ListView, setListView, useListView
-- mails.ts (134, ⚠1): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
+- mails.ts (134, ⚠2): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
 - pageTitle.ts (39): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
@@ -819,13 +822,13 @@ wordmark__dot design-styles.css:61
 - testAuth.ts (141): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
-- todos.ts (47): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
+- todos.ts (49): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
 - usePhone.ts (15): usePhone
 - uuid.ts (12): newId
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (222): MainMenu
+- MainMenu.tsx (204): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (117, ⚠4): DetailPage
@@ -840,6 +843,7 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (249, ⚠14): ANALYSE_THUMBS, AnalyticsAbout
+- AnalyticsLocked.tsx (27): AnalyticsLocked
 - AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
 - BeschluessePage.tsx (191, ⚠5): BeschluessePage
 - CompareCharts.tsx (51): PLACE_COLORS, CMonth, CompareLines, TopicRow

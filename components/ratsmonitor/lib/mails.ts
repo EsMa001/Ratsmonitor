@@ -112,7 +112,7 @@ export const alertMail = (to: string, search: { id?: string; name: string; text?
   sendMail(
     to,
     `Neu zu „${search.name}“: ${list[0]?.title ?? ""}`,
-    p(`Zu Ihrer Suche <b>${esc(search.name)}</b> ${list.length === 1 ? "gibt es einen neuen Beschluss" : `gibt es ${list.length} neue Beschlüsse`}.`) + items(list) + button("Alle Treffer ansehen", searchLink(search)),
+    p(`Zu Ihrer Suche <b>${esc(search.name)}</b> ${list.length === 1 ? "gibt es einen neuen Beschluss" : `gibt es ${list.length} neue Beschlüsse`}.`) + items(list) + `<p style="margin:12px 0 0;font-size:13px;color:#64748b">Ohne Gewähr. Maßgeblich sind die Originalunterlagen.</p>` + button("Alle Treffer ansehen", searchLink(search)),
     `Sie erhalten diese E-Mail, weil Sie für „${esc(search.name)}“ Sofort-Benachrichtigungen aktiviert haben.`,
   );
 

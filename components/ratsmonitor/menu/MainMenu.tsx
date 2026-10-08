@@ -8,7 +8,7 @@ import { useTier } from "../lib/tier";
 import { IconChevronDown } from "../components/icons";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
-const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" }[] = [
+const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" | "plenaraX" }[] = [
   { href: "/funktionen/suche", label: "Suche", icon: "search" },
   { href: "/konto/suchen", label: "Gespeicherte Suchen", icon: "heart" },
   { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
@@ -16,19 +16,16 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
   { href: "/konto/kalender", label: "Kalender", icon: "calendar" },
 ];
 
-/* Unterpunkte von „Plenara.X“ (die Gruppe selbst ist keine Seite) */
-const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "network" | "trendingUp" | "mapPin" | "circleCheck" | "users" }[] = [
-  { href: "/analytics/ueber", label: "Über Plenara.X", icon: "fileText" },
-  { href: "/analytics/diffusion", label: "Diffusionsanalyse", icon: "map" },
-  { href: "/analytics/graph", label: "Knowledge Graph", icon: "network" },
-  { href: "/analytics/trends", label: "Trends und Frühindikatoren", icon: "trendingUp" },
-  { href: "/analytics/vergleich", label: "Gebietsvergleich", icon: "mapPin" },
-  { href: "/analytics/beschluesse", label: "Status und Beschlüsse", icon: "circleCheck" },
-  { href: "/analytics/gremien", label: "Gremiennetz", icon: "users" },
-];
-
 /* Unterpunkte von „Informationen“: Tarife, Videos, Datenabdeckung und häufige Fragen */
-const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
+/* Anwender: fünf Gruppen, jede mit den Branchenseiten, die dazu gehören */
+/* Anwender: genau diese fünf Seiten, jede führt auf ihre Hauptbranche */
+const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
+  { label: "Immobilien", slug: "immobilien" },
+  { label: "Versorgung", slug: "versorgung" },
+  { label: "Planung", slug: "planung", icon: "map" },
+  { label: "Verbände", slug: "verbaende" },
+  { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
+];const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
   { href: "/preise", label: "Preise", icon: "euro" },
   { href: "/videos", label: "Videos", icon: "circlePlay" },
   { href: "/quellen", label: "Datenabdeckung", icon: "layers" },
@@ -41,12 +38,12 @@ const MENU_GAP = 6;
 
 export function MainMenu() {
   /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
-  const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases" | "analytics" | "info">(false);
+  const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases" | "info">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
   const { tier } = useTier();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
-  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/analytics") ? "analytics" : ["/preise", "/videos", "/quellen", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
+  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/analytics") ? "funktionen" : ["/preise", "/videos", "/quellen", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -102,7 +99,7 @@ export function MainMenu() {
     close();
     window.scrollTo(0, 0);
   };
-  const toggle = (which: "all" | "funktionen" | "usecases" | "analytics" | "info", el: HTMLElement | null) => {
+  const toggle = (which: "all" | "funktionen" | "usecases" | "info", el: HTMLElement | null) => {
     if (open === which) return close();
     const btn = el?.getBoundingClientRect();
     const head = btnRef.current?.closest("header")?.getBoundingClientRect();
@@ -121,9 +118,9 @@ export function MainMenu() {
       </button>
       {/* Breite Bildschirme: Menüpunkte direkt in der Kopfzeile, Funktionen und Use Cases klappen auf */}
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
-        {(["funktionen", "usecases", "analytics", "info"] as const).map((g) => (
+        {(["usecases", "funktionen", "info"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Use Cases" : g === "analytics" ? "Plenara.X" : "Informationen"}
+            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Anwender" : "Informationen"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
@@ -136,48 +133,33 @@ export function MainMenu() {
               {/* Gleiche Gruppen wie in der Fußzeile; Linien statt Kästen. Gespeichertes und Konto erreicht man über die Icons in der Kopfzeile */}
               <nav className="ri-menu__nav" aria-label="Menü">
                 {/* Funktionen und Use Cases sind einklappbar; die Gruppen selbst sind keine Seiten */}
-                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "funktionen"} onClick={() => setOpenGroup(openGroup === "funktionen" ? "" : "funktionen")}>
-                  Funktionen
-                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "funktionen" ? "rotate-180" : ""}`} />
-                </button>}
-                {show("funktionen") && (
-                  <ul className="ri-menu__subs">
-                    {FUNKTIONEN.map((f) => (
-                      <li key={f.href}>
-                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
-                          <Icon name={f.icon} size={15} />
-                          {f.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
                 {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "usecases"} onClick={() => setOpenGroup(openGroup === "usecases" ? "" : "usecases")}>
-                  Use Cases
+                  Anwender
                   <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "usecases" ? "rotate-180" : ""}`} />
                 </button>}
                 {show("usecases") && (
                   <ul className="ri-menu__subs">
-                    {BRANCHEN.map((b) => {
-                      const href = `/branchen/${b.slug}`;
+                    {ANWENDER.map((g) => {
+                      const b = BRANCHEN.find((x) => x.slug === g.slug);
+                      const href = `/branchen/${g.slug}`;
                       return (
-                        <li key={b.slug}>
+                        <li key={g.slug}>
                           <Link href={href} className="ri-menu__sub" aria-current={current(href)} onClick={pick}>
-                            <Icon name={b.icon} size={15} />
-                            {b.name}
+                            <Icon name={g.icon ?? b?.icon ?? "fileText"} size={15} />
+                            {g.label}
                           </Link>
                         </li>
                       );
                     })}
                   </ul>
                 )}
-                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "analytics"} onClick={() => setOpenGroup(openGroup === "analytics" ? "" : "analytics")}>
-                  Plenara.X
-                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "analytics" ? "rotate-180" : ""}`} />
+                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "funktionen"} onClick={() => setOpenGroup(openGroup === "funktionen" ? "" : "funktionen")}>
+                  Funktionen
+                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "funktionen" ? "rotate-180" : ""}`} />
                 </button>}
-                {show("analytics") && (
+                {show("funktionen") && (
                   <ul className="ri-menu__subs">
-                    {ANALYTICS.map((f) => (
+                    {[{ href: "/analytics/ueber", label: "Plenara.X", icon: "plenaraX" as const }, ...FUNKTIONEN].map((f) => (
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />

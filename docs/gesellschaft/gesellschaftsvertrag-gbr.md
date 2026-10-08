@@ -13,11 +13,11 @@ zwischen **[Name A]**, [Anschrift], und **[Name B]**, [Anschrift] (nachfolgend �
 
 ## § 2 Gesellschaftsvermögen
 
-1. Zum Gesellschaftsvermögen gehört alles, was zu Plenara gehört, insbesondere Quellcode, Datenbestände, Texte, Grafiken, Videos, Name, Logo und Marke, Domains, Server, Konten und Zugänge bei Diensten, Verträge und Guthaben. Das gilt auch für alles, was die Gesellschafter vor Vertragsschluss für Plenara geschaffen haben, und für alles, was sie künftig dafür schaffen. Jeder Gesellschafter überträgt seine Rechte daran auf die Gesellschaft.
+1. Zum Gesellschaftsvermögen gehört alles, was zu Plenara gehört, insbesondere Quellcode, Datenbestände, Texte, Grafiken, Videos, Name, Logo und Marke. Die Gesellschaft besitzt derzeit weder Konten noch eigene Server; Domains, Server, Konten, Zugänge bei Diensten, Verträge und Guthaben kommen dazu, sobald sie entstehen. Das gilt auch für alles, was die Gesellschafter vor Vertragsschluss für Plenara geschaffen haben, und für alles, was sie künftig dafür schaffen. Jeder Gesellschafter überträgt seine Rechte daran auf die Gesellschaft.
 2. Rechte, die sich nicht übertragen lassen, räumt jeder Gesellschafter der Gesellschaft als ausschließliches, zeitlich unbegrenztes und übertragbares Nutzungsrecht ein.
 3. Jeder Gesellschafter versichert, dass er über seine Beiträge frei verfügen darf (zum Beispiel keine Rechte eines Arbeitgebers oder Dritter).
-4. Konten und Zugänge laufen auf die Gesellschaft oder eine gemeinsame Adresse. Wer sie bisher auf seinen eigenen Namen hält, hält sie für die Gesellschaft und überträgt sie auf Verlangen. **Beide Gesellschafter haben jederzeit Administratorzugang zu allen Systemen.** Die Zugangsdaten liegen in einem gemeinsamen Passwortmanager.
-5. Die Gesellschaft führt ein eigenes Geschäftskonto. Sämtliche Einnahmen (auch vom Zahlungsdienstleister) fließen auf dieses Konto, nicht auf private Konten.
+4. Konten und Zugänge, die künftig entstehen, laufen auf die Gesellschaft oder eine gemeinsame Adresse. Wer sie bisher auf seinen eigenen Namen hält, hält sie für die Gesellschaft und überträgt sie auf Verlangen. **Beide Gesellschafter haben jederzeit Administratorzugang zu allen Systemen.** Die Zugangsdaten liegen in einem gemeinsamen Passwortmanager.
+5. Sobald die Gesellschaft Einnahmen hat, führt sie dafür ein eigenes Geschäftskonto. Sämtliche Einnahmen (auch vom Zahlungsdienstleister) fließen auf dieses Konto, nicht auf private Konten.
 6. Einlagen in Geld müssen nicht geleistet werden. Die Gesellschafter sind **zu je 50 %** am Gesellschaftsvermögen sowie an Gewinn und Verlust beteiligt.
 
 ## § 3 Geschäftsführung und Vertretung

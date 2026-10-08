@@ -58,7 +58,7 @@ Warnhinweise nutzen Amber (Tailwind `amber-50` Fläche, `amber-200` Rand, `amber
 
 **Regeln (Ist-Stand, aus `FRONTEND.md`):** Weiß, Linien statt Kästen und Kacheln, keine bunten Abzeichen, Status als schlichter grauer Text. Teal ist die einzige Farbe mit Bedeutung.
 
-**Vorschlag zum Kontrast:** Teal `#0d9488` erreicht auf Weiß nur 3,7 : 1. Das genügt für große Schrift, Linien und Symbole, aber nicht für kleinen Text (Richtwert 4,5 : 1). Das betrifft Links, die kleinen Eyebrow-Zeilen und weißen Text auf Teal-Flächen. Für kleinen Text auf Weiß empfehle ich `#0f766e` (5,5 : 1) und für Flächen mit weißem Text ebenfalls `#0f766e`. Das ändert den Eindruck kaum. Entscheidung offen.
+**Vorschlag zum Kontrast:** Teal `#0d9488` erreicht auf Weiß nur 3,7 : 1. Das genügt für große Schrift, Linien und Symbole, aber nicht für kleinen Text (Richtwert 4,5 : 1). Das betrifft Links, die kleinen Eyebrow-Zeilen und weißen Text auf Teal-Flächen. Für kleinen Text auf Weiß empfehle ich `#0f766e` (5,5 : 1) und für Flächen mit weißem Text ebenfalls `#0f766e`. Das ändert den Eindruck kaum. **Entschieden (08.10.26):** `#0f766e` für kleinen Text und für Flächen mit weißem Text, `#0d9488` bleibt für große Flächen, Linien und Symbole.
 
 ## 4. Schrift
 
