@@ -78,7 +78,7 @@
       "id": "marketing",
       "name": "Marketing und Vertrieb",
       "items": [
-        { "id": "ma-zielgruppen", "text": "Zielgruppen und Kernbotschaft festlegen", "hinweis": "Slogan und Vorteile Stufe A aus docs/produkt/vorteile.json verwenden.", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-zielgruppen", "text": "Zielgruppen und Kernbotschaft festlegen", "hinweis": "Festgelegt in docs/marketing/zielgruppen.md (08.10.26). Offen: Vorteil „Ganz Deutschland“ belegbar umformulieren.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "ma-branchenseiten", "text": "Branchenseiten inhaltlich prüfen und fertigstellen", "hinweis": "Texte am 08.10.26 auf belegbare Aussagen geprüft. Beispiel-Treffer noch fiktiv.", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-seo", "text": "SEO-Seiten je Gemeinde und Thema mit echtem Mehrwert", "hinweis": "Keine dünnen Massenseiten; jede Seite mit konkreten Beschlüssen und Einordnung.", "prio": 3, "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-social", "text": "Social-Media-Kanäle und Videos", "hinweis": "Skripte und Werkzeuge liegen in docs/videos.", "prio": 3, "erledigt": false, "faellig": null, "erledigtAm": null },
