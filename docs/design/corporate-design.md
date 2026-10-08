@@ -128,7 +128,7 @@ Warnhinweise nutzen Amber (Tailwind `amber-50` Fläche, `amber-200` Rand, `amber
 |---|---|
 | Favicon und App-Symbole stammten von der früheren Marke (dunkelgrünes Quadrat mit Gebäude-Symbol) | Neu aus der Bildmarke (p aus Punkten, Teal): `public/favicon.svg` transparent, `icon-192.png`, `icon-512.png` und `apple-touch-icon.png` auf Weiß |
 | Web-App-Manifest nannte „vor Ort · Münster“ | Name „Plenara“, Beschreibung mit Slogan, Farben Weiß und Teal |
-| Seitentitel-Zusatz „Politik für Ihre Region“ | Der Titel im Tab ist nur noch „Plenara“ (`lib/brands.ts`, `pageTitle`) |
+| Seitentitel-Zusatz „Politik für Ihre Region“ | Titel im Tab: Startseite „Plenara“, alle anderen Seiten „Seitenname · Plenara“ (zum Beispiel „Preise · Plenara“); die Analyse-Seiten „… · Plenara.X“. Namen der Seiten in `lib/pageTitle.ts`. |
 | Standardtexte der Push-Mitteilung („in Münster“, „Öffne vor Ort“) und Seitenbeschreibung („NRW und Niedersachsen“) | Auf Plenara und den Slogan umgestellt (`public/sw.js`, `app/layout.tsx`) |
 
 **Noch offen:**

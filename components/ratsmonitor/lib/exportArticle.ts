@@ -396,6 +396,6 @@ export async function exportArticlePdf({ t, place, docs, events }: ArticleExport
     pdf.textWithLink(link, ML, PH - 10, { url: link });
     pdf.text(`Seite ${i} von ${n}`, PW - MR, PH - 10, { align: "right" });
   }
-  pdf.setProperties({ title: t.title, subject: [place, status].filter(Boolean).join(" · "), creator: document.title.split(" · ")[0] });
+  pdf.setProperties({ title: t.title, subject: [place, status].filter(Boolean).join(" · "), creator: document.title.split(" · ").pop() });
   pdf.save(`${slug(t.title)}.pdf`);
 }

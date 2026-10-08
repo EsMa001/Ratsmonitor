@@ -681,6 +681,9 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/videos/
 - page.tsx (2): Page
 
+### app/(monitor)/widerruf/
+- page.tsx (2): Page
+
 ### app/abgemeldet/
 - page.tsx (2)
 
@@ -731,7 +734,7 @@ wordmark__dot design-styles.css:61
 - process-progress.tsx (8, ⚠1): ProcessProgress
 
 ### components/ratsmonitor/
-- App.tsx (44, ⚠1): MonitorApp
+- App.tsx (47, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (62, ⚠1): AccountMenu
@@ -770,23 +773,27 @@ wordmark__dot design-styles.css:61
 ### components/ratsmonitor/info/
 - AboutPage.tsx (164): AboutPage
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
+- AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenPages.tsx (130): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (48): isInfoPath, InfoPages
+- LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (165, ⚠4): QuellenPage
 - TodoPage.tsx (231): TodoPage
 - VideosPage.tsx (150): VideosPage
+- WiderrufPage.tsx (79): WiderrufPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (106): AnalyseId, ANALYSEN, EnterpriseBlock, ENTERPRISE
 - content.ts (363, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, brancheBySlug
 - icons.tsx (112): IconName, Icon
 
 ### components/ratsmonitor/lib/
+- betreiber.ts (20): BETREIBER, betreiberAdresse
 - brand.ts (54): setLogo, useBrand, useBrandText, brandName
-- brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, PAGE_TAGLINE, pageTitle
+- brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, pageTitle
 - clipboard.ts (26): copyText
 - constants.ts (37, ⚠1): THEMEN, StatusInfo, STATUS, STATUS_BY_ID, TEASER_MAX_SENTENCES, isCovered, MAP_COLORS, colorForCoverage, colorForCount
 - entitlements.ts (41): useEntitlements

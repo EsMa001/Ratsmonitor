@@ -8,7 +8,8 @@ import {GateDialog} from './components/GateDialog';
 import {ConfirmDialog} from './components/ConfirmDialog';
 // DevBrandSwitcher (Logo-Umschalter) ist nicht eingebunden; zum Wiedereinschalten importieren und im JSX von Content rendern.
 import {useBrand} from './lib/brand';
-import {pageTitle} from './lib/brands';
+import {tabTitle} from './lib/pageTitle';
+import {brancheBySlug} from './info/content';
 import {setFavicon} from './lib/favicon';
 import {useData} from './state/data';
 import {useSearchResults} from './state/search';
@@ -33,7 +34,9 @@ function useBrandTitle(p:string,notFound:boolean){
  const what=[text&&`„${text}“`,place&&(text?`in ${place}`:place)].filter(Boolean).join(' ');
  const count=!res.loading&&!res.totalPending&&what?`${res.total.toLocaleString('de-DE')} Treffer`:'';
  useEffect(()=>{
-  document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):pageTitle(brand);
+  // Analyse-Seiten setzen ihren Titel selbst („Diffusionsanalyse · Plenara.X“); ein Überschreiben hier würde ihn zurücksetzen
+  if(!notFound&&isAnalyticsPath(p))return;
+  document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):tabTitle(p,name,p.startsWith('/branchen/')?brancheBySlug(p.slice(10))?.name:undefined);
  },[brand,name,p,notFound,what,count]);
  useEffect(()=>{setFavicon(logo);},[logo,p]);
 }
