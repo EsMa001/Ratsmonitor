@@ -23,6 +23,8 @@ const STATE_COLOR: Record<TodoKind, string> = {
   open: "#64748b",
 };
 
+const PRIO_COLOR: Record<1 | 2 | 3, string> = { 1: "#0f172a", 2: "#475569", 3: "#94a3b8" };
+
 const sameEdit = (a: Edit, b: Edit) => a.erledigt === b.erledigt && a.faellig === b.faellig;
 
 export function TodoPage() {
@@ -163,7 +165,9 @@ export function TodoPage() {
                 </div>
                 {data.kategorien.map((cat) => {
                   const rows = cat.items.map((saved) => ({ saved, item: current(saved) }));
-                  const shown = rows.filter((r) => visible(r.item));
+                  /* Offene nach Priorität (1 vor 2 vor 3), erledigte und ohne Priorität ans Ende */
+                  const rank = (i: TodoItem) => (i.erledigt ? 9 : i.prio ?? 9);
+                  const shown = rows.filter((r) => visible(r.item)).sort((a, b) => rank(a.item) - rank(b.item));
                   if (!shown.length) return null;
                   const catDone = rows.filter((r) => r.item.erledigt).length;
                   return (
@@ -192,6 +196,7 @@ export function TodoPage() {
                                 </span>
                               </label>
                               <div style={{ display: "flex", flex: "0 0 auto", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                                {item.prio && !isDone && <span style={{ fontSize: 14, fontWeight: 600, color: PRIO_COLOR[item.prio] }}>Priorität {item.prio}</span>}
                                 <span style={{ fontSize: 14, fontWeight: state.kind === "overdue" ? 600 : 400, color: STATE_COLOR[state.kind] }}>{state.label}</span>
                                 <input
                                   type="date"

@@ -12,7 +12,6 @@ const HITS: { place: string; status: Status; title: string; meta: string }[] = [
   { place: "Rothenfels", status: "wait", title: "Neues Radwegekonzept und Änderung der Parkraumbewirtschaftung", meta: "Hauptausschuss · 10.09.26" },
 ];
 
-/* TODO: „4.500+“ und „16 Bundesländer“ bestätigen (Doku Kap. 8) */
 /* Echte Zahlen zur Abdeckung (aus /api/sources), keine festen Werbezahlen */
 function useCoverageStats(): [string, string][] {
   const [t, setT] = useState<{ withArticles: number; connected: number; articles: number; areas: number } | null>(null);

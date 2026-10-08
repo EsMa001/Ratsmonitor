@@ -92,6 +92,7 @@ export function DetailPage(){
             <section className="mt-10">
               <h2 className="mb-1 text-[18px] font-semibold text-slate-900">Originalunterlagen</h2>
               <p className="mb-4 text-[14px] text-slate-500">Originaltitel: {t.officialTitle}</p>
+              <p className="mb-4 text-[13px] text-slate-500">Ohne Gewähr. Maßgeblich sind die Originalunterlagen.</p>
               {docs.length?(
                 <ul className="m-0 grid list-none gap-x-8 border-t border-slate-200 p-0 sm:grid-cols-2">
                   {docs.map((d,i)=><li key={i} className="border-b border-slate-200"><a href={d.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 py-3 text-[16px] text-slate-900 no-underline"><IconDoc size={28} className="flex-none text-teal-600"/><span className="min-w-0 flex-1 break-words group-hover:text-teal-600">{d.title||'Dokument'}</span><span aria-hidden="true" className="flex-none text-teal-600">↗</span></a></li>)}
