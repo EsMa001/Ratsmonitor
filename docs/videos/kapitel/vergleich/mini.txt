@@ -1,0 +1,1 @@
+@vergleich.orte Der Gebietsvergleich stellt zwei bis vier Orte nebeneinander, hier {{p.ort|text}} und {{p.ort2|text}}.

@@ -15,7 +15,7 @@
   },
   {
    "satz": 3,
-   "zahl": "{{t.pool|ziffern}}",
+   "zahl": "{{t.paths|ziffern}}",
    "label": "Vorgänge durch mindestens zwei Gremien"
   },
   {

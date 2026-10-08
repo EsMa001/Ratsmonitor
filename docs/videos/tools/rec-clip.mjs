@@ -56,6 +56,7 @@ const hidden = async (fn) => { paused = true; await sleep(250); try { await fn()
 const H = { hidden, sleep, loaded, calc, go, home, move, click, role, clickRole, clickText, type, search, scrollTo, openFirstArticle, tapNode, dragNode, page, BASE };
 
 await home();
+await page.mouse.move(mx, my);  /* echte Mausposition = unsere Annahme (sonst startet die erste Bewegung bei 0,0 und öffnet das Menü oben links) */
 if (sc.setup) await sc.setup(H, P);
 await sleep(1000);
 const frames = []; let capturing = true, paused = false;

@@ -1,7 +1,7 @@
 # Plenara.X Gremiennetz.
 @gremiennetz.start Welchen Weg nimmt ein Vorgang durch die Gremien?
 *@gremiennetz.netz Das Gremiennetz zeigt, wo Vorgänge beginnen, welche Gremien dazwischen liegen und wo sie entschieden werden.
-@gremiennetz.pfeile Ausgewertet sind {{t.pool|zahl}} Vorgänge, die durch mindestens zwei Gremien gingen.
+@gremiennetz.pfeile Ausgewertet sind {{t.paths|zahl}} Vorgänge, die durch mindestens zwei Gremien gingen.
 *@gremiennetz.dauer Die Pfeile zeigen die Übergänge und wie lange ein Übergang dauert.
 @gremiennetz.arten Darunter sehen Sie die Rollen im Netz: Einstieg, Durchlauf und Entscheidung.
 @gremiennetz.fazit So erkennen Sie, an welcher Stelle Sie sich in ein Thema einbringen können.

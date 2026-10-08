@@ -17,6 +17,8 @@ const ordinal = (d) => ({ 1: "ersten", 3: "dritten", 7: "siebten", 8: "achten" }
 export const FORMATS = {
   text: (v) => String(v), /* Parameter des Kapitels: {{p.thema|text}} */
   zahl: (v) => words(v),
+  /* "ein" statt "eins" vor Hauptwörtern: {{x|ein}} Prozent */
+  ein: (v) => words(v).replace(/eins$/, "ein"),
   /* Ziffern mit Tausenderpunkt für Einblendungen: 2230 -> 2.230 */
   ziffern: (v) => Number(v).toLocaleString("de-DE"),
   abrunden: (v) => words(floorLead(v)),

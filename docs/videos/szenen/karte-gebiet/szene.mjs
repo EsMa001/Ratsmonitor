@@ -9,8 +9,9 @@ export default {
   beats: (p) => {
     const pos = POS[p.ort]; if (!pos) throw new Error(`Lage von ${p.ort} fehlt in POS (karte-gebiet)`);
     return [
-      ["zoom", async (H) => { await H.move(...pos.zoom, 30); for (let k = 0; k < 3; k++) { await H.page.mouse.wheel(0, -400); await H.sleep(1200); } }, 1.5],
-      ["klick", async (H) => { await H.move(...pos.klick, 40); await H.sleep(300); await H.page.mouse.down(); await H.sleep(60); await H.page.mouse.up(); await H.loaded(); await H.sleep(800); }, 2.5],
+      /* Zoom und Klick laufen ohne Aufnahme (die Kartenanimation ergäbe ruckelnde Zwischenbilder), davor und danach zeigt der Clip ruhige Bilder */
+      ["zoom", async (H) => { await H.move(...pos.zoom, 30); await H.sleep(900); await H.hidden(async () => { for (let k = 0; k < 3; k++) { await H.page.mouse.wheel(0, -400); await H.sleep(1200); } await H.sleep(600); }); await H.sleep(900); }, 1.5],
+      ["klick", async (H) => { await H.move(...pos.klick, 40); await H.sleep(500); await H.hidden(async () => { await H.page.mouse.down(); await H.sleep(60); await H.page.mouse.up(); await H.loaded(); await H.sleep(1500); }); await H.sleep(1200); }, 2.5],
     ];
   },
 };

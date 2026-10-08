@@ -1,0 +1,106 @@
+{
+ "ausgabe": "plenara-komplett",
+ "karten": false,
+ "vorteileMax": 5,
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Stuttgart"
+   }
+  },
+  {
+   "kapitel": "suchen",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Stuttgart",
+    "vorsuche": "ja"
+   }
+  },
+  {
+   "kapitel": "liste-artikel",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung",
+    "ort": "Stuttgart"
+   }
+  },
+  {
+   "kapitel": "filter",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
+  },
+  {
+   "kapitel": "alarme",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
+  },
+  {
+   "kapitel": "export",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
+  },
+  {
+   "kapitel": "kalender",
+   "text": "lang"
+  },
+  {
+   "kapitel": "konto",
+   "text": "lang"
+  },
+  {
+   "kapitel": "abdeckung",
+   "text": "lang"
+  },
+  {
+   "kapitel": "diffusion",
+   "text": "lang"
+  },
+  {
+   "kapitel": "entscheidungen",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
+  },
+  {
+   "kapitel": "trends",
+   "text": "lang"
+  },
+  {
+   "kapitel": "vergleich",
+   "text": "lang",
+   "parameter": {
+    "ort": "Münster",
+    "ort2": "Osnabrück"
+   }
+  },
+  {
+   "kapitel": "graph",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
+  },
+  {
+   "kapitel": "gremiennetz",
+   "text": "lang",
+   "parameter": {
+    "thema": "Wärmeplanung"
+   }
+  },
+  {
+   "kapitel": "abschluss",
+   "text": "lang"
+  }
+ ]
+}
