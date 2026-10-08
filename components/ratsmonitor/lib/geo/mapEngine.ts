@@ -1,5 +1,5 @@
 import type { Radius } from "../../types";
-import { MAP_COLORS as C, colorForCoverage } from "../constants";
+import { MAP_COLORS, MAP_COLORS_DARK, colorForCoverage, colorForCoverageDark } from "../constants";
 import type { BBox, GeoModel } from "./geoModel";
 
 interface View {
@@ -69,6 +69,18 @@ export class MapEngine {
   /** Darstellung im Kartenmodus: Flächen einfärben, Heatmap oder Blasen je Gemeinde */
   private style: MapStyle = "flaechen";
   private heatCanvas: HTMLCanvasElement | null = null;
+
+  private pal: typeof MAP_COLORS = MAP_COLORS;
+  private cov = colorForCoverage;
+
+  setDark(d: boolean) {
+    const pal = d ? MAP_COLORS_DARK : MAP_COLORS;
+    if (pal === this.pal) return;
+    this.pal = pal;
+    this.cov = d ? colorForCoverageDark : colorForCoverage;
+    this.cache = [];
+    if (this.W && this.view) this.drawAll();
+  }
 
   setStyle(v: MapStyle) {
     if (v === this.style) return;
@@ -342,7 +354,7 @@ export class MapEngine {
     const ty = this.H / 2 - (this.H / 2) * s + (v.cy - sv.cy) * v.k;
     const ctx = this.bctx;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = C.ground;
+    ctx.fillStyle = this.pal.ground;
     ctx.fillRect(0, 0, this.base.width, this.base.height);
     ctx.imageSmoothingEnabled = true;
     /* Erst gespeicherte Ansichten (weit heraus zuerst), darüber die aktuelle */
@@ -414,31 +426,31 @@ export class MapEngine {
     const pxkm = k * 100;
     const px = (v: number) => v / k;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = C.ground;
+    ctx.fillStyle = this.pal.ground;
     ctx.fillRect(0, 0, this.base!.width, this.base!.height);
     this.applyT(ctx);
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
-    ctx.fillStyle = C.neighbour;
+    ctx.fillStyle = this.pal.neighbour;
     ctx.fill(G.neighbours, "evenodd");
-    ctx.strokeStyle = "#f1f3f5";
+    ctx.strokeStyle = this.pal.meshNb;
     ctx.lineWidth = px(1);
     ctx.stroke(G.neighbours);
     const fp = G.germany.path;
     /* Gebiete ohne Treffer in der Farbe der Landmasse außerhalb Deutschlands */
-    ctx.fillStyle = C.neighbour;
+    ctx.fillStyle = this.pal.neighbour;
     ctx.fill(fp);
     const L = this.level === "district" ? G.krs : G.gem;
     const points = this.badges && this.style !== "flaechen";
     if (this.filled()) for (const ags of this.coverage) {
       const i=L.idx.get(ags);if(i===undefined||!this.counts[L.ags[i]])continue;
-      ctx.fillStyle = colorForCoverage(this.counts[L.ags[i]] || 0);
+      ctx.fillStyle = this.cov(this.counts[L.ags[i]] || 0);
       ctx.fill(L.path[i]);
     }
     /* Alle Grenzen weiß: Gemeinden fein, Kreise mittel, Länder am kräftigsten */
     ctx.save();
     ctx.clip(fp);
-    ctx.strokeStyle = "#ffffff";
+    ctx.strokeStyle = this.pal.mesh;
     ctx.lineWidth = px(Math.max(0.35, Math.min(1.1, 0.25 + pxkm * 0.18)));
     ctx.stroke(G.mesh[0]);
     ctx.lineWidth = px(pxkm < 1.2 ? 0.9 : Math.min(2, 1.1 + pxkm * 0.08));
@@ -446,7 +458,7 @@ export class MapEngine {
     ctx.lineWidth = px(Math.min(3, 1.6 + pxkm * 0.12));
     ctx.stroke(G.mesh[2]);
     ctx.restore();
-    ctx.strokeStyle = C.national;
+    ctx.strokeStyle = this.pal.national;
     ctx.lineWidth = px(1.1);
     ctx.stroke(G.mesh[3]);
     if (points && this.style === "heat") this.drawHeat(ctx);
@@ -750,7 +762,7 @@ export class MapEngine {
       const r = [Math.min(sx - tw / 2 - 3, sx - pr), sy - 8, Math.max(sx + tw / 2 + 3, sx + pr), sy + (n ? 9 + 2 * pr : 8)];
       if (placed.some((q) => !(r[2] < q[0] || r[0] > q[2] || r[3] < q[1] || r[1] > q[3]))) continue;
       placed.push(r);
-      ctx.fillStyle = hit ? "#ffffff" : "#475569";
+      ctx.fillStyle = hit ? "#ffffff" : this.pal.label;
       ctx.fillText(label, sx, sy);
       if (n) {
         const f = ctx.font;
@@ -782,7 +794,7 @@ export class MapEngine {
       }
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = C.dim;
+      ctx.fillStyle = this.pal.dim;
       ctx.fillRect(0, 0, over.width, over.height);
       ctx.restore();
       ctx.globalCompositeOperation = "destination-out";
@@ -790,7 +802,7 @@ export class MapEngine {
       if (exc.length < inc.length) {
         ctx.fill(G.germany.path);
         ctx.globalCompositeOperation = "source-over";
-        ctx.fillStyle = C.dim;
+        ctx.fillStyle = this.pal.dim;
         for (const i of exc) ctx.fill(L.path[i]);
       } else {
         for (const i of inc) ctx.fill(L.path[i]);
@@ -798,12 +810,12 @@ export class MapEngine {
       ctx.globalCompositeOperation = "source-over";
       ctx.beginPath();
       ctx.arc(r.x, r.y, Math.max(R, 0.01), 0, Math.PI * 2);
-      ctx.fillStyle = C.ringFill;
+      ctx.fillStyle = this.pal.ringFill;
       ctx.fill();
-      ctx.strokeStyle = "rgba(255,255,255,.9)";
+      ctx.strokeStyle = (this.pal === MAP_COLORS ? "rgba(255,255,255,.9)" : "rgba(11,18,32,.9)");
       ctx.lineWidth = 4.5 / k;
       ctx.stroke();
-      ctx.strokeStyle = C.ring;
+      ctx.strokeStyle = this.pal.ring;
       ctx.lineWidth = 2.5 / k;
       ctx.setLineDash([8 / k, 5 / k]);
       ctx.stroke();
@@ -812,7 +824,7 @@ export class MapEngine {
       ctx.arc(r.x, r.y, 5 / k, 0, Math.PI * 2);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
-      ctx.strokeStyle = C.ringDot;
+      ctx.strokeStyle = this.pal.ringDot;
       ctx.lineWidth = 2.5 / k;
       ctx.stroke();
     }
@@ -821,9 +833,9 @@ export class MapEngine {
       const L = G.layerOf(hv);
       const i = L?.idx.get(hv);
       if (L && i != null) {
-        ctx.fillStyle = C.hoverFill;
+        ctx.fillStyle = this.pal.hoverFill;
         ctx.fill(L.path[i]);
-        ctx.strokeStyle = C.hover;
+        ctx.strokeStyle = this.pal.hover;
         ctx.lineWidth = 1.8 / k;
         ctx.stroke(L.path[i]);
       }

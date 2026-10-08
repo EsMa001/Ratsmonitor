@@ -246,7 +246,7 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
                           aria-expanded={!isClosed}
                           className="flex w-full items-center gap-3 bg-transparent px-5 py-4 text-left hover:bg-slate-50"
                         >
-                          <IconChevronDown size={18} style={{ flex: "none", color: "#64748b", transition: "transform .15s", transform: isClosed ? "rotate(-90deg)" : "none" }} />
+                          <IconChevronDown size={18} style={{ flex: "none", color: "var(--rm-c500,#64748b)", transition: "transform .15s", transform: isClosed ? "rotate(-90deg)" : "none" }} />
                           <span className="text-[18px] font-semibold text-slate-900">{cat.name}</span>
                           <span className="ml-auto flex items-center gap-3">
                             <span className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-slate-100 sm:block"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${catPct}%` }} /></span>
@@ -318,11 +318,11 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
         )}
       </section>
       {IS_DEV && data && (
-        <div style={{ position: "sticky", bottom: 0, zIndex: 20, display: "flex", alignItems: "center", flexWrap: "wrap", gap: 16, padding: "14px var(--ri-pad)", background: "#fff", borderTop: "1px solid #e2e8f0" }}>
+        <div style={{ position: "sticky", bottom: 0, zIndex: 20, display: "flex", alignItems: "center", flexWrap: "wrap", gap: 16, padding: "14px var(--ri-pad)", background: "var(--rm-white,#fff)", borderTop: "1px solid var(--rm-c200,#e2e8f0)" }}>
           <button type="button" className="ri-btn ri-btn--dark" onClick={save} disabled={!dirty || saving} style={!dirty || saving ? { opacity: 0.45, cursor: "default" } : undefined}>
             {saving ? "Speichert …" : "Speichern"}
           </button>
-          <span style={{ fontSize: 14, color: "#64748b" }} aria-live="polite">
+          <span style={{ fontSize: 14, color: "var(--rm-c500,#64748b)" }} aria-live="polite">
             {dirty ? `${dirty} ungespeicherte ${dirty === 1 ? "Änderung" : "Änderungen"}` : note}
           </span>
         </div>

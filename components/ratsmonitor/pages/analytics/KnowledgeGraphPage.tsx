@@ -123,7 +123,7 @@ export function KnowledgeGraphPage() {
         <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
           <ul className="m-0 flex list-none flex-col gap-1 p-0">
             {(["center", "term", "topic"] as const).map((t) => (
-              <li key={t} className="flex items-center gap-2"><i className="inline-block h-3 w-3 rounded-full" style={{ background: KIND[t].fill, border: `2px solid ${KIND[t].stroke}` }} />{KIND[t].label}</li>
+              <li key={t} className="flex items-center gap-2"><i className={`inline-block h-3 w-3 rounded-full ${t === "topic" ? "rm-gdot" : ""}`} style={{ background: KIND[t].fill, border: `2px solid ${KIND[t].stroke}` }} />{KIND[t].label}</li>
             ))}
           </ul>
         </div>

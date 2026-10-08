@@ -17,10 +17,10 @@ export function SearchFilterPanel() {
   const toast = useToast();
 
   return (
-    <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:py-1 max-sm:pr-0.5">
+    <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:px-4 max-sm:py-1">
       {/* Trefferzahl, Datenstand und Sortierung; aktive Filter und Filter selbst liegen auf der Karte */}
-      <div className="flex items-center gap-1 sm:flex-wrap sm:gap-1.5">
-          <span aria-live="polite" className="mr-1 whitespace-nowrap text-[14px] text-slate-600 sm:mr-1.5">
+      <div className="flex items-center gap-1 max-sm:flex-wrap sm:flex-wrap sm:gap-1.5">
+          <span aria-live="polite" className="mr-1 whitespace-nowrap max-sm:whitespace-normal max-sm:min-w-0 max-sm:flex-[1_1_100%] text-[14px] text-slate-600 sm:mr-1.5">
             {res.loading ? "…" : res.totalPending ? (res.showDots ? <CountDots /> : "…") : res.total.toLocaleString("de-DE")} Treffer
             {res.updatedAt && (
               <span className="text-slate-500 max-sm:hidden">

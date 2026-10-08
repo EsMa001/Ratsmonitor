@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {IconBookmark,IconCalendar,IconHeart,IconUser} from './icons';
+import {useDarkMode} from '../lib/useDarkMode';
 import {useSavedArticles} from '../lib/savedArticles';
 import {useAccount} from '../state/account';
 import {useTier} from '../lib/tier';
@@ -9,6 +10,7 @@ import {logout as testLogout,useTestMails,useTestSession} from '../lib/testAuth'
 /** Symbole rechts in der Kopfzeile: Admin, gespeicherte Suchen, Kalender, gespeicherte Artikel, Konto (mit kleinem Menü) */
 export function AccountMenu({currentPage}:{currentPage:string}){
  const {saved}=useAccount(),articles=useSavedArticles(),{tier}=useTier();
+ const [dark,setDark]=useDarkMode();
  const [open,setOpen]=useState(false);
  const ref=useRef<HTMLDivElement>(null);
  /* Konto-Menü schließt bei Klick daneben und mit Escape */
@@ -31,14 +33,17 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   <Link href="/admin" title="Administration" aria-label="Administration" className={`${cls(false)} max-sm:hidden`}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
   </Link>
-  <Link href="/konto/suchen" title="Gespeicherte Suchen" aria-label={`Gespeicherte Suchen (${saved.length})`} className={cls(currentPage==='suchen')}>
+  <button type="button" title={dark?'Heller Modus':'Dunkler Modus'} aria-label={dark?'Heller Modus':'Dunkler Modus'} aria-pressed={dark} onClick={()=>setDark(!dark)} className={cls(false)}>
+   <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{dark?<><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>:<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>}</svg>
+  </button>
+  <Link href="/konto/suchen" title="Gespeicherte Suchen" aria-label={`Gespeicherte Suchen (${saved.length})`} className={`${cls(currentPage==='suchen')} max-sm:hidden`}>
    <IconHeart size={19} filled={currentPage==='suchen'}/>
    {saved.length>0&&<span className={badge}>{saved.length}</span>}
   </Link>
-  <Link href="/konto/kalender" title="Kalender" aria-label="Kalender" className={cls(currentPage==='kalender')}>
+  <Link href="/konto/kalender" title="Kalender" aria-label="Kalender" className={`${cls(currentPage==='kalender')} max-sm:hidden`}>
    <IconCalendar size={19}/>
   </Link>
-  <Link href="/konto/artikel" title="Gespeicherte Artikel" aria-label={`Gespeicherte Artikel (${articles.length})`} className={cls(currentPage==='artikel')}>
+  <Link href="/konto/artikel" title="Gespeicherte Artikel" aria-label={`Gespeicherte Artikel (${articles.length})`} className={`${cls(currentPage==='artikel')} max-sm:hidden`}>
    <IconBookmark size={19} filled={currentPage==='artikel'}/>
    {articles.length>0&&<span className={badge}>{articles.length}</span>}
   </Link>
@@ -46,12 +51,16 @@ export function AccountMenu({currentPage}:{currentPage:string}){
    <button type="button" title="Konto" aria-label="Konto" aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(o=>!o)} className={cls(currentPage==='profil'||open)}>
     <IconUser size={19}/>
    </button>
-   {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[132px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
-    <p className="m-0 truncate px-3 pb-1 pt-1.5 text-[12px] text-slate-500">{loggedIn?(session?.email?`Angemeldet als ${session.email}`:'Angemeldet'):'Nicht angemeldet'}</p>
+   {open&&<div role="menu" onKeyDown={e=>{const items=[...e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')],i=items.indexOf(document.activeElement as HTMLElement);if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length]?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length]?.focus();}}} className="absolute right-0 top-[calc(100%+13px)] z-[1100] w-[220px] max-sm:w-[190px] sm:top-[calc(100%+17px)] rounded-2xl border border-slate-200 bg-white p-1.5 shadow-pop">
     {!loggedIn&&<>
      <Link role="menuitem" href="/anmelden" className={item} onClick={()=>setOpen(false)}>Anmelden</Link>
      <Link role="menuitem" href="/registrieren" className={item} onClick={()=>setOpen(false)}>Registrieren</Link>
     </>}
+    <div className="mb-1 border-b border-slate-200 pb-1 sm:hidden">
+     <Link role="menuitem" href="/konto/suchen" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Gespeicherte Suchen{saved.length>0&&<span className="text-[12px] text-slate-500">{saved.length}</span>}</Link>
+     <Link role="menuitem" href="/konto/artikel" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Gespeicherte Artikel{articles.length>0&&<span className="text-[12px] text-slate-500">{articles.length}</span>}</Link>
+     <Link role="menuitem" href="/konto/kalender" className={`${item}`} onClick={()=>setOpen(false)}>Kalender</Link>
+    </div>
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
     <Link role="menuitem" href="/konto/postfach" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Test-Postfach{unread>0&&<span className="text-[12px] text-teal-600">{unread} neu</span>}</Link>
     {loggedIn&&<button role="menuitem" type="button" onClick={logout} className={`${item} w-full text-left`}>Abmelden</button>}

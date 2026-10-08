@@ -153,7 +153,7 @@ export function AgbPage() {
                 {i + 1}. {s.title}
               </H2>
               {s.paras.map((para, j) => {
-                const number = s.paras.length > 1 && <span style={{ color: "#0f172a" }}>({j + 1}) </span>;
+                const number = s.paras.length > 1 && <span style={{ color: "var(--rm-c900,#0f172a)" }}>({j + 1}) </span>;
                 return isList(para) ? (
                   <div key={j}>
                     <P>

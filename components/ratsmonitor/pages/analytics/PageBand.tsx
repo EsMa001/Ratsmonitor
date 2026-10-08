@@ -6,8 +6,8 @@ import { AnalyticsLogo } from "../../components/Brand";
 export function PageBand({ children }: { children: ReactNode }) {
   return (
     <div
-      className="-mx-[max(1vw,16px)] mb-8 border-b border-[#eef1f4] px-[max(1vw,16px)] pb-10 pt-10"
-      style={{ background: "radial-gradient(ellipse 1000px 520px at 88% -15%,rgba(13,148,136,.10),rgba(13,148,136,0) 70%),#fff" }}
+      className="-mx-[max(1vw,16px)] mb-8 border-b border-[#eef1f4] rm-topline px-[max(1vw,16px)] pb-10 pt-10"
+      style={{ background: "radial-gradient(ellipse 1000px 520px at 88% -15%,rgba(13,148,136,.10),rgba(13,148,136,0) 70%),var(--rm-white,#fff)" }}
     >
       <div className="mb-6 hidden print:block"><AnalyticsLogo size={30} /></div>
       <Reveal>{children}</Reveal>

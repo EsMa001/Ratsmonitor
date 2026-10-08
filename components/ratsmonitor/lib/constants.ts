@@ -23,7 +23,33 @@ export const MAP_COLORS = {
   ringFill: "rgba(209,102,90,.08)",
   ringDot: "#b4493e",
   dim: "rgba(255,255,255,.74)",
+  mesh: "#ffffff",
+  meshNb: "#f1f3f5",
+  label: "#475569",
 };
+
+/** Dunkle Palette der Startseitenkarte (Flächen heller = mehr Abdeckung) */
+export const MAP_COLORS_DARK = {
+  ...MAP_COLORS,
+  ground: "#0e1523",
+  neighbour: "#131c2c",
+  national: "#64748b",
+  line: "#243044",
+  zero: "#1b2638",
+  scale: ["#14524f", "#13706a", "#0f9488", "#2dd4bf"],
+  selection: "#5eead4",
+  hover: "#5eead4",
+  hoverFill: "rgba(94,234,212,.14)",
+  dim: "rgba(11,18,32,.72)",
+  mesh: "#0e1523",
+  meshNb: "#1b2638",
+  label: "#94a3b8",
+};
+
+export function colorForCoverageDark(level: number): string {
+  const s = MAP_COLORS_DARK.scale;
+  return level >= 4 ? s[3] : level === 3 ? s[2] : level === 2 ? s[1] : s[0];
+}
 
 /** Abdeckungsstufe: 1 = Teilbestand (letzter Abruf lückenhaft), 2 = vollständig abgerufen; 3 und 4 nur für plenara.X (Alter, 4 = am dunkelsten) */
 export function colorForCoverage(level: number): string {

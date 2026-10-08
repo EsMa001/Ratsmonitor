@@ -6,6 +6,7 @@ import { useSearch, useSearchResults } from "../../state/search";
 import { useFiltersOpen } from "../../lib/filtersOpen";
 import { SearchOverlay } from "../SearchOverlay";
 import { ActiveFilters } from "../ActiveFilters";
+import { useDarkMode } from "../../lib/useDarkMode";
 import { IconCenter, IconMinus, IconPlus, IconReset } from "../icons";
 
 /** Trefferstufe: 0 keine, 1 wenige, 2 mittel, 3 viele (ohne Suche nur 0 oder 3) */
@@ -104,6 +105,7 @@ export function MapPanel({ active }: { active: boolean }) {
   const [explore, setExplore] = useState(false);
   /* Darstellung im Kartenmodus (oben links wählbar) */
   const [style, setStyle] = useState<MapStyle>("flaechen");
+  const dark = useDarkMode()[0];
   const [styleOpen, setStyleOpen] = useState(false);
   /* Klick im Kartenmodus auf eine Gemeinde mit Treffern: diese Stadt (ohne Kreis) als Ort in die Suche übernehmen */
   const selectRef = useRef<(ags: string) => void>(() => {});
@@ -195,6 +197,9 @@ export function MapPanel({ active }: { active: boolean }) {
     }
   }, [engine, explore]);
   useEffect(() => {
+    engine?.setDark(dark);
+  }, [engine, dark]);
+  useEffect(() => {
     engine?.setStyle(style);
   }, [engine, style]);
 
@@ -260,9 +265,9 @@ export function MapPanel({ active }: { active: boolean }) {
   const si = STYLES.findIndex((x) => x.id === style);
 
   return (
-    <section ref={sectionRef} aria-label="Karte der Treffer" className="relative h-[460px] sm:h-[520px]">
+    <section ref={sectionRef} aria-label="Karte der Treffer" className={`${dark ? "rm-dark " : ""}relative h-[460px] sm:h-[520px]`}>
       {/* Normal nur Anzeige; im Kartenmodus reagiert die Karte auf Ziehen, Zoomen und Mausrad */}
-      <div ref={stageRef} className={`absolute inset-0 select-none overflow-hidden bg-map-ground ${explore ? "touch-none" : filtered ? "cursor-pointer touch-pan-y" : "pointer-events-none"}`}>
+      <div ref={stageRef} className={`absolute inset-0 select-none overflow-hidden ${dark ? "bg-[#0e1523]" : "bg-map-ground"} ${explore ? "touch-none" : filtered ? "cursor-pointer touch-pan-y" : "pointer-events-none"}`}>
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={overRef} role="img" aria-label={mapLabel} className="absolute left-0 top-0 block h-full w-full" />
         {!geo && <div className="absolute inset-0 grid place-items-center text-[14px] text-slate-500">{geoError ? "Kartendaten konnten nicht geladen werden." : "Karte wird aufgebaut …"}</div>}

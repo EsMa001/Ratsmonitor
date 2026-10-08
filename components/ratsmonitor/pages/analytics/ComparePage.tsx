@@ -269,7 +269,7 @@ export function ComparePage() {
           <div className="mt-8">
             <h3 className="text-[18px] font-semibold">Stand der Vorlagen</h3>
             <p className="mb-4 mt-1 text-[14px] text-slate-500">Wie die Einträge je Ort stehen (Anteile in %).</p>
-            {[...res.places.map((p, i) => ({ label: names[i], list: p.status.list, color: PLACE_COLORS[i] })), { label: "Alle Gebiete", list: res.base.status.list, color: "#475569" }].map((row) => (
+            {[...res.places.map((p, i) => ({ label: names[i], list: p.status.list, color: PLACE_COLORS[i] })), { label: "Alle Gebiete", list: res.base.status.list, color: "var(--rm-c600,#475569)" }].map((row) => (
               <div key={row.label} className="mb-3 grid items-center gap-3 sm:grid-cols-[200px_1fr]">
                 <span className="flex items-center gap-2 text-[14px]"><i className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: row.color }} /><span className="truncate">{row.label}</span></span>
                 <span className="flex h-[14px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={`Stand der Vorlagen in ${row.label}`}>

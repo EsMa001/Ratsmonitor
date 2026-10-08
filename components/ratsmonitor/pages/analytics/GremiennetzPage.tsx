@@ -178,7 +178,7 @@ export function GremiennetzPage() {
                       <button type="button" onClick={() => setSelected(x.id)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,1.2fr)_130px_minmax(0,1fr)_150px]">
                         <span className="truncate text-[16px] text-slate-900">{x.name}</span>
                         <span className="flex items-center gap-2 text-[14px] text-slate-500 max-sm:hidden"><i className="inline-block h-3 w-3 rounded-full" style={{ background: ROLE[x.role].fill, border: `2px solid ${ROLE[x.role].stroke}` }} />{ROLE[x.role].label}</span>
-                        <span className="flex h-[6px] overflow-hidden rounded-full bg-slate-100 max-sm:order-3 max-sm:col-span-2 max-sm:mt-1.5" style={{ width: `${Math.max(6, ((x.in + x.out) / maxFlow) * 100)}%` }}><span style={{ width: `${(x.in / Math.max(1, x.in + x.out)) * 100}%`, background: "#0f766e" }} /><span style={{ width: `${(x.out / Math.max(1, x.in + x.out)) * 100}%`, background: "#94a3b8" }} /></span>
+                        <span className="flex h-[6px] overflow-hidden rounded-full bg-slate-100 max-sm:order-3 max-sm:col-span-2 max-sm:mt-1.5" style={{ width: `${Math.max(6, ((x.in + x.out) / maxFlow) * 100)}%` }}><span style={{ width: `${(x.in / Math.max(1, x.in + x.out)) * 100}%`, background: "#0f766e" }} /><span style={{ width: `${(x.out / Math.max(1, x.in + x.out)) * 100}%`, background: "var(--rm-c400,#94a3b8)" }} /></span>
                         <span className="text-right text-[14px] tabular-nums"><b className="font-semibold text-slate-900">{n(x.in)}</b> rein · <b className="font-semibold text-slate-900">{n(x.out)}</b> raus</span>
                       </button>
                     </li>

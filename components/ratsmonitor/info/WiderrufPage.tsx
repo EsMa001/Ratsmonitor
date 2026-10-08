@@ -12,8 +12,8 @@ function Kontakt() {
   );
 }
 
-const box = { margin: "0 0 14px", padding: "18px 20px", border: "1px solid #e2e8f0", borderRadius: 10 } as const;
-const line = { margin: "0 0 10px", fontSize: 16, lineHeight: 1.7, color: "#64748b" } as const;
+const box = { margin: "0 0 14px", padding: "18px 20px", border: "1px solid var(--rm-c200,#e2e8f0)", borderRadius: 10 } as const;
+const line = { margin: "0 0 10px", fontSize: 16, lineHeight: 1.7, color: "var(--rm-c500,#64748b)" } as const;
 
 export function WiderrufPage() {
   return (

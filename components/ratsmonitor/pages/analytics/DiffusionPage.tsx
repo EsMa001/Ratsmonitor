@@ -4,6 +4,7 @@ import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useDarkMode } from "../../lib/useDarkMode";
 import { MapEngine } from "../../lib/geo/mapEngine";
 import { useData } from "../../state/data";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
@@ -103,6 +104,10 @@ export function DiffusionPage() {
 
   /* Eigene Karte (eigene Engine, unabhängig von der Startseite) */
   const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: (a) => pickRef.current(a), onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo]);
+  const dark = useDarkMode()[0];
+  useEffect(() => {
+    engine?.setDark(dark);
+  }, [engine, dark]);
   useEffect(() => {
     if (!engine) return;
     const detach = engine.attach(stageRef.current!, baseRef.current!, overRef.current!);
