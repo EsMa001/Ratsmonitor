@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "kategorien": [
+    {
+      "id": "frontend",
+      "name": "Frontend",
+      "items": [
+        { "id": "fe-registrierung", "text": "Registrierung ans Backend anbinden", "hinweis": "Bisher nur Validierung im Browser (AccountPages.tsx).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-kontaktformular", "text": "Kontaktformular ans Backend anbinden", "hinweis": "Bisher nur Validierung im Browser (AccountPages.tsx).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-platzhalter", "text": "Platzhalterwerte durch echte, belegbare Werte ersetzen", "hinweis": "Kennzahlen, Beispiel-Treffer und Orte, „< 24 Std.“, „4.500+“, „16 Bundesländer“ (content.ts, AboutPage.tsx, blocks.tsx).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-rechtstexte", "text": "Rechtstext-Seiten einbinden", "hinweis": "Impressum, Datenschutzerklärung, AGB, Widerrufsbelehrung; heute Platzhalter (InfoPages.tsx, LegalPage.tsx).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-tarifseite", "text": "Tarif- und Bezahlseite: Upgrade, Kündigung online, klare Preisangaben", "hinweis": "Erst sinnvoll, wenn die Zahlungsabwicklung im Backend steht.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-kontobereich", "text": "Kontobereich: Tarif ändern, Rechnungen, Datenexport, Konto löschen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-personenbezug", "text": "Personenbezug in der Oberfläche begrenzen", "hinweis": "Keine Namen von Privatpersonen und einfachen Mitarbeitern in Überschriften und Zusammenfassungen, noindex für betroffene Seiten, Link „Daten melden/entfernen“.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-haftungshinweis", "text": "Hinweis „keine Gewähr, maßgeblich sind die Originalunterlagen“ bei Treffern und in Alarm-E-Mails", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-einwilligungen", "text": "Einwilligungen und Cookie-Banner", "hinweis": "Nur nötig, soweit Tracking oder Analyse eingesetzt wird.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-onboarding", "text": "Onboarding und Alarm-Einrichtung vereinfachen", "hinweis": "Gebiet und Thema in wenigen Klicks wählen, dabei der Weg von der Einfachstufe zum Upgrade.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-mobil-barriere", "text": "Mobil- und Barrierefreiheitstest", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-zustaende", "text": "Fehler-, Lade- und Leerzustände prüfen", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "backend",
+      "name": "Backend",
+      "items": [
+        { "id": "be-zahlung", "text": "Zahlungsabwicklung und Abos", "hinweis": "Kein Zahlungscode vorhanden: Anbieteranbindung, Rechnungen, Kündigung, Zahlungsausfälle.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-konten", "text": "Konten: Registrierung, Login, E-Mail-Bestätigung, Passwort zurücksetzen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-kontakt", "text": "Kontaktformular serverseitig: speichern oder weiterleiten, Spamschutz", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-tarifrechte", "text": "Tarifrechte serverseitig durchsetzen", "hinweis": "Welche Funktion in welcher Stufe freigeschaltet ist, nicht nur in der Oberfläche prüfen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-personenbezug", "text": "Personenbezug filtern", "hinweis": "Privatpersonen und einfache Mitarbeiter aus KI-Zusammenfassungen und Suchindex heraushalten, Telefon, E-Mail und Geburtsdaten schwärzen, nichtöffentliche Teile ausschließen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-quellen", "text": "Quellen schonend und rechtssicher abrufen", "hinweis": "Wo möglich OParl, erkennbarer User-Agent, Rate Limit, robots.txt beachten, Nutzungsbedingungen je Quelle festhalten.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-wortliste", "text": "Wortliste in Produktion einmal vollständig aufbauen", "hinweis": "Siehe CLAUDE.md, Abschnitt Suche: Wortliste.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-loeschkonzept", "text": "Löschkonzept und Betroffenenrechte", "hinweis": "Kontolöschung, Datenexport, Löschanfragen zu Inhalten schnell umsetzbar.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-alarme", "text": "Zuverlässige Alarme und Überwachung", "hinweis": "E-Mail-Zustellung (SPF, DKIM, DMARC), Überwachung der Importe, Warnung bei Quellen ohne neue Daten.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-schutz", "text": "Backups, Missbrauchsschutz der API, Logs ohne unnötige Personendaten", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "be-audit", "text": "Code-Audit vor dem Start", "hinweis": "Sicherheit, Fehlerbehandlung, Testabdeckung, Abhängigkeiten.", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "rechtliches",
+      "name": "Rechtliches",
+      "items": [
+        { "id": "re-zustimmung", "text": "Schriftliche Zustimmung des Arbeitgebers zur Nebentätigkeit (§ 14) für beide Gründer", "hinweis": "Vor Markenanmeldung und öffentlichem Start. Zusagen: nur Freizeit, keine Beteiligung an Einkauf oder Vergabe, keine Nutzung interner Informationen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-markenrecherche", "text": "Markenrecherche „Plenara“ und ähnliche Schreibweisen", "hinweis": "Ergebnis: keine Treffer.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "re-markenanmeldung", "text": "Wortmarke „Plenara“ beim DPMA anmelden", "hinweis": "Online, Klassen 42 und 35 (ggf. 9), ca. 290 €, Anmelder zunächst die GbR. Erst nach der Zustimmung des Arbeitgebers, weil die Namen im Register öffentlich stehen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-impressum", "text": "Impressum", "hinweis": "Pflicht, sobald die Seite öffentlich ist.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-datenschutz", "text": "Datenschutzerklärung", "hinweis": "Inklusive Hinweis auf die Verarbeitung öffentlicher Ratsunterlagen und die Betroffenenrechte.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-agb", "text": "AGB, Widerrufsbelehrung und Preisangaben", "hinweis": "Haftungsbegrenzung, „keine Rechtsberatung“, Kündigungsbutton.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-itrecht", "text": "Einmaliger IT-Rechts-Check", "hinweis": "Datenbankrecht und Nutzungsbedingungen der Quellsysteme, Anhänge Dritter, Zusammenfassungen durch KI.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-dsgvo", "text": "DSGVO-Unterlagen", "hinweis": "Interessenabwägung, Verzeichnis der Verarbeitungstätigkeiten, Auftragsverarbeitungsverträge (Hosting, Zahlungsanbieter, KI-Dienst, E-Mail-Versand).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-gewerbe", "text": "Gewerbeanmeldung und Finanzamt-Fragebogen", "hinweis": "Laut GbR-Vertrag spätestens vor Freischaltung der Bezahlfunktion.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-versicherung", "text": "Versicherung: Vermögensschaden-/IT-Haftpflicht und Rechtsschutz", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-ug", "text": "UG-Gründung planen und Marke, Domain und Code von der GbR übertragen", "hinweis": "Vor dem ersten Firmenkunden. Umschreibung beim DPMA nach meinem Wissen gebührenfrei, Gebührenverzeichnis prüfen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-sozialversicherung", "text": "Sozialversicherungsstatus der Geschäftsführer klären", "hinweis": "Bei Zweifeln Statusfeststellung bei der Rentenversicherung; Berufsgenossenschaft anmelden.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "re-lizenzen", "text": "Lizenzen für Schriften, Bilder, Musik und KI-Inhalte prüfen", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing und Vertrieb",
+      "items": [
+        { "id": "ma-zielgruppen", "text": "Zielgruppen und Kernbotschaft festlegen", "hinweis": "Slogan und Vorteile Stufe A aus docs/produkt/vorteile.json verwenden.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-branchenseiten", "text": "Branchenseiten inhaltlich prüfen und fertigstellen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-seo", "text": "SEO-Seiten je Gemeinde und Thema mit echtem Mehrwert", "hinweis": "Keine dünnen Massenseiten; jede Seite mit konkreten Beschlüssen und Einordnung.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-social", "text": "Social-Media-Kanäle und Videos", "hinweis": "Skripte und Werkzeuge liegen in docs/videos.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-newsletter", "text": "Newsletter mit Anmeldung (Double-Opt-in)", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-pilotkunden", "text": "Pilotkunden gewinnen und Referenzen sammeln", "hinweis": "Namen und Logos nur mit Einverständnis verwenden.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-kontakte", "text": "Persönliche Kontakte um Weiterleitung an passende Ansprechpartner bitten", "hinweis": "Erst nach der Zustimmung des Arbeitgebers.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-preise", "text": "Preisstufen testen und Einführungspreis kennzeichnen", "hinweis": "Preisanpassungen in den AGB regeln.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-automatisiert", "text": "Regeln für automatisiertes Marketing festlegen", "hinweis": "Keine Werbe-E-Mails an Unbekannte (UWG), Texte stichprobenartig prüfen, nur belegbare Aussagen.", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "produkt",
+      "name": "Produkt und Daten",
+      "items": [
+        { "id": "pr-abdeckung", "text": "Abdeckung ausbauen und belegen", "hinweis": "Welche Kommunen, wie aktuell, welche Lücken.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "pr-qualitaet", "text": "Qualität der Zusammenfassungen und Themen stichprobenartig prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "pr-stufen", "text": "Funktionsumfang je Preisstufe festlegen", "hinweis": "Einfach (9,99 €), mehr Funktionen (49,99 €), Plenara.X; Preise können später steigen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "pr-feedback", "text": "Feedback-Kanal für Nutzer einrichten", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "pr-testbetrieb", "text": "Geschlossenen Testbetrieb mit kleinem Kreis durchführen", "hinweis": "Vor dem öffentlichen Start.", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "finanzen",
+      "name": "Finanzen und Steuern",
+      "items": [
+        { "id": "fi-konto", "text": "Geschäftskonto einrichten", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fi-buchhaltung", "text": "Buchhaltungssoftware und Belegablage einrichten", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fi-umsatzsteuer", "text": "Umsatzsteuer klären", "hinweis": "Kleinunternehmerregelung ja oder nein, Reverse Charge bei ausländischen Diensten (Hosting, API).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fi-zahlungsanbieter", "text": "Zahlungsanbieter auswählen und Gebühren einkalkulieren", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fi-kosten", "text": "Kostenplan und Stopp-Kriterien festlegen", "hinweis": "Hosting, KI, Zahlungsgebühren; Kosten je Bürgernutzer gegen 9,99 € rechnen; Schwelle nach sechs Monaten.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fi-steuerberater", "text": "Einmalige Erstberatung beim Steuerberater (1 bis 2 Stunden)", "hinweis": "Optional: Kleinunternehmerregelung, Aktivierung von Softwarekosten, Kontenrahmen.", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "betrieb",
+      "name": "Betrieb und Support",
+      "items": [
+        { "id": "bt-kontakt", "text": "Kontaktadresse, Antwortzeiten und Standardantworten festlegen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "bt-ausfall", "text": "Vorgehen bei Ausfall oder fehlerhaften Daten festlegen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "bt-loeschwuensche", "text": "Umgang mit Löschwünschen und Beschwerden regeln", "hinweis": "Frist, Zuständigkeit, Vorlage für die Antwort.", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "organisation",
+      "name": "Organisation der Gründer",
+      "items": [
+        { "id": "or-gbr-vertrag", "text": "GbR-Vertrag finalisieren und von allen unterschreiben lassen", "hinweis": "Entwurf in docs/gesellschaft; falls noch nicht geschehen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "or-aufgaben", "text": "Aufgabenverteilung und Entscheidungsregeln festlegen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "or-zeit", "text": "Zeitbudget neben dem Hauptjob festlegen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "or-zugaenge", "text": "Zugänge nicht an eine Person binden", "hinweis": "Domain, Hosting, Zahlungsanbieter, E-Mail, Code.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "or-notfall", "text": "Notfallplan: Zugangsdaten sicher hinterlegen, Vertretung klären", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "marke",
+      "name": "Marke und Auftritt",
+      "items": [
+        { "id": "mk-domains", "text": "Domains sichern", "hinweis": ".de, .com und ähnliche Schreibweisen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "mk-handles", "text": "Social-Media-Handles reservieren", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "mk-logo", "text": "Logo und Corporate Design final festlegen", "hinweis": "Standard ist derzeit „Plenara v2“.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "mk-mail", "text": "E-Mail-Adressen einrichten", "hinweis": "Zum Beispiel Kontakt und Datenschutz.", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    },
+    {
+      "id": "sicherheit",
+      "name": "Sicherheit im Betrieb",
+      "items": [
+        { "id": "si-zugang", "text": "Zwei-Faktor-Anmeldung und Passwortverwaltung für alle Dienste", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "si-rechte", "text": "Zugriffsrechte und Admin-Zugang prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "si-panne", "text": "Ablauf bei Datenpannen festlegen", "hinweis": "Meldung an die Aufsichtsbehörde binnen 72 Stunden.", "erledigt": false, "faellig": null, "erledigtAm": null }
+      ]
+    }
+  ]
+}

@@ -770,7 +770,7 @@ wordmark__dot design-styles.css:61
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenPages.tsx (130): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (65): isInfoPath, InfoPages
+- InfoPages.tsx (67): isInfoPath, InfoPages
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (165, ⚠4): QuellenPage

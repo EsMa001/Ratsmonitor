@@ -10,6 +10,7 @@ import { AGB_SECTIONS, brancheBySlug } from "./content";
 import { FaqPage } from "./FaqPage";
 import { VideosPage } from "./VideosPage";
 import { PreisePage } from "./PreisePage";
+import { TodoPage } from "./TodoPage";
 
 /* TODO: Rechtstext vom Betreiber (Doku Kap. 8) */
 function AgbPage() {
@@ -43,6 +44,7 @@ const PAGES: Record<string, ComponentType> = {
   "/anmelden": LoginPage,
   "/kontakt": KontaktPage,
   "/agb": AgbPage,
+  "/todo-liste": TodoPage,
 };
 
 export const isInfoPath = (p: string) => p in PAGES || p === "/registrieren" || !!brancheOf(p);
