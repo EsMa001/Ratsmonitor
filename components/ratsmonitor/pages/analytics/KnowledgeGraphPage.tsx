@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Befund } from "./Befund";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { GraphView, KIND, type GEdge, type GNode } from "./GraphView";
+import { isFiller, prettyTerm } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 
 interface Result {
@@ -19,7 +21,6 @@ interface Result {
   stats: { terms: number; topics: number; committees: number; lands: number; links: number };
 }
 
-const EXAMPLES = ["Windenergie", "Radverkehr", "Schulsozialarbeit", "Photovoltaik", "Wärmeplanung"];
 const glass = "rm-glass";
 const n = (v: number) => v.toLocaleString("de-DE");
 const pct = (v: number, total: number) => (total ? `${Math.max(1, Math.round((v / total) * 100))} %` : "–");
@@ -80,7 +81,7 @@ export function KnowledgeGraphPage() {
   };
 
   /* Nur Begriffe (und Themenfelder): keine Gremien, Länder oder Orte */
-  const nodes = useMemo(() => (res ? res.nodes.filter((x) => x.type !== "committee" && x.type !== "land") : []), [res]);
+  const nodes = useMemo(() => (res ? res.nodes.filter((x) => x.type !== "committee" && x.type !== "land" && !(x.type === "term" && isFiller(x.label))).map((x) => (x.type === "term" ? { ...x, label: prettyTerm(x.label) } : x)) : []), [res]);
   const edges = useMemo(() => { const ids = new Set(nodes.map((x) => x.id)); return res ? res.edges.filter((e) => ids.has(e.a) && ids.has(e.b)) : []; }, [res, nodes]);
   const byId = useMemo(() => new Map(nodes.map((x) => [x.id, x])), [nodes]);
   const sel = selected ? byId.get(selected) : undefined;
@@ -101,12 +102,6 @@ export function KnowledgeGraphPage() {
       </PageBand>
 
       <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Graph erstellen" /></div>
-      {!res && !loading && (
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
-          <span className="text-slate-500">Beispiele:</span>
-          {EXAMPLES.map((x) => <button key={x} type="button" onClick={() => { search.applySearch(x); setWant(true); }} className="text-teal-600">{x}</button>)}
-        </div>
-      )}
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && !loading && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu erstellen.</p>}
 
@@ -155,6 +150,7 @@ export function KnowledgeGraphPage() {
       {res && !empty && (
         <>
 
+          {strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
           <div className="mt-10 max-w-[820px]">
             <section>
               <h2 className="text-[22px] font-semibold">Stärkste Verbindungen</h2>

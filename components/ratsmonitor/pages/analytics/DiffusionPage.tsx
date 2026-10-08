@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -19,7 +20,6 @@ interface Result {
   stats: { regions: number; cards: number; first: string | null; last: string | null; p10: string | null; median: string | null; p90: string | null };
 }
 
-const EXAMPLES = ["Wärmeplanung", "Photovoltaik", "Windenergie", "Radverkehr", "Schulsozialarbeit"];
 const DAY = 86400000;
 const toDay = (iso: string) => Math.floor(Date.parse(iso.slice(0, 10) + "T00:00:00Z") / DAY);
 const toIso = (d: number) => new Date(d * DAY).toISOString().slice(0, 10);
@@ -154,12 +154,6 @@ export function DiffusionPage() {
       </PageBand>
 
       <div><DiffusionSearch play={play} onPlay={onPlay} onSubmit={() => setWant(true)} /></div>
-      {!res && !loading && (
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
-          <span className="text-slate-500">Beispiele:</span>
-          {EXAMPLES.map((x) => <button key={x} type="button" onClick={() => { search.applySearch(x); setWant(true); }} className="text-teal-600">{x}</button>)}
-        </div>
-      )}
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && !loading && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu analysieren.</p>}
 
@@ -206,6 +200,7 @@ export function DiffusionPage() {
 
       {res && res.stats.regions > 0 && (
         <>
+          <Befund>{res.q.trim() ? `„${res.q.trim()}“` : "Das Thema"} taucht in {res.stats.regions.toLocaleString("de-DE")} Gebieten auf, erstmals {fmt(res.stats.first)}. Die Hälfte der Gebiete war {res.stats.median ? `bis ${fmt(res.stats.median)}` : "noch nicht"} erreicht.</Befund>
           <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             {[
               ["Erste Erwähnung", fmt(res.stats.first)],

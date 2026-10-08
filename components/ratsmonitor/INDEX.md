@@ -772,7 +772,7 @@ wordmark__dot design-styles.css:61
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
-- BranchenLive.tsx (244): LiveThumb
+- BranchenLive.tsx (245): LiveThumb
 - BranchenPages.tsx (126): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (45): isInfoPath, InfoPages
@@ -843,22 +843,22 @@ wordmark__dot design-styles.css:61
 - AnalyticsAbout.tsx (239, ⚠13): ANALYSE_THUMBS, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
-- BeschluessePage.tsx (215, ⚠4): BeschluessePage
+- BeschluessePage.tsx (218, ⚠5): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (284, ⚠11): ComparePage
+- ComparePage.tsx (293, ⚠11): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
-- DiffusionPage.tsx (269, ⚠4): DiffusionPage
+- DiffusionPage.tsx (264, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (199, ⚠2): GremiennetzPage
-- KnowledgeGraphPage.tsx (185, ⚠1): KnowledgeGraphPage
+- GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
+- KnowledgeGraphPage.tsx (181, ⚠1): KnowledgeGraphPage
 - NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
 - PageBand.tsx (15): PageBand
 - Reveal.tsx (16): Reveal
-- TrendViews.tsx (70): Trend, TrendKind, Spark, TrendMap
-- TrendsPage.tsx (205, ⚠3): TrendsPage
+- TrendViews.tsx (71): Trend, TrendKind, Spark, TrendMap
+- TrendsPage.tsx (206, ⚠5): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery
 
 ### components/ratsmonitor/services/

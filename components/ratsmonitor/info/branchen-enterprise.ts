@@ -1,4 +1,4 @@
-/* Enterprise-Block der Branchenseiten: Plenara.X-Analysen (Teil von Enterprise) und Team-Funktionen.
+/* Enterprise-Block der Branchenseiten: plenara.X-Analysen (Teil von Enterprise) und Team-Funktionen.
    Gleiches Gerüst für alle Branchen, Auswahl, Sätze und Anordnung je Branche. */
 import type { IconName } from "./icons";
 
@@ -13,7 +13,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   gremien: { href: "/analytics/gremien", name: "Gremiennetz", icon: "users" },
 };
 
-/* Was Plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
+/* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
 export const PLENARAX_VORTEILE: [AnalyseId, string, string][] = [
   ["diffusion", "Ausbreitung sehen", "Wo ein Begriff zuerst auftaucht und in welchen Kommunen er danach folgt."],
   ["beschluesse", "Beschlüsse einordnen", "Quote, Vertagungen und Dauer zeigen, wie zügig eine Kommune entscheidet."],

@@ -93,7 +93,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
      wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */
   const shown=useRef(live);
   if(!live.loading)shown.current=live;
-  /* Außerhalb der Startseite wird nicht gesucht (loading bliebe wahr): Suche und Filter (Schlüssel, Chips) gelten live, z. B. für Plenara.X */
+  /* Außerhalb der Startseite wird nicht gesucht (loading bliebe wahr): Suche und Filter (Schlüssel, Chips) gelten live, z. B. für plenara.X */
   const derived=useMemo(()=>onHome&&live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live,onHome]);
   /* Wann was zu sehen ist (siehe useDerivedResults): In den ersten 0,5 s passiert nichts. Sind die Treffer bis dahin da
      oder wenigstens schon im Kommen, wechseln Karte und Liste, und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl

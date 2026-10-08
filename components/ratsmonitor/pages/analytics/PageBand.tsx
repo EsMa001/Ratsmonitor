@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Reveal } from "./Reveal";
 
-/** Kopfband der Plenara.X-Seiten: derselbe Farbverlauf oben rechts wie im Kopf der Branchenseiten (.ri-head), über die ganze Breite */
+/** Kopfband der plenara.X-Seiten: derselbe Farbverlauf oben rechts wie im Kopf der Branchenseiten (.ri-head), über die ganze Breite */
 export function PageBand({ children }: { children: ReactNode }) {
   return (
     <div

@@ -60,7 +60,7 @@ function Road(p: LucideProps) {
   );
 }
 
-/* X aus dem Plenara.X-Logo: vier Arme aus verblassenden Quadraten um einen Mittelpunkt (wie components/ratsmonitor/components/Brand.tsx) */
+/* X aus dem plenara.X-Logo: vier Arme aus verblassenden Quadraten um einen Mittelpunkt (wie components/ratsmonitor/components/Brand.tsx) */
 function PlenaraX(p: LucideProps) {
   const arms = [1, -1].flatMap((dx) => [1, -1].flatMap((dy) => Array.from({ length: 3 }, (_, i) => [12 + dx * (4.6 + i * 2.3), 12 + dy * (4.6 + i * 2.3), 1 - i * 0.15, 3.4 - i * 0.35] as const)));
   return (

@@ -404,7 +404,7 @@ select.ri-input{padding-right:12px;cursor:pointer}
 .ri-menu__panel--flyout .ri-menu__subs{display:grid;grid-auto-flow:row;grid-auto-columns:max-content;margin:0;padding:0;border:0}
 /* Handy: Dreistrich-Menü noch schmaler (Web 288 px = 10 % weniger als früher 320, Handy 256 px = 20 % weniger) */
 @media(max-width:639px){.ri-menu__panel:not(.ri-menu__panel--flyout){width:min(256px,calc(100vw - 16px))}}
-/* Großes Logo im Seitenkopf (Plenara.X): immer mit Schriftzug, auch auf schmalen Handys */
+/* Großes Logo im Seitenkopf (plenara.X): immer mit Schriftzug, auch auf schmalen Handys */
 @media (max-width:439px){.rm-logo--big .rm-logo__text{position:static;width:auto;height:auto;overflow:visible;clip:auto}
 .rm-logo--big .rm-logo__mark{height:.66em!important;width:.66em!important;vertical-align:-.07em!important;margin:0 .01em 0 0!important}
 .rm-logo--big .rm-logo__mark--p{height:.66em!important;width:.66em!important;vertical-align:-.07em!important}}

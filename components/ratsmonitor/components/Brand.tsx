@@ -233,7 +233,7 @@ function AnalyticsX() {
   );
 }
 
-/** Logo „Plenara ■ X“ für Plenara.X (Seitenkopf) */
+/** Logo „Plenara ■ X“ für plenara.X (Seitenkopf) */
 export function AnalyticsLogo({ size = 64 }: { size?: number }) {
   return (
     <div className="rm-logo rm-logo--big" role="img" aria-label="plenara.X" style={{ display: "inline-flex", alignItems: "center", fontSize: size }}>

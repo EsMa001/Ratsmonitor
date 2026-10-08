@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Laden } from "./Laden";
+import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { Spark, TrendMap, type Trend, type TrendKind } from "./TrendViews";
+import { isFiller, prettyTerm } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 
 interface Topic { id: string; name: string; recent: number; prev: number; change: number; n: number }
@@ -22,7 +25,6 @@ interface Result {
 }
 
 const WINDOWS = [[30, "30 Tage"], [90, "90 Tage"], [180, "180 Tage"]] as const;
-const EXAMPLES = ["Wärmeplanung", "Photovoltaik", "Radverkehr", "Schule", "Digitalisierung"];
 const TABS: { id: "rising" | "emerging" | "falling"; label: string; hint: string }[] = [
   { id: "rising", label: "Aufsteigend", hint: "Deutlich häufiger als im Zeitraum davor" },
   { id: "emerging", label: "Neu aufgekommen", hint: "Davor kaum vorhanden, jetzt in mehreren Gebieten" },
@@ -71,7 +73,7 @@ export function TrendsPage() {
         if (!r.ok) throw new Error(body.error || "Die Analyse konnte nicht berechnet werden.");
         return body as unknown as Result;
       })
-      .then((r) => { setRes(r); setRanKey(key); setLoading(false); setTab(r.rising.length ? "rising" : r.emerging.length ? "emerging" : "falling"); })
+      .then((r) => { const ok = (l: Trend[]) => l.filter((t) => !isFiller(t.term)); r = { ...r, rising: ok(r.rising), emerging: ok(r.emerging), falling: ok(r.falling), all: ok(r.all) }; setRes(r); setRanKey(key); setLoading(false); setTab(r.rising.length ? "rising" : r.emerging.length ? "emerging" : "falling"); })
       .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
@@ -111,15 +113,14 @@ export function TrendsPage() {
             <button key={v} type="button" role="radio" aria-checked={days === v} onClick={() => pickDays(v)} className={`h-8 rounded-full border px-3.5 ${days === v ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{l}</button>
           ))}
         </div>
-        {!hasTerm && !res && <span className="text-slate-500">Beispiele:</span>}
-        {!res && EXAMPLES.map((x) => <button key={x} type="button" onClick={() => { search.applySearch(x); setWant(true); }} className="text-teal-600">{x}</button>)}
       </div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu berechnen.</p>}
-      {loading && !res && <p className="mt-8 text-[16px] text-slate-500">Trends werden berechnet …</p>}
+      {loading && !res && <Laden text="Trends werden berechnet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+          {(() => { const t = res.rising[0]; return t ? <Befund>„{prettyTerm(t.term)}“ steigt am stärksten: {n(t.nr)} Einträge in den letzten {days} Tagen, {t.np ? `${t.ratio.toLocaleString("de-DE")}-mal so viele wie davor` : "davor kaum vorhanden"}{res.totals.regions ? `, in ${n(t.regions)} Gebieten` : ""}.</Befund> : null; })()}
           <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             {[
               ["Aktueller Zeitraum", `${d(res.ranges.start)} bis ${d(res.ranges.end)}`],
@@ -161,7 +162,7 @@ export function TrendsPage() {
                         <div className="grid grid-cols-[28px_1fr_auto] items-center gap-3 py-3 max-sm:grid-cols-[24px_1fr] sm:grid-cols-[28px_1fr_130px_250px]">
                           <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
                           <button type="button" onClick={() => setPicked(picked === t.term ? "" : t.term)} className="min-w-0 text-left">
-                            <span className="block truncate text-[16px] text-slate-900">{t.term}</span>
+                            <span className="block truncate text-[16px] text-slate-900">{prettyTerm(t.term)}</span>
                             <span className="block text-[12px] text-slate-500">{n(t.np)} → {n(t.nr)} Einträge · {n(t.regions)} {t.regions === 1 ? "Gebiet" : "Gebiete"}{t.regionsPrev ? ` (vorher ${n(t.regionsPrev)})` : ""}</span>
                           </button>
                           <span className="max-sm:hidden"><Spark series={t.series} kind={tab} /></span>

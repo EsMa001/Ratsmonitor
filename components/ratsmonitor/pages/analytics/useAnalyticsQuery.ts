@@ -4,7 +4,7 @@ import { radiusParam } from "@/shared/radius-areas.mjs";
 import { useData } from "../../state/data";
 import { useSearch, useSearchResults } from "../../state/search";
 
-/** Abfrage für Plenara.X: dieselben Suchbegriffe und Filter wie auf der Startseite, Gemeindeebene, ohne Sortierung und Seiten */
+/** Abfrage für plenara.X: dieselben Suchbegriffe und Filter wie auf der Startseite, Gemeindeebene, ohne Sortierung und Seiten */
 export function useAnalyticsQuery() {
   const { geo } = useData();
   const search = useSearch();

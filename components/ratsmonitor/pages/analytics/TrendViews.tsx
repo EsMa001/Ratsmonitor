@@ -1,3 +1,4 @@
+import { prettyTerm } from "../../lib/terms";
 import { useEffect, useRef, useState } from "react";
 
 export interface Trend { term: string; nr: number; np: number; ratio: number; z: number; regions: number; regionsPrev: number; series: number[] }
@@ -59,7 +60,7 @@ export function TrendMap({ items, selected, onSelect }: { items: (Trend & { kind
           return (
             <g key={t.term} style={{ cursor: "pointer" }} onClick={() => onSelect(on ? "" : t.term)} opacity={selected && !on ? 0.35 : 1}>
               <circle cx={x} cy={y} r={rad(t.regions)} fill={COLOR[t.kind]} fillOpacity={t.kind === "steady" ? 0.55 : 0.8} stroke={on ? "#0f172a" : "#fff"} strokeWidth={on ? 2 : 1.2} />
-              {labelled.has(t.term) && <text x={x} y={y - rad(t.regions) - 5} textAnchor={x > w - 90 ? "end" : x < 70 ? "start" : "middle"} fontSize="12" fill="#0f172a" stroke="#fff" strokeWidth="3.5" paintOrder="stroke" style={{ pointerEvents: "none" }}>{t.term}</text>}
+              {labelled.has(t.term) && <text x={x} y={y - rad(t.regions) - 5} textAnchor={x > w - 90 ? "end" : x < 70 ? "start" : "middle"} fontSize="12" fill="#0f172a" stroke="#fff" strokeWidth="3.5" paintOrder="stroke" style={{ pointerEvents: "none" }}>{prettyTerm(t.term)}</text>}
             </g>
           );
         })}

@@ -3,8 +3,9 @@ import { ANALYSE_THUMBS } from "../pages/analytics/AnalyticsAbout";
 import { Spark, type TrendKind } from "../pages/analytics/TrendViews";
 import type { AnalyseId } from "./branchen-enterprise";
 import { STATUS } from "../lib/constants";
+import { prettyTerm } from "../lib/terms";
 
-/* Mini-Ausschnitte der Plenara.X-Analysen zum Suchbegriff der Branche. Sie kommen aus einem Schnappschuss
+/* Mini-Ausschnitte der plenara.X-Analysen zum Suchbegriff der Branche. Sie kommen aus einem Schnappschuss
    (public/data/branchen-ausschnitte.json, erzeugt mit scripts/build-branchen-ausschnitte.mjs), nicht aus der API:
    plenara.X ist Teil von Enterprise, die Branchenseiten zeigen nur diese feste Auswahl. Fehlt ein Eintrag
    (leer, Gebietsvergleich), bleibt das schematische Vorschaubild. */
@@ -178,7 +179,7 @@ function mini(id: AnalyseId, d: any, geo?: Snap["geo"]): ReactNode {
       <ul className="m-0 list-none space-y-1.5 p-0">
         {(d.rows as { term: string; ratio: number; series: number[] }[]).map((t) => (
           <li key={t.term} className="flex items-center justify-between gap-3 text-[14px] text-slate-900">
-            <span className="truncate">{t.term}</span>
+            <span className="truncate">{prettyTerm(t.term)}</span>
             <span className="flex items-center gap-2"><span className="text-[13px] text-teal-600">×{String(t.ratio).replace(".", ",")}</span><Spark series={t.series} kind={"rising" as TrendKind} /></span>
           </li>
         ))}

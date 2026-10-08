@@ -9,7 +9,7 @@ import { KnowledgeGraphPage } from "./KnowledgeGraphPage";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
 
-/** Plenara.X: Übersicht und je Funktion eine Unterseite */
+/** plenara.X: Übersicht und je Funktion eine Unterseite */
 const PAGES: Record<string, ComponentType> = {
   "/analytics": AnalyticsAbout,
   "/analytics/ueber": AnalyticsAbout,
@@ -23,7 +23,7 @@ const PAGES: Record<string, ComponentType> = {
 
 export const isAnalyticsPath = (p: string) => p in PAGES;
 
-/** Nur „Über Plenara.X“ ist frei; die Analysen gehören zu Enterprise */
+/** Nur „Über plenara.X“ ist frei; die Analysen gehören zu Enterprise */
 const FREE = new Set(["/analytics", "/analytics/ueber"]);
 
 export function AnalyticsPages({ path }: { path: string }) {

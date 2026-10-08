@@ -34,7 +34,7 @@ function useBrandTitle(p:string,notFound:boolean){
  const what=[text&&`„${text}“`,place&&(text?`in ${place}`:place)].filter(Boolean).join(' ');
  const count=!res.loading&&!res.totalPending&&what?`${res.total.toLocaleString('de-DE')} Treffer`:'';
  useEffect(()=>{
-  // Analyse-Seiten setzen ihren Titel selbst („Diffusionsanalyse · Plenara.X“); ein Überschreiben hier würde ihn zurücksetzen
+  // Analyse-Seiten setzen ihren Titel selbst („Diffusionsanalyse · plenara.X“); ein Überschreiben hier würde ihn zurücksetzen
   if(!notFound&&isAnalyticsPath(p))return;
   document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):tabTitle(p,name,p.startsWith('/anwender/')?brancheBySlug(p.slice(10))?.name:undefined);
  },[brand,name,p,notFound,what,count]);

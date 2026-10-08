@@ -220,7 +220,7 @@ export function AnalyticsAbout() {
       </ul>
       <p className="mt-10 text-[14px] text-slate-500">Weitere Analysen sind in Planung.</p>
 
-      <h2 className="mt-16 text-[28px] font-semibold">Methodik</h2>
+      <h2 id="methodik" className="mt-16 scroll-mt-24 text-[28px] font-semibold">Methodik</h2>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was jede Analyse zeigt, worauf sie beruht und wo ihre Grenzen liegen.</p>
       <div className="mt-6 max-w-[900px] border-t border-slate-200">
         {ANALYSEN_KARTEN.map((a) => (

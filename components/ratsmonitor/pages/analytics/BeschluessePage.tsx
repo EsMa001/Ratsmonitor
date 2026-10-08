@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Laden } from "./Laden";
+import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
@@ -93,12 +95,13 @@ export function BeschluessePage() {
       <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
-      {loading && !res && <p className="mt-8 text-[16px] text-slate-500">Auswertung wird berechnet …</p>}
+      {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {res.totals.all === 0 ? <p className="mt-10 text-[16px]">Keine Einträge für diese Suche.</p> : (
             <>
+              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} werden ${pct(res.rates.approval)} der ${n(res.totals.decided)} Entscheidungen beschlossen, ${pct(res.rates.postponement)} vertagt und ${pct(res.rates.rejection)} abgelehnt.${res.duration.median !== null ? ` Im Median dauert es ${res.duration.median} Tage bis zur Entscheidung.` : ""}`}</Befund>
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
                 {[
                   ["Beschlussquote", pct(res.rates.approval)],

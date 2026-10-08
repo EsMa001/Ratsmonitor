@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Laden } from "./Laden";
+import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
@@ -13,7 +15,6 @@ interface Result {
 }
 const glass = "rm-glass";
 const n = (v: number) => v.toLocaleString("de-DE");
-const EXAMPLES = ["Radverkehr", "Haushalt", "Bebauungsplan", "Schule", "Windenergie"];
 
 export function GremiennetzPage() {
   const { query, hasTerm, search } = useAnalyticsQuery();
@@ -80,13 +81,9 @@ export function GremiennetzPage() {
       </PageBand>
 
       <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Netz berechnen" /></div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
-        <span className="text-slate-500">Ohne Eingabe gilt der ganze Bestand; mit genau einem Ort erscheinen dessen echte Gremien. Beispiele:</span>
-        {EXAMPLES.map((x) => <button key={x} type="button" onClick={() => { search.applySearch(x); setWant(true); }} className="text-teal-600">{x}</button>)}
-      </div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu berechnen.</p>}
-      {loading && !res && <p className="mt-8 text-[16px] text-slate-500">Netz wird berechnet …</p>}
+      {loading && !res && <Laden text="Netz wird berechnet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
@@ -128,6 +125,7 @@ export function GremiennetzPage() {
                 )}
               </section>
 
+              {res.routes[0] && <Befund>Der häufigste Weg: {res.routes[0].path.join(" → ")} ({n(res.routes[0].n)} Vorgänge).</Befund>}
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
                 {[
                   ["Vorgänge mit mehreren Gremien", n(res.paths)],

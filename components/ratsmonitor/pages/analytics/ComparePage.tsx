@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { prettyTerm } from "../../lib/terms";
 import { PageBand } from "./PageBand";
+import { Laden } from "./Laden";
+import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
@@ -147,10 +150,16 @@ export function ComparePage() {
       </section>
       {error && <p role="alert" className="mt-4 text-[14px] font-medium text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Orte oder Thema wurden geändert. Mit „Vergleichen“ neu berechnen.</p>}
-      {loading && !res && <p className="mt-8 text-[16px] text-slate-500">Vergleich wird berechnet …</p>}
+      {loading && !res && <Laden text="Vergleich wird berechnet …" />}
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+          {(() => {
+            const [a, b] = res.places; const x = a?.perThousand, y = b?.perThousand;
+            if (!a || !b || !x || !y) return null;
+            const hi = x >= y, r = Math.round((Math.max(x, y) / Math.min(x, y)) * 10) / 10;
+            return <Befund>{names[hi ? 0 : 1]} berät je 1.000 Einwohner {r <= 1.1 ? "etwa so viel wie" : `${r.toLocaleString("de-DE")}-mal so viel wie`} {names[hi ? 1 : 0]}.</Befund>;
+          })()}
           <Reveal>
           <section className="mt-10">
             <h2 className="text-[22px] font-semibold">Überblick</h2>
@@ -214,7 +223,7 @@ export function ComparePage() {
               <div>
                 <h3 className="flex items-center gap-2 text-[16px] font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">Typisch für {names[i]}</span></h3>
                 <ol className={list}>
-                  {typ[i].map((t) => <li key={t.term} className={row}><Link href={`/analytics/trends?thema=${encodeURIComponent(t.term)}`} className="min-w-0 truncate text-slate-900 hover:text-teal-600">{t.term}</Link><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
+                  {typ[i].map((t) => <li key={t.term} className={row}><Link href={`/analytics/trends?thema=${encodeURIComponent(t.term)}`} className="min-w-0 truncate text-slate-900 hover:text-teal-600">{prettyTerm(t.term)}</Link><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
                   {!typ[i].length && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
                 </ol>
               </div>
@@ -228,7 +237,7 @@ export function ComparePage() {
                   <div className="md:order-none">
                     <h3 className="text-[16px] font-semibold">In beiden Orten</h3>
                     <ol className={list}>
-                      {com.map((c) => <li key={c.term} className={row}><span className="min-w-0 truncate text-slate-900">{c.term}</span><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
+                      {com.map((c) => <li key={c.term} className={row}><span className="min-w-0 truncate text-slate-900">{prettyTerm(c.term)}</span><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
                       {!com.length && <li className="py-2 text-[14px] text-slate-500">Keine gemeinsamen Begriffe.</li>}
                     </ol>
                   </div>

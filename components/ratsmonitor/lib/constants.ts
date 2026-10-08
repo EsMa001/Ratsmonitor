@@ -25,7 +25,7 @@ export const MAP_COLORS = {
   dim: "rgba(255,255,255,.74)",
 };
 
-/** Abdeckungsstufe: 1 = Teilbestand (letzter Abruf lückenhaft), 2 = vollständig abgerufen; 3 und 4 nur für Plenara.X (Alter, 4 = am dunkelsten) */
+/** Abdeckungsstufe: 1 = Teilbestand (letzter Abruf lückenhaft), 2 = vollständig abgerufen; 3 und 4 nur für plenara.X (Alter, 4 = am dunkelsten) */
 export function colorForCoverage(level: number): string {
   return level >= 4 ? MAP_COLORS.scale[3] : level === 3 ? MAP_COLORS.scale[2] : level === 2 ? MAP_COLORS.scale[1] : MAP_COLORS.scale[0];
 }
