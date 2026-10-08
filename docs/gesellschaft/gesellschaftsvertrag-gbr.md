@@ -43,12 +43,13 @@ Beide Gesellschafter sind zu **je 50 %** am Vermögen, Gewinn und Verlust beteil
 ## § 7 Beschlüsse, Streit
 
 1. Beschlüsse brauchen **beide Stimmen**. Sie können formlos, auch per Chat, gefasst werden; Wichtiges halten die Gesellschafter in Textform fest.
-2. Können sich die Gesellschafter nicht einigen, reden sie innerhalb von 7 Tagen miteinander und ziehen dann eine gemeinsam bestimmte neutrale Person hinzu. Bis dahin bleibt alles, wie es ist.
+2. Können sich die Gesellschafter nicht einigen, reden sie innerhalb von 7 Tagen miteinander. Gelingt keine Einigung, bleibt alles, wie es ist. Jeder kann dann nach § 9 kündigen.
 
 ## § 8 Vertraulichkeit, Wettbewerb
 
 1. Die Gesellschafter schweigen über Zugangsdaten, Geschäftsgeheimnisse und Zahlen, auch nach dem Ausscheiden.
-2. Solange sie Gesellschafter sind, arbeiten sie an Plenara nur für die Gesellschaft und betreiben kein Konkurrenzprojekt.
+2. **Kein Konkurrenzprodukt:** Kein Gesellschafter baut, betreibt oder unterstützt allein ein Produkt, das mit Plenara im Wettbewerb steht (Beobachtung, Auswertung und Benachrichtigung zu kommunalen Ratsinformationen). Das gilt während der Gesellschaft **und nach dem Ausscheiden ohne zeitliche Grenze**, solange der andere Gesellschafter oder dessen Nachfolger (zum Beispiel die UG) Plenara betreibt. Das Verbot endet, wenn auch der andere ausgeschieden ist und niemand Plenara mehr betreibt. Gemeinsam dürfen die Gesellschafter jederzeit anders entscheiden.
+3. Gilt das Verbot nach dem Ausscheiden rechtlich nur eingeschränkt, bleibt es in dem Umfang bestehen, der zulässig ist (insbesondere in Zeit, Gebiet und Gegenstand). Wer dagegen verstößt, zahlt die Vertragsstrafe nach § 9 Abs. 7.
 
 ## § 9 Ausscheiden
 
@@ -56,7 +57,7 @@ Beide Gesellschafter sind zu **je 50 %** am Vermögen, Gewinn und Verlust beteil
 2. Mit dem Ausscheiden, aus welchem Grund auch immer (Kündigung, Tod, Insolvenz, Ausschluss), wird die Gesellschaft **nicht aufgelöst**, sondern vom verbleibenden Gesellschafter allein fortgeführt: Das Vermögen der Gesellschaft wächst ihm an (Anwachsung), er führt das Projekt als Einzelunternehmer weiter und übernimmt die Verbindlichkeiten. Er stellt den Ausscheidenden von Verbindlichkeiten frei, die nach dem Ausscheiden entstehen, und im Innenverhältnis auch von älteren, soweit sie über seinen hälftigen Anteil hinausgehen. Erben werden in der GbR keine Gesellschafter. In der UG können Erbfolge, Abfindung und Ausscheiden ganz anders geregelt werden (§ 12 Abs. 4).
 3. Der Ausscheidende erhält **keine Abfindung** und keine Vergütung. Er behält keine Rechte an Plenara, die er der Gesellschaft eingeräumt hat. Sein Anteil wächst dem anderen zu. Erstattungsfähige Auslagen (§ 11) werden bezahlt.
 4. Der Ausscheidende übergibt unverzüglich alle Zugänge, Daten und Kopien. Der verbleibende Gesellschafter darf Zugänge entziehen und Passwörter wechseln.
-5. Ein Gesellschafter kann aus wichtigem Grund (grobe Pflichtverletzung, Vertrauensbruch, Zugangsmissbrauch, Aufgabe des Projekts nach Absatz 6) ausgeschlossen werden. Der andere erklärt dies mit Begründung in Textform; der Ausschluss wird wirksam, wenn die neutrale Person nach § 7 Abs. 2 ihn binnen 14 Tagen bestätigt oder das Gericht ihn feststellt.
+5. Ein Gesellschafter kann aus wichtigem Grund (grobe Pflichtverletzung, Vertrauensbruch, Zugangsmissbrauch, Aufgabe des Projekts nach Absatz 6) ausgeschlossen werden. Der andere erklärt dies mit Begründung in Textform; der Ausschluss wird mit dem Zugang der Erklärung wirksam. Der Betroffene kann ihn gerichtlich überprüfen lassen.
 6. **Mindesteinsatz:** Jeder Gesellschafter arbeitet nach seinen Möglichkeiten an Plenara mit. Zeiten werden nicht erfasst. Hat ein Gesellschafter das Projekt erkennbar aufgegeben, weil er seit mindestens **6 Wochen** praktisch nichts mehr beiträgt (Urlaub und Krankheit zählen nicht) und sich auch nach einer Aufforderung in Textform nicht binnen **14 Tagen** wieder beteiligt, ist das ein wichtiger Grund nach Absatz 5.
 7. **Strafe:** Nimmt ein Ausscheidender Code, Daten oder Zugänge mit oder verwendet sie außerhalb der Gesellschaft, zahlt er 5.000 € Vertragsstrafe; weitere Ansprüche bleiben.
 8. Haftungsausgleich: Hat ein Gesellschafter für Schulden der Gesellschaft mehr als die Hälfte bezahlt, kann er vom anderen den Ausgleich verlangen. Für schuldlose oder leicht fahrlässige Fehler haftet niemand der Gesellschaft gegenüber.
@@ -77,7 +78,7 @@ Einigen sich die Gesellschafter, das Projekt nicht weiterzuführen, wird die Ges
 2. **Weg:** Eine GbR wird nicht unmittelbar zur UG. Die Gesellschafter gründen die UG, und die Gesellschaft überträgt ihr das gesamte Vermögen (Rechte, Verträge, Domains, Konten, Zugänge) **durch Verkauf oder Übertragung gegen Gegenleistung** (zum Beispiel Gesellschafterdarlehen), nicht als Sacheinlage, weil eine UG unter 25.000 € Stammkapital keine Sacheinlagen annehmen darf. Beide stimmen zu. Wie und zu welchem Wert, klären die Gesellschafter vor der Gründung mit Anwalt und Steuerberater.
 3. **Beteiligung:** Die Anteile an der UG entsprechen den Anteilen an der GbR (je 50 %). Beide werden Geschäftsführer.
 4. **Satzung der UG:** In der UG gelten **eigene, neu zu verhandelnde Regeln**, die sich von diesem Vertrag völlig unterscheiden dürfen, insbesondere **Erbfolge** (zum Beispiel Eintritt der Erben oder Übernahme durch den anderen gegen Entschädigung), Abfindung beim Ausscheiden, Vesting, Vorkaufsrecht, Wettbewerbsverbot, Vergütung und Beschlussregeln. Die Regeln dieses Vertrags (Einstimmigkeit, gemeinsame Verantwortung, Vertraulichkeit) sind nur die Ausgangsbasis. Der Ausschluss von Abfindung und Erbfolge in § 9 gilt ausdrücklich nur für die GbR.
-5. Einigen sich die Gesellschafter nicht auf die Satzung der UG, ziehen sie die neutrale Person nach § 7 Abs. 2 hinzu. Gelingt auch das nicht innerhalb von 30 Tagen, gilt die gesetzliche Mustersatzung mit 50/50 und beiden als Geschäftsführern.
+5. Einigen sich die Gesellschafter nicht innerhalb von 30 Tagen auf die Satzung der UG, gilt die gesetzliche Mustersatzung mit 50/50 und beiden als Geschäftsführern.
 6. Die UG kann später durch Kapitalerhöhung zur GmbH werden.
 7. Mit der Übertragung ist die GbR beendet; vorher begründete Verbindlichkeiten übernimmt die UG, soweit die Gläubiger zustimmen.
 
