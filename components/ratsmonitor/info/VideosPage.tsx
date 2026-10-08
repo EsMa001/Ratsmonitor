@@ -92,9 +92,9 @@ function ChapterList({ title, items, now, go }: { title: string; items: Chapter[
 
 const HOOKS: { title: string; text: string; t: number }[] = [
   { title: "Früher erfahren, was beraten wird", text: "Ein Begriff, und die Karte zeigt, wo darüber beraten wird.", t: 26 },
-  { title: "Alarme statt tägliches Suchen", text: "Plenara meldet sich per E-Mail, wenn es Neues gibt.", t: 128 },
+  { title: "Alarme statt tägliches Suchen", text: "plenara meldet sich per E-Mail, wenn es Neues gibt.", t: 128 },
   { title: "Stand jedes Vorgangs auf einen Blick", text: "Der Verlauf steht schon in der Trefferliste.", t: 59 },
-  { title: "Wie sich ein Thema ausbreitet", text: "Plenara.X zeigt Ausbreitung, Entscheidungen und Trends.", t: 268 },
+  { title: "Wie sich ein Thema ausbreitet", text: "plenara.X zeigt Ausbreitung, Entscheidungen und Trends.", t: 268 },
 ];
 
 export function VideosPage() {
@@ -107,14 +107,14 @@ export function VideosPage() {
   };
   return (
     <>
-      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="Plenara in Bewegung" lead="Früher wissen, was vor Ort beraten wird. In 30 Sekunden oder in acht Minuten." />
+      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="plenara in Bewegung" lead="Früher wissen, was vor Ort beraten wird. In 30 Sekunden oder in acht Minuten." />
       <section className="ri-sec">
         <div className="grid items-center gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
-          <Player base={PITCH} poster={PITCH} label="Kurzvideo abspielen: Plenara in 30 Sekunden" />
+          <Player base={PITCH} poster={PITCH} label="Kurzvideo abspielen: plenara in 30 Sekunden" />
           <div>
             <p className="m-0 text-[13px] font-semibold uppercase tracking-wide text-teal-700">30 Sekunden</p>
             <h2 className="m-0 mt-1 text-[26px] font-semibold leading-tight max-md:text-[21px] text-slate-900">Was entscheidet Ihr Rat gerade über Ihre Straße, Ihre Heizung oder Ihr Geschäft?</h2>
-            <p className="mb-0 mt-3 text-[16px] text-slate-600">Das Kurzvideo zeigt, wie Plenara Beschlüsse und Beratungen aus Ihren Kommunen an einem Ort sammelt, und warum ein Begriff genügt.</p>
+            <p className="mb-0 mt-3 text-[16px] text-slate-600">Das Kurzvideo zeigt, wie plenara Beschlüsse und Beratungen aus Ihren Kommunen an einem Ort sammelt, und warum ein Begriff genügt.</p>
           </div>
         </div>
       </section>
@@ -133,17 +133,17 @@ export function VideosPage() {
       </section>
       <section className="ri-sec" ref={full}>
         <p className="m-0 text-[13px] font-semibold uppercase tracking-wide text-teal-700">Rund acht Minuten</p>
-        <h2 className="m-0 mt-1 text-[22px] font-semibold text-slate-900">Alle Funktionen von Plenara und Plenara.X</h2>
+        <h2 className="m-0 mt-1 text-[22px] font-semibold text-slate-900">Alle Funktionen von plenara und plenara.X</h2>
         <p className="mb-6 mt-1 text-[16px] text-slate-500">Von der ersten Suche bis zur Analyse. Untertitel lassen sich im Player zuschalten.</p>
         <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-10">
           <Player base={FULL} poster={FULL} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
           <div className="grid gap-5 sm:grid-cols-2 lg:max-h-[34rem] lg:grid-cols-1 lg:overflow-y-auto">
-            <ChapterList title="Plenara" items={PLENARA} now={now} go={go} />
-            <ChapterList title="Plenara.X Analysen" items={ANALYSE} now={now} go={go} />
+            <ChapterList title="plenara" items={PLENARA} now={now} go={go} />
+            <ChapterList title="plenara.X Analysen" items={ANALYSE} now={now} go={go} />
           </div>
         </div>
       </section>
-      <DarkCta title="Gesehen, was Plenara kann?" sub="Probieren Sie es mit Ihrem Thema aus oder schreiben Sie uns, wenn Sie Fragen haben." action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
+      <DarkCta title="Gesehen, was plenara kann?" sub="Probieren Sie es mit Ihrem Thema aus oder schreiben Sie uns, wenn Sie Fragen haben." action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
     </>
   );
 }

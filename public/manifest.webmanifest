@@ -1,6 +1,6 @@
 {
-  "name": "Plenara",
-  "short_name": "Plenara",
+  "name": "plenara",
+  "short_name": "plenara",
   "description": "Früher wissen, was vor Ort beraten wird.",
   "start_url": "/",
   "display": "standalone",

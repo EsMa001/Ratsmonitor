@@ -63,7 +63,7 @@ export function BeschluessePage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Status und Beschlüsse</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Status und Beschlüsse</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Status und Beschlüsse</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen und Ablehnungen, wie einig Gremien entscheiden, wie oft Vorlagen geändert werden und wie lange ein Vorgang bis zum Beschluss braucht.</p>
       </PageBand>

@@ -753,7 +753,7 @@ wordmark__dot design-styles.css:61
 - PlanCards.tsx (117): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
-- SearchBox.tsx (528): SearchBox
+- SearchBox.tsx (528, ⚠1): SearchBox
 - SearchFilterPanel.tsx (83): SearchFilterPanel
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (40): ShareButton
@@ -772,7 +772,7 @@ wordmark__dot design-styles.css:61
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
-- BranchenLive.tsx (117): LiveThumb
+- BranchenLive.tsx (246): LiveThumb
 - BranchenPages.tsx (122): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (45): isInfoPath, InfoPages
@@ -840,19 +840,19 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (249, ⚠14): ANALYSE_THUMBS, AnalyticsAbout
-- AnalyticsLocked.tsx (27): AnalyticsLocked
+- AnalyticsAbout.tsx (253, ⚠14): ANALYSE_THUMBS, AnalyticsAbout
+- AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
 - BeschluessePage.tsx (191, ⚠5): BeschluessePage
-- CompareCharts.tsx (51): PLACE_COLORS, CMonth, CompareLines, TopicRow
-- ComparePage.tsx (204, ⚠5): ComparePage
+- CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
+- ComparePage.tsx (285, ⚠11): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
-- DiffusionChart.tsx (61, ⚠1): DiffusionChart
-- DiffusionPage.tsx (264, ⚠4): DiffusionPage
+- DiffusionChart.tsx (79, ⚠2): DiffusionChart
+- DiffusionPage.tsx (266, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
 - GraphView.tsx (183, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (186, ⚠2): GremiennetzPage
-- KnowledgeGraphPage.tsx (198, ⚠1): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (200, ⚠1): KnowledgeGraphPage
 - NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
 - PageBand.tsx (14): PageBand
 - TrendViews.tsx (70): Trend, TrendKind, Spark, TrendMap

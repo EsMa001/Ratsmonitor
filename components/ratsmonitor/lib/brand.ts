@@ -6,7 +6,7 @@ import { IS_DEV } from "./tier";
  * Gewählte Logo-Variante. In der Entwicklung über den Logo-Switch unten rechts wechselbar und im
  * Browser gemerkt; im Produktivbetrieb gilt immer DEFAULT_LOGO.
  */
-const KEY = "ratsmonitor:brand:v2"; // v2: frühere Auswahl (Standard war Quorumo) verfällt, jetzt gilt Plenara
+const KEY = "ratsmonitor:brand:v2"; // v2: frühere Auswahl (Standard war Quorumo) verfällt, jetzt gilt plenara
 const listeners = new Set<() => void>();
 let current: LogoId | null = null;
 

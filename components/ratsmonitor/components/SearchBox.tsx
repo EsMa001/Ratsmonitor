@@ -31,7 +31,7 @@ const dropKeyboard = () => {
 };
 
 /** stay: auf der aktuellen Seite bleiben (Plenara.X), statt nach einer Suche zur Startseite zu springen */
-export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean } = {}) {
+export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false, keepFocus = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean; /** Enter übernimmt Orte, der Cursor bleibt im Feld (z. B. für den zweiten Ort im Gebietsvergleich) */ keepFocus?: boolean } = {}) {
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;
@@ -302,7 +302,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
       else {
         search.commitPlaces();
         setOpen(false);
-        inputRef.current?.blur();
+        if (!keepFocus) inputRef.current?.blur();
       }
       confirmed();
       onSubmit?.();

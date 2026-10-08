@@ -128,9 +128,9 @@ export function AnalyticsAbout() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-12 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500">Plenara.X</p>
-      <h1 className="mb-6 mt-4"><span className="sr-only">Über Plenara.X</span><span aria-hidden="true" className="block max-sm:hidden"><AnalyticsLogo size={72} /></span><span aria-hidden="true" className="hidden max-sm:block"><AnalyticsLogo size={44} /></span></h1>
-      <p className="mt-3 max-w-[680px] text-[18px] font-medium text-slate-900">Plenara.X ist das Intelligence-Tool von Plenara.</p>
+      <p className="text-[14px] text-slate-500">plenara.X</p>
+      <h1 className="mb-6 mt-4"><span className="sr-only">Über plenara.X</span><span aria-hidden="true" className="block max-sm:hidden"><AnalyticsLogo size={72} /></span><span aria-hidden="true" className="hidden max-sm:block"><AnalyticsLogo size={44} /></span></h1>
+      <p className="mt-3 max-w-[680px] text-[18px] font-medium text-slate-900">plenara.X ist das Intelligence-Tool von plenara.</p>
       <p className="mt-2 max-w-[680px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte. Jede Auswertung wird bei der Abfrage frisch aus der Datenbank berechnet; ändert sich der Bestand, ändert sich das Ergebnis.</p>
       </PageBand>
 
@@ -193,7 +193,7 @@ export function AnalyticsAbout() {
       <article className="border-t border-slate-200 py-8">
         <h3 className="text-[22px] font-semibold">Gebietsvergleich</h3>
         <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
-        <Link href="/analytics/vergleich" aria-label="Gebietsvergleich öffnen" className="block xl:max-w-[420px]"><CompareThumb /></Link>
+        <Link href="/analytics/vergleich" aria-label="Gebietsvergleich öffnen" className="block xl:max-w-[420px]"><LiveThumb id="vergleich" term="Köln und Dortmund" /></Link>
         <div>
           <p className="mt-2 text-[16px] text-slate-500">Stellt zwei Orte nebeneinander: Themenprofil, Stand der Vorlagen, Verlauf, aktivste Gremien sowie typische und gemeinsame Begriffe. Als Maßstab dienen alle Gebiete. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <Link href="/analytics/vergleich" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gebietsvergleich öffnen →</Link>

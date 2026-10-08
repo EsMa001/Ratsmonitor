@@ -36,7 +36,9 @@ export function KnowledgeGraphPage() {
 
   const given = useRef(params.get("thema"));
   useEffect(() => {
-    if (!given.current) return;
+    /* Ohne Direktlink und ohne Begriff in der Suche: mit einem Beispiel starten, damit die Seite nicht leer ist */
+    if (!given.current && !hasTerm) given.current = "Photovoltaik";
+    if (!given.current) { if (hasTerm) setWant(true); return; }
     search.applySearch(given.current);
     given.current = null;
     setWant(true);
@@ -85,7 +87,7 @@ export function KnowledgeGraphPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Knowledge Graph</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Knowledge Graph</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Knowledge Graph</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, womit ein Thema in den Räten zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz.</p>
       </PageBand>

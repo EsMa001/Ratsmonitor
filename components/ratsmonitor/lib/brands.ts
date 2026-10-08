@@ -4,7 +4,7 @@
  */
 export type BrandId = "quorumo" | "plenara" | "parlamo";
 
-export const BRAND_NAME: Record<BrandId, string> = { quorumo: "Quorumo", plenara: "Plenara", parlamo: "Parlamo" };
+export const BRAND_NAME: Record<BrandId, string> = { quorumo: "Quorumo", plenara: "plenara", parlamo: "Parlamo" };
 
 /** Alle Varianten einer Marke tragen denselben Produktnamen; v1 behält die IDs der ersten Vorgabe.
  *  Quorumo v3 aus der „Ergänzung Quorumo v3“; die Reihenfolge hier ist die Reihenfolge im Dev-Switch. */

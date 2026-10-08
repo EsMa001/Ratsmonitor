@@ -236,7 +236,7 @@ function AnalyticsX() {
 /** Logo „Plenara ■ X“ für Plenara.X (Seitenkopf) */
 export function AnalyticsLogo({ size = 64 }: { size?: number }) {
   return (
-    <div className="rm-logo rm-logo--big" role="img" aria-label="Plenara.X" style={{ display: "inline-flex", alignItems: "center", fontSize: size }}>
+    <div className="rm-logo rm-logo--big" role="img" aria-label="plenara.X" style={{ display: "inline-flex", alignItems: "center", fontSize: size }}>
       <span style={{ fontSize: size }}>
         <PlenaraV2 square size={size} noDot />
       </span>

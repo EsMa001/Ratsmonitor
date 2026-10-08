@@ -159,7 +159,7 @@ export function MainMenu() {
                 </button>}
                 {show("funktionen") && (
                   <ul className="ri-menu__subs">
-                    {[{ href: "/analytics/ueber", label: "Plenara.X", icon: "plenaraX" as const }, ...FUNKTIONEN].map((f) => (
+                    {[{ href: "/analytics/ueber", label: "plenara.X", icon: "plenaraX" as const }, ...FUNKTIONEN].map((f) => (
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />

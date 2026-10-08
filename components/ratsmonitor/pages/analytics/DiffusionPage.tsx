@@ -56,7 +56,9 @@ export function DiffusionPage() {
   /* Beispiel- oder Direktlink (?thema=): Begriff in die Suche setzen und sofort starten */
   const given = useRef(params.get("thema"));
   useEffect(() => {
-    if (!given.current) return;
+    /* Ohne Direktlink und ohne Begriff in der Suche: mit einem Beispiel starten, damit die Seite nicht leer ist */
+    if (!given.current && !hasTerm) given.current = "Photovoltaik";
+    if (!given.current) { if (hasTerm) setWant(true); return; }
     search.applySearch(given.current);
     given.current = null;
     setWant(true);
@@ -145,7 +147,7 @@ export function DiffusionPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Diffusionsanalyse</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Diffusionsanalyse</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Diffusionsanalyse</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte, und wie es sich von dort ausbreitete.</p>
       </PageBand>

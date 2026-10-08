@@ -252,7 +252,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
     items: [
       {
         q: "Was ist Ratsmonitor?",
-        a: "Plenara bündelt die Ratsinformationssysteme der Kommunen in einer Suche. Vorlagen, Tagesordnungen und Beschlüsse finden Sie an einem Ort, jeweils mit Kommune, Gremium, Datum und Link zu den Originalunterlagen. Die Abdeckung wird laufend ausgebaut.",
+        a: "plenara bündelt die Ratsinformationssysteme der Kommunen in einer Suche. Vorlagen, Tagesordnungen und Beschlüsse finden Sie an einem Ort, jeweils mit Kommune, Gremium, Datum und Link zu den Originalunterlagen. Die Abdeckung wird laufend ausgebaut.",
       },
       { q: "Wie aktuell sind die Daten?", a: "Die Daten werden regelmäßig direkt aus den offiziellen Ratsinformationssystemen abgerufen. Den genauen Stand sehen Sie in der Suche neben der Trefferzahl („Datenstand“ mit Datum und Uhrzeit). Welche Kommunen erfasst sind und wo es Lücken gibt, steht unter „Datenabdeckung“." },
       { q: "Wie finde ich gezielt Dokumente aus meiner Heimatstadt oder Region?", a: "Tippen Sie den Ortsnamen, den Kreis oder eine Region wie „Münsterland“ ins Suchfeld. In den Vorschlägen wählen Sie, ob nur die Gemeinde oder auch der Kreis durchsucht wird. Im Filter beziehen Sie mit dem Umkreis Nachbarorte ein." },
@@ -270,10 +270,10 @@ export const FAQ: { group: string; items: Qa[] }[] = [
   {
     group: "Für Unternehmen und Organisationen",
     items: [
-      { q: "Kann ich Plenara im Team nutzen?", a: "Ja. Im Tarif Enterprise gehen Benachrichtigungen an bis zu fünf E-Mail-Adressen oder Verteiler je gespeicherter Suche, etwa an Kolleginnen und Kollegen oder ein Team-Postfach." },
+      { q: "Kann ich plenara im Team nutzen?", a: "Ja. Im Tarif Enterprise gehen Benachrichtigungen an bis zu fünf E-Mail-Adressen oder Verteiler je gespeicherter Suche, etwa an Kolleginnen und Kollegen oder ein Team-Postfach." },
       { q: "Erhalte ich eine Rechnung für mein Unternehmen?", a: "Für Unternehmen und Organisationen stimmen wir Abrechnung und Rechnungsstellung gern individuell ab. Sprechen Sie uns dazu über die Kontaktseite an." },
       { q: "Kann ich mehrere Regionen oder Themen beobachten?", a: "Ja. Legen Sie für jede Region oder jedes Thema eine eigene gespeicherte Suche an. In einer Suche können Sie außerdem mehrere Orte und mehrere Begriffe kombinieren. Wie viele Suchen Sie speichern können, hängt vom Tarif ab." },
-      { q: "Was unterscheidet Plenara von Vergabeportalen?", a: "Vergabeportale zeigen Ausschreibungen, also das Ende eines Prozesses. Plenara zeigt, was davor in Räten und Ausschüssen beraten und beschlossen wird. So sehen Sie Projekte, bevor sie ausgeschrieben werden." },
+      { q: "Was unterscheidet plenara von Vergabeportalen?", a: "Vergabeportale zeigen Ausschreibungen, also das Ende eines Prozesses. plenara zeigt, was davor in Räten und Ausschüssen beraten und beschlossen wird. So sehen Sie Projekte, bevor sie ausgeschrieben werden." },
     ],
   },
 ];
@@ -285,7 +285,7 @@ export const PRICE_FAQ: Qa[] = [
   { q: "Kann ich später upgraden?", a: "Ja, ein Wechsel auf einen höheren Tarif ist jederzeit möglich. Ihre gespeicherten Suchen und Artikel bleiben dabei erhalten." },
   { q: "Wie viele Suchen und Artikel kann ich speichern?", a: "Mit Basic eine Suche, einen Artikel und eine Benachrichtigung. Mit Pro und Enterprise jeweils bis zu 100 gespeicherte Suchen, bis zu 100 gespeicherte Artikel und bis zu 100 aktive Benachrichtigungen." },
   { q: "Welcher Tarif enthält den Sitzungskalender?", a: "Der Sitzungskalender mit Kalender-Abo ist nur im Tarif Enterprise enthalten. Er zeigt die Termine Ihrer Gebiete, auch mit Umkreis, und lässt sich in Apple Kalender, Outlook oder Google Kalender übernehmen." },
-  { q: "Was ist Plenara.X und welcher Tarif enthält es?", a: "Plenara.X sind die Analysen zu Plenara: Diffusion, Knowledge Graph, Trends, Gebietsvergleich, Status und Beschlüsse sowie Gremiennetz. Sie sind nur im Tarif Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
+  { q: "Was ist plenara.X und welcher Tarif enthält es?", a: "plenara.X sind die Analysen zu plenara: Diffusion, Knowledge Graph, Trends, Gebietsvergleich, Status und Beschlüsse sowie Gremiennetz. Sie sind nur im Tarif Enterprise enthalten. In Basic und Pro bleibt die Suche mit allen Treffern und Benachrichtigungen." },
 ];
 
 export type PlanId = "free" | "pro" | "enterprise";
@@ -355,7 +355,7 @@ export const PLANS: Plan[] = [
     items: [["map", "Suche in allen angebundenen Gebieten"], ["user", "Ihre Adresse + bis zu 5 weitere Empfänger"]],
     features: [
       { plus: true, text: "**Alles aus Pro**, zusätzlich:" },
-      { text: "**Plenara.X**: Analysen zu Ausbreitung, Beschlüssen und Trends" },
+      { text: "**plenara.X**: Analysen zu Ausbreitung, Beschlüssen und Trends" },
       { text: "**Sitzungskalender** für Ihre Gebiete, auch mit Umkreis" },
       { text: "Benachrichtigungen an **bis zu 5 Kolleginnen und Kollegen**" },
     ],

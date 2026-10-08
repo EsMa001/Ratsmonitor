@@ -32,7 +32,7 @@ function useCoverageStats(): [string, string][] {
 const POINTS: [string, string][] = [
   ["Informationsvorsprung", "Sie sehen Entscheidungen, sobald sie auf einer Tagesordnung stehen, nicht erst, wenn sie in der Zeitung sind."],
   ["Ganz Deutschland im Blick", "Märkte, Standorte und Wettbewerber über Kommunengrenzen hinweg beobachten."],
-  ["Innovation mitgestalten", "Als früher Nutzer profitieren Sie als Erste von neuen Funktionen und prägen mit Ihrem Feedback, wie Plenara wächst."],
+  ["Innovation mitgestalten", "Als früher Nutzer profitieren Sie als Erste von neuen Funktionen und prägen mit Ihrem Feedback, wie plenara wächst."],
 ];
 
 /* Suchbegriffe zu den Beispielen: ein Klick startet eine echte Suche */

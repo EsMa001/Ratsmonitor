@@ -11,7 +11,7 @@ const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
   { label: "Gespeicherte Artikel", tiers: { guest: null, basic: "1 gespeicherter Artikel", pro: `Bis zu ${PLAN_MAX} gespeicherte Artikel`, enterprise: `Bis zu ${PLAN_MAX} gespeicherte Artikel` } },
   { label: "E-Mail-Benachrichtigungen", tiers: { guest: null, basic: "1 aktive Benachrichtigung", pro: `Bis zu ${PLAN_MAX} Benachrichtigungen`, enterprise: `Bis zu ${PLAN_MAX} Benachrichtigungen` } },
   { label: "Sitzungskalender mit Kalender-Abo", tiers: { guest: null, basic: null, pro: null, enterprise: "Sitzungskalender mit Kalender-Abo" } },
-  { label: "Plenara.X", tiers: { guest: null, basic: null, pro: null, enterprise: "Plenara.X: Analysen zu Ausbreitung, Beschlüssen und Trends" } },
+  { label: "plenara.X", tiers: { guest: null, basic: null, pro: null, enterprise: "plenara.X: Analysen zu Ausbreitung, Beschlüssen und Trends" } },
   { label: "Bis zu 5 E-Mail-Empfänger", tiers: { guest: null, basic: null, pro: null, enterprise: "Bis zu 5 E-Mail-Empfänger je Benachrichtigung" } },
 ];
 const PLANS: { tier: Tier; price: string; note: string }[] = [
