@@ -59,7 +59,7 @@ export const BRANCHEN: Branche[] = [
     advantage: "Sie erfahren von einer Fläche, wenn sie zum ersten Mal in einem Gremium auftaucht, oft Jahre vor dem Baubeginn.",
     stat: ["312", "neue Aufstellungsbeschlüsse im letzten Monat"],
     watch: ["Aufstellungsbeschlüsse", "Offenlegungen", "Veränderungssperren", "Städtebauliche Verträge", "Bebauungspläne", "Grundstücksverkäufe"],
-    useCases: ["Sie erfahren, dass eine Kommune ein neues Baugebiet plant, Monate bevor die Flächen auf den Markt kommen, und können früh Kontakt zu Eigentümern und Verwaltung aufnehmen.", "Sie sehen, wann Planentwürfe öffentlich ausliegen, und können Fristen für Stellungnahmen und Einwendungen rechtzeitig einplanen.", "Sie erkennen Risiken vor einem Grundstückskauf: Eine Veränderungssperre kann Bauanträge in einem Gebiet für Jahre blockieren.", "Sie sehen, welche Kosten und Pflichten Kommunen Vorhabenträgern auferlegen, etwa für Erschließung, Kitas oder Sozialwohnungen.", "Sie verfolgen jeden Plan vom ersten Entwurf bis zur Satzung und wissen, was auf einer Fläche künftig erlaubt ist.", "Sie erfahren, wenn Kommunen eigene Grundstücke verkaufen oder in Erbpacht vergeben, oft mit Bewerbungsfrist."],
+    useCases: ["Sie erfahren, dass eine Kommune ein neues Baugebiet plant, Monate bevor die Flächen auf den Markt kommen, und können früh Kontakt zu Eigentümern und Verwaltung aufnehmen.", "Sie sehen, wann Planentwürfe öffentlich ausliegen, und können Fristen für Stellungnahmen und Einwendungen rechtzeitig einplanen.", "Sie erkennen Risiken vor einem Grundstückskauf: Eine Veränderungssperre kann Bauanträge in einem Gebiet für Jahre blockieren.", "Sie sehen, welche Kosten und Pflichten Kommunen Vorhabenträgern auferlegen, etwa für Erschließung, Kitas oder Sozialwohnungen.", "Sie verfolgen Pläne vom ersten Entwurf bis zur Satzung und wissen, was auf einer Fläche künftig erlaubt ist.", "Sie erfahren, wenn Kommunen eigene Grundstücke verkaufen oder in Erbpacht vergeben, oft mit Bewerbungsfrist."],
     watchIcons: ["fileText", "eye", "shieldCheck", "handshake", "map", "house"],
     closing: "Ihr nächstes Grundstück steht schon auf einer Tagesordnung.",
     keywords: ["Aufstellungsbeschluss", "Bebauungsplan", "Veränderungssperre", "Offenlegung", "städtebaulicher Vertrag"],
@@ -171,7 +171,7 @@ export const BRANCHEN: Branche[] = [
     benefits: [
       ["search", "Gutachtenbedarf erkennen", "Sehen, wo neue Pläne Umweltberichte und Artenschutzgutachten brauchen.", "Umweltbericht"],
       ["map", "Ausgleichsflächen finden", "Beschlossene Ausgleichsmaßnahmen, für die noch Planer gesucht werden.", "Ausgleich"],
-      ["calendar", "Fristen sicher einhalten", "Beteiligungsphasen rechtzeitig kennen und Stellungnahmen einreichen.", "Öffentliche Auslegung"],
+      ["calendar", "Fristen im Blick behalten", "Beteiligungsphasen rechtzeitig kennen und Stellungnahmen einreichen.", "Öffentliche Auslegung"],
     ],
     flowTitle: "Vom Planentwurf bis zur Ausgleichsfläche",
     steps: [["map", "Planentwurf"], ["fileText", "Beteiligung"], ["circleCheck", "Beschluss"], ["map", "Ausgleich"], ["clipboardList", "Umsetzung"]],
@@ -203,7 +203,7 @@ export const BRANCHEN: Branche[] = [
     advantage: "Sie sehen ein Thema, sobald die Vorlage veröffentlicht ist, und können recherchieren, bevor die Sitzung stattfindet.",
     stat: ["9.400", "neue Beschlussvorlagen im letzten Monat"],
     watch: ["Beschlussvorlagen", "Tagesordnungen", "Fördergelder", "Haushalte", "Anfragen und Anträge", "Personalien"],
-    useCases: ["Sie finden Vorlagen zu jedem Thema, bevor im Rat abgestimmt wird, und haben Zeit für Recherche, Nachfragen und Berichterstattung.", "Sie sehen auf einen Blick, was in den nächsten Sitzungen von Rat und Ausschüssen verhandelt wird, und können Termine planen.", "Sie verfolgen, welche Förderprogramme Kommunen beantragen oder vergeben und wofür das Geld eingesetzt wird.", "Sie erkennen Schwerpunkte, Kürzungen und Investitionen im kommunalen Haushalt und können sie über Jahre vergleichen.", "Sie sehen, welche Fragen Fraktionen stellen und welche Anträge sie einbringen, oft der Anfang einer Debatte.", "Sie erfahren von Wahlen, Besetzungen und Wechseln in Verwaltung, Aufsichtsräten und Gremien."],
+    useCases: ["Sie finden Vorlagen zu Ihren Themen, bevor im Rat abgestimmt wird, und haben Zeit für Recherche, Nachfragen und Berichterstattung.", "Sie sehen auf einen Blick, was in den nächsten Sitzungen von Rat und Ausschüssen verhandelt wird, und können Termine planen.", "Sie verfolgen, welche Förderprogramme Kommunen beantragen oder vergeben und wofür das Geld eingesetzt wird.", "Sie erkennen Schwerpunkte, Kürzungen und Investitionen im kommunalen Haushalt und können sie über Jahre vergleichen.", "Sie sehen, welche Fragen Fraktionen stellen und welche Anträge sie einbringen, oft der Anfang einer Debatte.", "Sie erfahren von Wahlen, Besetzungen und Wechseln in Verwaltung, Aufsichtsräten und Gremien."],
     watchIcons: ["fileText", "calendar", "euro", "newspaper", "megaphone", "users"],
     closing: "Die nächste Geschichte steht schon in einer Vorlage.",
     keywords: ["Beschlussvorlage", "Tagesordnung", "Zuschuss", "Gutachten", "Haushalt"],
@@ -247,7 +247,7 @@ export const FAQ: { group: string; items: Qa[] }[] = [
     items: [
       {
         q: "Was ist Ratsmonitor?",
-        a: "Ratsmonitor bündelt die Ratsinformationssysteme der Kommunen in einer Suche. Vorlagen, Tagesordnungen und Beschlüsse finden Sie an einem Ort, jeweils mit Kommune, Gremium, Datum und Link zu den Originalunterlagen. Die Abdeckung wird laufend auf ganz Deutschland ausgebaut.",
+        a: "Ratsmonitor bündelt die Ratsinformationssysteme der Kommunen in einer Suche. Vorlagen, Tagesordnungen und Beschlüsse finden Sie an einem Ort, jeweils mit Kommune, Gremium, Datum und Link zu den Originalunterlagen. Die Abdeckung wird laufend ausgebaut.",
       },
       { q: "Wie aktuell sind die Daten?", a: "Die Daten werden regelmäßig direkt aus den offiziellen Ratsinformationssystemen abgerufen. Den genauen Stand sehen Sie in der Suche neben der Trefferzahl („Datenstand“ mit Datum und Uhrzeit). Welche Kommunen erfasst sind und wo es Lücken gibt, steht unter „Datenabdeckung“." },
       { q: "Wie finde ich gezielt Dokumente aus meiner Heimatstadt oder Region?", a: "Tippen Sie den Ortsnamen, den Kreis oder eine Region wie „Münsterland“ ins Suchfeld. In den Vorschlägen wählen Sie, ob nur die Gemeinde oder auch der Kreis durchsucht wird. Im Filter beziehen Sie mit dem Umkreis Nachbarorte ein." },
@@ -308,7 +308,7 @@ export const PLANS: Plan[] = [
     unit: "dauerhaft kostenlos",
     note: "Ohne Zahlungsdaten, jederzeit nutzbar",
     short: "0 €",
-    items: [["map", "Suche in ganz Deutschland"], ["user", "Keine E-Mail-Benachrichtigungen"]],
+    items: [["map", "Suche in allen angebundenen Gebieten"], ["user", "Keine E-Mail-Benachrichtigungen"]],
     features: [
       { text: "Suche in allen Ratsinformationssystemen" },
       { text: "Filter nach Gebiet, Thema und Zeitraum" },
@@ -328,7 +328,7 @@ export const PLANS: Plan[] = [
     unit: "pro Monat",
     note: "inkl. MwSt.",
     short: "9,99 € / Monat",
-    items: [["map", "Suche in ganz Deutschland"], ["user", "E-Mail-Benachrichtigungen an Ihre Adresse"]],
+    items: [["map", "Suche in allen angebundenen Gebieten"], ["user", "E-Mail-Benachrichtigungen an Ihre Adresse"]],
     features: [
       { plus: true, text: "**Alles aus Basic**, zusätzlich:" },
       { text: "Bis zu **100** Suchen speichern" },
@@ -346,7 +346,7 @@ export const PLANS: Plan[] = [
     unit: "pro Monat",
     note: "inkl. MwSt.",
     short: "49,99 € / Monat",
-    items: [["map", "Suche in ganz Deutschland"], ["user", "Ihre Adresse + bis zu 5 weitere Empfänger"]],
+    items: [["map", "Suche in allen angebundenen Gebieten"], ["user", "Ihre Adresse + bis zu 5 weitere Empfänger"]],
     features: [
       { plus: true, text: "**Alles aus Pro**, zusätzlich:" },
       { text: "**Sitzungskalender** für Ihre Gebiete, auch mit Umkreis" },
