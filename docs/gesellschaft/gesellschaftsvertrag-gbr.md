@@ -44,6 +44,7 @@ Beide Gesellschafter sind zu **je 50 %** am Vermögen, Gewinn und Verlust beteil
 
 1. Beschlüsse brauchen **beide Stimmen**. Sie können formlos, auch per Chat, gefasst werden; Wichtiges halten die Gesellschafter in Textform fest.
 2. Können sich die Gesellschafter nicht einigen, reden sie innerhalb von 7 Tagen miteinander. Gelingt keine Einigung, bleibt alles, wie es ist. Jeder kann dann nach § 9 kündigen.
+3. **Übernahmeangebot:** Scheitert die Einigung bei einer wesentlichen Frage (zum Beispiel Richtung, Preise, UG), kann jeder Gesellschafter dem anderen in Textform einen Preis nennen, zu dem er dessen Anteil kaufen will. Der andere hat **14 Tage** Zeit zu wählen: Er verkauft zu diesem Preis, oder er kauft stattdessen den Anteil des Anbietenden zum selben Preis. Antwortet er nicht, gilt: Er verkauft. Der Käufer zahlt binnen 30 Tagen, danach scheidet der Verkäufer aus (§ 9 Abs. 2 bis 4, § 8 Abs. 2). Das ist ein Kauf und keine Abfindung nach § 9 Abs. 3. Der Preis muss ehrlich gemeint sein: Wer einen Preis weit unter dem Wert des Projekts nennt, muss damit rechnen, dass der andere kauft.
 
 ## § 8 Vertraulichkeit, Wettbewerb
 
