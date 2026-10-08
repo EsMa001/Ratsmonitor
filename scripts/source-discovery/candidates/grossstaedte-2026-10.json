@@ -1,0 +1,53 @@
+{
+ "de-06412000": {
+  "id": "de-06412000",
+  "name": "Stadt Frankfurt am Main",
+  "kind": "city",
+  "ags": "06412000",
+  "status": "Vorschlag vom 07.10.2026 (Großstädte mit Einzelfällen); neuer Leser parlis (server/integrations/parlis.mjs)",
+  "begruendung": [
+   "PARLIS ist das eigene Parlamentsinformationssystem der Stadt (www.stvv.frankfurt.de). Es war offen, weil robots.txt die Pfade /PARLISLINK und /download verbietet; seit der Entscheidung vom 05.10.2026 wird robots.txt festgehalten, aber nicht befolgt.",
+   "Die Listen der Niederschriften (DOKUMENTTYP=NIED) und der aktuellen Tagesordnungen (TAGO) antworten Programmen ohne Anmeldung; jedes Dokument hat einen dauerhaften Namen (DDW?W=DOK_NAME='N_H_4_29-09-2026'). Der nichtöffentliche Teil der Niederschriften liegt getrennt unter /PARLIS2S/ und wird nie abgefragt.",
+   "Probeabruf am 07.10.2026 (3 Monate): 51 Sitzungen, 1.812 Vorgänge, keine Fehler; Ortsbeiräte, Ausschüsse und Stadtverordnetenversammlung."
+  ],
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.stvv.frankfurt.de/parlis2/parlis.html",
+    "from": "https://frankfurt.de/service-und-rathaus/stadtpolitik/stadtverordnetenversammlung",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "PARLIS der Stadt Frankfurt; Leser parlis",
+     "beleg": "Startseite verlinkt die Stadtpolitik-Seite von frankfurt.de"
+    }
+   }
+  ]
+ },
+ "de-01002000": {
+  "id": "de-01002000",
+  "name": "Stadt Kiel",
+  "kind": "city",
+  "ags": "01002000",
+  "status": "Neuprüfung vom 07.10.2026: Der Lückenatlas nannte einen veralteten Grund; geprüft wird die richtige Adresse des Systems.",
+  "begruendung": [
+   "Die Ratsversammlung (kiel.de/de/politik_verwaltung/ratsversammlung) verlinkt ihr Ratsinformationssystem unter www.kiel.sitzung-online.de/public/ (ALLRIS 4). Die bisherige Prüfung bewertete einen Link auf den Livestream von Kiel TV.",
+   "Am 07.10.2026 antwortete /public/si010 mit der Zugriffsprüfung des Herstellers („Zugriff pruefen“); OParl unter /oparl/system mit HTTP 503."
+  ],
+  "sites": [],
+  "candidates": [
+   {
+    "url": "https://www.kiel.sitzung-online.de/public/",
+    "from": "https://www.kiel.de/de/politik_verwaltung/ratsversammlung/index.php",
+    "byHref": true,
+    "guessed": "Websuche",
+    "research": {
+     "art": "ris",
+     "hinweis": "ALLRIS 4 auf sitzung-online.de",
+     "beleg": "Link „Ausschüsse“ auf der Seite der Ratsversammlung"
+    }
+   }
+  ]
+ }
+}
