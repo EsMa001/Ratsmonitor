@@ -7,16 +7,16 @@
       "items": [
         { "id": "fe-registrierung", "text": "Registrierung ans Backend anbinden", "hinweis": "Bisher nur Validierung im Browser (AccountPages.tsx).", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-kontaktformular", "text": "Kontaktformular ans Backend anbinden", "hinweis": "Bisher nur Validierung im Browser (AccountPages.tsx).", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "fe-platzhalter", "text": "Platzhalterwerte durch echte, belegbare Werte ersetzen", "hinweis": "Kennzahlen, Beispiel-Treffer und Orte, „< 24 Std.“, „4.500+“, „16 Bundesländer“ (content.ts, AboutPage.tsx, blocks.tsx). „4.500+“ zählt auswählbare Gebiete, nicht die angebundene Abdeckung; mit dem Abdeckungsbericht belegen (requirements/de-sources-report.md).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-platzhalter", "text": "Platzhalterwerte durch echte, belegbare Werte ersetzen", "hinweis": "Abdeckungszahlen laufen live aus /api/sources; Festwerte entfernt (08.10.26). Beispiel-Treffer in den Branchenseiten sind noch fiktiv.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-rechtstexte", "text": "Rechtstext-Seiten einbinden", "hinweis": "Entwurf von Impressum, Datenschutz, AGB und Widerruf ist eingebunden und in der Fußzeile verlinkt (08.10.26). Offen: Betreiberdaten, Zahlungsdienstleister, anwaltliche Prüfung.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-tarifseite", "text": "Tarif- und Bezahlseite: Upgrade, Kündigung online, klare Preisangaben", "hinweis": "Erst sinnvoll, wenn die Zahlungsabwicklung im Backend steht.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-kontobereich", "text": "Kontobereich: Tarif ändern, Rechnungen, Datenexport, Konto löschen", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-personenbezug", "text": "Personenbezug in der Oberfläche begrenzen", "hinweis": "Keine Namen von Privatpersonen und einfachen Mitarbeitern in Überschriften und Zusammenfassungen, noindex für betroffene Seiten, Link „Daten melden/entfernen“.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "fe-haftungshinweis", "text": "Hinweis „keine Gewähr, maßgeblich sind die Originalunterlagen“ bei Treffern und in Alarm-E-Mails", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-haftungshinweis", "text": "Hinweis „keine Gewähr, maßgeblich sind die Originalunterlagen“ bei Treffern und in Alarm-E-Mails", "hinweis": "Detailseite erledigt (08.10.26). Alarm-E-Mails liegen im Backend.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-einwilligungen", "text": "Einwilligungen und Cookie-Banner", "hinweis": "Nur nötig, soweit Tracking oder Analyse eingesetzt wird.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-onboarding", "text": "Onboarding und Alarm-Einrichtung vereinfachen", "hinweis": "Gebiet und Thema in wenigen Klicks wählen, dabei der Weg von der Einfachstufe zum Upgrade.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "fe-mobil-barriere", "text": "Mobil- und Barrierefreiheitstest", "hinweis": "Teal #0d9488 hat auf Weiß nur 3,7 : 1; für kleinen Text und weißen Text auf Teal-Flächen #0f766e (5,5 : 1) erwägen (siehe Corporate Design, Abschnitt 3).", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "fe-zustaende", "text": "Fehler-, Lade- und Leerzustände prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "fe-zustaende", "text": "Fehler-, Lade- und Leerzustände prüfen", "hinweis": "Im Code geprüft, im Browser noch nicht gesehen.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "fe-ok-frontend", "text": "Frontend gestaltet und umgesetzt", "hinweis": "Startseite, Karte, Suche, Trefferliste und Detailseiten in einheitlichem Design.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-funktionen", "text": "Funktionen für Nutzer eingebaut", "hinweis": "Suche mit Filtern, Kartenansicht, gespeicherte Suchen und Artikel, Benachrichtigungen, Kalender, Export.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-infoseiten", "text": "Info-, Branchen- und Preisseiten angelegt", "erledigt": true, "faellig": null, "erledigtAm": null },
@@ -81,7 +81,7 @@
       "name": "Marketing und Vertrieb",
       "items": [
         { "id": "ma-zielgruppen", "text": "Zielgruppen und Kernbotschaft festlegen", "hinweis": "Slogan und Vorteile Stufe A aus docs/produkt/vorteile.json verwenden.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "ma-branchenseiten", "text": "Branchenseiten inhaltlich prüfen und fertigstellen", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "ma-branchenseiten", "text": "Branchenseiten inhaltlich prüfen und fertigstellen", "hinweis": "Texte am 08.10.26 auf belegbare Aussagen geprüft. Beispiel-Treffer noch fiktiv.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-seo", "text": "SEO-Seiten je Gemeinde und Thema mit echtem Mehrwert", "hinweis": "Keine dünnen Massenseiten; jede Seite mit konkreten Beschlüssen und Einordnung.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-social", "text": "Social-Media-Kanäle und Videos", "hinweis": "Skripte und Werkzeuge liegen in docs/videos.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "ma-newsletter", "text": "Newsletter mit Anmeldung (Double-Opt-in)", "erledigt": false, "faellig": null, "erledigtAm": null },
@@ -100,7 +100,7 @@
       "items": [
         { "id": "pr-abdeckung", "text": "Abdeckung ausbauen und belegen", "hinweis": "Welche Kommunen, wie aktuell, welche Lücken.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "pr-qualitaet", "text": "Qualität der Zusammenfassungen und Themen stichprobenartig prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "pr-stufen", "text": "Funktionsumfang je Preisstufe festlegen", "hinweis": "Einfach (9,99 €), mehr Funktionen (49,99 €), Plenara.X; Preise können später steigen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "pr-stufen", "text": "Funktionsumfang je Preisstufe festlegen", "hinweis": "Übersicht aus lib/tier.ts in docs/produkt/stufen.md. Zuordnung zu den Preisen als Vorschlag.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "pr-feedback", "text": "Feedback-Kanal für Nutzer einrichten", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "pr-testbetrieb", "text": "Geschlossenen Testbetrieb mit kleinem Kreis durchführen", "hinweis": "Vor dem öffentlichen Start.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "pr-ok-abdeckung", "text": "Abdeckung der Quellen erfasst und Lücken dokumentiert", "hinweis": "requirements/de-sources-report.md.", "erledigt": true, "faellig": null, "erledigtAm": null }
@@ -122,9 +122,9 @@
       "id": "betrieb",
       "name": "Betrieb und Support",
       "items": [
-        { "id": "bt-kontakt", "text": "Kontaktadresse, Antwortzeiten und Standardantworten festlegen", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "bt-ausfall", "text": "Vorgehen bei Ausfall oder fehlerhaften Daten festlegen", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "bt-loeschwuensche", "text": "Umgang mit Löschwünschen und Beschwerden regeln", "hinweis": "Frist, Zuständigkeit, Vorlage für die Antwort.", "erledigt": false, "faellig": null, "erledigtAm": null }
+        { "id": "bt-kontakt", "text": "Kontaktadresse, Antwortzeiten und Standardantworten festlegen", "hinweis": "Entwurf in docs/betrieb/support.md. E-Mail-Adresse fehlt noch (Marke).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "bt-ausfall", "text": "Vorgehen bei Ausfall oder fehlerhaften Daten festlegen", "hinweis": "Entwurf in docs/betrieb/support.md. Zuständig: GbR-Gesellschafter (Vorschlag).", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "bt-loeschwuensche", "text": "Umgang mit Löschwünschen und Beschwerden regeln", "hinweis": "Entwurf mit Antwortvorlage in docs/betrieb/support.md. Fristen als Vorschlag.", "erledigt": false, "faellig": null, "erledigtAm": null }
       ]
     },
     {
@@ -160,7 +160,7 @@
       "items": [
         { "id": "si-zugang", "text": "Zwei-Faktor-Anmeldung und Passwortverwaltung für alle Dienste", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "si-rechte", "text": "Zugriffsrechte und Admin-Zugang prüfen", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "si-panne", "text": "Ablauf bei Datenpannen festlegen", "hinweis": "Meldung an die Aufsichtsbehörde binnen 72 Stunden.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "si-panne", "text": "Ablauf bei Datenpannen festlegen", "hinweis": "Entwurf in docs/betrieb/datenpanne.md. Behörde und Ansprechperson bei Gründung bestätigen.", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "si-ok-admin", "text": "Admin-Bereich geschützt", "hinweis": "Einmalige Freischaltung, nur für den Besitzer, nicht indexierbar.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     }

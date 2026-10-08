@@ -6,7 +6,7 @@ Stand: 08.10.2026. Entwurf. Offene Stellen sind mit **[offen]** markiert; die Za
 
 - Kontakt: **[offen, E-Mail-Adresse]** (vorgesehen: Kontakt-Adresse, siehe Marke-Punkt „E-Mail-Adressen einrichten“)
 - Antwortzeit an Werktagen: **3 Werktage** (Vorschlag)
-- Keine Antwort am Wochenende; kein Notdienst. Das steht so auf der Kontaktseite.
+- Keine Antwort am Wochenende; kein Notdienst. Dieser Hinweis soll auf die Kontaktseite (noch nicht vorhanden).
 
 ## 2. Standardantworten
 
