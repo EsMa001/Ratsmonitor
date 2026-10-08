@@ -24,6 +24,9 @@
         { "id": "fe-ok-konto", "text": "Kontoseiten als Vorschau (Testmodus)", "hinweis": "Läuft bisher nur im Browser, siehe Punkte oben.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-abdeckungszahlen", "text": "Abdeckungszahlen auf der Infoseite live aus der Datenbank", "hinweis": "Festwerte und ungenutzte Konstante entfernt.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "fe-ok-haftung", "text": "Hinweis „Ohne Gewähr“ auf der Detailseite", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
+        { "id": "fe-ok-datenabdeckung", "text": "Seite Datenabdeckung neu: Abdeckung in Prozent, nach Bundesland, Ortsabfrage", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "fe-ok-branchen-enterprise", "text": "Branchenseiten mit Enterprise-Block (Plenara.X-Analysen und Team je Branche)", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "fe-ok-ueberuns", "text": "Über-uns-Seite entfernt, Weiterleitung entfernt", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "fe-ok-todo", "text": "Interne To-Do-Liste angelegt", "hinweis": "Unter /todo-liste, nur im lokalen Dev-Server.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" }
       ]
     },
@@ -50,6 +53,7 @@
         { "id": "be-ok-analysen", "text": "Auswertungen für Plenara.X (tiefere Analysen)", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "be-ok-push", "text": "Push-Mitteilungen und Kalenderdaten", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "be-ok-admin", "text": "Admin-Bereich", "hinweis": "Abdeckung, Qualität und Importübersicht, Zugang nur für den Betreiber.", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "be-ok-wochenbericht", "text": "Wochenbericht mit wählbarem Rhythmus (täglich oder Wochentag)", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "be-ok-tests", "text": "Automatische Tests für die wichtigsten Teile", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     },
@@ -94,6 +98,7 @@
         { "id": "ma-ok-branchen", "text": "Branchenseiten auf belegbare Aussagen geprüft", "hinweis": "Erfundene Kennzahlen entfernt, Superlative und Versprechen abgeschwächt.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "ma-ok-vorteile", "text": "Produktvorteile nach Relevanz sortiert", "hinweis": "docs/produkt/vorteile.json.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "ma-ok-slogan", "text": "Slogan festgelegt", "hinweis": "„Früher wissen, was vor Ort beraten wird.“", "erledigt": true, "faellig": null, "erledigtAm": null },
+        { "id": "ma-ok-webinar", "text": "Webinar (9 Minuten, alle Funktionen inklusive Plenara.X) mit Skript und Anleitung", "hinweis": "Laut Git-Verlauf (main) erledigt.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "ma-ok-videos", "text": "Video-System und erstes vollständiges Video erstellt", "hinweis": "docs/videos.", "erledigt": true, "faellig": null, "erledigtAm": null }
       ]
     },
