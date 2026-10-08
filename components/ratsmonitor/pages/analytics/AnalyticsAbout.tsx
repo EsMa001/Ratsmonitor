@@ -7,7 +7,7 @@ import { AnalyticsLogo } from "../../components/Brand";
 function DiffusionThumb() {
   const dots = Array.from({ length: 70 }, (_, i) => {
     const a = i * 2.399963, r = 5 + Math.sqrt(i) * 8.6;
-    return { x: 98 + Math.cos(a) * r * 1.1, y: 78 + Math.sin(a) * r * 0.9, age: i / 70 };
+    return { x: Math.round((98 + Math.cos(a) * r * 1.1) * 100) / 100, y: Math.round((78 + Math.sin(a) * r * 0.9) * 100) / 100, age: i / 70 };
   });
   const shade = (t: number) => (t < 0.25 ? "#0f766e" : t < 0.5 ? "#6ebfb8" : t < 0.75 ? "#8ccdc7" : "#d7dce3");
   return (
@@ -122,7 +122,7 @@ export const ANALYSE_THUMBS = {
 };
 
 /* Beispielbegriff der Vorschauen; Daten kommen aus dem Schnappschuss (scripts/build-branchen-ausschnitte.mjs) */
-const BEISPIEL = "Wärmeplanung";
+const BEISPIEL = "Photovoltaik";
 
 export function AnalyticsAbout() {
   return (

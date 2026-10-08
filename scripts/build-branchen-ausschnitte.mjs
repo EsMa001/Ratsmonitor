@@ -8,10 +8,13 @@ import {BRANCHEN} from '../components/ratsmonitor/info/content.ts';
 import {ENTERPRISE,PLENARAX_VORTEILE} from '../components/ratsmonitor/info/branchen-enterprise.ts';
 const base=process.argv[2]||'http://localhost:5173';
 const API={beschluesse:'decisions',trends:'trends',diffusion:'diffusion',gremien:'network',graph:'graph'};
+/* Allgemeine Wörter, die nichts über das Thema sagen */
+const STOP=new Set(['stand','bereich','ziel','mehrerer','fraktion','aktueller','deutsche','straße','grund','vorstellung','ergebnisse','erlass','sachstand','erstellung','durchführung','kommunale','kommunalen','errichtung','höhe','verfahrens','öffentlicher','öffentlichkeit','träger','behörden','belange']);
 const round=v=>Math.round(v*1e4)/1e4;
 function shrink(id,d){
  if(id==='beschluesse')return d.totals?.decided?{decided:d.totals.decided,approval:d.rates.approval,postponement:d.rates.postponement,months:(d.months||[]).slice(-12).map(m=>[m.approved,m.postponed,m.rejected])}:null;
- if(id==='trends'){const r=[...(d.rising||[]),...(d.emerging||[])].slice(0,3).map(t=>({term:t.term,ratio:t.ratio,series:t.series.map(round)}));return r.length?{rows:r}:null;}
+ if(id==='trends'){/* nur Begriffe, die in mindestens 5 Gebieten vorkommen (sonst meist Ortsnamen) */
+  const r=[...(d.rising||[]),...(d.emerging||[])].filter(t=>t.regions>=5&&!STOP.has(t.term)).slice(0,3).map(t=>({term:t.term,ratio:t.ratio,series:t.series.map(round)}));return r.length?{rows:r}:null;}
  if(id==='diffusion'){
   const f=(d.regions||[]).map(r=>r.first).filter(Boolean).sort();if(f.length<3)return null;
   const t0=Date.parse(f[0]),span=Math.max(Date.parse(f[f.length-1])-t0,1),pts=[];
@@ -19,11 +22,12 @@ function shrink(id,d){
   return {count:f.length,first:f[0],pts};
  }
  if(id==='gremien'){const e=[...(d.edges||[])].sort((a,b)=>b.n-a.n).slice(0,4).map(x=>[x.a,x.b,x.n]);return e.length?{edges:e}:null;}
- if(id==='graph'){const n=(d.nodes||[]).filter(x=>x.type==='term').slice(0,5).map(x=>[x.label,x.count]);return n.length?{terms:n}:null;}
+ if(id==='graph'){/* ohne Allgemeinwörter und ohne Abwandlungen desselben Wortstamms */
+  const seen=new Set();const n=(d.nodes||[]).filter(x=>x.type==='term'&&!STOP.has(x.label)).filter(x=>{const k=x.label.slice(0,7);if(seen.has(k))return false;seen.add(k);return true;}).slice(0,5).map(x=>[x.label,x.count]);return n.length?{terms:n}:null;}
  return null;
 }
 /* Plenara.X-Startseite (AnalyticsAbout): alle Analysen zu einem Beispielbegriff */
-const FEATURED_TERM='Wärmeplanung',FEATURED=['diffusion','graph','trends','gremien','beschluesse'];
+const FEATURED_TERM='Photovoltaik',FEATURED=['diffusion','graph','trends','gremien','beschluesse'];
 const out={generated:new Date().toISOString().slice(0,10),items:{}};
 for(const b of [{slug:'_start',keywords:[FEATURED_TERM]},...BRANCHEN]){
  const e=b.slug==='_start'?{analysen:[]}:ENTERPRISE[b.slug];if(!e)continue;

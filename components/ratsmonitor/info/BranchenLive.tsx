@@ -26,7 +26,7 @@ function Bars({ rows }: { rows: [string, number][] }) {
   return (
     <ul className="m-0 list-none space-y-2 p-0">
       {rows.map(([label, n]) => (
-        <li key={label} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_auto] items-center gap-3 text-[13px] text-slate-600">
+        <li key={label} className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_auto] items-center gap-3 text-[13px] text-slate-600">
           <span className="truncate">{label}</span>
           <span className="h-2 rounded bg-slate-100"><span className="block h-2 rounded bg-teal-600" style={{ width: `${(n / max) * 100}%` }} /></span>
           <span className="tabular-nums text-slate-500">{nf(n)}</span>
