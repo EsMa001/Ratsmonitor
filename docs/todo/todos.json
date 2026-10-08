@@ -144,7 +144,7 @@
       "name": "Marke und Auftritt",
       "items": [
         { "id": "mk-logodateien", "text": "Logo-Dateien exportieren (SVG, PNG) und Schutzraum festlegen", "hinweis": "Bisher gibt es das Logo nur als Komponente; eine Fassung für dunklen Grund fehlt.", "erledigt": false, "faellig": null, "erledigtAm": null },
-        { "id": "mk-altbestand", "text": "Altbestand der früheren Marke bereinigen", "hinweis": "Favicon, App-Symbole und Manifest („vor Ort · Münster“) sowie den Seitentitel-Zusatz „Politik für Ihre Region“ auf Plenara und den Slogan umstellen.", "erledigt": false, "faellig": null, "erledigtAm": null },
+        { "id": "mk-altbestand", "text": "Altbestand der früheren Marke bereinigen", "hinweis": "Favicon, App-Symbole, Manifest, Seitentitel („Plenara“) und Texte der Push-Mitteilung auf Plenara umgestellt; Seitenbeschreibung ohne „NRW und Niedersachsen“.", "erledigt": true, "faellig": null, "erledigtAm": "2026-10-08" },
         { "id": "mk-domains", "text": "Domains sichern", "hinweis": ".de, .com und ähnliche Schreibweisen.", "erledigt": true, "faellig": null, "erledigtAm": null },
         { "id": "mk-handles", "text": "Social-Media-Handles reservieren", "erledigt": false, "faellig": null, "erledigtAm": null },
         { "id": "mk-logo", "text": "Corporate Design prüfen und freigeben", "hinweis": "Entwurf liegt vor: docs/design/corporate-design.md und styleguide.html. Offen: Logo-Dateien exportieren, Schutzraum, Kontrast der Akzentfarbe, Vorlagen.", "erledigt": false, "faellig": null, "erledigtAm": null },

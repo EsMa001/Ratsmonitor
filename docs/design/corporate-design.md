@@ -120,13 +120,21 @@ Warnhinweise nutzen Amber (Tailwind `amber-50` Fläche, `amber-200` Rand, `amber
 - Datum mit zweistelligem Jahr („05.10.26“), „Stand“ statt „Datenstand“.
 - Der Slogan steht am Ende jedes Videos groß unter dem Logo.
 
-## 9. Abweichungen im Bestand (zu bereinigen)
+## 9. Abweichungen im Bestand
+
+**Erledigt am 08.10.2026:**
+
+| Befund | Lösung |
+|---|---|
+| Favicon und App-Symbole stammten von der früheren Marke (dunkelgrünes Quadrat mit Gebäude-Symbol) | Neu aus der Bildmarke (p aus Punkten, Teal): `public/favicon.svg` transparent, `icon-192.png`, `icon-512.png` und `apple-touch-icon.png` auf Weiß |
+| Web-App-Manifest nannte „vor Ort · Münster“ | Name „Plenara“, Beschreibung mit Slogan, Farben Weiß und Teal |
+| Seitentitel-Zusatz „Politik für Ihre Region“ | Der Titel im Tab ist nur noch „Plenara“ (`lib/brands.ts`, `pageTitle`) |
+| Standardtexte der Push-Mitteilung („in Münster“, „Öffne vor Ort“) und Seitenbeschreibung („NRW und Niedersachsen“) | Auf Plenara und den Slogan umgestellt (`public/sw.js`, `app/layout.tsx`) |
+
+**Noch offen:**
 
 | Befund | Wo | Vorschlag |
 |---|---|---|
-| Favicon und App-Symbole stammen von der früheren Marke (dunkelgrünes Quadrat mit Gebäude-Symbol, `#086e67`) | `public/favicon.svg`, `public/icon-192.png`, `public/icon-512.png`, `public/apple-touch-icon.png` | Neu aus der Bildmarke (p aus Punkten, Teal) erzeugen |
-| Web-App-Manifest nennt „vor Ort · Münster“, Beschreibung „Politik in Münster verständlich verfolgen“, Farbe `#086e67` | `public/manifest.webmanifest` | Name Plenara, Beschreibung mit Slogan, Farbe Teal |
-| Seitentitel-Zusatz „Politik für Ihre Region“ passt nicht zum Slogan | `components/ratsmonitor/lib/brands.ts` (`PAGE_TAGLINE`) | An den Slogan angleichen oder bewusst unterscheiden |
 | Ältere Design-Tokens (Kobaltblau `#2352AD`, Kopfzeile „vor Ort“) | `app/design-tokens.css`, `app/design-styles.css` | Gehören zu Admin und alten Analyseseiten, nicht zum Auftritt. Nicht übernehmen. |
 | Teal als kleiner Text hat zu wenig Kontrast | Links, Eyebrows | Siehe Abschnitt 3 |
 
