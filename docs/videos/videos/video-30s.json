@@ -1,6 +1,0 @@
-{"ausgabe": "plenara-x-30s", "karten": false, "vorteileMax": 0, "kapitel": [
- {"kapitel": "entscheidungen", "text": "mini", "parameter": {"thema": "Wärmeplanung"}},
- {"kapitel": "trends", "text": "mini"},
- {"kapitel": "vergleich", "text": "mini", "parameter": {"ort": "Münster", "ort2": "Osnabrück"}},
- {"kapitel": "graph", "text": "mini", "parameter": {"thema": "Wärmeplanung"}}
-]}

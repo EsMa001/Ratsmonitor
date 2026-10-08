@@ -4,36 +4,19 @@
  "kapitel": [
   {
    "kapitel": "einleitung",
-   "text": "kurz",
-   "parameter": {
-    "thema": "Wärmeplanung",
-    "ort": "Münster"
-   }
+   "text": "kurz"
   },
   {
    "kapitel": "suchen",
-   "text": "kurz",
-   "parameter": {
-    "thema": "Klimaschutz",
-    "ort": "Münster",
-    "vorsuche": "ja"
-   }
+   "text": "kurz"
   },
   {
    "kapitel": "liste-artikel",
-   "text": "kurz",
-   "parameter": {
-    "thema": "Wärmeplanung",
-    "ort": "Münster"
-   }
+   "text": "kurz"
   },
   {
    "kapitel": "filter",
-   "text": "kurz",
-   "parameter": {
-    "thema": "Wärmeplanung",
-    "ort": "Münster"
-   }
+   "text": "kurz"
   }
  ],
  "vorteileMax": 3

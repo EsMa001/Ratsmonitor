@@ -1,1 +1,0 @@
-@graph.netz Der Knowledge Graph zeigt ein Thema als Netz aus Begriffen, Gremien und Ländern.

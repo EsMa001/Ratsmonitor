@@ -3,26 +3,13 @@
  "karten": false,
  "kapitel": [
   {
-   "kapitel": "einleitung",
-   "parameter": {
-    "thema": "Klimaschutz",
-    "ort": "Münster"
-   }
+   "kapitel": "einleitung"
   },
   {
-   "kapitel": "suchen",
-   "parameter": {
-    "thema": "Klimaschutz",
-    "ort": "Münster",
-    "vorsuche": "ja"
-   }
+   "kapitel": "suchen"
   },
   {
-   "kapitel": "liste-artikel",
-   "parameter": {
-    "thema": "Klimaschutz",
-    "ort": "Münster"
-   }
+   "kapitel": "liste-artikel"
   }
  ]
 }

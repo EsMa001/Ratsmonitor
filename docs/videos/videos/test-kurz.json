@@ -1,1 +1,14 @@
-{ "ausgabe": "plenara-test-kurz", "karten": false, "kapitel": [ { "kapitel": "einleitung", "text": "kurz", "parameter": { "thema": "Wärmeplanung", "ort": "Münster" } }, { "kapitel": "liste-artikel", "text": "kurz", "parameter": { "thema": "Wärmeplanung", "ort": "Münster" } } ] }
+{
+ "ausgabe": "plenara-test-kurz",
+ "karten": false,
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "text": "kurz"
+  },
+  {
+   "kapitel": "liste-artikel",
+   "text": "kurz"
+  }
+ ]
+}
