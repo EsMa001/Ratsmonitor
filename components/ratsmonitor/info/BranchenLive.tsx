@@ -232,7 +232,7 @@ export function LiveThumb({ id, term }: { id: AnalyseId; term: string }) {
   return (
     <div ref={ref} className="relative">
       {node ? (
-        <div className="min-h-[260px] rounded-[18px] border border-slate-200 bg-transparent p-5 pt-12">{node}</div>
+        <div className="min-h-[260px] rounded-[18px] border border-slate-200 bg-white p-5 pt-12">{node}</div>
       ) : (
         <Thumb />
       )}

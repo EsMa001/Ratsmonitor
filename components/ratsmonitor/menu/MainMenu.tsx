@@ -4,11 +4,12 @@ import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKe
 import { createPortal } from "react-dom";
 import { BRANCHEN } from "../info/content";
 import { Icon } from "../info/icons";
+import { ANALYSEN } from "../info/branchen-enterprise";
 import { useTier } from "../lib/tier";
 import { IconChevronDown } from "../components/icons";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
-const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" | "plenaraX" }[] = [
+const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" }[] = [
   { href: "/funktionen/suche", label: "Suche", icon: "search" },
   { href: "/konto/suchen", label: "Gespeicherte Suchen", icon: "heart" },
   { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
@@ -25,7 +26,10 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Planung", slug: "planung", icon: "map" },
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
-];const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
+];/* Analyse: plenara.X und seine Analysen, gleichrangig aufgelistet (inhaltlich bleiben es Unterseiten von plenara.X) */
+const ANALYSE = [{ href: "/analytics/ueber", label: "plenara.X", icon: "plenaraX" as const }, ...Object.values(ANALYSEN).map((a) => ({ href: a.href, label: a.name, icon: a.icon }))];
+
+const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
   { href: "/preise", label: "Preise", icon: "euro" },
   { href: "/videos", label: "Videos", icon: "circlePlay" },
   { href: "/datenabdeckung", label: "Datenabdeckung", icon: "layers" },
@@ -38,12 +42,12 @@ const MENU_GAP = 6;
 
 export function MainMenu() {
   /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
-  const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases" | "info">(false);
+  const [open, setOpen] = useState<false | "all" | "funktionen" | "analyse" | "usecases" | "info">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
   const { tier } = useTier();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
-  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/anwender/") ? "usecases" : path.startsWith("/analytics") ? "funktionen" : ["/preise", "/videos", "/datenabdeckung", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
+  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/anwender/") ? "usecases" : path.startsWith("/analytics") ? "analyse" : ["/preise", "/videos", "/datenabdeckung", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -99,7 +103,7 @@ export function MainMenu() {
     close();
     window.scrollTo(0, 0);
   };
-  const toggle = (which: "all" | "funktionen" | "usecases" | "info", el: HTMLElement | null) => {
+  const toggle = (which: "all" | "funktionen" | "analyse" | "usecases" | "info", el: HTMLElement | null) => {
     if (open === which) return close();
     const btn = el?.getBoundingClientRect();
     const head = btnRef.current?.closest("header")?.getBoundingClientRect();
@@ -118,9 +122,9 @@ export function MainMenu() {
       </button>
       {/* Breite Bildschirme: Menüpunkte direkt in der Kopfzeile, Funktionen und Use Cases klappen auf */}
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
-        {(["usecases", "funktionen", "info"] as const).map((g) => (
+        {(["usecases", "funktionen", "analyse", "info"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Anwender" : "Informationen"}
+            {g === "funktionen" ? "Funktionen" : g === "analyse" ? "Analyse" : g === "usecases" ? "Anwender" : "Informationen"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
@@ -159,7 +163,23 @@ export function MainMenu() {
                 </button>}
                 {show("funktionen") && (
                   <ul className="ri-menu__subs">
-                    {[{ href: "/analytics/ueber", label: "plenara.X", icon: "plenaraX" as const }, ...FUNKTIONEN].map((f) => (
+                    {FUNKTIONEN.map((f) => (
+                      <li key={f.href}>
+                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
+                          <Icon name={f.icon} size={15} />
+                          {f.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "analyse"} onClick={() => setOpenGroup(openGroup === "analyse" ? "" : "analyse")}>
+                  Analyse
+                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "analyse" ? "rotate-180" : ""}`} />
+                </button>}
+                {show("analyse") && (
+                  <ul className="ri-menu__subs">
+                    {ANALYSE.map((f) => (
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
                           <Icon name={f.icon} size={15} />

@@ -54,7 +54,7 @@ function layout(nodes: P[], edges: GEdge[], iterations: number, alpha0 = 1) {
 const radius = (n: GNode, max: number) => (n.type === "center" ? 26 : 7 + 11 * Math.sqrt(n.count / Math.max(1, max)));
 
 /** Interaktives Netz: Ziehen von Knoten und Hintergrund, Auswahl und Hervorhebung der Nachbarn */
-export function GraphView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: GNode[]; edges: GEdge[]; selected: string; onSelect: (id: string) => void; zoomRef?: React.MutableRefObject<((f: number | "fit") => void) | null> }) {
+export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: { nodes: GNode[]; edges: GEdge[]; selected: string; pair?: GEdge | null; onSelect: (id: string) => void; zoomRef?: React.MutableRefObject<((f: number | "fit") => void) | null> }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 800, h: 560 });
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
@@ -128,7 +128,9 @@ export function GraphView({ nodes, edges, selected, onSelect, zoomRef }: { nodes
   }, [edges]);
   const focus = hover || selected;
   const near = focus ? neighbours.get(focus) : null;
-  const lit = (id: string) => !focus || id === focus || id === "q" || !!near?.has(id);
+  /* Eine gewählte Verbindung hebt genau ihre beiden Begriffe und die Linie dazwischen hervor */
+  const pairOn = !!pair && !hover;
+  const lit = (id: string) => (pairOn ? id === pair!.a || id === pair!.b || id === "q" : !focus || id === focus || id === "q" || !!near?.has(id));
 
   return (
     <div
@@ -158,14 +160,14 @@ export function GraphView({ nodes, edges, selected, onSelect, zoomRef }: { nodes
           {edges.map((e) => {
             const a = pos(e.a), b = pos(e.b);
             if (!a || !b) return null;
-            const on = focus && (e.a === focus || e.b === focus);
+            const on = pairOn ? e.a === pair!.a && e.b === pair!.b : focus && (e.a === focus || e.b === focus);
             /* Kanten zu Themen, Gremien und Ländern erscheinen erst, wenn man einen der Knoten wählt */
             const outer = !e.center && !(a.type === "term" && b.type === "term");
             const op = e.center ? (on ? 0.5 : 0.07) : outer ? (on ? 0.8 : 0) : focus ? (on ? 0.85 : 0.07) : 0.3 + Math.min(0.45, e.w);
             return <line key={e.a + e.b} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={on ? "#0d9488" : "#94a3b8"} strokeOpacity={op} strokeWidth={e.center ? 1 : 1 + Math.min(4, e.w * 9)} strokeLinecap="round" />;
           })}
           {sim.current.map((n) => {
-            const k = KIND[n.type], on = lit(n.id), sel = n.id === selected;
+            const k = KIND[n.type], on = lit(n.id), sel = n.id === selected || (pairOn && (n.id === pair!.a || n.id === pair!.b));
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.18} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>
                 {sel && <circle r={n.r + 6} fill="none" stroke="#0d9488" strokeWidth="2" strokeDasharray="3 4" />}

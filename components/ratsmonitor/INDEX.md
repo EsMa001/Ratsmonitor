@@ -773,7 +773,7 @@ wordmark__dot design-styles.css:61
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenLive.tsx (246): LiveThumb
-- BranchenPages.tsx (122): BranchePage
+- BranchenPages.tsx (126): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (45): isInfoPath, InfoPages
 - LegalText.tsx (20): H2, P, Ul
@@ -784,7 +784,7 @@ wordmark__dot design-styles.css:61
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
-- blocks.tsx (209, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (76): AnalyseId, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
@@ -826,7 +826,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (204, ⚠1): MainMenu
+- MainMenu.tsx (224, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (117, ⚠4): DetailPage
@@ -840,23 +840,24 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (253, ⚠14): ANALYSE_THUMBS, AnalyticsAbout
+- AnalyticsAbout.tsx (237, ⚠13): ANALYSE_THUMBS, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
-- BeschluessePage.tsx (191, ⚠5): BeschluessePage
+- BeschluessePage.tsx (215, ⚠4): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
-- ComparePage.tsx (285, ⚠11): ComparePage
+- CompareFields.tsx (71): FIELD, PlaceField
+- ComparePage.tsx (284, ⚠11): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
-- DiffusionPage.tsx (266, ⚠4): DiffusionPage
+- DiffusionPage.tsx (269, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
-- GraphView.tsx (183, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (186, ⚠2): GremiennetzPage
-- KnowledgeGraphPage.tsx (200, ⚠1): KnowledgeGraphPage
+- GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
+- GremiennetzPage.tsx (199, ⚠2): GremiennetzPage
+- KnowledgeGraphPage.tsx (185, ⚠1): KnowledgeGraphPage
 - NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
-- PageBand.tsx (14): PageBand
+- PageBand.tsx (15): PageBand
 - TrendViews.tsx (70): Trend, TrendKind, Spark, TrendMap
-- TrendsPage.tsx (198, ⚠3): TrendsPage
+- TrendsPage.tsx (205, ⚠3): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery
 
 ### components/ratsmonitor/services/

@@ -9,7 +9,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   graph: { href: "/analytics/graph", name: "Knowledge Graph", icon: "network" },
   trends: { href: "/analytics/trends", name: "Trends und Frühindikatoren", icon: "trendingUp" },
   vergleich: { href: "/analytics/vergleich", name: "Gebietsvergleich", icon: "mapPin" },
-  beschluesse: { href: "/analytics/beschluesse", name: "Status und Beschlüsse", icon: "circleCheck" },
+  beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck" },
   gremien: { href: "/analytics/gremien", name: "Gremiennetz", icon: "users" },
 };
 

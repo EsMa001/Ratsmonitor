@@ -5,6 +5,7 @@ import type { Branche } from "./content";
 import { Icon } from "./icons";
 import { AnalyticsLogo } from "../components/Brand";
 import { LiveThumb } from "./BranchenLive";
+import { Reveal } from "../pages/analytics/Reveal";
 import { useRouter } from "next/navigation";
 import { ANALYSEN, ENTERPRISE, PLENARAX_VORTEILE, type EnterpriseBlock } from "./branchen-enterprise";
 
@@ -36,8 +37,8 @@ function EnterpriseSection({ e, terms, slug }: { e: EnterpriseBlock; terms: stri
   const card = (id: keyof typeof ANALYSEN, text: string, term: string) => {
     const a = ANALYSEN[id];
     return (
-      <button key={id} type="button" onClick={() => router.push(a.href)} className="text-left">
-        <LiveThumb id={id} term={term} />
+      <button key={id} type="button" onClick={() => router.push(a.href)} className="group text-left">
+        <div className="transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={id} term={term} /></div>
         <h3 className="m-0 mt-4 text-[16px] font-semibold text-slate-900">{a.name}</h3>
         <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{text}</p>
       </button>
@@ -51,12 +52,15 @@ function EnterpriseSection({ e, terms, slug }: { e: EnterpriseBlock; terms: stri
       </div>
       
       <div className="grid gap-x-10 gap-y-8 sm:grid-cols-3" style={{ marginTop: 24 }}>
-        {PLENARAX_VORTEILE.map(([id, title, text]) => (
-          <button key={title} type="button" onClick={() => router.push(ANALYSEN[id].href)} className="flex w-full flex-col justify-start text-left">
-            <h3 className="m-0 text-[16px] font-semibold text-slate-900">{title}</h3>
-            <div className="mt-3"><LiveThumb id={id} term={terms[0]} /></div>
-            <p className="m-0 mt-4 text-[16px] leading-relaxed text-slate-500">{text}</p>
-          </button>
+        {PLENARAX_VORTEILE.map(([id, title, text], i) => (
+          <Reveal key={title} delay={i * 110}>
+            <button type="button" onClick={() => router.push(ANALYSEN[id].href)} className="group flex w-full flex-col justify-start text-left">
+              <h3 className="m-0 text-[16px] font-semibold text-slate-900">{title}</h3>
+              <div className="mt-3 w-full transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={id} term={terms[0]} /></div>
+              <p className="m-0 mt-4 text-[16px] leading-relaxed text-slate-500">{text}</p>
+              <span className="mt-3 inline-flex items-center gap-1.5 text-[14px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
+            </button>
+          </Reveal>
         ))}
       </div>
     </section>

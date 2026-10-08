@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
 import { useData } from "../../state/data";
@@ -23,7 +24,6 @@ interface Result {
 
 /* Voreinstellung und Schnellwahl: Ortspaare mit gut gefülltem Datenbestand (ohne Thema) */
 const ORT = { koeln: { ags: "05315", name: "Köln" }, dortmund: { ags: "05913", name: "Dortmund" }, duesseldorf: { ags: "05111", name: "Düsseldorf" } };
-const PAARE: [keyof typeof ORT, keyof typeof ORT][] = [["koeln", "dortmund"], ["koeln", "duesseldorf"], ["duesseldorf", "dortmund"]];
 const asPlace = (o: { ags: string; name: string }): PlaceEntry => ({ ags: o.ags, name: o.name, kind: "stadt", n: o.name.toLowerCase() });
 const n = (v: number) => v.toLocaleString("de-DE");
 const STATUS_COLOR: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0", unknown: "#f1f5f9" };
@@ -90,10 +90,6 @@ export function ComparePage() {
   };
   /* Beim Öffnen sofort mit den vorbelegten Orten vergleichen, damit die Seite nicht leer ist */
   useEffect(() => { run(); return () => abortRef.current?.abort(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const paar = (a: keyof typeof ORT, b: keyof typeof ORT) => {
-    const pa = asPlace(ORT[a]), pb = asPlace(ORT[b]);
-    setOrt1(pa); setOrt2(pb); run(pa, pb, thema);
-  };
 
   const stale = !!res && ranKey !== query && !loading;
 
@@ -122,7 +118,7 @@ export function ComparePage() {
     </ul>
   );
   /* Beschriftung, zwei Orte, Unterschied */
-  const grid = { gridTemplateColumns: "minmax(130px,1.1fr) repeat(2, minmax(0,1fr)) minmax(120px,.8fr)" };
+  const rowCls = "grid grid-cols-2 gap-x-4 gap-y-1 border-b border-slate-200 py-3 md:grid-cols-[minmax(130px,1.1fr)_repeat(2,minmax(0,1fr))_minmax(120px,.8fr)] md:gap-y-0";
   /* Unterschied zweier Zahlen: wer mehr hat und um welchen Faktor */
   const diff = (a: number | null, b: number | null) => {
     if (!a || !b) return "–";
@@ -146,13 +142,8 @@ export function ComparePage() {
             <label htmlFor="vergleich-thema" className="mb-1.5 block text-[14px] font-medium text-slate-700">Thema <span className="font-normal text-slate-500">(optional)</span></label>
             <input id="vergleich-thema" type="search" value={thema} onChange={(e) => setThema(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }} placeholder="beliebiger Begriff" className={FIELD} />
           </div>
-          <button type="button" onClick={() => run()} disabled={loading} className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-slate-900 px-6 text-[14px] font-medium text-white transition-opacity after:content-['→'] hover:opacity-85 disabled:opacity-60">{loading ? "Berechnet …" : "Vergleichen"}</button>
+          <button type="button" onClick={() => run()} disabled={loading} aria-label={loading ? "Wird berechnet" : "Vergleichen"} title="Vergleichen" className="inline-flex h-11 w-11 items-center justify-center justify-self-end rounded-full bg-slate-900 text-white transition-opacity hover:opacity-85 disabled:opacity-60 md:justify-self-auto">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" /> : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" /></svg>}</button>
         </div>
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
-          <span className="text-slate-500">Schnell wählen:</span>
-          {PAARE.map(([a, b]) => <button key={a + b} type="button" onClick={() => paar(a, b)} className="text-teal-600">{ORT[a].name} und {ORT[b].name}</button>)}
-        </div>
-        {res && <p className="m-0 mt-3 text-[14px] text-slate-500">Das Thema ist optional und frei wählbar: ein beliebiger Begriff, der in den Einträgen vorkommt (mindestens 3 Buchstaben). Ohne Thema werden alle Einträge verglichen.</p>}
       </section>
       {error && <p role="alert" className="mt-4 text-[14px] font-medium text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Orte oder Thema wurden geändert. Mit „Vergleichen“ neu berechnen.</p>}
@@ -160,25 +151,26 @@ export function ComparePage() {
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+          <Reveal>
           <section className="mt-10">
             <h2 className="text-[22px] font-semibold">Überblick</h2>
-            <div className="mt-3 overflow-x-auto"><div className="min-w-[560px] border-t border-slate-200 text-[16px]">
-              <div className="grid items-end gap-4 border-b border-slate-200 py-3" style={grid}>
-                <span />
+            <div className="mt-3"><div className="border-t border-slate-200 text-[16px]">
+              <div className={rowCls + " items-end"}>
+                <span className="hidden md:block" />
                 {res.places.map((p, i) => <span key={p.ags + p.scope} className="flex items-center gap-2 font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">{names[i]}</span></span>)}
-                <span className="text-[14px] text-slate-500">Unterschied</span>
+                <span className="hidden text-[14px] text-slate-500 md:block">Unterschied</span>
               </div>
               {([
                 ["Einträge", (p: Place) => n(p.total), (p: Place) => p.total],
                 ["je 1.000 Einwohner", (p: Place) => (p.perThousand === null ? "–" : p.perThousand.toLocaleString("de-DE")), (p: Place) => p.perThousand],
                 ["Einwohner", (p: Place) => (p.population ? n(p.population) : "–"), (p: Place) => p.population],
               ] as [string, (p: Place) => string, (p: Place) => number | null][]).map(([k, f, num]) => (
-                <div key={k} className="grid gap-4 border-b border-slate-200 py-3" style={grid}><span className="text-[14px] text-slate-500">{k}</span>{res.places.map((p) => <b key={p.ags + p.scope} className="font-semibold tabular-nums">{f(p)}</b>)}<span className="text-[14px] text-slate-700">{diff(num(res.places[0]), num(res.places[1]))}</span></div>
+                <div key={k} className={rowCls}><span className="col-span-2 text-[14px] text-slate-500 md:col-span-1">{k}</span>{res.places.map((p) => <b key={p.ags + p.scope} className="font-semibold tabular-nums">{f(p)}</b>)}<span className="col-span-2 text-[14px] text-slate-700 md:col-span-1"><span className="md:hidden">Unterschied: </span>{diff(num(res.places[0]), num(res.places[1]))}</span></div>
               ))}
-              <div className="grid gap-4 border-b border-slate-200 py-3" style={grid}>
-                <span className="text-[14px] text-slate-500">Aktivste Gremien</span>
+              <div className={rowCls}>
+                <span className="col-span-2 text-[14px] text-slate-500 md:col-span-1">Aktivste Gremien</span>
                 {res.places.map((p) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">{p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex justify-between gap-2"><span className="min-w-0 truncate" title={c.name}>{c.name}</span><span className="tabular-nums text-slate-500">{n(c.n)}</span></li>)}{!p.committees.length && <li className="text-slate-500">–</li>}</ul>)}
-                <span />
+                <span className="hidden md:block" />
               </div>
             </div></div>
             {res.places.some((p) => p.total < 30) && (
@@ -186,7 +178,9 @@ export function ComparePage() {
             )}
             <p className="m-0 mt-3 text-[12px] text-slate-500">Der Unterschied bei den Einträgen zeigt auch, wie vollständig die Quellen der beiden Orte sind. Er ist kein Maß für politische Aktivität.</p>
           </section>
+          </Reveal>
 
+          <Reveal>
           <section className="mt-12">
             <h2 className="text-[22px] font-semibold">Themenprofil</h2>
             <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Einträgen. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
@@ -196,7 +190,9 @@ export function ComparePage() {
             <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} />)}</ol>
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Einträge für ein Themenprofil.</p>}
           </section>
+          </Reveal>
 
+          <Reveal>
           <section className="mt-12">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div><h2 className="text-[22px] font-semibold">Verlauf</h2><p className="mt-1 text-[14px] text-slate-500">Einträge je Monat.</p></div>
@@ -207,6 +203,7 @@ export function ComparePage() {
             <div className="my-3">{legend}</div>
             <CompareLines months={res.months} series={lines} />
           </section>
+          </Reveal>
 
           {(() => {
             const typ = res.places.map((p) => p.typical.filter((t) => inhaltlich(t.term)).slice(0, 8));
@@ -241,6 +238,7 @@ export function ComparePage() {
             );
           })()}
 
+          <Reveal>
           <details className="group mt-12 border-t border-slate-200 pt-4">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[22px] font-semibold [&::-webkit-details-marker]:hidden">
               Details
@@ -275,6 +273,7 @@ export function ComparePage() {
             </ul>
           </div>
           </details>
+          </Reveal>
 
           <p className="mt-10 text-[12px] text-slate-500">Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Einträge). Zahlen und Verlauf sind exakt; Themenprofil, Stand der Vorlagen, gemeinsame und typische Begriffe stammen aus einer gleichmäßigen Stichprobe von höchstens 6.000 Einträgen je Ort. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Einträge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </div>

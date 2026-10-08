@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -15,15 +16,25 @@ const n = (v: number) => v.toLocaleString("de-DE");
 const EXAMPLES = ["Radverkehr", "Haushalt", "Bebauungsplan", "Schule", "Windenergie"];
 
 export function GremiennetzPage() {
-  const { query, search } = useAnalyticsQuery();
+  const { query, hasTerm, search } = useAnalyticsQuery();
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(true);
+  const [want, setWant] = useState(hasTerm);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  /* Ohne Begriff in der Suche: mit einem passenden Beispiel starten, damit die Seite nicht leer ist */
+  const given = useRef<string | null>(hasTerm ? null : "Bebauungsplan");
+  useEffect(() => {
+    if (!given.current) return;
+    search.applySearch(given.current);
+    given.current = null;
+    setWant(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!want) return;
@@ -159,6 +170,7 @@ export function GremiennetzPage() {
                 </section>
               </div>
 
+              <Reveal>
               <section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Rollen im Netz</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Durchsatz je Gremium: eingehende und ausgehende Übergänge. Durchgänge verbinden Einstieg und Entscheidung.</p>
@@ -175,6 +187,7 @@ export function GremiennetzPage() {
                   ))}
                 </ol>
               </section>
+              </Reveal>
             </>
           )}
           <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>

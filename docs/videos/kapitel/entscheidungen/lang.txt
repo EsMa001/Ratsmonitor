@@ -1,4 +1,4 @@
-# Plenara.X Status und Beschlüsse.
+# Plenara.X Beschlüsse.
 @entscheidungen.start Wie gehen Vorgänge aus: beschlossen, vertagt oder abgelehnt?
 *@entscheidungen.raten Bei {{p.thema|text}} sind {{t.approval|fast}} Prozent der entschiedenen Vorgänge beschlossen.
 @entscheidungen.rateno {{t.postponement|ein}} Prozent wurden vertagt, {{t.rejection|ein}} Prozent abgelehnt.

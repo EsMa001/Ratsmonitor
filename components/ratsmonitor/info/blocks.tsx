@@ -6,6 +6,7 @@ import { useSearch } from "../state/search";
 import { STATUS_LABEL, type Example, type Qa, type Rich as RichText, type Status } from "./content";
 import { Icon, type IconName } from "./icons";
 import { IconChevronLeft } from "../components/icons";
+import { Reveal } from "../pages/analytics/Reveal";
 import { useRouter } from "next/navigation";
 
 /** Öffnet die echte Suche der Startseite, optional mit vorbelegtem Begriff */
@@ -127,9 +128,10 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
   const { name } = useBrand();
   const openSearch = useOpenSearch();
   return (
+    <Reveal delay={150}>
     <div className="ri-pv" aria-label="Beispiel eines echten Treffers" style={{ background: "none", border: "none", boxShadow: "none", padding: 0, marginTop: 24 }}>
-      <a href={example.href ?? undefined} aria-label={example.title} style={{ display: "block", color: "inherit", textDecoration: "none" }}>
-      <div className="ri-pv__card" style={{ background: "linear-gradient(135deg, #ffffff 0%, #f1fbf9 100%)" }}>
+      <a href={example.href ?? undefined} aria-label={example.title} className="group" style={{ display: "block", color: "inherit", textDecoration: "none" }}>
+      <div className="ri-pv__card transition-transform duration-300 group-hover:-translate-y-1" style={{ background: "linear-gradient(135deg, #ffffff 0%, #f1fbf9 100%)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "52px minmax(0,1fr)", gap: 12 }}>
           {example.datum && (
             <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid #e2e8f0", paddingRight: 10, textAlign: "center" }}>
@@ -161,6 +163,7 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
       )}
       <span className="ri-pv__foot">Echter Treffer aus dem Bestand</span>
     </div>
+    </Reveal>
   );
 }
 

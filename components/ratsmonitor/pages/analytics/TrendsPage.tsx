@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Reveal } from "./Reveal";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -38,7 +39,7 @@ export function TrendsPage() {
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
-  const given = useRef(params.get("thema"));
+  const given = useRef(params.get("thema") || (hasTerm ? null : "Wärmeplanung"));
   const [want, setWant] = useState(!given.current);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<"rising" | "emerging" | "falling">("rising");
@@ -132,6 +133,7 @@ export function TrendsPage() {
 
           {res.totals.recent === 0 ? <p className="mt-10 text-[16px]">Keine Einträge für diese Suche im Zeitraum.</p> : (
             <>
+              <Reveal>
               <section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Trendkarte</h2>
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Jeder Punkt ist ein Begriff: rechts häufiger, oben stärker gewachsen. Die Größe zeigt, in wie vielen Gebieten er vorkommt. Oben links liegen Frühindikatoren: wenig, aber schnell wachsend.</p>
@@ -140,7 +142,9 @@ export function TrendsPage() {
                   {([["#0d9488", "aufsteigend"], ["#0f766e", "neu"], ["#94a3b8", "absteigend"], ["#cbd5e1", "unauffällig"]] as const).map(([c, l]) => <li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-full" style={{ background: c }} />{l}</li>)}
                 </ul>
               </section>
+              </Reveal>
 
+              <Reveal>
               <section className="mt-12">
                 <div role="tablist" aria-label="Trendart" className="flex gap-6 border-b border-slate-200">
                   {TABS.map((t) => (
@@ -171,7 +175,9 @@ export function TrendsPage() {
                   </ol>
                 )}
               </section>
+              </Reveal>
 
+              <Reveal>
               <section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Themenfelder</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Veränderung des Anteils der Einträge je Themenfeld in Prozentpunkten.</p>
@@ -187,6 +193,7 @@ export function TrendsPage() {
                   ))}
                 </ol>
               </section>
+              </Reveal>
             </>
           )}
           <p className="mt-10 text-[12px] text-slate-500">Verglichen werden zwei gleich lange Zeiträume ({d(res.ranges.prevStart)} bis {d(res.ranges.start)} und {d(res.ranges.start)} bis {d(res.ranges.end)}). {res.totals.capped ? `Bei großen Auswahlen werden je Zeitraum gleichmäßig rund ${n(res.totals.sampledRecent)} Einträge ausgewertet; ` : ""}Verglichen werden Anteile an allen Einträgen, nicht Rohzahlen. „Aufsteigend“ verlangt mindestens ×1,4 und einen deutlichen Unterschied (z-Wert ab 2,5); „neu“ heißt: davor kaum vorhanden, jetzt in mehreren Gebieten. Begriffe stammen aus den Titeln; Formalien und Füllwörter bleiben außen vor. Ein Trend ist ein Hinweis, keine Entscheidung. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>

@@ -33,20 +33,15 @@ export function KnowledgeGraphPage() {
   const [want, setWant] = useState(false);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
+  const [pair, setPair] = useState<GEdge | null>(null);
+  const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const given = useRef(params.get("thema"));
   useEffect(() => {
-    /* Ohne Direktlink und ohne Begriff: der vorab berechnete Graph über den ganzen Bestand (liegt als kleine Datei bereit, kein Warten) */
-    if (!given.current && !hasTerm) {
-      setLoading(true);
-      fetch("/data/graph-gesamt.json")
-        .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<Result>; })
-        .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
-        .catch(() => { setLoading(false); given.current = "Photovoltaik"; search.applySearch("Photovoltaik"); given.current = null; setWant(true); });
-      return;
-    }
+    /* Ohne Direktlink und ohne Begriff in der Suche: mit einem Beispiel starten, damit die Seite nicht leer ist */
+    if (!given.current && !hasTerm) given.current = "Windenergie";
     if (!given.current) { if (hasTerm) setWant(true); return; }
     search.applySearch(given.current);
     given.current = null;
@@ -61,6 +56,7 @@ export function KnowledgeGraphPage() {
     setError("");
     setLoading(true);
     setSelected("");
+    setPair(null);
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
@@ -83,22 +79,25 @@ export function KnowledgeGraphPage() {
     setWant(true);
   };
 
-  const byId = useMemo(() => new Map((res?.nodes ?? []).map((x) => [x.id, x])), [res]);
+  /* Nur Begriffe (und Themenfelder): keine Gremien, Länder oder Orte */
+  const nodes = useMemo(() => (res ? res.nodes.filter((x) => x.type !== "committee" && x.type !== "land") : []), [res]);
+  const edges = useMemo(() => { const ids = new Set(nodes.map((x) => x.id)); return res ? res.edges.filter((e) => ids.has(e.a) && ids.has(e.b)) : []; }, [res, nodes]);
+  const byId = useMemo(() => new Map(nodes.map((x) => [x.id, x])), [nodes]);
   const sel = selected ? byId.get(selected) : undefined;
   const links = useMemo(() => {
     if (!res || !selected) return [];
-    return res.edges.filter((e) => !e.center && (e.a === selected || e.b === selected)).sort((a, b) => b.w - a.w).map((e) => ({ other: byId.get(e.a === selected ? e.b : e.a)!, e })).filter((x) => x.other);
-  }, [res, selected, byId]);
-  const strongest = useMemo(() => (res ? res.edges.filter((e) => !e.center && e.a.startsWith("t:") && e.b.startsWith("t:")).sort((a, b) => b.w - a.w).slice(0, 10) : []), [res]);
-  const groups = useMemo(() => (res ? (["topic", "committee", "land"] as const).map((t) => ({ t, items: res.nodes.filter((x) => x.type === t).sort((a, b) => b.count - a.count) })) : []), [res]);
-  const empty = !!res && res.nodes.length <= 1;
+    return edges.filter((e) => !e.center && (e.a === selected || e.b === selected)).sort((a, b) => b.w - a.w).map((e) => ({ other: byId.get(e.a === selected ? e.b : e.a)!, e })).filter((x) => x.other);
+  }, [res, edges, selected, byId]);
+  const strongest = useMemo(() => edges.filter((e) => !e.center && e.a.startsWith("t:") && e.b.startsWith("t:")).sort((a, b) => b.w - a.w).slice(0, 10), [edges]);
+  const activePair = pair && selected === pair.a ? pair : null;
+  const empty = !!res && nodes.length <= 1;
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
       <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Knowledge Graph</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Knowledge Graph</h1>
-      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, womit ein Thema in den Räten zusammenhängt: verwandte Begriffe, Themenfelder, Gremien und Länder als Netz.</p>
+      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.</p>
       </PageBand>
 
       <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Graph erstellen" /></div>
@@ -111,12 +110,12 @@ export function KnowledgeGraphPage() {
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && !loading && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu erstellen.</p>}
 
-      <section className="relative mt-6 h-[520px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[620px]" aria-label="Knowledge Graph">
-        {res && !empty ? <GraphView nodes={res.nodes} edges={res.edges} selected={selected} onSelect={setSelected} zoomRef={zoomRef} /> : <div className="absolute inset-0 bg-map-ground" />}
+      <section ref={graphRef} className="relative mt-6 h-[520px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[620px]" aria-label="Knowledge Graph">
+        {res && !empty ? <GraphView nodes={nodes} edges={edges} selected={selected} pair={activePair} onSelect={(id) => { setPair(null); setSelected(id); }} zoomRef={zoomRef} /> : <div className="absolute inset-0 bg-map-ground" />}
 
         <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
           <ul className="m-0 flex list-none flex-col gap-1 p-0">
-            {(["center", "term", "topic", "committee", "land"] as const).map((t) => (
+            {(["center", "term", "topic"] as const).map((t) => (
               <li key={t} className="flex items-center gap-2"><i className="inline-block h-3 w-3 rounded-full" style={{ background: KIND[t].fill, border: `2px solid ${KIND[t].stroke}` }} />{KIND[t].label}</li>
             ))}
           </ul>
@@ -145,6 +144,7 @@ export function KnowledgeGraphPage() {
               </div>
               <button type="button" onClick={() => setSelected("")} aria-label="Auswahl schließen" className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
             </div>
+            {activePair && <p className="mt-2 text-[14px] text-slate-700">Verbindung mit „{byId.get(activePair.b)?.label}“: gemeinsam in {n(activePair.n)} Einträgen.</p>}
             {links.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500">Verbunden mit: {links.slice(0, 6).map((l) => l.other.label).join(", ")}</p>}
             {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-600">Graph um „{sel.label}“ neu aufbauen →</button>}
             {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-600">Auf dieses Thema eingrenzen →</button>}
@@ -154,51 +154,27 @@ export function KnowledgeGraphPage() {
 
       {res && !empty && (
         <>
-          <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-            {[["Einträge ausgewertet", n(res.total)], ["Verwandte Begriffe", n(res.stats.terms)], ["Verbindungen", n(res.stats.links)], ["Themenfelder", n(res.stats.topics)]].map(([k, v], i) => (
-              <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
-            ))}
-          </dl>
 
-          <div className="mt-12 grid gap-12 md:grid-cols-2">
+          <div className="mt-10 max-w-[820px]">
             <section>
               <h2 className="text-[22px] font-semibold">Stärkste Verbindungen</h2>
-              <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die in denselben Einträgen vorkommen. Der Balken zeigt die Ähnlichkeit (Jaccard-Index).</p>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">Begriffe, die in denselben Einträgen vorkommen. Tippen Sie auf eine Verbindung, um sie im Netz oben zu markieren.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {strongest.map((e, i) => (
                   <li key={e.a + e.b} className="border-b border-slate-200">
-                    <button type="button" onClick={() => setSelected(e.a)} className="grid w-full grid-cols-[28px_1fr_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
+                    <button type="button" onClick={() => { setSelected(e.a); setPair(e); graphRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className="group grid w-full cursor-pointer grid-cols-[28px_1fr_auto_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
                       <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
                       <span className="min-w-0">
                         <span className="block truncate text-[16px] text-slate-900">{byId.get(e.a)?.label} · {byId.get(e.b)?.label}</span>
                         <span className="mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(4, Math.min(100, e.w * 100))}%` }} /></span>
                       </span>
                       <span className="text-[14px] tabular-nums text-slate-500">{n(e.n)} Einträge</span>
+                      <span className="text-[16px] text-teal-600 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
                     </button>
                   </li>
                 ))}
               </ol>
             </section>
-            <div className="flex flex-col gap-10">
-              {groups.map(({ t, items }) => items.length > 0 && (
-                <section key={t}>
-                  <h2 className="text-[22px] font-semibold">{t === "topic" ? "Themenfelder" : t === "committee" ? "Gremien" : "Länder"}</h2>
-                  <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">
-                    {items.map((x) => (
-                      <li key={x.id} className="border-b border-slate-200">
-                        <button type="button" onClick={() => setSelected(x.id)} className="grid w-full grid-cols-[1fr_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
-                          <span className="min-w-0">
-                            <span className="block truncate text-[16px] text-slate-900">{x.label}</span>
-                            <span className="mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(3, (x.count / items[0].count) * 100)}%` }} /></span>
-                          </span>
-                          <span className="text-[14px] tabular-nums text-slate-500">{n(x.count)}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-              ))}
-            </div>
           </div>
           <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage ist eine gleichmäßig über den ganzen Bestand verteilte Stichprobe von ${n(res.total)} Einträgen${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind ${res.capped ? `die jüngsten ${n(res.sample)} von mehr passenden` : "alle passenden"} Einträge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien und Füllwörter bleiben außen vor. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
+import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
 import { DEC_COLORS, DecisionRow, MonthColumns, type Cut, type Month } from "./DecisionCharts";
@@ -20,19 +21,40 @@ interface Result {
 }
 
 const STATUS_COLOR: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0" };
-const EXAMPLES = ["Radverkehr", "Haushalt", "Bebauungsplan", "Schule", "Windenergie"];
 const n = (v: number) => v.toLocaleString("de-DE");
 const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE")} %`);
 
+function Fold({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <details className="group border-b border-slate-200">
+      <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-[18px] font-semibold [&::-webkit-details-marker]:hidden">
+        {title}
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
+      </summary>
+      {children}
+    </details>
+  );
+}
+
 export function BeschluessePage() {
-  const { query, search } = useAnalyticsQuery();
+  const { query, hasTerm, search } = useAnalyticsQuery();
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(true);
+  const [want, setWant] = useState(hasTerm);
   const [error, setError] = useState("");
   const [cut, setCut] = useState<"topics" | "kinds" | "lands">("kinds");
   const abortRef = useRef<AbortController | null>(null);
+
+  /* Ohne Begriff in der Suche: mit einem passenden Beispiel starten, damit die Seite nicht leer ist */
+  const given = useRef<string | null>(hasTerm ? null : "Haushalt");
+  useEffect(() => {
+    if (!given.current) return;
+    search.applySearch(given.current);
+    given.current = null;
+    setWant(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!want) return;
@@ -63,16 +85,12 @@ export function BeschluessePage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Status und Beschlüsse</p>
-      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Status und Beschlüsse</h1>
-      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wie Vorgänge stehen und ausgehen: Beschlussquote, Vertagungen und Ablehnungen, wie einig Gremien entscheiden, wie oft Vorlagen geändert werden und wie lange ein Vorgang bis zum Beschluss braucht.</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Beschlüsse</p>
+      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Beschlüsse</h1>
+      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wie Gremien entscheiden: Beschlussquote, Vertagungen und Ablehnungen, Einigkeit und Dauer.</p>
       </PageBand>
 
       <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
-        <span className="text-slate-500">Ohne Eingabe gilt der ganze Bestand. Beispiele:</span>
-        {EXAMPLES.map((x) => <button key={x} type="button" onClick={() => { search.applySearch(x); setWant(true); }} className="text-teal-600">{x}</button>)}
-      </div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <p className="mt-8 text-[16px] text-slate-500">Auswertung wird berechnet …</p>}
@@ -91,29 +109,22 @@ export function BeschluessePage() {
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
               </dl>
-              <p className="mt-4 max-w-[820px] text-[14px] text-slate-500">Die Quoten beziehen sich auf Vorgänge mit Entscheidung (beschlossen, vertagt, abgelehnt). Bei {pct(res.totals.knownShare === null ? null : Math.round((100 - res.totals.knownShare) * 10) / 10)} der {n(res.totals.all)} Einträge ist der Status nicht bekannt; ein Status ist nur bei {n(res.totals.known)} erfasst.</p>
 
-              <section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Stand der Vorgänge</h2>
-                <p className="mb-4 mt-1 text-[14px] text-slate-500">Alle Einträge mit bekanntem Status.</p>
-                <div className="flex h-[16px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label="Stand der Vorgänge">
-                  {statusRows.map((s) => <span key={s.id} title={`${STATUS.find((x) => x.id === s.id)?.label ?? s.id}: ${n(s.n)}`} style={{ width: `${(s.n / statusTotal) * 100}%`, background: STATUS_COLOR[s.id] }} />)}
-                </div>
-                <ul className="m-0 mt-3 grid list-none gap-x-6 gap-y-1 p-0 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
-                  {statusRows.map((s) => <li key={s.id} className="flex items-center justify-between gap-3 border-b border-slate-100 py-1"><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
-                </ul>
-              </section>
 
-              <section className="mt-12">
+              <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Entscheidungen im Zeitverlauf</h2>
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Beschlossen, vertagt und abgelehnt je Monat.</p>
                 <ul className="m-0 mb-3 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-[12px] text-slate-700">
                   {([["beschlossen", DEC_COLORS.approved], ["vertagt", DEC_COLORS.postponed], ["abgelehnt", DEC_COLORS.rejected]] as const).map(([l, c]) => <li key={l} className="flex items-center gap-1.5"><i className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{l}</li>)}
                 </ul>
                 <MonthColumns months={res.months} />
-              </section>
+              </section></Reveal>
 
-              <section className="mt-12">
+
+
+              <div className="mt-12 border-t border-slate-200">
+              <Fold title="Aufteilung">
+              <div className="pb-6 pt-2">
                 <div role="tablist" aria-label="Aufteilung" className="flex gap-6 border-b border-slate-200">
                   {([["kinds", "Gremienebene"], ["topics", "Themenfeld"], ["lands", "Bundesland"]] as const).map(([id, l]) => (
                     <button key={id} type="button" role="tab" aria-selected={cut === id} onClick={() => setCut(id)} className={`-mb-px border-b-2 pb-3 text-[16px] ${cut === id ? "border-teal-600 font-semibold text-slate-900" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{l}</button>
@@ -121,10 +132,10 @@ export function BeschluessePage() {
                 </div>
                 <p className="mb-2 mt-3 text-[14px] text-slate-500">Beschlussquote und Anteil vertagt und abgelehnt{cut === "topics" ? `. Nur ${n(res.totals.decided - res.unclassified.decided)} der ${n(res.totals.decided)} Entscheidungen sind einem Themenfeld zugeordnet.` : cut === "kinds" ? ". Ausschüsse und Ortsgremien empfehlen meist nur, der Rat beschließt: Ihre Quote ist mit der des Rats nicht direkt vergleichbar." : "."}</p>
                 {cuts.length === 0 ? <p className="py-4 text-[14px] text-slate-500">Zu wenige Entscheidungen für diese Aufteilung.</p> : <ol className="m-0 list-none border-t border-slate-200 p-0">{cuts.map((c) => <DecisionRow key={c.id} cut={c} />)}</ol>}
-              </section>
-
-              <section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Abstimmung und Änderungen</h2>
+              </div>
+              </Fold>
+              <Fold title="Abstimmung und Änderungen">
+              <div className="pb-6 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Aus dem Ergebnistext der Beschlüsse gelesen. Stichprobe von {n(res.votes.sampled)} der {n(res.votes.of)} Vorgänge mit Entscheidung.</p>
                 <dl className="grid grid-cols-2 gap-y-6 sm:grid-cols-4">
                   {[
@@ -154,10 +165,10 @@ export function BeschluessePage() {
                     </div>
                   ))}
                 </div>
-              </section>
-
-              <section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Durchlaufzeit</h2>
+              </div>
+              </Fold>
+              <Fold title="Durchlaufzeit">
+              <div className="pb-6 pt-2">
                 <p className="mb-4 mt-1 text-[14px] text-slate-500">Tage von der ersten Station eines Vorgangs bis zur Entscheidung. Nur Vorgänge mit mindestens zwei datierten Stationen ({n(res.duration.n)} in der Stichprobe).</p>
                 {res.duration.median === null ? <p className="text-[14px] text-slate-500">Zu wenige Vorgänge mit mehreren Stationen.</p> : (
                   <>
@@ -179,10 +190,23 @@ export function BeschluessePage() {
                     )}
                   </>
                 )}
-              </section>
+              </div>
+              </Fold>
+              <Fold title="Stand der Vorgänge und Datenlage">
+              <div className="pb-6 pt-2">
+                <p className="mb-4 mt-1 text-[14px] text-slate-500">Alle Einträge mit bekanntem Status.</p>
+                <div className="flex h-[16px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label="Stand der Vorgänge">
+                  {statusRows.map((s) => <span key={s.id} title={`${STATUS.find((x) => x.id === s.id)?.label ?? s.id}: ${n(s.n)}`} style={{ width: `${(s.n / statusTotal) * 100}%`, background: STATUS_COLOR[s.id] }} />)}
+                </div>
+                <ul className="m-0 mt-3 grid list-none gap-x-6 gap-y-1 p-0 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
+                  {statusRows.map((s) => <li key={s.id} className="flex items-center justify-between gap-3 border-b border-slate-100 py-1"><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
+                </ul>
+              </div>
+              <p className="mt-4 max-w-[900px] text-[12px] text-slate-500">Stand der Vorgänge, Verlauf und Aufteilungen zählen alle passenden Einträge genau. Abstimmung, Änderungen und Durchlaufzeit stammen aus einer gleichmäßigen Stichprobe der Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+              </Fold>
+              </div>
             </>
           )}
-          <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Stand der Vorgänge, Verlauf und Aufteilungen zählen alle passenden Einträge genau. Abstimmung, Änderungen und Durchlaufzeit stammen aus einer gleichmäßigen Stichprobe der Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </div>
       )}
     </main>
