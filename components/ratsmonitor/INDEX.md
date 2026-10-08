@@ -787,7 +787,7 @@ wordmark__dot design-styles.css:61
 - WiderrufPage.tsx (79): WiderrufPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (106): AnalyseId, ANALYSEN, EnterpriseBlock, ENTERPRISE
-- content.ts (361, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, brancheBySlug
+- content.ts (351, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, brancheBySlug
 - icons.tsx (112): IconName, Icon
 
 ### components/ratsmonitor/lib/
