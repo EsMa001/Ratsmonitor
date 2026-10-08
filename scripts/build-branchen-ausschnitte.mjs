@@ -5,7 +5,7 @@
    Neu erzeugen nach Datenimporten oder geänderten Branchenbegriffen. */
 import {writeFileSync} from 'node:fs';
 import {BRANCHEN} from '../components/ratsmonitor/info/content.ts';
-import {ENTERPRISE} from '../components/ratsmonitor/info/branchen-enterprise.ts';
+import {ENTERPRISE,PLENARAX_VORTEILE} from '../components/ratsmonitor/info/branchen-enterprise.ts';
 const base=process.argv[2]||'http://localhost:5173';
 const API={beschluesse:'decisions',trends:'trends',diffusion:'diffusion',gremien:'network',graph:'graph'};
 const round=v=>Math.round(v*1e4)/1e4;
@@ -25,8 +25,10 @@ function shrink(id,d){
 const out={generated:new Date().toISOString().slice(0,10),items:{}};
 for(const b of BRANCHEN){
  const e=ENTERPRISE[b.slug];if(!e)continue;
- for(const [i,[id]] of e.analysen.slice(0,2).entries()){
-  const api=API[id],term=b.keywords[i]??b.keywords[0];
+ /* Die drei festen Vorschaukarten (PLENARAX_VORTEILE) zeigen immer den ersten Begriff der Branche, die Analysekarten je Branche Begriff 1 und 2 */
+ const jobs=[...PLENARAX_VORTEILE.map(([id])=>[id,b.keywords[0]]),...e.analysen.slice(0,2).map(([id],i)=>[id,b.keywords[i]??b.keywords[0]])];
+ for(const [id,term] of jobs){
+  const api=API[id];
   if(!api){console.log('übersprungen (kein Ausschnitt):',b.slug,id);continue;}
   const key=`${id}|${term}`;if(key in out.items)continue;
   try{

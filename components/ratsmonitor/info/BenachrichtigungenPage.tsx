@@ -26,7 +26,7 @@ export function BenachrichtigungenPage() {
         icon="bell"
         label="Funktionen"
         name="Benachrichtigungen"
-        title={<>Früher wissen.<br />Bares Geld verdienen.</>}
+        title={<>Früher wissen.<br />Alarme statt tägliches Suchen.</>}
         lead={`Kommunale Entscheidungen entscheiden über Aufträge, Grundstücke und Standorte. ${name} meldet sich, sobald zu Ihren Themen und Gebieten etwas beraten wird: per E-Mail, sofort, täglich oder wöchentlich.`}
       />
 

@@ -153,7 +153,7 @@ export function AboutPage() {
         sub="Acht Branchen, jeweils mit typischem Ablauf und passenden Suchbegriffen."
         action={
           <Link href="/anwender/immobilien" className="ri-btn ri-btn--inv">
-            Zu den Use Cases
+            Zu den Anwendern
           </Link>
         }
       />

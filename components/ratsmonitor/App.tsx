@@ -36,7 +36,7 @@ function useBrandTitle(p:string,notFound:boolean){
  useEffect(()=>{
   // Analyse-Seiten setzen ihren Titel selbst („Diffusionsanalyse · Plenara.X“); ein Überschreiben hier würde ihn zurücksetzen
   if(!notFound&&isAnalyticsPath(p))return;
-  document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):tabTitle(p,name,p.startsWith('/branchen/')?brancheBySlug(p.slice(10))?.name:undefined);
+  document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):tabTitle(p,name,p.startsWith('/anwender/')?brancheBySlug(p.slice(10))?.name:undefined);
  },[brand,name,p,notFound,what,count]);
  useEffect(()=>{setFavicon(logo);},[logo,p]);
 }

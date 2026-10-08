@@ -52,7 +52,7 @@ function EnterpriseSection({ e, terms, slug }: { e: EnterpriseBlock; terms: stri
       
       <div className="grid gap-x-10 gap-y-8 sm:grid-cols-3" style={{ marginTop: 24 }}>
         {PLENARAX_VORTEILE.map(([id, title, text]) => (
-          <button key={title} type="button" onClick={() => router.push(ANALYSEN[id].href)} className="block w-full text-left">
+          <button key={title} type="button" onClick={() => router.push(ANALYSEN[id].href)} className="flex w-full flex-col justify-start text-left">
             <h3 className="m-0 text-[16px] font-semibold text-slate-900">{title}</h3>
             <div className="mt-3"><LiveThumb id={id} term={terms[0]} /></div>
             <p className="m-0 mt-4 text-[16px] leading-relaxed text-slate-500">{text}</p>
@@ -96,7 +96,7 @@ export function BranchePage({ b }: { b: Branche }) {
                     <div key={title}>
                       <p className="m-0 text-[16px] font-semibold text-slate-900">{title}</p>
                       <p className="m-0 mt-1 text-[16px] leading-relaxed text-slate-500">{text}</p>
-                      <button type="button" onClick={() => openBenefit(term)} className="mt-1 text-[14px] text-teal-600 hover:underline">
+                      <button type="button" onClick={() => openBenefit(term)} className="-mb-1.5 mt-0 py-1.5 text-[14px] text-teal-600 hover:underline">
                         Suche „{term}“ →
                       </button>
                     </div>

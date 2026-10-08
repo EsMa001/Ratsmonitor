@@ -154,7 +154,7 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
           <span className="ri-pv__topics-label" style={{ display: "block", marginBottom: 8 }}>Auch im Blick</span>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {topics.map((t, i) => (
-            <button key={t + i} type="button" aria-pressed={active === i} onClick={() => (onPick ? onPick(i) : openSearch(t))} className={"rounded-full border px-3 py-1 text-[13px] " + (active === i ? "border-teal-600 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-600")}>{t}</button>
+            <button key={t + i} type="button" aria-pressed={active === i} onClick={() => (onPick ? onPick(i) : openSearch(t))} className={"rounded-full border px-3 py-1.5 text-[13px] " + (active === i ? "border-teal-600 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-600")}>{t}</button>
           ))}
           </div>
         </div>

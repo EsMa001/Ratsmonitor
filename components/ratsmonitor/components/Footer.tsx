@@ -42,7 +42,7 @@ export function Footer() {
             <ul className="m-0 mt-2 flex list-none flex-col gap-0 p-0 sm:mt-3 sm:gap-2">
               {g.links.map(([href, label]) => (
                 <li key={href}>
-                  <Link href={href} lang="de" className="block max-sm:py-[13px] hyphens-auto break-words text-[14px] text-slate-600 no-underline hover:text-teal-600">
+                  <Link href={href} lang="de" className="block py-1.5 max-sm:py-[13px] hyphens-auto break-words text-[14px] text-slate-600 no-underline hover:text-teal-600">
                     {brandText(label)}
                   </Link>
                 </li>
