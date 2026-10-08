@@ -126,6 +126,8 @@ export const ANALYSE_THUMBS = {
 
 /* Beispielbegriff der Vorschauen; Daten kommen aus dem Schnappschuss (scripts/build-branchen-ausschnitte.mjs) */
 const BEISPIEL = "Photovoltaik";
+/* Der Gebietsvergleich hat im Schnappschuss ein eigenes Beispiel: zwei Orte statt eines Begriffs */
+const VERGLEICH_BEISPIEL = "Köln und Dortmund";
 
 const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string }[] = [
   { id: "diffusion", name: "Diffusionsanalyse", href: "/analytics/diffusion", kurz: "Wer zuerst dran war, wie schnell andere folgten und wo ein Thema noch fehlt." },
@@ -197,7 +199,7 @@ export function AnalyticsAbout() {
               <a href="#analysen" className="text-[16px] font-medium text-teal-600">Alle Analysen ↓</a>
             </div>
           </div>
-          <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen" className="block xl:justify-self-end xl:w-full xl:max-w-[560px]"><LiveThumb id="diffusion" term={BEISPIEL} /></Link>
+          <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen" className="hidden xl:block xl:w-full xl:max-w-[560px] xl:justify-self-end"><LiveThumb id="diffusion" term={BEISPIEL} /></Link>
         </div>
       </PageBand>
 
@@ -207,7 +209,7 @@ export function AnalyticsAbout() {
           <li key={a.id}>
             <Reveal delay={(i % 3) * 90}>
               <Link href={a.href} aria-label={`${a.name} öffnen`} className="group block">
-                <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={a.id} term={BEISPIEL} /></div>
+                <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} /></div>
                 <h3 className="mt-5 text-[22px] font-semibold">{a.name}</h3>
                 <p className="mt-2 text-[16px] text-slate-500">{a.kurz}</p>
                 <span className="mt-4 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>

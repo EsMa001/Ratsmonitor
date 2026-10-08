@@ -772,7 +772,7 @@ wordmark__dot design-styles.css:61
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
-- BranchenLive.tsx (246): LiveThumb
+- BranchenLive.tsx (244): LiveThumb
 - BranchenPages.tsx (126): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (45): isInfoPath, InfoPages
@@ -840,7 +840,7 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (237, ⚠13): ANALYSE_THUMBS, AnalyticsAbout
+- AnalyticsAbout.tsx (239, ⚠13): ANALYSE_THUMBS, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
 - BeschluessePage.tsx (215, ⚠4): BeschluessePage
@@ -856,6 +856,7 @@ wordmark__dot design-styles.css:61
 - KnowledgeGraphPage.tsx (185, ⚠1): KnowledgeGraphPage
 - NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
 - PageBand.tsx (15): PageBand
+- Reveal.tsx (16): Reveal
 - TrendViews.tsx (70): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (205, ⚠3): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery

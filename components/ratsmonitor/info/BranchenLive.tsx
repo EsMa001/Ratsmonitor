@@ -149,7 +149,6 @@ function mini(id: AnalyseId, d: any, geo?: Snap["geo"]): ReactNode {
     /* Stand der Vorgänge: nur Einträge mit bekanntem Status, wie in der Analyse */
     const known = ((d.status ?? []) as [string, number][]).filter(([id]) => id !== "unknown");
     const sum = known.reduce((t, [, n]) => t + n, 0);
-    const top = [...known].sort((a, b) => b[1] - a[1]).slice(0, 3);
     return (
       <div>
         <div className="grid grid-cols-3 gap-2">
@@ -162,10 +161,9 @@ function mini(id: AnalyseId, d: any, geo?: Snap["geo"]): ReactNode {
             <span className="mt-2.5 flex h-[10px] w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label="Stand der Vorgänge">
               {known.map(([sid, n]) => <span key={sid} style={{ width: `${(n / sum) * 100}%`, background: STATUS_FARBE[sid] ?? "#e2e8f0" }} title={`${STATUS_NAME[sid] ?? sid}: ${n}`} />)}
             </span>
-            <p className="m-0 mt-1.5 text-[12px] text-slate-500">{top.map(([sid, n]) => `${STATUS_NAME[sid] ?? sid} ${Math.round((n / sum) * 100)} %`).join(" · ")}</p>
           </>
         )}
-        <svg viewBox="0 0 120 36" preserveAspectRatio="none" className="mt-2 block h-9 w-full" role="img" aria-label="Entscheidungen je Monat">
+        <svg viewBox="0 0 120 36" preserveAspectRatio="none" className="mt-3 block h-8 w-full" role="img" aria-label="Entscheidungen je Monat">
           {months.map((m, i) => {
             const h = ((m[0] + m[1] + m[2]) / max) * 34, w = 120 / months.length;
             return <rect key={i} x={i * w + 1} y={35 - h} width={w - 2} height={h} fill="#0d9488" fillOpacity=".85" />;
@@ -232,7 +230,7 @@ export function LiveThumb({ id, term }: { id: AnalyseId; term: string }) {
   return (
     <div ref={ref} className="relative">
       {node ? (
-        <div className="min-h-[260px] rounded-[18px] border border-slate-200 bg-white p-5 pt-12">{node}</div>
+        <div className="h-[390px] overflow-hidden rounded-[18px] border border-slate-200 bg-white p-5 pt-12"><div className="flex h-full flex-col justify-center [&>svg]:max-h-full [&>svg]:min-h-0 [&>svg]:shrink">{node}</div></div>
       ) : (
         <Thumb />
       )}
