@@ -7,3 +7,4 @@
 - **UG:** Vermögen per Verkauf/Übertragung gegen Gegenleistung, nicht als Sacheinlage (UG unter 25.000 € Stammkapital). Bei Streit über die Satzung: nach 30 Tagen Mustersatzung 50/50. Erbfolge, Abfindung, Vesting werden dort neu geregelt.
 - **Haftung:** persönlich und unbeschränkt; Versicherung (Haftpflicht/Cyber) sobald Kunden zahlen.
 - **Offen:** nur Namen und Anschriften.
+- **Streit:** 7 Tage reden, dann Übernahmeangebot: Einer nennt einen Preis, der andere verkauft oder kauft zum selben Preis (14 Tage Frist, Zahlung in 30 Tagen).
