@@ -110,6 +110,16 @@ function NetThumb() {
   );
 }
 
+/** Vorschaubilder je Analyse (auch auf den Branchenseiten) */
+export const ANALYSE_THUMBS = {
+  diffusion: DiffusionThumb,
+  graph: GraphThumb,
+  trends: TrendThumb,
+  vergleich: CompareThumb,
+  beschluesse: DecisionThumb,
+  gremien: NetThumb,
+};
+
 export function AnalyticsAbout() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-12 text-slate-900">

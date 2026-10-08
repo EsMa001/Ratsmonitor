@@ -3,6 +3,8 @@ import { useBrand } from "../lib/brand";
 import { DarkCta, HitPreview, PageHead, SearchTermButton, useOpenSearch } from "./blocks";
 import type { Branche } from "./content";
 import { Icon } from "./icons";
+import { AnalyticsLogo } from "../components/Brand";
+import { ANALYSE_THUMBS } from "../pages/analytics/AnalyticsAbout";
 import { useRouter } from "next/navigation";
 import { ANALYSEN, ENTERPRISE, type EnterpriseBlock } from "./branchen-enterprise";
 
@@ -35,9 +37,10 @@ function EnterpriseSection({ e }: { e: EnterpriseBlock }) {
   const rest = e.layout === "lead" ? e.analysen.slice(1) : e.analysen;
   const card = (id: keyof typeof ANALYSEN, text: string, big = false) => {
     const a = ANALYSEN[id];
+    const Thumb = ANALYSE_THUMBS[id];
     return (
       <button key={id} type="button" onClick={() => router.push(a.href)} className={"border-t border-slate-200 pt-5 text-left " + (big ? "lg:row-span-2 lg:pr-6" : "")}>
-        <Icon name={a.icon} size={22} className="mb-3 text-teal-600" />
+        <div className="mb-4"><Thumb /></div>
         <h3 className="m-0 text-[16px] font-semibold text-slate-900">{a.name}</h3>
         <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{text}</p>
         <span className="mt-1 inline-block text-[14px] text-teal-600">Analyse öffnen →</span>
@@ -46,6 +49,7 @@ function EnterpriseSection({ e }: { e: EnterpriseBlock }) {
   };
   return (
     <section className="ri-sec bg-teal-50/40">
+      <div className="mb-5"><AnalyticsLogo size={40} /></div>
       <h2 className="ri-h2">{e.title}</h2>
       <p className="ri-sub">Mit {name}.X und dem Tarif Enterprise, für Organisationen mit mehreren Beteiligten.</p>
       <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
