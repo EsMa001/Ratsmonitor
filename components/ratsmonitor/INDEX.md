@@ -672,6 +672,9 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/thema/[id]/
 - page.tsx (2): Page
 
+### app/(monitor)/todo-liste/
+- page.tsx (2): Page
+
 ### app/(monitor)/ueber-ratsmonitor/
 - page.tsx (2): Page
 
@@ -770,14 +773,15 @@ wordmark__dot design-styles.css:61
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenPages.tsx (130): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (67): isInfoPath, InfoPages
+- InfoPages.tsx (48): isInfoPath, InfoPages
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (165, ⚠4): QuellenPage
+- TodoPage.tsx (231): TodoPage
 - VideosPage.tsx (150): VideosPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (106): AnalyseId, ANALYSEN, EnterpriseBlock, ENTERPRISE
-- content.ts (373, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, AGB_SECTIONS, brancheBySlug
+- content.ts (363, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, NOTIFY_STAT, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, brancheBySlug
 - icons.tsx (112): IconName, Icon
 
 ### components/ratsmonitor/lib/
@@ -786,7 +790,7 @@ wordmark__dot design-styles.css:61
 - clipboard.ts (26): copyText
 - constants.ts (37, ⚠1): THEMEN, StatusInfo, STATUS, STATUS_BY_ID, TEASER_MAX_SENTENCES, isCovered, MAP_COLORS, colorForCoverage, colorForCount
 - entitlements.ts (41): useEntitlements
-- exportArticle.ts (403): ArticleExport, exportArticleTable, printArticle, exportArticlePdf
+- exportArticle.ts (402): ArticleExport, exportArticleTable, printArticle, exportArticlePdf
 - exportResults.ts (33): EXPORT_MAX, ExportFormat, exportResults
 - favicon.ts (39, ⚠1): faviconHref, setFavicon
 - filter.ts (35): FilterSpec, FilterKey, matches, addCount, countBy
@@ -809,6 +813,7 @@ wordmark__dot design-styles.css:61
 - testAuth.ts (141): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
+- todos.ts (45): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
 - usePhone.ts (15): usePhone
 - uuid.ts (12): newId
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
@@ -819,7 +824,7 @@ wordmark__dot design-styles.css:61
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (116, ⚠4): DetailPage
 - KalenderPage.tsx (363, ⚠3): KalenderPage
-- LegalPage.tsx (232): LegalPage
+- LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
 - PersonalPage.tsx (30, ⚠4): PersonalPage
 - PostfachPage.tsx (81): PostfachPage

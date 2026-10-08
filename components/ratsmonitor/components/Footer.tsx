@@ -6,7 +6,7 @@ import { useBrand, useBrandText } from "../lib/brand";
 
 const GROUPS: { title: string; links: [string, string][] }[] = [
   { title: "Informationen", links: [["/preise", "Preismodelle"], ["/faq", "FAQ"], ["/videos", "Videos"], ["/quellen", "Datenabdeckung"]] },
-  { title: "Rechtliches", links: [["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"]] },
+  { title: "Rechtliches", links: [["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"], ["/agb", "AGB"], ["/widerruf", "Widerruf"]] },
 ];
 
 /** Fußzeile auf allen Seiten: Marke, Linkgruppen, Hinweis auf die Originalquellen */

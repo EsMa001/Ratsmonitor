@@ -1,45 +1,19 @@
-import type { ReactNode } from "react";
+import Link from "next/link";
 import { useBrand } from "../lib/brand";
+import { BETREIBER } from "../lib/betreiber";
 import { PageHead } from "../info/blocks";
-
-/* Platzhalter: vor Veröffentlichung durch die echten Angaben des Betreibers ersetzen */
-const BETREIBER = {
-  name: "[Vor- und Nachname bzw. Name der Organisation]",
-  strasse: "[Straße Hausnummer]",
-  ort: "[PLZ Ort]",
-  email: "[kontakt@beispiel.de]",
-  telefon: "[Telefonnummer]",
-};
-
-/* Abstände als Inline-Style: ratsmonitor-info.css setzt Ränder zurück, Tailwind-Abstände greifen dort nicht */
-function H2({ children }: { children: ReactNode }) {
-  return <h2 style={{ margin: "44px 0 12px", fontSize: 18, lineHeight: 1.35, fontWeight: 600, color: "#0f172a" }}>{children}</h2>;
-}
-function P({ children }: { children: ReactNode }) {
-  return <p style={{ margin: "0 0 14px", fontSize: 16, lineHeight: 1.7, color: "#64748b" }}>{children}</p>;
-}
-function Ul({ items }: { items: ReactNode[] }) {
-  return (
-    <ul style={{ margin: "0 0 14px", paddingLeft: 22, listStyle: "disc", fontSize: 16, lineHeight: 1.7, color: "#64748b" }}>
-      {items.map((x, i) => (
-        <li key={i} style={{ marginBottom: 6 }}>{x}</li>
-      ))}
-    </ul>
-  );
-}
+import { H2, P, Ul } from "../info/LegalText";
 
 function Anschrift() {
   return (
     <P>
       {BETREIBER.name}
       <br />
+      vertreten durch die Gesellschafter {BETREIBER.gesellschafter.join(" und ")}
+      <br />
       {BETREIBER.strasse}
       <br />
       {BETREIBER.ort}
-      <br />
-      E-Mail: {BETREIBER.email}
-      <br />
-      Telefon: {BETREIBER.telefon}
     </P>
   );
 }
@@ -50,9 +24,15 @@ function Impressum() {
     <>
       <H2>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG)</H2>
       <Anschrift />
+      <H2>Kontakt</H2>
+      <P>
+        E-Mail: {BETREIBER.email}
+        <br />
+        Oder über das <Link href="/kontakt" className="ri-link">Kontaktformular</Link>.
+      </P>
       <H2>Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag (MStV)</H2>
       <P>
-        {BETREIBER.name}, {BETREIBER.strasse}, {BETREIBER.ort}
+        {BETREIBER.gesellschafter.join(" und ")}, Anschrift wie oben
       </P>
       <H2>Hinweis zu den Inhalten</H2>
       <P>
@@ -85,6 +65,7 @@ function Datenschutz() {
       <H2>1. Verantwortlicher</H2>
       <P>Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:</P>
       <Anschrift />
+      <P>E-Mail: {BETREIBER.email}</P>
 
       <H2>2. Das Wichtigste in Kürze</H2>
       <Ul

@@ -359,14 +359,4 @@ export const PLANS: Plan[] = [
   },
 ];
 
-export const AGB_SECTIONS = [
-  "Geltungsbereich",
-  "Vertragsschluss und Registrierung",
-  "Leistungen der Tarife Basic, Pro und Enterprise",
-  "Preise und Zahlung",
-  "Laufzeit und Kündigung",
-  "Haftung",
-  "Schlussbestimmungen",
-];
-
 export const brancheBySlug = (slug: string) => BRANCHEN.find((b) => b.slug === slug);

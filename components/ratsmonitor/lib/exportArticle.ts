@@ -52,7 +52,6 @@ export function printArticle({ t, place, docs, events }: ArticleExport) {
   const link = `${window.location.origin}/beschluss/${t.id}`;
   const facts: [string, string][] = [["Gebiet", place], ["Gremium", t.committee || "–"], ["Sitzung", formatDate(t.eventDate)], ["Vorlage", t.reference || "–"], ["Stand", status], ["Quellenstand", formatDate(t.updatedAt)]];
   const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${esc(t.title)}</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap">
 <style>
 @page{size:A4;margin:18mm 16mm}
 *{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#0f172a;font-size:11pt;line-height:1.5}

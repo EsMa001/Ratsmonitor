@@ -4,34 +4,14 @@ import { BenachrichtigungenPage } from "./BenachrichtigungenPage";
 import { useEffect, type ComponentType } from "react";
 import { AboutPage } from "./AboutPage";
 import { KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
-import { PageHead } from "./blocks";
 import { BranchePage } from "./BranchenPages";
-import { AGB_SECTIONS, brancheBySlug } from "./content";
+import { brancheBySlug } from "./content";
 import { FaqPage } from "./FaqPage";
 import { VideosPage } from "./VideosPage";
 import { PreisePage } from "./PreisePage";
 import { TodoPage } from "./TodoPage";
-
-/* TODO: Rechtstext vom Betreiber (Doku Kap. 8) */
-function AgbPage() {
-  return (
-    <>
-      <PageHead icon="fileText" label="Rechtliches" name="Rechtliches" title="Allgemeine Geschäftsbedingungen" lead="Platzhalter: Der verbindliche Rechtstext wird vom Betreiber ergänzt." />
-      <section className="ri-sec">
-        <div className="ri-legal">
-          {AGB_SECTIONS.map((t, i) => (
-            <div key={t}>
-              <h2>
-                {i + 1}. {t}
-              </h2>
-              <p>Text folgt.</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
+import { AgbPage } from "./AgbPage";
+import { WiderrufPage } from "./WiderrufPage";
 
 const PAGES: Record<string, ComponentType> = {
   "/ueber-ratsmonitor": AboutPage,
@@ -44,6 +24,7 @@ const PAGES: Record<string, ComponentType> = {
   "/anmelden": LoginPage,
   "/kontakt": KontaktPage,
   "/agb": AgbPage,
+  "/widerruf": WiderrufPage,
   "/todo-liste": TodoPage,
 };
 
