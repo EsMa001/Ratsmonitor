@@ -27,7 +27,7 @@ const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "netw
   { href: "/analytics/gremien", label: "Gremiennetz", icon: "users" },
 ];
 
-/* Unterpunkte von „Entdecken“: Tarife, Videos, Datenabdeckung und häufige Fragen */
+/* Unterpunkte von „Informationen“: Tarife, Videos, Datenabdeckung und häufige Fragen */
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
   { href: "/preise", label: "Preise", icon: "euro" },
   { href: "/videos", label: "Videos", icon: "circlePlay" },
@@ -123,7 +123,7 @@ export function MainMenu() {
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
         {(["funktionen", "usecases", "analytics", "info"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Use Cases" : g === "analytics" ? "Plenara.X" : "Entdecken"}
+            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Use Cases" : g === "analytics" ? "Plenara.X" : "Informationen"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
@@ -188,7 +188,7 @@ export function MainMenu() {
                   </ul>
                 )}
                 {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "info"} onClick={() => setOpenGroup(openGroup === "info" ? "" : "info")}>
-                  Entdecken
+                  Informationen
                   <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "info" ? "rotate-180" : ""}`} />
                 </button>}
                 {show("info") && (
@@ -206,7 +206,7 @@ export function MainMenu() {
               </nav>
               {open === "all" && tier === "guest" && (
                 <div className="ri-menu__start">
-                  <Link href="/registrieren?tarif=free" className="btn-primary w-full" onClick={pick}>
+                  <Link href="/registrieren?tarif=free" className="btn-secondary w-full" onClick={pick}>
                     Kostenlos starten
                   </Link>
                   <p>Suchen speichern und Beschlüsse merken.</p>
