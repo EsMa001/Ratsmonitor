@@ -4,7 +4,7 @@ import { DarkCta, HitPreview, PageHead, SearchTermButton, useOpenSearch } from "
 import type { Branche } from "./content";
 import { Icon } from "./icons";
 import { AnalyticsLogo } from "../components/Brand";
-import { ANALYSE_THUMBS } from "../pages/analytics/AnalyticsAbout";
+import { LiveThumb } from "./BranchenLive";
 import { useRouter } from "next/navigation";
 import { ANALYSEN, ENTERPRISE, type EnterpriseBlock } from "./branchen-enterprise";
 
@@ -30,40 +30,36 @@ function Timeline({ b }: { b: Branche }) {
   );
 }
 
-function EnterpriseSection({ e }: { e: EnterpriseBlock }) {
+function EnterpriseSection({ e, terms }: { e: EnterpriseBlock; terms: string[] }) {
   const { name } = useBrand();
   const router = useRouter();
-  const lead = e.layout === "lead" ? e.analysen[0] : null;
-  const rest = e.layout === "lead" ? e.analysen.slice(1) : e.analysen;
-  const card = (id: keyof typeof ANALYSEN, text: string, big = false) => {
+  const card = (id: keyof typeof ANALYSEN, text: string, term: string) => {
     const a = ANALYSEN[id];
-    const Thumb = ANALYSE_THUMBS[id];
     return (
-      <button key={id} type="button" onClick={() => router.push(a.href)} className={"border-t border-slate-200 pt-5 text-left " + (big ? "lg:row-span-2 lg:pr-6" : "")}>
-        <div className="mb-4"><Thumb /></div>
-        <h3 className="m-0 text-[16px] font-semibold text-slate-900">{a.name}</h3>
+      <button key={id} type="button" onClick={() => router.push(a.href)} className="text-left">
+        <LiveThumb id={id} term={term} />
+        <h3 className="m-0 mt-4 text-[16px] font-semibold text-slate-900">{a.name}</h3>
         <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{text}</p>
-        <span className="mt-1 inline-block text-[14px] text-teal-600">Analyse öffnen →</span>
       </button>
     );
   };
   return (
     <section className="ri-sec bg-teal-50/40">
-      <div className="mb-5"><AnalyticsLogo size={40} /></div>
-      <h2 className="ri-h2">{e.title}</h2>
-      <p className="ri-sub">Mit {name}.X und dem Tarif Enterprise, für Organisationen mit mehreren Beteiligten.</p>
-      <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
-        {lead && card(lead[0], lead[1], true)}
-        {rest.map(([id, text]) => card(id, text))}
-        <div className="border-t border-slate-200 pt-5">
-          <Icon name="users" size={22} className="mb-3 text-teal-600" />
-          <h3 className="m-0 text-[16px] font-semibold text-slate-900">{e.team[0]}</h3>
-          <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{e.team[1]}</p>
-          <button type="button" onClick={() => router.push("/preise")} className="mt-1 text-[14px] text-teal-600 hover:underline">
-            Tarife ansehen →
-          </button>
-        </div>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <AnalyticsLogo size={32} />
+        <p className="m-0 text-[14px] text-slate-500">Im Tarif Enterprise, für Organisationen mit mehreren Beteiligten</p>
       </div>
+      <h2 className="ri-h2" style={{ marginTop: 16 }}>{e.title}</h2>
+      <div className="grid gap-10 sm:grid-cols-2" style={{ marginTop: 28 }}>
+        {e.analysen.slice(0, 2).map(([id, text], i) => card(id, text, terms[i] ?? terms[0]))}
+      </div>
+      <p className="m-0 mt-10 max-w-[760px] border-t border-slate-200 pt-5 text-[16px] leading-relaxed text-slate-500">
+        <strong className="font-semibold text-slate-900">{e.team[0]}: </strong>
+        {e.team[1]}{" "}
+        <button type="button" onClick={() => router.push("/preise")} className="text-teal-600 hover:underline">
+          Tarife ansehen →
+        </button>
+      </p>
     </section>
   );
 }
@@ -99,29 +95,25 @@ export function BranchePage({ b }: { b: Branche }) {
         </div>
       </section>
 
-      {/* Ablauf als hell mintfarbenes Band: trennt die beiden Dreier-Raster */}
-      <section className="ri-sec bg-teal-50/40">
+      {/* Ablauf */}
+      <section className="ri-sec">
         <h2 className="ri-h2">{b.flowTitle}</h2>
         <p className="ri-sub">{name} meldet bei jedem Schritt, zu dem die Kommune ein Dokument veröffentlicht.</p>
         <Timeline b={b} />
       </section>
 
       <section className="ri-sec ri-sec--tight">
-        {/* Gleiche Überschrift wie die anderen Abschnitte; Themen als Zeile mit Häkchen, nicht auf die volle Breite gestreckt */}
         <h2 className="ri-h2">Worauf {name} für Sie achtet</h2>
-        {/* Gleiches Raster wie „Ihr Nutzen“ */}
-        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: 24 }}>
-          {b.watch.map((w, i) => (
-            <div key={w} className="border-t border-slate-200 pt-5">
-              {b.watchIcons?.[i] && <Icon name={b.watchIcons[i]} size={22} className="mb-3 text-teal-600" />}
-              <h3 className="m-0 text-[16px] font-semibold text-slate-900">{w}</h3>
-              <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{b.useCases?.[i] ?? ""}</p>
-            </div>
+        <div className="flex flex-wrap gap-2" style={{ marginTop: 24 }}>
+          {b.watch.map((w) => (
+            <button key={w} type="button" onClick={() => openBenefit(w)} className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[16px] text-slate-900 hover:border-teal-600 hover:text-teal-600">
+              {w}
+            </button>
           ))}
         </div>
       </section>
 
-      {ENTERPRISE[b.slug] && <EnterpriseSection e={ENTERPRISE[b.slug]} />}
+      {ENTERPRISE[b.slug] && <EnterpriseSection e={ENTERPRISE[b.slug]} terms={b.keywords} />}
 
       <DarkCta title={b.closing} pills={b.keywords} />
     </>

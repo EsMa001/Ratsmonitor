@@ -47,8 +47,8 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     title: "Vergaben und Gebühren im Ortsvergleich",
     layout: "lead",
     analysen: [
-      ["vergleich", "Vergleichen Sie Ausschreibungen, Gebührensatzungen und Laufzeiten mehrerer Kommunen."],
       ["trends", "Sehen Sie, wann Neuvergaben in Ihrer Region häufiger werden."],
+      ["vergleich", "Vergleichen Sie Ausschreibungen, Gebührensatzungen und Laufzeiten mehrerer Kommunen."],
     ],
     team: ["Für Ausschreibungsteam und Vertrieb", "Der Sitzungskalender nennt Ausschusstermine mit Entsorgungsthemen; bis zu fünf weitere Empfänger bekommen die Alarme."],
   },
@@ -86,8 +86,8 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     title: "Zusammenhänge für die Recherche",
     layout: "lead",
     analysen: [
-      ["graph", "Verbindungen zwischen Personen, Vorlagen und Gremien sichtbar machen, bevor andere sie sehen."],
       ["gremien", "Der Weg einer Vorlage durch die Gremien liefert den Zeitplan Ihrer Geschichte."],
+      ["graph", "Verbindungen zwischen Personen, Vorlagen und Gremien sichtbar machen, bevor andere sie sehen."],
       ["vergleich", "Haushalte und Beschlüsse mehrerer Orte gegenüberstellen."],
     ],
     team: ["Für Ihre Redaktion", "Der Sitzungskalender ist Ihre Wochenvorschau; bis zu fünf Kolleginnen und Kollegen bekommen dieselben Hinweise."],
@@ -96,8 +96,8 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     title: "Förderung im Vergleich verstehen",
     layout: "cards",
     analysen: [
-      ["vergleich", "Vergleichen Sie Zuschüsse und Förderrichtlinien mehrerer Kommunen."],
       ["beschluesse", "Sehen Sie, wie oft Haushalte beschlossen oder vertagt werden."],
+      ["vergleich", "Vergleichen Sie Zuschüsse und Förderrichtlinien mehrerer Kommunen."],
       ["trends", "Erkennen Sie früh, wo Förderthemen wie Ehrenamt zunehmen."],
     ],
     team: ["Für Vorstand und Geschäftsstelle", "Der Sitzungskalender zeigt Haushaltsberatungen vor Ort; bis zu fünf weitere Personen aus dem Verein erhalten die Alarme."],
