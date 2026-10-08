@@ -62,7 +62,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 - Tests: `~/.local/bin/node --test tests/*.test.mjs` (gelegentlich zufällig rot: „marks of read meetings“, „every import leaves a record“)
 - Dev-Server: `corepack pnpm dev` (Port 5173), fürs Handy im WLAN: `corepack pnpm dev --hostname 0.0.0.0`
 - Handy-Vorschau lokal: `public/handy.html` (nicht im Git)
-- Gast/Tarif testen: Testkonten `basic|pro|enterprise@parlamo.test`, Passwort `test1234`
+- Gast/Tarif testen: Testkonten `basic|pro|enterprise@plenara.test`, Passwort `test1234`
 
 ## Git
 

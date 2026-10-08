@@ -10,6 +10,7 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionChart } from "./DiffusionChart";
 import { DiffusionSearch, type PlayState } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { prettyTerm } from "../../lib/terms";
 
 interface Reg { ags: string; name: string; first: string; last: string; n: number }
 interface Result {
@@ -153,7 +154,7 @@ export function DiffusionPage() {
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte, und wie es sich von dort ausbreitete.</p>
       </PageBand>
 
-      <div><DiffusionSearch play={play} onPlay={onPlay} onSubmit={() => setWant(true)} /></div>
+      <div className="print:hidden"><DiffusionSearch play={play} onPlay={onPlay} onSubmit={() => setWant(true)} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && !loading && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu analysieren.</p>}
 
@@ -200,7 +201,7 @@ export function DiffusionPage() {
 
       {res && res.stats.regions > 0 && (
         <>
-          <Befund>{res.q.trim() ? `„${res.q.trim()}“` : "Das Thema"} taucht in {res.stats.regions.toLocaleString("de-DE")} Gebieten auf, erstmals {fmt(res.stats.first)}. Die Hälfte der Gebiete war {res.stats.median ? `bis ${fmt(res.stats.median)}` : "noch nicht"} erreicht.</Befund>
+          <Befund>{res.q.trim() ? `„${prettyTerm(res.q.trim())}“` : "Das Thema"} taucht in {res.stats.regions.toLocaleString("de-DE")} Gebieten auf, erstmals {fmt(res.stats.first)}. Die Hälfte der Gebiete war {res.stats.median ? `bis ${fmt(res.stats.median)}` : "noch nicht"} erreicht.</Befund>
           <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             {[
               ["Erste Erwähnung", fmt(res.stats.first)],

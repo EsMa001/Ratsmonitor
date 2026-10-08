@@ -277,7 +277,7 @@ export function LoginPage() {
                 type="button"
                 className="ri-link max-sm:py-[10px]"
                 onClick={async () => {
-                  if (!(await login("enterprise@parlamo.test", TEST_PASSWORD))) router.push("/");
+                  if (!(await login("enterprise@plenara.test", TEST_PASSWORD))) router.push("/");
                 }}
               >
                 Dev: als Enterprise fortfahren
@@ -285,7 +285,7 @@ export function LoginPage() {
             </p>
           )}
           <p className="ri-help">
-            Testmodus: basic@parlamo.test, pro@parlamo.test oder enterprise@parlamo.test, Passwort „{TEST_PASSWORD}“. Alles bleibt in diesem Browser, es werden keine E-Mails verschickt.
+            Testmodus: basic@plenara.test, pro@plenara.test oder enterprise@plenara.test, Passwort „{TEST_PASSWORD}“. Alles bleibt in diesem Browser, es werden keine E-Mails verschickt.
           </p>
         </form>
       </section>

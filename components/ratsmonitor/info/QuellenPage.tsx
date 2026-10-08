@@ -71,7 +71,16 @@ export function QuellenPage() {
       />
       <section className="ri-sec ri-sec--tight">
         {error && <p role="alert" className="text-slate-600">{error}</p>}
-        {!data && !error && <p className="text-slate-500">Abdeckung wird geladen …</p>}
+        {!data && !error && (
+          <div role="status" aria-label="Abdeckung wird geladen">
+            <div className="grid animate-pulse gap-12 sm:grid-cols-2" aria-hidden="true">
+              {[0, 1].map((i) => <div key={i}><div className="h-12 w-28 rounded-full bg-slate-100" /><div className="mt-3 h-5 w-64 max-w-full rounded-full bg-slate-100" /><div className="mt-2 h-4 w-48 max-w-full rounded-full bg-slate-100" /></div>)}
+            </div>
+            <div className="mt-12 grid animate-pulse grid-cols-2 gap-6 border-t border-slate-200 pt-4 sm:grid-cols-4" aria-hidden="true">
+              {[0, 1, 2, 3].map((i) => <div key={i}><div className="h-7 w-24 rounded-full bg-slate-100" /><div className="mt-2 h-4 w-28 rounded-full bg-slate-100" /></div>)}
+            </div>
+          </div>
+        )}
         {data && reach && (
           <>
             <div className="grid gap-12 sm:grid-cols-2">

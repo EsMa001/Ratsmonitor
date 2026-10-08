@@ -142,3 +142,19 @@ html,html body{background:#fff;overscroll-behavior-y:none}
 .rm-dots i:nth-child(2){animation-delay:.15s}.rm-dots i:nth-child(3){animation-delay:.3s}
 @keyframes rmDots{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-3px);opacity:1}}
 @media (prefers-reduced-motion:reduce){.rm-dots i{animation:none;opacity:.7}}
+
+/* Einheitlicher Fokus-Rahmen bei Tastaturbedienung (Felder haben ihren eigenen Rahmen) */
+.ratsmonitor :focus-visible:not(input):not(textarea):not(select) { outline: 2px solid #0d9488; outline-offset: 2px; }
+
+/* Briefing als PDF: Analysen ausdrucken oder als PDF speichern (Befund, Zahlen und Diagramme ohne Bedienelemente) */
+@media print {
+  @page { size: A4; margin: 16mm 14mm; }
+  html, body { background: #fff !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  header, footer, .ri-menu, .skip-link, .rm-glass button, .rm-glass[class*="absolute"] { display: none !important; }
+  main { padding-left: 0 !important; padding-right: 0 !important; }
+  main section, main li, main figure, main dl > div, main details { break-inside: avoid; }
+  main h1, main h2, main h3 { break-after: avoid; }
+  main a { color: inherit !important; text-decoration: none !important; }
+  main [style*="opacity: 0"] { opacity: 1 !important; transform: none !important; }
+}

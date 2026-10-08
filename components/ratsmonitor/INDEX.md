@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (411 Zeilen, ⚠9)
-- app/ratsmonitor.css (145 Zeilen, ⚠6)
+- app/ratsmonitor.css (161 Zeilen, ⚠6)
 
 admin-access analyse-admin.css:66
 admin-activation analyse-admin.css:66
@@ -442,6 +442,7 @@ ri-link ratsmonitor-info.css:217
 ri-logo ratsmonitor-info.css:265
 ri-logo__mark ratsmonitor-info.css:266
 ri-menu ratsmonitor-info.css:13
+ri-menu ratsmonitor.css:154
 ri-menu__bg ratsmonitor-info.css:262
 ri-menu__chev ratsmonitor-info.css:380
 ri-menu__close ratsmonitor-info.css:267
@@ -574,6 +575,7 @@ setting__label design-styles.css:268
 setting__name design-styles.css:269
 share-button design-styles.css:89
 skip-link analyse-admin.css:6
+skip-link ratsmonitor.css:154
 source-filter analyse-admin.css:38
 steps design-styles.css:121
 steps__bar design-styles.css:122
@@ -625,7 +627,7 @@ wordmark__dot design-styles.css:61
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (3): Page
+- page.tsx (19): generateMetadata, Page
 
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
@@ -693,7 +695,7 @@ wordmark__dot design-styles.css:61
 - chatgpt-auth.ts (95): ChatGPTUser, getChatGPTUser, requireChatGPTUser, chatGPTSignInPath, chatGPTSignOutPath
 - error.tsx (8, ⚠1): PageError
 - global-error.tsx (10, ⚠1): GlobalError
-- layout.tsx (6, ⚠1): metadata, RootLayout
+- layout.tsx (9, ⚠1): metadata, RootLayout
 - not-found.tsx (4): metadata, NotFound
 
 ### app/thema/[id]/
@@ -779,7 +781,7 @@ wordmark__dot design-styles.css:61
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
-- QuellenPage.tsx (165, ⚠4): QuellenPage
+- QuellenPage.tsx (174, ⚠4): QuellenPage
 - TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
@@ -818,7 +820,7 @@ wordmark__dot design-styles.css:61
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - sha256.ts (47): sha256Fallback, sha256Hex
 - terms.ts (11, ⚠1): isFiller, prettyTerm
-- testAuth.ts (141): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
+- testAuth.ts (149): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (49): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
@@ -844,21 +846,21 @@ wordmark__dot design-styles.css:61
 - AnalyticsAbout.tsx (239, ⚠13): ANALYSE_THUMBS, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
-- Befund.tsx (37): Befund, zuThema
+- Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (218, ⚠5): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (293, ⚠11): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
-- DiffusionPage.tsx (264, ⚠4): DiffusionPage
+- DiffusionPage.tsx (265, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
 - KnowledgeGraphPage.tsx (193, ⚠1): KnowledgeGraphPage
 - Laden.tsx (15): Laden
 - NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
-- PageBand.tsx (15): PageBand
+- PageBand.tsx (17): PageBand
 - Reveal.tsx (16): Reveal
 - TrendViews.tsx (71): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (206, ⚠5): TrendsPage

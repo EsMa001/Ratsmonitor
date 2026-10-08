@@ -137,7 +137,7 @@ export function ComparePage() {
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Stellt zwei Orte nebeneinander: womit sie sich beschäftigen, wie Vorlagen ausgehen und was für den jeweiligen Ort typisch ist. Als Maßstab dienen alle Gebiete.</p>
       </PageBand>
 
-      <section aria-label="Vergleich einstellen" className="mt-6 rounded-[20px] border border-slate-200 bg-white p-5 sm:p-6">
+      <section aria-label="Vergleich einstellen" className="print:hidden mt-6 rounded-[20px] border border-slate-200 bg-white p-5 sm:p-6">
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
           <PlaceField label="Ort 1" color={PLACE_COLORS[0]} value={ort1} onChange={setOrt1} onEnter={() => run()} />
           <PlaceField label="Ort 2" color={PLACE_COLORS[1]} value={ort2} onChange={setOrt2} onEnter={() => run()} />

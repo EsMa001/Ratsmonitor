@@ -105,7 +105,7 @@ export function TrendsPage() {
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, welche Begriffe in den Räten gerade aufkommen, zunehmen oder verschwinden. Verglichen wird der aktuelle Zeitraum mit dem gleich langen davor.</p>
       </PageBand>
 
-      <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Trends berechnen" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Trends berechnen" /></div>
       <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
         <span className="text-slate-500">Zeitraum:</span>
         <div role="radiogroup" aria-label="Zeitraum" className="flex gap-1">

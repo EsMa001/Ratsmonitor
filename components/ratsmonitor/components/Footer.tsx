@@ -21,7 +21,7 @@ export function Footer() {
   return (
     <>
     {/* Abstand, damit Inhalt wie die Seitenzahl nicht im Verlauf des Abschlusses steht */}
-    {!OWN_CTA(path) && <div className="ri pt-16">{
+    {!OWN_CTA(path) && <div className="ri pt-16 print:hidden">{
       /* Auf Konto-, Anmelde- und Registrierseiten steht die Aufforderung schon im Inhalt: dort kein zweites Mal */
       tier === "guest" && !(path.startsWith("/konto/") || path === "/anmelden" || path === "/registrieren") ? (
         <DarkCta title="Starten Sie kostenlos" sub="Alle Treffer und Filter, Suchen speichern. Ohne Zahlungsdaten." action={<Link href="/registrieren?tarif=free" className="ri-btn ri-btn--inv">Konto erstellen</Link>} />

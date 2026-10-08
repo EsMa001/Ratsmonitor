@@ -8,7 +8,7 @@ import { setTier, type Tier } from "./tier";
  * Es wird nichts an einen Server geschickt; „E-Mails“ landen im Test-Postfach (/konto/postfach).
  *
  * Vorbereitete Testkonten (Passwort jeweils „test1234“):
- *   basic@parlamo.test · pro@parlamo.test · enterprise@parlamo.test
+ *   basic@plenara.test · pro@plenara.test · enterprise@plenara.test
  */
 export interface TestAccount {
   email: string;
@@ -58,12 +58,20 @@ const subscribe = (l: () => void) => (listeners.add(l), () => listeners.delete(l
 
 async function accounts(): Promise<TestAccount[]> {
   const list = load<TestAccount[]>(ACCOUNTS, []);
+  /* Frühere Testkonten hießen @parlamo.test: im Browser vorhandene Konten umbenennen */
+  if (list.some((x) => x.email.endsWith("@parlamo.test"))) {
+    const moved = list.map((x) => ({ ...x, email: x.email.replace(/@parlamo\.test$/, "@plenara.test") }));
+    store(ACCOUNTS, moved);
+    const ses = load<{ email: string } | null>(SESSION, null);
+    if (ses?.email.endsWith("@parlamo.test")) store(SESSION, { email: ses.email.replace(/@parlamo\.test$/, "@plenara.test") });
+    return moved;
+  }
   if (list.length) return list;
   const hash = await sha(TEST_PASSWORD);
   const seed: TestAccount[] = [
-    { email: "basic@parlamo.test", name: "Test Basic", tier: "basic", hash },
-    { email: "pro@parlamo.test", name: "Test Pro", tier: "pro", hash },
-    { email: "enterprise@parlamo.test", name: "Test Enterprise", org: "Musterfirma GmbH", tier: "enterprise", hash },
+    { email: "basic@plenara.test", name: "Test Basic", tier: "basic", hash },
+    { email: "pro@plenara.test", name: "Test Pro", tier: "pro", hash },
+    { email: "enterprise@plenara.test", name: "Test Enterprise", org: "Musterfirma GmbH", tier: "enterprise", hash },
   ];
   store(ACCOUNTS, seed);
   return seed;
