@@ -8,6 +8,8 @@ import { GraphView, KIND, type GEdge, type GNode } from "./GraphView";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 
 interface Result {
+  /** Datum des vorab berechneten Gesamtgraphen (nur dort gesetzt) */
+  generated?: string;
   q: string;
   total: number;
   capped: boolean;
@@ -36,8 +38,15 @@ export function KnowledgeGraphPage() {
 
   const given = useRef(params.get("thema"));
   useEffect(() => {
-    /* Ohne Direktlink und ohne Begriff in der Suche: mit einem Beispiel starten, damit die Seite nicht leer ist */
-    if (!given.current && !hasTerm) given.current = "Photovoltaik";
+    /* Ohne Direktlink und ohne Begriff: der vorab berechnete Graph über den ganzen Bestand (liegt als kleine Datei bereit, kein Warten) */
+    if (!given.current && !hasTerm) {
+      setLoading(true);
+      fetch("/data/graph-gesamt.json")
+        .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<Result>; })
+        .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
+        .catch(() => { setLoading(false); given.current = "Photovoltaik"; search.applySearch("Photovoltaik"); given.current = null; setWant(true); });
+      return;
+    }
     if (!given.current) { if (hasTerm) setWant(true); return; }
     search.applySearch(given.current);
     given.current = null;
@@ -191,7 +200,7 @@ export function KnowledgeGraphPage() {
               ))}
             </div>
           </div>
-          <p className="mt-10 text-[12px] text-slate-500">Grundlage sind {res.capped ? `die jüngsten ${n(res.sample)} von mehr passenden` : "alle passenden"} Einträge der Suche. Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien und Füllwörter bleiben außen vor. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage ist eine gleichmäßig über den ganzen Bestand verteilte Stichprobe von ${n(res.total)} Einträgen${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind ${res.capped ? `die jüngsten ${n(res.sample)} von mehr passenden` : "alle passenden"} Einträge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien und Füllwörter bleiben außen vor. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </>
       )}
     </main>

@@ -11,10 +11,14 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
  * nicht Füllwörter („Antrag“, „Sitzung“) das Bild bestimmen.
  */
 const SAMPLE=3000,TERMS=22,PER_KIND=6,MIN_DF=3;
+/* Gesamtgraph (all=1, nur für das vorab berechnete Bild): größere, gleichmäßig über alle Karten verteilte Stichprobe, mehr Knoten */
+const SAMPLE_ALL=20000,TERMS_ALL=40,PER_KIND_ALL=8;
 const STOP=new Set('aber alle allen aller alles als also auch auf aus bei beim bis dass dem den der des die diese diesem diesen dieser dieses doch durch ein eine einem einen einer eines für gegen hat haben ihre ihrem ihren ihrer ist kann mit nach nicht noch nur oder ohne sich sind über und unter vom von vor wird wurde zum zur zwischen sowie sowohl weitere weiteren weiterer weiteres neue neuen neuer neues dazu hierzu hierfür dafür dagegen darüber darauf daraus davon damit wegen innerhalb außerhalb bezüglich betreffend gemäß nr nummer vom im am an zu so wie was wer wo wenn dann denn mehr sehr schon bereits'.split(' '));
 /* Formalien tragen nichts zum Thema bei */
 const FORMAL=new Set('sitzung sitzungen niederschrift niederschriften protokoll tagesordnung tagesordnungspunkt mitteilung mitteilungen anfrage anfragen anfragen antrag anträge antrags beschluss beschlüsse beschlussvorlage vorlage vorlagen vorlagenummer verschiedenes bekanntgaben bekanntgabe genehmigung feststellung eröffnung öffentlich öffentliche öffentlichen nichtöffentlich nichtöffentlichen teil ortsrat ortsrates gemeinderat gemeinderates stadtrat stadtrates kreistag kreistages rat rates ausschuss ausschusses fachausschuss einwohnerfragestunde fragestunde top punkt hier änderung beteiligung stellungnahme beratung entwurf gemeinde stadt gmbh sachlichen aufstellung beschlussfassung kenntnisnahme bericht berichte information informationen verfahren januar februar märz april mai juni juli august september oktober november dezember montag dienstag mittwoch donnerstag freitag samstag sonntag informativ beschliessend beschließend beschließende beschließender flst'.split(' '));
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
+/* Nur für den Gesamtgraphen: Wörter des Sitzungsbetriebs, die über den ganzen Bestand ständig vorkommen und kein Thema sind */
+const FORMAL_ALL=new Set('beschlussfähigkeit ordnungsgemäßen ordnungsgemäße ladung vorstellung öffentlicher öffentliche sachstand bürgermeisters bürgermeister begrüßung bestätigung wahl bestellung protokolls anwesenheit geschäftsordnung einladung fraktion fraktionen anregungen beschwerden verwaltung eröffnung feststellung genehmigung mitglieder mitglied beantwortung unterrichtung verpflichtung verabschiedung beschlussfassung ergänzung bekanntgabe entgegennahme sitzungsniederschrift gremium gremien ausschuss ausschusses rates gemeinderates stadtrates ortsgemeinderates verbandsgemeinde stadt gemeinde kreis ortsbeirat ortsbeirates niederschrift vorlage vorlagen beschluss beschlüsse bericht berichte aktuelle aktueller informationen information verschiedenes tagesordnungspunkte wortmeldungen einwohnerfragestunde einwohnerfrage teils letzten gefassten angelegenheiten sonstiges annahme nichtöffentlicher nichtöffentlichen sachstandsbericht ordnungsmäßigkeit änderungsanträge einwohner'.split(' ').map(w=>w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('ß','ss')));
 export const tokens=title=>{
  const found=new Map();
  for(const raw of String(title).split(/[^A-Za-zÀ-ÿ]+/)){
@@ -29,11 +33,11 @@ export const tokens=title=>{
 const gremiumKey=g=>String(g||'').replace(/\s+/g,' ').trim();
 const jaccard=(c,a,b)=>c/(a+b-c);
 
-/** Gleiche Filter wie die Suche; Begriff erforderlich */
+/** Gleiche Filter wie die Suche; Begriff erforderlich, außer für den Gesamtgraphen (all=1) */
 export function parseGraph(params){
  let f;
  try{f=parseMonitorSearch(params);}catch(e){throw new AnalyticsError(e.message,e.status||400);}
- if(!f.groups.length)throw new AnalyticsError('Bitte einen Begriff eingeben.');
+ if(!f.groups.length&&new URLSearchParams(params).get('all')!=='1')throw new AnalyticsError('Bitte einen Begriff eingeben.');
  if(f.groups.flat().some(w=>w.length<3))throw new AnalyticsError('Jedes Suchwort braucht mindestens 3 Buchstaben.');
  return f;
 }
@@ -41,15 +45,24 @@ export function parseGraph(params){
 export async function knowledgeGraph(db,catalog,params){
  const f=parseGraph(params);
  const {page}=await searchFilters(db,catalog,f);
- const {results:rows}=await db.prepare('SELECT region_id,label,gremium,title FROM search_cards WHERE '+page.where+' ORDER BY date DESC LIMIT ?').bind(...page.args,SAMPLE+1).all();
- const capped=rows.length>SAMPLE;if(capped)rows.pop();
+ /* Gesamtgraph: jede n-te Karte statt der jüngsten, damit die Auswahl den ganzen Bestand abbildet */
+ const overall=!f.groups.length;
+ const limit=overall?SAMPLE_ALL:SAMPLE;
+ let where=page.where;const args=[...page.args];
+ if(overall){
+  const top=(await db.prepare('SELECT max(rowid) n FROM search_cards').first())?.n||0;
+  const step=Math.max(1,Math.floor(top/limit));
+  if(step>1){where='('+where+') AND (rowid % ? = 0)';args.push(step);}
+ }
+ const {results:rows}=await db.prepare('SELECT region_id,label,gremium,title FROM search_cards WHERE '+where+' ORDER BY date DESC LIMIT ?').bind(...args,limit+1).all();
+ const capped=rows.length>limit;if(capped)rows.pop();
  const total=rows.length;
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const exclude=new Set(f.groups.flat());
  /* Je Karte: Begriffe, Thema, Gremium, Land */
  const docs=rows.map(r=>{
   const region=byId.get(r.region_id),land=region?region.ags.slice(0,2):null;
-  return {terms:new Map([...tokens(r.title)].filter(([k])=>!exclude.has(k))),label:r.label,gremium:gremiumKey(r.gremium),land};
+  return {terms:new Map([...tokens(r.title)].filter(([k])=>!exclude.has(k)&&!(overall&&FORMAL_ALL.has(k)))),label:r.label,gremium:gremiumKey(r.gremium),land};
  });
  /* Häufigkeit der Begriffe in der Auswahl; Gewichtung gegen den ganzen Bestand (search_words) */
  const df=new Map(),shown=new Map();
@@ -64,13 +77,13 @@ export async function knowledgeGraph(db,catalog,params){
   }catch{global=new Map();}
  }
  const idf=k=>global.size&&all?Math.log(1+all/Math.max(1,global.get(k)||df.get(k))):1;
- const chosen=cand.map(([k,n])=>({k,n,score:n*idf(k)})).sort((a,b)=>b.score-a.score).slice(0,TERMS);
+ const chosen=cand.map(([k,n])=>({k,n,score:n*idf(k)})).sort((a,b)=>b.score-a.score).slice(0,overall?TERMS_ALL:TERMS);
  const termSet=new Set(chosen.map(c=>c.k));
  /* Themen, Gremien, Länder: je Art die häufigsten */
- const count=pick=>{const m=new Map();for(const d of docs){const v=pick(d);if(v)m.set(v,(m.get(v)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]).slice(0,PER_KIND);};
+ const count=pick=>{const m=new Map();for(const d of docs){const v=pick(d);if(v)m.set(v,(m.get(v)||0)+1);}return [...m].sort((a,b)=>b[1]-a[1]).slice(0,overall?PER_KIND_ALL:PER_KIND);};
  const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
  const topics=count(d=>labelName(d.label)&&d.label!=='unklar'?d.label:null),committees=count(d=>d.gremium.length>=4?d.gremium:null),lands=count(d=>d.land);
- const nodes=[{id:'q',type:'center',label:f.q,count:total}];
+ const nodes=[{id:'q',type:'center',label:f.q||'Gesamter Datenbestand',count:total}];
  for(const c of chosen)nodes.push({id:'t:'+c.k,type:'term',label:shown.get(c.k),count:c.n});
  for(const [id,n] of topics)nodes.push({id:'k:'+id,type:'topic',label:labelName(id),count:n});
  for(const [g,n] of committees)nodes.push({id:'g:'+g,type:'committee',label:g.length>46?g.slice(0,44)+'…':g,count:n});
@@ -104,5 +117,5 @@ export async function knowledgeGraph(db,catalog,params){
  const links=[...keep];
  /* Jeder Knoten hängt am Zentrum (Stärke: Anteil der Auswahl) */
  for(const n of nodes.slice(1))links.push({a:'q',b:n.id,w:Math.round((n.count/Math.max(1,total))*1000)/1000,n:n.count,center:true});
- return {q:f.q,total,capped,sample:SAMPLE,nodes,edges:links,stats:{terms:chosen.length,topics:topics.length,committees:committees.length,lands:lands.length,links:links.length-nodes.length+1}};
+ return {q:f.q,total,capped,sample:limit,nodes,edges:links,stats:{terms:chosen.length,topics:topics.length,committees:committees.length,lands:lands.length,links:links.length-nodes.length+1}};
 }
