@@ -7,7 +7,7 @@ zwischen **[Name A]**, [Anschrift], und **[Name B]**, [Anschrift] (nachfolgend �
 ## § 1 Name, Sitz, Zweck, Dauer
 
 1. Die Gesellschaft führt den Namen **Plenara GbR**. Ihr Sitz ist **Billerbeck**.
-2. Zweck der Gesellschaft ist die gemeinsame Entwicklung, der Betrieb und die Vermarktung der Plattform **Plenara** (bisher „Ratsmonitor“).
+2. Zweck der Gesellschaft ist die gemeinsame Entwicklung, der Betrieb und die Vermarktung der Plattform **Plenara**.
 3. Die Gesellschaft beginnt mit der Unterzeichnung dieses Vertrags und ist auf unbestimmte Zeit geschlossen.
 4. Die GbR ist als **Übergangslösung** gedacht. Die Gesellschafter wollen möglichst bald eine Unternehmergesellschaft (haftungsbeschränkt) („UG“) gründen und das Projekt dort fortführen (§ 9). Das ist ein Ziel, keine Pflicht, und keine Voraussetzung für den Start des Kundenbetriebs.
 
