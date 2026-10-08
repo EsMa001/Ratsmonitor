@@ -70,7 +70,7 @@ Die Gesellschaft führt einfache Bücher (Einnahmen und Ausgaben). Jeder Gesells
 2. **Weg:** Eine GbR wird nicht unmittelbar zur UG. Die Gesellschafter gründen die UG, und die Gesellschaft überträgt ihr das gesamte Vermögen (Rechte, Verträge, Domains, Konten, Zugänge) **durch Verkauf oder Übertragung gegen Gegenleistung**, zum Beispiel gegen ein Gesellschafterdarlehen. Eine Sacheinlage ist bei einer UG mit weniger als 25.000 € Stammkapital nicht möglich. Beide stimmen zu.
 3. **Beteiligung:** An der UG sind beide wie hier zu je 50 % beteiligt und beide werden Geschäftsführer.
 4. **Neue Regeln:** Für die UG gelten eigene, neu zu verhandelnde Regeln, die sich von diesem Vertrag völlig unterscheiden dürfen, insbesondere zu **Erbfolge**, Abfindung beim Ausscheiden, Vesting, Vorkaufsrecht, Wettbewerb und Beschlüssen. Die Regeln dieses Vertrags (gemeinsame Verantwortung, Einstimmigkeit, Vertraulichkeit) dienen als Ausgangsbasis. Der Ausschluss von Abfindung und Erbfolge in § 5 gilt nur für die GbR.
-5. Einigen sich die Gesellschafter nicht binnen 30 Tagen auf die Satzung, gilt die gesetzliche Mustersatzung mit 50/50 und beiden als Geschäftsführern.
+5. Einigen sich die Gesellschafter nicht binnen 30 Tagen auf die Satzung, gilt eine einfache Standardsatzung mit 50/50; beide sind Geschäftsführer und vertreten die UG einzeln.
 6. Mit der Übertragung ist die GbR beendet. Die UG übernimmt die Schulden der GbR, soweit die Gläubiger zustimmen; bis dahin haften die Gesellschafter weiter. Später kann die UG durch Kapitalerhöhung zur GmbH werden.
 
 ## § 10 Schlussbestimmungen
