@@ -107,4 +107,4 @@ Benötigt: Node 20 oder neuer, Python 3, und den laufenden Dev-Server der App au
 
 ## Größe
 
-Die Videos in `public/videos/` sind zusammen rund 42 MB. Jede neu erzeugte Fassung bleibt in der Git-Historie. Wenn das zu viel wird, können die Dateien später in einen Speicher außerhalb von Git (z. B. Cloudflare R2) umziehen, dann ändert sich nur die Adresse der Dateien in `VideosPage.tsx`.
+Die Videos in `public/videos/` sind zusammen rund 15 MB (Stand 08.10.26: nur Kurz- und vollständiges Video, die Einzelclips sind entfernt). Jede neu erzeugte Fassung bleibt in der Git-Historie. Wenn das zu viel wird, können die Dateien später in einen Speicher außerhalb von Git (z. B. Cloudflare R2) umziehen, dann ändert sich nur die Adresse der Dateien in `VideosPage.tsx`.

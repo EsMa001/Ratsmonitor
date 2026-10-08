@@ -2,6 +2,8 @@
 
 Die 14 Videos auf der Seite (12 Funktionen, 2 Vorstellungen, Handy und Web) und das erste Webinar sind mit den Werkzeugen in `tools/` und den Texten in `texts/` dieses Ordners entstanden. Die Beschreibung stammt aus der früheren Haupt-README. Pfade `tools/…` und `texts/…` meinen hier `legacy/tools/…` und `legacy/texts/…`; die Werkzeuge `speak.py`, `build.py` usw. liegen teils im Ordner `docs/videos/tools/` (neu) bzw. `legacy/tools/` (alt). Für neue Videos gilt die Haupt-README.
 
+**Stand 08.10.26:** Die Einzelclips (12 Funktionen mit Handy- und Webfassung, Vorstellungen) und das Webinar sind aus `public/videos/` entfernt. Auf der Videoseite sind nur noch das Kurzvideo `plenara-pitch` und das vollständige Video `plenara-komplett`. Die alten Dateien stehen in der Git-Historie.
+
 ## Was wo liegt
 
 | Pfad | Inhalt |
