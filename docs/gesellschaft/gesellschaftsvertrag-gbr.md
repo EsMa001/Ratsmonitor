@@ -62,7 +62,7 @@ zwischen **[Name A]**, [Anschrift], und **[Name B]**, [Anschrift] (nachfolgend �
 
 ## § 8 Buchführung und Steuern
 
-Die Gesellschaft führt einfache Bücher (Einnahmen und Ausgaben). Jeder Gesellschafter versteuert seinen Anteil selbst. Sobald die Gesellschaft mit Gewinnabsicht tätig wird, meldet sie das Gewerbe bei der Stadt Billerbeck an. Beide haben jederzeit Einsicht in alle Unterlagen und Konten.
+Die Gesellschaft führt einfache Bücher (Einnahmen und Ausgaben). Jeder Gesellschafter versteuert seinen Anteil selbst. Die Gesellschaft meldet das Gewerbe bei der Stadt Billerbeck an, sobald sie mit Gewinnabsicht nach außen tätig wird, **spätestens vor der Freischaltung der Bezahlfunktion**. Beide haben jederzeit Einsicht in alle Unterlagen und Konten.
 
 ## § 9 Wechsel in die UG
 
