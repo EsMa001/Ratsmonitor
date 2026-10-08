@@ -775,7 +775,7 @@ wordmark__dot design-styles.css:61
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
-- BranchenPages.tsx (130): BranchePage
+- BranchenPages.tsx (122): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (48): isInfoPath, InfoPages
 - LegalText.tsx (20): H2, P, Ul
