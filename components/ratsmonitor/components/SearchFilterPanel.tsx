@@ -28,6 +28,9 @@ export function SearchFilterPanel() {
                 {new Date(res.updatedAt).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })} Uhr
               </span>
             )}
+            {!state.noformal && !state.status && new URLSearchParams(res.key).get("noformal") === "1" && (
+              <span className="text-slate-500"> · zuletzt Beschlossenes, <button type="button" onClick={() => search.setNoformal(false)} className="text-teal-600 hover:underline">alle anzeigen</button></span>
+            )}
           </span>
           <FilterSelect
             id="f-sort"

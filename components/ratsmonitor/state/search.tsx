@@ -378,7 +378,12 @@ function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['pl
   /* Ohne „inkl. Zukunft“ endet der Zeitraum heute (sofern kein eigenes Enddatum gesetzt ist) */
   const today=new Date().toISOString().slice(0,10),to=state.bis||(state.future?'':today);
   const params=new URLSearchParams({q:canonicalQuery(queryText(text,state.allterms)),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
-  if(state.noformal)params.set('noformal','1');
+  /* Ohne Suche und ohne Filter zeigt die Liste unter der Karte zuerst Inhalt: Formalien (Niederschriften, Mitteilungen, Anfragen) sind dann ausgeblendet, sofern nicht ausdrücklich eingeschaltet (noformal === false) */
+  const leer=!text.trim()&&!state.q.trim()&&!area&&!state.radius&&!state.thema&&!state.status&&!state.monat&&!state.von&&!state.bis&&!more.length&&!state.future&&!state.exact&&!state.allterms;
+  const auto=leer&&state.noformal!==false;
+  if(state.noformal||auto)params.set('noformal','1');
+  /* … und zeigt zuletzt Beschlossenes statt angekündigter Tagesordnungen eines einzelnen Gremiums */
+  if(auto)params.set('status','approved');
   if(state.exact)params.set('exact','1');
   if(pageSize!==20)params.set('size',String(pageSize));
   if(more.length&&!state.radius)params.set('more',more.map(m=>m.ags+':'+(m.ags.length===5&&!hasScope(m.ags,geo)?'with':m.scope)).join(','));
@@ -387,6 +392,17 @@ function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['pl
   const spec:FilterSpec={area,radiusSet:within?.set??null,thema:state.thema,monat:state.monat,status:state.status,terms:toTerms(text)};
   return {pq,placeActive,liveHits,text,terms:toTerms(text),pageSize,snapshot,signature:signature(snapshot),spec,kommunenInRadius:within?.kommunen??0,key:params.toString(),around:state.radius?{set:within?.set??null,level:state.level}:null};
  }
+/** Leere Startliste (zuletzt Beschlossenes): Einträge desselben Ortes nicht hintereinander, sondern reihum (je Ort nach Datum) */
+function spreadAuto(list:Article[]|undefined,key:string,status:string):Article[]{
+ if(!list||list.length<3||status)return list??EMPTY_LIST;
+ const p=new URLSearchParams(key);
+ if(p.get('noformal')!=='1'||p.get('status')!=='approved'||p.get('q'))return list;
+ const groups=new Map<string,Article[]>();
+ for(const a of list){const k=a.ags||a.gemeinde||a.id;(groups.get(k)??groups.set(k,[]).get(k)!).push(a);}
+ const queues=[...groups.values()],out:Article[]=[];
+ for(let i=0;out.length<list.length;i++)for(const q of queues)if(q[i])out.push(q[i]);
+ return out;
+}
 function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveResults {
  const {geo,place}=useData();
  const local=useMemo(()=>computeLocal(state,geo,place,pageSize),[state,geo,place,pageSize]);
@@ -560,6 +576,6 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
  /* Gibt es Treffer? ja: mindestens einer ist da; nein: die Suche ist zu Ende ohne Treffer; unbekannt: sie läuft noch */
  const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0||(rd?.known==='yes'&&!rd.final)?'yes':(cached||rd?.final)?'no':'unknown';
- return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:data?.articles??EMPTY_LIST,total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,badgeCounts:fx?.badgeCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
+ return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:spreadAuto(data?.articles,local.key,state.status),total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,badgeCounts:fx?.badgeCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}
