@@ -23,7 +23,7 @@ interface Result {
 }
 
 /* Beispiele mit Thema: geprüft, dass jeder Ort mindestens 30 Einträge dazu hat */
-const EXAMPLES: [string, string][] = [["Schule, Köln, Dortmund", "Schule: Köln und Dortmund"], ["Haushalt, Köln, Düsseldorf, Dortmund", "Haushalt: Köln, Düsseldorf, Dortmund"], ["Bebauungsplan, Köln, Dortmund", "Bebauungsplan: Köln und Dortmund"], ["Verkehr, Köln, Düsseldorf, Dortmund", "Verkehr: Köln, Düsseldorf, Dortmund"]];
+const EXAMPLES: [string, string][] = [["Schule, Köln, Dortmund", "Schule: Köln und Dortmund"], ["Haushalt, Düsseldorf, Dortmund", "Haushalt: Düsseldorf und Dortmund"], ["Bebauungsplan, Köln, Dortmund", "Bebauungsplan: Köln und Dortmund"], ["Verkehr, Köln, Düsseldorf", "Verkehr: Köln und Düsseldorf"]];
 const n = (v: number) => v.toLocaleString("de-DE");
 const STATUS_COLOR: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0", unknown: "#f1f5f9" };
 /* Wörter des Sitzungsbetriebs (Anfragen, Geschäftsordnung, Rollen), die eher die Schreibweise eines Ratsinformationssystems als die Themen eines Ortes zeigen */
@@ -66,7 +66,9 @@ export function ComparePage() {
 
   useEffect(() => {
     /* wartet, bis die gewählten Orte (z. B. aus einem Beispiel) in der Suche angekommen sind */
-    if (!want || placeCount < 2) return;
+    if (!want) return;
+    if (placeCount > 2) { setWant(false); return setError(`Der Vergleich nimmt genau zwei Orte. Es sind ${placeCount} gewählt: bitte oben im Suchfeld Orte entfernen.`); }
+    if (placeCount < 2) return;
     setWant(false);
     setError("");
     setLoading(true);
@@ -88,7 +90,7 @@ export function ComparePage() {
   const stale = !!res && ranKey !== query && !loading;
   const onPlay = () => {
     if (loading) return;
-    if (placeCount < 2) return setError("Bitte in der Suche mindestens zwei Orte wählen, zum Beispiel „Münster, Osnabrück“.");
+    if (placeCount !== 2) return setError(placeCount > 2 ? `Der Vergleich nimmt genau zwei Orte. Es sind ${placeCount} gewählt: bitte oben im Suchfeld Orte entfernen.` : "Bitte in der Suche zwei Orte wählen, zum Beispiel „Köln, Dortmund“.");
     setError("");
     setWant(true);
   };
@@ -120,12 +122,12 @@ export function ComparePage() {
       <PageBand>
       <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">Plenara.X</Link> / Gebietsvergleich</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Gebietsvergleich</h1>
-      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Stellt zwei bis vier Orte nebeneinander: womit sie sich beschäftigen, wie Vorlagen ausgehen und was für den jeweiligen Ort typisch ist. Als Maßstab dienen alle Gebiete.</p>
+      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Stellt zwei Orte nebeneinander: womit sie sich beschäftigen, wie Vorlagen ausgehen und was für den jeweiligen Ort typisch ist. Als Maßstab dienen alle Gebiete.</p>
       </PageBand>
 
       <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Vergleich starten" /></div>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
-        <span className="text-slate-500">Thema und Orte oben im Suchfeld wählen, zum Beispiel „Schule, Köln, Dortmund“ (Orte mit Komma trennen, höchstens vier). Das Thema ist optional, mit Thema wird der Vergleich aussagekräftiger.{!res && " Beispiele:"}</span>
+        <span className="text-slate-500">Thema und Orte oben im Suchfeld wählen, zum Beispiel „Schule, Köln, Dortmund“ (genau zwei Orte, mit Komma getrennt). Das Thema ist optional, mit Thema wird der Vergleich aussagekräftiger.{!res && " Beispiele:"}</span>
         {!res && EXAMPLES.map(([v, l]) => <button key={v} type="button" onClick={() => { search.applySearch(v); setWant(true); }} className="text-teal-600">{l}</button>)}
       </div>
       {placeCount === 1 && !res && <p className="mt-3 text-[14px] text-slate-500">Ein Ort ist gewählt. Es braucht mindestens einen weiteren.</p>}

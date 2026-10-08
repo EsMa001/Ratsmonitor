@@ -195,7 +195,7 @@ export function AnalyticsAbout() {
         <div className="mt-4 grid items-start gap-6 md:grid-cols-[280px_1fr] md:gap-8 xl:grid-cols-1">
         <Link href="/analytics/vergleich" aria-label="Gebietsvergleich öffnen" className="block xl:max-w-[420px]"><CompareThumb /></Link>
         <div>
-          <p className="mt-2 text-[16px] text-slate-500">Stellt zwei bis vier Orte nebeneinander: Themenprofil, Stand der Vorlagen, Verlauf, aktivste Gremien sowie typische und gemeinsame Begriffe. Als Maßstab dienen alle Gebiete. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
+          <p className="mt-2 text-[16px] text-slate-500">Stellt zwei Orte nebeneinander: Themenprofil, Stand der Vorlagen, Verlauf, aktivste Gremien sowie typische und gemeinsame Begriffe. Als Maßstab dienen alle Gebiete. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
           <Link href="/analytics/vergleich" className="mt-5 inline-block text-[16px] font-medium text-teal-600">Gebietsvergleich öffnen →</Link>
           <details className="group mt-6 border-t border-slate-200 pt-3">
             <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
