@@ -7,6 +7,7 @@ import { LABELS } from "@/shared/labels.mjs";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { CompareLines, PLACE_COLORS, TopicRow } from "./CompareCharts";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { useSearchResults } from "../../state/search";
 
 interface Share { id: string; n: number; share: number }
 interface Place {
@@ -21,7 +22,8 @@ interface Result {
   base: { total: number; sampled: number; topics: { n: number; list: Share[] }; status: { n: number; list: Share[] } };
 }
 
-const EXAMPLES: [string, string][] = [["Münster, Osnabrück", "Münster und Osnabrück"], ["Köln, Düsseldorf, Dortmund", "Köln, Düsseldorf, Dortmund"], ["Freiburg, Heidelberg", "Freiburg und Heidelberg"]];
+/* Beispiele mit Thema: geprüft, dass jeder Ort mindestens 30 Einträge dazu hat */
+const EXAMPLES: [string, string][] = [["Schule, Köln, Dortmund", "Schule: Köln und Dortmund"], ["Haushalt, Köln, Düsseldorf, Dortmund", "Haushalt: Köln, Düsseldorf, Dortmund"], ["Bebauungsplan, Köln, Dortmund", "Bebauungsplan: Köln und Dortmund"], ["Verkehr, Köln, Düsseldorf, Dortmund", "Verkehr: Köln, Düsseldorf, Dortmund"]];
 const n = (v: number) => v.toLocaleString("de-DE");
 const STATUS_COLOR: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0", unknown: "#f1f5f9" };
 /* Wörter des Sitzungsbetriebs (Anfragen, Geschäftsordnung, Rollen), die eher die Schreibweise eines Ratsinformationssystems als die Themen eines Ortes zeigen */
@@ -32,6 +34,8 @@ const inhaltlich = (term: string) => !SITZUNGSWORT.test(term) && !/(fraktion|gru
 function datenlage(p: Place): string[] {
   const out: string[] = [];
   const sampled = p.sampled || p.total;
+  if (p.total === 0) out.push("keine Einträge");
+  else if (p.total < 30) out.push(`nur ${p.total} ${p.total === 1 ? "Eintrag" : "Einträge"}, zu wenige für einen Vergleich`);
   if (sampled >= 30) {
     if (p.topics.n === 0) out.push("keinem Thema zugeordnet");
     else if (p.topics.n / sampled < 0.25) out.push(`nur ${Math.round((p.topics.n / sampled) * 100)} % einem Thema zugeordnet`);
@@ -46,6 +50,7 @@ const TOPIC_NAME = new Map<string, string>(LABELS.map((l: { id: string; name: st
 export function ComparePage() {
   const { geo } = useData();
   const { query, search } = useAnalyticsQuery();
+  const results = useSearchResults();
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -120,7 +125,7 @@ export function ComparePage() {
 
       <div><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Vergleich starten" /></div>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
-        <span className="text-slate-500">Orte oben im Suchfeld wählen (mit Komma trennen, höchstens vier). Optional ein Thema oder Filter dazu.</span>
+        <span className="text-slate-500">Thema und Orte oben im Suchfeld wählen, zum Beispiel „Schule, Köln, Dortmund“ (Orte mit Komma trennen, höchstens vier). Das Thema ist optional, mit Thema wird der Vergleich aussagekräftiger.{!res && " Beispiele:"}</span>
         {!res && EXAMPLES.map(([v, l]) => <button key={v} type="button" onClick={() => { search.applySearch(v); setWant(true); }} className="text-teal-600">{l}</button>)}
       </div>
       {placeCount === 1 && !res && <p className="mt-3 text-[14px] text-slate-500">Ein Ort ist gewählt. Es braucht mindestens einen weiteren.</p>}
@@ -159,10 +164,10 @@ export function ComparePage() {
 
           <section className="mt-12">
             <h2 className="text-[22px] font-semibold">Themenprofil</h2>
-            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Einträgen. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
+            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Einträgen. Die senkrechte Marke zeigt den Wert für alle Gebiete. Ein Klick auf ein Themenfeld vergleicht alle gewählten Orte nur in diesem Themenfeld (statt mit dem Suchbegriff).</p>
             {legend}
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-2 text-[14px] text-slate-700"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
-            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicRow key={r.id} name={r.name} shares={r.shares} base={r.base} max={maxTopic} />)}</ol>
+            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicRow key={r.id} name={r.name} shares={r.shares} base={r.base} max={maxTopic} onPick={() => { search.applySearch(results.liveHits.map((h) => h.phraseRaw).join(", "), { thema: r.name }); setWant(true); }} />)}</ol>
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Einträge für ein Themenprofil.</p>}
           </section>
 

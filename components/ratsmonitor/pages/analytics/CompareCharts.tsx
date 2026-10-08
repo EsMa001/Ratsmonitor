@@ -31,11 +31,18 @@ export function CompareLines({ months, series }: { months: string[]; series: { c
 }
 
 /** Ein Themenfeld: je Ort ein dünner Balken (Anteil unter den eingeordneten Einträgen), dazu eine Marke für alle Gebiete */
-export function TopicRow({ name, shares, base, max }: { name: string; shares: number[]; base: number; max: number }) {
+export function TopicRow({ name, shares, base, max, onPick }: { name: string; shares: number[]; base: number; max: number; onPick?: () => void }) {
   const pct = (v: number) => `${Math.min(100, (v / max) * 100)}%`;
   return (
     <li className="grid grid-cols-[minmax(0,1fr)] gap-2 border-b border-slate-200 py-3 sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center sm:gap-6">
-      <span className="truncate text-[16px] text-slate-900">{name}</span>
+      {onPick ? (
+        <button type="button" onClick={onPick} title={`Nur „${name}“ vergleichen`} className="group flex min-w-0 items-center gap-1.5 text-left text-[16px] text-slate-900 hover:text-teal-600">
+          <span className="truncate group-hover:underline">{name}</span>
+          <span aria-hidden="true" className="shrink-0 text-teal-600 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100">→</span>
+        </button>
+      ) : (
+        <span className="truncate text-[16px] text-slate-900">{name}</span>
+      )}
       <span className="relative block">
         {shares.map((v, i) => (
           <span key={i} className="mb-1 flex items-center gap-2 last:mb-0">
