@@ -3,11 +3,11 @@ import {ShieldCheck} from 'lucide-react';
 import {Brand} from '@/components/ratsmonitor/components/Brand';
 
 // Kopfzeile aller Adminseiten im Quorumo-Design: Logo wie in der App (führt zur Übersicht), Bereich, Konto.
-// Die Seiten heißen in der Adresse nach ihrem Inhalt (?seite=abruf); die alten Nummern 1 bis 4 führen weiter dorthin.
-export type AdminPage='uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'stichwoerter';
-export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'uebersicht',label:'Übersicht'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'}];
+// Die Startseite des Adminbereichs ist die To-do-Liste (ohne Parameter). Die Seiten heißen in der Adresse nach ihrem Inhalt (?seite=abruf); die alten Nummern 1 bis 4 führen weiter dorthin.
+export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'stichwoerter';
+export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'todo',label:'To-do-Liste'},{id:'uebersicht',label:'Übersicht'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'}];
 /** Adresse einer Adminseite, mit weiteren Parametern ("filter=issues"). */
-export const adminHref=(page:AdminPage,params='')=>'/admin'+(page==='uebersicht'?(params?'?'+params:''):'?seite='+page+(params?'&'+params:''));
+export const adminHref=(page:AdminPage,params='')=>'/admin'+(page==='todo'?(params?'?'+params:''):'?seite='+page+(params?'&'+params:''));
 
 export function AdminBar({displayName,signOutPath}:{displayName?:string;signOutPath?:string}){
  return <header className="admin-masthead"><div className="admin-masthead__inner">

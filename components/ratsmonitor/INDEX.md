@@ -672,9 +672,6 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/thema/[id]/
 - page.tsx (2): Page
 
-### app/(monitor)/todo-liste/
-- page.tsx (2): Page
-
 ### app/(monitor)/ueber-ratsmonitor/
 - page.tsx (2): Page
 
@@ -688,7 +685,7 @@ wordmark__dot design-styles.css:61
 - page.tsx (2)
 
 ### app/admin/
-- page.tsx (42, ⚠1): dynamic, metadata, AdminPage
+- page.tsx (44, ⚠1): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -709,7 +706,7 @@ wordmark__dot design-styles.css:61
 ### components/
 - admin-activation.tsx (9, ⚠1): AdminActivation
 - admin-atlas.tsx (166, ⚠33): AdminAtlas
-- admin-chrome.tsx (26): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
+- admin-chrome.tsx (26, ⚠1): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
 - admin-dashboard.tsx (75, ⚠17): AdminDashboardView
 - admin-estimate.tsx (334, ⚠53): AdminEstimate
 - admin-forecast.tsx (12): AdminForecast
@@ -775,20 +772,21 @@ wordmark__dot design-styles.css:61
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
+- BranchenLive.tsx (117): LiveThumb
 - BranchenPages.tsx (122): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (48): isInfoPath, InfoPages
+- InfoPages.tsx (46): isInfoPath, InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (91): PreisePage
 - QuellenPage.tsx (165, ⚠4): QuellenPage
-- TodoPage.tsx (236): TodoPage
+- TodoPage.tsx (324, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - blocks.tsx (199): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (106): AnalyseId, ANALYSEN, EnterpriseBlock, ENTERPRISE
 - content.ts (351, ⚠12): Status, Example, Branche, STATUS_LABEL, BRANCHEN, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, brancheBySlug
-- icons.tsx (112): IconName, Icon
+- icons.tsx (114): IconName, Icon
 
 ### components/ratsmonitor/lib/
 - betreiber.ts (20): BETREIBER, betreiberAdresse
@@ -811,7 +809,7 @@ wordmark__dot design-styles.css:61
 - iconStroke.ts (3): iconStroke
 - listView.ts (46): ListView, setListView, useListView
 - mails.ts (134, ⚠1): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
-- pageTitle.ts (40): pageName, tabTitle
+- pageTitle.ts (39): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - savedArticles.ts (65): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, useSavedArticles
@@ -827,7 +825,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (210): MainMenu
+- MainMenu.tsx (222): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (117, ⚠4): DetailPage
@@ -841,8 +839,8 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (248, ⚠14): ANALYSE_THUMBS, AnalyticsAbout
-- AnalyticsPages.tsx (32, ⚠1): isAnalyticsPath, AnalyticsPages
+- AnalyticsAbout.tsx (249, ⚠14): ANALYSE_THUMBS, AnalyticsAbout
+- AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
 - BeschluessePage.tsx (191, ⚠5): BeschluessePage
 - CompareCharts.tsx (51): PLACE_COLORS, CMonth, CompareLines, TopicRow
 - ComparePage.tsx (204, ⚠5): ComparePage

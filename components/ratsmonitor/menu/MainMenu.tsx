@@ -17,14 +17,22 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
 ];
 
 /* Unterpunkte von „Plenara.X“ (die Gruppe selbst ist keine Seite) */
-const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "layers" | "trendingUp" | "mapPin" | "circleCheck" | "users" }[] = [
+const ANALYTICS: { href: string; label: string; icon: "fileText" | "map" | "network" | "trendingUp" | "mapPin" | "circleCheck" | "users" }[] = [
   { href: "/analytics/ueber", label: "Über Plenara.X", icon: "fileText" },
   { href: "/analytics/diffusion", label: "Diffusionsanalyse", icon: "map" },
-  { href: "/analytics/graph", label: "Knowledge Graph", icon: "layers" },
+  { href: "/analytics/graph", label: "Knowledge Graph", icon: "network" },
   { href: "/analytics/trends", label: "Trends und Frühindikatoren", icon: "trendingUp" },
   { href: "/analytics/vergleich", label: "Gebietsvergleich", icon: "mapPin" },
   { href: "/analytics/beschluesse", label: "Status und Beschlüsse", icon: "circleCheck" },
   { href: "/analytics/gremien", label: "Gremiennetz", icon: "users" },
+];
+
+/* Unterpunkte von „Entdecken“: Tarife, Videos, Datenabdeckung und häufige Fragen */
+const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
+  { href: "/preise", label: "Preise", icon: "euro" },
+  { href: "/videos", label: "Videos", icon: "circlePlay" },
+  { href: "/quellen", label: "Datenabdeckung", icon: "layers" },
+  { href: "/faq", label: "FAQ", icon: "circleHelp" },
 ];
 
 /** Dreistrichmenü: Knopf in der Kopfzeile, Auswahl klappt links unterhalb der Kopfzeile auf und braucht nur so viel Platz wie nötig */
@@ -33,12 +41,12 @@ const MENU_GAP = 6;
 
 export function MainMenu() {
   /* "all" = Dreistrichmenü; "funktionen"/"usecases" = Aufklappliste der breiten Kopfzeile */
-  const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases" | "analytics">(false);
+  const [open, setOpen] = useState<false | "all" | "funktionen" | "usecases" | "analytics" | "info">(false);
   const [pos, setPos] = useState({ top: 60, left: 8 });
   const path = usePathname();
   const { tier } = useTier();
   /* Eingeklappt starten; die Gruppe der aktuellen Seite ist offen */
-  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/analytics") ? "analytics" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
+  const [openGroup, setOpenGroup] = useState(() => (path.startsWith("/branchen/") ? "usecases" : path.startsWith("/analytics") ? "analytics" : ["/preise", "/videos", "/quellen", "/faq"].includes(path) ? "info" : path.startsWith("/funktionen/") || path.startsWith("/konto/") ? "funktionen" : ""));
   const btnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -94,7 +102,7 @@ export function MainMenu() {
     close();
     window.scrollTo(0, 0);
   };
-  const toggle = (which: "all" | "funktionen" | "usecases" | "analytics", el: HTMLElement | null) => {
+  const toggle = (which: "all" | "funktionen" | "usecases" | "analytics" | "info", el: HTMLElement | null) => {
     if (open === which) return close();
     const btn = el?.getBoundingClientRect();
     const head = btnRef.current?.closest("header")?.getBoundingClientRect();
@@ -113,16 +121,12 @@ export function MainMenu() {
       </button>
       {/* Breite Bildschirme: Menüpunkte direkt in der Kopfzeile, Funktionen und Use Cases klappen auf */}
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
-        {(["funktionen", "usecases", "analytics"] as const).map((g) => (
+        {(["funktionen", "usecases", "analytics", "info"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Use Cases" : "Plenara.X"}
+            {g === "funktionen" ? "Funktionen" : g === "usecases" ? "Use Cases" : g === "analytics" ? "Plenara.X" : "Entdecken"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
-        <Link href="/preise" aria-current={current("/preise")}>Preise</Link>
-        <Link href="/faq" aria-current={current("/faq")}>FAQ</Link>
-        <Link href="/videos" aria-current={current("/videos")}>Videos</Link>
-        <Link href="/quellen" aria-current={current("/quellen")}>Datenabdeckung</Link>
       </nav>
       {open &&
         createPortal(
@@ -131,7 +135,6 @@ export function MainMenu() {
             <div ref={panelRef} id="hauptmenue" tabIndex={-1} className={`ri-menu__panel outline-none ${open !== "all" ? "ri-menu__panel--flyout" : ""}`} role="dialog" aria-label="Hauptmenü" style={{ top: pos.top, left: pos.left, maxHeight: `calc(100dvh - ${pos.top}px - 12px)` }} onKeyDown={trap}>
               {/* Gleiche Gruppen wie in der Fußzeile; Linien statt Kästen. Gespeichertes und Konto erreicht man über die Icons in der Kopfzeile */}
               <nav className="ri-menu__nav" aria-label="Menü">
-                {open === "all" && <p className="ri-menu__label">Produkt</p>}
                 {/* Funktionen und Use Cases sind einklappbar; die Gruppen selbst sind keine Seiten */}
                 {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "funktionen"} onClick={() => setOpenGroup(openGroup === "funktionen" ? "" : "funktionen")}>
                   Funktionen
@@ -184,13 +187,22 @@ export function MainMenu() {
                     ))}
                   </ul>
                 )}
-                {open === "all" && <>
-                <Link href="/preise" className="ri-menu__main" aria-current={current("/preise")} onClick={pick}>Preismodelle</Link>
-                <p className="ri-menu__label ri-menu__label--sep">Informationen</p>
-                <Link href="/faq" className="ri-menu__main" aria-current={current("/faq")} onClick={pick}>FAQ</Link>
-                <Link href="/videos" className="ri-menu__main" aria-current={current("/videos")} onClick={pick}>Videos</Link>
-                <Link href="/quellen" className="ri-menu__main" aria-current={current("/quellen")} onClick={pick}>Datenabdeckung</Link>
-                </>}
+                {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "info"} onClick={() => setOpenGroup(openGroup === "info" ? "" : "info")}>
+                  Entdecken
+                  <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "info" ? "rotate-180" : ""}`} />
+                </button>}
+                {show("info") && (
+                  <ul className="ri-menu__subs">
+                    {INFO.map((f) => (
+                      <li key={f.href}>
+                        <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
+                          <Icon name={f.icon} size={15} />
+                          {f.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </nav>
               {open === "all" && tier === "guest" && (
                 <div className="ri-menu__start">

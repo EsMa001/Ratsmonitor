@@ -9,7 +9,6 @@ import { brancheBySlug } from "./content";
 import { FaqPage } from "./FaqPage";
 import { VideosPage } from "./VideosPage";
 import { PreisePage } from "./PreisePage";
-import { TodoPage } from "./TodoPage";
 import { AgbPage } from "./AgbPage";
 import { WiderrufPage } from "./WiderrufPage";
 
@@ -25,7 +24,6 @@ const PAGES: Record<string, ComponentType> = {
   "/kontakt": KontaktPage,
   "/agb": AgbPage,
   "/widerruf": WiderrufPage,
-  "/todo-liste": TodoPage,
 };
 
 export const isInfoPath = (p: string) => p in PAGES || p === "/registrieren" || !!brancheOf(p);

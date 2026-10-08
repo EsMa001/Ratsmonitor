@@ -34,7 +34,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | E-Mails (Vorlagen: Willkommen, Passwort, Wochenbericht, Treffer, Vorgang, Sitzung) | `lib/mails.ts`; Test-Postfach: `pages/PostfachPage.tsx` |
 | Anmelden/Registrieren/Kontakt | `info/AccountPages.tsx`; Testkonten: `lib/testAuth.ts` |
 | Impressum/Datenschutz | `pages/LegalPage.tsx` |
-| Interne To-Do-Liste `/todo-liste` (nur lokaler Dev-Server, nicht im Menü; Daten `docs/todo/todos.json`, Speichern über Vite-Plugin `build/todo-dev-plugin.mjs`, Endpunkt `/__todos`) | `info/TodoPage.tsx`, Status/Datum: `lib/todos.ts` |
+| Interne To-do-Liste: erster Reiter im Adminbereich (`/admin?seite=todo`, `components/admin-todo.tsx`; nur lokaler Dev-Server; Daten `docs/todo/todos.json`, Speichern über Vite-Plugin `build/todo-dev-plugin.mjs`, Endpunkt `/__todos`) | `info/TodoPage.tsx`, Status/Datum: `lib/todos.ts` |
 | Symbole | App: `components/icons.tsx`; Info-Seiten: `info/icons.tsx` |
 | Suchzustand + Abfrage an `/api/search` | `state/search.tsx`; Ortserkennung + Regionen: `lib/place.ts`; Logik: `lib/searchLogic.ts` |
 | Neue Route anlegen | Stub in `app/(monitor)/<pfad>/page.tsx` (gibt `null` zurück) + Eintrag in `info/InfoPages.tsx` bzw. `pages/PersonalPage.tsx`; Kontoseiten zusätzlich in `app/(monitor)/konto/[[...section]]/page.tsx` freischalten |
