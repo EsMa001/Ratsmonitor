@@ -1,6 +1,9 @@
 // A source refresh must never masquerade as an analysis or erase its result.
+import {AUSZUG_LABEL} from './ris-auszug.mjs';
 export const RECORD_VERSION='article-record-v1';
 export function analysisSignature(t){return JSON.stringify({title:t.officialTitle||t.title||'',status:t.status,events:(t.events||[]).map(e=>({date:e.date,committee:e.committee,status:e.status,result:e.result||''})),documents:(t.documents||[]).map(d=>d.url).sort()});}
+// Grundlage des regelbasierten Auszugs: Titel und Dokumente. Ändern sich beide nicht, bleibt der Auszug gültig.
+export const excerptBasis=t=>JSON.stringify([t.officialTitle||t.title||'',(t.documents||[]).filter(d=>d.kind==='application/pdf').map(d=>d.url).sort()]);
 export function preserveArticleContent(old,incoming,source=incoming){
  const next={...incoming};
  for(const key of ['contentAnalysis','weightedKeywords','labelAssessments','metadata'])if(old[key]&&!next[key])next[key]=old[key];
@@ -9,6 +12,11 @@ export function preserveArticleContent(old,incoming,source=incoming){
  if(priorAI&&!incomingAI){
   for(const key of ['title','shortSummary','longSummary','generatedBy','summaryGeneratedAt','summaryMethod','summaryModel','summaryEvidence','quality'])if(old[key]!==undefined)next[key]=old[key];
   if(old.contentAnalysis){const stale=old.contentAnalysis.sourceSignature!==analysisSignature(next);next.contentAnalysis={...old.contentAnalysis,...(stale?{status:'stale',reason:'Die Quelldaten haben sich seit dieser Auswertung geändert. Eine erneute Analyse muss manuell gestartet werden.'}:{})};}
+ }
+ // Regelbasierter Auszug: bleibt über Importe erhalten, solange Titel und Dokumente gleich sind; sonst wird er neu gebildet.
+ if(old.ruleExcerpt&&!next.ruleExcerpt&&!priorAI&&!incomingAI&&old.ruleExcerpt.basis===excerptBasis(next)){
+  next.ruleExcerpt=old.ruleExcerpt;
+  if(old.ruleExcerpt.status==='completed'&&old.generatedBy===AUSZUG_LABEL)for(const key of ['shortSummary','longSummary','generatedBy','summaryMethod'])if(old[key]!==undefined)next[key]=old[key];
  }
  // Erfolglose KI-Versuche gelten nur für unveränderte Quelldaten; nach einer Änderung wird wieder angefragt.
  if(old.aiAttempts&&!next.aiAttempts){const signature=analysisSignature(next),kept=Object.fromEntries(Object.entries(old.aiAttempts).filter(([,a])=>a?.sourceSignature===signature));if(Object.keys(kept).length)next.aiAttempts=kept;}

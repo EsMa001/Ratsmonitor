@@ -404,6 +404,10 @@ Die Administration hat sechs Seiten mit eigenen Namen in der Adresse (`component
 
 Tests: `tests/admin-coverage.test.mjs` (Zählung, Verlaufsreihe, Stufen und Größenklassen, Übersicht und Atlas auf einer Datenbank im Speicher), `tests/admin.test.mjs` (Sitzungstage je Gebiet, Neuzählung älterer Kennzahlen), `tests/source-access.test.mjs` (jedes Gebiet im Atlas mit Status).
 
+### Regelbasierter Auszug (Branch feature/regelauszug, 09.10.2026)
+
+Für Berichte ohne KI-Zusammenfassung legt ein manuell gestarteter Admin-Auftrag bis zu fünf Originalsätze ab (Abschnitt „Regelbasierten Auszug erstellen“ auf „Abruf & Verarbeitung“, `POST /api/admin/analyse` mit `mode:'excerpt'`, `server/integrations/rule-excerpt.mjs`). Die Regeln (`shared/ris-auszug.mjs`, Beschluss, Anlass, Kern, Zahlen, Fristen) kommen aus `experiments/ris-regeln/` und liefern auf allen 317 Münsteraner Dokumenten mit Text dasselbe wie die Python-Vorlage (`node scripts/vergleich-ris-auszug.mjs`). Das Dokument wird nur im Arbeitsspeicher gelesen; gespeichert werden die Sätze mit Regel, Quelle und Prüfsumme (`ruleExcerpt`, Verlauf `article_analyses.kind='rule-excerpt'` mit den ersetzten Texten). Der Bericht zeigt „Automatischer Auszug (Regeln)“ und den Hinweis „Automatischer Auszug aus der Originalunterlage, keine KI-Zusammenfassung.“ KI-Zusammenfassungen werden nie überschrieben; Importe lassen den Auszug stehen, solange Titel und PDF-Dokumente gleich sind. Pro Schritt höchstens 8 gelesene Dokumente. Fehlversuche werden vermerkt und nach 24 Stunden erneut versucht. Nicht automatisch, nicht im Import.
+
 ## Lückenatlas (05.10.2026)
 
 `dashboard/luecken.html` ist eine eigenständige Seite ohne Website und Server: Datei im Browser öffnen. Sie zeigt alle 5.324 Gebiete auf der Karte und in einer durchsuchbaren Liste, eingefärbt nach Anbindung (angebunden, offen nach Grund) oder, umschaltbar, nach Zugang für Programme (Abschnitt „Zugang für Programme“). Filter nach Land, Art, Betreiber oder Rechner, Recherche-Kandidaten und Neuprüfung; je Gebiet Grund laut Prüfbericht, was er bedeutet und was die Lücke schließen könnte; dazu Lücken je Land und die Rechner mit den meisten offenen Gebieten.

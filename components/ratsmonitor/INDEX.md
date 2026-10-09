@@ -723,7 +723,7 @@ wordmark__dot design-styles.css:61
 - admin-loader.tsx (33): AdminLoader
 - admin-overview.tsx (178, ⚠13): AdminOverview
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
-- admin-processing.tsx (210, ⚠23): AdminProcessing
+- admin-processing.tsx (212, ⚠23): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
