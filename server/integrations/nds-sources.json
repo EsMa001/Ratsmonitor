@@ -3545,5 +3545,29 @@
     "verifiedSource": "https://twist.ris.itebo.de/oparl/system",
     "verifiedAt": "2026-10-09",
     "foundBy": "Recherche 2026-10-09"
+  },
+  {
+    "id": "nds-03159013",
+    "name": "Gemeinde Friedland",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/friedland/BI/",
+    "extension": "asp",
+    "verifiedSource": "https://sessionnet.owl-it.de/friedland/BI/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "Recherche2 2026-10-09"
+  },
+  {
+    "id": "nds-03358002",
+    "name": "Gemeinde Bispingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.bispingen.sitzung-online.de/",
+    "verifiedSource": "https://www.bispingen.sitzung-online.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "OParl-Adresse des Systems (https://www.bispingen.sitzung-online.de/oparl/system) lieferte am 09.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+    "foundBy": "Recherche2 2026-10-09"
   }
 ]
