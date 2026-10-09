@@ -8499,6 +8499,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08116011",
+    "name": "Gemeinde Beuren",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://beuren.ris-portal.de/web/ratsinformation/",
+    "verifiedSource": "https://beuren.ris-portal.de/web/ratsinformation/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) am 10.10.2026 erreichbar; Ort und Landkreis über die Sitzungsorte der Seite geprüft."
+  },
+  {
     "id": "de-08116012",
     "name": "Gemeinde Bissingen an der Teck",
     "kind": "city",
@@ -9013,6 +9024,17 @@
     "verifiedSource": "https://www.hattenhofen.de/de/startseite",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08117030",
+    "name": "Gemeinde Heiningen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://heiningen-online.ris-portal.de/web/ratsinformation/",
+    "verifiedSource": "https://heiningen-online.ris-portal.de/web/ratsinformation/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) am 10.10.2026 erreichbar; Ort und Landkreis über die Sitzungsorte der Seite geprüft."
   },
   {
     "id": "de-08117033",
@@ -9695,6 +9717,17 @@
     "verifiedSource": "https://www.winterbach.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-08119087",
+    "name": "Gemeinde Aspach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://aspach.ris-portal.de/web/ratsinformation/",
+    "verifiedSource": "https://aspach.ris-portal.de/web/ratsinformation/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) am 10.10.2026 erreichbar; Ort und Landkreis über die Sitzungsorte der Seite geprüft."
   },
   {
     "id": "de-08119089",
@@ -11419,6 +11452,17 @@
     "verifiedSource": "https://www.buehlertal.de/home/meine-anliegen/online-services/online-buergerinfoportal",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08216009",
+    "name": "Gemeinde Durmersheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://durmersheim.ris-portal.de/web/ratsinformation/",
+    "verifiedSource": "https://durmersheim.ris-portal.de/web/ratsinformation/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) am 10.10.2026 erreichbar; Ort und Landkreis über die Sitzungsorte der Seite geprüft."
   },
   {
     "id": "de-08216012",
