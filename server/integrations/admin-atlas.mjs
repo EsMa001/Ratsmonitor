@@ -38,7 +38,7 @@ function staticAreas(){
 }
 const readJson=s=>{try{return JSON.parse(s||'{}');}catch{return {};}};
 export async function adminAtlas(db,{now=new Date()}={}){
- const [{rows:figures,pending},coverage]=await Promise.all([areaFigures(db,{now,budgetMs:4000}),db.prepare('SELECT region_id,payload FROM source_coverage').all()]);
+ const [{rows:figures,pending},coverage]=await Promise.all([areaFigures(db,{now}),db.prepare('SELECT region_id,payload FROM source_coverage').all()]);
  const cov=new Map(coverage.results.map(r=>[r.region_id,readJson(r.payload)]));
  let reports=0;
  const areas=staticAreas().map(a=>{
