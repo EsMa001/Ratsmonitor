@@ -69,6 +69,8 @@ function chunks(list,chunkRows){
  * Returns {done,pending,unbuilt,ms}, or {missing:'0016'} without the tables. pending and unbuilt are the areas left over
  * among those looked at (stale rows and areas without rows); the next call continues with them.
  * Safe to run twice at once: a row is never replaced by one computed at an older revision.
+ * @param {any} db
+ * @param {{regions?:string[],budgetMs?:number,chunkRows?:number,now?:Date}} [options]
  */
 export async function refreshRegionFacts(db,{regions,budgetMs=5000,chunkRows=25000,now=new Date()}={}){
  const started=Date.now();

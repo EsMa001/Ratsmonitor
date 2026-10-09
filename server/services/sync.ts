@@ -11,6 +11,7 @@ import {preserveAnalysis} from '@/shared/analysis-state.mjs';
 import {metadataChanged,stableJson} from '@/shared/article-record.mjs';
 import {batches} from '../integrations/batches.mjs';
 import {refreshSearchWords} from '../integrations/search-words.mjs';
+import {refreshRegionFacts} from '../integrations/region-facts.mjs';
 import {REGIONS} from '@/shared/regions';
 import { env } from 'cloudflare:workers';
 import { ensureData } from '@/server/repositories/seed';
@@ -41,7 +42,10 @@ export async function runSync(mode: 'metadata' | 'summaries',region='muenster', 
     await env.DB.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id, started, 'running', JSON.stringify(mode==='metadata'?{mode,region,trigger,window:lookback}:{mode,region,trigger})).run();
     const data = await (mode === 'summaries' ? refreshSummaries(id, started,region) : refreshMetadata(id, started,region,previousCoverage,lookback,trace));
     /* Wortliste der Suche nachführen (nur Neues; fehlt sie noch oder schlägt es fehl, sucht die Suche wie gewohnt) */
-    if (mode === 'metadata') { try { await refreshSearchWords(env.DB, { onlyIfBuilt: true, maxCards: 20000, kinds: new Map(REGIONS.map((r) => [r.id, r.kind])), names: new Map(REGIONS.map((r) => [r.id, r.name])) }); } catch { /* nicht wichtig für den Import */ } }
+    if (mode === 'metadata') { try { await refreshSearchWords(env.DB, { onlyIfBuilt: true, maxCards: 20000, kinds: new Map(REGIONS.map((r) => [r.id, r.kind])), names: new Map(REGIONS.map((r) => [r.id, r.name])) }); } catch { /* nicht wichtig für den Import */ }
+        /* Werte je Gebiet der Administration für dieses Gebiet nachrechnen (region-facts.mjs), nach dem letzten Teilabruf.
+           Schlägt es fehl oder reicht die Zeit nicht, holt der nächste Rechenschritt der Administration es nach. */
+        if (!(data as { resume?: boolean }).resume) { try { await refreshRegionFacts(env.DB, { regions: [region], budgetMs: 4000 }); } catch { /* nicht wichtig für den Import */ } } }
     return { status: 200, data };
 }
 catch (e) {
