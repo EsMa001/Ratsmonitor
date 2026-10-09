@@ -22039,6 +22039,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09372116",
+    "name": "Stadt Cham",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://ratsinfo.cham.de/",
+    "verifiedSource": "https://ratsinfo.cham.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM 4 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar, Leser sdnet-rim4 las 3 Monate vollständig."
+  },
+  {
     "id": "de-09372124",
     "name": "Gemeinde Eschlkam",
     "kind": "city",
@@ -26138,6 +26149,17 @@
     "verifiedSource": "https://www.eussenheim.de/seite/de/cms041020261444533410f389/02/WB/Herzlich_Willkommen.html",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-09677148",
+    "name": "Stadt Karlstadt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://ris.karlstadt.de/",
+    "verifiedSource": "https://ris.karlstadt.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM 4 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar, Leser sdnet-rim4 las 3 Monate vollständig."
   },
   {
     "id": "de-09677154",
@@ -34430,6 +34452,25 @@
     "verifiedSource": "https://www.aschersleben.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-15089026",
+    "name": "Stadt Barby",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://stadt-barby.mein-intra.net/",
+    "token": "8b7580fb-21a1acfa-610f0906-47edc3e0",
+    "page": "https://www.stadt-barby.de/de/ratsinfosystem_oeffentlich.html",
+    "verifiedSource": "https://www.stadt-barby.de/de/ratsinfosystem_oeffentlich.html",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 168,
+      "meetings": 14,
+      "identity": "Adresse"
+    }
   },
   {
     "id": "de-15089030",
