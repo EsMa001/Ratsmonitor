@@ -6,6 +6,39 @@ Stand 08.10.26. Repo `C:\Git\vor-ort-quellcode`, Branch `quellen-erweiterung`. A
 
 **Für das umsetzende Modell:** Zuerst Abschnitt 8 lesen (Projektregeln, Prüf- und Messbefehle). Danach die Pakete in Abschnitt 4 der Reihe nach umsetzen. Die Abschnitte 3, 5 und 6 sind Nachschlagewerk. Pakete mit Buchstaben (z. B. P15a, P15b) sind Teile eines größeren Schritts. Jeder Teil wird einzeln committet.
 
+## 0. Umsetzungsstand (09.10.26, Branch `admin-performance`)
+
+**Erledigt: P09 bis P21c** (Phasen 2, 3 und 4). Das umsetzende Modell beginnt mit den offenen Paketen unten. Wo der Code von den Abschnitten 3 und 4 abweicht, gilt der Code; die Abweichungen stehen hier.
+
+Gemessen lokal (Dev-Server, 1,34 Mio. Berichte), vorher → nachher:
+
+| Schnittstelle | vorher | nachher |
+|---|---|---|
+| `coverage` | > 180 s (zweiter Aufruf 75 s) | 0,8 s, Wiederaufruf 304 in < 0,1 s |
+| `timeline?basis=event` | 55–92 s | 0,3 s |
+| `overview?review=0` | 38 s | 0,8–1,7 s (weiter 6,4 MB, Aufteilen ist P23–P28) |
+| `atlas` | 92 s | 0,6 s |
+| `keywords` | 116 s | 0,1 s (gespeicherter Stand); „Neu zählen“ 80–90 s in Schritten von ≤ 9 s |
+| `estimate` POST | 2–3 min | 4,4 s |
+| Qualitätsprüfungen, alle | etwa 7 min am Stück | 193 s in Schritten von ≤ 8,2 s |
+| Erstaufbau der Werte je Gebiet | – | 82 s (`node scripts/refresh-admin.mjs`) |
+
+**Abweichungen vom Konzept (gelten):**
+- **Bauzustand mit Cursor** (`admin-builds.mjs`): Der Zustand hält die zuletzt bearbeitete Gebietskennung (`next`) statt der Liste aller Gebiete; Gebiete werden binär sortiert aus `region_revisions` gelesen (`build-chunks.mjs`). Der Vergleichen-und-Tauschen-Schutz liegt auf `next`. Gebiete, die während eines Baus hinzukommen, werden gezählt, wenn sie hinter dem Cursor liegen.
+- **Doppelungen unter mehreren Gebieten je Host der Quelladresse** statt je konfiguriertem Server (`provider()`): Die Gebietsabschnitte notieren in `admin_agg` (Liste `host`), welche Gebiete Adressen welches Hosts haben; danach ist jeder Host mit mindestens zwei Gebieten eine Einheit. Das ist exakt, weil eine Gruppe genau eine Adresse hat. Die Einteilung nach Server verfehlte lokal 239 von 2.618 Gruppen (alle `www.seligenstadt.sitzung-online.de`). `scripts/check-dup-shared.mjs` meldet jetzt Gleichheit. **Entscheidung E4 ist damit erledigt**: Die Prüfung läuft auch in Produktion.
+- **Schrittlänge:** Ein Schritt beginnt keine Einheit, die nach der bisherigen Zeit je Bericht über das Budget ginge; Einheiten über viele Gebiete (Hosts, Einzelprüfungen) beginnen immer einen eigenen Schritt. Qualitätsprüfungen nehmen Abschnitte von 10.000 statt 25.000 Berichten.
+- **Zeilenprüfungen eines Abschnitts in einem Lauf:** eine Abfrage mit `sum(CASE WHEN … )` je Prüfung; Beispiele werden nur gelesen, wo der Abschnitt Treffer hat und noch keine 20 vorliegen.
+- **Qualitätsseite:** `POST /api/admin/quality {check}` startet den Bau `quality:<check>` bzw. `quality:all` und macht einen Schritt; `{check,continue:true}` macht den nächsten. Die Seite zeigt Fortschritt in Prozent; „Alle Prüfungen ausführen“ läuft als ein Bau über den Bestand. Die Stand-Zeile der Seite ist weiter die bisherige Zeile „Zuletzt geprüft …“ (noch keine `StandLine`).
+- **`components/admin-store.ts`** enthält bisher nur `useRegionCatchUp` und das Ereignis `ADMIN_REGIONS_DONE`; `fetchAdmin`, `useAdmin` usw. kommen mit P25.
+- **Gespeicherte Hochrechnung:** Schlüssel `admin-stored:estimate`; die alte Zeile `admin-estimate` wird gelesen, bis neu berechnet ist. GET liefert den gespeicherten Text ungeparst mit `stand` davor.
+- **Stichwörter:** `null` in Titelbegriffen und Sachthemen wird ausgelassen (auch in der alten Vergleichszählung `adminKeywords`).
+
+**Offen:**
+- **P01–P08:** P03 ist durch P15b erledigt (keine Warteschleife mehr). P01 betrifft nur noch den Rückfall ohne Migration 0011 und `/api/sources`. P02 ist entschärft (der Zeitverlauf kostet 0,3 s), das Laden erst bei Sichtbarkeit fehlt noch. P04–P08 sind offen.
+- **P22–P41** (Runner, Aufteilen der 6,4-MB-Antwort, Browser-Speicher, Navigation, Design, Texte, Doku, Messung in Produktion).
+
+**Für den Deploy in Produktion:** Migration `0016` einspielen. Danach baut eine offene Adminseite die Werte je Gebiet in Schritten selbst auf (etwa 15–30 Schritte, Zeile „Kennzahlen für … Gebiete werden nachgerechnet“); bis dahin zeigt die Übersicht keine Zahlen und die Hochrechnung antwortet mit 409. Stichwörter einmal mit „Jetzt berechnen“, Qualität mit „Alle Prüfungen ausführen“ aufbauen.
+
 ---
 
 ## 1. Kurzfassung
