@@ -15,28 +15,44 @@ async function request<T>(method:'GET'|'POST',body?:unknown):Promise<T>{
 }
 /**
  * Quality page: checks of the stock for duplicates, defects and orphans. The results stay stored on the server; the
- * page shows them at once and runs the checks one after another on request, every result as soon as it arrives.
+ * page shows them at once. A check runs on request in steps of a few seconds over chunks of areas (POST until it is no
+ * longer running); "Alle Prüfungen" runs every check in one pass over the stock.
  */
 export function AdminQualityCheck({sources=[],disabled=false}:{sources?:{id:string;name:string}[];disabled?:boolean}){
- const [data,setData]=useState<Stored|null>(null),[busy,setBusy]=useState(''),[error,setError]=useState(''),[stopping,setStopping]=useState(false);
- // Set by "anhalten": the running check finishes and is stored, no further check is started.
+ const [data,setData]=useState<Stored|null>(null),[busy,setBusy]=useState(''),[error,setError]=useState(''),[stopping,setStopping]=useState(false),[progress,setProgress]=useState<{done:number;total:number}|null>(null);
+ // Set by "anhalten": no further step is sent; the check keeps its place and continues when it is started again.
  const stopRequested=useRef(false);
  const regionName=(id?:string)=>sources.find(s=>s.id===id)?.name||id||'';
  useEffect(()=>{let gone=false;request<Stored>('GET').then(d=>{if(!gone)setData(d);}).catch(e=>{if(!gone)setError(e instanceof Error?e.message:'Prüfung nicht erreichbar.');});return()=>{gone=true;};},[]);
+ type Running={running:true;busy:boolean;done:number;total:number};
+ async function drive<T>(check:string):Promise<T|null>{
+  let r=await request<T|Running>('POST',{check});
+  while((r as Running).running){
+   const p=r as Running;setProgress({done:p.done,total:p.total});
+   if(stopRequested.current)return null;
+   if(p.busy)await new Promise(resolve=>setTimeout(resolve,3000));
+   r=await request<T|Running>('POST',{check,continue:true});
+  }
+  return r as T;
+ }
  async function run(ids:string[]){
   setError('');setStopping(false);
-  try{for(const id of ids){setBusy(id);const result=await request<Result>('POST',{check:id});setData(prev=>({checks:{...(prev?.checks||{}),[id]:result},currentRevision:result.revision}));if(stopRequested.current)break;}}
+  try{
+   if(ids.length>1){setBusy('all');const all=await drive<Stored>('all');if(all)setData({checks:all.checks,currentRevision:all.currentRevision});}
+   else{const id=ids[0];setBusy(id);const result=await drive<Result>(id);if(result)setData(prev=>({checks:{...(prev?.checks||{}),[id]:result},currentRevision:result.revision}));}
+  }
   catch(e){setError(e instanceof Error?e.message:'Prüfung fehlgeschlagen.');}
-  finally{setBusy('');stopRequested.current=false;setStopping(false);}
+  finally{setBusy('');setProgress(null);stopRequested.current=false;setStopping(false);}
  }
+ const percent=progress&&progress.total?` ${Math.round(100*progress.done/progress.total)} %`:'';
  const checks=data?.checks||{},sum=qualitySummary(checks),latest=Object.values(checks).map(r=>r.checkedAt).sort().at(-1),anyStale=Object.values(checks).some(r=>r.stale);
  return <section id="admin-pruefung" className="admin-section"><p className="eyebrow">DUPLIKATE & DEFEKTE</p><h2>Ist der Bestand in sich stimmig?</h2>
-  <p>Vierzehn Prüfungen lesen den gespeicherten Bestand: Doppelungen (derselbe Vorgang unter mehreren Gebieten), unvollständige oder widersprüchliche Berichte, Einträge ohne Ziel und als Hinweis gleichlautende Punkte derselben Sitzung. Jede Prüfung ist eine eigene Anfrage, ihr Ergebnis bleibt gespeichert. Nichts wird verändert oder zusammengeführt; die Beispiele führen zum Bericht.</p>
-  <div className="admin-selection-actions"><Button variant="outline" disabled={!!busy||disabled} onClick={()=>run(QUALITY_CHECKS.map(c=>c.id))}><Play size={15}/> {busy?'Prüfung läuft …':sum.checked?'Alle Prüfungen erneut ausführen':'Alle Prüfungen ausführen'}</Button>{busy&&<Button variant="outline" disabled={stopping} onClick={()=>{stopRequested.current=true;setStopping(true);}}>Nach der laufenden Prüfung anhalten</Button>}</div>
+  <p>Vierzehn Prüfungen lesen den gespeicherten Bestand: Doppelungen (derselbe Vorgang unter mehreren Gebieten), unvollständige oder widersprüchliche Berichte, Einträge ohne Ziel und als Hinweis gleichlautende Punkte derselben Sitzung. Die Prüfungen laufen in kurzen Schritten über den Bestand, ihr Ergebnis bleibt gespeichert. Nichts wird verändert oder zusammengeführt; die Beispiele führen zum Bericht.</p>
+  <div className="admin-selection-actions"><Button variant="outline" disabled={!!busy||disabled} onClick={()=>run(QUALITY_CHECKS.map(c=>c.id))}><Play size={15}/> {busy?'Prüfung läuft …'+percent:sum.checked?'Alle Prüfungen erneut ausführen':'Alle Prüfungen ausführen'}</Button>{busy&&<Button variant="outline" disabled={stopping} onClick={()=>{stopRequested.current=true;setStopping(true);}}>Anhalten (läuft beim nächsten Start weiter)</Button>}</div>
   {sum.checked>0&&<p><strong>{n(sum.duplicates)} Doppelungen</strong> ({n(sum.duplicateGroups)} Vorgänge unter mehreren Gebieten) · <strong>{n(sum.defects)} Defekte</strong> · <strong>{n(sum.orphans)} verwaiste Einträge</strong> · {n(sum.hints)} gleichlautende Punkte als Hinweis{sum.pending.length?` · ${sum.pending.length} von ${QUALITY_CHECKS.length} Prüfungen noch nicht gelaufen`:''}<br/><small className="admin-note">Zuletzt geprüft {latest?when(latest):'–'}{anyStale?' · Bestand seit mindestens einer Prüfung geändert':' · Bestand seither unverändert'}</small></p>}
-  {!sum.checked&&data&&<p className="admin-empty">Noch keine Prüfung gelaufen. „Alle Prüfungen ausführen“ liest den Bestand einmal durch; bei einer Million Berichten dauert jede Prüfung einige Sekunden bis eine Minute.</p>}
-  {GROUPS.map(group=><div key={group} className="admin-quality-group"><h3>{QUALITY_GROUPS[group]}</h3><ul className="admin-quality-checks">{QUALITY_CHECKS.filter(c=>c.group===group).map(c=>{const r=checks[c.id];const running=busy===c.id;
-   return <li key={c.id} className={r?r.count>0?'is-found':'is-clean':''}><div className="admin-quality-head"><strong>{c.name}</strong><span>{running?'läuft …':r?<>{n(r.count)}{r.groups!=null&&r.count>0?c.id==='regionUnknown'?` in ${n(r.groups)} Gebieten`:` zu viel in ${n(r.groups)} Gruppen`:''}{r.stale?' · veraltet':''}</>:'nicht geprüft'}</span><button type="button" className="admin-timeline-retry" disabled={!!busy||disabled} onClick={()=>run([c.id])}>{r?'Erneut':'Prüfen'}</button></div><small>{c.explain}{r&&<> · Geprüft {when(r.checkedAt)} in {(r.ms/1000).toFixed(1)} s.</>}</small>
+  {!sum.checked&&data&&<p className="admin-empty">Noch keine Prüfung gelaufen. „Alle Prüfungen ausführen“ liest den Bestand einmal in kurzen Schritten durch; bei einer Million Berichten dauert das einige Minuten, solange diese Seite offen ist.</p>}
+  {GROUPS.map(group=><div key={group} className="admin-quality-group"><h3>{QUALITY_GROUPS[group]}</h3><ul className="admin-quality-checks">{QUALITY_CHECKS.filter(c=>c.group===group).map(c=>{const r=checks[c.id];const running=busy===c.id||busy==='all';
+   return <li key={c.id} className={r?r.count>0?'is-found':'is-clean':''}><div className="admin-quality-head"><strong>{c.name}</strong><span>{running?'läuft …'+percent:r?<>{n(r.count)}{r.groups!=null&&r.count>0?c.id==='regionUnknown'?` in ${n(r.groups)} Gebieten`:` zu viel in ${n(r.groups)} Gruppen`:''}{r.stale?' · veraltet':''}</>:'nicht geprüft'}</span><button type="button" className="admin-timeline-retry" disabled={!!busy||disabled} onClick={()=>run([c.id])}>{r?'Erneut':'Prüfen'}</button></div><small>{c.explain}{r&&<> · Geprüft {when(r.checkedAt)} in {(r.ms/1000).toFixed(1)} s.</>}</small>
     {r&&r.samples?.length>0&&<details><summary>Beispiele ({n(Math.min(r.samples.length,20))} von {n(r.groups!=null?r.groups:r.count)})</summary><ul className="admin-quality-samples">{r.samples.map((s,i)=><li key={s.id||s.regionId||i}>
      {s.ids?<><strong>{s.count}× „{s.title}“</strong><small>{s.regions?s.regions.map(regionName).join(' · '):regionName(s.regionId)} · {s.date}{s.committee?' · '+s.committee:''}{s.url?' · '+s.url:''}</small><span>{s.ids.map(id=><a key={id} href={'/thema/'+id} target="_blank" rel="noreferrer">{id} <ArrowUpRight size={13}/></a>)}</span></>
      :s.topicId?<><strong>{s.title}</strong><small>Eintrag {s.id}</small></>
