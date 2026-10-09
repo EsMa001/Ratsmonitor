@@ -12,6 +12,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { checkClientNavigation } from './check-client-navigation.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const cli = fileURLToPath(new URL('../node_modules/vinext/dist/cli.js', import.meta.url));
@@ -45,4 +46,6 @@ const leftover = scan(server, /["']cloudflare:workers["']/);
 if (leftover.length) fail(`'cloudflare:workers' noch im Server-Paket: ${leftover.slice(0, 3).join(', ')}`);
 const leaked = scan(client, /node:sqlite|DATABASE_FILE/);
 if (leaked.length) fail(`Datenbank-Anbindung im Browser-Paket: ${leaked.slice(0, 3).join(', ')}`);
+const navigation = checkClientNavigation(client);
+if (navigation.problems.length) fail(`Link-Navigation im Browser-Paket kaputt: ${navigation.problems.join('; ')}`);
 console.log('build:node: fertig. Start mit: node dist/standalone/serve.mjs');

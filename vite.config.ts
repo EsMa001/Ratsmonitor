@@ -42,6 +42,32 @@ const localBindingConfig = {
 // über node:sqlite aus DATABASE_FILE öffnet. Der lokale Dev-Server (npm run dev) bleibt unverändert bei Miniflare.
 const nodeTarget = process.env.RM_TARGET === "node";
 
+// Fehler im gebauten Browser-Paket (beide Builds, nicht im Dev-Server): vinexts Link lädt die Navigation mit
+// import("./navigation.js") und liest daraus navigateClientSide. Der Bundler legt das Modul in einen gemeinsamen
+// Paketteil, dessen Exporte anders heißen; navigateClientSide ist dann undefined und Klicks auf Links tun nichts.
+// Statisch importiert bleibt die Verbindung erhalten. Dasselbe gilt für die übrigen relativen import() in link.js
+// (Vorladen von Seiten: app-elements, headers …). Prüfung: scripts/check-client-navigation.mjs.
+function vinextStaticNavigation() {
+  return {
+    name: "rm-vinext-static-navigation",
+    apply: "build" as const,
+    transform(code: string, id: string) {
+      if (!/[\\/]vinext[\\/]dist[\\/]shims[\\/]link\.js$/.test(id.split("?")[0])) return null;
+      if (!code.includes('import("./navigation.js")')) {
+        this.error("vinext/shims/link.js lädt die Navigation nicht mehr wie erwartet; rm-vinext-static-navigation prüfen.");
+      }
+      const specifiers: string[] = [];
+      const body = code.replace(/\bimport\("(\.\.?\/[^"]+\.js)"\)/g, (_match, specifier: string) => {
+        let index = specifiers.indexOf(specifier);
+        if (index === -1) index = specifiers.push(specifier) - 1;
+        return `Promise.resolve(__rmStatic${index})`;
+      });
+      const imports = specifiers.map((specifier, index) => `import * as __rmStatic${index} from "${specifier}";`).join("\n");
+      return { code: `${imports}\n${body}`, map: null };
+    },
+  };
+}
+
 export default defineConfig(async ({ command }) => {
   if (nodeTarget) {
     // Nur bauen: Im Dev-Modus wäre import.meta.env.DEV wahr, und jeder Besucher wäre Admin (admin-access.mjs).
@@ -52,12 +78,7 @@ export default defineConfig(async ({ command }) => {
           "cloudflare:workers": fileURLToPath(new URL("./server/node/cloudflare-workers.mjs", import.meta.url)),
         },
       },
-      // Exportnamen im Browser-Paket nicht kürzen: vinexts Link lädt die Navigation per import() und liest
-      // `navigateClientSide` beim Namen. Gekürzt (export {wl as t}) war das undefined und Klicks auf Links taten nichts.
-      environments: {
-        client: { build: { rolldownOptions: { output: { minifyInternalExports: false } } } },
-      },
-      plugins: [vinext()],
+      plugins: [vinextStaticNavigation(), vinext()],
     };
   }
 
@@ -95,6 +116,7 @@ export default defineConfig(async ({ command }) => {
     },
     plugins: [
       todoDev(),
+      vinextStaticNavigation(),
       vinext(),
       sites({ mockAuth: !managedLinux }),
       cloudflare({
