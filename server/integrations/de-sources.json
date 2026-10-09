@@ -1827,6 +1827,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06432003",
+    "name": "Gemeinde Bickenbach",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://bickenbach.gremien.info/",
+    "verifiedSource": "https://bickenbach.gremien.info/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "de-06432004",
     "name": "Stadt Dieburg",
     "kind": "city",
@@ -20120,6 +20131,18 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
+    "id": "de-09189134",
+    "name": "Gemeinde Palling",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/palling/",
+    "api": "https://risapi1.komuna.net/",
+    "verifiedSource": "https://ris.komuna.net/palling/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
     "id": "de-09189135",
     "name": "Gemeinde Petting",
     "kind": "city",
@@ -29678,6 +29701,18 @@
     "state": "system-verified",
     "verifiedSource": "https://neuruppin.de/sitzungen-und-bekanntmachungen",
     "verifiedAt": "2026-10-04"
+  },
+  {
+    "id": "de-12068353",
+    "name": "Stadt Rheinsberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://ratsinfo-online.net/rheinsberg-bi/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://ratsinfo-online.net/rheinsberg-bi/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
   },
   {
     "id": "de-12068468",
