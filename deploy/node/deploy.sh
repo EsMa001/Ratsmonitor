@@ -19,7 +19,9 @@ git -c core.autocrlf=false -c core.eol=lf archive --format=tar "$SHA" | ssh "$HO
 ssh "$HOST" bash -s -- "$REL" "$APP" <<'REMOTE'
 set -euo pipefail
 REL="$1"; APP="$2"
-set -a; . /srv/ratsmonitor/ratsmonitor.env; set +a
+# Nur die zwei Werte lesen, die das Skript braucht (die Datei ist für systemd geschrieben, nicht für die Shell)
+envval() { sed -n "s/^$1=//p" /srv/ratsmonitor/ratsmonitor.env | tail -1 | sed 's/^"\(.*\)"$/\1/'; }
+DATABASE_FILE="$(envval DATABASE_FILE)"; PORT="$(envval PORT)"
 cd "$REL"
 # strict-dep-builds aus: core-js hat im Repo noch keine Freigabe (pnpm-workspace.yaml), sein Skript zeigt nur einen Spendenhinweis.
 echo "Pakete installieren ..."
