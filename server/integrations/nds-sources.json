@@ -1064,6 +1064,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "nds-03254011",
+    "name": "Gemeinde Diekholzen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.diekholzen.sitzung-online.de/public/",
+    "verifiedSource": "https://www.diekholzen.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.diekholzen.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; Name über die Gremien der Seite bestätigt."
+  },
+  {
     "id": "nds-03254014",
     "name": "Stadt Elze",
     "kind": "city",

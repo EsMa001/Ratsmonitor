@@ -7604,6 +7604,18 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-073345005",
+    "name": "Verbandsgemeinde Lingenfeld",
+    "kind": "city",
+    "system": "https://www.vg-lingenfeld.sitzung-online.de/oparl/system",
+    "method": "oparl",
+    "body": "https://www.vg-lingenfeld.sitzung-online.de/oparl/bodies/1",
+    "meetingScan": "end",
+    "state": "system-verified",
+    "verifiedSource": "https://www.vg-lingenfeld.sitzung-online.de/oparl/system",
+    "verifiedAt": "2026-10-10"
+  },
+  {
     "id": "de-073345006",
     "name": "Verbandsgemeinde Rülzheim",
     "kind": "city",
@@ -23163,6 +23175,18 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09461000",
+    "name": "Stadt Bamberg",
+    "kind": "city",
+    "system": "https://www.bamberg.sitzung-online.de/oparl/system",
+    "method": "oparl",
+    "body": "https://www.bamberg.sitzung-online.de/oparl/bodies/1",
+    "meetingScan": "end",
+    "state": "system-verified",
+    "verifiedSource": "https://www.bamberg.sitzung-online.de/oparl/system",
+    "verifiedAt": "2026-10-10"
+  },
+  {
     "id": "de-09462000",
     "name": "Stadt Bayreuth",
     "kind": "city",
@@ -29718,6 +29742,17 @@
     "verifiedSource": "https://stadt.vetschau.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-120665601",
+    "name": "Amt Altdöbern",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://altdoebern.allris.cloud/public/",
+    "verifiedSource": "https://altdoebern.allris.cloud/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://altdoebern.allris.cloud/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; Name über die Gremien der Seite bestätigt."
   },
   {
     "id": "de-120665606",
