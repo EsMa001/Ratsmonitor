@@ -1,0 +1,602 @@
+[
+ {
+  "id": "de-16073",
+  "name": "Landkreis Saalfeld-Rudolstadt",
+  "url": "https://lk-slf-ru.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09571",
+  "name": "Landkreis Ansbach",
+  "url": "https://landratsamt-ansbach.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09184149",
+  "name": "Stadt Unterschleißheim",
+  "url": "https://unterschleissheim.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09180117",
+  "name": "Gemeinde Garmisch-Partenkirchen",
+  "url": "https://gapa.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-06631017",
+  "name": "Gemeinde Künzell",
+  "url": "https://kuenzell.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09273111",
+  "name": "Stadt Abensberg",
+  "url": "https://abensberg.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-08327046",
+  "name": "Stadt Spaichingen",
+  "url": "https://spaichingen.ratsinfomanagement.net/termine",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "nrw-05958048",
+  "name": "Stadt Winterberg",
+  "url": "https://winterberg.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "nds-033535401",
+  "name": "Samtgemeinde Elbmarsch",
+  "url": "https://sg-elbmarsch.ris.kommune-aktiv.de/?cvg=EM",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-08236046",
+  "name": "Gemeinde Niefern-Öschelbronn",
+  "url": "https://niefern-oeschelbronn.ratsinfomanagement.net/startseite",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "nds-033565401",
+  "name": "Samtgemeinde Hambergen",
+  "url": "https://hambergen.ratsinfomanagement.net",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-08226060",
+  "name": "Gemeinde Nußloch",
+  "url": "https://nussloch.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-097785765",
+  "name": "Verwaltungsgemeinschaft Memmingerberg",
+  "url": "https://vg-memmingerberg.ris.kommune-aktiv.de/?cvg=ME",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-092745220",
+  "name": "Verwaltungsgemeinschaft Ergoldsbach",
+  "url": "https://vg-ergoldsbach.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-095715502",
+  "name": "Verwaltungsgemeinschaft Schillingsfürst",
+  "url": "https://vgsch.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09171125",
+  "name": "Stadt Neuötting",
+  "url": "https://neuoetting.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-097715771",
+  "name": "Verwaltungsgemeinschaft Pöttmes",
+  "url": "https://vg-poettmes.ris.kommune-aktiv.de/?cvg=PO",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-130725256",
+  "name": "Amt Krakow am See",
+  "url": "https://www.krakow.sitzung-online.de/buergerinfo/si010_r.asp",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-093745323",
+  "name": "Verwaltungsgemeinschaft Neustadt a.d.Waldnaab",
+  "url": "https://neustadt-waldnaab.ris.kommune-aktiv.de/?cvg=NW",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "nds-033555401",
+  "name": "Samtgemeinde Amelinghausen",
+  "url": "https://www.amelinghausen.sitzung-online.de/bi/si010_e.asp",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-091905177",
+  "name": "Verwaltungsgemeinschaft Huglfing",
+  "url": "https://vg-huglfing.ris.kommune-aktiv.de/?cvg=HU",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09777159",
+  "name": "Gemeinde Pfronten",
+  "url": "https://pfronten.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-092725211",
+  "name": "Verwaltungsgemeinschaft Schönberg",
+  "url": "https://vg-schoenberg.ratsinfomanagement.net/startseite",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-096795648",
+  "name": "Verwaltungsgemeinschaft Giebelstadt",
+  "url": "https://giebelstadt.ris.kommune-aktiv.de/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09182131",
+  "name": "Gemeinde Schliersee",
+  "url": "https://schliersee.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09375180",
+  "name": "Gemeinde Pentling",
+  "url": "https://pentling.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09374124",
+  "name": "Stadt Grafenwöhr",
+  "url": "https://grafenwoehr.ris.kommune-aktiv.de/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-095715504",
+  "name": "Verwaltungsgemeinschaft Weihenzell",
+  "url": "https://vg-weihenzell.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09274172",
+  "name": "Gemeinde Pfeffenhausen",
+  "url": "https://pfeffenhausen.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09173120",
+  "name": "Gemeinde Egling",
+  "url": "https://www.egling.sitzung-online.de/ri/logon.asp",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09573133",
+  "name": "Gemeinde Wilhermsdorf",
+  "url": "https://markt-wilhermsdorf.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-08236044",
+  "name": "Gemeinde Neuhausen",
+  "url": "https://neuhausen-enzkreis.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-096735638",
+  "name": "Verwaltungsgemeinschaft Heustreu",
+  "url": "https://vg-heustreu.ris.kommune-aktiv.de/seite/de/rathaus/023/2_G_4/Gemeinderat.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-091835150",
+  "name": "Verwaltungsgemeinschaft Oberbergkirchen",
+  "url": "https://vgem-oberbergkirchen.ris.kommune-aktiv.de/?cvg=VG",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-096735639",
+  "name": "Verwaltungsgemeinschaft Ostheim v.d.Rhön",
+  "url": "https://vg-ostheim.ris.kommune-aktiv.de/kalender/de/rathaus/-/-/calendar_show",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09177137",
+  "name": "Gemeinde Sankt Wolfgang",
+  "url": "https://sankt-wolfgang.ris.kommune-aktiv.de/kalender/de/rathaus/-/-/calendar_show",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-095725512",
+  "name": "Verwaltungsgemeinschaft Aurachtal",
+  "url": "https://vgem-aurachtal.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-091905175",
+  "name": "Verwaltungsgemeinschaft Bernbeuren",
+  "url": "https://bernbeuren.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09179113",
+  "name": "Gemeinde Alling",
+  "url": "https://alling.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-08317021",
+  "name": "Gemeinde Durbach",
+  "url": "https://durbach.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-08236019",
+  "name": "Gemeinde Friolzheim",
+  "url": "https://friolzheim.ratsinfomanagement.net/termine",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09476164",
+  "name": "Gemeinde Pressig",
+  "url": "https://pressig.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-14521130",
+  "name": "Gemeinde Crottendorf",
+  "url": "https://crottendorf.ris.kommune-aktiv.de/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09276117",
+  "name": "Gemeinde Bodenmais",
+  "url": "https://bodenmais.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-097775770",
+  "name": "Verwaltungsgemeinschaft Roßhaupten",
+  "url": "https://vg-rosshaupten.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09375205",
+  "name": "Gemeinde Thalmassing",
+  "url": "https://thalmassing.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-095755525",
+  "name": "Verwaltungsgemeinschaft Neuhof a.d.Zenn",
+  "url": "https://vg-neuhof.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-14521320",
+  "name": "Stadt Johanngeorgenstadt",
+  "url": "https://johanngeorgenstadt.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09187126",
+  "name": "Gemeinde Eiselfing",
+  "url": "https://eiselfing.ris.kommune-aktiv.de/kalender/de/rathaus/-/-/calendar_show",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-08315041",
+  "name": "Gemeinde Glottertal",
+  "url": "https://glottertal.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09472197",
+  "name": "Stadt Waischenfeld",
+  "url": "https://waischenfeld.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09176137",
+  "name": "Gemeinde Kinding",
+  "url": "https://kinding.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-08317008",
+  "name": "Gemeinde Bad Peterstal-Griesbach",
+  "url": "https://bad-peterstal-griesbach.ratsinfomanagement.net/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09277139",
+  "name": "Gemeinde Postmünster",
+  "url": "https://postmuenster.ris.kommune-aktiv.de",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09679134",
+  "name": "Gemeinde Gaukönigshofen",
+  "url": "https://gaukoenigshofen.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09372113",
+  "name": "Gemeinde Arrach",
+  "url": "https://arrach.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09377133",
+  "name": "Gemeinde Kulmain",
+  "url": "https://kulmain.ris.kommune-aktiv.de/",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09278129",
+  "name": "Gemeinde Haibach",
+  "url": "https://haibach.ris.kommune-aktiv.de/seite/de/rathaus/023/1_G_4/Gemeinderat.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09574146",
+  "name": "Gemeinde Ottensoos",
+  "url": "https://ottensoos.ris.kommune-aktiv.de/kalender/de/rathaus/26/-/start",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09372157",
+  "name": "Gemeinde Schönthal",
+  "url": "https://schoenthal.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "quelle": "recherche",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-01055018",
+  "name": "Gemeinde Grube",
+  "url": "https://www.groemitz.sitzung-online.de/integration/gr010?1&menu=Gemeindevertretung",
+  "quelle": "recherche",
+  "httpStatus": 200,
+  "ergebnis": "offen"
+ },
+ {
+  "id": "nds-032575405",
+  "name": "Samtgemeinde Nienstädt",
+  "url": "https://sg-nienstaedt.ratsinfomanagement.net/",
+  "quelle": "recherche2",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09677114",
+  "name": "Stadt Arnstein",
+  "url": "https://arnstein.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html",
+  "quelle": "recherche2",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "nds-033555403",
+  "name": "Samtgemeinde Dahlenburg",
+  "url": "https://www.sg-dahlenburg.sitzung-online.de/bi/si010_e.asp",
+  "quelle": "recherche2",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-095775533",
+  "name": "Verwaltungsgemeinschaft Altmühltal",
+  "url": "https://vg-altmuehltal.ris.kommune-aktiv.de/seite/de/rathaus/021/-/Sitzungsprotokolle.html",
+  "quelle": "recherche2",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09272136",
+  "name": "Gemeinde Neureichenau",
+  "url": "https://neureichenau.ratsinfomanagement.net/tops/",
+  "quelle": "recherche2",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09777153",
+  "name": "Gemeinde Nesselwang",
+  "url": "https://nesselwang.ris.kommune-aktiv.de/?cvg=NE",
+  "quelle": "recherche2",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-096775656",
+  "name": "Verwaltungsgemeinschaft Partenstein",
+  "url": "https://vg-partenstein.ris.kommune-aktiv.de/",
+  "quelle": "agenten1",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-097775749",
+  "name": "Verwaltungsgemeinschaft Pforzen",
+  "url": "https://vg-pforzen.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html",
+  "quelle": "agenten1",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-09371146",
+  "name": "Gemeinde Rieden",
+  "url": "https://www.rieden.com/",
+  "quelle": "agenten",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-06636002",
+  "name": "Gemeinde Berkatal",
+  "url": "https://www.berkatal.de",
+  "quelle": "agenten",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-07339009",
+  "name": "Gemeinde Budenheim",
+  "url": "https://www.budenheim.de/verwaltung/rathaus/sitzungsunterlagen-ab-01-01-2023/",
+  "quelle": "agenten",
+  "httpStatus": 200,
+  "ergebnis": "offen"
+ },
+ {
+  "id": "de-160715053",
+  "name": "Erfüllende Gemeinde Am Ettersberg",
+  "url": "https://am-ettersberg.ris-portal.de",
+  "quelle": "agenten",
+  "httpStatus": 401,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-094715403",
+  "name": "Verwaltungsgemeinschaft Steinfeld",
+  "url": "https://www.steinfeld-oberfranken.de",
+  "quelle": "agenten",
+  "httpStatus": 403,
+  "ergebnis": "gesperrt"
+ },
+ {
+  "id": "de-10046113",
+  "name": "Gemeinde Namborn",
+  "url": "https://www.namborn.de/Ratsinfo/Log-In/",
+  "quelle": "agenten",
+  "httpStatus": 200,
+  "ergebnis": "gesperrt"
+ }
+]
