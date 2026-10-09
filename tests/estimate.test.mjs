@@ -8,6 +8,7 @@ import {documentType,primaryDocument,DOCUMENT_TYPES} from '../shared/document-ty
 import {adminEstimate} from '../server/integrations/admin-estimate.mjs';
 import {storedEstimate,computeEstimate} from '../server/integrations/admin-estimate-store.mjs';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
 import frame from '../shared/germany-population.json' with {type:'json'};
 import population from '../shared/nrw-population.json' with {type:'json'};
 import regions from '../shared/nrw-regions.json' with {type:'json'};
@@ -241,6 +242,7 @@ test('the admin estimate combines stored NRW areas with the measured sample and 
   insert.run('t'+k,'billerbeck',JSON.stringify({id:'t'+k,title:'T',events:i%4===0?[{date:day},{date:again}]:[{date:day}],documents:i%2?[{kind:'application/pdf',url:'https://x/'+k,title:'Vorlage'}]:[{kind:'html',url:'https://x/h'+k}],identity:{}}),'2026-10-01T00:00:00Z');k++;}
  // Warendorf: only the last two months are stored.
  for(let i=0;i<40;i++)insert.run('w'+i,'warendorf',JSON.stringify({id:'w'+i,title:'W',events:[{date:i%2?'2026-08-20':'2026-09-17'}],documents:[],identity:{}}),'2026-10-01T00:00:00Z');
+ await refreshRegionFacts(db,{budgetMs:1e9});
  const e=await adminEstimate(db,{now:new Date('2026-10-02T12:00:00Z'),replicates:40});
  assert.equal(e.from,'2025-10-03');assert.equal(e.to,'2026-10-02');
  const billerbeck=e.examples.find(a=>a.id==='billerbeck');assert.equal(billerbeck.origin,'stored');assert.equal(billerbeck.reports,360);assert.equal(billerbeck.class,'small');assert.equal(billerbeck.state,'05');assert.equal(billerbeck.population,population.billerbeck);
@@ -279,6 +281,9 @@ test('the estimate is stored on request and the page learns whether the stock ch
  // A stored report raises the content revision: the stored estimate stays, marked as stale, until it is computed again.
  raw.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run('x','billerbeck','city','2026-09-17','2026-10-01T00:00:00Z','unknown',JSON.stringify({id:'x',title:'X',events:[{date:'2026-09-17'}],documents:[],identity:{}}));
  const later=await storedEstimate(db);assert.equal(later.stale,true);assert.equal(later.computedAt,first.computedAt);assert.ok(later.currentRevision>later.revision);
+ /* Until the values per area of the new area are computed, the estimate is refused (it would miss the area) */
+ await assert.rejects(computeEstimate(db,{replicates:10}),e=>e.status===409);
+ await refreshRegionFacts(db,{budgetMs:1e9});
  const again=await computeEstimate(db,{now:new Date('2026-10-03T12:00:00Z'),replicates:10});assert.equal(again.stale,false);assert.equal((await storedEstimate(db)).stale,false);
 });
 test('quantile and the seeded random numbers behave as the range calculation expects',()=>{

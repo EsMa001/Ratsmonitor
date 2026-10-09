@@ -4,6 +4,8 @@
 // The result is 1.2 MB of JSON at 1,700 examples and grows with the stock; a D1 row holds at most 2 MB, so it is
 // stored gzip-compressed (CompressionStream, available in Workers and Node), about a quarter of the size.
 import {adminEstimate} from './admin-estimate.mjs';
+import {pendingRegions} from './region-series.mjs';
+import {AdminError} from './admin-access.mjs';
 const KEY='admin-estimate';
 const readJson=text=>{try{return JSON.parse(text||'null');}catch{return null;}};
 const contentRevision=async db=>Number((await db.prepare("SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) AS revision").first())?.revision||0);
@@ -25,6 +27,10 @@ export async function storedEstimate(db){
 }
 /** Computes the estimate and stores it. The revision is read before the scans: a change during them shows as stale. */
 export async function computeEstimate(db,{now=new Date(),replicates}={}){
+ // The estimate reads the values per area (region_series); while they are being built for the first time it would count
+ // only part of the areas.
+ const left=await pendingRegions(db);
+ if(left.missing||left.unbuilt>0)throw new AdminError(409,'Erst nach der Vorberechnung möglich: Die Werte je Gebiet werden noch berechnet.');
  const revision=await contentRevision(db);
  const estimate=await adminEstimate(db,replicates===undefined?{now}:{now,replicates});
  const computedAt=now.toISOString();

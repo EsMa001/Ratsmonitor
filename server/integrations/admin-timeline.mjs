@@ -1,5 +1,5 @@
 import {TIMELINE_BASES} from '../../shared/timeline.mjs';
-import {atRevision} from './revision-cache.mjs';
+import {readSeries,binary} from './region-series.mjs';
 const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
 // The day a report first appeared on an agenda, or the day it was first stored. Reports stored before the
 // import date was recorded carry none; they are returned as undated instead of being guessed.
@@ -15,12 +15,25 @@ const wellFormed=x=>`CASE WHEN ${x} GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][
 export const FIRST_DAY_SQL=wellFormed(EVENT_DAY),LAST_DAY_SQL=wellFormed('substr(event_date,1,10)');
 /**
  * Stored reports per area and day, compact: days[] plus, per area, pairs of [index into days, count].
- * Read-only. Merged duplicates are excluded, as in every other stock figure of the administration.
+ * Read-only, from the values per area (region_series, computed by region-facts.mjs for changed areas only); never a
+ * scan of the reports. Merged duplicates are excluded, as in every other stock figure of the administration.
+ * Without migration 0016 the result is empty and says so (missing:'0016').
  */
 export async function adminTimeline(db,{basis='event',now=new Date()}={}){
  if(!Object.hasOwn(TIMELINE_BASES,basis))throw Error('Ungültiger Zeitbezug');
- // The scan reads every report; its rows are kept until the reports change (revision-cache.mjs).
- const rows=await atRevision(db,'timeline|'+basis,async()=>(await db.prepare(`SELECT region_id AS area,${DAY_SQL[basis]} AS day,count(*) AS count FROM topics WHERE ${canonical} GROUP BY region_id,day ORDER BY day,region_id`).all()).results);
+ const series=await readSeries(db,{columns:[basis==='event'?'event_days':'import_days']});
+ if(!series)return {basis,missing:'0016',asOf:now.toISOString(),today:now.toISOString().slice(0,10),total:0,days:[],areas:{},undated:{}};
+ const rows=[];
+ for(const [area,row] of series)for(const [day,count] of (basis==='event'?row.eventDays:row.importDays)||[])rows.push({area,day,count});
+ // The order of the former query (ORDER BY day,region_id): days are kept raw, null first, binary like SQL.
+ rows.sort((a,b)=>binary(a.day,b.day)||binary(a.area,b.area));
+ return timelineFromRows(rows,{basis,now});
+}
+/** The former scan over all reports, for tests and comparisons only (scripts, tests/admin-series.test.mjs). */
+export async function timelineRowsSql(db,basis){
+ return (await db.prepare(`SELECT region_id AS area,${DAY_SQL[basis]} AS day,count(*) AS count FROM topics WHERE ${canonical} GROUP BY region_id,day ORDER BY day,region_id`).all()).results;
+}
+export function timelineFromRows(rows,{basis,now}){
  const days=[],index=new Map(),areas={},undated={};let total=0;
  for(const row of rows){
   const count=Number(row.count);total+=count;
