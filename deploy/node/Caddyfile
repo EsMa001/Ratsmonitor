@@ -25,7 +25,7 @@
 #   ssh -N -L 8080:127.0.0.1:8080 ratsmonitor     und dann im Browser http://localhost:8080
 # Port 8080 lauscht nur auf dem Server selbst; die Firewall lässt ihn ohnehin nicht durch.
 # Wer den Tunnel öffnen kann (SSH-Schlüssel), ist Admin.
-http://localhost:8080 {
+http://localhost:8080, http://127.0.0.1:8080 {
 	bind 127.0.0.1
 	import ratsmonitor_app
 }
