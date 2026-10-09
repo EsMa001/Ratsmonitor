@@ -309,3 +309,6 @@ button:disabled{cursor:wait;opacity:.6}.article__status{flex-wrap:wrap}
 .admin-app .admin-terms-columns>*{min-width:0}
 @media(max-width:860px){.admin-app .admin-terms-columns{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:700px){.admin-app .admin-terms-table{display:block;max-width:100%;overflow-x:auto}}
+/* Stufe 03: Vorschau, wie viele Berichte die Einstellung exportiert. */
+.admin-app .admin-ai-preview{display:flex;flex-direction:column;gap:2px;min-height:44px}
+.admin-app .admin-ai-preview strong{transition:opacity .15s}

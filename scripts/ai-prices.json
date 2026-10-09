@@ -1,7 +1,8 @@
 {
   "_hinweis": "Preise je 1 Mio. Token. Ohne Eintrag werden keine Kosten berechnet. cachedInput ist optional.",
-  "_quelle": "claude-sonnet-5-5: USD 2 Eingabe / 10 Ausgabe / 0,20 Cache-Lesen, laut Preisliste im claude-api-Skill (Stand 2026-09-25); vor Nutzung gegen die aktuelle Anbieter-Preisliste pruefen.",
+  "_quelle": "claude-sonnet-5-5: USD 2 Eingabe / 10 Ausgabe / 0,20 Cache-Lesen, laut Preisliste im claude-api-Skill (Stand 2026-09-25); claude-haiku-5-5: USD 0,10 Eingabe / 0,50 Ausgabe bis 100.000 Token Eingabe je Anfrage, Cache-Lesen 0,01 (ein Zehntel der Eingabe), laut claude-api-Skill (Stand 2026-10-06); vor Nutzung gegen die aktuelle Anbieter-Preisliste pruefen.",
   "models": {
-    "claude-sonnet-5-5": { "currency": "USD", "input": 2, "cachedInput": 0.2, "output": 10 }
+    "claude-sonnet-5-5": { "currency": "USD", "input": 2, "cachedInput": 0.2, "output": 10 },
+    "claude-haiku-5-5": { "currency": "USD", "input": 0.1, "cachedInput": 0.01, "output": 0.5 }
   }
 }

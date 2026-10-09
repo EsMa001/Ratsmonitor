@@ -5,7 +5,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/analyse-admin.css (312 Zeilen, ⚠26)
+- app/analyse-admin.css (315 Zeilen, ⚠26)
 - app/design-fonts.css (71 Zeilen)
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
@@ -16,6 +16,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 admin-access analyse-admin.css:66
 admin-activation analyse-admin.css:66
 admin-ai-kinds analyse-admin.css:79
+admin-ai-preview analyse-admin.css:313
 admin-ai-retry analyse-admin.css:79
 admin-app analyse-admin.css:102
 admin-app ratsmonitor.css:202
@@ -717,14 +718,15 @@ wordmark__dot design-styles.css:61
 - admin-chrome.tsx (60, ⚠2): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠16): AdminDashboardView
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-keywords.tsx (115, ⚠13): AdminKeywords
 - admin-loader.tsx (33): AdminLoader
 - admin-overview.tsx (178, ⚠13): AdminOverview
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
-- admin-processing.tsx (210, ⚠23): AdminProcessing
+- admin-processing.tsx (224, ⚠23): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
+- admin-rule-texts.tsx (52): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
@@ -864,7 +866,7 @@ wordmark__dot design-styles.css:61
 - BeschluessePage.tsx (218, ⚠5): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (293, ⚠11): ComparePage
+- ComparePage.tsx (293, ⚠12): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (270, ⚠4): DiffusionPage

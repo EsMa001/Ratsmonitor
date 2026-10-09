@@ -54,21 +54,47 @@ async function rememberEarlierAttempts(db,scope){
   await db.prepare('UPDATE topics SET payload=? WHERE id=? AND payload=?').bind(JSON.stringify({...t,aiAttempts}),id,payload).run();
  }
 }
-async function createAiJobUnlocked(db,body,{metadataOnly=false}={}){
- const previous=await getAiJob(db,{metadataOnly:true});
- if(previous?.status==='prepared')throw new AdminError(409,'Ein KI-Auftrag ist bereits vorbereitet. Zuerst ausführen oder ausdrücklich verwerfen.');
- // regions 'all': every area of Germany, without a list of region IDs in the SQL (it would exceed the statement size).
- // window: only reports whose latest meeting lies in the look-back window (or later); without it every report.
+/**
+ * Which reports a request selects. regions 'all': every area of Germany, without a list of region IDs in the SQL (it
+ * would exceed the statement size). window: only reports whose latest meeting lies in the look-back window (or later);
+ * without it every report. The comparison on the column itself lets the index on event_date narrow short windows.
+ */
+function exportScope(body){
  const all=body.regions==='all',regions=all?[]:selectedRegions(body.regions),kinds=body.kinds,limit=body.limit??10,retryBlocked=body.retryBlocked===true;
  if(!Array.isArray(kinds)||!kinds.length||kinds.length>3||new Set(kinds).size!==kinds.length||kinds.some(k=>!AI_KINDS.includes(k))||(limit!=='all'&&(!Number.isInteger(limit)||limit<1||limit>100)))throw new AdminError(400,'KI-Schritte und Paketgröße (1–100 oder alle) prüfen.');
  let window=null;
  if(body.window!==undefined&&body.window!==null&&body.window!==''){try{window=historyWindow(body.window);}catch{throw new AdminError(400,'Ungültiger Zeitraum.');}}
  const from=window?windowStart(new Date(),window).toISOString().slice(0,10):null;
  const ids=regions.map(id=>"'"+id.replaceAll("'","''")+"'").join(',');
- const scope=(p='')=>[all?'':`${p}region_id IN (${ids})`,from?`substr(${p}event_date,1,10)>='${from}'`:''].filter(Boolean).join(' AND ')||'1=1';
+ const scope=(p='',date='event_date')=>[all?'':`${p}region_id IN (${ids})`,from?`${p}${date}>='${from}'`:''].filter(Boolean).join(' AND ')||'1=1';
  const kindSQL=kinds.map(k=>"'"+k+"'").join(',');
  // Je Artikel nur die noch fehlenden Schritte; gesperrte Fehlversuche nur auf ausdrücklichen Wunsch erneut.
  const need=k=>`(NOT coalesce((${STAGE_SQL[k]}),0)${retryBlocked?'':` AND ${attemptOpen(k)}`})`;
+ return {all,regions,kinds,limit,retryBlocked,window,from,scope,kindSQL,need};
+}
+/**
+ * How many reports a job with these settings would take, without reserving anything (read-only). Reading every payload
+ * of the stock takes minutes, so the reports in scope are counted on search_cards (one row per canonical report, the
+ * meeting day as date) and only reports with a stored analysis are read: a finished step and a blocked attempt both
+ * come from an analysis (applyAiResults, rememberEarlierAttempts), every other report still needs all chosen steps.
+ * Earlier failed attempts that predate aiAttempts are only recorded when a job is prepared, so for such old data the
+ * preview may count a few more.
+ */
+export async function previewAiJob(db,body){
+ const {kinds,limit,retryBlocked,scope,need}=exportScope(body);
+ const inScope=Number((await db.prepare(`SELECT count(*) n FROM search_cards c WHERE ${scope('c.','date')}`).first()).n);
+ // Rule labels are an analysis of almost every report: left out, read from the index (topic_id, kind) alone. CROSS JOIN
+ // keeps the order: the few analysed reports first, never a scan of every payload.
+ const analysed=`(SELECT DISTINCT topic_id FROM article_analyses WHERE kind<>'rule-label') a CROSS JOIN topics ON topics.id=a.topic_id WHERE ${CANONICAL} AND ${scope('topics.')}`;
+ const row=await db.prepare(`SELECT count(*) analysed,coalesce(sum(${kinds.map(k=>'need_'+k).join(' OR ')}),0) open,${kinds.map(k=>`coalesce(sum(need_${k}),0) AS ${k}`).join(',')},coalesce(sum(blocked),0) blocked
+  FROM (SELECT ${kinds.map(k=>`${need(k)} AS need_${k}`).join(',')},${retryBlocked?'0':`(${kinds.map(blockedSQL).join(' OR ')})`} AS blocked FROM ${analysed})`).first();
+ const untouched=Math.max(0,inScope-Number(row.analysed)),articles=untouched+Number(row.open);
+ return {articles,steps:Object.fromEntries(kinds.map(k=>[k,untouched+Number(row[k])])),blocked:Number(row.blocked),exported:limit==='all'?articles:Math.min(articles,limit)};
+}
+async function createAiJobUnlocked(db,body,{metadataOnly=false}={}){
+ const previous=await getAiJob(db,{metadataOnly:true});
+ if(previous?.status==='prepared')throw new AdminError(409,'Ein KI-Auftrag ist bereits vorbereitet. Zuerst ausführen oder ausdrücklich verwerfen.');
+ const {all,regions,kinds,limit,retryBlocked,window,from,scope,kindSQL,need}=exportScope(body);
  const lease=await importLease(db),id=crypto.randomUUID();
  let activated=false;
  try{

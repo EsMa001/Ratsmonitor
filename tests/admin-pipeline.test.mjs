@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {pipelineAction,selectedRegions,canImport,provider,PARALLEL,PER_PROVIDER} from '../server/integrations/pipeline-jobs.mjs';
 import {mergeJob} from '../shared/pipeline-job.mjs';
-import {createAiJob,applyAiResults,cancelAiJob,getAiJob} from '../server/integrations/ai-jobs.mjs';
+import {createAiJob,previewAiJob,applyAiResults,cancelAiJob,getAiJob} from '../server/integrations/ai-jobs.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
 import {keywordWeights,articleResult,AI_METHOD,LEGACY_AI_METHOD,sourceRole,needsQuickCheck} from '../shared/ai-job.mjs';
 import {hashText} from '../shared/database-transfer.mjs';
@@ -77,6 +77,24 @@ test('AI job can take all of Germany and a look-back window like the import',asy
  await cancelAiJob(db,selection.id);
  await assert.rejects(createAiJob(db,{regions:'all',window:'2d',kinds:['summary']}),/Zeitraum/);
  assert.equal((await processingStatus(db)).aiJob.window,'1w');sql.close();
+});
+test('AI preview counts what a job with the same settings takes, without reserving anything',async()=>{
+ const {sql,db,put}=fixture();put('a');put('b');put('c','muenster');put('alias','billerbeck',{identity:{mergedInto:'a'}});
+ put('done','billerbeck',{weightedKeywords:{status:'completed'}});
+ const day=d=>new Date(Date.now()+d*86400000).toISOString().slice(0,10);sql.prepare('UPDATE topics SET event_date=? WHERE id=?').run(day(-40),'b');
+ // A finished summary, and a blocked keyword attempt: both come with an analysis.
+ const first=await createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:1});const result=await output(first);await applyAiResults(db,first,result);
+ const done=first.articles[0].id;
+ sql.prepare("UPDATE topics SET payload=json_set(payload,'$.aiAttempts.keywords',json('{\"retry\":false}')) WHERE id=?").run(done);
+ for(const body of [{regions:'all',kinds:['summary'],limit:'all'},{regions:'all',kinds:['summary','keywords'],limit:'all'},{regions:['billerbeck'],kinds:['keywords'],limit:'all'},{regions:['billerbeck'],kinds:['keywords'],limit:'all',retryBlocked:true},{regions:'all',window:'1m',kinds:['summary','aiLabel','keywords'],limit:'all'},{regions:'all',kinds:['summary'],limit:1}]){
+  const before=sql.prepare("SELECT count(*) n FROM ai_dispatches").get().n;
+  const preview=await previewAiJob(db,body);assert.equal(sql.prepare("SELECT count(*) n FROM ai_dispatches").get().n,before,'preview reserves nothing');
+  const job=await createAiJob(db,body);
+  assert.equal(preview.exported,job.articles.length,JSON.stringify(body));assert.equal(preview.blocked,job.blocked,JSON.stringify(body));
+  if(body.limit==='all')for(const k of body.kinds)assert.equal(preview.steps[k],job.articles.filter(x=>x.kinds.includes(k)).length,k+' '+JSON.stringify(body));
+  await cancelAiJob(db,job.id);
+ }
+ sql.close();
 });
 test('article commit rolls back all versions if database write fails',async()=>{
  const {sql,db,put}=fixture();put('a');const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary']});const before=sql.prepare('SELECT payload FROM topics').get().payload;
