@@ -3520,5 +3520,30 @@
     "verifiedSource": "https://holtriem.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-033575402",
+    "name": "Samtgemeinde Fintel",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.sgfintel.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo.sgfintel.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "Recherche 2026-10-09"
+  },
+  {
+    "id": "nds-03454054",
+    "name": "Gemeinde Twist",
+    "kind": "city",
+    "ags": "03454054",
+    "system": "https://twist.ris.itebo.de/oparl/system",
+    "method": "oparl",
+    "meetingScan": "end",
+    "state": "system-verified",
+    "verifiedSource": "https://twist.ris.itebo.de/oparl/system",
+    "verifiedAt": "2026-10-09",
+    "foundBy": "Recherche 2026-10-09"
   }
 ]
