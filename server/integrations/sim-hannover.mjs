@@ -42,7 +42,7 @@ export function simMeetingRows(html){
  return [...seen.values()].sort((a,b)=>b.date.localeCompare(a.date)||a.key.localeCompare(b.key));
 }
 // "Drucks. Nr. 1389/2026 N1" (also "Informationsdrucks."), the paper of an item without a link to it.
-const REFERENCE=/\((?:Informations)?[Dd]rucks\.\s*Nr\.\s*(\d{3,5})\/(\d{4})(?:\s*([A-Z]\d+))?\)/;
+const REFERENCE=/\((?:Informations)?[Dd]rucks\.\s*Nr\.\s*((?:\d{2}-)?\d{3,5})\/(\d{4})(?:\s*([A-Z]\d+))?\)/;
 /** Key of a paper as the site addresses it: DS/<number>-<year>[N1]. */
 export const simPaperKey=reference=>String(reference).replace(/^DS\//,'').trim();
 const paperFromTitle=title=>{const m=title.match(REFERENCE);return m?`${m[1]}-${m[2]}${m[3]||''}`:null;};
@@ -90,10 +90,14 @@ const DECIDING=/^(?:Ratsversammlung|Verwaltungsausschuss)\b/;
 /** Status of a result such as "Einstimmig" or "Zur Kenntnis genommen"; only the deciding bodies approve or reject. */
 export function simStatus(result,body){
  const r=String(result||'').trim();if(!r)return null;
+ const decides=DECIDING.test(body);
  if(/zur kenntnis/i.test(r))return 'info';
- if(/vertagt|zurückgestellt|verschoben/i.test(r))return 'postponed';
- if(/abgelehnt|ablehn/i.test(r))return DECIDING.test(body)?'rejected':'recommended';
- if(/einstimmig|mehrheitlich|beschlossen|zugestimmt|angenommen|empfohlen|befürwortet|genehmigt|bestätigt|verabschiedet|einvernehmen/i.test(r))return DECIDING.test(body)?'approved':'recommended';
+ if(/vertagt|zurückgestellt|verschoben|in die (?:\S+ )?(?:Fraktion|Gruppe)n?\b.*gezogen|in die Fraktion/i.test(r))return 'postponed';
+ // "6 Stimmen dafür, 5 Stimmen dagegen, 0 Enthaltungen"
+ const votes=r.match(/(\d+)\s+Stimmen?\s+dafür.*?(\d+)\s+Stimmen?\s+dagegen/i);
+ if(votes)return Number(votes[1])>Number(votes[2])?(decides?'approved':'recommended'):(decides?'rejected':'recommended');
+ if(/abgelehnt|ablehn/i.test(r))return decides?'rejected':'recommended';
+ if(/einstimmig|mehrheitlich|beschlossen|zugestimmt|angenommen|empfohlen|befürwortet|genehmigt|bestätigt|verabschiedet|einvernehmen|mit Änderung/i.test(r))return decides?'approved':'recommended';
  return null;
 }
 /** The reports of one meeting: a row per item with a paper, with its event. papers: parsed papers by key. */
@@ -154,7 +158,7 @@ export async function collectSimHannover(source,{now=new Date(),get=fetchText,re
     const previous=grouped.get(row.id);if(previous){previous.events.push(row.event);previous.documents.push(...row.documents);previous.identityLinks.push(...row.identityLinks);if(row.text&&!previous.text)previous.text=row.text;}else grouped.set(row.id,{...row,events:[row.event]});
    }
    held[m.url]=newMark({...m,date:meetingDate},print,now,rows.length);done++;
-  }catch(e){if(/Zeitbudget/.test(e.message))unread++;else issues.push(m.url+': '+e.message);}
+  }catch(e){if(/Zeitbudget/.test(e.message))unread++;else if(/HTTP 404/.test(e.message))warnings.push('Sitzung ohne Seite (geplant oder ausgefallen): '+m.key);else issues.push(m.url+': '+e.message);}
   onProgress(source.id+': '+count+'/'+meetings.size+' Sitzungen');
  },2);
  if(unread)issues.push(`Zeitbudget der Quelle erreicht; ${unread} ${unread===1?'Sitzung':'Sitzungen'} noch nicht vollständig gelesen.`);

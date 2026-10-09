@@ -56,6 +56,10 @@ test('SIM results: only the deciding bodies approve or reject',()=>{
  assert.equal(simStatus('Abgelehnt','Ratsversammlung'),'rejected');
  assert.equal(simStatus('Zur Kenntnis genommen','Verwaltungsausschuss'),'info');
  assert.equal(simStatus('Vertagt','Ratsversammlung'),'postponed');
+ assert.equal(simStatus('Auf Wunsch der CDU in die Fraktion gezogen.','Stadtbezirksrat Mitte'),'postponed');
+ assert.equal(simStatus('6 Stimmen dafür, 5 Stimmen dagegen, 0 Enthaltungen','Ausschuss für Haushalt'),'recommended');
+ assert.equal(simStatus('2 Stimmen dafür, 5 Stimmen dagegen, 0 Enthaltungen','Verwaltungsausschuss'),'rejected');
+ assert.equal(simStatus('Zurückgezogen','Ratsversammlung'),null);
  assert.equal(simStatus('','Ratsversammlung'),null);
 });
 
