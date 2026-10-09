@@ -1,29 +1,32 @@
 'use client';
 import {useEffect,useState} from 'react';
 import type {AdminDashboard} from '@/shared/admin-types';
-import {AdminHeader} from '@/components/admin-chrome';
+import {AdminPageHead,PageSkeleton,Alert,StandLine} from '@/components/admin-ui';
 import {AdminProcessing} from '@/components/admin-processing';
 import {AdminDashboardView} from '@/components/admin-dashboard';
-// The dashboard of the import and quality pages (every area with its sources and stages, several MB once the database
-// holds hundreds of thousands of reports) is loaded by the browser from the same interface the pages refresh from.
+import {fetchDashboard,setAdminStaticVersion} from '@/components/admin-store';
+// The dashboard of the import and quality pages is put together by the browser from three parts (fetchDashboard in
+// admin-store.ts): the summary, the rows of figures per area and the static list of areas, which the browser keeps.
 // Embedded by the server it delayed the page for the whole read and, at 4.7 MB, broke the local render ("Network
-// connection lost").
-export function AdminLoader({page,displayName,signOutPath,initialSelection=[],initialFilter}:{page:'abruf'|'qualitaet';displayName:string;signOutPath:string;initialSelection?:string[];initialFilter?:string}){
- const [data,setData]=useState<AdminDashboard|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[pending,setPending]=useState(0);
+// connection lost"). The server only reads stored figures; areas still being computed show their previous figures and
+// are named in the line under the navigation (RegionCatchUp, admin-catch-up.tsx), which computes them in steps.
+export function AdminLoader({page,staticVersion='',initialSelection=[],initialFilter}:{page:'abruf'|'qualitaet';staticVersion?:string;initialSelection?:string[];initialFilter?:string}){
+ if(staticVersion)setAdminStaticVersion(staticVersion);
+ const [data,setData]=useState<AdminDashboard|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0);
  useEffect(()=>{
   const controller=new AbortController();setError('');
   // The import page asks without the review list of the quality page, as its own refresh does.
-  fetch(page==='qualitaet'?'/api/admin/overview':'/api/admin/overview?review=0',{cache:'no-store',signal:controller.signal})
-   // While figures of changed areas are still being computed (a few seconds per request), ask again; each request
-   // continues where the last one stopped.
-   .then(async r=>{const d=await r.json() as AdminDashboard&{error?:string};if(!r.ok)throw Error(d.error||'Der Datenbankstand konnte nicht geladen werden.');if(d.statsPending){setPending(d.statsPending);setTimeout(()=>{if(!controller.signal.aborted)setAttempt(n=>n+1);},300);return;}setData(d);})
+  fetchDashboard({review:page==='qualitaet',signal:controller.signal})
+   .then(d=>{setData(d);})
    .catch(e=>{if(!controller.signal.aborted)setError(e instanceof Error?e.message:'Der Datenbankstand konnte nicht geladen werden.');});
   return()=>controller.abort();
  },[page,attempt]);
- if(data)return page==='qualitaet'?<AdminDashboardView initial={data} displayName={displayName} signOutPath={signOutPath}/>:<AdminProcessing initial={data} displayName={displayName} signOutPath={signOutPath} initialSelection={initialSelection} initialFilter={initialFilter}/>;
- return <div className="admin-app"><AdminHeader page={page} displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
-  <div className="admin-heading"><div><p className="eyebrow">ADMINISTRATION</p><h1>{error?'Administration nicht erreichbar':'Datenbankstand wird geladen …'}</h1><p>{displayName}</p></div></div>
-  {error?<><p className="admin-error" role="alert">{error} Es werden keine Ersatzzahlen angezeigt.</p><button type="button" className="text-link" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></>
-   :<p role="status">{pending?`Kennzahlen werden berechnet: noch ${pending.toLocaleString('de-DE')} Gebiete. Das geschieht einmal nach größeren Änderungen; danach öffnet sich die Seite in Sekunden.`:'Alle Gebiete mit Quellen und Verarbeitungsstand; das dauert bei großem Bestand einige Sekunden.'}</p>}
- </main></div>;
+ if(data)return page==='qualitaet'?<AdminDashboardView initial={data}/>:<AdminProcessing initial={data} initialSelection={initialSelection} initialFilter={initialFilter}/>;
+ // Solange Daten fehlen: Kopfband, Überschriften und Erklärungen der Abschnitte stehen schon, darunter graue Flächen.
+ const sections:[string,number][]=page==='abruf'?[['abruf.gebiete',520],['abruf.stufen',260],['abruf.verlauf',300]]:[['qualitaet.inhalt',320],['qualitaet.importe',240],['qualitaet.vollstaendig',160],['qualitaet.pruefung',240],['qualitaet.betrieb',200]];
+ return <>
+  <AdminPageHead page={page}><StandLine stand={undefined}/></AdminPageHead>
+  {error&&<Alert onRetry={()=>setAttempt(n=>n+1)}>{error} Es werden keine Ersatzzahlen angezeigt.</Alert>}
+  <PageSkeleton sections={sections}/>
+ </>;
 }

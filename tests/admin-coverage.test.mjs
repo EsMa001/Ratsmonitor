@@ -6,6 +6,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {coverageOf,dataCoverageSeries,reachBucket,freshBucket,sizeClassOf,tally,monthlyReports} from '../shared/coverage.mjs';
 import {adminCoverage,connectedIds} from '../server/integrations/admin-coverage.mjs';
 import {adminAtlas} from '../server/integrations/admin-atlas.mjs';
+import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
 import {CATALOG,POPULATION} from '../shared/catalog.mjs';
 import history from '../server/integrations/coverage-history.json' with {type:'json'};
 import atlas from '../server/integrations/source-atlas.json' with {type:'json'};
@@ -52,6 +53,7 @@ test('adminCoverage: totals from the catalog, data from the reports, history fro
  sqlite.exec('DELETE FROM topics');
  const ids=CATALOG.filter(r=>r.kind==='city').slice(0,3).map(r=>r.id);
  insert('t1',ids[0],'2026-10-02T08:00:00Z');insert('t2',ids[0],'2026-10-03T08:00:00Z');insert('t3',ids[1],'2026-10-04T08:00:00Z');insert('t4',ids[2],null);
+ await refreshRegionFacts(db,{budgetMs:1e9});
  const c=await adminCoverage(db,{now:new Date('2026-10-06T12:00:00Z')});
  assert.equal(c.total.areas,CATALOG.length);assert.equal(c.connected.areas,connectedIds().size);
  assert.equal(c.data.areas,3);assert.equal(c.data.reports,4);assert.equal(c.data.undatedAreas,1);
@@ -71,6 +73,7 @@ test('adminAtlas: every area of the catalog with category and access, reports an
  insert('h1',hh,'2026-10-06T08:00:00Z');insert('h2',hh,'2026-10-06T08:00:00Z');
  sqlite.prepare('INSERT INTO source_coverage VALUES(?,?)').run(hh,JSON.stringify({method:'scraper',complete:false,importedAt:'2026-10-06T08:00:00Z',lastSuccessAt:'2026-10-06T08:05:00Z',issues:[]}));
  sqlite.prepare('INSERT INTO source_coverage VALUES(?,?)').run('muenster',JSON.stringify({method:'oparl',complete:true,importedAt:'2026-10-05T00:00:00Z',attemptStatus:'failed',issues:['HTTP 503']}));
+ await refreshRegionFacts(db,{budgetMs:1e9});
  const a=await adminAtlas(db,{now:new Date('2026-10-06T12:00:00Z')});
  assert.equal(a.areas.length,CATALOG.length);assert.equal(a.reports,2);
  for(const row of a.areas){assert.ok(ATLAS_CATEGORY_BY_ID[row.c],row.id+' category '+row.c);assert.ok(ACCESS_BY_ID[row.z],row.id+' access '+row.z);if(row.r!==undefined)assert.equal(typeof a.texts[row.r],'string');}

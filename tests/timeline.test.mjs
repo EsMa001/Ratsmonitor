@@ -5,6 +5,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {bucketStart,mergeAreas,rangeStart,timelineSeries,timelineStats,TIMELINE_BUCKETS,TIMELINE_RANGES,TIMELINE_BASES} from '../shared/timeline.mjs';
 import {adminTimeline} from '../server/integrations/admin-timeline.mjs';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
+import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
 test('buckets start on the day, on Monday or on the first of the month',()=>{
  assert.deepEqual(Object.keys(TIMELINE_BUCKETS),['day','week','month']);assert.deepEqual(Object.keys(TIMELINE_RANGES),['3m','12m','24m','all']);assert.deepEqual(Object.keys(TIMELINE_BASES),['event','import']);
  assert.equal(bucketStart('2026-09-30','day'),'2026-09-30');assert.equal(bucketStart('2026-09-30','week'),'2026-09-28');assert.equal(bucketStart('2026-09-28','week'),'2026-09-28');
@@ -45,6 +46,8 @@ test('the database query counts each report once on its first meeting day or its
  put('b1','coesfeld',['2026-09-24']);
  put('merged','billerbeck',['2026-09-03'],{identity:{mergedInto:'a1'}});
  const now=new Date('2026-10-01T12:00:00Z');
+ // The timeline reads the values per area (region_series); they are computed first, as after an import.
+ await refreshRegionFacts(db,{budgetMs:1e9,now});
  const byMeeting=await adminTimeline(db,{basis:'event',now});
  assert.equal(byMeeting.total,4);assert.deepEqual(byMeeting.days,['2026-09-03','2026-09-24']);assert.deepEqual(byMeeting.areas,{billerbeck:[[0,2],[1,1]],coesfeld:[[1,1]]});assert.deepEqual(byMeeting.undated,{});assert.equal(byMeeting.today,'2026-10-01');
  // Reports stored before the import date was recorded are undated, not guessed.

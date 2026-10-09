@@ -1,6 +1,8 @@
 'use client';
 import {useState} from 'react';
 import {HISTORY_WINDOWS} from '@/shared/history-window.mjs';
+import {Alert,How} from '@/components/admin-ui';
+import {PROTOKOLL} from '@/components/admin-texts';
 type RequestRow={t:number;ms:number;kind:string;url:string;ok:boolean;size?:number;error?:string};
 type Summary={requests:number;failed:number;networkMs:number;kinds:Record<string,{requests:number;failed:number;ms:number}>;errors:Record<string,number>;slowest:{url:string;ms:number;ok:boolean}[]};
 type Trace={region:string;window:string|null;startedAt:string;durationMs:number;status?:string;error?:string;adapter?:string|null;meetings?:number;unchangedMeetings?:number;readMeetings?:number|null;reports?:number;stockBefore?:number;written?:{created:number;changed:number;unchanged:number};marksKnown?:number;collectMs?:number;storeMs?:number;issues?:string[];warnings?:string[];summary:Summary;droppedRequests:number;requests:RequestRow[]};
@@ -21,7 +23,7 @@ export function RunDebugView({data}:{data:Debug}){
      <div><dt>Beginn</dt><dd>{time(t.startedAt)}</dd></div>
      <div><dt>Ergebnis</dt><dd>{STATUS[t.status||'']||t.status||'–'}{t.error?<> – {t.error}</>:null}</dd></div>
      <div><dt>Dauer</dt><dd>{seconds(t.durationMs)}{t.collectMs!==undefined?<> · Abruf {seconds(t.collectMs)} · Speichern {seconds(t.storeMs)}</>:null}</dd></div>
-     <div><dt>Zeitraum · Baustein</dt><dd>{WINDOWS[t.window||'']||t.window||'–'} · {t.adapter||'–'}</dd></div>
+     <div><dt>{PROTOKOLL.feld}</dt><dd>{WINDOWS[t.window||'']||t.window||'–'} · {t.adapter||'–'}</dd></div>
      <div><dt>Sitzungen</dt><dd>{n(t.meetings)} gefunden{t.unchangedMeetings?<> · {n(t.unchangedMeetings)} unverändert übersprungen</>:null}{t.readMeetings!==null&&t.readMeetings!==undefined?<> · {n(t.readMeetings)} vollständig gelesen</>:null}</dd></div>
      <div><dt>Berichte</dt><dd>{n(t.reports)} geliefert{t.written?<> · {n(t.written.created)} neu · {n(t.written.changed)} geändert · {n(t.written.unchanged)} unverändert</>:null}{t.stockBefore!==undefined?<> · Bestand vorher {n(t.stockBefore)}</>:null}</dd></div>
      <div><dt>Anfragen an die Quelle</dt><dd>{n(s.requests)}, davon {n(s.failed)} fehlgeschlagen · Wartezeit zusammen {seconds(s.networkMs)} (Anfragen laufen teils gleichzeitig){t.droppedRequests?<> · {n(t.droppedRequests)} weitere nicht aufgezeichnet</>:null}</dd></div>
@@ -44,23 +46,24 @@ export function RunDebugView({data}:{data:Debug}){
    </details>}
  </>;
 }
-/** Debug information about the last import of one area, loaded only when asked for. Reads; starts nothing. */
+/** Protocol of the last import of one area, loaded only when asked for. Reads; starts nothing. */
 export function AdminRunDebug({region,name}:{region:string;name:string}){
  const [open,setOpen]=useState(false),[data,setData]=useState<Debug|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  async function load(){
   setBusy(true);setError('');
-  try{const r=await fetch('/api/admin/run-debug?region='+encodeURIComponent(region),{cache:'no-store'}),d=await r.json() as Debug&{error?:string};if(!r.ok)throw Error(d.error||'Debug-Infos konnten nicht geladen werden.');setData(d);}
-  catch(e){setError(e instanceof Error?e.message:'Debug-Infos konnten nicht geladen werden.');}
+  try{const r=await fetch('/api/admin/run-debug?region='+encodeURIComponent(region),{cache:'no-store'}),d=await r.json() as Debug&{error?:string};if(!r.ok)throw Error(d.error||PROTOKOLL.fehler);setData(d);}
+  catch(e){setError(e instanceof Error?e.message:PROTOKOLL.fehler);}
   finally{setBusy(false);}
  }
- const save=()=>{if(!data)return;const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=`abruf-debug-${region}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ const save=()=>{if(!data)return;const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=`abruf-protokoll-${region}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
  return <div className="admin-run-debug">
-  <button type="button" className="admin-timeline-retry" aria-expanded={open} onClick={()=>{const next=!open;setOpen(next);if(next)void load();}}>{open?'Debug-Infos ausblenden':'Debug-Infos zum letzten Abruf'}</button>
-  {open&&<div className="admin-run-debug-panel" aria-label={'Debug-Infos: '+name}>
+  <button type="button" className="link-btn" aria-expanded={open} onClick={()=>{const next=!open;setOpen(next);if(next)void load();}}>{open?PROTOKOLL.ausblenden:PROTOKOLL.knopf}</button>
+  {open&&<div className="admin-run-debug-panel" aria-label={PROTOKOLL.aria(name)}>
+   <How label={PROTOKOLL.howTitel}>{PROTOKOLL.how.map(t=><p key={t}>{t}</p>)}</How>
    {busy&&<p role="status">Wird geladen …</p>}
-   {error&&<p role="alert" className="admin-error">{error}</p>}
+   {error&&<Alert>{error}</Alert>}
    {data&&<RunDebugView data={data}/>}
-   {data&&<p className="admin-run-debug-actions"><button type="button" className="admin-timeline-retry" onClick={()=>void load()}>Neu laden</button> <button type="button" className="admin-timeline-retry" onClick={save}>Als JSON speichern</button> <span>Aufgezeichnet wird der jeweils letzte Abruf eines Gebiets; ältere Läufe stehen mit ihren Kennzahlen in der Liste.</span></p>}
+   {data&&<p className="admin-run-debug-actions"><button type="button" className="link-btn" onClick={()=>void load()}>Neu laden</button> <button type="button" className="link-btn" onClick={save}>Als JSON speichern</button> <span className="text-[12px] text-slate-500">{PROTOKOLL.fuss}</span></p>}
   </div>}
  </div>;
 }

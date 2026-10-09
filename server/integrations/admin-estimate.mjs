@@ -7,7 +7,7 @@ import {estimateVolume,SIZE_RULES} from '../../shared/estimate-size.mjs';
 import {rangeStart} from '../../shared/timeline.mjs';
 import {adminTimeline} from './admin-timeline.mjs';
 import {canImport} from './pipeline-jobs.mjs';
-import {atRevision} from './revision-cache.mjs';
+import {readSeries} from './region-series.mjs';
 // Classes with fewer complete examples of the connected states than this get suggestions for a twelve-month import.
 const WANTED_SAMPLES=8;
 // Level in the population frame: Lower Saxon Samtgemeinden are associations, their members belong to them.
@@ -15,7 +15,21 @@ const levelOf=r=>r.kind==='district'?'district':r.members?'association':'municip
 const readJson=text=>{try{return JSON.parse(text||'{}');}catch{return {};}};
 const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
 // Per area and for the period: reports with at least one PDF, linked PDFs, and how often reports return to an agenda.
-const DETAILS_SQL=`SELECT area,sum(pdfs>0) AS withDocuments,sum(pdfs) AS links,sum(days>1) AS followUps,sum(days) AS consultations FROM (SELECT region_id AS area,substr((SELECT min(json_extract(value,'$.date')) FROM json_each(payload,'$.events')),1,10) AS day,(SELECT count(*) FROM json_each(payload,'$.documents') WHERE json_extract(value,'$.kind') IN ('application/pdf','pdf')) AS pdfs,(SELECT count(DISTINCT substr(json_extract(value,'$.date'),1,10)) FROM json_each(payload,'$.events')) AS days FROM topics WHERE ${canonical}) WHERE day>=? AND day<=? GROUP BY area`;
+/** The former scan over all reports (tests only); detailsFromSeries gives the same from region_series. */
+export const DETAILS_SQL=`SELECT area,sum(pdfs>0) AS withDocuments,sum(pdfs) AS links,sum(days>1) AS followUps,sum(days) AS consultations FROM (SELECT region_id AS area,substr((SELECT min(json_extract(value,'$.date')) FROM json_each(payload,'$.events')),1,10) AS day,(SELECT count(*) FROM json_each(payload,'$.documents') WHERE json_extract(value,'$.kind') IN ('application/pdf','pdf')) AS pdfs,(SELECT count(DISTINCT substr(json_extract(value,'$.date'),1,10)) FROM json_each(payload,'$.events')) AS days FROM topics WHERE ${canonical}) WHERE day>=? AND day<=? GROUP BY area`;
+/**
+ * DETAILS_SQL from the values per area: the entries of event_days (first agenda day, kept raw) between from and to,
+ * summed per area. An area appears only if at least one of its days falls into the period, as with GROUP BY.
+ */
+export function detailsFromSeries(series,from,to){
+ const out=[];
+ for(const [area,row] of series||[]){
+  let found=false;const d={area,withDocuments:0,links:0,followUps:0,consultations:0};
+  for(const [day,,wd,links,fu,cons] of row.eventDays||[]){if(day===null||day<from||day>to)continue;found=true;d.withDocuments+=wd;d.links+=links;d.followUps+=fu;d.consultations+=cons;}
+  if(found)out.push(d);
+ }
+ return out;
+}
 const ratio=(list,a,b)=>{const total=list.reduce((n,x)=>n+(x[b]||0),0);return total?list.reduce((n,x)=>n+(x[a]||0),0)/total:null;};
 /**
  * Germany-wide estimate of new reports per year and day, and of the documents behind them. Read-only.
@@ -26,8 +40,8 @@ const ratio=(list,a,b)=>{const total=list.reduce((n,x)=>n+(x[b]||0),0);return to
 export async function adminEstimate(db,{now=new Date(),replicates=SAMPLE_RULES.replicates}={}){
  const timeline=await adminTimeline(db,{basis:'event',now}),to=timeline.today,from=rangeStart('12m',to,new Map());
  const coverage=new Map((await db.prepare('SELECT region_id,payload FROM source_coverage').all()).results.map(r=>[r.region_id,readJson(r.payload)]));
- // This scan reads every report as well; its rows are kept until the reports change (revision-cache.mjs).
- const details=new Map((await atRevision(db,'estimate|'+from+'|'+to,async()=>(await db.prepare(DETAILS_SQL).bind(from,to).all()).results)).map(r=>[r.area,r]));
+ // Documents and consultations per area from the values per area (region_series), never a scan of the reports.
+ const details=new Map(detailsFromSeries(await readSeries(db,{columns:['event_days']}),from,to).map(r=>[r.area,r]));
  // --- candidates: stored areas of the connected states and the units of the sample ---
  const stored=[];
  for(const region of regions){

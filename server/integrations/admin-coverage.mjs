@@ -21,7 +21,7 @@ export const connectedIds=()=>new Set([...CORE,...SOURCES.map(s=>s.id),...NRW_SO
 export async function adminCoverage(db,{now=new Date()}={}){
  const all=new Set(CATALOG.map(r=>r.id)),connectedSet=connectedIds(),today=now.toISOString().slice(0,10);
  const total=coverageOf(CATALOG,POPULATION,all,landOf),connected=coverageOf(CATALOG,POPULATION,connectedSet,landOf);
- const [dataset,events,figures]=await Promise.all([adminTimeline(db,{basis:'import',now}),adminTimeline(db,{basis:'event',now}),areaFigures(db,{now,budgetMs:4000})]);
+ const [dataset,events,figures]=await Promise.all([adminTimeline(db,{basis:'import',now}),adminTimeline(db,{basis:'event',now}),areaFigures(db,{now})]);
  const withData=new Set([...Object.keys(dataset.areas||{}),...Object.keys(dataset.undated||{})].filter(id=>all.has(id)));
  const data=coverageOf(CATALOG,POPULATION,withData,landOf);
  // Reach and freshness over the connected areas: "none" are connected areas without reports.

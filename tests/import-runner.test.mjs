@@ -18,3 +18,15 @@ test('invalid transport is rejected; persistent errors are bounded and next regi
 test('request budget stops new requests after expiry',()=>{
  let called=false;assert.throws(()=>budgeted(()=>{called=true;},-1)('https://example.test'),/Zeitbudget/);assert.equal(called,false);
 });
+
+import {refreshAdminValues} from '../scripts/run-imports.mjs';
+test('after the imports the runner brings the values per area up to date in steps and never fails the run',async()=>{
+ const asked=[],states=['running','running','busy','done'];
+ const fetcher=async(url,init)=>{asked.push([String(url),init.headers.authorization,JSON.parse(init.body)]);return new Response(JSON.stringify({state:states.shift()}),{status:200});};
+ const logs=[];const steps=await refreshAdminValues({siteUrl:'https://site.example',token:'secret',fetcher,sleep:async()=>{},log:m=>logs.push(m)});
+ assert.equal(steps,4);assert.equal(asked.length,4);
+ assert.ok(asked.every(([u,a,b])=>u==='https://site.example/api/internal/admin-refresh'&&a==='Bearer secret'&&b.target==='regions'));
+ assert.ok(!logs.join('').includes('secret'));
+ assert.equal(await refreshAdminValues({siteUrl:'https://site.example',token:'x',fetcher:async()=>{throw Error('network');},log:()=>{}}),0);
+ assert.equal(await refreshAdminValues({siteUrl:'https://site.example',token:'x',fetcher:async()=>new Response('{}',{status:401}),log:()=>{}}),0);
+});

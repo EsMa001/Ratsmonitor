@@ -7,8 +7,9 @@ import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
 import ts from 'typescript';
 import {adminAccess,claimAdmin,requireAdminAccess,requireSameOrigin} from '../server/integrations/admin-access.mjs';
-import {loadAdminData,adminReview,D1_MAX_PARAMETERS} from '../server/integrations/admin-data.mjs';
+import {loadAdminData,adminReview} from '../server/integrations/admin-data.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
+import {refreshRegionFacts} from '../server/integrations/region-facts.mjs';
 import {filterAdminSources,sourcesCsv} from '../shared/admin.mjs';
 
 const root=path.resolve(import.meta.dirname,'..'),sqlite=new DatabaseSync(':memory:');
@@ -51,6 +52,7 @@ test('real admin SQL counts canonical articles, separate quality states and sour
  sqlite.prepare('INSERT INTO push_subscriptions(id,endpoint,auth,p256dh,created_at) VALUES(?,?,?,?,?)').run('1','https://private-push.example/secret','private-auth','private-key','2026-09-27');
  sqlite.prepare('INSERT INTO system_state VALUES(?,?)').run('admin-owner-v1',JSON.stringify({userId:'secret-owner'}));
  sqlite.prepare('INSERT INTO import_runs VALUES(?,?,?,?,?)').run('run','2026-09-27T00:00:00Z',null,'running',JSON.stringify({region:'billerbeck',trigger:'scheduled',issues:['private-diagnostics']}));
+ await refreshRegionFacts(db,{budgetMs:1e9});
  const result=await loadAdminData(db,{now:new Date('2026-09-27T12:00:00Z')});
  assert.equal(result.counts.online,2);assert.equal(result.counts.aliases,1);assert.equal(result.counts.unlabelled,1);
  for(const key of ['aiSummaries','qualityPassed','pdfArticles','conflicts','textIssues','pushSubscriptions'])assert.equal(result.counts[key],1,key);
@@ -80,7 +82,9 @@ test('the overview reads the stored reports once; its figures per area equal the
  insert('d',{regionId:'muenster',classification:{primary:'unklar'},contentAnalysis:{status:'insufficient_source'}});insert('alias',{identity:{mergedInto:'a'},classification:{primary:'unklar'}});
  // Statements that read into the stored reports, beyond the indexed columns.
  const asked=[],watched={prepare(sql){asked.push(sql);return db.prepare(sql);},batch:statements=>db.batch(statements)},scans=()=>asked.filter(q=>/FROM topics WHERE/.test(q)&&q.includes("'$.classification.primary'")).length;
- const full=await loadAdminData(watched,{now:at});assert.equal(scans(),2,'one scan for all figures, one for the review list');
+ // The figures per area are computed by region-facts.mjs (after an import or in a catch-up step), never by the page.
+ await refreshRegionFacts(watched,{budgetMs:1e9,now:at});assert.equal(scans(),1,'one scan for the figures of all areas');
+ asked.length=0;const full=await loadAdminData(watched,{now:at});assert.equal(scans(),1,'the page reads the review list only');
  // Unchanged reports are not read a second time (revision-cache.mjs).
  asked.length=0;const light=await loadAdminData(watched,{now:at,review:false});assert.equal(scans(),0);assert.ok(!asked.some(q=>q.includes('LIMIT 25')));
  assert.deepEqual(light.review,{issue:'labels',total:2,articles:[]});assert.deepEqual({...light,review:0},{...full,review:0});
@@ -90,19 +94,21 @@ test('the overview reads the stored reports once; its figures per area equal the
  const status=await processingStatus(db);assert.equal(status.regions.length,2);
  for(const area of status.regions){const shown=full.sources.find(s=>s.id===area.region_id);assert.equal(shown.count,area.total);assert.deepEqual(shown.processing,{...area},area.region_id);assert.equal(shown.pendingAnalysis,area.total-area.rules);}
  // A changed report is read again, only its area; "updated in the last seven days" moves with the clock without a scan.
- asked.length=0;insert('e');const changed=await loadAdminData(watched,{now:at,review:false});assert.equal(scans(),1);assert.equal(changed.counts.online,5);
- assert.ok(asked.some(q=>/region_id IN \(\?\)/.test(q)),'only the changed area is read');
+ asked.length=0;insert('e');await refreshRegionFacts(watched,{budgetMs:1e9,now:at});assert.equal(scans(),1);
+ assert.ok(asked.some(q=>/region_id IN \(SELECT value FROM json_each\(\?\)\)/.test(q)),'only the changed area is read');
+ asked.length=0;const changed=await loadAdminData(watched,{now:at,review:false});assert.equal(scans(),0);assert.equal(changed.counts.online,5);
  asked.length=0;const later=await loadAdminData(watched,{now:new Date('2026-10-30T13:00:00Z'),review:false});assert.equal(scans(),0);
  assert.equal(later.counts.updated7d,0);assert.equal(later.counts.online,5);assert.equal(changed.counts.updated7d,5);
  const muenster=full.sources.find(s=>s.id==='muenster').processing;assert.equal(muenster.total,3);assert.equal(muenster.stale,1);assert.equal(muenster.insufficient,1);assert.equal(muenster.fetchedAt,'2026-09-27T10:00:00Z');assert.equal(muenster.processedAt,'2026-09-27T11:00:00Z');
  assert.deepEqual(full.sources.find(s=>s.id==='borken').processing,{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,blocked_summary:0,blocked_aiLabel:0,blocked_keywords:0,fetchedAt:null,processedAt:null});
 });
-test('figures per area are computed step by step within a budget and fall back to one scan without the tables',async()=>{
+test('the overview reads the figures per area, counts stale areas as pending and falls back to one scan without the tables',async()=>{
  reset();const at=new Date('2026-09-27T12:00:00Z');
  insert('a',{events:[{date:'2026-08-01'},{date:'2026-09-20'}]});insert('b',{regionId:'muenster'});insert('c',{regionId:'coesfeld',classification:{primary:'unklar'}});
- /* Kein Budget: nichts wird gelesen, alle drei Gebiete stehen aus; die Zahl der Berichte stimmt trotzdem */
- const first=await loadAdminData(db,{now:at,review:false,statsBudgetMs:0});
+ /* Noch nicht nachgerechnet: alle drei Gebiete stehen aus; die Zahl der Berichte stimmt trotzdem (Index) */
+ const first=await loadAdminData(db,{now:at,review:false});
  assert.equal(first.statsPending,3);assert.equal(first.counts.online,3);
+ await refreshRegionFacts(db,{budgetMs:1e9,now:at});
  const second=await loadAdminData(db,{now:at,review:false});
  assert.equal(second.statsPending,undefined);assert.equal(second.counts.unlabelled,1);assert.equal(second.sources.find(s=>s.id==='coesfeld').count,1);
  /* Erster Tagesordnungstag und jüngster Sitzungstag je Gebiet; ohne Tagesordnung nur der Sitzungstag der Spalte */
@@ -110,7 +116,8 @@ test('figures per area are computed step by step within a budget and fall back t
  assert.equal(second.sources.find(s=>s.id==='muenster').firstEventAt,null);assert.equal(second.sources.find(s=>s.id==='muenster').lastEventAt,'2026-09-20');
  /* Kennzahlen einer älteren Fassung gelten als veraltet und werden neu gezählt */
  sqlite.prepare("UPDATE region_stats SET stats=json_remove(stats,'$.v','$.firstEvent') WHERE region_id='billerbeck'").run();
- assert.equal((await loadAdminData(db,{now:at,review:false,statsBudgetMs:0})).statsPending,1);
+ assert.equal((await loadAdminData(db,{now:at,review:false})).statsPending,1);
+ await refreshRegionFacts(db,{budgetMs:1e9,now:at});
  assert.equal((await loadAdminData(db,{now:at,review:false})).sources.find(s=>s.id==='billerbeck').firstEventAt,'2026-08-01');
  /* Ohne Migration 0011: der frühere Lauf über alle Berichte */
  const legacy={prepare(sql){if(/region_revisions|region_stats/.test(sql))return {bind(){return this;},async all(){throw Error('D1_ERROR: no such table: region_revisions');}};return db.prepare(sql);},batch:statements=>Promise.all(statements.map(s=>s.all()))};
@@ -119,15 +126,6 @@ test('figures per area are computed step by step within a budget and fall back t
  assert.equal(old.sources.find(s=>s.id==='billerbeck').firstEventAt,'2026-08-01','the single scan carries the days too');
 });
 
-test('figures per area bind at most 100 parameters per statement, as D1 allows',async()=>{
- reset();const at=new Date('2026-09-27T12:00:00Z');
- for(let i=0;i<150;i++)insert('t'+i,{regionId:'area-'+String(i).padStart(3,'0')});
- // D1 refuses a statement with more than 100 bound parameters ("too many SQL variables"); node:sqlite allows 32766.
- const counted=[],strict={prepare(sql){const s=db.prepare(sql),bind=s.bind;s.bind=(...v)=>{counted.push(v.length);if(v.length>D1_MAX_PARAMETERS)throw Error('D1_ERROR: too many SQL variables');return bind.apply(s,v);};return s;},batch:statements=>db.batch(statements)};
- const data=await loadAdminData(strict,{now:at,review:false});
- assert.equal(data.statsPending,undefined);assert.equal(data.counts.online,150);
- assert.ok(Math.max(...counted)<=D1_MAX_PARAMETERS&&counted.some(n=>n===D1_MAX_PARAMETERS),'the chunks fill the limit and stay within it');
-});
 test('review filters stay parameterized, exclude aliases, constrain region and cap result rows',async()=>{
  reset();for(let i=0;i<30;i++)insert('open-'+i,{classification:{primary:'unklar'}});
  insert('elsewhere',{regionId:'muenster',classification:{primary:'unklar'},status:'unknown'});
@@ -147,7 +145,7 @@ test('review totals come from the figures per area; changed areas are counted ex
  const scans=()=>asked.filter(q=>/FROM topics WHERE/.test(q)&&!/region_id IN|region_id=\?/.test(q)&&!/INDEXED BY/.test(q));
  /* Noch keine Kennzahlen: beide Gebiete werden einzeln gezählt, die Summe stimmt */
  assert.equal((await adminReview(watched,'labels','all')).total,5);
- await loadAdminData(db,{now:new Date('2026-09-27T12:00:00Z'),review:false});
+ await refreshRegionFacts(db,{budgetMs:1e9,now:new Date('2026-09-27T12:00:00Z')});
  asked.length=0;
  const fresh=await adminReview(watched,'labels','all');
  assert.equal(fresh.total,5);assert.equal(fresh.articles.length,5);assert.deepEqual(scans(),[],'no scan of all reports');
@@ -165,6 +163,18 @@ test('review totals come from the figures per area; changed areas are counted ex
  asked.length=0;await adminReview(watched,'labels','all');
  assert.ok(asked.some(q=>/region_id IN \(\?,\?\)/.test(q)&&/ORDER BY updated_at DESC/.test(q)),'5 matches in two areas: read there');
 });
+test('with more than 500 changed areas the review total stays open and the list reads only recent reports',async()=>{
+ reset();for(const t of ['region_stats','region_revisions','region_series'])sqlite.exec('DELETE FROM '+t);
+ for(let i=0;i<501;i++)insert('many-'+i,{regionId:'area-'+String(i).padStart(3,'0'),classification:{primary:'unklar'},updatedAt:'2026-09-26T12:00:'+String(i%60).padStart(2,'0')+'Z'});
+ const asked=[],watched={prepare(sql){asked.push(sql);return db.prepare(sql);},batch:statements=>db.batch(statements)};
+ const result=await adminReview(watched,'labels','all');
+ assert.equal(result.total,null);assert.equal(result.pending,501);assert.equal(result.articles.length,25);
+ assert.ok(!asked.some(q=>/count\(\*\)[^]*FROM topics/.test(q)),'no count over the reports');
+ assert.ok(asked.some(q=>/INDEXED BY idx_topics_canonical_updated/.test(q)&&/LIMIT 5000/.test(q)));
+ /* Once computed, the total is exact again */
+ await refreshRegionFacts(db,{budgetMs:1e9});
+ assert.equal((await adminReview(db,'labels','all')).total,501);
+});
 test('CSV export neutralizes spreadsheet formulas and escapes delimiters and quotes',()=>{
  const csv=sourcesCsv([{name:'=HYPERLINK("x")',ags:'055',kind:'city',count:1,state:'Teilstand',issues:['note; "quoted"']}]);
  assert.ok(csv.startsWith('\ufeff'));assert.ok(csv.includes('"\'=HYPERLINK(""x"")"'));assert.ok(csv.includes('note; ""quoted""'));assert.equal(csv.split('\r\n').length,2);
@@ -181,7 +191,7 @@ const stubs={
  'server-only':'export {};',
  'cloudflare:workers':'export const env=globalThis.adminFixture.env;',
  '@/app/chatgpt-auth':'export async function getChatGPTUser(){return globalThis.adminFixture.user;}',
- '@/server/repositories/admin':'export async function getAdminDashboard(){globalThis.adminFixture.reads++;return {sources:[]};} export async function getAdminReview(){globalThis.adminFixture.reads++;return {};}',
+ '@/server/repositories/admin':'export async function getAdminDashboard(){globalThis.adminFixture.reads++;return {sources:[]};} export async function getAdminSummary(){globalThis.adminFixture.reads++;return {counts:{}};} export async function getAreaNotes(){globalThis.adminFixture.reads++;return {issues:[]};} export async function getAdminReview(){globalThis.adminFixture.reads++;return {};}',
  '@/server/integrations/database-transfer.mjs':'export async function exportRequest(){globalThis.adminFixture.reads++;return {status:200,data:{format:"ratsmonitor-data-v1"}};}',
  '@/server/integrations/manual-analysis.mjs':'export async function analysePending(){globalThis.adminFixture.analyses++;return {status:200,data:{processed:1,remaining:0}};}',
  '@/server/data/billerbeck-content-v1.json':'export default {};',
@@ -193,16 +203,16 @@ function load(file){if(cache.has(file))return cache.get(file);let s=fs.readFileS
  s=ts.transpileModule(s,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText.replace(/((?:from\s*|import\s*)['"])([^'"]+)(['"])/g,(m,pre,spec,post)=>{if(stubs[spec])return pre+uri(stubs[spec])+post;const base=spec.startsWith('@/')?path.join(root,spec.slice(2)):spec.startsWith('.')?path.resolve(path.dirname(file),spec):null;if(!base)return m;return pre+load([base,base+'.ts'].find(p=>fs.existsSync(p)&&fs.statSync(p).isFile()))+post;});
  const out=uri(s);cache.set(file,out);return out;
 }
-const routes=Object.fromEntries(await Promise.all(['overview','review','export','import','claim','analyse','prepared-analysis','database','pipeline','ai-job'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
+const routes=Object.fromEntries(await Promise.all(['summary','area','review','export','import','claim','analyse','prepared-analysis','database','pipeline','ai-job'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
 const req=(route,body,headers={})=>new Request('https://site.example/api/admin/'+route,{method:body===undefined?'GET':'POST',headers:{origin:'https://site.example','content-type':'application/json',...headers},...(body===undefined?{}:{body})});
 test('every data endpoint denies anonymous and other signed-in users before any reads or imports',async()=>{
  reset();await claimAdmin(db,owner,code,hash);globalThis.adminFixture.reads=0;globalThis.adminFixture.syncs=0;
- for(const [user,status] of [[null,401],[other,403]]){globalThis.adminFixture.user=user;for(const route of ['overview','review','export','import','analyse','prepared-analysis','database','pipeline','ai-job']){const response=['import','analyse','prepared-analysis','pipeline','ai-job'].includes(route)?await routes[route].POST(req(route,'{"region":"billerbeck"}')):await routes[route].GET(req(route));assert.equal(response.status,status,route);assert.match(response.headers.get('cache-control'),/no-store/);assert.ok(!(await response.text()).includes('sources'));}}
+ for(const [user,status] of [[null,401],[other,403]]){globalThis.adminFixture.user=user;for(const route of ['summary','area','review','export','import','analyse','prepared-analysis','database','pipeline','ai-job']){const response=['import','analyse','prepared-analysis','pipeline','ai-job'].includes(route)?await routes[route].POST(req(route,'{"region":"billerbeck"}')):await routes[route].GET(req(route));assert.equal(response.status,status,route);assert.match(response.headers.get('cache-control'),/no-store/);assert.ok(!(await response.text()).includes('sources'));}}
  assert.equal(globalThis.adminFixture.reads,0);assert.equal(globalThis.adminFixture.syncs,0);assert.equal(globalThis.adminFixture.prepared,0);
 });
 test('authorized APIs validate all inputs and keep import locked to configured territory identifiers',async()=>{
  globalThis.adminFixture.user=owner;
- assert.equal((await routes.overview.GET()).status,200);
+ assert.equal((await routes.summary.GET()).status,200);assert.equal((await routes.area.GET(req('area?id=nope'))).status,400);
  assert.equal((await routes.database.GET(req('database'))).status,200);assert.equal(routes.database.POST,undefined);
  for(const body of ['null','[]','{','{"region":"not-configured"}'])assert.equal((await routes.import.POST(req('import',body))).status,400);
  assert.equal((await routes.import.POST(req('import','{"region":"billerbeck"}',{origin:'https://evil.example'}))).status,403);

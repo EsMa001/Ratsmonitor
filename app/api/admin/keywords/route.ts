@@ -1,4 +1,5 @@
-import {requireAdmin,adminFailure,ADMIN_HEADERS} from '@/server/services/admin-auth';
-import {getAdminKeywords} from '@/server/repositories/admin';
-// Counts the keywords stored with the reports. Reads only; starts no analysis.
-export async function GET(){try{await requireAdmin();return Response.json(await getAdminKeywords(),{headers:ADMIN_HEADERS});}catch(e){return adminFailure(e);}}
+import {adminRead} from '@/server/services/admin-http';
+import {keywordsView} from '@/server/repositories/admin';
+// Keywords of the stored reports, as last counted ("Neu zählen" counts them anew in steps, /api/admin/refresh). Reads
+// only; ETag and stand.
+export async function GET(request:Request){const v=keywordsView();return adminRead(request,v.tag,v.build);}
