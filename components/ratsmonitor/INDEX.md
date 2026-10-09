@@ -695,7 +695,7 @@ wordmark__dot design-styles.css:61
 - page.tsx (2)
 
 ### app/admin/
-- page.tsx (48, ⚠2): dynamic, metadata, AdminPage
+- page.tsx (50, ⚠2): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -729,7 +729,7 @@ wordmark__dot design-styles.css:61
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
 - admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (514, ⚠3): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
+- admin-texts.ts (517, ⚠3): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-ui.tsx (86): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
@@ -773,7 +773,7 @@ wordmark__dot design-styles.css:61
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (40): ShareButton
 - TierNotice.tsx (46): LoginRequired, UsagePill
-- icons.tsx (229): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
+- icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
 - MapPanel.tsx (319, ⚠2): MapPanel
@@ -846,7 +846,7 @@ wordmark__dot design-styles.css:61
 - MainMenu.tsx (224, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (117, ⚠4): DetailPage
+- DetailPage.tsx (130, ⚠4): DetailPage
 - KalenderPage.tsx (363, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage

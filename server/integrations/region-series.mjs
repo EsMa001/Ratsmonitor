@@ -5,7 +5,7 @@
 /** Version of region_series rows: raising it makes every area count again once. */
 export const SERIES_VERSION=1;
 /** Version of the figures in region_stats (FIGURES in admin-data.mjs). */
-export const FIGURES_VERSION=2;
+export const FIGURES_VERSION=4;
 export const SERIES_COLUMNS=['event_days','import_days','statuses'];
 const KEYS={event_days:'eventDays',import_days:'importDays',statuses:'statuses'};
 export const missingTable=e=>/no such table/i.test(String(e?.message||e));

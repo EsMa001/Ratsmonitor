@@ -3,7 +3,7 @@ export const RECORD_VERSION='article-record-v1';
 export function analysisSignature(t){return JSON.stringify({title:t.officialTitle||t.title||'',status:t.status,events:(t.events||[]).map(e=>({date:e.date,committee:e.committee,status:e.status,result:e.result||''})),documents:(t.documents||[]).map(d=>d.url).sort()});}
 export function preserveArticleContent(old,incoming,source=incoming){
  const next={...incoming};
- for(const key of ['contentAnalysis','weightedKeywords','labelAssessments','metadata'])if(old[key]&&!next[key])next[key]=old[key];
+ for(const key of ['contentAnalysis','weightedKeywords','labelAssessments','metadata','ruleSummary'])if(old[key]&&!next[key])next[key]=old[key];
  const priorAI=old.contentAnalysis||/^KI-Zusammenfassung/.test(old.generatedBy||'');
  const incomingAI=incoming.contentAnalysis&&incoming.contentAnalysis.id!==old.contentAnalysis?.id||/^KI-Zusammenfassung/.test(incoming.generatedBy||'')&&incoming.summaryGeneratedAt&&incoming.summaryGeneratedAt!==old.summaryGeneratedAt;
  if(priorAI&&!incomingAI){

@@ -12,5 +12,5 @@ export function toCard(t: StoredTopic): TopicCard {
 }
 export function toDetail(t: StoredTopic): TopicDetail {
     const { officialTitle, longSummary, committee, eventDate, reference, documents, events, relevanceReason, quality, sourceUrl } = t;
-    return { ...toCard(t), metadata:t.metadata,contentAnalysis:t.contentAnalysis,weightedKeywords:t.weightedKeywords,labelAssessments:t.labelAssessments,analysisFeatures:t.analysisFeatures, identityState:identityState(t), officialTitle, longSummary, committee, eventDate, reference, documents, events, relevanceReason, quality, sourceUrl };
+    return { ...toCard(t), metadata:t.metadata,contentAnalysis:t.contentAnalysis,weightedKeywords:t.weightedKeywords,labelAssessments:t.labelAssessments,ruleSummary:t.ruleSummary,analysisFeatures:t.analysisFeatures, identityState:identityState(t), officialTitle, longSummary, committee, eventDate, reference, documents, events, relevanceReason, quality, sourceUrl };
 }

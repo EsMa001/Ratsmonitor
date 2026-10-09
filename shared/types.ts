@@ -50,6 +50,8 @@ export interface TopicCard {
         sourceUrl: string;
     };
 }
+export interface RuleSummaryText { sentences: string[]; gaps?: boolean[]; words: number; score: number; parts?: Record<string, number> }
+export interface RuleSummary { version: number; generatedBy: string; generatedAt: string; source?: { url: string; title: string }; score: number; short: RuleSummaryText; long: RuleSummaryText }
 export interface TopicDetail extends TopicCard {
     metadata?:ArticleMetadata;
     contentAnalysis?:ContentAnalysis;
@@ -57,6 +59,7 @@ export interface TopicDetail extends TopicCard {
     labelAssessments?:{rule?:Classification;ai?:Classification;review?:{primary:string;reviewer:string;reviewedAt:string;reason:string}};
     analysisFeatures?: {subjects:string[];terms:string[];version:string;evidence:string;analysedAt:string};
     identityState?: 'paper'|'unlinked'|'conflict';
+    ruleSummary?: RuleSummary;
     officialTitle: string;
     longSummary: string[];
     committee: string;

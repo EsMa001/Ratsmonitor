@@ -11,8 +11,8 @@ import {RegionCatchUp} from '@/components/admin-catch-up';
 // Rahmen aller Adminseiten im Design der Startseite: Kopfzeile wie Header.tsx, darunter Reiter, Inhalt mit der Seitenbreite der
 // Startseite und eine Fußzeile. Die Seiten heißen in der Adresse nach ihrem Inhalt (?seite=abruf); die alten Nummern 1 bis 4
 // führen weiter dorthin. Die Startseite des Adminbereichs ist die To-do-Liste (ohne Parameter).
-export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'stichwoerter';
-export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'todo',label:'To-do-Liste'},{id:'uebersicht',label:'Übersicht'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'}];
+export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'stichwoerter'|'regeltexte';
+export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'todo',label:'To-do-Liste'},{id:'uebersicht',label:'Übersicht'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'},{id:'regeltexte',label:'Regelbasierte Texte'}];
 /** Adresse einer Adminseite, mit weiteren Parametern ("filter=issues"). */
 export const adminHref=(page:AdminPage,params='')=>'/admin'+(page==='todo'?(params?'?'+params:''):'?seite='+page+(params?'&'+params:''));
 
