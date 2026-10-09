@@ -7,6 +7,7 @@ import {adminAtlas} from '../integrations/admin-atlas.mjs';
 import {storedEstimate,computeEstimate} from '../integrations/admin-estimate-store.mjs';
 import {adminKeywords} from '../integrations/admin-keywords.mjs';
 import {readDebug} from '../integrations/import-trace.mjs';
+import {refreshStep,refreshStatus} from '../integrations/admin-refresh.mjs';
 import {atRevision} from '../integrations/revision-cache.mjs';
 import type {AdminDashboard} from '@/shared/admin-types';
 // review:false leaves out the review list of page 2 (a scan of its own); its total is still reported.
@@ -24,3 +25,6 @@ export async function computeAdminEstimate(){if(!env.DB)throw Error('Datenbank f
 // Fünf Läufe über alle Vorgänge (61 s bei 900.000): gehalten, solange sich der Datenstand nicht ändert.
 export async function getAdminKeywords(){if(!env.DB)throw Error('Datenbank fehlt');const db=env.DB;return atRevision(db,'keywords',()=>adminKeywords(db));}
 export async function getRunDebug(region:string){if(!env.DB)throw Error('Datenbank fehlt');return readDebug(env.DB,region);}
+// Computing steps (server/integrations/admin-refresh.mjs): values per area take steps of 5 s, builds of 8 s.
+export async function getRefreshStatus(){if(!env.DB)throw Error('Datenbank fehlt');return refreshStatus(env.DB);}
+export async function runRefreshStep({action,target,restart}:{action:string;target:string;restart:boolean}){if(!env.DB)throw Error('Datenbank fehlt');return refreshStep(env.DB,{action,target,restart,budgetMs:target==='regions'?5000:8000});}
