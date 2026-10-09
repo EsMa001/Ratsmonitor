@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import vinext from "vinext";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
@@ -47,10 +47,10 @@ const nodeTarget = process.env.RM_TARGET === "node";
 // Paketteil, dessen Exporte anders heißen; navigateClientSide ist dann undefined und Klicks auf Links tun nichts.
 // Statisch importiert bleibt die Verbindung erhalten. Dasselbe gilt für die übrigen relativen import() in link.js
 // (Vorladen von Seiten: app-elements, headers …). Prüfung: scripts/check-client-navigation.mjs.
-function vinextStaticNavigation() {
+function vinextStaticNavigation(): Plugin {
   return {
     name: "rm-vinext-static-navigation",
-    apply: "build" as const,
+    apply: "build",
     transform(code: string, id: string) {
       if (!/[\\/]vinext[\\/]dist[\\/]shims[\\/]link\.js$/.test(id.split("?")[0])) return null;
       if (!code.includes('import("./navigation.js")')) {
