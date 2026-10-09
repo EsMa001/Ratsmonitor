@@ -164,6 +164,19 @@
         { "id": "si-rechte", "text": "Zugriffsrechte und Admin-Zugang prüfen", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null, "art": "extern" },
         { "id": "si-panne", "text": "Ablauf bei Datenpannen festlegen", "hinweis": "Entwurf in docs/betrieb/datenpanne.md. Behörde und Ansprechperson bei Gründung bestätigen.", "prio": 2, "erledigt": false, "faellig": null, "erledigtAm": null, "art": "extern" }
       ]
+    },
+    {
+      "id": "ideen",
+      "name": "Ideen (optional, nur nach Bestätigung)",
+      "items": [
+        { "id": "id-volltext", "text": "Volltext statt nur Titel für die plenara.X-Analysen", "hinweis": "Begriffe, Trends und Graph nutzen bisher nur Titel. Wo PDF-Texte vorliegen, könnten Themen, Beträge, Flächen und Standorte aus den Vorlagen kommen. Nur eine Idee: wird erst nach ausdrücklicher Bestätigung des Inhabers umgesetzt, nie automatisch.", "erledigt": false, "faellig": null, "erledigtAm": null, "art": "code" },
+        { "id": "id-saison", "text": "Saisonbereinigte Trends", "hinweis": "Der Haushaltszyklus im Herbst erscheint heute als Trend. Mit der 12-Monats-Nachladung gegen das Vorjahr normalisieren. Nur eine Idee: wird erst nach ausdrücklicher Bestätigung des Inhabers umgesetzt, nie automatisch.", "erledigt": false, "faellig": null, "erledigtAm": null, "art": "code" },
+        { "id": "id-verlauf", "text": "Beschlussverlauf: Durchlaufzeit, Vertagungsquote, Gremienstationen", "hinweis": "Setzt eine bessere Statuserfassung voraus (Status ist bisher nur bei etwa einem Viertel der Einträge bekannt). Nur eine Idee: wird erst nach ausdrücklicher Bestätigung des Inhabers umgesetzt, nie automatisch.", "erledigt": false, "faellig": null, "erledigtAm": null, "art": "code" },
+        { "id": "id-einbringer", "text": "Wer bringt Themen ein: Fraktionsantrag oder Verwaltungsvorlage, Einigkeit nach Fraktion", "hinweis": "Nur auf Fraktionsebene, wegen des offenen Punkts zum Personenbezug. Nur eine Idee: wird erst nach ausdrücklicher Bestätigung des Inhabers umgesetzt, nie automatisch.", "erledigt": false, "faellig": null, "erledigtAm": null, "art": "code" },
+        { "id": "id-finanzen", "text": "Finanzvolumen aus Beschlüssen, je Einwohner vergleichbar", "hinweis": "Geldbeträge aus den Vorlagen; Einwohnerdaten liegen im Repo. Interessant für Projektentwickler und Stadtwerke. Nur eine Idee: wird erst nach ausdrücklicher Bestätigung des Inhabers umgesetzt, nie automatisch.", "erledigt": false, "faellig": null, "erledigtAm": null, "art": "code" },
+        { "id": "id-rueckschau", "text": "Frühindikator-Rückschau: Folgt auf eine Erwähnung in Gemeinde A ein Beschluss in Gemeinde B, mit welchem Vorlauf?", "hinweis": "Würde den Kernnutzen „früher wissen“ mit Zahlen belegen. Nur eine Idee: wird erst nach ausdrücklicher Bestätigung des Inhabers umgesetzt, nie automatisch.", "erledigt": false, "faellig": null, "erledigtAm": null, "art": "code" },
+        { "id": "id-vollstaendigkeit", "text": "Vollständigkeitshinweis je Gebiet in jeder plenara.X-Analyse", "hinweis": "Zeigt, wie vollständig die Daten des Gebiets sind, und schützt vor Fehlschlüssen. Nur eine Idee: wird erst nach ausdrücklicher Bestätigung des Inhabers umgesetzt, nie automatisch.", "erledigt": false, "faellig": null, "erledigtAm": null, "art": "code" }
+      ]
     }
   ]
 }
