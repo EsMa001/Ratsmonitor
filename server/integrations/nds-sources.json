@@ -1912,6 +1912,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.walsrode.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-033585401",
+    "name": "Samtgemeinde Ahlden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sessionnet6",
+    "base": "https://ratsinfo.ahlden.eu/",
+    "verifiedSource": "https://ratsinfo.ahlden.eu/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar."
+  },
+  {
     "id": "nds-033585402",
     "name": "Samtgemeinde Rethem (Aller)",
     "kind": "city",
@@ -2746,6 +2757,17 @@
     "verifiedSource": "https://www.wangerland.org/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03455021",
+    "name": "Gemeinde Wangerooge",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://ratsinfo.wangerooge.de/",
+    "verifiedSource": "https://ratsinfo.wangerooge.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM 4 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar, Leser sdnet-rim4 las 3 Monate vollständig."
   },
   {
     "id": "nds-03455025",
