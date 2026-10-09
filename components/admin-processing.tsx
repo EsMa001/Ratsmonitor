@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef,useState,useMemo} from 'react';
 import {Download,RefreshCw,Play,Pause,MapPinned} from 'lucide-react';
 import {AdminHeader,adminHref} from '@/components/admin-chrome';
 import {Button} from '@/components/ui/button';
@@ -45,7 +45,10 @@ export function AdminProcessing({initial,displayName,signOutPath,initialSelectio
  const [lookback,setLookback]=useState(initialSelection.length?'12m':'1m'),[scope,setScope]=useState<'selection'|'sources'>('selection'),[land,setLand]=useState('all'),[jobFilter,setJobFilter]=useState('all');
  const pause=useRef(false),file=useRef<HTMLInputElement>(null);
  const chosen=data.sources.filter(s=>selected.has(s.id)),total=chosen.reduce((a,s)=>a+s.count,0),count=(key:string)=>chosen.reduce((a,s)=>a+Number(s.processing[key as keyof typeof s.processing]||0),0);
- const visible=data.sources.filter(s=>s.kind===layer&&(land==='all'||s.land===land)&&(!query||[s.name,s.ags].join(' ').toLocaleLowerCase('de-DE').includes(query.toLocaleLowerCase('de-DE')))&&matchesFilter(s,filter,selected,String(data?.asOf||'').slice(0,10)));
+ // The list is filtered again only when what it depends on changes (not with every render of the page, e.g. while a job reports);
+ // the search text is lower-cased once.
+ const asOfDay=String(data?.asOf||'').slice(0,10);
+ const visible=useMemo(()=>{const q=query.toLocaleLowerCase('de-DE');return data.sources.filter(s=>s.kind===layer&&(land==='all'||s.land===land)&&(!q||(s.name+' '+s.ags).toLocaleLowerCase('de-DE').includes(q))&&matchesFilter(s,filter,selected,asOfDay));},[data.sources,layer,land,query,filter,selected,asOfDay]);
  const toggle=(id:string)=>setSelected(prev=>{const next=new Set(prev);if(next.has(id))next.delete(id);else next.add(id);return next;});
  const busySource=busy!==''||running||!!data.importBusyUntil;
  // The timeline is read again after a job or an action (refresh), not with every reload beside a running job.

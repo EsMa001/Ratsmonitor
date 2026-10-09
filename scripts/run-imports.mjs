@@ -27,7 +27,26 @@ export async function runImports({siteUrl,token,regions=DEFAULT_REGIONS,fetcher=
  }
  return results;
 }
+/**
+ * After the imports: brings the values per area of the administration up to date in steps of a few seconds
+ * (POST /api/internal/admin-refresh, target regions) until nothing is left, so the pages open without computing.
+ * Best effort: a failure here never fails the import run. Returns the number of steps.
+ */
+export async function refreshAdminValues({siteUrl,token,fetcher=fetch,sleep=pause,log=console.log,maxSteps=200}) {
+ const url=new URL('/api/internal/admin-refresh',siteUrl);let steps=0;
+ try{
+  while(steps<maxSteps){
+   const response=await fetcher(url,{method:'POST',redirect:'error',headers:{authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify({action:'step',target:'regions'}),signal:AbortSignal.timeout(60000)});
+   if(!response.ok)break;
+   const data=await response.json().catch(()=>({}));steps++;
+   if(data.state==='done'||data.missing)break;
+   if(data.state==='busy')await sleep(3000);
+  }
+ }catch{/* the pages catch up themselves */}
+ log(JSON.stringify({adminValues:{steps}}));
+ return steps;
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
- try{const results=await runImports({siteUrl:process.env.SITE_URL,token:process.env.IMPORT_TOKEN,regions:process.env.IMPORT_REGIONS?.split(',').map(s=>s.trim()).filter(Boolean),trigger:process.env.IMPORT_TRIGGER==='manual'?'manual':'scheduled'});if(results.some(r=>r.status!==200||['failed','empty'].includes(r.coverage)))process.exitCode=1;}
+ try{const results=await runImports({siteUrl:process.env.SITE_URL,token:process.env.IMPORT_TOKEN,regions:process.env.IMPORT_REGIONS?.split(',').map(s=>s.trim()).filter(Boolean),trigger:process.env.IMPORT_TRIGGER==='manual'?'manual':'scheduled'});await refreshAdminValues({siteUrl:process.env.SITE_URL,token:process.env.IMPORT_TOKEN});if(results.some(r=>r.status!==200||['failed','empty'].includes(r.coverage)))process.exitCode=1;}
  catch{console.error('Importlauf abgebrochen. HTTPS-Ziel, Zugang und Konfiguration prüfen; keine Zugangsdaten ins Protokoll kopieren.');process.exitCode=1;}
 }
