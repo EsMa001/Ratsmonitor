@@ -20,10 +20,22 @@ export async function withRefreshLease(db,budgetMs,fn,{now=Date.now()}={}){
  try{return await fn();}
  finally{await db.prepare('DELETE FROM system_state WHERE key=? AND value=?').bind(LEASE,value).run();}
 }
+/**
+ * Whether a job of the administration (imports, rule labelling) is being driven or an import holds the stock. Builds of
+ * global evaluations read the whole stock and keep the database busy for minutes; beside a running job both slow down and
+ * the local development server has gone down under that load, so builds wait for the job (their state is kept).
+ */
+export async function heavyJobRunning(db,{now=new Date()}={}){
+ const [state,rows]=await Promise.all([processingState(db),db.prepare("SELECT value FROM system_state WHERE key='import-lock'").all()]);
+ const job=state.job,updated=Date.parse(job?.updatedAt||'');
+ const driven=!!job&&['queued','running'].includes(job.status)&&Number.isFinite(updated)&&now.getTime()-updated<JOB_IDLE_MS;
+ const lock=lockedUntil(rows.results[0]?.value);
+ return driven||lock>now.getTime();
+}
 const validTarget=target=>target==='regions'||isBuildTarget(target);
 /**
  * One step: action 'step' | 'start' | 'cancel'; target 'regions' or a registered build.
- * Returns {target,state:'running'|'done'|'busy'|'conflict',done,total,pending,ms,until?}.
+ * Returns {target,state:'running'|'done'|'busy'|'conflict',done,total,pending,ms,until?,reason?:'job'}: busy with reason 'job' while an import job runs.
  */
 export async function refreshStep(db,{action='step',target='regions',restart=false,budgetMs=5000,now=new Date()}={}){
  if(typeof target!=='string'||!validTarget(target))throw new AdminError(400,'Unbekanntes Rechenziel.');
@@ -38,6 +50,7 @@ export async function refreshStep(db,{action='step',target='regions',restart=fal
   }
   if(action==='cancel'){await cancelBuild(db,target);return {target,state:'done',done:0,total:0,pending:0,cancelled:true};}
   if(action==='start')await startBuild(db,target,{restart,now});
+  if(await heavyJobRunning(db,{now})){const b=await buildStatus(db,target,{now});return {target,state:'busy',reason:'job',done:b?.done||0,total:b?.total||0,pending:Math.max(0,(b?.total||0)-(b?.done||0))};}
   return stepBuild(db,target,{budgetMs,now});
  });
  if(result.busy)return {target,state:'busy',done:0,total:0,pending:0,until:result.until,ms:Date.now()-started};

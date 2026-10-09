@@ -22,6 +22,7 @@ const ACTIVE_MS=60000,FINISH_GRACE_MS=30000;
 // A paused build is continued by a new start within this time; an older one is started anew (its counts would mix
 // an old and a new stock).
 const RESUME_MS=3600000;
+const PAUSE_MS=150;
 const FINISHING='\u0000finish';
 const GUARD="EXISTS(SELECT 1 FROM system_state s WHERE s.key=? AND json_extract(s.value,'$.id')=? AND json_extract(s.value,'$.next')=?)";
 const add=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b))out[k]=(out[k]||0)+v;return out;};
@@ -36,6 +37,8 @@ const TARGETS={
  ...QUALITY_BUILDS,
  keywords:{
   usesAgg:true,
+  // Small chunks: every chunk writes in one transaction, during which the database serves nothing else.
+  chunkRows:8000,
   async chunk(db,ids,{build,guard,guardArgs,state}){const {sums,statements}=await keywordChunk(db,ids,{build,guard,guardArgs});return {partial:add(state.partial,sums),statements};},
   async finish(db,state,now){
    // Partial sums gone (a cancel or restart during a slow finish): store nothing rather than counts without words.
@@ -112,6 +115,8 @@ export async function stepBuild(db,target,{budgetMs=8000,now=new Date(),chunkRow
   if(!changed(results.at(-1)))return {...progress(st),state:'conflict'};
   st=next;units++;lastMs=Date.now()-began;if(step.rows)perRow=lastMs/step.rows;
   if(Date.now()-started>=budgetMs)return {...progress(st),state:'running'};
+  // A breath between chunks: requests that queued meanwhile (pages, status) run before the next chunk starts.
+  await new Promise(resolve=>setTimeout(resolve,PAUSE_MS));
  }
 }
 const changed=result=>Number(result?.meta?.changes??result?.changes??0)>0;

@@ -12,6 +12,14 @@ type Keywords=Stored&{asOf:string;articles:number;listLimit:number;
  ai:{profiles:number;content:number;stale:number;distinct:number;once:number|null;cut:boolean;items:(Counted&{weight:number;contentArticles:number;contentWeight:number})[]}};
 // metric orders the rows and sets the length of the bar; value is what is printed next to the term.
 type Row={term:string;metric:number;value:string;tag?:string;color?:string;cells:string[]};
+// A failed connection (the server restarts, the computer sleeps) is tried again for two minutes; the state of the build is kept
+// on the server, so counting continues where it stopped.
+async function withRetry<T>(call:()=>Promise<T>,onWait?:(waiting:boolean)=>void):Promise<T>{
+ for(let attempt=0;;attempt++){
+  try{const result=await call();onWait?.(false);return result;}
+  catch(e){if(!(e instanceof TypeError)||attempt>=24)throw e;onWait?.(true);await new Promise(r=>setTimeout(r,5000));}
+ }
+}
 const TOP=50,PAGE=50;
 const n=(v:number,digits=0)=>v.toLocaleString('de-DE',{maximumFractionDigits:digits,minimumFractionDigits:digits});
 const pct=(a:number,b:number)=>b?n(100*a/b,a/b<.1?1:0)+' %':'–';
@@ -37,7 +45,7 @@ function FullList({id,rows,title,headers,note}:{id:string;rows:Row[];title:strin
 /** Admin page 4: keywords found by the rules and assigned by the AI. Reads only; nothing is started from here. */
 export function AdminKeywords({initial}:{displayName?:string;signOutPath?:string;initial?:Keywords}){
  const [data,setData]=useState<Keywords|null>(initial||null),[stored,setStored]=useState<Stored|null>(initial||null),[error,setError]=useState(''),[busy,setBusy]=useState(!initial);
- const [counting,setCounting]=useState<{done:number;total:number}|null>(null);
+ const [counting,setCounting]=useState<{done:number;total:number}|null>(null),[waiting,setWaiting]=useState('');
  const [label,setLabel]=useState('all'),[basis,setBasis]=useState('all'),[order,setOrder]=useState('articles');
  // The page shows the keywords as last counted (stored); "Neu zählen" counts them anew in steps of a few seconds
  // (POST /api/admin/refresh, target keywords) and keeps the old count visible meanwhile.
@@ -46,13 +54,13 @@ export function AdminKeywords({initial}:{displayName?:string;signOutPath?:string
  useEffect(()=>{if(initial)return;const c=new AbortController();load(c.signal);return()=>c.abort();},[]);
  const count=async()=>{
   if(counting)return;setError('');setCounting({done:0,total:0});
-  const post=(action:string)=>fetch('/api/admin/refresh',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,target:'keywords'})}).then(async r=>{const d=await r.json() as {state:string;done:number;total:number;error?:string};if(!r.ok)throw Error(d.error||'Das Zählen ist fehlgeschlagen.');return d;});
+  const post=(action:string)=>withRetry(()=>fetch('/api/admin/refresh',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,target:'keywords'})}),w=>{if(w)setWaiting('server');else setWaiting(s=>s==='server'?'':s);}).then(async r=>{const d=await r.json() as {state:string;done:number;total:number;reason?:string;error?:string};if(!r.ok)throw Error(d.error||'Das Zählen ist fehlgeschlagen.');return d;});
   try{
    let step=await post('start');
-   for(;;){setCounting({done:step.done,total:step.total});if(step.state==='done')break;if(step.state==='busy')await new Promise(r=>setTimeout(r,3000));step=await post('step');}
+   for(;;){setCounting({done:step.done,total:step.total});setWaiting(step.reason==='job'?'job':'');if(step.state==='done')break;if(step.state==='busy')await new Promise(r=>setTimeout(r,step.reason==='job'?5000:3000));step=await post('step');}
    load();
   }catch(e){setError((e instanceof Error?e.message:'Das Zählen ist fehlgeschlagen.')+' Angezeigt bleibt der letzte gespeicherte Stand.');}
-  finally{setCounting(null);}
+  finally{setCounting(null);setWaiting('');}
  };
  const stand:Stand|null|undefined=stored?{...(stored.stand as Stand),...(counting?{build:{target:'keywords',state:'running' as const,done:counting.done,total:counting.total,startedAt:''}}:{})}:busy?undefined:null;
  const ruleRows=useMemo<Row[]>(()=>(data?.rule.words||[]).filter(w=>label==='all'||w.label===label).map(w=>({term:w.term,metric:w.articles,value:n(w.articles),tag:labelName(w.label),color:color(w.label),cells:[n(w.articles)]})),[data,label]);
@@ -71,7 +79,7 @@ export function AdminKeywords({initial}:{displayName?:string;signOutPath?:string
  ]:['Berichte im Bestand','Erkannte Sachbegriffe','Titelbegriffe','KI-Stichwörter'].map(label=>({label,value:undefined}));
  const notCounted=!data&&!!stored&&stored.computed===false;
  return <>
-  <AdminPageHead page="stichwoerter"><StandLine stand={stand} busy={!!counting} action="Neu zählen" onAction={count} hint="Liest alle Berichte; kann einige Minuten dauern."/></AdminPageHead>
+  <AdminPageHead page="stichwoerter"><StandLine stand={stand} busy={!!counting} action="Neu zählen" onAction={count} hint="Liest alle Berichte; kann einige Minuten dauern."/>{waiting&&<p role="status" className="mt-2 text-[14px] text-slate-500">{waiting==='job'?'Das Zählen wartet, bis der laufende Abruf fertig ist; der Stand bleibt erhalten.':'Der Server antwortet gerade nicht. Das Zählen versucht es gleich noch einmal und macht danach dort weiter, wo es war.'}</p>}</AdminPageHead>
   {error&&<Alert onRetry={!stored?()=>load():undefined}>{!stored?ZUSTAND.fehler+' ('+error+')':<>{error}{data&&' Der letzte geladene Stand bleibt sichtbar.'}</>}</Alert>}
   {!data?notCounted?<div className="admin-empty mt-8" role="status"><p>{STAND_TEXT.stichwoerterOhneStand}</p><p className="mt-5"><button type="button" className="btn-primary" disabled={!!counting} onClick={count}>{counting?'Wird gezählt …':STAND_TEXT.jetztBerechnen}</button></p></div>:<>
    <div className="mt-8"><Kpis label="Kennzahlen der Stichwörter" items={kpis}/></div>

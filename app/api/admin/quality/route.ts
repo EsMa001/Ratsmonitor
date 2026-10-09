@@ -16,7 +16,7 @@ export async function POST(request:Request){try{
  const body=await request.json().catch(()=>null) as {check?:unknown;continue?:unknown}|null;
  if(!body||typeof body.check!=='string'||!(body.check==='all'||Object.hasOwn(QUALITY_BY_ID,body.check)))throw new AdminError(400,'Unbekannte Prüfung.');
  const check=body.check,step=await refreshStep(env.DB,{action:body.continue===true?'step':'start',target:'quality:'+check,budgetMs:8000});
- if(step.state!=='done')return Response.json({id:check,running:true,busy:step.state==='busy',done:step.done,total:step.total},{headers:ADMIN_HEADERS});
+ if(step.state!=='done')return Response.json({id:check,running:true,busy:step.state==='busy',reason:(step as {reason?:string}).reason,done:step.done,total:step.total},{headers:ADMIN_HEADERS});
  const stored=await storedQualityChecks(env.DB);
  if(check==='all')return Response.json({id:check,...stored},{headers:ADMIN_HEADERS});
  const result=stored.checks[check as keyof typeof stored.checks];

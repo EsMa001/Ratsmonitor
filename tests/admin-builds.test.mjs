@@ -109,3 +109,17 @@ test('an old paused build is started anew, a finishing one makes others wait, a 
  assert.equal(await readBuild(db,'keywords'),null);
  assert.equal(await readStored(db,'keywords'),null);
 });
+
+test('builds wait while an import job runs, and go on when it is over (the state is kept)',async()=>{
+ const {sql,db}=stock();
+ sql.prepare("INSERT INTO system_state(key,value) VALUES('admin-pipeline-job',?)").run(JSON.stringify({status:'running',updatedAt:new Date().toISOString(),items:[]}));
+ const first=await refreshStep(db,{action:'start',target:'keywords',budgetMs:1e9});
+ assert.equal(first.state,'busy');assert.equal(first.reason,'job');
+ assert.ok(await readBuild(db,'keywords'),'the build is started and kept');
+ assert.equal((await refreshStep(db,{action:'step',target:'keywords',budgetMs:1e9})).reason,'job');
+ assert.equal(sql.prepare('SELECT count(*) n FROM admin_agg').get().n,0,'nothing was counted meanwhile');
+ /* The job is over (nobody has written to it for five minutes) */
+ sql.prepare("UPDATE system_state SET value=json_set(value,'$.updatedAt',?) WHERE key='admin-pipeline-job'").run(new Date(Date.now()-600000).toISOString());
+ const done=await refreshStep(db,{action:'step',target:'keywords',budgetMs:1e9});
+ assert.equal(done.state,'done');assert.ok(await readStored(db,'keywords'));
+});

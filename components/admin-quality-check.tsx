@@ -9,9 +9,17 @@ type Result={id:string;count:number;groups?:number;samples:Sample[];checkedAt:st
 type Stored={checks:Record<string,Result>;currentRevision:number};
 const n=(v:number)=>v.toLocaleString('de-DE');
 const when=(iso:string)=>new Date(iso).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'});
+// A failed connection (the server restarts, the computer sleeps) is tried again for two minutes; the state of the build is kept
+// on the server, so counting continues where it stopped.
+async function withRetry<T>(call:()=>Promise<T>,onWait?:(waiting:boolean)=>void):Promise<T>{
+ for(let attempt=0;;attempt++){
+  try{const result=await call();onWait?.(false);return result;}
+  catch(e){if(!(e instanceof TypeError)||attempt>=24)throw e;onWait?.(true);await new Promise(r=>setTimeout(r,5000));}
+ }
+}
 const GROUPS=Object.keys(QUALITY_GROUPS) as (keyof typeof QUALITY_GROUPS)[];
 async function request<T>(method:'GET'|'POST',body?:unknown):Promise<T>{
- const r=await fetch('/api/admin/quality',{method,cache:method==='GET'?'no-cache':'no-store',...(body?{headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
+ const r=await withRetry(()=>fetch('/api/admin/quality',{method,cache:method==='GET'?'no-cache':'no-store',...(body?{headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})}));
  const d=await r.json() as T&{error?:string};if(!r.ok)throw Error(d.error||'Prüfung nicht erreichbar.');return d;
 }
 /**

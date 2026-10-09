@@ -28,7 +28,7 @@ export async function computeAdminEstimate(){if(!env.DB)throw Error('Datenbank f
 export async function getRunDebug(region:string){if(!env.DB)throw Error('Datenbank fehlt');return readDebug(env.DB,region);}
 // Computing steps (server/integrations/admin-refresh.mjs): values per area take steps of 5 s, builds of 8 s.
 export async function getRefreshStatus(){if(!env.DB)throw Error('Datenbank fehlt');return refreshStatus(env.DB);}
-export async function runRefreshStep({action,target,restart}:{action:string;target:string;restart:boolean}){if(!env.DB)throw Error('Datenbank fehlt');return refreshStep(env.DB,{action,target,restart,budgetMs:target==='regions'?5000:8000});}
+export async function runRefreshStep({action,target,restart}:{action:string;target:string;restart:boolean}){if(!env.DB)throw Error('Datenbank fehlt');return refreshStep(env.DB,{action,target,restart,budgetMs:5000});}
 // Reading views with ETag and stand (rule R2/R3 of requirements/admin-performance-konzept.md): tag() reads the stand
 // (a few small queries) and names the answer; build() runs only if the browser does not hold that answer already.
 // Class B views derive from the values per area; class C views are stored evaluations.
