@@ -44,8 +44,21 @@ Zugang öffnen, dann im Browser `http://localhost:8080`:
 ssh -N -L 8080:127.0.0.1:8080 ratsmonitor
 ```
 
-Wer den Tunnel öffnen kann, ist Admin. Caddy meldet jede Anfrage mit der Kennung aus `/etc/default/caddy`
-(`RM_ADMIN_USER_ID`). Für Nico einen eigenen SSH-Schlüssel in `/root/.ssh/authorized_keys` eintragen.
+Wer den Tunnel öffnen kann, ist Admin. Caddy meldet jede Anfrage mit der Kennung aus `/etc/default/caddy`.
+Die Datei und ihre Einbindung in Caddy (der Caddy-Dienst von Ubuntu liest sie nicht von selbst):
+
+```bash
+printf 'RM_ADMIN_USER_ID=max\nRM_ADMIN_EMAIL=admin@ratsmonitor.local\n' > /etc/default/caddy
+mkdir -p /etc/systemd/system/caddy.service.d
+printf '[Service]\nEnvironmentFile=-/etc/default/caddy\n' > /etc/systemd/system/caddy.service.d/env.conf
+systemctl daemon-reload && systemctl restart caddy
+```
+
+Fehlt die Einbindung, setzt Caddy leere Kennungen, und die Administration ist gesperrt. Die gebundene Kennung muss
+zu `RM_ADMIN_USER_ID` passen (`scripts/bind-admin-owner.mjs`).
+
+Für Nico einen eigenen SSH-Schlüssel eintragen. Für den Tunnel allein genügt ein Benutzer ohne Root-Rechte; Deploys
+brauchen Root.
 
 Neuen Stand aufspielen (nur Committetes, gebaut wird auf dem Server):
 
@@ -66,7 +79,7 @@ journalctl -u ratsmonitor -f
 
 | Pfad | Inhalt |
 |---|---|
-| `/srv/ratsmonitor/app/current` | Verweis auf den laufenden Stand unter `releases/<commit>` (die letzten drei bleiben) |
+| `/srv/ratsmonitor/app/current` | Verweis auf den laufenden Stand unter `releases/<commit>` (dazu bleiben die zwei neuesten anderen) |
 | `/srv/ratsmonitor/data/ratsmonitor.sqlite` | Datenbank |
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
 | `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, drei Stände (`/etc/cron.d/ratsmonitor-backup`) |
@@ -79,19 +92,25 @@ Der Server startet nicht ohne gültige Datenbank. Sonst würden die Seiten still
 
 Die lokale Datei ist eine SQLite-Datei mit Protokoll (`-wal`). Eine rohe Kopie der laufenden Datei ist unbrauchbar.
 
-1. Lokal den Dev-Server beenden oder sicherstellen, dass kein Import und kein KI-Auftrag läuft.
-2. Protokoll zurückschreiben, dann Datei übertragen (ohne lokalen Zusatzplatz):
+1. Lokal den Dev-Server beenden. Auch seine Hintergrundskripte (`refresh-search-words`, `refresh-admin`) und
+   jeden KI-Auftrag abwarten: Im Task-Manager darf kein `node.exe` die Datei mehr halten.
+2. Protokoll zurückschreiben und prüfen, dass niemand mehr schreibt. Das Skript bricht sonst ab:
 
    ```bash
-   node -e "const {DatabaseSync}=require('node:sqlite');const d=new DatabaseSync(process.argv[1]);console.log(d.prepare('PRAGMA wal_checkpoint(TRUNCATE)').get());d.close()" "<lokale .sqlite>"
+   node scripts/db-checkpoint.mjs "<lokale .sqlite>"
+   ```
+
+3. Datei übertragen (braucht keinen lokalen Zusatzplatz). Bis zum Ende der Kopie nichts auf der Datei starten:
+
+   ```bash
    scp -C "<lokale .sqlite>" ratsmonitor:/srv/ratsmonitor/data/ratsmonitor.sqlite.new
    ```
 
-3. Auf dem Server: Dienst stoppen, Datei prüfen und tauschen, Besitzer binden, starten:
+4. Auf dem Server: Dienst stoppen, Datei vollständig prüfen und tauschen, Besitzer binden, starten:
 
    ```bash
    systemctl stop ratsmonitor
-   sqlite3 /srv/ratsmonitor/data/ratsmonitor.sqlite.new "PRAGMA quick_check"
+   sqlite3 /srv/ratsmonitor/data/ratsmonitor.sqlite.new "PRAGMA integrity_check"
    cd /srv/ratsmonitor/data && rm -f ratsmonitor.sqlite-wal ratsmonitor.sqlite-shm && mv ratsmonitor.sqlite.new ratsmonitor.sqlite && chown ratsmonitor: ratsmonitor.sqlite
    sudo -u ratsmonitor node /srv/ratsmonitor/app/current/scripts/node-migrate.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite --check
    sudo -u ratsmonitor node /srv/ratsmonitor/app/current/scripts/bind-admin-owner.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite max --replace

@@ -15,10 +15,12 @@
 import { openD1 } from './d1-sqlite.mjs';
 
 const STATE = Symbol.for('ratsmonitor.node.database');
-const state = (globalThis[STATE] ??= { database: undefined, failed: false, warned: false });
+const state = (globalThis[STATE] ??= { database: undefined, failedAt: 0, warned: false });
+const RETRY_MS = 30_000;
 
 function db() {
-  if (state.database || state.failed) return state.database;
+  // Nach einem Fehlschlag (z. B. Sperre eines anderen Prozesses) nach 30 s erneut versuchen statt bis zum Neustart nie.
+  if (state.database || Date.now() - state.failedAt < RETRY_MS) return state.database;
   const file = process.env.DATABASE_FILE || process.env.DB_FILE;
   if (!file) {
     if (!state.warned) { state.warned = true; console.error('[ratsmonitor] DATABASE_FILE ist nicht gesetzt: keine Datenbank, die Seiten zeigen den mitgelieferten Stand.'); }
@@ -31,7 +33,7 @@ function db() {
     });
     console.log(`[ratsmonitor] Datenbank geöffnet: ${file}${process.env.DATABASE_READONLY === '1' ? ' (nur lesen)' : ''}`);
   } catch (error) {
-    state.failed = true;
+    state.failedAt = Date.now();
     console.error('[ratsmonitor] Datenbank konnte nicht geöffnet werden:', error?.message ?? error);
   }
   return state.database;

@@ -11,6 +11,8 @@ KEEP="${KEEP:-3}"
 [ -f "$DB" ] || { echo "$(date -Is) keine Datenbank unter $DB"; exit 1; }
 need=$(stat -c %s "$DB"); free=$(( $(df --output=avail -B1 "$DIR" | tail -1) ))
 if [ "$free" -lt $(( need + need / 10 )) ]; then echo "$(date -Is) zu wenig Platz: frei $free, nötig etwa $need"; exit 1; fi
+# Reste abgebrochener Läufe entfernen; sie zählen nicht als Sicherung und belegen Platz
+rm -f "$DIR"/ratsmonitor-*.sqlite.part
 target="$DIR/ratsmonitor-$(date +%F-%H%M).sqlite"
 started=$(date +%s)
 # Mit niedriger Priorität: Die Kopie liest die ganze Datei, der Server soll dabei bedienbar bleiben.
