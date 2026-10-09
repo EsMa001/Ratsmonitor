@@ -479,6 +479,38 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.bad-schwartau.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-01055007",
+    "name": "Gemeinde Bosau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.agps.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Bosau"
+      ]
+    },
+    "verifiedSource": "https://www.agps.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.agps.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
+    "id": "de-01055010",
+    "name": "Gemeinde Dahme",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.groemitz.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Dahme"
+      ]
+    },
+    "verifiedSource": "https://www.groemitz.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.groemitz.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-01055012",
     "name": "Stadt Eutin",
     "kind": "city",
@@ -493,6 +525,40 @@
     "verifiedSource": "https://www.vg-eutin-suesel.de/Stadt-Eutin/Stadt/Stadtpolitik/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "OParl-Adresse des Systems (https://www.eutin.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-01055016",
+    "name": "Gemeinde Grömitz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.groemitz.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Grömitz",
+        "Cismar",
+        "Brenkenhagen"
+      ]
+    },
+    "verifiedSource": "https://www.groemitz.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.groemitz.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
+    "id": "de-01055018",
+    "name": "Gemeinde Grube",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.groemitz.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Grube"
+      ]
+    },
+    "verifiedSource": "https://www.groemitz.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.groemitz.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
   },
   {
     "id": "de-01055021",
@@ -511,6 +577,22 @@
     "verifiedSource": "https://www.heiligenhafen.de/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-01055025",
+    "name": "Gemeinde Kellenhusen (Ostsee)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.groemitz.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Kellenhusen"
+      ]
+    },
+    "verifiedSource": "https://www.groemitz.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.groemitz.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
   },
   {
     "id": "de-01055028",
@@ -659,6 +741,41 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.kreis-pinneberg.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-01056002",
+    "name": "Stadt Barmstedt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Barmstedt"
+      ],
+      "exclude": [
+        "Zweckverband"
+      ]
+    },
+    "verifiedSource": "https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
+    "id": "de-01056005",
+    "name": "Gemeinde Bönningstedt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.quickborn.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Bönningstedt"
+      ]
+    },
+    "verifiedSource": "https://www.quickborn.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.quickborn.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-01056015",
     "name": "Stadt Elmshorn",
     "kind": "city",
@@ -693,6 +810,22 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-01056021",
+    "name": "Gemeinde Hasloh",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.quickborn.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Hasloh"
+      ]
+    },
+    "verifiedSource": "https://www.quickborn.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.quickborn.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-01056025",
     "name": "Gemeinde Helgoland",
     "kind": "city",
@@ -719,6 +852,24 @@
     "verifiedSource": "https://www.pinneberg.de/politik/beiraete/behindertenbeirat",
     "verifiedAt": "2026-10-05",
     "apiCheck": "OParl-Adresse https://allris.pinneberg.de/public/oparl/system antwortete am 05.10.2026, lieferte aber keine verwertbaren Sitzungen (OParl HTTP 500); deshalb öffentliche Seiten."
+  },
+  {
+    "id": "de-01056041",
+    "name": "Stadt Quickborn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.quickborn.sitzung-online.de/public/",
+    "organizations": {
+      "exclude": [
+        "der Gemeinde",
+        "Gemeindevertretung",
+        "Gemeindewahlausschuss"
+      ]
+    },
+    "verifiedSource": "https://www.quickborn.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.quickborn.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
   },
   {
     "id": "de-01056043",
@@ -765,6 +916,25 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.amt-elmshorn-land.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-010565636",
+    "name": "Amt Hörnerkirchen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Hörnerkirchen",
+        "Bokel",
+        "Osterhorn",
+        "Westerhorn"
+      ]
+    },
+    "verifiedSource": "https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-01057",
     "name": "Kreis Plön",
     "kind": "district",
@@ -774,6 +944,22 @@
     "verifiedSource": "https://www.kreis-ploen.de/Politik-Verwaltung/Kreistag/B%C3%BCrgerinformationsportal/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-01057001",
+    "name": "Gemeinde Ascheberg (Holstein)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.quickborn.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Ascheberg"
+      ]
+    },
+    "verifiedSource": "https://www.quickborn.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.quickborn.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
   },
   {
     "id": "de-01057008",
@@ -839,6 +1025,31 @@
     "verifiedSource": "https://www.amt-luetjenburg.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.amt-luetjenburg.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-010575739",
+    "name": "Amt Großer Plöner See",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.agps.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Großer Plöner See",
+        "Dersau",
+        "Dörnick",
+        "Grebin",
+        "Kalübbe",
+        "Lebrade",
+        "Nehmten",
+        "Rantzau",
+        "Rathjensdorf",
+        "Wittmoldt"
+      ]
+    },
+    "verifiedSource": "https://www.agps.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.agps.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
   },
   {
     "id": "de-010575747",
@@ -1083,6 +1294,25 @@
     "foundBy": "requirements/anbindungskonzept.md"
   },
   {
+    "id": "de-01059045",
+    "name": "Stadt Kappeln",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://kappeln.ris-portal.de/web/ratsinformation/",
+    "organizations": {
+      "include": [
+        "Kappeln"
+      ],
+      "exclude": [
+        "Kappeln-Land"
+      ]
+    },
+    "verifiedSource": "https://kappeln.ris-portal.de/web/ratsinformation/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) am 10.10.2026 erreichbar; gemeinsames System mit Amt Kappeln-Land, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-01059075",
     "name": "Stadt Schleswig",
     "kind": "city",
@@ -1263,6 +1493,22 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.bad-bramstedt.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-01060019",
+    "name": "Gemeinde Ellerau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.quickborn.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Ellerau"
+      ]
+    },
+    "verifiedSource": "https://www.quickborn.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.quickborn.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-01060044",
     "name": "Stadt Kaltenkirchen",
     "kind": "city",
@@ -1357,6 +1603,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.amt-boostedt-rickling.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-010605086",
+    "name": "Amt Trave-Land",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.trave.sitzung-online.de/public/",
+    "verifiedSource": "https://www.trave.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.trave.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-01061029",
     "name": "Stadt Glückstadt",
     "kind": "city",
@@ -1377,6 +1634,25 @@
     "verifiedSource": "https://www.itzehoe.de/rathaus/politik-gremien/buerger-ratsinformationssystem",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-01061113",
+    "name": "Stadt Wilster",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.wilstermarsch.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Wilster"
+      ],
+      "exclude": [
+        "Wilstermarsch"
+      ]
+    },
+    "verifiedSource": "https://www.wilstermarsch.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.wilstermarsch.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
   },
   {
     "id": "de-010615134",
@@ -1421,6 +1697,36 @@
     "verifiedSource": "https://www.amt-schenefeld.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.amt-schenefeld.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-010615179",
+    "name": "Amt Wilstermarsch",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.wilstermarsch.sitzung-online.de/public/",
+    "organizations": {
+      "include": [
+        "Wilstermarsch",
+        "Aebtissinwisch",
+        "Beidenfleth",
+        "Brokdorf",
+        "Büttel",
+        "Dammfleth",
+        "Ecklak",
+        "Kudensee",
+        "Landrecht",
+        "Landscheide",
+        "Neuendorf-Sachsenbande",
+        "Nortorf",
+        "Sankt Margarethen",
+        "Stördorf",
+        "Wewelsfleth"
+      ]
+    },
+    "verifiedSource": "https://www.wilstermarsch.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.wilstermarsch.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
   },
   {
     "id": "de-010615189",
