@@ -185,3 +185,11 @@ test('RIS-Portal redesigned theme: public items with number, title and documents
  const cut=parseRisPortalMeeting(withNonPublic,meeting,dachau,new Date('2026-10-09T12:00:00Z'));
  assert.equal(cut.items.length,3);assert.ok(!cut.items.some(i=>/geheim/.test(i.title)));
 });
+
+test('RIS-Portal: the part "Teil A - Öffentlicher Teil" (Langen) is the public agenda, "Teil B" is not read',()=>{
+ const src={id:'de-06438006',name:'Stadt Langen (Hessen)',kind:'city',method:'scraper',adapter:'ris-portal',base:'https://langen.ris-portal.de/'};
+ const item=(n,t)=>`<li class="rp-lis-item" data-top-number="${n}"><div class="top-item-content"><p><span>${n}</span><span>${t}</span></p></div></li>`;
+ const html=`<h2 class="h1">Sitzung Stadtverordnetenversammlung am 24.09.2026</h2><h3 class="h4 accordion-list-header">Teil A - Öffentlicher Teil</h3><ul>${item('1','Haushalt 2027')}</ul><h3 class="h4 accordion-list-header">Teil B - Nichtöffentlicher Teil</h3><ul>${item('2','Personalangelegenheit')}</ul>`;
+ const m=parseRisPortalMeeting(html,{date:'2026-09-24',committee:'Stadtverordnetenversammlung',url:'https://langen.ris-portal.de/web/guest/sitzungen?sitzungId=1'},src,new Date('2026-10-09T00:00:00Z'));
+ assert.deepEqual(m.items.map(i=>i.title),['Haushalt 2027']);
+});

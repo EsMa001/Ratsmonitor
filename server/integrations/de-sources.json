@@ -2927,6 +2927,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-06438006",
+    "name": "Stadt Langen (Hessen)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://langen.ris-portal.de/",
+    "verifiedSource": "https://langen.ris-portal.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten, Teil A - Öffentlicher Teil) erreichbar."
+  },
+  {
     "id": "de-06438007",
     "name": "Gemeinde Mainhausen",
     "kind": "city",

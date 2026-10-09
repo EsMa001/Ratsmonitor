@@ -3150,7 +3150,7 @@
  "de-073355011":{"c":"ok","z":"scraping"},
  "de-010595937":{"c":"ok","z":"scraping"},
  "de-09276129":{"c":"ok","z":"scraping"},
- "de-06438006":{"c":"readfail","z":"scraping","r":105,"u":"https://langen.ris-portal.de/"},
+ "de-06438006":{"c":"ok","z":"scraping"},
  "de-09577148":{"c":"nolink","z":"none","r":39},
  "de-08435030":{"c":"ok","z":"scraping"},
  "de-08425072":{"c":"ok","z":"scraping"},
