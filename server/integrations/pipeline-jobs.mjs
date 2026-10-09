@@ -100,6 +100,16 @@ async function step(db,id,run){
  if(!claim.region)return claim;
  // The cursor (rule labelling) is handed on only when the item has one; imports take their three arguments as before.
  let result=null;try{result=await run(claim.job.stage,claim.region,claim.job.window,...(claim.cursor!==undefined?[claim.cursor]:[]));}catch{}
+ // Progress of rule labelling over the whole stock: how many stored reports lie up to the cursor (the reports are worked through in
+ // the order of their id) of all stored. Read before the job is locked; the counts take about a tenth of a second.
+ let position=null,total=null;
+ if(claim.job.stage==='analysis'&&claim.region==='all'&&result?.status===200){
+  try{
+   const known=claim.job.items.find(i=>i.region==='all')?.total,cursor=result.data?.cursor;
+   if(cursor)position=Number((await db.prepare('SELECT count(*) n FROM topics WHERE id<=?').bind(cursor).first())?.n);
+   total=known||Number((await db.prepare('SELECT count(*) n FROM topics').first())?.n)||null;
+  }catch{/* progress is only shown, never needed */}
+ }
  return locked(db,async()=>{
   const job=await read(db);
   // The job was replaced in the meantime. The import itself is stored; there is no item left to report to.
@@ -119,10 +129,12 @@ async function step(db,id,run){
    else if(job.stage==='analysis'){
     // The next package continues behind the cursor; remaining is known for one region, for the whole stock only whether more may follow.
     if(d.cursor)item.cursor=d.cursor;
+    if(total)item.total=total;
+    if(position!==null)item.position=position;
     if(typeof d.remaining==='number')item.remaining=d.remaining;else delete item.remaining;
     const open=d.more||d.remaining>0;
     item.status=open?'queued':'completed';item.message=!open?'Alle offenen Berichte bearbeitet.':typeof d.remaining==='number'?`${d.remaining} Berichte noch offen; das nächste Paket folgt.`:'Weitere Berichte offen; das nächste Paket folgt.';
-    if(!open)delete item.cursor;}
+    if(!open){delete item.cursor;if(item.total)item.position=item.total;}}
    else {item.status=d.coverage&&!complete?'partial':'completed';item.message=d.quiet?'Keine Sitzungen im gewählten Zeitraum; gespeicherter Bestand unverändert.':d.coverage?.issues?.join(' · ').slice(0,short)||(d.unchanged?`Ergebnis in der Datenbank gespeichert; ${d.unchanged} unveränderte ${d.unchanged===1?'Sitzung':'Sitzungen'} übersprungen.`:'Ergebnis in der Datenbank gespeichert.');
     if(d.warnings?.length)item.message=(item.message+` Warnung: ${d.warnings.join(' · ')}`).slice(0,long);}}
   if(job.status!=='cancelled')job.status=job.items.some(i=>i.status==='running')?'running':job.items.some(i=>i.status==='queued')?'queued':'completed';

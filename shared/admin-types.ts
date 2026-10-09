@@ -3,7 +3,7 @@ export type ProcessingCounts={total:number;rules:number;summary:number;aiLabel:n
 // scope: 'sources' for the import of every connected source. paused: no further areas are claimed until the job is resumed.
 // delta: items lists only the areas changed since the moment the caller named; counts covers all areas.
 // cursor, remaining: rule labelling only — the last id of the stored package, and the open reports of one region (unknown for the whole stock).
-export type PipelineItem={region:string;status:string;processed:number;message:string;startedAt?:string;at?:string;server?:string;resumes?:number;cursor?:string;remaining?:number};
+export type PipelineItem={region:string;status:string;processed:number;position?:number;total?:number;message:string;startedAt?:string;at?:string;server?:string;resumes?:number;cursor?:string;remaining?:number};
 export type PipelineJob={id:string;stage:string;window?:string;scope?:string;createdAt:string;updatedAt:string;status:string;wait?:boolean;paused?:boolean;delta?:boolean;counts?:Record<string,number>;items:PipelineItem[]};
 export type AdminSource={processing:ProcessingCounts;attemptStatus:string|null;id:string;name:string;ags:string;land:string;kind:string;count:number;firstEventAt:string|null;lastEventAt:string|null;pendingAnalysis:number;method:string;configured:boolean;canImport:boolean;stale:boolean;partial:boolean;attention:boolean;state:string;access:string;accessLabel:string;channel:string;lastSuccessAt:string|null;lastAttemptAt:string|null;issues:string[];warnings:string[];issueCount?:number;warningCount?:number;sourceUrl:string|null;complete:boolean;nextRetryAt:string|null};
 export type AdminArticle={id:string;regionId:string;title:string;status:string;updatedAt:string;label:string;generatedBy:string};

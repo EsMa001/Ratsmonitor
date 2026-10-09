@@ -448,3 +448,14 @@ test('jobs list each source with its role once, group articles by session and ke
   assert.equal((await applyAiResults(db,job,ok)).applied,3);
  }finally{sql.close();}
 });
+
+test('rule labelling over the whole stock reports its position among the stored reports, not the counter of changed rows',async()=>{
+ const {sql,db}=fixture();
+ for(const id of ['a1','a2','a3','a4','a5'])sql.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run(id,'billerbeck','city','2026-09-20','2026-10-01T00:00:00Z','unknown','{}');
+ let job=await pipelineAction(db,{action:'create',stage:'analysis',regions:'all'},()=>{});
+ /* The counter of a package may be inflated (triggers); the position is read from the stored reports */
+ job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{processed:30,more:true,cursor:'a3'}}));
+ assert.equal(job.items[0].total,5);assert.equal(job.items[0].position,3);
+ job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:200,data:{processed:12,more:false,cursor:'a5'}}));
+ assert.equal(job.status,'completed');assert.equal(job.items[0].position,5,'complete: position = total');
+});
