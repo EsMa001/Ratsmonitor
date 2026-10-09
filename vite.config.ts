@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import vinext from "vinext";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
@@ -36,7 +37,23 @@ const localBindingConfig = {
     : [],
 };
 
+// Node-Betrieb (eigener Server statt Cloudflare): `npm run build:node` setzt RM_TARGET=node.
+// Dann ohne Cloudflare-Plugin; 'cloudflare:workers' zeigt auf server/node/cloudflare-workers.mjs, das `env.DB`
+// über node:sqlite aus DATABASE_FILE öffnet. Der lokale Dev-Server (npm run dev) bleibt unverändert bei Miniflare.
+const nodeTarget = process.env.RM_TARGET === "node";
+
 export default defineConfig(async () => {
+  if (nodeTarget) {
+    return {
+      resolve: {
+        alias: {
+          "cloudflare:workers": fileURLToPath(new URL("./server/node/cloudflare-workers.mjs", import.meta.url)),
+        },
+      },
+      plugins: [vinext()],
+    };
+  }
+
   // Use Miniflare's local Request.cf placeholder unless fetching is requested.
   process.env.CLOUDFLARE_CF_FETCH_ENABLED ??= "false";
   process.env.WRANGLER_SEND_METRICS ??= "false";

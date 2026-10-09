@@ -1,0 +1,35 @@
+# Caddy für den Node-Betrieb: /etc/caddy/Caddyfile, danach `systemctl reload caddy`.
+#
+# Die App erkennt den Admin über die Kopfzeilen oai-authenticated-user-* (app/chatgpt-auth.ts).
+# Caddy setzt sie hier selbst und überschreibt alles, was ein Browser schickt.
+# RM_ADMIN_USER_ID und RM_ADMIN_EMAIL kommen aus /etc/default/caddy (siehe docs/betrieb/node-server.md).
+
+# Phase 1, nur für uns: erreichbar ausschließlich über einen SSH-Tunnel.
+#   ssh -N -L 8080:127.0.0.1:8080 ratsmonitor     und dann im Browser http://localhost:8080
+# Port 8080 lauscht nur auf dem Server selbst; die Firewall lässt ihn ohnehin nicht durch.
+# Wer den Tunnel öffnen kann (SSH-Schlüssel), ist Admin.
+http://localhost:8080 {
+	bind 127.0.0.1
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:3000 {
+		header_up Oai-Authenticated-User-Id {$RM_ADMIN_USER_ID}
+		header_up Oai-Authenticated-User-Email {$RM_ADMIN_EMAIL}
+		header_up -Oai-Authenticated-User-Full-Name
+		header_up -Oai-Authenticated-User-Full-Name-Encoding
+	}
+}
+
+# Phase 2, eigene Subdomain mit Passwort (erst einschalten, wenn der A-Record auf den Server zeigt):
+# test.example.de {
+# 	encode zstd gzip
+# 	basicauth {  # ab Caddy 2.8: basic_auth
+# 		# Benutzer und Hash erzeugen: caddy hash-password
+# 		max $2a$14$...
+# 	}
+# 	reverse_proxy 127.0.0.1:3000 {
+# 		header_up Oai-Authenticated-User-Id {$RM_ADMIN_USER_ID}
+# 		header_up Oai-Authenticated-User-Email {$RM_ADMIN_EMAIL}
+# 		header_up -Oai-Authenticated-User-Full-Name
+# 		header_up -Oai-Authenticated-User-Full-Name-Encoding
+# 	}
+# }

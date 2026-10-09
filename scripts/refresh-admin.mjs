@@ -13,10 +13,12 @@ import {sqliteAdapter} from './ai-job.mjs';
 const args=process.argv.slice(2),quiet=args.includes('--quiet'),say=(...a)=>{if(!quiet)console.log(...a);};
 const build=args.includes('--build')?args[args.indexOf('--build')+1]:null;
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
-const file=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
+// Auf dem eigenen Server (Node-Betrieb) nennt DATABASE_FILE die Datei; lokal die Miniflare-Datei unter .wrangler/.
+const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
+const file=process.env.DATABASE_FILE||(local?dir+local:null);
 if(!file){say('Keine lokale Datenbank gefunden, nichts zu tun.');process.exit(0);}
 // Der Dev-Server hält dieselbe Datei offen: warten statt mit SQLITE_BUSY abzubrechen.
-const sql=new DatabaseSync(dir+file);sql.exec('PRAGMA busy_timeout=60000');
+const sql=new DatabaseSync(file);sql.exec('PRAGMA busy_timeout=60000');
 const db=sqliteAdapter(sql),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function drive(target,first='step'){
  const t0=Date.now();let action=first,r;

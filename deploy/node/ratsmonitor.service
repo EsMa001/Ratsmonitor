@@ -1,0 +1,33 @@
+# systemd-Dienst für den Node-Betrieb. Installieren:
+#   cp deploy/node/ratsmonitor.service /etc/systemd/system/ && systemctl daemon-reload && systemctl enable --now ratsmonitor
+# Werte (Datenbank, Port, Geheimnisse) stehen in /srv/ratsmonitor/ratsmonitor.env (Vorlage: ratsmonitor.env.example).
+[Unit]
+Description=Ratsmonitor (Node-Server)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+ExecStart=/usr/bin/node dist/standalone/server.js
+Restart=always
+RestartSec=3
+# Lange Admin-Anfragen (Abrufe bis etwa 3 Minuten) beim Neustart ausklingen lassen
+TimeoutStopSec=30
+LimitNOFILE=65536
+# Absicherung: nur der Datenordner ist beschreibbar
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target
