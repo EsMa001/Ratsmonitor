@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useMemo,useState} from 'react';
+import {useEffect,useMemo,useRef,useState} from 'react';
 import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
 import {mergeAreas,rangeStart,timelineSeries,timelineStats,TIMELINE_BUCKETS,TIMELINE_RANGES,TIMELINE_BASES} from '@/shared/timeline.mjs';
@@ -28,25 +28,28 @@ function Chart({points,value,kind,bucket,color,unit,hover,onHover}:{points:Point
  </svg>;
 }
 /** Stock and inflow of stored reports over time, for the map selection or all areas. Reads only. */
-export function AdminTimeline({selected,revision,initial}:{selected:Set<string>;revision:number;initial?:Dataset}){
+export function AdminTimeline({selected,version,initial}:{selected:Set<string>;version:number;initial?:Dataset}){
  const [scope,setScope]=useState('selection'),[basis,setBasis]=useState('event'),[bucket,setBucket]=useState('week'),[range,setRange]=useState('12m');
- const [loaded,setLoaded]=useState<Record<string,Dataset>>(initial?{[initial.basis+':'+revision]:initial}:{}),[failed,setFailed]=useState<Record<string,string>>({}),[hover,setHover]=useState<number|null>(null);
+ const [loaded,setLoaded]=useState<Record<string,Dataset>>(initial?{[initial.basis+':'+version]:initial}:{}),[failed,setFailed]=useState<Record<string,string>>({}),[hover,setHover]=useState<number|null>(null);
  // round: values per area just computed by the catch-up steps (admin-store.ts) are read again.
  const [round,setRound]=useState(0);
  useEffect(()=>{const again=()=>setRound(r=>r+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);
- const key=basis+':'+revision+(round?':'+round:''),dataset=loaded[key],error=failed[key]||'';
+ const key=basis+':'+version+(round?':'+round:''),dataset=loaded[key],error=failed[key]||'';
+ // Loaded only when the section comes into view: a page that is opened for something else does not read it.
+ const box=useRef<HTMLElement>(null),[seen,setSeen]=useState(false);
+ useEffect(()=>{const el=box.current;if(!el||seen)return;const io=new IntersectionObserver(e=>{if(e.some(x=>x.isIntersecting)){setSeen(true);io.disconnect();}},{rootMargin:'200px'});io.observe(el);return()=>io.disconnect();},[seen]);
  useEffect(()=>{
-  if(loaded[key]||failed[key])return;const c=new AbortController();
+  if(!seen||loaded[key]||failed[key])return;const c=new AbortController();
   fetch('/api/admin/timeline?basis='+basis,{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Dataset&{error?:string};if(!r.ok)throw Error(d.error||'Verlauf konnte nicht geladen werden.');setLoaded(prev=>({...prev,[key]:d}));}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[key]:e instanceof Error?e.message:'Verlauf konnte nicht geladen werden.'}));});
   return()=>c.abort();
- },[key,basis,loaded,failed]);
+ },[key,basis,loaded,failed,seen]);
  const view=useMemo(()=>{
   if(!dataset)return null;
   const merged=mergeAreas(dataset,scope==='all'?null:selected),to=dataset.today,from=rangeStart(range,to,merged.counts);
   return {merged,from,to,series:timelineSeries(merged.counts,{bucket,from,to,undated:merged.undated}),stats:timelineStats(merged.counts,{from,to})};
  },[dataset,scope,selected,range,bucket]);
  const point=view&&hover!==null?view.series.points[hover]:null;
- return <section className="admin-timeline" id="admin-verlauf">
+ return <section ref={box} className="admin-timeline" id="admin-verlauf">
   <div className="admin-section-heading"><div><p className="eyebrow">BESTAND & ZULAUF</p><h2>Wie viele Berichte sind gespeichert, wie viele kommen neu hinzu?</h2></div>{view&&<span>{scope==='all'?'Alle Gebiete':n(selected.size)+' ausgewählte Gebiete'} · {n(view.merged.areas)} mit Berichten</span>}</div>
   <div className="admin-timeline-controls">
    <Choice label="Gebiete" value={scope} onChange={setScope} items={[["selection",`Auswahl der Karte (${n(selected.size)})`],["all","Alle Gebiete"]]}/>

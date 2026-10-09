@@ -39,10 +39,15 @@ export function AdminAtlas({displayName,signOutPath}:{displayName:string;signOut
  const [data,setData]=useState<Atlas|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[geo,setGeo]=useState<{shapes:Shape[];states:string[]}|null>(null),[geoError,setGeoError]=useState(false);
  const [cats,setCats]=useState<Set<string>|null>(null),[access,setAccess]=useState<Set<string>|null>(null),[reach,setReach]=useState<Set<string>|null>(null),[fresh,setFresh]=useState<Set<string>|null>(null),[colorBy,setColorBy]=useState('cat'),[layer,setLayer]=useState('city'),[land,setLand]=useState('all'),[type,setType]=useState('all'),[operator,setOperator]=useState('all'),[query,setQuery]=useState(''),[sort,setSort]=useState('pop'),[selected,setSelected]=useState<string|null>(null),[hover,setHover]=useState<string|null>(null),[shown,setShown]=useState(PAGE);
  const [view,setView]=useState<View|null>(null);const svgRef=useRef<SVGSVGElement>(null),drag=useRef<{x:number;y:number;view:View;moved:boolean}|null>(null),lastDrag=useRef(0);
- // Data: now and every five minutes; the shapes once.
+ // Data: now and every five minutes while the tab is visible (and when it comes back after more than five minutes); never
+ // two requests at once. The shapes once.
  useEffect(()=>{const c=new AbortController();setError('');
-  const load=()=>fetch('/api/admin/atlas',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Atlas&{error?:string};if(!r.ok)throw Error(d.error||'Der Lückenatlas konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Der Lückenatlas konnte nicht geladen werden.');});
-  void load();const timer=setInterval(load,REFRESH_MS);return()=>{c.abort();clearInterval(timer);};},[attempt]);
+  let running=false,loadedAt=0;
+  const fetchNow=()=>fetch('/api/admin/atlas',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Atlas&{error?:string};if(!r.ok)throw Error(d.error||'Der Lückenatlas konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Der Lückenatlas konnte nicht geladen werden.');});
+  const load=()=>{if(running||document.visibilityState!=='visible')return Promise.resolve();running=true;return fetchNow().finally(()=>{running=false;loadedAt=Date.now();});};
+  const onVisible=()=>{if(document.visibilityState==='visible'&&Date.now()-loadedAt>=REFRESH_MS)void load();};
+  document.addEventListener('visibilitychange',onVisible);
+  void load();const timer=setInterval(()=>void load(),REFRESH_MS);return()=>{c.abort();clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);};},[attempt]);
  useEffect(()=>{const c=new AbortController();
   Promise.all(FILES.map((file,i)=>fetch(file,{signal:c.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<{regions:Shape[];states?:{path:string}[]}>;}).catch(e=>{if(i===0||e.name==='AbortError')throw e;return {regions:[] as Shape[],states:[] as {path:string}[]};}))).then(parts=>setGeo({shapes:parts.flatMap(p=>p.regions),states:(parts[0].states||[]).map(s=>s.path)})).catch(e=>{if(e.name!=='AbortError')setGeoError(true);});
   return()=>c.abort();},[]);
@@ -97,7 +102,8 @@ export function AdminAtlas({displayName,signOutPath}:{displayName:string;signOut
  return <div className="admin-app"><AdminHeader page="atlas" displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
   <div className="admin-heading"><div><p className="eyebrow">LÜCKENATLAS</p><h1>Welche Gebiete lesen wir, welche nicht, und warum?</h1><p>{displayName}</p><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={()=>setAttempt(a=>a+1)} extra={data?<> · Gründe aus der Quellensuche vom {data.reportDate}</>:null}/></div></div>
   {error&&<p role="alert" className="admin-error">{error} <button type="button" className="admin-timeline-retry" onClick={()=>setAttempt(a=>a+1)}>Erneut laden</button></p>}
-  {!data&&!error&&<p role="status" className="admin-note">Alle {n(5324)} Gebiete werden mit Anbindung, Grund und Berichtsstand geladen …</p>}
+  {!data&&!error&&<p role="status" className="admin-note">Alle Gebiete werden mit Anbindung, Grund und Berichtsstand geladen …</p>}
+  {!data&&!error&&<div className="h-[520px] animate-pulse rounded-lg bg-slate-100" aria-hidden="true"/>}
   {data&&<>
    {data.statsPending>0&&<p role="status" className="admin-notice">Berichtszahlen von {n(data.statsPending)} Gebieten werden noch berechnet; die nächste Aktualisierung zeigt sie.</p>}
    <section className="admin-kpis" aria-label="Kennzahlen">

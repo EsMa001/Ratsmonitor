@@ -62,9 +62,9 @@ function BucketBar({buckets,of}:{buckets:Bucket[];of:'areas'|'population'}){
 }
 /** Admin page "Übersicht": coverage by areas and population, today and over time, and analyses of the stock. Reads only. */
 export function AdminOverview({displayName,signOutPath}:{displayName:string;signOutPath:string}){
- const [data,setData]=useState<Coverage|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[hover,setHover]=useState<number|null>(null),[of,setOf]=useState<'areas'|'population'>('areas');
+ const [data,setData]=useState<Coverage|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[refreshing,setRefreshing]=useState(false),[hover,setHover]=useState<number|null>(null),[of,setOf]=useState<'areas'|'population'>('areas');
  useEffect(()=>{const c=new AbortController();setError('');
-  fetch('/api/admin/coverage',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Coverage&{error?:string};if(!r.ok)throw Error(d.error||'Die Abdeckung konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Die Abdeckung konnte nicht geladen werden.');});
+  fetch('/api/admin/coverage',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Coverage&{error?:string};if(!r.ok)throw Error(d.error||'Die Abdeckung konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Die Abdeckung konnte nicht geladen werden.');}).finally(()=>{if(!c.signal.aborted)setRefreshing(false);});
   return()=>c.abort();},[attempt]);
  // Values per area just computed by the catch-up steps (admin-store.ts): read again.
  useEffect(()=>{const again=()=>setAttempt(a=>a+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);
@@ -85,11 +85,11 @@ export function AdminOverview({displayName,signOutPath}:{displayName:string;sign
   return {now,areas:series('areas'),population:series('population'),lands,months,reach,fresh,shallow:sum(reach,['w','m1']),deep:sum(reach,['y1','y2']),quiet:sum(fresh,['d180','old']),current:sum(fresh,['ahead','d30'])};
  },[data]);
  return <div className="admin-app"><AdminHeader page="uebersicht" displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
-  <div className="admin-heading"><div><p className="eyebrow">ÜBERSICHT</p><h1>Wie weit reicht Plenara?</h1><p>{displayName}</p><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={()=>setAttempt(a=>a+1)}/></div></div>
+  <div className="admin-heading"><div><p className="eyebrow">ÜBERSICHT</p><h1>Wie weit reicht Plenara?</h1><p>{displayName}</p><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={()=>{setRefreshing(true);setAttempt(a=>a+1);}} busy={refreshing}/></div></div>
   {error&&<p role="alert" className="admin-error">{error} <button type="button" className="admin-timeline-retry" onClick={()=>setAttempt(a=>a+1)}>Erneut laden</button></p>}
   {!data&&!error&&<p role="status" className="admin-note">Abdeckung wird aus Katalog und Datenbank gelesen. Beim ersten Aufruf nach einer Änderung des Bestands dauert das bis zu einer Minute.</p>}
   {data&&data.stand&&data.stand.unbuilt>0&&<p role="status" className="admin-note">Die Werte je Gebiet werden zum ersten Mal berechnet. Bis alle Gebiete fertig sind, zeigt diese Seite keine Zahlen, damit keine Teilsummen wie Ergebnisse aussehen.</p>}
-  {data&&view&&!(data.stand&&data.stand.unbuilt>0)&&<>
+  {data&&view&&!(data.stand&&data.stand.unbuilt>0)&&<div className={refreshing?'opacity-60 transition-opacity':''}>
    <section className="admin-kpis" aria-label="Abdeckung heute">
     <div className="admin-kpi admin-kpi-primary"><span>Gebiete angebunden</span><strong>{n(data.connected.areas)}<em> / {n(data.total.areas)}</em></strong><small>{pct(data.connected.areas,data.total.areas)} aller Städte, Gemeinden, Gemeindeverbände und Kreise haben eine Quelle, die Programme lesen können</small></div>
     <div className="admin-kpi admin-kpi-primary"><span>Einwohner erreicht</span><strong>{pct(data.connected.population,data.total.population)}</strong><small>{mio(data.connected.population)} von {mio(data.total.population)} Einwohnern leben in einem angebundenen Gebiet (Gemeindeebene)</small></div>
@@ -133,7 +133,7 @@ export function AdminOverview({displayName,signOutPath}:{displayName:string;sign
     <a className="admin-next-link" href={adminHref('abruf','filter=empty')}><Play size={20}/><span><strong>Abruf starten</strong><small>{n(data.connected.areas-data.data.areas)} angebundene Gebiete haben noch keine Berichte</small></span><ArrowUpRight size={16}/></a>
     <a className="admin-next-link" href={adminHref('qualitaet')}><RefreshCw size={20}/><span><strong>Qualität & Betrieb</strong><small>Prüfliste, Importverlauf, Datenbank</small></span><ArrowUpRight size={16}/></a>
    </section>
-  </>}
+  </div>}
   <footer className="admin-footer">Kennzahlen aus Quellenkatalog und Datenbank. Berichtszahlen schließen zusammengeführte Verweise aus. <a href="/">Zur öffentlichen Website</a></footer>
  </main></div>;
 }

@@ -8,6 +8,10 @@
 /data/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
+# Kartenformen der Administration (germany.json, de-areas.json): wie /data.
+/geo/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
 # Schriften ändern sich praktisch nie.
 /fonts/*
   Cache-Control: public, max-age=2592000

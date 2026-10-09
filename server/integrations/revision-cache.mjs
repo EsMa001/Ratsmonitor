@@ -17,8 +17,8 @@ export async function atRevision(db,key,compute){
  const hit=entries.get(key);
  if(hit&&hit.revision===revision)return hit.value;
  const value=await compute();
- // A few keys only (the overview per hour, the timeline per basis); older ones of the same kind are dropped.
- const kind=key.split('|')[0];for(const other of entries.keys())if(other.split('|')[0]===kind)entries.delete(other);
+ // A few keys only (the overview per hour); older ones of the same kind are dropped. Timeline keys are kept per basis.
+ const kindOf=k=>k.startsWith('timeline|')?k:k.split('|')[0],kind=kindOf(key);for(const other of entries.keys())if(kindOf(other)===kind)entries.delete(other);
  entries.set(key,{revision,value});
  return value;
 }

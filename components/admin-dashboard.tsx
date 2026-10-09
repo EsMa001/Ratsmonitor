@@ -8,7 +8,6 @@ import {Button} from '@/components/ui/button';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
 import {Table,TableHeader,TableBody,TableRow,TableHead,TableCell} from '@/components/ui/table';
 import {REVIEW_FILTERS} from '@/shared/admin.mjs';
-import {regionName} from '@/shared/regions';
 import {STATUS} from '@/shared/types';
 import type {AdminDashboard,AdminSource} from '@/shared/admin-types';
 const n=(v:number)=>v.toLocaleString('de-DE');
@@ -21,6 +20,7 @@ export function AdminDashboardView({initial,displayName,signOutPath}:{initial:Ad
  const [issue,setIssue]=useState('labels'),[reviewRegion,setReviewRegion]=useState('all'),[review,setReview]=useState(initial.review),[reviewBusy,setReviewBusy]=useState(false),[reviewError,setReviewError]=useState('');
  const [analysisRegion,setAnalysisRegion]=useState('all'),[analysing,setAnalysing]=useState('');
  const firstReview=useRef(true);
+ const names=useMemo(()=>new Map(data.sources.map(s=>[s.id,s.name])),[data.sources]),regionName=(id:string)=>names.get(id)||id;
  const populated=useMemo(()=>data.sources.filter(s=>s.count>0),[data.sources]),partial=populated.filter(s=>s.partial),stale=populated.filter(s=>s.stale),configuredEmpty=data.sources.filter(s=>s.canImport&&!s.count),failed=data.sources.filter(s=>s.attemptStatus==='failed');
  useEffect(()=>{
   if(firstReview.current){firstReview.current=false;return;}
