@@ -23,6 +23,15 @@ if (command === "dev" && !process.env.RM_SKIP_SEARCH_WORDS) {
   } catch { /* Hilfe beim Start, kein Muss */ }
 }
 
+// Dev: die vorberechneten Werte der Administration (Werte je Gebiet, server/integrations/region-facts.mjs) im Hintergrund
+// nachführen; beim ersten Mal 2 bis 3 Minuten, bis dahin rechnet eine offene Adminseite in Schritten selbst nach.
+// Ohne lokale Datenbank, ohne Migration 0016 oder mit RM_SKIP_ADMIN_REFRESH=1 passiert nichts.
+if (command === "dev" && !process.env.RM_SKIP_ADMIN_REFRESH) {
+  try {
+    spawn(process.execPath, ["--no-warnings", fileURLToPath(new URL("./refresh-admin.mjs", import.meta.url)), "--quiet"], { stdio: "ignore", detached: true, cwd: fileURLToPath(new URL("..", import.meta.url)) }).unref();
+  } catch { /* Hilfe beim Start, kein Muss */ }
+}
+
 // Import in this process so the preview owner retains its PID and signals.
 const cli = new URL(managedLinux
   ? "../node_modules/vite/bin/vite.js"
