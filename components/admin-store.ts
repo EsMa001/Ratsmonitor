@@ -62,14 +62,21 @@ let staticVersion='',staticKept:{v:string;data:{areas:unknown[]}}|null=null;
 /** The version of the static list the server rendered the page with; the list is then cached by the browser for good. */
 export function setAdminStaticVersion(version:string){staticVersion=version;}
 async function readJson<T>(response:Response,fallback:string):Promise<T>{
- const data=await response.json().catch(()=>({})) as T&{error?:string};
+ // An aborted read (the page was left or its effect ran twice) is an abort, not an empty answer: it must not be kept as data.
+ const data=await response.json().catch(e=>{if((e as {name?:string})?.name==='AbortError')throw e;return {};}) as T&{error?:string};
  if(!response.ok)throw Error(data.error||fallback);
  return data;
 }
 async function staticAreasData(signal?:AbortSignal){
  if(staticKept&&(!staticVersion||staticKept.v===staticVersion))return staticKept.data;
- const data=await fetch('/api/admin/static'+(staticVersion?'?v='+encodeURIComponent(staticVersion):''),{cache:staticVersion?'default':'no-cache',signal}).then(r=>readJson<{areas:unknown[]}>(r,'Die Gebiete konnten nicht geladen werden.'));
- staticKept={v:staticVersion,data};return data;
+ const url='/api/admin/static'+(staticVersion?'?v='+encodeURIComponent(staticVersion):'');
+ const load=(cache:RequestCache)=>fetch(url,{cache,signal}).then(r=>readJson<{areas?:unknown[]}>(r,'Die Gebiete konnten nicht geladen werden.'));
+ let data=await load(staticVersion?'default':'no-cache');
+ // An answer that is not the list (empty, cut off, or kept by the browser from a failed request: the list is cached for good
+ // under its version) is read again past the browser's cache.
+ if(!Array.isArray(data.areas))data=await load('reload');
+ if(!Array.isArray(data.areas))throw Error('Die Gebietsliste ist unvollständig angekommen. Bitte die Seite mit Strg+F5 neu laden.');
+ staticKept={v:staticVersion,data:data as {areas:unknown[]}};return staticKept.data;
 }
 /**
  * The dashboard in the form of the former overview: counts, labels, statuses, runs and job from summary, `sources` from the
@@ -82,6 +89,7 @@ export async function fetchDashboard({review=false,signal}:{review?:boolean;sign
   staticAreasData(signal),
   review?fetch('/api/admin/review?issue=labels&region=all',{cache:'no-store',signal}).then(r=>readJson<Record<string,any>>(r,'Die Prüfliste konnte nicht geladen werden.')):Promise.resolve(null),
  ]);
+ if(!Array.isArray((areas as {fields?:unknown}).fields)||!Array.isArray((areas as {rows?:unknown}).rows))throw Error('Die Werte der Gebiete sind unvollständig angekommen. Bitte die Seite neu laden.');
  const {toSources}=await import('@/shared/admin-areas.mjs');
  return {...summary,sources:toSources(statics as {areas:any[]},areas as {fields:string[];rows:any[][]}),review:list||{issue:'labels',total:summary.counts?.unlabelled??0,articles:[]}} as unknown as import('@/shared/admin-types').AdminDashboard;
 }
