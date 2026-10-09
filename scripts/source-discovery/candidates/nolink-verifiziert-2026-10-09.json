@@ -1,0 +1,1852 @@
+[
+ {
+  "id": "de-12071076",
+  "name": "Stadt Forst (Lausitz)",
+  "einwohner": 16933,
+  "methode": "scraper",
+  "url": "https://forst.allris.cloud/public/",
+  "system": "ALLRIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-12071076",
+   "name": "Stadt Forst (Lausitz)",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "allris",
+   "base": "https://forst.allris.cloud/public/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "OParl-Adresse des Systems (https://forst.allris.cloud/public/oparl/system) lieferte am 09.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 187,
+    "meetings": 22,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-071415009",
+  "name": "Verbandsgemeinde Loreley",
+  "einwohner": 16126,
+  "methode": "oparl",
+  "url": "https://vgloreley.gremien.info/oparl/system",
+  "system": "gremien.info",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-071415009",
+   "name": "Verbandsgemeinde Loreley",
+   "kind": "city",
+   "system": "https://vgloreley.gremien.info/oparl/system",
+   "method": "oparl",
+   "meetingScan": "forward",
+   "state": "system-verified",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "evidence": {
+    "window": "3m",
+    "topics": 56,
+    "meetings": 12,
+    "body": "https://vgloreley.gremien.info/oparl/body/VGLoreley"
+   }
+  }
+ },
+ {
+  "id": "de-08226018",
+  "name": "Stadt Eppelheim",
+  "einwohner": 15706,
+  "methode": "scraper",
+  "url": "https://www.eppelheim.de/is/bi/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08226018",
+   "name": "Stadt Eppelheim",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://www.eppelheim.de/is/bi/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 81,
+    "meetings": 8,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-147295307",
+  "name": "Verwaltungsgemeinschaft Naunhof",
+  "einwohner": 15659,
+  "methode": "official-api",
+  "url": "https://naunhof.gremien.info/",
+  "system": "gremien.info",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-147295307",
+   "name": "Verwaltungsgemeinschaft Naunhof",
+   "kind": "city",
+   "method": "official-api",
+   "adapter": "more-rubin",
+   "base": "https://naunhof.gremien.info/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 88,
+    "meetings": 23,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-010585890",
+  "name": "Amt Hüttener Berge",
+  "einwohner": 14932,
+  "methode": "scraper",
+  "url": "https://amt-huettener-berge.ris-portal.de/web/ratsinformation/",
+  "system": "RIS-Portal",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-010585890",
+   "name": "Amt Hüttener Berge",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://amt-huettener-berge.ris-portal.de/web/ratsinformation/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 378,
+    "meetings": 45,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-130755551",
+  "name": "Amt Am Peenestrom",
+  "einwohner": 13895,
+  "methode": "scraper",
+  "url": "https://sessionnet.wolgast.de/sessionnet/buergerinfo/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-130755551",
+   "name": "Amt Am Peenestrom",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://sessionnet.wolgast.de/sessionnet/buergerinfo/",
+   "extension": "php",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 160,
+    "meetings": 11,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-073385001",
+  "name": "Verbandsgemeinde Dannstadt-Schauernheim",
+  "einwohner": 13423,
+  "methode": "official-api",
+  "url": "https://dannstadt-schauernheim.gremien.info/",
+  "system": "gremien.info (more-rubin)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-073385001",
+   "name": "Verbandsgemeinde Dannstadt-Schauernheim",
+   "kind": "city",
+   "method": "official-api",
+   "adapter": "more-rubin",
+   "base": "https://dannstadt-schauernheim.gremien.info/",
+   "bodies": [
+    "2",
+    "3",
+    "4",
+    "1"
+   ],
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 67,
+    "meetings": 12,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-130745455",
+  "name": "Amt Lützow-Lübstorf",
+  "einwohner": 13315,
+  "methode": "scraper",
+  "url": "https://session.luetzow-luebstorf.de/sessionnet/buergerinfo/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-130745455",
+   "name": "Amt Lützow-Lübstorf",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://session.luetzow-luebstorf.de/sessionnet/buergerinfo/",
+   "extension": "php",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 9,
+    "meetings": 1,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-145235122",
+  "name": "Verwaltungsgemeinschaft Oelsnitz/Vogtl., Bösenbrunn, Eichigt und Triebel/Vogtl.",
+  "einwohner": 13162,
+  "methode": "scraper",
+  "url": "https://oelsnitzvogtland.allris.cloud/public/",
+  "system": "ALLRIS (Cloud)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-145235122",
+   "name": "Verwaltungsgemeinschaft Oelsnitz/Vogtl., Bösenbrunn, Eichigt und Triebel/Vogtl.",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "allris",
+   "base": "https://oelsnitzvogtland.allris.cloud/public/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "OParl-Adresse des Systems (https://oelsnitzvogtland.allris.cloud/public/oparl/system) lieferte am 09.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 66,
+    "meetings": 5,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-12072169",
+  "name": "Stadt Jüterbog",
+  "einwohner": 12961,
+  "methode": "oparl",
+  "url": "https://jueterbog.gremien.info/oparl/system",
+  "system": "gremien.info (more-rubin)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-12072169",
+   "name": "Stadt Jüterbog",
+   "kind": "city",
+   "system": "https://jueterbog.gremien.info/oparl/system",
+   "method": "oparl",
+   "meetingScan": "forward",
+   "state": "system-verified",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "evidence": {
+    "window": "3m",
+    "topics": 166,
+    "meetings": 42,
+    "body": "https://jueterbog.gremien.info/oparl/body/01"
+   }
+  }
+ },
+ {
+  "id": "de-12065356",
+  "name": "Stadt Zehdenick",
+  "einwohner": 12875,
+  "methode": "scraper",
+  "url": "https://www.zehdenick.de/rathaus/ris/ti-stadt/",
+  "system": "TI-Web-Generator / Rats-Manager (Bartel)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-12065356",
+   "name": "Stadt Zehdenick",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ti-generator",
+   "base": "https://www.zehdenick.de/rathaus/ris/ti-stadt/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 55,
+    "meetings": 4,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08116047",
+  "name": "Gemeinde Neuhausen auf den Fildern",
+  "einwohner": 12449,
+  "methode": "scraper",
+  "url": "https://neuhausen-fildern.ris-portal.de/",
+  "system": "RIS-Portal (unbekannt)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08116047",
+   "name": "Gemeinde Neuhausen auf den Fildern",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://neuhausen-fildern.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 51,
+    "meetings": 10,
+    "identity": "Seitentext"
+   }
+  }
+ },
+ {
+  "id": "de-08326052",
+  "name": "Stadt St. Georgen im Schwarzwald",
+  "einwohner": 12262,
+  "methode": "scraper",
+  "url": "https://cms.georgen.eu/session/buergerinfo/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08326052",
+   "name": "Stadt St. Georgen im Schwarzwald",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://cms.georgen.eu/session/buergerinfo/",
+   "extension": "php",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 43,
+    "meetings": 11,
+    "identity": "Seitentext"
+   }
+  }
+ },
+ {
+  "id": "de-130725251",
+  "name": "Amt Bad Doberan-Land",
+  "einwohner": 12180,
+  "methode": "scraper",
+  "url": "https://sessionnet.owl-it.de/doberan-land/bi/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-130725251",
+   "name": "Amt Bad Doberan-Land",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://sessionnet.owl-it.de/doberan-land/bi/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 8,
+    "meetings": 1,
+    "identity": "Seitentext"
+   }
+  }
+ },
+ {
+  "id": "de-073335003",
+  "name": "Verbandsgemeinde Göllheim",
+  "einwohner": 11894,
+  "methode": "official-api",
+  "url": "https://goellheim.gremien.info/",
+  "system": "gremien.info (more-rubin)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-073335003",
+   "name": "Verbandsgemeinde Göllheim",
+   "kind": "city",
+   "method": "official-api",
+   "adapter": "more-rubin",
+   "base": "https://goellheim.gremien.info/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 118,
+    "meetings": 35,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-12064044",
+  "name": "Stadt Bad Freienwalde (Oder)",
+  "einwohner": 11750,
+  "methode": "scraper",
+  "url": "https://session.dikom-bb.de/stadtbadfreienwalde_bi/",
+  "system": "SessionNet (dikom-bb)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-12064044",
+   "name": "Stadt Bad Freienwalde (Oder)",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://session.dikom-bb.de/stadtbadfreienwalde_bi/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 246,
+    "meetings": 32,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08335022",
+  "name": "Stadt Engen",
+  "einwohner": 11351,
+  "methode": "scraper",
+  "url": "https://session.engen.de/buergerinfo/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08335022",
+   "name": "Stadt Engen",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://session.engen.de/buergerinfo/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 68,
+    "meetings": 3,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-06435023",
+  "name": "Gemeinde Rodenbach",
+  "einwohner": 11211,
+  "methode": "official-api",
+  "url": "https://rodenbach.gremien.info/",
+  "system": "gremien.info (Rats-Bürger-Portal)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-06435023",
+   "name": "Gemeinde Rodenbach",
+   "kind": "city",
+   "method": "official-api",
+   "adapter": "more-rubin",
+   "base": "https://rodenbach.gremien.info/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 25,
+    "meetings": 12,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-12069020",
+  "name": "Stadt Bad Belzig",
+  "einwohner": 11109,
+  "methode": "scraper",
+  "url": "https://rig.stadt-belzig.de/ti-1/",
+  "system": "unbekannt (eigenes Ratsinfo, rig.stadt-belzig.de)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-12069020",
+   "name": "Stadt Bad Belzig",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ti-generator",
+   "base": "https://rig.stadt-belzig.de/ti-1/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 92,
+    "meetings": 8,
+    "identity": "Seitentext"
+   }
+  }
+ },
+ {
+  "id": "de-073315003",
+  "name": "Verbandsgemeinde Monsheim",
+  "einwohner": 10420,
+  "methode": "official-api",
+  "url": "https://monsheim.gremien.info/",
+  "system": "gremien.info",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-073315003",
+   "name": "Verbandsgemeinde Monsheim",
+   "kind": "city",
+   "method": "official-api",
+   "adapter": "more-rubin",
+   "base": "https://monsheim.gremien.info/",
+   "bodies": [
+    "FD",
+    "HS",
+    "ML",
+    "MO",
+    "MR",
+    "OF",
+    "WA",
+    "VG"
+   ],
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 148,
+    "meetings": 41,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-073345002",
+  "name": "Verbandsgemeinde Hagenbach",
+  "einwohner": 10361,
+  "methode": "scraper",
+  "url": "https://www.vg-hagenbach.sitzung-online.de/public/",
+  "system": "Sitzung-Online (Somacos; Seite nennt ALLRIS)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-073345002",
+   "name": "Verbandsgemeinde Hagenbach",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "allris",
+   "base": "https://www.vg-hagenbach.sitzung-online.de/public/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "OParl-Adresse des Systems (https://www.vg-hagenbach.sitzung-online.de/public/oparl/system) lieferte am 09.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 134,
+    "meetings": 13,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-097795724",
+  "name": "Verwaltungsgemeinschaft Monheim",
+  "einwohner": 9925,
+  "methode": "scraper",
+  "url": "https://ris.komuna.net/vgmonheim/",
+  "system": "Komuna RIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-097795724",
+   "name": "Verwaltungsgemeinschaft Monheim",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "kic",
+   "base": "https://ris.komuna.net/vgmonheim/",
+   "api": "https://risapi1.komuna.net/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 47,
+    "meetings": 5,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "nds-03454054",
+  "name": "Gemeinde Twist",
+  "einwohner": 9847,
+  "methode": "oparl",
+  "url": "https://twist.ris.itebo.de/oparl/system",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "nds-03454054",
+   "name": "Gemeinde Twist",
+   "kind": "city",
+   "ags": "03454054",
+   "system": "https://twist.ris.itebo.de/oparl/system",
+   "method": "oparl",
+   "meetingScan": "end",
+   "state": "system-verified",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "evidence": {
+    "window": "3m",
+    "topics": 70,
+    "meetings": 4,
+    "body": "https://twist.ris.itebo.de/oparl/bodies/0011"
+   }
+  }
+ },
+ {
+  "id": "de-096755616",
+  "name": "Verwaltungsgemeinschaft Iphofen",
+  "einwohner": 9654,
+  "methode": "scraper",
+  "url": "https://buergerinfo-vg-iphofen.digitalfabrix.de/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-096755616",
+   "name": "Verwaltungsgemeinschaft Iphofen",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo-vg-iphofen.digitalfabrix.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 48,
+    "meetings": 4,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-150905053",
+  "name": "Verbandsgemeinde Seehausen (Altmark)",
+  "einwohner": 9091,
+  "methode": "scraper",
+  "url": "https://ratsinfo-online.de/vgem-seehausen-bi/",
+  "system": "ALLRIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-150905053",
+   "name": "Verbandsgemeinde Seehausen (Altmark)",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "allris3",
+   "base": "https://ratsinfo-online.de/vgem-seehausen-bi/",
+   "calendar": "si010_e.asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 134,
+    "meetings": 14,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-092785250",
+  "name": "Verwaltungsgemeinschaft Rain",
+  "einwohner": 8149,
+  "methode": "scraper",
+  "url": "https://buergerinfo-rain.digitalfabrix.de/",
+  "system": "SessionNet (Somacos)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-092785250",
+   "name": "Verwaltungsgemeinschaft Rain",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo-rain.digitalfabrix.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 131,
+    "meetings": 8,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "nds-033575402",
+  "name": "Samtgemeinde Fintel",
+  "einwohner": 8036,
+  "methode": "scraper",
+  "url": "https://buergerinfo.sgfintel.de/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "nds-033575402",
+   "name": "Samtgemeinde Fintel",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo.sgfintel.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 36,
+    "meetings": 4,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-12063244",
+  "name": "Stadt Premnitz",
+  "einwohner": 7966,
+  "methode": "scraper",
+  "url": "https://premnitz-politik.de/ti-premnitz/",
+  "system": "ris/ti-System",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-12063244",
+   "name": "Stadt Premnitz",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ti-generator",
+   "base": "https://premnitz-politik.de/ti-premnitz/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 49,
+    "meetings": 7,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-15089195",
+  "name": "Stadt Könnern",
+  "einwohner": 7804,
+  "methode": "scraper",
+  "url": "https://www.stadt-koennern.de/ris/ti-1/",
+  "system": "ris/ti-System",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-15089195",
+   "name": "Stadt Könnern",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ti-generator",
+   "base": "https://www.stadt-koennern.de/ris/ti-1/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 44,
+    "meetings": 5,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-095755521",
+  "name": "Verwaltungsgemeinschaft Diespeck",
+  "einwohner": 7658,
+  "methode": "scraper",
+  "url": "https://buergerinfo-vg-diespeck.digitalfabrix.de/",
+  "system": "digitalfabrix (Bürgerinfo/Ratsinfo)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-095755521",
+   "name": "Verwaltungsgemeinschaft Diespeck",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo-vg-diespeck.digitalfabrix.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 178,
+    "meetings": 15,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08119083",
+  "name": "Gemeinde Weissach im Tal",
+  "einwohner": 7598,
+  "methode": "scraper",
+  "url": "https://weissach-im-tal.ris-portal.de/",
+  "system": "regisafe RIS-Portal",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08119083",
+   "name": "Gemeinde Weissach im Tal",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://weissach-im-tal.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 15,
+    "meetings": 3,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-130735357",
+  "name": "Amt Mönchgut-Granitz",
+  "einwohner": 7259,
+  "methode": "scraper",
+  "url": "https://ris.amt-moenchgut-granitz.de/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-130735357",
+   "name": "Amt Mönchgut-Granitz",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "sessionnet6",
+   "base": "https://ris.amt-moenchgut-granitz.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 213,
+    "meetings": 29,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-092735219",
+  "name": "Verwaltungsgemeinschaft Mainburg",
+  "einwohner": 7243,
+  "methode": "scraper",
+  "url": "https://buergerinfo-mainburg.digitalfabrix.de/",
+  "system": "digitalfabrix Bürgerinfo",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-092735219",
+   "name": "Verwaltungsgemeinschaft Mainburg",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo-mainburg.digitalfabrix.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 79,
+    "meetings": 12,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-096735634",
+  "name": "Verwaltungsgemeinschaft Bad Königshofen i.Grabfeld",
+  "einwohner": 7082,
+  "methode": "scraper",
+  "url": "https://ris.komuna.net/badkoenigshofen/",
+  "system": "komuna RIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-096735634",
+   "name": "Verwaltungsgemeinschaft Bad Königshofen i.Grabfeld",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "kic",
+   "base": "https://ris.komuna.net/badkoenigshofen/",
+   "api": "https://risapi1.komuna.net/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 35,
+    "meetings": 4,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-09187118",
+  "name": "Gemeinde Bernau a.Chiemsee",
+  "einwohner": 6901,
+  "methode": "scraper",
+  "url": "https://gemeinde-bernau.ris-portal.de/",
+  "system": "RIS-Portal (ris-portal.de)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-09187118",
+   "name": "Gemeinde Bernau a.Chiemsee",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://gemeinde-bernau.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 48,
+    "meetings": 5,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-09189140",
+  "name": "Gemeinde Ruhpolding",
+  "einwohner": 6819,
+  "methode": "scraper",
+  "url": "https://ruhpolding-rathaus.ris-portal.de/",
+  "system": "RIS-Portal (ris-portal.de)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-09189140",
+   "name": "Gemeinde Ruhpolding",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://ruhpolding-rathaus.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 53,
+    "meetings": 20,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-12064317",
+  "name": "Stadt Müncheberg",
+  "einwohner": 6776,
+  "methode": "scraper",
+  "url": "https://www.stadt-muencheberg.de/ris/ti-stadt/",
+  "system": "Ratsinfo (Sitzungskalender, Archiv 2015-Juni 2024; Angaben auf Seite)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-12064317",
+   "name": "Stadt Müncheberg",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ti-generator",
+   "base": "https://www.stadt-muencheberg.de/ris/ti-stadt/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 113,
+    "meetings": 13,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-15089175",
+  "name": "Stadt Hecklingen",
+  "einwohner": 6368,
+  "methode": "scraper",
+  "url": "https://ratsinfo.kitu-genossenschaft.de/hecklingen_bi/",
+  "system": "kitu Ratsinfo",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-15089175",
+   "name": "Stadt Hecklingen",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://ratsinfo.kitu-genossenschaft.de/hecklingen_bi/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 163,
+    "meetings": 17,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-097745731",
+  "name": "Verwaltungsgemeinschaft Krumbach (Schwaben)",
+  "einwohner": 6295,
+  "methode": "scraper",
+  "url": "https://buergerinfo-krumbach.digitalfabrix.de/",
+  "system": "digitalfabrix Ratsinfo",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-097745731",
+   "name": "Verwaltungsgemeinschaft Krumbach (Schwaben)",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo-krumbach.digitalfabrix.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 47,
+    "meetings": 5,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-15081030",
+  "name": "Stadt Arendsee (Altmark)",
+  "einwohner": 6188,
+  "methode": "scraper",
+  "url": "https://ratsinfo.stadt-arendsee.de/bi/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-15081030",
+   "name": "Stadt Arendsee (Altmark)",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://ratsinfo.stadt-arendsee.de/bi/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 136,
+    "meetings": 16,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08237027",
+  "name": "Gemeinde Eutingen im Gäu",
+  "einwohner": 6112,
+  "methode": "scraper",
+  "url": "https://eutingen-im-gaeu.ris-portal.de/",
+  "system": "RIS-Portal (ris-portal.de)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08237027",
+   "name": "Gemeinde Eutingen im Gäu",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://eutingen-im-gaeu.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 60,
+    "meetings": 14,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-096745613",
+  "name": "Verwaltungsgemeinschaft Theres",
+  "einwohner": 5885,
+  "methode": "scraper",
+  "url": "https://buerger.ratsinfo-theres.de/",
+  "system": "SessionNet (Somacos)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-096745613",
+   "name": "Verwaltungsgemeinschaft Theres",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buerger.ratsinfo-theres.de/",
+   "extension": "php",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 70,
+    "meetings": 10,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-130755558",
+  "name": "Amt Peenetal/Loitz",
+  "einwohner": 5852,
+  "methode": "official-api",
+  "url": "https://loitz.gremien.info/",
+  "system": "gremien.info (more!rubin)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-130755558",
+   "name": "Amt Peenetal/Loitz",
+   "kind": "city",
+   "method": "official-api",
+   "adapter": "more-rubin",
+   "base": "https://loitz.gremien.info/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 74,
+    "meetings": 8,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-16076094",
+  "name": "Stadt Berga-Wünschendorf",
+  "einwohner": 5813,
+  "methode": "scraper",
+  "url": "https://stadt-berga.ris-portal.de/",
+  "system": "regisafe RIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-16076094",
+   "name": "Stadt Berga-Wünschendorf",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://stadt-berga.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 55,
+    "meetings": 8,
+    "identity": "Seitentext"
+   }
+  }
+ },
+ {
+  "id": "de-091735108",
+  "name": "Verwaltungsgemeinschaft Kochel a.See",
+  "einwohner": 5424,
+  "methode": "scraper",
+  "url": "https://www.vgkochel.sitzung-online.de/public/",
+  "system": "Sitzung-Online (ALLRIS)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-091735108",
+   "name": "Verwaltungsgemeinschaft Kochel a.See",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "allris",
+   "base": "https://www.vgkochel.sitzung-online.de/public/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "OParl-Adresse des Systems (https://www.vgkochel.sitzung-online.de/public/oparl/system) lieferte am 09.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 61,
+    "meetings": 4,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-120625205",
+  "name": "Amt Kleine Elster (Niederlausitz)",
+  "einwohner": 5346,
+  "methode": "scraper",
+  "url": "https://session.dikom-bb.de/amtkleineelster_bi/",
+  "system": "SessionNet (dikom-bb)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-120625205",
+   "name": "Amt Kleine Elster (Niederlausitz)",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://session.dikom-bb.de/amtkleineelster_bi/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 10,
+    "meetings": 1,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-093715303",
+  "name": "Verwaltungsgemeinschaft Neukirchen b.Sulzbach-Rosenberg",
+  "einwohner": 5129,
+  "methode": "scraper",
+  "url": "https://ris.komuna.net/vgneukirchen/",
+  "system": "komuna (ris.komuna.net)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-093715303",
+   "name": "Verwaltungsgemeinschaft Neukirchen b.Sulzbach-Rosenberg",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "kic",
+   "base": "https://ris.komuna.net/vgneukirchen/",
+   "api": "https://risapi1.komuna.net/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 71,
+    "meetings": 8,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-097795725",
+  "name": "Verwaltungsgemeinschaft Rain",
+  "einwohner": 4966,
+  "methode": "scraper",
+  "url": "https://buergerinfo-rain.digitalfabrix.de/",
+  "system": "BürgerInfoSystem (digitalfabrix, ASP)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-097795725",
+   "name": "Verwaltungsgemeinschaft Rain",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo-rain.digitalfabrix.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 131,
+    "meetings": 8,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-093755337",
+  "name": "Verwaltungsgemeinschaft Alteglofsheim",
+  "einwohner": 4836,
+  "methode": "scraper",
+  "url": "https://buergerinfo-vg-alteglofsheim.digitalfabrix.de/",
+  "system": "digitalfabrix Bürgerinfo",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-093755337",
+   "name": "Verwaltungsgemeinschaft Alteglofsheim",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo-vg-alteglofsheim.digitalfabrix.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 6,
+    "meetings": 1,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-095745527",
+  "name": "Verwaltungsgemeinschaft Velden",
+  "einwohner": 4791,
+  "methode": "scraper",
+  "url": "https://ris.komuna.net/vgveldenvils/",
+  "system": "komuna RIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-095745527",
+   "name": "Verwaltungsgemeinschaft Velden",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "kic",
+   "base": "https://ris.komuna.net/vgveldenvils/",
+   "api": "https://risapi1.komuna.net/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 26,
+    "meetings": 3,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-16063101",
+  "name": "Gemeinde Krayenberggemeinde",
+  "einwohner": 4574,
+  "methode": "scraper",
+  "url": "https://ratsinfo-online.de/dorndorf-bi/",
+  "system": "ALLRIS net",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-16063101",
+   "name": "Gemeinde Krayenberggemeinde",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "allris3",
+   "base": "https://ratsinfo-online.de/dorndorf-bi/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 78,
+    "meetings": 10,
+    "identity": "Seitentext"
+   }
+  }
+ },
+ {
+  "id": "de-120685804",
+  "name": "Amt Lindow (Mark)",
+  "einwohner": 4498,
+  "methode": "scraper",
+  "url": "https://www.amt-lindow-mark.de/ris/ti-lindow-1/",
+  "system": "TI-System RIS (unsicher)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-120685804",
+   "name": "Amt Lindow (Mark)",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ti-generator",
+   "base": "https://www.amt-lindow-mark.de/ris/ti-lindow-1/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 11,
+    "meetings": 1,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-146265206",
+  "name": "Verwaltungsgemeinschaft Bernstadt/Schönau-Berzdorf",
+  "einwohner": 4480,
+  "methode": "scraper",
+  "url": "https://vg-bernstadt-schoenau.allris.cloud/public/",
+  "system": "ALLRIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-146265206",
+   "name": "Verwaltungsgemeinschaft Bernstadt/Schönau-Berzdorf",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "allris",
+   "base": "https://vg-bernstadt-schoenau.allris.cloud/public/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "OParl-Adresse des Systems (https://vg-bernstadt-schoenau.allris.cloud/public/oparl/system) lieferte am 09.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 23,
+    "meetings": 3,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08226080",
+  "name": "Stadt Schönau",
+  "einwohner": 4328,
+  "methode": "scraper",
+  "url": "https://stadt-schoenau.ris-portal.de/",
+  "system": "regisafe RIS-Portal",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08226080",
+   "name": "Stadt Schönau",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://stadt-schoenau.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 62,
+    "meetings": 9,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-096735640",
+  "name": "Verwaltungsgemeinschaft Saal a.d.Saale",
+  "einwohner": 4098,
+  "methode": "scraper",
+  "url": "https://ris.komuna.net/vgsaal/",
+  "system": "komuna RIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-096735640",
+   "name": "Verwaltungsgemeinschaft Saal a.d.Saale",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "kic",
+   "base": "https://ris.komuna.net/vgsaal/",
+   "api": "https://risapi1.komuna.net/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 108,
+    "meetings": 12,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-146275234",
+  "name": "Verwaltungsgemeinschaft Röderaue-Wülknitz",
+  "einwohner": 3927,
+  "methode": "scraper",
+  "url": "https://roederaue.ris-portal.de/",
+  "system": "RIS-Portal (ris-portal.de)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-146275234",
+   "name": "Verwaltungsgemeinschaft Röderaue-Wülknitz",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://roederaue.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 87,
+    "meetings": 8,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-09272149",
+  "name": "Gemeinde Spiegelau",
+  "einwohner": 3892,
+  "methode": "scraper",
+  "url": "https://www.spiegelau.bayern/bi/",
+  "system": "SessionNet",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-09272149",
+   "name": "Gemeinde Spiegelau",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://www.spiegelau.bayern/bi/",
+   "extension": "php",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 62,
+    "meetings": 7,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-09780122",
+  "name": "Gemeinde Haldenwang",
+  "einwohner": 3789,
+  "methode": "scraper",
+  "url": "https://haldenwang.ris-portal.de/",
+  "system": "RIS-Portal (comundus/obis)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-09780122",
+   "name": "Gemeinde Haldenwang",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://haldenwang.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 74,
+    "meetings": 8,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08226046",
+  "name": "Gemeinde Malsch",
+  "einwohner": 3451,
+  "methode": "scraper",
+  "url": "https://malsch-sitzungsdienst.komm.one/bi/",
+  "system": "komm.one Sitzungsdienst",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08226046",
+   "name": "Gemeinde Malsch",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://malsch-sitzungsdienst.komm.one/bi/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 112,
+    "meetings": 14,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-12073384",
+  "name": "Stadt Lychen",
+  "einwohner": 3147,
+  "methode": "scraper",
+  "url": "https://www.lychen-politik.de/ris/ti-lychen/",
+  "system": "RIS auf eigener Domain (Pfad /ris/, Anbieter nicht bestimmt)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-12073384",
+   "name": "Stadt Lychen",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ti-generator",
+   "base": "https://www.lychen-politik.de/ris/ti-lychen/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 42,
+    "meetings": 4,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-094765433",
+  "name": "Verwaltungsgemeinschaft Teuschnitz",
+  "einwohner": 2975,
+  "methode": "scraper",
+  "url": "https://ris.komuna.net/vgemteuschnitz/",
+  "system": "komuna.net (Anbieter-Domain; Produkt nicht benannt)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-094765433",
+   "name": "Verwaltungsgemeinschaft Teuschnitz",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "kic",
+   "base": "https://ris.komuna.net/vgemteuschnitz/",
+   "api": "https://risapi1.komuna.net/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 54,
+    "meetings": 9,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-097775772",
+  "name": "Verwaltungsgemeinschaft Stötten a.Auerberg",
+  "einwohner": 2936,
+  "methode": "scraper",
+  "url": "https://buergerinfo-vg-stoetten.digitalfabrix.de/",
+  "system": "SessionNet (Bürgerinfoportal)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-097775772",
+   "name": "Verwaltungsgemeinschaft Stötten a.Auerberg",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo-vg-stoetten.digitalfabrix.de/",
+   "extension": "asp",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 80,
+    "meetings": 8,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-09673149",
+  "name": "Gemeinde Oberelsbach",
+  "einwohner": 2634,
+  "methode": "scraper",
+  "url": "https://buergerinfo.rat-oberels.de/",
+  "system": "SessionNet (Somacos)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-09673149",
+   "name": "Gemeinde Oberelsbach",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo.rat-oberels.de/",
+   "extension": "php",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 30,
+    "meetings": 2,
+    "identity": "Seitentext"
+   }
+  }
+ },
+ {
+  "id": "de-08317039",
+  "name": "Gemeinde Gutach (Schwarzwaldbahn)",
+  "einwohner": 2268,
+  "methode": "scraper",
+  "url": "https://gutach-sitzungsdienst.komm.one/bi/",
+  "system": "komm.ONE Sitzungsdienst (Bürgerinfo)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08317039",
+   "name": "Gemeinde Gutach (Schwarzwaldbahn)",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://gutach-sitzungsdienst.komm.one/bi/",
+   "extension": "asp",
+   "oparlFallback": {
+    "system": "https://gutach-sitzungsdienst.komm.one/oparl/system",
+    "reason": "Körperschaft nicht eindeutig dem ausgewählten Gebiet zugeordnet",
+    "checkedAt": "2026-10-09"
+   },
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "OParl-Adresse https://gutach-sitzungsdienst.komm.one/oparl/system antwortete am 09.10.2026, lieferte aber keine verwertbaren Sitzungen (Körperschaft nicht eindeutig dem ausgewählten Gebiet zugeordnet); deshalb öffentliche Seiten.",
+   "evidence": {
+    "window": "3m",
+    "topics": 21,
+    "meetings": 3,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08426065",
+  "name": "Gemeinde Kirchberg an der Iller",
+  "einwohner": 2218,
+  "methode": "scraper",
+  "url": "https://kirchberg-iller.ris-portal.de/",
+  "system": "RIS-Portal (ris-portal.de)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08426065",
+   "name": "Gemeinde Kirchberg an der Iller",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://kirchberg-iller.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 40,
+    "meetings": 6,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08128138",
+  "name": "Gemeinde Ahorn",
+  "einwohner": 2217,
+  "methode": "scraper",
+  "url": "https://buergerinfo.ahorn.de/",
+  "system": "Infori (Ratsinfo)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08128138",
+   "name": "Gemeinde Ahorn",
+   "kind": "city",
+   "method": "scraper",
+   "base": "https://buergerinfo.ahorn.de/",
+   "extension": "php",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 47,
+    "meetings": 3,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08117017",
+  "name": "Gemeinde Dürnau",
+  "einwohner": 2180,
+  "methode": "scraper",
+  "url": "https://duernau.ris-portal.de/",
+  "system": "KommunalPLUS (ris-portal)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08117017",
+   "name": "Gemeinde Dürnau",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://duernau.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 26,
+    "meetings": 2,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08426008",
+  "name": "Gemeinde Altheim",
+  "einwohner": 2159,
+  "methode": "scraper",
+  "url": "https://vv-langenau.ris-portal.de/",
+  "system": "RIS-Portal (KommunalPLUS)",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08426008",
+   "name": "Gemeinde Altheim",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://vv-langenau.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 259,
+    "meetings": 43,
+    "identity": "Seitentext"
+   }
+  }
+ },
+ {
+  "id": "de-09475113",
+  "name": "Gemeinde Berg",
+  "einwohner": 1951,
+  "methode": "scraper",
+  "url": "https://ris.komuna.net/berg/",
+  "system": "Komuna RIS",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-09475113",
+   "name": "Gemeinde Berg",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "kic",
+   "base": "https://ris.komuna.net/berg/",
+   "api": "https://risapi1.komuna.net/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 33,
+    "meetings": 3,
+    "identity": "Adresse"
+   }
+  }
+ },
+ {
+  "id": "de-08417045",
+  "name": "Gemeinde Nusplingen",
+  "einwohner": 1912,
+  "methode": "scraper",
+  "url": "https://gemeinde-nusplingen.ris-portal.de/",
+  "system": "comundus ris-portal",
+  "beleg": "Recherche 2026-10-09",
+  "accepted": {
+   "id": "de-08417045",
+   "name": "Gemeinde Nusplingen",
+   "kind": "city",
+   "method": "scraper",
+   "adapter": "ris-portal",
+   "base": "https://gemeinde-nusplingen.ris-portal.de/",
+   "verifiedSource": "Recherche 2026-10-09",
+   "verifiedAt": "2026-10-09",
+   "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+   "evidence": {
+    "window": "3m",
+    "topics": 27,
+    "meetings": 3,
+    "identity": "Adresse"
+   }
+  }
+ }
+]
