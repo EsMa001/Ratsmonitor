@@ -304,6 +304,22 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-01054033",
+    "name": "Stadt Friedrichstadt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://amtnt.ris-portal.de/web/ratsinformation/",
+    "organizations": {
+      "include": [
+        "Friedrichstadt"
+      ]
+    },
+    "verifiedSource": "https://amtnt.ris-portal.de/web/ratsinformation/startseite",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar; gemeinsames System von Amt Nordsee-Treene und Stadt Friedrichstadt, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-01054056",
     "name": "Stadt Husum",
     "kind": "city",
@@ -401,6 +417,22 @@
     "verifiedSource": "https://www.amt-suedtondern.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-010545492",
+    "name": "Amt Nordsee-Treene",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://amtnt.ris-portal.de/web/ratsinformation/",
+    "organizations": {
+      "exclude": [
+        "Friedrichstadt"
+      ]
+    },
+    "verifiedSource": "https://amtnt.ris-portal.de/web/ratsinformation/startseite",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar; gemeinsames System von Amt Nordsee-Treene und Stadt Friedrichstadt, getrennt über die Gremienangabe."
   },
   {
     "id": "de-010545494",
