@@ -1,7 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {requireAdmin,adminFailure,ADMIN_HEADERS} from '@/server/services/admin-auth';
 import {requireSameOrigin,AdminError} from '@/server/integrations/admin-access.mjs';
-import {createAiJob,getAiJob,applyAiResults,cancelAiJob} from '@/server/integrations/ai-jobs.mjs';
+import {createAiJob,previewAiJob,getAiJob,applyAiResults,cancelAiJob} from '@/server/integrations/ai-jobs.mjs';
 export async function GET(request:Request){try{
  await requireAdmin();const params=new URL(request.url).searchParams;
  const offset=params.get('offset')||'0';
@@ -10,7 +10,8 @@ export async function GET(request:Request){try{
 }catch(e){return adminFailure(e);}}
 export async function POST(request:Request){try{
  requireSameOrigin(request);await requireAdmin();const text=await request.text();if(new TextEncoder().encode(text).byteLength>3000000)throw new AdminError(413,'Ergebnispaket zu groß.');let body;try{body=JSON.parse(text);if(!body||typeof body!=='object'||Array.isArray(body))throw Error();}catch{throw new AdminError(400,'Ungültige Anfrage.');}
- let result;if(body.action==='create')result=await createAiJob(env.DB,body,{metadataOnly:true});else if(body.action==='apply'){
+ // preview: how many reports these settings would take; reads only, reserves nothing.
+ let result;if(body.action==='create')result=await createAiJob(env.DB,body,{metadataOnly:true});else if(body.action==='preview')result=await previewAiJob(env.DB,body);else if(body.action==='apply'){
   if(!Array.isArray(body.result?.articles)||body.result.articles.length>100)throw new AdminError(400,'Höchstens 100 Artikel je Ergebnispaket.');
   result=await applyAiResults(env.DB,await getAiJob(env.DB,{metadataOnly:true}),body.result);
  }else if(body.action==='cancel')result=await cancelAiJob(env.DB,body.id);else throw new AdminError(400,'Ungültige Aktion.');

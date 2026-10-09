@@ -186,7 +186,7 @@ const uri=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
 globalThis.adminFixture={user:null,env:{DB:db,ADMIN_SETUP_HASH:hash},reads:0,syncs:0,analyses:0,prepared:0};
 const stubs={
  '@/server/integrations/pipeline-jobs.mjs':'export async function pipelineAction(){globalThis.adminFixture.syncs++;return {status:"queued"};}',
- '@/server/integrations/ai-jobs.mjs':'export async function getAiJob(){globalThis.adminFixture.reads++;return null;} export async function createAiJob(){globalThis.adminFixture.analyses++;return {};} export async function applyAiResults(){globalThis.adminFixture.analyses++;return {};} export async function cancelAiJob(){globalThis.adminFixture.analyses++;return {};}',
+ '@/server/integrations/ai-jobs.mjs':'export async function getAiJob(){globalThis.adminFixture.reads++;return null;} export async function createAiJob(){globalThis.adminFixture.analyses++;return {};} export async function previewAiJob(){return {articles:0,steps:{},blocked:0,exported:0};} export async function applyAiResults(){globalThis.adminFixture.analyses++;return {};} export async function cancelAiJob(){globalThis.adminFixture.analyses++;return {};}',
 
  'server-only':'export {};',
  'cloudflare:workers':'export const env=globalThis.adminFixture.env;',
