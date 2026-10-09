@@ -7,9 +7,11 @@ import {refreshSearchWords} from '../server/integrations/search-words.mjs';
 import {sqliteAdapter} from './ai-job.mjs';
 const quiet=process.argv.includes('--quiet'),say=(...a)=>{if(!quiet)console.log(...a);};
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
-const file=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
+// Auf dem eigenen Server (Node-Betrieb) nennt DATABASE_FILE die Datei; lokal die Miniflare-Datei unter .wrangler/.
+const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
+const file=process.env.DATABASE_FILE||process.env.DB_FILE||(local?dir+local:null);
 if(!file){say('Keine lokale Datenbank gefunden, nichts zu tun.');process.exit(0);}
-const db=new DatabaseSync(dir+file);db.exec('PRAGMA busy_timeout=60000');
+const db=new DatabaseSync(file);db.exec('PRAGMA busy_timeout=60000');
 /* Ohne Gebietsarten gibt es keine vorberechneten Zahlen, Wörter und Karten-IDs funktionieren trotzdem (z. B. ältere Node-Version ohne .ts-Import) */
 let kinds=null,names=null;
 try{const {REGIONS}=await import('../shared/regions.ts');kinds=new Map(REGIONS.map(r=>[r.id,r.kind]));names=new Map(REGIONS.map(r=>[r.id,r.name]));}catch{say('Gebietsarten nicht ladbar: keine vorberechneten Zahlen.');}
