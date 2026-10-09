@@ -1379,6 +1379,22 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.haddeby.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-010595920",
+    "name": "Amt Kappeln-Land",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://kappeln.ris-portal.de/web/ratsinformation/",
+    "organizations": {
+      "include": [
+        "Amtes Kappeln-Land"
+      ]
+    },
+    "verifiedSource": "https://kappeln.ris-portal.de/web/ratsinformation/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentliches RIS-Portal erreichbar; gemeinsames System mit Stadt Kappeln, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-010595937",
     "name": "Amt Langballig",
     "kind": "city",
@@ -2427,6 +2443,20 @@
     "verifiedSource": "https://rim.ekom21.de/gernsheim/",
     "verifiedAt": "2026-10-09",
     "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06433005",
+    "name": "Stadt Ginsheim-Gustavsburg",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://gigu.gremien.info/",
+    "bodies": [
+      "3"
+    ],
+    "verifiedSource": "https://gigu.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl nicht aktiv; öffentliche Kalender-API (api.php) erreichbar."
   },
   {
     "id": "de-06433006",
@@ -4977,6 +5007,19 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.ebersburg.sitzung-online.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-06631005",
+    "name": "Gemeinde Ehrenberg (Rhön)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.gvv-ulstertal.de/",
+    "api": "https://risapi3.kic-software.de/",
+    "client": 132009432,
+    "verifiedSource": "https://www.ehrenberg-rhoen.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
     "id": "de-06631006",
     "name": "Gemeinde Eichenzell",
     "kind": "city",
@@ -5059,6 +5102,19 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-06631012",
+    "name": "Gemeinde Hilders",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.gvv-ulstertal.de/",
+    "api": "https://risapi3.kic-software.de/",
+    "client": 132081101,
+    "verifiedSource": "https://www.hilders.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
     "id": "de-06631014",
     "name": "Gemeinde Hosenfeld",
     "kind": "city",
@@ -5134,6 +5190,19 @@
     "verifiedSource": "https://www.rasdorf.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-06631023",
+    "name": "Stadt Tann (Rhön)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.gvv-ulstertal.de/",
+    "api": "https://risapi3.kic-software.de/",
+    "client": 32,
+    "verifiedSource": "https://www.tann.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
     "id": "de-06632",
@@ -5718,6 +5787,19 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-06634017",
+    "name": "Stadt Neukirchen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.gvv-suedlicherknuell.de/",
+    "api": "https://risapi1.kic-software.de/",
+    "client": 32,
+    "verifiedSource": "https://www.neukirchen-knuell.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
     "id": "de-06634018",
     "name": "Stadt Niedenstein",
     "kind": "city",
@@ -5727,6 +5809,19 @@
     "verifiedSource": "https://www.niedenstein.de/rathaus/rats-und-buergerinformationssystem-magistrat-und-stavo/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "de-06634019",
+    "name": "Gemeinde Oberaula",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.gvv-suedlicherknuell.de/",
+    "api": "https://risapi1.kic-software.de/",
+    "client": 1380777,
+    "verifiedSource": "https://www.oberaula.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
     "id": "de-06634022",
@@ -8463,6 +8558,20 @@
     "verifiedSource": "https://www.vgzwland.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-073405009",
+    "name": "Verbandsgemeinde Thaleischweiler-Wallhalben",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://vgtw.gremien.info/",
+    "bodies": [
+      "VG-TW"
+    ],
+    "verifiedSource": "https://vgtw.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl nicht aktiv bzw. ohne Sitzungen; öffentliche Kalender-API erreichbar. Sitzungen im Kalender, Tagesordnungspunkte der letzten Monate noch nicht öffentlich."
   },
   {
     "id": "de-08111000",
@@ -14049,6 +14158,17 @@
     "foundBy": "wellendingen.ris-portal.de"
   },
   {
+    "id": "de-08325069",
+    "name": "Gemeinde Zimmern ob Rottweil",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://zimmern-or.ris-portal.de/",
+    "verifiedSource": "https://zimmern-or.ris-portal.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentliches RIS-Portal erreichbar."
+  },
+  {
     "id": "de-08325070",
     "name": "Gemeinde Fluorn-Winzeln",
     "kind": "city",
@@ -18435,6 +18555,19 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09178116",
+    "name": "Gemeinde Au i.d.Hallertau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/auhallertau/",
+    "api": "https://risapi1.komuna.net/",
+    "client": 32,
+    "verifiedSource": "https://www.au-hallertau.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
     "id": "de-09178120",
     "name": "Gemeinde Eching",
     "kind": "city",
@@ -19406,6 +19539,19 @@
     "api": "https://risapi1.komuna.net/",
     "verifiedSource": "https://www.reichertsheim.de/buergerservice-politik/politik/ratsinformationssystem",
     "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
+    "id": "de-091835149",
+    "name": "Verwaltungsgemeinschaft Neumarkt-Sankt Veit",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/neumarktsv/",
+    "api": "https://risapi1.komuna.net/",
+    "client": 32,
+    "verifiedSource": "https://www.neumarkt-sankt-veit.de/",
+    "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
@@ -23233,6 +23379,19 @@
     "verifiedSource": "https://www.maxhuette-haidhof.de/Rathaus-/Rathaus/Stadtrat-und-Termine/Stadtratssitzungen-mit-Terminen-und-Protokollen/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-09376147",
+    "name": "Stadt Neunburg vorm Wald",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/neunburgvw/",
+    "api": "https://risapi1.komuna.net/",
+    "client": 32,
+    "verifiedSource": "https://www.neunburgvormwald.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
     "id": "de-09376149",
@@ -27631,6 +27790,20 @@
     "foundBy": "ris.komuna.net/vglangerringen"
   },
   {
+    "id": "de-09773",
+    "name": "Landkreis Dillingen a.d.Donau",
+    "kind": "district",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://landkreis-dillingen.gremien.info/",
+    "bodies": [
+      "lra"
+    ],
+    "verifiedSource": "https://landkreis-dillingen.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl nicht aktiv bzw. ohne Sitzungen; öffentliche Kalender-API erreichbar. Sitzungen im Kalender, Tagesordnungspunkte der letzten Monate noch nicht öffentlich."
+  },
+  {
     "id": "de-09773122",
     "name": "Gemeinde Buttenwiesen",
     "kind": "city",
@@ -31476,6 +31649,20 @@
     "method": "scraper",
     "adapter": "allris",
     "base": "https://grevesmuehlen.sitzung-mv.de/public/",
+    "organizations": {
+      "exclude": [
+        "Amtsausschuss",
+        "Bernstorf",
+        "Gägelow",
+        "Roggenstorf",
+        "Rüting",
+        "Stepenitztal",
+        "Testorf-Steinfort",
+        "Upahl",
+        "Warnow",
+        "Zierow"
+      ]
+    },
     "verifiedSource": "https://www.grevesmuehlen.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://grevesmuehlen.sitzung-mv.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
@@ -31512,6 +31699,35 @@
     "verifiedSource": "https://www.gadebusch.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-130745453",
+    "name": "Amt Grevesmühlen-Land",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://grevesmuehlen.sitzung-mv.de/public/",
+    "organizations": {
+      "include": [
+        "Amtsausschuss Grevesmühlen-Land",
+        "Bernstorf",
+        "Gägelow",
+        "Roggenstorf",
+        "Rüting",
+        "Stepenitztal",
+        "Testorf-Steinfort",
+        "Upahl",
+        "Warnow",
+        "Zierow"
+      ],
+      "exclude": [
+        "Stadt Grevesmühlen",
+        "Stadtvertretung Grevesmühlen"
+      ]
+    },
+    "verifiedSource": "https://grevesmuehlen.sitzung-mv.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentliche ALLRIS-Seiten unter /public/ erreichbar; gemeinsames System mit der Stadt Grevesmühlen, getrennt über die Gremienangabe."
   },
   {
     "id": "de-130745454",

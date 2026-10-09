@@ -308,6 +308,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://ris.kdgoe.de/LKNOM_public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03155003",
+    "name": "Stadt Dassel",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ris.kdgoe.de/DAS_public/",
+    "verifiedSource": "https://www.dassel.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "ALLRIS 4 (KDG Göttingen), öffentliche Seiten unter /<Kürzel>_public/ erreichbar; eigener Mandant, keine geteilten Gremien."
+  },
+  {
     "id": "nds-03155006",
     "name": "Gemeinde Kalefeld",
     "kind": "city",
@@ -369,6 +380,17 @@
     "verifiedSource": "https://www.uslar.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03155013",
+    "name": "Stadt Einbeck",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ris.kdgoe.de/EIN_public/",
+    "verifiedSource": "https://www.einbeck.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "ALLRIS 4 (KDG Göttingen), öffentliche Seiten unter /<Kürzel>_public/ erreichbar; eigener Mandant, keine geteilten Gremien."
   },
   {
     "id": "nds-03157",
@@ -566,6 +588,17 @@
     "verifiedSource": "http://ratsinformationssystem.badlauterberg.de/bi/info.asp",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03159004",
+    "name": "Stadt Bad Sachsa",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ris.kdgoe.de/SAC_public/",
+    "verifiedSource": "https://www.bad-sachsa.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "ALLRIS 4 (KDG Göttingen), öffentliche Seiten unter /<Kürzel>_public/ erreichbar; eigener Mandant, keine geteilten Gremien."
   },
   {
     "id": "nds-03159007",

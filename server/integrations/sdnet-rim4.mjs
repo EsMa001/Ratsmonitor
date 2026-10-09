@@ -5,6 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {committeePart} from './oparl-regional.mjs';
 // SD.NET RIM 4 (Somacos, the newer web interface of the SD.NET Ratsinformationssystem: /termine, /tops, /vorgang),
 // as hosted by a municipality itself (ris.wesel.de). Read are plain addresses of the public site only:
 // - the iCalendar of the meeting calendar (termine/ics/SD.NET_RIM.ics): every meeting with its day, body and the address
@@ -115,13 +116,14 @@ export async function collectRim4(source,{now=new Date(),get=fetchText,request=f
  const guarded=(url,init)=>{guard(url,source);return request(url,init);};
  const read=target=>{const url=target.startsWith('http')?allowed(target,source):rim4Url(target,source);guard(url,source);return get(url,source,undefined,guarded);};
  const period=historyWindow(lookback)+':',from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10);
- const issues=[],warnings=[],meetings=new Map();
+ const issues=[],warnings=[],meetings=new Map(),part=committeePart(source.organizations);
  let withoutAgenda=0;
  try{
   const rows=rim4Meetings(await read(ICS));
   if(!rows.length)throw Error('keine Sitzungen im Kalender');
   for(const r of rows){
    if(r.date<fromDay)continue;
+   if(!part.keep(r.body,r.agenda||r.date+r.body))continue;
    if(!r.agenda){withoutAgenda++;continue;}
    meetings.set(r.agenda,{...r,url:r.agenda});
   }
@@ -162,5 +164,5 @@ export async function collectRim4(source,{now=new Date(),get=fetchText,request=f
   Object.assign(t,sourceSummary(t));t.longSummary[0]=t.longSummary[0].replace('in Münster','in '+source.name);
   t.quality={passed:false,checks:[{name:'Originalquelle',passed:true,detail:'Öffentliche Seiten des Ratsinformationssystems (SD.NET RIM 4); nur der öffentliche Teil.'},{name:'Inhaltliche Prüfung',passed:false,detail:'Automatischer Quellenüberblick, keine geprüfte KI-Zusammenfassung.'}],checkedAt:now.toISOString(),sourceHash:await hash(t.sourceText)};topics.push(t);
  }
- return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:meetings.size,...(withoutAgenda?{upcomingWithoutAgenda:withoutAgenda}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),...(warnings.length?{warnings}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0||withoutAgenda>0),issues:topics.length||unchanged||withoutAgenda?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:meetings.size,...(withoutAgenda?{upcomingWithoutAgenda:withoutAgenda}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||limited?{resumable:true}:{}),...(warnings.length||part.warnings().length?{warnings:[...warnings,...part.warnings()]}:{}),sourceCount:1,quiet:topics.length===0&&unchanged===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0||withoutAgenda>0),issues:topics.length||unchanged||withoutAgenda?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }
