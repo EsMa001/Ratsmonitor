@@ -732,6 +732,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.rellingen.sitzung-online.de/integration/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-01056048",
+    "name": "Stadt Tornesch",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.tornesch.sitzung-online.de/public/",
+    "verifiedSource": "https://www.tornesch.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.tornesch.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar (die Adresse der Stadtwebsite führte zu 404)."
+  },
+  {
     "id": "de-01056050",
     "name": "Stadt Wedel",
     "kind": "city",
@@ -30142,6 +30153,17 @@
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
     "foundBy": "manuell 2026-10-05"
+  },
+  {
+    "id": "de-12069632",
+    "name": "Stadt Treuenbrietzen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://ris.treuenbrietzen.de/ti-1/",
+    "verifiedSource": "https://ris.treuenbrietzen.de/ti-1/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) am 10.10.2026 erreichbar; einzelne Ausschusslisten in unbekanntem Format."
   },
   {
     "id": "de-12069656",
