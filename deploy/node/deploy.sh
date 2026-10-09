@@ -21,8 +21,9 @@ set -euo pipefail
 REL="$1"; APP="$2"
 set -a; . /srv/ratsmonitor/ratsmonitor.env; set +a
 cd "$REL"
+# strict-dep-builds aus: core-js hat im Repo noch keine Freigabe (pnpm-workspace.yaml), sein Skript zeigt nur einen Spendenhinweis.
 echo "Pakete installieren ..."
-sudo -u ratsmonitor -H bash -lc "cd '$REL' && CI=1 corepack pnpm install --frozen-lockfile --reporter=silent"
+sudo -u ratsmonitor -H bash -lc "cd '$REL' && CI=1 corepack pnpm install --frozen-lockfile --config.strict-dep-builds=false --reporter=append-only > install.log 2>&1 || { tail -30 install.log; exit 1; }"
 echo "Bauen (Node) ..."
 sudo -u ratsmonitor -H bash -lc "cd '$REL' && node scripts/build-node.mjs > build.log 2>&1" || { tail -40 "$REL/build.log"; exit 1; }
 if [ -n "${DATABASE_FILE:-}" ] && [ -f "$DATABASE_FILE" ]; then
