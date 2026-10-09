@@ -1,6 +1,7 @@
 'use client';
 import {ShieldCheck} from 'lucide-react';
 import {Brand} from '@/components/ratsmonitor/components/Brand';
+import {RegionCatchUp} from '@/components/admin-catch-up';
 
 // Kopfzeile aller Adminseiten im Quorumo-Design: Logo wie in der App (führt zur Übersicht), Bereich, Konto.
 // Die Startseite des Adminbereichs ist die To-do-Liste (ohne Parameter). Die Seiten heißen in der Adresse nach ihrem Inhalt (?seite=abruf); die alten Nummern 1 bis 4 führen weiter dorthin.
@@ -21,5 +22,6 @@ export function AdminHeader({page,displayName,signOutPath}:{page:AdminPage;displ
  return <>
   <AdminBar displayName={displayName} signOutPath={signOutPath}/>
   <nav className="admin-pages" aria-label="Adminseiten">{ADMIN_PAGES.map(p=><a key={p.id} href={adminHref(p.id)} aria-current={page===p.id?'page':undefined}><span>{p.label}</span></a>)}</nav>
+  <RegionCatchUp/>
  </>;
 }

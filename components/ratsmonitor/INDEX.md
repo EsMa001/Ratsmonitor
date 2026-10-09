@@ -705,12 +705,12 @@ wordmark__dot design-styles.css:61
 ### components/
 - admin-activation.tsx (9, ⚠1): AdminActivation
 - admin-atlas.tsx (166, ⚠33): AdminAtlas
-- admin-chrome.tsx (26, ⚠1): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
+- admin-chrome.tsx (28, ⚠1): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
 - admin-dashboard.tsx (75, ⚠17): AdminDashboardView
 - admin-estimate.tsx (334, ⚠53): AdminEstimate
 - admin-forecast.tsx (12): AdminForecast
 - admin-keywords.tsx (88, ⚠13): AdminKeywords
-- admin-loader.tsx (30, ⚠1): AdminLoader
+- admin-loader.tsx (29): AdminLoader
 - admin-overview.tsx (135, ⚠17): AdminOverview
 - admin-processing-map.tsx (39, ⚠4): AdminProcessingMap
 - admin-processing.tsx (168, ⚠21): AdminProcessing
@@ -772,7 +772,7 @@ wordmark__dot design-styles.css:61
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
-- BranchenLive.tsx (117): LiveThumb
+- BranchenLive.tsx (203): LiveThumb
 - BranchenPages.tsx (122): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (45): isInfoPath, InfoPages
@@ -840,14 +840,14 @@ wordmark__dot design-styles.css:61
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (249, ⚠14): ANALYSE_THUMBS, AnalyticsAbout
+- AnalyticsAbout.tsx (253, ⚠14): ANALYSE_THUMBS, AnalyticsAbout
 - AnalyticsLocked.tsx (27): AnalyticsLocked
 - AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
 - BeschluessePage.tsx (191, ⚠5): BeschluessePage
 - CompareCharts.tsx (51): PLACE_COLORS, CMonth, CompareLines, TopicRow
-- ComparePage.tsx (204, ⚠5): ComparePage
+- ComparePage.tsx (228, ⚠7): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
-- DiffusionChart.tsx (61, ⚠1): DiffusionChart
+- DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (264, ⚠4): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
 - GraphView.tsx (183, ⚠2): GNode, GEdge, KIND, GraphView
