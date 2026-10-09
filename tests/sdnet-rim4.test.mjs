@@ -95,3 +95,17 @@ test('RIM 4 import: a meeting without agenda is counted, not an error; a failing
  assert.equal(bad.coverage.complete,false);assert.match(bad.coverage.issues.join(' '),/Sitzungskalender/);
  await assert.rejects(()=>collectRim4({...source,base:'https://ris.wesel.de/x/'},{now,get:async u=>u,window:'3m'}).then(r=>{throw Error(r.coverage.issues.join('|'));}),/Sitzungskalender/);
 });
+
+test('RIM 4 import: organizations keep one municipality of a shared system; other bodies are left out with a warning',async()=>{
+ const get=async url=>{
+  if(url===base+'termine/ics/SD.NET_RIM.ics')return fixture('termine.ics');
+  if(url.startsWith(base+'tops/'))return fixture('tagesordnung-rat.html');
+  if(url.startsWith(base+'vorgang/'))return fixture('vorgang.html');
+  throw Error('Quelle antwortet mit HTTP 404');
+ };
+ const result=await collectRim4({...source,organizations:{include:['Schul- und Sport']}},{now,get,window:'3m'});
+ assert.equal(result.coverage.meetings,1);
+ assert.match((result.coverage.warnings||[]).join(' '),/anderer Gremien/);
+ const none=await collectRim4({...source,organizations:{include:['Gibt es nicht']}},{now,get,window:'3m'});
+ assert.equal(none.coverage.meetings,0);
+});
