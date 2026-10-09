@@ -37,6 +37,10 @@ for i in $(seq 1 30); do
   sleep 2
 done
 [ "$code" = 200 ] || { echo "Startseite antwortet nicht (HTTP $code)"; journalctl -u ratsmonitor -n 40 --no-pager; exit 1; }
+# Die Seiten fallen bei Datenbankfehlern still auf den mitgelieferten Stand zurück; die Suche dagegen meldet einen Fehler.
+search=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "http://127.0.0.1:${PORT:-3000}/api/search?level=city" || true)
+[ "$search" = 200 ] || { echo "Suche antwortet nicht (HTTP $search): Datenbank prüfen"; journalctl -u ratsmonitor -n 40 --no-pager; exit 1; }
+journalctl -u ratsmonitor -n 20 --no-pager -o cat | grep -E "Datenbank|Node v" || true
 # Alte Stände aufräumen: die letzten drei bleiben
 ls -1dt "$APP"/releases/* | tail -n +4 | xargs -r rm -rf
 REMOTE

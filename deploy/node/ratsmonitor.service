@@ -12,11 +12,14 @@ User=ratsmonitor
 Group=ratsmonitor
 WorkingDirectory=/srv/ratsmonitor/app/current
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
-ExecStart=/usr/bin/node dist/standalone/server.js
+ExecStart=/usr/bin/node dist/standalone/serve.mjs
 Restart=always
 RestartSec=3
 # Lange Admin-Anfragen (Abrufe bis etwa 3 Minuten) beim Neustart ausklingen lassen
 TimeoutStopSec=30
+# Speichergrenzen: ein Import großer Gebiete liest einige Hundert MB; der Rest bleibt dem Seitencache der Datenbank
+MemoryHigh=8G
+MemoryMax=10G
 LimitNOFILE=65536
 # Absicherung: nur der Datenordner ist beschreibbar
 NoNewPrivileges=yes

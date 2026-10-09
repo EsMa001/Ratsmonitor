@@ -42,8 +42,10 @@ const localBindingConfig = {
 // über node:sqlite aus DATABASE_FILE öffnet. Der lokale Dev-Server (npm run dev) bleibt unverändert bei Miniflare.
 const nodeTarget = process.env.RM_TARGET === "node";
 
-export default defineConfig(async () => {
+export default defineConfig(async ({ command }) => {
   if (nodeTarget) {
+    // Nur bauen: Im Dev-Modus wäre import.meta.env.DEV wahr, und jeder Besucher wäre Admin (admin-access.mjs).
+    if (command !== "build") throw new Error("RM_TARGET=node ist nur für den Bau gedacht (npm run build:node).");
     return {
       resolve: {
         alias: {

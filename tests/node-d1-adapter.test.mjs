@@ -6,9 +6,13 @@ import os from 'node:os';
 import path from 'node:path';
 import { openD1 } from '../server/node/d1-sqlite.mjs';
 
+const STATE = Symbol.for('ratsmonitor.node.database');
+const resetShim = () => { try { globalThis[STATE]?.database?.close(); } catch {} delete globalThis[STATE]; };
+
 function fresh() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rm-d1-'));
   const file = path.join(dir, 'db.sqlite');
+  fs.writeFileSync(file, '');
   const db = openD1(file);
   return { db, file, dir };
 }
@@ -26,6 +30,7 @@ test('bind() liefert eine neue Anweisung: dieselbe vorbereitete Anweisung lässt
 test('Werte: true/false als 1/0, undefined und Objekte abgelehnt wie bei D1', async () => {
   const { db } = fresh();
   await db.exec('CREATE TABLE t(v)');
+  assert.throws(() => db.prepare('INSERT INTO t VALUES(?)').bind(10n), /D1_TYPE_ERROR/);
   await db.prepare('INSERT INTO t VALUES(?)').bind(true).run();
   await db.prepare('INSERT INTO t VALUES(?)').bind(false).run();
   assert.deepEqual((await db.prepare('SELECT v FROM t').all()).results.map((r) => r.v), [1, 0]);
@@ -74,7 +79,7 @@ test('batch() ist atomar: ein Fehler rollt alles zurück, Fehlertext mit D1_ERRO
   assert.equal(results.length, 2);
   assert.equal(results[0].meta.changes, 1);
   assert.deepEqual(results[1].results, [{ id: 3 }]);
-  assert.deepEqual(await db.batch([]), []);
+  await assert.rejects(db.batch([]), /D1_ERROR/);
 });
 
 test('Fehler in einzelnen Anweisungen tragen D1_ERROR und den SQLite-Text', async () => {
@@ -96,6 +101,7 @@ test('Ersatzmodul: env.DB aus DATABASE_FILE, übrige Werte aus process.env, leer
     process.env.DATABASE_FILE = file;
     process.env.IMPORT_TOKEN = 'abc';
     process.env.OPENAI_API_KEY = '';
+    resetShim();
     const { env } = await import(`../server/node/cloudflare-workers.mjs?case=${Date.now()}`);
     assert.ok(env.DB, 'Datenbank geöffnet');
     assert.equal(env.DB, env.DB, 'eine Verbindung je Prozess');
@@ -105,6 +111,7 @@ test('Ersatzmodul: env.DB aus DATABASE_FILE, übrige Werte aus process.env, leer
     assert.equal('OPENAI_API_KEY' in env, false);
     assert.equal(env.NOT_SET_ANYWHERE, undefined);
   } finally {
+    resetShim();
     for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key];
     Object.assign(process.env, saved);
   }
@@ -113,9 +120,71 @@ test('Ersatzmodul: env.DB aus DATABASE_FILE, übrige Werte aus process.env, leer
 test('Ersatzmodul ohne DATABASE_FILE: env.DB fehlt wie auf Cloudflare ohne Bindung', async () => {
   const saved = process.env.DATABASE_FILE;
   delete process.env.DATABASE_FILE;
+  resetShim();
   try {
     const { env } = await import(`../server/node/cloudflare-workers.mjs?case=nodb-${Date.now()}`);
     assert.equal(env.DB, undefined);
     assert.equal('DB' in env, false);
-  } finally { if (saved !== undefined) process.env.DATABASE_FILE = saved; }
+  } finally { resetShim(); if (saved !== undefined) process.env.DATABASE_FILE = saved; }
+});
+
+test('Ganze Zahlen bleiben ganze Zahlen (node:sqlite machte aus 5 sonst 5.0)', async () => {
+  const { db } = fresh();
+  await db.exec('CREATE TABLE t(a TEXT, j TEXT)');
+  await db.prepare("INSERT INTO t VALUES(?, json_object('n', ?, 'x', ?))").bind(5, 7, 2.5).run();
+  const row = await db.prepare("SELECT a, j, typeof(a) ta, ?||'' s, typeof(?) tb FROM t").bind(3, 4).first();
+  assert.deepEqual(row, { a: '5', j: '{"n":7,"x":2.5}', ta: 'text', s: '3', tb: 'integer' });
+  assert.equal(await db.prepare('SELECT ? AS v').bind(Number.NaN).first('v'), null);
+});
+
+test('meta.changes zählt Zeilen aus Triggern mit, SELECT ändert nichts, RETURNING zählt', async () => {
+  const { db } = fresh();
+  await db.exec('CREATE TABLE t(a); CREATE TABLE log(x); CREATE TRIGGER tr AFTER INSERT ON t BEGIN INSERT INTO log VALUES(1); END;');
+  const run = await db.prepare('INSERT INTO t VALUES(1)').run();
+  assert.equal(run.meta.changes, 2);
+  assert.equal((await db.prepare('SELECT * FROM t').all()).meta.changes, 0);
+  const ret = await db.prepare('INSERT INTO t VALUES(2) RETURNING a').all();
+  assert.deepEqual(ret.results, [{ a: 2 }]);
+  assert.equal(ret.meta.changes, 2);
+});
+
+test('Ein SQL-Fehler kommt als abgelehntes Promise, nicht schon bei prepare()', async () => {
+  const { db } = fresh();
+  const statement = db.prepare('SELECT * FROM fehlt');
+  await assert.rejects(statement.first(), /no such table/);
+  await assert.rejects(db.batch([db.prepare('SELECT 1'), statement]), /no such table/);
+  await db.exec('CREATE TABLE t(a)');
+  await db.batch([db.prepare('INSERT INTO t VALUES(1)')]);
+  assert.equal(await db.prepare('SELECT count(*) n FROM t').first('n'), 1, 'nach dem Fehler keine offene Transaktion');
+});
+
+test('Lesende Pakete laufen ohne Schreibsperre neben einem anderen Schreiber', async () => {
+  const { db, file } = fresh();
+  await db.exec('CREATE TABLE t(a)');
+  const { DatabaseSync } = await import('node:sqlite');
+  const other = new DatabaseSync(file);
+  other.exec('PRAGMA busy_timeout=0');
+  other.exec('BEGIN IMMEDIATE');
+  other.exec('INSERT INTO t VALUES(1)');
+  try {
+    const started = Date.now();
+    const [count] = await db.batch([db.prepare('SELECT count(*) AS n FROM t')]);
+    assert.equal(count.results[0].n, 0);
+    assert.ok(Date.now() - started < 1000, 'kein Warten auf die Sperre');
+  } finally { other.exec('ROLLBACK'); other.close(); }
+});
+
+test('Eine fehlende Datei wird nicht still neu angelegt', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rm-d1-'));
+  assert.throws(() => openD1(path.join(dir, 'tippfehler.sqlite')), /Datenbankdatei fehlt/);
+  assert.equal(fs.existsSync(path.join(dir, 'tippfehler.sqlite')), false);
+});
+
+test('Lange Schleifen lassen andere Arbeit dazwischen (Abgabe an die Ereignisschleife)', async () => {
+  const { db } = fresh();
+  let ticks = 0;
+  const timer = setInterval(() => { ticks++; }, 0);
+  try { for (let i = 0; i < 200; i++) await db.prepare('SELECT ?').bind(i).first(); }
+  finally { clearInterval(timer); }
+  assert.ok(ticks > 0, 'Zeitgeber liefen zwischen den Abfragen');
 });

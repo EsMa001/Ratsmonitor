@@ -2,30 +2,45 @@
  * Ersatz für das Modul 'cloudflare:workers' im Node-Build (RM_TARGET=node, siehe vite.config.ts).
  *
  * Der Code liest überall `import {env} from 'cloudflare:workers'`. Hier liefert `env`:
- * - `env.DB`: die SQLite-Datei aus DATABASE_FILE über einen D1-kompatiblen Adapter (server/node/d1-sqlite.mjs),
- *   einmal je Prozess geöffnet. Ohne DATABASE_FILE ist `env.DB` undefined, wie auf Cloudflare ohne Bindung:
- *   Die Seiten zeigen dann den mitgelieferten Stand, die Administration meldet „Datenbank fehlt“.
- * - alle anderen Schlüssel (ADMIN_SETUP_HASH, IMPORT_TOKEN, OPENAI_API_KEY, VAPID_*, …) aus process.env.
- *   Leere Werte gelten als nicht gesetzt.
+ * - `env.DB`: die SQLite-Datei aus DATABASE_FILE über einen D1-kompatiblen Adapter (server/node/d1-sqlite.mjs).
+ *   Geöffnet beim ersten Zugriff, nie beim Bauen; genau eine Verbindung je Prozess, auch wenn das Modul in mehreren
+ *   Server-Paketen (rsc, ssr) landet (globalThis). Ohne DATABASE_FILE, oder wenn die Datei fehlt, ist `env.DB`
+ *   undefined wie auf Cloudflare ohne Bindung; das steht dann laut im Protokoll, denn die Seiten zeigen still den
+ *   mitgelieferten Stand.
+ * - alle anderen Schlüssel (ADMIN_SETUP_HASH, IMPORT_TOKEN, OPENAI_API_KEY, VAPID_*, …) aus process.env,
+ *   gelesen beim Zugriff. Leere Werte gelten als nicht gesetzt.
  *
  * Lokal (npm run dev) wird dieses Modul nicht benutzt; dort kommt `env` weiter von Miniflare.
  */
 import { openD1 } from './d1-sqlite.mjs';
 
-let database;
-let failed = false;
+const STATE = Symbol.for('ratsmonitor.node.database');
+const state = (globalThis[STATE] ??= { database: undefined, failed: false, warned: false });
 
 function db() {
-  if (database || failed) return database;
+  if (state.database || state.failed) return state.database;
   const file = process.env.DATABASE_FILE;
-  if (!file) return undefined;
+  if (!file) {
+    if (!state.warned) { state.warned = true; console.error('[ratsmonitor] DATABASE_FILE ist nicht gesetzt: keine Datenbank, die Seiten zeigen den mitgelieferten Stand.'); }
+    return undefined;
+  }
   try {
-    database = openD1(file, { readOnly: process.env.DATABASE_READONLY === '1' });
+    state.database = openD1(file, {
+      readOnly: process.env.DATABASE_READONLY === '1',
+      busyTimeoutMs: Number(process.env.DATABASE_BUSY_TIMEOUT_MS || 5000),
+    });
+    console.log(`[ratsmonitor] Datenbank geöffnet: ${file}${process.env.DATABASE_READONLY === '1' ? ' (nur lesen)' : ''}`);
   } catch (error) {
-    failed = true;
+    state.failed = true;
     console.error('[ratsmonitor] Datenbank konnte nicht geöffnet werden:', error?.message ?? error);
   }
-  return database;
+  return state.database;
+}
+
+/** Für den Server-Einstieg (server/node/serve.mjs): Verbindung beim Beenden sauber schließen. */
+export function closeDatabase() {
+  try { state.database?.close(); } catch { /* schon zu */ }
+  state.database = undefined;
 }
 
 const value = (key) => {
@@ -46,5 +61,3 @@ export const env = new Proxy(Object.create(null), {
   set() { return false; },
   ownKeys() { return []; },
 });
-
-export default { env };

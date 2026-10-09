@@ -13,7 +13,12 @@ need=$(stat -c %s "$DB"); free=$(( $(df --output=avail -B1 "$DIR" | tail -1) ))
 if [ "$free" -lt $(( need + need / 10 )) ]; then echo "$(date -Is) zu wenig Platz: frei $free, nötig etwa $need"; exit 1; fi
 target="$DIR/ratsmonitor-$(date +%F-%H%M).sqlite"
 started=$(date +%s)
-sqlite3 "$DB" ".timeout 600000" "VACUUM INTO '$target.part'"
+# Mit niedriger Priorität: Die Kopie liest die ganze Datei, der Server soll dabei bedienbar bleiben.
+nice -n 10 ionice -c2 -n7 sqlite3 "$DB" ".timeout 600000" "VACUUM INTO '$target.part'"
+check=$(sqlite3 -readonly "$target.part" "PRAGMA quick_check;")
+[ "$check" = ok ] || { echo "$(date -Is) Prüfung der Kopie fehlgeschlagen: $check"; rm -f "$target.part"; exit 1; }
 mv "$target.part" "$target"
+# Der lange Lesevorgang hielt Checkpoints auf; das Protokoll (-wal) jetzt zurückschreiben, damit es nicht weiter wächst.
+sqlite3 "$DB" ".timeout 60000" "PRAGMA wal_checkpoint(PASSIVE);" >/dev/null || true
 ls -1t "$DIR"/ratsmonitor-*.sqlite | tail -n +$(( KEEP + 1 )) | xargs -r rm -f
 echo "$(date -Is) gesichert: $target ($(du -h "$target" | cut -f1), $(( $(date +%s) - started )) s)"
