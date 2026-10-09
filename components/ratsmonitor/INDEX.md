@@ -704,18 +704,20 @@ wordmark__dot design-styles.css:61
 
 ### components/
 - admin-activation.tsx (9, ⚠1): AdminActivation
-- admin-atlas.tsx (166, ⚠33): AdminAtlas
+- admin-atlas.tsx (168, ⚠33): AdminAtlas
+- admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (28, ⚠1): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminHeader
 - admin-dashboard.tsx (75, ⚠17): AdminDashboardView
-- admin-estimate.tsx (334, ⚠53): AdminEstimate
+- admin-estimate.tsx (337, ⚠52): AdminEstimate
 - admin-forecast.tsx (12): AdminForecast
 - admin-keywords.tsx (88, ⚠13): AdminKeywords
 - admin-loader.tsx (29): AdminLoader
-- admin-overview.tsx (135, ⚠17): AdminOverview
+- admin-overview.tsx (137, ⚠16): AdminOverview
 - admin-processing-map.tsx (39, ⚠4): AdminProcessingMap
 - admin-processing.tsx (168, ⚠21): AdminProcessing
 - admin-quality-check.tsx (49, ⚠5): AdminQualityCheck
 - admin-run-debug.tsx (67, ⚠3): RunDebugView, AdminRunDebug
+- admin-store.ts (56): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp
 - admin-timeline.tsx (72, ⚠6): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - analysis-article-list.tsx (34, ⚠1): AnalysisArticleList

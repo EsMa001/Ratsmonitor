@@ -1,6 +1,8 @@
 'use client';
 import {memo,useCallback,useEffect,useMemo,useRef,useState} from 'react';
-import {RefreshCw,X} from 'lucide-react';
+import {X} from 'lucide-react';
+import {StandLine} from '@/components/admin-stand';
+import type {Stand} from '@/shared/admin-types';
 import {AdminHeader,adminHref} from '@/components/admin-chrome';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
@@ -11,7 +13,7 @@ import {REACH_BUCKETS,FRESH_BUCKETS,reachBucket,freshBucket} from '@/shared/cove
 type Area={id:string;n:string;l:string;g:string;t:string;k:'c'|'i'|'d';p:number;m?:number;c:string;z:string;r?:number;u?:string;o?:string;v?:string;zc?:string;rb?:string;rn?:string;at?:string;cs?:string;nc?:number[];rs?:{url:string;hint?:string;proof?:string}[];cnt?:number;last?:string;st?:'failed'|'partial';fe?:string;le?:string;rk?:string;fk?:string};
 type Category={id:string;label:string;open:boolean;color:string;why:string;help:string};
 type Access={id:string;label:string;group:string;automated:boolean;color:string;explain:string};
-type Atlas={asOf:string;builtAt:string;reportDate:string;statsPending:number;reports:number;texts:string[];categories:Category[];access:Access[];lands:Record<string,{name:string;short:string}>;areas:Area[]};
+type Atlas={stand?:Stand;asOf:string;builtAt:string;reportDate:string;statsPending:number;reports:number;texts:string[];categories:Category[];access:Access[];lands:Record<string,{name:string;short:string}>;areas:Area[]};
 type Shape={id:string;ags:string;kind:string;path:string;bounds:number[]};
 type View={x:number;y:number;w:number;h:number};
 const FILES=['/geo/germany.json','/geo/de-areas.json'],REFRESH_MS=5*60*1000,PAGE=80,DIM='#e3e8ed';
@@ -90,7 +92,7 @@ export function AdminAtlas({displayName,signOutPath}:{displayName:string;signOut
   return [...by].map(([name,m])=>({name,...m,median:m.counts.length?m.counts.sort((x,y)=>x-y)[Math.floor(m.counts.length/2)]:0})).sort((x,y)=>y.areas-x.areas);
  },[atlasAreas,catById]);
  return <div className="admin-app"><AdminHeader page="atlas" displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
-  <div className="admin-heading"><div><p className="eyebrow">LÜCKENATLAS</p><h1>Welche Gebiete lesen wir, welche nicht, und warum?</h1><p>{displayName}{data&&<> · Stand {time(data.asOf)} · aktualisiert sich alle fünf Minuten · Prüfberichte vom {data.reportDate}</>}</p></div><Button variant="outline" onClick={()=>setAttempt(a=>a+1)}><RefreshCw size={16}/> Aktualisieren</Button></div>
+  <div className="admin-heading"><div><p className="eyebrow">LÜCKENATLAS</p><h1>Welche Gebiete lesen wir, welche nicht, und warum?</h1><p>{displayName}</p><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={()=>setAttempt(a=>a+1)} extra={data?<> · Gründe aus der Quellensuche vom {data.reportDate}</>:null}/></div></div>
   {error&&<p role="alert" className="admin-error">{error} <button type="button" className="admin-timeline-retry" onClick={()=>setAttempt(a=>a+1)}>Erneut laden</button></p>}
   {!data&&!error&&<p role="status" className="admin-note">Alle {n(5324)} Gebiete werden mit Anbindung, Grund und Berichtsstand geladen …</p>}
   {data&&<>

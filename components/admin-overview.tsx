@@ -1,13 +1,14 @@
 'use client';
 import {useEffect,useMemo,useState} from 'react';
 import {RefreshCw,MapPinned,Play,ArrowUpRight} from 'lucide-react';
+import {StandLine} from '@/components/admin-stand';
+import type {Stand} from '@/shared/admin-types';
 import {AdminHeader,adminHref} from '@/components/admin-chrome';
-import {Button} from '@/components/ui/button';
 type Share={areas:number;population:number;lands:Record<string,[number,number]>};
 type Bucket={id:string;label:string;color:string;areas:number;population:number};
 type SizeRow={id:string;label:string;total:[number,number];connected:[number,number];data:[number,number]};
 type Month={month:string;reports:number;areas:number};
-type Coverage={asOf:string;lands:Record<string,{name:string;short:string}>;total:Share;connected:Share;data:Share&{series:{day:string;areas:number;population:number}[];reports:number;undatedAreas:number};history:{builtAt:string;points:{at:string;commit:string|null;areas:number;population:number}[]};analysis:{statsPending:number;reach:{buckets:Bucket[]};fresh:{buckets:Bucket[]};sizes:SizeRow[];months:Month[];undated:number}};
+type Coverage={stand?:Stand;asOf:string;lands:Record<string,{name:string;short:string}>;total:Share;connected:Share;data:Share&{series:{day:string;areas:number;population:number}[];reports:number;undatedAreas:number};history:{builtAt:string;points:{at:string;commit:string|null;areas:number;population:number}[]};analysis:{statsPending:number;reach:{buckets:Bucket[]};fresh:{buckets:Bucket[]};sizes:SizeRow[];months:Month[];undated:number}};
 type Point={t:number;v:number};
 type Series={id:string;label:string;color:string;points:Point[]};
 const n=(v:number,digits=0)=>v.toLocaleString('de-DE',{maximumFractionDigits:digits,minimumFractionDigits:digits});
@@ -81,10 +82,11 @@ export function AdminOverview({displayName,signOutPath}:{displayName:string;sign
   return {now,areas:series('areas'),population:series('population'),lands,months,reach,fresh,shallow:sum(reach,['w','m1']),deep:sum(reach,['y1','y2']),quiet:sum(fresh,['d180','old']),current:sum(fresh,['ahead','d30'])};
  },[data]);
  return <div className="admin-app"><AdminHeader page="uebersicht" displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
-  <div className="admin-heading"><div><p className="eyebrow">ÜBERSICHT</p><h1>Wie weit reicht Plenara?</h1><p>{displayName}{data&&<> · Stand {dateTime(data.asOf)}</>}</p></div><Button variant="outline" disabled={!data&&!error} onClick={()=>{setData(null);setAttempt(a=>a+1);}}><RefreshCw size={16}/> Aktualisieren</Button></div>
+  <div className="admin-heading"><div><p className="eyebrow">ÜBERSICHT</p><h1>Wie weit reicht Plenara?</h1><p>{displayName}</p><StandLine stand={data?data.stand??null:undefined} action="Aktualisieren" onAction={()=>setAttempt(a=>a+1)}/></div></div>
   {error&&<p role="alert" className="admin-error">{error} <button type="button" className="admin-timeline-retry" onClick={()=>setAttempt(a=>a+1)}>Erneut laden</button></p>}
   {!data&&!error&&<p role="status" className="admin-note">Abdeckung wird aus Katalog und Datenbank gelesen. Beim ersten Aufruf nach einer Änderung des Bestands dauert das bis zu einer Minute.</p>}
-  {data&&view&&<>
+  {data&&data.stand&&data.stand.unbuilt>0&&<p role="status" className="admin-note">Die Werte je Gebiet werden zum ersten Mal berechnet. Bis alle Gebiete fertig sind, zeigt diese Seite keine Zahlen, damit keine Teilsummen wie Ergebnisse aussehen.</p>}
+  {data&&view&&!(data.stand&&data.stand.unbuilt>0)&&<>
    <section className="admin-kpis" aria-label="Abdeckung heute">
     <div className="admin-kpi admin-kpi-primary"><span>Gebiete angebunden</span><strong>{n(data.connected.areas)}<em> / {n(data.total.areas)}</em></strong><small>{pct(data.connected.areas,data.total.areas)} aller Städte, Gemeinden, Gemeindeverbände und Kreise haben eine Quelle, die Programme lesen können</small></div>
     <div className="admin-kpi admin-kpi-primary"><span>Einwohner erreicht</span><strong>{pct(data.connected.population,data.total.population)}</strong><small>{mio(data.connected.population)} von {mio(data.total.population)} Einwohnern leben in einem angebundenen Gebiet (Gemeindeebene)</small></div>
