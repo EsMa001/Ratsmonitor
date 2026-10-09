@@ -165,7 +165,9 @@ export async function pipelineAction(db,body,run){
  if(body.action==='step'){const done=await step(db,body.id,run);return view(done.job,since,done.wait?{wait:true}:{});}
  if(body.action!=='run')throw new AdminError(400,'Ungültige Aktion.');
  const lanes=Math.max(1,Math.min(MAX_LANES,Math.floor(Number(body.lanes))||1)),until=Date.now()+RUN_MS;
- const lane=async()=>{let done;do{done=await step(db,body.id,run);}while(done.claimed&&!done.job.paused&&!ended(done.job)&&Date.now()<until);return done;};
+ // Rule labelling works through the whole stock in packages and keeps the runtime busy for the whole request; between two
+ // packages it rests as long as the package took (at most 2.5 s), so pages and status requests are answered meanwhile.
+ const lane=async()=>{let done;do{const began=Date.now();done=await step(db,body.id,run);if(done.claimed&&done.job.stage==='analysis'&&!done.job.paused&&!ended(done.job))await new Promise(r=>setTimeout(r,Math.min(2500,Date.now()-began)));}while(done.claimed&&!done.job.paused&&!ended(done.job)&&Date.now()<until);return done;};
  // A lane that fails must not end the request while the others still import: their results are reported first.
  const outcomes=await Promise.allSettled(Array.from({length:lanes},lane)),finished=outcomes.filter(o=>o.status==='fulfilled').map(o=>o.value);
  if(!finished.length)throw outcomes[0].reason;
