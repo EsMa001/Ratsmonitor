@@ -2,6 +2,7 @@ import {processingState,stageColumns} from './processing-status.mjs';
 import {lockedUntil} from './import-lock.mjs';
 import {atRevision} from './revision-cache.mjs';
 import {FIRST_DAY_SQL,LAST_DAY_SQL} from './admin-timeline.mjs';
+import {FIGURES_VERSION} from './region-series.mjs';
 import {CATALOG as regions} from '../../shared/catalog.mjs';
 import {LABELS} from '../../shared/labels.mjs';
 import {sourceHealth,REVIEW_FILTERS} from '../../shared/admin.mjs';
@@ -66,9 +67,8 @@ export async function adminReview(db,issue='labels',region='all',{total}={}){
 // Figures of the reports that are added up over all areas. Each name is a column of the scan below.
 const TOTALS=['contentSummaries','insufficient','stale','aiLabels','weightedKeywords','aiSummaries','qualityPassed','updated7d','pdfArticles','conflicts','textIssues','pendingAnalysis'];
 // Figures of one area from its stored reports; every one is a sum over the area's canonical reports.
-// Version of the stored figures per area: raising it makes every area count again once (new figures).
-const FIGURES_VERSION=2;
-const FIGURES=`min(${FIRST_DAY_SQL}) firstEvent,max(${LAST_DAY_SQL}) lastEvent,coalesce(sum(json_extract(payload,'$.contentAnalysis.status')='completed'),0) contentSummaries,coalesce(sum(json_extract(payload,'$.labelAssessments.ai.primary') IS NOT NULL),0) aiLabels,coalesce(sum(json_extract(payload,'$.weightedKeywords.status')='completed'),0) weightedKeywords,coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) aiSummaries,coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) qualityPassed,coalesce(sum(EXISTS(SELECT 1 FROM json_each(json_extract(topics.payload,'$.documents')) d WHERE json_extract(d.value,'$.kind')='application/pdf')),0) pdfArticles,coalesce(sum(json_extract(payload,'$.identity.conflict')=1),0) conflicts,coalesce(sum((${conditions.summaries})),0) textIssues,coalesce(sum(${ANALYSIS_PENDING_SQL}),0) pendingAnalysis,${stageColumns({withRules:false})},${LABELS.map(l=>`coalesce(sum(${label}='${l.id}'),0) AS label_${l.id}`).join(',')}`;
+// Version of the stored figures per area (FIGURES_VERSION, region-series.mjs): raising it makes every area count again once.
+export const FIGURES=`min(${FIRST_DAY_SQL}) firstEvent,max(${LAST_DAY_SQL}) lastEvent,coalesce(sum(json_extract(payload,'$.contentAnalysis.status')='completed'),0) contentSummaries,coalesce(sum(json_extract(payload,'$.labelAssessments.ai.primary') IS NOT NULL),0) aiLabels,coalesce(sum(json_extract(payload,'$.weightedKeywords.status')='completed'),0) weightedKeywords,coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) aiSummaries,coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) qualityPassed,coalesce(sum(EXISTS(SELECT 1 FROM json_each(json_extract(topics.payload,'$.documents')) d WHERE json_extract(d.value,'$.kind')='application/pdf')),0) pdfArticles,coalesce(sum(json_extract(payload,'$.identity.conflict')=1),0) conflicts,coalesce(sum((${conditions.summaries})),0) textIssues,coalesce(sum(${ANALYSIS_PENDING_SQL}),0) pendingAnalysis,${stageColumns({withRules:false})},${LABELS.map(l=>`coalesce(sum(${label}='${l.id}'),0) AS label_${l.id}`).join(',')}`;
 /**
  * Figures per area for the overview, from region_stats. Every change of a report raises the revision of its area
  * (triggers of migration 0011); only areas whose revision differs from the one their figures were computed at are read
