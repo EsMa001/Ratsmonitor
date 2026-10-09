@@ -1603,6 +1603,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06431001",
+    "name": "Gemeinde Abtsteinach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/abtsteinach/",
+    "verifiedSource": "https://rim.ekom21.de/abtsteinach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06431002",
     "name": "Stadt Bensheim",
     "kind": "city",
@@ -1648,6 +1659,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.buerstadt.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-06431007",
+    "name": "Gemeinde Fürth",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/fuerth/",
+    "verifiedSource": "https://rim.ekom21.de/fuerth/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06431008",
     "name": "Gemeinde Gorxheimertal",
     "kind": "city",
@@ -1657,6 +1679,17 @@
     "verifiedSource": "https://www.gorxheimertal.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-06431010",
+    "name": "Gemeinde Groß-Rohrheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/gross-rohrheim/",
+    "verifiedSource": "https://rim.ekom21.de/gross-rohrheim/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06431011",
@@ -1670,6 +1703,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06431012",
+    "name": "Stadt Hirschhorn (Neckar)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/hirschhorn/",
+    "verifiedSource": "https://rim.ekom21.de/hirschhorn/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06431013",
+    "name": "Stadt Lampertheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/lampertheim/",
+    "verifiedSource": "https://rim.ekom21.de/lampertheim/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06431014",
     "name": "Gemeinde Lautertal (Odenwald)",
     "kind": "city",
@@ -1681,6 +1736,17 @@
     "state": "system-verified",
     "verifiedSource": "https://www.lautertal.de/",
     "verifiedAt": "2026-10-06"
+  },
+  {
+    "id": "de-06431015",
+    "name": "Stadt Lindenfels",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/lindenfels/",
+    "verifiedSource": "https://rim.ekom21.de/lindenfels/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06431016",
@@ -1773,6 +1839,28 @@
     "foundBy": "sessionnet.owl-it.de/dieburg/bi"
   },
   {
+    "id": "de-06432005",
+    "name": "Gemeinde Eppertshausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/eppertshausen/",
+    "verifiedSource": "https://rim.ekom21.de/eppertshausen/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06432006",
+    "name": "Gemeinde Erzhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/erzhausen/",
+    "verifiedSource": "https://rim.ekom21.de/erzhausen/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06432008",
     "name": "Stadt Griesheim",
     "kind": "city",
@@ -1859,6 +1947,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06432016",
+    "name": "Stadt Ober-Ramstadt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/ober-ramstadt/",
+    "verifiedSource": "https://rim.ekom21.de/ober-ramstadt/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06432017",
     "name": "Gemeinde Otzberg",
     "kind": "city",
@@ -1879,6 +1978,17 @@
     "verifiedSource": "https://pfungstadt.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 05.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
+  },
+  {
+    "id": "de-06432020",
+    "name": "Gemeinde Roßdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/rossdorf/",
+    "verifiedSource": "https://rim.ekom21.de/rossdorf/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06432023",
@@ -1935,6 +2045,39 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "buettelborn.ris-portal.de"
+  },
+  {
+    "id": "de-06433004",
+    "name": "Stadt Gernsheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/gernsheim/",
+    "verifiedSource": "https://rim.ekom21.de/gernsheim/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06433006",
+    "name": "Stadt Groß-Gerau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/gross-gerau/",
+    "verifiedSource": "https://rim.ekom21.de/gross-gerau/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06433007",
+    "name": "Stadt Kelsterbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/kelsterbach/",
+    "verifiedSource": "https://rim.ekom21.de/kelsterbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06433008",
@@ -2011,6 +2154,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06434",
+    "name": "Hochtaunuskreis",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/hochtaunuskreis/",
+    "verifiedSource": "https://rim.ekom21.de/hochtaunuskreis/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06434003",
     "name": "Gemeinde Glashütten",
     "kind": "city",
@@ -2021,6 +2175,17 @@
     "verifiedSource": "https://rim.ekom21.de/glashuetten/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-06",
     "foundBy": "dev.oparl.org/api/endpoints"
+  },
+  {
+    "id": "de-06434004",
+    "name": "Gemeinde Grävenwiesbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/graevenwiesbach/",
+    "verifiedSource": "https://rim.ekom21.de/graevenwiesbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06434005",
@@ -2071,6 +2236,17 @@
     "foundBy": "SD.NET-RIM-Webservice des Mandanten"
   },
   {
+    "id": "de-06434008",
+    "name": "Stadt Oberursel (Taunus)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/oberursel/",
+    "verifiedSource": "https://rim.ekom21.de/oberursel/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06434009",
     "name": "Gemeinde Schmitten im Taunus",
     "kind": "city",
@@ -2081,6 +2257,28 @@
     "verifiedSource": "https://rim.ekom21.de/schmitten/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-04",
     "foundBy": "OParl-Register: Schmitten"
+  },
+  {
+    "id": "de-06434010",
+    "name": "Stadt Steinbach (Taunus)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/steinbach/",
+    "verifiedSource": "https://rim.ekom21.de/steinbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06434011",
+    "name": "Stadt Usingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/usingen/",
+    "verifiedSource": "https://rim.ekom21.de/usingen/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06434013",
@@ -2139,6 +2337,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06435006",
+    "name": "Stadt Bruchköbel",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/bruchkoebel/",
+    "verifiedSource": "https://rim.ekom21.de/bruchkoebel/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06435007",
+    "name": "Stadt Erlensee",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/erlensee/",
+    "verifiedSource": "https://rim.ekom21.de/erlensee/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06435009",
     "name": "Gemeinde Freigericht",
     "kind": "city",
@@ -2182,6 +2402,17 @@
     "verifiedSource": "https://gruendau.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "de-06435013",
+    "name": "Gemeinde Hammersbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/hammersbach/",
+    "verifiedSource": "https://rim.ekom21.de/hammersbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06435014",
@@ -2478,6 +2709,17 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-06437003",
+    "name": "Gemeinde Brensbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/brensbach/",
+    "verifiedSource": "https://rim.ekom21.de/brensbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06437004",
     "name": "Stadt Breuberg",
     "kind": "city",
@@ -2514,6 +2756,28 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-06437006",
+    "name": "Stadt Erbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/erbach/",
+    "verifiedSource": "https://rim.ekom21.de/erbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06437007",
+    "name": "Gemeinde Fränkisch-Crumbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/fraenkisch-crumbach/",
+    "verifiedSource": "https://rim.ekom21.de/fraenkisch-crumbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06437009",
     "name": "Gemeinde Höchst i.Odw.",
     "kind": "city",
@@ -2530,6 +2794,28 @@
     "verifiedSource": "https://rim.ekom21.de/hoechst/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-06",
     "foundBy": "SD.NET-RIM-Webservice des Mandanten"
+  },
+  {
+    "id": "de-06437010",
+    "name": "Gemeinde Lützelbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/luetzelbach/",
+    "verifiedSource": "https://rim.ekom21.de/luetzelbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06437011",
+    "name": "Stadt Michelstadt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/michelstadt/",
+    "verifiedSource": "https://rim.ekom21.de/michelstadt/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06437012",
@@ -2594,6 +2880,17 @@
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
     "foundBy": "Websuche"
+  },
+  {
+    "id": "de-06438003",
+    "name": "Gemeinde Egelsbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/egelsbach/",
+    "verifiedSource": "https://rim.ekom21.de/egelsbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06438004",
@@ -2722,6 +3019,28 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06439003",
+    "name": "Stadt Eltville am Rhein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/eltville/",
+    "verifiedSource": "https://rim.ekom21.de/eltville/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06439004",
+    "name": "Stadt Geisenheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/geisenheim/",
+    "verifiedSource": "https://rim.ekom21.de/geisenheim/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06439005",
     "name": "Gemeinde Heidenrod",
     "kind": "city",
@@ -2767,6 +3086,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06439009",
+    "name": "Gemeinde Kiedrich",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/kiedrich/",
+    "verifiedSource": "https://rim.ekom21.de/kiedrich/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06439010",
     "name": "Stadt Lorch",
     "kind": "city",
@@ -2800,6 +3130,39 @@
     "verifiedSource": "https://www.niedernhausen.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06439012",
+    "name": "Stadt Oestrich-Winkel",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/oestrich-winkel/",
+    "verifiedSource": "https://rim.ekom21.de/oestrich-winkel/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06439014",
+    "name": "Gemeinde Schlangenbad",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/schlangenbad/",
+    "verifiedSource": "https://rim.ekom21.de/schlangenbad/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06439017",
+    "name": "Gemeinde Walluf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/walluf/",
+    "verifiedSource": "https://rim.ekom21.de/walluf/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06440",
@@ -2851,6 +3214,17 @@
     "foundBy": "SD.NET-RIM-Webservice des Mandanten"
   },
   {
+    "id": "de-06440004",
+    "name": "Stadt Büdingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/buedingen/",
+    "verifiedSource": "https://rim.ekom21.de/buedingen/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06440005",
     "name": "Stadt Butzbach",
     "kind": "city",
@@ -2860,6 +3234,39 @@
     "verifiedSource": "https://stadt-butzbach.de/rathaus/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "de-06440008",
+    "name": "Stadt Friedberg (Hessen)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/friedberg/",
+    "verifiedSource": "https://rim.ekom21.de/friedberg/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06440009",
+    "name": "Stadt Gedern",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/gedern/",
+    "verifiedSource": "https://rim.ekom21.de/gedern/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06440010",
+    "name": "Gemeinde Glauburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/glauburg/",
+    "verifiedSource": "https://rim.ekom21.de/glauburg/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06440012",
@@ -2886,6 +3293,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
+    "id": "de-06440014",
+    "name": "Gemeinde Limeshain",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/limeshain/",
+    "verifiedSource": "https://rim.ekom21.de/limeshain/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06440015",
     "name": "Stadt Münzenberg",
     "kind": "city",
@@ -2902,6 +3320,17 @@
     "verifiedSource": "https://www.muenzenberg.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06440019",
+    "name": "Stadt Ortenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/ortenberg/",
+    "verifiedSource": "https://rim.ekom21.de/ortenberg/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06440020",
@@ -3012,6 +3441,39 @@
     "foundBy": "OParl-Register: Fernwald"
   },
   {
+    "id": "de-06531005",
+    "name": "Stadt Gießen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/giessen/",
+    "verifiedSource": "https://rim.ekom21.de/giessen/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06531006",
+    "name": "Stadt Grünberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/gruenberg/",
+    "verifiedSource": "https://rim.ekom21.de/gruenberg/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06531007",
+    "name": "Gemeinde Heuchelheim a.d.Lahn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/heuchelheim/",
+    "verifiedSource": "https://rim.ekom21.de/heuchelheim/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06531008",
     "name": "Stadt Hungen",
     "kind": "city",
@@ -3028,6 +3490,17 @@
     "verifiedSource": "https://www.hungen.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06531009",
+    "name": "Gemeinde Langgöns",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/langgoens/",
+    "verifiedSource": "https://rim.ekom21.de/langgoens/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06531010",
@@ -3063,6 +3536,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06531013",
+    "name": "Stadt Lollar",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/lollar/",
+    "verifiedSource": "https://rim.ekom21.de/lollar/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06531014",
     "name": "Stadt Pohlheim",
     "kind": "city",
@@ -3083,6 +3567,17 @@
     "verifiedSource": "https://www.gemeinde-rabenau.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-06531016",
+    "name": "Gemeinde Reiskirchen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/reiskirchen/",
+    "verifiedSource": "https://rim.ekom21.de/reiskirchen/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06531017",
@@ -3107,6 +3602,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06532",
+    "name": "Lahn-Dill-Kreis",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/lahn-dill-kreis/",
+    "verifiedSource": "https://rim.ekom21.de/lahn-dill-kreis/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06532001",
     "name": "Stadt Aßlar",
     "kind": "city",
@@ -3117,6 +3623,17 @@
     "verifiedAt": "2026-10-05",
     "apiCheck": "OParl-Adresse des Systems (https://www.asslar.sitzung-online.de/public/oparl/system) lieferte am 05.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
     "foundBy": "www.asslar.sitzung-online.de"
+  },
+  {
+    "id": "de-06532004",
+    "name": "Gemeinde Breitscheid",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/breitscheid/",
+    "verifiedSource": "https://rim.ekom21.de/breitscheid/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06532005",
@@ -3198,6 +3715,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06532011",
+    "name": "Stadt Haiger",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/haiger/",
+    "verifiedSource": "https://rim.ekom21.de/haiger/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06532012",
     "name": "Stadt Herborn",
     "kind": "city",
@@ -3237,6 +3765,28 @@
     "foundBy": "huettenberg.ris-portal.de"
   },
   {
+    "id": "de-06532015",
+    "name": "Gemeinde Lahnau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/lahnau/",
+    "verifiedSource": "https://rim.ekom21.de/lahnau/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06532016",
+    "name": "Stadt Leun",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/leun/",
+    "verifiedSource": "https://rim.ekom21.de/leun/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06532018",
     "name": "Gemeinde Schöffengrund",
     "kind": "city",
@@ -3247,6 +3797,17 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "schoeffengrund.ris-portal.de"
+  },
+  {
+    "id": "de-06532019",
+    "name": "Gemeinde Siegbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/siegbach/",
+    "verifiedSource": "https://rim.ekom21.de/siegbach/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06532020",
@@ -3270,6 +3831,17 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "solms.ris-portal.de"
+  },
+  {
+    "id": "de-06532022",
+    "name": "Gemeinde Waldsolms",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/waldsolms/",
+    "verifiedSource": "https://rim.ekom21.de/waldsolms/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06532023",
@@ -3319,6 +3891,17 @@
     "verifiedSource": "https://www.bad-camberg.de/rathaus-politik/politik-und-wahlen/rats-und-buergerinformationssystem/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "de-06533005",
+    "name": "Gemeinde Elbtal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/elbtal/",
+    "verifiedSource": "https://rim.ekom21.de/elbtal/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06533006",
@@ -3454,6 +4037,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06534002",
+    "name": "Gemeinde Angelburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/angelburg/",
+    "verifiedSource": "https://rim.ekom21.de/angelburg/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06534003",
     "name": "Gemeinde Bad Endbach",
     "kind": "city",
@@ -3464,6 +4058,17 @@
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "bad-endbach.ris-portal.de"
+  },
+  {
+    "id": "de-06534004",
+    "name": "Stadt Biedenkopf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/biedenkopf/",
+    "verifiedSource": "https://rim.ekom21.de/biedenkopf/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06534005",
@@ -3487,6 +4092,17 @@
     "verifiedSource": "https://rim.ekom21.de/coelbe/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-04",
     "foundBy": "OParl-Register: Cölbe"
+  },
+  {
+    "id": "de-06534007",
+    "name": "Gemeinde Dautphetal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/dautphetal/",
+    "verifiedSource": "https://rim.ekom21.de/dautphetal/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06534009",
@@ -3538,6 +4154,17 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-06534012",
+    "name": "Gemeinde Lahntal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/lahntal/",
+    "verifiedSource": "https://rim.ekom21.de/lahntal/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06534013",
     "name": "Gemeinde Lohra",
     "kind": "city",
@@ -3558,6 +4185,17 @@
     "state": "system-verified",
     "verifiedSource": "https://www.marburg.de/",
     "verifiedAt": "2026-10-04"
+  },
+  {
+    "id": "de-06534016",
+    "name": "Stadt Neustadt (Hessen)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/neustadt/",
+    "verifiedSource": "https://rim.ekom21.de/neustadt/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06534017",
@@ -3599,6 +4237,17 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "steffenberg.ris-portal.de"
+  },
+  {
+    "id": "de-06534020",
+    "name": "Gemeinde Weimar (Lahn)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/weimar/",
+    "verifiedSource": "https://rim.ekom21.de/weimar/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06534021",
@@ -3809,6 +4458,17 @@
     "verifiedSource": "https://www.schlitz.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06535016",
+    "name": "Stadt Schotten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/schotten/",
+    "verifiedSource": "https://rim.ekom21.de/schotten/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06535018",
@@ -4105,6 +4765,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
+    "id": "de-06632006",
+    "name": "Gemeinde Friedewald",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/friedewald/",
+    "verifiedSource": "https://rim.ekom21.de/friedewald/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06632007",
     "name": "Gemeinde Hauneck",
     "kind": "city",
@@ -4159,6 +4830,17 @@
     "verifiedSource": "https://www.nentershausen.de/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
+  },
+  {
+    "id": "de-06632014",
+    "name": "Gemeinde Neuenstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/neuenstein/",
+    "verifiedSource": "https://rim.ekom21.de/neuenstein/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06632020",
@@ -4356,6 +5038,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06633016",
+    "name": "Stadt Liebenau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/liebenau/",
+    "verifiedSource": "https://rim.ekom21.de/liebenau/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06633017",
     "name": "Gemeinde Lohfelden",
     "kind": "city",
@@ -4366,6 +5059,17 @@
     "verifiedSource": "https://lohfelden.ratsinfomanagement.net/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-05",
     "foundBy": "Freigabe fr-2026-0089"
+  },
+  {
+    "id": "de-06633019",
+    "name": "Gemeinde Nieste",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/nieste/",
+    "verifiedSource": "https://rim.ekom21.de/nieste/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06633023",
@@ -4388,6 +5092,17 @@
     "verifiedSource": "https://www.soehrewald.eu/politik/ratsinformationssysthem.html",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-06633025",
+    "name": "Stadt Trendelburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/trendelburg/",
+    "verifiedSource": "https://rim.ekom21.de/trendelburg/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06633026",
@@ -4447,6 +5162,39 @@
     "verifiedSource": "https://www.schwalm-eder-kreis.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-06634001",
+    "name": "Stadt Borken (Hessen)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/borken/",
+    "verifiedSource": "https://rim.ekom21.de/borken/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06634002",
+    "name": "Gemeinde Edermünde",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/edermuende/",
+    "verifiedSource": "https://rim.ekom21.de/edermuende/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06634003",
+    "name": "Stadt Felsberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/felsberg/",
+    "verifiedSource": "https://rim.ekom21.de/felsberg/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06634005",
@@ -4747,6 +5495,39 @@
     "foundBy": "SD.NET-RIM-Webservice des Mandanten"
   },
   {
+    "id": "de-06635019",
+    "name": "Gemeinde Vöhl",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/voehl/",
+    "verifiedSource": "https://rim.ekom21.de/voehl/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06635020",
+    "name": "Stadt Volkmarsen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/volkmarsen/",
+    "verifiedSource": "https://rim.ekom21.de/volkmarsen/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06635021",
+    "name": "Stadt Waldeck",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/waldeck/",
+    "verifiedSource": "https://rim.ekom21.de/waldeck/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06635022",
     "name": "Gemeinde Willingen (Upland)",
     "kind": "city",
@@ -4786,6 +5567,17 @@
     "verifiedSource": "https://www.bad-sooden-allendorf.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06636003",
+    "name": "Stadt Eschwege",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/eschwege/",
+    "verifiedSource": "https://rim.ekom21.de/eschwege/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
   },
   {
     "id": "de-06636004",
@@ -6463,6 +7255,17 @@
     "verifiedSource": "http://www.buergerinfo-kreis-duew.de/infobi.php",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-07332002",
+    "name": "Stadt Bad Dürkheim",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/bad-duerkheim/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://sessionnet.owl-it.de/bad-duerkheim/BI/info.asp",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-07332024",
@@ -29958,6 +30761,17 @@
     "verifiedSource": "https://www.suederholz.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://suederholz.sitzung-mv.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-130735353",
+    "name": "Amt Bergen auf Rügen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://www.sv-stadt-bergen.de/ris/ti-bergen-13/",
+    "verifiedSource": "https://www.sv-stadt-bergen.de/ris/ti-bergen-13/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar. Die Sitzungslisten der Ausschüsse (ti_10…, ti_20…) antworteten am 09.10.2026 mit 404, gelesen wird die Gemeindevertretung."
   },
   {
     "id": "de-130735354",
