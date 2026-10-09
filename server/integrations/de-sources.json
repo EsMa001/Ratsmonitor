@@ -28397,6 +28397,18 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.saarwellingen.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-10044118",
+    "name": "Gemeinde Schwalbach",
+    "kind": "city",
+    "system": "https://www.schwalbach.sitzung-online.de/public/oparl/system",
+    "method": "oparl",
+    "upgradeHttpLinks": true,
+    "state": "system-verified",
+    "verifiedSource": "https://www.schwalbach.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-09",
+    "meetingScan": "filter"
+  },
+  {
     "id": "de-10044119",
     "name": "Gemeinde Überherrn",
     "kind": "city",
