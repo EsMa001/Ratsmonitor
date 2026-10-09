@@ -279,7 +279,7 @@
  "nrw-05358052":{"c":"ok","z":"oparl"},
  "nrw-05374032":{"c":"ok","z":"scraping"},
  "nrw-05374":{"c":"ok","z":"scraping"},
- "nrw-05119000":{"c":"readfail","z":"scraping","r":12,"u":"https://www.oberhausen.de/de/index/rathaus/politik/ratsinformationssystem.php"},
+ "nrw-05119000":{"c":"ok","z":"oparl"},
  "nrw-05566068":{"c":"ok","z":"oparl"},
  "nrw-05378020":{"c":"ok","z":"scraping"},
  "nrw-05570028":{"c":"ok","z":"scraping"},

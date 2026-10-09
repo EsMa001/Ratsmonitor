@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 346 angebunden, 81 nicht. Diese Datei beschreibt die 253 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 347 angebunden, 80 nicht. Diese Datei beschreibt die 254 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -342,7 +342,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Nachrodt-Wiblingwerde | Kein unterstütztes Ratsinformationssystem erkannt | https://www.nachrodt-wiblingwerde.de/Mitteilungen-der-Gemeindeverwaltung.htm/Seiten/Informationen-zu-Strassensperrungen.html? |
 | Gemeinde Neuenkirchen | Kein unterstütztes Ratsinformationssystem erkannt | https://neuenkirchen.ratsinfomanagement.net/ |
 | Gemeinde Nordwalde | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://nordwalde.ratsinfomanagement.net/termine |
-| Stadt Oberhausen | ALLRIS 4 gefunden, Abruf der öffentlichen Seiten lieferte keine Tagesordnungspunkte (Kalender 11/2026: Nicht freigegebene Quelladresse) | https://www.oberhausen.de/de/index/rathaus/politik/ratsinformationssystem.php |
 | Stadt Olsberg | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.olsberg.de/politik-verwaltung/rats-und-buergerinformationssystem-der-stadt-olsberg |
 | Stadt Plettenberg | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.plettenberg.de/soziales/soziales/fluechtlingshilfe-buergerinfo |
 | Stadt Preußisch Oldendorf | Kein unterstütztes Ratsinformationssystem erkannt | https://www.preussischoldendorf.de/Rathaus-Politik/Haushalt-Finanzen/St%C3%A4dtischer-Haushaltsplan-2017.php?object=tx,2864.4&ModID=7&FID=391.2651.1&NavID=2863.28&La=1 |
