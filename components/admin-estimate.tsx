@@ -90,14 +90,14 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
  const data=loaded[revision],error=failed[revision]||'';
  useEffect(()=>{
   if(loaded[revision]||failed[revision])return;const c=new AbortController();
-  fetch('/api/admin/estimate',{cache:'no-store',signal:c.signal}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}));});
+  fetch('/api/admin/estimate',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}));});
   return()=>c.abort();
  },[revision,loaded,failed]);
  // The server keeps the last estimate (system_state). GET only reads it; POST computes it anew, which reads every
  // report twice and takes about a minute, so it runs only on request. Coming back to the page re-reads the stored one.
  const load=(method:'GET'|'POST')=>{
   if(busy)return;setBusy(true);
-  fetch('/api/admin/estimate',{method,cache:'no-store',...(method==='POST'?{headers:{'Content-Type':'application/json'},body:'{"action":"compute"}'}:{})}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}))).finally(()=>setBusy(false));
+  fetch('/api/admin/estimate',{method,cache:method==='GET'?'no-cache':'no-store',...(method==='POST'?{headers:{'Content-Type':'application/json'},body:'{"action":"compute"}'}:{})}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}))).finally(()=>setBusy(false));
  };
  const reload=()=>load('GET'),compute=()=>load('POST');
  useEffect(()=>{

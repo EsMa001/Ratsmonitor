@@ -62,7 +62,7 @@ function BucketBar({buckets,of}:{buckets:Bucket[];of:'areas'|'population'}){
 export function AdminOverview({displayName,signOutPath}:{displayName:string;signOutPath:string}){
  const [data,setData]=useState<Coverage|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[hover,setHover]=useState<number|null>(null),[of,setOf]=useState<'areas'|'population'>('areas');
  useEffect(()=>{const c=new AbortController();setError('');
-  fetch('/api/admin/coverage',{cache:'no-store',signal:c.signal}).then(async r=>{const d=await r.json() as Coverage&{error?:string};if(!r.ok)throw Error(d.error||'Die Abdeckung konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Die Abdeckung konnte nicht geladen werden.');});
+  fetch('/api/admin/coverage',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Coverage&{error?:string};if(!r.ok)throw Error(d.error||'Die Abdeckung konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Die Abdeckung konnte nicht geladen werden.');});
   return()=>c.abort();},[attempt]);
  const view=useMemo(()=>{
   if(!data)return null;

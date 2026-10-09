@@ -33,7 +33,7 @@ export function AdminTimeline({selected,revision,initial}:{selected:Set<string>;
  const key=basis+':'+revision,dataset=loaded[key],error=failed[key]||'';
  useEffect(()=>{
   if(loaded[key]||failed[key])return;const c=new AbortController();
-  fetch('/api/admin/timeline?basis='+basis,{cache:'no-store',signal:c.signal}).then(async r=>{const d=await r.json() as Dataset&{error?:string};if(!r.ok)throw Error(d.error||'Verlauf konnte nicht geladen werden.');setLoaded(prev=>({...prev,[key]:d}));}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[key]:e instanceof Error?e.message:'Verlauf konnte nicht geladen werden.'}));});
+  fetch('/api/admin/timeline?basis='+basis,{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Dataset&{error?:string};if(!r.ok)throw Error(d.error||'Verlauf konnte nicht geladen werden.');setLoaded(prev=>({...prev,[key]:d}));}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[key]:e instanceof Error?e.message:'Verlauf konnte nicht geladen werden.'}));});
   return()=>c.abort();
  },[key,basis,loaded,failed]);
  const view=useMemo(()=>{

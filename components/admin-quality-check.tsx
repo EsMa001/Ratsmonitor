@@ -10,7 +10,7 @@ const n=(v:number)=>v.toLocaleString('de-DE');
 const when=(iso:string)=>new Date(iso).toLocaleString('de-DE',{timeZone:'Europe/Berlin',dateStyle:'short',timeStyle:'short'});
 const GROUPS=Object.keys(QUALITY_GROUPS) as (keyof typeof QUALITY_GROUPS)[];
 async function request<T>(method:'GET'|'POST',body?:unknown):Promise<T>{
- const r=await fetch('/api/admin/quality',{method,cache:'no-store',...(body?{headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
+ const r=await fetch('/api/admin/quality',{method,cache:method==='GET'?'no-cache':'no-store',...(body?{headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
  const d=await r.json() as T&{error?:string};if(!r.ok)throw Error(d.error||'Prüfung nicht erreichbar.');return d;
 }
 /**
