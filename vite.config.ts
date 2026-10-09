@@ -52,6 +52,11 @@ export default defineConfig(async ({ command }) => {
           "cloudflare:workers": fileURLToPath(new URL("./server/node/cloudflare-workers.mjs", import.meta.url)),
         },
       },
+      // Exportnamen im Browser-Paket nicht kürzen: vinexts Link lädt die Navigation per import() und liest
+      // `navigateClientSide` beim Namen. Gekürzt (export {wl as t}) war das undefined und Klicks auf Links taten nichts.
+      environments: {
+        client: { build: { rolldownOptions: { output: { minifyInternalExports: false } } } },
+      },
       plugins: [vinext()],
     };
   }
