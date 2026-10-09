@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import type {AdminDashboard} from '@/shared/admin-types';
-import {AdminHeader} from '@/components/admin-chrome';
+import {AdminPageHead,PageSkeleton,Alert,StandLine} from '@/components/admin-ui';
 import {AdminProcessing} from '@/components/admin-processing';
 import {AdminDashboardView} from '@/components/admin-dashboard';
 import {fetchDashboard,setAdminStaticVersion} from '@/components/admin-store';
@@ -10,7 +10,7 @@ import {fetchDashboard,setAdminStaticVersion} from '@/components/admin-store';
 // Embedded by the server it delayed the page for the whole read and, at 4.7 MB, broke the local render ("Network
 // connection lost"). The server only reads stored figures; areas still being computed show their previous figures and
 // are named in the line under the navigation (RegionCatchUp, admin-catch-up.tsx), which computes them in steps.
-export function AdminLoader({page,displayName,signOutPath,staticVersion='',initialSelection=[],initialFilter}:{page:'abruf'|'qualitaet';displayName:string;signOutPath:string;staticVersion?:string;initialSelection?:string[];initialFilter?:string}){
+export function AdminLoader({page,staticVersion='',initialSelection=[],initialFilter}:{page:'abruf'|'qualitaet';staticVersion?:string;initialSelection?:string[];initialFilter?:string}){
  if(staticVersion)setAdminStaticVersion(staticVersion);
  const [data,setData]=useState<AdminDashboard|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0);
  useEffect(()=>{
@@ -21,10 +21,12 @@ export function AdminLoader({page,displayName,signOutPath,staticVersion='',initi
    .catch(e=>{if(!controller.signal.aborted)setError(e instanceof Error?e.message:'Der Datenbankstand konnte nicht geladen werden.');});
   return()=>controller.abort();
  },[page,attempt]);
- if(data)return page==='qualitaet'?<AdminDashboardView initial={data} displayName={displayName} signOutPath={signOutPath}/>:<AdminProcessing initial={data} displayName={displayName} signOutPath={signOutPath} initialSelection={initialSelection} initialFilter={initialFilter}/>;
- return <div className="admin-app"><AdminHeader page={page} displayName={displayName} signOutPath={signOutPath}/><main id="inhalt" className="admin-shell admin-workspace">
-  <div className="admin-heading"><div><p className="eyebrow">ADMINISTRATION</p><h1>{error?'Administration nicht erreichbar':'Datenbankstand wird geladen …'}</h1><p>{displayName}</p></div></div>
-  {error?<><p className="admin-error" role="alert">{error} Es werden keine Ersatzzahlen angezeigt.</p><button type="button" className="text-link" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></>
-   :<p role="status">Alle Gebiete mit Quellen und Verarbeitungsstand werden geladen.</p>}
- </main></div>;
+ if(data)return page==='qualitaet'?<AdminDashboardView initial={data}/>:<AdminProcessing initial={data} initialSelection={initialSelection} initialFilter={initialFilter}/>;
+ // Solange Daten fehlen: Kopfband, Überschriften und Erklärungen der Abschnitte stehen schon, darunter graue Flächen.
+ const sections:[string,number][]=page==='abruf'?[['abruf.gebiete',520],['abruf.stufen',260],['abruf.verlauf',300]]:[['qualitaet.inhalt',320],['qualitaet.importe',240],['qualitaet.vollstaendig',160],['qualitaet.pruefung',240],['qualitaet.betrieb',200]];
+ return <>
+  <AdminPageHead page={page}><StandLine stand={undefined}/></AdminPageHead>
+  {error&&<Alert onRetry={()=>setAttempt(n=>n+1)}>{error} Es werden keine Ersatzzahlen angezeigt.</Alert>}
+  <PageSkeleton sections={sections}/>
+ </>;
 }

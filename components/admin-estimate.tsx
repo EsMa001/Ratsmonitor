@@ -1,5 +1,6 @@
 'use client';
-import {StandLine} from '@/components/admin-stand';
+import {AdminPageHead,Alert,Kpis,PageSkeleton,SectionHelp,StandLine,dd,standText} from '@/components/admin-ui';
+import {HELP,HOCHRECHNUNG,TERMS,TITLES,ZUSTAND} from '@/components/admin-texts';
 import type {Stand} from '@/shared/admin-types';
 import {useEffect,useState,type ReactNode} from 'react';
 import {landName} from '@/shared/lands.mjs';
@@ -32,7 +33,7 @@ const big=(v:number)=>v>=1e9?n(v/1e9,v>=1e10?1:2)+' Mrd.':v>=1e6?n(v/1e6,v>=1e8?
 const bytes=(v:number)=>v>=1e12?n(v/1e12,1)+' TB':v>=1e9?n(v/1e9,v>=1e10?0:1)+' GB':v>=1e6?n(v/1e6,v>=1e7?0:1)+' MB':n(v/1e3)+' KB';
 const pct=(v:number|null|undefined,digits=0)=>v===null||v===undefined?'–':n(100*v,digits)+' %';
 const signed=(v:number)=>(v>0?'+':v<0?'−':'±')+n(Math.abs(100*v))+' %';
-const day=(s:string)=>s.split('-').reverse().join('.');
+const MEDIAN=TERMS.find(t=>t.term==='Median')?.text;
 // The states in which the source search ran: there the catalog says which areas are readable, not the sample.
 const catalogLands=(ids:string[]=['05','03'])=>ids.length>=14&&!ids.includes('11')&&!ids.includes('02')?'allen Ländern außer Berlin und Hamburg':ids.map(landName).join(', ').replace(/, ([^,]*)$/,' und $1');
 const short=(name:string)=>name.replace(/^(Stadt|Gemeinde|Kreis|Landkreis) /,'');
@@ -59,16 +60,16 @@ function Scatter({level,examples,provisional}:{level:Level;examples:Example[];pr
  const x=(v:number)=>L+(v-x0)/(x1-x0)*(W-L-R),y=(v:number)=>T+(H-T-B)*(1-(v-y0)/(y1-y0)),clampY=(v:number)=>Math.min(y1,Math.max(y0,v));
  const decades=(a:number,b:number)=>Array.from({length:b-a+1},(_,i)=>a+i),label=(e:number)=>e>=6?n(10**(e-6))+' Mio.':n(10**e);
  const line=(e:number)=>clampY(Math.log10(at(m,10**e))),[one]=UNIT[level.id];
- return <figure><figcaption>{level.name}: {n(own.length)} Beispiele <Tag kind="counted"/>{open.length>0&&<> + {n(open.length)} mit Teilbestand <Tag kind="assumed">hochgerechnet</Tag></>}</figcaption>
+ return <figure><figcaption>{level.name}: {n(own.length)} Beispiele <Tag kind="counted"/>{open.length>0&&<> + {n(open.length)} mit Teilstand <Tag kind="assumed">hochgerechnet</Tag></>}</figcaption>
   <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${level.name}: Berichte pro Jahr (senkrecht) gegen Einwohner (waagerecht) für ${own.length} Beispiele, beide Achsen logarithmisch. Die Werte stehen in der Liste der Beispielgebiete.`}>
-   {decades(y0,y1).map(e=><g key={'y'+e}><line x1={L} x2={W-R} y1={y(e)} y2={y(e)} stroke={e===y0?'#8a8a8a':'#e3e3e3'}/><text x={L-8} y={y(e)+4} textAnchor="end" fontSize="12" fill="#555">{label(e)}</text></g>)}
-   {decades(x0,x1).map(e=><g key={'x'+e}><line x1={x(e)} x2={x(e)} y1={T} y2={H-B} stroke={e===x0?'#8a8a8a':'#e3e3e3'}/><text x={x(e)} y={H-B+17} textAnchor="middle" fontSize="12" fill="#555">{label(e)}</text></g>)}
-   <text x={(L+W-R)/2} y={H-10} textAnchor="middle" fontSize="14" fill="#171717">Einwohner</text>
-   <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="#171717">Berichte pro Jahr</text>
-   {open.map(e=>{const title=`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte in ${n(e.weeks)} Wochen, aufs Jahr hochgerechnet rund ${round(e.annual)}. Nicht in der Rechnung: ${e.reason}.`,cx=x(Math.log10(e.population)),cy=y(Math.log10(e.annual));return e.origin==='stored'?<circle key={e.id} cx={cx} cy={cy} r="3.5" fill="#fff" fillOpacity=".6" stroke="#0d9488" strokeOpacity=".55" strokeWidth="1.2"><title>{title}</title></circle>:<rect key={e.id} x={cx-3.2} y={cy-3.2} width="6.4" height="6.4" fill="#fff" fillOpacity=".6" stroke="#b4530a" strokeOpacity=".6" strokeWidth="1.2"><title>{title}</title></rect>;})}
-   <line x1={x(x0)} y1={y(line(x0))} x2={x(x1)} y2={y(line(x1))} stroke="#171717" strokeWidth="2"/>
+   {decades(y0,y1).map(e=><g key={'y'+e}><line x1={L} x2={W-R} y1={y(e)} y2={y(e)} stroke={e===y0?'#cbd5e1':'#e2e8f0'}/><text x={L-8} y={y(e)+4} textAnchor="end" fontSize="12" fill="#64748b">{label(e)}</text></g>)}
+   {decades(x0,x1).map(e=><g key={'x'+e}><line x1={x(e)} x2={x(e)} y1={T} y2={H-B} stroke={e===x0?'#cbd5e1':'#e2e8f0'}/><text x={x(e)} y={H-B+17} textAnchor="middle" fontSize="12" fill="#64748b">{label(e)}</text></g>)}
+   <text x={(L+W-R)/2} y={H-10} textAnchor="middle" fontSize="14" fill="#64748b">Einwohner</text>
+   <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="#64748b">Berichte pro Jahr</text>
+   {open.map(e=>{const title=`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte in ${n(e.weeks)} Wochen, aufs Jahr hochgerechnet rund ${round(e.annual)}. Nicht in der Rechnung: ${e.reason}.`,cx=x(Math.log10(e.population)),cy=y(Math.log10(e.annual));return e.origin==='stored'?<circle key={e.id} cx={cx} cy={cy} r="3.5" fill="#fff" fillOpacity=".6" stroke="#0d9488" strokeOpacity=".55" strokeWidth="1.2"><title>{title}</title></circle>:<rect key={e.id} x={cx-3.2} y={cy-3.2} width="6.4" height="6.4" fill="#fff" fillOpacity=".6" stroke="#0f172a" strokeOpacity=".6" strokeWidth="1.2"><title>{title}</title></rect>;})}
+   <line x1={x(x0)} y1={y(line(x0))} x2={x(x1)} y2={y(line(x1))} stroke="#94a3b8" strokeWidth="2"/>
    {own.map(e=>e.origin==='stored'?<circle key={e.id} cx={x(Math.log10(e.population))} cy={y(Math.log10(e.reports))} r="4.5" fill="#0d9488" fillOpacity=".75" stroke="#fff" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></circle>
-    :<rect key={e.id} x={x(Math.log10(e.population))-4} y={y(Math.log10(e.reports))-4} width="8" height="8" fill="#b4530a" fillOpacity=".8" stroke="#fff" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></rect>)}
+    :<rect key={e.id} x={x(Math.log10(e.population))-4} y={y(Math.log10(e.reports))-4} width="8" height="8" fill="#0f172a" fillOpacity=".8" stroke="#fff" strokeWidth="1"><title>{`${e.name}: ${n(e.population)} Einwohner, ${n(e.reports)} Berichte`}</title></rect>)}
   </svg>
   <p className="admin-estimate-explain">Jeder Punkt ist ein Gebiet mit einem gezählten Jahr: je weiter rechts, desto mehr Einwohner; je weiter oben, desto mehr Berichte. Die Linie ist das Modell und beruht nur auf den gefüllten Punkten. {open.length>0?'Hohle Punkte sind Gebiete mit Berichten, aber ohne vollständiges Jahr: Ihr Jahreswert ist aus den vorhandenen Wochen hochgerechnet und geht nicht in die Rechnung ein. ':''}{m.slope<.1?`Sie verläuft fast waagerecht: Ein ${one} hat unabhängig von seiner Größe ähnlich viele Berichte.`:`Sie steigt: Bei doppelter Einwohnerzahl erwartet das Modell ${signed(2**m.slope-1)} Berichte.`}</p>
  </figure>;
@@ -78,16 +79,16 @@ function Bars({values,labels,ticks,unit,reference,xTitle,yTitle}:{values:number[
  const W=880,H=250,L=66,R=8,T=12,B=52,max=Math.max(.5,Math.ceil(Math.max(...values,reference||0)*2)/2),step=(W-L-R)/values.length,y=(v:number)=>T+(H-T-B)*(1-v/max);
  const marks=Array.from({length:Math.round(max*2)+1},(_,i)=>i/2);
  return <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={unit}>
-  {marks.map(v=><g key={v}><line x1={L} x2={W-R} y1={y(v)} y2={y(v)} stroke={v?'#e3e3e3':'#8a8a8a'}/><text x={L-8} y={y(v)+4} textAnchor="end" fontSize="12" fill="#555">{n(v,1)}</text></g>)}
-  {values.map((v,i)=>{const tick=ticks(i);return <g key={i}><rect x={L+i*step+Math.min(2,step*.12)} y={y(v)} width={Math.max(1,step-Math.min(4,step*.24))} height={Math.max(0,H-B-y(v))} fill="#0d9488"><title>{labels(i)}</title></rect>{tick&&<><line x1={L+i*step} x2={L+i*step} y1={H-B} y2={H-B+5} stroke="#8a8a8a"/><text x={L+i*step+3} y={H-B+18} fontSize="12" fill="#555">{tick}</text></>}</g>;})}
-  {reference!==undefined&&<><line x1={L} x2={W-R} y1={y(reference)} y2={y(reference)} stroke="#171717" strokeDasharray="5 4"/></>}
-  <text x={(L+W-R)/2} y={H-8} textAnchor="middle" fontSize="14" fill="#171717">{xTitle}</text>
-  <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="#171717">{yTitle}</text>
+  {marks.map(v=><g key={v}><line x1={L} x2={W-R} y1={y(v)} y2={y(v)} stroke={v?'#e2e8f0':'#cbd5e1'}/><text x={L-8} y={y(v)+4} textAnchor="end" fontSize="12" fill="#64748b">{n(v,1)}</text></g>)}
+  {values.map((v,i)=>{const tick=ticks(i);return <g key={i}><rect x={L+i*step+Math.min(2,step*.12)} y={y(v)} width={Math.max(1,step-Math.min(4,step*.24))} height={Math.max(0,H-B-y(v))} fill="#0d9488"><title>{labels(i)}</title></rect>{tick&&<><line x1={L+i*step} x2={L+i*step} y1={H-B} y2={H-B+5} stroke="#cbd5e1"/><text x={L+i*step+3} y={H-B+18} fontSize="12" fill="#64748b">{tick}</text></>}</g>;})}
+  {reference!==undefined&&<><line x1={L} x2={W-R} y1={y(reference)} y2={y(reference)} stroke="#94a3b8" strokeDasharray="5 4"/></>}
+  <text x={(L+W-R)/2} y={H-8} textAnchor="middle" fontSize="14" fill="#64748b">{xTitle}</text>
+  <text transform={`translate(16 ${(T+H-B)/2}) rotate(-90)`} textAnchor="middle" fontSize="14" fill="#64748b">{yTitle}</text>
  </svg>;
 }
 const Share=({value}:{value:number})=><span className="admin-estimate-share"><span style={{width:Math.max(0,Math.min(100,100*value))+'%'}}/></span>;
 /** Germany-wide estimate of new reports and of the documents behind them, with every step of the derivation. Reads only. */
-export function AdminEstimate({revision,initial}:{revision:number;initial?:Estimate}){
+export function AdminEstimate({revision,initial}:{revision:number;initial?:Estimate;displayName?:string;signOutPath?:string}){
  const [loaded,setLoaded]=useState<Record<number,Estimate>>(initial?{[revision]:initial}:{}),[failed,setFailed]=useState<Record<number,string>>({}),[busy,setBusy]=useState(false),[loadedAt,setLoadedAt]=useState(0);
  const data=loaded[revision],error=failed[revision]||'';
  useEffect(()=>{
@@ -99,7 +100,7 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
  // report twice and takes about a minute, so it runs only on request. Coming back to the page re-reads the stored one.
  const load=(method:'GET'|'POST')=>{
   if(busy)return;setBusy(true);
-  fetch('/api/admin/estimate',{method,cache:method==='GET'?'no-cache':'no-store',...(method==='POST'?{headers:{'Content-Type':'application/json'},body:'{"action":"compute"}'}:{})}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setLoadedAt(Date.now());}).catch(e=>setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}))).finally(()=>setBusy(false));
+  fetch('/api/admin/estimate',{method,cache:method==='GET'?'no-cache':'no-store',...(method==='POST'?{headers:{'Content-Type':'application/json'},body:'{"action":"compute"}'}:{})}).then(async r=>{const d=await r.json() as Estimate&{error?:string};if(!r.ok)throw Error(d.error||'Hochrechnung konnte nicht geladen werden.');setLoaded(prev=>({...prev,[revision]:d}));setFailed(prev=>{const next={...prev};delete next[revision];return next;});setLoadedAt(Date.now());}).catch(e=>setFailed(prev=>({...prev,[revision]:e instanceof Error?e.message:'Hochrechnung konnte nicht geladen werden.'}))).finally(()=>setBusy(false));
  };
  const reload=()=>load('GET'),compute=()=>load('POST');
  useEffect(()=>{
@@ -111,9 +112,20 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
   const url=URL.createObjectURL(new Blob([JSON.stringify({hinweis:'Hochrechnung des Berichts- und Dokumentenaufkommens; Werte pro Jahr, sofern nicht anders benannt. Tokens sind lokal gezählte Näherungen.',...figures,examples:examples.length,excluded:excluded.length},null,1)],{type:'application/json'}));
   const a=document.createElement('a');a.href=url;a.download=`hochrechnung-${data.to}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
- if(error)return <section className="admin-estimate"><p role="alert" className="admin-error">{error} <button type="button" className="admin-timeline-retry" onClick={()=>setFailed(prev=>{const next={...prev};delete next[revision];return next;})}>Erneut laden</button></p></section>;
- if(!data)return <section className="admin-estimate"><p role="status" className="admin-note">Gespeicherte Hochrechnung wird geladen …</p></section>;
- if(data.computed===false)return <section className="admin-estimate"><div className="admin-section-heading"><div><p className="eyebrow">HOCHRECHNUNG DEUTSCHLAND</p><h2>Noch keine Hochrechnung gespeichert.</h2></div></div><p className="admin-note">Die Berechnung liest jeden gespeicherten Bericht zweimal und zieht die Spannen; bei einer Million Berichten dauert das etwa eine Minute. Danach zeigt die Seite das Ergebnis sofort, bis du neu rechnen lässt.</p><p><button type="button" className="admin-timeline-retry" disabled={busy} onClick={compute}>{busy?'Wird berechnet … (etwa eine Minute)':'Jetzt berechnen'}</button></p></section>;
+ const resetError=()=>setFailed(prev=>{const next={...prev};delete next[revision];return next;});
+ if(!data)return <>
+  <AdminPageHead page="hochrechnung"><StandLine stand={undefined}/></AdminPageHead>
+  {error&&<Alert onRetry={resetError}>{ZUSTAND.fehler} ({error})</Alert>}
+  <div className="mt-8"><Kpis label="Berichte pro Tag und Jahr" items={['Neue Berichte pro Tag','Pro Arbeitstag · an einem starken Tag','Davon heute lesbar','Pro Jahr'].map(label=>({label,value:undefined}))}/></div>
+  <PageSkeleton sections={[['hochrechnung.ergebnis',480]]}/>
+ </>;
+ if(data.computed===false){const waiting=!!data.stand&&data.stand.unbuilt>0;return <>
+  <AdminPageHead page="hochrechnung"><StandLine stand={data.stand??null} busy={busy}/></AdminPageHead>
+  {error&&<Alert>{error}</Alert>}
+  <section className="admin-estimate"><div className="admin-section-heading"><h2>{HELP['hochrechnung.leer'].title}</h2></div><SectionHelp id="hochrechnung.leer"/>
+   {waiting&&data.stand&&<p role="status" className="admin-note">{HOCHRECHNUNG.vorVorberechnung(n(data.stand.total-data.stand.unbuilt),n(data.stand.total))}</p>}
+   <p className="mt-5"><button type="button" className="btn-primary" disabled={busy||waiting} onClick={compute}>{busy?'Wird berechnet …':HOCHRECHNUNG.leerKnopf}</button></p></section>
+ </>;}
  const d=data,v=d.volume,size=d.size,variant=(id:string)=>v?.variants.find(x=>x.id===id),municipal=d.levels.find(l=>l.id==='municipality')?.model,today=variant('primary'),once=variant('once');
  const sampleStates=[...new Set(d.examples.filter(e=>e.origin==='sample').map(e=>e.state))],stored=d.examples.filter(e=>e.origin==='stored').length;
  const measuredStates=d.states.filter(s=>Object.values(s.factors).some(Boolean));
@@ -122,31 +134,37 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
  // Shares of the yearly total by what they rest on. Counted: the reports of the examples themselves.
  const counted=d.examples.reduce((sum,e)=>sum+e.reports,0),countedShare=Math.min(1,counted/d.total.perYear),assumedShare=(d.basis.typical+d.basis.borrowed)/d.total.perYear,modelShare=Math.max(0,1-countedShare-assumedShare);
  const withExamples=d.states.filter(s=>s.samples>0).map(s=>s.name),without=d.states.filter(s=>!s.samples).map(s=>s.name),borrowed=d.levels.filter(l=>l.assumed).map(l=>l.name),units=Object.values(d.frame.units).reduce((a,b)=>a+b,0);
- return <section className="admin-estimate" id="admin-hochrechnung">
-  <div className="admin-section-heading"><div><p className="eyebrow">HOCHRECHNUNG DEUTSCHLAND</p><h2>Wie viele Berichte und wie viel Text fallen bundesweit pro Tag an?</h2></div><span>{n(d.sampleCount)} Beispiele mit vollständigem Jahr · {day(d.from)} bis {day(d.to)}</span></div>
-  <StandLine stand={d.stand??null} busy={busy} action="Neu berechnen" onAction={compute} hint="Rechnet die Hochrechnung aus den Werten je Gebiet neu; dauert einige Sekunden."/>
-  <div className="admin-kpis">
-   <div className="admin-kpi admin-kpi-primary"><span>Neue Berichte pro Tag</span><strong>{round(d.total.perDay)}</strong><small>Spanne {round(d.total.lowPerDay)} bis {round(d.total.highPerDay)} · Durchschnitt über alle Kalendertage</small></div>
-   <div className="admin-kpi"><span>Pro Arbeitstag · an einem starken Tag</span><strong>{round(d.total.perWorkday)} <em>· {round(d.season.peakDay)}</em></strong><small>{n(d.rules.workdaysPerYear)} Arbeitstage im Jahr · stärkster Wochentag einer starken Sitzungswoche</small></div>
-   <div className="admin-kpi"><span>Davon heute lesbar</span><strong>{pct(d.capture.total.connectedShare)}</strong><small>rund {round(d.capture.total.connected/365)} Berichte pro Tag mit den vorhandenen Anbindungen</small></div>
-   <div className="admin-kpi"><span>Pro Jahr</span><strong>{big(d.total.perYear)}</strong><small>Spanne {big(d.total.lowPerYear)} bis {big(d.total.highPerYear)}</small></div>
+ return <>
+  <AdminPageHead page="hochrechnung"><StandLine stand={d.stand??null} busy={busy} action="Neu berechnen" onAction={compute} hint="Rechnet die Hochrechnung aus den Werten je Gebiet neu; dauert einige Sekunden." extra={HOCHRECHNUNG.standExtra(n(d.sampleCount),dd(d.from),dd(d.to))}/></AdminPageHead>
+  {error&&<Alert>{ZUSTAND.fehlerNeu(error.replace(/[.]$/,''),standText(d.stand?.computedAt??d.computedAt))}</Alert>}
+  <div className={'mt-8'+(busy?' opacity-60 transition-opacity':'')}>
+   <Kpis label="Berichte pro Tag und Jahr" items={[
+    {label:'Neue Berichte pro Tag',value:round(d.total.perDay),note:`Spanne ${round(d.total.lowPerDay)} bis ${round(d.total.highPerDay)} · Durchschnitt über alle Kalendertage`},
+    {label:'Pro Arbeitstag · an einem starken Tag',value:<>{round(d.total.perWorkday)} <span className="text-[14px] font-normal text-slate-500">· {round(d.season.peakDay)}</span></>,note:`${n(d.rules.workdaysPerYear)} Arbeitstage im Jahr · stärkster Wochentag einer starken Sitzungswoche`},
+    {label:'Davon heute lesbar',value:pct(d.capture.total.connectedShare),note:HOCHRECHNUNG.lesbar(round(d.capture.total.connected/365))},
+    {label:'Pro Jahr',value:big(d.total.perYear),note:`Spanne ${big(d.total.lowPerYear)} bis ${big(d.total.highPerYear)}`},
+   ]}/>
+   {v&&today&&once&&<div className="mt-6"><Kpis label="Tokens und Datenmenge pro Tag" items={[
+    {label:'Tokens pro Tag, wie heute verarbeitet',title:TITLES.token,value:big(today.perDay),note:`Spanne ${big(today.lowPerDay)} bis ${big(today.highPerDay)} · eine Unterlage je Bericht`},
+    {label:'Tokens pro Tag, alles gelesen',title:TITLES.token,value:big(once.perDay),note:`Spanne ${big(once.lowPerDay)} bis ${big(once.highPerDay)} · jedes Dokument einmal`},
+    {label:'Dokumente und Seiten pro Tag',value:<>{round(v.total.documentsOnce.perDay)} <span className="text-[14px] font-normal text-slate-500">· {round(v.total.pagesOnce.perDay)}</span></>,note:'verschiedene PDF-Dateien · Seiten darin'},
+    {label:'Datenmenge pro Tag · pro Jahr',value:<>{bytes(v.total.bytesOnce.perDay)} <span className="text-[14px] font-normal text-slate-500">· {bytes(v.total.bytesOnce.perYear)}</span></>,note:'Abruf und Speicherung, wenn jedes Dokument einmal geladen wird'},
+   ]}/></div>}
+   <p className="mt-4 max-w-[820px] text-[16px] text-slate-500">{HOCHRECHNUNG.kurz(round(d.total.perDay),round(d.total.lowPerDay),round(d.total.highPerDay),pct(d.capture.total.connectedShare))}</p>
   </div>
-  {v&&today&&once&&<div className="admin-kpis">
-   <div className="admin-kpi admin-kpi-primary"><span>Tokens pro Tag, wie heute verarbeitet</span><strong>{big(today.perDay)}</strong><small>Spanne {big(today.lowPerDay)} bis {big(today.highPerDay)} · eine Unterlage je Bericht</small></div>
-   <div className="admin-kpi"><span>Tokens pro Tag, alles gelesen</span><strong>{big(once.perDay)}</strong><small>Spanne {big(once.lowPerDay)} bis {big(once.highPerDay)} · jedes Dokument einmal</small></div>
-   <div className="admin-kpi"><span>Dokumente und Seiten pro Tag</span><strong>{round(v.total.documentsOnce.perDay)} <em>· {round(v.total.pagesOnce.perDay)}</em></strong><small>verschiedene PDF-Dateien · Seiten darin</small></div>
-   <div className="admin-kpi"><span>Datenmenge pro Tag · pro Jahr</span><strong>{bytes(v.total.bytesOnce.perDay)} <em>· {bytes(v.total.bytesOnce.perYear)}</em></strong><small>Abruf und Speicherung, wenn jedes Dokument einmal geladen wird</small></div>
-  </div>}
+  <section className={'admin-estimate'+(busy?' opacity-60 transition-opacity':'')} id="admin-hochrechnung">
+   <div className="admin-section-heading"><h2>{HELP['hochrechnung.ergebnis'].title}</h2></div>
+   <SectionHelp id="hochrechnung.ergebnis"/>
   <h3 className="admin-estimate-subheading">Was davon ist echt, was gerechnet, was angenommen?</h3>
   <div className="admin-estimate-facts">
    <div className="is-counted"><Tag kind="counted"/><strong>{pct(countedShare,1)} der Jahresmenge</strong><p>{n(counted)} Berichte aus {n(d.sampleCount)} Gebieten wurden wirklich gezählt{size&&docs?<>, {n(docs.tried)} Dokumente aus {n(size.reports)} Berichten vermessen</>:null}. Echt sind außerdem die Einwohnerzahlen aller {n(units)} Einheiten und das Ergebnis der Quellensuche in der Stichprobe.</p></div>
    <div className="is-model"><Tag kind="model"/><strong>{pct(modelShare)} der Jahresmenge</strong><p>Mit dem Modell aus den Zählungen hochgerechnet – für Länder, die eigene Beispiele haben: {withExamples.join(', ')}. Gerechnet sind auch alle Spannen, die Tokens pro Tag und der starke Tag.</p></div>
    <div className="is-assumed"><Tag kind="assumed"/><strong>{pct(assumedShare)} der Jahresmenge</strong><p>Noch ohne ein einziges eigenes Beispiel: {without.join(', ')}{borrowed.length?<> sowie {borrowed.join(', ')}</>:null}. Dort steht ein Platzhalter – das typische Niveau der gemessenen Länder –, bis dort gezählt ist.</p></div>
   </div>
-  <p className="admin-note">Die drei Marken stehen auch an jedem Schritt und in den Tabellen. Die Zahlen beschreiben das gesamte kommunale Aufkommen in Deutschland, als wären alle Gremien technisch erfassbar. <button type="button" className="admin-timeline-retry" onClick={download}>Zahlen für das Kostenmodell als JSON speichern</button></p>
+  <p className="admin-note">Die drei Marken stehen auch an jedem Schritt und in den Tabellen. Die Zahlen beschreiben das gesamte kommunale Aufkommen in Deutschland, als wären alle Gremien technisch erfassbar. <button type="button" className="link-btn" onClick={download}>Zahlen für das Kostenmodell als JSON speichern</button></p>
 
   <h3 className="admin-estimate-step"><span>1</span> Was gezählt wird<span className="admin-estimate-tags"><Tag kind="counted">amtliche Zahlen</Tag></span></h3>
-  <p>Ein <strong>Bericht</strong> ist ein öffentlicher Tagesordnungspunkt oder Vorgang eines kommunalen Gremiums. Er zählt einmal: an dem Tag, an dem er zum ersten Mal auf einer Tagesordnung stand. Betrachtet werden zwölf Monate ({day(d.from)} bis {day(d.to)}). Gezählt wird je <strong>Einheit</strong>, die ein eigenes Ratsinformationssystem führt:</p>
+  <p>Ein <strong>Bericht</strong> ist ein öffentlicher Tagesordnungspunkt oder Vorgang eines kommunalen Gremiums. Er zählt einmal: an dem Tag, an dem er zum ersten Mal auf einer Tagesordnung stand. Betrachtet werden zwölf Monate ({dd(d.from)} bis {dd(d.to)}). Gezählt wird je <strong>Einheit</strong>, die ein eigenes Ratsinformationssystem führt:</p>
   <ul className="admin-estimate-assumptions">
    <li><strong>{n(d.frame.units.municipality)} Städte und Gemeinden</strong>, die keinem Gemeindeverband angehören (alle Größen, auch kreisfreie Städte).</li>
    <li><strong>{n(d.frame.units.association)} Gemeindeverbände</strong> (Verbandsgemeinden, Ämter, Samtgemeinden, Verwaltungsgemeinschaften) mit ihren {n(d.frame.memberMunicipalities)} Mitgliedsgemeinden. Verband und Mitglieder führen in der Regel ein gemeinsames System; ein Verband zählt deshalb als eine Einheit mit allen Räten seiner Gemeinden. In Baden-Württemberg behalten die Mitglieder eigene Verwaltungen und zählen einzeln.</li>
@@ -156,8 +174,8 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
   <p className="admin-note">Zusammen {n(d.frame.municipalities)} Gemeinden mit {n(d.frame.population/1e6,1)} Mio. Einwohnern. {d.frame.source}; Stand {d.frame.populationYear}.</p>
 
   <h3 className="admin-estimate-step"><span>2</span> Woher die Beispiele stammen<span className="admin-estimate-tags"><Tag kind="counted"/></span></h3>
-  <p>Zwei Quellen liefern gezählte Jahre: der <strong>gespeicherte Bestand</strong> ({n(d.sample.storedWithData)} Gebiete mit Berichten, davon {n(stored)} mit vollständigem Jahr) und eine <strong>Zufallsstichprobe aus ganz Deutschland</strong>. Für die Stichprobe wurden {n(d.sample.units)} Einheiten ausgelost, für jede die offizielle Website nach dem Ratsinformationssystem durchsucht und, wo es lesbar war, zwölf Monate abgerufen und gezählt – ohne etwas in die Datenbank zu schreiben. So entstanden {n(d.examples.length-stored)} weitere Beispiele aus {n(sampleStates.length)} Bundesländern ({sampleStates.map(s=>stateName(d.states,s)).join(', ')}); gezählt am {day(d.sample.to)}.</p>
-  {partialStored.length>0&&<p role="status" className="admin-notice"><strong>{n(d.sample.storedWithData-stored)} gespeicherte Gebiete haben Berichte, aber kein vollständiges Jahr</strong> und zählen deshalb nicht als Beispiel – fast immer, weil sie mit einem kürzeren Zeitraum (1 Woche, 1 Monat, 3 Monate) abgerufen wurden. Die Seite rechnet bei jedem Laden neu: Sobald ein Gebiet mit „12 Monate“ abgerufen ist, wird es zum Beispiel. In den Diagrammen in Schritt 3 stehen diese Gebiete als hohle Punkte. <a className="admin-estimate-action" href={'/admin?auswahl='+partialStored.map(e=>e.id).join(',')}>Diese {n(partialStored.length)} Gebiete auf Seite 1 für einen 12-Monats-Abruf auswählen →</a></p>}
+  <p>Zwei Quellen liefern gezählte Jahre: der <strong>gespeicherte Bestand</strong> ({n(d.sample.storedWithData)} Gebiete mit Berichten, davon {n(stored)} mit vollständigem Jahr) und eine <strong>Zufallsstichprobe aus ganz Deutschland</strong>. Für die Stichprobe wurden {n(d.sample.units)} Einheiten ausgelost, für jede die offizielle Website nach dem Ratsinformationssystem durchsucht und, wo es lesbar war, zwölf Monate abgerufen und gezählt – ohne etwas in die Datenbank zu schreiben. So entstanden {n(d.examples.length-stored)} weitere Beispiele aus {n(sampleStates.length)} Bundesländern ({sampleStates.map(s=>stateName(d.states,s)).join(', ')}); gezählt am {dd(d.sample.to)}.</p>
+  {partialStored.length>0&&<p role="status" className="admin-notice"><strong>{n(d.sample.storedWithData-stored)} gespeicherte Gebiete haben Berichte, aber kein vollständiges Jahr</strong> und zählen deshalb nicht als Beispiel – fast immer, weil sie mit einem kürzeren Zeitraum (1 Woche, 1 Monat, 3 Monate) abgerufen wurden. {HOCHRECHNUNG.schritt2} In den Diagrammen in Schritt 3 stehen diese Gebiete als hohle Punkte. <a className="admin-estimate-action" href={'/admin?auswahl='+partialStored.map(e=>e.id).join(',')}>Diese {n(partialStored.length)} Gebiete auf der Seite „Abruf & Verarbeitung“ für einen 12-Monats-Abruf auswählen →</a></p>}
   <p className="admin-note">{d.sample.design} Ausgelost wurde nach einer festen Zufallsreihenfolge, damit auch Einheiten ohne lesbares System im Ergebnis stehen: Sie zeigen, wie viel des Aufkommens erfassbar ist (Schritt 6).</p>
   <div className="admin-estimate-table"><table>
    <thead><tr><th scope="col">Klasse</th><th scope="col">Stichprobe: ausgelost</th><th scope="col">davon lesbar</th><th scope="col">vollständiges Jahr</th><th scope="col">Bestand: mit Berichten</th><th scope="col">vollständiges Jahr</th><th scope="col">Beispiele gesamt</th></tr></thead>
@@ -174,12 +192,12 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
    {d.sample.strata.map(s=>{const own=d.examples.filter(e=>e.class===s.id),out=d.excluded.filter(e=>e.class===s.id);return <div className="admin-estimate-class" key={s.id}><h4>{s.name}</h4>
     {own.length?<p><strong>Vollständiges Jahr:</strong> {own.sort((a,b)=>a.population-b.population).map(e=>`${short(e.name)} (${e.origin==='sample'?stateName(d.states,e.state)+', ':''}${n(e.population)} Einw., ${n(e.reports)} Berichte)`).join(' · ')}</p>:<p>Kein Beispiel mit vollständigem Jahr.</p>}
     {out.length>0&&<p><strong>Nicht verwendet:</strong> {out.slice(0,14).map(e=>`${short(e.name)} – ${e.reason}`).join(' · ')}{out.length>14&&` · und ${out.length-14} weitere`}</p>}
-    {s.candidates.length>0&&<p><strong>Angebunden und als weitere Beispiele geeignet:</strong> {s.candidates.map(c=>short(c.name)).join(', ')}. <a className="admin-estimate-action" href={'/admin?auswahl='+s.candidates.map(c=>c.id).join(',')}>Diese {s.candidates.length} auf Seite 1 auswählen →</a></p>}
+    {s.candidates.length>0&&<p><strong>Angebunden und als weitere Beispiele geeignet:</strong> {s.candidates.map(c=>short(c.name)).join(', ')}. <a className="admin-estimate-action" href={'/admin?auswahl='+s.candidates.map(c=>c.id).join(',')}>Diese {s.candidates.length} auf der Seite „Abruf & Verarbeitung“ auswählen →</a></p>}
    </div>;})}
   </details>
 
   <h3 className="admin-estimate-step"><span>3</span> Das Rechenmodell je Ebene<span className="admin-estimate-tags"><Tag kind="model">gerechnet aus den gezählten Beispielen</Tag></span></h3>
-  <p>Größere Einheiten haben mehr Berichte, aber nicht im gleichen Verhältnis: Ein Rat tagt in einer Stadt mit zehnmal so vielen Einwohnern nicht zehnmal so oft. Für jede Ebene wird deshalb aus den Beispielen eine Kurve bestimmt:</p>
+  <p>{HOCHRECHNUNG.schritt3} Größere Einheiten haben mehr Berichte, aber nicht im gleichen Verhältnis: Ein Rat tagt in einer Stadt mit zehnmal so vielen Einwohnern nicht zehnmal so oft. Für jede Ebene wird deshalb aus den Beispielen eine Kurve bestimmt:</p>
   <p className="admin-estimate-formula">Berichte pro Jahr = Niveau des Bundeslands × Einwohner<sup>Steigung</sup></p>
   <ul className="admin-estimate-assumptions">
    <li><strong>Steigung:</strong> gemessen aus den Unterschieden zwischen Einheiten desselben Landes, begrenzt auf 0 bis 1. Steigung 0 heißt: Die Größe spielt keine Rolle, jede Einheit hat im Mittel gleich viele Berichte. Steigung 1 heißt: Berichte wachsen im Gleichschritt mit den Einwohnern.</li>
@@ -192,12 +210,12 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
    <tbody>{d.levels.map(l=>{const m=l.model,[one]=UNIT[l.id];return <tr key={l.id}><th scope="row">{l.name}</th><td>{n(l.samples)}</td>
     {m?<><td>{n(m.slope,2)}<small>{m.measured?(m.slope===0||m.slope===1?'gemessen, an der Grenze':'gemessen'):'gesetzt, zu wenige Beispiele'}</small></td><td>{m.slope===0?'gleich viele Berichte':signed(2**m.slope-1)+' Berichte'}</td>
      <td className="admin-estimate-wrap">{l.id==='municipality'?<>{[1000,10000,100000,1000000].map(p=>`${n(p)} Einw.: ${round(at(m,p))}`).join(' · ')}</>:m.slope===0?`${round(at(m,1))} je ${one}`:[10000,100000].map(p=>`${n(p)} Einw.: ${round(at(m,p))}`).join(' · ')}</td>
-     <td className="admin-estimate-wrap">{m.scatter?<>×/÷ {n(Math.exp(m.scatter),2)}<small>zwei Drittel der Beispiele liegen so nah an ihrer Kurve</small></>:'–'}</td></>
+     <td className="admin-estimate-wrap">{m.scatter?<>×/÷ {n(Math.exp(m.scatter),2)}<small>{HOCHRECHNUNG.streuung(n(Math.exp(m.scatter),2))}</small></>:'–'}</td></>
     :<td colSpan={4} className="admin-estimate-wrap"><Tag kind="assumed"/> Kein Beispiel: Es gilt die Kurve der Gemeinden bei der Größe der Einheit.</td>}
    </tr>;})}</tbody>
   </table></div>
   <div className="admin-estimate-charts">{d.levels.map(l=><Scatter key={l.id} level={l} examples={d.examples} provisional={d.provisional}/>)}</div>
-  <p className="admin-note"><span className="admin-estimate-key is-stored"/> gezählt: gespeicherter Bestand <span className="admin-estimate-key is-sample"/> gezählt: Stichprobe <span className="admin-estimate-key is-open"/> Teilbestand, aufs Jahr hochgerechnet (nicht in der Rechnung) <span className="admin-estimate-key is-line"/> gerechnet: Modell für ein Land mit typischem Niveau. Beide Achsen sind logarithmisch: Jeder Teilstrich ist das Zehnfache des vorigen.</p>
+  <p className="admin-note"><span className="admin-estimate-key is-stored"/> gezählt: gespeicherter Bestand <span className="admin-estimate-key is-sample"/> gezählt: Stichprobe <span className="admin-estimate-key is-open"/> Teilstand, aufs Jahr hochgerechnet (nicht in der Rechnung) <span className="admin-estimate-key is-line"/> gerechnet: Modell für ein Land mit typischem Niveau. Beide Achsen sind logarithmisch: Jeder Teilstrich ist das Zehnfache des vorigen.</p>
   {measuredStates.length>0&&<div className="admin-estimate-table"><table>
    <thead><tr><th scope="col">Niveau je Bundesland</th>{d.levels.filter(l=>l.model).map(l=><th scope="col" key={l.id}>{l.name}</th>)}</tr></thead>
    <tbody>{measuredStates.map(s=><tr key={s.id}><th scope="row">{s.name}</th>{d.levels.filter(l=>l.model).map(l=>{const f=s.factors[l.id],raw=l.model?.states[s.id]?.raw;return <td key={l.id}>{f?<>{signed(f.factor-1)}<small>{n(f.examples)} {f.examples===1?'Beispiel':'Beispiele'}{raw&&Math.abs(raw-f.factor)>.02?` · ungedämpft ${signed(raw-1)}`:''}</small></>:(l.id==='municipality'?s.municipalities:l.id==='district'?s.districts:l.id==='association'?s.associations:s.boroughs)?<Tag kind="assumed">angenommen: typisches Niveau</Tag>:'–'}</td>;})}</tr>)}</tbody>
@@ -226,8 +244,8 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
   <p className="admin-note">In der Spalte „Beispiele“ steht, worauf die Zahl eines Landes beruht. „Angenommen“ heißt: Für diesen Teil gibt es im Land kein eigenes Beispiel, es gilt das typische Niveau der gemessenen Länder. Länder mit vielen kleinen Gemeinden und Verbänden liegen je Einwohner deutlich höher: Jeder Gemeinderat tagt, auch wenn die Gemeinde nur wenige hundert Einwohner hat.</p>
 
   <h3 className="admin-estimate-step"><span>5</span> Wie sicher die Zahl ist<span className="admin-estimate-tags"><Tag kind="model"/></span></h3>
-  <p><strong>Spanne:</strong> Die Rechnung wird {n(d.rules.replicates)}-mal wiederholt. Jedes Mal werden die Beispiele je Ebene und Land neu ausgelost (mit Zurücklegen), Steigung und Niveaus neu bestimmt und alles neu addiert. Ein Land ohne Beispiel erhält in jedem Durchgang das Niveau eines zufällig gewählten gemessenen Landes – so geht die Unsicherheit über unbekannte Länder in die Spanne ein. Angegeben ist der Bereich, in dem 8 von 10 Durchgängen liegen: <strong>{round(d.total.lowPerDay)} bis {round(d.total.highPerDay)} Berichte pro Tag</strong>.</p>
-  {d.validation.n>0&&<><p><strong>Probe an bekannten Gebieten:</strong> Jedes der {n(d.validation.n)} Beispiele wurde einmal weggelassen und aus den übrigen vorhergesagt. Die Vorhersage lag im Mittel (Median) um <strong>{pct(d.validation.medianError)}</strong> neben dem gezählten Wert; bei {pct(d.validation.within50)} der Gebiete um höchstens die Hälfte. Über alle Gebiete summiert weicht sie um {signed(d.validation.bias||0)} ab. Für ein einzelnes Gebiet ist die Schätzung also grob, in der Summe gleichen sich die Abweichungen weitgehend aus.</p>
+  <p><strong>Spanne:</strong> Die Rechnung wird {n(d.rules.replicates)}-mal wiederholt. Jedes Mal werden die Beispiele je Ebene und Land neu ausgelost (ein Beispiel kann mehrfach gezogen werden), Steigung und Niveaus neu bestimmt und alles neu addiert. Ein Land ohne Beispiel erhält in jedem Durchgang das Niveau eines zufällig gewählten gemessenen Landes – so geht die Unsicherheit über unbekannte Länder in die Spanne ein. Angegeben ist der Bereich, in dem 8 von 10 Durchgängen liegen: <strong>{round(d.total.lowPerDay)} bis {round(d.total.highPerDay)} Berichte pro Tag</strong>.</p>
+  {d.validation.n>0&&<><p><strong>Probe an bekannten Gebieten:</strong> Jedes der {n(d.validation.n)} Beispiele wurde einmal weggelassen und aus den übrigen vorhergesagt. Die Vorhersage lag im Mittel (<span title={MEDIAN}>Median</span>) um <strong>{pct(d.validation.medianError)}</strong> neben dem gezählten Wert; bei {pct(d.validation.within50)} der Gebiete um höchstens die Hälfte. Über alle Gebiete summiert weicht sie um {signed(d.validation.bias||0)} ab. Für ein einzelnes Gebiet ist die Schätzung also grob, in der Summe gleichen sich die Abweichungen weitgehend aus.</p>
   {d.validation.states.length>0&&<><p><strong>Probe an ganzen Ländern:</strong> Jedes Land mit mindestens drei Beispielen einer Ebene wurde vollständig weggelassen und nur aus den anderen Ländern vorhergesagt. Das ist die Lage der Länder ohne eigenes Beispiel.</p>
   <div className="admin-estimate-table"><table>
    <thead><tr><th scope="col">Weggelassenes Land</th><th scope="col">Ebene</th><th scope="col">Beispiele</th><th scope="col">gezählt</th><th scope="col">vorhergesagt</th><th scope="col">Abweichung</th></tr></thead>
@@ -243,17 +261,17 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
     <td>{c.known.areas?`${n(c.known.connected)} von ${n(c.known.areas)}`:'–'}</td><td>{round(c.perYear.connected/365)}</td><td>{round(c.perYear.total/365)}</td></tr>)}</tbody>
    <tfoot><tr><th scope="row">Deutschland gesamt</th><td>{n(d.sample.units)}</td><td>{n(d.sample.connected)}</td><td></td><td></td><td></td><td>{round(d.capture.total.connected/365)}</td><td>{round(d.capture.total.total/365)}</td></tr></tfoot>
   </table></div>
-  <p className="admin-note">Lesbar: {pct(d.capture.total.connectedShare)} des Aufkommens. System erkannt, aber mit den vorhandenen Bausteinen nicht lesbar (zum Beispiel ALLRIS ohne offene Schnittstelle oder ein Abrufschutz): {pct(d.capture.total.unreadable/d.capture.total.total)}. Nicht angebundene Gebiete in {catalogLands(d.catalogStates)}: {pct(d.capture.total.knownOpen/d.capture.total.total)}. Kein System gefunden: {pct(d.capture.total.unknown/d.capture.total.total)} – das ist eine Obergrenze, denn die Suche findet nicht jedes System, vor allem bei kleinen Gemeinden ohne bekannte Website.</p>
+  <p className="admin-note">Lesbar: {pct(d.capture.total.connectedShare)} des Aufkommens. System erkannt, aber mit den vorhandenen Lesern nicht lesbar (zum Beispiel ALLRIS ohne offene Schnittstelle oder ein Abrufschutz): {pct(d.capture.total.unreadable/d.capture.total.total)}. Nicht angebundene Gebiete in {catalogLands(d.catalogStates)}: {pct(d.capture.total.knownOpen/d.capture.total.total)}. Kein System gefunden: {pct(d.capture.total.unknown/d.capture.total.total)} – das ist eine Obergrenze, denn die Suche findet nicht jedes System, vor allem bei kleinen Gemeinden ohne bekannte Website.</p>
 
   {v&&size&&docs&&<>
   <h3 className="admin-estimate-step"><span>7</span> Umfang der Dokumente<span className="admin-estimate-tags"><Tag kind="counted">gemessen</Tag></span></h3>
-  <p>Für die KI-Kosten zählt, wie viel Text zu lesen ist. Aus jedem der {n(size.areas)} Gebiete mit gezähltem Bestand wurden bis zu {n(size.perArea)} Berichte mit Dokumenten ausgewählt (feste Zufallsreihenfolge) und ihre {n(docs.tried)} PDF-Verweise einmal abgerufen und vermessen: Dateigröße, Seiten, Zeichen, Tokens, Textebene. Gespeichert wurden nur diese Messwerte, kein Text. Messung vom {day(size.measuredAt)}.</p>
-  <div className="admin-kpis">
-   <div className="admin-kpi"><span>Berichte mit Dokument</span><strong>{pct(d.documents.share)}</strong><small>der Berichte verweisen auf mindestens ein PDF; die übrigen bestehen nur aus Titel und Beratungsverlauf</small></div>
-   <div className="admin-kpi"><span>Dokumente je Bericht</span><strong>{n(v.total.documentsOnce.perYear/v.withDocumentsPerYear,1)} <em>/ {n(d.documents.linksPerReport,1)}</em></strong><small>eigene Dokumente / alle Verweise – Einladungen und Niederschriften hängen an vielen Berichten zugleich</small></div>
-   <div className="admin-kpi"><span>Seiten je Bericht</span><strong>{n(v.perReport.pages.median)} <em>· {n(v.perReport.pages.mean,1)}</em></strong><small>Median · Mittelwert; 90 % der Berichte haben höchstens {n(v.perReport.pages.p90)} Seiten</small></div>
-   <div className="admin-kpi"><span>Tokens je Bericht, alles gelesen</span><strong>{round(v.perReport.tokens.median)} <em>· {round(v.perReport.tokens.mean)}</em></strong><small>Median · Mittelwert; die umfangreichsten 10 % der Berichte tragen {pct(v.perReport.tokens.top10Share)} des Textes</small></div>
-  </div>
+  <p>Für die KI-Kosten zählt, wie viel Text zu lesen ist. Aus jedem der {n(size.areas)} Gebiete mit gezähltem Bestand wurden bis zu {n(size.perArea)} Berichte mit Dokumenten ausgewählt (feste Zufallsreihenfolge) und ihre {n(docs.tried)} PDF-Verweise einmal abgerufen und vermessen: Dateigröße, Seiten, Zeichen, Tokens, Textebene. Gespeichert wurden nur diese Messwerte, kein Text. Messung vom {dd(size.measuredAt)}.</p>
+  <Kpis label="Umfang je Bericht" items={[
+   {label:'Berichte mit Dokument',value:pct(d.documents.share),note:'der Berichte verweisen auf mindestens ein PDF; die übrigen bestehen nur aus Titel und Beratungsverlauf'},
+   {label:'Dokumente je Bericht',value:<>{n(v.total.documentsOnce.perYear/v.withDocumentsPerYear,1)} <span className="text-[14px] font-normal text-slate-500">/ {n(d.documents.linksPerReport,1)}</span></>,note:'eigene Dokumente / alle Verweise – Einladungen und Niederschriften hängen an vielen Berichten zugleich'},
+   {label:'Seiten je Bericht',value:<>{n(v.perReport.pages.median)} <span className="text-[14px] font-normal text-slate-500">· {n(v.perReport.pages.mean,1)}</span></>,note:<><span title={MEDIAN}>Median</span> · Mittelwert; 90 % der Berichte haben höchstens {n(v.perReport.pages.p90)} Seiten</>},
+   {label:'Tokens je Bericht, alles gelesen',title:TITLES.token,value:<>{round(v.perReport.tokens.median)} <span className="text-[14px] font-normal text-slate-500">· {round(v.perReport.tokens.mean)}</span></>,note:<><span title={MEDIAN}>Median</span> · Mittelwert; die umfangreichsten 10 % der Berichte tragen {pct(v.perReport.tokens.top10Share)} des Textes</>},
+  ]}/>
   <p className="admin-note">Der Mittelwert liegt weit über dem Median, weil wenige Berichte sehr umfangreiche Unterlagen haben (Haushaltspläne, Bebauungspläne, Gutachten). Für Kosten zählt der Mittelwert, für die typische Verarbeitungszeit der Median.</p>
   <div className="admin-estimate-table"><table>
    <thead><tr><th scope="col">Je Dokument</th><th scope="col">Median</th><th scope="col">Mittelwert</th><th scope="col">90 % höchstens</th><th scope="col">Größtes</th></tr></thead>
@@ -279,7 +297,7 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
    <li><strong>Ohne Textebene:</strong> {pct(docs.scanPages/docs.pages)} der Seiten sind Scans oder Zeichnungen ohne lesbaren Text; {pct(docs.scans/readable)} der Dokumente bestehen überwiegend daraus. Ihr Inhalt wäre nur über Texterkennung oder als Bild lesbar und ist in den Tokens nicht enthalten.</li>
    <li><strong>Größer als {n(d.rules.maxBytes/1e6)} MB:</strong> {pct(docs.large/(readable+docs.large+docs.notPdf),1)} der Dokumente. Die Verarbeitung überspringt sie; ihre Größe stammt aus der Serverangabe und zählt bei der Datenmenge mit, nicht bei Seiten und Tokens.</li>
    <li><strong>Kein PDF</strong> trotz PDF-Verweis (Fehlerseite, anderes Format): {pct(docs.notPdf/(readable+docs.large+docs.notPdf),1)}. <strong>Nicht abrufbar</strong> beim Messen: {pct(docs.failed/docs.tried,1)} der Verweise; für sie wird der Durchschnitt der übrigen Dokumente desselben Berichts angesetzt.</li>
-   <li><strong>Tokens:</strong> lokal gezählt mit dem Tokenizer {size.tokenizer?<code>{size.tokenizer}</code>:'(nicht verfügbar; Zeichen geteilt durch 2,8)'} – ohne Aufruf einer KI-Schnittstelle. Im Mittel {n(size.charsPerToken,2)} Zeichen je Token{size.charsPerTokenOther?<>; zum Vergleich der Tokenizer o200k: {n(size.charsPerTokenOther,2)} Zeichen je Token, also {signed(size.charsPerToken/size.charsPerTokenOther-1)} Tokens</>:null}. Aktuelle Modelle zählen anders als dieser Tokenizer; für die Kosten sollte ein Zuschlag oder Abschlag als eigener Faktor geführt werden.</li>
+   <li><strong>Tokens:</strong> lokal gezählt mit dem Tokenizer {size.tokenizer?<code>{size.tokenizer}</code>:'(nicht verfügbar; Zeichen geteilt durch 2,8)'} – ohne Aufruf einer KI-Schnittstelle. Im Mittel {n(size.charsPerToken,2)} Zeichen je Token{size.charsPerTokenOther?<>; zum Vergleich mit einem zweiten Zählverfahren (o200k): {n(size.charsPerTokenOther,2)} Zeichen je Token, also {signed(size.charsPerToken/size.charsPerTokenOther-1)} Tokens</>:null}. Aktuelle Modelle zählen anders als dieser Tokenizer; für die Kosten sollte ein Zuschlag oder Abschlag als eigener Faktor geführt werden.</li>
   </ul>
 
   <h3 className="admin-estimate-step"><span>8</span> Text und Datenmenge pro Tag<span className="admin-estimate-tags"><Tag kind="model"/></span></h3>
@@ -305,7 +323,7 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
 
   <h3 className="admin-estimate-step"><span>9</span> Verteilung über das Jahr und Wiedervorlagen<span className="admin-estimate-tags"><Tag kind="counted">Verteilung gezählt</Tag><Tag kind="model">starker Tag gerechnet</Tag></span></h3>
   <p>Der Tageswert ist ein Jahresdurchschnitt. Sitzungen finden fast nur von Montag bis Donnerstag statt, häufen sich vor den Ferien und ruhen im Sommer und um den Jahreswechsel. Die Verteilung stammt aus allen Beispielen zusammen.</p>
-  <figure className="admin-estimate-figure"><figcaption>Neue Berichte je Woche, alle Beispiele zusammen <Tag kind="counted"/></figcaption><Bars values={d.season.weeks} reference={1} xTitle={`Wochen von ${day(d.from)} bis ${day(d.to)} (beschriftet ist jeweils der Monatsanfang)`} yTitle="Vielfaches der Durchschnittswoche" unit="Berichte je Woche im Verhältnis zur Durchschnittswoche; die Werte stehen an den Balken und in den Tabellen darunter" labels={i=>`Woche ab ${weekStart(d.from,i).toLocaleDateString('de-DE',{timeZone:'UTC'})}: ${n(d.season.weeks[i],2)}-faches der Durchschnittswoche`} ticks={i=>i===0||weekStart(d.from,i).getUTCMonth()!==weekStart(d.from,i-1).getUTCMonth()?MONTHS[weekStart(d.from,i).getUTCMonth()]:null}/><p className="admin-estimate-explain">Jeder Balken ist eine Woche. Höhe 1 ist eine durchschnittliche Woche (gestrichelte Linie), Höhe 2 doppelt so viele Berichte. Die Lücken sind die Herbstferien, der Jahreswechsel, Ostern und die Sommerferien.</p></figure>
+  <figure className="admin-estimate-figure"><figcaption>Neue Berichte je Woche, alle Beispiele zusammen <Tag kind="counted"/></figcaption><Bars values={d.season.weeks} reference={1} xTitle={`Wochen von ${dd(d.from)} bis ${dd(d.to)} (beschriftet ist jeweils der Monatsanfang)`} yTitle="Vielfaches der Durchschnittswoche" unit="Berichte je Woche im Verhältnis zur Durchschnittswoche; die Werte stehen an den Balken und in den Tabellen darunter" labels={i=>`Woche ab ${weekStart(d.from,i).toLocaleDateString('de-DE',{timeZone:'UTC',day:'2-digit',month:'2-digit',year:'2-digit'})}: ${n(d.season.weeks[i],2)}-faches der Durchschnittswoche`} ticks={i=>i===0||weekStart(d.from,i).getUTCMonth()!==weekStart(d.from,i-1).getUTCMonth()?MONTHS[weekStart(d.from,i).getUTCMonth()]:null}/><p className="admin-estimate-explain">Jeder Balken ist eine Woche. Höhe 1 ist eine durchschnittliche Woche (gestrichelte Linie), Höhe 2 doppelt so viele Berichte. Die Lücken sind die Herbstferien, der Jahreswechsel, Ostern und die Sommerferien.</p></figure>
   <div className="admin-estimate-table"><table>
    <thead><tr><th scope="col">Anteil der Berichte</th>{WEEKDAYS.map(w=><th scope="col" key={w}>{w}</th>)}</tr></thead>
    <tbody><tr><th scope="row">nach Wochentag</th>{d.season.weekdays.map((s,i)=><td key={i}>{pct(s)}</td>)}</tr></tbody>
@@ -329,8 +347,8 @@ export function AdminEstimate({revision,initial}:{revision:number;initial?:Estim
    <li>Bezirke von Berlin und Hamburg: {d.levels.find(l=>l.id==='borough')?.model?'eigene Beispiele vorhanden.':'kein Bezirk war lesbar (ALLRIS ohne offene Schnittstelle bzw. Abrufschutz); ihre Berichte sind mit der Kurve der Gemeinden angenommen.'}</li>
    <li>Nicht enthalten: Landtage, Zweckverbände, Regionalverbände, Ortsbeiräte ohne eigenes System und alles Nichtöffentliche.</li>
    {municipal&&<li>Kleinstgemeinden außerhalb von Verbänden liegen am Rand des gemessenen Bereichs: Die Kurve wird dort über die kleinsten Beispiele hinaus verlängert.</li>}
-   <li>Stand der Zählung: gespeicherter Bestand vom {new Date(d.asOf).toLocaleDateString('de-DE')}, Stichprobe vom {day(d.sample.builtAt)}. Die Beispiele aus dem Bestand ändern sich mit jedem Abruf; die Stichprobe und die Dokumentenmessung werden mit den Skripten unter <code>scripts/estimate/</code> erneuert.</li>
+   <li>Stand der Zählung: gespeicherter Bestand vom {new Date(d.asOf).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'})}, Stichprobe vom {dd(d.sample.builtAt)}. Die Beispiele aus dem Bestand ändern sich mit jedem Abruf; die Stichprobe und die Dokumentenmessung werden mit den Skripten unter <code>scripts/estimate/</code> erneuert.</li>
   </ul>
   <p className="admin-note">Erkannte Systeme der lesbaren Stichprobe: {Object.entries(d.examples.filter(e=>e.origin==='sample'&&e.method).reduce<Record<string,number>>((sum,e)=>({...sum,[SYSTEMS[e.method!]||e.method!]:(sum[SYSTEMS[e.method!]||e.method!]||0)+1}),{})).map(([name,count])=>`${name} ${n(count)}`).join(' · ')}.</p>
- </section>;
+ </section></>;
 }

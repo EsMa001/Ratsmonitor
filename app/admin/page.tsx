@@ -1,9 +1,8 @@
-import {Button} from '@/components/ui/button';
 import {env} from 'cloudflare:workers';
 import {getChatGPTUser,chatGPTSignInPath,chatGPTSignOutPath} from '@/app/chatgpt-auth';
 import {adminAccess} from '@/server/integrations/admin-access.mjs';
 import {AdminActivation} from '@/components/admin-activation';
-import {AdminBar,type AdminPage} from '@/components/admin-chrome';
+import {AdminFrame,type AdminPage} from '@/components/admin-chrome';
 import {BRAND_NAME,DEFAULT_BRAND} from '@/components/ratsmonitor/lib/brands';
 import {AdminLoader} from '@/components/admin-loader';
 import {staticVersion} from '@/server/repositories/admin';
@@ -18,7 +17,7 @@ export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robo
 // Pages by name; the numbers of the first version still lead to their page. "auswahl" (areas handed over by the
 // estimate) and "filter" (a list filter) open the import page.
 const PAGES:Record<string,AdminPage>={todo:'todo',uebersicht:'uebersicht',abruf:'abruf',atlas:'atlas',qualitaet:'qualitaet',hochrechnung:'hochrechnung',stichwoerter:'stichwoerter','1':'abruf','2':'qualitaet','3':'hochrechnung','4':'stichwoerter'};
-const FILTERS=['all','connected','data','empty','issues','shallow','quiet','selected'];
+const FILTERS=['all','connected','data','empty','issues','partial','stale','failed','shallow','quiet','selected'];
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string}>}){const {seite,auswahl,filter}=await searchParams;
  // "auswahl" preselects areas on the import page; only known area ids are accepted.
  const selection=[...new Set(String(auswahl||'').split(',').filter(id=>id&&validRegion(id)))].slice(0,REGIONS.length);
@@ -26,19 +25,23 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<{se
  return <AdminContent page={page} selection={selection} filter={FILTERS.includes(String(filter))?String(filter):undefined}/>;}
 async function AdminContent({page,selection,filter}:{page:AdminPage;selection:string[];filter?:string}){
  const user=await getChatGPTUser();
- const frame=(children:React.ReactNode)=><div className="admin-app"><AdminBar/><main id="inhalt" className="admin-gate"><p className="eyebrow">ADMINISTRATION</p>{children}<a className="text-link" href="/">Zur öffentlichen Website</a></main></div>;
- if(!user)return frame(<><h1>Geschützter Bereich</h1><p>Melde dich mit ChatGPT an, um die Administration zu öffnen.</p><Button asChild className="admin-gate-action"><a target="_top" href={chatGPTSignInPath('/admin')}>Mit ChatGPT anmelden</a></Button></>);
+ // Melde-, Einrichtungs- und Fehlerzustände im Rahmen ohne Reiter.
+ const gate=(children:React.ReactNode)=><AdminFrame tabs={false}><div className="mx-auto max-w-[640px] py-16">{children}</div></AdminFrame>;
+ const title=(text:string)=><h1 className="text-[28px] font-semibold leading-tight">{text}</h1>;
+ const text=(children:React.ReactNode)=><p className="mt-3 text-[16px] text-slate-500">{children}</p>;
+ if(!user)return gate(<>{title('Geschützter Bereich')}{text('Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.')}<a target="_top" href={chatGPTSignInPath('/admin')} className="btn-primary mt-6 inline-flex">Mit ChatGPT anmelden</a></>);
  try{
   const access=await adminAccess(env.DB,user);
-  if(access.kind==='setup')return frame(<><h1>Admin-Zugang einrichten</h1><p>Angemeldet als <strong>{user.displayName}</strong>. Der einmalige Freischaltcode verknüpft die Administration dauerhaft mit diesem Konto.</p>{env.ADMIN_SETUP_HASH?<AdminActivation/>:<p role="status">Die Freischaltung ist noch nicht eingerichtet: Der Betreiber muss den geheimen Freischalt-Hash setzen und neu deployen.</p>}</>);
-  if(access.kind!=='owner')return frame(<><h1>Kein Admin-Zugriff</h1><p>Dieses ChatGPT-Konto ist nicht für die Administration freigeschaltet.</p><a className="text-link" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln</a></>);
+  if(access.kind==='setup')return gate(<>{title('Admin-Zugang einrichten')}{text(<>Angemeldet als <strong>{user.displayName}</strong>. Der einmalige Freischaltcode verknüpft die Administration dauerhaft mit diesem Konto.</>)}{env.ADMIN_SETUP_HASH?<AdminActivation/>:<p role="status" className="mt-4 text-[14px] text-slate-500">Die Freischaltung ist noch nicht eingerichtet: Der Betreiber muss den geheimen Freischalt-Hash setzen und neu deployen.</p>}</>);
+  if(access.kind!=='owner')return gate(<>{title('Kein Admin-Zugriff')}{text('Dieses ChatGPT-Konto ist nicht für die Administration freigeschaltet.')}<a className="mt-6 inline-flex text-[14px] text-teal-600" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln →</a></>);
   const signOutPath=chatGPTSignOutPath('/');
-  if(page==='todo')return <AdminTodo displayName={user.displayName} signOutPath={signOutPath}/>;
-  if(page==='stichwoerter')return <AdminKeywords displayName={user.displayName} signOutPath={signOutPath}/>;
-  if(page==='hochrechnung')return <AdminForecast displayName={user.displayName} signOutPath={signOutPath}/>;
-  if(page==='atlas')return <AdminAtlas displayName={user.displayName} signOutPath={signOutPath}/>;
-  if(page==='uebersicht')return <AdminOverview displayName={user.displayName} signOutPath={signOutPath}/>;
-  // Import and quality pages: the browser loads the dashboard (several MB) itself, see components/admin-loader.tsx.
-  return <AdminLoader page={page} displayName={user.displayName} signOutPath={signOutPath} staticVersion={staticVersion()} initialSelection={selection} initialFilter={filter}/>;
- }catch{return frame(<><h1>Administration nicht erreichbar</h1><p role="alert">Der Datenbankstand konnte gerade nicht geladen werden. Es werden keine Ersatzzahlen angezeigt.</p><Button asChild className="admin-gate-action"><a href="/admin">Erneut versuchen</a></Button></>);}
+  const frame=(content:React.ReactNode)=><AdminFrame page={page} displayName={user.displayName} signOutPath={signOutPath}>{content}</AdminFrame>;
+  if(page==='todo')return frame(<AdminTodo/>);
+  if(page==='stichwoerter')return frame(<AdminKeywords/>);
+  if(page==='hochrechnung')return frame(<AdminForecast/>);
+  if(page==='atlas')return frame(<AdminAtlas/>);
+  if(page==='uebersicht')return frame(<AdminOverview/>);
+  // Import and quality pages: the browser puts the dashboard together from three parts, see components/admin-loader.tsx.
+  return frame(<AdminLoader page={page} staticVersion={staticVersion()} initialSelection={selection} initialFilter={filter}/>);
+ }catch{return gate(<>{title('Administration nicht erreichbar')}<p role="alert" className="mt-3 text-[16px] text-slate-500">Die Zugangsprüfung hat gerade nicht geantwortet. Bitte versuchen Sie es gleich noch einmal.</p><a className="btn-primary mt-6 inline-flex" href="/admin">Erneut versuchen</a></>);}
 }

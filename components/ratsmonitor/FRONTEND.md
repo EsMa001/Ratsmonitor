@@ -35,6 +35,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | Anmelden/Registrieren/Kontakt | `info/AccountPages.tsx`; Testkonten: `lib/testAuth.ts` |
 | Impressum/Datenschutz | `pages/LegalPage.tsx` |
 | Interne To-do-Liste: erster Reiter im Adminbereich (`/admin?seite=todo`, `components/admin-todo.tsx`; nur lokaler Dev-Server; Daten `docs/todo/todos.json`, Speichern über Vite-Plugin `build/todo-dev-plugin.mjs`, Endpunkt `/__todos`) | `info/TodoPage.tsx`, Status/Datum: `lib/todos.ts` |
+| Adminbereich (Rahmen, Bausteine, Stand, Speicher, Nachholen, Texte, Farben) | `components/admin-chrome.tsx` (AdminFrame, Reiter), `components/admin-ui.tsx`, `components/admin-stand.tsx`, `components/admin-store.ts`, `components/admin-catch-up.tsx`, `components/admin-texts.ts`, `components/admin-colors.ts`; Seiten: `components/admin-*.tsx`, `app/admin/page.tsx` |
 | Symbole | App: `components/icons.tsx`; Info-Seiten: `info/icons.tsx` |
 | Suchzustand + Abfrage an `/api/search` | `state/search.tsx`; Ortserkennung + Regionen: `lib/place.ts`; Logik: `lib/searchLogic.ts` |
 | Neue Route anlegen | Stub in `app/(monitor)/<pfad>/page.tsx` (gibt `null` zurück) + Eintrag in `info/InfoPages.tsx` bzw. `pages/PersonalPage.tsx`; Kontoseiten zusätzlich in `app/(monitor)/konto/[[...section]]/page.tsx` freischalten |
@@ -43,7 +44,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 
 - `app/ratsmonitor.css`: App (Startseite, Karte, Milchglas `.rm-glass`, Filterfenster `#filter-body`).
 - `app/ratsmonitor-info.css`: Info- und Kontoseiten (Klassen `ri-…`). Achtung: Die Datei setzt Grundstile zurück; Tailwind-Klassen greifen dort manchmal nicht → dann Inline-Style.
-- Sonst Tailwind direkt im JSX. `app/analyse-admin.css` (Analyse-Seiten, Quellen, Admin) und `app/globals.css` (nur Einstieg und Theme) gehören nicht zum Ratsmonitor-Frontend – nicht ändern. `app/design-styles.css` wirkt auch auf Admin/Analysen: Änderungen dort immer auch dort prüfen.
+- Sonst Tailwind direkt im JSX. `app/analyse-admin.css`: Der Admin-Teil steht im Startseiten-Design am Dateiende (Block „Adminbereich im Design der Startseite“); ältere Admin-Regeln nicht erweitern, neue Admin-Stile dort anhängen. Die übrigen Regeln der Datei gehören den Analyse-Seiten. `app/globals.css` (nur Einstieg und Theme) nicht ändern. `app/design-styles.css` wirkt auch auf Admin/Analysen: Änderungen dort immer auch dort prüfen.
 
 ## Designregeln (vereinbart)
 
