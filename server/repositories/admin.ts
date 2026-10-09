@@ -15,6 +15,7 @@ import {fnv} from '../services/admin-etag.mjs';
 import {AdminError} from '../integrations/admin-access.mjs';
 import {TIMELINE_BASES} from '@/shared/timeline.mjs';
 import {STATIC_VER} from '../integrations/admin-static-version.mjs';
+import {staticAreas,buildAreas,areaNotes} from '../integrations/admin-areas.mjs';
 import type {AdminDashboard} from '@/shared/admin-types';
 // review:false leaves out the review list of page 2 (a scan of its own); its total is still reported.
 export async function getAdminDashboard({review=true}:{review?:boolean}={}):Promise<AdminDashboard>{
@@ -66,3 +67,15 @@ export const keywordsView=()=>{
   return stored&&stored.text.length>2?'{"stand":'+JSON.stringify(stand)+',"computed":true,'+stored.text.slice(1):{computed:false,stand};
  },undefined,async db=>{[head,build]=await Promise.all([storedMeta(db,'keywords'),buildStatus(db,'keywords')]);});
 };
+// The list of areas in parts (admin-areas.mjs): static (cached for good under its version), areas (rows of figures) and
+// summary (counts, labels, statuses, runs, job; live, small).
+export const staticVersion=()=>staticAreas().v;
+export const areasView=()=>view(s=>['a1',VERSIONS,s.stockSum,s.statsStamp,s.content,STATIC_VER,staticAreas().v,hour()],async(db,s)=>({...await buildAreas(db),stand:derivedStand(s,'stats')}));
+export async function getAdminSummary(){
+ if(!env.DB)throw Error('Datenbank fehlt');
+ const [data,stand]=await Promise.all([loadAdminData(env.DB,{aiConfigured:!!env.OPENAI_API_KEY,pushConfigured:!!env.VAPID_PRIVATE_KEY&&!!env.VAPID_PUBLIC_KEY,review:false,sources:false}),adminStand(env.DB)]);
+ const {sources:_sources,review:_review,...rest}=data as unknown as AdminDashboard;
+ return {...rest,stand:derivedStand(stand as Stand,'stats')};
+}
+export async function getAreaNotes(id:string){if(!env.DB)throw Error('Datenbank fehlt');return areaNotes(env.DB,id);}
+export const staticAreasText=()=>JSON.stringify(staticAreas());

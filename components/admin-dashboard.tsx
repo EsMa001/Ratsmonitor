@@ -1,5 +1,6 @@
 'use client';
 import {DatabaseAdmin} from '@/components/database-admin';
+import {fetchDashboard} from '@/components/admin-store';
 import {AdminQualityCheck} from '@/components/admin-quality-check';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {RefreshCw,ArrowUpRight,AlertCircle,Check} from 'lucide-react';
@@ -28,7 +29,7 @@ export function AdminDashboardView({initial,displayName,signOutPath}:{initial:Ad
   fetch('/api/admin/review?'+new URLSearchParams({issue,region:reviewRegion}),{signal:controller.signal,cache:'no-store'}).then(async r=>{const d=await r.json() as AdminDashboard['review'] & {error?:string};if(!r.ok)throw Error(d.error||'Prüfliste nicht erreichbar.');return d;}).then(setReview).catch(e=>{if(e.name!=='AbortError')setReviewError(e.message);}).finally(()=>{if(!controller.signal.aborted)setReviewBusy(false);});
   return ()=>controller.abort();
  },[issue,reviewRegion,data.asOf]);
- async function refresh(preserveError=false){setRefreshing(true);if(!preserveError)setError('');try{const r=await fetch('/api/admin/overview',{cache:'no-store'}),d=await r.json() as AdminDashboard & {error?:string};if(!r.ok)throw Error(d.error||'Aktualisierung fehlgeschlagen.');setData(d);}catch(e){setError(e instanceof Error?e.message:'Aktualisierung fehlgeschlagen.');}finally{setRefreshing(false);}}
+ async function refresh(preserveError=false){setRefreshing(true);if(!preserveError)setError('');try{setData(await fetchDashboard({review:true}));}catch(e){setError(e instanceof Error?e.message:'Aktualisierung fehlgeschlagen.');}finally{setRefreshing(false);}}
  async function startAnalysis(mode:'analysis'|'summaries'){
   setAnalysing(mode);setMessage('');setError('');
   try{const r=await fetch('/api/admin/analyse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({region:analysisRegion,mode}),signal:AbortSignal.timeout(160000)}),d=await r.json() as {error?:string;processed?:number;remaining?:number;more?:boolean};if(!r.ok)throw Error(d.error||'Analyse fehlgeschlagen.');setMessage(mode==='analysis'?n(d.processed||0)+' Artikel analysiert. '+n(d.remaining||0)+' stehen in dieser Auswahl noch aus. Ein weiterer Lauf startet erst mit deinem nächsten Klick.':n(d.processed||0)+' Artikel zur Textverarbeitung übernommen. Ergebnisse und Hinweise stehen im Importverlauf.');}catch(e){setError(e instanceof Error&&e.name!=='TimeoutError'?e.message:'Die Antwort dauert länger. Bitte zuerst den Verlauf aktualisieren; es wird kein weiterer Lauf automatisch gestartet.');}finally{setAnalysing('');await refresh(true);}

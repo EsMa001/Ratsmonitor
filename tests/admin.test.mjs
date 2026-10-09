@@ -191,7 +191,7 @@ const stubs={
  'server-only':'export {};',
  'cloudflare:workers':'export const env=globalThis.adminFixture.env;',
  '@/app/chatgpt-auth':'export async function getChatGPTUser(){return globalThis.adminFixture.user;}',
- '@/server/repositories/admin':'export async function getAdminDashboard(){globalThis.adminFixture.reads++;return {sources:[]};} export async function getAdminReview(){globalThis.adminFixture.reads++;return {};}',
+ '@/server/repositories/admin':'export async function getAdminDashboard(){globalThis.adminFixture.reads++;return {sources:[]};} export async function getAdminSummary(){globalThis.adminFixture.reads++;return {counts:{}};} export async function getAreaNotes(){globalThis.adminFixture.reads++;return {issues:[]};} export async function getAdminReview(){globalThis.adminFixture.reads++;return {};}',
  '@/server/integrations/database-transfer.mjs':'export async function exportRequest(){globalThis.adminFixture.reads++;return {status:200,data:{format:"ratsmonitor-data-v1"}};}',
  '@/server/integrations/manual-analysis.mjs':'export async function analysePending(){globalThis.adminFixture.analyses++;return {status:200,data:{processed:1,remaining:0}};}',
  '@/server/data/billerbeck-content-v1.json':'export default {};',
@@ -203,16 +203,16 @@ function load(file){if(cache.has(file))return cache.get(file);let s=fs.readFileS
  s=ts.transpileModule(s,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText.replace(/((?:from\s*|import\s*)['"])([^'"]+)(['"])/g,(m,pre,spec,post)=>{if(stubs[spec])return pre+uri(stubs[spec])+post;const base=spec.startsWith('@/')?path.join(root,spec.slice(2)):spec.startsWith('.')?path.resolve(path.dirname(file),spec):null;if(!base)return m;return pre+load([base,base+'.ts'].find(p=>fs.existsSync(p)&&fs.statSync(p).isFile()))+post;});
  const out=uri(s);cache.set(file,out);return out;
 }
-const routes=Object.fromEntries(await Promise.all(['overview','review','export','import','claim','analyse','prepared-analysis','database','pipeline','ai-job'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
+const routes=Object.fromEntries(await Promise.all(['summary','area','review','export','import','claim','analyse','prepared-analysis','database','pipeline','ai-job'].map(async r=>[r,await import(load(path.join(root,'app/api/admin',r,'route.ts')))])));
 const req=(route,body,headers={})=>new Request('https://site.example/api/admin/'+route,{method:body===undefined?'GET':'POST',headers:{origin:'https://site.example','content-type':'application/json',...headers},...(body===undefined?{}:{body})});
 test('every data endpoint denies anonymous and other signed-in users before any reads or imports',async()=>{
  reset();await claimAdmin(db,owner,code,hash);globalThis.adminFixture.reads=0;globalThis.adminFixture.syncs=0;
- for(const [user,status] of [[null,401],[other,403]]){globalThis.adminFixture.user=user;for(const route of ['overview','review','export','import','analyse','prepared-analysis','database','pipeline','ai-job']){const response=['import','analyse','prepared-analysis','pipeline','ai-job'].includes(route)?await routes[route].POST(req(route,'{"region":"billerbeck"}')):await routes[route].GET(req(route));assert.equal(response.status,status,route);assert.match(response.headers.get('cache-control'),/no-store/);assert.ok(!(await response.text()).includes('sources'));}}
+ for(const [user,status] of [[null,401],[other,403]]){globalThis.adminFixture.user=user;for(const route of ['summary','area','review','export','import','analyse','prepared-analysis','database','pipeline','ai-job']){const response=['import','analyse','prepared-analysis','pipeline','ai-job'].includes(route)?await routes[route].POST(req(route,'{"region":"billerbeck"}')):await routes[route].GET(req(route));assert.equal(response.status,status,route);assert.match(response.headers.get('cache-control'),/no-store/);assert.ok(!(await response.text()).includes('sources'));}}
  assert.equal(globalThis.adminFixture.reads,0);assert.equal(globalThis.adminFixture.syncs,0);assert.equal(globalThis.adminFixture.prepared,0);
 });
 test('authorized APIs validate all inputs and keep import locked to configured territory identifiers',async()=>{
  globalThis.adminFixture.user=owner;
- assert.equal((await routes.overview.GET()).status,200);
+ assert.equal((await routes.summary.GET()).status,200);assert.equal((await routes.area.GET(req('area?id=nope'))).status,400);
  assert.equal((await routes.database.GET(req('database'))).status,200);assert.equal(routes.database.POST,undefined);
  for(const body of ['null','[]','{','{"region":"not-configured"}'])assert.equal((await routes.import.POST(req('import',body))).status,400);
  assert.equal((await routes.import.POST(req('import','{"region":"billerbeck"}',{origin:'https://evil.example'}))).status,403);

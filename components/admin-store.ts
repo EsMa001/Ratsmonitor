@@ -54,3 +54,34 @@ export function useRegionCatchUp():CatchUp{
  },[]);
  return state;
 }
+
+// --- The dashboard of the import and quality pages, put together from its parts (shared/admin-areas.mjs) ---
+// summary (live, small), areas (rows of figures, ETag) and static (cached for good under its version). The notes of an area
+// are read when somebody opens them (/api/admin/area).
+let staticVersion='',staticKept:{v:string;data:{areas:unknown[]}}|null=null;
+/** The version of the static list the server rendered the page with; the list is then cached by the browser for good. */
+export function setAdminStaticVersion(version:string){staticVersion=version;}
+async function readJson<T>(response:Response,fallback:string):Promise<T>{
+ const data=await response.json().catch(()=>({})) as T&{error?:string};
+ if(!response.ok)throw Error(data.error||fallback);
+ return data;
+}
+async function staticAreasData(signal?:AbortSignal){
+ if(staticKept&&(!staticVersion||staticKept.v===staticVersion))return staticKept.data;
+ const data=await fetch('/api/admin/static'+(staticVersion?'?v='+encodeURIComponent(staticVersion):''),{cache:staticVersion?'default':'no-cache',signal}).then(r=>readJson<{areas:unknown[]}>(r,'Die Gebiete konnten nicht geladen werden.'));
+ staticKept={v:staticVersion,data};return data;
+}
+/**
+ * The dashboard in the form of the former overview: counts, labels, statuses, runs and job from summary, `sources` from the
+ * static list and the rows. review: with the first page of the review list (quality page); otherwise only its total.
+ */
+export async function fetchDashboard({review=false,signal}:{review?:boolean;signal?:AbortSignal}={}):Promise<import('@/shared/admin-types').AdminDashboard>{
+ const [summary,areas,statics,list]=await Promise.all([
+  fetch('/api/admin/summary',{cache:'no-store',signal}).then(r=>readJson<Record<string,any>>(r,'Der Datenbankstand konnte nicht geladen werden.')),
+  fetch('/api/admin/areas',{cache:'no-cache',signal}).then(r=>readJson<{fields:string[];rows:unknown[][]}>(r,'Der Datenbankstand konnte nicht geladen werden.')),
+  staticAreasData(signal),
+  review?fetch('/api/admin/review?issue=labels&region=all',{cache:'no-store',signal}).then(r=>readJson<Record<string,any>>(r,'Die Prüfliste konnte nicht geladen werden.')):Promise.resolve(null),
+ ]);
+ const {toSources}=await import('@/shared/admin-areas.mjs');
+ return {...summary,sources:toSources(statics as {areas:any[]},areas as {fields:string[];rows:any[][]}),review:list||{issue:'labels',total:summary.counts?.unlabelled??0,articles:[]}} as unknown as import('@/shared/admin-types').AdminDashboard;
+}

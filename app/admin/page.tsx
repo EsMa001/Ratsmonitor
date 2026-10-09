@@ -6,6 +6,7 @@ import {AdminActivation} from '@/components/admin-activation';
 import {AdminBar,type AdminPage} from '@/components/admin-chrome';
 import {BRAND_NAME,DEFAULT_BRAND} from '@/components/ratsmonitor/lib/brands';
 import {AdminLoader} from '@/components/admin-loader';
+import {staticVersion} from '@/server/repositories/admin';
 import {AdminOverview} from '@/components/admin-overview';
 import {AdminAtlas} from '@/components/admin-atlas';
 import {AdminForecast} from '@/components/admin-forecast';
@@ -38,6 +39,6 @@ async function AdminContent({page,selection,filter}:{page:AdminPage;selection:st
   if(page==='atlas')return <AdminAtlas displayName={user.displayName} signOutPath={signOutPath}/>;
   if(page==='uebersicht')return <AdminOverview displayName={user.displayName} signOutPath={signOutPath}/>;
   // Import and quality pages: the browser loads the dashboard (several MB) itself, see components/admin-loader.tsx.
-  return <AdminLoader page={page} displayName={user.displayName} signOutPath={signOutPath} initialSelection={selection} initialFilter={filter}/>;
+  return <AdminLoader page={page} displayName={user.displayName} signOutPath={signOutPath} staticVersion={staticVersion()} initialSelection={selection} initialFilter={filter}/>;
  }catch{return frame(<><h1>Administration nicht erreichbar</h1><p role="alert">Der Datenbankstand konnte gerade nicht geladen werden. Es werden keine Ersatzzahlen angezeigt.</p><Button asChild className="admin-gate-action"><a href="/admin">Erneut versuchen</a></Button></>);}
 }

@@ -16,11 +16,11 @@ const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
 const conditions={labels:"coalesce(json_extract(payload,'$.classification.primary'),'unklar')='unklar'",status:"status='unknown'",identity:"json_extract(payload,'$.identity.conflict')=1",summaries:"coalesce(json_extract(payload,'$.documentIssue'),'')!='' OR coalesce(json_extract(payload,'$.summaryIssue'),'')!='' OR json_extract(payload,'$.contentAnalysis.status') IN ('insufficient_source','failed','stale') OR json_extract(payload,'$.contentAnalysis.reason') IS NOT NULL"};
 const configuredSources=[...SOURCES.map(s=>({...s,method:s.id==='recklinghausen'?'official-api':'scraper'})),...NRW_SOURCES,{id:'muenster',method:'oparl',system:'https://oparl.stadt-muenster.de/system'}];
 // The first entry of an area counts, as in the list above; the catalog holds several thousand areas.
-const configuredById=new Map([...configuredSources].reverse().map(s=>[s.id,s]));
+export const configuredById=new Map([...configuredSources].reverse().map(s=>[s.id,s]));
 // Access of programs per area (shared/source-access.mjs: OParl, then API, then HTML pages, where robots.txt gives the
 // label; then a technical block): of a connected source from its reader and the robots.txt verdict of its path
 // (source-robots.json), of an area without source from its last check (source-atlas.json, scripts/dashboard/build.mjs).
-const accessFields=(id,config)=>{const connected=!!config&&config.method!=='pending',access=connected?accessOfSource(config,robotsVerdicts.sources?.[id]):atlas.areas?.[id]?.z||'none';return {access,accessLabel:accessLabel(access),channel:connected?channelOf(config).name:''};};
+export const accessFields=(id,config)=>{const connected=!!config&&config.method!=='pending',access=connected?accessOfSource(config,robotsVerdicts.sources?.[id]):atlas.areas?.[id]?.z||'none';return {access,accessLabel:accessLabel(access),channel:connected?channelOf(config).name:''};};
 const readJson=s=>{try{return JSON.parse(s||'{}');}catch{return {};}};
 const label="coalesce(json_extract(payload,'$.classification.primary'),'unklar')";
 // Figure of region_stats that counts the reports of a review filter. "status" has none: it is counted on its index.
@@ -126,7 +126,8 @@ async function seriesStatuses(db,areas){
  * further scan would add about as much again. Grouping by anything that is not in the index would sort whole rows.
  * review:false leaves out the review list, which needs a scan of its own and is shown on page 2 only.
  */
-export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushConfigured=false,review=true}={}){
+/** sources:false leaves out the list of areas (source_coverage is not read; `sources` is empty): the summary of the pages. */
+export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushConfigured=false,review=true,sources:withSources=true}={}){
  const week=new Date(now.getTime()-7*86400000).toISOString();
  // The scan of the reports is kept until the reports change (revision-cache.mjs); "updated in the last seven days" moves
  // with the clock, so a kept result also ends with the hour.
@@ -139,7 +140,7 @@ export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushCo
   db.prepare(`SELECT status AS id,count(*) count FROM topics WHERE ${canonical} GROUP BY status`)
  ]);
  const queries=[
-  db.prepare('SELECT region_id,payload FROM source_coverage'),
+  db.prepare(withSources?'SELECT region_id,payload FROM source_coverage':'SELECT region_id,payload FROM source_coverage LIMIT 0'),
   db.prepare('SELECT id,started_at,finished_at,status,details FROM import_runs ORDER BY started_at DESC LIMIT 30'),
   db.prepare('SELECT (SELECT count(*) FROM article_versions) versions,(SELECT count(*) FROM article_analyses) analysisVersions,(SELECT count(*) FROM topics) stored,(SELECT count(*) FROM push_subscriptions) pushSubscriptions'),
   db.prepare("SELECT key,value FROM system_state WHERE key='import-lock'"),
@@ -152,7 +153,7 @@ export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushCo
  const counts={online,unlabelled:sum('label_unklar'),...Object.fromEntries(TOTALS.map(key=>[key==='insufficient'?'summaryInsufficient':key==='stale'?'summaryStale':key,sum(key)])),...Object.fromEntries(Object.entries(other).map(([k,v])=>[k,Number(v||0)])),aliases:Number(stored||0)-online};
  const byCoverage=new Map(coverage.results.map(r=>[r.region_id,readJson(r.payload)]));
  const stages=r=>r?{region_id:r.region_id,total:Number(r.count),rules:Number(r.count)-Number(r.pendingAnalysis),summary:r.summary,aiLabel:r.aiLabel,keywords:r.keywords,insufficient:r.insufficient,stale:r.stale,blocked_summary:r.blocked_summary,blocked_aiLabel:r.blocked_aiLabel,blocked_keywords:r.blocked_keywords,fetchedAt:r.fetchedAt,processedAt:r.processedAt}:{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,blocked_summary:0,blocked_aiLabel:0,blocked_keywords:0,fetchedAt:null,processedAt:null};
- const sources=regions.map(r=>{const config=configuredById.get(r.id),c={method:config?.method||'pending',complete:false,issues:[],...byCoverage.get(r.id)},area=areas.get(r.id);const count=Number(area?.count||0),health=sourceHealth(c,count,now);return {id:r.id,name:r.name,ags:r.ags,land:r.ags.slice(0,2),kind:r.kind,count,firstEventAt:area?.firstEvent||null,lastEventAt:area?.lastEvent||null,pendingAnalysis:Number(area?.pendingAnalysis||0),method:c.method||'pending',attemptStatus:c.attemptStatus||null,processing:stages(area),...health,canImport:!!config&&config.method!=='pending',...accessFields(r.id,config),complete:!!c.complete,lastAttemptAt:c.lastAttemptAt||c.importedAt||null,nextRetryAt:c.nextRetryAt||null,sourceUrl:c.sourceUrl||config?.system||config?.base||null,issues:Array.isArray(c.issues)?c.issues.map(String):[],warnings:Array.isArray(c.warnings)?c.warnings.map(String):[]};});
+ const sources=!withSources?[]:regions.map(r=>{const config=configuredById.get(r.id),c={method:config?.method||'pending',complete:false,issues:[],...byCoverage.get(r.id)},area=areas.get(r.id);const count=Number(area?.count||0),health=sourceHealth(c,count,now);return {id:r.id,name:r.name,ags:r.ags,land:r.ags.slice(0,2),kind:r.kind,count,firstEventAt:area?.firstEvent||null,lastEventAt:area?.lastEvent||null,pendingAnalysis:Number(area?.pendingAnalysis||0),method:c.method||'pending',attemptStatus:c.attemptStatus||null,processing:stages(area),...health,canImport:!!config&&config.method!=='pending',...accessFields(r.id,config),complete:!!c.complete,lastAttemptAt:c.lastAttemptAt||c.importedAt||null,nextRetryAt:c.nextRetryAt||null,sourceUrl:c.sourceUrl||config?.system||config?.base||null,issues:Array.isArray(c.issues)?c.issues.map(String):[],warnings:Array.isArray(c.warnings)?c.warnings.map(String):[]};});
  const runs=runRows.results.map(r=>{const d=readJson(r.details);return {id:r.id,startedAt:r.started_at,finishedAt:r.finished_at,status:r.status,region:d.region||'muenster',mode:d.mode||'metadata',trigger:d.trigger||'unbekannt',count:typeof(d.count??d.processed)==='number'?(d.count??d.processed):null,issueCount:Array.isArray(d.issues)?d.issues.length:0,abandoned:r.status==='running'&&Date.parse(r.started_at)<now.getTime()-600000};});
  const until=lockedUntil(lockRows.results[0]?.value);
  // The default review list shows the reports without a label; their number is known from the scan.
