@@ -5,7 +5,9 @@ import {knownWords,candidateCards,precomputedTotal,precomputedFacets} from './se
 export const MAX_PAGE=250;
 export class SearchError extends Error { constructor(message,status=400){super(message);this.status=status;} }
 /* Typische Formalien einer Sitzung (Muster für LIKE auf den kleingeschriebenen Titel) */
-const FORMAL=['%niederschrift%','%mitteilungen%','%anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','%verpflichtung%','%anträge der fraktionen%'];
+const FORMAL=['%niederschrift%','mitteilungen%','anfragen%','% anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%protokolls der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','bericht des vorsitzenden%','bericht des oberbürgermeisters%','bericht des bürgermeisters%','%verpflichtung%','%anträge der fraktionen%'];
+/* Ausnahmen: Titel mit eigenem Gegenstand sind keine Formalien („Mitteilungen; Beschaffung …“, „Widerspruch … gegen den Beschluss …“) */
+const NOT_FORMAL=['mitteilungen;%','widerspruch%','%gegen den beschluss%'];
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 /* Ganzes Wort in der Suchspalte (nur a–z, 0–9, sonst Trenner): Muster für GLOB am Anfang, in der Mitte und am Ende; Sonderzeichen des Begriffs in [ ] gefasst */
 const wholeWord=t=>{const e=t.replace(/[*?[]/g,c=>'['+c+']');return [e+'[^a-z0-9à-ÿ]*','*[^a-z0-9à-ÿ]'+e+'[^a-z0-9à-ÿ]*','*[^a-z0-9à-ÿ]'+e];};
@@ -94,7 +96,7 @@ export async function searchFilters(db,catalog,f){
   if(f.from){where.push('date>=?');args.push(f.from);}
   if(f.to){where.push('date<=?');args.push(f.to);}
   /* Formalien ausblenden: Niederschriften, Mitteilungen, Anfragen, Eröffnung usw. (Titelanfang bzw. Titel) */
-  if(f.noformal){where.push('NOT ('+FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+')');args.push(...FORMAL);}
+  if(f.noformal){where.push('(NOT ('+FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+') OR '+NOT_FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+')');args.push(...FORMAL,...NOT_FORMAL);}
   /* Mehrere Suchbegriffe: Komma trennt Alternativen (ODER), Wörter innerhalb eines Begriffs müssen alle vorkommen */
   const groups=(f.groups||[f.terms]).filter(g=>g.length);
   if(groups.length){

@@ -160,3 +160,13 @@ test('precomputed facets of common words equal the grouping over all cards, per 
   let k=0;for(const q of ['q=kita','q=windpark','q=radweg'])assert.deepEqual(await run(q),expected[k++],q+' (nach Fortschreibung)');
  }finally{sql.close();}
 });
+test('Formalien-Filter blendet Formalien aus, lässt Inhalte mit ähnlichen Wörtern stehen',async()=>{
+ const {sql,db,put}=fixture();try{
+ const formal=['Einwohnerfragestunde','Verschiedenes','Anfragen der Fraktionen','Mitteilungen der Verwaltung','Genehmigung des öffentlichen Protokolls der 19. Sitzung vom 16.02.2026','Bericht des Vorsitzenden - hier: Seniorenfahrt','Bericht des Oberbürgermeisters','Verpflichtung des Bürgermeisters','Bestätigung der Niederschrift der 1. Sitzung'];
+ const content=['Bauvoranfragen Riedstraße 15','Mitteilungen; Beschaffung von Feuerwehrfahrzeugen','Widerspruch der Hauptverwaltungsbeamtin gegen den Beschluss des Stadtrates vom 30.06.','Schulbau in Dülmen'];
+ formal.forEach((t,i)=>put('f'+i,'billerbeck',{title:t}));content.forEach((t,i)=>put('c'+i,'billerbeck',{title:t}));
+ const all=await searchMonitor(db,catalog,new URLSearchParams('scope=only&area=05558008'));assert.equal(all.total,formal.length+content.length);
+ const r=await searchMonitor(db,catalog,new URLSearchParams('scope=only&area=05558008&noformal=1'));
+ assert.deepEqual(r.articles.map(a=>a.title).sort(),[...content].sort());
+ }finally{sql.close();}
+});
