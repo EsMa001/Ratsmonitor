@@ -9,7 +9,7 @@ const quiet=process.argv.includes('--quiet'),say=(...a)=>{if(!quiet)console.log(
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
 // Auf dem eigenen Server (Node-Betrieb) nennt DATABASE_FILE die Datei; lokal die Miniflare-Datei unter .wrangler/.
 const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
-const file=process.env.DATABASE_FILE||(local?dir+local:null);
+const file=process.env.DATABASE_FILE||process.env.DB_FILE||(local?dir+local:null);
 if(!file){say('Keine lokale Datenbank gefunden, nichts zu tun.');process.exit(0);}
 const db=new DatabaseSync(file);db.exec('PRAGMA busy_timeout=60000');
 /* Ohne Gebietsarten gibt es keine vorberechneten Zahlen, Wörter und Karten-IDs funktionieren trotzdem (z. B. ältere Node-Version ohne .ts-Import) */

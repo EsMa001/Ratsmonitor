@@ -19,7 +19,7 @@ const state = (globalThis[STATE] ??= { database: undefined, failed: false, warne
 
 function db() {
   if (state.database || state.failed) return state.database;
-  const file = process.env.DATABASE_FILE;
+  const file = process.env.DATABASE_FILE || process.env.DB_FILE;
   if (!file) {
     if (!state.warned) { state.warned = true; console.error('[ratsmonitor] DATABASE_FILE ist nicht gesetzt: keine Datenbank, die Seiten zeigen den mitgelieferten Stand.'); }
     return undefined;

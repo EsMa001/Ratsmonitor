@@ -15,7 +15,7 @@ const build=args.includes('--build')?args[args.indexOf('--build')+1]:null;
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
 // Auf dem eigenen Server (Node-Betrieb) nennt DATABASE_FILE die Datei; lokal die Miniflare-Datei unter .wrangler/.
 const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
-const file=process.env.DATABASE_FILE||(local?dir+local:null);
+const file=process.env.DATABASE_FILE||process.env.DB_FILE||(local?dir+local:null);
 if(!file){say('Keine lokale Datenbank gefunden, nichts zu tun.');process.exit(0);}
 // Der Dev-Server hält dieselbe Datei offen: warten statt mit SQLITE_BUSY abzubrechen.
 const sql=new DatabaseSync(file);sql.exec('PRAGMA busy_timeout=60000');

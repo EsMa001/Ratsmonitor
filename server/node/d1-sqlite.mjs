@@ -108,7 +108,7 @@ class Statement {
 }
 
 class Database {
-  #db; #cache = new Map(); #probe;
+  #db; #cache = new Map(); #probe; #inTransaction = false;
   constructor(db) { this.#db = db; this.#probe = db.prepare('SELECT total_changes() AS c, last_insert_rowid() AS r'); this.#probe.setReadBigInts(true); }
   get sqlite() { return this.#db; }
   statement(sql) {
@@ -147,17 +147,21 @@ class Database {
     await yieldToEventLoop();
     // Alles vor BEGIN übersetzen: Ein SQL-Fehler bricht dann ab, ohne dass eine Transaktion offen ist.
     try { for (const statement of statements) statement.compile(); } catch (error) { throw d1Error(error); }
-    if (this.#db.isTransaction) throw new Error('D1_ERROR: batch() während einer offenen Transaktion');
+    // Eigener Merker statt db.isTransaction (erst ab Node 22.16)
+    if (this.#inTransaction) throw new Error('D1_ERROR: batch() während einer offenen Transaktion');
     const write = !statements.every((statement) => readsOnly(statement.sql));
     // Ab hier kein await bis COMMIT oder ROLLBACK: Die Transaktion läuft am Stück und mischt sich nicht mit anderen Anfragen.
-    this.#db.exec(write ? 'BEGIN IMMEDIATE' : 'BEGIN');
+    try { this.#db.exec(write ? 'BEGIN IMMEDIATE' : 'BEGIN'); } catch (error) { throw d1Error(error); }
+    this.#inTransaction = true;
     try {
       const results = statements.map((statement) => statement.execute());
       this.#db.exec('COMMIT');
       return results;
     } catch (error) {
-      if (this.#db.isTransaction) { try { this.#db.exec('ROLLBACK'); } catch { /* bereits zurückgerollt */ } }
+      try { this.#db.exec('ROLLBACK'); } catch { /* SQLite hat schon zurückgerollt */ }
       throw d1Error(error);
+    } finally {
+      this.#inTransaction = false;
     }
   }
   async exec(sql) {
@@ -169,7 +173,7 @@ class Database {
   }
   async dump() { throw new Error('D1_ERROR: dump() wird im Node-Betrieb nicht unterstützt'); }
   withSession() { return this; }
-  close() { this.#cache.clear(); if (this.#db.isOpen) this.#db.close(); }
+  close() { this.#cache.clear(); try { this.#db.close(); } catch { /* schon zu */ } }
 }
 
 /**

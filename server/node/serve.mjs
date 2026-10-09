@@ -7,13 +7,48 @@
  * - keepAliveTimeout länger als der von Caddy: Sonst schließt Node eine Verbindung, die Caddy gerade wiederverwendet,
  *   und ein POST endet mit 502.
  * - Bei SIGTERM/SIGINT (systemctl stop/restart) laufende Anfragen kurz ausklingen lassen und die Datenbank schließen.
+ * - Prüft vor dem Start die Datenbank. Ohne sie würden die Seiten still den mitgelieferten, alten Stand zeigen;
+ *   deshalb startet der Server dann nicht (Ausnahme für Tests: RM_ALLOW_NO_DB=1).
  */
-import { join } from 'node:path';
+import fs from 'node:fs';
+import { isAbsolute, join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { startProdServer } from 'vinext/server/prod-server';
 
 const port = Number.parseInt(process.env.PORT ?? '3000', 10);
 const host = process.env.HOST ?? '127.0.0.1';
 const graceMs = Number(process.env.SHUTDOWN_GRACE_MS ?? 20000);
+
+// Der Adapter nutzt StatementSync.columns() (node:sqlite ab Node 22.16); gebaut und getestet wird mit Node 24.
+const [major, minor] = process.versions.node.split('.').map(Number);
+if (major < 22 || (major === 22 && minor < 16)) {
+  console.error(`[ratsmonitor] Start abgebrochen: Node ${process.version} ist zu alt, nötig ist mindestens 22.16 (empfohlen 24).`);
+  process.exit(1);
+}
+
+function checkDatabase() {
+  const file = process.env.DATABASE_FILE || process.env.DB_FILE;
+  if (!file) return process.env.RM_ALLOW_NO_DB === '1' ? null : 'DATABASE_FILE ist nicht gesetzt.';
+  if (!isAbsolute(file)) return `DATABASE_FILE muss ein absoluter Pfad sein: ${file}`;
+  if (!fs.existsSync(file)) return `Datenbankdatei fehlt: ${file}`;
+  let db;
+  try {
+    db = new DatabaseSync(file, { readOnly: true });
+    const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map((row) => row.name));
+    const missing = ['topics', 'search_cards', 'system_state', 'd1_migrations'].filter((name) => !tables.has(name));
+    if (missing.length) return `Datenbank ohne Tabellen ${missing.join(', ')}: ${file}`;
+    const mode = db.prepare('PRAGMA journal_mode').get().journal_mode;
+    if (mode !== 'wal') console.warn(`[ratsmonitor] journal_mode der Datenbank ist ${mode}; der Server stellt beim ersten Schreiben auf wal um.`);
+  } catch (error) {
+    return `Datenbank nicht lesbar (${file}): ${error.message}`;
+  } finally { db?.close(); }
+  return null;
+}
+const problem = checkDatabase();
+if (problem) {
+  console.error(`[ratsmonitor] Start abgebrochen: ${problem}`);
+  process.exit(1);
+}
 
 const { server } = await startProdServer({ port, host, outDir: join(import.meta.dirname, 'dist') });
 server.keepAliveTimeout = 65_000;
