@@ -15,6 +15,7 @@ import {collectCouncilservice,detectCouncilservice} from './councilservice.mjs';
 import {collectRisPortal,detectRisPortal} from './ris-portal.mjs';
 import {collectKomfa,detectKomfa} from './komfa.mjs';
 import {collectParlis,detectParlis} from './parlis.mjs';
+import {collectSimHannover,detectSimHannover} from './sim-hannover.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -42,6 +43,9 @@ export const READERS={
  // PARLIS Frankfurt am Main (own development of the city): lists of minutes and current agendas, each document under
  // its permanent name; the non-public part (/PARLIS2S/) is never requested.
  parlis:{name:'PARLIS Frankfurt (öffentliche Niederschriften und Tagesordnungen)',collect:collectParlis,detect:async(url,html)=>pick(detectParlis(url,html),['base'])},
+ // SIM Hannover (Sitzungsmanagement of the city, Domino): lists of meetings per body, agenda pages and the papers with
+ // their "Beratungsverlauf"; pages of items and minutes (confidential items) are never requested.
+ 'sim-hannover':{name:'SIM Hannover (öffentliches Sitzungsmanagement)',collect:collectSimHannover,detect:async(url,html)=>pick(detectSimHannover(url,html),['base'])},
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
  'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},

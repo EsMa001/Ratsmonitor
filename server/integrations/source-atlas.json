@@ -626,7 +626,7 @@
  "nds-03252006":{"c":"noreader","z":"noreader","r":5,"u":"https://ris.hameln.de/ris"},
  "nds-031515403":{"c":"ok","z":"scraping"},
  "nds-03159017":{"c":"ok","z":"scraping"},
- "nds-03241001":{"c":"shared","z":"scraping","r":13,"u":"https://ris.hannit.de/public/to010?SILFDNR=2003885"},
+ "nds-03241001":{"c":"ok","z":"scraping"},
  "nds-033535402":{"c":"ok","z":"scraping"},
  "nds-03155005":{"c":"nolink","z":"none","r":16},
  "nds-03454018":{"c":"ok","z":"oparl"},

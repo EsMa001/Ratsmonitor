@@ -702,6 +702,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03241001",
+    "name": "Stadt Hannover",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sim-hannover",
+    "base": "https://e-government.hannover-stadt.de/lhhsimwebre.nsf/",
+    "verifiedSource": "https://e-government.hannover-stadt.de/lhhsimwebre.nsf/TermineAktuell.xsp",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-System der Stadt gefunden; öffentliches Sitzungsmanagement SIM (Sitzungen seit 2003, Drucksachen mit Beratungsverlauf) erreichbar, robots.txt erlaubt alles außer den Bots phantom und PhantomJS."
+  },
+  {
     "id": "nds-03241002",
     "name": "Stadt Barsinghausen",
     "kind": "city",
