@@ -163,3 +163,25 @@ test('collectRisPortal names a list it cannot read and stops at the time budget'
  assert.ok(broken.coverage.issues.every(i=>/Sitzungsliste|Noch keine Artikel/.test(i)));
  assert.ok(broken.coverage.issues.some(i=>/Sitzungsliste \d{2}\/2026: Unexpected token|Sitzungsliste \d{2}\/2026: .*JSON/.test(i)));
 });
+
+// Redesigned theme (ris-redesign-theme, ris.dachau.de, 09.10.2026): items are div.rp-session-top-result under
+// <h3 class="accordion-list-header">, the documents are links "document-link" with data-href.
+const dachau={id:'de-09174115',name:'Stadt Dachau',kind:'city',method:'scraper',adapter:'ris-portal',base:'https://ris.dachau.de/'};
+test('RIS-Portal redesigned theme: the body is named by the link text of the month list',()=>{
+ const list=risPortalMeetings(fixture('dachau-sessions-2026-10.json'),dachau);
+ assert.deepEqual(list.map(m=>[m.id,m.date,m.committee]),[['2762','2026-10-14','Stadtrat']]);
+});
+test('RIS-Portal redesigned theme: public items with number, title and documents; a part with another heading ends the agenda',()=>{
+ const meeting={id:'2762',url:'https://ris.dachau.de/web/guest/sitzungen?sitzungId=2762',date:'2026-10-14',committee:'Stadtrat'};
+ const page=fixture('dachau-sitzung-2762.html');
+ const parsed=parseRisPortalMeeting(page,meeting,dachau,new Date('2026-10-09T12:00:00Z'));
+ assert.equal(parsed.items.length,3);
+ const first=parsed.items[0];
+ assert.match(first.title,/^1\. Änderung der Mobilitätssatzung/);assert.equal(first.status,'consulting');assert.equal(first.number,'1.');
+ assert.ok(first.documents.some(d=>/Sitzungsvorlage/.test(d.title)||d.url.includes('schriftgutId=30116')));
+ assert.ok(first.id.startsWith('de-09174115-rp-vo-'));
+ // Everything after a heading that is not the public part is cut off.
+ const withNonPublic=page.replace('</div></div></div></body>','</div><h3 class="accordion-list-header">Nichtöffentliche Tagesordnungspunkte</h3><div class="list-group-item rp-result rp-session-top-result " data-top-number="9."><h3><a href="#">Personalangelegenheit geheim</a></h3></div></div></div></body>');
+ const cut=parseRisPortalMeeting(withNonPublic,meeting,dachau,new Date('2026-10-09T12:00:00Z'));
+ assert.equal(cut.items.length,3);assert.ok(!cut.items.some(i=>/geheim/.test(i.title)));
+});

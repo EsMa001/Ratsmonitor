@@ -68,7 +68,9 @@ export function risPortalMeetings(json,source){
   const html=String(s.text||''),badge=plain(html.match(/rp-gremium-badge mbsc-hide-in-calendar['"][^>]*>([\s\S]*?)<\/div>/i)?.[1]||'');
   const short=plain(html.match(/rp-gremium-badge mbsc-hide-in-eventlist['"][^>]*>([\s\S]*?)<\/div>/i)?.[1]||'')||String(s.label||'').replace(/\s+\d{1,2}\.\d{1,2}\.\d{4}\s*$/,'').trim();
   let url;try{url=allowed(new URL(String(s.sessionLink||''),source.base).href,source);}catch{continue;}
-  meetings.push({id,url,date,committee:badge||short,shortName:short,cancelled:CANCELLED.test(plain(html)+' '+String(s.label||''))});
+  // The redesigned theme has no badge with the full name; the link text of the entry states it ("Sitzung Stadtrat am 10.11.2026").
+  const linked=plain(html.match(/<a\b[^>]*>\s*Sitzung\s+([\s\S]*?)\s+am\s+\d{1,2}\.\d{1,2}\.\d{4}\s*<\/a>/i)?.[1]||'');
+  meetings.push({id,url,date,committee:badge||linked||short,shortName:short,cancelled:CANCELLED.test(plain(html)+' '+String(s.label||''))});
  }
  return meetings;
 }
@@ -90,7 +92,10 @@ export function parseRisPortalMeeting(html,meeting,source,now=new Date()){
  const page=String(html||'');
  const heading=plain(page.match(/<h2 class=["']h1["'][^>]*>([\s\S]*?)<\/h2>/i)?.[1]||'');
  const date=meeting.date||day(heading),committee=meeting.committee||heading.match(/^Sitzung\s+(.+?)\s+am\s+\d/)?.[1]||heading||'Öffentliche Sitzung';
- const parts=page.split(/<h3 class=["']h4 accordion-list-header["'][^>]*>/i).slice(1);
+ // The redesigned theme (ris-redesign-theme, Dachau) lists the items as div.rp-session-top-result under
+ // <h3 class="accordion-list-header">; the classic theme as li.rp-lis-item under <h3 class="h4 accordion-list-header">.
+ const redesign=/\brp-session-top-result\b/.test(page);
+ const parts=page.split(redesign?/<h3 class=["']accordion-list-header["'][^>]*>/i:/<h3 class=["']h4 accordion-list-header["'][^>]*>/i).slice(1);
  let publicPart=null;
  for(const part of parts){
   const title=partTitle(plain(part.slice(0,part.search(/<\/h3>/i))));
@@ -105,19 +110,20 @@ export function parseRisPortalMeeting(html,meeting,source,now=new Date()){
  const end=publicPart.search(/<\/h3>/i),after=publicPart.slice(end);
  const stop=after.search(/<div class=["']offcanvas\b[^>]*\bid=["']offcanvas-(?!top-votes_)|<div class=["']rp-meta-data\b/i),list=stop<0?after:after.slice(0,stop);
  const today=now.toISOString().slice(0,10),items=new Map();let left=0;
- for(const chunk of list.split(/<li class=["']rp-lis-item["']/i).slice(1)){
+ for(const chunk of list.split(redesign?/<div\s+class=["']list-group-item rp-result rp-session-top-result[^"']*["']/i:/<li class=["']rp-lis-item["']/i).slice(1)){
   const number=attribute(chunk.slice(0,chunk.indexOf('>')),'data-top-number').trim();
-  const content=chunk.match(/<div class=["']top-item-content["'][^>]*>\s*<p>([\s\S]*?)<\/p>/i)?.[1]||'';
-  const spans=[...content.matchAll(/<span[^>]*>([\s\S]*?)<\/span>/gi)].map(m=>plain(m[1]));
-  const title=(spans.length>1&&spans[0].replace(/\s+/g,'')===number.replace(/\s+/g,'')?spans.slice(1).join(' '):plain(content).replace(new RegExp('^'+number.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*'),'')).trim();
+  const content=redesign?chunk.match(/<h3>\s*<a\b[^>]*>([\s\S]*?)<\/a>\s*<\/h3>/i)?.[1]||'':chunk.match(/<div class=["']top-item-content["'][^>]*>\s*<p>([\s\S]*?)<\/p>/i)?.[1]||'';
+  const spans=redesign?[]:[...content.matchAll(/<span[^>]*>([\s\S]*?)<\/span>/gi)].map(m=>plain(m[1]));
+  const title=redesign?plain(content).trim():(spans.length>1&&spans[0].replace(/\s+/g,'')===number.replace(/\s+/g,'')?spans.slice(1).join(' '):plain(content).replace(new RegExp('^'+number.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*'),'')).trim();
   if(!title)continue;
   // A title that names the non-public part (or is a heading of it) is not taken, whatever part it stands in.
   if(isNonPublicText(title)||isNonPublicHeading(title)){left++;continue;}
   const documents=[];
-  for(const button of chunk.matchAll(/<button class=["']document-button["']([^>]*)>([\s\S]*?)<\/button>/gi)){
+  const buttons=redesign?[...chunk.matchAll(/<a class=["']document-link["']([^>]*)>([\s\S]*?)<\/a>/gi)]:[...chunk.matchAll(/<button class=["']document-button["']([^>]*)>([\s\S]*?)<\/button>/gi)];
+  for(const button of buttons){
    const href=attribute(button[1],'data-href'),docid=attribute(button[1],'data-docid'),type=attribute(button[1],'data-type');
    if(!docid||!href)continue;
-   const label=plain(button[2].match(/<span class=["']d-none doc-title["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]||'')||type||'Dokument';
+   const label=redesign?plain(attribute(button[1],'data-title')||button[2])||type||'Dokument':plain(button[2].match(/<span class=["']d-none doc-title["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]||'')||type||'Dokument';
    if(isNonPublicText(label))continue;
    let url;try{url=allowed(new URL(href,meeting.url).href,source);}catch{continue;}
    documents.push({title:label,url,kind:'application/pdf',type,docid});

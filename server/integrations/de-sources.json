@@ -16505,6 +16505,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09174115",
+    "name": "Stadt Dachau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://ris.dachau.de/",
+    "verifiedSource": "https://ris.dachau.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe mit neuem Oberflächendesign (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "de-09174118",
     "name": "Gemeinde Erdweg",
     "kind": "city",
