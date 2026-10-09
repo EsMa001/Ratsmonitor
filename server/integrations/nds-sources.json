@@ -1633,6 +1633,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://buergerinfo.stadt.lueneburg.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-033555401",
+    "name": "Samtgemeinde Amelinghausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.amelinghausen.sitzung-online.de/public/",
+    "verifiedSource": "https://www.amelinghausen.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.amelinghausen.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ erreichbar (die ältere Adresse /bi/si010_e.asp antwortet mit HTTP 403)."
+  },
+  {
     "id": "nds-033555402",
     "name": "Samtgemeinde Bardowick",
     "kind": "city",
