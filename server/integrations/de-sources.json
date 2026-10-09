@@ -1782,6 +1782,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-06431020",
+    "name": "Stadt Viernheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/viernheim/",
+    "verifiedSource": "https://rim.ekom21.de/viernheim/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
     "id": "de-06431021",
     "name": "Gemeinde Wald-Michelbach",
     "kind": "city",
@@ -36831,5 +36842,107 @@
     "verifiedAt": "2026-10-09",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
     "foundBy": "Recherche2 2026-10-09"
+  },
+  {
+    "id": "de-093755335",
+    "name": "Verwaltungsgemeinschaft Donaustauf",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.donaustauf.de/",
+    "extension": "asp",
+    "verifiedSource": "https://donaustauf.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 39,
+      "meetings": 5,
+      "identity": "Adresse"
+    }
+  },
+  {
+    "id": "de-08327040",
+    "name": "Gemeinde Reichenbach am Heuberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://reichenbach.allris.cloud/public/",
+    "verifiedSource": "Name der Plattform-Adresse",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "OParl-Adresse des Systems (https://reichenbach.allris.cloud/public/oparl/system) lieferte am 09.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 236,
+      "meetings": 23,
+      "identity": "Adresse"
+    }
+  },
+  {
+    "id": "de-08426036",
+    "name": "Gemeinde Dürnau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://duernau.ris-portal.de/",
+    "verifiedSource": "Name der Plattform-Adresse",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 26,
+      "meetings": 2,
+      "identity": "Adresse"
+    }
+  },
+  {
+    "id": "de-08426100",
+    "name": "Gemeinde Rot an der Rot",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://rot.ris-portal.de/",
+    "verifiedSource": "Name der Plattform-Adresse",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 12,
+      "meetings": 2,
+      "identity": "Adresse"
+    }
+  },
+  {
+    "id": "de-08128014",
+    "name": "Stadt Boxberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://boxberg.ris-portal.de/",
+    "verifiedSource": "Name der Plattform-Adresse",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 40,
+      "meetings": 4,
+      "identity": "Adresse"
+    }
+  },
+  {
+    "id": "de-08337053",
+    "name": "Gemeinde Hohentengen am Hochrhein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://hohentengen.ris-portal.de/",
+    "verifiedSource": "Name der Plattform-Adresse",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 42,
+      "meetings": 5,
+      "identity": "Adresse"
+    }
   }
 ]
