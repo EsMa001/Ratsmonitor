@@ -408,7 +408,7 @@
  "nrw-05978040":{"c":"ok","z":"scraping"},
  "nrw-05754052":{"c":"blocked","z":"blocked","r":0,"u":"https://werther.ratsinfomanagement.net/"},
  "nrw-05170":{"c":"ok","z":"oparl"},
- "nrw-05170048":{"c":"readfail","z":"scraping","r":15,"u":"https://ris.wesel.de/"},
+ "nrw-05170048":{"c":"ok","z":"scraping"},
  "nrw-05362040":{"c":"ok","z":"oparl"},
  "nrw-05566092":{"c":"readfail","z":"scraping","r":1,"u":"https://www.gemeinde-westerkappeln.de/Politik/Politik/Ratsinformationssystem/BuergerApp.htm?"},
  "nrw-05954032":{"c":"blocked","z":"blocked","r":2,"u":"https://wetter.ratsinfomanagement.net/"},

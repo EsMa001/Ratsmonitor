@@ -647,6 +647,17 @@
     "apiCheck": "OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am 02.10.2026 nicht aktiviert; öffentliche SD.NET-Seiten erreichbar."
   },
   {
+    "id": "nrw-05170048",
+    "name": "Stadt Wesel",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://ris.wesel.de/",
+    "verifiedSource": "https://ris.wesel.de/",
+    "verifiedAt": "2026-10-09",
+    "apiCheck": "Kein OParl-Pfad (/oparl/system liefert 404); öffentliche Seiten von SD.NET RIM 4 erreichbar, robots.txt antwortet mit 403."
+  },
+  {
     "id": "nrw-05170052",
     "name": "Stadt Xanten",
     "kind": "city",
