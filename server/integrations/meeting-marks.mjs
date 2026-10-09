@@ -17,7 +17,7 @@
  * MARKS_VERSION must be raised whenever the reading of agenda or paper pages changes: all marks then lose validity.
  */
 import {HISTORY_WINDOWS,windowSpanDays} from './history-window.mjs';
-export const MARKS_VERSION=1;
+export const MARKS_VERSION=2; // SessionNet card titles now retain wrapped lines; cached first-line titles must be reread.
 export const RECENT_DAYS=14,TRUST_HOURS=6,MIN_AGE_DAYS=45,AGE_SPREAD_DAYS=30;
 // Marks are kept as long as the longest selectable import period reaches back, plus two months of slack.
 // A mark that is dropped earlier makes every resumed import read the same old meetings again.

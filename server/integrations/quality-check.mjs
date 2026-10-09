@@ -5,9 +5,10 @@
 import {CATALOG} from '../../shared/catalog.mjs';
 import {QUALITY_BY_ID,QUALITY_CHECKS} from '../../shared/quality-checks.mjs';
 import {AdminError} from './admin-access.mjs';
+import {TITLE_SQL,TITLE_CANDIDATE_SQL} from './title-candidates.mjs';
 const KEY='admin-quality-check',SAMPLES=20;
 const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
-const title="coalesce(nullif(trim(json_extract(payload,'$.officialTitle')),''),nullif(trim(json_extract(payload,'$.title')),''),'')";
+const title=TITLE_SQL;
 const committee="coalesce(json_extract(payload,'$.events[0].committee'),json_extract(payload,'$.committee'),'')",url="coalesce(json_extract(payload,'$.sourceUrl'),'')";
 // Titles that stand several times in one meeting by nature (placeholders, standing items) and short titles: left out
 // of the hint "same title in the same meeting", where they made nearly all of the 55,683 groups of the first measurement.
@@ -37,8 +38,9 @@ const RUNNERS={
   const samples=(await db.prepare(`SELECT region_id regionId,min(${title}) title,event_date date,min(${committee}) committee,count(*) count,group_concat(id,' ') ids ${group} ORDER BY count(*) DESC,region_id,event_date DESC LIMIT ?`).bind(SAMPLES).all()).results;
   return {count:Number(total.extra),groups:Number(total.groups),samples:samples.map(s=>({...s,ids:String(s.ids).split(' ')}))};
  },
+ // Punctuation is only a candidate selector, never evidence of a parser defect or a repair rule.
  // A title that ends with a dash is a style of some sources ("Protokoll … - öffentlicher Teil -"), not a cut.
- truncatedTitle:rows(`${canonical} AND (${title} GLOB '*;' OR ${title} GLOB '*:' OR ${title} GLOB '*,')`),
+ truncatedTitle:rows(TITLE_CANDIDATE_SQL),
  emptyTitle:rows(`${canonical} AND ${title}=''`),
  noEvents:rows(`${canonical} AND (json_type(payload,'$.events')<>'array' OR json_array_length(payload,'$.events')=0)`),
  badEventDate:rows(`date(event_date) IS NULL OR event_date NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' OR event_date<'1990-01-01' OR event_date>date('now','+2 years')`),

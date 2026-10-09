@@ -57,6 +57,29 @@ test('failed canonical/alias batch rolls back both changes and preserves origina
  assert.equal(db.prepare('SELECT count(*) AS n FROM topics').get().n,2);
  assert.equal((await topics.getTopic('b')).id,'b');
 });
+test('a corrected source title archives the old payload once and preserves meeting links, versions and stored analyses',async()=>{
+ reset();
+ const prior={...make('title-correction'),officialTitle:'2. Lesung:',title:'Gespeicherter KI-Titel',generatedBy:'KI-Zusammenfassung',
+  shortSummary:'Gespeicherte Inhaltsanalyse',longSummary:['Gespeicherter Absatz'],
+  contentAnalysis:{id:'summary-title',status:'available',sourceSignature:'old'},classification:{evidence:'2. Lesung:',primary:'finanzen'}};
+ insert(prior);
+ db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').run('older-title',prior.id,'2026-09-01','{"earlier":"keep"}');
+ db.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').run('summary-title',prior.id,'summary','stored','old','2026-09-20','{"summary":"keep"}');
+ const analyses=db.prepare('SELECT * FROM article_analyses WHERE topic_id=?').all(prior.id);
+ globalThis.identityFixture.fresh={topics:[{...make(prior.id),officialTitle:'2. Lesung: Haushalt 2027',title:'2. Lesung: Haushalt 2027',updatedAt:'2026-10-07'}],coverage:{complete:true,issues:[]}};
+ assert.equal((await sync.runSync('metadata','billerbeck')).status,200);
+ const saved=JSON.parse(db.prepare('SELECT payload FROM topics WHERE id=?').get(prior.id).payload);
+ assert.equal(saved.id,prior.id);assert.equal(saved.sourceUrl,prior.sourceUrl);assert.deepEqual(saved.events,prior.events);
+ assert.equal(saved.officialTitle,'2. Lesung: Haushalt 2027');assert.equal(saved.title,prior.title);
+ assert.equal(saved.shortSummary,prior.shortSummary);assert.deepEqual(saved.longSummary,prior.longSummary);
+ assert.equal(saved.contentAnalysis.id,'summary-title');assert.equal(saved.contentAnalysis.status,'stale');assert.deepEqual(saved.classification,prior.classification);
+ const versions=db.prepare('SELECT * FROM article_versions WHERE topic_id=? ORDER BY captured_at').all(prior.id);
+ assert.equal(versions.length,2);assert.equal(versions[0].payload,'{"earlier":"keep"}');assert.deepEqual(JSON.parse(versions[1].payload),prior);
+ assert.deepEqual(db.prepare('SELECT * FROM article_analyses WHERE topic_id=?').all(prior.id),analyses);
+ assert.equal((await sync.runSync('metadata','billerbeck')).status,200);
+ assert.deepEqual(db.prepare('SELECT * FROM article_versions WHERE topic_id=? ORDER BY captured_at').all(prior.id),versions);
+ assert.deepEqual(db.prepare('SELECT * FROM article_analyses WHERE topic_id=?').all(prior.id),analyses);
+});
 test('repository caller excludes own district for a district origin as well as its municipality',async()=>{
  reset();const own=analysed(make('own','coesfeld','district')),other=analysed(make('other','steinfurt','district'));insert(own);insert(other);
  assert.deepEqual((await regions.getRelated({...own,id:'origin'})).totalDistricts,['steinfurt']);

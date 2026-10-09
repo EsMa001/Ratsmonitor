@@ -1,0 +1,321 @@
+{
+  "format": "ratsmonitor-title-audit-v1",
+  "mode": "dry-run",
+  "basis": "bundled topics.json + regions.json + nrw-seed.json; NOT the 2026-10-07 dev database",
+  "revision": "e20c38018e3addf1",
+  "totalTopics": 17358,
+  "candidateCount": 15,
+  "expectedCount": null,
+  "countMatches": null,
+  "proposalCount": 0,
+  "causes": {
+    "missing_provenance": 15
+  },
+  "groups": [
+    {
+      "regionId": "nrw-05315000",
+      "adapter": "unknown",
+      "sourceHost": "buergerinfo.stadt-koeln.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://buergerinfo.stadt-koeln.de/oparl/system"
+      },
+      "count": 1,
+      "causes": {
+        "missing_provenance": 1
+      }
+    },
+    {
+      "regionId": "nrw-05334002",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "count": 8,
+      "causes": {
+        "missing_provenance": 8
+      }
+    },
+    {
+      "regionId": "nrw-05558044",
+      "adapter": "unknown",
+      "sourceHost": "sessionnet.owl-it.de",
+      "catalogHint": {
+        "adapter": "sessionnet",
+        "url": "https://sessionnet.owl-it.de/gemeinde-senden/bi/"
+      },
+      "count": 1,
+      "causes": {
+        "missing_provenance": 1
+      }
+    },
+    {
+      "regionId": "nrw-05562024",
+      "adapter": "unknown",
+      "sourceHost": "marl.gremien.info",
+      "catalogHint": {
+        "adapter": "more-rubin",
+        "url": "https://marl.gremien.info/"
+      },
+      "count": 2,
+      "causes": {
+        "missing_provenance": 2
+      }
+    },
+    {
+      "regionId": "nrw-05758012",
+      "adapter": "unknown",
+      "sourceHost": "herford.ratsinfomanagement.net",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://herford.ratsinfomanagement.net/webservice/oparl/v1.1/system"
+      },
+      "count": 1,
+      "causes": {
+        "missing_provenance": 1
+      }
+    },
+    {
+      "regionId": "steinfurt",
+      "adapter": "unknown",
+      "sourceHost": "sessionnet.owl-it.de",
+      "catalogHint": {
+        "adapter": "sessionnet",
+        "url": "https://sessionnet.owl-it.de/kreis_steinfurt/bi/"
+      },
+      "count": 2,
+      "causes": {
+        "missing_provenance": 2
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "nrw-05315000-oparl-538838ee3986faee3412",
+      "regionId": "nrw-05315000",
+      "title": "Anfrage zum Thema Erreichbarkeit des Standesamtes im Bezug auf Sicherstellung religionskonformer Bestattungen:",
+      "sourceUrl": "https://buergerinfo.stadt-koeln.de/oparl/bodies/stadtverwaltung_koeln/agendaitems/449812",
+      "adapter": "unknown",
+      "sourceHost": "buergerinfo.stadt-koeln.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://buergerinfo.stadt-koeln.de/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "b6fe39770b8ff8ea0ddfb82ae50cfe4512d2dfc2230c7c77d2b44c501088d927"
+    },
+    {
+      "id": "nrw-05334002-oparl-26ad821db38a98242902",
+      "regionId": "nrw-05334002",
+      "title": "Mitteilungen:",
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/agendaItems?id=1025617",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "9facfed82604c2215f4124dd736ded78a2589165510f4deafa21038dec1966d0"
+    },
+    {
+      "id": "nrw-05334002-oparl-2746c1dc812db8076c35",
+      "regionId": "nrw-05334002",
+      "title": "Jahresbericht Sädtebauförderung 2025:",
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/agendaItems?id=1025882",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "38cd29ec1fb7e6cca490ec05c81804ac0f66f20a6920561c5cd64a0bd8e3bbbb"
+    },
+    {
+      "id": "nrw-05334002-oparl-3af54e5bc5d1cfa4f41f",
+      "regionId": "nrw-05334002",
+      "title": "Jahresbericht Sädtebauförderung 2025:",
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/papers?id=1011761",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "1dec925bf1d245bef8eba17b1733390e87931db1563460033a7f9ababb17211e"
+    },
+    {
+      "id": "nrw-05334002-oparl-4db06e9102c6860f77ce",
+      "regionId": "nrw-05334002",
+      "title": "Über- und außerplanmäßige Aufwendungen/Auszahlungen/Verpflichtungsermächtigungen:",
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/agendaItems?id=1025367",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "4665da28d6115a47c7120e4c3c20b3e0943c01e45bbee5e2cd65d0d9f6a1277c"
+    },
+    {
+      "id": "nrw-05334002-oparl-72c80d76e50e5a7e7119",
+      "regionId": "nrw-05334002",
+      "title": "Mitteilungen:",
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/agendaItems?id=1025583",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "8a98d74b124969d0f49cf6ee0bd6bcc67170b0055afbbe34edbbea197ba468d1"
+    },
+    {
+      "id": "nrw-05334002-oparl-7d37e9caf1f19aab6c6b",
+      "regionId": "nrw-05334002",
+      "title": "Mitteilungen der Verwaltung:",
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/agendaItems?id=1024792",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "11dbad2a198f5e52955c8b2913f7e3083a894dce12ecf92268d267299632f99f"
+    },
+    {
+      "id": "nrw-05334002-oparl-84f1a7a449c6c0043c0c",
+      "regionId": "nrw-05334002",
+      "title": "Mitteilungen:",
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/agendaItems?id=1025085",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "fd64711bfc3767f2212da90a51cd5e629ec4e534565afabc4778c3a091a19548"
+    },
+    {
+      "id": "nrw-05334002-oparl-9bb67eb6a460efe3cb62",
+      "regionId": "nrw-05334002",
+      "title": "Anfragen:",
+      "sourceUrl": "https://ratsinfo.aachen.de/public/oparl/agendaItems?id=1025374",
+      "adapter": "unknown",
+      "sourceHost": "ratsinfo.aachen.de",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://ratsinfo.aachen.de/public/oparl/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "f014414ce8cb5b4ca9cd8efaeeb0b442cd7baefa9949ef839bb574ed9ec83094"
+    },
+    {
+      "id": "nrw-05558044-top-1528--8",
+      "regionId": "nrw-05558044",
+      "title": "Berichte der Verwaltung hier: Anfrage Ratssitzung am 25.10.2025 zur Ausbreitung der asiatischen Hornisse:",
+      "sourceUrl": "https://sessionnet.owl-it.de/gemeinde-senden/bi/to0050.asp?__ktonr=23396",
+      "adapter": "unknown",
+      "sourceHost": "sessionnet.owl-it.de",
+      "catalogHint": {
+        "adapter": "sessionnet",
+        "url": "https://sessionnet.owl-it.de/gemeinde-senden/bi/"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "9bdcad026713239a4f7961fe93deb4501edeb407fcf4654d750b90fc124fbd6b"
+    },
+    {
+      "id": "nrw-05562024-top-27510",
+      "regionId": "nrw-05562024",
+      "title": "Abstimmung der Ausschussumbesetzungen en-bloc (TOP 8a-8d):",
+      "sourceUrl": "https://marl.gremien.info/meeting?id=ni_2026-1-183",
+      "adapter": "unknown",
+      "sourceHost": "marl.gremien.info",
+      "catalogHint": {
+        "adapter": "more-rubin",
+        "url": "https://marl.gremien.info/"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "6b0f9f56b94e5ab65ff83d501a6a04f4cad2dcdc7f30839ed51296e8e652d89b"
+    },
+    {
+      "id": "nrw-05562024-top-27524",
+      "regionId": "nrw-05562024",
+      "title": "Kenntnisnahme der Berichtsvorlage en-bloc (TOP 16 -21.a):",
+      "sourceUrl": "https://marl.gremien.info/meeting?id=ni_2026-1-183",
+      "adapter": "unknown",
+      "sourceHost": "marl.gremien.info",
+      "catalogHint": {
+        "adapter": "more-rubin",
+        "url": "https://marl.gremien.info/"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "4272b026ce93a0a1412ac77a910ec6eff977a6a07a9a0c39fb01407f48530472"
+    },
+    {
+      "id": "nrw-05758012-oparl-22dd66b7ca7ff1c26952",
+      "regionId": "nrw-05758012",
+      "title": "Steuerung von Drittorganisationen:",
+      "sourceUrl": "https://herford.ratsinfomanagement.net/webservice/oparl/v1.1/body/1/agendaitem/54953",
+      "adapter": "unknown",
+      "sourceHost": "herford.ratsinfomanagement.net",
+      "catalogHint": {
+        "adapter": "oparl",
+        "url": "https://herford.ratsinfomanagement.net/webservice/oparl/v1.1/system"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "d969cec45c3dce19948dfeb2e46dedd7173da9a80d52f4e5bfb219e44d26465a"
+    },
+    {
+      "id": "steinfurt-top-8743--11",
+      "regionId": "steinfurt",
+      "title": "Verschiedenes:",
+      "sourceUrl": "https://sessionnet.owl-it.de/kreis_steinfurt/bi/si0057.asp?__ksinr=8743",
+      "adapter": "unknown",
+      "sourceHost": "sessionnet.owl-it.de",
+      "catalogHint": {
+        "adapter": "sessionnet",
+        "url": "https://sessionnet.owl-it.de/kreis_steinfurt/bi/"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "a4706d659c6d7e25addf814d5dde743d883f7971b959109e1147d723b10619b6"
+    },
+    {
+      "id": "steinfurt-top-8743--9",
+      "regionId": "steinfurt",
+      "title": "Informationen:",
+      "sourceUrl": "https://sessionnet.owl-it.de/kreis_steinfurt/bi/si0057.asp?__ksinr=8743",
+      "adapter": "unknown",
+      "sourceHost": "sessionnet.owl-it.de",
+      "catalogHint": {
+        "adapter": "sessionnet",
+        "url": "https://sessionnet.owl-it.de/kreis_steinfurt/bi/"
+      },
+      "cause": "missing_provenance",
+      "proposal": null,
+      "payloadSha256": "1130c6a5b0e821837173041ec8bddc281dcb2a1738aae724704cffe81ca6d3df"
+    }
+  ]
+}

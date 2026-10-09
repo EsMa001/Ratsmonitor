@@ -125,7 +125,7 @@ export function parseAgenda(h,meeting,source,now=new Date()){
 /**
  * Card layout of newer SessionNet installations: the agenda stands on the meeting page si0056 as one card per item;
  * the table page si0057 leads to an error page there. The same rules apply: only items numbered "Ö …" are taken.
- * A card holds the number (badge), the title (first line of smc-card-text-title), the paper (vo0050), the documents
+ * A card holds the number (badge), the title (smc-card-text-title, including wrapped lines), the paper (vo0050), the documents
  * (getfile) and the decision (field smcdv0_box2_beschluss). The page footer after the last card is not part of it.
  */
 export function parseAgendaCards(h,meeting,source,now=new Date()){
@@ -133,13 +133,22 @@ export function parseAgendaCards(h,meeting,source,now=new Date()){
  for(const card of String(h).split(/<footer\b/i)[0].split(/<div class=["']card card-light/i).slice(1)){
   const number=text(card.match(/<span class=["']badge["']>([\s\S]*?)<\/span>/i)?.[1]);
   if(!/^Ö\s+\d/.test(number))continue;
-  const title=text((card.match(/<div[^>]*smc-card-text-title[^>]*>([\s\S]*?)<\/div>/i)?.[1]||'').split(/<br\s*\/?>/i)[0]);
+  const title=cardTitle(card);
   if(!title)continue;
   const all=links(card,source.base),paper=all.find(l=>/vo0050\.(asp|php)/.test(l.url)),top=all.find(l=>/to0050\.(asp|php)/.test(l.url));
   const decision=text(card.match(/smcdv0_box2_beschluss[^>]*>([\s\S]*?)<\/p>/i)?.[1]||'').replace(/^Beschluss:\s*/i,'');
   result.push(agendaItem({number,title,paper,top,decision,all},meeting,source,now));
  }
  return result;
+}
+// A line break within the title is not its end. Some cards append a separate chair paragraph inside the title
+// container ("<br><br>Vorsitz: …", see regions.test.mjs). Only that labelled paragraph is excluded; neither
+// punctuation nor an arbitrary blank line separates a title. Decision fields outside this container stay outside.
+function cardTitle(card){
+ const markup=card.match(/<div[^>]*smc-card-text-title[^>]*>([\s\S]*?)<\/div>/i)?.[1]||'';
+ const paragraphs=markup.split(/(?:<br\b[^>]*>\s*){2,}/i);
+ const chair=paragraphs.findIndex((p,i)=>i>0&&/^Vorsitz:\s*\S/i.test(text(p)));
+ return text((chair<0?paragraphs:paragraphs.slice(0,chair)).join(' '));
 }
 const cell=(row,name)=>row.match(new RegExp(`<td[^>]*class=["'][^"']*\\b${name}\\b[^"']*["'][^>]*>([\\s\\S]*?)<\\/td>`,'i'))?.[1]||'';
 // A row up to its own end: an item cell may hold a table of documents with rows of its own. Without its closing tag the
