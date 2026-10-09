@@ -63,6 +63,12 @@ def sätze(flat):
 
 def extrahiere(txt):
     """Gibt (Typwörter, bis zu fünf Originalsätze) zurück."""
+    typ, getaggt = extrahiere_mit_regel(txt)
+    return typ, [s for _, s in getaggt]
+
+
+def extrahiere_mit_regel(txt):
+    """Wie extrahiere, aber jeder Satz mit der Regel, die ihn gewählt hat: (Typwörter, [(R2..R6, Satz)])."""
     lines = vorbereiten(txt)
     flat = re.sub(r'\s+', ' ', ' '.join(lines))
     S = sätze(flat)
@@ -94,7 +100,9 @@ def extrahiere(txt):
     # R6 Fristen, Inkrafttreten, Genehmigung
     g6 = [s for s in S if ok(s) and re.search(r'(tritt .{0,60}in Kraft|bedarf der Genehmigung|spätestens|Frist)', s)
           and s not in g2 + g3 + g4 + g5][:1]
-    return typ, (g2 + g3 + g4 + g5 + g6)[:5]
+    getaggt = ([('R2', s) for s in g2] + [('R3', s) for s in g3] + [('R4', s) for s in g4]
+               + [('R5', s) for s in g5] + [('R6', s) for s in g6])[:5]
+    return typ, getaggt
 
 
 def main():

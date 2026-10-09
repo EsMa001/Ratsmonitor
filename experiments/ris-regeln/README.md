@@ -11,6 +11,8 @@ Viele Vorgänge haben Dokumenttext, aber nur den automatischen Quellenüberblick
 | Datei | Was |
 |---|---|
 | `ris_regeln.py` | Allgemeine Regeln, ohne Kenntnis des einzelnen Dokuments. Liefert bis zu fünf Originalsätze. |
+| `beispiele.py` | Führt `ris_regeln.py` auf den 15 besprochenen Münsteraner Vorlagen (und optional einem weiteren Text) aus und schreibt JSON, jeder Satz mit der Regel, die ihn gewählt hat. |
+| `label_aus_text.mjs` | Label aus Titel und Text, nur mit Regeln (siehe unten). Nutzt `classifyTopic` aus `shared/labels.mjs` unverändert. |
 | `vorversuche/01_fakten_und_begriffe.py` | Beträge, Prozente, Daten, Aktenzeichen, Schlüsselbegriffe (tf-idf) und Auswahlsätze. |
 | `vorversuche/02_kategorie_bildung_muster.py` | Muster für „Bildung & Familie“ (Einrichtung, Größe, Träger, Zeitraum, Recht, Verfahren) und deren Trefferquote. |
 | `vorversuche/03_kategorie_naive_bayes_schwach.py` | Schneller Test, die Kategorie per Wortstatistik zu raten. Schwach (31 von 128 stimmen mit der bisherigen Einordnung überein), nur zur Doku. |
@@ -47,6 +49,28 @@ Sechs Dokumente: eine Änderungsvereinbarung (PDF, Anlage zur Vorlage Wertstoffh
 - Mittel: die Änderungsvereinbarung ohne Beschlussvorschlag. Vier von fünf möglichen Sätzen, einer davon ist nur ein Einleitungssatz.
 
 Kein Goldstandard, keine gemessene Trefferquote. Die bisherigen Kategorien stammen selbst aus Titelregeln und taugen nicht als Wahrheit.
+
+## Label aus Titel und Text (`label_aus_text.mjs`)
+
+Stufe 1 sind die bestehenden Titelregeln (`title-rules-v2`, unverändert). Stufe 2 greift nur, wenn der Titel mehrdeutig ist oder nichts trifft: Die ausgewählten Kernsätze werden wie Titel eingeordnet und stimmen ab. Zwei Varianten: `zaehlen` (jeder Satz zählt 1) und `gewichtet` (Beschlusssatz R2 zählt 3, Kernsatz R4 2, Rest 1).
+
+```
+cd experiments/ris-regeln
+python3 -B beispiele.py > /tmp/beispiele.json
+cd ../.. && node experiments/ris-regeln/label_aus_text.mjs /tmp/beispiele.json
+```
+
+Ergebnis an 16 Beispielen (15 Münsteraner Vorlagen und die Wertstoffhof-PDF), einmal gelaufen, nicht nachjustiert:
+
+- 12 von 16: Der Titel ist eindeutig, die Text-Stufe wird nicht gebraucht, alle 12 Labels sind nach Einschätzung von Claude plausibel.
+- 72. FNP-Änderung: Titel nur mit Abkürzung „FNP“, der Text liefert Bauen & Wohnen. Stimmt.
+- Förderprogramm altersgerechte Wohngebäude: `zaehlen` bleibt „nicht eingeordnet“, `gewichtet` ergibt Soziales & Teilhabe (stimmt nach Einschätzung). Das ist der einzige Fall, in dem die Gewichtung etwas ändert.
+- Schulzentrum Hiltrup: beide Varianten ergeben Sport & Freizeit, nach Einschätzung wäre Bildung & Betreuung (mit Zusatz Sport) richtig. „Sporthalle“ kommt in mehreren Sätzen vor, der Gegenstand ist aber ein Schulzentrum.
+- Spielplätze Münster-Ost: beide Varianten ergeben Bauen & Wohnen. Der Katalog gibt dem konkreten Gegenstand (Spielplatz, Sport & Freizeit) Vorrang vor Baubegriffen.
+
+Fazit: Zählen von Treffern reicht nicht, das Gewicht verschiebt wenig, weil dieselben Sätze beide Labels treffen. Es braucht eine Regel für den Hauptgegenstand (Betreff und Beschluss vor Nebensachen, konkreter Gegenstand vor Baubegriff) oder, in den wenigen Zweifelsfällen, eine gezielte KI. Die Referenz („Einschätzung von Claude“) ist keine Wahrheit, 16 Beispiele sind keine Messung.
+
+Hinweis: Die „Kategorie“ in `data/topics.json` (acht Kategorien, älteres Feld `category`) ist nicht dasselbe wie das Label aus `labels-v2`. Dort lagen z. B. die Kita Marga-Spiegel-Straße unter Mobilität und die Benennungsrechtssatzung unter Klima & Umwelt.
 
 ## Bekannte Schwächen und offene Punkte
 
