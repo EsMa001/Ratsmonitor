@@ -8,6 +8,7 @@ import {AdminLoader} from '@/components/admin-loader';
 import {staticVersion} from '@/server/repositories/admin';
 import {AdminOverview} from '@/components/admin-overview';
 import {AdminAtlas} from '@/components/admin-atlas';
+import {AdminMobile} from '@/components/admin-mobile';
 import {AdminForecast} from '@/components/admin-forecast';
 import {AdminKeywords} from '@/components/admin-keywords';
 import {AdminRuleTexts} from '@/components/admin-rule-texts';
@@ -23,8 +24,8 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<{se
  // "auswahl" preselects areas on the import page; only known area ids are accepted.
  const selection=[...new Set(String(auswahl||'').split(',').filter(id=>id&&validRegion(id)))].slice(0,REGIONS.length);
  const page=PAGES[String(seite||'')]||(selection.length||filter?'abruf':'todo');
- return <AdminContent page={page} selection={selection} filter={FILTERS.includes(String(filter))?String(filter):undefined}/>;}
-async function AdminContent({page,selection,filter}:{page:AdminPage;selection:string[];filter?:string}){
+ return <AdminContent page={page} mobile={String(seite||'')==='mobil'} selection={selection} filter={FILTERS.includes(String(filter))?String(filter):undefined}/>;}
+async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobile:boolean;selection:string[];filter?:string}){
  const user=await getChatGPTUser();
  // Melde-, Einrichtungs- und Fehlerzustände im Rahmen ohne Reiter.
  const gate=(children:React.ReactNode)=><AdminFrame tabs={false}><div className="mx-auto max-w-[640px] py-16">{children}</div></AdminFrame>;
@@ -37,6 +38,8 @@ async function AdminContent({page,selection,filter}:{page:AdminPage;selection:st
   if(access.kind!=='owner')return gate(<>{title('Kein Admin-Zugriff')}{text('Dieses ChatGPT-Konto ist nicht für die Administration freigeschaltet.')}<a className="mt-6 inline-flex text-[14px] text-teal-600" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln →</a></>);
   const signOutPath=chatGPTSignOutPath('/');
   const frame=(content:React.ReactNode)=><AdminFrame page={page} displayName={user.displayName} signOutPath={signOutPath}>{content}</AdminFrame>;
+  // Abgespeckter Bereich fürs Handy (?seite=mobil): ohne Reiter, nur die Abdeckung des Lückenatlas.
+  if(mobile)return <AdminFrame tabs={false} displayName={user.displayName} signOutPath={signOutPath}><AdminMobile/></AdminFrame>;
   if(page==='todo')return frame(<AdminTodo/>);
   if(page==='stichwoerter')return frame(<AdminKeywords/>);
   if(page==='regeltexte')return frame(<AdminRuleTexts/>);
