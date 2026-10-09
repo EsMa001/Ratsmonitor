@@ -33,7 +33,23 @@ const FILTERS:[string,string][]=[['all','Alle Gebiete'],['connected','Mit angebu
 // "shallow" and "quiet" judge the meeting days of the stored reports (shared/coverage.mjs): candidates for a longer
 // look-back window, or for a check of the source.
 const matchesFilter=(s:AdminSource,filter:string,selected:Set<string>,today:string)=>filter==='all'||filter==='connected'&&s.canImport||filter==='data'&&s.count>0||filter==='empty'&&s.canImport&&!s.count||filter==='issues'&&(s.attention||(s.issueCount||0)>0)||filter==='partial'&&s.partial||filter==='stale'&&s.stale||filter==='failed'&&s.attemptStatus==='failed'||filter==='shallow'&&s.canImport&&s.count>0&&['w','m1'].includes(reachBucket(s.firstEventAt,today))||filter==='quiet'&&s.canImport&&s.count>0&&['d180','old'].includes(freshBucket(s.lastEventAt,today))||filter==='selected'&&selected.has(s.id);
-async function api(url:string,body?:unknown):Promise<any>{const r=await fetch(url,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{} )}),data=await r.json() as any;if(!r.ok)throw Error(data.error||'Anfrage fehlgeschlagen.');return data;}
+// retry: reads and the steps of a job may be asked again when the server does not answer properly (it restarts, or a reply is
+// not JSON at all: an error page). The state of the job is kept on the server, so a repeated step only continues it. onWait
+// reports that the page is waiting for the server.
+async function api(url:string,body?:unknown,retry?:{onWait?:(waiting:boolean)=>void}):Promise<any>{
+ for(let attempt=0;;attempt++){
+  let failure='';
+  try{
+   const r=await fetch(url,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{} )});
+   let data:any=null;try{data=await r.json();}catch{/* not JSON: an error page of the server */}
+   if(data&&r.ok){retry?.onWait?.(false);return data;}
+   if(data?.error)throw Error(data.error);
+   failure=`Der Server hat nicht richtig geantwortet (HTTP ${r.status}).`;
+  }catch(e){if(!(e instanceof TypeError))throw e;failure='Der Server ist nicht erreichbar.';}
+  if(!retry||attempt>=8){retry?.onWait?.(false);throw Error(failure+' Der Auftrag bleibt gespeichert. Wenn der Server neu startet, dort „Auftrag fortsetzen“ klicken; antwortet er danach weiter mit Fehler 500, ihn beenden und neu starten (npm run dev).');}
+  retry.onWait?.(true);await new Promise(done=>setTimeout(done,10000));
+ }
+}
 function download(data:unknown,name:string){const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 // initialSelection: areas handed over by the estimate page ("/admin?auswahl=…") as candidates for a twelve-month import.
 export function AdminProcessing({initial,initialSelection=[],initialFilter}:{initial:AdminDashboard;displayName?:string;signOutPath?:string;initialSelection?:string[];initialFilter?:string}){
@@ -49,7 +65,7 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
  const toggle=(id:string)=>setSelected(prev=>{const next=new Set(prev);if(next.has(id))next.delete(id);else next.add(id);return next;});
  const busySource=busy!==''||running||!!data.importBusyUntil;
  // The timeline is read again after a job or an action (refresh), not with every reload beside a running job.
- const [timelineVersion,setTimelineVersion]=useState(0);
+ const [timelineVersion,setTimelineVersion]=useState(0),[notice,setNotice]=useState('');
  async function refresh(){const next:AdminDashboard=await fetchDashboard();setData(next);setJob(next.processing.job);setTimelineVersion(v=>v+1);return next;}
  async function action(name:string,fn:()=>Promise<void>){setBusy(name);setError('');setMessage('');try{await fn();}catch(e){setError(e instanceof Error?e.message:'Aktion fehlgeschlagen.');}finally{setBusy('');}}
  async function drain(start:PipelineJob){
@@ -59,7 +75,7 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
   // Replies of parallel requests can arrive out of order, and most list only the areas changed since the state the
   // page named; mergeJob keeps the newest state of every area and of the job.
   const show=(next:PipelineJob)=>{latest=mergeJob(latest,next) as PipelineJob;setJob(latest);};
-  const call=(action:string,extra:Record<string,unknown>={}):Promise<PipelineJob>=>api('/api/admin/pipeline',{action,id:start.id,since:latest.updatedAt,...extra});
+  const call=(action:string,extra:Record<string,unknown>={}):Promise<PipelineJob>=>api('/api/admin/pipeline',{action,id:start.id,since:latest.updatedAt,...extra},{onWait:waiting=>setNotice(waiting?'Der Server antwortet gerade nicht. Der Abruf versucht es gleich noch einmal und macht dort weiter, wo er war.':'')});
   const open=()=>!pause.current&&!['completed','cancelled'].includes(latest.status);
   // The overview reads every stored report and keeps the database busy meanwhile, so the running steps and every
   // other page wait for it. Beside a job it is reloaded at most once a minute and takes at most a tenth of the time;
@@ -70,7 +86,7 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
    const next=await call('run',{lanes:runner.lanes});show(next);
    // The server pauses a job itself when another process holds the stock.
    if(next.paused)pause.current=true;
-   else if(next.wait)await new Promise(done=>setTimeout(done,2500));
+   else if(next.wait){setNotice('Wartet, bis die laufenden Abrufe gespeichert sind. Ein unterbrochener Abruf wird nach fünf Minuten freigegeben.');await new Promise(done=>setTimeout(done,2500));}else setNotice('');
    reload();
   }}catch(e){pause.current=true;throw e;}};
   // Between the answers of those requests the progress is asked for.
@@ -84,7 +100,7 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
    await refresh();
    const failed=outcomes.find(o=>o.status==='rejected');if(failed)throw (failed as PromiseRejectedResult).reason;
    if(conflict)setMessage('Andere Verarbeitung läuft. Später ausdrücklich fortsetzen.');else if(!pause.current)setMessage('Auftrag beendet. Teilstände und Fehler stehen im Verlauf unten.');
-  }finally{stopped=true;setRunning(false);}
+  }finally{stopped=true;setRunning(false);setNotice('');}
  }
  const activeJob=job&&!['completed','cancelled'].includes(job.status);
  // Rule labelling: the figures of the whole stock (every area of the page, not only the selection) and of the job.
@@ -155,7 +171,7 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
    {label:'Gebiete mit Berichten',value:n(data.sources.filter(s=>s.count>0).length),of:n(data.sources.length),note:`${n(connected)} angebunden · davon ${n(data.sources.filter(s=>s.canImport&&!s.count).length)} noch ohne Berichte`},
    {label:'Letzter Abruf fehlgeschlagen',value:n(data.sources.filter(s=>s.attemptStatus==='failed').length),note:'Gebiete; die zuvor gespeicherten Berichte bleiben erhalten'},
    {label:'Ihre Auswahl',value:n(chosen.length),note:`${n(total)} Berichte · ${n(chosen.filter(s=>!s.canImport).length)} ohne angebundene Quelle; sie erscheinen im Auftrag als „Keine Quelle“`}]}/></div>
-  {error&&<Alert>{error}</Alert>}{message&&<p role="status" className="admin-notice">{message}</p>}
+  {error&&<Alert>{error}</Alert>}{message&&<p role="status" className="admin-notice">{message}</p>}{notice&&<p role="status" className="admin-notice">{notice}</p>}
   <section className="admin-territories" id="abruf-gebiete"><div className="admin-section-heading"><h2>{T('abruf.gebiete','Gebiete auswählen')}</h2><div className="admin-selection-actions"><span className="admin-note">{n(chosen.length)} ausgewählt</span><button type="button" className="btn-secondary btn-sm" disabled={running||!chosen.length} onClick={()=>setSelected(new Set())}>Auswahl leeren</button></div></div>
   <SectionHelp id="abruf.gebiete"/>
   <div className="admin-geography"><div><div className="admin-source-controls"><AdminChoice id="abruf-land" label="Bundesland" value={land} onChange={s=>{setLand(s);setPage(1);}} items={[["all","Alle Länder"],...ALL_LANDS.map(l=>[l.id,l.name] as [string,string])]}/><AdminChoice id="abruf-ebene" label="Kartenebene" value={layer} onChange={s=>{setLayer(s);setPage(1);}} items={[["city","Städte & Gemeinden"],["district","Kreise"]]}/><div style={{gridColumn:'1 / -1'}}><AdminChoice id="abruf-karte" label="Kartenfarbe" value={mode} onChange={setMode} items={[["coverage","Zustand des letzten Abrufs"],["reach","Rückreichweite"],["fresh","Jüngste Sitzung"],["access","Zugang (OParl, API, HTML, Sperren)"],["count","Anzahl Berichte"],["rules","Anteil nach Regeln bearbeitet"],["summary","Anteil mit KI-Zusammenfassung"],["aiLabel","Anteil mit KI-Sachgebiet aus dem Inhalt"],["keywords","Anteil mit zehn KI-Stichwörtern"]]} help={MAP_HELP[mode]}/></div></div><AdminProcessingMap sources={data.sources} selected={selected} onToggle={toggle} layer={layer} mode={mode} land={land}/></div>
