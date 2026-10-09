@@ -66,6 +66,18 @@ test('AI rejects invalid labels, evidence, tampering and stale snapshots; failur
  const next=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel']});result=await output(next);for(const k of next.kinds)result.articles[0][k]={status:'insufficient_source',reason:'Nur Titel öffentlich verfügbar'};result.articles[0].sources=[];
  assert.equal((await applyAiResults(db,next,result)).applied,1);assert.equal(JSON.parse(sql.prepare("SELECT payload FROM topics WHERE id='a'").get().payload).shortSummary,'Gute alte Zusammenfassung');sql.close();
 });
+test('AI job can take all of Germany and a look-back window like the import',async()=>{
+ const {sql,db,put}=fixture();put('old');put('recent','muenster');put('upcoming','billerbeck');
+ const day=d=>new Date(Date.now()+d*86400000).toISOString().slice(0,10);
+ for(const [id,d] of [['old',-30],['recent',0],['upcoming',5]])sql.prepare('UPDATE topics SET event_date=? WHERE id=?').run(day(d),id);
+ const job=await createAiJob(db,{regions:'all',window:'1d',kinds:['summary'],limit:'all'});
+ assert.deepEqual(job.articles.map(a=>a.id).sort(),['recent','upcoming']);assert.equal(job.scope,'all');assert.deepEqual(job.regions,[]);assert.equal(job.window,'1d');
+ await cancelAiJob(db,job.id);
+ const selection=await createAiJob(db,{regions:['billerbeck'],window:'1w',kinds:['summary'],limit:'all'});assert.deepEqual(selection.articles.map(a=>a.id),['upcoming']);assert.equal(selection.scope,'selection');
+ await cancelAiJob(db,selection.id);
+ await assert.rejects(createAiJob(db,{regions:'all',window:'2d',kinds:['summary']}),/Zeitraum/);
+ assert.equal((await processingStatus(db)).aiJob.window,'1w');sql.close();
+});
 test('article commit rolls back all versions if database write fails',async()=>{
  const {sql,db,put}=fixture();put('a');const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary']});const before=sql.prepare('SELECT payload FROM topics').get().payload;
  sql.exec("CREATE TRIGGER refuse_ai BEFORE UPDATE ON topics BEGIN SELECT RAISE(ABORT,'test write failure'); END;");await assert.rejects(applyAiResults(db,job,await output(job)),/test write failure/);assert.equal(sql.prepare('SELECT count(*) n FROM article_analyses').get().n,0);assert.equal(sql.prepare('SELECT count(*) n FROM article_versions').get().n,0);assert.equal(sql.prepare('SELECT payload FROM topics').get().payload,before);sql.close();

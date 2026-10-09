@@ -5,6 +5,7 @@ import {insertUsage} from '../../shared/ai-usage.mjs';
 import {AI_KINDS,AI_METHOD,LEGACY_AI_METHOD,articleResult,patchArticle,analysisSignature,aiInstructions,nextAttempt,sourceRole,needsQuickCheck,SOURCE_ROLES} from '../../shared/ai-job.mjs';
 import {LABELS} from '../../shared/labels.mjs';
 import {hashText} from '../../shared/database-transfer.mjs';
+import {historyWindow,windowStart} from '../../shared/history-window.mjs';
 import {invalidateReads} from '../services/read-cache.mjs';
 const KEY='admin-ai-job';
 /** @param {any} db @param {{metadataOnly?:boolean,id?:string,offset?:number,limit?:number}} [options] */
@@ -42,7 +43,7 @@ const ATTEMPT_KIND={summary:'summary','ai-label':'aiLabel',keywords:'keywords'};
  */
 async function rememberEarlierAttempts(db,scope){
  const rows=await db.prepare(`SELECT a.topic_id id,a.kind,a.payload analysis,t.payload topic FROM article_analyses a JOIN topics t ON t.id=a.topic_id
-  WHERE t.region_id IN (${scope}) AND a.method IN ('${AI_METHOD}','${LEGACY_AI_METHOD}') AND json_extract(a.payload,'$.status') IN ('insufficient_source','failed')
+  WHERE ${scope('t.')} AND a.method IN ('${AI_METHOD}','${LEGACY_AI_METHOD}') AND json_extract(a.payload,'$.status') IN ('insufficient_source','failed')
    AND a.created_at=(SELECT max(b.created_at) FROM article_analyses b WHERE b.topic_id=a.topic_id AND b.kind=a.kind)
    AND json_extract(t.payload,'$.aiAttempts.'||CASE a.kind WHEN 'ai-label' THEN 'aiLabel' ELSE a.kind END) IS NULL`).all();
  const byTopic=new Map();
@@ -56,9 +57,15 @@ async function rememberEarlierAttempts(db,scope){
 async function createAiJobUnlocked(db,body,{metadataOnly=false}={}){
  const previous=await getAiJob(db,{metadataOnly:true});
  if(previous?.status==='prepared')throw new AdminError(409,'Ein KI-Auftrag ist bereits vorbereitet. Zuerst ausführen oder ausdrücklich verwerfen.');
- const regions=selectedRegions(body.regions),kinds=body.kinds,limit=body.limit??10,retryBlocked=body.retryBlocked===true;
+ // regions 'all': every area of Germany, without a list of region IDs in the SQL (it would exceed the statement size).
+ // window: only reports whose latest meeting lies in the look-back window (or later); without it every report.
+ const all=body.regions==='all',regions=all?[]:selectedRegions(body.regions),kinds=body.kinds,limit=body.limit??10,retryBlocked=body.retryBlocked===true;
  if(!Array.isArray(kinds)||!kinds.length||kinds.length>3||new Set(kinds).size!==kinds.length||kinds.some(k=>!AI_KINDS.includes(k))||(limit!=='all'&&(!Number.isInteger(limit)||limit<1||limit>100)))throw new AdminError(400,'KI-Schritte und Paketgröße (1–100 oder alle) prüfen.');
- const scope=regions.map(id=>"'"+id.replaceAll("'","''")+"'").join(',');
+ let window=null;
+ if(body.window!==undefined&&body.window!==null&&body.window!==''){try{window=historyWindow(body.window);}catch{throw new AdminError(400,'Ungültiger Zeitraum.');}}
+ const from=window?windowStart(new Date(),window).toISOString().slice(0,10):null;
+ const ids=regions.map(id=>"'"+id.replaceAll("'","''")+"'").join(',');
+ const scope=(p='')=>[all?'':`${p}region_id IN (${ids})`,from?`substr(${p}event_date,1,10)>='${from}'`:''].filter(Boolean).join(' AND ')||'1=1';
  const kindSQL=kinds.map(k=>"'"+k+"'").join(',');
  // Je Artikel nur die noch fehlenden Schritte; gesperrte Fehlversuche nur auf ausdrücklichen Wunsch erneut.
  const need=k=>`(NOT coalesce((${STAGE_SQL[k]}),0)${retryBlocked?'':` AND ${attemptOpen(k)}`})`;
@@ -69,12 +76,12 @@ async function createAiJobUnlocked(db,body,{metadataOnly=false}={}){
   // Stable order and a source snapshot while imports are locked. Dispatches survive cancellation.
   const query=`SELECT id,region,session,${kinds.map(k=>'need_'+k).join(',')} FROM (SELECT topics.id,region_id region,json_extract(payload,'$.events[0].url') session,event_date,last_export,${kinds.map(k=>`${need(k)} AS need_${k}`).join(',')} FROM topics LEFT JOIN
    (SELECT topic_id,max(exported_at) last_export FROM ai_dispatches WHERE kind IN (${kindSQL}) GROUP BY topic_id) d ON d.topic_id=topics.id
-   WHERE ${CANONICAL} AND region_id IN (${scope}))
+   WHERE ${CANONICAL} AND ${scope()})
    WHERE ${kinds.map(k=>'need_'+k).join(' OR ')}
    ORDER BY coalesce(last_export,0),event_date DESC,id LIMIT ?`;
   const selection=await db.prepare(query).bind(limit==='all'?-1:limit).all();
   const wanted=new Map(selection.results.map(row=>[row.id,kinds.filter(k=>row['need_'+k])]));
-  const blocked=retryBlocked?0:Number((await db.prepare(`SELECT count(*) n FROM topics WHERE ${CANONICAL} AND region_id IN (${scope}) AND (${kinds.map(blockedSQL).join(' OR ')})`).first()).n);
+  const blocked=retryBlocked?0:Number((await db.prepare(`SELECT count(*) n FROM topics WHERE ${CANONICAL} AND ${scope()} AND (${kinds.map(blockedSQL).join(' OR ')})`).first()).n);
   let requested=0,quickChecks=0;const uses=new Map();
   // Gleiche Auswahl, aber Artikel derselben Sitzung nebeneinander: gemeinsame Quellen liegen im selben Paket.
   const order=(a,b)=>a<b?-1:a>b?1:0;
@@ -98,7 +105,7 @@ async function createAiJobUnlocked(db,body,{metadataOnly=false}={}){
    await db.prepare("INSERT INTO ai_job_articles(job_id,topic_id,position,payload) SELECT ?,json_extract(value,'$.id'),?+CAST(key AS INTEGER),value FROM json_each(?)").bind(id,count,JSON.stringify(articles)).run();
    count+=articles.length;
   }
-  const at=Date.now(),job={format:'ratsmonitor-ai-job-v1',method:AI_METHOD,id,createdAt:new Date(at).toISOString(),status:count?'prepared':'completed',regions,kinds,storage:'rows-v1',articleCount:count,requestedSteps:requested,blocked,retryBlocked,quickChecks,sourceRoles:SOURCE_ROLES,sharedSources:[...uses.values()].filter(u=>u.articles>1).sort((a,b)=>b.articles-a.articles||order(a.url,b.url)).slice(0,500),requestedLimit:limit,labelCatalog:LABELS.map(({id,name})=>({id,name})),instructions:aiInstructions,applied:0};
+  const at=Date.now(),job={format:'ratsmonitor-ai-job-v1',method:AI_METHOD,id,createdAt:new Date(at).toISOString(),status:count?'prepared':'completed',scope:all?'all':'selection',regions,...(window?{window,from}:{}),kinds,storage:'rows-v1',articleCount:count,requestedSteps:requested,blocked,retryBlocked,quickChecks,sourceRoles:SOURCE_ROLES,sharedSources:[...uses.values()].filter(u=>u.articles>1).sort((a,b)=>b.articles-a.articles||order(a.url,b.url)).slice(0,500),requestedLimit:limit,labelCatalog:LABELS.map(({id,name})=>({id,name})),instructions:aiInstructions,applied:0};
   // Use a monotonic timestamp even when two exports occur within one millisecond.
   const last=await db.prepare('SELECT coalesce(max(exported_at),0) at FROM ai_dispatches').first();
   await db.batch([

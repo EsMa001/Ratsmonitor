@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if(mode==='summaries')return Response.json({error:'Textverarbeitung ist hier deaktiviert. Bitte im angemeldeten Adminbereich manuell starten.'},{status:403});
     const region=new URL(request.url).searchParams.get('region')||'muenster';
     if(!validRegion(region))return Response.json({error:'Unbekanntes Gebiet'},{status:400});
-    // window: look-back period ('1w' … '24m'); without it the established twelve months. An unknown value is refused by runSync.
+    // window: look-back period ('1d' … '24m'); without it the established twelve months. An unknown value is refused by runSync.
     const result = await runSync(mode,region,request.headers.get('x-import-trigger')==='scheduled'?'scheduled':'manual',{window:new URL(request.url).searchParams.get('window')||undefined});
     return Response.json(result.data, { status: result.status, headers: {'Cache-Control':'no-store',...(result.status===409?{'Retry-After':'60'}:{})} });
 }

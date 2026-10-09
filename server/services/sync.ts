@@ -23,7 +23,7 @@ import { insertUsage } from '@/shared/ai-usage.mjs';
 import { dispatchDecisionPush } from '@/server/services/push';
 import type { StoredTopic as Topic, ImportData as FeedData } from '@/server/types';
 const FAILURE_CAUSE = 'Fehlerursache: ';
-/** options.window selects the look-back period for metadata imports ('1w' | '1m' | '3m' | '12m' | '24m'; default twelve months). */
+/** options.window selects the look-back period for metadata imports ('1d' | '1w' | '1m' | '3m' | '12m' | '24m'; default twelve months). */
 export async function runSync(mode: 'metadata' | 'summaries',region='muenster', trigger: 'manual' | 'scheduled' = 'manual', options: {window?: string} = {}) { if(mode==='summaries'&&trigger!=='manual')return {status:403,data:{error:'Textverarbeitung startet ausschließlich manuell im Adminbereich.'}};
     let lookback: string; try { lookback = historyWindow(options.window); } catch { return { status: 400, data: { error: 'Ungültiger Zeitraum für den Abruf.' } }; }
     if (!env.DB)

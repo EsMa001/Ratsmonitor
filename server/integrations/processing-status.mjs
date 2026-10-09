@@ -23,7 +23,7 @@ export async function processingState(db){
  ]);
  const saved=Object.fromEntries(state.results.map(r=>{try{return [r.key,JSON.parse(r.value)];}catch{return [r.key,null];}}));
  const ai=saved['admin-ai-job'];
- return {revision:Number(revision.results[0]?.revision||0),restore:saved['last-data-restore']||null,lastAiApply:saved['last-ai-apply']||null,job:saved['admin-pipeline-job']||null,aiJob:ai?{id:ai.id,createdAt:ai.createdAt,status:ai.status,kinds:ai.kinds,regions:ai.regions,count:ai.articleCount??ai.articles.length,steps:ai.requestedSteps??null,blocked:ai.blocked??0,applied:ai.applied||0}:null};
+ return {revision:Number(revision.results[0]?.revision||0),restore:saved['last-data-restore']||null,lastAiApply:saved['last-ai-apply']||null,job:saved['admin-pipeline-job']||null,aiJob:ai?{id:ai.id,createdAt:ai.createdAt,status:ai.status,kinds:ai.kinds,scope:ai.scope||'selection',window:ai.window||null,regions:ai.regions,count:ai.articleCount??ai.articles.length,steps:ai.requestedSteps??null,blocked:ai.blocked??0,applied:ai.applied||0}:null};
 }
 export async function processingStatus(db){
  const [groups,state]=await Promise.all([db.prepare(`SELECT region_id,count(*) total,${stageColumns()} FROM topics WHERE ${CANONICAL} GROUP BY region_id`).all(),processingState(db)]);

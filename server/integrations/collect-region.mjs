@@ -9,7 +9,7 @@ import {collectAllris} from './allris.mjs';
 import {collectOparl,requestJson} from './oparl.mjs';
 import {READERS} from './readers.mjs';
 /**
- * options.window selects the look-back period ('1w' | '1m' | '3m' | '12m' | '24m'); it is validated before any request and recorded with the source status.
+ * options.window selects the look-back period ('1d' | '1w' | '1m' | '3m' | '12m' | '24m'); it is validated before any request and recorded with the source status.
  * options.trace (import-trace.mjs) records every request to the source, whichever adapter reads it.
  */
 export async function collectRegion(id,options={}){

@@ -9,6 +9,7 @@ export function historyStart(now=new Date(),months=HISTORY_MONTHS){
 }
 /** Selectable look-back windows, shortest first. Keys are stored with jobs and source status. */
 export const HISTORY_WINDOWS=Object.freeze({
+ '1d':Object.freeze({label:'1 Tag',days:1}),
  '1w':Object.freeze({label:'1 Woche',days:7}),
  '1m':Object.freeze({label:'1 Monat',months:1}),
  '3m':Object.freeze({label:'3 Monate',months:3}),
