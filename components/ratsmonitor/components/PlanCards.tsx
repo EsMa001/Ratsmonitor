@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IS_DEV, PLAN_MAX, PRO_PRICE, setTier, TIER_LABEL, useTier, type Tier } from "../lib/tier";
 
 /* Leistungen je Tarif: Text, wenn enthalten (je Stufe auch abweichend), sonst null = nicht aufgeführt (steht in der Vergleichstabelle) */
@@ -28,23 +28,42 @@ const SECONDARY = "mt-5 inline-flex h-11 items-center gap-1.5 self-start text-[1
 /** Tarifübersicht für Konto und Preisseite; in der Entwicklung lässt sich die Stufe im Konto direkt umschalten */
 export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
   const { tier } = useTier();
-  /* Handy: ein Tarif auf einmal, Auswahl über Reiter (kein seitliches Wischen) */
+  /* Handy: ein Tarif auf einmal; seitlich wischen oder die Reiter antippen (beides bleibt abgeglichen) */
   const [pick, setPick] = useState<Tier>(publicPage ? "pro" : tier);
+  const track = useRef<HTMLDivElement>(null);
+  const lockUntil = useRef(0);
+  const goTo = (t: Tier, smooth: boolean) => {
+    const el = track.current;
+    const card = el?.children[PLANS.findIndex((p) => p.tier === t)] as HTMLElement | undefined;
+    if (el && card && el.scrollWidth > el.clientWidth) lockUntil.current = Date.now() + (smooth ? 700 : 100);
+    if (el && card && el.scrollWidth > el.clientWidth) el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: smooth ? "smooth" : "auto" });
+  };
+  /* Startkarte (Pro bzw. der eigene Tarif) ohne Animation in Sicht */
+  useEffect(() => { goTo(pick, false); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const onScroll = () => {
+    const el = track.current;
+    if (!el || el.scrollWidth <= el.clientWidth || Date.now() < lockUntil.current) return;
+    const kids = [...el.children] as HTMLElement[];
+    let best = 0;
+    kids.forEach((k, i) => { if (Math.abs(k.offsetLeft - el.offsetLeft - el.scrollLeft) < Math.abs(kids[best].offsetLeft - el.offsetLeft - el.scrollLeft)) best = i; });
+    const t = PLANS[best].tier;
+    if (t !== pick) setPick(t);
+  };
   return (
     <section id="tarif" aria-labelledby="tarif-title" className={publicPage ? "" : "mt-6 scroll-mt-20"}>
       {!publicPage && <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Tarif</h2>}
       <div role="tablist" aria-label="Tarif wählen" className="mt-3 flex border-b border-slate-200 sm:hidden">
         {PLANS.map((p) => (
-          <button key={p.tier} type="button" role="tab" aria-selected={pick === p.tier} onClick={() => setPick(p.tier)} className={`-mb-px flex-1 border-b-2 py-2.5 text-[14px] ${pick === p.tier ? "border-teal-600 font-semibold text-teal-600" : "border-transparent text-slate-500"}`}>
+          <button key={p.tier} type="button" role="tab" aria-selected={pick === p.tier} onClick={() => { setPick(p.tier); goTo(p.tier, true); }} className={`-mb-px flex-1 border-b-2 py-2.5 text-[14px] ${pick === p.tier ? "border-teal-600 font-semibold text-teal-600" : "border-transparent text-slate-500"}`}>
             {p.tier === "guest" ? "Gast" : TIER_LABEL[p.tier]}
           </button>
         ))}
       </div>
-      <div className="mt-3 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div ref={track} onScroll={onScroll} className="mt-3 grid gap-x-8 gap-y-6 max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-4 max-sm:overflow-x-auto max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden sm:grid-cols-2 lg:grid-cols-4">
         {PLANS.map((plan) => {
           const current = !publicPage && plan.tier === tier;
           return (
-            <div key={plan.tier} className={`${pick === plan.tier ? "flex" : "hidden sm:flex"} flex-col border-t-2 pb-2 pt-5 lg:pr-2 ${current ? "border-teal-600" : plan.tier === "pro" && publicPage ? "border-slate-900 bg-slate-50 px-4 sm:-mt-2 sm:pt-7" : "border-slate-200"}`}>
+            <div key={plan.tier} className={`flex flex-col max-sm:w-full max-sm:flex-none max-sm:snap-start border-t-2 pb-2 pt-5 lg:pr-2 ${current ? "border-teal-600" : plan.tier === "pro" && publicPage ? "border-slate-900 bg-slate-50 px-4 sm:-mt-2 sm:pt-7" : "border-slate-200"}`}>
               <div className="flex items-center justify-between gap-2">
                 <h3 className="m-0 text-[16px] font-semibold">{plan.tier === "guest" ? "Ohne Konto" : TIER_LABEL[plan.tier]}</h3>
                 {current && <span className="rounded-full bg-teal-600 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihr Tarif"}</span>}

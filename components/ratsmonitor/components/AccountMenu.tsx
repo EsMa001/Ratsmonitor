@@ -5,7 +5,7 @@ import {useDarkMode} from '../lib/useDarkMode';
 import {useSavedArticles} from '../lib/savedArticles';
 import {useAccount} from '../state/account';
 import {useTier} from '../lib/tier';
-import {logout as testLogout,useTestMails,useTestSession} from '../lib/testAuth';
+import {logout as testLogout,useTestMails} from '../lib/testAuth';
 
 /** Symbole rechts in der Kopfzeile: Admin, gespeicherte Suchen, Kalender, gespeicherte Artikel, Konto (mit kleinem Menü) */
 export function AccountMenu({currentPage}:{currentPage:string}){
@@ -28,7 +28,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
  const loggedIn=tier!=='guest';
  /* Testmodus: Abmelden beendet die Testsitzung in diesem Browser */
  const logout=()=>{setOpen(false);testLogout();};
- const session=useTestSession(),unread=useTestMails().filter(m=>!m.read).length;
+ const unread=useTestMails().filter(m=>!m.read).length;
  return <nav aria-label="Konto" className="flex items-center gap-0.5">
   <Link href="/admin" title="Administration" aria-label="Administration" className={`${cls(false)} max-sm:hidden`}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>

@@ -200,10 +200,6 @@ html.rm-dark [role=switch][aria-checked=false]>span{background:#aab4c5}
 /* Dunkel: shadcn-Variablen (Admin-Knöpfe, Auswahlfelder, Karten) */
 html.rm-dark{--background:#0e1523;--foreground:#e2e8f0;--card:#131b2b;--card-foreground:#e2e8f0;--popover:#131b2b;--popover-foreground:#e2e8f0;--primary:#0f766e;--primary-foreground:#fff;--secondary:#1a2335;--secondary-foreground:#e2e8f0;--muted:#1a2335;--muted-foreground:#9aa6b9;--accent:#1f2a40;--accent-foreground:#5eead4;--destructive:#f87171;--border:#27324a;--input:#3a4660;--ring:#2dd4bf}
 html.rm-dark .admin-app .admin-notice,html.rm-dark .admin-notice{color:#d5dce8}
-/* Dunkel: ältere Seite /ueber (eigenes Layout) */
-html.rm-dark main.screen{background:#131b2b;color:#d5dce8;border-color:#27324a}
-html.rm-dark main.screen :is(h1,h2,h3,strong){color:#e2e8f0}
-html.rm-dark main.screen a:not(.button){color:#5eead4}
-html.rm-dark main.screen :is(p,li,span,label,small,div){color:inherit}
-html.rm-dark main.screen{--color-ink:#e2e8f0;--color-meta:#9aa6b9}
 html.rm-dark .bg-teal-600{background-color:#0f766e}html.rm-dark .bg-teal-600:hover{background-color:#115e59}
+html.rm-dark .text-white\/80{color:rgba(255,255,255,.8)}html.rm-dark .text-white\/70{color:rgba(255,255,255,.7)}
+html.rm-dark,html.rm-dark .screen,html.rm-dark .admin-app{--color-accent:#5eead4;--color-accent-hover:#99f6e4;--color-ink:#e2e8f0;--color-meta:#9aa6b9}
