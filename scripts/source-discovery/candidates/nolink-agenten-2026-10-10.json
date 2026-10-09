@@ -1,0 +1,4862 @@
+[
+ {
+  "id": "de-09184149",
+  "name": "Stadt Unterschleißheim",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website liefert HTTP 401",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097725707",
+  "name": "Verwaltungsgemeinschaft Welden",
+  "status": "nur-website",
+  "url": "https://www.vg-welden.de/gemeinschaftsversammlung.html",
+  "system": "",
+  "beleg": "Domain vg-welden.de",
+  "notiz": "Kein RIS-Link; nur Seite Gemeinschaftsversammlung, Inhalt ungeprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-092765238",
+  "name": "Verwaltungsgemeinschaft Ruhmannsfelden",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Link; Buerger-App erwaehnt",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09772141",
+  "name": "Gemeinde Fischach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Link; nur Buergerservice-Portal /bayern/fischach/ (kein Sitzungsportal belegt)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09780128",
+  "name": "Gemeinde Oy-Mittelberg",
+  "status": "nur-website",
+  "url": "https://www.oy-mittelberg.info/gemeindepolitik-ortsrecht/politik/sitzungsplan/",
+  "system": "",
+  "beleg": "Domain oy-mittelberg.info",
+  "notiz": "Seiten Sitzungsplan/Beschluesse vorhanden, Tagesordnungen ungeprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09176118",
+  "name": "Gemeinde Buxheim",
+  "status": "nur-website",
+  "url": "https://www.buxheim.eu/gemeinderat",
+  "system": "",
+  "beleg": "Domain buxheim.eu",
+  "notiz": "Sitzungstermine-Seite, Tagesordnungen ungeprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14521400",
+  "name": "Gemeinde Mildenau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Link; nur Gemeinderat-Seiten",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16062063",
+  "name": "Gemeinde Werther",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft: Nutzungslimit erreicht",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09176137",
+  "name": "Gemeinde Kinding",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft: Nutzungslimit erreicht",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16075131",
+  "name": "Stadt Gefell",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft: Nutzungslimit erreicht",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372157",
+  "name": "Gemeinde Schönthal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft: Nutzungslimit erreicht",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09377142",
+  "name": "Gemeinde Bad Neualbenreuth",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft: Nutzungslimit erreicht",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-10044112",
+  "name": "Stadt Lebach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft: Nutzungslimit erreicht",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097785757",
+  "name": "Verwaltungsgemeinschaft Ottobeuren",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft: Nutzungslimit erreicht",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093745323",
+  "name": "Verwaltungsgemeinschaft Neustadt a.d.Waldnaab",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft: Nutzungslimit erreicht",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06631017",
+  "name": "Gemeinde Künzell",
+  "status": "gefunden",
+  "url": "https://www.kuenzell.de/service/gremienportal-gemeinde-kuenzell/",
+  "system": "SD.NET RIM (Gremienportal)",
+  "beleg": "Seite kuenzell.de, Titel \"Gremienportal (RIM) | Gemeinde Künzell\"",
+  "notiz": "Login-Seite verlinkt; öffentlicher Bereich nicht geprüft; Sitzungsseite https://www.kuenzell.de/verzeichnis/informationen/politik/sitzungen/",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-146285219",
+  "name": "Verwaltungsgemeinschaft Königstein/Sächs.Schw.",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne Hinweis auf Sitzungsinfos; Treffer bei Suche betrafen Königstein im Taunus (andere Stadt)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09277121",
+  "name": "Gemeinde Gangkofen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS/Sitzungslinks, Suche ergebnislos",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160615009",
+  "name": "Verwaltungsgemeinschaft Leinetal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Nur Amtsblatt und Mitgliedsgemeinden-Seiten, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14522540",
+  "name": "Gemeinde Striegistal",
+  "status": "nur-website",
+  "url": "https://www.striegistal.de/gemeinde/gemeindeverwaltung/gemeinderat",
+  "system": "",
+  "beleg": "Gemeinde Striegistal (Lkr. Mittelsachsen) laut Vorgabe",
+  "notiz": "Nur News-Meldungen zu Gemeinderatssitzungen, keine Tagesordnungen gesehen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09777153",
+  "name": "Gemeinde Nesselwang",
+  "status": "gesperrt",
+  "url": "https://nesselwang.ris.kommune-aktiv.de/?cvg=NE",
+  "system": "kommune-aktiv RIS",
+  "beleg": "Link auf nesselwang-buergerservice.de/sitzungsinformationsportal.html (Marktgemeinde Nesselwang)",
+  "notiz": "Cloudflare-Prüfseite, nicht abgerufen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09774162",
+  "name": "Gemeinde Neuburg a.d.Kammel",
+  "status": "nur-website",
+  "url": "https://www.neuburg-ka.de/Sitzungen.n39.html",
+  "system": "Open2C-Website",
+  "beleg": "neuburg-ka.de, Titel \"Gemeinde Neuburg a.d.Kammel\", Anschrift 86476",
+  "notiz": "Sitzungstermine und Beschlüsse je Sitzung (z. B. /sitzung-vom-11112025); kein RIS. Nicht mit Kammeltal verwechseln",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09772159",
+  "name": "Gemeinde Horgau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite Sitzungstermine leer bzw. dynamisch, keine TOPs gesehen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08317008",
+  "name": "Gemeinde Bad Peterstal-Griesbach",
+  "status": "gesperrt",
+  "url": "https://bad-peterstal-griesbach.ratsinfomanagement.net/",
+  "system": "SD.NET RIM",
+  "beleg": "Link auf gemeinde.bad-peterstal-griesbach.de (Gemeinde-Website)",
+  "notiz": "Seite zeigt WAF \"Verifying Browser\", nicht abgerufen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372155",
+  "name": "Gemeinde Runding",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne Sitzungs-/RIS-Links",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-094755428",
+  "name": "Verwaltungsgemeinschaft Lichtenberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Nur Seiten Stadtrat/Gemeinderat (Bauhof) ohne RIS; Buergerserviceportal digitalfabrix.de nur Anbieter",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09272122",
+  "name": "Gemeinde Haidmühle",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Keine RIS-/Sitzungslinks auf Startseite und Rathaus-Seite",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16076022",
+  "name": "Stadt Greiz",
+  "status": "nur-website",
+  "url": "https://www.greiz.de/verwaltung/stadtrat",
+  "system": "",
+  "beleg": "greiz.de, Titel \"Stadtrat | Stadt Greiz\"",
+  "notiz": "Nur Sitzungsplan 2026 als PDF, keine Tagesordnungen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09677131",
+  "name": "Stadt Gemünden a.Main",
+  "status": "nur-website",
+  "url": "https://www.stadt-gemuenden.de/sitzungskalender/",
+  "system": "",
+  "beleg": "stadt-gemuenden.de, \"Sitzungskalender - Stadt Gemünden a.Main\"",
+  "notiz": "Sitzungskalender und Sitzungsprotokolle-Seite; TOPs nicht bestätigt",
+  "durchlauf": 1
+ },
+ {
+  "id": "nds-03153008",
+  "name": "Gemeinde Liebenburg",
+  "status": "nur-website",
+  "url": "https://www.liebenburg.de/rathaus-verwaltung/politik/ratsinformation/",
+  "system": "",
+  "beleg": "liebenburg.de, Bereich Politik/Ratsinformation",
+  "notiz": "Protokolle und Einladungen je Gremium, Sitzungskalender, Sitzungsvorlagen als Webseiten; kein RIS-Produkt",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-10044114",
+  "name": "Gemeinde Rehlingen-Siersburg",
+  "status": "nur-website",
+  "url": "https://www.rehlingen-siersburg.de/rathaus/gremien/gemeinderat",
+  "system": "",
+  "beleg": "PLZ 66780",
+  "notiz": "Gemeinderat-Seite ohne Sitzungen/TOP; kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160715008",
+  "name": "Verwaltungsgemeinschaft Mellingen",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website HTTP 403; Suche rate-limitiert, ungeprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-10046116",
+  "name": "Gemeinde Oberthal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Landkreis St. Wendel, PLZ 66649",
+  "notiz": "Startseite ohne RIS-Link; nur Termine/Bekanntmachungen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-095715538",
+  "name": "Verwaltungsgemeinschaft Wolframs-Eschenbach",
+  "status": "nur-website",
+  "url": "https://www.wolframs-eschenbach.de/Stadt-Rathaus/Rathaus/Stadtrat.html",
+  "system": "",
+  "beleg": "",
+  "notiz": "Kein RIS; Stadtrat-Infos nur im Amtsblatt (Wittich)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14522260",
+  "name": "Gemeinde Hartmannsdorf",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-hartmannsdorf.de/de/Politik_Verwaltung_Buergerservice/Gemeinderat_1234.html",
+  "system": "",
+  "beleg": "Lkr. Mittelsachsen, PLZ 09232",
+  "notiz": "Nur Beschluss-PDFs; Link online-buerger-service.de/?ags=14522260 unverifiziert (Pruefung rate-limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16065085",
+  "name": "Gemeinde Kyffhäuserland",
+  "status": "nur-website",
+  "url": "https://www.kyffhaeuser-land.de/de/kyffhaeuserland/gemeinderat.html",
+  "system": "",
+  "beleg": "",
+  "notiz": "Nur Mitgliederliste, Satzungen und Beschluesse-Seite; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14522500",
+  "name": "Gemeinde Rossau",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-rossau.de/",
+  "system": "",
+  "beleg": "Amtsblatt Rossau, Lkr. Mittelsachsen",
+  "notiz": "Tagesordnung 10 Tage vor Sitzung auf Website (Gemeinderat > Tagesordnung) als PDF; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160655002",
+  "name": "Verwaltungsgemeinschaft Greußen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website ohne RIS/Sitzungskalender; nur Amtsblatt",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16076088",
+  "name": "Gemeinde Harth-Pöllnitz",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website harth-poellnitz.de nicht pruefbar (rate-limit); nichts gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09377133",
+  "name": "Gemeinde Kulmain",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website HTTP 403",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09477163",
+  "name": "Gemeinde Wirsberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Suche ohne Treffer; Website nicht pruefbar (rate-limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425090",
+  "name": "Gemeinde Obermarchtal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft (rate-limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-10044120",
+  "name": "Gemeinde Wadgassen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft (rate-limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-071345001",
+  "name": "Verbandsgemeinde Baumholder",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft (rate-limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-092745221",
+  "name": "Verwaltungsgemeinschaft Furth",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprueft (rate-limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16067072",
+  "name": "Stadt Waltershausen",
+  "status": "nur-website",
+  "url": "https://www.waltershausen.de/rathaus/stadtrat/",
+  "system": "",
+  "beleg": "Seite Stadtrat nennt Mitglieder, keine Sitzungen/TOP",
+  "notiz": "Kein RIS-Link; Startseite und Stadtrat-Seite geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "nds-03254029",
+  "name": "Gemeinde Schellerten",
+  "status": "nur-website",
+  "url": "https://www.schellerten.info/B%C3%BCrger/Sitzungen/Sitzungsarchiv/",
+  "system": "eigenes CMS",
+  "beleg": "Domain schellerten.info (Gemeindeseite)",
+  "notiz": "Sitzungsarchiv/Einladungen auf Gemeindeseite; Rds-intern nur mit Login; TOP-Inhalt nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16063103",
+  "name": "Stadt Werra-Suhl-Tal",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website liefert 403, nicht weiter geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-096775656",
+  "name": "Verwaltungsgemeinschaft Partenstein",
+  "status": "gesperrt",
+  "url": "https://vg-partenstein.ris.kommune-aktiv.de/",
+  "system": "kommune-aktiv RIS",
+  "beleg": "vg-partenstein.de Menü verlinkt Ratsinformationssystem, Sitzungskalender, Bürgerinformation; Impressum Hauptstraße 24, 97846 Partenstein",
+  "notiz": "RIS-Host mit Cloudflare-Prüfung (403), nicht abgerufen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-13073055",
+  "name": "Stadt Marlow",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "stadtmarlow.de liefert 403",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14729360",
+  "name": "Stadt Regis-Breitingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website (Tourismus-/Infoseite) ohne Hinweis auf RIS oder Sitzungen; Suche nicht möglich (Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160685050",
+  "name": "Erfüllende Gemeinde Elxleben",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Hinweis; Suche nicht möglich (Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08225116",
+  "name": "Gemeinde Schwarzach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Menü ohne RIS/Sitzungen (schwarzach-online.de, Neckar-Odenwald)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09779178",
+  "name": "Gemeinde Marxheim",
+  "status": "nur-website",
+  "url": "https://gemeinde-marxheim.de/gemeinde-rathaus/gemeinderat",
+  "system": "",
+  "beleg": "Titel 'Gemeinderat - Gemeinde Marxheim'",
+  "notiz": "Nur Gemeinderatsseite, keine Sitzungen mit TOP gesehen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14626420",
+  "name": "Stadt Ostritz",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ostritz.de nicht erreichbar (Verbindungsfehler)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09272140",
+  "name": "Gemeinde Ringelai",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "sommer.mei-hoamat.de ohne RIS-Hinweis; Seite verweist auf ringelai.de",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425050",
+  "name": "Gemeinde Griesingen",
+  "status": "nur-website",
+  "url": "https://www.griesingen.de/rathaus-buergerservice/gemeinderat/sitzungstermine",
+  "system": "",
+  "beleg": "Titel 'Sitzungstermine - Griesingen'",
+  "notiz": "Terminliste auf Gemeindeseite, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08337096",
+  "name": "Stadt Bad Säckingen",
+  "status": "nur-website",
+  "url": "https://www.bad-saeckingen.de/rathaus-service/gemeinderat/sitzungstermine",
+  "system": "",
+  "beleg": "Impressum Rathausplatz 1, 79713 Bad Säckingen",
+  "notiz": "Menüpunkt 'Ratsinfosystem' ohne sichtbaren externen Link; Sitzungstermine und Protokolle auf Stadtseite",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06533013",
+  "name": "Stadt Runkel",
+  "status": "nur-website",
+  "url": "https://www.runkel-lahn.de/stadt-rathaus/gremien/",
+  "system": "",
+  "beleg": "Titel 'Gremien: Stadt Runkel', Runkel-Ennerich",
+  "notiz": "Nur Sitzungstermine der StVV 2026, keine TOP",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-091905177",
+  "name": "Verwaltungsgemeinschaft Huglfing",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "huglfing.de leitet weiter, Startseite ohne RIS-Hinweis; nicht vertieft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09473159",
+  "name": "Stadt Rödental",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Stadtrat-Seite roedental.de ohne RIS-Link; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160745005",
+  "name": "Verwaltungsgemeinschaft Heideland-Elstertal-Schkölen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website heideland-elstertal.de per https nicht erreichbar; Suche ohne RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16064071",
+  "name": "Gemeinde Unstruttal",
+  "status": "nur-website",
+  "url": "https://gemeinde-unstruttal.de/sitzungstermin.html",
+  "system": "",
+  "beleg": "Titel 'Gemeinde Unstruttal in Thüringen'",
+  "notiz": "Seite Sitzungstermine/Gemeinderat; Tagesordnungen nicht geprüft; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09275159",
+  "name": "Gemeinde Windorf",
+  "status": "nur-website",
+  "url": "https://markt-windorf-cms.de/marktratssitzung/",
+  "system": "",
+  "beleg": "Titel 'Markt Windorf - Im Herzen des Landkreises Passau'",
+  "notiz": "Sitzungstermine plus Amtliche Bekanntmachung (PDF) je Sitzung; windorf.de ist falscher Immobilienmakler (Rüsselsheim); kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-095775536",
+  "name": "Verwaltungsgemeinschaft Hahnenkamm",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "vg.hahnenkamm.de und gnotzheim.de ohne RIS; Gemeinderat-Seite nur mit Login-Link",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09373115",
+  "name": "Gemeinde Breitenbrunn",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "breitenbrunn.de wirkt gekapert (Spam-Links), Zuordnung zu Lkr. Neumarkt nicht belegt; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14625120",
+  "name": "Gemeinde Elsterheide",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "elsterheide.de liefert HTTP 403; Websuche: nur Amtsblatt-PDFs, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-13073105",
+  "name": "Gemeinde Zingst",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "zingst.de (Tourismus), gemeinde-zingst.de ohne RIS; nicht im RIS des Amts Darß/Fischland (Zingst dort nicht Mitglied)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09772111",
+  "name": "Gemeinde Adelsried",
+  "status": "nur-website",
+  "url": "https://www.adelsried.de/de/rathaus/gemeinderat",
+  "system": "",
+  "beleg": "Gemeinde Adelsried, Lkr. Augsburg (adelsried.de)",
+  "notiz": "Nur Sitzungskalender 2026, keine Tagesordnungen erkennbar; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372146",
+  "name": "Gemeinde Pemfling",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite Gemeinderat ohne Sitzungen/RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08136029",
+  "name": "Gemeinde Heuchlingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Gemeinderat-Seite ohne Sitzungen/RIS; Kämmerei bei VG Rosenstein",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425124",
+  "name": "Gemeinde Unterstadion",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne Gemeinderat/Sitzungen/RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-096785642",
+  "name": "Verwaltungsgemeinschaft Gerolzhofen",
+  "status": "nur-website",
+  "url": "https://www.vg-gerolzhofen.de/sitzungen/",
+  "system": "",
+  "beleg": "Titel 'Sitzungen - VG Gerolzhofen'",
+  "notiz": "Nur Protokoll-PDFs der VG-Versammlung, keine Tagesordnungen; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097775754",
+  "name": "Verwaltungsgemeinschaft Obergünzburg",
+  "status": "nur-website",
+  "url": "https://www.oberguenzburg.de/rathaus/marktrat/sitzungstermine",
+  "system": "",
+  "beleg": "Site der Verwaltungsgemeinschaft Obergünzburg, Günzach, Untrasried",
+  "notiz": "Sitzungstermine und Niederschriften als PDF; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14730020",
+  "name": "Stadt Bad Düben",
+  "status": "nur-website",
+  "url": "https://www.bad-dueben.de/rathaus/stadtrat/",
+  "system": "",
+  "beleg": "Titel 'Eine Kurstadt stellt sich vor | Bad Düben'",
+  "notiz": "Tagesordnungen nur im Amtsblatt-PDF; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-10046118",
+  "name": "Gemeinde Tholey",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093755336",
+  "name": "Verwaltungsgemeinschaft Wörth a.d.Donau",
+  "status": "nur-website",
+  "url": "https://www.stadt-woerth.de/rathaus/politik/sitzungsprotokolle/",
+  "system": "",
+  "beleg": "Seite der Gemeinde selbst: https://www.stadt-woerth.de",
+  "notiz": "Sitzungsprotokolle (Stadtrat, Bauausschuss) auf stadt-woerth.de; kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093775349",
+  "name": "Verwaltungsgemeinschaft Neusorg",
+  "status": "nur-website",
+  "url": "https://neusorg.de/gemeinde-und-politik/politik/sitzungen",
+  "system": "",
+  "beleg": "Seite der Gemeinde selbst: https://www.neusorg.de",
+  "notiz": "Sitzungskalender (Termine) auf neusorg.de; kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14524060",
+  "name": "Gemeinde Fraureuth",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160765004",
+  "name": "Verwaltungsgemeinschaft Ländereck",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-094765434",
+  "name": "Verwaltungsgemeinschaft Mitwitz",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093725310",
+  "name": "Verwaltungsgemeinschaft Stamsried",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14522480",
+  "name": "Gemeinde Reinsberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09676124",
+  "name": "Gemeinde Faulbach",
+  "status": "nur-website",
+  "url": "https://www.faulbach.de/rathaus-und-buergerservice/gemeinderat/sitzungstermine/",
+  "system": "",
+  "beleg": "Seite der Gemeinde selbst: https://www.faulbach.de",
+  "notiz": "Sitzungskalender/-termine auf faulbach.de; kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09277154",
+  "name": "Gemeinde Zeilarn",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09278184",
+  "name": "Gemeinde Sankt Englmar",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425123",
+  "name": "Gemeinde Untermarchtal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Gemeinderat-Seite geprüft bzw. Suche ohne Treffer; kein RIS erkennbar (Websuche/WebFetch teils limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09275141",
+  "name": "Stadt Pocking",
+  "status": "nur-website",
+  "url": "https://pocking.de/rathaus-service/kommunales/sitzungstermine-ratsinfo",
+  "system": "",
+  "beleg": "Seite der Gemeinde selbst: https://pocking.de",
+  "notiz": "Sitzungstermine mit Tagesordnungs-PDFs je Sitzung; kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09676139",
+  "name": "Stadt Miltenberg",
+  "status": "nur-website",
+  "url": "https://www.miltenberg.de/rathaus-buergerservice/stadtrat/sitzungen/",
+  "system": "",
+  "beleg": "Seite der Gemeinde selbst: https://www.miltenberg.de",
+  "notiz": "Stadtratssitzungen/Informationen aus Sitzungen, PDF-Protokolle; kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09777159",
+  "name": "Gemeinde Pfronten",
+  "status": "gesperrt",
+  "url": "https://pfronten.ris.kommune-aktiv.de/seite/de/rathaus/02/WB/Ratsinformationssystem.html",
+  "system": "kommune-aktiv",
+  "beleg": "Verlinkt von rathaus.pfronten.de (Gemeinde Pfronten, Lkr. Ostallgäu)",
+  "notiz": "Cloudflare 'Just a moment' - nicht abgerufen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097795722",
+  "name": "Verwaltungsgemeinschaft Ries",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite geprüft: kein RIS/Sitzungskalender, nur Amtliche Bekanntmachungen (vgries.de/index.php/verwaltung-buerger/amtliche-bekanntmachungen); Mitgliedsgemeinden nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-091765119",
+  "name": "Verwaltungsgemeinschaft Pförring",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite geprüft: kein RIS-Link gefunden; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-12070173",
+  "name": "Gemeinde Karstädt",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite 403; Websuche ohne RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16076061",
+  "name": "Stadt Ronneburg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite geprüft: nur Seite Stadtrat (ronneburg.de/buergerservice/stadtrat/), kein RIS-Link; Unterseite nicht gelesen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160705002",
+  "name": "Verwaltungsgemeinschaft Geratal/Plaue",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite geprüft: kein RIS-Link; nur Rubrik Bekanntmachung (geratal.de/vg/index.php/bekanntmachung)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-091835152",
+  "name": "Verwaltungsgemeinschaft Rohrbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08315041",
+  "name": "Gemeinde Glottertal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08435042",
+  "name": "Gemeinde Neukirch",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093775350",
+  "name": "Verwaltungsgemeinschaft Krummennaab",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09574135",
+  "name": "Gemeinde Kirchensittenbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09475189",
+  "name": "Gemeinde Zell im Fichtelgebirge",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08336106",
+  "name": "Gemeinde Häg-Ehrsberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-010535391",
+  "name": "Amt Sandesneben-Nusse",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160675053",
+  "name": "Erfüllende Gemeinde Nessetal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14625310",
+  "name": "Stadt Lauta",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Such-/Abrufwerkzeug war ratenbegrenzt (Websuche ohne Treffer bzw. Domain-Prüfung gesperrt); erneut versuchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-10046114",
+  "name": "Gemeinde Nohfelden",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website nohfelden.de: Gemeinderat-Seite nur Mitgliederliste, kein RIS-Link; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160645055",
+  "name": "Erfüllende Gemeinde Nottertal-Heilingerhoehen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite nennt 'Ratsinformationssystem' nur als Nachrichtenmodul ('Seite im Aufbau'), kein System verlinkt",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14626180",
+  "name": "Stadt Herrnhut",
+  "status": "nur-website",
+  "url": "https://www.herrnhut.de/aktuelles/stadtrat",
+  "system": "Website (CMS)",
+  "beleg": "Seite herrnhut.de, Stadt Herrnhut, Lkr. Görlitz",
+  "notiz": "Stadtratssitzungen mit Tagesordnung als Einzelmeldungen (z. B. Sitzung 01.10.2026), kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160775004",
+  "name": "Verwaltungsgemeinschaft Pleißenaue",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite vg-pleissenaue.de ohne Hinweis auf RIS/Sitzungen; Websuche nicht verfügbar",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160765008",
+  "name": "Verwaltungsgemeinschaft Am Brahmetal",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "vg-brahmetal.de antwortet HTTP 403",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14524070",
+  "name": "Gemeinde Gersdorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Gemeinderat-Seite nur Mitgliederliste, kein RIS/Sitzungstermine",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093725312",
+  "name": "Verwaltungsgemeinschaft Weiding",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "weiding.de Gemeinderat-Seite/Menü ohne RIS oder Sitzungstagesordnungen; nur Bekanntmachungen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08315095",
+  "name": "Gemeinde St. Peter",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Keine Website bekannt; sankt-peter.de ist eine Domain zum Verkauf (nicht die Gemeinde)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08126020",
+  "name": "Gemeinde Dörzbach",
+  "status": "gefunden",
+  "url": "https://www.doerzbach.de/rathaus/ratsinfosystem",
+  "system": "Ratsinfosystem im Gemeinde-CMS (öffentliche Sitzungsliste, Login für nichtöffentlich)",
+  "beleg": "Seite doerzbach.de, Gemeinde Dörzbach, Tel. 07937, PLZ 74677",
+  "notiz": "Sitzungen Juni–Okt 2026 mit Weiterlesen-Details, 6 Seiten",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08325071",
+  "name": "Gemeinde Eschbronn",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Gemeinderat-Seite ohne Sitzungen/RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372178",
+  "name": "Gemeinde Lohberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Gemeinderat-Seite nur Mitglieder, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08327008",
+  "name": "Gemeinde Buchheim",
+  "status": "nur-website",
+  "url": "https://www.gemeindebuchheim.de/rathaus-service/gemeinderat/sitzungstermine-aufgaben",
+  "system": "Website (CMS)",
+  "beleg": "Seite gemeindebuchheim.de, Lkr. Tuttlingen (Link Landratsamt Tuttlingen)",
+  "notiz": "Nur Sitzungstermine 2026 und Sitzungsprotokolle-Seite, keine Tagesordnung je Sitzung bestätigt",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097735718",
+  "name": "Verwaltungsgemeinschaft Wertingen",
+  "status": "nur-website",
+  "url": "https://www.wertingen.de/rathaus/sitzungen/",
+  "system": "Website (WordPress, Events + PDF)",
+  "beleg": "Stadt Wertingen, Lkr. Dillingen a.d.Donau; Mitgliedergebiet",
+  "notiz": "Sitzungen als Termine mit PDF-Tagesordnung; kein RIS; Seite gehört der Stadt Wertingen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09475162",
+  "name": "Stadt Rehau",
+  "status": "nur-website",
+  "url": "https://rehau.bayern/de/rathaus/stadtrat/sitzungstermine/",
+  "system": "Website (IONAS)",
+  "beleg": "Titel 'Sitzungstermine | Stadt Rehau'",
+  "notiz": "Nur Termin-Bekanntmachung als PDF und Protokoll-Seite; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-092725211",
+  "name": "Verwaltungsgemeinschaft Schönberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite nur Bürgerservice-Portal und Gewerbeanzeige, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "nds-032575405",
+  "name": "Samtgemeinde Nienstädt",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Portal-Startseite geprüft: kein RIS-Link sichtbar",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160675012",
+  "name": "Verwaltungsgemeinschaft Fahner Höhe",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Öffentliche Bekanntmachungen geprüft: nur Amtsblatt/Stellen, keine Sitzungen",
+  "durchlauf": 1
+ },
+ {
+  "id": "nds-033555403",
+  "name": "Samtgemeinde Dahlenburg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09186128",
+  "name": "Gemeinde Hohenwart",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "hohenwart.de ist das Hohenwart Forum (Tagungszentrum), nicht die Gemeinde; Gemeindeseite nicht prüfbar (Sicherheitsprüfung limitiert)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09187124",
+  "name": "Gemeinde Edling",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "edling.de (PLZ 83533, Lkr. Rosenheim) und Seite Gemeinderat geprüft: nur Mitglieder/Ausschüsse, keine Sitzungen; Menüs Bürgerversammlung/Links nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093725313",
+  "name": "Verwaltungsgemeinschaft Walderbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09774116",
+  "name": "Gemeinde Ursberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09271122",
+  "name": "Gemeinde Grafling",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08116037",
+  "name": "Gemeinde Lichtenwald",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09779147",
+  "name": "Gemeinde Fremdingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09171131",
+  "name": "Gemeinde Teising",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08117031",
+  "name": "Gemeinde Hohenstadt",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-145225102",
+  "name": "Verwaltungsgemeinschaft Burgstädt",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09275124",
+  "name": "Stadt Bad Griesbach i.Rottal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160665005",
+  "name": "Verwaltungsgemeinschaft Hohe Rhön",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht prüfbar: Websuche und Abruf der Website wegen Ratenlimit fehlgeschlagen; ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09371136",
+  "name": "Gemeinde Kümmersbruck",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne erkennbares RIS; Suche und Unterseiten nicht geprüft (Suchlimit).",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-146255501",
+  "name": "Verwaltungsverband Am Klosterwasser",
+  "status": "nur-website",
+  "url": "https://www.am-klosterwasser.de/de/verband-und-buerger/verbandsversammlung",
+  "system": "",
+  "beleg": "Seite des Verwaltungsverbands Am Klosterwasser",
+  "notiz": "Nur Seite Verbandsversammlung/Bekanntmachungen, kein RIS erkennbar; Inhalt nicht geprüft.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160675007",
+  "name": "Verwaltungsgemeinschaft Nesseaue",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "vg-nesseaue.de lieferte HTTP 403.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-146265224",
+  "name": "Verwaltungsgemeinschaft Neusalza-Spremberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Suche ohne Treffer; Website wegen Prüflimit nicht abrufbar.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160765051",
+  "name": "Erfüllende Gemeinde Bad Köstritz",
+  "status": "nur-website",
+  "url": "https://www.stadtbadkoestritz.de/rathaus/stadtrat/",
+  "system": "",
+  "beleg": "Stadt Bad Köstritz Website",
+  "notiz": "Stadtrat- und Bekanntmachungsseiten, kein RIS erkennbar; Tagesordnungen nicht bestätigt.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372144",
+  "name": "Gemeinde Neukirchen b.Hl.Blut",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Nicht geprüft (Suche und Abruf limitiert).",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09180126",
+  "name": "Gemeinde Oberau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Nicht geprüft (Suche und Abruf limitiert).",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160775009",
+  "name": "Verwaltungsgemeinschaft Oberes Sprottental",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "vg-sprottental.de lieferte HTTP 403.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09171118",
+  "name": "Gemeinde Haiming",
+  "status": "nur-website",
+  "url": "https://www.haiming.de/rathaus-service/gemeinderat/termine-berichte/",
+  "system": "",
+  "beleg": "Gemeinde Haiming Website, Bericht zur Gemeinderatssitzung",
+  "notiz": "Termine und Berichte, kein RIS; keine Tagesordnungen bestätigt.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16075046",
+  "name": "Stadt Hirschberg",
+  "status": "nur-website",
+  "url": "https://www.stadt-hirschberg-saale.de/inhalte/stadt_hirschberg/_inhalt/stadtrat/stadtrat",
+  "system": "",
+  "beleg": "Stadt Hirschberg Website",
+  "notiz": "Nur Stadtrat-Seite, kein RIS erkennbar.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08136003",
+  "name": "Gemeinde Adelmannsfelden",
+  "status": "nur-website",
+  "url": "https://www.adelmannsfelden.de/de/verwaltung/gemeinderat",
+  "system": "",
+  "beleg": "Gemeinde Adelmannsfelden Website (Tel. 07963)",
+  "notiz": "Gemeinderat-Seite und Terminkalender, keine Tagesordnungen bestätigt.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08426020",
+  "name": "Gemeinde Betzenweiler",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Abruf limitiert, nicht geprüft.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09375174",
+  "name": "Stadt Neutraubling",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Abruf limitiert, nicht geprüft.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-146265227",
+  "name": "Verwaltungsgemeinschaft Olbersdorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Abruf limitiert, nicht geprüft.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-072315006",
+  "name": "Verbandsgemeinde Thalfang am Erbeskopf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Abruf limitiert, nicht geprüft.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-10044121",
+  "name": "Gemeinde Wallerfangen",
+  "status": "nur-website",
+  "url": "https://www.wallerfangen.de/rathaus/kommunalpolitik/",
+  "system": "",
+  "beleg": "Gemeindeseite Wallerfangen (Tel. 06831, Ortsräte Wallerfangen/Bedersdorf/Düren)",
+  "notiz": "Kommunalpolitik-Seite nur mit Mitglieder-/Ausschusslisten, kein RIS, keine Tagesordnungen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160635056",
+  "name": "Erfüllende Gemeinde Geisa",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Bürgerseite ohne RIS-Link; Unterseite /ich-bin-buerger/amtliches/ nicht mehr geprüft (Tool-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14625640",
+  "name": "Stadt Wittichenau",
+  "status": "nur-website",
+  "url": "https://wittichenau.de/ratssitzungen/",
+  "system": "",
+  "beleg": "Stadtseite wittichenau.de, Ratssitzungen",
+  "notiz": "Nur Beschlussveröffentlichungen 2018-2026 als PDF, Terminliste leer, keine Tagesordnungen, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160615014",
+  "name": "Verwaltungsgemeinschaft Ershausen/Geismar",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche wegen Limit ohne Ergebnis, keine Website bekannt",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09272136",
+  "name": "Gemeinde Neureichenau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Bürgerinfo ohne RIS; /rathaus-online/ nicht geprüft; frühere Recherche meldete evtl. Treffer (ungeprüft)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-092785246",
+  "name": "Verwaltungsgemeinschaft Stallwang",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "stallwang.de: gemeinsame Internetpräsenz in Vorbereitung (Straubinger Str. 18, 94375 Stallwang)",
+  "notiz": "kein RIS erkennbar",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-094715403",
+  "name": "Verwaltungsgemeinschaft Steinfeld",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Suche wegen Limit ohne Ergebnis, ungeprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14522170",
+  "name": "Stadt Frauenstein",
+  "status": "nur-website",
+  "url": "https://www.frauenstein-erzgebirge.de",
+  "system": "",
+  "beleg": "Frauenstein, Markt 28, 09623 Frauenstein (Mittelsachsen)",
+  "notiz": "Sitzungstermine nur im Amtsblatt (PDF) und Bürgerservice-Portal online-buerger-service.de/frauenstein; kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09473132",
+  "name": "Gemeinde Großheirath",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ungeprüft (Tool-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14730180",
+  "name": "Gemeinde Löbnitz",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ungeprüft (Tool-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14522470",
+  "name": "Gemeinde Rechenberg-Bienenmühle",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ungeprüft (Tool-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08237032",
+  "name": "Gemeinde Grömbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ungeprüft (Tool-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "nds-03453011",
+  "name": "Stadt Löningen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ungeprüft (Tool-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-091765115",
+  "name": "Verwaltungsgemeinschaft Eichstätt",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ungeprüft (Tool-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-092735216",
+  "name": "Verwaltungsgemeinschaft Saal a.d.Donau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ungeprüft (Tool-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06436012",
+  "name": "Gemeinde Sulzbach (Taunus)",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093745329",
+  "name": "Verwaltungsgemeinschaft Schirmitz",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097775749",
+  "name": "Verwaltungsgemeinschaft Pforzen",
+  "status": "gesperrt",
+  "url": "https://vg-pforzen.ris.kommune-aktiv.de/seite/de/rathaus/02/-/Startseite.html",
+  "system": "kommune-aktiv",
+  "beleg": "Niederschrift der Marktgemeinde Irsee (VG Pforzen) verweist darauf; Gremium Gemeinderat Irsee",
+  "notiz": "Cloudflare-Abfrage (403), nicht weiter geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-091775124",
+  "name": "Verwaltungsgemeinschaft Oberneuching",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372164",
+  "name": "Gemeinde Traitsching",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14523040",
+  "name": "Stadt Bad Elster",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06634012",
+  "name": "Gemeinde Körle",
+  "status": "nur-website",
+  "url": "https://koerle.de",
+  "system": "Website (PDF)",
+  "beleg": "koerle.de, Sitzungs-PDFs der Gemeindevertretung Körle (Schwalm-Eder)",
+  "notiz": "Tagesordnungen als PDF unter wp-content/uploads",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09276121",
+  "name": "Gemeinde Frauenau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14625060",
+  "name": "Gemeinde Burkau",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-burkau.de/sitzungen.html",
+  "system": "Website (PDF)",
+  "beleg": "Seite Gemeinde Burkau",
+  "notiz": "nur Bekanntmachungs-PDFs je Sitzung",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08136007",
+  "name": "Gemeinde Bartholomä",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09276134",
+  "name": "Gemeinde Patersdorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08225113",
+  "name": "Gemeinde Zwingenberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14730230",
+  "name": "Stadt Oschatz",
+  "status": "nur-website",
+  "url": "https://oschatz.org/gremienunterlagen/",
+  "system": "Website (PDF)",
+  "beleg": "oschatz.org, Stadt Oschatz; Einladungen/Niederschriften als PDF",
+  "notiz": "kein RIS gefunden, Gremienunterlagen als PDF-Liste",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097725706",
+  "name": "Verwaltungsgemeinschaft Nordendorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website und Websuche geprüft, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-096765630",
+  "name": "Verwaltungsgemeinschaft Kleinwallstadt",
+  "status": "nur-website",
+  "url": "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/sitzungsdokumente/",
+  "system": "Website (PDF)",
+  "beleg": "Markt Kleinwallstadt, Unterseiten Tagesordnungen/Niederschriften",
+  "notiz": "PDF-Listen; VG mit Hausen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097785762",
+  "name": "Verwaltungsgemeinschaft Erkheim",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website vg-erkheim.de liefert 403; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09279113",
+  "name": "Gemeinde Eichendorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS/Sitzungskalender; nur Bekanntmachungen und Veranstaltungskalender; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160615008",
+  "name": "Verwaltungsgemeinschaft Hanstein-Rusteberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS/Sitzungen; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-095715507",
+  "name": "Verwaltungsgemeinschaft Dentlein a.Forst",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS; Seite VG-Rat ohne Sitzungsinfo im Menü",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09472139",
+  "name": "Stadt Gefrees",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS/Sitzungen; Unterseite /rathaus nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09273165",
+  "name": "Gemeinde Rohr i.NB",
+  "status": "nur-website",
+  "url": "https://www.markt-rohr.de/rathaus/marktgemeinderat.php",
+  "system": "Website-Sitzungskalender",
+  "beleg": "Seite markt-rohr.de, Marktgemeinderat",
+  "notiz": "Kalender mit Sitzungen auf Gemeindeseite; Okt 2026 leer, Tagesordnungspunkte nicht bestätigt; kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16072015",
+  "name": "Stadt Schalkau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS; /buerger­service/stadtrat.html nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09275130",
+  "name": "Gemeinde Kirchham",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS/Sitzungen; Unterseite /buerger nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09771140",
+  "name": "Gemeinde Hollenbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Sicherheitsprüfung der Domain beim Abruf ratenbegrenzt; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09272134",
+  "name": "Gemeinde Mauth",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Sicherheitsprüfung der Domain beim Abruf ratenbegrenzt; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09172124",
+  "name": "Gemeinde Marktschellenberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Sicherheitsprüfung der Domain beim Abruf ratenbegrenzt; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08417029",
+  "name": "Gemeinde Hausen am Tann",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Sicherheitsprüfung der Domain beim Abruf ratenbegrenzt; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-01057091",
+  "name": "Stadt Schwentinental",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Sicherheitsprüfung der Domain beim Abruf ratenbegrenzt; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-010535308",
+  "name": "Amt Berkenthin",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft: Sicherheitsprüfung der Domain beim Abruf ratenbegrenzt; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08337062",
+  "name": "Gemeinde Klettgau",
+  "status": "nur-website",
+  "url": "https://www.klettgau.de",
+  "system": "Website mit PDFs",
+  "beleg": "Websuche: klettgau.de/fileadmin/.../Gemeinderat/ mit Einladung, Sitzungsunterlagen, Protokoll (Gemeinderat Rathaus Erzingen)",
+  "notiz": "kein RIS; PDFs je Sitzung im Ordner Gemeinderat; Startseite nicht abgerufen",
+  "durchlauf": 1
+ },
+ {
+  "id": "nds-03361003",
+  "name": "Gemeinde Dörverden",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093745327",
+  "name": "Verwaltungsgemeinschaft Eschenbach i.d.OPf.",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Link; buergerservice-portal.de/bayern/vgeschenbach/ nicht pruefbar (Rate-Limit)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09576117",
+  "name": "Gemeinde Büchenbach",
+  "status": "nur-website",
+  "url": "https://www.buechenbach.de/rathaus-service/verwaltung/rathaus-aktuell/406/bekanntmachungen-und-einladungen",
+  "system": "",
+  "beleg": "buechenbach.de, PLZ 91186, Lkr. Roth",
+  "notiz": "Bekanntmachungen/Einladungen, kein RIS erkennbar",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160745007",
+  "name": "Verwaltungsgemeinschaft Hügelland/Täler",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09475169",
+  "name": "Stadt Schwarzenbach a.Wald",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09275127",
+  "name": "Gemeinde Hofkirchen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06634015",
+  "name": "Gemeinde Morschen",
+  "status": "nur-website",
+  "url": "https://my.website-editor.net/site/3d0c530e754a46b7be70e715f9b00d57/amtliche-bekanntmachungen",
+  "system": "Website Bekanntmachungen",
+  "beleg": "morschen.de, PLZ 34326",
+  "notiz": "Einladungen/Niederschriften v.a. Ortsbeiraete; Gemeindevertretung unklar",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08325036",
+  "name": "Gemeinde Lauterbach",
+  "status": "gefunden",
+  "url": "https://lauterbach-schwarzwald.ris-portal.de/startseite",
+  "system": "ris-portal.de",
+  "beleg": "Link von lauterbach-schwarzwald.de (PLZ 78730, Schramberger Str. 5, Lkr. Rottweil)",
+  "notiz": "Link auf Gemeindestartseite",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09679143",
+  "name": "Gemeinde Hausen b.Würzburg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372112",
+  "name": "Gemeinde Arnschwang",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09477148",
+  "name": "Gemeinde Presseck",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08327040",
+  "name": "Gemeinde Reichenbach am Heuberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14524120",
+  "name": "Stadt Hohenstein-Ernstthal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160715053",
+  "name": "Erfüllende Gemeinde Am Ettersberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093775348",
+  "name": "Verwaltungsgemeinschaft Kemnath",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche gedrosselt, Startseite nicht auswertbar oder ohne RIS-Link; nicht abschliessend geprueft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-091905174",
+  "name": "Verwaltungsgemeinschaft Altenstadt",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "VG-Startseite geprüft: kein RIS, nur Gemeinschaftsversammlung/Bekanntmachungen; Mitgliedsseiten (altenstadt-obb.de, hohenfurch.de, ingenried.de, schwabbruck.de, schwabsoien.de) nicht geprüft.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-130765652",
+  "name": "Amt Boizenburg-Land",
+  "status": "nur-website",
+  "url": "https://www.amtboizenburgland.de/portal/startseite.html",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16072023",
+  "name": "Gemeinde Frankenblick",
+  "status": "nur-website",
+  "url": "https://frankenblick.eu/",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06533010",
+  "name": "Gemeinde Löhnberg",
+  "status": "nur-website",
+  "url": "https://gemeinde-loehnberg.de/",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160705009",
+  "name": "Verwaltungsgemeinschaft Riechheimer Berg",
+  "status": "nur-website",
+  "url": "https://www.vg-riechheimer-berg.de/",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09374133",
+  "name": "Gemeinde Luhe-Wildenau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09176131",
+  "name": "Gemeinde Hepberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14522220",
+  "name": "Gemeinde Großweitzschen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08327055",
+  "name": "Gemeinde Seitingen-Oberflacht",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372175",
+  "name": "Gemeinde Willmering",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08136084",
+  "name": "Gemeinde Wört",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08337059",
+  "name": "Gemeinde Ibach",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-ibach.de",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097715704",
+  "name": "Verwaltungsgemeinschaft Dasing",
+  "status": "nur-website",
+  "url": "https://www.vg-dasing.de",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06533004",
+  "name": "Gemeinde Dornburg",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-dornburg.de/",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-15089042",
+  "name": "Gemeinde Bördeland",
+  "status": "nur-website",
+  "url": "https://www.gem-boerdeland.de",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Website-Abruf wegen Rate-Limit nicht möglich, nicht verifiziert.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372126",
+  "name": "Stadt Furth im Wald",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "furth.de: Stadtrat-Seite ohne Sitzungen/RIS; kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-13072091",
+  "name": "Gemeinde Sanitz",
+  "status": "nur-website",
+  "url": "https://gemeindesanitz.de/politische-gremien-gemeinde-sa/",
+  "system": "Gemeindeseite (PDF-Einladungen)",
+  "beleg": "Rostocker Str. 19, 18190 Sanitz, Lkr. Rostock",
+  "notiz": "Einladungen/Protokolle als PDF je Sitzung, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09172132",
+  "name": "Gemeinde Schönau a.Königssee",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Rathausplatz 1, 83471, Berchtesgadener Land",
+  "notiz": "kein RIS/Sitzungsseite gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09672112",
+  "name": "Gemeinde Bad Bocklet",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "kein RIS-Link auf Startseite, Suche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-096795654",
+  "name": "Verwaltungsgemeinschaft Röttingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "97285 Röttingen, Marktplatz 1",
+  "notiz": "Stadtrat-Seite nur Mitglieder, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09777173",
+  "name": "Gemeinde Halblech",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-halblech.de/gemeinderat-und-ausschuesse/sitzungen.html",
+  "system": "Gemeindeseite",
+  "beleg": "PLZ 87642 Halblech, Lkr. Ostallgäu",
+  "notiz": "Sitzungstermine und Bekanntmachung zur Sitzung; Tagesordnung evtl. im PDF",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372158",
+  "name": "Gemeinde Schorndorf",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-schorndorf.de/rathaus-service/gemeinderat/sitzungstermine",
+  "system": "Gemeindeseite",
+  "beleg": "Kirchplatz 1, 93489 Schorndorf, Lkr. Cham",
+  "notiz": "Terminliste mit Detailseiten; Tagesordnung nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09371146",
+  "name": "Gemeinde Rieden",
+  "status": "gesperrt",
+  "url": "https://www.rieden.com/",
+  "system": "",
+  "beleg": "",
+  "notiz": "HTTP 403",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09372117",
+  "name": "Gemeinde Chamerau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "keine Website bekannt, Suche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16069061",
+  "name": "Gemeinde Masserberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite /rathaus/gemeinderat ohne erkennbare Sitzungen/RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06636002",
+  "name": "Gemeinde Berkatal",
+  "status": "gesperrt",
+  "url": "https://www.berkatal.de",
+  "system": "",
+  "beleg": "",
+  "notiz": "HTTP 403",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425055",
+  "name": "Gemeinde Hausen am Bussen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Gemeinderat-Seite ohne Sitzungen/RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-145245111",
+  "name": "Verwaltungsgemeinschaft Kirchberg",
+  "status": "nur-website",
+  "url": "https://www.kirchberg.de/buergerservice/stadtrat/sitzungstermine/",
+  "system": "Stadtseite Kirchberg",
+  "beleg": "Stadt Kirchberg (Lkr. Zwickau), Seite Sitzungstermine",
+  "notiz": "Inhalt der Termine nicht geprüft; Stadt, nicht VG",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14521355",
+  "name": "Stadt Lauter-Bernsbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Stadtrat-Seite nicht vertieft, kein RIS-Link gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-092785248",
+  "name": "Verwaltungsgemeinschaft Mitterfels",
+  "status": "nur-website",
+  "url": "https://www.mitterfels.de/index.php/politik/sitzungen-termine",
+  "system": "Joomla-Seite (Termine/Protokolle)",
+  "beleg": "mitterfels.de VG-Seite",
+  "notiz": "Sitzungstermine und Protokolle, keine TOP geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160675054",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite: Sitzungstermine-Seite leer ('Aktuell keine Termine'), kein RIS verlinkt",
+  "name": "Erfüllende Gemeinde Georgenthal",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093755338",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website suenching.de: nur Gemeinderat-/Ausschussseiten, kein RIS/Sitzungskalender",
+  "name": "Verwaltungsgemeinschaft Sünching",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160765056",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website: nur Mitglieder/Satzungen/Amtsblatt-PDF, kein RIS",
+  "name": "Erfüllende Gemeinde Langenwetzendorf",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09189124",
+  "status": "nur-website",
+  "url": "https://www.gemeindeverwaltung-inzell.de/buergerservice-und-politik/gemeinderat/sitzungskalender",
+  "system": "Gemeindewebsite",
+  "beleg": "Verlinkt von inzell.de; Seite verweist auf Landratsamt Traunstein",
+  "notiz": "Sitzungskalender mit Einzelseiten je Sitzung sowie Bereiche Tagesordnung und Protokolle, RSS/iCal; kein RIS",
+  "name": "Gemeinde Inzell",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09777130",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS/Sitzungslinks",
+  "name": "Gemeinde Germaringen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-092715205",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite verweist nur auf Seiten der Gemeinden Buchhofen und Moos; nicht vertieft",
+  "name": "Verwaltungsgemeinschaft Moos",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14522120",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website nicht erreichbar (Verbindung abgelehnt)",
+  "name": "Gemeinde Erlau",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08225024",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite Sitzungstermine ohne Inhalt, kein RIS; 'Gemeinderat Aktuell' nicht geprüft",
+  "name": "Gemeinde Fahrenbach",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09275125",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website liefert 403",
+  "name": "Gemeinde Haarbach",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08426011",
+  "status": "nur-website",
+  "url": "https://www.attenweiler.de/de/verwaltung/gemeinderat/ratsinformationssystem",
+  "system": "Gemeindewebsite",
+  "beleg": "Menüpunkt Ratsinformationssystem unter Gemeinderat",
+  "notiz": "Interne Seite ohne externes System erkennbar; Inhalt nicht geprüft",
+  "name": "Gemeinde Attenweiler",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09275148",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Politik/Bekanntmachungen ohne RIS-Link; Bürgerservice-Portal nur Verweis",
+  "name": "Gemeinde Sonnen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425052",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "nicht geprüft (Kontingent), keine Quelle gefunden",
+  "name": "Gemeinde Grundsheim",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09272151",
+  "status": "nur-website",
+  "url": "https://www.waldkirchen.de/rathaus/sitzungstermine",
+  "system": "Gemeindewebsite",
+  "beleg": "Tel. 08581 2020 Rathaus Waldkirchen",
+  "notiz": "Nur Terminliste (Stadtrat, Ausschüsse), keine Tagesordnung",
+  "name": "Stadt Waldkirchen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-07339009",
+  "status": "gesperrt",
+  "url": "https://www.budenheim.de/verwaltung/rathaus/sitzungsunterlagen-ab-01-01-2023/",
+  "system": "Gemeindewebsite",
+  "beleg": "Sitzungsunterlagen-Seite der Gemeinde",
+  "notiz": "Ratsinformation passwortgeschützt (intranet-login); öffentliche Seite listet 11 Gremien mit Einladungen, Beschlussvorlagen, Niederschriften (öffentlich) - evtl. nur-website",
+  "name": "Gemeinde Budenheim",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-146265232",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite: Gremien-Seite und Bekanntmachungen, kein RIS; nicht vertieft",
+  "name": "Verwaltungsgemeinschaft Reichenbach/O.L.",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160665014",
+  "name": "Verwaltungsgemeinschaft Dolmar-Salzbrücke",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website liefert HTTP 403",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-146265502",
+  "name": "Verwaltungsverband Diehsa",
+  "status": "nur-website",
+  "url": "https://www.verwaltungsverband-diehsa.de/",
+  "system": "",
+  "beleg": "Startseite nennt Mitglieder Hohendubrau, Mücka, Quitzdorf am See, Waldhufen",
+  "notiz": "Kein RIS-Link auf Startseite; Mitgliedsgemeinden-Seiten nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-16073109",
+  "name": "Gemeinde Uhlstädt-Kirchhasel",
+  "status": "nur-website",
+  "url": "https://www.uhlstaedt-kirchhasel.de/der-gemeinderat/",
+  "system": "",
+  "beleg": "Domain uhlstaedt-kirchhasel.de",
+  "notiz": "Gemeinderat-Seite ohne erkennbares RIS; Unterseite nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09576126",
+  "name": "Stadt Heideck",
+  "status": "nur-website",
+  "url": "https://www.heideck.de/stadtrat/",
+  "system": "",
+  "beleg": "Domain heideck.de, Menü Stadtrat",
+  "notiz": "Kein RIS-Link auf Startseite",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-120705005",
+  "name": "Amt Lenzen-Elbtalaue",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website HTTP 403; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09371144",
+  "name": "Gemeinde Poppenricht",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne Links abrufbar, Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08316036",
+  "name": "Gemeinde Reute",
+  "status": "nur-website",
+  "url": "https://www.reute.de/rathaus-service/gemeinderat/sitzungen",
+  "system": "",
+  "beleg": "Bürgermeisteramt Tel. 07641 (Lkr. Emmendingen)",
+  "notiz": "Sitzungstermine-Seite ohne Termine/TOPs, kein RIS",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14625100",
+  "name": "Gemeinde Demitz-Thumitz",
+  "status": "nur-website",
+  "url": "https://www.demitz-thumitz.de/gemeinderat.html",
+  "system": "",
+  "beleg": "Domain demitz-thumitz.de, Tel. 03594 (Bautzen)",
+  "notiz": "Kein RIS-Link gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08437101",
+  "name": "Stadt Scheer",
+  "status": "nur-website",
+  "url": "https://www.stadt-scheer.de/de/gemeinde-rat/",
+  "system": "",
+  "beleg": "Domain stadt-scheer.de",
+  "notiz": "Kein RIS-Link; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08315094",
+  "name": "Gemeinde St. Märgen",
+  "status": "nur-website",
+  "url": "https://www.st-maergen.de",
+  "system": "",
+  "beleg": "Links zu hochschwarzwald.de",
+  "notiz": "Kein RIS-Link auf Startseite",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425110",
+  "name": "Gemeinde Schnürpflingen",
+  "status": "nur-website",
+  "url": "https://www.schnuerpflingen.de/rathaus-service/gemeinderat",
+  "system": "",
+  "beleg": "Domain schnuerpflingen.de",
+  "notiz": "Kein RIS-Link auf Startseite",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425125",
+  "name": "Gemeinde Unterwachingen",
+  "status": "nur-website",
+  "url": "https://www.unterwachingen.de/rathaus/gemeinderat.html",
+  "system": "",
+  "beleg": "Domain unterwachingen.de",
+  "notiz": "Kein RIS; Gemeinderat-Seite nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-091775126",
+  "name": "Verwaltungsgemeinschaft Wartenberg",
+  "status": "geteilt",
+  "url": "https://buergerinfo-vg-wartenberg.digitalfabrix.de/info.asp?__cpanr=2&",
+  "system": "digitalfabrix (SessionNet)",
+  "beleg": "Link 'Zum Bürgerinformationssystem' auf wartenberg.de/sitzungstermine; enthält Tagesordnungen",
+  "notiz": "Vermutlich Markt Wartenberg bzw. VG gemeinsam; Mitglieder Berglern, Langenpreising nicht eigens geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097715701",
+  "name": "Verwaltungsgemeinschaft Aindling",
+  "status": "gefunden",
+  "url": "https://www.vg-aindling.de/ratsinformationssystem_aindling",
+  "system": "Ratsinformationssystem (VG-Seite)",
+  "beleg": "Link von aindling.de zu vg-aindling.de; Marktgemeinderat Aindling",
+  "notiz": "Genaues System nicht geprüft; ggf. nur Markt Aindling",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-096745610",
+  "name": "Verwaltungsgemeinschaft Ebelsbach",
+  "status": "gefunden",
+  "url": "https://ratsinfo-vg-ebelsbach.livingdata.de/ylogon.asp?smcpn=info&smclom=1",
+  "system": "livingdata Ratsinfo (SessionNet-Typ)",
+  "beleg": "Link auf vg-ebelsbach.de, VG Ebelsbach mit Breitbrunn, Kirchlauter, Stettfeld",
+  "notiz": "",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-12067544",
+  "name": "Gemeinde Woltersdorf",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "www.woltersdorf-schleuse.de liefert 403 (Bot-Schutz); Websuche ohne RIS-Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097735719",
+  "name": "Verwaltungsgemeinschaft Holzheim",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "holzheim.de (Gemeinde Holzheim, VG) hat Seiten Gemeinderat/Amtsblatt, kein RIS und keine Tagesordnungen gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14521310",
+  "name": "Gemeinde Jahnsdorf/Erzgeb.",
+  "status": "nur-website",
+  "url": "https://www.jahnsdorf-erzgeb.de/ratsinformationssystem",
+  "system": "Eigene Seite 'Ratsinformationssystem' (Sitzungsliste)",
+  "beleg": "Domain jahnsdorf-erzgeb.de, Gemeindeseite Erzgebirgskreis",
+  "notiz": "Liste von Sitzungen (Gemeinderat, Technischer Ausschuss, Verwaltungsausschuss) als Aufklapper; sichtbare Einträge ab 2022, Aktualität prüfen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09476178",
+  "name": "Gemeinde Stockheim",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "stockheim-online.de (Kronach) nur Website, digitalfabriX nur als Webdesign-Hinweis im Footer; kein RIS gefunden. gemeinde-stockheim.de gehört zu Stockheim Rhön-Grabfeld, nicht verwenden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09371154",
+  "name": "Gemeinde Ursensollen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne Links zu RIS/Sitzungen; Websuche ohne Treffer",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14521290",
+  "name": "Gemeinde Hohndorf",
+  "status": "nur-website",
+  "url": "https://www.hohndorf.com/gemeinderat/",
+  "system": "Gemeindewebsite",
+  "beleg": "Website hohndorf.com, Gemeinderat Hohndorf, Wahlperiode 2024-2029",
+  "notiz": "Seite nur mit Gemeinderat-Beschreibung, keine Sitzungen mit Tagesordnung gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09476152",
+  "name": "Stadt Ludwigsstadt",
+  "status": "nur-website",
+  "url": "https://www.ludwigsstadt.de/rathaus-und-service/stadtrat/stadtratssitzungen-zusammenfassungen",
+  "system": "Gemeindewebsite",
+  "beleg": "Domain ludwigsstadt.de, Geschäftsordnung Stadtrat Ludwigsstadt",
+  "notiz": "Seite 'Stadtratssitzungen - Zusammenfassungen' (Zusammenfassungen, keine Tagesordnungen geprüft)",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09375209",
+  "name": "Gemeinde Wiesent",
+  "status": "nur-website",
+  "url": "https://www.wiesent.de/rathaus/sitzungstermine/",
+  "system": "Gemeindewebsite",
+  "beleg": "wiesent.de, Gemeinde Wiesent, Lkr. Regensburg (PLZ 93109)",
+  "notiz": "Seite Sitzungstermine mit Verweis auf amtliche Bekanntmachungen; Footer digitalfabriX nur Webdesign",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09277139",
+  "name": "Gemeinde Postmünster",
+  "status": "gesperrt",
+  "url": "https://postmuenster.ris.kommune-aktiv.de",
+  "system": "kommune-aktiv (PostRat Sitzungsportal)",
+  "beleg": "Link 'PostRat · Sitzungsportal' auf postmuenster.de",
+  "notiz": "Portal antwortet mit Cloudflare-Seite (403), nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09472121",
+  "name": "Gemeinde Bischofsgrün",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "bischofsgruen.de Startseite ohne RIS/Sitzungslinks",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08337027",
+  "name": "Gemeinde Dachsberg (Südschwarzwald)",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "gemeinde-dachsberg.de nur Rathaus/Gemeinderat-Info, kein RIS gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08425035",
+  "name": "Gemeinde Emeringen",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "emeringen.eu liefert 403",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-150845051",
+  "name": "Verbandsgemeinde An der Finne",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "vgem-finne.de Startseite ohne RIS-/Sitzungslinks gefunden",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-147295308",
+  "name": "Verwaltungsgemeinschaft Pegau",
+  "status": "geteilt",
+  "url": "https://www.stadt-pegau.de/stadt-pegau/stadtrat/termine/",
+  "system": "Stadtwebsite (Termine, Einladung & Tagesordnung)",
+  "beleg": "Seite Stadt Pegau, Stadtratstermine 2026",
+  "notiz": "Gehört zur Stadt Pegau (Mitglied der VG); Stadtratssitzungen mit Menüpunkt 'Einladung & Tagesordnung'",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-095725510",
+  "name": "Verwaltungsgemeinschaft Höchstadt a.d.Aisch",
+  "status": "geteilt",
+  "url": "https://www.hoechstadt.de/buergerservice-politik/ihr-stadtrat/sitzungskalender-1",
+  "system": "Stadtwebsite (Sitzungskalender)",
+  "beleg": "Titel 'Höchstadt a.d. Aisch: Sitzungskalender'",
+  "notiz": "Gehört zur Stadt Höchstadt a.d. Aisch; Mitgliedsgemeinden nicht enthalten",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09677114",
+  "name": "Stadt Arnstein",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite nicht erreichbar (kein Ergebnis), Suche limitiert",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14625560",
+  "name": "Gemeinde Sohland a.d.Spree",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website antwortet 403 auf Abruf",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-093745326",
+  "name": "Verwaltungsgemeinschaft Kirchenthumbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-160615013",
+  "name": "Verwaltungsgemeinschaft Westerwald-Obereichsfeld",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-096735637",
+  "name": "Verwaltungsgemeinschaft Fladungen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-14626280",
+  "name": "Gemeinde Leutersdorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09276143",
+  "name": "Gemeinde Teisnach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08336043",
+  "name": "Gemeinde Inzlingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite hat Gemeinderat-Menü (Archiv, Mitglieder, Fraktionen), kein RIS-Link gesehen",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08226101",
+  "name": "Gemeinde Zuzenhausen",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website antwortet 403 auf Abruf",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-09574146",
+  "name": "Gemeinde Ottensoos",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-08317126",
+  "name": "Gemeinde Seebach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06434001",
+  "name": "Stadt Bad Homburg v.d.Höhe",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097795723",
+  "name": "Verwaltungsgemeinschaft Wemding",
+  "status": "nur-website",
+  "url": "https://www.wemding.de/sitzungen-und-termine/",
+  "system": "Website Stadt Wemding",
+  "beleg": "Titel 'Sitzungen & Termine - Stadt Wemding'; zusätzlich /sitzungsprotokolle/",
+  "notiz": "gehört der Stadt Wemding (Mitglied der VG), VG-Seite vg-wemding.de; Inhalt (TOPs) nicht geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-097775751",
+  "name": "Verwaltungsgemeinschaft Westendorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-10046113",
+  "name": "Gemeinde Namborn",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Seitenabruf (Suchlimit/Safety-Check erschöpft); Startseite per curl ohne RIS-Link, nicht abschließend geprüft",
+  "durchlauf": 1
+ },
+ {
+  "id": "de-06434001",
+  "name": "Stadt Bad Homburg v.d.Höhe",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Websuche (Treffer nur Homburg/Saar ALLRIS) und Gremien-Menü geprüft; kein RIS-Link, nur Taunus-Zeitung-Bekanntmachungen",
+  "notiz": "Gremienseiten ohne Sitzungs-TOPs",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-097785757",
+  "name": "Verwaltungsgemeinschaft Ottobeuren",
+  "status": "nur-website",
+  "url": "https://www.ottobeuren.de/de/marktgemeinde/politik/beschluesse-marktgemeinderat.php",
+  "system": "Gemeinde-CMS",
+  "beleg": "Seite auf ottobeuren.de, Menü Politik",
+  "notiz": "Seite 'Beschlüsse Marktgemeinderat'; Inhalt nicht auf TOPs geprüft; Bürgerservice-Portal digitalfabrix vgottobeuren ohne Sitzungen erkennbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372126",
+  "name": "Stadt Furth im Wald",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "furth.de/stadtrat ohne Sitzungen/RIS; erneut nur Startseite geprüft",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160665005",
+  "name": "Verwaltungsgemeinschaft Hohe Rhön",
+  "status": "nur-website",
+  "url": "https://vghoherhoen.de/",
+  "system": "Website-Beiträge",
+  "beleg": "Domain vghoherhoen.de, Beiträge zu Sitzungen Birx, Kaltennordheim, Frankenheim",
+  "notiz": "Einladungen als Einzelbeiträge mit Datum/Ort; TOPs nicht geprüft; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093745327",
+  "name": "Verwaltungsgemeinschaft Eschenbach i.d.OPf.",
+  "status": "nur-website",
+  "url": "https://www.buergerservice-portal.de/bayern/vgeschenbach/",
+  "system": "Bürgerservice-Portal (digitalfabrix)",
+  "beleg": "Titel 'Verwaltungsgemeinschaft Eschenbach'",
+  "notiz": "Kein RIS erkennbar, Sitzungen nicht gesehen",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160615009",
+  "name": "Verwaltungsgemeinschaft Leinetal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite: nur Mitgliedsgemeinden/Bürgermeister, kein RIS; keine zusätzliche Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-095775536",
+  "name": "Verwaltungsgemeinschaft Hahnenkamm",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Link; nur Joomla-Seiten",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09373115",
+  "name": "Gemeinde Breitenbrunn",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Zuordnung zu Lkr. Neumarkt nicht belegt",
+  "notiz": "breitenbrunn.de zeigt Spam-Links (gekapert); kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14626280",
+  "name": "Gemeinde Leutersdorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Startseite ohne Gemeinderat-Link; Tagesordnungen laut Amtsblatt per Aushang",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09772159",
+  "name": "Gemeinde Horgau",
+  "status": "nur-website",
+  "url": "https://www.horgau.de/rathaus-service/gemeinderat/sitzungstermine",
+  "system": "TYPO3",
+  "beleg": "Seitentitel 'Sitzungstermine - Horgau'",
+  "notiz": "Terminseite, TOPs nicht gesehen",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09176137",
+  "name": "Gemeinde Kinding",
+  "status": "gesperrt",
+  "url": "https://kinding.ris.kommune-aktiv.de",
+  "system": "kommune-aktiv",
+  "beleg": "Link auf kinding.de Startseite",
+  "notiz": "RIS-Adresse liefert 403/Cloudflare 'Just a moment'",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09277154",
+  "name": "Gemeinde Zeilarn",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite/Menü Politik (Gemeinderat, Ausschüsse) ohne RIS-Link",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-094755428",
+  "name": "Verwaltungsgemeinschaft Lichtenberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Nur Gemeinderat-Seiten; digitalfabrix nur Anbieter",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09275148",
+  "name": "Gemeinde Sonnen",
+  "status": "nur-website",
+  "url": "https://www.buergerservice-portal.de/bayern/sonnen",
+  "system": "Bürgerservice-Portal (digitalfabrix)",
+  "beleg": "Titel 'Gemeinde Sonnen'",
+  "notiz": "Kein RIS erkennbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08417029",
+  "name": "Gemeinde Hausen am Tann",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite: nur Rathaus-Bürgerservice, kein Sitzungs-/RIS-Menü",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-10044112",
+  "name": "Stadt Lebach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite Stadtratssitzungen nur Terminliste 2026/27 (Saarlouis, Stadt Lebach, PLZ 66822); kein RIS verlinkt; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-10046114",
+  "name": "Gemeinde Nohfelden",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite, Gemeinderat-Seite nur Mitglieder, kein RIS-Link; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-010535308",
+  "name": "Amt Berkenthin",
+  "status": "nur-website",
+  "url": "https://berkenthin-amt.de/",
+  "system": "Amtsseite",
+  "beleg": "Amt Berkenthin, Am Schart 16, 23919 Berkenthin; Mitgliedsgemeinden aufgelistet",
+  "notiz": "Sitzungen werden als Meldungen angekündigt, Tagesordnungen unter Amtliche Bekanntmachungen (https://berkenthin-amt.de/amtliche-bekanntmachungen/); kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160745005",
+  "name": "VG Heideland-Elstertal-Schkölen",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Domain heideland-elstertal.de per https nicht erreichbar; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093755338",
+  "name": "VG Sünching",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite, Politik/Gemeinderat/Ausschüsse geprüft: kein RIS/Sitzungskalender (nur digitalfabrix.de-Link, kein Bürgerinfo-Portal); Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14524060",
+  "name": "Gemeinde Fraureuth",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Bekanntmachungen geprüft, nur Hauptsatzung/GO; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160765004",
+  "name": "VG Ländereck",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "vg-laendereck.de liefert 'Zugriff verweigert' (403); Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-094765434",
+  "name": "VG Mitwitz",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Markt Mitwitz: Marktgemeinderat-Seite und Startseite ohne RIS/Tagesordnungen (nur Presseberichte, digitalfabrix.de Anbieterlink); Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160685050",
+  "name": "Erfüllende Gemeinde Elxleben",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite elxleben.de ohne Gemeinderat-/RIS-Menü; Websuche ohne Treffer (Namensverwechslung mit Elxleben Ilm-Kreis beachtet)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160655002",
+  "name": "VG Greußen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne Gemeinderat/RIS-Menü, nur Aus dem Rathaus/Amtsblatt; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-16076088",
+  "name": "Gemeinde Harth-Pöllnitz",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Keine Website bekannt; harth-poellnitz.de ist Parkseite (domainname.de); Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09574135",
+  "name": "Gemeinde Kirchensittenbach",
+  "status": "nur-website",
+  "url": "https://www.kirchensittenbach.de/gemeinde-politik/gemeinderat/",
+  "system": "Gemeindeseite",
+  "beleg": "Gemeinde Kirchensittenbach (Lkr. Nürnberger Land), Domain kirchensittenbach.de",
+  "notiz": "Seite Gemeinderat zeigt je Sitzung Tagesordnung und Beschlüsse (03.08.2026, 13.07.2026) sowie Termine; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09477163",
+  "name": "Gemeinde Wirsberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Marktgemeinderat-Seite ohne RIS/Tagesordnungen; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08337027",
+  "name": "Gemeinde Dachsberg (Südschwarzwald)",
+  "status": "gefunden",
+  "url": "https://www.gemeinde-dachsberg.de/Rathaus/Gemeinderat/Sitzungen-und-Berichte/Ratsinformationssystem",
+  "system": "eingebettetes RIS (Anbieter unklar, JS-Einbindung)",
+  "beleg": "Seite 'Ratsinformationssystem | Gemeinde Dachsberg' auf gemeinde-dachsberg.de, Text: Sitzungstermine, Inhalte, Protokolle",
+  "notiz": "Auf Gemeindeseite eingebettet (initializeExport); Inhalt ohne JS nicht lesbar, eigene Domain des RIS nicht ermittelt; dachsberg.de ist nur Weiterleitungsseite",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08327040",
+  "name": "Gemeinde Reichenbach am Heuberg",
+  "status": "nur-website",
+  "url": "https://www.reichenbach-heuberg.de/verwaltung-service/gemeinderat/sitzungseinladungen",
+  "system": "Gemeindeseite",
+  "beleg": "reichenbach-heuberg.de, Gemeinde Reichenbach (Esslinger Str. 16 Grundschulgebäude, Lkr. Tuttlingen)",
+  "notiz": "Sitzungseinladungen mit Tagesordnung je Sitzung (07.09.2026) plus Sitzungstermine/Archiv; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-10044120",
+  "name": "Gemeinde Wadgassen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Gemeinde Wadgassen, Lindenstr. 114, 66787 Wadgassen",
+  "notiz": "Websuche ohne Treffer; Startseite und Rathaus-Menü (Bürgerservice, Verwaltung) ohne Gemeinderat/Sitzungen; ris-Subdomains nicht vorhanden",
+  "durchlauf": 2
+ },
+ {
+  "id": "nds-032575405",
+  "name": "Samtgemeinde Nienstädt",
+  "status": "gesperrt",
+  "url": "https://sg-nienstaedt.ratsinfomanagement.net",
+  "system": "SD.NET RIM (vermutet)",
+  "beleg": "Subdomain sg-nienstaedt existiert (Nonsense-Subdomain nicht), WAF-Prüfseite",
+  "notiz": "Host existiert, Bot-Schutz-Prüfseite; nicht umgangen. Inhalt nicht verifiziert, Zuordnung nur über Hostname. Website sg-nienstaedt.de ohne RIS-Link",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160715053",
+  "name": "Erfüllende Gemeinde Am Ettersberg",
+  "status": "gesperrt",
+  "url": "https://am-ettersberg.ris-portal.de",
+  "system": "ris-portal.de",
+  "beleg": "401 mit Realm \"RIS Seitenschutz fuer am-ettersberg\"",
+  "notiz": "Passwortgeschützt (401). Website am-ettersberg.de veröffentlicht außerdem öffentliche Tagesordnungen als Meldungen und Sitzungsprotokolle (/rathaus/politik/sitzungsprotokolle-2024/)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-072315006",
+  "name": "Verbandsgemeinde Thalfang am Erbeskopf",
+  "status": "nur-website",
+  "url": "https://www.erbeskopf.de/verwaltung-politik/politik/rat-und-ausschuesse.html",
+  "system": "TYPO3 Rat-Modul (die NetzWerkstatt)",
+  "beleg": "VG Thalfang am Erbeskopf, erbeskopf.de",
+  "notiz": "Seite führt Niederschriften/Unterrichtungen zu Rat und Ausschüssen; laut Ausschussvorlage 04/2024 Vergabe eines Ratsinformationssystems geplant, Adresse nicht gefunden",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-097735719",
+  "name": "Verwaltungsgemeinschaft Holzheim",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Gemeinde Holzheim, Hochstiftstr. 2, 89438 Holzheim",
+  "notiz": "Websuche ohne Treffer, Startseite und Gemeinderat-Seite (nur Mitglieder), Amtsblatt; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-16076061",
+  "name": "Stadt Ronneburg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Ronneburg / Thür., ronneburg.de, Tel. 036602",
+  "notiz": "Websuche ohne Treffer; Stadtrat-Seite ohne Sitzungen/RIS; nur Amtsblatt Anzeiger",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160705002",
+  "name": "Verwaltungsgemeinschaft Geratal/Plaue",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "VG Geratal/Plaue, 99331 Geratal OT Geraberg",
+  "notiz": "Websuche ohne Treffer; Startseite ohne RIS; nur Geratal-Anzeiger/Bekanntmachungen",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-091835152",
+  "name": "Verwaltungsgemeinschaft Rohrbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "vg-rohrbach.de, Mitglieder Erharting, Niederbergkirchen, Niedertaufkirchen",
+  "notiz": "Websuche ohne Treffer; Seite hat Gemeinderat-Seiten je Mitglied (nur Mitglieder), Bürgerserviceportal; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093725310",
+  "name": "Verwaltungsgemeinschaft Stamsried",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Markt Stamsried, Lkr. Cham",
+  "notiz": "Websuche ohne Treffer; Startseite nur Mitglieder des Marktgemeinderats und Bürgerserviceportal; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08225116",
+  "name": "Gemeinde Schwarzach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "schwarzach-online.de, 74869 Schwarzach",
+  "notiz": "Seite Sitzungstermine vorhanden, aber leer (\"keine Einträge\"); Gemeinderat-News ohne TOP-Liste",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093775350",
+  "name": "Verwaltungsgemeinschaft Krummennaab",
+  "status": "nur-website",
+  "url": "https://krummennaab.de/rathaus/aktuelles/gemeinderatssitzungen-elementor/",
+  "system": "WordPress-Seite",
+  "beleg": "Gemeinde Krummennaab, krummennaab.de",
+  "notiz": "Berichte der letzten Gemeinderatssitzungen (Zusammenfassungen), Sitzungseinladung als PDF-Bild; keine Tagesordnung je Sitzung als Text",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08325071",
+  "name": "Gemeinde Eschbronn",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Gemeinde Eschbronn mit Ortsteilen Mariazell und Locherhof",
+  "notiz": "Websuche ohne Treffer; Gemeinderat-Seite ohne Sitzungen/RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09272140",
+  "name": "Gemeinde Ringelai",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Gemeinde Ringelai, Lkr. Freyung-Grafenau",
+  "notiz": "Gemeinderat-Seite nur Mitgliederliste; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08317126",
+  "name": "Gemeinde Seebach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "seebach.de, Ortenaukreis (Achertal)",
+  "notiz": "Startseite: nur Öffentliche Bekanntmachungen; kein RIS gefunden",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08425055",
+  "name": "Gemeinde Hausen am Bussen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "Gemeinde Hausen am Bussen",
+  "notiz": "Gemeinderat-Seite nur Mitgliederliste; Bekanntmachungen; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-010535391",
+  "name": "Amt Sandesneben-Nusse",
+  "status": "nur-website",
+  "url": "https://www.amt-sn.de/verwaltung/sitzungstermine/",
+  "system": "Terminkalender (Website)",
+  "beleg": "Seite amt-sn.de, Amt Sandesneben-Nusse",
+  "notiz": "Kalender 'Sitzungstermine' für Amt und Gemeinden, per JS geladen; Tagesordnungen nicht verifiziert; Websuche ohne RIS-Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09371136",
+  "name": "Gemeinde Kümmersbruck",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ist Angular-App (ohne JS nicht lesbar); Websuche ohne Treffer; gremien.info/ris-portal-Raten ohne Beleg",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160675054",
+  "name": "Erfüllende Gemeinde Georgenthal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Seiten Gemeinderäte (nur Mitglieder) und Sitzungstermine (leer) geprüft, kein RIS verlinkt",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-092735216",
+  "name": "Verwaltungsgemeinschaft Saal a.d.Donau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne RIS; Startseite/Rathaus nur buergerservice-portal.de (Formulare); nur einzelne Sitzungs-PDFs von 2019",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-092765238",
+  "name": "Verwaltungsgemeinschaft Ruhmannsfelden",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Startseite nur Bürger-App und Tourismus, kein RIS/Sitzungsseite",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160775004",
+  "name": "Verwaltungsgemeinschaft Pleißenaue",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Menü Verwaltung (Satzungen, Amtsblatt, Bekanntmachung) ohne Sitzungen/RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09187124",
+  "name": "Gemeinde Edling",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche nicht fündig; Startseite, Gemeinderat, Politik, Bekanntmachungen: nur Mitglieder/Ausschüsse, keine Sitzungen",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14524070",
+  "name": "Gemeinde Gersdorf",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-gersdorf.de/index/beschlussvorlagen.html",
+  "system": "Website",
+  "beleg": "Footer/Quelle: Gemeindeverwaltung Gersdorf, Lkr. Zwickau",
+  "notiz": "Seite 'Aktuelle Beschlussvorlagen' ohne lesbare Liste (evtl. dynamisch); Gemeinderat-Seite nur Mitglieder; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08315041",
+  "name": "Gemeinde Glottertal",
+  "status": "gefunden",
+  "url": "https://glottertal.ratsinfomanagement.net/",
+  "system": "SD.NET RIM",
+  "beleg": "Link 'Ratsinformations-system' auf gemeinde-glottertal.de (Breisgau-Hochschwarzwald)",
+  "notiz": "Abruf von außen liefert 403 (WAF 'Verifying Browser'), daher Inhalt nicht geprüft",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-13073105",
+  "name": "Gemeinde Zingst",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-zingst.de/verwaltung/ortspolitik/beschluesse",
+  "system": "Website (PDF-Protokolle)",
+  "beleg": "gemeinde-zingst.de, Gemeinde Ostseeheilbad Zingst, 18374",
+  "notiz": "Nur Protokoll-PDFs (2018/2019), keine Tagesordnung je Sitzung; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08116037",
+  "name": "Gemeinde Lichtenwald",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "lichtenwald.de liefert HTTP 403; Websuche ohne RIS-Treffer; nicht umgangen",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09779147",
+  "name": "Gemeinde Fremdingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Startseite/Gemeinderat-Seite ohne RIS oder Sitzungstermine",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08136029",
+  "name": "Gemeinde Heuchlingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Rathaus/Gemeinderat/Amtsblatt ohne RIS; Verwaltungsgemeinschaft-Seite vorhanden, kein System",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09377142",
+  "name": "Gemeinde Bad Neualbenreuth",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Gemeinde-Menü nur Bekanntmachungen und buergerservice-portal.de (Formulare)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08425052",
+  "name": "Gemeinde Grundsheim",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Startseite nur Amtsblatt-PDFs und Bürgerservice, kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-145225102",
+  "name": "Verwaltungsgemeinschaft Burgstädt",
+  "status": "nur-website",
+  "url": "https://www.burgstaedt.de/rathaus-buergerservice/verwaltung/stadtrat-burgstaedt-sitzungsunterlagen/",
+  "system": "Stadtwebsite (NOLIS CMS), PDF-Unterlagen",
+  "beleg": "Impressum: Brühl 1, 09217 Burgstädt",
+  "notiz": "Seite 'Sitzungen des Stadtrates' mit Unterlagen nach Jahren (2022-2026); kein RIS gefunden; Websuche ergebnislos",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-071345001",
+  "name": "Verbandsgemeinde Baumholder",
+  "status": "nur-website",
+  "url": "https://www.vgv-baumholder.de/de/rathaus/bekanntmachungen/",
+  "system": "Bekanntmachungen je Sitzung",
+  "beleg": "Domain vgv-baumholder.de, Bekanntmachungen VG und Stadt Baumholder",
+  "notiz": "Je Sitzung eine Bekanntmachung (Ausschüsse VG/Stadt); kein RIS erkennbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09677114",
+  "name": "Stadt Arnstein",
+  "status": "gefunden",
+  "url": "https://arnstein.ris.kommune-aktiv.de/seite/de/rathaus/033:02/-/startseite.html",
+  "system": "kommune-aktiv (RIS/BIS)",
+  "beleg": "stadtarnstein.de/stadtrat-sitzungen: 'Zum Ratsinformationssystem', Stadt Arnstein, Marktstraße 37, 97450 Arnstein, poststelle@arnstein.bayern.de",
+  "notiz": "Alte Domain arnstein.de hat TLS-Fehler; neue Domain stadtarnstein.de. Gleiche Seite verlinkt Bürgerinformationssystem",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093775348",
+  "name": "Verwaltungsgemeinschaft Kemnath",
+  "status": "nur-website",
+  "url": "https://www.kemnath.de/buergerservice/rathaus-und-verwaltung/stadtrat-sitzungen",
+  "system": "Stadtwebsite TYPO3, PDF-Tagesordnungen",
+  "beleg": "Stadt Kemnath i.d. Oberpfalz, Stadtplatz 38, 95478; Landkreis Tirschenreuth (Bek. 2025)",
+  "notiz": "Sitzungskalender 2026 und Tagesordnungen als PDF je Sitzung; kein RIS; nur Stadt Kemnath",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09277121",
+  "name": "Gemeinde Gangkofen",
+  "status": "ungeprueft",
+  "url": "https://www.gangkofen.de/",
+  "system": "",
+  "beleg": "Markt Gangkofen, Marktplatz 21/23, 84140",
+  "notiz": "Startseite und Rathaus-Seite ohne RIS-/Sitzungslinks; Gemeinderat-Seite ohne Inhalt; keine gezielte Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09186128",
+  "name": "Gemeinde Hohenwart",
+  "status": "nur-website",
+  "url": "https://markt-hohenwart.de/gemeinde/sitzungskalender-presseberichte/",
+  "system": "Gemeindewebsite, Sitzungskalender mit PDF-Tagesordnung",
+  "beleg": "Markt Hohenwart, Marktplatz 1, 86558 Hohenwart",
+  "notiz": "Sitzungskalender 2026 mit Terminen und teils Tagesordnung-PDFs (Bauausschuss); hohenwart.de ist Hohenwart Forum Pforzheim, falsch",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09272136",
+  "name": "Gemeinde Neureichenau",
+  "status": "nichts",
+  "url": "https://www.neureichenau.de/",
+  "system": "",
+  "beleg": "Startseite neureichenau.de",
+  "notiz": "Bürgerinfo-Seite und Startseite ohne RIS/Sitzungen; Rathaus Online nur Dienste",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093725313",
+  "name": "Verwaltungsgemeinschaft Walderbach",
+  "status": "ungeprueft",
+  "url": "https://walderbach.de/",
+  "system": "",
+  "beleg": "Gemeinde Walderbach, 93194",
+  "notiz": "Gemeinderat-Seite ohne Sitzungen/RIS; keine Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093725312",
+  "name": "Verwaltungsgemeinschaft Weiding",
+  "status": "ungeprueft",
+  "url": "https://weiding.de",
+  "system": "",
+  "beleg": "",
+  "notiz": "Gemeinderat-Seite ohne Sitzungen/RIS; keine Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14522480",
+  "name": "Gemeinde Reinsberg",
+  "status": "ungeprueft",
+  "url": "https://gemeinde-reinsberg.de",
+  "system": "",
+  "beleg": "Gemeindeverwaltung Reinsberg, Kirchgasse 2, 09629",
+  "notiz": "Gemeinderat-Seite ohne Sitzungen/RIS; keine Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09473132",
+  "name": "Gemeinde Großheirath",
+  "status": "ungeprueft",
+  "url": "https://www.grossheirath.de",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite hat Button 'Ratssystem' (/ratssystem), liefert aber 404; Websuche ergebnislos; ggf. später erneut",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14730180",
+  "name": "Gemeinde Löbnitz",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "loebnitz.de liefert leere Seite ohne Titel/Menü; Websuche ergebnislos",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09278184",
+  "name": "Gemeinde Sankt Englmar",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "urlaubsregion-sankt-englmar.de ist Tourismusseite, keine Gemeinderat-Seite gefunden",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09272122",
+  "name": "Gemeinde Haidmühle",
+  "status": "ungeprueft",
+  "url": "https://haidmuehle.eu",
+  "system": "",
+  "beleg": "Gemeinde Haidmühle (Impressum)",
+  "notiz": "Nur Amtliche Bekanntmachungen und Rathaus-Seite, keine Sitzungsliste/RIS gesehen; keine Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09375174",
+  "name": "Stadt Neutraubling",
+  "status": "nur-website",
+  "url": "https://www.stadt-neutraubling.de/rathaus/politik/",
+  "system": "Website (Stadt-CMS)",
+  "beleg": "Neutraubling, Lkr. Regensburg (Domain stadt-neutraubling.de)",
+  "notiz": "Öffentliche Tagesordnungen als Meldungen (z. B. Bauausschuss 15.10.2026), Sitzungsprotokolle je Jahr; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160675053",
+  "name": "Erfüllende Gemeinde Nessetal",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite liefert HTTP 403; Websuche ohne Treffer (nur Nesse-Apfelstädt, andere Gemeinde)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14521355",
+  "name": "Stadt Lauter-Bernsbach",
+  "status": "nur-website",
+  "url": "https://www.lauter-bernsbach.de/de/verwaltung-rathaus/stadtvertretung/stadtrat/",
+  "system": "Sitzungsdienst (PDF je Sitzung)",
+  "beleg": "Stadt Lauter-Bernsbach, Erzgebirgskreis (Domain lauter-bernsbach.de)",
+  "notiz": "Menü Stadtrat/Termine/Bekanntgaben; je Sitzung PDF \"Bürgerinformation\" mit Tagesordnung unter /fileadmin/user_upload/Sitzungsdienst/, kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-091765119",
+  "name": "Verwaltungsgemeinschaft Pförring",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-/Sitzungslink, Websuche ohne Treffer; nur monatliches Infoblatt-PDF der VG",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-10046116",
+  "name": "Gemeinde Oberthal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne Gemeinderats-/RIS-Menü, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-146265224",
+  "name": "Verwaltungsgemeinschaft Neusalza-Spremberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Menü buergerservice/stadtrat vorhanden, laut früherer Prüfung nur Amtsblatt/Aushang; Websuche ohne Treffer; Neusalza-Spremberg nicht mit Spremberg (Brandenburg) verwechseln",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372164",
+  "name": "Gemeinde Traitsching",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite /gemeinderat/ nur Mitgliederliste, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372144",
+  "name": "Gemeinde Neukirchen b.Hl.Blut",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite neukirchen.bayern, Menü Marktrat ohne RIS/Sitzungsliste gefunden, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09774116",
+  "name": "Gemeinde Ursberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-/Sitzungslink, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08435042",
+  "name": "Gemeinde Neukirch",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Keine Website bekannt (neukirch.de gehört vermutlich anderer Gemeinde); Websuche nur Zeitungsberichte",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09771140",
+  "name": "Gemeinde Hollenbach",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-hollenbach.de/sitzungen-und-sitzungskalender",
+  "system": "Website (Sitzungskalender)",
+  "beleg": "Gemeinde Hollenbach, 86568 Hollenbach (Lkr. Aichach-Friedberg)",
+  "notiz": "Sitzungskalender mit Terminen (22.10., 10.12.2026) und Detailseiten; Tagesordnung nicht verifiziert",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08136007",
+  "name": "Gemeinde Bartholomä",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Link, Websuche ohne Treffer, /buergerinformationen 404",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09475189",
+  "name": "Gemeinde Zell im Fichtelgebirge",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Menü Marktgemeinderat/Ausschüsse ohne RIS; Beschlüsse nur im monatlichen Informationsblatt (PDF); Websuche ohne Tagesordnungen",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08425090",
+  "name": "Gemeinde Obermarchtal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Gemeinderat-Seite ohne RIS-Link, Websuche nur Zeitungsberichte",
+  "durchlauf": 2
+ },
+ {
+  "id": "nds-03453011",
+  "name": "Stadt Löningen",
+  "status": "nur-website",
+  "url": "https://www.loeningen.de/buergerservice-stadt/politik/ratsinformationssystem/",
+  "system": "SOMACOS Session (im Aufbau)",
+  "beleg": "Seite der Stadt Löningen (Lkr. Cloppenburg)",
+  "notiz": "RIS-Seite kündigt neues RIS 'Session' (SOMACOS) ab 01.11.2026 an; bisher kein öffentliches RIS gefunden; Protokolle/Einladungen als Downloads",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09275124",
+  "name": "Stadt Bad Griesbach i.Rottal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "bad-griesbach.de, Stadtrat- und Ausschuss-Seiten geprüft",
+  "notiz": "Websuche ohne Treffer; Stadtrat/Ausschüsse-Seiten ohne Sitzungen/Tagesordnung",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-146285219",
+  "name": "Verwaltungsgemeinschaft Königstein/Sächs.Schw.",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "koenigstein-sachsen.de Startseite",
+  "notiz": "Suche liefert nur Königstein im Taunus; Startseite ohne Sitzungshinweise",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-146265232",
+  "name": "Verwaltungsgemeinschaft Reichenbach/O.L.",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "reichenbach-ol.de/de/gremien.html",
+  "notiz": "Gremien-Seite ohne Tagesordnung/Sitzungen; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-12070173",
+  "name": "Gemeinde Karstädt",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "gemeinde-karstaedt.de",
+  "notiz": "Startseite liefert 403; Websuche ohne RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160615014",
+  "name": "Verwaltungsgemeinschaft Ershausen/Geismar",
+  "status": "gesperrt",
+  "url": "",
+  "system": "",
+  "beleg": "www.ershausen-geismar.de (laut Wikipedia Website)",
+  "notiz": "403 beim Abruf; Websuche ohne Sitzungsinfos",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09472139",
+  "name": "Stadt Gefrees",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "gefrees.de, /rathaus",
+  "notiz": "Startseite und /rathaus ohne Sitzungen/RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-092785246",
+  "name": "Verwaltungsgemeinschaft Stallwang",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "stallwang.de",
+  "notiz": "Startseite ohne Sitzungen/RIS; kleine Seite",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09180126",
+  "name": "Gemeinde Oberau",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-oberau.de/gemeinderat",
+  "system": "Gemeindewebsite",
+  "beleg": "Titel 'Gemeinde Oberau', Schmiedeweg 10, 82496 Oberau",
+  "notiz": "Seite nennt Sitzungstermine und Beratungsgegenstände auf der Website; Details je Sitzung nicht geprüft",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08315095",
+  "name": "Gemeinde St. Peter",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Keine Gemeindewebsite gefunden (sankt-peter.de laut Vorrecherche Domain-Verkauf); Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09679143",
+  "name": "Gemeinde Hausen b.Würzburg",
+  "status": "nur-website",
+  "url": "https://www.hausen-wzbg.de/de/rathaus/rathaus/sitzungsprotokolle",
+  "system": "Gemeindewebsite",
+  "beleg": "Titel 'Gemeinde Hausen bei Würzburg'",
+  "notiz": "Nur Protokolle von Gemeinderat und Bauausschuss, keine Tagesordnung/RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09272134",
+  "name": "Gemeinde Mauth",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "gemeinde-mauth.de Gemeinderat-Seite",
+  "notiz": "Keine Sitzungen/Tagesordnung; kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372178",
+  "name": "Gemeinde Lohberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "gemeinde-lohberg.de Gemeinderat-Seite",
+  "notiz": "Nur Mitglieder, kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08425124",
+  "name": "Gemeinde Unterstadion",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "unterstadion.de Startseite",
+  "notiz": "Kein RIS/Sitzungsbereich gefunden",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-01057091",
+  "name": "Stadt Schwentinental",
+  "status": "nur-website",
+  "url": "https://www.schwentinental.de/verwaltung-politik/dokumentenwesen",
+  "system": "Eigene Website-Module (TYPO3)",
+  "beleg": "Titel 'Stadt Schwentinental', Kreis Plön, offizielle Domain",
+  "notiz": "Sitzungsplanung (Termine je Gremium) und Dokumentenwesen mit Einladungen/Vorlagen als PDF (api.schwentinental.cloud); kein RIS, Tagesordnungen nur als PDF",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-146265227",
+  "name": "Verwaltungsgemeinschaft Olbersdorf",
+  "status": "nur-website",
+  "url": "https://www.olbersdorf.de/de/gemeinde-buergerservice/ratsinformationen/",
+  "system": "Website 'Ratsinformationen'",
+  "beleg": "Gemeindeverwaltung Olbersdorf, 02785 Olbersdorf",
+  "notiz": "Nur Sitzungsbekanntmachungen und Beschlüsse je Jahr; Seite der Gemeinde Olbersdorf (Mitglied der VG)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-097775751",
+  "name": "Verwaltungsgemeinschaft Westendorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl geprüft, kein Menüpunkt Gemeinderat/RIS; Websuche (andere Fälle) ohne Treffer; Tagesordnungen vermutlich nur als Aushang/Amtsblatt",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160645055",
+  "name": "Erfüllende Gemeinde Nottertal-Heilingerhoehen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Menü (Kommunalpolitik je Ortsteil) geprüft, kein RIS verlinkt",
+  "durchlauf": 2
+ },
+ {
+  "id": "nds-033555403",
+  "name": "Samtgemeinde Dahlenburg",
+  "status": "gesperrt",
+  "url": "https://www.sg-dahlenburg.sitzung-online.de/ri/allris.net.asp",
+  "system": "ALLRIS (sitzung-online.de)",
+  "beleg": "Link von dahlenburg.de, Seite Politikinformationen (Samtgemeinde Dahlenburg, Lkr. Lüneburg)",
+  "notiz": "Direkter Abruf liefert 403 Forbidden; Adresse stammt von der offiziellen Samtgemeinde-Seite",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-091775124",
+  "name": "Verwaltungsgemeinschaft Oberneuching",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite (Joomla) mit Rathaus/Infos A-Z geprüft, kein Gemeinderat-/RIS-Menü; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09475169",
+  "name": "Stadt Schwarzenbach a.Wald",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Menü Rathaus/Termine geprüft, kein RIS; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14523040",
+  "name": "Stadt Bad Elster",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite (nur Tourismus/Staatsbad) und Websuche geprüft, kein RIS; Stadtratsinfos nicht erkennbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-094715403",
+  "name": "Verwaltungsgemeinschaft Steinfeld",
+  "status": "gesperrt",
+  "url": "https://www.steinfeld-oberfranken.de",
+  "system": "",
+  "beleg": "Website der VG Steinfeld (Königsfeld, Stadelhofen, Wattendorf) laut Suchtreffer",
+  "notiz": "Abruf: 'Zugriff verweigert'; Tagesordnungen erscheinen laut Suche als Bekanntmachung im Mitteilungsblatt (PDF) und auf Mitgliedsseiten (z. B. koenigsfeld-oberfranken.de)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09271122",
+  "name": "Gemeinde Grafling",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Seite Gemeinderat geprüft, kein RIS und keine Sitzungsliste",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08327055",
+  "name": "Gemeinde Seitingen-Oberflacht",
+  "status": "gefunden",
+  "url": "https://www.seitingen-oberflacht.de/rathaus-service/ratsinformationssystem/sitzungstermine",
+  "system": "Ratsinformationssystem der Gemeinde-Website (Sitzungskalender, Gremien, Berichte)",
+  "beleg": "Titel 'Gemeinde Seitingen-Oberflacht'; Menü Ratsinformationssystem",
+  "notiz": "Menü: Sitzungstermine, Sitzungskalender, Gremien, Mitglieder, Berichte aus öffentlichen Sitzungen",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372112",
+  "name": "Gemeinde Arnschwang",
+  "status": "nur-website",
+  "url": "https://www.arnschwang.de/de/rathaus-service/Niederschriften/",
+  "system": "Website Niederschriften",
+  "beleg": "Gemeinde Arnschwang, 93473 Arnschwang (Impressum/Kontakt)",
+  "notiz": "Nur Niederschriften öffentlicher Gemeinderatssitzungen (PDF), kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09171131",
+  "name": "Gemeinde Teising",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Seite Gemeinderat geprüft, kein RIS erkennbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08425123",
+  "name": "Gemeinde Untermarchtal",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite und Bürgerservice geprüft, kein RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14524120",
+  "name": "Stadt Hohenstein-Ernstthal",
+  "status": "nur-website",
+  "url": "",
+  "system": "",
+  "beleg": "Seiten /leben-und-wohnen/stadtrat/sitzungsplan/ und sitzungen-stadtrat/ auf hohenstein-ernstthal.de",
+  "notiz": "Sitzungsplan/Sitzungen Stadtrat vorhanden, kein RIS-Link; Tagesordnungen nicht bestätigt",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-06436012",
+  "name": "Gemeinde Sulzbach (Taunus)",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093745323",
+  "name": "Verwaltungsgemeinschaft Neustadt a.d.Waldnaab",
+  "status": "geteilt",
+  "url": "https://neustadt-waldnaab.ris.kommune-aktiv.de/?cvg=NW",
+  "system": "kommune-aktiv",
+  "beleg": "Link von neustadt-waldnaab.de/stadtverwaltung (Stadtrat, Sitzungstermine, Tagesordnungen)",
+  "notiz": "Gehört zur Stadt Neustadt a.d.Waldnaab; RIS hinter Cloudflare (Just a moment), nicht abrufbar. VG-Rat evtl. nicht enthalten.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160675012",
+  "name": "Verwaltungsgemeinschaft Fahner Höhe",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160615008",
+  "name": "Verwaltungsgemeinschaft Hanstein-Rusteberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-095715507",
+  "name": "Verwaltungsgemeinschaft Dentlein a.Forst",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-096795654",
+  "name": "Verwaltungsgemeinschaft Röttingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09275127",
+  "name": "Gemeinde Hofkirchen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-16072015",
+  "name": "Stadt Schalkau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09276121",
+  "name": "Gemeinde Frauenau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372117",
+  "name": "Gemeinde Chamerau",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "keine Website, nur flach",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372175",
+  "name": "Gemeinde Willmering",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14522470",
+  "name": "Gemeinde Rechenberg-Bienenmühle",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08336106",
+  "name": "Gemeinde Häg-Ehrsberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl und Websuche geprüft, kein RIS-Link/Sitzungsseite mit TOPs gefunden (teils JS-Seiten, Menü nicht vollständig auswertbar)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09473159",
+  "name": "Stadt Rödental",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Seite stadtrat-und-gremien per curl ohne Sitzungen/RIS-Link",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-091765115",
+  "name": "Verwaltungsgemeinschaft Eichstätt",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website eichstaett.de ist die Stadt Eichstätt; Unterseite /stadtrat/ ohne RIS-Link per curl, keine Websuche (Suche unergiebig)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-092745221",
+  "name": "Verwaltungsgemeinschaft Furth",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Link per curl; keine eigene Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-10046113",
+  "name": "Gemeinde Namborn",
+  "status": "gesperrt",
+  "url": "https://www.namborn.de/Ratsinfo/Log-In/",
+  "system": "Ratsinfo (Login)",
+  "beleg": "Seite namborn.de, Menü Ratsinfo/Log-In mit Passwortfeld",
+  "notiz": "Ratsinfo nur mit Anmeldung; nicht weiter geprüft",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09172132",
+  "name": "Gemeinde Schönau a.Königssee",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite ohne RIS/Sitzungsseite (Site ist eine App-Seite, wenig Text)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160745007",
+  "name": "Verwaltungsgemeinschaft Hügelland/Täler",
+  "status": "nur-website",
+  "url": "https://hp.huegelland-taeler.de/",
+  "system": "",
+  "beleg": "",
+  "notiz": "Nur Veröffentlichungen von Beschlüssen der Gemeinschaftsversammlung als PDF; kein RIS gefunden",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09777130",
+  "name": "Gemeinde Germaringen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche: nur Gemeindeblatt-PDFs; Startseite ohne RIS-Link",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09374133",
+  "name": "Gemeinde Luhe-Wildenau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Startseite per curl ohne Links (evtl. JS)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09176131",
+  "name": "Gemeinde Hepberg",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl ohne verwertbare Links; keine Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09275130",
+  "name": "Gemeinde Kirchham",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite verweist auf /buerger, nicht ausgewertet; keine Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-16075131",
+  "name": "Stadt Gefell",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite ohne RIS-Link per curl; keine Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-16069061",
+  "name": "Gemeinde Masserberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Seite /rathaus/gemeinderat ohne Sitzungen/RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09276134",
+  "name": "Gemeinde Patersdorf",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite /rathaus/gemeinderat.html ohne Sitzungen/RIS; verweist auf buergerservice-portal.de (kein RIS); keine neue Websuche",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08117031",
+  "name": "Gemeinde Hohenstadt",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche ohne Treffer; Startseite per curl ohne Links",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-10046118",
+  "name": "Gemeinde Tholey",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "nds-03361003",
+  "name": "Gemeinde Dörverden",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-091905177",
+  "name": "Verwaltungsgemeinschaft Huglfing",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite leitet weiter (302), Seite nicht auswertbar; Muster-Probe ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160635056",
+  "name": "Erfüllende Gemeinde Geisa",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160765056",
+  "name": "Erfüllende Gemeinde Langenwetzendorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09672112",
+  "name": "Gemeinde Bad Bocklet",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09371154",
+  "name": "Gemeinde Ursensollen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-092715205",
+  "name": "Verwaltungsgemeinschaft Moos",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Kandidat https://moos.ris-portal.de/ (Gremium Gemeinderat, Büllefestausschuss) nicht als diese VG belegt, Name mehrdeutig; vg-moos.de verlinkt nicht darauf.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14522120",
+  "name": "Gemeinde Erlau",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Website nicht erreichbar (Verbindung schlägt fehl); Websuche ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14522220",
+  "name": "Gemeinde Großweitzschen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372155",
+  "name": "Gemeinde Runding",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09472121",
+  "name": "Gemeinde Bischofsgrün",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09172124",
+  "name": "Gemeinde Marktschellenberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08426020",
+  "name": "Gemeinde Betzenweiler",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche und Startseite/Menü (Rathaus/Gemeinderat) geprüft, kein RIS oder Sitzungsseite mit Tagesordnung gefunden; gremien.info/ris.komuna.net/ris-portal/digitalfabrix/komm.one-Muster geprüft ohne Treffer.",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-150845051",
+  "name": "Verbandsgemeinde An der Finne",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite nur Weiterleitung auf altes CMS (webNC), keine Menüpunkte zu Gremien; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-091905174",
+  "name": "Verwaltungsgemeinschaft Altenstadt",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche (ohne Treffer) und Startseite/Menü geprüft, kein RIS erkennbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14625310",
+  "name": "Stadt Lauta",
+  "status": "nur-website",
+  "url": "https://www.lauta.de/sitzungstermine.html",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite 'Sitzungstermine' (lauta.de/sitzungstermine.html): nur Terminliste, Tagesordnung per Aushang",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093745329",
+  "name": "Verwaltungsgemeinschaft Schirmitz",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche (ohne Treffer) und Startseite/Menü geprüft, kein RIS erkennbar; Menü Gemeinderat",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-093745326",
+  "name": "Verwaltungsgemeinschaft Kirchenthumbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche (ohne Treffer) und Startseite/Menü geprüft, kein RIS erkennbar; Menü Gemeinderat",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09476178",
+  "name": "Gemeinde Stockheim",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche (ohne Treffer) und Startseite/Menü geprüft, kein RIS erkennbar; Seite Gemeinderat, digitalfabriX nur Webdesign-Footer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-096735637",
+  "name": "Verwaltungsgemeinschaft Fladungen",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "vgfladungen.rhoen-saale.net per https nicht erreichbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09371144",
+  "name": "Gemeinde Poppenricht",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche (ohne Treffer) und Startseite/Menü geprüft, kein RIS erkennbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09276143",
+  "name": "Gemeinde Teisnach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche (ohne Treffer) und Startseite/Menü geprüft, kein RIS erkennbar; nur Marktgemeinderat-Mitgliederliste und Terminkalender",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08225024",
+  "name": "Gemeinde Fahrenbach",
+  "status": "nur-website",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Menü Kommunalpolitik/Sitzungstermine und Gemeinderat Aktuell vorhanden, keine Tagesordnungspunkte erkennbar; kein RIS-Link",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14626420",
+  "name": "Stadt Ostritz",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ostritz.de per https nicht erreichbar",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09574146",
+  "name": "Gemeinde Ottensoos",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "ottensoos.de leitet auf eingang.asp um, Seiten per curl nicht abrufbar; Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09477148",
+  "name": "Gemeinde Presseck",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche (ohne Treffer) und Startseite/Menü geprüft, kein RIS erkennbar; nur Seite /rathaus/gemeinderat",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08237032",
+  "name": "Gemeinde Grömbach",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Websuche (ohne Treffer) und Startseite/Menü geprüft, kein RIS erkennbar; Seiten Gemeinderat und Termine",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-097795722",
+  "name": "Verwaltungsgemeinschaft Ries",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-097725706",
+  "name": "Verwaltungsgemeinschaft Nordendorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-092725211",
+  "name": "Verwaltungsgemeinschaft Schönberg",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl ohne RIS-Link; keine eigene Websuche (Suche ergebnisarm)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09279113",
+  "name": "Gemeinde Eichendorf",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09772141",
+  "name": "Gemeinde Fischach",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl ohne RIS-Link; keine eigene Websuche (Suche ergebnisarm)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-160615013",
+  "name": "Verwaltungsgemeinschaft Westerwald-Obereichsfeld",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl ohne RIS-Link; keine eigene Websuche (Suche ergebnisarm)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14729360",
+  "name": "Stadt Regis-Breitingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-14521400",
+  "name": "Gemeinde Mildenau",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-16062063",
+  "name": "Gemeinde Werther",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08336043",
+  "name": "Gemeinde Inzlingen",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372146",
+  "name": "Gemeinde Pemfling",
+  "status": "ungeprueft",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl ohne RIS-Link; keine eigene Websuche (Suche ergebnisarm)",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-09372157",
+  "name": "Gemeinde Schönthal",
+  "status": "nur-website",
+  "url": "https://www.gemeinde-schoenthal.de/rathaus/gemeinderat/",
+  "system": "",
+  "beleg": "",
+  "notiz": "Seite Gemeinderat verweist nur auf Bekanntmachung der Sitzung (PDF), keine Tagesordnungsseite; Websuche ohne RIS",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08136084",
+  "name": "Gemeinde Wört",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ },
+ {
+  "id": "de-08225113",
+  "name": "Gemeinde Zwingenberg",
+  "status": "nichts",
+  "url": "",
+  "system": "",
+  "beleg": "",
+  "notiz": "Startseite per curl auf RIS-Links geprueft, Websuche ohne Treffer",
+  "durchlauf": 2
+ }
+]
