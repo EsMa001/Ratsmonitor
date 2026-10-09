@@ -36,7 +36,9 @@ export async function analysePending(db,region='all',{after=''}={}){
    }
    // One history insertion per batch keeps the 500-article action below the D1 query limit.
    statements.push(db.prepare(`INSERT OR IGNORE INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) SELECT ?||':'||id,id,'rule-label',json_extract(payload,'$.classification.method'),json_extract(payload,'$.classification.inputHash'),?,json_extract(payload,'$.classification') FROM topics WHERE id IN (${group.map(()=>'?').join(',')}) AND json_extract(payload,'$.metadata.lastProcessedAt')=?`).bind(id,started,...group.map(t=>t.id),started));
-   const results=await db.batch(statements);processed+=results.slice(0,-1).reduce((n,r)=>n+Number(r.meta?.changes||0),0);
+   const results=await db.batch(statements);// One report per updated statement: the changes of a statement also count the rows its triggers write (search cards, revisions,
+   // history), which inflated the number about sixfold.
+   processed+=results.slice(0,-1).filter(r=>Number(r.meta?.changes||0)>0).length;
   }
   const more=rows.results.length>=ANALYSIS_BATCH_SIZE,last=rows.results.at(-1)?.id||cursor;
   // Counting the whole stock (over a million reports, three JSON reads each) would cost more than the package itself:
