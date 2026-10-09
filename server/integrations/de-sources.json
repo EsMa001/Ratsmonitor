@@ -13520,6 +13520,17 @@
     "foundBy": "epfendorf-sitzungsdienst.komm.one"
   },
   {
+    "id": "de-08325036",
+    "name": "Gemeinde Lauterbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://lauterbach-schwarzwald.ris-portal.de/",
+    "verifiedSource": "https://lauterbach-schwarzwald.ris-portal.de/startseite",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar; Gemeinde Lauterbach (Schwarzwald), Landkreis Rottweil."
+  },
+  {
     "id": "de-08325045",
     "name": "Stadt Oberndorf am Neckar",
     "kind": "city",
@@ -17972,6 +17983,17 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
     "foundBy": "ris.komuna.net/vgsteinkirchen"
+  },
+  {
+    "id": "de-091775126",
+    "name": "Verwaltungsgemeinschaft Wartenberg",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-vg-wartenberg.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://www.wartenberg.de/sitzungstermine",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-09178120",
