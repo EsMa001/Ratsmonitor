@@ -3,7 +3,7 @@
      node scripts/refresh-admin.mjs [--regions] [--full] [--build <ziel>] [--quiet]
    --regions (Standard): Werte je Gebiet (region_stats, region_series) für geänderte Gebiete, Schritt für Schritt bis fertig.
    --full: alle Gebiete als veraltet markieren und neu rechnen (nach Änderungen an den Formeln oder von Hand geänderten Daten).
-   --build <ziel>: einen Bauauftrag ganz durchlaufen (z. B. keywords, quality:all).
+   --build <ziel>: einen Bauauftrag ganz durchlaufen (z. B. keywords, quality:all); ohne laufenden Bau startet er einen.
    Fortsetzbar: jeder Schritt ist für sich gültig. Wird beim Start des Dev-Servers im Hintergrund aufgerufen
    (run-framework.mjs, abschaltbar mit RM_SKIP_ADMIN_REFRESH=1). Ohne Migration 0016 passiert nichts. */
 import {DatabaseSync} from 'node:sqlite';

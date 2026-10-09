@@ -1,20 +1,17 @@
 // Computing steps of the administration (rule R4 of requirements/admin-performance-konzept.md): pages only read stored
 // values; computing happens in short POST steps under one lease, each continuing where the last one stopped.
-// target 'regions': values per area (region-facts.mjs). Builds of global evaluations are added by admin-builds.mjs.
+// target 'regions': values per area (region-facts.mjs); other targets are builds of global evaluations (admin-builds.mjs).
 import {refreshRegionFacts} from './region-facts.mjs';
 import {pendingRegions} from './region-series.mjs';
 import {processingState} from './processing-status.mjs';
 import {lockedUntil} from './import-lock.mjs';
 import {AdminError} from './admin-access.mjs';
+import {isBuildTarget,buildTargets,startBuild,stepBuild,cancelBuild,buildStatus} from './admin-builds.mjs';
 const LEASE='admin-refresh-lease';
 // A lease outlives its step by this much, so a step stopped without its finally (worker cancelled) frees it soon.
 const GRACE_MS=20000;
 // A job whose state was not written for this long is no longer driven by any page.
 const JOB_IDLE_MS=300000;
-const builders=new Map();
-/** Registers the steps of a build target (admin-builds.mjs): {step(db,{action,restart,budgetMs,now}),status(db)}. */
-export function registerBuild(match,builder){builders.set(match,builder);}
-const builderOf=target=>{for(const [match,builder] of builders)if(typeof match==='string'?match===target:match.test(target))return builder;return null;};
 /** Lease without waiting: fn runs only if the lease is free; otherwise {busy:true,until}. */
 export async function withRefreshLease(db,budgetMs,fn,{now=Date.now()}={}){
  const value=String(now+budgetMs+GRACE_MS);
@@ -23,7 +20,7 @@ export async function withRefreshLease(db,budgetMs,fn,{now=Date.now()}={}){
  try{return await fn();}
  finally{await db.prepare('DELETE FROM system_state WHERE key=? AND value=?').bind(LEASE,value).run();}
 }
-const validTarget=target=>target==='regions'||!!builderOf(target);
+const validTarget=target=>target==='regions'||isBuildTarget(target);
 /**
  * One step: action 'step' | 'start' | 'cancel'; target 'regions' or a registered build.
  * Returns {target,state:'running'|'done'|'busy'|'conflict',done,total,pending,ms,until?}.
@@ -39,7 +36,9 @@ export async function refreshStep(db,{action='step',target='regions',restart=fal
    const left=await pendingRegions(db),pending=Number(left.pending||0)+Number(left.unbuilt||0);
    return {target,state:pending?'running':'done',done:Number(left.total||0)-pending,total:Number(left.total||0),pending};
   }
-  return builderOf(target).step(db,{target,action,restart,budgetMs,now});
+  if(action==='cancel'){await cancelBuild(db,target);return {target,state:'done',done:0,total:0,pending:0,cancelled:true};}
+  if(action==='start')await startBuild(db,target,{restart,now});
+  return stepBuild(db,target,{budgetMs,now});
  });
  if(result.busy)return {target,state:'busy',done:0,total:0,pending:0,until:result.until,ms:Date.now()-started};
  return {...result,ms:Date.now()-started};
@@ -59,6 +58,6 @@ export async function refreshStatus(db,{now=new Date()}={}){
  const jobRunning=!!job&&['queued','running'].includes(job.status)&&Number.isFinite(updated)&&now.getTime()-updated<JOB_IDLE_MS;
  const lock=lockedUntil(value('import-lock')),lease=lockedUntil(value(LEASE));
  const builds={};
- for(const [match,builder] of builders)if(typeof match==='string')builds[match]=await builder.status(db);
+ for(const target of buildTargets()){const b=await buildStatus(db,target,{now});if(b)builds[target]=b;}
  return {regions,builds,...(lease>now.getTime()?{busy:{until:new Date(lease).toISOString()}}:{}),jobRunning,importBusyUntil:lock>now.getTime()?new Date(lock).toISOString():null};
 }

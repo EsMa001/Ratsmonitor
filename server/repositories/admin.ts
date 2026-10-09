@@ -5,10 +5,10 @@ import {adminTimeline} from '../integrations/admin-timeline.mjs';
 import {adminCoverage} from '../integrations/admin-coverage.mjs';
 import {adminAtlas} from '../integrations/admin-atlas.mjs';
 import {computeEstimate,estimateHead,storedEstimateText} from '../integrations/admin-estimate-store.mjs';
-import {adminKeywords} from '../integrations/admin-keywords.mjs';
+import {readStored,storedMeta} from '../integrations/admin-stored.mjs';
+import {buildStatus} from '../integrations/admin-builds.mjs';
 import {readDebug} from '../integrations/import-trace.mjs';
 import {refreshStep,refreshStatus} from '../integrations/admin-refresh.mjs';
-import {atRevision} from '../integrations/revision-cache.mjs';
 import {adminStand,derivedStand,storedStand,VERSIONS} from '../integrations/admin-stand.mjs';
 import {storedQualityChecks} from '../integrations/quality-check.mjs';
 import {fnv} from '../services/admin-etag.mjs';
@@ -23,8 +23,6 @@ export async function getAdminDashboard({review=true}:{review?:boolean}={}):Prom
 export async function getAdminReview(issue:string,region:string){if(!env.DB)throw Error('Datenbank fehlt');return adminReview(env.DB,issue,region);}
 // The estimate is kept in the database and computed only on request: GET reads (estimateView), POST computes.
 export async function computeAdminEstimate(){if(!env.DB)throw Error('Datenbank fehlt');return computeEstimate(env.DB);}
-// Fünf Läufe über alle Vorgänge (61 s bei 900.000): gehalten, solange sich der Datenstand nicht ändert.
-export async function getAdminKeywords(){if(!env.DB)throw Error('Datenbank fehlt');const db=env.DB;return atRevision(db,'keywords',()=>adminKeywords(db));}
 export async function getRunDebug(region:string){if(!env.DB)throw Error('Datenbank fehlt');return readDebug(env.DB,region);}
 // Computing steps (server/integrations/admin-refresh.mjs): values per area take steps of 5 s, builds of 8 s.
 export async function getRefreshStatus(){if(!env.DB)throw Error('Datenbank fehlt');return refreshStatus(env.DB);}
@@ -57,4 +55,13 @@ export const qualityView=()=>{
  let kept:{checks:Record<string,{checkedAt?:string;stale?:boolean}>;currentRevision:number}={checks:{},currentRevision:0};
  const latest=()=>Object.values(kept.checks).map(c=>c.checkedAt||'').sort().at(-1)||null;
  return view(s=>['q1',latest(),s.stockSum,s.content],async(_db,s)=>({...kept,stand:{...storedStand(s,null),computedAt:latest(),stale:Object.values(kept.checks).some(c=>c.stale)}}),undefined,async db=>{kept=await storedQualityChecks(db) as typeof kept;});
+};
+// Keywords are counted by a build in steps (admin-builds.mjs, "Neu zählen") and stored; the page reads the stored text
+// unparsed, with the stand (and a running build) in front.
+export const keywordsView=()=>{
+ let head:{computedAt:string;stockSum?:number}|null=null,build:Awaited<ReturnType<typeof buildStatus>>=null;
+ return view(s=>['k1',head?.computedAt,head?.stockSum,s.stockSum,build?.state,build?.done],async(db,s)=>{
+  const stand=storedStand(s,head,build),stored=await readStored(db,'keywords');
+  return stored&&stored.text.length>2?'{"stand":'+JSON.stringify(stand)+',"computed":true,'+stored.text.slice(1):{computed:false,stand};
+ },undefined,async db=>{[head,build]=await Promise.all([storedMeta(db,'keywords'),buildStatus(db,'keywords')]);});
 };
