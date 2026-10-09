@@ -72,13 +72,13 @@ export function DetailPage(){
           {/* Hauptspalte: Inhalt und Verlauf */}
           <div className="min-w-0">
             <section>
-              <h2 className="mb-3 border-l-2 border-teal-600 pl-4 text-[18px] font-semibold text-slate-900">{t.contentAnalysis?.status==='completed'?'Inhaltszusammenfassung':rule?'Auszug aus der Vorlage':'Worum es geht'}</h2>
+              <h2 className="mb-3 text-[18px] font-semibold text-slate-900">{t.contentAnalysis?.status==='completed'?'Inhaltszusammenfassung':rule?'Auszug aus der Vorlage':'Worum es geht'}</h2>
               {rule?<div className="mb-4"><Excerpt text={rule.long} source={excerptSource} size="long"/></div>:<div className="mb-4 border-l-2 border-teal-600 pl-4">{longText?.map((p,i)=><p key={i} className="mb-4 max-w-none text-[16px] leading-relaxed text-slate-900 last:mb-0">{p}</p>)}</div>}
               <p className="max-w-none border-l-2 border-teal-600 pl-4 text-[14px] text-slate-500">{status.description}</p>
             </section>
 
             <section className="mt-10">
-              <h2 className="mb-4 border-l-2 border-teal-600 pl-4 text-[18px] font-semibold text-slate-900">Verlauf</h2>
+              <h2 className="mb-4 text-[18px] font-semibold text-slate-900">Verlauf</h2>
               {sorted.length?(
                 /* Zeitleiste: Punkt je Sitzung, der jüngste Schritt in Petrol; schmal senkrecht, ab 768 px quer (umbricht, wenn es nicht passt) */
                 <ol className="m-0 list-none p-0 md:flex md:flex-wrap md:gap-x-8 md:gap-y-8">
@@ -103,7 +103,7 @@ export function DetailPage(){
             </section>
             {/* Originalunterlagen prominent unter dem Verlauf: je Dokument eine Zeile mit Symbol und Link */}
             <section className="mt-10">
-              <h2 className="mb-1 border-l-2 border-teal-600 pl-4 text-[18px] font-semibold text-slate-900">Originalunterlagen</h2>
+              <h2 className="mb-1 text-[18px] font-semibold text-slate-900">Originalunterlagen</h2>
               <p className="mb-4 text-[14px] text-slate-500">Originaltitel: {t.officialTitle}</p>
               <p className="mb-4 text-[13px] text-slate-500">Ohne Gewähr. Maßgeblich sind die Originalunterlagen.</p>
               {docs.length?(
