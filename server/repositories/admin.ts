@@ -4,7 +4,7 @@ import {loadAdminData,adminReview} from '../integrations/admin-data.mjs';
 import {adminTimeline} from '../integrations/admin-timeline.mjs';
 import {adminCoverage} from '../integrations/admin-coverage.mjs';
 import {adminAtlas} from '../integrations/admin-atlas.mjs';
-import {storedEstimate,computeEstimate} from '../integrations/admin-estimate-store.mjs';
+import {computeEstimate,estimateHead,storedEstimateText} from '../integrations/admin-estimate-store.mjs';
 import {adminKeywords} from '../integrations/admin-keywords.mjs';
 import {readDebug} from '../integrations/import-trace.mjs';
 import {refreshStep,refreshStatus} from '../integrations/admin-refresh.mjs';
@@ -46,13 +46,11 @@ type Stand=Awaited<ReturnType<typeof adminStand>>&Record<string,any>;
 export const timelineView=(basis:string)=>view(s=>['t1',VERSIONS,basis,s.stockSum,s.seriesStamp,day()],async(db,s)=>({...await adminTimeline(db,{basis}),stand:derivedStand(s)}),()=>{if(!Object.hasOwn(TIMELINE_BASES,basis))throw new AdminError(400,'Ungültiger Zeitbezug.');});
 export const coverageView=()=>view(s=>['c1',VERSIONS,s.stockSum,s.seriesStamp,s.statsStamp,STATIC_VER,day()],async(db,s)=>({...await adminCoverage(db),stand:derivedStand(s)}));
 export const atlasView=()=>view(s=>['at1',VERSIONS,s.stockSum,s.statsStamp,s.content,STATIC_VER,hour()],async(db,s)=>({...await adminAtlas(db),stand:derivedStand(s,'stats')}));
-// The estimate is stored (admin-estimate-store.mjs); its tag reads the head of the stored row only.
+// The estimate is stored (admin-stored.mjs); its tag reads the head of the stored row only, the answer passes the stored
+// text on unparsed.
 export const estimateView=()=>{
- let head:{c:string|null;k:number|null}={c:null,k:null};
- return view(s=>['e1',head.c,head.k,s.stockSum],async(db,s)=>({...await storedEstimate(db),stand:storedStand(s,head.c?{computedAt:head.c,stockSum:head.k??undefined}:null)}),undefined,async db=>{
-  const row=await db.prepare("SELECT json_extract(value,'$.computedAt') c,json_extract(value,'$.stockSum') k FROM system_state WHERE key='admin-estimate'").first<{c:string|null;k:number|null}>();
-  head={c:row?.c??null,k:typeof row?.k==='number'?row.k:null};
- });
+ let head:{computedAt:string;stockSum?:number;content:number}|null=null;
+ return view(s=>['e1',head?.computedAt,head?.stockSum,s.stockSum],async(db,s)=>{const stand=storedStand(s,head);return await storedEstimateText(db,stand)??{computed:false,stand};},undefined,async db=>{head=await estimateHead(db) as typeof head;});
 };
 // The quality checks are stored with their time (quality-check.mjs); 24 KB, read with the tag.
 export const qualityView=()=>{
