@@ -2,6 +2,7 @@
 import {memo,useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {X} from 'lucide-react';
 import {StandLine} from '@/components/admin-stand';
+import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import type {Stand} from '@/shared/admin-types';
 import {AdminHeader,adminHref} from '@/components/admin-chrome';
 import {Button} from '@/components/ui/button';
@@ -45,6 +46,8 @@ export function AdminAtlas({displayName,signOutPath}:{displayName:string;signOut
  useEffect(()=>{const c=new AbortController();
   Promise.all(FILES.map((file,i)=>fetch(file,{signal:c.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<{regions:Shape[];states?:{path:string}[]}>;}).catch(e=>{if(i===0||e.name==='AbortError')throw e;return {regions:[] as Shape[],states:[] as {path:string}[]};}))).then(parts=>setGeo({shapes:parts.flatMap(p=>p.regions),states:(parts[0].states||[]).map(s=>s.path)})).catch(e=>{if(e.name!=='AbortError')setGeoError(true);});
   return()=>c.abort();},[]);
+ // Values per area just computed by the catch-up steps (admin-store.ts): read again.
+ useEffect(()=>{const again=()=>setAttempt(a=>a+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);
  // "farbe" in the address preselects the colour of the map (links of the overview).
  useEffect(()=>{const f=new URLSearchParams(window.location.search).get('farbe');if(f&&COLOR_MODES.includes(f))setColorBy(f);},[]);
  // Every area with its reach and freshness bucket, judged at the time of the data.

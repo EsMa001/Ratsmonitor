@@ -2,6 +2,7 @@
 import {useEffect,useMemo,useState} from 'react';
 import {RefreshCw,MapPinned,Play,ArrowUpRight} from 'lucide-react';
 import {StandLine} from '@/components/admin-stand';
+import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import type {Stand} from '@/shared/admin-types';
 import {AdminHeader,adminHref} from '@/components/admin-chrome';
 type Share={areas:number;population:number;lands:Record<string,[number,number]>};
@@ -65,6 +66,8 @@ export function AdminOverview({displayName,signOutPath}:{displayName:string;sign
  useEffect(()=>{const c=new AbortController();setError('');
   fetch('/api/admin/coverage',{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Coverage&{error?:string};if(!r.ok)throw Error(d.error||'Die Abdeckung konnte nicht geladen werden.');setData(d);}).catch(e=>{if(!c.signal.aborted)setError(e instanceof Error?e.message:'Die Abdeckung konnte nicht geladen werden.');});
   return()=>c.abort();},[attempt]);
+ // Values per area just computed by the catch-up steps (admin-store.ts): read again.
+ useEffect(()=>{const again=()=>setAttempt(a=>a+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);
  const view=useMemo(()=>{
   if(!data)return null;
   const now=Date.parse(data.asOf);

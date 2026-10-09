@@ -111,7 +111,7 @@ export async function regionFigures(db,{now=new Date()}={}){
 }
 /**
  * Reports by status from the values per area (region_series), or null if an area with reports has no row there yet
- * (the caller then counts on the index).
+ * (the caller then counts on the index, as it does while areas are pending).
  */
 async function seriesStatuses(db,areas){
  const series=await readSeries(db,{columns:['statuses']});
@@ -145,7 +145,7 @@ export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushCo
   db.prepare("SELECT key,value FROM system_state WHERE key='import-lock'"),
   db.prepare("SELECT max(started_at) lastScheduledAt FROM import_runs WHERE json_extract(details,'$.trigger')='scheduled'")
  ];
- const [[scan,statuses],[coverage,runRows,extra,lockRows,scheduled],state]=await Promise.all([figures?seriesStatuses(db,figures.rows.filter(r=>r.count>0).map(r=>r.region_id)).then(async statuses=>[{results:figures.rows},statuses||(await db.batch([db.prepare(`SELECT status AS id,count(*) count FROM topics INDEXED BY idx_topics_canonical_region_status WHERE ${canonical} GROUP BY status`)]))[0]]):atRevision(db,'overview|'+now.toISOString().slice(0,13),scanned),db.batch(queries),processingState(db)]);
+ const [[scan,statuses],[coverage,runRows,extra,lockRows,scheduled],state]=await Promise.all([figures?(figures.pending?Promise.resolve(null):seriesStatuses(db,figures.rows.filter(r=>r.count>0).map(r=>r.region_id))).then(async statuses=>[{results:figures.rows},statuses||(await db.batch([db.prepare(`SELECT status AS id,count(*) count FROM topics INDEXED BY idx_topics_canonical_region_status WHERE ${canonical} GROUP BY status`)]))[0]]):atRevision(db,'overview|'+now.toISOString().slice(0,13),scanned),db.batch(queries),processingState(db)]);
  const areas=new Map(scan.results.map(r=>[r.region_id,r])),sum=key=>scan.results.reduce((n,r)=>n+Number(r[key]||0),0),online=sum('count');
  const {stored,...other}=extra.results[0];
  // Merged reports are all stored rows that are not articles of their own.

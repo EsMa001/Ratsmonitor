@@ -14,6 +14,7 @@ import {storedQualityChecks} from '../integrations/quality-check.mjs';
 import {fnv} from '../services/admin-etag.mjs';
 import {AdminError} from '../integrations/admin-access.mjs';
 import {TIMELINE_BASES} from '@/shared/timeline.mjs';
+import {STATIC_VER} from '../integrations/admin-static-version.mjs';
 import type {AdminDashboard} from '@/shared/admin-types';
 // review:false leaves out the review list of page 2 (a scan of its own); its total is still reported.
 export async function getAdminDashboard({review=true}:{review?:boolean}={}):Promise<AdminDashboard>{
@@ -30,7 +31,7 @@ export async function runRefreshStep({action,target,restart}:{action:string;targ
 // Reading views with ETag and stand (rule R2/R3 of requirements/admin-performance-konzept.md): tag() reads the stand
 // (a few small queries) and names the answer; build() runs only if the browser does not hold that answer already.
 // Class B views derive from the values per area; class C views are stored evaluations.
-const STATIC_VER='0';
+// STATIC_VER: version of the deployed catalog, history, atlas and check names (admin-static-version.mjs).
 const day=()=>new Date().toISOString().slice(0,10),hour=()=>new Date().toISOString().slice(0,13);
 type View={tag:()=>Promise<string>;build:()=>Promise<unknown>};
 function view(parts:(s:Stand)=>unknown[],build:(db:D1Database,s:Stand)=>Promise<unknown>,check?:()=>void,load?:(db:D1Database)=>Promise<void>):View{
@@ -48,13 +49,13 @@ export const atlasView=()=>view(s=>['at1',VERSIONS,s.stockSum,s.statsStamp,s.con
 // text on unparsed.
 export const estimateView=()=>{
  let head:{computedAt:string;stockSum?:number;content:number}|null=null;
- return view(s=>['e1',head?.computedAt,head?.stockSum,s.stockSum],async(db,s)=>{const stand=storedStand(s,head);return await storedEstimateText(db,stand)??{computed:false,stand};},undefined,async db=>{head=await estimateHead(db) as typeof head;});
+ return view(s=>['e1',head?.computedAt,head?.stockSum,s.stockSum,s.content],async(db,s)=>{const stand=storedStand(s,head);return await storedEstimateText(db,stand)??{computed:false,stand};},undefined,async db=>{head=await estimateHead(db) as typeof head;});
 };
 // The quality checks are stored with their time (quality-check.mjs); 24 KB, read with the tag.
 export const qualityView=()=>{
  let kept:{checks:Record<string,{checkedAt?:string;stale?:boolean}>;currentRevision:number}={checks:{},currentRevision:0};
  const latest=()=>Object.values(kept.checks).map(c=>c.checkedAt||'').sort().at(-1)||null;
- return view(s=>['q1',latest(),s.stockSum,s.content],async(_db,s)=>({...kept,stand:{...storedStand(s,null),computedAt:latest(),stale:Object.values(kept.checks).some(c=>c.stale)}}),undefined,async db=>{kept=await storedQualityChecks(db) as typeof kept;});
+ return view(s=>['q1',latest(),s.stockSum,s.content,STATIC_VER],async(_db,s)=>({...kept,stand:{...storedStand(s,null),computedAt:latest(),stale:Object.values(kept.checks).some(c=>c.stale)}}),undefined,async db=>{kept=await storedQualityChecks(db) as typeof kept;});
 };
 // Keywords are counted by a build in steps (admin-builds.mjs, "Neu zählen") and stored; the page reads the stored text
 // unparsed, with the stand (and a running build) in front.

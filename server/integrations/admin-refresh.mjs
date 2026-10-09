@@ -34,7 +34,7 @@ export async function refreshStep(db,{action='step',target='regions',restart=fal
    const step=await refreshRegionFacts(db,{budgetMs,now});
    if(step.missing)return {target,state:'done',missing:step.missing,done:0,total:0,pending:0};
    const left=await pendingRegions(db),pending=Number(left.pending||0)+Number(left.unbuilt||0);
-   return {target,state:pending?'running':'done',done:Number(left.total||0)-pending,total:Number(left.total||0),pending};
+   return {target,state:pending?'running':'done',done:Number(left.total||0)-pending,total:Number(left.total||0),pending,unbuilt:Number(left.unbuilt||0)};
   }
   if(action==='cancel'){await cancelBuild(db,target);return {target,state:'done',done:0,total:0,pending:0,cancelled:true};}
   if(action==='start')await startBuild(db,target,{restart,now});

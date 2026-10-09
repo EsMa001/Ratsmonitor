@@ -9,7 +9,7 @@ import {useEffect,useState} from 'react';
 export const ADMIN_REGIONS_DONE='admin:regions-done';
 export type CatchUp={pending:number;unbuilt:number;running:boolean;missing:boolean};
 type Status={regions:{pending?:number;unbuilt?:number;total?:number;missing?:string};jobRunning:boolean;importBusyUntil:string|null};
-type Step={state:'running'|'done'|'busy'|'conflict';pending:number;total:number};
+type Step={state:'running'|'done'|'busy'|'conflict';pending:number;unbuilt?:number;total:number};
 // Checks while nothing is left, while a job runs, and after a failed request.
 const IDLE_MS=120000,JOB_MS=30000,ERROR_MS=60000,BUSY_MS=3000;
 
@@ -42,7 +42,8 @@ export function useRegionCatchUp():CatchUp{
      if(step.state==='busy'){await wait(BUSY_MS);continue;}
      if(step.state==='conflict')continue;
      computed=true;
-     setState(s=>({...s,pending:step.pending,unbuilt:Math.min(s.unbuilt,step.pending),running:step.state==='running'}));
+     // step.pending counts stale and never computed areas together.
+     setState(s=>({...s,pending:Math.max(0,step.pending-(step.unbuilt||0)),unbuilt:step.unbuilt||0,running:step.state==='running'}));
      if(step.state==='done')break;
     }
     setState(s=>({...s,running:false}));

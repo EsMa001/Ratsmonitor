@@ -19,6 +19,9 @@ const PREFIX='admin-build:';
 const CHUNK_ROWS=25000;
 // A build whose state was not written for this long is shown as paused; a finish that stopped is taken over after it.
 const ACTIVE_MS=60000,FINISH_GRACE_MS=30000;
+// A paused build is continued by a new start within this time; an older one is started anew (its counts would mix
+// an old and a new stock).
+const RESUME_MS=3600000;
 const FINISHING='\u0000finish';
 const GUARD="EXISTS(SELECT 1 FROM system_state s WHERE s.key=? AND json_extract(s.value,'$.id')=? AND json_extract(s.value,'$.next')=?)";
 const add=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b))out[k]=(out[k]||0)+v;return out;};
@@ -34,7 +37,11 @@ const TARGETS={
  keywords:{
   usesAgg:true,
   async chunk(db,ids,{build,guard,guardArgs,state}){const {sums,statements}=await keywordChunk(db,ids,{build,guard,guardArgs});return {partial:add(state.partial,sums),statements};},
-  async finish(db,state,now){const result=await keywordFinish(db,{build:state.id,sums:state.partial,now});await writeStored(db,'keywords',result,{stockSum:state.stockSum,content:state.content,ms:state.ms,computedAt:now.toISOString()});},
+  async finish(db,state,now){
+   // Partial sums gone (a cancel or restart during a slow finish): store nothing rather than counts without words.
+   const agg=await db.prepare('SELECT count(*) n FROM admin_agg WHERE build=?').bind(state.id).first();
+   if(!Number(agg?.n)&&Number(state.partial?.articles)>0)throw Error('Teilsummen des Stichwort-Baus fehlen; bitte neu zählen.');
+   const result=await keywordFinish(db,{build:state.id,sums:state.partial,now});await writeStored(db,'keywords',result,{stockSum:state.stockSum,content:state.content,ms:state.ms,computedAt:now.toISOString()});},
  },
 };
 export const isBuildTarget=target=>typeof target==='string'&&Object.hasOwn(TARGETS,target);
@@ -42,10 +49,10 @@ export const buildTargets=()=>Object.keys(TARGETS);
 const stateKey=target=>PREFIX+target;
 const readJson=text=>{try{return JSON.parse(text||'null');}catch{return null;}};
 export async function readBuild(db,target){const row=await db.prepare('SELECT value FROM system_state WHERE key=?').bind(stateKey(target)).first();const st=row?readJson(row.value):null;return st&&st.id?st:null;}
-/** Starts a build, or returns the running one; restart replaces a running build. */
+/** Starts a build, or continues one written to within RESUME_MS; restart (or an older build) starts anew. */
 export async function startBuild(db,target,{restart=false,now=new Date()}={}){
  const running=await readBuild(db,target);
- if(running&&!restart)return running;
+ if(running&&!restart&&Date.now()-Date.parse(running.updatedAt||running.startedAt)<RESUME_MS)return running;
  if(running)await cancelBuild(db,target);
  const def=TARGETS[target];
  const [{stockSum,content},total]=await Promise.all([stockRevisions(db),def.total?def.total(db):db.prepare('SELECT count(*) n FROM region_revisions').first().then(r=>Number(r?.n||0))]);
@@ -70,7 +77,7 @@ export async function buildStatus(db,target,{now=new Date()}={}){
 /** The next chunk after the cursor: areas in binary order, their reports adding up to at most CHUNK_ROWS. */
 /**
  * Runs chunks of a build until budgetMs is spent; the last one stores the result.
- * Returns {target,state:'running'|'done'|'conflict',done,total,pending}.
+ * Returns {target,state:'running'|'done'|'conflict'|'busy',done,total,pending}.
  */
 export async function stepBuild(db,target,{budgetMs=8000,now=new Date(),chunkRows}={}){
  const def=TARGETS[target],started=Date.now(),key=stateKey(target),rows=chunkRows||def.chunkRows||CHUNK_ROWS;
@@ -80,8 +87,10 @@ export async function stepBuild(db,target,{budgetMs=8000,now=new Date(),chunkRow
  if(!st)return {target,state:'done',done:0,total:0,pending:0,idle:true};
  for(;;){
   if(st.next===FINISHING){
-   // Another step is finishing; take over only if it stopped.
-   if(Date.now()-Date.parse(st.updatedAt)<FINISH_GRACE_MS)return {...progress(st),state:'running'};
+   // Another step is finishing: the caller waits (busy). Taken over only if it stopped, and only by one step (CAS on updatedAt).
+   if(Date.now()-Date.parse(st.updatedAt)<FINISH_GRACE_MS)return {...progress(st),state:'busy',until:new Date(Date.parse(st.updatedAt)+FINISH_GRACE_MS).toISOString()};
+   const claimed=await db.prepare("UPDATE system_state SET value=json_set(value,'$.updatedAt',?) WHERE key=? AND json_extract(value,'$.id')=? AND json_extract(value,'$.next')=? AND json_extract(value,'$.updatedAt')=?").bind(new Date().toISOString(),key,st.id,FINISHING,st.updatedAt).run();
+   if(!changed(claimed))return {...progress(st),state:'conflict'};
    await finish(db,def,st,now);return {...progress(st),state:'done'};
   }
   const step=def.next?await def.next(db,st,rows):await nextChunk(db,st.next,rows).then(c=>c.ids.length?{unit:JSON.stringify(c.ids),cursor:c.ids.at(-1),areas:c.ids.length,rows:c.rows}:null);
@@ -107,7 +116,8 @@ export async function stepBuild(db,target,{budgetMs=8000,now=new Date(),chunkRow
 }
 const changed=result=>Number(result?.meta?.changes??result?.changes??0)>0;
 async function finish(db,def,st,now){
- await def.finish(db,st,now);
+ // A finish that fails removes the build, so it cannot block later starts; the caller sees the error.
+ try{await def.finish(db,st,now);}catch(e){await cancelBuild(db,st.target);throw e;}
  await db.batch([
   ...(def.usesAgg?[db.prepare('DELETE FROM admin_agg WHERE build=?').bind(st.id)]:[]),
   db.prepare("DELETE FROM system_state WHERE key=? AND json_extract(value,'$.id')=?").bind(stateKey(st.target),st.id),

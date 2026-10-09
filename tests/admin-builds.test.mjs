@@ -89,3 +89,23 @@ test('keywords are counted through the refresh steps: start, steps, done',async(
  assert.ok(await readStored(db,'keywords'));
  r=await refreshStep(db,{action:'step',target:'keywords'});assert.equal(r.state,'done','nothing running');
 });
+
+test('an old paused build is started anew, a finishing one makes others wait, a failed finish removes the build',async()=>{
+ const {sql,db}=stock();
+ await startBuild(db,'keywords',{now});await stepBuild(db,'keywords',{budgetMs:0,chunkRows:20,now});
+ const old=await readBuild(db,'keywords');
+ /* Paused for two hours: a new start begins anew instead of mixing old and new counts */
+ sql.prepare("UPDATE system_state SET value=json_set(value,'$.updatedAt',?) WHERE key='admin-build:keywords'").run(new Date(Date.now()-7200000).toISOString());
+ const fresh=await startBuild(db,'keywords',{now});
+ assert.notEqual(fresh.id,old.id);assert.equal(fresh.done,0);
+ assert.equal(sql.prepare('SELECT count(*) n FROM admin_agg WHERE build=?').get(old.id).n,0,'old partial sums removed');
+ /* Another step is finishing: wait (busy) */
+ sql.prepare("UPDATE system_state SET value=json_set(value,'$.next',char(0)||'finish','$.updatedAt',?) WHERE key='admin-build:keywords'").run(new Date().toISOString());
+ assert.equal((await stepBuild(db,'keywords',{budgetMs:0,now})).state,'busy');
+ /* It stopped and its partial sums are gone: the takeover refuses to store counts without words and removes the build */
+ sql.prepare("UPDATE system_state SET value=json_set(value,'$.updatedAt',?,'$.partial.articles',5) WHERE key='admin-build:keywords'").run(new Date(Date.now()-60000).toISOString());
+ sql.exec('DELETE FROM admin_agg');
+ await assert.rejects(stepBuild(db,'keywords',{budgetMs:0,now}),/Teilsummen/);
+ assert.equal(await readBuild(db,'keywords'),null);
+ assert.equal(await readStored(db,'keywords'),null);
+});

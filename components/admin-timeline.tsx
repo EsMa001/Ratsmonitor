@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useMemo,useState} from 'react';
+import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
 import {mergeAreas,rangeStart,timelineSeries,timelineStats,TIMELINE_BUCKETS,TIMELINE_RANGES,TIMELINE_BASES} from '@/shared/timeline.mjs';
 type Dataset={basis:string;asOf:string;today:string;total:number;days:string[];areas:Record<string,[number,number][]>;undated:Record<string,number>};
@@ -30,7 +31,10 @@ function Chart({points,value,kind,bucket,color,unit,hover,onHover}:{points:Point
 export function AdminTimeline({selected,revision,initial}:{selected:Set<string>;revision:number;initial?:Dataset}){
  const [scope,setScope]=useState('selection'),[basis,setBasis]=useState('event'),[bucket,setBucket]=useState('week'),[range,setRange]=useState('12m');
  const [loaded,setLoaded]=useState<Record<string,Dataset>>(initial?{[initial.basis+':'+revision]:initial}:{}),[failed,setFailed]=useState<Record<string,string>>({}),[hover,setHover]=useState<number|null>(null);
- const key=basis+':'+revision,dataset=loaded[key],error=failed[key]||'';
+ // round: values per area just computed by the catch-up steps (admin-store.ts) are read again.
+ const [round,setRound]=useState(0);
+ useEffect(()=>{const again=()=>setRound(r=>r+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);
+ const key=basis+':'+revision+(round?':'+round:''),dataset=loaded[key],error=failed[key]||'';
  useEffect(()=>{
   if(loaded[key]||failed[key])return;const c=new AbortController();
   fetch('/api/admin/timeline?basis='+basis,{cache:'no-cache',signal:c.signal}).then(async r=>{const d=await r.json() as Dataset&{error?:string};if(!r.ok)throw Error(d.error||'Verlauf konnte nicht geladen werden.');setLoaded(prev=>({...prev,[key]:d}));}).catch(e=>{if(e.name!=='AbortError')setFailed(prev=>({...prev,[key]:e instanceof Error?e.message:'Verlauf konnte nicht geladen werden.'}));});
