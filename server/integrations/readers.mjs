@@ -22,6 +22,10 @@ import {collectMeetingMobile,detectMeetingMobile} from './meeting-mobile.mjs';
 import {collectHwTypo3,detectHw} from './hw-typo3.mjs';
 import {collectEcics,detectEcics} from './ecics-ris.mjs';
 import {collectProvoxIip,detectProvoxIip} from './provox-iip.mjs';
+import {collectRisNg,detectRisNg} from './ris-ng.mjs';
+import {collectHhDocuments,detectHhDocuments} from './hhdocuments.mjs';
+import {collectRioSys,detectRioSys} from './rio-sys.mjs';
+import {collectHitcomRis,detectHitcomRis} from './hitcom-ris.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -69,6 +73,13 @@ export const READERS={
  // Ratsinformationssystem of the municipal website system ecics (/ris?action=show_sitzungsliste, show_sitzung): the list of
  // meetings, the public agenda of each with its papers (PDF) and, where published, the minutes of the items.
  'ecics-ris':{name:'Gemeinde-RIS ecics (öffentliche Seiten)',collect:collectEcics,detect:async(url,html)=>pick(detectEcics(url,html),['base'])},
+ // Small systems of single municipalities (public pages only, one reader each): "ris" (ratsinformationssystem.<name>.de/ris,
+ // Baden-Württemberg), hhdocuments (Sitzungsplanung/Dokumentenwesen of a TYPO3 website: the papers and their meetings),
+ // rio-sys (<name>.rio-sys.de) and the Rats-Info-System of hitcom (cEasy websites).
+ 'ris-ng':{name:'ris (öffentliche Seiten)',collect:collectRisNg,detect:async(url,html)=>pick(detectRisNg(url,html),['base'])},
+ 'hhdocuments':{name:'Sitzungsplanung hhdocuments (öffentliche Seiten)',collect:collectHhDocuments,detect:async(url,html)=>pick(detectHhDocuments(url,html),['base'])},
+ 'rio-sys':{name:'rio-sys (öffentliche Seiten)',collect:collectRioSys,detect:async(url,html)=>pick(detectRioSys(url,html),['base'])},
+ 'hitcom-ris':{name:'Rats-Info-System hitcom (öffentliche Seiten)',collect:collectHitcomRis,detect:async(url,html)=>pick(detectHitcomRis(url,html),['base'])},
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
  'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},
