@@ -12,7 +12,8 @@ bitte beibehalten.
   Millisekunden) ist noch **nicht** lokal und nicht auf dem Server eingespielt; ohne sie läuft alles wie vorher.
   Vorher-Messwerte stehen im Bericht, die Nachher-Messung folgt mit dem ersten bundesweiten Lauf nach dem Ausrollen.
   `SERVER_LIMITS` (A1, mehr als zwei Abrufe je Servergruppe) ist leer; das entscheidet Max.
-- **Paket 3 (Fehler und Sicherheit)** ist umgesetzt auf `paket-3-sicherheit` (Stand im Bericht unter Paket 3).
+- **Paket 3 (Fehler und Sicherheit) ist auf `main`** (`1b15f27`, gegengelesen mit Fable; Stand im Bericht unter Paket 3).
+  Noch nicht ausgerollt. Vor einer öffentlichen Adresse zusätzlich die ausgehende Sperre aus `node-server.md` (Max).
 - **Nico** muss 0017 lokal noch einspielen, bei beendetem Dev-Server:
   `node scripts/node-migrate.mjs .wrangler/state/v3/d1/miniflare-D1DatabaseObject/<datei>.sqlite`
 - **Server** (Hostinger 187.7.72.52, SSH-Alias `ratsmonitor`):
