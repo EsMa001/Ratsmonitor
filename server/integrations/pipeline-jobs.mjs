@@ -21,6 +21,19 @@ export function selectedRegions(value){
 export const PARALLEL=Object.freeze({metadata:24,analysis:1});
 /** Imports that may run at the same time against one server of council systems. */
 export const PER_PROVIDER=2;
+/**
+ * Exceptions per server group (name as provider() returns it, e.g. 'ris-portal.de'). Empty: every server is read at most
+ * PER_PROVIDER at a time, as robots-policy.mjs states. A higher number puts more load on someone else's server and is
+ * the project owner's decision; a group that refuses (HTTP 429) is paused anyway (holds below).
+ */
+export const SERVER_LIMITS=Object.freeze({});
+export const serverLimit=server=>SERVER_LIMITS[server]||PER_PROVIDER;
+// A server that refused a request (HTTP 429 or a rejection page) is left alone for its Retry-After, within these bounds,
+// for HOLD_DEFAULT_MS without one. Its area is taken up again afterwards, at most MAX_REFUSALS times per job.
+const HOLD_MIN_MS=60000,HOLD_DEFAULT_MS=300000,HOLD_MAX_MS=3600000,MAX_REFUSALS=3;
+// An area refused because it is being imported elsewhere (409) is set back this long, at most MAX_BUSY times; when
+// something else holds the whole stock, the job as a whole waits this long. Neither pauses the job.
+const BUSY_MS=60000,MAX_BUSY=5;
 // An import that the time limit cut off continues where it stopped, at most this many times per area and job.
 // Continuations of one area within a job, for each year of the import period.
 const MAX_RESUMES=10;
@@ -71,15 +84,43 @@ function view(job,since,extra={}){
  * The area a step takes next. Imports: an area of the server with the most open areas among those that still have
  * room. Those servers decide when the job ends, so they start first and stay occupied.
  */
-function next(job){
+function next(job,now=Date.now()){
  const active=job.items.filter(i=>i.status==='running');
  if(active.length>=(PARALLEL[job.stage]||1))return null;
  if(job.stage!=='metadata')return job.items.find(i=>i.status==='queued')||null;
- const serverOfItem=i=>i.server||provider(i.region),busy=new Map(),open=new Map();
+ const busy=new Map(),open=new Map();
  for(const i of job.items)if(i.status==='running'||i.status==='queued'){const s=serverOfItem(i);open.set(s,(open.get(s)||0)+1);if(i.status==='running')busy.set(s,(busy.get(s)||0)+1);}
  let item=null,most=0;
- for(const i of job.items){if(i.status!=='queued')continue;const s=serverOfItem(i);if((busy.get(s)||0)>=PER_PROVIDER)continue;if(open.get(s)>most){most=open.get(s);item=i;}}
+ for(const i of job.items){if(i.status!=='queued'||readyAt(job,i)>now)continue;const s=serverOfItem(i);if((busy.get(s)||0)>=serverLimit(s))continue;if(open.get(s)>most){most=open.get(s);item=i;}}
  return item;
+}
+const serverOfItem=i=>i.server||provider(i.region);
+/** When a waiting area may be taken: after its own delay (409), the pause of its server and of the whole job (holds). */
+function readyAt(job,item){
+ const at=v=>Date.parse(v||'')||0;
+ return Math.max(at(item.notBefore),at(job.holds?.[serverOfItem(item)]),at(job.holds?.['*']));
+}
+/** The earliest moment a waiting area becomes free, if every waiting area is held back; otherwise null. */
+function heldUntil(job,now){
+ let first=Infinity;
+ for(const i of job.items)if(i.status==='queued'){const at=readyAt(job,i);if(at<=now)return null;first=Math.min(first,at);}
+ return Number.isFinite(first)?new Date(first).toISOString():null;
+}
+/** Pauses that are over are dropped, so the stored job stays small. */
+function dropHolds(job,now){
+ if(!job.holds)return;
+ for(const [s,until] of Object.entries(job.holds))if(!(Date.parse(until)>now))delete job.holds[s];
+ if(!Object.keys(job.holds).length)delete job.holds;
+}
+const hold=(job,server,ms,now)=>{job.holds={...job.holds};const until=new Date(now+ms).toISOString();if(!(job.holds[server]>until))job.holds[server]=until;return until;};
+const clock=iso=>new Date(iso).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Berlin'});
+/**
+ * After the run the planner statistics (sqlite_stat1) are brought up to date where tables grew or shrank a lot
+ * (0x10000: check every table, not only those of this connection). With a small sample this takes moments. Only where
+ * the database supports it; never needed.
+ */
+async function optimize(db){
+ try{await db.prepare('PRAGMA analysis_limit=1000').run();await db.prepare('PRAGMA optimize=0x10002').run();}catch{/* D1 or an older SQLite: the statistics stay as they are */}
 }
 /** Claims one waiting area, runs it and stores its result. wait: nothing could be claimed while others are still running. */
 async function step(db,id,run){
@@ -90,16 +131,21 @@ async function step(db,id,run){
   let changed=false;const now=Date.now(),at=new Date(now).toISOString();
   // Rule labelling is repeatable: every package is stored as it is written, and the next one continues behind the cursor.
   for(const i of job.items)if(i.status==='running'&&!(now-Date.parse(i.startedAt||'')<STALE_MS)){if(job.stage==='analysis'){i.status='queued';i.message='Antwort unterbrochen; gespeicherte Pakete bleiben erhalten, das nächste Paket folgt.';}else{i.status='unknown';i.message='Antwort unterbrochen. Quellenstand und Verlauf prüfen; bei Bedarf einen neuen Auftrag starten.';}delete i.startedAt;i.at=at;changed=true;}
-  const item=job.paused?null:next(job);
-  if(item){item.status='running';item.startedAt=at;item.at=at;job.status='running';await save(db,stamp(job,at));return {job,region:item.region,cursor:item.cursor};}
+  const item=job.paused?null:next(job,now);
+  if(item){item.status='running';item.startedAt=at;item.at=at;delete item.notBefore;job.status='running';dropHolds(job,now);await save(db,stamp(job,at));return {job,region:item.region,cursor:item.cursor};}
   const open=job.items.some(i=>i.status==='running'||i.status==='queued');
   if(!open){job.status='completed';changed=true;}
   if(changed)await save(db,stamp(job,at));
-  return {job,wait:open&&!job.paused};
+  // heldUntil: every waiting area is held back (a paused server, an area set back); the page asks again then.
+  const held=open&&!job.paused?heldUntil(job,now):null;
+  return {job,wait:open&&!job.paused,...(held?{heldUntil:held}:{})};
  });
  if(!claim.region)return claim;
  // The cursor (rule labelling) is handed on only when the item has one; imports take their three arguments as before.
- let result=null;try{result=await run(claim.job.stage,claim.region,claim.job.window,...(claim.cursor!==undefined?[claim.cursor]:[]));}catch{}
+ // An exception is kept as the cause of the interruption (and logged), not swallowed.
+ let result=null,failure='';
+ try{result=await run(claim.job.stage,claim.region,claim.job.window,...(claim.cursor!==undefined?[claim.cursor]:[]));}
+ catch(e){failure=String(e?.message||e).slice(0,300);console.error('[pipeline] '+claim.job.stage+' '+claim.region+':',e);}
  // Progress of rule labelling over the whole stock: how many stored reports lie up to the cursor (the reports are worked through in
  // the order of their id) of all stored. Read before the job is locked; the counts take about a tenth of a second.
  let position=null,total=null;
@@ -110,17 +156,30 @@ async function step(db,id,run){
    total=known||Number((await db.prepare('SELECT count(*) n FROM topics').first())?.n)||null;
   }catch{/* progress is only shown, never needed */}
  }
- return locked(db,async()=>{
+ const stored=await locked(db,async()=>{
   const job=await read(db);
   // The job was replaced in the meantime. The import itself is stored; there is no item left to report to.
   if(!job||job.id!==id)return {job:job||claim.job};
-  const item=job.items.find(i=>i.region===claim.region),d=result?.data||{},at=new Date().toISOString();
+  const item=job.items.find(i=>i.region===claim.region),d=result?.data||{},now=Date.now(),at=new Date(now).toISOString(),was=job.status;
   // A large job keeps short notes: the full notes of an import are stored with the source status.
   const [short,long]=job.items.length>200?[240,320]:[2500,3000];
+  const cause=failure?' Ursache: '+failure.slice(0,long-120):'';
   delete item.startedAt;item.at=at;
-  if(!result){if(job.stage==='analysis'){item.status='queued';item.message='Paket unterbrochen; gespeicherte Pakete bleiben erhalten, das nächste Paket folgt beim Fortsetzen.';job.paused=true;}else{item.status='unknown';item.message='Ausführung unterbrochen. Gespeicherten Bestand vor einem neuen Auftrag prüfen.';}}
-  // Another process holds the stock (or this area). The job waits for an explicit continuation instead of asking again and again.
-  else if(result.status===409){item.status='queued';item.message=d.error;job.paused=true;}
+  if(!result){if(job.stage==='analysis'){item.status='queued';item.message=('Paket unterbrochen; gespeicherte Pakete bleiben erhalten, das nächste Paket folgt beim Fortsetzen.'+cause).slice(0,long);job.paused=true;}else{item.status='unknown';item.message=('Ausführung unterbrochen. Gespeicherten Bestand vor einem neuen Auftrag prüfen.'+cause).slice(0,long);}}
+  // Rule labelling refused (409): another process holds the stock. The job waits for an explicit continuation.
+  else if(result.status===409&&job.stage==='analysis'){item.status='queued';item.message=d.error;job.paused=true;}
+  // An import refused (409). Something else holds the whole stock: the job waits a minute as a whole. This area is being
+  // imported elsewhere (an earlier request whose answer was lost): only this area is set back; the others go on.
+  else if(result.status===409&&d.busy==='stock'){item.status='queued';const until=hold(job,'*',BUSY_MS,now);item.message=`${d.error||'Bestand belegt'}; der Auftrag wartet bis ${clock(until)}.`;}
+  else if(result.status===409&&(item.busy||0)<MAX_BUSY){item.busy=(item.busy||0)+1;item.status='queued';item.notBefore=new Date(now+Math.max(BUSY_MS,Number(d.retryAfter)*1000||0)).toISOString();item.message=`${d.error||'Import läuft bereits'}; neuer Versuch ab ${clock(item.notBefore)} (${item.busy}. Mal).`;}
+  else if(result.status===409){item.status='failed';item.message=`${d.error||'Import läuft bereits'}; nach ${MAX_BUSY} Versuchen zurückgestellt. Gebiet später erneut abrufen.`;}
+  // The source refused a request (HTTP 429 or a rejection page): its server rests for the Retry-After, the area follows
+  // afterwards. What the import stored counts.
+  else if(job.stage==='metadata'&&d.refused&&(item.refusals||0)<MAX_REFUSALS){
+   item.refusals=(item.refusals||0)+1;item.status='queued';if(result.status===200)item.processed+=Number(d.topics??0);
+   const wanted=d.refused.retryAfterMs,ms=Math.min(HOLD_MAX_MS,Math.max(HOLD_MIN_MS,typeof wanted==='number'&&Number.isFinite(wanted)?wanted:HOLD_DEFAULT_MS));
+   const until=hold(job,serverOfItem(item),ms,now);item.message=`Der Server bittet um eine Pause (HTTP 429); der Abruf wird ab ${clock(until)} fortgesetzt.`;
+  }
   else if(result.status!==200){item.status='failed';item.message=((d.error||'Abruf fehlgeschlagen.')+(d.cause?' Ursache: '+String(d.cause).slice(0,300):'')).slice(0,long);}
   else {item.processed+=Number(d.processed??d.topics??0);
    // The item reports this attempt; the stored period may still be partial from an earlier, wider import.
@@ -138,8 +197,12 @@ async function step(db,id,run){
    else {item.status=d.coverage&&!complete?'partial':'completed';item.message=d.quiet?'Keine Sitzungen im gewählten Zeitraum; gespeicherter Bestand unverändert.':d.coverage?.issues?.join(' · ').slice(0,short)||(d.unchanged?`Ergebnis in der Datenbank gespeichert; ${d.unchanged} unveränderte ${d.unchanged===1?'Sitzung':'Sitzungen'} übersprungen.`:'Ergebnis in der Datenbank gespeichert.');
     if(d.warnings?.length)item.message=(item.message+` Warnung: ${d.warnings.join(' · ')}`).slice(0,long);}}
   if(job.status!=='cancelled')job.status=job.items.some(i=>i.status==='running')?'running':job.items.some(i=>i.status==='queued')?'queued':'completed';
-  await save(db,stamp(job,at));return {job,claimed:true};
+  dropHolds(job,now);
+  await save(db,stamp(job,at));return {job,claimed:true,finished:job.status==='completed'&&was!=='completed'};
  });
+ // The step that ends an import job brings the planner statistics up to date (the run changed many rows).
+ if(stored.finished&&stored.job.stage==='metadata')await optimize(db);
+ return stored;
 }
 /**
  * create | cancel | pause | resume | status | step | run.
@@ -174,7 +237,7 @@ export async function pipelineAction(db,body,run){
  if(body.action==='cancel')return locked(db,async()=>{const job=await current(db,body.id);job.status='cancelled';delete job.paused;await save(db,stamp(job));return view(job,since);});
  if(body.action==='pause'||body.action==='resume')return locked(db,async()=>{const job=await current(db,body.id);if(body.action==='pause'&&!ended(job))job.paused=true;else delete job.paused;await save(db,stamp(job));return view(job,since);});
  if(body.action==='status')return view(await current(db,body.id),since);
- if(body.action==='step'){const done=await step(db,body.id,run);return view(done.job,since,done.wait?{wait:true}:{});}
+ if(body.action==='step'){const done=await step(db,body.id,run);return view(done.job,since,done.wait?{wait:true,...(done.heldUntil?{heldUntil:done.heldUntil}:{})}:{});}
  if(body.action!=='run')throw new AdminError(400,'Ungültige Aktion.');
  const lanes=Math.max(1,Math.min(MAX_LANES,Math.floor(Number(body.lanes))||1)),until=Date.now()+RUN_MS;
  // Rule labelling works through the whole stock in packages and keeps the runtime busy for the whole request; between two
@@ -184,6 +247,8 @@ export async function pipelineAction(db,body,run){
  const outcomes=await Promise.allSettled(Array.from({length:lanes},lane)),finished=outcomes.filter(o=>o.status==='fulfilled').map(o=>o.value);
  if(!finished.length)throw outcomes[0].reason;
  const job=await current(db,body.id);
- // wait: no lane found anything to claim; the caller asks again a little later instead of at once.
- return view(job,since,!ended(job)&&!job.paused&&finished.every(done=>done.wait)?{wait:true}:{});
+ // wait: no lane found anything to claim; the caller asks again a little later instead of at once, or at heldUntil when
+ // every waiting area is held back.
+ const waiting=!ended(job)&&!job.paused&&finished.every(done=>done.wait),held=waiting&&finished.every(done=>done.heldUntil)?finished.map(done=>done.heldUntil).sort()[0]:null;
+ return view(job,since,waiting?{wait:true,...(held?{heldUntil:held}:{})}:{});
 }

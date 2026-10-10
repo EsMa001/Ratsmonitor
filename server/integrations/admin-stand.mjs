@@ -1,12 +1,14 @@
 // Stand of the administration's data, in one batch of small queries (a few ms): how far the stock and the values per area
 // are, for the ETags of the reading routes (admin-http.ts) and the stand line of the pages (components/admin-stand.tsx).
-// stockSum rises with every change of a report (triggers of migration 0011); content (data_revisions) also with changes
-// of source states, versions and analyses. The stamps of region_series and region_stats include the time of their last
+// stockSum rises with every change of a report (triggers of migration 0011); content (data_revisions content + coverage) also with
+// changes of source states, versions and analyses. The stamps of region_series and region_stats include the time of their last
 // computation, so a new build at the same revision (--full, a new version) changes them as well.
 import {pendingRegions,missingTable,SERIES_VERSION,FIGURES_VERSION} from './region-series.mjs';
+import {SOURCES_REVISION_SQL} from './revision-cache.mjs';
 /** {stock,stockSum,seriesStamp,statsStamp,pending,unbuilt,total,content,seriesComputedAt,statsComputedAt} or {missing:'0016',content,stockSum}. */
 export async function adminStand(db){
- const content=async()=>Number((await db.prepare("SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) AS revision").first())?.revision||0);
+ // content: with the source states (the area list shows them), see SOURCES_REVISION_SQL.
+ const content=async()=>Number((await db.prepare(SOURCES_REVISION_SQL).first())?.revision||0);
  let stock,series,stats;
  try{
   [stock,series,stats]=await db.batch([

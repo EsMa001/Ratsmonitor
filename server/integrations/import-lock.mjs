@@ -12,21 +12,40 @@
  * never missing while an import runs.
  */
 const LEASE_MS=600000;
-const BUSY=Object.freeze({ok:false});
-/** Returns {ok:true, release} or {ok:false} if this area is being imported or the stock is locked by something else. */
+/**
+ * Imports hold their marker and the shared lock for IMPORT_LEASE_MS and renew both once collecting is done (renew).
+ * An import is limited to about two minutes of collecting plus storing; an interrupted one blocks its area and holders
+ * of the whole stock only this long, as long as the job takes to give up on it (STALE_MS in pipeline-jobs.mjs).
+ */
+export const IMPORT_LEASE_MS=300000;
+// reason: 'area' (this area is being imported) or 'stock' (something else holds the whole stock).
+const BUSY_AREA=Object.freeze({ok:false,reason:'area'}),BUSY_STOCK=Object.freeze({ok:false,reason:'stock'});
+/** Returns {ok:true, release, renew} or {ok:false, reason} if this area is being imported or the stock is locked by something else. */
 export async function acquireImport(db,region,{shared=true,now=Date.now()}={}){
- const expiry=String(now+LEASE_MS);
  if(!shared){
+  const expiry=String(now+LEASE_MS);
   const lock=await db.prepare("INSERT INTO system_state(key,value) VALUES('import-lock',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE CAST(system_state.value AS INTEGER) < ? RETURNING value").bind(expiry,now).first();
-  return lock?{ok:true,release:()=>db.prepare("DELETE FROM system_state WHERE key='import-lock' AND value=?").bind(expiry).run()}:BUSY;
+  return lock?{ok:true,release:()=>db.prepare("DELETE FROM system_state WHERE key='import-lock' AND value=?").bind(expiry).run(),renew:async()=>{}}:BUSY_STOCK;
  }
+ let expiry=String(now+IMPORT_LEASE_MS);
  const marker='import-run:'+region;
  const own=await db.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE CAST(system_state.value AS INTEGER) < ? RETURNING value').bind(marker,expiry,now).first();
- if(!own)return BUSY;
+ if(!own)return BUSY_AREA;
  const lock=await db.prepare("INSERT INTO system_state(key,value) VALUES('import-lock',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE CAST(system_state.value AS INTEGER) < ? OR system_state.value LIKE '% shared' RETURNING value").bind(expiry+' shared',now).first();
- if(!lock){await db.prepare('DELETE FROM system_state WHERE key=? AND value=?').bind(marker,expiry).run();return BUSY;}
- // One statement, so marker and lock go together: the own marker always, the shared lock only if no other import is left.
- return {ok:true,release:()=>db.prepare("DELETE FROM system_state WHERE (key=? AND value=?) OR (key='import-lock' AND value LIKE '% shared' AND NOT EXISTS (SELECT 1 FROM system_state other WHERE other.key LIKE 'import-run:%' AND other.key<>? AND CAST(other.value AS INTEGER) > ?))").bind(marker,expiry,marker,Date.now()).run()};
+ if(!lock){await db.prepare('DELETE FROM system_state WHERE key=? AND value=?').bind(marker,expiry).run();return BUSY_STOCK;}
+ return {ok:true,
+  // One statement, so marker and lock go together: the own marker always, the shared lock only if no other import is left.
+  release:()=>db.prepare("DELETE FROM system_state WHERE (key=? AND value=?) OR (key='import-lock' AND value LIKE '% shared' AND NOT EXISTS (SELECT 1 FROM system_state other WHERE other.key LIKE 'import-run:%' AND other.key<>? AND CAST(other.value AS INTEGER) > ?))").bind(marker,expiry,marker,Date.now()).run(),
+  // Moves both expiries IMPORT_LEASE_MS ahead. The shared lock is only ever moved later, and never taken back from a
+  // holder of the whole stock; the marker only while it is still this import's.
+  renew:async(at=Date.now())=>{
+   const next=String(at+IMPORT_LEASE_MS);
+   const [mine]=await db.batch([
+    db.prepare('UPDATE system_state SET value=? WHERE key=? AND value=? RETURNING value').bind(next,marker,expiry),
+    db.prepare("UPDATE system_state SET value=? WHERE key='import-lock' AND value LIKE '% shared' AND CAST(value AS INTEGER) < ?").bind(next+' shared',Number(next)),
+   ]);
+   if(mine.results?.length)expiry=next;
+  }};
 }
 /** Time until which the stock is locked, read from the stored value of either kind; 0 if it is free. */
 export const lockedUntil=value=>Number.parseInt(String(value||'0'),10)||0;

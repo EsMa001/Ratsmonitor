@@ -10,8 +10,17 @@
  *   the next call sees the newer one and scans again.
  */
 const kept=new WeakMap();
-export async function atRevision(db,key,compute){
- const row=await db.prepare("SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) AS revision").first();
+/** Reports, versions and analyses. */
+export const CONTENT_REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) AS revision";
+/**
+ * Reports, versions, analyses and the source states (source_coverage). Since migration 0018 the source states count
+ * 'coverage' of their own, because every import step writes them; before it they raised 'content', and 'coverage' is 0.
+ * Both only rise, so the sum changes exactly when either does.
+ */
+export const SOURCES_REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0)+coalesce((SELECT revision FROM data_revisions WHERE id='coverage'),0) AS revision";
+/** options.sources: the result shows source states as well (SOURCES_REVISION_SQL). */
+export async function atRevision(db,key,compute,{sources=false}={}){
+ const row=await db.prepare(sources?SOURCES_REVISION_SQL:CONTENT_REVISION_SQL).first();
  const revision=Number(row?.revision||0);
  let entries=kept.get(db);if(!entries){entries=new Map();kept.set(db,entries);}
  const hit=entries.get(key);

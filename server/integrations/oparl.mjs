@@ -11,7 +11,7 @@ export function checkedUrl(value){const u=new URL(value);if(u.protocol!=='https:
 // and is not repeated.
 export async function requestJson(url,timeoutMs=55000){
  for(let attempt=0;;attempt++){
-  try{const r=await fetchNoRedirect(checkedUrl(url),{signal:AbortSignal.timeout(timeoutMs),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok)throw Object.assign(Error('OParl HTTP '+r.status),{answered:true});return await r.json();}
+  try{const r=await fetchNoRedirect(checkedUrl(url),{signal:AbortSignal.timeout(timeoutMs),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok){await r.body?.cancel();throw Object.assign(Error('OParl HTTP '+r.status),{answered:true});}return await r.json();}
   catch(e){if(attempt>=1||e.answered||e.name==='TimeoutError'||/Weiterleitung|Nicht freigegeben|Fremde/.test(String(e.message)))throw e;await new Promise(done=>setTimeout(done,400));}
  }
 }

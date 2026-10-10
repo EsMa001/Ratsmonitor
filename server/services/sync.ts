@@ -23,6 +23,8 @@ import { insertUsage } from '@/shared/ai-usage.mjs';
 import { dispatchDecisionPush } from '@/server/services/push';
 import type { StoredTopic as Topic, ImportData as FeedData } from '@/server/types';
 const FAILURE_CAUSE = 'Fehlerursache: ';
+/** Import runs (import_runs) are kept this long; the record of each area's last import stays in import-debug. */
+export const RUNS_KEEP_DAYS = 30;
 /** options.window selects the look-back period for metadata imports ('1d' | '1w' | '1m' | '3m' | '12m' | '24m'; default twelve months). */
 export async function runSync(mode: 'metadata' | 'summaries',region='muenster', trigger: 'manual' | 'scheduled' = 'manual', options: {window?: string} = {}) { if(mode==='summaries'&&trigger!=='manual')return {status:403,data:{error:'Textverarbeitung startet ausschließlich manuell im Adminbereich.'}};
     let lookback: string; try { lookback = historyWindow(options.window); } catch { return { status: 400, data: { error: 'Ungültiger Zeitraum für den Abruf.' } }; }
@@ -35,34 +37,49 @@ export async function runSync(mode: 'metadata' | 'summaries',region='muenster', 
     const id = crypto.randomUUID(), started = new Date().toISOString();
     // Imports of different areas run side by side; reading documents for summaries changes the stock and runs alone.
     const lock = await acquireImport(env.DB, region, { shared: mode === 'metadata' }); if (!lock.ok)
-    return { status: 409, data: { error: 'Import läuft bereits', retryAfter: 60 } };
+    // busy: 'area' (this area is being imported elsewhere) or 'stock' (something else holds the whole stock); the job
+    // sets the area back for a while or waits as a whole (pipeline-jobs.mjs).
+    return { status: 409, data: { error: 'Import läuft bereits', retryAfter: 60, busy: (lock as { reason?: string }).reason } };
     // Every import of official data is recorded for the debug view (import-trace.mjs).
     const trace = mode === 'metadata' ? createTrace(region, { window: lookback }) : null;
+    // Cached analysis results go when the reports may have changed: always, except after an import that wrote nothing.
+    let wrote = true;
     try {
     await env.DB.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id, started, 'running', JSON.stringify(mode==='metadata'?{mode,region,trigger,window:lookback}:{mode,region,trigger})).run();
-    const data = await (mode === 'summaries' ? refreshSummaries(id, started,region) : refreshMetadata(id, started,region,previousCoverage,lookback,trace));
-    /* Wortliste der Suche nachführen (nur Neues; fehlt sie noch oder schlägt es fehl, sucht die Suche wie gewohnt) */
-    if (mode === 'metadata') { try { await refreshSearchWords(env.DB, { onlyIfBuilt: true, maxCards: 20000, kinds: new Map(REGIONS.map((r) => [r.id, r.kind])), names: new Map(REGIONS.map((r) => [r.id, r.name])) }); } catch { /* nicht wichtig für den Import */ }
-        /* Werte je Gebiet der Administration für dieses Gebiet nachrechnen (region-facts.mjs), nach dem letzten Teilabruf.
-           Schlägt es fehl oder reicht die Zeit nicht, holt der nächste Rechenschritt der Administration es nach. */
-        if (!(data as { resume?: boolean }).resume) { try { await refreshRegionFacts(env.DB, { regions: [region], budgetMs: 4000 }); } catch { /* nicht wichtig für den Import */ } } }
+    // Runs older than RUNS_KEEP_DAYS go, a few hundred per import, oldest first (index on started_at); the table stays bounded.
+    if (mode === 'metadata') { try { await env.DB.prepare('DELETE FROM import_runs WHERE id IN (SELECT id FROM import_runs WHERE started_at<? ORDER BY started_at LIMIT 200)').bind(new Date(Date.now() - RUNS_KEEP_DAYS * 864e5).toISOString()).run(); } catch { /* nicht wichtig für den Import */ } }
+    const data = await (mode === 'summaries' ? refreshSummaries(id, started,region) : refreshMetadata(id, started,region,previousCoverage,lookback,trace,lock.renew));
+    if (mode === 'metadata') wrote = Boolean((data as { stored?: number }).stored);
+    if (mode === 'metadata') {
+        /* Wortliste der Suche nachführen, wenn dieser Import Vorgänge geschrieben hat (nur Neues; fehlt sie noch oder
+           schlägt es fehl, sucht die Suche wie gewohnt). Änderungen ohne Import holt der nächste Import mit Änderungen
+           oder das nächtliche Nachführen nach. */
+        if ((data as { stored?: number }).stored) { try { await refreshSearchWords(env.DB, { onlyIfBuilt: true, maxCards: 20000, kinds: new Map(REGIONS.map((r) => [r.id, r.kind])), names: new Map(REGIONS.map((r) => [r.id, r.name])) }); } catch { /* nicht wichtig für den Import */ } }
+        /* Werte je Gebiet der Administration für dieses Gebiet nachrechnen (region-facts.mjs), nach dem letzten Teilabruf,
+           höchstens eine Sekunde: Die Rechnung hält den Prozess an, auch die anderen Importe. Reicht die Zeit nicht oder
+           schlägt es fehl, holt der nächste Rechenschritt der Administration es nach. */
+        if (!(data as { resume?: boolean }).resume) { try { await refreshRegionFacts(env.DB, { regions: [region], budgetMs: 1000 }); } catch { /* nicht wichtig für den Import */ } } }
     return { status: 200, data };
 }
 catch (e) {
     // The cause is stored with the source status; otherwise only older notes of the stock would be visible.
     const cause = (e instanceof Error ? e.message : 'Importfehler').slice(0, 300);
+    // The source refused a request (collect-region.mjs, refusalGate): the job pauses its server and asks again later.
+    const refused = (e as { refused?: { retryAfterMs: number | null } })?.refused;
     const record = trace ? trace.finish({ runId: id, status: 'failed', error: cause }) : null;
     await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), 'failed', JSON.stringify({ mode,region,trigger,error: cause, ...(record ? { debug: brief(record) } : {}) }), id).run();
     // The record must never hide the failure it describes.
     if (record) try { await saveDebug(env.DB, record); } catch {}
     if(mode==='metadata'){
         const coverage={...previousCoverage,regionId:region,...importHealth(previousCoverage,{at:started,failed:true}),complete:false,issues:[...new Set([...(previousCoverage.issues||[]).filter((i:string)=>!String(i).startsWith(FAILURE_CAUSE)),'Abruf fehlgeschlagen; letzter übernommener Bestand bleibt erhalten.',FAILURE_CAUSE+cause])]};
+        // After a failure the OParl probe is sent again (it may be the reason: "OParl vorhanden").
+        delete coverage.oparlProbeAt;
         await env.DB.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload').bind(region,JSON.stringify(coverage)).run();
     }
-    return { status: 502, data: { error: 'Import fehlgeschlagen; der angezeigte Bestand kann teilweise aktualisiert sein', cause } };
+    return { status: 502, data: { error: 'Import fehlgeschlagen; der angezeigte Bestand kann teilweise aktualisiert sein', cause, ...(refused ? { refused } : {}) } };
 }
 finally {
-    invalidateReads();
+    if (wrote) invalidateReads();
     await lock.release();
 } }
 // What of a record goes into the details of the run.
@@ -104,7 +121,7 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
     if (processed >= 8)
         break;
 } await env.DB.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(), 'completed', JSON.stringify({ mode: "summaries", region, processed, aiConfigured: !!env.OPENAI_API_KEY }), id).run(); return { processed, more: processed === 8, aiConfigured: !!env.OPENAI_API_KEY }; }
-async function refreshMetadata(id: string, started: string,region:string,previousCoverage:any,lookback:string,trace:any) {
+async function refreshMetadata(id: string, started: string,region:string,previousCoverage:any,lookback:string,trace:any,renew:()=>Promise<void>) {
     if (!env.DB)
         throw Error('Datenbank fehlt');
     const previous = await env.DB.prepare('SELECT id,payload FROM topics WHERE region_id=?').bind(region).all<{
@@ -112,6 +129,8 @@ async function refreshMetadata(id: string, started: string,region:string,previou
         payload: string;
     }>();
     const old = new Map(previous.results.map(r => [r.id, JSON.parse(r.payload) as Topic]));
+    // The raw text is no longer needed once parsed; a large area (Dortmund: 88 MB) would otherwise stay in memory twice.
+    previous.results.length = 0;
     // Meetings whose agenda is unchanged since their papers were last read are not read again (meeting-marks.mjs).
     // A mark only counts while the reports of its meeting are still stored.
     const stock = new Set<string>();
@@ -122,7 +141,9 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const listRow = await env.DB.prepare('SELECT value FROM system_state WHERE key=?').bind(listKey(region)).first<{value: string}>();
     const keptList = readList(listRow?.value);
     const collectStarted = Date.now();
-    const fresh = await collectRegion(region,{maxDurationMs:120000,window:lookback,marks:{known,stock,list:keptList},trace}) as FeedData;
+    const fresh = await collectRegion(region,{maxDurationMs:120000,window:lookback,marks:{known,stock,list:keptList},trace,oparlProbeAt:previousCoverage.oparlProbeAt}) as FeedData & {refused?:{retryAfterMs:number|null}};
+    // Storing a large area takes a while; the lock is held for it anew (import-lock.mjs).
+    try { await renew(); } catch { /* die Sperre gilt ohnehin noch einige Minuten */ }
     const collectMs = Date.now() - collectStarted, written = { created: 0, changed: 0, unchanged: 0 };
     const unchanged = Number(fresh.coverage.unchangedMeetings || 0), warnings = fresh.coverage.warnings || [];
     const decisions: Topic[] = [];
@@ -148,12 +169,14 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     // A short window without meetings is a successful attempt; the stored stock and its status stay as they are.
     const quiet=Boolean(combined.quiet);
     const health=importHealth(previousCoverage,{at:started,count:fresh.topics.length+unchanged,complete:fresh.coverage.complete,quiet});
-    const coverage={...combined.coverage,regionId:region,...health,importedAt:health.lastSuccessAt};
+    const coverage:any={...combined.coverage,regionId:region,...health,importedAt:health.lastSuccessAt};
+    // The negative OParl probe this import relied on (collect-region.mjs); without one the next import asks again.
+    if(fresh.coverage.oparlProbeAt)coverage.oparlProbeAt=fresh.coverage.oparlProbeAt;else delete coverage.oparlProbeAt;
     // Missing items remain in the archive. A partial scan never deletes an article.
     await env.DB.prepare('INSERT INTO source_coverage(region_id,payload) VALUES(?,?) ON CONFLICT(region_id) DO UPDATE SET payload=excluded.payload').bind(region,JSON.stringify(coverage)).run();
-    // Only now, with the reports stored, do the marks of this import count.
-    if (fresh.marks) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(marksKey(region), writeMarks({...known,...fresh.marks}, new Date())).run();
-    if (fresh.list) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(listKey(region), JSON.stringify(fresh.list)).run();
+    // Only now, with the reports stored, do the marks of this import count. Unchanged marks and lists are not written again.
+    if (fresh.marks) { const marks = writeMarks({...known,...fresh.marks}, new Date()); if (marks !== marksRow?.value) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(marksKey(region), marks).run(); }
+    if (fresh.list) { const list = JSON.stringify(fresh.list); if (list !== listRow?.value) await env.DB.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(listKey(region), list).run(); }
     if (decisions.length && region==='muenster') {
         const t = decisions.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
         await env.DB.prepare("INSERT INTO system_state(key,value) VALUES('latest-decision',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(JSON.stringify({ id: t.id, title: t.title, shortSummary: t.shortSummary, detectedAt: started, count: decisions.length })).run();
@@ -168,5 +191,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
     const listAdvanced = Boolean(fresh.list) && (fresh.list as {readAt?: number}).readAt !== keptList?.readAt;
     // attemptComplete describes this attempt; coverage.complete describes the stored period.
     // resume: the time limit ended this attempt after it had read further meetings; the next attempt continues behind them.
-    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet, unchanged, warnings, resume: Boolean(fresh.coverage.resumable) && (Number(fresh.readMeetings || 0) > 0 || listAdvanced) };
+    // stored: reports written (new, changed, or with changed metadata). refused: the source refused a request; the job
+    // pauses its server and continues the area later (pipeline-jobs.mjs).
+    return { topics: fresh.topics.length, decisions: decisions.length, coverage, window: lookback, quiet, attemptComplete: Boolean(fresh.coverage.complete) || quiet, unchanged, warnings, resume: Boolean(fresh.coverage.resumable) && (Number(fresh.readMeetings || 0) > 0 || listAdvanced), stored: written.created + written.changed + touch.length, ...(fresh.refused ? { refused: fresh.refused } : {}) };
 }

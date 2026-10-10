@@ -1,6 +1,8 @@
 import {TRANSFER_FORMAT,TRANSFER_TABLES,transferTable,hashText,INITIALIZATION_KEYS} from '../../shared/database-transfer.mjs';
 import {dataCompleteness} from './data-completeness.mjs';
-const revisionSQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) AS revision";
+import {SOURCES_REVISION_SQL} from './revision-cache.mjs';
+// The export carries the source states as well (source_coverage): their changes count too (revision-cache.mjs).
+const revisionSQL=SOURCES_REVISION_SQL;
 export async function exportManifest(db){
  const [before,...rest]=await db.batch([db.prepare(revisionSQL),...Object.keys(TRANSFER_TABLES).map(t=>db.prepare(`SELECT count(*) AS count FROM ${t}`)),db.prepare("SELECT key,value FROM system_state WHERE key IN (?,?,?)").bind(...INITIALIZATION_KEYS),db.prepare(revisionSQL)]);
  const after=rest.pop().results[0].revision;

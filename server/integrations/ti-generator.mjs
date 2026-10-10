@@ -225,7 +225,7 @@ export async function readNoticePdf(url,source){
  const r=await fetchNoRedirect(allowed(url,source),{signal:AbortSignal.timeout(30000),headers:{'User-Agent':SOURCE_USER_AGENT}});
  if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
  const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.byteLength>3e6)throw Error('Quelldokument zu groß');
- const pdf=await getDocumentProxy(bytes,{isEvalSupported:false});
+ const pdf=await getDocumentProxy(bytes,{isEvalSupported:false,verbosity:0});
  try{if(pdf.numPages>12)throw Error('Quelldokument zu umfangreich');return (await extractText(pdf,{mergePages:true})).text;}finally{await (pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.());}
 }
 const votes=v=>v.yes===null?'':` (${v.yes} Ja-Stimmen, ${v.no??0} Nein-Stimmen, ${v.abstentions??0} Enthaltungen)`;

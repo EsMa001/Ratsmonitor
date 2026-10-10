@@ -1,4 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {DatabaseSync} from 'node:sqlite';
+import {SOURCES_REVISION_SQL,CONTENT_REVISION_SQL} from '../server/integrations/revision-cache.mjs';
 import {exportPage,exportRequest} from '../server/integrations/database-transfer.mjs';
 import {dataCompleteness} from '../server/integrations/data-completeness.mjs';
 import {downloadDatabase} from '../shared/download-database.mjs';
@@ -20,7 +21,9 @@ test('every content-table mutation invalidates snapshots and sensitive tables ca
  assert.equal((await exportPage(db,{table:'topics',revision})).data.rows.length,1);sql.exec("UPDATE topics SET status='approved'");assert.equal((await exportPage(db,{table:'topics',revision})).status,409);
  for(const table of ['system_state','push_subscriptions','topics;DROP TABLE topics','__proto__'])await assert.rejects(exportPage(db,{table,revision}));
  for(const [table,insert] of [['article_versions',"INSERT INTO article_versions VALUES('v','a','now','{}')"],['article_analyses',"INSERT INTO article_analyses VALUES('a','a','summary','codex','hash','now','{}')"],['source_coverage',"INSERT INTO source_coverage VALUES('billerbeck','{}')"]]){
-  const before=sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision;sql.exec(insert);sql.exec(`UPDATE ${table} SET payload='{}'`);sql.exec(`DELETE FROM ${table}`);assert.equal(sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision,before+3);
+  const before=sql.prepare(SOURCES_REVISION_SQL).get().revision,content=sql.prepare(CONTENT_REVISION_SQL).get().revision;sql.exec(insert);sql.exec(`UPDATE ${table} SET payload='{}'`);sql.exec(`DELETE FROM ${table}`);assert.equal(sql.prepare(SOURCES_REVISION_SQL).get().revision,before+3);
+  // Source states count a revision of their own (0018): the content revision, and the caches on it, stay where they were.
+  assert.equal(sql.prepare(CONTENT_REVISION_SQL).get().revision-content,table==='source_coverage'?0:3);
  }
  sql.close();
 });

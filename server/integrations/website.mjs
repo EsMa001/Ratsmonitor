@@ -114,7 +114,7 @@ const release=pdf=>pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.();
  * parser reads it without spaces (website-text.mjs: closedLine, NONPUBLIC_WORDS).
  */
 export async function readPdfText(bytes){
- const pdf=await getDocumentProxy(bytes,{isEvalSupported:false});
+ const pdf=await getDocumentProxy(bytes,{isEvalSupported:false,verbosity:0});
  try{if(pdf.numPages>LIMITS.pdfPages)throw Error('Dokument zu umfangreich');const {text}=await extractText(pdf,{mergePages:true});return text;}
  finally{await release(pdf);}
 }

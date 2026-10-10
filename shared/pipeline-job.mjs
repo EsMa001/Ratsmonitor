@@ -7,7 +7,7 @@
  */
 export function mergeJob(latest,next){
  if(next.id!==latest.id)return latest;
- const newer=next.updatedAt>=latest.updatedAt,{delta,wait,...head}=newer?next:latest;
+ const newer=next.updatedAt>=latest.updatedAt,{delta,wait,heldUntil,...head}=newer?next:latest;
  if(!delta&&newer)return head;
  const changed=new Map(next.items.map(i=>[i.region,i]));
  const items=next.delta?latest.items.map(i=>{const other=changed.get(i.region);return other&&(other.at||'')>=(i.at||'')?other:i;}):latest.items;

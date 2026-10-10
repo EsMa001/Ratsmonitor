@@ -142,6 +142,14 @@ Migration 0017 (Spalte `formal`, Datenstand `search`) dauerte lokal bei 1,3 Mio.
 der Wortliste nicht mehr; das nächste Nachführen übernimmt ihn (`scripts/refresh-search-words.mjs`, bis dahin sucht die
 App über alle Karten).
 
+Migration 0018 (Datenstand `coverage`) ersetzt nur drei Trigger und dauert Millisekunden. Danach erhöht ein Importschritt
+den Datenstand `content` nur noch, wenn er Vorgänge schreibt; die Quellenstände zählen `coverage`
+(`server/integrations/revision-cache.mjs`). Ohne die Migration läuft alles wie vorher.
+
+Am Ende eines Abrufauftrags erneuert der Server die Planerstatistik dort, wo sich Tabellen stark verändert haben
+(`PRAGMA optimize=0x10002` mit `analysis_limit=1000`, `pipeline-jobs.mjs`). Die Statistik von Hand zu erneuern
+(Abschnitt unten) braucht es damit nur noch nach neuen Indizes.
+
 Nachführen der Wortliste nachts (einmal anlegen):
 
 ```bash

@@ -23,9 +23,15 @@ const stateNames:Record<string,string>={queued:'Ausstehend',running:'Läuft',com
 // Look-back windows for stage 01; the same keys are validated on the server.
 const windowItems=Object.entries(HISTORY_WINDOWS).map(([id,w])=>[id,w.label]) as [string,string][];
 const windowLabel=(id?:string)=>windowItems.find(([key])=>key===id)?.[1]||'';
-// A browser opens six connections to one server. The page uses four of them for requests that each run six imports
-// side by side on the server (24 at once, the server's own limit) and keeps two free for status, pause and overview.
+// Over HTTP/1.1 (the tunnel) a browser opens six connections to one server. The page then uses four of them for requests
+// that each run six imports side by side on the server (24 at once, the server's own limit) and keeps two free for
+// status, pause and overview. Such a request ends only when its slowest import is stored, and its other lanes idle
+// meanwhile. Over HTTP/2 or HTTP/3 (Caddy) the requests share one connection: 24 requests with one lane each never wait
+// for one another.
 const RUNNERS:Record<string,{requests:number;lanes:number}>={metadata:{requests:4,lanes:6},analysis:{requests:1,lanes:1}};
+const MULTIPLEXED={requests:24,lanes:1};
+const multiplexed=()=>{try{return /^h[23]/.test((performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming|undefined)?.nextHopProtocol||'');}catch{return false;}};
+const runnerFor=(stage:string)=>stage==='metadata'&&multiplexed()?MULTIPLEXED:RUNNERS[stage]||RUNNERS.analysis;
 // Order of the areas in the result list of a job: what needs attention comes first. The list shows this many rows.
 const JOB_ORDER=['running','failed','unknown','partial','queued','completed','unavailable'],JOB_ROWS=60;
 // List filters; "filter" in the address of the page preselects one (links of the overview and quality pages).
@@ -73,7 +79,7 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
  async function action(name:string,fn:()=>Promise<void>){setBusy(name);setError('');setMessage('');try{await fn();}catch(e){setError(e instanceof Error?e.message:'Aktion fehlgeschlagen.');}finally{setBusy('');}}
  async function drain(start:PipelineJob){
   pause.current=false;setRunning(true);
-  const runner=RUNNERS[start.stage]||RUNNERS.analysis;
+  const runner=runnerFor(start.stage);
   let latest=start,stopped=false,reloading=false,reloaded=Date.now(),rest=60000;
   // Replies of parallel requests can arrive out of order, and most list only the areas changed since the state the
   // page named; mergeJob keeps the newest state of every area and of the job.
@@ -87,8 +93,10 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
   // One request runs several imports side by side on the server and returns when they are stored.
   const worker=async()=>{try{while(open()){
    const next=await call('run',{lanes:runner.lanes});show(next);
-   // The server pauses a job itself when another process holds the stock.
+   // The server pauses rule labelling itself when another process holds the stock. Imports are set back on the server
+   // instead (a server asked for a pause, an area is being imported elsewhere); then the page asks again at heldUntil.
    if(next.paused)pause.current=true;
+   else if(next.wait&&next.heldUntil){const until=Date.parse(next.heldUntil);setNotice(`Wartet auf Server, die um eine Pause gebeten haben, oder auf zurückgestellte Gebiete; weiter ab ${new Date(until).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} Uhr.`);await new Promise(done=>setTimeout(done,Math.min(30000,Math.max(2500,until-Date.now()))));}
    else if(next.wait){setNotice('Wartet, bis die laufenden Abrufe gespeichert sind. Ein unterbrochener Abruf wird nach fünf Minuten freigegeben.');await new Promise(done=>setTimeout(done,2500));}else setNotice('');
    reload();
   }}catch(e){pause.current=true;throw e;}};
@@ -99,7 +107,7 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
    show(await call('resume'));void watch();
    const outcomes=await Promise.allSettled(Array.from({length:runner.requests},worker));
    stopped=true;
-   const conflict=latest.items.some(i=>i.status==='queued'&&i.message?.includes('läuft bereits'));
+   const conflict=latest.stage==='analysis'&&latest.items.some(i=>i.status==='queued'&&i.message?.includes('läuft bereits'));
    await refresh();
    const failed=outcomes.find(o=>o.status==='rejected');if(failed)throw (failed as PromiseRejectedResult).reason;
    if(conflict)setMessage('Andere Verarbeitung läuft. Später ausdrücklich fortsetzen.');else if(!pause.current)setMessage('Auftrag beendet. Teilstände und Fehler stehen im Verlauf unten.');

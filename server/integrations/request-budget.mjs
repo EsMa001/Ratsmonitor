@@ -26,9 +26,43 @@ export function paced(get, { spacingMs = 600 } = {}) {
   }
  };
 }
-/* Vorübergehende Fehler: eigene Zeitüberschreitung, Überlastung oder Serverfehler der Quelle */
-const TRANSIENT = /aborted|timeout|timed out|HTTP (429|502|503|504)\b/i;
+/* Vorübergehende Fehler: eigene Zeitüberschreitung oder Serverfehler der Quelle. Nicht 429 und keine Abweisungsseite:
+   Wer „zu viele Anfragen“ meldet, wird nicht gleich erneut gefragt (robots-policy.mjs); refusalGate beendet den Schritt. */
+const TRANSIENT = /aborted|timeout|timed out|HTTP (502|503|504)\b/i;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+/** A refusal of the source: HTTP 429, or a rejection page (REFUSED names HTTP 429 as well). */
+export const isRefusal = (e) => /HTTP 429\b/.test(String(e?.message || e));
+/** Retry-After of an answer (seconds, or an HTTP date) in milliseconds from now; null without a usable value. */
+export function retryAfterMs(value, now = Date.now()) {
+ const text = String(value ?? '').trim();
+ if (!text) return null;
+ if (/^\d+$/.test(text)) return Number(text) * 1000;
+ const at = Date.parse(text);
+ return Number.isFinite(at) ? Math.max(0, at - now) : null;
+}
+/** Error for an answer that is not ok: prefix plus status; a 429 or 503 carries its Retry-After as retryAfterMs. */
+export const statusError = (prefix, response) => Object.assign(Error(prefix + response.status), response.status === 429 || response.status === 503 ? { retryAfterMs: retryAfterMs(response.headers?.get?.('retry-after')) } : {});
+/**
+ * Ends an import's requests to its source at the first refusal (HTTP 429 or a rejection page). The refused request
+ * fails as before; every later one fails at once with BUDGET_REACHED, so the readers stop as at the end of their time
+ * budget and the import counts as resumable. gate.refused ({retryAfterMs}) tells the caller; the job then pauses that
+ * server (pipeline-jobs.mjs) instead of asking it again at once.
+ */
+export function refusalGate() {
+ let refused = null;
+ return {
+  get refused() { return refused; },
+  wrap: (fn) => async (...args) => {
+   if (refused) throw Error(BUDGET_REACHED);
+   try {
+    return await fn(...args);
+   } catch (e) {
+    if (!refused && isRefusal(e)) refused = { retryAfterMs: Number.isFinite(e?.retryAfterMs) ? e.retryAfterMs : null };
+    throw e;
+   }
+  },
+ };
+}
 
 /**
  * Bound subsequent requests and each real network operation to one source budget.
