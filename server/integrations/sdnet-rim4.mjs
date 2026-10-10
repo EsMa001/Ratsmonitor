@@ -84,7 +84,7 @@ export function parseRim4Process(html){
  return {kind:first?.[1]||'',number:first?.[2]?.trim()||'',subject:field('Betreff'),department:field('Federführung'),deliberations};
 }
 // resultStatus knows the wording of classic SD.NET; the resolution column of RIM 4 is free text as well.
-const statusOf=(resolution,committee)=>{
+export const statusOf=(resolution,committee)=>{
  const r=resultStatus(resolution,committee);if(r)return r;
  const decides=DECIDING_BODY.test(committee);
  if(/zur kenntnis/i.test(resolution))return 'info';
