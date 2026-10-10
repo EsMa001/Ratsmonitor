@@ -23,7 +23,29 @@
  * liegen gebliebene Wörter und IDs schaden nicht, die Suche prüft jede Karte aus der Liste erneut.
  */
 const STATE_KEY='search-words';
-const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision";
+/**
+ * Datenstand der Suche (drizzle/0017): steigt nur, wenn sich ein Vorgang ändert, nicht mit jedem Importschritt
+ * (source_coverage), mit Versionen oder Analysen. Ohne Migration der allgemeine Datenstand 'content'.
+ * Auch für monitor-search.mjs (Zwischenspeicher, 409 beim Blättern).
+ */
+export const SEARCH_REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='search'),(SELECT revision FROM data_revisions WHERE id='content'),0) revision";
+const REVISION_SQL=SEARCH_REVISION_SQL;
+/*
+ * Sperre der Nachführung: Importe (je Schritt, bis 24 nebeneinander), das Skript und der Dev-Start dürfen nicht gleichzeitig
+ * schreiben. Zwei Läufe ab demselben Stand zählten die vorberechneten Zahlen doppelt; beim nächsten Lauf passte der Stand
+ * nicht mehr und die Zahlen wurden gelöscht. Wer die Sperre nicht bekommt, lässt den Lauf aus (der nächste holt nach).
+ * Kurz für das Nachführen; ein voller Aufbau verlängert sie, bevor er beginnt.
+ */
+const LEASE_KEY='search-words-lease';
+export const LEASE_MS=180000,FULL_LEASE_MS=3600000;
+async function withLease(db,fn,{now=Date.now()}={}){
+ let value=String(now+LEASE_MS);
+ const got=await db.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE CAST(system_state.value AS INTEGER)<? RETURNING value').bind(LEASE_KEY,value,now).first();
+ if(!got)return {skipped:true,busy:true};
+ const extend=async ms=>{const next=String(Date.now()+ms);await db.prepare('UPDATE system_state SET value=? WHERE key=? AND value=?').bind(next,LEASE_KEY,value).run();value=next;};
+ try{return await fn(extend);}
+ finally{await db.prepare('DELETE FROM system_state WHERE key=? AND value=?').bind(LEASE_KEY,value).run();}
+}
 /** Wörter mit höchstens so vielen Karten bekommen Karten-IDs */
 export const POSTING_MAX=500;
 /** Zählstand für „zu häufig“ */
@@ -73,9 +95,15 @@ const insertPostings=(db,pairs)=>{const out=[];for(let i=0;i<pairs.length;i+=150
  *   kinds: Gebiets-ID -> 'city'|'district' für die vorberechneten Trefferzahlen (ohne sie gibt es keine);
  *   blockedMin: ab wie vielen Karten ein seltenes Wort, das in einem häufigen steckt, vorberechnet wird (Standard 6)
  *   postingMax: ab wie vielen Karten ein Wort als häufig gilt (Standard 500; für Tests kleiner)
+ *   fullIfNoHits: mit kinds alles neu aufbauen, wenn die vorberechneten Zahlen fehlen (hasHits false). Nachführen kann sie nie
+ *   wiederherstellen; ohne diesen Aufbau blieben häufige Begriffe dauerhaft im langsamen Weg. Für das Skript, nicht für den Import.
+ * Läuft gerade eine andere Nachführung (Sperre), passiert nichts: {skipped:true,busy:true}.
  */
-export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity,kinds=null,names=null,postingMax=POSTING_MAX,blockedMin=BLOCKED_MIN_CARDS}={}){
+export async function refreshSearchWords(db,options={}){
  await ensureSchema(db);
+ return withLease(db,extend=>refreshLocked(db,options,extend));
+}
+async function refreshLocked(db,{full=false,chunk=5000,onlyIfBuilt=false,maxCards=Infinity,kinds=null,names=null,postingMax=POSTING_MAX,blockedMin=BLOCKED_MIN_CARDS,fullIfNoHits=false}={},extend){
  const state=await readState(db);
  if(onlyIfBuilt&&!full&&!state?.complete)return {skipped:true};
  /* Datenstand vor dem Lesen: ändert sich währenddessen etwas, passt die Liste danach nicht mehr und gilt als veraltet */
@@ -85,7 +113,8 @@ export async function refreshSearchWords(db,{full=false,chunk=5000,onlyIfBuilt=f
     refreshNew liest die protokollierten rowids erneut. */
  const same=state?.complete&&(state.rowid===0||(await db.prepare('SELECT id FROM search_cards WHERE rowid=?').bind(state.rowid).first())?.id===state.topId
   ||!!(await db.prepare('SELECT 1 x FROM search_cards_gone WHERE card_rowid=? AND id=? LIMIT 1').bind(state.rowid,state.topId).first()));
- if(full||!state?.complete||!same||!(await schemaOk(db)))return buildAll(db,revision,chunk,kinds,postingMax,blockedMin,names);
+ const noHits=fullIfNoHits&&!!kinds&&!!state?.complete&&!state.hasHits;
+ if(full||!state?.complete||!same||noHits||!(await schemaOk(db))){await extend(FULL_LEASE_MS);return buildAll(db,revision,chunk,kinds,postingMax,blockedMin,names);}
  return refreshNew(db,state,revision,chunk,maxCards,kinds,postingMax);
 }
 

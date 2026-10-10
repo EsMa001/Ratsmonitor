@@ -83,6 +83,7 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/data/ratsmonitor.sqlite` | Datenbank |
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
 | `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, drei Stände (`/etc/cron.d/ratsmonitor-backup`) |
+| `/etc/cron.d/ratsmonitor-search-words` | Wortliste der Suche nachführen, 4:15 Uhr; baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
 
@@ -126,6 +127,32 @@ Danach ist der Server der Hauptbestand. Importe laufen dort; lokale Datenbanken 
 `d1_migrations` wie Wrangler. Eine lokal migrierte Datenbank gilt damit als auf demselben Stand. Vorher sichern;
 große Indizes über alle Vorgänge brauchen Minuten.
 
+`deploy/node/deploy.sh` bricht ab, wenn Migrationen fehlen (der laufende Stand bleibt). Dann von Hand, mit dem neuen
+Stand als Archiv in `/tmp` (`git archive main scripts/node-migrate.mjs drizzle | ssh ratsmonitor 'mkdir -p /tmp/m && tar -x -C /tmp/m'`):
+
+```bash
+ls -la /srv/ratsmonitor/backups/          # Sicherung von heute vorhanden?
+systemctl stop ratsmonitor
+sudo -u ratsmonitor node /tmp/m/scripts/node-migrate.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite
+systemctl start ratsmonitor
+deploy/node/deploy.sh main
+```
+
+Migration 0017 (Spalte `formal`, Datenstand `search`) dauerte lokal bei 1,3 Mio. Karten 142 s. Danach stimmt der Stand
+der Wortliste nicht mehr; das nächste Nachführen übernimmt ihn (`scripts/refresh-search-words.mjs`, bis dahin sucht die
+App über alle Karten).
+
+Nachführen der Wortliste nachts (einmal anlegen):
+
+```bash
+cat > /etc/cron.d/ratsmonitor-search-words <<'CRON'
+15 4 * * * ratsmonitor cd /srv/ratsmonitor/app/current && DATABASE_FILE=/srv/ratsmonitor/data/ratsmonitor.sqlite node --no-warnings scripts/refresh-search-words.mjs >> /srv/ratsmonitor/backups/search-words.log 2>&1
+CRON
+```
+
+Das Skript läuft unter derselben Sperre wie das Nachführen nach Importen (`search-words-lease` in `system_state`);
+läuft schon eines, lässt es aus.
+
 ## Vor dem Öffnen für andere
 
 Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain erreichbar wird:
@@ -143,6 +170,7 @@ Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain 
 ## Bekannte Grenzen
 
 - Begriffssuche ohne Volltextindex dauert bei vollem Bestand rund 3 s und hält den Prozess so lange an.
-- `refreshSearchWords` nach Importen hat keine Sperre gegen sich selbst; das galt auf Cloudflare genauso.
+- `refreshSearchWords` läuft unter einer Sperre (3 min, beim vollen Aufbau 1 h); bricht ein Lauf hart ab, ist die
+  Wortliste bis zum Ablauf der Sperre nicht nachführbar, die Suche läuft dann über alle Karten.
 - Fehlerzweige mancher Leser lesen die Antwort nicht zu Ende; in einem lange laufenden Prozess bleiben die
   Verbindungen dann bis zur nächsten Speicherbereinigung offen.

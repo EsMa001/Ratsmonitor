@@ -127,7 +127,18 @@ async function seriesStatuses(db,areas){
  * review:false leaves out the review list, which needs a scan of its own and is shown on page 2 only.
  */
 /** sources:false leaves out the list of areas (source_coverage is not read; `sources` is empty): the summary of the pages. */
-export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushConfigured=false,review=true,sources:withSources=true}={}){
+// Totals over three large tables: count(*) reads a whole index each (3.3 s on the server with 1.3 million reports), on every
+// opening of the administration. They only grow slowly and are only shown: held for a minute per process.
+const TOTALS_MAX_AGE_MS=60000,totals=new WeakMap();
+const TOTALS_SQL='SELECT (SELECT count(*) FROM article_versions) versions,(SELECT count(*) FROM article_analyses) analysisVersions,(SELECT count(*) FROM topics) stored,(SELECT count(*) FROM push_subscriptions) pushSubscriptions';
+async function storedTotals(db,{maxAgeMs=TOTALS_MAX_AGE_MS}={}){
+ const hit=totals.get(db),at=Date.now();
+ if(hit&&at-hit.at<maxAgeMs)return hit.row;
+ const row=await db.prepare(TOTALS_SQL).first();
+ totals.set(db,{at,row});
+ return row;
+}
+export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushConfigured=false,review=true,sources:withSources=true,totalsMaxAgeMs=TOTALS_MAX_AGE_MS}={}){
  const week=new Date(now.getTime()-7*86400000).toISOString();
  // The scan of the reports is kept until the reports change (revision-cache.mjs); "updated in the last seven days" moves
  // with the clock, so a kept result also ends with the hour.
@@ -142,13 +153,12 @@ export async function loadAdminData(db,{now=new Date(),aiConfigured=false,pushCo
  const queries=[
   db.prepare(withSources?'SELECT region_id,payload FROM source_coverage':'SELECT region_id,payload FROM source_coverage LIMIT 0'),
   db.prepare('SELECT id,started_at,finished_at,status,details FROM import_runs ORDER BY started_at DESC LIMIT 30'),
-  db.prepare('SELECT (SELECT count(*) FROM article_versions) versions,(SELECT count(*) FROM article_analyses) analysisVersions,(SELECT count(*) FROM topics) stored,(SELECT count(*) FROM push_subscriptions) pushSubscriptions'),
   db.prepare("SELECT key,value FROM system_state WHERE key='import-lock'"),
   db.prepare("SELECT max(started_at) lastScheduledAt FROM import_runs WHERE json_extract(details,'$.trigger')='scheduled'")
  ];
- const [[scan,statuses],[coverage,runRows,extra,lockRows,scheduled],state]=await Promise.all([figures?(figures.pending?Promise.resolve(null):seriesStatuses(db,figures.rows.filter(r=>r.count>0).map(r=>r.region_id))).then(async statuses=>[{results:figures.rows},statuses||(await db.batch([db.prepare(`SELECT status AS id,count(*) count FROM topics INDEXED BY idx_topics_canonical_region_status WHERE ${canonical} GROUP BY status`)]))[0]]):atRevision(db,'overview|'+now.toISOString().slice(0,13),scanned),db.batch(queries),processingState(db)]);
+ const [[scan,statuses],[coverage,runRows,lockRows,scheduled],state,extraRow]=await Promise.all([figures?(figures.pending?Promise.resolve(null):seriesStatuses(db,figures.rows.filter(r=>r.count>0).map(r=>r.region_id))).then(async statuses=>[{results:figures.rows},statuses||(await db.batch([db.prepare(`SELECT status AS id,count(*) count FROM topics INDEXED BY idx_topics_canonical_region_status WHERE ${canonical} GROUP BY status`)]))[0]]):atRevision(db,'overview|'+now.toISOString().slice(0,13),scanned),db.batch(queries),processingState(db),storedTotals(db,{maxAgeMs:totalsMaxAgeMs})]);
  const areas=new Map(scan.results.map(r=>[r.region_id,r])),sum=key=>scan.results.reduce((n,r)=>n+Number(r[key]||0),0),online=sum('count');
- const {stored,...other}=extra.results[0];
+ const {stored,...other}=extraRow||{};
  // Merged reports are all stored rows that are not articles of their own.
  const counts={online,unlabelled:sum('label_unklar'),...Object.fromEntries(TOTALS.map(key=>[key==='insufficient'?'summaryInsufficient':key==='stale'?'summaryStale':key,sum(key)])),...Object.fromEntries(Object.entries(other).map(([k,v])=>[k,Number(v||0)])),aliases:Number(stored||0)-online};
  const byCoverage=new Map(coverage.results.map(r=>[r.region_id,readJson(r.payload)]));

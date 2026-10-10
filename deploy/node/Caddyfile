@@ -9,6 +9,20 @@
 # Keine Zeitgrenzen für Antworten: Abrufe im Adminbereich dauern bis etwa drei Minuten.
 
 (ratsmonitor_app) {
+	# Statische Dateien ohne Hash im Namen: vinext liefert sie unter Node mit max-age=3600, die Regeln aus public/_headers
+	# gelten nur auf Cloudflare. Hier dieselben Regeln: Kartendaten (de_map.json 2,4 MB, Version in der Adresse) und
+	# Kartenformen der Administration einen Tag, danach eine Woche im Hintergrund erneuert; Schriften 30 Tage.
+	# defer: erst beim Schreiben der Antwort setzen, sonst bliebe zusätzlich der Wert von vinext stehen.
+	@static_data path /data/* /geo/*
+	header @static_data {
+		Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
+		defer
+	}
+	@static_fonts path /fonts/*
+	header @static_fonts {
+		Cache-Control "public, max-age=2592000"
+		defer
+	}
 	reverse_proxy 127.0.0.1:3000 {
 		header_up Oai-Authenticated-User-Id {$RM_ADMIN_USER_ID}
 		header_up Oai-Authenticated-User-Email {$RM_ADMIN_EMAIL}
@@ -30,13 +44,14 @@ http://localhost:8080, http://127.0.0.1:8080 {
 	import ratsmonitor_app
 }
 
-# Phase 2, eigene Subdomain mit Passwort (erst einschalten, wenn der A-Record auf den Server zeigt).
-# Dann gilt jeder mit dem Passwort als Admin. Vor einer öffentlichen Seite: Admin-Kennung nur unter /admin* und
-# /api/admin* setzen und den Rest ohne Passwort ausliefern (docs/betrieb/node-server.md, „Vor dem Öffnen“).
-# test.example.de {
+# Zugang von außen mit Passwort (seit 10.10.2026 auf dem Server unter https://187-7-72-52.sslip.io, ohne eigene Domain).
+# Jeder mit dem Passwort gilt als Admin. Vor einer öffentlichen Seite: Admin-Kennung nur unter /admin* und /api/admin*
+# setzen und den Rest ohne Passwort ausliefern (docs/betrieb/node-server.md, „Vor dem Öffnen“).
+# Benutzer und Hash erzeugen: caddy hash-password; der Hash steht nur auf dem Server, nicht im Repository.
+# 187-7-72-52.sslip.io {
+# 	header X-Robots-Tag "noindex, nofollow"
 # 	basicauth {  # ab Caddy 2.8: basic_auth
-# 		# Benutzer und Hash erzeugen: caddy hash-password
-# 		max $2a$14$...
+# 		plenara $2a$14$...
 # 	}
 # 	import ratsmonitor_app
 # }

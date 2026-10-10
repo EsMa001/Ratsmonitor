@@ -16,11 +16,11 @@ test('completeness audits actual fields without writing and keeps source gaps an
  assert.equal((await dataCompleteness(db,'muenster')).total,0);await assert.rejects(dataCompleteness(db,"x' OR 1=1"));sql.close();
 });
 test('every content-table mutation invalidates snapshots and sensitive tables cannot be exported',async()=>{
- const {sql,db,put}=fixture();put('a',full);const revision=sql.prepare('SELECT revision FROM data_revisions').get().revision;
+ const {sql,db,put}=fixture();put('a',full);const revision=sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision;
  assert.equal((await exportPage(db,{table:'topics',revision})).data.rows.length,1);sql.exec("UPDATE topics SET status='approved'");assert.equal((await exportPage(db,{table:'topics',revision})).status,409);
  for(const table of ['system_state','push_subscriptions','topics;DROP TABLE topics','__proto__'])await assert.rejects(exportPage(db,{table,revision}));
  for(const [table,insert] of [['article_versions',"INSERT INTO article_versions VALUES('v','a','now','{}')"],['article_analyses',"INSERT INTO article_analyses VALUES('a','a','summary','codex','hash','now','{}')"],['source_coverage',"INSERT INTO source_coverage VALUES('billerbeck','{}')"]]){
-  const before=sql.prepare('SELECT revision FROM data_revisions').get().revision;sql.exec(insert);sql.exec(`UPDATE ${table} SET payload='{}'`);sql.exec(`DELETE FROM ${table}`);assert.equal(sql.prepare('SELECT revision FROM data_revisions').get().revision,before+3);
+  const before=sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision;sql.exec(insert);sql.exec(`UPDATE ${table} SET payload='{}'`);sql.exec(`DELETE FROM ${table}`);assert.equal(sql.prepare("SELECT revision FROM data_revisions WHERE id='content'").get().revision,before+3);
  }
  sql.close();
 });

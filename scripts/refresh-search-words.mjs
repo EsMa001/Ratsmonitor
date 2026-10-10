@@ -1,6 +1,9 @@
 /* Wortliste der Suche in der lokalen D1-Datei aufbauen bzw. nachführen: node scripts/refresh-search-words.mjs [--full] [--quiet]
-   Ohne --full wird nur Neues seit dem letzten Lauf gelesen (fehlt die Liste noch, wird sie gebaut). Gleiche Logik wie im
-   Worker (server/integrations/search-words.mjs). Wird beim Start des Dev-Servers im Hintergrund aufgerufen (run-framework.mjs). */
+   Ohne --full wird nur Neues seit dem letzten Lauf gelesen (fehlt die Liste noch, wird sie gebaut). Fehlen die vorberechneten
+   Zahlen der häufigen Begriffe (Stand hasHits:false), baut das Skript alles neu auf: Nachführen kann sie nicht wiederherstellen.
+   Gleiche Logik wie im Server (server/integrations/search-words.mjs), unter derselben Sperre wie die Nachführung nach Importen.
+   Wird beim Start des Dev-Servers im Hintergrund aufgerufen (run-framework.mjs), auf dem eigenen Server nachts (Cron,
+   docs/betrieb/node-server.md). */
 import {DatabaseSync} from 'node:sqlite';
 import {existsSync,readdirSync} from 'node:fs';
 import {refreshSearchWords} from '../server/integrations/search-words.mjs';
@@ -16,6 +19,7 @@ const db=new DatabaseSync(file);db.exec('PRAGMA busy_timeout=60000');
 let kinds=null,names=null;
 try{const {REGIONS}=await import('../shared/regions.ts');kinds=new Map(REGIONS.map(r=>[r.id,r.kind]));names=new Map(REGIONS.map(r=>[r.id,r.name]));}catch{say('Gebietsarten nicht ladbar: keine vorberechneten Zahlen.');}
 try{
- const t0=Date.now(),result=await refreshSearchWords(sqliteAdapter(db),{full:process.argv.includes('--full'),kinds,names});
+ const t0=Date.now(),result=await refreshSearchWords(sqliteAdapter(db),{full:process.argv.includes('--full'),fullIfNoHits:true,kinds,names});
+ if(result?.busy){say('Eine andere Nachführung läuft gerade (Import oder Skript), nichts zu tun.');process.exit(0);}
  say(JSON.stringify({...result,seconds:Math.round((Date.now()-t0)/100)/10}));
 }catch(e){say('Wortliste nicht aufgebaut:',e instanceof Error?e.message:e);process.exit(0);}
