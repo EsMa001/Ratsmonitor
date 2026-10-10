@@ -112,7 +112,7 @@ export function parseAllrisPaper(html,source){
 }
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs.
 // checkOparl: ask the system's own OParl address first; if it answers as an OParl system, the pages are not read.
-export async function collectAllris(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks,checkOparl=false}={}){
+export async function collectAllris(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks,checkOparl=false,oparlChecked=()=>{}}={}){
  get=budgeted(get,maxDurationMs,2);const deadline=Date.now()+maxDurationMs;
  const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),issues=[],warnings=[],meetings=new Map(),part=committeePart(source.organizations),session=createSession(request);
  // halt: the reason why the system must not be asked any further in this import.
@@ -141,7 +141,7 @@ export async function collectAllris(source,{now=new Date(),get=fetchText,request
   }catch(e){if(e.message!==halt)issues.push(`Kalender ${number}/${year}: ${e.message}`);if(/HTTP 4\d\d|Kalenderformat|ohne Inhalt/.test(e.message))denied=true;}
  };
  // Order of sources: OParl where it works. The system's own OParl address is asked in the same session as the pages.
- if(checkOparl){let system=false;try{system=String(JSON.parse(await read(source.base+'oparl/system')).type||'').endsWith('/System');}catch{/* no OParl system at this address */}if(system)throw Error('OParl vorhanden; Adapterfreigabe erforderlich.');}
+ if(checkOparl){let system=false,outcome='negative';try{system=String(JSON.parse(await read(source.base+'oparl/system')).type||'').endsWith('/System');}catch(e){/* no OParl system at this address; only a clear answer (a status, no JSON) counts, not a timeout or a refusal */outcome=e instanceof SyntaxError||/HTTP \d{3}/.test(e.message)&&!/HTTP 429\b/.test(e.message)?'negative':'unclear';}if(system)throw Error('OParl vorhanden; Adapterfreigabe erforderlich.');oparlChecked(outcome);}
  // Calendar months cover the selected look-back window and already published meetings of the next month.
  // One after the other: the first opens the session, and the system keeps a calendar page for its follow-up
  // request reliably only while no other page of the same session is being built.

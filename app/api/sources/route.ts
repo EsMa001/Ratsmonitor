@@ -37,7 +37,7 @@ async function sourcesSummary(){
 export async function GET(){
  try{
   // Ändert sich nur mit Importen: gehalten, solange der Datenstand gleich bleibt, und im Browser kurz wiederverwendbar.
-  const summary=env.DB?await atRevision(env.DB,'sources',sourcesSummary):await sourcesSummary();
+  const summary=env.DB?await atRevision(env.DB,'sources',sourcesSummary,{sources:true}):await sourcesSummary();
   return Response.json(summary,{headers:{'Cache-Control':'public, max-age=300, stale-while-revalidate=3600'}});
  }catch{return Response.json({error:'Der Quellenstand ist gerade nicht erreichbar.'},{status:503,headers:{'Cache-Control':'no-store'}});}
 }

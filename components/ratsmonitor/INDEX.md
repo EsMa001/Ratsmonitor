@@ -733,7 +733,7 @@ wordmark__dot design-styles.css:61
 - admin-mobile.tsx (34): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
-- admin-processing.tsx (224, ⚠23): AdminProcessing
+- admin-processing.tsx (234, ⚠24): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
 - admin-rule-texts.tsx (52): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
@@ -787,7 +787,7 @@ wordmark__dot design-styles.css:61
 - icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (319, ⚠2): MapPanel
+- MapPanel.tsx (320, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (179, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
@@ -853,7 +853,7 @@ wordmark__dot design-styles.css:61
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (49): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
 - useDarkMode.ts (40): useDarkMode
-- usePhone.ts (15): usePhone
+- usePhone.ts (16): usePhone
 - uuid.ts (12): newId
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 

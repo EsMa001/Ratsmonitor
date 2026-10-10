@@ -1,13 +1,13 @@
 import {LABELS} from '../../shared/labels.mjs';
-import {knownWords,candidateCards,precomputedTotal,precomputedFacets} from './search-words.mjs';
+import {knownWords,candidateCards,precomputedTotal,precomputedFacets,SEARCH_REVISION_SQL} from './search-words.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
 export class SearchError extends Error { constructor(message,status=400){super(message);this.status=status;} }
 /* Typische Formalien einer Sitzung (Muster für LIKE auf den kleingeschriebenen Titel) */
-const FORMAL=['%niederschrift%','mitteilungen%','anfragen%','% anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%protokolls der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','bericht des vorsitzenden%','bericht des oberbürgermeisters%','bericht des bürgermeisters%','%verpflichtung%','%anträge der fraktionen%'];
+export const FORMAL=['%niederschrift%','mitteilungen%','anfragen%','% anfragen%','verschiedenes%','%einwohnerfragestunde%','%fragestunde%','eröffnung%','%feststellung der%','%genehmigung der tagesordnung%','%tagesordnung%','%sitzungsprotokoll%','%protokoll der%','%protokolls der%','%bekanntgaben%','%bekanntgabe von%','berichte der verwaltung%','bericht des vorsitzenden%','bericht des oberbürgermeisters%','bericht des bürgermeisters%','%verpflichtung%','%anträge der fraktionen%'];
 /* Ausnahmen: Titel mit eigenem Gegenstand sind keine Formalien („Mitteilungen; Beschaffung …“, „Widerspruch … gegen den Beschluss …“) */
-const NOT_FORMAL=['mitteilungen;%','widerspruch%','%gegen den beschluss%'];
+export const NOT_FORMAL=['mitteilungen;%','widerspruch%','%gegen den beschluss%'];
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 /* Ganzes Wort in der Suchspalte (nur a–z, 0–9, sonst Trenner): Muster für GLOB am Anfang, in der Mitte und am Ende; Sonderzeichen des Begriffs in [ ] gefasst */
 const wholeWord=t=>{const e=t.replace(/[*?[]/g,c=>'['+c+']');return [e+'[^a-z0-9à-ÿ]*','*[^a-z0-9à-ÿ]'+e+'[^a-z0-9à-ÿ]*','*[^a-z0-9à-ÿ]'+e];};
@@ -46,7 +46,22 @@ export function parseMonitorSearch(params){
 const ROW_SELECT=`SELECT id,region_id,date,status,title,teaser,gremium,label,(SELECT json_group_array(json_object('d',substr(json_extract(e.value,'$.date'),1,10),'s',json_extract(e.value,'$.status'),'c',json_extract(e.value,'$.committee'),'u',json_extract(e.value,'$.url'))) FROM topics t2,json_each(t2.payload,'$.events') e WHERE t2.id=search_cards.id) steps,(SELECT json_extract(t3.payload,'$.sourceUrl') FROM topics t3 WHERE t3.id=search_cards.id) src FROM search_cards`;
 /* Strom: Karten in Stücken nach Datum durchsuchen (erstes Stück klein, dann wachsend) */
 const STREAM_FIRST=2000,STREAM_MAX=150000,SMALL_SCOPE=30;
-const REVISION_SQL="SELECT coalesce((SELECT revision FROM data_revisions WHERE id='content'),0) revision";
+/* Datenstand der Suche (drizzle/0017): steigt nur, wenn sich ein Vorgang ändert; ohne Migration der allgemeine Datenstand */
+const REVISION_SQL=SEARCH_REVISION_SQL;
+/*
+ * Spalte formal (drizzle/0017): Formalien stehen beim Einfügen der Karte fest, die Zählung ohne Formalien läuft dann über
+ * den Teilindex idx_search_cards_noformal. Ohne Migration (lokale Datenbank, noch nicht migriert) wie früher über die
+ * LIKE-Muster auf dem Titel: gleiches Ergebnis, nur langsam. Vorhanden wird gemerkt, fehlend nur eine Minute.
+ */
+const formalColumns=new WeakMap();
+async function formalColumn(db){
+ const known=formalColumns.get(db);
+ if(known&&(known.present||Date.now()-known.at<60000))return known.present;
+ let present=false;
+ try{await db.prepare('SELECT formal FROM search_cards LIMIT 0').all();present=true;}catch{/* Spalte fehlt: Rückfall auf die Muster */}
+ formalColumns.set(db,{present,at:Date.now()});
+ return present;
+}
 /*
  * Gebiet als SQL-Bedingung. Eine lange Einschlussliste (ohne Ort: alle 5.030 Gemeinden) zwingt SQLite, über den
  * Gebietsindex jede Karte zu lesen und danach zu sortieren (erste Seite 730 ms bei 900.000 Karten). Umfasst die
@@ -68,6 +83,7 @@ function regionCondition(ids,catalog){
 // Die Abdeckung (Gebiete mit Berichten, Stand des letzten Abrufs) hängt an keinem Filter: searchCoverage.
 /** Filter der Suche als SQL-Bedingung auf search_cards (Gebiet, Begriff, Zeitraum, Thema, Status); auch für Plenara.X */
 export async function searchFilters(db,catalog,f){
+ const formalReady=f.noformal?await formalColumn(db):false;
  /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
  const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...f.more];
  /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */
@@ -96,7 +112,8 @@ export async function searchFilters(db,catalog,f){
   if(f.from){where.push('date>=?');args.push(f.from);}
   if(f.to){where.push('date<=?');args.push(f.to);}
   /* Formalien ausblenden: Niederschriften, Mitteilungen, Anfragen, Eröffnung usw. (Titelanfang bzw. Titel) */
-  if(f.noformal){where.push('(NOT ('+FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+') OR '+NOT_FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+')');args.push(...FORMAL,...NOT_FORMAL);}
+  if(f.noformal&&formalReady)where.push('formal=0');
+  else if(f.noformal){where.push('(NOT ('+FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+') OR '+NOT_FORMAL.map(()=>'lower(title) LIKE ?').join(' OR ')+')');args.push(...FORMAL,...NOT_FORMAL);}
   /* Mehrere Suchbegriffe: Komma trennt Alternativen (ODER), Wörter innerhalb eines Begriffs müssen alle vorkommen */
   const groups=(f.groups||[f.terms]).filter(g=>g.length);
   if(groups.length){
@@ -238,7 +255,8 @@ export async function searchCoverage(db,catalog,level){
  if(!['city','district'].includes(level))throw new SearchError('Ungültige Ebene.');
  const byId=new Map(catalog.filter(r=>r.kind===level).map(r=>[r.id,r]));
  const [coverage,stand]=await db.batch([
-  db.prepare("SELECT sc.region_id,count(*) n,coalesce(json_extract(c.payload,'$.complete'),0) complete FROM search_cards sc LEFT JOIN source_coverage c ON c.region_id=sc.region_id GROUP BY sc.region_id"),
+  /* Erst je Gebiet zählen, dann die Abdeckung dazunehmen: ein Nachschlagen je Gebiet statt je Karte (0,8 s → 0,2 s) */
+  db.prepare("SELECT t.region_id,t.n,coalesce(json_extract(c.payload,'$.complete'),0) complete FROM (SELECT region_id,count(*) n FROM search_cards GROUP BY region_id) t LEFT JOIN source_coverage c ON c.region_id=t.region_id ORDER BY t.region_id"),
   /* Datenstand: jüngster erfolgreicher Abruf über alle Quellen */
   db.prepare("SELECT max(json_extract(payload,'$.importedAt')) at FROM source_coverage"),
  ]);
@@ -264,12 +282,15 @@ export async function cachedSearch(db,catalog,params,{max=200}={}){
  return value;
 }
 const coverages=new WeakMap();
-/** searchCoverage, gehalten solange sich der Datenstand nicht ändert (je Ebene). */
-export async function cachedCoverage(db,catalog,level){
- const now=String((await db.prepare(REVISION_SQL).first())?.revision??0);
+/* Die Abdeckung hängt auch an source_coverage (vollständig, letzter Abruf), das jeder Importschritt schreibt, ohne den
+   Datenstand der Suche zu ändern: höchstens so lange gilt ein gehaltenes Ergebnis */
+const COVERAGE_MAX_AGE_MS=300000;
+/** searchCoverage, gehalten solange sich der Datenstand der Suche nicht ändert, höchstens fünf Minuten (je Ebene). */
+export async function cachedCoverage(db,catalog,level,{now=Date.now()}={}){
+ const revision=String((await db.prepare(REVISION_SQL).first())?.revision??0);
  let entries=coverages.get(db);if(!entries){entries=new Map();coverages.set(db,entries);}
- const hit=entries.get(level);if(hit&&hit.revision===now)return hit.value;
- const value=await searchCoverage(db,catalog,level);entries.set(level,{revision:now,value});
+ const hit=entries.get(level);if(hit&&hit.revision===revision&&now-hit.at<COVERAGE_MAX_AGE_MS)return hit.value;
+ const value=await searchCoverage(db,catalog,level);entries.set(level,{revision,at:now,value});
  return value;
 }
 

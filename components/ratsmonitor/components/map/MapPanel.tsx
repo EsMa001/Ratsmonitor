@@ -101,7 +101,8 @@ export function MapPanel({ active }: { active: boolean }) {
   const baseRef = useRef<HTMLCanvasElement>(null);
   const overRef = useRef<HTMLCanvasElement>(null);
   const [mapH, setMapH] = useState(520);
-  const [mapW, setMapW] = useState(() => (typeof window === "undefined" ? 1200 : window.innerWidth));
+  /* Startwert wie auf dem Server (1200); die echte Breite setzt der Effekt unten über die Elementbreite. */
+  const [mapW, setMapW] = useState(1200);
   const [explore, setExplore] = useState(false);
   /* Darstellung im Kartenmodus (oben links wählbar) */
   const [style, setStyle] = useState<MapStyle>("flaechen");

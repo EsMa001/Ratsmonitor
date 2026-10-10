@@ -1,6 +1,7 @@
 import {sourceDecision} from './source-fields.mjs';
 import {windowStart,calendarMonthsBack} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
+import {bodyBytes} from './body-bytes.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {createSession} from './allris.mjs';
@@ -100,7 +101,7 @@ export function declaredCharset(request=fetch){
  return async(url,init)=>{
   const r=await request(url,init);
   if(!r.ok||/charset=/i.test(r.headers.get('content-type')||''))return r;
-  const body=await r.arrayBuffer(),declared=new TextDecoder().decode(body.slice(0,4000)).match(/(?:charset|encoding)\s*=\s*["']?([\w-]+)/i)?.[1]||'';
+  const body=await bodyBytes(r,4e6),declared=new TextDecoder().decode(body.slice(0,4000)).match(/(?:charset|encoding)\s*=\s*["']?([\w-]+)/i)?.[1]||'';
   const headers=new Headers(r.headers);
   if(/^(?:iso-8859-15?|windows-1252|latin-?1)$/i.test(declared))headers.set('content-type',(r.headers.get('content-type')||'text/html')+'; charset=windows-1252');
   return new Response(body,{status:r.status,statusText:r.statusText,headers});
@@ -196,7 +197,7 @@ export function parseAllris3Paper(html,source){
  * see meeting-marks.mjs. checkOparl: ask <base>oparl/1.0/system.asp first; if it answers as an OParl system, the pages
  * are not read.
  */
-export async function collectAllris3(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks,checkOparl=false}={}){
+export async function collectAllris3(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks,checkOparl=false,oparlChecked=()=>{}}={}){
  if(source.calendar&&!CALENDAR.test(source.calendar))throw Error('Unbekanntes Kalenderprogramm: '+source.calendar);
  get=budgeted(get,maxDurationMs,2);const deadline=Date.now()+maxDurationMs;
  const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),issues=[],warnings=[],meetings=new Map(),part=committeePart(source.organizations);
@@ -215,7 +216,7 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
   if(refusedProgram(html)){refused.add(program);throw Error(closed(program));}
   return html;
  };
- if(checkOparl){let system=false;try{system=String(JSON.parse(await read(source.base+'oparl/1.0/system.asp')).type||'').endsWith('/System');}catch{/* no OParl system at this address */}if(system)throw Error('OParl vorhanden; Adapterfreigabe erforderlich.');}
+ if(checkOparl){let system=false,outcome='negative';try{system=String(JSON.parse(await read(source.base+'oparl/1.0/system.asp')).type||'').endsWith('/System');}catch(e){/* no OParl system at this address; only a clear answer (a status, no JSON) counts, not a timeout or a refusal */outcome=e instanceof SyntaxError||/HTTP \d{3}/.test(e.message)&&!/HTTP 429\b/.test(e.message)?'negative':'unclear';}if(system)throw Error('OParl vorhanden; Adapterfreigabe erforderlich.');oparlChecked(outcome);}
  let calendar=source.calendar||null,probed=false;
  // Calendar pages read while looking for the program, so that the month is not asked twice.
  const pages=new Map();

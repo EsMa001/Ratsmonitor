@@ -286,7 +286,7 @@ export function htmlToLines(html){
  h=h.replace(/<(del|s|strike)(?=[\s>])[^>]*>([\s\S]*?)<\/\1\s*>/gi,(m,tag,inner)=>struck(inner)?' ':m);
  h=h.replace(/<([a-z][a-z0-9]*)\b([^>]*\bstyle\s*=\s*["'][^"']*line-through[^"']*["'][^>]*)>([\s\S]*?)<\/\1\s*>/gi,(m,tag,a,inner)=>struck(inner)?' ':m);
  // Symbols inside a link or button belong to it (a file icon, an arrow), not to an item.
- h=h.replace(/<(a|button)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,m=>m.replace(/<svg\b([^>]*)>([\s\S]*?)<\/svg\s*>/gi,(x,a,body)=>` ${altText(a)||body.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]||''} `).replace(/<(?:img|input|area)\b([^>]*)>/gi,(x,a)=>` ${iconText(a,false)} `).replace(/<(i|span)\b([^>]*?)\s*(?:\/>|>\s*<\/\1\s*>)/gi,(x,tag,a)=>` ${iconText(a,false)} `));
+ h=h.replace(/<(a|button)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,m=>m.replace(/<svg\b([^>]*)>([\s\S]*?)<\/svg\s*>/gi,(x,a,body)=>` ${altText(a)||body.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]||''} `).replace(/<(?:img|input|area)\b([^>]*)>/gi,(x,a)=>` ${iconText(a,false)} `).replace(/<(i|span)\b([^>]*?)\s{0,20}(?:\/>|>\s{0,200}<\/\1\s{0,20}>)/gi,(x,tag,a)=>` ${iconText(a,false)} `));
  // Text alternatives are text: an icon or image with title/alt "nichtöffentlich" marks an item like a word; a symbol without
  // text stands as SYMBOL.
  h=h.replace(/<svg\b([^>]*)>([\s\S]*?)<\/svg\s*>/gi,(m,a,body)=>{const t=[altText(a),body.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]??''].filter(Boolean).join(' ');return ` ${t||iconText(a)} `;});
@@ -298,7 +298,7 @@ export function htmlToLines(html){
  h=markClasses(h);
  // An empty element (an icon font's <i>, a <span> badge) is read by its title; another element only where its title
  // names the non-public part (<abbr title="nichtöffentlich">N</abbr>).
- h=h.replace(/<(i|span|em|b|strong|abbr|a|div|td|th|li|button|small|sup|sub|mark|font|u|s|p|dd|dt)\b([^>]*?)\s*(?:\/>|>\s*<\/\1\s*>)/gi,(m,tag,a)=>{const t=iconText(a,/^i$/i.test(tag)&&/\bclass\s*=/i.test(a)||ICONISH.test(attrOf(a,'class')));return t?`${m} ${t} `:m;});
+ h=h.replace(/<(i|span|em|b|strong|abbr|a|div|td|th|li|button|small|sup|sub|mark|font|u|s|p|dd|dt)\b([^>]*?)\s{0,20}(?:\/>|>\s{0,200}<\/\1\s{0,20}>)/gi,(m,tag,a)=>{const t=iconText(a,/^i$/i.test(tag)&&/\bclass\s*=/i.test(a)||ICONISH.test(attrOf(a,'class')));return t?`${m} ${t} `:m;});
  h=h.replace(/<([a-z][a-z0-9]*)\b([^>]*?)(?<!\/)>(?!\s*<\/\1\s*>)/gi,(m,tag,a)=>{const t=altText(a);return t&&!/^(?:img|input|area|script|style)$/i.test(tag)&&mentionsNonPublic(t)?`${m} ${t} `:m;});
  h=strip(h,'script|style|noscript|template|svg|iframe|object|canvas');
  const main=h.search(/<main\b/i),role=h.match(/<([a-z][a-z0-9]*)\b[^>]*\brole\s*=\s*["']?main\b[^>]*>/i);

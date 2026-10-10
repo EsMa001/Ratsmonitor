@@ -332,10 +332,13 @@ test('one request runs several lanes; pause holds further areas until resume; an
  job=await pipelineAction(db,{action:'run',id:created.id,lanes:4},refused);assert.equal(job.paused,true);assert.equal(job.wait,undefined);
  job=await pipelineAction(db,{action:'resume',id:created.id},()=>{});assert.equal(job.paused,undefined);
  job=await pipelineAction(db,{action:'run',id:created.id,lanes:4},run);assert.equal(job.status,'completed');
- // An import refused because another process holds the stock pauses the job instead of asking again and again.
+ // An import refused because its area is being imported elsewhere sets back only that area; the job is not paused.
  job=await pipelineAction(db,{action:'create',stage:'metadata',regions:single.slice(0,4)},()=>{});
- let asked=0;job=await pipelineAction(db,{action:'run',id:job.id,lanes:1},async()=>{asked++;return {status:409,data:{error:'Import läuft bereits'}};});
- assert.equal(asked,1);assert.equal(job.paused,true);assert.equal(job.counts.queued,4);assert.match(job.items.find(i=>i.message).message,/läuft bereits/);
+ let asked=0;job=await pipelineAction(db,{action:'run',id:job.id,lanes:1},async(stage,region)=>{asked++;return region===single[0]?{status:409,data:{error:'Import läuft bereits',retryAfter:60,busy:'area'}}:done;});
+ assert.equal(asked,4);assert.equal(job.paused,undefined);assert.equal(job.counts.completed,3);assert.equal(job.counts.queued,1);
+ const later=job.items.find(i=>i.region===single[0]);assert.match(later.message,/läuft bereits; neuer Versuch ab/);assert.equal(later.busy,1);assert.ok(Date.parse(later.notBefore)>Date.now()+50000);
+ // Nothing else is open: the page is told to wait until the area is free again.
+ job=await pipelineAction(db,{action:'run',id:job.id,lanes:2},()=>{throw Error('a set-back area waits');});assert.equal(job.wait,true);assert.equal(job.heldUntil,later.notBefore);
  await assert.rejects(pipelineAction(db,{action:'run',id:'other',lanes:2},run),/inzwischen geändert/);
  await pipelineAction(db,{action:'cancel',id:job.id},()=>{});
  // The nationwide job: every connected source, no area without one, named by its scope.
