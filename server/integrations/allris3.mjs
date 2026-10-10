@@ -196,7 +196,7 @@ export function parseAllris3Paper(html,source){
  * see meeting-marks.mjs. checkOparl: ask <base>oparl/1.0/system.asp first; if it answers as an OParl system, the pages
  * are not read.
  */
-export async function collectAllris3(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks,checkOparl=false}={}){
+export async function collectAllris3(source,{now=new Date(),get=fetchText,request=fetch,oldestFirst=false,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks,checkOparl=false,oparlChecked=()=>{}}={}){
  if(source.calendar&&!CALENDAR.test(source.calendar))throw Error('Unbekanntes Kalenderprogramm: '+source.calendar);
  get=budgeted(get,maxDurationMs,2);const deadline=Date.now()+maxDurationMs;
  const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),issues=[],warnings=[],meetings=new Map(),part=committeePart(source.organizations);
@@ -215,7 +215,7 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
   if(refusedProgram(html)){refused.add(program);throw Error(closed(program));}
   return html;
  };
- if(checkOparl){let system=false;try{system=String(JSON.parse(await read(source.base+'oparl/1.0/system.asp')).type||'').endsWith('/System');}catch{/* no OParl system at this address */}if(system)throw Error('OParl vorhanden; Adapterfreigabe erforderlich.');}
+ if(checkOparl){let system=false,outcome='negative';try{system=String(JSON.parse(await read(source.base+'oparl/1.0/system.asp')).type||'').endsWith('/System');}catch(e){/* no OParl system at this address; only a clear answer (a status, no JSON) counts, not a timeout or a refusal */outcome=e instanceof SyntaxError||/HTTP \d{3}/.test(e.message)&&!/HTTP 429\b/.test(e.message)?'negative':'unclear';}if(system)throw Error('OParl vorhanden; Adapterfreigabe erforderlich.');oparlChecked(outcome);}
  let calendar=source.calendar||null,probed=false;
  // Calendar pages read while looking for the program, so that the month is not asked twice.
  const pages=new Map();

@@ -91,8 +91,10 @@ export function AdminProcessing({initial,initialSelection=[],initialFilter}:{ini
   // the progress of the job itself comes with the answers of the steps.
   const reload=()=>{if(reloading||Date.now()-reloaded<rest)return;reloading=true;const began=Date.now();void fetchDashboard().then((next:AdminDashboard)=>setData(next)).catch(()=>{}).finally(()=>{reloading=false;reloaded=Date.now();rest=Math.max(60000,10*(reloaded-began));});};
   // One request runs several imports side by side on the server and returns when they are stored.
+  // A request that found the stored job briefly taken by another request (24 of them share it) waits like one that
+  // found nothing to claim, instead of ending the whole run.
   const worker=async()=>{try{while(open()){
-   const next=await call('run',{lanes:runner.lanes});show(next);
+   let next:PipelineJob;try{next=await call('run',{lanes:runner.lanes});}catch(e){if(e instanceof Error&&/Warteschlangenschritt läuft bereits/.test(e.message)){await new Promise(done=>setTimeout(done,2500));continue;}throw e;}show(next);
    // The server pauses rule labelling itself when another process holds the stock. Imports are set back on the server
    // instead (a server asked for a pause, an area is being imported elsewhere); then the page asks again at heldUntil.
    if(next.paused)pause.current=true;

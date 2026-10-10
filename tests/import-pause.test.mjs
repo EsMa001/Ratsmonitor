@@ -53,7 +53,7 @@ test('pauses stay within bounds, a failed import that was refused is taken up ag
  }
  // The fourth refusal ends the area like any failure, with its cause.
  job=await pipelineAction(db,{action:'step',id:job.id},async()=>({status:502,data:{error:'Import fehlgeschlagen',cause:'Quelle antwortet mit HTTP 429',refused:{retryAfterMs:null}}}));
- assert.equal(job.items[0].status,'failed');assert.equal(job.items[0].refusals,3);assert.match(job.items[0].message,/Ursache: Quelle antwortet mit HTTP 429/);assert.equal(job.status,'completed');sql.close();
+ assert.equal(job.items[0].status,'failed');assert.equal(job.items[0].refusals,4);assert.match(job.items[0].message,/4-mal um eine Pause.*Ursache: Quelle antwortet mit HTTP 429/);assert.equal(job.status,'completed');sql.close();
 });
 
 test('an area busy elsewhere is set back a few times, then given up; a stock held by something else holds the whole job',async()=>{
@@ -126,4 +126,47 @@ test('a source that answers 429 is asked once in the import; the refusal and its
  const {result,asked}=await collectWith(()=>new Response('',{status:429,headers:{'retry-after':'120'}}));
  assert.equal(asked.length,1,'the probe was refused; nothing further was asked');assert.deepEqual(result.refused,{retryAfterMs:120000});
  assert.equal(result.coverage.oparlProbeAt,undefined,'a refused probe is no negative probe');
+});
+
+test('a fourth refusal still rests the server, then ends the area with what was stored',async()=>{
+ const {sql,db}=fixture();
+ let job=await pipelineAction(db,{action:'create',stage:'metadata',regions:[a,other],window:'1w'},()=>{});
+ const partly=async(stage,region)=>region===a?{status:200,data:{topics:1,coverage:{complete:false,issues:[]},resume:true,refused:{retryAfterMs:3600000}}}:done;
+ for(let n=1;n<=3;n++){job=await pipelineAction(db,{action:'step',id:job.id},partly);assert.equal(job.items.find(i=>i.region===a).status,'queued');rewind(sql);}
+ // The other area is read meanwhile; a's fourth refusal: the server rests again (its areas would otherwise be read at
+ // once, the import brought resume:true), a ends as partial.
+ job=await pipelineAction(db,{action:'run',id:job.id,lanes:2},partly);
+ const first=job.items.find(i=>i.region===a);assert.equal(first.status,'partial');assert.equal(first.refusals,4);assert.equal(first.processed,4);assert.match(first.message,/4-mal um eine Pause/);
+ assert.ok(Date.parse(stored(sql).holds?.[provider(a)]||0)>Date.now()+3500000,'the server still rests');assert.equal(job.status,'completed');sql.close();
+});
+
+test('after the gate closed, a paced reader does not wait between the requests it cannot send any more',async()=>{
+ const {paced}=await import('../server/integrations/request-budget.mjs');
+ const gate=refusalGate();let sent=0;
+ const get=paced(gate.wrap(async url=>{sent++;if(url==='refused')throw Error(REFUSED);return 'ok';}),{spacingMs:400});
+ await get('a');await assert.rejects(get('refused'));
+ const began=Date.now();for(let i=0;i<20;i++)await assert.rejects(get('x'+i),e=>e.message===BUDGET_REACHED);
+ assert.ok(Date.now()-began<1500,'only the first call after the refusal waits');assert.equal(sent,2);
+});
+
+// An ALLRIS source (the reader probes the system's own OParl address itself).
+async function collectAllrisWith(answer,options={}){
+ const real=globalThis.fetch,asked=[];
+ globalThis.fetch=async(url)=>{asked.push(String(url));return answer(String(url));};
+ try{return {result:await collectRegion('nrw-05117000',{window:'1d',maxDurationMs:5000,...options}),asked};}
+ catch(e){e.asked=asked;throw e;}
+ finally{globalThis.fetch=real;}
+}
+test('an unclear ALLRIS probe (refused, no answer) is not remembered; a clear one is',async()=>{
+ const empty=()=>new Response('<html><body></body></html>',{status:200,headers:{'content-type':'text/html'}});
+ // Refused at the probe: the import ends there, nothing is remembered.
+ const refused=await collectAllrisWith(()=>new Response('',{status:429,headers:{'retry-after':'60'}})).catch(e=>e);
+ const coverage=refused.result?.coverage||refused.coverage;assert.ok(refused.result?.refused||refused.refused,'the refusal is reported');
+ assert.equal(coverage?.oparlProbeAt,undefined);
+ // A clear 404: remembered.
+ const clear=await collectAllrisWith(url=>/oparl/i.test(url)?new Response('x',{status:404}):empty());
+ assert.ok(clear.result.coverage.oparlProbeAt);assert.equal(clear.asked.filter(u=>/oparl/i.test(u)).length,1);
+ const again=await collectAllrisWith(empty,{oparlProbeAt:clear.result.coverage.oparlProbeAt});assert.equal(again.asked.filter(u=>/oparl/i.test(u)).length,0);
+ // An OParl system stops the reader, as before.
+ await assert.rejects(collectAllrisWith(url=>/oparl/i.test(url)?Response.json({type:'https://schema.oparl.org/1.0/System'}):empty()),/Adapterfreigabe/);
 });

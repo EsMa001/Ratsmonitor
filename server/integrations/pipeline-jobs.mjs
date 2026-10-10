@@ -120,7 +120,7 @@ const clock=iso=>new Date(iso).toLocaleTimeString('de-DE',{hour:'2-digit',minute
  * the database supports it; never needed.
  */
 async function optimize(db){
- try{await db.prepare('PRAGMA analysis_limit=1000').run();await db.prepare('PRAGMA optimize=0x10002').run();}catch{/* D1 or an older SQLite: the statistics stay as they are */}
+ try{await db.prepare('PRAGMA analysis_limit=4000').run();await db.prepare('PRAGMA optimize=0x10002').run();}catch{/* D1 or an older SQLite: the statistics stay as they are */}
 }
 /** Claims one waiting area, runs it and stores its result. wait: nothing could be claimed while others are still running. */
 async function step(db,id,run){
@@ -173,12 +173,14 @@ async function step(db,id,run){
   else if(result.status===409&&d.busy==='stock'){item.status='queued';const until=hold(job,'*',BUSY_MS,now);item.message=`${d.error||'Bestand belegt'}; der Auftrag wartet bis ${clock(until)}.`;}
   else if(result.status===409&&(item.busy||0)<MAX_BUSY){item.busy=(item.busy||0)+1;item.status='queued';item.notBefore=new Date(now+Math.max(BUSY_MS,Number(d.retryAfter)*1000||0)).toISOString();item.message=`${d.error||'Import läuft bereits'}; neuer Versuch ab ${clock(item.notBefore)} (${item.busy}. Mal).`;}
   else if(result.status===409){item.status='failed';item.message=`${d.error||'Import läuft bereits'}; nach ${MAX_BUSY} Versuchen zurückgestellt. Gebiet später erneut abrufen.`;}
-  // The source refused a request (HTTP 429 or a rejection page): its server rests for the Retry-After, the area follows
-  // afterwards. What the import stored counts.
-  else if(job.stage==='metadata'&&d.refused&&(item.refusals||0)<MAX_REFUSALS){
-   item.refusals=(item.refusals||0)+1;item.status='queued';if(result.status===200)item.processed+=Number(d.topics??0);
+  // The source refused a request (HTTP 429 or a rejection page): its server rests for the Retry-After, whatever else the
+  // import brought, and the area follows afterwards, at most MAX_REFUSALS times; then it ends with what was stored.
+  else if(job.stage==='metadata'&&d.refused){
+   item.refusals=(item.refusals||0)+1;if(result.status===200)item.processed+=Number(d.topics??0);
    const wanted=d.refused.retryAfterMs,ms=Math.min(HOLD_MAX_MS,Math.max(HOLD_MIN_MS,typeof wanted==='number'&&Number.isFinite(wanted)?wanted:HOLD_DEFAULT_MS));
-   const until=hold(job,serverOfItem(item),ms,now);item.message=`Der Server bittet um eine Pause (HTTP 429); der Abruf wird ab ${clock(until)} fortgesetzt.`;
+   const until=hold(job,serverOfItem(item),ms,now);
+   if(item.refusals<=MAX_REFUSALS){item.status='queued';item.message=`Der Server bittet um eine Pause (HTTP 429); der Abruf wird ab ${clock(until)} fortgesetzt.`;}
+   else{item.status=result.status===200?'partial':'failed';item.message=`Der Server hat ${item.refusals}-mal um eine Pause gebeten (HTTP 429); Gebiet später erneut abrufen.`+(d.cause?' Ursache: '+String(d.cause).slice(0,200):'');}
   }
   else if(result.status!==200){item.status='failed';item.message=((d.error||'Abruf fehlgeschlagen.')+(d.cause?' Ursache: '+String(d.cause).slice(0,300):'')).slice(0,long);}
   else {item.processed+=Number(d.processed??d.topics??0);

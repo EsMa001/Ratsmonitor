@@ -725,7 +725,7 @@ wordmark__dot design-styles.css:61
 - admin-mobile.tsx (34): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
-- admin-processing.tsx (232, ⚠24): AdminProcessing
+- admin-processing.tsx (234, ⚠24): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
 - admin-rule-texts.tsx (52): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug

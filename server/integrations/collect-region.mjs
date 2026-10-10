@@ -54,12 +54,13 @@ async function collect(id,options){
  }
  if(source.adapter==='allris'){
   // The reader asks the system's own OParl address itself, in the one session it keeps for the whole import.
+  // The reader reports whether its probe got a clear answer (oparlChecked); only then is the probe remembered.
   const ask=!checked&&!recent;
-  const d=await collectAllris(source,{...pages,checkOparl:ask});if(ask)probe=new Date().toISOString();d.coverage.apiCheck=checked||'OParl-Adresse des Systems (oparl/system) liefert kein OParl-System.';return mark(d);
+  const d=await collectAllris(source,{...pages,checkOparl:ask,oparlChecked:outcome=>{if(outcome==='negative')probe=new Date().toISOString();}});d.coverage.apiCheck=checked||'OParl-Adresse des Systems (oparl/system) liefert kein OParl-System.';return mark(d);
  }
  // Further readers (readers.mjs). ALLRIS 3 asks the system's own OParl address first, like ALLRIS 4.
  const reader=READERS[source.adapter];
- if(reader){const ask=Boolean(reader.oparlCheck)&&!checked&&!recent;const d=await reader.collect(source,{...pages,...(reader.oparlCheck?{checkOparl:ask}:{})});if(ask)probe=new Date().toISOString();else if(!reader.oparlCheck)probe=null;if(checked)d.coverage.apiCheck=checked;return mark(d);}
+ if(reader){const ask=Boolean(reader.oparlCheck)&&!checked&&!recent;const d=await reader.collect(source,{...pages,...(reader.oparlCheck?{checkOparl:ask,oparlChecked:outcome=>{if(outcome==='negative')probe=new Date().toISOString();}}:{})});if(!reader.oparlCheck)probe=null;if(checked)d.coverage.apiCheck=checked;return mark(d);}
  if(source.extension){
   // Probe the vendor's public OParl endpoint. Failures do not masquerade as API data.
   await vendorOparlOff(source.base+`oparl/1.0/system.${source.extension}`);

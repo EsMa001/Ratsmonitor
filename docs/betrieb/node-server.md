@@ -147,7 +147,7 @@ den Datenstand `content` nur noch, wenn er Vorgänge schreibt; die Quellenständ
 (`server/integrations/revision-cache.mjs`). Ohne die Migration läuft alles wie vorher.
 
 Am Ende eines Abrufauftrags erneuert der Server die Planerstatistik dort, wo sich Tabellen stark verändert haben
-(`PRAGMA optimize=0x10002` mit `analysis_limit=1000`, `pipeline-jobs.mjs`). Die Statistik von Hand zu erneuern
+(`PRAGMA optimize=0x10002` mit `analysis_limit=4000`, `pipeline-jobs.mjs`). Die Statistik von Hand zu erneuern
 (Abschnitt unten) braucht es damit nur noch nach neuen Indizes.
 
 Nachführen der Wortliste nachts (einmal anlegen):

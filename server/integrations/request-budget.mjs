@@ -21,7 +21,10 @@ export function paced(get, { spacingMs = 600 } = {}) {
   try {
    return await get(...args);
   } catch (e) {
-   if (String(e?.message || e).includes(REFUSED)) spacing = spacingMs;
+   const message = String(e?.message || e);
+   if (message.includes(REFUSED)) spacing = spacingMs;
+   // Nothing goes out any more (the budget is used up, or refusalGate ended the import): no more waiting either.
+   else if (message === BUDGET_REACHED) spacing = 0;
    throw e;
   }
  };

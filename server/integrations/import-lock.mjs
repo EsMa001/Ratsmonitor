@@ -14,10 +14,11 @@
 const LEASE_MS=600000;
 /**
  * Imports hold their marker and the shared lock for IMPORT_LEASE_MS and renew both once collecting is done (renew).
- * An import is limited to about two minutes of collecting plus storing; an interrupted one blocks its area and holders
- * of the whole stock only this long, as long as the job takes to give up on it (STALE_MS in pipeline-jobs.mjs).
+ * Collecting is limited to about two minutes (plus a probe), so the lease outlasts it with room to spare; an
+ * interrupted import blocks its area and holders of the whole stock only this long, a minute longer than the job
+ * takes to give up on it (STALE_MS in pipeline-jobs.mjs), so a replaced job never meets a marker that is still live.
  */
-export const IMPORT_LEASE_MS=300000;
+export const IMPORT_LEASE_MS=360000;
 // reason: 'area' (this area is being imported) or 'stock' (something else holds the whole stock).
 const BUSY_AREA=Object.freeze({ok:false,reason:'area'}),BUSY_STOCK=Object.freeze({ok:false,reason:'stock'});
 /** Returns {ok:true, release, renew} or {ok:false, reason} if this area is being imported or the stock is locked by something else. */
@@ -34,8 +35,10 @@ export async function acquireImport(db,region,{shared=true,now=Date.now()}={}){
  const lock=await db.prepare("INSERT INTO system_state(key,value) VALUES('import-lock',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE CAST(system_state.value AS INTEGER) < ? OR system_state.value LIKE '% shared' RETURNING value").bind(expiry+' shared',now).first();
  if(!lock){await db.prepare('DELETE FROM system_state WHERE key=? AND value=?').bind(marker,expiry).run();return BUSY_STOCK;}
  return {ok:true,
-  // One statement, so marker and lock go together: the own marker always, the shared lock only if no other import is left.
-  release:()=>db.prepare("DELETE FROM system_state WHERE (key=? AND value=?) OR (key='import-lock' AND value LIKE '% shared' AND NOT EXISTS (SELECT 1 FROM system_state other WHERE other.key LIKE 'import-run:%' AND other.key<>? AND CAST(other.value AS INTEGER) > ?))").bind(marker,expiry,marker,Date.now()).run(),
+  // One statement, so marker and lock go together: the own marker always, the shared lock only if no other import is
+  // left. "Other" is any live marker but this one (key and expiry): a successor of the same area, taken after this
+  // marker expired, keeps the lock.
+  release:()=>db.prepare("DELETE FROM system_state WHERE (key=? AND value=?) OR (key='import-lock' AND value LIKE '% shared' AND NOT EXISTS (SELECT 1 FROM system_state other WHERE other.key LIKE 'import-run:%' AND NOT (other.key=? AND other.value=?) AND CAST(other.value AS INTEGER) > ?))").bind(marker,expiry,marker,expiry,Date.now()).run(),
   // Moves both expiries IMPORT_LEASE_MS ahead. The shared lock is only ever moved later, and never taken back from a
   // holder of the whole stock; the marker only while it is still this import's.
   renew:async(at=Date.now())=>{
