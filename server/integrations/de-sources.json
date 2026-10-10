@@ -10244,6 +10244,19 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08119",
+    "name": "Rems-Murr-Kreis",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://lrarmk-sitzungsdienst.komm.one/bi/",
+    "verifiedSource": "https://lrarmk-sitzungsdienst.komm.one/bi/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "SessionNet mit zwei Mandanten (Landratsamt, Abfallwirtschaft AöR); Mandant über den Namen getrennt.",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=1",
+    "clientName": "Landratsamt Rems-Murr"
+  },
+  {
     "id": "de-08119001",
     "name": "Gemeinde Alfdorf",
     "kind": "city",
@@ -26560,6 +26573,18 @@
     "verifiedSource": "https://www.winkelhaid.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-095745527",
+    "name": "Verwaltungsgemeinschaft Velden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/vgvelden/",
+    "api": "https://risapi2.komuna.net/",
+    "verifiedSource": "https://www.velden.de/sitzungskalender-velden",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
     "id": "de-095745528",
