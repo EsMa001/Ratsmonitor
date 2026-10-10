@@ -21,7 +21,8 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/gremien": GremiennetzPage,
 };
 
-export const isAnalyticsPath = (p: string) => p in PAGES;
+// Die Adressen stehen in lib/routes.ts (App.tsx braucht sie, ohne diese Seiten zu laden); PAGES muss sie alle bedienen.
+export { isAnalyticsPath } from "../../lib/routes";
 
 /** Nur „Über plenara.X“ ist frei; die Analysen gehören zu Enterprise */
 const FREE = new Set(["/analytics", "/analytics/ueber"]);

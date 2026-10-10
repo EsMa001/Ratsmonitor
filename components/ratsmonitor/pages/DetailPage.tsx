@@ -12,6 +12,7 @@ import {SaveArticleButton} from '../components/SaveArticleButton';
 import {FollowButton} from '../components/FollowButton';
 import {ExportMenu} from '../components/ExportMenu';
 import {exportArticlePdf,exportArticleTable,printArticle} from '../lib/exportArticle';
+import {loadTopic,TopicError} from '../lib/topicCache';
 /* Auszug aus der Vorlage: nur Originalsätze, wörtlich; „[…]“ steht, wo im Dokument etwas dazwischen liegt */
 function Excerpt({text,source,size}:{text:{sentences:string[];gaps?:boolean[]};source?:{url:string;title:string};size:'short'|'long'}){
   const body=text.sentences.map((s,k)=>(k?(text.gaps?.[k]?' […] ':' '):'')+s).join('');
@@ -23,7 +24,8 @@ function Excerpt({text,source,size}:{text:{sentences:string[];gaps?:boolean[]};s
 export function DetailPage(){
  const router=useRouter(),params=useParams(),id=String(params.id||''),{goBack}=useAppNav();
  const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>({id:'',topic:null,error:''}),[attempt,setAttempt]=useState(0);
- useEffect(()=>{const ctrl=new AbortController();fetch('/api/topics/'+encodeURIComponent(id),{signal:ctrl.signal}).then(async r=>{if(!r.ok)throw Error(r.status===404?'Dieser Vorgang wurde nicht gefunden.':'Der Vorgang konnte nicht geladen werden.');return r.json() as Promise<TopicDetail>;}).then(t=>{if(!ctrl.signal.aborted)setData({id,topic:t,error:''});}).catch(e=>{if(!ctrl.signal.aborted)setData({id,topic:null,error:e.message});});window.scrollTo(0,0);return()=>ctrl.abort();},[id,attempt]);
+ // Der Vorgang kommt aus lib/topicCache.ts: aus der Trefferliste meist schon vorgeladen, bei der Rückkehr noch gehalten.
+ useEffect(()=>{let live=true;loadTopic(id).then(t=>{if(live)setData({id,topic:t,error:''});}).catch(e=>{if(live)setData({id,topic:null,error:e instanceof TopicError?e.message:'Der Vorgang konnte nicht geladen werden.'});});window.scrollTo(0,0);return()=>{live=false;};},[id,attempt]);
  const t=data.id===id?data.topic:null,region=REGIONS.find(r=>r.id===t?.regionId);
  if(!t)return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><Link className="link-btn" href="/">Zur Übersicht</Link>{data.id===id&&data.error?<div role="alert" className="card-shell mt-6 p-6"><p>{data.error}</p><button className="btn-secondary mt-4" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></div>:<p role="status" className="mt-6">Vorgang wird geladen …</p>}</main>;
   const host=(u:string)=>{try{return new URL(u).host;}catch{return '';}},events=t.events.filter(e=>!t.sourceUrl||!e.url||!host(e.url)||host(e.url)===host(t.sourceUrl)),status=STATUS[t.status]||STATUS.unknown;

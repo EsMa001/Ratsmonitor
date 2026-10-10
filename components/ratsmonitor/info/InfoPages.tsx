@@ -5,7 +5,7 @@ import { useEffect, type ComponentType } from "react";
 import { AboutPage } from "./AboutPage";
 import { KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
 import { BranchePage } from "./BranchenPages";
-import { brancheBySlug } from "./content";
+import { brancheOf } from "../lib/routes";
 import { FaqPage } from "./FaqPage";
 import { VideosPage } from "./VideosPage";
 import { PreisePage } from "./PreisePage";
@@ -25,8 +25,8 @@ const PAGES: Record<string, ComponentType> = {
   "/widerruf": WiderrufPage,
 };
 
-export const isInfoPath = (p: string) => p in PAGES || p === "/registrieren" || !!brancheOf(p);
-const brancheOf = (p: string) => (p.startsWith("/anwender/") ? brancheBySlug(p.slice(10)) : undefined);
+// Die Adressen stehen in lib/routes.ts (App.tsx braucht sie, ohne diese Seiten zu laden); PAGES muss sie alle bedienen.
+export { isInfoPath } from "../lib/routes";
 
 /** Seiten des Dreistrichmenüs; eingehängt neben Übersicht, Detail- und Kontoseiten */
 export function InfoPages({ path }: { path: string }) {

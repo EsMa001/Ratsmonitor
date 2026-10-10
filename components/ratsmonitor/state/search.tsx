@@ -1,5 +1,5 @@
-import {REGIONS,mapKeys} from '@/shared/regions';
 import {radiusParam} from '@/shared/radius-areas.mjs';
+import {loadCatalog} from '../lib/catalog';
 import {usePathname,useSearchParams} from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
 import type { FilterSpec } from "../lib/filter";
@@ -78,7 +78,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const params=useSearchParams();
   // Die Karte kennt Samtgemeinden und neue Fusionsgemeinden nicht: sie werden über eine Mitglieds- bzw. frühere
   // Gemeinde gewählt, die Suche ordnet diese ihnen zu.
-  useEffect(()=>{const region=REGIONS.find(r=>r.id===params.get("region"));if(region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));},[params.get("region")]);
+  // Der Katalog wird dafür erst geladen, wenn die Adresse ein Gebiet nennt.
+  useEffect(()=>{const id=params.get("region");if(!id)return;let live=true;void loadCatalog().then(({REGIONS,mapKeys})=>{const region=REGIONS.find(r=>r.id===id);if(live&&region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));});return()=>{live=false;};},[params.get("region")]);
   // Gesucht wird nur, solange die Übersicht zu sehen ist. Sie bleibt auf allen Seiten versteckt eingebunden (Karte und
   // Suchstand bleiben erhalten); ohne diese Bedingung löste jede Detail-, Info- und Kontoseite die volle Suche aus.
   /* Handy: Ändert man Filter im offenen Filterfenster, wird die Suche erst beim Schließen neu ausgeführt
@@ -97,8 +98,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const derived=useMemo(()=>onHome&&live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live,onHome]);
   /* Wann was zu sehen ist (siehe useDerivedResults): In den ersten 0,5 s passiert nichts. Sind die Treffer bis dahin da
      oder wenigstens schon im Kommen, wechseln Karte und Liste, und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl
-     feststeht. Ist nach 0,5 s noch kein Treffer da, steht der Ladering, und alles erscheint erst, wenn die Suche samt
-     genauer Zahl fertig ist (dann keine Punkte). Nie beides zugleich. */
+     feststeht. Ist nach 0,5 s noch kein Treffer da, steht der Ladering, bis die erste Seite fertig ist; fehlt dann noch
+     die genaue Zahl, laufen ab da die Punkte. Nie beides zugleich. */
   const searching=derived.pending||derived.totalPending;
   const results=useMemo<SearchResults>(()=>({...derived,searching,showRing:derived.pending&&derived.ringMode,showDots:!derived.pending&&derived.totalPending}),[derived,searching]);
   const [popup, setPopupState] = useState("");
@@ -430,6 +431,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
    else{
     let known=covered.current[level];
     if(!known&&await loadCover(level,signal))known=covered.current[level];
+    const {REGIONS}=await loadCatalog();
     const [name,keys]=radiusParam(REGIONS.filter(r=>r.kind===level),set,known||null);params.set(name,keys);
    }
   }
@@ -535,12 +537,11 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Liegt die Antwort schon im Zwischenspeicher, gilt sie sofort als fertig: kein „lädt“, kein Ring, kein Aufblitzen */
  const cached=active?freshSearch(requestKey):null;
  const rd=remote.key===requestKey?remote:null;
- /* Zähler abgeschlossen (auch fehlgeschlagen): erst dann zeigt eine lange Suche („ring“) ihre Treffer */
- const settled=facets.key===local.key;
- /* Ring-Fall: Treffer erst mit den Zählern zeigen. Ohne einen einzigen Treffer gibt es nichts zu zählen: sofort „keine Treffer“ */
- const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final?!(modeNow==='ring'&&!settled&&rd.data.articles.length>0):(modeNow==='partial'&&(rd.data.articles.length>0||rd.known==='yes')))));
- /* Eine Antwort aus dem Zwischenspeicher gilt sofort als fertig, außer sie stammt aus dieser lang laufenden Suche selbst (Ring): dann erst mit den Zählern */
- const cachedReady=!!cached&&!(modeNow==='ring'&&!settled&&cached.articles.length>0);
+ /* Ring-Fall (Code-Analyse C10): Die fertige erste Seite erscheint sofort, die genaue Zahl folgt mit den Zählern (dann
+    laufen Punkte an der Zahl, wie im partial-Fall). Früher wartete die Seite auf die Zähler. Ohne Treffer sofort „keine Treffer“. */
+ const adoptable=!!rd&&(!!rd.error||(!!rd.data&&(rd.final||(modeNow==='partial'&&(rd.data.articles.length>0||rd.known==='yes')))));
+ /* Eine Antwort aus dem Zwischenspeicher gilt sofort als fertig. */
+ const cachedReady=!!cached;
  const loading=!cachedReady&&!adoptable;
  const lastGood=useRef<ResponseData|null>(null);
  if(!loading&&(cached||remote.data))lastGood.current=cached??remote.data;

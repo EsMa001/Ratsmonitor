@@ -1,4 +1,6 @@
 import {env} from 'cloudflare:workers';
+// Stile nur der Administration (nicht im öffentlichen CSS); nach globals.css geladen wie zuvor.
+import '../admin.css';
 import {getChatGPTUser,chatGPTSignInPath,chatGPTSignOutPath} from '@/app/chatgpt-auth';
 import {adminAccess} from '@/server/integrations/admin-access.mjs';
 import {AdminActivation} from '@/components/admin-activation';

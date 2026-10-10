@@ -203,3 +203,6 @@ html.rm-dark .admin-app .admin-notice,html.rm-dark .admin-notice{color:#d5dce8}
 html.rm-dark .bg-teal-600{background-color:#0f766e}html.rm-dark .bg-teal-600:hover{background-color:#115e59}
 html.rm-dark .text-white\/80{color:rgba(255,255,255,.8)}html.rm-dark .text-white\/70{color:rgba(255,255,255,.7)}
 html.rm-dark,html.rm-dark .screen,html.rm-dark .admin-app{--color-accent:#5eead4;--color-accent-hover:#99f6e4;--color-ink:#e2e8f0;--color-meta:#9aa6b9}
+/* Handy und Touch (Code-Analyse C8): kein Weichzeichner über der laufend neu gezeichneten Karte, das kostet dort jedes Bild;
+   stattdessen fast deckende Flächen im selben Ton. */
+@media (max-width:639px),(hover:none){.rm-glass,.rm-glass-pop,.rm-glass-pop:hover,.rm-chip,#filter-body .select-base{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}.rm-glass{background:rgba(255,255,255,.94)}.rm-glass-pop,.rm-glass-pop:hover{background:rgba(255,255,255,.97)!important}.rm-chip{background:rgba(255,255,255,.95)}#filter-body .select-base{background:rgba(255,255,255,.9)}html.rm-dark .rm-glass{background:rgba(19,27,43,.94)}html.rm-dark .rm-glass-pop,html.rm-dark .rm-glass-pop:hover{background:rgba(19,27,43,.97)!important}html.rm-dark .rm-chip{background:rgba(15,23,42,.94)}html.rm-dark #filter-body .select-base{background:rgba(30,41,59,.9)}}
