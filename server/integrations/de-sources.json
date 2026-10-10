@@ -1050,6 +1050,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-01057091",
+    "name": "Stadt Schwentinental",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hhdocuments",
+    "base": "https://www.schwentinental.de/verwaltung-politik/",
+    "verifiedSource": "https://www.schwentinental.de/verwaltung-politik/sitzungsplanung",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; Sitzungsplanung und Dokumentenwesen (hhdocuments) öffentlich; Seiten antworten langsam (8 bis 22 s), Zeitbudget beachten."
+  },
+  {
     "id": "de-010575727",
     "name": "Amt Lütjenburg",
     "kind": "city",
@@ -9590,6 +9601,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08117012",
+    "name": "Gemeinde Bad Boll",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "rio-sys",
+    "base": "https://badboll.rio-sys.de/",
+    "verifiedSource": "https://badboll.rio-sys.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten von rio-sys erreichbar (Reiter Öffentlich)."
+  },
+  {
     "id": "de-08117014",
     "name": "Gemeinde Deggingen",
     "kind": "city",
@@ -14621,6 +14643,17 @@
     "verifiedSource": "https://www.rottweil.de/gemeinderat",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08325051",
+    "name": "Stadt Schiltach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hitcom-ris",
+    "base": "https://www.schiltach.de/de/Rathaus/",
+    "verifiedSource": "https://www.schiltach.de/de/Rathaus/Ratsinformationssystem",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliches Rats-Info-System (hitcom) erreichbar; Mitgliederbereich wird nie abgefragt."
   },
   {
     "id": "de-08325053",
