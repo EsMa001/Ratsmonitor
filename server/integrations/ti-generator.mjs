@@ -4,6 +4,8 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {extractText,getDocumentProxy} from 'unpdf';
+import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
 // Public pages of the "TI-Generator" (Town Hall Information WEB-Generator, Bartel Software Engineering): static sites
 // that the Rats-Manager writes to a web host. The start page holds a menu with one entry per committee and list; the
 // page's script loads each list from listen/<file> (the address of the menu entry itself answers 404). Read are the
@@ -40,8 +42,8 @@ const panels=block=>block.split(PANEL).slice(1).map(p=>{const head=p.split(HEAD_
 const NONPUBLIC=/nicht\s*-?\s*öffentl|ausgeschlossen|vertraulich|geschlossene[rn]?\s+(?:Sitzung|Teil|Tagesord)/iu;
 const ITEM=/<(li|a)\b([^>]*?)\stitle=["'](?:Tagesordnungspunkt[^"']*|TOP betrachten\.?)["']([^>]*)>([\s\S]*?)<\/\1>/gi;
 // A list page shows its count of files ("13 Akten") or its collapsible set, also when it holds no meeting; a page that
-// merely says "Akte" is not one.
-const listPage=html=>/data-role\s*=\s*["']collapsible(?:set)?["']|\b\d+\s+Akten?\b/i.test(html);
+// merely says "Akte" is not one. A list without any file says "keine Einträge vorhanden" (Amt Gartz).
+const listPage=html=>/data-role\s*=\s*["']collapsible(?:set)?["']|\b\d+\s+Akten?\b|keine\s+Eintr(?:ä|&auml;)ge\s+vorhanden/i.test(html);
 // Session ids (";jsessionid=…", "?PHPSESSID=…") and other additions name no other file of the static site.
 const plain=address=>address.replace(/[;?#].*$/s,'');
 // A document is linked by href or, on some installations, opened by onclick="window.open('listen/…pdf',…)".
@@ -123,6 +125,84 @@ export function parseTiDecisions(html,source){
  return decisions;
 }
 /**
+ * Lists of installations without invitation lists (Amt Gartz, VG Vorharz): the lists of papers ("Sitzungsvorlagen",
+ * _bv_) and of notices ("Bekanntmachungen", _bk_; a PDF per meeting with its agenda). Same fields as menuPages.
+ */
+export function extraPages(html,source){
+ const pages=new Map();
+ for(const m of String(html).matchAll(/<a\s((?:[^>"']|"[^"]*"|'[^']*')*)>/gi)){
+  if(!/(?:^|\s)menu-link(?:\s|$)/.test(attr(m[1],'class')))continue;
+  const href=plain(decode(attr(m[1],'href')).replace(/^\.\//,'')),label=clean(attr(m[1],'data-link')),name=clean(attr(m[1],'data-name'));
+  const kind=/^ti_\d+__\d+_bv_\.php$/i.test(href)&&/^Sitzungsvorlagen$/i.test(label)?'papers':/^ti_\d+__\d+_bk_\.php$/i.test(href)&&/^(?:Archiv:?\s*)?Bekanntmachungen?\b/i.test(label)&&!/^Bekanntmachungen der /i.test(name)?'notices':null;
+  if(!kind)continue;
+  let url;try{url=allowed(new URL('listen/'+href,source.base).href,source);}catch{continue;}
+  const ended=`${name} ${label}`.match(/(?:\d{4}\s*[-–]\s*|\bbis\s+)(\d{4})\b/i)?.[1];
+  if(!pages.has(url))pages.set(url,{url,kind,committee:name.replace(/^Archiv:?\s*/i,'').trim(),group:href.match(/__(\d+)_/)[1],label,until:ended?Number(ended):null});
+ }
+ return [...pages.values()];
+}
+/**
+ * Public agenda items from the list of papers: every paper names the meeting it is dealt with in the body of the list
+ * ("Angaben zur Beratung im aktuellen Gremium": meeting, day, item number and "öffentlicher Teil"). Papers of the
+ * non-public part are skipped. Meetings are made of these items; a meeting holds only the papers published so far.
+ */
+export function parseTiPapers(html,page,source){
+ const found=new Map();
+ for(const block of blocks(html)){
+  const panel=panels(block).find(p=>/Angaben zur Beratung/i.test(p.heading))?.body;if(!panel)continue;
+  const field=name=>clean(panel.match(new RegExp(`>\\s*${name}:([\\s\\S]*?)</div>`,'i'))?.[1]);
+  const top=field('TOP'),date=day(field('Sitzungsdatum'));
+  if(!date||!/\(\s*öffentlicher\s+Teil\s*\)/i.test(top)||/nicht\s*-?\s*öffentl/i.test(top))continue;
+  const head=block.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i)?.[1]||'';
+  const title=clean(head.replace(/<div\b[^>]*>[\s\S]*?<\/div>/gi,' '));if(!/\p{L}{2}/u.test(title))continue;
+  const reference=clean(block.match(/>\s*Vorlage Nr\.:?([^<]*)</i)?.[1]).trim();
+  const documents=[];
+  for(const a of block.matchAll(/<a\b([^>]*?)>([\s\S]*?)<\/a>/gi)){
+   const kind=/title=["']Dokument anzeigen/i.test(a[1])?'paper':/title=["']Anlage betrachten/i.test(a[1])?'annex':null;if(!kind)continue;
+   const d=pdf(a[1],kind==='paper'?(reference?'Vorlage '+reference:'Vorlage'):clean(a[2].replace(/<span\b[\s\S]*$/i,'')),source);if(d)documents.push(d);
+  }
+  const number=top.replace(/\(.*$/,'').trim(),beratung=field('Beratung'),key=date;
+  if(!found.has(key))found.set(key,{url:`${page.url}#sitzung-${date}`,date,committee:page.committee||beratung,group:page.group??'',heading:beratung||page.committee,agenda:[],restricted:false,unclear:false});
+  found.get(key).agenda.push({number,title,reference,documents});
+ }
+ for(const m of found.values())m.agenda.sort((a,b)=>topKey(a.number).localeCompare(topKey(b.number),'de',{numeric:true}));
+ return {stand:standOf(html),meetings:[...found.values()]};
+}
+/** Notices of the list of announcements that name a meeting: title, number and the PDF. */
+export function parseTiNotices(html,page,source){
+ const notices=[];
+ for(const block of blocks(html)){
+  const head=block.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i)?.[1]||'';
+  const title=clean(head.replace(/<div\b[^>]*>[\s\S]*?<\/div>/gi,' '));if(!/Sitzung/i.test(title))continue;
+  const link=block.match(/<a\b([^>]*?)\stitle=["']Dokument anzeigen\.?["']([^>]*)>/i),document=link&&pdf(link[1]+link[2],'Bekanntmachung zur Sitzung',source);if(!document)continue;
+  notices.push({title,date:day(title),number:title.match(/(\d+)\.\s*Sitzung/i)?.[1]||'',document,page:page.url});
+ }
+ return notices;
+}
+/**
+ * Items of the public part from the text of a notice ("Am 28.09.2026, 18.30 Uhr, findet eine Sitzung … statt",
+ * "Öffentlicher Teil: Vorlagen-Nr.", "01. Eröffnung …", reference "LP VIII 26-163", "Nichtöffentlicher Teil").
+ * date null where the text names none; items empty where the notice shows no public part.
+ */
+export function parseTiNoticeText(raw){
+ const body=String(raw).replace(/H\s?i\s?n\s?w\s?e\s?i\s?s\s?:[\s\S]*?bekanntmachungen\.html/gi,'\n').replace(/\r/g,'');
+ const date=day(body.match(/\bAm\s+(\d{1,2}\.\d{1,2}\.\d{4})/i)?.[1]||'');
+ const start=body.search(/(?<!\p{L})Öffentlicher\s+Teil\s*:?/iu);if(start<0)return {date,items:[]};
+ let part=body.slice(start).replace(/^Öffentlicher\s+Teil\s*:?[^\n]*\n/i,'');
+ const end=part.search(/Nicht\s*-?\s*öffentlicher\s+Teil/i);if(end>=0)part=part.slice(0,end);
+ const items=[];let current=null;
+ for(const line of part.split('\n').map(l=>l.trim()).filter(Boolean)){
+  const m=line.match(/^(\d{1,2})\.\s+(\S.*)$/);
+  if(m&&(!current||Number(m[1])===Number(current.number)+1||items.length===0)){current={number:m[1].padStart(2,'0'),text:m[2]};items.push(current);}
+  else if(current)current.text+=' '+line;
+ }
+ return {date,items:items.map(i=>{
+  const ref=i.text.match(/\s+((?:[A-ZÄÖÜ]{1,4}\s+[IVX]+\s+\d{2}-\d{2,4}|\d{3,4}\/\d{2}))\s*$/);
+  const title=clean((ref?i.text.slice(0,ref.index):i.text).replace(/\s+/g,' '));
+  return {number:i.number,title,reference:ref?.[1]||'',documents:[]};
+ }).filter(i=>/\p{L}{2}/u.test(i.title))};
+}
+/**
  * Recognises a page of the generator (start page): {adapter, method, base, invitationLists, stand} or null.
  * base is the folder of the page on https; invitationLists counts the invitation lists in its menu (0: the site holds
  * no meetings, e.g. a site of announcements only); stand is the date the site was last written.
@@ -139,6 +219,14 @@ export function detectTiGenerator(url,html){
  const meta=[...page.matchAll(/<meta\s((?:[^>"']|"[^"]*"|'[^']*')*)>/gi)].some(m=>/^generator$/i.test(attr(m[1],'name'))&&/Town Hall Information WEB-Generator|TI-Generator/i.test(attr(m[1],'content')));
  if(!meta&&!(/TI-Generator/.test(page)&&/Bartel Software/i.test(page)&&lists.length))return null;
  return {adapter:'ti-generator',method:'scraper',base,invitationLists:lists.filter(p=>p.kind==='invitations').length,stand:standOf(page)};
+}
+/** Text of a notice (PDF of the site, at most 3 MB and 12 pages), read in memory; never kept. */
+export async function readNoticePdf(url,source){
+ const r=await fetchNoRedirect(allowed(url,source),{signal:AbortSignal.timeout(30000),headers:{'User-Agent':SOURCE_USER_AGENT}});
+ if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
+ const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.byteLength>3e6)throw Error('Quelldokument zu groß');
+ const pdf=await getDocumentProxy(bytes,{isEvalSupported:false});
+ try{if(pdf.numPages>12)throw Error('Quelldokument zu umfangreich');return (await extractText(pdf,{mergePages:true})).text;}finally{await (pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.());}
 }
 const votes=v=>v.yes===null?'':` (${v.yes} Ja-Stimmen, ${v.no??0} Nein-Stimmen, ${v.abstentions??0} Enthaltungen)`;
 function agendaRows(m,source,now,decided){
@@ -159,7 +247,7 @@ function agendaRows(m,source,now,decided){
 }
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs. Every list is read in each import (a
 // list holds all its meetings); a meeting whose items and decisions are unchanged yields no reports again.
-export async function collectTiGenerator(source,{now=new Date(),get=fetchText,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks}={}){
+async function collectOneTi(source,{now=new Date(),get=fetchText,getPdf=readNoticePdf,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks}={}){
  get=budgeted(get,maxDurationMs,2);
  // Meetings from the start of the period up to the end of the next month, as with SD.NET.
  const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),until=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+2,0)).toISOString().slice(0,10),issues=[],warnings=[];
@@ -167,16 +255,37 @@ export async function collectTiGenerator(source,{now=new Date(),get=fetchText,ma
  const later=s=>{if(s&&(!stand||s>stand))stand=s;};
  const read=async(url,what)=>{try{return await get(url,source);}catch(e){if(/Zeitbudget/.test(e.message))unread++;else issues.push(what+': '+e.message);return null;}};
  const start=await read(source.base,'Startseite');
+ let extra=[];
  if(start!==null){
   if(!detectTiGenerator(source.base,start))issues.push('Startseite: Unbekanntes Format, kein TI-Generator');
-  else{later(standOf(start));pages=menuPages(start,source).filter(p=>!p.until||p.until>=from.getUTCFullYear());if(!pages.some(p=>p.kind==='invitations'))issues.push('Startseite: keine Einladungslisten im Menü');}
+  else{
+   later(standOf(start));pages=menuPages(start,source).filter(p=>!p.until||p.until>=from.getUTCFullYear());
+   // Without invitation lists the meetings are made of the papers (Amt Gartz) or of the notices (VG Vorharz).
+   if(!pages.some(p=>p.kind==='invitations')){
+    extra=extraPages(start,source).filter(p=>!p.until||p.until>=from.getUTCFullYear());
+    const papers=extra.filter(p=>p.kind==='papers');if(papers.length)extra=papers;
+    if(!extra.length)issues.push('Startseite: keine Einladungslisten im Menü');
+   }
+  }
  }
  // 1. Invitation lists: every meeting of a committee with its public agenda.
- const found=await parallel(pages.filter(p=>p.kind==='invitations'),async p=>{
+ const within=list=>list.meetings.filter(m=>m.date>=fromDay&&m.date<=until);
+ const found=await parallel([...pages.filter(p=>p.kind==='invitations'),...extra],async p=>{
   const html=await read(p.url,`${p.committee||'Gremium'}, ${p.label}`);if(html===null)return [];
   if(!listPage(html)){issues.push(`${p.committee||'Gremium'}, ${p.label}: Unbekanntes Format der Liste`);return [];}
-  const list=parseTiList(html,p,source);later(list.stand);onProgress(`${source.id}: ${++lists} Listen`);
-  return list.meetings.filter(m=>m.date>=fromDay&&m.date<=until);
+  if(p.kind==='notices'){
+   const out=[];later(standOf(html));
+   for(const n of parseTiNotices(html,p,source)){
+    if(n.date&&(n.date<fromDay||n.date>until))continue;
+    let read2;try{read2=parseTiNoticeText(await getPdf(n.document.url,source));}catch(e){if(/Zeitbudget/.test(e.message))unread++;else issues.push(`${n.title}: ${e.message}`);continue;}
+    const date=read2.date||n.date;if(!date||date<fromDay||date>until)continue;
+    const heading=n.title.replace(/^Bekanntmachung\s+(?:zur|der)\s+/i,'');
+    out.push({url:`${p.url}#sitzung-${date}`,date,committee:p.committee,group:p.group,heading,agenda:read2.items.length?read2.items.map(i=>({...i,documents:[n.document]})):null,restricted:!read2.items.length,unclear:false});
+   }
+   onProgress(`${source.id}: ${++lists} Listen`);return out;
+  }
+  const list=p.kind==='papers'?parseTiPapers(html,p,source):parseTiList(html,p,source);later(list.stand);onProgress(`${source.id}: ${++lists} Listen`);
+  return within(list);
  },2);
  // A meeting on a current list and on an archive list of its body keeps the address of the list named first in the menu.
  for(const m of found.flat()){const key=[m.group,m.date,m.heading].join('|');if(!meetings.has(key))meetings.set(key,m);}
@@ -226,4 +335,37 @@ export async function collectTiGenerator(source,{now=new Date(),get=fetchText,ma
  const listed=meetings.size-upcoming;
  // Unchanged meetings are a successful reading: their reports are in the database already.
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:listed,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||beyond?{resumable:true}:{}),...(warnings.length?{warnings}:{}),...(stand?{sourceStand:stand}:{}),sourceCount:1,quiet:listed===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+}
+
+/**
+ * An Amt may publish one generator site per municipality (Amt Gartz (Oder): ti-1 for the Amt, ti-2 … ti-6 for its
+ * municipalities). An entry with `bases` (further folders on the same host) reads every site and joins the results;
+ * the coverage is complete only where all sites are.
+ */
+export async function collectTiGenerator(source,options={}){
+ const bases=[source.base,...(Array.isArray(source.bases)?source.bases:[])];
+ if(bases.length===1)return collectOneTi(source,options);
+ const host=new URL(source.base).origin,parts=[];
+ for(const base of bases){
+  if(new URL(base).origin!==host)continue;
+  parts.push({base,result:await collectOneTi({...source,base,bases:undefined},options)});
+ }
+ const topics=new Map(),marks={},issues=[],warnings=[];let readMeetings=0,meetings=0,unchanged=0,upcoming=0,stand=null,resumable=false,quiet=true,complete=true;
+ for(const {base,result} of parts){
+  for(const t of result.topics){
+   const known=topics.get(t.id);
+   if(!known)topics.set(t.id,t);
+   else{known.events=[...known.events,...t.events].sort((a,b)=>a.date.localeCompare(b.date));known.documents=[...new Map([...known.documents,...t.documents].map(d=>[d.url,d])).values()];}
+  }
+  Object.assign(marks,result.marks);readMeetings+=result.readMeetings||0;
+  const c=result.coverage,label=new URL(base).pathname.replace(/^\/|\/$/g,'');
+  meetings+=c.meetings||0;unchanged+=c.unchangedMeetings||0;upcoming+=c.upcomingWithoutAgenda||0;resumable||=!!c.resumable;quiet&&=!!c.quiet;complete&&=!!c.complete;
+  if(c.sourceStand&&(!stand||c.sourceStand>stand))stand=c.sourceStand;
+  for(const i of c.issues||[])if(!/^Noch keine Artikel erfolgreich erfasst\.$/.test(i))issues.push(`${label}: ${i}`);
+  for(const w of c.warnings||[])warnings.push(w);
+ }
+ const first=parts[0].result.coverage,list=[...topics.values()];
+ // A site without meetings is no gap as long as another one holds reports; with none at all the usual hint stays.
+ if(!list.length&&!unchanged)issues.push('Noch keine Artikel erfolgreich erfasst.');
+ return {topics:list,marks,readMeetings,coverage:{...first,meetings,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(resumable?{resumable:true}:{}),...(warnings.length?{warnings}:{}),...(stand?{sourceStand:stand}:{}),sourceCount:parts.length,quiet:quiet&&issues.length===0,complete:issues.length===0&&(list.length>0||unchanged>0),issues}};
 }

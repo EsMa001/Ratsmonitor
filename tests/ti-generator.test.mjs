@@ -185,7 +185,7 @@ test('TI-Generator collector returns what a no longer updated site holds and nam
 test('TI-Generator collector reports pages it cannot read and never mistakes them for a quiet period',async()=>{
  const asked=[];const foreign=await collectTiGenerator(source,{now,window:'12m',get:async url=>{asked.push(url);return '<html><title>Wartungsarbeiten</title></html>';}});
  assert.deepEqual(asked,[base]);assert.deepEqual(foreign.coverage.issues,['Startseite: Unbekanntes Format, kein TI-Generator','Noch keine Artikel erfolgreich erfasst.']);assert.equal(foreign.coverage.quiet,false);
- const none=await collectTiGenerator(source,{now,window:'12m',get:async()=>'<html><meta name="generator" content="Town Hall Information WEB-Generator  (c) Bartel Software Engineering GbR"><a class="menu-link" href="ti_3__10_bk_.php" data-name="Verbandsgemeinderat" data-link="Bekanntmachungen">x</a></html>'});
+ const none=await collectTiGenerator(source,{now,window:'12m',get:async()=>'<html><meta name="generator" content="Town Hall Information WEB-Generator  (c) Bartel Software Engineering GbR"><a class="menu-link" href="ti_17__10_sc_.php" data-name="Verbandsgemeinderat" data-link="Niederschriften">x</a></html>'});
  assert.match(none.coverage.issues[0],/keine Einladungslisten/);assert.equal(none.coverage.quiet,false);
  // A missing list is named; the other lists are read.
  const gap=await collectTiGenerator(source,{now,window:'12m',get:web({[list('ti_234__301_el_.php')]:Error('Quelle antwortet mit HTTP 404')}).get});
