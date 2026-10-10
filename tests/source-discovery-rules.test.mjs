@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {CRAWL_SKIP,SERVICE,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,identity,HOSTED,pageNamesArea,anchors,sharedBodies,nameTwins,namesDistinctly,platformLands} from '../scripts/source-discovery/rules.mjs';
+import {CRAWL_SKIP,SERVICE,TRANSLATED,unwrapLink,followUpsAfterFailure,RUBIN_HOST,MEMBERS_AREA,publicSiblings,publicHosts,PUBLIC_HOST_LABELS,rankCandidates,PUBLIC_TEXT,STRONG_RIS,hrefs,allrisBases,allrisGeneration,allris3Siblings,ALLRIS3_PUBLIC_FOLDERS,identity,HOSTED,pageNamesArea,anchors,sharedBodies,nameTwins,namesDistinctly,platformLands} from '../scripts/source-discovery/rules.mjs';
 import {foreignOwner,aliasInAddress,nameParts,ALIASES,addressNames} from '../scripts/source-discovery/areas.mjs';
 import {CATALOG} from '../shared/catalog.mjs';
 const area=id=>CATALOG.find(a=>a.id===id);
@@ -161,6 +161,15 @@ test('crawl.mjs and verify.mjs apply these rules: no search next to a refused pa
  // findSessionNet asks robots.txt before every entry page.
  const nearby=verify.slice(verify.indexOf('async function findSessionNet'),verify.indexOf('return null;',verify.indexOf('async function findSessionNet')));
  assert.ok(nearby.indexOf("robotsAllow(base+'si0040.'+extension)")>0&&nearby.indexOf("robotsAllow(base+'si0040.'+extension)")<nearby.indexOf("page(base+'si0040.'+extension"));
+ // The public hosts next to a login are asked only when the login was recognised, each with one extension.
+ assert.match(nearby,/publicSiblings\(here,\{login\}\)/);assert.match(nearby,/hostname===u\.hostname\?\['asp','php'\]:once/);
+ assert.match(verify,/findSessionNet\(sn\.base,\{login:loginPage\(p\)\}\)/);assert.match(verify,/findSessionNet\(p\.url,\{login:true\}\)/);
+ assert.equal(verify.match(/findSessionNet\([^)]*\{login:true\}\)/g).length,1);
+ // Candidates in the order of rankCandidates; a system with no meeting in the window is asked once more over twelve months.
+ assert.match(verify,/const ordered=rankCandidates\(/);assert.match(verify,/const strong=STRONG_RIS;/);
+ assert.equal(verify.match(/await widen\(/g).length,4);assert.match(verify,/const WIDE_WINDOW='12m'/);
+ // The page that embeds the council service is recognised by the shared rule of the reader.
+ assert.match(crawl,/if\(embeddedCouncilservice\(page\.html\)\)/);assert.match(crawl,/exportTokens\(code\)\.length===1/);
  for(const file of ['crawl.mjs','verify.mjs','rules.mjs','areas.mjs'])execFileSync(process.execPath,['--check',fileURLToPath(new URL('../scripts/source-discovery/'+file,import.meta.url))]);
 });
 
@@ -260,4 +269,51 @@ test('a system with the councils of other municipalities of the district is shar
  assert.equal(sharedBodies(urt,['Amtsausschuss Uecker-Randow-Tal','Gemeindevertretung Jatznick'],[town,urt]),null);
  // An area without a district is not checked.
  assert.equal(sharedBodies({id:'x',name:'Stadt X',kind:'city'},['Gemeinderat Asselfingen'],areas),null);
+});
+
+test('after a login the public hosts of the same domain are asked once each: bis., sbi., buergerinfo., bi.',()=>{
+ // Landkreis Ludwigslust-Parchim and its municipalities: ris.<domain> is the login, bis.<domain> the public Bürgerinfo.
+ assert.deepEqual(publicHosts('ris.kreis-lup.de'),['bis.kreis-lup.de','sbi.kreis-lup.de','buergerinfo.kreis-lup.de','bi.kreis-lup.de']);
+ assert.deepEqual(publicSiblings('https://ris.kreis-lup.de/',{login:true}),['https://ris.kreis-lup.de/','https://bis.kreis-lup.de/','https://sbi.kreis-lup.de/','https://buergerinfo.kreis-lup.de/','https://bi.kreis-lup.de/']);
+ assert.deepEqual(publicSiblings('https://ris.kreis-lup.de/'),['https://ris.kreis-lup.de/']);
+ // Deeper labels stay; the public path of the folder is taken along; no host variants for a domain without a subdomain.
+ assert.deepEqual(publicHosts('ris.stadt.amt-eldenburg-luebz.de'),PUBLIC_HOST_LABELS.map(l=>l+'.stadt.amt-eldenburg-luebz.de'));
+ assert.ok(publicSiblings('https://ris.example.de/ri/',{login:true}).includes('https://bis.example.de/bi/'));
+ assert.deepEqual(publicHosts('example.de'),[]);assert.deepEqual(publicHosts('bis.kreis-lup.de'),[]);
+ // Platform hosts: only the tenant label changes (ratsinfo-vg-strasskirchen → buergerinfo-vg-strasskirchen), never the platform.
+ assert.deepEqual(publicSiblings('https://ratsinfo-vg-strasskirchen.digitalfabrix.de/',{login:true}),['https://ratsinfo-vg-strasskirchen.digitalfabrix.de/','https://buergerinfo-vg-strasskirchen.digitalfabrix.de/']);
+ assert.deepEqual(publicHosts('ratsinfo-x.livingdata.de'),[]);assert.deepEqual(publicHosts('sessionnet.owl-it.de'),[]);
+ // ratsinfo. → buergerinfo. on an own domain as before (Ostrhauderfehn, Laaber), now with the other labels after it.
+ const laaber=publicSiblings('https://ratsinfo.vg-laaber.de/',{login:true});
+ assert.equal(laaber[1],'https://buergerinfo.vg-laaber.de/');assert.ok(laaber.includes('https://bis.vg-laaber.de/'));assert.equal(laaber.length,5);
+ assert.equal(new Set(laaber).size,laaber.length);
+});
+
+test('a link named "Bürgerinformationssystem" is checked before a "Ratsinformationssystem" link, then addresses that show a system',()=>{
+ const ris={url:'https://ris.kreis-lup.de/',text:'Ratsinformationssystem',byHref:true},bis={url:'https://bis.kreis-lup.de/',text:'Bürgerinformationssystem',byText:true};
+ assert.deepEqual(rankCandidates([ris,bis]).map(c=>c.url),[bis.url,ris.url]);
+ // Ludwigsburg: the login address names "ratsinfo" (strong), the public one does not; the text still decides.
+ assert.deepEqual(rankCandidates([{url:'https://ratsinfo.kreis-lb.de/',text:'Ratsinformationssystem',byHref:true},{url:'https://sbi.landkreis-ludwigsburg.de/',text:'Bürgerinfo',byText:true}]).map(c=>c.url),['https://sbi.landkreis-ludwigsburg.de/','https://ratsinfo.kreis-lb.de/']);
+ // Among the rest: strong addresses first, hits by address before hits by text, equal candidates in their order.
+ const a={url:'https://www.example.de/politik/',text:'Politik',byText:true},b={url:'https://www.example.de/sitzungen/',text:'Sitzungen',byHref:true},c={url:'https://sessionnet.example.de/bi/si0040.asp',text:'Sitzungen',byHref:true};
+ assert.deepEqual(rankCandidates([a,b,c]).map(x=>x.url),[c.url,b.url,a.url]);
+ assert.deepEqual(rankCandidates([b,{...b,url:'https://www.example.de/rat/'}]).map(x=>x.url),[b.url,'https://www.example.de/rat/']);
+ for(const t of ['Bürgerinformationssystem','Bürgerinfo','Rats- und Bürgerinfo','buergerinfo'])assert.match(t,PUBLIC_TEXT);
+ assert.doesNotMatch('Ratsinformationssystem',PUBLIC_TEXT);assert.match('https://ris.example.de/sessionnet/bi/',STRONG_RIS);
+});
+
+test('links without quotes count; translated copies of a website are never candidates or pages to explore',()=>{
+ const html='<a href=https://www.vgmering.sitzung-online.de/pi2/yw040_r.asp\r\n class="x">Textrecherche</a><a href="./si010_r.asp?MM=9">K</a><frame src=allris.net.asp>';
+ assert.deepEqual(hrefs(html,'https://www.vgmering.sitzung-online.de/pi2/'),['https://www.vgmering.sitzung-online.de/pi2/yw040_r.asp','https://www.vgmering.sitzung-online.de/pi2/si010_r.asp?MM=9','https://www.vgmering.sitzung-online.de/pi2/allris.net.asp']);
+ assert.equal(allrisGeneration('https://www.vgmering.sitzung-online.de/pi2/yw040_r.asp',html),3);
+ for(const u of ['https://www.saarpfalz-kreis.de/:translation/fr/politik/kreistag/','https://www.saarpfalz-kreis.de/:translation/en/']){assert.match(u,CRAWL_SKIP);assert.match(u,TRANSLATED);}
+ assert.doesNotMatch('https://www.saarpfalz-kreis.de/politik/kreistag/',TRANSLATED);assert.doesNotMatch('https://www.example.de/translation-service/',TRANSLATED);
+});
+
+test('ALLRIS 3: the public folders next to a members\' folder, the derived one first; nothing for other addresses',()=>{
+ assert.deepEqual(allris3Siblings('https://www.example.de/bi/'),ALLRIS3_PUBLIC_FOLDERS.map(f=>'https://www.example.de/'+f+'/'));
+ assert.deepEqual(allris3Siblings('https://www.landkreis-diepholz.sitzung-online.de/ri/').slice(0,4),['https://www.landkreis-diepholz.sitzung-online.de/bi/','https://www.landkreis-diepholz.sitzung-online.de/pi/','https://www.landkreis-diepholz.sitzung-online.de/bi2/','https://www.landkreis-diepholz.sitzung-online.de/pi2/']);
+ assert.deepEqual(allris3Siblings('https://ssl.ratsinfo-online.net/landkreisshk-bi/')[1],'https://ssl.ratsinfo-online.net/landkreisshk-pi/');
+ assert.deepEqual(allris3Siblings('https://www.example.de/rat_ri/')[0],'https://www.example.de/rat_bi/');
+ assert.deepEqual(allris3Siblings('https://www.example.de/pi2/'),[]);assert.deepEqual(allris3Siblings('https://www.example.de/bri/'),[]);assert.deepEqual(allris3Siblings('nicht'),[]);
 });

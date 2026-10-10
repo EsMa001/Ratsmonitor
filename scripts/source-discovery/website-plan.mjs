@@ -1,7 +1,7 @@
 // Pure decisions of the website search (website.mjs): which areas to search, which links to follow, which pages count
 // as lists of meeting notices, how the catalog entry looks and why an area is not taken. Importing this file asks no
 // network and reads no file; tests/website-discovery.test.mjs checks it.
-import {sessionScore,SESSION_THRESHOLD,documentLinks,isRisLink,isSearchLink,isCmsFileUrl} from '../../server/integrations/website-feeds.mjs';
+import {sessionScore,SESSION_THRESHOLD,documentLinks,isRisLink,isSearchLink,isCmsFileUrl,TRANSLATED} from '../../server/integrations/website-feeds.mjs';
 
 /** A page counts as a list of meeting notices from this score of listPageScore (one heading and one notice, or three notices). */
 export const MIN_LIST_SCORE=3;
@@ -88,7 +88,7 @@ const NAV_WEAK=/rathaus|verwaltung|aktuelles|aktuell\b|neuigkeiten|nachrichten|m
  * council, meetings). A single dated notice counts 1: the list that links it is what the search wants.
  */
 export function navScore({url,label}={}){
- if(!url||isRisLink(url)||isSearchLink(url)||SKIP.test(url))return 0;
+ if(!url||isRisLink(url)||isSearchLink(url)||SKIP.test(url)||TRANSLATED.test(url))return 0;
  const s=sessionScore({url,label});if(s===-100)return -100;if(s<=-4)return 0;
  const t=norm(`${label??''} ${pathText(url)}`);
  let n=(NAV_STRONG.test(t)?3:0)+(NAV_MEDIUM.test(t)?2:0)+(NAV_WEAK.test(t)?1:0);

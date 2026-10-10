@@ -116,10 +116,12 @@ export function embeddedPdfs(html,base){
  return out;
 }
 /** Links of a page: [{url,label,date,kind}], fragments removed, relative addresses resolved, one entry per address. */
+/** Pages under /:translation/<language>/… repeat the website in another language (Saarpfalz-Kreis): never followed or read. */
+export const TRANSLATED=/\/:translation\//i;
 export function documentLinks(html,base){
  const out=new Map();
  for(const e of embeddedPdfs(html,base)){if(!out.has(e.url))out.set(e.url,{url:e.url,label:e.label,type:'application/pdf'});}
- for(const a of anchors(html)){const url=resolve(attr(a.attrs,'href'),base);if(!url)continue;const label=labelOf(a);
+ for(const a of anchors(html)){const url=resolve(attr(a.attrs,'href'),base);if(!url||TRANSLATED.test(url))continue;const label=labelOf(a);
   // An icon and a text often link the same file; their words are joined.
   const seen=out.get(url);if(seen){if(label&&!seen.label.toLowerCase().includes(label.toLowerCase()))seen.label=`${seen.label} ${label}`.trim();continue;}
   out.set(url,{url,label,type:attr(a.attrs,'type')});}
@@ -200,7 +202,7 @@ const NEXT=/^(?:»|›|>{1,2}|weiter\b|vorwärts|nächste|ältere|seite 2\b|next
 export function paginationLinks(html,pageUrl){
  let page;try{page=new URL(pageUrl);page.hash='';}catch{return [];}
  const here=pageNumber(page),root=listRoot(page.pathname),found=new Map();
- const offer=(href,rel,label)=>{const url=resolve(href,page.href);if(!url||url===page.href||found.has(url))return;const u=new URL(url);if(u.origin!==page.origin||listRoot(u.pathname)!==root)return;
+ const offer=(href,rel,label)=>{const url=resolve(href,page.href);if(!url||url===page.href||found.has(url)||TRANSLATED.test(url))return;const u=new URL(url);if(u.origin!==page.origin||listRoot(u.pathname)!==root)return;
   const n=pageNumber(u),next=/(?:^|\s)next(?:\s|$)/i.test(rel??''),textual=NEXT.test(label.toLowerCase().replace(/\s+/g,' ').trim());
   // A "weiter" that names no page leads into an article; only rel=next is taken without a page number.
   if(!n&&!next)return;

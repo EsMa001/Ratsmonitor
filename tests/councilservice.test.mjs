@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {detectCouncilservice,councilservicePage,councilserviceHeaders,councilserviceLink,councilserviceCommittee,councilserviceMeetings,councilserviceReference,councilserviceDocument,parseCouncilserviceMeeting,collectCouncilservice} from '../server/integrations/councilservice.mjs';
+import {detectCouncilservice,exportTokens,councilservicePage,councilserviceHeaders,councilserviceLink,councilserviceCommittee,councilserviceMeetings,councilserviceReference,councilserviceDocument,parseCouncilserviceMeeting,collectCouncilservice} from '../server/integrations/councilservice.mjs';
 import {READERS} from '../server/integrations/readers.mjs';
 import {windowStart} from '../server/integrations/history-window.mjs';
 // Excerpts of the live export of Stadt Sonnewalde (stadt-sonnewalde.mein-intra.net, 05.10.2026), shortened and without
@@ -224,4 +224,23 @@ test('collect names a lost token and refuses an entry without system, token or p
  await assert.rejects(collectCouncilservice({...source,base:'https://evil.example/'},{now,request:login}),/ohne Adresse eines mein-intra-Systems/);
  await assert.rejects(collectCouncilservice({...source,token:''},{now,request:login}),/ohne Export-Schlüssel/);
  await assert.rejects(collectCouncilservice({...source,page:''},{now,request:login}),/ohne Seite der Website/);
+});
+
+test('the export loaded after a click with the token as element id (Pößneck) is recognised as well',async()=>{
+ // Modelled on www.poessneck.de/stadt/ratsinformationssystem/: no <script src>, the loader receives the element and the
+ // script address; initializeExport(b.id) runs with the id of that element. The page never says "councilservice".
+ const id='94887bb0-4aa4ba38-4ce333dc-4de7b7bf',ps='https://www.poessneck.de/stadt/ratsinformationssystem/';
+ const html='<html><body><h1>Ratsinformationssystem</h1><div id="'+id+'" style="cursor:pointer" onclick="loadExport(true)">Externe Inhalte laden</div>'
+  +'<script type="text/javascript">(function(d,c,b,f){function e(a){a&&(a=new Date,a.setTime(a.getTime()+864E5),c.cookie="export_"+b.id+"=1; path=/; expires="+a.toUTCString()+";");b.removeAttribute("style");b.innerHTML="";b.onclick=null;a=c.createElement("script");a.setAttribute("crossorigin","use-credentials");a.onload=function(){d.initializeExport(b.id)};a.src=f;a.type="text/javascript";b.parentNode.insertBefore(a,b.nextSibling)}-1!==c.cookie.indexOf("export_"+b.id)&&e();d.loadExport=e})(window,document,document.getElementById("'+id+'"),"https://poessneck.mein-intra.net/export/js/initialize.js");</script>'
+  +'<script>document.getElementById("ionasInfo").innerText="x";</script></body></html>';
+ assert.deepEqual(exportTokens(html),[id]);
+ assert.deepEqual(detectCouncilservice(ps+'?href=/councilservice/session/list',html),{adapter:'councilservice',base:'https://poessneck.mein-intra.net/',token:id,page:ps});
+ assert.deepEqual(await READERS.councilservice.detect(ps+'?href=/councilservice/session/list',html),{base:'https://poessneck.mein-intra.net/',token:id,page:ps});
+ // Without the address of the council service, without the loader call, with an id that is no token, or with both forms naming different tokens: nothing.
+ assert.equal(detectCouncilservice(ps,html),null);
+ assert.equal(detectCouncilservice(ps+'?href=/councilservice/session/list',html.replace('d.initializeExport(b.id)','d.initializeExport()')),null);
+ assert.equal(detectCouncilservice(ps+'?href=/councilservice/session/list',html.replaceAll(id,'ris-box')),null);
+ assert.equal(detectCouncilservice(ps+'?href=/councilservice/session/list',html+'<script>initializeExport("aaaaaaaa-bbbbbbbb-cccccccc-dddddddd")</script>'),null);
+ // The static form still names its token alone.
+ assert.deepEqual(exportTokens(fixture('sonnewalde-page.html')),[token]);
 });
