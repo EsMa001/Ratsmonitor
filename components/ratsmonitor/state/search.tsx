@@ -378,10 +378,10 @@ function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['pl
   /* Ohne „inkl. Zukunft“ endet der Zeitraum heute (sofern kein eigenes Enddatum gesetzt ist) */
   const today=new Date().toISOString().slice(0,10),to=state.bis||(state.future?'':today);
   const params=new URLSearchParams({q:canonicalQuery(queryText(text,state.allterms)),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
-  /* Ohne Suche und ohne Filter zeigt die Liste unter der Karte zuerst Inhalt: Formalien (Niederschriften, Mitteilungen, Anfragen) sind dann ausgeblendet, sofern nicht ausdrücklich eingeschaltet (noformal === false) */
+  /* Ohne Suche und ohne Filter zeigt die Liste unter der Karte zuerst Inhalt: zuletzt Beschlossenes; Formalien bleiben sichtbar, bis „Formalien ausblenden“ eingeschaltet wird */
   const leer=!text.trim()&&!state.q.trim()&&!area&&!state.radius&&!state.thema&&!state.status&&!state.monat&&!state.von&&!state.bis&&!more.length&&!state.future&&!state.exact&&!state.allterms;
-  const auto=leer&&state.noformal!==false;
-  if(state.noformal||auto)params.set('noformal','1');
+  const auto=leer;
+  if(state.noformal)params.set('noformal','1');
   /* … und zeigt zuletzt Beschlossenes statt angekündigter Tagesordnungen eines einzelnen Gremiums */
   if(auto)params.set('status','approved');
   if(state.exact)params.set('exact','1');
@@ -396,7 +396,7 @@ function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['pl
 function spreadAuto(list:Article[]|undefined,key:string,status:string):Article[]{
  if(!list||list.length<3||status)return list??EMPTY_LIST;
  const p=new URLSearchParams(key);
- if(p.get('noformal')!=='1'||p.get('status')!=='approved'||p.get('q'))return list;
+ if(p.get('status')!=='approved'||p.get('q'))return list;
  const groups=new Map<string,Article[]>();
  for(const a of list){const k=a.ags||a.gemeinde||a.id;(groups.get(k)??groups.set(k,[]).get(k)!).push(a);}
  const queues=[...groups.values()],out:Article[]=[];
