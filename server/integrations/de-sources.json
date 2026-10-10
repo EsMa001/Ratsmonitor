@@ -22252,6 +22252,26 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09271",
+    "name": "Landkreis Deggendorf",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.landkreis-deggendorf.de/",
+    "pages": [
+      "https://www.landkreis-deggendorf.de/landkreis/kreistag/sitzungseinladungen/kreistag/",
+      "https://www.landkreis-deggendorf.de/landkreis/kreistag/sitzungseinladungen/kreisausschuss/",
+      "https://www.landkreis-deggendorf.de/landkreis/kreistag/sitzungseinladungen/bauausschuss/",
+      "https://www.landkreis-deggendorf.de/landkreis/kreistag/sitzungseinladungen/jugendhilfeausschuss/",
+      "https://www.landkreis-deggendorf.de/landkreis/kreistag/sitzungseinladungen/ausschuss-fuer-wirtschaft-tourismus-planung-und-umweltfragen/",
+      "https://www.landkreis-deggendorf.de/landkreis/kreistag/sitzungsbeschluesse/kreistag/",
+      "https://www.landkreis-deggendorf.de/landkreis/kreistag/sitzungsbeschluesse/kreisausschuss/"
+    ],
+    "verifiedSource": "https://www.landkreis-deggendorf.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Einladungen und Beschlüsse der Kreisverwaltung auf der offiziellen Website."
+  },
+  {
     "id": "de-09271111",
     "name": "Gemeinde Aholming",
     "kind": "city",
@@ -22584,6 +22604,18 @@
     "verifiedSource": "https://www.landkreis-kelheim.de/landkreis/kreistag-ausschuesse/sitzungstermine-protokolle/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-09273116",
+    "name": "Gemeinde Bad Abbach",
+    "kind": "city",
+    "method": "scraper",
+    "base": "http://bi-bad-abbach.de/",
+    "extension": "php",
+    "allowHttp": true,
+    "verifiedSource": "http://bi-bad-abbach.de/info.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; SessionNet-Bürgerinfo (öffentliche Seiten) nur über http erreichbar (https scheitert), Lesen mit allowHttp."
   },
   {
     "id": "de-09273137",
@@ -24968,6 +25000,18 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09471117",
+    "name": "Gemeinde Bischberg",
+    "kind": "city",
+    "method": "scraper",
+    "base": "http://www.buergerinfo-bischberg.de/",
+    "extension": "php",
+    "allowHttp": true,
+    "verifiedSource": "http://www.buergerinfo-bischberg.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; SessionNet-Bürgerinfo (öffentliche Seiten) nur über http erreichbar (https scheitert), Lesen mit allowHttp."
+  },
+  {
     "id": "de-09471119",
     "name": "Gemeinde Breitengüßbach",
     "kind": "city",
@@ -27162,6 +27206,18 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
+    "id": "de-09576132",
+    "name": "Gemeinde Schwanstetten",
+    "kind": "city",
+    "method": "scraper",
+    "base": "http://buergerinfo-schwanstetten.de/",
+    "extension": "php",
+    "allowHttp": true,
+    "verifiedSource": "http://buergerinfo-schwanstetten.de/info.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; SessionNet-Bürgerinfo (öffentliche Seiten) nur über http erreichbar (https scheitert), Lesen mit allowHttp."
+  },
+  {
     "id": "de-09576137",
     "name": "Gemeinde Rednitzhembach",
     "kind": "city",
@@ -28032,6 +28088,18 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09676112",
+    "name": "Stadt Amorbach",
+    "kind": "city",
+    "method": "scraper",
+    "base": "http://buergerinfo-amorbach.de/",
+    "extension": "php",
+    "allowHttp": true,
+    "verifiedSource": "http://buergerinfo-amorbach.de/info.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; SessionNet-Bürgerinfo (öffentliche Seiten) nur über http erreichbar (https scheitert), Lesen mit allowHttp."
+  },
+  {
     "id": "de-09676117",
     "name": "Gemeinde Collenberg",
     "kind": "city",
@@ -28243,6 +28311,23 @@
     "verifiedSource": "https://www.moenchberg.de/markt-moenchberg/gemeinde-verwaltung/marktgemeinderat/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-096765632",
+    "name": "Verwaltungsgemeinschaft Stadtprozelten",
+    "kind": "city",
+    "method": "scraper",
+    "base": "http://buergerinfo-stadtprozelten.de/",
+    "extension": "php",
+    "allowHttp": true,
+    "organizations": {
+      "include": [
+        "Stadtprozelten"
+      ]
+    },
+    "verifiedSource": "http://buergerinfo-stadtprozelten.de/info.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; SessionNet-Bürgerinfo (öffentliche Seiten) nur über http erreichbar (https scheitert), Lesen mit allowHttp."
   },
   {
     "id": "de-09677",
@@ -28856,6 +28941,18 @@
     "verifiedSource": "https://www.altertheim.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-096795652",
+    "name": "Verwaltungsgemeinschaft Margetshöchheim",
+    "kind": "city",
+    "method": "scraper",
+    "base": "http://bis-margetshoechheim.de/",
+    "extension": "php",
+    "allowHttp": true,
+    "verifiedSource": "http://bis-margetshoechheim.de/info.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; SessionNet-Bürgerinfo (öffentliche Seiten) nur über http erreichbar (https scheitert), Lesen mit allowHttp."
   },
   {
     "id": "de-09761000",
@@ -32514,6 +32611,18 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-120715102",
+    "name": "Amt Döbern-Land",
+    "kind": "city",
+    "method": "scraper",
+    "base": "http://bi.amt-doebern-land.com/",
+    "extension": "php",
+    "allowHttp": true,
+    "verifiedSource": "http://bi.amt-doebern-land.com/default.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; SessionNet-Bürgerinfo (öffentliche Seiten) nur über http erreichbar (https scheitert), Lesen mit allowHttp."
+  },
+  {
     "id": "de-120715107",
     "name": "Amt Peitz",
     "kind": "city",
@@ -32842,6 +32951,26 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "OParl-Adresse des Systems (https://malchin.sitzung-mv.de/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
     "foundBy": "malchin.sitzung-mv.de"
+  },
+  {
+    "id": "de-130715154",
+    "name": "Amt Malchow",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-2/",
+    "bases": [
+      "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-3/",
+      "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-5/",
+      "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-6/",
+      "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-8/",
+      "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-9/",
+      "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-10/"
+    ],
+    "allowHttp": true,
+    "verifiedSource": "http://infosystem.inselstadt-malchow.de/ris/ti-malchow-2/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "TI-Generator (öffentliche Seiten) nur über http erreichbar (https: abgelaufenes Zertifikat), Lesen mit allowHttp."
   },
   {
     "id": "de-130715155",
@@ -37969,6 +38098,18 @@
     "verifiedSource": "https://www.breitungen.de/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
+  },
+  {
+    "id": "de-16067",
+    "name": "Landkreis Gotha",
+    "kind": "district",
+    "method": "scraper",
+    "base": "http://buergerinfo.kreis-gth.de/",
+    "extension": "php",
+    "allowHttp": true,
+    "verifiedSource": "http://buergerinfo.kreis-gth.de/default.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; SessionNet-Bürgerinfo (öffentliche Seiten) nur über http erreichbar (https scheitert), Lesen mit allowHttp."
   },
   {
     "id": "de-16067019",
