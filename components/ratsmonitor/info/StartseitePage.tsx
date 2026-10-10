@@ -8,7 +8,7 @@ import { useOpenSearch } from "./blocks";
    zum ersten Mal beraten wurden, und der Kreis bleibt gefärbt. Darunter die Trends derselben Begriffe, alles aus /api/analytics/diffusion. */
 
 /** Begriffe, die auf der Karte aufploppen und deren Trend darunter steht */
-const TOPICS = ["Wärmeplanung", "Kita", "Hitzeschutz", "Photovoltaik", "Bebauungsplan", "Glasfaser"];
+const TOPICS = ["Wärmeplanung", "Kita", "Hitzeschutz", "Photovoltaik", "Bebauungsplan", "Glasfaser", "Windenergie"];
 
 interface Series {
   month: string;
@@ -204,13 +204,11 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
   return (
     <div>
       <svg role="img" aria-label="Deutschlandkarte der Kreise; farbig sind Kreise, in denen die Begriffe bereits beraten wurden" viewBox="28 10 542 754" style={{ width: "100%", height: "auto", display: "block" }} onMouseLeave={() => setTip("")} onMouseOver={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) setTip(n); }} onClick={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) onPick(n); }}>
-        <style>{`html.rm-dark .pl-de{filter:drop-shadow(0 0 1.4px #2dd4bf) drop-shadow(0 0 1.4px #2dd4bf)}.pl-pop{animation:plpop 5.6s ease-out both}@keyframes plpop{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}.pl-ping{transform-box:fill-box;transform-origin:center;animation:plping 1.6s ease-out infinite}@keyframes plping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.4);opacity:0}}@media (prefers-reduced-motion:reduce){.pl-pop,.pl-ping{animation:none}}`}</style>
-        <g className="pl-de">
-          {paths}
-          {geo.states.map((st) => (
-            <path key={st.name} d={st.path} fill="none" stroke="var(--rm-white,#fff)" strokeWidth="0.9" strokeLinejoin="round" pointerEvents="none" />
-          ))}
-        </g>
+        <style>{`.pl-pop{animation:plpop 5.6s ease-out both}@keyframes plpop{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}.pl-ping{transform-box:fill-box;transform-origin:center;animation:plping 1.6s ease-out infinite}@keyframes plping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.4);opacity:0}}@media (prefers-reduced-motion:reduce){.pl-pop,.pl-ping{animation:none}}`}</style>
+        {paths}
+        {geo.states.map((st) => (
+          <path key={st.name} d={st.path} fill="none" stroke="var(--rm-white,#fff)" strokeWidth="0.9" strokeLinejoin="round" pointerEvents="none" />
+        ))}
         {pops.map((p) => {
           const r = geo.regions.find((x) => x.ags === p.k);
           if (!r) return null;
@@ -500,7 +498,7 @@ export function StartseitePage() {
           )}
             {tier === "guest" && (
               <div style={{ margin: "28px 0 0" }}>
-                <Link href="/suche" className="ri-btn" style={{ borderRadius: 999, border: 0, color: "var(--rm-white,#fff)", background: "var(--rm-c900,#0f172a)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
+                <Link href="/suche" className="ri-btn pl-cta" style={{ borderRadius: 999, border: 0, color: "var(--rm-white,#fff)", background: "var(--rm-c900,#0f172a)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
                   Ohne Anmeldung starten →
                 </Link>
               </div>

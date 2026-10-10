@@ -428,3 +428,6 @@ footer.pl-footer-accent{background:#0d9488 !important;border-color:#0f766e}
 html.rm-dark footer.pl-footer-accent{background:var(--rm-page,#0e1523) !important;border-top:2px solid #0d9488}
 html.rm-dark .pl-footer-accent,html.rm-dark .pl-footer-accent *{border-color:rgba(255,255,255,.12) !important}
 html.rm-dark footer.pl-footer-accent{border-top-color:#0d9488 !important}
+
+/* Startknopf der Startseite im Dark Mode in Akzentfarbe */
+html.rm-dark .pl-cta{background:#0d9488 !important;color:#fff !important}
