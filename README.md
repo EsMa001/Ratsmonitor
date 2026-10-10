@@ -1,5 +1,7 @@
 # Ratsmonitor · Kommunalpolitik entdecken
 
+> **Stand und Betrieb (10.10.2026):** Die Seite läuft auf dem eigenen Server (Node, Hostinger-VPS); Betrieb, Ausrollen und Migrationen stehen in [docs/betrieb/node-server.md](docs/betrieb/node-server.md), Hinweise für die Arbeit am Code in [CLAUDE.md](CLAUDE.md). Die Kapitel ab „Design: Entwurf 2“ sind ein Protokoll früherer Stände (mit Datum); sie nennen teils Dateien und Wege, die es nicht mehr gibt (Code-Analyse vom 10.10.2026, Paket 5).
+
 Responsive MVP zum Lesen öffentlicher Kommunalpolitik. 396 NRW-Städte und Gemeinden sowie 31 Kreise / Städteregionen und in Niedersachsen 403 Städte, Einheits- und Samtgemeinden sowie 37 Landkreise einschließlich Region Hannover zur Auswahl; zwölf Monate angefragter Rückblick plus veröffentlichte anstehende Beratungen. Die übrigen 14 Länder stehen mit 4.231 Gebieten der Gemeindeebene und 226 Landkreisen im Katalog; dort sind 1.492 Quellen angebunden, bundesweit 2.092 (siehe „Bundesweiter Abruf“). Keine Kommentare oder Beteiligungshinweise.
 
 ## Aktuelle Oberfläche (28.09.2026)
@@ -18,7 +20,7 @@ Lokal mit vorhandenen Abhängigkeiten und eingerichteter D1-Datenbank: `npm run 
 
 Münster nutzt OParl: https://oparl.stadt-muenster.de/system. Die Erweiterung nutzt die öffentliche More-Rubin-API für Recklinghausen und SessionNet-HTML für Billerbeck, Coesfeld, Steinfurt und Warendorf. Borkens öffentlicher Zugang antwortet mit HTTP 403; die Auswahl bleibt mit sichtbarer Datenlücke verfügbar. Eine fehlgeschlagene OParl-Standardpfadprüfung beweist nicht die Abwesenheit jeder Schnittstelle. Bei einem künftig gefundenen OParl-System wird der Import bis zur passenden Adapterkonfiguration angehalten, statt die offizielle Schnittstelle zu umgehen.
 
-Der erste regionale Initialbestand enthält 437 zusätzliche Artikel (84 Billerbeck, 99 Coesfeld, 149 Steinfurt, 44 Warendorf, 61 Recklinghausen). Quellenstand und Teilfehler stehen auf `/quellen`. `node scripts/import-regions.mjs` aktualisiert die regionalen Quelldateien und behält bereits gespeicherte Artikel bei Fehlern. Es werden ausschließlich öffentliche Tagesordnungspunkte eingelesen; Zugangssperren werden nicht umgangen.
+Der erste regionale Initialbestand enthält 437 zusätzliche Artikel (84 Billerbeck, 99 Coesfeld, 149 Steinfurt, 44 Warendorf, 61 Recklinghausen). Quellenstand und Teilfehler stehen auf `/quellen`. (Die Quelldateien schrieb damals `scripts/import-regions.mjs`; seit den Importen über die Datenbank ist das Skript entfernt.) Es werden ausschließlich öffentliche Tagesordnungspunkte eingelesen; Zugangssperren werden nicht umgangen.
 
 Der versionierte Bestand einschließlich Zwölf-Monats-Nachladung umfasst nach lokalem Abgleich 24.921 kanonische Artikel aus 43 Gebieten (39 Kommunen, vier Kreise). Die zwanzig jüngst ergänzten Kommunen im Münsterland und nördlichen Ruhrgebiet liefern nach dem Folgeimport 8.993 Artikel. Er ist keine NRW-Vollerhebung und keine Live-Zählung der Datenbank. Die vollständige Aufteilung sowie offene Anforderungen stehen im Hauptdokument.
 
@@ -36,7 +38,7 @@ Die Übersicht (`GET /api/admin/overview`, `server/integrations/admin-data.mjs`)
 
 Kann eine Seite nicht geladen werden, zeigen `app/error.tsx` und `app/global-error.tsx` eine deutsche Meldung mit „Seite neu laden“. Nach einem Neustart des Entwicklungsservers müssen bereits offene Tabs neu geladen werden (Strg+F5): Der Server beantwortet Modulabrufe mit veralteter Versionskennung mit HTTP 504, der Browser meldet dann „error loading dynamically imported module“.
 
-Für die erste Nutzung mit ChatGPT anmelden und den separat übergebenen Freischaltcode eingeben. Die erste erfolgreiche Zuweisung bindet die vom Sites-Dispatcher verifizierte Nutzer-ID atomar an `system_state['admin-owner-v1']`. Danach genügt dieses Konto. Ein gleichlautender Anzeigename oder dieselbe E-Mail genügt nicht. Zugang wird auf jeder Admin-API geprüft; Schreibaktionen benötigen dieselbe Origin. Metadatenimport je Quelle verwendet die bestehende globale Importsperre. Der CSV-Export enthält den aktuellen Quellenfilter. Die Prüfliste erlaubt noch keine redaktionelle Bearbeitung.
+**Zugang (eigener Server):** Caddy setzt die Admin-Kennung nach der Anmeldung am Server (Passwort oder SSH-Tunnel, `deploy/node/Caddyfile`); gebunden wird sie einmal mit `scripts/bind-admin-owner.mjs`. Auf Cloudflare/Sites (früherer Betrieb) lief die Anmeldung über ChatGPT mit Freischaltcode: Für die erste Nutzung mit ChatGPT anmelden und den separat übergebenen Freischaltcode eingeben. Die erste erfolgreiche Zuweisung bindet die vom Sites-Dispatcher verifizierte Nutzer-ID atomar an `system_state['admin-owner-v1']`. Danach genügt dieses Konto. Ein gleichlautender Anzeigename oder dieselbe E-Mail genügt nicht. Zugang wird auf jeder Admin-API geprüft; Schreibaktionen benötigen dieselbe Origin. Metadatenimport je Quelle verwendet die bestehende globale Importsperre. Der CSV-Export enthält den aktuellen Quellenfilter. Die Prüfliste erlaubt noch keine redaktionelle Bearbeitung.
 
 Einrichtung auf einem neuen Deployment: einen kryptografisch zufälligen Code mit mindestens 24 Zufallsbytes erzeugen, dessen SHA-256-Hexdigest als geheimen Runtime-Wert `ADMIN_SETUP_HASH` konfigurieren, neu deployen und den Originalcode dem Betreiber separat geben. Der Code darf nicht im Repository, in Logs oder URLs stehen. Nach der Erstzuweisung ist er wirkungslos; ein Austausch des Hashs setzt den Besitzer nicht zurück. Ein Kontowechsel erfordert einen kontrollierten administrativen Eingriff in die Besitzerzuweisung mit erneuter sicherer Freischaltung. Kein öffentlicher Reset-Endpunkt.
 
@@ -46,11 +48,11 @@ Für einen späteren Umzug ins eigene Repository sind die Anwendungslogik und SQ
 
 Ladezeitkorrekturen v0.19 (weiterhin gültig): Die Datenbankinitialisierung hält keine laufenden Anfragen in einer globalen Promise fest. Kanonische Gebiets-/Statuszählungen verwenden einen partiellen Index; die Sitzungsvorschau liefert direkt höchstens zwei Sitzungen. Analysen übertragen nur benötigte Quelldaten und verwenden nach Version und Originaltitel geprüfte bestehende Labels. Fertige öffentliche Auswertungen werden höchstens 30 Sekunden für bis zu drei Auswahlen gecacht; Importläufe invalidieren den Cache. Die Karte wird bei Annäherung an den sichtbaren Bereich geladen, Artikellisten erst beim Aufklappen und in Portionen von 30. Der vollständige Bestand und die fachlichen Ergebnisse bleiben erhalten. Messwerte und Grenzen: [Performance-Nachweis](requirements/performance-review-2026-09-27.md).
 
-Das Projekt verwendet Vinext/React, Tailwind und die vorhandenen Shadcn-Komponenten; D1 hält Themen, Quellenstand, Importprotokolle und Push-Abonnements. Logische Bindungen stehen in `.openai/hosting.json`, Schema in `db/schema.ts`, Migrationen in `drizzle/`.
+Das Projekt verwendet Vinext/React, Tailwind und die vorhandenen Shadcn-Komponenten; D1 hält Themen, Quellenstand, Importprotokolle und Push-Abonnements. Logische Bindungen stehen in `.openai/hosting.json`, Migrationen in `drizzle/*.sql` (das frühere Drizzle-Schema `db/schema.ts` ist entfernt).
 
-Installations-, Build- und Preview-Abläufe entsprechen dem Sites-Starter. Neue Schemaänderungen mit `npm run db:generate` erzeugen und prüfen. Lokal die Migrationen in Reihenfolge mit Wrangler auf DB anwenden. Keine DDL im Request-Pfad.
+Entwicklung: `npm run dev` (Port 5173); Node-Build `npm run build:node`, Cloudflare-Build `npm run build`. Neue Schemaänderungen von Hand als neue Datei in `drizzle/` schreiben (nummeriert, mit Kommentar); lokal und auf dem Server mit `scripts/node-migrate.mjs` einspielen (`docs/betrieb/node-server.md`, „Migrationen“). Keine DDL im Request-Pfad.
 
-`node scripts/import-data.mjs` lädt den rollierenden OParl-Bestand. Der lokale JSON-Cache dient reproduzierbaren Entwicklungsläufen; vor einem neuen aktuellen Abruf `.oparl-cache` leeren oder einen frischen Checkout verwenden. `node scripts/enrich-documents.mjs` extrahiert PDF-Text mit dem lokal installierten `pdftotext`. Die Laufzeitimplementierung nutzt `unpdf`.
+*(Überholt: `scripts/import-data.mjs` und `scripts/enrich-documents.mjs` sind entfernt; Importe laufen über `runSync` in die Datenbank.)* Früher lud `scripts/import-data.mjs` den rollierenden OParl-Bestand. Der lokale JSON-Cache dient reproduzierbaren Entwicklungsläufen; vor einem neuen aktuellen Abruf `.oparl-cache` leeren oder einen frischen Checkout verwenden. Die Laufzeitimplementierung nutzt `unpdf`.
 
 `node --test tests/*.test.mjs` prüft die politischen Statusregeln, Paginierung, Quelleneinschränkung und das Verwerfen unbelegter KI-Zahlen. `node node_modules/typescript/bin/tsc --noEmit` prüft die Typen.
 
@@ -87,7 +89,7 @@ Server-Einstiegsmodule sind mit `server-only` geschützt. Ein Architekturtest pr
 
 ### Lesende API für Website und spätere App
 
-`GET /api/topics?limit=12&cursor=…` liefert `topics: TopicCard[]`, `total`, `nextCursor`, `coverage` und `storageAvailable`. Ohne Cursor beginnt die erste Seite; `limit` ist 1–50, Standard 12. Den Cursor unverändert mit `URLSearchParams` an den nächsten Aufruf übergeben. `nextCursor: null` bedeutet Ende. Ungültige Parameter liefern HTTP 400, ein zwischenzeitlich geänderter Importstand HTTP 409; dann bei der ersten Seite beginnen. Die Reihenfolge verwendet Aktualisierungsdatum, Vorlagenkennzeichen und ID als eindeutigen letzten Sortierschlüssel. Die aktuelle Implementierung nutzt begrenzte SQL-Abfragen mit Offset und bindet Cursor an den Importstand.
+Von der früheren lesenden API ist `GET /api/topics/{id}` geblieben; die Liste (`GET /api/topics`) und `GET /api/analytics` als Sammel-API gibt es nicht mehr (Suche: `/api/search`, Analysen: `/api/analytics/*`).
 
 `GET /api/topics/{id}` liefert ein `TopicDetail` mit Langfassung, Verlauf und Originaldokumenten, jedoch ohne interne Dokumentrohtexte. Unbekannte oder ungültige IDs liefern HTTP 404. HTTP 500 steht für einen unerwarteten Fehler. Bei einer späteren privaten Veröffentlichung gilt die vorgeschaltete Zugriffskontrolle auch für diese API.
 
@@ -171,7 +173,7 @@ Vorbereitete Aktivierung nach Übernahme in ein eigenes GitHub-Repository:
 
 1. Repository-Variable `SITE_URL` auf den veröffentlichten HTTPS-Origin setzen.
 2. Repository-Secret `IMPORT_TOKEN` sicher mit dem gleichnamigen Backend-Secret abgleichen. Das vorhandene Secret ist nicht auslesbar; bei Verlust kontrolliert neu setzen und beide Seiten aktualisieren.
-3. Variable `IMPORTS_ENABLED=true` setzen. `.github/workflows/import.yml` muss auf dem Default-Branch liegen und Actions aktiviert sein.
+3. *(Überholt: `.github/workflows` ist leer; die Vorlage lag in `examples/` und ist entfernt. Zeitgesteuerte Importe auf dem eigenen Server: `docs/betrieb/node-server.md`, Paket 6 der Code-Analyse.)*
 4. Zunächst den Workflow manuell auslösen, danach den ersten geplanten Lauf kontrollieren. Zeitplan: 00:17, 06:17, 12:17 und 18:17 UTC. Verzögerungen des Ausführers sind möglich.
 5. Zwei reale Folgeimporte prüfen: Artikelbestand, Archivfassungen, Quellenzeitstempel und Workflow-Ergebnis. Quellenlücken separat bewerten. Diese Produktionsabnahme ist noch offen.
 
@@ -573,7 +575,7 @@ Den tatsächlichen Dateinamen einsetzen. Das Werkzeug benötigt Node >=22.13 (f�
 
 Die Kopie stimmt mit dem Online-Stand **zum Exportzeitpunkt** überein. Spätere Änderungen laufen nicht automatisch zwischen beiden Installationen mit. Alle bekannten Quellen- und KI-Lücken bleiben in der Kopie sichtbar. Die Dateien `ratsmonitor-data*.json*`, `.local-backups/`, `.wrangler/` und `.dev.vars*` gehören nicht in Git. Regelmäßige separate Sicherungen der Arbeitsergebnisse sind weiterhin erforderlich.
 
-Für einen ausdrücklich beauftragten technischen Export kann `DATA_EXPORT_TOKEN` als separates Runtime-Geheimnis gesetzt werden. `GET /api/internal/database-export` erlaubt ausschließlich die vier festen Inhaltstabellen und Feldprüfungen. Der Browser verwendet stattdessen die bestehende Betreiberanmeldung unter `/api/admin/database`.
+Ein technischer Export läuft über die Administration (`/api/admin/database`); die frühere Token-Route `/api/internal/database-export` ist entfernt. Der Browser verwendet stattdessen die bestehende Betreiberanmeldung unter `/api/admin/database`.
 
 ### Admin: Daten & Verarbeitung
 

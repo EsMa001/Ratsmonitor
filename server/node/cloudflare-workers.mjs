@@ -5,8 +5,8 @@
  * - `env.DB`: die SQLite-Datei aus DATABASE_FILE über einen D1-kompatiblen Adapter (server/node/d1-sqlite.mjs).
  *   Geöffnet beim ersten Zugriff, nie beim Bauen; genau eine Verbindung je Prozess, auch wenn das Modul in mehreren
  *   Server-Paketen (rsc, ssr) landet (globalThis). Ohne DATABASE_FILE, oder wenn die Datei fehlt, ist `env.DB`
- *   undefined wie auf Cloudflare ohne Bindung; das steht dann laut im Protokoll, denn die Seiten zeigen still den
- *   mitgelieferten Stand.
+ *   undefined wie auf Cloudflare ohne Bindung. serve.mjs startet dann gar nicht erst (nur ohne DATABASE_FILE und mit
+ *   RM_ALLOW_NO_DB=1 doch; dann steht es laut im Protokoll, denn die Seiten zeigen still den Stand vom September).
  * - alle anderen Schlüssel (ADMIN_SETUP_HASH, IMPORT_TOKEN, OPENAI_API_KEY, VAPID_*, …) aus process.env,
  *   gelesen beim Zugriff. Leere Werte gelten als nicht gesetzt.
  *
@@ -21,7 +21,7 @@ const RETRY_MS = 30_000;
 function db() {
   // Nach einem Fehlschlag (z. B. Sperre eines anderen Prozesses) nach 30 s erneut versuchen statt bis zum Neustart nie.
   if (state.database || Date.now() - state.failedAt < RETRY_MS) return state.database;
-  const file = process.env.DATABASE_FILE || process.env.DB_FILE;
+  const file = process.env.DATABASE_FILE;
   if (!file) {
     if (!state.warned) { state.warned = true; console.error('[ratsmonitor] DATABASE_FILE ist nicht gesetzt: keine Datenbank, die Seiten zeigen den mitgelieferten Stand.'); }
     return undefined;

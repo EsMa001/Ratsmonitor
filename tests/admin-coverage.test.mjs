@@ -12,12 +12,11 @@ import history from '../server/integrations/coverage-history.json' with {type:'j
 import atlas from '../server/integrations/source-atlas.json' with {type:'json'};
 import {ATLAS_CATEGORY_BY_ID} from '../shared/atlas-categories.mjs';
 import {ACCESS_BY_ID} from '../shared/source-access.mjs';
+import {memoryDb} from './helpers/d1.mjs';
+const root=path.resolve(import.meta.dirname,'..'),{sql:sqlite,db}=memoryDb();
 
 // Coverage by areas and population (shared/coverage.mjs), the overview (admin-coverage.mjs) and the gap atlas of the
 // administration (admin-atlas.mjs), on an in-memory database with the real migrations.
-const root=path.resolve(import.meta.dirname,'..'),sqlite=new DatabaseSync(':memory:');
-for(const f of fs.readdirSync(path.join(root,'drizzle')).filter(f=>f.endsWith('.sql')).sort())sqlite.exec(fs.readFileSync(path.join(root,'drizzle',f),'utf8'));
-const db={prepare(sql){let args=[];return {bind(...v){args=v;return this;},async all(){return {results:sqlite.prepare(sql).all(...args)};},async first(){return sqlite.prepare(sql).get(...args)||null;},async run(){sqlite.prepare(sql).run(...args);return {success:true};}};},async batch(list){const out=[];for(const s of list)out.push(await s.all());return out;}};
 const insert=(id,regionId,firstImportedAt)=>sqlite.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run(id,regionId,'city','2026-09-20','2026-10-01T10:00:00Z','consulting',JSON.stringify({id,regionId,title:'Thema '+id,status:'consulting',updatedAt:'2026-10-01T10:00:00Z',events:[{date:'2026-09-20'}],...(firstImportedAt?{metadata:{firstImportedAt}}:{})}));
 const catalog=[{id:'a',kind:'city',ags:'05000001'},{id:'b',kind:'city',ags:'05000002'},{id:'k',kind:'district',ags:'05000'},{id:'c',kind:'city',ags:'09000001'}],population={a:100,b:200,k:300,c:1000};
 const landOf=r=>r.ags.slice(0,2);

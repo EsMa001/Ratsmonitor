@@ -534,7 +534,7 @@ Der dokumentierte Regelvergleich verwendet denselben Importbestand: Offen sinkt 
 
 ### Dokumentpflege und Nachweisgrenzen
 
-requirements/vor-Ort_Anforderungen.md ist die aktuelle normative Ergänzung im Repository. Die frühere Datei vor-Ort_Erweiterung_v0.5.md verweist darauf. requirements/analysis-examples.md verweist für verbindliche Regeln auf Abschnitt 15; der UX-Prüfbericht bleibt ein historischer Nachweis und verweist für DA-41 bis DA-43 auf Abschnitt 16. Abschnitt 18 führt die Anforderungen aus Arbeitspaket 1 fort. Weitere Änderungen sollen künftig direkt in diesem Hauptdokument gepflegt werden.
+requirements/vor-Ort_Anforderungen.md ist die aktuelle normative Ergänzung im Repository. requirements/analysis-examples.md verweist für verbindliche Regeln auf Abschnitt 15; der UX-Prüfbericht bleibt ein historischer Nachweis und verweist für DA-41 bis DA-43 auf Abschnitt 16. Abschnitt 18 führt die Anforderungen aus Arbeitspaket 1 fort. Weitere Änderungen sollen künftig direkt in diesem Hauptdokument gepflegt werden.
 
 Für den ursprünglichen Abgleich v0.9 wurden alle bisherigen Anforderungs-IDs des Hauptdokuments erhalten, die neuen Analyse- und UX-IDs ohne Duplikate integriert, Codepfade und Datenzahlen abgeglichen sowie Markdown und PDF aus demselben Text erzeugt. Die Gestaltung übernimmt Schrift, Farben und Linien der Website. Der Export wurde auf lesbare Tabellen, Seitenumbrüche und Textvollständigkeit geprüft. Es erfolgte kein neuer Import, keine Live-Datenbankprüfung und keine neue fachliche Produktabnahme.
 

@@ -2,6 +2,7 @@ import {readNrwSnapshot} from '../nrw-snapshot-file.mjs';
 import fs from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {mergeImport} from '../../server/integrations/merge-import.mjs';
+import {loadBackfill} from '../../server/integrations/load-backfill.mjs';
 import {activeTopics} from '../../shared/topic-identity.mjs';
 import {classifyTopic,LABELS,LABEL_VERSION,CLASSIFIER_VERSION} from '../../shared/labels.mjs';
 import {studyInput,STUDY_VERSION,PROMPT_VERSION} from '../../shared/label-study.mjs';
@@ -10,7 +11,9 @@ if(!['source','title'].includes(basis))throw Error('basis: source oder title');
 await fs.mkdir(folder,{recursive:true});
 try{await fs.access(folder+'/corpus.json');throw Error('Vorhandener Studienbestand wird nicht überschrieben. Für neue Version anderes Verzeichnis verwenden.');}catch(e){if(e.code!=='ENOENT')throw e;}
 const read=async p=>JSON.parse(await fs.readFile(p,'utf8'));
-const [city,regional,nrw,history]=await Promise.all(['data/topics.json','data/regions.json','data/nrw-seed.json','data/history-backfill.json'].map(p=>p==='data/nrw-seed.json'?readNrwSnapshot():read(p)));
+const [city,regional,nrw]=await Promise.all(['data/topics.json','data/regions.json','data/nrw-seed.json'].map(p=>p==='data/nrw-seed.json'?readNrwSnapshot():read(p)));
+// Die Zwölf-Monats-Nachladung liegt nur noch gepackt vor (data/history-backfill-gzip.json, wie für den Server).
+const history={results:[]};for await(const result of loadBackfill(await read('data/history-backfill-gzip.json')).results)history.results.push(result);
 const base=[...city.topics.map(t=>({...t,regionId:'muenster'})),...regional.topics,...nrw.topics],all=[];
 for(const id of new Set(base.map(t=>t.regionId))){const prior=base.filter(t=>t.regionId===id),fresh=history.results.find(r=>r.coverage.regionId===id);all.push(...activeTopics(fresh?mergeImport({topics:prior},fresh).topics:prior));}
 const hash=s=>createHash('sha256').update(s).digest('hex');

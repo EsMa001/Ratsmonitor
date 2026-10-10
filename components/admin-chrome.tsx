@@ -25,9 +25,9 @@ export function AdminBar({displayName,signOutPath}:{displayName?:string;signOutP
    <div className="flex min-w-0 items-center gap-3"><Brand/><span className="hidden text-[14px] text-slate-500 sm:inline">Administration</span></div>
    <div className="flex min-w-0 items-center gap-2 text-[14px] text-slate-500">
     <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-lg hover:bg-slate-100" title={mode} aria-label={mode} aria-pressed={dark} onClick={()=>setDark(!dark)}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{dark?<><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>:<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>}</svg></button>
-    {signOutPath&&<>
     {displayName&&<span className="hidden max-w-[240px] truncate md:inline">{displayName}</span>}
-    <a target="_top" href={signOutPath} className="btn-secondary btn-sm">Abmelden</a></>}</div>
+    {/* Abmelden nur mit ChatGPT-Anmeldung (app/admin/page.tsx); auf dem eigenen Server gibt es keinen Abmeldeweg. */}
+    {signOutPath&&<a target="_top" href={signOutPath} className="btn-secondary btn-sm">Abmelden</a>}</div>
   </div>
  </header>;
 }

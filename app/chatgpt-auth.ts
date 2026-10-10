@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 export type ChatGPTUser = {
   userId: string;
@@ -43,14 +42,12 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   };
 }
 
-export async function requireChatGPTUser(
-  returnTo: string,
-): Promise<ChatGPTUser> {
-  const user = await getChatGPTUser();
-  if (user) return user;
-
-  redirect(chatGPTSignInPath(returnTo));
-}
+/**
+ * Whether this runtime offers the ChatGPT sign-in (/signin-with-chatgpt): the Cloudflare/Sites hosting and the local
+ * dev server (workerd) do; the Node server does not, there Caddy sets the identity headers
+ * (deploy/node/Caddyfile) and these links would end in a 404.
+ */
+export const chatGPTSignInAvailable = (): boolean => globalThis.navigator?.userAgent === "Cloudflare-Workers";
 
 export function chatGPTSignInPath(returnTo: string): string {
   const safeReturnTo = safeRelativeReturnPath(returnTo);

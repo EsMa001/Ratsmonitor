@@ -60,10 +60,10 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 
 ## Prüfen
 
-- Typcheck: `~/.local/bin/node node_modules/typescript/bin/tsc --noEmit --incremental false`
-- Tests: `~/.local/bin/node --test tests/*.test.mjs` (gelegentlich zufällig rot: „marks of read meetings“, „every import leaves a record“)
-- Dev-Server: `corepack pnpm dev` (Port 5173), fürs Handy im WLAN: `corepack pnpm dev --hostname 0.0.0.0`
-- Handy-Vorschau lokal: `public/handy.html` (nicht im Git)
+- Typcheck: `node node_modules/typescript/bin/tsc --noEmit --incremental false`
+- Tests: `node --test tests/*.test.mjs` (gelegentlich zufällig rot: „marks of read meetings“, „every import leaves a record“)
+- Dev-Server: `npm run dev` (Port 5173, setzt `scripts/run-framework.mjs`), fürs Handy im WLAN: `RM_DEV_HOST=0.0.0.0 npm run dev`
+- Builds: `node scripts/build-node.mjs` (Server) und `npm run build` (Cloudflare; überschreibt `dist/`)
 - Gast/Tarif testen: Testkonten `basic|pro|enterprise@plenara.test`, Passwort `test1234`
 
 ## Git

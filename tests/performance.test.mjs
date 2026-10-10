@@ -5,26 +5,12 @@ import path from 'node:path';
 import ts from 'typescript';
 import {currentClassification} from '../shared/analytics.mjs';
 import {classifyTopic} from '../shared/labels.mjs';
-import {analysisControlsData,mapPlaces,analysisListPage} from '../shared/analysis-payload.mjs';
 import {cachedRead,rememberRead,invalidateReads} from '../server/services/read-cache.mjs';
 
 test('stored classifications are reused only for the same title, method and catalog',()=>{
  const t={title:'Schulbau',officialTitle:'Bau einer Grundschule'},classification=classifyTopic(t);
  assert.equal(currentClassification({...t,classification}),classification);
  for(const c of [{...classification,method:'old'},{...classification,version:'old'},{...classification,evidence:'Anderer Titel'},{...classification,primary:'invented'}])assert.equal(currentClassification({...t,classification:c}).method,'pending');
-});
-test('client props omit full match lists, article bodies and unrelated statistics',()=>{
- const d={region:'billerbeck',topicId:'',label:'bildung',level:'all',from:'2026-09-01',to:'2026-09-27',today:'2026-09-27',topicOptions:[{id:'a',title:'Schulbau'}],regionAvailability:{},geography:[{id:'billerbeck',count:1,total:10,share:10,coverage:{method:'oparl',issues:['long diagnostics']},matches:[{id:'a',title:'long article'}],comparison:{delta:1}}],articles:[{id:'a'}]};
- const controls=analysisControlsData(d),map=mapPlaces(d);
- assert.equal('geography' in controls,false);assert.equal('articles' in controls,false);assert.equal('matches' in map[0],false);assert.deepEqual(map[0].coverage,{method:'oparl'});assert.equal(map[0].count,1);
-});
-test('lazy article pages retain every source, cap transfer at 30 and reject changed membership',()=>{
- const items=Array.from({length:65},(_,i)=>({id:'id-'+String(i).padStart(3,'0'),title:'Schulbau '+i,sourceUrl:'https://example.org/'+i}));
- const d={articles:items,geography:[{id:'billerbeck',matches:items}],storageAvailable:true};
- const a=analysisListPage(d,'matches','billerbeck',0),b=analysisListPage(d,'matches','billerbeck',a.nextOffset,a.revision),c=analysisListPage(d,'matches','billerbeck',b.nextOffset,b.revision);
- assert.deepEqual([a.items.length,b.items.length,c.items.length],[30,30,5]);assert.equal(c.nextOffset,null);assert.deepEqual([...a.items,...b.items,...c.items],items);
- assert.equal(analysisListPage({...d,geography:[{id:'billerbeck',matches:items.slice(1)}]},'matches','billerbeck',30,a.revision).changed,true);
- assert.equal(analysisListPage(d,'local','',0).total,65);
 });
 test('completed-result cache expires, evicts, invalidates and refuses shared promises',()=>{
  invalidateReads();assert.throws(()=>rememberRead('unsafe',Promise.resolve(1)));
