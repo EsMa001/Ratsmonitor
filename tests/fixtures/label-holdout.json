@@ -1,0 +1,506 @@
+{
+ "version": "label-holdout-v1",
+ "note": "Zufällige Titel (blind zugeordnet, nicht zum Anpassen der Regeln benutzt); misst die Regeln auf ungesehenen Titeln",
+ "rows": [
+  {
+   "id": "nrw-05570008-vo-32375",
+   "title": "Vorhabenbezogener Bebauungsplan \"Wohnquartier Herzfelder Straße\" – Abschluss des Durchführungsvertrags",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05558004-vo-4113",
+   "title": "Bauvorhaben in Ascheberg; Befreiungen von den Festsetzungen des Bebauungsplanes A 74 \"Breilbusch\"",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05570024-vo-7270",
+   "title": "Besichtigung der Baustelle Kita am Vitus Bad",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05566076-vo-13172",
+   "title": "Beratung Ergebnis- und Investitionsplan 2026 - 2029 - Fortschreibung",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05570044-top-1273--13",
+   "title": "Mündliche Anfragen gemäß § 17 Abs. 2 der Geschäftsordnung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05566076-top-7549--1",
+   "title": "Niederschrift Nr. 3 über die öffentliche Sitzung am 22.04.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05554004-vo-7393",
+   "title": "Prüfauftrag zur Aufstellung von Fahrrad-Reparaturstationen im Stadtgebiet Ahaus; Antrag der SPD-Fraktion vom 08.03.2026",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05570044-vo-5841",
+   "title": "Wahl des Vorsitzes und des stellvertretenden Vorsitzes des Ortsausschusses Westbevern",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05554004-vo-7304",
+   "title": "Erste Informationen zum Anmeldeverfahren zum Kita-Jahr 2026/2027",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05570044-top-1399--1-2",
+   "title": "Kleinspielfeld der SG Telgte",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05558004-vo-3896",
+   "title": "Controllingbericht zur Budgetausführung zum Stichtag 31.08.2025",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05558024-vo-20000",
+   "title": "Bürgerwind Seppenrade / 37. Änd. des FNP - Beschluss Standortplanung und 37. Änderungsverfahren des FNP",
+   "gold": "klima"
+  },
+  {
+   "id": "nrw-05558016-vo-2004025578",
+   "title": "Allgemeine Themen zur Schulentwicklung",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05566076-vo-13704",
+   "title": "Einstellung Grünschnittabholung im Frühjahr 2027",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05570044-top-1395--1-3",
+   "title": "Bericht zur Umsetzung des FDP-Antrags „Anpassung der Servicezeiten Bürgerbüro“",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05570044-top-1400--9-3",
+   "title": "Mobilstation am Bahnhof Telgte",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05554004-top-1725--2-2-1",
+   "title": "Antrag 1,0 Stelle Personal und interner Service",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05558004-vo-3922",
+   "title": "Bestellung einer Schriftführung einschl. Vertretung für die Sitzungen des Bau- und Planungsausschusses",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05558044-vo-3552",
+   "title": "Verpflichtung und Einführung der Stellvertreterinnen/Stellvertreter des Bürgermeisters",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-vo-13004",
+   "title": "Förderprogramm Bundesprogramm „Sanierung kommunaler Sportstätten\"",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05566076-vo-12619",
+   "title": "Jahresbericht 2024 der Verbraucherzentrale Nordrhein-Westfalen - Beratungsstelle Rheine",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05566076-vo-12844",
+   "title": "Beratung Stellenplan 2026, Sonderbereich 2 - Produktgruppe 24 - Offene Senioren- und Behindertenarbeit",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05558044-top-1519--9",
+   "title": "Berichte der Verwaltung Aktueller Stand 2. Änderung des Bebauungsplanes „2. Erweiterung Holterode“ für die freien Grundstücke an der Ascheberger Straße am Kreisverkehr Dillenbaum, Ottmarsbocholt",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05558004-vo-3942",
+   "title": "Einführung der Bezahlkarte - Sachstandsbericht",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05558036-vo-2004019356",
+   "title": "Bericht über das Anmeldeverfahren an der Wieschhofschule - Kath. Grundschule der Stadt Olfen für das Schuljahr 2026/2027",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05566076-vo-13413",
+   "title": "Förderung von Veranstaltungen im Rahmen der Interkulturellen Woche 2026 - gleichzeitig Faire Wochen 2026 Antrag an den Ausschuss für Chancengerechtigkeit und Integration",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05558044-top-1437--17",
+   "title": "Anfragen der Ausschussmitglieder Sachstand sechsarmiger Kreisverkehr L 550 / L 551, Bösensell",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05562016-vo-20252111100166",
+   "title": "Grundhafte Erneuerung der Holtwicker Straße im Zuge der Umsetzung des ISEK hier: Beschluss über die Vorplanung",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05562016-vo-20251911100163",
+   "title": "Bauleitplanverfahren zur Aufstellung des Bebauungsplanes Nr. 135 \"Südliche Annabergstraße - Teil Ost\" hier: Durchführung der öffentlichen Auslegung gem. § 3 Abs. 2 BauGB sowie Beteiligung der Behörden und sonstigen Träger öffentl. Belange gem. § 4 Abs. 2 BauGB",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05554004-vo-7187",
+   "title": "Teilnahme von Schülersprecher*innen mit beratender Stimme an den Sitzungen des Ausschusses für Schule und Sport; Antrag der SPD-Fraktion vom 02.02.2025",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05558024-vo-19729",
+   "title": "Umgestaltung \"Kleine Münsterstraße\"; - hier; Vorstellung der Planung",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05570044-top-1448--9-2",
+   "title": "Schienenersatzverkehr für die Zeit der Sperrpausen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05558028-vo-10385",
+   "title": "Austausch des Kunstrasens an der Sportanlage in Nordkirchen",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05566076-vo-12898",
+   "title": "Wahl der Delegierten für den Landesintegrationsrat und die Steuerungsgruppe des Kommunalen Integrationsmanagements",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-vo-12660",
+   "title": "Programmübersicht Interkulturelle Woche (IKW) 2025",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05558016-vo-2004025452",
+   "title": "Bestellung eines Schriftführers und eines stellvertretenden Schriftführers für die Sitzungen des Ausschusses für Arbeit, Soziales, Ehrenamt und Senioren",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-vo-13121",
+   "title": "Antrag SPD-Fraktion: Prüfung zur Einführung eines Ampelmännchens mit der lokalen Sagenfigur „Bote Veit“",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05566076-vo-12876",
+   "title": "Verfahren zum Aktionsplan Inklusion",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05558016-vo-2004025551",
+   "title": "Jahresbericht Kulturbüro 2025",
+   "gold": "kultur"
+  },
+  {
+   "id": "nrw-05566076-vo-13224",
+   "title": "3. Änderungssatzung zur Hauptsatzung der Stadt Rheine",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05566076-vo-13046",
+   "title": "Antrag SPD Fraktion Rheine - Prüfauftrag: Zweckentfremdungssatzung",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05558016-vo-2004025506",
+   "title": "Einführung und Verpflichtung der sachkundigen Bürger/innen und beratenden Mitglieder sowie deren Stellvertreter/innen durch den Ausschussvorsitzenden.",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05570044-top-1400--3",
+   "title": "Sanierung der Rampen/ Personenunterführung am Bhf. Vadrup durch die Stadt Telgte (mündl. Bericht)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05558024-vo-19758",
+   "title": "Verabschiedung und Ehrung der ausscheidenden Ratsmitglieder",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-vo-13001",
+   "title": "Behandlung der Bilanzierungshilfe nach § 6 NKF-CUIG",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05562016-vo-20262402100024",
+   "title": "Einrichtung einer Tempo 30-Zone zur Erhöhung der Verkehrssicherheit Antrag der Fraktion Bündnis 90/Die Grünen vom 28.08.2025",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05566076-top-7561--4",
+   "title": "Verpflichtung eines neuen Mitglieds für den Familienbeirat",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-vo-13452",
+   "title": "Entwurf des Jahresabschlusses zum 31. Dezember 2025",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05566076-vo-13510",
+   "title": "Statistische Daten des Allgemeinen Sozialen Dienstes im interkommunalen Vergleich",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05558044-top-1436--13",
+   "title": "Berichte der Verwaltung Endausbau von-Liebig-Straße, Senden",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05558016-vo-2004025435",
+   "title": "Bericht zur Jahresabschlussprüfung 2024 des Abwasserwerkes",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05558024-vo-19882",
+   "title": "39. Änderung des FNP (Wohnmobilstellplatz) - Feststellungsbeschluss",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05562008-vo-20250511100033",
+   "title": "Neubildung des Verbandsrates 2026-2031 des Lippeverbandes",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-top-7215--4",
+   "title": "Informationen aus dem Integrationsrat",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05554004-vo-7201",
+   "title": "Wahl, Verpflichtung und Einführung der stellvertretenden Bürgermeister/innen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05570044-top-1400--7",
+   "title": "Anfrage der GRÜNE-Fraktion vom 03.07.2026 betr. Fragen an die untere Denkmalbehörde",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05570044-top-1400--9-2",
+   "title": "Elektroschrottcontainer",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05570044-top-1400--1-2",
+   "title": "Marienschule - Sachstand zu Umbau und Erweiterung",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05566076-vo-12800",
+   "title": "Änderung von Gesellschaftsverträgen städtischer Beteiligungsunternehmen bzw. von Betriebssatzungen",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05562008-vo-20251002100139",
+   "title": "Entwurf des Jahresabschlusses 2023",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05558036-top-5155--12-3",
+   "title": "Verkehrssituation am Borker Landweg/Lützowstraße",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05558016-vo-2004025501",
+   "title": "Festlegung des Aufnahmerahmens für die städtischen Grundschulen zum Schuljahr 2026/2027",
+   "gold": "bildung"
+  },
+  {
+   "id": "agendaitems-285988",
+   "title": "Austausch über den aktuellen Stand: Neue Elternbeitragstabelle zum Kita-Jahr 2027/ 2028",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05114000-oparl-09455816810d29f06a0f",
+   "title": "Parksituation Moerser Landstraße - Mitteilung zur Anfrage der SPD-Fraktion vom 12.03.2026 zur Sitzung am 26.03.2026 (Vorlagen-Nr. 661/26 Af), dort Tagesordnungspunkt 4.9 und dem seinerzeitigen Antrag der Fraktionen der SPD und Bündnis´90/Die Grünen vom 12.06.2025 zur Sitzung am 26.06.2025 (Vorlagen-Nr. 7889/25 A), dort Tagesordnungspunkt 15 -",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "billerbeck-top-2530--30-1",
+   "title": "Sitzungsausfall - Herr Messing",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-4178979c75162f592e84",
+   "title": "Veröffentlichungen (ehem. Offenlage von Bauleitplänen)",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05566008-oparl-79273e4121c20329269d",
+   "title": "Niederschrift über die letzte Sitzung vom 02.12.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-vo-13466",
+   "title": "Öffentlich-rechtliche Vereinbarung zur Wasserrettung mit der Gemeinde Nordwalde durch die freiwillige Feuerwehr der Stadt Rheine",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "nrw-05758012-oparl-d41b3389b1325e854f99",
+   "title": "Niederschrift des öffentlichen Teiles der Sitzung des Schulausschusses vom 09.03.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-12e6b91c984d7baae080",
+   "title": "Beantwortung einer Anfrage der FDP/KSG-Fraktion betreffend \"Ausstattungszustand und Betriebsbereitschaft von Notstromanlagen in Köln\" (AN/1229/2026)",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05558044-vo-3789",
+   "title": "Bürgerbus Senden e.V. hier: Defizitausgleich für die Jahre 2027 bis 2031",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "papers-vo-2004055831",
+   "title": "Bericht zur Umsetzung der Sunset-Klausel für die Kulturförderung",
+   "gold": "kultur"
+  },
+  {
+   "id": "nrw-05558044-vo-3827",
+   "title": "Bauleitplanung 43. Änderung des Flächennutzungsplanes der Gemeinde Senden hier: Prüfung der frühzeitigen Beteiligung und Offenlagebeschluss",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05554004-vo-7257",
+   "title": "Betreuungsquoten an den Grundschulen im Schuljahr 2025/2026",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05566076-vo-12766",
+   "title": "Ausschüsse: Bildung, Aufgaben, Befugnisse und Zusammensetzung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "coesfeld-top-3461--5",
+   "title": "Einstellung der Zusatzfahrten der Linie S91 mit Ablauf des Projekts „ways2work“ der Stadt Datteln zum 31.12.2026 (MV-11-0283)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05566076-top-7295--7-1",
+   "title": "Straßensanierungen 2026/2027",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-e76ffd15c728e360e677",
+   "title": "Eilentscheidung zur Forschungs-Tiefenbohrung des Geologischen Dienstes im Bereich Thurner Kamp",
+   "gold": "unklar"
+  },
+  {
+   "id": "agendaitems-288655",
+   "title": "Zwischenbericht über die Umsetzung des Integrierten Stadtteilentwicklungskonzept (InSEK) Berg Fidel",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05562016-vo-20251011100146",
+   "title": "Kommunale Wärmeplanung - Bericht zur Auftragsvergabe gem. § 4 (2) VergO, Vorstellung Auftragnehmer und weiteres Vorgehen",
+   "gold": "klima"
+  },
+  {
+   "id": "nrw-05315000-oparl-f2764cd14f68844c7fa3",
+   "title": "Beantwortung von Anfragen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05558044-top-1436--20",
+   "title": "Berichte der Verwaltung Holzdecks am Dortmund-Ems-Kanal, Senden",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05570048-top-2569--7",
+   "title": "Jahresabschluss 2024",
+   "gold": "finanzen"
+  },
+  {
+   "id": "agendaitems-287621",
+   "title": "Kurzfristig Maßnahmen gegen untragbare Verunreinigungen im Umfeld des Hauptbahnhofs ergreifen",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "nrw-05562008-vo-20251812100069",
+   "title": "Erlass einer Geschäftsordnung für den Rat der Stadt Datteln und seine Ausschüsse",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05315000-oparl-40b27a41c9b4167ffcd8",
+   "title": "Aufstellung einer Bank an der Bushaltestelle Esch Friedhof in der Fahrtrichtung Weiler der Linie 126",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05562016-vo-20252110100113",
+   "title": "Bestellung von Vertretern in die Gremien der Sparkasse Westmünsterland",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05562008-vo-20250402100129",
+   "title": "Realsteuerhebesatzsatzung 2026 der Stadt Datteln",
+   "gold": "finanzen"
+  },
+  {
+   "id": "agendaitems-280508",
+   "title": "Eingänge und Eingaben aus der Politik",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05558004-vo-3916",
+   "title": "Bildung der Ausschüsse und Festlegung der Mitgliederzahl",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-vo-12765",
+   "title": "Änderung der Hauptsatzung, Geschäftsordnung und der Zuständigkeitsordnung für den Rat und die Ausschüsse der Stadt Rheine",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05558036-vo-2004019424",
+   "title": "Fortschreibung des Dorfinnenentwicklungskonzeptes für den Ortsteil Olfen - Vinnum",
+   "gold": "bauen"
+  },
+  {
+   "id": "papers-vo-2004056517",
+   "title": "Sanierungen von Spielplätzen im Stadtbezirk Münster-Nord -Planungs- und Baubeschluss-",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05315000-oparl-5af5e493a7fd36d6acb4",
+   "title": "Bürgereingabe nach § 24 GO– „Einrichtung einer Fahrspur für die AWB am Butzweilerhof“, Aktenzeichen 50/26",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05562016-vo-20252110100109",
+   "title": "Neubildung des Ausschusses für Generationen und Soziales",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05570024-vo-7340",
+   "title": "4. Satzung zur Änderung der Gebührensatzung zur Satzung zur Umlage der Kosten der Gewässerunterhaltung gemäß § 64 LWG NRW in der Gemeinde Everswinkel",
+   "gold": "umwelt"
+  },
+  {
+   "id": "coesfeld-top-3452--2",
+   "title": "Aufhebung der öffentlich-rechtlichen Vereinbarung zur Wahrnehmung von Aufgaben des Öffentlichen Personennahverkehrs (ÖPNV) in den Kreisen Coesfeld und Warendorf (SV-11-0154)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-43fe0a21f3bdc5127564",
+   "title": "Verkehrssicherheit Westerwaldstraße Köln Rondorf, Unbeantwortete Anfrage der Fraktion Bündnis 90/Die Grünen (AN/1209/2024) aus der Sitzung am 16.09.2024",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-4f19e38d5909f7253f3f",
+   "title": "Voreinschätzung zur Zustimmungsfähigkeit eines Vorhabens für Verfahrenserleichterung des \"Wohnungsbau-Turbos\": Am Stiftswäldchen 19 in Köln-Hahnwald",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05558044-top-1437--20",
+   "title": "Anfragen der Ausschussmitglieder Bushaltestelle Raring, Bösensell",
+   "gold": "mobilitaet"
+  }
+ ]
+}

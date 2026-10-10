@@ -1,0 +1,506 @@
+{
+ "version": "label-holdout-2-v1",
+ "note": "Dritte Stichprobe, blind zugeordnet und vor der Messung nicht zum Anpassen benutzt",
+ "rows": [
+  {
+   "id": "nrw-05562036-vo-112310100058",
+   "title": "Wahl von Vertreter:innen der Stadt Waltrop in die Mitgliederversammlung des Nordrhein-Westfälischen Städte- und Gemeindebundes (StGB) für die Dauer der Wahlperiode 2025 - 2030",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05114000-oparl-6ec36740de5d7a121798",
+   "title": "Tempo 30 auf einem Teilstück der Hafelsstraße - Antrag der Fraktionen von SPD und Bündnis 90/Die Grünen aus der 27. Sitzung vom 19.02.2025 (dort TOP 12)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05334002-oparl-85f1c3ecdd12a6b58702",
+   "title": "Franzstraße: Erweiterter Planungsbeschluss zum Neubau von zwei unterirdischen Einfeldturnhallen mit einer siebengruppigen KiTa",
+   "gold": "sport"
+  },
+  {
+   "id": "papers-vo-2004056268",
+   "title": "Anfrage zur Parkraumüberwachung",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05758012-oparl-9240f379a7cabef935c2",
+   "title": "Berichte aus den Arbeitsgruppen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "agendaitems-277777",
+   "title": "Neue Anregungen/Anträge",
+   "gold": "allgemein"
+  },
+  {
+   "id": "recklinghausen-top-22824",
+   "title": "Antrag der AfD Kreistagsfraktion Recklinghausen -Wiedereinführung / Beibehaltung der Barzahlungsmöglichkeit im Kreishaus und im Straßenverkehrsamt-",
+   "gold": "finanzen"
+  },
+  {
+   "id": "papers-vo-2004056516",
+   "title": "Mittagstisch im Wuddi erhalten - Übergangslösung nach den Ferien",
+   "gold": "unklar"
+  },
+  {
+   "id": "billerbeck-vo-6024",
+   "title": "Bestellung von Mitgliedern für das Kuratorium der Sparkassenstiftung zur Förderung von Kunst. Kultur, Jugend- und Altenhilfe in der Stadt Billerbeck",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-top-8721--3",
+   "title": "Rettungsdienstgebühren im Kreis Steinfurt – Aktuelle Entwicklung",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "papers-vo-2004056533",
+   "title": "Holsteiner Straße zwischen Piusallee und Schnorrenburg - Rückbau des Hochbordradweges - Planungsbeschluss",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "steinfurt-vo-13805",
+   "title": "Externe Organisationsuntersuchung der Kreisleitstelle - Ergebnisse der ORGAKOM Analyse + Beratung GmbH",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "steinfurt-top-8743--1",
+   "title": "Feststellung der Niederschrift über den öffentlichen Teil der Sitzung vom 10.06.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-vo-13565",
+   "title": "Beratung des Haushaltsentwurfes 2026 für die Produkte des Jugendamtes",
+   "gold": "finanzen"
+  },
+  {
+   "id": "steinfurt-vo-13834",
+   "title": "Finanzierung von Schulbegleitungen an den Förderschulen des Kreises Steinfurt mit den Schwerpunkten geistige Entwicklung sowie körperliche und motorische Entwicklung",
+   "gold": "bildung"
+  },
+  {
+   "id": "coesfeld-vo-6757",
+   "title": "Verwendung Ersatzgeld",
+   "gold": "umwelt"
+  },
+  {
+   "id": "agendaitems-277106",
+   "title": "Anregungen gem. § 24 GO NRW",
+   "gold": "allgemein"
+  },
+  {
+   "id": "billerbeck-top-2664--2-2",
+   "title": "Rückzahlungen Gewerbesteuer - Frau Lammers",
+   "gold": "finanzen"
+  },
+  {
+   "id": "steinfurt-top-8747--1",
+   "title": "Feststellung der Niederschrift über den öffentlichen Teil der Sitzung vom 22.04.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-vo-13977",
+   "title": "Projektstipendium Kunstkommunikation 2027 – Projekte und Termine",
+   "gold": "kultur"
+  },
+  {
+   "id": "steinfurt-vo-13654",
+   "title": "Umgang mit sinkenden Kinderzahlen und zurückgehendem Anmeldeverhalten",
+   "gold": "bildung"
+  },
+  {
+   "id": "steinfurt-vo-13356",
+   "title": "Genehmigung einer Eilentscheidung gemäß § 50 Abs. 3 KrO NRW zur Haushaltsausführung 2025; Zustimmung zu überplanmäßigen Auszahlungen",
+   "gold": "finanzen"
+  },
+  {
+   "id": "agendaitems-289292",
+   "title": "Den Apostelgarten jetzt zum kühlen Aufenthaltsort machen (A-M/0010/2026) - Antrag in der BV-Mitte vom 15.09.2026",
+   "gold": "klima"
+  },
+  {
+   "id": "steinfurt-top-8821--8",
+   "title": "Austausch zur Weiterentwicklung der Konferenz Alter und Pflege zu verschiedenen Oberthemen",
+   "gold": "gesundheit"
+  },
+  {
+   "id": "recklinghausen-vo-202611303100036",
+   "title": "Ernennung der Kreisausschussmitglieder zu Ehrenbeamtinnen / Ehrenbeamten und Vereidigung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "coesfeld-vo-6747",
+   "title": "Bestellung von Schriftführerinnen für den Ausschuss für Umwelt, Klimaschutz, öffentliche Sicherheit und Ordnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-top-8762--1",
+   "title": "Feststellung der Niederschrift über den öffentlichen Teil der Sitzung vom 24.11.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "papers-vo-2004053872",
+   "title": "Verkehrssichere Gestaltung der Überquerung der Grevener Straße/Höhe Ermlandweg (A-N/0006/2024)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "steinfurt-vo-13561",
+   "title": "Programm \"depflastern\"",
+   "gold": "umwelt"
+  },
+  {
+   "id": "steinfurt-top-8762--6-1",
+   "title": "Amt für Kultur, Tourismus und Heimatpflege: Jahresrückblick 2025",
+   "gold": "kultur"
+  },
+  {
+   "id": "recklinghausen-vo-202613103100039",
+   "title": "Tätigkeitsbericht der Beratungs- und Prüfbehörde nach dem Wohn- und Teilhabegesetz NRW",
+   "gold": "soziales"
+  },
+  {
+   "id": "papers-vo-2004056489",
+   "title": "Georgskommende – Gehwegausbau vor den Häusern Nr. 7-14",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "recklinghausen-vo-202611112100003",
+   "title": "Förderung Bildung für Nachhaltige Entwicklung (BNE)-Regionalzentrum Hof Wessels der Hertener Bürgerstiftung",
+   "gold": "bildung"
+  },
+  {
+   "id": "recklinghausen-vo-202611912100029",
+   "title": "Digitalisierungsstrategie der Kreisverwaltung Recklinghausen 2026-2028",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "recklinghausen-vo-202611912100026",
+   "title": "Neubau des Straßenverkehrsamtes in Marl: Errichtung einer Netzersatzanlage für den Kreis Recklinghausen",
+   "gold": "bauen"
+  },
+  {
+   "id": "billerbeck-top-2652--7-1",
+   "title": "Unfallschwerpunkt Kreuzung Temming-Langenhorst L 550 - Frau Hüwe",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "steinfurt-vo-13707",
+   "title": "Einrichtung einer zu 90 % mit Bundesmitteln geförderten Personalstelle für Aufgaben des Moorbodenschutzmanagements zur Umsetzung der Moorschutzstrategie des Kreises Steinfurt (Förderrichtlinie InAWi)",
+   "gold": "umwelt"
+  },
+  {
+   "id": "recklinghausen-vo-202612503100038",
+   "title": "Jahresbericht 2025 des Jobcenters Kreis Recklinghausen",
+   "gold": "soziales"
+  },
+  {
+   "id": "agendaitems-279131",
+   "title": "Anliegen des Jugendrats",
+   "gold": "soziales"
+  },
+  {
+   "id": "coesfeld-vo-6988",
+   "title": "Nutzung Bezahldienst Wero; Anfrage der Kreistagsfraktion BÜNDNIS 90/DIE GRÜNEN vom 26.08.2026",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "steinfurt-vo-13637",
+   "title": "Haushaltssatzung des Kreises Steinfurt für das Haushaltsjahr 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "steinfurt-vo-13399",
+   "title": "Errichtung von Bildungsgängen an den Berufskollegs des Kreises Steinfurt",
+   "gold": "bildung"
+  },
+  {
+   "id": "papers-vo-2004056159",
+   "title": "Bauliche Erweiterung des Schulzentrums Hiltrup; Errichtung einer Dreifach-Sporthalle und Erweiterungsneubau Johannes-Gutenberg-Realschule Hiltrup sowie Umsetzung von Maßnahmen im Bestand",
+   "gold": "bildung"
+  },
+  {
+   "id": "coesfeld-vo-6754",
+   "title": "Beseitigung von 3 Alleebäumen zur Errichtung eines Kreisverkehrs an der Halterner Straße in Dülmen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "recklinghausen-vo-202610605100082",
+   "title": "Umbau bzw. Neubau der Oberflächenentwässerung und -behandlung im Bereich der Einleitstelle der K 36 \"Polsumer Straße\" in Herten",
+   "gold": "umwelt"
+  },
+  {
+   "id": "coesfeld-top-3452--1",
+   "title": "Aktuelle Entwicklungen RVM/WVG (Geschäftsführer Julian Hericks)",
+   "gold": "unklar"
+  },
+  {
+   "id": "recklinghausen-top-23537",
+   "title": "Vortrag der Verwaltung: \"Heide brennen\"",
+   "gold": "umwelt"
+  },
+  {
+   "id": "warendorf-vo-2004109850",
+   "title": "Aktueller Sachstand Reaktivierung der WLE-Strecke für den Personennahverkehr",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "papers-vo-2004056490",
+   "title": "Matthias-Claudius-Grundschule Handorf: Aufstellung von zwei Fertigbauklassen",
+   "gold": "bildung"
+  },
+  {
+   "id": "recklinghausen-vo-20252708100135",
+   "title": "Einführung und Verpflichtung eines Kreistagsmitglieds",
+   "gold": "sitzung"
+  },
+  {
+   "id": "agendaitems-279348",
+   "title": "Mitteilungen und Berichte der Verwaltung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "papers-vo-2004055783",
+   "title": "Gefahr durch Laternen an der Wolbecker Straße (Höhe Bushaltestelle Mühlhäuser Straße) beseitigen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "steinfurt-vo-13341",
+   "title": "Besetzung freier Positionen in der Konferenz Alter und Pflege und Vorstellung neuer Mitglieder",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-vo-13726",
+   "title": "Befreiung gem. § 67 BNatSchG von dem Verbot zur Errichtung von Bauwerken aller Art im Landschaftsschutzgebiet „Herthasee – Heiliges Meer – Bad Steinbeck“ entsprechend der „Verordnung zum Schutz von Landschaftsteilen im Landkreis Tecklenburg“.",
+   "gold": "umwelt"
+  },
+  {
+   "id": "recklinghausen-top-23786",
+   "title": "Antrag der Kreistagsfraktionen von SPD und CDU: - \"Digitale Souveränität\" -",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "steinfurt-vo-13643",
+   "title": "Genehmigung einer Dringlichkeitsentscheidung gemäß § 50 Abs. 3 KrO NRW zur Haushaltsausführung 2026 (Genehmigung von außerplanmäßigen investiven Auszahlungen)",
+   "gold": "finanzen"
+  },
+  {
+   "id": "recklinghausen-vo-202610204100046",
+   "title": "Schulentwicklungsplan Berufskollegs 2028-2033",
+   "gold": "bildung"
+  },
+  {
+   "id": "coesfeld-vo-6847",
+   "title": "Wohnortnahe Verlängerung von Fahrerlaubnissen der Klassen C und CE für ehrenamtliche Feuerwehrangehörige; Antrag der Kreistagsgruppe der UWG vom 24.01.2026",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "papers-vo-2004056484",
+   "title": "122. FNP-Änderung - Vorhabenbezogener Bebauungsplan Nr. 635 - Aufhebung [ASB-Campus]",
+   "gold": "bauen"
+  },
+  {
+   "id": "steinfurt-vo-13346",
+   "title": "Bestellung von Schriftführer/innen für den Aussschuss für Umwelt, Klima, Naturschutz, Energie und Entsorgung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "recklinghausen-top-23330",
+   "title": "Niederschrift der Sitzung vom 21.01.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "billerbeck-vo-6087",
+   "title": "Bürgeranregung gem. § 24 GO NRW vom 07.02.2026 hier: Leitlinien für die Durchführung von Positivplanung zur Errichtung von Windkraftanlagen",
+   "gold": "unklar"
+  },
+  {
+   "id": "recklinghausen-vo-202610204100048",
+   "title": "\"kreativraum\" - Fortführung des Projektes",
+   "gold": "kultur"
+  },
+  {
+   "id": "papers-vo-2004056455",
+   "title": "Förderprogramm \"Münster entsiegelt - lebendige Vorgärten statt Schottergärten\"",
+   "gold": "umwelt"
+  },
+  {
+   "id": "agendaitems-288333",
+   "title": "Aussprache zum Gemeindefinanzierungsgesetz 2027",
+   "gold": "finanzen"
+  },
+  {
+   "id": "coesfeld-vo-6737",
+   "title": "Neufassung der Allgemeinen Vorschrift zum Deutschlandticket",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "recklinghausen-vo-20250412100002",
+   "title": "Einführung und Vereidigung des Landrats",
+   "gold": "sitzung"
+  },
+  {
+   "id": "billerbeck-vo-5989",
+   "title": "Haushaltssatzung, Haushaltsplan und Stellenplan für das Haushaltsjahr 2026 sowie Finanzplanung und Investitionsprogramm für die Jahre 2026 bis 2029; hier: Einbringung des Etatentwurfes durch die Bürgermeisterin im Rat",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05315000-oparl-1688d0598f53f05e4bee",
+   "title": "Nutzung von Fahrradboxen im Stadtbezirk Nippes",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "agendaitems-276728",
+   "title": "Berichte aus Ausschüssen, Bezirksvertretungen und weiteren Gremien",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05315000-oparl-6a8e52e7b1d73d6e21cf",
+   "title": "Baubeschluss für die Instandsetzung der Fahrbahn- und Radwegeoberfläche Thuleweg zwischen Sigwinstraße und Glockenblumenweg",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "billerbeck-top-2690--4-2",
+   "title": "Wiederherstellung des Radweges L 506 - Frau Besecke",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "papers-vo-2004056137",
+   "title": "Teilhabechancen verbessern, Armutsfolgen abmildern und Kinder, Jugendliche und ihre Familien stärken - ein \"Aktionsplan gegen Kinder- und Jugendarmut\" für Münster",
+   "gold": "soziales"
+  },
+  {
+   "id": "billerbeck-vo-6070",
+   "title": "5. Änderung des Bebauungsplanes \"Sportzentrum Helker Berg\" hier: Beschluss zur frühzeitigen Beteiligung der Öffentlichkeit nach § 3 Abs. 1 Baugesetzbuch (BauGB) und der Träger öffentlicher Belange nach § 4 Abs. 1 BauGB sowie der Nachbargemeinden nach § 2 Abs. 2 BauGB",
+   "gold": "bauen"
+  },
+  {
+   "id": "recklinghausen-vo-20252708100136",
+   "title": "Interkommunale Zusammenarbeit im Projekt HERE's healthy (Netzwerk HERne und REcklinghausen)",
+   "gold": "gesundheit"
+  },
+  {
+   "id": "steinfurt-vo-13568",
+   "title": "Öffentlich-rechtliche Vereinbarung zwischen dem Kreis Steinfurt und der Stadt Tecklenburg zur Übertragung eines Teils der Aufgabe des betrieblichen Eingliederungsmanagements",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "recklinghausen-vo-202610204100049",
+   "title": "Bildungsgänge an den Berufskollegs des Kreises Recklinghausen",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033753",
+   "title": "Regionalpakt Hochwasserschutz des EGLV Beitritt der Gemeinde Nottuln",
+   "gold": "umwelt"
+  },
+  {
+   "id": "recklinghausen-vo-202611212100004",
+   "title": "Vorberatung des Haushaltes für das Jahr 2026 - Ausschuss für Arbeit, Bildung, Gesundheit und Soziales",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05558040-top-4546--2-1",
+   "title": "Stand der Sperrung der Kreisstraße im Bereich Darfeld–Schöppingen - Herr Gerwing",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "recklinghausen-vo-202610907100105",
+   "title": "Aktualisierung des interkommunalen Wirtschaftsflächenkonzeptes für den Kreis Recklinghausen",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "papers-vo-2004055821",
+   "title": "Baubeschluss Begegnungs- und Demokratieort im Yorkquartier",
+   "gold": "bauen"
+  },
+  {
+   "id": "warendorf-vo-2004109692",
+   "title": "5. Sanierungsprogramm 2026 - 2028 an den Caritas Förderschulen Heinrich-Tellen-Schule und Vinzenz-von-Paul-Schule",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033569",
+   "title": "EU-Verordnung über die Wiederherstellung der Natur (Verordnung (EU) 2024/1991)",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05558020-top-4277--1",
+   "title": "Bestellung einer Schriftführerin oder eines Schriftführers für die Protokollunterzeichnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566032-oparl-58e1525706888e2797ec",
+   "title": "\"Laufen für Jutta\"",
+   "gold": "sport"
+  },
+  {
+   "id": "warendorf-vo-2004109707",
+   "title": "Qualitätsmanagement außerklinischer Herz-Kreislauf-Stillstand im Kreis Warendorf",
+   "gold": "gesundheit"
+  },
+  {
+   "id": "nrw-05558020-vo-29562",
+   "title": "Umbesetzung in Ausschüssen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05558016-vo-2004025662",
+   "title": "Verfahren zur Aufstellung des Bebauungsplanes Nr. 253 Bischof-Kaiser-Straße / Lüdinghauser Straße hier: Entwurfsbeschluss",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05315000-oparl-645d3531f99d4ec62d6c",
+   "title": "A Das Amt für Gleichstellung von Frauen und Männer stellt sich vor",
+   "gold": "soziales"
+  },
+  {
+   "id": "papers-vo-2004055838",
+   "title": "Bebauungsplan Hiltrup Nr. 13 - Aufhebung - Satzung",
+   "gold": "bauen"
+  },
+  {
+   "id": "recklinghausen-top-23641",
+   "title": "Sachstand zum geplanten Solar-Batteriekraftwerk in Oer-Erkenschwick",
+   "gold": "klima"
+  },
+  {
+   "id": "nrw-05570028-top-4083--2",
+   "title": "Anregungen gemäß § 24 GO NRW",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05315000-oparl-1e1430df37f0b0aba358",
+   "title": "Baucontainer Münstereifler Platz",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05315000-oparl-fbb1fd5c3b26e3e0e764",
+   "title": "Anfragen der Seniorenvertretung",
+   "gold": "soziales"
+  },
+  {
+   "id": "papers-vo-2004055853",
+   "title": "Neubau eines 3-zügigen Schulgebäudes für die Matthias- Claudius- Grundschule Handorf - Baubeschluss -",
+   "gold": "bildung"
+  },
+  {
+   "id": "coesfeld-vo-6700",
+   "title": "Wahl von Vertreterinnen/Vertretern des Kreises Coesfeld in die EUREGIO-Zweckverbandsversammlung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-c4c519affddcdbad8742",
+   "title": "Benennung nach Frauen",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05558012-vo-2004032621",
+   "title": "Bebauungsplan Nr. 168 \" Wohnquartier zwischen Holtwicker Straße und Völkers Röttchen\" - Satzungsbeschluss - Abwägung und Beschlussfassung über eingegangene Stellungnahmen gemäß § 1 Abs. 7 BauGB - Satzungsbeschluss gemäß § 10 Abs. 1 BauGB",
+   "gold": "bauen"
+  },
+  {
+   "id": "agendaitems-283850",
+   "title": "Verkehr & Mobilität - Vorbereitung der Sitzung im Mai",
+   "gold": "mobilitaet"
+  }
+ ]
+}
