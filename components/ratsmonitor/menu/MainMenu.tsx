@@ -6,7 +6,7 @@ import { BRANCHEN } from "../info/content";
 import { Icon } from "../info/icons";
 import { ANALYSEN } from "../info/branchen-enterprise";
 import { useTier } from "../lib/tier";
-import { IconChevronDown } from "../components/icons";
+import { IconChevronDown, IconSpark } from "../components/icons";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
 const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" | "circleHelp" }[] = [
@@ -167,7 +167,7 @@ export function MainMenu() {
                     {FUNKTIONEN.map((f) => (
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
-                          <Icon name={f.icon} size={15} />
+                          {f.href === "/lena" ? <IconSpark size={15} /> : <Icon name={f.icon} size={15} />}
                           {f.label}
                         </Link>
                       </li>
