@@ -3,6 +3,7 @@ import { STATUS_BY_ID } from "../../lib/constants";
 import { MONTH_SHORT, fmtDate, highlightSegments } from "../../lib/text";
 import type { Article } from "../../types";
 import { SaveArticleButton } from "../SaveArticleButton";
+import { prefetchDetail } from "../../lib/topicCache";
 
 export function Highlight({ text, terms }: { text: string; terms: string[] }) {
   return (
@@ -91,9 +92,17 @@ function MobileTitle({ title, terms }: { title: string; terms: string[] }) {
 export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, onOpen, onHover, compact = false }: Props) {
   const [y, m, d] = a.date.split("-");
   const sub = [a.gemeinde, a.gremium].filter(Boolean).join(" · ");
+  /* Vorladen der Detailseite: nach kurzem Verweilen mit der Maus oder dem Finger, nicht bei jedem Überstreichen der Liste
+     und nicht beim Wischen (touchmove bricht ab) */
+  const warm = useRef(0);
+  const later = () => { clearTimeout(warm.current); warm.current = window.setTimeout(() => prefetchDetail(a.id), 150); };
+  const stop = () => clearTimeout(warm.current);
   return (
     <article
-      onMouseEnter={() => onHover(a.ags)}
+      onMouseEnter={() => { onHover(a.ags); later(); }}
+      onMouseLeave={stop}
+      onTouchStart={later}
+      onTouchMove={stop}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest("button, a")) return;
         if (e.metaKey || e.ctrlKey || e.shiftKey) return;

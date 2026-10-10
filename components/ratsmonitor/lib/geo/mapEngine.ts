@@ -31,6 +31,23 @@ const LABEL_PXKM = 7.5;
 
 export type MapStyle = "flaechen" | "heat" | "punkte" | "blasen";
 
+/** Gleiche Zähler je Gebiet (gleiche Referenz oder dieselben Schlüssel mit denselben Werten), ohne Zwischentext. */
+function sameCounts(a: Record<string, number> | null, b: Record<string, number> | null) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  let n = 0;
+  for (const k in a) { if (a[k] !== b[k]) return false; n++; }
+  for (const _ in b) n--;
+  return n === 0;
+}
+/** Gleiche Liste (gleiche Referenz oder dieselben Einträge in derselben Reihenfolge). */
+function sameList(a: string[], b: string[]) {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
 export class MapEngine {
   private geo: GeoModel;
   private cb: MapEngineCallbacks;
@@ -54,7 +71,8 @@ export class MapEngine {
   private drawQueued = false;
   private overQueued = false;
   private counts: Record<string, number> = {};
-  private countsKey = "";
+  /** Der erste Aufruf von update zeichnet immer. */
+  private updated = false;
   private level: "city" | "district" = "city";
   private coverage: string[] = [];
   private area = "";
@@ -157,12 +175,12 @@ export class MapEngine {
 
   /* ---------- Zustand von außen ---------- */
   update(counts: Record<string, number>, area: string, radius: Radius | null, coverage:string[]=[], level:"city"|"district"="city") {
+    // Geändert? Erst die Referenzen, dann Feld für Feld; früher JSON.stringify über rund 11.000 Schlüssel bei jedem Aufruf.
+    const changed = !this.updated || level !== this.level || !sameList(coverage, this.coverage) || !sameCounts(counts, this.counts);
+    this.updated = true;
     this.level=level; this.coverage=coverage;
-    this.geo.coveredGem.splice(0,this.geo.coveredGem.length,...coverage.map(a=>this.geo.gem.idx.get(a)).filter((i):i is number=>i!==undefined));
-    const key = JSON.stringify([counts,coverage,level]);
-    const changed = key !== this.countsKey;
+    if (changed) this.geo.coveredGem.splice(0,this.geo.coveredGem.length,...coverage.map(a=>this.geo.gem.idx.get(a)).filter((i):i is number=>i!==undefined));
     this.counts = counts;
-    this.countsKey = key;
     this.area = area;
     this.radius = radius;
     if (changed) this.requestDraw();
@@ -171,8 +189,7 @@ export class MapEngine {
 
   /** Kartenmodus an/aus: freies Zoomen mit dem Mausrad und Trefferzahlen unter den Gemeindenamen */
   setExplore(on: boolean, badges: Record<string, number> | null) {
-    const key = JSON.stringify(badges);
-    const changed = on !== this.freeWheel || key !== JSON.stringify(this.badges);
+    const changed = on !== this.freeWheel || !sameCounts(badges, this.badges);
     this.freeWheel = on;
     this.badges = on ? badges : null;
     if (changed) this.requestDraw();

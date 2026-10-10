@@ -3,7 +3,7 @@ import {useRouter,useParams} from 'next/navigation';
 import Link from 'next/link';
 import type {TopicDetail} from '@/shared/types';
 import {STATUS,formatDate} from '@/shared/types';
-import {REGIONS} from '@/shared/regions';
+import {loadCatalog,type Region} from '../lib/catalog';
 import {SessionDetails} from '@/components/article-analysis';
 import {IconChevronLeft,IconDoc,IconSpark,IconRules} from '../components/icons';
 import {useAppNav} from '../state/nav';
@@ -12,6 +12,7 @@ import {SaveArticleButton} from '../components/SaveArticleButton';
 import {FollowButton} from '../components/FollowButton';
 import {ExportMenu} from '../components/ExportMenu';
 import {exportArticlePdf,exportArticleTable,printArticle} from '../lib/exportArticle';
+import {loadTopic,TopicError} from '../lib/topicCache';
 /* Auszug aus der Vorlage: nur Originalsätze, wörtlich; „[…]“ steht, wo im Dokument etwas dazwischen liegt */
 function Excerpt({text,source,size}:{text:{sentences:string[];gaps?:boolean[]};source?:{url:string;title:string};size:'short'|'long'}){
   const body=text.sentences.map((s,k)=>(k?(text.gaps?.[k]?' […] ':' '):'')+s).join('');
@@ -23,8 +24,12 @@ function Excerpt({text,source,size}:{text:{sentences:string[];gaps?:boolean[]};s
 export function DetailPage(){
  const router=useRouter(),params=useParams(),id=String(params.id||''),{goBack}=useAppNav();
  const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>({id:'',topic:null,error:''}),[attempt,setAttempt]=useState(0);
- useEffect(()=>{const ctrl=new AbortController();fetch('/api/topics/'+encodeURIComponent(id),{signal:ctrl.signal}).then(async r=>{if(!r.ok)throw Error(r.status===404?'Dieser Vorgang wurde nicht gefunden.':'Der Vorgang konnte nicht geladen werden.');return r.json() as Promise<TopicDetail>;}).then(t=>{if(!ctrl.signal.aborted)setData({id,topic:t,error:''});}).catch(e=>{if(!ctrl.signal.aborted)setData({id,topic:null,error:e.message});});window.scrollTo(0,0);return()=>ctrl.abort();},[id,attempt]);
- const t=data.id===id?data.topic:null,region=REGIONS.find(r=>r.id===t?.regionId);
+ // Der Vorgang kommt aus lib/topicCache.ts: aus der Trefferliste meist schon vorgeladen, bei der Rückkehr noch gehalten.
+ useEffect(()=>{let live=true;loadTopic(id).then(t=>{if(live)setData({id,topic:t,error:''});}).catch(e=>{if(live)setData({id,topic:null,error:e instanceof TopicError?e.message:'Der Vorgang konnte nicht geladen werden.'});});window.scrollTo(0,0);return()=>{live=false;};},[id,attempt]);
+ // Gebietsname aus dem Katalog; der wird erst hier geladen (nicht schon mit dem Vorladen der Seite), der Name folgt dann.
+ const [regions,setRegions]=useState<Region[]|null>(null);
+ useEffect(()=>{let live=true;loadCatalog().then(m=>{if(live)setRegions(m.REGIONS);}).catch(()=>{});return()=>{live=false;};},[]);
+ const t=data.id===id?data.topic:null,region=regions?.find(r=>r.id===t?.regionId);
  if(!t)return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><Link className="link-btn" href="/suche">Zur Übersicht</Link>{data.id===id&&data.error?<div role="alert" className="card-shell mt-6 p-6"><p>{data.error}</p><button className="btn-secondary mt-4" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></div>:<p role="status" className="mt-6">Vorgang wird geladen …</p>}</main>;
   const host=(u:string)=>{try{return new URL(u).host;}catch{return '';}},events=t.events.filter(e=>!t.sourceUrl||!e.url||!host(e.url)||host(e.url)===host(t.sourceUrl)),status=STATUS[t.status]||STATUS.unknown;
   /* Textquelle: KI-Zusammenfassung, sonst regelbasiert (Originalsätze aus dem Dokument), sonst Platzhalter */
@@ -38,7 +43,7 @@ export function DetailPage(){
   /* Unterlagen über den eigenen Durchreicher öffnen: PDFs erscheinen im Browser statt als Download */
   const docs=t.documents.map((d,i)=>({...d,url:`${typeof window!=='undefined'?window.location.origin:''}/api/dokument?t=${encodeURIComponent(t.id)}&i=${i}`,src:d.url})).filter(d=>!isOparlData(d.src,d.title));
   const sorted=[...events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  const facts:[string,string][]=[['Sitzung',formatDate(t.eventDate)],['Gremium',t.committee||'Nicht dokumentiert'],['Vorlage',t.reference||'Nicht dokumentiert'],['Gebiet',region?.name||'Unbekannt'],['Stand',status.label],['Quellenstand',formatDate(t.updatedAt)]];
+  const facts:[string,string][]=[['Sitzung',formatDate(t.eventDate)],['Gremium',t.committee||'Nicht dokumentiert'],['Vorlage',t.reference||'Nicht dokumentiert'],['Gebiet',region?.name||(regions?'Unbekannt':'…')],['Stand',status.label],['Quellenstand',formatDate(t.updatedAt)]];
   return (
     <main id="inhalt" className="mx-auto max-w-page py-[12px]">
       <article className="py-2">
@@ -46,7 +51,7 @@ export function DetailPage(){
 
         {/* Kopf: Ort, Thema, Stand als Textzeile; Aktionen rechts */}
         <div className="flex flex-wrap items-center gap-2 text-[14px] text-slate-500">
-          <span>{region?.name||'Gebiet nicht zugeordnet'} · {t.category} · <span className="text-teal-600">{status.label}</span></span>
+          <span>{region?.name||(regions?'Gebiet nicht zugeordnet':'')} · {t.category} · <span className="text-teal-600">{status.label}</span></span>
           {/* Aktionen als Symbole: Teilen, Folgen, Speichern, Exportieren */}
           <span className="ml-auto flex flex-wrap items-center gap-1">
             <ShareButton title={t.title} url={typeof window!=='undefined'?window.location.origin+'/beschluss/'+t.id:''}/>

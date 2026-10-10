@@ -5,157 +5,178 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/analyse-admin.css (315 Zeilen, ⚠26)
-- app/design-fonts.css (71 Zeilen)
+- app/admin.css (226 Zeilen, ⚠6)
+- app/analyse-admin.css (95 Zeilen, ⚠21)
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
-- app/globals.css (12 Zeilen, ⚠2)
+- app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (429 Zeilen, ⚠13)
-- app/ratsmonitor.css (206 Zeilen, ⚠11)
+- app/ratsmonitor.css (209 Zeilen, ⚠12)
 
-admin-access analyse-admin.css:66
-admin-activation analyse-admin.css:66
-admin-ai-kinds analyse-admin.css:79
-admin-ai-preview analyse-admin.css:313
-admin-ai-retry analyse-admin.css:79
-admin-app analyse-admin.css:102
+admin-access admin.css:6
+admin-activation admin.css:6
+admin-ai-kinds admin.css:10
+admin-ai-preview admin.css:224
+admin-ai-retry admin.css:10
+admin-app admin.css:13
 admin-app ratsmonitor.css:202
-admin-atlas-block analyse-admin.css:188
-admin-atlas-canvas analyse-admin.css:161
-admin-atlas-chips analyse-admin.css:145
-admin-atlas-close analyse-admin.css:181
-admin-atlas-detail analyse-admin.css:178
-admin-atlas-detail-head analyse-admin.css:179
-admin-atlas-dot analyse-admin.css:173
-admin-atlas-facts analyse-admin.css:184
-admin-atlas-flag analyse-admin.css:177
-admin-atlas-list analyse-admin.css:165
-admin-atlas-main analyse-admin.css:152
-admin-atlas-map analyse-admin.css:154
-admin-atlas-meta analyse-admin.css:176
-admin-atlas-name analyse-admin.css:174
-admin-atlas-pop analyse-admin.css:175
-admin-atlas-reason analyse-admin.css:164
-admin-atlas-row analyse-admin.css:169
-admin-atlas-rows analyse-admin.css:168
-admin-atlas-stack analyse-admin.css:142
-admin-atlas-tools analyse-admin.css:155
-admin-atlas-why analyse-admin.css:139
-admin-attention analyse-admin.css:66
-admin-bar analyse-admin.css:66
-admin-bar-row analyse-admin.css:66
-admin-charts analyse-admin.css:66
-admin-chip analyse-admin.css:146
-admin-dark-toggle analyse-admin.css:222
-admin-download analyse-admin.css:66
-admin-empty analyse-admin.css:66
-admin-error analyse-admin.css:66
-admin-estimate analyse-admin.css:87
-admin-estimate-action analyse-admin.css:87
-admin-estimate-assumptions analyse-admin.css:87
-admin-estimate-basis analyse-admin.css:87
-admin-estimate-charts analyse-admin.css:88
-admin-estimate-class analyse-admin.css:87
-admin-estimate-explain analyse-admin.css:90
-admin-estimate-facts analyse-admin.css:90
-admin-estimate-figure analyse-admin.css:88
-admin-estimate-formula analyse-admin.css:88
-admin-estimate-key analyse-admin.css:88
-admin-estimate-share analyse-admin.css:88
-admin-estimate-step analyse-admin.css:88
-admin-estimate-subheading analyse-admin.css:87
-admin-estimate-table analyse-admin.css:87
-admin-estimate-tag analyse-admin.css:90
-admin-estimate-tags analyse-admin.css:90
-admin-estimate-wrap analyse-admin.css:88
-admin-explainer analyse-admin.css:66
-admin-field analyse-admin.css:66
-admin-footer analyse-admin.css:66
-admin-gate analyse-admin.css:66
-admin-gate-action analyse-admin.css:66
-admin-geography analyse-admin.css:79
-admin-heading analyse-admin.css:66
-admin-job analyse-admin.css:79
-admin-job-counts analyse-admin.css:103
-admin-job-progress analyse-admin.css:102
-admin-job-results analyse-admin.css:79
-admin-kpi analyse-admin.css:66
-admin-kpi-primary analyse-admin.css:66
-admin-kpis analyse-admin.css:66
-admin-lands analyse-admin.css:121
-admin-legacy analyse-admin.css:194
-admin-list-meta analyse-admin.css:79
-admin-map analyse-admin.css:79
-admin-map-canvas analyse-admin.css:79
-admin-map-hover analyse-admin.css:79
-admin-map-legend analyse-admin.css:79
-admin-map-region analyse-admin.css:79
-admin-masthead__account analyse-admin.css:224
-admin-mono analyse-admin.css:189
-admin-nav analyse-admin.css:66
-admin-next analyse-admin.css:131
-admin-next-link analyse-admin.css:132
-admin-note analyse-admin.css:66
-admin-notice analyse-admin.css:66
+admin-atlas-block admin.css:99
+admin-atlas-canvas admin.css:72
+admin-atlas-chips admin.css:56
+admin-atlas-close admin.css:92
+admin-atlas-detail admin.css:89
+admin-atlas-detail-head admin.css:90
+admin-atlas-dot admin.css:84
+admin-atlas-facts admin.css:95
+admin-atlas-flag admin.css:88
+admin-atlas-list admin.css:76
+admin-atlas-main admin.css:63
+admin-atlas-map admin.css:65
+admin-atlas-meta admin.css:87
+admin-atlas-name admin.css:85
+admin-atlas-pop admin.css:86
+admin-atlas-reason admin.css:75
+admin-atlas-row admin.css:80
+admin-atlas-rows admin.css:79
+admin-atlas-stack admin.css:53
+admin-atlas-tools admin.css:66
+admin-atlas-why admin.css:50
+admin-attention admin.css:6
+admin-bar admin.css:6
+admin-bar-row admin.css:6
+admin-bar-row analyse-admin.css:89
+admin-charts admin.css:6
+admin-chip admin.css:57
+admin-dark-toggle admin.css:133
+admin-download admin.css:6
+admin-empty admin.css:6
+admin-error admin.css:6
+admin-estimate admin.css:141
+admin-estimate analyse-admin.css:80
+admin-estimate-action admin.css:215
+admin-estimate-action analyse-admin.css:80
+admin-estimate-assumptions analyse-admin.css:80
+admin-estimate-basis admin.css:210
+admin-estimate-basis analyse-admin.css:80
+admin-estimate-charts analyse-admin.css:81
+admin-estimate-class analyse-admin.css:80
+admin-estimate-explain analyse-admin.css:83
+admin-estimate-facts admin.css:201
+admin-estimate-facts analyse-admin.css:83
+admin-estimate-figure analyse-admin.css:81
+admin-estimate-formula analyse-admin.css:81
+admin-estimate-key admin.css:206
+admin-estimate-key analyse-admin.css:81
+admin-estimate-share analyse-admin.css:81
+admin-estimate-step analyse-admin.css:81
+admin-estimate-subheading analyse-admin.css:80
+admin-estimate-table analyse-admin.css:80
+admin-estimate-tag admin.css:197
+admin-estimate-tag analyse-admin.css:83
+admin-estimate-tags admin.css:215
+admin-estimate-tags analyse-admin.css:83
+admin-estimate-wrap analyse-admin.css:81
+admin-explainer admin.css:6
+admin-field admin.css:6
+admin-footer admin.css:6
+admin-gate admin.css:6
+admin-gate analyse-admin.css:94
+admin-gate-action admin.css:6
+admin-gate-action analyse-admin.css:94
+admin-geography admin.css:10
+admin-heading admin.css:6
+admin-job admin.css:10
+admin-job-counts admin.css:14
+admin-job-progress admin.css:13
+admin-job-results admin.css:10
+admin-kpi admin.css:6
+admin-kpi-primary admin.css:6
+admin-kpis admin.css:6
+admin-kpis analyse-admin.css:78
+admin-lands admin.css:32
+admin-legacy admin.css:105
+admin-list-meta admin.css:10
+admin-map admin.css:10
+admin-map-canvas admin.css:10
+admin-map-hover admin.css:10
+admin-map-legend admin.css:10
+admin-map-region admin.css:10
+admin-masthead__account admin.css:135
+admin-mono admin.css:100
+admin-nav admin.css:6
+admin-next admin.css:42
+admin-next-link admin.css:43
+admin-note admin.css:6
+admin-notice admin.css:6
 admin-notice ratsmonitor.css:202
-admin-number analyse-admin.css:66
-admin-operations analyse-admin.css:66
-admin-overview-charts analyse-admin.css:111
-admin-overview-trend analyse-admin.css:118
-admin-pages analyse-admin.css:79
-admin-pill analyse-admin.css:182
-admin-pipeline analyse-admin.css:79
-admin-quality-checks analyse-admin.css:207
-admin-quality-group analyse-admin.css:205
-admin-quality-head analyse-admin.css:209
-admin-quality-samples analyse-admin.css:217
-admin-quality-stats analyse-admin.css:66
-admin-refresh analyse-admin.css:66
-admin-region-list analyse-admin.css:79
-admin-review-head analyse-admin.css:66
-admin-review-list analyse-admin.css:66
-admin-row-actions analyse-admin.css:66
-admin-run-debug analyse-admin.css:92
-admin-run-debug-actions analyse-admin.css:92
-admin-run-debug-panel analyse-admin.css:92
-admin-run-debug-requests analyse-admin.css:92
-admin-section analyse-admin.css:66
-admin-section-heading analyse-admin.css:66
-admin-seg analyse-admin.css:156
-admin-selection-actions analyse-admin.css:79
-admin-share analyse-admin.css:128
-admin-shell analyse-admin.css:65
-admin-source-controls analyse-admin.css:66
-admin-source-issues analyse-admin.css:66
-admin-source-item analyse-admin.css:79
-admin-source-list analyse-admin.css:79
-admin-source-meta analyse-admin.css:79
-admin-spin analyse-admin.css:66
-admin-stage analyse-admin.css:79
-admin-stage-ai analyse-admin.css:79
-admin-stage-grid analyse-admin.css:79
-admin-stage-number analyse-admin.css:79
-admin-state analyse-admin.css:66
-admin-status-row analyse-admin.css:66
-admin-storage-status analyse-admin.css:79
-admin-strong analyse-admin.css:66
-admin-table analyse-admin.css:66
-admin-terms analyse-admin.css:96
-admin-terms-chips analyse-admin.css:96
-admin-terms-columns analyse-admin.css:96
-admin-terms-search analyse-admin.css:96
-admin-terms-stats analyse-admin.css:96
-admin-terms-table analyse-admin.css:96
-admin-territories analyse-admin.css:79
-admin-timeline analyse-admin.css:85
-admin-timeline-charts analyse-admin.css:85
-admin-timeline-controls analyse-admin.css:85
-admin-timeline-retry analyse-admin.css:85
-admin-timeline-table analyse-admin.css:85
-admin-topbar analyse-admin.css:66
-admin-trend-legend analyse-admin.css:115
-admin-workspace analyse-admin.css:79
-admin-zoom analyse-admin.css:159
+admin-number admin.css:6
+admin-number analyse-admin.css:89
+admin-operations admin.css:6
+admin-overview-charts admin.css:22
+admin-overview-trend admin.css:29
+admin-pages admin.css:10
+admin-pages analyse-admin.css:89
+admin-pill admin.css:93
+admin-pipeline admin.css:10
+admin-quality-checks admin.css:118
+admin-quality-group admin.css:116
+admin-quality-head admin.css:120
+admin-quality-samples admin.css:128
+admin-quality-stats admin.css:6
+admin-refresh admin.css:6
+admin-region-list admin.css:10
+admin-review-head admin.css:6
+admin-review-list admin.css:6
+admin-row-actions admin.css:6
+admin-run-debug analyse-admin.css:85
+admin-run-debug-actions analyse-admin.css:85
+admin-run-debug-panel admin.css:169
+admin-run-debug-panel analyse-admin.css:85
+admin-run-debug-requests analyse-admin.css:85
+admin-section admin.css:6
+admin-section-heading admin.css:6
+admin-section-heading analyse-admin.css:87
+admin-seg admin.css:67
+admin-selection-actions admin.css:10
+admin-share admin.css:39
+admin-shell admin.css:5
+admin-source-controls admin.css:6
+admin-source-issues admin.css:6
+admin-source-item admin.css:10
+admin-source-list admin.css:10
+admin-source-meta admin.css:10
+admin-spin admin.css:6
+admin-stage admin.css:10
+admin-stage-ai admin.css:10
+admin-stage-grid admin.css:10
+admin-stage-number admin.css:10
+admin-state admin.css:6
+admin-status-row admin.css:6
+admin-storage-status admin.css:10
+admin-strong admin.css:6
+admin-table admin.css:6
+admin-terms admin.css:217
+admin-terms analyse-admin.css:89
+admin-terms-chips analyse-admin.css:89
+admin-terms-columns admin.css:220
+admin-terms-columns analyse-admin.css:89
+admin-terms-search analyse-admin.css:89
+admin-terms-stats analyse-admin.css:89
+admin-terms-table admin.css:222
+admin-terms-table analyse-admin.css:89
+admin-territories admin.css:10
+admin-timeline admin.css:141
+admin-timeline analyse-admin.css:78
+admin-timeline-charts analyse-admin.css:78
+admin-timeline-controls analyse-admin.css:78
+admin-timeline-retry admin.css:176
+admin-timeline-retry analyse-admin.css:78
+admin-timeline-table admin.css:29
+admin-timeline-table analyse-admin.css:78
+admin-topbar admin.css:6
+admin-trend-legend admin.css:26
+admin-workspace admin.css:10
+admin-zoom admin.css:70
 analysis-advanced analyse-admin.css:48
 analysis-advanced-fields analyse-admin.css:48
 analysis-apply analyse-admin.css:29
@@ -176,7 +197,7 @@ analysis-method analyse-admin.css:29
 analysis-notice analyse-admin.css:29
 analysis-options analyse-admin.css:48
 analysis-panel analyse-admin.css:29
-analysis-provenance analyse-admin.css:76
+analysis-provenance analyse-admin.css:71
 analysis-provenance ratsmonitor.css:66
 analysis-region analyse-admin.css:49
 analysis-screen analyse-admin.css:29
@@ -192,11 +213,11 @@ bg-teal-600 ratsmonitor.css:203
 bg-white ratsmonitor.css:190
 border-slate-100 ratsmonitor.css:156
 btn-danger ratsmonitor.css:14
-btn-primary analyse-admin.css:250
+btn-primary admin.css:161
 btn-primary ratsmonitor.css:5
-btn-secondary analyse-admin.css:250
+btn-secondary admin.css:161
 btn-secondary ratsmonitor.css:8
-btn-sm analyse-admin.css:305
+btn-sm admin.css:216
 btn-sm ratsmonitor.css:11
 button design-styles.css:65
 button--primary design-styles.css:76
@@ -210,7 +231,7 @@ concrete-card-heading analyse-admin.css:44
 concrete-examples analyse-admin.css:44
 concrete-grid analyse-admin.css:44
 count-pill ratsmonitor.css:54
-deferred-map analyse-admin.css:73
+deferred-map analyse-admin.css:68
 distribution-name analyse-admin.css:29
 distribution-row analyse-admin.css:29
 distribution-track analyse-admin.css:29
@@ -231,6 +252,7 @@ examples-heading analyse-admin.css:42
 explainer design-styles.css:241
 explainer__text design-styles.css:242
 export-footer analyse-admin.css:12
+eyebrow admin.css:6
 eyebrow analyse-admin.css:29
 facts design-styles.css:248
 facts__row design-styles.css:249
@@ -252,54 +274,59 @@ heading-m ratsmonitor.css:66
 heat-legend analyse-admin.css:29
 hover ratsmonitor.css:169
 icon design-styles.css:22
-is-assumed analyse-admin.css:87
-is-clean analyse-admin.css:210
-is-counted analyse-admin.css:90
-is-data analyse-admin.css:130
-is-failed analyse-admin.css:92
-is-found analyse-admin.css:209
-is-group analyse-admin.css:151
-is-line analyse-admin.css:90
-is-model analyse-admin.css:88
-is-none analyse-admin.css:87
-is-open analyse-admin.css:94
-is-sample analyse-admin.css:88
+is-assumed admin.css:197
+is-assumed analyse-admin.css:80
+is-clean admin.css:121
+is-counted admin.css:197
+is-counted analyse-admin.css:83
+is-data admin.css:41
+is-failed analyse-admin.css:85
+is-found admin.css:120
+is-group admin.css:62
+is-line analyse-admin.css:83
+is-model admin.css:197
+is-model analyse-admin.css:81
+is-none analyse-admin.css:80
+is-open analyse-admin.css:87
+is-sample admin.css:206
+is-sample analyse-admin.css:81
+is-selected admin.css:10
 is-selected analyse-admin.css:29
-is-static analyse-admin.css:200
-is-stored analyse-admin.css:88
-is-thin analyse-admin.css:87
-keyword-list analyse-admin.css:76
-legacy-tools analyse-admin.css:84
+is-static admin.css:111
+is-stored analyse-admin.css:81
+is-thin analyse-admin.css:80
+keyword-list analyse-admin.css:71
+legacy-tools analyse-admin.css:77
 legend design-styles.css:307
 link-btn ratsmonitor.css:17
 load-more analyse-admin.css:9
 map-attribution analyse-admin.css:29
-map-canvas analyse-admin.css:71
-map-canvas-note analyse-admin.css:71
-map-comparison-values analyse-admin.css:71
-map-completeness analyse-admin.css:71
-map-data-table analyse-admin.css:71
+map-canvas analyse-admin.css:66
+map-canvas-note analyse-admin.css:66
+map-comparison-values analyse-admin.css:66
+map-completeness analyse-admin.css:66
+map-data-table analyse-admin.css:66
 map-heading analyse-admin.css:29
 map-inspector analyse-admin.css:29
-map-inspector-links analyse-admin.css:71
-map-key analyse-admin.css:71
-map-key-missing analyse-admin.css:71
+map-inspector-links analyse-admin.css:66
+map-key analyse-admin.css:66
+map-key-missing analyse-admin.css:66
 map-layout analyse-admin.css:29
-map-loading analyse-admin.css:73
-map-matches-heading analyse-admin.css:71
-map-period-arrow analyse-admin.css:71
-map-periods analyse-admin.css:71
+map-loading analyse-admin.css:68
+map-matches-heading analyse-admin.css:66
+map-period-arrow analyse-admin.css:66
+map-periods analyse-admin.css:66
 map-place-buttons analyse-admin.css:29
-map-question analyse-admin.css:71
+map-question analyse-admin.css:66
 map-region analyse-admin.css:51
-map-scope analyse-admin.css:71
-map-table-select analyse-admin.css:71
+map-scope analyse-admin.css:66
+map-table-select analyse-admin.css:66
 map-tools analyse-admin.css:29
 map-value analyse-admin.css:29
-map-value-text analyse-admin.css:71
-map-view-controls analyse-admin.css:71
-map-workspace analyse-admin.css:71
-masthead analyse-admin.css:84
+map-value-text analyse-admin.css:66
+map-view-controls analyse-admin.css:66
+map-workspace analyse-admin.css:66
+masthead analyse-admin.css:77
 masthead design-styles.css:135
 masthead__meta analyse-admin.css:22
 masthead__meta design-styles.css:137
@@ -322,7 +349,7 @@ mix-stack analyse-admin.css:46
 mix-values analyse-admin.css:46
 monthly-mix analyse-admin.css:46
 more-concrete analyse-admin.css:44
-needs-attention analyse-admin.css:66
+needs-attention admin.css:6
 no-data analyse-admin.css:57
 no-data-swatch analyse-admin.css:29
 notice analyse-admin.css:13
@@ -336,7 +363,7 @@ onboarding__place design-styles.css:231
 onboarding__source design-styles.css:244
 onboarding__title design-styles.css:232
 page design-styles.css:41
-page-error-action analyse-admin.css:98
+page-error-action analyse-admin.css:91
 page-note analyse-admin.css:29
 page-note design-styles.css:43
 page-note ratsmonitor.css:66
@@ -561,7 +588,7 @@ rm-logo__text ratsmonitor-info.css:251
 rm-search ratsmonitor-info.css:416
 rm-spinner ratsmonitor.css:110
 rm-topline ratsmonitor.css:171
-screen analyse-admin.css:84
+screen analyse-admin.css:77
 screen design-styles.css:32
 screen ratsmonitor.css:205
 scroll-thin ratsmonitor.css:60
@@ -572,7 +599,7 @@ select-active ratsmonitor.css:40
 select-base ratsmonitor.css:37
 selected analyse-admin.css:46
 session design-styles.css:184
-session-details analyse-admin.css:76
+session-details analyse-admin.css:71
 session__body design-styles.css:189
 session__date design-styles.css:186
 session__day design-styles.css:188
@@ -605,7 +632,8 @@ tabs__tab design-styles.css:143
 tag analyse-admin.css:14
 tag design-styles.css:106
 tag--final design-styles.css:118
-text-link analyse-admin.css:66
+text-link admin.css:6
+text-link analyse-admin.css:94
 text-link design-styles.css:79
 text-link ratsmonitor.css:93
 text-slate-900 ratsmonitor.css:158
@@ -704,7 +732,7 @@ wordmark__dot design-styles.css:61
 - page.tsx (2)
 
 ### app/admin/
-- page.tsx (53, ⚠2): dynamic, metadata, AdminPage
+- page.tsx (55, ⚠2): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -713,7 +741,7 @@ wordmark__dot design-styles.css:61
 - chatgpt-auth.ts (95): ChatGPTUser, getChatGPTUser, requireChatGPTUser, chatGPTSignInPath, chatGPTSignOutPath
 - error.tsx (8, ⚠1): PageError
 - global-error.tsx (10, ⚠1): GlobalError
-- layout.tsx (9, ⚠2): metadata, RootLayout
+- layout.tsx (10, ⚠2): metadata, RootLayout
 - not-found.tsx (4): metadata, NotFound
 
 ### app/thema/[id]/
@@ -757,7 +785,9 @@ wordmark__dot design-styles.css:61
 - process-progress.tsx (8, ⚠1): ProcessProgress
 
 ### components/ratsmonitor/
-- App.tsx (47, ⚠1): MonitorApp
+- App.tsx (68, ⚠1): MonitorApp
+- App.tsx (68, ⚠1): MonitorApp
+- App.tsx (68, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (74, ⚠2): AccountMenu
@@ -790,7 +820,7 @@ wordmark__dot design-styles.css:61
 - MapPanel.tsx (320, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
-- ArticleCard.tsx (179, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
+- ArticleCard.tsx (188, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
 - ResultsPanel.tsx (212): ResultsPanel
 
 ### components/ratsmonitor/info/
@@ -801,7 +831,7 @@ wordmark__dot design-styles.css:61
 - BranchenLive.tsx (245): LiveThumb
 - BranchenPages.tsx (126): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (47): isInfoPath, InfoPages
+- InfoPages.tsx (47): InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - LenaPage.tsx (189): LenaPage
 - NotFoundPage.tsx (36): NotFoundPage
@@ -821,6 +851,7 @@ wordmark__dot design-styles.css:61
 - betreiber.ts (20): BETREIBER, betreiberAdresse
 - brand.ts (54): setLogo, useBrand, useBrandText, brandName
 - brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, pageTitle
+- catalog.ts (9): loadCatalog
 - clipboard.ts (26): copyText
 - constants.ts (63, ⚠1): THEMEN, StatusInfo, STATUS, STATUS_BY_ID, TEASER_MAX_SENTENCES, isCovered, MAP_COLORS, MAP_COLORS_DARK, colorForCoverageDark, colorForCoverage, colorForCount
 - entitlements.ts (41): useEntitlements
@@ -832,7 +863,7 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (988): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1005): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
@@ -842,6 +873,7 @@ wordmark__dot design-styles.css:61
 - pageTitle.ts (40): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
+- routes.ts (10): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (65): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, useSavedArticles
 - savedSearch.ts (134, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
@@ -851,6 +883,7 @@ wordmark__dot design-styles.css:61
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (49): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
+- topicCache.ts (26): TopicError, loadTopic, prefetchDetail
 - useDarkMode.ts (40): useDarkMode
 - usePhone.ts (16): usePhone
 - uuid.ts (12): newId
@@ -860,7 +893,9 @@ wordmark__dot design-styles.css:61
 - MainMenu.tsx (232, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (130, ⚠4): DetailPage
+- DetailPage.tsx (135, ⚠3): DetailPage
+- DetailPage.tsx (135, ⚠3): DetailPage
+- DetailPage.tsx (135, ⚠3): DetailPage
 - KalenderPage.tsx (363, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
@@ -873,7 +908,7 @@ wordmark__dot design-styles.css:61
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (239, ⚠13): ANALYSE_THUMBS, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (39, ⚠1): isAnalyticsPath, AnalyticsPages
+- AnalyticsPages.tsx (40, ⚠1): AnalyticsPages
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (218, ⚠5): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
@@ -901,7 +936,9 @@ wordmark__dot design-styles.css:61
 - account.tsx (17, ⚠1): AccountProvider, useAccount, useSavedStats
 - data.tsx (34, ⚠1): DataProvider, useData
 - nav.ts (13): View, viewOf, overviewScroll, useAppNav
-- search.tsx (582, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (585, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (585, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (585, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 
