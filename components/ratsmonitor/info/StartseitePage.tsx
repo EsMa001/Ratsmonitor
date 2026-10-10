@@ -34,6 +34,7 @@ interface Trends {
   totals: { recent: number; prev: number; regions: number };
   rising: Term[];
   emerging: Term[];
+  all?: Term[];
   topics: Topic[];
 }
 
@@ -58,7 +59,7 @@ const EXAMPLES = ["Bebauungsplan", "Wärmeplanung", "Windkraft", "Netzausbau", "
 const ANALYSIS_TERMS = ["Windkraft", "Wärmeplanung", "Photovoltaik", "Bebauungsplan", "Kita"];
 
 /** Wörter, die in der Trendliste nur Rauschen wären (Ortsnamen, Verwaltungsfloskeln) */
-const NOISE = new Set(["bayerischen", "köln", "gemarkung", "errichtung", "neubau", "flurstück", "flst", "nr", "straße", "str"]);
+const NOISE = new Set(["bayerischen", "köln", "gemarkung", "errichtung", "neubau", "flurstück", "flst", "nr", "straße", "str", "satzungsbeschluss", "baugenehmigung", "abbruch", "stadtbezirk", "beschluss", "antrag", "vorlage", "änderung", "aufstellung"]);
 
 interface Diffusion {
   stats: { regions: number; cards: number; first: string; last: string };
@@ -296,7 +297,7 @@ function Analyses({ openSearch, cov }: { openSearch: (term?: string) => void; co
           ) : (
             <div aria-hidden="true" style={{ marginTop: 14, height: 8, width: "70%", borderRadius: 4, background: "#f1f5f9" }} />
           )}
-          <Link href={`/analytics/diffusion?q=${q}`} style={{ ...link, display: "inline-block", marginTop: 12 }}>
+          <Link href={`/analytics/diffusion?q=${q}`} style={{ ...link, display: "inline-block", marginTop: 16 }}>
             Diffusionsanalyse →
           </Link>
         </div>
@@ -313,7 +314,7 @@ function Analyses({ openSearch, cov }: { openSearch: (term?: string) => void; co
                   .filter((n) => n.type === "term")
                   .slice(0, 6)
                   .map((n, i) => (
-                    <button key={n.id} type="button" onClick={() => openSearch(`${term} ${n.label}`)} style={{ padding: 0, background: "none", border: 0, color: "#0f172a", fontSize: i < 2 ? 18 : i < 4 ? 16 : 14, fontWeight: i < 2 ? 600 : 400, cursor: "pointer" }}>
+                    <button key={n.id} type="button" onClick={() => openSearch(`${term} ${n.label}`)} style={{ padding: 0, background: "none", border: 0, color: "#0f172a", fontSize: i < 2 ? 22 : i < 4 ? 16 : 14, fontWeight: i < 2 ? 600 : 400, cursor: "pointer" }}>
                       {n.label} <span style={{ color: "#0d9488", fontSize: 12 }}>{nf.format(n.count)}</span>
                     </button>
                   ))}
@@ -370,6 +371,149 @@ function Analyses({ openSearch, cov }: { openSearch: (term?: string) => void; co
           Mehr zu plenara.X →
         </Link>
       </p>
+    </section>
+  );
+}
+
+interface Window {
+  total: number;
+  places: number;
+  articles: Hit[];
+}
+
+/** Ein Thema im Vergleich: letzte 30 Tage gegen die 30 Tage davor, gezählt über die Suche (jede Vorlage einmal, Gebiete einmal) */
+function TopicChange({ end, openSearch, openSaveDialog }: { end: string; openSearch: (term?: string) => void; openSaveDialog: () => void }) {
+  const [term, setTerm] = useState(ANALYSIS_TERMS[1]);
+  const [data, setData] = useState<Record<string, { now: Window; before: Window }>>({});
+  const [all, setAll] = useState<{ now: number; before: number } | null>(null);
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+  const endDate = new Date(end + "T12:00:00Z");
+  const mid = iso(new Date(endDate.getTime() - 30 * 86400000));
+  const start = iso(new Date(endDate.getTime() - 60 * 86400000));
+  useEffect(() => {
+    const ctl = new AbortController();
+    const win = (t: string, from: string, to: string) =>
+      fetch(`/api/search?q=${encodeURIComponent(t)}&from=${from}&to=${to}`, { signal: ctl.signal })
+        .then((r) => (r.ok ? (r.json() as Promise<{ total: number; badgeCounts?: Record<string, number>; articles?: Hit[] }>) : Promise.reject(new Error("fenster"))))
+        .then((d): Window => ({ total: d.total, places: Object.keys(d.badgeCounts ?? {}).length, articles: d.articles ?? [] }));
+    const count = (from: string, to: string) =>
+      fetch(`/api/search?from=${from}&to=${to}`, { signal: ctl.signal })
+        .then((r) => (r.ok ? (r.json() as Promise<{ total: number }>) : Promise.reject(new Error("gesamt"))))
+        .then((d) => d.total);
+    Promise.all([count(mid, end), count(start, mid)])
+      .then(([n, b]) => setAll({ now: n, before: b }))
+      .catch(() => {});
+    ANALYSIS_TERMS.forEach((t) => {
+      Promise.all([win(t, mid, end), win(t, start, mid)])
+        .then(([now, before]) => setData((m) => ({ ...m, [t]: { now, before } })))
+        .catch(() => {});
+    });
+    return () => ctl.abort();
+  }, [end, mid, start]);
+  const cur = data[term];
+  /* Veränderung des Anteils an allen Einträgen des Fensters, damit mehr Einträge insgesamt nicht als Themenzuwachs erscheinen */
+  const share = (d: { now: Window; before: Window }) =>
+    all && all.now > 0 && all.before > 0 && d.before.total > 0 ? Math.round(((d.now.total / all.now) / (d.before.total / all.before) - 1) * 100) : null;
+  /* Balken und Marke zeigen den Anteil an allen Vorlagen des jeweiligen Fensters; jede Zeile hat ihre eigene Skala, damit auch kleine Themen lesbar bleiben */
+  const shareNow = (d: { now: Window }) => (all && all.now > 0 ? d.now.total / all.now : 0);
+  const shareBefore = (d: { before: Window }) => (all && all.before > 0 ? d.before.total / all.before : 0);
+  const rowMax = (d: { now: Window; before: Window }) => Math.max(0.0001, shareNow(d), shareBefore(d)) * 1.15;
+  /* Unter 100 Vorlagen in einem der Fenster ist die Veränderung ein Hinweis, kein Befund */
+  const uncertain = (d: { now: Window; before: Window }) => d.now.total < 100 || d.before.total < 100;
+  const q = encodeURIComponent(term);
+  return (
+    <section className="ri-sec" style={{ paddingTop: 96, paddingBottom: 96 }}>
+      <p style={{ margin: 0, fontSize: 14, color: "#0d9488", fontWeight: 600 }}>Was sich verändert</p>
+      <h2 style={{ margin: "8px 0 0", fontSize: 28, lineHeight: 1.2, fontWeight: 600, color: "#0f172a" }}>Wie sich Themen verändern</h2>
+      <p style={{ margin: "10px 0 0", fontSize: 14, color: "#64748b", maxWidth: 680 }}>
+        Anteil des Themas an allen Vorlagen: letzte 30 Tage gegen die 30 Tage davor{all ? ` (insgesamt ${nf.format(all.now)} statt ${nf.format(all.before)} Vorlagen)` : ""}. Der Zuwachs ist um den Anstieg des Gesamtbestands bereinigt. Kleine Zahlen sind Hinweise, keine Beweise.{" "}
+        <Link href="/analytics/ueber" style={{ color: "#0d9488", fontWeight: 500 }}>
+          So wird gerechnet →
+        </Link>
+      </p>
+      <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: "40px 64px", alignItems: "start" }}>
+        <div>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+            {ANALYSIS_TERMS.map((t) => {
+              const d = data[t];
+              const ch = d ? share(d) : null;
+              return (
+                <li key={t} style={rule}>
+                  <button type="button" aria-pressed={term === t} onClick={() => setTerm(t)} style={{ width: "100%", padding: "14px 0", background: "none", border: 0, cursor: "pointer", textAlign: "left" }}>
+                    <span style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+                      <span style={{ fontSize: 18, fontWeight: term === t ? 600 : 500, color: term === t ? "#0d9488" : "#0f172a" }}>{t}</span>
+                      <b style={{ fontSize: 22, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: d && !uncertain(d) && ch !== null && ch >= 10 ? "#0d9488" : "#0f172a" }}>
+                        {d && ch !== null ? `${ch >= 0 ? "+" : "−"}${Math.abs(ch)} %` : "…"}
+                      </b>
+                    </span>
+                    <span style={{ display: "block", marginTop: 2, textAlign: "right", fontSize: 14, color: "#64748b", fontVariantNumeric: "tabular-nums" }}>
+                      {d ? `${nf.format(d.now.total)} Vorlagen, davor ${nf.format(d.before.total)}${uncertain(d) ? " · unsicher, kleine Zahl" : ""}` : ""}
+                    </span>
+                    <span aria-hidden="true" style={{ display: "block", marginTop: 8, height: 6, position: "relative", background: "#f1f5f9", borderRadius: 3 }}>
+                      {d && (
+                        <>
+                          <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${(shareNow(d) / rowMax(d)) * 100}%`, background: term === t ? "#0d9488" : "#5fb8ae", borderRadius: 3 }} />
+                          <span style={{ position: "absolute", top: -4, bottom: -4, left: `${(shareBefore(d) / rowMax(d)) * 100}%`, width: 2, background: "#475569" }} />
+                        </>
+                      )}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <p style={{ margin: "10px 0 0", fontSize: 12, color: "#64748b" }}>Balken: Anteil an allen Vorlagen der letzten 30 Tage; Marke: Anteil in den 30 Tagen davor; jede Zeile mit eigener Skala. Die Themen sind häufig gesuchte Begriffe, keine Auswahl nach Auffälligkeit. Neu angebundene Quellen können den Bestand verändern; bereinigt ist nur das Gesamtvolumen.</p>
+        </div>
+        <div>
+          {cur ? (
+            <>
+              <h3 style={{ margin: 0, fontSize: 22, lineHeight: 1.25, fontWeight: 600, color: "#0f172a" }}>
+                „{term}“: {nf.format(cur.now.total)} Vorlagen in {nf.format(cur.now.places)} Gebieten, davor {nf.format(cur.before.total)} in {nf.format(cur.before.places)}.
+              </h3>
+              <p style={{ margin: "8px 0 0", fontSize: 14, color: "#64748b" }}>
+                {cur.now.places >= cur.before.places
+                  ? `In ${nf.format(cur.now.places - cur.before.places)} Gebieten mehr als im Zeitraum davor beraten.`
+                  : `In ${nf.format(cur.before.places - cur.now.places)} Gebieten weniger als im Zeitraum davor beraten.`}
+              </p>
+              <h4 style={{ margin: "20px 0 0", fontSize: 14, fontWeight: 600, color: "#64748b" }}>Neueste Vorlagen</h4>
+              <ul style={{ margin: "4px 0 0", padding: 0, listStyle: "none" }}>
+                {cur.now.articles.slice(0, 3).map((a) => (
+                  <li key={a.id} style={{ ...rule, padding: "10px 0" }}>
+                    <Link href={`/beschluss/${a.id}`} style={{ color: "#0f172a", fontSize: 16, fontWeight: 500 }}>
+                      {a.title.length > 100 ? a.title.slice(0, 100) + "…" : a.title}
+                    </Link>
+                    <span style={{ display: "block", marginTop: 2, fontSize: 14, color: "#64748b" }}>
+                      {day(a.date)}
+                      {a.gemeinde ? " · " + a.gemeinde : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div style={{ margin: "20px 0 0", display: "flex", flexWrap: "wrap", gap: "12px 24px", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    openSearch(term);
+                    window.setTimeout(openSaveDialog, 700);
+                  }}
+                  className="ri-btn"
+                  style={{ borderRadius: 999, background: "#0f172a", color: "#fff", minHeight: 48, padding: "0 22px" }}
+                >
+                  Alarm für „{term}“ →
+                </button>
+                <button type="button" onClick={() => openSearch(term)} style={{ padding: 0, background: "none", border: 0, color: "#0d9488", fontSize: 16, fontWeight: 500, cursor: "pointer" }}>
+                  Alle Vorlagen →
+                </button>
+                <Link href={`/analytics/diffusion?q=${q}`} style={{ color: "#0d9488", fontSize: 16, fontWeight: 500 }}>
+                  Ausbreitung →
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div aria-hidden="true" style={{ marginTop: 14, height: 8, width: "70%", borderRadius: 4, background: "#f1f5f9" }} />
+          )}
+        </div>
+      </div>
     </section>
   );
 }
@@ -445,12 +589,9 @@ export function StartseitePage() {
   };
 
   /* Erkenntnis: der neue Begriff mit den meisten Gebieten, sonst der am deutlichsten steigende */
-  const byReach = (a: Term, b: Term) => b.regions - a.regions || b.nr - a.nr;
-  const fresh = trends ? trends.emerging.filter((t) => !NOISE.has(t.term)).sort(byReach).slice(0, 5) : [];
-  const lead = fresh[0] ?? trends?.rising[0];
-  const rising = trends ? trends.rising.filter((t) => !NOISE.has(t.term) && t.regions >= 10 && t.ratio >= 1.8).sort((a, b) => b.ratio - a.ratio || b.regions - a.regions).slice(0, 5) : [];
-  const topics = trends ? [...trends.topics].filter((t) => t.n >= 5).slice(0, 6) : [];
-  const topMax = Math.max(1, ...topics.map((t) => Math.abs(t.change)));
+  const rel = (t: Topic) => (t.prev > 0 ? (t.recent - t.prev) / t.prev : 0);
+  const topics = trends ? [...trends.topics].filter((t) => t.n >= 20).sort((x, y) => Math.abs(rel(y)) - Math.abs(rel(x))).slice(0, 6) : [];
+  const topMax = Math.max(1, ...topics.map((t) => Math.max(t.recent, t.prev))) * 1.15;
 
   const q = place.trim().toLocaleLowerCase("de");
   const found = cov && q.length >= 3 ? cov.filter((c) => c.name.toLocaleLowerCase("de").includes(q)).slice(0, 5) : [];
@@ -505,7 +646,7 @@ export function StartseitePage() {
                   Kostenlos starten →
                 </Link>
                 <p style={{ margin: "10px 0 0", fontSize: 14, lineHeight: 1.5, color: "#64748b" }}>
-                  Gast: {LIMITS.guest.maxResults} Treffer · Konto: alle Treffer, Filter, Alarm per E-Mail · Pro {PRO_PRICE.replace(" / Monat", "")} im Monat, jederzeit kündbar.{" "}
+                  Gast: {LIMITS.guest.maxResults} Treffer · Konto: alle, Filter, Alarm · Pro {PRO_PRICE.replace(" / Monat", "")}.{" "}
                   <Link href="/preise" style={{ color: "#0d9488" }}>
                     Tarife →
                   </Link>
@@ -523,7 +664,7 @@ export function StartseitePage() {
               </p>
             )}
           </div>
-          <div style={{ maxWidth: 560, width: "100%", justifySelf: "end" }}>
+          <div style={{ maxWidth: "min(560px, max(300px, calc((100vh - 270px) / 1.39)))", width: "100%", justifySelf: "end" }}>
             {cov ? <CoverageMap cov={cov} onPick={(n) => openSearch(n)} /> : <DotMap />}
             <p style={{ margin: "14px 0 0", display: "flex", alignItems: "baseline", justifyContent: "center", gap: 12 }}>
               <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "#0f172a", fontVariantNumeric: "tabular-nums" }}>{ABDECKUNG.anteil} %</span>
@@ -534,7 +675,7 @@ export function StartseitePage() {
       </section>
 
         {cov && (
-          <section className="ri-sec ri-sec--tight">
+          <section className="ri-sec ri-sec--tight" style={{ paddingTop: 72 }}>
           <div className="mx-auto" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48 }}>
             <div style={rule}>
               <h2 style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "#0f172a" }}>Ist mein Ort dabei?</h2>
@@ -545,12 +686,12 @@ export function StartseitePage() {
                   value={place}
                   onChange={(e) => setPlace(e.target.value)}
                   maxLength={60}
-                  placeholder="Name der Stadt oder Gemeinde"
+                  placeholder="Stadt oder Gemeinde, mindestens 3 Buchstaben"
                   style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "#0f172a", border: "1px solid #cbd5e1", borderRadius: 999, background: "#fff" }}
                 />
               </label>
               <div aria-live="polite" style={{ marginTop: 10, fontSize: 14, color: "#64748b" }}>
-                {q.length < 3 ? "Mindestens drei Buchstaben." : found.length === 0 ? "Dazu liegen noch keine Berichte vor." : null}
+                {q.length < 3 ? null : found.length === 0 ? "Dazu liegen noch keine Berichte vor." : null}
                 {found.map((c) => (
                   <div key={c.name} style={{ padding: "6px 0", display: "flex", justifyContent: "space-between", gap: 12 }}>
                     <button type="button" onClick={() => setPick(c)} aria-pressed={pick?.ags === c.ags} style={{ padding: 0, background: "none", border: 0, color: pick?.ags === c.ags ? "#0d9488" : "#0f172a", fontSize: 16, fontWeight: pick?.ags === c.ags ? 600 : 400, cursor: "pointer", textAlign: "left" }}>
@@ -659,93 +800,35 @@ export function StartseitePage() {
 
       <Analyses openSearch={openSearch} cov={cov} />
 
-      {lead && trends && (
-        <section className="ri-sec">
-          <div className="mx-auto" style={{ }}>
-            <p style={{ margin: 0, fontSize: 14, color: "#0d9488", fontWeight: 600 }}>Was auffällt: Erkenntnis der letzten {trends.window} Tage</p>
-            <p style={{ margin: "8px 0 0", fontSize: 14, color: "#64748b", maxWidth: 640 }}>Verglichen wird mit den {trends.window} Tagen davor, über alle Gebiete mit Berichten.</p>
-            <div style={{ marginTop: 14, display: "flex", gap: 40, flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between" }}>
-              <div style={{ flex: "1 1 360px" }}>
-                <h2 style={{ margin: 0, fontSize: 28, lineHeight: 1.25, fontWeight: 600, color: "#0f172a" }}>
-                  „{lead.term}“ wird in {nf.format(lead.regions)} {lead.regions === 1 ? "Gebiet" : "Gebieten"} beraten
-                  {lead.regionsPrev > 0 ? `, davor in ${nf.format(lead.regionsPrev)}.` : ", davor kaum."}
-                </h2>
-                <p style={{ margin: "12px 0 0", fontSize: 16, lineHeight: 1.5, color: "#64748b" }}>
-                  {nf.format(lead.nr)} Einträge im Zeitraum, {nf.format(lead.np)} im Zeitraum davor. Verglichen werden Anteile an allen Einträgen, nicht Rohzahlen.
-                </p>
-                <button type="button" onClick={() => openSearch(lead.term)} style={{ marginTop: 16, padding: 0, background: "none", border: 0, color: "#0d9488", fontSize: 16, fontWeight: 500, cursor: "pointer" }}>
-                  In der Suche ansehen →
-                </button>
-                <Link href="/analytics/ueber" style={{ marginLeft: 20, color: "#0d9488", fontSize: 16, fontWeight: 500 }}>
-                  So wird gerechnet →
-                </Link>
-              </div>
-              <Spark values={lead.series} w={260} h={64} label={`Verlauf des Begriffs ${lead.term} nach Wochen`} />
-            </div>
-          </div>
-        </section>
-      )}
+      <TopicChange end={today} openSearch={openSearch} openSaveDialog={openSaveDialog} />
 
-      {(fresh.length > 0 || rising.length > 0) && (
+      {topics.length > 0 && trends && (
         <section className="ri-sec">
-          <div className="mx-auto" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48 }}>
-            {[
-              { title: "Neu aufgetaucht", rows: fresh },
-              { title: "Deutlich häufiger", rows: rising },
-            ].map(
-              (g) =>
-                g.rows.length > 0 && (
-                  <div key={g.title}>
-                    <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, color: "#0f172a" }}>{g.title}</h2>
-                    <ul style={{ margin: "12px 0 0", padding: 0, listStyle: "none" }}>
-                      {g.rows.map((t) => (
-                        <li key={t.term} style={{ ...rule }}>
-                          <button type="button" onClick={() => openSearch(t.term)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 16, padding: "12px 0", background: "none", border: 0, cursor: "pointer", textAlign: "left" }}>
-                            <span style={{ flex: 1, fontSize: 16, color: "#0f172a", fontWeight: 500 }}>
-                              {t.term}
-                              <span style={{ display: "block", fontSize: 14, color: "#64748b", fontWeight: 400 }}>
-                                {nf.format(t.regions)} {t.regions === 1 ? "Gebiet" : "Gebiete"} · {nf.format(t.nr)} Einträge{g.title === "Deutlich häufiger" ? ` · ${String(t.ratio).replace(".", ",")}-mal so häufig` : ""}
-                              </span>
-                            </span>
-                            <Spark values={t.series} w={96} h={28} label={`Verlauf von ${t.term}`} />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ),
-            )}
-          </div>
-        </section>
-      )}
-
-      {topics.length > 0 && (
-        <section className="ri-sec">
-          <div className="mx-auto" style={{ }}>
-            <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, color: "#0f172a" }}>Themenfelder: Anteil gegenüber dem Zeitraum davor</h2>
+          <div className="mx-auto">
+            <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, color: "#0f172a" }}>Themenfelder</h2>
+            <p style={{ margin: "6px 0 0", fontSize: 14, color: "#64748b" }}>
+              Anteil an allen Einträgen der letzten {trends.window} Tage. Die Marke zeigt den Anteil davor; sortiert nach der größten Veränderung.
+            </p>
             <ul style={{ margin: "12px 0 0", padding: 0, listStyle: "none" }}>
-              {topics.map((t) => (
-                <li key={t.id} style={{ ...rule, display: "flex", alignItems: "center", gap: 16, padding: "12px 0" }}>
-                  <span style={{ flex: "0 0 180px", fontSize: 16, color: "#0f172a" }}>{t.name}</span>
-                  <span style={{ flex: 1, height: 8, position: "relative", background: "#f1f5f9", borderRadius: 4 }} aria-hidden="true">
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        bottom: 0,
-                        borderRadius: 4,
-                        background: t.change >= 0 ? "#0d9488" : "#94a3b8",
-                        width: `${(Math.abs(t.change) / topMax) * 50}%`,
-                        ...(t.change >= 0 ? { left: "50%" } : { right: "50%" }),
-                      }}
-                    />
-                  </span>
-                  <span style={{ flex: "0 0 150px", textAlign: "right", fontSize: 14, color: "#64748b", fontVariantNumeric: "tabular-nums" }}>
-                    {t.change >= 0 ? "+" : "−"}
-                    {nf.format(Math.abs(t.change))} Prozentpunkte
-                  </span>
-                </li>
-              ))}
+              {topics.map((t, i) => {
+                const r = Math.round(rel(t) * 100);
+                return (
+                  <li key={t.id} style={{ ...rule, display: "flex", alignItems: "center", gap: 16, padding: "12px 0" }}>
+                    <span style={{ flex: "0 0 200px", fontSize: 16, color: "#0f172a", fontWeight: i === 0 ? 600 : 400 }}>{t.name}</span>
+                    <span style={{ flex: 1, height: 6, position: "relative", background: "#f1f5f9", borderRadius: 3 }} aria-hidden="true">
+                      <span style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: `${(t.recent / topMax) * 100}%`, borderRadius: 3, background: i === 0 ? "#0d9488" : "#99d6cf" }} />
+                      <span style={{ position: "absolute", top: -4, bottom: -4, left: `${(t.prev / topMax) * 100}%`, width: 2, background: "#94a3b8" }} />
+                    </span>
+                    <span style={{ flex: "0 0 300px", textAlign: "right", fontSize: 14, color: "#64748b", fontVariantNumeric: "tabular-nums" }}>
+                      <b style={{ color: r >= 10 ? "#0d9488" : "#0f172a", fontWeight: 600 }}>
+                        {r >= 0 ? "+" : "−"}
+                        {Math.abs(r)} %
+                      </b>{" "}
+                      ({String(t.recent).replace(".", ",")} % statt {String(t.prev).replace(".", ",")} %) · {nf.format(t.n)} Einträge
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </section>

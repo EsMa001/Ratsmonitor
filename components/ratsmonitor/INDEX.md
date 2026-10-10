@@ -688,6 +688,9 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/registrieren/
 - page.tsx (2): Page
 
+### app/(monitor)/startseite/
+- page.tsx (2): Page
+
 ### app/(monitor)/thema/[id]/
 - page.tsx (2): Page
 
@@ -804,9 +807,11 @@ wordmark__dot design-styles.css:61
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
+- StartseitePage.tsx (881, ⚠2): StartseitePage
 - TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
+- abdeckung.ts (10): ABDECKUNG
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (76): AnalyseId, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
