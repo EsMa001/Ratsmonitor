@@ -33,13 +33,20 @@ const germanDate = (iso: string) => iso.slice(0, 10).split("-").reverse().join("
 const MAX_HITS = 5;
 
 async function fetchHits(p: LenaPlan, signal: AbortSignal) {
-  const params = new URLSearchParams({ q: p.q ?? "", sort: "desc", page: "1", part: "page" });
-  if (p.status) params.set("status", p.status);
-  if (p.from) params.set("from", p.from);
-  const r = await fetch("/api/search?" + params, { signal });
-  const d = (await r.json().catch(() => ({}))) as { articles?: Hit[]; total?: number; error?: string };
-  if (!r.ok) throw new Error(d.error || "Die Suche ist gerade nicht erreichbar.");
-  return { hits: (d.articles ?? []).slice(0, MAX_HITS), total: d.total ?? (d.articles ?? []).length };
+  const base = new URLSearchParams({ q: p.q ?? "", sort: "desc", page: "1" });
+  if (p.status) base.set("status", p.status);
+  if (p.from) base.set("from", p.from);
+  /* Trefferliste (erste Seite) und Gesamtzahl (Zähler) sind getrennte Teile der Suche; die Seite liefert keine Gesamtzahl */
+  const call = async (part: "page" | "facets") => {
+    const r = await fetch("/api/search?" + new URLSearchParams({ ...Object.fromEntries(base), part }), { signal });
+    const d = (await r.json().catch(() => ({}))) as { articles?: Hit[]; total?: number; hasMore?: boolean; error?: string };
+    if (!r.ok) throw new Error(d.error || "Die Suche ist gerade nicht erreichbar.");
+    return d;
+  };
+  const [page, facets] = await Promise.all([call("page"), call("facets").catch(() => null)]);
+  const articles = page.articles ?? [];
+  const total = typeof facets?.total === "number" ? facets.total : page.hasMore ? undefined : articles.length;
+  return { hits: articles.slice(0, MAX_HITS), total, more: !!page.hasMore };
 }
 
 export function LenaPage() {
@@ -76,18 +83,18 @@ export function LenaPage() {
       const ctl = new AbortController();
       live.current.add(ctl);
       try {
-        const { hits, total } = await fetchHits(p, ctl.signal);
+        const { hits, total, more } = await fetchHits(p, ctl.signal);
         if (p.kind === "abdeckung") {
           const newest = hits[0]?.date;
           patch(lenaId, {
             loading: false,
             hits: [],
             total,
-            text: total
-              ? `Zu „${p.place}“ liegen ${total.toLocaleString("de-DE")} Einträge vor${newest ? ", der jüngste vom " + germanDate(newest) : ""}. Das ist das Ergebnis einer Suche nach dem Ortsnamen, die Datenabdeckung zeigt die Gebiete im Einzelnen.`
+            text: total || hits.length
+              ? `Zu „${p.place}“ liegen ${total === undefined ? "mehr als " + hits.length : total.toLocaleString("de-DE")} Einträge vor${newest ? ", der jüngste vom " + germanDate(newest) : ""}. Das ist das Ergebnis einer Suche nach dem Ortsnamen, die Datenabdeckung zeigt die Gebiete im Einzelnen.`
               : `Zu „${p.place}“ habe ich keine Einträge gefunden. Möglicherweise ist das Gebiet noch nicht angebunden. Die Datenabdeckung zeigt den Stand je Gebiet, mit der Kontaktseite können Sie es melden.`,
           });
-        } else if (!total) {
+        } else if (!total && !hits.length && !more) {
           patch(lenaId, {
             loading: false,
             hits: [],
