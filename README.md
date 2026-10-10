@@ -20,7 +20,7 @@ Lokal mit vorhandenen Abhängigkeiten und eingerichteter D1-Datenbank: `npm run 
 
 Münster nutzt OParl: https://oparl.stadt-muenster.de/system. Die Erweiterung nutzt die öffentliche More-Rubin-API für Recklinghausen und SessionNet-HTML für Billerbeck, Coesfeld, Steinfurt und Warendorf. Borkens öffentlicher Zugang antwortet mit HTTP 403; die Auswahl bleibt mit sichtbarer Datenlücke verfügbar. Eine fehlgeschlagene OParl-Standardpfadprüfung beweist nicht die Abwesenheit jeder Schnittstelle. Bei einem künftig gefundenen OParl-System wird der Import bis zur passenden Adapterkonfiguration angehalten, statt die offizielle Schnittstelle zu umgehen.
 
-Der erste regionale Initialbestand enthält 437 zusätzliche Artikel (84 Billerbeck, 99 Coesfeld, 149 Steinfurt, 44 Warendorf, 61 Recklinghausen). Quellenstand und Teilfehler stehen auf `/quellen`. `node scripts/import-regions.mjs` aktualisiert die regionalen Quelldateien und behält bereits gespeicherte Artikel bei Fehlern. Es werden ausschließlich öffentliche Tagesordnungspunkte eingelesen; Zugangssperren werden nicht umgangen.
+Der erste regionale Initialbestand enthält 437 zusätzliche Artikel (84 Billerbeck, 99 Coesfeld, 149 Steinfurt, 44 Warendorf, 61 Recklinghausen). Quellenstand und Teilfehler stehen auf `/quellen`. (Die Quelldateien schrieb damals `scripts/import-regions.mjs`; seit den Importen über die Datenbank ist das Skript entfernt.) Es werden ausschließlich öffentliche Tagesordnungspunkte eingelesen; Zugangssperren werden nicht umgangen.
 
 Der versionierte Bestand einschließlich Zwölf-Monats-Nachladung umfasst nach lokalem Abgleich 24.921 kanonische Artikel aus 43 Gebieten (39 Kommunen, vier Kreise). Die zwanzig jüngst ergänzten Kommunen im Münsterland und nördlichen Ruhrgebiet liefern nach dem Folgeimport 8.993 Artikel. Er ist keine NRW-Vollerhebung und keine Live-Zählung der Datenbank. Die vollständige Aufteilung sowie offene Anforderungen stehen im Hauptdokument.
 
@@ -52,7 +52,7 @@ Das Projekt verwendet Vinext/React, Tailwind und die vorhandenen Shadcn-Komponen
 
 Entwicklung: `npm run dev` (Port 5173); Node-Build `npm run build:node`, Cloudflare-Build `npm run build`. Neue Schemaänderungen von Hand als neue Datei in `drizzle/` schreiben (nummeriert, mit Kommentar); lokal und auf dem Server mit `scripts/node-migrate.mjs` einspielen (`docs/betrieb/node-server.md`, „Migrationen“). Keine DDL im Request-Pfad.
 
-`node scripts/import-data.mjs` lädt den rollierenden OParl-Bestand. Der lokale JSON-Cache dient reproduzierbaren Entwicklungsläufen; vor einem neuen aktuellen Abruf `.oparl-cache` leeren oder einen frischen Checkout verwenden. `node scripts/enrich-documents.mjs` extrahiert PDF-Text mit dem lokal installierten `pdftotext`. Die Laufzeitimplementierung nutzt `unpdf`.
+*(Überholt: `scripts/import-data.mjs` und `scripts/enrich-documents.mjs` sind entfernt; Importe laufen über `runSync` in die Datenbank.)* Früher lud `scripts/import-data.mjs` den rollierenden OParl-Bestand. Der lokale JSON-Cache dient reproduzierbaren Entwicklungsläufen; vor einem neuen aktuellen Abruf `.oparl-cache` leeren oder einen frischen Checkout verwenden. Die Laufzeitimplementierung nutzt `unpdf`.
 
 `node --test tests/*.test.mjs` prüft die politischen Statusregeln, Paginierung, Quelleneinschränkung und das Verwerfen unbelegter KI-Zahlen. `node node_modules/typescript/bin/tsc --noEmit` prüft die Typen.
 
