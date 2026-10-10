@@ -8,6 +8,7 @@ import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import type {Stand} from '@/shared/admin-types';
 import {adminHref} from '@/components/admin-chrome';
 import {REACH_BUCKETS,FRESH_BUCKETS,reachBucket,freshBucket} from '@/shared/coverage.mjs';
+import {VG_GROUPS} from '@/shared/vg-groups.mjs';
 // Same data as the standalone gap atlas (scripts/dashboard/page.html), read live: the catalog and the atlas file of
 // the deployed code, reports and imports from the database. Refreshed every five minutes while the page is open.
 type Area={id:string;n:string;l:string;g:string;t:string;k:'c'|'i'|'d';p:number;m?:number;c:string;z:string;r?:number;u?:string;o?:string;v?:string;zc?:string;rb?:string;rn?:string;at?:string;cs?:string;nc?:number[];rs?:{url:string;hint?:string;proof?:string}[];cnt?:number;last?:string;st?:'failed'|'partial';fe?:string;le?:string;rk?:string;fk?:string};
@@ -94,7 +95,12 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
   <div className="admin-atlas-chips"><button type="button" className="admin-chip is-group" onClick={()=>setActive(null)}>Alle</button>{items.map(it=>{const k=areas.filter(a=>valueOf(a)===it.id).length;return k?<button key={it.id} type="button" className="admin-chip" title={it.title} aria-pressed={active.has(it.id)} onClick={()=>{const next=new Set(active);if(next.has(it.id)&&next.size===all.length)setActive(new Set([it.id]));else{if(next.has(it.id))next.delete(it.id);else next.add(it.id);setActive(next.size?next:null);}}}><i style={{background:it.color}}/>{it.label} <span>{n(k)}</span></button>:null;})}</div></>;
  };
  const connected=atlasAreas.filter(a=>!catById.get(a.c)?.open),open=atlasAreas.filter(a=>catById.get(a.c)?.open);
- const popAll=atlasAreas.filter(isCityLevel).reduce((s,a)=>s+a.p,0),popOk=connected.filter(isCityLevel).reduce((s,a)=>s+a.p,0),kreisOk=new Set(connected.filter(a=>!isCityLevel(a)).map(a=>a.g)),popOkK=atlasAreas.filter(a=>isCityLevel(a)&&(!catById.get(a.c)?.open||kreisOk.has(a.g.slice(0,5)))).reduce((s,a)=>s+a.p,0),withReports=atlasAreas.filter(a=>a.cnt).length;
+ const popAll=atlasAreas.filter(isCityLevel).reduce((s,a)=>s+a.p,0),popOk=connected.filter(isCityLevel).reduce((s,a)=>s+a.p,0),kreisOk=new Set(connected.filter(a=>!isCityLevel(a)).map(a=>a.g));
+ const vgOf=useMemo(()=>{const m=new Map<string,string[]>();for(const g of VG_GROUPS)for(const id of g)m.set(id,g);return m;},[]);
+ const openIds=useMemo(()=>new Set(open.map(a=>a.id)),[open]);
+ const vgReached=(id:string)=>!openIds.has(id)||(vgOf.get(id)||[]).some(x=>!openIds.has(x));
+ const popOkV=atlasAreas.filter(a=>isCityLevel(a)&&vgReached(a.id)).reduce((s,a)=>s+a.p,0);
+ const popOkK=atlasAreas.filter(a=>isCityLevel(a)&&(vgReached(a.id)||kreisOk.has(a.g.slice(0,5)))).reduce((s,a)=>s+a.p,0),withReports=atlasAreas.filter(a=>a.cnt).length;
  // What each reading method delivers: connected areas per method, reports, median per area with reports, reach, state.
  const methods=useMemo(()=>{
   const by=new Map<string,{areas:number;withReports:number;reports:number;partial:number;failed:number;deep:number;counts:number[]}>();
@@ -108,7 +114,8 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
   <div className="mt-8"><Kpis label="Anbindung der Gebiete" items={[
    {label:'Gebiete angebunden',value:data?n(connected.length):undefined,of:data?n(atlasAreas.length):undefined,note:data?pct(connected.length,data.areas.length)+' · einschließlich eingeschalteter Quellen, deren erste Prüfung aussteht':undefined},
    {label:'Einwohner erreicht',value:data?pct(popOk,popAll):undefined,note:data?mio(popOk)+' von '+mio(popAll)+' auf Gemeindeebene':undefined},
-   {label:'Einwohner erreicht (inkl. Kreise)',value:data?pct(popOkK,popAll):undefined,note:data?mio(popOkK)+' von '+mio(popAll)+' · ein Ort gilt als erreicht, wenn Gemeinde, Verband oder Landkreis angebunden ist':undefined},
+   {label:'Einwohner erreicht (inkl. VG)',value:data?pct(popOkV,popAll):undefined,note:data?mio(popOkV)+' von '+mio(popAll)+' · zusätzlich Orte, deren Samtgemeinde/VG/Amt über ein anderes Mitglied angebunden ist':undefined},
+   {label:'Einwohner erreicht (inkl. Kreise)',value:data?pct(popOkK,popAll):undefined,note:data?mio(popOkK)+' von '+mio(popAll)+' · zusätzlich, wenn der Landkreis angebunden ist':undefined},
    {label:'Gebiete offen',value:data?n(open.length):undefined,note:data?openPop+' Einwohner auf Gemeindeebene · ohne lesbare Quelle':undefined},
    {label:'Mit gespeicherten Berichten',value:data?n(withReports):undefined,note:data?n(data.reports)+' Berichte in der Datenbank':undefined}]}/></div>
   {apiError}
