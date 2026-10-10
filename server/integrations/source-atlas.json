@@ -623,7 +623,7 @@
  "nds-03352060":{"c":"blocked","z":"blocked","r":22,"u":"https://hagen-cux.ratsinfomanagement.net/gremien"},
  "nds-033565401":{"c":"blocked","z":"blocked","r":0,"u":"https://hambergen.ratsinfomanagement.net"},
  "nds-03351012":{"c":"ok","z":"scraping"},
- "nds-03252006":{"c":"noreader","z":"noreader","r":169,"u":"https://ris.hameln.de/ris"},
+ "nds-03252006":{"c":"ok","z":"scraping"},
  "nds-031515403":{"c":"ok","z":"scraping"},
  "nds-03159017":{"c":"ok","z":"scraping"},
  "nds-03241001":{"c":"ok","z":"scraping"},

@@ -1121,6 +1121,17 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "nds-03252006",
+    "name": "Stadt Hameln",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "provox-iip",
+    "base": "https://ris.hameln.de/ris/hameln/",
+    "verifiedSource": "https://ris.hameln.de/ris/hameln/meeting/list",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; Provox IIP (öffentliche Seiten, ohne Anmeldung): Sitzungskalender als JSON-Feed, Tagesordnung und Vorlagen am 10.10.2026 gelesen."
+  },
+  {
     "id": "nds-03252008",
     "name": "Gemeinde Salzhemmendorf",
     "kind": "city",
