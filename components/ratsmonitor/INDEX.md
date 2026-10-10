@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (434 Zeilen, ⚠13)
+- app/ratsmonitor-info.css (496 Zeilen, ⚠13)
 - app/ratsmonitor.css (209 Zeilen, ⚠12)
 
 admin-access admin.css:6
@@ -266,8 +266,16 @@ figure design-styles.css:253
 font-bold ratsmonitor.css:71
 font-medium ratsmonitor.css:73
 font-semibold ratsmonitor.css:72
+gap-10 ratsmonitor-info.css:452
+gap-6 ratsmonitor-info.css:490
+gap-8 ratsmonitor-info.css:489
+gap-y-12 ratsmonitor-info.css:440
+gap-y-14 ratsmonitor-info.css:484
+gap-y-6 ratsmonitor-info.css:487
+gap-y-8 ratsmonitor-info.css:441
 germany-map analyse-admin.css:29
 group ratsmonitor.css:159
+h-16 ratsmonitor-info.css:462
 has-data analyse-admin.css:56
 heading-m design-styles.css:51
 heading-m ratsmonitor.css:66
@@ -334,6 +342,8 @@ masthead__place design-styles.css:138
 masthead__row design-styles.css:136
 masthead__status analyse-admin.css:22
 masthead__status design-styles.css:139
+mb-6 ratsmonitor-info.css:454
+mb-8 ratsmonitor-info.css:475
 mix-bars analyse-admin.css:46
 mix-changes analyse-admin.css:46
 mix-delta analyse-admin.css:46
@@ -349,6 +359,15 @@ mix-stack analyse-admin.css:46
 mix-values analyse-admin.css:46
 monthly-mix analyse-admin.css:46
 more-concrete analyse-admin.css:44
+mt-10 ratsmonitor-info.css:479
+mt-12 ratsmonitor-info.css:478
+mt-14 ratsmonitor-info.css:477
+mt-16 ratsmonitor-info.css:476
+mt-3 ratsmonitor-info.css:458
+mt-4 ratsmonitor-info.css:457
+mt-5 ratsmonitor-info.css:443
+mt-6 ratsmonitor-info.css:455
+mt-8 ratsmonitor-info.css:480
 needs-attention admin.css:6
 no-data analyse-admin.css:57
 no-data-swatch analyse-admin.css:29
@@ -367,6 +386,7 @@ page-error-action analyse-admin.css:91
 page-note analyse-admin.css:29
 page-note design-styles.css:43
 page-note ratsmonitor.css:66
+pb-10 ratsmonitor-info.css:474
 pl-cta ratsmonitor-info.css:433
 pl-footer-accent ratsmonitor-info.css:424
 popover ratsmonitor.css:57
@@ -380,6 +400,12 @@ process__step--open design-styles.css:129
 prose analyse-admin.css:15
 prose design-styles.css:257
 prose ratsmonitor.css:66
+pt-10 ratsmonitor-info.css:473
+py-10 ratsmonitor-info.css:493
+py-2 ratsmonitor-info.css:460
+py-3 ratsmonitor-info.css:459
+py-6 ratsmonitor-info.css:461
+py-8 ratsmonitor-info.css:494
 ratsmonitor ratsmonitor-info.css:260
 ratsmonitor ratsmonitor.css:2
 region-data-badge analyse-admin.css:55
@@ -399,6 +425,7 @@ related-topics analyse-admin.css:26
 ri ratsmonitor-info.css:13
 ri ratsmonitor.css:149
 ri-actions ratsmonitor-info.css:29
+ri-anw ratsmonitor-info.css:437
 ri-band ratsmonitor-info.css:54
 ri-bc ratsmonitor-info.css:163
 ri-bc__benefit ratsmonitor-info.css:167
@@ -465,6 +492,7 @@ ri-head__grid ratsmonitor-info.css:33
 ri-head__grid--top ratsmonitor-info.css:34
 ri-help ratsmonitor-info.css:213
 ri-input ratsmonitor-info.css:207
+ri-konto ratsmonitor-info.css:450
 ri-lead ratsmonitor-info.css:41
 ri-legal ratsmonitor-info.css:244
 ri-link ratsmonitor-info.css:217
@@ -570,6 +598,7 @@ ri-vp__stats ratsmonitor-info.css:76
 ri-vp__text ratsmonitor-info.css:75
 ri-wr ratsmonitor-info.css:82
 ri-wr__sep ratsmonitor-info.css:83
+rm-analytics ratsmonitor-info.css:473
 rm-chip ratsmonitor.css:107
 rm-dark ratsmonitor-info.css:420
 rm-dark ratsmonitor.css:135
@@ -616,6 +645,8 @@ share-button design-styles.css:89
 skip-link analyse-admin.css:6
 skip-link ratsmonitor.css:127
 source-filter analyse-admin.css:38
+space-y-6 ratsmonitor-info.css:442
+space-y-8 ratsmonitor-info.css:491
 steps design-styles.css:121
 steps__bar design-styles.css:122
 steps__bar--done design-styles.css:123
@@ -789,7 +820,7 @@ wordmark__dot design-styles.css:61
 - App.tsx (68, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
-- AccountMenu.tsx (74, ⚠2): AccountMenu
+- AccountMenu.tsx (66, ⚠2): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (98, ⚠1): AreaBar
 - Brand.tsx (274): AnalyticsLogo, Brand
@@ -836,12 +867,12 @@ wordmark__dot design-styles.css:61
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
-- StartseitePage.tsx (537, ⚠6): StartseitePage
+- StartseitePage.tsx (529, ⚠5): StartseitePage
 - TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
-- blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- blocks.tsx (211, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (76): AnalyseId, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
@@ -889,7 +920,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (232, ⚠1): MainMenu
+- MainMenu.tsx (225, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (135, ⚠3): DetailPage

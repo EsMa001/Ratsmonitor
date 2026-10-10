@@ -209,10 +209,10 @@ export function AnalyticsAbout() {
           <li key={a.id}>
             <Reveal delay={(i % 3) * 90}>
               <Link href={a.href} aria-label={`${a.name} öffnen`} className="group block">
-                <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} /></div>
-                <h3 className="mt-5 text-[22px] font-semibold">{a.name}</h3>
-                <p className="mt-2 text-[16px] text-slate-500">{a.kurz}</p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
+                <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} showStand={false} /></div>
+                <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
+                <h3 className="mt-2 text-[22px] font-semibold">{a.name}</h3>
+                <p className="mt-1 text-[16px] text-slate-500">{a.kurz}</p>
               </Link>
             </Reveal>
           </li>

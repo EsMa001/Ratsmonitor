@@ -30,10 +30,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
  const logout=()=>{setOpen(false);testLogout();};
  const unread=useTestMails().filter(m=>!m.read).length;
  return <nav aria-label="Konto" className="flex items-center gap-0.5">
-  <Link href="/admin" title="Administration" aria-label="Administration" className={`${cls(false)} max-sm:hidden`}>
-   <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
-  </Link>
-  <Link href="/admin?seite=mobil" title="Administration" aria-label="Administration" className={`${cls(false)} sm:hidden`}>
+  <Link href="/admin" title="Administration" aria-label="Administration" className={cls(false)}>
    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 8.3 7.5 9.5 4.3-1.2 7.5-5 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
   </Link>
   <button type="button" title={dark?'Heller Modus':'Dunkler Modus'} aria-label={dark?'Heller Modus':'Dunkler Modus'} aria-pressed={dark} onClick={()=>setDark(!dark)} className={cls(false)}>
@@ -59,11 +56,6 @@ export function AccountMenu({currentPage}:{currentPage:string}){
      <Link role="menuitem" href="/anmelden" className={item} onClick={()=>setOpen(false)}>Anmelden</Link>
      <Link role="menuitem" href="/registrieren" className={item} onClick={()=>setOpen(false)}>Registrieren</Link>
     </>}
-    <div className="mb-1 border-b border-slate-200 pb-1 sm:hidden">
-     <Link role="menuitem" href="/konto/suchen" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Gespeicherte Suchen{saved.length>0&&<span className="text-[12px] text-slate-500">{saved.length}</span>}</Link>
-     <Link role="menuitem" href="/konto/artikel" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Gespeicherte Artikel{articles.length>0&&<span className="text-[12px] text-slate-500">{articles.length}</span>}</Link>
-     <Link role="menuitem" href="/konto/kalender" className={`${item}`} onClick={()=>setOpen(false)}>Kalender</Link>
-    </div>
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
     <Link role="menuitem" href="/konto/postfach" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Test-Postfach{unread>0&&<span className="text-[12px] text-teal-600">{unread} neu</span>}</Link>
     {loggedIn&&<button role="menuitem" type="button" onClick={logout} className={`${item} w-full text-left`}>Abmelden</button>}

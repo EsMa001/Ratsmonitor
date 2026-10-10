@@ -161,7 +161,6 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
           </div>
         </div>
       )}
-      <span className="ri-pv__foot">Echter Treffer aus dem Bestand</span>
     </div>
     </Reveal>
   );

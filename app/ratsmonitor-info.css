@@ -431,3 +431,65 @@ html.rm-dark footer.pl-footer-accent{border-top-color:#0d9488 !important}
 
 /* Startknopf der Startseite im Dark Mode in Akzentfarbe */
 html.rm-dark .pl-cta{background:#0d9488 !important;color:#fff !important}
+
+/* Anwenderseiten auf dem Handy kompakter: weniger Weißraum zwischen Abschnitten und Kacheln */
+@media (max-width:640px){
+  .ri-anw .ri-sec{padding-top:28px !important;padding-bottom:28px !important}
+  .ri-anw .ri-sec--tight{padding-top:18px !important;padding-bottom:18px !important}
+  .ri-anw .ri-head{padding-bottom:24px !important}
+  .ri-anw .gap-y-12{row-gap:18px !important}
+  .ri-anw .gap-y-8{row-gap:14px !important}
+  .ri-anw .space-y-6>:not([hidden])~:not([hidden]){margin-top:12px !important}
+  .ri-anw .mt-5{margin-top:10px !important}
+  .ri-anw .ri-h2{margin-bottom:0 !important}
+  .ri-anw .ri-bcard{padding:16px 16px 18px !important}
+}
+
+/* Gespeicherte Suchen, Artikel und Kalender auf dem Handy kompakter */
+@media (max-width:640px){
+  .ri-konto .ri-sec{padding-top:18px !important;padding-bottom:18px !important}
+  .ri-konto .ri-head{padding-bottom:20px !important}
+  .ri-konto .gap-10{gap:18px !important}
+  .ri-konto .gap-y-8{row-gap:14px !important}
+  .ri-konto .mb-6{margin-bottom:12px !important}
+  .ri-konto .mt-6{margin-top:14px !important}
+  .ri-konto .mt-5{margin-top:10px !important}
+  .ri-konto .mt-4{margin-top:8px !important}
+  .ri-konto .mt-3{margin-top:6px !important}
+  .ri-konto .py-3{padding-top:8px !important;padding-bottom:8px !important}
+  .ri-konto .py-2\.5{padding-top:6px !important;padding-bottom:6px !important}
+  .ri-konto .py-6{padding-top:12px !important;padding-bottom:12px !important}
+  .ri-konto .h-16{height:3.25rem !important}
+  .ri-konto .ri-points{gap:6px 0 !important;margin-top:14px !important}
+  .ri-konto .ri-point{padding-top:12px !important;padding-bottom:6px}
+  .ri-konto .ri-point h3{margin-top:4px !important;font-size:16px !important}
+  .ri-konto .ri-point p{margin-top:2px !important;font-size:14px !important}
+  .ri-konto .ri-actions{margin-top:18px !important}
+  .ri-konto .ri-h2{font-size:18px !important}
+}
+
+/* plenara.X und ihre Unterseiten auf dem Handy kompakter: weniger Weißraum zwischen Bändern, Kacheln und Überschriften */
+@media (max-width:640px){
+  html.rm-analytics main .pt-10{padding-top:18px !important}
+  html.rm-analytics main .pb-10{padding-bottom:18px !important}
+  html.rm-analytics main .mb-8{margin-bottom:14px !important}
+  html.rm-analytics main .mt-16{margin-top:30px !important}
+  html.rm-analytics main .mt-14{margin-top:26px !important}
+  html.rm-analytics main .mt-12{margin-top:22px !important}
+  html.rm-analytics main .mt-10{margin-top:18px !important}
+  html.rm-analytics main .mt-8{margin-top:14px !important}
+  html.rm-analytics main .mt-6{margin-top:12px !important}
+  html.rm-analytics main .mt-5{margin-top:8px !important}
+  html.rm-analytics main .mt-4{margin-top:8px !important}
+  html.rm-analytics main .gap-y-14{row-gap:22px !important}
+  html.rm-analytics main .gap-y-12{row-gap:18px !important}
+  html.rm-analytics main .gap-y-8{row-gap:14px !important}
+  html.rm-analytics main .gap-y-6{row-gap:12px !important}
+  html.rm-analytics main .gap-10{gap:16px !important}
+  html.rm-analytics main .gap-8{gap:14px !important}
+  html.rm-analytics main .gap-6{gap:12px !important}
+  html.rm-analytics main .space-y-8>:not([hidden])~:not([hidden]){margin-top:14px !important}
+  html.rm-analytics main .space-y-6>:not([hidden])~:not([hidden]){margin-top:12px !important}
+  html.rm-analytics main .py-10{padding-top:18px !important;padding-bottom:18px !important}
+  html.rm-analytics main .py-8{padding-top:14px !important;padding-bottom:14px !important}
+}

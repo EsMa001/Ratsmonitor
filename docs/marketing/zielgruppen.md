@@ -4,7 +4,7 @@ Stand: 08.10.2026. Festgelegt als Grundlage für Marketing, Videos und Seiten. �
 
 ## Kernbotschaft
 
-**Slogan (fest):** „Früher wissen, was vor Ort beraten wird.“
+**Slogan (fest):** „Besser verstehen, was vor Ort beraten wird.“
 
 **Unterstützende Aussage:** Ein Portal statt vieler Systeme. Alarme per E-Mail, und jede Angabe mit Originalquelle.
 

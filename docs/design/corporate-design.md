@@ -7,7 +7,7 @@ Die Ansicht dazu: [`styleguide.html`](styleguide.html) (im Browser öffnen). Que
 ## 1. Marke
 
 - **Name:** Plenara. Schreibweise im Fließtext „Plenara“, die Analysen heißen „Plenara.X“.
-- **Slogan (fest):** „Früher wissen, was vor Ort beraten wird.“ Nicht ändern oder umformulieren (`docs/produkt/slogan.json`).
+- **Slogan (fest):** „Besser verstehen, was vor Ort beraten wird.“ Nicht ändern oder umformulieren (`docs/produkt/slogan.json`).
 - **Idee hinter dem Zeichen (Ist-Stand):** Der Plenarsaal aus Sitzpunkten. Das p besteht aus kleinen Punkten in zwei Reihen, so wie Sitze in einem Ratssaal. Das Schlussquadrat ist der Punkt des Namens.
 - **Charakter (Ist-Stand):** ruhig, hell, sachlich, offen. Viel Weiß, wenige Linien, ein einziger Akzent. Es soll sich wie ein Werkzeug anfühlen, nicht wie Werbung.
 
@@ -115,7 +115,7 @@ Warnhinweise nutzen Amber (Tailwind `amber-50` Fläche, `amber-200` Rand, `amber
 **Ist-Stand:**
 
 - Deutsch, Anrede „Sie“.
-- Sachlich und kurz. Beispiele: „Einfache Preise. Jederzeit kündbar.“, „Früher wissen, was vor Ort beraten wird.“
+- Sachlich und kurz. Beispiele: „Einfache Preise. Jederzeit kündbar.“, „Besser verstehen, was vor Ort beraten wird.“
 - Nur belegbare Aussagen, keine Superlative, keine Vergleiche mit anderen Anbietern (siehe `CLAUDE.md`, Produktvorteile).
 - Datum mit zweistelligem Jahr („05.10.26“), „Stand“ statt „Datenstand“.
 - Der Slogan steht am Ende jedes Videos groß unter dem Logo.

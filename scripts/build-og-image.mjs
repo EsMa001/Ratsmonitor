@@ -22,7 +22,7 @@ svg{position:absolute;left:0;top:0}svg circle{fill:#0d9488;fill-opacity:.55}
 .s{margin-top:36px;font-size:52px;line-height:1.12;font-weight:600}
 .u{position:absolute;left:72px;bottom:64px;width:520px;font-size:24px;line-height:1.4;color:#64748b}
 </style><svg width="1200" height="630">${dots}</svg>
-<div class="t"><div class="logo"><img src="data:image/png;base64,${readFileSync(`${root}scripts/assets/og-logo.png`).toString("base64")}"></div><div class="s">Früher wissen, was vor Ort beraten wird.</div></div>
+<div class="t"><div class="logo"><img src="data:image/png;base64,${readFileSync(`${root}scripts/assets/og-logo.png`).toString("base64")}"></div><div class="s">Besser verstehen, was vor Ort beraten wird.</div></div>
 <div class="u">Beschlüsse und Beratungen aus den Ratsinformationssystemen der Kommunen, durchsuchbar auf einer Karte.</div>`;
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });

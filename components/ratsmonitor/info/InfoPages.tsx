@@ -39,7 +39,7 @@ export function InfoPages({ path }: { path: string }) {
   const b = brancheOf(path);
   const Page = PAGES[path];
   return (
-    <main id="inhalt" className="ri">
+    <main id="inhalt" className={path.startsWith("/anwender/") ? "ri ri-anw" : "ri"}>
       {b ? <BranchePage key={b.slug} b={b} /> : path === "/registrieren" ? <RegisterPage key={query} /> : Page ? <Page key={path} /> : null}
     </main>
   );

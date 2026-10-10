@@ -210,7 +210,7 @@ function mini(id: AnalyseId, d: any, geo?: Snap["geo"]): ReactNode {
   return null;
 }
 
-export function LiveThumb({ id, term }: { id: AnalyseId; term: string }) {
+export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term: string; showStand?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
   const [node, setNode] = useState<ReactNode>(null);
@@ -238,7 +238,7 @@ export function LiveThumb({ id, term }: { id: AnalyseId; term: string }) {
       <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[13px] text-slate-600 shadow-sm">
         {node ? "Daten" : "Beispiel"}: „{term}“
       </span>
-      {node && stand && <p className="m-0 mt-1.5 text-[12px] text-slate-500">Stand {stand}</p>}
+      {showStand && node && stand && <p className="m-0 mt-1.5 text-[12px] text-slate-500">Stand {stand}</p>}
     </div>
   );
 }

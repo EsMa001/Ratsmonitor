@@ -32,7 +32,7 @@ const page = await ctx.newPage(); page.setDefaultTimeout(15000); page.setDefault
 const loaded = async () => { await page.waitForFunction(() => { const el = [...document.querySelectorAll("span")].find((x) => /Treffer/.test(x.textContent || "")); return !!el && !(el.textContent || "").trim().startsWith("…") && !document.querySelector('[aria-busy="true"]'); }, null, { timeout: 40000 }); };
 const calc = async () => { await page.waitForFunction(() => !/wird berechnet|werden berechnet|Wird berechnet|wird erstellt|Wird erstellt/.test(document.body.innerText), null, { timeout: 60000 }).catch(() => {}); await sleep(500); };
 const go = async (path) => { await page.goto(BASE + path, { waitUntil: "load" }); await sleep(2200); };
-const home = () => go("/");
+const home = () => go("/suche");
 let mx = 640, my = 360;
 const move = async (x, y, steps = 28) => { await page.mouse.move(x, y, { steps }); mx = x; my = y; };
 const click = async (target, { dx = 0, dy = 0 } = {}) => {

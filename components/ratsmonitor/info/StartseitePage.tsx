@@ -199,7 +199,7 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
   if (!geo) return <DotMap />;
   return (
     <div>
-      <svg role="img" aria-label="Deutschlandkarte der Kreise; farbig sind Kreise, in denen die Begriffe bereits beraten wurden" viewBox="28 10 542 754" style={{ width: "100%", height: "auto", display: "block" }} onMouseLeave={() => setTip("")} onMouseOver={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) setTip(n); }} onClick={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) onPick(n); }}>
+      <svg role="img" aria-label="Deutschlandkarte der Kreise; farbig sind Kreise, in denen die Begriffe bereits beraten wurden" viewBox="12 8 560 758" style={{ width: "100%", height: "auto", display: "block" }} onMouseLeave={() => setTip("")} onMouseOver={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) setTip(n); }} onClick={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) onPick(n); }}>
         <style>{`.pl-pop{animation:plpop 5.6s ease-out both}@keyframes plpop{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}.pl-ping{transform-box:fill-box;transform-origin:center;animation:plping 1.6s ease-out infinite}@keyframes plping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.4);opacity:0}}@media (prefers-reduced-motion:reduce){.pl-pop,.pl-ping{animation:none}}`}</style>
         {paths}
         {geo.states.map((st) => (
@@ -242,6 +242,7 @@ export function StartseitePage() {
   const [term, setTerm] = useState("");
   const [total, setTotal] = useState<number | null>(null);
   const [cov, setCov] = useState<Cov[] | null>(null);
+  const [allTotal, setAllTotal] = useState<number | null>(null);
   const [raw, setData] = useState<Record<string, TopicData>>({});
   const [cent, setCent] = useState<Record<string, [number, number]>>({});
   /* Erstberatungen sind in den Daten zeitlich stark gebündelt (Beginn der Erfassung). Für die Darstellung werden sie
@@ -302,9 +303,15 @@ export function StartseitePage() {
   /* Artikelzahl und Abdeckungsliste (für die Ortsprüfung) */
   useEffect(() => {
     const ctl = new AbortController();
-    fetch("/api/search", { signal: ctl.signal })
+    /* Zahl der Einträge der letzten 30 Tage (nicht der Gesamtbestand) */
+    const from = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+    fetch(`/api/search?q=&area=&label=&month=&from=${from}&to=${today}&scope=with&status=&level=city`, { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : Promise.reject(new Error("gesamt"))))
       .then((d) => setTotal(typeof d.total === "number" ? d.total : null))
+      .catch(() => {});
+    fetch("/api/search", { signal: ctl.signal })
+      .then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : Promise.reject(new Error("gesamt"))))
+      .then((d) => setAllTotal(typeof d.total === "number" ? d.total : null))
       .catch(() => {});
     fetch("/api/search/coverage?level=city", { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ coverage?: Cov[] }>) : Promise.reject(new Error("coverage"))))
@@ -434,16 +441,16 @@ export function StartseitePage() {
   return (
     <>
       <section className="ri-sec pl-hero" style={{ paddingTop: 56 }}>
-        <style>{`@media (max-width:640px){.pl-hero{padding-top:12px !important;padding-bottom:16px !important}.pl-grid{display:flex !important;flex-direction:column;align-items:stretch !important;gap:0 !important}.pl-left{display:contents}.pl-h1{order:1;font-size:24px !important;line-height:1.1 !important}.pl-slogan{order:2;margin:6px 0 0 !important;font-size:14px !important}.pl-num{order:3;margin:10px 0 0 !important}.pl-num span:first-child{font-size:28px !important}.pl-num span:last-child{font-size:12px !important}.pl-stand,.pl-chips{display:none !important}.pl-h2{margin:0 0 6px !important;font-size:18px !important}.pl-trends{order:6;margin:8px 0 0 !important;min-height:0 !important;gap:8px !important;flex-wrap:nowrap !important}.pl-trends>button{flex:0 0 calc(50% - 4px);min-width:0;width:auto !important;padding:6px 10px !important}.pl-trends>button:nth-of-type(n+3){display:none}.pl-mapwrap{order:4;margin:6px 0 0 !important}.pl-mapwrap p[aria-live]{display:none}.pl-mapwrap{max-width:none !important;width:100% !important}.pl-mapwrap>div:first-child{width:240px;margin:0 auto}.pl-mapwrap>p:nth-of-type(1){display:none !important}.pl-pop text:nth-of-type(1),.pl-still text:nth-of-type(1){font-size:30px !important}.pl-pop text:nth-of-type(2),.pl-still text:nth-of-type(2){font-size:22px !important;transform:translateY(14px)}.pl-search{order:5;margin:10px 0 0 !important;border-top:0 !important}.pl-ort{order:8;margin:22px 0 0 !important;border-top:0 !important}.pl-search input,.pl-ort input{margin-top:0 !important;height:42px !important}.pl-ort [aria-live]{margin-top:4px !important}.pl-ctawrap{order:9;margin:24px 0 0 !important;text-align:center}.pl-ctawrap a{min-height:44px !important;padding:0 20px !important}}`}</style>
+        <style>{`@media (max-width:640px){.pl-hero{padding-top:12px !important;padding-bottom:16px !important}.pl-grid{display:flex !important;flex-direction:column;align-items:stretch !important;gap:0 !important}.pl-left{display:contents}.pl-h1{order:1;font-size:24px !important;line-height:1.1 !important}.pl-slogan{order:2;margin:6px 0 0 !important;font-size:14px !important}.pl-num{order:3;margin:10px 0 0 !important}.pl-num span:first-child{font-size:28px !important}.pl-num span:last-child{font-size:12px !important}.pl-stand,.pl-chips,.pl-source{display:none !important}.pl-h2{margin:0 0 6px !important;font-size:18px !important}.pl-trends{order:6;margin:8px 0 0 !important;min-height:0 !important;gap:8px !important;flex-wrap:nowrap !important}.pl-trends>button{flex:0 0 calc(50% - 4px);min-width:0;width:auto !important;padding:6px 10px !important}.pl-trends>button:nth-of-type(n+3){display:none}.pl-mapwrap{order:4;margin:6px 0 0 !important}.pl-mapwrap p[aria-live]{display:none}.pl-mapwrap{max-width:none !important;width:100% !important}.pl-mapwrap>div:first-child{width:240px;margin:0 auto}.pl-mapwrap>p:nth-of-type(1){display:none !important}.pl-pop text:nth-of-type(1),.pl-still text:nth-of-type(1){font-size:30px !important}.pl-pop text:nth-of-type(2),.pl-still text:nth-of-type(2){font-size:22px !important;transform:translateY(14px)}.pl-search{order:5;margin:10px 0 0 !important;border-top:0 !important}.pl-ort{order:8;margin:22px 0 0 !important;border-top:0 !important}.pl-search input,.pl-ort input{margin-top:0 !important;height:42px !important}.pl-ort [aria-live]{margin-top:4px !important}.pl-ctawrap{order:9;margin:24px 0 0 !important;text-align:center}.pl-ctawrap a{min-height:44px !important;padding:0 20px !important}}`}</style>
         <div className="mx-auto pl-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "start" }}>
-          <div className="pl-left">
+          <div className="pl-left" style={{ paddingTop: 40 }}>
             <h1 className="pl-h1" style={{ margin: 0, fontSize: "clamp(28px, 8vw, 44px)", lineHeight: 1.08, letterSpacing: "-0.02em", fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>
               Deutschlands Kommunalpolitik<br /> <span style={{ color: "#0d9488" }}>in Echtzeit.</span>
             </h1>
             <p className="pl-slogan" style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>Besser verstehen, was vor Ort beraten wird.</p>
             <p className="pl-num" style={{ margin: "28px 0 0", display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "4px 14px" }}>
               <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "var(--rm-c900,#0f172a)", fontVariantNumeric: "tabular-nums" }}>{total !== null ? <CountUp value={total} /> : "…"}</span>
-              <span style={{ fontSize: 16, color: "var(--rm-c500,#64748b)" }}>Berichte aus Räten und Ausschüssen</span>
+              <span style={{ fontSize: 16, color: "var(--rm-c500,#64748b)" }}>Berichte aus Räten und Ausschüssen in den letzten 30 Tagen</span>
             </p>
             <p className="pl-stand" style={{ margin: "10px 0 0", fontSize: 14, color: "var(--rm-c500,#64748b)" }}>
               <span aria-hidden="true" className="pl-pulse" style={{ display: "inline-block", width: 8, height: 8, marginRight: 8, borderRadius: 4, background: "#0d9488" }} />
@@ -505,27 +512,12 @@ export function StartseitePage() {
                 Ohne Anmeldung starten →
               </Link>
             </div>
+            <p className="pl-source" style={{ margin: "14px 0 0", maxWidth: 460, fontSize: 14, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>
+              {`Aus den öffentlichen Ratsinformationssystemen${cov ? ` von ${nf.format(cov.length)} Kommunen und Gebieten` : " der Kommunen"}${allTotal !== null ? `: insgesamt ${nf.format(allTotal)} Berichte aus Räten und Ausschüssen` : ""}.`}
+            </p>
           </div>
-          <div className="pl-mapwrap" style={{ maxWidth: "min(770px, max(412px, calc((100vh - 230px) / 1.013)))", width: "100%", justifySelf: "start", marginTop: -50, marginLeft: 56 }}>
+          <div className="pl-mapwrap" style={{ maxWidth: "min(679px, max(362px, calc((100vh - 230px) / 1.149)))", width: "100%", justifySelf: "start", marginTop: -50, marginLeft: 56 }}>
             <GermanyMap lit={span ? lit : null} litKey={litCount} stage={stage} pops={pops} onPick={(n) => openSearch(n)} />
-            <p style={{ margin: "6px 0 0", display: "flex", alignItems: "baseline", justifyContent: "center", gap: 12, minHeight: 34 }}>
-              {span ? (
-                <>
-                  <span style={{ fontSize: 28, lineHeight: 1, fontWeight: 600, color: "#0d9488", fontVariantNumeric: "tabular-nums" }}>{nf.format(litCount)}</span>
-                  <span style={{ fontSize: 14, color: "var(--rm-c500,#64748b)" }}>Kreise beraten diese Themen · bis {monthLabel}</span>
-                </>
-              ) : (
-                <span style={{ fontSize: 14, color: "var(--rm-c500,#64748b)" }}>Die Karte wird aufgebaut …</span>
-              )}
-            </p>
-            <p className="pl-chips" style={{ margin: "10px auto 0", maxWidth: 520, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", minHeight: 36 }}>
-              {counts.map((c) => (
-                <button key={c.topic} type="button" onClick={() => openSearch(c.topic)} className="pl-chip" style={{ height: 30, padding: "0 12px", background: "var(--rm-white,#fff)", border: "1px solid var(--rm-c200,#e2e8f0)", borderRadius: 999, color: "var(--rm-c900,#0f172a)", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
-                  {c.topic} <span style={{ color: "#0d9488", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{nf.format(c.n)}</span>
-                </button>
-              ))}
-              <style>{`.pl-chip{animation:plchip .45s ease-out both}@keyframes plchip{from{opacity:0;transform:translateY(6px) scale(.96)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.pl-chip{animation:none}}`}</style>
-            </p>
           </div>
         </div>
       </section>

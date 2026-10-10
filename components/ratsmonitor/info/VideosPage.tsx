@@ -107,7 +107,7 @@ export function VideosPage() {
   };
   return (
     <>
-      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="plenara in Bewegung" lead="Früher wissen, was vor Ort beraten wird. In 30 Sekunden oder in acht Minuten." />
+      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="plenara in Bewegung" lead="Besser verstehen, was vor Ort beraten wird. In 30 Sekunden oder in acht Minuten." />
       <section className="ri-sec">
         <div className="grid items-center gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
           <Player base={PITCH} poster={PITCH} label="Kurzvideo abspielen: plenara in 30 Sekunden" />

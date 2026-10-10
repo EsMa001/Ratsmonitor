@@ -25,7 +25,7 @@ const schluss = (k = 1.2) => `<style>${css}
 .lw::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.85),rgba(255,255,255,0));transform:skewX(-18deg);animation:shine ${1.3*k}s ${1.0*k}s ease-in-out forwards}@keyframes shine{to{left:120%}}
 .line{margin-top:44px;height:4px;width:0;border-radius:2px;background:#0d9488;animation:w ${.8*k}s ${1.6*k}s ease-out forwards}@keyframes w{to{width:120px}}
 .s{margin-top:34px;font-size:46px;font-weight:600;letter-spacing:-.015em;max-width:980px;line-height:1.2;opacity:0;animation:up ${.8*k}s ${2.1*k}s ease-out forwards}.lw{animation-duration:${1*k}s}.tail{animation-duration:${.7*k}s}</style>
-<div class=m>${brand(+(1.7*k).toFixed(2))}<div class=line></div><div class=s>Früher wissen, was vor Ort beraten wird.</div></div>`;
+<div class=m>${brand(+(1.7*k).toFixed(2))}<div class=line></div><div class=s>Besser verstehen, was vor Ort beraten wird.</div></div>`;
 const vorteile = (v) => `<style>${css}
 img.logo.s{position:absolute;left:72px;top:46px;height:56px}
 h2{position:absolute;left:72px;top:152px;font-size:50px;font-weight:400;letter-spacing:-.01em;color:#0d9488;animation:up .6s ease-out both}
