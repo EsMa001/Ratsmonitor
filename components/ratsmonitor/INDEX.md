@@ -768,7 +768,7 @@ wordmark__dot design-styles.css:61
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - ExportMenu.tsx (55, ⚠1): ExportOption, ExportMenu
 - FilterPanel.tsx (103, ⚠1): FilterPanel
-- FilterSelect.tsx (117): FilterSelect
+- FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (30): FollowButton
 - Footer.tsx (59): Footer
 - GateDialog.tsx (127): GateFeature, openGate, GateDialog
@@ -788,7 +788,7 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (179, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
-- ResultsPanel.tsx (211): ResultsPanel
+- ResultsPanel.tsx (212): ResultsPanel
 
 ### components/ratsmonitor/info/
 - AboutPage.tsx (163): AboutPage
@@ -798,7 +798,7 @@ wordmark__dot design-styles.css:61
 - BranchenLive.tsx (245): LiveThumb
 - BranchenPages.tsx (126): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (47): isInfoPath, InfoPages
+- InfoPages.tsx (49): isInfoPath, InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - LenaPage.tsx (189): LenaPage
 - NotFoundPage.tsx (36): NotFoundPage
@@ -853,7 +853,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (232, ⚠1): MainMenu
+- MainMenu.tsx (240, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (130, ⚠4): DetailPage
