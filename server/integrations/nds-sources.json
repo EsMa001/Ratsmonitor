@@ -3985,5 +3985,118 @@
     "verifiedAt": "2026-10-10",
     "foundBy": "Vom Projektinhaber gefunden (10.10.2026): öffentliches Bürgerinfoportal neben dem Anmeldebereich ratsinfo.ostrhauderfehn.de; in den letzten drei Monaten keine Sitzung, zwölf Monate: 82 Punkte in 7 Sitzungen",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nds-03256",
+    "name": "Landkreis Nienburg (Weser)",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://ratsinfo.kreis-ni.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://www.lk-nienburg.de/politik-verwaltung/kreistag/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 84,
+      "meetings": 12,
+      "identity": "Infoseite des Systems (Kreistagsseite, von der offiziellen Website verlinkt)"
+    },
+    "foundBy": "Recherche 10.10.2026: Kreistagsseite verlinkt das Bürgerinformationssystem ratsinfo.kreis-ni.de/bi/ neben dem Abgeordneten-Login ri/ (Atlas kannte nur buergerinfo.lk-ni.de, HTTP 403)"
+  },
+  {
+    "id": "nds-032515402",
+    "name": "Samtgemeinde Barnstorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.barnstorf.de/allris/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://www.barnstorf.de/rathaus-politik/buergerinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 96,
+      "meetings": 10,
+      "identity": "Adresse"
+    },
+    "foundBy": "Recherche 10.10.2026: Seite Bürgerinformationssystem der Website bettet ALLRIS 3 unter /allris/ ein; Login der Ratsmitglieder getrennt auf sitzungsdienst-barnstorf.de"
+  },
+  {
+    "id": "nds-03352061",
+    "name": "Gemeinde Wurster Nordseeküste",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.gwnk.de/allris/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://www.gwnk.de/rathaus-buergerservice/rat-politik/ratsinformationssystem/bereich-fuer-buerger-innen/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 118,
+      "meetings": 11,
+      "identity": "Seitentext"
+    },
+    "foundBy": "Recherche 10.10.2026: Bereich für Bürger:innen bettet ALLRIS 3 unter www.gwnk.de/allris/ ein (Atlas kannte nur sitzung-online.de/ri/)"
+  },
+  {
+    "id": "nds-032545406",
+    "name": "Samtgemeinde Leinebergland",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.sg-leinebergland.de/allris/",
+    "calendar": "si010_r.asp",
+    "verifiedSource": "https://www.sg-leinebergland.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 139,
+      "meetings": 13,
+      "identity": "Adresse"
+    },
+    "foundBy": "Recherche 10.10.2026: Startseite verlinkt Bürgerinformationssystem sg-leinebergland.de/allris/ neben dem Ratsinformationssystem gronau-leine.sitzung-online.de/ri"
+  },
+  {
+    "id": "nds-033595403",
+    "name": "Samtgemeinde Harsefeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.harsefeld.de/allris/",
+    "calendar": "si010_r.asp",
+    "verifiedSource": "https://www.harsefeld.de/rathaus-politik/aktuelles/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 70,
+      "meetings": 13,
+      "identity": "Adresse"
+    },
+    "foundBy": "Recherche 10.10.2026: Website verlinkt Ratsinformationssystem www.harsefeld.de/allris/si010_r.asp neben Anmeldung Ratsmitglieder (sitzung-online.de/ri/)"
+  },
+  {
+    "id": "nds-03251042",
+    "name": "Stadt Twistringen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.twistringen.de/allris/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://www.twistringen.de/verwaltung-politik/politik/sitzungskalender/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 27,
+      "meetings": 1,
+      "identity": "Adresse"
+    },
+    "foundBy": "Recherche 10.10.2026: Website verlinkt Protokolle www.twistringen.de/allris/si018.asp; Sitzungskalender si010_e.asp daneben (Atlas kannte nur /bi/allris.net.asp ohne Kalender)"
   }
 ]

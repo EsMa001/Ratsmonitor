@@ -40582,5 +40582,109 @@
     "verifiedAt": "2026-10-10",
     "foundBy": "Öffentliches Bürgerinfoportal neben dem Anmeldebereich ratsinfo-vg-strasskirchen.digitalfabrix.de (Adresse geraten, 10.10.2026); letzte drei Monate ohne Sitzung, zwölf Monate: 20 Punkte in 3 Sitzungen",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-096765627",
+    "name": "Verwaltungsgemeinschaft Kleinheubach",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-vg-kleinheubach.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo-vg-kleinheubach.digitalfabrix.de/info.asp",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "Öffentliches Bürgerinfoportal, verlinkt auf kleinheubach.de (Gemeinderat → Bürgerinfoportal), neben dem Anmeldebereich (10.10.2026); drei Monate: 116 Punkte in 9 Sitzungen",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-09676139",
+    "name": "Stadt Miltenberg",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-miltenberg.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://www.miltenberg.de/rathaus-buergerservice/stadtrat/sitzungen/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 55,
+      "meetings": 9,
+      "identity": "Adresse"
+    },
+    "foundBy": "Recherche 10.10.2026: Website Stadtrat/Sitzungen verweist auf buergerinfo-miltenberg.digitalfabrix.de (Bürgerinfo neben dem Ratsinfo-Zugang)"
+  },
+  {
+    "id": "de-09175132",
+    "name": "Gemeinde Vaterstetten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.vaterstetten.sitzung-online.de/public/",
+    "verifiedSource": "https://www.vaterstetten.de/rathaus-politik/Der%20neue%20Gemeinderat/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.vaterstetten.sitzung-online.de/public/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 43,
+      "meetings": 6,
+      "identity": "Adresse"
+    },
+    "foundBy": "Recherche 10.10.2026: Gemeinderatsseite verlinkt den öffentlichen ALLRIS-4-Sitzungskalender /public/ (Atlas kannte nur bi2/ ALLRIS 3)"
+  },
+  {
+    "id": "de-010585803",
+    "name": "Amt Achterwehr",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.achterwehr.sitzung-online.de/buergerinfo/",
+    "calendar": "si010_r.asp",
+    "verifiedSource": "https://www.amt-achterwehr.de/politik/buergerinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 591,
+      "meetings": 42,
+      "identity": "Adresse"
+    },
+    "foundBy": "Recherche 10.10.2026: Seite Bürgerinformationssystem verlinkt achterwehr.sitzung-online.de/buergerinfo/ neben dem geschützten ri/-Bereich"
+  },
+  {
+    "id": "de-01062009",
+    "name": "Gemeinde Barsbüttel",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.barsbuettel.de/allris/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://www.barsbuettel.de/buergerservice-politik/politik/gemeindevertretung/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 107,
+      "meetings": 11,
+      "identity": "Adresse"
+    },
+    "foundBy": "Recherche 10.10.2026: Gemeindevertretungsseite verlinkt Sitzungskalender www.barsbuettel.de/allris/si010_e.asp; ALLRIS-Login nur für Ratsmitglieder auf sitzungsdienst-barsbuettel.de"
+  },
+  {
+    "id": "de-071385001",
+    "name": "Verbandsgemeinde Asbach",
+    "kind": "city",
+    "system": "https://ratsinfo-vg-asbach.gremien.info/oparl/system",
+    "method": "oparl",
+    "meetingScan": "forward",
+    "state": "system-verified",
+    "verifiedSource": "https://www.vg-asbach.de/verbandsgemeinde/rathaus-und-verwaltung/ratsinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "evidence": {
+      "window": "3m",
+      "topics": 32,
+      "meetings": 14,
+      "body": "https://ratsinfo-vg-asbach.gremien.info/oparl/body/VG"
+    },
+    "foundBy": "Recherche 10.10.2026: Seite Ratsinformationssystem verlinkt „neues Ratsinformationssystem (ab Juli 2024)“ ratsinfo-vg-asbach.gremien.info (More! Rubin mit OParl); Atlas kannte nur ratsinfo.vg-asbach.de (HTTP 403)"
   }
 ]
