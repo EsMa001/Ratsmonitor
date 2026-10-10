@@ -3155,6 +3155,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06436012",
+    "name": "Gemeinde Sulzbach (Taunus)",
+    "kind": "city",
+    "method": "scraper",
+    "verifiedAt": "2026-10-10",
+    "adapter": "more-rubin",
+    "base": "https://sulzbach-taunus.gremien.info/",
+    "verifiedSource": "https://www.sulzbach-taunus.de/kundenservice-rathaus/gemeindespitze-und-gremien/gremien-ausschuesse-und-kommissionen/rats-und-buergerinformationssystem",
+    "apiCheck": "öffentliche Kalender-API/Seiten, Leser more-rubin liefert Punkte"
+  },
+  {
     "id": "de-06437001",
     "name": "Stadt Bad König",
     "kind": "city",
@@ -26241,6 +26252,18 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09574152",
+    "name": "Stadt Röthenbach a.d.Pegnitz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sessionnet",
+    "base": "https://stadtrat.roethenbach.de/bi/",
+    "extension": "php",
+    "verifiedSource": "https://stadtrat.roethenbach.de/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "collectSessionNet window 3m: 6 Sitzungen, 28 Punkte"
+  },
+  {
     "id": "de-09574154",
     "name": "Gemeinde Rückersdorf",
     "kind": "city",
@@ -32901,6 +32924,17 @@
     "verifiedSource": "https://amtboizenburgland.ris-portal.de/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "collectRisPortal 3m: 141 Punkte, Amtsausschuss + Gemeindevertretungen der Mitglieder (ris.boizenburgland.de leitet dorthin)"
+  },
+  {
+    "id": "de-130765654",
+    "name": "Amt Dömitz-Malliß",
+    "kind": "city",
+    "method": "scraper",
+    "verifiedAt": "2026-10-10",
+    "adapter": "ti-generator",
+    "base": "https://verwaltung.amtdoemitz-malliss.de/ris/ti-doemitz-1/",
+    "verifiedSource": "https://verwaltung.amtdoemitz-malliss.de/ris/ti-doemitz-1/",
+    "apiCheck": "kein OParl; TI-Generator-Seiten öffentlich"
   },
   {
     "id": "de-130765656",
