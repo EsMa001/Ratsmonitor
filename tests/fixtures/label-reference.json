@@ -1,0 +1,656 @@
+{
+ "version": "label-reference-v1",
+ "note": "Von Hand zugeordnete Titel (Stichprobe, nicht statistisch repräsentativ) für Regelmessung mit scripts/label-study/measure-rules.mjs",
+ "rows": [
+  {
+   "id": "recklinghausen-vo-20252111100173",
+   "title": "Benennung von Vertreterinnen und Vertretern des Kreises Recklinghausen für die Mitgliederversammlung des Vereins Drogenberatung Westvest e.V.",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-9fb47ea76383c92b96c6",
+   "title": "Sachstand Einrichtung Fahrradstraße Goethestraße",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05558044-top-1543--5",
+   "title": "Berichte der Verwaltung Übersicht LEADER-Kleinprojekte",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "nrw-05558012-vo-2004032772",
+   "title": "Berufung eines neuen Beiratsmitgliedes für den Gestaltungsbeirat",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05334002-oparl-b0b7d4f85bf2828d17a3",
+   "title": "Genehmigung der Niederschrift der Sitzung vom 01.07.2026 (öffentlicher Teil)",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05558044-top-1534--13",
+   "title": "Anfragen der Ausschussmitglieder hier: Kanalseitenweg - zukünftige Zugänglichkeit für Wasserentnahme (IV)",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "nrw-05315000-oparl-c57f9355e8a009462b40",
+   "title": "Anfragen gemäß § 4 der Geschäftsordnung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05315000-oparl-8bde882fd62c3bedfe68",
+   "title": "Beantwortung der Anfrage AN/0948/2026 der CDU-Fraktion zur Schließung des Frauenhauses Haus Rosalie Rendu",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05562004-oparl-d1772763a2431197c921",
+   "title": "Antrag der SPD-Ratsfraktion vom 30.06.2026 zur Gesundheitsversorgung in Castrop-Rauxel zukunftssicher, wohnortnah, sozial, gerecht und vernetzt gestalten",
+   "gold": "gesundheit"
+  },
+  {
+   "id": "nrw-05334002-oparl-417e6187914665c7f047",
+   "title": "Vorstellung der Organisationsstruktur der Abteilungen des Gebäudemanagements der Stadt Aachen",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05554004-top-1751--5",
+   "title": "Mitteilungen der Verwaltung / Sachstand Fraktionsanträge",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05758012-oparl-466d5c23d156af0deeda",
+   "title": "Altkleidersammlung im Stadtgebiet Herford",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05315000-oparl-c9774cffb0e56b70fbfc",
+   "title": "Vermeidungsstrategien und Handlungsspielräume bei kampfmittelbedingten Baumfällungen, Anfrage B90/Die Grünen",
+   "gold": "umwelt"
+  },
+  {
+   "id": "warendorf-vo-2004109739",
+   "title": "Begleitvorlage zum Entwurf der Haushaltssatzung 2026: Erläuterungen zum Stellenplan",
+   "gold": "finanzen"
+  },
+  {
+   "id": "recklinghausen-vo-202611305100083",
+   "title": "Änderung der Dienstanweisung über Stundung, Niederschlagung und Erlass von Geldforderungen des Kreises Recklinghausen",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05114000-oparl-2faa4de18cecf413b567",
+   "title": "Barrierefreie Umgestaltung der Haltestelle Rathaus Fischeln - Antrag der Fraktionen von SPD, Bündnis 90/Die Grünen und Herrn Eisenhuth aus der 33. Sitzung vom 25.09.2019 (dort TOP 20)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "warendorf-vo-2004109915",
+   "title": "Digitalisierungsstrategie - Roadmap 2026",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05334002-oparl-8e818a92bb68328cb99a",
+   "title": "Eine Freundschaftsbank für die KGS Hanbruch",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05758012-oparl-eb33ac5c588ec941d3fd",
+   "title": "Flächennutzungsplanneuaufstellung Hier: erneuter Entwurf, erneute Beteiligung gem. § 4a BauGB",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05758012-oparl-8970a4ac7ef54347032c",
+   "title": "Antrag des Allgemeinen Gehörlosen-Vereins von 1907 e.V. Herford und Gehörlosen-Sportvereins Herford 1946 e.V. auf finanzielle Förderung.",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05315000-oparl-d23680b1e9bb8c2c9e5c",
+   "title": "Antwort der Verwaltung vom 17. Juni 2026",
+   "gold": "allgemein"
+  },
+  {
+   "id": "recklinghausen-top-23137",
+   "title": "Benennung von Vertretern/ Vertreterinnen des Naturschutzbeirates im Ausschuss für Klima, Nachhaltigkeit und Umwelt",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566076-vo-12774",
+   "title": "Entsendung von Vertreter/innen der Stadt Rheine in Verbände, Vereine und sonstige Gremien",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05558012-vo-2004032658",
+   "title": "Festlegung der Anzahl der ehrenamtlichen Stellvertreter/innen der Bürgermeisterin",
+   "gold": "sitzung"
+  },
+  {
+   "id": "warendorf-vo-2004109836",
+   "title": "Programm Erasmus Plus am PSBK Warendorf",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05334002-oparl-0d6429a0faa5586d4279",
+   "title": "Tagesordnungsantrag der SPD und CDU: Bericht über Immobilienleerstände im Bezirk Haaren und Vorstellung von Maßnahmen gegen systematischen Leerstand",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05558012-vo-2004032728",
+   "title": "Reduzierung des Stellplatzangebotes im Wohngebiet Wahrkamp",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05758012-oparl-9939760cdcde53edf17f",
+   "title": "Herforder Sportvereine präsentieren sich in den Sitzungen des Sportausschusses - Vorstellung der BSG Lebenshilfe Herford e.V.",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033564",
+   "title": "Antrag auf Errichtung einer Fahrradaufstellzone an der Kreuzung Niederstockumer Weg/Daruper Straße , Änderung der Ampelschaltung für Fußgänger:innen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-04f82c50376c278118d6",
+   "title": "Stärkere Berücksichtigung der älteren Generation in der Kölner Wohnungspolitik",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05315000-oparl-8d874a4150df938973fd",
+   "title": "Verschiebung der Sonderausstellung im MAKK zum 75-jährigen Jubiläum der DGPh",
+   "gold": "kultur"
+  },
+  {
+   "id": "recklinghausen-top-23747",
+   "title": "Antrag der Kreistagsfraktionen von SPD und CDU - hier: Neuaufstellung des Nahverkehrsplans Kreis Recklinghausen -",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05114000-oparl-4c624c96e6e6021ddab8",
+   "title": "Beratung über den Entwurf des Haushaltsplans 2026 Teilpläne für die Produktgruppen: - 4-400-00 FB-Overhead 40, S. 790 - 4-400-01 Schule, S. 796 - 4-400-02 Schulamt, Zentrum für digitale Lernwelten und Schul-IT, S. 804 - 4-400-03 Pädagogischer Dienst, S. 812 - 4-400-05 Psychologischer Dienst, S. 820 - 4-401-00 FB-Overhead 40/VHS, S. 831 - 4-401-01 Bildungsangebote, S. 836",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05570012-vo-13822",
+   "title": "Tätigkeitsbericht des Amtes für Jugend und Bildung Kreis Warendorf Berichterstatterin: Frau Anke Frölich, Amtsleiterin",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05315000-oparl-04e53e27a7537ae107d2",
+   "title": "Vergabe bezirksorientierter Mittel an den Experimentalchor Alte Stimmen e.V.",
+   "gold": "kultur"
+  },
+  {
+   "id": "nrw-05558040-vo-15677",
+   "title": "69. Änderung des Flächennutzungsplanes der Gemeinde Rosendahl zur Ausweisung eines allgemeinen Wohngebietes im Ortsteil Holtwick Beschluss über eingegangene Stellungnahmen Beschluss zur öffentlichen Auslegung gemäß § 3 Abs. 2 Baugesetzbuch (BauGB) und sonstigen Träger öffentlicher Belange gemäß § 4 Abs. 2 BauGB",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05114000-oparl-7836ae1c83da1528c556",
+   "title": "Neuanlage Fußweg Altmühlenfeld westlich der Grünfläche an der Kreuzung zur Kimplerstraße - Anfrage der Fraktionen von SPD und Bündnis 90/Die Grünen aus der 15. Sitzung vom 11.05.2023 (dort TOP 8)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05566008-oparl-1173026ab21f907042ae",
+   "title": "Kurze allgemeine Einführung, wichtige Dokumente",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05570044-top-1400--1-4",
+   "title": "Entwicklungskonzept für den Orkotten, Teilbereich Mitte",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033714",
+   "title": "Besetzung der Leitungsstelle an der Sebastian Grundschule",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05558044-top-1451--9",
+   "title": "Berichte der Verwaltung hier: DEK Route",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05315000-oparl-348150405f1f8835392b",
+   "title": "Änderungsantrag zu TOP 3.1 - \"Beschluss einer zeitlich begrenzten Anpassung von städtischen Vorgaben zur Baukostenreduzierung im Wohnungsbau\", Änderungsantrag B90/Die Grünen",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05315000-oparl-80c2fdf339763e108890",
+   "title": "Beantwortung der Verwaltung liegt vor",
+   "gold": "allgemein"
+  },
+  {
+   "id": "recklinghausen-top-22713",
+   "title": "Niederschrift über die 7. Sitzung des Rechnungsprüfungsausschusses am 12.11.2024",
+   "gold": "sitzung"
+  },
+  {
+   "id": "warendorf-vo-2004109821",
+   "title": "Antrag der Kreistagsfraktion Bündnis 90/DIE GRÜNEN: Ausstellung \"Demokratie stärken - Rechtsextremismus bekämpfen\"",
+   "gold": "kultur"
+  },
+  {
+   "id": "nrw-05558044-top-1521--15",
+   "title": "Berichte der Verwaltung Ortsumgehung Ottmarsbocholt – Umstufung von Abschnitten der L 844 und der K 2 bei Ottmarsbocholt (IV)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05334002-oparl-119060de23fbd1d23d3e",
+   "title": "Bericht über die Kennzahlenerreichung im ersten Halbjahr 2026",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05558024-vo-19853",
+   "title": "9. Änderung der Satzung für die Benutzung der Friedhofseinrichtungen der Stadt Lüdinghausen vom 18.12.2008",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "nrw-05315000-oparl-af843d78c8937833f574",
+   "title": "Sicherstellung der Durchfahrt für Einsatzfahrzeuge im Bereich Schmitburgstraße/Goldenfelsstraße.",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "nrw-05334002-oparl-67a6cf998e1cc28d96a7",
+   "title": "Entlastung der Kassenwartin",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05758012-oparl-9b736d445412cbe45ccb",
+   "title": "Bebauungsplan Nr. 12.38 \"Vlothoer Straße Nord/ Hammersmith Kaserne, Teil 2\" Hier: Satzungsbeschluss",
+   "gold": "bauen"
+  },
+  {
+   "id": "warendorf-vo-2004109818",
+   "title": "Beratung des Entwurfs der Haushaltssatzung 2026 mit Haushaltsplan und Anlagen, soweit die Zuständigkeit anderer Fachausschüsse nicht gegeben ist",
+   "gold": "finanzen"
+  },
+  {
+   "id": "warendorf-vo-2004109853",
+   "title": "Einführung einer smartphonebasierten Ersthelferalarmierung",
+   "gold": "gesundheit"
+  },
+  {
+   "id": "recklinghausen-top-23132",
+   "title": "Begrüßung aller Anwesenden und Ehrung der ausgeschiedenen Naturschutzbeiratsmitglieder durch den Fachdienstleiter Umwelt Herrn Fischer",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05334002-oparl-b544632b4c247f0afbc5",
+   "title": "Besetzung des Ausschusses für Schule und Weiterbildung - Wahl sachkundiger Einwohner*innen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "warendorf-top-103824--3",
+   "title": "Wahl des/der Vorsitzenden und eines/-er Stellvertreters/-in",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05334002-oparl-d8212bacc10cf3843b6e",
+   "title": "Verkehrssicherheitskonzept Fußgängertunnel; Auswertung der gemeinsamen Aktion von Verwaltung und Polizei",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-218ba2b7b993e374ccfb",
+   "title": "Beantwortung der Anfrage AN/1050/2026 der FDP-Frakton und der Volt-Fraktion bezüglich des Baugerüsts an der Katholischen Grundschule Freiligrathstraße",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05558012-vo-2004032879",
+   "title": "Landesprogramm Teil.Sein.NRW - Demokratieförderung und Partizipation in der Stadt Coesfeld",
+   "gold": "soziales"
+  },
+  {
+   "id": "recklinghausen-vo-202611812100020",
+   "title": "Besuch einer Delegation des Kreises Recklinghausen im Kreis Wodzislaw (Polen) vom 17.03.2026 - 20.03.2026 -Genehmigung einer Dienstreise für die teilnehmenden Kreistagsmitglieder-",
+   "gold": "kultur"
+  },
+  {
+   "id": "nrw-05334002-oparl-b76de5010222ee3d4242",
+   "title": "Sachstand Liniennetzgutachten, TO Antrag der Fraktion Bündnis 90 die Grünen vom 28.05.2026",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "recklinghausen-vo-202611712100014",
+   "title": "Aktualisierung des interkommunalen Wirtschaftsflächenkonzepts für den Kreis Recklinghausen",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "nrw-05558044-top-1445--16",
+   "title": "Anfragen der Ratsmitglieder Einhaltung der Regelungen im neuen Skatepark",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05334002-oparl-feefb57c3d2a57c4e9d0",
+   "title": "Finanzieller Zwischenbericht 2. Quartal 2026 (01.01. bis 30.06.2026) nach § 20 EigVO NRW nebst Erläuterungen",
+   "gold": "finanzen"
+  },
+  {
+   "id": "warendorf-vo-2004109808",
+   "title": "Zuständigkeiten des Ausschusses für Digitalisierung und Vorstellung der Akteure",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05114000-oparl-06ec040a91c64bf85b74",
+   "title": "Genehmigung der Niederschrift der öffentlichen Sitzung vom 19.05.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05334002-oparl-c6889f658dec17e75223",
+   "title": "Sachstand zur finanziellen Abwicklung von Klassenfahrten und Tagesausflügen, Antrag zur Tagesordnung der Fraktion Die Grüne vom 12.05.26",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05114000-oparl-497362b7be9e74f734b7",
+   "title": "Widmungsverfahren Griesbacher Straße",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "recklinghausen-vo-202611112100000",
+   "title": "Schlüssiges Konzept zur Ermittlung und Festsetzung der angemessenen Bedarfe für Unterkunft und Heizung",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05570032-vo-5362",
+   "title": "Zuschüsse an Dritte im Bereich des sozialen Lebens",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05315000-oparl-4712271be8edc7f6b077",
+   "title": "Anfrage der SPD-Fraktion, betr.: Wie geht es mit der Bezirkssportanlage Prälat-Ludwig-Wolker in Ehrenfeld weiter?",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05315000-oparl-c2bb10b9dc47be66652d",
+   "title": "Beantwortung einer Anfrage der FDP-KSG-Fraktion BV Köln-Rodenkirchen betreffend \"Machbarkeit eines sicheren Flussbades in Rodenkirchen im Zuge der Olympiabewerbung\" (AN/0845/2026)",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05315000-oparl-c650d4a98da2a6faf6cc",
+   "title": "Aggressives Betteln auf der Neusser Straße in Nippes",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "nrw-05558016-vo-2004025482",
+   "title": "Bestellung eines Schriftführers und einer stellv. Schriftführerin für die Sitzungen des Ausschusses für Wirtschaftsförderung und Stadtentwicklung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "recklinghausen-vo-20252108100134",
+   "title": "Einbringung des Entwurfs des Gesamtabschlusses 2024",
+   "gold": "finanzen"
+  },
+  {
+   "id": "recklinghausen-vo-20250711100161",
+   "title": "Schriftführung für die Sitzungen des Ausschusses für Klima, Nachhaltigkeit und Umwelt",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-719cb78c03c8b8902948",
+   "title": "Gemeinsamer Antrag der Fraktion Bündnis 90/Die Grünen, SPD-Fraktion, Fraktion Die Linke, CDU-Fraktion, Volt/FDP-Fraktion betr.: Beratung mit dem Kinder- und Jugendforum Ehrenfeld",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05558012-top-12675--17",
+   "title": "Sachstand Erweiterung des Wohnmobilstellplatzes",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "nrw-05315000-oparl-efd9631d9b697fa58db3",
+   "title": "Anfrage der AfD-Fraktion betreffend \"Durchführung des Christopher Street Days (CSD) in Köln\"",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05114000-oparl-f24eb4faa34a1b796d59",
+   "title": "Beratung über den Entwurf des Haushaltsplans 2026 hier: Teilpläne für die Produktgruppen: Dezernat Wirtschaft, Digitalisierung und Internationales, 1-101-01 Wirtschaft und Digitalisierung, I, S. 116 Dezernat Wirtschaft, Digitalisierung und Internationales, 1-101-02 Fördermittel, regionale und internationale Zusammenarbeit, I, S. 122 20 - Finanzsteuerung und Beteiligungsmanagement, 2-020-00 FB Overhead 20, II, S.342 20 - Finanzsteuerung und Beteiligungsmanagement, 2-020-01, Zentrale Finanzsteuerung, II, S. 348 21 - Finanzservice, 2-021-00, FB-Overhead 21, II, S. 370 21 - Finanzservice, 2-021-01, Finanzbuchhaltung, II, S. 376 21 - Finanzservice, 2-021-02, Steuern und Abgaben, II, S.383 21 - Finanzservice, 2-021-04, Märkte und Allgemeine Verwaltung (nur Allgemeine Verwaltung), II, S 391 02 - Gleichstellungsstelle, 3-002-01, Gleichstellungsstelle, III, S. 442 03 - Gesamtpersonalrat, 3-003-01, Gesamtpersonalrat, III, S. 453 10 - Verwaltungssteuerung und -service, 3-010-00, FB-Overhead 10, III, S. 466 10 - Verwaltungssteuerung und -service, 3-010-01, Strategische Organisationsentwicklung, III, S. 473 10 - Verwaltungssteuerung und -service, 3-010-02, Ausbildung, Personalmarketing und-entwicklung, III, S. 480 10 - Verwaltungssteuerung und -service, 3-010-03, Personalservice, III, S. 488 10 - Verwaltungssteuerung und -service, 3-010-05, Zentrale Dienste, III, S. 495 11 - E-Government und Informationstechnik, 3-011-00 - FB-Overhead 11, III, S. 509 11 - E-Government und Informationstechnik, 3-011-01, Verwaltung und E-Government, III, S. 515 11 - E-Government und Informationstechnik, 3-011-02, IT-Service und IT-Betrieb, III, S. 521 30 - Recht, 3-030-00, FB-Overhead 30, III, S. 534 30 - Recht, 3-030-01, Rechtsangelegenheiten, III, S. 540 30 - Recht, 3-030-02, Versicherungsangelegenheiten, III, S. 547 30 - Recht, 3-030-03, Vergabe- und Vertragswesen, III, S. 553 30 - Recht, 3-030-99, Gemeinkosten, III, S. 560 31 - Bürgerservice, 3-031-00, FB-Overhead 31, III, S. 569 31 - Bürgerservice, 3-031-01, Bezirksverwaltungen, III, S. 575 31 - Bürgerservice, 3-031-02, Standesamtswesen, III, S. 582 31 - Bürgerservice, 3-031-03, Statistik und Wahlen, III, S. 589",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05334002-oparl-34fe1b546a6ac6a521c2",
+   "title": "Konzept Ladeinfrastruktur E-Mobilität für den Bezirk Kornelimünster/Walheim",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "warendorf-vo-2004109791",
+   "title": "Vorbereitung und Entscheidungen im Rahmen der Haushaltsplanberatungen Hier: Beratung des Budgets Bildung, Kultur und Sport des Amtes für Jugend und Bildung für das Jahr 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05315000-oparl-58f5113de67ac5cad19c",
+   "title": "Ein Verkehrskonzept für die Stegerwaldsiedlung",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-f52373d8b1ebe06448c5",
+   "title": "Anregungen und Beschwerden gemäß § 24 der Gemeindeordnung des Landes Nordrhein-Westfalen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05558040-vo-15640",
+   "title": "Antrag der SPD-Fraktion auf Installation einer kosten- und energieeffizienten Beleuchtung an der Pumptrack-Anlage in Rosendahl-Osterwick",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05334002-oparl-2047f104d08806848d57",
+   "title": "Anregungen und Beschwerden nach § 24 Gemeindeordnung NW",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05558012-vo-2004032691",
+   "title": "Änderung der Abfallgebührensatzung sowie Kalkulation der Abfallgebühren für das Jahr 2026",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05570044-top-1399--1-1",
+   "title": "Padel-Tennis",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05315000-oparl-1897b0e8ed65aa702d56",
+   "title": "Vergabe zur Konservierung von nass geborgenem Archivgut",
+   "gold": "kultur"
+  },
+  {
+   "id": "nrw-05758012-oparl-112c3d41d5a72516ab3d",
+   "title": "Maßnahmen des Straßenbauprogramms ab 2027, hier: Straßenendausbau",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05558024-vo-19951",
+   "title": "SmartCity Lüdinghausen",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05558040-vo-15571",
+   "title": "Förderantragsstellung zum Abriss und Ersatzneubau der Turnhalle in Holtwick",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05114000-oparl-da5044040866a975f4bd",
+   "title": "Ampelschaltung Rheinstraße / Ostwall",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05558012-vo-2004032828",
+   "title": "Ausbau des Stromnetzes durch die Stadtwerke",
+   "gold": "klima"
+  },
+  {
+   "id": "nrw-05554060-vo-20262503100046",
+   "title": "Übersicht der Nebentätigkeiten und Mitgliedschaften des Bürgermeisters",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "recklinghausen-vo-202611812100019",
+   "title": "Wahl der Mitglieder der lokalen Steuerungs- und Planungskonferenz - Wohnen in der Eingliederungshilfe",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05558012-vo-2004032868",
+   "title": "Masterplan Mobilität, Maßnahme E1: Bestätigung des Umsetzungsplans für das Parken in der Innenstadt - Antrag der Fraktion Bündnis 90/die Grünen: Alternativer Umsetzungsplan für das Parken in der Innenstadt",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05114000-oparl-c694c5f5dc5d4145f41c",
+   "title": "Gleiserneuerung auf dem Friedrich Platz / Gehwegfertigstellung Luisenstraße",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-e97a8f99c24759f2f3d7",
+   "title": "Vorläufige Fertigstellung der Kreuzungsbereiche bei der Baustelle Nord-Süd-Stadtbahn, 3. Baustufe, Antrag der SPD-Fraktion",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05566008-oparl-48894a77b1fd86b51df5",
+   "title": "Wahl Vorsitzende/r, Schriftführer/Schriftführerin",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-59cc3cb401c1a988f84b",
+   "title": "Einwohneranträge gemäß § 25 der Gemeindeordnung des Landes Nordrhein-Westfalen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05334002-oparl-858f9e4d1828e3bfcb8e",
+   "title": "Genehmigung der Niederschrift der Sitzung vom 25.02.2026 - öffentlicher Teil",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-7b37b2b12f075b36ebc3",
+   "title": "Bürgereingabe zum Thema „Parksituation in der Germaniastraße\"",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05758012-oparl-3c4685d0030b768c18a6",
+   "title": "Grunderneuerung der Straße Schwalbenweg vom Lübberlindenweg bis zum Meisenpfad",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "recklinghausen-vo-20250711100162",
+   "title": "Suchtberatung im Kreis Recklinghausen - Änderung der Richtlinien des Kreises Recklinghausen über die Förderung der Sucht- und Drogenberatungsstellen",
+   "gold": "gesundheit"
+  },
+  {
+   "id": "nrw-05334002-oparl-7d37e9caf1f19aab6c6b",
+   "title": "Mitteilungen der Verwaltung:",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05554060-top-5762",
+   "title": "Übernahme der Sitzungsleitung durch den neuen Bürgermeister",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-f7856a4a10ad81bf6d3a",
+   "title": "Haushaltsplan-Entwurf 2027/2028 Aufteilung der Bezirksorientierten Mittel gem. § 37 Absatz 3 Gemeindeordnung Nordrhein-Westfalen (GO NRW)",
+   "gold": "finanzen"
+  },
+  {
+   "id": "warendorf-top-103824--2",
+   "title": "Verabschiedung von Herrn Stockmann und Herrn Kleibolde als Vorsitzende",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05758012-oparl-f34d164240fa20eb4d9d",
+   "title": "Herstellung der Erschließungsanlage \"Kattendorp\" Hier: Beschluss zur Einleitung des Verfahrens gemäß § 125 Abs. 2 BauGB; Beschluss zur Öffentlichkeitsbeteiligung gemäß § 3 Abs. 2 BauGB und § 4 Abs. 2 BauGB",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05114000-oparl-c78dde5954a59f52fcc7",
+   "title": "Jahresabschluss der eigenbetriebsähnlichen Einrichtung Senioreneinrichtungen der Stadt Krefeld für das Wirtschaftsjahr 2025",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05554060-vo-20262105100076",
+   "title": "Verwendung des Bundessondervermögens",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05570044-vo-5880",
+   "title": "Änderung der öffentlich-rechtlichen Vereinbarung über die Durchführung der Aufgaben einer interkommunalen Vergabe- und Submissionsstelle durch die Stadt Beckum",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05558036-vo-2004019436",
+   "title": "Benutzungs- und Entgeltordnung für das Leohaus Olfen",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05566076-top-7221--1",
+   "title": "Niederschrift Nr. 34 über die öffentliche Sitzung am 04.09.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05558012-top-12390--15",
+   "title": "Anträge der Fraktionen zum Stellenplan",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05334002-oparl-e2ead61f065bfbe415af",
+   "title": "Resolutionsantrag der Fraktionen bzw. Ratsgruppen von CDU, Bündnis 90/Die Grünen, SPD, Die Linke, Volt, FDP und UP vom 10.06.2026: Beendigung der stationären Binnengrenzkontrollen",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05334002-oparl-b76ef4b354afc36f4602",
+   "title": "Volleyball in Parkanlagen – Ratsantrag Nr. 491/18 vom 01.07.2025",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05114000-oparl-7d4546acf0d2903250ba",
+   "title": "Radwegeinstandsetzung Hafelsstraße",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05570044-vo-5878",
+   "title": "Anregungen und Beschwerden gemäß § 24 Gemeindeordnung NRW – Anfrage/Jüngste Berichterstattung in den lokalen Medien",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05315000-oparl-68fcdc29fd02faeaf0e2",
+   "title": "Mitteilung zur Bürgereingabe nach § 24 GO NRW - Ewigkeitsfinanzierung bestimmter Projekte beenden, Aktenzeichen 125/26",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05558012-top-12379--3",
+   "title": "Mitteilungen des Ausschussvorsitzenden und Bericht der Verwaltung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05334002-oparl-ea7366c9504ec6eb4f2d",
+   "title": "Ranger im Aachener Wald hier: Tätigkeitsbericht",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05315000-oparl-1a2ada40912bdfeed294",
+   "title": "Schulstraße Biggestraße",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05554060-vo-20262002100037",
+   "title": "Außerkrafttreten der Satzung der Gemeinde Südlohn über die Errichtung und Unterhaltung von Übergangswohnheimen (Übergangsheimsatzung) vom 20.02.2008, geändert am 11.12.2014, 26.04.20216, 21.06.2023, 27.06.2024 und 27.06.2025 sowie Inkrafttreten der neuen Satzung",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05570044-top-1395--8-2",
+   "title": "Umbau an der Kreuzung in Westbevern Dorf",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05566076-top-7054--7",
+   "title": "Anfragen, Anregungen, Verschiedenes",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05558020-top-4299--3",
+   "title": "Anfragen der Einwohnerinnen und Einwohner gem. § 18 GeschO",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05334002-oparl-19ad35dd4138b6a5f201",
+   "title": "Haaren Mobil - Ergebnisse der Mobilitätserhebung",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05558016-top-5128--5",
+   "title": "Mitteilungen des Ausschussvorsitzenden und des Bürgermeisters",
+   "gold": "allgemein"
+  }
+ ]
+}

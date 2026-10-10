@@ -1,0 +1,506 @@
+{
+ "version": "label-holdout-3-v1",
+ "note": "Vierte Stichprobe, blind zugeordnet, nach dem Festlegen der Regeln gezogen und nicht zum Anpassen benutzt",
+ "rows": [
+  {
+   "id": "nrw-05570020-top-3605--15-1",
+   "title": "Neues Stadtlogo",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05566008-oparl-e9c3366424c7dda44878",
+   "title": "Niederschrift über die letzte Sitzung vom 12.06.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-vo-13469",
+   "title": "Neufassung der Vereinbarung zwischen dem Kreis Steinfurt und der EGST über den Ansatz kalkulatorischer Wagnisse sowie die Berechnung des kalkulatorischen Gewinns vom 01.02.2002",
+   "gold": "finanzen"
+  },
+  {
+   "id": "warendorf-vo-2004109894",
+   "title": "Handlungswege bei Kindern mit besonderen Bedarfen in Kindertageseinrichtungen",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05334002-oparl-3b223170c38e7967716b",
+   "title": "Erster Aachener Nachhaltigkeitsbericht",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05334002-oparl-7623b9a99d0affc2d5bc",
+   "title": "Anträge gemäß § 25 Abs. 4 Geschäftsordnung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "steinfurt-vo-13794",
+   "title": "Aktueller Sachstand Telenotarzt",
+   "gold": "gesundheit"
+  },
+  {
+   "id": "nrw-05334002-oparl-aa477a2663aaffbffaa8",
+   "title": "Prioritätenliste Kleinmaßnahmen 2026; Antrag der CDU-Fraktion in der Bezirksvertretung Aachen-Kornelimünster/Wahlheim vom 06.03.2026",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05334002-oparl-da7c80b1365ad9088efc",
+   "title": "Eröffnung, Begrüßung, Feststellen der Beschlussfähigkeit",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-top-8809--5",
+   "title": "Wahl der/des Vorsitzenden des Inklusionsbeirates",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05334002-oparl-80bc745b2e0e1b01eb53",
+   "title": "Genehmigung der Niederschrift der Sitzung vom 10.09.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05334002-oparl-ee11c4e23e79de298b34",
+   "title": "Behandlung von Anträgen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "steinfurt-top-8725--1",
+   "title": "Feststellung der Niederschrift über den öffentlichen Teil der KT-Sitzung vom 15.12.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05334002-oparl-d1a5b6f51e6fd1500294",
+   "title": "Vergabe der bezirklichen Investitionsmittel 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "steinfurt-vo-13622",
+   "title": "Haushaltsplanentwurf 2026 für die Produkte in der Zuständigkeit des Ausschusses für Umwelt, Klima, Naturschutz, Energie und Entsorgung",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05334002-oparl-07a7c51122c55738e3d4",
+   "title": "Ratsantrag der UWG Partei “Zur Prävention von sexuellem Missbrauch von Kindern und Jugendlichen”",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05562004-oparl-cef9562cf0db5a635bc5",
+   "title": "Antrag der SPD-Ratsfraktion vom 25.06.2026_Kraft tanken an der Emscher",
+   "gold": "unklar"
+  },
+  {
+   "id": "steinfurt-vo-13306",
+   "title": "Befreiung gem. § 67 BNatSchG von den Verboten des § 39 LNatSchG für das Baugenehmigungsverfahren, zur Querschnittsumgestaltung der L 583 und L 578 mit Anlage eines Kreisverkehrs und Neubau eines Geh- und Radweges zwischen Steinfurt und Emsdetten, einen gesetzlich geschützten Landschaftsbestandteil zu beseitigen",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05562004-oparl-1bde7af8d71193ad5ca1",
+   "title": "Sachstandsbericht Kita Bedarfsplanung - mündlicher Bericht",
+   "gold": "bildung"
+  },
+  {
+   "id": "steinfurt-vo-13907",
+   "title": "Aufgaben der Lebensmittelüberwachung",
+   "gold": "gesundheit"
+  },
+  {
+   "id": "steinfurt-top-8379--4",
+   "title": "Kulturpreis 2025 - Bekanntgabe",
+   "gold": "kultur"
+  },
+  {
+   "id": "nrw-05562004-oparl-e6633e1ebf0731f69710",
+   "title": "Bericht der Schulleiterin der Martin-Luther-King Schule",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05334002-oparl-0dc17a568384b0fd728d",
+   "title": "Umbesetzungsantrag der FDP-Ratsgruppe vom 14.09.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05562004-oparl-4b33c7b0bca2b8f282e3",
+   "title": "Sachstandsbericht Kinder- und Jugendförderplan - mündlicher Bericht",
+   "gold": "soziales"
+  },
+  {
+   "id": "steinfurt-vo-13681",
+   "title": "geplante Maßnahmen an der Ems im Jahr 2026",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05562004-oparl-38ec5b91bfe99a008b13",
+   "title": "Vorstellung des Bereiches 41 Kultur, Weiterbildung, Qualifizierung durch den Bereichsleiter Herrn Dr. Adrian Tavaszi",
+   "gold": "kultur"
+  },
+  {
+   "id": "nrw-05334002-oparl-665e39241a9b347a9e7d",
+   "title": "Bericht der DB zu aktuellen SPNV Themen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "steinfurt-vo-13475",
+   "title": "Information zur Umsetzung der Landesinitiative „Endlich ein Zuhause“",
+   "gold": "soziales"
+  },
+  {
+   "id": "warendorf-vo-2004109930",
+   "title": "Entscheidung über den pauschalen Verzicht auf das Widerspruchsrecht des Beirates in unkritischen Fällen.",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-vo-13465",
+   "title": "Befreiung gem. § 67 BNatSchG von den im Landschaftsplan II \"Schafbergplatte\" für das Landschaftsschutzgebiet \"Östlicher Schafberg“ festgesetzten Verboten zur Errichtung baulicher Anlagen sowie Betreten / Befahren des Gebietes hier: Bau eines Regenrückhaltebeckens für den Bebauungsplan Nr. 55 „Inova-Park“",
+   "gold": "umwelt"
+  },
+  {
+   "id": "agendaitems-277908",
+   "title": "Bericht zur Arbeit der Stadtteilkoordinatorin",
+   "gold": "soziales"
+  },
+  {
+   "id": "papers-vo-2004055978",
+   "title": "Bestellung einer Schriftführung und Stellvertretung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05566008-oparl-5cfbb8f58cf42613ebe5",
+   "title": "Außenbereichssatzung \"Rheiner Straße\" - Beschluss zur öffentlichen Auslegung",
+   "gold": "bauen"
+  },
+  {
+   "id": "warendorf-vo-2004109798",
+   "title": "Vorbereitung und Entscheidungen im Rahmen der Haushaltsplanberatungen-Hier: Beratung des Budgets Kinder, Jugendliche und Familien des Amtes für Jugend und Bildung für das Jahr 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05334002-oparl-696faf4ab8132435e7ce",
+   "title": "Genehmigung der Niederschrift der Sitzung vom 02.07.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "papers-vo-2004055814",
+   "title": "Bestellung der Schriftführung für die Sitzungen des Sportausschusses",
+   "gold": "sitzung"
+  },
+  {
+   "id": "steinfurt-top-8764--1",
+   "title": "Feststellung der Niederschrift über den öffentlichen Teil der Sitzung vom 03.02.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "billerbeck-vo-6037",
+   "title": "Antrag der SPD-Fraktion vom 17.06.2025; hier: Regelmäßige Sperrmüllabholung im Innenstadtbereich",
+   "gold": "umwelt"
+  },
+  {
+   "id": "steinfurt-vo-13397",
+   "title": "Zuschussvertrag mit dem Ersatzschulträger der Josefsschule Wettringen, einer Förderschule mit dem Schwerpunkt Emotionale und Soziale Entwicklung",
+   "gold": "bildung"
+  },
+  {
+   "id": "agendaitems-280727",
+   "title": "Theater Münster",
+   "gold": "kultur"
+  },
+  {
+   "id": "billerbeck-vo-6092",
+   "title": "Umsetzung des Klimaschutzkonzepts hier: Abschlussbericht über den Förderzeitraum des Klimaschutzkonzepts",
+   "gold": "klima"
+  },
+  {
+   "id": "nrw-05566008-oparl-cff1e525b3c86f793646",
+   "title": "Erweiterung der Josefschule / Vorstellung der Entwurfsplanung",
+   "gold": "bildung"
+  },
+  {
+   "id": "warendorf-vo-2004109790",
+   "title": "Einblicke in die Struktur und die Aufgaben des Amtes für Jugend und Bildung für den Zuständigkeitsbereich des Ausschusses für Bildung, Integration, Kultur und Sport",
+   "gold": "bildung"
+  },
+  {
+   "id": "coesfeld-vo-6892",
+   "title": "Aktualisierung Schulentwicklungsplanung der Förderschulen im Kreis Coesfeld - Schwerpunkt Förderschwerpunkte „Lernen“ und „Sprache“",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05334002-oparl-c60a0b30405e85c4971c",
+   "title": "Senior*innenratswahl 2027 – Änderung der Wahlordnung",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "billerbeck-vo-6102",
+   "title": "Information zur Versorgungssicherheit, zum Umgang mit Störungen im Stromnetz und zur Resilienz kritischer Infrastrukturen im Netzgebiet der GELSENWASSER Energienetze GmbH (GWN)",
+   "gold": "klima"
+  },
+  {
+   "id": "coesfeld-vo-6956",
+   "title": "Änderung des Gesellschaftsvertrages der INCA GmbH",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05562024-top-28379",
+   "title": "Anfragen und Mitteilungen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05114000-oparl-2325c3ef5a6e7ba6810c",
+   "title": "Straßen- und Verkehrszustand Hermannstraße - Antrag der CDU-Fraktion vom 24.03.2022 (Vorlagen-Nr. 2940/22 A)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-896c0a9721b07a3c2b11",
+   "title": "Mündliche Anfrage der SPD-Fraktion, Dr. Eva Bürgermeister, betr. \"Müll auf dem Großmarkt\"",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05315000-oparl-30c96dba6841e882ec94",
+   "title": "Bürgereingabe nach § 24 GO– „Lärmschutzmaßnahmen an der Weinsbergstraße“, Aktenzeichen 66/26",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033678",
+   "title": "Genehmigung eines eilbedürftigen Beschlusses des Betriebsausschusses vom 24.06.2026 durch den Rat der Gemeinde Nottuln gemäß § 60, Abs. 1, Satz 3, Gemeindeordnung (GO) NRW in einer nicht aufschiebbaren Angelegenheit: Billigung der Teilnahme am Interessenbekundungsverfahren des Bundesprogramms „Sanierung kommunaler Sportstätten (SKS)“ des Bundesministeriums für Wohnen, Stadtentwicklung und Bauwesen (BMWSB), Projektaufruf 2026 – Schwimmbäder sowie damit einhergehende erste Änderung der Finanzplanung der Bäder für den Zeitraum 2026 bis 2030",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-015a8c5c99dc4812682c",
+   "title": "Anfragen aus vorherigen Sitzungen Stand 11.03.2026",
+   "gold": "allgemein"
+  },
+  {
+   "id": "coesfeld-vo-6984",
+   "title": "Umdeklarierung hin zu „NO-GENDER-Toiletten“; Antrag der DIE LINKE-Gruppe vom 30.05.2026",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05315000-oparl-8fe6ed2b0406cedbe241",
+   "title": "Städtebauliche Planungskonzepte / Stellungnahme der Bezirksvertretungen zu den Ergebnissen der vorgezogenen Bürgerbeteiligungen/frühzeitigen Öffentlichkeitsbeteiligungen, Entscheidungen über die Vorgaben zu den Bebauungsplan-Entwürfen",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05758012-oparl-062f87f722bea61f0cd9",
+   "title": "Wirkungsorientierung in der sozialen Arbeit hier: Vorstellung der Ergebnisse aus der Projektarbeit der Studierenden der Stadt Herford zur Wirkungsorientierung des „Präventiven Hausbesuchs“",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033538",
+   "title": "Kalkulation der Trinkwassergebühren zum 01.01.2026",
+   "gold": "umwelt"
+  },
+  {
+   "id": "steinfurt-vo-13424",
+   "title": "Verlängerung der Integrationsförderrichtlinie",
+   "gold": "soziales"
+  },
+  {
+   "id": "papers-vo-2004055864",
+   "title": "Zusätzliche Ticketautomaten für Gievenbeck",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-0cf52a855f8b4c6a222f",
+   "title": "Mündliche Anfrage des Bezirksvertreters Herrn Büschges Turnhalle in Köln-Pesch",
+   "gold": "sport"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033614",
+   "title": "\"Nottuln.Wind GmbH\" - Entsendung der Mitglieder des Haupt- und Finanzausschusses und des Bürgermeisters",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05334002-oparl-66d1a7ffb100f998ab01",
+   "title": "Bericht des Landesbetriebs Straßen. NRW zu aktuellen Großmaßnahmen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05566008-oparl-a3c398332a5b58caa7e7",
+   "title": "Bürgerbus - Jahresbericht für das Jahr 2025",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "recklinghausen-vo-202610704100051",
+   "title": "Antrag der Kreistagsfraktion Bündnis 90 / Die Grünen vom 01.09.2025 - Verbot des Einsatzes von Mährobotern in der Nacht",
+   "gold": "unklar"
+  },
+  {
+   "id": "nrw-05562004-oparl-46e3425cd47f33746c7c",
+   "title": "Antrag der AfD-Fraktion vom 26.06.2026_Prüfung zur Aufstellung weiterer Papiercontainer oder anderer Lösungsmöglichkeiten",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05562004-oparl-e4da77dc2d953ecd7f0c",
+   "title": "Information über den Stand der Umnutzung des ehemaligen Sportplatzes Vördestraße, Erste Beigeordnete Regina Kleff mündlicher Bericht",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05562004-oparl-aa3ff7b30522b2f88a6e",
+   "title": "Vereidigung und Amtseinführung des Bürgermeisters durch die Altersvorsitzende",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-f3a9cc7c8e4027580370",
+   "title": "Präsentation zum Rechtsanspruch auf ganztägige Betreuung ab 01.08.2026",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05566008-oparl-2f97280d43595df55b6f",
+   "title": "Gebührenhaushalte / Betriebsabrechnungen",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033575",
+   "title": "Verwaltungsfinanzbericht per 30.09.2025",
+   "gold": "finanzen"
+  },
+  {
+   "id": "agendaitems-280686",
+   "title": "Kinder- und Jugendförderplan (A/001/2026)",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05566032-oparl-ee9866688280fd8d3d72",
+   "title": "Feuerwehrhaus Ladbergen",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "nrw-05334002-oparl-086f2b2a6bdd3485dd8d",
+   "title": "Umbesetzungsantrag der Fraktion DIE LINKE vom 15.09.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "papers-vo-2004046367",
+   "title": "Aufstellung von Hundekotbeutelspender und Müllsammelbehälter in Nienberge",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05558020-vo-29443",
+   "title": "Benennung von sachkundigen Einwohner*innen für die drei Fachausschüsse",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-619b193949bd142380e0",
+   "title": "Beschlussvorlagen zu Eingaben",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05758012-oparl-c3b8e886f6782a28ec70",
+   "title": "Stadtentwicklungsgesellschaft Hansestadt Herford mbH: a) Feststellung des Jahresabschlusses 2025 b) Ergebnisverwendung c) Bericht des Aufsichtsrates und Entlastung des Aufsichtsrates d) Entlastung der Geschäftsführung",
+   "gold": "finanzen"
+  },
+  {
+   "id": "steinfurt-vo-13922",
+   "title": "Verträge Fachberatung Kindertagespflege",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05315000-oparl-3492453478774307af60",
+   "title": "Niederschrift zur 12.Sitzung der Ständigen Jury Mülheimer Süden",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-d988b84d33713c59a84f",
+   "title": "Anfrage der Fraktion Volt vom 16.09.2026 betreffend \"Sichere Querung der Berrenrather Straße für die GGS Manderscheider Platz während der Interimsphase ohne Schulhof\"",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "papers-vo-2004055874",
+   "title": "Winterdienst auf dem Idenbrockplatz",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "nrw-05315000-oparl-522ac30d61653c263700",
+   "title": "Städtebauliche Planungskonzepte / Beschlüsse zur Durchführung von frühzeitigen Öffentlichkeitsbeteiligungen",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05566032-oparl-1bed803c439db038d1c7",
+   "title": "Jakobskreuzkraut",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05334002-oparl-f7b4c20c23263b71756d",
+   "title": "Aufnahmezahlen an den Aachener Schulen zum Schuljahr 2026/2027",
+   "gold": "bildung"
+  },
+  {
+   "id": "agendaitems-280058",
+   "title": "Aktuelle Themen der Integrierten Stadtentwicklung",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033695",
+   "title": "Entwicklung der Kitalandschaft in der Gemeinde Nottuln; hier: Abgestimmtes Auslaufen des Katholischen Liebfrauenkindergartens Nottuln",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05562004-oparl-ee74ced0e6223bdce641",
+   "title": "Bericht Schule Oberwiese",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05558032-vo-2006033599",
+   "title": "Beratung des Haushalts für das Haushaltsjahr 2026; Budget Fachbereich 6 / Wirtschaft, Kultur, Marketing",
+   "gold": "finanzen"
+  },
+  {
+   "id": "nrw-05558040-top-4517--3",
+   "title": "Einwohner-Fragestunde gemäß § 27 Abs. 10 GeschO (1. Teil)",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05315000-oparl-3b1eef6d85bbba26fa1a",
+   "title": "RheinEnergie AG hier: Versorger-Allianz 450 Beteiligungs GmbH & Co. KG – Änderung des Gesellschaftsvertrags",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "nrw-05315000-oparl-9dc397cb2053893d77df",
+   "title": "Vorberatungen (Beschlussorgan Rat oder andere Ausschüsse)",
+   "gold": "allgemein"
+  },
+  {
+   "id": "nrw-05315000-oparl-e635d4e6c9f0d57c4147",
+   "title": "Fühlinger See Veranstaltungsplanung - Rückblick 2026",
+   "gold": "sport"
+  },
+  {
+   "id": "papers-vo-2004055989",
+   "title": "Priorisierte Beseitigung von Wurzelschäden auf dem Dorfplatz Amelsbüren",
+   "gold": "umwelt"
+  },
+  {
+   "id": "nrw-05758012-oparl-e4ed776394833ca668eb",
+   "title": "Digitale Schule",
+   "gold": "bildung"
+  },
+  {
+   "id": "nrw-05315000-oparl-8c1ec08e43f7429e6855",
+   "title": "Information zu den Neuen Leitlinien zur Unterbringung und Betreuung Geflüchteter",
+   "gold": "soziales"
+  },
+  {
+   "id": "steinfurt-top-8813--2",
+   "title": "Feststellung der Niederschrift über den öffentlichen Teil der Sitzung vom 22.06.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "nrw-05315000-oparl-cf1f24c1f4bf36c352f9",
+   "title": "Kosten und Qualität von Einfachhotels als Art der Unterbringung obdachloser Menschen",
+   "gold": "soziales"
+  },
+  {
+   "id": "nrw-05334002-oparl-503910e46838f4f0b400",
+   "title": "Umgang mit der Rattenproblematik; hier: Tagesordnungsantrag der Fraktion DIE LINKE vom 10.03.2026",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "nrw-05315000-oparl-12255121d459e3fb2e9c",
+   "title": "Mitteilung über die Veröffentlichung gemäß § 3 Abs. 2 BauGB des Bebauungsplan Nr. 69420/06, 1. Änderung - Arbeitstitel: Käulchensweg in Köln-Poll, Teilaufhebung",
+   "gold": "bauen"
+  },
+  {
+   "id": "nrw-05315000-oparl-f51b1793b53ba0e9ca5f",
+   "title": "Ausnahme vom Ratsbeschluss vom 13.02.2025 zur Nichtkompensation ausfallender Drittmittel durch städtische Mittel",
+   "gold": "finanzen"
+  }
+ ]
+}
