@@ -376,7 +376,7 @@
  "nrw-05154056":{"c":"ok","z":"oparl"},
  "nrw-05978":{"c":"ok","z":"scraping"},
  "nrw-05978036":{"c":"ok","z":"scraping"},
- "nrw-05158032":{"c":"blocked","z":"blocked","r":166,"u":"https://www.velbert.de/rathaus-politik/rathaus/online-services/ratsinformationssytem-rats-tv"},
+ "nrw-05158032":{"c":"blocked","z":"blocked","r":0,"u":"https://velbert.ratsinfomanagement.net/"},
  "nrw-05554064":{"c":"ok","z":"oparl"},
  "nrw-05754044":{"c":"ok","z":"oparl"},
  "nrw-05754048":{"c":"ok","z":"scraping"},
