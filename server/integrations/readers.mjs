@@ -26,6 +26,7 @@ import {collectRisNg,detectRisNg} from './ris-ng.mjs';
 import {collectHhDocuments,detectHhDocuments} from './hhdocuments.mjs';
 import {collectRioSys,detectRioSys} from './rio-sys.mjs';
 import {collectHitcomRis,detectHitcomRis} from './hitcom-ris.mjs';
+import {collectWebcontactRatsinfo,detectWebcontactRatsinfo} from './webcontact-ratsinfo.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -80,6 +81,9 @@ export const READERS={
  'hhdocuments':{name:'Sitzungsplanung hhdocuments (öffentliche Seiten)',collect:collectHhDocuments,detect:async(url,html)=>pick(detectHhDocuments(url,html),['base'])},
  'rio-sys':{name:'rio-sys (öffentliche Seiten)',collect:collectRioSys,detect:async(url,html)=>pick(detectRioSys(url,html),['base'])},
  'hitcom-ris':{name:'Rats-Info-System hitcom (öffentliche Seiten)',collect:collectHitcomRis,detect:async(url,html)=>pick(detectHitcomRis(url,html),['base'])},
+ // Ratsinfo of the municipal website system of webcontact (Nuxt, Stadt Burgbernheim): the public JSON interface of the site
+ // lists the meetings with the public agenda (Sitzungsbericht or öffentliche Einladung); the area for members is not requested.
+ 'webcontact-ratsinfo':{name:'Ratsinfo webcontact (öffentliche Schnittstelle der Website)',collect:collectWebcontactRatsinfo,detect:async(url,html)=>pick(detectWebcontactRatsinfo(url,html),['base','path'])},
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
  'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},
