@@ -5,6 +5,7 @@ import { ABDECKUNG } from "./abdeckung";
 import { LIMITS, PLAN_MAX, PRO_PRICE, useTier } from "../lib/tier";
 import { useUi } from "../state/ui";
 import { useOpenSearch } from "./blocks";
+import { KnowledgeGraph } from "./StartseiteGraph";
 import { STATUS, type TopicStatus } from "@/shared/types";
 
 /* Startseite (Reiter rechts neben Lena, noch nicht die Landingpage): Kopf mit Karte und Suche, Ortsprüfung, ein Analyseblock, Alarm.
@@ -17,6 +18,7 @@ interface Cov {
   complete: boolean;
 }
 interface Hit {
+  ags?: string;
   id: string;
   date: string;
   status: string;
@@ -88,7 +90,7 @@ interface GeoRegion {
 }
 
 /** Abdeckungskarte: jeder Kreis nach dem Anteil vollständig abgerufener Gemeinden (public/geo/de-districts.json: die Kreise aus de-areas.json, © BKG) */
-function CoverageMap({ cov, onPick }: { cov: Cov[]; onPick: (name: string) => void }) {
+function CoverageMap({ cov, onPick, pins, replay }: { cov: Cov[]; onPick: (name: string) => void; pins: { k: string; active: boolean }[]; replay?: { first: Record<string, number>; t: number } | null }) {
   const [geo, setGeo] = useState<{ viewBox: string; regions: GeoRegion[]; states: { name: string; path: string }[] } | null>(null);
   const [tip, setTip] = useState<string>("");
   const [hover, setHover] = useState("");
@@ -119,15 +121,17 @@ function CoverageMap({ cov, onPick }: { cov: Cov[]; onPick: (name: string) => vo
   return (
     <div>
       <svg role="img" aria-label="Karte der Datenabdeckung nach Landkreisen" viewBox={geo.viewBox} style={{ width: "100%", height: "auto", display: "block" }} onMouseLeave={() => (setTip(""), setHover(""))}>
-        <style>{`.pl-reg{animation:plreg .6s ease-out both;transition:fill-opacity .15s}@keyframes plreg{from{opacity:0}to{opacity:1}}@media (prefers-reduced-motion:reduce){.pl-reg{animation:none}}`}</style>
+        <style>{`.pl-reg{animation:plreg .6s ease-out both;transition:fill-opacity .15s}@keyframes plreg{from{opacity:0}to{opacity:1}}.pl-ping{transform-box:fill-box;transform-origin:center;animation:plping 1.8s ease-out infinite}@keyframes plping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.2);opacity:0}}@media (prefers-reduced-motion:reduce){.pl-reg,.pl-ping{animation:none}}`}</style>
         {geo.regions.map((r) => {
           const e = byKreis.get(r.ags);
+          const f = replay ? replay.first[r.ags] : undefined;
+          const lit = replay ? f !== undefined && f <= replay.t : false;
           return (
             <path
               key={r.id}
               d={r.path}
-              fill={e ? tone(e.full / e.n) : "#f1f5f9"}
-              fillOpacity={hover === r.id ? 1 : e ? opacity(e.full / e.n) : 1}
+              fill={replay ? (lit ? "#0d9488" : "#eef1f4") : e ? tone(e.full / e.n) : "#f1f5f9"}
+              fillOpacity={hover === r.id ? 1 : replay ? (lit ? (replay.t - (f as number) < 30 * 86400000 ? 1 : 0.62) : 1) : e ? opacity(e.full / e.n) : 1}
               className="pl-reg"
               style={{ cursor: "pointer", animationDelay: `${Math.round(((Number(r.path.slice(1).split(/[ ,LMZ]/)[1]) || 10) - 10) / 754 * 1100)}ms`, ...(hover === r.id ? { stroke: "#0f172a", strokeOpacity: 1, strokeWidth: 0.9 } : null) }}
               stroke="#fff"
@@ -138,6 +142,21 @@ function CoverageMap({ cov, onPick }: { cov: Cov[]; onPick: (name: string) => vo
             />
           );
         })}
+        {pins.map((pin) => {
+          const r = geo.regions.find((x) => x.ags === pin.k);
+          if (!r) return null;
+          const nums = (r.path.match(/-?\d+\.?\d*/g) ?? []).map(Number);
+          const xs = nums.filter((_, i) => i % 2 === 0);
+          const ys = nums.filter((_, i) => i % 2 === 1);
+          const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+          const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+          return (
+            <g key={pin.k} pointerEvents="none">
+              {pin.active && <circle cx={cx} cy={cy} r="4" fill="none" stroke="#0f172a" strokeWidth="1.2" className="pl-ping" />}
+              <circle cx={cx} cy={cy} r={pin.active ? 4.6 : 3} fill="#0f172a" stroke="#fff" strokeWidth="1.4" style={{ transition: "r .3s" }} />
+            </g>
+          );
+        })}
         {geo.states.map((st) => (
           <path key={st.name} d={st.path} fill="none" stroke="#fff" strokeWidth="0.9" strokeLinejoin="round" pointerEvents="none" />
         ))}
@@ -145,9 +164,15 @@ function CoverageMap({ cov, onPick }: { cov: Cov[]; onPick: (name: string) => vo
       <p aria-live="polite" style={{ margin: "8px 0 0", minHeight: 21, fontSize: 14, color: "#0f172a", textAlign: "center" }}>
         {tip || "Fahren Sie über einen Kreis."}
       </p>
+      {replay ? (
+        <p style={{ margin: "4px 0 0", fontSize: 12, color: "#64748b", textAlign: "center" }}>
+          <span style={{ color: "#0d9488" }}>■</span> Thema dort im Bestand erfasst (kräftig: im letzten Monat erstmals; der Bestand beginnt im Herbst 2025) · <span style={{ color: "#cbd5e1" }}>■</span> noch nicht
+        </p>
+      ) : (
       <p style={{ margin: "4px 0 0", fontSize: 12, color: "#64748b", textAlign: "center" }}>
         <span style={{ color: "#0d9488" }}>■</span> überwiegend vollständig · <span style={{ color: "#a6dcd5" }}>■</span> überwiegend teilweise · <span style={{ color: "#cbd5e1" }}>■</span> noch keine Berichte
       </p>
+      )}
     </div>
   );
 }
@@ -159,8 +184,7 @@ interface Window {
 }
 
 /** Ein Thema im Vergleich: letzte 30 Tage gegen die 30 Tage davor, gezählt über die Suche (jede Vorlage einmal, Gebiete einmal) */
-function TopicChange({ end, openSearch, openSaveDialog }: { end: string; openSearch: (term?: string) => void; openSaveDialog: () => void }) {
-  const [term, setTerm] = useState(ANALYSIS_TERMS[1]);
+function TopicChange({ end, openSearch, openSaveDialog, term, setTerm }: { end: string; openSearch: (term?: string) => void; openSaveDialog: () => void; term: string; setTerm: (t: string) => void }) {
   const [data, setData] = useState<Record<string, { now: Window; before: Window }>>({});
   const [all, setAll] = useState<{ now: number; before: number } | null>(null);
   const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -319,7 +343,15 @@ export function StartseitePage() {
   const [cov, setCov] = useState<Cov[] | null>(null);
   const [hit, setHit] = useState<Hit | null>(null);
   const [ahead, setAhead] = useState<number | null>(null);
+  const [fresh, setFresh] = useState<Hit[]>([]);
+  const [idx, setIdx] = useState(0);
   const [place, setPlace] = useState("");
+  const [topic, setTopic] = useState(ANALYSIS_TERMS[1]);
+  const [mode, setMode] = useState<"abdeckung" | "zeit">("abdeckung");
+  const [rTopic, setRTopic] = useState(ANALYSIS_TERMS[1]);
+  const [rData, setRData] = useState<{ first: Record<string, number>; start: number; end: number } | null>(null);
+  const [rT, setRT] = useState(0);
+  const [playing, setPlaying] = useState(false);
   const { openSaveDialog } = useUi();
   const [pick, setPick] = useState<Cov | null>(null);
   const [placeInfo, setPlaceInfo] = useState<{ total: number; upcoming: number; next: Hit[] } | null>(null);
@@ -334,6 +366,81 @@ export function StartseitePage() {
   }, []);
 
   const today = new Date().toISOString().slice(0, 10);
+  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  /* Die neuesten Vorlagen der letzten Woche, höchstens eine je Kreis, laufen als Punkte über die Karte */
+  useEffect(() => {
+    const ctl = new AbortController();
+    fetch(`/api/search?from=${weekAgo}&to=${today}&noformal=1`, { signal: ctl.signal })
+      .then((r) => (r.ok ? (r.json() as Promise<{ articles?: Hit[] }>) : Promise.reject(new Error("neu"))))
+      .then((d) => {
+        const seen = new Set<string>();
+        const out: Hit[] = [];
+        for (const a of d.articles ?? []) {
+          const k = a.ags?.slice(0, 5);
+          if (!k || seen.has(k)) continue;
+          seen.add(k);
+          out.push(a);
+          if (out.length >= 8) break;
+        }
+        setFresh(out);
+      })
+      .catch(() => {});
+    return () => ctl.abort();
+  }, [today, weekAgo]);
+  useEffect(() => {
+    if (fresh.length < 2 || reduced()) return;
+    const t = window.setInterval(() => setIdx((i) => (i + 1) % fresh.length), 4200);
+    return () => window.clearInterval(t);
+  }, [fresh.length]);
+  /* Zeitraffer: wann ein Thema in einem Kreis zum ersten Mal beraten wurde (Diffusionsanalyse) */
+  useEffect(() => {
+    if (mode !== "zeit") return;
+    const ctl = new AbortController();
+    setRData(null);
+    setPlaying(false);
+    fetch(`/api/analytics/diffusion?q=${encodeURIComponent(rTopic)}`, { signal: ctl.signal })
+      .then((r) => (r.ok ? (r.json() as Promise<{ regions?: { ags: string; first: string }[] }>) : Promise.reject(new Error("zeitraffer"))))
+      .then((d) => {
+        const first: Record<string, number> = {};
+        let lo = Infinity;
+        let hi = 0;
+        for (const x of d.regions ?? []) {
+          const k = x.ags.slice(0, 5);
+          const t = Date.parse(x.first + "T12:00:00Z");
+          if (!Number.isFinite(t)) continue;
+          if (first[k] === undefined || t < first[k]) first[k] = t;
+          lo = Math.min(lo, t);
+          hi = Math.max(hi, t);
+        }
+        if (!Number.isFinite(lo)) return;
+        setRData({ first, start: lo, end: hi });
+        setRT(reduced() ? hi : lo);
+        setPlaying(!reduced());
+      })
+      .catch(() => {});
+    return () => ctl.abort();
+  }, [mode, rTopic]);
+  useEffect(() => {
+    if (!playing || !rData) return;
+    let raf = 0;
+    const t0 = performance.now();
+    const from = rT >= rData.end ? rData.start : rT;
+    const span = rData.end - from;
+    const dur = Math.max(2000, 11000 * (span / (rData.end - rData.start)));
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / dur);
+      setRT(from + span * p);
+      if (p < 1) raf = requestAnimationFrame(tick);
+      else setPlaying(false);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [playing, rData]); // eslint-disable-line react-hooks/exhaustive-deps
+  const litCount = rData ? Object.values(rData.first).filter((t) => t <= rT).length : 0;
+  const monthLabel = rData ? new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(rT)) : "";
+
+  const pins = fresh.map((a, i) => ({ k: (a.ags ?? "").slice(0, 5), active: i === idx % Math.max(1, fresh.length) }));
+  const current = fresh.length ? fresh[idx % fresh.length] : null;
   useEffect(() => {
     if (!today) return;
     const ctl = new AbortController();
@@ -391,7 +498,19 @@ export function StartseitePage() {
                 {ahead ? `${nf.format(ahead)} Vorgänge für kommende Sitzungen · ` : ""}Stand {day(today)}
               </p>
             )}
-            <form onSubmit={submit} style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
+            {current && (
+              <p key={current.id} className="pl-tick" style={{ margin: "10px 0 0", fontSize: 14, color: "#0f172a", minHeight: 44, maxWidth: 520 }}>
+                <span style={{ color: "#0d9488", fontWeight: 600 }}>Gerade neu: </span>
+                <Link href={`/beschluss/${current.id}`} style={{ color: "#0f172a", fontWeight: 500 }}>
+                  {current.title.length > 90 ? current.title.slice(0, 90) + "…" : current.title}
+                </Link>
+                <span style={{ color: "#64748b" }}>
+                  {current.gemeinde ? " · " + current.gemeinde : ""} · {day(current.date)}
+                </span>
+                <style>{`.pl-tick{animation:pltick .5s ease-out both}@keyframes pltick{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.pl-tick{animation:none}}`}</style>
+              </p>
+            )}
+            <form onSubmit={submit} style={{ marginTop: 22, display: "flex", gap: 12, flexWrap: "wrap" }}>
               <label style={{ flex: "1 1 260px" }}>
                 <span className="sr-only">Suchbegriff</span>
                 <input
@@ -439,11 +558,60 @@ export function StartseitePage() {
             )}
           </div>
           <div style={{ maxWidth: "min(560px, max(300px, calc((100vh - 270px) / 1.39)))", width: "100%", justifySelf: "end" }}>
-            {cov ? <CoverageMap cov={cov} onPick={(n) => openSearch(n)} /> : <DotMap />}
+            {cov ? <CoverageMap cov={cov} onPick={(n) => openSearch(n)} pins={mode === "zeit" ? [] : pins} replay={mode === "zeit" ? { first: rData?.first ?? {}, t: rData ? rT : 0 } : null} /> : <DotMap />}
+            <div role="group" aria-label="Kartenansicht" style={{ margin: "12px 0 0", display: "flex", flexWrap: "wrap", gap: "6px 16px", justifyContent: "center", fontSize: 14 }}>
+              {([["abdeckung", "Abdeckung"], ["zeit", "Zeitraffer"]] as const).map(([m, l]) => (
+                <button key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)} style={{ padding: "0 0 2px", background: "none", border: 0, borderBottom: mode === m ? "2px solid #0d9488" : "2px solid transparent", color: mode === m ? "#0f172a" : "#64748b", fontWeight: 600, cursor: "pointer" }}>
+                  {l}
+                </button>
+              ))}
+              {mode === "zeit" &&
+                ANALYSIS_TERMS.slice(0, 3).map((t) => (
+                  <button key={t} type="button" aria-pressed={rTopic === t} onClick={() => setRTopic(t)} style={{ height: 28, padding: "0 12px", background: rTopic === t ? "#0f172a" : "#fff", color: rTopic === t ? "#fff" : "#0f172a", border: "1px solid #e2e8f0", borderRadius: 999, cursor: "pointer", fontSize: 13 }}>
+                    {t}
+                  </button>
+                ))}
+            </div>
+            {mode === "zeit" && (
+              <div style={{ margin: "10px auto 0", maxWidth: 440, display: "flex", alignItems: "center", gap: 12 }}>
+                <button type="button" aria-label={playing ? "Anhalten" : "Abspielen"} disabled={!rData} onClick={() => setPlaying((p) => !p)} style={{ width: 36, height: 36, borderRadius: 18, border: "1px solid #0f172a", background: "#0f172a", color: "#fff", cursor: "pointer", flex: "0 0 36px" }}>
+                  {playing ? "❚❚" : "▶"}
+                </button>
+                <input
+                  type="range"
+                  aria-label="Zeitpunkt"
+                  min={rData?.start ?? 0}
+                  max={rData?.end ?? 1}
+                  step={86400000}
+                  value={rData ? rT : 0}
+                  disabled={!rData}
+                  onChange={(e) => {
+                    setPlaying(false);
+                    setRT(Number(e.target.value));
+                  }}
+                  style={{ flex: 1, accentColor: "#0d9488" }}
+                />
+              </div>
+            )}
+            {mode === "zeit" ? (
+              <p style={{ margin: "10px 0 0", display: "flex", alignItems: "baseline", justifyContent: "center", gap: 12 }}>
+                {rData ? (
+                  <>
+                    <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "#0d9488", fontVariantNumeric: "tabular-nums" }}>{nf.format(litCount)}</span>
+                    <span style={{ fontSize: 14, color: "#64748b" }}>
+                      Kreise beraten „{rTopic}“ · bis {monthLabel}
+                    </span>
+                  </>
+                ) : (
+                  <span style={{ fontSize: 14, color: "#64748b" }}>Zeitraffer „{rTopic}“ wird geladen …</span>
+                )}
+              </p>
+            ) : (
             <p style={{ margin: "14px 0 0", display: "flex", alignItems: "baseline", justifyContent: "center", gap: 12 }}>
               <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "#0f172a", fontVariantNumeric: "tabular-nums" }}>{ABDECKUNG.anteil} %</span>
               <span style={{ fontSize: 14, color: "#64748b" }}>Abdeckung, {ABDECKUNG.kreise} % der Kreise</span>
             </p>
+            )}
           </div>
         </div>
       </section>
@@ -548,7 +716,25 @@ export function StartseitePage() {
           </section>
       )}
 
-      <TopicChange end={today} openSearch={openSearch} openSaveDialog={openSaveDialog} />
+      <TopicChange end={today} openSearch={openSearch} openSaveDialog={openSaveDialog} term={topic} setTerm={setTopic} />
+
+      <section className="ri-sec" style={{ paddingTop: 72, paddingBottom: 72 }}>
+        <div className="mx-auto" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: "32px 64px", alignItems: "center" }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 14, color: "#0d9488", fontWeight: 600 }}>Knowledge Graph</p>
+            <h2 style={{ margin: "8px 0 0", fontSize: 28, lineHeight: 1.2, fontWeight: 600, color: "#0f172a" }}>Womit „{topic}“ zusammenhängt</h2>
+            <p style={{ margin: "12px 0 0", fontSize: 16, lineHeight: 1.5, color: "#64748b" }}>
+              Jede Vorlage nennt Begriffe, Themenfelder und Gremien. Daraus entsteht das Netz: Wo viele Linien zusammenlaufen, hängt ein Thema fest zusammen.
+            </p>
+            <p style={{ margin: "16px 0 0" }}>
+              <Link href={`/analytics/graph?q=${encodeURIComponent(topic)}`} style={{ color: "#0d9488", fontSize: 16, fontWeight: 500 }}>
+                Knowledge Graph öffnen →
+              </Link>
+            </p>
+          </div>
+          <KnowledgeGraph term={topic} onPick={(t) => openSearch(t)} />
+        </div>
+      </section>
 
       <section className="ri-sec">
         <div className="mx-auto" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 48 }}>
