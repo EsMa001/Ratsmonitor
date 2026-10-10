@@ -13,6 +13,8 @@ bitte beibehalten.
   Vorher- und Nachher-Messwerte stehen im Bericht.
   `SERVER_LIMITS` (A1, mehr als zwei Abrufe je Servergruppe) ist leer; das entscheidet Max.
 - **Paket 3 (Fehler und Sicherheit) ist auf `main`** (`1b15f27`, gegengelesen mit Fable; Stand im Bericht unter Paket 3).
+- **Paket 4 (Frontend-Start) ist auf `main`** (`2131f5a`, gegengelesen mit Fable), noch nicht ausgerollt. Offen daraus: `initialTopic`
+  vom Server für die Detailseite (C5, größerer Umbau, mit Max klären).
   Ausgerollt 10.10. 17:37. Vor einer öffentlichen Adresse zusätzlich die ausgehende Sperre aus `node-server.md` (Max).
 - **Nico** muss 0017 lokal noch einspielen, bei beendetem Dev-Server:
   `node scripts/node-migrate.mjs .wrangler/state/v3/d1/miniflare-D1DatabaseObject/<datei>.sqlite`
