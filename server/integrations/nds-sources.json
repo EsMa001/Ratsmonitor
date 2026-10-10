@@ -341,6 +341,17 @@
     "apiCheck": "ALLRIS 4 (KDG Göttingen), öffentliche Seiten unter /<Kürzel>_public/ erreichbar; eigener Mandant, keine geteilten Gremien."
   },
   {
+    "id": "nds-03155005",
+    "name": "Stadt Hardegsen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ris.kdgoe.de/HAR_public/",
+    "verifiedSource": "https://www.hardegsen.de/rathaus-und-politik/ratsinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "collectAllris window 3m: 67 Punkte, 8 Sitzungen; Rathaus-Seite verlinkt ris.kdgoe.de/HAR_public/"
+  },
+  {
     "id": "nds-03155006",
     "name": "Gemeinde Kalefeld",
     "kind": "city",

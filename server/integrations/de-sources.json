@@ -3155,6 +3155,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-06436012",
+    "name": "Gemeinde Sulzbach (Taunus)",
+    "kind": "city",
+    "method": "scraper",
+    "verifiedAt": "2026-10-10",
+    "adapter": "more-rubin",
+    "base": "https://sulzbach-taunus.gremien.info/",
+    "verifiedSource": "https://www.sulzbach-taunus.de/kundenservice-rathaus/gemeindespitze-und-gremien/gremien-ausschuesse-und-kommissionen/rats-und-buergerinformationssystem",
+    "apiCheck": "öffentliche Kalender-API/Seiten, Leser more-rubin liefert Punkte"
+  },
+  {
     "id": "de-06437001",
     "name": "Stadt Bad König",
     "kind": "city",
@@ -9897,6 +9908,17 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-08118012",
+    "name": "Gemeinde Eberdingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.eberdingen.de/",
+    "verifiedSource": "https://www.eberdingen.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08118014",
     "name": "Gemeinde Erdmannhausen",
     "kind": "city",
@@ -10478,6 +10500,28 @@
     "foundBy": "bad-wimpfen-sitzungsdienst.komm.one"
   },
   {
+    "id": "de-08125008",
+    "name": "Stadt Beilstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://ratsinformationssystem.beilstein.de/",
+    "verifiedSource": "https://ratsinformationssystem.beilstein.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
+    "id": "de-08125017",
+    "name": "Gemeinde Cleebronn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.cleebronn.de/",
+    "verifiedSource": "https://www.cleebronn.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08125021",
     "name": "Gemeinde Eberstadt",
     "kind": "city",
@@ -10554,6 +10598,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08125038",
+    "name": "Stadt Güglingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.gueglingen.de/",
+    "verifiedSource": "https://www.gueglingen.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08125039",
     "name": "Stadt Gundelsheim",
     "kind": "city",
@@ -10565,6 +10620,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08125046",
+    "name": "Gemeinde Ilsfeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.ilsfeld.de/",
+    "verifiedSource": "https://www.ilsfeld.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08125047",
     "name": "Gemeinde Ittlingen",
     "kind": "city",
@@ -10574,6 +10640,17 @@
     "verifiedSource": "https://www.ittlingen.de/rathaus-service/gemeinderat/ratsinfo",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08125056",
+    "name": "Stadt Lauffen am Neckar",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.lauffen.de/",
+    "verifiedSource": "https://www.lauffen.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125057",
@@ -10590,6 +10667,17 @@
     "verifiedSource": "https://www.lehrensteinsfeld.de/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "SD.NET RIM 4: öffentlicher Sitzungskalender (ICS) und Tagesordnungen erreichbar; gemeinsames System der Gemeinden um Weinsberg, getrennt über die Gremienangabe."
+  },
+  {
+    "id": "de-08125058",
+    "name": "Stadt Leingarten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://ratsinformationssystem.leingarten.de/",
+    "verifiedSource": "https://ratsinformationssystem.leingarten.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125063",
@@ -10612,6 +10700,17 @@
     "verifiedSource": "https://www.neckarsulm.de/startseite/willkommen/politik+_+gemeinderat.html",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08125068",
+    "name": "Stadt Neudenau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://ratsinformationssystem.neudenau.de/",
+    "verifiedSource": "https://ratsinformationssystem.neudenau.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125069",
@@ -10660,6 +10759,17 @@
     "verifiedSource": "https://www.offenau.de/startseite",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08125081",
+    "name": "Gemeinde Pfaffenhofen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.pfaffenhofen-wuertt.de/",
+    "verifiedSource": "https://www.pfaffenhofen-wuertt.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125084",
@@ -10760,6 +10870,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08125108",
+    "name": "Gemeinde Zaberfeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.zaberfeld.de/",
+    "verifiedSource": "https://www.zaberfeld.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08125110",
     "name": "Gemeinde Obersulm",
     "kind": "city",
@@ -10769,6 +10890,17 @@
     "verifiedSource": "https://www.obersulm.de/de",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08125111",
+    "name": "Gemeinde Hardthausen am Kocher",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hw-typo3",
+    "base": "https://www.hardthausen.de/rathaus/ratsinformationssystem/sitzungskalender",
+    "verifiedSource": "https://www.hardthausen.de/rathaus/ratsinformationssystem/sitzungskalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad; Ratsinformationsmodul von Hirsch & Wölfl (TYPO3): Monatsdaten des Sitzungskalenders mit öffentlichen Tagesordnungspunkten erreichbar."
   },
   {
     "id": "de-08125113",
@@ -11723,6 +11855,16 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08136060",
+    "name": "Gemeinde Rosenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://gemeinde-rosenberg.ris-portal.de/",
+    "verifiedSource": "https://gemeinde-rosenberg.ris-portal.de/",
+    "verifiedAt": "2026-10-10"
+  },
+  {
     "id": "de-08136062",
     "name": "Gemeinde Schechingen",
     "kind": "city",
@@ -12458,6 +12600,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08225039",
+    "name": "Gemeinde Höpfingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hw-typo3",
+    "base": "https://www.hoepfingen.de/rathaus-service/gemeinde-ortschaftsrat/ratsinformationssystem/sitzungskalender",
+    "verifiedSource": "https://www.hoepfingen.de/rathaus-service/gemeinde-ortschaftsrat/ratsinformationssystem/sitzungskalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad; Ratsinformationsmodul von Hirsch & Wölfl (TYPO3): Monatsdaten des Sitzungskalenders mit öffentlichen Tagesordnungspunkten erreichbar."
+  },
+  {
     "id": "de-08225042",
     "name": "Gemeinde Hüffenhardt",
     "kind": "city",
@@ -12689,6 +12842,17 @@
     "verifiedSource": "http://www.eschelbronn.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-08226022",
+    "name": "Gemeinde Gaiberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hw-typo3",
+    "base": "https://www.gaiberg.de/rathaus-service/ratsinformationssystem/sitzungskalender",
+    "verifiedSource": "https://www.gaiberg.de/rathaus-service/ratsinformationssystem/sitzungskalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad; Ratsinformationsmodul von Hirsch & Wölfl (TYPO3): Monatsdaten des Sitzungskalenders mit öffentlichen Tagesordnungspunkten erreichbar."
   },
   {
     "id": "de-08226028",
@@ -16119,6 +16283,17 @@
     "verifiedSource": "https://www.wannweil.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08415085",
+    "name": "Gemeinde Zwiefalten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hw-typo3",
+    "base": "https://www.zwiefalten.de/rathaus-service/ratsinformationssystem/kalender",
+    "verifiedSource": "https://www.zwiefalten.de/rathaus-service/ratsinformationssystem/kalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad; Ratsinformationsmodul von Hirsch & Wölfl (TYPO3): Monatsdaten des Sitzungskalenders mit öffentlichen Tagesordnungspunkten erreichbar."
   },
   {
     "id": "de-08415087",
@@ -26241,6 +26416,18 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09574152",
+    "name": "Stadt Röthenbach a.d.Pegnitz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sessionnet",
+    "base": "https://stadtrat.roethenbach.de/bi/",
+    "extension": "php",
+    "verifiedSource": "https://stadtrat.roethenbach.de/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "collectSessionNet window 3m: 6 Sitzungen, 28 Punkte"
+  },
+  {
     "id": "de-09574154",
     "name": "Gemeinde Rückersdorf",
     "kind": "city",
@@ -32901,6 +33088,17 @@
     "verifiedSource": "https://amtboizenburgland.ris-portal.de/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "collectRisPortal 3m: 141 Punkte, Amtsausschuss + Gemeindevertretungen der Mitglieder (ris.boizenburgland.de leitet dorthin)"
+  },
+  {
+    "id": "de-130765654",
+    "name": "Amt Dömitz-Malliß",
+    "kind": "city",
+    "method": "scraper",
+    "verifiedAt": "2026-10-10",
+    "adapter": "ti-generator",
+    "base": "https://verwaltung.amtdoemitz-malliss.de/ris/ti-doemitz-1/",
+    "verifiedSource": "https://verwaltung.amtdoemitz-malliss.de/ris/ti-doemitz-1/",
+    "apiCheck": "kein OParl; TI-Generator-Seiten öffentlich"
   },
   {
     "id": "de-130765656",
