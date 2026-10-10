@@ -312,6 +312,17 @@
     "verifiedAt": "2026-10-02"
   },
   {
+    "id": "nrw-05158026",
+    "name": "Stadt Monheim am Rhein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "typo3-bi",
+    "base": "https://stadtrat.monheim.de/bi/",
+    "verifiedSource": "https://stadtrat.monheim.de/bi/sitzungskalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; TYPO3-Bürgerinformationssystem: Monatsliste und Tagesordnung als JSON/HTML (api/meetings) öffentlich erreichbar."
+  },
+  {
     "id": "nrw-05158028",
     "name": "Stadt Ratingen",
     "kind": "city",

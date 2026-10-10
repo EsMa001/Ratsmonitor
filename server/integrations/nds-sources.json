@@ -1668,6 +1668,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.hanstedt.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-033535403",
+    "name": "Samtgemeinde Hollenstedt",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.sg-hollenstedt.sitzung-online.de/public/",
+    "verifiedSource": "https://www.sg-hollenstedt.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "ALLRIS 4 unter /public/ erreichbar; Tagesordnungsnummern stehen klein geschrieben (ö 1).",
+    "adapter": "allris"
+  },
+  {
     "id": "nds-033535405",
     "name": "Samtgemeinde Salzhausen",
     "kind": "city",

@@ -17942,6 +17942,19 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08436032",
+    "name": "Gemeinde Fleischwangen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=7",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Gemeinsames SessionNet des GVV Altshausen; Mandant über den Namen der Gemeinde getrennt.",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=7",
+    "clientName": "Fleischwangen"
+  },
+  {
     "id": "de-08436039",
     "name": "Gemeinde Grünkraut",
     "kind": "city",
@@ -31398,6 +31411,17 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "OParl-Adresse des Systems (https://eisenhuettenstadt.allris.cloud/public/oparl/system) lieferte am 06.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.",
     "foundBy": "eisenhuettenstadt.allris.cloud"
+  },
+  {
+    "id": "de-12067124",
+    "name": "Stadt Erkner",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/erkner/bi/",
+    "verifiedSource": "https://sessionnet.owl-it.de/erkner/bi/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "SessionNet (owl-it), Kalender verlinkt auf si0050; öffentlicher Teil lesbar.",
+    "extension": "asp"
   },
   {
     "id": "de-12067137",
