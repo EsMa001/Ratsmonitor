@@ -32,7 +32,7 @@ const CANCELLED=/\b(?:abgesagt|entfällt|entfaellt|ausgefallen|fällt aus)\b/i;
 // "Öffentliche Tagesordnungspunkte". Compared without case, a leading number and surrounding dashes or colons; any other
 // heading ends the public agenda. A heading that is only "Tagesordnung" is the public agenda when it is the only part on
 // the page: tenants that publish a non-public part show it under a heading of its own (Welver, Hexental).
-const PUBLIC_PART=/^(?:(?:tagesordnung|teil\s+[a-z0-9]+)\s*[-–:]?\s*)?(?:öffentlich|oeffentlich)(?:e[rs]?)?(?:\s+(?:teil|sitzung|sitzungsteil|tagesordnung|tagesordnungspunkte))?$/;
+const PUBLIC_PART=/^(?:(?:tagesordnung|teil\s+[a-z0-9]+)\s*[-–:]?\s*)?(?:öffentlich|oeffentlich)(?:e[rs]?)?(?:\s+(?:teil(?:\s+der\s+tagesordnung)?|sitzung|sitzungsteil|tagesordnung|tagesordnungspunkte|beratungen))?$/;
 const partTitle=title=>title.toLowerCase().replace(/\s+/g,' ').replace(/^\s*(?:[a-z]|[ivx]+|\d+)\s*[.)]+\s*/,'').replace(/^[\s\-–—:.*]+|[\s\-–—:.*]+$/g,'');
 export const NOT_PUBLIC='Sitzung ohne öffentlichen Teil auf der Seite';
 /**

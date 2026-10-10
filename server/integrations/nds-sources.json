@@ -24,6 +24,17 @@
     "foundBy": "manuell 2026-10-05"
   },
   {
+    "id": "nds-03103000",
+    "name": "Stadt Wolfsburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://ratsinfob.stadt.wolfsburg.de/",
+    "verifiedSource": "https://ratsinfob.stadt.wolfsburg.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://ratsinfob.stadt.wolfsburg.de/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nds-03151",
     "name": "Landkreis Gifhorn",
     "kind": "district",
@@ -175,6 +186,17 @@
     "verifiedSource": "https://www.stadt-bad-harzburg.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse https://www.ratsinfo.bad-harzburg.sitzung-online.de/public/oparl/system antwortete am 04.10.2026, lieferte aber keine verwertbaren Sitzungen (keine öffentlichen Tagesordnungspunkte im Prüfzeitraum); deshalb öffentliche Seiten."
+  },
+  {
+    "id": "nds-03153016",
+    "name": "Stadt Braunlage",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sessionnet6",
+    "base": "https://ratsinfo.braunlage.city/",
+    "verifiedSource": "https://ratsinfo.braunlage.city/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar."
   },
   {
     "id": "nds-03153018",
@@ -358,6 +380,17 @@
     "verifiedSource": "http://www.moringen.de",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "nds-03155010",
+    "name": "Gemeinde Nörten-Hardenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.noerten-hardenberg.de/bi/",
+    "verifiedSource": "https://www.noerten-hardenberg.de/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.noerten-hardenberg.de/bi/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-03155011",
@@ -857,6 +890,18 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "nds-03241016",
+    "name": "Stadt Sehnde",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.sehnde.de/allris/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://www.sehnde.de/allris/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "nds-03241017",
     "name": "Stadt Springe",
     "kind": "city",
@@ -978,6 +1023,18 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.weyhe.de/allris/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-032515403",
+    "name": "Samtgemeinde Bruchhausen-Vilsen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.ratsinfo-bruvi.de/buergerinfo/",
+    "extension": "php",
+    "calendarQuery": "__cmandant=2",
+    "verifiedSource": "https://www.ratsinfo-bruvi.de/buergerinfo/info.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "nds-032515404",
     "name": "Samtgemeinde Kirchdorf",
     "kind": "city",
@@ -987,6 +1044,17 @@
     "verifiedSource": "https://www.kirchdorf.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nds-032515406",
+    "name": "Samtgemeinde Schwaförden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.schwafoerden.sitzung-online.de/public/",
+    "verifiedSource": "https://www.schwafoerden.sitzung-online.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.schwafoerden.sitzung-online.de/public/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
     "id": "nds-032515407",
@@ -1433,6 +1501,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.celle.de/buergerinformationssystem/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03351012",
+    "name": "Gemeinde Hambühren",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://sitzungsdienst.hambuehren.de/public/",
+    "verifiedSource": "https://sitzungsdienst.hambuehren.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://sitzungsdienst.hambuehren.de/public/oparl/system) lieferte am 10.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "nds-03351026",
     "name": "Gemeinde Südheide",
     "kind": "city",
@@ -1675,6 +1754,17 @@
     "verifiedSource": "https://www.hansestadt-lueneburg.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://buergerinfo.stadt.lueneburg.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "nds-03355049",
+    "name": "Gemeinde Amt Neuhaus",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.amt-neuhaus.sitzung-online.de/public/",
+    "verifiedSource": "https://www.amt-neuhaus.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (oparl/system) liefert kein OParl-System; ALLRIS-Seiten öffentlich lesbar, Leser allris."
   },
   {
     "id": "nds-033555401",
@@ -2335,6 +2425,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03452002",
+    "name": "Gemeinde Baltrum",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "more-rubin",
+    "base": "https://baltrum.gremien.info/",
+    "verifiedSource": "https://baltrum.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "More! Rubin: OParl nicht aktiv, öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "nds-03452006",
     "name": "Gemeinde Großefehn",
     "kind": "city",
@@ -2534,6 +2635,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.cappeln.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03453005",
+    "name": "Gemeinde Emstek",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://emstek.gremien.info/",
+    "verifiedSource": "https://emstek.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "nds-03453006",
     "name": "Gemeinde Essen (Oldenburg)",
     "kind": "city",
@@ -2576,6 +2688,17 @@
     "verifiedSource": "https://www.lastrup.de/portal/seiten/Seite-900000043-31120.html?naviID=reset1",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nds-03453011",
+    "name": "Stadt Löningen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sessionnet6",
+    "base": "https://ratsinfo.loeningen.de/",
+    "verifiedSource": "https://www.loeningen.de/buergerservice-stadt/politik/ratsinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar, derzeit ohne Gremien."
   },
   {
     "id": "nds-03453012",

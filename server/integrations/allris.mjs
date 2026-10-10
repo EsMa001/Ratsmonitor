@@ -73,14 +73,14 @@ export function parseAllrisAgenda(html,meeting,source,now=new Date()){
   const row=m[1],subject=cell(row,'tobetreff'),top=row.match(/id=["'](?:betreff|link)_(\d+)["']/)?.[1];
   if(!top){const part=text(subject);if(/nicht\s*-?\s*öffentlich/i.test(part))open=false;else if(/öffentlich/i.test(part))open=true;continue;}
   const number=text(cell(row,'tonr')),paper=anchor(cell(row,'tovonr'),'vo020'),paperId=paper&&record(decode(paper[1]),'VOLFDNR');
-  if(open===false||!(/^Ö\s*\d/.test(number)||open===true&&(number?/^\d/.test(number):paperId)))continue;
+  if(open===false||!(/^Ö\s*\d/i.test(number)||open===true&&(number?/^\d/.test(number):paperId)))continue;
   const title=text(subject.match(/<a\b[^>]*id=["']betreff_\d+["'][^>]*>([\s\S]*?)<\/a>/i)?.[1]||subject);if(!title)continue;
   const result=text(cell(row,'tobanr')),reference=paper?text(paper[2]):'';
   const paperUrl=paperId?allowed(source.base+'vo020?VOLFDNR='+paperId,source):null,topUrl=anchor(subject,'to020')?allowed(source.base+'to020?TOLFDNR='+top,source):null;
   const status=date>today?(paperId?'consulting':'announced'):resultStatus(result,committee)||'unknown';
   const description=date>today?'Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.':result?'Ergebnis laut Tagesordnung: '+result:'Öffentlich auf der Tagesordnung; ein Ergebnis ist im eingelesenen Abschnitt nicht belegt.';
   items.push({id:`${source.id}-${paperId?'vo-'+paperId:'top-'+top}`,title,reference,sourceUrl:paperUrl||topUrl||url,identityLinks:[paperUrl,topUrl].filter(Boolean),status,documents:[],
-   event:{date,committee,status,description,result,url,publicEvidence:/^Ö/.test(number)?`Tagesordnungsnummer „${number}“ im öffentlichen Teil`:'Abschnitt „Öffentlicher Teil“ der Tagesordnung'},
+   event:{date,committee,status,description,result,url,publicEvidence:/^Ö/i.test(number)?`Tagesordnungsnummer „${number}“ im öffentlichen Teil`:'Abschnitt „Öffentlicher Teil“ der Tagesordnung'},
    agenda:{number,top,role:text(cell(row,'tozunr')),paperUrl}});
  }
  return {date,committee,items};

@@ -618,6 +618,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-01055033",
+    "name": "Stadt Oldenburg in Holstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.oldenburg-holstein.sitzung-online.de/public/",
+    "verifiedSource": "https://www.oldenburg-holstein.de/Verwaltung-Politik/Verwaltung-und-Politik/Politik/Ratsinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (https://www.oldenburg-holstein.sitzung-online.de/public/oparl/system) nicht als OParl-System geprüft; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
     "id": "de-01055035",
     "name": "Gemeinde Ratekau",
     "kind": "city",
@@ -894,6 +905,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.tornesch.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar (die Adresse der Stadtwebsite führte zu 404)."
   },
   {
+    "id": "de-01056049",
+    "name": "Stadt Uetersen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "more-rubin",
+    "base": "https://uetersen.gremien.info/",
+    "verifiedSource": "https://ratsinfo.uetersen.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "More! Rubin: öffentliche Kalender-API (api.php) erreichbar; kein OParl geprüft."
+  },
+  {
     "id": "de-01056050",
     "name": "Stadt Wedel",
     "kind": "city",
@@ -933,6 +955,18 @@
     "verifiedSource": "https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "OParl-Adresse des Systems (https://www.vg-barmstedt-hoernerkirchen.sitzung-online.de/public/oparl/system) nicht geprüft; öffentliche ALLRIS-Seiten unter /public/ am 10.10.2026 erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
+    "id": "de-010565690",
+    "name": "Amt Geest und Marsch Südholstein",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://rats-info.amt-geest-und-marsch-suedholstein.de/bi/",
+    "extension": "php",
+    "calendarQuery": "__cmandant=2&__cselect=0",
+    "verifiedSource": "https://rats-info.amt-geest-und-marsch-suedholstein.de/bi/info.php?__cmandant=2&__cselect=0",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Hersteller-Standardpfad oparl/1.0/system.php nicht geprüft (Leser fragt selbst); öffentlicher SessionNet-Kalender (Endung php, Mandant 2 = Amt mit Mitgliedsgemeinden) lieferte Tagesordnungspunkte."
   },
   {
     "id": "de-01057",
@@ -2022,6 +2056,17 @@
     "verifiedSource": "https://www.buerstadt.de/de/startseite",
     "verifiedAt": "2026-10-04",
     "apiCheck": "OParl-Adresse des Systems (https://www.buerstadt.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-06431006",
+    "name": "Gemeinde Einhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "more-rubin",
+    "base": "https://einhausen.gremien.info/",
+    "verifiedSource": "https://einhausen.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "More! Rubin: öffentliche Kalender-API (api.php) erreichbar; kein OParl geprüft."
   },
   {
     "id": "de-06431007",
@@ -4413,6 +4458,17 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-06533013",
+    "name": "Stadt Runkel",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://runkel.gremien.info/",
+    "verifiedSource": "https://runkel.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "collectRubin 3m: 128 Punkte (Stadtverordnetenversammlung, Ortsbeiräte, HFA)"
+  },
+  {
     "id": "de-06533014",
     "name": "Gemeinde Selters (Taunus)",
     "kind": "city",
@@ -5115,6 +5171,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
+    "id": "de-06631013",
+    "name": "Gemeinde Hofbieber",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://hofbieber.ris-portal.de/",
+    "verifiedSource": "https://hofbieber.ris-portal.de/startseite",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; RIS-Portal regisafe, öffentliche Sitzungsliste erreichbar."
+  },
+  {
     "id": "de-06631014",
     "name": "Gemeinde Hosenfeld",
     "kind": "city",
@@ -5136,6 +5203,17 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "huenfeld.ris-portal.de"
+  },
+  {
+    "id": "de-06631016",
+    "name": "Gemeinde Kalbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.kalbach.de/",
+    "verifiedSource": "https://gemeinde-kalbach.de/gemeinde-und-rathaus/politische-gremien",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SD.NET RIM 4 (öffentliche Seiten) erreichbar."
   },
   {
     "id": "de-06631018",
@@ -5218,6 +5296,19 @@
     "verifiedSource": "https://www.hef-rof.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06632001",
+    "name": "Gemeinde Alheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://alheim.mein-intra.net/",
+    "token": "639c1616-12047978-72888d07-fca38952",
+    "page": "https://www.alheim.de/ratsinformation",
+    "verifiedSource": "https://www.alheim.de/ratsinformation?href=/councilservice/session/list",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
     "id": "de-06632002",
@@ -5336,6 +5427,19 @@
     "verifiedSource": "https://rim.ekom21.de/neuenstein/",
     "verifiedAt": "2026-10-09",
     "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten von SD.NET RIM bei ekom21 (Kalender termine/ics/SD.NET_RIM.ics) am 09.10.2026 erreichbar."
+  },
+  {
+    "id": "de-06632017",
+    "name": "Gemeinde Ronshausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://ronshausen.mein-intra.net/",
+    "token": "9b31e8ff-36617b55-e8ed5973-a1e4fd6f",
+    "page": "https://ris.ronshausen.de/",
+    "verifiedSource": "https://ris.ronshausen.de/?href=/councilservice/session/list",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
     "id": "de-06632020",
@@ -6002,6 +6106,19 @@
     "verifiedSource": "https://www.gemuenden-wohra.de/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
+  },
+  {
+    "id": "de-06635013",
+    "name": "Gemeinde Haina (Kloster)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.haina.de/",
+    "api": "https://risapi51a.kic-software.de/",
+    "client": 32,
+    "verifiedSource": "https://ris.haina.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; KIC-RIS Gast-Schnittstelle erreichbar."
   },
   {
     "id": "de-06635015",
@@ -6705,6 +6822,17 @@
     "verifiedSource": "https://www.zell-mosel.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "de-07137",
+    "name": "Landkreis Mayen-Koblenz",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://ris.kvmyk.de/bi/",
+    "extension": "php",
+    "verifiedSource": "https://www.kvmyk.de/landkreis/politik/kreistagsinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl nicht geprüft; öffentliche SessionNet-Seiten (si0040.php) erreichbar."
   },
   {
     "id": "de-07137003",
@@ -7767,6 +7895,24 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-073315005",
+    "name": "Verbandsgemeinde Wöllstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "more-rubin",
+    "base": "https://woellstein.gremien.info/",
+    "organizations": {
+      "include": [
+        "VG ",
+        "Verbandsgemeinderat"
+      ],
+      "exclude": []
+    },
+    "verifiedSource": "https://www.woellstein.de/verwaltung/rats-und-buergerinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "collectRubin window 3m: 163 Punkte, 12m: 628 (alle Gremien inkl. 8 Ortsgemeinden); VG-Gremien: Verbandsgemeinderat, VG Schulträgerausschuss, VG Werksausschuss. Ortsgemeinden (Wöllstein, Gau-Bickelheim, Siefersheim, Wonsheim, Stein-Bockenheim, Eckelsheim, Gumbsheim, Wendelsheim) mit Gremienpräfix trennbar."
+  },
+  {
     "id": "de-073315006",
     "name": "Verbandsgemeinde Wörrstadt",
     "kind": "city",
@@ -7992,6 +8138,19 @@
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "bellheim.ris-portal.de"
+  },
+  {
+    "id": "de-073345003",
+    "name": "Verbandsgemeinde Jockgrim",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://bi.vg-jockgrim.de/",
+    "extension": "php",
+    "calendarQuery": "__cpanr=7",
+    "verifiedSource": "https://bi.vg-jockgrim.de/info.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "clientName": "Jockgrim"
   },
   {
     "id": "de-073345004",
@@ -9148,6 +9307,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08116053",
+    "name": "Gemeinde Ohmden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://gemeinde-ohmden.ris-portal.de/",
+    "verifiedSource": "https://gemeinde-ohmden.ris-portal.de/startseite",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "de-08116054",
     "name": "Stadt Owen",
     "kind": "city",
@@ -10254,6 +10424,38 @@
     "foundBy": "bad-wimpfen-sitzungsdienst.komm.one"
   },
   {
+    "id": "de-08125021",
+    "name": "Gemeinde Eberstadt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://sdnet.raum-weinsberg.de/",
+    "organizations": {
+      "include": [
+        "Eberstadt"
+      ]
+    },
+    "verifiedSource": "https://www.eberstadt.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "SD.NET RIM 4: öffentlicher Sitzungskalender (ICS) und Tagesordnungen erreichbar; gemeinsames System der Gemeinden um Weinsberg, getrennt über die Gremienangabe."
+  },
+  {
+    "id": "de-08125024",
+    "name": "Gemeinde Ellhofen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://sdnet.raum-weinsberg.de/",
+    "organizations": {
+      "include": [
+        "Ellhofen"
+      ]
+    },
+    "verifiedSource": "https://www.ellhofen.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "SD.NET RIM 4: öffentlicher Sitzungskalender (ICS) und Tagesordnungen erreichbar; gemeinsames System der Gemeinden um Weinsberg, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-08125026",
     "name": "Stadt Eppingen",
     "kind": "city",
@@ -10318,6 +10520,22 @@
     "verifiedSource": "https://www.ittlingen.de/rathaus-service/gemeinderat/ratsinfo",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08125057",
+    "name": "Gemeinde Lehrensteinsfeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://sdnet.raum-weinsberg.de/",
+    "organizations": {
+      "include": [
+        "Lehrensteinsfeld"
+      ]
+    },
+    "verifiedSource": "https://www.lehrensteinsfeld.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "SD.NET RIM 4: öffentlicher Sitzungskalender (ICS) und Tagesordnungen erreichbar; gemeinsames System der Gemeinden um Weinsberg, getrennt über die Gremienangabe."
   },
   {
     "id": "de-08125063",
@@ -10433,6 +10651,37 @@
     "verifiedSource": "https://www.untergruppenbach.de/rathaus-service/gemeinderat/ratsinformationssystem",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08125102",
+    "name": "Stadt Weinsberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://sdnet.raum-weinsberg.de/",
+    "organizations": {
+      "include": [
+        "Weinsberg",
+        "Technischer Ausschuss",
+        "Verwaltungsausschuss",
+        "Bauausschuss",
+        "Finanz- und Verwaltungsausschuss",
+        "Ortschaftsrat Grantschen",
+        "Ortschaftsrat Gellmersbach",
+        "Ortschaftsrat Wimmental"
+      ],
+      "exclude": [
+        "Eberstadt",
+        "Ellhofen",
+        "Lehrensteinsfeld",
+        "Verbandsversammlung",
+        "Sozialdemokratische",
+        "Fraktionsvorsitzende"
+      ]
+    },
+    "verifiedSource": "https://www.weinsberg.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "SD.NET RIM 4: öffentlicher Sitzungskalender (ICS) und Tagesordnungen erreichbar; gemeinsames System der Gemeinden um Weinsberg, getrennt über die Gremienangabe."
   },
   {
     "id": "de-08125103",
@@ -10893,6 +11142,17 @@
     "verifiedSource": "https://www.wolpertshausen.de/rathaus-service/gemeinderat/ratsinformationssystem",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08127100",
+    "name": "Gemeinde Rosengarten",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://rosengarten-sitzungsdienst.komm.one/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://rosengarten-sitzungsdienst.komm.one/bi/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-08127101",
@@ -11407,6 +11667,17 @@
     "verifiedSource": "https://www.oberkochen.de/willkommen",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08136062",
+    "name": "Gemeinde Schechingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sessionnet6",
+    "base": "https://schechingen-sitzungsdienst.komm.one/bi/",
+    "verifiedSource": "https://schechingen-sitzungsdienst.komm.one/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar."
   },
   {
     "id": "de-08136065",
@@ -12954,6 +13225,17 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-08236033",
+    "name": "Stadt Knittlingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://knittlingen.ris-portal.de/web/ratsinformation/",
+    "verifiedSource": "https://knittlingen.ris-portal.de/web/ratsinformation/sitzungen",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "de-08236040",
     "name": "Stadt Mühlacker",
     "kind": "city",
@@ -14320,6 +14602,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08326060",
+    "name": "Stadt Triberg im Schwarzwald",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sessionnet6",
+    "base": "https://triberg-sitzungsdienst.komm.one/bi/",
+    "verifiedSource": "https://triberg-sitzungsdienst.komm.one/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar."
+  },
+  {
     "id": "de-08326061",
     "name": "Gemeinde Tuningen",
     "kind": "city",
@@ -15470,6 +15763,19 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
+    "id": "de-08337096",
+    "name": "Stadt Bad Säckingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://bad-saeckingen.mein-intra.net/",
+    "token": "54702cb0-25bb7bea-52e5e95c-066c9493",
+    "page": "https://www.bad-saeckingen.de/rathaus-service/gemeinderat/ratsinfosystem",
+    "verifiedSource": "https://www.bad-saeckingen.de/rathaus-service/gemeinderat/ratsinfosystem",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
+  },
+  {
     "id": "de-08337097",
     "name": "Stadt St. Blasien",
     "kind": "city",
@@ -15637,6 +15943,17 @@
     "verifiedSource": "https://www.huelben.de/rathaus-service/neuigkeiten/7/ratsinformationssystem",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08415048",
+    "name": "Gemeinde Mehrstetten",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://mehrstetten.gremien.info/",
+    "verifiedSource": "https://mehrstetten.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "collectRubin 3m: 22 Punkte (Gemeinderat)"
   },
   {
     "id": "de-08415050",
@@ -16572,9 +16889,45 @@
     "method": "scraper",
     "adapter": "ris-portal",
     "base": "https://gvvbadbuchau.ris-portal.de/web/ratsinformation/",
+    "organizations": {
+      "include": [
+        "Alleshausen"
+      ]
+    },
     "verifiedSource": "https://www.alleshausen.de/rathaus-informiert/ratsinformationssystem/ratsinformation",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08426013",
+    "name": "Stadt Bad Buchau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://gvvbadbuchau.ris-portal.de/web/ratsinformation/",
+    "organizations": {
+      "include": [
+        "Bad Buchau"
+      ],
+      "exclude": [
+        "GVV",
+        "Verbandsversammlung"
+      ]
+    },
+    "verifiedSource": "https://www.bad-buchau.de/buerger-neu/de/rathaus-verwaltung/gemeinderat/sitzungsuebersicht",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08426014",
+    "name": "Stadt Bad Schussenried",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://service.bad-schussenried.de/buergerinfo/",
+    "extension": "php",
+    "verifiedSource": "https://service.bad-schussenried.de/buergerinfo/info.php",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-08426019",
@@ -16818,6 +17171,28 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "ummendorf.ris-portal.de"
+  },
+  {
+    "id": "de-08426121",
+    "name": "Gemeinde Unlingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://unlingen.ris-portal.de/",
+    "verifiedSource": "https://unlingen.ris-portal.de/startseite",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08426128",
+    "name": "Gemeinde Warthausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://warthausen.ris-portal.de/web/ratsinformation/",
+    "verifiedSource": "https://warthausen.ris-portal.de/web/ratsinformation/startseite",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
     "id": "de-08426134",
@@ -17225,6 +17600,42 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08436019",
+    "name": "Gemeinde Boms",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=2",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=2",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08436024",
+    "name": "Gemeinde Ebenweiler",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=5",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=5",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08436027",
+    "name": "Gemeinde Eichstegen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=4",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=4",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "de-08436039",
     "name": "Gemeinde Grünkraut",
     "kind": "city",
@@ -17234,6 +17645,30 @@
     "verifiedSource": "https://www.gruenkraut.de/startseite",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08436040",
+    "name": "Gemeinde Guggenhausen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=8",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=8",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08436047",
+    "name": "Gemeinde Hoßkirch",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=9",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=9",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-08436049",
@@ -17258,6 +17693,19 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08436053",
+    "name": "Gemeinde Königseggwald",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=11",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=11",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "clientName": "Königseggwald"
+  },
+  {
     "id": "de-08436055",
     "name": "Stadt Leutkirch im Allgäu",
     "kind": "city",
@@ -17280,6 +17728,19 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08436067",
+    "name": "Gemeinde Riedhausen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=10",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=10",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "clientName": "Riedhausen"
+  },
+  {
     "id": "de-08436069",
     "name": "Gemeinde Schlier",
     "kind": "city",
@@ -17289,6 +17750,19 @@
     "verifiedSource": "https://www.schlier.de/gemeinde-buergerservice/gremien/sitzungstermine/seite-1/suche-none",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08436077",
+    "name": "Gemeinde Unterwaldhausen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionnet.owl-it.de/altshausen/bi/",
+    "extension": "asp",
+    "calendarQuery": "__cpanr=12",
+    "verifiedSource": "https://sessionnet.owl-it.de/altshausen/bi/info.asp?__cpanr=12",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "clientName": "Unterwaldhausen"
   },
   {
     "id": "de-08436078",
@@ -17451,6 +17925,17 @@
     "verifiedSource": "https://www.illmensee.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08437059",
+    "name": "Gemeinde Inzigkofen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://inzigkofen-sitzungsdienst.komm.one/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://inzigkofen-sitzungsdienst.komm.one/bi/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp nicht geprüft/ohne OParl; öffentlicher SessionNet-Kalender erreichbar (Leser sessionnet, Lauf 10.10.2026)."
   },
   {
     "id": "de-08437072",
@@ -20279,6 +20764,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09187128",
+    "name": "Gemeinde Bad Endorf",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://bad-endorf.gremien.info/",
+    "verifiedSource": "https://www.bad-endorf.de/ratsinformationssystem",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Endpunkt; öffentliche Kalender-API (api.php) erreichbar, derzeit 0 Sitzungen."
+  },
+  {
     "id": "de-09187129",
     "name": "Gemeinde Bad Feilnbach",
     "kind": "city",
@@ -20898,6 +21394,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
+    "id": "de-09189152",
+    "name": "Stadt Tittmoning",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://tittmoning.ris-portal.de/",
+    "verifiedSource": "https://tittmoning.ris-portal.de/web/guest/sitzungen",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl geprüft; öffentliche Sitzungsseiten (RIS-Portal) erreichbar."
+  },
+  {
     "id": "de-09189154",
     "name": "Stadt Traunreut",
     "kind": "city",
@@ -21026,6 +21533,17 @@
     "foundBy": "Websuche"
   },
   {
+    "id": "de-09190130",
+    "name": "Gemeinde Hohenpeißenberg",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://hohenpeissenberg.gremien.info/",
+    "verifiedSource": "https://hohenpeissenberg.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Endpunkt; öffentliche Kalender-API (api.php) erreichbar."
+  },
+  {
     "id": "de-09190138",
     "name": "Gemeinde Pähl",
     "kind": "city",
@@ -21116,6 +21634,18 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
     "foundBy": "buergerinfo-weilheim.digitalfabrix.de"
+  },
+  {
+    "id": "de-09190158",
+    "name": "Gemeinde Wessobrunn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/wessobrunn/",
+    "api": "https://risapi1.komuna.net/",
+    "verifiedSource": "https://ris.komuna.net/wessobrunn/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl geprüft; KIC-RIS (öffentliche Gast-Schnittstelle, komuna, webconfig RIS51) erreichbar."
   },
   {
     "id": "de-09190159",
@@ -21308,6 +21838,17 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
     "foundBy": "buergerinfo-stephansposching.digitalfabrix.de"
+  },
+  {
+    "id": "de-09271153",
+    "name": "Gemeinde Winzer",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-winzer.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo-winzer.digitalfabrix.de/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp nicht geprüft/ohne OParl; öffentlicher SessionNet-Kalender erreichbar (Leser sessionnet, Lauf 10.10.2026)."
   },
   {
     "id": "de-092715206",
@@ -22032,6 +22573,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09276113",
+    "name": "Gemeinde Arnbruck",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-arnbruck.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo-arnbruck.digitalfabrix.de/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp nicht geprüft/ohne OParl; öffentlicher SessionNet-Kalender erreichbar (Leser sessionnet, Lauf 10.10.2026)."
+  },
+  {
     "id": "de-09276115",
     "name": "Gemeinde Bayerisch Eisenstein",
     "kind": "city",
@@ -22041,6 +22593,17 @@
     "verifiedSource": "https://www.bayerisch-eisenstein.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-09276128",
+    "name": "Gemeinde Kollnburg",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-kollnburg.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo-kollnburg.digitalfabrix.de/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp nicht geprüft/ohne OParl; öffentlicher SessionNet-Kalender erreichbar (Leser sessionnet, Lauf 10.10.2026)."
   },
   {
     "id": "de-09276129",
@@ -22169,6 +22732,18 @@
     "verifiedSource": "https://pfarrkirchen.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
+    "id": "de-09277142",
+    "name": "Gemeinde Roßbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/rossbach/",
+    "api": "https://risapi1.komuna.net/",
+    "verifiedSource": "https://ris.komuna.net/rossbach/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl geprüft; KIC-RIS (öffentliche Gast-Schnittstelle, komuna, webconfig RIS51) erreichbar."
   },
   {
     "id": "de-09277149",
@@ -22760,6 +23335,19 @@
     "api": "https://risapi1.komuna.net/",
     "verifiedSource": "https://www.markt-lam.de/",
     "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
+    "id": "de-09372151",
+    "name": "Gemeinde Rimbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/rimbach/",
+    "api": "https://risapi1.komuna.net/",
+    "client": 42,
+    "verifiedSource": "https://ris.komuna.net/rimbach/",
+    "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
@@ -23754,6 +24342,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09471142",
+    "name": "Gemeinde Heiligenstadt i.OFr.",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://www.markt-heiligenstadt.de/sessionnet/bi/",
+    "extension": "php",
+    "verifiedSource": "https://www.markt-heiligenstadt.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad lieferte kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "de-09471159",
     "name": "Gemeinde Memmelsdorf",
     "kind": "city",
@@ -23873,6 +24472,17 @@
     "verifiedSource": "https://www.vg-baunach.de/verwaltungsgemeinschaft/organe/buergerinformationsportal",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-094715408",
+    "name": "Verwaltungsgemeinschaft Burgebrach",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-vg-burgebrach.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo-vg-burgebrach.digitalfabrix.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad lieferte kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-094715445",
@@ -24928,6 +25538,19 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09571114",
+    "name": "Gemeinde Aurach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/aurach/",
+    "api": "https://risapi1.komuna.net/",
+    "client": 32,
+    "verifiedSource": "https://ris.komuna.net/aurach/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
     "id": "de-09571115",
     "name": "Gemeinde Bechhofen",
     "kind": "city",
@@ -25669,6 +26292,21 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
+    "id": "de-09575153",
+    "name": "Stadt Neustadt a.d.Aisch",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://rathaus.neustadt-aisch.de/",
+    "pages": [
+      "https://rathaus.neustadt-aisch.de/rathaus-und-verwaltung/politik/sitzungsprotokolle-des-stadtrates",
+      "https://rathaus.neustadt-aisch.de/aktuelles-und-veroeffentlichungen/amtliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://rathaus.neustadt-aisch.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem; Website mit Sitzungsladungen/Bekanntmachungen und Protokollen (PDF) lesbar."
+  },
+  {
     "id": "de-095755518",
     "name": "Verwaltungsgemeinschaft Scheinfeld",
     "kind": "city",
@@ -26291,6 +26929,19 @@
     "verifiedSource": "https://buergerinfo-vg-euerdorf.digitalfabrix.de/gr0040.asp",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 05.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-096725609",
+    "name": "Verwaltungsgemeinschaft Maßbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/massbach/",
+    "api": "https://risapi2.komuna.net/",
+    "client": 31153,
+    "verifiedSource": "https://ris.komuna.net/massbach/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
     "id": "de-09673",
@@ -26990,6 +27641,19 @@
     "api": "https://risapi1.komuna.net/",
     "verifiedSource": "https://www.grafenrheinfeld.de/kultur-freizeit/bibliothek/",
     "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
+    "id": "de-09678138",
+    "name": "Gemeinde Grettstadt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/grettstadt/",
+    "api": "https://risapi1.komuna.net/",
+    "client": 32,
+    "verifiedSource": "https://ris.komuna.net/grettstadt/",
+    "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
@@ -27777,6 +28441,17 @@
     "foundBy": "ris.komuna.net/vgstauden"
   },
   {
+    "id": "de-097725711",
+    "name": "Verwaltungsgemeinschaft Lechfeld",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-lechfeld.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo-lechfeld.digitalfabrix.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad lieferte kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "de-097725712",
     "name": "Verwaltungsgemeinschaft Langerringen",
     "kind": "city",
@@ -28013,6 +28688,19 @@
     "api": "https://risapi1.komuna.net/",
     "verifiedSource": "https://www.ichenhausen.de/buergerservice-und-politik/stadtrat/sitzungen-und-niederschriften",
     "verifiedAt": "2026-10-05",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
+    "id": "de-097745732",
+    "name": "Verwaltungsgemeinschaft Thannhausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/vgthannhausen/",
+    "api": "https://risapi1.komuna.net/",
+    "client": 32,
+    "verifiedSource": "https://ris.komuna.net/vgthannhausen/",
+    "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
@@ -28468,6 +29156,19 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
     "foundBy": "ris.komuna.net/kirchheimischw"
+  },
+  {
+    "id": "de-097785764",
+    "name": "Verwaltungsgemeinschaft Türkheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "kic",
+    "base": "https://ris.komuna.net/vgtuerkheim/",
+    "api": "https://risapi1.komuna.net/",
+    "client": 32,
+    "verifiedSource": "https://ris.komuna.net/vgtuerkheim/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
   },
   {
     "id": "de-097785767",
@@ -29142,6 +29843,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.saarwellingen.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-10044117",
+    "name": "Gemeinde Schmelz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://schmelz.ris-portal.de/",
+    "verifiedSource": "https://schmelz.ris-portal.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "de-10044118",
     "name": "Gemeinde Schwalbach",
     "kind": "city",
@@ -29176,6 +29888,15 @@
     "verifiedSource": "https://ueberherrn.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-10044121",
+    "name": "Gemeinde Wallerfangen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "more-rubin",
+    "base": "https://wallerfangen.gremien.info/",
+    "verifiedAt": "2026-10-10"
   },
   {
     "id": "de-10044123",
@@ -29483,6 +30204,17 @@
     "verifiedSource": "https://www.eichwalde.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-12061217",
+    "name": "Gemeinde Heidesee",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://politik.gemeinde-heidesee.de/ti-1/",
+    "verifiedSource": "https://politik.gemeinde-heidesee.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar."
   },
   {
     "id": "de-12061219",
@@ -29826,6 +30558,23 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-12063273",
+    "name": "Gemeinde Schönwalde-Glien",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://ratsinfo-online.net/schoenwaldeglien-bi/",
+    "calendar": "si010_e.asp",
+    "oparlFallback": {
+      "system": "https://ratsinfo-online.net/schoenwaldeglien-bi/oparl/1.0/system.asp",
+      "reason": "OParl-Lizenz „Nutzung nur nach Genehmigung“, keine Freigabe vorhanden",
+      "checkedAt": "2026-10-10"
+    },
+    "verifiedSource": "https://ratsinfo-online.net/schoenwaldeglien-bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse https://ratsinfo-online.net/schoenwaldeglien-bi/oparl/1.0/system.asp antwortet öffentlich, Lizenz aber „Nutzung nur nach Genehmigung“; deshalb öffentliche ALLRIS-3-Seiten (am 10.10.2026 erreichbar)."
+  },
+  {
     "id": "de-12063357",
     "name": "Gemeinde Wustermark",
     "kind": "city",
@@ -29939,6 +30688,23 @@
     "verifiedSource": "https://doppeldorf.de/gemeindepolitik/rats-und-buergerinformationssystem",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-12064428",
+    "name": "Gemeinde Rüdersdorf bei Berlin",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://ratsinfo-online.net/ruedersdorf-bi/",
+    "calendar": "si010_e.asp",
+    "oparlFallback": {
+      "system": "https://ratsinfo-online.net/ruedersdorf-bi/oparl/1.0/system.asp",
+      "reason": "OParl-Lizenz „Nutzung nur nach Genehmigung“, keine Freigabe vorhanden",
+      "checkedAt": "2026-10-10"
+    },
+    "verifiedSource": "https://ratsinfo-online.net/ruedersdorf-bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse https://ratsinfo-online.net/ruedersdorf-bi/oparl/1.0/system.asp antwortet öffentlich, Lizenz aber „Nutzung nur nach Genehmigung“; deshalb öffentliche ALLRIS-3-Seiten (am 10.10.2026 erreichbar)."
   },
   {
     "id": "de-12064448",
@@ -30140,6 +30906,19 @@
     "state": "system-verified",
     "verifiedSource": "https://velten.de/Verwaltung-Politik/Stadtpolitik/Sitzungskalender/",
     "verifiedAt": "2026-10-04"
+  },
+  {
+    "id": "de-120655502",
+    "name": "Amt Gransee und Gemeinden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://gransee.mein-intra.net/",
+    "token": "01350661-7be6514a-51a9e945-27d118a6",
+    "page": "https://www.gransee.de/politik-verwaltung/ratsinformationssystem/",
+    "verifiedSource": "https://www.gransee.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
     "id": "de-12066",
@@ -31554,6 +32333,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://suederholz.sitzung-mv.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-130735352",
+    "name": "Amt Barth",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://session.amt-barth.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://session.amt-barth.de/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
     "id": "de-130735353",
     "name": "Amt Bergen auf Rügen",
     "kind": "city",
@@ -31993,6 +32783,17 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-130765652",
+    "name": "Amt Boizenburg-Land",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://amtboizenburgland.ris-portal.de/",
+    "verifiedSource": "https://amtboizenburgland.ris-portal.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "collectRisPortal 3m: 141 Punkte, Amtsausschuss + Gemeindevertretungen der Mitglieder (ris.boizenburgland.de leitet dorthin)"
+  },
+  {
     "id": "de-130765656",
     "name": "Amt Goldberg-Mildenitz",
     "kind": "city",
@@ -32058,6 +32859,17 @@
     "verifiedSource": "https://plau.sitzung-mv.de/public/gr020?GRLFDNR=1",
     "verifiedAt": "2026-10-05",
     "apiCheck": "OParl-Adresse des Systems (https://plau.sitzung-mv.de/public/oparl/system) lieferte am 05.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
+  },
+  {
+    "id": "de-130765664",
+    "name": "Amt Sternberger Seenlandschaft",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://sternberg.sitzung-mv.de/public/",
+    "verifiedSource": "https://sternberg.sitzung-mv.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten am 10.10.2026 erreichbar."
   },
   {
     "id": "de-130765666",
@@ -32587,6 +33399,15 @@
     "verifiedSource": "https://neuhausen.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-14522430",
+    "name": "Gemeinde Oberschöna",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "more-rubin",
+    "base": "https://oberschoena.gremien.info/",
+    "verifiedAt": "2026-10-10"
   },
   {
     "id": "de-14522440",
@@ -33391,6 +34212,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://weisswasser.allris.cloud/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-14626530",
+    "name": "Stadt Seifhennersdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://seifhennersdorf.allris.cloud/public/",
+    "verifiedSource": "https://seifhennersdorf.allris.cloud/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten am 10.10.2026 erreichbar."
+  },
+  {
     "id": "de-146265503",
     "name": "Verwaltungsverband Weißer Schöps/Neiße",
     "kind": "city",
@@ -33525,6 +34357,20 @@
     "verifiedSource": "https://www.nossen.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "de-14627200",
+    "name": "Gemeinde Priestewitz",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://ris-priestewitz.zv-kisa.de/",
+    "bodies": [
+      "PWZ"
+    ],
+    "verifiedSource": "https://ris-priestewitz.zv-kisa.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten am 10.10.2026 erreichbar."
   },
   {
     "id": "de-14627210",
@@ -33744,6 +34590,20 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
     "foundBy": "sessionnet.owl-it.de/sebnitz/bi"
+  },
+  {
+    "id": "de-14628410",
+    "name": "Stadt Wilsdruff",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://ris-wilsdruff.zv-kisa.de/",
+    "bodies": [
+      "SVWD"
+    ],
+    "verifiedSource": "https://ris-wilsdruff.zv-kisa.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten am 10.10.2026 erreichbar."
   },
   {
     "id": "de-146285202",
@@ -34100,6 +34960,17 @@
     "verifiedSource": "https://www.eilenburg.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-14730160",
+    "name": "Gemeinde Laußig",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "komfa",
+    "base": "https://ris-laussig.komfa.de/",
+    "verifiedSource": "https://ris-laussig.komfa.de/index.php?module=komfaris&action=main",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten am 10.10.2026 erreichbar."
   },
   {
     "id": "de-14730210",
@@ -34509,6 +35380,24 @@
     "foundBy": "Websuche:"
   },
   {
+    "id": "de-150835051",
+    "name": "Verbandsgemeinde Elbe-Heide",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.kitu-genossenschaft.de/elbeheide_bi/",
+    "extension": "asp",
+    "calendarQuery": "__cmandant=2&__cselect=0",
+    "organizations": {
+      "include": [
+        "Elbe-Heide"
+      ],
+      "exclude": []
+    },
+    "verifiedSource": "https://ratsinfo.kitu-genossenschaft.de/elbeheide_bi/si0040.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentlicher SessionNet-Kalender am 10.10.2026 erreichbar."
+  },
+  {
     "id": "de-150835052",
     "name": "Verbandsgemeinde Flechtingen",
     "kind": "city",
@@ -34621,6 +35510,17 @@
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KOMFA-RIS (öffentliche Seiten) erreichbar.",
     "foundBy": "manuell 2026-10-05"
+  },
+  {
+    "id": "de-15084490",
+    "name": "Stadt Teuchern",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://teuchern.allris.cloud/public/",
+    "verifiedSource": "https://teuchern.allris.cloud/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad geprüft; öffentliche Seiten am 10.10.2026 erreichbar."
   },
   {
     "id": "de-150845052",
@@ -34858,6 +35758,17 @@
     "verifiedSource": "https://www.stadt-genthin.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 05.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-15086055",
+    "name": "Stadt Gommern",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://gommern.gremien.info/",
+    "verifiedSource": "https://gommern.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Anonyme öffentliche Kalender-API erreichbar; 3m: 24 Sitzungen, 108 Punkte."
   },
   {
     "id": "de-15086080",
@@ -35292,6 +36203,18 @@
     "verifiedSource": "https://egelnermulde.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-150895052",
+    "name": "Verbandsgemeinde Saale-Wipper",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.kitu-genossenschaft.de/saalewipper_bi/",
+    "extension": "asp",
+    "calendarQuery": "__cmandant=1",
+    "verifiedSource": "https://ratsinfo.kitu-genossenschaft.de/saalewipper_bi/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-15090",
@@ -35834,6 +36757,19 @@
     "verifiedSource": "https://bad-frankenhausen.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-16065067",
+    "name": "Stadt Sondershausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://ris-stadt-sondershausen.mein-intra.net/",
+    "token": "d05a1736-1d43ec48-d1744e38-61e52035",
+    "page": "https://www.sondershausen.de/ratsinformationssystem.html",
+    "verifiedSource": "https://www.sondershausen.de/ratsinformationssystem.html",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
     "id": "de-160655052",
@@ -36551,6 +37487,19 @@
     "verifiedSource": "https://saale-orla-kreis.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-16075098",
+    "name": "Stadt Schleiz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://schleiz.mein-intra.net/",
+    "token": "95e6e2a9-a7791e4e-d2e0d002-912212ee",
+    "page": "https://schleiz.de/startseite",
+    "verifiedSource": "https://schleiz.de/startseite",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst mein-intra (councilservice, öffentlicher Export der Website) erreichbar."
   },
   {
     "id": "de-16075132",
@@ -37392,6 +38341,18 @@
     "verifiedAt": "2026-10-09",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar.",
     "foundBy": "Recherche 2026-10-09"
+  },
+  {
+    "id": "de-150905051",
+    "name": "Verbandsgemeinde Arneburg-Goldbeck",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://ratsinfo.kitu-genossenschaft.de/arneburggoldbeck_bi/",
+    "extension": "asp",
+    "calendarQuery": "__cmandant=1",
+    "verifiedSource": "https://ratsinfo.kitu-genossenschaft.de/arneburggoldbeck_bi/info.asp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
     "id": "de-150905053",
