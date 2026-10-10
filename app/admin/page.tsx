@@ -1,7 +1,7 @@
 import {env} from 'cloudflare:workers';
 // Stile nur der Administration (nicht im öffentlichen CSS); nach globals.css geladen wie zuvor.
 import '../admin.css';
-import {getChatGPTUser,chatGPTSignInPath,chatGPTSignOutPath} from '@/app/chatgpt-auth';
+import {getChatGPTUser,chatGPTSignInPath,chatGPTSignOutPath,chatGPTSignInAvailable} from '@/app/chatgpt-auth';
 import {adminAccess} from '@/server/integrations/admin-access.mjs';
 import {AdminActivation} from '@/components/admin-activation';
 import {AdminFrame,type AdminPage} from '@/components/admin-chrome';
@@ -33,12 +33,15 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
  const gate=(children:React.ReactNode)=><AdminFrame tabs={false}><div className="mx-auto max-w-[640px] py-16">{children}</div></AdminFrame>;
  const title=(text:string)=><h1 className="text-[28px] font-semibold leading-tight">{text}</h1>;
  const text=(children:React.ReactNode)=><p className="mt-3 text-[16px] text-slate-500">{children}</p>;
- if(!user)return gate(<>{title('Geschützter Bereich')}{text('Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.')}<a target="_top" href={chatGPTSignInPath('/admin')} className="btn-primary mt-6 inline-flex">Mit ChatGPT anmelden</a></>);
+ // Mit ChatGPT-Anmeldung (Cloudflare, Dev) führt ein Knopf dorthin; auf dem eigenen Server setzt Caddy die Kennung nach seiner Anmeldung.
+ const signIn=chatGPTSignInAvailable();
+ if(!user)return gate(<>{title('Geschützter Bereich')}{signIn?<>{text('Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.')}<a target="_top" href={chatGPTSignInPath('/admin')} className="btn-primary mt-6 inline-flex">Mit ChatGPT anmelden</a></>:text('Diese Anfrage kam ohne Anmeldung an. Die Administration öffnet sich nach der Anmeldung am Server (Passwort oder Tunnel).')}</>);
  try{
   const access=await adminAccess(env.DB,user);
   if(access.kind==='setup')return gate(<>{title('Admin-Zugang einrichten')}{text(<>Angemeldet als <strong>{user.displayName}</strong>. Der einmalige Freischaltcode verknüpft die Administration dauerhaft mit diesem Konto.</>)}{env.ADMIN_SETUP_HASH?<AdminActivation/>:<p role="status" className="mt-4 text-[14px] text-slate-500">Die Freischaltung ist noch nicht eingerichtet: Der Betreiber muss den geheimen Freischalt-Hash setzen und neu deployen.</p>}</>);
-  if(access.kind!=='owner')return gate(<>{title('Kein Admin-Zugriff')}{text('Dieses ChatGPT-Konto ist nicht für die Administration freigeschaltet.')}<a className="mt-6 inline-flex text-[14px] text-teal-600" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln →</a></>);
-  const signOutPath=chatGPTSignOutPath('/');
+  if(access.kind!=='owner')return gate(<>{title('Kein Admin-Zugriff')}{text('Dieses Konto ist nicht für die Administration freigeschaltet.')}{signIn&&<a className="mt-6 inline-flex text-[14px] text-teal-600" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln →</a>}</>);
+  // Abmelden gibt es nur mit ChatGPT-Anmeldung; die Passwortanmeldung am Server merkt sich der Browser bis zum Schließen.
+  const signOutPath=signIn?chatGPTSignOutPath('/'):undefined;
   const frame=(content:React.ReactNode)=><AdminFrame page={page} displayName={user.displayName} signOutPath={signOutPath}>{content}</AdminFrame>;
   // Abgespeckter Bereich fürs Handy (?seite=mobil): ohne Reiter, nur die Abdeckung des Lückenatlas.
   if(mobile)return <AdminFrame tabs={false} displayName={user.displayName} signOutPath={signOutPath}><AdminMobile/></AdminFrame>;

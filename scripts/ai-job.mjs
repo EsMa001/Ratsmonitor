@@ -10,18 +10,18 @@ function findDatabase(){
  const matches=fs.readdirSync(dir,{recursive:true}).filter(p=>String(p).endsWith('.sqlite')).map(p=>path.join(dir,String(p))).filter(p=>{let db;try{db=new DatabaseSync(p,{readOnly:true});return ['topics','article_analyses','data_revisions'].every(name=>db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(name));}catch{return false;}finally{db?.close();}});
  if(matches.length!==1)throw Error('Keine eindeutige Ratsmonitor-Datenbank gefunden: '+matches.length);return matches[0];
 }
+/** D1-artiger Zugriff auf eine node:sqlite-Datenbank (Skripte und Tests). bind gibt wie D1 eine neue Anweisung zurück;
+ *  dieselbe vorbereitete Anweisung lässt sich also mehrfach mit verschiedenen Werten binden. */
 export function sqliteAdapter(sql){
+ const statement=(query,args)=>({
+  bind:(...values)=>statement(query,values),
+  async first(){return sql.prepare(query).get(...args)||null;},
+  async all(){return {results:sql.prepare(query).all(...args)};},
+  async run(){return {meta:{changes:Number(sql.prepare(query).run(...args).changes)}};},
+  execute(){const prepared=sql.prepare(query);return prepared.columns().length?{results:prepared.all(...args)}:{meta:{changes:Number(prepared.run(...args).changes)}};}
+ });
  return {
-  prepare(query){
-   let args=[];
-   return {
-    bind(...values){args=values;return this;},
-    async first(){return sql.prepare(query).get(...args)||null;},
-    async all(){return {results:sql.prepare(query).all(...args)};},
-    async run(){return {meta:{changes:Number(sql.prepare(query).run(...args).changes)}};},
-    execute(){const statement=sql.prepare(query);return statement.columns().length?{results:statement.all(...args)}:{meta:{changes:Number(statement.run(...args).changes)}};}
-   };
-  },
+  prepare:query=>statement(query,[]),
   async batch(statements){sql.exec('BEGIN IMMEDIATE');try{const result=statements.map(s=>s.execute());sql.exec('COMMIT');return result;}catch(e){sql.exec('ROLLBACK');throw e;}}
  };
 }

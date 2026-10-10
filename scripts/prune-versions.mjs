@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {stableJson} from '../shared/article-record.mjs';
 const dir = '.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
-const file = process.env.DB_FILE || dir + fs.readdirSync(dir).filter(f => f.endsWith('.sqlite') && f !== 'metadata.sqlite').map(f => [f, fs.statSync(dir + f).size]).sort((a, b) => b[1] - a[1])[0][0];
+const file = process.env.DATABASE_FILE || dir + fs.readdirSync(dir).filter(f => f.endsWith('.sqlite') && f !== 'metadata.sqlite').map(f => [f, fs.statSync(dir + f).size]).sort((a, b) => b[1] - a[1])[0][0];
 const apply = process.argv.includes('--apply'), vacuum = process.argv.includes('--vacuum');
 const db = new DatabaseSync(file, {readOnly: !apply});
 const content = payload => { let t; try { t = JSON.parse(payload); } catch { return null; } if (!t || typeof t !== 'object') return null; const {metadata, updatedAt, ...rest} = t; return stableJson(rest); };

@@ -39,7 +39,7 @@ if (major < 22 || (major === 22 && minor < 16)) {
 }
 
 function checkDatabase() {
-  const file = process.env.DATABASE_FILE || process.env.DB_FILE;
+  const file = process.env.DATABASE_FILE;
   if (!file) return process.env.RM_ALLOW_NO_DB === '1' ? null : 'DATABASE_FILE ist nicht gesetzt.';
   if (!isAbsolute(file)) return `DATABASE_FILE muss ein absoluter Pfad sein: ${file}`;
   if (!fs.existsSync(file)) return `Datenbankdatei fehlt: ${file}`;

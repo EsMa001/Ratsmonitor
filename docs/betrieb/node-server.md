@@ -1,6 +1,6 @@
 # Betrieb auf dem eigenen Server (Node statt Cloudflare)
 
-Stand: 9. Oktober 2026. Gilt für den Zweig `node-server` und den Hostinger-VPS (KVM 4, Deutschland, Ubuntu 24.04).
+Stand: 10. Oktober 2026. Gilt für `main` (nur `main` wird ausgerollt) und den Hostinger-VPS (KVM 4, Deutschland, Ubuntu 24.04).
 
 ## Was läuft wo
 

@@ -2,7 +2,6 @@ import { fileURLToPath } from "node:url";
 import vinext from "vinext";
 import { defineConfig, type Plugin } from "vite";
 import hostingConfig from "./.openai/hosting.json";
-import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
 import { todoDev } from "./build/todo-dev-plugin.mjs";
 
@@ -13,7 +12,6 @@ const { d1, r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
-const managedLinux = readExecutionProfile() === "managed-linux";
 
 const localBindingConfig = {
   main: "vinext/server/fetch-handler",
@@ -103,7 +101,6 @@ export default defineConfig(async ({ command }) => {
       // nicht verbunden, wirft das Weiterleiten selbst einen Fehler, der wiederum
       // weitergeleitet wird: Endlosschleife "can't access property 'send' of undefined".
       forwardConsole: false,
-      ...(managedLinux ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
       // Lokales Handy-Testen im WLAN: RM_DEV_HOST=0.0.0.0 node scripts/run-framework.mjs dev
       ...(process.env.RM_DEV_HOST ? { host: process.env.RM_DEV_HOST } : {}),
       // Arbeitsdateien der Quellensuche (tmp/), der erzeugte Lückenatlas (dashboard/) und Berichte (requirements/)
@@ -118,7 +115,7 @@ export default defineConfig(async ({ command }) => {
       todoDev(),
       vinextStaticNavigation(),
       vinext(),
-      sites({ mockAuth: !managedLinux }),
+      sites({ mockAuth: true }),
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         inspectorPort: false,
