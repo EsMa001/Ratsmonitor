@@ -10782,6 +10782,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08125111",
+    "name": "Gemeinde Hardthausen am Kocher",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hw-typo3",
+    "base": "https://www.hardthausen.de/rathaus/ratsinformationssystem/sitzungskalender",
+    "verifiedSource": "https://www.hardthausen.de/rathaus/ratsinformationssystem/sitzungskalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad; Ratsinformationsmodul von Hirsch & Wölfl (TYPO3): Monatsdaten des Sitzungskalenders mit öffentlichen Tagesordnungspunkten erreichbar."
+  },
+  {
     "id": "de-08125113",
     "name": "Gemeinde Langenbrettach",
     "kind": "city",
@@ -11734,6 +11745,16 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08136060",
+    "name": "Gemeinde Rosenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://gemeinde-rosenberg.ris-portal.de/",
+    "verifiedSource": "https://gemeinde-rosenberg.ris-portal.de/",
+    "verifiedAt": "2026-10-10"
+  },
+  {
     "id": "de-08136062",
     "name": "Gemeinde Schechingen",
     "kind": "city",
@@ -12469,6 +12490,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08225039",
+    "name": "Gemeinde Höpfingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hw-typo3",
+    "base": "https://www.hoepfingen.de/rathaus-service/gemeinde-ortschaftsrat/ratsinformationssystem/sitzungskalender",
+    "verifiedSource": "https://www.hoepfingen.de/rathaus-service/gemeinde-ortschaftsrat/ratsinformationssystem/sitzungskalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad; Ratsinformationsmodul von Hirsch & Wölfl (TYPO3): Monatsdaten des Sitzungskalenders mit öffentlichen Tagesordnungspunkten erreichbar."
+  },
+  {
     "id": "de-08225042",
     "name": "Gemeinde Hüffenhardt",
     "kind": "city",
@@ -12700,6 +12732,17 @@
     "verifiedSource": "http://www.eschelbronn.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-08226022",
+    "name": "Gemeinde Gaiberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hw-typo3",
+    "base": "https://www.gaiberg.de/rathaus-service/ratsinformationssystem/sitzungskalender",
+    "verifiedSource": "https://www.gaiberg.de/rathaus-service/ratsinformationssystem/sitzungskalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad; Ratsinformationsmodul von Hirsch & Wölfl (TYPO3): Monatsdaten des Sitzungskalenders mit öffentlichen Tagesordnungspunkten erreichbar."
   },
   {
     "id": "de-08226028",
@@ -16130,6 +16173,17 @@
     "verifiedSource": "https://www.wannweil.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08415085",
+    "name": "Gemeinde Zwiefalten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "hw-typo3",
+    "base": "https://www.zwiefalten.de/rathaus-service/ratsinformationssystem/kalender",
+    "verifiedSource": "https://www.zwiefalten.de/rathaus-service/ratsinformationssystem/kalender",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad; Ratsinformationsmodul von Hirsch & Wölfl (TYPO3): Monatsdaten des Sitzungskalenders mit öffentlichen Tagesordnungspunkten erreichbar."
   },
   {
     "id": "de-08415087",
