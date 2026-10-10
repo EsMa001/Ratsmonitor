@@ -40366,5 +40366,123 @@
     "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
     "foundBy": "Neuprüfung 2026-10-10 (Atlas-Adresse, Anmeldeseiten)"
+  },
+  {
+    "id": "de-09173130",
+    "name": "Gemeinde Icking",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.sitzungsdienst-icking.de/bi/",
+    "calendar": "si010.asp",
+    "verifiedSource": "https://www.sitzungsdienst-icking.de/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "foundBy": "Neuprüfung 2026-10-10 (frühere Ablehnung mit HTTP 403)"
+  },
+  {
+    "id": "de-15081240",
+    "name": "Stadt Kalbe (Milde)",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://remote.stadt-kalbe-milde.de/bi/",
+    "extension": "asp",
+    "verifiedSource": "https://remote.stadt-kalbe-milde.de/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "Neuprüfung 2026-10-10 (frühere Ablehnung mit HTTP 403)"
+  },
+  {
+    "id": "de-12073429",
+    "name": "Gemeinde Nordwestuckermark",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.nordwestuckermark.de/",
+    "pages": [
+      "https://www.nordwestuckermark.de/bekanntmachungen/index.php",
+      "https://www.nordwestuckermark.de/politik/gremium/8881/Gemeindevertretung",
+      "https://www.nordwestuckermark.de/politik/mitglieder/gremium/8881/gemeindevertretung",
+      "https://www.nordwestuckermark.de/politik/gremien/gremientyp/1/ebenentyp/5/titel/Gemeindevertretungen"
+    ],
+    "alsoFrom": [
+      "https://daten.verwaltungsportal.de"
+    ],
+    "verifiedSource": "https://www.nordwestuckermark.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-06440021",
+    "name": "Stadt Reichelsheim (Wetterau)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stadt-reichelsheim.de/",
+    "pages": [
+      "https://www.stadt-reichelsheim.de/verwaltung-politik/politik/sitzungen-der-gremien/islu-ausschuss/",
+      "https://www.stadt-reichelsheim.de/verwaltung-politik/politik/sitzungen-der-gremien/hfw-ausschuss/",
+      "https://www.stadt-reichelsheim.de/verwaltung-politik/politik/sitzungen-der-gremien/stvv-2022/",
+      "https://www.stadt-reichelsheim.de/verwaltung-politik/politik/sitzungen-der-gremien/stvv-2023/",
+      "https://www.stadt-reichelsheim.de/verwaltung-politik/politik/sitzungen-der-gremien/stvv-2024/"
+    ],
+    "sitemap": "https://www.stadt-reichelsheim.de/sitemap.xml",
+    "verifiedSource": "https://www.stadt-reichelsheim.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-120705005",
+    "name": "Amt Lenzen-Elbtalaue",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://sessionlenzen.de/bi/",
+    "extension": "php",
+    "verifiedSource": "https://sessionlenzen.de/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "Neuprüfung 2026-10-10 (Kategorie nolink)"
+  },
+  {
+    "id": "de-097715705",
+    "name": "Verwaltungsgemeinschaft Mering",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.vgmering.sitzung-online.de/pi2/",
+    "oparlFallback": {
+      "system": "https://www.vgmering.sitzung-online.de/pi2/oparl/1.0/system.asp",
+      "reason": "OParl-Lizenz „Nutzung nur nach Genehmigung“, keine Freigabe vorhanden",
+      "checkedAt": "2026-10-10"
+    },
+    "verifiedSource": "http://vg-mering.de/",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "Neuprüfung 2026-10-10 (Kategorie nolink, Link yw040_r.asp von der offiziellen Website, Leser von Hand geprüft: 103 Punkte in 12 Sitzungen der letzten drei Monate)",
+    "apiCheck": "OParl-Adresse https://www.vgmering.sitzung-online.de/pi2/oparl/1.0/system.asp antwortet öffentlich, Lizenz aber „Nutzung nur nach Genehmigung“; deshalb öffentliche ALLRIS-3-Seiten (am 10.10.2026 erreichbar)."
+  },
+  {
+    "id": "de-08118",
+    "name": "Landkreis Ludwigsburg",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://sbi.landkreis-ludwigsburg.de/",
+    "extension": "php",
+    "verifiedSource": "https://sbi.landkreis-ludwigsburg.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "manuell 2026-10-10"
+  },
+  {
+    "id": "de-145245128",
+    "name": "Verwaltungsgemeinschaft Rund um den Auersberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.ratsinfo-online.de/lichtenstein-bi/",
+    "calendar": "si010_e.asp",
+    "verifiedSource": "https://www.ratsinfo-online.de/lichtenstein-bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "foundBy": "manuell 2026-10-10"
   }
 ]

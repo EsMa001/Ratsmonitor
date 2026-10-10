@@ -2921,5 +2921,17 @@
     "verifiedAt": "2026-10-10",
     "foundBy": "Neuprüfung 2026-10-10 (Atlas-Adresse; die Startseite nennt kein Kalenderprogramm, freigegeben ist si010_a.asp)",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar, Leser liefert öffentliche Tagesordnungspunkte der letzten drei Monate (Kreistag und Ausschüsse)."
+  },
+  {
+    "id": "nrw-05954028",
+    "name": "Stadt Sprockhövel",
+    "kind": "city",
+    "system": "https://sprockhoevel.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://sprockhoevel.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "manuell 2026-10-10"
   }
 ]
