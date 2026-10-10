@@ -696,7 +696,7 @@ wordmark__dot design-styles.css:61
 - page.tsx (2)
 
 ### app/admin/
-- page.tsx (50, ⚠2): dynamic, metadata, AdminPage
+- page.tsx (53, ⚠2): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -713,15 +713,16 @@ wordmark__dot design-styles.css:61
 
 ### components/
 - admin-activation.tsx (7, ⚠1): AdminActivation
-- admin-atlas.tsx (185, ⚠29): AdminAtlas
+- admin-atlas.tsx (197, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (60, ⚠2): AdminPage, ADMIN_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠16): AdminDashboardView
-- admin-estimate.tsx (355, ⚠52): AdminEstimate
+- admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-keywords.tsx (115, ⚠13): AdminKeywords
 - admin-loader.tsx (33): AdminLoader
+- admin-mobile.tsx (34): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (224, ⚠23): AdminProcessing
@@ -734,7 +735,7 @@ wordmark__dot design-styles.css:61
 - admin-texts.ts (517, ⚠3): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
-- admin-ui.tsx (86): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
+- admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
 - analysis-article-list.tsx (34, ⚠1): AnalysisArticleList
 - analysis-controls.tsx (17, ⚠4): AnalysisControls
 - analysis-examples.tsx (16, ⚠5): AnalysisExamples
@@ -751,7 +752,7 @@ wordmark__dot design-styles.css:61
 - App.tsx (47, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
-- AccountMenu.tsx (71, ⚠2): AccountMenu
+- AccountMenu.tsx (74, ⚠2): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (98, ⚠1): AreaBar
 - Brand.tsx (274): AnalyticsLogo, Brand
@@ -866,7 +867,7 @@ wordmark__dot design-styles.css:61
 - BeschluessePage.tsx (218, ⚠5): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (293, ⚠12): ComparePage
+- ComparePage.tsx (293, ⚠11): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (270, ⚠4): DiffusionPage

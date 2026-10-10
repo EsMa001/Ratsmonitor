@@ -1,6 +1,6 @@
 # Lena: regelbasierte Assistentin (Konzept, ohne KI-Schnittstelle)
 
-Stand: 10.10.2026. Entwurf zur Entscheidung, noch nichts umgesetzt.
+Stand: 10.10.2026. Umgesetzt: Verstehen und Antworten im Backend (shared/lena/, server/integrations/lena.mjs, POST /api/lena), Fragenkatalog und Messung (scripts/lena/measure.mjs). Offen: Oberfläche und die Entscheidungen unten.
 
 ## Ziel
 
