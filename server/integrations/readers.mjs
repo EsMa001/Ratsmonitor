@@ -17,6 +17,7 @@ import {collectKomfa,detectKomfa} from './komfa.mjs';
 import {collectParlis,detectParlis} from './parlis.mjs';
 import {collectSimHannover,detectSimHannover} from './sim-hannover.mjs';
 import {collectRim4,detectRim4} from './sdnet-rim4.mjs';
+import {collectEcics,detectEcics} from './ecics-ris.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -50,6 +51,9 @@ export const READERS={
  // SD.NET RIM 4 (newer web interface of SD.NET, /termine /tops /vorgang) hosted by the municipality itself: the iCalendar
  // of the meetings, the agenda of each and the process of its items. The hosts of ratsinfomanagement.net are not served.
  'sdnet-rim4':{name:'SD.NET RIM 4 (öffentliche Seiten)',collect:collectRim4,detect:async(url,html)=>pick(detectRim4(url,html),['base'])},
+ // Ratsinformationssystem of the municipal website system ecics (/ris?action=show_sitzungsliste, show_sitzung): the list of
+ // meetings, the public agenda of each with its papers (PDF) and, where published, the minutes of the items.
+ 'ecics-ris':{name:'Gemeinde-RIS ecics (öffentliche Seiten)',collect:collectEcics,detect:async(url,html)=>pick(detectEcics(url,html),['base'])},
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
  'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},
