@@ -17,6 +17,7 @@ import {collectKomfa,detectKomfa} from './komfa.mjs';
 import {collectParlis,detectParlis} from './parlis.mjs';
 import {collectSimHannover,detectSimHannover} from './sim-hannover.mjs';
 import {collectRim4,detectRim4} from './sdnet-rim4.mjs';
+import {collectTypo3Bi,detectTypo3Bi} from './typo3-bi.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -49,6 +50,8 @@ export const READERS={
  'sim-hannover':{name:'SIM Hannover (öffentliches Sitzungsmanagement)',collect:collectSimHannover,detect:async(url,html)=>pick(detectSimHannover(url,html),['base'])},
  // SD.NET RIM 4 (newer web interface of SD.NET, /termine /tops /vorgang) hosted by the municipality itself: the iCalendar
  // of the meetings, the agenda of each and the process of its items. The hosts of ratsinfomanagement.net are not served.
+ // TYPO3 Bürgerinformationssystem (extension risportal, /bi with /api/meetings/): month lists and the public agenda of each meeting.
+ 'typo3-bi':{name:'TYPO3-Bürgerinformationssystem (öffentliche Seiten)',collect:collectTypo3Bi,detect:async(url,html)=>pick(detectTypo3Bi(url,html),['base'])},
  'sdnet-rim4':{name:'SD.NET RIM 4 (öffentliche Seiten)',collect:collectRim4,detect:async(url,html)=>pick(detectRim4(url,html),['base'])},
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
