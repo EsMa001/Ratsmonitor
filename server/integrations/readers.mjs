@@ -21,6 +21,7 @@ import {collectTypo3Bi,detectTypo3Bi} from './typo3-bi.mjs';
 import {collectMeetingMobile,detectMeetingMobile} from './meeting-mobile.mjs';
 import {collectHwTypo3,detectHw} from './hw-typo3.mjs';
 import {collectEcics,detectEcics} from './ecics-ris.mjs';
+import {collectProvoxIip,detectProvoxIip} from './provox-iip.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -58,6 +59,9 @@ export const READERS={
  // Meeting Mobile / RIS Web (Lotus Domino XPages, meeting-mobile.de/mm/<ort>/ris_web.nsf): the list of meetings and the public
  // block of each meeting page; no form or session needed. The non-public block is never read.
  'meeting-mobile':{name:'Meeting Mobile / RIS Web (öffentliche Seiten)',collect:collectMeetingMobile,detect:async(url,html)=>pick(detectMeetingMobile(url,html),['base'])},
+ // Provox IIP (Bürger- und Ratsinformationssystem, ASP.NET, <host>/ris/<client>/) hosted by the municipality: the JSON feed
+ // of the month calendar, the agenda of each meeting and the paper of its items. Only the block "Öffentlich" is read.
+ 'provox-iip':{name:'Provox IIP (öffentliche Seiten)',collect:collectProvoxIip,detect:async(url,html)=>pick(detectProvoxIip(url,html),['base'])},
  'sdnet-rim4':{name:'SD.NET RIM 4 (öffentliche Seiten)',collect:collectRim4,detect:async(url,html)=>pick(detectRim4(url,html),['base'])},
  // Ratsinformationsmodul (hwratssystem) of Hirsch & Wölfl in municipal TYPO3 websites (Baden-Württemberg): the month data of
  // the meeting calendar page with the public items of each meeting; the non-public items are never read.

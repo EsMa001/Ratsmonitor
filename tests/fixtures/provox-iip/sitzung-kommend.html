@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="de" style="cursor:default;overflow-x:hidden"> <!-- onselectstart="return false" oncontextmenu="return false" -->
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="black"><link rel="apple-touch-icon" href="/ris/images/hameln/icon.png">
+<title>B&uuml;rger- und Ratsinformationssystem</title>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no">
+    <!--title>Sitzungsdetails - Provox IIP</title-->
+    <link rel="shortcut icon" type="image/x-icon" href="/ris/favicon.ico">
+    <link rel="stylesheet" href="/ris/lib/font-awesome/css/all.min.css" />
+    <link href="/ris/css/customers/hameln.css" rel="stylesheet" type="text/css" />
+
+    <!--environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap-datepicker-1.6.4-dist/css/bootstrap-datepicker.css" />
+    </environment-->
+    
+        <link rel="stylesheet" href="/ris/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/ris/css/site.min.css" />
+        <link rel="stylesheet" href="/ris/lib/bootstrap-datepicker-1.6.4-dist/css/bootstrap-datepicker.min.css" />
+    
+<link href="/ris/css/customers/hameln-all.css" rel="stylesheet" type="text/css" />
+<script>if(top!=self){document.write('<link href="/ris/css/customers/hameln-frame.css" rel="stylesheet" type="text/css" />')}</script>
+<link href="/ris/css/customers/hameln-mobil.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="background">
+    <!--div id="skip"><a href="#content">Zum Inhalt springen</a></div-->
+
+<nav class="navbar navbar-expand-xl fixed-top py-1 heading" role="navigation" style="margin-top:-1px !important;height:36px">
+
+    <span class=NoFrame><a onClick=location.href="/ris"><img ID=Logo height=26 style=border-radius:2px;padding:0;margin-left:-12px;margin-top:-3px;cursor:pointer;background-color:white title="Startseite" alt="Logo" src=/ris/images/hameln/Logo.svg></a></span>
+    <div style="margin-left:26px;white-space:nowrap;color:white;display:none" class="NurMobil Kopf">Bürger- und Ratsinfosystem</div>
+    <button onClick=blur() class="navbar-toggler border-0 py-0" type="button" data-toggle="collapse" data-target="#navbarCollapse">
+      <span class="fas fa-bars Gruen" style=font-size:1.6em;position:relative;left:25px></span> 
+    </button>
+
+    <style>.navbar-nav li{text-align:center}</style>
+    <div class="collapse navbar-collapse" id="navbarCollapse")>
+        <ul class="navbar-nav justify-content-center mr-auto">
+            <li class="nav-item"><a class="nav-link" href="/ris">Startseite</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ris/hameln/organization/list">Organisationen</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ris/hameln/person/list">Personen</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ris/hameln/meeting/list">Monatskalender</a></li>
+                <li class="nav-item"><a href=/ris/hameln/meeting/year/2026 class="nav-link">Jahreskalender</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ris/hameln/meetingsearch"><span ID=Sitzungen>Sitzungssuche</span></a></li>
+                <script>if(self.name=="PVRatNeu"){document.getElementById("Sitzungen").innerHTML="Sitzungen"}</script>
+                <li class="nav-item"><a class="nav-link" href="/ris/hameln/agendaitem/list">Vorlagen</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ris/hameln/search">Recherche</a></li>
+                    <li class="nav-item">
+        <div class="dropdown">
+            <a href="#" data-toggle="dropdown" class="nav-link" id="dropdownMenuButton">Anmelden</a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style="height:10em;background-color:rgb(51,74,96)">
+                <form Name="Anmelden" method="post" class="px-2 py-1" action="/ris/hameln/login/login">
+                    <div class="form-group">
+                        <input name="Username" type="text"     class="form-control" id="loginusername" required placeholder=Benutzername style="padding:5px;text-align:center;margin-bottom:5px">
+                        <input name="Password" type="password" class="form-control" id="loginpassword" required placeholder=Passwort style="padding:5px;text-align:center">
+			<div style=height:13px></div>
+                        <input type=submit id="loginbutton" class="btn loginbuttons btn-block" style="font-size:18px !important;font-weight:bold" value='Anmelden'>
+                    </div>
+                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8Dugxa2EVfJKhbDKlQGreLmD1cr_SqyB9-yUodO6dSO943BW4gMzewbjJ7bQBSaEY3-rvfxCExBycTBUvyJ_Wv7-OZxh-0kA_SVmOX2lUQLsF1JJpgRNkz5pmLPK6T0hQe5lBSidtcAfVcNmxPTIeRw" /></form>
+            </div>
+        </div>
+    </li>
+
+        </ul>
+    </div>
+    <img class="NoMobil NoFrame Drucken" align=right src=/ris/images/hameln/Druck.png title="Diese Seite drucken" style=cursor:pointer;margin-right:-9px onClick=print()>
+</nav>
+    <div class="container body-content" id="content"> 
+        <div role="main">
+            
+
+
+
+<div class="container">
+    <button class="btn-sm loginbuttons" onclick="goBack()"><span class="fas fa-arrow-left"></span> Zur&#xFC;ck</button>
+
+
+
+
+
+    <div class="heading" role="heading" aria-level="1">Sitzungsdetails
+        <iframe src=/Sitzungen.asp?135 class=NoPrint width=92 height=22 frameborder=0 style=float:right;margin-top:9px;padding-left:11px></iframe>
+    </div>
+    <div class="row">
+        <div class="info col-lg-12" style=margin-top:-10px>
+                <h4><a style="color:rgb(32,98,179) !important" href="/ris/hameln/organization/details/135">Ausschuss f&#xFC;r Stadtentwicklung</a></h4>
+            <span class="fas fa-calendar-day" style="color:grey">&nbsp;</span>Mittwoch 23. September 2026<br />
+                <span class="fas fa-clock" style="color:grey">&nbsp;</span>Von 16:30 Uhr bis 17:15 Uhr<br>
+                <span style=display:none>Sitzungsort: </span><span class="fas fa-building" style="color:grey">&nbsp;</span>Energietreff der Stadtwerke<br>
+        </div>
+    </div>
+<hr class=Daten style=display:block;background-color:black;margin:0px;margin-top:3px>
+    <div class="row Daten" style=margin-top:-12px>
+        <div class="filebox col-md-6 col-xs-12" style="border:0;overflow-x:auto">
+            <!--Sitzungsdateien:<br /-->
+                <a aria-label="Amtliche Bekanntmachung" target="_blank" href="/ris/hameln/file/getfile/97651">
+                    <span class="fas fa-file-pdf" style="color:dodgerblue" aria-hidden="true" title="Amtliche Bekanntmachung (89 kB)"></span>
+                </a>
+
+<span data-toggle="collapse" data-target="#LegendeTab" style="display:none;float:right !important;cursor:pointer;color:dodgerblue;font-size:2em !important;margin-top:3px" class="fas fa-bars NurMobil"></span>
+
+        </div>
+        <div class="col-md-6 col-sm-12"><div style=display:none;height:1px class=NurMobil></div>
+          <table class=NoMobil height=40>
+            <tr data-toggle="collapse" data-target="#LegendeTab" style=cursor:pointer>
+              <td width=* class=Nomobil>Legende einblenden oder ausblenden</td>
+              <td align=center width=40xp><span class="fas fa-bars Blau border-0 py-0" style=font-size:1.5em></span></td>
+            </tr>
+          </table>
+          <div id="LegendeTab" class="collapse">
+          <hr style=display:none;background-color:black;margin:0px;margin-top:1px class=NurMobil>
+            <table class="Legende" style="font-size:0.9em">
+                <tr style="line-height:1.4">
+                    <td style="vertical-align:top;border-top:0px !important" rowspan=2>
+<span class="fas fa-file-pdf legendicon" style="color:dodgerblue" aria-hidden="true" title="Amtliche Bekanntmachung"></span>Amtliche Bekanntmachung<br />
+
+
+                    </td>
+
+                    <td width=1 style="vertical-align:top;white-space:nowrap !important;border-top:0px !important">
+
+                        <span class="fas fa-info-circle  legendicon" style="color:dodgerblue" aria-hidden="true" title="Vorlagendetails"></span><span style=float:right>Vorlagendetails</span><br />
+                        <span class="fas fa-download     legendicon" style="color:dodgerblue" aria-hidden="true" title="Vorlagendetails"></span>Vorlagendokument<br />
+
+                          <tr><td height="1" nowrap>
+                            <span class="fas fa-thumbs-up   legendicon" style="color:seagreen" aria-hidden="true" title="Abstimmungsdetails"></span><span style=float:right>Zugestimmt</span><br />
+                            <span class="fas fa-thumbs-down legendicon" style="color:crimson"  aria-hidden="true" title="Abstimmungsdetails"></span><span style=float:right>Abgelehnt</span><br />
+                          </td></tr>
+                    </td>
+                </tr>
+                    <tr style="display:none" class=Umrandet><td colspan=2><span style=color:red>Rot umrandet:</span> <span style=float:right>Nachträglich aufgenommene Tagesordnungspunkte</span></td</tr>
+            </table>
+          </div>
+        </div>
+    </div>
+    <hr class=Daten style=display:block;background-color:black;margin:0px;margin-top:1px;>
+    <div class="row Daten" style=margin-top:-10px>
+    </div>
+    <div class="row schmal Daten">
+            <button class="btn-sm loginbuttons" onclick="showAgenda();blur()">Tagesordnung</button><span>&nbsp; &nbsp;</span>
+            <button class="btn-sm loginbuttons" onclick="showParticipants();blur()">Teilnehmer</button>
+
+    </div>
+    <div class="row schmal Daten" style=;margin-top:-10px>
+        <div id="agenda" class="agenda col-lg-12" style="">
+            <h3 class="agendahead">Tagesordnung</h3>
+                    <div class="topic">
+                        <div class="header">
+                                <strong class=Gruen> &#xD6;ffentlich</strong>
+                                <div style=float:right><b>Details&nbsp;</b></div>
+
+                        </div>
+                            <div class="meetingitem" style="vertical-align:bottom !important; ">
+                                <div style="width:55px; float:left; overflow-wrap: break-word;" class="agendanumber">
+                                    1
+                                </div>
+                                <div style="width:65%; float:left;" class="TOText">
+                                    Genehmigung des Protokolls Nr. 5/2026 vom 20.08.2026 
+                                </div>
+                                <div style="width:17%; float:right;" class="TOZusatz">
+
+
+
+
+                                    <!--span aria-hidden="true" class="fas fa-poll docicon NoMobil" style=color:transparent></span-->
+<span aria-hidden="true" class="fas fa-download docicon NoMobil" style=color:transparent></span><span aria-hidden="true" class="fas fa-info-circle docicon NoMobil" style=color:transparent></span>                                    <div class=VLNR style="float:right;min-width:75px">
+                                        <span id="agendaitemnumber" style="font-size:smaller"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meetingitem" style="vertical-align:bottom !important; ">
+                                <div style="width:55px; float:left; overflow-wrap: break-word;" class="agendanumber">
+                                    2
+                                </div>
+                                <div style="width:65%; float:left;" class="TOText">
+                                    Miegelweg
+                                </div>
+                                <div style="width:17%; float:right;" class="TOZusatz">
+
+
+
+
+                                    <!--span aria-hidden="true" class="fas fa-poll docicon NoMobil" style=color:transparent></span-->
+<span aria-hidden="true" class="fas fa-download docicon NoMobil" style=color:transparent></span><span aria-hidden="true" class="fas fa-info-circle docicon NoMobil" style=color:transparent></span>                                    <div class=VLNR style="float:right;min-width:75px">
+                                        <span id="agendaitemnumber" style="font-size:smaller"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meetingitem" style="vertical-align:bottom !important; ">
+                                <div style="width:55px; float:left; overflow-wrap: break-word;" class="agendanumber">
+                                    2.1
+                                </div>
+                                <div style="width:65%; float:left;" class="TOText">
+                                    Umbenennung des Miegelwegs - Antrag der Mehrheitsgruppe aus SPD / Bündnis 90 / Die Grünen vom 19.05.2026
+                                </div>
+                                <div style="width:17%; float:right;" class="TOZusatz">
+
+
+
+
+                                    <!--span aria-hidden="true" class="fas fa-poll docicon NoMobil" style=color:transparent></span-->
+                                        <a title="Vorlagendokument Dateigr&#xF6;&#xDF;e 250 kB" aria-label="Vorlagendokument" target="_blank" href="/ris/hameln/file/getfile/96734">
+                                            <span aria-hidden="true" class="fas fa-download docicon style="color:dodgerblue"></span>
+                                        </a>
+                                        <a aria-label="Vorlage" href="/ris/hameln/agendaitem/details/7892">
+                                            <span aria-hidden="true" class="fas fa-info-circle docicon" style="color:dodgerblue"></span>
+                                        </a>
+                                    <div class=VLNR style="float:right;min-width:75px">
+                                        <span id="agendaitemnumber" style="font-size:smaller">90/2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meetingitem" style="vertical-align:bottom !important; ">
+                                <div style="width:55px; float:left; overflow-wrap: break-word;" class="agendanumber">
+                                    2.2
+                                </div>
+                                <div style="width:65%; float:left;" class="TOText">
+                                    Änderungsantrag zur Vorlage 90/2026 "Umbenennung des Miegelwegs" - Änderungsantrag CDU-Fraktion vom 26.06.2026
+                                </div>
+                                <div style="width:17%; float:right;" class="TOZusatz">
+
+
+
+
+                                    <!--span aria-hidden="true" class="fas fa-poll docicon NoMobil" style=color:transparent></span-->
+                                        <a title="Vorlagendokument Dateigr&#xF6;&#xDF;e 130 kB" aria-label="Vorlagendokument" target="_blank" href="/ris/hameln/file/getfile/96933">
+                                            <span aria-hidden="true" class="fas fa-download docicon style="color:dodgerblue"></span>
+                                        </a>
+                                        <a aria-label="Vorlage" href="/ris/hameln/agendaitem/details/7896">
+                                            <span aria-hidden="true" class="fas fa-info-circle docicon" style="color:dodgerblue"></span>
+                                        </a>
+                                    <div class=VLNR style="float:right;min-width:75px">
+                                        <span id="agendaitemnumber" style="font-size:smaller">93/2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meetingitem" style="vertical-align:bottom !important; ">
+                                <div style="width:55px; float:left; overflow-wrap: break-word;" class="agendanumber">
+                                    2.3
+                                </div>
+                                <div style="width:65%; float:left;" class="TOText">
+                                    Umbenennung des Miegelwegs: Anlass, Verfahrensstand und Entscheidungsgrundlagen
+                                </div>
+                                <div style="width:17%; float:right;" class="TOZusatz">
+
+
+
+
+                                    <!--span aria-hidden="true" class="fas fa-poll docicon NoMobil" style=color:transparent></span-->
+                                        <a title="Vorlagendokument Dateigr&#xF6;&#xDF;e 195 kB" aria-label="Vorlagendokument" target="_blank" href="/ris/hameln/file/getfile/97318">
+                                            <span aria-hidden="true" class="fas fa-download docicon style="color:dodgerblue"></span>
+                                        </a>
+                                        <a aria-label="Vorlage" href="/ris/hameln/agendaitem/details/7911">
+                                            <span aria-hidden="true" class="fas fa-info-circle docicon" style="color:dodgerblue"></span>
+                                        </a>
+                                    <div class=VLNR style="float:right;min-width:75px">
+                                        <span id="agendaitemnumber" style="font-size:smaller">107/2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meetingitem" style="vertical-align:bottom !important; ">
+                                <div style="width:55px; float:left; overflow-wrap: break-word;" class="agendanumber">
+                                    2.4
+                                </div>
+                                <div style="width:65%; float:left;" class="TOText">
+                                    Umbenennung des Miegelwegs – Entnazifizierungsakte und Stellungnahme des Dokumentations- und Lernorts Bückeberg
+                                </div>
+                                <div style="width:17%; float:right;" class="TOZusatz">
+
+
+
+
+                                    <!--span aria-hidden="true" class="fas fa-poll docicon NoMobil" style=color:transparent></span-->
+                                        <a title="Vorlagendokument Dateigr&#xF6;&#xDF;e 120 kB" aria-label="Vorlagendokument" target="_blank" href="/ris/hameln/file/getfile/97666">
+                                            <span aria-hidden="true" class="fas fa-download docicon style="color:dodgerblue"></span>
+                                        </a>
+                                        <a aria-label="Vorlage" href="/ris/hameln/agendaitem/details/7925">
+                                            <span aria-hidden="true" class="fas fa-info-circle docicon" style="color:dodgerblue"></span>
+                                        </a>
+                                    <div class=VLNR style="float:right;min-width:75px">
+                                        <span id="agendaitemnumber" style="font-size:smaller">121/2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meetingitem" style="vertical-align:bottom !important; ">
+                                <div style="width:55px; float:left; overflow-wrap: break-word;" class="agendanumber">
+                                    3
+                                </div>
+                                <div style="width:65%; float:left;" class="TOText">
+                                    Mitteilungen der Verwaltung
+                                </div>
+                                <div style="width:17%; float:right;" class="TOZusatz">
+
+
+
+
+                                    <!--span aria-hidden="true" class="fas fa-poll docicon NoMobil" style=color:transparent></span-->
+<span aria-hidden="true" class="fas fa-download docicon NoMobil" style=color:transparent></span><span aria-hidden="true" class="fas fa-info-circle docicon NoMobil" style=color:transparent></span>                                    <div class=VLNR style="float:right;min-width:75px">
+                                        <span id="agendaitemnumber" style="font-size:smaller"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meetingitem" style="vertical-align:bottom !important; ">
+                                <div style="width:55px; float:left; overflow-wrap: break-word;" class="agendanumber">
+                                    4
+                                </div>
+                                <div style="width:65%; float:left;" class="TOText">
+                                    Anfragen, Anregungen und Mitteilungen der Ausschussmitglieder
+                                </div>
+                                <div style="width:17%; float:right;" class="TOZusatz">
+
+
+
+
+                                    <!--span aria-hidden="true" class="fas fa-poll docicon NoMobil" style=color:transparent></span-->
+<span aria-hidden="true" class="fas fa-download docicon NoMobil" style=color:transparent></span><span aria-hidden="true" class="fas fa-info-circle docicon NoMobil" style=color:transparent></span>                                    <div class=VLNR style="float:right;min-width:75px">
+                                        <span id="agendaitemnumber" style="font-size:smaller"></span>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+        </div>
+        <div id="minutes" class="agenda col-lg-12" style="display:none;">
+            <!--h3 class="agendahead">Protokoll</h3-->
+            <h3 class="agendahead">Abstimmungsergebnisse</h3>
+        </div>
+             <br class=NoMobil>
+    </div>
+</div>
+        </div>
+    </div>
+    <br class="NoFrame">
+    <div class=NoFrame style=width:100%;background-color:rgb(51,74,96);color:white;position:fixed;bottom:0;z-index:1><table class=Fuss width=100%>
+ <tr height=30>
+  <td class="NoMobil Landscape" width=10></td>
+  <td align=left  nowrap>&copy; <span class="NoMobil Landscape">1996 - <script>document.write((new Date).getFullYear())</script> </span><a href="https://www.provox.de" target=_blank style=color:white>PROVOX<span class="NoMobil Landscape"> Systemplanung GmbH</span></a> & <a href=https://www.hameln.de/ target=_blank style=color:white>Stadt Hameln</a></td>
+  <td align=right nowrap><a href="https://www.hameln.de/de/impressum/" target=_blank style=color:white>Impressum</a> / <a href="https://www.hameln.de/de/datenschutz/" target=_blank style=color:white>Datenschutz</a></td>
+  <td class="NoMobil Landscape" width=10></td>
+ </tr>
+</table>
+</div>
+
+    
+    
+        <script src="/ris/lib/jquery/dist/jquery.min.js"></script>
+        <script src="/ris/js/jquery.tablesorter.min.js"></script>
+        <script src="/ris/lib/popper.min.js"></script>
+        <script src="/ris/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    
+    <script>
+        $('table').tablesorter({
+            dateFormat : "ddmmyyyy",
+        });
+    </script>
+    
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function showAgenda() {
+            var a = document.getElementById("agenda");
+            var m = document.getElementById("minutes");
+            var p = document.getElementById("participantstab");
+            a.style.display = "block";
+            m.style.display = "none";
+            if (true)
+                p.style.display = "none";
+        }
+
+        function showMinutes() {
+            var a = document.getElementById("agenda");
+            var m = document.getElementById("minutes");
+            var p = document.getElementById("participantstab");
+            a.style.display = "none";
+            m.style.display = "block";
+            if (true)
+                p.style.display = "none";
+        }
+
+        function showParticipants() {
+            var a = document.getElementById("agenda");
+            var m = document.getElementById("minutes");
+            var p = document.getElementById("participantstab");
+            a.style.display = "none";
+            m.style.display = "none";
+            p.style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
