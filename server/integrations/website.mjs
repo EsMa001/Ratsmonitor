@@ -481,8 +481,8 @@ export async function collectWebsite(source,{now=new Date(),get=fetchSiteText,ge
   const notices=[];
   for(const l of documentLinks(html,c.url)){
    // A page with items: every PDF of the site it links counts as its notice, whatever the link says ("Amtliche Bekanntmachung (PDF,
-   // 85 KB)", "Download", an icon, "Aushang vom …"). A page without items: only links that look like a meeting's document.
-   if(l.kind!=='pdf'||closed(l.label,l.url)||!days.size&&sessionScore({url:l.url,label:l.label||t.title})<SESSION_THRESHOLD||l.date&&!inWindow(l.date)&&!days.size)continue;
+   // 85 KB)", "Download", an icon, "Aushang vom …"). A page without items: only links that look like a meeting's document, with the page's title ("Bekanntmachung der Gemeinderatssitzung" over a PDF "Bekanntmachung 2026-10-13").
+   if(l.kind!=='pdf'||closed(l.label,l.url)||!days.size&&sessionScore({url:l.url,label:[l.label,t.title].filter(Boolean).join(' ')})<SESSION_THRESHOLD||l.date&&!inWindow(l.date)&&!days.size)continue;
    // The notice of a page with items: of its day, without a day, or dated by its posting shortly before ("2026-10-07_einladung.pdf").
    // A label that names another meeting's day leaves the PDF out; the day of a posting ("Aushang vom 07.10.2026") does not.
    const labelDay=firstDay(l.label)&&/sitzung|niederschrift|protokoll|einladung|tagesordnung|beschl|rat(?:es|s)?\b|ausschuss|kreistag|vertretung|versammlung/i.test(l.label);

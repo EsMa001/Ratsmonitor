@@ -613,7 +613,10 @@ export function isPublicHeading(line){const h=headingCore(line);return !!h&&(PUB
 export function isNonPublicHeading(line){const h=headingCore(line);return !!h&&(NONPUBLIC_CORE.test(h.core)||!h.numbered&&NONPUBLIC_LONG.test(h.core));}
 // A heading of the non-public part followed by a note ("Nichtöffentlicher Teil (ab TOP 3)", "Nichtöffentliche Sitzung ab
 // 20:00 Uhr", "NÖ-Teil", "Nichtöffentlicher Teil der Gemeinderatssitzung").
-const STARTS_NONPUBLIC=/^[-–*•_.:\s]*(?:(?:Teil|Abschnitt)\s+(?:[A-H]|[IVX]{1,4}|\d)\s*[:.)–-]?\s*|(?:[A-H]|[IVX]{1,4})[.)]\s*)?(?:Tagesordnung\s*[-–:,]?\s*)?(?:nichtöffentlich(?:e[rnms]?)?|vertrauliche[rnms]?|geschlossene[rnms]?|interne[rnms]?|n\.?\s?ö\.?|nö)[\s-]*(?:Teil|Sitzung|Sitzungsteil|Tagesordnung|Beratung|Abschnitt|Sitzungsabschnitt|Tagesordnungspunkte|Punkte|Angelegenheiten)(?!\p{L})|^[-–*•_.:\s]*unter\s+Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit(?!\p{L})/iu;
+const STARTS_NONPUBLIC=/^[-–*•_.:\s]*(?:(?:Im\s+Anschluss(?:\s+(?:daran|hieran))?|Anschlie(?:ß|ss)end|Danach|(?:Hieran|Daran)\s+anschlie(?:ß|ss)end)\s*[-–:,]?\s*)?(?:(?:Teil|Abschnitt)\s+(?:[A-H]|[IVX]{1,4}|\d)\s*[:.)–-]?\s*|(?:[A-H]|[IVX]{1,4})[.)]\s*)?(?:Tagesordnung\s*[-–:,]?\s*)?(?:nichtöffentlich(?:e[rnms]?)?|vertrauliche[rnms]?|geschlossene[rnms]?|interne[rnms]?|n\.?\s?ö\.?|nö)[\s-]*(?:Teil|Sitzung|Sitzungsteil|Tagesordnung|Beratung|Abschnitt|Sitzungsabschnitt|Tagesordnungspunkte|Punkte|Angelegenheiten)(?!\p{L})|^[-–*•_.:\s]*unter\s+Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit(?!\p{L})/iu;
+// The closing note of an agenda: what follows the published items is a non-public session.
+const TRAILING_NP=/^(?:Anschlie(?:ß|ss)end|Im\s+Anschluss(?:\s+(?:daran|hieran))?|Danach|(?:Hieran|Daran)\s+anschlie(?:ß|ss)end)\s*[-–:,]?\s*(?:findet\s+)?(?:eine\s+)?nichtöffentliche[rn]?\s+(?:Sitzung|Beratung|Teil)(?:\s+statt)?\.?$/iu;
+const lastItemIndex=(items,start,end)=>{for(let k=end-1;k>=start;k--)if(items[k])return k;return start;};
 const startsNonPublic=line=>{const l=canonNP(normalizeLine(line));return l.length<=90&&!itemOf(l)&&STARTS_NONPUBLIC.test(l);};
 // A sentence of the head that names the public session ("findet eine öffentliche Sitzung statt", "in öffentlicher Sitzung").
 // Never after a negation ("keine öffentliche Sitzung", "nicht in öffentlicher Sitzung") and never from a clause that names the
@@ -983,7 +986,7 @@ const NP_TAIL=/^(?:l|li|lich|liche[rnms]?|ich|iche[rnms]?|ntlich\p{Ll}*|tlich\p{
 // Words of a line between the items of an invitation that speak of the public, listeners, the press or secrecy; such a line
 // that is not read as anything else is a mention of the non-public part (folded text). Invitations to the public are not.
 const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bgaeste|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\.|mandatstraeger|\bzutritt|\bklausur|\bprivat\b|draussen/;
-const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeitsbeteiligung|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)/;
+const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)/;
 // A short line without a sentence ("Geheime Sitzung", "Fortsetzung ohne Publikum"): a heading.
 const suspect=l=>{const f=foldText(normalizeLine(l));return SUSPECT.test(f)&&!SUSPECT_OK.test(f);};
 // A note that refers to items or to the rest of the agenda ("Die weiteren Punkte …", "ab hier", "Öffentlich sind die Tagesordnungspunkte 1 und 2").
@@ -1191,6 +1194,9 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   let state='none',evidence='',restricted=false,unclear=0,mixed=false,delimited=false,headMention=false,headSpecific=false,footnote=false,whole=null;
   if(segments.length===1&&titleClosed){state='nonpublic';restricted=true;delimited=true;}
   else if(segments.length===1&&titlePublic){state='public';evidence=`Titel „${title}“`;}
+  // An invitation whose agenda ends with the note that a non-public session follows ("Anschließend findet eine nichtöffentliche
+  // Sitzung statt."): the agenda before it is the public part (the non-public items are not published).
+  else if(segments.length===1&&kind==='invitation'&&seg.start<first&&all.slice(Math.max(first,lastItemIndex(items,seg.start,end)),end).some(l=>TRAILING_NP.test(canonNP(normalizeLine(l))))){state='public';evidence='Hinweis „Anschließend nichtöffentliche Sitzung“ nach der Tagesordnung';}
   // The items of a meeting are numbered one way: with keyword ("TOP 1") if any, else with mark ("Ö 1"), else plain.
   // A mark N/NÖ alone does not make the style: such an item ends the public part in any form.
   const marked=items.slice(first,end).filter(Boolean),style=marked.some(i=>i.form==='keyword')?'keyword':marked.some(i=>i.form==='prefix'&&i.prefix==='Ö')?'prefix':'plain';
