@@ -1,0 +1,756 @@
+{
+ "version": "label-reference-v1",
+ "note": "150 ungesehene Titel aus der lokalen Datenbank (10.10.2026), per SHA-256 gewählt, von Hand eingeordnet (Claude) nach Abschluss von v4; nicht zum Abstimmen benutzt. scripts/label-study/measure-rules.mjs --set=label-holdout-6",
+ "rows": [
+  {
+   "id": "agendaitems-280607",
+   "title": "Bericht der Betriebsleitung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06635-oparl-fd29be196777a3fb0547",
+   "title": "Modellprojekt „Klassenassistenz“ – Fortsetzung am Standort „Schule am Goldberg“ in Allendorf (Eder) und Neuaufnahme der Westwallschule in Korbach",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-07137003-vo-20262109100237",
+   "title": "Neuerscheinungen aus dem Museumsverlag",
+   "gold": "kultur"
+  },
+  {
+   "id": "de-01004000-top-9621--7",
+   "title": "Bänke im Stadtteil Einfeld - Berichterstattung/Sachstand/Beschluss",
+   "gold": "unklar"
+  },
+  {
+   "id": "de-071405003-top-13397",
+   "title": "Beratung zu Renovierungsarbeiten im Gemeindehaus",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-01058005-vo-512907100697",
+   "title": "Stand zum Projekt \"Bau eines Radweges entlang der K19 von Lummerbruch bis Rathmannsdorf\"",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-01060004-top-1017677",
+   "title": "Bekanntgabe der in der Sitzung gefassten Beschlüsse",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01055032-top-28897",
+   "title": "Baumpflanzugen am Lübschen Mühlenberg",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-01056-vo-1001727",
+   "title": "Report Controlling 1. Quartal 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-071315001-vo-950252611100147",
+   "title": "Auftragsvergabe an bauausführende Firma über den flutbedingten Wiederaufbau (Renovation) \"Kanal Stichweg Ahrstraße, Müsch \"",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-06435027-vo-20250312100377",
+   "title": "Beschlussfassung über den Erlass der Zweiten Nachtragssatzung zur Friedhofsordnung der Gemeinde Sinntal",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-01060063-top-16857--7",
+   "title": "Besprechungspunkt Umbau / Aufstockung Moorbekpassage",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-01059075-vo-1001737",
+   "title": "Beschluss über die Umbesetzung von Ausschüssen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06531017-top-1430--7",
+   "title": "Beschlussfassung über die Haushaltssatzung und den -plan 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-07133-top-1000527",
+   "title": "Anfrage der SPD zum Thema \"Einhaltung des Anhörungs- und Beratungsrechts des Behindertenbeirats in Bezug auf dessen Aufgabenbereiche\" (Das Bauamt wird zu diesem Thema anwesend sein)",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-06435028-top-21057",
+   "title": "Verschiedenes: Abgemeldete Fahrzeuge im \"Paul-Kuhlmann-Weg\"",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-01057057-top-1003567",
+   "title": "Protokoll der letzten Sitzung vom 17.12.2025 - öffentlicher Teil",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01056-top-1004597",
+   "title": "Erhöhung der Aufwandsentschädigungen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010615168-vo-1000557",
+   "title": "Einwilligung, Genehmigung und Kenntnisnahme von Haushaltsüberschreitungen gemäß § 82 GO",
+   "gold": "finanzen"
+  },
+  {
+   "id": "agendaitems-289887",
+   "title": "Ausbleibende Schlüsselzuweisungen des Landes NRW und die Folgen für die kommenden Haushalte",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06534018-top-6932--17",
+   "title": "Familienbildungszentrum: Rad- und Fußweg; Beförderung der Kinder; Anfrage gem. § 23 b der GO der Fraktion B90/DIE GRÜNEN vom 06.08.2026 (eingegangen am 10.08.2026)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-01054168-vo-2025050511100017",
+   "title": "Beratung und Beschlussfassung über die Ergebnisrechnung 2024 der ev.-luth. Kirchengemeinde Sylt Westerland",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06438001-top-25087",
+   "title": "Berichte und Mitteilungen des Magistrats",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01057057-vo-1000817",
+   "title": "Jahresabschluss der Stadt Plön für das Haushaltsjahr 2024",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06433002-top-5827",
+   "title": "Begrüßung, Eröffnung der Sitzung und Beschlussfassung der Tagesordnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "billerbeck-top-2689--17",
+   "title": "Einwohnerfragestunde gemäß § 18 der Geschäftsordnung für den Rat und die Ausschüsse der Stadt Billerbeck",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01054056-vo-2457",
+   "title": "Beratung und Beschlussfassung über die Erhöhung eines Personalkostenzuschusses aufgrund von Tariferhöhungen an den Kinderschutzbund Nord für die Betreuung im Rahmen der Offenen Ganztagsschule an der Bürgerschule und an der Klaus-Groth-Schule",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-01051011-top-1004817",
+   "title": "Anfragen, Anregungen, Mitteilungen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-04012000-vo-535937",
+   "title": "Antrag der Koalitionsparteien SPD, CDU und FDP \"Sicherheits- und friedenspolitische Bildung an Bremerhavener Schulen stärken\"",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-010515166-top-1001077",
+   "title": "Mitteilung des Bürgermeisters d)",
+   "gold": "allgemein"
+  },
+  {
+   "id": "agendaitems-276577",
+   "title": "Einführung und Verpflichtung des Stellvertreters/der Stellvertreterin bzw. der Stellvertreter/innen und der übrigen Mitglieder der Bezirksvertretung durch den Bezirksbürgermeister/die Bezirksbürgermeisterin",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010595990-vo-1001097",
+   "title": "Neubesetzung von Ausschüssen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01051011-top-1004497",
+   "title": "Eröffnung der Sitzung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06440013-cs-111746-75997",
+   "title": "TOP 8 Rückmeldung auf offene Anfragen der letzten Sitzungen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010595993-rp-top-20260914-619f03d7",
+   "title": "Beschlussfassung über Schließtage 2027",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-010605053-vo-3347",
+   "title": "Beratung und Beschlussfassung über den Erlass des 4. Nachtrages zur Hauptsatzung der Gemeinde Todesfelde",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-071355002-vo-301009100797",
+   "title": "Beratung und Beschlussfassung über einen Antrag an die Stadt Kaisersesch zur Errichtung eines Trainingsparks am Entenweiher",
+   "gold": "sport"
+  },
+  {
+   "id": "de-010545417-top-13827",
+   "title": "Sachstand Fördermittel und Finanzen",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06533003-vo-30262105100037",
+   "title": "Versand der Sitzungsunterlagen in digitaler Form",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-06535009-oparl-57fd1513f9bcb57e10d7",
+   "title": "Antrag auf Eintragung eines Vorkaufsrechts für das Bürgerschloss Homberg zugunsten der Schlosspatrioten Homberg an der Ohm e.V.",
+   "gold": "kultur"
+  },
+  {
+   "id": "de-01054168-top-43717",
+   "title": "Feststellung der Ordnungsmäßigkeit der Ladung und der Beschlussfähigkeit",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06431005-top-1006947",
+   "title": "Protokoll vom 03.11.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06440002-top-2093--7",
+   "title": "Vorbereitung Ortsbegehung im August 2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01056050-top-1024387",
+   "title": "Haushaltskonsolidierung",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-071315004-top-38887",
+   "title": "Besprechung zur Durchführung weiterer Jugendveranstaltungen",
+   "gold": "sport"
+  },
+  {
+   "id": "de-06440-top-38438--7",
+   "title": "Bericht aus dem Diversitäts - und Inklusionsbeirat",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-071385003-top-3607",
+   "title": "Mitteilungen der Verwaltung / Verschiedenes",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-071355002-vo-302402100217",
+   "title": "Beratung und Beschlussfassung über die Ermächtigung des Ortsbürgermeisters zur Stimmabgabe in der Verbandsversammlung des Kindergartenzweckverbandes Laubach-Müllenbach zur Schaffung zusätzlicher Plätze in der Kindertagesstätte St. Hubertus Müllenbach",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06435014-top-96627",
+   "title": "Eröffnung der Sitzung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010545439-top-24567",
+   "title": "Begrüßung, Feststellung der Beschlussfähigkeit und Anerkennung der Tagesordnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071355002-vo-301606100557",
+   "title": "Beratung und Beschlussfassung über die Aufhebung der Gebührensatzung für die Benutzung des Festplatzes in Gamlen",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01053116-vo-3487",
+   "title": "I. Nachtragssatzung zur Satzung der Stadt Schwarzenbek über Gebühren zur Teilnahme an der Schulverpflegung",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-010625270-top-2009507",
+   "title": "Einwohnerfragestunde (nur zu vorangegangenen Tagesordnungspunkten)",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010625262-top-58397",
+   "title": "Anfragen und Mitteilungen - Bültbek",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01062001-top-5001--7-7",
+   "title": "Ehrenamtsmesse 2026 am 13. September 2026",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-010585895-top-1003817",
+   "title": "Anfragen aus der Gemeindevertretung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01060-top-1004557",
+   "title": "Informationen und Anfragen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010585864-top-34387",
+   "title": "Eröffnung der Sitzung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06414000-top-20260616-cfd694d7",
+   "title": "Geschäftsordnungsangelegenheiten",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010585896-vo-38651933-47006117",
+   "title": "Teilaufstellung des Regionalplans des Planungsraums II in Schleswig-Holstein Kapitel 4.7 zum Thema Windenergie an Land - Entwurf Juli 2025 (SV)",
+   "gold": "klima"
+  },
+  {
+   "id": "de-01058135-vo-12377",
+   "title": "Sachstand zum Klimabeirat",
+   "gold": "klima"
+  },
+  {
+   "id": "de-010575782-vo-1004617",
+   "title": "Feststellung und Bekanntgabe des endgültigen Gesamtergebnisses der Wahl eines hauptamtlichen Bürgermeisters in der Gemeinde Schönkirchen vom 30.08.2026",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-01054168-top-42157",
+   "title": "Beantwortung der Fragen und Anliegen aus dem Bau- und Planungsausschuss der vergangenen Sitzungen durch die Verwaltung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01057057-top-1005187",
+   "title": "Beratung zur Einrichtung eines WhatsApp Kanals der Gemeinde",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-01054138-vo-727",
+   "title": "Beratung und Beschlussfassung über die Neufassung der Gebührensatzung für die Nutzung des städtischen Kindergartens der Stadt Tönning",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-010515172-vo-1003547",
+   "title": "Änderung Badeordnung § 2 Punkt 1 und § 6 Punkt 1 a, sowie Altersstufe Kinder bei Damen und Herren",
+   "gold": "sport"
+  },
+  {
+   "id": "de-01003000-top-2005827",
+   "title": "Gleichstellung",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-01054168-top-43397",
+   "title": "Beschlussfassung über die Beratung von Tagesordnungspunkten in nichtöffentlicher Sitzung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01055001-top-11227",
+   "title": "Eröffnung, Begrüßung, Feststellung der Beschlussfähigkeit",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010595915-top-7437",
+   "title": "Verabschiedung der ehemaligen Gleichstellungsbeauftragten",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06438001-top-26477",
+   "title": "aus dem Seniorenbeirat",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-010575727-top-15287",
+   "title": "Nichtöffentlichkeit von Tagesordnungspunkten",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071335011-oparl-c7f37532786caa59bc87",
+   "title": "Beitritt zum Tourismusverband Hunsrück-Nahe e.V. - Verschmelzung der Naheland-Touristik GmbH mit der Hunsrück-Touristik GmbH zur Hunsrück-Nahe Tourismus GmbH- \"Vortrag Stabsstelle Torusimus\"",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "de-01051044-vo-4047",
+   "title": "Grundsatzbeschluss zur Anwendung des Gesetzes zur Beschleunigung des Wohnungsbaus und zur Wohnraumsicherung (\"Bau-Turbo\") sowie Billigung des Städtebaulichen Konzepts zum \"Bau-Turbo\"",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-071385003-top-4687",
+   "title": "Mitteilungen der Verwaltung / Verschiedenes",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06435028-top-20167",
+   "title": "Bericht des Ortsvorstehers: Ehemaliges Klavier des Gesangvereines",
+   "gold": "kultur"
+  },
+  {
+   "id": "de-01056050-vo-1002407",
+   "title": "Auftrag aus dem UBF vom 22.05.2025 zur Prüfung der MV2025/027 hinsichtlich der Einrichtung einer Einbahnstraßenregelung in der Straße Breiter Weg",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-010535358-top-58657",
+   "title": "Berichte der Ausschussvorsitzenden",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06433009-top-17837",
+   "title": "Feststellung der Tagesordnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010585864-top-34447",
+   "title": "Prüfung Jahresrechnung 2024 der Gemeinde Brammer",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06533009-vo-202520711100387",
+   "title": "Bordsteinabsenkung \"Am Stephanshügel\" - Antrag der SPD-Ortsbeiratsfraktion",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-071385004-top-10007",
+   "title": "Einwohnerfragen gemäß § 16 a der Gemeindeordnung Es wurden keine Einwohnerfragen vorgebracht.",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010605063-vo-1000467",
+   "title": "Aufstellung der 24. Änderung des Flächennutzungsplanes für das Gebiet „nördlich der Martin-Meiners-Straße, östlich der Dorfstraße, südlich des Rosenweges und westlich des Grünen Weges“ - Abwägung eingegangener Stellungnahmen, Entwurfs- und Veröffentlichungsbeschluss",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-01004000-top-8600--7",
+   "title": "Dialog mit dem Technischen Betriebszentrum",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-06435024-vo-20261606100107",
+   "title": "8. Änderungssatzung zur Entwässerungssatzung der Gemeinde Ronneburg hier: Anhebung der Abwassergebühren",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-01062-top-24727",
+   "title": "Haushalt Fachdienst 62",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01053090-top-1008627",
+   "title": "Wahl Schriftführer:in",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01055004-top-1014777",
+   "title": "Sport",
+   "gold": "sport"
+  },
+  {
+   "id": "de-010545439-vo-2026090906100007",
+   "title": "Beratung und Beschlussfassung über die Erhebung von Vorauszahlungen für die Straßenbaumaßnahme \"Norder Wung\"",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-01057057-vo-1000737",
+   "title": "Bericht des Wehrführers für das IV. Quartal 2025",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-01056050-top-1028917",
+   "title": "Fragen und Mitteilungen der Gäste",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-071385004-vo-24012207100407",
+   "title": "zukünftige Abwasserbeseitigung der Verbandsgemeinden Linz und Asbach hier: Planungsleistungen",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-010535323-top-1040837",
+   "title": "Änderungen/Ergänzungen der Tagesordnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01062023-oparl-bffbb1ed98d37e4fe127",
+   "title": "Haushalt 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06434009-oparl-845d4771a1c6cf3217a7",
+   "title": "Haupt-, Finanz- und Digitalisierungsausschuss",
+   "gold": "unklar"
+  },
+  {
+   "id": "de-07138045-vo-1002007",
+   "title": "Bildung des Jugendhilfeausschusses für die Wahlperiode 2024-2029; Wahl der Mitglieder / stellvertretenden Mitglieder hier: Berechtigte Mitglieder des Beirates für Migration und Integration zur Teilnahme an den Sitzungen von relevanten Ausschüssen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01059120-top-2322--7-7",
+   "title": "Kreisseniorenrat",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-06533009-vo-202622605100177",
+   "title": "Wahl der Stadtverordneten in den Vorstand der \"Anna-Ohl-Stiftung\"",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010605053-top-14027",
+   "title": "Genehmigung der Niederschrift der Sitzung vom 22.08.2024",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071385009-oparl-bdaaf02f820464bbf407",
+   "title": "Rückblick: 1.Wäller Seniorenkonferenz am 26.08.2026",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-06634009-oparl-78411c385e33a2111a57",
+   "title": "Kommunale Wärmeplanung Hier: Beratung und Beschlussfassung über die Teilnahme am Förderprogramm KfW 432 – Energetische Stadtsanierung",
+   "gold": "klima"
+  },
+  {
+   "id": "de-06534013-top-10650--17",
+   "title": "Verbandsversammlung Gewässerverband Salzbödetal (GVS) - Wahl der Vertreterinnen und Vertreter sowie Stellvertreterinnen und Stellvertreter",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010555591-top-1016487",
+   "title": "Feststellung der Niederschrift zur Sitzung vom 23.03.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06433009-top-16547",
+   "title": "Schriftliche Mitteilungen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01059075-vo-1002217",
+   "title": "Erlass einer Satzung zum Schutz von Wohnraum vor Zweckentfremdung gemäß § 10 des Schleswig-Holsteinischen Wohnraumschutzgesetzes (SHWoSchG)",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-06611000-vo-nr-101-19-1577",
+   "title": "Mehr Gründergeist für Kassel",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "de-01060004-top-1016587",
+   "title": "Beschlussfassung über evtl. Einwendungen gegen das Protokoll der Sitzung vom 25.11.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071315004-vo-2161707100967",
+   "title": "Bauleitplanung der Verbandsgemeinde Brohltal; 38. Änderung des Flächennutzungsplanes Ausweisung einer Sonderbaufläche für Freiflächenphotovoltaik im Ortsplan Oberzissen > Zustimmung gemäß § 67 Abs. 2 GemO",
+   "gold": "klima"
+  },
+  {
+   "id": "de-010625270-top-2010557",
+   "title": "Ausgestaltung des Betriebes der neuen 4-Feld-Sporthalle als Betrieb gewerblicher Art (BgA) nach § 4 Körperschaftsteuergesetz (KStG)",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-07138-vo-19787",
+   "title": "Verfahrenslotsen nach § 10b SGB VIII",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-071385002-top-5977",
+   "title": "Bekanntgabe der im nichtöffentlichen Teil der Sitzung gefassten Beschlüsse",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01059120-vo-15537",
+   "title": "Sachstandsbericht zur Städtebauförderung",
+   "gold": "bauen"
+  },
+  {
+   "id": "agendaitems-284137",
+   "title": "Anfrage von Mitgliedern des Sportausschusses",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010575727-vo-2587",
+   "title": "Spendenübersicht 2024",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06532009-oparl-586c885da4b7ccbe65a7",
+   "title": "Mobilfunkstandort der DFMG im Gewerbegebiet Eiershausen",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-010555543-top-1002047",
+   "title": "Mitteilungen der Schulverbandsvorsteherin",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01062053-vo-4002087",
+   "title": "Festwiese Havighorst: Aufstellen einer Tischtennisplatte",
+   "gold": "sport"
+  },
+  {
+   "id": "de-071355002-vo-301201100027",
+   "title": "Beratung und Beschlussfassung über den Forstwirtschaftsplan der Ortsgemeinde Düngenheim für das Forstwirtschaftsjahr 2026",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-071315003-vo-20262105100297",
+   "title": "Bauleitplanung der Stadt Bad Breisig 17. Änderung des Bebauungsplans \"Nr. 21 Schierlay\" gem. § 13a BauGB hier: Beschluss über die eingegangenen Stellungnahmen im Rahmen der Beteiligung der Öffentlichkeit nach § 3 Abs. 2 BauGB sowie der Behörden und Träger öffentlicher Belange nach § 4 Abs. 2 BauGB und Satzungsbeschluss gem. § 24 GemO",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-01003000-top-2008437",
+   "title": "Genehmigung der Niederschrift der Sitzung vom 25.08.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010515172-top-1017797",
+   "title": "Seniorenfahrt",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-010585864-top-34807",
+   "title": "Beratung über den Zustand des Boklohweg",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-06414000-top-20260420-2bbd5667",
+   "title": "Feststellung der Beschlussfähigkeit",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010575782-vo-1004377",
+   "title": "Beratung und Beschlussfassung über den Umbau bzw. Neubau der Sanitär- und Sozialräume des Amtsbetriebshofes, Stützpunkt Heikendorf (Grundsatzbeschluss)",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-06431022-vo-20260204100047",
+   "title": "Wahl der Schriftführer / in sowie der stellv. Schriftführer / innen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "agendaitems-284997",
+   "title": "Stadtbezirk Nord",
+   "gold": "unklar"
+  },
+  {
+   "id": "de-071355002-top-33317",
+   "title": "Jugendfragestunde",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-071385002-top-6537",
+   "title": "Bekanntgabe der im nichtöffentlichen Teil der Sitzung gefassten Beschlüsse",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-07140-oparl-15450e7585ee04d79977",
+   "title": "Nachtragsvereinbarungen zur Verlängerung des Gebäudereinigungsvertrags mit der Firma Klüh Cleaning GmbH, Frankfurt und des Glasreinigungsvertrages mit der Firma Limbach GmbH, Neuwied",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-01056-vo-1001207",
+   "title": "Wahl des stellvertretenden Landrats Antrag der CDU-Fraktion",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06433008-vo-18011409100137",
+   "title": "Investitionsprogramm 2027 Stadtwerke Mörfelden-Walldorf",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06435014-top-96967",
+   "title": "Genehmigung des Protokolls der Sitzung vom 25.11.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01060063-vo-19867",
+   "title": "Beantwortung der Anfrage des Seniorenbeirats zu den Einsparvorschlägen aus den Haushaltsklausuren zum Doppelhaushalt 2026 / 2027 vom 16.10.2025",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01056050-top-1027017",
+   "title": "Bericht aus dem Seniorenbüro",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-071385003-top-4457",
+   "title": "Mitteilungen der Verwaltung / Verschiedenes",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06635003-top-1709--17",
+   "title": "Bebauungsplan Nr. 49 \"Freiflächen-Photovoltaikanlage Ense\" sowie Änderung Nr. 8 zum Flächennutzungsplan; hier: Aufstellungs- und Auslegungsbeschlüsse",
+   "gold": "klima"
+  },
+  {
+   "id": "de-06432010-top-5490--7",
+   "title": "Antrag Beleuchtung Tiefe Wiesen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-071385007-top-10257",
+   "title": "Mitteilung über erfolgte Vergaben",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01055001-vo-1807",
+   "title": "Aufstellung Bebauungsplan Nr. 76 Gebiet: in der Ortschaft Tankenrade, nordwestlich der Straße Tankenrade (L 71), südwestlich der Gewerbefläche Tankenrade 44, nördlich der Wohnbebauung am südlichen Ortsausgang der Ortschaft Tankenrade hier: Aufstellungsbeschluss",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-06433014-top-12037",
+   "title": "Antrag der SPD-Fraktion, lfd. Nr. 43, Einführung der Grundsteuer C",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-010585895-top-1004397",
+   "title": "Beschlussfassung über eventuelle Einwendungen gegen die Niederschrift der letzten Sitzung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010595990-vo-1001057",
+   "title": "Beratung und Beschlussfassung über den Erlass einer Verbandssatzung für den Zweckverband \"Schulzweckverband Ostangeln\"",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-010575727-vo-2477",
+   "title": "Beratung und Beschlussfassung über eine Stellungnahme der Gemeinde Kletkamp zum Regionalplan Windenergie an Land - Entwurf Juli 2025",
+   "gold": "klima"
+  },
+  {
+   "id": "de-06531014-vo-11477",
+   "title": "Bestellung des Prüfers für den Jahresabschluss 2025 des Eigenbetriebes Wasserwerke Pohlheim",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-071375009-vo-45497",
+   "title": "Glasreinigung in den Verwaltungsgebäuden Kobern-Gondorf und Rhens, sowie in der Zentralwerkstatt der Feuerwehr in Kobern-Gondorf Ermächtigung der Bürgermeisterin",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-06532006-vo-16527",
+   "title": "Verständlicher und steuerbarer Haushalt",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06433002-top-5167",
+   "title": "Stadtklimaanalyse im Kreis GG (DS-Nr. 296/2024), Antrag der Fraktion GALB-BÜNDNIS 90/DIE GRÜNEN vom 09.11.2024",
+   "gold": "klima"
+  },
+  {
+   "id": "de-06611000-vo-nr-101-20-127",
+   "title": "Trailpark Hohes Gras",
+   "gold": "sport"
+  },
+  {
+   "id": "de-06413000-vo-2021-26-ds-i-a-1007",
+   "title": "Bestellung des Abschlussprüfers für die Jahre 2025 – 2029 für den Eigenbetrieb Kindertagesstätten Offenbach (EKO)",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01055012-vo-1004127",
+   "title": "Haushalt 2026 für die Produkte Brandschutz und Löschwasserversorgung",
+   "gold": "sicherheit"
+  }
+ ]
+}

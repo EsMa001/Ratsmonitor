@@ -1,0 +1,756 @@
+{
+ "version": "label-reference-v1",
+ "note": "150 ungesehene Titel aus der lokalen Datenbank (10.10.2026), per SHA-256 gewählt, von Hand eingeordnet (Claude) vor der Messung von v4; nicht zum Abstimmen der Regeln benutzt. scripts/label-study/measure-rules.mjs --set=label-holdout-5",
+ "rows": [
+  {
+   "id": "de-071385005-top-14967",
+   "title": "Interessenbekundung und Beteiligung der Ortsgemeinde Urbach zum Bundesprogramm zur Sanierung kommunaler Sportstätten; hier: Projektaufruf 2026 - Schwimmbäder",
+   "gold": "sport"
+  },
+  {
+   "id": "de-06436003-vo-202622005100017",
+   "title": "Satzung über die Benutzung der Kinderbetreuungseinrichtungen der Stadt Eschborn",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-010605053-top-15867",
+   "title": "Beratung und Beschlussfassung zur Anschaffung eines Notstromaggregats für das Wasserhaus",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-07111000-vo-42417",
+   "title": "Regionaler Raumordnungsplan Mittelrhein-Westerwald - Teilfortschreibung Erneuerbare Energien insbes. Windenergie; Stellungnahme der Stadt Koblenz für die zweite Offenlage",
+   "gold": "klima"
+  },
+  {
+   "id": "de-07132-vo-20240610100207",
+   "title": "Finanzbericht 2025",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01053116-top-1685--7",
+   "title": "Zu- und Bestandserfassung der Stadtstraßen in Schwarzenbek, Aufbau eines Pavement Management Systems (Gast: Herr Bose, Firma GSA Gesellschaft zur Straßenanalyse)",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-06435014-top-95117",
+   "title": "Bekanntmachungen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06435014-top-1001347",
+   "title": "Besetzung des Ortsgerichtes Hanau IV (Klein-Auheim)",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06439006-top-1106--7",
+   "title": "Sachstand Windkraft in Hohenstein und Windkraftanlage in Strinz-Margarethä",
+   "gold": "klima"
+  },
+  {
+   "id": "de-01057-top-5880--7",
+   "title": "Bericht des Landrates über Gesellschaftsangelegenheiten und aktuelle Verwaltungsangelegenheiten",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06433001-vo-20250810100267",
+   "title": "1. Änderung der Entschädigungssatzung vom 11.10.2016",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01056050-top-1027977",
+   "title": "Antworten der Verwaltung zu vorangegangenen Fragen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01055046-oparl-e353515cc6c855801867",
+   "title": "Wiederherstellung der Öffentlichkeit und Bekanntgabe evtl. Beschlüsse aus dem nichtöffentlichen Teil der Sitzung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01053100-vo-7557",
+   "title": "Antrag des Inklusionsbeirats: Sportsstätten Riemannstraße",
+   "gold": "sport"
+  },
+  {
+   "id": "agendaitems-282427",
+   "title": "Anträge und Anfragen von Mitgliedern des Ausschusses",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010515172-top-1016327",
+   "title": "Beschluss über die Nichtöffentlichkeit von Tagesordnungspunkten (Sollte die Tagesordnung nichtöffentliche Teile ausweisen, so wird hier über die Nichtöffentlichkeit der einzelnen Tagesordnungspunkte entschieden. Bis zum entsprechenden Beschluss gelten sie als \"voraussichtlich nichtöffentlich\". )",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01051-vo-2000567",
+   "title": "Berichterstattung der Abfallwirtschaft Dithmarschen GmbH",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-06439-top-19747",
+   "title": "Genehmigung der Niederschrift des Ausschuss für Kreisentwicklung, Mobilität und Umwelt vom 27. Mai 2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071385002-top-6927",
+   "title": "Bauantrag auf Neubau einer Werbeanlage, Flur 16",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-01058169-top-1322--7",
+   "title": "Eingaben / Einwohnerfragestunde I",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06532008-oparl-a050158dac814433ab87",
+   "title": "Planung 2027",
+   "gold": "unklar"
+  },
+  {
+   "id": "de-010615168-top-1002597",
+   "title": "Mitteilung und Anfragen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06534018-top-7002--7",
+   "title": "Bauleitplanung der Stadt Stadtallendorf, Vorhabenbezogener Bebauungsplan Nr. 113 \"Biokraft“,Schweinsberg (ehemals Meier) 1. Aufstellungsbeschluss",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-071375004-vo-9377",
+   "title": "16. Fortschreibung des Flächennutzungsplanes der Verbandsgemeinde Mendig gem. § 2 Abs. 1 BauGB - Ausweisung eines PV-Parks in der Gemarkung Bell - Einleitung der Öffentlichkeitsbeteiligung gem. § 3 Abs. 1 BauGB - Einleitung des Verfahrens zur Beteiligung der Träger öffentlicher Belange gem. § 4 Abs. 1 BauGB - Beteiligung der Nachbargemeinden gem. § 2 Abs. 2 BauGB",
+   "gold": "klima"
+  },
+  {
+   "id": "de-010585896-vo-58019784-58019837",
+   "title": "Mitteilung der Beschlüsse aus dem nichtöffentlichen Teil der Sitzung vom 19.03.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06633023-vo-2190807100197",
+   "title": "Interkommunale Zusammenarbeit Ordnungsbehördenbezirk Gefahrgut Erweiterung des gemeinsamen Ordnungsbehördenbezirks zur Überwachung gefährlicher Güter aufgrund des Beitritts der Gemeinde Guxhagen",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-010535373-top-22027",
+   "title": "Einwendungen zur Niederschrift über die Sitzung vom 03.03.2026 (öffentlicher Teil)",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01051011-top-1004527",
+   "title": "Teich hinter Schleusen-Gemeinschaftsschule",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-010625262-top-57587",
+   "title": "Anfragen und Mitteilungen - Verkehrsspiegel",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-07131070-vo-3617",
+   "title": "Annahme von Geldzuwendungen",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06431003-oparl-f1545f40fca3eac33317",
+   "title": "Widerruf der Bestellung als Standesbeamtin von Frau Siedel",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-071315002-vo-20241506100337",
+   "title": "Prüfung des Jahresabschlusses für das Haushaltsjahr 2024 gem. der §§ 110 und 112 GemO sowie Entlastung des Bürgermeisters und der Beigeordneten",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01053116-top-1869--7",
+   "title": "Termine im 3. Quartal",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-071355001-vo-20260907100517",
+   "title": "Neuabschluss eines Gaskonzessionsvertrages",
+   "gold": "klima"
+  },
+  {
+   "id": "de-071375009-vo-43397",
+   "title": "Neue Sportstätte Dieblich; Beratung und Beschlussfassung über Stellung eines Zuwendungsantrages im Rahmen des Bundesförderprogramms „Sanierung kommunaler Sportstätten“",
+   "gold": "sport"
+  },
+  {
+   "id": "de-06435003-vo-8147",
+   "title": "Neuwahl eines stellvertretenden Ausschussvorsitzenden",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071315004-top-38707",
+   "title": "Informationen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06435024-top-4337",
+   "title": "Eröffnung und Begrüßung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06436005-vo-1430709100007",
+   "title": "Antrag der Fraktion Bündnis 90/Die Grünen betreffend Wasserampel und Wasserkonzept für klimabedingte Ausnahmesituationen in der öffentlichen Wasserversorgung",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-010535323-vo-1005357",
+   "title": "Prüfung des Jahresabschlusses und Lagebericht 31.12.2025",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06440005-top-23637",
+   "title": "Terminvereinbarungen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01056015-top-1012717",
+   "title": "Starkregen, Reinigungszustand RW-Einläufe",
+   "gold": "klima"
+  },
+  {
+   "id": "de-07138045-top-1010457",
+   "title": "Anschaffung einer Sitzgruppe inkl. Tisch für den Außenbereich der Turnhalle - Nachtrag",
+   "gold": "sport"
+  },
+  {
+   "id": "de-06535005-top-1252--7",
+   "title": "Erstellung eines Wohnraum-Leerstndskatasters Antrag der SPD-Fraktion vom 14.10.2025",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-06433008-top-21217",
+   "title": "Begrüßung, Feststellung der Beschlussfähigkeit und Tagesordnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01058-oparl-36834a15e51341ebcb67",
+   "title": "Verabschiedung eines Kreistagsabgeordneten",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01059120-top-2338--7",
+   "title": "Haushalt 2027",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-010585896-vo-53591014-64134837",
+   "title": "1. Nachtragshaushalt 2026 der Gemeinde Rodenbek (SV)",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-071385005-top-14287",
+   "title": "Bekanntgabe von Beschlüssen gem. § 35 Abs. 1 GemO",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01053129-top-1013677",
+   "title": "Berichte",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010605063-vo-1000477",
+   "title": "Beratung und ggf. Beschlussfassung Renovierung und Instandhaltung Schulhof/Schulgelände",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-01059075-top-1011567",
+   "title": "Lfd. Nr.7 - Verzicht auf Verpflegung der städtischen Gremien",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010615134-vo-1001597",
+   "title": "Bereitstellung außerplanmäßiger Haushaltsmittel; Erstattung Konzessionsabgaben Strom 2022-2025",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-071315003-vo-20262206100357",
+   "title": "Bundesprogramm \"Förderung kommunaler Sportstätten, Projektaufruf 2026 Schwimmbäder\"; hier: Antragstellung",
+   "gold": "sport"
+  },
+  {
+   "id": "de-010615168-vo-1000677",
+   "title": "Veröffentlichungsbeschluss über die Aufstellung des selbständigen Bebauungsplanes Nr. 2 \"Holzkoppel\" der Gemeinde Christinenthal (Amt Schenefeld; Kreis Steinburg) für den Bereich \"nördlich der B 430 und westlich der Dorfstraße\"",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-010625270-top-2008607",
+   "title": "Bericht der Europabeauftragten",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010535323-vo-1004597",
+   "title": "Beschaffung von Funkmeldeempfänger für die Freiwillige Feuerwehr",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-01054138-vo-537",
+   "title": "Grundsätze zur Vergabe von Gewerbegrundstücken",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "de-010625262-vo-7547",
+   "title": "Haushaltssatzung für das Haushaltsjahr 2026 mit Ergebnis- und Finanzhaushalt sowie Stellenplan",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06435-top-2018--7",
+   "title": "Amtseinführung und Verpflichtung von ehrenamtlichen Kreisbeigeordneten gem. § 40 (1) HKO i.V.m. § 46 (2 und 3) HGO",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071405008-top-21647",
+   "title": "Die Tagesordnung entnehmen Sie bitte der Einladung (siehe Anlage)",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01054168-top-43297",
+   "title": "Anfragen und Mitteilungen aus dem Bau- und Planungsausschuss",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06414000-top-20260908-a01a41b7",
+   "title": "Bericht des Vorstands",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01056-top-1007147",
+   "title": "Fragestunde für Einwohnerinnen und Einwohner",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010585896-vo-53767878-53767887",
+   "title": "Entscheidung über Einwendungen gegen die Niederschrift der letzten öffentlichen Sitzung der Gemeindevertretung vom 18.05.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010585896-vo-62825514-62835717",
+   "title": "Eröffnungsbilanz zum 01.01.2024 (SV)",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06414000-top-20260616-a01a41b7",
+   "title": "Bericht des Vorstands",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010535373-vo-4157",
+   "title": "Zustimmung nach § 36a BauGB zum Abweichungsantrag vom Erfordernis des Einfügens in die nähere Umgebung nach § 34 Abs. 3b BauGB hier: Bauvoranfrage Gartenweg 2 (Neubau eines zweigeschossigen Anbaus an ein vorhandenes Wohnhaus)",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-010575782-vo-1004777",
+   "title": "Eröffnung der Sitzung, Feststellung der Beschlussfähigkeit und Genehmigung der Tagesordnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010605063-vo-1000757",
+   "title": "3. Nachtrag zur Hauptsatzung",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-06433008-vo-17012302101187",
+   "title": "Änderungsantrag zum Haushalt 2026 der GRÜNE-Fraktion vom 21.02.2026; \"Vollständige und sachgerechte Berücksichtigung externer Fördermittel im Haushalt 2026\"",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01061029-top-1005287",
+   "title": "Fragestunde für Einwohnerinnen und Einwohner",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01062001-top-5035--7",
+   "title": "Nachfragen der Selbstverwaltung zu Berichten der Verwaltung - k e i n e -",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01054168-top-42597",
+   "title": "Anfragen und Mitteilungen aus dem Ortsbeirat",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06436005-top-4407",
+   "title": "Einführung, Vereidigung und Verpflichtung der ehrenamtlichen Stadträte/innen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01003000-vo-2001177",
+   "title": "BM Kristin Blankenburg (SPD): Prüfauftrag Halteverbot Dornbreite",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-06435014-vo-1000387",
+   "title": "Stadtwerke Hanau GmbH - Qualifiziertes Nachrangdarlehen",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-06432010-top-5261--7",
+   "title": "Antrag Querungshilfen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "coesfeld-top-3454--7",
+   "title": "Mitteilungen des Ausschussvorsitzenden bzw. des Landrates",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-07134-vo-20260903100037",
+   "title": "Erfüllung der Aufgaben des Landkreises im überörtlichen Brandschutz, der überörtlichen allgemeinen Hilfe und dem Katastrophenschutz Hier: Änderung der Hauptsatzung (Aufwandsentschädigungen Brand- und Katastrophenschutz)",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-010575747-vo-8847",
+   "title": "Haushaltssatzung 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01060044-oparl-e24db8555d78ed3410a7",
+   "title": "Bericht des Inklusionsbeauftragten",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-06533009-top-36427",
+   "title": "Informationen zur Seniorenwohnanlage Limburger Straße 87",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-06635015-vo-5937",
+   "title": "Wahl der Stellvertreter der/des Ausschussvorsitzenden",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06440005-top-22477",
+   "title": "Informationen über die stattgefundene Sitzung der Ortsbeiratsvorsitzenden beim Bürgermeister",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010515166-top-41627",
+   "title": "Sonstiges",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06632011-vo-96541024-97029907",
+   "title": "Beratung und Beschlussfassung über den Entwurf der Haushaltssatzung 2026",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01062018-vo-2887",
+   "title": "Sanierung Kinderspielplätze",
+   "gold": "sport"
+  },
+  {
+   "id": "de-010615168-top-1002187",
+   "title": "Mitteilung und Anfragen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-071385009-oparl-a8ae5787e88fe4c72257",
+   "title": "Jahresabschlüsse 2024 der Verbandsgemeindewerke Rengsdorf-Waldbreitbach; Beratung und Beschlussfassung Wasserwerk Vorlage ist noch nicht veröffentlicht worden.",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01054056-top-4055--7",
+   "title": "Sachstandsbericht Tourismusabgabe",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "de-010615168-vo-1000637",
+   "title": "Einwilligung, Genehmigung und Kenntnisnahme von Haushaltsüberschreitungen gem. § 82 GO",
+   "gold": "finanzen"
+  },
+  {
+   "id": "agendaitems-278807",
+   "title": "öffentlicher Sitzungsteil als Betriebsausschuss Theater Münster",
+   "gold": "kultur"
+  },
+  {
+   "id": "de-01051011-vo-1000807",
+   "title": "Maßnahmen zur Haushaltskonsolidierung, Erfüllung der Auflage der Kommunalaufsichtsbehörde zur Genehmigungsentscheidung zur Kreditaufnahme 2026 (Stadtrat Harbeck)",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01051011-top-1005937",
+   "title": "Einwohnerfragestunde (max. Dauer: 30 Min.)",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06438002-top-19707",
+   "title": "die Verbandsversammlung des Zweckverbandes für das Friedhofs- und Bestattungswesen in Neu-Isenburg und Dreieich",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-06532006-top-69817",
+   "title": "Anfrage des B90 / Die Grünen-Ortsbeiratsmitgliedes",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01053116-top-1584--7",
+   "title": "Bauvorhaben Kita in der Seestern-Pauly-Straße - Gäste: Hr. Küpper (Johanniter-Unfall-Hilfe e.V.) und Hr. Breuer (Architekt)",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-01062-top-24617",
+   "title": "Bericht der Kinderbeauftragten",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-06414000-vo-26-i-30-0007",
+   "title": "Zielgerichtete und sensible Kommunikation bei Gefahrenlagen",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-07138045-vo-1001897",
+   "title": "Antrag der Stadtratsfraktion \"Ich tu's\": Antrag zur beabsichtigten Baumaßnahme Regenrückhaltebecken Hermesplatz/Oberbieber",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-010585895-top-1003777",
+   "title": "WC-Trennwände Bahnhof",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-010595990-vo-1001017",
+   "title": "Beratung und Beschluss über die Satzung über die Erhebung einer Zweitwohnungssteuer in der Gemeinde Ahneby",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-010515166-top-41967",
+   "title": "Bericht über die Ausführung von Beschlüssen (öffentlicher Teil)",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01060063-top-16802--18-7",
+   "title": "Anfrage Herr Mährlein (FDP) - Jugendschutz beim Cannabiskonsum",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-010575727-vo-1000447",
+   "title": "Abrechnung 2025 der Freiwilligen Feuerwehr Kaköhl-Blekendorf (Sondervermögen Kameradschaftskasse)",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-010585864-top-1001007",
+   "title": "Mitteilungen des Bürgermeisters",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010575747-top-28787",
+   "title": "Angelegenheiten des Strategieausschusses",
+   "gold": "unklar"
+  },
+  {
+   "id": "de-010585864-top-1003227",
+   "title": "Beschlussfassung über evtl. Einwendungen gegen die Niederschrift der Sitzung vom 17.06.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010575727-vo-1000327",
+   "title": "Radwege - Bewertung und Monitoring von Radwegen mit Wurzelaufbrüchen",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-01059075-top-1011227",
+   "title": "Bericht des Beauftragten für Menschen mit Behinderungen",
+   "gold": "soziales"
+  },
+  {
+   "id": "agendaitems-287877",
+   "title": "Protokoll der letzten Sitzung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06431005-top-1007677",
+   "title": "(nichtöffentlich)",
+   "gold": "unklar"
+  },
+  {
+   "id": "de-010585896-vo-50999638-50999647",
+   "title": "Änderungsanträge zur Tagesordnung",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-010585896-vo-55657594-55657677",
+   "title": "Einwohner/-innen-Fragestunde",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01054056-top-4061--7",
+   "title": "Sachstandsbericht zur Baumaßnahme Bürgerschule/ OGTS",
+   "gold": "bildung"
+  },
+  {
+   "id": "agendaitems-276527",
+   "title": "Einführung und Verpflichtung des Bezirksbürgermeisters/der Bezirksbürgermeisterin",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06435014-top-97497",
+   "title": "Genehmigung der Niederschrift der Sitzung vom 04.12.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-07111000-vo-42967",
+   "title": "Nachtrag: 02.06.2026 Nummer 1 Ko-Bubenheim: Neugestaltung des Stadtplatzes an der Alten Schule zum neuen Dorfmittelpunkt",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-01053100-vo-7337",
+   "title": "Bericht der DLRG über die Badesaison 2025",
+   "gold": "sport"
+  },
+  {
+   "id": "de-06432008-top-16636--7",
+   "title": "Sachstand Tiefbaumaßnahmen",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-010615134-top-1008527",
+   "title": "Beschlussfassung über eventuelle Einwendungen gegen die Niederschrift der Sitzung vom 21.04.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06436003-top-16287",
+   "title": "Stand der gefassten Beschlüsse",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01057-vo-8757",
+   "title": "Beratung und Beschlussfassung über die Zusammensetzung des Preisgerichts zur Vergabe des Kulturpreises des Kreises Plön 2026",
+   "gold": "kultur"
+  },
+  {
+   "id": "de-010535358-top-59607",
+   "title": "Seefest 22.08.2026",
+   "gold": "kultur"
+  },
+  {
+   "id": "de-01055004-top-1016237",
+   "title": "Anfragen, Mitteilungen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06411000-top-36817",
+   "title": "Große Anfrage der CDU-Fraktion vom 26. Juni 2025 betr. Amt für Wirtschaft und Stadtentwicklung",
+   "gold": "wirtschaft"
+  },
+  {
+   "id": "de-071315002-top-14147",
+   "title": "Mitteilungen ZMAhr",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010555591-top-1015397",
+   "title": "Ehrenmal Langenhagen",
+   "gold": "kultur"
+  },
+  {
+   "id": "de-071385003-vo-20261304100067",
+   "title": "Dorfgemeinschaftshaus Wienau; Auftragsvergabe Fensterarbeiten - Austausch Fensterelemente",
+   "gold": "bauen"
+  },
+  {
+   "id": "de-010605053-top-15777",
+   "title": "Genehmigung der Niederschrift der Sitzung vom 04.12.2025",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-01058005-top-7327",
+   "title": "Prioritätenliste für die Projekte der Gemeinde Altenholz",
+   "gold": "unklar"
+  },
+  {
+   "id": "de-06532006-vo-16357",
+   "title": "Parkflächen \"Auf der Schütte\" - Gelände Tennisclub Dillenburg",
+   "gold": "mobilitaet"
+  },
+  {
+   "id": "de-071385005-top-14397",
+   "title": "Bekanntgabe von Beschlüssen gem. § 35 Abs. 1 GemO",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071375002-top-8627--17",
+   "title": "Mitteilungen und Beantwortung von evtl. schriftlichen Anfragen",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01060-top-1004487",
+   "title": "Einwohnerfragestunde II",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-01059120-top-2303--7",
+   "title": "Terminabstimmungen",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-071385005-top-15397",
+   "title": "Genehmigung der Niederschrift vom 18.05.2026",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-07138045-top-1009787",
+   "title": "Grünpflege im Bereich \"Im Elm\" - Rheinufer",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-010515172-top-1018367",
+   "title": "Beschluss über die Nichtöffentlichkeit von Tagesordnungspunkten (Sollte die Tagesordnung nichtöffentliche Teile ausweisen, so wird über die Nichtöffentlichkeit der einzelnen Tagesordnungspunkte hier entschieden. Bis zum entsprechenden Beschluss gelten sie als \"voraussichtlich nichtöffentlich\". )",
+   "gold": "sitzung"
+  },
+  {
+   "id": "de-06440002-vo-3317",
+   "title": "Waldwirtschaftsplan Forstwirtschaftsjahr 2026 für die Waldflächen der Stadt Bad Nauheim Berichterstatter: Herr Stadtverordneter Manfred Jordis",
+   "gold": "umwelt"
+  },
+  {
+   "id": "de-010545439-top-26287",
+   "title": "Mitteilung über Feuerwehrangelegenheiten",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-07131-vo-2004100907",
+   "title": "Alarm- und Einsatzpläne des Landkreises Ahrweiler – Vorstellung der Alarm- und Einsatzpläne Hochwasser, Starkregen, Information & Warnung sowie Evakuierung",
+   "gold": "sicherheit"
+  },
+  {
+   "id": "de-010625262-top-57807",
+   "title": "Anfragen und Mitteilungen - Allgemeines und Termine",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-010615168-top-1002807",
+   "title": "Verfügbare Mittel",
+   "gold": "finanzen"
+  },
+  {
+   "id": "de-01058-oparl-819f2efcf24d324627e7",
+   "title": "Anfrage nach § 26 GO-KT des SSW zum Förderzentrum Sprache Sternschule",
+   "gold": "bildung"
+  },
+  {
+   "id": "de-01056050-top-1029157",
+   "title": "Öffentlichkeitsarbeit ((Helmut Steinke))",
+   "gold": "verwaltung"
+  },
+  {
+   "id": "de-01053090-top-1009097",
+   "title": "Verschiedenes und Termin für die nächste Beiratssitzung",
+   "gold": "allgemein"
+  },
+  {
+   "id": "de-06440025-vo-1000947",
+   "title": "Antrag der Gemeindevertreter Dr. Rinker & Hr. Kröker vom 09.01.2026; Antrag zum Haushalt 2026 – Frauen-Notruf",
+   "gold": "soziales"
+  },
+  {
+   "id": "de-01057057-vo-1000867",
+   "title": "Naturpark-Projekt Erlebniswandern - Aktivroute 'Naturparktier-Safari' rund um den Dieksee",
+   "gold": "sport"
+  }
+ ]
+}

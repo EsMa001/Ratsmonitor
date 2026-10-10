@@ -170,3 +170,15 @@ test('Formalien-Filter blendet Formalien aus, lässt Inhalte mit ähnlichen Wör
  assert.deepEqual(r.articles.map(a=>a.title).sort(),[...content].sort());
  }finally{sql.close();}
 });
+test('search cards carry the label of every title-rules version with the labels-v2 catalog (0017)',async()=>{
+ const {sql,put}=fixture();try{
+ put('v3','billerbeck',{classification:{method:'title-rules-v3',version:'labels-v2',primary:'bauen',evidence:'Neubau Feuerwehrhaus'},title:'Neubau Feuerwehrhaus',officialTitle:'Neubau Feuerwehrhaus'});
+ put('v9','billerbeck',{classification:{method:'title-rules-v9',version:'labels-v2',primary:'sport',evidence:'Neubau Sporthalle'},title:'Neubau Sporthalle',officialTitle:'Neubau Sporthalle'});
+ put('alt','billerbeck',{classification:{method:'title-rules-v3',version:'labels-v2',primary:'bauen',evidence:'Alter Titel'},title:'Neuer Titel',officialTitle:'Neuer Titel'});
+ put('katalog','billerbeck',{classification:{method:'title-rules-v3',version:'labels-v1',primary:'bauen',evidence:'Neubau'},title:'Neubau',officialTitle:'Neubau'});
+ const label=id=>sql.prepare('SELECT label FROM search_cards WHERE id=?').get(id).label;
+ assert.equal(label('v3'),'bauen');assert.equal(label('v9'),'sport');assert.equal(label('alt'),'unklar');assert.equal(label('katalog'),'unklar');
+ sql.prepare("UPDATE topics SET payload=json_set(payload,'$.classification.primary','sport') WHERE id='v3'").run();
+ assert.equal(label('v3'),'sport');
+ }finally{sql.close();}
+});

@@ -32,7 +32,7 @@ test('keyword overview counts the words the label rules stored, once per report 
 });
 test('keyword overview reads the reason exactly as the label rule writes it',async()=>{
  // The overview depends on the wording of the rule's reason; this fails if that wording changes.
- const stored=[{title:'Erweiterung der Grundschule und Ganztagsbetreuung'},{title:'Bebauungsplan Nr. 12 "Am Bahnhof"'},{title:'Mitteilungen'},{title:'Erneuerung der Fahrbahn Hauptweg'}].map(t=>({...t,classification:classifyTopic(t),analysisFeatures:features(t)}));
+ const stored=[{title:'Erweiterung der Grundschule und Ganztagsbetreuung'},{title:'Bebauungsplan Nr. 12 "Am Bahnhof"'},{title:'Mitteilungen'},{title:'Pflasterung Hauptweg'}].map(t=>({...t,classification:classifyTopic(t),analysisFeatures:features(t)}));
  const d=await adminKeywords(sqlite(stored),{now});
  assert.deepEqual(d.rule.words.map(w=>[w.term,w.label,w.articles]).sort(),[['Bebauungsplan','bauen',1],['Ganztag','bildung',1],['schul','bildung',1]]);
  assert.equal(d.rule.withWords,2);assert.equal(d.rule.general,1);assert.equal(d.rule.other,1);
