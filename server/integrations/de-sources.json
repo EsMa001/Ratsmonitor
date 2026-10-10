@@ -26744,6 +26744,17 @@
     "foundBy": "buergerinfo-uehlfeld.digitalfabrix.de"
   },
   {
+    "id": "de-095755524",
+    "name": "Verwaltungsgemeinschaft Burgbernheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "webcontact-ratsinfo",
+    "base": "https://www.burgbernheim.de/",
+    "verifiedSource": "https://www.burgbernheim.de/ratsinfo/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Ratsinfo webcontact (öffentliche Schnittstelle der Website) erreichbar."
+  },
+  {
     "id": "de-09576",
     "name": "Landkreis Roth",
     "kind": "district",
@@ -32259,6 +32270,24 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-120735304",
+    "name": "Amt Gartz (Oder)",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://www.amt-gartz.de/ris/ti-1/",
+    "bases": [
+      "https://www.amt-gartz.de/ris/ti-2/",
+      "https://www.amt-gartz.de/ris/ti-3/",
+      "https://www.amt-gartz.de/ris/ti-4/",
+      "https://www.amt-gartz.de/ris/ti-5/",
+      "https://www.amt-gartz.de/ris/ti-6/"
+    ],
+    "verifiedSource": "https://www.amt-gartz.de/ris/ti-1/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar."
+  },
+  {
     "id": "de-12073572",
     "name": "Stadt Templin",
     "kind": "city",
@@ -36135,6 +36164,17 @@
     "verifiedSource": "https://www.wernigerode.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-150855051",
+    "name": "Verbandsgemeinde Vorharz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ti-generator",
+    "base": "https://www.vorharz.online/Ratsmanager/ris/ti-1/",
+    "verifiedSource": "https://www.vorharz.online/Ratsmanager/ris/ti-1/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; TI-Generator (öffentliche Seiten) erreichbar."
   },
   {
     "id": "de-15086",
