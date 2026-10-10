@@ -21,6 +21,8 @@ export const connectedIds=()=>new Set([...CORE,...SOURCES.map(s=>s.id),...NRW_SO
 export async function adminCoverage(db,{now=new Date()}={}){
  const all=new Set(CATALOG.map(r=>r.id)),connectedSet=connectedIds(),today=now.toISOString().slice(0,10);
  const total=coverageOf(CATALOG,POPULATION,all,landOf),connected=coverageOf(CATALOG,POPULATION,connectedSet,landOf);
+ // Einwohner erreicht inklusive Kreise: ein Ort gilt als erreicht, wenn er selbst oder sein Landkreis angebunden ist.
+ const withDistricts=coverageOf(CATALOG,POPULATION,new Set(CATALOG.filter(r=>r.kind==='city'&&(connectedSet.has(r.id)||(r.district&&connectedSet.has(r.district)))).map(r=>r.id)),landOf);
  const [dataset,events,figures]=await Promise.all([adminTimeline(db,{basis:'import',now}),adminTimeline(db,{basis:'event',now}),areaFigures(db,{now})]);
  const withData=new Set([...Object.keys(dataset.areas||{}),...Object.keys(dataset.undated||{})].filter(id=>all.has(id)));
  const data=coverageOf(CATALOG,POPULATION,withData,landOf);
@@ -32,7 +34,7 @@ export async function adminCoverage(db,{now=new Date()}={}){
  return {
   asOf:now.toISOString(),
   lands:Object.fromEntries(ALL_LANDS.map(l=>[l.id,{name:l.name,short:l.short}])),
-  total,connected,
+  total,connected,withDistricts,
   data:{...data,series:dataCoverageSeries(dataset,CATALOG,POPULATION),reports:dataset.total,undatedAreas:Object.keys(dataset.undated||{}).filter(id=>all.has(id)&&!dataset.areas?.[id]?.length).length},
   history:{builtAt:history.builtAt,points:history.points.map(p=>({at:p.at,commit:p.commit,areas:p.areas,population:p.population}))},
   analysis:{

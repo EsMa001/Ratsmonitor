@@ -65,7 +65,9 @@ export async function readRubinBodies(source,{get=fetchText,endpoint=source.endp
  for(const page of endpoint==='webservice'?[WEBSERVICE]:endpoint==='api'?['api.php']:['api.php',WEBSERVICE]){
   let body;
   try{body=await get(source.base+query(page,{id:'organizations',action:'bodies'}),source);}
-  catch(e){if(page==='api.php'&&!endpoint&&/HTTP 404/.test(e.message))continue;throw e;}
+  catch(e){if(page==='api.php'&&!endpoint&&/HTTP 404/.test(e.message))continue;
+   // The older mobile web service has no list of bodies (HTTP 422, missing parameter): one installation, one body (lk-l.info).
+   if(page===WEBSERVICE&&/HTTP 422/.test(e.message))return [];throw e;}
   let list;try{list=JSON.parse(body);}catch{throw Error('Körperschaftsliste ist kein JSON');}
   if(!Array.isArray(list)||!list.length||list.some(b=>!b||typeof b!=='object'||b.ErrorCode||!b.id||!b.name))throw Error('Unbekanntes Format der Körperschaftsliste');
   return list.map(b=>({id:String(b.id),name:String(b.name)}));

@@ -29,7 +29,7 @@ export function AdminPageHead({page,children}:{page:AdminPage;children?:ReactNod
 export type Kpi={label:string;value?:ReactNode;of?:ReactNode;note?:ReactNode;title?:string};
 /** Kennzahlen wie Plenara.X (BeschluessePage.tsx). value undefined = lädt (drei Punkte). */
 export function Kpis({label,items}:{label:string;items:Kpi[]}){
- return <dl aria-label={label} className="grid grid-cols-2 gap-y-6 sm:grid-cols-4">
+ return <dl aria-label={label} className={'grid grid-cols-2 gap-y-6 '+(items.length===5?'sm:grid-cols-5':'sm:grid-cols-4')}>
   {items.map((k,i)=><div key={k.label} title={k.title} className={'min-w-0 px-4 '+(i%2?'border-l border-slate-200 ':'max-sm:pl-0 ')+(i?'sm:border-l sm:border-slate-200':'sm:pl-0')}>
    <dt className="text-[12px] text-slate-500">{k.label}</dt>
    <dd className="mt-1 text-[22px] font-semibold tabular-nums">{k.value===undefined?<span className="rm-dots" aria-label="wird geladen"><i/><i/><i/></span>:k.value}

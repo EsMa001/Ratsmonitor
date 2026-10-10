@@ -253,3 +253,10 @@ test('organizations: a member of a system that keeps several municipalities in o
  await collectRubin(source('de-010535343','lauenburg.gremien.info',{organizations:{exclude:['Buchhorst']}}),{now,get:other.get,window:'1m'});
  assert.deepEqual(other.calls.slice(1).map(meetingId).sort(),['2026-HA-194','2026-ST-124']);
 });
+
+test('readRubinBodies: the older web service without a list of bodies (HTTP 422) is one body, other errors still throw',async()=>{
+ const src={base:'https://www.lk-l.info/'};
+ assert.deepEqual(await readRubinBodies(src,{endpoint:'webservice',get:async()=>{throw Error('Quelle antwortet mit HTTP 422');}}),[]);
+ await assert.rejects(readRubinBodies(src,{endpoint:'webservice',get:async()=>{throw Error('Quelle antwortet mit HTTP 500');}}));
+ await assert.rejects(readRubinBodies(src,{endpoint:'api',get:async()=>{throw Error('Quelle antwortet mit HTTP 422');}}));
+});
