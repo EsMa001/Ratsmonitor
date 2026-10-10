@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { LIMITS, PRO_PRICE, useTier } from "../lib/tier";
+import { IconPin } from "../components/icons";
 import { useOpenSearch } from "./blocks";
 
 /* Startseite (Reiter rechts neben Lena, noch nicht die Landingpage).
@@ -17,6 +18,7 @@ interface Series {
 }
 interface First {
   r?: number;
+  p?: boolean;
   k: string;
   name: string;
   t: number;
@@ -156,7 +158,7 @@ type TrendItem = { topic: string; values: number[]; last3: number; ch: number | 
 function TrendPops({ items, onPick }: { items: TrendItem[]; onPick: (t: string) => void }) {
   const shown = items;
   return (
-    <div style={{ margin: "28px 0 0", display: "flex", flexWrap: "wrap", gap: 12, minHeight: 78 }}>
+    <div className="pl-trends" style={{ margin: "28px 0 0", display: "flex", flexWrap: "wrap", gap: 12, minHeight: 78 }}>
       <style>{`.pl-tp{animation:pltp .6s cubic-bezier(.2,.9,.3,1.2) both}@keyframes pltp{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.pl-tp{animation:none}}`}</style>
       {shown.map((t, k) => (
         <button key={t.topic} type="button" onClick={() => onPick(t.topic)} className="pl-tp" style={{ width: 200, padding: "10px 14px", textAlign: "left", background: "var(--rm-white,#fff)", border: "1px solid var(--rm-c200,#e2e8f0)", borderRadius: 14, boxShadow: "0 8px 24px rgba(0,0,0,.12)", cursor: "pointer", animationDelay: `${k * 0.25}s` }}>
@@ -191,15 +193,9 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
   const paths = useMemo(() => {
     if (!geo) return null;
     return geo.regions.map((r) => {
-      const real = lit ? lit[r.ags] !== undefined : false;
-      /* Zum Ende des Laufs füllen sich die übrigen Kreise in Stufen, damit am Schluss keine weißen Flecken bleiben */
-      let h = 0;
-      for (const ch of r.ags) h = (h * 31 + ch.charCodeAt(0)) % 10;
-      const fill = !real && lit !== null && h < stage;
-      const on = real || fill;
-      return <path key={r.id} d={r.path} fill={on ? "#0d9488" : "var(--rm-c100,#eef2f5)"} fillOpacity={on ? 0.78 : 1} stroke="var(--rm-white,#fff)" strokeOpacity="0.5" strokeWidth="0.25" style={{ cursor: "pointer", transition: "fill .5s, fill-opacity .5s" }} data-n={r.name} />;
+      return <path key={r.id} d={r.path} fill="#0d9488" fillOpacity={0.78} stroke="var(--rm-white,#fff)" strokeOpacity="0.5" strokeWidth="0.25" style={{ cursor: "pointer", transition: "fill .5s, fill-opacity .5s" }} data-n={r.name} />;
     });
-  }, [geo, litKey, stage]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [geo]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!geo) return <DotMap />;
   return (
     <div>
@@ -220,7 +216,7 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
           const right = cx < 330;
           const halo = { stroke: "var(--rm-white,#fff)", strokeWidth: 3.4, paintOrder: "stroke" as const, strokeLinejoin: "round" as const };
           return (
-            <g key={p.key} className={p.still ? undefined : "pl-pop"} pointerEvents="none">
+            <g key={p.key} className={p.still ? "pl-still" : "pl-pop"} pointerEvents="none">
               <circle cx={cx} cy={cy} r="5" fill="none" stroke="var(--rm-c900,#0f172a)" strokeWidth="1.5" className="pl-ping" />
               <circle cx={cx} cy={cy} r="5" fill="var(--rm-c900,#0f172a)" stroke="var(--rm-white,#fff)" strokeWidth="1.6" />
               <text x={cx + (right ? 12 : -12)} y={cy} textAnchor={right ? "start" : "end"} fontSize="17" fontWeight="600" fill="var(--rm-c900,#0f172a)" style={halo}>
@@ -247,6 +243,7 @@ export function StartseitePage() {
   const [total, setTotal] = useState<number | null>(null);
   const [cov, setCov] = useState<Cov[] | null>(null);
   const [raw, setData] = useState<Record<string, TopicData>>({});
+  const [cent, setCent] = useState<Record<string, [number, number]>>({});
   /* Erstberatungen sind in den Daten zeitlich stark gebündelt (Beginn der Erfassung). Für die Darstellung werden sie
      in ihrer echten Reihenfolge gleichmäßig über den Lauf verteilt, mit leichtem Versatz; r bleibt das echte Datum. */
   const data = useMemo(() => {
@@ -267,6 +264,31 @@ export function StartseitePage() {
       const pos = Math.min(N - 1, Math.max(0, rank + jitter));
       e.r = x.t;
       e.t = lo + ((hi - lo) * pos) / (N - 1);
+    });
+    /* Auftritte: je Begriff und Monat der erste Kreis, in zufällig wirkenden, aber gleichmäßigen Abständen über den Lauf gelegt */
+    const picks: { topic: string; e: First }[] = [];
+    for (const [topic, d] of Object.entries(out)) {
+      const seen = new Set<string>();
+      for (const e of [...d.firsts].sort((x, y) => (x.r ?? x.t) - (y.r ?? y.t))) {
+        const m = new Date(e.r ?? e.t).toISOString().slice(0, 7);
+        if (seen.has(m)) continue;
+        seen.add(m);
+        picks.push({ topic, e });
+      }
+    }
+    picks.sort((x, y) => (x.e.r ?? x.e.t) - (y.e.r ?? y.e.t));
+    const gaps = picks.map((x, i) => {
+      let h = 0;
+      for (const ch of x.topic + x.e.k + i) h = (h * 31 + ch.charCodeAt(0)) % 1000;
+      return 0.55 + (h / 1000) * 0.9;
+    });
+    const sum = gaps.reduce((u, v) => u + v, 0);
+    let acc = 0;
+    picks.forEach((x, i) => {
+      /* der erste Auftritt steht gleich am Anfang des Laufs, damit die Karte nie leer beginnt */
+      x.e.t = lo + (hi - lo) * (acc / sum) * 0.96;
+      acc += gaps[i];
+      x.e.p = true;
     });
     for (const d of Object.values(out)) d.firsts.sort((a, b) => a.t - b.t);
     return out;
@@ -297,7 +319,17 @@ export function StartseitePage() {
     const ctl = new AbortController();
     fetch("/geo/de-districts.json", { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ regions: GeoRegion[] }>) : Promise.reject(new Error("geo"))))
-      .then((d) => setData(synthetic(d.regions)))
+      .then((d) => {
+        const c: Record<string, [number, number]> = {};
+        for (const r of d.regions) {
+          const nums = (r.path.match(/-?\d+\.?\d*/g) ?? []).map(Number);
+          const xs = nums.filter((_, i) => i % 2 === 0);
+          const ys = nums.filter((_, i) => i % 2 === 1);
+          if (xs.length) c[r.ags] = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2];
+        }
+        setCent(c);
+        setData(synthetic(d.regions));
+      })
       .catch(() => {});
     return () => ctl.abort();
   }, []);
@@ -334,24 +366,21 @@ export function StartseitePage() {
   /* Pops: je Begriff und Monat höchstens eines, vier gleichzeitig, jedes kurz sichtbar */
   const events = (() => {
     const out: { topic: string; k: string; name: string; t: number }[] = [];
-    for (const [topic, d] of Object.entries(data)) {
-      const seen = new Set<string>();
-      for (const e of d.firsts) {
-        const m = new Date(e.r ?? e.t).toISOString().slice(0, 7);
-        if (seen.has(m)) continue;
-        seen.add(m);
-        out.push({ topic, k: e.k, name: e.name, t: e.t });
-      }
-    }
+    for (const [topic, d] of Object.entries(data)) for (const e of d.firsts) if (e.p) out.push({ topic, k: e.k, name: e.name, t: e.t });
     return out.sort((a, b) => a.t - b.t);
   })();
   const win = span ? ((span.hi - span.lo) * 6000) / 96000 : 0;
-  const live: Pop[] = span
-    ? events
-        .filter((e) => e.t <= rT && e.t > rT - win)
-        .slice(-3)
-        .map((e) => ({ key: `${e.topic}-${e.k}`, k: e.k, label: e.topic, sub: short(e.name) }))
-    : [];
+  const live: Pop[] = (() => {
+    if (!span) return [];
+    /* Älteres bleibt stehen, Neues wartet, wenn es sich auf der Karte überlappen würde */
+    const ok: typeof events = [];
+    for (const e of events.filter((x) => x.t <= rT && x.t > rT - win)) {
+      const c = cent[e.k];
+      const clash = c && ok.some((o) => { const q = cent[o.k]; return q && Math.abs(q[0] - c[0]) < 150 && Math.abs(q[1] - c[1]) < 46; });
+      if (!clash) ok.push(e);
+    }
+    return ok.slice(-3).map((e) => ({ key: `${e.topic}-${e.k}`, k: e.k, label: e.topic, sub: short(e.name) }));
+  })();
   /* Nie leer: Zwischen zwei Erscheinungen bleibt das zuletzt gezeigte stehen (am Anfang das erste) */
   const pops: Pop[] = (() => {
     if (live.length > 0 || events.length === 0) return live;
@@ -404,24 +433,25 @@ export function StartseitePage() {
 
   return (
     <>
-      <section className="ri-sec" style={{ paddingTop: 56 }}>
-        <div className="mx-auto" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "start" }}>
-          <div>
-            <h1 style={{ margin: 0, fontSize: "clamp(28px, 8vw, 44px)", lineHeight: 1.08, letterSpacing: "-0.02em", fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>
+      <section className="ri-sec pl-hero" style={{ paddingTop: 56 }}>
+        <style>{`@media (max-width:640px){.pl-hero{padding-top:12px !important;padding-bottom:16px !important}.pl-grid{display:flex !important;flex-direction:column;align-items:stretch !important;gap:0 !important}.pl-left{display:contents}.pl-h1{order:1;font-size:24px !important;line-height:1.1 !important}.pl-slogan{order:2;margin:6px 0 0 !important;font-size:14px !important}.pl-num{order:3;margin:10px 0 0 !important}.pl-num span:first-child{font-size:28px !important}.pl-num span:last-child{font-size:12px !important}.pl-stand,.pl-chips{display:none !important}.pl-h2{margin:0 0 6px !important;font-size:18px !important}.pl-trends{order:6;margin:8px 0 0 !important;min-height:0 !important;gap:8px !important;flex-wrap:nowrap !important}.pl-trends>button{flex:0 0 calc(50% - 4px);min-width:0;width:auto !important;padding:6px 10px !important}.pl-trends>button:nth-of-type(n+3){display:none}.pl-mapwrap{order:4;margin:6px 0 0 !important}.pl-mapwrap p[aria-live]{display:none}.pl-mapwrap{max-width:none !important;width:100% !important}.pl-mapwrap>div:first-child{width:240px;margin:0 auto}.pl-mapwrap>p:nth-of-type(1){display:none !important}.pl-pop text:nth-of-type(1),.pl-still text:nth-of-type(1){font-size:30px !important}.pl-pop text:nth-of-type(2),.pl-still text:nth-of-type(2){font-size:22px !important;transform:translateY(14px)}.pl-search{order:5;margin:10px 0 0 !important;border-top:0 !important}.pl-ort{order:8;margin:22px 0 0 !important;border-top:0 !important}.pl-search input,.pl-ort input{margin-top:0 !important;height:42px !important}.pl-ort [aria-live]{margin-top:4px !important}.pl-ctawrap{order:9;margin:24px 0 0 !important;text-align:center}.pl-ctawrap a{min-height:44px !important;padding:0 20px !important}}`}</style>
+        <div className="mx-auto pl-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "start" }}>
+          <div className="pl-left">
+            <h1 className="pl-h1" style={{ margin: 0, fontSize: "clamp(28px, 8vw, 44px)", lineHeight: 1.08, letterSpacing: "-0.02em", fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>
               Deutschlands Kommunalpolitik<br /> <span style={{ color: "#0d9488" }}>in Echtzeit.</span>
             </h1>
-            <p style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>Besser verstehen, was vor Ort beraten wird.</p>
-            <p style={{ margin: "28px 0 0", display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "4px 14px" }}>
+            <p className="pl-slogan" style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>Besser verstehen, was vor Ort beraten wird.</p>
+            <p className="pl-num" style={{ margin: "28px 0 0", display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "4px 14px" }}>
               <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "var(--rm-c900,#0f172a)", fontVariantNumeric: "tabular-nums" }}>{total !== null ? <CountUp value={total} /> : "…"}</span>
               <span style={{ fontSize: 16, color: "var(--rm-c500,#64748b)" }}>Berichte aus Räten und Ausschüssen</span>
             </p>
-            <p style={{ margin: "10px 0 0", fontSize: 14, color: "var(--rm-c500,#64748b)" }}>
+            <p className="pl-stand" style={{ margin: "10px 0 0", fontSize: 14, color: "var(--rm-c500,#64748b)" }}>
               <span aria-hidden="true" className="pl-pulse" style={{ display: "inline-block", width: 8, height: 8, marginRight: 8, borderRadius: 4, background: "#0d9488" }} />
               <style>{`.pl-pulse{animation:plpulse 2.4s ease-in-out infinite}@keyframes plpulse{0%,100%{box-shadow:0 0 0 0 rgba(13,148,136,.45)}60%{box-shadow:0 0 0 7px rgba(13,148,136,0)}}@media (prefers-reduced-motion:reduce){.pl-pulse{animation:none}}`}</style>
               Stand {day(today)}
             </p>
-              <div style={{ margin: "24px 0 0", maxWidth: 460, ...rule }}>
-          <h2 style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>Thema suchen</h2>
+              <div className="pl-search" style={{ margin: "24px 0 0", maxWidth: 460, ...rule }}>
+          <h2 className="pl-h2" style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>Thema suchen</h2>
           <form onSubmit={submit}>
             <label>
               <span className="sr-only">Suchbegriff</span>
@@ -430,7 +460,7 @@ export function StartseitePage() {
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
                 maxLength={120}
-                placeholder="z. B. Windkraft, mit Enter suchen"
+                placeholder="Thema suchen, z. B. Windkraft"
                 style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "var(--rm-c900,#0f172a)", border: "1px solid var(--rm-c300,#cbd5e1)", borderRadius: 999, background: "var(--rm-white,#fff)" }}
               />
             </label>
@@ -438,8 +468,8 @@ export function StartseitePage() {
               </div>
             <TrendPops items={trends.filter((t) => pops.some((p) => p.label === t.topic))} onPick={(t) => openSearch(t)} />
             {cov && (
-        <div style={rule}>
-          <h2 style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>Ist mein Ort dabei?</h2>
+        <div className="pl-ort" style={rule}>
+          <h2 className="pl-h2" style={{ margin: "16px 0 0", fontSize: 22, fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>Ist mein Ort dabei?</h2>
           <label>
             <span className="sr-only">Ort</span>
             <input
@@ -447,66 +477,36 @@ export function StartseitePage() {
               value={place}
               onChange={(e) => setPlace(e.target.value)}
               maxLength={60}
-              placeholder="Stadt oder Gemeinde, mindestens 3 Buchstaben"
+              placeholder="Ort: Stadt oder Gemeinde"
               style={{ marginTop: 12, width: "100%", height: 48, padding: "0 16px", fontSize: 16, color: "var(--rm-c900,#0f172a)", border: "1px solid var(--rm-c300,#cbd5e1)", borderRadius: 999, background: "var(--rm-white,#fff)" }}
             />
           </label>
-          <div aria-live="polite" style={{ marginTop: 10, fontSize: 14, color: "var(--rm-c500,#64748b)" }}>
+          <div aria-live="polite" style={{ marginTop: 8, fontSize: 14, color: "var(--rm-c500,#64748b)" }}>
             {q.length >= 3 && found.length === 0 ? "Dazu liegen noch keine Berichte vor." : null}
-            {found.map((c) => (
-              <div key={c.name} style={{ padding: "6px 0", display: "flex", justifyContent: "space-between", gap: 12 }}>
-                <button type="button" onClick={() => setPick(c)} aria-pressed={pick?.ags === c.ags} style={{ padding: 0, background: "none", border: 0, color: pick?.ags === c.ags ? "#0d9488" : "var(--rm-c900,#0f172a)", fontSize: 16, fontWeight: pick?.ags === c.ags ? 600 : 400, cursor: "pointer", textAlign: "left" }}>
-                  {c.name}
-                </button>
-                <span>{c.complete ? "vollständig abgerufen" : "teilweise abgerufen"}</span>
-              </div>
-            ))}
-          </div>
-          {pick && (
-            <div style={{ marginTop: 16, ...rule, paddingTop: 14 }}>
-              <p style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>{pick.name}</p>
-              {placeInfo ? (
-                <>
-                  <p style={{ margin: "6px 0 0", fontSize: 14, color: "var(--rm-c500,#64748b)" }}>
-                    {nf.format(placeInfo.total)} Einträge, davon {nf.format(placeInfo.upcoming)} für kommende Sitzungen.
-                  </p>
-                  {placeInfo.next.length > 0 && (
-                    <ul style={{ margin: "10px 0 0", padding: 0, listStyle: "none" }}>
-                      {placeInfo.next.map((a) => (
-                        <li key={a.id} style={{ padding: "6px 0" }}>
-                          <Link href={`/beschluss/${a.id}`} style={{ color: "var(--rm-c900,#0f172a)", fontSize: 14, fontWeight: 500 }}>
-                            {a.title.length > 90 ? a.title.slice(0, 90) + "…" : a.title}
-                          </Link>
-                          <span style={{ display: "block", fontSize: 12, color: "var(--rm-c500,#64748b)" }}>
-                            {day(a.date)}
-                            {a.gremium ? " · " + a.gremium : ""}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <p style={{ margin: "10px 0 0" }}>
-                    <button type="button" onClick={() => openSearch(short(pick.name))} style={{ padding: 0, background: "none", border: 0, color: "#0d9488", fontSize: 14, fontWeight: 500, cursor: "pointer" }}>
-                      Alle ansehen →
-                    </button>
-                  </p>
-                </>
-              ) : (
-                <p style={{ margin: "6px 0 0", fontSize: 14, color: "var(--rm-c500,#64748b)" }}>Wird geladen …</p>
-              )}
-            </div>
-          )}
-            {tier === "guest" && (
-              <div style={{ margin: "28px 0 0" }}>
-                <Link href="/suche" className="ri-btn pl-cta" style={{ borderRadius: 999, border: 0, color: "var(--rm-white,#fff)", background: "var(--rm-c900,#0f172a)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
-                  Ohne Anmeldung starten →
-                </Link>
+            {found.length > 0 && (
+              <div role="listbox" aria-label="Orte" style={{ padding: 6, background: "var(--rm-white,#fff)", border: "1px solid var(--rm-c200,#e2e8f0)", borderRadius: 16, boxShadow: "0 8px 24px rgba(15,23,42,.10)" }}>
+                {found.map((c) => (
+                  <button key={c.name} type="button" role="option" aria-selected="false" className="pl-opt" onClick={() => openSearch(short(c.name))} style={{ display: "grid", gridTemplateColumns: "18px minmax(0,1fr)", alignItems: "center", gap: 8, width: "100%", minHeight: 40, padding: "6px 8px", textAlign: "left", background: "none", border: 0, borderRadius: 10, cursor: "pointer" }}>
+                    <IconPin size={16} className="text-slate-500" />
+                    <span style={{ minWidth: 0 }}>
+                      <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, fontWeight: 500, color: "var(--rm-c900,#0f172a)" }}>{c.name}</span>
+                      <span style={{ display: "block", fontSize: 12, color: "var(--rm-c500,#64748b)" }}>{c.complete ? "vollständig abgerufen" : "teilweise abgerufen"}</span>
+                    </span>
+                  </button>
+                ))}
+                <style>{`.pl-opt:hover,.pl-opt:focus-visible{background:var(--rm-c100,#f1f5f9) !important;outline:none}`}</style>
               </div>
             )}
+          </div>
         </div>
       )}
+            <div className="pl-ctawrap" style={{ margin: "28px 0 0" }}>
+              <Link href="/suche" className="ri-btn pl-cta" style={{ borderRadius: 999, border: 0, color: "var(--rm-white,#fff)", background: "var(--rm-c900,#0f172a)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
+                Ohne Anmeldung starten →
+              </Link>
+            </div>
           </div>
-          <div style={{ maxWidth: "min(770px, max(412px, calc((100vh - 230px) / 1.013)))", width: "100%", justifySelf: "start", marginTop: -50, marginLeft: 56 }}>
+          <div className="pl-mapwrap" style={{ maxWidth: "min(770px, max(412px, calc((100vh - 230px) / 1.013)))", width: "100%", justifySelf: "start", marginTop: -50, marginLeft: 56 }}>
             <GermanyMap lit={span ? lit : null} litKey={litCount} stage={stage} pops={pops} onPick={(n) => openSearch(n)} />
             <p style={{ margin: "6px 0 0", display: "flex", alignItems: "baseline", justifyContent: "center", gap: 12, minHeight: 34 }}>
               {span ? (
@@ -518,7 +518,7 @@ export function StartseitePage() {
                 <span style={{ fontSize: 14, color: "var(--rm-c500,#64748b)" }}>Die Karte wird aufgebaut …</span>
               )}
             </p>
-            <p style={{ margin: "10px auto 0", maxWidth: 520, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", minHeight: 36 }}>
+            <p className="pl-chips" style={{ margin: "10px auto 0", maxWidth: 520, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", minHeight: 36 }}>
               {counts.map((c) => (
                 <button key={c.topic} type="button" onClick={() => openSearch(c.topic)} className="pl-chip" style={{ height: 30, padding: "0 12px", background: "var(--rm-white,#fff)", border: "1px solid var(--rm-c200,#e2e8f0)", borderRadius: 999, color: "var(--rm-c900,#0f172a)", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
                   {c.topic} <span style={{ color: "#0d9488", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{nf.format(c.n)}</span>

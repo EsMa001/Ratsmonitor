@@ -132,12 +132,15 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
           <MobileTitle title={a.title} terms={terms} />
         </a>
       </h3>
-      {/* Handy: Stadt, Gremium und Status untereinander */}
-      <div className="mt-1 text-[12px] leading-[1.45] text-slate-500 sm:hidden">
+      {/* Handy: Stadt, Gremium und Status nebeneinander, bei Platzmangel umbrechend */}
+      <p className="m-0 mt-1 text-[12px] leading-[1.45] text-slate-500 sm:hidden">
         {[a.gemeinde, a.gremium, STATUS_BY_ID[a.status]?.label].filter(Boolean).map((t, i) => (
-          <p key={i} className="m-0 truncate"><Highlight text={t!} terms={terms} /></p>
+          <span key={i}>
+            {i > 0 && " · "}
+            <Highlight text={t!} terms={terms} />
+          </span>
         ))}
-      </div>
+      </p>
       <p className="mb-1.5 mt-0.5 hidden text-[14px] font-medium text-slate-500 sm:block">
         <Highlight text={sub} terms={terms} />
         {/* Stand dezent am Ende der Zeile */}

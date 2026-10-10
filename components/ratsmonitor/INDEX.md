@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (429 Zeilen, ⚠13)
+- app/ratsmonitor-info.css (434 Zeilen, ⚠13)
 - app/ratsmonitor.css (209 Zeilen, ⚠12)
 
 admin-access admin.css:6
@@ -367,6 +367,7 @@ page-error-action analyse-admin.css:91
 page-note analyse-admin.css:29
 page-note design-styles.css:43
 page-note ratsmonitor.css:66
+pl-cta ratsmonitor-info.css:433
 pl-footer-accent ratsmonitor-info.css:424
 popover ratsmonitor.css:57
 process design-styles.css:126
@@ -786,8 +787,6 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/
 - App.tsx (68, ⚠1): MonitorApp
-- App.tsx (68, ⚠1): MonitorApp
-- App.tsx (68, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (74, ⚠2): AccountMenu
@@ -820,8 +819,8 @@ wordmark__dot design-styles.css:61
 - MapPanel.tsx (320, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
-- ArticleCard.tsx (188, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
-- ResultsPanel.tsx (212): ResultsPanel
+- ArticleCard.tsx (191, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
+- ResultsPanel.tsx (211): ResultsPanel
 
 ### components/ratsmonitor/info/
 - AboutPage.tsx (163): AboutPage
@@ -837,7 +836,7 @@ wordmark__dot design-styles.css:61
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
-- StartseitePage.tsx (530, ⚠5): StartseitePage
+- StartseitePage.tsx (537, ⚠6): StartseitePage
 - TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
@@ -894,8 +893,6 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (135, ⚠3): DetailPage
-- DetailPage.tsx (135, ⚠3): DetailPage
-- DetailPage.tsx (135, ⚠3): DetailPage
 - KalenderPage.tsx (363, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
@@ -936,8 +933,6 @@ wordmark__dot design-styles.css:61
 - account.tsx (17, ⚠1): AccountProvider, useAccount, useSavedStats
 - data.tsx (34, ⚠1): DataProvider, useData
 - nav.ts (13): View, viewOf, overviewScroll, useAppNav
-- search.tsx (585, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
-- search.tsx (585, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
 - search.tsx (585, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
