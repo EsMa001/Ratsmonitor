@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (422 Zeilen, ⚠13)
+- app/ratsmonitor-info.css (429 Zeilen, ⚠13)
 - app/ratsmonitor.css (206 Zeilen, ⚠11)
 
 admin-access analyse-admin.css:66
@@ -340,6 +340,7 @@ page-error-action analyse-admin.css:98
 page-note analyse-admin.css:29
 page-note design-styles.css:43
 page-note ratsmonitor.css:66
+pl-footer-accent ratsmonitor-info.css:424
 popover ratsmonitor.css:57
 process design-styles.css:126
 process-note analyse-admin.css:11
@@ -806,7 +807,7 @@ wordmark__dot design-styles.css:61
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
-- StartseitePage.tsx (489, ⚠5): StartseitePage
+- StartseitePage.tsx (530, ⚠5): StartseitePage
 - TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage

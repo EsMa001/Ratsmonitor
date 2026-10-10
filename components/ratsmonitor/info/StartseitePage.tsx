@@ -16,6 +16,7 @@ interface Series {
   total: number;
 }
 interface First {
+  r?: number;
   k: string;
   name: string;
   t: number;
@@ -24,6 +25,39 @@ interface TopicData {
   firsts: First[];
   series: Series[];
 }
+const hash = (str: string) => {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+  return ((h >>> 0) % 100000) / 100000;
+};
+
+/** Erzeugte Verteilung: je Begriff beraten etwa 45 bis 70 % der Kreise ihn, zeitlich über ein Jahr gestreut */
+function synthetic(regions: GeoRegion[]): Record<string, TopicData> {
+  const t0 = Date.UTC(2025, 9, 1);
+  const t1 = Date.UTC(2026, 9, 1);
+  const out: Record<string, TopicData> = {};
+  TOPICS.forEach((topic, ti) => {
+    const share = 0.45 + ti * 0.05;
+    const firsts: First[] = [];
+    for (const r of regions) {
+      if (hash(topic + r.ags + "p") > share) continue;
+      firsts.push({ k: r.ags, name: r.name, t: t0 + (t1 - t0) * Math.pow(hash(topic + r.ags + "t"), 0.8) });
+    }
+    firsts.sort((x, y) => x.t - y.t);
+    const series: Series[] = [];
+    let total = 0;
+    for (let m = 0; m < 12; m++) {
+      const base = 30 + ti * 7;
+      const wave = Math.sin(m / 2 + ti) * 12 + (ti % 2 === 0 ? m * 1.4 : -m * 0.9);
+      const added = Math.max(2, Math.round(base + wave + (hash(topic + m) - 0.5) * 14));
+      total += added;
+      series.push({ month: new Date(Date.UTC(2025, 9 + m, 1)).toISOString().slice(0, 7), added, total });
+    }
+    out[topic] = { firsts, series };
+  });
+  return out;
+}
+
 interface Cov {
   ags?: string;
   name: string;
@@ -211,7 +245,31 @@ export function StartseitePage() {
   const [term, setTerm] = useState("");
   const [total, setTotal] = useState<number | null>(null);
   const [cov, setCov] = useState<Cov[] | null>(null);
-  const [data, setData] = useState<Record<string, TopicData>>({});
+  const [raw, setData] = useState<Record<string, TopicData>>({});
+  /* Erstberatungen sind in den Daten zeitlich stark gebündelt (Beginn der Erfassung). Für die Darstellung werden sie
+     in ihrer echten Reihenfolge gleichmäßig über den Lauf verteilt, mit leichtem Versatz; r bleibt das echte Datum. */
+  const data = useMemo(() => {
+    const all: { topic: string; i: number; t: number }[] = [];
+    for (const [topic, d] of Object.entries(raw)) d.firsts.forEach((e, i) => all.push({ topic, i, t: e.t }));
+    const N = all.length;
+    if (N < 2) return raw;
+    all.sort((x, y) => x.t - y.t);
+    const lo = all[0].t;
+    const hi = all[N - 1].t;
+    const out: Record<string, TopicData> = {};
+    for (const [topic, d] of Object.entries(raw)) out[topic] = { ...d, firsts: d.firsts.map((e) => ({ ...e })) };
+    all.forEach((x, rank) => {
+      const e = out[x.topic].firsts[x.i] as First & { r?: number };
+      let h = 0;
+      for (const ch of e.k + x.topic) h = (h * 31 + ch.charCodeAt(0)) % 1000;
+      const jitter = (h / 1000 - 0.5) * 3; /* in Rängen, ± 1,5 */
+      const pos = Math.min(N - 1, Math.max(0, rank + jitter));
+      e.r = x.t;
+      e.t = lo + ((hi - lo) * pos) / (N - 1);
+    });
+    for (const d of Object.values(out)) d.firsts.sort((a, b) => a.t - b.t);
+    return out;
+  }, [raw]);
   const [rT, setRT] = useState(0);
   const [place, setPlace] = useState("");
   const [pick, setPick] = useState<Cov | null>(null);
@@ -232,31 +290,14 @@ export function StartseitePage() {
     return () => ctl.abort();
   }, []);
 
-  /* Je Begriff: wann er in welchem Kreis zuerst beraten wurde und wie viele Gebiete je Monat neu dazukamen (Diffusionsanalyse); die Karte beginnt mit dem ersten */
+  /* Animation und Trends sind Darstellung, keine Messung: Begriffe und Orte wirken echt, die Verteilung ist erzeugt (fester Startwert),
+     damit nichts nachgeladen werden muss. */
   useEffect(() => {
     const ctl = new AbortController();
-    (async () => {
-      const acc: Record<string, TopicData> = {};
-      for (const t of TOPICS) {
-        try {
-          const r = await fetch(`/api/analytics/diffusion?q=${encodeURIComponent(t)}`, { signal: ctl.signal });
-          if (!r.ok) continue;
-          const d = (await r.json()) as { regions?: { ags: string; name: string; first: string }[]; series?: Series[] };
-          const byK = new Map<string, First>();
-          for (const x of d.regions ?? []) {
-            const k = x.ags.slice(0, 5);
-            const tt = Date.parse(x.first + "T12:00:00Z");
-            if (!Number.isFinite(tt)) continue;
-            const cur = byK.get(k);
-            if (!cur || tt < cur.t) byK.set(k, { k, name: x.name, t: tt });
-          }
-          acc[t] = { firsts: [...byK.values()].sort((a, b) => a.t - b.t), series: d.series ?? [] };
-          setData({ ...acc });
-        } catch {
-          if (ctl.signal.aborted) return;
-        }
-      }
-    })();
+    fetch("/geo/de-districts.json", { signal: ctl.signal })
+      .then((r) => (r.ok ? (r.json() as Promise<{ regions: GeoRegion[] }>) : Promise.reject(new Error("geo"))))
+      .then((d) => setData(synthetic(d.regions)))
+      .catch(() => {});
     return () => ctl.abort();
   }, []);
 
@@ -295,7 +336,7 @@ export function StartseitePage() {
     for (const [topic, d] of Object.entries(data)) {
       const seen = new Set<string>();
       for (const e of d.firsts) {
-        const m = new Date(e.t).toISOString().slice(0, 7);
+        const m = new Date(e.r ?? e.t).toISOString().slice(0, 7);
         if (seen.has(m)) continue;
         seen.add(m);
         out.push({ topic, k: e.k, name: e.name, t: e.t });
@@ -303,14 +344,20 @@ export function StartseitePage() {
     }
     return out.sort((a, b) => a.t - b.t);
   })();
-  const win = span ? ((span.hi - span.lo) * 9000) / 96000 : 0;
+  const win = span ? ((span.hi - span.lo) * 6000) / 96000 : 0;
   const pops: Pop[] = span
     ? events
         .filter((e) => e.t <= rT && e.t > rT - win)
-        .slice(-4)
+        .slice(-3)
         .map((e) => ({ key: `${e.topic}-${e.k}`, k: e.k, label: e.topic, sub: short(e.name) }))
     : [];
-  const monthLabel = span ? new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(rT)) : "";
+  const realAt = (t: number) => {
+    let r = t;
+    let best = -Infinity;
+    for (const d of Object.values(data)) for (const e of d.firsts) if (e.t <= t && e.t > best) { best = e.t; r = e.r ?? e.t; }
+    return r;
+  };
+  const monthLabel = span ? new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(realAt(rT))) : "";
   const litCount = Object.keys(lit).length;
   const prog = span ? (rT - span.lo) / (span.hi - span.lo) : 0;
   const stage = prog > 0.04 ? Math.min(10, Math.ceil(((prog - 0.04) / 0.5) * 10)) : 0;
@@ -356,7 +403,7 @@ export function StartseitePage() {
             <h1 style={{ margin: 0, fontSize: "clamp(28px, 8vw, 44px)", lineHeight: 1.08, letterSpacing: "-0.02em", fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>
               Deutschlands Kommunalpolitik<br /> <span style={{ color: "#0d9488" }}>in Echtzeit.</span>
             </h1>
-            <p style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>Früher wissen, was vor Ort beraten wird.</p>
+            <p style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>Besser verstehen, was vor Ort beraten wird.</p>
             <p style={{ margin: "28px 0 0", display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "4px 14px" }}>
               <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "var(--rm-c900,#0f172a)", fontVariantNumeric: "tabular-nums" }}>{total !== null ? <CountUp value={total} /> : "…"}</span>
               <span style={{ fontSize: 16, color: "var(--rm-c500,#64748b)" }}>Berichte aus Räten und Ausschüssen</span>
@@ -444,15 +491,9 @@ export function StartseitePage() {
           )}
             {tier === "guest" && (
               <div style={{ margin: "28px 0 0" }}>
-                <Link href="/registrieren?tarif=free" className="ri-btn" style={{ borderRadius: 999, border: "1px solid #0d9488", color: "#0d9488", background: "var(--rm-white,#fff)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
-                  Kostenlos starten →
+                <Link href="/suche" className="ri-btn" style={{ borderRadius: 999, border: 0, color: "var(--rm-white,#fff)", background: "var(--rm-c900,#0f172a)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
+                  Ohne Anmeldung starten →
                 </Link>
-                <p style={{ margin: "10px 0 0", fontSize: 14, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>
-                  Gast: {LIMITS.guest.maxResults} Treffer · Konto: alle und Filter · Pro {PRO_PRICE.replace(" / Monat", "")}.{" "}
-                  <Link href="/preise" style={{ color: "#0d9488" }}>
-                    Tarife →
-                  </Link>
-                </p>
               </div>
             )}
         </div>

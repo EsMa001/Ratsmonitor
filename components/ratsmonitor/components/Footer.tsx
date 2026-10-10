@@ -28,7 +28,7 @@ export function Footer() {
       ) : (
         <DarkCta title="Fragen oder Anregungen?" sub={`Wir freuen uns über Ihr Feedback zu ${name}.`} action={<Link href="/kontakt" className="ri-btn ri-btn--inv">Kontakt aufnehmen</Link>} />
       )}</div>}
-    <footer className={path === "/" ? "pl-footer-accent border-t" : "border-t border-slate-200 bg-white"}>
+    <footer className="pl-footer-accent border-t">
       <div className="mx-auto grid max-w-page grid-cols-2 gap-x-6 gap-y-6 py-8 sm:gap-8 sm:py-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(2,minmax(0,1fr))]">
         <div className="col-span-2 sm:col-span-1">
           <p className="m-0 text-[16px] font-semibold text-slate-900">{name}</p>
