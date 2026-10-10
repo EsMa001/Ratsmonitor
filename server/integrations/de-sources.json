@@ -35118,6 +35118,18 @@
     "apiCheck": "OParl-Adresse des Systems (https://ratsinformation.leipzig.de/allris_leipzig_public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "de-14729",
+    "name": "Landkreis Leipzig",
+    "kind": "district",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://www.lk-l.info/",
+    "endpoint": "webservice",
+    "verifiedSource": "https://www.lk-l.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt; öffentliche Kalender-API (Webservice) erreichbar, ohne Körperschaftsliste."
+  },
+  {
     "id": "de-14729030",
     "name": "Gemeinde Bennewitz",
     "kind": "city",
