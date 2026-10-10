@@ -11014,6 +11014,26 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08126039",
+    "name": "Stadt Ingelfingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ingelfingen.de/",
+    "pages": [
+      "https://www.ingelfingen.de/",
+      "https://www.ingelfingen.de/de/rathaus-gemeinderat/oeffentliche-bekanntmachungen",
+      "https://www.ingelfingen.de/de/rathaus-gemeinderat/mitteilungsblatt",
+      "https://www.ingelfingen.de/de/rathaus-gemeinderat/kontakt-sprechzeiten",
+      "https://www.ingelfingen.de/de/rathaus-gemeinderat/rathaus-nachrichten",
+      "https://www.ingelfingen.de/de/rathaus-gemeinderat/wahlen",
+      "https://www.ingelfingen.de/de/rathaus-gemeinderat/mitarbeiter"
+    ],
+    "verifiedSource": "https://www.ingelfingen.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-08126045",
     "name": "Stadt Krautheim",
     "kind": "city",
@@ -11787,6 +11807,20 @@
     "verifiedSource": "https://www.heubach.de/,Lde/start",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08136029",
+    "name": "Gemeinde Heuchlingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://heuchlingen.de/",
+    "pages": [
+      "https://heuchlingen.de/rathaus/amtsblatt"
+    ],
+    "verifiedSource": "https://heuchlingen.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-08136033",
@@ -14468,6 +14502,24 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08317088",
+    "name": "Gemeinde Oberharmersbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.oberharmersbach.de/",
+    "pages": [
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/sitzungstermine/seite-1/suche-none",
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/gemeinderat-aktuell/seite-1/suche-none",
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/sitzungstermine/45/gemeinderatssitzung",
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/sitzungstermine/45/index.php?id=62",
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/sitzungstermine/seite-1/index.php?id=62"
+    ],
+    "verifiedSource": "https://www.oberharmersbach.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-08317093",
     "name": "Gemeinde Oberwolfach",
     "kind": "city",
@@ -14851,6 +14903,27 @@
     "verifiedSource": "http://www.furtwangen.de",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-08326020",
+    "name": "Gemeinde Gütenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.guetenbach.de/",
+    "pages": [
+      "https://www.guetenbach.de/de/rathaus-service/gemeinderat/gemeinderat-aktuell",
+      "https://www.guetenbach.de/de/rathaus-service/gemeinderat/index.php?id=347&publish%5Bp%5D=347&publish%5Bstart%5D=2",
+      "https://www.guetenbach.de/de/rathaus-service/gemeinderat/index.php?id=347&publish%5Bp%5D=347&publish%5Bstart%5D=3",
+      "https://www.guetenbach.de/de/startseite",
+      "https://www.guetenbach.de/de/rathaus-service/gemeinderat/index.php?id=3"
+    ],
+    "alsoFrom": [
+      "https://publish.cmcitymedia.de/news/getFile.php"
+    ],
+    "verifiedSource": "https://www.guetenbach.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-08326027",
@@ -16736,6 +16809,20 @@
     "foundBy": "rangendingen.ris-portal.de"
   },
   {
+    "id": "de-08417052",
+    "name": "Gemeinde Ratshausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.ratshausen.de/",
+    "pages": [
+      "https://www.ratshausen.de/gemeinderatssitzungen"
+    ],
+    "verifiedSource": "https://www.ratshausen.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-08417054",
     "name": "Stadt Rosenfeld",
     "kind": "city",
@@ -17363,6 +17450,20 @@
     "foundBy": "erlenmoos.ris-portal.de"
   },
   {
+    "id": "de-08426044",
+    "name": "Gemeinde Erolzheim",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.erolzheim.de/",
+    "pages": [
+      "https://www.erolzheim.de/startseite"
+    ],
+    "verifiedSource": "https://www.erolzheim.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-08426045",
     "name": "Gemeinde Ertingen",
     "kind": "city",
@@ -17440,6 +17541,23 @@
     "verifiedSource": "https://www.ochsenhausen.de/rathaus-service/gemeinde-und-ortschaftsrat/ratsinformationssystem",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08426090",
+    "name": "Gemeinde Oggelshausen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.oggelshausen.de/",
+    "pages": [
+      "https://www.oggelshausen.de/rathaus-service/amtsblaetter",
+      "https://www.oggelshausen.de/rathaus-service/gemeinderat/sitzungstermine-des-gemeinderats",
+      "https://www.oggelshausen.de/rathaus-service/gemeinderat/mitglieder",
+      "https://www.oggelshausen.de/rathaus-service/satzungen-und-oeffentliche-bekanntmachungen"
+    ],
+    "verifiedSource": "https://www.oggelshausen.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-08426097",
@@ -19251,6 +19369,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-091765118",
+    "name": "Verwaltungsgemeinschaft Nassenfels",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vg-nassenfels.de/",
+    "pages": [
+      "https://www.vg-nassenfels.de/rathaus/sitzungstermine/",
+      "https://www.vg-nassenfels.de/aktuelles/gemeinderatssitzung_egweil_am-637/",
+      "https://www.vg-nassenfels.de/aktuelles/gemeinderatssitzung_egweil_am-676/",
+      "https://www.vg-nassenfels.de/aktuelles/gemeinderatssitzung_egweil_am-693/",
+      "https://www.vg-nassenfels.de/aktuelles/gemeinderatssitzung_adelschlag-613/"
+    ],
+    "feeds": [
+      "https://www.vg-nassenfels.de/news.rss"
+    ],
+    "sitemap": "https://www.vg-nassenfels.de/sitemap.xml",
+    "verifiedSource": "https://www.vg-nassenfels.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-09177",
     "name": "Landkreis Erding",
     "kind": "district",
@@ -20025,6 +20165,23 @@
     "verifiedSource": "https://vgem-fuchstal.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-091815139",
+    "name": "Verwaltungsgemeinschaft Igling",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vg-igling.de/",
+    "pages": [
+      "https://www.vg-igling.de/aktuelles/bekanntmachungen/",
+      "https://www.vg-igling.de/aktuelles/aktuelle-meldungen/",
+      "https://www.vg-igling.de/aktuelles/detail/sitzung-des-gemeinderats-igling/",
+      "https://www.vg-igling.de/aktuelles/detail/sitzung-des-gemeinderates-hurlach-am-180826/"
+    ],
+    "verifiedSource": "https://www.vg-igling.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-091815140",
@@ -22107,6 +22264,28 @@
     "foundBy": "buergerinfo-aholming.digitalfabrix.de"
   },
   {
+    "id": "de-09271116",
+    "name": "Gemeinde Bernried",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.bernried-niederbayern.de/",
+    "pages": [
+      "https://www.bernried-niederbayern.de/aktuelles/aktuelle-meldungen/?category=33648",
+      "https://www.bernried-niederbayern.de/",
+      "https://www.bernried-niederbayern.de/aktuelles/bekanntmachungen/",
+      "https://www.bernried-niederbayern.de/aktuelles/aktuelle-meldungen/?category=44242"
+    ],
+    "feeds": [
+      "https://www.bernried-niederbayern.de/aktuelles/aktuelle-meldungen/newsrss/",
+      "https://www.bernried-niederbayern.de/aktuelles/bekanntmachungen/newsrss/"
+    ],
+    "sitemap": "https://www.bernried-niederbayern.de/sitemap.xml",
+    "verifiedSource": "https://www.bernried-niederbayern.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-09271119",
     "name": "Stadt Deggendorf",
     "kind": "city",
@@ -22344,6 +22523,21 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 06.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
     "foundBy": "buergerinfo-neuschoenau.digitalfabrix.de"
+  },
+  {
+    "id": "de-09272151",
+    "name": "Stadt Waldkirchen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.waldkirchen.de/",
+    "pages": [
+      "https://www.waldkirchen.de/aktuelles/amtliche-bekanntmachungen",
+      "https://www.waldkirchen.de/rathaus/sitzungstermine"
+    ],
+    "verifiedSource": "https://www.waldkirchen.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-092725212",
@@ -22751,6 +22945,25 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09275118",
+    "name": "Gemeinde Breitenberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.breitenberg.de/",
+    "pages": [
+      "https://www.breitenberg.de/neues-aus-breitenberg/",
+      "https://www.breitenberg.de/amtliche-bekanntmachungen/",
+      "https://www.breitenberg.de/meldungen-aus-dem-rathaus/",
+      "https://www.breitenberg.de/",
+      "https://www.breitenberg.de/neuigkeiten/gemeinderatssitzung-am-mittwoch-07-oktober-2026-um-2000-uhr/"
+    ],
+    "wp": "https://www.breitenberg.de/wp-json/",
+    "verifiedSource": "https://www.breitenberg.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-09275119",
     "name": "Gemeinde Büchlberg",
     "kind": "city",
@@ -22918,6 +23131,22 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09275159",
+    "name": "Gemeinde Windorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://markt-windorf-cms.de/",
+    "pages": [
+      "https://markt-windorf-cms.de/marktratssitzung/"
+    ],
+    "wp": "https://markt-windorf-cms.de/wp-json/",
+    "sitemap": "https://markt-windorf-cms.de/wp-sitemap-posts-page-1.xml",
+    "verifiedSource": "https://markt-windorf-cms.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-092755232",
     "name": "Verwaltungsgemeinschaft Aidenbach",
     "kind": "city",
@@ -23040,6 +23269,34 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-09277114",
+    "name": "Gemeinde Dietersburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://dietersburg.de/",
+    "pages": [
+      "https://dietersburg.de/category/rathaus_service/bekanntmachungen/",
+      "https://dietersburg.de/",
+      "https://dietersburg.de/veranstaltungen/gemeinderatssitzung-20/",
+      "https://dietersburg.de/veranstaltungen/gemeinderatssitzung-21/",
+      "https://dietersburg.de/veranstaltungen/gemeinderatssitzung-22/"
+    ],
+    "feeds": [
+      "https://dietersburg.de/feed/",
+      "https://dietersburg.de/category/rathaus_service/bekanntmachungen/feed/"
+    ],
+    "ics": [
+      "https://dietersburg.de/veranstaltungen/?ical=1",
+      "https://dietersburg.de/veranstaltungen/bauausschusssitzung-6/?ical=1",
+      "https://dietersburg.de/veranstaltungen/bauausschusssitzung-5/?ical=1"
+    ],
+    "sitemap": "https://dietersburg.de/post-sitemap.xml",
+    "verifiedSource": "https://dietersburg.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-09277116",
     "name": "Stadt Eggenfelden",
     "kind": "city",
@@ -23159,6 +23416,26 @@
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar.",
     "foundBy": "ris.komuna.net/wittibreut"
+  },
+  {
+    "id": "de-09277153",
+    "name": "Gemeinde Wurmannsquick",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wurmannsquick.bayern/",
+    "pages": [
+      "https://www.wurmannsquick.bayern/rathaus/gemeinderat/sitzungsprotokolle"
+    ],
+    "feeds": [
+      "https://www.wurmannsquick.bayern/rathaus/gemeinderat/sitzungsprotokolle?format=feed&type=rss",
+      "https://www.wurmannsquick.bayern/rathaus/gemeinderat/sitzungsprotokolle?format=feed&type=atom",
+      "https://www.wurmannsquick.bayern/rathaus/gemeinderat?format=feed&type=rss",
+      "https://www.wurmannsquick.bayern/rathaus/gemeinderat?format=feed&type=atom"
+    ],
+    "verifiedSource": "https://www.wurmannsquick.bayern",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-092775239",
@@ -24278,6 +24555,20 @@
     "verifiedSource": "https://www.wenzenbach.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
+    "id": "de-09375209",
+    "name": "Gemeinde Wiesent",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wiesent.de/",
+    "pages": [
+      "https://www.wiesent.de/aktuelles/amtliche-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.wiesent.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-09375213",
@@ -27257,6 +27548,26 @@
     "foundBy": "Websuche"
   },
   {
+    "id": "de-09672112",
+    "name": "Gemeinde Bad Bocklet",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://badbocklet.de/",
+    "pages": [
+      "https://badbocklet.de/verwaltung/bekanntmachungen/",
+      "https://badbocklet.de/politik/gemeinderat-ausschuesse/mgr-sitzungen/",
+      "https://badbocklet.de/gemeinde/",
+      "https://badbocklet.de/buergerservice/aktuelles/",
+      "https://badbocklet.de/news/bekanntmachung-martkgemeinderatssitzung-13-10-2026/"
+    ],
+    "wp": "https://badbocklet.de/wp-json/",
+    "sitemap": "https://badbocklet.de/wp-sitemap-posts-page-1.xml",
+    "verifiedSource": "https://badbocklet.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-09672117",
     "name": "Gemeinde Burkardroth",
     "kind": "city",
@@ -27901,6 +28212,28 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.php lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-096765630",
+    "name": "Verwaltungsgemeinschaft Kleinwallstadt",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.kleinwallstadt.de/",
+    "pages": [
+      "https://www.kleinwallstadt.de/",
+      "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/",
+      "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/ueberblick/",
+      "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/csu/",
+      "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/uwg/",
+      "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/spd/",
+      "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/b90gruene/",
+      "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/gemeindliche-beauftragte/",
+      "https://www.kleinwallstadt.de/rathaus-und-buergerservice/marktgemeinderat/gemeindeverfassungsrecht/"
+    ],
+    "verifiedSource": "https://www.kleinwallstadt.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-096765631",
     "name": "Verwaltungsgemeinschaft Mönchberg",
     "kind": "city",
@@ -28243,6 +28576,25 @@
     "verifiedSource": "https://www.werneck.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; KIC-RIS (öffentliche Gast-Schnittstelle) erreichbar."
+  },
+  {
+    "id": "de-096785642",
+    "name": "Verwaltungsgemeinschaft Gerolzhofen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gerolzhofen.de/",
+    "pages": [
+      "https://www.gerolzhofen.de/",
+      "https://www.gerolzhofen.de/grusswort.html",
+      "https://www.gerolzhofen.de/Stadtrat___Termine.html",
+      "https://www.gerolzhofen.de/protokolle_stadtratssitzungen.html",
+      "https://www.gerolzhofen.de/stadt_amtsblatt.html",
+      "https://www.gerolzhofen.de/b-rgermeister-stadtrat_Grusswort_253_kkmenue.html"
+    ],
+    "verifiedSource": "https://www.gerolzhofen.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-09679",
@@ -33616,6 +33968,21 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-145215101",
+    "name": "Verwaltungsgemeinschaft Bärenstein-Königswalde",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.baerenstein-erzgebirge.de/",
+    "pages": [
+      "https://www.baerenstein-erzgebirge.de/gemeinde-rathaus/gemeinderat/",
+      "https://www.baerenstein-erzgebirge.de/bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.baerenstein-erzgebirge.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-145215103",
     "name": "Verwaltungsgemeinschaft Burkhardtsdorf",
     "kind": "city",
@@ -34114,6 +34481,22 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
   },
   {
+    "id": "de-14523170",
+    "name": "Stadt Lengenfeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.stadt-lengenfeld.de/",
+    "pages": [
+      "https://www.stadt-lengenfeld.de/buergerservice/politik/",
+      "https://www.stadt-lengenfeld.de/buergerservice/politik/sitzungstermine/"
+    ],
+    "wp": "https://www.stadt-lengenfeld.de/wp-json/",
+    "verifiedSource": "https://www.stadt-lengenfeld.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-14523200",
     "name": "Stadt Markneukirchen",
     "kind": "city",
@@ -34411,6 +34794,20 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-14625100",
+    "name": "Gemeinde Demitz-Thumitz",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.demitz-thumitz.de/",
+    "pages": [
+      "https://www.demitz-thumitz.de/bekanntmachungen.html"
+    ],
+    "verifiedSource": "https://www.demitz-thumitz.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-14625110",
     "name": "Gemeinde Doberschau-Gaußig",
     "kind": "city",
@@ -34621,6 +35018,26 @@
     "foundBy": "ris-wachau.zv-kisa.de"
   },
   {
+    "id": "de-14625640",
+    "name": "Stadt Wittichenau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://wittichenau.de/",
+    "pages": [
+      "https://wittichenau.de/amtsblatt-stadt-wittichenau/",
+      "https://wittichenau.de/ratssitzungen/",
+      "https://wittichenau.de/stadtratssitzung-am-12-juni-2024-in-hoske/",
+      "https://wittichenau.de/hygienekonzept-fuer-rats-und-ausschusssitzungen-unter-corona-bedingungen/",
+      "https://wittichenau.de/sitzung-des-vergabeausschusses/"
+    ],
+    "wp": "https://wittichenau.de/wp-json/",
+    "sitemap": "https://wittichenau.de/wp-sitemap-posts-post-1.xml",
+    "verifiedSource": "https://wittichenau.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-14626",
     "name": "Landkreis Görlitz",
     "kind": "district",
@@ -34689,6 +35106,24 @@
     "verifiedSource": "https://www.krauschwitz.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-14626300",
+    "name": "Gemeinde Markersdorf",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://markersdorf.de/",
+    "pages": [
+      "https://markersdorf.de/buergerservice/rathaus/bekanntmachungen/?feature-block_9d3e5bf2ac6b36cbb968fca8fc811a01postsbekanntmachungen=4",
+      "https://markersdorf.de/buergerservice/politik/gemeinderat/",
+      "https://markersdorf.de/"
+    ],
+    "wp": "https://markersdorf.de/wp-json/",
+    "sitemap": "https://markersdorf.de/post-sitemap.xml",
+    "verifiedSource": "https://markersdorf.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-14626310",
@@ -36876,6 +37311,24 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-15091010",
+    "name": "Stadt Annaburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://annaburg.info/",
+    "pages": [
+      "https://annaburg.info/sitzungstermine-und-tagesordnungen/",
+      "https://annaburg.info/bekanntmachung-der-beschluesse-des-stadtrates-und-seiner-ausschuesse/",
+      "https://annaburg.info/stadtrat/",
+      "https://annaburg.info/oeffentliche-bekanntmachungen/",
+      "https://annaburg.info/live-uebertragung-von-sitzungen/"
+    ],
+    "verifiedSource": "https://annaburg.info",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-15091020",
     "name": "Stadt Bad Schmiedeberg",
     "kind": "city",
@@ -38554,6 +39007,29 @@
     "verifiedAt": "2026-10-09",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 09.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
     "foundBy": "Recherche 2026-10-09"
+  },
+  {
+    "id": "de-09476189",
+    "name": "Gemeinde Wilhelmsthal",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://wilhelmsthal.de/",
+    "pages": [
+      "https://wilhelmsthal.de/sitzungen/",
+      "https://wilhelmsthal.de/bekanntmachung-der-sitzung-des-wahlausschusses-zur-beschlussfassung-ueber-die-eingereichten-wahlvorschlaege-fuer-die-wahl-des-gemeinderates-und-des-ersten-buergermeisters-am-8-maerz-2026/",
+      "https://wilhelmsthal.de/bekanntmachung-der-sitzung-des-wahlausschusses-zur-feststellung-des-abschliessenden-wahlergebnisses-sowie-der-form-der-verkuendung-des-vorlaeufigen-wahlergebnisses-fuer-die-wahl-des-gemeinderats-und-d/",
+      "https://wilhelmsthal.de/neuigkeiten/",
+      "https://wilhelmsthal.de/neuigkeiten/page/2/?et_blog"
+    ],
+    "feeds": [
+      "https://wilhelmsthal.de/feed/"
+    ],
+    "wp": "https://wilhelmsthal.de/wp-json/",
+    "sitemap": "https://wilhelmsthal.de/wp-sitemap-posts-post-1.xml",
+    "verifiedSource": "https://wilhelmsthal.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-094765433",
