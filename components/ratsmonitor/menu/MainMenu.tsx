@@ -128,6 +128,9 @@ export function MainMenu() {
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
+        <Link href="/lena" aria-current={current("/lena")} onClick={close}>
+          Lena
+        </Link>
       </nav>
       {open &&
         createPortal(
@@ -136,6 +139,11 @@ export function MainMenu() {
             <div ref={panelRef} id="hauptmenue" tabIndex={-1} className={`ri-menu__panel outline-none ${open !== "all" ? "ri-menu__panel--flyout" : ""}`} role="dialog" aria-label="Hauptmenü" style={{ top: pos.top, left: pos.left, maxHeight: `calc(100dvh - ${pos.top}px - 12px)` }} onKeyDown={trap}>
               {/* Gleiche Gruppen wie in der Fußzeile; Linien statt Kästen. Gespeichertes und Konto erreicht man über die Icons in der Kopfzeile */}
               <nav className="ri-menu__nav" aria-label="Menü">
+                {open === "all" && (
+                  <Link href="/lena" className="ri-menu__main" aria-current={current("/lena")} onClick={pick}>
+                    Lena
+                  </Link>
+                )}
                 {/* Funktionen und Use Cases sind einklappbar; die Gruppen selbst sind keine Seiten */}
                 {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "usecases"} onClick={() => setOpenGroup(openGroup === "usecases" ? "" : "usecases")}>
                   Anwender

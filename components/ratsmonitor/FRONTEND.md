@@ -28,6 +28,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | Artikel-Detail | `pages/DetailPage.tsx` |
 | Export-Fenster | `components/ExportMenu.tsx`; Treffer: `lib/exportResults.ts`; Artikel (PDF/Drucken/Excel/CSV): `lib/exportArticle.ts`; Excel/CSV-Erzeugung: `lib/xlsx.ts` |
 | Kontoseiten (Routing) | `pages/PersonalPage.tsx` → `SavedSearchesPage`, `SavedArticlesPage`, `KalenderPage`, `ProfilePage`, `PostfachPage` |
+| Lena (regelbasierte Assistentin, eigener Reiter `/lena`; Konzept `docs/produkt/lena-konzept.md`) | Regeln und Texte: `lib/lena.ts` (rein, testbar: `tests/lena.test.mjs`), Dialog: `info/LenaPage.tsx`, Reiter: `menu/MainMenu.tsx` |
 | Info-Seiten (Routing) | `info/InfoPages.tsx`; Texte/Daten: `info/content.ts`; Bausteine (Seitenkopf, Abschlussband): `info/blocks.tsx` |
 | Use Cases | `info/BranchenPages.tsx` (+ Daten in `info/content.ts` → `BRANCHEN`) |
 | Preise | `info/PreisePage.tsx`, Tarifkarten: `components/PlanCards.tsx`, Grenzen je Tarif: `lib/tier.ts` |
