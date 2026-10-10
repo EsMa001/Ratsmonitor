@@ -1677,6 +1677,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://buergerinfo.stadt.lueneburg.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03355049",
+    "name": "Gemeinde Amt Neuhaus",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris",
+    "base": "https://www.amt-neuhaus.sitzung-online.de/public/",
+    "verifiedSource": "https://www.amt-neuhaus.sitzung-online.de/public/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "OParl-Adresse des Systems (oparl/system) liefert kein OParl-System; ALLRIS-Seiten öffentlich lesbar, Leser allris."
+  },
+  {
     "id": "nds-033555401",
     "name": "Samtgemeinde Amelinghausen",
     "kind": "city",
@@ -2335,6 +2346,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "nds-03452002",
+    "name": "Gemeinde Baltrum",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "more-rubin",
+    "base": "https://baltrum.gremien.info/",
+    "verifiedSource": "https://baltrum.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "More! Rubin: OParl nicht aktiv, öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "nds-03452006",
     "name": "Gemeinde Großefehn",
     "kind": "city",
@@ -2534,6 +2556,17 @@
     "apiCheck": "OParl-Adresse des Systems (https://www.cappeln.sitzung-online.de/public/oparl/system) lieferte am 04.10.2026 kein OParl-System; öffentliche ALLRIS-Seiten erreichbar."
   },
   {
+    "id": "nds-03453005",
+    "name": "Gemeinde Emstek",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://emstek.gremien.info/",
+    "verifiedSource": "https://emstek.gremien.info/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
     "id": "nds-03453006",
     "name": "Gemeinde Essen (Oldenburg)",
     "kind": "city",
@@ -2576,6 +2609,17 @@
     "verifiedSource": "https://www.lastrup.de/portal/seiten/Seite-900000043-31120.html?naviID=reset1",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "nds-03453011",
+    "name": "Stadt Löningen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sessionnet6",
+    "base": "https://ratsinfo.loeningen.de/",
+    "verifiedSource": "https://www.loeningen.de/buergerservice-stadt/politik/ratsinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; SessionNet 6 (öffentliche Schnittstelle) erreichbar, derzeit ohne Gremien."
   },
   {
     "id": "nds-03453012",
