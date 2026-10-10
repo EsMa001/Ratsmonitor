@@ -13,8 +13,13 @@ import {RegionCatchUp} from '@/components/admin-catch-up';
 // führen weiter dorthin. Die Startseite des Adminbereichs ist die To-do-Liste (ohne Parameter).
 export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'stichwoerter'|'regeltexte'|'social';
 export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'todo',label:'To-do-Liste'},{id:'uebersicht',label:'Übersicht'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'},{id:'regeltexte',label:'Regelbasierte Texte'},{id:'social',label:'Social Media'}];
+/** Die To-do-Liste gibt es nur im lokalen Dev-Server (docs/todo/todos.json); anderswo startet die Administration mit der Übersicht. */
+export const TODO_AVAILABLE=import.meta.env?.DEV===true;
+export const START_PAGE:AdminPage=TODO_AVAILABLE?'todo':'uebersicht';
+/** Reiter der Administration: ohne To-do-Liste, wo es sie nicht gibt. */
+export const VISIBLE_PAGES=ADMIN_PAGES.filter(p=>p.id!=='todo'||TODO_AVAILABLE);
 /** Adresse einer Adminseite, mit weiteren Parametern ("filter=issues"). */
-export const adminHref=(page:AdminPage,params='')=>'/admin'+(page==='todo'?(params?'?'+params:''):'?seite='+page+(params?'&'+params:''));
+export const adminHref=(page:AdminPage,params='')=>'/admin'+(page===START_PAGE?(params?'?'+params:''):'?seite='+page+(params?'&'+params:''));
 
 /** Kopfzeile wie Header.tsx der Startseite: 56 px, Linie unten, Logo links, Konto rechts. */
 export function AdminBar({displayName,signOutPath}:{displayName?:string;signOutPath?:string}){
@@ -35,7 +40,7 @@ export function AdminBar({displayName,signOutPath}:{displayName?:string;signOutP
 export function AdminTabs({page}:{page:AdminPage}){
  return <nav aria-label="Adminseiten" className="border-b border-slate-200 bg-white px-[max(1vw,16px)]">
   <div className="scroll-thin -mx-2.5 flex gap-1 overflow-x-auto py-1.5">
-   {ADMIN_PAGES.map(p=><Link key={p.id} href={adminHref(p.id)} prefetch={false} aria-current={page===p.id?'page':undefined}
+   {VISIBLE_PAGES.map(p=><Link key={p.id} href={adminHref(p.id)} prefetch={false} aria-current={page===p.id?'page':undefined}
     className="inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg px-2.5 text-[14px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 aria-[current=page]:font-medium aria-[current=page]:text-slate-900">{p.label}</Link>)}
   </div>
  </nav>;

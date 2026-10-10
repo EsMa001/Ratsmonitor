@@ -1,5 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
+import Link from 'next/link';
+import {VISIBLE_PAGES,adminHref} from '@/components/admin-chrome';
 // Abgespeckter Adminbereich für das Handy: nur die Abdeckung des Lückenatlas (erreichte Einwohner in Prozent, auf Gemeindeebene, inklusive VG und inklusive Kreise).
 // Quelle ist die leichte Abfrage /api/admin/coverage (Einwohner der angebundenen Gebiete im Verhältnis zu allen Gebieten).
 type Coverage={total:{population:number};connected:{population:number};withVg?:{population:number};withDistricts?:{population:number}};
@@ -29,5 +31,12 @@ export function AdminMobile(){
    </div>)}
   </div>
   {failed&&<p role="alert" className="mt-4 text-[14px] text-slate-500">Der Wert konnte nicht geladen werden. <button type="button" className="text-teal-600" onClick={()=>setAttempt(a=>a+1)}>Erneut versuchen →</button></p>}
+  {/* Die ganze Administration auch vom Handy aus: eine Zeile je Seite, getrennt durch Linien. */}
+  <nav aria-label="Adminseiten" className="mt-12">
+   <h2 className="text-[14px] font-normal text-slate-500">Administration</h2>
+   <ul className="mt-2 border-t border-slate-200">
+    {VISIBLE_PAGES.map(p=><li key={p.id} className="border-b border-slate-200"><Link href={adminHref(p.id)} prefetch={false} className="flex min-h-[44px] items-center justify-between gap-3 text-[16px] text-slate-900 no-underline">{p.label}<span aria-hidden="true" className="text-teal-600">→</span></Link></li>)}
+   </ul>
+  </nav>
  </section>;
 }
