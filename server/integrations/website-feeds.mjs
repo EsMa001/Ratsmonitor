@@ -92,9 +92,33 @@ export function pdfLinksOf(text,base){
  for(const m of String(text??'').replace(/<[^>]+>/g,' ').matchAll(/https?:\/\/[^\s"'<>()]+/gi)){const url=resolve(m[0].replace(/[.,;:]+$/,''),base);if(url&&kindOf(url)==='pdf'&&!out.has(url))out.set(url,{url,label:'',date:urlDate(url),kind:'pdf'});}
  return [...out.values()];
 }
+/**
+ * PDF files a page shows in a frame instead of linking them: <iframe|embed|object> whose address is the file, the viewer of a
+ * PDF plugin that names it ("?file=https://…/x.pdf"), or the PDF Embedder plugin ("?pdfemb-data=<base64 of {"url":"…"}>").
+ * The frame's title names the document. [{url,label}]
+ */
+export function embeddedPdfs(html,base){
+ const out=[];
+ for(const m of markup(html).matchAll(/<(?:iframe|embed|object)\b([^>]*)>/gi)){
+  const attrs=m[1],label=String(attr(attrs,'title')??'').replace(/\s+/g,' ').trim();
+  for(const raw of [attr(attrs,'data-src'),attr(attrs,'src'),attr(attrs,'data')]){
+   if(!raw||/^data:/i.test(raw))continue;
+   let target=null;
+   try{
+    const u=new URL(raw,base),emb=u.searchParams.get('pdfemb-data'),file=u.searchParams.get('file');
+    if(emb){try{target=JSON.parse(Buffer.from(emb.replace(/-/g,'+').replace(/_/g,'/'),'base64').toString('utf8')).url;}catch{/* not the plugin's data */}}
+    else target=file||u.href;
+   }catch{continue;}
+   const url=target&&resolve(String(target),base);
+   if(url&&kindOf(url)==='pdf'&&!out.some(o=>o.url===url))out.push({url,label});
+  }
+ }
+ return out;
+}
 /** Links of a page: [{url,label,date,kind}], fragments removed, relative addresses resolved, one entry per address. */
 export function documentLinks(html,base){
  const out=new Map();
+ for(const e of embeddedPdfs(html,base)){if(!out.has(e.url))out.set(e.url,{url:e.url,label:e.label,type:'application/pdf'});}
  for(const a of anchors(html)){const url=resolve(attr(a.attrs,'href'),base);if(!url)continue;const label=labelOf(a);
   // An icon and a text often link the same file; their words are joined.
   const seen=out.get(url);if(seen){if(label&&!seen.label.toLowerCase().includes(label.toLowerCase()))seen.label=`${seen.label} ${label}`.trim();continue;}
@@ -117,6 +141,8 @@ const NONPUBLIC=/nicht ?o?e?ff?(?:entl|n?tl\b|\b)|\bo oe\b|\bohne ?o?e?ff|\bnich
 // Old servers write umlauts of addresses in Latin-1 ("nicht%F6ffentlich").
 const latinUmlauts=s=>String(s??'').replace(/%(?:f6|d6)/gi,'oe').replace(/%(?:e4|c4)/gi,'ae').replace(/%(?:fc|dc)/gi,'ue').replace(/%df/gi,'ss');
 const BODY=/gemeinderat|stadtrat|marktrat|ortschaftsrat|ortsrat|ortsbeirat|beirat\b|bezirksrat|kreistag|gemeindevertret|stadtverordnet|stadtvertretung|ausschuss|ausschuess|\brat der (?:stadt|gemeinde|verbandsgemeinde|samtgemeinde)|ratssitzung|gemeindeversammlung/;
+// Short forms of bodies at the start of a file name: Gemeinderat, Marktgemeinderat, Gemeinschaftsversammlung, Stadtrat, …
+const BODY_SHORT=/^(?:gr|mgr|lgr|sr|gv|vv|stv|gvv)(?: |$)/;
 /** Links whose score reaches this count as documents of meetings. */
 export const SESSION_THRESHOLD=3;
 /** How much a link looks like a document of a meeting: -100 for the non-public part, below 0 for noise. */
@@ -126,14 +152,26 @@ export function sessionScore({url,label}={}){
  const sitting=/sitzung/.test(t),body=BODY.test(t);
  let n=sitting&&body?3:sitting||body?1:0;
  if(/tagesordnung/.test(t))n+=3;
+ // A PDF in a folder of the municipality's meeting service ("/pdf/sitzungsdienst/Penkun/Penkun_09_09_2026.pdf") whose link text is
+ // only a date (or nothing): the folder says what the document is, the date when. The text decides what is public.
+ if(sitting&&!body&&kindOf(url)==='pdf'&&/(?:^| )(?:sitzungsdienst|sitzungsunterlagen|sitzungsdokumente|sitzungsprotokolle)(?: |$)/.test(norm(pathOf(url).path.replace(/\/[^/]*$/,'')))&&/^(?:\d{1,2} \d{1,2} (?:\d{2}|\d{4})|)$/.test(norm(decode(label??''))))n+=2;
  if(/einladung/.test(t)&&(sitting||body))n+=2;
- if(/bekanntmachung/.test(t)&&sitting)n+=2;
+ // "Bekanntmachung SR 2026-09-24.pdf" in the folder of the town council: the notice of a body's meeting, named by its date.
+ // Also a file name that starts with the short form of a body ("MGR-2026-060_Bekanntmachung_13.10.2026.pdf").
+ const filed=kindOf(url)==='pdf'&&(firstDate(decode(label??''),LABEL_DATES)||urlDate(url));
+ const short=filed&&!body&&BODY_SHORT.test(norm(pathOf(url).path.split('/').pop()));
+ if(short&&/bekanntmachung|einladung|tagesordnung/.test(t))n+=1;
+ if(/bekanntmachung/.test(t)&&(sitting||(body||short)&&filed))n+=2;
  if(/niederschrift|sitzungsbericht|sitzungsprotokoll/.test(t))n+=3;else if(/protokoll/.test(t))n+=sitting||body?2:0;
  if(/beschluesse|beschlussuebersicht|beschlussfassungen|beschlussbuch|beschlussliste|gefasste beschl/.test(t))n+=3;
  if(/\baus (?:dem|der|den) (?:\w+ )?(?:gemeinderat|stadtrat|marktgemeinderat|ortschaftsrat|rat|sitzung|gemeindevertretung|stadtverordnetenversammlung|ausschuss|ausschuessen|kreistag)\b/.test(t))n+=3;
  if(/ratssitzung/.test(t))n+=2;
  // Official gazettes hold notices of meetings among much else: worth a look, never enough on their own.
- if(/amtsblatt|mitteilungsblatt|gemeindeblatt|amtsbote|gemeindebote|nachrichtenblatt|amtliche nachrichten/.test(t))n+=kindOf(url)==='pdf'?2:1;
+ if(/amtsblatt|mitteilungsblatt|gemeindeblatt|amtsbote|gemeindebote|nachrichtenblatt|amtliche nachrichten/.test(t)){
+  n+=kindOf(url)==='pdf'?2:1;
+  // An issue of the gazette as PDF with its date ("Mitteilungsblatt vom 07. Oktober 2026"): what is in it is decided by the text.
+  if(kindOf(url)==='pdf'&&(firstDate(decode(label??''),LABEL_DATES)||urlDate(url)))n+=1;
+ }
  if(!sitting&&/haushaltssatzung|haushaltsplan|nachtragshaushalt/.test(t))n-=4;
  if(!sitting&&/bebauungsplan|flaechennutzungsplan|bauleitplan|planfeststellung|\bb plan\b/.test(t))n-=4;
  if(/stellenausschreibung|stellenangebot|ausbildungsplatz|ausbildungsstelle|\bjobs?\b|karriere/.test(t))n-=6;
