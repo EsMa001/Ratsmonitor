@@ -9908,6 +9908,17 @@
     "verifiedAt": "2026-10-04"
   },
   {
+    "id": "de-08118012",
+    "name": "Gemeinde Eberdingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.eberdingen.de/",
+    "verifiedSource": "https://www.eberdingen.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08118014",
     "name": "Gemeinde Erdmannhausen",
     "kind": "city",
@@ -10489,6 +10500,28 @@
     "foundBy": "bad-wimpfen-sitzungsdienst.komm.one"
   },
   {
+    "id": "de-08125008",
+    "name": "Stadt Beilstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://ratsinformationssystem.beilstein.de/",
+    "verifiedSource": "https://ratsinformationssystem.beilstein.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
+    "id": "de-08125017",
+    "name": "Gemeinde Cleebronn",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.cleebronn.de/",
+    "verifiedSource": "https://www.cleebronn.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08125021",
     "name": "Gemeinde Eberstadt",
     "kind": "city",
@@ -10565,6 +10598,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08125038",
+    "name": "Stadt Güglingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.gueglingen.de/",
+    "verifiedSource": "https://www.gueglingen.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08125039",
     "name": "Stadt Gundelsheim",
     "kind": "city",
@@ -10576,6 +10620,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08125046",
+    "name": "Gemeinde Ilsfeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.ilsfeld.de/",
+    "verifiedSource": "https://www.ilsfeld.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
+  },
+  {
     "id": "de-08125047",
     "name": "Gemeinde Ittlingen",
     "kind": "city",
@@ -10585,6 +10640,17 @@
     "verifiedSource": "https://www.ittlingen.de/rathaus-service/gemeinderat/ratsinfo",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08125056",
+    "name": "Stadt Lauffen am Neckar",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.lauffen.de/",
+    "verifiedSource": "https://www.lauffen.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125057",
@@ -10601,6 +10667,17 @@
     "verifiedSource": "https://www.lehrensteinsfeld.de/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "SD.NET RIM 4: öffentlicher Sitzungskalender (ICS) und Tagesordnungen erreichbar; gemeinsames System der Gemeinden um Weinsberg, getrennt über die Gremienangabe."
+  },
+  {
+    "id": "de-08125058",
+    "name": "Stadt Leingarten",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://ratsinformationssystem.leingarten.de/",
+    "verifiedSource": "https://ratsinformationssystem.leingarten.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125063",
@@ -10623,6 +10700,17 @@
     "verifiedSource": "https://www.neckarsulm.de/startseite/willkommen/politik+_+gemeinderat.html",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08125068",
+    "name": "Stadt Neudenau",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://ratsinformationssystem.neudenau.de/",
+    "verifiedSource": "https://ratsinformationssystem.neudenau.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125069",
@@ -10671,6 +10759,17 @@
     "verifiedSource": "https://www.offenau.de/startseite",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08125081",
+    "name": "Gemeinde Pfaffenhofen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.pfaffenhofen-wuertt.de/",
+    "verifiedSource": "https://www.pfaffenhofen-wuertt.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125084",
@@ -10769,6 +10868,17 @@
     "verifiedSource": "https://www.gemeinde-wuestenrot.de/de/rathaus-gemeinderat/kommunalpolitik/ratsinformationssystem",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08125108",
+    "name": "Gemeinde Zaberfeld",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ecics-ris",
+    "base": "https://www.zaberfeld.de/",
+    "verifiedSource": "https://www.zaberfeld.de/ris",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; öffentliche Seiten des Gemeinde-RIS (ecics) unter /ris erreichbar, Tagesordnungspunkte am 10.10.2026 gelesen."
   },
   {
     "id": "de-08125110",
