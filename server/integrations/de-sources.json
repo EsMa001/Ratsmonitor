@@ -5381,6 +5381,19 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-06632010",
+    "name": "Gemeinde Hohenroda",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://hohenroda.mein-intra.net/",
+    "token": "5d17f636-d9c99db0-949b312e-5a1e24cf",
+    "page": "https://www.hohenroda.de/rathaus-gemeinde-verwaltung/ratsinfo",
+    "verifiedSource": "https://www.hohenroda.de/rathaus-gemeinde-verwaltung/ratsinfo",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Sitzungsdienst mein-intra (councilservice) auf der Gemeindeseite eingebettet"
+  },
+  {
     "id": "de-06632011",
     "name": "Gemeinde Kirchheim",
     "kind": "city",
@@ -5527,6 +5540,17 @@
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar.",
     "foundBy": "breuna.ris-portal.de"
+  },
+  {
+    "id": "de-06633005",
+    "name": "Gemeinde Calden",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/calden/",
+    "verifiedSource": "https://rim.ekom21.de/calden/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad (404); öffentliche Seiten von SD.NET RIM bei ekom21, Kalender termine/ics/SD.NET_RIM.ics am 10.10.2026 erreichbar."
   },
   {
     "id": "de-06633006",
@@ -6262,6 +6286,17 @@
     "verifiedSource": "https://rim.ekom21.de/hessisch-lichtenau/webservice/oparl/v1.1/system",
     "verifiedAt": "2026-10-04",
     "foundBy": "OParl-Register: Hessisch Lichtenau"
+  },
+  {
+    "id": "de-06636007",
+    "name": "Gemeinde Meinhard",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "sdnet-rim4",
+    "base": "https://rim.ekom21.de/meinhard/",
+    "verifiedSource": "https://rim.ekom21.de/meinhard/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Pfad (404); öffentliche Seiten von SD.NET RIM bei ekom21, Kalender termine/ics/SD.NET_RIM.ics am 10.10.2026 erreichbar."
   },
   {
     "id": "de-06636008",
@@ -7446,6 +7481,17 @@
     "verifiedSource": "https://www.bernkastel-kues.de/aktuelles/ratsinformation/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-072315006",
+    "name": "Verbandsgemeinde Thalfang am Erbeskopf",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://vg-thalfang.gremien.info/",
+    "verifiedSource": "https://www.erbeskopf.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Anonyme öffentliche Kalender-API erreichbar; Leser lieferte 237 Tagesordnungspunkte (3m)."
   },
   {
     "id": "de-072315008",
@@ -27557,6 +27603,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-096775620",
+    "name": "Verwaltungsgemeinschaft Kreuzwertheim",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-vgem-kreuzwertheim.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://www.kreuzwertheim.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "SessionNet öffentlicher Kalender erreichbar, derzeit ohne Sitzungen."
+  },
+  {
     "id": "de-096775625",
     "name": "Verwaltungsgemeinschaft Zellingen",
     "kind": "city",
@@ -36644,6 +36701,23 @@
     "verifiedSource": "https://www.badsalzungen.de/",
     "verifiedAt": "2026-10-06",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-160635057",
+    "name": "Erfüllende Gemeinde Ruhla",
+    "kind": "city",
+    "method": "official-api",
+    "adapter": "more-rubin",
+    "base": "https://ruhla.gremien.info/",
+    "verifiedSource": "manuell 2026-10-10",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar.",
+    "evidence": {
+      "window": "3m",
+      "topics": 57,
+      "meetings": 10,
+      "identity": "Adresse"
+    }
   },
   {
     "id": "de-160635059",
