@@ -1,6 +1,8 @@
 'use client';
 import {Footer} from "./components/Footer";
-import {useEffect,lazy,Suspense} from 'react';
+import {useEffect,lazy,Suspense,type ComponentType} from 'react';
+// Merker im Browser: nach einem fehlenden Seitenteil wurde schon einmal neu geladen (pageModule).
+const RELOADED='rm-chunk-reload';
 import {usePathname} from 'next/navigation';
 import {Header} from './components/Header';
 import {SaveSearchDialog} from './components/SaveSearchDialog';
@@ -15,13 +17,29 @@ import {useData} from './state/data';
 import {useSearchResults} from './state/search';
 import {OverviewPage} from './pages/OverviewPage';
 import {isInfoPath,isAnalyticsPath} from './lib/routes';
-// Nur die Startseite liegt im Startpaket. Detail (mit Export), Konto, Rechtliches, Info- und Analyse-Seiten werden beim
-// ersten Aufruf nachgeladen; auf dem Server rendern sie wie bisher mit (Suspense wartet dort auf das Modul).
-const DetailPage=lazy(()=>import('./pages/DetailPage').then(m=>({default:m.DetailPage})));
-const PersonalPage=lazy(()=>import('./pages/PersonalPage').then(m=>({default:m.PersonalPage})));
-const LegalPage=lazy(()=>import('./pages/LegalPage').then(m=>({default:m.LegalPage})));
-const InfoPages=lazy(()=>import('./info/InfoPages').then(m=>({default:m.InfoPages})));
-const AnalyticsPages=lazy(()=>import('./pages/analytics/AnalyticsPages').then(m=>({default:m.AnalyticsPages})));
+// Nur die Startseite liegt im Startpaket. Detail (mit Export), Konto, Rechtliches, Info- und Analyse-Seiten werden im
+// Browser beim ersten Aufruf nachgeladen (pageModule).
+const DetailPage=pageModule(()=>import('./pages/DetailPage'),m=>m.DetailPage,p=>p.startsWith('/beschluss/')||p.startsWith('/thema/'));
+const PersonalPage=pageModule(()=>import('./pages/PersonalPage'),m=>m.PersonalPage,p=>p.startsWith('/konto'));
+const LegalPage=pageModule(()=>import('./pages/LegalPage'),m=>m.LegalPage,p=>p==='/impressum'||p==='/datenschutz');
+const InfoPages=pageModule(()=>import('./info/InfoPages'),m=>m.InfoPages,isInfoPath);
+const AnalyticsPages=pageModule(()=>import('./pages/analytics/AnalyticsPages'),m=>m.AnalyticsPages,isAnalyticsPath);
+/**
+ * Eine nachgeladene Seite. Auf dem Server wird das Modul gleich beim Start geladen und danach synchron geliefert: ein
+ * Thenable, das sofort erfüllt, lässt React.lazy ohne Suspense-Platzhalter rendern. So steht der Inhalt im HTML selbst
+ * (Suchmaschinen, Vorschauen, Lesen ohne JavaScript), nicht als Nachtrag. Im Browser: fehlt ein Teil nach einem neuen
+ * Stand auf dem Server (alter Tab, Datei gibt es nicht mehr), lädt die Seite einmal neu. here: Adressen dieser Seite.
+ */
+function pageModule<M,P extends object>(load:()=>Promise<M>,pick:(m:M)=>ComponentType<P>,here:(path:string)=>boolean){
+ let loaded:M|undefined;
+ const fetchModule=()=>load().then(m=>{loaded=m;try{sessionStorage.removeItem(RELOADED);}catch{/* ohne Speicher */}return m;},e=>{
+  if(typeof window!=='undefined'){let again=false;try{again=!sessionStorage.getItem(RELOADED);if(again)sessionStorage.setItem(RELOADED,'1');}catch{/* ohne Speicher kein Neuladen */}if(again)location.reload();}
+  throw e;
+ });
+ // Auf dem Server immer, im Browser schon beim Start, wenn die aufgerufene Adresse diese Seite zeigt (Hydrierung ohne Umweg).
+ if(typeof window==='undefined'||here(location.pathname))void fetchModule().catch(()=>{});
+ return lazy<ComponentType<P>>(()=>(loaded!==undefined?{then:(done:(v:{default:ComponentType<P>})=>void)=>done({default:pick(loaded as M)})}:fetchModule().then(m=>({default:pick(m)}))) as Promise<{default:ComponentType<P>}>);
+}
 import {NotFoundPage} from './info/NotFoundPage';
 import {DataProvider} from './state/data';
 import {SearchProvider} from './state/search';

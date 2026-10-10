@@ -97,7 +97,7 @@ Der interne Importendpunkt prüft Authentifizierung und Modus, delegiert dann an
 
 ## Design: Entwurf 2
 
-Das vom Nutzer gelieferte Design wurde in die React-Seiten übertragen: Fira Sans (lokal eingebunden, Lizenz in `public/fonts/`), schwarz-weiße redaktionelle Darstellung, Kobaltblau für Bedienung, vier Prozessbalken und feste untere Navigation. Designvariablen und Komponentenstile stehen in `app/design-*.css`.
+Das vom Nutzer gelieferte Design wurde in die React-Seiten übertragen: IBM Plex Sans (lokal eingebunden, Lizenz in `public/fonts/`; die früher eingebundene Fira Sans ist seit Paket 4 entfernt), schwarz-weiße redaktionelle Darstellung, Kobaltblau für Bedienung, vier Prozessbalken und feste untere Navigation. Designvariablen und Komponentenstile stehen in `app/design-*.css`.
 
 Die Startseite bleibt direkt die Themenübersicht. `/ueber` entspricht dem Einstieg, `/mitteilungen` zeigt die tatsächlich verfügbare Push-Einstellung und zuletzt erfasste Entscheidungen. Die im Entwurf dargestellten, noch nicht implementierten Optionen für Tagesordnungs-Push und tägliche Bündelung werden nicht als aktive Einstellungen angeboten. Beispielkosten, Bildplatzhalter und ein funktionsloser Fehler-melden-Link wurden nicht übernommen.
 

@@ -78,8 +78,10 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const params=useSearchParams();
   // Die Karte kennt Samtgemeinden und neue Fusionsgemeinden nicht: sie werden über eine Mitglieds- bzw. frühere
   // Gemeinde gewählt, die Suche ordnet diese ihnen zu.
-  // Der Katalog wird dafür erst geladen, wenn die Adresse ein Gebiet nennt.
-  useEffect(()=>{const id=params.get("region");if(!id)return;let live=true;void loadCatalog().then(({REGIONS,mapKeys})=>{const region=REGIONS.find(r=>r.id===id);if(live&&region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));});return()=>{live=false;};},[params.get("region")]);
+  // Der Katalog wird dafür erst geladen, wenn die Adresse ein Gebiet nennt. Bis er da ist, wartet die Suche (regionWait),
+  // sonst liefe zuerst eine Suche ohne Gebiet. Schlägt das Laden fehl, sucht sie ohne Gebiet.
+  const [regionWait,setRegionWait]=useState<string|null>(()=>params.get("region"));
+  useEffect(()=>{const id=params.get("region");if(!id){setRegionWait(null);return;}let live=true;setRegionWait(id);loadCatalog().then(({REGIONS,mapKeys})=>{const region=REGIONS.find(r=>r.id===id);if(live&&region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));}).catch(()=>{}).finally(()=>{if(live)setRegionWait(null);});return()=>{live=false;};},[params.get("region")]);
   // Gesucht wird nur, solange die Übersicht zu sehen ist. Sie bleibt auf allen Seiten versteckt eingebunden (Karte und
   // Suchstand bleiben erhalten); ohne diese Bedingung löste jede Detail-, Info- und Kontoseite die volle Suche aus.
   /* Handy: Ändert man Filter im offenen Filterfenster, wird die Suche erst beim Schließen neu ausgeführt
@@ -89,7 +91,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   if(!hold)frozen.current=state;
   /* Handy: 15 statt 20 Treffer je Seite */
   const onHome=usePathname()==='/';
-  const live=useDerivedResults(hold?frozen.current:state,onHome,phone?15:20);
+  const live=useDerivedResults(hold?frozen.current:state,onHome&&!regionWait,phone?15:20);
   /* Läuft eine Suche, bleibt die Übersicht auf dem letzten fertigen Stand (Leiste, Chips, Karte, Zahl, Liste) und
      wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */
   const shown=useRef(live);
