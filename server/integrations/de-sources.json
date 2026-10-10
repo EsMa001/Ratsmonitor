@@ -7489,6 +7489,14 @@
     "method": "official-api",
     "adapter": "more-rubin",
     "base": "https://vg-thalfang.gremien.info/",
+    "organizations": {
+      "include": [
+        "Verbandsgemeinde Thalfang"
+      ],
+      "exclude": [
+        "Zweckverband"
+      ]
+    },
     "verifiedSource": "https://www.erbeskopf.de/",
     "verifiedAt": "2026-10-10",
     "apiCheck": "Anonyme öffentliche Kalender-API erreichbar; Leser lieferte 237 Tagesordnungspunkte (3m)."
@@ -13216,6 +13224,17 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08235073",
+    "name": "Gemeinde Unterreichenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "meeting-mobile",
+    "base": "https://www.meeting-mobile.de/mm/unterreichenbach/ris_web.nsf/",
+    "verifiedSource": "https://www.meeting-mobile.de/mm/unterreichenbach/ris_web.nsf/meeting_period_doc.xsp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; Meeting Mobile / RIS Web (Domino XPages), öffentliche GET-Seiten ohne Login; robots.txt: Disallow /mm/ (festgehalten)."
+  },
+  {
     "id": "de-08235079",
     "name": "Stadt Bad Wildbad",
     "kind": "city",
@@ -13522,6 +13541,17 @@
     "verifiedSource": "https://www.gemeinde-badenweiler.de/rathaus-service/raete-ausschuesse/ratsinformationssystem",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08315008",
+    "name": "Gemeinde Ballrechten-Dottingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "meeting-mobile",
+    "base": "https://www.meeting-mobile.de/mm/ballrechten/ris_web.nsf/",
+    "verifiedSource": "https://www.meeting-mobile.de/mm/ballrechten/ris_web.nsf/meeting_period_doc.xsp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; Meeting Mobile / RIS Web, öffentliche GET-Seiten; robots.txt: Disallow /mm/ (festgehalten)."
   },
   {
     "id": "de-08315013",
@@ -16058,6 +16088,17 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08415061",
+    "name": "Stadt Reutlingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "meeting-mobile",
+    "base": "https://ris.reutlingen.de/programme/RIS/ris_web.nsf/",
+    "verifiedSource": "https://ris.reutlingen.de/programme/RIS/ris_web.nsf/documents_month.xsp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; Meeting Mobile / RIS Web. Sitzungsliste nur mit JavaScript-Links; stateless erreichbar nur documents_month.xsp (laufender Monat). Teilabdeckung."
+  },
+  {
     "id": "de-08415073",
     "name": "Stadt Trochtelfingen",
     "kind": "city",
@@ -16134,6 +16175,17 @@
     "verifiedSource": "https://www.sonnenbuehl.de/start/rathaus+_+gemeinde/sitzungen.html",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-08415092",
+    "name": "Gemeinde Lichtenstein",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "meeting-mobile",
+    "base": "https://meeting-mobile.de/mm/lichtenstein/ris_web.nsf/",
+    "verifiedSource": "https://meeting-mobile.de/mm/lichtenstein/ris_web.nsf/meeting_period_doc.xsp",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl; Meeting Mobile / RIS Web, öffentliche GET-Seiten; robots.txt: Disallow /mm/ (festgehalten)."
   },
   {
     "id": "de-08415093",
