@@ -83,12 +83,12 @@ export function meetingClients(h){
  for(const row of String(h||'').matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)){
   const cell=row[1].match(/<td\b[^>]*data-label=["']Mandant["'][^>]*class=["'][^"']*\bpagel(\d+)\b[^"']*["'][^>]*>([\s\S]*?)<\/td>/i)||row[1].match(/<td\b[^>]*class=["'][^"']*\bpagel(\d+)\b[^"']*["'][^>]*data-label=["']Mandant["'][^>]*>([\s\S]*?)<\/td>/i);
   if(!cell)continue;
-  for(const link of row[1].matchAll(/(?:si005[67]|to0040)\.(?:asp|php)\?[^"']*__ksinr=(\d+)/gi))out.set(link[1],{panr:cell[1],name:text(cell[2])});
+  for(const link of row[1].matchAll(/(?:si005[067]|to0040)\.(?:asp|php)\?[^"']*__ksinr=(\d+)/gi))out.set(link[1],{panr:cell[1],name:text(cell[2])});
  }
  return out;
 }
 export function meetingRows(h,base){
- const rows=links(h,base).filter(l=>/(?:si005[67]|to0040)\.(asp|php)/.test(l.url)&&/\d{2}\.\d{2}\.\d{4}/.test(l.title)).map(l=>{const date=l.title.match(/(\d{2})\.(\d{2})\.(\d{4})/);return {...l,url:l.url.replace(/si0056\.(asp|php)/,'si0057.$1'),date:`${date[3]}-${date[2]}-${date[1]}`,committee:l.title.replace(/^Details anzeigen:\s*/,'').replace(/\s*\d{2}\.\d{2}\.\d{4}.*/,'')};});
+ const rows=links(h,base).filter(l=>/(?:si005[067]|to0040)\.(asp|php)/.test(l.url)&&/\d{2}\.\d{2}\.\d{4}/.test(l.title)).map(l=>{const date=l.title.match(/(\d{2})\.(\d{2})\.(\d{4})/);return {...l,url:l.url.replace(/si005[06]\.(asp|php)/,'si0057.$1'),date:`${date[3]}-${date[2]}-${date[1]}`,committee:l.title.replace(/^Details anzeigen:\s*/,'').replace(/\s*\d{2}\.\d{2}\.\d{4}.*/,'')};});
  // Only a meeting number joins two links; links without one are never taken for the same meeting.
  const tables=new Set(rows.filter(r=>/si0057\./.test(r.url)).map(r=>ksinr(r.url)).filter(Boolean));
  return rows.filter(r=>!/to0040\./.test(r.url)||!tables.has(ksinr(r.url)));
@@ -177,7 +177,7 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
  const from=windowStart(now,lookback);const fromDay=from.toISOString().slice(0,10),issues=[],meetings=new Map();
  // Calendar months cover the selected look-back window (default: rolling twelve months) and already published next-month meetings.
  let denied=false,readable=0,failing=0;
- const panr=new URLSearchParams(source.calendarQuery||'').get('__cpanr'),otherClients=new Set();
+ const panr=new URLSearchParams(source.calendarQuery||'').get('__cpanr'),otherClients=new Set(),clientName=source.clientName?String(source.clientName).toLocaleLowerCase('de-DE'):'';
  // organizations (optional): the bodies of one member in a system that serves several without clients, by the name the
  // calendar gives each meeting (oparl-regional.mjs); a meeting the patterns do not assign is not read.
  const part=committeePart(source.organizations);
@@ -191,8 +191,8 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
   try{const html=await get(url,source),closed=sessionNetPageIssue(html);if(closed)throw Error(closed);if(!sessionNetLandmark(html))throw Error(UNKNOWN_CALENDAR);readable++;
    // With a client selected (__cpanr), only meetings whose row names that client are taken; a meeting without the cell
    // (a list of next meetings, another layout) is left out: the part of a shared system is read fail closed.
-   const owners=panr?meetingClients(html):null;
-   for(const m of meetingRows(html,source.base)){if(m.date<fromDay)continue;if(owners&&owners.get(ksinr(m.url))?.panr!==panr){otherClients.add(m.url);continue;}if(!part.keep(m.committee,m.url))continue;meetings.set(m.url,m);}}
+   const owners=panr||clientName?meetingClients(html):null;
+   for(const m of meetingRows(html,source.base)){if(m.date<fromDay)continue;if(owners){const o=owners.get(ksinr(m.url));if(clientName?!o||!o.name.toLocaleLowerCase('de-DE').includes(clientName):o?.panr!==panr){otherClients.add(m.url);continue;}}if(!part.keep(m.committee,m.url))continue;meetings.set(m.url,m);}}
   // Each named reason is said once. A login page or program code holds for every month; an error page or an unknown page
   // may concern one month only, so the other months are still read, unless the first three were all of that kind.
   catch(e){const named=[SESSIONNET_LOGIN,SESSIONNET_ERROR,SESSIONNET_SOURCE,UNKNOWN_CALENDAR].includes(e.message);if(!named||!issues.includes(e.message))issues.push(e.message);
@@ -219,7 +219,7 @@ export async function collectSessionNet(source,{now=new Date(),get=fetchText,old
    let step,url,h,parse,shown='';
    for(step of pages){
     if(step==='to0040'&&step!==pages[0]&&shown)break;
-    url=m.url.replace(/(?:si005[67]|to0040)\.(asp|php)/,step+'.$1');h=await agendaPage(url);shown||=h;
+    url=m.url.replace(/(?:si005[067]|to0040)\.(asp|php)/,step+'.$1');h=await agendaPage(url);shown||=h;
     parse=/tofnum/.test(h)?parseAgenda:/smc-card-text-title/.test(h)?parseAgendaCards:/smc_tophn/.test(h)?parseAgendaTopTable:null;
     if(parse)break;
    }
