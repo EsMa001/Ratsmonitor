@@ -422,4 +422,8 @@ export const BRANCHEN: Branche[] = ANWENDER_GRUPPEN.map((g) => {
   };
 });
 
-export const brancheBySlug = (slug: string) => BRANCHEN.find((b) => b.slug === slug);
+/* Alte Adressen der Basisbranchen (/anwender/bauwesen …) führen zur Gruppe, die auf ihnen aufbaut */
+export const brancheBySlug = (slug: string) => {
+  const gruppe = ANWENDER_GRUPPEN.find((g) => g.basis === slug)?.slug ?? slug;
+  return BRANCHEN.find((b) => b.slug === gruppe);
+};
