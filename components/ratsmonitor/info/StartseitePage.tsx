@@ -8,7 +8,7 @@ import { useOpenSearch } from "./blocks";
    zum ersten Mal beraten wurden, und der Kreis bleibt gefärbt. Darunter die Trends derselben Begriffe, alles aus /api/analytics/diffusion. */
 
 /** Begriffe, die auf der Karte aufploppen und deren Trend darunter steht */
-const TOPICS = ["Wärmeplanung", "Kita", "Hitzeschutz", "Photovoltaik", "Bebauungsplan"];
+const TOPICS = ["Wärmeplanung", "Kita", "Hitzeschutz", "Photovoltaik", "Bebauungsplan", "Glasfaser"];
 
 interface Series {
   month: string;
@@ -72,6 +72,7 @@ interface Hit {
   gremium?: string;
 }
 interface Pop {
+  still?: boolean;
   key: string;
   k: string;
   label: string;
@@ -219,7 +220,7 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
           const right = cx < 330;
           const halo = { stroke: "var(--rm-white,#fff)", strokeWidth: 3.4, paintOrder: "stroke" as const, strokeLinejoin: "round" as const };
           return (
-            <g key={p.key} className="pl-pop" pointerEvents="none">
+            <g key={p.key} className={p.still ? undefined : "pl-pop"} pointerEvents="none">
               <circle cx={cx} cy={cy} r="5" fill="none" stroke="var(--rm-c900,#0f172a)" strokeWidth="1.5" className="pl-ping" />
               <circle cx={cx} cy={cy} r="5" fill="var(--rm-c900,#0f172a)" stroke="var(--rm-white,#fff)" strokeWidth="1.6" />
               <text x={cx + (right ? 12 : -12)} y={cy} textAnchor={right ? "start" : "end"} fontSize="17" fontWeight="600" fill="var(--rm-c900,#0f172a)" style={halo}>
@@ -345,12 +346,18 @@ export function StartseitePage() {
     return out.sort((a, b) => a.t - b.t);
   })();
   const win = span ? ((span.hi - span.lo) * 6000) / 96000 : 0;
-  const pops: Pop[] = span
+  const live: Pop[] = span
     ? events
         .filter((e) => e.t <= rT && e.t > rT - win)
         .slice(-3)
         .map((e) => ({ key: `${e.topic}-${e.k}`, k: e.k, label: e.topic, sub: short(e.name) }))
     : [];
+  /* Nie leer: Zwischen zwei Erscheinungen bleibt das zuletzt gezeigte stehen (am Anfang das erste) */
+  const pops: Pop[] = (() => {
+    if (live.length > 0 || events.length === 0) return live;
+    const prev = [...events].reverse().find((e) => e.t <= rT) ?? events[0];
+    return [{ still: true, key: `${prev.topic}-${prev.k}-still`, k: prev.k, label: prev.topic, sub: short(prev.name) }];
+  })();
   const realAt = (t: number) => {
     let r = t;
     let best = -Infinity;
