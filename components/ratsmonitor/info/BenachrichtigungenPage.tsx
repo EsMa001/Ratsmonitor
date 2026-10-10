@@ -66,7 +66,7 @@ export function BenachrichtigungenPage() {
         title="Starten Sie mit Ihrer ersten Benachrichtigung"
         sub="Suchen, Herz setzen, Glocke einschalten. Das dauert keine Minute."
         action={
-          <Link href="/" className="ri-btn ri-btn--inv">
+          <Link href="/suche" className="ri-btn ri-btn--inv">
             Zur Suche
           </Link>
         }

@@ -38,7 +38,7 @@ export function QuellenPage() {
   const search = useSearch();
   const open = (id: string) => {
     search.setArea(id.replace(/^de-/, ""), "ui", { zoom: true });
-    router.push("/");
+    router.push("/suche");
   };
   useEffect(() => {
     const ctrl = new AbortController();

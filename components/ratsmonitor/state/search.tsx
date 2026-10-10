@@ -87,7 +87,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const frozen=useRef(state);
   if(!hold)frozen.current=state;
   /* Handy: 15 statt 20 Treffer je Seite */
-  const onHome=usePathname()==='/';
+  const onHome=usePathname()==='/suche';
   const live=useDerivedResults(hold?frozen.current:state,onHome,phone?15:20);
   /* Läuft eine Suche, bleibt die Übersicht auf dem letzten fertigen Stand (Leiste, Chips, Karte, Zahl, Liste) und
      wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */

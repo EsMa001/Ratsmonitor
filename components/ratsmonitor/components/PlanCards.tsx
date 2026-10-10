@@ -83,7 +83,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                 })}
               </ul>
               {publicPage ? (
-                <Link href={plan.tier === "guest" ? "/" : `/registrieren?tarif=${plan.tier === "basic" ? "free" : plan.tier}`} className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
+                <Link href={plan.tier === "guest" ? "/suche" : `/registrieren?tarif=${plan.tier === "basic" ? "free" : plan.tier}`} className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
                   {plan.tier === "guest" ? "Direkt suchen" : plan.tier === "basic" ? "Kostenlos starten" : plan.tier === "pro" ? "Pro wählen" : "Enterprise wählen"}
                 </Link>
               ) : !current &&

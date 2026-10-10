@@ -14,10 +14,10 @@ const MAP_URL='/data/de_map.json?v=2018-1';
 export function DataProvider({children}:{children:ReactNode}){
  const [data,setData]=useState({geo:null as GeoModel|null,place:null as PlaceIndex|null,geoError:false});
  const pathname=usePathname();
- const [wanted,setWanted]=useState(pathname==='/');
+ const [wanted,setWanted]=useState(pathname==='/suche');
  useEffect(()=>{
   if(wanted)return;
-  if(pathname==='/'){setWanted(true);return;}
+  if(pathname==='/suche'){setWanted(true);return;}
   const w=window as Window&{requestIdleCallback?:(cb:()=>void,o?:{timeout:number})=>number;cancelIdleCallback?:(id:number)=>void};
   if(w.requestIdleCallback){const id=w.requestIdleCallback(()=>setWanted(true),{timeout:4000});return()=>w.cancelIdleCallback?.(id);}
   const t=setTimeout(()=>setWanted(true),2500);return()=>clearTimeout(t);

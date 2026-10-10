@@ -1,7 +1,8 @@
 /** Name der Seite für den Tab-Titel („Preise · Plenara“). Ohne React, damit der Aufbau testbar bleibt.
  *  Startseite und Analyse-Seiten setzen ihren Titel selbst (App.tsx bzw. AnalyticsPages.tsx). */
 const NAMES: Record<string, string> = {
-  "/funktionen/suche": "Suche",
+  "/": "Startseite",
+  "/suche": "Suche",
   "/funktionen/benachrichtigungen": "Benachrichtigungen",
   "/lena": "Lena",
   "/faq": "FAQ",

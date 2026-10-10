@@ -233,7 +233,7 @@ export function SavedSearchesPage() {
               ))}
             </ul>
           </div>
-          <Link className="btn-primary mt-5" href="/">
+          <Link className="btn-primary mt-5" href="/suche">
             Zur Suche
           </Link>
         </div>

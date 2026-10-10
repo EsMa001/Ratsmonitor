@@ -29,7 +29,7 @@
 .ri-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px}
 
 /* Kopfbereich (.ph2) */
-.ri-head{position:relative;padding:16px var(--ri-pad) 60px;border-bottom:1px solid var(--rm-c100,#eef1f4);background:radial-gradient(ellipse 1000px 520px at 88% -15%,rgba(13,148,136,.10),rgba(13,148,136,0) 70%),var(--rm-white,#fff)}
+.ri-head{position:relative;padding:16px var(--ri-pad) 60px;border-bottom:1px solid var(--rm-c100,#eef1f4);background:radial-gradient(ellipse 1000px 520px at 88% -15%,rgba(13,148,136,.10),rgba(13,148,136,0) 70%)}
 .ri-head__grid{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(0,1fr);gap:40px 72px;align-items:center}
 .ri-head__grid--top{align-items:start;grid-template-columns:minmax(0,1fr) minmax(0,520px)}
 .ri-bid{display:flex;align-items:center;gap:18px}
@@ -407,3 +407,21 @@ select.ri-input{padding-right:12px;cursor:pointer}
 @media (max-width:439px){.rm-logo--big .rm-logo__text{position:static;width:auto;height:auto;overflow:visible;clip:auto}
 .rm-logo--big .rm-logo__mark{height:.66em!important;width:.66em!important;vertical-align:-.07em!important;margin:0 .01em 0 0!important}
 .rm-logo--big .rm-logo__mark--p{height:.66em!important;width:.66em!important;vertical-align:-.07em!important}}
+
+/* Punktraster oben auf allen Anwenderseiten, wie auf der Startseite */
+.ri{position:relative;isolation:isolate}
+.ri::before{content:"";position:absolute;inset:0 0 auto 0;height:640px;z-index:-1;pointer-events:none;background-image:radial-gradient(circle,rgba(13,148,136,.22) 1.3px,transparent 1.8px);background-size:22px 22px;-webkit-mask-image:linear-gradient(to bottom,#000 0,transparent 100%);mask-image:linear-gradient(to bottom,#000 0,transparent 100%)}
+
+/* Punktraster auch auf allen übrigen Seiten, außer der Suche (html.rm-search) */
+html:not(.rm-search) body{position:relative;isolation:isolate;background:var(--rm-white,#fff)}
+html:not(.rm-search) body::before{content:"";position:absolute;inset:0 0 auto 0;height:640px;z-index:-1;pointer-events:none;background-image:radial-gradient(circle,rgba(13,148,136,.22) 1.3px,transparent 1.8px);background-size:22px 22px;-webkit-mask-image:linear-gradient(to bottom,#000 0,transparent 100%);mask-image:linear-gradient(to bottom,#000 0,transparent 100%)}
+html:not(.rm-search) .ratsmonitor{background:transparent}
+.ri::before{display:none}
+html.rm-dark .ri::before,html.rm-dark body::before{background-image:radial-gradient(circle,rgba(94,234,212,.34) 1.3px,transparent 1.8px)}
+html:not(.rm-search) .ri{background:transparent}
+
+/* Fußleiste der Startseite in Akzentfarbe */
+footer.pl-footer-accent{background:#0d9488 !important;border-color:#0f766e}
+.pl-footer-accent,.pl-footer-accent *{color:#fff !important;border-color:rgba(255,255,255,.25) !important}
+.pl-footer-accent a:hover{text-decoration:underline}
+

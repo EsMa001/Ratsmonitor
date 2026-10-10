@@ -1,7 +1,7 @@
 'use client';
 import {Footer} from "./components/Footer";
 import {useEffect} from 'react';
-import {usePathname} from 'next/navigation';
+import {usePathname,useRouter} from 'next/navigation';
 import {Header} from './components/Header';
 import {SaveSearchDialog} from './components/SaveSearchDialog';
 import {GateDialog} from './components/GateDialog';
@@ -36,11 +36,11 @@ function useBrandTitle(p:string,notFound:boolean){
  useEffect(()=>{
   // Analyse-Seiten setzen ihren Titel selbst („Diffusionsanalyse · plenara.X“); ein Überschreiben hier würde ihn zurücksetzen
   if(!notFound&&isAnalyticsPath(p))return;
-  document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/'?[what,count,name].filter(Boolean).join(' · '):tabTitle(p,name,p.startsWith('/anwender/')?brancheBySlug(p.slice(10))?.name:undefined);
+  document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/suche'?[what,count,name].filter(Boolean).join(' · '):tabTitle(p,name,p.startsWith('/anwender/')?brancheBySlug(p.slice(10))?.name:undefined);
  },[brand,name,p,notFound,what,count]);
  useEffect(()=>{setFavicon(logo);},[logo,p]);
 }
 /** Adressen, die eine der Seiten unten bedient; alles andere zeigt die 404-Seite */
-const isKnownPath=(p:string)=>p==='/'||p.startsWith('/beschluss/')||p.startsWith('/thema/')||p.startsWith('/konto')||p==='/impressum'||p==='/datenschutz'||isAnalyticsPath(p)||isInfoPath(p);
-function Content(){const p=usePathname();const notFound=!isKnownPath(p);useBrandTitle(p,notFound);return <><Header/>{notFound?<NotFoundPage/>:<OverviewPage active={p==='/'}/>}{(p.startsWith('/beschluss/')||p.startsWith('/thema/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isAnalyticsPath(p)&&<AnalyticsPages path={p}/>}{isInfoPath(p)&&<InfoPages path={p}/>}<Footer/><SaveSearchDialog/><GateDialog/><ConfirmDialog/></>;}
+const isKnownPath=(p:string)=>p==='/'||p==='/suche'||p.startsWith('/beschluss/')||p.startsWith('/thema/')||p.startsWith('/konto')||p==='/impressum'||p==='/datenschutz'||isAnalyticsPath(p)||isInfoPath(p);
+function Content(){const p=usePathname();const router=useRouter();useEffect(()=>{if(p!=='/')return;const q=new URLSearchParams(window.location.search);if(q.get('q')||q.get('suche')||q.get('region'))router.replace('/suche'+window.location.search);},[p,router]);useEffect(()=>{document.documentElement.classList.toggle('rm-search',p==='/suche');},[p]);const notFound=!isKnownPath(p);useBrandTitle(p,notFound);return <><Header/>{notFound?<NotFoundPage/>:<OverviewPage active={p==='/suche'}/>}{(p.startsWith('/beschluss/')||p.startsWith('/thema/'))&&<DetailPage/>}{p.startsWith('/konto')&&<PersonalPage/>}{(p==='/impressum'||p==='/datenschutz')&&<LegalPage kind={p.slice(1) as 'impressum'|'datenschutz'}/>}{isAnalyticsPath(p)&&<AnalyticsPages path={p}/>}{isInfoPath(p)&&<InfoPages path={p}/>}<Footer/><SaveSearchDialog/><GateDialog/><ConfirmDialog/></>;}
 export default function MonitorApp(){return <div className="ratsmonitor"><DataProvider><ToastProvider><SearchProvider><AccountProvider><UiProvider><Content/></UiProvider></AccountProvider></SearchProvider></ToastProvider></DataProvider></div>;}

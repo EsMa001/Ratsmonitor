@@ -10,7 +10,7 @@ import { IconChevronDown } from "../components/icons";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
 const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" }[] = [
-  { href: "/funktionen/suche", label: "Suche", icon: "search" },
+  { href: "/suche", label: "Suche", icon: "search" },
   { href: "/konto/suchen", label: "Gespeicherte Suchen", icon: "heart" },
   { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
   { href: "/funktionen/benachrichtigungen", label: "Benachrichtigungen", icon: "bell" },
@@ -131,9 +131,6 @@ export function MainMenu() {
         <Link href="/lena" aria-current={current("/lena")} onClick={close}>
           Lena
         </Link>
-        <Link href="/startseite" aria-current={current("/startseite")} onClick={close}>
-          Startseite
-        </Link>
       </nav>
       {open &&
         createPortal(
@@ -145,11 +142,6 @@ export function MainMenu() {
                 {open === "all" && (
                   <Link href="/lena" className="ri-menu__main" aria-current={current("/lena")} onClick={pick}>
                     Lena
-                  </Link>
-                )}
-                {open === "all" && (
-                  <Link href="/startseite" className="ri-menu__main" aria-current={current("/startseite")} onClick={pick}>
-                    Startseite
                   </Link>
                 )}
                 {/* Funktionen und Use Cases sind einklappbar; die Gruppen selbst sind keine Seiten */}

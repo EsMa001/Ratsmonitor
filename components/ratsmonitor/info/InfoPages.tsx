@@ -2,7 +2,6 @@ import { useSearchParams } from "next/navigation";
 import { QuellenPage } from "./QuellenPage";
 import { BenachrichtigungenPage } from "./BenachrichtigungenPage";
 import { useEffect, type ComponentType } from "react";
-import { AboutPage } from "./AboutPage";
 import { KontaktPage, LoginPage, RegisterPage } from "./AccountPages";
 import { BranchePage } from "./BranchenPages";
 import { brancheBySlug } from "./content";
@@ -16,11 +15,10 @@ import { StartseitePage } from "./StartseitePage";
 
 const PAGES: Record<string, ComponentType> = {
   "/lena": LenaPage,
-  "/startseite": StartseitePage,
+  "/": StartseitePage,
   "/faq": FaqPage,
   "/videos": VideosPage,
   "/datenabdeckung": QuellenPage,
-  "/funktionen/suche": AboutPage,
   "/funktionen/benachrichtigungen": BenachrichtigungenPage,
   "/preise": PreisePage,
   "/anmelden": LoginPage,

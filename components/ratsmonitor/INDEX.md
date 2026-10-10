@@ -10,7 +10,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-styles.css (310 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (12 Zeilen, ⚠2)
-- app/ratsmonitor-info.css (410 Zeilen, ⚠11)
+- app/ratsmonitor-info.css (422 Zeilen, ⚠13)
 - app/ratsmonitor.css (206 Zeilen, ⚠11)
 
 admin-access analyse-admin.css:66
@@ -542,6 +542,7 @@ ri-vp__text ratsmonitor-info.css:75
 ri-wr ratsmonitor-info.css:82
 ri-wr__sep ratsmonitor-info.css:83
 rm-chip ratsmonitor.css:107
+rm-dark ratsmonitor-info.css:420
 rm-dark ratsmonitor.css:135
 rm-dots ratsmonitor.css:113
 rm-flat ratsmonitor.css:79
@@ -556,6 +557,7 @@ rm-logo--big ratsmonitor-info.css:407
 rm-logo__mark ratsmonitor-info.css:253
 rm-logo__mark--p ratsmonitor-info.css:254
 rm-logo__text ratsmonitor-info.css:251
+rm-search ratsmonitor-info.css:416
 rm-spinner ratsmonitor.css:110
 rm-topline ratsmonitor.css:171
 screen analyse-admin.css:84
@@ -660,9 +662,6 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/funktionen/benachrichtigungen/
 - page.tsx (2): Page
 
-### app/(monitor)/funktionen/suche/
-- page.tsx (2): Page
-
 ### app/(monitor)/impressum/
 - page.tsx (2): Page
 
@@ -688,7 +687,7 @@ wordmark__dot design-styles.css:61
 ### app/(monitor)/registrieren/
 - page.tsx (2): Page
 
-### app/(monitor)/startseite/
+### app/(monitor)/suche/
 - page.tsx (2): Page
 
 ### app/(monitor)/thema/[id]/
@@ -775,7 +774,7 @@ wordmark__dot design-styles.css:61
 - FollowButton.tsx (30): FollowButton
 - Footer.tsx (59): Footer
 - GateDialog.tsx (127): GateFeature, openGate, GateDialog
-- Header.tsx (41): Header
+- Header.tsx (38): Header
 - PlanCards.tsx (136, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
@@ -801,13 +800,13 @@ wordmark__dot design-styles.css:61
 - BranchenLive.tsx (245): LiveThumb
 - BranchenPages.tsx (126): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (49): isInfoPath, InfoPages
+- InfoPages.tsx (47): isInfoPath, InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - LenaPage.tsx (189): LenaPage
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
-- StartseitePage.tsx (527, ⚠3): StartseitePage
+- StartseitePage.tsx (489, ⚠5): StartseitePage
 - TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
@@ -839,7 +838,7 @@ wordmark__dot design-styles.css:61
 - lena.ts (48): LENA_INTRO, LENA_EXAMPLES, LenaSource, LenaAnswer, askLena, germanDate
 - listView.ts (46): ListView, setListView, useListView
 - mails.ts (134, ⚠2): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
-- pageTitle.ts (39): pageName, tabTitle
+- pageTitle.ts (40): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - savedArticles.ts (65): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, useSavedArticles
@@ -857,7 +856,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (240, ⚠1): MainMenu
+- MainMenu.tsx (232, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (130, ⚠4): DetailPage
