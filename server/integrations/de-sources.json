@@ -11809,6 +11809,20 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-08136029",
+    "name": "Gemeinde Heuchlingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://heuchlingen.de/",
+    "pages": [
+      "https://heuchlingen.de/rathaus/amtsblatt"
+    ],
+    "verifiedSource": "https://heuchlingen.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-08136033",
     "name": "Gemeinde Hüttlingen",
     "kind": "city",
@@ -14488,6 +14502,24 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-08317088",
+    "name": "Gemeinde Oberharmersbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.oberharmersbach.de/",
+    "pages": [
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/sitzungstermine/seite-1/suche-none",
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/gemeinderat-aktuell/seite-1/suche-none",
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/sitzungstermine/45/gemeinderatssitzung",
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/sitzungstermine/45/index.php?id=62",
+      "https://www.oberharmersbach.de/rathaus-buerger/gemeinderat/sitzungstermine/seite-1/index.php?id=62"
+    ],
+    "verifiedSource": "https://www.oberharmersbach.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-08317093",
     "name": "Gemeinde Oberwolfach",
     "kind": "city",
@@ -14871,6 +14903,27 @@
     "verifiedSource": "http://www.furtwangen.de",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-08326020",
+    "name": "Gemeinde Gütenbach",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.guetenbach.de/",
+    "pages": [
+      "https://www.guetenbach.de/de/rathaus-service/gemeinderat/gemeinderat-aktuell",
+      "https://www.guetenbach.de/de/rathaus-service/gemeinderat/index.php?id=347&publish%5Bp%5D=347&publish%5Bstart%5D=2",
+      "https://www.guetenbach.de/de/rathaus-service/gemeinderat/index.php?id=347&publish%5Bp%5D=347&publish%5Bstart%5D=3",
+      "https://www.guetenbach.de/de/startseite",
+      "https://www.guetenbach.de/de/rathaus-service/gemeinderat/index.php?id=3"
+    ],
+    "alsoFrom": [
+      "https://publish.cmcitymedia.de/news/getFile.php"
+    ],
+    "verifiedSource": "https://www.guetenbach.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-08326027",
@@ -20112,6 +20165,23 @@
     "verifiedSource": "https://vgem-fuchstal.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-091815139",
+    "name": "Verwaltungsgemeinschaft Igling",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vg-igling.de/",
+    "pages": [
+      "https://www.vg-igling.de/aktuelles/bekanntmachungen/",
+      "https://www.vg-igling.de/aktuelles/aktuelle-meldungen/",
+      "https://www.vg-igling.de/aktuelles/detail/sitzung-des-gemeinderats-igling/",
+      "https://www.vg-igling.de/aktuelles/detail/sitzung-des-gemeinderates-hurlach-am-180826/"
+    ],
+    "verifiedSource": "https://www.vg-igling.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-091815140",
@@ -37239,6 +37309,24 @@
     "verifiedSource": "https://www.landkreis-wittenberg.de/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-15091010",
+    "name": "Stadt Annaburg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://annaburg.info/",
+    "pages": [
+      "https://annaburg.info/sitzungstermine-und-tagesordnungen/",
+      "https://annaburg.info/bekanntmachung-der-beschluesse-des-stadtrates-und-seiner-ausschuesse/",
+      "https://annaburg.info/stadtrat/",
+      "https://annaburg.info/oeffentliche-bekanntmachungen/",
+      "https://annaburg.info/live-uebertragung-von-sitzungen/"
+    ],
+    "verifiedSource": "https://annaburg.info",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-15091020",
