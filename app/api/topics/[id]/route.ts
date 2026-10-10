@@ -6,6 +6,7 @@ export async function GET(_request: Request, { params }: {
 }) {
     const { id } = await params;
     const topic = await getTopic(id);
-    // Ein Vorgang ändert sich selten: eine Minute im Browser halten, danach im Hintergrund erneuern (Zurück und erneutes Öffnen ohne Abruf).
-    return topic ? Response.json(topic, { headers: { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=300' } }) : Response.json({ error: 'Thema nicht gefunden.' }, { status: 404 });
+    // Ein Vorgang ändert sich selten: eine Minute im Browser halten (Zurück und erneutes Öffnen ohne Abruf). private: Antworten
+    // hinter der Anmeldung gehören nicht in geteilte Zwischenspeicher; ohne Nachladen im Hintergrund ist nichts älter als eine Minute.
+    return topic ? Response.json(topic, { headers: { 'Cache-Control': 'private, max-age=60' } }) : Response.json({ error: 'Thema nicht gefunden.' }, { status: 404 });
 }

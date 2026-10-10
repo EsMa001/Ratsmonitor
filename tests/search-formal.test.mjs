@@ -159,3 +159,19 @@ test('Wortliste: fehlen die vorberechneten Zahlen, baut fullIfNoHits sie neu auf
   assert.equal(state().hasHits,true);assert.equal(facets(),before);
  }finally{sql.close();}
 });
+
+test('Wortliste: läuft die Sperre ab und übernimmt ein anderer Lauf sie, bricht der erste ab, ohne weiterzuschreiben',async()=>{
+ const {sql,db,put}=fixture();try{
+  put('a','Schulbau in Dülmen');
+  await refreshSearchWords(db,{full:true});
+  const before=sql.prepare("SELECT value FROM system_state WHERE key='search-words'").get().value;
+  put('c','Kita Sonnenschein');
+  /* Ein anderer Lauf übernimmt die Sperre, während dieser die neuen Karten liest */
+  const stolen={...db,prepare(query){if(query.startsWith('SELECT rowid r,id,region_id,label,status,search FROM search_cards WHERE rowid>?'))sql.prepare("UPDATE system_state SET value='99999999999999' WHERE key='search-words-lease'").run();return db.prepare(query);}};
+  const r=await refreshSearchWords(stolen);
+  assert.equal(r.lost,true);assert.equal(r.busy,true);
+  assert.equal(sql.prepare("SELECT 1 x FROM search_postings WHERE word='sonnenschein'").get(),undefined);
+  assert.equal(sql.prepare("SELECT value FROM system_state WHERE key='search-words'").get().value,before);
+  assert.equal(sql.prepare("SELECT value FROM system_state WHERE key='search-words-lease'").get().value,'99999999999999','die Sperre des anderen Laufs bleibt');
+ }finally{sql.close();}
+});

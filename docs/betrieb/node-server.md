@@ -170,7 +170,8 @@ Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain 
 ## Bekannte Grenzen
 
 - Begriffssuche ohne Volltextindex dauert bei vollem Bestand rund 3 s und hält den Prozess so lange an.
-- `refreshSearchWords` läuft unter einer Sperre (3 min, beim vollen Aufbau 1 h); bricht ein Lauf hart ab, ist die
+- `refreshSearchWords` läuft unter einer Sperre, die jeder Lauf vor jedem Abschnitt verlängert (3 min, beim vollen
+  Aufbau 1 h); wer sie verliert, bricht ab. Bricht ein Lauf hart ab, ist die
   Wortliste bis zum Ablauf der Sperre nicht nachführbar, die Suche läuft dann über alle Karten.
 - Fehlerzweige mancher Leser lesen die Antwort nicht zu Ende; in einem lange laufenden Prozess bleiben die
   Verbindungen dann bis zur nächsten Speicherbereinigung offen.

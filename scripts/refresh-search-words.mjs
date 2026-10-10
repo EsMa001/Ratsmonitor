@@ -20,6 +20,6 @@ let kinds=null,names=null;
 try{const {REGIONS}=await import('../shared/regions.ts');kinds=new Map(REGIONS.map(r=>[r.id,r.kind]));names=new Map(REGIONS.map(r=>[r.id,r.name]));}catch{say('Gebietsarten nicht ladbar: keine vorberechneten Zahlen.');}
 try{
  const t0=Date.now(),result=await refreshSearchWords(sqliteAdapter(db),{full:process.argv.includes('--full'),fullIfNoHits:true,kinds,names});
- if(result?.busy){say('Eine andere Nachführung läuft gerade (Import oder Skript), nichts zu tun.');process.exit(0);}
+ if(result?.busy){say(result.lost?'Sperre abgelaufen und von einem anderen Lauf übernommen: abgebrochen, der nächste Lauf holt nach.':'Eine andere Nachführung läuft gerade (Import oder Skript), nichts zu tun.');process.exit(0);}
  say(JSON.stringify({...result,seconds:Math.round((Date.now()-t0)/100)/10}));
 }catch(e){say('Wortliste nicht aufgebaut:',e instanceof Error?e.message:e);process.exit(0);}
