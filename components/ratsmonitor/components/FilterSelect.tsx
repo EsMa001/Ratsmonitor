@@ -5,6 +5,8 @@ import { IconChevronDown } from "./icons";
 interface Option {
   value: string;
   label: string;
+  /** Kurzform für den schmalen Auswahlknopf auf dem Handy */
+  short?: string;
 }
 
 interface Props {
@@ -61,7 +63,10 @@ export function FilterSelect({ id, label, allLabel, value, options, counts, onCh
             }}
             className={`select-base relative flex w-full items-center text-left ${sm ? "!h-9 max-sm:!h-11 !rounded-lg !pl-3 !pr-8 !text-[14px]" : "desk:w-auto desk:min-w-[150px] desk:max-w-[200px]"} ${value && highlight ? "select-active" : ""}`}
           >
-            <span className="truncate">{current}</span>
+            {(() => {
+              const short = all.find((o) => o.value === value)?.short;
+              return short ? <><span className="truncate sm:hidden">{short}</span><span className="truncate max-sm:hidden">{current}</span></> : <span className="truncate">{current}</span>;
+            })()}
             <IconChevronDown size={14} className={`pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
           </button>
         </PopoverTrigger>

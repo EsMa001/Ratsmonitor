@@ -78,8 +78,9 @@ export function ResultsPanel() {
   const name = (ags: string) => geo?.info(ags).name ?? ags;
   const emptyWhere = state.radius ? ` im Umkreis von ${state.radius.km} km um ${name(state.radius.ags)}` : state.area ? ` für ${name(state.area)}` : "";
 
+  /* Handy ohne Suche und Filter: unter der Karte nur die Trefferzahl (eigene Zeile), keine Liste */
   return (
-    <section aria-labelledby="results-title" className="card-shell flex flex-col">
+    <section aria-labelledby="results-title" className={`card-shell flex flex-col ${active ? "" : "max-sm:hidden"}`}>
       <h2 id="results-title" className="sr-only">
         Ratsbeschlüsse und Artikel
       </h2>
