@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {detectAllris3,calendarProgram,refusedProgram,declaredCharset,parseAllris3Calendar,parseAllris3Agenda,parseAllris3Paper,collectAllris3} from '../server/integrations/allris3.mjs';
+import {detectAllris3,calendarProgram,refusedProgram,declaredCharset,parseAllris3Calendar,parseAllris3Agenda,parseAllris3Paper,collectAllris3,CALENDAR_PROBES} from '../server/integrations/allris3.mjs';
+import {allrisGeneration} from '../scripts/source-discovery/rules.mjs';
 import {fetchText} from '../server/integrations/sessionnet.mjs';
 import {SOURCE_USER_AGENT} from '../server/integrations/no-redirect.mjs';
 // Excerpts of live pages read on 04.10.2026: Landkreis Osnabrück (responsive _r), Stadt Regensburg (classic si010),
@@ -194,8 +195,9 @@ test('ALLRIS 3 collector without a calendar program takes it from the start page
 test('ALLRIS 3 collector ends at a refused program and does not try other variants',async()=>{
  const asked=[];const d=await collectAllris3({...giesen,calendar:'si010_r.asp'},{now,window:'12m',get:async url=>{asked.push(url);return refusal('si010_r.asp');}});
  assert.equal(asked.length,1);assert.equal(d.topics.length,0);assert.equal(d.coverage.quiet,false);assert.equal(d.coverage.complete,false);assert.match(d.coverage.issues[0],/Programm si010_r\.asp ist auf dieser Installation nicht freigegeben/);
+ // A start page without a calendar: the usual variants are asked once each (current month); here none shows a calendar.
  const menu=[];const none=await collectAllris3({...giesen,calendar:undefined},{now,window:'1m',get:async url=>{menu.push(url);return '<html><div id="allriscontainer"><a href="au010.asp">Gremien</a></div></html>';}});
- assert.deepEqual(menu,[giesen.base+'allris.net.asp']);assert.match(none.coverage.issues[0],/nennt keinen Sitzungskalender/);
+ assert.deepEqual(menu,[giesen.base+'allris.net.asp',...CALENDAR_PROBES.map(p=>giesen.base+p+'?MM=10&YY=2026')]);assert.match(none.coverage.issues[0],/nennt keinen Sitzungskalender; si010_e\.asp ohne Kalenderformat, si010_a\.asp ohne Kalenderformat/);assert.equal(none.calendar,undefined);
  // The start page forwards to the calendar inside the municipality's website, which first links another folder.
  const forwarded=[];const giesenPage=page('gie-si010_r.html').replace('<body>','<body><a href="https://www.giesen.de/alt/si010.asp">Sitzungskalender</a>');
  await collectAllris3({...giesen,calendar:undefined},{now,window:'1m',get:async url=>{forwarded.push(url);return url.endsWith('allris.net.asp')?giesenPage:withoutRows(giesenPage);}});
@@ -235,4 +237,37 @@ test('ALLRIS 3 collector reads only the bodies of one member of a shared system,
  assert.ok(web.calls.includes(web.meeting(1650)));assert.equal(d.coverage.meetings,0);assert.equal(d.coverage.upcomingWithoutAgenda,1);
  assert.ok(d.coverage.warnings.includes('1 Sitzungen anderer Gremien des gemeinsamen Systems ausgelassen.'));
  assert.ok(!d.topics.some(t=>t.events.some(e=>/Kreistag/.test(e.committee))));
+});
+
+test('ALLRIS 3: any program of the scheme (yw040_r.asp) with links without quotes is a page of the system',()=>{
+ // Modelled on the Verwaltungsgemeinschaft Mering: the search program yw040_r.asp in pi2/, the website's navigation around
+ // it writes href=https://… without quotes; its calendar link leads to another host and names no program of this folder.
+ const url='https://www.vgmering.sitzung-online.de/pi2/yw040_r.asp',html=page('mering-yw040_r.html');
+ assert.deepEqual(detectAllris3(url,html),{base:'https://www.vgmering.sitzung-online.de/pi2/',calendar:null});
+ assert.equal(allrisGeneration(url,html),3);
+ // The same navigation on a page of the website names the calendar program in the folder it links.
+ assert.deepEqual(detectAllris3('https://vg-mering.papillo.website/gemeinderat',html.replace(/https:\/\/vg-mering\.papillo\.website\/buergerinformationssystem\//g,'https://vg-mering.papillo.website/bi/').replace(/<div id="allris"[\s\S]*<\/div>\n<\/div>/,'')),{base:'https://vg-mering.papillo.website/bi/',calendar:'si010_r.asp'});
+ assert.equal(calendarProgram('<a href=si010_e.asp class="x">Kalender</a>'),'si010_e.asp');
+ // Other public folders of the scheme keep their own folder; ri2/ leads to bi2/.
+ assert.deepEqual(detectAllris3('https://www.landkreis-diepholz.sitzung-online.de/pi2/si010_r.asp',refusal('si010_r.asp')),{base:'https://www.landkreis-diepholz.sitzung-online.de/pi2/',calendar:null});
+ assert.deepEqual(detectAllris3('https://www.example.test/ri2/logon.asp','<html><title>ALLRIS net</title><link rel="shortcut icon" href="images/ALLRIS.ico" /></html>'),{base:'https://www.example.test/bi2/',calendar:null});
+});
+test('ALLRIS 3 collector without a calendar on the start page tries the usual variants once each and keeps the first with a calendar',async()=>{
+ // Märkischer Kreis type: the start page names no calendar; si010_e.asp is refused, si010_a.asp answers with the month (empty, but in the calendar format).
+ const source={...rgb};delete source.calendar;
+ const month=(p,n)=>rgb.base+`${p}?MM=${n}&YY=2026`,meeting=n=>rgb.base+'to010.asp?SILFDNR='+n,empty=page('rgb-si010.html').replace(/<tr class="zl12" valign="top">[\s\S]*<\/tr>/,'');
+ const pages={[rgb.base+'allris.net.asp']:'<html><div id="allriscontainer"><a href="au010.asp">Gremien</a></div></html>',[month('si010_e.asp',10)]:refusal('si010_e.asp'),[month('si010_a.asp',10)]:empty,[month('si010_a.asp',11)]:empty,[month('si010_a.asp',9)]:page('rgb-si010.html'),
+  [meeting(2667)]:page('rgb-to010.html'),[meeting(2665)]:page('rgb-to010.html').replace(/<table class="tl1"[\s\S]*<\/table>/,'').replace('22.09.2026','17.09.2026')};
+ for(const n of [22821,22820,22807,22826])pages[rgb.base+'vo020.asp?VOLFDNR='+n]=page('rgb-vo020.html');
+ const calls=[];const d=await collectAllris3(source,{now,window:'1m',get:async url=>{calls.push(url);if(!(url in pages))throw Error('Quelle antwortet mit HTTP 404');return pages[url];}});
+ // The probed month is not asked again; si010_j and si010_r are not asked once si010_a answered.
+ assert.deepEqual(calls.slice(0,5),[rgb.base+'allris.net.asp',month('si010_e.asp',10),month('si010_a.asp',10),month('si010_a.asp',11),month('si010_a.asp',9)]);
+ assert.ok(!calls.some(u=>/si010_[jr]\.asp/.test(u)));assert.equal(calls.filter(u=>u===month('si010_a.asp',10)).length,1);
+ assert.equal(d.calendar,'si010_a.asp');assert.deepEqual(d.coverage.issues,[]);assert.equal(d.coverage.meetings,2);assert.ok(d.topics.length>0);
+ // With the program in the entry nothing is probed and nothing is reported.
+ const fixed=await collectAllris3({...rgb,calendar:'si010_a.asp'},{now,window:'1m',get:async url=>{if(!(url in pages))throw Error('Quelle antwortet mit HTTP 404');return pages[url];}});
+ assert.equal(fixed.calendar,undefined);assert.equal(fixed.topics.length,d.topics.length);
+ // A start page that cannot be read: no probing (the folder may not exist at all).
+ const gone=[];const none=await collectAllris3(source,{now,window:'1m',get:async url=>{gone.push(url);throw Error('Quelle antwortet mit HTTP 404');}});
+ assert.deepEqual(gone,[rgb.base+'allris.net.asp']);assert.match(none.coverage.issues[0],/^Startseite allris\.net\.asp: Quelle antwortet mit HTTP 404/);
 });

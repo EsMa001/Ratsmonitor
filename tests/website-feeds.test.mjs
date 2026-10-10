@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {documentLinks,sessionScore,SESSION_THRESHOLD,listPageScore,paginationLinks,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,generatorOf,isRisLink,isSearchLink} from '../server/integrations/website-feeds.mjs';
+import {documentLinks,sessionScore,SESSION_THRESHOLD,listPageScore,paginationLinks,feedLinks,parseFeed,parseIcs,parseSitemap,robotsSitemaps,wpApiRoot,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,generatorOf,isRisLink,isSearchLink,TRANSLATED} from '../server/integrations/website-feeds.mjs';
 // All pages, feeds and files below are reproduced (nachgebildet), not live: small excerpts in the markup of the usual
 // municipal CMS (TYPO3, WordPress, IKISS, Joomla), with invented hosts under *.example.test and without names of persons.
 const base='https://www.gemeinde-musterdorf.example.test/rathaus/bekanntmachungen/';
@@ -257,4 +257,13 @@ test('website sessionScore gives -100 to the short forms, typos and encodings of
  for(const path of ['/f/Protokoll_GR_2026-09-16_nicht%F6ffentlich.pdf','/f/protokoll-gr-16-09-2026-nichtoef.pdf','/f/protokoll_gr_20260916_noeS.pdf','/f/gr-2026-09-16-n-oeff.pdf'])
   assert.equal(sessionScore({url:'https://www.gemeinde-musterdorf.example.test'+path,label:'Niederschrift Gemeinderat 16.09.2026'}),-100,path);
  assert.ok(sessionScore({url:'https://www.gemeinde-musterdorf.example.test/f/a.pdf',label:'Niederschrift Gemeinderat 16.09.2026'})>=SESSION_THRESHOLD);
+});
+
+test('website documentLinks and paginationLinks leave out translated copies of the website (/:translation/<language>/…)',()=>{
+ const html='<html><body><a href="/:translation/fr/rathaus/bekanntmachungen/einladung.pdf">Invitation</a><a href="/rathaus/bekanntmachungen/einladung.pdf">Einladung Gemeinderat 14.10.2026</a>'
+  +'<a href="/:translation/fr/rathaus/bekanntmachungen/?page=2">2</a><a href="/rathaus/bekanntmachungen/?page=2">2</a></body></html>';
+ const base=origin+'/rathaus/bekanntmachungen/';
+ assert.deepEqual(documentLinks(html,base).map(l=>l.url),[origin+'/rathaus/bekanntmachungen/einladung.pdf',origin+'/rathaus/bekanntmachungen/?page=2']);
+ assert.deepEqual(paginationLinks(html,base),[origin+'/rathaus/bekanntmachungen/?page=2']);
+ assert.match('https://www.saarpfalz-kreis.de/:translation/en/',TRANSLATED);
 });

@@ -42,6 +42,8 @@ test('website search: navigation is scored by its words; non-public, noise, serv
  assert.equal(score('/rathaus/stellenangebote/','Stellenangebote'),0);
  assert.equal(score('/service/abfallkalender/','Abfallkalender'),0);
  assert.equal(score('/impressum/','Impressum'),0);
+ // Translated copies of the website (Saarpfalz-Kreis: /:translation/<language>/…) repeat every page: not followed.
+ assert.equal(score('/:translation/fr/politik/kreistag/','Kreistag'),0);assert.equal(score('/:translation/en/rathaus/bekanntmachungen/','Bekanntmachungen'),0);
  assert.equal(score('/suche/?q=gemeinderat','Suche Gemeinderat'),0);
  assert.equal(score('/index.php?id=4&tx_kesearch_pi1[sword]=sitzung','Sitzung'),0);
  assert.equal(score('/bekanntmachungen/einladung.pdf','Einladung Gemeinderat'),0);

@@ -8,7 +8,9 @@ import {nameParts,aliasInAddress,ALIASES} from './areas.mjs';
 
 // --- links that are no candidates ------------------------------------------------------------------------------------
 /** Links the link search never opens or keeps: files, mail, social media, read-aloud, sharing, app stores, directories. */
-export const CRAWL_SKIP=/\.(pdf|jpe?g|png|gif|svg|zip|docx?|xlsx?|ics|mp[34])(\?|$)|mailto:|facebook|instagram|youtube|twitter|linkedin|google\.|wikipedia|readspeaker\.com|whatsapp\.com|\/\/wa\.me\/|xing\.com|\/\/t\.me\/|total-lokal\.de|findcity\.de|buergerservice-portal\.de|heimat-info\.de|lifesizecloud|oksh\.de|\.social\/@|x\.com\/intent|twitter\.com\/(?:intent|share)|facebook\.com\/(?:share|sharer)|linkedin\.com\/(?:share|uas)|acrobat\.adobe\.com|atlas\.bayern\.de|\/\/epaper\.|apps\.apple\.com|apps\.microsoft\.com|play\.google\.com|www\.sitzungsdienst\.net|\/\/www\.ratsinfomanagement\.net|somacos\.de|cc-egov\.de|\/(impressum|datenschutz|kontakt|barrierefrei)/i;
+export const CRAWL_SKIP=/\.(pdf|jpe?g|png|gif|svg|zip|docx?|xlsx?|ics|mp[34])(\?|$)|mailto:|facebook|instagram|youtube|twitter|linkedin|google\.|wikipedia|readspeaker\.com|whatsapp\.com|\/\/wa\.me\/|xing\.com|\/\/t\.me\/|total-lokal\.de|findcity\.de|buergerservice-portal\.de|heimat-info\.de|lifesizecloud|oksh\.de|\.social\/@|x\.com\/intent|twitter\.com\/(?:intent|share)|facebook\.com\/(?:share|sharer)|linkedin\.com\/(?:share|uas)|acrobat\.adobe\.com|atlas\.bayern\.de|\/\/epaper\.|apps\.apple\.com|apps\.microsoft\.com|play\.google\.com|www\.sitzungsdienst\.net|\/\/www\.ratsinfomanagement\.net|somacos\.de|cc-egov\.de|\/(impressum|datenschutz|kontakt|barrierefrei)|\/:translation\//i;
+/** Pages under /:translation/<language>/… repeat the website in another language (Saarpfalz-Kreis): never explored or read. */
+export const TRANSLATED=/\/:translation\//i;
 /** Links to read-aloud and sharing services, directories and vendor pages; they are no council systems (verify.mjs). */
 export const SERVICE=/total-lokal\.de|findcity\.de|buergerservice-portal\.de|heimat-info\.de|lifesizecloud|oksh\.de|\.social\/@|x\.com\/intent|twitter\.com\/(?:intent|share)|facebook\.com\/(?:share|sharer)|linkedin\.com\/(?:share|uas)|acrobat\.adobe\.com|atlas\.bayern\.de|\/\/epaper\.|apps\.apple\.com|apps\.microsoft\.com|play\.google\.com|www\.sitzungsdienst\.net|\/\/www\.ratsinfomanagement\.net|somacos\.de|cc-egov\.de|readspeaker\.com|api\.whatsapp\.com|\/\/wa\.me\/|xing\.com|\/\/t\.me\/|threads\.net|bsky\.app|pinterest\.|reddit\.com|tiktok\.com|mastodon/i;
 
@@ -66,19 +68,55 @@ export function followUpsAfterFailure(url,page={}){
 // --- members' area and public part -----------------------------------------------------------------------------------
 /** An address of SessionNet that names the members' area (gi/, ri/, suelze_ri/, ratsinfo, sessionnetri). */
 export const MEMBERS_AREA=/(?:\/|[_-])(?:gi|ri)\/$|ratsinfo|sessionnetri/i;
+// Platforms with one host per tenant (ratsinfo-<name>.digitalfabrix.de): only the tenant label changes there, never the
+// first label of the platform.
+const PLATFORM_HOST=/(?:^|\.)(?:digitalfabrix\.de|livingdata\.de|owl-it\.de|komm\.one|sitzung-online\.de|ratsinfo-online\.(?:de|net)|kitu-genossenschaft\.de)$/i;
+/** Host labels under which the public Bürgerinfo of SessionNet was found next to a members' host (bis.kreis-lup.de next to ris.kreis-lup.de, sbi. next to ratsinfo.). */
+export const PUBLIC_HOST_LABELS=['bis','sbi','buergerinfo','bi'];
+/**
+ * Hosts of the same registrable domain where the public part may live when host names its members' area: the first
+ * label replaced by bis, sbi, buergerinfo and bi (ris.kreis-lup.de → bis.kreis-lup.de). Nothing for a host without a
+ * subdomain, for a platform host (there only ratsinfo-<x> → buergerinfo-<x> applies, see publicSiblings) and for a host
+ * that already bears a public label.
+ */
+export function publicHosts(host){
+ const labels=String(host||'').toLowerCase().replace(/\.$/,'').split('.');
+ if(labels.length<3||PLATFORM_HOST.test(labels.join('.'))||PUBLIC_HOST_LABELS.includes(labels[0]))return [];
+ return PUBLIC_HOST_LABELS.map(l=>[l,...labels.slice(1)].join('.'));
+}
 /**
  * The public part of a system lies next to its members' area under another name: bi/ for gi/ or ri/ (also as the suffix
- * of a tenant folder, suelze_ri/ → suelze_bi/), buergerinfo for ratsinfo (folder or host name), sessionnetbi for
- * sessionnetri. Addresses to ask, the given base last among those of its host.
+ * of a tenant folder, suelze_ri/ → suelze_bi/), buergerinfo for ratsinfo (folder or host name, also the tenant label of a
+ * platform: ratsinfo-vg-strasskirchen.digitalfabrix.de → buergerinfo-…), sessionnetbi for sessionnetri. Addresses to
+ * ask, the given base last among those of its host. With login (the page was the login of SessionNet) also the hosts
+ * of publicHosts with the public path, after all addresses of the given host: each is asked once (verify.mjs).
  */
-export function publicSiblings(base){
+export function publicSiblings(base,{login=false}={}){
  const u=new URL(base),paths=[u.pathname.replace(/\/(gi|ri)\/$/i,'/bi/'),u.pathname.replace(/([_-])(gi|ri)\/$/i,'$1bi/'),u.pathname.replace(/ratsinfo\/$/i,'buergerinfo/'),u.pathname.replace(/sessionnetri\/$/i,'sessionnetbi/'),u.pathname],hosts=[u.hostname,u.hostname.replace(/^ratsinfo(?=[.-])/i,'buergerinfo')];
- return [...new Set(hosts.flatMap(host=>paths.map(path=>'https://'+host+path)))];
+ const out=hosts.flatMap(host=>paths.map(path=>'https://'+host+path));
+ if(login){const path=paths.find(p=>p!==u.pathname)||u.pathname;out.push(...publicHosts(u.hostname).map(host=>'https://'+host+path));}
+ return [...new Set(out)];
+}
+
+// --- order of the candidates (verify.mjs) ----------------------------------------------------------------------------
+/** Addresses that show a council system by themselves; such candidates are checked first. */
+export const STRONG_RIS=/ris-portal\.de|komuna\.net|cm-ratsinfos\.de|si00\d\d|sessionnet|\/bi\/|gremien\.info|ratsinfomanagement|sdnetrim|allris|sitzung-online|oparl|buergerinfo|ratsinfo|kdz-ws|session/i;
+/** Link texts that name the public part of a system ("Bürgerinformationssystem", "Bürgerinfo", "Rats- und Bürgerinfo"). */
+export const PUBLIC_TEXT=/b(?:ü|ue)rgerinfo/i;
+/**
+ * Candidates in the order the check asks them: a link whose text names the public part (Bürgerinformationssystem) first,
+ * since a "Ratsinformationssystem" link next to it often leads to the members' login (bis.kreis-lup.de next to
+ * ris.kreis-lup.de); then addresses that show a system themselves (STRONG_RIS); then hits by address before hits by text.
+ * Stable: equal candidates keep their order.
+ */
+export function rankCandidates(candidates){
+ const key=c=>[PUBLIC_TEXT.test(c.text||'')?1:0,STRONG_RIS.test(c.url)?1:0,c.byHref?1:0];
+ return [...candidates].map((c,i)=>({c,i,k:key(c)})).sort((a,b)=>b.k[0]-a.k[0]||b.k[1]-a.k[1]||b.k[2]-a.k[2]||a.i-b.i).map(x=>x.c);
 }
 
 // --- ALLRIS ----------------------------------------------------------------------------------------------------------
-/** Absolute http(s) addresses of the links, frames and forms of a page. */
-export const hrefs=(html,base)=>[...String(html||'').matchAll(/(?:href|src|action)\s*=\s*["']([^"'#]+)/gi)].map(m=>{try{const u=new URL(m[1].replace(/&amp;/g,'&'),base);return /^https?:$/.test(u.protocol)?u.href:null;}catch{return null;}}).filter(Boolean);
+/** Absolute http(s) addresses of the links, frames and forms of a page; attribute values in quotes or without them. */
+export const hrefs=(html,base)=>[...String(html||'').matchAll(/(?:href|src|action)\s*=\s*(?:["']([^"'#]+)|([^\s>"'#]+))/gi)].map(m=>{try{const u=new URL((m[1]||m[2]).replace(/&amp;/g,'&').trim(),base);return /^https?:$/.test(u.protocol)?u.href:null;}catch{return null;}}).filter(Boolean);
 const ALLRIS4_PAGE=/^(https?:\/\/[^?#]*\/)(?:si010|si018|to010|vo020|vo040|gr010|gr020|kp040|tr010)(?:[?#]|$)/;
 const ALLRIS3_PAGE=/\/(?:[a-z]{2}\d{3}(?:_[a-z])?|allris\.net|logon)\.asp$/i;
 // Links of a page on its own host: folders of ALLRIS 4 programs, and whether ALLRIS 3 programs (.asp) are linked.
@@ -96,6 +134,18 @@ export function allrisBases(url,html){
  const u=new URL(url);if(/\.asp$/i.test(u.pathname))return [];
  const wicket=/wicket/i.test(html||''),{folders,asp}=allrisLinks(url,html);
  return [...new Set([wicket?u.origin+u.pathname.replace(/[^/]*$/,''):null,...folders,asp&&!wicket&&!folders.length?null:u.origin+'/public/'].filter(Boolean))].map(b=>b.replace(/^http:/,'https:')).slice(0,3);
+}
+/** Public folders of ALLRIS 3 found next to the members' area ri/: bi/ (usual), pi/ (Steinburg), pi2/ (Diepholz), bi2/, bi-r/, pi-r/, buergerinfo/. */
+export const ALLRIS3_PUBLIC_FOLDERS=['bi','pi','bi2','pi2','bi-r','pi-r','buergerinfo'];
+/**
+ * Folder addresses where the public part of ALLRIS 3 may lie next to a members' folder (…/ri/, …/<name>-ri/): the
+ * folders of ALLRIS3_PUBLIC_FOLDERS in that order, the one detectAllris3 derived (bi/) first; [] for any other address.
+ * verify.mjs asks each once (allris.net.asp) only after the login was recognised and the derived folder answered 404.
+ */
+export function allris3Siblings(base){
+ let u;try{u=new URL(base);}catch{return [];}
+ const m=u.pathname.match(/^(.*?)(\/|[-_])(ri|bi)\/$/i);if(!m)return [];
+ return [...new Set(ALLRIS3_PUBLIC_FOLDERS.map(f=>u.origin+m[1]+m[2]+f+'/'))];
 }
 /**
  * 3 if a page belongs to ALLRIS 3 (an .asp address, a page detectAllris3 recognises, or a page that links only .asp

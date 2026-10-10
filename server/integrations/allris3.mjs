@@ -8,12 +8,15 @@ import {usableMark,newMark} from './meeting-marks.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
 // Public pages of ALLRIS net, the older ALLRIS generation (ALLRIS 3): .asp programs in one folder. Read are the monthly
-// calendar (si010, si010_e, si010_j or the responsive si010_r), the agenda of each meeting (to010) and the page of each
-// paper on a public agenda (vo020).
+// calendar (si010, si010_e, si010_j, si010_a or the responsive si010_r), the agenda of each meeting (to010) and the page
+// of each paper on a public agenda (vo020). Every program follows the scheme two letters, three digits, an optional
+// variant (_r, _e, _j, _a): yw040_r.asp (search) is as much a page of the system as si010_r.asp.
 //
 // - Each installation releases its own calendar program and answers the others with "Zugriff verweigert (Programm …)".
-//   The program is taken from the installation's menu, never guessed; a refusal ends reading. Agenda and paper pages
-//   are taken from the links of the pages read, so the responsive variant (_r) and the classic ones read alike.
+//   The program is taken from the installation's menu; a refusal ends reading. Only when the start page names no
+//   calendar (Märkischer Kreis, Reinbek, Twistringen, Velpke) the variants of CALENDAR_PROBES are asked once each and the
+//   first that answers with a calendar is taken (the refusals are not repeated). Agenda and paper pages are taken from
+//   the links of the pages read, so the responsive variant (_r) and the classic ones read alike.
 // - Only agenda items numbered "Ö …" are taken. The non-public part is printed as "N …" with the title
 //   "(nichtöffentlich)" or left out, and public items can follow it.
 // - Attachments are linked under temporary addresses (___tmp) and are not kept. Documents of a paper are kept under the
@@ -32,6 +35,11 @@ const attribute=(tag,name)=>decode(tag.match(new RegExp(`\\b${name}=["']([^"']*)
 // Address of one record: the program the link names, with the record number as its only parameter.
 const address=(href,name,id,source)=>{const u=new URL(decode(href),source.base);u.search=`?${name}=${id}`;u.hash='';return allowed(u.href,source);};
 const CALENDAR=/^si010(?:_[a-z])?\.asp$/i;
+/** Calendar programs tried once each when the start page names none; the first with a calendar wins. */
+export const CALENDAR_PROBES=['si010_e.asp','si010_a.asp','si010_j.asp','si010_r.asp'];
+// Attribute values in quotes or without them (some CMS write href=https://… around an embedded installation).
+const attributes=program=>new RegExp(`(?:href|action|src)\\s*=\\s*(?:["']([^"']*?${program})(?=[?#"'])|([^\\s>"']*?${program})(?=[?#\\s>]|$))`,'gi');
+const value=m=>m[1]??m[2];
 const MARKER=/allriscontainer|allriscontent|allrisnet\.js|ALLRIS net|images\/ALLRIS\.ico|id=["']allris["']|allris\.net\.asp/i;
 const REFUSAL='Quelle meldet zu viele Zugriffe und sperrt vorübergehend; Abruf beendet.';
 const GATE='Quelle verlangt eine Zugriffsprüfung gegen automatisierte Abrufe; sie wird nicht umgangen. Abruf beendet.';
@@ -42,8 +50,9 @@ const closed=program=>`Programm ${program} ist auf dieser Installation nicht fre
  */
 export function refusedProgram(html){html=String(html||'');const named=html.length<2000&&html.match(/Zugriff verweigert \(Programm ([^)\s]+?)\.?\)/i)?.[1];return named?named.split('/').pop():null;}
 const folder=u=>new URL('./',u).href.toLowerCase();
-// Public folder next to the members' area: bi/ for ri/, <name>-bi/ for <name>-ri/ (also with "_").
-const publicFolder=href=>href.replace(/(\/|[-_])ri\/$/i,'$1bi/');
+// Public folder next to the members' area: bi/ for ri/, <name>-bi/ for <name>-ri/ (also with "_"), bi2/ for ri2/.
+// Further public folders found next to ri/ (pi/, pi2/, bi-r/ …) are asked by the check (scripts/source-discovery/rules.mjs).
+const publicFolder=href=>href.replace(/(\/|[-_])ri(2?)\/$/i,'$1bi$2/');
 /**
  * First calendar program among the links of a page (menu or month navigation); null if the page names none. With base,
  * only a program in that folder counts: pages inside a municipality's website may also link an older installation.
@@ -51,9 +60,9 @@ const publicFolder=href=>href.replace(/(\/|[-_])ri\/$/i,'$1bi/');
  */
 export function calendarProgram(html,base,page=base){
  if(refusedProgram(html))return null;
- for(const m of String(html||'').matchAll(/(?:href|action)=["']([^"']*?si010(?:_[a-z])?\.asp)(?=[?#"'])/gi)){
-  if(!base)return m[1].split('/').pop();
-  try{const u=new URL(decode(m[1]),page);if(u.origin===new URL(base).origin&&folder(u)===base.toLowerCase())return u.pathname.split('/').pop();}catch{/* no address */}
+ for(const m of String(html||'').matchAll(attributes('si010(?:_[a-z])?\\.asp'))){
+  if(!base)return value(m).split('/').pop();
+  try{const u=new URL(decode(value(m)),page);if(u.origin===new URL(base).origin&&folder(u)===base.toLowerCase())return u.pathname.split('/').pop();}catch{/* no address */}
  }
  return null;
 }
@@ -76,7 +85,7 @@ export function detectAllris3(url,html=''){
  html=String(html||'');
  const program=page.pathname.match(/\/((?:[a-z]{2}\d{3}(?:_[a-z])?|allris\.net|logon)\.asp)$/i)?.[1]||null,refused=refusedProgram(html);
  // The login counts among the links of a folder address (a frame or link to logon.asp in ri/), never as its base.
- const linked=[...html.matchAll(/(?:href|action|src)=["']([^"']*?(?:[a-z]{2}\d{3}(?:_[a-z])?|allris\.net|logon)\.asp)(?=[?#"'])/gi)].map(m=>{try{return new URL(decode(m[1]),page);}catch{return null;}}).filter(u=>u?.origin===page.origin);
+ const linked=[...html.matchAll(attributes('(?:[a-z]{2}\\d{3}(?:_[a-z])?|allris\\.net|logon)\\.asp'))].map(m=>{try{return new URL(decode(value(m)),page);}catch{return null;}}).filter(u=>u?.origin===page.origin);
  if(!(MARKER.test(html)||refused||!program&&linked.some(u=>CALENDAR.test(u.pathname.split('/').pop())))||!program&&!linked.length)return null;
  const base=program?(/^logon\.asp$/i.test(program)?publicFolder(new URL('./',page).href):new URL('./',page).href):publicFolder(new URL('./',linked.find(u=>/\/(?:si010(?:_[a-z])?|allris\.net)\.asp$/i.test(u.pathname))||linked[0]).href);
  const own=program&&CALENDAR.test(program)&&!refused&&/calenderView|class=["']tl1["']/i.test(html)?program:null;
@@ -207,14 +216,27 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
   return html;
  };
  if(checkOparl){let system=false;try{system=String(JSON.parse(await read(source.base+'oparl/1.0/system.asp')).type||'').endsWith('/System');}catch{/* no OParl system at this address */}if(system)throw Error('OParl vorhanden; Adapterfreigabe erforderlich.');}
- let calendar=source.calendar||null;
+ let calendar=source.calendar||null,probed=false;
+ // Calendar pages read while looking for the program, so that the month is not asked twice.
+ const pages=new Map();
+ const monthAddress=(program,offset)=>{const date=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+offset,1));return {url:source.base+`${program}?MM=${date.getUTCMonth()+1}&YY=${date.getUTCFullYear()}`,year:date.getUTCFullYear(),number:date.getUTCMonth()+1};};
  // The start page may also forward to the calendar itself; its links then name the program as well.
- if(!calendar&&!halt){try{calendar=calendarProgram(await read(source.base+'allris.net.asp'),source.base);if(!calendar)issues.push('Startseite allris.net.asp nennt keinen Sitzungskalender.');}catch(e){if(e.message!==halt)issues.push('Startseite allris.net.asp: '+e.message);}}
+ if(!calendar&&!halt){try{calendar=calendarProgram(await read(source.base+'allris.net.asp'),source.base);}catch(e){if(e.message!==halt)issues.push('Startseite allris.net.asp: '+e.message);}
+  // No program named: the usual variants are asked once each for the current month; the first with a calendar is kept.
+  if(!calendar&&!halt&&!issues.length){probed=true;const tried=[];
+   for(const program of CALENDAR_PROBES){
+    const {url,year,number}=monthAddress(program,0);
+    try{const html=await read(url);if(parseAllris3Calendar(html,source,{year,month:number})){calendar=program;pages.set(url,html);break;}tried.push(program+' ohne Kalenderformat');}
+    catch(e){if(e.message===halt)break;tried.push(program+': '+e.message.replace(/^Programm \S+ ist auf dieser Installation nicht freigegeben.*$/,'nicht freigegeben'));}
+   }
+   if(!calendar)issues.push('Startseite allris.net.asp nennt keinen Sitzungskalender'+(tried.length?'; '+tried.join(', '):'')+'.');
+  }
+ }
  const month=async offset=>{
   if(denied||halt||!calendar)return;
-  const date=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+offset,1)),year=date.getUTCFullYear(),number=date.getUTCMonth()+1;
+  const {url,year,number}=monthAddress(calendar,offset);
   try{
-   const found=parseAllris3Calendar(await read(source.base+`${calendar}?MM=${number}&YY=${year}`),source,{year,month:number});
+   const found=parseAllris3Calendar(pages.get(url)??await read(url),source,{year,month:number});
    if(!found)throw Error('Unbekanntes Kalenderformat');
    for(const m of found)if(m.date>=fromDay&&part.keep(m.name,m.url))meetings.set(m.url,m);
   // A refusal, an unknown page or a missing program is not going to differ for the other months.
@@ -276,5 +298,6 @@ export async function collectAllris3(source,{now=new Date(),get=fetchText,reques
  // Unchanged meetings are a successful reading: their reports are in the database already.
  // After a halt nothing is resumed automatically: the next import is the next attempt.
  warnings.push(...part.warnings());
- return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:listed,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...((unread||beyond)&&!halt?{resumable:true}:{}),...(warnings.length?{warnings}:{}),sourceCount:1,quiet:listed===0&&found.length===0,complete:found.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?found:[...found,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+ // calendar: the program found when the entry named none (the check keeps it in the entry, scripts/source-discovery/verify.mjs).
+ return {topics,marks:held,readMeetings:done,...(probed&&calendar?{calendar}:{}),coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:listed,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...((unread||beyond)&&!halt?{resumable:true}:{}),...(warnings.length?{warnings}:{}),sourceCount:1,quiet:listed===0&&found.length===0,complete:found.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?found:[...found,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
 }

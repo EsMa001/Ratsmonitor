@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="https://vg-mering.papillo.website/build/assets/img/favicon/vg/favicon.a699a90d.ico">
+    <meta name="robots" content="noindex">
+    <title>Textrecherche</title>
+    <script src="./opt/scripting/jquery-3.6.0.min.js"></script>
+    <script src="./opt/scripting/selectize.js"></script>
+    <script src="./opt/scripting/allrisnet.js"></script>
+</head>
+<body>
+<div id="header">
+    <nav class="site-navigation" aria-label="Hauptnavigation">
+        <ul role="menubar">
+            <li role="menuitem" class=" site-navigation-level-1-item">
+                <a href=https://vg-mering.papillo.website/gemeinderat
+            class="site-main-link site-navigation-level-1-link
+            ">Gemeinderat</a>
+                <ul id=toggle-nav-80
+    class="collapse show
+    site-navigation-level-2"
+    role="menu">
+                    <li role="menuitem"
+            class=" site-navigation-level-2-item">
+                        <a href=https://vg-mering.papillo.website/buergerinformationssystem/si010_r.asp
+            class="site-main-link site-navigation-level-2-link
+            ">Sitzungskalender</a>
+                    </li>
+                    <li role="menuitem"
+            class=" site-navigation-level-2-item">
+                        <a href=https://www.vgmering.sitzung-online.de/pi2/yw040_r.asp
+            class="site-main-link site-navigation-level-2-link
+            ">Textrecherche</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div id="pageContent">
+<div id="allris" class="yw040 normal">
+	<div class="header"><h1 class="siteTitle">Textrecherche</h1></div>
+	<div class="search expandedDiv">
+		<legend class="expandedTitle">Suchkriterien</legend>
+		<div class="row">
+			<div class="colTitle"><label class="label optional-field" for="selvor" aria-label="Vorgänge:" id="selvor-label">Vorgänge:</label></div>
+			<div class="colEntry3">
+				<span class="text4 oeffchoices" role="group" aria-labelledby="selvor-label">
+					<span><input type="checkbox" name="vo" id="voChckbx" value="1" checked="checked" /><label for="voChckbx">Vorlagen</label></span><span><input type="checkbox" name="si" id="siChckbx" value="1" checked="checked" /><label for="siChckbx">Sitzungen</label></span><span><input type="checkbox" name="to" id="toChckbx" value="1" checked="checked" /><label for="toChckbx">Tagesordnungspunkte</label></span>
+				</span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="colTitle"><label class="label optional-field" for="selgr" aria-label="Gremium:" id="selgr-label">Gremium:</label></div>
+			<div class="colEntry3"><span class="text4"><select name="GRA" id="selgr" multiple="multiple"></select></span></div>
+		</div>
+		<input type="button" id="searchButton" value="Suchen" onclick="window.location.href = 'yw040_r.asp?q=' + encodeURIComponent($('#q').val());" />
+	</div>
+	<table class="dataTable stickyHeader searchResults" id="results" style="display:none;"></table>
+</div>
+</div>
+</body>
+</html>
