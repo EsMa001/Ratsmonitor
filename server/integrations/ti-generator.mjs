@@ -247,7 +247,7 @@ function agendaRows(m,source,now,decided){
 }
 // marks (optional): what earlier imports read completely, see meeting-marks.mjs. Every list is read in each import (a
 // list holds all its meetings); a meeting whose items and decisions are unchanged yields no reports again.
-export async function collectTiGenerator(source,{now=new Date(),get=fetchText,getPdf=readNoticePdf,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks}={}){
+async function collectOneTi(source,{now=new Date(),get=fetchText,getPdf=readNoticePdf,maxDurationMs=300000,onProgress=()=>{},window:lookback,marks}={}){
  get=budgeted(get,maxDurationMs,2);
  // Meetings from the start of the period up to the end of the next month, as with SD.NET.
  const from=windowStart(now,lookback),fromDay=from.toISOString().slice(0,10),today=now.toISOString().slice(0,10),until=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+2,0)).toISOString().slice(0,10),issues=[],warnings=[];
@@ -335,4 +335,37 @@ export async function collectTiGenerator(source,{now=new Date(),get=fetchText,ge
  const listed=meetings.size-upcoming;
  // Unchanged meetings are a successful reading: their reports are in the database already.
  return {topics,marks:held,readMeetings:done,coverage:{regionId:source.id,method:'scraper',from:fromDay,to:today,importedAt:now.toISOString(),meetings:listed,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(unread||beyond?{resumable:true}:{}),...(warnings.length?{warnings}:{}),...(stand?{sourceStand:stand}:{}),sourceCount:1,quiet:listed===0&&issues.length===0,complete:issues.length===0&&(topics.length>0||unchanged>0),issues:topics.length||unchanged?issues:[...issues,'Noch keine Artikel erfolgreich erfasst.'],sourceUrl:source.base}};
+}
+
+/**
+ * An Amt may publish one generator site per municipality (Amt Gartz (Oder): ti-1 for the Amt, ti-2 … ti-6 for its
+ * municipalities). An entry with `bases` (further folders on the same host) reads every site and joins the results;
+ * the coverage is complete only where all sites are.
+ */
+export async function collectTiGenerator(source,options={}){
+ const bases=[source.base,...(Array.isArray(source.bases)?source.bases:[])];
+ if(bases.length===1)return collectOneTi(source,options);
+ const host=new URL(source.base).origin,parts=[];
+ for(const base of bases){
+  if(new URL(base).origin!==host)continue;
+  parts.push({base,result:await collectOneTi({...source,base,bases:undefined},options)});
+ }
+ const topics=new Map(),marks={},issues=[],warnings=[];let readMeetings=0,meetings=0,unchanged=0,upcoming=0,stand=null,resumable=false,quiet=true,complete=true;
+ for(const {base,result} of parts){
+  for(const t of result.topics){
+   const known=topics.get(t.id);
+   if(!known)topics.set(t.id,t);
+   else{known.events=[...known.events,...t.events].sort((a,b)=>a.date.localeCompare(b.date));known.documents=[...new Map([...known.documents,...t.documents].map(d=>[d.url,d])).values()];}
+  }
+  Object.assign(marks,result.marks);readMeetings+=result.readMeetings||0;
+  const c=result.coverage,label=new URL(base).pathname.replace(/^\/|\/$/g,'');
+  meetings+=c.meetings||0;unchanged+=c.unchangedMeetings||0;upcoming+=c.upcomingWithoutAgenda||0;resumable||=!!c.resumable;quiet&&=!!c.quiet;complete&&=!!c.complete;
+  if(c.sourceStand&&(!stand||c.sourceStand>stand))stand=c.sourceStand;
+  for(const i of c.issues||[])if(!/^Noch keine Artikel erfolgreich erfasst\.$/.test(i))issues.push(`${label}: ${i}`);
+  for(const w of c.warnings||[])warnings.push(w);
+ }
+ const first=parts[0].result.coverage,list=[...topics.values()];
+ // A site without meetings is no gap as long as another one holds reports; with none at all the usual hint stays.
+ if(!list.length&&!unchanged)issues.push('Noch keine Artikel erfolgreich erfasst.');
+ return {topics:list,marks,readMeetings,coverage:{...first,meetings,...(upcoming?{upcomingWithoutAgenda:upcoming}:{}),...(unchanged?{unchangedMeetings:unchanged}:{}),...(resumable?{resumable:true}:{}),...(warnings.length?{warnings}:{}),...(stand?{sourceStand:stand}:{}),sourceCount:parts.length,quiet:quiet&&issues.length===0,complete:issues.length===0&&(list.length>0||unchanged>0),issues}};
 }

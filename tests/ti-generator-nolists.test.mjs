@@ -46,3 +46,14 @@ test('TI-Generator collector reads papers (Amt Gartz) and notices (VG Vorharz) w
  assert.equal(topic.committee,'Verbandsgemeinderat');assert.equal(topic.eventDate,'2026-09-28');
  assert.ok(topic.documents.some(d=>d.kind==='application/pdf'));
 });
+test('TI-Generator entry with bases reads every site of the Amt and joins the reports',async()=>{
+ const g2='https://ris.example.test/ris/ti-3/';
+ const pages={[gb]:fixture('start-gartz.html'),[gb+'listen/ti_13__60_bv_.php']:fixture('papers-gartz.html'),[gb+'listen/ti_31__60_bk_.php']:nothing,
+  [gb+'listen/ti_16__60_bv_.php']:nothing,[g2+'listen/ti_16__60_bv_.php']:nothing,[g2]:fixture('start-gartz.html'),[g2+'listen/ti_13__60_bv_.php']:nothing,[g2+'listen/ti_31__60_bk_.php']:nothing};
+ const asked=[];
+ const done=await collectTiGenerator({...gs,bases:[g2,'https://other.example.test/ti-9/']},{now,get:async url=>{asked.push(url);if(!(url in pages))throw Error('Quelle antwortet mit HTTP 404');return pages[url];}});
+ assert.ok(done.topics.some(t=>t.reference==='G/61/26'));
+ assert.equal(done.coverage.sourceCount,2,'a base on another host is not read');
+ assert.ok(asked.every(u=>u.startsWith('https://ris.example.test/')));
+ assert.deepEqual(done.coverage.issues,[]);assert.equal(done.coverage.complete,true);
+});
