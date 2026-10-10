@@ -18507,6 +18507,20 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-091715101",
+    "name": "Verwaltungsgemeinschaft Emmerting",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.gemeinde-emmerting.de/",
+    "pages": [
+      "https://www.gemeinde-emmerting.de/aktuelles/"
+    ],
+    "verifiedSource": "https://www.gemeinde-emmerting.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-091715102",
     "name": "Verwaltungsgemeinschaft Kirchweidach",
     "kind": "city",
@@ -23628,6 +23642,20 @@
     "foundBy": "ris.komuna.net/koenigstein"
   },
   {
+    "id": "de-093715304",
+    "name": "Verwaltungsgemeinschaft Illschwang",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vgib.bayern/",
+    "pages": [
+      "https://www.vgib.bayern/ihre-anliegen/amtliche-bekanntmachungen/"
+    ],
+    "verifiedSource": "https://www.vgib.bayern",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-09372",
     "name": "Landkreis Cham",
     "kind": "district",
@@ -26298,6 +26326,25 @@
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 04.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
   },
   {
+    "id": "de-095725510",
+    "name": "Verwaltungsgemeinschaft Höchstadt a.d.Aisch",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.vg-hoechstadt.de/",
+    "pages": [
+      "https://www.vg-hoechstadt.de/digitales-amtsblatt/",
+      "https://www.vg-hoechstadt.de/digitales-amtsblatt/vg-hoechstadt",
+      "https://www.vg-hoechstadt.de/digitales-amtsblatt/muehlhausen",
+      "https://www.vg-hoechstadt.de/digitales-amtsblatt/lonnerstadt",
+      "https://www.vg-hoechstadt.de/digitales-amtsblatt/gremsdorf",
+      "https://www.vg-hoechstadt.de/digitales-amtsblatt/vestenbergsgreuth"
+    ],
+    "verifiedSource": "https://www.vg-hoechstadt.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-095725514",
     "name": "Verwaltungsgemeinschaft Uttenreuth",
     "kind": "city",
@@ -28600,6 +28647,22 @@
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
   },
   {
+    "id": "de-097715701",
+    "name": "Verwaltungsgemeinschaft Aindling",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.aindling.de/",
+    "pages": [
+      "https://www.aindling.de/Sitzung-aktuell.n271.html",
+      "https://www.aindling.de/Niederschriften.n40.html",
+      "https://www.aindling.de/Amtliche-Bekanntmachungen.n60.html"
+    ],
+    "verifiedSource": "https://www.aindling.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
+  },
+  {
     "id": "de-097715703",
     "name": "Verwaltungsgemeinschaft Kühbach",
     "kind": "city",
@@ -28975,6 +29038,20 @@
     "verifiedSource": "http://www.vg-hoechstaedt.de/",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen der offiziellen Website."
+  },
+  {
+    "id": "de-097735718",
+    "name": "Verwaltungsgemeinschaft Wertingen",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.wertingen.de/",
+    "pages": [
+      "https://www.wertingen.de/rathaus/sitzungen/"
+    ],
+    "verifiedSource": "https://www.wertingen.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-09774",
@@ -33124,6 +33201,27 @@
     "verifiedSource": "https://www.landhagen.de/das-amt/",
     "verifiedAt": "2026-10-04",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; öffentliche Kalender-API erreichbar."
+  },
+  {
+    "id": "de-130755556",
+    "name": "Amt Löcknitz-Penkun",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "website",
+    "base": "https://www.amt-loecknitz-penkun.de/",
+    "pages": [
+      "https://www.amt-loecknitz-penkun.de/ALP/Sitzungsdienst/loecknitz-penkun.php",
+      "https://www.amt-loecknitz-penkun.de/ALP/Sitzungsdienst/loecknitz.php",
+      "https://www.amt-loecknitz-penkun.de/ALP/Sitzungsdienst/penkun.php",
+      "https://www.amt-loecknitz-penkun.de/ALP/Sitzungsdienst/ploewen.php",
+      "https://www.amt-loecknitz-penkun.de/ALP/Sitzungsdienst/bergholz.php",
+      "https://www.amt-loecknitz-penkun.de/ALP/Sitzungsdienst/blankensee.php",
+      "https://www.amt-loecknitz-penkun.de/ALP/Sitzungsdienst/boock.php",
+      "https://www.amt-loecknitz-penkun.de/ALP/Sitzungsdienst/grambow.php"
+    ],
+    "verifiedSource": "https://www.amt-loecknitz-penkun.de",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein Ratsinformationssystem angebunden; öffentliche Bekanntmachungen und Sitzungsunterlagen der offiziellen Website."
   },
   {
     "id": "de-130755560",
