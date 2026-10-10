@@ -807,7 +807,7 @@ wordmark__dot design-styles.css:61
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
-- StartseitePage.tsx (881, ⚠2): StartseitePage
+- StartseitePage.tsx (595, ⚠2): StartseitePage
 - TodoPage.tsx (333, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage

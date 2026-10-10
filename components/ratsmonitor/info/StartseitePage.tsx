@@ -7,36 +7,8 @@ import { useUi } from "../state/ui";
 import { useOpenSearch } from "./blocks";
 import { STATUS, type TopicStatus } from "@/shared/types";
 
-/* Startseite (Reiter rechts neben Lena, noch nicht die Landingpage): Schaufenster des Datenbestands.
-   Alle Zahlen kommen aus den öffentlichen, vorberechneten Abfragen /api/analytics/trends und /api/search/coverage;
-   fehlt eine, bleibt der Abschnitt leer statt zu raten. Slogan: docs/produkt/slogan.json (fest). */
-
-interface Term {
-  term: string;
-  nr: number;
-  np: number;
-  ratio: number;
-  regions: number;
-  regionsPrev: number;
-  series: number[];
-}
-interface Topic {
-  id: string;
-  name: string;
-  recent: number;
-  prev: number;
-  change: number;
-  n: number;
-}
-interface Trends {
-  window: number;
-  ranges: { start: string; end: string };
-  totals: { recent: number; prev: number; regions: number };
-  rising: Term[];
-  emerging: Term[];
-  all?: Term[];
-  topics: Topic[];
-}
+/* Startseite (Reiter rechts neben Lena, noch nicht die Landingpage): Kopf mit Karte und Suche, Ortsprüfung, ein Analyseblock, Alarm.
+   Aufbau nach einer Runde mit zwanzig Rollen: nur das Nötige, die Auswertungen liegen unter /analytics. Abdeckung: info/abdeckung.ts. */
 
 interface Cov {
   ags?: string;
@@ -58,58 +30,11 @@ const EXAMPLES = ["Bebauungsplan", "Wärmeplanung", "Windkraft", "Netzausbau", "
 /** Themen, an denen die Analysen gezeigt werden */
 const ANALYSIS_TERMS = ["Windkraft", "Wärmeplanung", "Photovoltaik", "Bebauungsplan", "Kita"];
 
-/** Wörter, die in der Trendliste nur Rauschen wären (Ortsnamen, Verwaltungsfloskeln) */
-const NOISE = new Set(["bayerischen", "köln", "gemarkung", "errichtung", "neubau", "flurstück", "flst", "nr", "straße", "str", "satzungsbeschluss", "baugenehmigung", "abbruch", "stadtbezirk", "beschluss", "antrag", "vorlage", "änderung", "aufstellung"]);
-
-interface Diffusion {
-  stats: { regions: number; cards: number; first: string; last: string };
-  series: { month: string; added: number; total: number }[];
-  lands: { id: string; name: string; regions: number }[];
-}
-interface Graph {
-  total: number;
-  nodes: { id: string; type: string; label: string; count: number }[];
-  stats: { terms: number; topics: number; committees: number; lands: number; links: number };
-}
-interface Decisions {
-  totals: { all: number; known: number; decided: number; knownShare: number };
-  rates: { approval: number; rejection: number; postponement: number; open: number };
-}
 
 const nf = new Intl.NumberFormat("de-DE");
 const day = (iso: string) => (iso ? iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(2, 4) : "");
 
-/** Kleines Liniendiagramm der Wochenanteile; ohne Achsen, nur der Verlauf */
-function Spark({ values, w = 120, h = 32, label, fluid }: { values: number[]; w?: number; h?: number; label: string; fluid?: boolean }) {
-  const max = Math.max(...values, 1e-9);
-  const pts = values.map((v, i) => `${((i / Math.max(1, values.length - 1)) * (w - 4) + 2).toFixed(1)},${(h - 3 - (v / max) * (h - 6)).toFixed(1)}`);
-  return (
-    <svg role="img" aria-label={label} width={fluid ? "100%" : w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio={fluid ? "none" : undefined} style={{ display: "block", overflow: "visible" }}>
-      <polyline points={pts.join(" ")} fill="none" stroke="#0d9488" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={pts[pts.length - 1]?.split(",")[0]} cy={pts[pts.length - 1]?.split(",")[1]} r="3" fill="#0d9488" />
-    </svg>
-  );
-}
-
 const reduced = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-/** Zahl, die einmal hochzählt (nicht bei reduzierter Bewegung) */
-function CountUp({ value }: { value: number }) {
-  const [v, setV] = useState(reduced() ? value : 0);
-  useEffect(() => {
-    if (reduced()) return setV(value);
-    let raf = 0;
-    const t0 = performance.now();
-    const step = (t: number) => {
-      const p = Math.min(1, (t - t0) / 900);
-      setV(Math.round(value * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [value]);
-  return <>{nf.format(v)}</>;
-}
 
 /** Deutschland aus Punkten: jeder Punkt eine Gemeinde (public/data/gemeinde-punkte.json); ein leiser Schein wandert von Nord nach Süd */
 function DotMap() {
@@ -227,154 +152,6 @@ function CoverageMap({ cov, onPick }: { cov: Cov[]; onPick: (name: string) => vo
   );
 }
 
-/** plenara.X: Ausbreitung, Wortnetz und Beschlüsse zu einem Thema, live aus dem Bestand */
-function Analyses({ openSearch, cov }: { openSearch: (term?: string) => void; cov: Cov[] | null }) {
-  const [term, setTerm] = useState(ANALYSIS_TERMS[0]);
-  const [d, setD] = useState<Diffusion | null>(null);
-  const [g, setG] = useState<Graph | null>(null);
-  const [c, setC] = useState<Decisions | null>(null);
-  useEffect(() => {
-    const ctl = new AbortController();
-    setD(null);
-    setG(null);
-    setC(null);
-    const get = <T,>(kind: string, set: (v: T) => void) =>
-      fetch(`/api/analytics/${kind}?q=${encodeURIComponent(term)}`, { signal: ctl.signal })
-        .then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(new Error(kind))))
-        .then(set)
-        .catch(() => {});
-    get<Diffusion>("diffusion", setD);
-    get<Graph>("graph", setG);
-    get<Decisions>("decisions", setC);
-    return () => ctl.abort();
-  }, [term]);
-  const q = encodeURIComponent(term);
-  const link = { color: "#0d9488", fontSize: 16, fontWeight: 500 } as const;
-  const cardHead = { margin: "16px 0 0", fontSize: 18, fontWeight: 600, color: "#0f172a" } as const;
-  const sub = { margin: "6px 0 0", fontSize: 14, color: "#64748b" } as const;
-  return (
-    <section className="ri-sec" style={{ paddingTop: 96, paddingBottom: 96 }}>
-      <p style={{ margin: 0, fontSize: 14, color: "#0d9488", fontWeight: 600 }}>plenara.X</p>
-      <h2 style={{ margin: "8px 0 0", fontSize: 28, lineHeight: 1.2, fontWeight: 600, color: "#0f172a" }}>Aus allen Beratungen lesen, was auf Sie zukommt</h2>
-      <p style={{ margin: "10px 0 0", fontSize: 16, lineHeight: 1.5, color: "#64748b", maxWidth: 720 }}>
-        Zu jedem Begriff zeigt plenara.X, wo er auftaucht, womit er zusammenhängt und wie darüber entschieden wird, über den ganzen Bestand.
-      </p>
-      <div role="group" aria-label="Thema wählen" style={{ margin: "18px 0 0", display: "flex", flexWrap: "wrap", gap: "6px 18px", fontSize: 14 }}>
-        <span style={{ color: "#64748b" }}>Thema</span>
-        {ANALYSIS_TERMS.map((t) => (
-          <button key={t} type="button" aria-pressed={term === t} onClick={() => setTerm(t)} style={{ padding: "0 0 2px", background: "none", border: 0, borderBottom: term === t ? "2px solid #0d9488" : "2px solid transparent", color: term === t ? "#0f172a" : "#64748b", fontSize: 14, fontWeight: 500, cursor: "pointer" }}>
-            {t}
-          </button>
-        ))}
-      </div>
-      <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "48px 64px" }}>
-        <div style={rule}>
-          <h3 style={cardHead}>Wo es schon angekommen ist</h3>
-          <p style={{ ...sub, color: "#0f172a" }}>Sehen Sie, in welchen Gebieten ein Thema schon beraten wird, bevor es bei Ihnen auf die Tagesordnung kommt.</p>
-          {d ? (
-            <>
-              <p style={{ margin: "14px 0 0", display: "flex", alignItems: "baseline", gap: 10 }}>
-                <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "#0d9488", fontVariantNumeric: "tabular-nums" }}>{nf.format(d.stats.regions)}</span>
-                <span style={{ fontSize: 14, color: "#64748b" }}>Gebiete beraten „{term}“, erstmals {day(d.stats.first)}</span>
-              </p>
-              <div style={{ marginTop: 12 }}>
-                <Spark fluid values={d.series.map((m) => m.total)} w={300} h={72} label={`Zahl der Gebiete mit ${term}, kumuliert nach Monaten`} />
-              </div>
-              <p style={{ ...sub, marginTop: 10 }}>
-                {(() => {
-                  /* Anteil je Land an den Gebieten mit Berichten, damit kleinteilige Länder nicht allein wegen ihrer Gemeindezahl vorn stehen */
-                  const base = new Map<string, number>();
-                  for (const x of cov ?? []) if (x.ags) base.set(x.ags.slice(0, 2), (base.get(x.ags.slice(0, 2)) ?? 0) + 1);
-                  const share = d.lands
-                    .map((l) => ({ name: l.name, pct: base.get(l.id) ? Math.round((l.regions / (base.get(l.id) as number)) * 100) : null }))
-                    .filter((l): l is { name: string; pct: number } => l.pct !== null)
-                    .sort((x, y) => y.pct - x.pct)
-                    .slice(0, 3);
-                  return share.length ? `Am stärksten, gemessen an den Gebieten je Land: ${share.map((l) => `${l.name} (${l.pct} %)`).join(", ")}` : "";
-                })()}
-              </p>
-            </>
-          ) : (
-            <div aria-hidden="true" style={{ marginTop: 14, height: 8, width: "70%", borderRadius: 4, background: "#f1f5f9" }} />
-          )}
-          <Link href={`/analytics/diffusion?q=${q}`} style={{ ...link, display: "inline-block", marginTop: 16 }}>
-            Diffusionsanalyse →
-          </Link>
-        </div>
-        <div style={rule}>
-          <h3 style={cardHead}>Womit es zusammenhängt</h3>
-          <p style={{ ...sub, color: "#0f172a" }}>Erkennen Sie, mit welchen Begriffen, Themenfeldern und Gremien ein Thema verbunden ist.</p>
-          {g ? (
-            <>
-              <p style={sub}>
-                {nf.format(g.total)} Einträge, verbunden mit {g.stats.terms} Begriffen, {g.stats.topics} Themenfeldern und {g.stats.committees} Gremien.
-              </p>
-              <p style={{ margin: "12px 0 0", display: "flex", flexWrap: "wrap", gap: "6px 14px", fontSize: 16 }}>
-                {g.nodes
-                  .filter((n) => n.type === "term")
-                  .slice(0, 6)
-                  .map((n, i) => (
-                    <button key={n.id} type="button" onClick={() => openSearch(`${term} ${n.label}`)} style={{ padding: 0, background: "none", border: 0, color: "#0f172a", fontSize: i < 2 ? 22 : i < 4 ? 16 : 14, fontWeight: i < 2 ? 600 : 400, cursor: "pointer" }}>
-                      {n.label} <span style={{ color: "#0d9488", fontSize: 12 }}>{nf.format(n.count)}</span>
-                    </button>
-                  ))}
-              </p>
-            </>
-          ) : (
-            <div aria-hidden="true" style={{ marginTop: 14, height: 8, width: "70%", borderRadius: 4, background: "#f1f5f9" }} />
-          )}
-          <Link href={`/analytics/graph?q=${q}`} style={{ ...link, display: "inline-block", marginTop: 12 }}>
-            Knowledge Graph →
-          </Link>
-        </div>
-        <div style={rule}>
-          <h3 style={cardHead}>Wie entschieden wird</h3>
-          <p style={{ ...sub, color: "#0f172a" }}>Schätzen Sie ein, wie ähnliche Vorlagen bisher ausgegangen sind.</p>
-          {c ? (
-            <>
-              <p style={sub}>
-                Bei {nf.format(c.totals.decided)} entschiedenen Vorgängen: {String(c.rates.approval).replace(".", ",")} % Zustimmung, {String(c.rates.rejection).replace(".", ",")} % Ablehnung, {String(c.rates.postponement).replace(".", ",")} % Vertagung.
-              </p>
-              <div style={{ marginTop: 12, height: 10, display: "flex", borderRadius: 5, overflow: "hidden", background: "#f1f5f9" }} aria-hidden="true">
-                <span style={{ width: `${c.rates.approval}%`, background: "#0d9488" }} />
-                <span style={{ width: `${c.rates.postponement}%`, background: "#cbd5e1" }} />
-                <span style={{ width: `${c.rates.rejection}%`, background: "#94a3b8" }} />
-              </div>
-              <p style={{ ...sub, marginTop: 10 }}>Von {nf.format(c.totals.all)} Vorgängen zum Thema ist bei {nf.format(c.totals.known)} der Ausgang bekannt.</p>
-            </>
-          ) : (
-            <div aria-hidden="true" style={{ marginTop: 14, height: 8, width: "70%", borderRadius: 4, background: "#f1f5f9" }} />
-          )}
-          <Link href="/analytics/beschluesse" style={{ ...link, display: "inline-block", marginTop: 12 }}>
-            Beschlüsse →
-          </Link>
-        </div>
-        <div style={rule}>
-          <h3 style={cardHead}>Weitere Auswertungen</h3>
-          <p style={{ ...sub, color: "#0f172a" }}>Steigende Begriffe früh erkennen, Orte nebeneinanderlegen, den Weg einer Vorlage durch die Gremien verfolgen.</p>
-          <p style={{ margin: "12px 0 0", display: "flex", flexWrap: "wrap", gap: "6px 20px" }}>
-            <Link href="/analytics/trends" style={link}>
-              Trends →
-            </Link>
-            <Link href="/analytics/vergleich" style={link}>
-              Gebietsvergleich →
-            </Link>
-            <Link href="/analytics/gremien" style={link}>
-              Gremiennetz →
-            </Link>
-          </p>
-        </div>
-      </div>
-      <p style={{ margin: "28px 0 0", fontSize: 14, color: "#64748b" }}>
-        Alle Auswertungen laufen über denselben Bestand wie die Suche; jede Zahl lässt sich bis zum Originaldokument zurückverfolgen.{" "}
-        <Link href="/analytics/ueber" style={{ color: "#0d9488", fontWeight: 500 }}>
-          Mehr zu plenara.X →
-        </Link>
-      </p>
-    </section>
-  );
-}
-
 interface Window {
   total: number;
   places: number;
@@ -430,6 +207,21 @@ function TopicChange({ end, openSearch, openSaveDialog }: { end: string; openSea
         <Link href="/analytics/ueber" style={{ color: "#0d9488", fontWeight: 500 }}>
           So wird gerechnet →
         </Link>
+      </p>
+      <p style={{ margin: "14px 0 0", display: "flex", flexWrap: "wrap", gap: "4px 18px", fontSize: 14, color: "#64748b" }}>
+        <span>Mehr mit plenara.X:</span>
+        {[
+          ["Ausbreitung", "/analytics/diffusion"],
+          ["Wortnetz", "/analytics/graph"],
+          ["Beschlüsse", "/analytics/beschluesse"],
+          ["Trends", "/analytics/trends"],
+          ["Gebietsvergleich", "/analytics/vergleich"],
+          ["Gremiennetz", "/analytics/gremien"],
+        ].map(([label, href]) => (
+          <Link key={href} href={href} style={{ color: "#0d9488", fontWeight: 500 }}>
+            {label} →
+          </Link>
+        ))}
       </p>
       <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: "40px 64px", alignItems: "start" }}>
         <div>
@@ -523,7 +315,6 @@ const rule = { borderTop: "1px solid #e2e8f0" } as const;
 export function StartseitePage() {
   const openSearch = useOpenSearch();
   const [term, setTerm] = useState("");
-  const [trends, setTrends] = useState<Trends | null>(null);
   const { tier } = useTier();
   const [cov, setCov] = useState<Cov[] | null>(null);
   const [hit, setHit] = useState<Hit | null>(null);
@@ -532,14 +323,9 @@ export function StartseitePage() {
   const { openSaveDialog } = useUi();
   const [pick, setPick] = useState<Cov | null>(null);
   const [placeInfo, setPlaceInfo] = useState<{ total: number; upcoming: number; next: Hit[] } | null>(null);
-  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     const ctl = new AbortController();
-    fetch("/api/analytics/trends?window=30", { signal: ctl.signal })
-      .then((r) => (r.ok ? (r.json() as Promise<Trends>) : Promise.reject(new Error("trends"))))
-      .then((d) => setTrends(d))
-      .catch((e) => (e as Error).name !== "AbortError" && setFailed(true));
     fetch("/api/search/coverage?level=city", { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ coverage?: Cov[] }>) : Promise.reject(new Error("coverage"))))
       .then((d) => setCov(Array.isArray(d.coverage) ? d.coverage : null))
@@ -547,8 +333,7 @@ export function StartseitePage() {
     return () => ctl.abort();
   }, []);
 
-  /* Die Trendabfrage ist die langsamste; Stand und kommende Sitzungen warten nicht auf sie */
-  const today = trends?.ranges.end ?? new Date().toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10);
   useEffect(() => {
     if (!today) return;
     const ctl = new AbortController();
@@ -589,19 +374,8 @@ export function StartseitePage() {
   };
 
   /* Erkenntnis: der neue Begriff mit den meisten Gebieten, sonst der am deutlichsten steigende */
-  const rel = (t: Topic) => (t.prev > 0 ? (t.recent - t.prev) / t.prev : 0);
-  const topics = trends ? [...trends.topics].filter((t) => t.n >= 20).sort((x, y) => Math.abs(rel(y)) - Math.abs(rel(x))).slice(0, 6) : [];
-  const topMax = Math.max(1, ...topics.map((t) => Math.max(t.recent, t.prev))) * 1.15;
-
   const q = place.trim().toLocaleLowerCase("de");
   const found = cov && q.length >= 3 ? cov.filter((c) => c.name.toLocaleLowerCase("de").includes(q)).slice(0, 5) : [];
-  const figures: { value: number; label: string; percent?: boolean }[] = [];
-  if (ahead) figures.push({ value: ahead, label: `Vorgänge stehen schon für kommende Sitzungen auf der Tagesordnung` });
-  figures.push({ value: ABDECKUNG.anteil, label: `Abdeckung der Städte und Gemeinden, ${ABDECKUNG.kreise} % der Kreise sind dabei`, percent: true });
-  if (trends) {
-    figures.push({ value: trends.totals.recent, label: `Einträge in den letzten ${trends.window} Tagen` });
-    figures.push({ value: trends.totals.regions, label: `Gebiete mit Neuem seit ${day(trends.ranges.start)}` });
-  }
 
   return (
     <>
@@ -614,7 +388,7 @@ export function StartseitePage() {
               <p style={{ margin: "14px 0 0", fontSize: 14, color: "#64748b" }}>
                 <span aria-hidden="true" className="pl-pulse" style={{ display: "inline-block", width: 8, height: 8, marginRight: 8, borderRadius: 4, background: "#0d9488" }} />
                 <style>{`.pl-pulse{animation:plpulse 2.4s ease-in-out infinite}@keyframes plpulse{0%,100%{box-shadow:0 0 0 0 rgba(13,148,136,.45)}60%{box-shadow:0 0 0 7px rgba(13,148,136,0)}}@media (prefers-reduced-motion:reduce){.pl-pulse{animation:none}}`}</style>
-                Stand {day(today)} · Originalquelle bei jedem Vorgang
+                {ahead ? `${nf.format(ahead)} Vorgänge für kommende Sitzungen · ` : ""}Stand {day(today)}
               </p>
             )}
             <form onSubmit={submit} style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -774,73 +548,7 @@ export function StartseitePage() {
           </section>
       )}
 
-      {figures.length > 0 && (
-        <>
-        <section className="ri-sec ri-sec--tight">
-          <div className="mx-auto" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 32 }}>
-            {figures.map((f) => (
-              <div key={f.label} style={{ ...rule, paddingTop: 16 }}>
-                <div style={{ fontSize: 44, lineHeight: 1.1, fontWeight: 600, color: "#0f172a", fontVariantNumeric: "tabular-nums" }}><CountUp value={f.value} />{f.percent ? " %" : ""}</div>
-                <div style={{ marginTop: 6, fontSize: 14, color: "#64748b" }}>{f.label}</div>
-              </div>
-            ))}
-          </div>
-          {trends && (
-            <p style={{ margin: "20px 0 0", fontSize: 14, color: "#64748b", maxWidth: 820 }}>
-              Stand {day(trends.ranges.end)}. Quelle sind die Ratsinformationssysteme der Kommunen, jede Angabe verweist auf das Originaldokument.{" "}
-              <Link href="/datenabdeckung" style={{ color: "#0d9488", fontWeight: 500 }}>
-                Datenabdeckung →
-              </Link>
-            </p>
-          )}
-        </section>
-
-        </>
-      )}
-
-      <Analyses openSearch={openSearch} cov={cov} />
-
       <TopicChange end={today} openSearch={openSearch} openSaveDialog={openSaveDialog} />
-
-      {topics.length > 0 && trends && (
-        <section className="ri-sec">
-          <div className="mx-auto">
-            <h2 style={{ margin: 0, fontSize: 22, fontWeight: 600, color: "#0f172a" }}>Themenfelder</h2>
-            <p style={{ margin: "6px 0 0", fontSize: 14, color: "#64748b" }}>
-              Anteil an allen Einträgen der letzten {trends.window} Tage. Die Marke zeigt den Anteil davor; sortiert nach der größten Veränderung.
-            </p>
-            <ul style={{ margin: "12px 0 0", padding: 0, listStyle: "none" }}>
-              {topics.map((t, i) => {
-                const r = Math.round(rel(t) * 100);
-                return (
-                  <li key={t.id} style={{ ...rule, display: "flex", alignItems: "center", gap: 16, padding: "12px 0" }}>
-                    <span style={{ flex: "0 0 200px", fontSize: 16, color: "#0f172a", fontWeight: i === 0 ? 600 : 400 }}>{t.name}</span>
-                    <span style={{ flex: 1, height: 6, position: "relative", background: "#f1f5f9", borderRadius: 3 }} aria-hidden="true">
-                      <span style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: `${(t.recent / topMax) * 100}%`, borderRadius: 3, background: i === 0 ? "#0d9488" : "#99d6cf" }} />
-                      <span style={{ position: "absolute", top: -4, bottom: -4, left: `${(t.prev / topMax) * 100}%`, width: 2, background: "#94a3b8" }} />
-                    </span>
-                    <span style={{ flex: "0 0 300px", textAlign: "right", fontSize: 14, color: "#64748b", fontVariantNumeric: "tabular-nums" }}>
-                      <b style={{ color: r >= 10 ? "#0d9488" : "#0f172a", fontWeight: 600 }}>
-                        {r >= 0 ? "+" : "−"}
-                        {Math.abs(r)} %
-                      </b>{" "}
-                      ({String(t.recent).replace(".", ",")} % statt {String(t.prev).replace(".", ",")} %) · {nf.format(t.n)} Einträge
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-      )}
-
-      {failed && !trends && (
-        <section className="ri-sec ri-sec--tight">
-          <p className="mx-auto" style={{ fontSize: 16, color: "#64748b" }}>
-            Die Auswertung ist gerade nicht erreichbar. Die Suche funktioniert trotzdem.
-          </p>
-        </section>
-      )}
 
       <section className="ri-sec">
         <div className="mx-auto" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 48 }}>
@@ -861,6 +569,10 @@ export function StartseitePage() {
         </div>
         <p className="mx-auto" style={{ margin: "48px auto 0", fontSize: 14, color: "#64748b" }}>
           Ein Angebot der {BETREIBER.name}. Daten stammen aus den öffentlichen Ratsinformationssystemen, maßgeblich sind die Originalunterlagen.{" "}
+          <Link href="/datenabdeckung" style={{ color: "#0d9488" }}>
+            Datenabdeckung
+          </Link>
+          {" · "}
           <Link href="/impressum" style={{ color: "#0d9488" }}>
             Impressum
           </Link>
