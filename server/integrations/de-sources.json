@@ -40484,5 +40484,103 @@
     "verifiedAt": "2026-10-10",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
     "foundBy": "manuell 2026-10-10"
+  },
+  {
+    "id": "de-16075085",
+    "name": "Stadt Pößneck",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "councilservice",
+    "base": "https://poessneck.mein-intra.net/",
+    "token": "94887bb0-4aa4ba38-4ce333dc-4de7b7bf",
+    "page": "https://www.poessneck.de/stadt/ratsinformationssystem/",
+    "verifiedSource": "https://www.poessneck.de/stadt/ratsinformationssystem/",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "Vom Projektinhaber gefunden (10.10.2026); die Seite lädt den Sitzungsdienst erst nach Klick (Export-Schlüssel ist die Kennung des Elements, initializeExport(b.id)), deshalb erkannte die Suche ihn nicht; Leser von Hand geprüft: 18 Punkte in 3 Sitzungen der letzten drei Monate",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; Sitzungsdienst von mein-intra.net (öffentliche JSON-Schnittstelle mit Export-Schlüssel) erreichbar."
+  },
+  {
+    "id": "de-13076",
+    "name": "Landkreis Ludwigslust-Parchim",
+    "kind": "district",
+    "method": "scraper",
+    "base": "https://bis.kreis-lup.de/",
+    "extension": "asp",
+    "verifiedSource": "https://bis.kreis-lup.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "manuell 2026-10-10"
+  },
+  {
+    "id": "de-130765655",
+    "name": "Amt Eldenburg Lübz",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://bis.amt-eldenburg-luebz.de/",
+    "extension": "asp",
+    "verifiedSource": "https://bis.amt-eldenburg-luebz.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "manuell 2026-10-10"
+  },
+  {
+    "id": "de-13076090",
+    "name": "Stadt Ludwigslust",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://bis.ludwigslust.de/",
+    "extension": "asp",
+    "verifiedSource": "https://bis.ludwigslust.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "manuell 2026-10-10"
+  },
+  {
+    "id": "de-130765660",
+    "name": "Amt Neustadt-Glewe",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://bis.neustadt-glewe.de/",
+    "extension": "asp",
+    "verifiedSource": "https://bis.neustadt-glewe.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.",
+    "foundBy": "manuell 2026-10-10"
+  },
+  {
+    "id": "de-130765665",
+    "name": "Amt Stralendorf",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://bis.amt-stralendorf.de/",
+    "extension": "asp",
+    "verifiedSource": "https://bis.amt-stralendorf.de/info.asp",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "Vom Projektinhaber gefunden (10.10.2026): öffentliches Bürgerinfoportal bis.amt-stralendorf.de neben dem Anmeldebereich ris.amt-stralendorf.de; letzte drei Monate ohne Sitzung, zwölf Monate: 43 Punkte in 4 Sitzungen",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-093755333",
+    "name": "Verwaltungsgemeinschaft Laaber",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo.vg-laaber.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo.vg-laaber.de/info.asp",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "Öffentliches Bürgerinfoportal neben dem Anmeldebereich ratsinfo.vg-laaber.de (Adresse geraten, 10.10.2026); letzte drei Monate ohne Sitzung, zwölf Monate: 13 Punkte in 1 Sitzung",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "de-092785257",
+    "name": "Verwaltungsgemeinschaft Straßkirchen",
+    "kind": "city",
+    "method": "scraper",
+    "base": "https://buergerinfo-vg-strasskirchen.digitalfabrix.de/",
+    "extension": "asp",
+    "verifiedSource": "https://buergerinfo-vg-strasskirchen.digitalfabrix.de/info.asp",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "Öffentliches Bürgerinfoportal neben dem Anmeldebereich ratsinfo-vg-strasskirchen.digitalfabrix.de (Adresse geraten, 10.10.2026); letzte drei Monate ohne Sitzung, zwölf Monate: 20 Punkte in 3 Sitzungen",
+    "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 10.10.2026 kein OParl-System; öffentlicher SessionNet-Kalender erreichbar."
   }
 ]
