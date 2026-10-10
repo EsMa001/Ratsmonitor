@@ -19,6 +19,7 @@ import {collectSimHannover,detectSimHannover} from './sim-hannover.mjs';
 import {collectRim4,detectRim4} from './sdnet-rim4.mjs';
 import {collectTypo3Bi,detectTypo3Bi} from './typo3-bi.mjs';
 import {collectMeetingMobile,detectMeetingMobile} from './meeting-mobile.mjs';
+import {collectHwTypo3,detectHw} from './hw-typo3.mjs';
 import {collectWebsite,fetchSiteText,fetchSiteBytes,WEBSITE_READER_NAME} from './website.mjs';
 import {collectHamburgTransparenz,collectOparlDistricts,collectBerlin} from './citystates.mjs';
 import {collectCkan,detectCkan} from './ckan.mjs';
@@ -57,6 +58,9 @@ export const READERS={
  // block of each meeting page; no form or session needed. The non-public block is never read.
  'meeting-mobile':{name:'Meeting Mobile / RIS Web (öffentliche Seiten)',collect:collectMeetingMobile,detect:async(url,html)=>pick(detectMeetingMobile(url,html),['base'])},
  'sdnet-rim4':{name:'SD.NET RIM 4 (öffentliche Seiten)',collect:collectRim4,detect:async(url,html)=>pick(detectRim4(url,html),['base'])},
+ // Ratsinformationsmodul (hwratssystem) of Hirsch & Wölfl in municipal TYPO3 websites (Baden-Württemberg): the month data of
+ // the meeting calendar page with the public items of each meeting; the non-public items are never read.
+ 'hw-typo3':{name:'Ratsinformationsmodul Hirsch & Wölfl (öffentliche Seiten)',collect:collectHwTypo3,detect:async(url,html)=>pick(detectHw(url,html),['base'])},
  // RIS-Portal of comundus regisafe (<name>.ris-portal.de, Liferay): the month lists of its meeting portlet and the public
  // part of each meeting page. A shared system needs organizations (the bodies of the area) in its entry.
  'ris-portal':{name:'RIS-Portal regisafe (öffentliche Seiten)',collect:collectRisPortal,detect:async(url,html)=>pick(detectRisPortal(url,html),['base'])},
