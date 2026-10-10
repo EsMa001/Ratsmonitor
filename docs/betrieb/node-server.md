@@ -146,12 +146,22 @@ Nachführen der Wortliste nachts (einmal anlegen):
 
 ```bash
 cat > /etc/cron.d/ratsmonitor-search-words <<'CRON'
-15 4 * * * ratsmonitor cd /srv/ratsmonitor/app/current && DATABASE_FILE=/srv/ratsmonitor/data/ratsmonitor.sqlite node --no-warnings scripts/refresh-search-words.mjs >> /srv/ratsmonitor/backups/search-words.log 2>&1
+15 4 * * * ratsmonitor cd /srv/ratsmonitor/app/current && DATABASE_FILE=/srv/ratsmonitor/data/ratsmonitor.sqlite node --no-warnings --max-old-space-size=6144 scripts/refresh-search-words.mjs >> /srv/ratsmonitor/backups/search-words.log 2>&1
 CRON
 ```
 
 Das Skript läuft unter derselben Sperre wie das Nachführen nach Importen (`search-words-lease` in `system_state`);
 läuft schon eines, lässt es aus.
+
+Die Datenbank auf dem Server hat Statistiken für den Planer (`sqlite_stat1`). Neue Indizes kennt sie nicht, und ohne
+Verteilung (stat4) unterschätzt sie schiefe Spalten (98 % der Analysen sind `rule-label`). Nach Migrationen mit neuen
+Indizes deshalb die Pläne der betroffenen Abfragen prüfen (`EXPLAIN QUERY PLAN`) und die Statistik der Tabellen
+erneuern, das dauert mit Stichprobe unter einer Sekunde; danach den Dienst neu starten, damit er sie liest:
+
+```bash
+sudo -u ratsmonitor sqlite3 /srv/ratsmonitor/data/ratsmonitor.sqlite "PRAGMA analysis_limit=4000;" "ANALYZE search_cards;" "ANALYZE article_analyses;"
+systemctl restart ratsmonitor
+```
 
 ## Vor dem Öffnen für andere
 

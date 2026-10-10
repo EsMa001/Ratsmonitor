@@ -84,10 +84,12 @@ export async function previewAiJob(db,body){
  const {kinds,limit,retryBlocked,scope,need}=exportScope(body);
  const inScope=Number((await db.prepare(`SELECT count(*) n FROM search_cards c WHERE ${scope('c.','date')}`).first()).n);
  // Rule labels are an analysis of almost every report (1.2 million rows): left out. The two ranges around 'rule-label' read
- // only the few AI rows from the index (kind, topic_id) of drizzle/0017 instead of the whole index (4.6 s); UNION removes
- // duplicates like DISTINCT. Without the migration SQLite scans as before. CROSS JOIN keeps the order: the few analysed
- // reports first, never a scan of every payload.
- const analysed=`(SELECT topic_id FROM article_analyses WHERE kind<'rule-label' UNION SELECT topic_id FROM article_analyses WHERE kind>'rule-label') a CROSS JOIN topics ON topics.id=a.topic_id WHERE ${CANONICAL} AND ${scope('topics.')}`;
+ // only the few AI rows from the index (kind, topic_id) of drizzle/0017 instead of the whole index (4.6 s), DISTINCT removes
+ // duplicates. UNION ALL, not UNION: UNION merges sorted rows, and with statistics (sqlite_stat1, which cannot see that 98 %
+ // are rule labels) SQLite then reads the whole index (topic_id, kind) for the order (server: 48 ms instead of 7 ms).
+ // Without the migration both ranges scan. CROSS JOIN keeps the order: the few analysed reports first, never a scan of
+ // every payload.
+ const analysed=`(SELECT DISTINCT topic_id FROM (SELECT topic_id FROM article_analyses WHERE kind<'rule-label' UNION ALL SELECT topic_id FROM article_analyses WHERE kind>'rule-label')) a CROSS JOIN topics ON topics.id=a.topic_id WHERE ${CANONICAL} AND ${scope('topics.')}`;
  const row=await db.prepare(`SELECT count(*) analysed,coalesce(sum(${kinds.map(k=>'need_'+k).join(' OR ')}),0) open,${kinds.map(k=>`coalesce(sum(need_${k}),0) AS ${k}`).join(',')},coalesce(sum(blocked),0) blocked
   FROM (SELECT ${kinds.map(k=>`${need(k)} AS need_${k}`).join(',')},${retryBlocked?'0':`(${kinds.map(blockedSQL).join(' OR ')})`} AS blocked FROM ${analysed})`).first();
  const untouched=Math.max(0,inScope-Number(row.analysed)),articles=untouched+Number(row.open);
