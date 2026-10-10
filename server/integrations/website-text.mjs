@@ -42,7 +42,7 @@ export const composeUmlauts=s=>String(s??'').replace(/¨\s?([AOUaou])/g,'$1̈').
 // Sitzung", "die in nichtöffentlicher Sitzung gefassten Beschlüsse". Only these past reports; "Bericht … in
 // nichtöffentlicher Sitzung" or "Information zu TOP 3: Beratung in nichtöffentlicher Sitzung" name the part itself.
 const NP_ADJ='nicht\\s*-?\\s*öffentlich';
-const PUBLIC_REPORT=new RegExp(`(?:Bekanntgabe|Bekanntgaben|Mitteilung|Mitteilungen|Information|Informationen|Unterrichtung|Bericht|Berichte)\\s[^.:;]{0,100}?(?<!\\p{L})aus\\s+(?:der\\s+|einer\\s+|den\\s+|dem\\s+)?(?:\\p{L}+\\s+){0,2}${NP_ADJ}(?:e[rnms]?)?\\s+(?:Sitzung(?:en)?|Beratung(?:en)?|Teil|Sitzungsteil)(?!\\p{L})|(?:in|aus)\\s+(?:der\\s+|den\\s+)?(?:\\p{L}+\\s+)?${NP_ADJ}e[rnm]?\\s+Sitzung(?:en)?\\s+(?:\\p{L}+\\s+){0,3}gefasste[n]?\\s+Beschl\\p{L}*|${NP_ADJ}\\s+gefasste[rn]?\\s+Beschl\\p{L}*`,'giu');
+const PUBLIC_REPORT=new RegExp(`(?:Bekanntgabe|Bekanntgaben|Mitteilung|Mitteilungen|Information|Informationen|Unterrichtung|Bericht|Berichte)\\s[^.:;]{0,100}?(?<!\\p{L})aus\\s+(?:der\\s+|einer\\s+|den\\s+|dem\\s+)?(?:\\p{L}+\\s+){0,2}${NP_ADJ}(?:e[rnms]?)?\\s+(?:Sitzung(?:en)?|Beratung(?:en)?|Teil|Sitzungsteil)(?!\\p{L})|(?:in|aus)\\s+(?:der\\s+|den\\s+)?(?:\\p{L}+\\s+)?${NP_ADJ}e[rnm]?\\s+Sitzung(?:en)?\\s+(?:\\p{L}+\\s+){0,3}gefasste[n]?\\s+Beschl\\p{L}*|${NP_ADJ}\\s+gefasste[rn]?\\s+Beschl\\p{L}*|Beschl\\p{L}*\\s+(?:des|der)\\s+(?:\\p{L}+\\s+)?${NP_ADJ}(?:e[rnms]?)?\\s+(?:Sitzung|Teil(?:es)?|Sitzungsteil(?:es)?)(?!\\p{L})`,'giu');
 const isPublicReport=s=>new RegExp(PUBLIC_REPORT.source,'iu').test(s);
 // The text compared without case and umlauts; a lost character (U+FFFD) stands for any letter.
 const foldText=s=>s.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/�/g,'#');
@@ -147,8 +147,11 @@ const typoNonPublic=folded=>{
  return false;
 };
 /** Whether a line names the non-public part in any spelling (reports on it from the public part excepted). */
+// The end of the standing item "Bekanntgabe der in nichtöffentlicher Sitzung gefassten Beschlüsse, nachdem die Gründe für die
+// Geheimhaltung weggefallen sind (Art. 52 Abs. 3 GO)": a public item about decisions already made known, no non-public part.
+const SECRECY_GONE=/(?:Gr(?:ü|ue)nde\s+)?(?:für|fuer)\s+(?:die\s+)?Geheimhaltung\s+(?:weggefallen|entfallen)\s+sind\s*(?:\((?:Art\.?|§)[^)]{0,30}\))?/giu;
 export function mentionsNonPublic(s){
- const n=normalizeLine(s),t=foldText(n.replace(PUBLIC_REPORT,' '));
+ const n=normalizeLine(s).replace(SECRECY_GONE,' '),t=foldText(n.replace(PUBLIC_REPORT,' '));
  return NP_SPACED.some(re=>re.test(t))||NP_COMPACT.test(t.replace(/[^a-z#]/g,''))||LAW_NP.test(n)||RULES_NP.test(n)||typoNonPublic(t);
 }
 // Labels and addresses only: "Teil N", "(intern)", "interner Teil", a folder or name part "geschlossen".
@@ -604,7 +607,7 @@ function headingCore(raw){
  const line=canonNP(normalizeLine(raw)),it=itemOf(line);
  if(!it&&line.length>90)return null;
  let core=(it?it.title:line).replace(/^(?:(?:Teil|Abschnitt)\s+(?:[A-H]|[IVX]{1,4}|\d)\s*[:.)–-]?\s*|(?:Erster|Zweiter|Dritter|Vierter)\s+(?:Teil|Sitzungsteil|Abschnitt)\s*[:.)–-]?\s*)/i,'').replace(/^(?:[A-H]|[IVX]{1,4})(?:[.)]\s*|\s+(?=\p{Lu}))/u,'');
- core=core.replace(/[()]/g,' ').replace(/[\s:.,;–-]+$/,'').replace(/\s+/g,' ').trim();
+ core=core.replace(/[()]/g,' ').replace(/^[\s–—-]+/,'').replace(/[\s:.,;–—-]+$/,'').replace(/\s+/g,' ').trim();
  return {core,numbered:!!it};
 }
 // The long form only as a heading of its own (capital Ö); "… eine\nöffentliche Sitzung des Gemeinderates statt." is a
@@ -615,13 +618,23 @@ export function isNonPublicHeading(line){const h=headingCore(line);return !!h&&(
 // 20:00 Uhr", "NÖ-Teil", "Nichtöffentlicher Teil der Gemeinderatssitzung").
 const STARTS_NONPUBLIC=/^[-–*•_.:\s]*(?:(?:Im\s+Anschluss(?:\s+(?:daran|hieran))?|Anschlie(?:ß|ss)end|Danach|(?:Hieran|Daran)\s+anschlie(?:ß|ss)end)\s*[-–:,]?\s*)?(?:(?:Teil|Abschnitt)\s+(?:[A-H]|[IVX]{1,4}|\d)\s*[:.)–-]?\s*|(?:[A-H]|[IVX]{1,4})[.)]\s*)?(?:Tagesordnung\s*[-–:,]?\s*)?(?:nichtöffentlich(?:e[rnms]?)?|vertrauliche[rnms]?|geschlossene[rnms]?|interne[rnms]?|n\.?\s?ö\.?|nö)[\s-]*(?:Teil|Sitzung|Sitzungsteil|Tagesordnung|Beratung|Abschnitt|Sitzungsabschnitt|Tagesordnungspunkte|Punkte|Angelegenheiten)(?!\p{L})|^[-–*•_.:\s]*unter\s+Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit(?!\p{L})/iu;
 // The closing note of an agenda: what follows the published items is a non-public session.
-const TRAILING_NP=/^(?:Anschlie(?:ß|ss)end|Im\s+Anschluss(?:\s+(?:daran|hieran))?|Danach|(?:Hieran|Daran)\s+anschlie(?:ß|ss)end)\s*[-–:,]?\s*(?:findet\s+)?(?:eine\s+)?nichtöffentliche[rn]?\s+(?:Sitzung|Beratung|Teil)(?:\s+statt)?\.?$/iu;
+const TRAILING_NP=/^(?:(?:Anschlie(?:ß|ss)end|Im\s+Anschluss(?:\s+(?:daran|hieran|an\s+(?:die|den|diese[nr]?)\s+(?:öffentliche[rn]?\s+)?(?:Sitzung|Teil)))?|Danach|(?:Hieran|Daran)\s+anschlie(?:ß|ss)end)\s*[-–:,]?\s*(?:findet\s+)?(?:(?:eine|ein)\s+)?nichtöffentliche[rn]?\s+(?:Sitzung|Beratung|Teil|Sitzungsteil)(?:\s+statt)?|(?:Eine|Ein|Die|Der)\s+nichtöffentliche[rn]?\s+(?:Sitzung|Beratung|Teil|Sitzungsteil)\s+(?:schlie(?:ß|ss)t\s+sich\s+(?:daran\s+)?an|folgt(?:\s+(?:im\s+Anschluss|anschlie(?:ß|ss)end))?|findet\s+(?:im\s+Anschluss|anschlie(?:ß|ss)end)\s+statt))\s*[.!]?$/iu;
 const lastItemIndex=(items,start,end)=>{for(let k=end-1;k>=start;k--)if(items[k])return k;return start;};
-const startsNonPublic=line=>{const l=canonNP(normalizeLine(line));return l.length<=90&&!itemOf(l)&&STARTS_NONPUBLIC.test(l);};
+const startsNonPublic=line=>{const l=canonNP(normalizeLine(line));return l.length<=90&&!itemOf(l)&&(STARTS_NONPUBLIC.test(l)||TRAILING_NP.test(l));};
 // A sentence of the head that names the public session ("findet eine öffentliche Sitzung statt", "in öffentlicher Sitzung").
 // Never after a negation ("keine öffentliche Sitzung", "nicht in öffentlicher Sitzung") and never from a clause that names the
 // non-public part ("Öffentliche Sitzung: nein").
 const PUBLIC_SENTENCE=/(?<!nicht\s*-?\s*)(?<!(?:kein\p{L}*|nicht\s+in)\s+)(?<!\p{L})öffentliche[rnm]?\s+(?:\p{L}*sitzung|Tagung)(?!\p{L})|(?:Sitzung|Tagung)\s(?:[^.]{0,40}\s)?(?:ist|findet|tagt)\s+öffentlich(?!\p{L})/iu;
+// A notice that invites the citizens to the meeting ("Alle interessierten Bürgerinnen und Bürger sind hierzu herzlich eingeladen",
+// "Zuhörer sind willkommen") is the notice of a public meeting; counted as evidence only for an invitation that nowhere speaks of a
+// non-public part, closed session or secrecy (checked over the whole meeting text where it is used).
+const INVITES_PUBLIC=/(?<!\p{L})(?:B(?:ü|ue)rger(?:innen)?|Einwohner(?:innen)?|Zuh(?:ö|oe)rer(?:innen)?|Interessierte[n]?|G(?:ä|ae)ste|Bev(?:ö|oe)lkerung|(?:Ö|Oe)ffentlichkeit)(?!\p{L})[^.]{0,80}(?<!\p{L})(?:eingeladen|willkommen|erw(?:ü|ue)nscht)(?!\p{L})/iu;
+// A report on a meeting that the town publishes for its citizens ("Bericht aus dem Gemeinderat vom 20.07.2026", "Aus dem Gemeinderat"):
+// minutes with that title give the public part (what the town reports of the non-public part is a note, see PUBLIC_REPORT).
+const REPORT_TITLE=/^(?:Bericht(?:e)?\s+(?:aus|von|über|zur)\s+(?:der\s+|dem\s+|den\s+)?(?:\p{L}+\s+)?|Aus\s+(?:dem|der)\s+)(?:\p{L}*(?:rat|sitzung|vertretung|versammlung|tag)|Ausschuss)(?!\p{L})/iu;
+const NOTICE_HEAD=/(?<!\p{L})öffentliche\s+Bekanntmachung(?:\s+(?:der|zur|über)\s+(?:\p{L}+\s+){0,2}(?:Tagesordnung|\p{L}*sitzung|Tagung)|\s*$|\s+(?:Tagesordnung|Gemeinderat|Stadtrat))/iu;
+// Whether lines speak of a non-public part, a closed session, the public being excluded or secrecy in any way.
+const hasClosedMention=ls=>ls.some(l=>mentionsNonPublic(l)||isNonPublicHeading(l)||closedLine(l)||startsNonPublic(l)||BARE_N.test(l)||suspect(l));
 const publicClause=c=>PUBLIC_SENTENCE.test(c)&&!mentionsNonPublic(c)&&!/^(?:Herstellung|Wiederherstellung)\s+der\s+Öffentlichkeit/i.test(c);
 const publicSentence=line=>publicClause(line)||mentionsNonPublic(line)&&String(line).split(/[.;,:]\s+|\s+[–-]\s+/).some(publicClause);
 
@@ -986,7 +999,7 @@ const NP_TAIL=/^(?:l|li|lich|liche[rnms]?|ich|iche[rnms]?|ntlich\p{Ll}*|tlich\p{
 // Words of a line between the items of an invitation that speak of the public, listeners, the press or secrecy; such a line
 // that is not read as anything else is a mention of the non-public part (folded text). Invitations to the public are not.
 const SUSPECT=/oeffentlichkeit|publikum|zuhoerer|zuhoerenden|besucher|\bgaeste|\bpresse\b|geheim|\bintern\b|vertraul|\bgeschlossen|verschlossen|ausgeschlossen|ausschluss|ausschl\.|mandatstraeger|\bzutritt|\bklausur|\bprivat\b|draussen/;
-const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)/;
+const SUSPECT_OK=/(?<!ohne\s+(?:die\s+)?)beteiligung\s+der\s+oeffentlichkeit|oeffentlichkeitsbeteiligung|oeffentlichkeits\W+(?:und|sowie)(?:\s+behoerden|\s*$)|fragen?\s+(?:aus\s+)?der\s+oeffentlichkeit|herstellung\s+der\s+oeffentlichkeit|(?:unterrichtung|information)\s+der\s+oeffentlichkeit|(?:herzlich\s+)?(?:eingeladen|willkommen)|geheimhaltung\s+(?:weggefallen|entfallen)|gruende\s+(?:fuer|der)\s+(?:die\s+)?geheimhaltung\s+(?:weggefallen|entfallen)/;
 // A short line without a sentence ("Geheime Sitzung", "Fortsetzung ohne Publikum"): a heading.
 const suspect=l=>{const f=foldText(normalizeLine(l));return SUSPECT.test(f)&&!SUSPECT_OK.test(f);};
 // A note that refers to items or to the rest of the agenda ("Die weiteren Punkte …", "ab hier", "Öffentlich sind die Tagesordnungspunkte 1 und 2").
@@ -1007,6 +1020,9 @@ const DEICTIC=/^[\s(]*(?:(?:Dieser|Diese|Der|Die|Das)\s+(?:Punkt|Tagesordnungspu
 // "N", "wird nichtöffentlich beraten"): it belongs to the item it stands next to.
 const MARK_WORDS=/nichtöffentlich\p{L}*|n\.?\s?ö\.?(?:ff\.?|s)?|nö|noe|vertraulich\p{L}*|geschlossen\p{L}*|unter\s+Ausschlu(?:ss|ß)\s+der\s+Öffentlichkeit|(?:in|im)\s+nichtöffentlicher\s+(?:Sitzung|Beratung)|Status|Art|Kennzeichnung|Sitzungsteil|Behandlung|Beratung|wird|werden|erfolgt|behandelt|beraten|nein|(?<!\p{L})N(?!\p{L})/giu;
 const BARE_N=/^[\s([–-]*(?:N|n|NÖ|Nö|nö|N\.\s?Ö\.?)[\s)\]–.-]*$/u;
+// A heading framed by dashes ("- nichtöffentlicher Sitzungsteil -") divides the agenda, where the public part is headed the same way
+// ("- öffentlicher Sitzungsteil -"); then it is no status of the item above it.
+const DASH_FRAMED=/^[–—-]\s*\S.*\S\s*[–—-]$/u;
 const markOnly=line=>{const l=canonNP(line);return !/:\s*$/.test(l)&&(BARE_N.test(l)||mentionsNonPublic(l))&&!/[\p{L}\d]/u.test(l.replace(MARK_WORDS,' '));};
 // Sentences that end the public part ("Ende des öffentlichen Teils", "Im Anschluss findet eine nichtöffentliche Sitzung
 // statt", "Für die folgenden Punkte wird die Öffentlichkeit ausgeschlossen").
@@ -1194,11 +1210,16 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
   let state='none',evidence='',restricted=false,unclear=0,mixed=false,delimited=false,headMention=false,headSpecific=false,footnote=false,whole=null;
   if(segments.length===1&&titleClosed){state='nonpublic';restricted=true;delimited=true;}
   else if(segments.length===1&&titlePublic){state='public';evidence=`Titel „${title}“`;}
+  // A public notice of the meeting ("Öffentliche Bekanntmachung der Sitzung des Gemeinderates … mit folgender Tagesordnung") whose text
+  // nowhere speaks of a non-public part, closed session or secrecy: the town publishes by law only the agenda of the public meeting.
+  else if(segments.length===1&&kind==='invitation'&&seg.start<first&&all.slice(Math.max(0,seg.start-3),first).some(l=>l.length<=140&&NOTICE_HEAD.test(l))&&!hasClosedMention(all.slice(Math.max(0,seg.start-3),end))){state='public';evidence='Bekanntmachung der Sitzung ohne Hinweis auf einen nichtöffentlichen Teil';}
+  else if(segments.length===1&&kind==='minutes'&&[title,...all.slice(0,4)].some(l=>REPORT_TITLE.test(String(l||'').trim()))&&!all.slice(seg.start,first).some(l=>publicSentence(l))){state='public';evidence=`Titel „Bericht aus dem Gemeinderat“ (Bericht für die Bürger)`;}
   // An invitation whose agenda ends with the note that a non-public session follows ("Anschließend findet eine nichtöffentliche
   // Sitzung statt."): the agenda before it is the public part (the non-public items are not published).
   else if(segments.length===1&&kind==='invitation'&&seg.start<first&&all.slice(Math.max(first,lastItemIndex(items,seg.start,end)),end).some(l=>TRAILING_NP.test(canonNP(normalizeLine(l))))){state='public';evidence='Hinweis „Anschließend nichtöffentliche Sitzung“ nach der Tagesordnung';}
   // The items of a meeting are numbered one way: with keyword ("TOP 1") if any, else with mark ("Ö 1"), else plain.
   // A mark N/NÖ alone does not make the style: such an item ends the public part in any form.
+  const dashParts=all.slice(seg.start,end).some(l=>DASH_FRAMED.test(l.trim())&&isPublicHeading(l));
   const marked=items.slice(first,end).filter(Boolean),style=marked.some(i=>i.form==='keyword')?'keyword':marked.some(i=>i.form==='prefix'&&i.prefix==='Ö')?'prefix':'plain';
   const numbers=new Set(marked.map(i=>mainNumber(i.number)));
   const headLines=all.slice(seg.start,first);
@@ -1252,14 +1273,14 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    if(!raw){
     // A report on decisions of the non-public part as a heading ("In nichtöffentlicher Sitzung gefasste Beschlüsse") is
     // a mention as well, except as the text of the item that announces it.
-    const report=isPublicReport(line)&&!(cur&&isPublicReport(cur.title));
+    const report=isPublicReport(line)&&!(cur&&isPublicReport(cur.title))&&!(i>0&&itemOf(all[i-1])&&!itemOf(all[i-1]).title&&isPublicReport(line)&&line.length<=140);
     // A word of the non-public part broken at the end of a line that no later line completes is a mention too.
     // A column of marks drawn before the rows (also in the head) cannot be matched to the items; the rest of a broken word
     // ("liche Sitzung"); in an invitation any other line between the items that speaks of the public, listeners or secrecy.
     const np=mentionsNonPublic(line)||report||isNonPublicHeading(line)||closedLine(line)||BARE_N.test(line)||NP_BROKEN.test(fold(line))||NP_TAIL.test(line)||
      seenItem&&i>=first&&(kind!=='minutes'||headingLike(line))&&SUSPECT.test(foldText(line))&&!SUSPECT_OK.test(foldText(line));
     if(np){
-     const mark=markOnly(line),names=namesItems(line);
+     const mark=markOnly(line)&&!(dashParts&&DASH_FRAMED.test(line.trim())),names=namesItems(line);
      const heading=isNonPublicHeading(line)||closedLine(line)||startsNonPublic(line)||report&&line.length<=110&&!/[.!?]$/.test(line)||line.length<=120&&/:\s*$/.test(line)&&!names.named.length&&!/[„"“”»«]/.test(line);
      const part=canonNP(line).match(PART_HEADING);
      // A legend of a mark: what the marked items are is told only here (rule 4).
@@ -1368,6 +1389,7 @@ export function parseSessionText(lines,{title='',wrapped=false}={}){
    else if(it&&kind==='minutes'&&cur&&state==='public'&&it.form==='plain'&&cur.deciding)it=null;
    if(!it){
     if(state==='none'&&!seenItem&&publicSentence(line)){state='public';evidence=`Satz „${line.length>120?line.slice(0,119)+'…':line}“`;}
+    else if(state==='none'&&!seenItem&&kind==='invitation'&&segments.length===1&&INVITES_PUBLIC.test(line)&&!hasClosedMention(all.slice(seg.start,end))){state='public';evidence=`Einladung der Bürger: „${line.length>120?line.slice(0,119)+'…':line}“`;}
     if(cur&&kind==='minutes'){cur.block.push(line);if(/^Beschluss/i.test(line)||DECISION_INTRO.test(line)&&/:\s*$/.test(line))cur.deciding=true;if(/Abstimmung|(?<!\p{L})Ja(?!\p{L}).*Nein|einstimmig|\d\s*:\s*\d|Stimmen/i.test(line))cur.deciding=false;}
     i++;continue;
    }

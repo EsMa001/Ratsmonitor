@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {sessionScore,SESSION_THRESHOLD,documentLinks,embeddedPdfs} from '../server/integrations/website-feeds.mjs';
+import {sessionScore,SESSION_THRESHOLD,documentLinks,embeddedPdfs,isCmsFileUrl} from '../server/integrations/website-feeds.mjs';
 import {parseSessionText,pdfLines,isNonPublicHeading} from '../server/integrations/website-text.mjs';
 import {collectWebsite} from '../server/integrations/website.mjs';
 // Everything here is NACHGEBILDET (made up for these tests): the way Verwaltungsgemeinschaften, Ämter and small towns publish
@@ -122,4 +122,76 @@ Gemeinde Musterdorf, den 07.10.2026`;
  assert.ok(d.topics.every(t=>t.sourceUrl.startsWith(pdf)));
  assert.ok(asked.includes(pdf));
  assert.ok(asked.every(u=>u.startsWith(origin)),'only the site itself is asked');
+});
+
+const parse=(name,opts={})=>parseSessionText(pdfLines(fixture(name)),{title:'',wrapped:true,...opts});
+
+test('"Eine nicht-öffentliche Sitzung schließt sich an." after a public Gemeinderatsitzung closes the agenda like "Anschließend nichtöffentliche Sitzung"',()=>{
+ const {meetings}=parse('einladung-np-schliesst-sich-an.txt');
+ assert.equal(meetings[0].unclear,false);
+ assert.equal(meetings[0].items.length,5);
+ assert.match(meetings[0].publicEvidence,/öffentliche/i);
+ // A note before the items proves nothing about them.
+ const lines=pdfLines(fixture('einladung-np-schliesst-sich-an.txt'));
+ const moved=[...lines.slice(0,7),'Eine nichtöffentliche Sitzung schließt sich an.',...lines.slice(7,12),...lines.slice(13)];
+ assert.ok((parseSessionText(moved,{title:'',wrapped:true}).meetings[0]?.items.length??0)<5);
+});
+
+test('an invitation of the citizens to a meeting is evidence of a public meeting only where nothing speaks of a closed part',()=>{
+ const ok=parse('einladung-buerger-eingeladen.txt').meetings[0];
+ assert.equal(ok.unclear,false);assert.equal(ok.items.length,4);
+ assert.match(ok.publicEvidence,/Bürger/);
+ const lines=pdfLines(fixture('einladung-buerger-eingeladen.txt'));
+ // Any hint at a closed part, before or after the items, takes the evidence away.
+ for(const hint of ['Im Anschluss folgt ein nichtöffentlicher Teil.','Die Beratung erfolgt unter Ausschluss der Öffentlichkeit.','Einzelne Punkte werden vertraulich behandelt.']){
+  const withHint=[...lines.slice(0,3),hint,...lines.slice(3)];
+  assert.equal(parseSessionText(withHint,{title:'',wrapped:true}).meetings[0]?.items.length??0,0,hint);
+ }
+});
+
+test('the standing item "Bekanntgabe der in nichtöffentlicher Sitzung gefassten Beschlüsse … Gründe für Geheimhaltung weggefallen" is a public item, not a hint at a closed part',()=>{
+ const {meetings}=parse('bekanntmachung-geheimhaltung-weggefallen.txt');
+ assert.equal(meetings[0].unclear,false);
+ assert.equal(meetings[0].items.length,5);
+ // Another mention of secrecy between the items stays suspect.
+ const lines=pdfLines(fixture('bekanntmachung-geheimhaltung-weggefallen.txt'));
+ const risky=[...lines.slice(0,9),'Dieser Punkt wird vertraulich behandelt.',...lines.slice(9)];
+ assert.ok((parseSessionText(risky,{title:'',wrapped:true}).meetings[0]?.items.length??0)<5);
+});
+
+test('headings of the parts with dashes ("- öffentlicher Sitzungsteil -") divide the agenda; "Beschlüsse des nichtöffentlichen Sitzungsteiles" is a public item',()=>{
+ const {meetings}=parse('bekanntmachung-sitzungsteile-mit-strichen.txt');
+ assert.equal(meetings[0].unclear,false);
+ assert.equal(meetings[0].items.length,7);
+ assert.equal(meetings[0].items.some(i=>/Vergabe|Grundstück|Personal/.test(i.title)),false);
+ assert.equal(isNonPublicHeading('- nichtöffentlicher Sitzungsteil –'),true);
+});
+
+test('a public notice of the meeting without any hint at a closed part gives its agenda; one with a hint does not',()=>{
+ const ok=parse('bekanntmachung-ohne-nichtoeffentlichen-teil.txt').meetings[0];
+ assert.equal(ok.unclear,false);assert.equal(ok.items.length,5);
+ assert.match(ok.publicEvidence,/Bekanntmachung/);
+ const lines=pdfLines(fixture('bekanntmachung-ohne-nichtoeffentlichen-teil.txt'));
+ for(const hint of ['Anschließend Sitzung unter Ausschluss der Öffentlichkeit.','Die Punkte 4 und 5 sind nichtöffentlich.','Hinweis: geheime Beratung möglich.']){
+  const risky=[...lines.slice(0,8),hint,...lines.slice(8)];
+  assert.equal(parseSessionText(risky,{title:'',wrapped:true}).meetings[0]?.items.length??0,0,hint);
+ }
+ // An invitation that does not call itself a notice is not covered.
+ const invitation=lines.map(l=>/BEKANNTMACHUNG/i.test(l)?'Einladung zur Sitzung':l);
+ assert.equal(parseSessionText(invitation,{title:'',wrapped:true}).meetings[0]?.items.length??0,0);
+});
+
+test('a "Bericht aus dem Gemeinderat" gives the items it reports; a text of another title does not',()=>{
+ const lines=pdfLines(fixture('bericht-aus-dem-gemeinderat.txt'));
+ const ok=parseSessionText(lines,{title:'',wrapped:true}).meetings[0];
+ assert.equal(ok.unclear,false);assert.ok(ok.items.length>=2);
+ const other=[...lines];other[0]='Niederschrift über die Sitzung vom 20.07.2026';
+ assert.equal(parseSessionText(other,{title:'',wrapped:true}).meetings[0]?.items.length??0,0);
+});
+
+test('the file storage of the CMS publish.cmcitymedia.de counts as the website\'s own, like the one of verwaltungsportal.de',()=>{
+ assert.equal(isCmsFileUrl('https://publish.cmcitymedia.de/news/getFile.php?id=1&file=a.pdf'),true);
+ assert.equal(isCmsFileUrl('http://publish.cmcitymedia.de/news/getFile.php'),false);
+ assert.equal(isCmsFileUrl('https://publish.cmcitymedia.de.example.test/x.pdf'),false);
+ assert.equal(isCmsFileUrl('https://www.cmcitymedia.de/'),false);
 });

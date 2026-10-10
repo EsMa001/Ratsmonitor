@@ -63,7 +63,7 @@ const RIS_ADDRESS=/sessionnet|\bsi00\d\d\b|\/(?:si|to|vo|kp|gr|pa|au|yw|do)0\d{3
 // File storage of a website CMS on a host of its provider: the municipality's own pages link their notices there
 // (daten2.verwaltungsportal.de for the websites that verwaltungsportal.de runs). Such an origin is read only as a
 // document origin that an entry names in alsoFrom, because the municipality's list pages link it; never as a website.
-export const CMS_FILE_HOST=/^daten\d*\.verwaltungsportal\.de$/i;
+export const CMS_FILE_HOST=/^(?:daten\d*\.verwaltungsportal\.de|publish\.cmcitymedia\.de)$/i;
 /** Whether an address lies on the file storage of a website CMS (CMS_FILE_HOST), over https. */
 export const isCmsFileUrl=url=>{try{const u=new URL(url);return u.protocol==='https:'&&CMS_FILE_HOST.test(u.hostname)&&!u.username&&!u.password;}catch{return false;}};
 /** Whether an address belongs to a council information system (host name or a path typical of one). */
