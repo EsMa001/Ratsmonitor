@@ -1242,6 +1242,22 @@
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
   },
   {
+    "id": "de-010585847",
+    "name": "Amt Hohner Harde",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://fockbek.ris-portal.de/web/ratsinformation/",
+    "organizations": {
+      "include": [
+        "Hohner Harde"
+      ]
+    },
+    "verifiedSource": "https://fockbek.ris-portal.de/web/ratsinformation/gremien",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Endpunkt; RIS-Portal (öffentliche Seiten) erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
+  },
+  {
     "id": "de-010585853",
     "name": "Amt Jevenstedt",
     "kind": "city",
@@ -9741,6 +9757,22 @@
     "verifiedSource": "https://www.kuchen.de/ratsinformationssystem-01.html",
     "verifiedAt": "2026-10-05",
     "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; RIS-Portal regisafe (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "de-08117035",
+    "name": "Gemeinde Mühlhausen im Täle",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "ris-portal",
+    "base": "https://gvv-oberes-filstal.ris-portal.de/",
+    "organizations": {
+      "include": [
+        "Mühlhausen"
+      ]
+    },
+    "verifiedSource": "https://gvv-oberes-filstal.ris-portal.de/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein OParl-Endpunkt; RIS-Portal (öffentliche Seiten) erreichbar; gemeinsames System mehrerer Körperschaften, getrennt über die Gremienangabe."
   },
   {
     "id": "de-08117037",
