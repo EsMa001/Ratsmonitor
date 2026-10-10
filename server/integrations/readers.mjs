@@ -5,7 +5,7 @@
 // recognised on the municipality's website page that embeds it, not on a page of the system itself.
 import {collectAllris3,detectAllris3} from './allris3.mjs';
 import {collectKic,detectKic,kicShell} from './kic.mjs';
-import {collectTiGenerator,detectTiGenerator} from './ti-generator.mjs';
+import {collectTiGenerator,detectTiGenerator,extraPages} from './ti-generator.mjs';
 import {collectSessionNet6,detectSessionNet6} from './sessionnet6.mjs';
 import {collectCronRatsinfo,detectCronRatsinfo} from './cron-ratsinfo.mjs';
 import {collectMuenchenRisi,detectMuenchenRisi} from './muenchen-risi.mjs';
@@ -44,7 +44,7 @@ export const READERS={
  // KIC Software (React app with a public guest API): the app's webconfig.json names the API and the organisation. The
  // systems of komuna (ris.komuna.net/<name>/, interface risapi1.komuna.net) are this app as well.
  kic:{name:'KIC-RIS (öffentliche Gast-Schnittstelle)',collect:collectKic,detect:async(url,html,{get}={})=>kicShell(url,html)?pick(await detectKic(url,html,get?{get}:{}),['base','api','client']):null},
- 'ti-generator':{name:'TI-Generator (öffentliche Seiten)',collect:collectTiGenerator,detect:async(url,html)=>{const found=detectTiGenerator(url,html);return found&&found.invitationLists>0?pick(found,['base']):null;}},
+ 'ti-generator':{name:'TI-Generator (öffentliche Seiten)',collect:collectTiGenerator,detect:async(url,html)=>{const found=detectTiGenerator(url,html);return found&&(found.invitationLists>0||extraPages(html,{base:found.base}).length)?pick(found,['base']):null;}},
  sessionnet6:{name:'SessionNet 6 (öffentliche Schnittstelle)',collect:collectSessionNet6,detect:async(url,html)=>pick(detectSessionNet6(url,html),['base'])},
  'cron-ratsinfo':{name:'cron Ratsinfo für TYPO3 (öffentliche Seiten)',collect:collectCronRatsinfo,detect:async(url,html)=>pick(detectCronRatsinfo(url,html),['base','start'])},
  'muenchen-risi':{name:'RIS München (öffentliche Seiten)',collect:collectMuenchenRisi,detect:async(url,html)=>pick(detectMuenchenRisi(url,html),['base'])},
