@@ -12,17 +12,17 @@ type Chapter = { t: number; title: string; what: string };
 const PLENARA: Chapter[] = [
   { t: 7, title: "Worum es geht", what: "Was in Ihren Kommunen beraten wird, an einem Ort." },
   { t: 26, title: "Suchen", what: "Ein Begriff, ganz Deutschland, sofort auf der Karte." },
-  { t: 59, title: "Liste und Artikel", what: "Den Stand jedes Vorgangs auf einen Blick." },
-  { t: 96, title: "Filter", what: "Eingrenzen, bis nur das Passende übrig bleibt." },
-  { t: 128, title: "Alarme", what: "Per E-Mail informiert werden, ohne zu suchen." },
+  { t: 60, title: "Liste und Artikel", what: "Den Stand jedes Vorgangs auf einen Blick." },
+  { t: 97, title: "Filter", what: "Eingrenzen, bis nur das Passende übrig bleibt." },
+  { t: 129, title: "Alarme", what: "Per E-Mail informiert werden, ohne zu suchen." },
   { t: 166, title: "Export", what: "Aus der Suche wird Ihre Auswertung." },
-  { t: 194, title: "Kalender", what: "Keine Sitzung verpassen." },
+  { t: 195, title: "Kalender", what: "Keine Sitzung verpassen." },
   { t: 217, title: "Konto", what: "Alles Gespeicherte an einem Ort." },
   { t: 240, title: "Datenabdeckung", what: "Ist Ihre Gemeinde dabei? Das sehen Sie offen." },
 ];
 const ANALYSE: Chapter[] = [
   { t: 268, title: "Ausbreitung", what: "Sehen, wie sich ein Thema ausbreitet." },
-  { t: 308, title: "Entscheidungen", what: "Wie Vorgänge ausgehen." },
+  { t: 309, title: "Entscheidungen", what: "Wie Vorgänge ausgehen." },
   { t: 340, title: "Trends", what: "Neues früh erkennen." },
   { t: 362, title: "Orte vergleichen", what: "Zwei Kommunen nebeneinander." },
   { t: 389, title: "Zusammenhänge", what: "Themen und Orte als Netz." },
@@ -92,8 +92,8 @@ function ChapterList({ title, items, now, go }: { title: string; items: Chapter[
 
 const HOOKS: { title: string; text: string; t: number }[] = [
   { title: "Früher erfahren, was beraten wird", text: "Ein Begriff, und die Karte zeigt, wo darüber beraten wird.", t: 26 },
-  { title: "Alarme statt tägliches Suchen", text: "plenara meldet sich per E-Mail, wenn es Neues gibt.", t: 128 },
-  { title: "Stand jedes Vorgangs auf einen Blick", text: "Der Verlauf steht schon in der Trefferliste.", t: 59 },
+  { title: "Alarme statt tägliches Suchen", text: "plenara meldet sich per E-Mail, wenn es Neues gibt.", t: 129 },
+  { title: "Stand jedes Vorgangs auf einen Blick", text: "Der Verlauf steht schon in der Trefferliste.", t: 60 },
   { title: "Wie sich ein Thema ausbreitet", text: "plenara.X zeigt Ausbreitung, Entscheidungen und Trends.", t: 268 },
 ];
 
