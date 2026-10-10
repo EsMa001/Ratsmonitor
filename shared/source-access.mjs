@@ -70,7 +70,7 @@ export const READER_CHANNELS=Object.freeze({
  councilservice:{kind:'api',name:'JSON-Export (mein-intra)'},
 });
 /** Name of the reader of a catalog entry, as the gap atlas and the administration show it. */
-export const METHOD_NAMES=Object.freeze({sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',parlis:'PARLIS','sim-hannover':'SIM Hannover','sdnet-rim4':'SD.NET RIM 4',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra','ris-portal':'RIS-Portal',komfa:'KOMFA-RIS',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',ckan:'CKAN-Portal',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'});
+export const METHOD_NAMES=Object.freeze({sdnet:'SD.NET',allris:'ALLRIS 4','more-rubin':'More! Rubin','cron-ratsinfo':'cron Ratsinfo',allris3:'ALLRIS 3',kic:'KIC-RIS',pio:'PIO',piwi:'PIWi',parlis:'PARLIS','sim-hannover':'SIM Hannover','sdnet-rim4':'SD.NET RIM 4','provox-iip':'Provox IIP',sessionnet6:'SessionNet 6','muenchen-risi':'RIS München','ti-generator':'TI-Generator',councilservice:'Sitzungsdienst mein-intra','ris-portal':'RIS-Portal',komfa:'KOMFA-RIS',website:'Website','hamburg-transparenz':'Transparenzportal Hamburg',ckan:'CKAN-Portal',berlin:'Abgeordnetenhaus (PARDOK)','oparl-bezirke':'OParl der Bezirke'});
 export const methodName=s=>s?.method==='oparl'?'OParl':METHOD_NAMES[s?.adapter]||(s?.base||s?.system?'SessionNet':'Stammquelle');
 /** {kind: 'oparl'|'api'|'html', name, documented?} of a catalog entry. */
 export function channelOf(source){
