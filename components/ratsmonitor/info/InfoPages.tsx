@@ -11,8 +11,10 @@ import { VideosPage } from "./VideosPage";
 import { PreisePage } from "./PreisePage";
 import { AgbPage } from "./AgbPage";
 import { WiderrufPage } from "./WiderrufPage";
+import { LenaPage } from "./LenaPage";
 
 const PAGES: Record<string, ComponentType> = {
+  "/lena": LenaPage,
   "/faq": FaqPage,
   "/videos": VideosPage,
   "/datenabdeckung": QuellenPage,

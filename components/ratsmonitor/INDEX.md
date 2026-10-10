@@ -674,6 +674,11 @@ wordmark__dot design-styles.css:61
 
 ### app/(monitor)/
 - layout.tsx (3): MonitorLayout
+
+### app/(monitor)/lena/
+- page.tsx (2): Page
+
+### app/(monitor)/
 - not-found.tsx (4): metadata, NotFound
 - page.tsx (2): Page
 
@@ -793,8 +798,9 @@ wordmark__dot design-styles.css:61
 - BranchenLive.tsx (245): LiveThumb
 - BranchenPages.tsx (126): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (45): isInfoPath, InfoPages
+- InfoPages.tsx (47): isInfoPath, InfoPages
 - LegalText.tsx (20): H2, P, Ul
+- LenaPage.tsx (189): LenaPage
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
@@ -826,9 +832,10 @@ wordmark__dot design-styles.css:61
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
+- lena.ts (48): LENA_INTRO, LENA_EXAMPLES, LenaSource, LenaAnswer, askLena, germanDate
 - listView.ts (46): ListView, setListView, useListView
 - mails.ts (134, ⚠2): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
-- pageTitle.ts (38): pageName, tabTitle
+- pageTitle.ts (39): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - savedArticles.ts (65): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, useSavedArticles
@@ -846,7 +853,7 @@ wordmark__dot design-styles.css:61
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (224, ⚠1): MainMenu
+- MainMenu.tsx (232, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (130, ⚠4): DetailPage

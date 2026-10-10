@@ -21,6 +21,13 @@ export const GLOSSARY=[
  {keys:['datenstand','wie aktuell','aktualität'],title:'Datenstand',text:'Die Daten kommen direkt aus den Ratsinformationssystemen der Kommunen. Den Stand sehen Sie in der Suche neben der Trefferzahl; welche Kommunen erfasst sind, zeigt die Datenabdeckung.',link:'/datenabdeckung'},
  {keys:['quelle','originalquelle','originalunterlagen'],title:'Originalquelle',text:'Jeder Vorgang verlinkt auf die Originalunterlagen im Ratsinformationssystem der Kommune. Maßgeblich ist immer die Quelle, nicht die Darstellung hier.',link:'/quellen'},
  {keys:['umkreis','radius'],title:'Umkreissuche',text:'In der Suche wählen Sie einen Ort und dazu einen Umkreis. Dann erscheinen die Vorgänge aller Kommunen in dieser Entfernung.',link:'/funktionen'},
+ {keys:['beschlussvorschlag'],title:'Beschlussvorschlag',text:'Der Beschlussvorschlag ist der Text, über den das Gremium abstimmen soll. Er steht in der Vorlage und kann in der Sitzung geändert werden.',link:'/faq'},
+ {keys:['tagesordnung','was ist ein top','top'],title:'Tagesordnung',text:'Die Tagesordnung ist die Liste der Punkte, die ein Gremium in einer Sitzung behandelt. Sie wird vor der Sitzung veröffentlicht.',link:'/faq'},
+ {keys:['ratsinformationssystem','ris','bürgerinformationssystem','buergerinformationssystem'],title:'Ratsinformationssystem',text:'Das Ratsinformationssystem ist das System einer Kommune, in dem Sitzungen, Vorlagen und Beschlüsse veröffentlicht werden. Plenara bündelt diese Angaben aus vielen Systemen.',link:'/quellen'},
+ {keys:['aufstellungsbeschluss'],title:'Aufstellungsbeschluss',text:'Der Aufstellungsbeschluss leitet ein Planverfahren, etwa für einen Bebauungsplan, förmlich ein.',link:'/faq'},
+ {keys:['was ist ein antrag','antrag'],title:'Antrag',text:'Ein Antrag ist ein Vorschlag aus dem Rat oder der Bürgerschaft, einen Beschluss zu fassen oder etwas zu prüfen.',link:'/faq'},
+ {keys:['was ist eine anfrage','anfrage'],title:'Anfrage',text:'Eine Anfrage ist eine Frage aus dem Rat an die Verwaltung, die diese beantwortet.',link:'/faq'},
+ {keys:['haushaltssatzung','haushaltsplan'],title:'Haushaltssatzung',text:'Mit der Haushaltssatzung setzt der Rat den Haushaltsplan für ein Jahr oder zwei Jahre fest.',link:'/faq'},
 ];
 /** Findet den Eintrag, dessen Schlüssel in der Frage vorkommt (längster Schlüssel zuerst). */
 export function lookupGlossary(text){
