@@ -22,6 +22,6 @@ export default {
       ["zeitstrahl", async (H) => { const b = await demo(H).boundingBox(); const y = b.y + b.height - 24; await H.move(b.x + 70, y, 40); await H.sleep(1400); await H.move(b.x + 320, y, 60); await H.sleep(1400); await H.move(b.x + 560, y, 60); }, 2.5],
       ["artikel", async (H) => { const href = await demo(H).locator("a[href^='/beschluss/']").first().getAttribute("href"); await H.hidden(() => H.go(href)); }, 3],
       ["verlauf", (H) => H.scrollTo(480), 4],
-      ["quelle", (H) => H.scrollTo(1000), 4],
+      ["quelle", async (H) => { const y = await H.page.evaluate(() => { const e = [...document.querySelectorAll("h1,h2,h3")].find((x) => /^Originalunterlagen|^Unterlagen|^Dokumente/.test(x.innerText.trim())); const max = document.documentElement.scrollHeight - innerHeight - 260; return Math.max(0, Math.min(e ? e.getBoundingClientRect().top + scrollY - 140 : 1000, max)); }); await H.scrollTo(y); }, 4],
     ],
   };
