@@ -180,10 +180,13 @@ Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain 
   HTTP-Basic-Anmeldung nicht (der Browser schickt das Passwort weiter); dafür ein Anmeldedienst mit Sitzung.
 - **`SITE_URL`** auf die https-Adresse setzen, `VINEXT_TRUST_PROXY=1` bleibt.
 - **Ausgehende Verbindungen sperren**, die nicht ins Internet gehen (127.0.0.0/8, 10/8, 172.16/12, 192.168/16,
-  169.254/16, ::1, fc00::/7) für den Benutzer `ratsmonitor`. `/api/dokument` lädt gespeicherte Quellenadressen und
-  folgt Weiterleitungen; auf Cloudflare kam man nie an interne Adressen, auf dem Server schon.
+  169.254/16, ::1, fc00::/7) für den Benutzer `ratsmonitor`. `/api/dokument` lädt gespeicherte Quellenadressen; seit
+  Paket 3 (`server/integrations/document-proxy.mjs`) nur https, nur öffentliche Namen und Adressen (auch nach der
+  Namensauflösung), Weiterleitungen von Hand mit Prüfung je Ziel. Die Sperre auf dem Server bleibt als zweite Schranke
+  sinnvoll: Ein Name, der sich zwischen Prüfung und Abruf anders auflöst (DNS-Rebinding), wird im Code nicht erkannt.
 - **Impressum und Datenschutz** mit Hostinger als Hoster.
-- **Zeitgesteuerte Importe** über `scripts/run-imports.mjs` (braucht `IMPORT_TOKEN` und eine https-Adresse).
+- **Zeitgesteuerte Importe** über `scripts/run-imports.mjs` (braucht `IMPORT_TOKEN` mit mindestens 16 Zeichen und eine
+  https-Adresse; der Token wird zeitkonstant verglichen, ein kürzerer gilt als nicht gesetzt).
 
 ## Bekannte Grenzen
 

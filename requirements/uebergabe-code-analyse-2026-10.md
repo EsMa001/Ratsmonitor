@@ -8,6 +8,11 @@ bitte beibehalten.
 
 - **Paket 1 (Suche und Server entlasten) ist fertig**, auf `main` und auf dem Server (Stand 45bdec0, Doku danach).
   Migration `drizzle/0017` ist lokal (Max) und auf dem Server eingespielt. Messwerte stehen im Bericht unter Paket 1.
+- **Paket 2 (Abrufe) ist auf `main`** (`da816bd`, gegengelesen mit Fable). Migration `drizzle/0018` (drei Trigger,
+  Millisekunden) ist noch **nicht** lokal und nicht auf dem Server eingespielt; ohne sie läuft alles wie vorher.
+  Vorher-Messwerte stehen im Bericht, die Nachher-Messung folgt mit dem ersten bundesweiten Lauf nach dem Ausrollen.
+  `SERVER_LIMITS` (A1, mehr als zwei Abrufe je Servergruppe) ist leer; das entscheidet Max.
+- **Paket 3 (Fehler und Sicherheit)** ist umgesetzt auf `paket-3-sicherheit` (Stand im Bericht unter Paket 3).
 - **Nico** muss 0017 lokal noch einspielen, bei beendetem Dev-Server:
   `node scripts/node-migrate.mjs .wrangler/state/v3/d1/miniflare-D1DatabaseObject/<datei>.sqlite`
 - **Server** (Hostinger 187.7.72.52, SSH-Alias `ratsmonitor`):
