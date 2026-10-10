@@ -9,6 +9,7 @@
 import history from './coverage-history.json' with {type:'json'};
 import {CATALOG,POPULATION,landOf} from '../../shared/catalog.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
+import {VG_GROUPS} from '../../shared/vg-groups.mjs';
 import {NRW_SOURCES} from './source-catalog.mjs';
 import {SOURCES} from './regions.mjs';
 import {coverageOf,dataCoverageSeries,tally,reachBucket,freshBucket,sizeClassOf,monthlyReports,REACH_BUCKETS,FRESH_BUCKETS,SIZE_CLASSES} from '../../shared/coverage.mjs';
@@ -21,8 +22,14 @@ export const connectedIds=()=>new Set([...CORE,...SOURCES.map(s=>s.id),...NRW_SO
 export async function adminCoverage(db,{now=new Date()}={}){
  const all=new Set(CATALOG.map(r=>r.id)),connectedSet=connectedIds(),today=now.toISOString().slice(0,10);
  const total=coverageOf(CATALOG,POPULATION,all,landOf),connected=coverageOf(CATALOG,POPULATION,connectedSet,landOf);
- // Einwohner erreicht inklusive Kreise: ein Ort gilt als erreicht, wenn er selbst oder sein Landkreis angebunden ist.
- const withDistricts=coverageOf(CATALOG,POPULATION,new Set(CATALOG.filter(r=>r.kind==='city'&&(connectedSet.has(r.id)||(r.district&&connectedSet.has(r.district)))).map(r=>r.id)),landOf);
+ // Einwohner erreicht inklusive VG: ein Ort gilt zusätzlich als erreicht, wenn ein von Hand geprüftes anderes
+ // Gebiet derselben Samtgemeinde/Verbandsgemeinde/Amt/Verwaltungsgemeinschaft angebunden ist (shared/vg-groups.mjs).
+ const vgOf=new Map();for(const g of VG_GROUPS)for(const id of g)vgOf.set(id,g);
+ const vgReached=id=>connectedSet.has(id)||(vgOf.get(id)||[]).some(x=>connectedSet.has(x));
+ const withVg=coverageOf(CATALOG,POPULATION,new Set(CATALOG.filter(r=>r.kind==='city'&&vgReached(r.id)).map(r=>r.id)),landOf);
+ // Einwohner erreicht inklusive Kreise: ein Ort gilt als erreicht, wenn er selbst (oder über die VG-Gruppe) oder
+ // sein Landkreis angebunden ist.
+ const withDistricts=coverageOf(CATALOG,POPULATION,new Set(CATALOG.filter(r=>r.kind==='city'&&(vgReached(r.id)||(r.district&&connectedSet.has(r.district)))).map(r=>r.id)),landOf);
  const [dataset,events,figures]=await Promise.all([adminTimeline(db,{basis:'import',now}),adminTimeline(db,{basis:'event',now}),areaFigures(db,{now})]);
  const withData=new Set([...Object.keys(dataset.areas||{}),...Object.keys(dataset.undated||{})].filter(id=>all.has(id)));
  const data=coverageOf(CATALOG,POPULATION,withData,landOf);
@@ -34,7 +41,7 @@ export async function adminCoverage(db,{now=new Date()}={}){
  return {
   asOf:now.toISOString(),
   lands:Object.fromEntries(ALL_LANDS.map(l=>[l.id,{name:l.name,short:l.short}])),
-  total,connected,withDistricts,
+  total,connected,withVg,withDistricts,
   data:{...data,series:dataCoverageSeries(dataset,CATALOG,POPULATION),reports:dataset.total,undatedAreas:Object.keys(dataset.undated||{}).filter(id=>all.has(id)&&!dataset.areas?.[id]?.length).length},
   history:{builtAt:history.builtAt,points:history.points.map(p=>({at:p.at,commit:p.commit,areas:p.areas,population:p.population}))},
   analysis:{

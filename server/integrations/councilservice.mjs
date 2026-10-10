@@ -7,7 +7,8 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {decodeEntities,repairMojibake,composeUmlauts,isNonPublicText,isNonPublicHeading,closedLine} from './website-text.mjs';
 // Sitzungsdienst "councilservice" of mein-intra.net, embedded in the municipality's own website (Sonnewalde, Mulda/Sa.,
 // Werra-Suhl-Tal …). The website page loads <mandant>.mein-intra.net/export/js/initialize.js and calls
-// initializeExport("<token>"); the script then asks the JSON interface of the system with the headers
+// initializeExport("<token>"), or (Pößneck) loads the script after a click with the token as the id of the embedding
+// element: initializeExport(b.id) with b = document.getElementById("<token>"); the script then asks the JSON interface of the system with the headers
 // X-Requested-By: spa-export and X-Export-Token: <token>. Without the token the system sends programs and people to its
 // login. The reader sends the same requests the page sends for every visitor and nothing that needs a login:
 // - POST councilservice/session/fetch-overview/mine/0/by-docs/0?range=individual&schedule_start&schedule_end with
@@ -55,16 +56,28 @@ export function councilservicePage(url){
  u.pathname=u.pathname.replace(/;jsessionid=[^/]*/i,'');u.hash='';
  return u.href;
 }
+/** The export script of a mein-intra.net system on a page: as <script src="…"> or as the address a loader script receives (Pößneck). */
+export const EXPORT_SCRIPT=/["']https:\/\/([a-z0-9-]+)\.mein-intra\.net\/export\/js\/initialize\.js["']/gi;
+/**
+ * The export tokens a page names: the argument of initializeExport("<token>"), or, when the page calls
+ * initializeExport(<element>.id) for the element it looks up (Pößneck: initializeExport(b.id) … getElementById("<token>")),
+ * the id of that element. Each form counts only with a well-formed token.
+ */
+export function exportTokens(code){
+ const named=[...code.matchAll(/initializeExport\(\s*["']([^"']+)["']\s*\)/g)].map(m=>m[1]);
+ const byElement=/initializeExport\(\s*[a-zA-Z_$][\w$]*\.id\s*\)/.test(code)?[...code.matchAll(/getElementById\(\s*["']([^"']+)["']\s*\)/g)].map(m=>m[1]).filter(id=>TOKEN.test(id)):[];
+ return [...new Set([...named,...byElement])];
+}
 /**
  * The page of a municipal website that embeds the council service: the export script of a mein-intra.net system and
- * its token, on a page whose address opens the council service (…?href=/councilservice/…). null for any other page:
- * another module of the same system (appointments, forms) or a page that merely links the council service.
+ * its token (exportTokens), on a page whose address opens the council service (…?href=/councilservice/…). null for any
+ * other page: another module of the same system (appointments, forms) or a page that merely links the council service.
  * Result: {base, token, page}; page keeps the page's own query (index.php?id=438) without the system's address.
  */
 export function detectCouncilservice(url,html=''){
  const code=String(html).replace(/<!--[\s\S]*?-->/g,'');
- const scripts=[...code.matchAll(/<script\b[^>]*\bsrc=["']https:\/\/([a-z0-9-]+)\.mein-intra\.net\/export\/js\/initialize\.js["']/gi)].map(m=>m[1].toLowerCase());
- const tokens=[...new Set([...code.matchAll(/initializeExport\(\s*["']([^"']+)["']\s*\)/g)].map(m=>m[1]))];
+ const scripts=[...code.matchAll(EXPORT_SCRIPT)].map(m=>m[1].toLowerCase());
+ const tokens=exportTokens(code);
  // One system and one export on the page; several are not told apart.
  if(new Set(scripts).size!==1||tokens.length!==1||!TENANT.test(scripts[0])||!TOKEN.test(tokens[0]))return null;
  if(!/^\/councilservice\//.test(hrefParameter(url)||''))return null;

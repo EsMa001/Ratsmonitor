@@ -10,8 +10,10 @@ import {collectSdnet} from '../../server/integrations/sdnet.mjs';
 import {collectAllris} from '../../server/integrations/allris.mjs';
 import {robotsVerdict} from '../../server/integrations/robots.mjs';
 import {READERS} from '../../server/integrations/readers.mjs';
+import {detectAllris3} from '../../server/integrations/allris3.mjs';
+const pick=(found,keys)=>Object.fromEntries(keys.filter(k=>found?.[k]).map(k=>[k,found[k]]));
 import {fetchText} from '../../server/integrations/sessionnet.mjs';
-import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,hrefs,title,identity,sharedBodies,nameTwins,namesDistinctly,platformLands} from './rules.mjs';
+import {SERVICE,unwrapLink,followUpsAfterFailure,MEMBERS_AREA,publicSiblings,allrisBases,allrisGeneration,allris3Siblings,hrefs,title,identity,sharedBodies,nameTwins,namesDistinctly,platformLands,STRONG_RIS,rankCandidates} from './rules.mjs';
 import {consentAllows} from '../../server/integrations/consents.mjs';
 import {obeyRobots} from '../../server/integrations/robots-policy.mjs';
 import {channelOf} from '../../shared/source-access.mjs';
@@ -24,6 +26,17 @@ const done=fs.existsSync(outFile)?JSON.parse(fs.readFileSync(outFile,'utf8')):{}
 // The areas to check (again): a comma-separated list as argument, or a file with one id per line (ONLY_FILE).
 const only=process.env.ONLY_FILE?new Set(fs.readFileSync(process.env.ONLY_FILE,'utf8').split(/\s+/).filter(Boolean)):process.argv[2]?new Set(process.argv[2].split(',')):null;
 const WINDOW=process.env.WINDOW||'3m';
+// A recognised system that lists no meeting in the check window (small municipalities meet rarely: Ostrhauderfehn,
+// Stralendorf, Laaber, Straßkirchen) is asked once more over twelve months; with items it is taken, and the entry says
+// so (apiCheck). Not after a refusal, an access check or a robots.txt verdict: those are no empty calendars.
+const WIDE_WINDOW='12m',EMPTY_REFUSAL=/HTTP (?:401|403|429)\b|Zugriffsprüfung|zu viele Zugriffe|nicht freigegeben|robots\.txt|Adapterfreigabe/i;
+const widenNote=`Im Prüfzeitraum von ${WINDOW} keine Sitzungen; mit ${WIDE_WINDOW} geprüft und öffentliche Tagesordnungspunkte gefunden.`;
+async function widen(collect,d,note){
+ const empty=!d.topics.length&&!(d.coverage?.meetings>0)&&!(d.coverage?.issues||[]).some(i=>EMPTY_REFUSAL.test(String(i)));
+ if(!empty||WINDOW===WIDE_WINDOW)return {d,window:WINDOW,check:''};
+ const again=await collect(WIDE_WINDOW);note.widened=WIDE_WINDOW;
+ return again.topics.length?{d:again,window:WIDE_WINDOW,check:' '+widenNote}:{d,window:WINDOW,check:''};
+}
 const today=new Date().toISOString().slice(0,10);
 // At most two requests or checks at a time on one server, as in the import (pipeline-jobs.mjs). A server is told apart
 // like there: by the registrable domain of its operator and by its address. A lock per host name would let every
@@ -130,11 +143,13 @@ function sessionNetBase(urls){
 // The members' area of SessionNet answers with its login (ylogon); it is never the public calendar.
 const loginPage=p=>/ylogon\.(asp|php)/i.test(p.url)||/smc-pagetype-logon/i.test(p.html);
 // The public part of a system next to its members' area (gi/, ri/, ratsinfo, sessionnetri): publicSiblings in rules.mjs.
-async function findSessionNet(url){
- const u=new URL(url),here=u.origin+u.pathname.replace(/[^/]*$/,''),bases=[...new Set([here.replace(/\/(gi|ri)\/$/i,'/bi/'),here,...publicSiblings(here),u.origin+'/',u.origin+'/bi/',here+'bi/'])];
+// login: the page was the login of SessionNet; then the public hosts of publicSiblings (bis., sbi., buergerinfo., bi.
+// on the same domain) are asked as well, each once, with the extension of the login address (asp if it names none).
+async function findSessionNet(url,{login=false}={}){
+ const u=new URL(url),here=u.origin+u.pathname.replace(/[^/]*$/,''),bases=[...new Set([here.replace(/\/(gi|ri)\/$/i,'/bi/'),here,...publicSiblings(here,{login}),u.origin+'/',u.origin+'/bi/',here+'bi/'])];
  // A host that did not answer at all (time limit, network error) is not asked again for its other folders.
- const silent=new Set();
- for(const base of bases)for(const extension of ['asp','php']){
+ const silent=new Set(),once=/\.php(?:$|[?#])/i.test(url)?['php']:['asp'];
+ for(const base of bases)for(const extension of new URL(base).hostname===u.hostname?['asp','php']:once){
   if(silent.has(new URL(base).origin))continue;
   // robots.txt decides for every address asked here as well; the search next to a failed page asks several.
   if(!await robotsAllow(base+'si0040.'+extension))continue;
@@ -185,8 +200,10 @@ const DISTRICT_BODY=/\bkreistag|\bkreisausschuss|\bkreis\w{0,30}ausschuss/i;
 const districtCommittees=topics=>topics.some(t=>[t.committee,...(t.events||[]).map(e=>e.committee)].some(name=>DISTRICT_BODY.test(String(name||''))));
 async function verify(region,row){
  const result={id:region.id,name:region.name,kind:region.kind,tried:[],systems:[]};
- const strong=/ris-portal\.de|komuna\.net|cm-ratsinfos\.de|si00\d\d|sessionnet|\/bi\/|gremien\.info|ratsinfomanagement|sdnetrim|allris|sitzung-online|oparl|buergerinfo|ratsinfo|kdz-ws|session/i;
- const ordered=row.candidates.map(c=>{let inner=null;try{inner=c.from?unwrapLink(c.url,new URL(c.from).hostname):null;}catch{/* no page */}return inner?{...c,url:inner,unwrapped:c.url}:c;}).filter(c=>!SERVICE.test(c.url)).sort((a,b)=>Number(strong.test(b.url))-Number(strong.test(a.url))||Number(b.byHref)-Number(a.byHref)).slice(0,6);
+ const strong=STRONG_RIS;
+ // Order (rankCandidates in rules.mjs): a link named "Bürgerinformationssystem" before a "Ratsinformationssystem" link,
+ // addresses that show a system before others, hits by address before hits by text.
+ const ordered=rankCandidates(row.candidates.map(c=>{let inner=null;try{inner=c.from?unwrapLink(c.url,new URL(c.from).hostname):null;}catch{/* no page */}return inner?{...c,url:inner,unwrapped:c.url}:c;}).filter(c=>!SERVICE.test(c.url))).slice(0,6);
  const seenBases=new Set(),seenUrls=new Set(ordered.map(c=>c.url));let hops=0;
  // Guessed addresses on shared hosts are not proof of assignment; links from the official website and its own domain are.
  const trusted=c=>!(c.guessed&&c.guessed!=='eigene Domain');
@@ -268,8 +285,8 @@ async function verify(region,row){
   const all=[p.url,...hrefs(p.html,p.url)];let system=systemOf(p.url,p.html);
   let sn=sessionNetBase(all.filter(u=>new URL(u).hostname===new URL(p.url).hostname).concat(all));
   // A login page, or an address that names the members' area: look for the public part next to it.
-  if(sn&&(loginPage(p)||MEMBERS_AREA.test(sn.base)))sn=await findSessionNet(sn.base)||sn;
-  else if(!sn&&loginPage(p))sn=await findSessionNet(p.url);
+  if(sn&&(loginPage(p)||MEMBERS_AREA.test(sn.base)))sn=await findSessionNet(sn.base,{login:loginPage(p)})||sn;
+  else if(!sn&&loginPage(p))sn=await findSessionNet(p.url,{login:true});
   if(!sn&&(system==='sessionnet'||system==='unknown')&&(strong.test(p.url)||/<meta[^>]+name=["']sessionnet["']/i.test(p.html)))sn=await findSessionNet(p.url);
   if(sn&&system==='unknown')system='sessionnet';
   if(!sn&&system==='unknown'&&strong.test(p.url)&&await isSdnet(p.url))system='sdnet';
@@ -353,15 +370,15 @@ async function verify(region,row){
   // 3. Public SessionNet pages.
   if(sn){
    const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',base:sn.base,extension:sn.extension,...(part?.calendarQuery?{calendarQuery:part.calendarQuery}:{}),...(part?.organizations?{organizations:part.organizations}:{})};
-   try{const d=await withHost(sn.base,()=>collectSessionNet(source,{window:WINDOW,maxDurationMs:150000}));note.snTopics=d.topics.length;note.snMeetings=d.coverage.meetings;note.snIssues=[...new Set(d.coverage.issues)].slice(0,4);
-    if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`Öffentlicher Hersteller-Standardpfad oparl/1.0/system.${sn.extension} lieferte am ${germanDate} kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
+   try{const run=w=>withHost(sn.base,()=>collectSessionNet(source,{window:w,maxDurationMs:150000}));const wide=await widen(run,await run(WINDOW),note),d=wide.d;note.snTopics=d.topics.length;note.snMeetings=d.coverage.meetings;note.snIssues=[...new Set(d.coverage.issues)].slice(0,4);
+    if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:(fallbackCheck||`Öffentlicher Hersteller-Standardpfad oparl/1.0/system.${sn.extension} lieferte am ${germanDate} kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar.`)+wide.check,evidence:{window:wide.window,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
    }catch(e){note.snError=e.message.slice(0,160);}
   }
   // 4. Public SD.NET pages.
   if(system==='sdnet'){
    const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter:'sdnet',base:sdnetBase(p.url)};
-   try{const d=await withHost(source.base,()=>collectSdnet(source,{window:WINDOW,maxDurationMs:150000}));note.sdTopics=d.topics.length;note.sdMeetings=d.coverage.meetings;note.sdIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);
-    if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am ${germanDate} nicht aktiviert; öffentliche SD.NET-Seiten erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
+   try{const run=w=>withHost(source.base,()=>collectSdnet(source,{window:w,maxDurationMs:150000}));const wide=await widen(run,await run(WINDOW),note),d=wide.d;note.sdTopics=d.topics.length;note.sdMeetings=d.coverage.meetings;note.sdIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);
+    if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:(fallbackCheck||`OParl-Schnittstelle des Herstellers (webservice/oparl/v1.1/system) war am ${germanDate} nicht aktiviert; öffentliche SD.NET-Seiten erreichbar.`)+wide.check,evidence:{window:wide.window,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
    }catch(e){note.sdError=e.message.slice(0,160);}
   }
   // 5. Public ALLRIS 4 pages. The reader asks the system's own OParl address first and keeps one session.
@@ -370,8 +387,8 @@ async function verify(region,row){
   else if(system==='allris'){
    for(const base of allrisBases(p.url,p.html)){
     const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter:'allris',base,...(part?.organizations?{organizations:part.organizations}:{})};
-    try{const d=await withHost(base,()=>collectAllris(source,{window:WINDOW,maxDurationMs:150000,checkOparl:!note.oparl}));note.allrisTopics=d.topics.length;note.allrisMeetings=d.coverage.meetings;note.allrisIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);delete note.allrisError;
-     if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`OParl-Adresse des Systems (${base}oparl/system) lieferte am ${germanDate} kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
+    try{const run=w=>withHost(base,()=>collectAllris(source,{window:w,maxDurationMs:150000,checkOparl:!note.oparl}));const wide=await widen(run,await run(WINDOW),note),d=wide.d;note.allrisTopics=d.topics.length;note.allrisMeetings=d.coverage.meetings;note.allrisIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);delete note.allrisError;
+     if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:(fallbackCheck||`OParl-Adresse des Systems (${base}oparl/system) lieferte am ${germanDate} kein OParl-System; öffentliche ALLRIS-Seiten erreichbar.`)+wide.check,evidence:{window:wide.window,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
      // The system asked not to be read by programs (or not right now): no further address of it is tried.
      if(note.allrisIssues.some(i=>/Zugriffsprüfung|zu viele Zugriffe/.test(i)))break;
     }catch(e){note.allrisError=e.message.slice(0,160);}
@@ -383,10 +400,25 @@ async function verify(region,row){
    if(!fields?.base)continue;
    if(!result.systems.includes(adapter))result.systems.push(adapter);note.reader=adapter;
    if(part&&!Object.keys(part).every(k=>PART_READERS[adapter]?.includes(k))){note.partError=adapter+': Leser trennt diesen Teil des gemeinsamen Systems nicht';break;}
-   const source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter,...fields,...(part||{})};
+   let source={id:region.id,name:region.name,kind:region.kind,method:'scraper',adapter,...fields,...(part||{})};
    if(!await robotsAllow(source.base,channelOf(source).kind)){note.robots='verboten';break;}
-   try{const d=await withHost(source.base,()=>reader.collect(source,{window:WINDOW,maxDurationMs:150000,...(reader.oparlCheck?{checkOparl:!note.oparl}:{})}));note.readerTopics=d.topics.length;note.readerMeetings=d.coverage.meetings;note.readerIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);
-    if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:fallbackCheck||`Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ${reader.name} erreichbar.`,evidence:{window:WINDOW,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
+   // ALLRIS 3 behind a members' login (ri/logon.asp): detectAllris3 derives bi/ next to it. If that folder is gone (the
+   // start page answers 404), the other public folders (pi/, bi2/, pi2/ …, rules.mjs) are asked once each for their start
+   // page, and the first that shows ALLRIS is read. Only here: ALLRIS hosts block a network that keeps asking.
+   const allrisLogin=adapter==='allris3'&&/\/logon\.asp$|(?:\/|[-_])ri\/$/i.test(new URL(p.url).pathname),gone=d=>(d.coverage?.issues||[]).some(i=>/^Startseite allris\.net\.asp: .*HTTP 404/.test(String(i)));
+   const collect=async(src,w)=>withHost(src.base,()=>reader.collect(src,{window:w,maxDurationMs:150000,...(reader.oparlCheck?{checkOparl:!note.oparl}:{})}));
+   try{let d=await collect(source,WINDOW);
+    if(allrisLogin&&!d.topics.length&&gone(d)){note.allrisFolders=[];
+     for(const folder of allris3Siblings(source.base).filter(f=>f!==source.base)){
+      let start;try{start=await withHost(folder,()=>page(folder+'allris.net.asp',12000),true);}catch{continue;}
+      note.allrisFolders.push(folder+(start.status===200?'':' ('+start.status+')'));if(start.status!==200||!detectAllris3(start.url,start.html))continue;
+      source={...source,base:folder,...pick(detectAllris3(start.url,start.html),['calendar'])};d=await collect(source,WINDOW);break;
+     }
+    }
+    const wide=await widen(w=>collect(source,w),d,note);d=wide.d;note.readerTopics=d.topics.length;note.readerMeetings=d.coverage.meetings;note.readerIssues=[...new Set(d.coverage.issues.map(i=>i.replace(/https?:\S+/g,'…')))].slice(0,4);
+    // The ALLRIS 3 reader may have found the calendar program itself (start page without one): the entry keeps it.
+    if(d.calendar&&!source.calendar)source={...source,calendar:d.calendar};
+    if(d.topics.length&&confirmed(d)){result.accepted={...source,...fallback,verifiedSource,verifiedAt:today,apiCheck:(fallbackCheck||`Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ${reader.name} erreichbar.`)+wide.check,evidence:{window:wide.window,topics:d.topics.length,meetings:d.coverage.meetings,identity:who.by}};result.tried.push(note);return result;}
    }catch(e){note.readerError=adapter+': '+e.message.slice(0,140);}
    break;
   }

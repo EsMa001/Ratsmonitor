@@ -26,7 +26,7 @@ Wir bitten um eine der folgenden Freigaben:
 
 Zur Begründung der Sperre wird der Schutz der Systeme vor Überlast genannt (Schriftliche Anfrage 19/26786). Unser Abruf ist darauf ausgelegt:
 
-- **Kennung:** Jede Anfrage nennt sich `VorOrt-PoliticalTopics/0.5 (public council documents)`, nie mit einer Browser-Kennung. So können Sie unseren Abruf in Ihren Protokollen erkennen und gezielt zulassen oder begrenzen.
+- **Kennung:** Jede Anfrage nennt sich `VorOrt-PoliticalTopics/0.5 (public council information)`, nie mit einer Browser-Kennung. So können Sie unseren Abruf in Ihren Protokollen erkennen und gezielt zulassen oder begrenzen.
 - **Last:** höchstens ein Import je Bezirk zur selben Zeit, darin höchstens fünf gleichzeitige Anfragen; keine Wiederholung nach HTTP 403, nach einer Überlastmeldung (HTTP 429, 503) höchstens ein weiterer Versuch nach einer Pause. Folgeimporte fragen bereits gelesene, unveränderte Sitzungen nicht erneut ab. Zeitfenster und Höchstzahl der Anfragen richten wir gern nach Ihren Vorgaben aus.
 - **Umfang:** nur die OParl-Schnittstelle, nur öffentliche Sitzungen, Tagesordnungspunkte und Drucksachen. Keine Webseiten des Informationssystems, keine Formulare, keine Suche, keine nichtöffentlichen Teile, keine Personendaten über die öffentliche Funktion hinaus.
 - **Quellenangabe:** Jeder Vorgang verlinkt das Original im Informationssystem des Bezirks.

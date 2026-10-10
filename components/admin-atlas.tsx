@@ -8,6 +8,7 @@ import {ADMIN_REGIONS_DONE} from '@/components/admin-store';
 import type {Stand} from '@/shared/admin-types';
 import {adminHref} from '@/components/admin-chrome';
 import {REACH_BUCKETS,FRESH_BUCKETS,reachBucket,freshBucket} from '@/shared/coverage.mjs';
+import {VG_GROUPS} from '@/shared/vg-groups.mjs';
 // Same data as the standalone gap atlas (scripts/dashboard/page.html), read live: the catalog and the atlas file of
 // the deployed code, reports and imports from the database. Refreshed every five minutes while the page is open.
 type Area={id:string;n:string;l:string;g:string;t:string;k:'c'|'i'|'d';p:number;m?:number;c:string;z:string;r?:number;u?:string;o?:string;v?:string;zc?:string;rb?:string;rn?:string;at?:string;cs?:string;nc?:number[];rs?:{url:string;hint?:string;proof?:string}[];cnt?:number;last?:string;st?:'failed'|'partial';fe?:string;le?:string;rk?:string;fk?:string};
@@ -15,8 +16,10 @@ type Category={id:string;label:string;open:boolean;color:string;why:string;help:
 type Access={id:string;label:string;group:string;automated:boolean;color:string;explain:string};
 type Atlas={stand?:Stand;asOf:string;builtAt:string;reportDate:string;statsPending:number;reports:number;texts:string[];categories:Category[];access:Access[];lands:Record<string,{name:string;short:string}>;areas:Area[]};
 type Shape={id:string;ags:string;kind:string;path:string;bounds:number[]};
+// Gemeindefreie Gebiete (Forste, Seen, Truppenübungsplätze): keine Gemeinde, kein Rat; nur gezeichnet, nicht wählbar (public/geo/de-free.json).
+type Free={ags:string;name:string;land:string;path:string;bounds:number[]};
 type View={x:number;y:number;w:number;h:number};
-const FILES=['/geo/germany.json','/geo/de-areas.json'],REFRESH_MS=5*60*1000,PAGE=80,DIM=AC.zero;
+const FILES=['/geo/germany.json','/geo/de-areas.json'],FREE_FILE='/geo/de-free.json',FREE_FILL='#e2e8f0',FREE_LINE='#94a3b8',FREE_CSS=`repeating-linear-gradient(135deg,${'#e2e8f0'} 0 2px,${'#94a3b8'} 2px 3px)`,REFRESH_MS=5*60*1000,PAGE=80,DIM=AC.zero;
 // Reach (first agenda day) and freshness (latest meeting day) of the reports per area: shared/coverage.mjs.
 const REACH_IDS=REACH_BUCKETS.map(b=>b.id),FRESH_IDS=FRESH_BUCKETS.map(b=>b.id),REACH_ITEMS=REACH_BUCKETS.map(b=>({...b,color:bucketColor('reach',b)})),FRESH_ITEMS=FRESH_BUCKETS.map(b=>({...b,color:bucketColor('fresh',b)})),REACH_COLOR=new Map<string,string>(REACH_ITEMS.map(b=>[b.id,b.color])),FRESH_COLOR=new Map<string,string>(FRESH_ITEMS.map(b=>[b.id,b.color])),COLOR_MODES=['cat','access','reports','reach','fresh'];
 const n=(v:number)=>v.toLocaleString('de-DE');
@@ -37,7 +40,7 @@ const Regions=memo(function Regions({shapes,fills,selected,fine,onPick,onHover}:
 /** Admin page "Lückenatlas". Reads only. */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
- const [data,setData]=useState<Atlas|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[geo,setGeo]=useState<{shapes:Shape[];states:string[]}|null>(null),[geoError,setGeoError]=useState(false);
+ const [data,setData]=useState<Atlas|null>(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0),[geo,setGeo]=useState<{shapes:Shape[];states:string[];free:Free[]}|null>(null),[freeHover,setFreeHover]=useState<Free|null>(null),[geoError,setGeoError]=useState(false);
  const [cats,setCats]=useState<Set<string>|null>(null),[access,setAccess]=useState<Set<string>|null>(null),[reach,setReach]=useState<Set<string>|null>(null),[fresh,setFresh]=useState<Set<string>|null>(null),[colorBy,setColorBy]=useState('cat'),[layer,setLayer]=useState('city'),[land,setLand]=useState('all'),[type,setType]=useState('all'),[operator,setOperator]=useState('all'),[query,setQuery]=useState(''),[sort,setSort]=useState('pop'),[selected,setSelected]=useState<string|null>(null),[hover,setHover]=useState<string|null>(null),[shown,setShown]=useState(PAGE);
  const [view,setView]=useState<View|null>(null);const svgRef=useRef<SVGSVGElement>(null),drag=useRef<{x:number;y:number;view:View;moved:boolean}|null>(null),lastDrag=useRef(0);
  // Data: now and every five minutes while the tab is visible (and when it comes back after more than five minutes); never
@@ -50,7 +53,9 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
   document.addEventListener('visibilitychange',onVisible);
   void load();const timer=setInterval(()=>void load(),REFRESH_MS);return()=>{c.abort();clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);};},[attempt]);
  useEffect(()=>{const c=new AbortController();
-  Promise.all(FILES.map((file,i)=>fetch(file,{signal:c.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<{regions:Shape[];states?:{path:string}[]}>;}).catch(e=>{if(i===0||e.name==='AbortError')throw e;return {regions:[] as Shape[],states:[] as {path:string}[]};}))).then(parts=>setGeo({shapes:parts.flatMap(p=>p.regions),states:(parts[0].states||[]).map(s=>s.path)})).catch(e=>{if(e.name!=='AbortError')setGeoError(true);});
+  Promise.all([...FILES.map((file,i)=>fetch(file,{signal:c.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<{regions:Shape[];states?:{path:string}[]}>;}).catch(e=>{if(i===0||e.name==='AbortError')throw e;return {regions:[] as Shape[],states:[] as {path:string}[]};})),
+   // The unincorporated areas are an optional background: without the file the map only shows them as gaps.
+   fetch(FREE_FILE,{signal:c.signal}).then(r=>r.ok?r.json() as Promise<{areas:Free[]}>:{areas:[] as Free[]}).catch(e=>{if(e.name==='AbortError')throw e;return {areas:[] as Free[]};})]).then(all=>{const parts=all.slice(0,FILES.length) as {regions:Shape[];states?:{path:string}[]}[],free=(all[FILES.length] as {areas:Free[]}).areas||[];setGeo({shapes:parts.flatMap(p=>p.regions),states:(parts[0].states||[]).map(s=>s.path),free});}).catch(e=>{if(e.name!=='AbortError')setGeoError(true);});
   return()=>c.abort();},[]);
  // Values per area just computed by the catch-up steps (admin-store.ts): read again.
  useEffect(()=>{const again=()=>setAttempt(a=>a+1);window.addEventListener(ADMIN_REGIONS_DONE,again);return()=>window.removeEventListener(ADMIN_REGIONS_DONE,again);},[]);
@@ -85,7 +90,7 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
  const zoomAt=(factor:number,cx?:number,cy?:number)=>{const svg=svgRef.current;if(!svg)return;const r=svg.getBoundingClientRect();const px=cx===undefined?current.x+current.w/2:current.x+(cx-r.left)/r.width*current.w,py=cy===undefined?current.y+current.h/2:current.y+(cy-r.top)/r.height*current.h;const w=Math.min(full.w*1.4,Math.max(4,current.w/factor)),h=current.h*w/current.w;setView({x:px-(px-current.x)*w/current.w,y:py-(py-current.y)*h/current.h,w,h});};
  // React registers onWheel passively, so the page would scroll while the map zooms: a native listener instead.
  const zoomRef=useRef(zoomAt);zoomRef.current=zoomAt;
- useEffect(()=>{const svg=svgRef.current;if(!svg)return;const onWheel=(e:WheelEvent)=>{e.preventDefault();zoomRef.current(e.deltaY<0?1.25:.8,e.clientX,e.clientY);};svg.addEventListener('wheel',onWheel,{passive:false});return()=>svg.removeEventListener('wheel',onWheel);},[geo,geoError]);
+ useEffect(()=>{const svg=svgRef.current;if(!svg)return;const onWheel=(e:WheelEvent)=>{e.preventDefault();zoomRef.current(e.deltaY<0?1.25:.8,e.clientX,e.clientY);};svg.addEventListener('wheel',onWheel,{passive:false});return()=>svg.removeEventListener('wheel',onWheel);},[geo,geoError,data]);
  const pick=useCallback((id:string)=>{if(Date.now()-lastDrag.current<400)return;setSelected(prev=>prev===id?null:id);},[]);
  const detail=selected?byId.get(selected):null,hovered=hover?byId.get(hover):null,todo=detail?ATLAS_TODO[detail.c]:undefined;
  const stack=(items:{id:string;label:string;color:string;title?:string}[],valueOf:(a:Area)=>string,active:Set<string>,setActive:(s:Set<string>|null)=>void,all:string[],pool?:Area[])=>{
@@ -94,7 +99,12 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
   <div className="admin-atlas-chips"><button type="button" className="admin-chip is-group" onClick={()=>setActive(null)}>Alle</button>{items.map(it=>{const k=areas.filter(a=>valueOf(a)===it.id).length;return k?<button key={it.id} type="button" className="admin-chip" title={it.title} aria-pressed={active.has(it.id)} onClick={()=>{const next=new Set(active);if(next.has(it.id)&&next.size===all.length)setActive(new Set([it.id]));else{if(next.has(it.id))next.delete(it.id);else next.add(it.id);setActive(next.size?next:null);}}}><i style={{background:it.color}}/>{it.label} <span>{n(k)}</span></button>:null;})}</div></>;
  };
  const connected=atlasAreas.filter(a=>!catById.get(a.c)?.open),open=atlasAreas.filter(a=>catById.get(a.c)?.open);
- const popAll=atlasAreas.filter(isCityLevel).reduce((s,a)=>s+a.p,0),popOk=connected.filter(isCityLevel).reduce((s,a)=>s+a.p,0),kreisOk=new Set(connected.filter(a=>!isCityLevel(a)).map(a=>a.g)),popOkK=atlasAreas.filter(a=>isCityLevel(a)&&(!catById.get(a.c)?.open||kreisOk.has(a.g.slice(0,5)))).reduce((s,a)=>s+a.p,0),withReports=atlasAreas.filter(a=>a.cnt).length;
+ const popAll=atlasAreas.filter(isCityLevel).reduce((s,a)=>s+a.p,0),popOk=connected.filter(isCityLevel).reduce((s,a)=>s+a.p,0),kreisOk=new Set(connected.filter(a=>!isCityLevel(a)).map(a=>a.g));
+ const vgOf=useMemo(()=>{const m=new Map<string,string[]>();for(const g of VG_GROUPS)for(const id of g)m.set(id,g);return m;},[]);
+ const openIds=useMemo(()=>new Set(open.map(a=>a.id)),[open]);
+ const vgReached=(id:string)=>!openIds.has(id)||(vgOf.get(id)||[]).some(x=>!openIds.has(x));
+ const popOkV=atlasAreas.filter(a=>isCityLevel(a)&&vgReached(a.id)).reduce((s,a)=>s+a.p,0);
+ const popOkK=atlasAreas.filter(a=>isCityLevel(a)&&(vgReached(a.id)||kreisOk.has(a.g.slice(0,5)))).reduce((s,a)=>s+a.p,0),withReports=atlasAreas.filter(a=>a.cnt).length;
  // What each reading method delivers: connected areas per method, reports, median per area with reports, reach, state.
  const methods=useMemo(()=>{
   const by=new Map<string,{areas:number;withReports:number;reports:number;partial:number;failed:number;deep:number;counts:number[]}>();
@@ -108,7 +118,8 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
   <div className="mt-8"><Kpis label="Anbindung der Gebiete" items={[
    {label:'Gebiete angebunden',value:data?n(connected.length):undefined,of:data?n(atlasAreas.length):undefined,note:data?pct(connected.length,data.areas.length)+' · einschließlich eingeschalteter Quellen, deren erste Prüfung aussteht':undefined},
    {label:'Einwohner erreicht',value:data?pct(popOk,popAll):undefined,note:data?mio(popOk)+' von '+mio(popAll)+' auf Gemeindeebene':undefined},
-   {label:'Einwohner erreicht (inkl. Kreise)',value:data?pct(popOkK,popAll):undefined,note:data?mio(popOkK)+' von '+mio(popAll)+' · ein Ort gilt als erreicht, wenn Gemeinde, Verband oder Landkreis angebunden ist':undefined},
+   {label:'Einwohner erreicht (inkl. VG)',value:data?pct(popOkV,popAll):undefined,note:data?mio(popOkV)+' von '+mio(popAll)+' · zusätzlich Orte, deren Samtgemeinde/VG/Amt über ein anderes Mitglied angebunden ist':undefined},
+   {label:'Einwohner erreicht (inkl. Kreise)',value:data?pct(popOkK,popAll):undefined,note:data?mio(popOkK)+' von '+mio(popAll)+' · zusätzlich, wenn der Landkreis angebunden ist':undefined},
    {label:'Gebiete offen',value:data?n(open.length):undefined,note:data?openPop+' Einwohner auf Gemeindeebene · ohne lesbare Quelle':undefined},
    {label:'Mit gespeicherten Berichten',value:data?n(withReports):undefined,note:data?n(data.reports)+' Berichte in der Datenbank':undefined}]}/></div>
   {apiError}
@@ -139,11 +150,11 @@ export function AdminAtlas(_props:{displayName?:string;signOutPath?:string}){
        onPointerDown={e=>{if(e.button!==0)return;drag.current={x:e.clientX,y:e.clientY,view:current,moved:false};(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);}}
        onPointerMove={e=>{const d=drag.current;if(!d)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;if(Math.abs(dx)+Math.abs(dy)>4)d.moved=true;if(d.moved){const r=(e.currentTarget as SVGSVGElement).getBoundingClientRect();setView({x:d.view.x-dx/r.width*d.view.w,y:d.view.y-dy/r.height*d.view.h,w:d.view.w,h:d.view.h});}}}
        onPointerUp={()=>{if(drag.current?.moved)lastDrag.current=Date.now();drag.current=null;}} onPointerCancel={()=>{drag.current=null;}}>
-       <defs><pattern id="atlas-empty" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><path d="M0 5L5 0" stroke={AC.hatch} strokeWidth="1"/></pattern></defs><g className="admin-atlas-states">{geo.states.map((d,i)=><path key={i} d={d} fill="none" stroke={AC.land} strokeWidth=".9" vectorEffect="non-scaling-stroke" pointerEvents="none"/>)}</g>
+       <defs><pattern id="atlas-empty" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fff"/><path d="M0 5L5 0" stroke={AC.hatch} strokeWidth="1"/></pattern><pattern id="atlas-free" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill={FREE_FILL}/><path d="M0 5L5 0" stroke={FREE_LINE} strokeWidth="1"/></pattern></defs><g className="admin-atlas-free" aria-hidden="true">{geo.free.map(f=><path key={f.ags} d={f.path} fill="url(#atlas-free)" stroke={FREE_LINE} strokeWidth=".3" vectorEffect="non-scaling-stroke" onMouseEnter={()=>setFreeHover(f)} onMouseLeave={()=>setFreeHover(null)}/>)}</g><g className="admin-atlas-states">{geo.states.map((d,i)=><path key={i} d={d} fill="none" stroke={AC.land} strokeWidth=".9" vectorEffect="non-scaling-stroke" pointerEvents="none"/>)}</g>
        <Regions shapes={shapes} fills={fills} selected={selected} fine={shapes.length>1500} onPick={pick} onHover={setHover}/>
       </svg>}</div>
-     <p className="admin-map-hover" aria-live="polite">{hovered?<><strong>{hovered.n}</strong> · {typeLabel(hovered)} · {catById.get(hovered.c)?.label}{hovered.cnt?` · ${n(hovered.cnt)} Berichte${hovered.fe?' · Sitzungen '+mm(hovered.fe)+' bis '+mm(hovered.le):''}`:''}{hovered.r!==undefined?<span className="admin-atlas-reason"> · {data.texts[hovered.r]}</span>:''}</>:<>{n(shapes.length)} {layer==='city'?'Städte, Gemeinden und Gemeindeverbände':'Kreise'} auf der Karte, {n(shapes.filter(r=>matches.has(r.id)).length)} passen zu den Filtern. Mausrad oder Plus/Minus zoomt, Ziehen verschiebt, Klick zeigt das Gebiet.</>}</p>
-     <Legend items={(colorBy==='cat'?data.categories.filter(c=>present.includes(c.id)).map(c=>[c.color,c.label]):colorBy==='access'?accessList.map(a=>[a.color,a.label]):colorBy==='reach'?[...REACH_ITEMS.filter(b=>b.id!=='none').map(b=>[b.color,b.label]),[HATCH_CSS,'Angebunden, ohne Berichte'],[DIM,'Nicht angebunden']]:colorBy==='fresh'?[...FRESH_ITEMS.filter(b=>b.id!=='none').map(b=>[b.color,b.label]),[HATCH_CSS,'Angebunden, ohne Berichte'],[DIM,'Nicht angebunden']]:[[COVERAGE.data,'Berichte gespeichert'],[COVERAGE.partial,'Teilstand'],[COVERAGE.failed,'Letzter Abruf fehlgeschlagen'],[HATCH_CSS,'Angebunden, ohne Berichte (Schraffur)'],[DIM,'Nicht angebunden']]) as [string,string][]}/>
+     <p className="admin-map-hover" aria-live="polite">{hovered?<><strong>{hovered.n}</strong> · {typeLabel(hovered)} · {catById.get(hovered.c)?.label}{hovered.cnt?` · ${n(hovered.cnt)} Berichte${hovered.fe?' · Sitzungen '+mm(hovered.fe)+' bis '+mm(hovered.le):''}`:''}{hovered.r!==undefined?<span className="admin-atlas-reason"> · {data.texts[hovered.r]}</span>:''}</>:freeHover?<><strong>{freeHover.name}</strong> · Gemeindefreies Gebiet · kein Rat, keine Einwohner; die Fläche gehört zum Kreis</>:<>{n(shapes.length)} {layer==='city'?'Städte, Gemeinden und Gemeindeverbände':'Kreise'} auf der Karte, {n(shapes.filter(r=>matches.has(r.id)).length)} passen zu den Filtern. Mausrad oder Plus/Minus zoomt, Ziehen verschiebt, Klick zeigt das Gebiet.</>}</p>
+     <Legend items={((colorBy==='cat'?data.categories.filter(c=>present.includes(c.id)).map(c=>[c.color,c.label]):colorBy==='access'?accessList.map(a=>[a.color,a.label]):colorBy==='reach'?[...REACH_ITEMS.filter(b=>b.id!=='none').map(b=>[b.color,b.label]),[HATCH_CSS,'Angebunden, ohne Berichte'],[DIM,'Nicht angebunden']]:colorBy==='fresh'?[...FRESH_ITEMS.filter(b=>b.id!=='none').map(b=>[b.color,b.label]),[HATCH_CSS,'Angebunden, ohne Berichte'],[DIM,'Nicht angebunden']]:[[COVERAGE.data,'Berichte gespeichert'],[COVERAGE.partial,'Teilstand'],[COVERAGE.failed,'Letzter Abruf fehlgeschlagen'],[HATCH_CSS,'Angebunden, ohne Berichte (Schraffur)'],[DIM,'Nicht angebunden']]) as [string,string][]).concat(geo?.free.length?[[FREE_CSS,'Gemeindefreies Gebiet, kein Rat'] as [string,string]]:[])}/>
     </section>
     <section className="admin-section admin-atlas-list" aria-label="Liste">
      <div className="admin-source-controls">

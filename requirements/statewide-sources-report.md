@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 349 angebunden, 78 nicht. Diese Datei beschreibt die 256 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 353 angebunden, 74 nicht. Diese Datei beschreibt die 260 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -337,11 +337,9 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Stadt Minden | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://minden.ratsinfomanagement.net/startseite |
 | Kreis Minden-Lübbecke | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://minden-luebbecke.ratsinfomanagement.net/ |
 | Gemeinde Morsbach | Prüfung abgebrochen: Betreiber wies Programme in diesem Lauf wiederholt ab (HTTP 403/429); nicht gefragt | https://morsbach.ratsinfomanagement.net/termine |
-| Kreis Märkischer Kreis | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Startseite allris.net.asp: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-maerkischer-kreis.de/bi2/pa020.asp?&PALFDNR=1 |
 | Gemeinde Nachrodt-Wiblingwerde | Kein unterstütztes Ratsinformationssystem erkannt | https://www.nachrodt-wiblingwerde.de/Mitteilungen-der-Gemeindeverwaltung.htm/Seiten/Informationen-zu-Strassensperrungen.html? |
 | Gemeinde Neuenkirchen | Kein unterstütztes Ratsinformationssystem erkannt | https://neuenkirchen.ratsinfomanagement.net/ |
 | Gemeinde Nordwalde | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://nordwalde.ratsinfomanagement.net/termine |
-| Stadt Olsberg | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.olsberg.de/politik-verwaltung/rats-und-buergerinformationssystem-der-stadt-olsberg |
 | Stadt Plettenberg | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.plettenberg.de/soziales/soziales/fluechtlingshilfe-buergerinfo |
 | Stadt Preußisch Oldendorf | Kein unterstütztes Ratsinformationssystem erkannt | https://www.preussischoldendorf.de/Rathaus-Politik/Haushalt-Finanzen/St%C3%A4dtischer-Haushaltsplan-2017.php?object=tx,2864.4&ModID=7&FID=391.2651.1&NavID=2863.28&La=1 |
 | Gemeinde Raesfeld | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://raesfeld.ratsinfomanagement.net/ |
@@ -353,8 +351,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Schlangen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schlangen.ratsinfomanagement.net/ |
 | Stadt Schloß Holte-Stukenbrock | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schlossholtestukenbrock.ratsinfomanagement.net/ |
 | Gemeinde Schöppingen | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.schoeppingen.de/rathaus-politik/politik/sitzungstermine/ |
-| Stadt Selm | ALLRIS 3 (öffentliche Seiten) gefunden, Abruf lieferte keine öffentlichen Tagesordnungspunkte (Kalender 11/2026: Quelle antwortet mit HTTP 403) | https://www.sitzungsdienst-selm.de/bi/si010_r.asp |
-| Stadt Sprockhövel | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://somacos.de/loesungen/sitzungsmanagement/session/ |
 | Stadt Stadtlohn | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://stadtlohn.ratsinfomanagement.net/ |
 | Stadt Steinfurt | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://steinfurt.ratsinfomanagement.net/aemter |
 | Stadt Sundern (Sauerland) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sundern.ratsinfomanagement.net/ |

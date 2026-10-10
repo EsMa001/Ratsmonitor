@@ -2883,5 +2883,55 @@
     "verifiedSource": "https://www.werne.de/de/rathaus/politik/buergerinformationssystem.php",
     "verifiedAt": "2026-10-01",
     "apiCheck": "Öffentlicher Hersteller-Standardpfad oparl/1.0/system.asp lieferte am 01.10.2026 kein OParl-System. Andere API-Adressen sind damit nicht ausgeschlossen; öffentlicher SessionNet-Kalender erreichbar."
+  },
+  {
+    "id": "nrw-05978032",
+    "name": "Stadt Selm",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.sitzungsdienst-selm.de/bi/",
+    "calendar": "si010_r.asp",
+    "verifiedSource": "https://www.sitzungsdienst-selm.de/bi/",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar.",
+    "foundBy": "Neuprüfung 2026-10-10 (Atlas-Adresse)"
+  },
+  {
+    "id": "nrw-05958036",
+    "name": "Stadt Olsberg",
+    "kind": "city",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://olsberg.allris-online.de/bi-r/",
+    "calendar": "si010_r.asp",
+    "verifiedSource": "https://www.olsberg.de/politik-verwaltung/rats-und-buergerinformationssystem-der-stadt-olsberg",
+    "verifiedAt": "2026-10-10",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar."
+  },
+  {
+    "id": "nrw-05962",
+    "name": "Kreis Märkischer Kreis",
+    "kind": "district",
+    "method": "scraper",
+    "adapter": "allris3",
+    "base": "https://www.sitzungsdienst-maerkischer-kreis.de/bi2/",
+    "calendar": "si010_a.asp",
+    "verifiedSource": "https://www.sitzungsdienst-maerkischer-kreis.de/bi2/",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "Neuprüfung 2026-10-10 (Atlas-Adresse; die Startseite nennt kein Kalenderprogramm, freigegeben ist si010_a.asp)",
+    "apiCheck": "Kein nutzbarer OParl-Endpunkt an den geprüften Standardpfaden; ALLRIS 3 (öffentliche Seiten) erreichbar, Leser liefert öffentliche Tagesordnungspunkte der letzten drei Monate (Kreistag und Ausschüsse)."
+  },
+  {
+    "id": "nrw-05954028",
+    "name": "Stadt Sprockhövel",
+    "kind": "city",
+    "system": "https://sprockhoevel.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "method": "oparl",
+    "meetingScan": "filter",
+    "state": "system-verified",
+    "verifiedSource": "https://sprockhoevel.ratsinfomanagement.net/webservice/oparl/v1.1/system",
+    "verifiedAt": "2026-10-10",
+    "foundBy": "manuell 2026-10-10"
   }
 ]
