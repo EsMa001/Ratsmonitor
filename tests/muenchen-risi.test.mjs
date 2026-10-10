@@ -8,7 +8,7 @@ import {createRisiSession,withoutSessionId,parseRisiCalendar,parseRisiAgenda,par
 // and a decision page.
 const fixture=name=>readFileSync(new URL('./fixtures/muenchen/'+name,import.meta.url),'utf8');
 const base=RISI_BASE,source={id:'de-09162000',name:'Stadt München',kind:'city',method:'scraper',adapter:'muenchen-risi',base};
-const now=new Date('2026-10-04T12:00:00Z'),UA='VorOrt-PoliticalTopics/0.5 (public council documents)';
+const now=new Date('2026-10-04T12:00:00Z'),UA='VorOrt-PoliticalTopics/0.5 (public council information)';
 const agendaUrl=id=>base+`sitzung/detail/${id}/tagesordnung/oeffentlich`,paperUrl=id=>base+'sitzungsvorlage/detail/'+id,decisionUrl=id=>base+`sitzung/top/${id}/entscheidung`,doc=id=>base+'dokument/v/'+id;
 const october=fixture('kalender-str.html'),september=fixture('kalender-str-prev.xml'),plenary=fixture('to-vollversammlung.html'),district=fixture('to-ba.html'),paper=fixture('sitzungsvorlage.html'),decision=fixture('entscheidung.html');
 const LABELS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
