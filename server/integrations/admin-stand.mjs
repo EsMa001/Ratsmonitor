@@ -18,7 +18,7 @@ export async function adminStand(db){
   ]);
  }catch(e){
   if(!missingTable(e))throw e;
-  let stockSum=0;try{stockSum=Number((await db.prepare('SELECT total(revision) s FROM region_revisions').first())?.s||0);}catch{}
+  let stockSum=0;try{stockSum=Number((await db.prepare('SELECT total(revision) s FROM region_revisions').first())?.s||0);}catch(e){console.error('[admin-stand] region_revisions nicht lesbar:',e);}
   return {missing:'0016',content:await content(),stockSum};
  }
  const one=r=>r.results[0]||{},left=await pendingRegions(db);

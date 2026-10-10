@@ -1,8 +1,11 @@
 import { env } from 'cloudflare:workers';
 import {validRegion} from '@/shared/regions';
 import { runSync } from '@/server/services/sync';
+import {validBearer} from '@/server/integrations/prepared-access.mjs';
+// The token is compared in constant time and must have at least 16 characters (deploy/node/ratsmonitor.env.example).
+const authorized=(request:Request)=>validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16);
 export async function POST(request: Request) {
-    if (!env.IMPORT_TOKEN || request.headers.get('authorization') !== 'Bearer ' + env.IMPORT_TOKEN)
+    if (!await authorized(request))
         return Response.json({ error: 'Nicht autorisiert' }, { status: 401 });
     const mode = new URL(request.url).searchParams.get('mode') || 'metadata';
     if (mode !== 'metadata' && mode !== 'summaries')
@@ -17,7 +20,7 @@ export async function POST(request: Request) {
 
 /** Operator-only run history. Public coverage is available on the sources page. */
 export async function GET(request: Request) {
-    if (!env.IMPORT_TOKEN || request.headers.get('authorization') !== 'Bearer ' + env.IMPORT_TOKEN)
+    if (!await authorized(request))
         return Response.json({error:'Nicht autorisiert'},{status:401});
     if(!env.DB)return Response.json({error:'Datenbank fehlt'},{status:503});
     const runs=await env.DB.prepare('SELECT id,started_at,finished_at,status,details FROM import_runs ORDER BY started_at DESC LIMIT 50').all();

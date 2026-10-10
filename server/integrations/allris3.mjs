@@ -1,6 +1,7 @@
 import {sourceDecision} from './source-fields.mjs';
 import {windowStart,calendarMonthsBack} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
+import {bodyBytes} from './body-bytes.mjs';
 import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {createSession} from './allris.mjs';
@@ -100,7 +101,7 @@ export function declaredCharset(request=fetch){
  return async(url,init)=>{
   const r=await request(url,init);
   if(!r.ok||/charset=/i.test(r.headers.get('content-type')||''))return r;
-  const body=await r.arrayBuffer(),declared=new TextDecoder().decode(body.slice(0,4000)).match(/(?:charset|encoding)\s*=\s*["']?([\w-]+)/i)?.[1]||'';
+  const body=await bodyBytes(r,4e6),declared=new TextDecoder().decode(body.slice(0,4000)).match(/(?:charset|encoding)\s*=\s*["']?([\w-]+)/i)?.[1]||'';
   const headers=new Headers(r.headers);
   if(/^(?:iso-8859-15?|windows-1252|latin-?1)$/i.test(declared))headers.set('content-type',(r.headers.get('content-type')||'text/html')+'; charset=windows-1252');
   return new Response(body,{status:r.status,statusText:r.statusText,headers});

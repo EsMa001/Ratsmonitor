@@ -5,6 +5,7 @@ import {chooseBody} from './body-identity.mjs';
 import {publicAgenda} from './public-agenda.mjs';
 import {clean,hash,statusOf,sourceSummary,category,parallel} from './oparl.mjs';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {bodyJson} from './body-bytes.mjs';
 const FILTER_MARGIN_DAYS=31,FILTER_PATIENCE_MS=30000;
 // Catalog field organizations {include:[…],exclude:[…]}: one OParl body can hold several councils (Bremen: Landtag and
 // Stadtbürgerschaft). A pattern is part of an organization's name or short name (case and umlaut spelling ignored) or
@@ -59,7 +60,7 @@ export async function collectRegionalOparl(source,{now=new Date(),getJson=null,m
  const filter=source.organizations?organizationFilter(source.organizations):null,skipped={filtered:0,mixed:0,unassigned:0};
  const since=windowStart(now,lookback);const from=since.toISOString().slice(0,10),issues=[];let requests=0;const cache=new Map();const base=new URL(source.system);const deadline=Date.now()+maxDurationMs;let strategy='plain';
  const allowed=value=>{const u=new URL(value);if(source.upgradeHttpLinks&&u.protocol==='http:'&&u.hostname===base.hostname&&!u.port&&!base.port)u.protocol='https:';if(u.protocol!=='https:'||u.origin!==base.origin||u.username||u.password)throw Error('Quelle außerhalb der freigegebenen OParl-Adresse');return u.href;};
- const load=async(url,patience)=>{if(getJson)return getJson(url);const r=await fetchNoRedirect(url,{signal:AbortSignal.timeout(Math.max(1,Math.min(patience,deadline-Date.now()))),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok){await r.body?.cancel();throw Error('OParl HTTP '+r.status);}const raw=await r.text();if(raw.length>Math.min(7e6,Math.max(5e6,source.maxResponseChars||5e6)))throw Error('Antwort überschreitet Größenlimit');return JSON.parse(raw);};
+ const load=async(url,patience)=>{if(getJson)return getJson(url);const r=await fetchNoRedirect(url,{signal:AbortSignal.timeout(Math.max(1,Math.min(patience,deadline-Date.now()))),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok){await r.body?.cancel();throw Error('OParl HTTP '+r.status);}return bodyJson(r,Math.min(7e6,Math.max(5e6,source.maxResponseChars||5e6)),{message:'Antwort überschreitet Größenlimit'});};
  // trace (optional) records every request of this import for the debug view.
  const traced=trace?trace.wrap(load):load;
  // Höchstens 5 gleichzeitige Netzabrufe (Workers erlaubt 6 offene Verbindungen). Die verschachtelten parallel()-Aufrufe

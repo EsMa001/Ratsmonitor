@@ -17,13 +17,29 @@ export function parseRobots(text){
  }
  return groups;
 }
-const pattern=path=>new RegExp('^'+path.replace(/[.+?^{}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\$$/,'$'));
+/**
+ * Whether a rule of robots.txt covers a path: the rule is a prefix with '*' for any run of characters and a final '$'
+ * for the end of the path. Matched position by position (the table of the classic wildcard match), never with a
+ * regular expression: several stars in a foreign rule would make that exponential.
+ */
+export function robotsPathMatches(rule,path){
+ const anchored=rule.endsWith('$'),p=anchored?rule.slice(0,-1):rule;
+ // reach[j]: the rule up to here can cover the first j characters of the path.
+ let reach=new Uint8Array(path.length+1);reach[0]=1;
+ for(const ch of p){
+  const next=new Uint8Array(path.length+1);
+  if(ch==='*'){let any=0;for(let j=0;j<=path.length;j++){any=any||reach[j];next[j]=any?1:0;}}
+  else for(let j=1;j<=path.length;j++)next[j]=reach[j-1]&&path[j-1]===ch?1:0;
+  reach=next;
+ }
+ return anchored?reach[path.length]===1:reach.some(v=>v===1);
+}
 /** tokens: product tokens of our programs in lower case, e.g. ['vorort-politicaltopics']. */
 export function robotsAllow(groups,path,tokens){
  const own=groups.filter(g=>g.agents.some(a=>a!=='*'&&tokens.some(t=>t===a||t.startsWith(a))));
  const rules=(own.length?own:groups.filter(g=>g.agents.includes('*'))).flatMap(g=>g.rules);
  let best=null;
- for(const r of rules)if(pattern(r.path).test(path)&&(!best||r.path.length>best.path.length||(r.path.length===best.path.length&&r.allow)))best=r;
+ for(const r of rules)if(robotsPathMatches(r.path,path)&&(!best||r.path.length>best.path.length||(r.path.length===best.path.length&&r.allow)))best=r;
  return best?best.allow:true;
 }
 /** Verdict for one path from the answer to /robots.txt: 'erlaubt', 'verboten', 'keine' (no robots.txt) or 'unklar'. */

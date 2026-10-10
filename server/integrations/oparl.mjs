@@ -2,6 +2,7 @@ import {compactOparl,sourceDecision,publicParticipants} from './source-fields.mj
 import {windowStart} from './history-window.mjs';
 import {budgeted} from './request-budget.mjs';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {bodyJson} from './body-bytes.mjs';
 // Public OParl 1.1 only. No HTML scraper or alternative RIS data path.
 export const OPARL='https://oparl.stadt-muenster.de/system';
 export const BODY='https://oparl.stadt-muenster.de/bodies/0001';
@@ -11,7 +12,7 @@ export function checkedUrl(value){const u=new URL(value);if(u.protocol!=='https:
 // and is not repeated.
 export async function requestJson(url,timeoutMs=55000){
  for(let attempt=0;;attempt++){
-  try{const r=await fetchNoRedirect(checkedUrl(url),{signal:AbortSignal.timeout(timeoutMs),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok){await r.body?.cancel();throw Object.assign(Error('OParl HTTP '+r.status),{answered:true});}return await r.json();}
+  try{const r=await fetchNoRedirect(checkedUrl(url),{signal:AbortSignal.timeout(timeoutMs),headers:{Accept:'application/json','User-Agent':SOURCE_USER_AGENT}});if(!r.ok){await r.body?.cancel();throw Object.assign(Error('OParl HTTP '+r.status),{answered:true});}return await bodyJson(r,8e6,{message:'Antwort überschreitet Größenlimit'});}
   catch(e){if(attempt>=1||e.answered||e.name==='TimeoutError'||/Weiterleitung|Nicht freigegeben|Fremde/.test(String(e.message)))throw e;await new Promise(done=>setTimeout(done,400));}
  }
 }

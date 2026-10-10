@@ -6,6 +6,7 @@ import {fetchText,allowed,text,decode,MAX_MEETINGS} from './sessionnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 import {extractText,getDocumentProxy} from 'unpdf';
 import {fetchNoRedirect,SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {bodyBytes} from './body-bytes.mjs';
 // Public pages of the "TI-Generator" (Town Hall Information WEB-Generator, Bartel Software Engineering): static sites
 // that the Rats-Manager writes to a web host. The start page holds a menu with one entry per committee and list; the
 // page's script loads each list from listen/<file> (the address of the menu entry itself answers 404). Read are the
@@ -224,7 +225,7 @@ export function detectTiGenerator(url,html){
 export async function readNoticePdf(url,source){
  const r=await fetchNoRedirect(allowed(url,source),{signal:AbortSignal.timeout(30000),headers:{'User-Agent':SOURCE_USER_AGENT}});
  if(!r.ok){await r.body?.cancel();throw Error('Quelle antwortet mit HTTP '+r.status);}
- const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.byteLength>3e6)throw Error('Quelldokument zu groß');
+ const bytes=await bodyBytes(r,3e6);
  const pdf=await getDocumentProxy(bytes,{isEvalSupported:false,verbosity:0});
  try{if(pdf.numPages>12)throw Error('Quelldokument zu umfangreich');return (await extractText(pdf,{mergePages:true})).text;}finally{await (pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.());}
 }

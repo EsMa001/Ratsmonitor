@@ -3,6 +3,7 @@ import {sourceDecision,DECIDING_BODY} from './source-fields.mjs';
 import {windowStart,calendarMonthsBack} from './history-window.mjs';
 import {budgeted,paced,isRejectionPage,REFUSED,statusError} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {bodyBytes} from './body-bytes.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {hash,category,sourceSummary,parallel} from './oparl.mjs';
 import {committeePart} from './oparl-regional.mjs';
@@ -62,7 +63,7 @@ export async function fetchText(url,source,timeoutMs=20000,request=fetch){
    next=allowed(new URL(location,next).href,source);continue;
   }
   if(!r.ok){await r.body?.cancel();throw statusError('Quelle antwortet mit HTTP ',r);}
-  const b=await r.arrayBuffer();if(b.byteLength>4e6)throw Error('Quelldokument zu groß');const probe=new TextDecoder().decode(b.slice(0,2000));const latin=/charset=["']?(?:iso-8859-1|windows-1252)/i.test(r.headers.get('content-type')||'')||/charset=(?:iso-8859-1|windows-1252)/i.test(probe);
+  const b=await bodyBytes(r,4e6);const probe=new TextDecoder().decode(b.slice(0,2000));const latin=/charset=["']?(?:iso-8859-1|windows-1252)/i.test(r.headers.get('content-type')||'')||/charset=(?:iso-8859-1|windows-1252)/i.test(probe);
   const html=new TextDecoder(latin?'windows-1252':'utf-8').decode(b);
   // A firewall's rejection page is no content; it counts as a temporary refusal (not retried; the import stops and continues later, refusalGate).
   if(isRejectionPage(html))throw Error(REFUSED);

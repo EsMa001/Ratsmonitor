@@ -4,6 +4,7 @@ import {windowStart} from './history-window.mjs';
 import {usableMark,newMark} from './meeting-marks.mjs';
 import {budgeted,isRejectionPage,REFUSED} from './request-budget.mjs';
 import {SOURCE_USER_AGENT} from './no-redirect.mjs';
+import {bodyBytes} from './body-bytes.mjs';
 import {parseRobots,robotsAllow} from './robots.mjs';
 import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
@@ -48,14 +49,6 @@ export function siteAllowed(url,source){
  let u;try{u=new URL(url);}catch{throw Error(DENIED);}
  if(u.protocol!=='https:'||u.username||u.password||!origins(source).includes(u.origin))throw Error(DENIED);
  u.hash='';return u.href;
-}
-async function bodyBytes(r,limit){
- if(Number(r.headers.get('content-length'))>limit){await r.body?.cancel();throw Error('Quelldokument zu groß');}
- if(!r.body){const b=new Uint8Array(await r.arrayBuffer());if(b.byteLength>limit)throw Error('Quelldokument zu groß');return b;}
- // Read in parts so that a server without Content-Length cannot make us hold more than the limit.
- const reader=r.body.getReader(),parts=[];let size=0;
- for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>limit){await reader.cancel();throw Error('Quelldokument zu groß');}parts.push(value);}
- const out=new Uint8Array(size);let at=0;for(const p of parts){out.set(p,at);at+=p.byteLength;}return out;
 }
 /**
  * Text of bytes as UTF-8 or Windows-1252/Latin-1. The bytes decide where answer and page contradict each other (a page

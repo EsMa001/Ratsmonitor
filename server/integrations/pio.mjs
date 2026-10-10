@@ -114,7 +114,7 @@ export function parsePioPaper(html,source){
  */
 export function parsePioDecision(html){
  const fragment=documentBody(html);if(!fragment)return null;
- const flat=lines(fragment).map(l=>l.text).join(' ');
+ const flat=lines(fragment).map(l=>l.text).join(' ').replace(/\s+/g,' ');
  const head=flat.match(/Niederschrift über die (?:\d+\.\s*)?Sitzung (?:der|des) (.+?) am (\d{1,2}\.\s*[A-Za-zäÄ]+\s+\d{4}|\d{1,2}\.\d{1,2}\.\d{4})/i);if(!head)return null;
  const end=/\s*(?:Der Antragstext kann|Dem Magistrat der Stadt|Obenstehenden Beschlussauszug|Offenbach a\.\s*M\.,\s*den)[\s\S]*$/i;
  const results=flat.split(/Beschlusslage\s*:?\s*/i).slice(1).map(block=>{
