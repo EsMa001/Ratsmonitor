@@ -2,7 +2,7 @@
 
 Stand: 06.10.2026. Erzeugt von `scripts/source-discovery/` (Ablauf siehe README dort).
 
-Von 427 auswählbaren Gebieten sind 352 angebunden, 75 nicht. Diese Datei beschreibt die 259 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
+Von 427 auswählbaren Gebieten sind 353 angebunden, 74 nicht. Diese Datei beschreibt die 260 Quellen in `server/integrations/statewide-sources.json` und nennt für jedes nicht angebundene Gebiet den Grund.
 
 Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffentliche Tagesordnungspunkte der letzten drei Monate geliefert hat. Das ist kein Nachweis der Vollständigkeit.
 
@@ -351,7 +351,6 @@ Eine Quelle wurde nur übernommen, wenn das Abrufprogramm bei der Prüfung öffe
 | Gemeinde Schlangen | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schlangen.ratsinfomanagement.net/ |
 | Stadt Schloß Holte-Stukenbrock | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://schlossholtestukenbrock.ratsinfomanagement.net/ |
 | Gemeinde Schöppingen | SD.NET: Startseite erreichbar, Vorlagenliste antwortet mit HTTP 404 | https://www.schoeppingen.de/rathaus-politik/politik/sitzungstermine/ |
-| Stadt Sprockhövel | Gefundenes System nicht eindeutig dem Gebiet zuzuordnen | https://somacos.de/loesungen/sitzungsmanagement/session/ |
 | Stadt Stadtlohn | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://stadtlohn.ratsinfomanagement.net/ |
 | Stadt Steinfurt | SD.NET RIM: Seiten antworten Programmen mit HTTP 403, OParl-Webservice nicht aktiviert (06.10.2026); Freischaltung bei der Kommune anfragen | https://steinfurt.ratsinfomanagement.net/aemter |
 | Stadt Sundern (Sauerland) | Zugriffsschutz (HTTP 403) für Programme; OParl nicht aktiviert | https://sundern.ratsinfomanagement.net/ |
