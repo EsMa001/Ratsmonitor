@@ -347,7 +347,7 @@ export function StartseitePage() {
   const [idx, setIdx] = useState(0);
   const [place, setPlace] = useState("");
   const [topic, setTopic] = useState(ANALYSIS_TERMS[1]);
-  const [mode, setMode] = useState<"abdeckung" | "zeit">("abdeckung");
+  const [mode, setMode] = useState<"abdeckung" | "zeit">("zeit");
   const [rTopic, setRTopic] = useState(ANALYSIS_TERMS[1]);
   const [rData, setRData] = useState<{ first: Record<string, number>; start: number; end: number } | null>(null);
   const [rT, setRT] = useState(0);
@@ -394,7 +394,8 @@ export function StartseitePage() {
   }, [fresh.length]);
   /* Zeitraffer: wann ein Thema in einem Kreis zum ersten Mal beraten wurde (Diffusionsanalyse) */
   useEffect(() => {
-    if (mode !== "zeit") return;
+    /* Die Abdeckungskarte kommt zuerst; die schwere Diffusionsabfrage wartet auf sie, damit der erste Bildaufbau nicht stockt */
+    if (mode !== "zeit" || !cov) return;
     const ctl = new AbortController();
     setRData(null);
     setPlaying(false);
@@ -419,7 +420,7 @@ export function StartseitePage() {
       })
       .catch(() => {});
     return () => ctl.abort();
-  }, [mode, rTopic]);
+  }, [mode, rTopic, cov !== null]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!playing || !rData) return;
     let raf = 0;
@@ -558,9 +559,9 @@ export function StartseitePage() {
             )}
           </div>
           <div style={{ maxWidth: "min(560px, max(300px, calc((100vh - 270px) / 1.39)))", width: "100%", justifySelf: "end" }}>
-            {cov ? <CoverageMap cov={cov} onPick={(n) => openSearch(n)} pins={mode === "zeit" ? [] : pins} replay={mode === "zeit" ? { first: rData?.first ?? {}, t: rData ? rT : 0 } : null} /> : <DotMap />}
+            {cov ? <CoverageMap cov={cov} onPick={(n) => openSearch(n)} pins={mode === "zeit" && rData ? [] : pins} replay={mode === "zeit" && rData ? { first: rData.first, t: rT } : null} /> : <DotMap />}
             <div role="group" aria-label="Kartenansicht" style={{ margin: "12px 0 0", display: "flex", flexWrap: "wrap", gap: "6px 16px", justifyContent: "center", fontSize: 14 }}>
-              {([["abdeckung", "Abdeckung"], ["zeit", "Zeitraffer"]] as const).map(([m, l]) => (
+              {([["zeit", "Zeitraffer"], ["abdeckung", "Abdeckung"]] as const).map(([m, l]) => (
                 <button key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)} style={{ padding: "0 0 2px", background: "none", border: 0, borderBottom: mode === m ? "2px solid #0d9488" : "2px solid transparent", color: mode === m ? "#0f172a" : "#64748b", fontWeight: 600, cursor: "pointer" }}>
                   {l}
                 </button>
@@ -597,7 +598,7 @@ export function StartseitePage() {
               <p style={{ margin: "10px 0 0", display: "flex", alignItems: "baseline", justifyContent: "center", gap: 12 }}>
                 {rData ? (
                   <>
-                    <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "#0d9488", fontVariantNumeric: "tabular-nums" }}>{nf.format(litCount)}</span>
+                    <span style={{ fontSize: 28, lineHeight: 1, fontWeight: 600, color: "#0d9488", fontVariantNumeric: "tabular-nums" }}>{nf.format(litCount)}</span>
                     <span style={{ fontSize: 14, color: "#64748b" }}>
                       Kreise beraten „{rTopic}“ · bis {monthLabel}
                     </span>
@@ -606,12 +607,16 @@ export function StartseitePage() {
                   <span style={{ fontSize: 14, color: "#64748b" }}>Zeitraffer „{rTopic}“ wird geladen …</span>
                 )}
               </p>
-            ) : (
+            ) : null}
+
             <p style={{ margin: "14px 0 0", display: "flex", alignItems: "baseline", justifyContent: "center", gap: 12 }}>
               <span style={{ fontSize: 44, lineHeight: 1, fontWeight: 600, color: "#0f172a", fontVariantNumeric: "tabular-nums" }}>{ABDECKUNG.anteil} %</span>
               <span style={{ fontSize: 14, color: "#64748b" }}>Abdeckung, {ABDECKUNG.kreise} % der Kreise</span>
             </p>
-            )}
+            <p style={{ margin: "6px auto 0", maxWidth: 440, fontSize: 12, lineHeight: 1.4, color: "#64748b", textAlign: "center" }}>
+              Anteil der Städte und Gemeinden mit Berichten im Bestand, Angabe des Betreibers, Stand {day(ABDECKUNG.stand)}.
+            </p>
+
           </div>
         </div>
       </section>
