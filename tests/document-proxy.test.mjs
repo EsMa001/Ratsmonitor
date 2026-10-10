@@ -14,8 +14,10 @@ test('only https addresses of public names are fetched',()=>{
  assert.equal(blockedTarget('https://93.90.195.235/x.pdf'),null);
  assert.match(blockedTarget('http://ratsinfo.example.de/x.pdf'),/https/);
  assert.match(blockedTarget('https://user:pw@ratsinfo.example.de/x.pdf'),/Zugangsdaten/);
- for(const url of ['https://localhost/x','https://intranet/x','https://ris.local/x','https://db.internal/x','https://printer.home.arpa/x','https://foo.localhost/x'])assert.match(blockedTarget(url),/interner Name/,url);
- for(const url of ['https://127.0.0.1/x','https://[::1]/x','https://169.254.169.254/latest/meta-data','https://10.0.0.1:8080/x','https://[fe80::1]/x'])assert.match(blockedTarget(url),/interne Adresse/,url);
+ for(const url of ['https://localhost/x','https://intranet/x','https://ris.local/x','https://db.internal/x','https://printer.home.arpa/x','https://foo.localhost/x','https://localhost./x','https://foo.localhost./x'])assert.match(blockedTarget(url),/interner Name/,url);
+ // URL writes every IPv4 form as dotted decimal and IPv6 in hex: octal, hex, short and mapped forms are all caught.
+ for(const url of ['https://127.0.0.1/x','https://[::1]/x','https://169.254.169.254/latest/meta-data','https://10.0.0.1:8080/x','https://[fe80::1]/x','https://127.1/x','https://0177.0.0.1/x','https://0x7f.1/x','https://2130706433/x','https://127.0.0.1./x','https://[::ffff:127.0.0.1]/x','https://[64:ff9b::127.0.0.1]/x','https://[0:0:0:0:0:0:0:1]/x'])assert.match(blockedTarget(url),/interne Adresse/,url);
+ assert.equal(blockedTarget('https://[64:ff9b::93.90.195.235]/x'),null,'a translated public address stays public');
  assert.match(blockedTarget('ftp://x.example/x'),/https/);assert.match(blockedTarget('nicht-eine-adresse'),/ungültig/);
 });
 
@@ -55,6 +57,12 @@ test('a transfer that stalls is cut off; a steady one passes whole',async()=>{
  assert.deepEqual((await reader.read()).value,new Uint8Array([1]));
  await new Promise(done=>setTimeout(done,120));
  assert.match(String(aborted?.message),/keine Daten/);
+ // The output fails by itself, even if the aborted source never ends (as a runtime might leave it).
+ await assert.rejects(reader.read(),/keine Daten/);
+ // A reader that stops early cancels the source and leaves no timer behind.
+ let cancelled=false;const endless=new ReadableStream({pull(c){c.enqueue(new Uint8Array([7]));},cancel(){cancelled=true;}});
+ const early=idleLimited(endless,()=>{throw Error('no abort after a cancel');},40).getReader();await early.read();await early.cancel();
+ await new Promise(done=>setTimeout(done,100));assert.equal(cancelled,true);
 });
 
 test('the file name survives a broken escape',()=>{

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runImports} from '../scripts/run-imports.mjs';
 import {budgeted} from '../server/integrations/request-budget.mjs';
-const base={siteUrl:'https://example.test',token:'private-secret',log:()=>{},sleep:async()=>{}};
+const base={siteUrl:'https://example.test',token:'private-secret-fixture',log:()=>{},sleep:async()=>{}};
 test('runner retries transient errors sequentially, continues and never logs tokens',async()=>{
  const calls=[],logs=[],waits=[];let n=0;
  const results=await runImports({...base,regions:['billerbeck','muenster'],log:v=>logs.push(v),sleep:async ms=>waits.push(ms),fetcher:async(url,options)=>{calls.push(url.searchParams.get('region'));assert.equal(options.redirect,'error');return new Response(JSON.stringify({topics:2}),{status:++n<3?503:200});}});

@@ -22,8 +22,9 @@ export function parseRobots(text){
  * for the end of the path. Matched position by position (the table of the classic wildcard match), never with a
  * regular expression: several stars in a foreign rule would make that exponential.
  */
-export function robotsPathMatches(rule,path){
- const anchored=rule.endsWith('$'),p=anchored?rule.slice(0,-1):rule;
+export function robotsPathMatches(rule,text){
+ // Rule and path both by code points, so characters beyond the BMP compare as one.
+ const anchored=rule.endsWith('$'),p=anchored?rule.slice(0,-1):rule,path=Array.from(text);
  // reach[j]: the rule up to here can cover the first j characters of the path.
  let reach=new Uint8Array(path.length+1);reach[0]=1;
  for(const ch of p){

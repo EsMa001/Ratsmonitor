@@ -33,8 +33,12 @@ test('the query finds the meetings between two days and skips reports whose meet
  put('e','billerbeck',[{date:'2026-10-06',committee:'Rat'}],{identity:{mergedInto:'b'}});
  const rows=sql.prepare(eventsSql(100)).all(JSON.stringify(['billerbeck']),'2026-10-01','2026-10-01','2026-10-31');
  assert.deepEqual(rows.map(r=>[r.d,r.c,r.n,JSON.parse(r.items).map(i=>i.id).sort()]),[['2026-10-05','Rat',2,['a','b']],['2026-10-20','Bauausschuss',1,['b']]]);
- // The index on event_date is what narrows the scan: the plan names it, not the index on the area alone.
+ // The reports are found over an index (of the area or of event_date), never by reading the whole table.
  const plan=sql.prepare('EXPLAIN QUERY PLAN '+eventsSql(100)).all(JSON.stringify(['billerbeck']),'2026-10-01','2026-10-01','2026-10-31').map(r=>r.detail).join(' | ');
- assert.match(plan,/event_date|region/i);
+ assert.match(plan,/SEARCH t USING (?:COVERING )?INDEX/);assert.doesNotMatch(plan,/SCAN t\b/);
+ // Münster's reader keeps the last decided meeting as event_date: its later meetings are still found.
+ put('m','muenster',[{date:'2026-10-25',committee:'Rat'},{date:'2026-09-17',committee:'Rat',status:'approved'}]);
+ sql.prepare("UPDATE topics SET event_date='2026-09-17' WHERE id='m'").run();
+ assert.deepEqual(sql.prepare(eventsSql(100)).all(JSON.stringify(['muenster']),'2026-10-20','2026-10-20','2026-10-31').map(r=>r.d),['2026-10-25']);
  sql.close();
 });

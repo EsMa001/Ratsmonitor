@@ -17,14 +17,16 @@ export function parseAgs(value,max=MAX_AREAS){
 }
 /**
  * Meetings of the areas between two days: per area, day and committee, with the reports discussed. Bind:
- * (ids as JSON, from, from, to). topics.event_date is the day of a report's last meeting (the readers set it so), so a
- * report with a meeting from `from` on has event_date >= from: the index on event_date narrows the scan to recent
- * reports before their events are unpacked, instead of reading every report of the areas.
+ * (ids as JSON, from, from, to). topics.event_date is the day of a report's last meeting (the page readers sort the
+ * meetings and take the last), so a report with a meeting from `from` on has event_date >= from. The check comes
+ * before the meetings are unpacked: the payload is parsed only for reports that can have a meeting in the period
+ * (the planner reads the reports of the areas over their index, not the whole table). Münster's OParl reader sets
+ * event_date to the last decided meeting, which can lie before later meetings: Münster is read without the check.
  */
 export const eventsSql=limit=>`SELECT t.region_id rid,substr(json_extract(e.value,'$.date'),1,10) d,coalesce(json_extract(e.value,'$.committee'),'') c,count(*) n,
    json_group_array(json_object('id',t.id,'title',json_extract(t.payload,'$.title'))) items
   FROM topics t,json_each(t.payload,'$.events') e
-  WHERE t.region_id IN (SELECT value FROM json_each(?)) AND t.event_date>=? AND json_extract(t.payload,'$.identity.mergedInto') IS NULL
+  WHERE t.region_id IN (SELECT value FROM json_each(?)) AND (t.event_date>=? OR t.region_id='muenster') AND json_extract(t.payload,'$.identity.mergedInto') IS NULL
    AND substr(json_extract(e.value,'$.date'),1,10) BETWEEN ? AND ?
   GROUP BY rid,d,c ORDER BY d,rid,c LIMIT ${Number(limit)}`;
 /** Text of an iCalendar property value: backslash, semicolon, comma and line breaks escaped (RFC 5545, 3.3.11). */

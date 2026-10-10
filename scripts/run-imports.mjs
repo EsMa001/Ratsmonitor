@@ -6,7 +6,7 @@ const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
 /** Portable, sequential client; logs never include credentials or response bodies. */
 export async function runImports({siteUrl,token,regions=DEFAULT_REGIONS,fetcher=fetch,sleep=pause,log=console.log,trigger='scheduled'}) {
  const site=new URL(siteUrl);
- if(site.protocol!=='https:'||site.username||site.password||site.search||site.hash||!token)throw Error('SITE_URL muss eine HTTPS-Adresse ohne Zugangsdaten sein; IMPORT_TOKEN ist erforderlich.');
+ if(site.protocol!=='https:'||site.username||site.password||site.search||site.hash||!token||token.length<16)throw Error('SITE_URL muss eine HTTPS-Adresse ohne Zugangsdaten sein; IMPORT_TOKEN ist erforderlich (mindestens 16 Zeichen, wie auf dem Server).');
  if(!regions.length||regions.some(r=>!/^[-a-z0-9]+$/.test(r)))throw Error('Ungültige Gebietsliste');
  const results=[];
  for(const region of [...new Set(regions)]){

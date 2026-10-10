@@ -29,6 +29,7 @@ test('robots.txt rules with many wildcards are matched without a regular express
  assert.equal(robotsPathMatches('/*.pdf$','/doc/a.pdf'),true);assert.equal(robotsPathMatches('/*.pdf$','/doc/a.pdf?x'),false);
  assert.equal(robotsPathMatches('/*.pdf','/doc/a.pdf?x'),true);assert.equal(robotsPathMatches('/a*b*c','/axxbyyc'),true);assert.equal(robotsPathMatches('/a*b*c','/axxcyyb'),false);
  assert.equal(robotsPathMatches('/','/anything'),true);assert.equal(robotsPathMatches('/$','/anything'),false);assert.equal(robotsPathMatches('/$','/'),true);
+ assert.equal(robotsPathMatches('/🙂','/🙂'),true);assert.equal(robotsPathMatches('/*🙂$','/x/🙂'),true);
  assert.equal(robotsPathMatches('/a.b','/a.b'),true);assert.equal(robotsPathMatches('/a.b','/axb'),false,'a dot is a dot, not any character');
  const rule='/'+'*a'.repeat(30)+'*$',path='/'+'a'.repeat(400)+'b';
  const [verdict,ms]=timed(()=>robotsAllow(parseRobots('User-agent: *\nDisallow: '+rule+'\n'),path,['vorort-politicaltopics']));
