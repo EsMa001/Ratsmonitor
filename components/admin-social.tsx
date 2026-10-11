@@ -89,7 +89,7 @@ export function AdminSocial(){
    {label:'Tage mit Vorschlag',value:data?data.summary.daysWithTopic:undefined,of:data?.summary.days,note:'schwache Tage bleiben leer'},
   ]}/></div>
   <p className="mt-4 max-w-[760px] text-[12px] leading-[1.5] text-slate-500">
-   Eignung = Themenwert (15, gelernte Streitquote und Urteil unabhängiger Bewerter) + Streit im Vorgang (15) + Alltagsnähe (20) + Reichweite des Ortes (15) + Aktualität (15) + Konkretheit (10) + Verständlichkeit (10) − Abzüge für Einzelstraßen, Ortsteil-Gremien und Planungsverfahren. Punkte über 62 werden gespreizt (Faktor 1,6), damit starke Vorschläge sichtbar vorn liegen.
+   Eignung = Themenwert (30, gelernte Streitquote und Urteil unabhängiger Bewerter) + Streit im Vorgang (15) + Alltagsnähe (15) + Reichweite des Ortes (10) + Aktualität (10) + Konkretheit (10) + Verständlichkeit (10) − Abzüge für Einzelstraßen, Ortsteil-Gremien und Planungsverfahren. Punkte über 62 werden gespreizt (Faktor 1,6), damit starke Vorschläge sichtbar vorn liegen.
    Reine Regelrechnung, keine Vorhersage von Klicks; es liegen keine Nutzungsdaten vor.
   </p>
 

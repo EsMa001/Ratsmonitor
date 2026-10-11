@@ -417,18 +417,18 @@ export function fitScore(c,{today,population={},evidence=null,calibration=calibr
  const main=c.hits[0];
  const tr=termRate(main.term,calibration),rt=termRating(main.term,ratings);
  const rateNorm=clamp((tr.rate-.12)/(.6-.12)),ratingNorm=clamp((rt.value-1.8)/(3.6-1.8));
- const themenwert=Math.round(15*(.5*rateNorm+.5*ratingNorm));
+ const themenwert=Math.round(30*(.35*rateNorm+.65*ratingNorm));
  // Streit im Vorgang: Abstimmungsergebnis, sonst Status; dazu Fraktionsantrag und Sitzungsfolge
  const res=evidence?.result||({rejected:'rej',postponed:'post'}[c.status])||null;
  let vorgang={rej:11,post:9,maj:8,unan:0,ok:2}[res]??3;
  if(c.party)vorgang+=4;
  if((evidence?.sessions||0)>=3)vorgang+=2;
  vorgang=Math.min(15,vorgang);
- const alltag=EVERYDAY_TERM[main.term]??EVERYDAY[main.group]??10;
+ const alltag=.75*(EVERYDAY_TERM[main.term]??EVERYDAY[main.group]??10);
  const pop=population[c.region_id];
- const reach=pop?Math.round(15*clamp((Math.log10(pop)-3.5)/2.2)):7;
+ const reach=pop?Math.round(10*clamp((Math.log10(pop)-3.5)/2.2)):5;
  const days=Math.max(0,Math.round((Date.parse(today+'T00:00:00Z')-Date.parse(c.date+'T00:00:00Z'))/DAY));
- const fresh=days<=1?15:days<=3?13:days<=7?10:days<=14?6:3;
+ const fresh=days<=1?10:days<=3?9:days<=7?7:days<=14?4:2;
  const party=PARTIES.some(([re])=>re.test(c.title.toLowerCase()));
  const decisive=['rejected','postponed','approved','recommended'].includes(c.status)||['rej','post','maj'].includes(res);
  const concrete=(party?4:0)+(decisive?3:0)+(/antrag|beschlussvorlage|bürgerbegehren|petition/i.test(c.title)?2:0);
@@ -446,11 +446,11 @@ export function fitScore(c,{today,population={},evidence=null,calibration=calibr
  if(PLANNING.test(c.title)){abzug-=5;why.push('Planungsverfahren');}
  if(/satzung|hebesatz/i.test(c.title)&&!c.party&&!['rej','post','maj'].includes(res)&&!['rejected','postponed'].includes(c.status)){abzug-=15;why.push('Routinesatzung');}
  const parts=[
-  {key:'thema',label:'Themenwert',points:themenwert,max:15},
+  {key:'thema',label:'Themenwert',points:themenwert,max:30},
   {key:'vorgang',label:'Streit im Vorgang',points:vorgang,max:15},
-  {key:'alltag',label:'Alltagsnähe',points:Math.round(alltag),max:20},
-  {key:'reichweite',label:'Reichweite',points:reach,max:15},
-  {key:'aktuell',label:'Aktualität',points:fresh,max:15},
+  {key:'alltag',label:'Alltagsnähe',points:Math.round(alltag),max:15},
+  {key:'reichweite',label:'Reichweite',points:reach,max:10},
+  {key:'aktuell',label:'Aktualität',points:fresh,max:10},
   {key:'konkret',label:'Konkretheit',points:concrete,max:10},
   {key:'klar',label:'Verständlichkeit',points:clear,max:10},
  ];

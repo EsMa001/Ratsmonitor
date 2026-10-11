@@ -1,73 +1,73 @@
 {
  "builtAt": "2026-10-11",
- "source": "Bewertung von 272 Vorschlägen durch vier unabhängige Bewerter (Skala 1 bis 5), blind gegenüber dem Score",
- "n": 272,
+ "source": "Bewertung von 389 Vorschlägen durch unabhängige Bewerter (Skala 1 bis 5), blind gegenüber dem Score; zweite Charge auf die Skala der ersten umgerechnet",
+ "n": 389,
  "mean": 2.72,
  "terms": {
   "Solarpark": {
-   "n": 15,
-   "eignung": 1.93,
-   "hook": 3.53
+   "n": 16,
+   "eignung": 1.88,
+   "hook": 3.43
   },
   "Gebührenerhöhung": {
-   "n": 3,
-   "eignung": 3,
-   "hook": 2.33
-  },
-  "Schließung": {
-   "n": 8,
-   "eignung": 2.5,
-   "hook": 2.25
-  },
-  "Tempo 30": {
-   "n": 31,
-   "eignung": 2.61,
-   "hook": 3.68
-  },
-  "Bad / Bibliothek": {
    "n": 4,
-   "eignung": 3,
+   "eignung": 3.29,
    "hook": 2.75
   },
+  "Schließung": {
+   "n": 11,
+   "eignung": 2.59,
+   "hook": 2.64
+  },
+  "Tempo 30": {
+   "n": 44,
+   "eignung": 2.66,
+   "hook": 3.59
+  },
+  "Bad / Bibliothek": {
+   "n": 6,
+   "eignung": 2.72,
+   "hook": 2.83
+  },
   "Bürgerbegehren": {
-   "n": 14,
-   "eignung": 2.43,
-   "hook": 2.36
+   "n": 16,
+   "eignung": 2.46,
+   "hook": 2.31
   },
   "Autofrei": {
-   "n": 7,
-   "eignung": 3.29,
-   "hook": 2.86
+   "n": 11,
+   "eignung": 3.06,
+   "hook": 2.82
   },
   "Windkraft": {
-   "n": 32,
-   "eignung": 2.53,
-   "hook": 3.12
+   "n": 36,
+   "eignung": 2.6,
+   "hook": 3.08
   },
   "Parken": {
-   "n": 10,
-   "eignung": 3.3,
-   "hook": 3.3
+   "n": 14,
+   "eignung": 3.33,
+   "hook": 3.5
   },
   "Baumschutz": {
-   "n": 8,
-   "eignung": 2.62,
-   "hook": 3.62
+   "n": 9,
+   "eignung": 2.68,
+   "hook": 3.55
   },
   "Innenstadt / Handel": {
-   "n": 4,
-   "eignung": 3,
-   "hook": 2.5
+   "n": 5,
+   "eignung": 3.03,
+   "hook": 2.8
   },
   "Eintrittspreise": {
-   "n": 2,
-   "eignung": 3,
-   "hook": 2
+   "n": 5,
+   "eignung": 3.09,
+   "hook": 2.6
   },
   "Streichung / Sparliste": {
-   "n": 15,
-   "eignung": 2.8,
-   "hook": 2.73
+   "n": 27,
+   "eignung": 2.4,
+   "hook": 2.85
   },
   "Transparenz": {
    "n": 4,
@@ -85,9 +85,9 @@
    "hook": 3.33
   },
   "Unterkunft": {
-   "n": 3,
-   "eignung": 3.33,
-   "hook": 3.33
+   "n": 6,
+   "eignung": 2.91,
+   "hook": 3
   },
   "Müll": {
    "n": 1,
@@ -95,19 +95,19 @@
    "hook": 4
   },
   "Fahrradstraße": {
-   "n": 10,
-   "eignung": 2.5,
-   "hook": 3.6
+   "n": 17,
+   "eignung": 2.53,
+   "hook": 3.41
   },
   "Verpackungs- / Bettensteuer": {
-   "n": 7,
-   "eignung": 3.43,
-   "hook": 3.14
+   "n": 12,
+   "eignung": 3.23,
+   "hook": 3.17
   },
   "Schulstraße / Poller": {
-   "n": 5,
-   "eignung": 2.2,
-   "hook": 2
+   "n": 7,
+   "eignung": 2.33,
+   "hook": 2.57
   },
   "Rücktritt / Abwahl": {
    "n": 1,
@@ -115,19 +115,19 @@
    "hook": 1
   },
   "Vielfalt / Demokratie": {
-   "n": 8,
-   "eignung": 2.5,
-   "hook": 2.38
+   "n": 9,
+   "eignung": 2.57,
+   "hook": 2.45
   },
   "Tierschutz": {
-   "n": 10,
-   "eignung": 2.5,
+   "n": 12,
+   "eignung": 2.36,
    "hook": 2
   },
   "Grundsteuer / Hebesatz": {
-   "n": 13,
-   "eignung": 3,
-   "hook": 2.38
+   "n": 32,
+   "eignung": 2.69,
+   "hook": 2.84
   },
   "Integration": {
    "n": 2,
@@ -135,19 +135,19 @@
    "hook": 2.5
   },
   "Bezahlkarte": {
-   "n": 8,
-   "eignung": 3.5,
-   "hook": 3.88
+   "n": 18,
+   "eignung": 3.48,
+   "hook": 3.84
   },
   "Flagge / Symbol": {
-   "n": 6,
-   "eignung": 3,
-   "hook": 3.67
+   "n": 12,
+   "eignung": 3.08,
+   "hook": 3.42
   },
   "Aufwandsentschädigung": {
-   "n": 1,
-   "eignung": 3,
-   "hook": 3
+   "n": 2,
+   "eignung": 2.58,
+   "hook": 3.5
   },
   "Biogas / Speicher": {
    "n": 2,
@@ -155,9 +155,9 @@
    "hook": 2.5
   },
   "Feuerwerk": {
-   "n": 4,
-   "eignung": 3.75,
-   "hook": 3.75
+   "n": 6,
+   "eignung": 3.72,
+   "hook": 3.67
   },
   "Ampel / Übergang": {
    "n": 3,
@@ -165,9 +165,9 @@
    "hook": 3.67
   },
   "Obdachlosigkeit": {
-   "n": 8,
-   "eignung": 3.25,
-   "hook": 2.62
+   "n": 10,
+   "eignung": 3.13,
+   "hook": 2.7
   },
   "Funk / Strom": {
    "n": 2,
@@ -180,14 +180,24 @@
    "hook": 1
   },
   "Sonntagsöffnung": {
-   "n": 4,
-   "eignung": 3,
-   "hook": 3
+   "n": 7,
+   "eignung": 2.78,
+   "hook": 2.86
   },
   "Videoüberwachung": {
+   "n": 2,
+   "eignung": 3.58,
+   "hook": 3.5
+  },
+  "Verkauf": {
    "n": 1,
-   "eignung": 4,
-   "hook": 3
+   "eignung": 2.16,
+   "hook": 4
+  },
+  "Hundesteuer": {
+   "n": 1,
+   "eignung": 3.16,
+   "hook": 2
   }
  }
 }
