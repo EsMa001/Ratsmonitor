@@ -152,3 +152,19 @@ Jeder Schritt einzeln auf `main`, mit Tests, Migrationen auf echten Daten gemess
 - Bestehender Fehler in der Wortliste (unabhängig davon): ein voller Aufbau leert `search_cards_gone` nicht, das nächste
   Nachführen verliert dann die vorberechneten Zahlen. Als eigene Aufgabe vorgemerkt; Migration 0019 leert das Protokoll
   selbst.
+
+### FTS5 eingebaut (Migration 0023, `monitor-search.mjs`)
+
+- Index `search_fts` (Trigram, external content über `search_cards`), mitgeführt über vier Trigger auf `search_cards`;
+  Aufbau in der Migration (lokale Kopie: 43 s, +650 MB). Die Wortliste bleibt unverändert und hat Vorrang: der Index
+  wird nur genutzt, wenn sie keine Kandidaten liefert (häufige Wörter mit Filter, mehrere Wörter, Teilwörter, Liste nicht
+  aktuell), nur für Begriffe aus Buchstaben und Ziffern ab 3 Zeichen und nur, wenn die Tabelle existiert. `instr` prüft
+  weiter, das Ergebnis ist dasselbe (Test `tests/search-fts.test.mjs`).
+- Begriffe ohne passenden Gebietsnamen bekommen kein leeres `OR region_id IN ([])` mehr; das Glied verhinderte, dass
+  SQLite über den Index einsteigt.
+- Echte Suchfunktion auf der Kopie, ohne Wortliste (ms, ohne → mit Index), Zähler: haushalt 5.101 → 114, turnhalle
+  2.776 → 13, kormoran 468 → 6, windkraft ohne Formalien 450 → 21, schwimm mit Thema 578 → 18, radweg oder
+  fahrradstrasse 806 → 37, kita beitrag 862 → 42. Erste Seite: kormoran 1.007 → 4, kita beitrag 183 → 46; sehr häufige
+  Wörter etwas langsamer (haushalt 6 → 128), weil die Seite nicht mehr nach 20 Treffern aufhört.
+- Migration 0022 (summaryEvidence) auf der Kopie 27 s.
+

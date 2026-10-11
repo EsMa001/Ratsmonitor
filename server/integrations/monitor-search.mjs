@@ -63,6 +63,22 @@ async function formalColumn(db){
  return present;
 }
 /*
+ * Volltextindex search_fts (drizzle/0023, Trigram): schränkt die Karten eines Begriffs über den Index ein, statt den
+ * Suchtext jeder Karte zu lesen. instr bleibt als Prüfung, das Ergebnis ist dasselbe. Nur für Begriffe aus Buchstaben und
+ * Ziffern ab 3 Zeichen (kürzere kann der Trigram-Index nicht) und nur ohne Kandidaten der Wortliste (die sind schneller).
+ * Ohne Migration wie früher; vorhanden wird gemerkt, fehlend nur eine Minute.
+ */
+const ftsTables=new WeakMap();
+async function ftsTable(db){
+ const known=ftsTables.get(db);
+ if(known&&(known.present||Date.now()-known.at<60000))return known.present;
+ let present=false;
+ try{await db.prepare('SELECT rowid FROM search_fts LIMIT 0').all();present=true;}catch{/* Index fehlt: Suche über alle Karten */}
+ ftsTables.set(db,{present,at:Date.now()});
+ return present;
+}
+const FTS_TERM=/^[a-z0-9]{3,}$/;
+/*
  * Gebiet als SQL-Bedingung. Eine lange Einschlussliste (ohne Ort: alle 5.030 Gemeinden) zwingt SQLite, über den
  * Gebietsindex jede Karte zu lesen und danach zu sortieren (erste Seite 730 ms bei 900.000 Karten). Umfasst die
  * Auswahl mehr als die Hälfte des Katalogs, schließt die Bedingung stattdessen die übrigen Gebiete aus; dann nutzt
@@ -84,6 +100,7 @@ function regionCondition(ids,catalog){
 /** Filter der Suche als SQL-Bedingung auf search_cards (Gebiet, Begriff, Zeitraum, Thema, Status); auch für Plenara.X */
 export async function searchFilters(db,catalog,f){
  const formalReady=f.noformal?await formalColumn(db):false;
+ const ftsReady=(f.groups||[f.terms]).some(g=>g.some(t=>FTS_TERM.test(t)))?await ftsTable(db):false;
  /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
  const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...f.more];
  /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */
@@ -118,11 +135,19 @@ export async function searchFilters(db,catalog,f){
   const groups=(f.groups||[f.terms]).filter(g=>g.length);
   if(groups.length){
    /* Exakter Begriff: erst grob über search (schnell), dann ganzes Wort in search_exact (mit Umlauten); Gebiete nur bei ganzem Wort im Namen */
-   where.push('('+groups.map(g=>'('+g.map(()=>(f.exact?'((instr(search,?)>0 AND (search_exact GLOB ? OR search_exact GLOB ? OR search_exact GLOB ?))':'(instr(search,?)>0')+' OR region_id IN (SELECT value FROM json_each(?)))').join(' AND ')+')').join(' OR ')+')');
+   /* Mit Volltextindex vorher: nur Karten, die der Index für den Begriff nennt (danach dieselbe Prüfung mit instr) */
+   const viaFts=t=>ftsReady&&!cand&&FTS_TERM.test(t);
+   const inText=t=>(viaFts(t)?'rowid IN (SELECT rowid FROM search_fts WHERE search_fts.search LIKE ?) AND ':'')+'instr(search,?)>0';
+   /* Gebiete, deren Name den Begriff enthält; ohne solche entfällt das Glied (eine leere Liste trifft nie, verhindert aber,
+      dass SQLite über den Volltextindex einsteigt: 5 s statt 3 ms bei 941.000 Karten) */
+   const named=(gi,ti)=>f.exact?exactNameHits(f.egroups[gi][ti]):nameHits(groups[gi][ti]);
+   const inName=(gi,ti)=>named(gi,ti)==='[]'?'':' OR region_id IN (SELECT value FROM json_each(?))';
+   where.push('('+groups.map((g,gi)=>'('+g.map((t,ti)=>(f.exact?'(('+inText(t)+' AND (search_exact GLOB ? OR search_exact GLOB ? OR search_exact GLOB ?))':'('+inText(t))+inName(gi,ti)+')').join(' AND ')+')').join(' OR ')+')');
    groups.forEach((g,gi)=>g.forEach((t,ti)=>{
-    if(!f.exact){args.push(t,nameHits(t));return;}
-    const e=f.egroups[gi][ti];
-    args.push(t,...wholeWord(e),exactNameHits(e));
+    if(viaFts(t))args.push('%'+t+'%');
+    const ids=named(gi,ti),more=ids==='[]'?[]:[ids];
+    if(!f.exact){args.push(t,...more);return;}
+    args.push(t,...wholeWord(f.egroups[gi][ti]),...more);
    }));
   }
   return {where,args};
