@@ -254,8 +254,9 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
    systemctl daemon-reload && systemctl enable --now ratsmonitor-pdf-nightly.timer`.
 
 **Nachts** (05:30, nach Import, Sicherung und Wortliste) führt `scripts/pdf-store/nightly.mjs` die Stufen 2 bis 6 in fester
-Reihenfolge aus, höchstens drei Stunden: Laden (bis 40 % der Zeit, Monat für Monat ab heute zurück, bis 65 GB), bei
-Überschreitung des Budgets die PDFs mit dem geringsten Wert je Byte löschen (Text bleibt), Textebene, OCR (die verbleibende
+Reihenfolge aus, höchstens drei Stunden: Laden (bis 40 % der Zeit, Monat für Monat ab heute zurück, bis 65 GB plus
+3 GB Puffer, damit bei voller Ablage neue Sitzungen trotzdem ankommen), danach bei Überschreitung des Budgets die PDFs mit dem
+geringsten Wert je Byte löschen, bis wieder 65 GB erreicht sind (Text bleibt; nur PDFs mit Textfassung, neu geladene bleiben), Textebene, OCR (die verbleibende
 Zeit bis auf 25 Minuten), Zusammenfassungen, Fakten, Wortliste. Was nicht fertig wird, macht die nächste Nacht weiter;
 eine Sperre (`nightly.lock` in der Ablage) verhindert zwei Läufe. Protokoll: `journalctl -u ratsmonitor-pdf-nightly`.
 Probe ohne Wirkung: `node scripts/pdf-store/nightly.mjs --dry-run`.
