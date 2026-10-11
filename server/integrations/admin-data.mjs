@@ -98,8 +98,10 @@ export async function regionFigures(db,{now=new Date()}={}){
   [revisions,stored,sizes,recent]=await db.batch([
    db.prepare('SELECT region_id,revision FROM region_revisions'),
    db.prepare('SELECT region_id,revision,stats FROM region_stats'),
-   db.prepare(`SELECT region_id,count(*) n FROM topics WHERE ${canonical} GROUP BY region_id`),
-   db.prepare(`SELECT region_id,count(*) n FROM topics WHERE ${canonical} AND updated_at>=? AND updated_at<=? GROUP BY region_id`).bind(week,now.toISOString())
+   // INDEXED BY: Der Planer nähme sonst den Index ohne Bedingung und läse für jede Zeile die Nutzlast (active ist eine generierte
+   // Spalte aus dem Payload): 6 bis 28 s statt 0,1 s auf dem Server, seit die Teilindizes mit 0020 neu angelegt wurden.
+   db.prepare(`SELECT region_id,count(*) n FROM topics INDEXED BY idx_topics_canonical_region_updated WHERE ${canonical} GROUP BY region_id`),
+   db.prepare(`SELECT region_id,count(*) n FROM topics INDEXED BY idx_topics_canonical_region_updated WHERE ${canonical} AND updated_at>=? AND updated_at<=? GROUP BY region_id`).bind(week,now.toISOString())
   ]);
  }catch(e){if(/no such table/i.test(String(e?.message||e)))return null;throw e;}
  const kept=new Map(stored.results.map(r=>[r.region_id,{revision:Number(r.revision),row:readJson(r.stats)}]));
