@@ -528,7 +528,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/admin/
-- page.tsx (58, ⚠3): dynamic, metadata, AdminPage
+- page.tsx (60, ⚠3): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -564,7 +564,7 @@ topic design-styles.css:140
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
 - admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (517, ⚠3): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
+- admin-texts.ts (519, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
@@ -665,7 +665,7 @@ topic design-styles.css:140
 - savedSearch.ts (134, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - sha256.ts (47): sha256Fallback, sha256Hex
-- terms.ts (11, ⚠1): isFiller, prettyTerm
+- terms.ts (13, ⚠2): isFiller, prettyTerm
 - testAuth.ts (149): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
@@ -695,19 +695,19 @@ topic design-styles.css:140
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (40, ⚠1): AnalyticsPages
 - Befund.tsx (51): Befund, zuThema
-- BeschluessePage.tsx (218, ⚠5): BeschluessePage
+- BeschluessePage.tsx (219, ⚠6): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (293, ⚠11): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
-- DiffusionPage.tsx (270, ⚠4): DiffusionPage
+- DiffusionPage.tsx (271, ⚠5): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
-- KnowledgeGraphPage.tsx (193, ⚠1): KnowledgeGraphPage
-- Laden.tsx (15): Laden
-- NetView.tsx (173, ⚠1): NNode, NEdge, ROLE, NetView
+- KnowledgeGraphPage.tsx (199, ⚠1): KnowledgeGraphPage
+- Laden.tsx (25): Laden
+- NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
 - PageBand.tsx (17): PageBand
 - Reveal.tsx (16): Reveal
 - TrendViews.tsx (71): Trend, TrendKind, Spark, TrendMap

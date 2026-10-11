@@ -13,6 +13,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  atlas:{title:'Lückenatlas',intro:'Zeigt für alle Gebiete Deutschlands, ob Plenara ihre Ratsinformationen lesen kann, und wenn nicht, warum – mit dem nächsten Schritt, der die Lücke schließen könnte.'},
  qualitaet:{title:'Qualität & Betrieb',intro:'Zeigt, wo der Bestand einen zweiten Blick braucht: fehlende Einordnung, unklare Verfahrensstände, Doppelungen und Defekte. Dazu die letzten Abrufe, die Datensicherung und was technisch eingerichtet ist.'},
  hochrechnung:{title:'Hochrechnung',intro:'Schätzt, wie viele Berichte alle kommunalen Gremien in Deutschland pro Tag erzeugen und wie viel Text das ist. Grundlage für die Abschätzung der KI-Kosten.'},
+ social:{title:'Social Media',intro:'Schlägt je Tag bis zu drei Einzelfälle aus Orten vor, die polarisieren: Tempo 30, Windkraft, Bezahlkarte, Gebühren, Schließungen, Bürgerbegehren. Gefunden über feste Streitwörter im Titel, verstärkt durch Fraktionsanträge und den Status (abgelehnt oder vertagt zählt mehr). Rein regelbasiert, ohne KI; schwache Tage bleiben leer.'},
  regeltexte:{title:'Regelbasierte Texte',intro:'Zeigt, bei wie vielen Artikeln die Zusammenfassung von der KI oder von festen Regeln stammt und wie die Themen-Labels zustande kamen. Die Seite zählt nur, was schon gespeichert ist.'},
  stichwoerter:{title:'Stichwörter',intro:'Zeigt, an welchen Wörtern die festen Regeln Sachgebiete erkennen, welche Begriffe in den Titeln stehen und welche Stichwörter die KI vergibt. Die Seite zählt nur, was schon gespeichert ist.'},
 };
@@ -23,6 +24,7 @@ export const FOOT:Record<AdminPage,string>={
  atlas:'Anbindung und Gründe aus Quellenkatalog und Quellensuche, Berichte und Abrufe aus der Datenbank. Karten: © BKG (2026), dl-de/by-2-0.',
  qualitaet:'Zahlen aus der Datenbank; doppelt gelieferte Berichte zählen einmal. Technische Prüfungen ersetzen keine fachliche Bewertung.',
  hochrechnung:'Die Hochrechnung liest nur den gespeicherten Bestand und startet keinen Abruf.',
+ social:'Vorschläge aus den gespeicherten Berichten; vor einem Beitrag Zahl und Fundstellen prüfen. Die Seite startet keine Analyse.',
  regeltexte:'Zahlen aus der Datenbank; die Seite startet keine Analyse.',
  stichwoerter:'Die Seite zählt nur, was frühere Schritte gespeichert haben; sie startet keine Analyse.',
 };
