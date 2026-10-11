@@ -97,3 +97,15 @@ test('a gap without a log entry or too many entries drop the precomputed numbers
  await refreshSearchWords(db,OPTIONS);
  assert.equal(state(raw).hasHits,false);assert.deepEqual(gone(raw),[]);
 });
+
+test('a full rebuild takes over the log written before it: the next incremental run still equals a full rebuild',async()=>{
+ const f=fixture();
+ for(let i=0;i<6;i++)f.add('t'+i,'Haushalt Schwimmbad '+i);
+ await refreshSearchWords(f.db,{...OPTIONS,full:true});
+ f.retitle('t1','Kormoran Brücke');assert.equal(gone(f.raw).length,1);
+ await refreshSearchWords(f.db,{...OPTIONS,full:true});
+ assert.deepEqual(gone(f.raw),[],'entries from before the rebuild are reflected in it');
+ f.add('t9','Haushalt Turnhalle');
+ await sameAsFull('after full rebuild with pending log',f);
+ f.raw.close();
+});

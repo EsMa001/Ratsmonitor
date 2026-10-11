@@ -138,6 +138,9 @@ function commonTermsIn(word,commonSet,cache){
 
 /** Voller Aufbau: zählt alle Wörter, behält die IDs der seltenen und rechnet die Trefferzahl der häufigen aus */
 async function buildAll(db,revision,chunk,kinds,postingMax,blockedMin,names,extend=async()=>{}){
+ /* Protokolleinträge von vor dem Aufbau sind darin schon berücksichtigt (er liest alle Karten neu) und werden am Ende gelöscht;
+    Einträge, die während des Aufbaus dazukommen, bleiben für das nächste Nachführen */
+ const goneBefore=(await db.prepare('SELECT max(rowid) m FROM search_cards_gone').first())?.m??0;
  await writeState(db,{rowid:0,topId:null,revision:null,complete:false,words:0});
  await db.prepare('DROP TABLE IF EXISTS search_postings').run();
  await db.prepare('DROP TABLE IF EXISTS search_word_areas').run();
@@ -224,6 +227,7 @@ async function buildAll(db,revision,chunk,kinds,postingMax,blockedMin,names,exte
  for(const [t,m] of facets)for(const [k,n] of m){const [kind,label,status]=k.split('|');facetRows.push([t,kind,label,status,n]);}
  await runBatches(db,insertRows(db,'search_word_areas',['word','region_id','n'],areaRows));
  await runBatches(db,insertRows(db,'search_word_facets',['word','kind','label','status','n'],facetRows));
+ if(goneBefore)await db.prepare('DELETE FROM search_cards_gone WHERE rowid<=?').bind(goneBefore).run();
  await writeState(db,{rowid,topId,revision,complete:true,counted:cards,hasHits:!!kinds,words:words.length,postings:pairs.length,at:new Date().toISOString()});
  return {cards,words:words.length,postings:pairs.length,hitsWords:hits.size,blocked:blocked.size,areaRows:areaRows.length,facetRows:facetRows.length,revision,full:true,reachedEnd:true};
 }
