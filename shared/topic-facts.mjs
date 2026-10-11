@@ -133,7 +133,9 @@ export function kitaFeeOf(title,text){
  const t=String(title||''),sents=[t,...String(text||'').replace(/\s+/g,' ').split(SENTENCE).slice(0,400)].filter(x=>FEE.test(x)&&(KITA.test(x)||KITA.test(t)));
  if(!sents.length||COLLECTIVE.test(t))return null;
  const all=sents.join(' ');
- const direction=/beitragsfrei|Beitragsfreiheit|gebührenfrei/i.test(all)?'Beitragsfreiheit':/Erhöhung|erhöht|Anhebung|angehoben|Steigerung|steig/i.test(all)?'Erhöhung':/Senkung|gesenkt|Reduzierung|reduziert|Entlastung|Ermäßigung/i.test(all)?'Senkung':sents.every(x=>MEAL.test(x))?'Verpflegung':'Neufassung';
+ // Der Titel hat Vorrang: „Reduzierung der Elternbeiträge“ bleibt eine Senkung, auch wenn der Text von Steigerungen spricht
+ const byTitle=/beitragsfrei|Beitragsfreiheit|gebührenfrei/i.test(t)?'Beitragsfreiheit':/Erhöhung|Anhebung|Anpassung nach oben/i.test(t)?'Erhöhung':/Reduzierung|Senkung|Absenkung|Entlastung|Ermäßigung/i.test(t)?'Senkung':null;
+ const direction=byTitle||(/beitragsfrei|Beitragsfreiheit|gebührenfrei/i.test(all)?'Beitragsfreiheit':/Erhöhung|erhöht|Anhebung|angehoben|Steigerung|steig/i.test(all)?'Erhöhung':/Senkung|gesenkt|Reduzierung|reduziert|Entlastung|Ermäßigung/i.test(all)?'Senkung':sents.every(x=>MEAL.test(x))?'Verpflegung':'Neufassung');
  const eur=all.match(/(\d{1,4}(?:,\d{2})?)\s*(?:€|Euro|EUR)/);
  return {direction,euro:eur?eur[1]:''};
 }

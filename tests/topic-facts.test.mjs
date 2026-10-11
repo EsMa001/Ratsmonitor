@@ -61,6 +61,7 @@ test('Kita: fee decisions with direction, new places without years',async()=>{
  const {kitaFeeOf,kitaPlacesOf}=await import('../shared/topic-facts.mjs');
  assert.deepEqual(kitaFeeOf('Satzung über Elternbeiträge in Kindertageseinrichtungen','Die Elternbeiträge für Kinder in der Kita werden zum 1.8. um 5 % erhöht.'),{direction:'Erhöhung',euro:''});
  assert.equal(kitaFeeOf('Kita-Beiträge','Das letzte Kita-Jahr bleibt beitragsfrei.').direction,'Beitragsfreiheit');
+ assert.equal(kitaFeeOf('Antrag: Reduzierung der Elternbeiträge für Kindertageseinrichtungen','Wegen der Steigerung der Kosten in der Kita …').direction,'Senkung','Titel vor Text');
  assert.equal(kitaFeeOf('Beitragssatzung über wiederkehrende Straßenbeiträge','Die Beiträge werden erhöht.'),null,'Straßenbeiträge sind keine Kita-Beiträge');
  assert.equal(kitaFeeOf('Festsetzung der Elternbeiträge für die Verpflegung in den Kitas','Die Verpflegungspauschale beträgt 3,50 Euro.').direction,'Verpflegung');
  assert.equal(kitaFeeOf('Mitteilungen','Elternbeiträge in der Kita werden erhöht.'),null,'Sammelpunkt');
