@@ -1,5 +1,6 @@
-# Einleitung (allgemein, für alle Zielgruppen). Beginnt mit einer Frage (keine Behauptung), endet ohne Aufruf; der Aufruf kommt im Abschluss des Videos. Start auf der Startseite, dann die erste Suche.
-@startseite.kopf Was entscheidet der Rat in Ihrer Gemeinde gerade über Ihre Straße, Ihre Heizung oder Ihr Geschäft?
+# Einleitung (allgemein, für alle Zielgruppen: Kommunen, Unternehmen, Verbände, Medien, Bürger). Beginnt mit einer Frage (keine Behauptung), endet ohne Aufruf; der Aufruf kommt im Abschluss des Videos. Start auf der Startseite, dann die erste Suche, dann der Weg zur Originalunterlage.
+@startseite.kopf Was wird in Räten gerade beraten, das Ihr Vorhaben, Ihre Stadt oder Ihre Recherche betrifft?
 *@startseite.marke Plenarra zeigt, was in Ihren Kommunen beraten wird: Beschlüsse und Beratungen an einem Ort.
 @startseite.zahl Die Zahl zeigt, wie viele Berichte aus Räten und Ausschüssen in den letzten 30 Tagen dazugekommen sind.
 *@startseite.suche Ein Begriff genügt, zum Beispiel {{p.thema|text}}, und die Karte zeigt sofort, wo darüber beraten wird.
+*@startseite.artikel Jede Angabe führt zur Originalunterlage, und Alarme melden Neues per E-Mail.

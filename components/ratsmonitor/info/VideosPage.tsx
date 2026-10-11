@@ -11,25 +11,25 @@ const FULL = "plenara-komplett";
 type Chapter = { t: number; title: string; what: string };
 const PLENARA: Chapter[] = [
   { t: 7, title: "Startseite", what: "Was in Ihren Kommunen beraten wird, an einem Ort." },
-  { t: 33, title: "Suchen", what: "Ein Begriff, ganz Deutschland, sofort auf der Karte." },
-  { t: 66, title: "Liste und Artikel", what: "Den Stand jedes Vorgangs auf einen Blick." },
-  { t: 103, title: "Filter", what: "Eingrenzen, bis nur das Passende übrig bleibt." },
-  { t: 136, title: "Alarme", what: "Per E-Mail informiert werden, ohne zu suchen." },
-  { t: 173, title: "Export", what: "Aus der Suche wird Ihre Auswertung." },
-  { t: 202, title: "Kalender", what: "Keine Sitzung verpassen." },
-  { t: 224, title: "Konto", what: "Alles Gespeicherte an einem Ort." },
-  { t: 247, title: "Datenabdeckung", what: "Ist Ihre Gemeinde dabei? Das sehen Sie offen." },
+  { t: 38, title: "Suchen", what: "Ein Begriff, ganz Deutschland, sofort auf der Karte." },
+  { t: 71, title: "Liste und Artikel", what: "Den Stand jedes Vorgangs auf einen Blick." },
+  { t: 108, title: "Filter", what: "Eingrenzen, bis nur das Passende übrig bleibt." },
+  { t: 140, title: "Alarme", what: "Per E-Mail informiert werden, ohne zu suchen." },
+  { t: 178, title: "Export", what: "Aus der Suche wird Ihre Auswertung." },
+  { t: 206, title: "Kalender", what: "Keine Sitzung verpassen." },
+  { t: 229, title: "Konto", what: "Alles Gespeicherte an einem Ort." },
+  { t: 252, title: "Datenabdeckung", what: "Ist Ihre Gemeinde dabei? Das sehen Sie offen." },
 ];
 const ANALYSE: Chapter[] = [
-  { t: 275, title: "Ausbreitung", what: "Sehen, wie sich ein Thema ausbreitet." },
-  { t: 315, title: "Entscheidungen", what: "Wie Vorgänge ausgehen." },
-  { t: 347, title: "Trends", what: "Neues früh erkennen." },
-  { t: 369, title: "Orte vergleichen", what: "Zwei Kommunen nebeneinander." },
-  { t: 396, title: "Zusammenhänge", what: "Themen und Orte als Netz." },
-  { t: 422, title: "Weg durch die Gremien", what: "Wie ein Thema durch die Gremien läuft." },
+  { t: 280, title: "Ausbreitung", what: "Sehen, wie sich ein Thema ausbreitet." },
+  { t: 320, title: "Entscheidungen", what: "Wie Vorgänge ausgehen." },
+  { t: 352, title: "Trends", what: "Neues früh erkennen." },
+  { t: 374, title: "Orte vergleichen", what: "Zwei Kommunen nebeneinander." },
+  { t: 401, title: "Zusammenhänge", what: "Themen und Orte als Netz." },
+  { t: 427, title: "Weg durch die Gremien", what: "Wie ein Thema durch die Gremien läuft." },
 ];
-const ALL = [...PLENARA, ...ANALYSE, { t: 452, title: "Jetzt ausprobieren", what: "" }];
-const LENGTH = 486;
+const ALL = [...PLENARA, ...ANALYSE, { t: 457, title: "Jetzt ausprobieren", what: "" }];
+const LENGTH = 492;
 
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
 
@@ -91,10 +91,10 @@ function ChapterList({ title, items, now, go }: { title: string; items: Chapter[
 }
 
 const HOOKS: { title: string; text: string; t: number }[] = [
-  { title: "Früher erfahren, was beraten wird", text: "Ein Begriff, und die Karte zeigt, wo darüber beraten wird.", t: 33 },
-  { title: "Alarme statt tägliches Suchen", text: "plenara meldet sich per E-Mail, wenn es Neues gibt.", t: 136 },
-  { title: "Stand jedes Vorgangs auf einen Blick", text: "Der Verlauf steht schon in der Trefferliste.", t: 66 },
-  { title: "Wie sich ein Thema ausbreitet", text: "plenara.X zeigt Ausbreitung, Entscheidungen und Trends.", t: 275 },
+  { title: "Früher erfahren, was beraten wird", text: "Ein Begriff, und die Karte zeigt, wo darüber beraten wird.", t: 38 },
+  { title: "Alarme statt tägliches Suchen", text: "plenara meldet sich per E-Mail, wenn es Neues gibt.", t: 140 },
+  { title: "Stand jedes Vorgangs auf einen Blick", text: "Der Verlauf steht schon in der Trefferliste.", t: 71 },
+  { title: "Wie sich ein Thema ausbreitet", text: "plenara.X zeigt Ausbreitung, Entscheidungen und Trends.", t: 280 },
 ];
 
 export function VideosPage() {
@@ -107,14 +107,14 @@ export function VideosPage() {
   };
   return (
     <>
-      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="plenara in Bewegung" lead="Besser verstehen, was vor Ort beraten wird. In 30 Sekunden oder in acht Minuten." />
+      <PageHead icon="circlePlay" label="Informationen" name="Videos" title="plenara in Bewegung" lead="Besser verstehen, was vor Ort beraten wird. In unter einer Minute oder in acht Minuten." />
       <section className="ri-sec">
         <div className="grid items-center gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
-          <Player base={PITCH} poster={PITCH} label="Kurzvideo abspielen: plenara in 30 Sekunden" />
+          <Player base={PITCH} poster={PITCH} label="Kurzvideo abspielen: plenara in unter einer Minute" />
           <div>
-            <p className="m-0 text-[13px] font-semibold uppercase tracking-wide text-teal-700">30 Sekunden</p>
-            <h2 className="m-0 mt-1 text-[26px] font-semibold leading-tight max-md:text-[21px] text-slate-900">Was entscheidet Ihr Rat gerade über Ihre Straße, Ihre Heizung oder Ihr Geschäft?</h2>
-            <p className="mb-0 mt-3 text-[16px] text-slate-600">Das Kurzvideo zeigt, wie plenara Beschlüsse und Beratungen aus Ihren Kommunen an einem Ort sammelt, und warum ein Begriff genügt.</p>
+            <p className="m-0 text-[13px] font-semibold uppercase tracking-wide text-teal-700">Unter 45 Sekunden</p>
+            <h2 className="m-0 mt-1 text-[26px] font-semibold leading-tight max-md:text-[21px] text-slate-900">Was wird in Räten gerade beraten, das Ihr Vorhaben, Ihre Stadt oder Ihre Recherche betrifft?</h2>
+            <p className="mb-0 mt-3 text-[16px] text-slate-600">Für Kommunen, Unternehmen, Verbände, Medien und Bürger: Ein Begriff genügt, die Karte zeigt, wo darüber beraten wird, und jede Angabe führt zur Originalunterlage.</p>
           </div>
         </div>
       </section>
