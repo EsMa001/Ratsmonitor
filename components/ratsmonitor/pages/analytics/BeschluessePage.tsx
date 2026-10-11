@@ -4,6 +4,7 @@ import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { RadarDrill } from "./RadarDrill";
 import { STATUS } from "../../lib/constants";
 import { DEC_COLORS, DecisionRow, MonthColumns, type Cut, type Month } from "./DecisionCharts";
 import { DiffusionSearch } from "./DiffusionSearch";
@@ -41,6 +42,8 @@ function Fold({ title, children }: { title: string; children: React.ReactNode })
 export function BeschluessePage() {
   const { query, hasTerm, search } = useAnalyticsQuery();
   const [res, setRes] = useState<Result | null>(null);
+  // Geöffnete Liste hinter einer Zeile („kind:rat“)
+  const [open, setOpen] = useState("");
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [want, setWant] = useState(hasTerm);
@@ -134,18 +137,18 @@ export function BeschluessePage() {
                     <button key={id} type="button" role="tab" aria-selected={cut === id} onClick={() => setCut(id)} className={`-mb-px border-b-2 pb-3 text-[16px] ${cut === id ? "border-teal-600 font-semibold text-slate-900" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{l}</button>
                   ))}
                 </div>
-                <p className="mb-2 mt-3 text-[14px] text-slate-500">Beschlussquote und Anteil vertagt und abgelehnt{cut === "topics" ? `. Nur ${n(res.totals.decided - res.unclassified.decided)} der ${n(res.totals.decided)} Entscheidungen sind einem Themenfeld zugeordnet.` : cut === "kinds" ? ". Ausschüsse und Ortsgremien empfehlen meist nur, der Rat beschließt: Ihre Quote ist mit der des Rats nicht direkt vergleichbar." : "."}</p>
-                {cuts.length === 0 ? <p className="py-4 text-[14px] text-slate-500">Zu wenige Entscheidungen für diese Aufteilung.</p> : <ol className="m-0 list-none border-t border-slate-200 p-0">{cuts.map((c) => <DecisionRow key={c.id} cut={c} />)}</ol>}
+                <p className="mb-2 mt-3 text-[14px] text-slate-500">Beschlussquote und Anteil vertagt und abgelehnt{cut === "topics" ? `. Nur ${n(res.totals.decided - res.unclassified.decided)} der ${n(res.totals.decided)} Entscheidungen sind einem Themenfeld zugeordnet.` : cut === "kinds" ? ". Ausschüsse empfehlen meist nur, der Rat beschließt: Für sie steht deshalb keine Quote, sondern die Zahl der Empfehlungen." : "."}{cut !== "kinds" ? " Grau: Quote im üblichen Rahmen, keine deutliche Abweichung vom Gesamtwert." : ""}</p>
+                {cuts.length === 0 ? <p className="py-4 text-[14px] text-slate-500">Zu wenige Entscheidungen für diese Aufteilung.</p> : <ol className="m-0 list-none border-t border-slate-200 p-0">{cuts.map((c) => { const by = { kinds: "kind", topics: "label", lands: "land" }[cut], k = `${by}:${c.id}`; return <DecisionRow key={c.id} cut={c} onToggle={() => setOpen(open === k ? "" : k)} expanded={open === k} drill={open === k && <RadarDrill base="/api/analytics/decisions?list=1" query={ranKey} by={by} value={c.id} label={`${c.name}, Vorgänge mit Entscheidung`} />} />; })}</ol>}
               </div>
               </Fold>
               <Fold title="Abstimmung und Änderungen">
               <div className="pb-6 pt-2">
-                <p className="mb-4 mt-1 text-[14px] text-slate-500">Aus dem Ergebnistext der Beschlüsse gelesen. Stichprobe von {n(res.votes.sampled)} der {n(res.votes.of)} Vorgänge mit Entscheidung.</p>
+                <p className="mb-4 mt-1 text-[14px] text-slate-500">Aus dem Ergebnistext der Beschlüsse gelesen; das nennen nur manche Ratsinformationssysteme, die Werte gelten nur für Vorgänge mit Angabe. Stichprobe von {n(res.votes.sampled)} der {n(res.votes.of)} Vorgänge mit Entscheidung.</p>
                 <dl className="grid grid-cols-2 gap-y-6 sm:grid-cols-4">
                   {[
-                    ["Einstimmig", pct(res.votes.all.unanimous)],
+                    [`Einstimmig (von ${n(res.votes.all.vote)} mit Angabe)`, pct(res.votes.all.unanimous)],
                     ["Mehrheitlich", res.votes.all.unanimous === null ? "–" : pct(Math.round((100 - res.votes.all.unanimous) * 10) / 10)],
-                    ["Geändert beschlossen", pct(res.votes.all.changed)],
+                    [`Geändert (von ${n(res.votes.all.changeN)} mit Angabe)`, pct(res.votes.all.changed)],
                     ["Mit Angabe zur Abstimmung", n(res.votes.all.vote)],
                   ].map(([k, v], i) => (
                     <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
@@ -206,7 +209,7 @@ export function BeschluessePage() {
                   {statusRows.map((s) => <li key={s.id} className="flex items-center justify-between gap-3 border-b border-slate-100 py-1"><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
                 </ul>
               </div>
-              <p className="mt-4 max-w-[900px] text-[12px] text-slate-500">Stand der Vorgänge, Verlauf und Aufteilungen zählen alle passenden Einträge genau. Abstimmung, Änderungen und Durchlaufzeit stammen aus einer gleichmäßigen Stichprobe der Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-4 max-w-[900px] text-[12px] text-slate-500">Stand der Vorgänge, Verlauf und Aufteilungen zählen alle passenden Vorgänge genau; derselbe Titel eines Gebiets mit gleichem Stand zählt einmal. Abstimmung, Änderungen und Durchlaufzeit stammen aus einer gleichmäßigen Stichprobe der Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
               </Fold>
               </div>
             </>

@@ -2,6 +2,8 @@ import {LABELS} from '../../shared/labels.mjs';
 import {searchFilters} from './monitor-search.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
+import {routineTitle,titleKey} from '../../shared/topic-facts.mjs';
+import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
  * Plenara.X – Fraktionsprofil: Welche Fraktionen stellen Anträge und Anfragen, zu welchen Themen, und was wird aus ihren Anträgen?
@@ -9,7 +11,10 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
  * Erkannt wird die Fraktion aus der Antragswendung in Titel oder Textanfang („Antrag der SPD-Fraktion“); Sammelpunkte wie
  * „Beantwortung von Anfragen“ zählen nicht. Gemeinsame Anträge zählen bei jeder beteiligten Fraktion.
  * Themenprofil: Anteil eines Themenfelds an den Anträgen einer Fraktion gegenüber dem Anteil an allen Fraktionsanträgen
- * (Index 100 = wie alle). Erfolgsquote: Anteil „beschlossen“ an den Anträgen mit Entscheidung (beschlossen, abgelehnt, vertagt).
+ * (Index 100 = wie alle). „Angenommen“: Anteil der Anträge, deren Beschlussvorschlag beschlossen wurde, an den Anträgen mit
+ * Entscheidung (beschlossen, abgelehnt, vertagt). Empfiehlt der Beschlussvorschlag, dem Antrag nicht zu folgen (kind
+ * 'faction_advice'), zählt „beschlossen“ als abgelehnt. Derselbe Titel je Gebiet (Ausschuss und Rat) zählt einmal, mit seiner
+ * jüngsten Sitzung; Besetzungen, Wahlen und Umbesetzungen zählen nicht.
  */
 const MIN_PARTY=10,MIN_CELL=5,DECIDED=['approved','rejected','postponed'];
 /* Restkategorien der Themeneinordnung sind keine Sachthemen: nicht im Themenprofil */
@@ -23,16 +28,39 @@ export async function factsReady(db){
  try{await db.prepare('SELECT 1 FROM topic_facts LIMIT 0').all();return true;}catch(e){if(/no such table/i.test(String(e?.message||e)))return false;throw e;}
 }
 
-export async function factions(db,catalog,params){
- const f=parseDecisions(params);
+/* Alle Fraktionsvorgänge der Suche (ohne Routinepunkte); status: „beschlossen“ mit Empfehlung „nicht folgen“ zählt als abgelehnt */
+async function load(db,catalog,params){
+ const copy=new URLSearchParams(params);for(const k of ['by','value','offset','outcome'])copy.delete(k);
+ const f=parseDecisions(copy);
  if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
  const {page}=await searchFilters(db,catalog,f);
  /* Nur die Karten mit Fraktion prüfen (über den Primärschlüssel), nicht alle: rund 0,5 s statt 24 s ohne Filter */
- const cards=`(SELECT id,label,status,date FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind='faction') AND ${page.where} AND date<>'')`;
- const [{results:cube},total]=await Promise.all([
-  db.prepare(`SELECT x.value party,x.detail kind,c.label label,c.status status,substr(c.date,1,7) m,count(*) n FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind='faction' GROUP BY 1,2,3,4,5`).bind(...page.args).all(),
-  db.prepare(`SELECT count(*) withFaction FROM ${cards}`).bind(...page.args).first(),
- ]);
+ const cards=`(SELECT id,region_id,title,gremium,label,status,date FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind='faction') AND ${page.where} AND date<>'')`;
+ const {results}=await db.prepare(`SELECT c.id id,c.region_id region,c.title title,c.gremium gremium,x.value party,x.detail kind,c.label label,c.status status,c.date date,
+  EXISTS(SELECT 1 FROM topic_facts a WHERE a.topic_id=c.id AND a.kind='faction_advice') advice FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind='faction'`).bind(...page.args).all();
+ return {f,raw:results.filter(r=>!routineTitle(r.title)).map(r=>({...r,status:r.status==='approved'&&r.advice?'rejected':r.status}))};
+}
+
+/** Liste hinter einer Zahl: by=party&value=Fraktion, optional outcome=approved|rejected|postponed|decided|antrag|anfrage */
+export async function factionList(db,catalog,params){
+ if(params.get('by')!=='party'||!params.get('value'))throw new AnalyticsError('Unbekannte Liste.',400);
+ const {raw}=await load(db,catalog,params),party=params.get('value'),outcome=params.get('outcome')||'';
+ /* Wie die Zahlen: je Gebiet und Titel der jüngste Stand, erst dann nach Ausgang filtern */
+ const seen=new Set(),latest=[...raw].sort((a,b)=>b.date.localeCompare(a.date)).filter(r=>{if(r.party!==party)return false;const k=r.region+'|'+titleKey(r.title);if(seen.has(k))return false;seen.add(k);return true;});
+ const rows=latest.filter(r=>(!outcome||(outcome==='anfrage'?r.kind==='anfrage':outcome==='antrag'?r.kind!=='anfrage':outcome==='decided'?r.kind!=='anfrage'&&DECIDED.includes(r.status):r.kind!=='anfrage'&&r.status===outcome)));
+ return listPage(rows,catalog,offsetOf(params));
+}
+
+export async function factions(db,catalog,params){
+ const {f,raw}=await load(db,catalog,params);
+ /* Je Gebiet, Titel und Fraktion ein Antrag mit seiner jüngsten Sitzung */
+ raw.sort((a,b)=>b.date.localeCompare(a.date));
+ const seen=new Set(),ids=new Set(),cube=[];
+ for(const r of raw){
+  const k=r.region+'|'+titleKey(r.title)+'|'+r.party;if(seen.has(k))continue;seen.add(k);ids.add(r.region+'|'+titleKey(r.title));
+  cube.push({party:r.party,kind:r.kind,label:r.label,status:r.status,m:r.date.slice(0,7),n:1});
+ }
+ const total={withFaction:ids.size};
  const parties=new Map(),labelsAll=new Map(),months=new Map();let facts=0;
  const party=name=>{if(!parties.has(name))parties.set(name,{name,n:0,antrag:0,anfrage:0,approved:0,rejected:0,postponed:0,open:0,labels:new Map(),months:new Map()});return parties.get(name);};
  for(const r of cube){

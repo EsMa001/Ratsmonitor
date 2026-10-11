@@ -11,6 +11,7 @@ import { LABELS } from "@/shared/labels.mjs";
 import { FIELD, PlaceField } from "./CompareFields";
 import type { PlaceEntry } from "../../lib/place";
 import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
+import { RadarDrill } from "./RadarDrill";
 
 interface Share { id: string; n: number; share: number }
 interface Place {
@@ -40,8 +41,8 @@ const inhaltlich = (term: string) => !SITZUNGSWORT.test(term) && !/(fraktion|gru
 function datenlage(p: Place): string[] {
   const out: string[] = [];
   const sampled = p.sampled || p.total;
-  if (p.total === 0) out.push("keine Einträge");
-  else if (p.total < 30) out.push(`nur ${p.total} ${p.total === 1 ? "Eintrag" : "Einträge"}, zu wenige für einen Vergleich`);
+  if (p.total === 0) out.push("keine Vorgänge");
+  else if (p.total < 30) out.push(`nur ${p.total} ${p.total === 1 ? "Vorgang" : "Vorgänge"}, zu wenige für einen Vergleich`);
   if (sampled >= 30) {
     if (p.topics.n === 0) out.push("keinem Thema zugeordnet");
     else if (p.topics.n / sampled < 0.25) out.push(`nur ${Math.round((p.topics.n / sampled) * 100)} % einem Thema zugeordnet`);
@@ -63,15 +64,17 @@ export function ComparePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [perHead, setPerHead] = useState(false);
+  /* Geöffnete Liste hinter einer Zahl: Abschnitt (at), Art (all, label, committee, term), Wert und die Orte (Index) */
+  const [drill, setDrill] = useState<{ at: string; by: string; value: string; label: string; idx: number[] } | null>(null);
   /* Sammelposten („Allgemeine Anfragen“, „Sitzungsablauf“) sind zunächst aus dem Themenprofil und seiner Rechnung herausgenommen */
   const [mitSammel, setMitSammel] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const buildQuery = (a: PlaceEntry | null, b: PlaceEntry | null, t: string) =>
-    a && b ? new URLSearchParams({ q: t.trim(), area: a.ags, label: "", month: "", from: "", to: new Date().toISOString().slice(0, 10), scope: "with", status: "", level: "city", more: b.ags + ":with" }).toString() : "";
+    a && b ? new URLSearchParams({ q: t.trim(), area: a.ags, label: "", month: "", from: "", to: new Date().toISOString().slice(0, 10), scope: "only", status: "", level: "city", more: b.ags + ":only" }).toString() : "";
   const query = buildQuery(ort1, ort2, thema);
   /* „(Kreis)“ nur bei echten Landkreisen; eine kreisfreie Stadt heißt einfach wie die Stadt */
-  const name = (ags: string, scope: string) => { const i = geo?.info(ags); return (i?.name ?? ags) + (scope === "with" && ags.length === 5 && /^(Landkreis|Kreis|Stadtkreis) /.test(i?.meta ?? "") ? " (Kreis)" : ""); };
+  const name = (ags: string, scope: string) => { const i = geo?.info(ags); return (i?.name ?? ags) + (ags.length === 5 && /^(Landkreis|Kreis|Stadtkreis) /.test(i?.meta ?? "") ? " (Kreis)" : ""); };
 
   const run = (a = ort1, b = ort2, t = thema) => {
     if (!a || !b) return setError("Bitte beide Orte wählen.");
@@ -88,7 +91,7 @@ export function ComparePage() {
         if (!r.ok) throw new Error(body.error || "Der Vergleich konnte nicht berechnet werden.");
         return body as unknown as Result;
       })
-      .then((r) => { setRes(r); setRanKey(q); setLoading(false); })
+      .then((r) => { setRes(r); setRanKey(q); setDrill(null); setLoading(false); })
       .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
   };
   /* Beim Öffnen sofort mit den vorbelegten Orten vergleichen, damit die Seite nicht leer ist */
@@ -110,6 +113,15 @@ export function ComparePage() {
     })).filter((r) => Math.max(...r.shares, r.base) >= 1).sort((a, b) => Math.max(...b.shares) - Math.max(...a.shares));
   }, [res, mitSammel]);
   const maxTopic = Math.max(5, ...topicRows.flatMap((r) => [...r.shares, r.base]));
+  const pick = (at: string, by: string, value: string, label: string, idx: number[]) =>
+    setDrill(drill && drill.at === at && drill.by === by && drill.value === value && drill.idx.join() === idx.join() ? null : { at, by, value, label, idx });
+  const isOpen = (at: string, by: string, value: string, i?: number) => !!drill && drill.at === at && drill.by === by && drill.value === value && (i === undefined || drill.idx.includes(i));
+  const drillAt = (at: string) => res && drill && drill.at === at ? (
+    <div className={`mt-3 grid gap-4 ${drill.idx.length > 1 ? "md:grid-cols-2" : ""}`}>
+      {drill.idx.map((i) => <RadarDrill key={i} base={`/api/analytics/compare?place=${res.places[i].ags}`} query={ranKey} by={drill.by} value={drill.value} label={`${names[i]}: ${drill.label}`} />)}
+    </div>
+  ) : null;
+  const linkCls = (on: boolean) => `text-left hover:text-teal-700 hover:underline ${on ? "text-teal-700 underline" : ""}`;
   const lines = useMemo(() => !res ? [] : res.places.map((p, i) => ({
     color: PLACE_COLORS[i], name: names[i],
     values: res.months.map((m) => { const v = p.months.find((x) => x.m === m)?.n ?? 0; return perHead && p.population ? (v / p.population) * 1000 : v; }),
@@ -170,41 +182,43 @@ export function ComparePage() {
                 <span className="hidden text-[14px] text-slate-500 md:block">Unterschied</span>
               </div>
               {([
-                ["Einträge", (p: Place) => n(p.total), (p: Place) => p.total],
+                ["Vorgänge", (p: Place) => n(p.total), (p: Place) => p.total],
                 ["je 1.000 Einwohner", (p: Place) => (p.perThousand === null ? "–" : p.perThousand.toLocaleString("de-DE")), (p: Place) => p.perThousand],
                 ["Einwohner", (p: Place) => (p.population ? n(p.population) : "–"), (p: Place) => p.population],
               ] as [string, (p: Place) => string, (p: Place) => number | null][]).map(([k, f, num]) => (
-                <div key={k} className={rowCls}><span className="col-span-2 text-[14px] text-slate-500 md:col-span-1">{k}</span>{res.places.map((p) => <b key={p.ags + p.scope} className="font-semibold tabular-nums">{f(p)}</b>)}<span className="col-span-2 text-[14px] text-slate-700 md:col-span-1"><span className="md:hidden">Unterschied: </span>{diff(num(res.places[0]), num(res.places[1]))}</span></div>
+                <div key={k} className={rowCls}><span className="col-span-2 text-[14px] text-slate-500 md:col-span-1">{k}</span>{res.places.map((p, i) => k === "Vorgänge" ? <button key={p.ags + p.scope} type="button" onClick={() => pick("overview", "all", "", "alle Vorgänge", [i])} aria-expanded={isOpen("overview", "all", "", i)} className={`font-semibold tabular-nums ${linkCls(isOpen("overview", "all", "", i))}`}>{f(p)}</button> : <b key={p.ags + p.scope} className="font-semibold tabular-nums">{f(p)}</b>)}<span className="col-span-2 text-[14px] text-slate-700 md:col-span-1"><span className="md:hidden">Unterschied: </span>{diff(num(res.places[0]), num(res.places[1]))}</span></div>
               ))}
               <div className={rowCls}>
                 <span className="col-span-2 text-[14px] text-slate-500 md:col-span-1">Aktivste Gremien</span>
-                {res.places.map((p) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">{p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex justify-between gap-2"><span className="min-w-0 truncate" title={c.name}>{c.name}</span><span className="tabular-nums text-slate-500">{n(c.n)}</span></li>)}{!p.committees.length && <li className="text-slate-500">–</li>}</ul>)}
+                {res.places.map((p, i) => <ul key={p.ags + p.scope} className="m-0 list-none p-0 text-[14px]">{p.committees.slice(0, 4).map((c) => <li key={c.name} className="mb-1 flex justify-between gap-2"><button type="button" onClick={() => pick("overview", "committee", c.name, c.name, [i])} aria-expanded={isOpen("overview", "committee", c.name, i)} className={`min-w-0 truncate ${linkCls(isOpen("overview", "committee", c.name, i))}`} title={c.name}>{c.name}</button><span className="tabular-nums text-slate-500">{n(c.n)}</span></li>)}{!p.committees.length && <li className="text-slate-500">–</li>}</ul>)}
                 <span className="hidden md:block" />
               </div>
             </div></div>
+            {drillAt("overview")}
             {res.places.some((p) => p.total < 30) && (
-              <p role="status" className="m-0 mt-3 text-[14px] font-medium text-slate-900">Zu wenige Einträge für einen belastbaren Vergleich: {res.places.map((p, i) => ({ p, i })).filter(({ p }) => p.total < 30).map(({ p, i }) => `${names[i]} (${p.total})`).join(", ")}. Ein weiter gefasstes oder gar kein Thema hilft.</p>
+              <p role="status" className="m-0 mt-3 text-[14px] font-medium text-slate-900">Zu wenige Vorgänge für einen belastbaren Vergleich: {res.places.map((p, i) => ({ p, i })).filter(({ p }) => p.total < 30).map(({ p, i }) => `${names[i]} (${p.total})`).join(", ")}. Ein weiter gefasstes oder gar kein Thema hilft.</p>
             )}
-            <p className="m-0 mt-3 text-[12px] text-slate-500">Der Unterschied bei den Einträgen zeigt auch, wie vollständig die Quellen der beiden Orte sind. Er ist kein Maß für politische Aktivität.</p>
+            <p className="m-0 mt-3 text-[12px] text-slate-500">Der Unterschied bei den Vorgängen zeigt auch, wie vollständig die Quellen der beiden Orte sind. Er ist kein Maß für politische Aktivität.</p>
           </section>
           </Reveal>
 
           <Reveal>
           <section className="mt-12">
             <h2 className="text-[22px] font-semibold">Themenprofil</h2>
-            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Einträgen. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
+            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Vorgängen. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
             <label className="mt-3 flex w-fit cursor-pointer items-center gap-2 text-[14px] text-slate-700"><input type="checkbox" checked={mitSammel} onChange={(e) => setMitSammel(e.target.checked)} className="h-4 w-4 accent-teal-600" />„Allgemeine Anfragen“ und „Sitzungsablauf“ einbeziehen</label>
-            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} />)}</ol>
-            {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Einträge für ein Themenprofil.</p>}
+            <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
+            {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Vorgänge für ein Themenprofil.</p>}
+            {drillAt("topics")}
           </section>
           </Reveal>
 
           <Reveal>
           <section className="mt-12">
             <div className="flex flex-wrap items-end justify-between gap-3">
-              <div><h2 className="text-[22px] font-semibold">Verlauf</h2><p className="mt-1 text-[14px] text-slate-500">Einträge je Monat.</p></div>
+              <div><h2 className="text-[22px] font-semibold">Verlauf</h2><p className="mt-1 text-[14px] text-slate-500">Vorgänge je Monat.</p></div>
               <div role="radiogroup" aria-label="Maß" className="flex gap-1 text-[14px]">
                 {([[false, "Anzahl"], [true, "je 1.000 Einwohner"]] as const).map(([v, l]) => <button key={l} type="button" role="radio" aria-checked={perHead === v} onClick={() => setPerHead(v)} className={`h-8 rounded-full border px-3.5 ${perHead === v ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{l}</button>)}
               </div>
@@ -223,7 +237,7 @@ export function ComparePage() {
               <div>
                 <h3 className="flex items-center gap-2 text-[16px] font-semibold"><i className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: PLACE_COLORS[i] }} /><span className="min-w-0 truncate">Typisch für {names[i]}</span></h3>
                 <ol className={list}>
-                  {typ[i].map((t) => <li key={t.term} className={row}><Link href={`/analytics/trends?thema=${encodeURIComponent(t.term)}`} className="min-w-0 truncate text-slate-900 hover:text-teal-600">{prettyTerm(t.term)}</Link><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
+                  {typ[i].map((t) => <li key={t.term} className={row}><button type="button" onClick={() => pick("terms", "term", t.term, `„${prettyTerm(t.term)}“`, [i])} aria-expanded={isOpen("terms", "term", t.term, i)} className={`min-w-0 truncate text-slate-900 ${linkCls(isOpen("terms", "term", t.term, i))}`}>{prettyTerm(t.term)}</button><span className="tabular-nums text-slate-500">×{t.ratio.toLocaleString("de-DE")}</span></li>)}
                   {!typ[i].length && <li className="py-2 text-[14px] text-slate-500">Keine auffälligen Begriffe.</li>}
                 </ol>
               </div>
@@ -231,18 +245,19 @@ export function ComparePage() {
             return (
               <section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Begriffe im Vergleich</h2>
-                <p className="mb-4 mt-1 text-[14px] text-slate-500">Links und rechts: Begriffe, die im jeweiligen Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). In der Mitte: Begriffe, die in beiden Orten vorkommen (Anteil an den Einträgen je Ort). Ortsnamen und Wörter des Sitzungsbetriebs (zum Beispiel „Anregungen“, „Beantwortung“) sind ausgenommen.</p>
+                <p className="mb-4 mt-1 text-[14px] text-slate-500">Links und rechts: Begriffe, die im jeweiligen Ort deutlich häufiger vorkommen als in allen Gebieten (Faktor in Klammern). Ein Klick auf einen Begriff, ein Thema, ein Gremium oder die Zahl der Vorgänge zeigt die Vorgänge dahinter. In der Mitte: Begriffe, die in beiden Orten vorkommen (Anteil an den Vorgängen je Ort). Ortsnamen und Wörter des Sitzungsbetriebs (zum Beispiel „Anregungen“, „Beantwortung“) sind ausgenommen.</p>
                 <div className="grid gap-x-8 gap-y-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1fr)]">
                   {only(0)}
                   <div className="md:order-none">
                     <h3 className="text-[16px] font-semibold">In beiden Orten</h3>
                     <ol className={list}>
-                      {com.map((c) => <li key={c.term} className={row}><span className="min-w-0 truncate text-slate-900">{prettyTerm(c.term)}</span><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
+                      {com.map((c) => <li key={c.term} className={row}><button type="button" onClick={() => pick("terms", "term", c.term, `„${prettyTerm(c.term)}“`, [0, 1])} aria-expanded={isOpen("terms", "term", c.term)} className={`min-w-0 truncate text-slate-900 ${linkCls(isOpen("terms", "term", c.term) && drill!.idx.length > 1)}`}>{prettyTerm(c.term)}</button><span className="flex shrink-0 items-center gap-2 tabular-nums text-slate-600">{c.shares.map((v, k) => <span key={k} className="flex items-center gap-1"><i className="inline-block h-2 w-2 rounded-full" style={{ background: PLACE_COLORS[k] }} />{v.toLocaleString("de-DE")} %</span>)}</span></li>)}
                       {!com.length && <li className="py-2 text-[14px] text-slate-500">Keine gemeinsamen Begriffe.</li>}
                     </ol>
                   </div>
                   {only(1)}
                 </div>
+                {drillAt("terms")}
               </section>
             );
           })()}
@@ -268,7 +283,7 @@ export function ComparePage() {
             </div>
           <div className="mt-8">
             <h3 className="text-[18px] font-semibold">Stand der Vorlagen</h3>
-            <p className="mb-4 mt-1 text-[14px] text-slate-500">Wie die Einträge je Ort stehen (Anteile in %).</p>
+            <p className="mb-4 mt-1 text-[14px] text-slate-500">Wie die Vorgänge je Ort stehen (Anteile in %).</p>
             {[...res.places.map((p, i) => ({ label: names[i], list: p.status.list, color: PLACE_COLORS[i] })), { label: "Alle Gebiete", list: res.base.status.list, color: "var(--rm-c600,#475569)" }].map((row) => (
               <div key={row.label} className="mb-3 grid items-center gap-3 sm:grid-cols-[200px_1fr]">
                 <span className="flex items-center gap-2 text-[14px]"><i className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: row.color }} /><span className="truncate">{row.label}</span></span>
@@ -284,7 +299,7 @@ export function ComparePage() {
           </details>
           </Reveal>
 
-          <p className="mt-10 text-[12px] text-slate-500">Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Einträge). Zahlen und Verlauf sind exakt; Themenprofil, Stand der Vorlagen, gemeinsame und typische Begriffe stammen aus einer gleichmäßigen Stichprobe von höchstens 6.000 Einträgen je Ort. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Einträge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Vorgänge). Jeder Ort zählt nur seinen eigenen Rat (eine Gemeinde ohne Kreistag, ein Kreis ohne seine Gemeinden); derselbe Titel in mehreren Gremien zählt einmal, einzeln geführte Einwohnerfragen und Besetzungen zählen nicht. Zahlen und Verlauf sind exakt; Themenprofil, Stand der Vorlagen, gemeinsame und typische Begriffe stammen aus einer gleichmäßigen Stichprobe von höchstens 6.000 Vorgängen je Ort. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Vorgänge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </div>
       )}
     </main>

@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {RADARS} from './radars.mjs';
-export const FACTS_VERSION='facts-v12';
+export const FACTS_VERSION='facts-v13';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -82,14 +82,28 @@ const FUND_FORM=/☐|☒|\b(Nein\s+Ja|Ja\s+Nein)\b|:\s*(ja|nein)\b|\bja\s*\/\s*n
 // Ausgehende Zuschüsse (die Kommune fördert Vereine, Träger, Projekte) sind kein Fördergeld für die Kommune (Bewertung 11.10.2026)
 const OUTGOING=/\be\.\s?V\.|\bVerein\w*\s+(hat|haben|beantragt|beantragen|erhält|erhalten)|Antragsteller|Zuschussantrag|Vereinsförder|institutionelle[nr]? Förderung|Projektförderung|Förderrichtlinie der (Stadt|Gemeinde)|städtische[nr]? Zuschuss|Zuschuss der (Stadt|Gemeinde)|gewährt (die|der) (Stadt|Gemeinde|Kreis|Landkreis)|Zuweisung an/i;
 const CONDITIONAL=/vorbehaltlich|sofern|falls|vorausgesetzt|im Falle|unter der Voraussetzung|nach Bewilligung|bei Bewilligung|nur nach/i;
+/* Hintergrund statt neuer Förderung (Bewertung 11.10.2026): verfallende oder zurückzuzahlende Mittel, über Jahre erwartete Mittel
+   (Koblenz: Anteilsverkauf), und Bescheide aus früheren Jahren („Bescheid vom 18.12.2023“ in einer Vergabe 2026) */
+const BACKGROUND=/Verfall|verfallen|zurückzuzahlen|Rückforderung|Rückzahlung|erwartet|über (die nächsten )?\d+ Jahre|in den (kommenden|nächsten) \d+ Jahren|seinerzeit|damals/i;
+// Nur bei Beträgen: geschätzte Mittel („Dem stehen voraussichtlich Fördermittel von etwa 23 Mio. € gegenüber“)
+const ESTIMATE=/voraussichtlich|gegenüberstehen|stehen[^.]{0,80}gegenüber|Schätzung|geschätzt|prognostiziert/i;
+const yearsOf=s=>(String(s).match(/\b20[1-3]\d\b/g)||[]).map(Number);
+// Jüngstes genanntes Jahr bis heute (Zieljahre wie „bis 2030“ zählen nicht)
+const latestYear=t=>Math.max(0,...yearsOf(t).filter(y=>y<=new Date().getFullYear()));
+const oldSentence=(s,latest)=>{const y=yearsOf(s);return !!y.length&&!!latest&&Math.max(...y)<=latest-2;};
+/* Mehrere Programme in einem Satz: das, dessen Name dem Förderwort am nächsten steht („Mittel der Städtebauförderung für das
+   Feuerwehrhaus“ ist Städtebauförderung) */
+const nearest=(s,names)=>{if(names.length<2)return names;const at=s.search(FUND);return [names.map(([n,re])=>[n,Math.abs(s.search(re)-at)]).sort((a,b)=>a[1]-b[1])[0][0]];};
 /** Förderprogramme im Text: [{program, status:'granted'|'applied'|'mentioned'}]; Förderung ohne erkennbares Programm als „Sonstige Förderung“. */
 export function fundingOf(text){
  const found=new Map();let any=null;
- for(const s of String(text||'').replace(/\s+/g,' ').split(SENTENCE)){
+ const flat=String(text||'').replace(/\s+/g,' '),latest=latestYear(flat);
+ for(const s of flat.split(SENTENCE)){
   if(!FUND.test(s)||FUND_FORM.test(s)||OUTGOING.test(s))continue;
-  const status=GRANTED.test(s)&&!CONDITIONAL.test(s)?'granted':APPLIED.test(s)?'applied':'mentioned';
+  const back=BACKGROUND.test(s)||oldSentence(s,latest);
+  const status=back?'mentioned':GRANTED.test(s)&&!CONDITIONAL.test(s)?'granted':APPLIED.test(s)?'applied':'mentioned';
   let named=false;
-  for(const [name,re] of PROGRAMS)if(re.test(s)){named=true;if(!found.has(name)||RANK[status]>RANK[found.get(name)])found.set(name,status);}
+  for(const name of nearest(s,PROGRAMS.filter(([,re])=>re.test(s))).map(x=>Array.isArray(x)?x[0]:x)){named=true;if(!found.has(name)||RANK[status]>RANK[found.get(name)])found.set(name,status);}
   if(!named&&(!any||RANK[status]>RANK[any]))any=status;
  }
  const out=[...found].map(([program,status])=>({program,status}));
@@ -119,16 +133,17 @@ const toEuro=(num,unit,cur)=>{
 /** Förderbeträge je Programm: [{program, euro}] (je Programm der größte genannte Betrag; ohne Programm „Sonstige Förderung“) */
 export function fundingEuroOf(text){
  const out=new Map();
- for(const s of String(text||'').replace(/\s+/g,' ').split(SENTENCE)){
-  // Sehr lange „Sätze“ sind Kopfzeilen, Formulare oder Tabellen ohne Satzzeichen
-  if(s.length>400||!FUND.test(s)&&!/Zuwendung|Zuschuss|Landesmittel|Bundesmittel/.test(s)||NOT_FUND_SENTENCE.test(s)||OUTGOING.test(s))continue;
+ const flat=String(text||'').replace(/\s+/g,' '),latest=latestYear(flat);
+ for(const s of flat.split(SENTENCE)){
+  // Sehr lange „Sätze“ sind Kopfzeilen, Formulare oder Tabellen ohne Satzzeichen; Hintergrund (verfallende, erwartete, alte Mittel) zählt nicht
+  if(s.length>400||BACKGROUND.test(s)||ESTIMATE.test(s)||oldSentence(s,latest)||!FUND.test(s)&&!/Zuwendung|Zuschuss|Landesmittel|Bundesmittel/.test(s)||NOT_FUND_SENTENCE.test(s)||OUTGOING.test(s))continue;
   let euro=0;
   for(const m of s.matchAll(EURO_AFTER)){const before=s.slice(Math.max(0,m.index-30),m.index);if(NOT_FUND_AMOUNT.test(m[1])||LIMIT_BEFORE.test(before)||OWN_BEFORE.test(before))continue;const v=toEuro(m[2],m[3],m[4]);if(v>euro)euro=v;}
   // „120.000 € Landesmittel“ nur in Fließtext: in Tabellen (drei und mehr Beträge) steht davor oft die Kostenzeile
   const tabular=(s.match(/\d\s*(?:€|Euro|EUR)/g)||[]).length>=3;
   if(!tabular)for(const m of s.matchAll(EURO_BEFORE)){if(LIMIT_BEFORE.test(s.slice(Math.max(0,m.index-30),m.index))||/Gesamt|Kosten|Summe|Saldo|volumen/i.test(s.slice(Math.max(0,m.index-30),m.index)))continue;const v=toEuro(m[1],m[2],m[3]);if(v>euro)euro=v;}
   if(!euro)continue;
-  const names=PROGRAMS.filter(([,re])=>re.test(s)).map(([n])=>n);
+  const names=nearest(s,PROGRAMS.filter(([,re])=>re.test(s))).map(x=>Array.isArray(x)?x[0]:x);
   for(const n of names.length?names:['Sonstige Förderung'])if(euro>(out.get(n)||0))out.set(n,euro);
  }
  return [...out].map(([program,euro])=>({program,euro}));
@@ -240,6 +255,14 @@ const RADAR_SKIP=/Bauantrag|Baugesuch|Antrag auf Baugenehmigung|Bauvoranfrage|Be
    Ortsnamen mit „Bad“ oder „Markt“ („Bad Honnef“ ist kein Schwimmbad) und die Floskel „Beratung und Beschlussfassung“ */
 const NOT_TOPIC=/[\wäöüß-]*(straße|strasse|str\.|gasse|allee)\b|\b(Bad|Markt)\s+[A-ZÄÖÜ][\wäöüß-]+|(Vor)?[Bb]eratung\s+(und|sowie)\s+(ggf\.?\s+)?Beschluss\w*|zur\s+(Vor)?[Bb]eratung|Beratungsfolge/g;
 export const topicText=t=>String(t||'').replace(NOT_TOPIC,' ');
+/** Routinepunkte ohne Sachthema für Begriffs- und Antragsauswertungen: Besetzungen und Wahlen in Gremien, stehende
+    Tagesordnungspunkte (Einwohnerfragestunde, Anregungen und Beschwerden), Formalien des Sitzungsbetriebs und einzeln
+    geführte Einwohnerfragen („Tore am Schulstandort - Herr Messing“) */
+export const routineTitle=t=>{const s=String(t||'');return PERSONNEL.test(s)||STANDING.test(s)||RADAR_SKIP.test(s)&&!/Bauantrag|Baugesuch|Baugenehmigung|Bauvoranfrage|Befreiung|Vorbescheid|Fl\.-?\s?Nr|Flurstück|Nutzungsänderung/i.test(s)||/\s[-–]\s*(Herr|Frau)\b/.test(s)||/^\W*(TOP\s*\S+\s*)?(\d+(\.\d+)*\.?\s+)?(Wahl|Wahlen|Neuwahl|Bestellung|Vereidigung|Ernennung|Verpflichtung|Einführung|Amtseinführung|Bildung der Ausschüsse|Besetzung)\b(?!\w*(kreis|bezirk|vorschlag|plakat|lokal|ergebnis|prüfung))/i.test(s)||/Umbesetzung|Ausschussumbesetzung|Nachbesetzung|Wahl (de[rs]|eines|einer) (stellvertretend|Vorsitz|Mitglied|Schrift|sachkundig|Ortsvorsteher|Beigeordnet)|Vereidigung|Einführung und Verpflichtung/i.test(s);};
+/** Private Bauanträge (Grundstück, Garage, Einfamilienhaus) sind für Begriffstrends kein Thema der Gemeinde */
+export const privateBuild=t=>/Bauantr(a|ä)g|Nutzungsänderung|Baugesuch|Antrag auf Baugenehmigung|Bauvoranfrage|Befreiung von den Festsetzungen|Vorbescheid|Fl\.-?\s?Nr|Flurstück|Gemarkung\s+\S+.{0,20}Flur/i.test(String(t||''));
+/** Derselbe Titel je Gebiet (mehrere Gremien) ist ein Vorgang */
+export const titleKey=t=>String(t||'').toLowerCase().replace(/[^a-z0-9äöüß]+/g,' ').trim();
 export function radarFactsOf(title,text){
  const t=String(title||''),dec=decision(text),rows=[];
  if(RADAR_SKIP.test(t)||PERSONNEL.test(t)||STANDING.test(t))return rows;
@@ -422,13 +445,18 @@ export function grantOf(title,text){
  return {purpose,euro:/Richtlinie|Satzung/i.test(t)?0:grantAmount(decision(text))||grantAmount(text)};
 }
 
+const ADVISE_REJECT=/(Antrag|Anträgen?|Anregung|Vorschlag)[^.]{0,120}\b(nicht\s+zu\s+folgen|nicht\s+zu\s+entsprechen|nicht\s+zuzustimmen|abzulehnen|zurückzuweisen|nicht\s+weiter\s+zu\s+verfolgen)|\b(lehnt|weist)\b[^.]{0,80}(Antrag|Anregung)[^.]{0,40}\b(ab|zurück)\b/i;
 /** Zeilen für topic_facts: {kind, value, detail} */
 export function factsOf(title,text){
  const rows=[],collective=COLLECTIVE.test(String(title||''))&&!/Förder|Zuwendung|Zuschuss/i.test(String(title||''));
  const f=factionsOf(title,text);
  if(f)for(const p of f.parties)rows.push({kind:'faction',value:p,detail:f.kind});
+ /* Empfiehlt der Beschlussvorschlag, dem Antrag nicht zu folgen, ist „beschlossen“ kein Erfolg der Fraktion */
+ if(f&&f.kind!=='anfrage'&&ADVISE_REJECT.test(decision(text)))rows.push({kind:'faction_advice',value:'ablehnen',detail:''});
  if(text&&!collective){
-  const fund=fundingOf(text);
+  /* Anfragen, Übersichten über Fördermöglichkeiten und Evaluierungen sind kein Antrag und keine Bewilligung */
+  const asked=/Anfrage|Fördermöglichkeit|Förderm(ittel|öglichkeiten)übersicht|Evaluierung|Evaluation/i.test(String(title||''));
+  const fund=fundingOf(text).map(x=>asked?{...x,status:'mentioned'}:x);
   for(const x of fund)rows.push({kind:'funding',value:x.program,detail:x.status});
   /* Betrag ohne Programm im selben Satz gehört zum Programm des Berichts, wenn er nur eines nennt */
   const named=fund.filter(x=>x.program!=='Sonstige Förderung'),euro=new Map();

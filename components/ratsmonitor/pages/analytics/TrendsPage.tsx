@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { Spark, TrendMap, type Trend, type TrendKind } from "./TrendViews";
+import { RadarDrill } from "./RadarDrill";
 import { isFiller, prettyTerm } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 
@@ -120,7 +121,7 @@ export function TrendsPage() {
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
-          {(() => { const t = res.rising[0]; return t ? <Befund>„{prettyTerm(t.term)}“ steigt am stärksten: {n(t.nr)} Einträge in den letzten {days} Tagen, {t.np ? `${t.ratio.toLocaleString("de-DE", { maximumFractionDigits: 1 })}-mal so viele wie davor` : "davor kaum vorhanden"}{res.totals.regions ? `, in ${n(t.regions)} ${t.regions === 1 ? "Gebiet" : "Gebieten"}` : ""}.</Befund> : null; })()}
+          {(() => { const t = res.rising[0]; return t ? <Befund>„{prettyTerm(t.term)}“ steigt am stärksten: {n(t.nr)} Vorgänge in den letzten {days} Tagen{res.totals.capped ? " (in der Stichprobe)" : ""}, {t.np ? `Anteil ${t.ratio.toLocaleString("de-DE", { maximumFractionDigits: 1 })}-mal so hoch wie davor` : "davor kaum vorhanden"}{res.totals.regions ? `, in ${n(t.regions)} ${t.regions === 1 ? "Gebiet" : "Gebieten"}` : ""}.</Befund> : null; })()}
           <p className="mt-3 max-w-[760px] text-[14px] text-slate-500">Verglichen werden {d(res.ranges.prevStart)} bis {d(res.ranges.start)} mit {d(res.ranges.start)} bis {d(res.ranges.end)}{res.totals.capped ? `, je Zeitraum eine Stichprobe von rund ${n(res.totals.sampledRecent)} Einträgen` : `, ${n(res.totals.recent)} Einträge im aktuellen Zeitraum`}. Aufsteiger zeigen wir erst ab 3 Gebieten.</p>
           <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             {[
@@ -164,7 +165,7 @@ export function TrendsPage() {
                           <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
                           <button type="button" onClick={() => setPicked(picked === t.term ? "" : t.term)} className="min-w-0 text-left">
                             <span className="block truncate text-[16px] text-slate-900">{prettyTerm(t.term)}</span>
-                            <span className="block text-[12px] text-slate-500">{n(t.np)} → {n(t.nr)} Einträge · {n(t.regions)} {t.regions === 1 ? "Gebiet" : "Gebiete"}{t.regionsPrev ? ` (vorher ${n(t.regionsPrev)})` : ""}</span>
+                            <span className="block text-[12px] text-slate-500">{n(t.np)} → {n(t.nr)} Vorgänge{res.totals.capped ? " in der Stichprobe" : ""} · {n(t.regions)} {t.regions === 1 ? "Gebiet" : "Gebiete"}{t.regionsPrev ? ` (vorher ${n(t.regionsPrev)})` : ""}</span>
                           </button>
                           <span className="max-sm:hidden"><Spark series={t.series} kind={tab} /></span>
                           <span className="flex items-baseline justify-between gap-3 text-right max-sm:col-span-2 max-sm:pl-9">
@@ -172,6 +173,7 @@ export function TrendsPage() {
                             <span className="flex gap-3 text-[14px]"><Link href={`/analytics/diffusion?thema=${encodeURIComponent(t.term)}`} className="text-teal-600">Ausbreitung</Link><Link href={`/analytics/graph?thema=${encodeURIComponent(t.term)}`} className="text-teal-600">Netz</Link></span>
                           </span>
                         </div>
+                        {picked === t.term && t.key && <RadarDrill base="/api/analytics/trends?list=1" query={ranKey} by="term" value={t.key} label={`„${prettyTerm(t.term)}“ in den letzten ${days} Tagen, alle Vorgänge`} />}
                       </li>
                     ))}
                   </ol>
@@ -198,7 +200,7 @@ export function TrendsPage() {
               </Reveal>
             </>
           )}
-          <p className="mt-10 text-[12px] text-slate-500">Verglichen werden zwei gleich lange Zeiträume ({d(res.ranges.prevStart)} bis {d(res.ranges.start)} und {d(res.ranges.start)} bis {d(res.ranges.end)}). {res.totals.capped ? `Bei großen Auswahlen werden je Zeitraum gleichmäßig rund ${n(res.totals.sampledRecent)} Einträge ausgewertet; ` : ""}Verglichen werden Anteile an allen Einträgen, nicht Rohzahlen. „Aufsteigend“ verlangt mindestens ×1,4 und einen deutlichen Unterschied (z-Wert ab 2,5); „neu“ heißt: davor kaum vorhanden, jetzt in mehreren Gebieten. Begriffe stammen aus den Titeln; Formalien und Füllwörter bleiben außen vor. Ein Trend ist ein Hinweis, keine Entscheidung. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">Verglichen werden zwei gleich lange Zeiträume ({d(res.ranges.prevStart)} bis {d(res.ranges.start)} und {d(res.ranges.start)} bis {d(res.ranges.end)}). {res.totals.capped ? `Bei großen Auswahlen werden je Zeitraum gleichmäßig rund ${n(res.totals.sampledRecent)} Einträge ausgewertet; ` : ""}Verglichen werden Anteile an allen Einträgen, nicht Rohzahlen. „Aufsteigend“ verlangt mindestens ×1,4 und einen deutlichen Unterschied (z-Wert ab 2,5); „neu“ heißt: davor kaum vorhanden, jetzt in mehreren Gebieten. Begriffe stammen aus den Titeln; Formalien, Füllwörter, Besetzungen und Wahlen, Fragestunden und private Bauanträge bleiben außen vor, derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Ein Trend ist ein Hinweis, keine Entscheidung. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </div>
       )}
     </main>

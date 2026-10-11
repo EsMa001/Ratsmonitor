@@ -114,7 +114,10 @@ export async function searchFilters(db,catalog,f){
  /* Regionen eines Orts je nach Umfang: nur das Gebiet oder inklusive Kreis bzw. Gemeinden.
     Eine niedersächsische Mitgliedsgemeinde liegt in ihrer Samtgemeinde: deren Rat und System führen ihre Vorgänge. */
  const isPlace=(r,ags)=>r.ags===ags||!!r.members?.some(m=>m.ags===ags)||!!r.formerAgs?.includes(ags);
- const inPlace=(r,{ags,scope})=>ags.length===2?r.ags.startsWith(ags):scope==='only'?isPlace(r,ags):ags.length===5?r.ags.startsWith(ags):isPlace(r,ags)||r.ags===ags.slice(0,5);
+ /* Kreisfreie Stadt mit Kreisschlüssel (5 Stellen, ohne eigenen Kreis-Eintrag): „nur das Gebiet“ ist die Stadt selbst */
+ const agsSet=new Set(regions.map(r=>r.ags));
+ const ownCity=(r,ags)=>ags.length===5&&!agsSet.has(ags)&&r.ags===ags+'000';
+ const inPlace=(r,{ags,scope})=>ags.length===2?r.ags.startsWith(ags):scope==='only'?isPlace(r,ags)||ownCity(r,ags):ags.length===5?r.ags.startsWith(ags):isPlace(r,ags)||r.ags===ags.slice(0,5);
  let scoped=places.length?regions.filter(r=>places.some(p=>inPlace(r,p))):regions;
  const listed=list=>{const w=new Set(list);return r=>w.has(r.ags)||!!r.members?.some(m=>w.has(m.ags))||!!r.formerAgs?.some(a=>w.has(a));};
  if(f.within)scoped=scoped.filter(listed(f.within));

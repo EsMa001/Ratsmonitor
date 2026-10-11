@@ -2,6 +2,7 @@ import {LABELS} from '../../shared/labels.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
+import {sqlList,offsetOf} from './analytics-lists.mjs';
 
 /*
  * Plenara.X – Status und Beschlüsse: Wie stehen die Vorgänge, wie fallen Beschlüsse aus, wie einig sind die Gremien?
@@ -9,13 +10,16 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
  * Aus einer gleichmäßigen Stichprobe beschlossener Vorgänge (Stationen in topics.payload): Abstimmungsverhalten (einstimmig oder
  * mehrheitlich), Änderungen am Beschlussvorschlag und Durchlaufzeit. Die Beschlussquote ist der Anteil „beschlossen“ an allen
  * Vorgängen mit Entscheidung (beschlossen, abgelehnt, vertagt). Die meisten Einträge haben keinen bekannten Status; das wird mit ausgewiesen.
+ * Gezählt werden Vorgänge: derselbe Titel je Gebiet in mehreren Sitzungen desselben Status einmal. Ausschüsse empfehlen meist nur,
+ * deshalb keine Beschlussquote für sie. Je Themenfeld und Land steht dabei, ob die Quote vom Gesamtwert deutlich abweicht
+ * (Wilson-Spanne 95 % schließt ihn aus); sonst gilt sie als üblich.
  */
 const SAMPLE=4000,MIN_TOPIC=20,MIN_LAND=60,MIN_VOTE=8;
 const DECIDED=['approved','rejected','postponed'];
 const STATUSES=['announced','consulting','recommended','approved','rejected','postponed','info','unknown'];
 /** Gremienebene aus dem Namen (SQL und JS gleich) */
-const KIND_SQL="CASE WHEN lower(gremium) LIKE '%ortsbeirat%' OR lower(gremium) LIKE '%ortsrat%' OR lower(gremium) LIKE '%bezirksvertretung%' OR lower(gremium) LIKE '%bezirksbeirat%' OR lower(gremium) LIKE '%stadtbezirk%' OR lower(gremium) LIKE '%ortschaftsrat%' THEN 'ortsebene' WHEN lower(gremium) LIKE '%ausschuss%' OR lower(gremium) LIKE '%kommission%' OR lower(gremium) LIKE '%beirat%' THEN 'ausschuss' WHEN lower(gremium) LIKE '%rat%' OR lower(gremium) LIKE '%kreistag%' OR lower(gremium) LIKE '%stadtverordneten%' OR lower(gremium) LIKE '%gemeindevertretung%' THEN 'rat' ELSE 'sonstige' END";
-export const KINDS=[['rat','Rat und Kreistag'],['ausschuss','Ausschüsse und Beiräte'],['ortsebene','Orts- und Bezirksebene'],['sonstige','Sonstige']];
+const KIND_SQL="CASE WHEN lower(gremium) LIKE 'ortsgemeinderat%' THEN 'ortsgemeinde' WHEN lower(gremium) LIKE '%ortsbeirat%' OR lower(gremium) LIKE '%ortsrat%' OR lower(gremium) LIKE '%bezirksvertretung%' OR lower(gremium) LIKE '%bezirksbeirat%' OR lower(gremium) LIKE '%stadtbezirk%' OR lower(gremium) LIKE '%ortschaftsrat%' THEN 'ortsebene' WHEN lower(gremium) LIKE '%ausschuss%' OR lower(gremium) LIKE '%kommission%' OR lower(gremium) LIKE '%beirat%' THEN 'ausschuss' WHEN lower(gremium) LIKE '%rat%' OR lower(gremium) LIKE '%kreistag%' OR lower(gremium) LIKE '%stadtverordneten%' OR lower(gremium) LIKE '%gemeindevertretung%' THEN 'rat' ELSE 'sonstige' END";
+export const KINDS=[['rat','Rat und Kreistag'],['ortsgemeinde','Ortsgemeinderäte (in Verbandsgemeinden)'],['ausschuss','Ausschüsse und Beiräte'],['ortsebene','Orts- und Bezirksebene'],['sonstige','Sonstige']];
 const labelName=id=>LABELS.find(l=>l.id===id)?.name||id;
 
 export function parseDecisions(params){
@@ -43,8 +47,8 @@ export async function decisions(db,catalog,params){
  const {page}=await searchFilters(db,catalog,f);
  const where=page.where+" AND date<>''";
  /* Eine Abfrage für Stand, Monat, Themenfeld und Gremienebene */
- const {results:cube}=await db.prepare(`SELECT substr(date,1,7) m,label,${KIND_SQL} kind,status,count(*) n FROM search_cards WHERE ${where} GROUP BY 1,2,3,4`).bind(...page.args).all();
- const {results:perRegion}=await db.prepare(`SELECT region_id,status,count(*) n FROM search_cards WHERE ${where} AND status IN ('approved','rejected','postponed') GROUP BY 1,2`).bind(...page.args).all();
+ const {results:cube}=await db.prepare(`SELECT substr(date,1,7) m,label,${KIND_SQL} kind,status,count(DISTINCT region_id||'|'||lower(title)) n FROM search_cards WHERE ${where} GROUP BY 1,2,3,4`).bind(...page.args).all();
+ const {results:perRegion}=await db.prepare(`SELECT region_id,status,count(DISTINCT lower(title)) n FROM search_cards WHERE ${where} AND status IN ('approved','rejected','postponed') GROUP BY 1,2`).bind(...page.args).all();
  const status=blank(),months=new Map(),topics=new Map(),kinds=new Map();
  for(const r of cube){
   status[r.status]=(status[r.status]||0)+r.n;
@@ -56,7 +60,11 @@ export async function decisions(db,catalog,params){
  }
  const total=Object.values(status).reduce((a,b)=>a+b,0),known=total-status.unknown;
  const decided=DECIDED.reduce((a,k)=>a+status[k],0);
- const row=(id,name,c)=>({id,name,decided:c.approved+c.rejected+c.postponed,approved:c.approved,rejected:c.rejected,postponed:c.postponed,rate:rate(c),open:c.announced+c.consulting+c.recommended});
+ const overall=rate(status);
+ /* Weicht die Quote deutlich vom Gesamtwert ab? (Wilson-Spanne 95 %) */
+ const differs=c=>{const d=c.approved+c.rejected+c.postponed;if(!d||overall===null)return false;const p=c.approved/d,z=1.96,den=1+z*z/d,mid=(p+z*z/(2*d))/den,h=z*Math.sqrt(p*(1-p)/d+z*z/(4*d*d))/den;return overall/100<mid-h||overall/100>mid+h;};
+ const row=(id,name,c)=>({id,name,decided:c.approved+c.rejected+c.postponed,approved:c.approved,rejected:c.rejected,postponed:c.postponed,recommended:c.recommended,
+  rate:id==='ausschuss'?null:rate(c),differs:id==='ausschuss'?false:differs(c),open:c.announced+c.consulting+c.recommended});
  /* Länder aus den Gebieten */
  const byId=new Map(catalog.map(r=>[r.id,r])),lands=new Map();
  for(const r of perRegion){const reg=byId.get(r.region_id);if(!reg)continue;const id=reg.ags.slice(0,2);if(!lands.has(id))lands.set(id,blank());lands.get(id)[r.status]+=r.n;}
@@ -102,4 +110,17 @@ export async function decisions(db,catalog,params){
   duration:{n:spans.length,median:quant(spans,.5),p25:quant(spans,.25),p75:quant(spans,.75),p90:quant(spans,.9),
    topics:[...spanTopic].filter(([id,s])=>id!=='unklar'&&s.length>=12).map(([id,s])=>{s.sort((a,b)=>a-b);return {id,name:labelName(id),n:s.length,median:quant(s,.5),p90:quant(s,.9)};}).sort((a,b)=>b.median-a.median)},
  };
+}
+
+/** Liste hinter einer Zahl: by=label|kind|land (value: Kennung), optional outcome=approved|rejected|postponed (sonst alle mit Entscheidung) */
+export async function decisionList(db,catalog,params){
+ const by=params.get('by'),value=params.get('value')||'',outcome=params.get('outcome')||'';
+ if(!['label','kind','land'].includes(by)||!value||outcome&&!DECIDED.includes(outcome))throw new AnalyticsError('Unbekannte Liste.',400);
+ const copy=new URLSearchParams(params);for(const k of ['by','value','offset','outcome'])copy.delete(k);
+ const f=parseDecisions(copy);
+ const {page}=await searchFilters(db,catalog,f);
+ const ids=by==='land'?catalog.filter(r=>r.ags?.startsWith(value)).map(r=>r.id):[];
+ const cond={label:'label=?',kind:`${KIND_SQL}=?`,land:`region_id IN (SELECT value FROM json_each(?))`}[by];
+ return sqlList(db,catalog,`${page.where} AND date<>'' AND status IN (${(outcome?[outcome]:DECIDED).map(()=>'?').join(',')}) AND ${cond}`,
+  [...page.args,...(outcome?[outcome]:DECIDED),by==='land'?JSON.stringify(ids):value],offsetOf(params));
 }

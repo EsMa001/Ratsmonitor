@@ -1,5 +1,6 @@
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
+import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
  * Plenara.X – Beratungswege: Welchen Weg nehmen Vorgänge durch die Gremien? Knoten sind Gremien, gerichtete Kanten zählen die Vorgänge, die von
@@ -24,15 +25,19 @@ export function gremiumType(name){
  if(/schul|bildung|jugend|kita|kinder|sport|kultur|familie|bürgerschaftlich/.test(t)&&/ausschuss|kommission/.test(t))return 'Bildungs-, Jugend-, Kultur- und Sportausschuss';
  if(/sozial|gesundheit|senior|integration|inklusion|pflege/.test(t)&&/ausschuss|kommission|beirat/.test(t))return 'Sozial- und Gesundheitsausschuss';
  if(/wirtschaft|tourismus|digital|arbeit|marketing/.test(t)&&/ausschuss|kommission/.test(t))return 'Wirtschafts- und Digitalausschuss';
+ if(/^ortsgemeinderat|^gemeinderat der ortsgemeinde/.test(t))return 'Ortsgemeinderat';
+ if(/verbandsgemeinderat|samtgemeinderat|amtsausschuss/.test(t))return 'Verbandsgemeinde-, Samtgemeinderat, Amtsausschuss';
  if(/beirat/.test(t))return 'Beiräte';
  if(/ausschuss|kommission/.test(t))return 'Sonstige Ausschüsse';
- if(/gemeinderat|stadtrat|kreistag|stadtverordneten|gemeindevertretung|verbandsgemeinderat|samtgemeinderat|amtsausschuss|^rat\b|\brat der\b|bezirkstag|stadtbürgerschaft|bürgerschaft|gemeindeversammlung/.test(t))return 'Rat und Kreistag';
+ if(/gemeinderat|stadtrat|kreistag|stadtverordneten|gemeindevertretung|^rat\b|\brat der\b|bezirkstag|stadtbürgerschaft|bürgerschaft|gemeindeversammlung/.test(t))return 'Rat und Kreistag';
  return 'Sonstige Gremien';
 }
 
 export function parseNetwork(params){
- const copy=new URLSearchParams(params);
+ const copy=new URLSearchParams(params);for(const k of ['by','value','offset'])copy.delete(k);
  if(!copy.has('to'))copy.set('to',new Date().toISOString().slice(0,10));
+ // Mit Ort gelten die Wege seines eigenen Rats (ohne Kreisgremien), wie in der Oberfläche
+ if(copy.get('area'))copy.set('scope','only');
  let f;
  try{f=parseMonitorSearch(copy);}catch(e){throw new AnalyticsError(e.message,e.status||400);}
  if(f.groups.flat().some(w=>w.length<3))throw new AnalyticsError('Jedes Suchwort braucht mindestens 3 Buchstaben.');
@@ -40,8 +45,8 @@ export function parseNetwork(params){
 }
 const median=a=>{if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)];};
 
-export async function network(db,catalog,params){
- const f=parseNetwork(params);
+/* Stationsfolgen je Vorgang der Stichprobe: nach Datum (bei Gleichstand wie in der Quelle), gleiche Gremien hintereinander einmal */
+async function sequences(db,catalog,f){
  const {page}=await searchFilters(db,catalog,f);
  const where=page.where+" AND date<>'' AND status IN "+STATUSES;
  const pool=(await db.prepare('SELECT count(*) n FROM search_cards WHERE '+where).bind(...page.args).first())?.n||0;
@@ -53,14 +58,33 @@ export async function network(db,catalog,params){
  const PLACEHOLDER=/^gremium laut originalquelle$/i;
  const byCard=new Map();
  for(const r of results){if(!r.g||(single&&PLACEHOLDER.test(String(r.g).trim())))continue;if(!byCard.has(r.id))byCard.set(r.id,[]);byCard.get(r.id).push({g:label(r.g),d:r.d,k:r.k});}
+ const seqs=new Map();
+ for(const [id,ev] of byCard){
+  ev.sort((a,b)=>(a.d||'').localeCompare(b.d||'')||a.k-b.k);
+  const seq=[];for(const e of ev)if(!seq.length||seq.at(-1).g!==e.g)seq.push(e);
+  if(seq.length>=2)seqs.set(id,seq);
+ }
+ return {seqs,pool,k,single};
+}
+
+/** Liste hinter einer Kante: by=edge&value=„Von|Nach“ (Vorgänge der Stichprobe, die direkt von einem Gremium zum nächsten liefen) */
+export async function networkList(db,catalog,params){
+ const [from,to]=(params.get('value')||'').split('|');
+ if(params.get('by')!=='edge'||!from||!to)throw new AnalyticsError('Unbekannte Liste.',400);
+ const {seqs}=await sequences(db,catalog,parseNetwork(params));
+ const ids=[...seqs].filter(([,q])=>q.some((e,i)=>i&&q[i-1].g===from&&e.g===to)).map(([id])=>id);
+ const rows=[];
+ for(let i=0;i<ids.length;i+=200){const part=ids.slice(i,i+200);const {results}=await db.prepare(`SELECT id,region_id region,title,gremium,date,status FROM search_cards WHERE id IN (${part.map(()=>'?').join(',')})`).bind(...part).all();rows.push(...results);}
+ return listPage(rows,catalog,offsetOf(params));
+}
+
+export async function network(db,catalog,params){
+ const f=parseNetwork(params);
+ const {seqs,pool,k,single}=await sequences(db,catalog,f);
  const nodes=new Map(),edges=new Map(),routes=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{id,in:0,out:0,starts:0,ends:0,stage:0,stageN:0});return nodes.get(id);};
  let paths=0;
- for(const ev of byCard.values()){
-  /* Nach Datum (bei Gleichstand wie in der Quelle) ordnen, aufeinanderfolgende gleiche Gremien zusammenfassen */
-  ev.sort((a,b)=>(a.d||'').localeCompare(b.d||'')||a.k-b.k);
-  const seq=[];for(const e of ev)if(!seq.length||seq.at(-1).g!==e.g)seq.push(e);
-  if(seq.length<2)continue;
+ for(const seq of seqs.values()){
   paths++;
   node(seq[0].g).starts++;node(seq.at(-1).g).ends++;
   seq.forEach((e,i)=>{const nd=node(e.g);nd.stage+=i/(seq.length-1);nd.stageN++;});

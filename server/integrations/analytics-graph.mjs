@@ -2,6 +2,8 @@ import {LABELS} from '../../shared/labels.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
+import {routineTitle,titleKey} from '../../shared/topic-facts.mjs';
+import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
  * Plenara.X – Themennetz: Welche Begriffe, Themen, Gremien und Länder hängen mit einem Suchbegriff zusammen?
@@ -15,10 +17,10 @@ const SAMPLE=3000,TERMS=22,PER_KIND=6,MIN_DF=3;
 const SAMPLE_ALL=20000,TERMS_ALL=40,PER_KIND_ALL=8;
 const STOP=new Set('aber alle allen aller alles als also auch auf aus bei beim bis dass dem den der des die diese diesem diesen dieser dieses doch durch ein eine einem einen einer eines für gegen hat haben ihre ihrem ihren ihrer ist kann mit nach nicht noch nur oder ohne sich sind über und unter vom von vor wird wurde zum zur zwischen sowie sowohl weitere weiteren weiterer weiteres neue neuen neuer neues dazu hierzu hierfür dafür dagegen darüber darauf daraus davon damit wegen innerhalb außerhalb bezüglich betreffend gemäß nr nummer vom im am an zu so wie was wer wo wenn dann denn mehr sehr schon bereits'.split(' '));
 /* Formalien tragen nichts zum Thema bei */
-const FORMAL=new Set('sitzung sitzungen niederschrift niederschriften protokoll tagesordnung tagesordnungspunkt mitteilung mitteilungen anfrage anfragen anfragen antrag anträge antrags beschluss beschlüsse beschlussvorlage vorlage vorlagen vorlagenummer verschiedenes bekanntgaben bekanntgabe genehmigung feststellung eröffnung öffentlich öffentliche öffentlichen nichtöffentlich nichtöffentlichen teil ortsrat ortsrates gemeinderat gemeinderates stadtrat stadtrates kreistag kreistages rat rates ausschuss ausschusses fachausschuss einwohnerfragestunde fragestunde top punkt hier änderung beteiligung stellungnahme beratung entwurf gemeinde stadt gmbh sachlichen aufstellung beschlussfassung kenntnisnahme bericht berichte information informationen verfahren januar februar märz april mai juni juli august september oktober november dezember montag dienstag mittwoch donnerstag freitag samstag sonntag informativ beschliessend beschließend beschließende beschließender flst'.split(' '));
+const FORMAL=new Set('sitzung sitzungen niederschrift niederschriften protokoll tagesordnung tagesordnungspunkt mitteilung mitteilungen anfrage anfragen anfragen antrag anträge antrags beschluss beschlüsse beschlussvorlage vorlage vorlagen vorlagenummer verschiedenes bekanntgaben bekanntgabe genehmigung feststellung eröffnung öffentlich öffentliche öffentlichen nichtöffentlich nichtöffentlichen teil ortsrat ortsrates gemeinderat gemeinderates stadtrat stadtrates kreistag kreistages rat rates ausschuss ausschusses fachausschuss einwohnerfragestunde fragestunde top punkt hier änderung beteiligung stellungnahme beratung entwurf gemeinde stadt gmbh sachlichen aufstellung beschlussfassung kenntnisnahme bericht berichte information informationen verfahren januar februar märz april mai juni juli august september oktober november dezember montag dienstag mittwoch donnerstag freitag samstag sonntag informativ beschliessend beschließend beschließende beschließender flst herr herrn frau fraktion fraktionen grünen grüne bündnis linke linken freie freien wähler wählergemeinschaft wählergruppe'.split(' '));
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
-/* Nur für den Gesamtgraphen: Wörter des Sitzungsbetriebs, die über den ganzen Bestand ständig vorkommen und kein Thema sind */
-const FORMAL_ALL=new Set('beschlussfähigkeit ordnungsgemäßen ordnungsgemäße ladung vorstellung öffentlicher öffentliche sachstand bürgermeisters bürgermeister begrüßung bestätigung wahl bestellung protokolls anwesenheit geschäftsordnung einladung fraktion fraktionen anregungen beschwerden verwaltung eröffnung feststellung genehmigung mitglieder mitglied beantwortung unterrichtung verpflichtung verabschiedung beschlussfassung ergänzung bekanntgabe entgegennahme sitzungsniederschrift gremium gremien ausschuss ausschusses rates gemeinderates stadtrates ortsgemeinderates verbandsgemeinde stadt gemeinde kreis ortsbeirat ortsbeirates niederschrift vorlage vorlagen beschluss beschlüsse bericht berichte aktuelle aktueller informationen information verschiedenes tagesordnungspunkte wortmeldungen einwohnerfragestunde einwohnerfrage teils letzten gefassten angelegenheiten sonstiges annahme nichtöffentlicher nichtöffentlichen sachstandsbericht ordnungsmäßigkeit änderungsanträge einwohner'.split(' ').map(w=>w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('ß','ss')));
+/* Wörter des Sitzungsbetriebs, die über den ganzen Bestand ständig vorkommen und kein Thema sind (auch mit Begriff) */
+export const FORMAL_ALL=new Set('beschlussfähigkeit ordnungsgemäßen ordnungsgemäße ladung vorstellung öffentlicher öffentliche sachstand bürgermeisters bürgermeister begrüßung bestätigung wahl bestellung protokolls anwesenheit geschäftsordnung einladung fraktion fraktionen anregungen beschwerden verwaltung eröffnung feststellung genehmigung mitglieder mitglied beantwortung unterrichtung verpflichtung verabschiedung beschlussfassung ergänzung bekanntgabe entgegennahme sitzungsniederschrift gremium gremien ausschuss ausschusses rates gemeinderates stadtrates ortsgemeinderates verbandsgemeinde stadt gemeinde kreis ortsbeirat ortsbeirates niederschrift vorlage vorlagen beschluss beschlüsse bericht berichte aktuelle aktueller informationen information verschiedenes tagesordnungspunkte wortmeldungen einwohnerfragestunde einwohnerfrage teils letzten gefassten angelegenheiten sonstiges annahme nichtöffentlicher nichtöffentlichen sachstandsbericht ordnungsmäßigkeit änderungsanträge einwohner'.split(' ').map(w=>w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('ß','ss')));
 export const tokens=title=>{
  const found=new Map();
  for(const raw of String(title).split(/[^A-Za-zÀ-ÿ]+/)){
@@ -31,11 +33,12 @@ export const tokens=title=>{
  return found;
 };
 const gremiumKey=g=>String(g||'').replace(/\s+/g,' ').trim();
+const PLACEHOLDER=/^Gremium\b|laut Originalquelle/i;
 const jaccard=(c,a,b)=>c/(a+b-c);
 
 /** Gleiche Filter wie die Suche; Begriff erforderlich, außer für den Gesamtgraphen (all=1) */
 export function parseGraph(params){
- let f;
+ let f;const copy=new URLSearchParams(params);for(const k of ['by','value','offset'])copy.delete(k);params=copy;
  try{f=parseMonitorSearch(params);}catch(e){throw new AnalyticsError(e.message,e.status||400);}
  if(!f.groups.length&&new URLSearchParams(params).get('all')!=='1')throw new AnalyticsError('Bitte einen Begriff eingeben.');
  if(f.groups.flat().some(w=>w.length<3))throw new AnalyticsError('Jedes Suchwort braucht mindestens 3 Buchstaben.');
@@ -54,15 +57,21 @@ export async function knowledgeGraph(db,catalog,params){
   const step=Math.max(1,Math.floor(top/limit));
   if(step>1){where='('+where+') AND (rowid % ? = 0)';args.push(step);}
  }
- const {results:rows}=await db.prepare('SELECT region_id,label,gremium,title FROM search_cards WHERE '+where+' ORDER BY date DESC LIMIT ?').bind(...args,limit+1).all();
- const capped=rows.length>limit;if(capped)rows.pop();
+ const {results:raw}=await db.prepare('SELECT region_id,label,gremium,title FROM search_cards WHERE '+where+' ORDER BY date DESC LIMIT ?').bind(...args,limit+1).all();
+ const capped=raw.length>limit;if(capped)raw.pop();
+ /* Routinepunkte (Besetzungen, Fragestunden, „– Herr X“) zählen nicht; derselbe Titel je Gebiet (mehrere Gremien) einmal */
+ const seen=new Set(),rows=raw.filter(r=>{if(routineTitle(r.title))return false;const k=r.region_id+'|'+titleKey(r.title);if(seen.has(k))return false;seen.add(k);return true;});
  const total=rows.length;
  const byId=new Map(catalog.map(r=>[r.id,r]));
- const exclude=new Set(f.groups.flat());
+ const exclude=new Set(f.groups.flat()),parts=[...exclude].map(norm);
+ /* Wörter, in denen der Begriff nur als Teil steckt: Hinweis auf „genaues Wort“ */
+ const partial=new Map();
+ if(!f.exact)for(const r of rows)for(const [k,w] of tokens(r.title))if(!exclude.has(k)&&parts.some(p=>k.includes(p)&&!k.startsWith(p+'s')&&k!==p))partial.set(w,(partial.get(w)||0)+1);
  /* Je Karte: Begriffe, Thema, Gremium, Land */
  const docs=rows.map(r=>{
   const region=byId.get(r.region_id),land=region?region.ags.slice(0,2):null;
-  return {terms:new Map([...tokens(r.title)].filter(([k])=>!exclude.has(k)&&!(overall&&FORMAL_ALL.has(k)))),label:r.label,gremium:gremiumKey(r.gremium),land};
+  /* Wortteil-Treffer („vereinbarung“ bei „Verein“, „saarbrücken“ bei „Brücke“) sind kein eigener Begriff */
+  return {terms:new Map([...tokens(r.title)].filter(([k])=>!exclude.has(k)&&!FORMAL_ALL.has(k)&&!parts.some(p=>k.includes(p)))),label:r.label,gremium:PLACEHOLDER.test(r.gremium||'')?'':gremiumKey(r.gremium),land};
  });
  /* Häufigkeit der Begriffe in der Auswahl; Gewichtung gegen den ganzen Bestand (search_words) */
  const df=new Map(),shown=new Map();
@@ -117,5 +126,17 @@ export async function knowledgeGraph(db,catalog,params){
  const links=[...keep];
  /* Jeder Knoten hängt am Zentrum (Stärke: Anteil der Auswahl) */
  for(const n of nodes.slice(1))links.push({a:'q',b:n.id,w:Math.round((n.count/Math.max(1,total))*1000)/1000,n:n.count,center:true});
- return {q:f.q,total,capped,sample:limit,nodes,edges:links,stats:{terms:chosen.length,topics:topics.length,committees:committees.length,lands:lands.length,links:links.length-nodes.length+1}};
+ return {q:f.q,total,capped,sample:limit,partial:[...partial].sort((a,b)=>b[1]-a[1]).slice(0,5).map(([w,n])=>({word:w,n})),nodes,edges:links,stats:{terms:chosen.length,topics:topics.length,committees:committees.length,lands:lands.length,links:links.length-nodes.length+1}};
+}
+
+/** Liste hinter einem Knoten: by=node&value=„t:Begriff“, „k:Thema“, „g:Gremium“ oder „l:Land“; aus denselben jüngsten SAMPLE Einträgen */
+export async function graphList(db,catalog,params){
+ const value=params.get('value')||'',kind=value[1]===':'?value[0]:'',id=value.slice(2);
+ if(params.get('by')!=='node'||!'tkgl'.includes(kind)||!kind||!id)throw new AnalyticsError('Unbekannte Liste.',400);
+ const f=parseGraph(params);
+ const {page}=await searchFilters(db,catalog,f);
+ const {results}=await db.prepare('SELECT id,region_id region,label,gremium,title,date,status FROM search_cards WHERE '+page.where+' ORDER BY date DESC LIMIT ?').bind(...page.args,SAMPLE).all();
+ const land=new Map(catalog.map(r=>[r.id,r.ags?.slice(0,2)]));
+ const hit={t:r=>tokens(r.title).has(id),k:r=>r.label===id,g:r=>gremiumKey(r.gremium)===id,l:r=>land.get(r.region)===id}[kind];
+ return listPage(results.filter(r=>!routineTitle(r.title)&&hit(r)),catalog,offsetOf(params));
 }

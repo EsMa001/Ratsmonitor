@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { NetView, ROLE, type NEdge, type NNode } from "./NetView";
+import { RadarDrill } from "./RadarDrill";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 
 interface Result {
@@ -24,6 +25,8 @@ export function GremiennetzPage() {
   const [want, setWant] = useState(hasTerm);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
+  // Geöffnete Liste hinter einem Übergang („Von|Nach“)
+  const [edge, setEdge] = useState("");
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -144,11 +147,12 @@ export function GremiennetzPage() {
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.edges.slice(0, 12).map((e) => (
                       <li key={e.a + e.b} className="border-b border-slate-200">
-                        <button type="button" onClick={() => setSelected(e.a)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left hover:bg-slate-50">
+                        <button type="button" onClick={() => { setSelected(e.a); setEdge(edge === e.a + "|" + e.b ? "" : e.a + "|" + e.b); }} aria-expanded={edge === e.a + "|" + e.b} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left ${edge === e.a + "|" + e.b ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                           <span className="min-w-0 text-[16px] text-slate-900"><span className="block truncate">{e.a}</span><span className="block truncate text-slate-500">→ {e.b}</span></span>
                           <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(e.n)}</b><span className="block text-slate-500">{e.days === null ? "–" : `${e.days} Tage`}</span></span>
                           <span className="col-span-2 mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(3, (e.n / maxEdge) * 100)}%` }} /></span>
                         </button>
+                        {edge === e.a + "|" + e.b && <RadarDrill base="/api/analytics/network?list=1" query={ranKey} by="edge" value={edge} label={`${e.a} → ${e.b}, Vorgänge der Stichprobe`} />}
                       </li>
                     ))}
                   </ol>

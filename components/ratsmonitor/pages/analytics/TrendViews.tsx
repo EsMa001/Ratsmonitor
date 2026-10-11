@@ -1,7 +1,7 @@
 import { prettyTerm } from "../../lib/terms";
 import { useEffect, useRef, useState } from "react";
 
-export interface Trend { term: string; nr: number; np: number; ratio: number; z: number; regions: number; regionsPrev: number; series: number[] }
+export interface Trend { term: string; key?: string; nr: number; np: number; ratio: number; z: number; regions: number; regionsPrev: number; series: number[] }
 export type TrendKind = "rising" | "emerging" | "falling" | "steady";
 const COLOR: Record<TrendKind, string> = { rising: "#0d9488", emerging: "#0f766e", falling: "#94a3b8", steady: "#cbd5e1" };
 

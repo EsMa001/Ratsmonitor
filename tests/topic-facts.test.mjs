@@ -177,3 +177,17 @@ test('fehltreffer nach der bewertung vom 11.10.2026: personal, feste tagesordnun
  assert.deepEqual(feeRateOf('Neu-Kalkulation der Wassergebühren','Diese betragen derzeit: Verbrauchsgebühr 1,10 € / m³ (netto). Die Verwaltung schlägt vor, die Verbrauchsgebühr auf 1,42 €/ m³ (netto) zu erhöhen.'),[{kind:'Trinkwasser',from:'',to:'1.42',unit:'m³'}]);
  assert.deepEqual(feeRateOf('Nachkalkulation der Abwassergebühren 2025','Schmutzwassergebühr 2,15 €/m³.'),[]);
 });
+
+test('Förderung: Hintergrund, alte Bescheide und Anfragen zählen nicht als bewilligt',async()=>{
+ const {fundingOf,fundingEuroOf,factsOf}=await import('../shared/topic-facts.mjs');
+ assert.deepEqual(fundingOf('Bei Verzögerung droht der Verfall von Fördermitteln in Höhe von 12,2 Mio. Euro, die bewilligt wurden.'),[]);
+ const old='Vergabe der Fliesenarbeiten im Oktober 2026 im Rathaus. Mit Bescheid vom 18.12.2023 wurden Fördermittel in Höhe von 8.840.000 Euro bewilligt.';
+ assert.deepEqual(fundingEuroOf(old),[]);
+ assert.deepEqual(fundingEuroOf('Dem stehen voraussichtlich Fördermittel in Höhe von etwa 23 Mio. € gegenüber.'),[]);
+ assert.equal(fundingOf(old)[0]?.status??'mentioned','mentioned');
+ const now='Sitzung 2026. Die Fördermittel in Höhe von 450.000 Euro wurden bewilligt. Umsetzung bis 2030.';
+ assert.deepEqual(fundingEuroOf(now),[{program:'Sonstige Förderung',euro:450000}]);
+ assert.equal(fundingOf(now)[0].status,'granted');
+ assert.deepEqual(fundingOf('Für das Feuerwehrhaus wurden Fördermittel der Städtebauförderung bewilligt.').map(x=>x.program),['Städtebauförderung']);
+ assert.ok(factsOf('Anfrage zu Fördermitteln für die Ortsmitte','Fördermittel wurden beantragt.').filter(r=>r.kind==='funding').every(r=>r.detail==='mentioned'));
+});

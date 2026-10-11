@@ -697,33 +697,34 @@ topic design-styles.css:140
 - AnalyticsPages.tsx (66, ⚠1): AnalyticsPages
 - BauleitplanungPage.tsx (257, ⚠8): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
-- BeschluessePage.tsx (219, ⚠6): BeschluessePage
+- BeschluessePage.tsx (222, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (293, ⚠11): ComparePage
-- DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
+- ComparePage.tsx (308, ⚠11): ComparePage
+- DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
-- DiffusionPage.tsx (271, ⚠5): DiffusionPage
+- DiffusionPage.tsx (275, ⚠6): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
-- FoerderradarPage.tsx (230, ⚠7): FoerderradarPage
-- FraktionenPage.tsx (166, ⚠2): FraktionenPage
+- FoerderradarPage.tsx (241, ⚠9): FoerderradarPage
+- FraktionenPage.tsx (175, ⚠5): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
+- GremiennetzPage.tsx (201, ⚠3): GremiennetzPage
 - KitaRadarPage.tsx (188, ⚠7): KitaRadarPage
-- KnowledgeGraphPage.tsx (219, ⚠1): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (229, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (135, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (56): DrillItem, RadarDrill
 - RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
+- RadarMap.tsx (78, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS
 - RegionMap.tsx (65): RegionMap
 - Reveal.tsx (16): Reveal
 - ThemeRadarPage.tsx (212, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
-- TrendsPage.tsx (207, ⚠6): TrendsPage
+- TrendsPage.tsx (209, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery
 
 ### components/ratsmonitor/services/

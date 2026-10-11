@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
 /** Farben der Entscheidungen: beschlossen Akzentfarbe, vertagt Grau, abgelehnt Schwarz */
 export const DEC_COLORS = { approved: "#0d9488", postponed: "#94a3b8", rejected: "#0f172a" };
-export interface Cut { id: string; name: string; decided: number; approved: number; rejected: number; postponed: number; rate: number | null }
+/** differs: Quote weicht deutlich vom Gesamtwert ab (false = im üblichen Rahmen, fehlt = keine Prüfung); recommended: Empfehlungen (Ausschüsse) */
+export interface Cut { id: string; name: string; decided: number; approved: number; rejected: number; postponed: number; rate: number | null; differs?: boolean; recommended?: number }
 export interface Month { m: string; approved: number; rejected: number; postponed: number; rate: number | null }
 const nf = (v: number) => v.toLocaleString("de-DE");
 const mlabel = (m: string) => `${m.slice(5, 7)}/${m.slice(2, 4)}`;
@@ -42,18 +44,25 @@ export function MonthColumns({ months }: { months: Month[] }) {
   );
 }
 
-/** Eine Zeile je Gruppe: Anteil beschlossen, vertagt und abgelehnt als gestapelter Balken */
-export function DecisionRow({ cut }: { cut: Cut }) {
+/** Eine Zeile je Gruppe: Anteil beschlossen, vertagt und abgelehnt als gestapelter Balken; onToggle öffnet die Liste der Vorgänge (drill, unter der Zeile) */
+export function DecisionRow({ cut, onToggle, expanded, drill }: { cut: Cut; onToggle?: () => void; expanded?: boolean; drill?: ReactNode }) {
   const d = Math.max(1, cut.decided), pc = (v: number) => `${(v / d) * 100}%`;
-  return (
-    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 py-3 sm:grid-cols-[220px_minmax(0,1fr)_150px]">
+  const cls = `grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 text-left sm:grid-cols-[220px_minmax(0,1fr)_150px] ${onToggle ? (expanded ? "bg-teal-50/60" : "hover:bg-slate-50") : ""}`;
+  const body = (
+    <>
       <span className="truncate text-[16px] text-slate-900">{cut.name}</span>
       <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1" role="img" aria-label={`${cut.name}: ${cut.rate ?? 0} % beschlossen`}>
         <span style={{ width: pc(cut.approved), background: DEC_COLORS.approved }} title={`beschlossen: ${nf(cut.approved)}`} />
         <span style={{ width: pc(cut.postponed), background: DEC_COLORS.postponed }} title={`vertagt: ${nf(cut.postponed)}`} />
         <span style={{ width: pc(cut.rejected), background: DEC_COLORS.rejected }} title={`abgelehnt: ${nf(cut.rejected)}`} />
       </span>
-      <span className="text-right text-[14px] tabular-nums"><b className="font-semibold text-slate-900">{cut.rate === null ? "–" : `${cut.rate.toLocaleString("de-DE")} %`}</b><span className="ml-2 text-slate-500">{nf(cut.decided)}</span></span>
+      <span className="text-right text-[14px] tabular-nums">{cut.rate === null && cut.recommended ? <span className="text-slate-500">{nf(cut.recommended)} empfohlen</span> : <b className={`font-semibold ${cut.differs === false ? "text-slate-400" : "text-slate-900"}`} title={cut.differs === false ? "im üblichen Rahmen (keine deutliche Abweichung vom Gesamtwert)" : undefined}>{cut.rate === null ? "–" : `${cut.rate.toLocaleString("de-DE")} %`}</b>}<span className="ml-2 text-slate-500">{nf(cut.decided)}</span></span>
+    </>
+  );
+  return (
+    <li className="border-b border-slate-200">
+      {onToggle ? <button type="button" onClick={onToggle} aria-expanded={expanded} className={cls}>{body}</button> : <div className={cls}>{body}</div>}
+      {drill}
     </li>
   );
 }

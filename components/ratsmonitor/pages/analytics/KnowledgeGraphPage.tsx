@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
 import { Befund } from "./Befund";
+import { RadarDrill } from "./RadarDrill";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
@@ -16,6 +17,8 @@ interface Result {
   total: number;
   capped: boolean;
   sample: number;
+  /** Längere Wörter, in denen der Begriff nur als Teil steckt („vereinbarung“ bei „Verein“) */
+  partial?: { word: string; n: number }[];
   nodes: GNode[];
   edges: GEdge[];
   stats: { terms: number; topics: number; committees: number; lands: number; links: number };
@@ -30,6 +33,8 @@ export function KnowledgeGraphPage() {
   const { query, hasTerm, search } = useAnalyticsQuery();
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
+  // Liste der Vorgänge hinter dem gewählten Knoten
+  const [showList, setShowList] = useState(false);
   const [loading, setLoading] = useState(false);
   const [want, setWant] = useState(false);
   const [error, setError] = useState("");
@@ -181,6 +186,8 @@ export function KnowledgeGraphPage() {
             {links.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500">Verbunden mit: {links.slice(0, 6).map((l) => l.other.label).join(", ")}</p>}
             {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-600">Graph um „{sel.label}“ neu aufbauen →</button>}
             {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-600">Auf dieses Thema eingrenzen →</button>}
+            {res.q && sel.type !== "center" && <button type="button" onClick={() => setShowList(!showList)} aria-expanded={showList} className="ml-4 mt-2 text-[14px] font-medium text-teal-600">{showList ? "Vorgänge ausblenden" : "Vorgänge zeigen"}</button>}
+            {res.q && showList && sel.type !== "center" && <div className="mt-2 max-h-[50vh] overflow-auto"><RadarDrill base="/api/analytics/graph?list=1" query={ranKey} by="node" value={sel.id} label={`„${sel.label}“`} /></div>}
           </div>
         )}
       </section>
@@ -188,6 +195,9 @@ export function KnowledgeGraphPage() {
       {res && !empty && (
         <>
 
+          {!!res.partial?.length && (
+            <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); setWant(true); }} className="font-medium text-teal-600">Nur ganze Wörter →</button></p>
+          )}
           {strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
           <div className="mt-10 max-w-[820px]">
             <section>
@@ -210,7 +220,7 @@ export function KnowledgeGraphPage() {
               </ol>
             </section>
           </div>
-          <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage ist eine gleichmäßig über den ganzen Bestand verteilte Stichprobe von ${n(res.total)} Einträgen${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind ${res.capped ? `die jüngsten ${n(res.sample)} von mehr passenden` : "alle passenden"} Einträge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien und Füllwörter bleiben außen vor. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage ist eine gleichmäßig über den ganzen Bestand verteilte Stichprobe von ${n(res.total)} Einträgen${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind ${res.capped ? `die jüngsten ${n(res.sample)} von mehr passenden` : "alle passenden"} Einträge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
         </>
       )}
     </main>

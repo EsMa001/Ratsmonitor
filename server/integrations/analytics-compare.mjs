@@ -4,12 +4,17 @@ import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {tokens} from './analytics-graph.mjs';
+import {routineTitle,titleKey} from '../../shared/topic-facts.mjs';
+import {listPage,sqlList,offsetOf} from './analytics-lists.mjs';
 
 /*
  * Plenara.X – Ortsvergleich: Zwei bis vier Orte nebeneinander, gemessen an allen Gebieten als Vergleichsbasis.
  * Je Ort gelten dieselben Filter wie in der Suche (Begriff, Zeitraum, Thema, Status ...). Zahlen je Ort: Einträge (genau, auch je
  * 1.000 Einwohner), Verlauf je Monat (genau); Themenprofil, Stand der Vorlagen, Gremien und typische Begriffe aus einer gleichmäßigen
  * Stichprobe von höchstens CAP Einträgen. „Typisch“ heißt: im Ort deutlich häufiger als in allen Gebieten (Zwei-Stichproben-z-Test).
+ * Gezählt werden Vorgänge: derselbe Titel je Gebiet (mehrere Gremien) einmal, ohne einzeln geführte Einwohnerfragen („… - Herr X“);
+ * Profile und Begriffe zusätzlich ohne Routinepunkte (Besetzungen, Wahlen, Fragestunden). Ein Ort zählt nur seinen eigenen Rat
+ * (die Seite fragt mit scope=only), sonst stiegen die Werte je Einwohner kleiner Orte mit den Vorgängen ihres Kreises.
  */
 const CAP=6000,BASE_CAP=12000,MIN=4,Z_MIN=3,RATIO=1.8,TERMS=12,COMMON=10,COMMITTEES=6;
 const STATUSES=['announced','consulting','recommended','approved','rejected','postponed','info','unknown'];
@@ -19,7 +24,7 @@ const PLACEHOLDER=/^gremium laut originalquelle$/i;
 const gremiumKey=g=>String(g||'').replace(/\s+/g,' ').trim();
 
 export function parseCompare(params){
- const copy=new URLSearchParams(params);
+ const copy=new URLSearchParams(params);for(const k of ['by','value','offset','place'])copy.delete(k);
  if(!copy.has('to'))copy.set('to',new Date().toISOString().slice(0,10));
  let f;
  try{f=parseMonitorSearch(copy);}catch(e){throw new AnalyticsError(e.message,e.status||400);}
@@ -30,12 +35,16 @@ export function parseCompare(params){
  return {f,places};
 }
 
+const PERSONAL_Q="title NOT LIKE '% - Herr %' AND title NOT LIKE '% - Frau %' AND title NOT LIKE '% - Herr' AND title NOT LIKE '% - Frau'";
 const sample=async(db,where,args,cap)=>{
- const range=" AND date<>''";
- const total=(await db.prepare('SELECT count(*) n FROM search_cards WHERE '+where+range).bind(...args).first())?.n||0;
+ const range=" AND date<>'' AND "+PERSONAL_Q;
+ const total=(await db.prepare("SELECT count(DISTINCT region_id||'|'||lower(title)) n FROM search_cards WHERE "+where+range).bind(...args).first())?.n||0;
  const k=Math.max(1,Math.ceil(total/cap));
- const {results}=await db.prepare('SELECT label,status,gremium,title FROM search_cards WHERE '+where+range+(k>1?' AND rowid % ? = 0':'')).bind(...args,...(k>1?[k]:[])).all();
- return {total,rows:results,capped:k>1};
+ const {results}=await db.prepare('SELECT region_id,label,status,gremium,title FROM search_cards WHERE '+where+range+(k>1?' AND rowid % ? = 0':'')).bind(...args,...(k>1?[k]:[])).all();
+ const seen=new Set(),rows=results.filter(r=>{if(routineTitle(r.title))return false;const key=r.region_id+'|'+titleKey(r.title);if(seen.has(key))return false;seen.add(key);return true;});
+ // Gremien: Titel je Gremium einmal (ein Titel aus Ausschuss und Rat zählt bei beiden), wie die Liste dahinter
+ const byGremium=new Map();for(const r of results){if(routineTitle(r.title))continue;const g=gremiumKey(r.gremium);if(!byGremium.has(g))byGremium.set(g,new Set());byGremium.get(g).add(r.region_id+'|'+titleKey(r.title));}
+ return {total,rows,capped:k>1,byGremium};
 };
 const shares=(rows,pick,keys)=>{const m=new Map();let n=0;for(const r of rows){const v=pick(r);if(v!==null&&v!==undefined){m.set(v,(m.get(v)||0)+1);n++;}}return {n,list:keys.map(k=>({id:k,n:m.get(k)||0,share:n?Math.round(((m.get(k)||0)/n)*10000)/100:0}))};};
 const termStats=(rows,exclude)=>{
@@ -68,7 +77,7 @@ export async function compare(db,catalog,params){
  for(const p of places){
   const {page,scopedIds,byId}=await searchFilters(db,catalog,{...f,area:p.ags,scope:p.scope,more:[],within:null,without:null});
   const s=await sample(db,page.where,page.args,CAP);
-  const {results:monthRows}=await db.prepare("SELECT substr(date,1,7) m,count(*) n FROM search_cards WHERE "+page.where+" AND date<>'' GROUP BY m ORDER BY m").bind(...page.args).all();
+  const {results:monthRows}=await db.prepare("SELECT substr(date,1,7) m,count(DISTINCT region_id||'|'||lower(title)) n FROM search_cards WHERE "+page.where+" AND date<>'' AND "+PERSONAL_Q+" GROUP BY m ORDER BY m").bind(...page.args).all();
   const regions=[...scopedIds].map(id=>byId.get(id)).filter(Boolean);
   const cities=regions.filter(r=>r.kind==='city');
   const pop=(cities.length?cities:regions).reduce((sum,r)=>sum+(POPULATION[r.id]||0),0)||null;
@@ -84,7 +93,7 @@ export async function compare(db,catalog,params){
    if(z>=Z_MIN&&ratio>=RATIO)typical.push({term:ts.shown.get(k),key:k,n,share:Math.round(pp*10000)/100,base:Math.round(pb*10000)/100,ratio:Math.round(ratio*10)/10,z:Math.round(z*10)/10});
   }
   typical.sort((a,b)=>b.z-a.z);
-  const committees=new Map();for(const r of s.rows){const g=gremiumKey(r.gremium);if(g.length>=4&&!PLACEHOLDER.test(g))committees.set(g,(committees.get(g)||0)+1);}
+  const committees=new Map();for(const [g,set] of s.byGremium)if(g.length>=4&&!PLACEHOLDER.test(g))committees.set(g,set.size);
   out.push({
    ags:p.ags,scope:p.scope,population:pop,total:s.total,sampled:s.rows.length,capped:s.capped,
    perThousand:pop?Math.round((s.total/pop)*10000)/10:null,
@@ -111,4 +120,22 @@ export async function compare(db,catalog,params){
   common:common.slice(0,COMMON).map(({min,...rest})=>rest),
   base:{total:base.total,sampled:base.rows.length,topics:baseTopics,status:baseStatus},
  };
+}
+
+/** Liste hinter einer Zahl eines Orts (place=Schlüssel): by=all (alle Vorgänge), label (Themenfeld), committee (Gremium) oder
+    term (Begriff aus den Titeln). Zählt wie die Seite: gleiche Titel je Gebiet einmal, ohne „… - Herr X“; Profile, Gremien und
+    Begriffe der Seite stammen bei großen Orten aus einer Stichprobe, die Liste zeigt alle Vorgänge. */
+export async function compareList(db,catalog,params){
+ const by=params.get('by'),value=params.get('value')||'',ags=params.get('place')||'';
+ if(!['all','label','committee','term'].includes(by)||by!=='all'&&!value)throw new AnalyticsError('Unbekannte Liste.',400);
+ const {f,places}=parseCompare(params);
+ const p=places.find(x=>x.ags===ags);if(!p)throw new AnalyticsError('Unbekannter Ort.',400);
+ const {page}=await searchFilters(db,catalog,{...f,area:p.ags,scope:p.scope,more:[],within:null,without:null});
+ const base=`${page.where} AND date<>'' AND ${PERSONAL_Q}`,offset=offsetOf(params);
+ if(by==='all')return sqlList(db,catalog,base,page.args,offset);
+ if(by==='label')return sqlList(db,catalog,`${base} AND label=?`,[...page.args,value],offset);
+ const {results}=await db.prepare(`SELECT id,region_id region,title,gremium,date,status FROM search_cards WHERE ${base}${by==='term'?' AND search LIKE ?':''}`).bind(...page.args,...(by==='term'?['%'+norm(value)+'%']:[])).all();
+ const key=norm(value);
+ const rows=results.filter(r=>!routineTitle(r.title)&&(by==='committee'?gremiumKey(r.gremium)===value:tokens(r.title).has(key)));
+ return listPage(rows,catalog,offset);
 }

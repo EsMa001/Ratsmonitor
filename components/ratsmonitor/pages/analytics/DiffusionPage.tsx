@@ -12,19 +12,22 @@ import { DiffusionChart } from "./DiffusionChart";
 import { DiffusionSearch, type PlayState } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { prettyTerm } from "../../lib/terms";
+import { RadarDrill } from "./RadarDrill";
 
-interface Reg { ags: string; name: string; first: string; last: string; n: number }
+/** members: Verband ohne erkennbare Mitgliedsgemeinde (zählt einmal, Karte bei allen Mitgliedern); atStart: schon in den ersten 14 Tagen des Bestands */
+interface Reg { ags: string; name: string; first: string; last: string; n: number; start?: string | null; atStart?: boolean; members?: string[] }
 interface Result {
   q: string;
   regions: Reg[];
   series: { month: string; added: number; total: number }[];
   lands: { id: string; name: string; regions: number; first: string }[];
-  stats: { regions: number; cards: number; first: string | null; last: string | null; p10: string | null; median: string | null; p90: string | null };
+  stats: { regions: number; cards: number; atStart?: number; dataStart?: string | null; first: string | null; last: string | null; p10: string | null; median: string | null; p90: string | null };
 }
 
 const DAY = 86400000;
 const toDay = (iso: string) => Math.floor(Date.parse(iso.slice(0, 10) + "T00:00:00Z") / DAY);
 const toIso = (d: number) => new Date(d * DAY).toISOString().slice(0, 10);
+const keysOf = (r: Reg) => r.members ?? [r.ags];
 const fmt = (iso: string | null) => (iso ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "–");
 const months = (a: string, b: string) => Math.max(0, Math.round((toDay(b) - toDay(a)) / 30.44));
 const glass = "rm-glass";
@@ -99,7 +102,7 @@ export function DiffusionPage() {
 
   const firstDay = res?.stats.first ? toDay(res.stats.first) : 0;
   const lastDay = res?.stats.last ? toDay(res.stats.last) : 0;
-  const byAgs = useMemo(() => new Map((res?.regions ?? []).map((r) => [r.ags, r])), [res]);
+  const byAgs = useMemo(() => { const m = new Map<string, Reg>(); for (const r of res?.regions ?? []) for (const a of r.members ?? [r.ags]) if (!m.has(a) || r.first < m.get(a)!.first) m.set(a, r); return m; }, [res]);
   const firsts = useMemo(() => (res?.regions ?? []).map((r) => toDay(r.first)).sort((a, b) => a - b), [res]);
 
   /* Eigene Karte (eigene Engine, unabhängig von der Startseite) */
@@ -121,11 +124,11 @@ export function DiffusionPage() {
     if (!engine) return;
     const levels: Record<string, number> = {};
     for (const a of allAgs) levels[a] = 0;
-    if (res) for (const r of res.regions) levels[r.ags] = levelAt(r.first, day);
+    if (res) for (const r of res.regions) for (const a of keysOf(r)) levels[a] = Math.max(levels[a] ?? 0, levelAt(r.first, day));
     engine.update(levels, picked, null, allAgs, "city");
   }, [engine, res, day, allAgs, picked]);
   useEffect(() => {
-    if (engine && res) res.regions.length ? engine.focusMany(res.regions.map((r) => r.ags)) : engine.focusArea("");
+    if (engine && res) res.regions.length ? engine.focusMany(res.regions.flatMap(keysOf)) : engine.focusArea("");
   }, [engine, res]);
 
   /* Zeitraffer */
@@ -183,7 +186,7 @@ export function DiffusionPage() {
         <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
           <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconPlus size={16} /></button>
           <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconMinus size={16} /></button>
-          <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (res?.regions.length ? engine?.focusMany(res.regions.map((r) => r.ags)) : engine?.focusArea(""))} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconCenter size={16} /></button>
+          <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (res?.regions.length ? engine?.focusMany(res.regions.flatMap(keysOf)) : engine?.focusArea(""))} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconCenter size={16} /></button>
         </div>
 
         {/* Hinweise und Auswahl oben in der Mitte */}
@@ -204,10 +207,11 @@ export function DiffusionPage() {
         )}
       </section>
 
+      {sel && ranKey && <div className="mt-4"><RadarDrill base="/api/analytics/diffusion?list=1" query={ranKey} by="region" value={sel.ags} label={`${sel.name}: Vorgänge mit dem Begriff`} /></div>}
       {res && res.stats.regions > 0 && (
         <>
           <Befund>{res.q.trim() ? `„${prettyTerm(res.q.trim())}“` : "Das Thema"} taucht im Bestand in {res.stats.regions.toLocaleString("de-DE")} {res.stats.regions === 1 ? "Gebiet" : "Gebieten"} auf, der früheste Eintrag ist vom {fmt(res.stats.first)}. Die Hälfte der Gebiete war {res.stats.median ? `bis ${fmt(res.stats.median)}` : "noch nicht"} erreicht.</Befund>
-          <p className="mt-3 max-w-[760px] text-[14px] text-slate-500">Der Bestand beginnt im Herbst 2025. „Frühester Eintrag“ und „Hälfte erreicht“ gelten daher für den Bestand, nicht für das Thema überhaupt. Berichte einer Verbandsgemeinde zählen bei jeder ihrer Mitgliedsgemeinden mit.</p>
+          <p className="mt-3 max-w-[760px] text-[14px] text-slate-500">Der Bestand beginnt am {fmt(res.stats.dataStart ?? null)}, bei vielen Gebieten später. „Frühester Eintrag“ und „Hälfte erreicht“ gelten daher für den Bestand, nicht für das Thema überhaupt{res.stats.atStart ? `; in ${res.stats.atStart.toLocaleString("de-DE")} Gebieten stand das Thema schon in den ersten 14 Tagen ihres Bestands` : ""}. Berichte eines Gemeindeverbands zählen bei der Mitgliedsgemeinde, deren Rat berät oder die der Titel nennt, sonst beim Verband als ein Gebiet. Für nur ganze Wörter (etwa „Brücke“ ohne „Saarbrücken“) „Exakter Begriff“ im Filter wählen.</p>
           <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             {[
               ["Frühester Eintrag", fmt(res.stats.first)],
@@ -229,12 +233,12 @@ export function DiffusionPage() {
 
           <div className="mt-12 grid gap-12 md:grid-cols-2">
             <section>
-              <h2 className="text-[22px] font-semibold">Vorreiter</h2>
-              <p className="mb-3 mt-1 text-[14px] text-slate-500">Die zehn Gebiete mit dem frühesten Eintrag im Bestand. Ein Klick zeigt sie auf der Karte.</p>
+              <h2 className="text-[22px] font-semibold">Erste neue Gebiete</h2>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">Die zehn Gebiete, in denen das Thema am frühesten neu auftauchte, also nicht schon in den ersten 14 Tagen ihres Bestands. Ein Klick zeigt sie auf der Karte.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
-                {res.regions.slice(0, 10).map((r, i) => (
+                {res.regions.filter((r) => !r.atStart).slice(0, 10).map((r, i) => (
                   <li key={r.ags} className="border-b border-slate-200">
-                    <button type="button" onClick={() => { setPicked(r.ags); engine?.focusArea(r.ags); window.scrollTo({ top: (document.querySelector('section[aria-label="Karte der Ausbreitung"]') as HTMLElement).offsetTop - 80, behavior: "smooth" }); }} className="grid w-full grid-cols-[28px_1fr_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
+                    <button type="button" onClick={() => { setPicked(keysOf(r)[0]); engine?.focusArea(keysOf(r)[0]); window.scrollTo({ top: (document.querySelector('section[aria-label="Karte der Ausbreitung"]') as HTMLElement).offsetTop - 80, behavior: "smooth" }); }} className="grid w-full grid-cols-[28px_1fr_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
                       <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
                       <span className="min-w-0">
                         <span className="block truncate text-[16px] text-slate-900">{r.name.includes(" (") ? r.name.slice(0, r.name.lastIndexOf(" (")) : r.name}</span>

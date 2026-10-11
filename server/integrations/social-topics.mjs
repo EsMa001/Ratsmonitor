@@ -356,8 +356,10 @@ const R_UNAN=/einstimmig|ohne gegenstimme|einvernehmlich|einhellig/i;
 const R_MAJ=/mehrheitlich|mit mehrheit|gegen \d+ stimme|\d+ gegenstimme|stimmenmehrheit|bei \d+ (nein|gegen)|\d+ nein/i;
 const R_OK=/beschlossen|empfohlen|zugestimmt|angenommen|genehmigt|zur kenntnis|kenntnis genommen|erledigt/i;
 /** 'rej' | 'post' | 'maj' | 'unan' | 'ok' | null */
+// Platzhalter der Importe („Ergebnis … nicht belegt“, „Sitzung steht noch aus“) sind kein Ergebnis
+const NO_RESULT=/nicht belegt|steht noch aus|liegt als Dokument vor|ohne Beschluss geführt/i;
 export function classifyResult(t){
- if(!t)return null;
+ if(!t||NO_RESULT.test(t))return null;
  if(R_REJ.test(t))return 'rej';
  if(R_POST.test(t))return 'post';
  if(R_UNAN.test(t))return 'unan';

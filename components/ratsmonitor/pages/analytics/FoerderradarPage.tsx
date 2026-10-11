@@ -6,6 +6,7 @@ import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { RadarDrill } from "./RadarDrill";
 
 interface Program { name: string; other: boolean; granted: number; applied: number; mentioned: number; n: number; regions: number; euroGranted: number; euroApplied: number; amounts: number }
 interface EuroRegion { id: string; name: string; pop: number; amounts: number; granted: number; applied: number; perCapita: number; grantedPerCapita: number }
@@ -39,6 +40,9 @@ const SHOW_EURO_RANKING = false;
 export function FoerderradarPage() {
   const { query } = useAnalyticsQuery();
   const [res, setRes] = useState<Result | null>(null);
+  // Geöffnete Liste hinter einer Zahl („program:Ganztagsausbau“, „region:<Gebiet>“)
+  const [open, setOpen] = useState("");
+  const toggle = (k: string) => setOpen(open === k ? "" : k);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [want, setWant] = useState(true);
@@ -65,6 +69,7 @@ export function FoerderradarPage() {
   }, [want]);
   useEffect(() => () => abortRef.current?.abort(), []);
   const stale = !!res && ranKey !== query && !loading;
+  const drill = (by: "program" | "region", value: string, label: string) => open === `${by}:${value}` && <RadarDrill base="/api/analytics/foerderung?list=1" query={ranKey} by={by} value={value} label={label} />;
 
   const programs = res?.programs ?? [];
   const named = programs.filter((p) => !p.other);
@@ -117,7 +122,8 @@ export function FoerderradarPage() {
                 {legend}
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
                   {programs.map((p) => (
-                    <li key={p.name} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 py-3 sm:grid-cols-[280px_minmax(0,1fr)_170px]">
+                    <li key={p.name} className="border-b border-slate-200">
+                      <button type="button" onClick={() => toggle(`program:${p.name}`)} aria-expanded={open === `program:${p.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 text-left sm:grid-cols-[280px_minmax(0,1fr)_170px] ${open === `program:${p.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                       <span className={`truncate text-[16px] ${p.other ? "text-slate-500" : ""}`}>{p.name}</span>
                       <span className="order-3 col-span-2 flex h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1" role="img" aria-label={`${p.name}: ${p.granted} bewilligt, ${p.applied} beantragt, ${p.mentioned} erwähnt`}>
                         <span style={{ width: `${(p.granted / maxP) * 100}%`, background: C.granted }} />
@@ -125,6 +131,8 @@ export function FoerderradarPage() {
                         <span style={{ width: `${(p.mentioned / maxP) * 100}%`, background: C.mentioned }} />
                       </span>
                       <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(p.n)}</b><span className="ml-2 text-slate-500">{n(p.regions)} Gebiete</span>{p.amounts > 0 && <span className="block text-[12px] text-slate-500">{eur(p.euroGranted + p.euroApplied)} in {n(p.amounts)} Beträgen</span>}</span>
+                      </button>
+                      {drill("program", p.name, p.name)}
                     </li>
                   ))}
                 </ol>
@@ -152,7 +160,8 @@ export function FoerderradarPage() {
                 {res.ranking.length === 0 ? <p className="text-[14px] text-slate-500">Zu wenige Gebiete für einen Vergleich.</p> : (
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.ranking.map((r, i) => (
-                      <li key={r.id} className="grid grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-x-3 border-b border-slate-200 py-3 sm:grid-cols-[28px_280px_minmax(0,1fr)_200px]">
+                      <li key={r.id} className="border-b border-slate-200">
+                      <button type="button" onClick={() => toggle(`region:${r.id}`)} aria-expanded={open === `region:${r.id}`} className={`grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left sm:grid-cols-[28px_280px_minmax(0,1fr)_200px] ${open === `region:${r.id}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                         <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
                         <span className="min-w-0"><span className="block truncate text-[16px]">{r.name}</span><span className="block truncate text-[12px] text-slate-500">{r.programs.map((p) => p.name).join(", ")}</span></span>
                         <span className="order-4 col-span-3 mt-1.5 flex h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1 sm:mt-0">
@@ -160,6 +169,8 @@ export function FoerderradarPage() {
                           <span style={{ width: `${((r.per10k - r.grantedPer10k) / maxR) * 100}%`, background: C.applied }} />
                         </span>
                         <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{r.per10k.toLocaleString("de-DE")}</b><span className="ml-2 text-slate-500">{n(r.granted)} bew. · {n(r.applied)} beantr.</span></span>
+                      </button>
+                      {drill("region", r.id, `${r.name}: bewilligte und beantragte Förderung`)}
                       </li>
                     ))}
                   </ol>
@@ -219,7 +230,7 @@ export function FoerderradarPage() {
                 </section></Reveal>
               )}
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gelesen werden Sätze im Volltext der Hauptdokumente, die von Fördergeld sprechen (Fördermittel, Förderbescheid, Zuwendung, Bundes- oder Landesmittel); daraus Programm und Stand (bewilligt, beantragt). Beträge zählen nur, wenn sie unmittelbar an einem Förderwort stehen („Zuwendung in Höhe von …“), nicht Gesamtkosten, Eigenanteile, förderfähige Kosten, Höchstbeträge oder Programmtöpfe; je Gebiet derselbe Betrag zum selben Programm einmal. Sammelberichte wie Mitteilungen, Haushalt oder Sachstände zählen nicht. Volltexte liegen nicht für alle Gebiete gleich vollständig vor. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gelesen werden Sätze im Volltext der Hauptdokumente, die von Fördergeld sprechen (Fördermittel, Förderbescheid, Zuwendung, Bundes- oder Landesmittel); daraus Programm und Stand (bewilligt, beantragt). Beträge zählen nur, wenn sie unmittelbar an einem Förderwort stehen („Zuwendung in Höhe von …“), nicht Gesamtkosten, Eigenanteile, förderfähige Kosten, Höchstbeträge oder Programmtöpfe; je Gebiet derselbe Betrag zum selben Programm einmal. Sammelberichte wie Mitteilungen, Haushalt oder Sachstände zählen nicht, ebenso wenig verfallende, zurückzuzahlende, über Jahre erwartete oder in früheren Jahren bewilligte Mittel, Anfragen und abgelehnte Vorgänge. Alle Zahlen zählen Vorgänge: derselbe Titel in mehreren Gremien eines Gebiets einmal. Vorgänge einer Mitgliedsgemeinde stehen unter ihrem Namen; in den Ranglisten zählt ein Gemeindeverband nur mit seinen eigenen Gremien. Nennt ein Satz mehrere Programme, gilt das, das dem Förderwort am nächsten steht. Volltexte liegen nicht für alle Gebiete gleich vollständig vor. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
             </>
           )}
         </div>

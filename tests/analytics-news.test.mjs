@@ -50,6 +50,13 @@ test('earlier rejections are named and placeholder committees are not counted tw
  const topic={title:'Wärmeplanung',events:[{date:'2026-09-28',committee:'Ortschaftsrat A',result:'einstimmig abgelehnt'},{date:'2026-09-29',committee:'Ortschaftsrat B',result:'abgelehnt'},
   {date:'2026-09-29',committee:'Gremium laut Originalquelle',result:''},{date:'2026-10-05',committee:'Stadtrat',result:''}]};
  const a=article({card,topic,facts:[],ev:{result:'rej'},sentences:['Der Stadtrat beschließt die kommunale Wärmeplanung.'],more:[],today:'2026-10-11',regionName:'Stadt Stendal'});
- assert.match(a.body.join(' '),/Zwei vorberatende Gremien hatten die Vorlage abgelehnt\./);
- assert.match(a.body.join(' '),/Zuvor hatten sich 2 Gremien damit befasst/);
+ assert.match(a.body.join(' '),/In zwei Vorberatungen war die Vorlage abgelehnt worden\./);
+ assert.match(a.body.join(' '),/Zuvor war der Vorgang 2-mal beraten worden/);
+});
+
+test('outcomeOf liest Platzhalter der Importe nicht als Ergebnis',()=>{
+ assert.equal(outcomeOf('Öffentlicher Tagesordnungspunkt; ein Beschlussergebnis ist im erfassten Text nicht belegt.'),null);
+ assert.equal(outcomeOf('Öffentlich auf der Tagesordnung; die Sitzung steht noch aus.'),null);
+ assert.equal(outcomeOf('Beschlussvorlage'),null);
+ assert.equal(outcomeOf('Beschluss: einstimmig'),'einstimmig beschlossen');
 });

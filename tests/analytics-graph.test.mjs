@@ -15,8 +15,8 @@ test('graph links terms, topics, committees and lands by co-occurrence and leave
  const db=sqliteAdapter(sql);
  let n=0;
  const put=(region,label,gremium,title)=>{n++;sql.prepare("INSERT INTO search_cards (id,region_id,date,status,label,title,teaser,gremium,search) VALUES (?,?,'2025-05-01','info',?,?, '', ?, ?)").run('c'+n,region,label,title,gremium,title.toLowerCase());};
- for(let i=0;i<6;i++)put('a','klima','Bauausschuss','Windenergie Flächennutzungsplan Änderung Sitzung');
- for(let i=0;i<4;i++)put('b','klima','Gemeinderat','Windenergie Artenschutz Gutachten');
+ for(let i=0;i<6;i++)put('a','klima','Bauausschuss','Windenergie Flächennutzungsplan Änderung Sitzung Teil '+'ABCDEF'[i]);
+ for(let i=0;i<4;i++)put('b','klima','Gemeinderat','Windenergie Artenschutz Gutachten '+'ABCD'[i]);
  put('b','unklar','Gemeinderat','Windenergie Sonstiges Thema');
  try{
   const g=await knowledgeGraph(db,catalog,new URLSearchParams('q=Windenergie&to=2999-01-01'));

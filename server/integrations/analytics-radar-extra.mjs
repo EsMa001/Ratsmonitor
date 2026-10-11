@@ -18,12 +18,18 @@ import {LANDS} from './analytics-radar-norms.mjs';
 const UNION=/^(Samtgemeinde|Verbandsgemeinde|Amt|Verwaltungsgemeinschaft|Verwaltungsverband|Gemeindeverwaltungsverband) /;
 const MEMBER=/\b(?:der|des)\s+(Ortsgemeinde|Gemeinde|Stadt|Flecken|Markt)\s+([A-ZÄÖÜ][\wäöüß.-]+(?:\s(?:am|an|im|in|bei|ob|a\.|i\.)\s?[A-ZÄÖÜ]?[\wäöüß.-]+)?)/;
 const COUNCIL=/^(?:Ortsgemeinderat|Gemeinderat|Stadtrat|Rat|Gemeindevertretung|Stadtvertretung|Stadtverordnetenversammlung)\s+(?:der\s+|des\s+)?(?:(Ortsgemeinde|Gemeinde|Stadt|Flecken|Markt)\s+)?([A-ZÄÖÜ][\wäöüß.-]+(?:\s(?:am|an|im|in|bei|ob|a\.|i\.)\s?[A-ZÄÖÜ]?[\wäöüß.-]+)?)/;
-export function where(regionName,title,gremium=''){
+/* members (optional, aus dem Katalog): Nennt der Titel genau eine Mitgliedsgemeinde als ganzes Wort („Leichenhalle Niederehe“),
+   gilt sie, wenn weder Gremium noch „der Gemeinde X“ eine nennen */
+const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+export function where(regionName,title,gremium='',members=null){
  if(!UNION.test(regionName))return {key:'',label:regionName};
  const g=String(gremium||'').match(COUNCIL);
  if(g&&!/gemeinde$|^(Samt|Verbands)|^Amt/i.test(g[2]))return {key:g[2],label:`${/^Ortsgemeinderat/.test(gremium)?'Ortsgemeinde':g[1]||'Gemeinde'} ${g[2]} (${regionName})`};
  const m=String(title||'').match(MEMBER);
- return m?{key:m[2],label:`${m[1]} ${m[2]} (${regionName})`}:{key:'',label:regionName};
+ if(m)return {key:m[2],label:`${m[1]} ${m[2]} (${regionName})`};
+ const named=(members||[]).filter(x=>x.name&&new RegExp(`(^|[^\\wäöüß])${esc(x.name)}($|[^\\wäöüß-])`).test(String(title||'')));
+ const own=named.length===1&&!regionName.endsWith(' '+named[0].name);
+ return own?{key:named[0].name,label:`${/^Ortsgemeinderat/.test(gremium)?'Ortsgemeinde':'Gemeinde'} ${named[0].name} (${regionName})`}:{key:'',label:regionName};
 }
 const median=a=>{if(!a.length)return null;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
 // Listen vollständig (je Gebiet ein Eintrag), damit ein Klick auf eine Zahl alle zugehörigen Gebiete zeigt

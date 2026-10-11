@@ -181,3 +181,12 @@ test('search cards carry the label of every title-rules version with the labels-
  assert.equal(label('v3'),'sport');
  }finally{sql.close();}
 });
+
+test('nur das Gebiet: kreisfreie Stadt mit Kreisschlüssel ist die Stadt selbst',async()=>{
+ const {searchFilters,parseMonitorSearch}=await import('../server/integrations/monitor-search.mjs');
+ const catalog=[{id:'koeln',kind:'city',name:'Stadt Köln',ags:'05315000',independent:true},{id:'kreis',kind:'district',name:'Kreis Coesfeld',ags:'05558'},{id:'bil',kind:'city',name:'Stadt Billerbeck',ags:'05558008'}];
+ const ids=async q=>[...(await searchFilters(null,catalog,parseMonitorSearch(new URLSearchParams(q)))).scopedIds].sort();
+ assert.deepEqual(await ids('area=05315&scope=only'),['koeln']);
+ assert.deepEqual(await ids('area=05558&scope=only'),['kreis']);
+ assert.deepEqual(await ids('area=05558&scope=with'),['bil','kreis']);
+});
