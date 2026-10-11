@@ -5,6 +5,7 @@
 // Je Tag höchstens `perDay` Einträge, je Ort und Tag höchstens einer, ein Ort höchstens einmal je Gruppe und Woche.
 
 import calibrationFile from '../../shared/social-calibration.json' with {type:'json'};
+import ratingsFile from '../../shared/social-ratings.json' with {type:'json'};
 
 const DAY=86400000;
 const iso=t=>new Date(t).toISOString().slice(0,10);
@@ -25,7 +26,7 @@ export const GROUPS=[
   ['Schulstraße / Poller',/schulstra(ß|ss)en\b|einrichtung einer schulstra|schulstra(ß|ss)e.{0,40}(sperr|autofrei|elternhaltestelle)|poller|modalfilter/,2.4],
  ]},
  {id:'energie',name:'Energie & Umwelt',weight:2.6,terms:[
-  ['Windkraft',/windkraft|windrad|windräder|windenergie|windpark|windvorrang|\bwea\b|repowering.{0,60}(wea|wind)/],
+  ['Windkraft',/windkraft|windrad|windräder|windenergie|windpark|windvorrang|\bwea\b|repowering.{0,60}(wea|wind)/,undefined,/^(?!.*(zuschuss|bezuschussung|schützengilde|e\.\s?v\.|förderverein)).*/s],
   ['Solarpark',/freiflächen-?(photovoltaik|pv|solar)|photovoltaik-?freifläche|solarpark|agri-?pv|pvfa/,2.4],
   ['Biogas / Speicher',/biogasanlage|batteriespeicher|großspeicher|wasserstofferzeugung|elektrolyseur/,2],
   ['Baumschutz',/baumfäll|baumschutzsatzung|baumerhalt|baumschutz/,2.4],
@@ -44,7 +45,7 @@ export const GROUPS=[
   ['Flagge / Symbol',/regenbogenflagge|regenbogenfahne|\bpride\b|\bcsd\b|beflaggung|bundesflagge|flagge zeigen|kruzifix/],
   ['Rechtsextremismus',/brandmauer|rechtsextrem|demonstration gegen|gegen rechts/],
   ['Vielfalt / Demokratie',/vielfalt|demokratie|toleranz|antisemitismus|rassismus|diskriminierung|queer|weltoffen/,2.4],
-  ['Tierschutz',/tierschutz|wildtierverbot|wildtiere im zirkus|zirkus|taubenmanagement|taubenfütter|tierheim|hundeauslauf|pelz/,2.6],
+  ['Tierschutz',/tierschutz|wildtierverbot|wildtiere im zirkus|zirkusverbot|taubenmanagement|taubenfütter|pelz/,2.6,/^(?!.*(tierschutzpartei|tierschutz-?partei|fraktion[^;]{0,40}tierschutz|tierschutz\s*[\/&]|die partei|tierschutz-?verein)).*/s],
  ]},
  {id:'geld',name:'Gebühren & Schließung',weight:2.5,terms:[
   ['Schließung',/(?<![a-zäöüß])schließung(?! (des|der|von) (öffentlichen|nichtöffentlichen|sitzung|versammlung|tagesordnung|beratung|rednerliste|gehweglücke|baulücke|lücke|radweglücke))(?!.{0,25}lücke)|schliessung|stilllegung (des|der|von) (bad|schule|kita|bibliothek|krankenhaus|klinik|standort)|schließen (der|des) (bad|schule|kita|bibliothek|krankenhaus|klinik|standort|freibad|hallenbad|filiale|jugendzentrum|werk|geschäftsstelle)|einstellung des betriebs/,3],
@@ -59,7 +60,7 @@ export const GROUPS=[
   ['Verkauf',/verkauf (des|der|von) (grundstück|gebäude|stadtwerke|anteile|wohnungen|rathaus|schule)|privatisierung|rekommunalisierung/,2.2],
  ]},
  {id:'beteiligung',name:'Bürgerbeteiligung',weight:3,terms:[
-  ['Bürgerbegehren',/bürgerbegehren|bürgerentscheid|einwohnerantrag|volksbegehren|ratsbegehren|unterschriftensammlung|unterschriften|bürgerinitiative|petition/],
+  ['Bürgerbegehren',/bürgerbegehren|bürgerentscheid|einwohnerantrag|volksbegehren|ratsbegehren|unterschriftensammlung|unterschriften|bürgerinitiative|petition/,undefined,/^(?!.*(petitionsausschuss|geschäftsordnung|besetzung|bestellung der mitglieder)).*/s],
   ['Rücktritt / Abwahl',/abwahl|rücktritt (des|der|von) (herrn |frau )?(bürgermeister|landrat|oberbürgermeister|stadträtin|stadtrat|gemeinderat|ratsherr|ratsfrau|beigeordnet|ortsvorsteher|fraktionsvorsitz)|misstrauensantrag|dienstaufsichtsbeschwerde|untersuchungsausschuss|abberufung (des|der|von) (bürgermeister|stadträtin|stadtrat|ersten|beigeordnet|ortsvorsteher|landrat)/],
   ['Anwohnerprotest',/\bprotest(?!ant)|widerstand gegen|anwohnerinitiative|kundgebung/,2.4],
  ]},
@@ -68,7 +69,7 @@ export const GROUPS=[
   ['Ehrung / Aberkennung',/aberkennung|aberkennen|ehrenbürger.{0,50}(nazi|ns-|nationalsozial)|umstritten.{0,30}(ehrenbürger|straßenname|denkmal)/,2.8],
   ['Verpackungs- / Bettensteuer',/verpackungssteuer|übernachtungssteuer|bettensteuer|tourismusabgabe|citytax|zweitwohnungssteuer/,2.8],
   ['Hundesteuer',/hundesteuer|vergnügungssteuer/,1.8],
-  ['Transparenz',/transparenz|livestream|sitzungsübertragung|übertragung der sitzung|ausschluss der öffentlichkeit|informationsfreiheit/,2.4],
+  ['Transparenz',/transparenz|livestream|sitzungsübertragung|übertragung der sitzung|informationsfreiheit/,2.4],
   ['Videoüberwachung',/videoüberwachung|kameraüberwachung|bodycam|überwachungskamera/,2.6,/innenstadt|marktplatz|bahnhof|park|kriminal|sicherheit|angstraum|rathausplatz|öffentlich|stadtgebiet|brennpunkt/],
   ['Feuerwerk',/böllerverbot|feuerwerksverbot|abbrennverbot|feuerwerk.{0,40}(verbot|einschränk)|silvesterfeuerwerk/,2.4],
  ]},
@@ -169,7 +170,9 @@ const OVERRIDE={
  'Unterkunft':[[/obdachlos|wohnungslos/,'der Unterbringung Obdachloser','die Unterbringung Obdachloser'],
   [/flüchtling|geflüchtet|asyl/,'einer Unterkunft für Geflüchtete','eine Unterkunft für Geflüchtete'],[/./,'einer Unterkunft','eine Unterkunft']],
 };
-const WORD_TERMS=new Set(['Bad / Bibliothek','Großprojekt','Funk / Strom','Verkauf','Teurer Bau','Neubaugebiet','Anwohnerprotest']);
+// Hier stimmt der feste Satzbaustein immer; bei allen anderen Stichwörtern steht das Wort aus dem Titel („Thema „Schließzeiten““),
+// weil die Bewertung zeigte, dass allgemeine Bausteine sonst Falsches behaupten (Schließzeiten als Schließung, Gewerbe- als Grundsteuer).
+const SAFE_FORMS=new Set(['Tempo 30','Bezahlkarte','Windkraft','Fahrradstraße','Solarpark','Gendern','Moschee / Religion','Flagge / Symbol','Rechtsextremismus','Verpackungs- / Bettensteuer','Hundesteuer','Feuerwerk','Sonntagsöffnung']);
 function matchedWord(title,term){
  for(const g of GROUPS)for(const [t,re] of g.terms){
   if(t!==term)continue;
@@ -185,45 +188,93 @@ function matchedWord(title,term){
  return '';
 }
 
-/** Kurzer Vorschlagstext aus festen Vorlagen: Partei (falls im Titel), Status, Streitwort, Ort. Keine freie Formulierung. */
+/**
+ * Titel für den Aufhänger bereinigen: Nachtragskopf, Fraktionskopf („Antrag der CDU-Fraktion vom …:“), „hier:“, Aktenzeichen,
+ * Klammern mit Daten und Paragraphen entfernen, auf höchstens `max` Zeichen an einer Wortgrenze kürzen.
+ */
+export function cleanTitle(title,max=105){
+ let t=String(title||'').replace(/\s+/g,' ').trim();
+ t=t.replace(/^Nachtrag:?\s*[\d.]+\s*(Nummer\s*\d+\s*)?/i,'');
+ // Kopf „Antrag/Anfrage … :“ oder „… vom 24.06.2026 zur …“ nur entfernen, wenn danach noch ein Gegenstand folgt
+ const heads=[
+  /^(?:[A-ZÄÖÜ][\wäöüß]+-)?(?:Gemeinsamer |Gemeinsame )?(?:Änderungs-?|Ergänzungs-?|Beschluss-?|Dringlichkeits-?)?(?:antrag|anfrage|vorschlag)\b(?:\s+Nr\.?\s*[\w\/.-]+)?[^:–]{0,110}?(?:\s+[-–]\s+|\s*:\s+)(?:Fraktion\s+[A-ZÄÖÜ][\wäöüß/]+\s+)?/i,
+  /^(?:Gemeinsamer |Gemeinsame )?(?:Änderungs-?|Ergänzungs-?|Beschluss-?|Dringlichkeits-?)?(?:antrag|anfrage|vorschlag)\b[^:–]{0,90}?vom\s+\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}\s*(?:(?:zur|zum|zu|betr\.?|betreffend)\s+|:\s*)/i,
+  /^(?:[A-ZÄÖÜ][\wäöüß]+-)?(?:Gemeinsamer |Gemeinsame )?(?:Änderungs-?|Ergänzungs-?|Beschluss-?|Dringlichkeits-?)?(?:antrag|anfrage|vorschlag)\b[^:–]{0,110}?:\s+/i,
+ ];
+ heads.push(/^[A-ZÄÖÜ][\wäöüß]+-?(?:antrag|anfrage)\s+(?:zur|zum|zu|betr\.?|betreffend)\s+/i);
+ heads.push(/^(?:antrag|anfrage) (?:der|des|von) [^,:]{0,70}?(?:fraktion|partei|gruppe|fraktionen)\s+(?:auf|zur|zum|zu|über|betr\.?|betreffend)\s+(?:die |den |das |eine |einen |ein )?/i);
+ {const m2=/^(.{0,70}?(?:antrag|drucksache|vorlage)\s*(?:nr\.?\s*)?\d[^:]{0,60}):\s+(.{12,})$/i.exec(t);if(m2)t=m2[2];}
+ for(const h of heads){const m=h.exec(t);if(m&&t.length-m[0].length>=8){t=t.slice(m[0].length);break;}}
+ t=t.replace(/^(hier|betr\.?|betreff)\s*:?\s*/i,'');
+ t=t.replace(/\((?:[^()]*?(?:\d{1,2}\.\d{1,2}\.\d{2,4}|eingang|aktenzeichen|az\.|vorlage|drucksache|§|ds\b)[^()]*)\)/gi,'');
+ t=t.replace(/\b(?:DS|Drucksache|Vorlage|Vorlagen?-?Nr\.?|Antrag Nr\.?|Nr\.)\s*[\w\/.-]*\d[\w\/.-]*/gi,'');
+ t=t.replace(/\s+[-–]\s+(?:Antrag|Anfrage|Vorlage|Beschlussvorlage)\b.*$/i,'');
+ {
+  const parts=t.split(/\s+hier\s*:\s*/i);
+  if(parts.length>1){
+   const formal=/§|GO NRW|Anregung|Beschwerde|Mitteilung|Drucksache|nach Art\./i;
+   t=formal.test(parts[0])&&parts[1].length>=12?parts.slice(1).join(' '):parts[0];
+  }
+ }
+ t=t.replace(/\s+(?:auf (?:den|dem) )?(?:Grundstück(?:en)?|Flurst(?:ück)?\.?|Flst\.?|Fl\.?-?\s?Nrn?\.?|Flurnummer|Gmk\.?|Gemarkung)\b.*$/i,'');
+ t=t.replace(/,\s*(?:,\s*)+/g,', ').replace(/\s+,/g,',').replace(/^[,\s]+/,'');
+ t=t.replace(/^(?:und|sowie)\s+[^:]{0,60}?(?:fraktion|partei)\b[^:]{0,40}?\bvom\s+\d{1,2}\.\d{1,2}\.\d{2,4}\s*(?:betr\.?|betreffend|zu(?:m|r)?|:)?\s*/i,'');
+ t=t.replace(/\s{2,}/g,' ').replace(/^[\s:;,.–-]+|[\s:;,.–-]+$/g,'');
+ t=t.replace(/„([^“]*)“/g,'‚$1‘').replace(/"([^"]*)"/g,'‚$1‘');
+ if(t)t=t[0].toUpperCase()+t.slice(1);
+ if(t.length>max){
+  const cut=t.slice(0,max);
+  const sp=cut.lastIndexOf(' ');
+  t=cut.slice(0,sp>max*.55?sp:max).replace(/[\s,;:–-]+$/,'')+' …';
+ }
+ return t;
+}
+
+/**
+ * Aufhänger aus Ort, Akteur, Stand und dem bereinigten Titel in Anführungszeichen. Der Titel wird nicht umformuliert:
+ * Die Bewertung durch unabhängige Bewerter zeigte, dass Umschreibungen (abgeschnittene Wörter, falsche Beugung, Fraktionsnamen
+ * als Thema) häufiger Falsches behaupteten als ein knappes Zitat.
+ */
 export function draftText({title,status,region,term}){
  const f=FORMS[term];if(!f)return null;
- let [dat,akk,tag]=f;
+ const [,,tag]=f;
  const low=title.toLowerCase();
- const ov=OVERRIDE[term]?.find(([re])=>re.test(low));
- if(ov){dat=ov[1];akk=ov[2];}
- else if(WORD_TERMS.has(term)){const w=matchedWord(title,term);if(w){dat=`dem Thema „${w}“`;akk=`das Thema „${w}“`;}}
- // Schließung: den Gegenstand aus dem Titel übernehmen („Schließung des Großmarktes“)
- if(term==='Schließung'){
-  const m=/[Ss]chließung (des|der|von) ([A-ZÄÖÜ][A-Za-zÄÖÜäöüß-]+(?: [A-ZÄÖÜ][A-Za-zÄÖÜäöüß-]+)?)/.exec(title);
-  if(m){dat=`der Schließung ${m[1].toLowerCase()} ${m[2]}`;akk=`die Schließung ${m[1].toLowerCase()} ${m[2]}`;}
- }
- const parties=PARTIES.filter(([re])=>re.test(low)).map(x=>x[1]);
- const antrag=/antrag|anfrage|vorstoß/.test(low);
+ let parties=PARTIES.filter(([re])=>re.test(low)).map(x=>x[1]);
+ if(parties.length>1&&/\b(zum|zu dem|gegen den|konkurrierend\w*|ersatz\w*)\b.{0,30}antrag/.test(low))parties=[];
+ const isAnfrage=/\banfrage\b/.test(low)&&!/antrag/.test(low);
+ const planning=PLANNING.test(title);
+ const isReport=!isAnfrage&&!planning&&/^(sachstand|bericht|mitteilung|informationsvorlage|information (zu|über)|beantwortung)|sachstandsbericht|^(nachtrag[^a-z]*)?(sachstand|bericht)/.test(low.replace(/^nachtrag:?\s*[\d. ]*(nummer \d+\s*)?/,''));
+ const isMotion=!isReport&&/antrag|vorstoß/.test(low)&&!isAnfrage;
  const place=inPlace(region);
  const At=cap(place);
+ const quote=cleanTitle(title);
+ if(quote.length<8)return null;
+ const bareHead=/^(antrag|anfrage|änderungsantrag|ergänzungsantrag)\b/i.test(quote)&&quote.length<60;
+ const topicLabel=term.split(' / ')[0];
+ const sep=bareHead?' ':': ';
+ const q=bareHead?`zum Thema „${topicLabel}“`:`„${quote}“`;
  let text;
- if(antrag&&parties.length&&parties.length<=2){
-  const nom=parties.map(p=>p.nom).join(' und ');
+ if(parties.length&&parties.length<=2&&(isMotion||isAnfrage)){
+  const nom=cap(parties.map(p=>p.nom).join(' und '));
   const gen=parties.map(p=>p.gen).join(' und ');
-  const motion=`der Antrag ${gen} ${zu(dat)}`;
-  const verb=parties.length>1||parties[0].plural?'haben':'hat';
-  text={rejected:`${At} wurde ${motion} abgelehnt.`,
-   postponed:`${At} wurde ${motion} vertagt.`,
-   approved:`${At} wurde ${motion} angenommen.`,
-   recommended:`${At} wurde ${motion} zur Annahme empfohlen.`}[status]||`${cap(nom)} ${verb} ${place} einen Antrag ${zu(dat)} gestellt.`;
+  const plural=parties.length>1||parties[0].plural;
+  const subject=bareHead?`der Antrag ${gen} zum Thema „${topicLabel}“`:`der Antrag ${gen}`;
+  if(isAnfrage)text=bareHead?`${nom} ${plural?'stellen':'stellt'} ${place} eine Anfrage zum Thema „${topicLabel}“`:`${nom} ${plural?'fragen':'fragt'} ${place}${sep}${q}`;
+  else text={rejected:`${At} wurde ${subject} abgelehnt${bareHead?'':sep+q}`,
+   postponed:`${At} wurde ${subject} vertagt${bareHead?'':sep+q}`,
+   approved:`${At} wurde ${subject} angenommen${bareHead?'':sep+q}`,
+   recommended:`${At} wurde ${subject} zur Annahme empfohlen${bareHead?'':sep+q}`}[status]||(bareHead?`${nom} ${plural?'stellen':'stellt'} ${place} einen Antrag zum Thema „${topicLabel}“`:`${nom} ${plural?'beantragen':'beantragt'} ${place}${sep}${q}`);
+ }else if(isReport){
+  text=`${At} gibt es einen Bericht${sep}${q}`;
  }else{
-  text={rejected:`${At} wurde ein Antrag ${zu(dat)} abgelehnt.`,
-   postponed:`${At} wurde die Entscheidung ${zu(dat)} vertagt.`,
-   approved:`${At} gab es einen Beschluss ${zu(dat)}.`,
-   recommended:`${At} gibt es eine Empfehlung ${zu(dat)}.`}[status]||`${At} wird über ${akk} beraten.`;
+  text={rejected:`${At} abgelehnt${sep}${q}`,postponed:`${At} vertagt${sep}${q}`,approved:`${At} beschlossen${sep}${q}`,
+   recommended:`${At} empfohlen${sep}${q}`}[status]||`${At} auf der Tagesordnung${sep}${q}`;
  }
- const street=STREET.exec(title)?.[1];
- if(street&&!NOT_STREET.test(street)&&street.length<40&&!(term==='Schulstraße / Poller'&&/^Schulstra/.test(street)))text=text.replace(/\.$/,` (${street}).`);
+ const label=SAFE_FORMS.has(term)?(term==='Verpackungs- / Bettensteuer'?'Kommunale Steuer':term.split(' / ')[0]):'';
  const ort=hashtag(region.replace(/^(Stadt|Gemeinde|Kreis|Landkreis) /,''));
  return {
   text,
-  question:`${term.split(' / ')[0]} ${place}: Was meinen Sie?`,
+  question:label?`${label} ${place}: Was meinen Sie?`:`Was meinen Sie dazu?`,
   hashtags:['#'+hashtag(tag),'#'+ort,'#Kommunalpolitik'],
   party:parties.length?parties.map(p=>p.nom.replace(/^(die|das) /,'')).join(' und '):null,
  };
@@ -310,15 +361,27 @@ export function termRate(term,cal=calibrationFile){
  const k=25;
  return {rate:(t.contested*t.res+base*k)/(t.res+k),n:t.res,base,raw:t.contested};
 }
+/** Mittleres Urteil unabhängiger Bewerter (1 bis 5) zu einem Stichwort, zum Gesamtmittel hin gezogen. */
+export function termRating(term,rat=ratingsFile){
+ const mean=rat.mean??2.75,t=rat.terms?.[term];
+ if(!t)return {value:mean,n:0,mean};
+ const k=6;
+ return {value:(t.eignung*t.n+mean*k)/(t.n+k),n:t.n,mean};
+}
+const SMALL_BODY=/ortsbeirat|ortsrat|ortschaftsrat|bezirksvertretung|bezirksausschuss|stadtteilbeirat|ortsgemeinderat|bezirksbeirat|ortsteilbeirat/i;
+const PLANNING=/bebauungsplan|flächennutzungsplan|vorhabenbezogen|aufstellungsbeschluss|öffentliche auslegung|bauantrag|bauvoranfrage|einvernehmen|bauleitplan|\d+\. änderung des/i;
+const STREET_WORD=/stra(ß|ss)e\b|str\.|\bweg\b|\bplatz\b|allee\b|\bring\b|damm\b|ufer\b/i;
 /**
- * Eignung eines Eintrags als Social-Media-Beitrag in Prozent, in sieben Teilen (Summe höchstens 100):
- * Streitquote des Themas 15 (gelernt aus den Berichten), Streit im Vorgang 15 (Ergebnis der Abstimmungen, Fraktionsantrag,
- * mehrere Sitzungen), Alltagsnähe 20, Reichweite des Ortes 15, Aktualität 15, Konkretheit 10, Verständlichkeit 10.
+ * Eignung eines Eintrags als Social-Media-Beitrag in Prozent. Teile (Summe höchstens 100, danach Abzüge):
+ * Themenwert 15 (Hälfte gelernte Streitquote aus den Berichten, Hälfte Urteil unabhängiger Bewerter), Streit im Vorgang 15,
+ * Alltagsnähe 20, Reichweite des Ortes 15, Aktualität 15, Konkretheit 10, Verständlichkeit 10.
+ * Abzüge (aus der Auswertung von 272 bewerteten Vorschlägen): Einzelstraße −5, Gremium eines Ortsteils −7, Planungsvorgang −5.
  */
-export function fitScore(c,{today,population={},evidence=null,calibration=calibrationFile}){
+export function fitScore(c,{today,population={},evidence=null,calibration=calibrationFile,ratings=ratingsFile}){
  const main=c.hits[0];
- const tr=termRate(main.term,calibration);
- const themenStreit=Math.round(15*clamp((tr.rate-.12)/(.6-.12)));
+ const tr=termRate(main.term,calibration),rt=termRating(main.term,ratings);
+ const rateNorm=clamp((tr.rate-.12)/(.6-.12)),ratingNorm=clamp((rt.value-1.8)/(3.6-1.8));
+ const themenwert=Math.round(15*(.5*rateNorm+.5*ratingNorm));
  // Streit im Vorgang: Abstimmungsergebnis, sonst Status; dazu Fraktionsantrag und Sitzungsfolge
  const res=evidence?.result||({rejected:'rej',postponed:'post'}[c.status])||null;
  let vorgang={rej:11,post:9,maj:8,unan:0,ok:2}[res]??3;
@@ -331,17 +394,22 @@ export function fitScore(c,{today,population={},evidence=null,calibration=calibr
  const days=Math.max(0,Math.round((Date.parse(today+'T00:00:00Z')-Date.parse(c.date+'T00:00:00Z'))/DAY));
  const fresh=days<=1?15:days<=3?13:days<=7?10:days<=14?6:3;
  const party=PARTIES.some(([re])=>re.test(c.title.toLowerCase()));
- const street=STREET.exec(c.title)?.[1];
  const decisive=['rejected','postponed','approved','recommended'].includes(c.status)||['rej','post','maj'].includes(res);
- const concrete=(party?4:0)+(street&&!NOT_STREET.test(street)?3:0)+(decisive?3:0);
+ const concrete=(party?4:0)+(decisive?3:0)+(/antrag|beschlussvorlage|bürgerbegehren|petition/i.test(c.title)?2:0);
  let clear=10;
  if(JARGON.test(c.title))clear-=4;
  if(c.title.length>140)clear-=3;
  if(c.title.length<25)clear-=2;
  if((c.title.match(/;|\bhier\b|\bnach\b § /gi)||[]).length>=2)clear-=2;
+ if(/^(änderungs|ergänzungs)antrag/i.test(c.title)&&!/ zu(m|r)? /i.test(c.title))clear-=3;
  clear=Math.max(0,clear);
+ // Abzüge
+ let abzug=0;const why=[];
+ if(STREET_WORD.test(c.title)&&!/straßen(namen|umbenennung)/i.test(c.title)){abzug-=5;why.push('Einzelstraße');}
+ if(SMALL_BODY.test(c.gremium||'')){abzug-=7;why.push('Gremium eines Ortsteils');}
+ if(PLANNING.test(c.title)){abzug-=5;why.push('Planungsverfahren');}
  const parts=[
-  {key:'thema',label:'Streitquote des Themas',points:themenStreit,max:15},
+  {key:'thema',label:'Themenwert',points:themenwert,max:15},
   {key:'vorgang',label:'Streit im Vorgang',points:vorgang,max:15},
   {key:'alltag',label:'Alltagsnähe',points:Math.round(alltag),max:20},
   {key:'reichweite',label:'Reichweite',points:reach,max:15},
@@ -349,10 +417,12 @@ export function fitScore(c,{today,population={},evidence=null,calibration=calibr
   {key:'konkret',label:'Konkretheit',points:concrete,max:10},
   {key:'klar',label:'Verständlichkeit',points:clear,max:10},
  ];
+ if(abzug)parts.push({key:'abzug',label:'Abzüge ('+why.join(', ')+')',points:abzug,max:0});
  const evidenceText=[];
  if(tr.n>=15)evidenceText.push(`Bei „${main.term}“ endeten ${Math.round(100*(tr.raw??tr.rate))} % der Vorgänge streitig (Mittel aller Themen ${Math.round(100*tr.base)} %, ${tr.n} Vorgänge mit Ergebnis)`);
  if(evidence?.result)evidenceText.push({rej:'Antrag abgelehnt',post:'vertagt oder verwiesen',maj:'mehrheitlich beschlossen, nicht einstimmig',unan:'einstimmig beschlossen',ok:'beschlossen'}[evidence.result]+(evidence.sessions>1?`, ${evidence.sessions} Sitzungen`:''));
- return {percent:parts.reduce((n,x)=>n+x.points,0),parts,evidence:evidenceText};
+ const sum=parts.reduce((n,x)=>n+x.points,0);
+ return {percent:Math.max(0,Math.min(100,sum)),parts,evidence:evidenceText};
 }
 
 /**
