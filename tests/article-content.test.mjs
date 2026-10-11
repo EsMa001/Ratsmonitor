@@ -25,6 +25,9 @@ test('explicit import saves summaries and separate results, skips replays, bound
  const before=get(articles[0].articleId);const first=await importPreparedAnalysis(db,part,{limit:2});assert.equal(first.data.processed,2);assert.equal(first.data.remaining,2);
  assert.equal(get(before.id).shortSummary,articles[0].shortSummary);assert.equal(get(before.id).sourceText,before.sourceText);assert.equal(get(before.id).metadata.firstImportedAt,null);
  assert.ok(get(before.id).labelAssessments.ai);assert.ok(get(before.id).labelAssessments.rule);assert.equal(sqlite.prepare('SELECT count(*) n FROM article_analyses').get().n,6);
+ /* Eine Versionskopie nur, wenn das Bündel Status oder Beratungsfolge ändert, nicht für die Analyse allein */
+ const moved=articles.slice(0,2).filter(a=>{const o=original(a);return (a.status||o.status)!==o.status||JSON.stringify(a.events||o.events)!==JSON.stringify(o.events);}).length;
+ assert.equal(sqlite.prepare('SELECT count(*) n FROM article_versions').get().n,moved);
  const changed=get(articles[3].articleId);changed.officialTitle+=' geändert';sqlite.prepare('UPDATE topics SET payload=? WHERE id=?').run(JSON.stringify(changed),changed.id);
  const second=await importPreparedAnalysis(db,part);assert.equal(second.data.processed,1);assert.equal(second.data.skipped,2);assert.equal(second.data.conflicts,1);
  assert.equal(get(changed.id).shortSummary,'Automatischer Überblick');const versions=sqlite.prepare('SELECT count(*) n FROM article_versions').get().n;

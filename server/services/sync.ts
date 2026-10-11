@@ -112,7 +112,7 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
     const u=(t as any).aiUsage;
     const compact=await compactSummaryAttempt(old,t,started);
     await env.DB.batch([
-      env.DB.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),old.id,started,JSON.stringify(old)),
+      // Keine Versionskopie: die Zusammenfassung steht in article_analyses (Art 'summary').
       env.DB.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(compact.analysis.id,old.id,'summary',compact.analysis.method,compact.analysis.inputHash,started,JSON.stringify(compact.analysis)),
       env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(compact.topic),old.id),
       ...(u?[insertUsage(env.DB,{...u,topicId:old.id,regionId:region})]:[])
