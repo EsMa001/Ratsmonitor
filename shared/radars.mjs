@@ -35,7 +35,7 @@ export const RADARS={
    ['Wärme',/Wärmeplanung|Wärmeplan|Fernwärme|Nahwärme|Wärmenetz|Wärmeversorgung|Heizzentrale/i],
    ['Trinkwasser',/Trinkwasser|Wasserversorgung|Wasserwerk|Hochbehälter|Wasserleitung|Wasserbezug|Wasserpreis/i],
    ['Abwasser',/Abwasser|Kläranlage|Kanal(netz|sanierung|isation)?\b|Niederschlagswasser|Regenwasser|Regenrückhalte|Schmutzwasser|Entwässerung/i],
-   ['Abfall und Entsorgung',/Abfall|Müll|Wertstoff|Entsorgung|Recycling|Biotonne|Sperrmüll|Wertstoffhof|Grünschnitt|Altkleider/i],
+   ['Abfall und Entsorgung',/Abfall|Müll(?!er)|Wertstoff|Entsorgung|Recycling|Biotonne|Sperrmüll|Wertstoffhof|Grünschnitt|Altkleider/i],
    ['Stadtwerke und Beteiligungen',/Stadtwerke|Eigenbetrieb|Zweckverband|Versorgungsbetrieb|Gemeindewerke|Beteiligungsbericht/i],
    ['Breitband',/Breitband|Glasfaser|Gigabit|Mobilfunk/i],
   ],
@@ -117,7 +117,9 @@ export const RADARS={
  },
  beteiligung:{
   name:'Beteiligung',icon:'megaphone',
-  kurz:'Einwohneranträge und Anregungen, Petitionen und Bürgerbegehren, Bürgerbeteiligung und Beiräte, mit Zustimmungsquote.',
+  kurz:'Einwohneranträge und Anregungen, Petitionen und Bürgerbegehren, Bürgerbeteiligung und Beiräte.',
+  // Keine Quote: „beschlossen“ heißt, der Beschlussvorschlag wurde angenommen, und der lehnt eine Anregung oft ab
+  noRate:true,
   // Beteiligung im Planverfahren (BauGB) ist Pflicht und gehört zur Bauleitplanung
   exclude:/Bebauungsplan|B-Plan|Flächennutzungsplan|Bauleitplan/i,
   topics:[
@@ -137,7 +139,7 @@ export const RADARS={
   // Gebühr ohne eines der Themen: „Weitere Benutzungsgebühren“
   fallback:'Weitere Benutzungsgebühren',
   topics:[
-   ['Abfall',/Abfall|Müll|Biotonne|Wertstoff/i],
+   ['Abfall',/Abfall|Müll(?!er)|Biotonne|Wertstoff/i],
    ['Schmutzwasser',/Abwasser|Schmutzwasser|Kanalbenutzung|Kanalgebühr|Entwässerung|Kläranlage|Fäkal|Grubeninhalt/i],
    ['Niederschlagswasser',/Niederschlag|Regenwasser|versiegelt/i],
    ['Trinkwasser',/Trinkwasser|\bWasser(gebühr|preis|geld|entgelt|versorgung|bezug|abgabe)|Wasserversorgungs/],
@@ -145,12 +147,12 @@ export const RADARS={
    ['Friedhof und Bestattung',/Friedh[oö]f|Bestattung|Grabstätte|Grabnutzung/i],
    ['Parken',/Parkgebühr|Parkraum|Parkschein|Parkausweis|Bewohnerpark|Anwohnerpark|Parken|Parkhaus/i],
    ['Straßenausbau- und Erschließungsbeiträge',/Straßenausbaubeitr|Erschließungsbeitr|Ausbaubeitr|wiederkehrende Beitr|Anliegerbeitr/i],
-   ['Bäder, Hallen und Sportstätten',/Bad\b|Bäder|Freibad|Hallenbad|Solebad|Schwimm|Sporthalle|Sportstätte|Sportanlage|Sportplatz|Hallengebühr|Turnhalle/i],
+   ['Bäder, Hallen und Sportstätten',/[a-zäöü]bad\b|Bäder|Freibad|Hallenbad|Solebad|Schwimm|Sporthalle|Sportstätte|Sportanlage|Sportplatz|Hallengebühr|Turnhalle/i],
    ['Bücherei, Musikschule und Kultur',/Bücherei|Bibliothek|Musikschule|Volkshochschule|\bVHS\b|Museum|Theater|Archiv/i],
    ['Schulkind- und Ferienbetreuung',/Ganztag|OGS|Mittagsbetreuung|Ferienbetreuung|Schulkindbetreuung|Betreuende Grundschule|Hortbetreuung|Nachmittagsbetreuung/i],
    ['Unterkünfte und Obdach',/Obdach|Unterkunft|Unterkünfte|Übergangsheim|Gemeinschaftsunterkunft|Unterbringung/i],
    ['Feuerwehr und Rettungsdienst',/Feuerwehr|Rettungsdienst|Brandverhütung|Brandsicherheit/i],
-   ['Sondernutzung und Märkte',/Sondernutzung|Markt|Standgebühr|Standplatz/i],
+   ['Sondernutzung und Märkte',/Sondernutzung|Wochenmarkt|Jahrmarkt|Weihnachtsmarkt|Marktgebühr|Marktsatzung|Marktordnung|Märkte|Standgebühr|Standplatz/i],
    ['Bus- und Bahntarife',/Deutschlandticket|Tarifreform|Westfalentarif|Verkehrsverbund|Fahrpreis|Ticket|ÖPNV-Tarif|Gemeinschaftstarif/i],
   ],
   signals:S('erhoehung','senkung','kalkulation','antrag','bericht'),

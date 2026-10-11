@@ -1,7 +1,7 @@
 // plenara.X – Newsradar: Bausteine der Meldung (server/integrations/analytics-news.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {place,organ,quotable,article} from '../server/integrations/analytics-news.mjs';
+import {place,organ,quotable,article,outcomeOf} from '../server/integrations/analytics-news.mjs';
 
 test('place and committee with article and place in the genitive',()=>{
  assert.deepEqual(place('Stadt Coesfeld'),{gen:'der Stadt Coesfeld',short:'Coesfeld'});
@@ -28,4 +28,28 @@ test('the outcome belongs to the named session, not to another committee',()=>{
  const b=article({card:{...card,status:'consulting'},topic,facts:[],ev:{result:'rej'},sentences:['x'],more:[],today:'2026-10-11',regionName:'Stadt Stendal'});
  assert.match(b.lead,/über die Vorlage beraten/,'Ablehnung im Ortschaftsrat ist kein Ausgang des Stadtrats');
  assert.match(b.body.join(' '),/Zuvor hatte sich der Ortschaftsrat Möringen der Stadt Stendal damit befasst/);
+});
+
+test('acknowledged, recommended and withdrawn are not decisions',()=>{
+ assert.equal(outcomeOf('einstimmig zur Kenntnis genommen'),'zur Kenntnis genommen');
+ assert.equal(outcomeOf('einstimmig empfohlen'),'einstimmig empfohlen');
+ assert.equal(outcomeOf('Antrag zurückgezogen'),'zurückgezogen');
+ assert.equal(outcomeOf('mehrheitlich beschlossen'),'mit Mehrheit beschlossen');
+ assert.equal(outcomeOf('abgelehnt'),'abgelehnt');
+ assert.equal(quotable('I3) Die Stadt übernimmt die Regelung des Kreises bezüglich der Einkommensgruppen.'),null,'Aufzählungsrest');
+ assert.equal(quotable('Die Verwaltung nimmt zum Antrag wie folgt Stellung. Std./72,10 € Mitteilung der Verwaltung zum Antrag.'),null,'Tabellenrest');
+ const card={id:'t2',date:'2026-09-30',status:'approved',title:'Reduzierung der Elternbeiträge',gremium:'Kreistag'};
+ const topic={title:'Reduzierung der Elternbeiträge',events:[{date:'2026-09-22',committee:'Kreisausschuss',result:'zur Kenntnis genommen'},{date:'2026-09-30',committee:'Kreistag',result:'Kenntnis genommen'}]};
+ const a=article({card,topic,facts:[],ev:{result:null},sentences:['Die vergleichende Übersicht der Elternbeiträge wird zur Kenntnis genommen.'],more:[],today:'2026-10-11',regionName:'Kreis Coesfeld'});
+ assert.match(a.headline,/– zur Kenntnis genommen$/);
+ assert.doesNotMatch(a.lead,/beschlossen/);
+});
+
+test('earlier rejections are named and placeholder committees are not counted twice',()=>{
+ const card={id:'t3',date:'2026-10-05',status:'consulting',title:'Wärmeplanung',gremium:'Stadtrat'};
+ const topic={title:'Wärmeplanung',events:[{date:'2026-09-28',committee:'Ortschaftsrat A',result:'einstimmig abgelehnt'},{date:'2026-09-29',committee:'Ortschaftsrat B',result:'abgelehnt'},
+  {date:'2026-09-29',committee:'Gremium laut Originalquelle',result:''},{date:'2026-10-05',committee:'Stadtrat',result:''}]};
+ const a=article({card,topic,facts:[],ev:{result:'rej'},sentences:['Der Stadtrat beschließt die kommunale Wärmeplanung.'],more:[],today:'2026-10-11',regionName:'Stadt Stendal'});
+ assert.match(a.body.join(' '),/Zwei vorberatende Gremien hatten die Vorlage abgelehnt\./);
+ assert.match(a.body.join(' '),/Zuvor hatten sich 2 Gremien damit befasst/);
 });

@@ -695,7 +695,7 @@ topic design-styles.css:140
 - AnalyticsAbout.tsx (354, ⚠23): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (66, ⚠1): AnalyticsPages
-- BauleitplanungPage.tsx (179, ⚠3): BauleitplanungPage
+- BauleitplanungPage.tsx (185, ⚠3): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (219, ⚠6): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
@@ -705,17 +705,19 @@ topic design-styles.css:140
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (271, ⚠5): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
-- FoerderradarPage.tsx (224, ⚠7): FoerderradarPage
+- FoerderradarPage.tsx (230, ⚠7): FoerderradarPage
 - FraktionenPage.tsx (166, ⚠2): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
-- KitaRadarPage.tsx (172, ⚠5): KitaRadarPage
+- KitaRadarPage.tsx (176, ⚠6): KitaRadarPage
 - KnowledgeGraphPage.tsx (219, ⚠1): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
+- NewsradarPage.tsx (116, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
+- RadarThumbs.tsx (167): RADAR_THUMBS
 - Reveal.tsx (16): Reveal
-- ThemeRadarPage.tsx (200, ⚠5): ThemeRadarPage
+- ThemeRadarPage.tsx (202, ⚠5): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (207, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery

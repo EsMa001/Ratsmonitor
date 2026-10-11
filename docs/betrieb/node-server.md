@@ -262,8 +262,9 @@ Probe ohne Wirkung: `node scripts/pdf-store/nightly.mjs --dry-run`.
 
 **Wie lange der Aufbau dauert** (hochgerechnet aus dem lokalen Aufbau, 11.10.2026): Alle Hauptdokumente sind 65 bis 80 GB,
 etwa 300.000 bis 360.000 PDFs; lokal kamen 30 bis 60 PDFs je Sekunde, also einige Nächte Laden. Textebene lokal 87.600
-Dateien in 18 Minuten. OCR braucht etwa jede zwanzigste Datei, lokal einige Stunden für 4.600 Dateien: für den Bestand
-voraussichtlich mehrere Nächte bis Wochen; die genaue Rate steht nach dem ersten Lauf im Protokoll. Bis die Ablage gefüllt ist, stützen sich die Analysen auf Titel und die neu gelesenen
+Dateien in 18 Minuten. OCR braucht etwa jede zwanzigste Datei; lokal 4.612 Dateien (11.584 Seiten) in 3,2 Stunden mit 4 Workern, also rund
+1.400 Dateien je Stunde. Für den Bestand (grob 15.000 bis 18.000 Dateien) mit 2 Workern und gut 2 Stunden je Nacht etwa
+zwei bis drei Wochen; die tatsächliche Rate steht nach dem ersten Lauf im Protokoll. Bis die Ablage gefüllt ist, stützen sich die Analysen auf Titel und die neu gelesenen
 Dokumente; das Förderradar braucht die Volltexte.
 
 Lücken: Der Import legt das PDF ab, aber nicht den daraus gelesenen Text (die Kette holt ihn nachts nach), und macht kein

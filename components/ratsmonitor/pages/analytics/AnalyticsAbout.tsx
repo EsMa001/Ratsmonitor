@@ -145,7 +145,7 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "gebuehren", name: RADARS.gebuehren.name, href: "/analytics/gebuehren", kurz: RADARS.gebuehren.kurz },
   { id: "foerderung", name: "Förderradar", href: "/analytics/foerderung", kurz: "Welche Förderprogramme wo beantragt und bewilligt werden." },
   { id: "bauleitplanung", name: "Bauleitplanung", href: "/analytics/bauleitplanung", kurz: "Welche Bauleitpläne in welchem Schritt sind und wie viele Wohnungen entstehen sollen." },
-  { id: "kita", name: "Kita-Radar", href: "/analytics/kita", kurz: "Wo über Elternbeiträge entschieden wird und wo neue Kita-Plätze entstehen." },
+  { id: "kita", name: "Kita-Radar", href: "/analytics/kita", kurz: "Wo über Elternbeiträge entschieden wird und in welche Richtung." },
   { id: "versorgung", name: RADARS.versorgung.name, href: "/analytics/versorgung", kurz: RADARS.versorgung.kurz },
   { id: "verkehr", name: RADARS.verkehr.name, href: "/analytics/verkehr", kurz: RADARS.verkehr.kurz },
   { id: "soziales", name: RADARS.soziales.name, href: "/analytics/soziales", kurz: RADARS.soziales.kurz },
@@ -221,7 +221,7 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
   ),
   kita: (
     <>
-      <p className="mt-3 text-[16px] text-slate-500">Zeigt, wo über Kita-Elternbeiträge entschieden wird und in welche Richtung (Erhöhung, Senkung, Beitragsfreiheit, Verpflegung), und wo neue Kita-Plätze entstehen.</p>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, wo über Kita-Elternbeiträge entschieden wird und in welche Richtung (Erhöhung, Senkung, Beitragsfreiheit, Verpflegung).</p>
       <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gelesen werden Titel und Volltext der Hauptdokumente: Elternbeiträge, Gebühren- und Beitragssatzungen nur mit Bezug zu Kita, Krippe oder Tagespflege, nicht Straßen- oder Vereinsbeiträge. Die Richtung ergibt sich aus Wörtern wie „erhöht“, „gesenkt“ oder „beitragsfrei“. Neue Plätze zählen nur, wenn der Titel einen Neubau, eine Erweiterung oder zusätzliche Gruppen nennt.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Die Höhe der Beiträge wird nicht verglichen, sie steht je Monat, Einkommensstufe, Alter und Betreuungszeit verschieden da. Bestand und Bedarfsplanungen zählen nicht als neue Plätze; nicht jeder Ausbau nennt eine Platzzahl.</p>
     </>

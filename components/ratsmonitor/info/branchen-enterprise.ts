@@ -99,7 +99,7 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     layout: "lead",
     analysen: [
       ["fraktionen", "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird."],
-      ["kita", "Wo über Kita-Elternbeiträge entschieden wird und wo neue Kita-Plätze entstehen."],
+      ["kita", "Wo über Kita-Elternbeiträge entschieden wird und in welche Richtung."],
       ["news", "Was diese Woche berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat aus der Vorlage und Quelle."],
     ],
     team: ["Für Ihre Redaktion", "Der Sitzungskalender ist Ihre Wochenvorschau; bis zu fünf Kolleginnen und Kollegen bekommen dieselben Hinweise."],

@@ -42,3 +42,12 @@ test('fee radar: fee items by service, other fees as fallback, no kita or staff 
  assert.deepEqual(g('Tarifabschluss TVöD 2026'),[],'Personal');
  assert.deepEqual(g('Neubau der Kläranlage'),[],'ohne Gebühr im Titel');
 });
+
+test('street names, spa town names, person names and the phrase "Beratung und Beschlussfassung" are no topics',()=>{
+ assert.deepEqual(of('Sanierung der Bahnhofstraße').filter(x=>x.includes('Bus und Bahn')),[],'Straßenname');
+ assert.deepEqual(of('Gebührensatzung der Stadt Bad Honnef').filter(x=>x.includes('Bäder')),[],'Ortsname');
+ assert.ok(of('Erhöhung der Eintrittspreise im Freibad – Entgeltordnung').some(x=>x.startsWith('gebuehren:Bäder')));
+ assert.deepEqual(of('Ehrung von Herrn Müller für 25 Jahre Feuerwehr').filter(x=>x.includes('Abfall')),[],'Personenname');
+ assert.deepEqual(of('Beratung und Beschlussfassung über die Vergabe der Reinigungsleistungen').filter(x=>x.includes('Gutachten')),[],'Floskel');
+ assert.deepEqual(of('Baugesuch zur Errichtung einer Photovoltaikanlage'),[],'privates Baugesuch');
+});

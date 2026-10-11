@@ -36,6 +36,10 @@ function PlanRow({ p, right }: { p: Plan; right: string }) {
   );
 }
 
+/* Wohneinheiten vorerst nicht zeigen: sie stehen nur bei rund 1 % der Pläne im Hauptdokument, und Summen für die ganze Stadt
+   werden einzelnen Plänen zugeschrieben (Bewertung 11.10.2026). Die Daten liefert die Auswertung weiter. */
+const SHOW_HOUSING = false;
+
 /** plenara.X – Bauleitplanung: Pläne nach Verfahrensschritt, Gebiete mit viel Planung, geplanter Wohnungsbau */
 export function BauleitplanungPage() {
   const { query } = useAnalyticsQuery();
@@ -89,9 +93,9 @@ export function BauleitplanungPage() {
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {res.totals.plans === 0 ? <p className="mt-10 text-[16px]">Für diese Suche ist kein Bauleitplan erkannt.</p> : (
             <>
-              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.plans)} Bauleitpläne in ${n(res.totals.regions)} Gebieten in Arbeit, ${n(res.totals.adopted)} davon mit Satzungsbeschluss.${res.totals.we ? ` Genannt sind ${n(res.totals.we)} geplante Wohneinheiten.` : ""}`}</Befund>
+              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.plans)} Bauleitpläne in ${n(res.totals.regions)} Gebieten in Arbeit, ${n(res.totals.adopted)} davon mit Satzungsbeschluss.${SHOW_HOUSING && res.totals.we ? ` Genannt sind ${n(res.totals.we)} geplante Wohneinheiten.` : ""}`}</Befund>
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                {[["Pläne", n(res.totals.plans)], ["Satzungsbeschlüsse", n(res.totals.adopted)], ["Gebiete", n(res.totals.regions)], ["Geplante Wohneinheiten", n(res.totals.we)]].map(([k, v], i) => (
+                {[["Pläne", n(res.totals.plans)], ["Satzungsbeschlüsse", n(res.totals.adopted)], ["Gebiete", n(res.totals.regions)], SHOW_HOUSING ? ["Geplante Wohneinheiten", n(res.totals.we)] : ["Vorgänge", n(res.totals.topics)]].map(([k, v], i) => (
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
               </dl>
@@ -145,6 +149,7 @@ export function BauleitplanungPage() {
                 )}
               </section></Reveal>
 
+              {SHOW_HOUSING && (
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Geplanter Wohnungsbau</h2>
                 <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Pläne mit den meisten genannten Wohneinheiten. Die Zahl steht nur bei {n(res.totals.weKnown)} Plänen im Hauptdokument, oft erst in der Begründung; die Summe ist deshalb eine Untergrenze.</p>
@@ -160,6 +165,7 @@ export function BauleitplanungPage() {
                   </div>
                 )}
               </section></Reveal>
+              )}
 
               {res.adopted.length > 0 && (
                 <Reveal><section className="mt-12">

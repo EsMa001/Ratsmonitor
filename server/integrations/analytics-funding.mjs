@@ -40,8 +40,9 @@ export async function funding(db,catalog,params){
   if(!months.has(r.m))months.set(r.m,blank());months.get(r.m)[r.status]+=r.n;
   if(r.status!=='mentioned')labels.set(r.label,(labels.get(r.label)||0)+r.n);
  }
- /* Ein Vorgang mit mehreren Programmen zählt je Programm; die Summen unten zählen Vorgänge je Gebiet genau einmal */
- const {results:distinct}=await db.prepare(`SELECT c.region_id region,max(CASE x.detail WHEN 'granted' THEN 3 WHEN 'applied' THEN 2 ELSE 1 END) s,count(DISTINCT c.id) n FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind='funding' GROUP BY c.region_id,c.id`).bind(...page.args).all().catch(()=>({results:[]}));
+ /* Ein Vorgang mit mehreren Programmen zählt je Programm; die Summen unten zählen Vorgänge je Gebiet genau einmal (gleicher Titel
+    in mehreren Gremien eines Gebiets: einmal) */
+ const {results:distinct}=await db.prepare(`SELECT c.region_id region,max(CASE x.detail WHEN 'granted' THEN 3 WHEN 'applied' THEN 2 ELSE 1 END) s,count(DISTINCT c.id) n FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind='funding' GROUP BY c.region_id,lower(trim(c.title))`).bind(...page.args).all().catch(()=>({results:[]}));
  const topicsByRegion=new Map();let topics=0,topicsGranted=0,topicsApplied=0;
  for(const r of distinct){topics++;if(r.s===3)topicsGranted++;if(r.s===2)topicsApplied++;if(r.s>=2){const e=topicsByRegion.get(r.region)||{granted:0,applied:0};e[r.s===3?'granted':'applied']++;topicsByRegion.set(r.region,e);}}
  const cardsIn=new Map(perRegion.map(r=>[r.region,r.n])),byId=new Map(catalog.map(r=>[r.id,r]));

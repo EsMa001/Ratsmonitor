@@ -2,7 +2,7 @@ import {searchFilters} from './monitor-search.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
-import {cleanTitle,matchTitle,evidenceOf,classifyResult} from './social-topics.mjs';
+import {cleanTitle,matchTitle,evidenceOf} from './social-topics.mjs';
 
 /*
  * Plenara.X – Newsradar: berichtenswerte Vorgänge der letzten 30 und nächsten 10 Tage (dieselben Filter wie die Suche),
@@ -41,10 +41,30 @@ export function organ(committee,ort){
  return fem?{nom:'Die '+full,dat:'der '+full}:{nom:'Der '+full,dat:'dem '+full};
 }
 /** Zitierfähiger Satz: ganzer Satz, kein Verweis auf Anlagen, ohne PDF-Reste und vorangestellten Betreff */
+// Aufzählungsreste am Anfang („I3)“, „a)“, „Alternative 1 –“) und Tabellenzeilen („Std./72,10 €“, mehrere Beträge)
+const FRAGMENT=/^\s*([A-Za-z]{0,2}\d{0,2}\)|[IVX]+\.|\d+\.\s|Alternative\s+\d|Variante\s+\d|Option\s+\d)|Std\.\/|\/\s*\d+,\d{2}\s*€|\s\|\s/;
+const amounts=t=>(t.match(/\d\s*(?:€|Euro|EUR)\b/g)||[]).length;
 export function quotable(x){
  const t=String(x||'').replace(/^.*?Beschlussvorschlag:\s*/i,'').replace(/^Betreff:?\s+/i,'').replace(/\s+/g,' ').trim();
- return /[.!?“”"]$/.test(t)&&!/verwiesen|als Anlage|siehe Anlage|s\.\s*Anlage|\(Anlage|Anlage\s*\d|beigefügt|anliegend/i.test(t)&&!PDF_NOISE.test(t)&&t.length>40&&t.length<600?t:null;
+ return /[.!?“”"]$/.test(t)&&!/verwiesen|als Anlage|siehe Anlage|s\.\s*Anlage|\(Anlage|Anlage\s*\d|beigefügt|anliegend/i.test(t)&&!PDF_NOISE.test(t)&&!FRAGMENT.test(t)&&amounts(t)<3&&t.length>40&&t.length<600?t:null;
 }
+
+/** Ausgang einer Sitzung aus ihrem Ergebnistext: Kenntnisnahme und Empfehlung sind kein Beschluss, Zurückziehen keine Vertagung */
+export function outcomeOf(text){
+ const t=String(text||'').toLowerCase();if(!t.trim())return null;
+ if(/zurückgezogen/.test(t))return 'zurückgezogen';
+ if(/abgelehnt|nicht angenommen|nicht beschlossen|keine mehrheit|nicht empfohlen/.test(t))return 'abgelehnt';
+ if(/vertagt|zurückgestellt|abgesetzt|vertagung|ohne beschluss/.test(t))return 'vertagt';
+ if(/verwiesen|überwiesen/.test(t))return 'verwiesen';
+ if(/kenntnis/.test(t)&&!/beschlossen|zugestimmt|angenommen/.test(t))return 'zur Kenntnis genommen';
+ const how=/einstimmig|ohne gegenstimme|einhellig/.test(t)?'einstimmig ':/mehrheitlich|mit mehrheit|gegenstimme|stimmenmehrheit|\d+ nein/.test(t)?'mit Mehrheit ':'';
+ if(/empfohlen|empfiehlt|empfehlung/.test(t)&&!/beschlossen/.test(t))return how+'empfohlen';
+ if(/beschlossen|zugestimmt|angenommen|genehmigt|beschluss/.test(t)||how)return how+'beschlossen';
+ return null;
+}
+const STATUS_OUTCOME={approved:'beschlossen',rejected:'abgelehnt',postponed:'vertagt',info:'zur Kenntnis genommen',recommended:'empfohlen'};
+// Platzhalter statt Gremium („Gremium laut Originalquelle“)
+const PLACEHOLDER=/^Gremium\b|laut Originalquelle/i;
 
 /** Nachrichtenwert ohne Bericht (Stufe 1): Status, Fakten, Stichwörter, Datum */
 function prescore(c,facts,today,week){
@@ -58,7 +78,7 @@ function prescore(c,facts,today,week){
  const fee=facts.find(x=>x.kind==='kita_fee');if(fee&&fee.value!=='Neufassung')add(18,`Kita-Beiträge: ${fee.value}`);
  const gb=facts.find(x=>x.kind==='radar:gebuehren'&&/Erhöhung|Senkung/.test(x.detail||''));if(gb)add(14,`${gb.value}: Gebühren-${gb.detail}`);
  if(facts.some(x=>x.kind==='radar:finanzen'&&x.value==='Haushaltssicherung'))add(8,'Haushaltssicherung');
- if(facts.some(x=>x.kind==='radar:finanzen'&&x.value==='Steuern und Hebesätze'&&/Erhöhung/.test(x.detail||'')))add(12,'Steuererhöhung');
+ if(facts.some(x=>x.kind==='radar:finanzen'&&x.value==='Steuern und Hebesätze'&&/Erhöhung/.test(x.detail||''))&&!/\bkeine[nr]?\s+(Erhöhung|Anhebung)|nicht\s+(zu\s+)?erhöh/i.test(c.title||''))add(12,'Steuererhöhung');
  const bt=facts.find(x=>x.kind==='radar:beteiligung'&&/Petitionen|Einwohneranträge/.test(x.value));if(bt)add(12,bt.value);
  if(facts.some(x=>x.kind==='plan'&&x.value==='Satzungsbeschluss'))add(8,'Bebauungsplan vor dem Satzungsbeschluss');
  const hits=matchTitle(c.title||'');if(hits.length)add(10,`Alltagsthema: ${hits[0].term}`);
@@ -70,7 +90,10 @@ function prescore(c,facts,today,week){
 
 /** Meldung im Agenturstil aus einem bewerteten Vorgang */
 export function article({card,topic,facts,ev,sentences,more,today,regionName}){
- const ort=place(regionName),events=[...(topic.events||[])].filter(e=>e?.date).sort((a,b)=>a.date.localeCompare(b.date));
+ const ort=place(regionName),all=[...(topic.events||[])].filter(e=>e?.date).sort((a,b)=>a.date.localeCompare(b.date));
+ /* Platzhalter-Gremien neben einem benannten am selben Tag und doppelte Einträge zählen nicht */
+ const seen=new Set(),events=all.filter(e=>{const d=e.date.slice(0,10),k=d+'|'+(e.committee||'');if(seen.has(k))return false;seen.add(k);
+  return !(PLACEHOLDER.test(e.committee||'')&&all.some(x=>x!==e&&x.date.slice(0,10)===d&&!PLACEHOLDER.test(x.committee||'')));});
  const title=cleanTitle(topic.officialTitle||topic.title||card.title,200);
  /* Der erste Satz der Zusammenfassung wiederholt oft den Titel: ihn im Zitat weglassen */
  const raw=String(topic.officialTitle||topic.title||'').trim();
@@ -80,13 +103,13 @@ export function article({card,topic,facts,ev,sentences,more,today,regionName}){
  const o=organ(cur.committee||card.gremium,ort),past=cur.date.slice(0,10)<=today,when=longDay(cur.date);
  /* Ausgang nur der genannten Sitzung (ein „abgelehnt“ im Ortschaftsrat ist kein Beschluss des Rats); der Status des Vorgangs
     gilt nur, wenn diese Sitzung die letzte ist */
- const r=classifyResult(cur.result||'')||classifyResult(cur.description||''),last=!events.some(e=>e.date.slice(0,10)>cur.date.slice(0,10));
- const outcome=r==='rej'?'abgelehnt':r==='post'?'vertagt':r==='unan'?'einstimmig beschlossen':r==='maj'?'mit Mehrheit beschlossen':r==='ok'?'beschlossen':!last||!past?null:card.status==='approved'?'beschlossen':card.status==='rejected'?'abgelehnt':card.status==='postponed'?'vertagt':null;
+ const last=!events.some(e=>e.date.slice(0,10)>cur.date.slice(0,10));
+ const outcome=outcomeOf(cur.result)||outcomeOf(cur.description)||(last&&past?STATUS_OUTCOME[card.status]||null:null);
  const parties=facts.filter(x=>x.kind==='faction').map(p=>PARTY[p.value]||`der Fraktion ${p.value}`);
  const what=parties.length?`einen Antrag ${parties.join(' und ')}`:'die Vorlage';
  const low=x=>x.replace(/^Der /,'der ').replace(/^Die /,'die ').replace(/^Ein /,'ein ');
  // Datum mit Wochentag als Einschub: „am Mittwoch, 30. September, beschlossen“
- const lead=past?(outcome?`${o.nom} hat ${what} am ${when}, ${outcome}.`:`${o.nom} hat am ${when}, über ${what} beraten.`):`${o.nom} berät am ${when}, über ${what}.`;
+ const lead=past?(outcome==='zurückgezogen'?`${o.nom} hat am ${when}, über ${what} beraten; sie wurde zurückgezogen.`.replace('; sie wurde',what==='die Vorlage'?'; sie wurde':'; er wurde'):outcome?`${o.nom} hat ${what} am ${when}, ${outcome}.`:`${o.nom} hat am ${when}, über ${what} beraten.`):`${o.nom} berät am ${when}, über ${what}.`;
  const body=[];
  const we=Number(facts.find(x=>x.kind==='housing')?.detail||0);if(we>=3)body.push(`Nach den Unterlagen sollen rund ${we.toLocaleString('de-DE')} Wohnungen entstehen.`);
  const fund=facts.filter(x=>x.kind==='funding'&&x.detail!=='mentioned');
@@ -94,6 +117,11 @@ export function article({card,topic,facts,ev,sentences,more,today,regionName}){
   const named=[...fund.map(x=>x.value).filter(v=>v!=='Sonstige Förderung'),...(money>=1000?[`genannt werden ${eur(money)}`]:[])];
   body.push(`Für das Vorhaben ist Fördergeld ${g?'bewilligt':'beantragt'}${named.length?` (${named.join(', ')})`:''}.`);}
  const before=events.filter(e=>e.date.slice(0,10)<cur.date.slice(0,10));
+ /* Was die vorberatenden Gremien entschieden haben, wenn es vom Bild abweicht (Ablehnung, Vertagung) */
+ const prior=before.map(e=>outcomeOf(e.result)||outcomeOf(e.description)),num=n=>['','ein','zwei','drei','vier','fünf','sechs','sieben','acht','neun','zehn','elf','zwölf'][n]||String(n);
+ const rej=prior.filter(x=>x==='abgelehnt').length,post=prior.filter(x=>x==='vertagt'||x==='verwiesen').length;
+ if(rej)body.push(rej>1?`${num(rej)[0].toUpperCase()+num(rej).slice(1)} vorberatende Gremien hatten die Vorlage abgelehnt.`:'Ein vorberatendes Gremium hatte die Vorlage abgelehnt.');
+ if(post)body.push(post>1?`Die Vorlage war zuvor ${num(post)}mal vertagt oder verwiesen worden.`:'Die Vorlage war zuvor einmal vertagt oder verwiesen worden.');
  if(before.length)body.push(before.length>1?`Zuvor hatten sich ${before.length} Gremien damit befasst, zuletzt ${low(organ(before.at(-1).committee,ort).nom)} am ${longDay(before.at(-1).date)}.`:`Zuvor hatte sich ${low(organ(before[0].committee,ort).nom)} damit befasst.`);
  if(next&&past)body.push(`Als Nächstes berät ${low(organ(next.committee,ort).nom)} am ${longDay(next.date)}.`);
  return {

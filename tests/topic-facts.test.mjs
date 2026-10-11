@@ -93,3 +93,17 @@ test('funding amount without program goes to the only program of the report',()=
  const t='Für die Mensa wurden Fördermittel aus dem Programm Ganztagsausbau bewilligt. Der Förderbescheid über 300.000 € liegt vor.';
  assert.deepEqual(factsOf('Neubau Mensa',t).filter(r=>r.kind.startsWith('funding')),[{kind:'funding',value:'Ganztagsausbau',detail:'granted'},{kind:'funding_euro',value:'Ganztagsausbau',detail:'300000'}]);
 });
+
+test('funding: form fields and conditional grants are not funding facts',()=>{
+ assert.deepEqual(fundingOf('Finanzielle Auswirkungen: Fördermittel beantragt: Nein Ja Haushaltsmittel stehen bereit.'),[],'Formularfeld');
+ assert.deepEqual(fundingOf('Vorbehaltlich der Förderzusage durch das Land wird die Radverkehrsanlage gebaut.'),[{program:'Radverkehr',status:'mentioned'}],'bedingt ist nicht bewilligt');
+ assert.deepEqual(fundingOf('Der Förderbescheid für die Radwege liegt vor.'),[{program:'Radverkehr',status:'granted'}]);
+});
+
+test('outgoing grants to clubs and carriers are no funding for the municipality; fee amounts are whole numbers',async()=>{
+ const {kitaFeeOf}=await import('../shared/topic-facts.mjs');
+ assert.deepEqual(fundingOf('Der Karnevalsverein e. V. hat eine Zuwendung in Höhe von 3.000 EUR beantragt.'),[]);
+ assert.deepEqual(fundingEuroOf('Der Karnevalsverein e. V. hat eine Zuwendung in Höhe von 3.000 EUR beantragt.'),[]);
+ assert.deepEqual(fundingEuroOf('Für den Ganztagsausbau wurde eine Zuwendung in Höhe von 450.000 € bewilligt.').map(x=>x.euro),[450000]);
+ assert.equal(kitaFeeOf('Erhöhung der Elternbeiträge Kita','Der Kita-Beitrag steigt ab August auf 1.000 € im Jahr und 95 € im Monat.').euro,'95');
+});

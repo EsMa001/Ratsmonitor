@@ -27,6 +27,10 @@ const COLOR: Record<Direction, string> = { Erhöhung: "#0f172a", Senkung: "#0d94
 const LABEL: Record<Direction, string> = { Erhöhung: "Erhöhung", Senkung: "Senkung", Beitragsfreiheit: "Beitragsfreiheit", Verpflegung: "Verpflegung", Neufassung: "Sonstige Änderung der Satzung" };
 const ORDER: Direction[] = ["Erhöhung", "Senkung", "Beitragsfreiheit", "Verpflegung", "Neufassung"];
 
+/* Neue Plätze vorerst nicht zeigen: zu wenige Projekte mit Platzzahl, und ein Neubau zählt je Vergabe-Vorlage (ein Gewerk je
+   Vorlage) mehrfach (Bewertung 11.10.2026). Die Daten liefert die Auswertung weiter. */
+const SHOW_PLACES = false;
+
 /** plenara.X – Kita-Radar: Entscheidungen zu Elternbeiträgen (Richtung) und neue Kita-Plätze */
 export function KitaRadarPage() {
   const { query } = useAnalyticsQuery();
@@ -72,7 +76,7 @@ export function KitaRadarPage() {
       <PageBand>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/radar" className="text-teal-600">plenara.X Radar</Link> / Kita-Radar</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Kita-Radar</h1>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung, und wo neue Kita-Plätze entstehen.</p>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung.</p>
       </PageBand>
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
@@ -82,11 +86,11 @@ export function KitaRadarPage() {
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
-          {res.totals.fees + res.totals.projects === 0 ? <p className="mt-10 text-[16px]">Für diese Suche sind keine Kita-Beiträge oder neuen Plätze erkannt.</p> : (
+          {res.totals.fees + (SHOW_PLACES ? res.totals.projects : 0) === 0 ? <p className="mt-10 text-[16px]">Für diese Suche sind keine Kita-Beiträge oder neuen Plätze erkannt.</p> : (
             <>
-              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.fees)} Vorgänge zu Kita-Elternbeiträgen in ${n(res.totals.feeRegions)} Gebieten: ${n(count("Erhöhung"))} Erhöhungen, ${n(count("Senkung"))} Senkungen und ${n(count("Beitragsfreiheit"))}-mal Beitragsfreiheit.${res.totals.places ? ` Genannt sind ${n(res.totals.places)} neue Kita-Plätze.` : ""}`}</Befund>
+              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.fees)} Vorgänge zu Kita-Elternbeiträgen in ${n(res.totals.feeRegions)} Gebieten: ${n(count("Erhöhung"))} Erhöhungen, ${n(count("Senkung"))} Senkungen und ${n(count("Beitragsfreiheit"))}-mal Beitragsfreiheit.${SHOW_PLACES && res.totals.places ? ` Genannt sind ${n(res.totals.places)} neue Kita-Plätze.` : ""}`}</Befund>
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                {[["Vorgänge zu Beiträgen", n(res.totals.fees)], ["Erhöhungen", n(count("Erhöhung"))], ["Senkungen und Beitragsfreiheit", n(count("Senkung") + count("Beitragsfreiheit"))], ["Neue Kita-Plätze", n(res.totals.places)]].map(([k, v], i) => (
+                {[["Vorgänge zu Beiträgen", n(res.totals.fees)], ["Erhöhungen", n(count("Erhöhung"))], ["Senkungen und Beitragsfreiheit", n(count("Senkung") + count("Beitragsfreiheit"))], SHOW_PLACES ? ["Neue Kita-Plätze", n(res.totals.places)] : ["Gebiete", n(res.totals.feeRegions)]].map(([k, v], i) => (
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
               </dl>
@@ -138,7 +142,7 @@ export function KitaRadarPage() {
                 </section></Reveal>
               )}
 
-              {res.projects.length > 0 && (
+              {SHOW_PLACES && res.projects.length > 0 && (
                 <Reveal><section className="mt-12">
                   <h2 className="text-[22px] font-semibold">Neue Kita-Plätze</h2>
                   <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Neubau, Erweiterung und zusätzliche Gruppen mit genannter Platzzahl. Bestand und Bedarfsplanungen zählen nicht; nicht jeder Ausbau nennt Plätze.</p>

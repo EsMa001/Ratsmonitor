@@ -31,6 +31,10 @@ const eurPc = (v: number) => `${v.toLocaleString("de-DE", { minimumFractionDigit
 const C = { granted: "#0d9488", applied: "#5eead4", mentioned: "#e2e8f0" };
 const MONTH = new Intl.DateTimeFormat("de-DE", { month: "short", year: "2-digit" });
 
+/* Rangliste „Euro je Einwohner“ vorerst nicht zeigen: Beträge stehen nur bei wenigen Vorgängen und Volltexte nicht überall gleich
+   (Bewertung 11.10.2026); die Summe hinge davon ab, wie ausführlich ein Gebiet berichtet. Die Auswertung liefert sie weiter. */
+const SHOW_EURO_RANKING = false;
+
 /** plenara.X – Förderradar: Förderprogramme in den Ratsunterlagen, beantragt und bewilligt, je Gebiet und Monat */
 export function FoerderradarPage() {
   const { query } = useAnalyticsQuery();
@@ -101,7 +105,7 @@ export function FoerderradarPage() {
                   ["Betrag bewilligt", eur(res.euro.granted)],
                   ["Betrag beantragt", eur(res.euro.applied)],
                   ["Mit Betrag", n(res.euro.amounts)],
-                  ["Gebiete im Euro-Vergleich", n(res.euro.ranked)],
+                  ["Programme", n(named.filter((p) => p.n > 0).length)],
                 ].map(([k, v], i) => (
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i % 4 ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
@@ -162,6 +166,7 @@ export function FoerderradarPage() {
                 )}
               </section></Reveal>
 
+              {SHOW_EURO_RANKING && (
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Förderbeträge je Einwohner</h2>
                 <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Summe der in den Unterlagen genannten Förderbeträge (bewilligt und beantragt) je Einwohner. Nur Gebiete ab {n(res.rule.minPop)} Einwohnern mit mindestens {n(res.rule.minCards)} Einträgen und {res.rule.minAmounts} Beträgen ({n(res.euro.ranked)} Gebiete). Die meisten Vorgänge nennen keinen Betrag: die Summen sind eine Untergrenze und hängen davon ab, wie ausführlich ein Gebiet berichtet.</p>
@@ -181,6 +186,7 @@ export function FoerderradarPage() {
                   </ol>
                 )}
               </section></Reveal>
+              )}
 
               {res.largest.length > 0 && (
                 <Reveal><section className="mt-12">

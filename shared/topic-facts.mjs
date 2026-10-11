@@ -7,9 +7,10 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {RADARS} from './radars.mjs';
-export const FACTS_VERSION='facts-v6';
+export const FACTS_VERSION='facts-v9';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
-const SENTENCE=/(?<=[^0-9][.;!?])\s+(?=[A-ZÄÖÜ„"])/;
+// und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
+const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)\s+(?=[A-ZÄÖÜ„"])/u;
 /* Sammelpunkte (Anfragen, Mitteilungen, Haushalt, Sachstandsberichte …) sprechen über viele Vorhaben und Fraktionen zugleich:
    aus ihnen wird nichts abgeleitet, außer ihr Titel nennt die Förderung selbst (Stichprobe 11.10.2026). */
 export const COLLECTIVE=/\bAnfragen\b|Beantwortung|Mitteilung|Informationen|Verschiedenes|Niederschrift|Tagesordnung|Haushalt|Jahresabschluss|Beteiligungsbericht|Lagebericht|Sachstand|Statusbericht|Bericht (der|des|aus)|Berichte\b|Eingänge/i;
@@ -74,12 +75,18 @@ const FUND=/(Fördermittel|Fördergeld|Förderprogramm|Förderantrag|Förderbesc
 const GRANTED=/(bewilligt|Bewilligung|Zuwendungsbescheid|Förderbescheid|Fördermittelbescheid|Zusage|zugesagt|in Aussicht gestellt|erhalten|wurde gefördert|werden gefördert)/i;
 const APPLIED=/(beantragt|beantragen|Förderantrag|Antrag auf Förderung|Antragstellung|Antrag auf Zuwendung|einzureichen|eingereicht|bewerben|Projektskizze)/i;
 const RANK={granted:3,applied:2,mentioned:1};
+// Formularfelder („Fördermittel beantragt: Nein Ja“, Ankreuzfelder) sagen nichts über den Vorgang
+const FUND_FORM=/☐|☒|\b(Nein\s+Ja|Ja\s+Nein)\b|:\s*(ja|nein)\b|\bja\s*\/\s*nein\b/i;
+// Bedingt bewilligt („vorbehaltlich der Förderzusage“, „sofern bewilligt“) ist noch nicht bewilligt
+// Ausgehende Zuschüsse (die Kommune fördert Vereine, Träger, Projekte) sind kein Fördergeld für die Kommune (Bewertung 11.10.2026)
+const OUTGOING=/\be\.\s?V\.|\bVerein\w*\s+(hat|haben|beantragt|beantragen|erhält|erhalten)|Antragsteller|Zuschussantrag|Vereinsförder|institutionelle[nr]? Förderung|Projektförderung|Förderrichtlinie der (Stadt|Gemeinde)|städtische[nr]? Zuschuss|Zuschuss der (Stadt|Gemeinde)|gewährt (die|der) (Stadt|Gemeinde|Kreis|Landkreis)|Zuweisung an/i;
+const CONDITIONAL=/vorbehaltlich|sofern|falls|vorausgesetzt|im Falle|unter der Voraussetzung|nach Bewilligung|bei Bewilligung|nur nach/i;
 /** Förderprogramme im Text: [{program, status:'granted'|'applied'|'mentioned'}]; Förderung ohne erkennbares Programm als „Sonstige Förderung“. */
 export function fundingOf(text){
  const found=new Map();let any=null;
  for(const s of String(text||'').replace(/\s+/g,' ').split(SENTENCE)){
-  if(!FUND.test(s))continue;
-  const status=GRANTED.test(s)?'granted':APPLIED.test(s)?'applied':'mentioned';
+  if(!FUND.test(s)||FUND_FORM.test(s)||OUTGOING.test(s))continue;
+  const status=GRANTED.test(s)&&!CONDITIONAL.test(s)?'granted':APPLIED.test(s)?'applied':'mentioned';
   let named=false;
   for(const [name,re] of PROGRAMS)if(re.test(s)){named=true;if(!found.has(name)||RANK[status]>RANK[found.get(name)])found.set(name,status);}
   if(!named&&(!any||RANK[status]>RANK[any]))any=status;
@@ -113,7 +120,7 @@ export function fundingEuroOf(text){
  const out=new Map();
  for(const s of String(text||'').replace(/\s+/g,' ').split(SENTENCE)){
   // Sehr lange „Sätze“ sind Kopfzeilen, Formulare oder Tabellen ohne Satzzeichen
-  if(s.length>400||!FUND.test(s)&&!/Zuwendung|Zuschuss|Landesmittel|Bundesmittel/.test(s)||NOT_FUND_SENTENCE.test(s))continue;
+  if(s.length>400||!FUND.test(s)&&!/Zuwendung|Zuschuss|Landesmittel|Bundesmittel/.test(s)||NOT_FUND_SENTENCE.test(s)||OUTGOING.test(s))continue;
   let euro=0;
   for(const m of s.matchAll(EURO_AFTER)){const before=s.slice(Math.max(0,m.index-30),m.index);if(NOT_FUND_AMOUNT.test(m[1])||LIMIT_BEFORE.test(before)||OWN_BEFORE.test(before))continue;const v=toEuro(m[2],m[3],m[4]);if(v>euro)euro=v;}
   // „120.000 € Landesmittel“ nur in Fließtext: in Tabellen (drei und mehr Beträge) steht davor oft die Kostenzeile
@@ -173,7 +180,8 @@ export function kitaFeeOf(title,text){
  // Der Titel hat Vorrang: „Reduzierung der Elternbeiträge“ bleibt eine Senkung, auch wenn der Text von Steigerungen spricht
  const byTitle=/beitragsfrei|Beitragsfreiheit|gebührenfrei/i.test(t)?'Beitragsfreiheit':/Erhöhung|Anhebung|Anpassung nach oben/i.test(t)?'Erhöhung':/Reduzierung|Senkung|Absenkung|Entlastung|Ermäßigung/i.test(t)?'Senkung':null;
  const direction=byTitle||(/beitragsfrei|Beitragsfreiheit|gebührenfrei/i.test(all)?'Beitragsfreiheit':/Erhöhung|erhöht|Anhebung|angehoben|Steigerung|steig/i.test(all)?'Erhöhung':/Senkung|gesenkt|Reduzierung|reduziert|Entlastung|Ermäßigung/i.test(all)?'Senkung':sents.every(x=>MEAL.test(x))?'Verpflegung':'Neufassung');
- const eur=all.match(/(\d{1,4}(?:,\d{2})?)\s*(?:€|Euro|EUR)/);
+ // Ganze Zahl („1.000 €“ nicht als „000 €“), Monatsbeiträge bis 4 Stellen
+ const eur=all.match(/(?<![\d.,])(\d{1,4}(?:,\d{2})?)\s*(?:€|Euro|EUR)/);
  return {direction,euro:eur?eur[1]:''};
 }
 /** Neue Kita-Plätze (größte Zahl in einem Satz mit Kita-Bezug und Ausbau), sonst null */
@@ -196,13 +204,17 @@ export function kitaPlacesOf(title,text){
 /* Themenradare (shared/radars.mjs): Unterthema aus dem Titel; bei sehr kurzen Titeln („Vorlage 12/26“) aus dem Beschlussvorschlag.
    Signal (was geschieht) aus Titel, sonst Beschlussvorschlag; ohne Signal „Sonstiges“. */
 // In keinem Radar: Bauanträge Privater (Grundstück, Hausnummer) und Formalpunkte (Eröffnung, Verpflichtung, Beschlussfähigkeit)
-const RADAR_SKIP=/Bauantrag|Antrag auf Baugenehmigung|Bauvoranfrage|Vorbescheid|formlose Anfrage|Fl\.-?\s?Nr|Flurstück|Nutzungsänderung|Eröffnung|Begrüßung|Beschlussfähigkeit|Verpflichtung (von|der|des)|Einführung und Verpflichtung|ordnungsgemäße[nr]? Einladung|Genehmigung der Niederschrift|Fragestunde/i;
+const RADAR_SKIP=/Bauantrag|Baugesuch|Antrag auf Baugenehmigung|Bauvoranfrage|Befreiung von den Festsetzungen|Vorbescheid|formlose Anfrage|Fl\.-?\s?Nr|Flurstück|Nutzungsänderung|Eröffnung|Begrüßung|Beschlussfähigkeit|Verpflichtung (von|der|des)|Einführung und Verpflichtung|ordnungsgemäße[nr]? Einladung|Genehmigung der Niederschrift|Fragestunde/i;
+/* Vor der Themenerkennung entfernen, was nur wie ein Thema aussieht: Straßennamen („Bahnhofstraße“ ist kein Bahnverkehr),
+   Ortsnamen mit „Bad“ oder „Markt“ („Bad Honnef“ ist kein Schwimmbad) und die Floskel „Beratung und Beschlussfassung“ */
+const NOT_TOPIC=/[\wäöüß-]*(straße|strasse|str\.|gasse|allee)\b|\b(Bad|Markt)\s+[A-ZÄÖÜ][\wäöüß-]+|(Vor)?[Bb]eratung\s+(und|sowie)\s+(ggf\.?\s+)?Beschluss\w*|zur\s+(Vor)?[Bb]eratung|Beratungsfolge/g;
+export const topicText=t=>String(t||'').replace(NOT_TOPIC,' ');
 export function radarFactsOf(title,text){
  const t=String(title||''),dec=decision(text),rows=[];
  if(RADAR_SKIP.test(t))return rows;
  for(const [id,r] of Object.entries(RADARS)){
   if((r.collective||COLLECTIVE).test(t)||r.exclude?.test(t)||(r.require&&!r.require.test(t)))continue;
-  const src=t.replace(/\s+/g,' ').trim().split(' ').length<4?t+' '+dec:t;
+  const src=topicText(t.replace(/\s+/g,' ').trim().split(' ').length<4?t+' '+dec:t);
   const topics=r.topics.filter(([,re])=>re.test(src)).map(([n])=>n);
   if(!topics.length&&r.fallback)topics.push(r.fallback);
   if(!topics.length)continue;

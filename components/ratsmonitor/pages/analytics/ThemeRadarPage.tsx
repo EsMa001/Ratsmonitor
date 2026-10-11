@@ -35,6 +35,8 @@ const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? ""
 export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analyse?: AnalyseId }) {
   const gruppe = GRUPPEN[ANALYSEN[analyse ?? (id as AnalyseId)].group];
   const def = RADARS[id];
+  /* Beteiligung: keine Quote (der angenommene Beschlussvorschlag lehnt eine Anregung oft ab) */
+  const showRate = !("noRate" in def);
   const { query } = useAnalyticsQuery();
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
@@ -90,9 +92,9 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {res.totals.topics === 0 ? <p className="mt-10 text-[16px]">Für diese Suche ist nichts zu diesem Radar erkannt.</p> : (
             <>
-              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.topics)} Vorgänge in ${n(res.totals.regions)} Gebieten, am häufigsten zu „${topics[0]?.name}“ (${n(topics[0]?.n ?? 0)}).${res.totals.rate !== null ? ` Von ${n(res.totals.decided)} entschiedenen Vorgängen wurden ${pct(res.totals.rate)} beschlossen.` : ""}`}</Befund>
+              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.topics)} Vorgänge in ${n(res.totals.regions)} Gebieten, am häufigsten zu „${topics[0]?.name}“ (${n(topics[0]?.n ?? 0)}).${showRate && res.totals.rate !== null ? ` Von ${n(res.totals.decided)} entschiedenen Vorgängen wurden ${pct(res.totals.rate)} beschlossen.` : ""}`}</Befund>
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                {[["Vorgänge", n(res.totals.topics)], ["Gebiete", n(res.totals.regions)], ["Entschieden", n(res.totals.decided)], ["Beschlussquote", pct(res.totals.rate)]].map(([k, v], i) => (
+                {[["Vorgänge", n(res.totals.topics)], ["Gebiete", n(res.totals.regions)], ["Entschieden", n(res.totals.decided)], showRate ? ["Beschlussquote", pct(res.totals.rate)] : ["Themen", n(topics.filter((t) => t.n > 0).length)]].map(([k, v], i) => (
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
               </dl>
@@ -110,7 +112,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                           <span className="order-3 col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${(t.n / maxT) * 100}%` }} /></span>
                           <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(t.n)}</b><span className="ml-2 text-slate-500">{n(t.regions)} Gebiete</span></span>
                           <span className="order-4 col-span-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-slate-500 sm:col-span-3">
-                            {t.decided > 0 && (
+                            {showRate && t.decided > 0 && (
                               <span className="flex items-center gap-2">
                                 <span className="flex h-[6px] w-[90px] overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
                                   <span style={{ width: `${(t.approved / d) * 100}%`, background: DEC_COLORS.approved }} /><span style={{ width: `${(t.postponed / d) * 100}%`, background: DEC_COLORS.postponed }} /><span style={{ width: `${(t.rejected / d) * 100}%`, background: DEC_COLORS.rejected }} />
@@ -189,7 +191,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                 )}
               </section></Reveal>
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Erkannt wird am Titel, bei sehr kurzen Titeln am Beschlussvorschlag. Bauanträge Privater, Formalpunkte und Sammelpunkte wie Mitteilungen zählen nicht. Die Beschlussquote ist der Anteil „beschlossen“ an den Vorgängen mit Entscheidung; der Status ist nur bei einem Teil bekannt. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Erkannt wird am Titel, bei sehr kurzen Titeln am Beschlussvorschlag. Bauanträge Privater, Formalpunkte und Sammelpunkte wie Mitteilungen zählen nicht. {showRate ? "Die Beschlussquote ist der Anteil „beschlossen“ an den Vorgängen mit Entscheidung: angenommen ist der Beschlussvorschlag, nicht unbedingt das Anliegen; der Status ist nur bei einem Teil bekannt." : "Eine Zustimmungsquote steht hier bewusst nicht: „beschlossen“ heißt nur, dass der Beschlussvorschlag angenommen wurde, und der lehnt eine Anregung oft ab."} <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
             </>
           )}
         </div>
