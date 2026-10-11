@@ -13,13 +13,16 @@ import {cleanTitle,matchTitle,evidenceOf} from './social-topics.mjs';
  * die besten CANDIDATES die Berichte lesen (Abstimmungsergebnis, Zusammenfassung, Sitzungen) und die Meldung bauen.
  * Nachrichtenwert: Konflikt (abgelehnt, vertagt, nur mehrheitlich), Tragweite (Wohnungen, Förderung, Beiträge, Gebühren,
  * Bürgerbegehren), Alltagsnähe (Stichwörter aus social-topics), Aktualität; ohne zitierbaren Kern deutlich weniger.
- * Höchstens PER_REGION Meldungen je Gebiet, damit nicht ein Ort die Liste füllt.
+ * Höchstens PER_REGION Meldungen je Gebiet, damit nicht ein Ort die Liste füllt; bei wenigen Gebieten (eine Gemeinde, ein
+ * kleiner Kreis) entsprechend mehr, sodass die Liste voll werden kann.
  */
 const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
 const FACT_KINDS=['faction','funding','funding_euro','housing','kita_fee','plan','radar:gebuehren','radar:finanzen','radar:beteiligung'];
 const day=d=>new Date(Date.now()+d*864e5).toISOString().slice(0,10);
 // Private Bauanträge mit Grundstücksadresse sind keine Meldung
 const PRIVATE=/Bauantrag|Bauvorhaben|Bauvoranfrage|Flurstück|\bFlur\s+\d/i,ADDRESS=/\d+\s*(-\s*\d+)?\s*(,|$)|straße\s*\d|weg\s*\d/i;
+// Personal- und Besetzungsfragen der Gremien sind keine Meldung (Formalien, die „Formalien ausblenden“ nicht erfasst)
+const NOT_NEWS=/Schriftführ|Bestellung (einer|eines|des|der) |Wahl (der|des|eines|einer) (stellvertretend|Vorsitz|Mitglied|Schrift|sachkundig)|Benennung (von|der|des|eines|einer) |Besetzung (von|der|des) |Nachbesetzung|Umbesetzung|Ausschussumbesetzung/i;
 // Reste aus dem PDF (Seitenzähler, Kopfzeilen) machen einen Satz unzitierbar
 const PDF_NOISE=/Seite\s*-?\s*\d+\s*-?\s*(von\s*\d+)?|^\s*-\s*\d+\s*-|Drucksache|DS Seite|Vorlage\s*(Nr\.?|Nummer)|Sitzungsvorlage|Beratungsfolge|☐|☒/i;
 export const PARTY={'CDU/CSU':'der CDU-Fraktion','SPD':'der SPD-Fraktion','Grüne':'der Fraktion der Grünen','FDP':'der FDP-Fraktion','AfD':'der AfD-Fraktion','Linke':'der Fraktion Die Linke','Freie Wähler und Wählergruppen':'einer Wählergemeinschaft','Volt':'der Volt-Fraktion','BSW':'der BSW-Fraktion','ÖDP':'der ÖDP-Fraktion','Die PARTEI':'der Fraktion Die PARTEI'};
@@ -157,7 +160,7 @@ export async function news(db,catalog,params){
  const factsOf=new Map();for(const x of factRows){const l=factsOf.get(x.id)||[];l.push({kind:x.kind,value:x.value,detail:x.detail});factsOf.set(x.id,l);}
  const pre=[];
  for(const c of rows){
-  if(PRIVATE.test(c.title||'')&&ADDRESS.test(c.title||''))continue;
+  if(PRIVATE.test(c.title||'')&&ADDRESS.test(c.title||'')||NOT_NEWS.test(c.title||''))continue;
   const facts=factsOf.get(c.id)||[];
   const s=prescore(c,facts,today,week);pre.push({c,facts,...s});
  }
@@ -183,11 +186,13 @@ export async function news(db,catalog,params){
   }
  }
  scored.sort((a,b)=>b.score-a.score||b.c.date.localeCompare(a.c.date));
+ /* Je Gebiet höchstens so viele, dass die Gebiete mit Meldungen die Liste füllen können, mindestens PER_REGION */
+ const cap=Math.max(PER_REGION,Math.ceil(n/Math.max(1,new Set(scored.map(x=>x.c.region)).size)));
  const items=[],per=new Map();
  for(const s of scored){
-  const k=per.get(s.c.region)||0;if(k>=PER_REGION)continue;per.set(s.c.region,k+1);
+  const k=per.get(s.c.region)||0;if(k>=cap)continue;per.set(s.c.region,k+1);
   items.push({...article({card:s.c,topic:s.t,facts:s.facts,ev:s.ev,sentences:s.sentences,more:s.more,today,regionName:byId.get(s.c.region)?.name||s.c.region}),score:s.score,why:s.why});
   if(items.length>=n)break;
  }
- return {q:f.q,from:copy.get('from'),to:copy.get('to'),totals:{considered:rows.length,read:top.length,quotable:scored.length},items,own,rule:{back,ahead:AHEAD,perRegion:PER_REGION,candidates:CANDIDATES}};
+ return {q:f.q,from:copy.get('from'),to:copy.get('to'),totals:{considered:rows.length,read:top.length,quotable:scored.length},items,own,rule:{back,ahead:AHEAD,perRegion:cap,candidates:CANDIDATES}};
 }
