@@ -15,6 +15,8 @@
 //   node scripts/pdf-store/fetch.mjs --stats                       Stand der Ablage
 //   node scripts/pdf-store/fetch.mjs --errors [--csv datei.csv]    fehlgeschlagene Abrufe: je Dokument Fehler, HTTP-Code, Tag
 // Fehlgeschlagene Abrufe werden nicht erneut versucht (nur mit --retry-days N), sie stehen in der Fehlerliste.
+// Server, die nachweislich nicht liefern (in der Ablage mindestens 10 Abrufe, davon mindestens 90 % Fehler oder „kein PDF“),
+// werden ausgelassen; ihre Dokumente bleiben offen. Nicht beim erneuten Versuch (--retry-days) und nicht mit --all-hosts.
 // Ablage: RM_PDF_STORE (Standard tmp/pdf-store). Datenbank: DATABASE_FILE, sonst die Miniflare-Datei unter .wrangler/.
 import {existsSync,readdirSync,writeFileSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
@@ -56,6 +58,16 @@ const db=new DatabaseSync(file,{readOnly:true});
 
 // Formalie wie in der Suche (search_cards.formal, drizzle/0017); ohne Spalte unbekannt.
 const formalSql=db.prepare("SELECT 1 FROM pragma_table_info('search_cards') WHERE name='formal'").get()?'(SELECT formal FROM search_cards c WHERE c.id=topics.id)':'NULL';
+// Server, die nicht liefern: aus der Ablage (alle bisherigen Abrufe je Server)
+const BLOCK_MIN=10,BLOCK_SHARE=0.9;
+const blocked=new Set();
+if(!flag('all-hosts')&&!Number.isFinite(o.retryDays)){
+ const by=new Map();
+ for(const r of store.db.prepare('SELECT url,status FROM pdfs').iterate()){let h;try{h=new URL(r.url).host;}catch{continue;}const x=by.get(h)||{n:0,bad:0};x.n++;if(r.status==='error'||r.status==='unsupported')x.bad++;by.set(h,x);}
+ for(const [h,x] of by)if(x.n>=BLOCK_MIN&&x.bad/x.n>=BLOCK_SHARE)blocked.add(h);
+ if(blocked.size)console.log(`${blocked.size} Server ausgelassen (mindestens ${BLOCK_MIN} Abrufe, davon mindestens ${BLOCK_SHARE*100} % fehlgeschlagen); ihre Dokumente bleiben offen`);
+}
+let skipped=0;
 // Aufträge eines Zeitraums sammeln: eine Adresse je Bericht, jede Adresse einmal, nach Server gruppiert (neueste zuerst).
 function collect(from,to){
  const where=["payload LIKE '%application/pdf%'"],params=[];
@@ -70,6 +82,7 @@ function collect(from,to){
   if(!store.wants(d.url,{retryDays:o.retryDays})){have++;continue;}
   if(o.limit&&open>=o.limit)continue;
   let host;try{host=new URL(d.url).host;}catch{continue;}
+  if(blocked.has(host)){skipped++;continue;}
   if(!hosts.has(host))hosts.set(host,{queue:[],busy:0,next:0,fails:0});
   hosts.get(host).queue.push({url:d.url,region:r.region,topic:r.id,meta:{docType:documentType(d.title),formal:r.formal,eventDate:r.date}});open++;
  }
@@ -129,5 +142,6 @@ for(const [from,to] of windows){
 db.close();clearInterval(timer);
 if(keeper){await keeper.close();const k=keeper.stats();console.log(`Grenze: ${k.kept} behalten, ${k.swapped} schlechtere verdrängt, ${k.rejected} nicht besser, ${k.tooBig} zu groß (nur Text), ${k.ocrPages} Seiten vor dem Löschen per OCR${k.stuck?`, ${k.stuck} Scans ohne OCR-Werkzeuge liegen geblieben`:''}; belegt ${mb(usedBytes(store))}`);}
 if(maxBytes&&size>=maxBytes)console.log(`ZIEL ERREICHT: ${mb(size)} in der Ablage`);
+if(skipped)console.log(`${skipped} Dokumente von ausgelassenen Servern übersprungen`);
 for(const r of store.stats())console.log('Ablage:',r.status,r.n,r.bytes?mb(r.bytes):'');
 store.close();
