@@ -76,7 +76,9 @@ export async function articleResult(job,article,result,now=new Date().toISOStrin
    if(kind==='summary'){
     assert(bounded(value.shortSummary,1000)&&normalize(value.shortSummary).split(/\s+/).length<=65&&Array.isArray(value.longSummary)&&value.longSummary.length>0&&value.longSummary.length<=8&&value.longSummary.every(p=>bounded(p,2500))&&value.longSummary.join(' ').split(/\s+/).length<=300,'Ungültige Zusammenfassung (kurz maximal 65, lang maximal 300 Wörter).');
     entry.shortSummary=value.shortSummary;entry.longSummary=value.longSummary;
-    Object.assign(patch,{shortSummary:value.shortSummary,longSummary:value.longSummary,generatedBy:legacy?'KI-Zusammenfassung · Claude-Code-Test':'KI-Zusammenfassung',summaryGeneratedAt:now,summaryMethod:method,summaryModel:result.model,summaryEvidence:entry.evidence,contentAnalysis:entry});
+    // Der Text steht im Vorgang in shortSummary/longSummary und vollständig in article_analyses; contentAnalysis trägt nur die Angaben zur Analyse.
+    const {shortSummary:_short,longSummary:_long,...analysis}=entry;
+    Object.assign(patch,{shortSummary:value.shortSummary,longSummary:value.longSummary,generatedBy:legacy?'KI-Zusammenfassung · Claude-Code-Test':'KI-Zusammenfassung',summaryGeneratedAt:now,summaryMethod:method,summaryModel:result.model,summaryEvidence:entry.evidence,contentAnalysis:analysis});
    }else if(kind==='aiLabel'){
     assert(ids.has(value.primary)&&Array.isArray(value.secondary)&&value.secondary.length<=2&&new Set([value.primary,...value.secondary]).size===1+value.secondary.length&&value.secondary.every(l=>ids.has(l))&&bounded(value.reason,1200),'Ungültiges KI-Label oder fehlende Begründung.');
     Object.assign(entry,{primary:value.primary,secondary:value.secondary,reason:value.reason,version:LABEL_VERSION,classifiedAt:now,sourceUrl:entry.evidence[0].url,basis:'source_content'});patch.aiLabel=entry;
