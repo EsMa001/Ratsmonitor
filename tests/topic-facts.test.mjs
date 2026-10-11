@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf} from '../shared/topic-facts.mjs';
+import {factionsOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -141,4 +141,13 @@ test('zuschuesse an vereine: purpose from the title, amount at the grant word, n
  assert.equal(grantOf('Antrag auf Fördermittel aus dem Landesprogramm für Vereinssportstätten',''),null);
  assert.equal(grantOf('Antrag auf Zuschuss im Rahmen der Modernisierungsrichtlinie',''),null);
  assert.equal(grantOf('Zuschuss an den Heimatverein Rehmsdorf e. V.','').purpose,'Kultur und Heimat');
+});
+
+test('art des plangebiets: gewerbe, industrie, energie, einzelhandel; abkuerzungen nur gross',()=>{
+ assert.deepEqual(planUseOf('4. Änderung des Bebauungsplanes Nr. 22 "Gewerbe- und Industriegebiet Osteressen" - Satzungsbeschluss'),{uses:['Industrie','Gewerbe'],inter:false});
+ assert.deepEqual(planUseOf('Aufstellung des Bebauungsplans „SO Freiflächenphotovoltaikanlage Stapfenberg“'),{uses:['Energie'],inter:false});
+ assert.deepEqual(planUseOf('Vorhabenbezogener Bebauungsplan Nr. 34 "Nahversorgungszentrum Hannoversche Heerstraße Süd" - Satzungsbeschluss'),{uses:['Einzelhandel'],inter:false});
+ assert.equal(planUseOf('Bebauungsplan Nr. 5 "Interkommunales Gewerbegebiet A 1" - Aufstellungsbeschluss').inter,true);
+ assert.equal(planUseOf('Bebauungsplan Nr. 7 "Am Gericht" - Aufstellungsbeschluss'),null);
+ assert.equal(planUseOf('Gewerbesteuer-Hebesatz'),null);
 });

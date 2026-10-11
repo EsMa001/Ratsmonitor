@@ -6,6 +6,7 @@ import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { RadarDrill } from "./RadarDrill";
 
 type Direction = "Erhöhung" | "Senkung" | "Beitragsfreiheit" | "Verpflegung" | "Neufassung";
 interface Decision { id: string; title: string; region: string; date: string; direction: Direction; euro: string | null }
@@ -40,6 +41,8 @@ export function KitaRadarPage() {
   const [want, setWant] = useState(true);
   const [error, setError] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  /* Aufgeklappte Liste hinter einer Richtung (Erhöhung, Senkung …) */
+  const [open, setOpen] = useState("");
 
   useEffect(() => {
     if (!want) return;
@@ -55,7 +58,7 @@ export function KitaRadarPage() {
         if (!r.ok) throw new Error(body.error || "Die Auswertung konnte nicht berechnet werden.");
         return body as unknown as Result;
       })
-      .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
+      .then((r) => { setRes(r); setRanKey(query); setOpen(""); setLoading(false); })
       .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
@@ -97,13 +100,16 @@ export function KitaRadarPage() {
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Elternbeiträge: in welche Richtung</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge zu Elternbeiträgen, Gebühren- und Beitragssatzungen für Kitas, Krippen und Tagespflege. Die Höhe der Beiträge wird nicht verglichen: Sie steht je Monat, Einkommensstufe, Alter und Betreuungszeit verschieden da.</p>
+                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge zu Elternbeiträgen, Gebühren- und Beitragssatzungen für Kitas, Krippen und Tagespflege. Die Höhe der Beiträge wird nicht verglichen: Sie steht je Monat, Einkommensstufe, Alter und Betreuungszeit verschieden da. Klick auf eine Richtung zeigt die Vorgänge.</p>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
                   {ORDER.map((d) => (
-                    <li key={d} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 py-3 sm:grid-cols-[280px_minmax(0,1fr)_100px]">
-                      <span className="flex items-center gap-2 truncate text-[16px]"><i className="inline-block h-3 w-3 flex-none rounded-sm border border-slate-200" style={{ background: COLOR[d] }} />{LABEL[d]}</span>
-                      <span className="order-3 col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="block h-full rounded-full" style={{ width: `${(count(d) / maxD) * 100}%`, background: COLOR[d] }} /></span>
-                      <span className="text-right text-[14px] font-semibold tabular-nums">{n(count(d))}</span>
+                    <li key={d} className="border-b border-slate-200">
+                      <button type="button" disabled={!count(d)} onClick={() => setOpen(open === d ? "" : d)} aria-expanded={open === d} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 text-left sm:grid-cols-[280px_minmax(0,1fr)_100px] ${open === d ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
+                        <span className="flex items-center gap-2 truncate text-[16px]"><i className="inline-block h-3 w-3 flex-none rounded-sm border border-slate-200" style={{ background: COLOR[d] }} />{LABEL[d]}</span>
+                        <span className="order-3 col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="block h-full rounded-full" style={{ width: `${(count(d) / maxD) * 100}%`, background: COLOR[d] }} /></span>
+                        <span className="text-right text-[14px] font-semibold tabular-nums">{n(count(d))}</span>
+                      </button>
+                      {open === d && <RadarDrill base="/api/analytics/kita?list=1" query={ranKey} by="direction" value={d} label={LABEL[d]} />}
                     </li>
                   ))}
                 </ol>

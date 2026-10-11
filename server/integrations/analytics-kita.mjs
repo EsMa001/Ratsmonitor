@@ -14,10 +14,18 @@ import {factsReady} from './analytics-factions.mjs';
 const DIRECTIONS=['Erhöhung','Senkung','Beitragsfreiheit','Verpflegung','Neufassung'];
 const TOP=25;
 
-export async function kita(db,catalog,params){
- const f=parseDecisions(params);
+/* Filter wie die Suche; mit Ort nur dessen eigener Rat (Kita-Bedarfsplanung liegt oft beim Kreis, das soll nicht mitzählen) */
+async function kitaFilters(db,catalog,params){
+ const copy=new URLSearchParams(params);for(const k of ['by','value','offset'])copy.delete(k);
+ if(copy.get('area'))copy.set('scope','only');
+ const f=parseDecisions(copy);
  if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
  const {page}=await searchFilters(db,catalog,f);
+ return {f,page};
+}
+
+export async function kita(db,catalog,params){
+ const {f,page}=await kitaFilters(db,catalog,params);
  const cards=kind=>`(SELECT id,region_id,date,title,status FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind='${kind}') AND ${page.where} AND date<>'')`;
  const [{results:fees},{results:places}]=await Promise.all([
   db.prepare(`SELECT c.id id,c.region_id region,c.date date,c.title title,c.status status,x.value direction,x.detail euro FROM ${cards('kita_fee')} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind='kita_fee'`).bind(...page.args).all(),
@@ -46,4 +54,20 @@ export async function kita(db,catalog,params){
   placeRegions:[...placeRegions].map(([id,g])=>({id,name:name(id),pop:pop(id),...g,per1k:pop(id)?Math.round((g.places/pop(id))*10000)/10:null})).sort((a,b)=>b.places-a.places).slice(0,TOP),
   projects:[...projects.values()].sort((a,b)=>b.n-a.n).slice(0,TOP).map(p=>({id:p.id,title:p.title,region:name(p.region),date:p.date,places:p.n})),
  };
+}
+
+/* Vorgänge hinter einer Zahl: Richtung der Elternbeiträge (by=direction) oder Gebiet (region); je Abruf 50 */
+const LIST_SIZE=50;
+export async function kitaList(db,catalog,params){
+ const by=params.get('by')||'',value=params.get('value')||'',offset=Math.max(0,Number(params.get('offset'))||0);
+ if(!['direction','region'].includes(by)||!value)throw new AnalyticsError('Unbekannte Liste.',400);
+ const {page}=await kitaFilters(db,catalog,params);
+ const cards=`(SELECT id,region_id,date,title,status FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind='kita_fee') AND ${page.where} AND date<>'')`;
+ const from=`FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind='kita_fee' WHERE ${by==='direction'?'x.value=?':'c.region_id=?'}`;
+ const byId=new Map(catalog.map(r=>[r.id,r])),name=id=>byId.get(id)?.name||id;
+ const [{results:rows},count]=await Promise.all([
+  db.prepare(`SELECT c.id id,c.region_id region,c.date date,c.title title,c.status status,x.value direction,x.detail euro ${from} ORDER BY c.date DESC LIMIT ? OFFSET ?`).bind(...page.args,value,LIST_SIZE,offset).all(),
+  db.prepare(`SELECT count(*) n ${from}`).bind(...page.args,value).first(),
+ ]);
+ return {by,value,offset,size:LIST_SIZE,total:Number(count?.n||0),items:rows.map(r=>({id:r.id,title:r.title,region:name(r.region),date:r.date,status:r.status,times:1,signal:r.direction,topics:[]}))};
 }

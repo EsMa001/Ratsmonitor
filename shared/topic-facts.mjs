@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {RADARS} from './radars.mjs';
-export const FACTS_VERSION='facts-v10';
+export const FACTS_VERSION='facts-v11';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -158,6 +158,27 @@ export function planOf(title,text=''){
  const no=t.match(/(?:Nr\.?|Nummer)\s*([0-9][0-9A-Za-z./ -]{0,12}?)(?=[\s,:;"„“(]|$)/);
  const name=t.match(/[„"“]([^"“”]{3,60})[”"“]/);
  return {stage,type,plan:(no?'Nr. '+no[1].trim():name?name[1].trim():t.replace(/\s+/g,' ').slice(0,80)).toLowerCase()};
+}
+/* Art des Plangebiets (Bauleitplanung): aus Titel und Planname, sonst aus dem Beschlussvorschlag. Ein Plan kann mehrere Arten
+   haben („Gewerbe- und Industriegebiet“). Abkürzungen der BauNVO (GE, GI, SO, MI, WA) nur als ganze Wörter in Großschreibung. */
+export const PLAN_USES=[
+ ['Industrie',/Industrie(?!-?\s*und\s*Handelskammer)|\bGI\b/i],
+ ['Gewerbe',/Gewerbe(?!steuer)|gewerblich|\bGE\b|Betriebserweiterung|Betriebsgelände|Firmengelände|Handwerkerhof|Bauhof/i],
+ ['Logistik',/Logistik|Distributionszentrum|Verteilzentrum|Güterverkehrszentrum|\bGVZ\b|Speditio/i],
+ ['Einzelhandel',/Einzelhandel|Nahversorg|Lebensmittel(markt|discounter|vollsortimenter)|Verbrauchermarkt|Fachmarkt|Supermarkt|Discounter|Einkaufszentrum|Baumarkt|Drogeriemarkt|großflächig/i],
+ ['Energie',/Photovoltaik|Solar|PV-|\bPV\b|Agri-?PV|Windenergie|Windpark|Windkraft|SO Wind|Vorrangfläche für Wind|Konzentrationszone|Batteriespeicher|Energiespeicher|Speicheranlage|Umspannwerk|Biogas|Elektrolyse|Wasserstoff|Energiepark|Erneuerbare|Energiegewinnung/i],
+ ['Rechenzentrum',/Rechenzentr|Data ?Cent(er|re)/i],
+ ['Mischgebiet',/Mischgebiet|urbane[sn]? Gebiet|\bM[IUD]\b|Dorfgebiet/],
+ ['Wohnen',/Wohn(gebiet|bau|baufläche|quartier|anlage|siedlung|park|ungen|en\b)|\bWA\b|Einfamilienh|Mehrfamilienh|Neubaugebiet|Baugebiet/i],
+];
+const INTERCOMMUNAL=/interkommunal|\bIKG\b|\bIGP\b|Zweckverband|gemeinsame[sn]? (Gewerbe|Industrie)/i;
+/** {uses:[…], inter} oder null */
+export function planUseOf(title,text=''){
+ const t=String(title||'');if(!planOf(t,text))return null;
+ const find=src=>PLAN_USES.filter(([,re])=>re.test(src)).map(([n])=>n);
+ let uses=find(t);
+ if(!uses.length)uses=find(decision(text).slice(0,400));
+ return uses.length?{uses,inter:INTERCOMMUNAL.test(t)}:null;
 }
 /** Geplante Wohneinheiten (größte genannte Zahl in einem Satz mit Planungsbezug), sonst null */
 export function housingOf(text){
@@ -394,7 +415,7 @@ export function factsOf(title,text){
   for(const [p,e] of euro)rows.push({kind:'funding_euro',value:p,detail:String(e)});
  }
  const plan=planOf(title,text);
- if(plan){rows.push({kind:'plan',value:plan.stage,detail:plan.type+'|'+plan.plan});const we=housingOf(text);if(we)rows.push({kind:'housing',value:'Wohneinheiten',detail:String(we)});}
+ if(plan){rows.push({kind:'plan',value:plan.stage,detail:plan.type+'|'+plan.plan});const use=planUseOf(title,text);if(use)for(const u of use.uses)rows.push({kind:'plan_use',value:u,detail:use.inter?'interkommunal':''});const we=housingOf(text);if(we)rows.push({kind:'housing',value:'Wohneinheiten',detail:String(we)});}
  const fee=kitaFeeOf(title,text);if(fee)rows.push({kind:'kita_fee',value:fee.direction,detail:fee.euro});
  const places=kitaPlacesOf(title,text);if(places)rows.push({kind:'kita_places',value:'Plätze',detail:String(places)});
  for(const x of hebesatzOf(title,text))rows.push({kind:'hebesatz',value:x.tax,detail:`${x.to}|${x.from}`});

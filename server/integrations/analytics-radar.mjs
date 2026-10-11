@@ -5,6 +5,7 @@ import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
 import {radarExtra} from './analytics-radar-extra.mjs';
+import {placeNorms} from './analytics-radar-norms.mjs';
 
 /*
  * Plenara.X – Themenradare (Versorgung, Verkehr, Vereine und Soziales, Vergabe, Klima und Energie, Finanzlage, Beteiligung):
@@ -18,14 +19,22 @@ const share=(a,b)=>b?Math.round((a/b)*1000)/10:null;
 // Derselbe Titel in mehreren Gremien eines Gebiets (Ausschuss, Rat, Ortschaftsräte) ist für den Vergleich ein Vorgang
 const titleKey=t=>String(t||'').toLowerCase().replace(/[^a-z0-9äöüß]+/g,' ').trim();
 
+/* Filter wie die Suche; mit Ort nur dessen eigener Rat (ohne Kreis bzw. ohne Gemeinden des Kreises): Ein Kreisjugendamt
+   ist nicht die Jugendarbeit der Gemeinde, und der Vergleich zählt nur den eigenen Rat */
+async function radarFilters(db,catalog,params){
+ const copy=new URLSearchParams(params);for(const k of ['radar','by','value','offset'])copy.delete(k);
+ if(copy.get('area'))copy.set('scope','only');
+ const f=parseDecisions(copy);
+ if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
+ const {page,scopedIds,places}=await searchFilters(db,catalog,f);
+ return {f,page,scopedIds,places};
+}
+
 export async function radar(db,catalog,params){
  const id=params.get('radar')||'';
  const def=RADARS[id];
  if(!def)throw new AnalyticsError('Unbekanntes Radar.',404);
- const copy=new URLSearchParams(params);copy.delete('radar');
- const f=parseDecisions(copy);
- if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
- const {page}=await searchFilters(db,catalog,f);
+ const {f,page,scopedIds,places}=await radarFilters(db,catalog,params);
  const kind='radar:'+id;
  const cards=`(SELECT id,region_id,date,title,status FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind=?) AND ${page.where} AND date<>'')`;
  const {results:rows}=await db.prepare(`SELECT c.id id,c.region_id region,c.date date,c.title title,c.status status,x.value topic,x.detail signal FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind=?`).bind(kind,...page.args,kind).all();
@@ -45,6 +54,9 @@ export async function radar(db,catalog,params){
  }
  const list=[...items.values()];
  const extra=await radarExtra(db,id,page,name);
+ /* Genau ein Gebiet gewählt: Einordnung gegenüber vergleichbaren Gebieten */
+ const one=places.length===1&&scopedIds.size===1?[...scopedIds][0]:null;
+ const norms=one?await placeNorms(db,catalog,one,kind,[...topics.keys()]):null;
  const decided=list.filter(i=>DECIDED.includes(i.status)),approved=decided.filter(i=>i.status==='approved').length;
  return {
   q:f.q,radar:id,name:def.name,
@@ -57,6 +69,31 @@ export async function radar(db,catalog,params){
    .filter(r=>r.pop>=MIN_POP&&r.n>=MIN_TOPICS).sort((a,b)=>b.per10k-a.per10k).slice(0,TOP),
   recent:list.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,RECENT).map(i=>({id:i.id,title:i.title,region:name(i.region),date:i.date,status:i.status,signal:i.signal,topics:i.topics})),
   rule:{minPop:MIN_POP,minTopics:MIN_TOPICS},
-  extra,
+  extra,norms,place:one?name(one):null,
  };
+}
+
+/* Liste der Vorgänge hinter einer Zahl: Thema (by=topic), Signal (signal), Monat (month), Gebiet (region, gleiche Titel einmal),
+   Zweck eines Zuschusses (purpose, kind 'grant'). Dieselben Filter wie das Radar; je Abruf LIST_SIZE Einträge ab offset. */
+const LIST_SIZE=50;
+export async function radarList(db,catalog,params){
+ const id=params.get('radar')||'';
+ if(!RADARS[id])throw new AnalyticsError('Unbekanntes Radar.',404);
+ const by=params.get('by')||'',value=params.get('value')||'',offset=Math.max(0,Number(params.get('offset'))||0);
+ if(!['topic','signal','month','region','purpose'].includes(by)||!value)throw new AnalyticsError('Unbekannte Liste.',400);
+ const {page}=await radarFilters(db,catalog,params);
+ const kind=by==='purpose'?'grant':'radar:'+id;
+ const cond={topic:'x.value=?',signal:'x.detail=?',month:'substr(c.date,1,7)=?',region:'c.region_id=?',purpose:'x.value=?'}[by];
+ const cards=`(SELECT id,region_id,date,title,status FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind=?) AND ${page.where} AND date<>'')`;
+ const from=`FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind=? WHERE ${cond}`,args=[kind,...page.args,kind,value];
+ const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
+ // Gebiet: gleiche Titel (mehrere Gremien) einmal, wie in der Rangliste
+ const group=by==='region'?'lower(c.title)':'c.id';
+ const [{results:rows},count]=await Promise.all([
+  db.prepare(`SELECT c.id id,c.region_id region,max(c.date) date,c.title title,c.status status,group_concat(x.value,'|') topics,max(x.detail) detail,count(DISTINCT c.id) times ${from} GROUP BY ${group} ORDER BY date DESC LIMIT ? OFFSET ?`).bind(...args,LIST_SIZE,offset).all(),
+  db.prepare(`SELECT count(DISTINCT ${group}) n ${from}`).bind(...args).first(),
+ ]);
+ return {by,value,offset,size:LIST_SIZE,total:Number(count?.n||0),
+  items:rows.map(r=>({id:r.id,title:r.title,region:name(r.region),date:r.date,status:r.status,times:r.times,
+   ...(by==='purpose'?{euro:Number(r.detail)||0}:{signal:r.detail,topics:[...new Set(String(r.topics||'').split('|'))]})}))};
 }

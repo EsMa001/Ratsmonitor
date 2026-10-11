@@ -7,6 +7,8 @@ import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarExtra, type Extra } from "./RadarExtra";
+import { RadarDrill } from "./RadarDrill";
+import { RadarNorms, normsSentence, type Norms } from "./RadarNorms";
 import { DEC_COLORS } from "./DecisionCharts";
 import { STATUS } from "../../lib/constants";
 import { RADARS } from "@/shared/radars.mjs";
@@ -23,6 +25,8 @@ interface Result {
   recent: { id: string; title: string; region: string; date: string; status: string; signal: string; topics: string[] }[];
   rule: { minPop: number; minTopics: number };
   extra?: Extra | null;
+  norms?: Norms | null;
+  place?: string | null;
 }
 
 const n = (v: number) => v.toLocaleString("de-DE");
@@ -30,6 +34,12 @@ const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-
 const DAY = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short", year: "2-digit" });
 const MONTH = new Intl.DateTimeFormat("de-DE", { month: "short", year: "2-digit" });
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
+/* „im Rat der Stadt Billerbeck“, „im Kreistag des Kreises Coesfeld“, „im Rat des Amtes Peitz“ */
+const ratOf = (p: string) => {
+  const m = p.match(/^(Kreis|Landkreis|Amt|Markt) (.+)$/);
+  const gen = m ? `${{ Kreis: "des Kreises", Landkreis: "des Landkreises", Amt: "des Amtes", Markt: "des Marktes" }[m[1]]} ${m[2]}` : `der ${p}`;
+  return `${m && /Kreis/.test(m[1]) ? "Kreistag" : "Rat"} ${gen}`;
+};
 
 /** plenara.X – Themenradar (Versorgung, Verkehr, Vereine und Soziales, Vergabe, Klima und Energie, Finanzlage, Beteiligung);
  *  Unterthemen, Signale und Muster in shared/radars.mjs, Auswertung in server/integrations/analytics-radar.mjs */
@@ -45,8 +55,9 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
   const [loading, setLoading] = useState(false);
   const [want, setWant] = useState(true);
   const [error, setError] = useState("");
-  /* Jüngste Vorgänge nach Unterthema filtern (Klick auf ein Unterthema) */
-  const [pick, setPick] = useState("");
+  /* Aufgeklappte Liste hinter einer Zahl: "topic:Jugend", "signal:…", "month:2026-05", "region:<id>" */
+  const [open, setOpen] = useState("");
+  const toggle = (key: string) => setOpen(open === key ? "" : key);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -63,7 +74,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
         if (!r.ok) throw new Error(body.error || "Die Auswertung konnte nicht berechnet werden.");
         return body as unknown as Result;
       })
-      .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
+      .then((r) => { setRes(r); setRanKey(query); setOpen(""); setLoading(false); })
       .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
@@ -75,7 +86,9 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
   const maxS = Math.max(1, ...(res?.signals ?? []).map((s) => s.n));
   const maxM = Math.max(1, ...(res?.months ?? []).map((m) => m.total));
   const maxR = Math.max(1, ...(res?.regions ?? []).map((r) => r.per10k ?? 0));
-  const recent = (res?.recent ?? []).filter((r) => !pick || r.topics.includes(pick));
+  const recent = res?.recent ?? [];
+  const drill = (by: "topic" | "signal" | "month" | "region", value: string, label: string) => open === `${by}:${value}` && <RadarDrill radar={id} query={ranKey} by={by} value={value} label={label} />;
+  const month = open.startsWith("month:") ? open.slice(6) : "";
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
@@ -94,24 +107,27 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {res.totals.topics === 0 ? <p className="mt-10 text-[16px]">Für diese Suche ist nichts zu diesem Radar erkannt.</p> : (
             <>
-              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.topics)} Vorgänge in ${n(res.totals.regions)} Gebieten, am häufigsten zu „${topics[0]?.name}“ (${n(topics[0]?.n ?? 0)}).${showRate && res.totals.rate !== null ? ` Von ${n(res.totals.decided)} entschiedenen Vorgängen wurden ${pct(res.totals.rate)} beschlossen.` : ""}`}</Befund>
+              <Befund>{`${res.place && !res.q ? `Im ${ratOf(res.place)} gab es ${n(res.totals.topics)} Vorgänge` : `${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.topics)} Vorgänge in ${n(res.totals.regions)} Gebieten`}, am häufigsten zu „${topics[0]?.name}“ (${n(topics[0]?.n ?? 0)}).${showRate && res.totals.rate !== null ? ` Von ${n(res.totals.decided)} entschiedenen Vorgängen wurden ${pct(res.totals.rate)} beschlossen.` : ""}${normsSentence(res.norms)}`}</Befund>
+              {res.place && <p className="mt-3 text-[14px] text-slate-500">Nur Vorgänge aus dem {ratOf(res.place)}: Vorgänge anderer Ebenen (etwa des Kreises) zählen hier nicht mit.</p>}
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
                 {[["Vorgänge", n(res.totals.topics)], ["Gebiete", n(res.totals.regions)], ["Entschieden", n(res.totals.decided)], showRate ? ["Beschlussquote", pct(res.totals.rate)] : ["Themen", n(topics.filter((t) => t.n > 0).length)]].map(([k, v], i) => (
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
               </dl>
 
-              <RadarExtra extra={res.extra} />
+              {res.norms && <RadarNorms x={res.norms} />}
+
+              <RadarExtra extra={res.extra} radar={id} query={ranKey} />
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Themen</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge je Thema, in wie vielen Gebieten und was aus ihnen wird. Ein Vorgang kann zu mehreren Themen gehören. Klick auf ein Thema zeigt unten seine jüngsten Vorgänge.</p>
+                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge je Thema, in wie vielen Gebieten und was aus ihnen wird. Ein Vorgang kann zu mehreren Themen gehören. Klick auf ein Thema zeigt seine Vorgänge.</p>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
                   {topics.map((t) => {
                     const d = Math.max(1, t.decided);
                     return (
                       <li key={t.name} className="border-b border-slate-200">
-                        <button type="button" onClick={() => setPick(pick === t.name ? "" : t.name)} aria-pressed={pick === t.name} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-3 text-left sm:grid-cols-[260px_minmax(0,1fr)_200px] ${pick === t.name ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
+                        <button type="button" onClick={() => toggle(`topic:${t.name}`)} aria-expanded={open === `topic:${t.name}`} disabled={t.n === 0} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-3 text-left sm:grid-cols-[260px_minmax(0,1fr)_200px] ${open === `topic:${t.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                           <span className="truncate text-[16px]">{t.name}</span>
                           <span className="order-3 col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${(t.n / maxT) * 100}%` }} /></span>
                           <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(t.n)}</b><span className="ml-2 text-slate-500">{n(t.regions)} Gebiete</span></span>
@@ -127,6 +143,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                             {t.signals.filter((s) => s.name !== "Sonstiges").map((s) => <span key={s.name} className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">{s.name} {n(s.n)}</span>)}
                           </span>
                         </button>
+                        {drill("topic", t.name, t.name)}
                       </li>
                     );
                   })}
@@ -135,13 +152,16 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Was geschieht</h2>
-                <p className="mb-3 mt-1 text-[14px] text-slate-500">Art der Vorgänge, aus Titel oder Beschlussvorschlag gelesen.</p>
+                <p className="mb-3 mt-1 text-[14px] text-slate-500">Art der Vorgänge, aus Titel oder Beschlussvorschlag gelesen. Klick zeigt die Vorgänge.</p>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
                   {res.signals.map((s) => (
-                    <li key={s.name} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-200 py-2.5 sm:grid-cols-[260px_minmax(0,1fr)_100px]">
-                      <span className={`truncate text-[16px] ${s.name === "Sonstiges" ? "text-slate-500" : ""}`}>{s.name}</span>
-                      <span className="order-3 col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className={`block h-full rounded-full ${s.name === "Sonstiges" ? "bg-slate-300" : "bg-teal-400"}`} style={{ width: `${(s.n / maxS) * 100}%` }} /></span>
-                      <span className="text-right text-[14px] font-semibold tabular-nums">{n(s.n)}</span>
+                    <li key={s.name} className="border-b border-slate-200">
+                      <button type="button" onClick={() => toggle(`signal:${s.name}`)} aria-expanded={open === `signal:${s.name}`} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-2.5 text-left sm:grid-cols-[260px_minmax(0,1fr)_100px] ${open === `signal:${s.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
+                        <span className={`truncate text-[16px] ${s.name === "Sonstiges" ? "text-slate-500" : ""}`}>{s.name}</span>
+                        <span className="order-3 col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className={`block h-full rounded-full ${s.name === "Sonstiges" ? "bg-slate-300" : "bg-teal-400"}`} style={{ width: `${(s.n / maxS) * 100}%` }} /></span>
+                        <span className="text-right text-[14px] font-semibold tabular-nums">{n(s.n)}</span>
+                      </button>
+                      {drill("signal", s.name, s.name)}
                     </li>
                   ))}
                 </ol>
@@ -150,37 +170,40 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
               {res.months.length > 1 && (
                 <Reveal><section className="mt-12">
                   <h2 className="text-[22px] font-semibold">Im Zeitverlauf</h2>
-                  <p className="mb-3 mt-1 text-[14px] text-slate-500">Vorgänge je Monat der Sitzung.</p>
-                  <div className="flex h-[150px] items-end gap-1.5 border-b border-slate-200" role="img" aria-label="Vorgänge je Monat">
-                    {res.months.map((m) => <div key={m.m} className="flex min-w-0 flex-1 justify-center" title={`${m.m}: ${m.total}`}><span className="w-full max-w-[36px] rounded-t-sm bg-teal-600" style={{ height: `${(m.total / maxM) * 140}px` }} /></div>)}
+                  <p className="mb-3 mt-1 text-[14px] text-slate-500">Vorgänge je Monat der Sitzung. Klick auf einen Monat zeigt seine Vorgänge.</p>
+                  <div className="flex h-[150px] items-end gap-1.5 border-b border-slate-200">
+                    {res.months.map((m) => <button type="button" key={m.m} onClick={() => toggle(`month:${m.m}`)} aria-expanded={month === m.m} aria-label={`${MONTH.format(new Date(m.m + "-01"))}: ${n(m.total)} Vorgänge`} className="flex h-full min-w-0 flex-1 items-end justify-center hover:opacity-80"><span className={`w-full max-w-[36px] rounded-t-sm ${month && month !== m.m ? "bg-teal-600/40" : "bg-teal-600"}`} style={{ height: `${(m.total / maxM) * 140}px` }} /></button>)}
                   </div>
                   <div className="mt-1 flex gap-1.5 text-[12px] text-slate-500">{res.months.map((m) => <span key={m.m} className="min-w-0 flex-1 truncate text-center">{MONTH.format(new Date(m.m + "-01"))}</span>)}</div>
+                  {month && <div className="mt-3">{drill("month", month, MONTH.format(new Date(month + "-01")))}</div>}
                 </section></Reveal>
               )}
 
-              <Reveal><section className="mt-12">
+              {!res.place && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Gebiete mit vielen Vorgängen</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge je 10.000 Einwohner; nur Gebiete ab {n(res.rule.minPop)} Einwohnern mit mindestens {res.rule.minTopics} Vorgängen. Die Zahl misst, wie oft das Thema in den Ratsunterlagen auftaucht.</p>
+                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge je 10.000 Einwohner; nur Gebiete ab {n(res.rule.minPop)} Einwohnern mit mindestens {res.rule.minTopics} Vorgängen. Die Zahl misst, wie oft das Thema in den Ratsunterlagen auftaucht. Mit einem gewählten Ort steht hier stattdessen der Vergleich mit ähnlichen Gebieten. Klick auf ein Gebiet zeigt seine Vorgänge.</p>
                 {res.regions.length === 0 ? <p className="text-[14px] text-slate-500">Zu wenige Gebiete für einen Vergleich.</p> : (
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.regions.map((r, i) => (
-                      <li key={r.id} className="grid grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-x-3 border-b border-slate-200 py-3 sm:grid-cols-[28px_280px_minmax(0,1fr)_150px]">
-                        <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
-                        <span className="min-w-0"><span className="block truncate text-[16px]">{r.name}</span><span className="block truncate text-[12px] text-slate-500">{r.topics.join(", ")}</span></span>
-                        <span className="order-4 col-span-3 mt-1.5 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1 sm:mt-0"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${((r.per10k ?? 0) / maxR) * 100}%` }} /></span>
-                        <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{(r.per10k ?? 0).toLocaleString("de-DE")}</b><span className="ml-2 text-slate-500">{n(r.n)} Vorg.</span></span>
+                      <li key={r.id} className="border-b border-slate-200">
+                        <button type="button" onClick={() => toggle(`region:${r.id}`)} aria-expanded={open === `region:${r.id}`} className={`grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left sm:grid-cols-[28px_280px_minmax(0,1fr)_150px] ${open === `region:${r.id}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
+                          <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
+                          <span className="min-w-0"><span className="block truncate text-[16px]">{r.name}</span><span className="block truncate text-[12px] text-slate-500">{r.topics.join(", ")}</span></span>
+                          <span className="order-4 col-span-3 mt-1.5 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1 sm:mt-0"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${((r.per10k ?? 0) / maxR) * 100}%` }} /></span>
+                          <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{(r.per10k ?? 0).toLocaleString("de-DE")}</b><span className="ml-2 text-slate-500">{n(r.n)} Vorg.</span></span>
+                        </button>
+                        {drill("region", r.id, r.name)}
                       </li>
                     ))}
                   </ol>
                 )}
-              </section></Reveal>
+              </section></Reveal>}
 
               <Reveal><section className="mt-12">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <h2 className="text-[22px] font-semibold">Jüngste Vorgänge{pick ? `: ${pick}` : ""}</h2>
-                  {pick && <button type="button" onClick={() => setPick("")} className="text-[14px] text-teal-700 hover:underline">Alle Themen zeigen</button>}
+                  <h2 className="text-[22px] font-semibold">Jüngste Vorgänge</h2>
                 </div>
-                {recent.length === 0 ? <p className="mt-3 text-[14px] text-slate-500">Unter den jüngsten Vorgängen keiner zu diesem Thema.</p> : (
+                {recent.length === 0 ? <p className="mt-3 text-[14px] text-slate-500">Keine Vorgänge.</p> : (
                   <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">
                     {recent.map((r) => (
                       <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">

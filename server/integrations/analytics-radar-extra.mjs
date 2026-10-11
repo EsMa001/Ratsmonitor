@@ -20,7 +20,8 @@ export function where(regionName,title){
  return m?{key:m[2],label:`${m[1]} ${m[2]} (${regionName})`}:{key:'',label:regionName};
 }
 const median=a=>{if(!a.length)return null;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
-const LIST=60,LARGEST=15;
+// Listen vollständig (je Gebiet ein Eintrag), damit ein Klick auf eine Zahl alle zugehörigen Gebiete zeigt
+const LIST=2000,LARGEST=15;
 
 async function rows(db,page,kind){
  const cards=`(SELECT id,region_id,date,title,status FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind=?) AND ${page.where} AND date<>'')`;
