@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
@@ -34,6 +34,9 @@ export function FraktionenPage() {
   const [loading, setLoading] = useState(false);
   const [want, setWant] = useState(true);
   const [error, setError] = useState("");
+  /* Fraktionen, deren typische Themen aufgeklappt sind (je Thema eine eigene Zeile) */
+  const [openTop, setOpenTop] = useState<Set<string>>(new Set());
+  const toggleTop = (name: string) => setOpenTop((prev) => { const next = new Set(prev); if (next.has(name)) next.delete(name); else next.add(name); return next; });
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -129,15 +132,33 @@ export function FraktionenPage() {
                     </thead>
                     <tbody>
                       {parties.map((p) => (
-                        <tr key={p.name} className="border-b border-slate-200">
+                        <Fragment key={p.name}>
+                        <tr className={openTop.has(p.name) ? "" : "border-b border-slate-200"}>
                           <td className="whitespace-nowrap py-2 pr-3">{p.name}</td>
                           {cols.map((c) => {
                             const cell = p.profile.find((x) => x.id === c.id);
                             const idx = cell && cell.n >= 3 ? cell.index : null;
                             return <td key={c.id} className="px-1 py-1 text-center tabular-nums"><span className={`block rounded px-1 py-1 ${idx !== null && idx >= 160 ? "text-white" : "text-slate-700"}`} style={{ background: cellColor(idx) }} title={cell ? `${c.name}: ${cell.share ?? 0} % der Einträge (${n(cell.n)}), Index ${cell.index ?? "–"}` : undefined}>{cell?.share !== null && cell?.share !== undefined ? `${Math.round(cell.share)} %` : "–"}</span></td>;
                           })}
-                          <td className="py-2 pl-3 text-slate-500">{p.top.length ? p.top.map((t) => t.name).join(", ") : "–"}</td>
+                          <td className="py-2 pl-3 text-slate-500">
+                            {p.top.length === 0 ? "–" : (
+                              <button type="button" onClick={() => toggleTop(p.name)} aria-expanded={openTop.has(p.name)} className="inline-flex items-center gap-1.5 whitespace-nowrap text-left text-teal-700 hover:underline">
+                                {p.top.length === 1 ? p.top[0].name : `${p.top[0].name} +${p.top.length - 1}`}
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={`transition-transform ${openTop.has(p.name) ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
+                              </button>
+                            )}
+                          </td>
                         </tr>
+                        {/* Aufgeklappt: je typischem Thema eine Zeile mit Anteil und wie viel häufiger als bei allen Fraktionen */}
+                        {openTop.has(p.name) && p.top.map((t, i) => (
+                          <tr key={t.id} className={i === p.top.length - 1 ? "border-b border-slate-200" : ""}>
+                            <td colSpan={cols.length + 2} className="py-1.5 pl-6 text-[14px]">
+                              <span className="font-medium text-slate-900">{t.name}</span>
+                              <span className="ml-2 text-slate-500">{t.share !== null ? `${t.share.toLocaleString("de-DE")} % der Einträge (${n(t.n)})` : n(t.n)}{t.index !== null ? ` · ${(t.index / 100).toLocaleString("de-DE", { maximumFractionDigits: 1 })}-mal so häufig wie bei allen Fraktionen` : ""}</span>
+                            </td>
+                          </tr>
+                        ))}
+                        </Fragment>
                       ))}
                     </tbody>
                   </table>
