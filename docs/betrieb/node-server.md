@@ -132,6 +132,7 @@ Stand als Archiv in `/tmp` (`git archive main scripts/node-migrate.mjs drizzle |
 
 ```bash
 ls -la /srv/ratsmonitor/backups/          # Sicherung von heute vorhanden?
+systemctl stop ratsmonitor-import.timer ratsmonitor-import-nightly.timer ratsmonitor-import ratsmonitor-import-nightly
 systemctl stop ratsmonitor
 sudo -u ratsmonitor node /tmp/m/scripts/node-migrate.mjs /srv/ratsmonitor/data/ratsmonitor.sqlite
 systemctl start ratsmonitor
@@ -192,9 +193,13 @@ Hand starten: `systemctl start ratsmonitor-import`. Ein Auftrag aus der Administ
 legt ihn nur an, der Timer holt ihn innerhalb von zehn Minuten.
 
 Der Prozess öffnet die Datenbank wie der Dienst (`DATABASE_FILE`), wartet aber bis 30 s auf Schreibsperren
-(`DATABASE_BUSY_TIMEOUT_MS`); eigener Speicherrahmen 6 GB. Nach dem Auftrag rechnet er die Kennzahlen der
-Administration nach. Ein Deployment startet nur den Dienst neu; ein laufender Importprozess läuft mit seinem alten
-Stand zu Ende (`deploy.sh` meldet das).
+(`IMPORT_BUSY_TIMEOUT_MS` in der Einheit; `DATABASE_BUSY_TIMEOUT_MS` aus der Umgebungsdatei gilt nur dem Dienst);
+Heap 6 GB, Speicherrahmen 8 GB, niedrige CPU- und Platten-Priorität. Nach dem Auftrag rechnet er die Kennzahlen der
+Administration nach. Exit 0: fertig, nichts zu tun oder Zeitgrenze (der Auftrag bleibt, der nächste Lauf macht
+weiter); 1: Abbruch; 2: der nächtliche Lauf fand einen pausierten frischen Auftrag vor und legte keinen an (ein
+pausierter oder seit sechs Stunden unbewegter Auftrag wird dagegen beendet). Ein Deployment startet nur den Dienst neu;
+ein laufender Importprozess läuft mit seinem alten Stand zu Ende (`deploy.sh` meldet das). **Vor Migrationen** den
+Importprozess und beide Timer stoppen (Abschnitt „Migrationen“).
 
 ## Vor dem Öffnen für andere
 

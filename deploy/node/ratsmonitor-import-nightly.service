@@ -12,11 +12,14 @@ User=ratsmonitor
 Group=ratsmonitor
 WorkingDirectory=/srv/ratsmonitor/app/current
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
-Environment=DATABASE_BUSY_TIMEOUT_MS=30000
+Environment=IMPORT_BUSY_TIMEOUT_MS=30000
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
 TimeoutStartSec=5h
-ExecStart=/usr/bin/node --max-old-space-size=4096 dist/standalone/worker/import-worker.mjs --create sources --window 1w --max-minutes 240
-MemoryHigh=5G
-MemoryMax=6G
+ExecStart=/usr/bin/node --max-old-space-size=6144 dist/standalone/worker/import-worker.mjs --create sources --window 1w --max-minutes 240
+MemoryHigh=7G
+MemoryMax=8G
 LimitNOFILE=65536
 NoNewPrivileges=yes
 PrivateTmp=yes

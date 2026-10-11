@@ -1,5 +1,7 @@
-# Täglich 01:00 Uhr Serverzeit (Europe/Berlin): bundesweiter Lauf (ratsmonitor-import-nightly.service), fertig vor der
-# Sicherung um 03:30 Uhr (ein Lauf dauerte am 10.10.2026 2,8 h; --max-minutes 240 beendet ihn spätestens um 05:00).
+# Täglich 01:00 Uhr Systemzeit (timedatectl: Europe/Berlin; TZ=UTC aus der Umgebungsdatei gilt nur im Prozess):
+# bundesweiter Lauf (ratsmonitor-import-nightly.service). Ein Lauf dauerte am 10.10.2026 2,8 h; --max-minutes 240 beendet
+# ihn spätestens gegen 05:00. Die Sicherung um 03:30 (VACUUM INTO, nur lesend) und die Wortliste um 04:15 (eigene Sperre)
+# vertragen sich damit.
 [Unit]
 Description=Ratsmonitor Importprozess, täglich 01:00 Uhr
 

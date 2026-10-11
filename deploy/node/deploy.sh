@@ -35,7 +35,7 @@ echo "Bauen (Node) ..."
 sudo -u ratsmonitor -H bash -lc "cd '$BUILD' && node scripts/build-node.mjs > build.log 2>&1" || { tail -40 "$BUILD/build.log"; exit 1; }
 [ -f "$BUILD/dist/standalone/worker/import-worker.mjs" ] || { echo "Abbruch: der Importprozess (dist/standalone/worker/import-worker.mjs) wurde nicht gebaut"; exit 1; }
 if [ -n "${DATABASE_FILE:-}" ] && [ -f "$DATABASE_FILE" ]; then
-  sudo -u ratsmonitor -H node "$BUILD/scripts/node-migrate.mjs" "$DATABASE_FILE" --check || { echo "Abbruch: Migrationen fehlen. Dienst stoppen, sichern, dann: node scripts/node-migrate.mjs $DATABASE_FILE"; exit 1; }
+  sudo -u ratsmonitor -H node "$BUILD/scripts/node-migrate.mjs" "$DATABASE_FILE" --check || { echo "Abbruch: Migrationen fehlen. Importprozess und Timer stoppen (systemctl stop ratsmonitor-import.timer ratsmonitor-import-nightly.timer ratsmonitor-import ratsmonitor-import-nightly), Dienst stoppen, sichern, dann: node scripts/node-migrate.mjs $DATABASE_FILE"; exit 1; }
 fi
 # Fertigen Bau an seinen Platz. Läuft genau dieser Stand gerade, zuerst auf einen anderen Ordner zeigen lassen.
 if [ "$(readlink -f "$APP/current" 2>/dev/null || true)" = "$REL" ]; then

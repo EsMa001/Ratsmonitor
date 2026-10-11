@@ -1,10 +1,8 @@
 # Zeitplan des Importprozesses (ratsmonitor-import.service):
 # - alle 10 Minuten: einen offenen Auftrag abarbeiten (die Admin-Seite legt ihn mit „im Hintergrund abrufen“ an);
 #   ohne offenen Auftrag endet der Prozess sofort.
-# - täglich 01:00 Uhr: bundesweiter Lauf über alle angebundenen Quellen, eine Woche zurück (Drop-in unten).
-# Installieren: siehe ratsmonitor-import.service. Der tägliche Lauf braucht die zweite Einheit:
-#   cp deploy/node/ratsmonitor-import-nightly.service deploy/node/ratsmonitor-import-nightly.timer /etc/systemd/system/
-#   systemctl daemon-reload && systemctl enable --now ratsmonitor-import-nightly.timer
+# - täglich 01:00 Uhr: bundesweiter Lauf über alle angebundenen Quellen, eine Woche zurück (zweite Einheit
+#   ratsmonitor-import-nightly.service/.timer). Installieren: siehe ratsmonitor-import.service.
 [Unit]
 Description=Ratsmonitor Importprozess, alle 10 Minuten
 

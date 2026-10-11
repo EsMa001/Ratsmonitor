@@ -19,15 +19,21 @@ User=ratsmonitor
 Group=ratsmonitor
 WorkingDirectory=/srv/ratsmonitor/app/current
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
-# Länger auf Schreibsperren des Webprozesses warten als dieser (5 s); der Importprozess hat Zeit
-Environment=DATABASE_BUSY_TIMEOUT_MS=30000
+# Länger auf Schreibsperren des Webprozesses warten als dieser (5 s); der Importprozess hat Zeit. Eigene Variable, weil
+# die Umgebungsdatei DATABASE_BUSY_TIMEOUT_MS für den Dienst setzt und Environment= hier überschreiben würde.
+Environment=IMPORT_BUSY_TIMEOUT_MS=30000
+# Hinter dem Webserver zurückstehen: CPU und Platte mit niedriger Priorität
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
 # Ein bundesweiter Lauf dauert etwa drei Stunden; --max-minutes beendet den Prozess vorher (der Auftrag bleibt, der
 # nächste Lauf des Timers macht weiter), TimeoutStartSec ist die harte Grenze
 TimeoutStartSec=5h
-ExecStart=/usr/bin/node --max-old-space-size=4096 dist/standalone/worker/import-worker.mjs --run --max-minutes 240
-# Speicher: Große Gebiete lesen einige Hundert MB; der Rest bleibt dem Seitencache und dem Webserver
-MemoryHigh=5G
-MemoryMax=6G
+ExecStart=/usr/bin/node --max-old-space-size=6144 dist/standalone/worker/import-worker.mjs --run --max-minutes 240
+# Speicher: Heap 6 GB wie bisher im Webprozess (große Gebiete lesen bis 1 GB je Schritt, A4); der Dienst ist auf 8 GB
+# begrenzt, zusammen bleibt bei 16 GB wenig für den Seitencache: beide Grenzen sind Obergrenzen, keine Reservierung
+MemoryHigh=7G
+MemoryMax=8G
 LimitNOFILE=65536
 # Absicherung wie der Dienst: nur der Datenordner ist beschreibbar
 NoNewPrivileges=yes
