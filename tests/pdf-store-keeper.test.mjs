@@ -38,6 +38,8 @@ test('feste Grenze: neue Datei verdrängt die schlechteste oder fliegt selbst ra
   assert.equal(await put(k,'D','invitation'),'nicht besser');
   assert.equal(store.entry('https://x.test/D').status,'text-only');
   assert.ok(usedBytes(store)<=size*2+200);
+  // Der fortgeschriebene Platz stimmt mit der vollen Zählung überein
+  assert.ok(Math.abs(k.used()-usedBytes(store))<1,'used '+k.used()+' vs '+usedBytes(store));
   // Texte bleiben auch bei gelöschten PDFs
   for(const n of ['B','D'])assert.match(store.getText('https://x.test/'+n).pages.join(' '),new RegExp('Dokument '+n));
   assert.deepEqual({...k.stats(),ocrPages:0},{kept:3,swapped:1,rejected:1,tooBig:0,ocrPages:0,stuck:0});

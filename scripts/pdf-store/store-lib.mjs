@@ -74,25 +74,31 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
  const kept=rankedFiles(store).filter(f=>f.keep).sort((a,b)=>a.score-b.score),have=new Set(kept.map(f=>f.sha));
  const c={kept:0,swapped:0,rejected:0,tooBig:0,ocrPages:0,stuck:0};
  let ocr,lock=Promise.resolve();
+ /* Belegter Platz: einmal gezählt, dann fortgeschrieben (die volle Zählung liest alle Einträge der Ablage und wäre je Datei
+    zu langsam); alle SYNC Entscheidungen neu gezählt, damit sich keine Abweichung ansammelt */
+ const SYNC=2000,textOf=sha=>Number(store.db.prepare("SELECT chars FROM texts WHERE sha256=? AND status='ok'").get(sha)?.chars||0)*1.05;
+ let used=usedBytes(store),since=0;
  /** Text vollständig? Sonst Textebene lesen und Seiten ohne Text per OCR; false, wenn OCR nötig, aber nicht möglich ist */
  const complete=async f=>{
-  const t=store.db.prepare('SELECT version,ocr_needed AS ocrNeeded,status FROM texts WHERE sha256=?').get(f.sha);
+  const t=store.db.prepare('SELECT version,ocr_needed AS ocrNeeded,status FROM texts WHERE sha256=?').get(f.sha),before=textOf(f.sha);
   let waiting=t&&t.version>=TEXT_VERSION?(t.status==='ok'?t.ocrNeeded:0):null;
-  if(waiting===null){try{waiting=await readTextLayer(store,f.sha);}catch(e){store.failText(f.sha,e.message,{version:TEXT_VERSION});waiting=0;}}
-  if(!waiting)return true;
-  ocr??=await ocrScheduler(ocrWorkers)||false;
-  if(!ocr)return false;
-  c.ocrPages+=await ocrFile(store,f.sha,ocr);return true;
+  try{
+   if(waiting===null){try{waiting=await readTextLayer(store,f.sha);}catch(e){store.failText(f.sha,e.message,{version:TEXT_VERSION});waiting=0;}}
+   if(!waiting)return true;
+   ocr??=await ocrScheduler(ocrWorkers)||false;
+   if(!ocr)return false;
+   c.ocrPages+=await ocrFile(store,f.sha,ocr);return true;
+  }finally{used+=textOf(f.sha)-before;}
  };
- const drop=async f=>{if(!await complete(f)){c.stuck++;log(`OCR nicht möglich, PDF bleibt: ${f.sha.slice(0,12)}`);return false;}store.dropPdf(f.sha);return true;};
+ const drop=async f=>{if(!await complete(f)){c.stuck++;log(`OCR nicht möglich, PDF bleibt: ${f.sha.slice(0,12)}`);return false;}store.dropPdf(f.sha);used-=f.bytes;return true;};
  const insert=f=>{let lo=0,hi=kept.length;while(lo<hi){const m=(lo+hi)>>1;if(kept[m].score<f.score)lo=m+1;else hi=m;}kept.splice(lo,0,f);have.add(f.sha);};
- const decide=async sha=>{
+ const decide=async(sha,before)=>{
   if(have.has(sha))return 'schon da';
-  // Textebene sofort: sie zeigt, ob es ein Scan ist (Rang), und der Text bleibt in jedem Fall
-  try{await readTextLayer(store,sha);}catch(e){store.failText(sha,e.message,{version:TEXT_VERSION});}
   const f=rankedFile(store,sha);if(!f)return 'fehlt';
+  used+=f.bytes+textOf(sha)-before;
+  if(++since>=SYNC){since=0;used=usedBytes(store);}
   if(!f.keep){await drop(f);c.tooBig++;return 'zu groß';}
-  while(usedBytes(store)>limit){
+  while(used>limit){
    const worst=kept[0];
    if(!worst||worst.score>=f.score){await drop(f);c.rejected++;return 'nicht besser';}
    kept.shift();have.delete(worst.sha);
@@ -102,9 +108,17 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   insert(f);c.kept++;return 'behalten';
  };
  return {
-  /** Neue Datei einordnen (nacheinander, in Aufrufreihenfolge) */
-  admit:sha=>(lock=lock.then(()=>decide(sha),()=>decide(sha))),
+  /** Neue Datei einordnen: Textebene sofort und parallel (sie zeigt, ob es ein Scan ist, und der Text bleibt in jedem Fall),
+      die Entscheidung danach nacheinander in Aufrufreihenfolge */
+  admit:async sha=>{
+   if(have.has(sha))return 'schon da';
+   const before=textOf(sha);
+   try{await readTextLayer(store,sha);}catch(e){store.failText(sha,e.message,{version:TEXT_VERSION});}
+   return lock=lock.then(()=>decide(sha,before),()=>decide(sha,before));
+  },
   stats:()=>({...c}),
+  /** Belegter Platz, wie fortgeschrieben */
+  used:()=>used,
   close:async()=>{await lock.catch(()=>{});if(ocr)await ocr.terminate();},
  };
 }

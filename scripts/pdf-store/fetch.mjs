@@ -102,7 +102,7 @@ async function one(h,job){
  try{
   const bytes=await download(job.url);
   const status=store.put(job.url,bytes,{regionId:job.region,topicId:job.topic,...job.meta});c[status]++;h.fails=0;
-  if(status==='ok'){c.bytes+=bytes.byteLength;size+=bytes.byteLength;if(keeper){await keeper.admit(store.entry(job.url).sha256);size=store.size();}}
+  if(status==='ok'){c.bytes+=bytes.byteLength;size+=bytes.byteLength;if(keeper){await keeper.admit(store.entry(job.url).sha256);size=keeper.used();}}
   if(stepBytes&&size>=nextStep){console.log(`MEILENSTEIN ${mb(size)} in der Ablage (${c.ok} PDFs in diesem Lauf, aktueller Monat ${month})`);while(nextStep<=size)nextStep+=stepBytes;}
   if(maxBytes&&size>=maxBytes)stopping=true;
  }catch(e){
