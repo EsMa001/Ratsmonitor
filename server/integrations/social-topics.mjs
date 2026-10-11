@@ -60,7 +60,8 @@ export const GROUPS=[
   ['Verkauf',/verkauf (des|der|von) (grundstück|gebäude|stadtwerke|anteile|wohnungen|rathaus|schule)|privatisierung|rekommunalisierung/,2.2],
  ]},
  {id:'beteiligung',name:'Bürgerbeteiligung',weight:3,terms:[
-  ['Bürgerbegehren',/bürgerbegehren|bürgerentscheid|einwohnerantrag|volksbegehren|ratsbegehren|unterschriftensammlung|unterschriften|bürgerinitiative|petition/,undefined,/^(?!.*(petitionsausschuss|geschäftsordnung|besetzung|bestellung der mitglieder)).*/s],
+  ['Bürgerbegehren',/bürgerbegehren|bürgerentscheid|einwohnerantrag|volksbegehren|ratsbegehren|unterschriftensammlung|unterschriften|bürgerinitiative/,undefined,/^(?!.*(petitionsausschuss|geschäftsordnung|besetzung|bestellung der mitglieder)).*/s],
+  ['Bürgerbegehren',/petition/,undefined,/^(?!.*(petitionsausschuss|geschäftsordnung|besetzung|bestellung der mitglieder|schülerbeförderung|kenntnisnahme|stellungnahme zur petition)).*(verbot|schließ|erhalt|abschaffung|gegen|kein|erhöhung|steuer|gebühr|tempo|windkraft|moschee|feuerwerk|bezahlkarte|rückbau|umbenennung|fällung|ausbau)/s],
   ['Rücktritt / Abwahl',/abwahl|rücktritt (des|der|von) (herrn |frau )?(bürgermeister|landrat|oberbürgermeister|stadträtin|stadtrat|gemeinderat|ratsherr|ratsfrau|beigeordnet|ortsvorsteher|fraktionsvorsitz)|misstrauensantrag|dienstaufsichtsbeschwerde|untersuchungsausschuss|abberufung (des|der|von) (bürgermeister|stadträtin|stadtrat|ersten|beigeordnet|ortsvorsteher|landrat)/],
   ['Anwohnerprotest',/\bprotest(?!ant)|widerstand gegen|anwohnerinitiative|kundgebung/,2.4],
  ]},
@@ -192,23 +193,40 @@ function matchedWord(title,term){
  * Titel für den Aufhänger bereinigen: Nachtragskopf, Fraktionskopf („Antrag der CDU-Fraktion vom …:“), „hier:“, Aktenzeichen,
  * Klammern mit Daten und Paragraphen entfernen, auf höchstens `max` Zeichen an einer Wortgrenze kürzen.
  */
-export function cleanTitle(title,max=105){
+export function cleanTitle(title,max=120){
  let t=String(title||'').replace(/\s+/g,' ').trim();
  t=t.replace(/^Nachtrag:?\s*[\d.]+\s*(Nummer\s*\d+\s*)?/i,'');
  // Kopf „Antrag/Anfrage … :“ oder „… vom 24.06.2026 zur …“ nur entfernen, wenn danach noch ein Gegenstand folgt
  const heads=[
   /^(?:[A-ZÄÖÜ][\wäöüß]+-)?(?:Gemeinsamer |Gemeinsame )?(?:Änderungs-?|Ergänzungs-?|Beschluss-?|Dringlichkeits-?)?(?:antrag|anfrage|vorschlag)\b(?:\s+Nr\.?\s*[\w\/.-]+)?[^:–]{0,110}?(?:\s+[-–]\s+|\s*:\s+)(?:Fraktion\s+[A-ZÄÖÜ][\wäöüß/]+\s+)?/i,
-  /^(?:Gemeinsamer |Gemeinsame )?(?:Änderungs-?|Ergänzungs-?|Beschluss-?|Dringlichkeits-?)?(?:antrag|anfrage|vorschlag)\b[^:–]{0,90}?vom\s+\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}\s*(?:(?:zur|zum|zu|betr\.?|betreffend)\s+|:\s*)/i,
+  /^(?:Gemeinsamer |Gemeinsame )?(?:Änderungs-?|Ergänzungs-?|Beschluss-?|Dringlichkeits-?)?(?:antrag|anfrage|vorschlag)\b[^:–]{0,90}?vom\s+\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4}\s*(?:(?:zur|zum|zu|betr\.?|betreffend|bzgl\.?|bezüglich)\s+|\s*[:;,_/]\s*)/i,
   /^(?:[A-ZÄÖÜ][\wäöüß]+-)?(?:Gemeinsamer |Gemeinsame )?(?:Änderungs-?|Ergänzungs-?|Beschluss-?|Dringlichkeits-?)?(?:antrag|anfrage|vorschlag)\b[^:–]{0,110}?:\s+/i,
  ];
- heads.push(/^[A-ZÄÖÜ][\wäöüß]+-?(?:antrag|anfrage)\s+(?:zur|zum|zu|betr\.?|betreffend)\s+/i);
+ heads.push(/^[A-ZÄÖÜ][\wäöüß]+-?(?:antrag|anfrage)\s+(?:zur|zum|zu|betr\.?|betreffend|bzgl\.?|bezüglich)\s+/i);
+ heads.push(/^(?:antrag|anfrage)\s+(?:bzgl\.?|bezüglich|betr\.?|betreffend|zur|zum|zu|auf)\s+/i);
+ heads.push(/^(?:(?:änderungs-?|ergänzungs-?|dringlichkeits-?)?(?:antrag|anfrage)|beschlussvorlage|beschlussantrag)\s+(?:der|des|von|vom)\s+[^,:;]{0,80}?\s+(?:betreffend|betr\.|bzgl\.|bezüglich)\s+/i);
+ heads.push(/^(?:beschlussvorlage|beschlussantrag)\s+(?:der\s+)?(?:fraktion\s+)?[^-–:]{0,40}?\s+[-–]\s+/i);
+ heads.push(/^beratung(?: und (?:ggf\.? )?beschluss(?:fassung)?)?\s+(?:über|zu|zum|zur)\s+(?:den |die |das |dem |der )?/i);
  heads.push(/^(?:antrag|anfrage) (?:der|des|von) [^,:]{0,70}?(?:fraktion|partei|gruppe|fraktionen)\s+(?:auf|zur|zum|zu|über|betr\.?|betreffend)\s+(?:die |den |das |eine |einen |ein )?/i);
  {const m2=/^(.{0,70}?(?:antrag|drucksache|vorlage)\s*(?:nr\.?\s*)?\d[^:]{0,60}):\s+(.{12,})$/i.exec(t);if(m2)t=m2[2];}
  for(const h of heads){const m=h.exec(t);if(m&&t.length-m[0].length>=8){t=t.slice(m[0].length);break;}}
+ t=t.replace(/B(?:ü|ue?)ndnis ?90 ?\/ ?(?:die )?gr(?:ü|ue?)nen/gi,'Grünen').replace(/partei mensch,? umwelt,? tierschutz/gi,'Tierschutzpartei');
+ {const m5=/^([^:]{4,90}(?:fraktion|gruppe|grünen|cdu|spd|fdp|afd|wähler|linke)[^:]{0,60}):\s+(.{15,})$/i.exec(t);
+  if(m5&&!/^\S*(antrag|anfrage)/i.test(m5[1])&&(m5[1].match(/fraktion|gruppe|cdu|spd|fdp|afd|grünen|wähler|linke|bvb|fwg|volt|bsw/gi)||[]).length>=2)t=m5[2];}
+ // Zweiter Durchgang: „Antrag der <Fraktion/Gruppe/Partei …> [vom Datum] [zur/auf/betr.] Gegenstand“
+ {const m4=/^(?:gemeinsamer?\s+)?\S*(?:antrag|anfrage)\s+(?:der|des|von|vom)\s+(?:\S+\s+){0,7}?(?:\S*fraktion\S*|gruppe|\S*partei|\S*grünen\S*|linke\S*|afd|cdu\S*|spd\S*|fdp|bsw|volt|fwg|ortsbeirat\S*)(?:(?:\s+(?:und|der|des|von)\s+|\s*[-–/,&]\s*|\s+)(?:\S*fraktion\S*|gruppe|\S*partei|\S*grünen\S*|linke\S*|afd|cdu\S*|spd\S*|fdp|bsw|volt|fwg|wab))*(?:\s+(?:im|in|für)\s+(?:\S+\s+){0,6}?(?:rat|kreistag|stadtrat|gemeinde\S*|landkreis\S*|ortsbeirat|bv\s*\d+))?(?:\s+vom\s+\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4})?\s*[,;:–-]?\s*(?:(?:zum\s+thema|zur|zum|zu|auf|für|betreffend|betr\.|bzgl\.|über|aus)\s+)?/i.exec(t);
+  if(m4&&t.length-m4[0].length>=12)t=t.slice(m4[0].length);}
+ t=t.replace(/^beratung\s+(?=[A-ZÄÖÜ])/,'').replace(/^thema\s+/i,'');
  t=t.replace(/^(hier|betr\.?|betreff)\s*:?\s*/i,'');
  t=t.replace(/\((?:[^()]*?(?:\d{1,2}\.\d{1,2}\.\d{2,4}|eingang|aktenzeichen|az\.|vorlage|drucksache|§|ds\b)[^()]*)\)/gi,'');
  t=t.replace(/\b(?:DS|Drucksache|Vorlage|Vorlagen?-?Nr\.?|Antrag Nr\.?|Nr\.)\s*[\w\/.-]*\d[\w\/.-]*/gi,'');
  t=t.replace(/\s+[-–]\s+(?:Antrag|Anfrage|Vorlage|Beschlussvorlage)\b.*$/i,'');
+ t=t.replace(/\s*[•|]\s*(?:Antrag|Anfrage)\b.*$/i,'');
+ t=t.replace(/\s+(?:Änderungs-?|Ergänzungs-?)?(?:Antrag|Anfrage)\s+(?:zur|zum|zu|der|des|von)$/i,'');
+ t=t.replace(/\s*\((?:Antrag|Anfrage)\b[^)]*$/i,'');
+ t=t.replace(/\bDS-\s*/g,'');
+ t=t.replace(/\s*\((?:(?:Antrag|Anfrage) (?:der )?)?(?:\S+-)?Fraktion[^)]*\)\s*$/i,'');
+ t=t.replace(/["„“]?\s*,\s*(?:Änderungs-?|Ergänzungs-?)?(?:Antrag|Anfrage) (?:der|des|von)\b.*$/i,'');
  {const m3=/^(.{15,}?)\s+(?:Änderungs-?|Ergänzungs-?)?(?:Antrag|Anfrage)\s+(?:der|des|von)\s+(?:Fraktion|Fraktionen|Gruppe|Partei|CDU|SPD|FDP|AfD|Grünen|Linken|Freien)\b.*$/i.exec(t);if(m3)t=m3[1];}
  {
   const parts=t.split(/\s+hier\s*:\s*/i);
@@ -221,12 +239,16 @@ export function cleanTitle(title,max=105){
  t=t.replace(/,\s*(?:,\s*)+/g,', ').replace(/\s+,/g,',').replace(/^[,\s]+/,'');
  t=t.replace(/^(?:und|sowie)\s+[^:]{0,60}?(?:fraktion|partei)\b[^:]{0,40}?\bvom\s+\d{1,2}\.\d{1,2}\.\d{2,4}\s*(?:betr\.?|betreffend|zu(?:m|r)?|:)?\s*/i,'');
  t=t.replace(/\s{2,}/g,' ').replace(/^[\s:;,.–-]+|[\s:;,.–-]+$/g,'');
+ if(((t.match(/"/g)||[]).length)%2)t=t.replace(/"/g,'');
  t=t.replace(/„([^“]*)“/g,'‚$1‘').replace(/"([^"]*)"/g,'‚$1‘');
+ t=t.replace(/^(?:Grünen|SPD|CDU|FDP|AfD|Linke|FWG|UWG)\b.{0,60}?\b(?:im|in der|in)\s+(?:Rat|Kreistag|Stadtrat|Gemeinderat)\b.{0,50}?\s+(?:zur|zum|zu|auf|für)\s+(?=.{12})/i,'');
+ {const m6=/^‚([^‚‘]+)‘$/.exec(t);if(m6)t=m6[1];}
  if(t)t=t[0].toUpperCase()+t.slice(1);
  if(t.length>max){
   const cut=t.slice(0,max);
   const sp=cut.lastIndexOf(' ');
-  t=cut.slice(0,sp>max*.55?sp:max).replace(/[\s,;:–-]+$/,'')+' …';
+  const pu=Math.max(cut.lastIndexOf(', '),cut.lastIndexOf(': '),cut.lastIndexOf('; '),cut.lastIndexOf(' – '));
+  t=cut.slice(0,pu>max*.5?pu:sp>max*.55?sp:max).replace(/[\s,;:–-]+$/,'')+' …';
  }
  return t;
 }
@@ -281,7 +303,7 @@ export function draftText({title,status,region,term}){
  };
 }
 
-const FORMAL=/^(einladung|niederschrift|bekanntgabe|genehmigung der niederschrift|anfragen|mitteilungen|verschiedenes|sonstiges|einwohnerfrag)/i;
+const FORMAL=/^(einladung|niederschrift|bekanntgabe|genehmigung der niederschrift|anfragen|mitteilungen|verschiedenes|sonstiges|einwohnerfrag|verfahrensantrag|geschäftsordnungsantrag)/i;
 // Antrag einer Fraktion, Gruppe oder eines Ratsmitglieds: Oppositionsanträge enden in den Berichten deutlich öfter streitig
 // (55 bis 80 % gegenüber 22 % im Mittel aller Vorgänge, Auswertung von 12 Monaten).
 const PARTY_MOTION=/\b(afd|linke|grüne|grünen|cdu|csu|spd|fdp|bsw|fraktion|freie wähler|volt)[- ]?(antrag|anfrage)|antrag der (afd|linken|grünen|cdu|spd|fdp|fraktion)|ratsfraktion|ratsgruppe|kreistagsfraktion|bürgerschaftsfraktion|änderungsantrag|ergänzungsantrag|beschlussantrag|antrag der gruppe|antrag des (ratsmitglieds|ratsherrn|einzelmandats)|einzelratsmitglied|wählergemeinschaft|antrag (der|von) (frau|herrn)|fraktion[a-zäöüß]* (die|der|bündnis|b['’]90)/;
@@ -297,7 +319,7 @@ export function matchTitle(title){
 
 export function scoreCard(card){
  const title=card.title||'';
- if(title.length<20||FORMAL.test(title))return null;
+ if(title.length<20||FORMAL.test(title)||/verfahrensantrag|geschäftsordnungsantrag/i.test(title))return null;
  const hits=matchTitle(title);
  if(!hits.length)return null;
  hits.sort((a,b)=>b.weight-a.weight);
@@ -409,6 +431,7 @@ export function fitScore(c,{today,population={},evidence=null,calibration=calibr
  if(STREET_WORD.test(c.title)&&!/straßen(namen|umbenennung)/i.test(c.title)){abzug-=5;why.push('Einzelstraße');}
  if(SMALL_BODY.test(c.gremium||'')){abzug-=7;why.push('Gremium eines Ortsteils');}
  if(PLANNING.test(c.title)){abzug-=5;why.push('Planungsverfahren');}
+ if(/satzung|hebesatz/i.test(c.title)&&!c.party&&!['rej','post','maj'].includes(res)&&!['rejected','postponed'].includes(c.status)){abzug-=15;why.push('Routinesatzung');}
  const parts=[
   {key:'thema',label:'Themenwert',points:themenwert,max:15},
   {key:'vorgang',label:'Streit im Vorgang',points:vorgang,max:15},
@@ -423,7 +446,9 @@ export function fitScore(c,{today,population={},evidence=null,calibration=calibr
  if(tr.n>=15)evidenceText.push(`Bei „${main.term}“ endeten ${Math.round(100*(tr.raw??tr.rate))} % der Vorgänge streitig (Mittel aller Themen ${Math.round(100*tr.base)} %, ${tr.n} Vorgänge mit Ergebnis)`);
  if(evidence?.result)evidenceText.push({rej:'Antrag abgelehnt',post:'vertagt oder verwiesen',maj:'mehrheitlich beschlossen, nicht einstimmig',unan:'einstimmig beschlossen',ok:'beschlossen'}[evidence.result]+(evidence.sessions>1?`, ${evidence.sessions} Sitzungen`:''));
  const sum=parts.reduce((n,x)=>n+x.points,0);
- return {percent:Math.max(0,Math.min(100,sum)),parts,evidence:evidenceText};
+ // Oberhalb von 62 Punkten gespreizt, damit starke Vorschläge sich von durchschnittlichen absetzen (Rangfolge bleibt gleich).
+ const percent=sum<=62?sum:Math.round(62+(sum-62)*1.6);
+ return {percent:Math.max(0,Math.min(100,percent)),raw:sum,parts,evidence:evidenceText};
 }
 
 /**
@@ -463,8 +488,12 @@ export async function socialTopics(db,regions,{today=iso(Date.now()),days=30,per
  const byDay=new Map(dayList.map(d=>[d,[]]));
  for(const c of picked){
   if(c.fit.percent<minFit)continue;
+  // Nicht strittige Satzungen (Hebesätze u. ä.) sind Routine und kein Social-Media-Thema
+  if(c.fit.parts.some(p=>/Routinesatzung/.test(p.label)))continue;
   const l=byDay.get(c.date);
   if(!l||l.length>=perDay||l.some(x=>x.region_id===c.region_id))continue;
+  // Dasselbe Stichwort am selben Tag nur, wenn der Vorschlag stark ist: mehr Abwechslung je Tag
+  if(c.fit.percent<70&&l.some(x=>x.hits[0].term===c.hits[0].term))continue;
   l.push(c);
  }
  const chosen=[...byDay.values()].flat();
