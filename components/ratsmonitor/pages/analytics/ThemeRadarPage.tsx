@@ -9,6 +9,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarExtra, type Extra } from "./RadarExtra";
 import { RadarDrill } from "./RadarDrill";
 import { RadarNorms, normsSentence, type Norms } from "./RadarNorms";
+import { RadarMap } from "./RadarMap";
 import { STATUS } from "../../lib/constants";
 import { RADARS } from "@/shared/radars.mjs";
 import { ANALYSEN, GRUPPEN, type AnalyseId } from "../../info/branchen-enterprise";
@@ -20,7 +21,6 @@ interface Result {
   topics: Topic[];
   signals: { name: string; n: number }[];
   months: { m: string; total: number }[];
-  regions: { id: string; name: string; type: string; k: number; n: number; share: number; topics: string[] }[];
   recent: { id: string; title: string; region: string; date: string; status: string; signal: string; topics: string[] }[];
   rule: { minTopics: number; window: { from: string; to: string } };
   extra?: Extra | null;
@@ -51,7 +51,11 @@ const ratOf = (p: string) => {
 export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analyse?: AnalyseId }) {
   const gruppe = GRUPPEN[ANALYSEN[analyse ?? (id as AnalyseId)].group];
   const def = RADARS[id];
-  const { query } = useAnalyticsQuery();
+  const { query, search } = useAnalyticsQuery();
+  /* Klick auf „Ort auswerten“ in der Karte: Ortsfilter setzen und auswerten, sobald die Abfrage den Ort enthält */
+  const [runOnChange, setRunOnChange] = useState(false);
+  useEffect(() => { if (runOnChange) { setRunOnChange(false); setWant(true); } }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
+  const qp = new URLSearchParams(query);
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,14 +91,11 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
   const maxT = Math.max(1, ...topics.map((t) => t.n));
   const maxS = Math.max(1, ...(res?.signals ?? []).map((s) => s.n));
   const maxM = Math.max(1, ...(res?.months ?? []).map((m) => m.total));
-  const maxR = Math.max(1, ...(res?.regions ?? []).map((r) => r.share));
   /* „Was geschieht“ nur, wenn die Signale etwas aussagen: über der Hälfte „Sonstiges“ sagen sie wenig (Bewertung 11.10.2026) */
   const other = res?.signals.find((s) => s.name === "Sonstiges")?.n ?? 0;
   const showSignals = !!res && other <= res.signals.reduce((a, s) => a + s.n, 0) / 2;
   const recent = res?.recent ?? [];
-  /* Die Rangliste rechnet mit den letzten 12 Monaten: dann zeigt auch die Liste eines Gebiets diesen Zeitraum */
-  const windowed = () => { const p = new URLSearchParams(ranKey); if (res) { p.set("from", res.rule.window.from); p.set("to", res.rule.window.to); } return p.toString(); };
-  const drill = (by: "topic" | "signal" | "month" | "region", value: string, label: string) => open === `${by}:${value}` && <RadarDrill radar={id} query={by === "region" ? windowed() : ranKey} by={by} value={value} label={by === "region" ? `${label}, letzte 12 Monate` : label} />;
+  const drill = (by: "topic" | "signal" | "month", value: string, label: string) => open === `${by}:${value}` && <RadarDrill radar={id} query={ranKey} by={by} value={value} label={label} />;
   const month = open.startsWith("month:") ? open.slice(6) : "";
 
   return (
@@ -107,6 +108,8 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      <RadarMap radar={id} topics={[...def.topics.map(([t]) => String(t)), ...("fallback" in def && def.fallback ? [String(def.fallback)] : [])]} q={new URLSearchParams(ranKey || query).get("q") ?? ""} exact={new URLSearchParams(ranKey || query).get("exact") === "1"}
+        place={qp.get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); setRunOnChange(true); }} />
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
@@ -177,25 +180,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                 </section></Reveal>
               )}
 
-              {!res.place && <Reveal><section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Gebiete, in denen das Thema viel Raum hat</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil der Vorgänge dieses Radars an allen Sachvorgängen des Rats vom {datum(res.rule.window.from)} bis {datum(res.rule.window.to)} (ohne Formalien, gleiche Titel einmal), unabhängig von Suche und Filtern; nur Gebiete mit genug Unterlagen und mindestens {res.rule.minTopics} Vorgängen. Ein Anteil gleicht aus, dass Verbände mit vielen Ortsgemeinderäten mehr Vorgänge haben. Mit einem gewählten Ort steht hier stattdessen der Vergleich mit ähnlichen Gebieten. Klick auf ein Gebiet zeigt seine Vorgänge.</p>
-                {res.regions.length === 0 ? <p className="text-[14px] text-slate-500">Zu wenige Gebiete für einen Vergleich.</p> : (
-                  <ol className="m-0 list-none border-t border-slate-200 p-0">
-                    {res.regions.map((r, i) => (
-                      <li key={r.id} className="border-b border-slate-200">
-                        <button type="button" onClick={() => toggle(`region:${r.id}`)} aria-expanded={open === `region:${r.id}`} className={`grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left sm:grid-cols-[28px_280px_minmax(0,1fr)_150px] ${open === `region:${r.id}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
-                          <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
-                          <span className="min-w-0"><span className="block truncate text-[16px]">{r.name}</span><span className="block truncate text-[12px] text-slate-500">{r.topics.join(", ")}</span></span>
-                          <span className="order-4 col-span-3 mt-1.5 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1 sm:mt-0"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${(r.share / maxR) * 100}%` }} /></span>
-                          <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{pct(r.share)}</b><span className="ml-2 text-slate-500">{n(r.k)} von {n(r.n)}</span></span>
-                        </button>
-                        {drill("region", r.id, r.name)}
-                      </li>
-                    ))}
-                  </ol>
-                )}
-              </section></Reveal>}
+              {/* Rangliste der Gebiete entfällt: die Karte oben ordnet jedes Gebiet in seiner Vergleichsgruppe ein */}
 
               <Reveal><section className="mt-12">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4">

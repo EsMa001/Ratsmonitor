@@ -709,7 +709,7 @@ topic design-styles.css:140
 - FraktionenPage.tsx (166, ⚠2): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
-- KitaRadarPage.tsx (182, ⚠7): KitaRadarPage
+- KitaRadarPage.tsx (188, ⚠7): KitaRadarPage
 - KnowledgeGraphPage.tsx (219, ⚠1): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
@@ -719,9 +719,9 @@ topic design-styles.css:140
 - RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS
-- RegionMap.tsx (63): RegionMap
+- RegionMap.tsx (65): RegionMap
 - Reveal.tsx (16): Reveal
-- ThemeRadarPage.tsx (225, ⚠8): ThemeRadarPage
+- ThemeRadarPage.tsx (212, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (207, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery

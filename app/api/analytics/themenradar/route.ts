@@ -1,12 +1,12 @@
 import {env} from 'cloudflare:workers';
 import {REGIONS} from '@/shared/regions';
-import {radar,radarList} from '@/server/integrations/analytics-radar.mjs';
+import {radar,radarList,radarMapData} from '@/server/integrations/analytics-radar.mjs';
 import {AnalyticsError} from '@/server/integrations/analytics-diffusion.mjs';
 // Öffentlich und für alle gleich; der Datenbestand ändert sich höchstens täglich.
 const CACHE='public, max-age=300, stale-while-revalidate=600';
 export async function GET(request:Request){
  try {const params=new URL(request.url).searchParams;
-  // Mit by=…: die Vorgänge hinter einer Zahl (Thema, Signal, Monat, Gebiet, Zweck)
-  return Response.json(await (params.get('by')?radarList:radar)(env.DB,REGIONS,params),{headers:{'Cache-Control':CACHE}});}
+  // Mit by=…: die Vorgänge hinter einer Zahl (Thema, Signal, Monat, Gebiet, Zweck); mit map=1: die Karte
+  return Response.json(await (params.get('map')?radarMapData:params.get('by')?radarList:radar)(env.DB,REGIONS,params),{headers:{'Cache-Control':CACHE}});}
  catch(error){return Response.json({error:error instanceof AnalyticsError?error.message:'Der Datenbestand ist gerade nicht erreichbar. Bitte erneut versuchen.'},{status:error instanceof AnalyticsError?error.status:503,headers:{'Cache-Control':'no-store'}});}
 }

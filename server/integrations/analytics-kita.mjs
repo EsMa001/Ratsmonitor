@@ -3,6 +3,7 @@ import {searchFilters} from './monitor-search.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
+import {radarMap,windowOf} from './analytics-radar-norms.mjs';
 
 /*
  * Plenara.X – Kita-Radar: Wo wird über Elternbeiträge entschieden und in welche Richtung (Erhöhung, Senkung, Beitragsfreiheit,
@@ -70,4 +71,18 @@ export async function kitaList(db,catalog,params){
   db.prepare(`SELECT count(*) n ${from}`).bind(...page.args,value).first(),
  ]);
  return {by,value,offset,size:LIST_SIZE,total:Number(count?.n||0),items:rows.map(r=>({id:r.id,title:r.title,region:name(r.region),date:r.date,status:r.status,times:1,signal:r.direction,topics:[]}))};
+}
+
+/* Karte (map=1): Anteil der Vorgänge zu Kita-Elternbeiträgen (oder einer Richtung) am Ratsgeschehen, wie in den Themenradaren */
+export async function kitaMap(db,catalog,params){
+ const topic=params.get('topic')||'',level=params.get('level')==='district'?'district':'city';
+ if(topic&&!DIRECTIONS.includes(topic))throw new AnalyticsError('Unbekannte Richtung.',400);
+ if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
+ const q=(params.get('q')||'').trim();let term=null;
+ if(q){
+  const w=windowOf(),p=new URLSearchParams({q,from:w.from,to:w.to,level,noformal:'1',...(params.get('exact')==='1'?{exact:'1'}:{})});
+  const {page}=await searchFilters(db,catalog,parseDecisions(p));
+  term={key:q.toLowerCase()+(params.get('exact')==='1'?'|exact':''),where:page.where,args:page.args};
+ }
+ return radarMap(db,catalog,'kita_fee',{topic,level,term});
 }

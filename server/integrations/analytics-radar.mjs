@@ -4,7 +4,7 @@ import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
 import {radarExtra} from './analytics-radar-extra.mjs';
-import {placeNorms,shareRanking,windowOf} from './analytics-radar-norms.mjs';
+import {placeNorms,windowOf,radarMap} from './analytics-radar-norms.mjs';
 
 /*
  * Plenara.X – Themenradare (Versorgung, Verkehr, Vereine und Soziales, Vergabe, Klima und Energie, Haushalt und Steuern, Beteiligung):
@@ -13,7 +13,7 @@ import {placeNorms,shareRanking,windowOf} from './analytics-radar-norms.mjs';
  * (Beschlussquote wie in „Beschlüsse“: Anteil beschlossen an beschlossen, vertagt, abgelehnt); dazu Signale, Verlauf je Monat,
  * Gebiete je 10.000 Einwohner (gleiche Titel je Gebiet einmal) und die jüngsten Vorgänge.
  */
-const DECIDED=['approved','rejected','postponed'],MIN_TOPICS=5,TOP=20,RECENT=40;
+const DECIDED=['approved','rejected','postponed'],MIN_TOPICS=5,RECENT=40;
 const share=(a,b)=>b?Math.round((a/b)*1000)/10:null;
 // Derselbe Titel in mehreren Gremien eines Gebiets (Ausschuss, Rat, Ortschaftsräte) ist für den Vergleich ein Vorgang
 const titleKey=t=>String(t||'').toLowerCase().replace(/[^a-z0-9äöüß]+/g,' ').trim();
@@ -61,9 +61,6 @@ export async function radar(db,catalog,params){
  /* Genau ein Gebiet gewählt: Einordnung gegenüber vergleichbaren Gebieten */
  const one=places.length===1&&scopedIds.size===1?[...scopedIds][0]:null;
  const norms=one?await placeNorms(db,catalog,one,kind,[...topics.keys()]):null;
- /* Rangliste: Anteil des Radars an allen Sachvorgängen des Rats (letzte 12 Monate), nicht Vorgänge je Einwohner: Verbände mit
-    vielen Ortsgemeinderäten hätten sonst immer vorn gelegen (Bewertung 11.10.2026) */
- const ranking=one?[]:await shareRanking(db,catalog,kind,{level:f.level==='district'?'district':'city',top:TOP});
  const regionsOf=new Map();for(const i of list){const g=regionsOf.get(i.region)||new Map();for(const t of i.topics)g.set(t,(g.get(t)||0)+1);regionsOf.set(i.region,g);}
  const decided=list.filter(i=>DECIDED.includes(i.status)),approved=decided.filter(i=>i.status==='approved').length;
  return {
@@ -73,7 +70,6 @@ export async function radar(db,catalog,params){
    signals:[...t.signals].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([s,k])=>({name:s,n:k}))};}),
   signals:[...signals].map(([s,n])=>({name:s,n})).sort((a,b)=>b.n-a.n),
   months:[...months].sort((a,b)=>a[0].localeCompare(b[0])).map(([m,c])=>({m,total:[...c.values()].reduce((a,b)=>a+b,0),byTopic:Object.fromEntries(c)})),
-  regions:ranking.map(r=>({...r,topics:[...(regionsOf.get(r.id)||new Map())].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([n])=>n)})),
   recent:list.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,RECENT).map(i=>({id:i.id,title:i.title,region:name(i.region),date:i.date,status:i.status,signal:i.signal,topics:i.topics})),
   rule:{minTopics:MIN_TOPICS,window:windowOf()},
   extra,norms,place:one?name(one):null,
@@ -103,4 +99,23 @@ export async function radarList(db,catalog,params){
  return {by,value,offset,size:LIST_SIZE,total:Number(count?.n||0),
   items:rows.map(r=>({id:r.id,title:r.title,region:name(r.region),date:r.date,status:r.status,times:r.times,
    ...(by==='purpose'?{euro:Number(r.detail)||0}:{signal:r.detail,topics:[...new Set(String(r.topics||'').split('|'))]})}))};
+}
+
+/* Karte eines Radars (map=1): Stufe je Gebiet gegenüber der Vergleichsgruppe, letzte 12 Monate, unabhängig von den Filtern */
+export async function radarMapData(db,catalog,params){
+ const id=params.get('radar')||'';
+ if(!RADARS[id])throw new AnalyticsError('Unbekanntes Radar.',404);
+ const topic=params.get('topic')||'',level=params.get('level')==='district'?'district':'city';
+ const def=RADARS[id];
+ if(topic&&!def.topics.some(([n])=>n===topic)&&topic!==def.fallback)throw new AnalyticsError('Unbekanntes Thema.',400);
+ if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
+ /* Suchbegriff gilt auch für die Karte (Anteil der Vorgänge mit dem Begriff); Ort, Thema, Status und Datum nicht:
+    die Karte vergleicht alle Gebiete über die letzten 12 Monate */
+ const q=(params.get('q')||'').trim();let term=null;
+ if(q){
+  const w=windowOf(),p=new URLSearchParams({q,from:w.from,to:w.to,level,noformal:'1',...(params.get('exact')==='1'?{exact:'1'}:{})});
+  const {page}=await searchFilters(db,catalog,parseDecisions(p));
+  term={key:q.toLowerCase()+(params.get('exact')==='1'?'|exact':''),where:page.where,args:page.args};
+ }
+ return radarMap(db,catalog,'radar:'+id,{topic,level,term});
 }

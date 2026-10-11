@@ -91,15 +91,6 @@ async function radarTotals(db,kind,w){
   return new Map(results.map(x=>[x.r,x.n]));
  });
 }
-/** Rangliste: Gebiete mit dem größten Anteil des Radars an allen Sachvorgängen (letzte 12 Monate, nur mit genug Daten) */
-export async function shareRanking(db,catalog,kind,{level='city',top=20,minK=MIN_TOPIC,today}={}){
- const w=windowOf(today);
- const [b,t]=await Promise.all([base(db,w),radarTotals(db,kind,w)]);
- const byId=new Map(catalog.map(r=>[r.id,r]));
- return [...t].filter(([r,k])=>{const x=b.get(r),reg=byId.get(r);return reg&&reg.kind===level&&x&&x.n>=MIN_ITEMS&&x.m>=MIN_MONTHS&&k>=minK;})
-  .map(([r,k])=>{const n=b.get(r).n,reg=byId.get(r);return {id:r,name:reg.name,type:typeOf(reg).id,k,n,share:round(k/n)};})
-  .sort((a,b2)=>b2.share-a.share).slice(0,top);
-}
 
 const round=(v,d=1)=>Math.round(v*100*10**d)/10**d;
 /** Einordnung je Unterthema für einen Ort, oder {insufficient} mit dem Grund, oder null */
@@ -123,4 +114,69 @@ export async function placeNorms(db,catalog,regionId,kind,names,{today}={}){
    ratio:med>0&&(cls==='mehr'||cls==='weniger')?Math.round((k/own.n/med)*10)/10:null,class:cls};
  });
  return {...head,group:{label:group.label,n:group.regions.length},topics:rows};
+}
+
+/**
+ * Karte eines Radars: jede Gemeinde (oder jeder Kreis) mit genug Unterlagen, eingeordnet in ihrer Vergleichsgruppe nach dem
+ * Anteil des Radars (oder eines Unterthemas) an allen Sachvorgängen der letzten 12 Monate. Stufe 1 bis 4 = Viertel der Gruppe
+ * (Rang, gleiche Werte zur Hälfte); 0 = zu wenig Daten (Gebiet, Gruppe oder erwartete Zahl unter MIN_TOPIC).
+ * Gemeindeverbände färben ihre Mitgliedsgemeinden (Kartenschlüssel wie mapKeys in shared/regions.ts).
+ */
+const mapKeysOf=r=>r.members?r.members.map(m=>m.ags):r.formerAgs??[r.ags];
+/* Mit Suchbegriff: Vorgänge des Radars (oder Unterthemas), die den Begriff treffen, je Gebiet; termWhere/termArgs aus
+   searchFilters (nur Begriff, Zeitfenster, ohne Formalien) */
+export async function termCounts(db,kind,topic,termWhere,termArgs){
+ const {results}=await db.prepare(`SELECT region_id r,count(DISTINCT lower(title)) n FROM search_cards WHERE id IN (SELECT topic_id FROM topic_facts WHERE kind=?${topic?' AND value=?':''}) AND ${termWhere} AND ${PERSONAL_Q} GROUP BY region_id`).bind(kind,...(topic?[topic]:[]),...termArgs).all();
+ return new Map(results.map(x=>[x.r,x.n]));
+}
+export async function radarMap(db,catalog,kind,{topic='',level='city',today,term=null}={}){
+ const w=windowOf(today);
+ return atRevision(db,`radar-map-${kind}-${topic}-${level}-${term?.key||''}|${w.from}|${w.to}`,async()=>{
+  const [b,t,tot,hits]=await Promise.all([base(db,w),topics(db,kind,w),radarTotals(db,kind,w),term?termCounts(db,kind,topic,term.where,term.args):null]);
+  const ok=id=>{const x=b.get(id);return !!x&&x.n>=MIN_ITEMS&&x.m>=MIN_MONTHS&&!!POPULATION[id];};
+  const regs=catalog.filter(r=>r.kind===level&&b.has(r.id));
+  const kOf=id=>hits?(hits.get(id)||0):topic?(t.get(id)?.get(topic)||0):(tot.get(id)||0);
+  const shareOf=id=>kOf(id)/b.get(id).n;
+  const key=(r,size,land)=>`${typeOf(r).id}|${size}|${land}`;
+  const buckets=new Map(),add=(k,r)=>{if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(r);};
+  for(const r of regs)if(ok(r.id)){const size=sizeOf(POPULATION[r.id]);add(key(r,size,r.ags.slice(0,2)),r);add(key(r,size,''),r);}
+  const groupOf=r=>{
+   const size=sizeOf(POPULATION[r.id]),land=r.ags.slice(0,2);
+   for(const [sizes,l] of [[[size],land],[[size],''],[[size-1,size,size+1],land],[[size-1,size,size+1],'']]){
+    const list=sizes.flatMap(s=>buckets.get(key(r,s,l))||[]).filter(x=>x.id!==r.id);
+    if(list.length>=MIN_GROUP)return list;
+   }
+   return null;
+  };
+  const items=[],counts=[0,0,0,0,0];
+  for(const r of regs){
+   const x=b.get(r.id),k=kOf(r.id);
+   let lvl=0,p=null,median=null,reason='';
+   if(!ok(r.id))reason='daten';
+   else{
+    const group=groupOf(r);
+    if(!group)reason='gruppe';
+    else{
+     const shares=group.map(g=>shareOf(g.id)).sort((a,c)=>a-c),s=k/x.n;
+     median=quantile(shares,0.5);
+     if(x.n*median<MIN_TOPIC&&k<MIN_TOPIC)reason='wenig';
+     else{
+      const below=shares.filter(v=>v<s).length,equal=shares.filter(v=>v===s).length;
+      p=(below+equal/2)/shares.length;lvl=p<0.25?1:p<0.5?2:p<0.75?3:4;
+     }
+    }
+   }
+   counts[lvl]++;
+   items.push({id:r.id,name:r.name,ags:mapKeysOf(r),level:lvl,k,n:x.n,share:round(k/x.n),median:median===null?null:round(median),p:p===null?null:Math.round(p*100),reason});
+  }
+  /* Zu selten für einen Vergleich (weniger als ein Fünftel der Gebiete mit genug Unterlagen eingeordnet): die Karte zeigt dann
+     die Zahl der Vorgänge (1, 2, 3–4, ab 5) statt der Einordnung, damit sie nicht fast ganz grau ist */
+  const eligible=items.filter(i=>i.reason!=='daten').length,placed=items.filter(i=>i.level>0).length;
+  let mode='vergleich';
+  if(eligible&&placed<eligible/5){
+   mode='anzahl';counts.fill(0);
+   for(const i of items){i.level=i.k>=5?4:i.k>=3?3:i.k===2?2:i.k===1?1:0;i.p=null;counts[i.level]++;}
+  }
+  return {window:w,level,topic,term:term?.key||'',mode,counts,items,rule:{minItems:MIN_ITEMS,minMonths:MIN_MONTHS,minTopic:MIN_TOPIC,minGroup:MIN_GROUP}};
+ });
 }

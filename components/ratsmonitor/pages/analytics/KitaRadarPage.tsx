@@ -7,6 +7,7 @@ import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
+import { RadarMap } from "./RadarMap";
 
 type Direction = "Erhöhung" | "Senkung" | "Beitragsfreiheit" | "Verpflegung" | "Neufassung";
 interface Decision { id: string; title: string; region: string; date: string; direction: Direction; euro: string | null }
@@ -34,7 +35,10 @@ const SHOW_PLACES = false;
 
 /** plenara.X – Kita-Radar: Entscheidungen zu Elternbeiträgen (Richtung) und neue Kita-Plätze */
 export function KitaRadarPage() {
-  const { query } = useAnalyticsQuery();
+  const { query, search } = useAnalyticsQuery();
+  /* Klick auf „Ort auswerten“ in der Karte: Ortsfilter setzen und auswerten, sobald die Abfrage den Ort enthält */
+  const [runOnChange, setRunOnChange] = useState(false);
+  useEffect(() => { if (runOnChange) { setRunOnChange(false); setWant(true); } }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -84,6 +88,8 @@ export function KitaRadarPage() {
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {(() => { const qp = new URLSearchParams(ranKey || query); return <RadarMap base="/api/analytics/kita" topics={["Erhöhung", "Senkung", "Beitragsfreiheit", "Verpflegung"]} topicLabel="Richtung" allLabel="Alle Vorgänge zu Beiträgen" what="der Vorgänge zu Kita-Elternbeiträgen"
+        q={qp.get("q") ?? ""} exact={qp.get("exact") === "1"} place={new URLSearchParams(query).get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); setRunOnChange(true); }} />; })()}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 

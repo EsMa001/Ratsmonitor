@@ -9,8 +9,9 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
    (levels: Gemeindeschlüssel → Stufe), Klick wählt eine Gemeinde. Lage nur auf Gemeindeebene. */
 const glass = "rm-glass";
 
-export function RegionMap({ levels, legend, label, picked, onPick, info }: {
+export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note }: {
   levels: Record<string, number>; legend: string[]; label: string; picked: string; onPick: (ags: string) => void; info?: React.ReactNode;
+  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string;
 }) {
   const { geo } = useData();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -28,15 +29,15 @@ export function RegionMap({ levels, legend, label, picked, onPick, info }: {
     engine.setExplore(true, null);
     return detach;
   }, [engine]);
-  const all = useMemo(() => (geo ? [...geo.gem.idx.keys()] : []), [geo]);
+  const all = useMemo(() => (geo ? [...(level === "district" ? geo.krs : geo.gem).idx.keys()] : []), [geo, level]);
   const shown = useMemo(() => Object.keys(levels).filter((a) => levels[a] > 0), [levels]);
   useEffect(() => {
     if (!engine) return;
     const v: Record<string, number> = {};
     for (const a of all) v[a] = 0;
     Object.assign(v, levels);
-    engine.update(v, picked, null, all, "city");
-  }, [engine, levels, all, picked]);
+    engine.update(v, picked, null, all, level);
+  }, [engine, levels, all, picked, level]);
   useEffect(() => { if (engine) shown.length ? engine.focusMany(shown) : engine.focusArea(""); }, [engine, shown]);
 
   return (
@@ -50,6 +51,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info }: {
         <ul className="m-0 flex list-none flex-col gap-1 p-0">
           {legend.map((l, i) => <li key={l} className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: MAP_COLORS.scale[i] }} />{l}</li>)}
         </ul>
+        {note && <p className="m-0 mt-1 max-w-[180px] text-slate-500">{note}</p>}
       </div>
       <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
         <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconPlus size={16} /></button>
