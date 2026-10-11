@@ -17,9 +17,10 @@ Restart=always
 RestartSec=3
 # Lange Admin-Anfragen (Abrufe bis etwa 3 Minuten) beim Neustart ausklingen lassen
 TimeoutStopSec=30
-# Speichergrenzen: ein Import großer Gebiete liest einige Hundert MB; der Rest bleibt dem Seitencache der Datenbank
-MemoryHigh=8G
-MemoryMax=10G
+# Speichergrenzen: Importe laufen seit A14 im eigenen Prozess (ratsmonitor-import.service, 8 GB); der Dienst braucht
+# weniger, der Rest bleibt dem Seitencache der Datenbank
+MemoryHigh=6G
+MemoryMax=8G
 LimitNOFILE=65536
 # Absicherung: nur der Datenordner ist beschreibbar
 NoNewPrivileges=yes

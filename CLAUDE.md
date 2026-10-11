@@ -25,6 +25,11 @@
 - **Exakter Begriff (`exact=1`):** nur ganze Wörter; geprüft in `search_cards.search_exact` (wie `search`, aber mit Umlauten, Migration `0014`, Trigger pflegen sie), damit „Bär“ nicht „Bar“ findet. Vorberechnete Zahlen gelten dafür nicht; seltene Wörter laufen über die Karten-IDs. Bei geänderten Triggern `search_exact` wie `search` neu auffüllen.
 - **Karte:** Die Abzeichen (`badgeCounts`) zählen jeden Eintrag genau einmal (Summe = Trefferzahl); die Einfärbung nutzt `areaCounts`, wo ein Samtgemeinde-Bericht bei jeder Mitgliedsgemeinde steht.
 
+## Abrufe: Importprozess (Backend, `server/node/import-worker.mjs`, `server/integrations/pipeline-worker.mjs`)
+
+- **Was:** Auf dem Server arbeitet ein eigener Node-Prozess den gespeicherten Abrufauftrag ab (`admin-pipeline-job`), mit denselben Funktionen wie `POST /api/admin/pipeline` (`pipelineAction`, `runSync`), in 24 Bahnen; systemd-Timer alle 10 Minuten und täglich 01:00 Uhr (`deploy/node/ratsmonitor-import*`). Die Admin-Seite kann weiter selbst abrufen; „Im Hintergrund abrufen“ legt den Auftrag nur an. Gebaut wird er von `scripts/build-node.mjs` über `build/worker-build.mjs` (Vite, alles eingebündelt, `cloudflare:workers` → `server/node/cloudflare-workers.mjs`). Details: `docs/betrieb/node-server.md`, „Importprozess“. Test: `tests/import-worker.test.mjs`.
+- **Lokal:** `DATABASE_FILE=<sqlite> node dist/standalone/worker/import-worker.mjs --create --regions billerbeck --window 1d` nach `node scripts/build-node.mjs`.
+
 ## Admin: Vorberechnung (Backend, `server/integrations/region-facts.mjs`, `admin-builds.mjs`)
 
 - **Was:** Die Adminseiten rechnen beim Öffnen nichts. Werte je Gebiet liegen in `region_stats` (Migration 0011) und `region_series` (Migration `drizzle/0016`: Berichte je Sitzungs- und Aufnahmetag, Zählung nach Status), geführt über `region_revisions` (Trigger zählen jede Änderung). Globale Auswertungen (Stichwörter, Hochrechnung) stehen gepackt in `system_state` (`admin-stored.mjs`), die Qualitätsprüfungen in `admin-quality-check`; Teilsummen laufender Bauaufträge in `admin_agg`. Die Daten selbst liegen nicht im Repo.
