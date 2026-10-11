@@ -193,7 +193,7 @@ function matchedWord(title,term){
  * Titel für den Aufhänger bereinigen: Nachtragskopf, Fraktionskopf („Antrag der CDU-Fraktion vom …:“), „hier:“, Aktenzeichen,
  * Klammern mit Daten und Paragraphen entfernen, auf höchstens `max` Zeichen an einer Wortgrenze kürzen.
  */
-export function cleanTitle(title,max=120){
+export function cleanTitle(title,max=130){
  let t=String(title||'').replace(/\s+/g,' ').trim();
  t=t.replace(/^Nachtrag:?\s*[\d.]+\s*(Nummer\s*\d+\s*)?/i,'');
  // Kopf „Antrag/Anfrage … :“ oder „… vom 24.06.2026 zur …“ nur entfernen, wenn danach noch ein Gegenstand folgt
@@ -220,11 +220,16 @@ export function cleanTitle(title,max=120){
  t=t.replace(/^(hier|betr\.?|betreff)\s*:?\s*/i,'');
  t=t.replace(/\((?:[^()]*?(?:\d{1,2}\.\d{1,2}\.\d{2,4}|eingang|aktenzeichen|az\.|vorlage|drucksache|§|ds\b|art\. ?\d|abs\. ?\d)[^()]*)\)/gi,'');
  t=t.replace(/\b(?:DS|Drucksache|Vorlage|Vorlagen?-?Nr\.?|Antrag Nr\.?|Nr\.)\s*[\w\/.-]*\d[\w\/.-]*/gi,'');
- t=t.replace(/\s+[-–]\s+(?:Antrag|Anfrage|Vorlage|Beschlussvorlage)\b.*$/i,'');
+ {const m0=/^(.+?)\s+[-–]\s+(?:Antrag|Anfrage|Vorlage|Beschlussvorlage)\b.*$/i.exec(t);if(m0&&/\s.+\s/.test(m0[1]))t=m0[1];}
  t=t.replace(/\s*[•|]\s*(?:Antrag|Anfrage)\b.*$/i,'');
  t=t.replace(/\s+(?:Änderungs-?|Ergänzungs-?)?(?:Antrag|Anfrage)\s+(?:zur|zum|zu|der|des|von)$/i,'');
  t=t.replace(/\s*\((?:Antrag|Anfrage)\b[^)]*$/i,'');
  t=t.replace(/\bDS-\s*/g,'');
+ t=t.replace(/^(?:und|sowie)\s+[^-–:]{0,40}\s[-–]\s+(?=.{12})/i,'');
+ t=t.replace(/^[A-ZÄÖÜ][A-ZÄÖÜ .\/-]{2,30}\s+vom\s+\d{1,2}\.\d{1,2}\.\d{2,4}\s+(?=.{12})/,'');
+ t=t.replace(/^eingegangen bei [^.]{0,60}?\bam \d{1,2}\.\d{1,2}\.\d{2,4}\s+(?:(?:zur|zum|zu|auf)\s+)?(?=.{12})/i,'');
+ t=t.replace(/^liste zur sitzung [^.]{0,50}?\bam \d{1,2}\.\d{1,2}\.\d{2,4}\s+(?=.{12})/i,'');
+ t=t.replace(/\s+Einr\.?:.*$/i,'').replace(/\s+ff\.?$/,'');
  t=t.replace(/^TOP\s*\d+[a-z]?\s*:\s*/i,'').replace(/^[^:]{3,30}:\s+hier\s*[-–]\s+(?=.{12})/i,'');
  t=t.replace(/^(?:Beschlussvorlage|Vorlage)\s+[\d\/.-]{4,}\s+(?=.{12})/i,'');
  t=t.replace(/(?:\s+[-–]\s+\S+)?\s+(?:gemäß|gemäss|gem\.|nach|i\. ?V\. ?m\.)\s+§.*$/i,'');
@@ -252,7 +257,7 @@ export function cleanTitle(title,max=120){
  if(t.length>max){
   const cut=t.slice(0,max);
   // Bevorzugt an einer Satzgrenze kürzen, dann ohne „…“: ein vollständiger Teilsatz liest sich besser als ein abgebrochener
-  {let best=-1;const re=/\s[–\/]\s|[;:]\s|,\s|\s(?:sowie|und|bis|mit)\s/g;let m;
+  {let best=-1;const re=/\s[–]\s|[;:]\s/g;let m;
    while((m=re.exec(cut)))if(m.index>=35&&m.index<=max-4&&!(cut.slice(0,m.index).split('(').length>cut.slice(0,m.index).split(')').length)&&(cut.slice(0,m.index).match(/[‚„"]/g)||[]).length%2===0)best=m.index;
    if(best>0)return cut.slice(0,best).replace(/[\s,;:–\/-]+$/,'');}
   const sp=cut.lastIndexOf(' ');
