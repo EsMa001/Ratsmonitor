@@ -120,3 +120,35 @@ Jeder Schritt einzeln auf `main`, mit Tests, Migrationen auf echten Daten gemess
 - Passt die Bündelung mit Paket 6 (B4/B5, B6, B7, B12), wer setzt welchen Schritt um?
 - B10: Regel-Label-Historie behalten oder löschen (gehört zu den Varianten in Abschnitt 4)?
 - Bleibt Cloudflare D1 ein Ziel, oder nur der Node-Server? Das betrifft generierte Spalten, FTS5 und Batchgrenzen.
+
+## 9. Weitere Schritte vom 11.10.2026 (Zweig `datenmodell_vorab`)
+
+- **Spalte `active`** (Migration 0020): generierte Spalte statt `json_extract(payload,'$.identity.mergedInto') IS NULL`
+  an 21 Stellen; die drei Teilindizes `idx_topics_canonical_*` hängen unter gleichem Namen an `active=1` (M1).
+- **KI-Zusammenfassung nicht doppelt im Vorgang** (Migration 0021): `contentAnalysis` ohne Text; der Text steht in
+  `shortSummary`/`longSummary` und in `article_analyses`. Weiterer kleiner Doppelbestand, nicht angefasst:
+  `summaryEvidence` (gleiche Belege wie `contentAnalysis.evidence`, ohne Leser).
+- **Keine Versionskopie bei Analysen:** KI-Übernahme und Zusammenfassungen im Abruf schreiben nichts mehr nach
+  `article_versions`; vorbereitete Bündel nur, wenn sie Status oder Beratungsfolge ändern.
+
+### Messung auf einer Kopie der lokalen Datenbank (9,2 GB, 941.027 Karten, 950.825 Vorgänge)
+
+- Migrationen: 0019 45 s, 0020 28 s, 0021 21 s (0015 bis 0018 lokal nachgeholt, zusammen 7 s). Auf dem Server mit
+  1,43 Mio. Karten grob das Anderthalbfache.
+- Bestand: Payload 5,5 GB; `article_versions` 133.781 Zeilen mit 944 MB (84.171 Vorgänge, höchstens 13 Versionen, nur
+  1.938 Vorgänge mit mehr als 5: ein Kappen auf 5 spart wenig); `article_analyses` 369.197 Regel-Label-Zeilen mit
+  163 MB; 406 Vorgänge mit KI-Stichwörtern; 52 mit doppeltem Text in `contentAnalysis`.
+- **FTS5 (B7, nur gemessen, nicht eingebaut):** Index mit Trigram-Tokenizer über `search_cards.search` (external
+  content): Aufbau 30 s, 650 MB (7 % der Datenbank); gleiche Trefferzahlen wie `LIKE '%…%'` für alle geprüften Begriffe.
+  Zeiten ohne / mit FTS5 (ms), verglichen mit der Suche über alle Karten, nicht mit der Wortliste:
+  - Zählen: haushalt 1.802 / 110, turnhalle 447 / 15, schwimmbad 461 / 27, kormoran 354 / 10, windkraft 351 / 35,
+    schwimm (Teilwort) 465 / 15, radweg 477 / 13.
+  - Zahlen je Gebiet, Thema, Status: 467 bis 705 / 3 bis 102.
+  - Erste Seite (20, nach Datum): seltene Begriffe bis 762 / 2; häufige schneller ohne FTS5 (haushalt 1 / 89), weil die
+    Suche nach 20 Treffern aufhört.
+  - Begriff plus Thema und „ohne Formalien“: beide unter 35.
+  Folgerung: FTS5 könnte die Wortliste (vier Tabellen, Protokoll, Sperre, nächtlicher Aufbau) ersetzen; die erste Seite
+  häufiger Begriffe müsste weiter ohne Index geholt werden.
+- Bestehender Fehler in der Wortliste (unabhängig davon): ein voller Aufbau leert `search_cards_gone` nicht, das nächste
+  Nachführen verliert dann die vorberechneten Zahlen. Als eigene Aufgabe vorgemerkt; Migration 0019 leert das Protokoll
+  selbst.
