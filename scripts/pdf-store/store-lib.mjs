@@ -106,3 +106,19 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   close:async()=>{await lock.catch(()=>{});if(ocr)await ocr.terminate();},
  };
 }
+
+/** Grund eines fehlgeschlagenen Abrufs in festen Gruppen (Admin-Reiter, fetch.mjs --errors) */
+export function errorReason({status,http,error}){
+ const e=String(error||'');
+ if(status==='unsupported')return 'Kein PDF (Antwort ist etwas anderes)';
+ if(http===404||http===410)return 'Nicht gefunden (404/410)';
+ if(http===401||http===403)return 'Kein Zugriff (401/403)';
+ if(http===429||http===503)return 'Server überlastet (429/503)';
+ if(http>=500)return 'Serverfehler (5xx)';
+ if(http>=400)return 'Abgelehnte Anfrage (4xx)';
+ if(/timeout|aborted/i.test(e))return 'Zeitüberschreitung (über 10 s)';
+ if(/zu groß/i.test(e))return 'Zu groß (über 30 MB)';
+ if(/ENOTFOUND|EAI_AGAIN/.test(e))return 'Server nicht gefunden (DNS)';
+ if(/fetch failed|ECONN|socket|TLS|certificate|SSL/i.test(e))return 'Keine Antwort (Verbindung fehlgeschlagen)';
+ return 'Sonstiges';
+}

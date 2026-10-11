@@ -265,6 +265,14 @@ eine Sperre (`nightly.lock` in der Ablage) verhindert zwei Läufe. Protokoll: `j
 Probe ohne Wirkung: `node scripts/pdf-store/nightly.mjs --dry-run`.
 Fehlgeschlagene Abrufe werden nicht erneut versucht; Liste: `node scripts/pdf-store/fetch.mjs --errors [--csv fehler.csv]`.
 
+**Admin-Reiter „PDF-Ablage“** (`/admin?seite=pdf`): zeigt den Stand nach dem letzten Lauf (`scripts/pdf-store/stats.mjs`,
+letzte Stufe der Kette, schreibt `system_state` `pdf-store-stats`): verlinkte Hauptdokumente, heruntergeladen, mit Text,
+fehlgeschlagen (mit Gründen), offen, Platz. Die Knöpfe „Lauf starten“ und „Fehlgeschlagene erneut versuchen“ legen nur einen
+Auftrag an (`pdf-store-job`); `scripts/pdf-store/job.mjs` führt ihn aus (Einheiten `ratsmonitor-pdf-job.service` und
+`.timer`, alle 10 Minuten; ohne Auftrag endet der Dienst sofort, während der nächtlichen Kette wartet der Auftrag).
+Einrichten: `cp deploy/node/ratsmonitor-pdf-job.service deploy/node/ratsmonitor-pdf-job.timer /etc/systemd/system/ &&
+systemctl daemon-reload && systemctl enable --now ratsmonitor-pdf-job.timer`.
+
 **Wie lange der Aufbau dauert** (hochgerechnet aus dem lokalen Aufbau, 11.10.2026): Alle Hauptdokumente sind 65 bis 80 GB,
 etwa 300.000 bis 360.000 PDFs; lokal kamen 30 bis 60 PDFs je Sekunde, also einige Nächte Laden. Textebene lokal 87.600
 Dateien in 18 Minuten. OCR braucht etwa jede zwanzigste Datei; lokal 4.612 Dateien (11.584 Seiten) in 3,2 Stunden mit 4 Workern, also rund

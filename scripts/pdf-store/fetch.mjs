@@ -23,7 +23,7 @@ import {fetchDocument} from '../../server/integrations/document-proxy.mjs';
 import {bodyBytes} from '../../server/integrations/body-bytes.mjs';
 import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
 import {primaryPdf,documentType} from '../../shared/document-type.mjs';
-import {keeper as makeKeeper,usedBytes} from './store-lib.mjs';
+import {keeper as makeKeeper,usedBytes,errorReason} from './store-lib.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const o={regions:opt('regions')?.split(',').filter(Boolean),since:opt('since'),limit:Number(opt('limit',0)),maxMinutes:Number(opt('max-minutes',0)),
@@ -40,10 +40,10 @@ const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
 const mb=b=>(b/1048576).toFixed(0)+' MB';
 if(flag('stats')){for(const r of store.stats())console.log(r.status.padEnd(12),String(r.n).padStart(8),r.bytes?mb(r.bytes):'');process.exit(0);}
 if(flag('errors')){
- const rows=store.db.prepare("SELECT url,topic_id AS topic,region_id AS region,http,error,fetched_at AS at FROM pdfs WHERE status IN ('error','unsupported') ORDER BY fetched_at DESC").all();
+ const rows=store.db.prepare("SELECT url,topic_id AS topic,region_id AS region,status,http,error,fetched_at AS at FROM pdfs WHERE status IN ('error','unsupported') ORDER BY fetched_at DESC").all();
  const csv=opt('csv');
- if(csv){const q=v=>`"${String(v??'').replaceAll('"','""')}"`;writeFileSync(csv,'\ufeffurl;bericht;gebiet;http;fehler;tag\n'+rows.map(r=>[r.url,r.topic,r.region,r.http,r.error,r.at?.slice(0,10)].map(q).join(';')).join('\n')+'\n');console.log(`${rows.length} Fehler nach ${csv}`);}
- else{const by=new Map();for(const r of rows){const k=(r.http?'HTTP '+r.http:String(r.error||'').replace(/\d+/g,'N').slice(0,60));by.set(k,(by.get(k)||0)+1);}
+ if(csv){const q=v=>`"${String(v??'').replaceAll('"','""')}"`;writeFileSync(csv,'\ufeffurl;bericht;gebiet;grund;http;fehler;tag\n'+rows.map(r=>[r.url,r.topic,r.region,errorReason(r),r.http,r.error,r.at?.slice(0,10)].map(q).join(';')).join('\n')+'\n');console.log(`${rows.length} Fehler nach ${csv}`);}
+ else{const by=new Map();for(const r of rows){const k=errorReason(r);by.set(k,(by.get(k)||0)+1);}
   console.log(`${rows.length} fehlgeschlagene Abrufe`);for(const [k,n] of [...by].sort((a,b)=>b[1]-a[1]).slice(0,20))console.log(String(n).padStart(8),k);}
  process.exit(0);
 }

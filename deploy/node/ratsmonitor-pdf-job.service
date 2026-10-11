@@ -1,0 +1,30 @@
+# Auftrag aus dem Admin-Reiter „PDF-Ablage“ (scripts/pdf-store/job.mjs): alle 10 Minuten nachsehen, ob ein Lauf oder ein
+# erneuter Versuch der fehlgeschlagenen Abrufe angefordert ist; ohne Auftrag endet der Dienst sofort. Startet die Kette
+# (nightly.mjs) wie nachts; läuft die nächtliche Kette gerade, wartet der Auftrag bis zum nächsten Mal.
+[Unit]
+Description=Ratsmonitor PDF-Ablage, Auftrag aus der Administration
+After=network-online.target ratsmonitor.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+Nice=15
+IOSchedulingClass=idle
+TimeoutStartSec=4h
+ExecStart=/usr/bin/node --no-warnings scripts/pdf-store/job.mjs --minutes 180 --budget-gb 100
+MemoryHigh=6G
+MemoryMax=7G
+LimitNOFILE=65536
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes

@@ -9,11 +9,14 @@
 //   5. summaries.mjs  Regel-Zusammenfassung für Berichte ohne, deren Text jetzt vorliegt
 //   6. facts.mjs      Fakten für plenara.X (alle Berichte, wenige Minuten)
 //   7. refresh-search-words.mjs  Wortliste nachführen (neue Zusammenfassungen ändern den Suchtext)
+//   8. stats.mjs      Stand für den Admin-Reiter „PDF-Ablage“ (system_state 'pdf-store-stats')
+// Fehlgeschlagene Abrufe werden nicht erneut versucht, außer mit --retry-errors (Auftrag „Fehlgeschlagene erneut versuchen“
+// im Admin-Reiter, scripts/pdf-store/job.mjs).
 // Eine Sperre (nightly.lock in der Ablage) verhindert zwei Läufe zugleich. Scheitert eine Stufe, laufen die übrigen weiter;
 // der Exit-Code ist dann 1. Zeit: --minutes (Standard 180) für alles; Laden höchstens --fetch-share (0.4) davon, OCR bekommt,
 // was bis auf --reserve (25 min für 5 bis 7) übrig ist.
 //
-//   node scripts/pdf-store/nightly.mjs [--minutes 180] [--budget-gb 100] [--months 240] [--ocr-workers 2] [--dry-run]
+//   node scripts/pdf-store/nightly.mjs [--minutes 180] [--budget-gb 100] [--months 240] [--ocr-workers 2] [--retry-errors] [--dry-run]
 // Umgebung: DATABASE_FILE (Server), RM_PDF_STORE (Ablage), OCR_TOOLS/OCR_CACHE (text.mjs).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -55,7 +58,7 @@ function step(name,script,stepArgs){
 }
 
 say(`Start: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
-step('Laden','scripts/pdf-store/fetch.mjs',['--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare))),'--report-mb','1000']);
+step('Laden','scripts/pdf-store/fetch.mjs',['--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare))),'--report-mb','1000']);
 if(sizeGb()>budgetGb){
  step('Rang nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
  step('Budget','scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
@@ -67,5 +70,6 @@ else say(`OCR übersprungen (nur ${Math.max(0,ocr)} min übrig)`);
 step('Zusammenfassungen','scripts/pdf-store/summaries.mjs',[]);
 step('Fakten','scripts/pdf-store/facts.mjs',[]);
 step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
+step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
 say(`Ende nach ${Math.round((Date.now()-t0)/60000)} min, Ablage ${sizeGb().toFixed(1)} GB${failed.length?`, Fehler in: ${failed.join(', ')}`:''}`);
 process.exit(failed.length?1:0);

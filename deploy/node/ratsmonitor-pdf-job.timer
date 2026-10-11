@@ -1,0 +1,12 @@
+# Alle 10 Minuten nach einem Auftrag aus dem Admin-Reiter „PDF-Ablage“ sehen (ratsmonitor-pdf-job.service).
+[Unit]
+Description=Ratsmonitor PDF-Ablage, Aufträge aus der Administration
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=false
+AccuracySec=1min
+Unit=ratsmonitor-pdf-job.service
+
+[Install]
+WantedBy=timers.target

@@ -15,6 +15,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  hochrechnung:{title:'Hochrechnung',intro:'Schätzt, wie viele Berichte alle kommunalen Gremien in Deutschland pro Tag erzeugen und wie viel Text das ist. Grundlage für die Abschätzung der KI-Kosten.'},
  social:{title:'Social Media',intro:'Schlägt je Tag bis zu drei Einzelfälle aus Orten vor, die polarisieren: Tempo 30, Windkraft, Bezahlkarte, Gebühren, Schließungen, Bürgerbegehren. Gefunden über feste Streitwörter im Titel, verstärkt durch Fraktionsanträge und den Status (abgelehnt oder vertagt zählt mehr). Zu jedem Vorschlag gibt es einen kurzen Textentwurf aus festen Satzvorlagen. Rein regelbasiert, ohne KI; schwache Tage bleiben leer.'},
  regeltexte:{title:'Regelbasierte Texte',intro:'Zeigt, bei wie vielen Artikeln die Zusammenfassung von der KI oder von festen Regeln stammt und wie die Themen-Labels zustande kamen. Die Seite zählt nur, was schon gespeichert ist.'},
+ pdf:{title:'PDF-Ablage',intro:'Zeigt, wie viele der verlinkten PDF-Dokumente Plenara schon heruntergeladen hat, für wie viele der Text vorliegt, was fehlgeschlagen ist und warum. Startet auf Wunsch einen Lauf oder einen erneuten Versuch der fehlgeschlagenen Abrufe.'},
  stichwoerter:{title:'Stichwörter',intro:'Zeigt, an welchen Wörtern die festen Regeln Sachgebiete erkennen und welche Begriffe in den Titeln stehen. Die Seite zählt nur, was schon gespeichert ist.'},
 };
 export const FOOT:Record<AdminPage,string>={
@@ -26,6 +27,7 @@ export const FOOT:Record<AdminPage,string>={
  hochrechnung:'Die Hochrechnung liest nur den gespeicherten Bestand und startet keinen Abruf.',
  social:'Vorschläge aus den gespeicherten Berichten; vor einem Beitrag Zahl und Fundstellen prüfen. Die Seite startet keine Analyse.',
  regeltexte:'Zahlen aus der Datenbank; die Seite startet keine Analyse.',
+ pdf:'Zahlen aus dem letzten Lauf auf dem Server (scripts/pdf-store/stats.mjs). Die Knöpfe legen nur einen Auftrag an; der Server startet ihn binnen 10 Minuten.',
  stichwoerter:'Die Seite zählt nur, was frühere Schritte gespeichert haben; sie startet keine Analyse.',
 };
 /** Stand-Zeile je Seite: Knopf, Hinweis und Zusatz hinter dem Datum („Stand … · Aktualisieren →“). */

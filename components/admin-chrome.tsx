@@ -11,8 +11,8 @@ import {RegionCatchUp} from '@/components/admin-catch-up';
 // Rahmen aller Adminseiten im Design der Startseite: Kopfzeile wie Header.tsx, darunter Reiter, Inhalt mit der Seitenbreite der
 // Startseite und eine Fußzeile. Die Seiten heißen in der Adresse nach ihrem Inhalt (?seite=abruf); die alten Nummern 1 bis 4
 // führen weiter dorthin. Die Startseite des Adminbereichs ist die Übersicht (ohne Parameter), daneben die To-do-Liste.
-export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'stichwoerter'|'regeltexte'|'social';
-export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'uebersicht',label:'Übersicht'},{id:'todo',label:'To-do-Liste'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'},{id:'regeltexte',label:'Regelbasierte Texte'},{id:'social',label:'Social Media'}];
+export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'stichwoerter'|'regeltexte'|'social'|'pdf';
+export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'uebersicht',label:'Übersicht'},{id:'todo',label:'To-do-Liste'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'},{id:'regeltexte',label:'Regelbasierte Texte'},{id:'social',label:'Social Media'},{id:'pdf',label:'PDF-Ablage'}];
 export const START_PAGE:AdminPage='uebersicht';
 /** Reiter der Administration, lokal und auf dem Server gleich. */
 export const VISIBLE_PAGES=ADMIN_PAGES;
