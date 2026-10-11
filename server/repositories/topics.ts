@@ -28,7 +28,7 @@ export async function getFeedPage(page: PageRequest = { limit: PAGE_SIZE, offset
         if (!env.DB)
             throw Error('DB fehlt');
         const statusWhere=page.filter==='entschieden'?"WHERE status IN ('approved','rejected')":page.filter==='offen'?"WHERE status IN ('announced','consulting','recommended','postponed')":'';
-        const where="WHERE region_id=? AND json_extract(payload,'$.identity.mergedInto') IS NULL"+(statusWhere?' AND '+statusWhere.replace('WHERE ',''):'');
+        const where="WHERE region_id=? AND active=1"+(statusWhere?' AND '+statusWhere.replace('WHERE ',''):'');
         // D1 batch keeps list, count and coverage in one database transaction.
         const [rows, count, coverage] = await env.DB.batch<Record<string, unknown>>([
             env.DB.prepare(`SELECT ${lightPayload} AS payload FROM topics ${where} ORDER BY ${order} LIMIT ? OFFSET ?`).bind(page.region,page.limit, page.offset),
@@ -54,7 +54,7 @@ export async function getSourceStats(): Promise<SourceStats> {
         if (!env.DB)
             throw Error('DB fehlt');
         const [stats, coverage] = await env.DB.batch<Record<string, unknown>>([
-            env.DB.prepare("SELECT count(*) AS total, coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) AS qualityPassed, coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) AS aiSummaries FROM topics WHERE json_extract(payload,'$.identity.mergedInto') IS NULL"),
+            env.DB.prepare("SELECT count(*) AS total, coalesce(sum(json_extract(payload,'$.quality.passed')=1),0) AS qualityPassed, coalesce(sum(json_extract(payload,'$.generatedBy') LIKE 'KI-Zusammenfassung%'),0) AS aiSummaries FROM topics WHERE active=1"),
             env.DB.prepare("SELECT value FROM system_state WHERE key='coverage'")
         ]);
         const s = stats.results[0];
@@ -92,7 +92,7 @@ export async function getTopic(id: string): Promise<TopicDetail | undefined> {
 export async function getUpcomingSessions(region="billerbeck"):Promise<import('@/shared/types').UpcomingSession[]> {
  const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Berlin'}).format(new Date());
  let rows:Pick<StoredTopic,'id'|'title'|'events'>[]=[];
- try{if(!env.DB)throw Error('DB fehlt');{const result=await env.DB.prepare("WITH dated AS (SELECT topics.id,json_extract(payload,'$.title') AS title,json_extract(e.value,'$.date') AS date,json_extract(e.value,'$.committee') AS committee,ROW_NUMBER() OVER (PARTITION BY json_extract(e.value,'$.date'),json_extract(e.value,'$.committee') ORDER BY topics.id) AS position FROM topics JOIN json_each(json_extract(payload,'$.events')) e WHERE region_id=? AND json_extract(payload,'$.identity.mergedInto') IS NULL AND substr(json_extract(e.value,'$.date'),1,10)>=? AND json_extract(e.value,'$.status') IN ('announced','consulting')) SELECT id,title,date,committee FROM dated WHERE position=1 ORDER BY date,id LIMIT 2").bind(region,today).all<{id:string;title:string;date:string;committee:string}>();return result.results;}}catch{rows=[...initial.topics,...regional.topics as unknown as StoredTopic[],...await fallbackNrwTopics(region)].filter(t=>!t.identity?.mergedInto&&(t.regionId||'muenster')===region);}
+ try{if(!env.DB)throw Error('DB fehlt');{const result=await env.DB.prepare("WITH dated AS (SELECT topics.id,json_extract(payload,'$.title') AS title,json_extract(e.value,'$.date') AS date,json_extract(e.value,'$.committee') AS committee,ROW_NUMBER() OVER (PARTITION BY json_extract(e.value,'$.date'),json_extract(e.value,'$.committee') ORDER BY topics.id) AS position FROM topics JOIN json_each(json_extract(payload,'$.events')) e WHERE region_id=? AND active=1 AND substr(json_extract(e.value,'$.date'),1,10)>=? AND json_extract(e.value,'$.status') IN ('announced','consulting')) SELECT id,title,date,committee FROM dated WHERE position=1 ORDER BY date,id LIMIT 2").bind(region,today).all<{id:string;title:string;date:string;committee:string}>();return result.results;}}catch{rows=[...initial.topics,...regional.topics as unknown as StoredTopic[],...await fallbackNrwTopics(region)].filter(t=>!t.identity?.mergedInto&&(t.regionId||'muenster')===region);}
  const seen=new Set<string>();
  return rows.flatMap(t=>t.events.filter(e=>e.date.slice(0,10)>=today&&['announced','consulting'].includes(e.status)).map(e=>({id:t.id,title:t.title,date:e.date,committee:e.committee}))).sort((a,b)=>a.date.localeCompare(b.date)).filter(e=>{const key=e.date+e.committee;if(seen.has(key))return false;seen.add(key);return true}).slice(0,2);
 }

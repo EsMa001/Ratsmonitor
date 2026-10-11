@@ -1,6 +1,6 @@
 import {TIMELINE_BASES} from '../../shared/timeline.mjs';
 import {readSeries,binary} from './region-series.mjs';
-const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
+const canonical="active=1";
 // The day a report first appeared on an agenda, or the day it was first stored. Reports stored before the
 // import date was recorded carry none; they are returned as undated instead of being guessed.
 const EVENT_DAY="substr((SELECT min(json_extract(value,'$.date')) FROM json_each(payload,'$.events')),1,10)";

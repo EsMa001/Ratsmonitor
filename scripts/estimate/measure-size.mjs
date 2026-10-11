@@ -26,7 +26,7 @@ const areas=[];
 const regions=read('shared/nrw-regions.json'),population=read('shared/nrw-population.json');
 const dbDir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/',db=new DatabaseSync(dbDir+fs.readdirSync(dbDir).find(f=>f.endsWith('.sqlite')),{readOnly:true});
 const byArea=new Map();
-for(const row of db.prepare("SELECT id,region_id AS area,json_extract(payload,'$.events') AS events,json_extract(payload,'$.documents') AS documents FROM topics WHERE json_extract(payload,'$.identity.mergedInto') IS NULL").all()){
+for(const row of db.prepare("SELECT id,region_id AS area,json_extract(payload,'$.events') AS events,json_extract(payload,'$.documents') AS documents FROM topics WHERE active=1").all()){
  const day=JSON.parse(row.events||'[]').map(e=>String(e.date||'').slice(0,10)).filter(Boolean).sort()[0];
  if(!day||day<from||day>to)continue;
  byArea.set(row.area,[...(byArea.get(row.area)||[]),{id:row.id,documents:JSON.parse(row.documents||'[]').filter(isPdf).map(d=>({url:d.url,title:String(d.title||'')}))}]);

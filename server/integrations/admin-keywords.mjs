@@ -7,7 +7,7 @@
 //   topics between areas.
 //
 // Reads only. Nothing is analysed or written when the page is opened; it counts what earlier steps stored.
-const ACTIVE="json_extract(topics.payload,'$.identity.mergedInto') IS NULL";
+const ACTIVE="topics.active=1";
 const PREFIX='Erkannte Sachbegriffe: ';
 /** Longest list delivered per kind; the page says so when a list is cut. */
 export const KEYWORD_LIST_LIMIT=2000;

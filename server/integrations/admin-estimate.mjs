@@ -13,7 +13,7 @@ const WANTED_SAMPLES=8;
 // Level in the population frame: Lower Saxon Samtgemeinden are associations, their members belong to them.
 const levelOf=r=>r.kind==='district'?'district':r.members?'association':'municipality';
 const readJson=text=>{try{return JSON.parse(text||'{}');}catch{return {};}};
-const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
+const canonical="active=1";
 // Per area and for the period: reports with at least one PDF, linked PDFs, and how often reports return to an agenda.
 /** The former scan over all reports (tests only); detailsFromSeries gives the same from region_series. */
 export const DETAILS_SQL=`SELECT area,sum(pdfs>0) AS withDocuments,sum(pdfs) AS links,sum(days>1) AS followUps,sum(days) AS consultations FROM (SELECT region_id AS area,substr((SELECT min(json_extract(value,'$.date')) FROM json_each(payload,'$.events')),1,10) AS day,(SELECT count(*) FROM json_each(payload,'$.documents') WHERE json_extract(value,'$.kind') IN ('application/pdf','pdf')) AS pdfs,(SELECT count(DISTINCT substr(json_extract(value,'$.date'),1,10)) FROM json_each(payload,'$.events')) AS days FROM topics WHERE ${canonical}) WHERE day>=? AND day<=? GROUP BY area`;

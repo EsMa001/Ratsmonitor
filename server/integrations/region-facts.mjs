@@ -6,7 +6,7 @@
 // administration (admin-refresh.mjs) and locally by scripts/refresh-admin.mjs. Pages never compute (region-series.mjs).
 import {FIGURES} from './admin-data.mjs';
 import {SERIES_VERSION,FIGURES_VERSION,binary,missingTable} from './region-series.mjs';
-const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
+const canonical="active=1";
 // Per report: first agenda day, day of first import, linked PDFs and meeting days. The expressions are those of
 // admin-timeline.mjs (days) and admin-estimate.mjs (DETAILS_SQL). MATERIALIZED keeps the grouping from evaluating them
 // again.

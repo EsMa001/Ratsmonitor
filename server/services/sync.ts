@@ -85,7 +85,7 @@ finally {
 // What of a record goes into the details of the run.
 const brief = (record: any) => ({ requests: record.summary.requests, failed: record.summary.failed, networkMs: record.summary.networkMs, durationMs: record.durationMs });
 async function refreshSummaries(id: string, started: string,region:string) { if (!env.DB)
-    throw Error('Datenbank fehlt'); const rows = await env.DB.prepare("SELECT id,payload FROM topics WHERE region_id=? AND json_extract(payload,'$.identity.mergedInto') IS NULL ORDER BY updated_at DESC").bind(region).all<{
+    throw Error('Datenbank fehlt'); const rows = await env.DB.prepare("SELECT id,payload FROM topics WHERE region_id=? AND active=1 ORDER BY updated_at DESC").bind(region).all<{
     id: string;
     payload: string;
 }>(); let processed = 0; for (const row of rows.results) {

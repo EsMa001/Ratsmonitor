@@ -16,7 +16,7 @@ export const REQUIRED_FIELDS=[
 export async function dataCompleteness(db,region='all'){
  if(!db)throw Error('Datenbank fehlt');
  if(!/^[a-z0-9-]{1,80}$/.test(region))throw Error('Ungültiges Gebiet');
- const where="json_extract(payload,'$.identity.mergedInto') IS NULL"+(region==='all'?'':' AND region_id=?');
+ const where="active=1"+(region==='all'?'':' AND region_id=?');
  const fields=REQUIRED_FIELDS.map(([id,,sql])=>`COALESCE(SUM(COALESCE((${sql}),0)),0) AS ${id}`);
  const all=REQUIRED_FIELDS.map(([, ,sql])=>`COALESCE((${sql}),0)`).join(' AND ');
  const row=await db.prepare(`SELECT COUNT(*) AS total,COALESCE(SUM(${all}),0) AS complete,${fields.join(',')} FROM topics WHERE ${where}`).bind(...(region==='all'?[]:[region])).first();

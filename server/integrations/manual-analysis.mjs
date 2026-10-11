@@ -22,7 +22,7 @@ export async function analysePending(db,region='all',{after=''}={}){
  const lock=await db.prepare("INSERT INTO system_state(key,value) VALUES('import-lock',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE CAST(system_state.value AS INTEGER) < ? RETURNING value").bind(lease,Date.now()).first();
  if(!lock)return {status:409,data:{error:'Ein Import oder eine Analyse läuft bereits. Bitte später erneut starten.'}};
  let processed=0;
- const where=`json_extract(payload,'$.identity.mergedInto') IS NULL AND ${ANALYSIS_PENDING_SQL}`+(region==='all'?'':' AND region_id=?'),args=region==='all'?[]:[region];
+ const where=`active=1 AND ${ANALYSIS_PENDING_SQL}`+(region==='all'?'':' AND region_id=?'),args=region==='all'?[]:[region];
  const cursor=typeof after==='string'&&after?after:'';
  try{
   await db.prepare('INSERT INTO import_runs(id,started_at,status,details) VALUES(?,?,?,?)').bind(id,started,'running',JSON.stringify({mode:'analysis',region,trigger:'manual',...(cursor?{after:cursor}:{})})).run();
@@ -32,7 +32,7 @@ export async function analysePending(db,region='all',{after=''}={}){
    for(const row of group){const t={...row,classification:row.savedClassification?JSON.parse(row.savedClassification):undefined};
     const inputHash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceTitle(t))))).map(x=>x.toString(16).padStart(2,'0')).join('');
     const rule={...(hasCurrentLabel(t)?t.classification:{...classifyTopic(t),classifiedAt:started}),inputHash};
-    statements.push(db.prepare(`UPDATE topics SET payload=json_set(payload,'$.classification',json(?),'$.labelAssessments.rule',json(?),'$.analysisFeatures',json(?),'$.metadata.version','article-record-v1','$.metadata.lastProcessedAt',?) WHERE id=? AND ${title}=? AND json_extract(payload,'$.identity.mergedInto') IS NULL`).bind(JSON.stringify(rule),JSON.stringify(rule),JSON.stringify({...features(t),version:MATCH_VERSION,evidence:sourceTitle(t),analysedAt:started}),started,t.id,sourceTitle(t)));
+    statements.push(db.prepare(`UPDATE topics SET payload=json_set(payload,'$.classification',json(?),'$.labelAssessments.rule',json(?),'$.analysisFeatures',json(?),'$.metadata.version','article-record-v1','$.metadata.lastProcessedAt',?) WHERE id=? AND ${title}=? AND active=1`).bind(JSON.stringify(rule),JSON.stringify(rule),JSON.stringify({...features(t),version:MATCH_VERSION,evidence:sourceTitle(t),analysedAt:started}),started,t.id,sourceTitle(t)));
    }
    // One history insertion per batch keeps the 500-article action below the D1 query limit.
    statements.push(db.prepare(`INSERT OR IGNORE INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) SELECT ?||':'||id,id,'rule-label',json_extract(payload,'$.classification.method'),json_extract(payload,'$.classification.inputHash'),?,json_extract(payload,'$.classification') FROM topics WHERE id IN (${group.map(()=>'?').join(',')}) AND json_extract(payload,'$.metadata.lastProcessedAt')=?`).bind(id,started,...group.map(t=>t.id),started));

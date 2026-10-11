@@ -12,7 +12,7 @@ import {ANALYSIS_PENDING_SQL} from './manual-analysis.mjs';
 import {accessOfSource,accessLabel,channelOf} from '../../shared/source-access.mjs';
 import robotsVerdicts from './source-robots.json' with {type:'json'};
 import atlas from './source-atlas.json' with {type:'json'};
-const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
+const canonical="active=1";
 const conditions={labels:"coalesce(json_extract(payload,'$.classification.primary'),'unklar')='unklar'",status:"status='unknown'",identity:"json_extract(payload,'$.identity.conflict')=1",summaries:"coalesce(json_extract(payload,'$.documentIssue'),'')!='' OR coalesce(json_extract(payload,'$.summaryIssue'),'')!='' OR json_extract(payload,'$.contentAnalysis.status') IN ('insufficient_source','failed','stale') OR json_extract(payload,'$.contentAnalysis.reason') IS NOT NULL"};
 const configuredSources=[...SOURCES.map(s=>({...s,method:s.id==='recklinghausen'?'official-api':'scraper'})),...NRW_SOURCES,{id:'muenster',method:'oparl',system:'https://oparl.stadt-muenster.de/system'}];
 // The first entry of an area counts, as in the list above; the catalog holds several thousand areas.

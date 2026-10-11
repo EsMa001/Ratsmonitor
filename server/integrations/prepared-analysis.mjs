@@ -46,7 +46,7 @@ export async function importPreparedAnalysis(db,bundle,{limit=75}={}){
    COALESCE(SUM(json_extract(payload,'$.contentAnalysis.status')='insufficient_source'),0) AS insufficient,
    COALESCE(SUM(json_extract(payload,'$.contentAnalysis.status')='stale'),0) AS stale,
    COALESCE(SUM(json_extract(payload,'$.labelAssessments.ai.primary') IS NOT NULL),0) AS aiLabels
-   FROM topics WHERE region_id=? AND json_extract(payload,'$.identity.mergedInto') IS NULL`).bind('billerbeck').first();
+   FROM topics WHERE region_id=? AND active=1`).bind('billerbeck').first();
   const data={bundle:bundle.id,processed,skipped,conflicts,conflictIds,remaining,limit,stored};
   await db.prepare('UPDATE import_runs SET finished_at=?,status=?,details=json_patch(details,?) WHERE id=?').bind(new Date().toISOString(),conflicts?'partial':'completed',JSON.stringify(data),runId).run();
   return {status:200,data};

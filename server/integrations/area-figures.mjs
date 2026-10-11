@@ -4,7 +4,7 @@
 import {regionFigures} from './admin-data.mjs';
 import {atRevision} from './revision-cache.mjs';
 import {FIRST_DAY_SQL,LAST_DAY_SQL} from './admin-timeline.mjs';
-const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
+const canonical="active=1";
 /**
  * @returns {Promise<{rows:Map<string,{count:number,first:string|null,last:string|null}>,pending:number}>} pending: areas
  * whose figures are still being computed (they keep count, first and last of their previous computation, if any).

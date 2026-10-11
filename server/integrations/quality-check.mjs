@@ -8,7 +8,7 @@ import {AdminError} from './admin-access.mjs';
 import {stockRevisions} from './admin-stored.mjs';
 import {nextChunk} from './build-chunks.mjs';
 const KEY='admin-quality-check',SAMPLES=20;
-const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
+const canonical="active=1";
 const title="coalesce(nullif(trim(json_extract(payload,'$.officialTitle')),''),nullif(trim(json_extract(payload,'$.title')),''),'')";
 const committee="coalesce(json_extract(payload,'$.events[0].committee'),json_extract(payload,'$.committee'),'')",url="coalesce(json_extract(payload,'$.sourceUrl'),'')";
 // Titles that stand several times in one meeting by nature (placeholders, standing items) and short titles: left out
@@ -30,8 +30,8 @@ const CONDITIONS={
  eventDateMismatch:`${canonical} AND event_date<>coalesce(json_extract(payload,'$.eventDate'),'')`,
  documentsWithoutUrl:`${canonical} AND EXISTS (SELECT 1 FROM json_each(payload,'$.documents') WHERE coalesce(json_extract(value,'$.url'),'')='')`,
  conflicts:"json_extract(payload,'$.identity.conflict')=1",
- mergeTargetMissing:"json_extract(payload,'$.identity.mergedInto') IS NOT NULL AND NOT EXISTS (SELECT 1 FROM topics b WHERE b.id=json_extract(topics.payload,'$.identity.mergedInto'))",
- mergeChain:"json_extract(payload,'$.identity.mergedInto') IS NOT NULL AND EXISTS (SELECT 1 FROM topics b WHERE b.id=json_extract(topics.payload,'$.identity.mergedInto') AND json_extract(b.payload,'$.identity.mergedInto') IS NOT NULL)",
+ mergeTargetMissing:"active=0 AND NOT EXISTS (SELECT 1 FROM topics b WHERE b.id=json_extract(topics.payload,'$.identity.mergedInto'))",
+ mergeChain:"active=0 AND EXISTS (SELECT 1 FROM topics b WHERE b.id=json_extract(topics.payload,'$.identity.mergedInto') AND b.active=0)",
 };
 const RUNNERS={
  // The same source address with the same title under two or more areas: a shared system whose reader does not
