@@ -528,9 +528,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/admin/
-- page.tsx (66, ⚠3): dynamic, metadata, AdminPage
-- page.tsx (66, ⚠3): dynamic, metadata, AdminPage
-- page.tsx (66, ⚠3): dynamic, metadata, AdminPage
+- page.tsx (61, ⚠3): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -549,9 +547,7 @@ topic design-styles.css:140
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-atlas.tsx (197, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
-- admin-chrome.tsx (70, ⚠3): AdminPage, ADMIN_PAGES, TODO_AVAILABLE, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
-- admin-chrome.tsx (70, ⚠3): AdminPage, ADMIN_PAGES, TODO_AVAILABLE, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
-- admin-chrome.tsx (70, ⚠3): AdminPage, ADMIN_PAGES, TODO_AVAILABLE, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
+- admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, TODO_AVAILABLE, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠16): AdminDashboardView
 - admin-estimate.tsx (355, ⚠52): AdminEstimate
