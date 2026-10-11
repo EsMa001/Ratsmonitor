@@ -25,7 +25,6 @@ const dmy=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(0,4);
 const WEEKDAY=['So','Mo','Di','Mi','Do','Fr','Sa'];
 const dayName=(d:string)=>WEEKDAY[new Date(d+'T12:00:00Z').getUTCDay()]+', '+dmy(d);
 const STATUS:Record<string,string>={approved:'beschlossen',recommended:'empfohlen',rejected:'abgelehnt',consulting:'in Beratung',announced:'angekündigt',info:'zur Kenntnis',postponed:'vertagt'};
-const MIN_STEPS=[0,50,60,70,80,90];
 const store={get(k:string){try{return window.localStorage.getItem(k);}catch{return null;}},set(k:string,v:string){try{window.localStorage.setItem(k,v);}catch{/* ohne Speicher geht es auch */}}};
 
 function TopicCard({t,showDate}:{t:Topic;showDate:boolean}){
@@ -53,7 +52,7 @@ export function AdminSocial(){
  useEffect(()=>{
   const s=store.get('social.sort'),m=Number(store.get('social.min')),g=store.get('social.group');
   if(s==='datum'||s==='eignung')setSort(s);
-  if(MIN_STEPS.includes(m))setMinFit(m);
+  if(Number.isFinite(m)&&m>=0&&m<=100)setMinFit(Math.round(m/5)*5);
   if(g)setGroup(g);
  },[]);
  const pick=<T,>(key:string,set:(v:T)=>void)=>(v:T)=>{set(v);store.set(key,String(v));};
@@ -102,10 +101,11 @@ export function AdminSocial(){
      <button type="button" aria-pressed={sort==='eignung'} className={btn(sort==='eignung')} onClick={()=>pick<Sort>('social.sort',setSort)('eignung')}>Eignung (höchste zuerst)</button>
     </div>
    </div>
-   <div>
-    <p className="text-[12px] text-slate-500" id="social-min">Eignung mindestens</p>
-    <div role="group" aria-labelledby="social-min" className="mt-1 flex flex-wrap gap-1.5">
-     {MIN_STEPS.map(m=><button key={m} type="button" aria-pressed={minFit===m} className={btn(minFit===m)} onClick={()=>pick<number>('social.min',setMinFit)(m)}>{m===0?'alle':m+' %'}</button>)}
+   <div className="min-w-[240px]">
+    <label htmlFor="social-min" className="text-[12px] text-slate-500">Nur anzeigen ab <strong className="text-[14px] tabular-nums text-slate-900">{minFit} %</strong> Eignung</label>
+    <input id="social-min" type="range" min={0} max={100} step={5} value={minFit} onChange={e=>pick<number>('social.min',setMinFit)(Number(e.target.value))} className="mt-1 block w-full accent-teal-600" aria-valuetext={minFit===0?'alle':'ab '+minFit+' Prozent'}/>
+    <div className="mt-1 flex flex-wrap gap-1.5">
+     {[0,60,70,80].map(m=><button key={m} type="button" aria-pressed={minFit===m} className={btn(minFit===m)} onClick={()=>pick<number>('social.min',setMinFit)(m)}>{m===0?'alle':'ab '+m+' %'}</button>)}
     </div>
    </div>
    <label className="text-[12px] text-slate-500">Thema
