@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,fundingOf,fundingEuroOf,factsOf} from '../shared/topic-facts.mjs';
+import {factionsOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -106,4 +106,39 @@ test('outgoing grants to clubs and carriers are no funding for the municipality;
  assert.deepEqual(fundingEuroOf('Der Karnevalsverein e. V. hat eine Zuwendung in Höhe von 3.000 EUR beantragt.'),[]);
  assert.deepEqual(fundingEuroOf('Für den Ganztagsausbau wurde eine Zuwendung in Höhe von 450.000 € bewilligt.').map(x=>x.euro),[450000]);
  assert.equal(kitaFeeOf('Erhöhung der Elternbeiträge Kita','Der Kita-Beitrag steigt ab August auf 1.000 € im Jahr und 95 € im Monat.').euro,'95');
+});
+
+test('hebesaetze: change, table row and plain rate; recommendations and comparisons do not count',()=>{
+ assert.deepEqual(hebesatzOf('Anhebung der Hebesätze der Realsteuern','Beschlussvorschlag: Der Ortsgemeinderat erhöht den Hebesatz der Grundsteuer B ab dem 01.01.2026 von derzeit 465 auf 500 Prozentpunkte.'),[{tax:'Grundsteuer B',from:'465',to:'500'}]);
+ assert.deepEqual(hebesatzOf('1. Satzung zur Änderung der Hebesatzsatzung','Folgende Änderungen sind vorgesehen: Steuerart Hebesatz bisher Hebesatz neu Grundsteuer A 262 v.H. 300 v.H. Gewerbesteuer 365 v.H. 400 v.H.'),[{tax:'Grundsteuer A',from:'262',to:'300'},{tax:'Gewerbesteuer',from:'365',to:'400'}]);
+ assert.deepEqual(hebesatzOf('Hebesatz-Satzung','Zur Sicherung der Aufkommensneutralität erhöht die Gemeinde den Hebesatz für die Grundsteuer B auf 483 v.H.'),[]);
+ assert.deepEqual(hebesatzOf('Hebesatzsatzung 2027','Der aufkommensneutrale Hebesatz der Grundsteuer B beträgt 1.092 v.H.'),[]);
+ assert.deepEqual(hebesatzOf('Hebesatzsatzung 2027','Der Gemeinderat beschließt, den Hebesatz der Grundsteuer B ab dem 01.01.2027 auf 1.200 v.H. festzusetzen.'),[{tax:'Grundsteuer B',from:'',to:'1200'}]);
+ assert.deepEqual(hebesatzOf('Radweg Hauptstraße','Grundsteuer B 500 v.H.'),[]);
+});
+
+test('gebuehrensaetze: kind before the value, basis after the unit does not count, contributions and comparisons are skipped',()=>{
+ assert.deepEqual(feeRateOf('Abwasserabgabensatzung','Die Niederschlagswassergebühr würde eine Steigerung von derzeit 1,26 €/m² auf 1,49 €/m² erfahren.'),[{kind:'Niederschlagswasser',from:'1.26',to:'1.49',unit:'m²'}]);
+ assert.deepEqual(feeRateOf('Satzung über die Erhebung von Schmutzwassergebühren','Beschluss 2: Die verbrauchsabhängige Schmutzwassergebühr wird ab dem 01.01.2026 auf 3,39 €/m³ festgesetzt.'),[{kind:'Schmutzwasser',from:'',to:'3.39',unit:'m³'}]);
+ assert.deepEqual(feeRateOf('Gebühren 2027 - Trinkwasserversorgung','Es ergibt sich eine Verbrauchsgebühr in Höhe von 3,02 €/m³ Frischwasser.'),[{kind:'Trinkwasser',from:'',to:'3.02',unit:'m³'}]);
+ assert.deepEqual(feeRateOf('Wassergebühren','Der Zweckverband hat beschlossen, den Wasserpreis von 1,70 € auf 1,90 € je Kubikmeter zu erhöhen.'),[{kind:'Trinkwasser',from:'1.7',to:'1.9',unit:'m³'}]);
+ assert.deepEqual(feeRateOf('Globale Beitragskalkulation für Schmutzwasser','Beitrag für Schmutzwasserbeseitigung 7,87 €/m² (vorher 6,00 €/m²)'),[]);
+ assert.deepEqual(feeRateOf('Wasserversorgungssatzung','Im Vergleich der Kommunen liegt die Stadt mit 2,54 €/m³ Trinkwasser am unteren Ende.'),[]);
+});
+
+test('waermeplanung: step from the title, draft before decision, political requests do not count',()=>{
+ assert.equal(heatPlanOf('Aufstellungsbeschluss zur kommunalen Wärmeplanung',''),'Start und Beauftragung');
+ assert.equal(heatPlanOf('Präsentation des Entwurfs des Endberichts der kommunalen Wärmeplanung und Beschluss der Einsichtnahme',''),'Entwurf und Beteiligung');
+ assert.equal(heatPlanOf('Beschlussfassung Kommunaler Wärmeplan Stadt Dessau-Roßlau',''),'Wärmeplan zur Beschlussfassung');
+ assert.equal(heatPlanOf('Kommunaler Wärmeplan der Landeshauptstadt Dresden','Beschlussvorschlag: 1. Der Stadtrat beschließt auf Grundlage des Wärmeplanungsgesetzes den Kommunalen Wärmeplan. 2. Umsetzung der Maßnahmen.'),'Wärmeplan zur Beschlussfassung');
+ assert.equal(heatPlanOf('Übertragung der Aufgabe „Umsetzung der Kommunalen Wärmeplanung“ auf das Amt',''),'Start und Beauftragung');
+ assert.equal(heatPlanOf('Antrag der SPD-Fraktion zur Wärmeplanung',''),null);
+});
+
+test('zuschuesse an vereine: purpose from the title, amount at the grant word, no limits, lists or incoming funds',()=>{
+ assert.deepEqual(grantOf('Zuschussantrag des TuS Lutten e. V. für Ballfangzäune','Beschlussvorschlag: Dem TuS Lutten e. V. wird ein Zuschuss in Höhe von 2.675,00 € gewährt.'),{purpose:'Sport',euro:2675});
+ assert.deepEqual(grantOf('Zuschussantrag der DLRG Ortsgruppe Barßel e. V.','Der Neubau wird mit 20 % der förderfähigen Ausgaben, bis zu einer Zuschusshöhe von bis zu 10.000 Euro, gefördert.'),{purpose:'Feuerwehr und Rettung',euro:0});
+ assert.equal(grantOf('Antrag auf Fördermittel aus dem Landesprogramm für Vereinssportstätten',''),null);
+ assert.equal(grantOf('Antrag auf Zuschuss im Rahmen der Modernisierungsrichtlinie',''),null);
+ assert.equal(grantOf('Zuschuss an den Heimatverein Rehmsdorf e. V.','').purpose,'Kultur und Heimat');
 });

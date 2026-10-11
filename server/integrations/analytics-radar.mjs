@@ -4,6 +4,7 @@ import {searchFilters} from './monitor-search.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
+import {radarExtra} from './analytics-radar-extra.mjs';
 
 /*
  * Plenara.X – Themenradare (Versorgung, Verkehr, Vereine und Soziales, Vergabe, Klima und Energie, Finanzlage, Beteiligung):
@@ -43,6 +44,7 @@ export async function radar(db,catalog,params){
   const g=regions.get(r.region);g.topics.set(r.topic,(g.topics.get(r.topic)||0)+1);
  }
  const list=[...items.values()];
+ const extra=await radarExtra(db,id,page,name);
  const decided=list.filter(i=>DECIDED.includes(i.status)),approved=decided.filter(i=>i.status==='approved').length;
  return {
   q:f.q,radar:id,name:def.name,
@@ -55,5 +57,6 @@ export async function radar(db,catalog,params){
    .filter(r=>r.pop>=MIN_POP&&r.n>=MIN_TOPICS).sort((a,b)=>b.per10k-a.per10k).slice(0,TOP),
   recent:list.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,RECENT).map(i=>({id:i.id,title:i.title,region:name(i.region),date:i.date,status:i.status,signal:i.signal,topics:i.topics})),
   rule:{minPop:MIN_POP,minTopics:MIN_TOPICS},
+  extra,
  };
 }

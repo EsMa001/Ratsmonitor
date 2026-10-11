@@ -692,7 +692,7 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (354, ⚠23): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
+- AnalyticsAbout.tsx (363, ⚠27): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (66, ⚠1): AnalyticsPages
 - BauleitplanungPage.tsx (185, ⚠3): BauleitplanungPage
@@ -713,11 +713,11 @@ topic design-styles.css:140
 - KnowledgeGraphPage.tsx (219, ⚠1): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (116, ⚠1): NewsradarPage
+- NewsradarPage.tsx (135, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarThumbs.tsx (167): RADAR_THUMBS
 - Reveal.tsx (16): Reveal
-- ThemeRadarPage.tsx (202, ⚠5): ThemeRadarPage
+- ThemeRadarPage.tsx (206, ⚠5): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (207, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery

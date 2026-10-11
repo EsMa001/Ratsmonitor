@@ -243,6 +243,14 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
   ),
 };
 
+/* Kopfmodule mit Werten aus den Unterlagen (shared/topic-facts.mjs, server/integrations/analytics-radar-extra.mjs) */
+const RADAR_WERTE: Partial<Record<keyof typeof RADARS, string>> = {
+  finanzen: "Hebesätze: aus Vorlagen zu Hebesätzen, Realsteuern oder der Haushaltssatzung wird je Steuerart (Grundsteuer A, Grundsteuer B, Gewerbesteuer) der genannte Satz gelesen, mit bisherigem Satz, wenn er dabeisteht („von 465 auf 500 v. H.“). Nicht gezählt werden aufkommensneutrale, empfohlene, Mindest- und Vergleichssätze sowie nach Grundstücksart unterschiedene Sätze. Je Gebiet gilt der zuletzt genannte Satz; ob er beschlossen ist, zeigt der Status.",
+  gebuehren: "Gebührensätze: aus Vorlagen zu Gebühren, Kalkulationen und Abgabensatzungen werden Schmutzwasser und Trinkwasser je m³ und Niederschlagswasser je m² gelesen, mit bisherigem Satz, wenn er dabeisteht. Nicht gezählt werden einmalige Beiträge, dezentrale Entsorgung (Gruben, Kleinkläranlagen), Vergleiche mit anderen Kommunen und Verbandsumlagen. Netto und brutto werden nicht unterschieden. Je Gebiet gilt der zuletzt genannte Satz.",
+  klima: "Wärmeplanung: aus dem Titel, sonst aus dem Beschlussvorschlag, wird der Schritt der kommunalen Wärmeplanung gelesen (Start und Beauftragung, Analyse und Zwischenstand, Entwurf und Beteiligung, Beschluss, Umsetzung und Fortschreibung). Je Gebiet zählt der weiteste Schritt; „beschlossen“ nur mit dem Status beschlossen. Anträge und Anfragen aus der Politik zählen nicht als Schritt.",
+  soziales: "Zuschüsse: Vorgänge, deren Titel einen Zuschuss der Kommune an einen Verein oder Träger oder die Vereins-, Sport- oder Kulturförderung nennt; nicht Fördermittel, die die Kommune selbst bekommt, und nicht Zuschüsse an Private oder Unternehmen. Der Zweck kommt aus dem Titel, ein Betrag nur, wenn er am Zuschusswort steht (ohne Höchstbeträge, Beträge je Mitglied und Listen). Derselbe Betrag in mehreren Gremien eines Gebiets zählt einmal; die Summe ist eine Untergrenze.",
+};
+
 /** Methodik eines Themenradars aus seiner Beschreibung (shared/radars.mjs) */
 function RadarMethodik({ id }: { id: keyof typeof RADARS }) {
   const r = RADARS[id];
@@ -251,6 +259,7 @@ function RadarMethodik({ id }: { id: keyof typeof RADARS }) {
       <p className="mt-3 text-[16px] text-slate-500">{r.kurz}</p>
       <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ein Vorgang gehört zum Radar, wenn sein Titel eines dieser Themen nennt: {r.topics.map(([t]) => t).join(", ")}{"fallback" in r ? ` (sonst: ${r.fallback})` : ""}. Was geschieht, steht in Titel oder Beschlussvorschlag: {r.signals.map(([s]) => s).join(", ")}. Bei sehr kurzen Titeln wird der Beschlussvorschlag gelesen. Je Thema zeigt das Radar, in wie vielen Gebieten es vorkommt und was aus den Vorgängen wird (Anteil „beschlossen“ an den entschiedenen); je Gebiet die Vorgänge je 10.000 Einwohner.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird über Wörter im Titel; ein Vorgang ohne passendes Wort fehlt, ein Wort in anderem Sinn zählt mit. Bauanträge Privater, Formalpunkte und Sammelpunkte wie Mitteilungen zählen nicht. Der Status ist nur bei einem Teil der Vorgänge bekannt.</p>
+      {RADAR_WERTE[id] && <p className="mt-3 text-[14px] leading-relaxed text-slate-700">{RADAR_WERTE[id]}</p>}
     </>
   );
 }

@@ -2,12 +2,13 @@
  * Fakten aus Titel und Volltext eines Berichts für plenara.X (Tabelle topic_facts, drizzle/0025): welche Fraktion einen
  * Antrag oder eine Anfrage stellt (Fraktionsprofil) und welches Förderprogramm genannt wird, bewilligt oder beantragt
  * (Förderradar), Verfahrensschritt und geplante Wohneinheiten eines Bauleitplans (Bauleitplanung), Entscheidungen zu
- * Kita-Elternbeiträgen und neue Kita-Plätze (Kita-Radar). Rein regelbasiert; erkannt wird nur, was ausdrücklich dasteht. Gefüllt von scripts/pdf-store/facts.mjs
+ * Kita-Elternbeiträgen und neue Kita-Plätze (Kita-Radar), Hebesätze (Finanzlage), Abwasser- und Wassergebühren je m³/m²
+ * (Gebührenradar), Schritt der Wärmeplanung (Klimaradar) und Zuschüsse an Vereine und Träger (Vereine und Soziales). Rein regelbasiert; erkannt wird nur, was ausdrücklich dasteht. Gefüllt von scripts/pdf-store/facts.mjs
  * (lokale PDF-Ablage) und im Import, sobald er ein Dokument liest (refreshSummaries in server/services/sync.ts).
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {RADARS} from './radars.mjs';
-export const FACTS_VERSION='facts-v9';
+export const FACTS_VERSION='facts-v10';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -224,6 +225,161 @@ export function radarFactsOf(title,text){
  return rows;
 }
 
+/* Hebesätze (Finanzlage): Steuerart und Satz aus Vorlagen zu Hebesätzen, Realsteuern oder der Haushaltssatzung. Je Steuerart der
+   Abschnitt bis zur nächsten Steuerart; darin „von 465 auf 500 v. H.“, „500 v. H. (bisher 465 v. H.)“, „262 v.H. 300 v.H.“ (Tabelle
+   bisher/neu) oder nur der Satz („auf 483 v.H.“). Nicht: aufkommensneutrale, empfohlene, Mindest- oder Vergleichssätze, Nivellierung,
+   nach Grundstücksart differenzierte Sätze, Grundsteuer C. Im Beschlussvorschlag Genanntes geht vor. */
+const TAX_TITLE=/Hebes[aä]tz|Realsteuer|Grundsteuer|Gewerbesteuer|Steuers[aä]tze|Haushaltssatzung/i;
+const TAXES=[['Grundsteuer A',/Grundsteuer\s*A\b/g],['Grundsteuer B',/Grundsteuer\s*B\b/g],['Gewerbesteuer',/Gewerbesteuer(?!umlage|einnahme|aufkommen|zahlung|vorauszahlung|messbetr|pflicht)/g]];
+const RATE_UNIT=String.raw`(?:v\.\s?H\.?|v\.\s?Hundert|vom Hundert|%|Prozent(?:punkte)?|Punkte)`;
+const RATE_NUM=String.raw`(\d\.\d{3}|\d{3,4})`;
+const NOT_RATE=/aufkommensneutral|Nivellierung|Kommunalaufsicht|Aufsichtsbehörde|mindestens|Mindest|Durchschnitt|Vergleich|fiktiv|Spanne|zwischen|empfohl|Empfehlung|Orientierung|Nichtwohn|Wohngrundst|unbebaut|differenziert|Grundsteuer\s*C|Umlage|Landkreis|Nachbar|Kommunen|Gemeinden|Städte/i;
+const TAX_RANGE={'Grundsteuer A':[100,3000],'Grundsteuer B':[100,3000],Gewerbesteuer:[200,1000]};
+const rateNum=x=>Number(String(x).replace('.',''));
+function ratesIn(seg){
+ const R=(p,f)=>{const m=seg.match(new RegExp(p,'i'));return m?f(m):null;};
+ return R(String.raw`von\s+(?:derzeit\s+|bisher\s+|zuletzt\s+)?`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`?\s+(?:um\s+[\d,]+\s*%?\s*)?auf\s+`+RATE_NUM,m=>({from:m[1],to:m[2]}))
+  ||R(RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`\s*\(?\s*(?:bisher|vorher|derzeit|alt|vom bisherigen Hebesatz mit)\s*:?\s*`+RATE_NUM,m=>({from:m[2],to:m[1]}))
+  ||R(String.raw`auf\s+`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`\s+(?:vom\s+)?(?:bisherigen Hebesatz mit|bisher)\s+`+RATE_NUM,m=>({from:m[2],to:m[1]}))
+  ||R(String.raw`^\W{0,3}`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`\s+`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`(?!\s*\d)`,m=>({from:m[1],to:m[2]}))
+  ||R(String.raw`(?:auf|beträgt|betragen|von|mit|in Höhe von|:|^\W{0,3})\s*`+RATE_NUM+String.raw`\s*`+RATE_UNIT,m=>({from:'',to:m[1]}));
+}
+/** [{tax, from, to}] (Zahlen als Text, from '' wenn nicht genannt) oder [] */
+export function hebesatzOf(title,text){
+ const t=String(title||'');
+ if(!TAX_TITLE.test(t)||/Grundsteuer\s*C\b/.test(t)&&!/Grundsteuer\s*[AB]\b|Gewerbesteuer/.test(t))return [];
+ const budget=/Haushalt/i.test(t),out=new Map();
+ const scan=(src,prio)=>{
+  for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){
+   if(s.length>500||NOT_RATE.test(s)||budget&&!/Hebes/i.test(s))continue;
+   const marks=TAXES.flatMap(([tax,re])=>[...s.matchAll(re)].map(m=>({tax,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
+   marks.forEach((m,i)=>{
+    if(out.has(m.tax)&&out.get(m.tax).prio>=prio)return;
+    const seg=s.slice(m.at,Math.min(m.at+180,marks[i+1]?marks[i+1].at-14:s.length)).replace(/^\s*(\(.{0,60}?\)|für\s+\S+(\s+\S+)?\s+Grundstücke)?/,'');
+    const r=ratesIn(seg);if(!r)return;
+    const [lo,hi]=TAX_RANGE[m.tax],to=rateNum(r.to),from=r.from?rateNum(r.from):0;
+    if(to<lo||to>hi||from&&(from<lo||from>hi||from===to))return;
+    out.set(m.tax,{tax:m.tax,from:from?String(from):'',to:String(to),prio:prio+(from?0.5:0)});
+   });
+  }
+ };
+ scan(text,1);scan(decision(text),2);
+ return [...out.values()].map(({tax,from,to})=>({tax,from,to}));
+}
+
+/* Gebührensätze (Gebührenradar): Schmutzwasser und Trinkwasser je m³, Niederschlagswasser je m² (oder m³) aus Vorlagen zu
+   Gebühren, Kalkulationen und Abgabensatzungen. Wie bei den Hebesätzen: je Gebührenart der Abschnitt bis zur nächsten Art,
+   „von 1,26 €/m² auf 1,49 €/m²“, „3,38 Euro/m³ (bisher 3,07 Euro/m³)“, „3,47 €/m³ (VJ: 3,34 €/m³)“, sonst nur der Satz.
+   Nicht: Beiträge (einmalig je Grundstück), dezentrale Entsorgung (Gruben, Kleinkläranlagen), Vergleiche mit anderen Kommunen,
+   Änderungen „um“, Wasserentnahmeentgelt. */
+const FEE_TITLE=/Gebühr|Entgelt|Kalkulation|Wasserpreis|Abgabensatzung|Entwässerungssatzung|Wasserversorgungssatzung|Abwassersatzung|Tarif/i;
+const FEE_KINDS=[
+ ['Niederschlagswasser',/Niederschlags\s?wasser|Regenwasser|Oberflächenwasser|Oberflächenentwässerung|versiegelte/gi],
+ ['Schmutzwasser',/Schmutzwasser|Abwassergebühr|Kanalbenutzungsgebühr|Einleit(?:ungs)?gebühr|Entwässerungsgebühr|Abwasserbeseitigung/gi],
+ ['Trinkwasser',/Trinkwasser|Frischwasser(?!maßstab|menge|bezug|verbrauch)|(?<![\wäöüß])Wasser(?:preis|gebühr|verbrauchsgebühr|bezugsgebühr|entgelt|geld)/gi],
+];
+// Ohne Art im Satz („Die Verbrauchsgebühr beträgt …“) gilt die einzige Art, die der Titel nennt
+const FEE_GENERIC=/Verbrauchsgebühr|Mengengebühr|Gebührensatz|Benutzungsgebühr|Arbeitspreis/gi;
+const FEE_NUM=String.raw`(\d{1,2},\d{2,4})`;
+const FEE_UNIT=String.raw`\s*(?:€|Euro|EUR)?\s*(?:\(?(?:netto|brutto)\)?\s*)?(?:/|je|pro)\s*(m³|m3|Kubikmeter|cbm|m²|m2|Quadratmeter|qm)`;
+const NOT_FEE=/Beitr[aä]g|Gruben|Kleinkläranlage|abflusslos|dezentral|Fäkal|Sammelgrube|Grundstücksentwässerungsanlage|Vergleich|Spanne|zwischen|Durchschnitt|Landkreis|Kommunen|Gemeinden|Städte|Wassercent|Entnahmeentgelt|Lippeverband|Emschergenossenschaft|\bLV\b|Verbandsumlage|Umsatzsteuer von|Zuschlag|Gewinn|Abweichung|Differenz/i;
+const FEE_RANGE={Schmutzwasser:[0.3,12],Trinkwasser:[0.3,9],Niederschlagswasser:[0.05,6]};
+const unitOf=u=>/²|2$|Quadrat|qm/.test(u)?'m²':'m³';
+const feeNum=x=>Number(x.replace(',','.'));
+function feeIn(seg){
+ const R=(p,f)=>{const m=seg.match(new RegExp(p,'i'));return m?f(m):null;};
+ return R(String.raw`von\s+(?:derzeit\s+|bisher\s+|zuletzt\s+)?(?:\(?brutto\)?\s*)?`+FEE_NUM+String.raw`(?:\s*(?:€|Euro|EUR))?(?:`+FEE_UNIT+String.raw`)?\s*(?:\(?brutto\)?\s*)?auf\s+(?:\(?brutto\)?\s*)?`+FEE_NUM+String.raw`(?:\s*(?:€|Euro|EUR))?(?:`+FEE_UNIT+')?',m=>({from:m[1],to:m[3],unit:m[4]||m[2]||''}))
+  ||R(FEE_NUM+FEE_UNIT+String.raw`\s*\(?\s*(?:bisher|bislang|vorher|derzeit|VJ|Vorjahr|alt)\s*:?\s*`+FEE_NUM,m=>({from:m[3],to:m[1],unit:m[2]}))
+  ||R(String.raw`(?<!um\s)`+FEE_NUM+FEE_UNIT,m=>({from:'',to:m[1],unit:m[2]}));
+}
+/** [{kind, from, to, unit}] (Euro mit Komma als Text, from '' wenn nicht genannt) oder [] */
+export function feeRateOf(title,text){
+ const t=String(title||'');
+ if(!FEE_TITLE.test(t)||/Kita|Kinder|Friedhof|Bestattung|Abfall|Müll|Parken|Markt|Sondernutzung|Obdach|Unterkunft|Musikschule|Bücherei/i.test(t))return [];
+ const out=new Map(),named=FEE_KINDS.filter(([,re])=>t.match(re)),only=named.length===1?named[0][0]:null;
+ const scan=(src,prio)=>{
+  for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){
+   if(s.length>600||NOT_FEE.test(s))continue;
+   // „… €/m³ Frischwasser“ nennt den Maßstab, nicht die Gebührenart
+   const marks=[...FEE_KINDS,...(only?[[only,FEE_GENERIC]]:[])].flatMap(([kind,re])=>[...s.matchAll(re)].filter(m=>!/(m³|m3|Kubikmeter)\s*$/.test(s.slice(Math.max(0,m.index-12),m.index))).map(m=>({kind,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
+   marks.forEach((m,i)=>{
+    if(out.has(m.kind)&&out.get(m.kind).prio>=prio)return;
+    const r=feeIn(s.slice(m.at,Math.min(m.at+160,marks[i+1]?.at??s.length)));if(!r||!r.unit)return;
+    const unit=unitOf(r.unit);if(m.kind!=='Niederschlagswasser'&&unit!=='m³')return;
+    const [lo,hi]=FEE_RANGE[m.kind],to=feeNum(r.to),from=r.from?feeNum(r.from):0;
+    if(to<lo||to>hi||from&&(from<lo||from>hi||from===to||Math.abs(to/from-1)>1))return;
+    out.set(m.kind,{kind:m.kind,from:from?String(from):'',to:String(to),unit,prio:prio+(from?0.5:0)});
+   });
+  }
+ };
+ scan(text,1);scan(decision(text),2);
+ return [...out.values()].map(({kind,from,to,unit})=>({kind,from,to,unit}));
+}
+
+/* Kommunale Wärmeplanung (Klimaradar): Verfahrensschritt aus dem Titel, sonst aus dem Beschlussvorschlag. Reihenfolge der Prüfung:
+   Entwurf vor Beschluss („Entwurf des Endberichts“), Übertragung der Aufgabe vor Umsetzung („Übertragung … Umsetzung der KWP“).
+   Anträge und Anfragen aus der Politik zählen nicht als Schritt. */
+const HEAT=/Wärmeplan|Wärmeleitplan|\bKWP\b/i;
+export const HEAT_STEPS=[
+ ['Entwurf und Beteiligung',/Entwurf|vorläufig|Stellungnahme|Auslegung|Offenlage|Einsichtnahme|Öffentlichkeitsbeteiligung|Beteiligung der Öffentlichkeit|Beteiligung gem/i],
+ ['Wärmeplan zur Beschlussfassung',/Beschluss(fassung)?\s+((des|über\s+den|über\s+die|zum|der)\s+)?(kommunalen?\s+|kommunaler\s+)?(Wärmepl|KWP|Abschlussbericht)|Festsetzungsbeschluss|Abschluss der (kommunalen\s+)?Wärmeplanung|Billigung|beschließt (den|die)\s+(kommunalen?\s+)?Wärmeplan|Abschlussbericht|Endbericht|finale[nr]? Wärmeplan|Veröffentlichung des Wärmeplan/i],
+ ['Start und Beauftragung',/Aufstellungsbeschluss|Aufstellung|Durchführung|Erstellung|Beauftragung|Vergabe|Auftrag|Übertragung|Konvoi|interkommunal|Zusammenarbeit|Förderantrag|Einleitung|Beginn|Zuständigkeit|planungsverantwortliche/i],
+ ['Umsetzung und Fortschreibung',/Fortschreibung|Umsetzung|Monitoring|Maßnahmenkatalog|Maßnahmenumsetzung|Wärmenetz/i],
+ ['Analyse und Zwischenstand',/Bestandsanalyse|Potenzialanalyse|Potentialanalyse|Zielszenario|Zielgebiet|Eignungsprüfung|Zwischenbericht|Zwischenergebnis|Sachstand|Vorstellung|Ergebnisse|Präsentation|Wärmewendestrategie|Bericht/i],
+];
+// Im Beschlussvorschlag: der Beschluss des Plans zuerst; „Umsetzung“ steht dort oft nur als Auftrag und zählt nicht
+const HEAT_DECISION=[['Wärmeplan zur Beschlussfassung',/beschließt\b[^.]{0,250}(Wärmeplan\b|Wärmeplan\s|Abschlussbericht)|Wärmeplan[^.]{0,80}(beschlossen|gebilligt)/i],...HEAT_STEPS.filter(([n])=>n!=='Umsetzung und Fortschreibung'&&n!=='Wärmeplan zur Beschlussfassung')];
+/** Verfahrensschritt der kommunalen Wärmeplanung oder null */
+export function heatPlanOf(title,text){
+ const t=String(title||'');
+ if(!HEAT.test(t)||/\bAnfrage|Antrag (der|des|von)|Fraktion/i.test(t))return null;
+ const dec=decision(text);
+ return (HEAT_STEPS.find(([,re])=>re.test(t))||(HEAT.test(dec)?HEAT_DECISION.find(([,re])=>re.test(dec)):null)||[null])[0];
+}
+
+/* Zuschüsse der Kommune an Vereine und Träger (Vereine und Soziales): Titel nennt einen Zuschuss an einen Verein oder Träger
+   oder die Vereins-, Sport- oder Kulturförderung. Nicht: Fördermittel, die die Kommune selbst bekommt, Zuschüsse an Private
+   (Modernisierung), Unternehmen und Wirtschaftsförderung, Sammelpunkte. Zweck aus dem Titel; Betrag nur, wenn er an einem
+   Zuschusswort hängt („Zuschuss in Höhe von 2.675,00 €“), zuerst im Beschlussvorschlag; nicht bei Höchstbeträgen, Beträgen je
+   Mitglied oder Stunde und in Listen (drei und mehr Beträge). */
+const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?Zuschuss|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss/i;
+const NOT_GRANT=/Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|GmbH|Gewerbe|Fassade|Privat|Eigentümer/i;
+export const GRANT_PURPOSES=[
+ ['Feuerwehr und Rettung',/Feuerwehr|Rettung|DRK|Rote[sn]? Kreuz|Malteser|Johanniter|THW|DLRG|Wasserwacht|Bergwacht/i],
+ ['Kinder und Jugend',/Jugend|Kinder|Kita|KiTa|Kindergarten|Krippe|Schule|Schüler|Hausaufgaben|Ferien/i],
+ ['Sport',/[Ss]port|Turn|Schütze|Fußball|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Ruder|Kanu|\b(SV|TSV|TuS|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
+ ['Kultur und Heimat',/Kultur|Kunst|Künstler|Musik|Chor|Kapelle|Theater|Heimat|Museum|Brauchtum|Karneval|Narren|Fastnacht|Kirmes|Fest\b|Feste|Denkmal|Bücherei|Geschicht|Orchester|Konzert|Jazz|Band\b|Music|Gesang|Sänger|Kerbe|Kirchweih|Maifeier|Mai-Feier|Tanz|Standarte|Fahne|Soldaten|Krieger|Kameradschaft|Dorf|Bürgerverein|Verschönerung|Partnerschaft|Städtepartner/i],
+ ['Soziales und Senioren',/Senior|Sozial|Diakon|Caritas|AWO|Tafel|Hospiz|Beratung|Frauen|Familie|Mehrgenerationen|Behindert|Inklusion|Pflege|Wohlfahrt|Selbsthilfe|Lebenshilfe|Hilfe\b|-Hilfe|Blaues Kreuz|in Not\b|Sucht|Obdach|Migra|Integration/i],
+ ['Kirche',/Kirche|Pfarr|\bkath\.|\bev\.|evangelisch|katholisch/i],
+ ['Umwelt und Tiere',/Natur|Umwelt|Tier|Imker|Kleingarten|Garten|Angel|Jagd|Obst|Wald/i],
+];
+const GRANT_AMOUNT=new RegExp(String.raw`(?:Zuschuss|Zuschüsse|Zuschusses|Zuwendung|Förderbetrag|Förderung|Investitionszuschuss|Zuschussbetrag|Zuschusshöhe|Betriebskostenzuschuss|Bezuschussung|bezuschusst|Betrag)([^.;€]{0,80}?)(?:in Höhe von|i\.\s?H\.\s?v\.|von|über|mit|:)\s*`+EURO_NUM,'g');
+const NOT_GRANT_GAP=/Gesamt|Kosten|Eigen|Restmittel|förderfähig|zuwendungsfähig|Anteil|Prozent|%|Haushalt|Ansatz|Budget|Mittel/i;
+const grantEuro=(num,unit,cur)=>{
+ if(!cur&&!unit)return 0;
+ let v=Number(num.replace(/\./g,'').replace(',','.'));
+ if(/^(Mio|Millionen)/.test(unit||''))v*=1e6;else if(/^(T€|TEUR|Tsd|Tausend)/.test(unit||''))v*=1e3;else if(/^(Mrd|Milliarden)/.test(unit||''))return 0;
+ return v>=50&&v<=5e6?Math.round(v):0;
+};
+function grantAmount(src){
+ for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){
+  if(s.length>500||(s.match(/\d\s*(?:€|Euro|EUR)/g)||[]).length>=3||/Richtlinie|stehen\b.{0,120}zur Verfügung|☐|☒/.test(s))continue;
+  for(const m of s.matchAll(GRANT_AMOUNT)){
+   const before=s.slice(Math.max(0,m.index-30),m.index),after=s.slice(m.index+m[0].length,m.index+m[0].length+25);
+   if(NOT_GRANT_GAP.test(m[1])||LIMIT_BEFORE.test(before+m[1])||/^\s*(pro|je|monatlich|jährlich je|im Monat|\/)/i.test(after))continue;
+   const v=grantEuro(m[2],m[3],m[4]);if(v)return v;
+  }
+ }
+ return 0;
+}
+/** {purpose, euro} (euro 0, wenn kein Betrag erkannt) oder null */
+export function grantOf(title,text){
+ const t=String(title||'');
+ if(!GRANT_TITLE.test(t)||NOT_GRANT.test(t)||COLLECTIVE.test(t))return null;
+ const purpose=(GRANT_PURPOSES.find(([,re])=>re.test(t))||['Sonstige Vereine und Träger'])[0];
+ return {purpose,euro:/Richtlinie|Satzung/i.test(t)?0:grantAmount(decision(text))||grantAmount(text)};
+}
+
 /** Zeilen für topic_facts: {kind, value, detail} */
 export function factsOf(title,text){
  const rows=[],collective=COLLECTIVE.test(String(title||''))&&!/Förder|Zuwendung|Zuschuss/i.test(String(title||''));
@@ -241,6 +397,10 @@ export function factsOf(title,text){
  if(plan){rows.push({kind:'plan',value:plan.stage,detail:plan.type+'|'+plan.plan});const we=housingOf(text);if(we)rows.push({kind:'housing',value:'Wohneinheiten',detail:String(we)});}
  const fee=kitaFeeOf(title,text);if(fee)rows.push({kind:'kita_fee',value:fee.direction,detail:fee.euro});
  const places=kitaPlacesOf(title,text);if(places)rows.push({kind:'kita_places',value:'Plätze',detail:String(places)});
+ for(const x of hebesatzOf(title,text))rows.push({kind:'hebesatz',value:x.tax,detail:`${x.to}|${x.from}`});
+ for(const x of feeRateOf(title,text))rows.push({kind:'fee_rate',value:x.kind,detail:`${x.to}|${x.from}|${x.unit}`});
+ const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});
+ const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
  rows.push(...radarFactsOf(title,text));
  return rows;
 }

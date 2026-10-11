@@ -6,6 +6,7 @@ import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { RadarExtra, type Extra } from "./RadarExtra";
 import { DEC_COLORS } from "./DecisionCharts";
 import { STATUS } from "../../lib/constants";
 import { RADARS } from "@/shared/radars.mjs";
@@ -21,6 +22,7 @@ interface Result {
   regions: { id: string; name: string; pop: number | null; n: number; per10k: number | null; topics: string[] }[];
   recent: { id: string; title: string; region: string; date: string; status: string; signal: string; topics: string[] }[];
   rule: { minPop: number; minTopics: number };
+  extra?: Extra | null;
 }
 
 const n = (v: number) => v.toLocaleString("de-DE");
@@ -98,6 +100,8 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
               </dl>
+
+              <RadarExtra extra={res.extra} />
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Themen</h2>
