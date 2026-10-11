@@ -15,7 +15,7 @@ import {cleanTitle,matchTitle,evidenceOf} from './social-topics.mjs';
  * Bürgerbegehren), Alltagsnähe (Stichwörter aus social-topics), Aktualität; ohne zitierbaren Kern deutlich weniger.
  * Höchstens PER_REGION Meldungen je Gebiet, damit nicht ein Ort die Liste füllt.
  */
-const BACK=30,AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
+const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
 const FACT_KINDS=['faction','funding','funding_euro','housing','kita_fee','plan','radar:gebuehren','radar:finanzen','radar:beteiligung'];
 const day=d=>new Date(Date.now()+d*864e5).toISOString().slice(0,10);
 // Private Bauanträge mit Grundstücksadresse sind keine Meldung
@@ -137,9 +137,12 @@ export function article({card,topic,facts,ev,sentences,more,today,regionName}){
 export async function news(db,catalog,params){
  const copy=new URLSearchParams(params);
  const n=Math.min(MAX_N,Math.max(1,Number(copy.get('n'))||DEFAULT_N));copy.delete('n');
- /* Ohne Zeitraum die letzten BACK und nächsten AHEAD Tage; „bis heute“ (die Suche ohne künftige Sitzungen) zählt als offen,
+ // Schnellwahl der Seite: 30, 90 oder 365 Tage zurück (ein Zeitraum im Filter geht vor)
+ const back=SPANS.includes(Number(copy.get('days')))?Number(copy.get('days')):BACK;copy.delete('days');
+ /* Ohne Zeitraum die letzten back (Standard BACK) und nächsten AHEAD Tage; „bis heute“ (die Suche ohne künftige Sitzungen) zählt als offen,
     denn was ansteht, gehört ins Newsradar */
- if(!copy.get('from'))copy.set('from',day(-BACK));
+ const own=!!copy.get('from');
+ if(!own)copy.set('from',day(-back));
  if(!copy.get('to')||copy.get('to')===day(0))copy.set('to',day(AHEAD));
  copy.set('noformal','1');
  const f=parseDecisions(copy);
@@ -186,5 +189,5 @@ export async function news(db,catalog,params){
   items.push({...article({card:s.c,topic:s.t,facts:s.facts,ev:s.ev,sentences:s.sentences,more:s.more,today,regionName:byId.get(s.c.region)?.name||s.c.region}),score:s.score,why:s.why});
   if(items.length>=n)break;
  }
- return {q:f.q,from:copy.get('from'),to:copy.get('to'),totals:{considered:rows.length,read:top.length,quotable:scored.length},items,rule:{back:BACK,ahead:AHEAD,perRegion:PER_REGION,candidates:CANDIDATES}};
+ return {q:f.q,from:copy.get('from'),to:copy.get('to'),totals:{considered:rows.length,read:top.length,quotable:scored.length},items,own,rule:{back,ahead:AHEAD,perRegion:PER_REGION,candidates:CANDIDATES}};
 }

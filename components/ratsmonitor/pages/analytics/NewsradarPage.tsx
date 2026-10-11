@@ -13,7 +13,7 @@ interface Item {
   lead: string; quote: string; more: string; body: string[]; source: string; score: number; why: string[];
 }
 interface Result {
-  q: string; from: string; to: string;
+  q: string; from: string; to: string; own: boolean;
   totals: { considered: number; read: number; quotable: number };
   items: Item[];
   rule: { back: number; ahead: number; perRegion: number; candidates: number };
@@ -22,6 +22,8 @@ interface Result {
 const n = (v: number) => v.toLocaleString("de-DE");
 const datum = (d: string) => new Date(d + "T12:00:00").toLocaleDateString("de-DE");
 const HINWEIS = "Automatisch aus Ratsunterlagen erstellt, nicht redaktionell geprüft.";
+/* Schnellwahl des Zeitraums (Tage zurück); ein Zeitraum im Filter geht vor */
+const SPANS: [number, string][] = [[30, "Letzte 30 Tage"], [90, "90 Tage"], [365, "12 Monate"]];
 
 /** Meldung als Text zum Kopieren: Überschrift, Ortsmarke, Text, Quelle */
 function asText(i: Item) {
@@ -60,6 +62,7 @@ export function NewsradarPage() {
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [want, setWant] = useState(true);
+  const [days, setDays] = useState(30);
   const [error, setError] = useState("");
   const abortRef = useRef<AbortController | null>(null);
 
@@ -71,28 +74,44 @@ export function NewsradarPage() {
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
-    fetch(`/api/analytics/news?${query}`, { signal: ctrl.signal })
+    const key = `${query}&days=${days}`;
+    fetch(`/api/analytics/news?${key}`, { signal: ctrl.signal })
       .then(async (r) => {
         const body = (await r.json()) as { error?: string };
         if (!r.ok) throw new Error(body.error || "Die Auswertung konnte nicht berechnet werden.");
         return body as unknown as Result;
       })
-      .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
+      .then((r) => { setRes(r); setRanKey(key); setLoading(false); })
       .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
   useEffect(() => () => abortRef.current?.abort(), []);
-  const stale = !!res && ranKey !== query && !loading;
+  const stale = !!res && ranKey !== `${query}&days=${days}` && !loading;
+  const own = !!new URLSearchParams(query).get("from");
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/politik" className="text-teal-600">plenara.X Politik</Link> / Newsradar</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Newsradar</h1>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was in den Räten gerade berichtenswert ist: Vorgänge der letzten 30 und der nächsten 10 Tage, nach Nachrichtenwert geordnet, je Vorgang eine Meldung mit wörtlichem Zitat aus der Vorlage und Quelle.</p>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was in den Räten gerade berichtenswert ist: Vorgänge der letzten Wochen und der nächsten 10 Tage, nach Nachrichtenwert geordnet, je Vorgang eine Meldung mit wörtlichem Zitat aus der Vorlage und Quelle.</p>
       </PageBand>
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
+      <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden" role="group" aria-label="Zeitraum">
+        {own ? (
+          <p className="m-0 text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</p>
+        ) : (
+          <>
+            <span className="text-[14px] text-slate-500">Zeitraum:</span>
+            {SPANS.map(([d, label]) => (
+              <button key={d} type="button" aria-pressed={days === d} disabled={loading} onClick={() => { if (d !== days) { setDays(d); setWant(true); } }}
+                className={`h-9 rounded-full border px-4 text-[14px] transition-colors ${days === d ? "border-teal-600 bg-teal-600 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`}>{label}</button>
+            ))}
+            <span className="text-[12px] text-slate-500">und die nächsten 10 Tage</span>
+          </>
+        )}
+      </div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Vorgänge werden bewertet …" />}
