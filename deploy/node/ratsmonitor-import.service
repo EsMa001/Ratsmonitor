@@ -1,0 +1,41 @@
+# Importprozess neben dem Webserver (Code-Analyse A14): arbeitet den gespeicherten Abrufauftrag ab, ohne Browser und ohne
+# die Website anzuhalten. Gestartet vom Timer (ratsmonitor-import.timer, alle 10 Minuten) oder von Hand:
+#   systemctl start ratsmonitor-import        offenen Auftrag abarbeiten (ohne offenen Auftrag endet er sofort)
+# Einen Auftrag anlegen: in der Administration „im Hintergrund abrufen“, oder der nächtliche Lauf
+# (ratsmonitor-import-nightly.service), oder von Hand als ratsmonitor:
+#   cd /srv/ratsmonitor/app/current && set -a && . /srv/ratsmonitor/ratsmonitor.env && set +a && node dist/standalone/worker/import-worker.mjs --create sources --window 1w
+# Installieren:
+#   cp deploy/node/ratsmonitor-import*.service deploy/node/ratsmonitor-import*.timer /etc/systemd/system/
+#   systemctl daemon-reload && systemctl enable --now ratsmonitor-import.timer ratsmonitor-import-nightly.timer
+# Protokoll: journalctl -u ratsmonitor-import -u ratsmonitor-import-nightly
+[Unit]
+Description=Ratsmonitor Importprozess
+After=network-online.target ratsmonitor.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+# Länger auf Schreibsperren des Webprozesses warten als dieser (5 s); der Importprozess hat Zeit
+Environment=DATABASE_BUSY_TIMEOUT_MS=30000
+# Ein bundesweiter Lauf dauert etwa drei Stunden; --max-minutes beendet den Prozess vorher (der Auftrag bleibt, der
+# nächste Lauf des Timers macht weiter), TimeoutStartSec ist die harte Grenze
+TimeoutStartSec=5h
+ExecStart=/usr/bin/node --max-old-space-size=4096 dist/standalone/worker/import-worker.mjs --run --max-minutes 240
+# Speicher: Große Gebiete lesen einige Hundert MB; der Rest bleibt dem Seitencache und dem Webserver
+MemoryHigh=5G
+MemoryMax=6G
+LimitNOFILE=65536
+# Absicherung wie der Dienst: nur der Datenordner ist beschreibbar
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes

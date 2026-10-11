@@ -171,6 +171,31 @@ sudo -u ratsmonitor sqlite3 /srv/ratsmonitor/data/ratsmonitor.sqlite "PRAGMA ana
 systemctl restart ratsmonitor
 ```
 
+## Importprozess (seit 11.10.2026, Code-Analyse A14)
+
+Abrufe laufen in einem eigenen Prozess neben dem Webserver, `dist/standalone/worker/import-worker.mjs` (Quelle
+`server/node/import-worker.mjs`, Schleife in `server/integrations/pipeline-worker.mjs`, gebaut von
+`scripts/build-node.mjs`). Er arbeitet denselben gespeicherten Auftrag ab wie die Admin-Seite (`admin-pipeline-job`
+in `system_state`), mit 24 Bahnen im Prozess; Auftrag, Sperren und Fortschritt liegen in der Datenbank, die Admin-Seite
+zeigt den Lauf wie einen aus dem Browser, und beide dürfen denselben Auftrag treiben (jedes Gebiet genau einmal).
+
+| Einheit | Zweck |
+|---|---|
+| `ratsmonitor-import.timer` → `.service` | alle 10 Minuten: offenen Auftrag abarbeiten (`--run --max-minutes 240`); ohne Auftrag endet der Prozess sofort |
+| `ratsmonitor-import-nightly.timer` → `.service` | täglich 01:00 Uhr: Auftrag über alle angebundenen Quellen, eine Woche zurück (`--create sources --window 1w`), fertig vor der Sicherung um 03:30 |
+
+Einrichten: `cp deploy/node/ratsmonitor-import*.service deploy/node/ratsmonitor-import*.timer /etc/systemd/system/ &&
+systemctl daemon-reload && systemctl enable --now ratsmonitor-import.timer ratsmonitor-import-nightly.timer`.
+Protokoll: `journalctl -u ratsmonitor-import -u ratsmonitor-import-nightly` (eine Zeile je Minute mit den Zählern).
+Anhalten: in der Administration „Pause“ oder „Beenden“; der Prozess endet dann nach den laufenden Gebieten. Von
+Hand starten: `systemctl start ratsmonitor-import`. Ein Auftrag aus der Administration: „Im Hintergrund abrufen“
+legt ihn nur an, der Timer holt ihn innerhalb von zehn Minuten.
+
+Der Prozess öffnet die Datenbank wie der Dienst (`DATABASE_FILE`), wartet aber bis 30 s auf Schreibsperren
+(`DATABASE_BUSY_TIMEOUT_MS`); eigener Speicherrahmen 6 GB. Nach dem Auftrag rechnet er die Kennzahlen der
+Administration nach. Ein Deployment startet nur den Dienst neu; ein laufender Importprozess läuft mit seinem alten
+Stand zu Ende (`deploy.sh` meldet das).
+
 ## Vor dem Öffnen für andere
 
 Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain erreichbar wird:
@@ -185,8 +210,9 @@ Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain 
   Namensauflösung), Weiterleitungen von Hand mit Prüfung je Ziel. Die Sperre auf dem Server bleibt als zweite Schranke
   sinnvoll: Ein Name, der sich zwischen Prüfung und Abruf anders auflöst (DNS-Rebinding), wird im Code nicht erkannt.
 - **Impressum und Datenschutz** mit Hostinger als Hoster.
-- **Zeitgesteuerte Importe** über `scripts/run-imports.mjs` (braucht `IMPORT_TOKEN` mit mindestens 16 Zeichen und eine
-  https-Adresse; der Token wird zeitkonstant verglichen, ein kürzerer gilt als nicht gesetzt).
+- **Zeitgesteuerte Importe** laufen über den Importprozess (Abschnitt oben). `scripts/run-imports.mjs` (über
+  `/api/internal/sync`, braucht `IMPORT_TOKEN` mit mindestens 16 Zeichen und eine https-Adresse) ist der ältere Weg
+  von außen.
 
 ## Bekannte Grenzen
 

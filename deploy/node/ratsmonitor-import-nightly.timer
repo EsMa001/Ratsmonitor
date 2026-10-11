@@ -1,0 +1,13 @@
+# Täglich 01:00 Uhr Serverzeit (Europe/Berlin): bundesweiter Lauf (ratsmonitor-import-nightly.service), fertig vor der
+# Sicherung um 03:30 Uhr (ein Lauf dauerte am 10.10.2026 2,8 h; --max-minutes 240 beendet ihn spätestens um 05:00).
+[Unit]
+Description=Ratsmonitor Importprozess, täglich 01:00 Uhr
+
+[Timer]
+OnCalendar=*-*-* 01:00:00
+Persistent=false
+AccuracySec=1min
+Unit=ratsmonitor-import-nightly.service
+
+[Install]
+WantedBy=timers.target

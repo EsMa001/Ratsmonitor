@@ -33,6 +33,7 @@ echo "Pakete installieren ..."
 sudo -u ratsmonitor -H bash -lc "cd '$BUILD' && CI=1 corepack pnpm install --frozen-lockfile --config.strict-dep-builds=false --reporter=append-only > install.log 2>&1 || { tail -30 install.log; exit 1; }"
 echo "Bauen (Node) ..."
 sudo -u ratsmonitor -H bash -lc "cd '$BUILD' && node scripts/build-node.mjs > build.log 2>&1" || { tail -40 "$BUILD/build.log"; exit 1; }
+[ -f "$BUILD/dist/standalone/worker/import-worker.mjs" ] || { echo "Abbruch: der Importprozess (dist/standalone/worker/import-worker.mjs) wurde nicht gebaut"; exit 1; }
 if [ -n "${DATABASE_FILE:-}" ] && [ -f "$DATABASE_FILE" ]; then
   sudo -u ratsmonitor -H node "$BUILD/scripts/node-migrate.mjs" "$DATABASE_FILE" --check || { echo "Abbruch: Migrationen fehlen. Dienst stoppen, sichern, dann: node scripts/node-migrate.mjs $DATABASE_FILE"; exit 1; }
 fi
@@ -43,6 +44,9 @@ fi
 rm -rf "$REL" && mv -T "$BUILD" "$REL" && trap - EXIT
 ln -sfn "$REL" "$APP/current.new" && mv -T "$APP/current.new" "$APP/current"
 rm -rf "$REL.old"
+# Ein laufender Importprozess (ratsmonitor-import*.service) hat seinen Stand im Speicher und läuft weiter; der nächste
+# Lauf des Timers nimmt den neuen Stand. Nur zur Kenntnis.
+for unit in ratsmonitor-import ratsmonitor-import-nightly; do systemctl is-active --quiet "$unit" 2>/dev/null && echo "Hinweis: $unit läuft gerade (alter Stand bis zu seinem Ende; Protokoll: journalctl -u $unit)"; done
 systemctl restart ratsmonitor
 for i in $(seq 1 30); do
   code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "http://127.0.0.1:${PORT:-3000}/" || true)
