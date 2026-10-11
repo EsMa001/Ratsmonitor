@@ -20,6 +20,8 @@ bitte beibehalten.
   eigener Schritt), D3, D5, B10, Rest von D14.
 - **Admin am Handy** (Liste der Adminseiten, Start mit der Übersicht) ist auf `main` und seit 11.10. 11:30 auf dem Server
   (Stand `dd8e6fb`, zusammen mit Nicos Social-Media-Auswertung, Videos und Suchseite).
+- **Server auf `a1c1d0e` (11.10. 19:45)**, mit Nicos Migrationen 0019 bis 0025 (Dienst 7 min gestoppt, Wortliste danach voll neu aufgebaut in 140 s,
+  FTS-Index aus 0023 gebaut). Nicos SSH-Schlüssel ist noch nicht eingetragen (PowerShell-Anführungszeichen, Schritte im Chat).
 - **Paket 6, A14 (eigener Importprozess) ist auf `main` und auf dem Server** (ausgerollt 11.10. 10:17, Stand `724a1a4`;
   Timer `ratsmonitor-import` alle 10 min und `ratsmonitor-import-nightly` 01:00 Uhr aktiv, `ratsmonitor.service` auf 8 GB;
   Sicherung der alten Einheit `/etc/systemd/system/ratsmonitor.service.bak-vor-a14`). Erster nächtlicher Lauf: 12.10., 01:00 Uhr.
