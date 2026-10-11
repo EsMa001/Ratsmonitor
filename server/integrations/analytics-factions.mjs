@@ -19,7 +19,8 @@ const share=(a,b)=>b?Math.round((a/b)*1000)/10:null;
 
 /** Tabelle topic_facts vorhanden? Ohne Migration 0025 gibt es nichts auszuwerten. */
 export async function factsReady(db){
- try{await db.prepare('SELECT 1 FROM topic_facts LIMIT 0').all();return true;}catch{return false;}
+ // Nur „Tabelle fehlt“ heißt fehlende Migration; andere Fehler (Datenbank gerade gesperrt) gehen weiter an die Route
+ try{await db.prepare('SELECT 1 FROM topic_facts LIMIT 0').all();return true;}catch(e){if(/no such table/i.test(String(e?.message||e)))return false;throw e;}
 }
 
 export async function factions(db,catalog,params){
