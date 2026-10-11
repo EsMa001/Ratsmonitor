@@ -31,6 +31,8 @@ export function AdminPdf(){
   finally{setBusy(false);}
  };
  const s=data?.stats,job=data?.job;
+ // Geladen, aber noch kein Stand (kein Lauf bisher): Striche statt Ladepunkten
+ const v=<T,>(f:(x:Stats)=>T):T|string|undefined=>s?f(s):data?'–':undefined;
  const btn='h-9 rounded-lg px-4 text-[14px] font-medium disabled:opacity-50';
  return <>
   <AdminPageHead page="pdf">
@@ -38,13 +40,13 @@ export function AdminPdf(){
   </AdminPageHead>
   {error&&<Alert onRetry={load}>{error}</Alert>}
   <div className="mt-6"><Kpis label="Stand der PDF-Ablage" items={[
-   {label:'Verlinkte PDFs',value:s?n(s.linked):undefined,note:s?`Hauptdokument je Bericht; insgesamt ${n(s.allPdfs)} PDF-Dokumente verlinkt`:undefined},
-   {label:'Heruntergeladen',value:s?pct(s.loaded+s.textOnly,s.linked):undefined,note:s?`${n(s.loaded)} als PDF, ${n(s.textOnly)} nur noch als Text`:undefined},
-   {label:'Mit Text',value:s?pct(s.texts.linked??0,s.linked):undefined,note:s?`${n(s.texts.linked??0)} Dokumente, davon ${n(s.texts.complete??0)} vollständig; ${n(s.texts.ocrWaiting)} warten auf OCR`:undefined},
-   {label:'Fehlgeschlagen',value:s?pct(s.failed,s.linked):undefined,note:s?`${n(s.failed)} Dokumente, werden nicht erneut versucht`:undefined},
-   {label:'Noch nicht versucht',value:s?pct(s.open,s.linked):undefined,note:s?`${n(s.open)} Dokumente`:undefined},
-   {label:'Ältestes geladenes Dokument',value:s?day(s.oldest?.loaded):undefined,note:s?`Sitzungstag; so weit ist der Lauf zurück (versucht bis ${day(s.oldest?.tried)}). Älteste verlinkte Sitzung: ${day(s.oldest?.linked)}`:undefined},
-   {label:'Platz',value:s?gb(s.bytes.used):undefined,of:s?s.budgetGb+' GB':undefined,note:s?`PDFs ${gb(s.bytes.pdf)}, Texte ${gb(s.bytes.text)}`:undefined},
+   {label:'Verlinkte PDFs',value:v(s=>n(s.linked)),note:s?`Hauptdokument je Bericht; insgesamt ${n(s.allPdfs)} PDF-Dokumente verlinkt`:undefined},
+   {label:'Heruntergeladen',value:v(s=>pct(s.loaded+s.textOnly,s.linked)),note:s?`${n(s.loaded)} als PDF, ${n(s.textOnly)} nur noch als Text`:undefined},
+   {label:'Mit Text',value:v(s=>pct(s.texts.linked??0,s.linked)),note:s?`${n(s.texts.linked??0)} Dokumente, davon ${n(s.texts.complete??0)} vollständig; ${n(s.texts.ocrWaiting)} warten auf OCR`:undefined},
+   {label:'Fehlgeschlagen',value:v(s=>pct(s.failed,s.linked)),note:s?`${n(s.failed)} Dokumente, werden nicht erneut versucht`:undefined},
+   {label:'Noch nicht versucht',value:v(s=>pct(s.open,s.linked)),note:s?`${n(s.open)} Dokumente`:undefined},
+   {label:'Ältestes geladenes Dokument',value:v(s=>day(s.oldest?.loaded)),note:s?`Sitzungstag; so weit ist der Lauf zurück (versucht bis ${day(s.oldest?.tried)}). Älteste verlinkte Sitzung: ${day(s.oldest?.linked)}`:undefined},
+   {label:'Platz',value:v(s=>gb(s.bytes.used)),of:s?s.budgetGb+' GB':undefined,note:s?`PDFs ${gb(s.bytes.pdf)}, Texte ${gb(s.bytes.text)}`:undefined},
   ]}/></div>
 
   <section className="mt-10" aria-label="Lauf anstoßen">
