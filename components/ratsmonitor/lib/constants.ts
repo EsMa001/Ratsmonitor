@@ -2,6 +2,9 @@ import type {StatusId} from '../types';
 import {STATUS as SOURCE_STATUS} from '@/shared/types';
 import {LABELS} from '@/shared/labels.mjs';
 export const THEMEN=LABELS.map(l=>l.name);
+/** Thema für die Trefferkarte: jedes eingeordnete Label, auch Sitzungsablauf und Allgemeines; „Noch nicht eingeordnet“ bleibt leer */
+const OHNE_THEMA=LABELS.find(l=>l.id==='unklar')?.name;
+export const shownThema=(thema?:string)=>thema&&thema!==OHNE_THEMA&&THEMEN.includes(thema)?thema:'';
 export interface StatusInfo {id:StatusId;label:string;badge:string;dot:string}
 export const STATUS:StatusInfo[]=Object.entries(SOURCE_STATUS).map(([id,s])=>({id:id as StatusId,label:s.label,badge:id==='approved'?'bg-emerald-50 text-emerald-700 border-emerald-200':id==='rejected'?'bg-rose-50 text-rose-700 border-rose-200':id==='unknown'?'bg-slate-100 text-slate-600 border-slate-200':'bg-sky-50 text-sky-700 border-sky-200',dot:id==='approved'?'bg-emerald-500':id==='rejected'?'bg-rose-500':'bg-slate-400'}));
 export const STATUS_BY_ID=Object.fromEntries(STATUS.map(s=>[s.id,s])) as Record<StatusId,StatusInfo>;
