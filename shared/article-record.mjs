@@ -7,7 +7,7 @@ export function preserveArticleContent(old,incoming,source=incoming){
  const priorAI=old.contentAnalysis||/^KI-Zusammenfassung/.test(old.generatedBy||'');
  const incomingAI=incoming.contentAnalysis&&incoming.contentAnalysis.id!==old.contentAnalysis?.id||/^KI-Zusammenfassung/.test(incoming.generatedBy||'')&&incoming.summaryGeneratedAt&&incoming.summaryGeneratedAt!==old.summaryGeneratedAt;
  if(priorAI&&!incomingAI){
-  for(const key of ['title','shortSummary','longSummary','generatedBy','summaryGeneratedAt','summaryMethod','summaryModel','summaryEvidence','quality'])if(old[key]!==undefined)next[key]=old[key];
+  for(const key of ['title','shortSummary','longSummary','generatedBy','summaryGeneratedAt','summaryMethod','summaryModel','quality'])if(old[key]!==undefined)next[key]=old[key];
   if(old.contentAnalysis){const stale=old.contentAnalysis.sourceSignature!==analysisSignature(next);next.contentAnalysis={...old.contentAnalysis,...(stale?{status:'stale',reason:'Die Quelldaten haben sich seit dieser Auswertung geändert. Eine erneute Analyse muss manuell gestartet werden.'}:{})};}
  }
  // Erfolglose KI-Versuche gelten nur für unveränderte Quelldaten; nach einer Änderung wird wieder angefragt.

@@ -23,3 +23,16 @@ test('0021 removes the duplicate summary text from contentAnalysis and keeps the
  assert.equal(raw.prepare('SELECT count(*) n FROM search_cards_gone').get().n,0);
  raw.close();
 });
+
+test('0022 removes summaryEvidence where contentAnalysis carries the evidence, and keeps it where it is the only copy',()=>{
+ const raw=new DatabaseSync(':memory:');migrate(raw,f=>f<'0022');
+ const put=raw.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)');
+ const add=(id,p)=>put.run(id,'r1','city','2026-09-17','2026-10-01T00:00:00Z','approved',JSON.stringify({id,title:'T '+id,shortSummary:'K',committee:'Rat',...p}));
+ add('both',{summaryEvidence:['Zitat'],contentAnalysis:{status:'completed',evidence:[{url:'u',quote:'Zitat'}]}});
+ add('only',{summaryEvidence:['Einziges Zitat']});
+ migrate(raw,f=>f>='0022');
+ const get=id=>JSON.parse(raw.prepare('SELECT payload FROM topics WHERE id=?').get(id).payload);
+ assert.equal(get('both').summaryEvidence,undefined);assert.deepEqual(get('both').contentAnalysis.evidence,[{url:'u',quote:'Zitat'}]);
+ assert.deepEqual(get('only').summaryEvidence,['Einziges Zitat']);
+ raw.close();
+});
