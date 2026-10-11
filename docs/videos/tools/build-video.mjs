@@ -12,6 +12,8 @@ const T = new URL("./", import.meta.url).pathname, V = new URL("../", import.met
 const [video, ...flags] = process.argv.slice(2);
 if (!video) { console.log("Aufruf: node build-video.mjs <video> [--refresh] [--only 2,3]"); process.exit(1); }
 const refresh = flags.includes("--refresh");
+const THEME = JSON.parse(readFileSync(`${V}videos/${video}.json`, "utf8")).theme === "dunkel" ? "dunkel" : "";  /* Dunkle Fassung: dieselben Kapitel und Texte, App und Folien im Dark Mode */
+process.env.VIDEO_THEME = THEME;
 const only = flags.includes("--only") ? flags[flags.indexOf("--only") + 1].split(",").map(Number) : null;
 const def = JSON.parse(readFileSync(`${V}videos/${video}.json`, "utf8"));
 const OUTNAME = (def.ausgabe || video) + (flags.includes("--entwurf") ? "-entwurf" : "");  /* Entwurf überschreibt das fertige Video nicht */
@@ -61,7 +63,7 @@ for (const [i, k0] of def.kapitel.entries()) {
     lines.push(fill(m ? m[2] : l, pf)); beats.push(m ? m[1].split(",") : []);
   }
   const nr = i + 1, n = pad(nr), format = k.format || "16x9", keys = {};
-  for (const id of kj.szenen) { const sc = await loadScene(id); const own = Object.fromEntries(Object.entries(k.parameter || {}).filter(([a]) => a in (sc.parameter || {}))); const full = resolveParams(sc, own); keys[id] = { key: clipKey(id, sc, full, format), params: own, full, id }; }
+  for (const id of kj.szenen) { const sc = await loadScene(id); const own = Object.fromEntries(Object.entries(k.parameter || {}).filter(([a]) => a in (sc.parameter || {}))); const full = resolveParams(sc, own); keys[id] = { key: clipKey(id, sc, full, format, THEME), params: own, full, id }; }
   mkdirSync(`${O}/c${n}`, { recursive: true });
   /* Einblendungen: "satz" zählt die Sätze der Textdatei (auch die in der kurzen Fassung entfallenen); Platzhalter werden hier gefüllt */
   const eb = (kj.einblendungen || []).map((e) => ({ satz: orig.indexOf(e.satz), text: e.text && fill(e.text, pf), zahl: e.zahl && fill(e.zahl, pf), label: e.label && fill(e.label, pf) })).filter((e) => e.satz >= 0);
@@ -85,7 +87,7 @@ for (const c of sel) for (const [id, { key, params, full }] of Object.entries(c.
   const cf = `out-clips/${key}/clip.json`, cj = existsSync(cf) ? JSON.parse(readFileSync(cf, "utf8")) : null;
   const anders = cj && (JSON.stringify(Object.entries(cj.params || {}).sort()) !== JSON.stringify(Object.entries(full).sort()) || statSync(`${V}szenen/${id}/szene.mjs`).mtimeMs > Date.parse(cj.recorded));
   const st = clipState(key), neu = st.state === "fehlt" || st.state === "veraltet" || anders || refresh || (st.entwurf && !entwurf);  /* Entwurf-Clips gelten für das fertige Video nicht */
-  if (neu) { const p = Object.entries(params).map(([a, b]) => `${a}=${b}`).join(","); const args = [`${T}rec-clip.mjs`, id, "--format", c.format]; todo.set(key, p ? [...args, "--p", p] : args); }
+  if (neu) { const p = Object.entries(params).map(([a, b]) => `${a}=${b}`).join(","); const args = [`${T}rec-clip.mjs`, id, "--format", c.format, ...(THEME ? ["--theme", THEME] : [])]; todo.set(key, p ? [...args, "--p", p] : args); }
 }
 console.log(`Clips: ${todo.size} neu aufzunehmen (parallel ${jobs}), Rest wird wiederverwendet`);
 const queue = [...todo.values()]; let bad = 0;

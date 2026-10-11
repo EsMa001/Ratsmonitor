@@ -7,8 +7,8 @@ export async function loadScene(id) {
 }
 export const resolveParams = (scene, over = {}) => ({ ...(scene.parameter || {}), ...over });
 /* Schlüssel = Szene, plus Format und abweichende Parameter (dasselbe Thema oder Format wird nur einmal aufgenommen) */
-export function clipKey(id, scene, params = {}, format = "16x9") {
+export function clipKey(id, scene, params = {}, format = "16x9", theme = "") {
   const diff = Object.entries(params).filter(([k, v]) => (scene.parameter || {})[k] !== v).sort(([a], [b]) => a.localeCompare(b));
   const slug = (s) => String(s).toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  return [id, format !== "16x9" ? format : "", ...diff.map(([k, v]) => `${k}-${slug(v)}`)].filter(Boolean).join("@");
+  return [id, format !== "16x9" ? format : "", ...diff.map(([k, v]) => `${k}-${slug(v)}`), theme].filter(Boolean).join("@");
 }

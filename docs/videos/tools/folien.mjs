@@ -9,10 +9,11 @@ const R = process.env.REPO || `${homedir()}/code/Ratsmonitor`, T = process.env.V
 const { chromium } = await import(`${T}/node_modules/playwright/index.mjs`);
 const FF = createRequire(`${T}/package.json`)("ffmpeg-static");
 const out = process.argv[2], spec = JSON.parse(readFileSync(`${out}/folien.json`, "utf8"));
-const LOGO = `file://${R}/docs/videos/assets/logo.png`, FPS = 30;
+const DARK = process.env.VIDEO_THEME === "dunkel";
+const LOGO = `file://${R}/docs/videos/assets/${DARK ? "logo-dunkel" : "logo"}.png`, FPS = 30;
 const esc = (s) => s.replace(/Plenarra/g, "Plenara").replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const css = `@font-face{font-family:P;src:url(file://${R}/public/fonts/IBMPlexSans-Regular.ttf);font-weight:400}@font-face{font-family:P;src:url(file://${R}/public/fonts/IBMPlexSans-SemiBold.ttf);font-weight:600}
-*{box-sizing:border-box;margin:0}body{width:1280px;height:720px;font-family:P,sans-serif;color:#0f172a;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff 0%,#e6f3f1 100%)}
+*{box-sizing:border-box;margin:0}body{width:1280px;height:720px;font-family:P,sans-serif;color:${DARK ? "#f1f5f9" : "#0f172a"};position:relative;overflow:hidden;background:${DARK ? "linear-gradient(180deg,#131a2a 0%,#12283a 100%)" : "linear-gradient(180deg,#fff 0%,#e6f3f1 100%)"}}
 img.logo{display:block}
 @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @keyframes draw{to{stroke-dashoffset:0}}
@@ -22,13 +23,13 @@ img.logo{display:block}
 const brand = (td) => `<div class=brand style="--td:${td}s"><div class=lw><img class="logo big" src="${LOGO}"></div><span class=tail><i class=sq></i><span class=de>de</span></span></div>`;
 const check = (d) => `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1;animation:draw .45s ${d + 0.1}s ease-out forwards"/></svg>`;
 const schluss = (k = 1.2) => `<style>${css}
-.lw::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.85),rgba(255,255,255,0));transform:skewX(-18deg);animation:shine ${1.3*k}s ${1.0*k}s ease-in-out forwards}@keyframes shine{to{left:120%}}
+.lw::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,${DARK ? ".35" : ".85"}),rgba(255,255,255,0));transform:skewX(-18deg);animation:shine ${1.3*k}s ${1.0*k}s ease-in-out forwards}@keyframes shine{to{left:120%}}
 .line{margin-top:44px;height:4px;width:0;border-radius:2px;background:#0d9488;animation:w ${.8*k}s ${1.6*k}s ease-out forwards}@keyframes w{to{width:120px}}
 .s{margin-top:34px;font-size:46px;font-weight:600;letter-spacing:-.015em;max-width:980px;line-height:1.2;opacity:0;animation:up ${.8*k}s ${2.1*k}s ease-out forwards}.lw{animation-duration:${1*k}s}.tail{animation-duration:${.7*k}s}</style>
 <div class=m>${brand(+(1.7*k).toFixed(2))}<div class=line></div><div class=s>Besser verstehen, was vor Ort beraten wird.</div></div>`;
 const vorteile = (v) => `<style>${css}
 img.logo.s{position:absolute;left:72px;top:46px;height:56px}
-h2{position:absolute;left:72px;top:152px;font-size:50px;font-weight:400;letter-spacing:-.01em;color:#0d9488;animation:up .6s ease-out both}
+h2{position:absolute;left:72px;top:152px;font-size:50px;font-weight:400;letter-spacing:-.01em;color:${DARK ? "#2dd4bf" : "#0d9488"};animation:up .6s ease-out both}
 ul{position:absolute;left:72px;top:262px;list-style:none;padding:0}
 li{display:flex;align-items:center;gap:24px;font-size:36px;margin-bottom:28px;opacity:0;animation:up .5s ease-out forwards}</style>
 <img class="logo s" src="${LOGO}"><h2>Das bringt Ihnen Plenara</h2>
