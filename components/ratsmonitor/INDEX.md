@@ -467,7 +467,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (19): generateMetadata, Page
+- page.tsx (21): generateMetadata, Page
 
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
@@ -616,7 +616,7 @@ topic design-styles.css:140
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
-- BranchenLive.tsx (246): LiveThumb
+- BranchenLive.tsx (247): LiveThumb
 - BranchenPages.tsx (126): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (47): InfoPages
@@ -631,7 +631,7 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (211, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- branchen-enterprise.ts (76): AnalyseId, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (78): AnalyseId, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 
@@ -692,9 +692,9 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (239, ⚠13): ANALYSE_THUMBS, AnalyticsAbout
+- AnalyticsAbout.tsx (259, ⚠17): ANALYSE_THUMBS, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (40, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (44, ⚠1): AnalyticsPages
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (219, ⚠6): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair

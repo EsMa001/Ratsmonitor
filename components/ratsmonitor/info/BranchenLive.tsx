@@ -216,7 +216,8 @@ export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term:
   const [seen, setSeen] = useState(false);
   const [node, setNode] = useState<ReactNode>(null);
   const [stand, setStand] = useState("");
-  const Thumb = ANALYSE_THUMBS[id];
+  /* Neue Analysen haben noch keine gezeichnete Vorschau (AnalyticsAbout zeigt dann ein Symbol) */
+  const Thumb = (ANALYSE_THUMBS as Partial<Record<AnalyseId, () => ReactNode>>)[id] ?? (() => null);
   useEffect(() => {
     if (!ref.current || typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { setSeen(true); io.disconnect(); } }, { rootMargin: "200px" });

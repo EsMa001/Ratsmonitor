@@ -4,7 +4,8 @@ import { PageBand } from "./PageBand";
 import { Reveal } from "./Reveal";
 import type { ReactNode } from "react";
 import { AnalyticsLogo } from "../../components/Brand";
-import type { AnalyseId } from "../../info/branchen-enterprise";
+import { ANALYSEN, type AnalyseId } from "../../info/branchen-enterprise";
+import { Icon } from "../../info/icons";
 
 /** Vorschaubild der Diffusionsanalyse: Wellen von Punkten um einen Ursprung und die S-Kurve */
 function DiffusionThumb() {
@@ -136,6 +137,8 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "vergleich", name: "Gebietsvergleich", href: "/analytics/vergleich", kurz: "Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe." },
   { id: "beschluesse", name: "Beschlüsse", href: "/analytics/beschluesse", kurz: "Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer." },
   { id: "gremien", name: "Gremiennetz", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
+  { id: "fraktionen", name: "Fraktionsprofil", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
+  { id: "foerderung", name: "Förderradar", href: "/analytics/foerderung", kurz: "Welche Förderprogramme wo beantragt und bewilligt werden." },
 ];
 
 const METHODIK: Record<AnalyseId, ReactNode> = {
@@ -181,6 +184,20 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Nur Vorgänge mit Stationen in mindestens zwei verschiedenen Gremien tragen bei, das ist ein kleiner Teil. Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab. Die Gremienart wird aus dem Namen abgeleitet und kann im Einzelfall danebenliegen. Ausgewertet werden höchstens rund 10.000 Vorgänge.</p>
     </>
   ),
+  fraktionen: (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, welche Fraktionen Anträge und Anfragen stellen, zu welchen Themenfeldern, und was aus ihren Anträgen wird. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Die Fraktion wird aus der Antragswendung in Titel oder Textanfang des Hauptdokuments gelesen („Antrag der SPD-Fraktion“, „Anfrage der Fraktion Bündnis 90/Die Grünen“); gemeinsame Anträge zählen bei jeder beteiligten Fraktion. Lokale Wählergruppen werden zusammengefasst. Das Themenprofil vergleicht den Anteil eines Themenfelds an den Anträgen einer Fraktion mit dem Anteil an allen Fraktionsanträgen (Index 100 = wie alle), ähnlich einem Standortquotienten. Die Erfolgsquote ist der Anteil „beschlossen“ an den Anträgen mit Entscheidung (beschlossen, vertagt, abgelehnt); Anfragen zählen dabei nicht, sie werden beantwortet, nicht beschlossen.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird nur, was ausdrücklich als Antrag einer Fraktion dasteht, ein kleiner Teil aller Einträge. Sammelpunkte wie „Beantwortung von Anfragen“ zählen nicht. Der Status ist nur bei einem Teil der Anträge bekannt; die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei. Wie viele Volltexte vorliegen, unterscheidet sich je Gebiet.</p>
+    </>
+  ),
+  foerderung: (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, welche Förderprogramme wo genannt, beantragt oder bewilligt werden, und welche Gebiete im Verhältnis zu ihrer Größe viele geförderte Vorhaben haben. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gelesen werden Sätze, die von Fördergeld sprechen (Fördermittel, Förderbescheid, Zuwendung, Bundes- oder Landesmittel); darin wird das Programm erkannt (etwa Städtebauförderung, Ganztagsausbau, Klimaanpassung, LEADER) und ob die Förderung beantragt oder bewilligt ist. Gezählt werden Vorgänge, nicht Euro: Beträge stehen in den Unterlagen in verschiedenen Rollen (Förderbetrag, Gesamtkosten, Eigenanteil) und oft mehrfach. Je Gebiet zählen Vorgänge mit beantragter oder bewilligter Förderung je 10.000 Einwohner, nur für Gebiete ab 20.000 Einwohnern mit genügend Einträgen.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Grundlage ist der Volltext der Hauptdokumente, soweit er vorliegt; Sammelberichte (Mitteilungen, Haushalt, Sachstände) zählen nicht. Eine Rangfolge misst, wie oft Förderung in den Ratsunterlagen auftaucht, nicht die Höhe der Mittel.</p>
+    </>
+  ),
 };
 
 export function AnalyticsAbout() {
@@ -209,7 +226,10 @@ export function AnalyticsAbout() {
           <li key={a.id}>
             <Reveal delay={(i % 3) * 90}>
               <Link href={a.href} aria-label={`${a.name} öffnen`} className="group block">
-                <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} showStand={false} /></div>
+                <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1">{a.id in ANALYSE_THUMBS ? <LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} showStand={false} /> : (
+                  /* Neue Analysen ohne Schnappschuss-Vorschau: ruhige Kachel mit Symbol */
+                  <div aria-hidden="true" className="flex aspect-[16/10] items-center justify-center bg-slate-50 text-teal-600"><Icon name={ANALYSEN[a.id].icon} size={56} /></div>
+                )}</div>
                 <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
                 <h3 className="mt-2 text-[22px] font-semibold">{a.name}</h3>
                 <p className="mt-1 text-[16px] text-slate-500">{a.kurz}</p>

@@ -12,6 +12,7 @@ import {metadataChanged,stableJson} from '@/shared/article-record.mjs';
 import {batches} from '../integrations/batches.mjs';
 import {refreshSearchWords} from '../integrations/search-words.mjs';
 import {rollCardDates} from '../integrations/search-card-dates.mjs';
+import {factsOf,FACTS_VERSION} from '../../shared/topic-facts.mjs';
 import {refreshRegionFacts} from '../integrations/region-facts.mjs';
 import {REGIONS} from '@/shared/regions';
 import { env } from 'cloudflare:workers';
@@ -124,6 +125,13 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
       env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(compact.topic),old.id),
       ...(u?[insertUsage(env.DB,{...u,topicId:old.id,regionId:region})]:[])
     ]);
+    /* Fakten für plenara.X (Fraktion, Förderprogramme) aus Titel und gelesenem Text; readText geht nicht in den Payload
+       (compactSummaryAttempt übernimmt es nicht). Ohne Migration 0025 schlägt es fehl und wird übergangen. */
+    try {
+      const db = env.DB!, text: string = (t as any).readText || '', facts = factsOf(old.officialTitle || old.title || '', text);
+      await db.batch([db.prepare("DELETE FROM topic_facts WHERE topic_id=? AND method LIKE 'facts-%'").bind(old.id),
+        ...facts.map((x) => db.prepare('INSERT OR REPLACE INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)').bind(old.id, x.kind, x.value, x.detail, `${FACTS_VERSION}:${text ? 'text' : 'title'}`))]);
+    } catch { /* nicht wichtig für die Zusammenfassung */ }
     processed++;
     if (processed >= 8)
         break;

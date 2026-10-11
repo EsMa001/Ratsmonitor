@@ -65,15 +65,20 @@ async function pdfText(bytes){
  try{
   const read=Math.min(pdf.numPages,READ_PAGES),text=[];
   for(let i=1;i<=read;i++){const page=await pdf.getPage(i);text.push((await page.getTextContent()).items.filter(x=>x.str!=null).map(x=>x.str+(x.hasEOL?'\n':'')).join(''));page.cleanup?.();}
-  let all='';const pages=[];
-  for(const page of text){
-   const p=paragraphs(String(page).split(/\r\n|\r|\n/)).join('\n\n');
-   if(!p.trim()){pages.push(all.length);continue;}
-   if(all)all+='\n\n';
-   pages.push(all.length);all+=p;
-  }
-  return {text:tidy(all),pages,pagesTotal:pdf.numPages,pagesRead:read};
+  return pagesText(text,pdf.numPages);
  }finally{await (pdf.destroy?pdf.destroy():pdf.loadingTask?.destroy?.());}
+}
+/** Gelesener Text aus den Seiten (je Seite die Textstücke wie oben); dieselben Seiten liegen in der PDF-Ablage (text.mjs). */
+export function pagesText(rawPages,pagesTotal){
+ const read=Math.min(rawPages.length,READ_PAGES);
+ let all='';const pages=[];
+ for(const page of rawPages.slice(0,read)){
+  const p=paragraphs(String(page).split(/\r\n|\r|\n/)).join('\n\n');
+  if(!p.trim()){pages.push(all.length);continue;}
+  if(all)all+='\n\n';
+  pages.push(all.length);all+=p;
+ }
+ return {text:tidy(all),pages,pagesTotal,pagesRead:read};
 }
 function jsonText(value){
  // OParl-Objekte: nur sprechende Felder, keine Adressen und Kennungen.
@@ -115,6 +120,9 @@ const pdfStore=()=>store===undefined?(store=process.env.RM_PDF_STORE?openPdfStor
 export async function fetchSource(url,{timeoutMs=60000}={}){
  const fetchedAt=new Date().toISOString();
  if(KIC_PAGE.test(new URL(url).pathname))return {url,status:'ok',kind:'page',fetchedAt,text:await kicText(url,timeoutMs),pages:[0],via:'kic-api'};
+ // PDF-Ablage: erst die Textfassung (auch per OCR gelesene Seiten), dann das PDF selbst, sonst aus dem Internet
+ const stored=pdfStore()?.getText(url);
+ if(stored)return {url,status:'ok',kind:'attachment',fetchedAt,...pagesText(stored.pages,stored.pages.length),via:'pdf-store-text'};
  const local=pdfStore()?.get(url);
  if(local)return {url,status:'ok',kind:'attachment',fetchedAt,...await pdfText(local),via:'pdf-store'};
  let r,target=url;
@@ -192,3 +200,4 @@ export function shingles(s){
  const out=[];for(let i=0;i+5<=w.length;i++)out.push(w.slice(i,i+5).join(' '));return out;
 }
 export const repeated=(s,seen,share=0.7)=>{const sh=shingles(s);if(!sh[0])return true;return sh.filter(x=>seen.has(x)).length>=share*sh.length;};
+export {pdfText as readPdfPages};

@@ -9,6 +9,8 @@ const SEITEN:Record<string,[string,string]>={
  vergleich:['Gebietsvergleich · plenara.X','Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe.'],
  beschluesse:['Beschlüsse · plenara.X','Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer.'],
  gremien:['Gremiennetz · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],
+ fraktionen:['Fraktionsprofil · plenara.X','Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird.'],
+ foerderung:['Förderradar · plenara.X','Welche Förderprogramme in den Ratsunterlagen wo beantragt und bewilligt werden.'],
 };
 export async function generateMetadata({params}:{params:Promise<{section?:string[]}>}):Promise<Metadata>{
  const {section=[]}=await params;const s=SEITEN[section[0]||'ueber'];if(!s)return {};

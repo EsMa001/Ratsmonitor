@@ -2,7 +2,7 @@
    Gleiches Gerüst für alle Branchen, Auswahl, Sätze und Anordnung je Branche. */
 import type { IconName } from "./icons";
 
-export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien";
+export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung";
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName }> = {
   diffusion: { href: "/analytics/diffusion", name: "Diffusionsanalyse", icon: "map" },
@@ -11,6 +11,8 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   vergleich: { href: "/analytics/vergleich", name: "Gebietsvergleich", icon: "mapPin" },
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck" },
   gremien: { href: "/analytics/gremien", name: "Gremiennetz", icon: "users" },
+  fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark" },
+  foerderung: { href: "/analytics/foerderung", name: "Förderradar", icon: "euro" },
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */

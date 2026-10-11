@@ -82,3 +82,15 @@ test('rankPdf: value per byte by type, formal, scan and age; too large files kee
  assert.equal(r({type:'paper',bytes:MAX_BYTES+1}).keep,true);
  assert.equal(r({type:'nonsense'}).value,r({type:'other'}).value);
 });
+
+test('the AI batch reads the stored text version and does not go to the network',async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-store-ai-'));process.env.RM_PDF_STORE=dir;
+ const s=openPdfStore(dir),url='https://a.example/vorlage.pdf';s.put(url,pdf('v'));s.putText(s.entry(url).sha256,['Erste Seite.\n','Zweite Seite.'],{method:'ocr',version:1});s.close();
+ const fetch0=globalThis.fetch;globalThis.fetch=async()=>{throw Error('Netz');};
+ try{
+  const {fetchSource}=await import('../scripts/ai-batch/lib.mjs');
+  const r=await fetchSource(url);
+  assert.equal(r.via,'pdf-store-text');assert.equal(r.status,'ok');
+  assert.match(r.text,/Erste Seite\.[\s\S]*Zweite Seite\./);assert.equal(r.pagesTotal,2);
+ }finally{globalThis.fetch=fetch0;delete process.env.RM_PDF_STORE;}
+});
