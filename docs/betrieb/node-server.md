@@ -147,6 +147,19 @@ Migration 0018 (Datenstand `coverage`) ersetzt nur drei Trigger und dauert Milli
 den Datenstand `content` nur noch, wenn er Vorgänge schreibt; die Quellenstände zählen `coverage`
 (`server/integrations/revision-cache.mjs`). Ohne die Migration läuft alles wie vorher.
 
+Migrationen 0019 bis 0023 (Datenmodell, 11.10.2026; Plan und Messwerte in `requirements/datenmodell-plan.md`). Der Code
+braucht 0020 (Spalte `active`), deshalb alle zusammen vor dem Ausrollen einspielen. Gemessen auf einer lokalen Kopie mit
+941.000 Karten, auf dem Server mit 1,43 Mio. grob das Anderthalbfache:
+- 0019 (45 s): Suchtext nur Überschrift, Kurztext und Gremium, KI-Stichwörter entfernt, alle Karten neu geschrieben,
+  Stand der Wortliste gelöscht.
+- 0020 (28 s): generierte Spalte `topics.active`, drei Teilindizes neu.
+- 0021 (21 s) und 0022 (27 s): doppelten Text bzw. doppelte Belege aus dem Payload entfernen.
+- 0023 (43 s, +650 MB lokal): Volltextindex `search_fts` mit Triggern.
+
+Danach: Wortliste voll aufbauen (`node scripts/refresh-search-words.mjs --full`, zuletzt 158 s; bis dahin sucht die App
+über den Volltextindex bzw. über alle Karten), Gebietswerte zählen wegen `FIGURES_VERSION` 5 einmal neu (Nachholschritte;
+bis dahin zeigt die Übersicht keine Zahlen), auf der Admin-Seite „Stichwörter“ einmal „Neu zählen“.
+
 Am Ende eines Abrufauftrags erneuert der Server die Planerstatistik dort, wo sich Tabellen stark verändert haben
 (`PRAGMA optimize=0x10002` mit `analysis_limit=4000`, `pipeline-jobs.mjs`). Die Statistik von Hand zu erneuern
 (Abschnitt unten) braucht es damit nur noch nach neuen Indizes.
