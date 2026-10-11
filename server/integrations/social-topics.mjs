@@ -209,6 +209,7 @@ export function cleanTitle(title,max=105){
  t=t.replace(/\((?:[^()]*?(?:\d{1,2}\.\d{1,2}\.\d{2,4}|eingang|aktenzeichen|az\.|vorlage|drucksache|§|ds\b)[^()]*)\)/gi,'');
  t=t.replace(/\b(?:DS|Drucksache|Vorlage|Vorlagen?-?Nr\.?|Antrag Nr\.?|Nr\.)\s*[\w\/.-]*\d[\w\/.-]*/gi,'');
  t=t.replace(/\s+[-–]\s+(?:Antrag|Anfrage|Vorlage|Beschlussvorlage)\b.*$/i,'');
+ {const m3=/^(.{15,}?)\s+(?:Änderungs-?|Ergänzungs-?)?(?:Antrag|Anfrage)\s+(?:der|des|von)\s+(?:Fraktion|Fraktionen|Gruppe|Partei|CDU|SPD|FDP|AfD|Grünen|Linken|Freien)\b.*$/i.exec(t);if(m3)t=m3[1];}
  {
   const parts=t.split(/\s+hier\s*:\s*/i);
   if(parts.length>1){
