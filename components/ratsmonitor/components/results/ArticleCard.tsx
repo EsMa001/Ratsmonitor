@@ -1,5 +1,5 @@
 import { memo, useLayoutEffect, useRef, useState } from "react";
-import { STATUS_BY_ID } from "../../lib/constants";
+import { STATUS_BY_ID, shownThema } from "../../lib/constants";
 import { MONTH_SHORT, fmtDate, highlightSegments } from "../../lib/text";
 import type { Article } from "../../types";
 import { SaveArticleButton } from "../SaveArticleButton";
@@ -92,6 +92,7 @@ function MobileTitle({ title, terms }: { title: string; terms: string[] }) {
 export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, onOpen, onHover, compact = false }: Props) {
   const [y, m, d] = a.date.split("-");
   const sub = [a.gemeinde, a.gremium].filter(Boolean).join(" · ");
+  const thema = shownThema(a.thema);
   /* Vorladen der Detailseite: nach kurzem Verweilen mit der Maus oder dem Finger, nicht bei jedem Überstreichen der Liste
      und nicht beim Wischen (touchmove bricht ab) */
   const warm = useRef(0);
@@ -132,9 +133,9 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
           <MobileTitle title={a.title} terms={terms} />
         </a>
       </h3>
-      {/* Handy: Stadt, Gremium und Status nebeneinander, bei Platzmangel umbrechend */}
+      {/* Handy: Stadt, Gremium, Status und Thema nebeneinander, bei Platzmangel umbrechend */}
       <p className="m-0 mt-1 text-[12px] leading-[1.45] text-slate-500 sm:hidden">
-        {[a.gemeinde, a.gremium, STATUS_BY_ID[a.status]?.label].filter(Boolean).map((t, i) => (
+        {[a.gemeinde, a.gremium, STATUS_BY_ID[a.status]?.label, thema].filter(Boolean).map((t, i) => (
           <span key={i}>
             {i > 0 && " · "}
             <Highlight text={t!} terms={terms} />
@@ -148,6 +149,13 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
           <span className="whitespace-nowrap font-normal">
             {" · "}
             {STATUS_BY_ID[a.status].label}
+          </span>
+        )}
+        {/* Thema (Label nach Regeln), nach dem auch gefiltert wird */}
+        {thema && (
+          <span className="whitespace-nowrap font-normal">
+            {" · "}
+            <Highlight text={thema} terms={terms} />
           </span>
         )}
       </p>
