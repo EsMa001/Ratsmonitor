@@ -1,6 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {requireAdmin,adminFailure,ADMIN_HEADERS} from '@/server/services/admin-auth';
 import {REGIONS} from '@/shared/regions';
+import {POPULATION} from '@/shared/catalog.mjs';
 import deRegions from '@/shared/de-regions.json';
 import {socialTopics} from '@/server/integrations/social-topics.mjs';
 // Themenvorschläge für Social Media (regelbasiert, letzte 30 Tage). Die Rechnung liest rund 200.000 Suchkarten;
@@ -14,7 +15,7 @@ export async function GET(request:Request){
   if(!env.DB)throw Error('Datenbank fehlt');
   const today=new Date().toISOString().slice(0,10);
   if(!kept||kept.day!==today||new URL(request.url).searchParams.has('neu')){
-   kept={day:today,at:new Date().toISOString(),data:await socialTopics(env.DB,REGIONS,{today,extraNames})};
+   kept={day:today,at:new Date().toISOString(),data:await socialTopics(env.DB,REGIONS,{today,extraNames,population:POPULATION as Record<string,number>})};
   }
   return Response.json({computedAt:kept.at,...(kept.data as object)},{headers:ADMIN_HEADERS});
  }catch(e){return adminFailure(e);}

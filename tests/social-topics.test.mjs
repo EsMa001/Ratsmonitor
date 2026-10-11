@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
-import {matchTitle,scoreCard,socialTopics} from '../server/integrations/social-topics.mjs';
+import {matchTitle,scoreCard,socialTopics,draftText} from '../server/integrations/social-topics.mjs';
 
 const terms=t=>matchTitle(t).map(h=>h.term);
 
@@ -44,4 +44,39 @@ test('Auswahl: je Tag und Ort höchstens ein Eintrag, Wiederholungen derselben G
  assert.deepEqual(all.map(t=>t.id).sort(),['a','d']);
  assert.equal(all.find(t=>t.id==='a').region,'Eins');
  assert.equal(r.days.length,10);
+});
+
+test('Textvorschlag: feste Vorlagen, Partei und Status', async () => {
+ const {draftText}=await import('../server/integrations/social-topics.mjs');
+ const a=draftText({title:'Antrag der CDU-Fraktion: Einführung von Tempo 30 auf der Burscheider Straße',status:'consulting',region:'Solingen',term:'Tempo 30'});
+ assert.equal(a.text,'Die CDU hat in Solingen einen Antrag zu Tempo 30 gestellt (Burscheider Straße).');
+ assert.deepEqual(a.hashtags,['#Tempo30','#Solingen','#Kommunalpolitik']);
+ const b=draftText({title:'AfD-Antrag zur Bezahlkarte',status:'rejected',region:'Erkelenz',term:'Bezahlkarte'});
+ assert.equal(b.text,'In Erkelenz wurde der Antrag der AfD zur Bezahlkarte abgelehnt.');
+ const c=draftText({title:'Windpark Olpe: Beteiligungsvereinbarung',status:'announced',region:'Olpe',term:'Windkraft'});
+ assert.equal(c.text,'In Olpe wird über Windkraftanlagen beraten.');
+ assert.equal(draftText({title:'x',status:'info',region:'Y',term:'Unbekannt'}),null);
+ const d=draftText({title:'Antrag der Fraktionen von CDU und SPD: Beendigung der Nutzung der Unterbringung Obdachloser',status:'consulting',region:'Mülheim',term:'Unterkunft'});
+ assert.equal(d.text,'Die CDU und die SPD haben in Mülheim einen Antrag zur Unterbringung Obdachloser gestellt.');
+ assert.equal(draftText({title:'Petition gegen die Erhöhung des Hebesatzes',status:'unknown',region:'Riedstadt',term:'Bürgerbegehren'}).text,'In Riedstadt wird über eine Petition beraten.');
+ assert.equal(draftText({title:'Ersatzneubau Hallenbad Sonnenberg',status:'recommended',region:'Stuttgart',term:'Bad / Bibliothek'}).text,'In Stuttgart gibt es eine Empfehlung zum Thema „Hallenbad“.');
+ assert.equal(draftText({title:'Tempo 30 in der Unterbringungsstraße und am Fußgängerüberweg',status:'announced',region:'X',term:'Tempo 30'}).text,'In X wird über Tempo 30 beraten (Unterbringungsstraße).');
+ assert.deepEqual(terms('Schließung der Gehweglücke an der Lindenstraße'),[]);
+ assert.deepEqual(terms('Aufwandsentschädigung der Gerätewarte der Feuerwehr'),[]);
+ assert.ok(terms('Erhöhung der Aufwandsentschädigung für Ratsmitglieder').includes('Aufwandsentschädigung'));
+ assert.equal(draftText({title:'Antrag der Grünen zu Tempo 30',status:'consulting',region:'Kreis Göttingen',term:'Tempo 30'}).text,'Die Grünen haben im Kreis Göttingen einen Antrag zu Tempo 30 gestellt.');
+});
+
+test('Eignung: Teile, Summe, Reichweite und Aktualität', async () => {
+ const {fitScore}=await import('../server/integrations/social-topics.mjs');
+ const hits=[{group:'verkehr',groupName:'Verkehr',term:'Tempo 30',weight:3}];
+ const c={title:'Antrag der Grünen: Tempo 30 auf der Hauptstraße in der Innenstadt',status:'rejected',date:'2026-10-10',region_id:'r',score:4.5,hits};
+ const big=fitScore(c,{today:'2026-10-11',population:{r:500000}}),small=fitScore(c,{today:'2026-10-11',population:{r:4000}});
+ assert.equal(big.parts.reduce((n,p)=>n+p.points,0),big.percent);
+ assert.ok(big.percent<=100&&big.percent>=60);
+ assert.ok(big.percent>small.percent);
+ const old=fitScore({...c,date:'2026-09-01'},{today:'2026-10-11',population:{r:500000}});
+ assert.ok(big.percent>old.percent);
+ const jargon=fitScore({...c,title:'Aufstellungsbeschluss gem. § 2 BauGB, Flst. 12, Tempo 30; hier: Vorlage; hier: Satzung'},{today:'2026-10-11',population:{r:500000}});
+ assert.ok(jargon.parts.find(p=>p.key==='klar').points<10);
 });
