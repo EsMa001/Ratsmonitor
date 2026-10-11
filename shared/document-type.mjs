@@ -26,3 +26,11 @@ export function documentType(title){
 export const primaryDocument=documents=>documents.find(d=>/vorlage/i.test(d.title))||documents.find(d=>/beschlussvorschlag|bericht/i.test(d.title))||documents[0]||null;
 /** The PDF the import reads for a summary (enrichDocument) and the local PDF store keeps (scripts/pdf-store/fetch.mjs). */
 export const primaryPdf=documents=>{const pdfs=(documents||[]).filter(d=>d.kind==='application/pdf');return pdfs.find(d=>/vorlage/i.test(d.title))||pdfs.find(d=>/beschlussvorschlag|bericht/i.test(d.title))||pdfs[0]||null;};
+/** Ab so vielen Berichten gilt ein Dokument als Unterlage der ganzen Sitzung (Probelauf 11.10.2026). */
+export const SESSION_DOCUMENT_USES=5;
+/**
+ * A document of the whole session rather than of one agenda item: minutes or invitation by title, or linked from
+ * SESSION_DOCUMENT_USES or more reports (some systems attach the minutes or the session bundle to every item). Its rule
+ * summary would describe the whole session, e.g. video surveillance at schools for "Einführung neuer Mitglieder".
+ */
+export const sessionDocument=(doc,uses=0)=>['minutes','invitation'].includes(documentType(doc?.title))||uses>=SESSION_DOCUMENT_USES;

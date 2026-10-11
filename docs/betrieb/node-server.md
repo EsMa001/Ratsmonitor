@@ -147,6 +147,11 @@ Migration 0018 (Datenstand `coverage`) ersetzt nur drei Trigger und dauert Milli
 den Datenstand `content` nur noch, wenn er Vorgänge schreibt; die Quellenstände zählen `coverage`
 (`server/integrations/revision-cache.mjs`). Ohne die Migration läuft alles wie vorher.
 
+Migration 0024 (Datum der Suchkarte „Stand heute“, Spalte `next_date`, lokal 3,8 s): Vorgänge mit früherer und künftiger
+Sitzung tragen das Datum der letzten Sitzung bis heute. Suchtext und Wortliste bleiben unverändert, kein Neuaufbau nötig.
+Danach rückt jeder Metadaten-Import und der nächtliche Lauf von `scripts/refresh-search-words.mjs` die Karten nach, deren
+nächste Sitzung erreicht ist. Ohne die Migration läuft alles wie vorher.
+
 Migrationen 0019 bis 0023 (Datenmodell, 11.10.2026; Plan und Messwerte in `requirements/datenmodell-plan.md`). Der Code
 braucht 0020 (Spalte `active`), deshalb alle zusammen vor dem Ausrollen einspielen. Gemessen auf einer lokalen Kopie mit
 941.000 Karten, auf dem Server mit 1,43 Mio. grob das Anderthalbfache:

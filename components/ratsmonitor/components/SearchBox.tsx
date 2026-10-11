@@ -255,7 +255,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
 
   const picks = rows.filter((r): r is Exclude<Row, { kind: "head" }> => r.kind !== "head");
   const showList = open && rows.length > 0;
-  const placeOn = state.areaSrc === "search" && !!state.area;
+  /* „Ort erkannt“ nur, solange der erkannte Ort im Feld steht; danach zeigt ihn der Chip darüber */
+  const placeOn = state.areaSrc === "search" && !!state.area && !!shownDraft;
 
   /* Schmale Bildschirme: kürzerer Platzhalter, damit er nicht abgeschnitten wird */
   const [narrow, setNarrow] = useState(false);

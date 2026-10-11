@@ -103,3 +103,16 @@ test('Darstellung der Sach- und Rechtslage ist eine Überschrift', () => {
   const { facts } = sections('Antrag: Der Rat beschließt die Einrichtung einer Anliegerstraße in der Hauptstraße.\nDarstellung der Sach- und Rechtslage: Der Antrag der Fraktion vom 23.03.2026 ist als Anlage beigefügt.\nAnlagen: keine');
   assert.ok(facts.trim().startsWith('Der Antrag der Fraktion'));
 });
+
+test('enrichDocument leaves documents of the whole session alone (minutes, invitation, linked from many reports)',async()=>{
+ const doc=title=>({title,kind:'application/pdf',url:'https://ris.example.de/'+encodeURIComponent(title)+'.pdf'});
+ const read=async()=>{throw Error('darf nicht gelesen werden');};
+ for(const d of [doc('Niederschrift öffentlich'),doc('Einladung')]){
+  const out=await enrichDocument({title:'Einführung neuer Mitglieder',documents:[d],longSummary:[],sourceText:''},read);
+  assert.match(out.documentIssue,/ganzen Sitzung/);assert.equal(out.ruleSummary,undefined);
+ }
+ const shared=doc('Vorlage 12/26');
+ const out=await enrichDocument({title:'Mitteilungen',documents:[shared],longSummary:[],sourceText:''},read,{uses:()=>5});
+ assert.match(out.documentIssue,/ganzen Sitzung/);
+ await assert.rejects(enrichDocument({title:'Radweg',documents:[shared],longSummary:[],sourceText:''},read,{uses:()=>2}),/darf nicht gelesen werden/);
+});

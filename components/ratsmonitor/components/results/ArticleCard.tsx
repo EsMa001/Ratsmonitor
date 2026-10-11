@@ -173,19 +173,21 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
   );
 });
 
-/** Kleine Timeline der bisherigen Beratungen eines Vorgangs */
+/** Kleine Timeline der Beratungen eines Vorgangs: die letzte bis heute in Petrol, künftige grau (hohler Punkt, gestrichelt) */
 export function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
   const shown = steps.slice(-5);
+  const today = new Date().toISOString().slice(0, 10);
+  const current = shown.reduce((c, st, i) => (st.d <= today ? i : c), -1);
   return (
     <ol aria-label="Verlauf des Vorgangs" className="mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none]">
       {steps.length > shown.length && <li className="mr-2 self-center text-[12px] text-slate-500">+{steps.length - shown.length}</li>}
       {shown.map((st, i) => {
-        const last = i === shown.length - 1;
+        const last = i === shown.length - 1, now = i === current, future = st.d > today, nextFuture = !last && shown[i + 1].d > today;
         return (
-          <li key={i} className="relative flex min-w-[96px] max-w-[170px] flex-1 flex-col gap-0.5 pr-2">
+          <li key={i} className={`relative flex min-w-[96px] max-w-[170px] flex-1 flex-col gap-0.5 pr-2 ${future ? "opacity-60" : ""}`}>
             <div className="flex items-center">
-              <span className={`h-2.5 w-2.5 flex-none rounded-full ${last ? "bg-teal-600" : "bg-slate-300"}`} />
-              {!last && <span className="h-px flex-1 bg-slate-300" />}
+              <span className={`h-2.5 w-2.5 flex-none rounded-full ${now ? "bg-teal-600" : future ? "border border-slate-300 bg-white" : "bg-slate-300"}`} />
+              {!last && <span className={nextFuture ? "h-0 flex-1 border-t border-dashed border-slate-300" : "h-px flex-1 bg-slate-300"} />}
             </div>
             <span className="text-[12px] font-semibold tabular-nums text-slate-600">{fmtDate(st.d)}</span>
             <span className="truncate text-[12px] text-slate-500" title={st.c}>{st.c || "Gremium offen"}</span>

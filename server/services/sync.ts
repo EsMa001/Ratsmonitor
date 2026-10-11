@@ -11,6 +11,7 @@ import {preserveAnalysis} from '@/shared/analysis-state.mjs';
 import {metadataChanged,stableJson} from '@/shared/article-record.mjs';
 import {batches} from '../integrations/batches.mjs';
 import {refreshSearchWords} from '../integrations/search-words.mjs';
+import {rollCardDates} from '../integrations/search-card-dates.mjs';
 import {refreshRegionFacts} from '../integrations/region-facts.mjs';
 import {REGIONS} from '@/shared/regions';
 import { env } from 'cloudflare:workers';
@@ -58,6 +59,8 @@ export async function runSync(mode: 'metadata' | 'summaries',region='muenster', 
         /* Werte je Gebiet der Administration für dieses Gebiet nachrechnen (region-facts.mjs), nach dem letzten Teilabruf,
            höchstens eine Sekunde: Die Rechnung hält den Prozess an, auch die anderen Importe. Reicht die Zeit nicht oder
            schlägt es fehl, holt der nächste Rechenschritt der Administration es nach. */
+        /* Suchkarten, deren nächste Sitzung erreicht ist, auf diese Sitzung nachrücken (drizzle/0024; meist nichts zu tun) */
+        try { await rollCardDates(env.DB); } catch { /* nicht wichtig für den Import */ }
         if (!(data as { resume?: boolean }).resume) { try { await refreshRegionFacts(env.DB, { regions: [region], budgetMs: 1000 }); } catch { /* nicht wichtig für den Import */ } } }
     return { status: 200, data };
 }
@@ -88,7 +91,11 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
     throw Error('Datenbank fehlt'); const rows = await env.DB.prepare("SELECT id,payload FROM topics WHERE region_id=? AND active=1 ORDER BY updated_at DESC").bind(region).all<{
     id: string;
     payload: string;
-}>(); let processed = 0; for (const row of rows.results) {
+}>();
+    /* Wie oft hängt ein PDF an Berichten des Gebiets? Unterlagen der ganzen Sitzung werden nicht zusammengefasst (sessionDocument) */
+    const uses = new Map<string, number>();
+    for (const row of rows.results) { try { for (const d of JSON.parse(row.payload).documents || []) if (d.kind === 'application/pdf') uses.set(d.url, (uses.get(d.url) || 0) + 1); } catch { /* kaputter Payload: zählt nicht */ } }
+    let processed = 0; for (const row of rows.results) {
     const old = JSON.parse(row.payload);
     if (!old.documents.some((d: {
         kind: string;
@@ -99,7 +106,7 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
     let t = {...old};
     try {
         if (!(t.documentText || t.hasDocumentText))
-            t = await enrichDocument(t);
+            t = await enrichDocument(t, undefined, { uses: (url: string) => uses.get(url) || 0 });
         t = await summarize(t, { apiKey: env.OPENAI_API_KEY, model: env.OPENAI_MODEL });
     }
     catch {

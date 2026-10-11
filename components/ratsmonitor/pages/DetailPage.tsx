@@ -43,6 +43,8 @@ export function DetailPage(){
   /* Unterlagen über den eigenen Durchreicher öffnen: PDFs erscheinen im Browser statt als Download */
   const docs=t.documents.map((d,i)=>({...d,url:`${typeof window!=='undefined'?window.location.origin:''}/api/dokument?t=${encodeURIComponent(t.id)}&i=${i}`,src:d.url})).filter(d=>!isOparlData(d.src,d.title));
   const sorted=[...events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  /* Letzte Sitzung bis heute (-1: alle noch künftig); danach Kommendes grau */
+  const today=new Date().toISOString().slice(0,10),current=sorted.reduce((c,e,i)=>(e.date||'').slice(0,10)<=today?i:c,-1);
   const facts:[string,string][]=[['Sitzung',formatDate(t.eventDate)],['Gremium',t.committee||'Nicht dokumentiert'],['Vorlage',t.reference||'Nicht dokumentiert'],['Gebiet',region?.name||(regions?'Unbekannt':'…')],['Stand',status.label],['Quellenstand',formatDate(t.updatedAt)]];
   return (
     <main id="inhalt" className="mx-auto max-w-page py-[12px]">
@@ -85,13 +87,14 @@ export function DetailPage(){
             <section className="mt-10">
               <h2 className="mb-4 text-[18px] font-semibold text-slate-900">Verlauf</h2>
               {sorted.length?(
-                /* Zeitleiste: Punkt je Sitzung, der jüngste Schritt in Petrol; schmal senkrecht, ab 768 px quer (umbricht, wenn es nicht passt) */
+                /* Zeitleiste: Punkt je Sitzung; die letzte Sitzung bis heute in Petrol, künftige grau (hohler Punkt, gestrichelt),
+                   denn sie haben noch nicht stattgefunden. Schmal senkrecht, ab 768 px quer (umbricht, wenn es nicht passt) */
                 <ol className="m-0 list-none p-0 md:flex md:flex-wrap md:gap-x-8 md:gap-y-8">
-                  {sorted.map((e,i)=>{const last=i===sorted.length-1;return (
-                    <li key={i} className={`relative grid grid-cols-[20px_minmax(0,1fr)] gap-x-3 pb-6 last:pb-0 md:block md:min-w-[240px] md:flex-1 md:border-t md:pb-0 md:pt-4 ${last?'md:border-teal-600':'md:border-slate-200'}`}>
+                  {sorted.map((e,i)=>{const last=i===current,future=(e.date||'').slice(0,10)>today;return (
+                    <li key={i} className={`relative grid grid-cols-[20px_minmax(0,1fr)] gap-x-3 pb-6 last:pb-0 md:block md:min-w-[240px] md:flex-1 md:border-t md:pb-0 md:pt-4 ${last?'md:border-teal-600':future?'md:border-dashed md:border-slate-300':'md:border-slate-200'}`}>
                       {!last&&<span aria-hidden="true" className="absolute bottom-0 left-[9px] top-4 w-px bg-slate-200 md:hidden"/>}
-                      <span aria-hidden="true" className={`relative z-[1] mt-1.5 h-2.5 w-2.5 justify-self-center rounded-full md:absolute md:-top-[6px] md:left-0 md:mt-0 md:justify-self-auto ${last?'bg-teal-600':'bg-slate-300'}`}/>
-                      <div className="min-w-0 text-[14px]">
+                      <span aria-hidden="true" className={`relative z-[1] mt-1.5 h-2.5 w-2.5 justify-self-center rounded-full md:absolute md:-top-[6px] md:left-0 md:mt-0 md:justify-self-auto ${last?'bg-teal-600':future?'border border-slate-300 bg-white':'bg-slate-300'}`}/>
+                      <div className={`min-w-0 text-[14px] ${future?'opacity-60':''}`}>
                         <div className="flex flex-wrap items-baseline gap-x-2">
                           <time className="tabular-nums text-slate-500">{formatDate(e.date)}</time>
                           <strong className="font-semibold text-slate-900">{e.committee||'Gremium nicht dokumentiert'}</strong>
