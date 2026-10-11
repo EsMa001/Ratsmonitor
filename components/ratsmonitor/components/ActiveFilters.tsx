@@ -37,10 +37,10 @@ export function ActiveFilters() {
   const regions = regionsIn(placeAgs);
   const inRegion = new Set(regions.flatMap((r) => r.ags));
   const chips = all.filter((c) => !((c.key === "area" && inRegion.has(state.area)) || (c.key === "more" && c.term && inRegion.has(c.term))));
-  /* Eingeschaltete Schalter als Chips wie die übrigen Filter; × schaltet sie wieder aus */
+  /* Vom Standard abweichende Schalter als Chips wie die übrigen Filter; × stellt den Standard wieder her (Formalien: ausgeblendet) */
   const toggles: { key: string; label: string; off: () => void }[] = [
     ...(state.future ? [{ key: "future", label: "mit künftigen Sitzungen", off: () => search.setFuture(false) }] : []),
-    ...(state.noformal ? [{ key: "noformal", label: "Formalien ausgeblendet", off: () => search.setNoformal(false) }] : []),
+    ...(!state.noformal ? [{ key: "noformal", label: "Mit Formalien", off: () => search.setNoformal(true) }] : []),
     ...(state.exact ? [{ key: "exact", label: "Exakter Begriff", off: () => search.setExact(false) }] : []),
     ...(state.allterms ? [{ key: "allterms", label: "Begriffe kombiniert", off: () => search.setAllterms(false) }] : []),
   ];

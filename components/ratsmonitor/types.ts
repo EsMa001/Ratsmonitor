@@ -70,7 +70,7 @@ export interface SearchState {
   sort: "desc" | "asc" | "relevance";
   /** Auch künftige Termine zeigen; sonst nur bis heute */
   future?: boolean;
-  /** Formalien ausblenden (Niederschriften, Mitteilungen …); Standard: alles zeigen */
+  /** Formalien ausblenden (Niederschriften, Mitteilungen …); Standard: ausgeblendet (INITIAL_SEARCH) */
   noformal?: boolean;
   /** Alle Suchbegriffe müssen vorkommen (UND); Standard: einer genügt (ODER) */
   allterms?: boolean;

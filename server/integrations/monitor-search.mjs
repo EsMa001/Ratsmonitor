@@ -178,11 +178,11 @@ export async function searchFilters(db,catalog,f){
   if(labelId){where.push('label=?');args.push(labelId);}
   if(f.status){where.push('status=?');args.push(f.status);}
   return {where:where.join(' AND '),args};})();
- return {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch};
+ return {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch,formalReady};
 }
 export async function searchMonitor(db,catalog,params){
  const f=parseMonitorSearch(params),limit=f.size;
- const {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch}=await searchFilters(db,catalog,f);
+ const {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch,formalReady}=await searchFilters(db,catalog,f);
  /* Relevanz: Treffer im Titel zählen dreifach, im übrigen Text einfach; bei Gleichstand das Neueste zuerst */
  const rterms=f.sort==='relevance'?[...new Set(f.terms||[])]:[];
  const order=rterms.length?{sql:`ORDER BY (${rterms.map(()=>'(instr(lower(title),?)>0)*3+(instr(search,?)>0)').join('+')}) DESC,date DESC,id ASC LIMIT ? OFFSET ?`,args:rterms.flatMap(t=>[t,t])}:{sql:`ORDER BY date ${f.sort==='asc'?'ASC':'DESC'},id ASC LIMIT ? OFFSET ?`,args:[]};
@@ -233,7 +233,10 @@ export async function searchMonitor(db,catalog,params){
  /* Veralteter Datenstand beim Blättern: vor der Arbeit melden, nicht danach */
  if(f.revision!==null){const now=String((await db.prepare(REVISION_SQL).first())?.revision??0);if(now!==f.revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);}
  const pageSql=db.prepare(`${ROW_SELECT} WHERE ${page.where} ${order.sql}`).bind(...page.args,...order.args,limit+(f.part==='page'?1:0),(f.page-1)*limit);
- const facetSql=db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args);
+ /* Ohne Formalien und ohne Begriff: über den Teilindex zählen (deckt Gebiet, Thema, Status und Datum ab). Ohne Hinweis nahm das
+    SQLite von Miniflare den Datumsindex und las jede Karte einzeln (über 40 s statt rund 1,5 s); das Ergebnis bleibt gleich. */
+ const noformalIndex=f.noformal&&formalReady&&!candidates&&!(f.groups||[f.terms]).some(g=>g.length)?' INDEXED BY idx_search_cards_noformal':'';
+ const facetSql=db.prepare(`SELECT region_id rid,label,status,count(*) n FROM search_cards${noformalIndex} ${facet.where} GROUP BY region_id,label,status`).bind(...facet.args);
  /* Häufiges Wort ohne Filter: die Zahlen je Gebiet, Thema und Status stehen vorberechnet in der Wortliste, dann entfällt die
     Gruppierung über alle Einträge. null: wie gewohnt gruppieren. */
  /* Ort und Umkreis zählen nicht als Filter für die Gebietszahlen (die Karte zählt über alle Gebiete): die kommen weiter vorberechnet,
