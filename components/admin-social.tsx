@@ -2,7 +2,7 @@
 import {useCallback,useEffect,useState} from 'react';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
 type Draft={text:string;question:string;hashtags:string[];party:string|null};
-type Fit={percent:number;parts:{key:string;label:string;points:number;max:number}[]};
+type Fit={percent:number;parts:{key:string;label:string;points:number;max:number}[];evidence:string[]};
 type Summary={count:number;avgFit:number|null;strong:number;daysWithTopic:number;days:number;minFit:number};
 type Topic={fit:Fit;draft:Draft|null;id:string;title:string;date:string;status:string;region:string;regionId:string;gremium:string;group:string;term:string;score:number;why:string[];otherPlaces:number;link:string;search:string};
 type Day={date:string;topics:Topic[]};
@@ -51,8 +51,8 @@ export function AdminSocial(){
    {label:'Tage mit Vorschlag',value:data?data.summary.daysWithTopic:undefined,of:data?.summary.days,note:'schwache Tage bleiben leer'},
   ]}/></div>
   <p className="mt-4 max-w-[760px] text-[12px] leading-[1.5] text-slate-500">
-   Eignung = Streitpotenzial (30) + Alltagsnähe (20) + Reichweite des Ortes (15) + Aktualität (15) + Konkretheit (10) + Verständlichkeit (10).
-   Reine Regelrechnung, keine Vorhersage von Klicks.
+   Eignung = Streitquote des Themas (15, gelernt aus den Abstimmungsergebnissen der letzten 12 Monate) + Streit im Vorgang (15) + Alltagsnähe (20) + Reichweite des Ortes (15) + Aktualität (15) + Konkretheit (10) + Verständlichkeit (10).
+   Reine Regelrechnung, keine Vorhersage von Klicks; es liegen keine Nutzungsdaten vor.
   </p>
   <label className="mt-6 flex items-center gap-2 text-[14px] text-slate-600"><input type="checkbox" checked={onlyFilled} onChange={e=>setOnlyFilled(e.target.checked)}/>Tage ohne Vorschlag ausblenden</label>
   <div className="mt-4 space-y-8">
@@ -68,6 +68,7 @@ export function AdminSocial(){
        <p className="mt-1 text-[12px] text-slate-500">{t.group} · Eignung für Social Media</p>
        <p className="mt-2 text-[15px] leading-snug"><a className="text-teal-600" href={t.link}>{t.title}</a></p>
        {t.draft&&<DraftBox d={t.draft}/>}
+       {t.fit.evidence.length>0&&<ul className="mt-2 list-disc pl-4 text-[12px] leading-snug text-slate-600">{t.fit.evidence.map(e=><li key={e}>{e}</li>)}</ul>}
        <p className="mt-2 text-[11px] leading-snug text-slate-500">{t.fit.parts.map(p=>p.label+' '+p.points+'/'+p.max).join(' · ')}</p>
        <p className="mt-2 text-[13px] text-slate-500">{t.gremium&&t.gremium+' · '}{STATUS[t.status]||t.status}</p>
        <p className="mt-2 flex flex-wrap gap-1.5 text-[12px]">{t.why.map(w=><span key={w} className="rounded bg-teal-50 px-2 py-0.5 text-teal-700">{w}</span>)}</p>

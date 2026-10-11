@@ -33,6 +33,8 @@ test('Status und Fraktionsantrag verstärken, Formales fällt weg', () => {
 test('Auswahl: je Tag und Ort höchstens ein Eintrag, Wiederholungen derselben Gruppe und Woche entfallen', async () => {
  const sql=new DatabaseSync(':memory:');
  sql.exec('CREATE TABLE search_cards (id text,region_id text,date text,status text,label text,title text,gremium text)');
+ sql.exec('CREATE TABLE topics (id text,payload text)');
+ sql.prepare('INSERT INTO topics VALUES (?,?)').run('a',JSON.stringify({events:[{result:'mehrheitlich beschlossen'}]}));
  const ins=sql.prepare('INSERT INTO search_cards VALUES (?,?,?,?,?,?,?)');
  ins.run('a','r1','2026-10-05','rejected','mobilitaet','Antrag der CDU-Fraktion: Tempo 30 in der Dorfstraße','Rat');
  ins.run('b','r1','2026-10-05','announced','mobilitaet','Tempo 30 in der Dorfstraße (Vorlage)','Rat');
@@ -43,6 +45,7 @@ test('Auswahl: je Tag und Ort höchstens ein Eintrag, Wiederholungen derselben G
  const all=r.days.flatMap(d=>d.topics);
  assert.deepEqual(all.map(t=>t.id).sort(),['a','d']);
  assert.equal(all.find(t=>t.id==='a').region,'Eins');
+ assert.ok(all.find(t=>t.id==='a').fit.evidence.some(e=>/mehrheitlich/.test(e)));
  assert.equal(r.days.length,10);
 });
 
@@ -71,12 +74,37 @@ test('Eignung: Teile, Summe, Reichweite und Aktualität', async () => {
  const {fitScore}=await import('../server/integrations/social-topics.mjs');
  const hits=[{group:'verkehr',groupName:'Verkehr',term:'Tempo 30',weight:3}];
  const c={title:'Antrag der Grünen: Tempo 30 auf der Hauptstraße in der Innenstadt',status:'rejected',date:'2026-10-10',region_id:'r',score:4.5,hits};
- const big=fitScore(c,{today:'2026-10-11',population:{r:500000}}),small=fitScore(c,{today:'2026-10-11',population:{r:4000}});
+ const cal={baseline:{contested:.29},terms:{'Tempo 30':{res:200,contested:.5}}};
+ const big=fitScore(c,{today:'2026-10-11',population:{r:500000},calibration:cal}),small=fitScore(c,{today:'2026-10-11',population:{r:4000},calibration:cal});
  assert.equal(big.parts.reduce((n,p)=>n+p.points,0),big.percent);
  assert.ok(big.percent<=100&&big.percent>=60);
+ assert.equal(big.parts.length,7);
  assert.ok(big.percent>small.percent);
- const old=fitScore({...c,date:'2026-09-01'},{today:'2026-10-11',population:{r:500000}});
+ const old=fitScore({...c,date:'2026-09-01'},{today:'2026-10-11',population:{r:500000},calibration:cal});
  assert.ok(big.percent>old.percent);
- const jargon=fitScore({...c,title:'Aufstellungsbeschluss gem. § 2 BauGB, Flst. 12, Tempo 30; hier: Vorlage; hier: Satzung'},{today:'2026-10-11',population:{r:500000}});
+ const jargon=fitScore({...c,title:'Aufstellungsbeschluss gem. § 2 BauGB, Flst. 12, Tempo 30; hier: Vorlage; hier: Satzung'},{today:'2026-10-11',population:{r:500000},calibration:cal});
  assert.ok(jargon.parts.find(p=>p.key==='klar').points<10);
+});
+
+test('Beleg und Kalibrierung: Abstimmungsergebnis und Themenquote wirken', async () => {
+ const {fitScore,evidenceOf,classifyResult,termRate}=await import('../server/integrations/social-topics.mjs');
+ assert.equal(classifyResult('einstimmig beschlossen'),'unan');
+ assert.equal(classifyResult('mehrheitlich beschlossen'),'maj');
+ assert.equal(classifyResult('mit 12 Gegenstimmen beschlossen'),'maj');
+ assert.equal(classifyResult('abgelehnt'),'rej');
+ assert.equal(classifyResult('vertagt'),'post');
+ const ev=evidenceOf({events:[{result:'einstimmig beschlossen'},{result:'zurückgestellt'}],records:[]});
+ assert.equal(ev.result,'post');assert.equal(ev.sessions,2);
+ const cal={baseline:{contested:.3},terms:{'Flagge / Symbol':{res:90,contested:.64},'Wärme':{res:1000,contested:.18},'Selten':{res:3,contested:1}}};
+ assert.ok(termRate('Flagge / Symbol',cal).rate>.5);
+ assert.ok(termRate('Wärme',cal).rate<.22);
+ assert.ok(termRate('Selten',cal).rate<.4,'wenig Belege bleiben nah am Mittel');
+ const hits=(term,group='verkehr')=>[{group,groupName:'X',term,weight:3}];
+ const base={title:'Antrag zur Beflaggung des Rathauses mit der Regenbogenflagge',status:'consulting',date:'2026-10-10',region_id:'r',score:3.5,hits:hits('Flagge / Symbol','identitaet')};
+ const o={today:'2026-10-11',population:{r:100000},calibration:cal};
+ const unan=fitScore(base,{...o,evidence:{result:'unan',sessions:1}}),maj=fitScore(base,{...o,evidence:{result:'maj',sessions:2}});
+ assert.ok(maj.percent>unan.percent);
+ assert.ok(maj.evidence.some(t=>/mehrheitlich/.test(t)));
+ const calm=fitScore({...base,hits:hits('Wärme','energie')},o);
+ assert.ok(unan.parts.find(p=>p.key==='thema').points>calm.parts.find(p=>p.key==='thema').points);
 });

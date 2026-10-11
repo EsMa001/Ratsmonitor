@@ -1,0 +1,437 @@
+{
+ "builtAt": "2026-10-11",
+ "from": "2025-10-11",
+ "to": "2026-10-11",
+ "cards": 868982,
+ "matched": 25837,
+ "baseline": {
+  "n": 25837,
+  "res": 10260,
+  "contested": 0.289
+ },
+ "terms": {
+  "Bürgerbegehren": {
+   "n": 820,
+   "res": 303,
+   "contested": 0.337,
+   "rej": 23,
+   "post": 36,
+   "maj": 43,
+   "unan": 69
+  },
+  "Windkraft": {
+   "n": 2867,
+   "res": 1046,
+   "contested": 0.28,
+   "rej": 61,
+   "post": 61,
+   "maj": 171,
+   "unan": 242
+  },
+  "Wärme": {
+   "n": 2531,
+   "res": 991,
+   "contested": 0.185,
+   "rej": 26,
+   "post": 65,
+   "maj": 92,
+   "unan": 295
+  },
+  "Biogas / Speicher": {
+   "n": 629,
+   "res": 215,
+   "contested": 0.256,
+   "rej": 11,
+   "post": 7,
+   "maj": 37,
+   "unan": 64
+  },
+  "Verpackungs- / Bettensteuer": {
+   "n": 333,
+   "res": 177,
+   "contested": 0.345,
+   "rej": 22,
+   "post": 18,
+   "maj": 21,
+   "unan": 28
+  },
+  "Grundsteuer / Hebesatz": {
+   "n": 1758,
+   "res": 789,
+   "contested": 0.412,
+   "rej": 95,
+   "post": 71,
+   "maj": 159,
+   "unan": 154
+  },
+  "Müll": {
+   "n": 301,
+   "res": 150,
+   "contested": 0.227,
+   "rej": 2,
+   "post": 9,
+   "maj": 23,
+   "unan": 74
+  },
+  "Schließung": {
+   "n": 472,
+   "res": 113,
+   "contested": 0.345,
+   "rej": 15,
+   "post": 8,
+   "maj": 16,
+   "unan": 32
+  },
+  "Parken": {
+   "n": 757,
+   "res": 352,
+   "contested": 0.341,
+   "rej": 23,
+   "post": 54,
+   "maj": 43,
+   "unan": 84
+  },
+  "Videoüberwachung": {
+   "n": 56,
+   "res": 26,
+   "contested": 0.346,
+   "rej": 2,
+   "post": 2,
+   "maj": 5,
+   "unan": 5
+  },
+  "Obdachlosigkeit": {
+   "n": 761,
+   "res": 356,
+   "contested": 0.242,
+   "rej": 20,
+   "post": 27,
+   "maj": 39,
+   "unan": 105
+  },
+  "Bad / Bibliothek": {
+   "n": 1002,
+   "res": 411,
+   "contested": 0.2,
+   "rej": 13,
+   "post": 26,
+   "maj": 43,
+   "unan": 166
+  },
+  "Hundesteuer": {
+   "n": 823,
+   "res": 380,
+   "contested": 0.305,
+   "rej": 19,
+   "post": 23,
+   "maj": 74,
+   "unan": 118
+  },
+  "Baumschutz": {
+   "n": 612,
+   "res": 222,
+   "contested": 0.279,
+   "rej": 17,
+   "post": 30,
+   "maj": 15,
+   "unan": 24
+  },
+  "Tempo 30": {
+   "n": 1370,
+   "res": 490,
+   "contested": 0.353,
+   "rej": 28,
+   "post": 79,
+   "maj": 66,
+   "unan": 94
+  },
+  "Funk / Strom": {
+   "n": 174,
+   "res": 36,
+   "contested": 0.194,
+   "rej": 3,
+   "post": 0,
+   "maj": 4,
+   "unan": 12
+  },
+  "Radweg": {
+   "n": 2253,
+   "res": 774,
+   "contested": 0.208,
+   "rej": 23,
+   "post": 70,
+   "maj": 68,
+   "unan": 246
+  },
+  "Mehrkosten": {
+   "n": 242,
+   "res": 98,
+   "contested": 0.153,
+   "rej": 1,
+   "post": 2,
+   "maj": 12,
+   "unan": 41
+  },
+  "Verkauf": {
+   "n": 117,
+   "res": 41,
+   "contested": 0.293,
+   "rej": 2,
+   "post": 4,
+   "maj": 6,
+   "unan": 20
+  },
+  "Unterkunft": {
+   "n": 411,
+   "res": 183,
+   "contested": 0.191,
+   "rej": 3,
+   "post": 15,
+   "maj": 17,
+   "unan": 42
+  },
+  "Solarpark": {
+   "n": 2342,
+   "res": 953,
+   "contested": 0.28,
+   "rej": 47,
+   "post": 49,
+   "maj": 171,
+   "unan": 314
+  },
+  "Autofrei": {
+   "n": 179,
+   "res": 69,
+   "contested": 0.464,
+   "rej": 12,
+   "post": 11,
+   "maj": 9,
+   "unan": 10
+  },
+  "Moschee / Religion": {
+   "n": 23,
+   "res": 12,
+   "contested": 0.167,
+   "rej": 0,
+   "post": 1,
+   "maj": 1,
+   "unan": 1
+  },
+  "Schulstraße / Poller": {
+   "n": 286,
+   "res": 112,
+   "contested": 0.232,
+   "rej": 8,
+   "post": 9,
+   "maj": 9,
+   "unan": 22
+  },
+  "Gebührenerhöhung": {
+   "n": 293,
+   "res": 112,
+   "contested": 0.393,
+   "rej": 8,
+   "post": 16,
+   "maj": 20,
+   "unan": 35
+  },
+  "Umspannwerk": {
+   "n": 112,
+   "res": 44,
+   "contested": 0.159,
+   "rej": 3,
+   "post": 1,
+   "maj": 3,
+   "unan": 18
+  },
+  "Rücktritt / Abwahl": {
+   "n": 52,
+   "res": 32,
+   "contested": 0.406,
+   "rej": 1,
+   "post": 2,
+   "maj": 10,
+   "unan": 10
+  },
+  "Ampel / Übergang": {
+   "n": 787,
+   "res": 290,
+   "contested": 0.259,
+   "rej": 13,
+   "post": 38,
+   "maj": 24,
+   "unan": 101
+  },
+  "Teurer Bau": {
+   "n": 58,
+   "res": 23,
+   "contested": 0.391,
+   "rej": 2,
+   "post": 5,
+   "maj": 2,
+   "unan": 3
+  },
+  "Fahrradstraße": {
+   "n": 385,
+   "res": 184,
+   "contested": 0.359,
+   "rej": 10,
+   "post": 23,
+   "maj": 33,
+   "unan": 46
+  },
+  "Neubaugebiet": {
+   "n": 70,
+   "res": 28,
+   "contested": 0.107,
+   "rej": 1,
+   "post": 0,
+   "maj": 2,
+   "unan": 15
+  },
+  "Großprojekt": {
+   "n": 344,
+   "res": 130,
+   "contested": 0.215,
+   "rej": 4,
+   "post": 9,
+   "maj": 15,
+   "unan": 49
+  },
+  "Flagge / Symbol": {
+   "n": 192,
+   "res": 90,
+   "contested": 0.633,
+   "rej": 30,
+   "post": 7,
+   "maj": 20,
+   "unan": 8
+  },
+  "Kita-Beiträge": {
+   "n": 860,
+   "res": 372,
+   "contested": 0.366,
+   "rej": 18,
+   "post": 20,
+   "maj": 98,
+   "unan": 136
+  },
+  "Umbenennung": {
+   "n": 394,
+   "res": 161,
+   "contested": 0.335,
+   "rej": 14,
+   "post": 7,
+   "maj": 33,
+   "unan": 53
+  },
+  "Bezahlkarte": {
+   "n": 258,
+   "res": 96,
+   "contested": 0.542,
+   "rej": 19,
+   "post": 8,
+   "maj": 25,
+   "unan": 9
+  },
+  "Spielplatz": {
+   "n": 25,
+   "res": 10,
+   "contested": 0.2,
+   "rej": 0,
+   "post": 1,
+   "maj": 1,
+   "unan": 6
+  },
+  "Rechtsextremismus": {
+   "n": 56,
+   "res": 24,
+   "contested": 0.375,
+   "rej": 3,
+   "post": 4,
+   "maj": 2,
+   "unan": 2
+  },
+  "Integration": {
+   "n": 172,
+   "res": 64,
+   "contested": 0.297,
+   "rej": 5,
+   "post": 13,
+   "maj": 1,
+   "unan": 6
+  },
+  "Spielhalle / Rotlicht": {
+   "n": 73,
+   "res": 32,
+   "contested": 0.281,
+   "rej": 4,
+   "post": 1,
+   "maj": 4,
+   "unan": 12
+  },
+  "Feuerwerk": {
+   "n": 150,
+   "res": 57,
+   "contested": 0.491,
+   "rej": 8,
+   "post": 13,
+   "maj": 7,
+   "unan": 13
+  },
+  "Aufwandsentschädigung": {
+   "n": 355,
+   "res": 184,
+   "contested": 0.266,
+   "rej": 9,
+   "post": 12,
+   "maj": 28,
+   "unan": 56
+  },
+  "Ehrung / Aberkennung": {
+   "n": 7,
+   "res": 4,
+   "contested": 0,
+   "rej": 0,
+   "post": 0,
+   "maj": 0,
+   "unan": 2
+  },
+  "Anwohnerprotest": {
+   "n": 26,
+   "res": 1,
+   "contested": 1,
+   "rej": 1,
+   "post": 0,
+   "maj": 0,
+   "unan": 0
+  },
+  "Gendern": {
+   "n": 12,
+   "res": 6,
+   "contested": 0.333,
+   "rej": 1,
+   "post": 1,
+   "maj": 0,
+   "unan": 0
+  },
+  "Busspur / Umweltspur": {
+   "n": 33,
+   "res": 15,
+   "contested": 0.467,
+   "rej": 1,
+   "post": 3,
+   "maj": 3,
+   "unan": 2
+  },
+  "Veranstaltung": {
+   "n": 4,
+   "res": 2,
+   "contested": 0,
+   "rej": 0,
+   "post": 0,
+   "maj": 0,
+   "unan": 0
+  }
+ }
+}

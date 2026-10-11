@@ -4,6 +4,8 @@
 // Antrag einer Fraktion) und durch den Status (abgelehnt und vertagt sind lauter als beschlossen).
 // Je Tag höchstens `perDay` Einträge, je Ort und Tag höchstens einer, ein Ort höchstens einmal je Gruppe und Woche.
 
+import calibrationFile from '../../shared/social-calibration.json' with {type:'json'};
+
 const DAY=86400000;
 const iso=t=>new Date(t).toISOString().slice(0,10);
 const shift=(d,n)=>iso(Date.parse(d+'T00:00:00Z')+n*DAY);
@@ -240,19 +242,74 @@ export function scoreCard(card){
  return {score:Math.round(score*100)/100,hits,party};
 }
 
+// ---- Ergebnisse aus den Berichten (events[].result): belegen, ob ein Vorgang streitig endete -----------------------
+const R_REJ=/abgelehnt|nicht angenommen|nicht beschlossen|keine mehrheit|nicht empfohlen/i;
+const R_POST=/vertagt|zurückgestellt|zurückgezogen|abgesetzt|verwiesen|überwiesen|ohne beschluss|vertagung/i;
+const R_UNAN=/einstimmig|ohne gegenstimme|einvernehmlich|einhellig/i;
+const R_MAJ=/mehrheitlich|mit mehrheit|gegen \d+ stimme|\d+ gegenstimme|stimmenmehrheit|bei \d+ (nein|gegen)|\d+ nein/i;
+const R_OK=/beschlossen|empfohlen|zugestimmt|angenommen|genehmigt|zur kenntnis|kenntnis genommen|erledigt/i;
+/** 'rej' | 'post' | 'maj' | 'unan' | 'ok' | null */
+export function classifyResult(t){
+ if(!t)return null;
+ if(R_REJ.test(t))return 'rej';
+ if(R_POST.test(t))return 'post';
+ if(R_UNAN.test(t))return 'unan';
+ if(R_MAJ.test(t))return 'maj';
+ if(R_OK.test(t))return 'ok';
+ return null;
+}
+const ORDER=['rej','post','maj','unan','ok'];
+/** Stärkstes Ergebnis aller Sitzungen eines Vorgangs und Zahl der Sitzungen; payload-Felder events, event, sourceData.records. */
+export function evidenceOf({events,event,records}){
+ const texts=[];
+ for(const e of events||[]){if(e?.result)texts.push(e.result);if(e?.description)texts.push(e.description);}
+ if(event?.result)texts.push(event.result);
+ for(const r of records||[]){if(r?.result)texts.push(r.result);if(r?.raw?.result)texts.push(r.raw.result);}
+ const found=texts.map(classifyResult).filter(Boolean);
+ return {result:ORDER.find(o=>found.includes(o))||null,sessions:(events||[]).length,text:texts.find(t=>classifyResult(t)===ORDER.find(o=>found.includes(o)))||''};
+}
+const parse=v=>{if(typeof v!=='string')return v;try{return JSON.parse(v);}catch{return null;}};
+/** Beleg je Karte aus den Berichten, in Blöcken; fehlende Berichte ergeben keinen Eintrag. */
+async function loadEvidence(db,ids){
+ const out=new Map();
+ try{
+  for(let i=0;i<ids.length;i+=40){
+   const part=ids.slice(i,i+40);
+   const {results}=await db.prepare(`SELECT id,json_extract(payload,'$.events') ev,json_extract(payload,'$.event') e1,json_extract(payload,'$.sourceData.records') rec FROM topics WHERE id IN (${part.map(()=>'?').join(',')})`).bind(...part).all();
+   for(const r of results||[])out.set(r.id,evidenceOf({events:parse(r.ev),event:parse(r.e1),records:parse(r.rec)}));
+  }
+ }catch{/* ohne Berichte keine Belege; die Eignung rechnet dann mit Status und Titel */}
+ return out;
+}
+
 // ---- Eignung für Social Media (0 bis 100 %), nur aus festen Regeln --------------------------------------------------
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 // Alltagsnähe: je näher am Alltag der Leserinnen und Leser, desto eher wird geteilt.
 const EVERYDAY={verkehr:20,geld:18,alltag:17,migration:16,beteiligung:16,politik:16,identitaet:15,energie:12,bauen:8};
 const EVERYDAY_TERM={'Tempo 30':20,'Grundsteuer / Hebesatz':20,'Schließung':19,'Bad / Bibliothek':18,'Bezahlkarte':16,'Kita-Beiträge':17,'Umspannwerk':6,'Wärme':8,'Mehrkosten':8,'Funk / Strom':9};
 const JARGON=/§|flst\.|fl\.-?nr|flurst|bebauungsplan|vorhabenbezogen|satzung|drucksache|\bbv\b|\bvo\/|geschäftsordnung|haushaltssatzung|aufstellungsbeschluss|einvernehmen|\bnr\.\s?\d/i;
+/** Streitquote eines Stichworts aus den Berichten der letzten 12 Monate, zum Mittel hin gezogen (wenig Belege = nah am Mittel). */
+export function termRate(term,cal=calibrationFile){
+ const base=cal.baseline?.contested??.29,t=cal.terms?.[term];
+ if(!t||!t.res)return {rate:base,n:0,base};
+ const k=25;
+ return {rate:(t.contested*t.res+base*k)/(t.res+k),n:t.res,base,raw:t.contested};
+}
 /**
- * Eignung eines Eintrags als Social-Media-Beitrag in Prozent, in sechs Teilen (Summe höchstens 100):
- * Streitpotenzial 30, Alltagsnähe 20, Reichweite des Ortes 15, Aktualität 15, Konkretheit 10, Verständlichkeit 10.
+ * Eignung eines Eintrags als Social-Media-Beitrag in Prozent, in sieben Teilen (Summe höchstens 100):
+ * Streitquote des Themas 15 (gelernt aus den Berichten), Streit im Vorgang 15 (Ergebnis der Abstimmungen, Fraktionsantrag,
+ * mehrere Sitzungen), Alltagsnähe 20, Reichweite des Ortes 15, Aktualität 15, Konkretheit 10, Verständlichkeit 10.
  */
-export function fitScore(c,{today,population={}}){
+export function fitScore(c,{today,population={},evidence=null,calibration=calibrationFile}){
  const main=c.hits[0];
- const streit=Math.round(30*clamp((c.score-2.5)/3));
+ const tr=termRate(main.term,calibration);
+ const themenStreit=Math.round(15*clamp((tr.rate-.12)/(.6-.12)));
+ // Streit im Vorgang: Abstimmungsergebnis, sonst Status; dazu Fraktionsantrag und Sitzungsfolge
+ const res=evidence?.result||({rejected:'rej',postponed:'post'}[c.status])||null;
+ let vorgang={rej:11,post:9,maj:8,unan:0,ok:2}[res]??3;
+ if(c.party)vorgang+=3;
+ if((evidence?.sessions||0)>=3)vorgang+=2;
+ vorgang=Math.min(15,vorgang);
  const alltag=EVERYDAY_TERM[main.term]??EVERYDAY[main.group]??10;
  const pop=population[c.region_id];
  const reach=pop?Math.round(15*clamp((Math.log10(pop)-3.5)/2.2)):7;
@@ -260,7 +317,7 @@ export function fitScore(c,{today,population={}}){
  const fresh=days<=1?15:days<=3?13:days<=7?10:days<=14?6:3;
  const party=PARTIES.some(([re])=>re.test(c.title.toLowerCase()));
  const street=STREET.exec(c.title)?.[1];
- const decisive=['rejected','postponed','approved','recommended'].includes(c.status);
+ const decisive=['rejected','postponed','approved','recommended'].includes(c.status)||['rej','post','maj'].includes(res);
  const concrete=(party?4:0)+(street&&!NOT_STREET.test(street)?3:0)+(decisive?3:0);
  let clear=10;
  if(JARGON.test(c.title))clear-=4;
@@ -269,14 +326,18 @@ export function fitScore(c,{today,population={}}){
  if((c.title.match(/;|\bhier\b|\bnach\b § /gi)||[]).length>=2)clear-=2;
  clear=Math.max(0,clear);
  const parts=[
-  {key:'streit',label:'Streitpotenzial',points:streit,max:30},
-  {key:'alltag',label:'Alltagsnähe',points:alltag,max:20},
+  {key:'thema',label:'Streitquote des Themas',points:themenStreit,max:15},
+  {key:'vorgang',label:'Streit im Vorgang',points:vorgang,max:15},
+  {key:'alltag',label:'Alltagsnähe',points:Math.round(alltag),max:20},
   {key:'reichweite',label:'Reichweite',points:reach,max:15},
   {key:'aktuell',label:'Aktualität',points:fresh,max:15},
   {key:'konkret',label:'Konkretheit',points:concrete,max:10},
   {key:'klar',label:'Verständlichkeit',points:clear,max:10},
  ];
- return {percent:parts.reduce((n,x)=>n+x.points,0),parts};
+ const evidenceText=[];
+ if(tr.n>=15)evidenceText.push(`Bei „${main.term}“ endeten ${Math.round(100*(tr.raw??tr.rate))} % der Vorgänge streitig (Mittel aller Themen ${Math.round(100*tr.base)} %, ${tr.n} Vorgänge mit Ergebnis)`);
+ if(evidence?.result)evidenceText.push({rej:'Antrag abgelehnt',post:'vertagt oder verwiesen',maj:'mehrheitlich beschlossen, nicht einstimmig',unan:'einstimmig beschlossen',ok:'beschlossen'}[evidence.result]+(evidence.sessions>1?`, ${evidence.sessions} Sitzungen`:''));
+ return {percent:parts.reduce((n,x)=>n+x.points,0),parts,evidence:evidenceText};
 }
 
 /**
@@ -310,7 +371,8 @@ export async function socialTopics(db,regions,{today=iso(Date.now()),days=30,per
   seen.add(k(week));picked.push(c);
  }
  const dayList=[];for(let d=from;d<=today;d=shift(d,1))dayList.push(d);
- for(const c of picked)c.fit=fitScore(c,{today,population});
+ const evidence=await loadEvidence(db,picked.map(c=>c.id));
+ for(const c of picked)c.fit=fitScore(c,{today,population,evidence:evidence.get(c.id)||null});
  picked.sort((a,b)=>b.fit.percent-a.fit.percent||b.score-a.score||a.id.localeCompare(b.id));
  const byDay=new Map(dayList.map(d=>[d,[]]));
  for(const c of picked){
