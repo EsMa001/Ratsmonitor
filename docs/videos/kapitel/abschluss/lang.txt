@@ -1,4 +1,4 @@
 # Jetzt selbst ausprobieren. Szenen und Schritte sind geplant (noch nicht aufgenommen). Zahlen und Namen nur als Platzhalter.
 @abschluss.suche Suchen Sie jetzt ein Thema, das für Sie wichtig ist.
-*@abschluss.suche Die Suche können Sie kostenlos nutzen.
+*@abschluss.suche Die Suche können Sie kostenlos und ohne Anmeldung nutzen.
 *@abschluss.logo Plenarra. Besser verstehen, was vor Ort beraten wird.
