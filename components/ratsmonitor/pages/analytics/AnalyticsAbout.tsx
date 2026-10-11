@@ -4,7 +4,7 @@ import { PageBand } from "./PageBand";
 import { Reveal } from "./Reveal";
 import type { ReactNode } from "react";
 import { AnalyticsLogo } from "../../components/Brand";
-import { ANALYSEN, type AnalyseId } from "../../info/branchen-enterprise";
+import { ANALYSEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
 import { Icon } from "../../info/icons";
 
 /** Vorschaubild der Ausbreitung: Wellen von Punkten um einen Ursprung und die S-Kurve */
@@ -139,6 +139,8 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "gremien", name: "Beratungswege", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   { id: "fraktionen", name: "Fraktionsprofil", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   { id: "foerderung", name: "Förderradar", href: "/analytics/foerderung", kurz: "Welche Förderprogramme wo beantragt und bewilligt werden." },
+  { id: "bauleitplanung", name: "Bauleitplanung", href: "/analytics/bauleitplanung", kurz: "Welche Bauleitpläne in welchem Schritt sind und wie viele Wohnungen entstehen sollen." },
+  { id: "kita", name: "Kita-Radar", href: "/analytics/kita", kurz: "Wo über Elternbeiträge entschieden wird und wo neue Kita-Plätze entstehen." },
 ];
 
 const METHODIK: Record<AnalyseId, ReactNode> = {
@@ -198,7 +200,86 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Grundlage ist der Volltext der Hauptdokumente, soweit er vorliegt; Sammelberichte (Mitteilungen, Haushalt, Sachstände) zählen nicht. Eine Rangfolge misst, wie oft Förderung in den Ratsunterlagen auftaucht, nicht die Höhe der Mittel.</p>
     </>
   ),
+  bauleitplanung: (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo im Verhältnis zur Größe viel geplant wird und wie viele Wohnungen nach den Unterlagen entstehen sollen.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Plan und Verfahrensschritt werden aus dem Titel gelesen, sonst aus dem Beschlussvorschlag: Aufstellung, frühzeitige Beteiligung (§ 3 Abs. 1 BauGB), Offenlage (§ 3 Abs. 2 BauGB), Abwägung, Satzungsbeschluss (§ 10 BauGB) oder Aufhebung. Ein Plan läuft über mehrere Sitzungen und Gremien; er wird je Gebiet über Nummer oder Namen einmal gezählt, mit dem weitesten Schritt. Geplante Wohneinheiten stammen aus Sätzen mit Planungsbezug („rund 140 Wohneinheiten sollen entstehen“).</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Bauanträge im Plangebiet, Stellungnahmen zu Plänen der Nachbargemeinden und Sammelberichte zählen nicht. Wohneinheiten stehen nur bei einem kleinen Teil der Pläne im Hauptdokument, oft erst in der Begründung; die Summe ist eine Untergrenze.</p>
+    </>
+  ),
+  kita: (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, wo über Kita-Elternbeiträge entschieden wird und in welche Richtung (Erhöhung, Senkung, Beitragsfreiheit, Verpflegung), und wo neue Kita-Plätze entstehen.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gelesen werden Titel und Volltext der Hauptdokumente: Elternbeiträge, Gebühren- und Beitragssatzungen nur mit Bezug zu Kita, Krippe oder Tagespflege, nicht Straßen- oder Vereinsbeiträge. Die Richtung ergibt sich aus Wörtern wie „erhöht“, „gesenkt“ oder „beitragsfrei“. Neue Plätze zählen nur, wenn der Titel einen Neubau, eine Erweiterung oder zusätzliche Gruppen nennt.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Die Höhe der Beiträge wird nicht verglichen, sie steht je Monat, Einkommensstufe, Alter und Betreuungszeit verschieden da. Bestand und Bedarfsplanungen zählen nicht als neue Plätze; nicht jeder Ausbau nennt eine Platzzahl.</p>
+    </>
+  ),
 };
+
+/* Gruppen: Tools funktionieren mit jedem Suchbegriff, Radare sind fertige Auswertungen zu einem festen Thema */
+const GRUPPEN = {
+  tool: { name: "plenara.X Tools", kurz: "Tools", text: "Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Zusammenhänge, Trends, Ortsvergleich, Beschlüsse und Beratungswege." },
+  radar: { name: "plenara.X Radar", kurz: "Radare", text: "Fertige Auswertungen zu festen Themen, aus den Ratsunterlagen gelesen: Fraktionen, Förderung, Bauleitplanung und Kitas." },
+} as const;
+
+function Karten({ group }: { group: AnalyseGruppe }) {
+  const list = ANALYSEN_KARTEN.filter((a) => ANALYSEN[a.id].group === group);
+  return (
+    <ul className="m-0 mt-8 grid list-none gap-x-10 gap-y-14 p-0 sm:grid-cols-2 xl:grid-cols-3">
+      {list.map((a, i) => (
+        <li key={a.id}>
+          <Reveal delay={(i % 3) * 90}>
+            <Link href={a.href} aria-label={`${a.name} öffnen`} className="group block">
+              <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1">{a.id in ANALYSE_THUMBS ? <LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} showStand={false} /> : (
+                /* Analysen ohne Schnappschuss-Vorschau: ruhige Kachel mit Symbol */
+                <div aria-hidden="true" className="flex aspect-[16/10] items-center justify-center bg-slate-50 text-teal-600"><Icon name={ANALYSEN[a.id].icon} size={56} /></div>
+              )}</div>
+              <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
+              <h3 className="mt-2 text-[22px] font-semibold">{a.name}</h3>
+              <p className="mt-1 text-[16px] text-slate-500">{a.kurz}</p>
+            </Link>
+          </Reveal>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Methodik({ group }: { group?: AnalyseGruppe }) {
+  return (
+    <>
+      <h2 id="methodik" className="mt-16 scroll-mt-24 text-[28px] font-semibold">Methodik</h2>
+      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was jede Analyse zeigt, worauf sie beruht und wo ihre Grenzen liegen.</p>
+      <div className="mt-6 max-w-[900px] border-t border-slate-200">
+        {ANALYSEN_KARTEN.filter((a) => !group || ANALYSEN[a.id].group === group).map((a) => (
+          <details key={a.id} className="group border-b border-slate-200">
+            <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-[18px] font-semibold [&::-webkit-details-marker]:hidden">
+              {a.name}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+            <div className="pb-6">{METHODIK[a.id]}</div>
+          </details>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/** Übersicht einer Gruppe (plenara.X Tools oder plenara.X Radar) */
+export function AnalyticsGroupPage({ group }: { group: AnalyseGruppe }) {
+  const g = GRUPPEN[group];
+  return (
+    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-16 text-slate-900">
+      <PageBand>
+        <p className="m-0 text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / {g.kurz}</p>
+        <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{g.name}</h1>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{g.text}</p>
+      </PageBand>
+      <Karten group={group} />
+      <Methodik group={group} />
+    </main>
+  );
+}
 
 export function AnalyticsAbout() {
   return (
@@ -220,39 +301,19 @@ export function AnalyticsAbout() {
         </div>
       </PageBand>
 
-      <h2 id="analysen" className="mt-14 scroll-mt-24 text-[28px] font-semibold">Analysen</h2>
-      <ul className="m-0 mt-8 grid list-none gap-x-10 gap-y-14 p-0 sm:grid-cols-2 xl:grid-cols-3">
-        {ANALYSEN_KARTEN.map((a, i) => (
-          <li key={a.id}>
-            <Reveal delay={(i % 3) * 90}>
-              <Link href={a.href} aria-label={`${a.name} öffnen`} className="group block">
-                <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1">{a.id in ANALYSE_THUMBS ? <LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} showStand={false} /> : (
-                  /* Neue Analysen ohne Schnappschuss-Vorschau: ruhige Kachel mit Symbol */
-                  <div aria-hidden="true" className="flex aspect-[16/10] items-center justify-center bg-slate-50 text-teal-600"><Icon name={ANALYSEN[a.id].icon} size={56} /></div>
-                )}</div>
-                <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
-                <h3 className="mt-2 text-[22px] font-semibold">{a.name}</h3>
-                <p className="mt-1 text-[16px] text-slate-500">{a.kurz}</p>
-              </Link>
-            </Reveal>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-10 text-[14px] text-slate-500">Weitere Analysen sind in Planung.</p>
+      {(["tool", "radar"] as const).map((group, gi) => (
+        <section key={group} id={gi ? "radar" : "analysen"} className="scroll-mt-24">
+          <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+            <h2 className="text-[28px] font-semibold">{GRUPPEN[group].name}</h2>
+            <Link href={group === "tool" ? "/analytics/tools" : "/analytics/radar"} className="text-[16px] font-medium text-teal-600">Alle {GRUPPEN[group].kurz} →</Link>
+          </div>
+          <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{GRUPPEN[group].text}</p>
+          <Karten group={group} />
+        </section>
+      ))}
+      <p className="mt-10 text-[14px] text-slate-500">Weitere Radare sind in Planung.</p>
 
-      <h2 id="methodik" className="mt-16 scroll-mt-24 text-[28px] font-semibold">Methodik</h2>
-      <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was jede Analyse zeigt, worauf sie beruht und wo ihre Grenzen liegen.</p>
-      <div className="mt-6 max-w-[900px] border-t border-slate-200">
-        {ANALYSEN_KARTEN.map((a) => (
-          <details key={a.id} className="group border-b border-slate-200">
-            <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-[18px] font-semibold [&::-webkit-details-marker]:hidden">
-              {a.name}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform group-open:rotate-180"><path d="m6 9 6 6 6-6" /></svg>
-            </summary>
-            <div className="pb-6">{METHODIK[a.id]}</div>
-          </details>
-        ))}
-      </div>
+      <Methodik />
     </main>
   );
 }

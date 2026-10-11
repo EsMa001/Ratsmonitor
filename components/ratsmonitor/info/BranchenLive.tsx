@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ANALYSE_THUMBS } from "../pages/analytics/AnalyticsAbout";
 import { Spark, type TrendKind } from "../pages/analytics/TrendViews";
-import type { AnalyseId } from "./branchen-enterprise";
+import { ANALYSEN, type AnalyseId } from "./branchen-enterprise";
+import { Icon } from "./icons";
 import { STATUS } from "../lib/constants";
 import { prettyTerm } from "../lib/terms";
 
@@ -217,7 +218,9 @@ export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term:
   const [node, setNode] = useState<ReactNode>(null);
   const [stand, setStand] = useState("");
   /* Neue Analysen haben noch keine gezeichnete Vorschau (AnalyticsAbout zeigt dann ein Symbol) */
-  const Thumb = (ANALYSE_THUMBS as Partial<Record<AnalyseId, () => ReactNode>>)[id] ?? (() => null);
+  const Thumb = (ANALYSE_THUMBS as Partial<Record<AnalyseId, () => ReactNode>>)[id] ?? (() => (
+    <div aria-hidden="true" className="flex h-full min-h-[200px] items-center justify-center text-teal-600"><Icon name={ANALYSEN[id].icon} size={56} /></div>
+  ));
   useEffect(() => {
     if (!ref.current || typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { setSeen(true); io.disconnect(); } }, { rootMargin: "200px" });

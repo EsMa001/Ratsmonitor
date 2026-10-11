@@ -11,6 +11,10 @@ const SEITEN:Record<string,[string,string]>={
  gremien:['Beratungswege · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],
  fraktionen:['Fraktionsprofil · plenara.X','Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird.'],
  foerderung:['Förderradar · plenara.X','Welche Förderprogramme in den Ratsunterlagen wo beantragt und bewilligt werden.'],
+ bauleitplanung:['Bauleitplanung · plenara.X','Welche Bauleitpläne in welchem Verfahrensschritt sind und wie viele Wohnungen entstehen sollen.'],
+ kita:['Kita-Radar · plenara.X','Wo über Kita-Elternbeiträge entschieden wird und wo neue Kita-Plätze entstehen.'],
+ tools:['plenara.X Tools','Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse, Beratungswege.'],
+ radar:['plenara.X Radar','Fertige Auswertungen zu festen Themen: Fraktionen, Förderung, Bauleitplanung, Kitas.'],
 };
 export async function generateMetadata({params}:{params:Promise<{section?:string[]}>}):Promise<Metadata>{
  const {section=[]}=await params;const s=SEITEN[section[0]||'ueber'];if(!s)return {};

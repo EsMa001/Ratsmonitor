@@ -24,13 +24,13 @@ for(const r of db.prepare("SELECT id,json_extract(payload,'$.title') AS title,js
 console.log(`${list.length} Berichte gelesen (${((Date.now()-t0)/1000).toFixed(0)} s)`);
 const insert=db.prepare('INSERT OR REPLACE INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)');
 db.exec('BEGIN');db.prepare("DELETE FROM topic_facts WHERE method LIKE 'facts-%'").run();
-const c={withText:0,faction:0,funding:0,topicsFaction:0,topicsFunding:0};let n=0;
+const c={withText:0,topicsFaction:0,topicsFunding:0};let n=0;
 for(const [id,title,url,docTitle] of list){
  const text=url&&!sessionDocument({title:docTitle},uses.get(url)||0)?store.getText(url):null;
  const body=text?mergePages(text.pages):'';if(text)c.withText++;
  const rows=factsOf(title,body);
  const method=`${FACTS_VERSION}:${text?'text':'title'}`;
- for(const r of rows){insert.run(id,r.kind,r.value,r.detail,method);c[r.kind]++;}
+ for(const r of rows){insert.run(id,r.kind,r.value,r.detail,method);c[r.kind]=(c[r.kind]||0)+1;}
  if(rows.some(r=>r.kind==='faction'))c.topicsFaction++;if(rows.some(r=>r.kind==='funding'))c.topicsFunding++;
  if(++n%50000===0){db.exec('COMMIT;BEGIN');console.log(`${n}/${list.length}`);}
 }

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKe
 import { createPortal } from "react-dom";
 import { BRANCHEN } from "../info/content";
 import { Icon } from "../info/icons";
-import { ANALYSEN } from "../info/branchen-enterprise";
 import { useTier } from "../lib/tier";
 import { IconChevronDown, IconSpark } from "../components/icons";
 
@@ -27,8 +26,12 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Planung", slug: "planung", icon: "map" },
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
-];/* Analyse: plenara.X und seine Analysen, gleichrangig aufgelistet (inhaltlich bleiben es Unterseiten von plenara.X) */
-const ANALYSE = [{ href: "/analytics/ueber", label: "plenara.X", icon: "plenaraX" as const }, ...Object.values(ANALYSEN).map((a) => ({ href: a.href, label: a.name, icon: a.icon }))];
+];/* Analyse: Start (Übersicht), Tools (mit jedem Suchbegriff) und Radar (feste Themen); die einzelnen Analysen stehen auf diesen Seiten */
+const ANALYSE = [
+  { href: "/analytics/ueber", label: "plenara.X Start", icon: "plenaraX" as const },
+  { href: "/analytics/tools", label: "plenara.X Tools", icon: "layoutGrid" as const },
+  { href: "/analytics/radar", label: "plenara.X Radar", icon: "target" as const },
+];
 
 const INFO: { href: string; label: string; icon: "euro" | "circlePlay" | "layers" | "circleHelp" }[] = [
   { href: "/preise", label: "Preise", icon: "euro" },

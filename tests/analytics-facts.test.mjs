@@ -52,3 +52,31 @@ test('funding radar counts programs by status and ranks no area below the thresh
  assert.equal(r.programs.at(-1).name,'Sonstige Förderung','Sonstige zuletzt');
  assert.equal(r.ranking.length,0,'zu kleine Gebiete und zu wenige Einträge');
 });
+
+test('planning counts each plan once with its furthest step and the housing it names',async()=>{
+ const {planning}=await import('../server/integrations/analytics-planning.mjs');
+ const {db,put}=setup();
+ put('a','consulting','bauen',[['plan','Aufstellung','Bebauungsplan|nr. 1']]);
+ put('a','approved','bauen',[['plan','Satzungsbeschluss','Bebauungsplan|nr. 1'],['housing','Wohneinheiten','120']]);
+ put('a','approved','bauen',[['plan','Offenlage','Bebauungsplan|nr. 2']]);
+ put('b','approved','bauen',[['plan','Satzungsbeschluss','Flächennutzungsplan|nr. 9']]);
+ const r=await planning(db,catalog,q(''));
+ assert.deepEqual(r.totals,{topics:4,plans:3,adopted:2,regions:2,we:120,weKnown:1});
+ assert.equal(r.plansByStage.find(s=>s.name==='Satzungsbeschluss').n,2);
+ assert.equal(r.plansByStage.find(s=>s.name==='Aufstellung').n,0,'Plan 1 zählt mit seinem weitesten Schritt');
+ assert.equal(r.housingPlans[0].we,120);
+ assert.equal(r.regions.length,0,'Gebiete unter den Schwellen fehlen im Vergleich');
+});
+
+test('kita counts fee decisions by direction and new places once per project',async()=>{
+ const {kita}=await import('../server/integrations/analytics-kita.mjs');
+ const {db,put}=setup();
+ put('a','approved','bildung',[['kita_fee','Erhöhung','150']]);
+ put('a','approved','bildung',[['kita_fee','Neufassung','']]);
+ put('b','approved','bildung',[['kita_fee','Beitragsfreiheit',''],['kita_places','Plätze','75']]);
+ const r=await kita(db,catalog,q(''));
+ assert.deepEqual(r.totals,{fees:3,feeRegions:2,projects:1,places:75,placeRegions:1});
+ assert.deepEqual(r.directions.filter(d=>d.n).map(d=>[d.name,d.n]),[['Erhöhung',1],['Beitragsfreiheit',1],['Neufassung',1]]);
+ assert.equal(r.decisions.length,2,'ohne sonstige Neufassungen');
+ assert.equal(r.decisions.find(d=>d.direction==='Erhöhung').euro,'150');
+});

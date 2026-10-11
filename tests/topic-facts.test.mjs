@@ -41,3 +41,33 @@ test('collective items yield no funding facts unless their title is about fundin
  assert.deepEqual(factsOf('Einbringung des Haushaltes 2027',t),[]);
  assert.deepEqual(factsOf('Sachstand Fördermittel Ganztag',t),[{kind:'funding',value:'Ganztagsausbau',detail:'granted'}]);
 });
+
+test('plans: stage from the title or the decision, the furthest step wins, repeal apart',async()=>{
+ const {planOf,housingOf}=await import('../shared/topic-facts.mjs');
+ assert.deepEqual(planOf('Bebauungsplan Nr. 43 Perleberg - Satzungsbeschluss'),{stage:'Satzungsbeschluss',type:'Bebauungsplan',plan:'nr. 43'});
+ assert.equal(planOf('Bebauungsplan „Wohngebiet Süd“: Abwägungs- und Satzungsbeschluss').stage,'Satzungsbeschluss');
+ assert.equal(planOf('Bebauungsplan „Am Markt“','Verfahren: Aufstellungsbeschluss 2024, Offenlage 2025. Beschlussvorschlag: Der Rat beschließt die öffentliche Auslegung des Entwurfs.').stage,'Offenlage');
+ assert.equal(planOf('Aufhebung des Bebauungsplans Nr. 7').stage,'Aufhebung');
+ assert.equal(planOf('112. Änderung des Flächennutzungsplans - Feststellungsbeschluss').type,'Flächennutzungsplan');
+ assert.equal(planOf('Sanierung der Grundschule'),null);
+ assert.equal(planOf('Einvernehmen nach § 36 BauGB zum Bauantrag im Bebauungsplan Nr. 5'),null,'Bauantrag');
+ assert.equal(planOf('Sachstandsbericht Wohnbaulandentwicklung, Bebauungspläne'),null,'Sammelbericht');
+ assert.equal(planOf('Stellungnahme der Stadt zum Vorentwurf des Bebauungsplans der Gemeinde Nachbarort'),null,'fremder Plan');
+ assert.equal(housingOf('Im Plangebiet sollen rund 140 Wohneinheiten entstehen. Bis 2030 Wohnungen'),140);
+ assert.equal(housingOf('Die Fläche umfasst 2 Wohnungen im Bestand.'),null,'ohne Planungsbezug und unter 3');
+});
+
+test('Kita: fee decisions with direction, new places without years',async()=>{
+ const {kitaFeeOf,kitaPlacesOf}=await import('../shared/topic-facts.mjs');
+ assert.deepEqual(kitaFeeOf('Satzung über Elternbeiträge in Kindertageseinrichtungen','Die Elternbeiträge für Kinder in der Kita werden zum 1.8. um 5 % erhöht.'),{direction:'Erhöhung',euro:''});
+ assert.equal(kitaFeeOf('Kita-Beiträge','Das letzte Kita-Jahr bleibt beitragsfrei.').direction,'Beitragsfreiheit');
+ assert.equal(kitaFeeOf('Beitragssatzung über wiederkehrende Straßenbeiträge','Die Beiträge werden erhöht.'),null,'Straßenbeiträge sind keine Kita-Beiträge');
+ assert.equal(kitaFeeOf('Festsetzung der Elternbeiträge für die Verpflegung in den Kitas','Die Verpflegungspauschale beträgt 3,50 Euro.').direction,'Verpflegung');
+ assert.equal(kitaFeeOf('Mitteilungen','Elternbeiträge in der Kita werden erhöht.'),null,'Sammelpunkt');
+ assert.equal(kitaPlacesOf('Neubau Kita Siedlung Kohlheck','Für 2026 Kita-Plätze fehlen. In der neuen Kita entstehen 75 Plätze.'),75);
+ assert.equal(kitaPlacesOf('Einheitliche Elternbeiträge','Mit dem Ausbau gibt es in den Kitas 564 Plätze.'),null,'kein Ausbau im Titel');
+ assert.equal(kitaPlacesOf('Spielplatz','Es entstehen 12 neue Parkplätze.'),null);
+ assert.equal(kitaPlacesOf('Schließung eines Kita-Standortes','In der Kita entfallen 77 Plätze durch die Schließung.'),null);
+ assert.equal(kitaPlacesOf('Situationsbericht Kindertagesstätten','Durch den Ausbau stehen in den Kitas 928 Plätze zur Verfügung.'),null,'Gesamtbestand');
+ assert.equal(kitaPlacesOf('Unterbringung von Geflüchteten','Neben der Kita entstehen 300 neue Plätze in der Unterkunft.'),null);
+});
