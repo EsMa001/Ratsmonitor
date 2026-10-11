@@ -51,7 +51,7 @@ export function AdminSocial(){
    {label:'Tage mit Vorschlag',value:data?data.summary.daysWithTopic:undefined,of:data?.summary.days,note:'schwache Tage bleiben leer'},
   ]}/></div>
   <p className="mt-4 max-w-[760px] text-[12px] leading-[1.5] text-slate-500">
-   Eignung = Streitquote des Themas (15, gelernt aus den Abstimmungsergebnissen der letzten 12 Monate) + Streit im Vorgang (15) + Alltagsnähe (20) + Reichweite des Ortes (15) + Aktualität (15) + Konkretheit (10) + Verständlichkeit (10).
+   Eignung = Themenwert (15, gelernte Streitquote und Urteil unabhängiger Bewerter) + Streit im Vorgang (15) + Alltagsnähe (20) + Reichweite des Ortes (15) + Aktualität (15) + Konkretheit (10) + Verständlichkeit (10) − Abzüge für Einzelstraßen, Ortsteil-Gremien und Planungsverfahren.
    Reine Regelrechnung, keine Vorhersage von Klicks; es liegen keine Nutzungsdaten vor.
   </p>
   <label className="mt-6 flex items-center gap-2 text-[14px] text-slate-600"><input type="checkbox" checked={onlyFilled} onChange={e=>setOnlyFilled(e.target.checked)}/>Tage ohne Vorschlag ausblenden</label>
@@ -63,13 +63,13 @@ export function AdminSocial(){
       {d.topics.map(t=><li key={t.id} className="rounded-xl border border-slate-200 bg-white p-4">
        <div className="flex items-baseline justify-between gap-2">
         <h3 className="text-[18px] font-semibold">{t.region}</h3>
-        <span className={'shrink-0 rounded px-2 py-0.5 text-[13px] font-semibold tabular-nums '+fitClass(t.fit.percent)} title={t.fit.parts.map(p=>p.label+' '+p.points+' von '+p.max).join('\n')}>{t.fit.percent} %</span>
+        <span className={'shrink-0 rounded px-2 py-0.5 text-[13px] font-semibold tabular-nums '+fitClass(t.fit.percent)} title={t.fit.parts.map(p=>p.max?p.label+' '+p.points+' von '+p.max:p.label+' '+p.points).join('\n')}>{t.fit.percent} %</span>
        </div>
        <p className="mt-1 text-[12px] text-slate-500">{t.group} · Eignung für Social Media</p>
        <p className="mt-2 text-[15px] leading-snug"><a className="text-teal-600" href={t.link}>{t.title}</a></p>
        {t.draft&&<DraftBox d={t.draft}/>}
        {t.fit.evidence.length>0&&<ul className="mt-2 list-disc pl-4 text-[12px] leading-snug text-slate-600">{t.fit.evidence.map(e=><li key={e}>{e}</li>)}</ul>}
-       <p className="mt-2 text-[11px] leading-snug text-slate-500">{t.fit.parts.map(p=>p.label+' '+p.points+'/'+p.max).join(' · ')}</p>
+       <p className="mt-2 text-[11px] leading-snug text-slate-500">{t.fit.parts.map(p=>p.max?p.label+' '+p.points+'/'+p.max:p.label+' '+p.points).join(' · ')}</p>
        <p className="mt-2 text-[13px] text-slate-500">{t.gremium&&t.gremium+' · '}{STATUS[t.status]||t.status}</p>
        <p className="mt-2 flex flex-wrap gap-1.5 text-[12px]">{t.why.map(w=><span key={w} className="rounded bg-teal-50 px-2 py-0.5 text-teal-700">{w}</span>)}</p>
        <p className="mt-3 text-[12px] text-slate-500">{t.otherPlaces?`„${t.term}“ gab es im Zeitraum auch in ${t.otherPlaces} anderen Orten · `:''}Stärke {t.score} · <a className="text-teal-600" href={t.search}>Suche öffnen →</a></p>

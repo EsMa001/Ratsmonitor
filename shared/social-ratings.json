@@ -1,0 +1,193 @@
+{
+ "builtAt": "2026-10-11",
+ "source": "Bewertung von 272 Vorschlägen durch vier unabhängige Bewerter (Skala 1 bis 5), blind gegenüber dem Score",
+ "n": 272,
+ "mean": 2.72,
+ "terms": {
+  "Solarpark": {
+   "n": 15,
+   "eignung": 1.93,
+   "hook": 3.53
+  },
+  "Gebührenerhöhung": {
+   "n": 3,
+   "eignung": 3,
+   "hook": 2.33
+  },
+  "Schließung": {
+   "n": 8,
+   "eignung": 2.5,
+   "hook": 2.25
+  },
+  "Tempo 30": {
+   "n": 31,
+   "eignung": 2.61,
+   "hook": 3.68
+  },
+  "Bad / Bibliothek": {
+   "n": 4,
+   "eignung": 3,
+   "hook": 2.75
+  },
+  "Bürgerbegehren": {
+   "n": 14,
+   "eignung": 2.43,
+   "hook": 2.36
+  },
+  "Autofrei": {
+   "n": 7,
+   "eignung": 3.29,
+   "hook": 2.86
+  },
+  "Windkraft": {
+   "n": 32,
+   "eignung": 2.53,
+   "hook": 3.12
+  },
+  "Parken": {
+   "n": 10,
+   "eignung": 3.3,
+   "hook": 3.3
+  },
+  "Baumschutz": {
+   "n": 8,
+   "eignung": 2.62,
+   "hook": 3.62
+  },
+  "Innenstadt / Handel": {
+   "n": 4,
+   "eignung": 3,
+   "hook": 2.5
+  },
+  "Eintrittspreise": {
+   "n": 2,
+   "eignung": 3,
+   "hook": 2
+  },
+  "Streichung / Sparliste": {
+   "n": 15,
+   "eignung": 2.8,
+   "hook": 2.73
+  },
+  "Transparenz": {
+   "n": 4,
+   "eignung": 2.5,
+   "hook": 3
+  },
+  "Umbenennung": {
+   "n": 9,
+   "eignung": 2.22,
+   "hook": 2.78
+  },
+  "Radweg": {
+   "n": 6,
+   "eignung": 2.67,
+   "hook": 3.33
+  },
+  "Unterkunft": {
+   "n": 3,
+   "eignung": 3.33,
+   "hook": 3.33
+  },
+  "Müll": {
+   "n": 1,
+   "eignung": 4,
+   "hook": 4
+  },
+  "Fahrradstraße": {
+   "n": 10,
+   "eignung": 2.5,
+   "hook": 3.6
+  },
+  "Verpackungs- / Bettensteuer": {
+   "n": 7,
+   "eignung": 3.43,
+   "hook": 3.14
+  },
+  "Schulstraße / Poller": {
+   "n": 5,
+   "eignung": 2.2,
+   "hook": 2
+  },
+  "Rücktritt / Abwahl": {
+   "n": 1,
+   "eignung": 2,
+   "hook": 1
+  },
+  "Vielfalt / Demokratie": {
+   "n": 8,
+   "eignung": 2.5,
+   "hook": 2.38
+  },
+  "Tierschutz": {
+   "n": 10,
+   "eignung": 2.5,
+   "hook": 2
+  },
+  "Grundsteuer / Hebesatz": {
+   "n": 13,
+   "eignung": 3,
+   "hook": 2.38
+  },
+  "Integration": {
+   "n": 2,
+   "eignung": 4,
+   "hook": 2.5
+  },
+  "Bezahlkarte": {
+   "n": 8,
+   "eignung": 3.5,
+   "hook": 3.88
+  },
+  "Flagge / Symbol": {
+   "n": 6,
+   "eignung": 3,
+   "hook": 3.67
+  },
+  "Aufwandsentschädigung": {
+   "n": 1,
+   "eignung": 3,
+   "hook": 3
+  },
+  "Biogas / Speicher": {
+   "n": 2,
+   "eignung": 2,
+   "hook": 2.5
+  },
+  "Feuerwerk": {
+   "n": 4,
+   "eignung": 3.75,
+   "hook": 3.75
+  },
+  "Ampel / Übergang": {
+   "n": 3,
+   "eignung": 2.33,
+   "hook": 3.67
+  },
+  "Obdachlosigkeit": {
+   "n": 8,
+   "eignung": 3.25,
+   "hook": 2.62
+  },
+  "Funk / Strom": {
+   "n": 2,
+   "eignung": 3,
+   "hook": 3
+  },
+  "Gendern": {
+   "n": 1,
+   "eignung": 1,
+   "hook": 1
+  },
+  "Sonntagsöffnung": {
+   "n": 4,
+   "eignung": 3,
+   "hook": 3
+  },
+  "Videoüberwachung": {
+   "n": 1,
+   "eignung": 4,
+   "hook": 3
+  }
+ }
+}
