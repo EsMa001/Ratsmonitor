@@ -9,7 +9,7 @@
 //        [--concurrency 32] [--per-host 3] [--gap-ms 200] [--timeout-ms 10000] [--retry-days N]
 //   node scripts/pdf-store/fetch.mjs --months 120 --max-gb 10   Monat für Monat ab heute zurück, bis die Ablage 10 GB hat
 //        (je --report-mb 500 eine Zeile MEILENSTEIN, am Ziel ZIEL ERREICHT)
-//   node scripts/pdf-store/fetch.mjs --months 240 --budget-gb 100 [--ocr-workers 2]
+//   node scripts/pdf-store/fetch.mjs --months 240 --budget-gb 100 [--ocr-workers 2] [--start-month 2025-11]
 //        feste Grenze mit Tausch (keeper in store-lib.mjs): lädt weiter, auch wenn die Ablage voll ist; jede neue Datei wird
 //        sofort bewertet und verdrängt die schlechteste, wenn sie besser ist, sonst fliegt sie selbst raus (Text bleibt immer)
 //   node scripts/pdf-store/fetch.mjs --stats                       Stand der Ablage
@@ -127,8 +127,12 @@ const work=hosts=>new Promise(resolve=>{
 });
 
 // Zeiträume: mit --months Monat für Monat ab dem laufenden zurück (der erste schließt künftige Sitzungen ein), sonst einer.
+// --start-month JJJJ-MM: erst ab diesem Monat zurück (etwa wenn die jüngeren schon abgearbeitet sind)
 const ym=d=>d.toISOString().slice(0,7)+'-01',back=(d,n)=>new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()-n,1));
-const windows=o.months?Array.from({length:o.months},(_,i)=>[ym(back(new Date(),i)),i?ym(back(new Date(),i-1)):null]):[[o.since,null]];
+const startMonth=opt('start-month');
+if(startMonth&&!/^\d{4}-(0[1-9]|1[0-2])$/.test(startMonth)){console.error('--start-month als JJJJ-MM angeben');process.exit(1);}
+const first=startMonth?new Date(startMonth+'-01T00:00:00Z'):new Date();
+const windows=o.months?Array.from({length:o.months},(_,i)=>[ym(back(first,i)),i||startMonth?ym(back(first,i-1)):null]):[[o.since,null]];
 let month='';
 for(const [from,to] of windows){
  if(stopping)break;

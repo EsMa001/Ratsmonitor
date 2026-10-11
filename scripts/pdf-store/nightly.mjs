@@ -16,7 +16,7 @@
 // der Exit-Code ist dann 1. Zeit: --minutes (Standard 180) für alles; Laden höchstens --fetch-share (0.4) davon, OCR bekommt,
 // was bis auf --reserve (25 min für 5 bis 7) übrig ist.
 //
-//   node scripts/pdf-store/nightly.mjs [--minutes 180] [--budget-gb 100] [--months 240] [--ocr-workers 2] [--retry-errors] [--dry-run]
+//   node scripts/pdf-store/nightly.mjs [--minutes 180] [--budget-gb 100] [--months 240] [--ocr-workers 2] [--retry-errors] [--start-month JJJJ-MM] [--dry-run]
 // Umgebung: DATABASE_FILE (Server), RM_PDF_STORE (Ablage), OCR_TOOLS/OCR_CACHE (text.mjs).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -58,7 +58,7 @@ function step(name,script,stepArgs){
 }
 
 say(`Start: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
-step('Laden','scripts/pdf-store/fetch.mjs',['--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare))),'--report-mb','1000']);
+step('Laden','scripts/pdf-store/fetch.mjs',['--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare))),'--report-mb','1000']);
 if(sizeGb()>budgetGb){
  step('Rang nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
  step('Budget','scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
