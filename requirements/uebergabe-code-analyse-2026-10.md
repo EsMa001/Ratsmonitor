@@ -19,9 +19,9 @@ bitte beibehalten.
   `0017_search_cards_label_version` auf dem Server eingespielt (89 s, Dienst gestoppt; Labels auf den Serverdaten unverändert). Offen daraus: D11 (Startdaten,
   eigener Schritt), D3, D5, B10, Rest von D14.
 - **Branch `admin-mobil`** (Adminseiten am Handy, Start ohne leere To-do-Liste) wartet auf Max.
-- **Paket 6, A14 (eigener Importprozess) ist auf `main`** (gegengelesen mit Fable; Stand und Messwerte im Bericht unter
-  Paket 6). Noch nicht ausgerollt: braucht die vier systemd-Einheiten `deploy/node/ratsmonitor-import*` und die neue
-  Speichergrenze in `ratsmonitor.service` auf dem Server (`node-server.md`, „Importprozess“).
+- **Paket 6, A14 (eigener Importprozess) ist auf `main` und auf dem Server** (ausgerollt 11.10. 10:17, Stand `724a1a4`;
+  Timer `ratsmonitor-import` alle 10 min und `ratsmonitor-import-nightly` 01:00 Uhr aktiv, `ratsmonitor.service` auf 8 GB;
+  Sicherung der alten Einheit `/etc/systemd/system/ratsmonitor.service.bak-vor-a14`). Erster nächtlicher Lauf: 12.10., 01:00 Uhr.
   Ausgerollt 10.10. 17:37. Vor einer öffentlichen Adresse zusätzlich die ausgehende Sperre aus `node-server.md` (Max).
 - **Nico** muss 0017 lokal noch einspielen, bei beendetem Dev-Server:
   `node scripts/node-migrate.mjs .wrangler/state/v3/d1/miniflare-D1DatabaseObject/<datei>.sqlite`
