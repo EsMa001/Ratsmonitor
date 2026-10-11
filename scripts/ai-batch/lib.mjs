@@ -10,6 +10,7 @@ import {decodeText} from '../../server/integrations/website.mjs';
 import {htmlToLines} from '../../server/integrations/website-text.mjs';
 import {kicShell,kicConfig,kicHeaders} from '../../server/integrations/kic.mjs';
 import {normalize} from '../../shared/ai-job.mjs';
+import {openPdfStore} from '../../server/node/pdf-store.mjs';
 
 export const CONTENT_ROLES=new Set(['paper','minutes','bundle']);
 export const MAX_BYTES=60_000_000,READ_PAGES=40;
@@ -107,10 +108,15 @@ async function kicText(url,timeoutMs){
  return tidy([item.name,...blocks].filter(Boolean).join('\n\n'));
 }
 
+// Lokale PDF-Ablage (server/node/pdf-store.mjs), wenn RM_PDF_STORE gesetzt ist: PDFs zuerst dort nachschlagen, neu geladene ablegen.
+let store;
+const pdfStore=()=>store===undefined?(store=process.env.RM_PDF_STORE?openPdfStore(process.env.RM_PDF_STORE):null):store;
 /** Lädt eine Adresse einmal (ohne Weiterleitungen über Hostgrenzen, mit Projektkennung) und liefert den gelesenen Text. */
 export async function fetchSource(url,{timeoutMs=60000}={}){
  const fetchedAt=new Date().toISOString();
  if(KIC_PAGE.test(new URL(url).pathname))return {url,status:'ok',kind:'page',fetchedAt,text:await kicText(url,timeoutMs),pages:[0],via:'kic-api'};
+ const local=pdfStore()?.get(url);
+ if(local)return {url,status:'ok',kind:'attachment',fetchedAt,...await pdfText(local),via:'pdf-store'};
  let r,target=url;
  for(let hop=0;hop<=3;hop++){
   r=await fetch(target,{redirect:'manual',headers:{'User-Agent':SOURCE_USER_AGENT},signal:AbortSignal.timeout(timeoutMs)});
@@ -124,7 +130,7 @@ export async function fetchSource(url,{timeoutMs=60000}={}){
  const bytes=new Uint8Array(await r.arrayBuffer());
  if(bytes.byteLength>MAX_BYTES)throw Error('Dokument zu groß ('+bytes.byteLength+' Bytes)');
  const head=new TextDecoder('latin1').decode(bytes.subarray(0,5));
- if(head==='%PDF-'){const p=await pdfText(bytes);return {url,status:'ok',kind:'attachment',fetchedAt,...p};}
+ if(head==='%PDF-'){try{pdfStore()?.put(url,bytes);}catch{/* Ablage ist Hilfe, kein Muss */}const p=await pdfText(bytes);return {url,status:'ok',kind:'attachment',fetchedAt,...p};}
  const body=decodeText(bytes,type);
  if(/json/i.test(type)||/^\s*[{[]/.test(body.slice(0,20))){let v=null;try{v=JSON.parse(body);}catch{/* kein JSON */}if(v)return {url,status:'ok',kind:'page',fetchedAt,text:tidy(jsonText(v)),pages:[0]};}
  if(/html|xml/i.test(type)||/<html|<body|<div/i.test(body.slice(0,4000))){

@@ -24,3 +24,5 @@ export function documentType(title){
 }
 /** The one document the current pipeline reads for a report: the paper, otherwise the first PDF (see documents.mjs). */
 export const primaryDocument=documents=>documents.find(d=>/vorlage/i.test(d.title))||documents.find(d=>/beschlussvorschlag|bericht/i.test(d.title))||documents[0]||null;
+/** The PDF the import reads for a summary (enrichDocument) and the local PDF store keeps (scripts/pdf-store/fetch.mjs). */
+export const primaryPdf=documents=>{const pdfs=(documents||[]).filter(d=>d.kind==='application/pdf');return pdfs.find(d=>/vorlage/i.test(d.title))||pdfs.find(d=>/beschlussvorschlag|bericht/i.test(d.title))||pdfs[0]||null;};
