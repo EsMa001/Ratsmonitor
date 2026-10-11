@@ -71,13 +71,16 @@ export const usedBytes=store=>store.size()+textBytes(store);
  * Entscheidungen laufen nacheinander; überschritten wird die Grenze nur um gerade geladene, noch nicht entschiedene Dateien.
  */
 export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
- const kept=rankedFiles(store).filter(f=>f.keep).sort((a,b)=>a.score-b.score),have=new Set(kept.map(f=>f.sha));
- const c={kept:0,swapped:0,rejected:0,tooBig:0,ocrPages:0,stuck:0};
+ const all=rankedFiles(store),kept=all.filter(f=>f.keep).sort((a,b)=>a.score-b.score),have=new Set(kept.map(f=>f.sha));
+ const c={kept:0,swapped:0,rejected:0,tooBig:0,tooBigLater:0,ocrPages:0,stuck:0};
  let ocr,lock=Promise.resolve();
  /* Belegter Platz: einmal gezählt, dann fortgeschrieben (die volle Zählung liest alle Einträge der Ablage und wäre je Datei
     zu langsam); alle SYNC Entscheidungen neu gezählt, damit sich keine Abweichung ansammelt */
  const SYNC=2000,textOf=sha=>Number(store.db.prepare("SELECT chars FROM texts WHERE sha256=? AND status='ok'").get(sha)?.chars||0)*1.05;
  let used=usedBytes(store),since=0;
+ /* Zu große Dateien (nie als PDF behalten) mit vollständigem Text vom letzten Mal jetzt löschen: Ihre Scans hat inzwischen der
+    OCR-Schritt der Nachtkette gelesen (siehe decide) */
+ for(const f of all)if(!f.keep&&f.chars!=null&&!(f.ocrNeeded>0)){store.dropPdf(f.sha);used-=f.bytes;c.tooBig++;}
  /** Text vollständig? Sonst Textebene lesen und Seiten ohne Text per OCR; false, wenn OCR nötig, aber nicht möglich ist */
  const complete=async f=>{
   const t=store.db.prepare('SELECT version,ocr_needed AS ocrNeeded,status FROM texts WHERE sha256=?').get(f.sha),before=textOf(f.sha);
@@ -97,7 +100,9 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   const f=rankedFile(store,sha);if(!f)return 'fehlt';
   used+=f.bytes+textOf(sha)-before;
   if(++since>=SYNC){since=0;used=usedBytes(store);}
-  if(!f.keep){await drop(f);c.tooBig++;return 'zu groß';}
+  /* Zu groß (nie als PDF behalten, die Grenze betrifft das nicht): ohne Scan sofort löschen; einen Scan nicht hier per OCR
+     lesen (das hielte alle Downloads an), sondern liegen lassen, bis der OCR-Schritt der Nachtkette ihn gelesen hat */
+  if(!f.keep){if(f.ocrNeeded>0){c.tooBigLater++;return 'zu groß, OCR folgt';}await drop(f);c.tooBig++;return 'zu groß';}
   while(used>limit){
    const worst=kept[0];
    if(!worst||worst.score>=f.score){await drop(f);c.rejected++;return 'nicht besser';}

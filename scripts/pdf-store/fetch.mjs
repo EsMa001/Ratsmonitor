@@ -144,7 +144,7 @@ for(const [from,to] of windows){
  report(month+' fertig: ');
 }
 db.close();clearInterval(timer);
-if(keeper){await keeper.close();const k=keeper.stats();console.log(`Grenze: ${k.kept} behalten, ${k.swapped} schlechtere verdrängt, ${k.rejected} nicht besser, ${k.tooBig} zu groß (nur Text), ${k.ocrPages} Seiten vor dem Löschen per OCR${k.stuck?`, ${k.stuck} Scans ohne OCR-Werkzeuge liegen geblieben`:''}; belegt ${mb(usedBytes(store))}`);}
+if(keeper){await keeper.close();const k=keeper.stats();console.log(`Grenze: ${k.kept} behalten, ${k.swapped} schlechtere verdrängt, ${k.rejected} nicht besser, ${k.tooBig} zu groß (nur Text), ${k.tooBigLater} zu große Scans warten auf OCR, ${k.ocrPages} Seiten vor dem Löschen per OCR${k.stuck?`, ${k.stuck} Scans ohne OCR-Werkzeuge liegen geblieben`:''}; belegt ${mb(usedBytes(store))}`);}
 if(maxBytes&&size>=maxBytes)console.log(`ZIEL ERREICHT: ${mb(size)} in der Ablage`);
 if(skipped)console.log(`${skipped} Dokumente von ausgelassenen Servern übersprungen`);
 for(const r of store.stats())console.log('Ablage:',r.status,r.n,r.bytes?mb(r.bytes):'');
