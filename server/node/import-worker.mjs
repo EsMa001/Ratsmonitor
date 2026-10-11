@@ -6,6 +6,7 @@
  *
  *   node dist/standalone/worker/import-worker.mjs --run                      offenen Auftrag abarbeiten, sonst Ende
  *   node dist/standalone/worker/import-worker.mjs --create sources --window 1w   Auftrag anlegen (wenn keiner offen ist) und abarbeiten
+ *   RM_PDF_STORE=<Ordner>: Dokumente zuerst aus der lokalen PDF-Ablage lesen (scripts/pdf-store/fetch.mjs)
  *   Weitere Schalter: --lanes 24, --max-minutes 240, --no-catch-up, --regions id,id (mit --create)
  *
  * Die Datenbank kommt wie im Dienst über DATABASE_FILE (server/node/cloudflare-workers.mjs). Der Prozess wartet länger
@@ -19,6 +20,7 @@ process.env.DATABASE_BUSY_TIMEOUT_MS=process.env.IMPORT_BUSY_TIMEOUT_MS||'30000'
 import {env} from 'cloudflare:workers';
 import {runSync} from '@/server/services/sync';
 import {analysePending} from '@/server/integrations/manual-analysis.mjs';
+import {useDocumentStore} from '@/server/integrations/documents.mjs';
 import {workJob,ensureJob,currentJob,openJob,catchUp,parseArgs,importRunner} from '@/server/integrations/pipeline-worker.mjs';
 
 const log=(...parts)=>console.log(new Date().toISOString(),'[import-worker]',...parts);
@@ -28,6 +30,8 @@ let options;
 try{options=parseArgs(process.argv.slice(2));}catch(e){warn('Aufruf:',e.message);process.exit(1);}
 const db=env.DB;
 if(!db){warn('keine Datenbank (DATABASE_FILE)');process.exit(1);}
+// Lokale PDF-Ablage (server/node/pdf-store.mjs): Dokumente zuerst von der Platte lesen, neu geladene dort ablegen.
+if(process.env.RM_PDF_STORE){const {openPdfStore}=await import('@/server/node/pdf-store.mjs');useDocumentStore(openPdfStore(process.env.RM_PDF_STORE));log('PDF-Ablage',process.env.RM_PDF_STORE);}
 const run=importRunner(db,{runSync,analysePending});
 const started=Date.now();
 const stop=()=>options.maxMinutes>0&&Date.now()-started>options.maxMinutes*60000;
