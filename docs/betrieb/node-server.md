@@ -82,7 +82,7 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/app/current` | Verweis auf den laufenden Stand unter `releases/<commit>` (dazu bleiben die zwei neuesten anderen) |
 | `/srv/ratsmonitor/data/ratsmonitor.sqlite` | Datenbank |
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
-| `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, drei Stände (`/etc/cron.d/ratsmonitor-backup`) |
+| `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, höchstens zwei Stände, auch während einer neuen (`/etc/cron.d/ratsmonitor-backup`) |
 | `/etc/cron.d/ratsmonitor-search-words` | Wortliste der Suche nachführen, 4:15 Uhr; baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
