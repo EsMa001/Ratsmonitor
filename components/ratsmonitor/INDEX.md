@@ -467,7 +467,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (25): generateMetadata, Page
+- page.tsx (29): generateMetadata, Page
 
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
@@ -631,7 +631,7 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (211, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- branchen-enterprise.ts (89): AnalyseId, AnalyseGruppe, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (95): AnalyseId, AnalyseGruppe, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 
@@ -692,9 +692,10 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (320, ⚠20): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
+- AnalyticsAbout.tsx (341, ⚠22): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (50, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (57, ⚠1): AnalyticsPages
+- BauleitplanungPage.tsx (179, ⚠3): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (219, ⚠6): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
@@ -708,6 +709,7 @@ topic design-styles.css:140
 - FraktionenPage.tsx (166, ⚠2): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
+- KitaRadarPage.tsx (172, ⚠5): KitaRadarPage
 - KnowledgeGraphPage.tsx (219, ⚠1): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView

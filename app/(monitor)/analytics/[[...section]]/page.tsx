@@ -13,6 +13,10 @@ const SEITEN:Record<string,[string,string]>={
  foerderung:['Förderradar · plenara.X','Welche Förderprogramme in den Ratsunterlagen wo beantragt und bewilligt werden.'],
  bauleitplanung:['Bauleitplanung · plenara.X','Welche Bauleitpläne in welchem Verfahrensschritt sind und wie viele Wohnungen entstehen sollen.'],
  kita:['Kita-Radar · plenara.X','Wo über Kita-Elternbeiträge entschieden wird und wo neue Kita-Plätze entstehen.'],
+ versorgung:['Versorgungsradar · plenara.X','Energie, Wärme, Wasser, Abwasser, Abfall, Stadtwerke und Breitband in den Ratsunterlagen.'],
+ verkehr:['Verkehrsradar · plenara.X','Straßen, Radverkehr, Bus und Bahn, Tempo und Parken in den Ratsunterlagen.'],
+ soziales:['Vereins- und Sozialradar · plenara.X','Vereinszuschüsse, Sport, Jugend, Senioren, Inklusion und Integration in den Ratsunterlagen.'],
+ vergabe:['Vergaberadar · plenara.X','Ausschreibungen und Vergaben der Kommunen: Bau, Planung, Gutachten, Fahrzeuge und Dienstleistungen.'],
  tools:['plenara.X Tools','Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse, Beratungswege.'],
  radar:['plenara.X Radar','Fertige Auswertungen zu festen Themen: Fraktionen, Förderung, Bauleitplanung, Kitas.'],
 };

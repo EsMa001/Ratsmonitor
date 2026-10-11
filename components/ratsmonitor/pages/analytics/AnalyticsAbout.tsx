@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { AnalyticsLogo } from "../../components/Brand";
 import { ANALYSEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
 import { Icon } from "../../info/icons";
+import { RADARS } from "@/shared/radars.mjs";
 
 /** Vorschaubild der Ausbreitung: Wellen von Punkten um einen Ursprung und die S-Kurve */
 function DiffusionThumb() {
@@ -141,6 +142,10 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "foerderung", name: "Förderradar", href: "/analytics/foerderung", kurz: "Welche Förderprogramme wo beantragt und bewilligt werden." },
   { id: "bauleitplanung", name: "Bauleitplanung", href: "/analytics/bauleitplanung", kurz: "Welche Bauleitpläne in welchem Schritt sind und wie viele Wohnungen entstehen sollen." },
   { id: "kita", name: "Kita-Radar", href: "/analytics/kita", kurz: "Wo über Elternbeiträge entschieden wird und wo neue Kita-Plätze entstehen." },
+  { id: "versorgung", name: RADARS.versorgung.name, href: "/analytics/versorgung", kurz: RADARS.versorgung.kurz },
+  { id: "verkehr", name: RADARS.verkehr.name, href: "/analytics/verkehr", kurz: RADARS.verkehr.kurz },
+  { id: "soziales", name: RADARS.soziales.name, href: "/analytics/soziales", kurz: RADARS.soziales.kurz },
+  { id: "vergabe", name: RADARS.vergabe.name, href: "/analytics/vergabe", kurz: RADARS.vergabe.kurz },
 ];
 
 const METHODIK: Record<AnalyseId, ReactNode> = {
@@ -214,12 +219,28 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Die Höhe der Beiträge wird nicht verglichen, sie steht je Monat, Einkommensstufe, Alter und Betreuungszeit verschieden da. Bestand und Bedarfsplanungen zählen nicht als neue Plätze; nicht jeder Ausbau nennt eine Platzzahl.</p>
     </>
   ),
+  versorgung: <RadarMethodik id="versorgung" />,
+  verkehr: <RadarMethodik id="verkehr" />,
+  soziales: <RadarMethodik id="soziales" />,
+  vergabe: <RadarMethodik id="vergabe" />,
 };
+
+/** Methodik eines Themenradars aus seiner Beschreibung (shared/radars.mjs) */
+function RadarMethodik({ id }: { id: keyof typeof RADARS }) {
+  const r = RADARS[id];
+  return (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">{r.kurz}</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ein Vorgang gehört zum Radar, wenn sein Titel eines dieser Themen nennt: {r.topics.map(([t]) => t).join(", ")}. Was geschieht, steht in Titel oder Beschlussvorschlag: {r.signals.map(([s]) => s).join(", ")}. Bei sehr kurzen Titeln wird der Beschlussvorschlag gelesen. Je Thema zeigt das Radar, in wie vielen Gebieten es vorkommt und was aus den Vorgängen wird (Anteil „beschlossen“ an den entschiedenen); je Gebiet die Vorgänge je 10.000 Einwohner.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird über Wörter im Titel; ein Vorgang ohne passendes Wort fehlt, ein Wort in anderem Sinn zählt mit. Bauanträge Privater, Formalpunkte und Sammelpunkte wie Mitteilungen zählen nicht. Der Status ist nur bei einem Teil der Vorgänge bekannt.</p>
+    </>
+  );
+}
 
 /* Gruppen: Tools funktionieren mit jedem Suchbegriff, Radare sind fertige Auswertungen zu einem festen Thema */
 const GRUPPEN = {
   tool: { name: "plenara.X Tools", kurz: "Tools", text: "Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Zusammenhänge, Trends, Ortsvergleich, Beschlüsse und Beratungswege." },
-  radar: { name: "plenara.X Radar", kurz: "Radare", text: "Fertige Auswertungen zu festen Themen, aus den Ratsunterlagen gelesen: Fraktionen, Förderung, Bauleitplanung und Kitas." },
+  radar: { name: "plenara.X Radar", kurz: "Radare", text: "Fertige Auswertungen zu festen Themen, aus den Ratsunterlagen gelesen: Fraktionen, Förderung, Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales sowie Vergaben." },
 } as const;
 
 function Karten({ group }: { group: AnalyseGruppe }) {

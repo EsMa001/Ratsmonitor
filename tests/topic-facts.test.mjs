@@ -30,9 +30,10 @@ test('funding: program in a funding sentence, granted before applied before ment
 });
 
 test('factsOf combines both kinds',()=>{
- assert.deepEqual(factsOf('Antrag der CDU-Fraktion: Sportplatz','Wir beantragen Fördermittel aus der Sportstättenförderung.'),[
+ const only=(t,x)=>factsOf(t,x).filter(r=>!r.kind.startsWith('radar:'));
+ assert.deepEqual(only('Antrag der CDU-Fraktion: Sportplatz','Wir beantragen Fördermittel aus der Sportstättenförderung.'),[
   {kind:'faction',value:'CDU/CSU',detail:'antrag'},{kind:'funding',value:'Sportstätten',detail:'applied'}]);
- assert.deepEqual(factsOf('Antrag der CDU-Fraktion: Sportplatz',''),[{kind:'faction',value:'CDU/CSU',detail:'antrag'}]);
+ assert.deepEqual(only('Antrag der CDU-Fraktion: Sportplatz',''),[{kind:'faction',value:'CDU/CSU',detail:'antrag'}]);
 });
 
 test('collective items yield no funding facts unless their title is about funding',()=>{

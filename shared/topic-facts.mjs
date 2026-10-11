@@ -6,7 +6,8 @@
  * (lokale PDF-Ablage) und im Import, sobald er ein Dokument liest (refreshSummaries in server/services/sync.ts).
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
-export const FACTS_VERSION='facts-v3';
+import {RADARS} from './radars.mjs';
+export const FACTS_VERSION='facts-v4';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 const SENTENCE=/(?<=[^0-9][.;!?])\s+(?=[A-ZÄÖÜ„"])/;
 /* Sammelpunkte (Anfragen, Mitteilungen, Haushalt, Sachstandsberichte …) sprechen über viele Vorhaben und Fraktionen zugleich:
@@ -156,6 +157,24 @@ export function kitaPlacesOf(title,text){
  return best;
 }
 
+/* Themenradare (shared/radars.mjs): Unterthema aus dem Titel; bei sehr kurzen Titeln („Vorlage 12/26“) aus dem Beschlussvorschlag.
+   Signal (was geschieht) aus Titel, sonst Beschlussvorschlag; ohne Signal „Sonstiges“. */
+// In keinem Radar: Bauanträge Privater (Grundstück, Hausnummer) und Formalpunkte (Eröffnung, Verpflichtung, Beschlussfähigkeit)
+const RADAR_SKIP=/Bauantrag|Antrag auf Baugenehmigung|Bauvoranfrage|Vorbescheid|formlose Anfrage|Fl\.-?\s?Nr|Flurstück|Nutzungsänderung|Eröffnung|Begrüßung|Beschlussfähigkeit|Verpflichtung (von|der|des)|Einführung und Verpflichtung|ordnungsgemäße[nr]? Einladung|Genehmigung der Niederschrift|Fragestunde/i;
+export function radarFactsOf(title,text){
+ const t=String(title||''),dec=decision(text),rows=[];
+ if(RADAR_SKIP.test(t))return rows;
+ for(const [id,r] of Object.entries(RADARS)){
+  if((r.collective||COLLECTIVE).test(t)||r.exclude?.test(t)||(r.require&&!r.require.test(t)))continue;
+  const src=t.replace(/\s+/g,' ').trim().split(' ').length<4?t+' '+dec:t;
+  const topics=r.topics.filter(([,re])=>re.test(src)).map(([n])=>n);
+  if(!topics.length)continue;
+  const sig=(r.signals.find(([,re])=>re.test(t))||r.signals.find(([,re])=>re.test(dec))||['Sonstiges'])[0];
+  for(const n of topics)rows.push({kind:'radar:'+id,value:n,detail:sig});
+ }
+ return rows;
+}
+
 /** Zeilen für topic_facts: {kind, value, detail} */
 export function factsOf(title,text){
  const rows=[],collective=COLLECTIVE.test(String(title||''))&&!/Förder|Zuwendung|Zuschuss/i.test(String(title||''));
@@ -166,5 +185,6 @@ export function factsOf(title,text){
  if(plan){rows.push({kind:'plan',value:plan.stage,detail:plan.type+'|'+plan.plan});const we=housingOf(text);if(we)rows.push({kind:'housing',value:'Wohneinheiten',detail:String(we)});}
  const fee=kitaFeeOf(title,text);if(fee)rows.push({kind:'kita_fee',value:fee.direction,detail:fee.euro});
  const places=kitaPlacesOf(title,text);if(places)rows.push({kind:'kita_places',value:'Plätze',detail:String(places)});
+ rows.push(...radarFactsOf(title,text));
  return rows;
 }

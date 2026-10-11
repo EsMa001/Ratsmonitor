@@ -80,3 +80,19 @@ test('kita counts fee decisions by direction and new places once per project',as
  assert.equal(r.decisions.length,2,'ohne sonstige Neufassungen');
  assert.equal(r.decisions.find(d=>d.direction==='Erhöhung').euro,'150');
 });
+
+test('theme radar counts topics, decisions, signals and recent items per radar',async()=>{
+ const {radar}=await import('../server/integrations/analytics-radar.mjs');
+ const {db,put}=setup();
+ put('a','approved','umwelt',[['radar:versorgung','Abwasser','Gebühren und Entgelte']]);
+ put('a','rejected','umwelt',[['radar:versorgung','Abwasser','Bau und Sanierung'],['radar:versorgung','Trinkwasser','Bau und Sanierung']]);
+ put('b','consulting','umwelt',[['radar:versorgung','Wärme','Planung und Konzept'],['radar:verkehr','Radverkehr','Bau und Sanierung']]);
+ const r=await radar(db,catalog,q('radar=versorgung'));
+ assert.deepEqual(r.totals,{topics:3,regions:2,decided:2,rate:50});
+ const abw=r.topics.find(t=>t.name==='Abwasser');
+ assert.deepEqual([abw.n,abw.decided,abw.approved,abw.rate,abw.regions],[2,2,1,50,1]);
+ assert.equal(r.topics.find(t=>t.name==='Strom und Gas').n,0,'alle Themen des Radars, auch ohne Vorgang');
+ assert.equal(r.signals.find(s=>s.name==='Bau und Sanierung').n,2);
+ assert.deepEqual(r.recent.find(x=>x.topics.length===2).topics.sort(),['Abwasser','Trinkwasser']);
+ await assert.rejects(radar(db,catalog,q('radar=unbekannt')),/Unbekanntes Radar/);
+});

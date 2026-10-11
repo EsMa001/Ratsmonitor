@@ -10,6 +10,8 @@ import { FraktionenPage } from "./FraktionenPage";
 import { FoerderradarPage } from "./FoerderradarPage";
 import { BauleitplanungPage } from "./BauleitplanungPage";
 import { KitaRadarPage } from "./KitaRadarPage";
+import { ThemeRadarPage } from "./ThemeRadarPage";
+import { RADARS } from "@/shared/radars.mjs";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
 
@@ -27,6 +29,10 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/foerderung": FoerderradarPage,
   "/analytics/bauleitplanung": BauleitplanungPage,
   "/analytics/kita": KitaRadarPage,
+  "/analytics/versorgung": () => <ThemeRadarPage id="versorgung" />,
+  "/analytics/verkehr": () => <ThemeRadarPage id="verkehr" />,
+  "/analytics/soziales": () => <ThemeRadarPage id="soziales" />,
+  "/analytics/vergabe": () => <ThemeRadarPage id="vergabe" />,
   "/analytics/tools": () => <AnalyticsGroupPage group="tool" />,
   "/analytics/radar": () => <AnalyticsGroupPage group="radar" />,
 };
@@ -41,7 +47,8 @@ export function AnalyticsPages({ path }: { path: string }) {
   const { tier } = useTier();
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = path === "/analytics/diffusion" ? "Ausbreitung · plenara.X" : path === "/analytics/graph" ? "Themennetz · plenara.X" : path === "/analytics/gremien" ? "Beratungswege · plenara.X" : path === "/analytics/beschluesse" ? "Beschlüsse · plenara.X" : path === "/analytics/vergleich" ? "Ortsvergleich · plenara.X" : path === "/analytics/trends" ? "Trends · plenara.X" : path === "/analytics/fraktionen" ? "Fraktionsprofil · plenara.X" : path === "/analytics/foerderung" ? "Förderradar · plenara.X" : path === "/analytics/bauleitplanung" ? "Bauleitplanung · plenara.X" : path === "/analytics/kita" ? "Kita-Radar · plenara.X" : path === "/analytics/tools" ? "plenara.X Tools" : path === "/analytics/radar" ? "plenara.X Radar" : "Über plenara.X · plenara";
+    const radar = RADARS[path.slice("/analytics/".length) as keyof typeof RADARS];
+    document.title = radar ? `${radar.name} · plenara.X` : path === "/analytics/diffusion" ? "Ausbreitung · plenara.X" : path === "/analytics/graph" ? "Themennetz · plenara.X" : path === "/analytics/gremien" ? "Beratungswege · plenara.X" : path === "/analytics/beschluesse" ? "Beschlüsse · plenara.X" : path === "/analytics/vergleich" ? "Ortsvergleich · plenara.X" : path === "/analytics/trends" ? "Trends · plenara.X" : path === "/analytics/fraktionen" ? "Fraktionsprofil · plenara.X" : path === "/analytics/foerderung" ? "Förderradar · plenara.X" : path === "/analytics/bauleitplanung" ? "Bauleitplanung · plenara.X" : path === "/analytics/kita" ? "Kita-Radar · plenara.X" : path === "/analytics/tools" ? "plenara.X Tools" : path === "/analytics/radar" ? "plenara.X Radar" : "Über plenara.X · plenara";
   }, [path]);
   const Page = PAGES[path];
   if (!Page) return null;

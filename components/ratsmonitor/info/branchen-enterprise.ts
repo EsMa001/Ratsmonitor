@@ -2,7 +2,7 @@
    Gleiches Gerüst für alle Branchen, Auswahl, Sätze und Anordnung je Branche. */
 import type { IconName } from "./icons";
 
-export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita";
+export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "vergabe";
 /** Tools funktionieren mit jedem Suchbegriff; Radare sind fertige Auswertungen zu einem festen Thema */
 export type AnalyseGruppe = "tool" | "radar";
 
@@ -17,6 +17,10 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   foerderung: { href: "/analytics/foerderung", name: "Förderradar", icon: "euro", group: "radar" },
   bauleitplanung: { href: "/analytics/bauleitplanung", name: "Bauleitplanung", icon: "house", group: "radar" },
   kita: { href: "/analytics/kita", name: "Kita-Radar", icon: "heart", group: "radar" },
+  versorgung: { href: "/analytics/versorgung", name: "Versorgungsradar", icon: "droplet", group: "radar" },
+  verkehr: { href: "/analytics/verkehr", name: "Verkehrsradar", icon: "bus", group: "radar" },
+  soziales: { href: "/analytics/soziales", name: "Vereins- und Sozialradar", icon: "handshake", group: "radar" },
+  vergabe: { href: "/analytics/vergabe", name: "Vergaberadar", icon: "clipboardList", group: "radar" },
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
@@ -48,9 +52,10 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     team: ["Für Ihr Projektteam", "Sitzungskalender mit Umkreis um Ihre Flächen; Hinweise gehen an bis zu fünf weitere Personen aus Entwicklung und Planung."],
   },
   versorgung: {
-    title: "Neue Baugebiete und Förderung im Blick",
+    title: "Netze, Verträge und Gebühren im Blick",
     layout: "cards",
     analysen: [
+      ["versorgung", "Konzessionen, Gebühren, Ausschreibungen und Ausbau bei Energie, Wärme, Wasser, Abwasser und Abfall."],
       ["bauleitplanung", "Erkennen Sie neue Baugebiete früh: Aufstellung, Offenlage und Satzungsbeschluss, mit geplanten Wohneinheiten."],
       ["foerderung", "Sehen Sie, wo Fördermittel für Wärme, Energie und Breitband beantragt und bewilligt werden."],
     ],
@@ -67,9 +72,10 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     team: ["Für Geschäftsstelle und Mitglieder-Betreuung", "Sitzungskalender für Ihre Gebiete; bis zu fünf weitere Empfänger sehen jeden Alarm."],
   },
   planung: {
-    title: "Verfahren und Förderung im Blick",
+    title: "Verfahren, Aufträge und Förderung im Blick",
     layout: "cards",
     analysen: [
+      ["vergabe", "Welche Planungs-, Ingenieur- und Gutachterleistungen Kommunen ausschreiben und vergeben."],
       ["bauleitplanung", "Welche Pläne in welchem Verfahrensschritt sind, je Gebiet und im Zeitverlauf."],
       ["foerderung", "Welche Förderprogramme Kommunen nutzen, etwa Städtebauförderung oder Klimaanpassung."],
     ],
