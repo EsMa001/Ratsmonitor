@@ -16,7 +16,7 @@ let after='',batches=0,total=0;
 for(;;){
  const r=await analysePending(db,'all',{after});
  if(r.status!==200){console.log('Status',r.status,JSON.stringify(r.data).slice(0,200));if(r.status===409){await new Promise(x=>setTimeout(x,5000));continue}break}
- batches++;total+=r.data.processed||0;after=r.data.after||r.data.next||'';
+ batches++;total+=r.data.processed||0;after=r.data.cursor||'';
  console.log(JSON.stringify({batches,total,after:String(after).slice(0,24),more:r.data.more,s:Math.round((Date.now()-t0)/1000)}));
  if(!r.data.more)break;
 }
