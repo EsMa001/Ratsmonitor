@@ -209,7 +209,7 @@ export function cleanTitle(title,max=120){
  heads.push(/^beratung(?: und (?:ggf\.? )?beschluss(?:fassung)?)?\s+(?:über|zu|zum|zur)\s+(?:den |die |das |dem |der )?/i);
  heads.push(/^(?:antrag|anfrage) (?:der|des|von) [^,:]{0,70}?(?:fraktion|partei|gruppe|fraktionen)\s+(?:auf|zur|zum|zu|über|betr\.?|betreffend)\s+(?:die |den |das |eine |einen |ein )?/i);
  {const m2=/^(.{0,70}?(?:antrag|drucksache|vorlage)\s*(?:nr\.?\s*)?\d[^:]{0,60}):\s+(.{12,})$/i.exec(t);if(m2)t=m2[2];}
- for(const h of heads){const m=h.exec(t);if(m&&t.length-m[0].length>=8){t=t.slice(m[0].length);break;}}
+ for(const h of heads){const m=h.exec(t);if(m&&t.length-m[0].length>=8&&!/^(?:[\w-]+-)?fraktion\s*$/i.test(t.slice(m[0].length))){t=t.slice(m[0].length);break;}}
  t=t.replace(/(?:B(?:ü|ue?)ndnis|Bd\.) ?90 ?[\/-] ?(?:die )?gr(?:ü|ue?)nen/gi,'Grünen').replace(/partei mensch,? umwelt,? tierschutz/gi,'Tierschutzpartei');
  {const m5=/^([^:]{4,90}(?:fraktion|gruppe|grünen|cdu|spd|fdp|afd|wähler|linke)[^:]{0,60}):\s+(.{15,})$/i.exec(t);
   if(m5&&!/^\S*(antrag|anfrage)/i.test(m5[1])&&(m5[1].match(/fraktion|gruppe|cdu|spd|fdp|afd|grünen|wähler|linke|bvb|fwg|volt|bsw/gi)||[]).length>=2)t=m5[2];}
@@ -251,6 +251,10 @@ export function cleanTitle(title,max=120){
  if(t)t=t[0].toUpperCase()+t.slice(1);
  if(t.length>max){
   const cut=t.slice(0,max);
+  // Bevorzugt an einer Satzgrenze kürzen, dann ohne „…“: ein vollständiger Teilsatz liest sich besser als ein abgebrochener
+  {let best=-1;const re=/\s[–\/]\s|[;:]\s|,\s|\s(?:sowie|und|bis|mit)\s/g;let m;
+   while((m=re.exec(cut)))if(m.index>=35&&m.index<=max-4&&!(cut.slice(0,m.index).split('(').length>cut.slice(0,m.index).split(')').length)&&(cut.slice(0,m.index).match(/[‚„"]/g)||[]).length%2===0)best=m.index;
+   if(best>0)return cut.slice(0,best).replace(/[\s,;:–\/-]+$/,'');}
   const sp=cut.lastIndexOf(' ');
   const pu=Math.max(cut.lastIndexOf(', '),cut.lastIndexOf(': '),cut.lastIndexOf('; '),cut.lastIndexOf(' – '));
   const op=cut.lastIndexOf('(');
