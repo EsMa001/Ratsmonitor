@@ -15,7 +15,7 @@ Passende Vorteile: Ein Portal statt vieler Systeme (1), Früher erfahren (2), Al
 | Suche | „Was gibt es zu Photovoltaik in Billerbeck?“ | Die ersten Treffer der bestehenden Suche (Titel, Datum, Gremium, Status, Link), „alle anzeigen“ öffnet die Suche mit gesetzten Filtern |
 | Stand | „Wurde der Bebauungsplan Nr. 12 beschlossen?“ | Status und Verlauf des besten Treffers, sonst Liste zur Auswahl |
 | Entwicklung | „Wie entwickelt sich Wärmeplanung?“ | Satz aus der Trendanalyse, Link zu Trends und Ausbreitung mit gesetztem Begriff |
-| Vergleich | „Vergleiche Köln und Dortmund“ | Link zum Gebietsvergleich, Kernsatz aus der Analyse |
+| Vergleich | „Vergleiche Köln und Dortmund“ | Link zum Ortsvergleich, Kernsatz aus der Analyse |
 | Alarm | „Sag mir Bescheid bei Windkraft in Coesfeld“ | Öffnet „Suche speichern“ mit Begriff und Gebiet vorbelegt |
 | Abdeckung | „Ist Wesel dabei?“ | Aus der Datenabdeckung: dabei ja/nein, Anzahl, Stand |
 | Hilfe | „Was bedeutet Vertagung?“, „Was kostet Pro?“ | Aus Glossar und FAQ, feste Texte |

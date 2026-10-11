@@ -132,8 +132,8 @@ export function ComparePage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Gebietsvergleich</p>
-      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Gebietsvergleich</h1>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Ortsvergleich</p>
+      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Ortsvergleich</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Stellt zwei Orte nebeneinander: womit sie sich beschäftigen, wie Vorlagen ausgehen und was für den jeweiligen Ort typisch ist. Als Maßstab dienen alle Gebiete.</p>
       </PageBand>
 

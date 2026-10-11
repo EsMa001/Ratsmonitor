@@ -7,7 +7,7 @@ import { AnalyticsLogo } from "../../components/Brand";
 import { ANALYSEN, type AnalyseId } from "../../info/branchen-enterprise";
 import { Icon } from "../../info/icons";
 
-/** Vorschaubild der Diffusionsanalyse: Wellen von Punkten um einen Ursprung und die S-Kurve */
+/** Vorschaubild der Ausbreitung: Wellen von Punkten um einen Ursprung und die S-Kurve */
 function DiffusionThumb() {
   const dots = Array.from({ length: 70 }, (_, i) => {
     const a = i * 2.399963, r = 5 + Math.sqrt(i) * 8.6;
@@ -15,7 +15,7 @@ function DiffusionThumb() {
   });
   const shade = (t: number) => (t < 0.25 ? "#0f766e" : t < 0.5 ? "#6ebfb8" : t < 0.75 ? "#8ccdc7" : "#d7dce3");
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Diffusionsanalyse: Punkte breiten sich wellenförmig aus, daneben eine S-Kurve" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Ausbreitung: Punkte breiten sich wellenförmig aus, daneben eine S-Kurve" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
       {dots.map((d, i) => <circle key={i} cx={d.x} cy={d.y} r={3.2 + (1 - d.age) * 1.2} fill={shade(d.age)} />)}
       <path d="M190 126 C 212 124, 224 120, 238 100 S 262 44, 304 34" fill="none" stroke="#0d9488" strokeWidth="2.5" strokeLinecap="round" />
       <path d="M190 126H304" stroke="#e2e8f0" />
@@ -23,7 +23,7 @@ function DiffusionThumb() {
   );
 }
 
-/** Vorschaubild des Knowledge Graph: ein Netz aus Knoten um einen Mittelpunkt */
+/** Vorschaubild des Themennetzes: ein Netz aus Knoten um einen Mittelpunkt */
 function GraphThumb() {
   const hub: [number, number] = [160, 78];
   const ring: [number, number, number, string][] = [
@@ -32,7 +32,7 @@ function GraphThumb() {
   ];
   const cross: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0], [0, 8], [3, 9], [4, 10], [2, 9], [6, 4]];
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Knowledge Graph: Knoten um einen Suchbegriff, durch Linien verbunden" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Themennetzes: Knoten um einen Suchbegriff, durch Linien verbunden" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
       {ring.map(([x, y], i) => <line key={`h${i}`} x1={hub[0]} y1={hub[1]} x2={x} y2={y} stroke="#94a3b8" strokeOpacity=".25" />)}
       {cross.map(([a, b]) => <line key={`${a}-${b}`} x1={ring[a][0]} y1={ring[a][1]} x2={ring[b][0]} y2={ring[b][1]} stroke="#94a3b8" strokeOpacity=".55" strokeWidth="1.4" />)}
       {ring.map(([x, y, r, c], i) => <circle key={i} cx={x} cy={y} r={r} fill={c} fillOpacity=".9" />)}
@@ -58,11 +58,11 @@ function TrendThumb() {
   );
 }
 
-/** Vorschaubild des Gebietsvergleichs: Schmetterlingsdiagramm, links ein Ort, rechts der andere, in der Mitte die Themen */
+/** Vorschaubild des Ortsvergleichs: Schmetterlingsdiagramm, links ein Ort, rechts der andere, in der Mitte die Themen */
 function CompareThumb() {
   const rows: [number, number][] = [[96, 40], [64, 88], [44, 52], [78, 24], [30, 70]];
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Gebietsvergleichs: Balken zweier Orte gegenüber, links der eine, rechts der andere" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Ortsvergleichs: Balken zweier Orte gegenüber, links der eine, rechts der andere" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
       <line x1="160" x2="160" y1="16" y2="140" stroke="#cbd5e1" />
       <circle cx="40" cy="18" r="4" fill="#0d9488" /><circle cx="280" cy="18" r="4" fill="#0f172a" />
       {rows.map(([l, r], i) => (
@@ -99,12 +99,12 @@ function DecisionThumb() {
   );
 }
 
-/** Vorschaubild des Gremiennetzes: gerichtete Pfeile von Einstiegs-Gremien zu einem Entscheidungs-Gremium */
+/** Vorschaubild der Beratungswege: gerichtete Pfeile von Einstiegs-Gremien zu einem Entscheidungs-Gremium */
 function NetThumb() {
   const nodes: [number, number, number, string, string][] = [[40, 36, 9, "#cbd5e1", "#94a3b8"], [40, 80, 11, "#cbd5e1", "#94a3b8"], [40, 122, 8, "#cbd5e1", "#94a3b8"], [150, 60, 14, "#cbd5e1", "#94a3b8"], [150, 118, 8, "#5eead4", "#0d9488"], [272, 78, 20, "#0f766e", "#0f766e"]];
   const links: [number, number, number][] = [[0, 3, 2], [1, 3, 3.5], [2, 4, 1.5], [3, 5, 6], [1, 5, 2], [4, 5, 2.5]];
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Gremiennetzes: Pfeile von Ausschüssen zum Rat" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Beratungswege: Pfeile von Ausschüssen zum Rat" className="block h-auto w-full rounded-[18px] border border-slate-200 bg-white">
       <defs><marker id="nt" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1L9 5L0 9z" fill="#64748b" /></marker></defs>
       {links.map(([a, b, w]) => {
         const A = nodes[a], B = nodes[b], dx = B[0] - A[0], dy = B[1] - A[1], d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d;
@@ -127,16 +127,16 @@ export const ANALYSE_THUMBS = {
 
 /* Beispielbegriff der Vorschauen; Daten kommen aus dem Schnappschuss (scripts/build-branchen-ausschnitte.mjs) */
 const BEISPIEL = "Photovoltaik";
-/* Der Gebietsvergleich hat im Schnappschuss ein eigenes Beispiel: zwei Orte statt eines Begriffs */
+/* Der Ortsvergleich hat im Schnappschuss ein eigenes Beispiel: zwei Orte statt eines Begriffs */
 const VERGLEICH_BEISPIEL = "Köln und Dortmund";
 
 const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string }[] = [
-  { id: "diffusion", name: "Diffusionsanalyse", href: "/analytics/diffusion", kurz: "Wer zuerst dran war, wie schnell andere folgten und wo ein Thema noch fehlt." },
-  { id: "graph", name: "Knowledge Graph", href: "/analytics/graph", kurz: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
-  { id: "trends", name: "Trends und Frühindikatoren", href: "/analytics/trends", kurz: "Welche Begriffe gerade aufkommen, zunehmen oder verschwinden." },
-  { id: "vergleich", name: "Gebietsvergleich", href: "/analytics/vergleich", kurz: "Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe." },
+  { id: "diffusion", name: "Ausbreitung", href: "/analytics/diffusion", kurz: "Wer zuerst dran war, wie schnell andere folgten und wo ein Thema noch fehlt." },
+  { id: "graph", name: "Themennetz", href: "/analytics/graph", kurz: "Womit ein Thema zusammenhängt: verwandte Begriffe als Netz zum Anklicken." },
+  { id: "trends", name: "Trends", href: "/analytics/trends", kurz: "Welche Begriffe gerade aufkommen, zunehmen oder verschwinden." },
+  { id: "vergleich", name: "Ortsvergleich", href: "/analytics/vergleich", kurz: "Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe." },
   { id: "beschluesse", name: "Beschlüsse", href: "/analytics/beschluesse", kurz: "Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer." },
-  { id: "gremien", name: "Gremiennetz", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
+  { id: "gremien", name: "Beratungswege", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   { id: "fraktionen", name: "Fraktionsprofil", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
   { id: "foerderung", name: "Förderradar", href: "/analytics/foerderung", kurz: "Welche Förderprogramme wo beantragt und bewilligt werden." },
 ];
@@ -216,7 +216,7 @@ export function AnalyticsAbout() {
               <a href="#analysen" className="text-[16px] font-medium text-teal-600">Alle Analysen ↓</a>
             </div>
           </div>
-          <Link href="/analytics/diffusion" aria-label="Diffusionsanalyse öffnen" className="hidden xl:block xl:w-full xl:max-w-[560px] xl:justify-self-end"><LiveThumb id="diffusion" term={BEISPIEL} /></Link>
+          <Link href="/analytics/diffusion" aria-label="Ausbreitung öffnen" className="hidden xl:block xl:w-full xl:max-w-[560px] xl:justify-self-end"><LiveThumb id="diffusion" term={BEISPIEL} /></Link>
         </div>
       </PageBand>
 

@@ -155,7 +155,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
         if (!d.moved) onSelect(d.id === selected ? "" : d.id);
       }}
     >
-      <svg width={size.w} height={size.h} role="img" aria-label="Knowledge Graph: Begriffe, Themen, Gremien und Länder, die mit dem Suchbegriff zusammenhängen">
+      <svg width={size.w} height={size.h} role="img" aria-label="Themennetz: Begriffe, Themen, Gremien und Länder, die mit dem Suchbegriff zusammenhängen">
         <g transform={`translate(${size.w / 2 + view.x} ${size.h / 2 + view.y}) scale(${view.k})`}>
           {edges.map((e) => {
             const a = pos(e.a), b = pos(e.b);

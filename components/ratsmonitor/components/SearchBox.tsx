@@ -31,7 +31,7 @@ const dropKeyboard = () => {
 };
 
 /** stay: auf der aktuellen Seite bleiben (plenara.X), statt nach einer Suche zur Startseite zu springen */
-export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false, keepFocus = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean; /** Enter übernimmt Orte, der Cursor bleibt im Feld (z. B. für den zweiten Ort im Gebietsvergleich) */ keepFocus?: boolean } = {}) {
+export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false, keepFocus = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean; /** Enter übernimmt Orte, der Cursor bleibt im Feld (z. B. für den zweiten Ort im Ortsvergleich) */ keepFocus?: boolean } = {}) {
   const { geo, place } = useData();
   const search = useSearch();
   const { state } = search;

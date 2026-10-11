@@ -54,7 +54,7 @@ export async function answer(db,catalog,question,{now=Date.now()}={}){
  if(p.intent==='vergleich'){
   const [a,b]=p.places.map(x=>x.regions[0]);
   const q=new URLSearchParams({q:p.topic||'',area:a.ags,scope:'with',more:b.ags+':with',to:new Date(now).toISOString().slice(0,10)});
-  return {...base,text:'Den Vergleich von '+a.name+' und '+b.name+(p.topic?' zum Thema „'+p.topic+'“':'')+' zeigt der Gebietsvergleich mit Zahlen je Gebiet und Zeitraum.',links:[{text:'Gebietsvergleich öffnen',link:'/analytics/compare?'+q.toString()}]};
+  return {...base,text:'Den Vergleich von '+a.name+' und '+b.name+(p.topic?' zum Thema „'+p.topic+'“':'')+' zeigt der Ortsvergleich mit Zahlen je Gebiet und Zeitraum.',links:[{text:'Ortsvergleich öffnen',link:'/analytics/compare?'+q.toString()}]};
  }
  if(p.intent==='entwicklung'){
   if(!p.topic)return {...base,text:'Welches Thema meinen Sie? Nennen Sie einen Begriff, zum Beispiel „Wie entwickelt sich Wärmeplanung?“.'};

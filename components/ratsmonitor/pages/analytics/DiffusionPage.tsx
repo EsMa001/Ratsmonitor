@@ -154,8 +154,8 @@ export function DiffusionPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Diffusionsanalyse</p>
-      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Diffusionsanalyse</h1>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Ausbreitung</p>
+      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Ausbreitung</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte, und wie es sich von dort ausbreitete.</p>
       </PageBand>
 

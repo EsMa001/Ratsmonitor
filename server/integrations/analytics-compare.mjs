@@ -6,7 +6,7 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
 import {tokens} from './analytics-graph.mjs';
 
 /*
- * Plenara.X – Gebietsvergleich: Zwei bis vier Orte nebeneinander, gemessen an allen Gebieten als Vergleichsbasis.
+ * Plenara.X – Ortsvergleich: Zwei bis vier Orte nebeneinander, gemessen an allen Gebieten als Vergleichsbasis.
  * Je Ort gelten dieselben Filter wie in der Suche (Begriff, Zeitraum, Thema, Status ...). Zahlen je Ort: Einträge (genau, auch je
  * 1.000 Einwohner), Verlauf je Monat (genau); Themenprofil, Stand der Vorlagen, Gremien und typische Begriffe aus einer gleichmäßigen
  * Stichprobe von höchstens CAP Einträgen. „Typisch“ heißt: im Ort deutlich häufiger als in allen Gebieten (Zwei-Stichproben-z-Test).

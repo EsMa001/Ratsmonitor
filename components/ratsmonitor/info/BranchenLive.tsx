@@ -8,7 +8,7 @@ import { prettyTerm } from "../lib/terms";
 /* Mini-Ausschnitte der plenara.X-Analysen zum Suchbegriff der Branche. Sie kommen aus einem Schnappschuss
    (public/data/branchen-ausschnitte.json, erzeugt mit scripts/build-branchen-ausschnitte.mjs), nicht aus der API:
    plenara.X ist Teil von Enterprise, die Branchenseiten zeigen nur diese feste Auswahl. Fehlt ein Eintrag
-   (leer, Gebietsvergleich), bleibt das schematische Vorschaubild. */
+   (leer, Ortsvergleich), bleibt das schematische Vorschaubild. */
 
 const nf = (v: number) => v.toLocaleString("de-DE");
 type Snap = { generated?: string; items: Record<string, any>; geo?: { w: number; h: number; pts: number[] } };
@@ -59,7 +59,7 @@ function DiffusionMap({ map, geo }: { map: string; geo: NonNullable<Snap["geo"]>
   );
 }
 
-/** Mini-Netz des Knowledge Graph: Suchbegriff in der Mitte, Begriffe, Themen, Gremien und Länder ringsum */
+/** Mini-Netz des Themennetzes: Suchbegriff in der Mitte, Begriffe, Themen, Gremien und Länder ringsum */
 function MiniGraph({ nodes, edges }: { nodes: [string, string, number][]; edges: [number, number, number][] }) {
   const W = 260, H = 240, cx = W / 2, cy = H / 2;
   const pos = nodes.map((_, i) => {
@@ -88,7 +88,7 @@ function MiniGraph({ nodes, edges }: { nodes: [string, string, number][]; edges:
   );
 }
 
-/** Mini-Fluss des Gremiennetzes: von oben links (Eingang) nach unten rechts (Entscheidung), Linienstärke = Zahl der Wege */
+/** Mini-Fluss der Beratungswege: von oben links (Eingang) nach unten rechts (Entscheidung), Linienstärke = Zahl der Wege */
 function MiniFlow({ nodes, edges }: { nodes: [string, number, number][]; edges: [number, number, number][] }) {
   const W = 300, H = 190, PAD = 16;
   const order = nodes.map((_, i) => i).sort((a, b) => nodes[a][1] - nodes[b][1]);
@@ -118,7 +118,7 @@ function MiniFlow({ nodes, edges }: { nodes: [string, number, number][]; edges: 
   );
 }
 
-/** Mini-Themenprofil des Gebietsvergleichs: links der erste Ort, rechts der zweite, in der Mitte das Themenfeld */
+/** Mini-Themenprofil des Ortsvergleichs: links der erste Ort, rechts der zweite, in der Mitte das Themenfeld */
 function MiniVergleich({ names, counts, rows }: { names: string[]; counts: number[]; rows: [string, number, number][] }) {
   const W = 260, RH = 23, TOP = 24, H = TOP + rows.length * RH + 2, MID = 130, HALF = 46, BAR = 80;
   const max = Math.max(...rows.flatMap((r) => [r[1], r[2]]), 1);

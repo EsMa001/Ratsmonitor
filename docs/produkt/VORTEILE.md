@@ -12,21 +12,21 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | Rang | Stufe | Vorteil | Beleg |
 |---|---|---|---|
 | 1 | A | Ein Portal statt vieler Systeme | über 6.000 Gemeinden, mehr als 900.000 Einträge (docs/videos/facts.json) |
-| 2 | A | Früher erfahren, was beraten wird | Beschlüsse stehen vor der Presse in den Ratsinformationssystemen; Zeitraffer der Diffusionsanalyse |
+| 2 | A | Früher erfahren, was beraten wird | Beschlüsse stehen vor der Presse in den Ratsinformationssystemen; Zeitraffer der Analyse Ausbreitung |
 | 3 | A | Alarme per E-Mail statt tägliches Suchen | Glocke bei gespeicherten Suchen, E-Mail bei neuen Treffern |
 | 4 | A | Ganz Deutschland mit einem Begriff | Suche ohne Ortswahl |
 | 5 | A | Jede Angabe mit Originalquelle | Link zur Quelle im Artikel |
 | 6 | A | Stand jedes Vorgangs auf einen Blick | Zeitstrahl in der Trefferliste |
 | 7 | A | Sofort sehen, wo etwas passiert | Karte mit Flächen, Heatmap, Punkten |
-| 8 | B | Sehen, wie sich ein Thema ausbreitet | Plenara.X Diffusionsanalyse |
-| 9 | B | Neues früh erkennen | Plenara.X Trends und Frühindikatoren |
+| 8 | B | Sehen, wie sich ein Thema ausbreitet | Plenara.X Ausbreitung |
+| 9 | B | Neues früh erkennen | Plenara.X Trends |
 | 10 | B | Wochenbericht täglich oder am Wunschtag | Schalter und Rhythmus bei den gespeicherten Suchen |
 | 11 | B | Keine Sitzung verpassen | Kalender mit Abonnieren |
 | 12 | B | Gezielt eingrenzen | Filter: Zeitraum, Thema, Status |
-| 13 | B | Orte vergleichen | Plenara.X Gebietsvergleich, 2 bis 4 Orte |
+| 13 | B | Orte vergleichen | Plenara.X Ortsvergleich, 2 bis 4 Orte |
 | 14 | B | Beschlüsse einordnen | Plenara.X Status und Beschlüsse: Quote, Vertagungen, Dauer |
-| 15 | B | Den Weg durch die Gremien verstehen | Plenara.X Gremiennetz |
-| 16 | B | Zusammenhänge entdecken | Plenara.X Knowledge Graph |
+| 15 | B | Den Weg durch die Gremien verstehen | Plenara.X Beratungswege |
+| 16 | B | Zusammenhänge entdecken | Plenara.X Themennetz |
 | 17 | B | Ergebnisse als Excel oder CSV | Export der Trefferliste |
 | 18 | B | Artikel als PDF oder zum Drucken | Export im Artikel |
 | 19 | B | Die Suche kostenlos nutzen | Vom Nutzer bestätigt: Suche von Plenara kostenlos mit begrenztem Funktionsumfang; Plenara.X ist nicht kostenlos |
@@ -56,10 +56,10 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | 43 | C | Abdeckung nach Bundesland | Datenabdeckung |
 | 44 | C | „Ist Ihr Ort dabei?“ | Ortsabfrage auf der Datenabdeckung |
 | 45 | C | Fehlende Kommune melden | Kontaktweg auf der Datenabdeckung |
-| 46 | C | Vorreiter-Gebiete sehen | Liste der frühesten Gebiete in der Diffusionsanalyse |
+| 46 | C | Vorreiter-Gebiete sehen | Liste der frühesten Gebiete in der Analyse Ausbreitung |
 | 47 | C | Verlaufskurven je Begriff | Trends, Rangliste |
-| 48 | C | Themenprofil im Vergleich | Gebietsvergleich |
-| 49 | C | Alle Gebiete als Maßstab | Gebietsvergleich gegen den Gesamtbestand |
+| 48 | C | Themenprofil im Vergleich | Ortsvergleich |
+| 49 | C | Alle Gebiete als Maßstab | Ortsvergleich gegen den Gesamtbestand |
 | 50 | C | Analysen immer frisch berechnet | „bei der Abfrage frisch aus der Datenbank“ (Über Plenara.X) |
 | 51 | D | Schnelle Suche über den ganzen Bestand | Vorberechnete Wortliste (search-words.mjs): „keine Treffer“ sofort, Zähler und Karte häufiger Wörter aus vorberechneten Zahlen; Ergebnis identisch mit der vollen Suche (getestet) |
 | 52 | D | 227 von 294 Kreisen abgedeckt | Datenabdeckung (docs/videos/facts.json, cov) |
@@ -89,10 +89,10 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | 76 | D | Gespeichertes bleibt im Konto erhalten | Konto |
 | 77 | D | Anzahl gespeicherter Suchen und Artikel in der Kopfzeile | Kopfzeile |
 | 78 | D | Profil mit Name und E-Mail | Konto |
-| 79 | D | Diffusion: „Hälfte erreicht“ als Kennzahl | Diffusionsanalyse |
-| 80 | D | Diffusion: Dauer von 10 auf 90 Prozent der Gebiete | Diffusionsanalyse |
-| 81 | D | Diffusion: Verlauf als Diagramm, Klick setzt die Karte auf das Datum | Diffusionsanalyse |
-| 82 | D | Diffusion: Bundesländer im Vergleich | Diffusionsanalyse |
+| 79 | D | Diffusion: „Hälfte erreicht“ als Kennzahl | Ausbreitung |
+| 80 | D | Diffusion: Dauer von 10 auf 90 Prozent der Gebiete | Ausbreitung |
+| 81 | D | Diffusion: Verlauf als Diagramm, Klick setzt die Karte auf das Datum | Ausbreitung |
+| 82 | D | Diffusion: Bundesländer im Vergleich | Ausbreitung |
 | 83 | D | Alle Analysen mit denselben Suchen und Filtern wie die Startseite | Über Plenara.X |
 | 84 | D | Trends: Zeitraum wählbar (30, 90, 180 Tage) | Trends |
 | 85 | D | Trends: Veränderung je Themenfeld | Trends |
@@ -101,11 +101,11 @@ Zentrale Liste der Produktvorteile von Plenara und Plenara.X (98 Einträge), nac
 | 88 | D | Beschlüsse: Anteil einstimmiger Entscheidungen | Über Plenara.X |
 | 89 | D | Beschlüsse: Wie oft Vorlagen geändert werden | Über Plenara.X |
 | 90 | D | Beschlüsse: Durchlaufzeit bis zum Beschluss | Status und Beschlüsse |
-| 91 | D | Vergleich: typische und gemeinsame Begriffe | Gebietsvergleich |
-| 92 | D | Vergleich: Einträge je Einwohner (nur als Anhaltspunkt) | Gebietsvergleich, Grenze ausdrücklich nennen |
-| 93 | D | Graph: Knoten anklicken zeigt Details | Knowledge Graph |
-| 94 | D | Graph: Länder und Gremien als Knoten | Knowledge Graph |
-| 95 | D | Gremiennetz: Dauer eines Übergangs | Gremiennetz |
-| 96 | D | Gremiennetz: Gremienarten als Knoten | Gremiennetz |
+| 91 | D | Vergleich: typische und gemeinsame Begriffe | Ortsvergleich |
+| 92 | D | Vergleich: Einträge je Einwohner (nur als Anhaltspunkt) | Ortsvergleich, Grenze ausdrücklich nennen |
+| 93 | D | Graph: Knoten anklicken zeigt Details | Themennetz |
+| 94 | D | Graph: Länder und Gremien als Knoten | Themennetz |
+| 95 | D | Beratungswege: Dauer eines Übergangs | Beratungswege |
+| 96 | D | Beratungswege: Gremienarten als Knoten | Beratungswege |
 | 97 | D | Zu jeder Analyse der wissenschaftliche Hintergrund | Über Plenara.X |
 | 98 | D | Zu jeder Analyse die Grenzen in Klartext | Über Plenara.X |

@@ -704,6 +704,8 @@ topic design-styles.css:140
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (271, ⚠5): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
+- FoerderradarPage.tsx (176, ⚠2): FoerderradarPage
+- FraktionenPage.tsx (166, ⚠2): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
 - KnowledgeGraphPage.tsx (219, ⚠1): KnowledgeGraphPage

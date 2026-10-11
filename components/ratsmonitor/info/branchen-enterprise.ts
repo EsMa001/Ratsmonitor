@@ -5,12 +5,12 @@ import type { IconName } from "./icons";
 export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung";
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName }> = {
-  diffusion: { href: "/analytics/diffusion", name: "Diffusionsanalyse", icon: "map" },
-  graph: { href: "/analytics/graph", name: "Knowledge Graph", icon: "network" },
-  trends: { href: "/analytics/trends", name: "Trends und Frühindikatoren", icon: "trendingUp" },
-  vergleich: { href: "/analytics/vergleich", name: "Gebietsvergleich", icon: "mapPin" },
+  diffusion: { href: "/analytics/diffusion", name: "Ausbreitung", icon: "map" },
+  graph: { href: "/analytics/graph", name: "Themennetz", icon: "network" },
+  trends: { href: "/analytics/trends", name: "Trends", icon: "trendingUp" },
+  vergleich: { href: "/analytics/vergleich", name: "Ortsvergleich", icon: "mapPin" },
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck" },
-  gremien: { href: "/analytics/gremien", name: "Gremiennetz", icon: "users" },
+  gremien: { href: "/analytics/gremien", name: "Beratungswege", icon: "users" },
   fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark" },
   foerderung: { href: "/analytics/foerderung", name: "Förderradar", icon: "euro" },
 };

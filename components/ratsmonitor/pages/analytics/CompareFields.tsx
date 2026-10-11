@@ -6,7 +6,7 @@ import type { PlaceEntry } from "../../lib/place";
 export const FIELD = "h-11 w-full rounded-full border border-slate-200 bg-white px-4 text-[16px] text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20";
 
 /**
- * Ortsfeld für den Gebietsvergleich: ab drei Buchstaben erscheinen Vorschläge, ein Klick (oder Enter) wählt den Ort.
+ * Ortsfeld für den Ortsvergleich: ab drei Buchstaben erscheinen Vorschläge, ein Klick (oder Enter) wählt den Ort.
  * Der gewählte Ort steht dann als Kapsel im Feld und lässt sich mit dem Kreuz entfernen.
  */
 export function PlaceField({ label, color, value, onChange, onEnter }: { label: string; color: string; value: PlaceEntry | null; onChange: (p: PlaceEntry | null) => void; onEnter?: () => void }) {

@@ -4,7 +4,7 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
 import {tokens} from './analytics-graph.mjs';
 
 /*
- * Plenara.X – Trends und Frühindikatoren: Welche Begriffe nehmen gegenüber dem Zeitraum davor zu, ab oder tauchen neu auf?
+ * Plenara.X – Trends: Welche Begriffe nehmen gegenüber dem Zeitraum davor zu, ab oder tauchen neu auf?
  * Verglichen werden zwei gleich lange Zeitfenster (die letzten W Tage und die W Tage davor). Je Fenster werden die Einträge der
  * Suche (dieselben Filter wie die Suche, ohne eigenen Zeitraum) gezählt und gleichmäßig (jede k-te Zeile) auf höchstens CAP Einträge
  * heruntergerechnet. Verglichen werden Anteile an den Einträgen, nicht Rohzahlen; Maß ist ein Zwei-Stichproben-z-Test für Anteile.

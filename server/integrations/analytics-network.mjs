@@ -2,7 +2,7 @@ import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 
 /*
- * Plenara.X – Gremiennetz: Welchen Weg nehmen Vorgänge durch die Gremien? Knoten sind Gremien, gerichtete Kanten zählen die Vorgänge, die von
+ * Plenara.X – Beratungswege: Welchen Weg nehmen Vorgänge durch die Gremien? Knoten sind Gremien, gerichtete Kanten zählen die Vorgänge, die von
  * einem Gremium zum nächsten gelaufen sind (aufeinanderfolgende Stationen eines Vorgangs, nach Datum geordnet). Ohne einzelnen Ort werden
  * die Gremien nach ihrer Art zusammengefasst (Rat, Hauptausschuss, Bauausschuss ...), weil jeder Ort seine eigenen Namen hat; mit genau einem
  * Ort gelten die echten Namen. Grundlage ist eine gleichmäßige Stichprobe von Vorgängen mit Beratung oder Entscheidung; nur Vorgänge mit mindestens

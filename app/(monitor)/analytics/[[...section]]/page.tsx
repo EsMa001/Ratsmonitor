@@ -3,12 +3,12 @@ import {notFound} from 'next/navigation';
 /* Titel und Beschreibung je Analyse für Link-Vorschauen (die Seite selbst setzt den Titel im Browser) */
 const SEITEN:Record<string,[string,string]>={
  ueber:['plenara.X','Besser verstehen, was vor Ort beraten wird: Analysen auf dem gesamten Datenbestand der Räte.'],
- diffusion:['Diffusionsanalyse · plenara.X','Wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte und wie es sich ausbreitet.'],
- graph:['Knowledge Graph · plenara.X','Womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.'],
- trends:['Trends und Frühindikatoren · plenara.X','Welche Begriffe in den Räten gerade aufkommen, zunehmen oder verschwinden.'],
- vergleich:['Gebietsvergleich · plenara.X','Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe.'],
+ diffusion:['Ausbreitung · plenara.X','Wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte und wie es sich ausbreitet.'],
+ graph:['Themennetz · plenara.X','Womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.'],
+ trends:['Trends · plenara.X','Welche Begriffe in den Räten gerade aufkommen, zunehmen oder verschwinden.'],
+ vergleich:['Ortsvergleich · plenara.X','Zwei Orte nebeneinander: Themen, Verlauf und typische Begriffe.'],
  beschluesse:['Beschlüsse · plenara.X','Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer.'],
- gremien:['Gremiennetz · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],
+ gremien:['Beratungswege · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],
  fraktionen:['Fraktionsprofil · plenara.X','Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird.'],
  foerderung:['Förderradar · plenara.X','Welche Förderprogramme in den Ratsunterlagen wo beantragt und bewilligt werden.'],
 };

@@ -4,7 +4,7 @@ import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 
 /*
- * Plenara.X – Knowledge Graph: Welche Begriffe, Themen, Gremien und Länder hängen mit einem Suchbegriff zusammen?
+ * Plenara.X – Themennetz: Welche Begriffe, Themen, Gremien und Länder hängen mit einem Suchbegriff zusammen?
  * Grundlage sind allein die Karten der Datenbank, die zur Suche passen (dieselben Filter wie die Suche, die jüngsten zuerst).
  * Kanten entstehen, wenn zwei Dinge in derselben Karte vorkommen (Ko-Okkurrenz); ihr Gewicht ist der Jaccard-Index.
  * Begriffe werden nach Häufigkeit in der Auswahl gegenüber der Häufigkeit im ganzen Bestand gewichtet (wie tf-idf), damit

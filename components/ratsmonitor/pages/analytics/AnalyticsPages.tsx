@@ -35,7 +35,7 @@ export function AnalyticsPages({ path }: { path: string }) {
   const { tier } = useTier();
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = path === "/analytics/diffusion" ? "Diffusionsanalyse · plenara.X" : path === "/analytics/graph" ? "Knowledge Graph · plenara.X" : path === "/analytics/gremien" ? "Gremiennetz · plenara.X" : path === "/analytics/beschluesse" ? "Beschlüsse · plenara.X" : path === "/analytics/vergleich" ? "Gebietsvergleich · plenara.X" : path === "/analytics/trends" ? "Trends und Frühindikatoren · plenara.X" : path === "/analytics/fraktionen" ? "Fraktionsprofil · plenara.X" : path === "/analytics/foerderung" ? "Förderradar · plenara.X" : "Über plenara.X · plenara";
+    document.title = path === "/analytics/diffusion" ? "Ausbreitung · plenara.X" : path === "/analytics/graph" ? "Themennetz · plenara.X" : path === "/analytics/gremien" ? "Beratungswege · plenara.X" : path === "/analytics/beschluesse" ? "Beschlüsse · plenara.X" : path === "/analytics/vergleich" ? "Ortsvergleich · plenara.X" : path === "/analytics/trends" ? "Trends · plenara.X" : path === "/analytics/fraktionen" ? "Fraktionsprofil · plenara.X" : path === "/analytics/foerderung" ? "Förderradar · plenara.X" : "Über plenara.X · plenara";
   }, [path]);
   const Page = PAGES[path];
   if (!Page) return null;

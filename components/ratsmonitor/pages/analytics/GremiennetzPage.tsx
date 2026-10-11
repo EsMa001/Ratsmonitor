@@ -75,8 +75,8 @@ export function GremiennetzPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Gremiennetz</p>
-      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Gremiennetz</h1>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Beratungswege</p>
+      <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Beratungswege</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange der Weg dauert.</p>
       </PageBand>
 
@@ -91,7 +91,7 @@ export function GremiennetzPage() {
             <p className="mt-10 max-w-[680px] text-[16px]">Für diese Auswahl gibt es zu wenige Vorgänge, die durch mehrere Gremien gelaufen sind ({n(res.paths)} in der Stichprobe). Mit einer weiteren Auswahl, etwa ohne Ort oder mit längerem Zeitraum, wird das Netz aussagekräftiger.</p>
           ) : (
             <>
-              <section className="relative mt-8 h-[520px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[640px]" aria-label="Gremiennetz">
+              <section className="relative mt-8 h-[520px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[640px]" aria-label="Beratungswege">
                 <NetView nodes={res.nodes} edges={res.edges} selected={selected} onSelect={setSelected} zoomRef={zoomRef} />
                 <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
                   <ul className="m-0 flex list-none flex-col gap-1 p-0">

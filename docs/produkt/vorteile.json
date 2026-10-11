@@ -18,7 +18,7 @@
    "rang": 2,
    "stufe": "A",
    "titel": "Früher erfahren, was beraten wird",
-   "beleg": "Beschlüsse stehen vor der Presse in den Ratsinformationssystemen; Zeitraffer der Diffusionsanalyse"
+   "beleg": "Beschlüsse stehen vor der Presse in den Ratsinformationssystemen; Zeitraffer der Analyse Ausbreitung"
   },
   {
    "rang": 3,
@@ -54,13 +54,13 @@
    "rang": 8,
    "stufe": "B",
    "titel": "Sehen, wie sich ein Thema ausbreitet",
-   "beleg": "Plenara.X Diffusionsanalyse"
+   "beleg": "Plenara.X Ausbreitung"
   },
   {
    "rang": 9,
    "stufe": "B",
    "titel": "Neues früh erkennen",
-   "beleg": "Plenara.X Trends und Frühindikatoren"
+   "beleg": "Plenara.X Trends"
   },
   {
    "rang": 10,
@@ -84,7 +84,7 @@
    "rang": 13,
    "stufe": "B",
    "titel": "Orte vergleichen",
-   "beleg": "Plenara.X Gebietsvergleich, 2 bis 4 Orte"
+   "beleg": "Plenara.X Ortsvergleich, 2 bis 4 Orte"
   },
   {
    "rang": 14,
@@ -96,13 +96,13 @@
    "rang": 15,
    "stufe": "B",
    "titel": "Den Weg durch die Gremien verstehen",
-   "beleg": "Plenara.X Gremiennetz"
+   "beleg": "Plenara.X Beratungswege"
   },
   {
    "rang": 16,
    "stufe": "B",
    "titel": "Zusammenhänge entdecken",
-   "beleg": "Plenara.X Knowledge Graph"
+   "beleg": "Plenara.X Themennetz"
   },
   {
    "rang": 17,
@@ -282,7 +282,7 @@
    "rang": 46,
    "stufe": "C",
    "titel": "Vorreiter-Gebiete sehen",
-   "beleg": "Liste der frühesten Gebiete in der Diffusionsanalyse"
+   "beleg": "Liste der frühesten Gebiete in der Analyse Ausbreitung"
   },
   {
    "rang": 47,
@@ -294,13 +294,13 @@
    "rang": 48,
    "stufe": "C",
    "titel": "Themenprofil im Vergleich",
-   "beleg": "Gebietsvergleich"
+   "beleg": "Ortsvergleich"
   },
   {
    "rang": 49,
    "stufe": "C",
    "titel": "Alle Gebiete als Maßstab",
-   "beleg": "Gebietsvergleich gegen den Gesamtbestand"
+   "beleg": "Ortsvergleich gegen den Gesamtbestand"
   },
   {
    "rang": 50,
@@ -480,25 +480,25 @@
    "rang": 79,
    "stufe": "D",
    "titel": "Diffusion: „Hälfte erreicht“ als Kennzahl",
-   "beleg": "Diffusionsanalyse"
+   "beleg": "Ausbreitung"
   },
   {
    "rang": 80,
    "stufe": "D",
    "titel": "Diffusion: Dauer von 10 auf 90 Prozent der Gebiete",
-   "beleg": "Diffusionsanalyse"
+   "beleg": "Ausbreitung"
   },
   {
    "rang": 81,
    "stufe": "D",
    "titel": "Diffusion: Verlauf als Diagramm, Klick setzt die Karte auf das Datum",
-   "beleg": "Diffusionsanalyse"
+   "beleg": "Ausbreitung"
   },
   {
    "rang": 82,
    "stufe": "D",
    "titel": "Diffusion: Bundesländer im Vergleich",
-   "beleg": "Diffusionsanalyse"
+   "beleg": "Ausbreitung"
   },
   {
    "rang": 83,
@@ -552,37 +552,37 @@
    "rang": 91,
    "stufe": "D",
    "titel": "Vergleich: typische und gemeinsame Begriffe",
-   "beleg": "Gebietsvergleich"
+   "beleg": "Ortsvergleich"
   },
   {
    "rang": 92,
    "stufe": "D",
    "titel": "Vergleich: Einträge je Einwohner (nur als Anhaltspunkt)",
-   "beleg": "Gebietsvergleich, Grenze ausdrücklich nennen"
+   "beleg": "Ortsvergleich, Grenze ausdrücklich nennen"
   },
   {
    "rang": 93,
    "stufe": "D",
    "titel": "Graph: Knoten anklicken zeigt Details",
-   "beleg": "Knowledge Graph"
+   "beleg": "Themennetz"
   },
   {
    "rang": 94,
    "stufe": "D",
    "titel": "Graph: Länder und Gremien als Knoten",
-   "beleg": "Knowledge Graph"
+   "beleg": "Themennetz"
   },
   {
    "rang": 95,
    "stufe": "D",
-   "titel": "Gremiennetz: Dauer eines Übergangs",
-   "beleg": "Gremiennetz"
+   "titel": "Beratungswege: Dauer eines Übergangs",
+   "beleg": "Beratungswege"
   },
   {
    "rang": 96,
    "stufe": "D",
-   "titel": "Gremiennetz: Gremienarten als Knoten",
-   "beleg": "Gremiennetz"
+   "titel": "Beratungswege: Gremienarten als Knoten",
+   "beleg": "Beratungswege"
   },
   {
    "rang": 97,

@@ -140,7 +140,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
         if (!d.moved) onSelect(d.id === selected ? "" : d.id);
       }}
     >
-      <svg width={size.w} height={size.h} role="img" aria-label="Gremiennetz: Wege von Vorgängen durch die Gremien">
+      <svg width={size.w} height={size.h} role="img" aria-label="Beratungswege: Wege von Vorgängen durch die Gremien">
         <defs>
           <marker id="net-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="#64748b" /></marker>
           <marker id="net-arrow-on" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto-start-reverse"><path d="M0 1L9 5L0 9z" fill="#0d9488" /></marker>
