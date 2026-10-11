@@ -26,7 +26,7 @@ export function parseAgs(value,max=MAX_AREAS){
 export const eventsSql=limit=>`SELECT t.region_id rid,substr(json_extract(e.value,'$.date'),1,10) d,coalesce(json_extract(e.value,'$.committee'),'') c,count(*) n,
    json_group_array(json_object('id',t.id,'title',json_extract(t.payload,'$.title'))) items
   FROM topics t,json_each(t.payload,'$.events') e
-  WHERE t.region_id IN (SELECT value FROM json_each(?)) AND (t.event_date>=? OR t.region_id='muenster') AND json_extract(t.payload,'$.identity.mergedInto') IS NULL
+  WHERE t.region_id IN (SELECT value FROM json_each(?)) AND (t.event_date>=? OR t.region_id='muenster') AND t.active=1
    AND substr(json_extract(e.value,'$.date'),1,10) BETWEEN ? AND ?
   GROUP BY rid,d,c ORDER BY d,rid,c LIMIT ${Number(limit)}`;
 /** Text of an iCalendar property value: backslash, semicolon, comma and line breaks escaped (RFC 5545, 3.3.11). */

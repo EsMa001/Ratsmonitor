@@ -40,9 +40,9 @@ test('the triggers log the old search text of a replaced or deleted card with th
  add('a','Haushalt Plan Kormoran');assert.deepEqual(gone(raw),[]);
  const rowid=raw.prepare("SELECT rowid FROM search_cards WHERE id='a'").get().rowid;
  retitle('a','Nur noch Plan');
- assert.deepEqual(gone(raw),[{card_rowid:rowid,id:'a',search:'haushalt plan kormoran  rat  '}]);
- assert.equal(raw.prepare("SELECT search FROM search_cards WHERE id='a'").get().search,'nur noch plan  rat  ');
- remove('a');assert.equal(gone(raw).length,2);assert.equal(gone(raw)[1].search,'nur noch plan  rat  ');assert.equal(cards(raw),0);
+ assert.deepEqual(gone(raw),[{card_rowid:rowid,id:'a',search:'haushalt plan kormoran  rat'}]);
+ assert.equal(raw.prepare("SELECT search FROM search_cards WHERE id='a'").get().search,'nur noch plan  rat');
+ remove('a');assert.equal(gone(raw).length,2);assert.equal(gone(raw)[1].search,'nur noch plan  rat');assert.equal(cards(raw),0);
  /* an update that does not touch the search text (updated_at only) logs nothing */
  add('b','Biber am Damm');raw.prepare("UPDATE topics SET updated_at='2026-10-02T00:00:00Z' WHERE id='b'").run();assert.equal(gone(raw).length,2);
 });
@@ -96,4 +96,16 @@ test('a gap without a log entry or too many entries drop the precomputed numbers
  for(let i=0;i<=GONE_MAX;i++)many.run();
  await refreshSearchWords(db,OPTIONS);
  assert.equal(state(raw).hasHits,false);assert.deepEqual(gone(raw),[]);
+});
+
+test('a full rebuild takes over the log written before it: the next incremental run still equals a full rebuild',async()=>{
+ const f=fixture();
+ for(let i=0;i<6;i++)f.add('t'+i,'Haushalt Schwimmbad '+i);
+ await refreshSearchWords(f.db,{...OPTIONS,full:true});
+ f.retitle('t1','Kormoran Brücke');assert.equal(gone(f.raw).length,1);
+ await refreshSearchWords(f.db,{...OPTIONS,full:true});
+ assert.deepEqual(gone(f.raw),[],'entries from before the rebuild are reflected in it');
+ f.add('t9','Haushalt Turnhalle');
+ await sameAsFull('after full rebuild with pending log',f);
+ f.raw.close();
 });

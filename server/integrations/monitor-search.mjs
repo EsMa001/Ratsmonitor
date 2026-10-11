@@ -1,5 +1,5 @@
 import {LABELS} from '../../shared/labels.mjs';
-import {knownWords,candidateCards,precomputedTotal,precomputedFacets,SEARCH_REVISION_SQL} from './search-words.mjs';
+import {knownWords,candidateCards,precomputedTotal,precomputedFacets,listCurrent,SEARCH_REVISION_SQL} from './search-words.mjs';
 
 /** Höchste abrufbare Ergebnisseite (20 Treffer je Seite) */
 export const MAX_PAGE=250;
@@ -63,6 +63,27 @@ async function formalColumn(db){
  return present;
 }
 /*
+ * Volltextindex search_fts (drizzle/0023, Trigram): schränkt die Karten eines Begriffs über den Index ein, statt den
+ * Suchtext jeder Karte zu lesen. instr bleibt als Prüfung, das Ergebnis ist dasselbe. Nur für Begriffe aus Buchstaben und
+ * Ziffern ab 3 Zeichen (kürzere kann der Trigram-Index nicht) und nur ohne Kandidaten der Wortliste (die sind schneller).
+ * Ohne Migration wie früher; vorhanden wird gemerkt, fehlend nur eine Minute.
+ */
+const ftsTables=new WeakMap();
+async function ftsTable(db){
+ const known=ftsTables.get(db);
+ if(known&&(known.present||Date.now()-known.at<60000))return known.present;
+ let present=false;
+ try{await db.prepare('SELECT rowid FROM search_fts LIMIT 0').all();present=true;}catch{/* Index fehlt: Suche über alle Karten */}
+ ftsTables.set(db,{present,at:Date.now()});
+ return present;
+}
+const FTS_TERM=/^[a-z0-9]{3,}$/;
+/* Bei sehr häufigen Begriffen ist der Index langsamer als der alte Weg (rat: Seite 3,8 s statt Millisekunden, weil der alte
+   Weg nach 20 Treffern über den Datumsindex aufhört; Zähler 8 s). Ein Vorabtest mit Obergrenze (höchstens rund 10 bzw. 110 ms)
+   entscheidet je Begriff: Seite und Strom nur bis FTS_PAGE_MAX Treffer, Zähler bis FTS_FACETS_MAX. */
+export const FTS_PAGE_MAX=3000,FTS_FACETS_MAX=60000;
+const ftsCount=async(db,t,max)=>Number((await db.prepare('SELECT count(*) n FROM (SELECT rowid FROM search_fts WHERE search LIKE ? LIMIT ?)').bind('%'+t+'%',max+1).first())?.n??max+1);
+/*
  * Gebiet als SQL-Bedingung. Eine lange Einschlussliste (ohne Ort: alle 5.030 Gemeinden) zwingt SQLite, über den
  * Gebietsindex jede Karte zu lesen und danach zu sortieren (erste Seite 730 ms bei 900.000 Karten). Umfasst die
  * Auswahl mehr als die Hälfte des Katalogs, schließt die Bedingung stattdessen die übrigen Gebiete aus; dann nutzt
@@ -84,6 +105,7 @@ function regionCondition(ids,catalog){
 /** Filter der Suche als SQL-Bedingung auf search_cards (Gebiet, Begriff, Zeitraum, Thema, Status); auch für Plenara.X */
 export async function searchFilters(db,catalog,f){
  const formalReady=f.noformal?await formalColumn(db):false;
+ const ftsReady=(f.groups||[f.terms]).some(g=>g.some(t=>FTS_TERM.test(t)))?await ftsTable(db):false;
  /* Mit Gebiet: Kreis- und Gemeindeebene gemeinsam, der Umfang (nur/inklusive) entscheidet */
  const places=[...(f.area?[{ags:f.area,scope:f.scope}]:[]),...f.more];
  /* Mit Gebiet (auch Bundesland) zählen Gemeinde- und Kreisebene gemeinsam; ohne Gebiet entscheidet die Ebene */
@@ -118,11 +140,19 @@ export async function searchFilters(db,catalog,f){
   const groups=(f.groups||[f.terms]).filter(g=>g.length);
   if(groups.length){
    /* Exakter Begriff: erst grob über search (schnell), dann ganzes Wort in search_exact (mit Umlauten); Gebiete nur bei ganzem Wort im Namen */
-   where.push('('+groups.map(g=>'('+g.map(()=>(f.exact?'((instr(search,?)>0 AND (search_exact GLOB ? OR search_exact GLOB ? OR search_exact GLOB ?))':'(instr(search,?)>0')+' OR region_id IN (SELECT value FROM json_each(?)))').join(' AND ')+')').join(' OR ')+')');
+   /* Mit Volltextindex vorher: nur Karten, die der Index für den Begriff nennt (danach dieselbe Prüfung mit instr) */
+   const viaFts=t=>ftsTerms.has(t);
+   const inText=t=>(viaFts(t)?'rowid IN (SELECT rowid FROM search_fts WHERE search_fts.search LIKE ?) AND ':'')+'instr(search,?)>0';
+   /* Gebiete, deren Name den Begriff enthält; ohne solche entfällt das Glied (eine leere Liste trifft nie, verhindert aber,
+      dass SQLite über den Volltextindex einsteigt: 5 s statt 3 ms bei 941.000 Karten) */
+   const named=(gi,ti)=>f.exact?exactNameHits(f.egroups[gi][ti]):nameHits(groups[gi][ti]);
+   const inName=(gi,ti)=>named(gi,ti)==='[]'?'':' OR region_id IN (SELECT value FROM json_each(?))';
+   where.push('('+groups.map((g,gi)=>'('+g.map((t,ti)=>(f.exact?'(('+inText(t)+' AND (search_exact GLOB ? OR search_exact GLOB ? OR search_exact GLOB ?))':'('+inText(t))+inName(gi,ti)+')').join(' AND ')+')').join(' OR ')+')');
    groups.forEach((g,gi)=>g.forEach((t,ti)=>{
-    if(!f.exact){args.push(t,nameHits(t));return;}
-    const e=f.egroups[gi][ti];
-    args.push(t,...wholeWord(e),exactNameHits(e));
+    if(viaFts(t))args.push('%'+t+'%');
+    const ids=named(gi,ti),more=ids==='[]'?[]:[ids];
+    if(!f.exact){args.push(t,...more);return;}
+    args.push(t,...wholeWord(f.egroups[gi][ti]),...more);
    }));
   }
   return {where,args};
@@ -133,6 +163,14 @@ export async function searchFilters(db,catalog,f){
  const nameIds=t=>catalog.filter(r=>nameMatch(norm(r.name),t)).map(r=>r.id);
  const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part===''?await candidateCards(db,f.groups,{nameIds,exact:f.exact}):null;
  const candidates=cand?{sql:'id IN (SELECT value FROM json_each(?))',arg:JSON.stringify(cand)}:null;
+ /* Häufiges Wort ohne Filter: Zähler kommen vorberechnet aus der Wortliste (searchMonitor), dann bleibt alles wie gewohnt;
+    ist die Liste nicht aktuell (etwa direkt nach einem Import), springt der Index ein */
+ const placeScoped=scopedIds.size<regions.length;
+ const plainSearch=!f.label&&!f.status&&!f.month&&!f.from&&!f.noformal&&(placeScoped||(!f.area&&!f.more.length&&!f.within&&!f.without));
+ const precomputable=(f.part==='facets'||f.part==='')&&plainSearch&&!f.exact&&f.groups.length===1&&f.groups[0].length===1;
+ /* Begriffe, die über den Volltextindex eingeschränkt werden: ohne Kandidaten der Wortliste und unter der Obergrenze */
+ const ftsTerms=new Set(),ftsMax=f.part==='facets'?FTS_FACETS_MAX:FTS_PAGE_MAX;
+ if(ftsReady&&!cand&&!(precomputable&&await listCurrent(db)))for(const t of new Set((f.groups||[f.terms]).flat()))if(FTS_TERM.test(t)&&await ftsCount(db,t,ftsMax)<=ftsMax)ftsTerms.add(t);
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
  /* Ergebnisseite: Gebiet, Thema und Status als Bedingung */
  const page=(()=>{const b=base(),region=regionCondition([...scopedIds],catalog),where=[region.sql,...b.where],args=[region.arg,...b.args];
@@ -140,11 +178,11 @@ export async function searchFilters(db,catalog,f){
   if(labelId){where.push('label=?');args.push(labelId);}
   if(f.status){where.push('status=?');args.push(f.status);}
   return {where:where.join(' AND '),args};})();
- return {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page};
+ return {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch};
 }
 export async function searchMonitor(db,catalog,params){
  const f=parseMonitorSearch(params),limit=f.size;
- const {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page}=await searchFilters(db,catalog,f);
+ const {places,regions,byId,scopedIds,nameHit,nameIds,nameMatch,base,cand,candidates,labelId,page,placeScoped,plainSearch}=await searchFilters(db,catalog,f);
  /* Relevanz: Treffer im Titel zählen dreifach, im übrigen Text einfach; bei Gleichstand das Neueste zuerst */
  const rterms=f.sort==='relevance'?[...new Set(f.terms||[])]:[];
  const order=rterms.length?{sql:`ORDER BY (${rterms.map(()=>'(instr(lower(title),?)>0)*3+(instr(search,?)>0)').join('+')}) DESC,date DESC,id ASC LIMIT ? OFFSET ?`,args:rterms.flatMap(t=>[t,t])}:{sql:`ORDER BY date ${f.sort==='asc'?'ASC':'DESC'},id ASC LIMIT ? OFFSET ?`,args:[]};
@@ -200,8 +238,6 @@ export async function searchMonitor(db,catalog,params){
     Gruppierung über alle Einträge. null: wie gewohnt gruppieren. */
  /* Ort und Umkreis zählen nicht als Filter für die Gebietszahlen (die Karte zählt über alle Gebiete): die kommen weiter vorberechnet,
     nur Thema und Status werden dann im kleinen Ort selbst gezählt (placeSql) */
- const placeScoped=scopedIds.size<regions.length;
- const plainSearch=!f.label&&!f.status&&!f.month&&!f.from&&!f.noformal&&(placeScoped||(!f.area&&!f.more.length&&!f.within&&!f.without));
  const pre=(f.part==='facets'||f.part==='')&&plainSearch&&!f.exact&&f.groups.length===1&&f.groups[0].length===1&&!cand
   ?await precomputedFacets(db,f.groups[0][0],{level:f.level,to:f.to,levelIds:regions.map(r=>r.id),nameIds}):null;
  /* Reihenfolge der Antwort: Datenstand, dann je nach part die Seite und/oder die Zähler (Gruppierung) */

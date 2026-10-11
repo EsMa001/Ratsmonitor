@@ -115,7 +115,7 @@ test('statements stay within the limits of D1: 100 parameters, 100 KB per value,
 test('the series query reads the chunk through the canonical index, with three subqueries per report',()=>{
  const sql=fresh();
  const source=fs.readFileSync(path.join(root,'server','integrations','region-facts.mjs'),'utf8');
- const query=source.match(/const SERIES_SQL=`([\s\S]*?)`;/)[1].replace('${canonical}',"json_extract(payload,'$.identity.mergedInto') IS NULL");
+ const query=source.match(/const SERIES_SQL=`([\s\S]*?)`;/)[1].replace('${canonical}','active=1');
  const plan=sql.prepare('EXPLAIN QUERY PLAN '+query).all('["x"]').map(r=>r.detail);
  assert.ok(plan.includes('MATERIALIZE t'),plan.join('\n'));
  assert.ok(plan.some(d=>/SEARCH topics USING INDEX idx_topics_canonical_region_updated/.test(d)),plan.join('\n'));

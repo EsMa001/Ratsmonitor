@@ -14,7 +14,7 @@ import {refreshStatus} from '../server/integrations/admin-refresh.mjs';
 // Rule R1 of requirements/admin-performance-konzept.md: what a page asks for only reads, and never reads into the stored
 // reports beyond one area. Computing happens in region-facts.mjs (after imports and in catch-up steps).
 const root=path.resolve(import.meta.dirname,'..');
-const canonical="json_extract(payload,'$.identity.mergedInto') IS NULL";
+const canonical="active=1"; // Spalte aus drizzle/0020, liest das Payload nicht
 // A query into the reports is allowed if it is limited to some areas, walks an index with a limit, or only counts on
 // the partial index of canonical reports.
 const allowed=q=>/region_id IN \(SELECT value FROM json_each\(\?\)\)|region_id IN \(\?|region_id=\?|INDEXED BY idx_topics_canonical_updated/.test(q)||!q.split(canonical).join('').includes('payload');

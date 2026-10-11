@@ -10,7 +10,7 @@ import {sourceHealth} from '../../shared/admin.mjs';
 import {regionFigures,accessFields,configuredById} from './admin-data.mjs';
 import {fnv} from '../services/admin-etag.mjs';
 /** Columns of a row of `areas`, in this order. */
-export const AREA_FIELDS=['cnt','fe','le','pa','rules','sum','ail','kw','ins','stl','bs','ba','bk','fat','pat','m','as','ls','la','cp','nr','ni','nw','st','fl'];
+export const AREA_FIELDS=['cnt','fe','le','pa','rules','sum','ail','ins','stl','bs','ba','fat','pat','m','as','ls','la','cp','nr','ni','nw','st','fl'];
 let kept;
 /** {v,areas}: one entry per area of the catalog, in catalog order. Built once per isolate. */
 export function staticAreas(){
@@ -42,7 +42,7 @@ export async function buildAreas(db,{now=new Date()}={}){
   const attempt=c?.lastAttemptAt||c?.importedAt||null;
   // firstEvent/lastEvent are given only for areas with reports, as in loadAdminData
   return [count,f?.firstEvent||null,f?.lastEvent||null,Number(f?.pendingAnalysis||0),
-   count?count-Number(f.pendingAnalysis||0):0,count?f.summary:0,count?f.aiLabel:0,count?f.keywords:0,count?f.insufficient:0,count?f.stale:0,count?f.blocked_summary:0,count?f.blocked_aiLabel:0,count?f.blocked_keywords:0,
+   count?count-Number(f.pendingAnalysis||0):0,count?f.summary:0,count?f.aiLabel:0,count?f.insufficient:0,count?f.stale:0,count?f.blocked_summary:0,count?f.blocked_aiLabel:0,
    count?f.fetchedAt??null:null,count?f.processedAt??null:null,
    m,c?.attemptStatus||null,health.lastSuccessAt,attempt,complete?1:0,c?.nextRetryAt||null,Number(c?.ni||0),Number(c?.nw||0),health.state,
    (health.stale?1:0)|(health.partial?2:0)|(health.attention?4:0)|(health.configured?8:0)].map(x=>x===undefined?null:x);

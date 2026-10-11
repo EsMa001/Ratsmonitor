@@ -1,13 +1,13 @@
 import {REQUIRED_FIELDS} from './data-completeness.mjs';
 import {ANALYSIS_PENDING_SQL} from './manual-analysis.mjs';
 const field=id=>REQUIRED_FIELDS.find(f=>f[0]===id)[2];
-export const STAGE_SQL={rules:`NOT (${ANALYSIS_PENDING_SQL})`,summary:field('summary'),aiLabel:`(${field('aiLabel')}) AND json_extract(payload,'$.labelAssessments.ai.basis')='source_content'`,keywords:field('keywords')};
+export const STAGE_SQL={rules:`NOT (${ANALYSIS_PENDING_SQL})`,summary:field('summary'),aiLabel:`(${field('aiLabel')}) AND json_extract(payload,'$.labelAssessments.ai.basis')='source_content'`};
 export const STAGE_KEYS=Object.keys(STAGE_SQL);
-export const AI_STAGE_KEYS=['summary','aiLabel','keywords'];
+export const AI_STAGE_KEYS=['summary','aiLabel'];
 /** Ein KI-Schritt ist exportierbar, solange für die aktuellen Quelldaten kein gesperrter Fehlversuch vorliegt (aiAttempts, siehe shared/ai-job.mjs). */
 export const attemptOpen=k=>`coalesce(json_extract(payload,'$.aiAttempts.${k}.retry'),1)`;
 export const blockedSQL=k=>`(NOT coalesce((${STAGE_SQL[k]}),0) AND NOT ${attemptOpen(k)})`;
-export const CANONICAL="json_extract(payload,'$.identity.mergedInto') IS NULL";
+export const CANONICAL="active=1";
 const stageColumn=([key,sql])=>`coalesce(sum(coalesce((${sql}),0)),0) AS ${key}`;
 /**
  * Columns of the processing state per area, for a query over the reports grouped by area. The admin overview puts

@@ -612,11 +612,10 @@ node scripts/estimate/build-samples.mjs      # → shared/estimate-samples.json,
 
 Die Skripte rufen nur öffentliche Seiten und Dokumente ab, ein Gebiet je Server zur gleichen Zeit und mit Pausen; Anmeldungen, Sperren und HTTP 403 werden nicht umgangen. Einzelheiten: `scripts/estimate/README.md`.
 
-**Stichwörter (`/admin?seite=stichwoerter`, früher Seite 4).** Zeigt, welche Stichwörter bei den Berichten gespeichert sind, getrennt nach ihrer Herkunft, jeweils als Top 50 und als durchsuchbare Liste:
+**Stichwörter (`/admin?seite=stichwoerter`, früher Seite 4).** Zeigt, welche Begriffe die Regeln bei den Berichten gespeichert haben, getrennt nach ihrer Herkunft, jeweils als Top 50 und als durchsuchbare Liste:
 
 - **Sachbegriffe der Label-Regeln.** Die Regeln in `shared/labels.mjs` suchen im Originaltitel nach festen Wortmustern. Entscheidet ein Muster über das Label, steht das gefundene Wort in der Begründung des Labels („Erkannte Sachbegriffe: …“). Gezählt ist, in wie vielen Berichten ein Wort so gespeichert ist, mit seinem Sachgebiet. Treffer weiterer Sachgebiete im selben Titel speichert die Regel nicht; sie fehlen deshalb auch hier.
 - **Titelbegriffe und feste Sachthemen.** Was `shared/similarity.mjs` für den Themenvergleich aus dem Titel ableitet: Wörter ab fünf Buchstaben ohne Füllwörter, klein geschrieben und mit gekürzter Endung, dazu 18 fest benannte Sachthemen.
-- **KI-Stichwörter.** Die gewichteten Stichwörter aus `weightedKeywords` (je Bericht zusammen 100), mit Zahl der Berichte, Gewichtssumme und mittlerem Gewicht. Profile aus dem gelesenen Inhalt und aus dem früheren Titeltest lassen sich getrennt ansehen; veraltete Profile zählen nicht.
 
 Schreibweisen, die sich nur in Groß- und Kleinschreibung unterscheiden, werden zusammengefasst. Je Liste werden höchstens 2.000 Begriffe ausgeliefert; die Seite nennt die Gesamtzahl. Die Abfrage (`GET /api/admin/keywords`, `server/integrations/admin-keywords.mjs`) liest nur und startet keine Analyse; sie zählt, was Regel-Labeling und KI-Aufträge gespeichert haben. Tests: `tests/admin-keywords.test.mjs`.
 

@@ -920,8 +920,8 @@ const sameTitle=(a,b)=>{const x=plainTitle(a),y=plainTitle(b);return !!x&&!!y&&(
 const join=(a,b)=>/\p{Ll}-$/u.test(a)&&/^\p{Ll}/u.test(b)&&!/^(?:und|oder|sowie|bzw)(?!\p{L})/u.test(b)?a.slice(0,-1)+b:/-$/.test(a)&&/^\p{Lu}/u.test(b)?a+b:a+' '+b;
 const ddmmyyyy=iso=>iso?iso.split('-').reverse().join('.'):'';
 // Words of a title for comparing two wordings of one item: stems of six letters, without small words.
-const SMALL=new Set('der die das des den dem und oder fuer von vom zur zum auf aus mit bei einer eines einem eine ein ueber im in am an zu nach sowie bzw'.split(' '));
-const stems=t=>new Set(fold(composeUmlauts(t)).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!SMALL.has(w)).map(w=>w.slice(0,6)));
+export const SMALL_WORDS=new Set('der die das des den dem und oder fuer von vom zur zum auf aus mit bei einer eines einem eine ein ueber im in am an zu nach sowie bzw'.split(' '));
+const stems=t=>new Set(fold(composeUmlauts(t)).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!SMALL_WORDS.has(w)).map(w=>w.slice(0,6)));
 // Numbers of a title (plot, house, plan, lot): two titles that both have numbers name the same item only with the same.
 const numbersOf=t=>new Set((String(t).match(/\d+(?:[/.-]\d+)*/g)||[]).filter(n=>!/^\d{1,2}\.\d{1,2}\.(?:\d{2}|\d{4})$/.test(n)));
 /** Whether two titles name the same item: most words of the shorter one are in the other, and their numbers agree. */

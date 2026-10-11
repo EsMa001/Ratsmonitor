@@ -36,7 +36,7 @@ async function importLease(db){
  if(!lock)throw new AdminError(409,'Ein Import oder eine Analyse läuft bereits.');
  return lease;
 }
-const ATTEMPT_KIND={summary:'summary','ai-label':'aiLabel',keywords:'keywords'};
+const ATTEMPT_KIND={summary:'summary','ai-label':'aiLabel'};
 /**
  * Erfolglose Agentenversuche aus der Zeit vor aiAttempts nachtragen: jeweils die neueste Analyse je Artikel und Schritt.
  * Passt sie nicht mehr zu den Quelldaten, bleibt der Schritt offen; der Eintrag verhindert nur erneutes Prüfen.
@@ -170,7 +170,7 @@ async function applyAiResultsUnlocked(db,job,output){
    if(!row||await hashText(row.payload)!==p.article.payloadHash){conflicts.push(p.article.id);continue;}
    const topic=patchArticle(JSON.parse(row.payload),p,at),statements=[
     db.prepare("SELECT CASE WHEN EXISTS(SELECT 1 FROM topics WHERE id=? AND payload=?) THEN 1 ELSE json('conflict') END").bind(p.article.id,row.payload),
-    db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),p.article.id,at,row.payload),
+    // Keine Versionskopie: die Analyse steht vollständig in article_analyses, Versionen halten nur Änderungen am Quellenstand fest.
     insertUsage(db,{...p.usage,topicId:p.article.id,regionId:p.article.region||'',at}),
     ...p.analyses.map(a=>db.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(a.payload.id,p.article.id,a.kind,a.payload.method,a.payload.inputHash,at,JSON.stringify(a.payload))),
     db.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(topic),p.article.id),
