@@ -17,8 +17,15 @@ const SEITEN:Record<string,[string,string]>={
  verkehr:['Verkehrsradar · plenara.X','Straßen, Radverkehr, Bus und Bahn, Tempo und Parken in den Ratsunterlagen.'],
  soziales:['Vereins- und Sozialradar · plenara.X','Vereinszuschüsse, Sport, Jugend, Senioren, Inklusion und Integration in den Ratsunterlagen.'],
  vergabe:['Vergaberadar · plenara.X','Ausschreibungen und Vergaben der Kommunen: Bau, Planung, Gutachten, Fahrzeuge und Dienstleistungen.'],
+ klima:['Klima- und Energieradar · plenara.X','Wärmeplanung, Photovoltaik, Windenergie, Klimaschutz, Klimaanpassung und Ladeinfrastruktur in den Ratsunterlagen.'],
+ finanzlage:['Finanzlage · plenara.X','Haushalt, Haushaltssicherung, Steuern und Hebesätze, Kredite, Jahresabschlüsse und Umlagen in den Ratsunterlagen.'],
+ news:['Newsradar · plenara.X','Was in den Räten gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle.'],
+ gebuehren:['Gebührenradar · plenara.X','Abfall-, Abwasser-, Niederschlagswasser- und Wassergebühren, Straßenreinigung, Friedhof, Parken und Ausbaubeiträge in den Ratsunterlagen.'],
+ beteiligung:['Beteiligung · plenara.X','Einwohneranträge, Petitionen, Bürgerbegehren, Bürgerbeteiligung und Beiräte, mit Zustimmungsquote.'],
  tools:['plenara.X Tools','Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse, Beratungswege.'],
- radar:['plenara.X Radar','Fertige Auswertungen zu festen Themen: Fraktionen, Förderung, Bauleitplanung, Kitas.'],
+ politik:['plenara.X Politik','Wer entscheidet wie: Fraktionsprofil, Beteiligung und Newsradar, aus den Ratsunterlagen gelesen.'],
+ finanzen:['plenara.X Finanzen','Wohin Geld fließt: Finanzlage, Gebühren, Fördermittel und Vergaben, aus den Ratsunterlagen gelesen.'],
+ radar:['plenara.X Radar','Was gebaut und geplant wird: Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales, Klima und Energie.'],
 };
 export async function generateMetadata({params}:{params:Promise<{section?:string[]}>}):Promise<Metadata>{
  const {section=[]}=await params;const s=SEITEN[section[0]||'ueber'];if(!s)return {};

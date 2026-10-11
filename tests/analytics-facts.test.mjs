@@ -53,6 +53,18 @@ test('funding radar counts programs by status and ranks no area below the thresh
  assert.equal(r.ranking.length,0,'zu kleine Gebiete und zu wenige Einträge');
 });
 
+test('funding radar sums amounts once per area, program and amount, only granted or applied',async()=>{
+ const {db,put}=setup();
+ put('a','approved','bauen',[['funding','Städtebauförderung','applied'],['funding_euro','Städtebauförderung','500000']]);
+ put('a','approved','bauen',[['funding','Städtebauförderung','granted'],['funding_euro','Städtebauförderung','500000']]);
+ put('a','approved','bauen',[['funding','Radverkehr','mentioned'],['funding_euro','Radverkehr','90000']]);
+ put('b','approved','bauen',[['funding','Radverkehr','granted'],['funding_euro','Radverkehr','90000']]);
+ const r=await funding(db,catalog,q(''));
+ assert.deepEqual([r.euro.granted,r.euro.applied,r.euro.amounts],[590000,0,2],'Antrag und Bescheid über denselben Betrag zählen einmal, als bewilligt; nur erwähnt zählt nicht');
+ assert.equal(r.programs.find(p=>p.name==='Städtebauförderung').euroGranted,500000);
+ assert.equal(r.largest[0].euro,500000);
+});
+
 test('planning counts each plan once with its furthest step and the housing it names',async()=>{
  const {planning}=await import('../server/integrations/analytics-planning.mjs');
  const {db,put}=setup();

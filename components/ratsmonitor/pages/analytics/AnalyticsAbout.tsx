@@ -4,9 +4,10 @@ import { PageBand } from "./PageBand";
 import { Reveal } from "./Reveal";
 import type { ReactNode } from "react";
 import { AnalyticsLogo } from "../../components/Brand";
-import { ANALYSEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
+import { ANALYSEN, GRUPPEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
 import { Icon } from "../../info/icons";
 import { RADARS } from "@/shared/radars.mjs";
+import { RADAR_THUMBS } from "./RadarThumbs";
 
 /** Vorschaubild der Ausbreitung: Wellen von Punkten um einen Ursprung und die S-Kurve */
 function DiffusionThumb() {
@@ -124,6 +125,7 @@ export const ANALYSE_THUMBS = {
   vergleich: CompareThumb,
   beschluesse: DecisionThumb,
   gremien: NetThumb,
+  ...RADAR_THUMBS,
 };
 
 /* Beispielbegriff der Vorschauen; Daten kommen aus dem Schnappschuss (scripts/build-branchen-ausschnitte.mjs) */
@@ -139,6 +141,8 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "beschluesse", name: "Beschlüsse", href: "/analytics/beschluesse", kurz: "Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer." },
   { id: "gremien", name: "Beratungswege", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   { id: "fraktionen", name: "Fraktionsprofil", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
+  { id: "finanzlage", name: RADARS.finanzen.name, href: "/analytics/finanzlage", kurz: RADARS.finanzen.kurz },
+  { id: "gebuehren", name: RADARS.gebuehren.name, href: "/analytics/gebuehren", kurz: RADARS.gebuehren.kurz },
   { id: "foerderung", name: "Förderradar", href: "/analytics/foerderung", kurz: "Welche Förderprogramme wo beantragt und bewilligt werden." },
   { id: "bauleitplanung", name: "Bauleitplanung", href: "/analytics/bauleitplanung", kurz: "Welche Bauleitpläne in welchem Schritt sind und wie viele Wohnungen entstehen sollen." },
   { id: "kita", name: "Kita-Radar", href: "/analytics/kita", kurz: "Wo über Elternbeiträge entschieden wird und wo neue Kita-Plätze entstehen." },
@@ -146,6 +150,9 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "verkehr", name: RADARS.verkehr.name, href: "/analytics/verkehr", kurz: RADARS.verkehr.kurz },
   { id: "soziales", name: RADARS.soziales.name, href: "/analytics/soziales", kurz: RADARS.soziales.kurz },
   { id: "vergabe", name: RADARS.vergabe.name, href: "/analytics/vergabe", kurz: RADARS.vergabe.kurz },
+  { id: "klima", name: RADARS.klima.name, href: "/analytics/klima", kurz: RADARS.klima.kurz },
+  { id: "beteiligung", name: RADARS.beteiligung.name, href: "/analytics/beteiligung", kurz: RADARS.beteiligung.kurz },
+  { id: "news", name: "Newsradar", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
 ];
 
 const METHODIK: Record<AnalyseId, ReactNode> = {
@@ -223,6 +230,17 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
   verkehr: <RadarMethodik id="verkehr" />,
   soziales: <RadarMethodik id="soziales" />,
   vergabe: <RadarMethodik id="vergabe" />,
+  klima: <RadarMethodik id="klima" />,
+  finanzlage: <RadarMethodik id="finanzen" />,
+  gebuehren: <RadarMethodik id="gebuehren" />,
+  beteiligung: <RadarMethodik id="beteiligung" />,
+  news: (
+    <>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, was in den Räten gerade berichtenswert ist: Vorgänge der letzten 30 und der nächsten 10 Tage, nach Nachrichtenwert geordnet, je Vorgang eine kurze Meldung.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Der Nachrichtenwert folgt festen Regeln, angelehnt an die Nachrichtenwertforschung (Galtung und Ruge 1965; Schulz 1976): Konflikt (abgelehnt, vertagt, nur mit Mehrheit beschlossen, Anträge von Fraktionen), Tragweite (geplante Wohnungen, Fördergeld, Kita-Beiträge, Gebühren und Steuern, Bürgerbegehren), Nähe zum Alltag und Aktualität. Ortsmarke, Gremium, Datum und Ausgang stammen aus den Sitzungsdaten; der Kern ist ein wörtliches Zitat aus der Regel-Zusammenfassung der Vorlage. Je Gebiet erscheinen höchstens zwei Meldungen.</p>
+          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Es wird nichts umformuliert und nichts bewertet; die Meldung ersetzt keine Recherche. Vorgänge ohne zitierbaren Satz in der Vorlage erscheinen nicht. Der Ausgang steht nur, wenn er für die genannte Sitzung bekannt ist.</p>
+    </>
+  ),
 };
 
 /** Methodik eines Themenradars aus seiner Beschreibung (shared/radars.mjs) */
@@ -231,17 +249,11 @@ function RadarMethodik({ id }: { id: keyof typeof RADARS }) {
   return (
     <>
       <p className="mt-3 text-[16px] text-slate-500">{r.kurz}</p>
-      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ein Vorgang gehört zum Radar, wenn sein Titel eines dieser Themen nennt: {r.topics.map(([t]) => t).join(", ")}. Was geschieht, steht in Titel oder Beschlussvorschlag: {r.signals.map(([s]) => s).join(", ")}. Bei sehr kurzen Titeln wird der Beschlussvorschlag gelesen. Je Thema zeigt das Radar, in wie vielen Gebieten es vorkommt und was aus den Vorgängen wird (Anteil „beschlossen“ an den entschiedenen); je Gebiet die Vorgänge je 10.000 Einwohner.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ein Vorgang gehört zum Radar, wenn sein Titel eines dieser Themen nennt: {r.topics.map(([t]) => t).join(", ")}{"fallback" in r ? ` (sonst: ${r.fallback})` : ""}. Was geschieht, steht in Titel oder Beschlussvorschlag: {r.signals.map(([s]) => s).join(", ")}. Bei sehr kurzen Titeln wird der Beschlussvorschlag gelesen. Je Thema zeigt das Radar, in wie vielen Gebieten es vorkommt und was aus den Vorgängen wird (Anteil „beschlossen“ an den entschiedenen); je Gebiet die Vorgänge je 10.000 Einwohner.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird über Wörter im Titel; ein Vorgang ohne passendes Wort fehlt, ein Wort in anderem Sinn zählt mit. Bauanträge Privater, Formalpunkte und Sammelpunkte wie Mitteilungen zählen nicht. Der Status ist nur bei einem Teil der Vorgänge bekannt.</p>
     </>
   );
 }
-
-/* Gruppen: Tools funktionieren mit jedem Suchbegriff, Radare sind fertige Auswertungen zu einem festen Thema */
-const GRUPPEN = {
-  tool: { name: "plenara.X Tools", kurz: "Tools", text: "Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Zusammenhänge, Trends, Ortsvergleich, Beschlüsse und Beratungswege." },
-  radar: { name: "plenara.X Radar", kurz: "Radare", text: "Fertige Auswertungen zu festen Themen, aus den Ratsunterlagen gelesen: Fraktionen, Förderung, Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales sowie Vergaben." },
-} as const;
 
 function Karten({ group }: { group: AnalyseGruppe }) {
   const list = ANALYSEN_KARTEN.filter((a) => ANALYSEN[a.id].group === group);
@@ -250,13 +262,14 @@ function Karten({ group }: { group: AnalyseGruppe }) {
       {list.map((a, i) => (
         <li key={a.id}>
           <Reveal delay={(i % 3) * 90}>
-            <Link href={a.href} aria-label={`${a.name} öffnen`} className="group block">
+            <Link href={a.href} aria-label={`${a.name} öffnen`} className="group flex flex-col">
               <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1">{a.id in ANALYSE_THUMBS ? <LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} showStand={false} /> : (
                 /* Analysen ohne Schnappschuss-Vorschau: ruhige Kachel mit Symbol */
                 <div aria-hidden="true" className="flex aspect-[16/10] items-center justify-center bg-slate-50 text-teal-600"><Icon name={ANALYSEN[a.id].icon} size={56} /></div>
               )}</div>
               <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
-              <h3 className="mt-2 text-[22px] font-semibold">{a.name}</h3>
+              {/* Auf dem Handy steht die Überschrift über dem Vorschaubild, sonst ist unklar, wozu das Bild gehört */}
+              <h3 className="mt-2 text-[22px] font-semibold max-sm:order-first max-sm:mb-2 max-sm:mt-0">{a.name}</h3>
               <p className="mt-1 text-[16px] text-slate-500">{a.kurz}</p>
             </Link>
           </Reveal>
@@ -286,7 +299,7 @@ function Methodik({ group }: { group?: AnalyseGruppe }) {
   );
 }
 
-/** Übersicht einer Gruppe (plenara.X Tools oder plenara.X Radar) */
+/** Übersicht einer Gruppe (plenara.X Tools, Politik, Finanzen oder Radar) */
 export function AnalyticsGroupPage({ group }: { group: AnalyseGruppe }) {
   const g = GRUPPEN[group];
   return (
@@ -322,11 +335,11 @@ export function AnalyticsAbout() {
         </div>
       </PageBand>
 
-      {(["tool", "radar"] as const).map((group, gi) => (
-        <section key={group} id={gi ? "radar" : "analysen"} className="scroll-mt-24">
+      {(["tool", "politik", "finanzen", "radar"] as const).map((group, gi) => (
+        <section key={group} id={gi ? group : "analysen"} className="scroll-mt-24">
           <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2 className="text-[28px] font-semibold">{GRUPPEN[group].name}</h2>
-            <Link href={group === "tool" ? "/analytics/tools" : "/analytics/radar"} className="text-[16px] font-medium text-teal-600">Alle {GRUPPEN[group].kurz} →</Link>
+            <Link href={GRUPPEN[group].href} className="text-[16px] font-medium text-teal-600">Zu {GRUPPEN[group].name} →</Link>
           </div>
           <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{GRUPPEN[group].text}</p>
           <Karten group={group} />

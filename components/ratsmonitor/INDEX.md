@@ -467,7 +467,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (29): generateMetadata, Page
+- page.tsx (36): generateMetadata, Page
 
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
@@ -588,7 +588,7 @@ topic design-styles.css:140
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - ExportMenu.tsx (55, ⚠1): ExportOption, ExportMenu
-- FilterPanel.tsx (103, ⚠1): FilterPanel
+- FilterPanel.tsx (105, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (30): FollowButton
 - Footer.tsx (59): Footer
@@ -616,8 +616,8 @@ topic design-styles.css:140
 - AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
-- BranchenLive.tsx (250): LiveThumb
-- BranchenPages.tsx (126): BranchePage
+- BranchenLive.tsx (254): LiveThumb
+- BranchenPages.tsx (127): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (47): InfoPages
 - LegalText.tsx (20): H2, P, Ul
@@ -631,7 +631,7 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (211, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- branchen-enterprise.ts (95): AnalyseId, AnalyseGruppe, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (108): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 
@@ -678,7 +678,7 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (228, ⚠1): MainMenu
+- MainMenu.tsx (230, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (138, ⚠3): DetailPage
@@ -692,9 +692,9 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (341, ⚠22): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
+- AnalyticsAbout.tsx (354, ⚠23): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (57, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (66, ⚠1): AnalyticsPages
 - BauleitplanungPage.tsx (179, ⚠3): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (219, ⚠6): BeschluessePage
@@ -705,7 +705,7 @@ topic design-styles.css:140
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (271, ⚠5): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
-- FoerderradarPage.tsx (176, ⚠2): FoerderradarPage
+- FoerderradarPage.tsx (224, ⚠7): FoerderradarPage
 - FraktionenPage.tsx (166, ⚠2): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (197, ⚠2): GremiennetzPage
@@ -715,6 +715,7 @@ topic design-styles.css:140
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
 - PageBand.tsx (17): PageBand
 - Reveal.tsx (16): Reveal
+- ThemeRadarPage.tsx (200, ⚠5): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (207, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery

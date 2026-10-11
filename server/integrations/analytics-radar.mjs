@@ -28,7 +28,7 @@ export async function radar(db,catalog,params){
  const {results:rows}=await db.prepare(`SELECT c.id id,c.region_id region,c.date date,c.title title,c.status status,x.value topic,x.detail signal FROM ${cards} c JOIN topic_facts x ON x.topic_id=c.id AND x.kind=?`).bind(kind,...page.args,kind).all();
  const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
  const blank=()=>({n:0,approved:0,rejected:0,postponed:0,open:0,regions:new Set(),signals:new Map()});
- const topics=new Map(def.topics.map(([n])=>[n,blank()])),signals=new Map(),months=new Map(),regions=new Map(),items=new Map();
+ const topics=new Map([...def.topics.map(([n])=>n),...(def.fallback?[def.fallback]:[])].map(n=>[n,blank()])),signals=new Map(),months=new Map(),regions=new Map(),items=new Map();
  for(const r of rows){
   const t=topics.get(r.topic)||blank();topics.set(r.topic,t);
   t.n++;t.regions.add(r.region);t.signals.set(r.signal,(t.signals.get(r.signal)||0)+1);

@@ -1,0 +1,162 @@
+import {searchFilters} from './monitor-search.mjs';
+import {parseDecisions} from './analytics-decisions.mjs';
+import {AnalyticsError} from './analytics-diffusion.mjs';
+import {factsReady} from './analytics-factions.mjs';
+import {cleanTitle,matchTitle,evidenceOf,classifyResult} from './social-topics.mjs';
+
+/*
+ * Plenara.X – Newsradar: berichtenswerte Vorgänge der letzten 30 und nächsten 10 Tage (dieselben Filter wie die Suche),
+ * nach Nachrichtenwert geordnet, je Vorgang eine Meldung im Agenturstil. Alles regelbasiert, ohne Modell: Ortsmarke,
+ * Gremium und Datum aus den Sitzungen, der Kern nur aus wörtlichen Sätzen der Regel-Zusammenfassung (als Zitat), dazu
+ * Fakten aus topic_facts (Fraktion, Förderung, Wohnungen, Kita-Beiträge, Gebühren, Beteiligung).
+ * Zwei Stufen: erst alle Vorgänge des Zeitraums aus search_cards und topic_facts vorbewerten (ohne Payload), dann nur für
+ * die besten CANDIDATES die Berichte lesen (Abstimmungsergebnis, Zusammenfassung, Sitzungen) und die Meldung bauen.
+ * Nachrichtenwert: Konflikt (abgelehnt, vertagt, nur mehrheitlich), Tragweite (Wohnungen, Förderung, Beiträge, Gebühren,
+ * Bürgerbegehren), Alltagsnähe (Stichwörter aus social-topics), Aktualität; ohne zitierbaren Kern deutlich weniger.
+ * Höchstens PER_REGION Meldungen je Gebiet, damit nicht ein Ort die Liste füllt.
+ */
+const BACK=30,AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
+const FACT_KINDS=['faction','funding','funding_euro','housing','kita_fee','plan','radar:gebuehren','radar:finanzen','radar:beteiligung'];
+const day=d=>new Date(Date.now()+d*864e5).toISOString().slice(0,10);
+// Private Bauanträge mit Grundstücksadresse sind keine Meldung
+const PRIVATE=/Bauantrag|Bauvorhaben|Bauvoranfrage|Flurstück|\bFlur\s+\d/i,ADDRESS=/\d+\s*(-\s*\d+)?\s*(,|$)|straße\s*\d|weg\s*\d/i;
+// Reste aus dem PDF (Seitenzähler, Kopfzeilen) machen einen Satz unzitierbar
+const PDF_NOISE=/Seite\s*-?\s*\d+\s*-?\s*(von\s*\d+)?|^\s*-\s*\d+\s*-|Drucksache|DS Seite|Vorlage\s*(Nr\.?|Nummer)|Sitzungsvorlage|Beratungsfolge|☐|☒/i;
+export const PARTY={'CDU/CSU':'der CDU-Fraktion','SPD':'der SPD-Fraktion','Grüne':'der Fraktion der Grünen','FDP':'der FDP-Fraktion','AfD':'der AfD-Fraktion','Linke':'der Fraktion Die Linke','Freie Wähler und Wählergruppen':'einer Wählergemeinschaft','Volt':'der Volt-Fraktion','BSW':'der BSW-Fraktion','ÖDP':'der ÖDP-Fraktion','Die PARTEI':'der Fraktion Die PARTEI'};
+const longDay=d=>new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d.slice(0,10)+'T12:00:00Z'));
+const eur=v=>v>=1e6?`${(v/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})} Mio. Euro`:`${Math.round(v).toLocaleString('de-DE')} Euro`;
+
+/** Ortsangabe: Genitiv („der Stadt Coesfeld“) und kurz („Coesfeld“) */
+export function place(name){
+ const n=String(name||'');if(/^Kreis /.test(n))return {gen:'des Kreises '+n.slice(6),short:'Kreis '+n.slice(6)};
+ const m=n.match(/^(Stadt|Gemeinde|Hansestadt|Landeshauptstadt|Samtgemeinde|Verbandsgemeinde|Ortsgemeinde|Marktgemeinde|Markt) (.+)$/);
+ return m?{gen:`der ${m[1]} ${m[2]}`,short:m[2]}:{gen:n,short:n};
+}
+/** Gremium mit Artikel; ohne Ortsnamen im Namen mit Ort im Genitiv */
+export function organ(committee,ort){
+ const name=String(committee||'').trim();if(!name||/^Gremium\b|laut Originalquelle/i.test(name))return {nom:'Ein Gremium',dat:'einem Gremium'};
+ const fem=/^(Bezirksvertretung|Kommission|Versammlung|Gemeindevertretung|Stadtverordnetenversammlung|Konferenz|Stadtvertretung)/i.test(name)||/(vertretung|kommission|versammlung|konferenz)$/i.test(name);
+ const first=ort.short.split(/[ /(]/)[0];
+ const full=first&&name.toLowerCase().includes(first.toLowerCase())?name:`${name} ${ort.gen}`;
+ return fem?{nom:'Die '+full,dat:'der '+full}:{nom:'Der '+full,dat:'dem '+full};
+}
+/** Zitierfähiger Satz: ganzer Satz, kein Verweis auf Anlagen, ohne PDF-Reste und vorangestellten Betreff */
+export function quotable(x){
+ const t=String(x||'').replace(/^.*?Beschlussvorschlag:\s*/i,'').replace(/^Betreff:?\s+/i,'').replace(/\s+/g,' ').trim();
+ return /[.!?“”"]$/.test(t)&&!/verwiesen|als Anlage|siehe Anlage|s\.\s*Anlage|\(Anlage|Anlage\s*\d|beigefügt|anliegend/i.test(t)&&!PDF_NOISE.test(t)&&t.length>40&&t.length<600?t:null;
+}
+
+/** Nachrichtenwert ohne Bericht (Stufe 1): Status, Fakten, Stichwörter, Datum */
+function prescore(c,facts,today,week){
+ const why=[];let score=0;const add=(n,text)=>{score+=n;why.push(text);};
+ if(c.status==='rejected')add(25,'abgelehnt');else if(c.status==='postponed')add(15,'vertagt');
+ const party=facts.filter(x=>x.kind==='faction');if(party.length)add(8,`Antrag ${party.map(p=>p.value).join(' und ')}`);
+ const we=Number(facts.find(x=>x.kind==='housing')?.detail||0);if(we>=20)add(15,`${we.toLocaleString('de-DE')} Wohnungen geplant`);
+ const fund=facts.filter(x=>x.kind==='funding'&&x.detail!=='mentioned');
+ if(fund.length){const g=fund.some(x=>x.detail==='granted');add(g?12:8,`Förderung ${g?'bewilligt':'beantragt'}: ${fund[0].value}`);}
+ const money=Math.max(0,...facts.filter(x=>x.kind==='funding_euro').map(x=>Number(x.detail)||0));if(money>=100000&&fund.length)add(6,`Förderbetrag ${eur(money)}`);
+ const fee=facts.find(x=>x.kind==='kita_fee');if(fee&&fee.value!=='Neufassung')add(18,`Kita-Beiträge: ${fee.value}`);
+ const gb=facts.find(x=>x.kind==='radar:gebuehren'&&/Erhöhung|Senkung/.test(x.detail||''));if(gb)add(14,`${gb.value}: Gebühren-${gb.detail}`);
+ if(facts.some(x=>x.kind==='radar:finanzen'&&x.value==='Haushaltssicherung'))add(8,'Haushaltssicherung');
+ if(facts.some(x=>x.kind==='radar:finanzen'&&x.value==='Steuern und Hebesätze'&&/Erhöhung/.test(x.detail||'')))add(12,'Steuererhöhung');
+ const bt=facts.find(x=>x.kind==='radar:beteiligung'&&/Petitionen|Einwohneranträge/.test(x.value));if(bt)add(12,bt.value);
+ if(facts.some(x=>x.kind==='plan'&&x.value==='Satzungsbeschluss'))add(8,'Bebauungsplan vor dem Satzungsbeschluss');
+ const hits=matchTitle(c.title||'');if(hits.length)add(10,`Alltagsthema: ${hits[0].term}`);
+ // Titel ohne Gegenstand („Anregung“, „Antrag“) ergeben keine verständliche Überschrift
+ if(cleanTitle(c.title||'',200).length<20)add(-15,'Titel ohne Gegenstand');
+ if(c.date>today)add(6,`steht am ${longDay(c.date)} an`);else if(c.date>=week)add(10,'in den letzten sieben Tagen');
+ return {score,why};
+}
+
+/** Meldung im Agenturstil aus einem bewerteten Vorgang */
+export function article({card,topic,facts,ev,sentences,more,today,regionName}){
+ const ort=place(regionName),events=[...(topic.events||[])].filter(e=>e?.date).sort((a,b)=>a.date.localeCompare(b.date));
+ const title=cleanTitle(topic.officialTitle||topic.title||card.title,200);
+ /* Der erste Satz der Zusammenfassung wiederholt oft den Titel: ihn im Zitat weglassen */
+ const raw=String(topic.officialTitle||topic.title||'').trim();
+ const quote=sentences.map(x=>raw.length>10&&x.startsWith(raw)?x.slice(raw.length).replace(/^[\s.:;–-]+/,''):x).filter(x=>x.length>40);
+ const cur=events.filter(e=>e.date.slice(0,10)<=today).at(-1)||events[0]||{date:card.date,committee:card.gremium};
+ const next=events.find(e=>e.date.slice(0,10)>today);
+ const o=organ(cur.committee||card.gremium,ort),past=cur.date.slice(0,10)<=today,when=longDay(cur.date);
+ /* Ausgang nur der genannten Sitzung (ein „abgelehnt“ im Ortschaftsrat ist kein Beschluss des Rats); der Status des Vorgangs
+    gilt nur, wenn diese Sitzung die letzte ist */
+ const r=classifyResult(cur.result||'')||classifyResult(cur.description||''),last=!events.some(e=>e.date.slice(0,10)>cur.date.slice(0,10));
+ const outcome=r==='rej'?'abgelehnt':r==='post'?'vertagt':r==='unan'?'einstimmig beschlossen':r==='maj'?'mit Mehrheit beschlossen':r==='ok'?'beschlossen':!last||!past?null:card.status==='approved'?'beschlossen':card.status==='rejected'?'abgelehnt':card.status==='postponed'?'vertagt':null;
+ const parties=facts.filter(x=>x.kind==='faction').map(p=>PARTY[p.value]||`der Fraktion ${p.value}`);
+ const what=parties.length?`einen Antrag ${parties.join(' und ')}`:'die Vorlage';
+ const low=x=>x.replace(/^Der /,'der ').replace(/^Die /,'die ').replace(/^Ein /,'ein ');
+ // Datum mit Wochentag als Einschub: „am Mittwoch, 30. September, beschlossen“
+ const lead=past?(outcome?`${o.nom} hat ${what} am ${when}, ${outcome}.`:`${o.nom} hat am ${when}, über ${what} beraten.`):`${o.nom} berät am ${when}, über ${what}.`;
+ const body=[];
+ const we=Number(facts.find(x=>x.kind==='housing')?.detail||0);if(we>=3)body.push(`Nach den Unterlagen sollen rund ${we.toLocaleString('de-DE')} Wohnungen entstehen.`);
+ const fund=facts.filter(x=>x.kind==='funding'&&x.detail!=='mentioned');
+ if(fund.length){const g=fund.some(x=>x.detail==='granted'),money=Math.max(0,...facts.filter(x=>x.kind==='funding_euro').map(x=>Number(x.detail)||0));
+  const named=[...fund.map(x=>x.value).filter(v=>v!=='Sonstige Förderung'),...(money>=1000?[`genannt werden ${eur(money)}`]:[])];
+  body.push(`Für das Vorhaben ist Fördergeld ${g?'bewilligt':'beantragt'}${named.length?` (${named.join(', ')})`:''}.`);}
+ const before=events.filter(e=>e.date.slice(0,10)<cur.date.slice(0,10));
+ if(before.length)body.push(before.length>1?`Zuvor hatten sich ${before.length} Gremien damit befasst, zuletzt ${low(organ(before.at(-1).committee,ort).nom)} am ${longDay(before.at(-1).date)}.`:`Zuvor hatte sich ${low(organ(before[0].committee,ort).nom)} damit befasst.`);
+ if(next&&past)body.push(`Als Nächstes berät ${low(organ(next.committee,ort).nom)} am ${longDay(next.date)}.`);
+ return {
+  id:card.id,region:regionName,place:ort.short,
+  headline:`${ort.short}: ${title}${outcome?` – ${outcome}`:!past?' kommt auf die Tagesordnung':''}`,
+  dateline:{place:ort.short,committee:cur.committee||card.gremium||'',date:cur.date.slice(0,10)},
+  lead:`${ort.short}. ${lead}`,
+  quote:(quote.length?quote:sentences).join(' '),more:more.slice(0,2).join(' '),body,
+  source:`Ratsinformationssystem ${ort.gen}`,
+ };
+}
+
+export async function news(db,catalog,params){
+ const copy=new URLSearchParams(params);
+ const n=Math.min(MAX_N,Math.max(1,Number(copy.get('n'))||DEFAULT_N));copy.delete('n');
+ /* Ohne Zeitraum die letzten BACK und nächsten AHEAD Tage; „bis heute“ (die Suche ohne künftige Sitzungen) zählt als offen,
+    denn was ansteht, gehört ins Newsradar */
+ if(!copy.get('from'))copy.set('from',day(-BACK));
+ if(!copy.get('to')||copy.get('to')===day(0))copy.set('to',day(AHEAD));
+ copy.set('noformal','1');
+ const f=parseDecisions(copy);
+ if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
+ const {page}=await searchFilters(db,catalog,f);
+ const today=day(0),week=day(-7);
+ /* Stufe 1: alle Vorgänge des Zeitraums mit ihren Fakten, ohne Payload */
+ const {results:rows}=await db.prepare(`SELECT c.id id,c.region_id region,c.date date,c.status status,c.title title,c.gremium gremium
+  FROM search_cards c WHERE ${page.where} AND c.date<>''`).bind(...page.args).all();
+ const {results:factRows}=await db.prepare(`SELECT x.topic_id id,x.kind kind,x.value value,x.detail detail FROM topic_facts x WHERE x.kind IN (${FACT_KINDS.map(()=>'?').join(',')})
+  AND x.topic_id IN (SELECT c.id FROM search_cards c WHERE ${page.where} AND c.date<>'')`).bind(...FACT_KINDS,...page.args).all();
+ const factsOf=new Map();for(const x of factRows){const l=factsOf.get(x.id)||[];l.push({kind:x.kind,value:x.value,detail:x.detail});factsOf.set(x.id,l);}
+ const pre=[];
+ for(const c of rows){
+  if(PRIVATE.test(c.title||'')&&ADDRESS.test(c.title||''))continue;
+  const facts=factsOf.get(c.id)||[];
+  const s=prescore(c,facts,today,week);pre.push({c,facts,...s});
+ }
+ pre.sort((a,b)=>b.score-a.score);
+ /* Stufe 2: Berichte der besten Kandidaten lesen */
+ const top=pre.slice(0,CANDIDATES),byId=new Map(catalog.map(r=>[r.id,r])),scored=[];
+ for(let i=0;i<top.length;i+=40){
+  const part=top.slice(i,i+40);
+  const {results}=await db.prepare(`SELECT id,payload FROM topics WHERE id IN (${part.map(()=>'?').join(',')})`).bind(...part.map(p=>p.c.id)).all();
+  const payload=new Map(results.map(r=>[r.id,r.payload]));
+  for(const p of part){
+   let t;try{t=JSON.parse(payload.get(p.c.id)||'null');}catch{t=null;}if(!t)continue;
+   const ev=evidenceOf({events:t.events,event:t.event,records:t.sourceData?.records});
+   const rule=t.ruleSummary,sentences=(rule?.short?.sentences||[]).map(quotable).filter(Boolean);
+   const more=(rule?.long?.sentences||[]).map(quotable).filter(x=>x&&!sentences.includes(x));
+   let {score}=p;const why=[...p.why];
+   if(ev.result==='maj'){score+=12;why.push('nur mehrheitlich beschlossen');}
+   else if(ev.result==='rej'&&p.c.status!=='rejected'){score+=25;why.push('in einer Sitzung abgelehnt');}
+   else if(ev.result==='post'&&p.c.status!=='postponed'){score+=15;why.push('in einer Sitzung vertagt');}
+   if((t.events||[]).length>=3){score+=5;why.push(`seit ${(t.events||[]).length} Sitzungen in Beratung`);}
+   if(!sentences.length)continue; // ohne zitierbaren Kern keine Meldung
+   scored.push({...p,t,ev,sentences,more,score,why});
+  }
+ }
+ scored.sort((a,b)=>b.score-a.score||b.c.date.localeCompare(a.c.date));
+ const items=[],per=new Map();
+ for(const s of scored){
+  const k=per.get(s.c.region)||0;if(k>=PER_REGION)continue;per.set(s.c.region,k+1);
+  items.push({...article({card:s.c,topic:s.t,facts:s.facts,ev:s.ev,sentences:s.sentences,more:s.more,today,regionName:byId.get(s.c.region)?.name||s.c.region}),score:s.score,why:s.why});
+  if(items.length>=n)break;
+ }
+ return {q:f.q,from:copy.get('from'),to:copy.get('to'),totals:{considered:rows.length,read:top.length,quotable:scored.length},items,rule:{back:BACK,ahead:AHEAD,perRegion:PER_REGION,candidates:CANDIDATES}};
+}

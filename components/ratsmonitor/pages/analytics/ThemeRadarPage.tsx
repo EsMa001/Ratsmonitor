@@ -9,6 +9,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { DEC_COLORS } from "./DecisionCharts";
 import { STATUS } from "../../lib/constants";
 import { RADARS } from "@/shared/radars.mjs";
+import { ANALYSEN, GRUPPEN, type AnalyseId } from "../../info/branchen-enterprise";
 
 interface Topic { name: string; n: number; regions: number; decided: number; approved: number; rejected: number; postponed: number; open: number; rate: number | null; signals: { name: string; n: number }[] }
 interface Result {
@@ -30,7 +31,9 @@ const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? ""
 
 /** plenara.X – Themenradar (Versorgung, Verkehr, Vereine und Soziales, Vergabe, Klima und Energie, Finanzlage, Beteiligung);
  *  Unterthemen, Signale und Muster in shared/radars.mjs, Auswertung in server/integrations/analytics-radar.mjs */
-export function ThemeRadarPage({ id }: { id: keyof typeof RADARS }) {
+/** id: Radar in shared/radars.mjs; analyse: Eintrag in ANALYSEN, falls er anders heißt (Finanzlage) */
+export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analyse?: AnalyseId }) {
+  const gruppe = GRUPPEN[ANALYSEN[analyse ?? (id as AnalyseId)].group];
   const def = RADARS[id];
   const { query } = useAnalyticsQuery();
   const [res, setRes] = useState<Result | null>(null);
@@ -73,7 +76,7 @@ export function ThemeRadarPage({ id }: { id: keyof typeof RADARS }) {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/radar" className="text-teal-600">plenara.X Radar</Link> / {def.name}</p>
+        <p className="text-[14px] text-slate-500"><Link href={gruppe.href} className="text-teal-600">{gruppe.name}</Link> / {def.name}</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{def.name}</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{def.kurz}</p>
       </PageBand>

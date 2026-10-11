@@ -22,6 +22,7 @@ const SIGNALS={
  bericht:['Bericht und Controlling',/Bericht|Controlling|Sachstand|Prognose|Quartal/i],
  beschluss:['Beschluss',/Beschluss|Erlass|Feststellung|Entlastung/i],
  beteiligung:['Beteiligung und Dialog',/Beteiligung|Befragung|Workshop|Dialog|Versammlung|Werkstatt/i],
+ kalkulation:['Kalkulation und Satzung',/Kalkulation|Bedarfsberechnung|Gebührensatzung|Satzung|Neufassung|Änderung|Festsetzung/i],
 };
 const S=(...keys)=>keys.map(k=>SIGNALS[k]);
 
@@ -126,6 +127,33 @@ export const RADARS={
    ['Beiräte',/Jugendrat|Jugendparlament|Jugendbeirat|Seniorenbeirat|Seniorenvertretung|Integrationsrat|Integrationsbeirat|Behindertenbeirat|Ausländerbeirat|Kinder- und Jugendparlament/i],
   ],
   signals:S('beteiligung','antrag','regelung','beschluss'),
+ },
+ gebuehren:{
+  name:'Gebührenradar',icon:'tag',
+  kurz:'Abfall-, Abwasser-, Niederschlagswasser- und Wassergebühren, Straßenreinigung, Friedhof, Parken und Ausbaubeiträge: Kalkulation, Erhöhung und Senkung.',
+  // Nur Vorgänge mit Gebühr, Entgelt oder Beitrag im Titel; Kita-Beiträge stehen im Kita-Radar, Tarife des Personals sind keine Gebühren
+  require:/Gebühr|Entgelt|Tarif|Kalkulation|Wasserpreis|Wassergeld|Straßenausbaubeitr|Erschließungsbeitr|Ausbaubeitr|wiederkehrende Beitr|Anliegerbeitr/i,
+  exclude:/Kita|Kindertages|Elternbeitr|Krippe|Kindergarten|Tagespflege|Tarifvertrag|Tarifabschluss|Tarifbeschäftigte|TVöD|Tarifeinigung|Entgeltgruppe|Entgeltumwandlung/i,
+  // Gebühr ohne eines der Themen: „Weitere Benutzungsgebühren“
+  fallback:'Weitere Benutzungsgebühren',
+  topics:[
+   ['Abfall',/Abfall|Müll|Biotonne|Wertstoff/i],
+   ['Schmutzwasser',/Abwasser|Schmutzwasser|Kanalbenutzung|Kanalgebühr|Entwässerung|Kläranlage|Fäkal|Grubeninhalt/i],
+   ['Niederschlagswasser',/Niederschlag|Regenwasser|versiegelt/i],
+   ['Trinkwasser',/Trinkwasser|\bWasser(gebühr|preis|geld|entgelt|versorgung|bezug|abgabe)|Wasserversorgungs/],
+   ['Straßenreinigung und Winterdienst',/Straßenreinigung|Winterdienst/i],
+   ['Friedhof und Bestattung',/Friedh[oö]f|Bestattung|Grabstätte|Grabnutzung/i],
+   ['Parken',/Parkgebühr|Parkraum|Parkschein|Parkausweis|Bewohnerpark|Anwohnerpark|Parken|Parkhaus/i],
+   ['Straßenausbau- und Erschließungsbeiträge',/Straßenausbaubeitr|Erschließungsbeitr|Ausbaubeitr|wiederkehrende Beitr|Anliegerbeitr/i],
+   ['Bäder, Hallen und Sportstätten',/Bad\b|Bäder|Freibad|Hallenbad|Solebad|Schwimm|Sporthalle|Sportstätte|Sportanlage|Sportplatz|Hallengebühr|Turnhalle/i],
+   ['Bücherei, Musikschule und Kultur',/Bücherei|Bibliothek|Musikschule|Volkshochschule|\bVHS\b|Museum|Theater|Archiv/i],
+   ['Schulkind- und Ferienbetreuung',/Ganztag|OGS|Mittagsbetreuung|Ferienbetreuung|Schulkindbetreuung|Betreuende Grundschule|Hortbetreuung|Nachmittagsbetreuung/i],
+   ['Unterkünfte und Obdach',/Obdach|Unterkunft|Unterkünfte|Übergangsheim|Gemeinschaftsunterkunft|Unterbringung/i],
+   ['Feuerwehr und Rettungsdienst',/Feuerwehr|Rettungsdienst|Brandverhütung|Brandsicherheit/i],
+   ['Sondernutzung und Märkte',/Sondernutzung|Markt|Standgebühr|Standplatz/i],
+   ['Bus- und Bahntarife',/Deutschlandticket|Tarifreform|Westfalentarif|Verkehrsverbund|Fahrpreis|Ticket|ÖPNV-Tarif|Gemeinschaftstarif/i],
+  ],
+  signals:S('erhoehung','senkung','kalkulation','antrag','bericht'),
  },
 };
 export const RADAR_IDS=Object.keys(RADARS);

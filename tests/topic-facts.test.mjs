@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,fundingOf,factsOf} from '../shared/topic-facts.mjs';
+import {factionsOf,fundingOf,fundingEuroOf,factsOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -72,4 +72,24 @@ test('Kita: fee decisions with direction, new places without years',async()=>{
  assert.equal(kitaPlacesOf('Schließung eines Kita-Standortes','In der Kita entfallen 77 Plätze durch die Schließung.'),null);
  assert.equal(kitaPlacesOf('Situationsbericht Kindertagesstätten','Durch den Ausbau stehen in den Kitas 928 Plätze zur Verfügung.'),null,'Gesamtbestand');
  assert.equal(kitaPlacesOf('Unterbringung von Geflüchteten','Neben der Kita entstehen 300 neue Plätze in der Unterkunft.'),null);
+});
+
+test('funding amounts: only the amount attached to a funding word, never costs, own share, limits or program pools',()=>{
+ const e=t=>fundingEuroOf(t).map(x=>[x.program,x.euro]);
+ assert.deepEqual(e('Für den Ganztagsausbau wurde eine Zuwendung in Höhe von 450.000 € bewilligt.'),[['Ganztagsausbau',450000]]);
+ assert.deepEqual(e('Die Gesamtkosten betragen 2,4 Mio. €, die Fördermittel aus der Städtebauförderung 1,2 Mio. Euro.'),[['Städtebauförderung',1200000]]);
+ assert.deepEqual(e('Es wurden 120.000 € Landesmittel beantragt.'),[['Sonstige Förderung',120000]]);
+ assert.deepEqual(e('Der Zuschuss beträgt 350 TEUR.'),[['Sonstige Förderung',350000]]);
+ assert.deepEqual(e('Die Förderquote beträgt 80 % der förderfähigen Kosten von 500.000 €.'),[],'förderfähige Kosten');
+ assert.deepEqual(e('Die Förderung beträgt bis zu 200.000 €.'),[],'Höchstbetrag');
+ assert.deepEqual(e('Finanzschwache Kommunen erhalten einen Fördersatz von 90 % (maximale Fördersumme 200.000 Euro).'),[],'Höchstbetrag vor dem Förderwort');
+ assert.deepEqual(e('Der durch Zuwendungen nicht gedeckte Anteil von 303.750 € muss über den Haushalt finanziert werden.'),[],'Eigenanteil');
+ assert.deepEqual(e('Für den Projektaufruf 2026 stehen Bundesmittel in Höhe von 250 Mio. Euro zur Verfügung.'),[],'Programmtopf');
+ assert.deepEqual(e('Der städtische Zuschuss für den Ersatzneubau in Höhe von 60,5 Mio. € wird beschlossen.'),[],'Zuschuss der Kommune selbst');
+ assert.deepEqual(e('Gesamtsumme 9,1 Mio. € Fördermittel 6,37 Mio. € Eigenanteil 2,73 Mio. €'),[['Sonstige Förderung',6370000]],'Tabelle: kein Betrag vor dem Förderwort');
+});
+
+test('funding amount without program goes to the only program of the report',()=>{
+ const t='Für die Mensa wurden Fördermittel aus dem Programm Ganztagsausbau bewilligt. Der Förderbescheid über 300.000 € liegt vor.';
+ assert.deepEqual(factsOf('Neubau Mensa',t).filter(r=>r.kind.startsWith('funding')),[{kind:'funding',value:'Ganztagsausbau',detail:'granted'},{kind:'funding_euro',value:'Ganztagsausbau',detail:'300000'}]);
 });

@@ -219,6 +219,34 @@ pausierter oder seit sechs Stunden unbewegter Auftrag wird dagegen beendet). Ein
 ein laufender Importprozess läuft mit seinem alten Stand zu Ende (`deploy.sh` meldet das). **Vor Migrationen** den
 Importprozess und beide Timer stoppen (Abschnitt „Migrationen“).
 
+## PDF-Ablage, Texte, Fakten: die Kette (Stand 11.10.2026, auf dem Server noch nicht eingerichtet)
+
+Der Server erzeugt alles aus seinen eigenen PDFs; übertragen wird nichts. Jede Stufe liest nur, was die vorige
+abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Prüfsumme):
+
+1. **Bericht** (Import, `runSync`): Metadaten nach `topics` und `search_cards`. Hauptdokument je Bericht `primaryPdf`
+   (`shared/document-type.mjs`); Unterlagen der ganzen Sitzung (`sessionDocument`: Niederschrift, Einladung, an 5 und
+   mehr Berichten) werden weder zusammengefasst noch für Fakten gelesen.
+2. **PDF** (`RM_PDF_STORE`, `server/node/pdf-store.mjs`): Der Import liest zuerst aus der Ablage und legt neu geladene
+   PDFs dort ab (`readDocument`). Bestand: `scripts/pdf-store/fetch.mjs`, Budget: `budget.mjs`.
+3. **Text** (`texts` in der Ablage, Seiten getrennt durch `\f`): `text.mjs` (Textebene), danach `text.mjs --ocr` (Seiten
+   unter 20 Zeichen). Version `TEXT_VERSION`; eine neue Version liest alles neu.
+4. **Zusammenfassung** (Regel, ohne KI): im Import `refreshSummaries` (je Lauf höchstens 8 Berichte je Gebiet, nur
+   solche ohne Versuch), für den Bestand `summaries.mjs` (alle ohne `ruleSummary`, deren Text in der Ablage liegt).
+5. **Fakten** (`topic_facts`, `shared/topic-facts.mjs` und `shared/radars.mjs`, Version `FACTS_VERSION`): im Import
+   zusammen mit Stufe 4, für den Bestand und nach jeder Regeländerung `facts.mjs` (schreibt alle Berichte neu, lokal
+   rund 2 Minuten für 940.000 Berichte, in Stücken von 5.000, die App liest weiter).
+6. **Suche**: `refresh-search-words.mjs --full` nach Stufe 4 im Bestand (neue Zusammenfassungen ändern den Suchtext);
+   im Import führt `runSync` die Wortliste und `rollCardDates` selbst nach.
+
+Einmal einrichten: `RM_PDF_STORE` in die Umgebung von Dienst und Importprozess, Migrationen `0024` und `0025`, dann
+1 bis 6 nacheinander. Danach nachts nach dem Import (Reihenfolge fest, jeder Schritt nur Neues): `fetch.mjs --months 1`,
+`text.mjs`, `text.mjs --ocr`, `summaries.mjs`, `facts.mjs`, `refresh-search-words.mjs`.
+
+Lücken, bevor das so läuft: Der Import legt das PDF ab, aber nicht den daraus gelesenen Text (Stufe 3 holt ihn nachts
+nach) und macht kein OCR; Berichte, deren Zusammenfassung schon versucht wurde, bekommen ihre Fakten nur über
+`facts.mjs`. Nach einer Änderung an `FACTS_VERSION` oder `TEXT_VERSION` die betroffenen Stufen von Hand anstoßen.
+
 ## Vor dem Öffnen für andere
 
 Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain erreichbar wird:

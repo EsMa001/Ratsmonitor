@@ -2,9 +2,17 @@
    Gleiches Gerüst für alle Branchen, Auswahl, Sätze und Anordnung je Branche. */
 import type { IconName } from "./icons";
 
-export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "vergabe";
-/** Tools funktionieren mit jedem Suchbegriff; Radare sind fertige Auswertungen zu einem festen Thema */
-export type AnalyseGruppe = "tool" | "radar";
+export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "vergabe" | "klima" | "finanzlage" | "beteiligung" | "gebuehren" | "news";
+/** Tools funktionieren mit jedem Suchbegriff; Politik, Finanzen und Radar sind fertige Auswertungen, nach der Frage geordnet */
+export type AnalyseGruppe = "tool" | "politik" | "finanzen" | "radar";
+
+/* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
+export const GRUPPEN: Record<AnalyseGruppe, { name: string; kurz: string; href: string; text: string }> = {
+  tool: { name: "plenara.X Tools", kurz: "Tools", href: "/analytics/tools", text: "Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Zusammenhänge, Trends, Ortsvergleich, Beschlüsse und Beratungswege." },
+  politik: { name: "plenara.X Politik", kurz: "Politik", href: "/analytics/politik", text: "Wer entscheidet wie: welche Fraktionen welche Themen beantragen und was daraus wird, wo Einwohnerinnen und Einwohner sich einbringen und was gerade berichtenswert ist." },
+  finanzen: { name: "plenara.X Finanzen", kurz: "Finanzen", href: "/analytics/finanzen", text: "Wohin Geld fließt: Haushalt, Steuern und Kredite, Gebühren, Fördermittel und Vergaben, aus den Ratsunterlagen gelesen." },
+  radar: { name: "plenara.X Radar", kurz: "Radar", href: "/analytics/radar", text: "Was gebaut und geplant wird: Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales, Klima und Energie." },
+};
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
   diffusion: { href: "/analytics/diffusion", name: "Ausbreitung", icon: "map", group: "tool" },
@@ -13,14 +21,19 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   vergleich: { href: "/analytics/vergleich", name: "Ortsvergleich", icon: "mapPin", group: "tool" },
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck", group: "tool" },
   gremien: { href: "/analytics/gremien", name: "Beratungswege", icon: "users", group: "tool" },
-  fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "radar" },
-  foerderung: { href: "/analytics/foerderung", name: "Förderradar", icon: "euro", group: "radar" },
+  fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "politik" },
+  foerderung: { href: "/analytics/foerderung", name: "Förderradar", icon: "euro", group: "finanzen" },
   bauleitplanung: { href: "/analytics/bauleitplanung", name: "Bauleitplanung", icon: "house", group: "radar" },
   kita: { href: "/analytics/kita", name: "Kita-Radar", icon: "heart", group: "radar" },
   versorgung: { href: "/analytics/versorgung", name: "Versorgungsradar", icon: "droplet", group: "radar" },
   verkehr: { href: "/analytics/verkehr", name: "Verkehrsradar", icon: "bus", group: "radar" },
   soziales: { href: "/analytics/soziales", name: "Vereins- und Sozialradar", icon: "handshake", group: "radar" },
-  vergabe: { href: "/analytics/vergabe", name: "Vergaberadar", icon: "clipboardList", group: "radar" },
+  vergabe: { href: "/analytics/vergabe", name: "Vergaberadar", icon: "clipboardList", group: "finanzen" },
+  klima: { href: "/analytics/klima", name: "Klima- und Energieradar", icon: "zap", group: "radar" },
+  finanzlage: { href: "/analytics/finanzlage", name: "Finanzlage", icon: "layers", group: "finanzen" },
+  beteiligung: { href: "/analytics/beteiligung", name: "Beteiligung", icon: "megaphone", group: "politik" },
+  news: { href: "/analytics/news", name: "Newsradar", icon: "newspaper", group: "politik" },
+  gebuehren: { href: "/analytics/gebuehren", name: "Gebührenradar", icon: "tag", group: "finanzen" },
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
@@ -47,7 +60,7 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     analysen: [
       ["bauleitplanung", "Sehen Sie, welche Bebauungspläne in welchem Verfahrensschritt sind und wie viele Wohnungen entstehen sollen."],
       ["graph", "Verknüpfen Sie Bauleitpläne, Veränderungssperren und Gewerbegebiete zu einem Netz."],
-      ["trends", "Erkennen Sie früh, welche Flächenthemen in Ihrer Region an Fahrt gewinnen."],
+      ["gebuehren", "Grundbesitzabgaben im Blick: wo Abfall-, Abwasser- und Niederschlagswassergebühren neu kalkuliert, erhöht oder gesenkt werden."],
     ],
     team: ["Für Ihr Projektteam", "Sitzungskalender mit Umkreis um Ihre Flächen; Hinweise gehen an bis zu fünf weitere Personen aus Entwicklung und Planung."],
   },
@@ -66,8 +79,8 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     layout: "cards",
     analysen: [
       ["foerderung", "Sehen Sie, welche Förderprogramme in den Kommunen Ihrer Mitglieder beantragt und bewilligt werden."],
+      ["finanzlage", "Wo Haushaltssicherung, Hebesätze, Kredite und Umlagen beraten werden und was daraus wird."],
       ["fraktionen", "Welche Fraktionen Anträge zu Ihren Themen stellen und was aus ihnen wird."],
-      ["vergleich", "Vergleichen Sie Hebesätze und Gewerbeflächen mehrerer Kommunen nebeneinander."],
     ],
     team: ["Für Geschäftsstelle und Mitglieder-Betreuung", "Sitzungskalender für Ihre Gebiete; bis zu fünf weitere Empfänger sehen jeden Alarm."],
   },
@@ -87,7 +100,7 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     analysen: [
       ["fraktionen", "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird."],
       ["kita", "Wo über Kita-Elternbeiträge entschieden wird und wo neue Kita-Plätze entstehen."],
-      ["trends", "Erkennen Sie früh, welche Themen in Ihrer Recherche an Fahrt gewinnen."],
+      ["news", "Was diese Woche berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat aus der Vorlage und Quelle."],
     ],
     team: ["Für Ihre Redaktion", "Der Sitzungskalender ist Ihre Wochenvorschau; bis zu fünf Kolleginnen und Kollegen bekommen dieselben Hinweise."],
   },

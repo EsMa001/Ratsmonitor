@@ -7,12 +7,12 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {RADARS} from './radars.mjs';
-export const FACTS_VERSION='facts-v4';
+export const FACTS_VERSION='facts-v6';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 const SENTENCE=/(?<=[^0-9][.;!?])\s+(?=[A-ZÄÖÜ„"])/;
 /* Sammelpunkte (Anfragen, Mitteilungen, Haushalt, Sachstandsberichte …) sprechen über viele Vorhaben und Fraktionen zugleich:
    aus ihnen wird nichts abgeleitet, außer ihr Titel nennt die Förderung selbst (Stichprobe 11.10.2026). */
-export const COLLECTIVE=/\bAnfragen\b|Beantwortung|Mitteilung|Informationen|Verschiedenes|Niederschrift|Tagesordnung|Haushalt|Jahresabschluss|Sachstand|Statusbericht|Bericht (der|des|aus)|Berichte\b|Eingänge/i;
+export const COLLECTIVE=/\bAnfragen\b|Beantwortung|Mitteilung|Informationen|Verschiedenes|Niederschrift|Tagesordnung|Haushalt|Jahresabschluss|Beteiligungsbericht|Lagebericht|Sachstand|Statusbericht|Bericht (der|des|aus)|Berichte\b|Eingänge/i;
 
 /* Parteifamilien. Lokale Wählergruppen heißen überall anders und werden zusammengefasst. */
 export const PARTIES=[
@@ -88,6 +88,42 @@ export function fundingOf(text){
  // Förderung ohne Programmnamen zählt nur, wenn sie bewilligt oder beantragt ist (bloße Erwähnungen sind zu ungenau)
  if(!out.length&&any&&any!=='mentioned')out.push({program:'Sonstige Förderung',status:any});
  return out;
+}
+
+/* Förderbeträge: nur ein Betrag, der unmittelbar an einem Förderwort hängt („Zuwendung in Höhe von 450.000 €“, „Fördermittel
+   von 1,2 Mio. Euro“, „120.000 € Landesmittel“). Nicht dazwischen: Gesamtkosten, Eigenanteil, förderfähige Kosten, Prozent. */
+const EURO_NUM=String.raw`(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d+)?)\s*(Mio\.?|Millionen|Mrd\.?|Milliarden|T€|TEUR|Tsd\.?\s*(?:€|Euro|EUR)|Tausend\s*(?:€|Euro))?\s*(€|Euro|EUR)?`;
+const FUND_WORD=String.raw`(?:Förder(?:summe|betrag|beträge|mittel|geld|ung|zuschuss|zusage|bescheid|antrag)|Zuwendung(?:en)?|Zuschuss|Zuschüsse|Zuschusses|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss|gefördert|bewilligt)`;
+const EURO_AFTER=new RegExp(FUND_WORD+String.raw`([^.;€]{0,60}?)(?:€\s*)?`+EURO_NUM,'g');
+const EURO_BEFORE=new RegExp(EURO_NUM+String.raw`\s+(?:an\s+)?(?:Förder|Zuwendung|Zuschuss|Zuschüsse|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss)`,'g');
+const NOT_FUND_AMOUNT=/Gesamtkosten|Kosten|Anteil|volumen|zwischen|nicht gedeckt|Restbetrag|Differenz|verbleibend|Eigenmittel|Eigenleistung|Investition|Ausgaben|Aufwand|förderfähig|zuwendungsfähig|Bemessungsgrundlage|Haushalt|Bagatellgrenze|mindestens|höchstens|maximal|bis zu|pro |je |Prozent|%/i;
+// Davor: Zuschüsse der Kommune selbst (an Vereine, Bäder, Stadtwerke) sind kein Fördergeld für sie
+const OWN_BEFORE=/städtisch|gemeindlich|kommunal|eigene|der Stadt\s*$|der Gemeinde\s*$/i;
+// Davor: Höchst- und Mindestbeträge einer Richtlinie
+const LIMIT_BEFORE=/maximal|Höchst|höchstens|bis zu|mindestens|Mindest|\bmin\.|Bagatell|mehr als|über\s*$/i;
+/* Ganze Sätze ohne Förderbetrag einer Kommune: Programmtöpfe und Aufrufe, Haushaltsformulare mit Ankreuzfeldern */
+const NOT_FUND_SENTENCE=/stehen\b.{0,200}zur Verfügung|Projektaufruf|bundesweit|landesweit|Programmvolumen|Fördervolumen|Fördertopf|Gesamtvolumen|☐|☒|Sachkonto|Auszahlungen|Einzahlungen/i;
+const toEuro=(num,unit,cur)=>{
+ let v=Number(num.replace(/\./g,'').replace(',','.'));
+ if(/^(Mio|Millionen)/.test(unit||''))v*=1e6;else if(/^(Mrd|Milliarden)/.test(unit||''))v*=1e9;else if(/^(T€|TEUR|Tsd|Tausend)/.test(unit||''))v*=1e3;else if(!cur)return 0;
+ return v>=1000&&v<=2e8?Math.round(v):0;
+};
+/** Förderbeträge je Programm: [{program, euro}] (je Programm der größte genannte Betrag; ohne Programm „Sonstige Förderung“) */
+export function fundingEuroOf(text){
+ const out=new Map();
+ for(const s of String(text||'').replace(/\s+/g,' ').split(SENTENCE)){
+  // Sehr lange „Sätze“ sind Kopfzeilen, Formulare oder Tabellen ohne Satzzeichen
+  if(s.length>400||!FUND.test(s)&&!/Zuwendung|Zuschuss|Landesmittel|Bundesmittel/.test(s)||NOT_FUND_SENTENCE.test(s))continue;
+  let euro=0;
+  for(const m of s.matchAll(EURO_AFTER)){const before=s.slice(Math.max(0,m.index-30),m.index);if(NOT_FUND_AMOUNT.test(m[1])||LIMIT_BEFORE.test(before)||OWN_BEFORE.test(before))continue;const v=toEuro(m[2],m[3],m[4]);if(v>euro)euro=v;}
+  // „120.000 € Landesmittel“ nur in Fließtext: in Tabellen (drei und mehr Beträge) steht davor oft die Kostenzeile
+  const tabular=(s.match(/\d\s*(?:€|Euro|EUR)/g)||[]).length>=3;
+  if(!tabular)for(const m of s.matchAll(EURO_BEFORE)){if(LIMIT_BEFORE.test(s.slice(Math.max(0,m.index-30),m.index))||/Gesamt|Kosten|Summe|Saldo|volumen/i.test(s.slice(Math.max(0,m.index-30),m.index)))continue;const v=toEuro(m[1],m[2],m[3]);if(v>euro)euro=v;}
+  if(!euro)continue;
+  const names=PROGRAMS.filter(([,re])=>re.test(s)).map(([n])=>n);
+  for(const n of names.length?names:['Sonstige Förderung'])if(euro>(out.get(n)||0))out.set(n,euro);
+ }
+ return [...out].map(([program,euro])=>({program,euro}));
 }
 
 /* Bauleitplanung: Plan und Verfahrensschritt aus dem Titel, sonst aus dem Beschlussvorschlag („… beschließt …“), nicht aus dem
@@ -168,6 +204,7 @@ export function radarFactsOf(title,text){
   if((r.collective||COLLECTIVE).test(t)||r.exclude?.test(t)||(r.require&&!r.require.test(t)))continue;
   const src=t.replace(/\s+/g,' ').trim().split(' ').length<4?t+' '+dec:t;
   const topics=r.topics.filter(([,re])=>re.test(src)).map(([n])=>n);
+  if(!topics.length&&r.fallback)topics.push(r.fallback);
   if(!topics.length)continue;
   const sig=(r.signals.find(([,re])=>re.test(t))||r.signals.find(([,re])=>re.test(dec))||['Sonstiges'])[0];
   for(const n of topics)rows.push({kind:'radar:'+id,value:n,detail:sig});
@@ -180,7 +217,14 @@ export function factsOf(title,text){
  const rows=[],collective=COLLECTIVE.test(String(title||''))&&!/Förder|Zuwendung|Zuschuss/i.test(String(title||''));
  const f=factionsOf(title,text);
  if(f)for(const p of f.parties)rows.push({kind:'faction',value:p,detail:f.kind});
- if(text&&!collective)for(const x of fundingOf(text))rows.push({kind:'funding',value:x.program,detail:x.status});
+ if(text&&!collective){
+  const fund=fundingOf(text);
+  for(const x of fund)rows.push({kind:'funding',value:x.program,detail:x.status});
+  /* Betrag ohne Programm im selben Satz gehört zum Programm des Berichts, wenn er nur eines nennt */
+  const named=fund.filter(x=>x.program!=='Sonstige Förderung'),euro=new Map();
+  for(const x of fundingEuroOf(text)){const p=x.program==='Sonstige Förderung'&&named.length===1?named[0].program:x.program;if(x.euro>(euro.get(p)||0))euro.set(p,x.euro);}
+  for(const [p,e] of euro)rows.push({kind:'funding_euro',value:p,detail:String(e)});
+ }
  const plan=planOf(title,text);
  if(plan){rows.push({kind:'plan',value:plan.stage,detail:plan.type+'|'+plan.plan});const we=housingOf(text);if(we)rows.push({kind:'housing',value:'Wohneinheiten',detail:String(we)});}
  const fee=kitaFeeOf(title,text);if(fee)rows.push({kind:'kita_fee',value:fee.direction,detail:fee.euro});

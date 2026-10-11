@@ -227,12 +227,14 @@ export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term:
     io.observe(ref.current);
     return () => io.disconnect();
   }, []);
+  /* Radare (Politik, Finanzen, Radar) haben eine gezeichnete Vorschau ohne Beispielbegriff */
+  const radar = ANALYSEN[id].group !== "tool";
   useEffect(() => {
-    if (!seen) return;
+    if (!seen || radar) return;
     let alive = true;
     load().then((d) => { if (!alive) return; const m = mini(id, d.items[`${id}|${term}`], d.geo); setNode(m); if (m && d.generated) setStand(d.generated.split("-").reverse().join(".")); }).catch((e) => console.error("LiveThumb", id, e));
     return () => { alive = false; };
-  }, [seen, id, term]);
+  }, [seen, id, term, radar]);
   return (
     <div ref={ref} className="relative">
       {node ? (
@@ -240,9 +242,11 @@ export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term:
       ) : (
         <Thumb />
       )}
-      <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[13px] text-slate-600 shadow-sm">
-        {node ? "Daten" : "Beispiel"}: „{term}“
-      </span>
+      {!radar && (
+        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[13px] text-slate-600 shadow-sm">
+          {node ? "Daten" : "Beispiel"}: „{term}“
+        </span>
+      )}
       {showStand && node && stand && <p className="m-0 mt-1.5 text-[12px] text-slate-500">Stand {stand}</p>}
     </div>
   );

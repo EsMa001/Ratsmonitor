@@ -37,9 +37,10 @@ function EnterpriseSection({ e, terms, slug }: { e: EnterpriseBlock; terms: stri
   const card = (id: keyof typeof ANALYSEN, text: string, term: string) => {
     const a = ANALYSEN[id];
     return (
-      <button key={id} type="button" onClick={() => router.push(a.href)} className="group text-left">
+      <button key={id} type="button" onClick={() => router.push(a.href)} className="group flex flex-col text-left">
         <div className="transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={id} term={term} /></div>
-        <h3 className="m-0 mt-4 text-[16px] font-semibold text-slate-900">{a.name}</h3>
+        {/* Handy: Überschrift über dem Vorschaubild */}
+        <h3 className="m-0 mt-4 text-[16px] font-semibold text-slate-900 max-sm:order-first max-sm:mb-3 max-sm:mt-0">{a.name}</h3>
         <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{text}</p>
       </button>
     );

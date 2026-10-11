@@ -45,8 +45,10 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
   const [flip, setFlip] = useState(false);
   useLayoutEffect(() => {
     const el = ref.current;
+    /* Grenze: der umgebende Abschnitt (Karte), höchstens der Bildschirm (Analyseseiten: Knopf rechts neben der Suche) */
     const box = el?.closest("section")?.getBoundingClientRect();
-    if (el && box) setFlip(el.getBoundingClientRect().right > box.right - 12);
+    const edge = Math.min(box?.right ?? Infinity, document.documentElement.clientWidth);
+    if (el) setFlip(el.getBoundingClientRect().right > edge - 12);
   }, []);
   const phone = usePhone();
   const full = "min-w-0 [&_button]:!w-full [&_button]:!min-w-0 [&_button]:!max-w-none";
