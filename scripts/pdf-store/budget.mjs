@@ -2,8 +2,8 @@
 // Wert je Byte, bis das Budget voll ist. Ohne --apply wird nur gerechnet.
 //
 //   node scripts/pdf-store/budget.mjs --backfill           Dokumentart, Formalie, Sitzungstag aus der Datenbank nachtragen
-//   node scripts/pdf-store/budget.mjs [--budget-gb 100]    was passt hinein, was behält nur den Text
-//   node scripts/pdf-store/budget.mjs --budget-gb 100 --population 870701
+//   node scripts/pdf-store/budget.mjs [--budget-gb 65]    was passt hinein, was behält nur den Text
+//   node scripts/pdf-store/budget.mjs --budget-gb 65 --population 870701
 //        Hochrechnung: die Ablage als Stichprobe von `population` Dokumenten; das Budget schrumpft im selben Verhältnis
 //   node scripts/pdf-store/budget.mjs --budget-gb 15 --apply   PDFs außerhalb des Budgets löschen (Text bleibt, Status 'text-only')
 import {existsSync,readdirSync} from 'node:fs';
@@ -46,7 +46,7 @@ const ranked=files.map(f=>{
  return {...f,type,scan,...rankPdf({type,formal:f.minFormal===1,scan,eventDate:f.eventDate,bytes:f.bytes})};
 }).sort((a,b)=>b.score-a.score);
 
-const budget=Number(opt('budget-gb',100))*1073741824,population=Number(opt('population',0));
+const budget=Number(opt('budget-gb',65))*1073741824,population=Number(opt('population',0));
 const share=population?files.length/population:1,limit=budget*share;
 let used=textBytes,cut=null;const kept=[],dropped=[];
 for(const f of ranked){if(f.keep&&used+f.bytes<=limit){used+=f.bytes;kept.push(f);}else{dropped.push(f);cut??=f;}}
