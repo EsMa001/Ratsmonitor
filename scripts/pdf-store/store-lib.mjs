@@ -29,17 +29,30 @@ export async function ocrScheduler(workers=2){
  try{fs.mkdirSync(cache,{recursive:true});}catch{/* ohne Cache geht es auch, nur langsamer */}
  const scheduler=tesseract.createScheduler();
  for(let i=0;i<workers;i++)scheduler.addWorker(await tesseract.createWorker('deu',1,{cachePath:cache}));
- return {scheduler,canvasImport:()=>import(tools+'/node_modules/@napi-rs/canvas/index.js'),terminate:()=>scheduler.terminate()};
+ return {scheduler,workers,canvasImport:()=>import(tools+'/node_modules/@napi-rs/canvas/index.js'),terminate:()=>scheduler.terminate()};
 }
 
-/** Seiten ohne Textebene einer Datei per OCR lesen (jede Seite einzeln gerendert); Rückgabe: Zahl der gelesenen Seiten. */
+/* Größtes Bild je Seite für OCR (Pixel): Pläne und Plakate im Großformat würden bei OCR_SCALE sonst riesig */
+const MAX_PIXELS=12e6;
+/** Seiten ohne Textebene einer Datei per OCR lesen; Rückgabe: Zahl der gelesenen Seiten. Die Datei wird einmal geöffnet, die
+    Seiten in Gruppen so groß wie die Zahl der OCR-Worker gelesen (alle Seiten auf einmal zu rendern sprengte bei großen Scans
+    Speicher und CPU und hielt den Lauf an, 12.10.2026). */
 export async function ocrFile(store,sha,ocr){
  const pages=store.textPages(sha);if(!pages)return 0;
- const bytes=fs.readFileSync(store.file(sha)),want=pages.map((p,i)=>needsOcr(p)?i:-1).filter(i=>i>=0);
- await Promise.all(want.map(async i=>{
-  const png=await renderPageAsImage(new Uint8Array(bytes),i+1,{canvasImport:ocr.canvasImport,scale:OCR_SCALE});
-  pages[i]=(await ocr.scheduler.addJob('recognize',Buffer.from(png))).data.text;
- }));
+ const want=pages.map((p,i)=>needsOcr(p)?i:-1).filter(i=>i>=0);
+ if(want.length){
+  const pdf=await getDocumentProxy(new Uint8Array(fs.readFileSync(store.file(sha))),{isEvalSupported:false,verbosity:0});
+  try{
+   for(let k=0;k<want.length;k+=ocr.workers){
+    await Promise.all(want.slice(k,k+ocr.workers).map(async i=>{
+     const page=await pdf.getPage(i+1),v=page.getViewport({scale:1});page.cleanup();
+     const scale=Math.max(0.5,Math.min(OCR_SCALE,Math.sqrt(MAX_PIXELS/Math.max(1,v.width*v.height))));
+     const png=await renderPageAsImage(pdf,i+1,{canvasImport:ocr.canvasImport,scale});
+     pages[i]=(await ocr.scheduler.addJob('recognize',Buffer.from(png))).data.text;
+    }));
+   }
+  }finally{await pdf.loadingTask?.destroy?.();}
+ }
  store.putText(sha,pages,{method:want.length===pages.length?'ocr':'mixed',version:TEXT_VERSION,ocrPages:want.length,ocrNeeded:0});
  return want.length;
 }
