@@ -7,6 +7,9 @@ import {matchTitle,scoreCard,socialTopics,draftText} from '../server/integration
 const terms=t=>matchTitle(t).map(h=>h.term);
 
 test('Streitwörter treffen Themen, nicht Verfahrenssprache', () => {
+ assert.ok(terms('Wiedereinführung verkaufsoffener Sonntage in der Innenstadt').includes('Sonntagsöffnung'));
+ assert.ok(terms('Streichung der Zuschüsse für Vereine im Rahmen der Haushaltskonsolidierung').includes('Streichung / Sparliste'));
+ assert.equal(scoreCard({title:'Änderungsantrag der Ratsfraktion zur Grundsteuer B',status:'consulting'}).party,true);
  assert.deepEqual(terms('Einführung von Tempo 30 auf der Hauptstraße'),['Tempo 30']);
  assert.ok(terms('Antrag auf Errichtung von drei Windkraftanlagen').includes('Windkraft'));
  assert.ok(terms('Einführung der Bezahlkarte für Asylbewerber').includes('Bezahlkarte'));

@@ -43,11 +43,15 @@ export const GROUPS=[
   ['Umbenennung',/umbenennung (der|des|von) .*(stra(ß|ss)e|platz|schule|weg)|straßenumbenennung|straßennamen|kolonial/],
   ['Flagge / Symbol',/regenbogenflagge|regenbogenfahne|\bpride\b|\bcsd\b|beflaggung|bundesflagge|flagge zeigen|kruzifix/],
   ['Rechtsextremismus',/brandmauer|rechtsextrem|demonstration gegen|gegen rechts/],
+  ['Vielfalt / Demokratie',/vielfalt|demokratie|toleranz|antisemitismus|rassismus|diskriminierung|queer|weltoffen/,2.4],
+  ['Tierschutz',/tierschutz|wildtierverbot|wildtiere im zirkus|zirkus|taubenmanagement|taubenfütter|tierheim|hundeauslauf|pelz/,2.6],
  ]},
  {id:'geld',name:'Gebühren & Schließung',weight:2.5,terms:[
   ['Schließung',/(?<![a-zäöüß])schließung(?! (des|der|von) (öffentlichen|nichtöffentlichen|sitzung|versammlung|tagesordnung|beratung|rednerliste|gehweglücke|baulücke|lücke|radweglücke))(?!.{0,25}lücke)|schliessung|stilllegung (des|der|von) (bad|schule|kita|bibliothek|krankenhaus|klinik|standort)|schließen (der|des) (bad|schule|kita|bibliothek|krankenhaus|klinik|standort|freibad|hallenbad|filiale|jugendzentrum|werk|geschäftsstelle)|einstellung des betriebs/,3],
   ['Bad / Bibliothek',/hallenbad(?!str)|freibad|schwimmbad|schwimmhalle|stadtbibliothek|bücherei|musikschule|volkshochschule|stadtteilbibliothek|jugendzentrum|stadtteilzentrum/,2.5,/schließ|erhalt|zukunft|abriss|streichung|kürzung|einspar|defizit|sanierung|neubau|kosten|erhöhung|bürger|petition|rettung|verkauf/],
-  ['Grundsteuer / Hebesatz',/grundsteuer|hebesatz|hebesätze|gewerbesteuer/,2.6],
+  ['Grundsteuer / Hebesatz',/grundsteuer|hebesatz|hebesätze|realsteuer|gewerbesteuer/,2.6],
+  ['Streichung / Sparliste',/streichung (von|der|des|aller)|kürzung (der|von|des|aller)|haushaltskonsolidierung|konsolidierungsliste|sparpaket|sparliste|kürzungsliste|rotstift/,2.6],
+  ['Eintrittspreise',/eintrittspreis|eintrittsgeld|badeeintritt|preiserhöhung|ticketpreis|fahrpreiserhöhung|tariferhöhung/,2.6],
   ['Gebührenerhöhung',/erhöhung (der |des |von )?(gebühr|beitr|steuer|entgelt|eintritt|elternbeitr|kita)|gebührenerhöhung|beitragserhöhung|straßenausbaubeitr/,2.8],
   ['Kita-Beiträge',/kita-?gebühr|elternbeitr|kita-?beitr/,1.6],
   ['Teurer Bau',/kostensteigerung|kostenexplosion|kostenüberschreitung|prestigeprojekt|millionengrab|baukostensteigerung/,2.8],
@@ -64,10 +68,13 @@ export const GROUPS=[
   ['Ehrung / Aberkennung',/aberkennung|aberkennen|ehrenbürger.{0,50}(nazi|ns-|nationalsozial)|umstritten.{0,30}(ehrenbürger|straßenname|denkmal)/,2.8],
   ['Verpackungs- / Bettensteuer',/verpackungssteuer|übernachtungssteuer|bettensteuer|tourismusabgabe|citytax|zweitwohnungssteuer/,2.8],
   ['Hundesteuer',/hundesteuer|vergnügungssteuer/,1.8],
+  ['Transparenz',/transparenz|livestream|sitzungsübertragung|übertragung der sitzung|ausschluss der öffentlichkeit|informationsfreiheit/,2.4],
   ['Videoüberwachung',/videoüberwachung|kameraüberwachung|bodycam|überwachungskamera/,2.6,/innenstadt|marktplatz|bahnhof|park|kriminal|sicherheit|angstraum|rathausplatz|öffentlich|stadtgebiet|brennpunkt/],
   ['Feuerwerk',/böllerverbot|feuerwerksverbot|abbrennverbot|feuerwerk.{0,40}(verbot|einschränk)|silvesterfeuerwerk/,2.4],
  ]},
  {id:'alltag',name:'Alltag & Müll',weight:2.2,terms:[
+  ['Sonntagsöffnung',/verkaufsoffene[rn]? sonntag|sonntagsöffnung|ladenöffnung|sonn- und feiertag/,2.6],
+  ['Innenstadt / Handel',/innenstadt.{0,40}(leerstand|belebung|händler|einzelhandel)|einzelhandel|leerstand/,2.0],
   ['Müll',/müllgebühr|abfallgebühr|restmülltonne|biotonne|gelbe tonne|windeltonne|abfallwirtschaftssatzung/,2.4],
   ['Ampel / Übergang',/zebrastreifen|fußgängerüberweg|fußgängerampel|ampelanlage|lichtsignalanlage/,1.8],
   ['Radweg',/(?<!pop-up-)(?<!schnell)radweg|radwegebau|radverkehrsanlage/,1.8],
@@ -122,6 +129,13 @@ const FORMS={
  'Umspannwerk':['einem Umspannwerk','ein Umspannwerk','Energiewende'],
  'Aufwandsentschädigung':['der Aufwandsentschädigung der Politik','die Aufwandsentschädigung der Politik','Kommunalpolitik'],
  'Ehrung / Aberkennung':['einer Ehrung','eine Ehrung','Erinnerungskultur'],
+ 'Streichung / Sparliste':['Kürzungen im Haushalt','Kürzungen im Haushalt','Haushalt'],
+ 'Eintrittspreise':['höheren Eintritts- und Fahrpreisen','höhere Eintritts- und Fahrpreise','Preise'],
+ 'Vielfalt / Demokratie':['Vielfalt und Demokratie','Vielfalt und Demokratie','Demokratie'],
+ 'Tierschutz':['Tierschutz','Tierschutz','Tierschutz'],
+ 'Transparenz':['mehr Transparenz in der Ratsarbeit','mehr Transparenz in der Ratsarbeit','Transparenz'],
+ 'Sonntagsöffnung':['verkaufsoffenen Sonntagen','verkaufsoffene Sonntage','Sonntagsöffnung'],
+ 'Innenstadt / Handel':['der Innenstadt und dem Einzelhandel','die Innenstadt und den Einzelhandel','Innenstadt'],
  'Verpackungs- / Bettensteuer':['einer neuen kommunalen Steuer','eine neue kommunale Steuer','Steuern'],
  'Hundesteuer':['der Hundesteuer','die Hundesteuer','Hundesteuer'],
  'Videoüberwachung':['mehr Sicherheit in der Innenstadt','mehr Sicherheit in der Innenstadt','Sicherheit'],
@@ -216,8 +230,9 @@ export function draftText({title,status,region,term}){
 }
 
 const FORMAL=/^(einladung|niederschrift|bekanntgabe|genehmigung der niederschrift|anfragen|mitteilungen|verschiedenes|sonstiges|einwohnerfrag)/i;
-// Antrag einer Fraktion oder Partei: deutet auf Streit hin.
-const PARTY_MOTION=/\b(afd|linke|grüne|grünen|cdu|csu|spd|fdp|bsw|fraktion|freie wähler|volt)[- ]?(antrag|anfrage)|antrag der (afd|linken|grünen|cdu|spd|fdp|fraktion)/;
+// Antrag einer Fraktion, Gruppe oder eines Ratsmitglieds: Oppositionsanträge enden in den Berichten deutlich öfter streitig
+// (55 bis 80 % gegenüber 22 % im Mittel aller Vorgänge, Auswertung von 12 Monaten).
+const PARTY_MOTION=/\b(afd|linke|grüne|grünen|cdu|csu|spd|fdp|bsw|fraktion|freie wähler|volt)[- ]?(antrag|anfrage)|antrag der (afd|linken|grünen|cdu|spd|fdp|fraktion)|ratsfraktion|ratsgruppe|kreistagsfraktion|bürgerschaftsfraktion|änderungsantrag|ergänzungsantrag|beschlussantrag|antrag der gruppe|antrag des (ratsmitglieds|ratsherrn|einzelmandats)|einzelratsmitglied|wählergemeinschaft|antrag (der|von) (frau|herrn)|fraktion[a-zäöüß]* (die|der|bündnis|b['’]90)/;
 const STATUS_BOOST={rejected:1.5,postponed:1.3,approved:1.1,recommended:1.15,consulting:1,announced:.95,info:.8,unknown:.9};
 
 /** Streitwörter eines Titels: [{group,groupName,term,weight}] */
@@ -286,7 +301,7 @@ async function loadEvidence(db,ids){
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 // Alltagsnähe: je näher am Alltag der Leserinnen und Leser, desto eher wird geteilt.
 const EVERYDAY={verkehr:20,geld:18,alltag:17,migration:16,beteiligung:16,politik:16,identitaet:15,energie:12,bauen:8};
-const EVERYDAY_TERM={'Tempo 30':20,'Grundsteuer / Hebesatz':20,'Schließung':19,'Bad / Bibliothek':18,'Bezahlkarte':16,'Kita-Beiträge':17,'Umspannwerk':6,'Wärme':8,'Mehrkosten':8,'Funk / Strom':9};
+const EVERYDAY_TERM={'Eintrittspreise':19,'Sonntagsöffnung':16,'Tierschutz':14,'Streichung / Sparliste':16,'Transparenz':10,'Vielfalt / Demokratie':12,'Innenstadt / Handel':14,'Tempo 30':20,'Grundsteuer / Hebesatz':20,'Schließung':19,'Bad / Bibliothek':18,'Bezahlkarte':16,'Kita-Beiträge':17,'Umspannwerk':6,'Wärme':8,'Mehrkosten':8,'Funk / Strom':9};
 const JARGON=/§|flst\.|fl\.-?nr|flurst|bebauungsplan|vorhabenbezogen|satzung|drucksache|\bbv\b|\bvo\/|geschäftsordnung|haushaltssatzung|aufstellungsbeschluss|einvernehmen|\bnr\.\s?\d/i;
 /** Streitquote eines Stichworts aus den Berichten der letzten 12 Monate, zum Mittel hin gezogen (wenig Belege = nah am Mittel). */
 export function termRate(term,cal=calibrationFile){
@@ -307,7 +322,7 @@ export function fitScore(c,{today,population={},evidence=null,calibration=calibr
  // Streit im Vorgang: Abstimmungsergebnis, sonst Status; dazu Fraktionsantrag und Sitzungsfolge
  const res=evidence?.result||({rejected:'rej',postponed:'post'}[c.status])||null;
  let vorgang={rej:11,post:9,maj:8,unan:0,ok:2}[res]??3;
- if(c.party)vorgang+=3;
+ if(c.party)vorgang+=4;
  if((evidence?.sessions||0)>=3)vorgang+=2;
  vorgang=Math.min(15,vorgang);
  const alltag=EVERYDAY_TERM[main.term]??EVERYDAY[main.group]??10;
