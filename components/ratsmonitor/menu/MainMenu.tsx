@@ -128,7 +128,7 @@ export function MainMenu() {
       <nav aria-label="Hauptmenü" className="ri-topnav order-last hidden xl:flex">
         {(["usecases", "funktionen", "analyse", "info"] as const).map((g) => (
           <button key={g} type="button" data-menu-trigger aria-expanded={open === g} aria-controls="hauptmenue" onClick={(e) => toggle(g, e.currentTarget)}>
-            {g === "funktionen" ? "Funktionen" : g === "analyse" ? "Analyse" : g === "usecases" ? "Anwender" : "Informationen"}
+            {g === "funktionen" ? "Funktionen" : g === "analyse" ? "Analysen" : g === "usecases" ? "Anwender" : "Informationen"}
             <IconChevronDown size={14} className={open === g ? "rotate-180" : ""} />
           </button>
         ))}
@@ -178,7 +178,7 @@ export function MainMenu() {
                   </ul>
                 )}
                 {open === "all" && <button type="button" className="ri-menu__main ri-menu__group" aria-expanded={openGroup === "analyse"} onClick={() => setOpenGroup(openGroup === "analyse" ? "" : "analyse")}>
-                  Analyse
+                  Analysen
                   <IconChevronDown size={16} className={`ri-menu__chev ${openGroup === "analyse" ? "rotate-180" : ""}`} />
                 </button>}
                 {show("analyse") && (
