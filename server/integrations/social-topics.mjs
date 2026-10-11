@@ -210,21 +210,26 @@ export function cleanTitle(title,max=120){
  heads.push(/^(?:antrag|anfrage) (?:der|des|von) [^,:]{0,70}?(?:fraktion|partei|gruppe|fraktionen)\s+(?:auf|zur|zum|zu|über|betr\.?|betreffend)\s+(?:die |den |das |eine |einen |ein )?/i);
  {const m2=/^(.{0,70}?(?:antrag|drucksache|vorlage)\s*(?:nr\.?\s*)?\d[^:]{0,60}):\s+(.{12,})$/i.exec(t);if(m2)t=m2[2];}
  for(const h of heads){const m=h.exec(t);if(m&&t.length-m[0].length>=8){t=t.slice(m[0].length);break;}}
- t=t.replace(/B(?:ü|ue?)ndnis ?90 ?\/ ?(?:die )?gr(?:ü|ue?)nen/gi,'Grünen').replace(/partei mensch,? umwelt,? tierschutz/gi,'Tierschutzpartei');
+ t=t.replace(/(?:B(?:ü|ue?)ndnis|Bd\.) ?90 ?[\/-] ?(?:die )?gr(?:ü|ue?)nen/gi,'Grünen').replace(/partei mensch,? umwelt,? tierschutz/gi,'Tierschutzpartei');
  {const m5=/^([^:]{4,90}(?:fraktion|gruppe|grünen|cdu|spd|fdp|afd|wähler|linke)[^:]{0,60}):\s+(.{15,})$/i.exec(t);
   if(m5&&!/^\S*(antrag|anfrage)/i.test(m5[1])&&(m5[1].match(/fraktion|gruppe|cdu|spd|fdp|afd|grünen|wähler|linke|bvb|fwg|volt|bsw/gi)||[]).length>=2)t=m5[2];}
  // Zweiter Durchgang: „Antrag der <Fraktion/Gruppe/Partei …> [vom Datum] [zur/auf/betr.] Gegenstand“
- {const m4=/^(?:gemeinsamer?\s+)?\S*(?:antrag|anfrage)\s+(?:der|des|von|vom)\s+(?:\S+\s+){0,7}?(?:\S*fraktion\S*|gruppe|\S*partei|\S*grünen\S*|linke\S*|afd|cdu\S*|spd\S*|fdp|bsw|volt|fwg|ortsbeirat\S*)(?:(?:\s+(?:und|der|des|von)\s+|\s*[-–/,&]\s*|\s+)(?:\S*fraktion\S*|gruppe|\S*partei|\S*grünen\S*|linke\S*|afd|cdu\S*|spd\S*|fdp|bsw|volt|fwg|wab))*(?:\s+(?:im|in|für)\s+(?:\S+\s+){0,6}?(?:rat|kreistag|stadtrat|gemeinde\S*|landkreis\S*|ortsbeirat|bv\s*\d+))?(?:\s+vom\s+\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4})?\s*[,;:–-]?\s*(?:(?:zum\s+thema|zur|zum|zu|auf|für|betreffend|betr\.|bzgl\.|über|aus)\s+)?/i.exec(t);
+ {const m4=/^(?:gemeinsamer?\s+)?\S*(?:antrag|anfrage)\s+(?:der|des|von|vom)\s+(?:\S+\s+){0,7}?(?:\S*fraktion\S*|gruppe|\S*partei|\S*grünen\S*|linke\S*|afd|cdu\S*|spd\S*|fdp|bsw|volt|fwg|ortsbeirat\S*)(?:(?:\s+(?:und|der|des|von)\s+|\s*[-–/,&]\s*|\s+)(?:die\s+)?(?:\S*fraktion\S*|gruppe|\S*partei|\S*grünen\S*|linke\S*|afd|cdu\S*|spd\S*|fdp|bsw|volt|fwg|wab))*(?:\s+(?:im|in|für)\s+(?:\S+\s+){0,6}?(?:rat|kreistag|stadtrat|gemeinde\S*|landkreis\S*|ortsbeirat|bv\s*\d+))?(?:\s+vom\s+\d{1,2}\.\s?\d{1,2}\.\s?\d{2,4})?\s*[,;:–-]?\s*(?:(?:zum\s+thema|zur|zum|zu|auf|für|betreffend|betr\.|bzgl\.|über|aus)\s+)?/i.exec(t);
   if(m4&&t.length-m4[0].length>=12)t=t.slice(m4[0].length);}
  t=t.replace(/^beratung\s+(?=[A-ZÄÖÜ])/,'').replace(/^thema\s+/i,'');
  t=t.replace(/^(hier|betr\.?|betreff)\s*:?\s*/i,'');
- t=t.replace(/\((?:[^()]*?(?:\d{1,2}\.\d{1,2}\.\d{2,4}|eingang|aktenzeichen|az\.|vorlage|drucksache|§|ds\b)[^()]*)\)/gi,'');
+ t=t.replace(/\((?:[^()]*?(?:\d{1,2}\.\d{1,2}\.\d{2,4}|eingang|aktenzeichen|az\.|vorlage|drucksache|§|ds\b|art\. ?\d|abs\. ?\d)[^()]*)\)/gi,'');
  t=t.replace(/\b(?:DS|Drucksache|Vorlage|Vorlagen?-?Nr\.?|Antrag Nr\.?|Nr\.)\s*[\w\/.-]*\d[\w\/.-]*/gi,'');
  t=t.replace(/\s+[-–]\s+(?:Antrag|Anfrage|Vorlage|Beschlussvorlage)\b.*$/i,'');
  t=t.replace(/\s*[•|]\s*(?:Antrag|Anfrage)\b.*$/i,'');
  t=t.replace(/\s+(?:Änderungs-?|Ergänzungs-?)?(?:Antrag|Anfrage)\s+(?:zur|zum|zu|der|des|von)$/i,'');
  t=t.replace(/\s*\((?:Antrag|Anfrage)\b[^)]*$/i,'');
  t=t.replace(/\bDS-\s*/g,'');
+ t=t.replace(/^TOP\s*\d+[a-z]?\s*:\s*/i,'').replace(/^[^:]{3,30}:\s+hier\s*[-–]\s+(?=.{12})/i,'');
+ t=t.replace(/^(?:Beschlussvorlage|Vorlage)\s+[\d\/.-]{4,}\s+(?=.{12})/i,'');
+ t=t.replace(/(?:\s+[-–]\s+\S+)?\s+(?:gemäß|gemäss|gem\.|nach|i\. ?V\. ?m\.)\s+§.*$/i,'');
+ t=t.replace(/^(?:Die\s+)?(?:Linke|Grünen|SPD|CDU|FDP|AfD)\s+zu(?:r|m)?\s+(?:Beschlussvorlage|Vorlage|Antrag)\s+[\d\/._A-Z-]{4,}\s*(?=.{12})/,'');
+ t=t.replace(/^(?:Der|Die)\s+(?:Gemeinde|Stadt|Samtgemeinde)\s+\S+\s+(?:auf|zur|zum)\s+(?=.{12})/i,'').replace(/^Der\s+(?=\S+ung\b)/i,'').replace(/^Der\s+Fraktion\s+[^.]{3,40}?\s+vom\s+\d{1,2}\.\d{1,2}\.\d{2,4}\s+(?=.{12})/i,'');
  t=t.replace(/\s*\((?:(?:Antrag|Anfrage) (?:der )?)?(?:\S+-)?Fraktion[^)]*\)\s*$/i,'');
  t=t.replace(/["„“]?\s*,\s*(?:Änderungs-?|Ergänzungs-?)?(?:Antrag|Anfrage) (?:der|des|von)\b.*$/i,'');
  {const m3=/^(.{15,}?)\s+(?:Änderungs-?|Ergänzungs-?)?(?:Antrag|Anfrage)\s+(?:der|des|von)\s+(?:Fraktion|Fraktionen|Gruppe|Partei|CDU|SPD|FDP|AfD|Grünen|Linken|Freien)\b.*$/i.exec(t);if(m3)t=m3[1];}
@@ -248,7 +253,11 @@ export function cleanTitle(title,max=120){
   const cut=t.slice(0,max);
   const sp=cut.lastIndexOf(' ');
   const pu=Math.max(cut.lastIndexOf(', '),cut.lastIndexOf(': '),cut.lastIndexOf('; '),cut.lastIndexOf(' – '));
-  t=cut.slice(0,pu>max*.5?pu:sp>max*.55?sp:max).replace(/[\s,;:–-]+$/,'')+' …';
+  const op=cut.lastIndexOf('(');
+  const open=op>max*.4&&op>cut.lastIndexOf(')');
+  t=cut.slice(0,open?op:pu>max*.5?pu:sp>max*.55?sp:max).replace(/[\s,;:–-]+$/,'');
+  for(let i=0;i<3;i++)t=t.replace(/\s+(?:und|oder|der|des|die|das|dem|den|zur|zum|von|vom|für|mit|in|im|an|auf|am|bei|sowie|zu|um|als|ein|eine|einer|eines)$/i,'').replace(/[\s,;:–-]+$/,'');
+  t+=' …';
  }
  return t;
 }
@@ -271,7 +280,7 @@ export function draftText({title,status,region,term}){
  const place=inPlace(region);
  const At=cap(place);
  const quote=cleanTitle(title);
- if(quote.length<8)return null;
+ if(quote.length<8||/^(der|die|das|des) (vergangenen|linke|grünen)\b/i.test(quote)||/(?<![\wäöüßÄÖÜ])(und|oder|der|des|zur|zum|von|für|mit)$/i.test(quote.replace(/ …$/,'')))return null;
  const bareHead=/^(antrag|anfrage|änderungsantrag|ergänzungsantrag)\b/i.test(quote)&&quote.length<60;
  const topicLabel=term.split(' / ')[0];
  const sep=bareHead?' ':': ';
@@ -303,7 +312,7 @@ export function draftText({title,status,region,term}){
  };
 }
 
-const FORMAL=/^(einladung|niederschrift|bekanntgabe|genehmigung der niederschrift|anfragen|mitteilungen|verschiedenes|sonstiges|einwohnerfrag|verfahrensantrag|geschäftsordnungsantrag)/i;
+const FORMAL=/^(einladung|niederschrift|bekanntgabe|genehmigung der niederschrift|anfragen|mitteilungen|verschiedenes|sonstiges|einwohnerfrag|verfahrensantrag|geschäftsordnungsantrag|vorlage wird nachgereicht)/i;
 // Antrag einer Fraktion, Gruppe oder eines Ratsmitglieds: Oppositionsanträge enden in den Berichten deutlich öfter streitig
 // (55 bis 80 % gegenüber 22 % im Mittel aller Vorgänge, Auswertung von 12 Monaten).
 const PARTY_MOTION=/\b(afd|linke|grüne|grünen|cdu|csu|spd|fdp|bsw|fraktion|freie wähler|volt)[- ]?(antrag|anfrage)|antrag der (afd|linken|grünen|cdu|spd|fdp|fraktion)|ratsfraktion|ratsgruppe|kreistagsfraktion|bürgerschaftsfraktion|änderungsantrag|ergänzungsantrag|beschlussantrag|antrag der gruppe|antrag des (ratsmitglieds|ratsherrn|einzelmandats)|einzelratsmitglied|wählergemeinschaft|antrag (der|von) (frau|herrn)|fraktion[a-zäöüß]* (die|der|bündnis|b['’]90)/;
