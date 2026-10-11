@@ -390,7 +390,8 @@ const SAFE=/^[a-z0-9]*[a-z][a-z0-9]*$/;
 /** Begriffe, die sich so in der Wortliste wiederfinden würden: Buchstaben und Ziffern, ab 3 Zeichen, mit mindestens einem Buchstaben */
 const searchable=terms=>terms.length>0&&terms.every(t=>t.length>=3&&SAFE.test(t));
 const nextKey=t=>t.slice(0,-1)+String.fromCharCode(t.charCodeAt(t.length-1)+1);
-const listCurrent=async db=>{const state=await readState(db);return !!state?.complete&&state.revision===await currentRevision(db);};
+/** Wortliste vollständig und zum Datenstand passend (sonst sucht die App ohne sie) */
+export const listCurrent=async db=>{const state=await readState(db);return !!state?.complete&&state.revision===await currentRevision(db);};
 
 /**
  * Kann der Suchbegriff Treffer haben?

@@ -168,3 +168,17 @@ Jeder Schritt einzeln auf `main`, mit Tests, Migrationen auf echten Daten gemess
   Wörter etwas langsamer (haushalt 6 → 128), weil die Seite nicht mehr nach 20 Treffern aufhört.
 - Migration 0022 (summaryEvidence) auf der Kopie 27 s.
 
+### FTS5: Obergrenze für häufige Begriffe (Nachtrag)
+
+- Ohne Obergrenze war der Index bei sehr häufigen Begriffen viel langsamer (rat: Seite 3,8 s, Zähler 8,2 s; stadt 3,5 s /
+  10,1 s; beschluss 6,8 s / 7,0 s), weil der alte Weg die Seite nach 20 Treffern über den Datumsindex abschließt.
+- Jetzt je Begriff ein Vorabtest mit Obergrenze (`SELECT … LIMIT`, 1 bis 110 ms): Seite und Strom nur bis 3.000
+  Treffer (`FTS_PAGE_MAX`), Zähler bis 60.000 (`FTS_FACETS_MAX`). Ein einzelnes Wort ohne Filter bleibt bei der
+  Wortliste (vorberechnete Zahlen), solange sie aktuell ist; ist sie es nicht, springt der Index ein.
+- Die Wortliste bleibt nötig: vorberechnete Zahlen für häufige Wörter (rat, stadt) und Kandidaten für seltene; sie
+  belegt auf der Kopie rund 167 MB (2,0 Mio. Postings), der Index 647 MB.
+- Echte Suchfunktion auf der Kopie (ohne Wortliste), Strom / Zähler in ms: rat 8 / 1.503, stadt 8 / 760, haushalt
+  11 / 187, haushalt ohne Formalien 12 / 171, beschluss mit Status 246 / 1.808, turnhalle 37 / 17, kormoran 32 / 7,
+  windkraft ohne Formalien 39 / 15, kita beitrag 153 / 56, radweg oder fahrradstrasse 55 / 38. Vorher (ohne Index)
+  Zähler: haushalt 5.101, turnhalle 2.776, kormoran 468, kita beitrag 862, radweg oder fahrradstrasse 806.
+
