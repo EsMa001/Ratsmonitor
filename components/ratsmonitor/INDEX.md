@@ -467,7 +467,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (36): generateMetadata, Page
+- page.tsx (37): generateMetadata, Page
 
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
@@ -556,6 +556,7 @@ topic design-styles.css:140
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
+- admin-pdf.tsx (75, ⚠1): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (243, ⚠25): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
@@ -694,7 +695,7 @@ topic design-styles.css:140
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (365, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (66, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (67, ⚠1): AnalyticsPages
 - BauleitplanungPage.tsx (257, ⚠8): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (222, ⚠7): BeschluessePage
@@ -709,7 +710,7 @@ topic design-styles.css:140
 - FraktionenPage.tsx (175, ⚠5): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (201, ⚠3): GremiennetzPage
-- KitaRadarPage.tsx (188, ⚠7): KitaRadarPage
+- KitaRadarPage.tsx (190, ⚠7): KitaRadarPage
 - KnowledgeGraphPage.tsx (229, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
@@ -722,7 +723,7 @@ topic design-styles.css:140
 - RadarThumbs.tsx (167): RADAR_THUMBS
 - RegionMap.tsx (65): RegionMap
 - Reveal.tsx (16): Reveal
-- ThemeRadarPage.tsx (212, ⚠6): ThemeRadarPage
+- ThemeRadarPage.tsx (214, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (209, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery

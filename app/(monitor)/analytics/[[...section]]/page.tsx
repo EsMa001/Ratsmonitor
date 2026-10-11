@@ -25,6 +25,7 @@ const SEITEN:Record<string,[string,string]>={
  tools:['plenara.X Tools','Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse, Beratungswege.'],
  politik:['plenara.X Politik','Wer entscheidet wie: Fraktionsprofil, Beteiligung und Newsradar, aus den Ratsunterlagen gelesen.'],
  finanzen:['plenara.X Finanzen','Wohin Geld fließt: Haushalt und Steuern, Gebühren, Fördermittel und Vergaben, aus den Ratsunterlagen gelesen.'],
+ atlas:['plenara.X Atlas','Eine Karte für alle Themen: wie häufig Kita, Versorgung, Verkehr, Vereine, Klima, Haushalt, Gebühren, Vergabe und Beteiligung in den Räten vorkommen, verglichen mit ähnlichen Kommunen.'],
  radar:['plenara.X Radar','Was gebaut und geplant wird: Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales, Klima und Energie.'],
 };
 export async function generateMetadata({params}:{params:Promise<{section?:string[]}>}):Promise<Metadata>{

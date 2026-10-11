@@ -10,6 +10,7 @@ import { RadarExtra, type Extra } from "./RadarExtra";
 import { RadarDrill } from "./RadarDrill";
 import { RadarNorms, normsSentence, type Norms } from "./RadarNorms";
 import { RadarMap } from "./RadarMap";
+import { Frame } from "./AtlasFrame";
 import { STATUS } from "../../lib/constants";
 import { RADARS } from "@/shared/radars.mjs";
 import { ANALYSEN, GRUPPEN, type AnalyseId } from "../../info/branchen-enterprise";
@@ -48,7 +49,8 @@ const ratOf = (p: string) => {
 /** plenara.X – Themenradar (Versorgung, Verkehr, Vereine und Soziales, Vergabe, Klima und Energie, Haushalt und Steuern, Beteiligung);
  *  Unterthemen, Signale und Muster in shared/radars.mjs, Auswertung in server/integrations/analytics-radar.mjs */
 /** id: Radar in shared/radars.mjs; analyse: Eintrag in ANALYSEN, falls er anders heißt (Haushalt und Steuern) */
-export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analyse?: AnalyseId }) {
+/** embedded: im plenara.X Atlas (AtlasPage.tsx) ohne eigenen Seitenkopf, nur mit Zwischenüberschrift */
+export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RADARS; analyse?: AnalyseId; embedded?: boolean }) {
   const gruppe = GRUPPEN[ANALYSEN[analyse ?? (id as AnalyseId)].group];
   const def = RADARS[id];
   const { query, search } = useAnalyticsQuery();
@@ -99,12 +101,12 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
   const month = open.startsWith("month:") ? open.slice(6) : "";
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
+    <Frame embedded={embedded}>
+      {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">{def.kurz}</p> : <PageBand>
         <p className="text-[14px] text-slate-500"><Link href={gruppe.href} className="text-teal-600">{gruppe.name}</Link> / {def.name}</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{def.name}</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{def.kurz}</p>
-      </PageBand>
+      </PageBand>}
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
@@ -206,6 +208,6 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
           )}
         </div>
       )}
-    </main>
+    </Frame>
   );
 }

@@ -8,6 +8,7 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
 import { RadarMap } from "./RadarMap";
+import { Frame } from "./AtlasFrame";
 
 type Direction = "Erhöhung" | "Senkung" | "Beitragsfreiheit" | "Verpflegung" | "Neufassung";
 interface Decision { id: string; title: string; region: string; date: string; direction: Direction; euro: string | null }
@@ -34,7 +35,8 @@ const ORDER: Direction[] = ["Erhöhung", "Senkung", "Beitragsfreiheit", "Verpfle
 const SHOW_PLACES = false;
 
 /** plenara.X – Kita-Radar: Entscheidungen zu Elternbeiträgen (Richtung) und neue Kita-Plätze */
-export function KitaRadarPage() {
+/** embedded: im plenara.X Atlas (AtlasPage.tsx) ohne eigenen Seitenkopf */
+export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
   const { query, search } = useAnalyticsQuery();
   /* Klick auf „Ort auswerten“ in der Karte: Ortsfilter setzen und auswerten, sobald die Abfrage den Ort enthält */
   const [runOnChange, setRunOnChange] = useState(false);
@@ -79,12 +81,12 @@ export function KitaRadarPage() {
   );
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
+    <Frame embedded={embedded}>
+      {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung.</p> : <PageBand>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/radar" className="text-teal-600">plenara.X Radar</Link> / Kita-Radar</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Kita-Radar</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung.</p>
-      </PageBand>
+      </PageBand>}
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
@@ -182,6 +184,6 @@ export function KitaRadarPage() {
           )}
         </div>
       )}
-    </main>
+    </Frame>
   );
 }
