@@ -8,53 +8,61 @@ const DAY=86400000;
 const iso=t=>new Date(t).toISOString().slice(0,10);
 const shift=(d,n)=>iso(Date.parse(d+'T00:00:00Z')+n*DAY);
 
-/** Gruppen polarisierender Themen: Name, Gewicht, Muster auf dem kleingeschriebenen Titel. */
+/**
+ * Gruppen polarisierender Themen: Name, Gewicht (1 bis 3), Begriffe als [Name, Muster auf dem kleingeschriebenen Titel,
+ * Gewicht (sonst das der Gruppe), zweites Muster, das zusätzlich treffen muss]. Gewichte unter 2,8 bringen einen Eintrag
+ * nur mit Verstärkern (Fraktionsantrag, abgelehnt, vertagt) über die Schwelle.
+ */
 export const GROUPS=[
  {id:'verkehr',name:'Verkehr',weight:3,terms:[
-  ['Tempo 30',/tempo[ -]?30|tempo[ -]?20|tempolimit|geschwindigkeitsbegrenzung|geschwindigkeitsreduz/],
-  ['Fahrradstraße',/fahrradstra(ß|ss)e|fahrradzone|radschnellweg|radspur|pop-up-radweg/],
-  ['Autofrei',/autofrei|autoarm|verkehrsversuch|durchfahrtsverbot|sperrung der innenstadt/],
-  ['Parken',/wegfall (von |der )?parkpl|parkgebühr|anwohnerparken|parkraumbewirtschaft|parkplatzabbau|stellplatzsatzung/],
-  ['Busspur / Umweltspur',/busspur|umweltspur|umweltzone|citymaut/],
-  ['Poller / Sperrung',/poller|schulstra(ß|ss)e|verkehrsberuhigt|modalfilter/],
+  ['Tempo 30',/tempo[ -]?30|tempo[ -]?20|tempolimit|geschwindigkeitsbegrenzung|geschwindigkeitsreduz|30 km\/h/],
+  ['Fahrradstraße',/fahrradstra(ß|ss)e|fahrradzone|radschnellweg|radspur|pop-up-radweg|protected bike/],
+  ['Autofrei',/autofrei|autoarm|verkehrsversuch|durchfahrtsverbot|sperrung der innenstadt|verkehrsberuhigung der innenstadt/],
+  ['Parken',/wegfall (von |der )?parkpl|parkgebühr|anwohnerparken|parkraumbewirtschaft|parkplatzabbau|stellplatzsatzung|parkplätze (entfallen|wegfall)/,2.6],
+  ['Busspur / Umweltspur',/busspur|umweltspur|umweltzone|citymaut/,2.4],
+  ['Schulstraße / Poller',/schulstra(ß|ss)en\b|einrichtung einer schulstra|schulstra(ß|ss)e.{0,40}(sperr|autofrei|elternhaltestelle)|poller|modalfilter/,2.4],
  ]},
- {id:'energie',name:'Energie & Umwelt',weight:3,terms:[
-  ['Windkraft',/windkraft|windrad|windräder|windenergie|windpark|windvorrang|repowering/],
-  ['Solarpark',/freiflächen-?(photovoltaik|pv|solar)|solarpark|agri-?pv|photovoltaik-?freifläche/],
-  ['Biogas / Speicher',/biogas|batteriespeicher|großspeicher|wasserstoff/],
-  ['Baumschutz',/baumfäll|baumschutz|baumerhalt|rodung/],
-  ['Wärme',/wärmeplanung|nahwärme|heizungsgesetz|gasnetz/,2],
+ {id:'energie',name:'Energie & Umwelt',weight:2.6,terms:[
+  ['Windkraft',/windkraft|windrad|windräder|windenergie|windpark|windvorrang|\bwea\b|repowering.{0,60}(wea|wind)/],
+  ['Solarpark',/freiflächen-?(photovoltaik|pv|solar)|photovoltaik-?freifläche|solarpark|agri-?pv|pvfa/,2.4],
+  ['Biogas / Speicher',/biogasanlage|batteriespeicher|großspeicher|wasserstofferzeugung|elektrolyseur/,2],
+  ['Baumschutz',/baumfäll|baumschutzsatzung|baumerhalt|baumschutz/,2.4],
+  ['Wärme',/wärmeplanung|nahwärme|heizungsgesetz|gasnetz/,1.2],
  ]},
  {id:'migration',name:'Migration & Soziales',weight:3,terms:[
-  ['Unterkunft',/flüchtlingsunterkunft|geflüchtetenunterkunft|asylunterkunft|sammelunterkunft|containerdorf|notunterkunft|zeltstadt|gemeinschaftsunterkunft|unterbringung (von )?(geflüchtet|flüchtling)/],
+  ['Unterkunft',/flüchtlingsunterkunft|geflüchtetenunterkunft|asylunterkunft|sammelunterkunft|containerdorf|notunterkunft|zeltstadt|gemeinschaftsunterkunft|unterbringung (von )?(geflüchtet|flüchtling|obdachlos)|aufnahme und unterbringung/],
   ['Bezahlkarte',/bezahlkarte/],
-  ['Obdachlosigkeit',/obdachlos|wohnungslos|trinkerraum|drogenkonsumraum|bettelverbot|alkoholverbot|waffenverbotszone/],
-  ['Integration',/einbürgerung|abschiebung|abschiebehaft|ankerzentrum/],
+  ['Obdachlosigkeit',/obdachlos|wohnungslos|trinkerraum|drogenkonsumraum|bettelverbot|alkoholverbot|waffenverbotszone/,2.6],
+  ['Integration',/einbürgerung|abschiebung|abschiebehaft|ankerzentrum|ausreisepflicht/,2.2],
  ]},
  {id:'identitaet',name:'Haltung & Symbole',weight:2.5,terms:[
   ['Gendern',/gendern|gendersprache|geschlechtergerechte sprache|genderstern|gender-?sternchen/],
   ['Moschee / Religion',/moschee|muezzin|gebetsruf|minarett|kopftuch|kirchenasyl/],
-  ['Umbenennung',/umbenennung (der|des|von) .*(stra(ß|ss)e|platz|schule|weg)|straßenumbenennung|kolonial|erinnerungskultur/],
-  ['Flagge / Symbol',/regenbogenflagge|regenbogen|pride|beflaggung|kruzifix/],
-  ['Partei / Ausschluss',/\bafd\b|brandmauer|rechtsextrem|demonstration gegen/,1.5],
+  ['Umbenennung',/umbenennung (der|des|von) .*(stra(ß|ss)e|platz|schule|weg)|straßenumbenennung|straßennamen|kolonial/],
+  ['Flagge / Symbol',/regenbogenflagge|regenbogenfahne|\bpride\b|\bcsd\b|beflaggung|bundesflagge|flagge zeigen|kruzifix/],
+  ['Rechtsextremismus',/brandmauer|rechtsextrem|demonstration gegen|gegen rechts/],
  ]},
  {id:'geld',name:'Gebühren & Schließung',weight:2.5,terms:[
-  ['Schließung',/schließung|schliessung|stilllegung|einstellung des betriebs/],
-  ['Bad / Bibliothek',/hallenbad|freibad|schwimmbad|schwimmhalle|stadtbibliothek|bücherei|musikschule|volkshochschule/],
-  ['Steuer / Gebühr',/grundsteuer|hebesatz|gewerbesteuer|erhöhung (der )?(gebühr|beitr|steuer|entgelt|eintritt)|kita-?gebühr|elternbeitr|straßenausbaubeitr|müllgebühr|abwassergebühr/],
-  ['Teurer Bau',/kostensteigerung|kostenexplosion|mehrkosten|baukostensteigerung|prestigeprojekt|stadthalle|rathausneubau/],
-  ['Verkauf',/verkauf (des|der|von) (grundstück|gebäude|stadtwerke|anteile|wohnungen)|privatisierung|rekommunalisierung/],
+  ['Schließung',/(?<![a-zäöüß])schließung(?! (des|der) (öffentlichen|nichtöffentlichen|sitzung|versammlung|tagesordnung|beratung|rednerliste))|schliessung|stilllegung (des|der|von) (bad|schule|kita|bibliothek|krankenhaus|klinik|standort)|schließen (der|des) (bad|schule|kita|bibliothek|krankenhaus|klinik|standort|freibad|hallenbad|filiale|jugendzentrum|werk|geschäftsstelle)|einstellung des betriebs/,3],
+  ['Bad / Bibliothek',/hallenbad(?!str)|freibad|schwimmbad|schwimmhalle|stadtbibliothek|bücherei|musikschule|volkshochschule|stadtteilbibliothek|jugendzentrum|stadtteilzentrum/,2.5,/schließ|erhalt|zukunft|abriss|streichung|kürzung|einspar|defizit|sanierung|neubau|kosten|erhöhung|bürger|petition|rettung|verkauf/],
+  ['Grundsteuer / Hebesatz',/grundsteuer|hebesatz|hebesätze|gewerbesteuer/,2.6],
+  ['Gebührenerhöhung',/erhöhung (der |des |von )?(gebühr|beitr|steuer|entgelt|eintritt|elternbeitr|kita)|gebührenerhöhung|beitragserhöhung|straßenausbaubeitr/,2.8],
+  ['Kita-Beiträge',/kita-?gebühr|elternbeitr|kita-?beitr/,1.6],
+  ['Teurer Bau',/kostensteigerung|kostenexplosion|kostenüberschreitung|prestigeprojekt|millionengrab|baukostensteigerung/,2.8],
+  ['Mehrkosten',/mehrkosten|nachtragsbewilligung/,1.5],
+  ['Verkauf',/verkauf (des|der|von) (grundstück|gebäude|stadtwerke|anteile|wohnungen|rathaus|schule)|privatisierung|rekommunalisierung/,2.2],
  ]},
  {id:'beteiligung',name:'Bürgerbeteiligung',weight:3,terms:[
   ['Bürgerbegehren',/bürgerbegehren|bürgerentscheid|einwohnerantrag|volksbegehren|ratsbegehren|unterschriftensammlung|unterschriften|bürgerinitiative|petition/],
-  ['Rücktritt / Abwahl',/abwahl|rücktritt|abberufung|misstrauensantrag|dienstaufsichtsbeschwerde|untersuchungsausschuss/],
-  ['Anwohnerprotest',/anwohnerprotest|protest|widerstand|bürgerversammlung/],
+  ['Rücktritt / Abwahl',/abwahl|rücktritt (des|der|von) (herrn |frau )?(bürgermeister|landrat|oberbürgermeister|stadträtin|stadtrat|gemeinderat|ratsherr|ratsfrau|beigeordnet|ortsvorsteher|fraktionsvorsitz)|misstrauensantrag|dienstaufsichtsbeschwerde|untersuchungsausschuss|abberufung (des|der|von) (bürgermeister|stadträtin|stadtrat|ersten|beigeordnet|ortsvorsteher|landrat)/],
+  ['Anwohnerprotest',/\bprotest(?!ant)|widerstand gegen|anwohnerinitiative|kundgebung/,2.4],
  ]},
  {id:'bauen',name:'Bauen & Flächen',weight:2,terms:[
-  ['Großprojekt',/hochhaus|logistikzentrum|logistikpark|rechenzentrum|kiesabbau|kiesgrube|steinbruch|deponie|müllverbrennung/],
-  ['Neubaugebiet',/flächenverbrauch|flächenversiegelung|nachverdichtung/],
-  ['Funk / Strom',/mobilfunkmast|funkmast|hochspannungsleitung|stromtrasse|südlink|suedlink|umspannwerk/],
-  ['Spielhalle',/spielhalle|wettbüro|vergnügungsstätte|shisha|bordell|prostitution/],
+  ['Großprojekt',/hochhaus|logistikzentrum|logistikpark|rechenzentrum|kiesabbau|kiesgrube|steinbruch|müllverbrennung/,2.2],
+  ['Neubaugebiet',/flächenverbrauch|flächenversiegelung|nachverdichtung/,2.2],
+  ['Funk / Strom',/mobilfunkmast|funkmast|hochspannungsleitung|stromtrasse|südlink|suedlink/,2.4],
+  ['Umspannwerk',/umspannwerk/,1.5],
+  ['Spielhalle / Rotlicht',/spielhalle|wettbüro|vergnügungsstätte|shisha|bordell|prostitution/,2.4],
  ]},
 ];
 
@@ -67,7 +75,7 @@ const STATUS_BOOST={rejected:1.5,postponed:1.3,approved:1.1,recommended:1.15,con
 export function matchTitle(title){
  const t=' '+title.toLowerCase()+' ';
  const hits=[];
- for(const g of GROUPS)for(const [term,re,w] of g.terms)if(re.test(t))hits.push({group:g.id,groupName:g.name,term,weight:w??g.weight});
+ for(const g of GROUPS)for(const [term,re,w,need] of g.terms)if(re.test(t)&&(!need||need.test(t)))hits.push({group:g.id,groupName:g.name,term,weight:w??g.weight});
  return hits;
 }
 
