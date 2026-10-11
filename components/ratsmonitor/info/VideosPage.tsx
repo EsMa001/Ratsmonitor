@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { DarkCta, PageHead } from "./blocks";
+import { useDarkMode } from "../lib/useDarkMode";
 
 /* Zwei Videos, beide aus der Video-Datenbank (docs/videos): das Kurzvideo (Pitch) und das vollständige Video mit allen Kapiteln.
    Dateien in public/videos/: <name>.mp4, .jpg (Vorschau), .vtt (Untertitel). Kapitelzeiten stammen aus docs/videos/fassungen/*.timeline.json
    (Sekunden); bei einer neuen Fassung hier die Zeiten und die Dauer nachziehen. */
 const PITCH = "plenara-pitch";
 const FULL = "plenara-komplett";
+/* Im Dark Mode der App laufen die dunklen Fassungen (<name>-dunkel, gleiche Kapitelzeiten) */
+const variant = (base: string, dark: boolean) => (dark ? `${base}-dunkel` : base);
 
 type Chapter = { t: number; title: string; what: string };
 const PLENARA: Chapter[] = [
@@ -45,7 +48,7 @@ function Player({ base, poster, label, onTime, seekRef }: { base: string; poster
   return (
     <div className="relative overflow-hidden rounded-2xl bg-slate-900 shadow-lg">
       {on ? (
-        <video ref={ref} controls autoPlay playsInline preload="auto" poster={`/videos/${poster}.jpg`} src={`/videos/${base}.mp4`}
+        <video key={base} ref={ref} controls autoPlay playsInline preload="auto" poster={`/videos/${poster}.jpg`} src={`/videos/${base}.mp4`}
           onLoadedMetadata={() => { if (pending.current !== null && ref.current) { ref.current.currentTime = pending.current; pending.current = null; } }}
           onTimeUpdate={(e) => onTime?.(e.currentTarget.currentTime)} className="block aspect-video w-full bg-slate-900">
           <track kind="captions" srcLang="de" label="Deutsch" src={`/videos/${base}.vtt`} />
@@ -98,6 +101,7 @@ const HOOKS: { title: string; text: string; t: number }[] = [
 ];
 
 export function VideosPage() {
+  const [dark] = useDarkMode();
   const [now, setNow] = useState(0);
   const ctlRef = useRef<((t: number) => void) | null>(null);
   const full = useRef<HTMLElement>(null);
@@ -110,7 +114,7 @@ export function VideosPage() {
       <PageHead icon="circlePlay" label="Informationen" name="Videos" title="plenara in Bewegung" lead="Besser verstehen, was vor Ort beraten wird. In unter einer Minute oder in acht Minuten." />
       <section className="ri-sec">
         <div className="grid items-center gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
-          <Player base={PITCH} poster={PITCH} label="Kurzvideo abspielen: plenara in unter einer Minute" />
+          <Player base={variant(PITCH, dark)} poster={variant(PITCH, dark)} label="Kurzvideo abspielen: plenara in unter einer Minute" />
           <div>
             <p className="m-0 text-[13px] font-semibold uppercase tracking-wide text-teal-700">Unter 45 Sekunden</p>
             <h2 className="m-0 mt-1 text-[26px] font-semibold leading-tight max-md:text-[21px] text-slate-900">Was wird in Räten gerade beraten, das Ihr Vorhaben, Ihre Stadt oder Ihre Recherche betrifft?</h2>
@@ -136,7 +140,7 @@ export function VideosPage() {
         <h2 className="m-0 mt-1 text-[22px] font-semibold text-slate-900">Alle Funktionen von plenara und plenara.X</h2>
         <p className="mb-6 mt-1 text-[16px] text-slate-500">Von der ersten Suche bis zur Analyse. Untertitel lassen sich im Player zuschalten.</p>
         <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-10">
-          <Player base={FULL} poster={FULL} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
+          <Player base={variant(FULL, dark)} poster={variant(FULL, dark)} label="Vollständiges Video abspielen" onTime={(t) => setNow(Math.floor(t))} seekRef={ctlRef} />
           <div className="grid gap-5 sm:grid-cols-2 lg:max-h-[34rem] lg:grid-cols-1 lg:overflow-y-auto">
             <ChapterList title="plenara" items={PLENARA} now={now} go={go} />
             <ChapterList title="plenara.X Analysen" items={ANALYSE} now={now} go={go} />

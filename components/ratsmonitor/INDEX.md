@@ -597,8 +597,8 @@ topic design-styles.css:140
 - PlanCards.tsx (136, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (27): SaveArticleButton
 - SaveSearchDialog.tsx (15, ⚠2): SaveSearchDialog
-- SearchBox.tsx (528, ⚠1): SearchBox
-- SearchFilterPanel.tsx (86): SearchFilterPanel
+- SearchBox.tsx (529, ⚠1): SearchBox
+- SearchFilterPanel.tsx (83): SearchFilterPanel
 - SearchOverlay.tsx (88): SearchOverlay
 - ShareButton.tsx (40): ShareButton
 - TierNotice.tsx (46): LoginRequired, UsagePill
@@ -608,7 +608,7 @@ topic design-styles.css:140
 - MapPanel.tsx (320, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
-- ArticleCard.tsx (199, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
+- ArticleCard.tsx (201, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
 - ResultsPanel.tsx (211): ResultsPanel
 
 ### components/ratsmonitor/info/
@@ -627,7 +627,7 @@ topic design-styles.css:140
 - QuellenPage.tsx (174, ⚠4): QuellenPage
 - StartseitePage.tsx (529, ⚠5): StartseitePage
 - TodoPage.tsx (331, ⚠1): TodoPage
-- VideosPage.tsx (150): VideosPage
+- VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (211, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
@@ -681,7 +681,7 @@ topic design-styles.css:140
 - MainMenu.tsx (225, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (135, ⚠3): DetailPage
+- DetailPage.tsx (138, ⚠3): DetailPage
 - KalenderPage.tsx (363, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
@@ -722,7 +722,7 @@ topic design-styles.css:140
 - account.tsx (17, ⚠1): AccountProvider, useAccount, useSavedStats
 - data.tsx (34, ⚠1): DataProvider, useData
 - nav.ts (13): View, viewOf, overviewScroll, useAppNav
-- search.tsx (585, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (580, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

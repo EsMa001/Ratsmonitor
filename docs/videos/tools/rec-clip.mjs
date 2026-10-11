@@ -15,16 +15,18 @@ const FORMAT = arg("--format") || "16x9";
 if (!FORMATS[FORMAT]) throw new Error("Format unbekannt: " + FORMAT);
 const sc = await loadScene(ID);
 const P = resolveParams(sc, Object.fromEntries((arg("--p") || "").split(",").filter(Boolean).map((kv) => kv.split("=").map((x) => x.trim()))));
-const KEY = clipKey(ID, sc, P, FORMAT);
+const THEME = arg("--theme") === "dunkel" ? "dunkel" : "";  /* dunkel: App im Dark Mode (localStorage rm-dark) */
+const KEY = clipKey(ID, sc, P, FORMAT, THEME);
 const OUT = `out-clips/${KEY}`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const cursor = `(()=>{const d=document.createElement('div');d.style.cssText='position:fixed;z-index:2147483647;width:18px;height:18px;border-radius:50%;background:rgba(13,148,136,.55);border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.35);pointer-events:none;left:-40px;top:-40px;transform:translate(-50%,-50%)';const add=()=>document.documentElement.appendChild(d);document.readyState==='loading'?document.addEventListener('DOMContentLoaded',add):add();addEventListener('mousemove',e=>{d.style.left=e.clientX+'px';d.style.top=e.clientY+'px'},true)})()`;
 rmSync(`${OUT}/raw`, { recursive: true, force: true }); mkdirSync(`${OUT}/raw`, { recursive: true });
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: FORMATS[FORMAT].w, height: FORMATS[FORMAT].h }, deviceScaleFactor: 1, locale: "de-DE" });
+const ctx = await browser.newContext({ colorScheme: THEME === "dunkel" ? "dark" : "light", viewport: { width: FORMATS[FORMAT].w, height: FORMATS[FORMAT].h }, deviceScaleFactor: 1, locale: "de-DE" });
 await ctx.addInitScript(cursor);
+await ctx.addInitScript((d) => { window.__dunkel = d; }, THEME === "dunkel");
 await ctx.addInitScript(() => {
-  try { localStorage.setItem("ratsmonitor:brand:v1", "plenara-v2sq"); localStorage.setItem("ratsmonitor:tier:v1", "enterprise"); } catch {}
+  try { localStorage.setItem("ratsmonitor:brand:v1", "plenara-v2sq"); localStorage.setItem("ratsmonitor:tier:v1", "enterprise"); localStorage.setItem("rm-dark", window.__dunkel ? "1" : "0"); } catch {}
   const st = document.createElement("style"); st.textContent = '[class*="border-dashed"][class*="border-amber-300"]{display:none!important}';
   const add = () => document.documentElement.appendChild(st); document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", add) : add();
 });
@@ -71,7 +73,7 @@ for (const [name, fn, hold = 1] of BEATS) {
 }
 capturing = false; await cap; await ctx.close(); await browser.close();
 let commit = ""; try { commit = execSync("git rev-parse --short HEAD", { cwd: new URL("../../../", import.meta.url).pathname }).toString().trim(); } catch {}
-writeFileSync(`${OUT}/clip.json`, JSON.stringify({ id: ID, key: KEY, params: P, format: FORMAT, commit, entwurf: ENTWURF, recorded: new Date().toISOString(), frames, beats }));
+writeFileSync(`${OUT}/clip.json`, JSON.stringify({ id: ID, key: KEY, params: P, format: FORMAT, theme: THEME, commit, entwurf: ENTWURF, recorded: new Date().toISOString(), frames, beats }));
 if (failed) console.log(`ACHTUNG: ${failed} Schritt(e) fehlgeschlagen, Clip nicht verwenden`);
 console.log("fertig", KEY, "Bilder", frames.length, "Schritte", beats.map((b) => `${b.name} ${((b.end - b.start) / 1000).toFixed(1)}s`).join(", "));
 if (failed) { rmSync(`${OUT}/clip.json`, { force: true }); process.exit(1); }  /* kaputter Clip gilt als fehlend, build-video verwendet ihn nie */

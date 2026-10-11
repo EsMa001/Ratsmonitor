@@ -1,0 +1,72 @@
+{
+ "ausgabe": "plenara-komplett-dunkel",
+ "theme": "dunkel",
+ "karten": false,
+ "vorteileMax": 5,
+ "kapitel": [
+  {
+   "kapitel": "einleitung",
+   "text": "lang"
+  },
+  {
+   "kapitel": "suchen",
+   "text": "lang"
+  },
+  {
+   "kapitel": "liste-artikel",
+   "text": "lang"
+  },
+  {
+   "kapitel": "filter",
+   "text": "lang"
+  },
+  {
+   "kapitel": "alarme",
+   "text": "lang"
+  },
+  {
+   "kapitel": "export",
+   "text": "lang"
+  },
+  {
+   "kapitel": "kalender",
+   "text": "lang"
+  },
+  {
+   "kapitel": "konto",
+   "text": "lang"
+  },
+  {
+   "kapitel": "abdeckung",
+   "text": "lang"
+  },
+  {
+   "kapitel": "diffusion",
+   "text": "lang"
+  },
+  {
+   "kapitel": "entscheidungen",
+   "text": "lang"
+  },
+  {
+   "kapitel": "trends",
+   "text": "lang"
+  },
+  {
+   "kapitel": "vergleich",
+   "text": "lang"
+  },
+  {
+   "kapitel": "graph",
+   "text": "lang"
+  },
+  {
+   "kapitel": "gremiennetz",
+   "text": "lang"
+  },
+  {
+   "kapitel": "abschluss",
+   "text": "lang"
+  }
+ ]
+}

@@ -3,6 +3,7 @@ Schreibt out-web/<ordner>/<name>.mp4, .vtt und .jpg (Vorschaubild = erste Kapite
 import json,subprocess,sys,os,re,glob
 TOOLS=os.environ.get('VIDEO_TOOLS',os.path.expanduser('~/code/video-tools'))
 FF=subprocess.check_output(['node','-p',f"require('{TOOLS}/node_modules/ffmpeg-static')"]).decode().strip()
+FADE='0x131a2a' if os.environ.get('VIDEO_THEME')=='dunkel' else 'white'
 PRESET,CRF=('veryfast','30') if os.environ.get('VIDEO_ENTWURF') else ('slow','24')
 O=f'out-web/{sys.argv[1]}'; name=sys.argv[2]; CARD=float(sys.argv[3]) if len(sys.argv)>3 else 3.0
 KARTEN=not (len(sys.argv)>4 and sys.argv[4]=='keine')  # 'keine' = Kapitel ohne Kapitelseite, nahtlos hintereinander
@@ -55,7 +56,7 @@ for c in chs:
     if not KARTEN:
         body=f'{O}/body{n}.mp4'
         D_=dur(ch)
-        run('-i',ch,'-vf',f'fps=30,scale=1280:720,format=yuv420p,fade=t=in:st=0:d=0.3:color=white,fade=t=out:st={D_-0.3:.2f}:d=0.3:color=white','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
+        run('-i',ch,'-vf',f'fps=30,scale=1280:720,format=yuv420p,fade=t=in:st=0:d=0.3:color={FADE},fade=t=out:st={D_-0.3:.2f}:d=0.3:color={FADE}','-ar','22050','-ac','1','-c:v','libx264','-crf','24','-c:a','aac','-b:a','96k',body)
         for s in aj['sentences']:
             vtt.append(f"{ts(t+0.5+s['start'])} --> {ts(t+0.5+s['end']+0.3)}\n{s['text'].replace('Plenarra','Plenara')}\n")
         TL['kapitel'].append({'nr':c['nr'],'id':json.load(open(f"{O}/c{n}/meta.json"))['id'],'kapitel':c['name'],'start':round(t,1),'ende':round(t+dur(ch),1),'saetze':tl_chapter(c,n,aj,t,0.5)})
