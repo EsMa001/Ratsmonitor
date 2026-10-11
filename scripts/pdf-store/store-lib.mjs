@@ -25,6 +25,8 @@ export async function readTextLayer(store,sha){
 export async function ocrScheduler(workers=2){
  const tools=process.env.OCR_TOOLS||process.env.VIDEO_TOOLS||os.homedir()+'/code/video-tools',cache=process.env.OCR_CACHE||tools+'/cache/tesseract';
  let tesseract;try{tesseract=await import(tools+'/node_modules/tesseract.js/src/index.js');}catch{return null;}
+ // tesseract.js speichert die Sprachdaten nur in einen vorhandenen Ordner; sonst lädt jeder Lauf sie neu aus dem Internet
+ try{fs.mkdirSync(cache,{recursive:true});}catch{/* ohne Cache geht es auch, nur langsamer */}
  const scheduler=tesseract.createScheduler();
  for(let i=0;i<workers;i++)scheduler.addWorker(await tesseract.createWorker('deu',1,{cachePath:cache}));
  return {scheduler,canvasImport:()=>import(tools+'/node_modules/@napi-rs/canvas/index.js'),terminate:()=>scheduler.terminate()};
