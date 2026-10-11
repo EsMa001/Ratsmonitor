@@ -18,7 +18,8 @@ bitte beibehalten.
 - **Paket 5 (Aufräumen) ist auf `main`** (`3cdcdc7`, gegengelesen mit Opus), ausgerollt am 11.10. Dabei Nicos Migration
   `0017_search_cards_label_version` auf dem Server eingespielt (89 s, Dienst gestoppt; Labels auf den Serverdaten unverändert). Offen daraus: D11 (Startdaten,
   eigener Schritt), D3, D5, B10, Rest von D14.
-- **Admin am Handy** (Liste der Adminseiten, Start mit der Übersicht) ist auf `main` (11.10.), noch nicht ausgerollt.
+- **Admin am Handy** (Liste der Adminseiten, Start mit der Übersicht) ist auf `main` und seit 11.10. 11:30 auf dem Server
+  (Stand `dd8e6fb`, zusammen mit Nicos Social-Media-Auswertung, Videos und Suchseite).
 - **Paket 6, A14 (eigener Importprozess) ist auf `main` und auf dem Server** (ausgerollt 11.10. 10:17, Stand `724a1a4`;
   Timer `ratsmonitor-import` alle 10 min und `ratsmonitor-import-nightly` 01:00 Uhr aktiv, `ratsmonitor.service` auf 8 GB;
   Sicherung der alten Einheit `/etc/systemd/system/ratsmonitor.service.bak-vor-a14`). Erster nächtlicher Lauf: 12.10., 01:00 Uhr.
