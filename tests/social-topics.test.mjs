@@ -81,7 +81,7 @@ test('Eignung: Teile, Summe, Reichweite und Aktualität', async () => {
  const c={title:'Antrag der Grünen: Tempo 30 auf der Hauptstraße in der Innenstadt',status:'rejected',date:'2026-10-10',region_id:'r',score:4.5,hits};
  const cal={baseline:{contested:.29},terms:{'Tempo 30':{res:200,contested:.5}}};
  const big=fitScore(c,{today:'2026-10-11',population:{r:500000},calibration:cal}),small=fitScore(c,{today:'2026-10-11',population:{r:4000},calibration:cal});
- assert.equal(Math.max(0,big.parts.reduce((n,p)=>n+p.points,0)),big.percent);
+ assert.equal(Math.max(0,big.parts.reduce((n,p)=>n+p.points,0)),big.raw);
  assert.ok(big.percent<=100&&big.percent>=60);
  assert.ok(big.parts.length>=7);
  assert.ok(big.parts.some(p=>p.key==='abzug'),'Straße im Titel ergibt einen Abzug');
@@ -113,4 +113,12 @@ test('Beleg und Kalibrierung: Abstimmungsergebnis und Themenquote wirken', async
  assert.ok(maj.evidence.some(t=>/mehrheitlich/.test(t)));
  const calm=fitScore({...base,hits:hits('Wärme','energie')},o);
  assert.ok(unan.parts.find(p=>p.key==='thema').points>calm.parts.find(p=>p.key==='thema').points);
+});
+
+test('cleanTitle entfernt Antragskopf mit Fraktion, Datum und Trennzeichen', async () => {
+  const {cleanTitle,scoreCard}=await import('../server/integrations/social-topics.mjs');
+  assert.equal(cleanTitle('Antrag der Fraktion Bündnis 90/ Die GRÜNEN vom 01.06.2026_Prüfung von Tempo 30 auf der Cottenburgstraße'),'Prüfung von Tempo 30 auf der Cottenburgstraße');
+  assert.equal(cleanTitle('Abschaffung der Fraktionsmittel •Antrag der Partei dieBasis'),'Abschaffung der Fraktionsmittel');
+  assert.equal(cleanTitle('Antrag der CDU-Ratsfraktion, betr. Berichterstattung über Verkehrsversuch auf dem Großflecken'),'Berichterstattung über Verkehrsversuch auf dem Großflecken');
+  assert.equal(scoreCard({id:'x',title:'Antrag der SPD-Fraktion: Verfahrensantrag zur Vorlage Zurückstellung der Abstimmung über die Schließung der Volkshochschule',status:'rejected',date:'2026-09-09',gremium:'Rat',region_id:'r',label:''}),null);
 });
