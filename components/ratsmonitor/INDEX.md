@@ -695,7 +695,7 @@ topic design-styles.css:140
 - AnalyticsAbout.tsx (365, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (66, ⚠1): AnalyticsPages
-- BauleitplanungPage.tsx (257, ⚠7): BauleitplanungPage
+- BauleitplanungPage.tsx (257, ⚠8): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (219, ⚠6): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
@@ -715,10 +715,13 @@ topic design-styles.css:140
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (135, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
-- RadarExtra.tsx (152, ⚠6): Extra, RadarExtra
+- RadarDrill.tsx (56): DrillItem, RadarDrill
+- RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
+- RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS
+- RegionMap.tsx (63): RegionMap
 - Reveal.tsx (16): Reveal
-- ThemeRadarPage.tsx (229, ⚠9): ThemeRadarPage
+- ThemeRadarPage.tsx (225, ⚠8): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (207, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery

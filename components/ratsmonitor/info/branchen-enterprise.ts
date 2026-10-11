@@ -30,7 +30,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   soziales: { href: "/analytics/soziales", name: "Vereins- und Sozialradar", icon: "handshake", group: "radar" },
   vergabe: { href: "/analytics/vergabe", name: "Vergaberadar", icon: "clipboardList", group: "finanzen" },
   klima: { href: "/analytics/klima", name: "Klima- und Energieradar", icon: "zap", group: "radar" },
-  finanzlage: { href: "/analytics/finanzlage", name: "Finanzlage", icon: "layers", group: "finanzen" },
+  finanzlage: { href: "/analytics/finanzlage", name: "Haushalt und Steuern", icon: "layers", group: "finanzen" },
   beteiligung: { href: "/analytics/beteiligung", name: "Beteiligung", icon: "megaphone", group: "politik" },
   news: { href: "/analytics/news", name: "Newsradar", icon: "newspaper", group: "politik" },
   gebuehren: { href: "/analytics/gebuehren", name: "Gebührenradar", icon: "tag", group: "finanzen" },
@@ -58,7 +58,7 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     title: "Sehen, wo ein Thema schon angekommen ist",
     layout: "lead",
     analysen: [
-      ["bauleitplanung", "Sehen Sie, welche Bebauungspläne in welchem Verfahrensschritt sind und wie viele Wohnungen entstehen sollen."],
+      ["bauleitplanung", "Sehen Sie, welche Bebauungspläne in welchem Verfahrensschritt sind und wo Gewerbe-, Industrie- und Energieflächen entstehen."],
       ["graph", "Verknüpfen Sie Bauleitpläne, Veränderungssperren und Gewerbegebiete zu einem Netz."],
       ["gebuehren", "Grundbesitzabgaben im Blick: wo Abfall-, Abwasser- und Niederschlagswassergebühren neu kalkuliert, erhöht oder gesenkt werden."],
     ],

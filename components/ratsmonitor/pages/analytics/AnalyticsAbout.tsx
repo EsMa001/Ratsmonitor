@@ -144,7 +144,7 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "finanzlage", name: RADARS.finanzen.name, href: "/analytics/finanzlage", kurz: RADARS.finanzen.kurz },
   { id: "gebuehren", name: RADARS.gebuehren.name, href: "/analytics/gebuehren", kurz: RADARS.gebuehren.kurz },
   { id: "foerderung", name: "Förderradar", href: "/analytics/foerderung", kurz: "Welche Förderprogramme wo beantragt und bewilligt werden." },
-  { id: "bauleitplanung", name: "Bauleitplanung", href: "/analytics/bauleitplanung", kurz: "Welche Bauleitpläne in welchem Schritt sind und wie viele Wohnungen entstehen sollen." },
+  { id: "bauleitplanung", name: "Bauleitplanung", href: "/analytics/bauleitplanung", kurz: "Welche Bauleitpläne in welchem Schritt sind und wo Gewerbe-, Industrie- und Energieflächen geplant werden." },
   { id: "kita", name: "Kita-Radar", href: "/analytics/kita", kurz: "Wo über Elternbeiträge entschieden wird und in welche Richtung." },
   { id: "versorgung", name: RADARS.versorgung.name, href: "/analytics/versorgung", kurz: RADARS.versorgung.kurz },
   { id: "verkehr", name: RADARS.verkehr.name, href: "/analytics/verkehr", kurz: RADARS.verkehr.kurz },
@@ -214,8 +214,8 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
   ),
   bauleitplanung: (
     <>
-      <p className="mt-3 text-[16px] text-slate-500">Zeigt, welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo im Verhältnis zur Größe viel geplant wird und wie viele Wohnungen nach den Unterlagen entstehen sollen.</p>
-      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Plan und Verfahrensschritt werden aus dem Titel gelesen, sonst aus dem Beschlussvorschlag: Aufstellung, frühzeitige Beteiligung (§ 3 Abs. 1 BauGB), Offenlage (§ 3 Abs. 2 BauGB), Abwägung, Satzungsbeschluss (§ 10 BauGB) oder Aufhebung. Ein Plan läuft über mehrere Sitzungen und Gremien; er wird je Gebiet über Nummer oder Namen einmal gezählt, mit dem weitesten Schritt. Geplante Wohneinheiten stammen aus Sätzen mit Planungsbezug („rund 140 Wohneinheiten sollen entstehen“).</p>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo im Verhältnis zur Größe viel geplant wird und wo Gewerbe-, Industrie- und Energieflächen entstehen.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Plan und Verfahrensschritt werden aus dem Titel gelesen, sonst aus dem Beschlussvorschlag: Aufstellung, frühzeitige Beteiligung (§ 3 Abs. 1 BauGB), Offenlage (§ 3 Abs. 2 BauGB), Abwägung, Satzungsbeschluss (§ 10 BauGB; „beschlossen“ nur mit Status beschlossen, sonst „Satzungsbeschluss vorgelegt“) oder Aufhebung. Ein Plan läuft über mehrere Sitzungen und Gremien; er wird je Gebiet über Nummer oder Namen einmal gezählt, mit dem weitesten Schritt. Geplante Wohneinheiten stammen aus Sätzen mit Planungsbezug („rund 140 Wohneinheiten sollen entstehen“).</p>
           <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Art des Plangebiets: aus Titel und Planname, sonst aus dem Beschlussvorschlag (Industrie, Gewerbe, Logistik, Einzelhandel, Energie wie Photovoltaik und Wind, Rechenzentrum, Mischgebiet, Wohnen; „interkommunal“, wenn der Titel es nennt). Die Karte zeigt die Gemeinde des Plans, bei Gemeindeverbänden die im Titel genannte Mitgliedsgemeinde; die Lage im Ort steht nur im Plannamen.</p>
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Bauanträge im Plangebiet, Stellungnahmen zu Plänen der Nachbargemeinden und Sammelberichte zählen nicht. Wohneinheiten stehen nur bei einem kleinen Teil der Pläne im Hauptdokument, oft erst in der Begründung; die Summe ist eine Untergrenze. Ohne erkennbare Art (etwa nur ein Straßenname als Planname) fehlt ein Plan in Karte und Liste der Arten.</p>
     </>

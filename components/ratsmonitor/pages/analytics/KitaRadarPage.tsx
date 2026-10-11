@@ -91,9 +91,9 @@ export function KitaRadarPage() {
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {res.totals.fees + (SHOW_PLACES ? res.totals.projects : 0) === 0 ? <p className="mt-10 text-[16px]">Für diese Suche sind keine Kita-Beiträge oder neuen Plätze erkannt.</p> : (
             <>
-              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.fees)} Vorgänge zu Kita-Elternbeiträgen in ${n(res.totals.feeRegions)} Gebieten: ${n(count("Erhöhung"))} Erhöhungen, ${n(count("Senkung"))} Senkungen und ${n(count("Beitragsfreiheit"))}-mal Beitragsfreiheit.${SHOW_PLACES && res.totals.places ? ` Genannt sind ${n(res.totals.places)} neue Kita-Plätze.` : ""}`}</Befund>
+              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.fees)} Vorgänge zu Kita-Elternbeiträgen in ${n(res.totals.feeRegions)} Gebieten, davon ${n(count("Erhöhung"))} mit Erhöhung, ${n(count("Senkung"))} mit Senkung und ${n(count("Beitragsfreiheit"))} mit Beitragsfreiheit in Titel oder Beschlussvorschlag. Darunter sind auch Anträge, die nicht beschlossen sein müssen; der Status steht in der Liste.${SHOW_PLACES && res.totals.places ? ` Genannt sind ${n(res.totals.places)} neue Kita-Plätze.` : ""}`}</Befund>
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                {[["Vorgänge zu Beiträgen", n(res.totals.fees)], ["Erhöhungen", n(count("Erhöhung"))], ["Senkungen und Beitragsfreiheit", n(count("Senkung") + count("Beitragsfreiheit"))], SHOW_PLACES ? ["Neue Kita-Plätze", n(res.totals.places)] : ["Gebiete", n(res.totals.feeRegions)]].map(([k, v], i) => (
+                {[["Vorgänge zu Beiträgen", n(res.totals.fees)], ["Mit Erhöhung", n(count("Erhöhung"))], ["Mit Senkung oder Beitragsfreiheit", n(count("Senkung") + count("Beitragsfreiheit"))], SHOW_PLACES ? ["Neue Kita-Plätze", n(res.totals.places)] : ["Gebiete", n(res.totals.feeRegions)]].map(([k, v], i) => (
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
               </dl>

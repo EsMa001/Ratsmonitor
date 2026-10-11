@@ -4,10 +4,10 @@ import { STATUS } from "../../lib/constants";
 import { RadarDrill } from "./RadarDrill";
 
 /* Kopfmodule der Themenradare mit Werten aus den Unterlagen (server/integrations/analytics-radar-extra.mjs):
-   Hebesätze (Finanzlage), Abwasser- und Wassergebühren (Gebührenradar), Stand der Wärmeplanung (Klimaradar),
+   Hebesätze (Haushalt und Steuern), Abwasser- und Wassergebühren (Gebührenradar), Stand der Wärmeplanung (Klimaradar),
    Zuschüsse an Vereine und Träger (Vereine und Soziales). */
 interface RateItem { id: string; title: string; region: string; date: string; status: string; from: number | null; to: number; unit: string }
-interface RateBlock { name: string; regions: number; median: number | null; min: number | null; max: number | null; up: number; down: number; unit: string; items: RateItem[] }
+interface RateBlock { name: string; regions: number; min: number | null; max: number | null; lands: { land: string; regions: number; median: number | null }[]; up: number; down: number; unit: string; items: RateItem[] }
 interface HeatRegion { id: string; title: string; region: string; date: string; status: string; step: string }
 interface Grant { id: string; title: string; region: string; date: string; status: string; purpose: string; euro: number }
 export type Extra =
@@ -56,8 +56,8 @@ function Rates({ x }: { x: Extract<Extra, { kind: "hebesatz" | "fee_rate" }> }) 
     <Reveal><section className="mt-12">
       <h2 className="text-[22px] font-semibold">{tax ? "Hebesätze" : "Gebühren für Wasser und Abwasser"}</h2>
       <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">{tax
-        ? "In den Unterlagen genannte Hebesätze, je Gebiet der zuletzt genannte. Mit „bisher“ ist eine Änderung genannt; ob sie beschlossen ist, zeigt der Status."
-        : "In den Unterlagen genannte Gebührensätze je Kubik- oder Quadratmeter, je Gebiet der zuletzt genannte. Mit „bisher“ ist eine Änderung genannt; ob sie beschlossen ist, zeigt der Status."}</p>
+        ? "In den Unterlagen genannte Hebesätze, je Gemeinde der zuletzt genannte; bei Verbands- und Samtgemeinden gilt er für die Mitgliedsgemeinde, deren Rat berät. Abgelehnte Vorschläge zählen nicht. Mit „bisher“ ist eine Änderung genannt; ob sie beschlossen ist, zeigt der Status."
+        : "In den Unterlagen genannte Gebührensätze je Kubik- oder Quadratmeter (netto oder brutto, wie genannt), je Gebiet der zuletzt genannte; abgelehnte Vorschläge und Nachkalkulationen zählen nicht. Mit „bisher“ ist eine Änderung genannt; ob sie beschlossen ist, zeigt der Status."}</p>
       {x.blocks.length > 1 && (
         <div className="flex flex-wrap gap-2" role="group" aria-label={tax ? "Steuerart" : "Gebührenart"}>
           {x.blocks.map((k) => (
@@ -67,13 +67,14 @@ function Rates({ x }: { x: Extract<Extra, { kind: "hebesatz" | "fee_rate" }> }) 
         </div>
       )}
       <dl className="mt-5 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-        {[["Gebiete mit Wert", n(b.regions)], ["Mittlerer Wert", b.median === null ? "–" : fmt(b.median)], ["Spanne", b.min === null ? "–" : `${fmt(b.min)} bis ${fmt(b.max ?? b.min)}`]].map(([k, v], i) => (
+        {[["Gebiete mit Wert", n(b.regions)], b.lands.length === 1 ? [`Mitte (${b.lands[0].land})`, b.lands[0].median === null ? "–" : fmt(b.lands[0].median)] : ["Länder", n(b.lands.length)], ["Spanne", b.min === null ? "–" : `${fmt(b.min)} bis ${fmt(b.max ?? b.min)}`]].map(([k, v], i) => (
           <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[18px] font-semibold tabular-nums sm:text-[22px]">{v}</dd></div>
         ))}
         <div className="border-l border-slate-200 px-4"><dt className="text-[12px] text-slate-500">Erhöhung / Senkung</dt><dd className="mt-1 flex gap-1 text-[18px] font-semibold tabular-nums sm:text-[22px]">
           {(["up", "down"] as const).map((c, i) => <span key={c}>{i > 0 && <span className="mr-1 text-slate-400">/</span>}<button type="button" aria-pressed={change === c} disabled={!(c === "up" ? b.up : b.down)} onClick={() => setChange(change === c ? "" : c)} className={`rounded px-1 ${change === c ? "bg-teal-600 text-white" : "text-teal-700 underline decoration-dotted underline-offset-4 disabled:text-slate-900 disabled:no-underline"}`}>{n(c === "up" ? b.up : b.down)}</button></span>)}
         </dd></div>
       </dl>
+      {b.lands.length > 1 && <p className="mt-4 text-[14px] text-slate-500"><span className="text-slate-700">Mitte je Land</span> (Grundsteuermodelle und Gebührenordnungen sind je Land verschieden, daher kein gemeinsamer Wert): {b.lands.map((l) => `${l.land} ${l.median === null ? "–" : fmt(l.median)} (${n(l.regions)})`).join(" · ")}</p>}
       {change && <p className="mt-4 text-[14px] text-slate-500">Nur Gebiete mit {change === "up" ? "Erhöhung" : "Senkung"}. <button type="button" onClick={() => setChange("")} className="text-teal-700 hover:underline">Alle zeigen</button></p>}
       <More key={`${b.name}|${change}`} items={items} render={(i) => (
         <Row key={i.id} href={`/beschluss/${i.id}`} title={i.region} sub={`${DAY.format(new Date(i.date))} · ${i.title}`}
@@ -116,7 +117,7 @@ function Grants({ x, radar, query }: { x: Extract<Extra, { kind: "grant" }>; rad
   return (
     <Reveal><section className="mt-12">
       <h2 className="text-[22px] font-semibold">Zuschüsse an Vereine und Träger</h2>
-      <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge, in denen die Kommune selbst einen Zuschuss gewährt oder über ihre Vereins-, Sport- oder Kulturförderung berät. Zweck aus dem Titel; Beträge nur, wo sie am Zuschuss genannt sind (ohne Höchstbeträge und Listen), daher eine Untergrenze. Klick auf einen Zweck zeigt die Vorgänge.</p>
+      <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge, in denen die Kommune selbst einen Zuschuss gewährt oder über ihre Vereins-, Sport- oder Kulturförderung berät. Das Thema „Vereinsförderung“ weiter unten zählt anders: dort genügt das Wort im Titel, hier muss ein Zuschuss an einen Verein oder Träger gemeint sein. Zweck aus dem Titel; Beträge nur, wo sie am Zuschuss genannt sind (ohne Höchstbeträge und Listen), daher eine Untergrenze. Klick auf einen Zweck zeigt die Vorgänge.</p>
       <dl className="mt-5 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
         {[["Vorgänge", n(x.topics)], ["Gebiete", n(x.regions)], ["Genannte Beträge", euro(x.euro)], ["Mittlerer Betrag", x.median === null ? "–" : euro(x.median)]].map(([k, v], i) => (
           <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[18px] font-semibold tabular-nums sm:text-[22px]">{v}</dd></div>

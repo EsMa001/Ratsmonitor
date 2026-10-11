@@ -28,7 +28,7 @@ const n = (v: number) => v.toLocaleString("de-DE");
 const DAY = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short", year: "2-digit" });
 const MONTH = new Intl.DateTimeFormat("de-DE", { month: "short", year: "2-digit" });
 /* Verfahrensschritte von hell nach kräftig; Aufhebung und Unklares grau */
-const STEP_COLOR: Record<string, string> = { Aufstellung: "#ccfbf1", "Frühzeitige Beteiligung": "#99f6e4", Offenlage: "#5eead4", Abwägung: "#2dd4bf", Satzungsbeschluss: "#0d9488", Aufhebung: "#94a3b8", "Sonstiger Schritt": "#e2e8f0" };
+const STEP_COLOR: Record<string, string> = { Aufstellung: "#ccfbf1", "Frühzeitige Beteiligung": "#99f6e4", Offenlage: "#5eead4", Abwägung: "#2dd4bf", "Satzungsbeschluss vorgelegt": "#14b8a6", Satzungsbeschluss: "#0d9488", Aufhebung: "#94a3b8", "Sonstiger Schritt": "#e2e8f0" };
 
 function PlanRow({ p, right }: { p: Plan; right: string }) {
   return (
@@ -44,7 +44,7 @@ function PlanRow({ p, right }: { p: Plan; right: string }) {
 
 /* Gewerbe und Wirtschaft: die Arten, die zusammen „Wirtschaftsflächen“ ergeben */
 const ECONOMY = ["Gewerbe", "Industrie", "Logistik", "Einzelhandel", "Rechenzentrum"];
-const IN_PROGRESS = ["Aufstellung", "Frühzeitige Beteiligung", "Offenlage", "Abwägung"];
+const IN_PROGRESS = ["Aufstellung", "Frühzeitige Beteiligung", "Offenlage", "Abwägung", "Satzungsbeschluss vorgelegt"];
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
 
 /** Gewerbe, Industrie, Energie, Handel: Karte auf Gemeindeebene und Liste der Pläne, nach Art und Verfahrensstand */
@@ -68,7 +68,7 @@ function Uses({ uses, plans }: { uses: NonNullable<Result["uses"]>; plans: UsePl
   return (
     <Reveal><section className="mt-12">
       <h2 className="text-[22px] font-semibold">Gewerbe, Industrie, Energie: wo wird geplant?</h2>
-      <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Art des Plangebiets aus Titel und Planname (etwa „Gewerbegebiet Nord“, „SO Photovoltaik“), sonst aus dem Beschlussvorschlag. „Wirtschaft“ fasst Gewerbe, Industrie, Logistik, Einzelhandel und Rechenzentren zusammen. Die Karte zeigt die Gemeinde, nicht die Lage im Ort; die steht im Plannamen. Klick auf eine Gemeinde zeigt ihre Pläne.</p>
+      <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Art des Plangebiets aus Titel und Planname (etwa „Gewerbegebiet Nord“, „SO Photovoltaik“), sonst aus dem Beschlussvorschlag. „Wirtschaft“ fasst Gewerbe, Industrie, Logistik, Einzelhandel und Rechenzentren zusammen. Die Karte zeigt die Gemeinde, nicht die Lage im Ort; die steht im Plannamen. Pläne eines Gemeindeverbands ohne erkennbare Mitgliedsgemeinde und Pläne der Kreise stehen nur in der Liste. Klick auf eine Gemeinde zeigt ihre Pläne.</p>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Art des Plangebiets">
         {chips.filter(([, k]) => k > 0).map(([name, k]) => <button key={name} type="button" aria-pressed={use === name} onClick={() => { setUse(name); setPicked(""); setAll(false); }} className={chip(use === name)}>{name} <span className="tabular-nums opacity-80">{n(k)}</span></button>)}
       </div>
@@ -79,7 +79,7 @@ function Uses({ uses, plans }: { uses: NonNullable<Result["uses"]>; plans: UsePl
         <RegionMap levels={levels} legend={["1 Plan", "2 Pläne", "3 bis 4 Pläne", "5 und mehr"]} label={`Karte: Gemeinden mit Plänen der Art ${use}`} picked={picked} onPick={(a) => { setPicked(picked === a ? "" : a); setAll(false); }}
           info={picked ? <><b className="font-semibold">{shown[0]?.region ?? "Keine Pläne"}</b><br /><span className="text-slate-500">{n(shown.length)} {shown.length === 1 ? "Plan" : "Pläne"} · Klick erneut hebt die Auswahl auf</span></> : undefined} />
       </div>
-      <p className="mt-3 text-[14px] text-slate-500">{`${n(shown.length)} ${shown.length === 1 ? "Plan" : "Pläne"}${picked ? " in der gewählten Gemeinde" : ""}${list.filter((p) => !p.ags.length).length && !picked ? `, davon ${n(list.filter((p) => !p.ags.length).length)} von Kreisen ohne Lage auf der Karte` : ""}.`}{picked && <> <button type="button" onClick={() => setPicked("")} className="text-teal-700 hover:underline">Alle Gemeinden zeigen</button></>}</p>
+      <p className="mt-3 text-[14px] text-slate-500">{`${n(shown.length)} ${shown.length === 1 ? "Plan" : "Pläne"}${picked ? " in der gewählten Gemeinde" : ""}${list.filter((p) => !p.ags.length).length && !picked ? `, davon ${n(list.filter((p) => !p.ags.length).length)} ohne Lage auf der Karte` : ""}.`}{picked && <> <button type="button" onClick={() => setPicked("")} className="text-teal-700 hover:underline">Alle Gemeinden zeigen</button></>}</p>
       <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
         {(all ? shown : shown.slice(0, 10)).map((p) => (
           <li key={p.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
@@ -157,7 +157,7 @@ export function BauleitplanungPage() {
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {res.totals.plans === 0 ? <p className="mt-10 text-[16px]">Für diese Suche ist kein Bauleitplan erkannt.</p> : (
             <>
-              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.plans)} Bauleitpläne in ${n(res.totals.regions)} Gebieten in Arbeit, ${n(res.totals.adopted)} davon mit Satzungsbeschluss.${SHOW_HOUSING && res.totals.we ? ` Genannt sind ${n(res.totals.we)} geplante Wohneinheiten.` : ""}`}</Befund>
+              <Befund>{`${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} sind ${n(res.totals.plans)} Bauleitpläne in ${n(res.totals.regions)} Gebieten in Arbeit, ${n(res.totals.adopted)} davon als Satzung beschlossen.${SHOW_HOUSING && res.totals.we ? ` Genannt sind ${n(res.totals.we)} geplante Wohneinheiten.` : ""}`}</Befund>
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
                 {[["Pläne", n(res.totals.plans)], ["Satzungsbeschlüsse", n(res.totals.adopted)], ["Gebiete", n(res.totals.regions)], SHOW_HOUSING ? ["Geplante Wohneinheiten", n(res.totals.we)] : ["Vorgänge", n(res.totals.topics)]].map(([k, v], i) => (
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
@@ -166,7 +166,7 @@ export function BauleitplanungPage() {
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Pläne nach Verfahrensschritt</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Jeder Plan einmal, mit dem weitesten Schritt im Zeitraum. Ein Plan läuft meist über mehrere Sitzungen und Gremien. Klick auf einen Schritt zeigt die Pläne.</p>
+                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Jeder Plan einmal, mit dem weitesten Schritt im Zeitraum. Ein Plan läuft meist über mehrere Sitzungen und Gremien. „Satzungsbeschluss“ zählt nur mit dem Status beschlossen; steht er auf der Tagesordnung und ist der Ausgang offen, heißt der Schritt „Satzungsbeschluss vorgelegt“. Klick auf einen Schritt zeigt die Pläne.</p>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
                   {stages.filter((s) => s.n > 0).map((s) => (
                     <li key={s.name} className="border-b border-slate-200">

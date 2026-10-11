@@ -9,7 +9,6 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarExtra, type Extra } from "./RadarExtra";
 import { RadarDrill } from "./RadarDrill";
 import { RadarNorms, normsSentence, type Norms } from "./RadarNorms";
-import { DEC_COLORS } from "./DecisionCharts";
 import { STATUS } from "../../lib/constants";
 import { RADARS } from "@/shared/radars.mjs";
 import { ANALYSEN, GRUPPEN, type AnalyseId } from "../../info/branchen-enterprise";
@@ -21,9 +20,9 @@ interface Result {
   topics: Topic[];
   signals: { name: string; n: number }[];
   months: { m: string; total: number }[];
-  regions: { id: string; name: string; pop: number | null; n: number; per10k: number | null; topics: string[] }[];
+  regions: { id: string; name: string; type: string; k: number; n: number; share: number; topics: string[] }[];
   recent: { id: string; title: string; region: string; date: string; status: string; signal: string; topics: string[] }[];
-  rule: { minPop: number; minTopics: number };
+  rule: { minTopics: number; window: { from: string; to: string } };
   extra?: Extra | null;
   norms?: Norms | null;
   place?: string | null;
@@ -31,24 +30,27 @@ interface Result {
 
 const n = (v: number) => v.toLocaleString("de-DE");
 const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE")} %`);
+const datum = (d: string) => new Date(d + "T12:00:00").toLocaleDateString("de-DE");
 const DAY = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short", year: "2-digit" });
 const MONTH = new Intl.DateTimeFormat("de-DE", { month: "short", year: "2-digit" });
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
-/* „im Rat der Stadt Billerbeck“, „im Kreistag des Kreises Coesfeld“, „im Rat des Amtes Peitz“ */
+/* Wer berät: „im Rat der Stadt Billerbeck“, „im Kreistag des Kreises Coesfeld“, bei Verbänden „in den Räten der
+   Verbandsgemeinde Schweich (mit den Räten der Mitgliedsgemeinden)“; dat: dasselbe nach „aus“ */
 const ratOf = (p: string) => {
-  const m = p.match(/^(Kreis|Landkreis|Amt|Markt) (.+)$/);
-  const gen = m ? `${{ Kreis: "des Kreises", Landkreis: "des Landkreises", Amt: "des Amtes", Markt: "des Marktes" }[m[1]]} ${m[2]}` : `der ${p}`;
-  return `${m && /Kreis/.test(m[1]) ? "Kreistag" : "Rat"} ${gen}`;
+  const u = p.match(/^(Verbandsgemeinde|Samtgemeinde|Amt|Verwaltungsgemeinschaft) (.+)$/);
+  if (u) { const r = `Räten ${u[1] === "Amt" ? "des Amtes" : `der ${u[1]}`} ${u[2]} (mit den Räten der Mitgliedsgemeinden)`; return { in: `In den ${r}`, dat: `den ${r}` }; }
+  const m = p.match(/^(Kreis|Landkreis|Markt) (.+)$/);
+  const gen = m ? `${{ Kreis: "des Kreises", Landkreis: "des Landkreises", Markt: "des Marktes" }[m[1]]} ${m[2]}` : `der ${p}`;
+  const organ = `${m && /Kreis/.test(m[1]) ? "Kreistag" : "Rat"} ${gen}`;
+  return { in: `Im ${organ}`, dat: `dem ${organ}` };
 };
 
-/** plenara.X – Themenradar (Versorgung, Verkehr, Vereine und Soziales, Vergabe, Klima und Energie, Finanzlage, Beteiligung);
+/** plenara.X – Themenradar (Versorgung, Verkehr, Vereine und Soziales, Vergabe, Klima und Energie, Haushalt und Steuern, Beteiligung);
  *  Unterthemen, Signale und Muster in shared/radars.mjs, Auswertung in server/integrations/analytics-radar.mjs */
-/** id: Radar in shared/radars.mjs; analyse: Eintrag in ANALYSEN, falls er anders heißt (Finanzlage) */
+/** id: Radar in shared/radars.mjs; analyse: Eintrag in ANALYSEN, falls er anders heißt (Haushalt und Steuern) */
 export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analyse?: AnalyseId }) {
   const gruppe = GRUPPEN[ANALYSEN[analyse ?? (id as AnalyseId)].group];
   const def = RADARS[id];
-  /* Beteiligung: keine Quote (der angenommene Beschlussvorschlag lehnt eine Anregung oft ab) */
-  const showRate = !("noRate" in def);
   const { query } = useAnalyticsQuery();
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
@@ -85,9 +87,14 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
   const maxT = Math.max(1, ...topics.map((t) => t.n));
   const maxS = Math.max(1, ...(res?.signals ?? []).map((s) => s.n));
   const maxM = Math.max(1, ...(res?.months ?? []).map((m) => m.total));
-  const maxR = Math.max(1, ...(res?.regions ?? []).map((r) => r.per10k ?? 0));
+  const maxR = Math.max(1, ...(res?.regions ?? []).map((r) => r.share));
+  /* „Was geschieht“ nur, wenn die Signale etwas aussagen: über der Hälfte „Sonstiges“ sagen sie wenig (Bewertung 11.10.2026) */
+  const other = res?.signals.find((s) => s.name === "Sonstiges")?.n ?? 0;
+  const showSignals = !!res && other <= res.signals.reduce((a, s) => a + s.n, 0) / 2;
   const recent = res?.recent ?? [];
-  const drill = (by: "topic" | "signal" | "month" | "region", value: string, label: string) => open === `${by}:${value}` && <RadarDrill radar={id} query={ranKey} by={by} value={value} label={label} />;
+  /* Die Rangliste rechnet mit den letzten 12 Monaten: dann zeigt auch die Liste eines Gebiets diesen Zeitraum */
+  const windowed = () => { const p = new URLSearchParams(ranKey); if (res) { p.set("from", res.rule.window.from); p.set("to", res.rule.window.to); } return p.toString(); };
+  const drill = (by: "topic" | "signal" | "month" | "region", value: string, label: string) => open === `${by}:${value}` && <RadarDrill radar={id} query={by === "region" ? windowed() : ranKey} by={by} value={value} label={by === "region" ? `${label}, letzte 12 Monate` : label} />;
   const month = open.startsWith("month:") ? open.slice(6) : "";
 
   return (
@@ -107,10 +114,10 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {res.totals.topics === 0 ? <p className="mt-10 text-[16px]">Für diese Suche ist nichts zu diesem Radar erkannt.</p> : (
             <>
-              <Befund>{`${res.place && !res.q ? `Im ${ratOf(res.place)} gab es ${n(res.totals.topics)} Vorgänge` : `${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.topics)} Vorgänge in ${n(res.totals.regions)} Gebieten`}, am häufigsten zu „${topics[0]?.name}“ (${n(topics[0]?.n ?? 0)}).${showRate && res.totals.rate !== null ? ` Von ${n(res.totals.decided)} entschiedenen Vorgängen wurden ${pct(res.totals.rate)} beschlossen.` : ""}${normsSentence(res.norms)}`}</Befund>
-              {res.place && <p className="mt-3 text-[14px] text-slate-500">Nur Vorgänge aus dem {ratOf(res.place)}: Vorgänge anderer Ebenen (etwa des Kreises) zählen hier nicht mit.</p>}
+              <Befund>{`${res.place && !res.q ? `${ratOf(res.place).in} gab es ${n(res.totals.topics)} Vorgänge` : `${zuThema(res.q)[0].toUpperCase()}${zuThema(res.q).slice(1)} gab es ${n(res.totals.topics)} Vorgänge in ${n(res.totals.regions)} Gebieten`}, am häufigsten zu „${topics[0]?.name}“ (${n(topics[0]?.n ?? 0)}).${normsSentence(res.norms)}`}</Befund>
+              {res.place && <p className="mt-3 text-[14px] text-slate-500">Nur Vorgänge aus {ratOf(res.place).dat}: Vorgänge anderer Ebenen (etwa des Kreises) zählen hier nicht mit.</p>}
               <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
-                {[["Vorgänge", n(res.totals.topics)], ["Gebiete", n(res.totals.regions)], ["Entschieden", n(res.totals.decided)], showRate ? ["Beschlussquote", pct(res.totals.rate)] : ["Themen", n(topics.filter((t) => t.n > 0).length)]].map(([k, v], i) => (
+                {[["Vorgänge", n(res.totals.topics)], ["Gebiete", n(res.totals.regions)], ["Themen mit Vorgängen", n(topics.filter((t) => t.n > 0).length)], ["Monate", n(res.months.length)]].map(([k, v], i) => (
                   <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[22px] font-semibold tabular-nums">{v}</dd></div>
                 ))}
               </dl>
@@ -121,10 +128,9 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Themen</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge je Thema, in wie vielen Gebieten und was aus ihnen wird. Ein Vorgang kann zu mehreren Themen gehören. Klick auf ein Thema zeigt seine Vorgänge.</p>
+                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge je Thema und in wie vielen Gebieten; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Ein Vorgang kann zu mehreren Themen gehören. Klick auf ein Thema zeigt seine Vorgänge.</p>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
                   {topics.map((t) => {
-                    const d = Math.max(1, t.decided);
                     return (
                       <li key={t.name} className="border-b border-slate-200">
                         <button type="button" onClick={() => toggle(`topic:${t.name}`)} aria-expanded={open === `topic:${t.name}`} disabled={t.n === 0} className={`grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-3 text-left sm:grid-cols-[260px_minmax(0,1fr)_200px] ${open === `topic:${t.name}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
@@ -132,15 +138,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                           <span className="order-3 col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${(t.n / maxT) * 100}%` }} /></span>
                           <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{n(t.n)}</b><span className="ml-2 text-slate-500">{n(t.regions)} Gebiete</span></span>
                           <span className="order-4 col-span-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-slate-500 sm:col-span-3">
-                            {showRate && t.decided > 0 && (
-                              <span className="flex items-center gap-2">
-                                <span className="flex h-[6px] w-[90px] overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
-                                  <span style={{ width: `${(t.approved / d) * 100}%`, background: DEC_COLORS.approved }} /><span style={{ width: `${(t.postponed / d) * 100}%`, background: DEC_COLORS.postponed }} /><span style={{ width: `${(t.rejected / d) * 100}%`, background: DEC_COLORS.rejected }} />
-                                </span>
-                                {pct(t.rate)} beschlossen von {n(t.decided)}
-                              </span>
-                            )}
-                            {t.signals.filter((s) => s.name !== "Sonstiges").map((s) => <span key={s.name} className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">{s.name} {n(s.n)}</span>)}
+                            {showSignals && t.signals.filter((s) => s.name !== "Sonstiges").map((s) => <span key={s.name} className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">{s.name} {n(s.n)}</span>)}
                           </span>
                         </button>
                         {drill("topic", t.name, t.name)}
@@ -150,7 +148,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                 </ol>
               </section></Reveal>
 
-              <Reveal><section className="mt-12">
+              {showSignals && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Was geschieht</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Art der Vorgänge, aus Titel oder Beschlussvorschlag gelesen. Klick zeigt die Vorgänge.</p>
                 <ol className="m-0 list-none border-t border-slate-200 p-0">
@@ -165,7 +163,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                     </li>
                   ))}
                 </ol>
-              </section></Reveal>
+              </section></Reveal>}
 
               {res.months.length > 1 && (
                 <Reveal><section className="mt-12">
@@ -180,8 +178,8 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
               )}
 
               {!res.place && <Reveal><section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Gebiete mit vielen Vorgängen</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge je 10.000 Einwohner; nur Gebiete ab {n(res.rule.minPop)} Einwohnern mit mindestens {res.rule.minTopics} Vorgängen. Die Zahl misst, wie oft das Thema in den Ratsunterlagen auftaucht. Mit einem gewählten Ort steht hier stattdessen der Vergleich mit ähnlichen Gebieten. Klick auf ein Gebiet zeigt seine Vorgänge.</p>
+                <h2 className="text-[22px] font-semibold">Gebiete, in denen das Thema viel Raum hat</h2>
+                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil der Vorgänge dieses Radars an allen Sachvorgängen des Rats vom {datum(res.rule.window.from)} bis {datum(res.rule.window.to)} (ohne Formalien, gleiche Titel einmal), unabhängig von Suche und Filtern; nur Gebiete mit genug Unterlagen und mindestens {res.rule.minTopics} Vorgängen. Ein Anteil gleicht aus, dass Verbände mit vielen Ortsgemeinderäten mehr Vorgänge haben. Mit einem gewählten Ort steht hier stattdessen der Vergleich mit ähnlichen Gebieten. Klick auf ein Gebiet zeigt seine Vorgänge.</p>
                 {res.regions.length === 0 ? <p className="text-[14px] text-slate-500">Zu wenige Gebiete für einen Vergleich.</p> : (
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.regions.map((r, i) => (
@@ -189,8 +187,8 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                         <button type="button" onClick={() => toggle(`region:${r.id}`)} aria-expanded={open === `region:${r.id}`} className={`grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-x-3 py-3 text-left sm:grid-cols-[28px_280px_minmax(0,1fr)_150px] ${open === `region:${r.id}` ? "bg-teal-50/60" : "hover:bg-slate-50"}`}>
                           <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
                           <span className="min-w-0"><span className="block truncate text-[16px]">{r.name}</span><span className="block truncate text-[12px] text-slate-500">{r.topics.join(", ")}</span></span>
-                          <span className="order-4 col-span-3 mt-1.5 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1 sm:mt-0"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${((r.per10k ?? 0) / maxR) * 100}%` }} /></span>
-                          <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{(r.per10k ?? 0).toLocaleString("de-DE")}</b><span className="ml-2 text-slate-500">{n(r.n)} Vorg.</span></span>
+                          <span className="order-4 col-span-3 mt-1.5 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1 sm:mt-0"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${(r.share / maxR) * 100}%` }} /></span>
+                          <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{pct(r.share)}</b><span className="ml-2 text-slate-500">{n(r.k)} von {n(r.n)}</span></span>
                         </button>
                         {drill("region", r.id, r.name)}
                       </li>
@@ -218,7 +216,7 @@ export function ThemeRadarPage({ id, analyse }: { id: keyof typeof RADARS; analy
                 )}
               </section></Reveal>
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Erkannt wird am Titel, bei sehr kurzen Titeln am Beschlussvorschlag. Bauanträge Privater, Formalpunkte und Sammelpunkte wie Mitteilungen zählen nicht. {showRate ? "Die Beschlussquote ist der Anteil „beschlossen“ an den Vorgängen mit Entscheidung: angenommen ist der Beschlussvorschlag, nicht unbedingt das Anliegen; der Status ist nur bei einem Teil bekannt." : "Eine Zustimmungsquote steht hier bewusst nicht: „beschlossen“ heißt nur, dass der Beschlussvorschlag angenommen wurde, und der lehnt eine Anregung oft ab."} <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Erkannt wird am Titel, bei sehr kurzen Titeln am Beschlussvorschlag. Bauanträge Privater, Formalpunkte, Besetzungen und Sammelpunkte wie Mitteilungen zählen nicht. Eine Beschlussquote steht hier bewusst nicht: Sie lag in allen Radaren zwischen 84 und 96 % und sagt wenig, weil „beschlossen“ nur heißt, dass der Beschlussvorschlag angenommen wurde. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
             </>
           )}
         </div>

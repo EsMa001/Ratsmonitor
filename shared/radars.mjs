@@ -36,7 +36,8 @@ export const RADARS={
    ['Trinkwasser',/Trinkwasser|Wasserversorgung|Wasserwerk|Hochbehälter|Wasserleitung|Wasserbezug|Wasserpreis/i],
    ['Abwasser',/Abwasser|Kläranlage|Kanal(netz|sanierung|isation)?\b|Niederschlagswasser|Regenwasser|Regenrückhalte|Schmutzwasser|Entwässerung/i],
    ['Abfall und Entsorgung',/Abfall|Müll(?!er)|Wertstoff|Entsorgung|Recycling|Biotonne|Sperrmüll|Wertstoffhof|Grünschnitt|Altkleider/i],
-   ['Stadtwerke und Beteiligungen',/Stadtwerke|Eigenbetrieb|Zweckverband|Versorgungsbetrieb|Gemeindewerke|Beteiligungsbericht/i],
+   // Zweckverband nur mit Versorgungsbezug: Sparkassen-, Schul- und Studienzweckverbände gehören nicht hierher
+   ['Stadtwerke und Beteiligungen',/Stadtwerke|Eigenbetrieb|(Wasser|Abwasser|Abfall|Energie|Versorgungs|Entsorgungs|Breitband|Zweck)verband[^,;:]{0,60}(Wasser|Abwasser|Abfall|Energie|Versorgung|Entsorgung|Breitband|Gas|Strom|Wärme|Klär)|(Wasser|Abwasser|Abfall|Energie|Versorgungs|Entsorgungs|Breitband)zweckverband|Versorgungsbetrieb|Gemeindewerke/i],
    ['Breitband',/Breitband|Glasfaser|Gigabit|Mobilfunk/i],
   ],
   signals:S('vertrag','gebuehren','vergabe','wirtschaft','bau','planung','foerderung'),
@@ -45,7 +46,7 @@ export const RADARS={
   name:'Verkehrsradar',icon:'bus',
   kurz:'Straßen und Brücken, Radverkehr, Bus und Bahn, Tempo und Verkehrssicherheit, Parken und Gehwege.',
   topics:[
-   ['Straßen und Brücken',/Straßenbau|Straßenausbau|Straßensanierung|Fahrbahn|Brücke|Kreisverkehr|Kreuzung|Ortsdurchfahrt|Erschließungsstraße|Deckensanierung|Straßenbeleuchtung/i],
+   ['Straßen und Brücken',/Straßenbau|Straßenausbau|Straßensanierung|Fahrbahn|\bBrücke|Kreisverkehr|Kreuzung|Ortsdurchfahrt|Erschließungsstraße|Deckensanierung|Straßenbeleuchtung/i],
    ['Radverkehr',/Radweg|Radverkehr|Fahrrad|Radschnellweg|Radstreifen|Schutzstreifen|Radabstell|Fahrradstraße/i],
    ['Bus und Bahn',/ÖPNV|Nahverkehr|Busverkehr|Buslinie|Bushaltestelle|Haltestelle|Bahnhof|Bürgerbus|Schülerbeförderung|Deutschlandticket|Rufbus|On-Demand|S-Bahn|Straßenbahn/i],
    ['Tempo und Verkehrssicherheit',/Tempo\s?\d|Geschwindigkeit|Verkehrsberuhigung|Schulweg|Zebrastreifen|Fußgängerüberweg|Querungshilfe|Ampel|Lichtsignal|Verkehrssicherheit|Blitzer|Verkehrsschau/i],
@@ -59,7 +60,7 @@ export const RADARS={
   name:'Vereins- und Sozialradar',icon:'handshake',
   kurz:'Zuschüsse an Vereine, Sportstätten, Jugend, Senioren, Inklusion, Integration und soziale Angebote.',
   topics:[
-   ['Vereinsförderung',/Vereinsförderung|Vereinszuschuss|(Zuschuss|Zuschussantrag|Zuwendung|Förderantrag)[^,;:]{0,60}(Verein|e\.\s?V\.|Club|Initiative|Förderverein|Gemeinschaft)|Ehrenamtspauschale|Vereinsrichtlinie|Sportförderung/i],
+   ['Vereinsförderung',/Vereinsförderung|Vereinszuschuss|(Zuschuss|Zuschussantrag|Zuwendung|Förderantrag)[^,;:]{0,60}(Verein(?!barung)|e\.\s?V\.|Club|Initiative|Förderverein|Gemeinschaft)|Ehrenamtspauschale|Vereinsrichtlinie|Sportförderung/i],
    ['Sport und Bäder',/Sportplatz|Sporthalle|Turnhalle|Kunstrasen|Sportstätte|Sportanlage|Schwimmbad|Hallenbad|Freibad|Bäder|Sportverein/i],
    ['Jugend',/Jugendhilfe|Jugendzentrum|Jugendtreff|Jugendarbeit|Jugendpflege|Jugendrat|Jugendparlament|Spielplatz|Streetwork|Jugendhaus/i],
    ['Senioren und Pflege',/Senioren|Pflegeheim|Pflegestützpunkt|Altenpflege|Pflegeplanung|Pflegeeinrichtung|Altenhilfe|Mehrgenerationen|Demenz/i],
@@ -100,7 +101,7 @@ export const RADARS={
   signals:S('planung','bau','foerderung','vergabe','regelung','antrag','vertrag'),
  },
  finanzen:{
-  name:'Finanzlage',icon:'layers',
+  name:'Haushalt und Steuern',icon:'layers',
   kurz:'Haushalt und Nachträge, Haushaltssicherung, Steuern und Hebesätze, Kredite, Jahresabschlüsse und Umlagen.',
   // Haushalt ist hier das Thema: Sammelpunkte nur ohne Haushaltsbezug ausschließen
   collective:/\bAnfragen\b|Beantwortung|Mitteilung|Verschiedenes|Niederschrift|Tagesordnung/i,
@@ -118,8 +119,6 @@ export const RADARS={
  beteiligung:{
   name:'Beteiligung',icon:'megaphone',
   kurz:'Einwohneranträge und Anregungen, Petitionen und Bürgerbegehren, Bürgerbeteiligung und Beiräte.',
-  // Keine Quote: „beschlossen“ heißt, der Beschlussvorschlag wurde angenommen, und der lehnt eine Anregung oft ab
-  noRate:true,
   // Beteiligung im Planverfahren (BauGB) ist Pflicht und gehört zur Bauleitplanung
   exclude:/Bebauungsplan|B-Plan|Flächennutzungsplan|Bauleitplan/i,
   topics:[
@@ -147,13 +146,14 @@ export const RADARS={
    ['Friedhof und Bestattung',/Friedh[oö]f|Bestattung|Grabstätte|Grabnutzung/i],
    ['Parken',/Parkgebühr|Parkraum|Parkschein|Parkausweis|Bewohnerpark|Anwohnerpark|Parken|Parkhaus/i],
    ['Straßenausbau- und Erschließungsbeiträge',/Straßenausbaubeitr|Erschließungsbeitr|Ausbaubeitr|wiederkehrende Beitr|Anliegerbeitr/i],
-   ['Bäder, Hallen und Sportstätten',/[a-zäöü]bad\b|Bäder|Freibad|Hallenbad|Solebad|Schwimm|Sporthalle|Sportstätte|Sportanlage|Sportplatz|Hallengebühr|Turnhalle/i],
+   // Fahrten zum Schwimmbad (Beförderungsentgelte) sind keine Bädergebühren
+   ['Bäder, Hallen und Sportstätten',/^(?![^]*(Beförderung|Busfahrt|Schülerbeförderung))[^]*(?:[a-zäöü]bad\b|Bäder|Freibad|Hallenbad|Solebad|Schwimm|Sporthalle|Sportstätte|Sportanlage|Sportplatz|Hallengebühr|Turnhalle)/i],
    ['Bücherei, Musikschule und Kultur',/Bücherei|Bibliothek|Musikschule|Volkshochschule|\bVHS\b|Museum|Theater|Archiv/i],
    ['Schulkind- und Ferienbetreuung',/Ganztag|OGS|Mittagsbetreuung|Ferienbetreuung|Schulkindbetreuung|Betreuende Grundschule|Hortbetreuung|Nachmittagsbetreuung/i],
    ['Unterkünfte und Obdach',/Obdach|Unterkunft|Unterkünfte|Übergangsheim|Gemeinschaftsunterkunft|Unterbringung/i],
    ['Feuerwehr und Rettungsdienst',/Feuerwehr|Rettungsdienst|Brandverhütung|Brandsicherheit/i],
    ['Sondernutzung und Märkte',/Sondernutzung|Wochenmarkt|Jahrmarkt|Weihnachtsmarkt|Marktgebühr|Marktsatzung|Marktordnung|Märkte|Standgebühr|Standplatz/i],
-   ['Bus- und Bahntarife',/Deutschlandticket|Tarifreform|Westfalentarif|Verkehrsverbund|Fahrpreis|Ticket|ÖPNV-Tarif|Gemeinschaftstarif/i],
+   ['Bus- und Bahntarife',/Deutschlandticket|Tarifreform|Westfalentarif|Verkehrsverbund|Fahrpreis|(?<!Park[\wäöüß-]{0,8})Ticket|ÖPNV-Tarif|Gemeinschaftstarif/i],
   ],
   signals:S('erhoehung','senkung','kalkulation','antrag','bericht'),
  },

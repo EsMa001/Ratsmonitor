@@ -10,9 +10,9 @@ import {atRevision} from './revision-cache.mjs';
  * „häufiger als üblich“, wenn die Spanne ganz über dem oberen Viertel der Gruppe liegt, „seltener“ entsprechend.
  * Die Zahl sagt, wie oft ein Thema in den Ratsunterlagen vorkommt, nicht, was umgesetzt wurde.
  */
-const MONTHS=12,MIN_MONTHS=9,MIN_ITEMS=100,MIN_GROUP=15,MIN_TOPIC=5,SMOOTH=200;
+const MONTHS=12,MIN_MONTHS=9,MIN_ITEMS=100,MIN_GROUP=15,MIN_TOPIC=5;
 const SIZES=[[0,10000,'unter 10.000'],[10000,20000,'10.000 bis 20.000'],[20000,50000,'20.000 bis 50.000'],[50000,100000,'50.000 bis 100.000'],[100000,Infinity,'ab 100.000']];
-const LANDS={'01':'Schleswig-Holstein','02':'Hamburg','03':'Niedersachsen','04':'Bremen','05':'Nordrhein-Westfalen','06':'Hessen','07':'Rheinland-Pfalz','08':'Baden-Württemberg','09':'Bayern','10':'Saarland','11':'Berlin','12':'Brandenburg','13':'Mecklenburg-Vorpommern','14':'Sachsen','15':'Sachsen-Anhalt','16':'Thüringen'};
+export const LANDS={'01':'Schleswig-Holstein','02':'Hamburg','03':'Niedersachsen','04':'Bremen','05':'Nordrhein-Westfalen','06':'Hessen','07':'Rheinland-Pfalz','08':'Baden-Württemberg','09':'Bayern','10':'Saarland','11':'Berlin','12':'Brandenburg','13':'Mecklenburg-Vorpommern','14':'Sachsen','15':'Sachsen-Anhalt','16':'Thüringen'};
 const UNION=/Samtgemeinde|Verbandsgemeinde|Amt\b|Verwaltungsgemeinschaft|Verwaltungsverband/;
 /** Art eines Gebiets für die Vergleichsgruppe (name im Dativ: „verglichen mit 84 kreisangehörigen Gemeinden“) */
 export function typeOf(r){
@@ -61,21 +61,44 @@ export function windowOf(today=new Date()){
  const from=new Date(today);from.setMonth(from.getMonth()-MONTHS);
  return {from:day(from),to:day(today)};
 }
-/* Sachvorgänge je Gebiet im Zeitfenster (gleiche Titel einmal) und Monate mit Sitzungen; ohne Spalte formal alle Einträge */
+/* Zähler und Nenner gleich gebildet: ohne Formalien, gleiche Titel einmal und ohne einzeln geführte Einwohnerfragen
+   („Schaukel Spielplatz Buschenkamp - Herr Tauber“): Manche Systeme führen jede Frage als eigenen Punkt, das hätte Themen
+   mit vielen Einwohnerfragen hochgezogen (Bewertung 11.10.2026). Ohne Spalte formal alle Einträge. */
+const PERSONAL_Q="title NOT LIKE '% - Herr %' AND title NOT LIKE '% - Frau %' AND title NOT LIKE '% - Herr' AND title NOT LIKE '% - Frau'";
+const cleanCards=(alias,formal)=>`${PERSONAL_Q.replaceAll('title',alias+'title')}${formal?` AND ${alias}formal=0`:''}`;
+async function withFormal(db,sql,args){
+ return db.prepare(sql(true)).bind(...args).all().catch(()=>db.prepare(sql(false)).bind(...args).all());
+}
+/* Sachvorgänge je Gebiet im Zeitfenster und Monate mit Sitzungen */
 async function base(db,w){
  return atRevision(db,`radar-norm-base|${w.from}|${w.to}`,async()=>{
-  const sql=formal=>`SELECT region_id r,count(DISTINCT lower(title)) n,count(DISTINCT substr(date,1,7)) m FROM search_cards WHERE date>=? AND date<=?${formal?' AND formal=0':''} GROUP BY region_id`;
-  const {results}=await db.prepare(sql(true)).bind(w.from,w.to).all().catch(()=>db.prepare(sql(false)).bind(w.from,w.to).all());
+  const {results}=await withFormal(db,formal=>`SELECT region_id r,count(DISTINCT lower(title)) n,count(DISTINCT substr(date,1,7)) m FROM search_cards WHERE date>=? AND date<=? AND ${cleanCards('',formal)} GROUP BY region_id`,[w.from,w.to]);
   return new Map(results.map(x=>[x.r,{n:x.n,m:x.m}]));
  });
 }
-/* Vorgänge je Gebiet und Unterthema eines Radars im Zeitfenster (gleiche Titel einmal) */
+/* Vorgänge je Gebiet und Unterthema eines Radars im Zeitfenster */
 async function topics(db,kind,w){
  return atRevision(db,`radar-norm-${kind}|${w.from}|${w.to}`,async()=>{
-  const {results}=await db.prepare(`SELECT c.region_id r,x.value t,count(DISTINCT lower(c.title)) n FROM topic_facts x JOIN search_cards c ON c.id=x.topic_id WHERE x.kind=? AND c.date>=? AND c.date<=? GROUP BY c.region_id,x.value`).bind(kind,w.from,w.to).all();
+  const {results}=await withFormal(db,formal=>`SELECT c.region_id r,x.value t,count(DISTINCT lower(c.title)) n FROM topic_facts x JOIN search_cards c ON c.id=x.topic_id WHERE x.kind=? AND c.date>=? AND c.date<=? AND ${cleanCards('c.',formal)} GROUP BY c.region_id,x.value`,[kind,w.from,w.to]);
   const by=new Map();for(const x of results){if(!by.has(x.r))by.set(x.r,new Map());by.get(x.r).set(x.t,x.n);}
   return by;
  });
+}
+/* Vorgänge je Gebiet mit irgendeinem Unterthema des Radars (für die Rangliste) */
+async function radarTotals(db,kind,w){
+ return atRevision(db,`radar-norm-total-${kind}|${w.from}|${w.to}`,async()=>{
+  const {results}=await withFormal(db,formal=>`SELECT c.region_id r,count(DISTINCT lower(c.title)) n FROM search_cards c WHERE c.id IN (SELECT topic_id FROM topic_facts WHERE kind=?) AND c.date>=? AND c.date<=? AND ${cleanCards('c.',formal)} GROUP BY c.region_id`,[kind,w.from,w.to]);
+  return new Map(results.map(x=>[x.r,x.n]));
+ });
+}
+/** Rangliste: Gebiete mit dem größten Anteil des Radars an allen Sachvorgängen (letzte 12 Monate, nur mit genug Daten) */
+export async function shareRanking(db,catalog,kind,{level='city',top=20,minK=MIN_TOPIC,today}={}){
+ const w=windowOf(today);
+ const [b,t]=await Promise.all([base(db,w),radarTotals(db,kind,w)]);
+ const byId=new Map(catalog.map(r=>[r.id,r]));
+ return [...t].filter(([r,k])=>{const x=b.get(r),reg=byId.get(r);return reg&&reg.kind===level&&x&&x.n>=MIN_ITEMS&&x.m>=MIN_MONTHS&&k>=minK;})
+  .map(([r,k])=>{const n=b.get(r).n,reg=byId.get(r);return {id:r,name:reg.name,type:typeOf(reg).id,k,n,share:round(k/n)};})
+  .sort((a,b2)=>b2.share-a.share).slice(0,top);
 }
 
 const round=(v,d=1)=>Math.round(v*100*10**d)/10**d;
@@ -94,9 +117,10 @@ export async function placeNorms(db,catalog,regionId,kind,names,{today}={}){
  const rows=names.map(name=>{
   const shares=group.regions.map(r=>((t.get(r.id)?.get(name))||0)/b.get(r.id).n).sort((a,b2)=>a-b2);
   const q1=quantile(shares,0.25),med=quantile(shares,0.5),q3=quantile(shares,0.75),k=mine.get(name)||0,[lo,hi]=wilson(k,own.n);
-  const smooth=(k+SMOOTH*med)/(own.n+SMOOTH);
+  // Faktor ungeglättet und nur bei klarer Einordnung: „3,7-fach“ neben „im üblichen Bereich“ hat verwirrt
+  const cls=classify(k,own.n,q1,q3);
   return {name,k,share:round(k/own.n),lo:round(lo),hi:round(hi),q1:round(q1),median:round(med),q3:round(q3),
-   ratio:med>0?Math.round((smooth/med)*10)/10:null,class:classify(k,own.n,q1,q3)};
+   ratio:med>0&&(cls==='mehr'||cls==='weniger')?Math.round((k/own.n/med)*10)/10:null,class:cls};
  });
  return {...head,group:{label:group.label,n:group.regions.length},topics:rows};
 }

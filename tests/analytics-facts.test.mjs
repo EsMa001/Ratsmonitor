@@ -12,7 +12,7 @@ function setup(){
  const sql=new DatabaseSync(':memory:');
  for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8').replaceAll('--> statement-breakpoint',''));
  let n=0;
- const put=(region,status,label,facts)=>{n++;const title='Vorlage '+n,t={title,officialTitle:title,shortSummary:'x',committee:'Rat',classification:{method:'title-rules-v2',version:'labels-v2',primary:label,evidence:title},events:[{date:'2026-09-20',committee:'Rat',status}]};
+ const put=(region,status,label,facts,same)=>{n++;const title=same||'Vorlage '+n,t={title,officialTitle:title,shortSummary:'x',committee:'Rat',classification:{method:'title-rules-v2',version:'labels-v2',primary:label,evidence:title},events:[{date:'2026-09-20',committee:'Rat',status}]};
   sql.prepare('INSERT INTO topics VALUES(?,?,?,?,?,?,?)').run('t'+n,'city','2026-09-20','2026-09-20',status,JSON.stringify(t),region);
   for(const [kind,value,detail] of facts)sql.prepare('INSERT INTO topic_facts VALUES(?,?,?,?,?)').run('t'+n,kind,value,detail,'facts-v2:text');};
  return {db:sqliteAdapter(sql),sql,put};
@@ -104,7 +104,18 @@ test('theme radar counts topics, decisions, signals and recent items per radar',
  const abw=r.topics.find(t=>t.name==='Abwasser');
  assert.deepEqual([abw.n,abw.decided,abw.approved,abw.rate,abw.regions],[2,2,1,50,1]);
  assert.equal(r.topics.find(t=>t.name==='Strom und Gas').n,0,'alle Themen des Radars, auch ohne Vorgang');
- assert.equal(r.signals.find(s=>s.name==='Bau und Sanierung').n,2);
+ assert.equal(r.signals.find(s=>s.name==='Bau und Sanierung').n,1,'Signale je Vorgang, nicht je Thema');
  assert.deepEqual(r.recent.find(x=>x.topics.length===2).topics.sort(),['Abwasser','Trinkwasser']);
  await assert.rejects(radar(db,catalog,q('radar=unbekannt')),/Unbekanntes Radar/);
+});
+
+test('theme radar counts the same title in several committees of one region once',async()=>{
+ const {radar}=await import('../server/integrations/analytics-radar.mjs');
+ const {db,put}=setup();
+ put('a','consulting','umwelt',[['radar:versorgung','Abwasser','Bau und Sanierung']],'Sanierung Kläranlage');
+ put('a','approved','umwelt',[['radar:versorgung','Abwasser','Bau und Sanierung']],'Sanierung Kläranlage');
+ put('b','approved','umwelt',[['radar:versorgung','Abwasser','Bau und Sanierung']],'Sanierung Kläranlage');
+ const r=await radar(db,catalog,q('radar=versorgung'));
+ assert.equal(r.topics.find(t=>t.name==='Abwasser').n,2,'je Gebiet einmal');
+ assert.equal(r.totals.topics,2);
 });

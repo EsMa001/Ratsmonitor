@@ -26,7 +26,8 @@ export function normsSentence(x: Norms | null | undefined) {
 }
 
 export function RadarNorms({ x }: { x: Norms }) {
-  const head = `Anteil an allen ${n(x.n)} Sachvorgängen des Rats (${x.region}, ohne Formalien, gleiche Titel einmal) vom ${datum(x.from)} bis ${datum(x.to)}`;
+  const union = /^(Verbandsgemeinde|Samtgemeinde|Amt|Verwaltungsgemeinschaft) /.test(x.region);
+  const head = `Anteil an allen ${n(x.n)} Sachvorgängen ${union ? "der Räte" : "des Rats"} (${x.region}${union ? " mit den Mitgliedsgemeinden" : ""}; ohne Formalien, einzeln geführte Einwohnerfragen und doppelte Titel) vom ${datum(x.from)} bis ${datum(x.to)}`;
   if (x.insufficient) {
     return (
       <Reveal><section className="mt-12">
@@ -60,7 +61,7 @@ export function RadarNorms({ x }: { x: Norms }) {
                 </span>
               </span>
               <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{p(t.share)}</b><span className={`ml-2 rounded-full px-2 py-0.5 text-[12px] ${cls}`}>{label}</span></span>
-              <span className="order-4 col-span-2 text-[12px] text-slate-500 sm:col-span-3">{`${n(t.k)} von ${n(x.n)} Vorgängen (Spanne ${p(t.lo)} bis ${p(t.hi)}) · vergleichbare Gebiete: Mitte ${p(t.median)}, mittlere Hälfte ${p(t.q1)} bis ${p(t.q3)}${t.ratio !== null && t.k >= x.minTopic ? ` · ${t.ratio.toLocaleString("de-DE")}-fach der Mitte` : ""}`}</span>
+              <span className="order-4 col-span-2 text-[12px] text-slate-500 sm:col-span-3">{`${n(t.k)} von ${n(x.n)} Vorgängen (Spanne ${p(t.lo)} bis ${p(t.hi)}) · vergleichbare Gebiete: Mitte ${p(t.median)}, mittlere Hälfte ${p(t.q1)} bis ${p(t.q3)}${t.ratio !== null ? ` · ${t.ratio.toLocaleString("de-DE")}-fach der Mitte` : ""}`}</span>
             </li>
           );
         })}

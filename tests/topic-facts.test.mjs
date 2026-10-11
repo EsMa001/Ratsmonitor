@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf} from '../shared/topic-facts.mjs';
+import {factionsOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,radarFactsOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -60,8 +60,11 @@ test('plans: stage from the title or the decision, the furthest step wins, repea
 
 test('Kita: fee decisions with direction, new places without years',async()=>{
  const {kitaFeeOf,kitaPlacesOf}=await import('../shared/topic-facts.mjs');
- assert.deepEqual(kitaFeeOf('Satzung über Elternbeiträge in Kindertageseinrichtungen','Die Elternbeiträge für Kinder in der Kita werden zum 1.8. um 5 % erhöht.'),{direction:'Erhöhung',euro:''});
- assert.equal(kitaFeeOf('Kita-Beiträge','Das letzte Kita-Jahr bleibt beitragsfrei.').direction,'Beitragsfreiheit');
+ assert.deepEqual(kitaFeeOf('Satzung über Elternbeiträge in Kindertageseinrichtungen','Beschlussvorschlag: Die Elternbeiträge für Kinder in der Kita werden zum 1.8. um 5 % erhöht.'),{direction:'Erhöhung',euro:''});
+ assert.equal(kitaFeeOf('Satzung über Elternbeiträge in Kindertageseinrichtungen','Im Jahr 2023 wurden die Elternbeiträge der Kita erhöht. Beschlussvorschlag: Die Satzung wird neu gefasst.').direction,'Neufassung','Richtung nicht aus dem Hintergrund');
+ assert.equal(kitaFeeOf('Information zu den Kita-Elternbeiträgen ab 01.01.2027','Beschlussvorschlag: Für Kinder in der Kita gelten die Absenkungsbeiträge, die Beiträge werden gesenkt.').direction,'Neufassung','Information ohne Richtung im Titel');
+ assert.equal(kitaFeeOf('Absenkungsbeiträge für Kita-Elternbeiträge','').direction,'Neufassung','Absenkungsbeitrag ist keine Senkung');
+ assert.equal(kitaFeeOf('Kita-Beiträge','Beschlussvorschlag: Das letzte Kita-Jahr bleibt beitragsfrei.').direction,'Beitragsfreiheit');
  assert.equal(kitaFeeOf('Antrag: Reduzierung der Elternbeiträge für Kindertageseinrichtungen','Wegen der Steigerung der Kosten in der Kita …').direction,'Senkung','Titel vor Text');
  assert.equal(kitaFeeOf('Beitragssatzung über wiederkehrende Straßenbeiträge','Die Beiträge werden erhöht.'),null,'Straßenbeiträge sind keine Kita-Beiträge');
  assert.equal(kitaFeeOf('Festsetzung der Elternbeiträge für die Verpflegung in den Kitas','Die Verpflegungspauschale beträgt 3,50 Euro.').direction,'Verpflegung');
@@ -129,8 +132,8 @@ test('gebuehrensaetze: kind before the value, basis after the unit does not coun
 test('waermeplanung: step from the title, draft before decision, political requests do not count',()=>{
  assert.equal(heatPlanOf('Aufstellungsbeschluss zur kommunalen Wärmeplanung',''),'Start und Beauftragung');
  assert.equal(heatPlanOf('Präsentation des Entwurfs des Endberichts der kommunalen Wärmeplanung und Beschluss der Einsichtnahme',''),'Entwurf und Beteiligung');
- assert.equal(heatPlanOf('Beschlussfassung Kommunaler Wärmeplan Stadt Dessau-Roßlau',''),'Wärmeplan zur Beschlussfassung');
- assert.equal(heatPlanOf('Kommunaler Wärmeplan der Landeshauptstadt Dresden','Beschlussvorschlag: 1. Der Stadtrat beschließt auf Grundlage des Wärmeplanungsgesetzes den Kommunalen Wärmeplan. 2. Umsetzung der Maßnahmen.'),'Wärmeplan zur Beschlussfassung');
+ assert.equal(heatPlanOf('Beschlussfassung Kommunaler Wärmeplan Stadt Dessau-Roßlau',''),'Wärmeplan vorgelegt');
+ assert.equal(heatPlanOf('Kommunaler Wärmeplan der Landeshauptstadt Dresden','Beschlussvorschlag: 1. Der Stadtrat beschließt auf Grundlage des Wärmeplanungsgesetzes den Kommunalen Wärmeplan. 2. Umsetzung der Maßnahmen.'),'Wärmeplan vorgelegt');
  assert.equal(heatPlanOf('Übertragung der Aufgabe „Umsetzung der Kommunalen Wärmeplanung“ auf das Amt',''),'Start und Beauftragung');
  assert.equal(heatPlanOf('Antrag der SPD-Fraktion zur Wärmeplanung',''),null);
 });
@@ -150,4 +153,27 @@ test('art des plangebiets: gewerbe, industrie, energie, einzelhandel; abkuerzung
  assert.equal(planUseOf('Bebauungsplan Nr. 5 "Interkommunales Gewerbegebiet A 1" - Aufstellungsbeschluss').inter,true);
  assert.equal(planUseOf('Bebauungsplan Nr. 7 "Am Gericht" - Aufstellungsbeschluss'),null);
  assert.equal(planUseOf('Gewerbesteuer-Hebesatz'),null);
+});
+
+test('fehltreffer nach der bewertung vom 11.10.2026: personal, feste tagesordnungspunkte, zuschuesse, waermeplanung, hebesaetze, gebuehren',()=>{
+ assert.deepEqual(radarFactsOf('Besetzung des Ausschusses für Umwelt und Klimaschutz',''),[]);
+ assert.deepEqual(radarFactsOf('Wahl der Mitglieder des Seniorenbeirats',''),[]);
+ assert.deepEqual(radarFactsOf('Anregungen und Beschwerden nach § 24 GO NRW',''),[]);
+ assert.ok(radarFactsOf('Anregung nach § 24 GO NRW: Tempo 30 in der Lindenstraße','').some(x=>x.kind==='radar:beteiligung'));
+ assert.ok(!radarFactsOf('Haushaltssatzung der Stadt Zweibrücken 2027','').some(x=>x.value==='Straßen und Brücken'));
+ assert.equal(grantOf('Kooperationsvereinbarung mit dem Förderverein der Grundschule zum Ganztag',''),null);
+ assert.equal(grantOf('Technisch-methodische Unterstützung diverser Projekte / Ausschreibung Rahmenvereinbarung',''),null);
+ assert.equal(grantOf('Verwendungsnachweis des Caritasverbandes e.V. über die Zuschussverwendung',''),null);
+ assert.equal(heatPlanOf('Umsetzung Wärmeplanungsgesetz',''),'Start und Beauftragung');
+ assert.equal(heatPlanOf('Grundsatzbeschluss zur kommunalen Wärmeplanung',''),'Start und Beauftragung');
+ assert.equal(heatPlanOf('Kommunale Wärmeplanung nach dem Bundesgesetz für die Wärmeplanung und zur Dekarbonisierung der Wärmenetze (WPG) - Umsetzung in der Gemeinde Aukrug',''),'Start und Beauftragung');
+ assert.equal(heatPlanOf('Kommunale Wärmeplanung - Kurzstudie über ein Wärmenetz in der Altstadt',''),'Umsetzung und Fortschreibung');
+ assert.equal(heatPlanOf('Widerspruch der Bürgermeisterin gegen den Beschluss zur Kommunalen Wärmeplanung',''),null);
+ assert.equal(heatPlanOf('Antrag Nr. 16/2026 Machbarkeitsstudie Wärmeplanung',''),null);
+ assert.deepEqual(hebesatzOf('Beantwortung des Offenen Briefes zur Grundsteuer','Die Erhöhung des Hebesatzes der Grundsteuer B von zuvor 883 v. H. auf 1.190 v. H.'),[]);
+ assert.deepEqual(hebesatzOf('Hebesatzsatzung 2026','Die Erhöhung des Hebesatzes der Grundsteuer B von zuvor 883 v. H. auf 1.190 v. H. wurde beschlossen.'),[{tax:'Grundsteuer B',from:'883',to:'1190'}]);
+ assert.deepEqual(hebesatzOf('Hebesatzsatzung 2026','Ein Änderungsantrag, die Gewerbesteuer von 499 v. H. auf 539 v. H. zu erhöhen, wurde beraten.'),[]);
+ assert.deepEqual(feeRateOf('Tarife für die Wasserversorgung','Der Wasserpreis wurde von 1,60 €/m³ (netto) auf 1,80 €/m³ (netto) erhöht.'),[{kind:'Trinkwasser',from:'1.6',to:'1.8',unit:'m³'}]);
+ assert.deepEqual(feeRateOf('Neu-Kalkulation der Wassergebühren','Diese betragen derzeit: Verbrauchsgebühr 1,10 € / m³ (netto). Die Verwaltung schlägt vor, die Verbrauchsgebühr auf 1,42 €/ m³ (netto) zu erhöhen.'),[{kind:'Trinkwasser',from:'',to:'1.42',unit:'m³'}]);
+ assert.deepEqual(feeRateOf('Nachkalkulation der Abwassergebühren 2025','Schmutzwassergebühr 2,15 €/m³.'),[]);
 });
