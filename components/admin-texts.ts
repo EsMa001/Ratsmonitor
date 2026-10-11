@@ -18,7 +18,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  stichwoerter:{title:'Stichwörter',intro:'Zeigt, an welchen Wörtern die festen Regeln Sachgebiete erkennen und welche Begriffe in den Titeln stehen. Die Seite zählt nur, was schon gespeichert ist.'},
 };
 export const FOOT:Record<AdminPage,string>={
- todo:'Gespeichert wird in docs/todo/todos.json, nur am lokalen Dev-Server.',
+ todo:'Einträge aus docs/todo/todos.json. Lokal speichert die Seite in die Datei, auf dem Server in die Datenbank; node scripts/pull-todos.mjs holt die Server-Stände in die Datei.',
  uebersicht:'Zahlen aus Quellenkatalog und Datenbank. Doppelt gelieferte Berichte, die zu einem Vorgang zusammengeführt wurden, zählen einmal.',
  abruf:'Doppelt gelieferte Berichte zählen einmal. Seitenaufrufe starten keinen Abruf.',
  atlas:'Anbindung und Gründe aus Quellenkatalog und Quellensuche, Berichte und Abrufe aus der Datenbank. Karten: © BKG (2026), dl-de/by-2-0.',

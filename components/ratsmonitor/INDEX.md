@@ -528,7 +528,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/admin/
-- page.tsx (61, ⚠3): dynamic, metadata, AdminPage
+- page.tsx (60, ⚠3): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -547,7 +547,7 @@ topic design-styles.css:140
 - admin-activation.tsx (7, ⚠1): AdminActivation
 - admin-atlas.tsx (197, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
-- admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, TODO_AVAILABLE, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
+- admin-chrome.tsx (63, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠15): AdminDashboardView
 - admin-estimate.tsx (355, ⚠51): AdminEstimate
@@ -626,7 +626,7 @@ topic design-styles.css:140
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
 - StartseitePage.tsx (529, ⚠5): StartseitePage
-- TodoPage.tsx (333, ⚠1): TodoPage
+- TodoPage.tsx (331, ⚠1): TodoPage
 - VideosPage.tsx (150): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE

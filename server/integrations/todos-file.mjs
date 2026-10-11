@@ -1,34 +1,11 @@
 import {readFile,writeFile,rename} from 'node:fs/promises';
 import {dirname,join} from 'node:path';
 import {AdminError} from './admin-access.mjs';
+import {applyTodoUpdates} from './todos-store.mjs';
+export {applyTodoUpdates,berlinToday} from './todos-store.mjs';
 // Interne To-Do-Liste: liegt als Datei im Repo (docs/todo/todos.json). Sie wird nur vom Vite-Dev-Server (build/todo-dev-plugin.mjs, Node)
-// gelesen und geschrieben, nie vom Worker und nie im Produktions-Build; die Liste ist nicht öffentlich.
+// gelesen und geschrieben, nie vom Worker und nie im Produktions-Build. Auf dem Server: todos-store.mjs.
 const FILE='docs/todo/todos.json';
-const DATE=/^\d{4}-\d{2}-\d{2}$/;
-const MAX_UPDATES=1000;
-const isDate=value=>DATE.test(value)&&new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value;
-export const berlinToday=()=>new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Berlin'});
-// Wendet {id,erledigt,faellig}-Änderungen auf die Liste an. Texte, Hinweise und Reihenfolge bleiben unverändert; unbekannte Einträge sind ein Fehler.
-export function applyTodoUpdates(data,updates,today=berlinToday()){
- if(!Array.isArray(updates)||updates.length>MAX_UPDATES)throw new AdminError(400,'Ungültige Anfrage.');
- const byId=new Map();
- for(const update of updates){
-  if(!update||typeof update!=='object'||typeof update.id!=='string'||typeof update.erledigt!=='boolean')throw new AdminError(400,'Ungültige Anfrage.');
-  const faellig=update.faellig===null||update.faellig===''||update.faellig===undefined?null:update.faellig;
-  if(faellig!==null&&(typeof faellig!=='string'||!isDate(faellig)))throw new AdminError(400,'Ungültiges Datum.');
-  byId.set(update.id,{erledigt:update.erledigt,faellig});
- }
- const known=new Set();
- const kategorien=data.kategorien.map(category=>({...category,items:category.items.map(item=>{
-  known.add(item.id);
-  const change=byId.get(item.id);
-  if(!change)return item;
-  const erledigtAm=change.erledigt?(item.erledigt?item.erledigtAm:today):null;
-  return {...item,erledigt:change.erledigt,faellig:change.faellig,erledigtAm};
- })}));
- for(const id of byId.keys())if(!known.has(id))throw new AdminError(400,'Unbekannter Eintrag: '+id);
- return {...data,kategorien};
-}
 export async function readTodos(file=FILE){
  return JSON.parse(await readFile(file,'utf8'));
 }

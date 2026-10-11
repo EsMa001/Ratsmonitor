@@ -20,8 +20,7 @@ import {validRegion,REGIONS} from '@/shared/regions';
 export const dynamic='force-dynamic';
 export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robots:{index:false,follow:false}};
 // Pages by name; the numbers of the first version still lead to their page. "auswahl" (areas handed over by the
-// estimate) and "filter" (a list filter) open the import page. Without a page: the to-do list in the local dev
-// server, the overview everywhere else (START_PAGE; the to-do list exists only there).
+// estimate) and "filter" (a list filter) open the import page. Without a page: the overview (START_PAGE).
 const PAGES:Record<string,AdminPage>={todo:'todo',uebersicht:'uebersicht',abruf:'abruf',atlas:'atlas',qualitaet:'qualitaet',hochrechnung:'hochrechnung',stichwoerter:'stichwoerter',regeltexte:'regeltexte',social:'social','1':'abruf','2':'qualitaet','3':'hochrechnung','4':'stichwoerter'};
 const FILTERS=['all','connected','data','empty','issues','partial','stale','failed','shallow','quiet','selected'];
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string}>}){const {seite,auswahl,filter}=await searchParams;

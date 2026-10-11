@@ -35,7 +35,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | E-Mails (Vorlagen: Willkommen, Passwort, Wochenbericht, Treffer, Vorgang, Sitzung) | `lib/mails.ts`; Test-Postfach: `pages/PostfachPage.tsx` |
 | Anmelden/Registrieren/Kontakt | `info/AccountPages.tsx`; Testkonten: `lib/testAuth.ts` |
 | Impressum/Datenschutz | `pages/LegalPage.tsx` |
-| Interne To-do-Liste: erster Reiter im Adminbereich (`/admin?seite=todo`, `components/admin-todo.tsx`; nur lokaler Dev-Server; Daten `docs/todo/todos.json`, Speichern über Vite-Plugin `build/todo-dev-plugin.mjs`, Endpunkt `/__todos`) | `info/TodoPage.tsx`, Status/Datum: `lib/todos.ts` |
+| Interne To-do-Liste: zweiter Reiter im Adminbereich (`/admin?seite=todo`, `components/admin-todo.tsx`; Daten `docs/todo/todos.json`; lokal speichert das Vite-Plugin `build/todo-dev-plugin.mjs` (`/__todos`) in die Datei, auf dem Server `/api/admin/todos` in `system_state`; `node scripts/pull-todos.mjs` holt die Server-Stände in die Datei) | `info/TodoPage.tsx`, Status/Datum: `lib/todos.ts` |
 | Adminbereich (Rahmen, Bausteine, Stand, Speicher, Nachholen, Texte, Farben) | `components/admin-chrome.tsx` (AdminFrame, Reiter), `components/admin-ui.tsx`, `components/admin-stand.tsx`, `components/admin-store.ts`, `components/admin-catch-up.tsx`, `components/admin-texts.ts`, `components/admin-colors.ts`; Seiten: `components/admin-*.tsx`, `app/admin/page.tsx` |
 | Symbole | App: `components/icons.tsx`; Info-Seiten: `info/icons.tsx` |
 | Suchzustand + Abfrage an `/api/search` | `state/search.tsx`; Ortserkennung + Regionen: `lib/place.ts`; Logik: `lib/searchLogic.ts` |

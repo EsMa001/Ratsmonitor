@@ -10,14 +10,12 @@ import {RegionCatchUp} from '@/components/admin-catch-up';
 
 // Rahmen aller Adminseiten im Design der Startseite: Kopfzeile wie Header.tsx, darunter Reiter, Inhalt mit der Seitenbreite der
 // Startseite und eine Fußzeile. Die Seiten heißen in der Adresse nach ihrem Inhalt (?seite=abruf); die alten Nummern 1 bis 4
-// führen weiter dorthin. Die Startseite des Adminbereichs ist die To-do-Liste (ohne Parameter).
+// führen weiter dorthin. Die Startseite des Adminbereichs ist die Übersicht (ohne Parameter), daneben die To-do-Liste.
 export type AdminPage='todo'|'uebersicht'|'abruf'|'atlas'|'qualitaet'|'hochrechnung'|'stichwoerter'|'regeltexte'|'social';
-export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'todo',label:'To-do-Liste'},{id:'uebersicht',label:'Übersicht'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'},{id:'regeltexte',label:'Regelbasierte Texte'},{id:'social',label:'Social Media'}];
-/** Die To-do-Liste gibt es nur im lokalen Dev-Server (docs/todo/todos.json); anderswo startet die Administration mit der Übersicht. */
-export const TODO_AVAILABLE=import.meta.env?.DEV===true;
-export const START_PAGE:AdminPage=TODO_AVAILABLE?'todo':'uebersicht';
-/** Reiter der Administration: ohne To-do-Liste, wo es sie nicht gibt. */
-export const VISIBLE_PAGES=ADMIN_PAGES.filter(p=>p.id!=='todo'||TODO_AVAILABLE);
+export const ADMIN_PAGES:{id:AdminPage;label:string}[]=[{id:'uebersicht',label:'Übersicht'},{id:'todo',label:'To-do-Liste'},{id:'abruf',label:'Abruf & Verarbeitung'},{id:'atlas',label:'Lückenatlas'},{id:'qualitaet',label:'Qualität & Betrieb'},{id:'hochrechnung',label:'Hochrechnung'},{id:'stichwoerter',label:'Stichwörter'},{id:'regeltexte',label:'Regelbasierte Texte'},{id:'social',label:'Social Media'}];
+export const START_PAGE:AdminPage='uebersicht';
+/** Reiter der Administration, lokal und auf dem Server gleich. */
+export const VISIBLE_PAGES=ADMIN_PAGES;
 /** Adresse einer Adminseite, mit weiteren Parametern ("filter=issues"). */
 export const adminHref=(page:AdminPage,params='')=>'/admin'+(page===START_PAGE?(params?'?'+params:''):'?seite='+page+(params?'&'+params:''));
 

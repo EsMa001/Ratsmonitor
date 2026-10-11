@@ -1,4 +1,4 @@
-/** Interne To-Do-Liste (Daten: docs/todo/todos.json, nur im lokalen Dev-Server verfügbar) */
+/** Interne To-Do-Liste (Daten: docs/todo/todos.json; auf dem Server mit Änderungen aus der Datenbank) */
 export type TodoItem = {
   id: string;
   text: string;
