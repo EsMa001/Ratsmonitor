@@ -41,7 +41,7 @@ export function TrendsPage() {
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
-  const given = useRef(params.get("thema") || (hasTerm ? null : "Wärmeplanung"));
+  const given = useRef(params.get("thema") || (hasTerm ? null : "Photovoltaik"));
   const [want, setWant] = useState(!given.current);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<"rising" | "emerging" | "falling">("rising");
@@ -73,7 +73,7 @@ export function TrendsPage() {
         if (!r.ok) throw new Error(body.error || "Die Analyse konnte nicht berechnet werden.");
         return body as unknown as Result;
       })
-      .then((r) => { const ok = (l: Trend[]) => l.filter((t) => !isFiller(t.term)); r = { ...r, rising: ok(r.rising), emerging: ok(r.emerging), falling: ok(r.falling), all: ok(r.all) }; setRes(r); setRanKey(key); setLoading(false); setTab(r.rising.length ? "rising" : r.emerging.length ? "emerging" : "falling"); })
+      .then((r) => { const ok = (l: Trend[]) => l.filter((t) => !isFiller(t.term)); /* Aufsteiger und Neues nur mit Mindestzahl Gebiete: ein einzelnes Dokument ist kein Trend */ const many = (l: Trend[]) => { const k = ok(l); const m = k.filter((t) => t.regions >= 3); return r.totals.regions >= 3 && m.length ? m : k; }; r = { ...r, rising: many(r.rising), emerging: many(r.emerging), falling: ok(r.falling), all: ok(r.all) }; setRes(r); setRanKey(key); setLoading(false); setTab(r.rising.length ? "rising" : r.emerging.length ? "emerging" : "falling"); })
       .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
@@ -120,7 +120,8 @@ export function TrendsPage() {
 
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
-          {(() => { const t = res.rising[0]; return t ? <Befund>„{prettyTerm(t.term)}“ steigt am stärksten: {n(t.nr)} Einträge in den letzten {days} Tagen, {t.np ? `${t.ratio.toLocaleString("de-DE")}-mal so viele wie davor` : "davor kaum vorhanden"}{res.totals.regions ? `, in ${n(t.regions)} Gebieten` : ""}.</Befund> : null; })()}
+          {(() => { const t = res.rising[0]; return t ? <Befund>„{prettyTerm(t.term)}“ steigt am stärksten: {n(t.nr)} Einträge in den letzten {days} Tagen, {t.np ? `${t.ratio.toLocaleString("de-DE", { maximumFractionDigits: 1 })}-mal so viele wie davor` : "davor kaum vorhanden"}{res.totals.regions ? `, in ${n(t.regions)} ${t.regions === 1 ? "Gebiet" : "Gebieten"}` : ""}.</Befund> : null; })()}
+          <p className="mt-3 max-w-[760px] text-[14px] text-slate-500">Verglichen werden {d(res.ranges.prevStart)} bis {d(res.ranges.start)} mit {d(res.ranges.start)} bis {d(res.ranges.end)}{res.totals.capped ? `, je Zeitraum eine Stichprobe von rund ${n(res.totals.sampledRecent)} Einträgen` : `, ${n(res.totals.recent)} Einträge im aktuellen Zeitraum`}. Aufsteiger zeigen wir erst ab 3 Gebieten.</p>
           <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             {[
               ["Aktueller Zeitraum", `${d(res.ranges.start)} bis ${d(res.ranges.end)}`],

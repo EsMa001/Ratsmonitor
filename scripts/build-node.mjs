@@ -30,6 +30,11 @@ const fail = (message) => { console.error(`build:node: ${message}`); process.exi
 if (!fs.existsSync(new URL('server.js', standalone))) fail('dist/standalone/server.js fehlt.');
 fs.copyFileSync(new URL('../server/node/serve.mjs', import.meta.url), new URL('serve.mjs', standalone));
 
+// Der Importprozess (A14) als zweiter Einstieg: dist/standalone/worker/import-worker.mjs, gebaut mit Vite.
+const { buildWorker } = await import('../build/worker-build.mjs');
+await buildWorker({ root, outDir: fileURLToPath(new URL('worker/', standalone)) });
+if (!fs.existsSync(new URL('worker/import-worker.mjs', standalone))) fail('dist/standalone/worker/import-worker.mjs fehlt.');
+
 // Prüfen: kein Cloudflare-Modul mehr im Server-Paket, und die Datenbank-Anbindung nicht im Browser-Paket.
 const scan = (dir, pattern) => {
   const hits = [];

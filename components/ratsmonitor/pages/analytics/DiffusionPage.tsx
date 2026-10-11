@@ -206,11 +206,12 @@ export function DiffusionPage() {
 
       {res && res.stats.regions > 0 && (
         <>
-          <Befund>{res.q.trim() ? `„${prettyTerm(res.q.trim())}“` : "Das Thema"} taucht in {res.stats.regions.toLocaleString("de-DE")} Gebieten auf, erstmals {fmt(res.stats.first)}. Die Hälfte der Gebiete war {res.stats.median ? `bis ${fmt(res.stats.median)}` : "noch nicht"} erreicht.</Befund>
+          <Befund>{res.q.trim() ? `„${prettyTerm(res.q.trim())}“` : "Das Thema"} taucht im Bestand in {res.stats.regions.toLocaleString("de-DE")} {res.stats.regions === 1 ? "Gebiet" : "Gebieten"} auf, der früheste Eintrag ist vom {fmt(res.stats.first)}. Die Hälfte der Gebiete war {res.stats.median ? `bis ${fmt(res.stats.median)}` : "noch nicht"} erreicht.</Befund>
+          <p className="mt-3 max-w-[760px] text-[14px] text-slate-500">Der Bestand beginnt im Herbst 2025. „Frühester Eintrag“ und „Hälfte erreicht“ gelten daher für den Bestand, nicht für das Thema überhaupt. Berichte einer Verbandsgemeinde zählen bei jeder ihrer Mitgliedsgemeinden mit.</p>
           <dl className="mt-8 grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             {[
-              ["Erste Erwähnung", fmt(res.stats.first)],
-              ["Hälfte erreicht", fmt(res.stats.median)],
+              ["Frühester Eintrag", fmt(res.stats.first)],
+              ["Hälfte im Bestand", fmt(res.stats.median)],
               ["Von 10 % auf 90 %", res.stats.p10 && res.stats.p90 ? `${months(res.stats.p10, res.stats.p90)} Monate` : "–"],
               ["Einträge insgesamt", res.stats.cards.toLocaleString("de-DE")],
             ].map(([k, v], i) => (
@@ -229,15 +230,15 @@ export function DiffusionPage() {
           <div className="mt-12 grid gap-12 md:grid-cols-2">
             <section>
               <h2 className="text-[22px] font-semibold">Vorreiter</h2>
-              <p className="mb-3 mt-1 text-[14px] text-slate-500">Die zehn Gebiete mit der frühesten Erwähnung. Ein Klick zeigt sie auf der Karte.</p>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">Die zehn Gebiete mit dem frühesten Eintrag im Bestand. Ein Klick zeigt sie auf der Karte.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {res.regions.slice(0, 10).map((r, i) => (
                   <li key={r.ags} className="border-b border-slate-200">
                     <button type="button" onClick={() => { setPicked(r.ags); engine?.focusArea(r.ags); window.scrollTo({ top: (document.querySelector('section[aria-label="Karte der Ausbreitung"]') as HTMLElement).offsetTop - 80, behavior: "smooth" }); }} className="grid w-full grid-cols-[28px_1fr_auto] items-center gap-3 py-3 text-left hover:bg-slate-50">
                       <span className="text-[14px] tabular-nums text-slate-500">{i + 1}</span>
                       <span className="min-w-0">
-                        <span className="block truncate text-[16px] text-slate-900">{r.name.split(" (")[0]}</span>
-                        <span className="block truncate text-[12px] text-slate-500">{r.name.includes(" (") ? r.name.slice(r.name.indexOf("(") + 1, -1) + " · " : ""}{r.n.toLocaleString("de-DE")} {r.n === 1 ? "Eintrag" : "Einträge"}</span>
+                        <span className="block truncate text-[16px] text-slate-900">{r.name.includes(" (") ? r.name.slice(0, r.name.lastIndexOf(" (")) : r.name}</span>
+                        <span className="block truncate text-[12px] text-slate-500">{r.name.includes(" (") ? r.name.slice(r.name.lastIndexOf(" (") + 2).replace(/\)$/, "") + " · " : ""}{r.n.toLocaleString("de-DE")} {r.n === 1 ? "Eintrag" : "Einträge"}</span>
                       </span>
                       <span className="text-[14px] tabular-nums text-slate-500">{fmt(r.first)}</span>
                     </button>
@@ -247,7 +248,7 @@ export function DiffusionPage() {
             </section>
             <section>
               <h2 className="text-[22px] font-semibold">Bundesländer</h2>
-              <p className="mb-3 mt-1 text-[14px] text-slate-500">Erreichte Gebiete je Land und Datum der ersten Erwähnung.</p>
+              <p className="mb-3 mt-1 text-[14px] text-slate-500">Erreichte Gebiete je Land und Datum des frühesten Eintrags.</p>
               <ol className="m-0 list-none border-t border-slate-200 p-0">
                 {res.lands.map((l) => (
                   <li key={l.id} className="grid grid-cols-[1fr_auto] items-center gap-3 border-b border-slate-200 py-3">
@@ -255,7 +256,7 @@ export function DiffusionPage() {
                       <span className="block truncate text-[16px] text-slate-900">{l.name}</span>
                       <span className="mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(3, (l.regions / maxLand) * 100)}%` }} /></span>
                     </span>
-                    <span className="text-right text-[14px] tabular-nums text-slate-500"><b className="font-semibold text-slate-900">{l.regions.toLocaleString("de-DE")}</b> Gebiete<br />ab {fmt(l.first)}</span>
+                    <span className="text-right text-[14px] tabular-nums text-slate-500"><b className="font-semibold text-slate-900">{l.regions.toLocaleString("de-DE")}</b> {l.regions === 1 ? "Gebiet" : "Gebiete"}<br />ab {fmt(l.first)}</span>
                   </li>
                 ))}
               </ol>

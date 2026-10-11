@@ -37,7 +37,8 @@ export function TrendMap({ items, selected, onSelect }: { items: (Trend & { kind
   if (!items.length) return <div ref={ref} />;
   const maxN = Math.max(...items.map((t) => t.nr), 10), minN = Math.min(...items.map((t) => t.nr), 5);
   const lx = (v: number) => L + ((Math.log(v) - Math.log(minN * 0.8)) / (Math.log(maxN * 1.2) - Math.log(minN * 0.8))) * (w - L - R);
-  const ymax = Math.log2(Math.max(4, ...items.map((t) => t.ratio))) + 0.2, ymin = -Math.max(1.5, ...items.map((t) => -Math.log2(t.ratio))) - 0.2;
+  const cap = (r: number) => Math.min(r, 16); /* Begriffe ohne Vorperiode (×50 und mehr) nicht die Achse sprengen lassen */
+  const ymax = Math.log2(Math.max(4, ...items.map((t) => cap(t.ratio)))) + 0.2, ymin = -Math.max(1.5, ...items.map((t) => -Math.log2(t.ratio))) - 0.2;
   const ly = (r: number) => T + ((ymax - Math.log2(r)) / (ymax - ymin)) * (H - T - B);
   const rad = (g: number) => 4 + Math.min(10, Math.sqrt(g) * 0.9);
   const ticks = [0.25, 0.5, 1, 2, 4, 8].filter((r) => Math.log2(r) <= ymax && Math.log2(r) >= ymin);
@@ -56,7 +57,7 @@ export function TrendMap({ items, selected, onSelect }: { items: (Trend & { kind
         <text x={L} y={H - 8} fontSize="12" fill="#64748b">weniger Einträge</text>
         <text x={w - R} y={H - 8} fontSize="12" fill="#64748b" textAnchor="end">mehr Einträge im aktuellen Zeitraum →</text>
         {items.map((t) => {
-          const x = lx(t.nr), y = ly(t.ratio), on = t.term === selected;
+          const x = lx(t.nr), y = ly(cap(t.ratio)), on = t.term === selected;
           return (
             <g key={t.term} style={{ cursor: "pointer" }} onClick={() => onSelect(on ? "" : t.term)} opacity={selected && !on ? 0.35 : 1}>
               <circle cx={x} cy={y} r={rad(t.regions)} fill={COLOR[t.kind]} fillOpacity={t.kind === "steady" ? 0.55 : 0.8} stroke={on ? "#0f172a" : "#fff"} strokeWidth={on ? 2 : 1.2} />

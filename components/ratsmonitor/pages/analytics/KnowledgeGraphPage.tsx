@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { GraphView, KIND, type GEdge, type GNode } from "./GraphView";
-import { isFiller, prettyTerm } from "../../lib/terms";
+import { isFiller, prettyTerm, termStem } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 
 interface Result {
@@ -93,15 +93,41 @@ export function KnowledgeGraphPage() {
   };
 
   /* Nur Begriffe (und Themenfelder): keine Gremien, Länder oder Orte */
-  const nodes = useMemo(() => (res ? res.nodes.filter((x) => x.type !== "committee" && x.type !== "land" && !(x.type === "term" && isFiller(x.label))).map((x) => (x.type === "term" ? { ...x, label: prettyTerm(x.label) } : x)) : []), [res]);
-  const edges = useMemo(() => { const ids = new Set(nodes.map((x) => x.id)); return res ? res.edges.filter((e) => ids.has(e.a) && ids.has(e.b)) : []; }, [res, nodes]);
+  /* Beugungsformen eines Begriffs werden zu einem Knoten (größte Form gibt den Namen, Zählung summiert, höchstens Gesamtzahl) */
+  const merged = useMemo(() => {
+    if (!res) return { nodes: [] as GNode[], edges: [] as GEdge[] };
+    const keep = res.nodes.filter((x) => x.type !== "committee" && x.type !== "land" && !(x.type === "term" && isFiller(x.label)));
+    const bySt = new Map<string, GNode>(), idMap = new Map<string, string>(), out: GNode[] = [];
+    for (const x of [...keep].sort((a, b) => b.count - a.count)) {
+      if (x.type !== "term") { out.push(x); continue; }
+      const st = termStem(x.label), hit = bySt.get(st);
+      if (hit) { hit.count = Math.min(res.total, hit.count + x.count); idMap.set(x.id, hit.id); continue; }
+      const c = { ...x, label: prettyTerm(x.label) };
+      bySt.set(st, c); out.push(c);
+    }
+    const ids = new Set(out.map((x) => x.id)), em = new Map<string, GEdge>();
+    for (const e of res.edges) {
+      const a = idMap.get(e.a) ?? e.a, b = idMap.get(e.b) ?? e.b;
+      if (a === b || !ids.has(a) || !ids.has(b)) continue;
+      const key = a < b ? a + "|" + b : b + "|" + a, old = em.get(key);
+      if (old) { old.n = Math.min(res.total, old.n + e.n); old.w = Math.max(old.w, e.w); } else em.set(key, { ...e, a, b });
+    }
+    return { nodes: out, edges: [...em.values()] };
+  }, [res]);
+  const nodes = merged.nodes, edges = merged.edges;
   const byId = useMemo(() => new Map(nodes.map((x) => [x.id, x])), [nodes]);
   const sel = selected ? byId.get(selected) : undefined;
   const links = useMemo(() => {
     if (!res || !selected) return [];
     return edges.filter((e) => !e.center && (e.a === selected || e.b === selected)).sort((a, b) => b.w - a.w).map((e) => ({ other: byId.get(e.a === selected ? e.b : e.a)!, e })).filter((x) => x.other);
   }, [res, edges, selected, byId]);
-  const strongest = useMemo(() => edges.filter((e) => !e.center && e.a.startsWith("t:") && e.b.startsWith("t:")).sort((a, b) => b.w - a.w).slice(0, 10), [edges]);
+  /* Nur Begriffe, die zum Thema passen: die häufigsten des Netzes; seltene Paare wie „Belange · öffentlicher“ sagen nichts über das Thema */
+  const strongest = useMemo(() => {
+    const all = edges.filter((e) => !e.center && e.a.startsWith("t:") && e.b.startsWith("t:"));
+    const top = new Set(nodes.filter((x) => x.id.startsWith("t:")).sort((a, b) => b.count - a.count).slice(0, 12).map((x) => x.id));
+    const main = all.filter((e) => top.has(e.a) && top.has(e.b));
+    return (main.length ? main : all).sort((a, b) => b.w - a.w).slice(0, 10);
+  }, [edges, nodes]);
   const activePair = pair && selected === pair.a ? pair : null;
   const empty = !!res && nodes.length <= 1;
 

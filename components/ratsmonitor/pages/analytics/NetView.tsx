@@ -43,11 +43,13 @@ function layout(nodes: P[], edges: NEdge[], span: number, iterations: number, al
 }
 
 const wrap = (s: string, w = 17) => {
-  const words = s.split(/(?<=-)|\s+/).filter(Boolean), lines: string[] = [];
+  /* Wörter mit Leerzeichen getrennt; nach einem Bindestrich im Wort („Bau-Ausschuss“) darf ohne Leerzeichen umbrochen werden */
+  const words = s.split(/\s+/).filter(Boolean).flatMap((x) => x.split(/(?<=\w-)(?=\w)/).map((p, i) => ({ p, glue: i > 0 })));
+  const lines: string[] = [];
   let cur = "";
-  for (const word of words) { const next = cur ? (cur.endsWith("-") ? cur + word : cur + " " + word) : word; if (next.length > w && cur) { lines.push(cur); cur = word; } else cur = next; }
+  for (const { p, glue } of words) { const next = cur ? (glue ? cur + p : cur + " " + p) : p; if (next.length > w && cur) { lines.push(cur); cur = p; } else cur = next; }
   if (cur) lines.push(cur);
-  return lines.slice(0, 3);
+  return lines.slice(0, 4);
 };
 
 export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: NNode[]; edges: NEdge[]; selected: string; onSelect: (id: string) => void; zoomRef?: React.MutableRefObject<((f: number | "fit") => void) | null> }) {

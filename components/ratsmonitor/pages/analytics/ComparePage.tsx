@@ -193,9 +193,9 @@ export function ComparePage() {
           <section className="mt-12">
             <h2 className="text-[22px] font-semibold">Themenprofil</h2>
             <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Einträgen. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
+            {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
             <label className="mt-3 flex w-fit cursor-pointer items-center gap-2 text-[14px] text-slate-700"><input type="checkbox" checked={mitSammel} onChange={(e) => setMitSammel(e.target.checked)} className="h-4 w-4 accent-teal-600" />„Allgemeine Anfragen“ und „Sitzungsablauf“ einbeziehen</label>
-            {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-2 text-[14px] text-slate-700"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} />)}</ol>
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Einträge für ein Themenprofil.</p>}
           </section>

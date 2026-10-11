@@ -177,6 +177,7 @@ function mini(id: AnalyseId, d: any, geo?: Snap["geo"]): ReactNode {
   if (id === "trends") {
     return (
       <ul className="m-0 list-none space-y-1.5 p-0">
+        <li className="flex justify-between text-[12px] text-slate-500"><span>Begriff</span><span>Veränderung zum Zeitraum davor</span></li>
         {(d.rows as { term: string; ratio: number; series: number[] }[]).map((t) => (
           <li key={t.term} className="flex items-center justify-between gap-3 text-[14px] text-slate-900">
             <span className="truncate">{prettyTerm(t.term)}</span>

@@ -28,7 +28,7 @@ export function GremiennetzPage() {
   const abortRef = useRef<AbortController | null>(null);
 
   /* Ohne Begriff in der Suche: mit einem passenden Beispiel starten, damit die Seite nicht leer ist */
-  const given = useRef<string | null>(hasTerm ? null : "Bebauungsplan");
+  const given = useRef<string | null>(hasTerm ? null : "Photovoltaik");
   useEffect(() => {
     if (!given.current) return;
     search.applySearch(given.current);
