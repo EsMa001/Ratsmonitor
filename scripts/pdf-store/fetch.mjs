@@ -9,19 +9,25 @@
 //        [--concurrency 32] [--per-host 3] [--gap-ms 200] [--timeout-ms 10000] [--retry-days N]
 //   node scripts/pdf-store/fetch.mjs --months 120 --max-gb 10   Monat für Monat ab heute zurück, bis die Ablage 10 GB hat
 //        (je --report-mb 500 eine Zeile MEILENSTEIN, am Ziel ZIEL ERREICHT)
+//   node scripts/pdf-store/fetch.mjs --months 240 --budget-gb 100 [--ocr-workers 2]
+//        feste Grenze mit Tausch (keeper in store-lib.mjs): lädt weiter, auch wenn die Ablage voll ist; jede neue Datei wird
+//        sofort bewertet und verdrängt die schlechteste, wenn sie besser ist, sonst fliegt sie selbst raus (Text bleibt immer)
 //   node scripts/pdf-store/fetch.mjs --stats                       Stand der Ablage
+//   node scripts/pdf-store/fetch.mjs --errors [--csv datei.csv]    fehlgeschlagene Abrufe: je Dokument Fehler, HTTP-Code, Tag
+// Fehlgeschlagene Abrufe werden nicht erneut versucht (nur mit --retry-days N), sie stehen in der Fehlerliste.
 // Ablage: RM_PDF_STORE (Standard tmp/pdf-store). Datenbank: DATABASE_FILE, sonst die Miniflare-Datei unter .wrangler/.
-import {existsSync,readdirSync} from 'node:fs';
+import {existsSync,readdirSync,writeFileSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {fetchDocument} from '../../server/integrations/document-proxy.mjs';
 import {bodyBytes} from '../../server/integrations/body-bytes.mjs';
 import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
 import {primaryPdf,documentType} from '../../shared/document-type.mjs';
+import {keeper as makeKeeper,usedBytes} from './store-lib.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const o={regions:opt('regions')?.split(',').filter(Boolean),since:opt('since'),limit:Number(opt('limit',0)),maxMinutes:Number(opt('max-minutes',0)),
- concurrency:Number(opt('concurrency',32)),perHost:Number(opt('per-host',3)),gapMs:Number(opt('gap-ms',200)),timeoutMs:Number(opt('timeout-ms',10000)),months:Number(opt('months',0)),maxGb:Number(opt('max-gb',0)),reportMb:Number(opt('report-mb',500)),retryDays:Number(opt('retry-days',Infinity))};
+ concurrency:Number(opt('concurrency',32)),perHost:Number(opt('per-host',3)),gapMs:Number(opt('gap-ms',200)),timeoutMs:Number(opt('timeout-ms',10000)),months:Number(opt('months',0)),maxGb:Number(opt('max-gb',0)),budgetGb:Number(opt('budget-gb',0)),ocrWorkers:Number(opt('ocr-workers',2)),reportMb:Number(opt('report-mb',500)),retryDays:Number(opt('retry-days',Infinity))};
 // Abruf wie /api/dokument (nur öffentliche https-Adressen, jede Weiterleitung geprüft), aber mit der Projektkennung.
 // Die Zeitgrenze gilt je Abruf für Kopf und Inhalt zusammen (das Signal bricht auch das Lesen des Inhalts ab).
 const request=(url,init)=>fetch(url,{...init,signal:AbortSignal.any([init.signal,AbortSignal.timeout(o.timeoutMs)]),headers:{'User-Agent':SOURCE_USER_AGENT}});
@@ -33,6 +39,14 @@ async function download(url){
 const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
 const mb=b=>(b/1048576).toFixed(0)+' MB';
 if(flag('stats')){for(const r of store.stats())console.log(r.status.padEnd(12),String(r.n).padStart(8),r.bytes?mb(r.bytes):'');process.exit(0);}
+if(flag('errors')){
+ const rows=store.db.prepare("SELECT url,topic_id AS topic,region_id AS region,http,error,fetched_at AS at FROM pdfs WHERE status IN ('error','unsupported') ORDER BY fetched_at DESC").all();
+ const csv=opt('csv');
+ if(csv){const q=v=>`"${String(v??'').replaceAll('"','""')}"`;writeFileSync(csv,'\ufeffurl;bericht;gebiet;http;fehler;tag\n'+rows.map(r=>[r.url,r.topic,r.region,r.http,r.error,r.at?.slice(0,10)].map(q).join(';')).join('\n')+'\n');console.log(`${rows.length} Fehler nach ${csv}`);}
+ else{const by=new Map();for(const r of rows){const k=(r.http?'HTTP '+r.http:String(r.error||'').replace(/\d+/g,'N').slice(0,60));by.set(k,(by.get(k)||0)+1);}
+  console.log(`${rows.length} fehlgeschlagene Abrufe`);for(const [k,n] of [...by].sort((a,b)=>b[1]-a[1]).slice(0,20))console.log(String(n).padStart(8),k);}
+ process.exit(0);
+}
 
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
 const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite'):null;
@@ -68,11 +82,14 @@ const maxBytes=o.maxGb*1073741824,stepBytes=o.reportMb*1048576;let size=store.si
 process.on('SIGINT',()=>{if(stopping)process.exit(130);stopping=true;console.log('\nAbbruch: laufende Abrufe werden beendet (noch einmal Strg+C zum sofortigen Ende).');});
 const report=label=>{const s=(Date.now()-started)/1000;console.log(`${new Date().toISOString().slice(11,19)} ${label||''}${done} geladen: ${c.ok} ok, ${c.unsupported} kein PDF, ${c.error} Fehler, Ablage ${mb(size)}, ${(done/s).toFixed(1)}/s`);};
 const timer=setInterval(()=>report(),60000);
+// Feste Grenze mit Tausch: PDFs und Texte zusammen höchstens --budget-gb
+const keeper=o.budgetGb&&!flag('dry-run')?makeKeeper(store,o.budgetGb*1073741824,{ocrWorkers:o.ocrWorkers,log:x=>console.log(x)}):null;
+if(keeper)console.log(`Grenze ${o.budgetGb} GB (PDFs und Texte), belegt ${mb(usedBytes(store))}`);
 async function one(h,job){
  try{
   const bytes=await download(job.url);
   const status=store.put(job.url,bytes,{regionId:job.region,topicId:job.topic,...job.meta});c[status]++;h.fails=0;
-  if(status==='ok'){c.bytes+=bytes.byteLength;size+=bytes.byteLength;}
+  if(status==='ok'){c.bytes+=bytes.byteLength;size+=bytes.byteLength;if(keeper){await keeper.admit(store.entry(job.url).sha256);size=store.size();}}
   if(stepBytes&&size>=nextStep){console.log(`MEILENSTEIN ${mb(size)} in der Ablage (${c.ok} PDFs in diesem Lauf, aktueller Monat ${month})`);while(nextStep<=size)nextStep+=stepBytes;}
   if(maxBytes&&size>=maxBytes)stopping=true;
  }catch(e){
@@ -110,6 +127,7 @@ for(const [from,to] of windows){
  report(month+' fertig: ');
 }
 db.close();clearInterval(timer);
+if(keeper){await keeper.close();const k=keeper.stats();console.log(`Grenze: ${k.kept} behalten, ${k.swapped} schlechtere verdrängt, ${k.rejected} nicht besser, ${k.tooBig} zu groß (nur Text), ${k.ocrPages} Seiten vor dem Löschen per OCR${k.stuck?`, ${k.stuck} Scans ohne OCR-Werkzeuge liegen geblieben`:''}; belegt ${mb(usedBytes(store))}`);}
 if(maxBytes&&size>=maxBytes)console.log(`ZIEL ERREICHT: ${mb(size)} in der Ablage`);
 for(const r of store.stats())console.log('Ablage:',r.status,r.n,r.bytes?mb(r.bytes):'');
 store.close();

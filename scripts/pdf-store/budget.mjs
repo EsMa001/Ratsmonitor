@@ -2,15 +2,16 @@
 // Wert je Byte, bis das Budget voll ist. Ohne --apply wird nur gerechnet.
 //
 //   node scripts/pdf-store/budget.mjs --backfill           Dokumentart, Formalie, Sitzungstag aus der Datenbank nachtragen
-//   node scripts/pdf-store/budget.mjs [--budget-gb 65]    was passt hinein, was behält nur den Text
-//   node scripts/pdf-store/budget.mjs --budget-gb 65 --population 870701
+//   node scripts/pdf-store/budget.mjs [--budget-gb 100]    was passt hinein, was behält nur den Text
+//   node scripts/pdf-store/budget.mjs --budget-gb 100 --population 870701
 //        Hochrechnung: die Ablage als Stichprobe von `population` Dokumenten; das Budget schrumpft im selben Verhältnis
 //   node scripts/pdf-store/budget.mjs --budget-gb 15 --apply   PDFs außerhalb des Budgets löschen (Text bleibt, Status 'text-only')
 import {existsSync,readdirSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {documentType} from '../../shared/document-type.mjs';
-import {rankPdf,TYPE_VALUE} from '../../shared/pdf-rank.mjs';
+import {TYPE_VALUE} from '../../shared/pdf-rank.mjs';
+import {rankedFiles,textBytes as textBytesOf,ocrScheduler,ocrFile} from './store-lib.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE),db=store.db;
@@ -35,18 +36,9 @@ if(flag('backfill')){
  process.exit(0);
 }
 
-// Eine Zeile je Datei (gleiche Datei unter mehreren Adressen: der höchste Wert zählt).
-const files=db.prepare(`SELECT p.sha256 AS sha,MAX(p.bytes) AS bytes,GROUP_CONCAT(COALESCE(p.doc_type,'other')) AS types,MAX(COALESCE(p.formal,0)) AS formal,MIN(p.formal) AS minFormal,
- MIN(p.event_date) AS eventDate,t.pages,t.ocr_pages AS ocrPages,t.ocr_needed AS ocrNeeded,t.chars
- FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok' GROUP BY p.sha256`).all();
-const textBytes=db.prepare("SELECT COALESCE(SUM(chars),0) AS c FROM texts WHERE status='ok'").get().c*1.05;
-const ranked=files.map(f=>{
- const types=f.types.split(','),type=types.sort((a,b)=>(TYPE_VALUE[b]??0)-(TYPE_VALUE[a]??0))[0];
- const scan=f.pages>0&&((f.ocrPages||0)+(f.ocrNeeded||0))>=f.pages/2;
- return {...f,type,scan,...rankPdf({type,formal:f.minFormal===1,scan,eventDate:f.eventDate,bytes:f.bytes})};
-}).sort((a,b)=>b.score-a.score);
+const ranked=rankedFiles(store),files=ranked,textBytes=textBytesOf(store);
 
-const budget=Number(opt('budget-gb',65))*1073741824,population=Number(opt('population',0));
+const budget=Number(opt('budget-gb',100))*1073741824,population=Number(opt('population',0));
 const share=population?files.length/population:1,limit=budget*share;
 let used=textBytes,cut=null;const kept=[],dropped=[];
 for(const f of ranked){if(f.keep&&used+f.bytes<=limit){used+=f.bytes;kept.push(f);}else{dropped.push(f);cut??=f;}}
@@ -62,9 +54,14 @@ const biggest=kept.reduce((m,f)=>Math.max(m,f.bytes),0);
 console.log(`\ngrößtes behaltenes PDF: ${(biggest/1048576).toFixed(1)} MB; Scans behalten: ${kept.filter(f=>f.scan).length}, nur Text: ${dropped.filter(f=>f.scan).length}`);
 if(flag('apply')){
  if(population){console.error('--apply nur ohne --population');process.exit(1);}
- // Nur löschen, was schon eine Textfassung hat; der Rest wartet auf scripts/pdf-store/text.mjs.
- const go=dropped.filter(f=>f.chars!=null);
- db.exec('BEGIN');for(const f of go)store.dropPdf(f.sha);db.exec('COMMIT');
- console.log(`${go.length} PDFs gelöscht, ihre Texte bleiben; ${dropped.length-go.length} ohne Textfassung bleiben vorerst.`);
+ // Nur löschen, was schon eine Textfassung hat; der Rest wartet auf scripts/pdf-store/text.mjs. Seiten ohne Text (Scans)
+ // vorher per OCR lesen, damit der Text vollständig bleibt.
+ const go=dropped.filter(f=>f.chars!=null);let ocr=null,ocrPages=0;
+ for(const f of go.filter(f=>f.ocrNeeded>0)){ocr??=await ocrScheduler(Number(opt('ocr-workers',2)));if(!ocr){console.error('OCR-Werkzeuge fehlen: Scans ohne OCR bleiben als PDF.');break;}ocrPages+=await ocrFile(store,f.sha,ocr);f.ocrNeeded=0;}
+ if(ocr)await ocr.terminate();
+ const now=go.filter(f=>!(f.ocrNeeded>0));
+ db.exec('BEGIN');for(const f of now)store.dropPdf(f.sha);db.exec('COMMIT');
+ if(ocrPages)console.log(`${ocrPages} Seiten vor dem Löschen per OCR gelesen`);
+ console.log(`${now.length} PDFs gelöscht, ihre Texte bleiben; ${dropped.length-now.length} ohne vollständige Textfassung bleiben vorerst.`);
 }
 store.close();

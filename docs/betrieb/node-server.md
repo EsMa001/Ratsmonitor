@@ -254,12 +254,16 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
    systemctl daemon-reload && systemctl enable --now ratsmonitor-pdf-nightly.timer`.
 
 **Nachts** (05:30, nach Import, Sicherung und Wortliste) führt `scripts/pdf-store/nightly.mjs` die Stufen 2 bis 6 in fester
-Reihenfolge aus, höchstens drei Stunden: Laden (bis 40 % der Zeit, Monat für Monat ab heute zurück, bis 65 GB plus
-3 GB Puffer, damit bei voller Ablage neue Sitzungen trotzdem ankommen), danach bei Überschreitung des Budgets die PDFs mit dem
-geringsten Wert je Byte löschen, bis wieder 65 GB erreicht sind (Text bleibt; nur PDFs mit Textfassung, neu geladene bleiben), Textebene, OCR (die verbleibende
+Reihenfolge aus, höchstens drei Stunden: Laden (bis 40 % der Zeit, Monat für Monat ab heute zurück) mit **fester Grenze
+von 100 GB** für PDFs und Texte zusammen: Ist sie erreicht, wird jede neue Datei sofort bewertet (Rang `shared/pdf-rank.mjs`,
+Textebene gleich gelesen, damit Scans erkannt sind) und verdrängt die schlechteste Datei der Ablage, wenn sie besser ist;
+sonst fliegt sie selbst raus. Der Text bleibt immer: vor jedem Löschen werden Seiten ohne Text sofort per OCR gelesen, auch bei
+vielen Seiten. So liegen in den 100 GB die besten Dokumente unter allen geladenen. Danach nur zur Sicherung das Kürzen
+(`budget.mjs --apply`, etwa nach einer gesenkten Grenze), Textebene, OCR (die verbleibende
 Zeit bis auf 25 Minuten), Zusammenfassungen, Fakten, Wortliste. Was nicht fertig wird, macht die nächste Nacht weiter;
 eine Sperre (`nightly.lock` in der Ablage) verhindert zwei Läufe. Protokoll: `journalctl -u ratsmonitor-pdf-nightly`.
 Probe ohne Wirkung: `node scripts/pdf-store/nightly.mjs --dry-run`.
+Fehlgeschlagene Abrufe werden nicht erneut versucht; Liste: `node scripts/pdf-store/fetch.mjs --errors [--csv fehler.csv]`.
 
 **Wie lange der Aufbau dauert** (hochgerechnet aus dem lokalen Aufbau, 11.10.2026): Alle Hauptdokumente sind 65 bis 80 GB,
 etwa 300.000 bis 360.000 PDFs; lokal kamen 30 bis 60 PDFs je Sekunde, also einige Nächte Laden. Textebene lokal 87.600
