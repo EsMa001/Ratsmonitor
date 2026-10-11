@@ -5,7 +5,11 @@
  "kapitel": [
   {
    "kapitel": "einleitung",
-   "text": "lang"
+   "saetze": [
+    1,
+    2,
+    4
+   ]
   }
  ]
 }

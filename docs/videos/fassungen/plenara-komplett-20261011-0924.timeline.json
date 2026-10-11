@@ -7,13 +7,13 @@
   },
   {
    "name": "vorteile",
-   "start": 456.0,
-   "ende": 472.0
+   "start": 462.8,
+   "ende": 478.8
   },
   {
    "name": "schluss",
-   "start": 472.0,
-   "ende": 479.3
+   "start": 478.8,
+   "ende": 486.0
   }
  ],
  "kapitel": [
@@ -22,7 +22,7 @@
    "id": "einleitung",
    "kapitel": "Wissen, was vor Ort entschieden wird, bevor es bekannt ist",
    "start": 7.2,
-   "ende": 26.5,
+   "ende": 33.3,
    "saetze": [
     {
      "nr": 1,
@@ -32,9 +32,9 @@
      "ende": 13.1,
      "schritte": [
       {
-       "szene": "einleitung",
-       "schritt": "start",
-       "clip": "einleitung@thema-waermeplanung"
+       "szene": "startseite",
+       "schritt": "kopf",
+       "clip": "startseite"
       }
      ]
     },
@@ -46,23 +46,37 @@
      "ende": 19.0,
      "schritte": [
       {
-       "szene": "einleitung",
-       "schritt": "karte",
-       "clip": "einleitung@thema-waermeplanung"
+       "szene": "startseite",
+       "schritt": "marke",
+       "clip": "startseite"
       }
      ]
     },
     {
      "nr": 3,
-     "kern": true,
-     "text": "Ein Begriff genügt, zum Beispiel Wärmeplanung, und die Karte zeigt sofort, wo darüber beraten wird.",
+     "kern": false,
+     "text": "Die Zahl zeigt, wie viele Berichte aus Räten und Ausschüssen in den letzten 30 Tagen dazugekommen sind.",
      "start": 19.8,
-     "ende": 25.4,
+     "ende": 25.7,
      "schritte": [
       {
-       "szene": "einleitung",
+       "szene": "startseite",
+       "schritt": "zahl",
+       "clip": "startseite"
+      }
+     ]
+    },
+    {
+     "nr": 4,
+     "kern": true,
+     "text": "Ein Begriff genügt, zum Beispiel Wärmeplanung, und die Karte zeigt sofort, wo darüber beraten wird.",
+     "start": 26.5,
+     "ende": 32.2,
+     "schritte": [
+      {
+       "szene": "startseite",
        "schritt": "suche",
-       "clip": "einleitung@thema-waermeplanung"
+       "clip": "startseite"
       }
      ]
     }
@@ -72,15 +86,15 @@
    "nr": 2,
    "id": "suchen",
    "kapitel": "Ein Begriff. Ganz Deutschland. Sofort auf der Karte.",
-   "start": 26.5,
-   "ende": 59.6,
+   "start": 33.3,
+   "ende": 66.4,
    "saetze": [
     {
      "nr": 1,
      "kern": true,
      "text": "Die Suche gilt immer für ganz Deutschland. Einen Ort können Sie aber wählen.",
-     "start": 27.0,
-     "ende": 30.9,
+     "start": 33.8,
+     "ende": 37.7,
      "schritte": [
       {
        "szene": "suche-eingabe",
@@ -93,8 +107,8 @@
      "nr": 2,
      "kern": false,
      "text": "Die Karte zeigt, wo darüber beraten wird: in vierzehn Bundesländern.",
-     "start": 31.7,
-     "ende": 35.8,
+     "start": 38.5,
+     "ende": 42.6,
      "schritte": [
       {
        "szene": "suche-eingabe",
@@ -107,8 +121,8 @@
      "nr": 3,
      "kern": false,
      "text": "Die Zahl an jedem Gebiet verrät, wie viele Einträge es dort gibt.",
-     "start": 36.6,
-     "ende": 40.1,
+     "start": 43.4,
+     "ende": 46.9,
      "schritte": [
       {
        "szene": "suche-eingabe",
@@ -121,8 +135,8 @@
      "nr": 4,
      "kern": true,
      "text": "Ein Klick zeigt die Beschlüsse dieses Gebiets. In Stuttgart sind es dreizehn.",
-     "start": 40.9,
-     "ende": 44.9,
+     "start": 47.7,
+     "ende": 51.6,
      "schritte": [
       {
        "szene": "karte-gebiet",
@@ -140,8 +154,8 @@
      "nr": 5,
      "kern": false,
      "text": "Die Heatmap zeigt auf einen Blick, wo sich ein Thema häuft.",
-     "start": 45.7,
-     "ende": 48.6,
+     "start": 52.4,
+     "ende": 55.4,
      "schritte": [
       {
        "szene": "karte-heatmap",
@@ -154,8 +168,8 @@
      "nr": 6,
      "kern": false,
      "text": "Tippen Sie einen Ort, zum Beispiel Stuttgart, und Plenara erkennt ihn sofort.",
-     "start": 49.4,
-     "ende": 53.6,
+     "start": 56.2,
+     "ende": 60.4,
      "schritte": [
       {
        "szene": "suche-ort",
@@ -173,8 +187,8 @@
      "nr": 7,
      "kern": false,
      "text": "Von ganz Deutschland bis in Ihre Gemeinde. Eine Suche, eine Karte.",
-     "start": 54.4,
-     "ende": 58.5,
+     "start": 61.2,
+     "ende": 65.3,
      "schritte": [
       {
        "szene": "suche-ort",
@@ -189,15 +203,15 @@
    "nr": 3,
    "id": "liste-artikel",
    "kapitel": "Aus über zehntausend Einträgen den Überblick behalten",
-   "start": 59.6,
-   "ende": 96.7,
+   "start": 66.4,
+   "ende": 103.4,
    "saetze": [
     {
      "nr": 1,
      "kern": true,
      "text": "Zu einem Thema gibt es mehr als zweitausend Einträge, jeder mit Gremium und Datum.",
-     "start": 60.1,
-     "ende": 65.2,
+     "start": 66.9,
+     "ende": 71.9,
      "schritte": [
       {
        "szene": "liste-zeitstrahl",
@@ -210,8 +224,8 @@
      "nr": 2,
      "kern": false,
      "text": "Jede Zeile sagt Ihnen, worum es geht, wer berät und wann.",
-     "start": 66.0,
-     "ende": 69.8,
+     "start": 72.7,
+     "ende": 76.5,
      "schritte": [
       {
        "szene": "liste-zeitstrahl",
@@ -224,8 +238,8 @@
      "nr": 3,
      "kern": true,
      "text": "Bei vielen Vorgängen sehen Sie sogar den Stand: jede Beratung mit Datum und Gremium.",
-     "start": 70.6,
-     "ende": 75.5,
+     "start": 77.3,
+     "ende": 82.2,
      "schritte": [
       {
        "szene": "liste-zeitstrahl",
@@ -238,8 +252,8 @@
      "nr": 4,
      "kern": false,
      "text": "Sortieren Sie nach Datum oder Relevanz, kompakt oder ausführlich.",
-     "start": 76.3,
-     "ende": 80.5,
+     "start": 83.0,
+     "ende": 87.2,
      "schritte": [
       {
        "szene": "liste-zeitstrahl",
@@ -252,8 +266,8 @@
      "nr": 5,
      "kern": false,
      "text": "Ein Klick öffnet den ganzen Artikel.",
-     "start": 81.3,
-     "ende": 83.3,
+     "start": 88.0,
+     "ende": 90.0,
      "schritte": [
       {
        "szene": "liste-zeitstrahl",
@@ -266,8 +280,8 @@
      "nr": 6,
      "kern": false,
      "text": "Eine Kurzfassung unter dem Titel sagt Ihnen sofort, worum es geht.",
-     "start": 84.1,
-     "ende": 87.8,
+     "start": 90.8,
+     "ende": 94.5,
      "schritte": [
       {
        "szene": "liste-zeitstrahl",
@@ -280,8 +294,8 @@
      "nr": 7,
      "kern": false,
      "text": "Darunter stehen der Verlauf durch die Gremien und alle Unterlagen.",
-     "start": 88.6,
-     "ende": 91.8,
+     "start": 95.3,
+     "ende": 98.6,
      "schritte": [
       {
        "szene": "liste-zeitstrahl",
@@ -294,8 +308,8 @@
      "nr": 8,
      "kern": false,
      "text": "Vom Überblick zur Originalunterlage in wenigen Klicks.",
-     "start": 92.6,
-     "ende": 95.6,
+     "start": 99.4,
+     "ende": 102.3,
      "schritte": [
       {
        "szene": "liste-zeitstrahl",
@@ -310,15 +324,15 @@
    "nr": 4,
    "id": "filter",
    "kapitel": "Gezielt eingrenzen, bis nur das Passende übrig bleibt",
-   "start": 96.7,
-   "ende": 128.7,
+   "start": 103.4,
+   "ende": 135.5,
    "saetze": [
     {
      "nr": 1,
      "kern": true,
      "text": "Zu viele Treffer? Dann grenzen Sie sie ein.",
-     "start": 97.2,
-     "ende": 99.7,
+     "start": 103.9,
+     "ende": 106.4,
      "schritte": [
       {
        "szene": "filter-fenster",
@@ -331,8 +345,8 @@
      "nr": 2,
      "kern": false,
      "text": "Wollen Sie nur ganze Wörter, schalten Sie den exakten Begriff ein.",
-     "start": 100.5,
-     "ende": 104.0,
+     "start": 107.2,
+     "ende": 110.8,
      "schritte": [
       {
        "szene": "filter-fenster",
@@ -345,8 +359,8 @@
      "nr": 3,
      "kern": true,
      "text": "Wählen Sie Zeitraum, Thema und Status, zum Beispiel beschlossen oder in Beratung.",
-     "start": 104.8,
-     "ende": 109.6,
+     "start": 111.6,
+     "ende": 116.3,
      "schritte": [
       {
        "szene": "filter-fenster",
@@ -369,8 +383,8 @@
      "nr": 4,
      "kern": false,
      "text": "Karte und Liste passen sich sofort an.",
-     "start": 110.4,
-     "ende": 112.6,
+     "start": 117.1,
+     "ende": 119.3,
      "schritte": [
       {
        "szene": "filter-fenster",
@@ -383,8 +397,8 @@
      "nr": 5,
      "kern": false,
      "text": "Ihre Auswahl steht als Marken unter der Suchleiste, ein Klick entfernt sie wieder.",
-     "start": 113.4,
-     "ende": 117.9,
+     "start": 120.1,
+     "ende": 124.7,
      "schritte": [
       {
        "szene": "filter-fenster",
@@ -397,8 +411,8 @@
      "nr": 6,
      "kern": false,
      "text": "Mehrere Begriffe verknüpfen Sie wahlweise mit „alle“ oder „einer davon“.",
-     "start": 118.7,
-     "ende": 122.5,
+     "start": 125.5,
+     "ende": 129.3,
      "schritte": [
       {
        "szene": "filter-fenster",
@@ -411,8 +425,8 @@
      "nr": 7,
      "kern": false,
      "text": "So wird aus mehr als zweitausend Einträgen genau die Auswahl, die Sie brauchen.",
-     "start": 123.3,
-     "ende": 127.6,
+     "start": 130.1,
+     "ende": 134.4,
      "schritte": [
       {
        "szene": "filter-fenster",
@@ -427,15 +441,15 @@
    "nr": 5,
    "id": "alarme",
    "kapitel": "Nichts verpassen, ohne zu suchen",
-   "start": 128.7,
-   "ende": 166.4,
+   "start": 135.5,
+   "ende": 173.1,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Sie wollen nichts verpassen, aber nicht jeden Tag suchen?",
-     "start": 129.2,
-     "ende": 131.9,
+     "start": 136.0,
+     "ende": 138.7,
      "schritte": [
       {
        "szene": "alarm",
@@ -448,8 +462,8 @@
      "nr": 2,
      "kern": true,
      "text": "Speichern Sie Ihre Suche mit dem Herz.",
-     "start": 132.7,
-     "ende": 134.7,
+     "start": 139.5,
+     "ende": 141.4,
      "schritte": [
       {
        "szene": "alarm",
@@ -462,8 +476,8 @@
      "nr": 3,
      "kern": false,
      "text": "Im Konto schalten Sie die Glocke ein.",
-     "start": 135.5,
-     "ende": 137.2,
+     "start": 142.2,
+     "ende": 143.9,
      "schritte": [
       {
        "szene": "alarm",
@@ -476,8 +490,8 @@
      "nr": 4,
      "kern": true,
      "text": "Ab jetzt kommt eine E-Mail, sobald es zu Ihrer Suche neue Treffer gibt.",
-     "start": 138.0,
-     "ende": 141.8,
+     "start": 144.7,
+     "ende": 148.6,
      "schritte": [
       {
        "szene": "alarm",
@@ -490,8 +504,8 @@
      "nr": 5,
      "kern": false,
      "text": "Wie oft Sie benachrichtigt werden, legen Sie bei jeder Suche fest.",
-     "start": 142.7,
-     "ende": 146.0,
+     "start": 149.4,
+     "ende": 152.8,
      "schritte": [
       {
        "szene": "alarm",
@@ -504,8 +518,8 @@
      "nr": 6,
      "kern": false,
      "text": "Auch zu einem einzelnen Vorgang können Sie sich benachrichtigen lassen.",
-     "start": 146.8,
-     "ende": 150.3,
+     "start": 153.6,
+     "ende": 157.1,
      "schritte": [
       {
        "szene": "alarm-artikel",
@@ -518,8 +532,8 @@
      "nr": 7,
      "kern": false,
      "text": "Der Wochenbericht fasst alle neuen Treffer Ihrer Suchen zusammen, täglich oder an Ihrem Wunschtag.",
-     "start": 151.1,
-     "ende": 156.2,
+     "start": 157.9,
+     "ende": 163.0,
      "schritte": [
       {
        "szene": "postfach",
@@ -532,8 +546,8 @@
      "nr": 8,
      "kern": false,
      "text": "Und am Tag einer Sitzung in Ihren Gebieten kommt eine E-Mail.",
-     "start": 157.1,
-     "ende": 160.6,
+     "start": 163.8,
+     "ende": 167.3,
      "schritte": [
       {
        "szene": "kalender",
@@ -546,8 +560,8 @@
      "nr": 9,
      "kern": false,
      "text": "So behalten Sie den Überblick, ohne zu suchen. Plenara meldet sich.",
-     "start": 161.4,
-     "ende": 165.3,
+     "start": 168.1,
+     "ende": 172.0,
      "schritte": [
       {
        "szene": "postfach",
@@ -562,15 +576,15 @@
    "nr": 6,
    "id": "export",
    "kapitel": "Aus der Suche wird Ihre Auswertung",
-   "start": 166.4,
-   "ende": 194.8,
+   "start": 173.1,
+   "ende": 201.5,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Sie brauchen die Treffer in Ihrer eigenen Auswertung oder im Bericht?",
-     "start": 166.9,
-     "ende": 170.3,
+     "start": 173.6,
+     "ende": 177.1,
      "schritte": [
       {
        "szene": "export",
@@ -583,8 +597,8 @@
      "nr": 2,
      "kern": true,
      "text": "Über der Trefferliste exportieren Sie alle Treffer als Excel oder CSV.",
-     "start": 171.1,
-     "ende": 175.6,
+     "start": 177.9,
+     "ende": 182.4,
      "schritte": [
       {
        "szene": "export",
@@ -597,8 +611,8 @@
      "nr": 3,
      "kern": true,
      "text": "Auch einen einzelnen Artikel geben Sie aus, als PDF, zum Drucken, als Excel oder CSV.",
-     "start": 176.4,
-     "ende": 182.2,
+     "start": 183.2,
+     "ende": 189.0,
      "schritte": [
       {
        "szene": "export",
@@ -611,8 +625,8 @@
      "nr": 4,
      "kern": false,
      "text": "Das PDF eignet sich zum Weitergeben oder Ablegen.",
-     "start": 183.0,
-     "ende": 186.1,
+     "start": 189.8,
+     "ende": 192.8,
      "schritte": [
       {
        "szene": "export",
@@ -625,8 +639,8 @@
      "nr": 5,
      "kern": false,
      "text": "Excel und CSV helfen, wenn Sie die Daten selbst auswerten wollen.",
-     "start": 186.9,
-     "ende": 190.6,
+     "start": 193.6,
+     "ende": 197.4,
      "schritte": [
       {
        "szene": "export",
@@ -639,8 +653,8 @@
      "nr": 6,
      "kern": false,
      "text": "Von der Suche zur Datei in wenigen Klicks.",
-     "start": 191.4,
-     "ende": 193.6,
+     "start": 198.2,
+     "ende": 200.4,
      "schritte": [
       {
        "szene": "export",
@@ -655,15 +669,15 @@
    "nr": 7,
    "id": "kalender",
    "kapitel": "Keine Sitzung verpassen",
-   "start": 194.8,
-   "ende": 217.2,
+   "start": 201.5,
+   "ende": 223.9,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Wann tagt der Rat, der Sie interessiert?",
-     "start": 195.3,
-     "ende": 197.3,
+     "start": 202.0,
+     "ende": 204.0,
      "schritte": [
       {
        "szene": "kalender",
@@ -676,8 +690,8 @@
      "nr": 2,
      "kern": true,
      "text": "Im Kalender sehen Sie anstehende Sitzungen auf einen Blick.",
-     "start": 198.1,
-     "ende": 201.4,
+     "start": 204.8,
+     "ende": 208.1,
      "schritte": [
       {
        "szene": "kalender",
@@ -690,8 +704,8 @@
      "nr": 3,
      "kern": false,
      "text": "Wählen Sie Ihre Gebiete, einen Ort oder Kreis, auch mehrere zugleich.",
-     "start": 202.2,
-     "ende": 206.2,
+     "start": 208.9,
+     "ende": 212.9,
      "schritte": [
       {
        "szene": "kalender",
@@ -704,8 +718,8 @@
      "nr": 4,
      "kern": true,
      "text": "Jeder Tag mit einer Sitzung ist markiert, ein Klick zeigt Gremium und Themen.",
-     "start": 207.0,
-     "ende": 211.4,
+     "start": 213.7,
+     "ende": 218.1,
      "schritte": [
       {
        "szene": "kalender",
@@ -718,8 +732,8 @@
      "nr": 5,
      "kern": false,
      "text": "Mit „Kalender abonnieren“ übernehmen Sie die Termine in Ihren eigenen Kalender.",
-     "start": 212.2,
-     "ende": 216.1,
+     "start": 218.9,
+     "ende": 222.8,
      "schritte": [
       {
        "szene": "kalender",
@@ -734,15 +748,15 @@
    "nr": 8,
    "id": "konto",
    "kapitel": "Alles Gespeicherte an einem Ort",
-   "start": 217.2,
-   "ende": 240.5,
+   "start": 223.9,
+   "ende": 247.3,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Ihre Suchen, Artikel und Alarme an einem Ort.",
-     "start": 217.7,
-     "ende": 220.8,
+     "start": 224.4,
+     "ende": 227.6,
      "schritte": [
       {
        "szene": "konto",
@@ -755,8 +769,8 @@
      "nr": 2,
      "kern": false,
      "text": "Über das Personensymbol öffnen Sie Ihr Konto und die Abmeldung.",
-     "start": 221.6,
-     "ende": 225.1,
+     "start": 228.4,
+     "ende": 231.9,
      "schritte": [
       {
        "szene": "konto",
@@ -769,8 +783,8 @@
      "nr": 3,
      "kern": true,
      "text": "Im Profil tragen Sie Name und E-Mail ein und sehen Ihren Tarif.",
-     "start": 225.9,
-     "ende": 229.7,
+     "start": 232.7,
+     "ende": 236.5,
      "schritte": [
       {
        "szene": "konto",
@@ -783,8 +797,8 @@
      "nr": 4,
      "kern": true,
      "text": "Alles Gespeicherte erreichen Sie über die Symbole in der Kopfzeile: Suchen, Artikel und Kalender.",
-     "start": 230.5,
-     "ende": 235.8,
+     "start": 237.3,
+     "ende": 242.6,
      "schritte": [
       {
        "szene": "konto",
@@ -797,8 +811,8 @@
      "nr": 5,
      "kern": false,
      "text": "Es bleibt erhalten, auch wenn Sie später wiederkommen.",
-     "start": 236.6,
-     "ende": 239.4,
+     "start": 243.4,
+     "ende": 246.2,
      "schritte": [
       {
        "szene": "konto",
@@ -813,15 +827,15 @@
    "nr": 9,
    "id": "abdeckung",
    "kapitel": "Ist Ihre Gemeinde dabei? Das sehen Sie offen",
-   "start": 240.5,
-   "ende": 268.0,
+   "start": 247.3,
+   "ende": 274.7,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Ist Ihre Gemeinde dabei?",
-     "start": 241.0,
-     "ende": 242.6,
+     "start": 247.8,
+     "ende": 249.3,
      "schritte": [
       {
        "szene": "abdeckung",
@@ -834,8 +848,8 @@
      "nr": 2,
      "kern": true,
      "text": "Die Seite Datenabdeckung zeigt es offen.",
-     "start": 243.4,
-     "ende": 245.7,
+     "start": 250.1,
+     "ende": 252.4,
      "schritte": [
       {
        "szene": "abdeckung",
@@ -848,8 +862,8 @@
      "nr": 3,
      "kern": true,
      "text": "Heute sind es mehr als neunhunderttausend Einträge aus über sechstausend Gemeinden.",
-     "start": 246.5,
-     "ende": 251.0,
+     "start": 253.2,
+     "ende": 257.8,
      "schritte": [
       {
        "szene": "abdeckung",
@@ -862,8 +876,8 @@
      "nr": 4,
      "kern": false,
      "text": "Suchen Sie Ihre Gemeinde oder Ihren Kreis und sehen Sie, wie aktuell der Stand dort ist.",
-     "start": 251.8,
-     "ende": 256.7,
+     "start": 258.6,
+     "ende": 263.4,
      "schritte": [
       {
        "szene": "abdeckung",
@@ -876,8 +890,8 @@
      "nr": 5,
      "kern": false,
      "text": "Auch der letzte Abruf der Daten steht dabei.",
-     "start": 257.5,
-     "ende": 260.1,
+     "start": 264.2,
+     "ende": 266.8,
      "schritte": [
       {
        "szene": "abdeckung",
@@ -890,8 +904,8 @@
      "nr": 6,
      "kern": false,
      "text": "Fehlt etwas, melden Sie es uns direkt.",
-     "start": 260.9,
-     "ende": 263.2,
+     "start": 267.6,
+     "ende": 270.0,
      "schritte": [
       {
        "szene": "abdeckung",
@@ -904,8 +918,8 @@
      "nr": 7,
      "kern": false,
      "text": "Wir sagen offen, was schon dabei ist und was noch fehlt.",
-     "start": 264.0,
-     "ende": 266.9,
+     "start": 270.8,
+     "ende": 273.6,
      "schritte": [
       {
        "szene": "abdeckung",
@@ -920,15 +934,15 @@
    "nr": 10,
    "id": "diffusion",
    "kapitel": "Sehen, wie sich ein Thema ausbreitet",
-   "start": 268.0,
-   "ende": 308.6,
+   "start": 274.7,
+   "ende": 315.4,
    "saetze": [
     {
      "nr": 1,
      "kern": true,
      "text": "Eine Suche zeigt einzelne Beschlüsse. Plenara X zeigt, wie sich ein Thema im ganzen Land bewegt.",
-     "start": 268.5,
-     "ende": 274.2,
+     "start": 275.2,
+     "ende": 280.9,
      "schritte": [
       {
        "szene": "diffusion",
@@ -941,8 +955,8 @@
      "nr": 2,
      "kern": false,
      "text": "Im Datenbestand taucht Wärmeplanung im September zweitausendfünfundzwanzig zum ersten Mal auf.",
-     "start": 275.0,
-     "ende": 280.6,
+     "start": 281.7,
+     "ende": 287.3,
      "schritte": [
       {
        "szene": "diffusion",
@@ -955,8 +969,8 @@
      "nr": 3,
      "kern": false,
      "text": "Die Diffusionsanalyse läuft dann als Zeitraffer auf der Karte.",
-     "start": 281.4,
-     "ende": 284.7,
+     "start": 288.1,
+     "ende": 291.4,
      "schritte": [
       {
        "szene": "diffusion",
@@ -969,8 +983,8 @@
      "nr": 4,
      "kern": true,
      "text": "Nach fünf Monaten war die Hälfte der Gebiete erreicht.",
-     "start": 285.5,
-     "ende": 288.3,
+     "start": 292.2,
+     "ende": 295.1,
      "schritte": [
       {
        "szene": "diffusion",
@@ -983,8 +997,8 @@
      "nr": 5,
      "kern": false,
      "text": "Von zehn auf neunzig Prozent der Gebiete dauerte es elf Monate.",
-     "start": 289.1,
-     "ende": 292.9,
+     "start": 295.9,
+     "ende": 299.6,
      "schritte": [
       {
        "szene": "diffusion",
@@ -997,8 +1011,8 @@
      "nr": 6,
      "kern": false,
      "text": "Das Diagramm zeigt den Verlauf Monat für Monat, ein Klick setzt die Karte auf das Datum.",
-     "start": 293.7,
-     "ende": 298.6,
+     "start": 300.4,
+     "ende": 305.4,
      "schritte": [
       {
        "szene": "diffusion",
@@ -1011,8 +1025,8 @@
      "nr": 7,
      "kern": false,
      "text": "Ganz anders Hitzeschutz: Im September kamen dreihundertneunundneunzig neue Gebiete dazu.",
-     "start": 299.4,
-     "ende": 304.4,
+     "start": 306.2,
+     "ende": 311.2,
      "schritte": [
       {
        "szene": "diffusion",
@@ -1025,8 +1039,8 @@
      "nr": 8,
      "kern": false,
      "text": "Auch die Bundesländer lassen sich vergleichen.",
-     "start": 305.2,
-     "ende": 307.5,
+     "start": 312.0,
+     "ende": 314.3,
      "schritte": [
       {
        "szene": "diffusion",
@@ -1041,15 +1055,15 @@
    "nr": 11,
    "id": "entscheidungen",
    "kapitel": "Wie Vorgänge ausgehen",
-   "start": 308.6,
-   "ende": 340.2,
+   "start": 315.4,
+   "ende": 347.0,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Wie gehen Vorgänge aus: beschlossen, vertagt oder abgelehnt?",
-     "start": 309.1,
-     "ende": 312.7,
+     "start": 315.9,
+     "ende": 319.5,
      "schritte": [
       {
        "szene": "entscheidungen",
@@ -1062,8 +1076,8 @@
      "nr": 2,
      "kern": true,
      "text": "Bei Wärmeplanung sind fast fünfundneunzig Prozent der entschiedenen Vorgänge beschlossen.",
-     "start": 313.5,
-     "ende": 318.0,
+     "start": 320.3,
+     "ende": 324.8,
      "schritte": [
       {
        "szene": "entscheidungen",
@@ -1076,8 +1090,8 @@
      "nr": 3,
      "kern": false,
      "text": "vier Prozent wurden vertagt, ein Prozent abgelehnt.",
-     "start": 318.8,
-     "ende": 321.8,
+     "start": 325.6,
+     "ende": 328.6,
      "schritte": [
       {
        "szene": "entscheidungen",
@@ -1090,8 +1104,8 @@
      "nr": 4,
      "kern": true,
      "text": "Die Hälfte der Vorgänge war nach siebzehn Tagen entschieden.",
-     "start": 322.6,
-     "ende": 325.5,
+     "start": 329.4,
+     "ende": 332.3,
      "schritte": [
       {
        "szene": "entscheidungen",
@@ -1104,8 +1118,8 @@
      "nr": 5,
      "kern": false,
      "text": "Wo das Abstimmungsergebnis bekannt ist, waren fast neunundsechzig Prozent einstimmig.",
-     "start": 326.3,
-     "ende": 331.1,
+     "start": 333.1,
+     "ende": 337.9,
      "schritte": [
       {
        "szene": "entscheidungen",
@@ -1118,8 +1132,8 @@
      "nr": 6,
      "kern": false,
      "text": "Dabei zählen nur Vorgänge mit bekanntem Status, das sind einundvierzig Prozent der Einträge. Das zeigt Plenara offen an.",
-     "start": 331.9,
-     "ende": 339.1,
+     "start": 338.7,
+     "ende": 345.9,
      "schritte": [
       {
        "szene": "entscheidungen",
@@ -1134,15 +1148,15 @@
    "nr": 12,
    "id": "trends",
    "kapitel": "Neues früh erkennen",
-   "start": 340.2,
-   "ende": 362.4,
+   "start": 347.0,
+   "ende": 369.2,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Was kommt in Ihren Kommunen gerade auf?",
-     "start": 340.7,
-     "ende": 342.7,
+     "start": 347.5,
+     "ende": 349.4,
      "schritte": [
       {
        "szene": "trends",
@@ -1155,8 +1169,8 @@
      "nr": 2,
      "kern": false,
      "text": "Die Trendanalyse vergleicht die letzten neunzig Tage mit dem Zeitraum davor.",
-     "start": 343.5,
-     "ende": 347.4,
+     "start": 350.2,
+     "ende": 354.1,
      "schritte": [
       {
        "szene": "trends",
@@ -1169,8 +1183,8 @@
      "nr": 3,
      "kern": true,
      "text": "In der Trendkarte ist jeder Punkt ein Begriff: rechts häufiger, oben stärker gewachsen.",
-     "start": 348.2,
-     "ende": 352.7,
+     "start": 354.9,
+     "ende": 359.4,
      "schritte": [
       {
        "szene": "trends",
@@ -1183,8 +1197,8 @@
      "nr": 4,
      "kern": true,
      "text": "Die Rangliste zeigt zu jedem Begriff die Verlaufskurve und den Faktor des Anstiegs.",
-     "start": 353.5,
-     "ende": 358.0,
+     "start": 360.2,
+     "ende": 364.7,
      "schritte": [
       {
        "szene": "trends",
@@ -1197,8 +1211,8 @@
      "nr": 5,
      "kern": false,
      "text": "Auch die Themenfelder lassen sich vergleichen.",
-     "start": 358.8,
-     "ende": 361.3,
+     "start": 365.5,
+     "ende": 368.1,
      "schritte": [
       {
        "szene": "trends",
@@ -1213,15 +1227,15 @@
    "nr": 13,
    "id": "vergleich",
    "kapitel": "Orte vergleichen",
-   "start": 362.4,
-   "ende": 389.2,
+   "start": 369.2,
+   "ende": 395.9,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Wie steht Ihr Ort im Vergleich?",
-     "start": 362.9,
-     "ende": 364.9,
+     "start": 369.7,
+     "ende": 371.6,
      "schritte": [
       {
        "szene": "vergleich",
@@ -1234,8 +1248,8 @@
      "nr": 2,
      "kern": true,
      "text": "Der Gebietsvergleich stellt zwei bis vier Orte nebeneinander, hier Münster und Köln.",
-     "start": 365.7,
-     "ende": 370.4,
+     "start": 372.4,
+     "ende": 377.1,
      "schritte": [
       {
        "szene": "vergleich",
@@ -1248,8 +1262,8 @@
      "nr": 3,
      "kern": true,
      "text": "Sie vergleichen Themenprofil, Stand der Vorlagen und aktivste Gremien.",
-     "start": 371.2,
-     "ende": 375.3,
+     "start": 377.9,
+     "ende": 382.1,
      "schritte": [
       {
        "szene": "vergleich",
@@ -1262,8 +1276,8 @@
      "nr": 4,
      "kern": false,
      "text": "Dazu kommen typische und gemeinsame Begriffe.",
-     "start": 376.1,
-     "ende": 378.8,
+     "start": 382.9,
+     "ende": 385.5,
      "schritte": [
       {
        "szene": "vergleich",
@@ -1276,8 +1290,8 @@
      "nr": 5,
      "kern": false,
      "text": "Als Maßstab dienen alle Gebiete.",
-     "start": 379.6,
-     "ende": 381.5,
+     "start": 386.3,
+     "ende": 388.3,
      "schritte": [
       {
        "szene": "vergleich",
@@ -1290,8 +1304,8 @@
      "nr": 6,
      "kern": false,
      "text": "Die Zahlen zeigen, was im Bestand steht, nicht automatisch, wie aktiv die Politik vor Ort ist.",
-     "start": 382.3,
-     "ende": 388.1,
+     "start": 389.1,
+     "ende": 394.8,
      "schritte": [
       {
        "szene": "vergleich",
@@ -1306,15 +1320,15 @@
    "nr": 14,
    "id": "graph",
    "kapitel": "Zusammenhänge entdecken",
-   "start": 389.2,
-   "ende": 415.5,
+   "start": 395.9,
+   "ende": 422.3,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Womit hängt Wärmeplanung zusammen?",
-     "start": 389.7,
-     "ende": 391.6,
+     "start": 396.4,
+     "ende": 398.4,
      "schritte": [
       {
        "szene": "graph",
@@ -1327,8 +1341,8 @@
      "nr": 2,
      "kern": true,
      "text": "Der Knowledge Graph zeigt es als Netz aus verwandten Begriffen, Themenfeldern, Gremien und Ländern.",
-     "start": 392.4,
-     "ende": 398.0,
+     "start": 399.2,
+     "ende": 404.8,
      "schritte": [
       {
        "szene": "graph",
@@ -1341,8 +1355,8 @@
      "nr": 3,
      "kern": false,
      "text": "Die Knoten ziehen und anklicken können Sie selbst.",
-     "start": 398.8,
-     "ende": 401.7,
+     "start": 405.6,
+     "ende": 408.5,
      "schritte": [
       {
        "szene": "graph",
@@ -1355,8 +1369,8 @@
      "nr": 4,
      "kern": false,
      "text": "Auch Länder und Gremien sind Knoten, ein Klick zeigt Details.",
-     "start": 402.5,
-     "ende": 406.4,
+     "start": 409.3,
+     "ende": 413.2,
      "schritte": [
       {
        "szene": "graph",
@@ -1369,8 +1383,8 @@
      "nr": 5,
      "kern": true,
      "text": "So entdecken Sie Zusammenhänge, nach denen Sie nie gesucht hätten.",
-     "start": 407.2,
-     "ende": 410.4,
+     "start": 414.0,
+     "ende": 417.2,
      "schritte": [
       {
        "szene": "graph",
@@ -1383,8 +1397,8 @@
      "nr": 6,
      "kern": false,
      "text": "Eine Verbindung bedeutet gemeinsames Vorkommen, keine Ursache.",
-     "start": 411.2,
-     "ende": 414.4,
+     "start": 418.0,
+     "ende": 421.2,
      "schritte": [
       {
        "szene": "graph",
@@ -1399,15 +1413,15 @@
    "nr": 15,
    "id": "gremiennetz",
    "kapitel": "Den Weg durch die Gremien verstehen",
-   "start": 415.5,
-   "ende": 445.0,
+   "start": 422.3,
+   "ende": 451.8,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Welchen Weg nimmt ein Vorgang durch die Gremien?",
-     "start": 416.0,
-     "ende": 418.2,
+     "start": 422.8,
+     "ende": 425.0,
      "schritte": [
       {
        "szene": "gremiennetz",
@@ -1420,8 +1434,8 @@
      "nr": 2,
      "kern": true,
      "text": "Das Gremiennetz zeigt, wo Vorgänge beginnen, welche Gremien dazwischen liegen und wo sie entschieden werden.",
-     "start": 419.0,
-     "ende": 424.6,
+     "start": 425.8,
+     "ende": 431.4,
      "schritte": [
       {
        "szene": "gremiennetz",
@@ -1434,8 +1448,8 @@
      "nr": 3,
      "kern": false,
      "text": "Ausgewertet sind einhundertfünfundfünfzig Vorgänge, die durch mindestens zwei Gremien gingen.",
-     "start": 425.4,
-     "ende": 430.5,
+     "start": 432.2,
+     "ende": 437.3,
      "schritte": [
       {
        "szene": "gremiennetz",
@@ -1448,8 +1462,8 @@
      "nr": 4,
      "kern": true,
      "text": "Die Pfeile zeigen die Übergänge und wie lange ein Übergang dauert.",
-     "start": 431.3,
-     "ende": 434.6,
+     "start": 438.1,
+     "ende": 441.4,
      "schritte": [
       {
        "szene": "gremiennetz",
@@ -1462,8 +1476,8 @@
      "nr": 5,
      "kern": false,
      "text": "Darunter sehen Sie die Rollen im Netz: Einstieg, Durchlauf und Entscheidung.",
-     "start": 435.4,
-     "ende": 439.7,
+     "start": 442.2,
+     "ende": 446.4,
      "schritte": [
       {
        "szene": "gremiennetz",
@@ -1476,8 +1490,8 @@
      "nr": 6,
      "kern": false,
      "text": "So erkennen Sie, an welcher Stelle Sie sich in ein Thema einbringen können.",
-     "start": 440.5,
-     "ende": 443.9,
+     "start": 447.2,
+     "ende": 450.7,
      "schritte": [
       {
        "szene": "gremiennetz",
@@ -1492,15 +1506,15 @@
    "nr": 16,
    "id": "abschluss",
    "kapitel": "Jetzt selbst ausprobieren",
-   "start": 445.0,
-   "ende": 456.0,
+   "start": 451.8,
+   "ende": 462.8,
    "saetze": [
     {
      "nr": 1,
      "kern": false,
      "text": "Suchen Sie jetzt ein Thema, das für Sie wichtig ist.",
-     "start": 445.5,
-     "ende": 448.1,
+     "start": 452.3,
+     "ende": 454.8,
      "schritte": [
       {
        "szene": "abschluss",
@@ -1513,8 +1527,8 @@
      "nr": 2,
      "kern": true,
      "text": "Die Suche können Sie kostenlos nutzen.",
-     "start": 448.9,
-     "ende": 451.2,
+     "start": 455.6,
+     "ende": 457.9,
      "schritte": [
       {
        "szene": "abschluss",
@@ -1527,8 +1541,8 @@
      "nr": 3,
      "kern": true,
      "text": "Plenara. Besser verstehen, was vor Ort beraten wird.",
-     "start": 452.0,
-     "ende": 454.9,
+     "start": 458.7,
+     "ende": 461.7,
      "schritte": [
       {
        "szene": "abschluss",
@@ -1541,5 +1555,5 @@
   }
  ],
  "datei": "plenara-komplett.mp4",
- "dauer": 479.3
+ "dauer": 486.0
 }

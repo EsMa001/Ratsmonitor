@@ -3,7 +3,7 @@
  "icon": "landmark",
  "stichpunkte": [],
  "szenen": [
-  "einleitung"
+  "startseite"
  ],
  "vorteile": [
   1,
@@ -15,7 +15,7 @@
    "text": "{{v.1|text}}"
   },
   {
-   "satz": 3,
+   "satz": 4,
    "zahl": "{{t.entries|ziffern}}",
    "label": "Einträge"
   }
