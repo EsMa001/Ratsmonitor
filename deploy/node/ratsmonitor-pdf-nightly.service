@@ -1,0 +1,31 @@
+# Nächtliche Kette der PDF-Ablage (scripts/pdf-store/nightly.mjs): Hauptdokumente laden, Texte, OCR, Regel-Zusammenfassungen,
+# Fakten für plenara.X, Wortliste. Jede Stufe fasst nur Neues an; was nicht fertig wird, kommt in der nächsten Nacht.
+# Ablage, OCR-Werkzeuge und Sprachdaten: RM_PDF_STORE, OCR_TOOLS, OCR_CACHE aus der Umgebungsdatei.
+# Eine Sperre in der Ablage (nightly.lock) verhindert zwei Läufe; von Hand: systemctl start ratsmonitor-pdf-nightly.
+[Unit]
+Description=Ratsmonitor PDF-Ablage, nächtliche Kette
+After=network-online.target ratsmonitor.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+Nice=15
+IOSchedulingClass=idle
+TimeoutStartSec=4h
+ExecStart=/usr/bin/node --no-warnings scripts/pdf-store/nightly.mjs --minutes 180 --budget-gb 100 --ocr-workers 2
+MemoryHigh=6G
+MemoryMax=7G
+LimitNOFILE=65536
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes

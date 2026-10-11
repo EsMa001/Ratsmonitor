@@ -5,7 +5,10 @@
 //   node scripts/pdf-store/text.mjs --ocr [--workers 4] [--limit N]
 //                                                  Seiten ohne Textebene (unter MIN_CHARS Zeichen) per OCR lesen
 //   node scripts/pdf-store/text.mjs --stats        Stand der Textfassungen
-// OCR: tesseract.js (Deutsch) und @napi-rs/canvas aus ~/code/video-tools (VIDEO_TOOLS), Seiten mit OCR_SCALE gerendert.
+//   --max-minutes M: danach keine neue Datei mehr anfangen (nächtliche Kette, nightly.mjs); der nächste Lauf macht weiter.
+// OCR: tesseract.js (Deutsch) und @napi-rs/canvas aus OCR_TOOLS (Ordner mit node_modules; Standard VIDEO_TOOLS bzw.
+// ~/code/video-tools), Sprachdaten in OCR_CACHE (Standard <OCR_TOOLS>/cache/tesseract, beim ersten Lauf geladen),
+// Seiten mit OCR_SCALE gerendert.
 // Neue Fassung des Leseverfahrens: TEXT_VERSION erhöhen, dann liest der erste Aufruf alle Dateien neu.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -15,7 +18,8 @@ import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 export const TEXT_VERSION=1,MIN_CHARS=20,OCR_SCALE=2.5;
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
-const limit=Number(opt('limit',0));
+const limit=Number(opt('limit',0)),maxMinutes=Number(opt('max-minutes',0)),started=Date.now();
+const late=()=>maxMinutes>0&&Date.now()-started>maxMinutes*60000;
 const needsOcr=page=>page.replace(/\s+/g,'').length<MIN_CHARS;
 const elapsed=t0=>((Date.now()-t0)/1000).toFixed(0)+' s';
 
@@ -29,6 +33,7 @@ if(!flag('ocr')){
  const todo=store.textless(TEXT_VERSION).slice(0,limit||undefined),t0=Date.now();let ok=0,failed=0,waiting=0;
  console.log(`${todo.length} Dateien ohne Textfassung`);
  for(const sha of todo){
+  if(late()){console.log(`Zeitgrenze erreicht (${maxMinutes} min), Rest im nächsten Lauf`);break;}
   try{
    const pdf=await getDocumentProxy(new Uint8Array(fs.readFileSync(store.file(sha))),{isEvalSupported:false,verbosity:0});
    try{
@@ -43,11 +48,11 @@ if(!flag('ocr')){
  console.log(`fertig: ${ok} Textfassungen, ${failed} defekt, ${waiting} mit Seiten für OCR (${elapsed(t0)})`);
 }else{
  // OCR: nur Seiten ohne Textebene, jede Seite einzeln gerendert; die übrigen Seiten bleiben, wie pdf.js sie liest.
- const tools=process.env.VIDEO_TOOLS||os.homedir()+'/code/video-tools';
+ const tools=process.env.OCR_TOOLS||process.env.VIDEO_TOOLS||os.homedir()+'/code/video-tools',cache=process.env.OCR_CACHE||tools+'/cache/tesseract';
  const {createScheduler,createWorker}=await import(tools+'/node_modules/tesseract.js/src/index.js');
  const canvasImport=()=>import(tools+'/node_modules/@napi-rs/canvas/index.js');
  const workers=Number(opt('workers',4)),scheduler=createScheduler();
- for(let i=0;i<workers;i++)scheduler.addWorker(await createWorker('deu',1,{cachePath:tools+'/cache/tesseract'}));
+ for(let i=0;i<workers;i++)scheduler.addWorker(await createWorker('deu',1,{cachePath:cache}));
  const todo=store.ocrQueue().slice(0,limit||undefined),t0=Date.now();let files=0,pagesDone=0,failed=0;
  console.log(`${todo.length} Dateien mit Seiten ohne Textebene, ${workers} OCR-Worker`);
  const one=async sha=>{
@@ -63,7 +68,8 @@ if(!flag('ocr')){
   if((files+failed)%100===0)console.log(`${files+failed}/${todo.length} Dateien, ${pagesDone} Seiten, ${failed} Fehler, ${elapsed(t0)}`);
  };
  // Mehrere Dateien gleichzeitig, damit alle OCR-Worker zu tun haben.
- const queue=[...todo];await Promise.all(Array.from({length:workers},async()=>{while(queue.length)await one(queue.shift());}));
+ const queue=[...todo];await Promise.all(Array.from({length:workers},async()=>{while(queue.length&&!late())await one(queue.shift());}));
+ if(queue.length)console.log(`Zeitgrenze erreicht (${maxMinutes} min), ${queue.length} Dateien im nächsten Lauf`);
  await scheduler.terminate();
  console.log(`fertig: ${files} Dateien, ${pagesDone} Seiten per OCR, ${failed} Fehler (${elapsed(t0)})`);
 }

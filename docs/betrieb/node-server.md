@@ -86,6 +86,9 @@ journalctl -u ratsmonitor -f
 | `/etc/cron.d/ratsmonitor-search-words` | Wortliste der Suche nachführen, 4:15 Uhr; baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
+| `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
+| `/srv/ratsmonitor/ocr-tools/`, `data/ocr-cache/` | OCR-Werkzeuge (tesseract.js, @napi-rs/canvas) und Sprachdaten |
+| `/etc/systemd/system/ratsmonitor-pdf-nightly.*` | nächtliche Kette der PDF-Ablage, 05:30 Uhr; Vorlage `deploy/node/ratsmonitor-pdf-nightly.*` |
 
 Der Server startet nicht ohne gültige Datenbank. Sonst würden die Seiten still den mitgelieferten, alten Stand zeigen.
 
@@ -219,7 +222,7 @@ pausierter oder seit sechs Stunden unbewegter Auftrag wird dagegen beendet). Ein
 ein laufender Importprozess läuft mit seinem alten Stand zu Ende (`deploy.sh` meldet das). **Vor Migrationen** den
 Importprozess und beide Timer stoppen (Abschnitt „Migrationen“).
 
-## PDF-Ablage, Texte, Fakten: die Kette (Stand 11.10.2026, auf dem Server noch nicht eingerichtet)
+## PDF-Ablage, Texte, Fakten: die Kette (Stand 11.10.2026, auf dem Server noch nicht eingerichtet, die Ablage ist leer)
 
 Der Server erzeugt alles aus seinen eigenen PDFs; übertragen wird nichts. Jede Stufe liest nur, was die vorige
 abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Prüfsumme):
@@ -239,13 +242,33 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
 6. **Suche**: `refresh-search-words.mjs --full` nach Stufe 4 im Bestand (neue Zusammenfassungen ändern den Suchtext);
    im Import führt `runSync` die Wortliste und `rollCardDates` selbst nach.
 
-Einmal einrichten: `RM_PDF_STORE` in die Umgebung von Dienst und Importprozess, Migrationen `0024` und `0025`, dann
-1 bis 6 nacheinander. Danach nachts nach dem Import (Reihenfolge fest, jeder Schritt nur Neues): `fetch.mjs --months 1`,
-`text.mjs`, `text.mjs --ocr`, `summaries.mjs`, `facts.mjs`, `refresh-search-words.mjs`.
+**Einrichten** (einmal, als root; der Server hat noch keine PDFs, die Kette lädt sie selbst):
 
-Lücken, bevor das so läuft: Der Import legt das PDF ab, aber nicht den daraus gelesenen Text (Stufe 3 holt ihn nachts
-nach) und macht kein OCR; Berichte, deren Zusammenfassung schon versucht wurde, bekommen ihre Fakten nur über
-`facts.mjs`. Nach einer Änderung an `FACTS_VERSION` oder `TEXT_VERSION` die betroffenen Stufen von Hand anstoßen.
+1. Umgebung: `RM_PDF_STORE`, `OCR_TOOLS`, `OCR_CACHE` aus `deploy/node/ratsmonitor.env.example` in
+   `/srv/ratsmonitor/ratsmonitor.env` übernehmen. Ab dem nächsten Importlauf legt der Import jedes gelesene PDF ab.
+2. OCR-Werkzeuge außerhalb des Releases (sie gehören nicht zu den App-Paketen):
+   `mkdir -p /srv/ratsmonitor/ocr-tools && cd /srv/ratsmonitor/ocr-tools && npm install tesseract.js@7 @napi-rs/canvas &&
+   chown -R ratsmonitor:ratsmonitor /srv/ratsmonitor/ocr-tools`. Die Sprachdaten lädt der erste OCR-Lauf nach `OCR_CACHE`.
+3. Migrationen `0024` und `0025` (Abschnitt „Migrationen“).
+4. Einheiten: `cp deploy/node/ratsmonitor-pdf-nightly.service deploy/node/ratsmonitor-pdf-nightly.timer /etc/systemd/system/ &&
+   systemctl daemon-reload && systemctl enable --now ratsmonitor-pdf-nightly.timer`.
+
+**Nachts** (05:30, nach Import, Sicherung und Wortliste) führt `scripts/pdf-store/nightly.mjs` die Stufen 2 bis 6 in fester
+Reihenfolge aus, höchstens drei Stunden: Laden (bis 40 % der Zeit, Monat für Monat ab heute zurück, bis 100 GB), bei
+Überschreitung des Budgets die PDFs mit dem geringsten Wert je Byte löschen (Text bleibt), Textebene, OCR (die verbleibende
+Zeit bis auf 25 Minuten), Zusammenfassungen, Fakten, Wortliste. Was nicht fertig wird, macht die nächste Nacht weiter;
+eine Sperre (`nightly.lock` in der Ablage) verhindert zwei Läufe. Protokoll: `journalctl -u ratsmonitor-pdf-nightly`.
+Probe ohne Wirkung: `node scripts/pdf-store/nightly.mjs --dry-run`.
+
+**Wie lange der Aufbau dauert** (hochgerechnet aus dem lokalen Aufbau, 11.10.2026): Alle Hauptdokumente sind 65 bis 80 GB,
+etwa 300.000 bis 360.000 PDFs; lokal kamen 30 bis 60 PDFs je Sekunde, also einige Nächte Laden. Textebene lokal 87.600
+Dateien in 18 Minuten. OCR braucht etwa jede zwanzigste Datei, lokal einige Stunden für 4.600 Dateien: für den Bestand
+voraussichtlich mehrere Nächte bis Wochen; die genaue Rate steht nach dem ersten Lauf im Protokoll. Bis die Ablage gefüllt ist, stützen sich die Analysen auf Titel und die neu gelesenen
+Dokumente; das Förderradar braucht die Volltexte.
+
+Lücken: Der Import legt das PDF ab, aber nicht den daraus gelesenen Text (die Kette holt ihn nachts nach), und macht kein
+OCR; Berichte, deren Zusammenfassung schon versucht wurde, bekommen ihre Fakten nur über `facts.mjs`. Nach einer Änderung
+an `FACTS_VERSION` läuft das von selbst in der nächsten Nacht; nach `TEXT_VERSION` liest die Kette alle Texte neu (Nächte).
 
 ## Vor dem Öffnen für andere
 

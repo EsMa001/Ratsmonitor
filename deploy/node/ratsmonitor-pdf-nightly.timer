@@ -1,0 +1,13 @@
+# Täglich 05:30 Uhr Systemzeit, nach dem bundesweiten Import (01:00, spätestens gegen 05:00 fertig), der Sicherung (03:30) und
+# der Wortliste (04:15). Die Kette läuft höchstens drei Stunden (--minutes 180), also bis etwa 08:30.
+[Unit]
+Description=Ratsmonitor PDF-Ablage, täglich 05:30 Uhr
+
+[Timer]
+OnCalendar=*-*-* 05:30:00
+Persistent=false
+AccuracySec=1min
+Unit=ratsmonitor-pdf-nightly.service
+
+[Install]
+WantedBy=timers.target
