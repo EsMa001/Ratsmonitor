@@ -67,9 +67,6 @@ function build(answer,packet,line){
    if(DECIDED.test([v.k,...(v.l||[])].join(' '))&&!(article.events||[]).some(e=>e.result))warnings.push('Beschlussformulierung ohne Ergebnis in der Beratungsfolge');
   }else if(kind==='aiLabel'){
    result.aiLabel={status:'completed',primary:v.p,secondary:v.n||[],reason:v.g,evidence:(v.b||[]).map(ref),checks:checks(line.ok)};
-  }else if(kind==='keywords'){
-   const items=Array.isArray(v)?v:v.items;
-   result.keywords={status:'completed',items:items.map(([term,score,reason,id])=>({term,score,reason,evidence:ref(id)})),evidence:[ref(items[0][3])],checks:checks(line.ok)};
   }
  }
  // Auszüge: zusammenhängende zitierte Sätze zu einem Auszug, höchstens 1.600 Zeichen.
@@ -90,7 +87,7 @@ function build(answer,packet,line){
  return {result,warnings};
 }
 function triageResult(t,answer){
- const article=byId.get(t.id),kinds=article.kinds||job.kinds;
+ const article=byId.get(t.id),kinds=(article.kinds||job.kinds).filter(k=>AI_KINDS.includes(k));
  return {id:t.id,expectedPayloadHash:article.payloadHash,agent:answer.agent,model:answer.model,sources:[],usage:{basis:'measured',inputTokens:0,outputTokens:0},...Object.fromEntries(kinds.map(k=>[k,{status:t.s,reason:t.r}]))};
 }
 

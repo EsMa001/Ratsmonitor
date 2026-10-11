@@ -4,13 +4,13 @@ import {pipelineAction,selectedRegions,canImport,provider,PARALLEL,PER_PROVIDER}
 import {mergeJob} from '../shared/pipeline-job.mjs';
 import {createAiJob,previewAiJob,applyAiResults,cancelAiJob,getAiJob} from '../server/integrations/ai-jobs.mjs';
 import {processingStatus} from '../server/integrations/processing-status.mjs';
-import {keywordWeights,articleResult,AI_METHOD,LEGACY_AI_METHOD,sourceRole,needsQuickCheck} from '../shared/ai-job.mjs';
+import {articleResult,AI_METHOD,LEGACY_AI_METHOD,sourceRole,needsQuickCheck} from '../shared/ai-job.mjs';
 import {hashText} from '../shared/database-transfer.mjs';
 import {preserveArticleContent,analysisSignature} from '../shared/article-record.mjs';
 import {compactOparl,publicParticipants} from '../server/integrations/source-fields.mjs';
 function fixture(){const sql=new DatabaseSync(':memory:');for(const f of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())sql.exec(fs.readFileSync(new URL('../drizzle/'+f,import.meta.url),'utf8'));const db=sqliteAdapter(sql);const put=(id,region='billerbeck',extra={})=>{const t={id,regionId:region,title:'Schulbau',officialTitle:'Schulbau',status:'consulting',sourceUrl:'https://example.org/paper',documents:[],events:[],classification:{primary:'bildung',method:'title-rules-v2',version:'labels-v2',evidence:'Schulbau'},labelAssessments:{rule:{primary:'bildung',method:'rules'}},metadata:{firstImportedAt:'2026-09-01'},...extra};sql.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?)').run(id,region,'city','2026-09-27','2026-09-27','consulting',JSON.stringify(t));return t;};return {sql,db,put};}
 const checks=['source_read','process','numbers','neutrality'].map(name=>({name,passed:true}));
-async function output(job){const quote='Im Rat wird der Schulneubau beraten.',url='https://example.org/paper',e={url,quote};return {format:'ratsmonitor-ai-results-v1',jobId:job.id,articles:job.articles.map(a=>({id:a.id,expectedPayloadHash:a.payloadHash,agent:'Example Agent',model:'test-model',sources:[{url,hash:'a'.repeat(64),fetchedAt:'2026-09-27T19:00:00Z',excerpts:[quote]}],summary:{status:'completed',shortSummary:quote,longSummary:[quote],evidence:[e],checks},aiLabel:{status:'completed',primary:'bildung',secondary:[],reason:'Schulneubau',evidence:[e],checks},keywords:{status:'completed',items:Array.from({length:10},(_,i)=>({term:'Begriff '+i,score:1+i%5,reason:'Testbegründung',evidence:e})),evidence:[e],checks}}))};}
+async function output(job){const quote='Im Rat wird der Schulneubau beraten.',url='https://example.org/paper',e={url,quote};return {format:'ratsmonitor-ai-results-v1',jobId:job.id,articles:job.articles.map(a=>({id:a.id,expectedPayloadHash:a.payloadHash,agent:'Example Agent',model:'test-model',sources:[{url,hash:'a'.repeat(64),fetchedAt:'2026-09-27T19:00:00Z',excerpts:[quote]}],summary:{status:'completed',shortSummary:quote,longSummary:[quote],evidence:[e],checks},aiLabel:{status:'completed',primary:'bildung',secondary:[],reason:'Schulneubau',evidence:[e],checks}}))};}
 
 test('selection validates IDs, distinguishes districts, and covers the complete catalogue of all states',()=>{assert.equal(selectedRegions('all').length,427+440+4457);assert.ok(selectedRegions(['nds-033585401']).length===1);assert.ok(selectedRegions(['de-09162000']).length===1);
  // 'sources': every area with a connected source and no other.
@@ -45,21 +45,20 @@ test('rule labelling of the whole stock is one item: package after package behin
  job=await pipelineAction(db,{action:'create',stage:'analysis',regions:'all'},()=>{});job=await pipelineAction(db,{action:'step',id:job.id},()=>{throw Error('interrupted');});assert.equal(job.items[0].status,'queued');assert.equal(job.paused,true);
  const unchanged=await pipelineAction(db,{action:'create',stage:'metadata',regions:'all'},()=>{throw Error('must not run');}).catch(e=>e);assert.equal(unchanged.status,409);sql.close();
 });
-test('integer keyword allocation totals 100 and breaks ties consistently without filling missing terms',()=>{const items=Array.from({length:10},(_,i)=>({term:String(i),score:1+i%4}));const result=keywordWeights(items);assert.equal(result.reduce((n,k)=>n+k.weight,0),100);assert.ok(result.every(k=>Number.isInteger(k.weight)&&k.weight>0));assert.deepEqual(Object.fromEntries(result.map(k=>[k.term,k.weight])),Object.fromEntries(keywordWeights([...items].reverse()).map(k=>[k.term,k.weight])));assert.throws(()=>keywordWeights(items.slice(1)));assert.throws(()=>keywordWeights(items.map(i=>({...i,term:'same'}))));});
 test('AI job applies separate results atomically, preserves rules and owner, counts current state and repeats safely',async()=>{
  const {sql,db,put}=fixture();put('a');put('other','muenster');put('alias','billerbeck',{identity:{mergedInto:'a'}});sql.exec("INSERT INTO system_state VALUES('admin-owner-v1','local-owner')");
  const before=JSON.parse(sql.prepare("SELECT payload FROM topics WHERE id='a'").get().payload);
- const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel','keywords'],limit:10});assert.equal(job.articles.length,1);assert.ok(!JSON.stringify(job).includes('title-rules-v2'));
+ const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel'],limit:10});assert.equal(job.articles.length,1);assert.ok(!JSON.stringify(job).includes('title-rules-v2'));
  const result=await output(job);let receipt=await applyAiResults(db,job,result);assert.equal(receipt.applied,1);assert.equal(receipt.conflicts.length,0);
- const topic=JSON.parse(sql.prepare("SELECT payload FROM topics WHERE id='a'").get().payload);assert.deepEqual(topic.labelAssessments.rule,before.labelAssessments.rule);assert.deepEqual(topic.classification,before.classification);assert.equal(topic.weightedKeywords.items.reduce((n,i)=>n+i.weight,0),100);assert.equal(sql.prepare("SELECT value FROM system_state WHERE key='admin-owner-v1'").get().value,'local-owner');
- receipt=await applyAiResults(db,job,result);assert.equal(receipt.skipped,1);assert.equal(sql.prepare('SELECT count(*) n FROM article_analyses').get().n,3);assert.equal(sql.prepare('SELECT count(*) n FROM article_versions').get().n,1);
- const status=await processingStatus(db);const region=status.regions.find(r=>r.region_id==='billerbeck');assert.equal(region.total,1);for(const k of ['summary','aiLabel','keywords'])assert.equal(region[k],1,k);assert.ok(status.revision>0);sql.close();
+ const topic=JSON.parse(sql.prepare("SELECT payload FROM topics WHERE id='a'").get().payload);assert.deepEqual(topic.labelAssessments.rule,before.labelAssessments.rule);assert.deepEqual(topic.classification,before.classification);assert.equal(topic.weightedKeywords,undefined);assert.equal(sql.prepare("SELECT value FROM system_state WHERE key='admin-owner-v1'").get().value,'local-owner');
+ receipt=await applyAiResults(db,job,result);assert.equal(receipt.skipped,1);assert.equal(sql.prepare('SELECT count(*) n FROM article_analyses').get().n,2);assert.equal(sql.prepare('SELECT count(*) n FROM article_versions').get().n,1);
+ const status=await processingStatus(db);const region=status.regions.find(r=>r.region_id==='billerbeck');assert.equal(region.total,1);for(const k of ['summary','aiLabel'])assert.equal(region[k],1,k);assert.ok(status.revision>0);sql.close();
 });
 test('AI rejects invalid labels, evidence, tampering and stale snapshots; failures preserve good old summaries',async()=>{
  const {sql,db,put}=fixture();put('a','billerbeck',{shortSummary:'Gute alte Zusammenfassung',longSummary:['Bisheriger Text'],contentAnalysis:{status:'completed',evidence:[{}]}});
- const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel','keywords']});let result=await output(job);
+ const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel']});let result=await output(job);
  result.articles[0].aiLabel.primary='invented';await assert.rejects(applyAiResults(db,job,result),/Label/);assert.equal(sql.prepare('SELECT count(*) n FROM article_analyses').get().n,0);
- assert.deepEqual(job.articles[0].kinds,['aiLabel','keywords']); // Zusammenfassung ist schon vorhanden
+ assert.deepEqual(job.articles[0].kinds,['aiLabel']); // Zusammenfassung ist schon vorhanden
  result=await output(job);result.articles[0].aiLabel.evidence[0]={url:'https://evil.example',quote:'not read'};await assert.rejects(applyAiResults(db,job,result),/Beleg/);
  result=await output(job);sql.prepare("UPDATE topics SET payload=json_set(payload,'$.reference','new') WHERE id='a'").run();assert.deepEqual((await applyAiResults(db,job,result)).conflicts,['a']);assert.equal(sql.prepare('SELECT count(*) n FROM article_versions').get().n,0);
  await cancelAiJob(db,job.id);await assert.rejects(applyAiResults(db,job,result),/aktiv/);
@@ -80,13 +79,13 @@ test('AI job can take all of Germany and a look-back window like the import',asy
 });
 test('AI preview counts what a job with the same settings takes, without reserving anything',async()=>{
  const {sql,db,put}=fixture();put('a');put('b');put('c','muenster');put('alias','billerbeck',{identity:{mergedInto:'a'}});
- put('done','billerbeck',{weightedKeywords:{status:'completed'}});
+ put('done','billerbeck');
  const day=d=>new Date(Date.now()+d*86400000).toISOString().slice(0,10);sql.prepare('UPDATE topics SET event_date=? WHERE id=?').run(day(-40),'b');
- // A finished summary, and a blocked keyword attempt: both come with an analysis.
+ // A finished summary, and a blocked AI label attempt: both come with an analysis.
  const first=await createAiJob(db,{regions:['billerbeck'],kinds:['summary'],limit:1});const result=await output(first);await applyAiResults(db,first,result);
  const done=first.articles[0].id;
- sql.prepare("UPDATE topics SET payload=json_set(payload,'$.aiAttempts.keywords',json('{\"retry\":false}')) WHERE id=?").run(done);
- for(const body of [{regions:'all',kinds:['summary'],limit:'all'},{regions:'all',kinds:['summary','keywords'],limit:'all'},{regions:['billerbeck'],kinds:['keywords'],limit:'all'},{regions:['billerbeck'],kinds:['keywords'],limit:'all',retryBlocked:true},{regions:'all',window:'1m',kinds:['summary','aiLabel','keywords'],limit:'all'},{regions:'all',kinds:['summary'],limit:1}]){
+ sql.prepare("UPDATE topics SET payload=json_set(payload,'$.aiAttempts.aiLabel',json('{\"retry\":false}')) WHERE id=?").run(done);
+ for(const body of [{regions:'all',kinds:['summary'],limit:'all'},{regions:'all',kinds:['summary','aiLabel'],limit:'all'},{regions:['billerbeck'],kinds:['aiLabel'],limit:'all'},{regions:['billerbeck'],kinds:['aiLabel'],limit:'all',retryBlocked:true},{regions:'all',window:'1m',kinds:['summary','aiLabel'],limit:'all'},{regions:'all',kinds:['summary'],limit:1}]){
   const before=sql.prepare("SELECT count(*) n FROM ai_dispatches").get().n;
   const preview=await previewAiJob(db,body);assert.equal(sql.prepare("SELECT count(*) n FROM ai_dispatches").get().n,before,'preview reserves nothing');
   const job=await createAiJob(db,body);
@@ -108,7 +107,7 @@ test('source extraction retains public structured fields and does not copy priva
 
 test('generic jobs retain arbitrary agent provenance in storage, hashes and counters',async()=>{
  const {sql,db,put}=fixture();put('a');
- const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel','keywords']});
+ const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel']});
  assert.equal(job.method,AI_METHOD);assert.ok(!/claude/i.test(job.instructions));
  const result=await output(job);delete result.articles[0].agent;
  await assert.rejects(applyAiResults(db,job,result),/KI-Agenten/);
@@ -128,7 +127,7 @@ test('generic jobs retain arbitrary agent provenance in storage, hashes and coun
  }
  assert.equal(JSON.parse(sql.prepare('SELECT details FROM import_runs').get().details).mode,'ai-agent-analysis');
  assert.equal((await applyAiResults(db,job,result)).skipped,1);
- assert.equal((await processingStatus(db)).regions[0].keywords,1);sql.close();
+ assert.equal((await processingStatus(db)).regions[0].aiLabel,1);sql.close();
 });
 
 test('legacy results retain their original hashes and repeat without relabelling',async()=>{
@@ -161,7 +160,7 @@ test('limited exports rotate after cancellation and failed results, survive rest
   await applyAiResults(db,third,await output(third));
   const fourth=await createAiJob(db,request);assert.equal(fourth.articles[0].id,'a'); // oldest export, c is completed
   await cancelAiJob(db,fourth.id);
-  const otherKind=await createAiJob(db,{...request,kinds:['keywords']});assert.equal(otherKind.articles[0].id,'a'); // never exported for keywords
+  const otherKind=await createAiJob(db,{...request,kinds:['aiLabel']});assert.equal(otherKind.articles[0].id,'a'); // never exported for the AI label
  }finally{sql.close();}
 });
 test('all freezes more than 100 inputs in rows, pages downloads, and accepts idempotent partial results',async()=>{
@@ -395,7 +394,7 @@ test('the page follows a job through parallel requests: its merged answers equal
 
 test('agent usage, words and attachments are stored once per article; missing figures stay unknown',async()=>{
  const {sql,db,put}=fixture();put('a');put('b');
- const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel','keywords']});
+ const job=await createAiJob(db,{regions:['billerbeck'],kinds:['summary','aiLabel']});
  const result=await output(job);
  const [one,two]=result.articles;
  one.sources[0].words=1200;one.sources[0].kind='page';
@@ -419,7 +418,7 @@ test('exports request only missing steps and remember unsuccessful attempts unti
   const result=await output(first),fail=(a,status,reason)=>{a.summary={status,reason};a.aiLabel={status,reason};};
   for(const a of result.articles){if(a.id==='thin')fail(a,'insufficient_source','Nur Tagesordnung');if(a.id==='broken')fail(a,'failed','Abruf scheiterte');}
   const receipt=await applyAiResults(db,first,result);
-  assert.equal(receipt.applied,3);assert.equal(receipt.ignored,4); // nicht angeforderte Schritte werden nicht gespeichert
+  assert.equal(receipt.applied,3);assert.equal(receipt.ignored,1); // nicht angeforderte Schritte werden nicht gespeichert
   assert.equal(JSON.parse(sql.prepare("SELECT payload FROM topics WHERE id='done'").get().payload).shortSummary,'Fertig');
   // failed: ein weiterer Versuch; insufficient_source: keiner, solange die Quelldaten gleich bleiben
   const second=await createAiJob(db,all);assert.deepEqual(second.articles.map(a=>a.id),['broken']);assert.equal(second.blocked,1);

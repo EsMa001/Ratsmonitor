@@ -41,7 +41,6 @@ Ziel: jede Quelle nur einmal lesen, jeden Artikel nur einmal anfassen, nur ausge
 - Keine Regel-Labels als Antwortvorlage verwenden.
 - Zusammenfassung: neutrale deutsche Kurzfassung, rund 45 Wörter, höchstens 65. Langfassung normalerweise 120–220, höchstens 300 Wörter; bei wenig Inhalt kürzer. Keine erfundenen Beträge, Termine, Abstimmungen oder Beteiligungsmöglichkeiten.
 - KI-Label: genau ein Hauptlabel, höchstens zwei verschiedene Nebenlabels aus `labelCatalog`, jeweils kurz begründet. Kultur bleibt getrennt von Sport und Freizeit. Bei inhaltlicher Mehrdeutigkeit `unklar` mit Begründung.
-- Stichwörter: genau zehn unterschiedliche, spezifische Begriffe mit Inhaltsbeleg und Relevanzscore 1–5. Keine Synonyme als Auffüllung. Die Software berechnet daraus deterministisch positive ganzzahlige Gewichte mit Summe 100 (ein Basispunkt je Begriff, 90 proportional zum Score; größte Reste, Gleichstand nach normalisiertem Begriff). Sind keine zehn sinnvollen Begriffe belegbar, Quellenlücke begründen.
 - Für jedes abgeschlossene Ergebnis vier eigene Prüfungen dokumentieren: Quelle gelesen, Prozessstand, Zahlen, Neutralität. Diese Eigenprüfung ist keine unabhängige fachliche Freigabe; das System bewahrt diesen Unterschied.
 - Herkunft: tatsächlichen Agenten als `agent` und tatsächliches Modell als `model` angeben; Unbekanntes als `unknown`. Keine Modellversion oder Temperatur erfinden.
 - Kostenerfassung: je Quelle `words` (Wortzahl des gelesenen Textes) und `kind` (`page` oder `attachment`), je Artikel `usage` mit `basis` (`measured`, `estimated` oder `unknown`), `inputTokens`, `outputTokens`, optional `cachedTokens`. Ist nur der Verbrauch eines Pakets bekannt, ihn nach gelesener Wortzahl auf die Artikel verteilen und `basis: estimated` angeben. Ohne verlässliche Zahl `basis: unknown`; die Anwendung schätzt nichts nach. Die Werte landen in `ai_usage` (eine Zeile je Artikel) und werden mit `node scripts/ai-usage.mjs` ausgewertet.
@@ -81,7 +80,7 @@ Die Datei muss `format`, `jobId` und `articles` enthalten. Pro Artikel stehen `i
 }
 ```
 
-`aiLabel` nutzt dieselben `status`, `evidence` und `checks`, zusätzlich `primary`, `secondary` (Array) und `reason`. `keywords` nutzt dieselben Status-/Prüffelder und `items`: zehn Objekte mit `term`, `score` (Ganzzahl 1–5), `reason` und einem `evidence`-Objekt mit `url`, `quote`, optional `location`. Freie Gewichte werden nicht übernommen, sondern aus Scores berechnet. Nicht abgeschlossene Ergebnisse enthalten nur `status` und `reason`; keine erfundenen Inhaltsfelder.
+`aiLabel` nutzt dieselben `status`, `evidence` und `checks`, zusätzlich `primary`, `secondary` (Array) und `reason`. Nicht abgeschlossene Ergebnisse enthalten nur `status` und `reason`; keine erfundenen Inhaltsfelder.
 
 Prüfen, ohne Datenbank zu verändern:
 

@@ -36,7 +36,7 @@ async function importLease(db){
  if(!lock)throw new AdminError(409,'Ein Import oder eine Analyse läuft bereits.');
  return lease;
 }
-const ATTEMPT_KIND={summary:'summary','ai-label':'aiLabel',keywords:'keywords'};
+const ATTEMPT_KIND={summary:'summary','ai-label':'aiLabel'};
 /**
  * Erfolglose Agentenversuche aus der Zeit vor aiAttempts nachtragen: jeweils die neueste Analyse je Artikel und Schritt.
  * Passt sie nicht mehr zu den Quelldaten, bleibt der Schritt offen; der Eintrag verhindert nur erneutes Prüfen.

@@ -8,7 +8,7 @@ import {bodyBytes} from './body-bytes.mjs';
 import {parseRobots,robotsAllow} from './robots.mjs';
 import {obeyRobots} from './robots-policy.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
-import {htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
+import {SMALL_WORDS,htmlToLines,pdfLines,normalizeLine,parseSessionText,isSpecialPurposeBody,isNonPublicText,composeUmlauts,similarTitles,capsFix,truncatedText,meetingMoves,germanDates,committeeOf,parseItemLine} from './website-text.mjs';
 import {documentLinks,sessionScore,SESSION_THRESHOLD,paginationLinks,parseFeed,parseIcs,parseSitemap,wpEndpoints,parseWpPosts,parseWpMedia,jsonLdEvents,isRisLink,isSearchLink,pdfLinksOf,CMS_FILE_HOST} from './website-feeds.mjs';
 // Reader "website": what a municipality without a council system publishes on its own website about the meetings of
 // its bodies — notices with agenda (every Land requires them), reports and minutes, its gazette as PDF, and the outputs
@@ -178,7 +178,6 @@ const splitRunOn=line=>{
  const out=[];let prev=0;for(const m of at){const i=m.index+(/^\s/.test(m[0])?1:0);if(i>prev)out.push(s.slice(prev,i).trim());prev=i;}
  out.push(s.slice(prev).trim());return out.filter(Boolean);
 };
-const SMALL_WORDS=new Set('der die das des den dem und oder fuer von vom zur zum auf aus mit bei einer eines einem eine ein ueber im in am an zu nach sowie bzw'.split(' '));
 const stemsOf=t=>new Set(fold(t).split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!SMALL_WORDS.has(w)).map(w=>w.slice(0,6)));
 // One item in two wordings for the outcome: similar, and the words of one are all in the other.
 const sameItem=(a,b)=>{if(!similarTitles(a,b))return false;const x=stemsOf(a),y=stemsOf(b);return [...x].every(w=>y.has(w))||[...y].every(w=>x.has(w));};

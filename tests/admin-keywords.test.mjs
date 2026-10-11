@@ -15,7 +15,6 @@ function sqlite(topics){
 }
 const label=(primary,reason)=>({classification:{primary,reason}});
 const words=(primary,...found)=>label(primary,'Erkannte Sachbegriffe: '+found.join(', '));
-const profile=(items,extra={})=>({weightedKeywords:{status:'completed',items:items.map(([term,weight])=>({term,weight})),...extra}});
 test('keyword overview counts the words the label rules stored, once per report and spelling-insensitive',async()=>{
  const d=await adminKeywords(sqlite([
   words('bildung','Schul','Ganztag'),words('bildung','Schul'),words('bildung','schul','Schul'),words('bauen','Bebauungsplan'),
@@ -46,22 +45,9 @@ test('keyword overview ranks title terms and tells how many there are beyond the
  const short=await adminKeywords(db,{now,limit:2});
  assert.equal(short.listLimit,2);assert.deepEqual(short.titleTerms.terms.map(t=>t.term),['radweg','sanierung']);assert.equal(short.titleTerms.distinct,3);assert.equal(short.titleTerms.once,1);
 });
-test('keyword overview adds up AI keywords with their weights and keeps content profiles apart from the title test',async()=>{
- const d=await adminKeywords(sqlite([
-  profile([['Ganztag',60],['Schulhof',40]],{inputBasis:'content',method:'ai-agent-content-v1'}),
-  profile([['ganztag',100]],{method:'codex-title-keywords-v1'}),
-  profile([[' Ganztag ',30],['Haushalt',70]],{inputBasis:'content'}),
-  // The title changed after this profile was written: it no longer describes the report.
-  {weightedKeywords:{status:'stale',items:[{term:'Altlast',weight:100}]}},
-  {...profile([['Verborgen',100]]),identity:{mergedInto:'t0'}},
-  {},
- ]),{now});
- assert.deepEqual(d.ai.items,[
-  {term:'Ganztag',articles:3,weight:190,contentArticles:2,contentWeight:90},
-  {term:'Haushalt',articles:1,weight:70,contentArticles:1,contentWeight:70},
-  {term:'Schulhof',articles:1,weight:40,contentArticles:1,contentWeight:40}]);
- const {items:_,...figures}=d.ai;assert.deepEqual(figures,{profiles:3,content:2,stale:1,distinct:3,once:2,cut:false});
- // An empty database is an empty overview, not an error.
+test('keyword overview has no AI keywords any more and an empty database is an empty overview',async()=>{
+ const d=await adminKeywords(sqlite([{weightedKeywords:{status:'completed',items:[{term:'Ganztag',weight:100}]}}]),{now});
+ assert.equal(d.ai,undefined);assert.equal(d.articles,1);
  const empty=await adminKeywords(sqlite([]),{now});
- assert.equal(empty.articles,0);assert.deepEqual(empty.rule.words,[]);assert.deepEqual(empty.titleTerms.terms,[]);assert.deepEqual(empty.ai.items,[]);assert.equal(empty.ai.distinct,0);assert.equal(empty.titleTerms.distinct,0);
+ assert.equal(empty.articles,0);assert.deepEqual(empty.rule.words,[]);assert.deepEqual(empty.titleTerms.terms,[]);assert.equal(empty.titleTerms.distinct,0);
 });

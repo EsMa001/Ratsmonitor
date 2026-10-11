@@ -75,7 +75,7 @@ export function AdminDashboardView({initial}:{initial:AdminDashboard;displayName
    <section id="admin-qualitaet" className="admin-section">
     <Head id="qualitaet.inhalt"/><SectionHelp id="qualitaet.inhalt"/>
     <Figures items={[['Als KI-Text gekennzeichnet',data.counts.aiSummaries],['Ohne KI-Kennzeichnung',data.counts.online-data.counts.aiSummaries],['Mit PDF-Unterlage',data.counts.pdfArticles],['Textprüfung bestanden',data.counts.qualityPassed]]}/>
-    <Figures items={[['KI-Inhaltsanalyse abgeschlossen',data.counts.contentSummaries],['Zu wenig lesbarer Text',data.counts.summaryInsufficient],['KI-Analyse veraltet',data.counts.summaryStale],['KI-Sachgebiete (alle, auch Titeltest)',data.counts.aiLabels],['KI-Stichwortprofile (alle, auch Titeltest)',data.counts.weightedKeywords]]}/>
+    <Figures items={[['KI-Inhaltsanalyse abgeschlossen',data.counts.contentSummaries],['Zu wenig lesbarer Text',data.counts.summaryInsufficient],['KI-Analyse veraltet',data.counts.summaryStale],['KI-Sachgebiete (alle, auch Titeltest)',data.counts.aiLabels]]}/>
     <div className="admin-charts">
      <div><h3>{QUALITY_TEXT.sachgebiete}</h3><p className="admin-note mb-3">{QUALITY_TEXT.sachgebieteNotiz}</p>
       {data.labels.filter(l=>l.count>0).sort((a,b)=>b.count-a.count).map(l=><div className="admin-bar-row" key={l.id}><div><span>{l.name}</span><span>{n(l.count)} · {pct(l.count,data.counts.online)}</span></div><div className="admin-bar" aria-hidden="true"><span style={{width:(data.counts.online?100*l.count/data.counts.online:0)+'%'}}/></div></div>)}</div>

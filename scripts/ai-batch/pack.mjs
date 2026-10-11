@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {loadJob,runDir,cached,sentences,fold,words,writeJson,readJson,shingles,repeated,CONTENT_ROLES} from './lib.mjs';
+import {AI_KINDS} from '../../shared/ai-job.mjs';
 
 const args=process.argv.slice(2),opt=n=>{const i=args.indexOf('--'+n);return i<0?null:args[i+1]??true;};
 const job=loadJob(args[0]),dir=runDir(job);
@@ -134,8 +135,10 @@ for(const a of queue){
   for(const x of pick.shown)block.push(`[${no}.${x.i}] ${x.t.replace(/\s*\n\s*/g,' ')}`);
  }
  const hint=retry?.get(a.id);
- const head=[`## ${a.id}`,`Schritte: ${(a.kinds||job.kinds).join(',')}`,`Titel: ${a.title}`,events(a)?`Beratungsfolge: ${events(a)}`:null,`Quellen: ${refs.join(', ')}`,hint?`Hinweis: Die letzte Antwort zu diesem Artikel war ungültig (${hint.slice(0,200)}). Bitte Format und Regeln genau einhalten.`:null].filter(Boolean);
- cur.articles.push({id:a.id,kinds:a.kinds||job.kinds,words:aw,refs:refs.map(r=>Number(r.match(/\d+/)[0]))});
+ // Ältere Aufträge können noch Stichwörter verlangen: die erzeugt die KI nicht mehr
+ const kinds=(a.kinds||job.kinds).filter(k=>AI_KINDS.includes(k));
+ const head=[`## ${a.id}`,`Schritte: ${kinds.join(',')}`,`Titel: ${a.title}`,events(a)?`Beratungsfolge: ${events(a)}`:null,`Quellen: ${refs.join(', ')}`,hint?`Hinweis: Die letzte Antwort zu diesem Artikel war ungültig (${hint.slice(0,200)}). Bitte Format und Regeln genau einhalten.`:null].filter(Boolean);
+ cur.articles.push({id:a.id,kinds,words:aw,refs:refs.map(r=>Number(r.match(/\d+/)[0]))});
  cur.text.push(head.join('\n'),...block,'');
  cur.words+=aw;
  if(cur.words>=PACKET_WORDS||cur.articles.length>=PACKET_MAX)flush();

@@ -19,7 +19,6 @@ export interface TopicEvent {
 }
 export interface ContentEvidence {url:string;quote:string;location?:string}
 export interface ContentAnalysis {id:string;status:'completed'|'insufficient_source'|'failed'|'stale';method:string;generatedAt:string;inputHash:string;sourceSignature:string;basis:string;reason?:string;evidence:ContentEvidence[];sourceDocuments:{url:string;hash:string;fetchedAt:string}[];checks:{name:string;passed:boolean}[];reviewStatus:'not_independently_reviewed'|'reviewed'}
-export interface WeightedKeywords {inputBasis?:'title'|'content';status:'completed'|'stale';method:string;generatedAt:string;inputHash:string;basis:string;items:{term:string;weight:number;evidence?:ContentEvidence}[]}
 export interface ArticleMetadata {version:string;firstImportedAt:string|null;sourceModifiedAt:string|null;lastFetchedAt:string|null;lastProcessedAt:string|null}
 export interface QualityResult {
     passed: boolean;
@@ -55,7 +54,6 @@ export interface RuleSummary { version: number; generatedBy: string; generatedAt
 export interface TopicDetail extends TopicCard {
     metadata?:ArticleMetadata;
     contentAnalysis?:ContentAnalysis;
-    weightedKeywords?:WeightedKeywords;
     labelAssessments?:{rule?:Classification;ai?:Classification;review?:{primary:string;reviewer:string;reviewedAt:string;reason:string}};
     analysisFeatures?: {subjects:string[];terms:string[];version:string;evidence:string;analysedAt:string};
     identityState?: 'paper'|'unlinked'|'conflict';

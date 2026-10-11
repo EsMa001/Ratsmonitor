@@ -100,7 +100,7 @@ test('the overview reads the stored reports once; its figures per area equal the
  asked.length=0;const later=await loadAdminData(watched,{now:new Date('2026-10-30T13:00:00Z'),review:false});assert.equal(scans(),0);
  assert.equal(later.counts.updated7d,0);assert.equal(later.counts.online,5);assert.equal(changed.counts.updated7d,5);
  const muenster=full.sources.find(s=>s.id==='muenster').processing;assert.equal(muenster.total,3);assert.equal(muenster.stale,1);assert.equal(muenster.insufficient,1);assert.equal(muenster.fetchedAt,'2026-09-27T10:00:00Z');assert.equal(muenster.processedAt,'2026-09-27T11:00:00Z');
- assert.deepEqual(full.sources.find(s=>s.id==='borken').processing,{total:0,rules:0,summary:0,aiLabel:0,keywords:0,insufficient:0,stale:0,blocked_summary:0,blocked_aiLabel:0,blocked_keywords:0,fetchedAt:null,processedAt:null});
+ assert.deepEqual(full.sources.find(s=>s.id==='borken').processing,{total:0,rules:0,summary:0,aiLabel:0,insufficient:0,stale:0,blocked_summary:0,blocked_aiLabel:0,fetchedAt:null,processedAt:null});
 });
 test('the overview reads the figures per area, counts stale areas as pending and falls back to one scan without the tables',async()=>{
  reset();const at=new Date('2026-09-27T12:00:00Z');

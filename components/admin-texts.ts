@@ -15,7 +15,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  hochrechnung:{title:'Hochrechnung',intro:'Schätzt, wie viele Berichte alle kommunalen Gremien in Deutschland pro Tag erzeugen und wie viel Text das ist. Grundlage für die Abschätzung der KI-Kosten.'},
  social:{title:'Social Media',intro:'Schlägt je Tag bis zu drei Einzelfälle aus Orten vor, die polarisieren: Tempo 30, Windkraft, Bezahlkarte, Gebühren, Schließungen, Bürgerbegehren. Gefunden über feste Streitwörter im Titel, verstärkt durch Fraktionsanträge und den Status (abgelehnt oder vertagt zählt mehr). Zu jedem Vorschlag gibt es einen kurzen Textentwurf aus festen Satzvorlagen. Rein regelbasiert, ohne KI; schwache Tage bleiben leer.'},
  regeltexte:{title:'Regelbasierte Texte',intro:'Zeigt, bei wie vielen Artikeln die Zusammenfassung von der KI oder von festen Regeln stammt und wie die Themen-Labels zustande kamen. Die Seite zählt nur, was schon gespeichert ist.'},
- stichwoerter:{title:'Stichwörter',intro:'Zeigt, an welchen Wörtern die festen Regeln Sachgebiete erkennen, welche Begriffe in den Titeln stehen und welche Stichwörter die KI vergibt. Die Seite zählt nur, was schon gespeichert ist.'},
+ stichwoerter:{title:'Stichwörter',intro:'Zeigt, an welchen Wörtern die festen Regeln Sachgebiete erkennen und welche Begriffe in den Titeln stehen. Die Seite zählt nur, was schon gespeichert ist.'},
 };
 export const FOOT:Record<AdminPage,string>={
  todo:'Gespeichert wird in docs/todo/todos.json, nur am lokalen Dev-Server.',
@@ -163,8 +163,8 @@ export const HELP:Record<string,Help>={
    'Einträge: gelesene bzw. bearbeitete Berichte des Laufs.']},
  'qualitaet.export':{title:'Export und lokale Übernahme',sub:'Sichern Sie den Bestand als Datei oder übernehmen Sie einen geprüften Export lokal.'},
  'qualitaet.vollstaendig':{title:'Was ist wirklich gespeichert?',
-  sub:'Prüft je Bericht zwölf Pflichtangaben; vollständig ist ein Bericht, wenn alle erfüllt sind. Die Prüfung liest nur, sie erstellt keine Einordnung und keine KI-Texte.',
-  how:['Unbekannte Werte und Quellenlücken zählen nicht als vollständig. Anwesenheit bezieht sich auf die Sitzung, nicht auf einen einzelnen Tagesordnungspunkt. Zehn bloß aus Titeln abgeleitete Stichwörter erfüllen die Inhaltsanforderung nicht.'],
+  sub:'Prüft je Bericht elf Pflichtangaben; vollständig ist ein Bericht, wenn alle erfüllt sind. Die Prüfung liest nur, sie erstellt keine Einordnung und keine KI-Texte.',
+  how:['Unbekannte Werte und Quellenlücken zählen nicht als vollständig. Anwesenheit bezieht sich auf die Sitzung, nicht auf einen einzelnen Tagesordnungspunkt.'],
   todo:[{label:'Fehlende KI-Angaben: Stufe 03',href:href('abruf')},{label:'Fehlende Regel-Einordnung: Stufe 02',href:href('abruf')}]},
  'qualitaet.pruefung':{title:'Ist der Bestand in sich stimmig?',
   sub:'Vierzehn Prüfungen lesen den gespeicherten Bestand. Jede Prüfung läuft in Schritten, ihr Ergebnis bleibt gespeichert; nichts wird verändert oder zusammengeführt.',
@@ -185,8 +185,6 @@ export const HELP:Record<string,Help>={
   sub:'Wörter im Originaltitel, an denen die festen Regeln ein Sachgebiet erkannt haben, und in wie vielen Berichten sie stehen.'},
  'stichwoerter.titel':{title:'Welche Begriffe stehen in den Titeln?',
   sub:'Begriffe, in die eine zweite Regel jeden Titel zerlegt; sie verbinden Berichte verschiedener Gebiete zum selben Thema.'},
- 'stichwoerter.ki':{title:'Welche Stichwörter vergibt die KI?',
-  sub:'Gewichtete Stichwörter, die ein KI-Agent je Bericht vergeben hat; die Gewichte eines Berichts ergeben zusammen 100.'},
 };
 
 // ---- 6.11 Begriffe ------------------------------------------------------------------------------------------------
@@ -246,7 +244,6 @@ export const MAP_HELP:Record<string,string>={
  rules:'Anteil der Berichte des Gebiets, die diesen Schritt fertig haben. Schraffur: keine Berichte.',
  summary:'Anteil der Berichte des Gebiets, die diesen Schritt fertig haben. Schraffur: keine Berichte.',
  aiLabel:'Anteil der Berichte des Gebiets, die diesen Schritt fertig haben. Schraffur: keine Berichte.',
- keywords:'Anteil der Berichte des Gebiets, die diesen Schritt fertig haben. Schraffur: keine Berichte.',
 };
 /** Legendeneinträge und Namen der Kartenfarben. Die Stufen von reach, fresh und count kommen aus dem Code. */
 export const MAP_LEGEND={
@@ -259,7 +256,7 @@ export const MAP_LEGEND={
 } as const;
 export const MAP_NAME:Record<string,string>={
  coverage:'Zustand des letzten Abrufs',reach:'Rückreichweite',fresh:'Jüngste Sitzung',access:'Zugang (OParl, API, HTML, Sperren)',count:'Anzahl Berichte',
- rules:'Anteil nach Regeln bearbeitet',summary:'Anteil mit KI-Zusammenfassung',aiLabel:'Anteil mit KI-Sachgebiet aus dem Inhalt',keywords:'Anteil mit zehn KI-Stichwörtern',
+ rules:'Anteil nach Regeln bearbeitet',summary:'Anteil mit KI-Zusammenfassung',aiLabel:'Anteil mit KI-Sachgebiet aus dem Inhalt',
 };
 /** Zustände je Gebiet (Schlüssel = Text aus sourceHealth() in shared/admin.mjs). */
 export const STATE_HELP:Record<string,string>={
@@ -327,7 +324,6 @@ export const FIELD_HELP:Record<string,string>={
  originals:'Mindestens ein https-Link zur Quelle oder zu einer Unterlage.',
  ruleLabel:'Die festen Regeln haben den Bericht eingeordnet; auch „unklar“ zählt.',
  aiLabel:'Die KI hat ein eigenes Sachgebiet vergeben.',
- keywords:'Zehn Stichwörter aus dem Inhalt der Unterlagen, Gewichte zusammen 100.',
 };
 export const FIELD_FOOT='Vorhanden: Berichte, die die Angabe erfüllen. Offen: Berichte, denen sie fehlt.';
 export const QUALITY_EXPLAIN:Record<string,string>={
@@ -349,7 +345,6 @@ export const QUALITY_FIGURE_HELP:Record<string,string>={
  // geprüft: "stale" setzt article-record.mjs, wenn sich Titel, Verfahrensstand, Beratungen oder die verlinkten Unterlagen ändern (analysisSignature), nicht der Inhalt der Dateien.
  'KI-Analyse veraltet':'Titel, Verfahrensstand, Beratungen oder verlinkte Unterlagen des Berichts haben sich seit der KI-Analyse geändert.',
  'KI-Sachgebiete (alle, auch Titeltest)':'Von der KI vergebenes Sachgebiet, getrennt von dem der Regeln gespeichert.',
- 'KI-Stichwortprofile (alle, auch Titeltest)':'Gewichtete Stichwörter der KI, auch aus dem Titeltest.',
 };
 export const QUALITY_TEXT={
  sachgebiete:'Sachgebiete',
@@ -419,7 +414,6 @@ export const STUFEN={
  regelnKnopf:'Alle offenen Berichte einordnen',
  regelnAuswahl:(n:number|string,m:number|string)=>`Nur die Auswahl: ${n} offene Berichte in ${m} Gebieten`,
  ki:'Ein KI-Agent Ihrer Wahl liest die Originalunterlagen der Auswahl. Sie laden den Auftrag herunter, starten ihn selbst in Ihrem Projekt und lesen das Ergebnis hier wieder ein.',
- kiSchritte:['KI-Zusammenfassung','KI-Sachgebiet aus dem Inhalt','Zehn gewichtete Stichwörter'],
  kiSchrittZeile:(a:number|string,b:number|string,c:number|string)=>`${a} von ${b} gespeichert · ${c} ohne ausreichende Quelle`,
  kiQuelleTitel:'Was heißt „ohne ausreichende Quelle“?',
  kiQuelle:'Ein früherer Versuch fand zu wenig lesbaren Text, etwa nur einen Titel oder einen Scan. Diese Berichte werden erst wieder angefordert, wenn sich ihre Quelldaten ändern – oder mit dem Haken „erneut versuchen“, der nur nach einer Änderung am Verfahren sinnvoll ist.',
@@ -443,7 +437,6 @@ export const CONFIRM={
 export const ABRUF_TEXT={
  zeile:(uebernahme:string,versuch:string,von:string,bis:string)=>`Übernahme ${uebernahme} · Letzter Versuch ${versuch} · Sitzungen ${von} bis ${bis}`,
  verarbeitung:'Verarbeitung & Quellenhinweise',
- verarbeitungZeilen:['Nach Regeln bearbeitet','KI-Zusammenfassung','KI-Sachgebiet aus dem Inhalt','Zehn KI-Stichwörter aus dem Inhalt'],
  verarbeitungKlein:'Die drei KI-Zahlen zählen nur, was aus dem Inhalt der Unterlagen entstand; der frühere Titeltest zählt hier nicht.',
  // geprüft: issues machen einen Abruf unvollständig (complete = issues.length===0 …), warnings nicht (z. B. allris.mjs, citystates.mjs).
  hinweise:'Hinweise: Der Abruf meldet, dass etwas fehlt oder nicht gelesen wurde. Warnungen: Auffälligkeiten, die den Abruf nicht unvollständig machen.',
@@ -479,7 +472,6 @@ export const PROTOKOLL={
 export const TITLES={
  revision:'Revision: laufende Nummer des Datenbestands; sie steigt mit jedem Speichern, auch bei einem Abruf ohne neue Berichte.',
  token:'Token: Texteinheit, nach der KI-Anbieter abrechnen; meist ein Wortteil von wenigen Zeichen.',
- gewicht:'Gewichtssumme geteilt durch die Zahl der Berichte. Hoch heißt: Das Stichwort ist dort meist zentral.',
  uebernahme:'Der letzte Abruf, dessen Ergebnis gespeichert wurde.',
  versuch:'Der letzte Abruf überhaupt, auch wenn er scheiterte.',
  /** todo.ueberfaellig (12 px unter dem Fortschritt) */
@@ -509,7 +501,6 @@ export const STICHWOERTER_NOTES={
  berichte:'Doppelungen einmal gezählt',
  sachbegriffe:(n:number|string)=>`in ${n} Berichten · Wörter, an denen die Regeln ein Sachgebiet erkannt haben`,
  titelbegriffe:(n:number|string)=>`aus ${n} ausgewerteten Berichten · verbinden gleiche Themen über Gebiete hinweg`,
- ki:(n:number|string)=>`aus ${n} Stichwortprofilen`,
 };
 export const RAHMEN={
  anmelden:{title:'Geschützter Bereich',text:'Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.',knopf:'Mit ChatGPT anmelden'},

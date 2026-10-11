@@ -40,9 +40,9 @@ test('the triggers log the old search text of a replaced or deleted card with th
  add('a','Haushalt Plan Kormoran');assert.deepEqual(gone(raw),[]);
  const rowid=raw.prepare("SELECT rowid FROM search_cards WHERE id='a'").get().rowid;
  retitle('a','Nur noch Plan');
- assert.deepEqual(gone(raw),[{card_rowid:rowid,id:'a',search:'haushalt plan kormoran  rat  '}]);
- assert.equal(raw.prepare("SELECT search FROM search_cards WHERE id='a'").get().search,'nur noch plan  rat  ');
- remove('a');assert.equal(gone(raw).length,2);assert.equal(gone(raw)[1].search,'nur noch plan  rat  ');assert.equal(cards(raw),0);
+ assert.deepEqual(gone(raw),[{card_rowid:rowid,id:'a',search:'haushalt plan kormoran  rat'}]);
+ assert.equal(raw.prepare("SELECT search FROM search_cards WHERE id='a'").get().search,'nur noch plan  rat');
+ remove('a');assert.equal(gone(raw).length,2);assert.equal(gone(raw)[1].search,'nur noch plan  rat');assert.equal(cards(raw),0);
  /* an update that does not touch the search text (updated_at only) logs nothing */
  add('b','Biber am Damm');raw.prepare("UPDATE topics SET updated_at='2026-10-02T00:00:00Z' WHERE id='b'").run();assert.equal(gone(raw).length,2);
 });

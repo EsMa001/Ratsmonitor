@@ -16,7 +16,7 @@ const prices = existsSync(pricesFile) ? JSON.parse(readFileSync(pricesFile, 'utf
 
 const hasTable = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='ai_usage'").get();
 const rows = hasTable ? db.prepare('SELECT * FROM ai_usage').all() : [];
-const unknown = db.prepare(`SELECT count(*) n FROM topics WHERE (json_extract(payload,'$.summaryModel') IS NOT NULL OR json_extract(payload,'$.weightedKeywords.model') IS NOT NULL OR json_extract(payload,'$.labelAssessments.ai.model') IS NOT NULL)${hasTable ? ' AND id NOT IN (SELECT topic_id FROM ai_usage)' : ''}`).get().n;
+const unknown = db.prepare(`SELECT count(*) n FROM topics WHERE (json_extract(payload,'$.summaryModel') IS NOT NULL OR json_extract(payload,'$.labelAssessments.ai.model') IS NOT NULL)${hasTable ? ' AND id NOT IN (SELECT topic_id FROM ai_usage)' : ''}`).get().n;
 const r = summarizeUsage(rows, unknown, prices);
 
 const fmt = (n) => (n == null ? 'unbekannt' : n.toLocaleString('de-DE'));

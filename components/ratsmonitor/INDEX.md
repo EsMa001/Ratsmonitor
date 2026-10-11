@@ -549,10 +549,10 @@ topic design-styles.css:140
 - admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, TODO_AVAILABLE, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (129, ⚠16): AdminDashboardView
-- admin-estimate.tsx (355, ⚠52): AdminEstimate
+- admin-dashboard.tsx (129, ⚠15): AdminDashboardView
+- admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
-- admin-keywords.tsx (115, ⚠13): AdminKeywords
+- admin-keywords.tsx (103, ⚠10): AdminKeywords
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
@@ -561,15 +561,15 @@ topic design-styles.css:140
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
 - admin-rule-texts.tsx (52): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
-- admin-social.tsx (82): AdminSocial
+- admin-social.tsx (135): AdminSocial
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
 - admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (519, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
+- admin-texts.ts (510, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
-- article-analysis.tsx (17, ⚠6): ArticleAnalysis, SessionDetails
+- article-analysis.tsx (6, ⚠2): SessionDetails
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
 - notifications.tsx (10, ⚠3): Notifications
 - process-progress.tsx (8, ⚠1): ProcessProgress
@@ -699,7 +699,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (219, ⚠6): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (293, ⚠12): ComparePage
+- ComparePage.tsx (293, ⚠11): ComparePage
 - DecisionCharts.tsx (60): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (271, ⚠5): DiffusionPage
