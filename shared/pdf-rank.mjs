@@ -11,14 +11,14 @@
  *   Seiten, die noch auf OCR warten, zählen vorläufig mit OCR_PAGE_CHARS Zeichen (Mittel der per OCR gelesenen Vorlagen);
  *   nach der OCR gilt die echte Zahl, der Score wird bei jedem Lauf aus dem aktuellen Text gerechnet. Ohne lesbaren Text
  *   (Textebene fehlgeschlagen) zählt der Inhalt halb.
- * - Größe: voll bis FULL_BYTES, darüber mit der Kubikwurzel fallend; über der harten Grenze (MAX_BYTES, Vorlagen und
- *   Beschlüsse MAX_BYTES_PAPER) Score 0: die Datei bleibt nur als Text.
+ * - Größe: voll bis FULL_BYTES, darüber mit der Kubikwurzel fallend; über MAX_BYTES (für alle Dokumentarten, Entscheidung
+ *   12.10.2026) Score 0: die Datei bleibt nur als Text, das PDF wird gelöscht, sobald der Text vollständig ist.
  * Scan oder Textebene und Alter zählen nicht.
  */
 export const RANK_VERSION=2;
 export const TYPE_VALUE=Object.freeze({paper:1,decision:1,minutes:0.7,attachment:0.4,other:0.4,invitation:0.1});
-/** Größte Datei, die als PDF gespeichert wird; Vorlagen und Beschlüsse dürfen größer sein. */
-export const MAX_BYTES=10*1048576,MAX_BYTES_PAPER=30*1048576;
+/** Größte Datei, die als PDF gespeichert wird (alle Dokumentarten) */
+export const MAX_BYTES=10*1048576;
 export const FULL_CHARS=4000,FULL_BYTES=100*1024,OCR_PAGE_CHARS=800;
 
 /**
@@ -32,6 +32,6 @@ export function rankPdf(d){
  const chars=d.chars==null?null:d.chars+(d.ocrNeeded||0)*OCR_PAGE_CHARS;
  const content=chars==null?0.5:Math.min(1,Math.sqrt(chars/FULL_CHARS));
  const size=d.bytes<=FULL_BYTES?1:Math.cbrt(FULL_BYTES/d.bytes);
- const keep=d.bytes<=((type==='paper'||type==='decision')?MAX_BYTES_PAPER:MAX_BYTES);
+ const keep=d.bytes<=MAX_BYTES;
  return {score:keep?value*content*size:0,keep,content,size};
 }

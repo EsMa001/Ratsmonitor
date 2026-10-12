@@ -25,6 +25,8 @@ test('Aufträge: Reihe, gleiche Art nicht doppelt hintereinander, Entfernen, Obe
  await assert.rejects(requestPdfJob(db,'others'),new RegExp(`${QUEUE_MAX} Aufträge`));
  await removePdfJob(db,(await pdfStoreState(db)).jobs.queue.at(-1).id);
  assert.equal((await requestPdfJob(db,'texts')).jobs.queue.at(-1).kind,'texts','Auftrag „Texte erstellen“');
+ await removePdfJob(db,(await pdfStoreState(db)).jobs.queue.at(-1).id);
+ assert.equal((await requestPdfJob(db,'ocr')).jobs.queue.at(-1).kind,'ocr','Auftrag „OCR starten“');
  assert.equal((await pdfStoreState(db)).stats.linked,10);
 });
 

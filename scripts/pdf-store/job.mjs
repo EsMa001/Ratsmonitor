@@ -8,7 +8,8 @@
 //  - Den ältesten wartenden Auftrag starten (höchstens einen je Aufruf, der Dienst darf 4 Stunden laufen; der nächste kommt
 //    beim nächsten Aufruf dran): 'run' Kette wie nachts (nightly.mjs), 'retry' dazu mit erneutem Versuch der
 //    fehlgeschlagenen Abrufe, 'others' die übrigen PDFs (nightly.mjs --others), 'texts' nur Texte
-//    aus schon abgelegten PDFs ohne Text, mit OCR und Auswertung (nightly.mjs --texts). Läuft die nächtliche Kette (Sperre
+//    aus schon abgelegten PDFs ohne Text, mit OCR und Auswertung (nightly.mjs --texts), 'ocr' nur OCR und Auswertung
+//    (nightly.mjs --ocr-only). Läuft die nächtliche Kette (Sperre
 //    nightly.lock), wartet er. Während er läuft, alle 30 Sekunden Lebenszeichen und Wünsche „neu zählen“.
 // Angehalten wird ein Lauf über 'pdf-store-stop' (die Skripte prüfen das selbst, nightly.mjs endet dann mit Exit-Code 3) oder
 // per SIGTERM (systemctl stop); beides wird als „abgebrochen“ vermerkt.
@@ -87,7 +88,7 @@ if(running){
  console.log(`Auftrag ${running.kind} vom ${running.requestedAt} startet`);
  beat();
  const child=spawn(process.execPath,['--no-warnings','scripts/pdf-store/nightly.mjs','--kind',running.kind,'--minutes',opt('minutes','180'),'--budget-gb',opt('budget-gb','100'),
-  ...(running.kind==='retry'?['--retry-errors']:[]),...(running.kind==='others'?['--others']:[]),...(running.kind==='texts'?['--texts']:[]),...(args.includes('--dry-run')?['--dry-run']:[])],{cwd:root,stdio:'inherit',env:process.env});
+  ...(running.kind==='retry'?['--retry-errors']:[]),...(running.kind==='others'?['--others']:[]),...(running.kind==='texts'?['--texts']:[]),...(running.kind==='ocr'?['--ocr-only']:[]),...(args.includes('--dry-run')?['--dry-run']:[])],{cwd:root,stdio:'inherit',env:process.env});
  // Anhalten per Signal: an die Kette weitergeben, sie vermerkt den Lauf selbst als angehalten
  let signal='';for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{signal=sig;child.kill('SIGTERM');});
  const tick=setInterval(()=>{try{beat();jobs(j=>j.current?.id===running.id?{...j,current:{...j.current,updatedAt:now()}}:null);maybeCount();maybeDisk();}catch(e){console.error('Lebenszeichen:',e.message);}},30000);

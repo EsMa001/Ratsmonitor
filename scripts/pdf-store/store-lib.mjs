@@ -94,6 +94,13 @@ export function storeQuality(files,textOnly=[]){
   textOnly:{files:textOnly.length,avg:avg(textOnly)}};
 }
 export const rankedFile=(store,sha)=>{const f=store.db.prepare(FILES+' AND p.sha256=? GROUP BY p.sha256').get(sha);return f?ranked(f):null;};
+/** Zu große Datei (rankPdf keep:false) mit vollständigem Text: PDF löschen, Text bleibt (text.mjs gleich nach dem Lesen, der
+    Tausch beim nächsten Laden). Ein Scan wartet auf seine OCR (übrige PDFs nur Textebene). true, wenn gelöscht */
+export function dropIfTooBig(store,sha){
+ const f=rankedFile(store,sha);
+ if(!f||f.keep||f.chars==null||(f.ocrNeeded>0&&!f.other))return false;
+ store.dropPdf(sha);return true;
+}
 /** Platz der Textfassungen in Bytes (sie zählen mit in die Grenze und bleiben immer) */
 export const textBytes=store=>Number(store.db.prepare("SELECT COALESCE(SUM(chars),0) AS c FROM texts WHERE status='ok'").get().c)*1.05;
 /** Belegter Platz: PDFs und Texte */

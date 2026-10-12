@@ -315,12 +315,15 @@ getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dor
 
 **Texte erstellen** (Auftrag `texts`, `nightly.mjs --texts`): lädt nichts, liest die Textebene aller abgelegten PDFs ohne Text,
 danach OCR (nur Hauptdokumente), Zusammenfassungen, Fakten, Wortliste und Stand wie nachts. Die Kennzahl „PDFs ohne Text“
-(`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten.
+(`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten. **OCR starten** (Auftrag `ocr`, `nightly.mjs --ocr-only`):
+wie „Texte erstellen“, ohne Textebene. Ein von Hand gestarteter OCR-Dienst (`systemd-run`, Einheit `ratsmonitor-pdf-ocr`)
+hört nicht auf „Anhalten“; beenden mit `systemctl stop ratsmonitor-pdf-ocr`. Den Lauf der Aufträge selbst beendet
+`systemctl stop ratsmonitor-pdf-job` (der Dienst vermerkt den Auftrag als abgebrochen).
 
 **Score einer Datei** (`shared/pdf-rank.mjs`, Entscheidung 12.10.2026): 0 bis 100 % = Dokumentart (Vorlage und Beschluss 1,
 Niederschrift 0,7, Anlage und Sonstiges 0,4, Einladung 0,1) × Formalie (0,5, nicht bei Niederschriften) × Inhalt (voll ab
 4.000 Zeichen, darunter mit der Wurzel fallend; Seiten, die auf OCR warten, vorläufig 800 Zeichen) × Größe (voll bis 100 KB,
-darüber mit der Kubikwurzel fallend; über 10 MB, Vorlagen und Beschlüsse über 30 MB: 0, nur Text). Scan und Alter zählen nicht.
+darüber mit der Kubikwurzel fallend; über 10 MB für alle Dokumentarten: 0, nur Text; `text.mjs` löscht das PDF, sobald der Text vollständig ist, Scans gleich nach der OCR). Scan und Alter zählen nicht.
 Der Score wird bei jedem Lauf aus dem aktuellen Text gerechnet; nach der OCR gilt die echte Zeichenzahl.
 
 **Qualität der Ablage** (Abschnitt im Reiter, `quality` in `pdf-store-stats`, `storeQuality` in `store-lib.mjs`): Ø Score der

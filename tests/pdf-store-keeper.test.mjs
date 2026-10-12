@@ -89,3 +89,24 @@ test('feste Regel: übrige PDFs stehen immer unter Hauptdokumenten',async()=>{
   await k.close();
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('zu große Datei: PDF weg, sobald der Text vollständig ist (dropIfTooBig)',async()=>{
+ const {dropIfTooBig}=await import('../scripts/pdf-store/store-lib.mjs');
+ const {MAX_BYTES}=await import('../shared/pdf-rank.mjs');
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-keeper-'));
+ const store=openPdfStore(dir);
+ try{
+  const url='https://x.test/gross',small='https://x.test/klein';
+  store.put(url,pdf('Gross'),{docType:'paper',formal:false});store.put(small,pdf('Klein'),{docType:'paper',formal:false});
+  const sha=store.entry(url).sha256;
+  store.db.prepare('UPDATE pdfs SET bytes=? WHERE url=?').run(MAX_BYTES+1,url);
+  assert.equal(dropIfTooBig(store,sha),false,'ohne Text bleibt das PDF');
+  store.putText(sha,['Seite eins mit Text.','x'],{method:'text',version:1,ocrNeeded:1});
+  assert.equal(dropIfTooBig(store,sha),false,'Scan-Seite wartet auf OCR');
+  store.putText(sha,['Seite eins mit Text.','Seite zwei per OCR gelesen.'],{method:'mixed',version:1,ocrNeeded:0});
+  assert.equal(dropIfTooBig(store,sha),true);
+  assert.equal(store.entry(url).status,'text-only');
+  const s2=store.entry(small).sha256;store.putText(s2,['Kleine Vorlage.'],{method:'text',version:1});
+  assert.equal(dropIfTooBig(store,s2),false,'unter 10 MB bleibt das PDF');
+ }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
+});

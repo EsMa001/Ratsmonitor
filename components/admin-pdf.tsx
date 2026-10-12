@@ -17,13 +17,13 @@ type Stats={at:string;seconds:number;linked:number;allPdfs:number;loaded:number;
  texts:{files:number;ocrWaiting:number;ocrPages?:number;missing?:number;linked?:number;complete?:number};summaries?:{withText:number;done:number};
  others?:{linked:number;loaded:number;textOnly:number;failed:number;open:number;openBlocked?:number;withText:number;scans:number;reasons:Reason[];completeThrough?:string|null};
  quality?:Quality;months?:{primary:MonthRow[];others:MonthRow[]};hosts?:{total:number;blocked:number;top:Host[]};errorsCsv?:{rows:number}};
-type Job={id:string;kind:'run'|'retry'|'others'|'texts';state:string;requestedAt:string;startedAt?:string;finishedAt?:string;exit?:number|string};
+type Job={id:string;kind:'run'|'retry'|'others'|'texts'|'ocr';state:string;requestedAt:string;startedAt?:string;finishedAt?:string;exit?:number|string};
 type Progress={kind?:string;startedAt?:string;until?:string;step?:string;at:string;
  fetch?:{what:string;month:string;monthOpen:number;done:number;ok:number;unsupported:number;error:number;rate:number;bytes:number};
  text?:{done:number;total:number;failed:number;waiting:number};ocr?:{done:number;total:number;pages:number;failed:number;workers:number;perHour:number|null}};
 type Data={stats:Stats|null;jobs:{queue:Job[];current:Job|null;recent:Job[]};progress:{chain:Progress|null;ocr:Progress|null};runs:Run[];
  stop:{chain?:{requestedAt:string};ocr?:{requestedAt:string}};count:{requestedAt:string;startedAt?:string;finishedAt?:string;ok?:boolean}|null;worker:boolean;error?:string};
-const JOB:Record<string,string>={run:'Lauf starten',retry:'Fehlgeschlagene erneut versuchen',others:'Übrige PDFs laden',texts:'Texte erstellen'};
+const JOB:Record<string,string>={run:'Lauf starten',retry:'Fehlgeschlagene erneut versuchen',others:'Übrige PDFs laden',texts:'Texte erstellen',ocr:'OCR starten'};
 
 /** Fortschritt eines Vorgangs in einem Satz */
 function progressText(p:Progress){
@@ -91,9 +91,10 @@ export function AdminPdf(){
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'retry'})}>Fehlgeschlagene erneut versuchen →</button>
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'others'})}>Übrige PDFs laden →</button>
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'texts'})}>Texte erstellen →</button>
+    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'ocr'})}>OCR starten →</button>
     <button type="button" className={textBtn} disabled={!canAct||!!data?.count&&!data.count.finishedAt} onClick={()=>post({action:'count'})}>{data?.count&&!data.count.finishedAt?(data.count.startedAt?'Wird gezählt …':'Zählen angefordert …'):'Stand neu zählen →'}</button>
    </div>
-   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Kette wie nachts (neue und noch nicht versuchte Hauptdokumente, Text, OCR, Auswertung).':k==='retry'?'wie „Lauf starten“, dazu fehlgeschlagene Abrufe und ausgelassene Server.':k==='texts'?'nichts laden; Text aus schon abgelegten PDFs ohne Text, dann OCR und Auswertung wie nachts.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Jeder Lauf höchstens 3 Stunden; ist einer aktiv, wartet der nächste. „Stand neu zählen“ geht auch während eines Laufs (etwa eine Minute).</p>
+   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Kette wie nachts (neue und noch nicht versuchte Hauptdokumente, Text, OCR, Auswertung).':k==='retry'?'wie „Lauf starten“, dazu fehlgeschlagene Abrufe und ausgelassene Server.':k==='texts'?'nichts laden; Text aus schon abgelegten PDFs ohne Text, dann OCR und Auswertung wie nachts.':k==='ocr'?'nur Seiten ohne Text per OCR lesen (Hauptdokumente), dann Auswertung.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Jeder Lauf höchstens 3 Stunden; ist einer aktiv, wartet der nächste. „Stand neu zählen“ geht auch während eines Laufs (etwa eine Minute).</p>
   </section>
 
   {/* B. Hauptdokumente */}
@@ -176,7 +177,7 @@ export function AdminPdf(){
      value:s?`${pct(s.loaded+s.textOnly,s.linked)} geladen`:undefined},
     {icon:'scale',title:'Bewerten und Grenze',what:'Jede neue Datei wird sofort bewertet. Ist die Grenze erreicht, verdrängt sie die am schlechtesten bewertete Datei, wenn sie besser ist; sonst bleibt sie selbst nur als Text.',
      rules:['Score 0 bis 100 % = Dokumentart × Formalie × Inhalt × Größe','Dokumentart: Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1; Formalie halber Wert','Inhalt voll ab 4.000 Zeichen Text (Seiten, die auf OCR warten, vorläufig 800 Zeichen); Größe voll bis 100 KB, darüber langsam fallend','Scan oder Textebene und Alter zählen nicht','Übrige PDFs stehen immer unter allen Hauptdokumenten','Vor dem Löschen eines PDFs ist sein Text vollständig (Scans vorher per OCR)'],
-     limits:[`Feste Grenze ${s?.budgetGb??100} GB für PDFs und Texte zusammen`,'Über 10 MB nur Text; Vorlagen und Beschlüsse bis 30 MB'],
+     limits:[`Feste Grenze ${s?.budgetGb??100} GB für PDFs und Texte zusammen`,'Über 10 MB nur Text (alle Dokumentarten); das PDF wird gelöscht, sobald der Text vollständig ist (Scans nach der OCR)'],
      value:s?`${gb(s.bytes.used)} von ${s.budgetGb} GB`:undefined},
     {icon:'text',title:'Text lesen',what:'Die Textebene jedes PDFs wird gleich beim Laden gelesen und als Textfassung neben dem PDF abgelegt; sie bleibt auch, wenn das PDF gelöscht wird.',
      rules:['Seiten mit weniger als 20 Zeichen gelten als Scan und warten auf OCR','Übrige PDFs: nur Textebene'],

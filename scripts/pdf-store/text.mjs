@@ -12,10 +12,12 @@
 // Schritt der Nachtkette, während ein langer Lauf von Hand läuft) endet sofort, statt dieselben Seiten noch einmal zu lesen.
 // Lesen und OCR je Datei: store-lib.mjs (auch für den Tausch in fetch.mjs). Neue Fassung des Leseverfahrens: TEXT_VERSION
 // dort erhöhen, dann liest der erste Aufruf alle Dateien neu.
+// Zu große Dateien (über 10 MB, shared/pdf-rank.mjs) verlieren ihr PDF, sobald ihr Text vollständig ist (dropIfTooBig): ohne
+// Scan-Seiten gleich nach der Textebene, sonst gleich nach der OCR.
 import fs from 'node:fs';
 import path from 'node:path';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile} from './store-lib.mjs';
+import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,dropIfTooBig} from './store-lib.mjs';
 import {progress,stopRequested,stepSummary,lane} from './state.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
@@ -41,17 +43,17 @@ if(flag('stats')){
 
 if(!flag('ocr')){
  // Textebene: Text je Seite wie unpdf getPageText (Textstücke, Zeilenende bei hasEOL).
- const todo=store.textless(TEXT_VERSION).slice(0,limit||undefined),t0=Date.now();let ok=0,failed=0,waiting=0;
+ const todo=store.textless(TEXT_VERSION).slice(0,limit||undefined),t0=Date.now();let ok=0,failed=0,waiting=0,dropped=0;
  console.log(`${todo.length} Dateien ohne Textfassung`);
  for(const sha of todo){
   if(late()){console.log(halted?'Rest im nächsten Lauf':`Zeitgrenze erreicht (${maxMinutes} min), Rest im nächsten Lauf`);break;}
-  try{if(await readTextLayer(store,sha))waiting++;ok++;}
+  try{if(await readTextLayer(store,sha))waiting++;ok++;if(dropIfTooBig(store,sha))dropped++;}
   catch(e){store.failText(sha,e.message,{version:TEXT_VERSION});failed++;}
   if((ok+failed)%2000===0)console.log(`${ok+failed}/${todo.length}, ${failed} defekt, ${waiting} mit Seiten für OCR, ${elapsed(t0)}`);
   tell({step:'Textebene',text:{done:ok+failed,total:todo.length,failed,waiting}});
  }
- console.log(`fertig: ${ok} Textfassungen, ${failed} defekt, ${waiting} mit Seiten für OCR (${elapsed(t0)})`);
- stepSummary({files:ok,failed,waiting,open:todo.length-ok-failed,stopped:halted});
+ console.log(`fertig: ${ok} Textfassungen, ${failed} defekt, ${waiting} mit Seiten für OCR, ${dropped} zu große PDFs gelöscht (${elapsed(t0)})`);
+ stepSummary({files:ok,failed,waiting,dropped,open:todo.length-ok-failed,stopped:halted});
  if(!chained)progress(myLane,null);
 }else{
  // OCR: nur Seiten ohne Textebene, jede Seite einzeln gerendert; die übrigen Seiten bleiben, wie pdf.js sie liest.
@@ -63,10 +65,10 @@ if(!flag('ocr')){
  process.on('exit',release);for(const sig of ['SIGINT','SIGTERM'])process.on(sig,()=>{release();process.exit(1);});
  const workers=Number(opt('workers',4)),ocr=await ocrScheduler(workers);
  if(!ocr){console.error('OCR-Werkzeuge fehlen (OCR_TOOLS).');process.exit(1);}
- const todo=store.ocrQueue().slice(0,limit||undefined),t0=Date.now();let files=0,pagesDone=0,failed=0;
+ const todo=store.ocrQueue().slice(0,limit||undefined),t0=Date.now();let files=0,pagesDone=0,failed=0,dropped=0;
  console.log(`${todo.length} Dateien mit Seiten ohne Textebene, ${workers} OCR-Worker`);
  const one=async sha=>{
-  try{pagesDone+=await ocrFile(store,sha,ocr);files++;}
+  try{pagesDone+=await ocrFile(store,sha,ocr);files++;if(dropIfTooBig(store,sha))dropped++;}
   catch(e){failed++;console.error('OCR',sha.slice(0,12),e.message);}
   if((files+failed)%100===0)console.log(`${files+failed}/${todo.length} Dateien, ${pagesDone} Seiten, ${failed} Fehler, ${elapsed(t0)}`);
   const h=(Date.now()-t0)/3600000;
@@ -77,8 +79,8 @@ if(!flag('ocr')){
  const queue=[...todo];await Promise.all(Array.from({length:workers},async()=>{while(queue.length&&!late())await one(queue.shift());}));
  if(queue.length)console.log(`${halted?'Angehalten':`Zeitgrenze erreicht (${maxMinutes} min)`}, ${queue.length} Dateien im nächsten Lauf`);
  await ocr.terminate();
- console.log(`fertig: ${files} Dateien, ${pagesDone} Seiten per OCR, ${failed} Fehler (${elapsed(t0)})`);
- stepSummary({files,pages:pagesDone,failed,open:queue.length,seconds:Math.round((Date.now()-t0)/1000),stopped:halted});
+ console.log(`fertig: ${files} Dateien, ${pagesDone} Seiten per OCR, ${failed} Fehler, ${dropped} zu große PDFs gelöscht (${elapsed(t0)})`);
+ stepSummary({files,pages:pagesDone,failed,dropped,open:queue.length,seconds:Math.round((Date.now()-t0)/1000),stopped:halted});
  if(!chained)progress(myLane,null);
 }
 store.close();

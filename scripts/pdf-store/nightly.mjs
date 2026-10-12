@@ -17,6 +17,7 @@
 // Zeit bis auf 15 min. Dieselbe Sperre: nie zugleich mit dem normalen Lauf.
 // --texts (Auftrag „Texte erstellen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann OCR,
 // Zusammenfassungen, Fakten, Wortliste und Stand wie nachts (OCR nur Hauptdokumente).
+// --ocr-only (Auftrag „OCR starten“): wie --texts, aber ohne Textebene: OCR mit der ganzen Zeit bis auf die Reserve.
 // Admin-Reiter (state.mjs): Fortschritt je Schritt (die Schritte schreiben ihren eigenen jede Minute dazu), Protokoll des Laufs
 // am Ende ('pdf-store-runs', höchstens 50 Läufe, mit Zeit und Zusammenfassung je Schritt), Anhalten vor jedem Schritt (die
 // Schritte selbst prüfen jede Minute); angehalten endet der Lauf mit Exit-Code 3. --kind: Art im Protokoll (job.mjs setzt sie).
@@ -24,7 +25,7 @@
 // der Exit-Code ist dann 1. Zeit: --minutes (Standard 180) für alles; Laden höchstens --fetch-share (0.4) davon, OCR bekommt,
 // was bis auf --reserve (25 min für 5 bis 7) übrig ist.
 //
-//   node scripts/pdf-store/nightly.mjs [--minutes 180] [--budget-gb 100] [--months 240] [--ocr-workers 2] [--retry-errors] [--start-month JJJJ-MM] [--others|--texts] [--kind nightly|run|retry|others|texts] [--dry-run]
+//   node scripts/pdf-store/nightly.mjs [--minutes 180] [--budget-gb 100] [--months 240] [--ocr-workers 2] [--retry-errors] [--start-month JJJJ-MM] [--others|--texts|--ocr-only] [--kind nightly|run|retry|others|texts|ocr] [--dry-run]
 // Umgebung: DATABASE_FILE (Server), RM_PDF_STORE (Ablage), OCR_TOOLS/OCR_CACHE (text.mjs).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -84,8 +85,8 @@ function finish(result){
  progress('chain',null);
 }
 
-const others=flag('others'),texts=!others&&flag('texts');
-say(`Start${others?' (übrige PDFs)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
+const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&(ocrOnly||flag('texts'));
+say(`Start${others?' (übrige PDFs)':ocrOnly?' (nur OCR)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
 if(!texts)step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare))),'--report-mb','1000']);
 if(!texts&&sizeGb()>budgetGb){
  step('Rang nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
@@ -103,7 +104,7 @@ if(others){
  step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
  end();
 }
-step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-reserve)))]);
+if(!ocrOnly)step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-reserve)))]);
 const ocr=Math.floor(left()-reserve);
 if(ocr>=5||stopped)step('OCR','scripts/pdf-store/text.mjs',['--ocr','--workers',String(ocrWorkers),'--max-minutes',String(ocr)]);
 else{say(`OCR übersprungen (nur ${Math.max(0,ocr)} min übrig)`);steps.push({name:'OCR',seconds:0,ok:true,summary:{skipped:`nur ${Math.max(0,ocr)} min übrig`}});}

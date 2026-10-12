@@ -82,7 +82,7 @@ test('rankPdf: one score 0..1 from type, formal, text amount and size; too large
  for(const d of [{},{chars:10},{bytes:MAX_BYTES},{type:'invitation'}])assert.ok(r(d).score>=0&&r(d).score<=1);
  assert.equal(r({type:'attachment',bytes:MAX_BYTES+1}).keep,false);
  assert.equal(r({type:'attachment',bytes:MAX_BYTES+1}).score,0);
- assert.equal(r({bytes:MAX_BYTES+1}).keep,true);
+ assert.equal(r({bytes:MAX_BYTES+1}).keep,false,'über 10 MB auch Vorlagen nur Text');
  assert.equal(r({type:'nonsense'}).score,r({type:'other'}).score);
 });
 

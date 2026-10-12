@@ -114,8 +114,8 @@ function stepText(s:RunStep){
  const x=s.summary||{};
  if(typeof x.skipped==='string')return 'übersprungen: '+x.skipped;
  if(s.name==='Laden'){const k=(x.keeper||{}) as Record<string,number>;return `${n(num(x.ok))} geladen, ${n(num(x.error))} Fehler${x.keeper?`; Grenze: ${n(k.kept)} behalten, ${n(k.swapped)} verdrängt, ${n(k.rejected)} nicht besser`:''}${x.lastMonth?`; bis ${month(String(x.lastMonth))}`:''}`;}
- if(s.name==='OCR')return `${n(num(x.files))} Dateien, ${n(num(x.pages))} Seiten${num(x.open)?`, ${n(num(x.open))} offen`:''}`;
- if(s.name==='Textebene')return `${n(num(x.files))} Dateien${num(x.waiting)?`, ${n(num(x.waiting))} mit Seiten für OCR`:''}`;
+ if(s.name==='OCR')return `${n(num(x.files))} Dateien, ${n(num(x.pages))} Seiten${num(x.open)?`, ${n(num(x.open))} offen`:''}${num(x.dropped)?`, ${n(num(x.dropped))} zu große PDFs gelöscht`:''}`;
+ if(s.name==='Textebene')return `${n(num(x.files))} Dateien${num(x.waiting)?`, ${n(num(x.waiting))} mit Seiten für OCR`:''}${num(x.dropped)?`, ${n(num(x.dropped))} zu große PDFs gelöscht`:''}`;
  if(s.name==='Zusammenfassungen')return `${n(num(x.summaries))} neue von ${n(num(x.withText))} mit Text`;
  return '';
 }
