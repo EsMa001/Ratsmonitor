@@ -8,7 +8,7 @@
  *  - 'schedule-now'   je Job „jetzt einmal ausführen“ (Zeitpunkt des Wunsches)
  * Uhrzeiten gelten in deutscher Zeit (Europe/Berlin), in 10-Minuten-Schritten (so oft fragen die Auslöser).
  */
-export const SCHEDULES_KEY='schedules',SCHEDULE_RUNS_KEY='schedule-runs',SCHEDULE_NOW_KEY='schedule-now';
+export const SCHEDULES_KEY='schedules',SCHEDULE_RUNS_KEY='schedule-runs',SCHEDULE_NOW_KEY='schedule-now',SCHEDULE_STOP_KEY='schedule-stop';
 export const ZONE='Europe/Berlin',STEP_MIN=10;
 /** Ein täglicher Job, der zur Zeit nicht laufen konnte (Server aus), wird so lange danach noch nachgeholt */
 export const CATCH_UP_MS=3*3600000;
@@ -95,14 +95,23 @@ export function nextRun(job,setting,run,now=Date.now()){
 
 /** Alle Jobs mit Einstellung, letztem Lauf, nächstem Start (nur lesen) */
 export async function schedulesState(db,now=Date.now()){
- const {results}=await db.prepare('SELECT key,value FROM system_state WHERE key IN (?,?,?)').bind(SCHEDULES_KEY,SCHEDULE_RUNS_KEY,SCHEDULE_NOW_KEY).all();
+ const {results}=await db.prepare('SELECT key,value FROM system_state WHERE key IN (?,?,?,?)').bind(SCHEDULES_KEY,SCHEDULE_RUNS_KEY,SCHEDULE_NOW_KEY,SCHEDULE_STOP_KEY).all();
  const by=new Map(results.map(r=>[r.key,parse(r.value)]));
- const saved=by.get(SCHEDULES_KEY)||{},runs=by.get(SCHEDULE_RUNS_KEY)||{},asked=by.get(SCHEDULE_NOW_KEY)||{};
+ const saved=by.get(SCHEDULES_KEY)||{},runs=by.get(SCHEDULE_RUNS_KEY)||{},asked=by.get(SCHEDULE_NOW_KEY)||{},stops=by.get(SCHEDULE_STOP_KEY)||{};
  return {jobs:JOBS.map(({cmd,...job})=>{const setting=settingOf(job,saved),run=runs[job.id]||null;
-  return {...job,setting,run,now:asked[job.id]||null,next:(n=>n&&new Date(n).toISOString())(nextRun(job,setting,run,now))};}),
+  return {...job,setting,run,now:asked[job.id]||null,stop:stops[job.id]||null,next:(n=>n&&new Date(n).toISOString())(nextRun(job,setting,run,now))};}),
   managed:Object.keys(runs).length>0};
 }
 
+/** Laufenden Job anhalten: Wunsch vermerken ('schedule-stop', für die Anzeige „wird angehalten“); angehalten wird auf dem
+    Server über die Auslöser-Datei stop-<job> (job-trigger.mjs, deploy/node/ratsmonitor-stop-*.path → systemctl stop) */
+export async function requestScheduleStop(db,id,now=new Date()){
+ if(!JOBS.some(j=>j.id===id))throw Object.assign(Error('Unbekannter Job.'),{status:400});
+ const row=await db.prepare('SELECT value FROM system_state WHERE key=?').bind(SCHEDULE_STOP_KEY).first();
+ const next={...(parse(row?.value)||{}),[id]:now.toISOString()};
+ await db.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').bind(SCHEDULE_STOP_KEY,JSON.stringify(next)).run();
+ return {requestedAt:next[id]};
+}
 /** Einstellung ändern: {enabled?, time?, every?} */
 export async function setSchedule(db,id,{enabled,time,every}={}){
  const job=JOBS.find(j=>j.id===id);if(!job)throw Object.assign(Error('Unbekannter Job.'),{status:400});

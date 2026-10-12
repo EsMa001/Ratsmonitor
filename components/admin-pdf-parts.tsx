@@ -7,6 +7,8 @@ import {Icon} from '@/components/admin-icons';
 export const n=(v?:number|null)=>(v??0).toLocaleString('de-DE');
 export const pct=(a:number,b:number)=>b?(Math.round((a/b)*1000)/10).toLocaleString('de-DE')+' %':'–';
 export const gb=(b?:number|null)=>b==null?'–':(b/1073741824).toLocaleString('de-DE',{maximumFractionDigits:1})+' GB';
+/** Größe mit passender Einheit (KB, MB, GB), für kleine Dateien neben großen */
+export const size=(b?:number|null)=>b==null?'–':b<1048576?`${Math.max(1,Math.round(b/1024)).toLocaleString('de-DE')} KB`:b<1073741824?`${(b/1048576).toLocaleString('de-DE',{maximumFractionDigits:1})} MB`:gb(b);
 export const when=(d?:string|null)=>d?new Date(d).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'–';
 export const clock=(d?:string|null)=>d?new Date(d).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'–';
 export const day=(d?:string|null)=>d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4):'–';

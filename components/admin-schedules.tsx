@@ -8,7 +8,7 @@ import {when,clock,dur} from '@/components/admin-pdf-parts';
    selbst laufen, mit Schalter, Zeit, letztem und nächstem Lauf; oben der Tagesablauf der nächtlichen Jobs. */
 type Setting={enabled:boolean;time?:string;every?:number};
 type RunInfo={lastStart?:string;lastEnd?:string;seconds?:number;exit?:number|string;result?:'ok'|'failed'|'stopped';skipped?:boolean;trigger?:string;running?:{pid:number;startedAt:string}|null};
-type Job={id:string;label:string;icon:string;time?:string;every?:number;what:string;steps:string[];limits?:string;warn?:string;setting:Setting;run:RunInfo|null;now:string|null;next:string|null};
+type Job={id:string;label:string;icon:string;time?:string;every?:number;what:string;steps:string[];limits?:string;warn?:string;setting:Setting;run:RunInfo|null;now:string|null;stop:string|null;next:string|null};
 type Data={jobs:Job[];managed:boolean;error?:string};
 const EVERY=[10,20,30,60,120];
 /* Übliche Dauer, solange noch kein Lauf vermerkt ist (Minuten) */
@@ -101,6 +101,9 @@ export function AdminSchedules(){
         <select value={j.setting.every} disabled={busy===j.id} onChange={e=>post({action:'set',id:j.id,every:Number(e.target.value)})} className="h-9 rounded-lg border border-slate-300 px-2">{EVERY.map(m=><option key={m} value={m}>{m<60?`${m} Minuten`:`${m/60} ${m===60?'Stunde':'Stunden'}`}</option>)}</select></label>}
       <p><Status job={j}/></p>
       <p className="text-slate-500">{j.setting.enabled&&j.next?`Nächster Start ${when(j.next)}`:'Startet nicht von selbst'}</p>
+      {j.run?.running&&(j.stop&&j.stop>j.run.running.startedAt?<span className="text-[14px] text-slate-500">wird angehalten …</span>
+       :<button type="button" className="text-[14px] font-medium text-slate-900 hover:text-teal-700 disabled:opacity-40" disabled={busy===j.id}
+        onClick={()=>post({action:'stop',id:j.id},`„${j.label}“ jetzt anhalten? Der laufende Job endet sofort; was er schon erledigt hat, bleibt.${j.warn?' '+j.warn:''}`)}>Anhalten</button>)}
       <button type="button" className="text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40" disabled={busy===j.id||!!j.run?.running||!!j.now&&(!j.run?.lastStart||j.now>j.run.lastStart)}
        onClick={()=>post({action:'now',id:j.id},`„${j.label}“ jetzt einmal ausführen? Er startet sofort.`)}>{j.now&&(!j.run?.lastStart||j.now>j.run.lastStart)?'Start angefordert …':'Jetzt ausführen →'}</button>
      </div>

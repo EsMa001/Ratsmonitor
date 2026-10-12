@@ -320,6 +320,17 @@ systemctl daemon-reload
 systemctl enable --now ratsmonitor-backup.timer ratsmonitor-search-words.timer ratsmonitor-import.path ratsmonitor-import-nightly.path ratsmonitor-pdf-job.path ratsmonitor-pdf-nightly.path ratsmonitor-backup.path ratsmonitor-search-words.path
 ```
 
+**Anhalten** (Knopf je laufendem Job im Reiter „Jobs & Zeitpläne“, seit 12.10.2026): schreibt `trigger/stop-<job>` und
+`schedule-stop` (Anzeige „wird angehalten“); `ratsmonitor-stop-<job>.path` startet `ratsmonitor-stop@<job>.service` (als root),
+das `systemctl stop ratsmonitor-<job>.service` ausführt; der Zeitplaner vermerkt den Lauf als angehalten. Einrichten (einmal):
+
+```bash
+cd /srv/ratsmonitor/app/current
+cp deploy/node/ratsmonitor-stop@.service deploy/node/ratsmonitor-stop-*.path /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now ratsmonitor-stop-import.path ratsmonitor-stop-import-nightly.path ratsmonitor-stop-pdf-job.path ratsmonitor-stop-pdf-nightly.path ratsmonitor-stop-backup.path ratsmonitor-stop-search-words.path
+```
+
 Von Hand, unabhängig vom Schalter: `systemd-run --unit ratsmonitor-pdf-job-now --uid=ratsmonitor --gid=ratsmonitor -p
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env -p WorkingDirectory=/srv/ratsmonitor/app/current /usr/bin/node --no-warnings
 scripts/schedule.mjs pdf-job --force` (Job-Name austauschbar).

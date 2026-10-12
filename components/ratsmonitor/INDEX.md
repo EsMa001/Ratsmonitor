@@ -557,18 +557,18 @@ topic design-styles.css:140
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
-- admin-pdf-parts.tsx (165, ⚠4): n, pct, gb, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
+- admin-pdf-parts.tsx (167, ⚠4): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
 - admin-pdf.tsx (250, ⚠18): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (243, ⚠25): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
 - admin-rule-texts.tsx (52): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
-- admin-schedules.tsx (112, ⚠4): AdminSchedules
+- admin-schedules.tsx (115, ⚠4): AdminSchedules
 - admin-social.tsx (135, ⚠1): AdminSocial
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
-- admin-storage.tsx (121, ⚠9): AdminStorage
+- admin-storage.tsx (124, ⚠9): AdminStorage
 - admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
 - admin-texts.ts (516, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline

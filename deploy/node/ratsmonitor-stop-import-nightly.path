@@ -1,0 +1,11 @@
+# Anhalten aus der Administration (server/integrations/job-trigger.mjs, triggerStop): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/stop-import-nightly, systemd hält dann ratsmonitor-import-nightly.service an (ratsmonitor-stop@.service).
+[Unit]
+Description=Ratsmonitor: import-nightly anhalten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/stop-import-nightly
+Unit=ratsmonitor-stop@import-nightly.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+# Anhalten aus der Administration (server/integrations/job-trigger.mjs, triggerStop): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/stop-backup, systemd hält dann ratsmonitor-backup.service an (ratsmonitor-stop@.service).
+[Unit]
+Description=Ratsmonitor: backup anhalten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/stop-backup
+Unit=ratsmonitor-stop@backup.service
+
+[Install]
+WantedBy=multi-user.target

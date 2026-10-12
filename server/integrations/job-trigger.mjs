@@ -13,16 +13,18 @@ export function triggerDir(env=globalThis.process?.env||{}){
  return db&&db.includes('/')?db.slice(0,db.lastIndexOf('/')+1)+'trigger':'';
 }
 
+/** Laufenden Job sofort anhalten (Datei stop-<job>, ratsmonitor-stop-<job>.path hält den Dienst an) */
+export const triggerStop=(id,env)=>triggerJob(id,env,'stop-');
 /** Job sofort anstoßen; true, wenn die Auslöser-Datei geschrieben wurde. Fehler (kein Ordner, keine Rechte) zählen nicht:
     der Wunsch steht schon in der Datenbank, der Timer holt ihn spätestens nach 10 Minuten. */
-export async function triggerJob(id,env){
+export async function triggerJob(id,env,prefix=''){
  if(!TRIGGER_JOBS.includes(id))return false;
  const dir=triggerDir(env);
  if(!dir)return false;
  try{
   const fs=await import(/* @vite-ignore */ 'node:fs/promises');
   await fs.mkdir(dir,{recursive:true});
-  await fs.writeFile(`${dir}/${id}`,new Date().toISOString()+'\n');
+  await fs.writeFile(`${dir}/${prefix}${id}`,new Date().toISOString()+'\n');
   return true;
  }catch{return false;}
 }

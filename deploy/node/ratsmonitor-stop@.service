@@ -1,0 +1,9 @@
+# Laufenden Job anhalten (Admin-Reiter „Jobs & Zeitpläne“, Knopf „Anhalten“): ausgelöst von ratsmonitor-stop-<job>.path,
+# hält ratsmonitor-<job>.service samt allen Unterprozessen an; der Zeitplaner (scripts/schedule.mjs) vermerkt den Lauf als
+# angehalten. Läuft als root, weil nur root Dienste anhalten darf; tut nichts anderes.
+[Unit]
+Description=Ratsmonitor: Job %i anhalten
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl stop ratsmonitor-%i.service

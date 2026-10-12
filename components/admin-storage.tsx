@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
 import {adminHref} from '@/components/admin-chrome';
 import {Icon} from '@/components/admin-icons';
-import {n,gb,when,dur} from '@/components/admin-pdf-parts';
+import {n,gb,size,when,dur} from '@/components/admin-pdf-parts';
 
 /* Reiter „Speicher & Sicherungen“ (server/integrations/server-storage.mjs, Route /api/admin/speicher): was auf der Festplatte
    des Servers wie viel Platz belegt und welche Sicherungen es gibt. Gemessen von scripts/server-disk.mjs auf dem Server. */
@@ -45,7 +45,9 @@ export function AdminStorage(){
   finally{setBusy(false);}
  };
  const d=data?.disk,disk=d?.disk,v=<T,>(f:(x:Disk)=>T):T|string|undefined=>d?f(d):data?'–':undefined;
- const dbMain=d?.database.files.find(f=>f.kind==='Datenbank')?.bytes||0,dbBackups=d?.backups.list.filter(b=>b.kind==='Datenbank')||[];
+ const dbMain=d?.database.files.find(f=>f.kind==='Datenbank')?.bytes||0,dbBackups=d?.backups.list.filter(b=>!!b.kind?.startsWith('Datenbank'))||[];
+ // In der Liste nur Datenbankkopien (auch ungepackte und unfertige); Protokolle und Skripte im Ordner nur als Summe
+ const copies=d?.backups.list.filter(b=>b.kind!=='Sonstiges')||[],rest=d?.backups.list.filter(b=>b.kind==='Sonstiges')||[];
  const textBtn='text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40';
  return <>
   <AdminPageHead page="speicher">
@@ -93,14 +95,15 @@ export function AdminStorage(){
   <section className="mt-12" aria-label="Sicherungen">
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="shield" className="text-teal-600"/>Sicherungen</h2>
    <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Nächtliche Kopie der Datenbank, geprüft und mit zstd gepackt (Job „Datensicherung“, <Link href={adminHref('zeitplaene')} className="text-teal-600">Jobs & Zeitpläne →</Link>). Es liegen nie mehr als 2 Kopien auf der Platte: vor einer neuen wird die älteste gelöscht. Während einer neuen braucht die ungepackte Kopie vorübergehend so viel Platz wie die Datenbank. Programmstände sind keine Sicherung der Daten; sie kommen aus Git.</p>
-   {d&&(d.backups.list.length?<ol className="m-0 mt-3 max-w-[820px] list-none border-t border-slate-200 p-0">
-    {d.backups.list.map(b=><li key={b.name} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5 text-[14px] sm:grid-cols-[minmax(0,1fr)_140px_90px]">
+   {d&&(copies.length?<ol className="m-0 mt-3 max-w-[820px] list-none border-t border-slate-200 p-0">
+    {copies.map(b=><li key={b.name} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-2.5 text-[14px] sm:grid-cols-[minmax(0,1fr)_140px_90px]">
      <span className="min-w-0 break-all">{b.name}{b.kind!=='Datenbank'&&<span className="ml-2 text-[12px] text-slate-500">{b.kind}</span>}</span>
      <span className="tabular-nums text-slate-500 max-sm:order-3">{when(b.at)}</span>
-     <b className="text-right font-semibold tabular-nums">{gb(b.bytes)}</b>
+     <b className="text-right font-semibold tabular-nums">{size(b.bytes)}</b>
     </li>)}
    </ol>:<p className="mt-3 flex gap-2 text-[14px] font-medium text-slate-900"><Icon name="alert" size={18}/>Keine Sicherung gefunden in {d.backups.dir}.</p>)}
    {d&&dbBackups.length>0&&<p className="mt-2 text-[14px] text-slate-700">{n(dbBackups.length)} Datenbank-{dbBackups.length===1?'Kopie':'Kopien'}, zusammen {gb(dbBackups.reduce((a,b)=>a+b.bytes,0))}; neueste vom {when(dbBackups[0].at)}.{dbBackups[0].at&&Date.now()-Date.parse(dbBackups[0].at)>36*3600000?' Älter als anderthalb Tage: Job „Datensicherung“ prüfen.':''}</p>}
+   {d&&rest.length>0&&<p className="mt-2 text-[14px] text-slate-500">Dazu {n(rest.length)} weitere Dateien im Ordner (Protokolle, Skripte), zusammen {size(rest.reduce((a,b)=>a+b.bytes,0))}.</p>}
    {d&&d.backups.env.length>0&&<p className="mt-2 text-[14px] text-slate-500">Dazu {n(d.backups.env.length)} Sicherungen der Einstellungsdatei (zusammen {gb(d.backups.env.reduce((a,b)=>a+b.bytes,0))}).</p>}
   </section>
 
