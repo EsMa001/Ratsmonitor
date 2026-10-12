@@ -310,7 +310,7 @@ function Methodik({ group }: { group?: AnalyseGruppe }) {
   );
 }
 
-/** Übersicht einer Gruppe (plenara.X Tools, Politik oder Finanzen) */
+/** Übersicht einer Gruppe (plenara.X Tools oder Themen) */
 export function AnalyticsGroupPage({ group }: { group: Exclude<AnalyseGruppe, "atlas"> }) {
   const g = GRUPPEN[group];
   return (
@@ -346,7 +346,7 @@ export function AnalyticsAbout() {
         </div>
       </PageBand>
 
-      {(["tool", "politik", "finanzen"] as const).map((group, gi) => (
+      {(["tool", "themen"] as const).map((group, gi) => (
         <section key={group} id={gi ? group : "analysen"} className="scroll-mt-24">
           <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2 className="text-[28px] font-semibold">{GRUPPEN[group].name}</h2>
@@ -364,7 +364,7 @@ export function AnalyticsAbout() {
           <h2 className="text-[28px] font-semibold">plenara.X Atlas</h2>
           <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-600">Zum plenara.X Atlas →</Link>
         </div>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was gebaut und geplant wird, alle Themen auf einer Karte: Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales, Klima und Energie, Haushalt, Gebühren, Vergaben und Beteiligung.</p>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was gebaut und geplant wird, alle Themen auf einer Karte: Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales, Klima und Energie, Haushalt, Gebühren, Vergaben, Förderung und Beteiligung.</p>
       </section>
 
       <Methodik />

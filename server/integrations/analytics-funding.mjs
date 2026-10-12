@@ -6,6 +6,7 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
 import {where} from './analytics-radar-extra.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
+import {radarMap,windowOf} from './analytics-radar-norms.mjs';
 
 /*
  * Plenara.X – Förderradar: Welche Förderprogramme werden wo genannt, beantragt oder bewilligt?
@@ -114,4 +115,18 @@ export async function fundingList(db,catalog,params){
  const rows=by==='region'?results.filter(r=>!where(byId.get(r.region)?.name||'',r.title,r.gremium,byId.get(r.region)?.members).key):results;
  const word={3:'bewilligt',2:'beantragt',1:'genannt'};
  return listPage(rows,catalog,offsetOf(params),r=>({signal:word[r.s]}));
+}
+
+/* Karte (map=1) für den plenara.X Atlas: Anteil der Vorgänge mit Förderung (topic_facts kind 'funding') am Ratsgeschehen je
+   Gebiet, eingeordnet in der Vergleichsgruppe wie die Themenradare (radarMap); topic: ein Förderprogramm, q: Suchbegriff */
+export async function fundingMap(db,catalog,params){
+ const topic=(params.get('topic')||'').trim(),level=params.get('level')==='district'?'district':'city';
+ if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
+ const q=(params.get('q')||'').trim();let term=null;
+ if(q){
+  const w=windowOf(),p=new URLSearchParams({q,from:w.from,to:w.to,level,noformal:'1',...(params.get('exact')==='1'?{exact:'1'}:{})});
+  const {page}=await searchFilters(db,catalog,parseDecisions(p));
+  term={key:q.toLowerCase()+(params.get('exact')==='1'?'|exact':''),where:page.where,args:page.args};
+ }
+ return radarMap(db,catalog,'funding',{topic,level,term});
 }

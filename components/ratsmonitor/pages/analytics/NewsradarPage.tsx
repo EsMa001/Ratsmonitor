@@ -92,7 +92,7 @@ export function NewsradarPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/politik" className="text-teal-600">plenara.X Politik</Link> / Newsradar</p>
+        <p className="text-[14px] text-slate-500"><Link href="/analytics/themen" className="text-teal-600">plenara.X Themen</Link> / Newsradar</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Newsradar</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was in den Räten gerade berichtenswert ist: Vorgänge der letzten Wochen und der nächsten 10 Tage, nach Nachrichtenwert geordnet, je Vorgang eine Meldung mit wörtlichem Zitat aus der Vorlage und Quelle.</p>
       </PageBand>

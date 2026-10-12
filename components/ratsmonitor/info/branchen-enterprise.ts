@@ -5,13 +5,12 @@ import type { IconName } from "./icons";
 export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "vergabe" | "klima" | "finanzlage" | "beteiligung" | "gebuehren" | "news";
 /** Tools funktionieren mit jedem Suchbegriff; Politik, Finanzen und Radar sind fertige Auswertungen, nach der Frage geordnet */
 /** atlas: Thema des plenara.X Atlas (/analytics/atlas), keine eigene Gruppe und kein eigener Eintrag in den Listen */
-export type AnalyseGruppe = "tool" | "politik" | "finanzen" | "atlas";
+export type AnalyseGruppe = "tool" | "themen" | "atlas";
 
 /* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
 export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; kurz: string; href: string; text: string }> = {
   tool: { name: "plenara.X Tools", kurz: "Tools", href: "/analytics/tools", text: "Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Zusammenhänge, Trends, Ortsvergleich, Beschlüsse und Beratungswege." },
-  politik: { name: "plenara.X Politik", kurz: "Politik", href: "/analytics/politik", text: "Wer entscheidet wie: welche Fraktionen welche Themen beantragen und was daraus wird, wo Einwohnerinnen und Einwohner sich einbringen und was gerade berichtenswert ist." },
-  finanzen: { name: "plenara.X Finanzen", kurz: "Finanzen", href: "/analytics/finanzen", text: "Wohin Geld fließt: Haushalt, Steuern und Kredite, Gebühren, Fördermittel und Vergaben, aus den Ratsunterlagen gelesen." },
+  themen: { name: "plenara.X Themen", kurz: "Themen", href: "/analytics/themen", text: "Fest vorgegebene Fragen ohne Suchbegriff: welche Fraktionen welche Themen beantragen und was daraus wird, und was gerade berichtenswert ist." },
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
@@ -21,8 +20,8 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   vergleich: { href: "/analytics/vergleich", name: "Ortsvergleich", icon: "mapPin", group: "tool" },
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck", group: "tool" },
   gremien: { href: "/analytics/gremien", name: "Beratungswege", icon: "users", group: "tool" },
-  fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "politik" },
-  foerderung: { href: "/analytics/foerderung", name: "Förderradar", icon: "euro", group: "finanzen" },
+  fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "themen" },
+  foerderung: { href: "/analytics/atlas?bereich=foerderung", name: "Förderradar", icon: "euro", group: "atlas" },
   bauleitplanung: { href: "/analytics/atlas?bereich=bauleitplanung", name: "Bauleitplanung", icon: "house", group: "atlas" },
   kita: { href: "/analytics/atlas?bereich=kita", name: "Kita-Radar", icon: "heart", group: "atlas" },
   versorgung: { href: "/analytics/atlas?bereich=versorgung", name: "Versorgungsradar", icon: "droplet", group: "atlas" },
@@ -32,7 +31,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   klima: { href: "/analytics/atlas?bereich=klima", name: "Klima- und Energieradar", icon: "zap", group: "atlas" },
   finanzlage: { href: "/analytics/atlas?bereich=finanzlage", name: "Haushalt und Steuern", icon: "layers", group: "atlas" },
   beteiligung: { href: "/analytics/atlas?bereich=beteiligung", name: "Beteiligung", icon: "megaphone", group: "atlas" },
-  news: { href: "/analytics/news", name: "Newsradar", icon: "newspaper", group: "politik" },
+  news: { href: "/analytics/news", name: "Newsradar", icon: "newspaper", group: "themen" },
   gebuehren: { href: "/analytics/atlas?bereich=gebuehren", name: "Gebührenradar", icon: "tag", group: "atlas" },
 };
 

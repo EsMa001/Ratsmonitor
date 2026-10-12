@@ -26,12 +26,11 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
   { label: "Planung", slug: "planung", icon: "map" },
   { label: "Verbände", slug: "verbaende" },
   { label: "Öffentlichkeit", slug: "oeffentlichkeit" },
-];/* Analyse: Start (Übersicht), Tools (mit jedem Suchbegriff), Politik, Finanzen, Atlas (alle Themenradare auf einer Karte); die einzelnen Analysen stehen auf diesen Seiten */
+];/* Analyse: Start (Übersicht), Tools (mit jedem Suchbegriff), Themen (feste Fragen), Atlas (alle Themenradare auf einer Karte); die einzelnen Analysen stehen auf diesen Seiten */
 const ANALYSE = [
   { href: "/analytics/ueber", label: "plenara.X Start", icon: "plenaraX" as const },
   { href: "/analytics/tools", label: "plenara.X Tools", icon: "layoutGrid" as const },
-  { href: "/analytics/politik", label: "plenara.X Politik", icon: "landmark" as const },
-  { href: "/analytics/finanzen", label: "plenara.X Finanzen", icon: "euro" as const },
+  { href: "/analytics/themen", label: "plenara.X Themen", icon: "landmark" as const },
   { href: "/analytics/atlas", label: "plenara.X Atlas", icon: "map" as const },
 ];
 

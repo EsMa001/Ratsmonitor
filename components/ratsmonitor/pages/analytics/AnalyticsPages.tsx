@@ -7,13 +7,20 @@ import { TrendsPage } from "./TrendsPage";
 import { GremiennetzPage } from "./GremiennetzPage";
 import { KnowledgeGraphPage } from "./KnowledgeGraphPage";
 import { FraktionenPage } from "./FraktionenPage";
-import { FoerderradarPage } from "./FoerderradarPage";
 import { NewsradarPage } from "./NewsradarPage";
 import { AtlasPage } from "./AtlasPage";
 import { RADARS } from "@/shared/radars.mjs";
 import { GRUPPEN } from "../../info/branchen-enterprise";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
+import { useRouter } from "next/navigation";
+
+/** Frühere Adresse: ersetzt sie im Verlauf durch die neue (Lesezeichen und alte Links funktionieren weiter) */
+function Umleiten({ to }: { to: string }) {
+  const router = useRouter();
+  useEffect(() => { router.replace(to, { scroll: false }); }, [router, to]);
+  return null;
+}
 
 /** plenara.X: Übersicht und je Funktion eine Unterseite */
 const PAGES: Record<string, ComponentType> = {
@@ -26,7 +33,7 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/beschluesse": BeschluessePage,
   "/analytics/gremien": GremiennetzPage,
   "/analytics/fraktionen": FraktionenPage,
-  "/analytics/foerderung": FoerderradarPage,
+  "/analytics/foerderung": () => <AtlasPage initial="foerderung" />,
   "/analytics/news": NewsradarPage,
   /* Themenradare: eine Seite, der plenara.X Atlas; die früheren Einzeladressen zeigen ihn mit ihrem Thema */
   "/analytics/atlas": () => <AtlasPage />,
@@ -41,8 +48,10 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/beteiligung": () => <AtlasPage initial="beteiligung" />,
   "/analytics/gebuehren": () => <AtlasPage initial="gebuehren" />,
   "/analytics/tools": () => <AnalyticsGroupPage group="tool" />,
-  "/analytics/politik": () => <AnalyticsGroupPage group="politik" />,
-  "/analytics/finanzen": () => <AnalyticsGroupPage group="finanzen" />,
+  "/analytics/themen": () => <AnalyticsGroupPage group="themen" />,
+  // Frühere Gruppen plenara.X Politik und Finanzen
+  "/analytics/politik": () => <Umleiten to="/analytics/themen" />,
+  "/analytics/finanzen": () => <Umleiten to="/analytics/themen" />,
   // Frühere Übersicht plenara.X Radar: die Themen stehen im Atlas
   "/analytics/radar": () => <AtlasPage />,
 };
@@ -50,8 +59,8 @@ const PAGES: Record<string, ComponentType> = {
 // Die Adressen stehen in lib/routes.ts (App.tsx braucht sie, ohne diese Seiten zu laden); PAGES muss sie alle bedienen.
 export { isAnalyticsPath } from "../../lib/routes";
 
-/** Nur die Übersichten (Start, Tools, Politik, Finanzen) sind frei; die Analysen gehören zu Enterprise */
-const FREE = new Set(["/analytics", "/analytics/ueber", "/analytics/tools", "/analytics/politik", "/analytics/finanzen"]);
+/** Nur die Übersichten (Start, Tools, Themen) sind frei; die Analysen gehören zu Enterprise */
+const FREE = new Set(["/analytics", "/analytics/ueber", "/analytics/tools", "/analytics/themen", "/analytics/politik", "/analytics/finanzen"]);
 
 export function AnalyticsPages({ path }: { path: string }) {
   const { tier } = useTier();

@@ -5,6 +5,7 @@ import { PageBand } from "./PageBand";
 import { ThemeRadarPage } from "./ThemeRadarPage";
 import { KitaRadarPage } from "./KitaRadarPage";
 import { BauleitplanungPage } from "./BauleitplanungPage";
+import { FoerderradarPage } from "./FoerderradarPage";
 import { ScoreView } from "./ScoreView";
 
 /** Themen des Atlas: Adresse (?bereich=…, gleich den früheren Seiten /analytics/<bereich>), Name in der Themenleiste;
@@ -19,6 +20,7 @@ export const ATLAS_BEREICHE = [
   ["klima", "Klima und Energie"],
   ["finanzlage", "Haushalt und Steuern"],
   ["gebuehren", "Gebühren"],
+  ["foerderung", "Förderung"],
   ["vergabe", "Vergabe"],
   ["beteiligung", "Beteiligung"],
 ] as const;
@@ -63,6 +65,7 @@ export function AtlasPage({ initial }: { initial?: AtlasBereich }) {
       {bereich === "score" ? <ScoreView onTheme={(id) => isAtlasBereich(id) && pick(id)} atlasThemes={ATLAS_BEREICHE.map(([id]) => id)} /> :
         bereich === "kita" ? <KitaRadarPage key="kita" embedded /> :
         bereich === "bauleitplanung" ? <BauleitplanungPage embedded /> :
+        bereich === "foerderung" ? <FoerderradarPage key="foerderung" embedded /> :
         bereich === "finanzlage" ? <ThemeRadarPage key="finanzen" id="finanzen" analyse="finanzlage" embedded /> :
         <ThemeRadarPage key={bereich} id={bereich} embedded />}
     </main>
