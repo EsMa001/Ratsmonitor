@@ -9,6 +9,7 @@
 //                                                  übrigen. Verdrängte Dateien ('text-only') werden kurz nachgeladen, gelesen und
 //                                                  gleich wieder gelöscht (ocrWithRefetch in store-lib.mjs); ein Server mit 3
 //                                                  Fehlern in Folge fällt für den Lauf heraus. Je Worker eine Datei zur Zeit.
+//   --recycle N: nach je N Dateien frische OCR-Worker (Standard 150, gegen wachsenden Speicher)
 //   --file-minutes M (nightly.mjs setzt 5): Zeitgrenze je Datei; wer länger braucht, wird abgebrochen, nichts geschrieben und
 //                                                  ans Ende der Reihe gestellt (ocr_slow). Ohne: keine Grenze.
 //   node scripts/pdf-store/text.mjs --stats        Stand der Textfassungen
@@ -69,7 +70,7 @@ if(!flag('ocr')){
  catch{const pid=Number(fs.readFileSync(lock,'utf8'));if(pid&&alive(pid)){console.log(`OCR läuft schon (Prozess ${pid}), nichts zu tun`);stepSummary({skipped:'OCR-Lauf von Hand läuft'});store.close();process.exit(0);}fs.writeFileSync(lock,String(process.pid));}
  const release=()=>{try{if(fs.readFileSync(lock,'utf8')===String(process.pid))fs.unlinkSync(lock);}catch{/* schon weg */}};
  process.on('exit',release);
- const workers=Number(opt('workers',3)),ocr=await ocrScheduler(workers);
+ const workers=Number(opt('workers',3)),recycle=Number(opt('recycle',150));let ocr=await ocrScheduler(workers);
  if(!ocr){console.error('OCR-Werkzeuge fehlen (OCR_TOOLS).');process.exit(1);}
  const todo=store.ocrQueue().slice(0,limit||undefined),main=new Set(todo.filter(x=>x.main).map(x=>x.sha)),t0=Date.now();
  let files=0,primary=0,pagesDone=0,failed=0,dropped=0,fetched=0,changed=0,skipped=0,slow=0;
@@ -96,13 +97,21 @@ if(!flag('ocr')){
    else{failed++;console.error('OCR',sha.slice(0,12),e.message);}
   }
   const done=files+failed+skipped+slow,h=(Date.now()-t0)/3600000;
-  if(done%100===0)console.log(`${done}/${todo.length} Dateien, ${pagesDone} Seiten, ${failed} Fehler, ${slow} zu langsam, ${fetched} nachgeladen, ${elapsed(t0)}`);
-  tell({step:'OCR',ocr:{done,total:todo.length,pages:pagesDone,failed,workers,perHour:h>0.05?Math.round(done/h):null,fetched,...(fileMs?{slow}:{})}});
+  if(done%100===0)console.log(`${done}/${todo.length} Dateien, ${pagesDone} Seiten, ${failed} Fehler, ${slow} zu langsam, ${fetched} nachgeladen, ${Math.round(process.memoryUsage.rss()/1048576)} MB, ${elapsed(t0)}`);
+  tell({step:'OCR',ocr:{done,total:todo.length,pages:pagesDone,failed,workers,perHour:h>0.05?Math.round(done/h):null,fetched,mb:Math.round(process.memoryUsage.rss()/1048576),...(fileMs?{slow}:{})}});
  };
  tell({step:'OCR',ocr:{done:0,total:todo.length,pages:0,failed:0,workers,perHour:null,fetched:0,...(fileMs?{slow:0}:{})}},true);
  // Je Worker eine Datei zur Zeit (bei den vielen Dateien mit einer Seite hätten sonst nicht alle Worker zu tun); so liegen
  // höchstens so viele nachgeladene Dateien wie Worker gleichzeitig da
- const queue=todo.map(x=>x.sha);await Promise.all(Array.from({length:workers},async()=>{while(queue.length&&!late())await one(queue.shift());}));
+ // In Paketen zu --recycle Dateien (Standard 150), danach frische OCR-Worker: tesseract.js gibt Speicher nicht vollständig
+ // frei, ein Lauf über tausende Dateien wuchs auf 4 GB und brachte den Auftragsdienst an seine Grenze (12.10.2026)
+ const queue=todo.map(x=>x.sha);
+ while(queue.length&&!late()){
+  const batch=queue.splice(0,recycle);
+  await Promise.all(Array.from({length:workers},async()=>{while(batch.length&&!late())await one(batch.shift());}));
+  if(batch.length)queue.unshift(...batch);
+  if(queue.length&&!late()){await ocr.terminate();ocr=await ocrScheduler(workers);}
+ }
  if(queue.length)console.log(`${halted?'Angehalten':`Zeitgrenze erreicht (${maxMinutes} min)`}, ${queue.length} Dateien im nächsten Lauf`);
  await ocr.terminate();
  console.log(`fertig: ${files} Dateien (${primary} Hauptdokumente), ${pagesDone} Seiten per OCR, ${failed} Fehler (davon ${changed} geändert), ${fetched} nachgeladen und wieder gelöscht, ${skipped} Server ausgelassen${fileMs?`, ${slow} über der Zeitgrenze (später)`:''}, ${dropped} zu große PDFs gelöscht (${elapsed(t0)})`);
