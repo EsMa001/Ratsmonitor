@@ -7,6 +7,9 @@
  * - keepAliveTimeout länger als der von Caddy: Sonst schließt Node eine Verbindung, die Caddy gerade wiederverwendet,
  *   und ein POST endet mit 502.
  * - Bei SIGTERM/SIGINT (systemctl stop/restart) laufende Anfragen kurz ausklingen lassen und die Datenbank schließen.
+ * - Rechnet die Startansichten der Auswertungen vor (warm): 30 s nach dem Start und alle 10 Minuten fragt der Server sie
+ *   selbst ab. Der Zwischenspeicher liegt im Speicher dieses Prozesses (revision-cache.mjs); nach einem Import liefert er
+ *   den letzten Stand und rechnet im Hintergrund neu, so wartet kein Besucher auf die erste Rechnung. Aus: RM_SKIP_WARM=1.
  * - Prüft vor dem Start die Datenbank. Ohne sie würden die Seiten still den mitgelieferten, alten Stand zeigen;
  *   deshalb startet der Server dann nicht (Ausnahme für Tests: RM_ALLOW_NO_DB=1).
  */
@@ -67,6 +70,18 @@ server.keepAliveTimeout = 65_000;
 server.headersTimeout = 66_000;
 server.requestTimeout = 0; // Abrufe im Adminbereich dauern Minuten; Grenzen setzt Caddy
 console.log(`[ratsmonitor] Node ${process.version}, NODE_ENV=${process.env.NODE_ENV ?? '(leer)'}, TZ=${process.env.TZ ?? '(System)'}`);
+
+// Startansichten der Auswertungen nacheinander abfragen, damit ihr Zwischenspeicher gefüllt ist (siehe oben).
+const WARM = ['decisions', 'news', 'network', 'foerderung', 'trends', 'score'].map((name) => `/api/analytics/${name}`);
+async function warm() {
+  for (const path of WARM) {
+    if (stopping) return;
+    try { await (await fetch(`http://${host === '::1' ? '[::1]' : host}:${port}${path}`)).arrayBuffer(); } catch { /* nächster Lauf */ }
+  }
+}
+if (process.env.RM_SKIP_WARM !== '1') {
+  setTimeout(() => { warm(); setInterval(warm, 10 * 60e3).unref(); }, 30e3).unref();
+}
 
 let stopping = false;
 // Beim Beenden nimmt Node auf offenen Keep-alive-Verbindungen (Caddy) weiter Anfragen an. Diese bekommen
