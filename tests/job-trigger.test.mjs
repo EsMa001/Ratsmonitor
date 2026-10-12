@@ -33,6 +33,7 @@ test('pending work of the PDF job runs it even when switched off',()=>{
  assert.equal(pendingWork('pdf-job',state({'server-disk-count':{requestedAt:'x'}})),true);
  assert.equal(pendingWork('pdf-job',state({'pdf-store-job':{queue:[{id:'a'}],current:null,recent:[]}})),true);
  assert.equal(pendingWork('pdf-job',state({'pdf-store-job':{queue:[],current:null,recent:[]}})),false);
+ assert.equal(pendingWork('pdf-job',state({'pdf-store-job':{queue:[],current:{id:'a',kind:'texts',state:'running'},recent:[]}})),true,'als laufend vermerkt: aufräumen, falls abgebrochen');
  assert.equal(pendingWork('backup',state({'pdf-store-count':{requestedAt:'x'}})),false);
 });
 

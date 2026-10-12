@@ -79,11 +79,12 @@ export function dueNow(job,setting,run,now=Date.now()){
 }
 /** Offene Wünsche aus der Administration, die ein Job gleich erledigen soll, auch wenn er ausgeschaltet ist (ein Knopfdruck
     zählt wie „jetzt ausführen“; der Schalter stoppt nur die geplanten Zeiten): beim Auftragsdienst „Stand neu zählen“,
-    „Neu messen“ und wartende Aufträge. get: Schlüssel aus system_state → Wert */
+    „Neu messen“, wartende Aufträge und ein als laufend vermerkter Auftrag (läuft der Dienst gar nicht, war er abgebrochen;
+    job.mjs vermerkt ihn dann, statt dass er bis zum nächsten Einschalten als „läuft“ stehen bleibt). get: Schlüssel → Wert */
 export function pendingWork(id,get){
  if(id!=='pdf-job')return false;
  const open=x=>!!x?.requestedAt&&!x.startedAt,jobs=get('pdf-store-job');
- return open(get('pdf-store-count'))||open(get('server-disk-count'))||(Array.isArray(jobs?.queue)?jobs.queue.length>0:jobs?.state==='waiting');
+ return open(get('pdf-store-count'))||open(get('server-disk-count'))||(Array.isArray(jobs?.queue)?jobs.queue.length>0:jobs?.state==='waiting')||jobs?.current?.state==='running';
 }
 /** Nächster geplanter Start (ms) */
 export function nextRun(job,setting,run,now=Date.now()){

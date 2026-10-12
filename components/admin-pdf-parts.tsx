@@ -108,7 +108,7 @@ export function HostList({hosts,total,blocked}:{hosts:Host[];total:number;blocke
 }
 
 export type RunStep={name:string;seconds:number;ok:boolean;summary?:Record<string,unknown>|null};
-export type Run={kind:string;startedAt:string;finishedAt:string;result:'done'|'failed'|'stopped';failed:string[];steps:RunStep[];sizeGb:number|null};
+export type Run={kind:string;startedAt:string;finishedAt:string;result:'done'|'failed'|'stopped';failed:string[];steps:RunStep[];sizeGb:number|null;quality?:{score:number|null;text:number|null;at?:string;thisRun?:boolean}|null};
 const RESULT={done:'fertig',failed:'mit Fehlern',stopped:'angehalten'};
 const num=(v:unknown)=>typeof v==='number'?v:0;
 /** Kurzfassung eines Schritts aus seiner Zusammenfassung */
@@ -132,12 +132,13 @@ export function RunList({runs}:{runs:Run[]}){
       <span className="font-medium">{KIND[r.kind]||r.kind}</span>
       <span className="text-right tabular-nums text-slate-500 md:text-left">{when(r.startedAt)}</span>
       <span className="tabular-nums text-slate-500">{dur(Math.round(secs))}</span>
-      <span className="min-w-0 text-slate-500">{load?stepText(load):''}</span>
+      <span className="min-w-0 text-slate-500">{r.quality&&(r.quality.score!=null||r.quality.text!=null)&&<span className="mr-2 whitespace-nowrap font-medium text-slate-900">{r.quality.score!=null&&`Ø Score ${Math.round(r.quality.score*100)} %`}{r.quality.score!=null&&r.quality.text!=null&&' · '}{r.quality.text!=null&&`Text ${Math.round(r.quality.text*100)} %`}</span>}{load?stepText(load):''}</span>
       <span className={r.result==='done'?'text-slate-700':'font-medium text-slate-900'}>{RESULT[r.result]}{r.failed.length?`: ${r.failed.join(', ')}`:''}</span>
      </summary>
      <ul className="m-0 mb-3 list-none space-y-1 p-0 pl-4 text-[14px]">
       {r.steps.map(s=><li key={s.name} className="grid grid-cols-[150px_70px_minmax(0,1fr)] gap-x-3"><span className={s.ok?'':'font-medium'}>{s.name}{s.ok?'':' (Fehler)'}</span><span className="tabular-nums text-slate-500">{dur(s.seconds)}</span><span className="text-slate-500">{stepText(s)}</span></li>)}
       {r.sizeGb!=null&&<li className="text-slate-500">Ablage danach: {r.sizeGb.toLocaleString('de-DE')} GB</li>}
+      {r.quality&&<li className="text-slate-500">Ø Score der Ablage {r.quality.score!=null?`${Math.round(r.quality.score*100)} %`:'–'}, Hauptdokumente mit Text {r.quality.text!=null?`${(Math.round(r.quality.text*1000)/10).toLocaleString('de-DE')} %`:'–'} ({r.quality.thisRun?'gezählt am Ende dieses Laufs':`aus der Zählung vom ${when(r.quality.at)}`})</li>}
      </ul>
     </details>
    </li>;})}

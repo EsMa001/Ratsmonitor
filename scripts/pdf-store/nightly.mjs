@@ -29,12 +29,12 @@
 // Umgebung: DATABASE_FILE (Server), RM_PDF_STORE (Ablage), OCR_TOOLS/OCR_CACHE (text.mjs).
 import fs from 'node:fs';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {usedBytes} from './store-lib.mjs';
 import {progress,stopRequested,readState,writeState} from './state.mjs';
-import {RUNS_KEY} from '../../server/integrations/pdf-store-admin.mjs';
+import {RUNS_KEY,STATS_KEY} from '../../server/integrations/pdf-store-admin.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const minutes=Number(opt('minutes',180)),budgetGb=Number(opt('budget-gb',100)),months=Number(opt('months',240));
@@ -55,7 +55,10 @@ catch{
  fs.writeFileSync(lock,String(process.pid));say(`verwaiste Sperre von Prozess ${pid} übernommen`);
 }
 const release=()=>{try{if(fs.readFileSync(lock,'utf8')===String(process.pid))fs.unlinkSync(lock);}catch{/* schon weg */}};
-process.on('exit',release);for(const sig of ['SIGINT','SIGTERM'])process.on(sig,()=>{finish('stopped');release();process.exit(1);});
+/* Anhalten per Signal (systemctl stop, Knopf „Anhalten“ im Reiter Jobs & Zeitpläne): an den laufenden Schritt weitergeben, Lauf
+   als angehalten vermerken, sauber enden (Exit 3). Die Schritte laufen asynchron, damit das Signal sofort ankommt. */
+let child=null;
+process.on('exit',release);for(const sig of ['SIGINT','SIGTERM'])process.on(sig,()=>{try{child?.kill('SIGTERM');}catch{/* schon weg */}finish('stopped');release();process.exit(3);});
 
 const sizeGb=()=>{const s=openPdfStore(dir);try{return usedBytes(s)/1073741824;}finally{s.close();}};
 const failed=[],steps=[],dry=flag('dry-run'),kind=opt('kind','nightly');
@@ -64,7 +67,7 @@ const summaryFile=path.join(dir,`step-summary-${process.pid}.json`);
 let stopped=false,finished=false,plan=[],stepIndex=0;
 /* Fortschritt für den Balken im Admin-Reiter: geplante Schritte (plan), laufender Schritt (stepIndex), Beginn und Zeitgrenze des
    Schritts (aus --max-minutes); die Schritte schreiben ihr done/total dazu */
-function step(name,script,stepArgs){
+async function step(name,script,stepArgs){
  const cmd=[process.execPath,'--no-warnings','--max-old-space-size=4096',path.join(root,script),...stepArgs];
  if(dry){say('[Probe]',name+':',cmd.slice(3).join(' '));return;}
  if(stopped||(stopped=stopRequested('chain',t0))){say(`${name} übersprungen (angehalten)`);return;}
@@ -73,8 +76,13 @@ function step(name,script,stepArgs){
  const stepBase={...base,plan,stepIndex,stepStartedAt:new Date(now).toISOString(),...(lim?{stepUntil:new Date(now+lim*60000).toISOString()}:{})};
  say(`${name} …`);progress('chain',{...stepBase,step:name});
  try{fs.unlinkSync(summaryFile);}catch{/* keine */}
- const t=Date.now(),r=spawnSync(cmd[0],cmd.slice(1),{cwd:root,stdio:'inherit',
-  env:{...process.env,RM_PROGRESS_LANE:'chain',RM_PROGRESS_BASE:JSON.stringify(stepBase),RM_STEP_SUMMARY:summaryFile}});
+ const t=Date.now();
+ const r=await new Promise(resolve=>{
+  child=spawn(cmd[0],cmd.slice(1),{cwd:root,stdio:'inherit',env:{...process.env,RM_PROGRESS_LANE:'chain',RM_PROGRESS_BASE:JSON.stringify(stepBase),RM_STEP_SUMMARY:summaryFile}});
+  child.on('error',e=>{say(`${name}: ${e.message}`);resolve({status:127,signal:null});});
+  child.on('exit',(status,signal)=>resolve({status,signal}));
+ });
+ child=null;
  const sec=Math.round((Date.now()-t)/1000);
  let summary=null;try{summary=JSON.parse(fs.readFileSync(summaryFile,'utf8'));fs.unlinkSync(summaryFile);}catch{/* Schritt ohne Zusammenfassung */}
  steps.push({name,seconds:sec,ok:r.status===0,summary});
@@ -85,7 +93,10 @@ function step(name,script,stepArgs){
 function finish(result){
  if(finished||dry)return;finished=true;
  let gb=null;try{gb=Math.round(sizeGb()*10)/10;}catch{/* Ablage gerade nicht lesbar */}
- const run={...base,finishedAt:new Date().toISOString(),result,failed,steps,sizeGb:gb};
+ /* Qualität nach dem Lauf aus der letzten Zählung (Schritt „Stand“; fehlt er, die vorige): Ø Score der Ablage und Anteil der
+    Hauptdokumente mit Text */
+ let quality=null;try{const st=readState(STATS_KEY);if(st)quality={score:st.quality?.avg??null,text:st.linked?Math.round((st.texts?.linked||0)/st.linked*1000)/1000:null,at:st.at,thisRun:st.at>=base.startedAt};}catch{/* ohne */}
+ const run={...base,finishedAt:new Date().toISOString(),result,failed,steps,sizeGb:gb,quality};
  writeState(RUNS_KEY,[run,...(readState(RUNS_KEY)||[])].slice(0,50));
  progress('chain',null);
 }
@@ -94,10 +105,10 @@ const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&(oc
 const TAIL=['Zusammenfassungen','Fakten','Wortliste','Stand'];
 plan=others?['Laden','Textebene','Stand']:ocrOnly?['OCR',...TAIL]:texts?['Textebene',...TAIL]:['Laden','Textebene','OCR',...TAIL];
 say(`Start${others?' (übrige PDFs)':ocrOnly?' (nur OCR)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
-if(!texts)step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare))),'--report-mb','1000']);
+if(!texts)await step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare))),'--report-mb','1000']);
 if(!texts&&sizeGb()>budgetGb){
- step('Rang nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
- step('Budget','scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
+ await step('Rang nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
+ await step('Budget','scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
 }
 /* Ende: Protokoll, Meldung, Exit-Code (0 fertig, 1 Fehler in einem Schritt, 3 angehalten) */
 const end=()=>{
@@ -107,17 +118,17 @@ const end=()=>{
  process.exit(stopped?3:failed.length?1:0);
 };
 if(others){
- step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-5)))]);
- step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
+ await step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-5)))]);
+ await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
  end();
 }
-if(!ocrOnly)step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-reserve)))]);
+if(!ocrOnly)await step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-reserve)))]);
 const ocr=Math.floor(left()-reserve);
 if(texts&&!ocrOnly){say('OCR ausgelassen (Texte erstellen)');steps.push({name:'OCR',seconds:0,ok:true,summary:{skipped:'bei „Texte erstellen“ keine OCR'}});}
-else if(ocr>=5||stopped)step('OCR','scripts/pdf-store/text.mjs',['--ocr','--workers',String(ocrWorkers),'--max-minutes',String(ocr)]);
+else if(ocr>=5||stopped)await step('OCR','scripts/pdf-store/text.mjs',['--ocr','--workers',String(ocrWorkers),'--max-minutes',String(ocr)]);
 else{say(`OCR übersprungen (nur ${Math.max(0,ocr)} min übrig)`);steps.push({name:'OCR',seconds:0,ok:true,summary:{skipped:`nur ${Math.max(0,ocr)} min übrig`}});}
-step('Zusammenfassungen','scripts/pdf-store/summaries.mjs',[]);
-step('Fakten','scripts/pdf-store/facts.mjs',[]);
-step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
-step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
+await step('Zusammenfassungen','scripts/pdf-store/summaries.mjs',[]);
+await step('Fakten','scripts/pdf-store/facts.mjs',[]);
+await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
+await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
 end();
