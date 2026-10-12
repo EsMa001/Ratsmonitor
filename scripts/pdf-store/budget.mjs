@@ -12,8 +12,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {documentType,documentTypeFromText,DOC_TYPE_VERSION} from '../../shared/document-type.mjs';
 import {TYPE_VALUE,BUDGET_GB} from '../../shared/pdf-rank.mjs';
-import {rankedFiles,textBytes as textBytesOf,ocrScheduler,ocrFile} from './store-lib.mjs';
-import {onStop} from './state.mjs';
+import {rankedFiles,textBytes as textBytesOf} from './store-lib.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE),db=store.db;
@@ -67,16 +66,10 @@ const biggest=kept.reduce((m,f)=>Math.max(m,f.bytes),0);
 console.log(`\ngrößtes behaltenes PDF: ${(biggest/1048576).toFixed(1)} MB; Scans behalten: ${kept.filter(f=>f.scan).length}, nur Text: ${dropped.filter(f=>f.scan).length}`);
 if(flag('apply')){
  if(population){console.error('--apply nur ohne --population');process.exit(1);}
- // Nur löschen, was schon eine Textfassung hat; der Rest wartet auf scripts/pdf-store/text.mjs. Seiten ohne Text (Scans)
- // vorher per OCR lesen, damit der Text vollständig bleibt. Übrige PDFs (role other) nur Textebene, kein OCR.
- // Anhalten (Signal): OCR nach der laufenden Seitengruppe beenden, dann nur Dateien mit vollständigem Text löschen
- let halted=false;onStop(null,Date.now(),()=>{halted=true;console.log('Angehalten: OCR endet, gelöscht wird nur, was vollständig gelesen ist.');});
- const go=dropped.filter(f=>f.chars!=null);let ocr=null,ocrPages=0;
- for(const f of go.filter(f=>f.ocrNeeded>0&&!f.other)){if(halted)break;ocr??=await ocrScheduler(Number(opt('ocr-workers',2)));if(!ocr){console.error('OCR-Werkzeuge fehlen: Scans ohne OCR bleiben als PDF.');break;}try{ocrPages+=await ocrFile(store,f.sha,ocr,{halt:()=>halted});f.ocrNeeded=0;}catch(e){if(!e.halted)throw e;}}
- if(ocr)await ocr.terminate();
- const now=go.filter(f=>!(f.ocrNeeded>0&&!f.other));
+ // Nur löschen, was schon eine Textfassung hat; der Rest wartet auf scripts/pdf-store/text.mjs. Keine OCR vorher (Entscheidung
+ // 12.10.2026): Seiten ohne Text liest der Auftrag „OCR starten“, der die Datei dafür kurz nachlädt.
+ const now=dropped.filter(f=>f.chars!=null);
  store.dropPdfs(now.map(f=>f.sha));
- if(ocrPages)console.log(`${ocrPages} Seiten vor dem Löschen per OCR gelesen`);
- console.log(`${now.length} PDFs gelöscht, ihre Texte bleiben; ${dropped.length-now.length} ohne vollständige Textfassung bleiben vorerst.`);
+ console.log(`${now.length} PDFs gelöscht, ihre Texte bleiben; ${dropped.length-now.length} ohne Textfassung bleiben vorerst.`);
 }
 store.close();

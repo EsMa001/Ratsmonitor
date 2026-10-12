@@ -10,6 +10,10 @@
 // Texts (ruleSummaryTried) und wird erst wieder gerechnet, wenn sich eins davon ändert; ein neuer Versuch ersetzt den alten
 // Eintrag in article_analyses, statt einen weiteren anzulegen (früher bis zu 5 Zeilen je Bericht, 12.10.2026).
 // Dazu Berichte, deren Zusammenfassung aus einem anderen Dokument stammt als dem heutigen Hauptdokument (ruleSummary.source).
+// Auch Berichte mit KI-Zusammenfassung (Entscheidung 12.10.2026): Sie bekommen die Regel-Zusammenfassung zusätzlich, kurz und lang
+// im Feld ruleSummary, nur wenn sie noch keine haben. Bei ihnen wird nur ruleSummary bzw. ruleSummaryTried geschrieben: KI-Text (shortSummary, longSummary,
+// generatedBy), summaryMethod, summaryIssue, contentAnalysis und ihre Einträge in article_analyses bleiben unberührt (der Weg über
+// compactSummaryAttempt würde sie überschreiben und gescheiterte Einträge löschen, auch KI-Einträge ohne Status 'completed').
 // Danach die Wortliste neu aufbauen: node scripts/refresh-search-words.mjs --full
 //
 //   node scripts/pdf-store/summaries.mjs --dry-run [--limit 300]   nur zählen und Beispiele zeigen, nichts schreiben
@@ -18,7 +22,7 @@ import {existsSync,readdirSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {useDocumentStore,enrichDocument} from '../../server/integrations/documents.mjs';
-import {compactSummaryAttempt} from '../../server/integrations/compact-summary.mjs';
+import {compactSummaryAttempt,withRuleSummary} from '../../server/integrations/compact-summary.mjs';
 import {primaryPdf,sessionDocument} from '../../shared/document-type.mjs';
 import {stepSummary} from './state.mjs';
 import {RULE_SUMMARY_VERSION} from '../../server/integrations/rule-summary.mjs';
@@ -33,7 +37,7 @@ const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!==
 const db=new DatabaseSync(process.env.DATABASE_FILE||dir+local);db.exec('PRAGMA busy_timeout=60000');
 
 // Ein Durchlauf über alle Berichte: wie oft hängt ein PDF an Berichten (Sitzungsunterlagen), und welche Berichte sind
-// Kandidaten (ohne ruleSummary, nicht von der KI) mit Hauptdokument und letztem Versuch (rund eine Minute)
+// Kandidaten (ohne ruleSummary, auch mit KI-Zusammenfassung) mit Hauptdokument und letztem Versuch (rund eine Minute)
 const uses=new Map(),cands=[];
 // Kandidat ist auch ein Bericht, dessen Zusammenfassung aus einem anderen Dokument stammt als dem heutigen Hauptdokument
 // (neue Regeln für primaryPdf, 12.10.2026); scheitert der neue Versuch, bleibt die alte Zusammenfassung (ruleSummaryTried)
@@ -43,20 +47,20 @@ for(const r of db.prepare(`SELECT id,json_extract(payload,'$.documents') AS d,js
   json_extract(payload,'$.ruleSummaryTried') AS tried FROM topics WHERE active=1 AND payload LIKE '%application/pdf%'`).iterate()){
  let docs;try{docs=JSON.parse(r.d||'[]');}catch{continue;}
  for(const x of docs)if(x.kind==='application/pdf')uses.set(x.url,(uses.get(x.url)||0)+1);
- if(r.ai)continue;
  const p=primaryPdf(docs);
- if(r.missing)cands.push([r.id,p,r.tried]);
- else if(p&&r.src&&r.src!==p.url){stale++;cands.push([r.id,p,r.tried]);}
+ if(r.missing)cands.push([r.id,p,r.tried,!!r.ai]);
+ // Mit KI-Zusammenfassung nur, wenn noch keine Regel-Zusammenfassung da ist (keine Neufassung aus einem anderen Dokument)
+ else if(!r.ai&&p&&r.src&&r.src!==p.url){stale++;cands.push([r.id,p,r.tried,false]);}
 }
 const ids=cands;
 const get=db.prepare('SELECT region_id AS region,payload FROM topics WHERE id=?');
 const insert=db.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)');
 const update=db.prepare('UPDATE topics SET payload=? WHERE id=?');
 const dropFailed=db.prepare("DELETE FROM article_analyses WHERE topic_id=? AND kind='summary' AND coalesce(json_extract(payload,'$.status'),'')<>'completed'");
-const started=new Date().toISOString(),t0=Date.now(),c={candidates:ids.length,stale,session:0,unchanged:0,withText:0,summary:0,noSummary:0,unreadable:0,ocr:0,ocrSummary:0},examples=[];
+const started=new Date().toISOString(),t0=Date.now(),c={candidates:ids.length,stale,session:0,unchanged:0,withText:0,summary:0,noSummary:0,unreadable:0,ocr:0,ocrSummary:0,ai:0,aiSummary:0},examples=[];
 console.log(`${ids.length-stale} Berichte ohne Regel-Zusammenfassung, ${stale} mit Zusammenfassung aus einem anderen als dem Hauptdokument`);
 let open=0;const flush=()=>{if(open){db.exec('COMMIT');open=0;}};
-for(const [id,d,lastTried] of ids){
+for(const [id,d,lastTried,ai] of ids){
  if(limit&&c.withText>=limit)break;
  if(d&&sessionDocument(d,uses.get(d.url)||0)){c.session++;continue;}
  // Prüfsumme des Texts aus der Ablage (je Textfassung einmal gerechnet): Unveränderte ohne Lesen von Bericht und Datei
@@ -66,11 +70,16 @@ for(const [id,d,lastTried] of ids){
  const row=get.get(id);if(!row)continue;
  const old=JSON.parse(row.payload);
  const text=store.getText(d.url);if(!text)continue;
- c.withText++;const ocr=text.method!=='text';if(ocr)c.ocr++;
+ c.withText++;const ocr=text.method!=='text';if(ocr)c.ocr++;if(ai)c.ai++;
  let t;try{t=await enrichDocument(old);}catch(e){t={...old,documentIssue:e.message};}
- if(t.ruleSummary){c.summary++;if(ocr)c.ocrSummary++;if(examples.length<5&&(ocr||examples.length<3))examples.push({titel:old.title,ocr,kurz:t.ruleSummary.short.sentences.join(' ').slice(0,300),güte:t.ruleSummary.score});}
+ if(t.ruleSummary){c.summary++;if(ocr)c.ocrSummary++;if(ai)c.aiSummary++;if(examples.length<5&&(ocr||examples.length<3))examples.push({titel:old.title,ocr,kurz:t.ruleSummary.short.sentences.join(' ').slice(0,300),güte:t.ruleSummary.score});}
  else if(t.documentIssue)c.unreadable++;else c.noSummary++;
- if(!dry){
+ if(!dry&&ai){
+  // KI-Zusammenfassung: nur die Regel-Zusammenfassung dazu (oder den Versuch merken), sonst nichts anfassen
+  if(!open){db.exec('BEGIN');}
+  update.run(JSON.stringify(withRuleSummary(old,t,tried)),old.id);
+  if(++open>=200)flush();
+ }else if(!dry){
   const compact=await compactSummaryAttempt(old,t,started);
   if(t.ruleSummary)delete compact.topic.ruleSummaryTried;else compact.topic.ruleSummaryTried=tried;
   if(!open){db.exec('BEGIN');}
@@ -83,6 +92,6 @@ for(const [id,d,lastTried] of ids){
 }
 flush();
 console.log(JSON.stringify({...c,sekunden:Math.round((Date.now()-t0)/1000),geschrieben:!dry},null,1));
-if(!dry)stepSummary({summaries:c.summary,withText:c.withText,unchanged:c.unchanged,noSummary:c.noSummary,unreadable:c.unreadable,session:c.session});
+if(!dry)stepSummary({summaries:c.summary,ai:c.aiSummary,withText:c.withText,unchanged:c.unchanged,noSummary:c.noSummary,unreadable:c.unreadable,session:c.session});
 for(const e of examples)console.log(`\n# ${e.titel}${e.ocr?' (OCR)':''}, Güte ${e.güte}\n${e.kurz}`);
 store.close();

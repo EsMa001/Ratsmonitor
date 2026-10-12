@@ -2,9 +2,25 @@
 // Textebene und OCR einer Datei, Score je Datei (shared/pdf-rank.mjs) und die feste Grenze mit Tausch (keeper).
 import fs from 'node:fs';
 import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
 import {getDocumentProxy,renderPageAsImage} from 'unpdf';
 import {rankPdf,TYPE_VALUE} from '../../shared/pdf-rank.mjs';
 import {effectiveType} from '../../shared/document-type.mjs';
+import {fetchDocument} from '../../server/integrations/document-proxy.mjs';
+import {bodyBytes} from '../../server/integrations/body-bytes.mjs';
+import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
+
+/** Abruf wie /api/dokument (nur öffentliche https-Adressen, jede Weiterleitung geprüft), aber mit der Projektkennung (fetch.mjs,
+    text.mjs --ocr --others). Die Zeitgrenze gilt je Abruf für Kopf und Inhalt zusammen; signal bricht ab (Anhalten). */
+export function downloader({timeoutMs=10000,signal=null}={}){
+ const request=(url,init)=>fetch(url,{...init,signal:AbortSignal.any([init.signal,AbortSignal.timeout(timeoutMs),signal].filter(Boolean)),headers:{'User-Agent':SOURCE_USER_AGENT}});
+ return async url=>{
+  const {response:r}=await fetchDocument(url,{request});
+  if(!r.ok){await r.body?.cancel().catch(()=>{});throw Object.assign(Error('HTTP '+r.status),{http:r.status});}
+  return bodyBytes(r,30*1048576,{message:'Dokument zu groß'});
+ };
+}
 
 // Neue Fassung des Leseverfahrens: TEXT_VERSION erhöhen, dann liest der erste Aufruf von text.mjs alle Dateien neu.
 export const TEXT_VERSION=1,MIN_CHARS=20,OCR_SCALE=2.5;
@@ -42,8 +58,9 @@ const MAX_PIXELS=12e6;
 /** Seiten ohne Textebene einer Datei per OCR lesen; Rückgabe: Zahl der gelesenen Seiten. Die Datei wird einmal geöffnet, die
     Seiten in Gruppen so groß wie die Zahl der OCR-Worker gelesen (alle Seiten auf einmal zu rendern sprengte bei großen Scans
     Speicher und CPU und hielt den Lauf an, 12.10.2026). halt(): vor jeder Gruppe gefragt; true bricht ab (Fehler mit halted),
-    ohne etwas zu schreiben: Die Datei bleibt in der OCR-Reihe. */
-export async function ocrFile(store,sha,ocr,{halt}={}){
+    ohne etwas zu schreiben: Die Datei bleibt in der OCR-Reihe. deadline (ms seit 1970, 0 = keine): danach ebenso abbrechen,
+    Fehler mit slow (OCR-Knöpfe: lieber viele leichte Dateien als eine schwere). */
+export async function ocrFile(store,sha,ocr,{halt,deadline=0}={}){
  const pages=store.textPages(sha);if(!pages)return 0;
  const want=pages.map((p,i)=>needsOcr(p)?i:-1).filter(i=>i>=0);
  if(want.length){
@@ -51,6 +68,7 @@ export async function ocrFile(store,sha,ocr,{halt}={}){
   try{
    for(let k=0;k<want.length;k+=ocr.workers){
     if(halt?.())throw Object.assign(new Error('angehalten'),{halted:true});
+    if(deadline&&Date.now()>deadline)throw Object.assign(new Error('Zeitgrenze je Datei'),{slow:true});
     await Promise.all(want.slice(k,k+ocr.workers).map(async i=>{
      const page=await pdf.getPage(i+1),v=page.getViewport({scale:1});page.cleanup();
      const scale=Math.max(0.5,Math.min(OCR_SCALE,Math.sqrt(MAX_PIXELS/Math.max(1,v.width*v.height))));
@@ -62,6 +80,36 @@ export async function ocrFile(store,sha,ocr,{halt}={}){
  }
  store.putText(sha,pages,{method:want.length===pages.length?'ocr':'mixed',version:TEXT_VERSION,ocrPages:want.length,ocrNeeded:0});
  return want.length;
+}
+
+/**
+ * OCR einer Datei für beide OCR-Aufträge (text.mjs --ocr [--others]). Liegt das PDF, wie ocrFile. Ist es
+ * verdrängt ('text-only'), wird es einmal kurz nachgeladen: dieselbe Datei (Prüfsumme), gelesen, sofort wieder gelöscht. Der
+ * Eintrag bleibt dabei 'text-only', die Grenze sieht die Datei nie; es liegt also höchstens eine nachgeladene Datei zur Zeit da.
+ * read(sha): liest die Seiten (ocrFile), Rückgabe Seitenzahl; seine Fehler (Anhalten, Zeitgrenze je Datei) gehen weiter, eine
+ * nachgeladene Datei ist dann trotzdem wieder gelöscht. download(url): Bytes; ein Fehler mit skip (Server ausgelassen)
+ * oder Anhalten (halted()) lässt die Datei offen, jeder andere wird vermerkt (refetchFailed), sie kommt nicht wieder.
+ * Rückgabe {pages, fetched, result}: 'ok' | 'changed' (unter der Adresse liegt heute eine andere Datei) | 'failed' | 'skipped'.
+ */
+export async function ocrWithRefetch(store,sha,{download,read,halted=()=>false}){
+ const file=store.file(sha);
+ if(fs.existsSync(file)){
+  try{return {pages:await read(sha),fetched:false,result:'ok'};}
+  finally{if(!store.present(sha))fs.rmSync(file,{force:true});}
+ }
+ let error='keine Adresse',changed=false;
+ for(const url of store.urlsOf(sha)){
+  let bytes;
+  try{bytes=await download(url);}
+  catch(e){if(halted())throw Object.assign(new Error('angehalten'),{halted:true});if(e.skip)return {pages:0,fetched:false,result:'skipped'};error=e.message;continue;}
+  if(crypto.createHash('sha256').update(bytes).digest('hex')!==sha){changed=true;error='Datei geändert';continue;}
+  fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes);
+  // Löschen auch beim Anhalten oder bei einem Lesefehler; nur nicht, wenn die Datei inzwischen wirklich abgelegt ist
+  try{return {pages:await read(sha),fetched:true,result:'ok'};}
+  finally{if(!store.present(sha))fs.rmSync(file,{force:true});}
+ }
+ store.refetchFailed(sha,error);
+ return {pages:0,fetched:false,result:changed?'changed':'failed'};
 }
 
 // Eine Zeile je Datei (gleiche Datei unter mehreren Adressen: der höchste Wert zählt). other: nur als übriges PDF verlinkt
@@ -102,11 +150,12 @@ export function storeQuality(files,textOnly=[]){
   textOnly:{files:textOnly.length,avg:avg(textOnly)}};
 }
 export const rankedFile=(store,sha)=>{const f=store.db.prepare(FILES+' AND p.sha256=? GROUP BY p.sha256').get(sha);return f?ranked(f):null;};
-/** Zu große Datei (rankPdf keep:false) mit vollständigem Text: PDF löschen, Text bleibt (text.mjs gleich nach dem Lesen, der
-    Tausch beim nächsten Laden). Ein Scan wartet auf seine OCR (übrige PDFs nur Textebene). true, wenn gelöscht */
+/** Zu große Datei (rankPdf keep:false) mit gelesener Textebene: PDF löschen, Text bleibt (text.mjs gleich nach dem Lesen, der
+    Tausch beim nächsten Laden). Auch ein Scan wartet nicht auf seine OCR: die holt die Datei später kurz nach (ocrWithRefetch,
+    Entscheidung 12.10.2026). true, wenn gelöscht */
 export function dropIfTooBig(store,sha){
  const f=rankedFile(store,sha);
- if(!f||f.keep||f.chars==null||(f.ocrNeeded>0&&!f.other))return false;
+ if(!f||f.keep||f.chars==null)return false;
  store.dropPdf(sha);return true;
 }
 /** Platz der Textfassungen in Bytes (sie zählen mit in die Grenze und bleiben immer) */
@@ -118,37 +167,28 @@ export const usedBytes=store=>store.size()+textBytes(store);
  * Feste Grenze mit Tausch (fetch.mjs --budget-gb): Solange Platz ist, bleibt jede neue Datei. Ist die Grenze erreicht, wird
  * die neue Datei sofort bewertet (Textebene gelesen: Textmenge und Seiten, die auf OCR warten, gehen in den Score ein) und mit der schlechtesten behaltenen verglichen:
  * besser → die schlechteste fliegt raus, sonst die neue. Zu große Dateien (rankPdf keep:false) behalten nur den Text.
- * Vor dem Löschen ist der Text immer vollständig: fehlende Textebene wird gelesen, Seiten ohne Text per OCR (sofort, auch bei
- * vielen Seiten; nicht bei übrigen PDFs, die behalten nur die Textebene). Fehlen die OCR-Werkzeuge, bleibt ein Scan als PDF liegen (lieber kurz über der Grenze als Text verlieren).
+ * Vor dem Löschen wird die Textebene gelesen, falls sie fehlt; keine OCR (Entscheidung 12.10.2026): Seiten ohne Text liest
+ * später der Auftrag „OCR starten“, der die Datei dafür kurz nachlädt (ocrWithRefetch).
  * Entscheidungen laufen nacheinander; überschritten wird die Grenze nur um gerade geladene, noch nicht entschiedene Dateien.
  */
-export function keeper(store,limit,{ocrWorkers=2,log=()=>{},halt=()=>false}={}){
+export function keeper(store,limit,{halt=()=>false}={}){
  const all=rankedFiles(store),kept=all.filter(f=>f.keep).sort((a,b)=>a.order-b.order),have=new Set(kept.map(f=>f.sha));
- const c={kept:0,swapped:0,rejected:0,tooBig:0,tooBigLater:0,ocrPages:0,stuck:0};
- let ocr,lock=Promise.resolve();
+ const c={kept:0,swapped:0,rejected:0,tooBig:0};
+ let lock=Promise.resolve();
  /* Belegter Platz: einmal gezählt, dann fortgeschrieben (die volle Zählung liest alle Einträge der Ablage und wäre je Datei
     zu langsam); alle SYNC Entscheidungen neu gezählt, damit sich keine Abweichung ansammelt */
  const SYNC=2000,textOf=sha=>Number(store.db.prepare("SELECT chars FROM texts WHERE sha256=? AND status='ok'").get(sha)?.chars||0)*1.05;
  let used=usedBytes(store),since=0;
- /* Zu große Dateien (nie als PDF behalten) mit vollständigem Text vom letzten Mal jetzt löschen: Ihre Scans hat inzwischen der
-    OCR-Schritt der Nachtkette gelesen (siehe decide) */
- for(const f of all)if(!f.keep&&f.chars!=null&&!(f.ocrNeeded>0&&!f.other)){store.dropPdf(f.sha);used-=f.bytes;c.tooBig++;}
- /** Text vollständig? Sonst Textebene lesen und Seiten ohne Text per OCR (übrige PDFs nur Textebene); false, wenn OCR nötig,
-     aber nicht möglich ist */
+ /* Zu große Dateien (nie als PDF behalten) mit gelesener Textebene vom letzten Mal jetzt löschen */
+ for(const f of all)if(!f.keep&&f.chars!=null){store.dropPdf(f.sha);used-=f.bytes;c.tooBig++;}
+ /** Textebene lesen, falls sie fehlt (der Text bleibt in jedem Fall) */
  const complete=async f=>{
-  const t=store.db.prepare('SELECT version,ocr_needed AS ocrNeeded,status FROM texts WHERE sha256=?').get(f.sha),before=textOf(f.sha);
-  let waiting=t&&t.version>=TEXT_VERSION?(t.status==='ok'?t.ocrNeeded:0):null;
-  try{
-   if(waiting===null){try{waiting=await readTextLayer(store,f.sha);}catch(e){store.failText(f.sha,e.message,{version:TEXT_VERSION});waiting=0;}}
-   if(!waiting||f.other)return true;
-   if(halt())return false;
-   ocr??=await ocrScheduler(ocrWorkers)||false;
-   if(!ocr)return false;
-   try{c.ocrPages+=await ocrFile(store,f.sha,ocr,{halt});}catch(e){if(e.halted)return false;throw e;}
-   return true;
-  }finally{used+=textOf(f.sha)-before;}
+  const t=store.db.prepare('SELECT version FROM texts WHERE sha256=?').get(f.sha),before=textOf(f.sha);
+  if(t&&t.version>=TEXT_VERSION)return;
+  try{await readTextLayer(store,f.sha);}catch(e){store.failText(f.sha,e.message,{version:TEXT_VERSION});}
+  finally{used+=textOf(f.sha)-before;}
  };
- const drop=async f=>{if(!await complete(f)){if(halt())return false;c.stuck++;log(`OCR nicht möglich, PDF bleibt: ${f.sha.slice(0,12)}`);return false;}store.dropPdf(f.sha);used-=f.bytes;return true;};
+ const drop=async f=>{await complete(f);store.dropPdf(f.sha);used-=f.bytes;};
  /* Gleicher Score: die neue Datei hinter die schon behaltenen (bei Gleichstand fliegt die älteste Entscheidung zuerst) */
  const insert=f=>{let lo=0,hi=kept.length;while(lo<hi){const m=(lo+hi)>>1;if(kept[m].order<=f.order)lo=m+1;else hi=m;}kept.splice(lo,0,f);have.add(f.sha);};
  const decide=async(sha,before)=>{
@@ -156,16 +196,14 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{},halt=()=>false}={}){
   const f=rankedFile(store,sha);if(!f)return 'fehlt';
   used+=f.bytes+textOf(sha)-before;
   if(++since>=SYNC){since=0;used=usedBytes(store);}
-  /* Zu groß (nie als PDF behalten, die Grenze betrifft das nicht): ohne Scan sofort löschen; einen Scan nicht hier per OCR
-     lesen (das hielte alle Downloads an), sondern liegen lassen, bis der OCR-Schritt der Nachtkette ihn gelesen hat */
-  if(!f.keep){if(f.ocrNeeded>0&&!f.other){c.tooBigLater++;return 'zu groß, OCR folgt';}await drop(f);c.tooBig++;return 'zu groß';}
+  /* Zu groß (nie als PDF behalten, die Grenze betrifft das nicht): sofort löschen, auch einen Scan */
+  if(!f.keep){await drop(f);c.tooBig++;return 'zu groß';}
   /* Angehalten: nichts mehr verdrängen, die neue Datei bleibt (über der Grenze bis zum nächsten Lauf mit Budget) */
   while(used>limit&&!halt()){
    const worst=kept[0];
    if(!worst||worst.order>=f.order){await drop(f);c.rejected++;return 'nicht besser';}
    kept.shift();have.delete(worst.sha);
-   if(!await drop(worst)){insert(worst);await drop(f);c.rejected++;return 'nicht besser';}
-   c.swapped++;
+   await drop(worst);c.swapped++;
   }
   insert(f);c.kept++;return 'behalten';
  };
@@ -181,7 +219,7 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{},halt=()=>false}={}){
   stats:()=>({...c}),
   /** Belegter Platz, wie fortgeschrieben */
   used:()=>used,
-  close:async()=>{await lock.catch(()=>{});if(ocr)await ocr.terminate();},
+  close:async()=>{await lock.catch(()=>{});},
  };
 }
 

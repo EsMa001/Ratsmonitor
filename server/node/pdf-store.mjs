@@ -24,7 +24,10 @@ const isPdf=bytes=>bytes.byteLength>4&&bytes[0]===0x25&&bytes[1]===0x50&&bytes[2
 export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
  fs.mkdirSync(path.join(dir,'files'),{recursive:true});
  const db=new DatabaseSync(path.join(dir,'index.sqlite'));
- db.exec(`PRAGMA journal_mode=WAL;PRAGMA busy_timeout=30000;
+ // Erst warten lassen, dann WAL: öffnen zwei Prozesse die Ablage gleichzeitig (zwei Bahnen, job.mjs), wartet der zweite, statt
+ // sofort mit „database is locked“ abzubrechen. Beim allerersten Anlegen wartet SQLite beim Umstellen auf WAL nicht: dann kurz
+ // wiederholen (setup ist mehrfach ausführbar)
+ const setup=()=>db.exec(`PRAGMA busy_timeout=30000;PRAGMA journal_mode=WAL;
   CREATE TABLE IF NOT EXISTS pdfs(url TEXT PRIMARY KEY,sha256 TEXT,bytes INTEGER,pages INTEGER,status TEXT NOT NULL,http INTEGER,error TEXT,fetched_at TEXT NOT NULL,region_id TEXT,topic_id TEXT);
   CREATE INDEX IF NOT EXISTS idx_pdfs_sha ON pdfs(sha256);CREATE INDEX IF NOT EXISTS idx_pdfs_status ON pdfs(status,fetched_at);
   -- method: 'text' (Textebene), 'ocr' (alle Seiten per OCR), 'mixed'; ocr_needed: Seiten ohne Textebene, die noch auf OCR warten.
@@ -34,11 +37,17 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   -- Prüfsumme der Textfassung (sha256 über die .txt-Datei) je Datei und Stand made_at: summaries.mjs vergleicht sie mit
   -- ruleSummaryTried, ohne die Datei bei jedem Lauf zu lesen. facts_keys: Eingaben der letzten Fakten je Bericht (facts.mjs).
   CREATE TABLE IF NOT EXISTS text_hashes(sha256 TEXT PRIMARY KEY,made_at TEXT NOT NULL,hash TEXT NOT NULL);
-  CREATE TABLE IF NOT EXISTS facts_keys(topic_id TEXT PRIMARY KEY,key TEXT NOT NULL);`);
+  CREATE TABLE IF NOT EXISTS facts_keys(topic_id TEXT PRIMARY KEY,key TEXT NOT NULL);
+  -- Verdrängte PDFs, die für die OCR nachgeladen werden sollten (Auftrag „OCR starten“) und nicht kamen: kein neuer Versuch
+  CREATE TABLE IF NOT EXISTS ocr_refetch(sha256 TEXT PRIMARY KEY,error TEXT,tried_at TEXT NOT NULL);
+  -- OCR einer Datei über der Zeitgrenze je Datei abgebrochen (Auftrag „OCR starten“, text.mjs --file-minutes): ans Ende der Reihe
+  CREATE TABLE IF NOT EXISTS ocr_slow(sha256 TEXT PRIMARY KEY,tried_at TEXT NOT NULL);`);
+ for(let i=0;;i++){try{setup();break;}catch(e){if(e.errcode!==5||i>=50)throw e;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,100);}}
  // head_type: Dokumentart laut Textanfang (documentTypeFromText, shared/document-type.mjs), '' ohne Merkmal, NULL noch nicht bestimmt
  if(!db.prepare('PRAGMA table_info(texts)').all().some(c=>c.name==='head_type'))db.exec('ALTER TABLE texts ADD COLUMN head_type TEXT');
  // Angaben für den Rang (shared/pdf-rank.mjs): Dokumentart (documentType des Titels), Formalie, Sitzungstag.
- // role: 'other' für PDFs, die nicht Hauptdokument sind (fetch.mjs --others: nur Textebene, kein OCR); leer = Hauptdokument.
+ // role: 'other' für PDFs, die nicht Hauptdokument sind (fetch.mjs --others); leer = Hauptdokument. Für die OCR zählen beide,
+ // bei gleicher Seitenzahl gehen Hauptdokumente vor (ocrQueue).
  const cols=new Set(db.prepare('PRAGMA table_info(pdfs)').all().map(c=>c.name));
  for(const [c,t] of [['doc_type','TEXT'],['formal','INTEGER'],['event_date','TEXT'],['role','TEXT']])if(!cols.has(c))db.exec(`ALTER TABLE pdfs ADD COLUMN ${c} ${t}`);
  const fileOf=(sha,ext='.pdf')=>path.join(dir,'files',sha.slice(0,2),sha+ext);
@@ -63,8 +72,18 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   metaGet:db.prepare('SELECT value FROM meta WHERE key=?'),
   metaSet:db.prepare('INSERT INTO meta(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value'),
   textless:db.prepare(`SELECT DISTINCT p.sha256 AS sha FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok' AND (t.sha256 IS NULL OR t.version<?)`),
-  // OCR nur für Hauptdokumente: Dateien, die nur als übrige PDFs (role 'other') verlinkt sind, behalten nur die Textebene
-  ocrQueue:db.prepare("SELECT sha256 AS sha FROM texts t WHERE ocr_needed>0 AND EXISTS(SELECT 1 FROM pdfs p WHERE p.sha256=t.sha256 AND COALESCE(p.role,'')<>'other')"),
+  // OCR (Auftrag „OCR starten“, text.mjs --ocr): alle Dateien mit Seiten ohne Text, Hauptdokumente und übrige PDFs in einer Reihe.
+  // Leichte zuerst (wenigste Seiten für die OCR, so werden schnell viele Dateien vollständig), bei gleich vielen Hauptdokumente vor
+  // übrigen, abgelegte vor verdrängten ('text-only', werden kurz nachgeladen), dann kleinere; Dateien, deren OCR schon einmal über
+  // der Zeitgrenze lag (ocr_slow), ganz am Ende; ohne die, deren Nachladen schon einmal scheiterte (ocr_refetch)
+  ocrQueue:db.prepare(`SELECT t.sha256 AS sha,MAX(COALESCE(p.role,'')<>'other') AS main,MAX(p.status='ok') AS present,MAX(p.bytes) AS bytes,t.ocr_needed AS need
+   FROM texts t JOIN pdfs p ON p.sha256=t.sha256 WHERE t.ocr_needed>0 AND p.status IN ('ok','text-only')
+   AND NOT EXISTS(SELECT 1 FROM ocr_refetch r WHERE r.sha256=t.sha256) GROUP BY t.sha256
+   ORDER BY EXISTS(SELECT 1 FROM ocr_slow s WHERE s.sha256=t.sha256),need,main DESC,present DESC,bytes,t.sha256`),
+  slow:db.prepare('INSERT INTO ocr_slow(sha256,tried_at) VALUES(?,?) ON CONFLICT(sha256) DO UPDATE SET tried_at=excluded.tried_at'),
+  urlsOf:db.prepare("SELECT url FROM pdfs WHERE sha256=? AND status IN ('ok','text-only') ORDER BY fetched_at DESC"),
+  present:db.prepare("SELECT 1 FROM pdfs WHERE sha256=? AND status='ok' LIMIT 1"),
+  refetchFailed:db.prepare('INSERT INTO ocr_refetch(sha256,error,tried_at) VALUES(?,?,?) ON CONFLICT(sha256) DO UPDATE SET error=excluded.error,tried_at=excluded.tried_at'),
   textStats:db.prepare("SELECT status,method,COUNT(*) AS n,SUM(chars) AS chars,SUM(ocr_needed>0) AS waiting FROM texts GROUP BY status,method"),
  };
  return {
@@ -146,8 +165,16 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   setNote:(key,value)=>{q.metaSet.run(key,String(value));},
   /** Prüfsummen geladener PDFs ohne Textfassung der Fassung `version`. */
   textless:version=>q.textless.all(version).map(r=>r.sha),
-  /** Prüfsummen mit Seiten, die auf OCR warten. */
-  ocrQueue:()=>q.ocrQueue.all().map(r=>r.sha),
+  /** Dateien mit Seiten, die auf OCR warten, in der Reihenfolge der OCR: [{sha, main (Hauptdokument), present (PDF liegt), need}]. */
+  ocrQueue:()=>q.ocrQueue.all().map(r=>({sha:r.sha,main:!!r.main,present:!!r.present,need:r.need})),
+  /** Adressen einer Datei (geladen oder nur noch als Text), die jüngste zuerst. */
+  urlsOf:sha=>q.urlsOf.all(sha).map(r=>r.url),
+  /** Liegt das PDF laut Eintrag (Status 'ok')? */
+  present:sha=>!!q.present.get(sha),
+  /** Nachladen für die OCR ging nicht: vermerken, die Datei kommt nicht wieder in die Reihe. */
+  refetchFailed:(sha,error)=>{q.refetchFailed.run(sha,String(error).slice(0,300),new Date().toISOString());},
+  /** OCR der Datei lag über der Zeitgrenze je Datei: ans Ende der OCR-Reihe. */
+  markSlow:sha=>{q.slow.run(sha,new Date().toISOString());},
   textStats:()=>q.textStats.all().map(r=>({...r})),
   /** Belegter Platz der Dateien in Bytes (jede Datei einmal). */
   size:()=>Number(q.size.get().b),

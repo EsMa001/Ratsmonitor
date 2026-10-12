@@ -1,4 +1,5 @@
-import {compactSummaryAttempt} from '../integrations/compact-summary.mjs';
+import {compactSummaryAttempt,withRuleSummary} from '../integrations/compact-summary.mjs';
+import {RULE_SUMMARY_VERSION} from '../integrations/rule-summary.mjs';
 import {versionPayload} from '@/shared/article-version.mjs';
 import {invalidateReads} from './read-cache.mjs';
 import {importHealth} from '../integrations/import-health.mjs';
@@ -99,10 +100,26 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
     for (const row of rows.results) { try { for (const d of JSON.parse(row.payload).documents || []) if (d.kind === 'application/pdf') uses.set(d.url, (uses.get(d.url) || 0) + 1); } catch { /* kaputter Payload: zählt nicht */ } }
     let processed = 0; for (const row of rows.results) {
     const old = JSON.parse(row.payload);
+    const ai = String(old.generatedBy || '').startsWith('KI-Zusammenfassung');
     if (!old.documents.some((d: {
         kind: string;
-    }) => d.kind === 'application/pdf') || old.summaryAttemptedAt || old.generatedBy.startsWith('KI-Zusammenfassung'))
+    }) => d.kind === 'application/pdf') || (!ai && old.summaryAttemptedAt))
         continue;
+    /* KI-Zusammenfassung: zusätzlich die Regel-Zusammenfassung aus dem Hauptdokument, ohne KI (Entscheidung 12.10.2026); nur
+       ruleSummary wird geschrieben (withRuleSummary), einmal je Regelfassung. Die Nachtkette der PDF-Ablage versucht es mit
+       ihrem Text erneut (summaries.mjs merkt sich die Prüfsumme des Texts statt „import“). */
+    if (ai) {
+        if (old.ruleSummary || String(old.ruleSummaryTried || '').startsWith(`${RULE_SUMMARY_VERSION}:`))
+            continue;
+        let t = old;
+        try { t = await enrichDocument({ ...old }, undefined, { uses: (url: string) => uses.get(url) || 0 }); }
+        catch { /* Dokument nicht lesbar: als Versuch gemerkt */ }
+        await env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(withRuleSummary(old, t, `${RULE_SUMMARY_VERSION}:import`)), old.id).run();
+        processed++;
+        if (processed >= 8)
+            break;
+        continue;
+    }
     if (!env.OPENAI_API_KEY && (old.documentText || old.hasDocumentText))
         continue;
     let t = {...old};

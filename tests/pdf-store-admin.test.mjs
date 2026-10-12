@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {gzipSync} from 'node:zlib';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
-import {pdfStoreState,requestPdfJob,removePdfJob,requestStop,requestCount,errorsCsv,normalizeJobs,STATS_KEY,JOB_KEY,HEARTBEAT_KEY,PROGRESS_KEYS,ERRORS_KEY,QUEUE_MAX} from '../server/integrations/pdf-store-admin.mjs';
+import {pdfStoreState,requestPdfJob,removePdfJob,requestStop,requestCount,errorsCsv,normalizeJobs,addJob,laneOf,STATS_KEY,JOB_KEY,HEARTBEAT_KEY,PROGRESS_KEYS,ERRORS_KEY,QUEUE_MAX} from '../server/integrations/pdf-store-admin.mjs';
 import {JOBS,settingOf,dueNow,nextRun,slotAt,setSchedule,runScheduleNow,schedulesState} from '../server/integrations/schedules.mjs';
 import {diskDue,storageState,requestDiskCount} from '../server/integrations/server-storage.mjs';
 
@@ -14,7 +14,7 @@ const fresh=()=>{const sql=new DatabaseSync(':memory:');sql.exec('CREATE TABLE s
 test('Aufträge: Reihe, gleiche Art nie doppelt (wartend oder laufend), Entfernen, Obergrenze, unbekannte Arten abgelehnt',async()=>{
  const {sql,db}=fresh();
  const s0=await pdfStoreState(db);
- assert.deepEqual(s0.jobs,{queue:[],current:null,recent:[]});assert.equal(s0.worker,false);
+ assert.deepEqual(s0.jobs,{queue:[],running:{chain:null,ocr:null},recent:[]});assert.equal(s0.worker,false);
  sql.prepare('INSERT INTO system_state VALUES(?,?)').run(STATS_KEY,JSON.stringify({linked:10,loaded:4}));
  const a=await requestPdfJob(db,'retry');assert.equal(a.created,true);
  const b=await requestPdfJob(db,'retry');assert.equal(b.created,false);assert.equal(b.jobs.queue.length,1);
@@ -25,18 +25,27 @@ test('Aufträge: Reihe, gleiche Art nie doppelt (wartend oder laufend), Entferne
  assert.equal((await pdfStoreState(db)).jobs.queue.length,QUEUE_MAX,'jede Art höchstens einmal, also nie mehr als QUEUE_MAX');
  for(const k of ['run','others','ocr'])assert.equal((await requestPdfJob(db,k)).reason,'waiting','dieselbe Art nie doppelt in der Reihe');
  const {sql:sql2,db:db2}=fresh(),at=new Date().toISOString();
- sql2.prepare('INSERT INTO system_state VALUES(?,?)').run(JOB_KEY,JSON.stringify({queue:[],current:{id:'t',kind:'texts',state:'running',startedAt:at,updatedAt:at},recent:[]}));
+ sql2.prepare('INSERT INTO system_state VALUES(?,?)').run(JOB_KEY,JSON.stringify({queue:[],running:{chain:{id:'t',kind:'texts',state:'running',startedAt:at,updatedAt:at},ocr:null},recent:[]}));
  const busy=await requestPdfJob(db2,'texts');assert.equal(busy.created,false);assert.equal(busy.reason,'running');
- assert.equal((await requestPdfJob(db2,'ocr')).created,true,'andere Art wartet hinter dem laufenden');
+ assert.equal((await requestPdfJob(db2,'run')).created,true,'andere Art wartet hinter dem laufenden');
  assert.equal((await pdfStoreState(db)).stats.linked,10);
 });
 
-test('Aufträge: frühere Form wird übernommen, verwaister laufender Auftrag gilt als veraltet',async()=>{
+test('Aufträge: zwei Bahnen (Laden und OCR), je Bahn einer; frühere Formen werden übernommen, verwaister Auftrag gilt als veraltet',async()=>{
+ assert.deepEqual(['run','retry','others','texts','ocr'].map(laneOf),['chain','chain','chain','chain','ocr']);
  assert.deepEqual(normalizeJobs({kind:'others',state:'waiting',requestedAt:'x'}).queue.map(j=>j.kind),['others']);
  assert.equal(normalizeJobs({kind:'run',state:'done',requestedAt:'x'}).recent.length,1);
+ assert.equal(normalizeJobs({kind:'ocr',state:'running',requestedAt:'x'}).running.ocr.kind,'ocr','einzelner laufender Auftrag in seiner Bahn');
+ const legacy=normalizeJobs({queue:[],current:{id:'c',kind:'ocr',state:'running'},recent:[]});
+ assert.deepEqual([legacy.running.chain,legacy.running.ocr.id],[null,'c'],'früheres Feld current landet in der Bahn seines Auftrags');
+ // Ein laufender OCR-Auftrag hält nur seine Art auf: „Lauf starten“ wartet in seiner Bahn, „OCR starten“ nicht doppelt
+ const ocrRunning={queue:[],running:{chain:null,ocr:{id:'o',kind:'ocr',state:'running'}},recent:[]};
+ assert.equal(addJob(ocrRunning,'ocr').reason,'running');
+ assert.deepEqual(addJob(ocrRunning,'run').next.queue.map(j=>j.kind),['run']);
+ assert.throws(()=>addJob(null,'ocr-others'),/Unbekannter Auftrag/,'der frühere Auftrag „OCR übrige Dokumente“ ist in „OCR starten“ aufgegangen');
  const {sql,db}=fresh(),old=new Date(Date.now()-3600000).toISOString();
- sql.prepare('INSERT INTO system_state VALUES(?,?)').run(JOB_KEY,JSON.stringify({queue:[],current:{id:'a',kind:'run',state:'running',startedAt:old,updatedAt:old},recent:[]}));
- assert.equal((await pdfStoreState(db)).jobs.current.state,'stale');
+ sql.prepare('INSERT INTO system_state VALUES(?,?)').run(JOB_KEY,JSON.stringify({queue:[],running:{chain:{id:'a',kind:'run',state:'running',startedAt:old,updatedAt:old},ocr:null},recent:[]}));
+ const st=(await pdfStoreState(db)).jobs.running;assert.equal(st.chain.state,'stale');assert.equal(st.ocr,null);
 });
 
 test('Anhalten, neu zählen, Fortschritt und Lebenszeichen nur frisch, Fehlerliste aus Stücken',async()=>{

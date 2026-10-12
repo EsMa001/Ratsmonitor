@@ -544,7 +544,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (37): generateMetadata, Page
+- page.tsx (38): generateMetadata, Page
 
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
@@ -627,15 +627,15 @@ topic design-styles.css:140
 - admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠15): AdminDashboardView
-- admin-estimate.tsx (355, ⚠52): AdminEstimate
+- admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
 - admin-keywords.tsx (103, ⚠10): AdminKeywords
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
-- admin-pdf-parts.tsx (168, ⚠6): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
-- admin-pdf.tsx (272, ⚠19): AdminPdf
+- admin-pdf-parts.tsx (168, ⚠7): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
+- admin-pdf.tsx (275, ⚠21): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (243, ⚠25): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
@@ -714,7 +714,7 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (211, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- branchen-enterprise.ts (108): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (107): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
@@ -762,7 +762,7 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (231, ⚠1): MainMenu
+- MainMenu.tsx (229, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (138, ⚠3): DetailPage
@@ -776,33 +776,33 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (320): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (369, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
+- AnalyticsAbout.tsx (374, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (66, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (76, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (72): ATLAS_BEREICHE, AtlasBereich, isAtlasBereich, atlasHref, AtlasPage
+- AtlasPage.tsx (74): ATLAS_BEREICHE, AtlasBereich, isAtlasBereich, atlasHref, AtlasPage
 - BauleitplanungPage.tsx (265, ⚠9): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (222, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (308, ⚠12): ComparePage
+- ComparePage.tsx (308, ⚠11): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (275, ⚠6): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
-- FoerderradarPage.tsx (241, ⚠9): FoerderradarPage
+- FoerderradarPage.tsx (250, ⚠9): FoerderradarPage
 - FraktionenPage.tsx (175, ⚠5): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (201, ⚠3): GremiennetzPage
-- KitaRadarPage.tsx (190, ⚠8): KitaRadarPage
+- KitaRadarPage.tsx (190, ⚠7): KitaRadarPage
 - KnowledgeGraphPage.tsx (229, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (135, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (56): DrillItem, RadarDrill
-- RadarExtra.tsx (153, ⚠8): Extra, RadarExtra
+- RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
 - RadarMap.tsx (78, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS

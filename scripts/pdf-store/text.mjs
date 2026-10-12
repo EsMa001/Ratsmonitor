@@ -2,8 +2,15 @@
 // sie liefert (getrennt durch \f), damit readDocument daraus genau den Text des PDFs bildet (mergePages in documents.mjs).
 //
 //   node scripts/pdf-store/text.mjs [--limit N]    Textebene aller geladenen PDFs ohne Textfassung auslesen (schnell, ~12 ms je Datei)
-//   node scripts/pdf-store/text.mjs --ocr [--workers 4] [--limit N]
-//                                                  Seiten ohne Textebene (unter MIN_CHARS Zeichen) per OCR lesen
+//   node scripts/pdf-store/text.mjs --ocr [--workers 3] [--limit N] [--timeout-ms 10000] [--file-minutes M]
+//                                                  Seiten ohne Textebene (unter MIN_CHARS Zeichen) per OCR lesen (Auftrag „OCR
+//                                                  starten“): alle PDFs, Hauptdokumente und übrige, in einer Reihe (ocrQueue): die
+//                                                  mit den wenigsten OCR-Seiten zuerst, bei gleich vielen Hauptdokumente vor
+//                                                  übrigen. Verdrängte Dateien ('text-only') werden kurz nachgeladen, gelesen und
+//                                                  gleich wieder gelöscht (ocrWithRefetch in store-lib.mjs); ein Server mit 3
+//                                                  Fehlern in Folge fällt für den Lauf heraus. Je Worker eine Datei zur Zeit.
+//   --file-minutes M (nightly.mjs setzt 5): Zeitgrenze je Datei; wer länger braucht, wird abgebrochen, nichts geschrieben und
+//                                                  ans Ende der Reihe gestellt (ocr_slow). Ohne: keine Grenze.
 //   node scripts/pdf-store/text.mjs --stats        Stand der Textfassungen
 //   --max-minutes M: danach keine neue Datei mehr anfangen (nächtliche Kette, nightly.mjs); der nächste Lauf macht weiter.
 // OCR: tesseract.js (Deutsch) und @napi-rs/canvas aus OCR_TOOLS (Ordner mit node_modules; Standard VIDEO_TOOLS bzw.
@@ -12,12 +19,12 @@
 // Schritt der Nachtkette, während ein langer Lauf von Hand läuft) endet sofort, statt dieselben Seiten noch einmal zu lesen.
 // Lesen und OCR je Datei: store-lib.mjs (auch für den Tausch in fetch.mjs). Neue Fassung des Leseverfahrens: TEXT_VERSION
 // dort erhöhen, dann liest der erste Aufruf alle Dateien neu.
-// Zu große Dateien (über 10 MB, shared/pdf-rank.mjs) verlieren ihr PDF, sobald ihr Text vollständig ist (dropIfTooBig): ohne
-// Scan-Seiten gleich nach der Textebene, sonst gleich nach der OCR.
+// Zu große Dateien (über 10 MB, shared/pdf-rank.mjs) verlieren ihr PDF gleich nach der Textebene (dropIfTooBig), auch Scans:
+// deren OCR lädt die Datei später kurz nach.
 import fs from 'node:fs';
 import path from 'node:path';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,dropIfTooBig} from './store-lib.mjs';
+import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,ocrWithRefetch,downloader,dropIfTooBig} from './store-lib.mjs';
 import {progress,onStop,stepSummary,lane} from './state.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
@@ -27,8 +34,8 @@ const limit=Number(opt('limit',0)),maxMinutes=Number(opt('max-minutes',0)),start
 const myLane=lane(flag('ocr')?'ocr':'chain'),chained=!!process.env.RM_PROGRESS_BASE;
 // Anhalten (Admin-Reiter alle 2 s, Signal, Strg+C): Textebene nach der laufenden Datei, OCR nach der laufenden Seitengruppe;
 // fertige Textfassungen bleiben, eine halb gelesene Datei bleibt in der OCR-Reihe
-let halted=false;
-if(!flag('stats'))onStop(myLane,started,why=>{halted=true;console.log(`Angehalten (${why==='admin'?'Admin-Reiter':why})`);});
+let halted=false;const halt=new AbortController();
+if(!flag('stats'))onStop(myLane,started,why=>{halted=true;halt.abort();console.log(`Angehalten (${why==='admin'?'Admin-Reiter':why})`);});
 const late=()=>halted||(maxMinutes>0&&Date.now()-started>maxMinutes*60000);
 let told=0;
 const tell=(detail,force)=>{if(!force&&Date.now()-told<60000)return;told=Date.now();
@@ -62,24 +69,44 @@ if(!flag('ocr')){
  catch{const pid=Number(fs.readFileSync(lock,'utf8'));if(pid&&alive(pid)){console.log(`OCR läuft schon (Prozess ${pid}), nichts zu tun`);stepSummary({skipped:'OCR-Lauf von Hand läuft'});store.close();process.exit(0);}fs.writeFileSync(lock,String(process.pid));}
  const release=()=>{try{if(fs.readFileSync(lock,'utf8')===String(process.pid))fs.unlinkSync(lock);}catch{/* schon weg */}};
  process.on('exit',release);
- const workers=Number(opt('workers',4)),ocr=await ocrScheduler(workers);
+ const workers=Number(opt('workers',3)),ocr=await ocrScheduler(workers);
  if(!ocr){console.error('OCR-Werkzeuge fehlen (OCR_TOOLS).');process.exit(1);}
- const todo=store.ocrQueue().slice(0,limit||undefined),t0=Date.now();let files=0,pagesDone=0,failed=0,dropped=0;
- console.log(`${todo.length} Dateien mit Seiten ohne Textebene, ${workers} OCR-Worker`);
- const one=async sha=>{
-  try{pagesDone+=await ocrFile(store,sha,ocr,{halt:()=>halted});files++;if(dropIfTooBig(store,sha))dropped++;}
-  catch(e){if(e.halted){queue.unshift(sha);return;}failed++;console.error('OCR',sha.slice(0,12),e.message);}
-  if((files+failed)%100===0)console.log(`${files+failed}/${todo.length} Dateien, ${pagesDone} Seiten, ${failed} Fehler, ${elapsed(t0)}`);
-  const h=(Date.now()-t0)/3600000;
-  tell({step:'OCR',ocr:{done:files+failed,total:todo.length,pages:pagesDone,failed,workers,perHour:h>0.05?Math.round((files+failed)/h):null}});
+ const todo=store.ocrQueue().slice(0,limit||undefined),main=new Set(todo.filter(x=>x.main).map(x=>x.sha)),t0=Date.now();
+ let files=0,primary=0,pagesDone=0,failed=0,dropped=0,fetched=0,changed=0,skipped=0,slow=0;
+ const fileMs=Number(opt('file-minutes',0))*60000;
+ console.log(`${todo.length} Dateien mit Seiten ohne Textebene (${main.size} Hauptdokumente), ${workers} OCR-Worker`);
+ // Nachladen: ein Server mit 3 Fehlern in Folge fällt für diesen Lauf heraus (seine Dateien bleiben offen)
+ const get=downloader({timeoutMs:Number(opt('timeout-ms',10000)),signal:halt.signal}),fails=new Map();
+ const download=async url=>{
+  const host=new URL(url).host;
+  if((fails.get(host)||0)>=3)throw Object.assign(Error('Server ausgelassen'),{skip:true});
+  try{const b=await get(url);fails.set(host,0);return b;}catch(e){if(!halted)fails.set(host,(fails.get(host)||0)+1);throw e;}
  };
- tell({step:'OCR',ocr:{done:0,total:todo.length,pages:0,failed:0,workers,perHour:null}},true);
- // Mehrere Dateien gleichzeitig, damit alle OCR-Worker zu tun haben.
- const queue=[...todo];await Promise.all(Array.from({length:workers},async()=>{while(queue.length&&!late())await one(queue.shift());}));
+ const read=sha=>ocrFile(store,sha,ocr,{halt:()=>halted,deadline:fileMs?Date.now()+fileMs:0});
+ const one=async sha=>{
+  try{
+   const r=await ocrWithRefetch(store,sha,{download,read,halted:()=>halted});
+   pagesDone+=r.pages;if(r.fetched)fetched++;
+   if(r.result==='ok'){files++;if(main.has(sha))primary++;if(dropIfTooBig(store,sha))dropped++;}
+   else if(r.result==='skipped')skipped++;else{failed++;if(r.result==='changed')changed++;}
+  }
+  catch(e){
+   if(e.halted){queue.unshift(sha);return;}
+   if(e.slow){slow++;store.markSlow(sha);console.log(`OCR ${sha.slice(0,12)} über der Zeitgrenze (${fileMs/60000} min), ans Ende der Reihe`);}
+   else{failed++;console.error('OCR',sha.slice(0,12),e.message);}
+  }
+  const done=files+failed+skipped+slow,h=(Date.now()-t0)/3600000;
+  if(done%100===0)console.log(`${done}/${todo.length} Dateien, ${pagesDone} Seiten, ${failed} Fehler, ${slow} zu langsam, ${fetched} nachgeladen, ${elapsed(t0)}`);
+  tell({step:'OCR',ocr:{done,total:todo.length,pages:pagesDone,failed,workers,perHour:h>0.05?Math.round(done/h):null,fetched,...(fileMs?{slow}:{})}});
+ };
+ tell({step:'OCR',ocr:{done:0,total:todo.length,pages:0,failed:0,workers,perHour:null,fetched:0,...(fileMs?{slow:0}:{})}},true);
+ // Je Worker eine Datei zur Zeit (bei den vielen Dateien mit einer Seite hätten sonst nicht alle Worker zu tun); so liegen
+ // höchstens so viele nachgeladene Dateien wie Worker gleichzeitig da
+ const queue=todo.map(x=>x.sha);await Promise.all(Array.from({length:workers},async()=>{while(queue.length&&!late())await one(queue.shift());}));
  if(queue.length)console.log(`${halted?'Angehalten':`Zeitgrenze erreicht (${maxMinutes} min)`}, ${queue.length} Dateien im nächsten Lauf`);
  await ocr.terminate();
- console.log(`fertig: ${files} Dateien, ${pagesDone} Seiten per OCR, ${failed} Fehler, ${dropped} zu große PDFs gelöscht (${elapsed(t0)})`);
- stepSummary({files,pages:pagesDone,failed,dropped,open:queue.length,seconds:Math.round((Date.now()-t0)/1000),stopped:halted});
+ console.log(`fertig: ${files} Dateien (${primary} Hauptdokumente), ${pagesDone} Seiten per OCR, ${failed} Fehler (davon ${changed} geändert), ${fetched} nachgeladen und wieder gelöscht, ${skipped} Server ausgelassen${fileMs?`, ${slow} über der Zeitgrenze (später)`:''}, ${dropped} zu große PDFs gelöscht (${elapsed(t0)})`);
+ stepSummary({files,primary,pages:pagesDone,failed,changed,fetched,skipped,dropped,open:queue.length+skipped+slow,seconds:Math.round((Date.now()-t0)/1000),stopped:halted,...(fileMs?{slow}:{})});
  if(!chained)progress(myLane,null);
 }
 store.close();

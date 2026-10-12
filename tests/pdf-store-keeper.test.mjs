@@ -42,12 +42,12 @@ test('feste Grenze: neue Datei verdrängt die schlechteste oder fliegt selbst ra
   assert.ok(Math.abs(k.used()-usedBytes(store))<1,'used '+k.used()+' vs '+usedBytes(store));
   // Texte bleiben auch bei gelöschten PDFs
   for(const n of ['B','D'])assert.match(store.getText('https://x.test/'+n).pages.join(' '),new RegExp('Dokument '+n));
-  assert.deepEqual({...k.stats(),ocrPages:0},{kept:3,swapped:1,rejected:1,tooBig:0,tooBigLater:0,ocrPages:0,stuck:0});
+  assert.deepEqual(k.stats(),{kept:3,swapped:1,rejected:1,tooBig:0});
   await k.close();
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
 
-test('übrige PDFs (role other): Scan ohne Textebene fliegt ohne OCR raus und steht nicht in der OCR-Liste',async()=>{
+test('Scan ohne Textebene fliegt ohne OCR raus (Entscheidung 12.10.2026) und steht danach in der OCR-Reihe',async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-keeper-'));
  const store=openPdfStore(dir);
  try{
@@ -61,8 +61,7 @@ test('übrige PDFs (role other): Scan ohne Textebene fliegt ohne OCR raus und st
   const sha=store.entry('https://x.test/S').sha256;
   assert.equal(await k.admit(sha),'nicht besser');
   assert.equal(store.entry('https://x.test/S').status,'text-only');
-  assert.equal(k.stats().ocrPages,0);assert.equal(k.stats().stuck,0);
-  assert.ok(!store.ocrQueue().includes(sha));
+  assert.ok(store.ocrQueue().some(x=>x.sha===sha&&!x.present),'„OCR starten“ lädt ihn dafür kurz nach');
   await k.close();
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
@@ -90,7 +89,7 @@ test('feste Regel: übrige PDFs stehen immer unter Hauptdokumenten',async()=>{
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
 
-test('zu große Datei: PDF weg, sobald der Text vollständig ist (dropIfTooBig)',async()=>{
+test('zu große Datei: PDF weg, sobald die Textebene gelesen ist, auch bei einem Scan (dropIfTooBig)',async()=>{
  const {dropIfTooBig}=await import('../scripts/pdf-store/store-lib.mjs');
  const {MAX_BYTES}=await import('../shared/pdf-rank.mjs');
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-keeper-'));
@@ -102,9 +101,7 @@ test('zu große Datei: PDF weg, sobald der Text vollständig ist (dropIfTooBig)'
   store.db.prepare('UPDATE pdfs SET bytes=? WHERE url=?').run(MAX_BYTES+1,url);
   assert.equal(dropIfTooBig(store,sha),false,'ohne Text bleibt das PDF');
   store.putText(sha,['Seite eins mit Text.','x'],{method:'text',version:1,ocrNeeded:1});
-  assert.equal(dropIfTooBig(store,sha),false,'Scan-Seite wartet auf OCR');
-  store.putText(sha,['Seite eins mit Text.','Seite zwei per OCR gelesen.'],{method:'mixed',version:1,ocrNeeded:0});
-  assert.equal(dropIfTooBig(store,sha),true);
+  assert.equal(dropIfTooBig(store,sha),true,'auch mit einer Scan-Seite: die OCR lädt die Datei später kurz nach');
   assert.equal(store.entry(url).status,'text-only');
   const s2=store.entry(small).sha256;store.putText(s2,['Kleine Vorlage.'],{method:'text',version:1});
   assert.equal(dropIfTooBig(store,s2),false,'unter 10 MB bleibt das PDF');
@@ -124,7 +121,7 @@ test('angehalten: der Tausch verdrängt nichts mehr, die neue Datei bleibt (übe
   assert.equal(await put(k,'B','paper'),'behalten');
   assert.equal(store.entry('https://x.test/A').status,'ok');
   assert.equal(store.entry('https://x.test/B').status,'ok');
-  assert.equal(k.stats().swapped,0);assert.equal(k.stats().stuck,0);
+  assert.equal(k.stats().swapped,0);
   await k.close();
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });

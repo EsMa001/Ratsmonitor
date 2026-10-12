@@ -3,6 +3,15 @@ const hash=async text=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA
 // Extraction is transient. A new result stores small evidence and text digests,
 // never the downloaded full text or automatic multi-paragraph source excerpts. Exception (approved): `ruleSummary` keeps the
 // few original sentences the rule-based summary selected (about 40 and 65 words), with their score.
+/** Bericht mit KI-Zusammenfassung (Entscheidung 12.10.2026): nur die Regel-Zusammenfassung dazu, kurz und lang in ruleSummary, oder
+    den Versuch merken (ruleSummaryTried = tried); KI-Text, Angaben, contentAnalysis und article_analyses bleiben, wie sie sind.
+    compactSummaryAttempt würde summaryMethod, summaryIssue und summaryAttemptedAt setzen. Import (refreshSummaries) und
+    scripts/pdf-store/summaries.mjs. */
+export function withRuleSummary(old,processed,tried){
+ const next={...old};
+ if(processed.ruleSummary){next.ruleSummary=processed.ruleSummary;delete next.ruleSummaryTried;}else next.ruleSummaryTried=tried;
+ return next;
+}
 export async function compactSummaryAttempt(old,processed,at){
  const inputHash=await hash(processed.sourceText||old.officialTitle||''),completed=processed.generatedBy==='KI-Zusammenfassung'&&processed.summaryGeneratedAt!==old.summaryGeneratedAt;
  const url=processed.documentSource||old.sourceUrl;

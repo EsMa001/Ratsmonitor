@@ -257,16 +257,17 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
 Reihenfolge aus, höchstens drei Stunden: Laden (bis 40 % der Zeit, Monat für Monat ab heute zurück) mit **fester Grenze
 von 80 GB** (`BUDGET_GB` in `shared/pdf-rank.mjs`, bis 12.10.2026 100 GB) für PDFs und Texte zusammen: Ist sie erreicht, wird jede neue Datei sofort bewertet (Score 0 bis 100 % aus `shared/pdf-rank.mjs`,
 Textebene gleich gelesen, Seiten ohne Text vorläufig geschätzt) und verdrängt die schlechteste Datei der Ablage, wenn sie besser ist;
-sonst fliegt sie selbst raus. Der Text bleibt immer: vor jedem Löschen werden Seiten ohne Text sofort per OCR gelesen, auch bei
-vielen Seiten. So liegen in den 80 GB die besten Dokumente unter allen geladenen. Danach nur zur Sicherung das Kürzen
-(`budget.mjs --apply`, etwa nach einer gesenkten Grenze), Textebene, OCR (die verbleibende
-Zeit bis auf 25 Minuten), Zusammenfassungen, Fakten, Wortliste. Was nicht fertig wird, macht die nächste Nacht weiter;
-eine Sperre (`nightly.lock` in der Ablage) verhindert zwei Läufe. Protokoll: `journalctl -u ratsmonitor-pdf-nightly`.
+sonst fliegt sie selbst raus. Die Textebene bleibt immer; vor dem Löschen gibt es keine OCR mehr (Entscheidung 12.10.2026):
+Seiten ohne Text liest „OCR starten“ später und lädt die Datei dafür kurz nach. So liegen in den 80 GB die besten Dokumente unter
+allen geladenen. Danach nur zur Sicherung das Kürzen (`budget.mjs --apply`, etwa nach einer gesenkten Grenze), dann stellt die
+Kette den Auftrag „OCR starten“ an (er läuft in der Bahn OCR neben dem Rest), dann Textebene, Zusammenfassungen, Fakten,
+Wortliste. Was nicht fertig wird, macht die nächste Nacht weiter; die Sperre der Bahn Laden (`nightly.lock` in der Ablage)
+verhindert zwei Läufe. Protokoll: `journalctl -u ratsmonitor-pdf-nightly`.
 Probe ohne Wirkung: `node scripts/pdf-store/nightly.mjs --dry-run`.
 Fehlgeschlagene Abrufe werden nicht erneut versucht; Liste: `node scripts/pdf-store/fetch.mjs --errors [--csv fehler.csv]`.
 
 **Admin-Reiter „PDF-Import“** (`/admin?seite=pdf`, früher „PDF-Ablage“; Konzept `requirements/admin-pdf-ablage-konzept.md`):
-liest nur `system_state` (`server/integrations/pdf-store-admin.mjs`). „Jetzt“: Fortschritt des Laufs bzw. OCR-Laufs (jede
+liest nur `system_state` (`server/integrations/pdf-store-admin.mjs`). „Jetzt“: je Bahn (Laden, OCR) Fortschritt des laufenden Auftrags (jede
 Minute von `fetch.mjs`/`text.mjs`/`nightly.mjs` geschrieben, `pdf-store-progress-chain`/`-ocr`, `scripts/pdf-store/state.mjs`),
 „Anhalten“ (`pdf-store-stop`; `nightly.mjs` und die Skripte prüfen das alle 2 s, `onStop` in `state.mjs`, und warten nicht
 auf das Ende des Schritts: der laufende Schritt bekommt SIGTERM, `fetch.mjs` bricht laufende Abrufe ab und lässt sie offen
@@ -342,18 +343,29 @@ scripts/schedule.mjs pdf-job --force` (Job-Name austauschbar).
 **Übrige PDFs** (Anlagen, Pläne …, in keinem Bericht Hauptdokument; Server 12.10.2026: rund 682.000): nur über den Knopf
 „Übrige PDFs laden“ (Auftrag `others`, `nightly.mjs --others`, `fetch.mjs --others`), nicht in der nächtlichen Kette. Ein
 Lauf lädt bis 15 Minuten vor Ende (Standard 180 min), neueste Sitzungen zuerst, liest die Textebene und zählt den Stand neu;
-kein OCR, keine Zusammenfassungen und Fakten (die lesen nur Hauptdokumente). Sie laufen durch dieselbe feste Grenze mit Tausch
+keine Zusammenfassungen und Fakten (die lesen nur Hauptdokumente). Sie laufen durch dieselbe feste Grenze mit Tausch
 und stehen dabei fest unter allen Hauptdokumenten (`ranked` in `store-lib.mjs`): ein neues Hauptdokument verdrängt
-zuerst übrige PDFs, ein übriges PDF nie ein Hauptdokument. In der Ablage `pdfs.role='other'`; OCR (Tausch,
-`text.mjs --ocr`) nur für Dateien, die auch als Hauptdokument verlinkt oder ohne Angabe sind. Der Admin-Reiter zeigt sie
+zuerst übrige PDFs, ein übriges PDF nie ein Hauptdokument. In der Ablage `pdfs.role='other'`; OCR über „OCR starten“ wie bei
+Hauptdokumenten (bei gleicher Seitenzahl nach ihnen). Der Admin-Reiter zeigt sie
 getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dort weiter, wo der vorige aufgehört hat.
 
 **Texte erstellen** (Auftrag `texts`, `nightly.mjs --texts`): lädt nichts, liest die Textebene aller abgelegten PDFs ohne Text,
-danach Zusammenfassungen, Fakten, Wortliste und Stand wie nachts; keine OCR (die hält auf). Die Kennzahl „PDFs ohne Text“
-(`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten. **OCR starten** (Auftrag `ocr`, `nightly.mjs --ocr-only`):
-keine Textebene, OCR (nur Hauptdokumente) mit der ganzen Zeit, dann dieselbe Auswertung. Ein von Hand gestarteter OCR-Dienst (`systemd-run`, Einheit `ratsmonitor-pdf-ocr`)
-hört nicht auf „Anhalten“; beenden mit `systemctl stop ratsmonitor-pdf-ocr` (endet ebenso nach der laufenden Seitengruppe). Den Lauf der Aufträge selbst beendet
-`systemctl stop ratsmonitor-pdf-job` (der Dienst vermerkt den Auftrag als abgebrochen).
+danach Zusammenfassungen, Fakten, Wortliste und Stand wie nachts. Die Kennzahl „PDFs ohne Text“
+(`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten. **OCR starten** (Auftrag `ocr`, `nightly.mjs --ocr-only`,
+`text.mjs --ocr`, Bahn OCR): OCR aller PDFs, Hauptdokumente und übrige, in einer Reihe (`ocrQueue`): wenigste OCR-Seiten zuerst,
+bei gleich vielen Hauptdokumente vor übrigen, abgelegte vor verdrängten. Verdrängte (`text-only`) werden kurz nachgeladen (gleiche
+Prüfsumme), gelesen und sofort wieder gelöscht, der Eintrag bleibt `text-only`; scheitert das, steht die Datei in `ocr_refetch`
+(Ablage) und kommt nicht wieder; ein Server mit 3 Fehlern in Folge fällt für den Lauf heraus. Je Datei höchstens 5 Minuten
+(`--file-minutes`), sonst über `ocr_slow` ans Ende der Reihe. 3 Worker, je eine Datei. Danach Zusammenfassungen, Fakten und
+Wortliste, aber nur, wenn Hauptdokumente gelesen wurden.
+
+**Zwei Bahnen** (seit 12.10.2026): Laden (`run`, `retry`, `others`, `texts`, auch die Nachtkette) und OCR (`ocr`) laufen
+nebeneinander, je Bahn ein Auftrag (`laneOf`, Sperren `LANE_LOCKS` in `pdf-store-admin.mjs`: `nightly.lock`, `ocr-lane.lock`).
+`job.mjs` startet beide, bleibt, solange etwas läuft, und startet frei gewordene Bahnen nach; der Dienst darf deshalb 12 Stunden
+laufen (`TimeoutStartSec=12h` in `ratsmonitor-pdf-job.service`, nach dem Ausrollen `systemctl daemon-reload`). Zusammenfassungen,
+Fakten und Wortliste schreiben dieselben Berichte: eigene Sperre `eval.lock`, die andere Bahn wartet. Ein von Hand gestarteter
+OCR-Dienst (`systemd-run`, Einheit `ratsmonitor-pdf-ocr`) hört nicht auf „Anhalten“; beenden mit `systemctl stop ratsmonitor-pdf-ocr` (endet ebenso nach der laufenden Seitengruppe). Den Lauf der Aufträge selbst beendet
+`systemctl stop ratsmonitor-pdf-job` (der Dienst vermerkt beide laufenden Aufträge als abgebrochen).
 
 **Qualität einer Datei** (im Code „Score“, `shared/pdf-rank.mjs`, Entscheidung 12.10.2026; im Admin-Reiter „Qualität“): 0 bis 100 % = Dokumentart (Vorlage und Beschluss 1,
 Niederschrift 0,7, Anlage und Sonstiges 0,4, Einladung 0,1; seit 12.10.2026 aus dem ersten Wort des Titels, `documentType`, berichtigt
@@ -361,7 +373,7 @@ durch den Textanfang, `documentTypeFromText`/`effectiveType` in `shared/document
 „Art nachtragen“ = `budget.mjs --backfill`, nach neuen Regeln (`DOC_TYPE_VERSION`) einmal für alle Einträge). Hauptdokumente bis 10 MB, die nur noch als Text vorliegen, lädt der
 normale Lauf wieder, solange übrige PDFs als PDF liegen (die weichen in der Grenze zuerst); sonst nicht, damit nichts im Kreis lädt × Formalie (0,5, nicht bei Niederschriften) × Inhalt (voll ab
 4.000 Zeichen, darunter mit der Wurzel fallend; Seiten, die auf OCR warten, vorläufig 800 Zeichen) × Größe (voll bis 100 KB,
-darüber mit der Kubikwurzel fallend; über 10 MB für alle Dokumentarten: 0, nur Text; `text.mjs` löscht das PDF, sobald der Text vollständig ist, Scans gleich nach der OCR). Scan und Alter zählen nicht.
+darüber mit der Kubikwurzel fallend; über 10 MB für alle Dokumentarten: 0, nur Text; `text.mjs` löscht das PDF gleich nach der Textebene, auch bei Scans). Scan und Alter zählen nicht.
 Der Score wird bei jedem Lauf aus dem aktuellen Text gerechnet; nach der OCR gilt die echte Zeichenzahl.
 
 **Qualität der Ablage** (Abschnitt im Reiter, `quality` in `pdf-store-stats`, `storeQuality` in `store-lib.mjs`): Ø Score der

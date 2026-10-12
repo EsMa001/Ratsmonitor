@@ -3,7 +3,7 @@
 // Alles hier ist Beiwerk: Gelingt ein Schreiben nicht (Datenbank gerade gesperrt), läuft das Skript trotzdem weiter.
 import fs from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {PROGRESS_KEYS,STOP_KEY} from '../../server/integrations/pdf-store-admin.mjs';
+import {PROGRESS_KEYS,STOP_KEY,JOB_KEY,addJob} from '../../server/integrations/pdf-store-admin.mjs';
 
 /** Datenbank: DATABASE_FILE, sonst die Miniflare-Datei unter .wrangler/ (oder null) */
 export function databaseFile(){
@@ -28,7 +28,19 @@ export const writeState=(key,value)=>withDb(db=>{
  return true;
 });
 
-/** Bahn des Fortschritts: 'chain' (Lauf und seine Schritte) oder 'ocr' (OCR-Lauf von Hand); nightly.mjs setzt RM_PROGRESS_LANE */
+/** Auftrag anstellen (wie der Knopf im Admin-Reiter, gleiche Regel addJob): etwa „OCR starten“ nach dem Laden der Nachtkette.
+    true, wenn er neu in der Reihe steht; läuft oder wartet dieselbe Art schon, false. Gelingt das Schreiben nicht, null. */
+export const queueJob=kind=>withDb(db=>{
+ db.exec('BEGIN IMMEDIATE');
+ try{
+  const r=db.prepare('SELECT value FROM system_state WHERE key=?').get(JOB_KEY);
+  const {next}=addJob(r?JSON.parse(r.value):null,kind);
+  if(next)db.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').run(JOB_KEY,JSON.stringify(next));
+  db.exec('COMMIT');return !!next;
+ }catch(e){db.exec('ROLLBACK');throw e;}
+});
+
+/** Bahn des Fortschritts: 'chain' (Bahn „Laden“) oder 'ocr' (Bahn „OCR“, auch ein OCR-Lauf von Hand); nightly.mjs setzt RM_PROGRESS_LANE */
 export const lane=(fallback='chain')=>process.env.RM_PROGRESS_LANE||fallback;
 /** Fortschritt schreiben: Grundangaben des Laufs (RM_PROGRESS_BASE von nightly.mjs) und die des Schritts; null löscht */
 export function progress(laneName,detail){

@@ -15,7 +15,7 @@ export const day=(d?:string|null)=>d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(
 export const month=(m?:string|null)=>m&&/^\d{4}-\d{2}$/.test(m)?m.slice(5,7)+'.'+m.slice(2,4):m||'–';
 export const dur=(s?:number|null)=>s==null?'–':s<90?`${s} s`:s<5400?`${Math.round(s/60)} min`:`${(s/3600).toLocaleString('de-DE',{maximumFractionDigits:1})} h`;
 /** Arten der Läufe und Aufträge */
-export const KIND:Record<string,string>={nightly:'Nachtkette',run:'Lauf von Hand',retry:'Erneuter Versuch',others:'Übrige PDFs',texts:'Texte erstellen',fetch:'Laden von Hand',ocr:'OCR-Lauf von Hand',text:'Textebene von Hand'};
+export const KIND:Record<string,string>={nightly:'Nachtkette',run:'Lauf von Hand',retry:'Erneuter Versuch',others:'Übrige PDFs',texts:'Texte erstellen',fetch:'Laden von Hand',ocr:'OCR',text:'Textebene von Hand'};
 
 export type MonthRow={month:string;linked:number;ok:number;textOnly:number;failed:number;open:number;openBlocked?:number};
 const SEG:[keyof MonthRow,string,string][]=[['ok','bg-teal-600','als PDF'],['textOnly','bg-teal-300','nur Text'],['failed','bg-slate-400','fehlgeschlagen'],['open','bg-slate-200','offen']];
@@ -116,7 +116,7 @@ function stepText(s:RunStep){
  const x=s.summary||{};
  if(typeof x.skipped==='string')return 'übersprungen: '+x.skipped;
  if(s.name==='Laden'){const k=(x.keeper||{}) as Record<string,number>;return `${n(num(x.ok))} geladen, ${n(num(x.error))} Fehler${x.keeper?`; Grenze: ${n(k.kept)} behalten, ${n(k.swapped)} verdrängt, ${n(k.rejected)} nicht besser`:''}${x.lastMonth?`; bis ${month(String(x.lastMonth))}`:''}`;}
- if(s.name==='OCR')return `${n(num(x.files))} Dateien, ${n(num(x.pages))} Seiten${num(x.open)?`, ${n(num(x.open))} offen`:''}${num(x.dropped)?`, ${n(num(x.dropped))} zu große PDFs gelöscht`:''}`;
+ if(s.name==='OCR')return `${n(num(x.files))} Dateien${x.primary!=null?` (${n(num(x.primary))} Hauptdokumente)`:''}, ${n(num(x.pages))} Seiten${num(x.fetched)?`, ${n(num(x.fetched))} kurz nachgeladen`:''}${num(x.slow)?`, ${n(num(x.slow))} über der Zeitgrenze`:''}${num(x.open)?`, ${n(num(x.open))} offen`:''}${num(x.dropped)?`, ${n(num(x.dropped))} zu große PDFs gelöscht`:''}`;
  if(s.name==='Textebene')return `${n(num(x.files))} Dateien${num(x.waiting)?`, ${n(num(x.waiting))} mit Seiten für OCR`:''}${num(x.dropped)?`, ${n(num(x.dropped))} zu große PDFs gelöscht`:''}`;
  if(s.name==='Zusammenfassungen')return `${n(num(x.summaries))} neue von ${n(num(x.withText))} mit Text`;
  return '';

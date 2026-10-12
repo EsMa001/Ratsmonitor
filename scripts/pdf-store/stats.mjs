@@ -86,7 +86,8 @@ const used=pdfPrimary+pdfOthers+text,kept=files.filter(f=>f.keep),worst=kept.at(
 // bleiben nur als Text); ist es ein übriges PDF, verdrängt jedes neue Hauptdokument zuerst übrige PDFs.
 const threshold=used<limit*0.98||!worst?null:worst.other?{others:true}:{others:false,score:Math.round(worst.score*1000)/1000};
 const PRIMARY_SQL="EXISTS(SELECT 1 FROM pdfs p WHERE p.sha256=t.sha256 AND COALESCE(p.role,'')<>'other')";
-const tx=store.db.prepare(`SELECT COUNT(*) AS files,SUM(ocr_needed>0 AND ${PRIMARY_SQL}) AS waiting,SUM(CASE WHEN ocr_needed>0 AND ${PRIMARY_SQL} THEN ocr_needed ELSE 0 END) AS pages FROM texts t WHERE status='ok'`).get();
+const tx=store.db.prepare(`SELECT COUNT(*) AS files,SUM(ocr_needed>0 AND ${PRIMARY_SQL}) AS waiting,SUM(CASE WHEN ocr_needed>0 AND ${PRIMARY_SQL} THEN ocr_needed ELSE 0 END) AS pages,
+ SUM(ocr_needed>0) AS waitingAll,SUM(CASE WHEN ocr_needed>0 THEN ocr_needed ELSE 0 END) AS pagesAll FROM texts t WHERE status='ok'`).get();
 const missing=store.db.prepare("SELECT COUNT(DISTINCT p.sha256) AS n FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok' AND t.sha256 IS NULL").get();
 let disk=null;try{const s=fs.statfsSync(store.dir);disk={free:s.bavail*s.bsize,total:s.blocks*s.bsize};}catch{/* nicht ermittelbar */}
 
@@ -103,7 +104,8 @@ const stats={
  loaded:P.ok,textOnly:P.textOnly,failed:P.failed,open:P.open,openBlocked:P.openBlocked,reasons:list(P.reasons),
  quality:storeQuality(files,rankedTextOnly(store)),
  bytes:{pdf:pdfPrimary+pdfOthers,pdfPrimary,pdfOthers,text:Math.round(text),used:Math.round(used)},budgetGb,threshold,disk,
- texts:{files:Number(tx.files||0),ocrWaiting:Number(tx.waiting||0),ocrPages:Number(tx.pages||0),missing:Number(missing.n||0),linked:P.withText,complete:P.complete},
+ // OCR (Auftrag „OCR starten“): alle Dateien; ocrWaiting/ocrPages nur Hauptdokumente
+ texts:{files:Number(tx.files||0),ocrWaiting:Number(tx.waiting||0),ocrPages:Number(tx.pages||0),ocrWaitingAll:Number(tx.waitingAll||0),ocrPagesAll:Number(tx.pagesAll||0),missing:Number(missing.n||0),linked:P.withText,complete:P.complete},
  summaries:{withText:sumText,done:sumDone},
  others:{linked:O.linked,loaded:O.ok,textOnly:O.textOnly,failed:O.failed,open:O.open,openBlocked:O.openBlocked,withText:O.withText,scans:O.scans,reasons:list(O.reasons),completeThrough:completeThrough(om)},
  months:{primary:pm,others:om},

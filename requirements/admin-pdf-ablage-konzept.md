@@ -95,11 +95,11 @@ Knöpfe mit einem Satz Erklärung, was sie tun und wie lange es dauert:
 
 | Knopf | Wirkung |
 |---|---|
-| Lauf starten | Kette wie nachts: neue und noch nicht versuchte Hauptdokumente, Texte, OCR, Auswertung |
+| Lauf starten | Bahn Laden: Kette wie nachts ohne OCR: neue und noch nicht versuchte Hauptdokumente, Texte, Auswertung |
 | Fehlgeschlagene erneut versuchen | wie oben, dazu fehlgeschlagene Abrufe und ausgelassene Server |
 | Übrige PDFs laden | nur die übrigen PDFs, nur Textebene |
 | Texte erstellen | nichts laden, keine OCR; Textebene der abgelegten PDFs ohne Text, dann Auswertung (`nightly.mjs --texts`) |
-| OCR starten | nur OCR und Auswertung (`nightly.mjs --ocr-only`) |
+| OCR starten | Bahn OCR: OCR aller PDFs, wenigste OCR-Seiten zuerst (bei gleich vielen Hauptdokumente vor übrigen), verdrängte kurz nachladen, lesen, wieder löschen; je Datei höchstens 5 Minuten; Auswertung, wenn Hauptdokumente dabei waren (`nightly.mjs --ocr-only`) |
 | Stand neu zählen | nur `stats.mjs` (etwa 1 Minute), ohne Laden |
 | Anhalten | im Statuskasten, je laufendem Vorgang |
 

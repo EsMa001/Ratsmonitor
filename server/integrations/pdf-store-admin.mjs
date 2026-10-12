@@ -3,22 +3,29 @@
  * Die Ablage selbst liegt nur auf dem Node-Server (server/node/pdf-store.mjs); die Seite liest deshalb nur, was die Skripte
  * unter scripts/pdf-store/ in system_state hinterlegen, und legt dort Wünsche ab:
  *  - 'pdf-store-stats'     Stand nach dem letzten Zählen (stats.mjs)
- *  - 'pdf-store-job'       Aufträge: {queue:[…], current, recent:[…]}; ausgeführt von job.mjs (Timer alle 10 Minuten)
- *  - 'pdf-store-progress-chain' / '-ocr'  Fortschritt des laufenden Laufs bzw. OCR-Laufs (jede Minute, state.mjs)
+ *  - 'pdf-store-job'       Aufträge: {queue:[…], running:{chain,ocr}, recent:[…]}; ausgeführt von job.mjs (Timer alle 10 Minuten)
+ *  - 'pdf-store-progress-chain' / '-ocr'  Fortschritt der Bahn „Laden“ bzw. „OCR“ (jede Minute, state.mjs)
  *  - 'pdf-store-runs'      Protokoll der letzten Läufe (nightly.mjs)
- *  - 'pdf-store-stop'      Anhalten je Bahn ('chain' Lauf, 'ocr' OCR-Lauf von Hand)
+ *  - 'pdf-store-stop'      Anhalten je Bahn ('chain' Laden, 'ocr' OCR)
  *  - 'pdf-store-count'     Wunsch „Stand neu zählen“
  *  - 'pdf-store-heartbeat' Lebenszeichen von job.mjs; fehlt es, führt niemand Aufträge aus (etwa lokal)
  *  - 'pdf-store-errors-csv:N'  Fehlerliste als gepacktes CSV in Stücken (stats.mjs)
- * GETs lesen nur. Aufträge: 'run' (Lauf wie nachts), 'retry' (dazu fehlgeschlagene Abrufe erneut versuchen), 'others'
- * (übrige PDFs der Berichte laden, nur Textebene), 'texts' (nichts laden, Texte aus abgelegten PDFs ohne Text, OCR, Auswertung), 'ocr' (nur OCR und Auswertung). Es läuft immer nur einer; weitere warten in der Reihe.
+ * GETs lesen nur. Aufträge in zwei Bahnen, die nebeneinander laufen (je Bahn einer zur Zeit, weitere warten in der Reihe):
+ *  - Bahn „Laden“ ('chain'): 'run' (Lauf wie nachts, ohne OCR), 'retry' (dazu fehlgeschlagene Abrufe erneut versuchen), 'others'
+ *    (übrige PDFs der Berichte laden, nur Textebene), 'texts' (nichts laden, Texte aus abgelegten PDFs ohne Text, Auswertung)
+ *  - Bahn „OCR“ ('ocr'): 'ocr' (OCR aller PDFs, leichte zuerst, verdrängte kurz nachgeladen; Auswertung, wenn Hauptdokumente dabei waren)
+ * Sperren je Bahn in der Ablage (LANE_LOCKS); die Auswertung (Zusammenfassungen, Fakten, Wortliste) hat eine eigene (eval.lock).
  */
 export const STATS_KEY='pdf-store-stats',JOB_KEY='pdf-store-job',RUNS_KEY='pdf-store-runs',STOP_KEY='pdf-store-stop',
  COUNT_KEY='pdf-store-count',HEARTBEAT_KEY='pdf-store-heartbeat',ERRORS_KEY='pdf-store-errors-csv',
  PROGRESS_KEYS=Object.freeze({chain:'pdf-store-progress-chain',ocr:'pdf-store-progress-ocr'}),
- JOB_KINDS=['run','retry','others','texts','ocr'],LANES=['chain','ocr'];
-/** Höchstens so viele wartende Aufträge; so viele beendete bleiben in der Liste */
-export const QUEUE_MAX=5,RECENT_MAX=10;
+ JOB_KINDS=['run','retry','others','texts','ocr'],LANES=['chain','ocr'],
+ /** Sperrdatei je Bahn in der Ablage (nightly.mjs nimmt sie, job.mjs prüft sie); die Nachtkette nimmt die der Bahn „Laden“ */
+ LANE_LOCKS=Object.freeze({chain:'nightly.lock',ocr:'ocr-lane.lock'});
+/** Bahn eines Auftrags */
+export const laneOf=kind=>kind==='ocr'?'ocr':'chain';
+/** Höchstens so viele wartende Aufträge (jede Art einmal); so viele beendete bleiben in der Liste */
+export const QUEUE_MAX=JOB_KINDS.length,RECENT_MAX=10;
 /** Fortschritt älter als das gilt als beendet (geschrieben wird jede Minute) */
 export const PROGRESS_STALE_MS=3*60000;
 /** Ohne Lebenszeichen so lange: niemand führt Aufträge aus (Timer alle 10 Minuten) */
@@ -28,16 +35,33 @@ export const JOB_STALE_MS=30*60000;
 const parse=v=>{try{return v?JSON.parse(v):null;}catch{return null;}};
 const age=(at,now)=>now-Date.parse(at||0);
 
-/** Auftragsliste; die frühere Form (ein einzelner Auftrag {kind,state,…}) wird übernommen */
+/** Auftragsliste {queue, running:{chain,ocr}, recent}; frühere Formen (ein laufender Auftrag `current`, davor ein einzelner
+    Auftrag {kind,state,…}) werden übernommen */
 export function normalizeJobs(v){
- if(v&&Array.isArray(v.queue))return {queue:v.queue,current:v.current||null,recent:Array.isArray(v.recent)?v.recent:[]};
+ const empty=()=>({chain:null,ocr:null});
+ if(v&&Array.isArray(v.queue)){
+  const running={...empty(),...(v.running||{})};
+  if(v.current)running[laneOf(v.current.kind)]??=v.current;
+  return {queue:v.queue,running,recent:Array.isArray(v.recent)?v.recent:[]};
+ }
  if(v?.kind){
   const job={id:v.id||v.requestedAt,...v};
-  if(v.state==='waiting')return {queue:[job],current:null,recent:[]};
-  if(v.state==='running')return {queue:[],current:job,recent:[]};
-  return {queue:[],current:null,recent:[job]};
+  if(v.state==='waiting')return {queue:[job],running:empty(),recent:[]};
+  if(v.state==='running')return {queue:[],running:{...empty(),[laneOf(job.kind)]:job},recent:[]};
+  return {queue:[],running:empty(),recent:[job]};
  }
- return {queue:[],current:null,recent:[]};
+ return {queue:[],running:empty(),recent:[]};
+}
+/** Auftrag anstellen (rein, ohne Datenbank; requestPdfJob und die Nachtkette): dieselbe Art nie doppelt, läuft oder wartet sie
+    schon, bleibt die Liste ({next:null, reason 'running'|'waiting'}); höchstens QUEUE_MAX wartende (Fehler mit status 409) */
+export function addJob(v,kind,now=new Date()){
+ if(!JOB_KINDS.includes(kind))throw Object.assign(Error('Unbekannter Auftrag.'),{status:400});
+ const j=normalizeJobs(v),run=j.running[laneOf(kind)];
+ if(run?.state==='running'&&run.kind===kind)return {next:null,reason:'running',jobs:j};
+ if(j.queue.some(x=>x.kind===kind))return {next:null,reason:'waiting',jobs:j};
+ if(j.queue.length>=QUEUE_MAX)throw Object.assign(Error(`Es warten schon ${QUEUE_MAX} Aufträge.`),{status:409});
+ const next={...j,queue:[...j.queue,{id:now.getTime().toString(36)+Math.random().toString(36).slice(2,6),kind,state:'waiting',requestedAt:now.toISOString()}]};
+ return {next,reason:null,jobs:next};
 }
 /** Läuft der Auftrag noch (Rückmeldung nicht zu alt)? */
 export const active=(job,now=Date.now())=>!!job&&job.state==='running'&&age(job.updatedAt||job.startedAt||job.requestedAt,now)<JOB_STALE_MS;
@@ -48,7 +72,7 @@ export async function pdfStoreState(db,now=Date.now()){
  const {results}=await db.prepare(`SELECT key,value FROM system_state WHERE key IN (${keys.map(()=>'?').join(',')})`).bind(...keys).all();
  const by=new Map(results.map(r=>[r.key,parse(r.value)]));
  const jobs=normalizeJobs(by.get(JOB_KEY));
- if(jobs.current&&!active(jobs.current,now))jobs.current={...jobs.current,state:'stale'};
+ for(const l of LANES)if(jobs.running[l]&&!active(jobs.running[l],now))jobs.running[l]={...jobs.running[l],state:'stale'};
  const progress=Object.fromEntries(LANES.map(l=>{const p=by.get(PROGRESS_KEYS[l]);return [l,p&&age(p.at,now)<PROGRESS_STALE_MS?p:null];}));
  const heartbeat=by.get(HEARTBEAT_KEY)||null;
  return {stats:by.get(STATS_KEY)||null,jobs,progress,runs:by.get(RUNS_KEY)||[],stop:by.get(STOP_KEY)||{},count:by.get(COUNT_KEY)||null,
@@ -72,19 +96,11 @@ async function change(db,key,fn){
 }
 const bad=msg=>Object.assign(Error(msg),{status:400});
 
-/** Auftrag anstellen. Dieselbe Art direkt hintereinander wird nicht doppelt angestellt (created:false). */
 /** Auftrag anlegen; dieselbe Art nie doppelt: läuft oder wartet sie schon, kein neuer (created:false, reason 'running'|'waiting') */
 export async function requestPdfJob(db,kind,now=new Date()){
  if(!JOB_KINDS.includes(kind))throw bad('Unbekannter Auftrag.');
  let created=false,reason=null;
- const jobs=await change(db,JOB_KEY,v=>{
-  const j=normalizeJobs(v);
-  if(j.current?.state==='running'&&j.current.kind===kind){reason='running';return undefined;}
-  if(j.queue.some(x=>x.kind===kind)){reason='waiting';return undefined;}
-  if(j.queue.length>=QUEUE_MAX)throw Object.assign(Error(`Es warten schon ${QUEUE_MAX} Aufträge.`),{status:409});
-  created=true;
-  return {...j,queue:[...j.queue,{id:now.getTime().toString(36)+Math.random().toString(36).slice(2,6),kind,state:'waiting',requestedAt:now.toISOString()}]};
- });
+ const jobs=await change(db,JOB_KEY,v=>{const r=addJob(v,kind,now);reason=r.reason;created=!!r.next;return r.next??undefined;});
  return {jobs:normalizeJobs(jobs),created,reason};
 }
 /** Wartenden Auftrag aus der Reihe nehmen */
@@ -93,7 +109,7 @@ export async function removePdfJob(db,id){
  const jobs=await change(db,JOB_KEY,v=>{const j=normalizeJobs(v);return j.queue.some(x=>x.id===id)?{...j,queue:j.queue.filter(x=>x.id!==id)}:undefined;});
  return {jobs:normalizeJobs(jobs)};
 }
-/** Lauf ('chain') oder OCR-Lauf ('ocr') anhalten: die Skripte prüfen das alle 2 s (onStop in state.mjs) und hören sofort auf,
+/** Bahn „Laden“ ('chain') oder „OCR“ ('ocr') anhalten: die Skripte prüfen das alle 2 s (onStop in state.mjs) und hören sofort auf,
     ohne Verlust (Abrufe bleiben offen, halb gelesene Dateien in der Reihe) */
 export async function requestStop(db,lane,now=new Date()){
  if(!LANES.includes(lane))throw bad('Unbekannter Vorgang.');

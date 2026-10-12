@@ -1,6 +1,7 @@
-# Auftrag aus dem Admin-Reiter „PDF-Ablage“ (scripts/pdf-store/job.mjs): alle 10 Minuten nachsehen, ob ein Lauf oder ein
-# erneuter Versuch der fehlgeschlagenen Abrufe angefordert ist; ohne Auftrag endet der Dienst sofort. Startet die Kette
-# (nightly.mjs) wie nachts; läuft die nächtliche Kette gerade, wartet der Auftrag bis zum nächsten Mal.
+# Aufträge aus dem Admin-Reiter „PDF-Ablage“ (scripts/pdf-store/job.mjs): alle 10 Minuten und per Knopf nachsehen, ob etwas
+# angefordert ist; ohne Auftrag endet der Dienst sofort. Zwei Bahnen nebeneinander (Laden, OCR), je Bahn einer zur Zeit; der
+# Dienst bleibt, solange etwas läuft, und startet frei gewordene Bahnen nach. Hält die nächtliche Kette die Bahn „Laden“,
+# warten deren Aufträge. Höchstens 12 Stunden (job.mjs startet nur, was in der Restzeit fertig wird).
 [Unit]
 Description=Ratsmonitor PDF-Ablage, Auftrag aus der Administration
 After=network-online.target ratsmonitor.service
@@ -14,7 +15,7 @@ WorkingDirectory=/srv/ratsmonitor/app/current
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
 Nice=15
 IOSchedulingClass=idle
-TimeoutStartSec=4h
+TimeoutStartSec=12h
 # Gestartet über den Zeitplaner (scripts/schedule.mjs, Admin-Reiter „Jobs & Zeitpläne“): er prüft Ein/Aus und Zeit aus der
 # Datenbank und vermerkt den Lauf; der Befehl selbst steht in server/integrations/schedules.mjs.
 ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs pdf-job

@@ -85,7 +85,8 @@ export function dueNow(job,setting,run,now=Date.now()){
 export function pendingWork(id,get){
  if(id!=='pdf-job')return false;
  const open=x=>!!x?.requestedAt&&!x.startedAt,jobs=get('pdf-store-job');
- return open(get('pdf-store-count'))||open(get('server-disk-count'))||(Array.isArray(jobs?.queue)?jobs.queue.length>0:jobs?.state==='waiting')||jobs?.current?.state==='running';
+ return open(get('pdf-store-count'))||open(get('server-disk-count'))||(Array.isArray(jobs?.queue)?jobs.queue.length>0:jobs?.state==='waiting')||jobs?.current?.state==='running'||
+  Object.values(jobs?.running||{}).some(j=>j?.state==='running');
 }
 /** Nächster geplanter Start (ms) */
 export function nextRun(job,setting,run,now=Date.now()){

@@ -9,13 +9,13 @@
 //        [--concurrency 32] [--per-host 3] [--gap-ms 200] [--timeout-ms 10000] [--retry-days N]
 //   node scripts/pdf-store/fetch.mjs --months 120 --max-gb 10   Monat für Monat ab heute zurück, bis die Ablage 10 GB hat
 //        (je --report-mb 500 eine Zeile MEILENSTEIN, am Ziel ZIEL ERREICHT)
-//   node scripts/pdf-store/fetch.mjs --months 240 --budget-gb 80 [--ocr-workers 2] [--start-month 2025-11]
+//   node scripts/pdf-store/fetch.mjs --months 240 --budget-gb 80 [--start-month 2025-11]
 //        feste Grenze mit Tausch (keeper in store-lib.mjs): lädt weiter, auch wenn die Ablage voll ist; jede neue Datei wird
 //        sofort bewertet und verdrängt die schlechteste, wenn sie besser ist, sonst fliegt sie selbst raus (Text bleibt immer)
 //   node scripts/pdf-store/fetch.mjs --others --months 240 --budget-gb 80
 //        statt der Hauptdokumente die übrigen PDFs der Berichte (Anlagen, Pläne …; nicht, was irgendwo Hauptdokument ist):
-//        eigener Lauf (Auftrag „Übrige PDFs laden“ im Admin-Reiter), gleiche Grenze mit Tausch, aber nur Textebene, kein OCR
-//        (role 'other' in der Ablage); was nicht in die Grenze passt, bleibt nur als Text
+//        eigener Lauf (Auftrag „Übrige PDFs laden“ im Admin-Reiter), gleiche Grenze mit Tausch (role 'other' in der Ablage);
+//        was nicht in die Grenze passt, bleibt nur als Text. OCR für beide Arten: Auftrag „OCR starten“ (text.mjs --ocr)
 //   node scripts/pdf-store/fetch.mjs --stats                       Stand der Ablage
 //   node scripts/pdf-store/fetch.mjs --errors [--csv datei.csv]    fehlgeschlagene Abrufe: je Dokument Fehler, HTTP-Code, Tag
 // Fehlgeschlagene Abrufe werden nicht erneut versucht (nur mit --retry-days N), sie stehen in der Fehlerliste.
@@ -27,27 +27,18 @@
 import {existsSync,readdirSync,writeFileSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {fetchDocument} from '../../server/integrations/document-proxy.mjs';
-import {bodyBytes} from '../../server/integrations/body-bytes.mjs';
-import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
 import {primaryPdf,documentType} from '../../shared/document-type.mjs';
 import {MAX_BYTES} from '../../shared/pdf-rank.mjs';
-import {keeper as makeKeeper,usedBytes,errorReason,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
+import {keeper as makeKeeper,usedBytes,errorReason,downloader,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
 import {progress,onStop,stepSummary,lane} from './state.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const o={regions:opt('regions')?.split(',').filter(Boolean),since:opt('since'),limit:Number(opt('limit',0)),maxMinutes:Number(opt('max-minutes',0)),
- concurrency:Number(opt('concurrency',32)),perHost:Number(opt('per-host',3)),gapMs:Number(opt('gap-ms',200)),timeoutMs:Number(opt('timeout-ms',10000)),months:Number(opt('months',0)),maxGb:Number(opt('max-gb',0)),budgetGb:Number(opt('budget-gb',0)),ocrWorkers:Number(opt('ocr-workers',2)),reportMb:Number(opt('report-mb',500)),retryDays:Number(opt('retry-days',Infinity))};
-// Abruf wie /api/dokument (nur öffentliche https-Adressen, jede Weiterleitung geprüft), aber mit der Projektkennung.
-// Die Zeitgrenze gilt je Abruf für Kopf und Inhalt zusammen (das Signal bricht auch das Lesen des Inhalts ab).
-// Anhalten bricht laufende Abrufe ab (halt); sie gelten nicht als Fehler und bleiben offen für den nächsten Lauf.
+ concurrency:Number(opt('concurrency',32)),perHost:Number(opt('per-host',3)),gapMs:Number(opt('gap-ms',200)),timeoutMs:Number(opt('timeout-ms',10000)),months:Number(opt('months',0)),maxGb:Number(opt('max-gb',0)),budgetGb:Number(opt('budget-gb',0)),reportMb:Number(opt('report-mb',500)),retryDays:Number(opt('retry-days',Infinity))};
+// Abruf wie /api/dokument mit der Projektkennung (downloader in store-lib.mjs). Anhalten bricht laufende Abrufe ab (halt);
+// sie gelten nicht als Fehler und bleiben offen für den nächsten Lauf.
 const halt=new AbortController();
-const request=(url,init)=>fetch(url,{...init,signal:AbortSignal.any([init.signal,AbortSignal.timeout(o.timeoutMs),halt.signal].filter(Boolean)),headers:{'User-Agent':SOURCE_USER_AGENT}});
-async function download(url){
- const {response:r}=await fetchDocument(url,{request});
- if(!r.ok){await r.body?.cancel().catch(()=>{});throw Object.assign(Error('HTTP '+r.status),{http:r.status});}
- return bodyBytes(r,30*1048576,{message:'Dokument zu groß'});
-}
+const download=downloader({timeoutMs:o.timeoutMs,signal:halt.signal});
 const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
 const mb=b=>(b/1048576).toFixed(0)+' MB';
 if(flag('stats')){for(const r of store.stats())console.log(r.status.padEnd(12),String(r.n).padStart(8),r.bytes?mb(r.bytes):'');process.exit(0);}
@@ -132,7 +123,7 @@ const tell=()=>{if(!live)return;const s=(Date.now()-started)/1000;
   fetch:{what:others?'others':'primary',month,monthOpen,done,ok:c.ok,unsupported:c.unsupported,error:c.error,rate:Math.round(done/Math.max(1,s)*10)/10,bytes:Math.round(size)}});};
 const timer=setInterval(()=>{report();tell();},60000);
 // Feste Grenze mit Tausch: PDFs und Texte zusammen höchstens --budget-gb
-const keeper=o.budgetGb&&!flag('dry-run')?makeKeeper(store,o.budgetGb*1073741824,{ocrWorkers:o.ocrWorkers,log:x=>console.log(x),halt:()=>halted}):null;
+const keeper=o.budgetGb&&!flag('dry-run')?makeKeeper(store,o.budgetGb*1073741824,{halt:()=>halted}):null;
 if(keeper)console.log(`Grenze ${o.budgetGb} GB (PDFs und Texte), belegt ${mb(usedBytes(store))}`);
 async function one(h,job){
  try{
@@ -182,7 +173,7 @@ for(const [from,to] of windows){
  report(month+' fertig: ');
 }
 db.close();clearInterval(timer);
-if(keeper){await keeper.close();const k=keeper.stats();console.log(`Grenze: ${k.kept} behalten, ${k.swapped} schlechtere verdrängt, ${k.rejected} nicht besser, ${k.tooBig} zu groß (nur Text), ${k.tooBigLater} zu große Scans warten auf OCR, ${k.ocrPages} Seiten vor dem Löschen per OCR${k.stuck?`, ${k.stuck} Scans ohne OCR-Werkzeuge liegen geblieben`:''}; belegt ${mb(usedBytes(store))}`);}
+if(keeper){await keeper.close();const k=keeper.stats();console.log(`Grenze: ${k.kept} behalten, ${k.swapped} schlechtere verdrängt, ${k.rejected} nicht besser, ${k.tooBig} zu groß (nur Text); belegt ${mb(usedBytes(store))}`);}
 if(maxBytes&&size>=maxBytes)console.log(`ZIEL ERREICHT: ${mb(size)} in der Ablage`);
 if(skipped)console.log(`${skipped} Dokumente von ausgelassenen Servern übersprungen`);
 for(const r of store.stats())console.log('Ablage:',r.status,r.n,r.bytes?mb(r.bytes):'');
