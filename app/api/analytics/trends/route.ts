@@ -1,5 +1,5 @@
 import {env} from 'cloudflare:workers';
-import {atRevision,paramsKey} from '@/server/integrations/revision-cache.mjs';
+import {atRevisionStale,paramsKey} from '@/server/integrations/revision-cache.mjs';
 import {REGIONS} from '@/shared/regions';
 import {trends,trendList} from '@/server/integrations/analytics-trends.mjs';
 import {AnalyticsError} from '@/server/integrations/analytics-diffusion.mjs';
@@ -8,6 +8,6 @@ const CACHE='public, max-age=300, stale-while-revalidate=600';
 export async function GET(request:Request){
  try {const params=new URL(request.url).searchParams;
   // Mit by=…: die Vorgänge hinter einer Zahl
-  return Response.json(await (params.get('by')?trendList(env.DB,REGIONS,params):atRevision(env.DB,paramsKey('trends',params),()=>trends(env.DB,REGIONS,params))),{headers:{'Cache-Control':CACHE}});}
+  return Response.json(await (params.get('by')?trendList(env.DB,REGIONS,params):atRevisionStale(env.DB,paramsKey('trends',params),()=>trends(env.DB,REGIONS,params))),{headers:{'Cache-Control':CACHE}});}
  catch(error){return Response.json({error:error instanceof AnalyticsError?error.message:'Der Datenbestand ist gerade nicht erreichbar. Bitte erneut versuchen.'},{status:error instanceof AnalyticsError?error.status:503,headers:{'Cache-Control':'no-store'}});}
 }

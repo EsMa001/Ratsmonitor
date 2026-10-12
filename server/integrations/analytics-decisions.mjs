@@ -3,7 +3,7 @@ import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {sqlList,offsetOf} from './analytics-lists.mjs';
-import {atRevision,paramsKey} from './revision-cache.mjs';
+import {atRevisionStale,paramsKey} from './revision-cache.mjs';
 
 /*
  * Plenara.X – Status und Beschlüsse: Wie stehen die Vorgänge, wie fallen Beschlüsse aus, wie einig sind die Gremien?
@@ -46,7 +46,7 @@ export function readResult(text){
 /* Je Datenstand, Tag und Filter einmal gerechnet (lokal 10 bis 15 s je Aufruf); gehalten wird der zuletzt gefragte Filter */
 export async function decisions(db,catalog,params){
  const f=parseDecisions(params);
- return atRevision(db,paramsKey('decisions',params),()=>computeDecisions(db,catalog,f));
+ return atRevisionStale(db,paramsKey('decisions',params),()=>computeDecisions(db,catalog,f));
 }
 async function computeDecisions(db,catalog,f){
  const {page}=await searchFilters(db,catalog,f);

@@ -33,3 +33,25 @@ export async function atRevision(db,key,compute,{sources=false}={}){
 }
 /** Key of a request: kind, today and the sorted query parameters (results that count "the last 12 months" change daily). */
 export const paramsKey=(kind,params)=>`${kind}|${new Date().toISOString().slice(0,10)}|${[...new URLSearchParams(params)].map(([k,v])=>k+'='+v).sort().join('&')}`;
+/* Requests by filter (paramsKey): up to KEEP_PER_KIND filters per kind, the oldest dropped first. After an import the
+   last result of the same key is answered for up to STALE_MS while the new one is computed in the background, as in
+   the score (analytics-score.mjs); the first view after an import then does not wait for a scan. */
+const byFilter=new WeakMap(),KEEP_PER_KIND=20,STALE_MS=6*3600e3;
+export async function atRevisionStale(db,key,compute){
+ const row=await db.prepare(CONTENT_REVISION_SQL).first();
+ const revision=Number(row?.revision||0);
+ let entries=byFilter.get(db);if(!entries){entries=new Map();byFilter.set(db,entries);}
+ const hit=entries.get(key);
+ const fresh=()=>compute().then(value=>{
+  entries.delete(key);entries.set(key,{revision,value,at:Date.now()});
+  const kind=key.split('|')[0],same=[...entries.keys()].filter(k=>k.split('|')[0]===kind);
+  for(const k of same.slice(0,Math.max(0,same.length-KEEP_PER_KIND)))entries.delete(k);
+  return value;
+ });
+ if(hit&&hit.revision===revision){entries.delete(key);entries.set(key,hit);return hit.value;}
+ if(hit&&Date.now()-hit.at<STALE_MS){
+  if(!hit.busy){hit.busy=true;fresh().catch(()=>{}).finally(()=>{hit.busy=false;});}
+  return hit.value;
+ }
+ return fresh();
+}
