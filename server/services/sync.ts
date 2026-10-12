@@ -120,7 +120,9 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
     const u=(t as any).aiUsage;
     const compact=await compactSummaryAttempt(old,t,started);
     await env.DB.batch([
-      // Keine Versionskopie: die Zusammenfassung steht in article_analyses (Art 'summary').
+      // Keine Versionskopie: die Zusammenfassung steht in article_analyses (Art 'summary'). Gescheiterte Versuche ersetzen
+      // einander (höchstens einer je Bericht), gelungene KI-Zusammenfassungen bleiben.
+      env.DB.prepare("DELETE FROM article_analyses WHERE topic_id=? AND kind='summary' AND coalesce(json_extract(payload,'$.status'),'')<>'completed'").bind(old.id),
       env.DB.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(compact.analysis.id,old.id,'summary',compact.analysis.method,compact.analysis.inputHash,started,JSON.stringify(compact.analysis)),
       env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(compact.topic),old.id),
       ...(u?[insertUsage(env.DB,{...u,topicId:old.id,regionId:region})]:[])
