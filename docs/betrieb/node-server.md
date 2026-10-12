@@ -277,7 +277,8 @@ systemctl daemon-reload && systemctl enable --now ratsmonitor-pdf-job.timer`.
 „Übrige PDFs laden“ (Auftrag `others`, `nightly.mjs --others`, `fetch.mjs --others`), nicht in der nächtlichen Kette. Ein
 Lauf lädt bis 15 Minuten vor Ende (Standard 180 min), neueste Sitzungen zuerst, liest die Textebene und zählt den Stand neu;
 kein OCR, keine Zusammenfassungen und Fakten (die lesen nur Hauptdokumente). Sie laufen durch dieselbe feste Grenze mit Tausch
-(Rang nach Dokumentart, Anlagen niedriger) und bleiben meist nur als Text. In der Ablage `pdfs.role='other'`; OCR (Tausch,
+und stehen dabei fest unter allen Hauptdokumenten (`ranked` in `store-lib.mjs`): ein neues Hauptdokument verdrängt
+zuerst übrige PDFs, ein übriges PDF nie ein Hauptdokument. In der Ablage `pdfs.role='other'`; OCR (Tausch,
 `text.mjs --ocr`) nur für Dateien, die auch als Hauptdokument verlinkt oder ohne Angabe sind. Der Admin-Reiter zeigt sie
 getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dort weiter, wo der vorige aufgehört hat.
 

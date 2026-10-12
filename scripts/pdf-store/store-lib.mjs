@@ -66,7 +66,10 @@ const FILES=`SELECT p.sha256 AS sha,MAX(p.bytes) AS bytes,GROUP_CONCAT(COALESCE(
 const ranked=f=>{
  const type=f.types.split(',').sort((a,b)=>(TYPE_VALUE[b]??0)-(TYPE_VALUE[a]??0))[0];
  const scan=f.pages>0&&((f.ocrPages||0)+(f.ocrNeeded||0))>=f.pages/2;
- return {...f,type,scan,...rankPdf({type,formal:f.minFormal===1,scan,eventDate:f.eventDate,bytes:f.bytes})};
+ const r=rankPdf({type,formal:f.minFormal===1,scan,eventDate:f.eventDate,bytes:f.bytes});
+ /* Feste Regel: übrige PDFs stehen immer unter allen Hauptdokumenten (Wert je Byte liegt weit unter 1, also negativ):
+    ein neues Hauptdokument verdrängt zuerst übrige PDFs, ein übriges nie ein Hauptdokument */
+ return {...f,type,scan,...r,score:f.other?r.score-1:r.score};
 };
 /** Alle geladenen Dateien mit Rang, beste zuerst */
 export const rankedFiles=store=>store.db.prepare(FILES+' GROUP BY p.sha256').all().map(ranked).sort((a,b)=>b.score-a.score);

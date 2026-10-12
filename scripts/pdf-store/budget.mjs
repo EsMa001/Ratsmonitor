@@ -55,11 +55,11 @@ console.log(`\ngrößtes behaltenes PDF: ${(biggest/1048576).toFixed(1)} MB; Sca
 if(flag('apply')){
  if(population){console.error('--apply nur ohne --population');process.exit(1);}
  // Nur löschen, was schon eine Textfassung hat; der Rest wartet auf scripts/pdf-store/text.mjs. Seiten ohne Text (Scans)
- // vorher per OCR lesen, damit der Text vollständig bleibt.
+ // vorher per OCR lesen, damit der Text vollständig bleibt. Übrige PDFs (role other) nur Textebene, kein OCR.
  const go=dropped.filter(f=>f.chars!=null);let ocr=null,ocrPages=0;
- for(const f of go.filter(f=>f.ocrNeeded>0)){ocr??=await ocrScheduler(Number(opt('ocr-workers',2)));if(!ocr){console.error('OCR-Werkzeuge fehlen: Scans ohne OCR bleiben als PDF.');break;}ocrPages+=await ocrFile(store,f.sha,ocr);f.ocrNeeded=0;}
+ for(const f of go.filter(f=>f.ocrNeeded>0&&!f.other)){ocr??=await ocrScheduler(Number(opt('ocr-workers',2)));if(!ocr){console.error('OCR-Werkzeuge fehlen: Scans ohne OCR bleiben als PDF.');break;}ocrPages+=await ocrFile(store,f.sha,ocr);f.ocrNeeded=0;}
  if(ocr)await ocr.terminate();
- const now=go.filter(f=>!(f.ocrNeeded>0));
+ const now=go.filter(f=>!(f.ocrNeeded>0&&!f.other));
  db.exec('BEGIN');for(const f of now)store.dropPdf(f.sha);db.exec('COMMIT');
  if(ocrPages)console.log(`${ocrPages} Seiten vor dem Löschen per OCR gelesen`);
  console.log(`${now.length} PDFs gelöscht, ihre Texte bleiben; ${dropped.length-now.length} ohne vollständige Textfassung bleiben vorerst.`);

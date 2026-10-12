@@ -66,3 +66,26 @@ test('übrige PDFs (role other): Scan ohne Textebene fliegt ohne OCR raus und st
   await k.close();
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('feste Regel: übrige PDFs stehen immer unter Hauptdokumenten',async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-keeper-'));
+ const store=openPdfStore(dir);
+ try{
+  const day=new Date().toISOString().slice(0,10);
+  const size=pdf('Dokument A').byteLength;
+  const put=async(k,name,docType,role)=>{store.put('https://x.test/'+name,pdf('Dokument '+name),{docType,formal:false,eventDate:day,role});return k.admit(store.entry('https://x.test/'+name).sha256);};
+  const k=keeper(store,size*2+200);
+  // Übrige PDFs, die nach Art sogar besser sind (Vorlage) als das spätere Hauptdokument (Einladung)
+  assert.equal(await put(k,'O1','paper','other'),'behalten');
+  assert.equal(await put(k,'O2','paper','other'),'behalten');
+  // Hauptdokument (Einladung) verdrängt trotzdem ein übriges PDF
+  assert.equal(await put(k,'H1','invitation'),'behalten');
+  assert.equal(store.entry('https://x.test/O1').status,'text-only');
+  assert.equal(await put(k,'H2','invitation'),'behalten');
+  assert.equal(store.entry('https://x.test/O2').status,'text-only');
+  // Ein übriges PDF verdrängt nie ein Hauptdokument
+  assert.equal(await put(k,'O3','paper','other'),'nicht besser');
+  assert.equal(store.entry('https://x.test/H1').status,'ok');
+  await k.close();
+ }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
+});
