@@ -122,14 +122,28 @@ export function AdminPdf(){
    <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Kette wie nachts (neue und noch nicht versuchte Hauptdokumente, Text, OCR, Auswertung).':k==='retry'?'wie „Lauf starten“, dazu fehlgeschlagene Abrufe und ausgelassene Server.':k==='texts'?'nichts laden, keine OCR; Textebene der abgelegten PDFs ohne Text, dann Zusammenfassungen, Fakten, Wortliste und Stand.':k==='ocr'?'nur Seiten ohne Text per OCR lesen (Hauptdokumente), dann Auswertung.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Jeder Lauf höchstens 3 Stunden; ist einer aktiv, wartet der nächste. „Stand neu zählen“ geht auch während eines Laufs (etwa eine Minute).</p>
   </section>
 
+  {/* Alle Dokumente: Hauptdokumente und übrige PDFs zusammen, je Adresse */}
+  <section className="mt-10" aria-label="Alle Dokumente">
+   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="file" className="text-teal-600"/>Alle Dokumente</h2>
+   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Alle PDF-Dokumente der Berichte, Hauptdokumente und übrige zusammen. Text bleibt immer; das PDF nur, solange es in die Grenze passt.</p>
+   <div className="mt-5"><Kpis label="Stand aller Dokumente" items={[
+    {label:'Verlinkt',value:v(s=>n(s.allPdfs)),note:s?`${n(s.linked)} Hauptdokumente, ${n(o?.linked)} übrige`:undefined},
+    {label:'PDF gelesen',value:v(s=>pct(s.loaded+s.textOnly+(o?.loaded??0)+(o?.textOnly??0),s.allPdfs)),note:s?`${n(s.loaded+s.textOnly+(o?.loaded??0)+(o?.textOnly??0))} Dokumente einmal heruntergeladen`:undefined},
+    {label:'Text gespeichert',value:v(s=>pct((s.texts.linked??0)+(o?.withText??0),s.allPdfs)),note:s?`${n((s.texts.linked??0)+(o?.withText??0))} Dokumente`:undefined},
+    {label:'PDF gespeichert',value:v(s=>pct(s.loaded+(o?.loaded??0),s.allPdfs)),note:s?`${n(s.loaded+(o?.loaded??0))} Dokumente; die übrigen nur als Text, fehlgeschlagen oder noch offen`:undefined},
+    {label:'Größe der Ablage',value:v(s=>gb(s.bytes.used)),note:s?`von ${s.budgetGb} GB (PDFs ${gb(s.bytes.pdf)}, Texte ${gb(s.bytes.text)})`:undefined},
+    {label:'Ø Qualität',value:v(s=>scorePct(s.quality?.avg)),note:s?.quality?`der ${n(s.quality.files)} als PDF abgelegten Dateien`:s?'nach dem nächsten Zählen':undefined},
+   ]}/></div>
+  </section>
+
   {/* B. Hauptdokumente */}
   <section className="mt-10" aria-label="Hauptdokumente">
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="report" className="text-teal-600"/>Hauptdokumente</h2>
    <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Je Bericht das Dokument, aus dem Zusammenfassung und Fakten entstehen: die Vorlage, sonst Beschlussvorschlag oder Bericht, sonst das erste PDF.</p>
    <div className="mt-5"><Kpis label="Stand der Hauptdokumente" items={[
     {label:'Verlinkt',value:v(s=>n(s.linked)),note:s?`insgesamt ${n(s.allPdfs)} PDF-Dokumente verlinkt`:undefined},
-    {label:'Heruntergeladen',value:v(s=>pct(s.loaded+s.textOnly,s.linked)),note:s?`${n(s.loaded)} als PDF, ${n(s.textOnly)} nur noch als Text`:undefined},
     {label:'Mit Text',value:v(s=>pct(s.texts.linked??0,s.linked)),note:s?`${n(s.texts.linked)} Dokumente, davon ${n(s.texts.complete)} vollständig`:undefined},
+    {label:'Heruntergeladen',value:v(s=>pct(s.loaded+s.textOnly,s.linked)),note:s?`${n(s.loaded)} als PDF, ${n(s.textOnly)} nur noch als Text`:undefined},
     {label:'Fehlgeschlagen',value:v(s=>pct(s.failed,s.linked)),note:s?`${n(s.failed)} Dokumente, werden nicht erneut versucht`:undefined},
     {label:'Noch nicht versucht',value:v(s=>pct(s.open,s.linked)),note:s?`${n(s.open)} Dokumente${s.openBlocked?`, davon ${n(s.openBlocked)} bei ausgelassenen Servern`:''}`:undefined},
     {label:'Vollständig bis',value:v(s=>s.completeThrough?month(s.completeThrough):'–'),note:s?`Sitzungsmonat, bis zu dem höchstens 5 % offen sind (ohne ausgelassene Server). Ältestes geladenes Dokument ${day(s.oldest?.loaded)}, älteste verlinkte Sitzung ${day(s.oldest?.linked)}`:undefined},
@@ -143,8 +157,8 @@ export function AdminPdf(){
    <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Anlagen, Pläne und weitere Unterlagen, die in keinem Bericht Hauptdokument sind. Nur über „Übrige PDFs laden“, nur Textebene, kein OCR. Sie stehen in der Grenze immer unter allen Hauptdokumenten und bleiben deshalb meist nur als Text.</p>
    <div className="mt-5"><Kpis label="Stand der übrigen PDFs" items={[
     {label:'Verlinkt',value:o?n(o.linked):v(()=>'–')},
-    {label:'Heruntergeladen',value:o?pct(o.loaded+o.textOnly,o.linked):v(()=>'–'),note:o?`${n(o.loaded)} als PDF, ${n(o.textOnly)} nur noch als Text`:undefined},
     {label:'Mit Text',value:o?pct(o.withText,o.linked):v(()=>'–'),note:o?`${n(o.withText)} Dokumente; ${n(o.scans)} Scans ohne Textebene`:undefined},
+    {label:'Heruntergeladen',value:o?pct(o.loaded+o.textOnly,o.linked):v(()=>'–'),note:o?`${n(o.loaded)} als PDF, ${n(o.textOnly)} nur noch als Text`:undefined},
     {label:'Fehlgeschlagen',value:o?pct(o.failed,o.linked):v(()=>'–'),note:o?`${n(o.failed)} Dokumente`:undefined},
     {label:'Noch nicht versucht',value:o?pct(o.open,o.linked):v(()=>'–'),note:o?`${n(o.open)} Dokumente`:undefined},
    ]}/></div>
@@ -169,7 +183,7 @@ export function AdminPdf(){
    <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Feste Grenze {s?.budgetGb??80} GB für PDFs und Texte zusammen. Texte bleiben immer; ist die Grenze erreicht, verdrängt eine neue Datei die am schlechtesten bewertete, oder sie bleibt selbst nur als Text.</p>
    {s&&<SpaceBar limit={s.budgetGb*1073741824} parts={[['PDFs Hauptdokumente',s.bytes.pdfPrimary??s.bytes.pdf,'bg-teal-600'],['PDFs übrige',s.bytes.pdfOthers??0,'bg-teal-300'],['Texte',s.bytes.text,'bg-slate-500']]}/>}
    <ul className="m-0 mt-4 max-w-[820px] list-none space-y-1.5 p-0 text-[14px] text-slate-700">
-    {s&&<li>{s.threshold?s.threshold.others?'Ablage voll: neue Hauptdokumente verdrängen zuerst übrige PDFs.':s.threshold.score!=null?`Ablage voll: die schlechteste behaltene Datei hat einen Score von ${scorePct(s.threshold.score)}; neue Dateien darunter bleiben nur als Text.`:'Ablage voll: neue Dateien verdrängen die am schlechtesten bewerteten.':`Noch ${gb(s.budgetGb*1073741824-s.bytes.used)} frei bis zur Grenze: jede neue Datei bleibt als PDF.`}</li>}
+    {s&&<li>{s.threshold?s.threshold.others?'Ablage voll: neue Hauptdokumente verdrängen zuerst übrige PDFs.':s.threshold.score!=null?`Ablage voll: die schlechteste behaltene Datei hat eine Qualität von ${scorePct(s.threshold.score)}; neue Dateien darunter bleiben nur als Text.`:'Ablage voll: neue Dateien verdrängen die am schlechtesten bewerteten.':`Noch ${gb(s.budgetGb*1073741824-s.bytes.used)} frei bis zur Grenze: jede neue Datei bleibt als PDF.`}</li>}
     {keep&&<li>Letzter Lauf ({when(lastRun?.startedAt)}): {n(keep.kept)} behalten, {n(keep.swapped)} schlechtere verdrängt, {n(keep.rejected)} nicht besser (nur Text), {n(keep.tooBig)} zu groß (nur Text), {n(keep.ocrPages)} Seiten vor dem Löschen per OCR.</li>}
     {s?.disk&&<li className={s.disk.free<20*1073741824?'flex gap-2 font-medium text-slate-900':''}>{s.disk.free<20*1073741824&&<Icon name="alert" size={18}/>}Festplatte des Servers: {gb(s.disk.free)} frei von {gb(s.disk.total)} (Datenbank, Sicherungen und Ablage teilen sie sich; <Link href={adminHref('speicher')} className="text-teal-600">Speicher & Sicherungen →</Link>)</li>}
    </ul>
@@ -178,12 +192,12 @@ export function AdminPdf(){
   {/* Qualität der Ablage */}
   <section className="mt-12" aria-label="Qualität der Ablage">
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="check" className="text-teal-600"/>Qualität der Ablage</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Jede Datei hat einen Score von 0 bis 100 %: Dokumentart (Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1) × 0,5 bei Formalien × Inhalt (voll ab 4.000 Zeichen Text) × Größe (voll bis 100 KB, darüber langsam fallend). 100 % hat eine Vorlage mit viel Text in einer kleinen Datei. Die Grenze behält die Dateien mit dem höchsten Score.</p>
+   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Jede Datei hat eine Qualität von 0 bis 100 %: Dokumentart (Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1) × 0,5 bei Formalien × Inhalt (voll ab 4.000 Zeichen Text) × Größe (voll bis 100 KB, darüber langsam fallend). 100 % hat eine Vorlage mit viel Text in einer kleinen Datei. Die Grenze behält die Dateien mit der höchsten Qualität.</p>
    <div className="mt-5"><Kpis label="Qualität der Ablage" items={[
-    {label:'Ø Score',value:v(s=>scorePct(s.quality?.avg)),note:s?.quality?`${n(s.quality.files)} Dateien als PDF`:s?'nach dem nächsten Zählen':undefined},
-    {label:'Hauptdokumente',value:v(s=>scorePct(s.quality?.primary.avg)),note:s?.quality?`Ø Score von ${n(s.quality.primary.files)} Dateien`:undefined},
-    {label:'Übrige PDFs',value:v(s=>scorePct(s.quality?.others.avg)),note:s?.quality?`Ø Score von ${n(s.quality.others.files)} Dateien`:undefined},
-    {label:'Nur als Text',value:v(s=>scorePct(s.quality?.textOnly.avg)),note:s?.quality?`Ø Score der ${n(s.quality.textOnly.files)} verdrängten oder zu großen Dateien (Text bleibt)`:undefined},
+    {label:'Ø Qualität',value:v(s=>scorePct(s.quality?.avg)),note:s?.quality?`${n(s.quality.files)} Dateien als PDF`:s?'nach dem nächsten Zählen':undefined},
+    {label:'Hauptdokumente',value:v(s=>scorePct(s.quality?.primary.avg)),note:s?.quality?`Ø Qualität von ${n(s.quality.primary.files)} Dateien`:undefined},
+    {label:'Übrige PDFs',value:v(s=>scorePct(s.quality?.others.avg)),note:s?.quality?`Ø Qualität von ${n(s.quality.others.files)} Dateien`:undefined},
+    {label:'Nur als Text',value:v(s=>scorePct(s.quality?.textOnly.avg)),note:s?.quality?`Ø Qualität der ${n(s.quality.textOnly.files)} verdrängten oder zu großen Dateien (Text bleibt)`:undefined},
    ]}/></div>
    {s?.quality&&s.quality.files>0&&<QualityTable q={s.quality}/>}
   </section>
@@ -201,7 +215,7 @@ export function AdminPdf(){
      limits:['Je Datei höchstens 10 Sekunden und 30 MB','Nachts höchstens 72 Minuten Laden (40 % der Laufzeit), übrige PDFs bis 15 Minuten vor Laufende'],
      value:s?`${pct(s.loaded+s.textOnly,s.linked)} geladen`:undefined},
     {icon:'scale',title:'Bewerten und Grenze',what:'Jede neue Datei wird sofort bewertet. Ist die Grenze erreicht, verdrängt sie die am schlechtesten bewertete Datei, wenn sie besser ist; sonst bleibt sie selbst nur als Text.',
-     rules:['Score 0 bis 100 % = Dokumentart × Formalie × Inhalt × Größe','Dokumentart: Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1; Formalie halber Wert','Inhalt voll ab 4.000 Zeichen Text (Seiten, die auf OCR warten, vorläufig 800 Zeichen); Größe voll bis 100 KB, darüber langsam fallend','Scan oder Textebene und Alter zählen nicht','Übrige PDFs stehen immer unter allen Hauptdokumenten','Vor dem Löschen eines PDFs ist sein Text vollständig (Scans vorher per OCR)'],
+     rules:['Qualität 0 bis 100 % = Dokumentart × Formalie × Inhalt × Größe','Dokumentart: Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1; Formalie halber Wert','Inhalt voll ab 4.000 Zeichen Text (Seiten, die auf OCR warten, vorläufig 800 Zeichen); Größe voll bis 100 KB, darüber langsam fallend','Scan oder Textebene und Alter zählen nicht','Übrige PDFs stehen immer unter allen Hauptdokumenten','Vor dem Löschen eines PDFs ist sein Text vollständig (Scans vorher per OCR)'],
      limits:[`Feste Grenze ${s?.budgetGb??80} GB für PDFs und Texte zusammen`,'Über 10 MB nur Text (alle Dokumentarten); das PDF wird gelöscht, sobald der Text vollständig ist (Scans nach der OCR)'],
      value:s?`${gb(s.bytes.used)} von ${s.budgetGb} GB`:undefined},
     {icon:'text',title:'Text lesen',what:'Die Textebene jedes PDFs wird gleich beim Laden gelesen und als Textfassung neben dem PDF abgelegt; sie bleibt auch, wenn das PDF gelöscht wird.',

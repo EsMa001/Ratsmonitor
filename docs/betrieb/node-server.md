@@ -351,7 +351,7 @@ keine Textebene, OCR (nur Hauptdokumente) mit der ganzen Zeit, dann dieselbe Aus
 hört nicht auf „Anhalten“; beenden mit `systemctl stop ratsmonitor-pdf-ocr`. Den Lauf der Aufträge selbst beendet
 `systemctl stop ratsmonitor-pdf-job` (der Dienst vermerkt den Auftrag als abgebrochen).
 
-**Score einer Datei** (`shared/pdf-rank.mjs`, Entscheidung 12.10.2026): 0 bis 100 % = Dokumentart (Vorlage und Beschluss 1,
+**Qualität einer Datei** (im Code „Score“, `shared/pdf-rank.mjs`, Entscheidung 12.10.2026; im Admin-Reiter „Qualität“): 0 bis 100 % = Dokumentart (Vorlage und Beschluss 1,
 Niederschrift 0,7, Anlage und Sonstiges 0,4, Einladung 0,1) × Formalie (0,5, nicht bei Niederschriften) × Inhalt (voll ab
 4.000 Zeichen, darunter mit der Wurzel fallend; Seiten, die auf OCR warten, vorläufig 800 Zeichen) × Größe (voll bis 100 KB,
 darüber mit der Kubikwurzel fallend; über 10 MB für alle Dokumentarten: 0, nur Text; `text.mjs` löscht das PDF, sobald der Text vollständig ist, Scans gleich nach der OCR). Scan und Alter zählen nicht.
