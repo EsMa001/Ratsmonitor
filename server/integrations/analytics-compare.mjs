@@ -40,9 +40,9 @@ const sample=async(db,where,args,cap)=>{
  const range=" AND date<>'' AND "+PERSONAL_Q;
  // Ein Durchlauf über die Karten (bei einem Suchbegriff über alle Karten teuer): Treffer einmal zwischenspeichern, daraus
  // Zahl und Stichprobe (jede k-te Karte, k aus der Zahl); früher zwei Abfragen mit je einem Durchlauf
- const {results}=await db.prepare(`WITH m AS MATERIALIZED (SELECT rowid id,region_id,label,status,gremium,title FROM search_cards WHERE ${where}${range}),
+ const {results}=await db.prepare(`WITH m AS MATERIALIZED (SELECT rowid id,date,region_id,label,status,gremium,title FROM search_cards WHERE ${where}${range}),
   t AS (SELECT count(DISTINCT region_id||'|'||lower(title)) total FROM m)
-  SELECT t.total,m.region_id,m.label,m.status,m.gremium,m.title FROM t LEFT JOIN m ON m.id % max(1,(t.total+?-1)/?) = 0`).bind(...args,cap,cap).all();
+  SELECT t.total,m.region_id,m.label,m.status,m.gremium,m.title FROM t LEFT JOIN m ON m.id % max(1,(t.total+?-1)/?) = 0 ORDER BY m.date,m.id`).bind(...args,cap,cap).all();
  const total=results[0]?.total||0,k=Math.max(1,Math.ceil(total/cap));
  if(results.length===1&&results[0].title==null)results.length=0;
  const seen=new Set(),rows=results.filter(r=>{if(routineTitle(r.title))return false;const key=r.region_id+'|'+titleKey(r.title);if(seen.has(key))return false;seen.add(key);return true;});
@@ -73,13 +73,14 @@ export async function compare(db,catalog,params){
  const {f,places}=parseCompare(params);
  const exclude=new Set(f.groups.flat());
  /* Vergleichsbasis: alle Gebiete (Gemeindeebene) mit denselben übrigen Filtern */
- const {page:basePage}=await searchFilters(db,catalog,{...f,area:'',more:[],scope:'with',within:null,without:null});
+ /* part:'facets': Begriffe bis FTS_FACETS_MAX Treffer über den Volltextindex statt über den Suchtext jeder Karte (Ergebnis gleich) */
+ const {page:basePage}=await searchFilters(db,catalog,{...f,part:'facets',area:'',more:[],scope:'with',within:null,without:null});
  const base=await cachedBase(db,basePage.where,basePage.args);
  const bt=termStats(base.rows,exclude);
  const baseTopics=shares(base.rows,r=>REAL.includes(r.label)?r.label:null,REAL),baseStatus=shares(base.rows,r=>r.status,STATUSES);
  const out=[];
  for(const p of places){
-  const {page,scopedIds,byId}=await searchFilters(db,catalog,{...f,area:p.ags,scope:p.scope,more:[],within:null,without:null});
+  const {page,scopedIds,byId}=await searchFilters(db,catalog,{...f,part:'facets',area:p.ags,scope:p.scope,more:[],within:null,without:null});
   const s=await sample(db,page.where,page.args,CAP);
   const {results:monthRows}=await db.prepare("SELECT substr(date,1,7) m,count(DISTINCT region_id||'|'||lower(title)) n FROM search_cards WHERE "+page.where+" AND date<>'' AND "+PERSONAL_Q+" GROUP BY m ORDER BY m").bind(...page.args).all();
   const regions=[...scopedIds].map(id=>byId.get(id)).filter(Boolean);
