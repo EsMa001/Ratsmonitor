@@ -61,8 +61,17 @@ export function effectiveType(titleType,textType){
 }
 /** The one document the current pipeline reads for a report: the paper, otherwise the first PDF (see documents.mjs). */
 export const primaryDocument=documents=>documents.find(d=>/vorlage/i.test(d.title))||documents.find(d=>/beschlussvorschlag|bericht/i.test(d.title))||documents[0]||null;
-/** The PDF the import reads for a summary (enrichDocument) and the local PDF store keeps (scripts/pdf-store/fetch.mjs). */
-export const primaryPdf=documents=>{const pdfs=(documents||[]).filter(d=>d.kind==='application/pdf');return pdfs.find(d=>/vorlage/i.test(d.title))||pdfs.find(d=>/beschlussvorschlag|bericht/i.test(d.title))||pdfs[0]||null;};
+/* Rang der Art für das Hauptdokument: Vorlage, Antrag oder Anfrage zuerst; Beschlusstext und Titel ohne erkennbare Art gleich
+   (Titel wie „FB 1-047-26“ sind oft die Vorlage selbst, dann zählt wie früher die Reihenfolge); Anlagen danach; Niederschrift
+   und Einladung zuletzt und gleich (zwischen zwei Sitzungsunterlagen zu wechseln brächte nichts). Früher genügte „vorlage“
+   irgendwo im Titel, so wurden „Anlage 1 zur Vorlage …“ und „Bürgerexemplar (Tagesordnung mit öffentlichen Vorlagen)“
+   Hauptdokument, und ohne „vorlage“ das erste PDF, oft die Niederschrift neben einem Antrag (Messung 12.10.2026: 11.119 von
+   273.688 Berichten mit mehreren PDFs bekommen ein passenderes Hauptdokument). */
+const PRIMARY_RANK={paper:0,decision:1,other:1,attachment:2,minutes:3,invitation:3};
+const primaryRank=d=>{const t=String(d.title||'');return PRIMARY_RANK[documentType(t)]*3+(/vorlage/i.test(t)?0:/beschlussvorschlag|bericht/i.test(t)?1:2);};
+/** The PDF the import reads for a summary (enrichDocument) and the local PDF store keeps (scripts/pdf-store/fetch.mjs):
+    the best kind by PRIMARY_RANK, on a tie the first. */
+export const primaryPdf=documents=>{let best=null,rank=Infinity;for(const d of documents||[]){if(d.kind!=='application/pdf')continue;const r=primaryRank(d);if(r<rank){rank=r;best=d;}}return best;};
 /** Ab so vielen Berichten gilt ein Dokument als Unterlage der ganzen Sitzung (Probelauf 11.10.2026). */
 export const SESSION_DOCUMENT_USES=5;
 /**

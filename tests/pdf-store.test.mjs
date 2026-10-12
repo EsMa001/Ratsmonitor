@@ -42,6 +42,13 @@ test('primaryPdf picks the paper among PDFs, as the import does',()=>{
  assert.equal(primaryPdf([d('Anlage 1'),d('Anlage 2')]).title,'Anlage 1');
  assert.equal(primaryPdf([d('Vorlage','text/html')]),null);
  assert.equal(primaryPdf(undefined),null);
+ // Nach der Art, nicht nach dem Wort „vorlage“ (Fälle aus der Messung vom 12.10.2026)
+ assert.equal(primaryPdf([d('Anlage 1 zur Vorlage V_0197_2026'),d('Beschlussvorlage')]).title,'Beschlussvorlage');
+ assert.equal(primaryPdf([d('Buergerexemplar (Tagesordnung mit oeffentlichen Vorlagen ohne Anlagen)'),d('A-R-0053-2026')]).title,'A-R-0053-2026');
+ assert.equal(primaryPdf([d('Niederschrift öffentlich'),d('Antrag CDU Münster schenkt aus')]).title,'Antrag CDU Münster schenkt aus');
+ // Titel ohne Art und Beschlusstext gleich: die Reihenfolge entscheidet; zwei Sitzungsunterlagen: die erste
+ assert.equal(primaryPdf([d('FB 1-047-26'),d('Beschluss - Top 2')]).title,'FB 1-047-26');
+ assert.equal(primaryPdf([d('Einladung öffentlich'),d('Niederschrift öffentlich')]).title,'Einladung öffentlich');
 });
 
 test('readDocument takes the file from the store and does not go to the network',async()=>{
