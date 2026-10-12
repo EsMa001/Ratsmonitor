@@ -68,7 +68,7 @@ export async function getSourceStats(): Promise<SourceStats> {
     }
 }
 export async function getTopic(id: string): Promise<TopicDetail | undefined> {
-    if (!/^[a-z0-9-]{1,120}$/.test(id))
+    if (!/^[a-z0-9.-]{1,120}$/.test(id))
         return undefined;
     try {
 
