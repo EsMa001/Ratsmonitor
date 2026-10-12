@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IS_DEV } from "../lib/tier";
-import { normalizeTodoItem, type TodoData, type TodoItem, type TodoPersonId, type TodoResolution, type TodoStatus } from "../lib/todos";
+import { normalizeTodoItem, type TodoData, type TodoItem, type TodoPersonId, type TodoResolution, type TodoStatus, type TodoSubtask } from "../lib/todos";
 
 export type TodoPatch = Partial<{
   text: string;
@@ -14,6 +14,8 @@ export type TodoPatch = Partial<{
   reihenfolge: number;
   erledigt: boolean;
   faellig: string | null;
+  startDatum: string | null;
+  unteraufgaben: TodoSubtask[];
   erledigtAm: string | null;
 }>;
 export type TodoCreate = TodoItem & { kategorieId: string };
@@ -31,7 +33,8 @@ type State = {
 };
 
 const ENDPOINT = IS_DEV ? "/__todos" : "/api/admin/todos";
-const FIELDS: (keyof TodoPatch)[] = ["text", "hinweis", "prio", "art", "status", "abschluss", "bearbeiter", "wartetAuf", "reihenfolge", "erledigt", "faellig", "erledigtAm"];
+const FIELDS: (keyof TodoPatch)[] = ["text", "hinweis", "prio", "art", "status", "abschluss", "bearbeiter", "wartetAuf", "reihenfolge", "erledigt", "faellig", "startDatum", "unteraufgaben", "erledigtAm"];
+const sameValue = (a: unknown, b: unknown) => Object.is(a, b) || Array.isArray(a) && Array.isArray(b) && JSON.stringify(a) === JSON.stringify(b);
 const normalizedData = (data: TodoData): TodoData => ({ ...data, kategorien: data.kategorien.map((cat) => ({ ...cat, items: cat.items.map(normalizeTodoItem) })) });
 const patchItem = (item: TodoItem, patch?: TodoPatch): TodoItem => normalizeTodoItem({ ...item, ...patch } as TodoItem);
 const valueOf = (item: TodoItem, key: keyof TodoPatch): unknown => {
@@ -59,7 +62,7 @@ function applyChanges(state: State, changes: Change[], remember: boolean, keepPe
     const inverse: TodoPatch = {};
     const actual: TodoPatch = {};
     for (const key of FIELDS) {
-      if (key in patch && !Object.is(valueOf(current, key), patch[key])) {
+      if (key in patch && !sameValue(valueOf(current, key), patch[key])) {
         Object.assign(inverse, { [key]: valueOf(current, key) });
         Object.assign(actual, { [key]: patch[key] });
       }
@@ -69,7 +72,7 @@ function applyChanges(state: State, changes: Change[], remember: boolean, keepPe
     else {
       const saved = findSaved(state, id)!;
       const combined = { ...updates[id], ...actual };
-      if (!keepPending) for (const key of FIELDS) if (key in combined && Object.is(valueOf(saved, key), combined[key])) delete combined[key];
+      if (!keepPending) for (const key of FIELDS) if (key in combined && sameValue(valueOf(saved, key), combined[key])) delete combined[key];
       if (Object.keys(combined).length) updates[id] = combined;
       else delete updates[id];
       before.push({ id, patch: inverse });
@@ -107,7 +110,7 @@ export function useTodoBoard() {
           const saved = data.kategorien.flatMap((category) => category.items).find((item) => item.id === id);
           if (!saved) continue;
           const remaining: TodoPatch = {};
-          for (const key of FIELDS) if (!Object.is(valueOf(current, key), valueOf(saved, key))) Object.assign(remaining, { [key]: valueOf(current, key) });
+          for (const key of FIELDS) if (!sameValue(valueOf(current, key), valueOf(saved, key))) Object.assign(remaining, { [key]: valueOf(current, key) });
           delete creates[id];
           if (Object.keys(remaining).length) updates[id] = { ...remaining, ...updates[id] };
         }
@@ -151,7 +154,7 @@ export function useTodoBoard() {
         const creates = { ...previous.creates };
         for (const [id, sent] of Object.entries(snapshot.updates)) {
           const remaining = { ...updates[id] };
-          for (const key of FIELDS) if (key in sent && Object.is(remaining[key], sent[key])) delete remaining[key];
+          for (const key of FIELDS) if (key in sent && sameValue(remaining[key], sent[key])) delete remaining[key];
           if (Object.keys(remaining).length) updates[id] = remaining;
           else delete updates[id];
         }
@@ -160,7 +163,7 @@ export function useTodoBoard() {
           const saved = savedData.kategorien.flatMap((cat) => cat.items).find((item) => item.id === id);
           if (!saved || !current) continue;
           const remaining: TodoPatch = {};
-          for (const key of FIELDS) if (!Object.is(valueOf(current, key), valueOf(saved, key))) Object.assign(remaining, { [key]: valueOf(current, key) });
+          for (const key of FIELDS) if (!sameValue(valueOf(current, key), valueOf(saved, key))) Object.assign(remaining, { [key]: valueOf(current, key) });
           delete creates[id];
           if (Object.keys(remaining).length) updates[id] = { ...remaining, ...updates[id] };
         }
@@ -193,7 +196,7 @@ export function useTodoBoard() {
     if (!entry) return previous;
     const matches = entry.after.every(({ id, patch }) => {
       const current = findCurrent(previous, id);
-      return current && FIELDS.every((key) => !(key in patch) || Object.is(valueOf(current, key), patch[key]));
+      return current && FIELDS.every((key) => !(key in patch) || sameValue(valueOf(current, key), patch[key]));
     });
     if (!matches) return { ...previous, error: "Diese Änderung kann nach dem neuen Stand nicht mehr rückgängig gemacht werden.", undo: [] };
     return { ...applyChanges(previous, entry.before, false, inFlight.current), undo: previous.undo.slice(0, -1) };

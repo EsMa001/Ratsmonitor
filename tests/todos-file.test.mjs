@@ -10,6 +10,19 @@ const sample=()=>({version:1,kategorien:[{id:'a',name:'A',items:[
  {id:'y',text:'Zwei',hinweis:'H',erledigt:true,faellig:'2026-10-01',erledigtAm:'2026-09-30'}]}]});
 const items=data=>data.kategorien.flatMap(c=>c.items);
 
+test('local task endpoint persists subtasks and planned dates and rejects inverted dates without writing',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'todos-')),file=join(dir,'todos.json');
+ await writeFile(file,JSON.stringify(sample()));
+ const post=async updates=>handleTodoRequest({method:'POST',origin:'http://localhost:5173',host:'localhost:5173',contentType:'application/json',text:JSON.stringify({revision:(await readTodos(file)).revision,updates})},file,'2026-10-12');
+ const response=await post([{id:'x',startDatum:'2026-10-15',faellig:'2026-10-20',unteraufgaben:[{id:'sub',text:'Schritt',erledigt:true}]}]);
+ assert.equal(response.status,200);
+ assert.deepEqual(await readTodos(file),response.body);
+ assert.equal(items(response.body)[0].unteraufgaben[0].erledigt,true);
+ const before=await readFile(file,'utf8');
+ assert.equal((await post([{id:'x',faellig:'2026-10-14'}])).status,400);
+ assert.equal(await readFile(file,'utf8'),before);
+});
+
 test('marking done sets the date, keeps text and order, and never removes the entry',()=>{
  const next=applyTodoUpdates(sample(),[{id:'x',erledigt:true,faellig:'2026-11-05'}],'2026-10-08');
  assert.deepEqual(items(next).map(i=>i.id),['x','y']);

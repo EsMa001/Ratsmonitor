@@ -20,6 +20,88 @@ const db=async(t)=>{
 };
 const save=(d,base,revision,updates,creates=[])=>updateStoredTodos(d,base,updates,'2026-10-11',{revision,creates});
 
+test('legacy due dates remain planned ends and checklists default to empty',()=>{
+ const normalized=items(normalizeTodos(file()));
+ assert.equal(normalized[1].faellig,'2026-10-01');
+ assert.equal(normalized[1].startDatum,null);
+ assert.deepEqual(normalized[1].unteraufgaben,[]);
+ assert.deepEqual(Object.keys(diffTodos(file(),normalizeTodos(file())).changes),[]);
+});
+
+test('subtasks and planned intervals persist, can be checked, edited, removed and cleared',async(t)=>{
+ const d=await db(t),base=file(),initial=await readStoredTodos(d,base);
+ const checklist=[{id:'s1',text:'  Entwurf  ',erledigt:false},{id:'s2',text:'Pruefen',erledigt:true}];
+ let next=await save(d,base,initial.revision,[{id:'x',startDatum:'2026-10-15',faellig:'2026-10-20',unteraufgaben:checklist}]);
+ assert.equal(items(next)[0].unteraufgaben[0].text,'Entwurf');
+ assert.equal(checklist[0].text,'  Entwurf  ','input is not mutated');
+ assert.deepEqual(await readStoredTodos(d,base),next);
+ next=await save(d,base,next.revision,[{id:'x',unteraufgaben:[{id:'s1',text:'Freigabe',erledigt:true}]}]);
+ assert.equal(items(next)[0].status,'backlog','finishing subtasks does not close the parent');
+ assert.equal(items(next)[0].faellig,'2026-10-20');
+ assert.deepEqual(items(next)[0].unteraufgaben,[{id:'s1',text:'Freigabe',erledigt:true}]);
+ next=await save(d,base,next.revision,[{id:'x',unteraufgaben:[],startDatum:null,faellig:null}]);
+ assert.deepEqual(items(next)[0].unteraufgaben,[]);
+ assert.equal(items(next)[0].startDatum,null);
+ assert.equal(items(next)[0].faellig,null);
+ assert.deepEqual((await readChanges(d)).changes,{});
+});
+
+test('new tasks retain their subtasks and interval through a pull and subsequent deployment',async(t)=>{
+ const d=await db(t),base=file(),initial=await readStoredTodos(d,base);
+ const next=await save(d,base,initial.revision,[],[{id:'new',kategorieId:'a',text:'Neu',startDatum:'2026-10-15',faellig:'2026-10-20',unteraufgaben:[{id:'sub',text:'Erster Schritt',erledigt:false}]}]);
+ const pulled=withoutRevision(next);
+ await save(d,base,next.revision,[{id:'new',startDatum:'2026-10-16',unteraufgaben:[{id:'sub',text:'Erster Schritt',erledigt:true}]}]);
+ const deployed=await readStoredTodos(d,pulled),task=items(deployed).find(item=>item.id==='new');
+ assert.equal(task.startDatum,'2026-10-16');
+ assert.equal(task.faellig,'2026-10-20');
+ assert.equal(task.unteraufgaben[0].erledigt,true);
+ assert.equal(items(deployed).filter(item=>item.id==='new').length,1);
+});
+
+test('planned dates are validated against existing partner dates and rejected atomically',async(t)=>{
+ const d=await db(t),base=file();
+ Object.assign(items(base)[0],{startDatum:'2026-10-15',faellig:'2026-10-20'});
+ const initial=await readStoredTodos(d,base);
+ for(const patch of [{startDatum:'2026-10-21'},{faellig:'2026-10-14'},{startDatum:'2026-02-30'},{startDatum:42}]){
+  await assert.rejects(save(d,base,initial.revision,[{id:'y',text:'Must not persist'},{id:'x',...patch}]),error=>error.status===400);
+  assert.deepEqual(await readStoredTodos(d,base),initial);
+ }
+ const equal=await save(d,base,initial.revision,[{id:'x',faellig:'2026-10-15'}]);
+ assert.equal(items(equal)[0].faellig,'2026-10-15','same-day intervals are valid');
+ const moved=await save(d,base,equal.revision,[{id:'x',startDatum:'2026-11-01',faellig:'2026-11-02'}]);
+ assert.equal(items(moved)[0].startDatum,'2026-11-01','both ends can change together');
+});
+
+test('invalid subtasks reject the complete request before writing',async(t)=>{
+ const d=await db(t),base=file(),initial=await readStoredTodos(d,base);
+ const sub={id:'s',text:'Schritt',erledigt:false};
+ for(const unteraufgaben of [null,{},[{}],[{...sub,text:' '}],[{...sub,erledigt:'ja'}],[{...sub,extra:true}],[sub,sub],[{...sub,id:''}],[{...sub,text:'x'.repeat(501)}],Array.from({length:101},(_,i)=>({...sub,id:String(i)}))]){
+  await assert.rejects(save(d,base,initial.revision,[{id:'x',unteraufgaben}]),error=>error.status===400);
+  assert.deepEqual(await readStoredTodos(d,base),initial);
+ }
+});
+
+test('unchanged checklist values produce no overrides and planned intervals survive source changes together',()=>{
+ const base=file();
+ Object.assign(items(base)[0],{startDatum:'2026-10-15',faellig:'2026-10-20',unteraufgaben:[{id:'s',text:'Schritt',erledigt:false}]});
+ const next=applyTodoUpdates(base,[{id:'x',bearbeiter:'nico'}]);
+ assert.deepEqual(diffTodos(base,next).changes.x.fields,{bearbeiter:'nico'});
+ const planned=applyTodoUpdates(base,[{id:'x',startDatum:'2026-10-16'}]);
+ const stored=diffTodos(base,planned);
+ assert.equal(stored.changes.x.fields.faellig,'2026-10-20');
+ const deployed=structuredClone(base);items(deployed)[0].faellig='2026-10-10';
+ const merged=items(mergeTodos(deployed,stored))[0];
+ assert.equal(merged.startDatum,'2026-10-16');
+ assert.equal(merged.faellig,'2026-10-20');
+});
+
+test('simultaneous checklist edits retain revision conflict protection',async(t)=>{
+ const d=await db(t),base=file(),initial=await readStoredTodos(d,base);
+ const next=await save(d,base,initial.revision,[{id:'x',unteraufgaben:[{id:'s',text:'Pruefen',erledigt:true}]}]);
+ await assert.rejects(save(d,base,initial.revision,[{id:'x',unteraufgaben:[{id:'other',text:'Parallel',erledigt:false}]}]),error=>error.status===409);
+ assert.deepEqual(await readStoredTodos(d,base),next);
+});
+
 test('legacy tasks normalize to backlog or done with no guessed assignee',()=>{
  const normalized=normalizeTodos(file());
  assert.equal(items(normalized)[0].status,'backlog');

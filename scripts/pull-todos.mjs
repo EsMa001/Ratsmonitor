@@ -30,7 +30,7 @@ const before=new Map(normalizeTodos(local).kategorien.flatMap(category=>category
 const categoryIds=new Set(local.kategorien.map(category=>category.id));
 const priorities={1:'hoch',2:'mittel',3:'niedrig'};
 const resolutions={done:'erledigt',wont_do:'wird nicht umgesetzt',duplicate:'Duplikat'};
-const state=item=>`${item.status}, Prioritaet ${priorities[item.prio]}${item.abschluss?', '+resolutions[item.abschluss]:''}${item.bearbeiter?', '+item.bearbeiter:''}${item.faellig?', faellig '+item.faellig:''}${item.erledigtAm?', geschlossen am '+item.erledigtAm:''}`;
+const state=item=>`${item.status}, Prioritaet ${priorities[item.prio]}${item.abschluss?', '+resolutions[item.abschluss]:''}${item.bearbeiter?', '+item.bearbeiter:''}${item.startDatum?', Start '+item.startDatum:''}${item.faellig?', geplantes Ende '+item.faellig:''}${item.unteraufgaben?.length?', Unteraufgaben '+item.unteraufgaben.filter(subtask=>subtask.erledigt).length+'/'+item.unteraufgaben.length:''}${item.erledigtAm?', geschlossen am '+item.erledigtAm:''}`;
 let taken=0,skipped=0;
 for(const category of merged.kategorien)for(const item of category.items){
  const old=before.get(item.id);

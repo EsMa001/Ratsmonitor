@@ -3,6 +3,7 @@ export type TodoStatus = "backlog" | "ready" | "doing" | "review" | "done";
 export type TodoPersonId = "max" | "nico";
 export type TodoResolution = "done" | "wont_do" | "duplicate";
 export type TodoPriority = 1 | 2 | 3;
+export type TodoSubtask = { id: string; text: string; erledigt: boolean };
 export const TODO_STATUSES: { id: TodoStatus; label: string }[] = [
   { id: "backlog", label: "Backlog" },
   { id: "ready", label: "Bereit" },
@@ -34,8 +35,11 @@ export type TodoItem = {
   /** Art: „code“ = im Repo umsetzbar, „extern“ = Handlung außerhalb des Codes */
   art?: "code" | "extern";
   erledigt: boolean;
-  /** geplantes Datum, ISO „JJJJ-MM-TT“ */
+  /** Geplanter Start, ISO „JJJJ-MM-TT“. */
+  startDatum?: string | null;
+  /** Geplantes Enddatum; bestehende Termine bleiben erhalten. */
   faellig: string | null;
+  unteraufgaben?: TodoSubtask[];
   /** Tag, an dem der Eintrag abgehakt und gespeichert wurde */
   erledigtAm: string | null;
   status?: TodoStatus;
@@ -71,6 +75,8 @@ export function normalizeTodoItem(item: TodoItem): TodoItem {
     wartetAuf: item.wartetAuf || null,
     reihenfolge: Number.isFinite(item.reihenfolge) ? item.reihenfolge : 0,
     faellig: item.faellig ?? null,
+    startDatum: item.startDatum ?? null,
+    unteraufgaben: item.unteraufgaben ?? [],
     erledigt: status === "done",
     erledigtAm: status === "done" ? item.erledigtAm ?? null : null,
   };
@@ -97,12 +103,12 @@ const daysBetween = (from: string, to: string) => Math.round((Date.parse(to + "T
 const days = (n: number) => (n === 1 ? "1 Tag" : `${n} Tagen`);
 
 /** Status eines Eintrags: erledigt, überfällig, heute fällig, bald (bis 7 Tage), geplant oder ohne Termin */
-export function todoState(item: Pick<TodoItem, "status" | "abschluss" | "erledigt" | "faellig" | "erledigtAm">, today: string): TodoState {
+export function todoState(item: Pick<TodoItem, "status" | "abschluss" | "erledigt" | "startDatum" | "faellig" | "erledigtAm">, today: string): TodoState {
   if (taskStatus(item) === "done") {
     const label = TODO_RESOLUTIONS.find(resolution => resolution.id === taskResolution(item))!.label;
     return { kind: "done", label: item.erledigtAm ? `${label} · Geschlossen am ${fmtShort(item.erledigtAm)}` : label };
   }
-  if (!item.faellig) return { kind: "open", label: "Ohne Termin" };
+  if (!item.faellig) return item.startDatum ? { kind: "planned", label: `Start am ${fmtShort(item.startDatum)}` } : { kind: "open", label: "Ohne Termin" };
   const diff = daysBetween(today, item.faellig);
   if (diff < 0) return { kind: "overdue", label: `Überfällig seit ${days(-diff)}` };
   if (diff === 0) return { kind: "today", label: "Heute fällig" };

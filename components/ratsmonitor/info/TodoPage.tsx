@@ -1,5 +1,5 @@
 import { useState, type DragEvent } from "react";
-import { ArrowRight, Check, ChevronDown, CircleAlert, Clock3, GripVertical, LayoutList, LoaderCircle, RefreshCw, Search, Undo2 } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, CircleAlert, Clock3, GripVertical, ListChecks, LayoutList, LoaderCircle, RefreshCw, Search, Undo2 } from "lucide-react";
 import { TODO_PEOPLE, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_STATUSES, fmtShort, localToday, taskResolution, taskStatus, todoPriority, todoState, type TodoItem, type TodoPersonId, type TodoResolution, type TodoStatus } from "../lib/todos";
 import { PageHead } from "./blocks";
 import { TodoChoice, TodoEditor, TodoOrder, TodoOwner, TodoPriorityChoice, TodoStatusChoice } from "./TodoControls";
@@ -74,8 +74,8 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
     const due = todoState(item, today).kind;
     if (dueFilter === "overdue" && due !== "overdue") return false;
     if (dueFilter === "today" && due !== "today") return false;
-    if (dueFilter === "undated" && item.faellig) return false;
-    return !needle || [item.text, item.hinweis, item.wartetAuf, category, item.id, TODO_PEOPLE.find((person) => person.id === item.bearbeiter)?.name].filter(Boolean).join(" ").toLocaleLowerCase("de-DE").includes(needle);
+    if (dueFilter === "undated" && (item.faellig || item.startDatum)) return false;
+    return !needle || [item.text, item.hinweis, ...(item.unteraufgaben ?? []).map(subtask => subtask.text), item.wartetAuf, category, item.id, TODO_PEOPLE.find((person) => person.id === item.bearbeiter)?.name].filter(Boolean).join(" ").toLocaleLowerCase("de-DE").includes(needle);
   };
   const group = (entry: Entry) => swimlane === "work" ? workLane(entry.categoryId) : swimlane === "person" ? entry.item.bearbeiter ?? "unassigned" : "all";
   const lanes: Lane[] = swimlane === "work" ? WORK_LANES : swimlane === "person" ? [...TODO_PEOPLE.map((person) => ({ id: person.id, name: person.name })), { id: "unassigned", name: "Nicht zugewiesen" }] : [{ id: "all", name: "Aktuelle Aufgaben" }];
@@ -145,7 +145,8 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
       <TodoPriorityChoice item={entry.item} onChange={(prio) => store.change([{ id: entry.item.id, patch: { prio } }])}/>
       {resolution && <span className="admin-todo-resolution" data-resolution={resolution}>{TODO_RESOLUTIONS.find((option) => option.id === resolution)?.label}</span>}
       <span>{entry.item.art === "code" ? "Code" : "Außerhalb Code"}</span>
-      {entry.item.faellig && taskStatus(entry.item) !== "done" && <span className={state.kind === "overdue" ? "admin-todo-overdue" : ""} title={state.label}><Clock3 size={12} aria-hidden="true"/>{fmtShort(entry.item.faellig)}</span>}
+      {(entry.item.startDatum || entry.item.faellig) && <span className={state.kind === "overdue" ? "admin-todo-overdue" : ""} title={`Start: ${entry.item.startDatum ? fmtShort(entry.item.startDatum) : "Nicht geplant"}; Geplantes Ende: ${entry.item.faellig ? fmtShort(entry.item.faellig) : "Nicht geplant"}${taskStatus(entry.item) !== "done" ? `; ${state.label}` : ""}`}><Clock3 size={12} aria-hidden="true"/>{entry.item.startDatum ? fmtShort(entry.item.startDatum) : "Offen"} → {entry.item.faellig ? fmtShort(entry.item.faellig) : "Offen"}</span>}
+      {!!entry.item.unteraufgaben?.length && <span title="Erledigte Unteraufgaben" aria-label={`${entry.item.unteraufgaben.filter(subtask => subtask.erledigt).length} von ${entry.item.unteraufgaben.length} Unteraufgaben erledigt`}><ListChecks size={14} aria-hidden="true"/>{entry.item.unteraufgaben.filter(subtask => subtask.erledigt).length}/{entry.item.unteraufgaben.length}</span>}
       {taskStatus(entry.item) === "done" && entry.item.erledigtAm && <span title={`Geschlossen am ${fmtShort(entry.item.erledigtAm)}`}><Check size={12} aria-hidden="true"/>{fmtShort(entry.item.erledigtAm)}</span>}
     </div>;
   };
@@ -168,9 +169,9 @@ export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
         {store.conflictFresh && Object.keys(store.updates).length > 0 && <details className="admin-todo-conflicts"><summary>Ausstehende Änderungen ansehen</summary><ul>{Object.entries(store.updates).map(([id, patch]) => {
           const saved = store.data?.kategorien.flatMap((category) => category.items).find((item) => item.id === id);
           return <li key={id}><strong>{saved?.text ?? id}</strong>{Object.entries(patch).map(([field, value]) => {
-            const labels: Record<string, string> = { status: "Status", abschluss: "Abschluss", text: "Aufgabe", hinweis: "Beschreibung", prio: "Priorität", art: "Art", bearbeiter: "Bearbeiter", wartetAuf: "Wartet auf", faellig: "Termin", reihenfolge: "Reihenfolge" };
+            const labels: Record<string, string> = { status: "Status", abschluss: "Abschluss", text: "Aufgabe", hinweis: "Beschreibung", prio: "Priorität", art: "Art", bearbeiter: "Bearbeiter", wartetAuf: "Wartet auf", startDatum: "Startdatum", faellig: "Geplantes Enddatum", unteraufgaben: "Unteraufgaben", reihenfolge: "Reihenfolge" };
             if (!labels[field]) return null;
-            const display = (v: unknown) => field === "status" ? TODO_STATUSES.find((s) => s.id === v)?.label ?? "Backlog" : field === "abschluss" ? TODO_RESOLUTIONS.find((option) => option.id === v)?.label ?? "Nicht geschlossen" : field === "prio" ? TODO_PRIORITIES.find((option) => option.id === v)?.label ?? "Mittel" : field === "bearbeiter" ? TODO_PEOPLE.find((p) => p.id === v)?.name ?? "Nicht zugewiesen" : String(v ?? "–");
+            const display = (v: unknown) => field === "unteraufgaben" && Array.isArray(v) ? v.map(subtask => `${subtask.erledigt ? "Erledigt" : "Offen"}: ${subtask.text}`).join("; ") || "Keine" : field === "status" ? TODO_STATUSES.find((s) => s.id === v)?.label ?? "Backlog" : field === "abschluss" ? TODO_RESOLUTIONS.find((option) => option.id === v)?.label ?? "Nicht geschlossen" : field === "prio" ? TODO_PRIORITIES.find((option) => option.id === v)?.label ?? "Mittel" : field === "bearbeiter" ? TODO_PEOPLE.find((p) => p.id === v)?.name ?? "Nicht zugewiesen" : String(v ?? "–");
             const savedValue = saved ? field === "prio" ? todoPriority(saved) : field === "abschluss" ? taskResolution(saved) : field === "status" ? taskStatus(saved) : saved[field as keyof TodoItem] : null;
             return <span key={field}>{labels[field]}: {display(savedValue)} → {display(value)}</span>;
           })}</li>;

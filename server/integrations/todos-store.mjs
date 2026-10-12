@@ -5,7 +5,7 @@ const KEY='admin-todos-v1';
 const STATUSES=new Set(['backlog','ready','doing','review','done']);
 const PEOPLE=new Set(['max','nico']);
 const RESOLUTIONS=new Set(['done','wont_do','duplicate']);
-const FIELDS=['text','hinweis','prio','art','status','abschluss','bearbeiter','wartetAuf','reihenfolge','faellig','erledigt','erledigtAm'];
+const FIELDS=['text','hinweis','prio','art','status','abschluss','bearbeiter','wartetAuf','reihenfolge','faellig','startDatum','unteraufgaben','erledigt','erledigtAm'];
 const INPUT_FIELDS=new Set(['id','kategorieId',...FIELDS]);
 const MAX_UPDATES=1000;
 const DATE=/^\d{4}-\d{2}-\d{2}$/;
@@ -22,6 +22,7 @@ function normalize(item){
   abschluss:status==='done'?(RESOLUTIONS.has(item.abschluss)?item.abschluss:'done'):null,
   bearbeiter:PEOPLE.has(item.bearbeiter)?item.bearbeiter:null,wartetAuf:item.wartetAuf||null,
   reihenfolge:Number.isFinite(item.reihenfolge)?item.reihenfolge:0,faellig:item.faellig??null,
+  startDatum:item.startDatum??null,unteraufgaben:(item.unteraufgaben??[]).map(subtask=>({...subtask})),
   erledigt:status==='done',erledigtAm:status==='done'?item.erledigtAm??null:null};
  for(const key of ['hinweis','art'])if(next[key]===null)delete next[key];
  return next;
@@ -51,9 +52,18 @@ function validateInput(update,creating=false){
  if(own(next,'bearbeiter')&&next.bearbeiter!==null&&!PEOPLE.has(next.bearbeiter))throw new AdminError(400,'Ungueltiger Bearbeiter.');
  if(own(next,'reihenfolge')&&(!Number.isFinite(next.reihenfolge)||Math.abs(next.reihenfolge)>1e12))throw new AdminError(400,'Ungueltige Reihenfolge.');
  if(own(next,'erledigt')&&typeof next.erledigt!=='boolean')throw new AdminError(400,'Ungueltige Anfrage.');
- for(const key of ['faellig','erledigtAm'])if(own(next,key)){
+ for(const key of ['faellig','startDatum','erledigtAm'])if(own(next,key)){
   next[key]=next[key]===''?null:next[key];
   if(next[key]!==null&&!isDate(next[key]))throw new AdminError(400,'Ungueltiges Datum.');
+ }
+ if(own(next,'unteraufgaben')){
+  if(!Array.isArray(next.unteraufgaben)||next.unteraufgaben.length>100)throw new AdminError(400,'Hoechstens 100 Unteraufgaben sind erlaubt.');
+  const ids=new Set();
+  next.unteraufgaben=next.unteraufgaben.map(subtask=>{
+   if(!isObject(subtask)||!Object.keys(subtask).every(key=>['id','text','erledigt'].includes(key))||typeof subtask.id!=='string'||!subtask.id.trim()||subtask.id.length>160||ids.has(subtask.id)||typeof subtask.text!=='string'||!subtask.text.trim()||subtask.text.length>500||typeof subtask.erledigt!=='boolean')throw new AdminError(400,'Ungueltige Unteraufgabe.');
+   ids.add(subtask.id);
+   return {id:subtask.id,text:subtask.text.trim(),erledigt:subtask.erledigt};
+  });
  }
  if(own(next,'status')&&own(next,'erledigt')&&(next.status==='done')!==next.erledigt)throw new AdminError(400,'Status und Erledigung widersprechen sich.');
  if(own(next,'abschluss')){
@@ -68,6 +78,7 @@ function applyChange(item,change,today){
  const previousStatus=statusOf(item);
  const status=own(change,'status')?change.status:own(change,'erledigt')?(change.erledigt?'done':previousStatus==='done'?'backlog':previousStatus):own(change,'abschluss')?(change.abschluss!==null?'done':previousStatus==='done'?'backlog':previousStatus):previousStatus;
  const next=normalize({...item,...fields,status});
+ if(next.startDatum&&next.faellig&&next.startDatum>next.faellig)throw new AdminError(400,'Das geplante Enddatum darf nicht vor dem Startdatum liegen.');
  next.erledigtAm=status==='done'?(own(change,'erledigtAm')?change.erledigtAm:statusOf(item)==='done'?item.erledigtAm??null:today):null;
  for(const key of ['hinweis','art'])if(next[key]===null)delete next[key];
  return next;
@@ -154,7 +165,12 @@ export function diffTodos(base,next){
   const previous=before.get(item.id);
   if(!previous){creates.push({kategorieId:category.id,item});continue;}
   const fields={};
-  for(const key of FIELDS)if((previous.item[key]??null)!==(item[key]??null))fields[key]=item[key]??null;
+  for(const key of FIELDS){
+   const before=previous.item[key]??null,after=item[key]??null;
+   if(key==='unteraufgaben'?JSON.stringify(before)!==JSON.stringify(after):before!==after)fields[key]=after;
+  }
+  // Keep a planned interval together when a later deployment changes its source dates.
+  if(own(fields,'startDatum')||own(fields,'faellig'))Object.assign(fields,{startDatum:item.startDatum,faellig:item.faellig});
   // Closure is a single state: a deployment cannot keep its reason while reopening its status.
   if((previous.item.erledigt||item.erledigt)&&['status','erledigt','erledigtAm','abschluss'].some(key=>own(fields,key))){
    for(const key of ['status','erledigt','erledigtAm','abschluss'])fields[key]=item[key]??null;

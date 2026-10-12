@@ -356,6 +356,16 @@
 .admin-todo-field textarea{resize:vertical}
 .admin-todo-field .admin-todo-choice{width:100%;min-height:40px}
 .admin-todo-field .admin-todo-owner{padding:6px 10px;border:1px solid var(--rm-c200,#e2e8f0);justify-content:space-between}
+.admin-todo-subtasks{grid-column:1/-1;min-width:0;margin:0;padding:0;border:0}
+.admin-todo-subtasks legend{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:0;font-size:14px;font-weight:500}
+.admin-todo-subtasks legend span{font-size:12px;font-weight:400;color:var(--rm-c500,#64748b);font-variant-numeric:tabular-nums}
+.admin-todo-subtasks ul{list-style:none;margin:0;padding:0}
+.admin-todo-subtasks li{display:grid;grid-template-columns:32px minmax(0,1fr) 32px;align-items:center;gap:8px;margin-bottom:6px}
+.admin-todo-subtask-check{display:flex;align-items:center;justify-content:center;width:32px;min-height:38px;cursor:pointer}
+.admin-todo-subtasks input[type=checkbox]{width:20px;height:20px;justify-self:center;accent-color:var(--rm-ac,#0d9488);cursor:pointer}
+.admin-todo-subtasks input[type=text]{width:100%;min-width:0;min-height:38px;padding:8px 10px;border:1px solid var(--rm-c200,#e2e8f0);border-radius:6px;background:var(--rm-white,#fff);color:var(--rm-c900,#0f172a);font:inherit;font-size:14px;line-height:1.5}
+.admin-todo-subtasks li.is-done input[type=text]{text-decoration:line-through;color:var(--rm-c500,#64748b)}
+.admin-todo-subtask-add{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:8px;margin-top:8px}
 .admin-todo-dialog-actions{display:flex;justify-content:flex-end;align-items:center;gap:24px;padding-top:18px;margin-top:22px;border-top:1px solid var(--rm-c200,#e2e8f0)}
 .admin-todo :is(button,input):focus-visible,.admin-todo-menu button:focus-visible,.admin-todo-dialog :is(button,input,textarea):focus-visible{outline:2px solid var(--rm-ac,#0d9488);outline-offset:3px}
 .admin-todo-mobile-status{display:none}
@@ -414,5 +424,8 @@
   .admin-todo-icon,.admin-todo-order .admin-todo-icon{width:44px;height:44px}
   .admin-todo-owner,.admin-todo-status-choice,.admin-todo-priority-choice,.admin-todo-menu button,.admin-todo-text-action,.admin-todo-dialog button{min-height:44px}
   .admin-todo-card-actions{flex-wrap:wrap}
-  .admin-todo-search input,.admin-todo-field :is(input,textarea){font-size:16px}
+  .admin-todo-search input,.admin-todo-field :is(input,textarea),.admin-todo-subtasks input[type=text]{font-size:16px}
+  .admin-todo-subtasks li{grid-template-columns:44px minmax(0,1fr) 44px}
+  .admin-todo-subtask-check{width:44px;min-height:44px}
+  .admin-todo-subtask-add{grid-template-columns:minmax(0,1fr) 44px}
 }

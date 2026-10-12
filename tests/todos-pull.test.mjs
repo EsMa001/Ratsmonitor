@@ -24,6 +24,18 @@ async function fixture(changes){
  return {file,run};
 }
 
+test('pull preserves planned intervals and checklist states without repeated changes',async()=>{
+ const unteraufgaben=[{id:'sub',text:'Erster Schritt',erledigt:true}];
+ const {file,run}=await fixture({format:2,changes:{x:{fields:{startDatum:'2026-10-15',faellig:'2026-10-20',unteraufgaben}}},creates:[]});
+ const result=await run();
+ assert.equal(result.code,0,result.output);
+ const pulled=JSON.parse(await readFile(file,'utf8')).kategorien[0].items[0];
+ assert.equal(pulled.startDatum,'2026-10-15');
+ assert.equal(pulled.faellig,'2026-10-20');
+ assert.deepEqual(pulled.unteraufgaben,unteraufgaben);
+ assert.match((await run()).output,/0 uebernommen, 0 ausgelassen/);
+});
+
 test('pull imports assigned board tasks, content edits and newly created tasks',async()=>{
  const changes={format:2,changes:{x:{fields:{text:'Bearbeitet',status:'doing',bearbeiter:'max',wartetAuf:'Freigabe',reihenfolge:20}}},creates:[{kategorieId:'a',item:{id:'new',text:'Neu',status:'ready',bearbeiter:'nico',erledigt:false,faellig:'2026-11-01',erledigtAm:null}}]};
  const {file,run}=await fixture(changes);

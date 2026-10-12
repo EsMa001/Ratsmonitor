@@ -5,7 +5,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/admin.css (419 Zeilen, ⚠11)
+- app/admin.css (432 Zeilen, ⚠11)
 - app/analyse-admin.css (95 Zeilen, ⚠9)
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
@@ -152,7 +152,7 @@ admin-timeline-table analyse-admin.css:78
 admin-todo admin.css:228
 admin-todo-avatar admin.css:308
 admin-todo-backlog-rows admin.css:325
-admin-todo-board admin.css:388
+admin-todo-board admin.css:398
 admin-todo-card admin.css:283
 admin-todo-card-actions admin.css:311
 admin-todo-card-owner admin.css:303
@@ -167,7 +167,7 @@ admin-todo-column-heading admin.css:273
 admin-todo-columns admin.css:271
 admin-todo-conflicts admin.css:340
 admin-todo-dialog admin.css:347
-admin-todo-dialog-actions admin.css:359
+admin-todo-dialog-actions admin.css:369
 admin-todo-dialog-description admin.css:350
 admin-todo-dialog-head admin.css:348
 admin-todo-empty admin.css:315
@@ -186,7 +186,7 @@ admin-todo-lane-heading admin.css:277
 admin-todo-loading admin.css:345
 admin-todo-menu admin.css:258
 admin-todo-meta admin.css:292
-admin-todo-mobile-status admin.css:361
+admin-todo-mobile-status admin.css:371
 admin-todo-order admin.css:313
 admin-todo-overdue admin.css:299
 admin-todo-overlay admin.css:346
@@ -204,8 +204,11 @@ admin-todo-row-owner admin.css:331
 admin-todo-row-status admin.css:331
 admin-todo-save-state admin.css:241
 admin-todo-search admin.css:251
-admin-todo-spin admin.css:362
+admin-todo-spin admin.css:372
 admin-todo-status-choice admin.css:312
+admin-todo-subtask-add admin.css:368
+admin-todo-subtask-check admin.css:364
+admin-todo-subtasks admin.css:359
 admin-todo-summary admin.css:229
 admin-todo-swimlane admin.css:269
 admin-todo-tabs admin.css:236
@@ -705,8 +708,8 @@ topic design-styles.css:140
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
 - StartseitePage.tsx (529, ⚠5): StartseitePage
-- TodoControls.tsx (123, ⚠8): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
-- TodoPage.tsx (266, ⚠21): TodoPage
+- TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
+- TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
@@ -714,7 +717,7 @@ topic design-styles.css:140
 - branchen-enterprise.ts (108): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
-- useTodoBoard.ts (205, ⚠2): TodoPatch, TodoCreate, useTodoBoard
+- useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
 ### components/ratsmonitor/lib/
 - betreiber.ts (20): BETREIBER, betreiberAdresse
@@ -751,7 +754,7 @@ topic design-styles.css:140
 - testAuth.ts (149): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
-- todos.ts (112): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
+- todos.ts (118): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TodoSubtask, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
 - topicCache.ts (26): TopicError, loadTopic, prefetchDetail
 - useDarkMode.ts (40): useDarkMode
 - usePhone.ts (16): usePhone
