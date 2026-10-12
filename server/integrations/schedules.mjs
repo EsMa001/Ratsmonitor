@@ -8,6 +8,7 @@
  *  - 'schedule-now'   je Job „jetzt einmal ausführen“ (Zeitpunkt des Wunsches)
  * Uhrzeiten gelten in deutscher Zeit (Europe/Berlin), in 10-Minuten-Schritten (so oft fragen die Auslöser).
  */
+import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
 export const SCHEDULES_KEY='schedules',SCHEDULE_RUNS_KEY='schedule-runs',SCHEDULE_NOW_KEY='schedule-now',SCHEDULE_STOP_KEY='schedule-stop';
 export const ZONE='Europe/Berlin',STEP_MIN=10;
 /** Ein täglicher Job, der zur Zeit nicht laufen konnte (Server aus), wird so lange danach noch nachgeholt */
@@ -35,9 +36,9 @@ export const JOBS=Object.freeze([
   cmd:['node','--no-warnings','--max-old-space-size=6144','scripts/refresh-search-words.mjs']},
  {id:'pdf-nightly',label:'PDF-Import, nachts',icon:'file',time:'05:30',
   what:'Lädt die PDF-Hauptdokumente neuer Berichte, liest ihren Text und wertet ihn aus (Reiter PDF-Import).',
-  steps:['PDFs laden, neueste Sitzungen zuerst, feste Grenze 100 GB','Textebene lesen, Scans per OCR','Zusammenfassungen, Fakten, Wortliste','Stand für den Reiter PDF-Import zählen'],
+  steps:[`PDFs laden, neueste Sitzungen zuerst, feste Grenze ${BUDGET_GB} GB`,'Textebene lesen, Scans per OCR','Zusammenfassungen, Fakten, Wortliste','Stand für den Reiter PDF-Import zählen'],
   limits:'Höchstens 3 Stunden, Laden höchstens 72 Minuten.',
-  cmd:['node','--no-warnings','scripts/pdf-store/nightly.mjs','--kind','nightly','--minutes','180','--budget-gb','100','--ocr-workers','2']},
+  cmd:['node','--no-warnings','scripts/pdf-store/nightly.mjs','--kind','nightly','--minutes','180','--budget-gb',String(BUDGET_GB),'--ocr-workers','2']},
  {id:'import',label:'Abrufaufträge',icon:'download',every:10,
   what:'Arbeitet Abrufaufträge ab, die im Reiter „Abruf & Verarbeitung“ angelegt wurden („Im Hintergrund abrufen“).',
   steps:['Nachsehen, ob ein Auftrag offen ist','Wenn ja: abrufen wie nachts, sonst sofort fertig'],
@@ -47,7 +48,7 @@ export const JOBS=Object.freeze([
   what:'Führt Aufträge aus dem Reiter PDF-Import aus, zählt dessen Stand auf Wunsch neu und misst stündlich den Speicher.',
   steps:['Lebenszeichen für die Administration','Wartenden Auftrag starten (einer zur Zeit)','„Stand neu zählen“ und Speichermessung'],
   limits:'Ein Auftrag höchstens 3 Stunden.',warn:'Ohne diesen Job starten die Knöpfe im Reiter PDF-Import nichts.',
-  cmd:['node','--no-warnings','scripts/pdf-store/job.mjs','--minutes','180','--budget-gb','100']},
+  cmd:['node','--no-warnings','scripts/pdf-store/job.mjs','--minutes','180','--budget-gb',String(BUDGET_GB)]},
 ]);
 export const EVERY_CHOICES=[10,20,30,60,120];
 const parse=v=>{try{return v?JSON.parse(v):null;}catch{return null;}};

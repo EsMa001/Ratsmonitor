@@ -17,6 +17,9 @@
  */
 export const RANK_VERSION=2;
 export const TYPE_VALUE=Object.freeze({paper:1,decision:1,minutes:0.7,attachment:0.4,other:0.4,invitation:0.1});
+/** Feste Grenze der Ablage in GB, PDFs und Texte zusammen (Entscheidung 12.10.2026: 80 statt 100, Luft für Datenbank und
+    Sicherung auf der Platte); Standard aller Skripte und der Zeitplaner-Befehle */
+export const BUDGET_GB=80;
 /** Größte Datei, die als PDF gespeichert wird (alle Dokumentarten) */
 export const MAX_BYTES=10*1048576;
 export const FULL_CHARS=4000,FULL_BYTES=100*1024,OCR_PAGE_CHARS=800;

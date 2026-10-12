@@ -14,7 +14,7 @@
 // Angehalten wird ein Lauf über 'pdf-store-stop' (die Skripte prüfen das selbst, nightly.mjs endet dann mit Exit-Code 3) oder
 // per SIGTERM (systemctl stop); beides wird als „abgebrochen“ vermerkt.
 //
-//   node scripts/pdf-store/job.mjs [--budget-gb 100] [--minutes 180] [--dry-run]   (--dry-run: Kette nur als Probe)
+//   node scripts/pdf-store/job.mjs [--budget-gb 80] [--minutes 180] [--dry-run]   (--dry-run: Kette nur als Probe)
 // Datenbank: DATABASE_FILE, sonst die Miniflare-Datei unter .wrangler/; Ablage: RM_PDF_STORE.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -25,6 +25,7 @@ import {DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {JOB_KEY,COUNT_KEY,HEARTBEAT_KEY,RECENT_MAX,normalizeJobs} from '../../server/integrations/pdf-store-admin.mjs';
 import {DISK_KEY,DISK_COUNT_KEY,diskDue} from '../../server/integrations/server-storage.mjs';
 import {databaseFile} from './state.mjs';
+import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
 
 const args=process.argv.slice(2),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
@@ -57,7 +58,7 @@ function maybeCount(){
  put(COUNT_KEY,{...c,startedAt:now()});
  console.log('Stand neu zählen …');
  counting=new Promise(resolve=>{
-  const child=spawn(process.execPath,['--no-warnings','scripts/pdf-store/stats.mjs','--budget-gb',opt('budget-gb','100')],{cwd:root,stdio:'inherit',env:process.env});
+  const child=spawn(process.execPath,['--no-warnings','scripts/pdf-store/stats.mjs','--budget-gb',opt('budget-gb',String(BUDGET_GB))],{cwd:root,stdio:'inherit',env:process.env});
   child.on('exit',code=>{put(COUNT_KEY,{...get(COUNT_KEY),finishedAt:now(),ok:code===0});counting=null;resolve();});
  });
 }
@@ -87,7 +88,7 @@ else jobs(j=>{if(!j.queue.length)return null;running={...j.queue[0],state:'runni
 if(running){
  console.log(`Auftrag ${running.kind} vom ${running.requestedAt} startet`);
  beat();
- const child=spawn(process.execPath,['--no-warnings','scripts/pdf-store/nightly.mjs','--kind',running.kind,'--minutes',opt('minutes','180'),'--budget-gb',opt('budget-gb','100'),
+ const child=spawn(process.execPath,['--no-warnings','scripts/pdf-store/nightly.mjs','--kind',running.kind,'--minutes',opt('minutes','180'),'--budget-gb',opt('budget-gb',String(BUDGET_GB)),
   ...(running.kind==='retry'?['--retry-errors']:[]),...(running.kind==='others'?['--others']:[]),...(running.kind==='texts'?['--texts']:[]),...(running.kind==='ocr'?['--ocr-only']:[]),...(args.includes('--dry-run')?['--dry-run']:[])],{cwd:root,stdio:'inherit',env:process.env});
  // Anhalten per Signal: an die Kette weitergeben, sie vermerkt den Lauf selbst als angehalten
  let signal='';for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{signal=sig;child.kill('SIGTERM');});

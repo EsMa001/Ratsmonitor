@@ -9,10 +9,10 @@
 //        [--concurrency 32] [--per-host 3] [--gap-ms 200] [--timeout-ms 10000] [--retry-days N]
 //   node scripts/pdf-store/fetch.mjs --months 120 --max-gb 10   Monat für Monat ab heute zurück, bis die Ablage 10 GB hat
 //        (je --report-mb 500 eine Zeile MEILENSTEIN, am Ziel ZIEL ERREICHT)
-//   node scripts/pdf-store/fetch.mjs --months 240 --budget-gb 100 [--ocr-workers 2] [--start-month 2025-11]
+//   node scripts/pdf-store/fetch.mjs --months 240 --budget-gb 80 [--ocr-workers 2] [--start-month 2025-11]
 //        feste Grenze mit Tausch (keeper in store-lib.mjs): lädt weiter, auch wenn die Ablage voll ist; jede neue Datei wird
 //        sofort bewertet und verdrängt die schlechteste, wenn sie besser ist, sonst fliegt sie selbst raus (Text bleibt immer)
-//   node scripts/pdf-store/fetch.mjs --others --months 240 --budget-gb 100
+//   node scripts/pdf-store/fetch.mjs --others --months 240 --budget-gb 80
 //        statt der Hauptdokumente die übrigen PDFs der Berichte (Anlagen, Pläne …; nicht, was irgendwo Hauptdokument ist):
 //        eigener Lauf (Auftrag „Übrige PDFs laden“ im Admin-Reiter), gleiche Grenze mit Tausch, aber nur Textebene, kein OCR
 //        (role 'other' in der Ablage); was nicht in die Grenze passt, bleibt nur als Text

@@ -109,7 +109,7 @@ export function AdminStorage(){
 
   <section className="mt-12" aria-label="PDF-Ablage">
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="file" className="text-teal-600"/>PDF-Ablage</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Original-PDFs und ihre Textfassungen, feste Grenze {d?.pdfStore?.budgetGb??100} GB (<Link href={adminHref('pdf')} className="text-teal-600">PDF-Import →</Link>). Aufteilung aus dessen letzter Zählung{d?.pdfStore?.at?` (${when(d.pdfStore.at)})`:''}.</p>
+   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Original-PDFs und ihre Textfassungen, feste Grenze {d?.pdfStore?.budgetGb??80} GB (<Link href={adminHref('pdf')} className="text-teal-600">PDF-Import →</Link>). Aufteilung aus dessen letzter Zählung{d?.pdfStore?.at?` (${when(d.pdfStore.at)})`:''}.</p>
    {d?.pdfStore&&<Bars rows={[{key:'p',label:'PDFs der Hauptdokumente',bytes:d.pdfStore.pdfPrimary||0},{key:'o',label:'PDFs der übrigen Dokumente',bytes:d.pdfStore.pdfOthers||0},{key:'t',label:'Textfassungen',bytes:d.pdfStore.text||0},{key:'i',label:'Verzeichnis (index.sqlite)',bytes:d.pdfStore.index}]}/>}
   </section>
 

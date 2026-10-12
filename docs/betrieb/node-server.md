@@ -255,10 +255,10 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
 
 **Nachts** (05:30, nach Import, Sicherung und Wortliste) führt `scripts/pdf-store/nightly.mjs` die Stufen 2 bis 6 in fester
 Reihenfolge aus, höchstens drei Stunden: Laden (bis 40 % der Zeit, Monat für Monat ab heute zurück) mit **fester Grenze
-von 100 GB** für PDFs und Texte zusammen: Ist sie erreicht, wird jede neue Datei sofort bewertet (Score 0 bis 100 % aus `shared/pdf-rank.mjs`,
+von 80 GB** (`BUDGET_GB` in `shared/pdf-rank.mjs`, bis 12.10.2026 100 GB) für PDFs und Texte zusammen: Ist sie erreicht, wird jede neue Datei sofort bewertet (Score 0 bis 100 % aus `shared/pdf-rank.mjs`,
 Textebene gleich gelesen, Seiten ohne Text vorläufig geschätzt) und verdrängt die schlechteste Datei der Ablage, wenn sie besser ist;
 sonst fliegt sie selbst raus. Der Text bleibt immer: vor jedem Löschen werden Seiten ohne Text sofort per OCR gelesen, auch bei
-vielen Seiten. So liegen in den 100 GB die besten Dokumente unter allen geladenen. Danach nur zur Sicherung das Kürzen
+vielen Seiten. So liegen in den 80 GB die besten Dokumente unter allen geladenen. Danach nur zur Sicherung das Kürzen
 (`budget.mjs --apply`, etwa nach einer gesenkten Grenze), Textebene, OCR (die verbleibende
 Zeit bis auf 25 Minuten), Zusammenfassungen, Fakten, Wortliste. Was nicht fertig wird, macht die nächste Nacht weiter;
 eine Sperre (`nightly.lock` in der Ablage) verhindert zwei Läufe. Protokoll: `journalctl -u ratsmonitor-pdf-nightly`.

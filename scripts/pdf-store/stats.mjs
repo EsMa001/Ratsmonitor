@@ -5,7 +5,7 @@
 // Fehlerliste je Dokument als gepacktes CSV ('pdf-store-errors-csv:N'); läuft am Ende jedes Laufs (nightly.mjs) und auf
 // Wunsch („Stand neu zählen“, job.mjs), braucht etwa eine Minute.
 //
-//   node scripts/pdf-store/stats.mjs [--budget-gb 100] [--print]
+//   node scripts/pdf-store/stats.mjs [--budget-gb 80] [--print]
 // Ablage: RM_PDF_STORE (Standard tmp/pdf-store). Datenbank: DATABASE_FILE, sonst die Miniflare-Datei unter .wrangler/.
 import fs from 'node:fs';
 import {gzipSync} from 'node:zlib';
@@ -14,6 +14,7 @@ import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {primaryPdf} from '../../shared/document-type.mjs';
 import {textBytes,errorReason,rankedFiles,rankedTextOnly,storeQuality,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
 import {databaseFile} from './state.mjs';
+import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
 import {STATS_KEY,ERRORS_KEY} from '../../server/integrations/pdf-store-admin.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
@@ -21,7 +22,7 @@ const file=databaseFile();
 if(!file){console.error('Keine Datenbank (DATABASE_FILE oder .wrangler/).');process.exit(1);}
 const t0=Date.now(),db=new DatabaseSync(file),store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
 db.exec('PRAGMA busy_timeout=30000');
-const budgetGb=Number(opt('budget-gb',100));
+const budgetGb=Number(opt('budget-gb',BUDGET_GB));
 const hostOf=u=>{try{return new URL(u).host;}catch{return '';}};
 
 /* 1. Ablage: Stand je Adresse; je Server Abrufe, Fehler, Gründe, letzter Erfolg */

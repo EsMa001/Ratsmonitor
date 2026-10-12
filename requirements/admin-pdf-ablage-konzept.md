@@ -10,7 +10,7 @@ Die Seite beantwortet vier Fragen, in dieser Reihenfolge:
 
 1. **Läuft gerade etwas?** Welcher Lauf, welcher Schritt, wie weit, wann ist er fertig, kann ich ihn anhalten?
 2. **Wie vollständig ist die Ablage?** Hauptdokumente und übrige PDFs: geladen, mit Text, fehlgeschlagen, offen; wie weit
-   zurück; wie voll die 100 GB sind.
+   zurück; wie voll die 80 GB sind (bis 12.10.2026: 100 GB).
 3. **Warum fehlt etwas?** Fehlergründe, Server, die nicht liefern, Scans ohne OCR.
 4. **Was kann ich tun?** Lauf starten, Fehlgeschlagene erneut versuchen, übrige PDFs laden, anhalten, neu zählen.
 
@@ -64,7 +64,7 @@ Die Kette nach dem Laden, je Stufe ein Wert:
 
 ### D. Platz und Grenze
 
-- Ein Balken über 100 GB: PDFs der Hauptdokumente, PDFs der übrigen PDFs, Texte, frei.
+- Ein Balken über die Grenze (80 GB): PDFs der Hauptdokumente, PDFs der übrigen PDFs, Texte, frei.
 - **Tausch im letzten Lauf:** behalten, verdrängt, nicht besser, zu groß (nur Text), Seiten vor dem Löschen per OCR
   (aus `keeper.stats()`).
 - **Schwelle:** Score der schlechtesten noch behaltenen Datei, als Satz erklärt („neue Dateien darunter

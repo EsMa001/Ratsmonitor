@@ -166,7 +166,7 @@ export function AdminPdf(){
   {/* D. Platz und Grenze */}
   <section className="mt-12" aria-label="Platz und Grenze">
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="scale" className="text-teal-600"/>Platz und Grenze</h2>
-   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Feste Grenze {s?.budgetGb??100} GB für PDFs und Texte zusammen. Texte bleiben immer; ist die Grenze erreicht, verdrängt eine neue Datei die am schlechtesten bewertete, oder sie bleibt selbst nur als Text.</p>
+   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Feste Grenze {s?.budgetGb??80} GB für PDFs und Texte zusammen. Texte bleiben immer; ist die Grenze erreicht, verdrängt eine neue Datei die am schlechtesten bewertete, oder sie bleibt selbst nur als Text.</p>
    {s&&<SpaceBar limit={s.budgetGb*1073741824} parts={[['PDFs Hauptdokumente',s.bytes.pdfPrimary??s.bytes.pdf,'bg-teal-600'],['PDFs übrige',s.bytes.pdfOthers??0,'bg-teal-300'],['Texte',s.bytes.text,'bg-slate-500']]}/>}
    <ul className="m-0 mt-4 max-w-[820px] list-none space-y-1.5 p-0 text-[14px] text-slate-700">
     {s&&<li>{s.threshold?s.threshold.others?'Ablage voll: neue Hauptdokumente verdrängen zuerst übrige PDFs.':s.threshold.score!=null?`Ablage voll: die schlechteste behaltene Datei hat einen Score von ${scorePct(s.threshold.score)}; neue Dateien darunter bleiben nur als Text.`:'Ablage voll: neue Dateien verdrängen die am schlechtesten bewerteten.':`Noch ${gb(s.budgetGb*1073741824-s.bytes.used)} frei bis zur Grenze: jede neue Datei bleibt als PDF.`}</li>}
@@ -202,7 +202,7 @@ export function AdminPdf(){
      value:s?`${pct(s.loaded+s.textOnly,s.linked)} geladen`:undefined},
     {icon:'scale',title:'Bewerten und Grenze',what:'Jede neue Datei wird sofort bewertet. Ist die Grenze erreicht, verdrängt sie die am schlechtesten bewertete Datei, wenn sie besser ist; sonst bleibt sie selbst nur als Text.',
      rules:['Score 0 bis 100 % = Dokumentart × Formalie × Inhalt × Größe','Dokumentart: Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1; Formalie halber Wert','Inhalt voll ab 4.000 Zeichen Text (Seiten, die auf OCR warten, vorläufig 800 Zeichen); Größe voll bis 100 KB, darüber langsam fallend','Scan oder Textebene und Alter zählen nicht','Übrige PDFs stehen immer unter allen Hauptdokumenten','Vor dem Löschen eines PDFs ist sein Text vollständig (Scans vorher per OCR)'],
-     limits:[`Feste Grenze ${s?.budgetGb??100} GB für PDFs und Texte zusammen`,'Über 10 MB nur Text (alle Dokumentarten); das PDF wird gelöscht, sobald der Text vollständig ist (Scans nach der OCR)'],
+     limits:[`Feste Grenze ${s?.budgetGb??80} GB für PDFs und Texte zusammen`,'Über 10 MB nur Text (alle Dokumentarten); das PDF wird gelöscht, sobald der Text vollständig ist (Scans nach der OCR)'],
      value:s?`${gb(s.bytes.used)} von ${s.budgetGb} GB`:undefined},
     {icon:'text',title:'Text lesen',what:'Die Textebene jedes PDFs wird gleich beim Laden gelesen und als Textfassung neben dem PDF abgelegt; sie bleibt auch, wenn das PDF gelöscht wird.',
      rules:['Seiten mit weniger als 20 Zeichen gelten als Scan und warten auf OCR','Übrige PDFs: nur Textebene'],
