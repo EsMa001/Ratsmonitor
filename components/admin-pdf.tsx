@@ -18,12 +18,33 @@ type Stats={at:string;seconds:number;linked:number;allPdfs:number;loaded:number;
  others?:{linked:number;loaded:number;textOnly:number;failed:number;open:number;openBlocked?:number;withText:number;scans:number;reasons:Reason[];completeThrough?:string|null};
  quality?:Quality;months?:{primary:MonthRow[];others:MonthRow[]};hosts?:{total:number;blocked:number;top:Host[]};errorsCsv?:{rows:number}};
 type Job={id:string;kind:'run'|'retry'|'others'|'texts'|'ocr';state:string;requestedAt:string;startedAt?:string;finishedAt?:string;exit?:number|string};
-type Progress={kind?:string;startedAt?:string;until?:string;step?:string;at:string;
+type Progress={kind?:string;startedAt?:string;until?:string;step?:string;at:string;plan?:string[];stepIndex?:number;stepStartedAt?:string;stepUntil?:string;
  fetch?:{what:string;month:string;monthOpen:number;done:number;ok:number;unsupported:number;error:number;rate:number;bytes:number};
  text?:{done:number;total:number;failed:number;waiting:number};ocr?:{done:number;total:number;pages:number;failed:number;workers:number;perHour:number|null}};
 type Data={stats:Stats|null;jobs:{queue:Job[];current:Job|null;recent:Job[]};progress:{chain:Progress|null;ocr:Progress|null};runs:Run[];
  stop:{chain?:{requestedAt:string};ocr?:{requestedAt:string}};count:{requestedAt:string;startedAt?:string;finishedAt?:string;ok?:boolean}|null;worker:boolean;error?:string};
 const JOB:Record<string,string>={run:'Lauf starten',retry:'Fehlgeschlagene erneut versuchen',others:'Übrige PDFs laden',texts:'Texte erstellen',ocr:'OCR starten'};
+
+/** Anteil 0–1 eines Vorgangs: im Schritt aus done/total (Text, OCR), beim Laden nach der Zeit bis zur Grenze des Schritts (es
+    endet mit der Zeit oder wenn nichts mehr offen ist); über den Lauf: erledigte Schritte plus Anteil des laufenden, alle
+    Schritte gleich gewichtet. Schritte ohne Angabe (Zusammenfassungen, Fakten …) zählen bis zu ihrem Ende als 0. */
+function shares(p:Progress){
+ const part=(d?:{done:number;total:number})=>d&&d.total>0?Math.min(1,d.done/d.total):null;
+ const time=p.fetch&&p.stepStartedAt&&p.stepUntil?Math.min(0.99,Math.max(0,(Date.parse(p.at)-Date.parse(p.stepStartedAt))/(Date.parse(p.stepUntil)-Date.parse(p.stepStartedAt)))):null;
+ const step=part(p.ocr)??part(p.text)??time;
+ const total=p.plan?.length?Math.min(1,((p.stepIndex??0)+(step??0))/p.plan.length):step;
+ return {step,total};
+}
+const pc=(v:number)=>`${Math.floor(v*100)} %`;
+/** Balken 0–100 % mit Schrittangabe */
+function ProgressLine({p}:{p:Progress}){
+ const {step,total}=shares(p);
+ if(total===null)return null;
+ return <div className="mt-2 max-w-[620px]">
+  <div className="flex items-baseline justify-between gap-3 text-[12px] text-slate-500"><span>{p.plan?.length?`Schritt ${(p.stepIndex??0)+1} von ${p.plan.length}${p.step?`: ${p.step}`:''}${step!==null?` (${pc(step)})`:''}`:p.step||'Fortschritt'}</span><b className="text-[14px] font-semibold tabular-nums text-slate-900">{pc(total)}</b></div>
+  <div className="mt-1 h-[8px] overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.floor(total*100)} aria-label="Fortschritt des Laufs"><div className="h-full rounded-full bg-teal-600 transition-[width]" style={{width:`${Math.max(1,total*100)}%`}}/></div>
+ </div>;
+}
 
 /** Fortschritt eines Vorgangs in einem Satz */
 function progressText(p:Progress){
@@ -75,13 +96,14 @@ export function AdminPdf(){
    <ul className="m-0 mt-3 list-none space-y-3 p-0 text-[14px]">
     {chain?<li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4">
       <div className="min-w-0"><b className="font-semibold">{KIND[chain.kind||'']||chain.kind||'Lauf'}</b>{chain.step&&<> · Schritt <b className="font-semibold">{chain.step}</b></>}<span className="text-slate-500"> · seit {clock(chain.startedAt)}{chain.until&&`, endet spätestens ${clock(chain.until)}`}</span>
-       <p className="mt-0.5 text-slate-700">{progressText(chain)||'Fortschritt folgt (wird jede Minute geschrieben).'}</p></div>
+       <ProgressLine p={chain}/>
+       <p className="mt-1 text-slate-700">{progressText(chain)||'Fortschritt folgt (wird jede Minute geschrieben).'}</p></div>
       <div>{stopping('chain',chain)?<span className="text-slate-500">wird angehalten …</span>:<button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'stop',lane:'chain'},'Lauf anhalten? Was schon geladen oder gelesen ist, bleibt; offene Schritte holt der nächste Lauf nach.')}>Anhalten →</button>}</div>
      </li>
      :jobs?.current?.state==='running'?<li><b className="font-semibold">{KIND[jobs.current.kind]}</b> läuft seit {clock(jobs.current.startedAt)}; Fortschritt folgt.</li>
      :<li className="text-slate-700">Kein Lauf aktiv. Die Nachtkette startet zur Zeit aus dem Reiter <Link href={adminHref('zeitplaene')} className="text-teal-600">Jobs & Zeitpläne</Link>; von Hand mit den Knöpfen unten.</li>}
     {ocr&&<li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4">
-     <div className="min-w-0"><b className="font-semibold">OCR-Lauf von Hand</b><span className="text-slate-500"> · seit {clock(ocr.startedAt)}</span><p className="mt-0.5 text-slate-700">{progressText(ocr)}</p></div>
+     <div className="min-w-0"><b className="font-semibold">OCR-Lauf von Hand</b><span className="text-slate-500"> · seit {clock(ocr.startedAt)}</span><ProgressLine p={ocr}/><p className="mt-1 text-slate-700">{progressText(ocr)}</p></div>
      <div>{stopping('ocr',ocr)?<span className="text-slate-500">wird angehalten …</span>:<button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'stop',lane:'ocr'},'OCR-Lauf anhalten? Die Datei in Arbeit wird fertig gelesen, der Rest kommt in der Nachtkette.')}>Anhalten →</button>}</div>
     </li>}
     {jobs&&jobs.queue.length>0&&<li><span className="text-slate-500">Warten (in dieser Reihenfolge, einer zur Zeit; der nächste startet spätestens 10 Minuten nach dem vorigen):</span>

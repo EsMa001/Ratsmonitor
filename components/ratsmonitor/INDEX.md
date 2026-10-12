@@ -558,7 +558,7 @@ topic design-styles.css:140
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
 - admin-pdf-parts.tsx (165, ⚠4): n, pct, gb, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
-- admin-pdf.tsx (225, ⚠16): AdminPdf
+- admin-pdf.tsx (250, ⚠18): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (243, ⚠25): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck

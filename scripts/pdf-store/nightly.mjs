@@ -61,15 +61,20 @@ const sizeGb=()=>{const s=openPdfStore(dir);try{return usedBytes(s)/1073741824;}
 const failed=[],steps=[],dry=flag('dry-run'),kind=opt('kind','nightly');
 const base={kind,startedAt:new Date(t0).toISOString(),until:new Date(t0+minutes*60000).toISOString()};
 const summaryFile=path.join(dir,`step-summary-${process.pid}.json`);
-let stopped=false,finished=false;
+let stopped=false,finished=false,plan=[],stepIndex=0;
+/* Fortschritt für den Balken im Admin-Reiter: geplante Schritte (plan), laufender Schritt (stepIndex), Beginn und Zeitgrenze des
+   Schritts (aus --max-minutes); die Schritte schreiben ihr done/total dazu */
 function step(name,script,stepArgs){
  const cmd=[process.execPath,'--no-warnings','--max-old-space-size=4096',path.join(root,script),...stepArgs];
  if(dry){say('[Probe]',name+':',cmd.slice(3).join(' '));return;}
  if(stopped||(stopped=stopRequested('chain',t0))){say(`${name} übersprungen (angehalten)`);return;}
- say(`${name} …`);progress('chain',{...base,step:name});
+ const at=plan.indexOf(name);if(at>=0)stepIndex=at;
+ const lim=stepArgs.includes('--max-minutes')?Number(stepArgs[stepArgs.indexOf('--max-minutes')+1]):0,now=Date.now();
+ const stepBase={...base,plan,stepIndex,stepStartedAt:new Date(now).toISOString(),...(lim?{stepUntil:new Date(now+lim*60000).toISOString()}:{})};
+ say(`${name} …`);progress('chain',{...stepBase,step:name});
  try{fs.unlinkSync(summaryFile);}catch{/* keine */}
  const t=Date.now(),r=spawnSync(cmd[0],cmd.slice(1),{cwd:root,stdio:'inherit',
-  env:{...process.env,RM_PROGRESS_LANE:'chain',RM_PROGRESS_BASE:JSON.stringify(base),RM_STEP_SUMMARY:summaryFile}});
+  env:{...process.env,RM_PROGRESS_LANE:'chain',RM_PROGRESS_BASE:JSON.stringify(stepBase),RM_STEP_SUMMARY:summaryFile}});
  const sec=Math.round((Date.now()-t)/1000);
  let summary=null;try{summary=JSON.parse(fs.readFileSync(summaryFile,'utf8'));fs.unlinkSync(summaryFile);}catch{/* Schritt ohne Zusammenfassung */}
  steps.push({name,seconds:sec,ok:r.status===0,summary});
@@ -86,6 +91,8 @@ function finish(result){
 }
 
 const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&(ocrOnly||flag('texts'));
+const TAIL=['Zusammenfassungen','Fakten','Wortliste','Stand'];
+plan=others?['Laden','Textebene','Stand']:ocrOnly?['OCR',...TAIL]:texts?['Textebene',...TAIL]:['Laden','Textebene','OCR',...TAIL];
 say(`Start${others?' (übrige PDFs)':ocrOnly?' (nur OCR)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
 if(!texts)step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare))),'--report-mb','1000']);
 if(!texts&&sizeGb()>budgetGb){
