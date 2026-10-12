@@ -34,7 +34,7 @@ import {fileURLToPath} from 'node:url';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {usedBytes} from './store-lib.mjs';
 import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
-import {progress,stopRequested,readState,writeState} from './state.mjs';
+import {progress,stopRequested,onStop,readState,writeState} from './state.mjs';
 import {RUNS_KEY,STATS_KEY} from '../../server/integrations/pdf-store-admin.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
@@ -56,16 +56,25 @@ catch{
  fs.writeFileSync(lock,String(process.pid));say(`verwaiste Sperre von Prozess ${pid} übernommen`);
 }
 const release=()=>{try{if(fs.readFileSync(lock,'utf8')===String(process.pid))fs.unlinkSync(lock);}catch{/* schon weg */}};
-/* Anhalten per Signal (systemctl stop, Knopf „Anhalten“ im Reiter Jobs & Zeitpläne): an den laufenden Schritt weitergeben, Lauf
-   als angehalten vermerken, sauber enden (Exit 3). Die Schritte laufen asynchron, damit das Signal sofort ankommt. */
 let child=null;
-process.on('exit',release);for(const sig of ['SIGINT','SIGTERM'])process.on(sig,()=>{try{child?.kill('SIGTERM');}catch{/* schon weg */}finish('stopped');release();process.exit(3);});
+process.on('exit',release);
 
 const sizeGb=()=>{const s=openPdfStore(dir);try{return usedBytes(s)/1073741824;}finally{s.close();}};
 const failed=[],steps=[],dry=flag('dry-run'),kind=opt('kind','nightly');
 const base={kind,startedAt:new Date(t0).toISOString(),until:new Date(t0+minutes*60000).toISOString()};
 const summaryFile=path.join(dir,`step-summary-${process.pid}.json`);
 let stopped=false,finished=false,plan=[],stepIndex=0;
+/* Anhalten ohne Warten auf das Ende des Schritts: Knopf im Reiter PDF-Import (alle 2 s geprüft) oder Signal (systemctl stop, Knopf
+   im Reiter Jobs & Zeitpläne). Der laufende Schritt bekommt SIGTERM und hört nach seiner laufenden Einheit auf (Laden: Abrufe
+   abgebrochen und offen gelassen; Textebene: nach der Datei; OCR: nach der Seitengruppe; Datenbank-Schritte: offene Transaktion
+   zurückgerollt). Die übrigen Schritte entfallen, der Lauf wird als angehalten vermerkt (Exit 3). Hängt ein Schritt, endet der
+   Lauf nach STOP_GRACE_MS trotzdem (vor dem SIGKILL von systemd nach 90 s). */
+const STOP_GRACE_MS=60000;
+onStop(dry?null:'chain',t0,why=>{
+ stopped=true;say(`angehalten (${why==='admin'?'Admin-Reiter':why}), laufender Schritt wird beendet`);
+ try{child?.kill('SIGTERM');}catch{/* schon weg */}
+ setTimeout(()=>{say('Schritt endet nicht, Lauf wird beendet');try{child?.kill('SIGKILL');}catch{/* schon weg */}finish('stopped');release();process.exit(3);},STOP_GRACE_MS);
+});
 /* Fortschritt für den Balken im Admin-Reiter: geplante Schritte (plan), laufender Schritt (stepIndex), Beginn und Zeitgrenze des
    Schritts (aus --max-minutes); die Schritte schreiben ihr done/total dazu */
 async function step(name,script,stepArgs){
@@ -82,13 +91,16 @@ async function step(name,script,stepArgs){
   child=spawn(cmd[0],cmd.slice(1),{cwd:root,stdio:'inherit',env:{...process.env,RM_PROGRESS_LANE:'chain',RM_PROGRESS_BASE:JSON.stringify(stepBase),RM_STEP_SUMMARY:summaryFile}});
   child.on('error',e=>{say(`${name}: ${e.message}`);resolve({status:127,signal:null});});
   child.on('exit',(status,signal)=>resolve({status,signal}));
+  if(stopped)child.kill('SIGTERM');
  });
  child=null;
  const sec=Math.round((Date.now()-t)/1000);
  let summary=null;try{summary=JSON.parse(fs.readFileSync(summaryFile,'utf8'));fs.unlinkSync(summaryFile);}catch{/* Schritt ohne Zusammenfassung */}
- steps.push({name,seconds:sec,ok:r.status===0,summary});
  if(summary?.stopped)stopped=true;
- if(r.status===0)say(`${name} fertig (${sec} s)`);else{failed.push(name);say(`${name} FEHLER (Exit ${r.status??r.signal}, ${sec} s), weiter mit der nächsten Stufe`);}
+ const halted=stopped&&(r.status!==0||!!summary?.stopped);
+ steps.push({name,seconds:sec,ok:r.status===0||halted,summary:summary||(halted?{stopped:true}:null)});
+ if(halted)say(`${name} angehalten (${sec} s)`);
+ else if(r.status===0)say(`${name} fertig (${sec} s)`);else{failed.push(name);say(`${name} FEHLER (Exit ${r.status??r.signal}, ${sec} s), weiter mit der nächsten Stufe`);}
 }
 /* Protokoll des Laufs und Fortschritt löschen (einmal, auch beim Anhalten per Signal) */
 function finish(result){

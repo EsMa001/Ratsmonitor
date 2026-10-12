@@ -86,6 +86,12 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   setMeta(url,{docType=null,formal=null,eventDate=null,role=null}={}){q.meta.run(docType,formal==null?null:Number(!!formal),eventDate,role,url);},
   /** Löscht das PDF einer Prüfsumme, die Textfassung bleibt (Status 'text-only' für alle Adressen dieser Datei). */
   dropPdf(sha){q.drop.run(sha);try{fs.unlinkSync(fileOf(sha));}catch{/* schon weg */}},
+  /** Viele PDFs löschen: erst alle Einträge in einer Transaktion auf 'text-only', dann die Dateien. Endet der Prozess dazwischen,
+      bleiben höchstens Dateien ohne Eintrag liegen, nie Einträge ohne Datei. */
+  dropPdfs(shas){
+   db.exec('BEGIN');try{for(const sha of shas)q.drop.run(sha);db.exec('COMMIT');}catch(e){db.exec('ROLLBACK');throw e;}
+   for(const sha of shas)try{fs.unlinkSync(fileOf(sha));}catch{/* schon weg */}
+  },
   db,
   /** Pfad der Datei zu einer Prüfsumme. */
   file:sha=>fileOf(sha),

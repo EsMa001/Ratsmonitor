@@ -36,14 +36,16 @@ export async function ocrScheduler(workers=2){
 const MAX_PIXELS=12e6;
 /** Seiten ohne Textebene einer Datei per OCR lesen; Rückgabe: Zahl der gelesenen Seiten. Die Datei wird einmal geöffnet, die
     Seiten in Gruppen so groß wie die Zahl der OCR-Worker gelesen (alle Seiten auf einmal zu rendern sprengte bei großen Scans
-    Speicher und CPU und hielt den Lauf an, 12.10.2026). */
-export async function ocrFile(store,sha,ocr){
+    Speicher und CPU und hielt den Lauf an, 12.10.2026). halt(): vor jeder Gruppe gefragt; true bricht ab (Fehler mit halted),
+    ohne etwas zu schreiben: Die Datei bleibt in der OCR-Reihe. */
+export async function ocrFile(store,sha,ocr,{halt}={}){
  const pages=store.textPages(sha);if(!pages)return 0;
  const want=pages.map((p,i)=>needsOcr(p)?i:-1).filter(i=>i>=0);
  if(want.length){
   const pdf=await getDocumentProxy(new Uint8Array(fs.readFileSync(store.file(sha))),{isEvalSupported:false,verbosity:0});
   try{
    for(let k=0;k<want.length;k+=ocr.workers){
+    if(halt?.())throw Object.assign(new Error('angehalten'),{halted:true});
     await Promise.all(want.slice(k,k+ocr.workers).map(async i=>{
      const page=await pdf.getPage(i+1),v=page.getViewport({scale:1});page.cleanup();
      const scale=Math.max(0.5,Math.min(OCR_SCALE,Math.sqrt(MAX_PIXELS/Math.max(1,v.width*v.height))));
@@ -114,7 +116,7 @@ export const usedBytes=store=>store.size()+textBytes(store);
  * vielen Seiten; nicht bei übrigen PDFs, die behalten nur die Textebene). Fehlen die OCR-Werkzeuge, bleibt ein Scan als PDF liegen (lieber kurz über der Grenze als Text verlieren).
  * Entscheidungen laufen nacheinander; überschritten wird die Grenze nur um gerade geladene, noch nicht entschiedene Dateien.
  */
-export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
+export function keeper(store,limit,{ocrWorkers=2,log=()=>{},halt=()=>false}={}){
  const all=rankedFiles(store),kept=all.filter(f=>f.keep).sort((a,b)=>a.order-b.order),have=new Set(kept.map(f=>f.sha));
  const c={kept:0,swapped:0,rejected:0,tooBig:0,tooBigLater:0,ocrPages:0,stuck:0};
  let ocr,lock=Promise.resolve();
@@ -133,12 +135,14 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   try{
    if(waiting===null){try{waiting=await readTextLayer(store,f.sha);}catch(e){store.failText(f.sha,e.message,{version:TEXT_VERSION});waiting=0;}}
    if(!waiting||f.other)return true;
+   if(halt())return false;
    ocr??=await ocrScheduler(ocrWorkers)||false;
    if(!ocr)return false;
-   c.ocrPages+=await ocrFile(store,f.sha,ocr);return true;
+   try{c.ocrPages+=await ocrFile(store,f.sha,ocr,{halt});}catch(e){if(e.halted)return false;throw e;}
+   return true;
   }finally{used+=textOf(f.sha)-before;}
  };
- const drop=async f=>{if(!await complete(f)){c.stuck++;log(`OCR nicht möglich, PDF bleibt: ${f.sha.slice(0,12)}`);return false;}store.dropPdf(f.sha);used-=f.bytes;return true;};
+ const drop=async f=>{if(!await complete(f)){if(halt())return false;c.stuck++;log(`OCR nicht möglich, PDF bleibt: ${f.sha.slice(0,12)}`);return false;}store.dropPdf(f.sha);used-=f.bytes;return true;};
  /* Gleicher Score: die neue Datei hinter die schon behaltenen (bei Gleichstand fliegt die älteste Entscheidung zuerst) */
  const insert=f=>{let lo=0,hi=kept.length;while(lo<hi){const m=(lo+hi)>>1;if(kept[m].order<=f.order)lo=m+1;else hi=m;}kept.splice(lo,0,f);have.add(f.sha);};
  const decide=async(sha,before)=>{
@@ -149,7 +153,8 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   /* Zu groß (nie als PDF behalten, die Grenze betrifft das nicht): ohne Scan sofort löschen; einen Scan nicht hier per OCR
      lesen (das hielte alle Downloads an), sondern liegen lassen, bis der OCR-Schritt der Nachtkette ihn gelesen hat */
   if(!f.keep){if(f.ocrNeeded>0&&!f.other){c.tooBigLater++;return 'zu groß, OCR folgt';}await drop(f);c.tooBig++;return 'zu groß';}
-  while(used>limit){
+  /* Angehalten: nichts mehr verdrängen, die neue Datei bleibt (über der Grenze bis zum nächsten Lauf mit Budget) */
+  while(used>limit&&!halt()){
    const worst=kept[0];
    if(!worst||worst.order>=f.order){await drop(f);c.rejected++;return 'nicht besser';}
    kept.shift();have.delete(worst.sha);

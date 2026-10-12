@@ -93,7 +93,8 @@ export async function removePdfJob(db,id){
  const jobs=await change(db,JOB_KEY,v=>{const j=normalizeJobs(v);return j.queue.some(x=>x.id===id)?{...j,queue:j.queue.filter(x=>x.id!==id)}:undefined;});
  return {jobs:normalizeJobs(jobs)};
 }
-/** Lauf ('chain') oder OCR-Lauf ('ocr') anhalten: die Skripte prüfen das jede Minute und hören geordnet auf */
+/** Lauf ('chain') oder OCR-Lauf ('ocr') anhalten: die Skripte prüfen das alle 2 s (onStop in state.mjs) und hören sofort auf,
+    ohne Verlust (Abrufe bleiben offen, halb gelesene Dateien in der Reihe) */
 export async function requestStop(db,lane,now=new Date()){
  if(!LANES.includes(lane))throw bad('Unbekannter Vorgang.');
  const stop=await change(db,STOP_KEY,v=>({...(v||{}),[lane]:{requestedAt:now.toISOString()}}));

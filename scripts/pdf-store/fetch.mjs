@@ -32,14 +32,16 @@ import {bodyBytes} from '../../server/integrations/body-bytes.mjs';
 import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
 import {primaryPdf,documentType} from '../../shared/document-type.mjs';
 import {keeper as makeKeeper,usedBytes,errorReason,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
-import {progress,stopRequested,stepSummary,lane} from './state.mjs';
+import {progress,onStop,stepSummary,lane} from './state.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const o={regions:opt('regions')?.split(',').filter(Boolean),since:opt('since'),limit:Number(opt('limit',0)),maxMinutes:Number(opt('max-minutes',0)),
  concurrency:Number(opt('concurrency',32)),perHost:Number(opt('per-host',3)),gapMs:Number(opt('gap-ms',200)),timeoutMs:Number(opt('timeout-ms',10000)),months:Number(opt('months',0)),maxGb:Number(opt('max-gb',0)),budgetGb:Number(opt('budget-gb',0)),ocrWorkers:Number(opt('ocr-workers',2)),reportMb:Number(opt('report-mb',500)),retryDays:Number(opt('retry-days',Infinity))};
 // Abruf wie /api/dokument (nur öffentliche https-Adressen, jede Weiterleitung geprüft), aber mit der Projektkennung.
 // Die Zeitgrenze gilt je Abruf für Kopf und Inhalt zusammen (das Signal bricht auch das Lesen des Inhalts ab).
-const request=(url,init)=>fetch(url,{...init,signal:AbortSignal.any([init.signal,AbortSignal.timeout(o.timeoutMs)]),headers:{'User-Agent':SOURCE_USER_AGENT}});
+// Anhalten bricht laufende Abrufe ab (halt); sie gelten nicht als Fehler und bleiben offen für den nächsten Lauf.
+const halt=new AbortController();
+const request=(url,init)=>fetch(url,{...init,signal:AbortSignal.any([init.signal,AbortSignal.timeout(o.timeoutMs),halt.signal].filter(Boolean)),headers:{'User-Agent':SOURCE_USER_AGENT}});
 async function download(url){
  const {response:r}=await fetchDocument(url,{request});
  if(!r.ok){await r.body?.cancel().catch(()=>{});throw Object.assign(Error('HTTP '+r.status),{http:r.status});}
@@ -112,17 +114,19 @@ function collect(from,to){
 // Abrufen: höchstens `concurrency` gleichzeitig, je Server `perHost` und `gapMs` Abstand.
 const started=Date.now(),c={ok:0,unsupported:0,error:0,bytes:0};let stopping=false,done=0;
 const maxBytes=o.maxGb*1073741824,stepBytes=o.reportMb*1048576;let size=store.size(),nextStep=(Math.floor(size/stepBytes)+1)*stepBytes;
-process.on('SIGINT',()=>{if(stopping)process.exit(130);stopping=true;console.log('\nAbbruch: laufende Abrufe werden beendet (noch einmal Strg+C zum sofortigen Ende).');});
 const report=label=>{const s=(Date.now()-started)/1000;console.log(`${new Date().toISOString().slice(11,19)} ${label||''}${done} geladen: ${c.ok} ok, ${c.unsupported} kein PDF, ${c.error} Fehler, Ablage ${mb(size)}, ${(done/s).toFixed(1)}/s`);};
 // Fortschritt für den Admin-Reiter; ohne nightly.mjs (von Hand) als eigener Lauf
 const myLane=lane('chain'),live=!flag('dry-run');
 let monthOpen=0,halted=false;
+// Anhalten (Admin-Reiter alle 2 s, Signal von nightly.mjs oder systemctl stop, Strg+C): keine neuen Abrufe, laufende abbrechen,
+// nichts mehr verdrängen; was schon geladen ist, bleibt
+onStop(live?myLane:null,Date.now(),why=>{stopping=halted=true;halt.abort();console.log(`Angehalten (${why==='admin'?'Admin-Reiter':why}): laufende Abrufe abgebrochen, sie bleiben offen.`);});
 const tell=()=>{if(!live)return;const s=(Date.now()-started)/1000;
  progress(myLane,{...(process.env.RM_PROGRESS_BASE?{}:{kind:others?'others':'fetch',startedAt:new Date(started).toISOString()}),step:'Laden',
   fetch:{what:others?'others':'primary',month,monthOpen,done,ok:c.ok,unsupported:c.unsupported,error:c.error,rate:Math.round(done/Math.max(1,s)*10)/10,bytes:Math.round(size)}});};
-const timer=setInterval(()=>{report();tell();if(live&&!stopping&&stopRequested(myLane,started)){stopping=halted=true;console.log('Angehalten (Admin-Reiter): laufende Abrufe werden beendet.');}},60000);
+const timer=setInterval(()=>{report();tell();},60000);
 // Feste Grenze mit Tausch: PDFs und Texte zusammen höchstens --budget-gb
-const keeper=o.budgetGb&&!flag('dry-run')?makeKeeper(store,o.budgetGb*1073741824,{ocrWorkers:o.ocrWorkers,log:x=>console.log(x)}):null;
+const keeper=o.budgetGb&&!flag('dry-run')?makeKeeper(store,o.budgetGb*1073741824,{ocrWorkers:o.ocrWorkers,log:x=>console.log(x),halt:()=>halted}):null;
 if(keeper)console.log(`Grenze ${o.budgetGb} GB (PDFs und Texte), belegt ${mb(usedBytes(store))}`);
 async function one(h,job){
  try{
@@ -132,6 +136,7 @@ async function one(h,job){
   if(stepBytes&&size>=nextStep){console.log(`MEILENSTEIN ${mb(size)} in der Ablage (${c.ok} PDFs in diesem Lauf, aktueller Monat ${month})`);while(nextStep<=size)nextStep+=stepBytes;}
   if(maxBytes&&size>=maxBytes)stopping=true;
  }catch(e){
+  if(halted)return;
   c.error++;h.fails++;store.fail(job.url,e.message,{http:e.http??null,regionId:job.region,topicId:job.topic});
   // Server bremst oder ist gestört: für diesen Zeitraum aufgeben (die Adressen bleiben offen für den nächsten Lauf).
   if(e.http===429||e.http===503||h.fails>=3)h.queue.length=0;

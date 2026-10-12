@@ -110,3 +110,33 @@ test('zu große Datei: PDF weg, sobald der Text vollständig ist (dropIfTooBig)'
   assert.equal(dropIfTooBig(store,s2),false,'unter 10 MB bleibt das PDF');
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('angehalten: der Tausch verdrängt nichts mehr, die neue Datei bleibt (über der Grenze bis zum nächsten Lauf)',async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-keeper-'));
+ const store=openPdfStore(dir);
+ try{
+  const day=new Date().toISOString().slice(0,10);let halted=false;
+  const put=async(k,name,docType)=>{store.put('https://x.test/'+name,pdf('Dokument '+name),{docType,formal:false,eventDate:day});return k.admit(store.entry('https://x.test/'+name).sha256);};
+  const size=pdf('Dokument A').byteLength;
+  const k=keeper(store,size+200,{halt:()=>halted});
+  assert.equal(await put(k,'A','invitation'),'behalten');
+  halted=true;
+  assert.equal(await put(k,'B','paper'),'behalten');
+  assert.equal(store.entry('https://x.test/A').status,'ok');
+  assert.equal(store.entry('https://x.test/B').status,'ok');
+  assert.equal(k.stats().swapped,0);assert.equal(k.stats().stuck,0);
+  await k.close();
+ }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('dropPdfs: Einträge zuerst, dann Dateien; Text bleibt',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-keeper-'));
+ const store=openPdfStore(dir);
+ try{
+  store.put('https://x.test/A',pdf('Dokument A'));store.put('https://x.test/B',pdf('Dokument B',4001));
+  const shas=['A','B'].map(n=>store.entry('https://x.test/'+n).sha256);
+  store.dropPdfs(shas);
+  for(const sha of shas)assert.equal(fs.existsSync(store.file(sha)),false);
+  for(const n of ['A','B'])assert.equal(store.entry('https://x.test/'+n).status,'text-only');
+ }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
+});

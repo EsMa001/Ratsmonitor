@@ -268,8 +268,12 @@ Fehlgeschlagene Abrufe werden nicht erneut versucht; Liste: `node scripts/pdf-st
 **Admin-Reiter „PDF-Import“** (`/admin?seite=pdf`, früher „PDF-Ablage“; Konzept `requirements/admin-pdf-ablage-konzept.md`):
 liest nur `system_state` (`server/integrations/pdf-store-admin.mjs`). „Jetzt“: Fortschritt des Laufs bzw. OCR-Laufs (jede
 Minute von `fetch.mjs`/`text.mjs`/`nightly.mjs` geschrieben, `pdf-store-progress-chain`/`-ocr`, `scripts/pdf-store/state.mjs`),
-„Anhalten“ (`pdf-store-stop`; die Skripte prüfen das jede Minute und hören geordnet auf, `nightly.mjs` überspringt die
-übrigen Schritte und endet mit Exit-Code 3), Warteschlange (`pdf-store-job` = `{queue, current, recent}`; immer nur ein
+„Anhalten“ (`pdf-store-stop`; `nightly.mjs` und die Skripte prüfen das alle 2 s, `onStop` in `state.mjs`, und warten nicht
+auf das Ende des Schritts: der laufende Schritt bekommt SIGTERM, `fetch.mjs` bricht laufende Abrufe ab und lässt sie offen
+(kein Fehler), `text.mjs` hört nach der Datei bzw. OCR-Seitengruppe auf (halb gelesene Dateien bleiben in der Reihe), Schritte
+mit Datenbank rollen die offene Transaktion zurück, im Tausch wird nichts mehr verdrängt; `nightly.mjs` überspringt die
+übrigen Schritte, vermerkt den Lauf als angehalten und endet mit Exit-Code 3, spätestens nach 60 s; `systemctl stop` wirkt
+genauso), Warteschlange (`pdf-store-job` = `{queue, current, recent}`; immer nur ein
 Auftrag, `job.mjs` startet je Aufruf höchstens einen), „Stand neu zählen“ (`pdf-store-count`, `stats.mjs` auch während eines
 Laufs). Dazu Abdeckung je Sitzungsmonat, „vollständig bis“, Texte und Auswertung, Platz mit Schwelle der Grenze, der
 Prozessablauf mit Regeln und Grenzen, Fehlergründe, Server, die nicht liefern, Fehlerliste als CSV
@@ -348,7 +352,7 @@ getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dor
 danach Zusammenfassungen, Fakten, Wortliste und Stand wie nachts; keine OCR (die hält auf). Die Kennzahl „PDFs ohne Text“
 (`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten. **OCR starten** (Auftrag `ocr`, `nightly.mjs --ocr-only`):
 keine Textebene, OCR (nur Hauptdokumente) mit der ganzen Zeit, dann dieselbe Auswertung. Ein von Hand gestarteter OCR-Dienst (`systemd-run`, Einheit `ratsmonitor-pdf-ocr`)
-hört nicht auf „Anhalten“; beenden mit `systemctl stop ratsmonitor-pdf-ocr`. Den Lauf der Aufträge selbst beendet
+hört nicht auf „Anhalten“; beenden mit `systemctl stop ratsmonitor-pdf-ocr` (endet ebenso nach der laufenden Seitengruppe). Den Lauf der Aufträge selbst beendet
 `systemctl stop ratsmonitor-pdf-job` (der Dienst vermerkt den Auftrag als abgebrochen).
 
 **Qualität einer Datei** (im Code „Score“, `shared/pdf-rank.mjs`, Entscheidung 12.10.2026; im Admin-Reiter „Qualität“): 0 bis 100 % = Dokumentart (Vorlage und Beschluss 1,

@@ -41,6 +41,20 @@ export function stopRequested(laneName,since){
  const at=readState(STOP_KEY)?.[laneName]?.requestedAt;
  return !!at&&Date.parse(at)>=since;
 }
+/** Anhalten ohne Warten: fn(grund) einmal, sobald die Bahn im Admin-Reiter angehalten wird (alle STOP_POLL_MS geprüft; ohne
+    laneName nicht) oder ein Signal kommt (systemctl stop, Strg+C, nightly.mjs gibt es an den Schritt weiter). Das Skript hört dann
+    nach der laufenden Einheit auf (Datei, Seite) und schreibt, was fertig ist. Mit dem Handler beendet SIGTERM den Prozess nicht
+    mehr sofort; ein zweites Strg+C schon. Laufende SQLite-Transaktionen und synchrone Schleifen enden so immer vollständig. */
+export const STOP_POLL_MS=2000;
+export function onStop(laneName,since,fn){
+ let fired=false,ints=0;
+ const timer=laneName?setInterval(()=>{if(stopRequested(laneName,since))fire('admin');},STOP_POLL_MS):null;
+ timer?.unref();
+ function fire(why){if(fired)return;fired=true;if(timer)clearInterval(timer);fn(why);}
+ process.on('SIGTERM',()=>fire('SIGTERM'));
+ process.on('SIGINT',()=>{if(++ints>1)process.exit(130);fire('SIGINT');});
+ return ()=>{if(timer)clearInterval(timer);};
+}
 /** Zusammenfassung des Schritts für nightly.mjs (Datei aus RM_STEP_SUMMARY), sonst nichts */
 export function stepSummary(obj){
  const file=process.env.RM_STEP_SUMMARY;if(!file)return;

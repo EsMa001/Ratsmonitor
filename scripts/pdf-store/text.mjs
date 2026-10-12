@@ -18,19 +18,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,dropIfTooBig} from './store-lib.mjs';
-import {progress,stopRequested,stepSummary,lane} from './state.mjs';
+import {progress,onStop,stepSummary,lane} from './state.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
 const limit=Number(opt('limit',0)),maxMinutes=Number(opt('max-minutes',0)),started=Date.now();
 // Fortschritt und Anhalten (Admin-Reiter, state.mjs): in der Kette deren Bahn, ein OCR-Lauf von Hand die Bahn 'ocr'
 const myLane=lane(flag('ocr')?'ocr':'chain'),chained=!!process.env.RM_PROGRESS_BASE;
-let halted=false,checked=started;
-const late=()=>{
- if(halted)return true;
- if(Date.now()-checked>=60000){checked=Date.now();if(stopRequested(myLane,started)){halted=true;console.log('Angehalten (Admin-Reiter)');return true;}}
- return maxMinutes>0&&Date.now()-started>maxMinutes*60000;
-};
+// Anhalten (Admin-Reiter alle 2 s, Signal, Strg+C): Textebene nach der laufenden Datei, OCR nach der laufenden Seitengruppe;
+// fertige Textfassungen bleiben, eine halb gelesene Datei bleibt in der OCR-Reihe
+let halted=false;
+if(!flag('stats'))onStop(myLane,started,why=>{halted=true;console.log(`Angehalten (${why==='admin'?'Admin-Reiter':why})`);});
+const late=()=>halted||(maxMinutes>0&&Date.now()-started>maxMinutes*60000);
 let told=0;
 const tell=(detail,force)=>{if(!force&&Date.now()-told<60000)return;told=Date.now();
  progress(myLane,{...(chained?{}:{kind:flag('ocr')?'ocr':'text',startedAt:new Date(started).toISOString()}),...detail});};
@@ -62,14 +61,14 @@ if(!flag('ocr')){
  try{fs.writeFileSync(lock,String(process.pid),{flag:'wx'});}
  catch{const pid=Number(fs.readFileSync(lock,'utf8'));if(pid&&alive(pid)){console.log(`OCR läuft schon (Prozess ${pid}), nichts zu tun`);stepSummary({skipped:'OCR-Lauf von Hand läuft'});store.close();process.exit(0);}fs.writeFileSync(lock,String(process.pid));}
  const release=()=>{try{if(fs.readFileSync(lock,'utf8')===String(process.pid))fs.unlinkSync(lock);}catch{/* schon weg */}};
- process.on('exit',release);for(const sig of ['SIGINT','SIGTERM'])process.on(sig,()=>{release();process.exit(1);});
+ process.on('exit',release);
  const workers=Number(opt('workers',4)),ocr=await ocrScheduler(workers);
  if(!ocr){console.error('OCR-Werkzeuge fehlen (OCR_TOOLS).');process.exit(1);}
  const todo=store.ocrQueue().slice(0,limit||undefined),t0=Date.now();let files=0,pagesDone=0,failed=0,dropped=0;
  console.log(`${todo.length} Dateien mit Seiten ohne Textebene, ${workers} OCR-Worker`);
  const one=async sha=>{
-  try{pagesDone+=await ocrFile(store,sha,ocr);files++;if(dropIfTooBig(store,sha))dropped++;}
-  catch(e){failed++;console.error('OCR',sha.slice(0,12),e.message);}
+  try{pagesDone+=await ocrFile(store,sha,ocr,{halt:()=>halted});files++;if(dropIfTooBig(store,sha))dropped++;}
+  catch(e){if(e.halted){queue.unshift(sha);return;}failed++;console.error('OCR',sha.slice(0,12),e.message);}
   if((files+failed)%100===0)console.log(`${files+failed}/${todo.length} Dateien, ${pagesDone} Seiten, ${failed} Fehler, ${elapsed(t0)}`);
   const h=(Date.now()-t0)/3600000;
   tell({step:'OCR',ocr:{done:files+failed,total:todo.length,pages:pagesDone,failed,workers,perHour:h>0.05?Math.round((files+failed)/h):null}});

@@ -129,8 +129,9 @@ und `keeper.stats()` als letzte Zeile maschinenlesbar aus, `nightly.mjs` überni
 
 ### 3.3 Anhalten
 
-Auftrag bekommt den Zustand `stop`. `fetch.mjs` prüft ihn jede Minute (mit dem Fortschritt) und hört wie bei Strg+C auf:
-laufende Abrufe zu Ende, dann Schluss. `nightly.mjs` prüft ihn vor jedem Schritt. OCR hört nach der laufenden Datei auf.
+Auftrag bekommt den Zustand `stop`. Seit 12.10.2026 ohne Warten: `nightly.mjs` und die Skripte prüfen ihn alle 2 s, der
+laufende Schritt endet per SIGTERM nach seiner laufenden Einheit (Abrufe abgebrochen und offen gelassen, Textebene nach der
+Datei, OCR nach der Seitengruppe, Datenbank-Schritte zurückgerollt), die übrigen Schritte entfallen.
 Kein `systemctl stop` mehr nötig. Der verwaiste Zustand wird schon heute erkannt (`job.mjs`, „abgebrochen“).
 
 ### 3.4 Warteschlange und Server-Dienst
