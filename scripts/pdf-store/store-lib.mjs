@@ -28,6 +28,10 @@ export async function ocrScheduler(workers=2){
  let tesseract;try{tesseract=await import(tools+'/node_modules/tesseract.js/src/index.js');}catch{return null;}
  // tesseract.js speichert die Sprachdaten nur in einen vorhandenen Ordner; sonst lädt jeder Lauf sie neu aus dem Internet
  try{fs.mkdirSync(cache,{recursive:true});}catch{/* ohne Cache geht es auch, nur langsamer */}
+ // Tesseract meldet jedes Textstück unter 3 Pixel Breite (Tabellenstrich, Fleck im Scan), das es auslässt; der Rest der Seite
+ // wird normal gelesen. Die Zeilen verdeckten im Protokoll echte Meldungen (443 an einem Tag), deshalb einmal je Prozess ausfiltern.
+ for(const stream of [process.stdout,process.stderr])if(!stream.__rmQuiet){const write=stream.write.bind(stream);stream.__rmQuiet=true;
+  stream.write=(chunk,...rest)=>/^Image too small to scale!!/.test(String(chunk))?(typeof rest.at(-1)==="function"&&rest.at(-1)(),true):write(chunk,...rest);}
  const scheduler=tesseract.createScheduler();
  for(let i=0;i<workers;i++)scheduler.addWorker(await tesseract.createWorker('deu',1,{cachePath:cache}));
  return {scheduler,workers,canvasImport:()=>import(tools+'/node_modules/@napi-rs/canvas/index.js'),terminate:()=>scheduler.terminate()};
