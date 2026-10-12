@@ -143,7 +143,11 @@ else if(ocr>=5||stopped)await step('OCR','scripts/pdf-store/text.mjs',['--ocr','
 else{say(`OCR übersprungen (nur ${Math.max(0,ocr)} min übrig)`);steps.push({name:'OCR',seconds:0,ok:true,summary:{skipped:`nur ${Math.max(0,ocr)} min übrig`}});}
 await step('Zusammenfassungen','scripts/pdf-store/summaries.mjs',[]);
 await step('Fakten','scripts/pdf-store/facts.mjs',[]);
-await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
+/* Die Wortliste hängt am Suchtext, den hier nur neue Zusammenfassungen ändern: ohne geschriebene Berichte auslassen
+   (nachts führt der Zeitplaner sie ohnehin nach, docs/betrieb/node-server.md) */
+const sum=steps.find(x=>x.name==='Zusammenfassungen')?.summary;
+if(sum&&!sum.stopped&&!sum.withText){say('Wortliste ausgelassen (keine Zusammenfassung geschrieben)');steps.push({name:'Wortliste',seconds:0,ok:true,summary:{skipped:'keine Zusammenfassung geschrieben'}});}
+else await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
 /* Dokumentart und Art laut Textanfang für den Score (nur Fehlendes; nach neuen Regeln einmal alles) */
 await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
 await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
