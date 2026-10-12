@@ -115,12 +115,12 @@ function finish(result){
 }
 
 const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&(ocrOnly||flag('texts'));
-const TAIL=['Zusammenfassungen','Fakten','Wortliste','Stand'];
-plan=others?['Laden','Textebene','Stand']:ocrOnly?['OCR',...TAIL]:texts?['Textebene',...TAIL]:['Laden','Textebene','OCR',...TAIL];
+const TAIL=['Zusammenfassungen','Fakten','Wortliste','Art nachtragen','Stand'];
+plan=others?['Laden','Textebene','Art nachtragen','Stand']:ocrOnly?['OCR',...TAIL]:texts?['Textebene',...TAIL]:['Laden','Textebene','OCR',...TAIL];
 say(`Start${others?' (übrige PDFs)':ocrOnly?' (nur OCR)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
 if(!texts)await step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare))),'--report-mb','1000']);
 if(!texts&&sizeGb()>budgetGb){
- await step('Rang nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
+ await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
  await step('Budget','scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
 }
 /* Ende: Protokoll, Meldung, Exit-Code (0 fertig, 1 Fehler in einem Schritt, 3 angehalten) */
@@ -132,6 +132,7 @@ const end=()=>{
 };
 if(others){
  await step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-5)))]);
+ await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
  await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
  end();
 }
@@ -143,5 +144,7 @@ else{say(`OCR übersprungen (nur ${Math.max(0,ocr)} min übrig)`);steps.push({na
 await step('Zusammenfassungen','scripts/pdf-store/summaries.mjs',[]);
 await step('Fakten','scripts/pdf-store/facts.mjs',[]);
 await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
+/* Dokumentart und Art laut Textanfang für den Score (nur Fehlendes; nach neuen Regeln einmal alles) */
+await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
 await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
 end();

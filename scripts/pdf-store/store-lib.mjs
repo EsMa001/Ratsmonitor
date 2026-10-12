@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import {getDocumentProxy,renderPageAsImage} from 'unpdf';
 import {rankPdf,TYPE_VALUE} from '../../shared/pdf-rank.mjs';
+import {effectiveType} from '../../shared/document-type.mjs';
 
 // Neue Fassung des Leseverfahrens: TEXT_VERSION erhöhen, dann liest der erste Aufruf von text.mjs alle Dateien neu.
 export const TEXT_VERSION=1,MIN_CHARS=20,OCR_SCALE=2.5;
@@ -63,10 +64,11 @@ export async function ocrFile(store,sha,ocr,{halt}={}){
 // (role 'other', fetch.mjs --others), dann gilt nur die Textebene, kein OCR.
 const FILES=`SELECT p.sha256 AS sha,MAX(p.bytes) AS bytes,GROUP_CONCAT(COALESCE(p.doc_type,'other')) AS types,MAX(COALESCE(p.formal,0)) AS formal,MIN(p.formal) AS minFormal,
  MIN(COALESCE(p.role,'')='other') AS other,
- MIN(p.event_date) AS eventDate,t.pages,t.ocr_pages AS ocrPages,t.ocr_needed AS ocrNeeded,t.chars,t.status AS textStatus
+ MIN(p.event_date) AS eventDate,t.pages,t.ocr_pages AS ocrPages,t.ocr_needed AS ocrNeeded,t.chars,t.status AS textStatus,t.head_type AS headType
  FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok'`;
 const ranked=f=>{
- const type=f.types.split(',').sort((a,b)=>(TYPE_VALUE[b]??0)-(TYPE_VALUE[a]??0))[0];
+ /* Art: die beste der Titel (gleiche Datei unter mehreren Adressen), berichtigt durch den Textanfang (effectiveType) */
+ const type=effectiveType(f.types.split(',').sort((a,b)=>(TYPE_VALUE[b]??0)-(TYPE_VALUE[a]??0))[0],f.headType||null);
  const scan=f.pages>0&&((f.ocrPages||0)+(f.ocrNeeded||0))>=f.pages/2;
  const r=rankPdf({type,formal:f.minFormal===1,chars:f.textStatus==='ok'?f.chars:null,ocrNeeded:f.ocrNeeded,bytes:f.bytes});
  /* Feste Regel: übrige PDFs stehen immer unter allen Hauptdokumenten. order ist die Reihenfolge der Grenze (Score 0 bis 1,

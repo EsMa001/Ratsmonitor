@@ -1,15 +1,16 @@
 // PDF-Ablage mit festem Budget (server/node/pdf-store.mjs, Score: shared/pdf-rank.mjs): Texte bleiben immer, PDFs nach
 // Score, bis das Budget voll ist. Ohne --apply wird nur gerechnet.
 //
-//   node scripts/pdf-store/budget.mjs --backfill           Dokumentart, Formalie, Sitzungstag aus der Datenbank nachtragen
+//   node scripts/pdf-store/budget.mjs --backfill           Dokumentart, Formalie, Sitzungstag aus der Datenbank nachtragen, dazu die
+//        Art laut Textanfang (texts.head_type); nach neuen Regeln (DOC_TYPE_VERSION) alle Einträge neu, sonst nur fehlende
 //   node scripts/pdf-store/budget.mjs [--budget-gb 80]    was passt hinein, was behält nur den Text
 //   node scripts/pdf-store/budget.mjs --budget-gb 80 --population 870701
 //        Hochrechnung: die Ablage als Stichprobe von `population` Dokumenten; das Budget schrumpft im selben Verhältnis
 //   node scripts/pdf-store/budget.mjs --budget-gb 15 --apply   PDFs außerhalb des Budgets löschen (Text bleibt, Status 'text-only')
-import {existsSync,readdirSync} from 'node:fs';
+import {existsSync,readdirSync,openSync,readSync,closeSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {documentType} from '../../shared/document-type.mjs';
+import {documentType,documentTypeFromText,DOC_TYPE_VERSION} from '../../shared/document-type.mjs';
 import {TYPE_VALUE,BUDGET_GB} from '../../shared/pdf-rank.mjs';
 import {rankedFiles,textBytes as textBytesOf,ocrScheduler,ocrFile} from './store-lib.mjs';
 import {onStop} from './state.mjs';
@@ -24,7 +25,9 @@ if(flag('backfill')){
  const main=new DatabaseSync(process.env.DATABASE_FILE||dir+local,{readOnly:true});
  const hasFormal=main.prepare("SELECT 1 FROM pragma_table_info('search_cards') WHERE name='formal'").get();
  const q=main.prepare(`SELECT event_date AS date,json_extract(payload,'$.documents') AS docs${hasFormal?',(SELECT formal FROM search_cards c WHERE c.id=topics.id) AS formal':''} FROM topics WHERE id=?`);
- const rows=db.prepare("SELECT url,topic_id AS topic FROM pdfs WHERE status IN ('ok','text-only') AND doc_type IS NULL AND topic_id IS NOT NULL").all();
+ const retype=store.note('doc-type-version')!==String(DOC_TYPE_VERSION);
+ if(retype)console.log(`Regeln der Dokumentart neu (Fassung ${DOC_TYPE_VERSION}): alle Einträge werden neu eingeordnet`);
+ const rows=db.prepare(`SELECT url,topic_id AS topic FROM pdfs WHERE status IN ('ok','text-only') AND topic_id IS NOT NULL${retype?'':' AND doc_type IS NULL'}`).all();
  const t0=Date.now();db.exec('BEGIN');
  rows.forEach((r,i)=>{
   const x=q.get(r.topic);if(!x)return;
@@ -34,6 +37,15 @@ if(flag('backfill')){
  });
  db.exec('COMMIT');main.close();
  console.log(`${rows.length} Einträge nachgetragen (${((Date.now()-t0)/1000).toFixed(0)} s)`);
+ // Art laut Textanfang: die ersten Zeichen jeder Textfassung
+ const head=sha=>{try{const fd=openSync(store.file(sha).replace(/\.pdf$/,'.txt'),'r'),b=Buffer.alloc(2400);try{return b.subarray(0,readSync(fd,b,0,2400,0)).toString('utf8');}finally{closeSync(fd);}}catch{return null;}};
+ const texts=db.prepare(`SELECT sha256 AS sha FROM texts WHERE status='ok'${retype?'':' AND head_type IS NULL'}`).all(),t1=Date.now();let found=0;
+ db.exec('BEGIN');
+ texts.forEach((r,i)=>{const h=head(r.sha);if(h==null)return;const type=documentTypeFromText(h);if(type)found++;store.setHeadType(r.sha,type);
+  if(i%20000===19999){db.exec('COMMIT;BEGIN');console.log(`Textanfang ${i+1}/${texts.length}`);}});
+ db.exec('COMMIT');
+ store.setNote('doc-type-version',DOC_TYPE_VERSION);
+ console.log(`${texts.length} Textanfänge gelesen, ${found} mit erkennbarer Art (${((Date.now()-t1)/1000).toFixed(0)} s)`);
  process.exit(0);
 }
 

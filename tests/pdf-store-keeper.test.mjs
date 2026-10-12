@@ -140,3 +140,16 @@ test('dropPdfs: Einträge zuerst, dann Dateien; Text bleibt',()=>{
   for(const n of ['A','B'])assert.equal(store.entry('https://x.test/'+n).status,'text-only');
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('wants: Hauptdokument nur als Text nur mit textOnlyBelow wieder laden, übrige PDFs und zu große nie',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-keeper-'));
+ const store=openPdfStore(dir);
+ try{
+  store.put('https://x.test/A',pdf('Dokument A'));store.put('https://x.test/B',pdf('Dokument B',4001),{role:'other'});
+  store.dropPdfs(['A','B'].map(n=>store.entry('https://x.test/'+n).sha256));
+  assert.equal(store.wants('https://x.test/A'),false);
+  assert.equal(store.wants('https://x.test/A',{textOnlyBelow:1e7}),true);
+  assert.equal(store.wants('https://x.test/A',{textOnlyBelow:100}),false);
+  assert.equal(store.wants('https://x.test/B',{textOnlyBelow:1e7}),false);
+ }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
+});

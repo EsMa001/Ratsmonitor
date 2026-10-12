@@ -356,7 +356,10 @@ hört nicht auf „Anhalten“; beenden mit `systemctl stop ratsmonitor-pdf-ocr`
 `systemctl stop ratsmonitor-pdf-job` (der Dienst vermerkt den Auftrag als abgebrochen).
 
 **Qualität einer Datei** (im Code „Score“, `shared/pdf-rank.mjs`, Entscheidung 12.10.2026; im Admin-Reiter „Qualität“): 0 bis 100 % = Dokumentart (Vorlage und Beschluss 1,
-Niederschrift 0,7, Anlage und Sonstiges 0,4, Einladung 0,1) × Formalie (0,5, nicht bei Niederschriften) × Inhalt (voll ab
+Niederschrift 0,7, Anlage und Sonstiges 0,4, Einladung 0,1; seit 12.10.2026 aus dem ersten Wort des Titels, `documentType`, berichtigt
+durch den Textanfang, `documentTypeFromText`/`effectiveType` in `shared/document-type.mjs`, Spalte `texts.head_type`; Schritt
+„Art nachtragen“ = `budget.mjs --backfill`, nach neuen Regeln (`DOC_TYPE_VERSION`) einmal für alle Einträge). Hauptdokumente bis 10 MB, die nur noch als Text vorliegen, lädt der
+normale Lauf wieder, solange übrige PDFs als PDF liegen (die weichen in der Grenze zuerst); sonst nicht, damit nichts im Kreis lädt × Formalie (0,5, nicht bei Niederschriften) × Inhalt (voll ab
 4.000 Zeichen, darunter mit der Wurzel fallend; Seiten, die auf OCR warten, vorläufig 800 Zeichen) × Größe (voll bis 100 KB,
 darüber mit der Kubikwurzel fallend; über 10 MB für alle Dokumentarten: 0, nur Text; `text.mjs` löscht das PDF, sobald der Text vollständig ist, Scans gleich nach der OCR). Scan und Alter zählen nicht.
 Der Score wird bei jedem Lauf aus dem aktuellen Text gerechnet; nach der OCR gilt die echte Zeichenzahl.

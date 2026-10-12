@@ -141,12 +141,12 @@ export function AdminPdf(){
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="report" className="text-teal-600"/>Hauptdokumente</h2>
    <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Je Bericht das Dokument, aus dem Zusammenfassung und Fakten entstehen: die Vorlage, sonst Beschlussvorschlag oder Bericht, sonst das erste PDF.</p>
    <div className="mt-5"><Kpis label="Stand der Hauptdokumente" items={[
-    {label:'Verlinkt',value:v(s=>n(s.linked)),note:s?`insgesamt ${n(s.allPdfs)} PDF-Dokumente verlinkt`:undefined},
-    {label:'Mit Text',value:v(s=>pct(s.texts.linked??0,s.linked)),note:s?`${n(s.texts.linked)} Dokumente, davon ${n(s.texts.complete)} vollständig`:undefined},
-    {label:'Heruntergeladen',value:v(s=>pct(s.loaded+s.textOnly,s.linked)),note:s?`${n(s.loaded)} als PDF, ${n(s.textOnly)} nur noch als Text`:undefined},
-    {label:'Fehlgeschlagen',value:v(s=>pct(s.failed,s.linked)),note:s?`${n(s.failed)} Dokumente, werden nicht erneut versucht`:undefined},
-    {label:'Noch nicht versucht',value:v(s=>pct(s.open,s.linked)),note:s?`${n(s.open)} Dokumente${s.openBlocked?`, davon ${n(s.openBlocked)} bei ausgelassenen Servern`:''}`:undefined},
-    {label:'Vollständig bis',value:v(s=>s.completeThrough?month(s.completeThrough):'–'),note:s?`Sitzungsmonat, bis zu dem höchstens 5 % offen sind (ohne ausgelassene Server). Ältestes geladenes Dokument ${day(s.oldest?.loaded)}, älteste verlinkte Sitzung ${day(s.oldest?.linked)}`:undefined},
+    {label:'Verlinkt',value:v(s=>n(s.linked)),note:s?`von ${n(s.allPdfs)} PDF-Dokumenten`:undefined},
+    {label:'PDF gelesen',value:v(s=>pct(s.loaded+s.textOnly,s.linked)),note:s?`${n(s.loaded+s.textOnly)} Dokumente einmal heruntergeladen`:undefined},
+    {label:'Text gespeichert',value:v(s=>pct(s.texts.linked??0,s.linked)),note:s?`${n(s.texts.linked)} Dokumente, davon ${n(s.texts.complete)} vollständig`:undefined},
+    {label:'PDF gespeichert',value:v(s=>pct(s.loaded,s.linked)),note:s?`${n(s.loaded)} Dokumente, ${n(s.textOnly)} nur noch als Text`:undefined},
+    {label:'Größe der PDFs',value:v(s=>gb(s.bytes.pdfPrimary??s.bytes.pdf)),note:s?`von ${s.budgetGb} GB für alle PDFs und Texte`:undefined},
+    {label:'Ø Qualität',value:v(s=>scorePct(s.quality?.primary.avg)),note:s?.quality?`der ${n(s.quality.primary.files)} als PDF abgelegten Dateien`:s?'nach dem nächsten Zählen':undefined},
    ]}/></div>
    {s?.months&&<MonthBars rows={s.months.primary} label="Hauptdokumente je Sitzungsmonat"/>}
   </section>
@@ -156,11 +156,12 @@ export function AdminPdf(){
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="archive" className="text-teal-600"/>Übrige PDFs der Berichte</h2>
    <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Anlagen, Pläne und weitere Unterlagen, die in keinem Bericht Hauptdokument sind. Nur über „Übrige PDFs laden“, nur Textebene, kein OCR. Sie stehen in der Grenze immer unter allen Hauptdokumenten und bleiben deshalb meist nur als Text.</p>
    <div className="mt-5"><Kpis label="Stand der übrigen PDFs" items={[
-    {label:'Verlinkt',value:o?n(o.linked):v(()=>'–')},
-    {label:'Mit Text',value:o?pct(o.withText,o.linked):v(()=>'–'),note:o?`${n(o.withText)} Dokumente; ${n(o.scans)} Scans ohne Textebene`:undefined},
-    {label:'Heruntergeladen',value:o?pct(o.loaded+o.textOnly,o.linked):v(()=>'–'),note:o?`${n(o.loaded)} als PDF, ${n(o.textOnly)} nur noch als Text`:undefined},
-    {label:'Fehlgeschlagen',value:o?pct(o.failed,o.linked):v(()=>'–'),note:o?`${n(o.failed)} Dokumente`:undefined},
-    {label:'Noch nicht versucht',value:o?pct(o.open,o.linked):v(()=>'–'),note:o?`${n(o.open)} Dokumente`:undefined},
+    {label:'Verlinkt',value:o?n(o.linked):v(()=>'–'),note:s&&o?`von ${n(s.allPdfs)} PDF-Dokumenten`:undefined},
+    {label:'PDF gelesen',value:o?pct(o.loaded+o.textOnly,o.linked):v(()=>'–'),note:o?`${n(o.loaded+o.textOnly)} Dokumente einmal heruntergeladen`:undefined},
+    {label:'Text gespeichert',value:o?pct(o.withText,o.linked):v(()=>'–'),note:o?`${n(o.withText)} Dokumente; ${n(o.scans)} Scans ohne Textebene`:undefined},
+    {label:'PDF gespeichert',value:o?pct(o.loaded,o.linked):v(()=>'–'),note:o?`${n(o.loaded)} Dokumente, ${n(o.textOnly)} nur noch als Text`:undefined},
+    {label:'Größe der PDFs',value:v(s=>gb(s.bytes.pdfOthers??0)),note:s?`von ${s.budgetGb} GB für alle PDFs und Texte`:undefined},
+    {label:'Ø Qualität',value:v(s=>scorePct(s.quality?.others.avg)),note:s?.quality?`der ${n(s.quality.others.files)} als PDF abgelegten Dateien`:s?'nach dem nächsten Zählen':undefined},
    ]}/></div>
    {s?.months&&s.months.others.some(r=>r.ok+r.textOnly+r.failed>0)&&<MonthBars rows={s.months.others} label="Übrige PDFs je Sitzungsmonat"/>}
   </section>
@@ -215,7 +216,7 @@ export function AdminPdf(){
      limits:['Je Datei höchstens 10 Sekunden und 30 MB','Nachts höchstens 72 Minuten Laden (40 % der Laufzeit), übrige PDFs bis 15 Minuten vor Laufende'],
      value:s?`${pct(s.loaded+s.textOnly,s.linked)} geladen`:undefined},
     {icon:'scale',title:'Bewerten und Grenze',what:'Jede neue Datei wird sofort bewertet. Ist die Grenze erreicht, verdrängt sie die am schlechtesten bewertete Datei, wenn sie besser ist; sonst bleibt sie selbst nur als Text.',
-     rules:['Qualität 0 bis 100 % = Dokumentart × Formalie × Inhalt × Größe','Dokumentart: Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1; Formalie halber Wert','Inhalt voll ab 4.000 Zeichen Text (Seiten, die auf OCR warten, vorläufig 800 Zeichen); Größe voll bis 100 KB, darüber langsam fallend','Scan oder Textebene und Alter zählen nicht','Übrige PDFs stehen immer unter allen Hauptdokumenten','Vor dem Löschen eines PDFs ist sein Text vollständig (Scans vorher per OCR)'],
+     rules:['Qualität 0 bis 100 % = Dokumentart × Formalie × Inhalt × Größe','Dokumentart: Vorlage und Beschluss 1, Niederschrift 0,7, Anlage 0,4, Einladung 0,1; Formalie halber Wert','Dokumentart aus dem ersten Wort des Titels, berichtigt durch den Textanfang (steht dort „Beschlussvorlage“, „Vorlage-Nr.“ oder „Drucksache“, zählt die Datei als Vorlage)','Inhalt voll ab 4.000 Zeichen Text (Seiten, die auf OCR warten, vorläufig 800 Zeichen); Größe voll bis 100 KB, darüber langsam fallend','Scan oder Textebene und Alter zählen nicht','Übrige PDFs stehen immer unter allen Hauptdokumenten','Vor dem Löschen eines PDFs ist sein Text vollständig (Scans vorher per OCR)'],
      limits:[`Feste Grenze ${s?.budgetGb??80} GB für PDFs und Texte zusammen`,'Über 10 MB nur Text (alle Dokumentarten); das PDF wird gelöscht, sobald der Text vollständig ist (Scans nach der OCR)'],
      value:s?`${gb(s.bytes.used)} von ${s.budgetGb} GB`:undefined},
     {icon:'text',title:'Text lesen',what:'Die Textebene jedes PDFs wird gleich beim Laden gelesen und als Textfassung neben dem PDF abgelegt; sie bleibt auch, wenn das PDF gelöscht wird.',
@@ -237,7 +238,14 @@ export function AdminPdf(){
 
   {/* F. Fehler und Server */}
   <section className="mt-12" aria-label="Fehler und Server">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="alert" className="text-teal-600"/>Fehler und Server</h2>
+   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="alert" className="text-teal-600"/>Abrufe, Fehler und Server</h2>
+   <div className="mt-5"><Kpis label="Stand der Abrufe" items={[
+    {label:'Fehlgeschlagen',value:v(s=>pct(s.failed,s.linked)),note:s?`${n(s.failed)} Hauptdokumente, werden nicht erneut versucht`:undefined},
+    {label:'Noch nicht versucht',value:v(s=>pct(s.open,s.linked)),note:s?`${n(s.open)} Hauptdokumente${s.openBlocked?`, davon ${n(s.openBlocked)} bei ausgelassenen Servern`:''}`:undefined},
+    {label:'Vollständig bis',value:v(s=>s.completeThrough?month(s.completeThrough):'–'),note:s?`Sitzungsmonat, bis zu dem höchstens 5 % der Hauptdokumente offen sind (ohne ausgelassene Server). Ältestes geladenes Dokument ${day(s.oldest?.loaded)}, älteste verlinkte Sitzung ${day(s.oldest?.linked)}`:undefined},
+    {label:'Übrige fehlgeschlagen',value:o?pct(o.failed,o.linked):v(()=>'–'),note:o?`${n(o.failed)} Dokumente`:undefined},
+    {label:'Übrige noch nicht versucht',value:o?pct(o.open,o.linked):v(()=>'–'),note:o?`${n(o.open)} Dokumente`:undefined},
+   ]}/></div>
    <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
     <span className="inline-flex rounded-full bg-slate-100 p-0.5">{(['primary','others'] as const).map(k=><button key={k} type="button" aria-pressed={reasonsOf===k} onClick={()=>setReasonsOf(k)} className={'h-8 rounded-full px-3 '+(reasonsOf===k?'bg-white font-medium text-slate-900 shadow-sm':'text-slate-500')}>{k==='primary'?'Hauptdokumente':'Übrige PDFs'}</button>)}</span>
     {s?.errorsCsv&&<a href="/api/admin/pdf-ablage/fehler" className="text-teal-600">Fehlerliste als CSV ({n(s.errorsCsv.rows)} Dokumente) →</a>}

@@ -36,7 +36,7 @@ export const JOBS=Object.freeze([
   cmd:['node','--no-warnings','--max-old-space-size=6144','scripts/refresh-search-words.mjs']},
  {id:'pdf-nightly',label:'PDF-Import, nachts',icon:'file',time:'05:30',
   what:'Lädt die PDF-Hauptdokumente neuer Berichte, liest ihren Text und wertet ihn aus (Reiter PDF-Import).',
-  steps:[`PDFs laden, neueste Sitzungen zuerst, feste Grenze ${BUDGET_GB} GB`,'Textebene lesen, Scans per OCR','Zusammenfassungen, Fakten, Wortliste','Stand für den Reiter PDF-Import zählen'],
+  steps:[`PDFs laden, neueste Sitzungen zuerst, feste Grenze ${BUDGET_GB} GB`,'Textebene lesen, Scans per OCR','Zusammenfassungen, Fakten, Wortliste, Dokumentart nachtragen','Stand für den Reiter PDF-Import zählen'],
   limits:'Höchstens 3 Stunden, Laden höchstens 72 Minuten.',
   cmd:['node','--no-warnings','scripts/pdf-store/nightly.mjs','--kind','nightly','--minutes','180','--budget-gb',String(BUDGET_GB),'--ocr-workers','2']},
  {id:'import',label:'Abrufaufträge',icon:'download',every:10,

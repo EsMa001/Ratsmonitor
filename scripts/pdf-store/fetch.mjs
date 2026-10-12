@@ -31,6 +31,7 @@ import {fetchDocument} from '../../server/integrations/document-proxy.mjs';
 import {bodyBytes} from '../../server/integrations/body-bytes.mjs';
 import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
 import {primaryPdf,documentType} from '../../shared/document-type.mjs';
+import {MAX_BYTES} from '../../shared/pdf-rank.mjs';
 import {keeper as makeKeeper,usedBytes,errorReason,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
 import {progress,onStop,stepSummary,lane} from './state.mjs';
 
@@ -86,6 +87,11 @@ if(others){
  console.log(`Übrige PDFs: ${primaryUrls.size} Hauptdokumente ausgenommen (${((Date.now()-t0)/1000).toFixed(0)} s)`);
 }
 const what=others?'übrige PDFs':'Hauptdokumente';
+// Hauptdokumente, die nur noch als Text vorliegen (verdrängt, nicht zu groß), wieder laden, solange übrige PDFs als PDF
+// liegen: die stehen in der Grenze immer darunter und weichen zuerst. Ohne solche nicht, sonst flögen sie gleich wieder raus.
+const refetch=!others&&o.budgetGb>0&&!!store.db.prepare("SELECT 1 FROM pdfs WHERE status='ok' AND role='other' LIMIT 1").get();
+const textOnlyBelow=refetch?MAX_BYTES:0;
+if(refetch){const n=store.db.prepare("SELECT COUNT(*) AS n FROM pdfs WHERE status='text-only' AND COALESCE(role,'')<>'other' AND bytes<=?").get(MAX_BYTES).n;if(n)console.log(`${n} Hauptdokumente nur als Text werden wieder geladen (übrige PDFs weichen)`);}
 // Aufträge eines Zeitraums sammeln: eine Adresse je Bericht (mit --others die übrigen PDFs), jede Adresse einmal, nach Server
 // gruppiert (neueste zuerst).
 function collect(from,to){
@@ -100,7 +106,7 @@ function collect(from,to){
   for(const d of others?docs.filter(x=>x?.kind==='application/pdf'&&x.url&&x.url!==p?.url&&!primaryUrls.has(x.url)):[p]){
    if(!d?.url||seen.has(d.url))continue;
    seen.add(d.url);total++;
-   if(!store.wants(d.url,{retryDays:o.retryDays})){have++;continue;}
+   if(!store.wants(d.url,{retryDays:o.retryDays,textOnlyBelow})){have++;continue;}
    if(o.limit&&open>=o.limit)continue;
    let host;try{host=new URL(d.url).host;}catch{continue;}
    if(blocked.has(host)){skipped++;continue;}
