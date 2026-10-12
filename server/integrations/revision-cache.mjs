@@ -31,3 +31,5 @@ export async function atRevision(db,key,compute,{sources=false}={}){
  entries.set(key,{revision,value});
  return value;
 }
+/** Key of a request: kind, today and the sorted query parameters (results that count "the last 12 months" change daily). */
+export const paramsKey=(kind,params)=>`${kind}|${new Date().toISOString().slice(0,10)}|${[...new URLSearchParams(params)].map(([k,v])=>k+'='+v).sort().join('&')}`;
