@@ -19,7 +19,10 @@ const SERIES_SQL=`WITH t AS MATERIALIZED (
   FROM topics WHERE ${canonical} AND region_id IN (SELECT value FROM json_each(?)))
 SELECT region_id,eday,iday,count(*) n,sum(pdfs>0) wd,sum(pdfs) links,sum(days>1) fu,sum(days) cons
 FROM t GROUP BY region_id,eday,iday`;
-const STATUS_SQL=`SELECT region_id,status,count(*) n FROM topics WHERE ${canonical} AND region_id IN (SELECT value FROM json_each(?)) GROUP BY 1,2`;
+// INDEXED BY: active ist eine berechnete Spalte (json_extract der Nutzlast); ohne Hinweis nimmt der Planer den Index ohne
+// Bedingung und liest für jede Zeile die Nutzlast (auf dem Server 70 bis 100 s statt unter 1 s, 12.10.2026)
+const BY_STATUS='topics INDEXED BY idx_topics_canonical_region_status';
+const STATUS_SQL=`SELECT region_id,status,count(*) n FROM ${BY_STATUS} WHERE ${canonical} AND region_id IN (SELECT value FROM json_each(?)) GROUP BY 1,2`;
 const STATS_SQL=`SELECT region_id,count(*) count,${FIGURES} FROM topics WHERE ${canonical} AND region_id IN (SELECT value FROM json_each(?)) GROUP BY region_id`;
 // D1 takes at most about 100 KB per bound value: rows are written as JSON lists of at most this many characters.
 const MAX_JSON=90000;
@@ -86,7 +89,7 @@ export async function refreshRegionFacts(db,{regions,budgetMs=5000,chunkRows=250
    bound(db.prepare('SELECT region_id,revision FROM region_revisions'+filter())),
    bound(db.prepare("SELECT region_id,revision,json_extract(stats,'$.v') v FROM region_stats"+filter())),
    bound(db.prepare('SELECT region_id,revision,v FROM region_series'+filter())),
-   bound(db.prepare(`SELECT region_id,count(*) n FROM topics WHERE ${canonical}${only?' AND region_id IN (SELECT value FROM json_each(?))':''} GROUP BY region_id`))
+   bound(db.prepare(`SELECT region_id,count(*) n FROM ${BY_STATUS} WHERE ${canonical}${only?' AND region_id IN (SELECT value FROM json_each(?))':''} GROUP BY region_id`))
   ]);
  }catch(e){if(missingTable(e))return {missing:'0016'};throw e;}
  const statsAt=new Map(stats.results.map(r=>[r.region_id,r])),seriesAt=new Map(series.results.map(r=>[r.region_id,r]));
