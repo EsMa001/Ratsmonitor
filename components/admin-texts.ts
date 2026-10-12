@@ -15,7 +15,9 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  hochrechnung:{title:'Hochrechnung',intro:'Schätzt, wie viele Berichte alle kommunalen Gremien in Deutschland pro Tag erzeugen und wie viel Text das ist. Grundlage für die Abschätzung der KI-Kosten.'},
  social:{title:'Social Media',intro:'Schlägt je Tag bis zu drei Einzelfälle aus Orten vor, die polarisieren: Tempo 30, Windkraft, Bezahlkarte, Gebühren, Schließungen, Bürgerbegehren. Gefunden über feste Streitwörter im Titel, verstärkt durch Fraktionsanträge und den Status (abgelehnt oder vertagt zählt mehr). Zu jedem Vorschlag gibt es einen kurzen Textentwurf aus festen Satzvorlagen. Rein regelbasiert, ohne KI; schwache Tage bleiben leer.'},
  regeltexte:{title:'Regelbasierte Texte',intro:'Zeigt, bei wie vielen Artikeln die Zusammenfassung von der KI oder von festen Regeln stammt und wie die Themen-Labels zustande kamen. Die Seite zählt nur, was schon gespeichert ist.'},
- pdf:{title:'PDF-Ablage',intro:'Zeigt, wie viele der verlinkten PDF-Dokumente Plenara schon heruntergeladen hat, für wie viele der Text vorliegt, was fehlgeschlagen ist und warum. Startet auf Wunsch einen Lauf, einen erneuten Versuch der fehlgeschlagenen Abrufe oder einen Lauf für die übrigen PDFs (Anlagen, nur Text).'},
+ pdf:{title:'PDF-Import',intro:'Lädt die PDF-Dokumente der Berichte in die eigene Ablage, liest ihren Text und hält die feste Grenze von 100 GB ein. Zeigt, was gerade läuft, wie vollständig die Ablage ist, was fehlschlägt und warum, und startet Läufe von Hand.'},
+ zeitplaene:{title:'Jobs & Zeitpläne',intro:'Zeigt alle Jobs, die auf dem Server von selbst laufen: was sie tun, wann sie zuletzt liefen, wie lange und mit welchem Ergebnis, wann sie das nächste Mal starten. Jobs lassen sich hier ein- und ausschalten, ihre Zeit ändern und einmal sofort starten.'},
+ speicher:{title:'Speicher & Sicherungen',intro:'Zeigt, was auf der Festplatte des Servers wie viel Platz belegt: Datenbank und ihre größten Tabellen, PDF-Ablage, Sicherungen, Programmstände, OCR-Werkzeuge. Dazu, welche Sicherungen es gibt, wie groß und wie alt sie sind.'},
  stichwoerter:{title:'Stichwörter',intro:'Zeigt, an welchen Wörtern die festen Regeln Sachgebiete erkennen und welche Begriffe in den Titeln stehen. Die Seite zählt nur, was schon gespeichert ist.'},
 };
 export const FOOT:Record<AdminPage,string>={
@@ -27,7 +29,9 @@ export const FOOT:Record<AdminPage,string>={
  hochrechnung:'Die Hochrechnung liest nur den gespeicherten Bestand und startet keinen Abruf.',
  social:'Vorschläge aus den gespeicherten Berichten; vor einem Beitrag Zahl und Fundstellen prüfen. Die Seite startet keine Analyse.',
  regeltexte:'Zahlen aus der Datenbank; die Seite startet keine Analyse.',
- pdf:'Zahlen aus dem letzten Lauf auf dem Server (scripts/pdf-store/stats.mjs). Die Knöpfe legen nur einen Auftrag an; der Server startet ihn binnen 10 Minuten.',
+ pdf:'Stand aus der letzten Zählung auf dem Server (scripts/pdf-store/stats.mjs), Fortschritt jede Minute. Die Knöpfe legen nur einen Auftrag an; der Server startet ihn binnen 10 Minuten.',
+ zeitplaene:'Die Auslöser auf dem Server fragen alle 10 Minuten (scripts/schedule.mjs); Änderungen gelten ab dem nächsten Aufruf. Uhrzeiten in deutscher Zeit.',
+ speicher:'Gemessen auf dem Server (scripts/server-disk.mjs) höchstens stündlich, Tabellen der Datenbank einmal am Tag. Die Seite löscht nichts.',
  stichwoerter:'Die Seite zählt nur, was frühere Schritte gespeichert haben; sie startet keine Analyse.',
 };
 /** Stand-Zeile je Seite: Knopf, Hinweis und Zusatz hinter dem Datum („Stand … · Aktualisieren →“). */

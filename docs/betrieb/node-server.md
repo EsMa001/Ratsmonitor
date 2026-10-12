@@ -265,13 +265,44 @@ eine Sperre (`nightly.lock` in der Ablage) verhindert zwei Läufe. Protokoll: `j
 Probe ohne Wirkung: `node scripts/pdf-store/nightly.mjs --dry-run`.
 Fehlgeschlagene Abrufe werden nicht erneut versucht; Liste: `node scripts/pdf-store/fetch.mjs --errors [--csv fehler.csv]`.
 
-**Admin-Reiter „PDF-Ablage“** (`/admin?seite=pdf`): zeigt den Stand nach dem letzten Lauf (`scripts/pdf-store/stats.mjs`,
-letzte Stufe der Kette, schreibt `system_state` `pdf-store-stats`): verlinkte Hauptdokumente, heruntergeladen, mit Text,
-fehlgeschlagen (mit Gründen), offen, Platz. Die Knöpfe „Lauf starten“ und „Fehlgeschlagene erneut versuchen“ legen nur einen
-Auftrag an (`pdf-store-job`); `scripts/pdf-store/job.mjs` führt ihn aus (Einheiten `ratsmonitor-pdf-job.service` und
-`.timer`, alle 10 Minuten; ohne Auftrag endet der Dienst sofort, während der nächtlichen Kette wartet der Auftrag).
-Einrichten: `cp deploy/node/ratsmonitor-pdf-job.service deploy/node/ratsmonitor-pdf-job.timer /etc/systemd/system/ &&
-systemctl daemon-reload && systemctl enable --now ratsmonitor-pdf-job.timer`.
+**Admin-Reiter „PDF-Import“** (`/admin?seite=pdf`, früher „PDF-Ablage“; Konzept `requirements/admin-pdf-ablage-konzept.md`):
+liest nur `system_state` (`server/integrations/pdf-store-admin.mjs`). „Jetzt“: Fortschritt des Laufs bzw. OCR-Laufs (jede
+Minute von `fetch.mjs`/`text.mjs`/`nightly.mjs` geschrieben, `pdf-store-progress-chain`/`-ocr`, `scripts/pdf-store/state.mjs`),
+„Anhalten“ (`pdf-store-stop`; die Skripte prüfen das jede Minute und hören geordnet auf, `nightly.mjs` überspringt die
+übrigen Schritte und endet mit Exit-Code 3), Warteschlange (`pdf-store-job` = `{queue, current, recent}`; immer nur ein
+Auftrag, `job.mjs` startet je Aufruf höchstens einen), „Stand neu zählen“ (`pdf-store-count`, `stats.mjs` auch während eines
+Laufs). Dazu Abdeckung je Sitzungsmonat, „vollständig bis“, Texte und Auswertung, Platz mit Schwelle der Grenze, der
+Prozessablauf mit Regeln und Grenzen, Fehlergründe, Server, die nicht liefern, Fehlerliste als CSV
+(`/api/admin/pdf-ablage/fehler`, aus `pdf-store-errors-csv:N`), Protokoll der letzten Läufe (`pdf-store-runs`, je Schritt Zeit
+und Zusammenfassung). `job.mjs` schreibt bei jedem Aufruf ein Lebenszeichen (`pdf-store-heartbeat`); fehlt es 20 Minuten,
+sperrt die Seite die Knöpfe (lokal führt niemand Aufträge aus).
+
+**Admin-Reiter „Speicher & Sicherungen“** (`/admin?seite=speicher`, `server/integrations/server-storage.mjs`): Platte, Datenbank
+mit Nebendateien und größten Tabellen (`dbstat`, einmal am Tag), PDF-Ablage, Sicherungen (Datenbankkopien und Sicherungen der
+Einstellungsdatei, nur Name und Größe), Programmstände, OCR-Werkzeuge. Gemessen von `scripts/server-disk.mjs` (`server-disk`),
+aufgerufen von `job.mjs` höchstens stündlich und auf Wunsch („Neu messen“, `server-disk-count`).
+
+### Zeitplaner (Admin-Reiter „Jobs & Zeitpläne“, seit 12.10.2026)
+
+Alle Jobs, die von selbst laufen, starten über `scripts/schedule.mjs <job>`; Befehle, Standardzeiten und Beschreibungen
+stehen in `server/integrations/schedules.mjs` (`JOBS`): `import-nightly` (01:00), `backup` (03:30), `search-words` (04:20),
+`pdf-nightly` (05:30), `import` und `pdf-job` (alle 10 Minuten). Die Auslöser fragen alle 10 Minuten; der Zeitplaner startet
+den Job, wenn er nach seiner Einstellung dran ist (`schedules` in `system_state`: ein/aus, Uhrzeit deutscher Zeit in
+10-Minuten-Schritten bzw. Abstand), ein täglicher Job wird bis 3 Stunden nach seiner Zeit nachgeholt; „Jetzt ausführen“
+(`schedule-now`) startet ihn beim nächsten Aufruf, auch ausgeschaltet. Jeder Lauf steht in `schedule-runs` (Start, Ende,
+Dauer, Ergebnis). Ohne fälligen Job endet der Zeitplaner still. Von Hand: `node scripts/schedule.mjs <job> --force`,
+Übersicht `node scripts/schedule.mjs --list`.
+
+Einrichten (einmal, als root; danach gelten die Einstellungen der Administration, vorher laufen die Jobs zu ihren festen
+Zeiten weiter und die Seite sagt das):
+
+```bash
+cp deploy/node/ratsmonitor-import.service deploy/node/ratsmonitor-import-nightly.service deploy/node/ratsmonitor-import-nightly.timer deploy/node/ratsmonitor-pdf-nightly.service deploy/node/ratsmonitor-pdf-nightly.timer deploy/node/ratsmonitor-pdf-job.service /etc/systemd/system/
+cp deploy/node/ratsmonitor.cron /etc/cron.d/ratsmonitor && rm /etc/cron.d/ratsmonitor-backup /etc/cron.d/ratsmonitor-search-words
+systemctl daemon-reload
+```
+
+Die Timer selbst bleiben eingeschaltet (`systemctl list-timers`); ein- und ausgeschaltet wird in der Administration.
 
 **Übrige PDFs** (Anlagen, Pläne …, in keinem Bericht Hauptdokument; Server 12.10.2026: rund 682.000): nur über den Knopf
 „Übrige PDFs laden“ (Auftrag `others`, `nightly.mjs --others`, `fetch.mjs --others`), nicht in der nächtlichen Kette. Ein

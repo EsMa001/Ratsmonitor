@@ -17,7 +17,9 @@ Nice=10
 IOSchedulingClass=best-effort
 IOSchedulingPriority=7
 TimeoutStartSec=5h
-ExecStart=/usr/bin/node --max-old-space-size=6144 dist/standalone/worker/import-worker.mjs --create sources --window 1w --max-minutes 240
+# Gestartet über den Zeitplaner (scripts/schedule.mjs, Admin-Reiter „Jobs & Zeitpläne“): er prüft Ein/Aus und Zeit aus der
+# Datenbank und vermerkt den Lauf; der Befehl selbst steht in server/integrations/schedules.mjs.
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs import-nightly
 MemoryHigh=7G
 MemoryMax=8G
 LimitNOFILE=65536

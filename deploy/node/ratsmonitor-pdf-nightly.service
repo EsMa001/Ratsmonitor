@@ -16,7 +16,9 @@ EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
 Nice=15
 IOSchedulingClass=idle
 TimeoutStartSec=4h
-ExecStart=/usr/bin/node --no-warnings scripts/pdf-store/nightly.mjs --minutes 180 --budget-gb 100 --ocr-workers 2
+# Gestartet über den Zeitplaner (scripts/schedule.mjs, Admin-Reiter „Jobs & Zeitpläne“): er prüft Ein/Aus und Zeit aus der
+# Datenbank und vermerkt den Lauf; der Befehl selbst steht in server/integrations/schedules.mjs.
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs pdf-nightly
 MemoryHigh=6G
 MemoryMax=7G
 LimitNOFILE=65536

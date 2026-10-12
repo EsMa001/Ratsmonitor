@@ -22,6 +22,8 @@
 // Server, die nachweislich nicht liefern (in der Ablage mindestens 10 Abrufe, davon mindestens 90 % Fehler oder „kein PDF“),
 // werden ausgelassen; ihre Dokumente bleiben offen. Nicht beim erneuten Versuch (--retry-days) und nicht mit --all-hosts.
 // Ablage: RM_PDF_STORE (Standard tmp/pdf-store). Datenbank: DATABASE_FILE, sonst die Miniflare-Datei unter .wrangler/.
+// Jede Minute: Fortschritt nach system_state (Admin-Reiter) und Prüfung, ob der Lauf angehalten wurde (state.mjs); angehalten
+// wird wie bei Strg+C (laufende Abrufe zu Ende, dann Schluss).
 import {existsSync,readdirSync,writeFileSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
@@ -29,7 +31,8 @@ import {fetchDocument} from '../../server/integrations/document-proxy.mjs';
 import {bodyBytes} from '../../server/integrations/body-bytes.mjs';
 import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
 import {primaryPdf,documentType} from '../../shared/document-type.mjs';
-import {keeper as makeKeeper,usedBytes,errorReason} from './store-lib.mjs';
+import {keeper as makeKeeper,usedBytes,errorReason,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
+import {progress,stopRequested,stepSummary,lane} from './state.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const o={regions:opt('regions')?.split(',').filter(Boolean),since:opt('since'),limit:Number(opt('limit',0)),maxMinutes:Number(opt('max-minutes',0)),
@@ -63,7 +66,6 @@ const db=new DatabaseSync(file,{readOnly:true});
 // Formalie wie in der Suche (search_cards.formal, drizzle/0017); ohne Spalte unbekannt.
 const formalSql=db.prepare("SELECT 1 FROM pragma_table_info('search_cards') WHERE name='formal'").get()?'(SELECT formal FROM search_cards c WHERE c.id=topics.id)':'NULL';
 // Server, die nicht liefern: aus der Ablage (alle bisherigen Abrufe je Server)
-const BLOCK_MIN=10,BLOCK_SHARE=0.9;
 const blocked=new Set();
 if(!flag('all-hosts')&&!Number.isFinite(o.retryDays)){
  const by=new Map();
@@ -112,7 +114,13 @@ const started=Date.now(),c={ok:0,unsupported:0,error:0,bytes:0};let stopping=fal
 const maxBytes=o.maxGb*1073741824,stepBytes=o.reportMb*1048576;let size=store.size(),nextStep=(Math.floor(size/stepBytes)+1)*stepBytes;
 process.on('SIGINT',()=>{if(stopping)process.exit(130);stopping=true;console.log('\nAbbruch: laufende Abrufe werden beendet (noch einmal Strg+C zum sofortigen Ende).');});
 const report=label=>{const s=(Date.now()-started)/1000;console.log(`${new Date().toISOString().slice(11,19)} ${label||''}${done} geladen: ${c.ok} ok, ${c.unsupported} kein PDF, ${c.error} Fehler, Ablage ${mb(size)}, ${(done/s).toFixed(1)}/s`);};
-const timer=setInterval(()=>report(),60000);
+// Fortschritt für den Admin-Reiter; ohne nightly.mjs (von Hand) als eigener Lauf
+const myLane=lane('chain'),live=!flag('dry-run');
+let monthOpen=0,halted=false;
+const tell=()=>{if(!live)return;const s=(Date.now()-started)/1000;
+ progress(myLane,{...(process.env.RM_PROGRESS_BASE?{}:{kind:others?'others':'fetch',startedAt:new Date(started).toISOString()}),step:'Laden',
+  fetch:{what:others?'others':'primary',month,monthOpen,done,ok:c.ok,unsupported:c.unsupported,error:c.error,rate:Math.round(done/Math.max(1,s)*10)/10,bytes:Math.round(size)}});};
+const timer=setInterval(()=>{report();tell();if(live&&!stopping&&stopRequested(myLane,started)){stopping=halted=true;console.log('Angehalten (Admin-Reiter): laufende Abrufe werden beendet.');}},60000);
 // Feste Grenze mit Tausch: PDFs und Texte zusammen höchstens --budget-gb
 const keeper=o.budgetGb&&!flag('dry-run')?makeKeeper(store,o.budgetGb*1073741824,{ocrWorkers:o.ocrWorkers,log:x=>console.log(x)}):null;
 if(keeper)console.log(`Grenze ${o.budgetGb} GB (PDFs und Texte), belegt ${mb(usedBytes(store))}`);
@@ -156,6 +164,7 @@ for(const [from,to] of windows){
  if(stopping)break;
  month=(from||'alles').slice(0,7);
  const t0=Date.now(),{hosts,total,have,open}=collect(from,to);
+ monthOpen=open;tell();
  console.log(`${month}: ${total} ${what}, ${have} schon in der Ablage, ${open} zu laden von ${hosts.size} Servern (${((Date.now()-t0)/1000).toFixed(0)} s)`);
  if(flag('dry-run')){for(const [h,q] of [...hosts].sort((a,b)=>b[1].queue.length-a[1].queue.length).slice(0,15))console.log(String(q.queue.length).padStart(8),h);continue;}
  await work(hosts);
@@ -166,4 +175,7 @@ if(keeper){await keeper.close();const k=keeper.stats();console.log(`Grenze: ${k.
 if(maxBytes&&size>=maxBytes)console.log(`ZIEL ERREICHT: ${mb(size)} in der Ablage`);
 if(skipped)console.log(`${skipped} Dokumente von ausgelassenen Servern übersprungen`);
 for(const r of store.stats())console.log('Ablage:',r.status,r.n,r.bytes?mb(r.bytes):'');
+stepSummary({what:others?'others':'primary',ok:c.ok,unsupported:c.unsupported,error:c.error,bytes:c.bytes,skipped,lastMonth:month,stopped:halted,
+ keeper:keeper?.stats()||null,used:Math.round(usedBytes(store))});
+if(live&&!process.env.RM_PROGRESS_BASE)progress(myLane,null);
 store.close();

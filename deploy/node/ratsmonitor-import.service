@@ -29,7 +29,9 @@ IOSchedulingPriority=7
 # Ein bundesweiter Lauf dauert etwa drei Stunden; --max-minutes beendet den Prozess vorher (der Auftrag bleibt, der
 # nächste Lauf des Timers macht weiter), TimeoutStartSec ist die harte Grenze
 TimeoutStartSec=5h
-ExecStart=/usr/bin/node --max-old-space-size=6144 dist/standalone/worker/import-worker.mjs --run --max-minutes 240
+# Gestartet über den Zeitplaner (scripts/schedule.mjs, Admin-Reiter „Jobs & Zeitpläne“): er prüft Ein/Aus und Zeit aus der
+# Datenbank und vermerkt den Lauf; der Befehl selbst steht in server/integrations/schedules.mjs.
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs import
 # Speicher: Heap 6 GB wie bisher im Webprozess (große Gebiete lesen bis 1 GB je Schritt, A4); der Dienst ist auf 8 GB
 # begrenzt, zusammen bleibt bei 16 GB wenig für den Seitencache: beide Grenzen sind Obergrenzen, keine Reservierung
 MemoryHigh=7G

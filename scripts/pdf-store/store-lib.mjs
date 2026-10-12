@@ -147,6 +147,10 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
  };
 }
 
+/** Server, die nicht liefern (fetch.mjs lässt sie aus, stats.mjs zeigt sie): mindestens BLOCK_MIN Abrufe, davon mindestens
+    BLOCK_SHARE fehlgeschlagen oder „kein PDF“ */
+export const BLOCK_MIN=10,BLOCK_SHARE=0.9;
+
 /** Grund eines fehlgeschlagenen Abrufs in festen Gruppen (Admin-Reiter, fetch.mjs --errors) */
 export function errorReason({status,http,error}){
  const e=String(error||'');

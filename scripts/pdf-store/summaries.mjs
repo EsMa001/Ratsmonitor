@@ -16,6 +16,7 @@ import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {useDocumentStore,enrichDocument} from '../../server/integrations/documents.mjs';
 import {compactSummaryAttempt} from '../../server/integrations/compact-summary.mjs';
 import {primaryPdf,sessionDocument} from '../../shared/document-type.mjs';
+import {stepSummary} from './state.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const dry=flag('dry-run'),limit=Number(opt('limit',0));
@@ -61,5 +62,6 @@ for(const id of ids){
 }
 flush();
 console.log(JSON.stringify({...c,sekunden:Math.round((Date.now()-t0)/1000),geschrieben:!dry},null,1));
+if(!dry)stepSummary({summaries:c.summary,withText:c.withText,noSummary:c.noSummary,unreadable:c.unreadable,session:c.session});
 for(const e of examples)console.log(`\n# ${e.titel}${e.ocr?' (OCR)':''}, Güte ${e.güte}\n${e.kurz}`);
 store.close();
