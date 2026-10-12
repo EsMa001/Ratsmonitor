@@ -273,6 +273,14 @@ Auftrag an (`pdf-store-job`); `scripts/pdf-store/job.mjs` führt ihn aus (Einhei
 Einrichten: `cp deploy/node/ratsmonitor-pdf-job.service deploy/node/ratsmonitor-pdf-job.timer /etc/systemd/system/ &&
 systemctl daemon-reload && systemctl enable --now ratsmonitor-pdf-job.timer`.
 
+**Übrige PDFs** (Anlagen, Pläne …, in keinem Bericht Hauptdokument; Server 12.10.2026: rund 682.000): nur über den Knopf
+„Übrige PDFs laden“ (Auftrag `others`, `nightly.mjs --others`, `fetch.mjs --others`), nicht in der nächtlichen Kette. Ein
+Lauf lädt bis 15 Minuten vor Ende (Standard 180 min), neueste Sitzungen zuerst, liest die Textebene und zählt den Stand neu;
+kein OCR, keine Zusammenfassungen und Fakten (die lesen nur Hauptdokumente). Sie laufen durch dieselbe feste Grenze mit Tausch
+(Rang nach Dokumentart, Anlagen niedriger) und bleiben meist nur als Text. In der Ablage `pdfs.role='other'`; OCR (Tausch,
+`text.mjs --ocr`) nur für Dateien, die auch als Hauptdokument verlinkt oder ohne Angabe sind. Der Admin-Reiter zeigt sie
+getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dort weiter, wo der vorige aufgehört hat.
+
 **Wie lange der Aufbau dauert** (hochgerechnet aus dem lokalen Aufbau, 11.10.2026): Alle Hauptdokumente sind 65 bis 80 GB,
 etwa 300.000 bis 360.000 PDFs; lokal kamen 30 bis 60 PDFs je Sekunde, also einige Nächte Laden. Textebene lokal 87.600
 Dateien in 18 Minuten. OCR braucht etwa jede zwanzigste Datei; lokal 4.612 Dateien (11.584 Seiten) in 3,2 Stunden mit 4 Workern, also rund

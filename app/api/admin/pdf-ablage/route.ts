@@ -2,7 +2,7 @@ import {env} from 'cloudflare:workers';
 import {requireAdmin,adminFailure,ADMIN_HEADERS} from '@/server/services/admin-auth';
 import {requireSameOrigin,AdminError} from '@/server/integrations/admin-access.mjs';
 import {pdfStoreState,requestPdfJob,JOB_KINDS} from '@/server/integrations/pdf-store-admin.mjs';
-// PDF-Ablage (server/integrations/pdf-store-admin.mjs): GET liest Stand und Auftrag, POST {kind:'run'|'retry'} legt einen
+// PDF-Ablage (server/integrations/pdf-store-admin.mjs): GET liest Stand und Auftrag, POST {kind:'run'|'retry'|'others'} legt einen
 // Auftrag an; ausgeführt wird er auf dem Server von scripts/pdf-store/job.mjs.
 export async function GET(){try{await requireAdmin();return Response.json(await pdfStoreState(env.DB),{headers:ADMIN_HEADERS});}catch(e){return adminFailure(e);}}
 export async function POST(request:Request){try{

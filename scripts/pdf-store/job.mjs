@@ -1,5 +1,6 @@
 // Auftrag aus dem Admin-Reiter „PDF-Ablage“ ausführen (server/integrations/pdf-store-admin.mjs, system_state 'pdf-store-job'):
-// 'run' startet die Kette wie nachts (nightly.mjs), 'retry' dazu mit erneutem Versuch der fehlgeschlagenen Abrufe.
+// 'run' startet die Kette wie nachts (nightly.mjs), 'retry' dazu mit erneutem Versuch der fehlgeschlagenen Abrufe, 'others'
+// lädt die übrigen PDFs der Berichte (nightly.mjs --others: nur Textebene, kein OCR).
 // Auf dem Server alle 10 Minuten per Timer (deploy/node/ratsmonitor-pdf-job.*); ohne wartenden Auftrag endet er sofort.
 // Läuft gerade die nächtliche Kette (Sperre nightly.lock), bleibt der Auftrag liegen und kommt beim nächsten Mal dran.
 //
@@ -35,7 +36,7 @@ if(pid&&alive(pid)){console.log(`Kette läuft schon (Prozess ${pid}), Auftrag wa
 save({...job,state:'running',startedAt:new Date().toISOString()});
 console.log(`Auftrag ${job.kind} vom ${job.requestedAt} startet`);
 const r=spawnSync(process.execPath,['--no-warnings','scripts/pdf-store/nightly.mjs','--minutes',opt('minutes','180'),'--budget-gb',opt('budget-gb','100'),
- ...(job.kind==='retry'?['--retry-errors']:[]),...(args.includes('--dry-run')?['--dry-run']:[])],{cwd:root,stdio:'inherit',env:process.env});
+ ...(job.kind==='retry'?['--retry-errors']:[]),...(job.kind==='others'?['--others']:[]),...(args.includes('--dry-run')?['--dry-run']:[])],{cwd:root,stdio:'inherit',env:process.env});
 save({...read(),state:r.status===0?'done':'failed',finishedAt:new Date().toISOString(),exit:r.status??String(r.signal)});
 console.log(`Auftrag ${job.kind} ${r.status===0?'fertig':'mit Fehlern beendet'}`);
 db.close();

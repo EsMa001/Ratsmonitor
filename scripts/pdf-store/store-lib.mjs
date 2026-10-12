@@ -57,8 +57,10 @@ export async function ocrFile(store,sha,ocr){
  return want.length;
 }
 
-// Eine Zeile je Datei (gleiche Datei unter mehreren Adressen: der höchste Wert zählt).
+// Eine Zeile je Datei (gleiche Datei unter mehreren Adressen: der höchste Wert zählt). other: nur als übriges PDF verlinkt
+// (role 'other', fetch.mjs --others), dann gilt nur die Textebene, kein OCR.
 const FILES=`SELECT p.sha256 AS sha,MAX(p.bytes) AS bytes,GROUP_CONCAT(COALESCE(p.doc_type,'other')) AS types,MAX(COALESCE(p.formal,0)) AS formal,MIN(p.formal) AS minFormal,
+ MIN(COALESCE(p.role,'')='other') AS other,
  MIN(p.event_date) AS eventDate,t.pages,t.ocr_pages AS ocrPages,t.ocr_needed AS ocrNeeded,t.chars
  FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok'`;
 const ranked=f=>{
@@ -80,7 +82,7 @@ export const usedBytes=store=>store.size()+textBytes(store);
  * die neue Datei sofort bewertet (Textebene gelesen, damit Scan bekannt ist) und mit der schlechtesten behaltenen verglichen:
  * besser → die schlechteste fliegt raus, sonst die neue. Zu große Dateien (rankPdf keep:false) behalten nur den Text.
  * Vor dem Löschen ist der Text immer vollständig: fehlende Textebene wird gelesen, Seiten ohne Text per OCR (sofort, auch bei
- * vielen Seiten). Fehlen die OCR-Werkzeuge, bleibt ein Scan als PDF liegen (lieber kurz über der Grenze als Text verlieren).
+ * vielen Seiten; nicht bei übrigen PDFs, die behalten nur die Textebene). Fehlen die OCR-Werkzeuge, bleibt ein Scan als PDF liegen (lieber kurz über der Grenze als Text verlieren).
  * Entscheidungen laufen nacheinander; überschritten wird die Grenze nur um gerade geladene, noch nicht entschiedene Dateien.
  */
 export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
@@ -93,14 +95,15 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
  let used=usedBytes(store),since=0;
  /* Zu große Dateien (nie als PDF behalten) mit vollständigem Text vom letzten Mal jetzt löschen: Ihre Scans hat inzwischen der
     OCR-Schritt der Nachtkette gelesen (siehe decide) */
- for(const f of all)if(!f.keep&&f.chars!=null&&!(f.ocrNeeded>0)){store.dropPdf(f.sha);used-=f.bytes;c.tooBig++;}
- /** Text vollständig? Sonst Textebene lesen und Seiten ohne Text per OCR; false, wenn OCR nötig, aber nicht möglich ist */
+ for(const f of all)if(!f.keep&&f.chars!=null&&!(f.ocrNeeded>0&&!f.other)){store.dropPdf(f.sha);used-=f.bytes;c.tooBig++;}
+ /** Text vollständig? Sonst Textebene lesen und Seiten ohne Text per OCR (übrige PDFs nur Textebene); false, wenn OCR nötig,
+     aber nicht möglich ist */
  const complete=async f=>{
   const t=store.db.prepare('SELECT version,ocr_needed AS ocrNeeded,status FROM texts WHERE sha256=?').get(f.sha),before=textOf(f.sha);
   let waiting=t&&t.version>=TEXT_VERSION?(t.status==='ok'?t.ocrNeeded:0):null;
   try{
    if(waiting===null){try{waiting=await readTextLayer(store,f.sha);}catch(e){store.failText(f.sha,e.message,{version:TEXT_VERSION});waiting=0;}}
-   if(!waiting)return true;
+   if(!waiting||f.other)return true;
    ocr??=await ocrScheduler(ocrWorkers)||false;
    if(!ocr)return false;
    c.ocrPages+=await ocrFile(store,f.sha,ocr);return true;
@@ -115,7 +118,7 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   if(++since>=SYNC){since=0;used=usedBytes(store);}
   /* Zu groß (nie als PDF behalten, die Grenze betrifft das nicht): ohne Scan sofort löschen; einen Scan nicht hier per OCR
      lesen (das hielte alle Downloads an), sondern liegen lassen, bis der OCR-Schritt der Nachtkette ihn gelesen hat */
-  if(!f.keep){if(f.ocrNeeded>0){c.tooBigLater++;return 'zu groß, OCR folgt';}await drop(f);c.tooBig++;return 'zu groß';}
+  if(!f.keep){if(f.ocrNeeded>0&&!f.other){c.tooBigLater++;return 'zu groß, OCR folgt';}await drop(f);c.tooBig++;return 'zu groß';}
   while(used>limit){
    const worst=kept[0];
    if(!worst||worst.score>=f.score){await drop(f);c.rejected++;return 'nicht besser';}

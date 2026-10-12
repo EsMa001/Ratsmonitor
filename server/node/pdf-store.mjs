@@ -30,8 +30,9 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   CREATE TABLE IF NOT EXISTS texts(sha256 TEXT PRIMARY KEY,status TEXT NOT NULL,method TEXT,version INTEGER NOT NULL,pages INTEGER,ocr_pages INTEGER,ocr_needed INTEGER,chars INTEGER,error TEXT,made_at TEXT NOT NULL);
   CREATE INDEX IF NOT EXISTS idx_texts_ocr ON texts(ocr_needed) WHERE ocr_needed>0;`);
  // Angaben für den Rang (shared/pdf-rank.mjs): Dokumentart (documentType des Titels), Formalie, Sitzungstag.
+ // role: 'other' für PDFs, die nicht Hauptdokument sind (fetch.mjs --others: nur Textebene, kein OCR); leer = Hauptdokument.
  const cols=new Set(db.prepare('PRAGMA table_info(pdfs)').all().map(c=>c.name));
- for(const [c,t] of [['doc_type','TEXT'],['formal','INTEGER'],['event_date','TEXT']])if(!cols.has(c))db.exec(`ALTER TABLE pdfs ADD COLUMN ${c} ${t}`);
+ for(const [c,t] of [['doc_type','TEXT'],['formal','INTEGER'],['event_date','TEXT'],['role','TEXT']])if(!cols.has(c))db.exec(`ALTER TABLE pdfs ADD COLUMN ${c} ${t}`);
  const fileOf=(sha,ext='.pdf')=>path.join(dir,'files',sha.slice(0,2),sha+ext);
  const write=(file,data)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file+'.tmp',data);fs.renameSync(file+'.tmp',file);};
  const q={
@@ -39,7 +40,7 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   upsert:db.prepare(`INSERT INTO pdfs(url,sha256,bytes,pages,status,http,error,fetched_at,region_id,topic_id) VALUES(?,?,?,?,?,?,?,?,?,?)
    ON CONFLICT(url) DO UPDATE SET sha256=excluded.sha256,bytes=excluded.bytes,pages=COALESCE(excluded.pages,pdfs.pages),status=excluded.status,http=excluded.http,error=excluded.error,
    fetched_at=excluded.fetched_at,region_id=COALESCE(excluded.region_id,pdfs.region_id),topic_id=COALESCE(excluded.topic_id,pdfs.topic_id)`),
-  meta:db.prepare('UPDATE pdfs SET doc_type=COALESCE(?,doc_type),formal=COALESCE(?,formal),event_date=COALESCE(?,event_date) WHERE url=?'),
+  meta:db.prepare('UPDATE pdfs SET doc_type=COALESCE(?,doc_type),formal=COALESCE(?,formal),event_date=COALESCE(?,event_date),role=COALESCE(?,role) WHERE url=?'),
   drop:db.prepare("UPDATE pdfs SET status='text-only' WHERE sha256=? AND status='ok'"),
   stats:db.prepare('SELECT status,COUNT(*) AS n,SUM(bytes) AS bytes FROM pdfs GROUP BY status'),
   size:db.prepare("SELECT COALESCE(SUM(bytes),0) AS b FROM (SELECT DISTINCT sha256,bytes FROM pdfs WHERE status='ok')"),
@@ -48,7 +49,8 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
    ON CONFLICT(sha256) DO UPDATE SET status=excluded.status,method=excluded.method,version=excluded.version,pages=excluded.pages,ocr_pages=excluded.ocr_pages,
    ocr_needed=excluded.ocr_needed,chars=excluded.chars,error=excluded.error,made_at=excluded.made_at`),
   textless:db.prepare(`SELECT DISTINCT p.sha256 AS sha FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok' AND (t.sha256 IS NULL OR t.version<?)`),
-  ocrQueue:db.prepare('SELECT sha256 AS sha FROM texts WHERE ocr_needed>0'),
+  // OCR nur für Hauptdokumente: Dateien, die nur als übrige PDFs (role 'other') verlinkt sind, behalten nur die Textebene
+  ocrQueue:db.prepare("SELECT sha256 AS sha FROM texts t WHERE ocr_needed>0 AND EXISTS(SELECT 1 FROM pdfs p WHERE p.sha256=t.sha256 AND COALESCE(p.role,'')<>'other')"),
   textStats:db.prepare("SELECT status,method,COUNT(*) AS n,SUM(chars) AS chars,SUM(ocr_needed>0) AS waiting FROM texts GROUP BY status,method"),
  };
  return {
@@ -80,8 +82,8 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
    return r.status==='error'&&Date.now()-Date.parse(r.fetchedAt)>retryDays*864e5;
   },
   stats:()=>q.stats.all().map(r=>({...r})),
-  /** Angaben für den Rang: {docType, formal, eventDate}; fehlende bleiben, wie sie sind. */
-  setMeta(url,{docType=null,formal=null,eventDate=null}={}){q.meta.run(docType,formal==null?null:Number(!!formal),eventDate,url);},
+  /** Angaben für den Rang: {docType, formal, eventDate, role}; fehlende bleiben, wie sie sind. */
+  setMeta(url,{docType=null,formal=null,eventDate=null,role=null}={}){q.meta.run(docType,formal==null?null:Number(!!formal),eventDate,role,url);},
   /** Löscht das PDF einer Prüfsumme, die Textfassung bleibt (Status 'text-only' für alle Adressen dieser Datei). */
   dropPdf(sha){q.drop.run(sha);try{fs.unlinkSync(fileOf(sha));}catch{/* schon weg */}},
   db,

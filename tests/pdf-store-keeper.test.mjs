@@ -46,3 +46,23 @@ test('feste Grenze: neue Datei verdrängt die schlechteste oder fliegt selbst ra
   await k.close();
  }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('übrige PDFs (role other): Scan ohne Textebene fliegt ohne OCR raus und steht nicht in der OCR-Liste',async()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pdf-keeper-'));
+ const store=openPdfStore(dir);
+ try{
+  const day=new Date().toISOString().slice(0,10);
+  const size=pdf('Dokument A').byteLength;
+  const k=keeper(store,size+200);
+  store.put('https://x.test/A',pdf('Dokument A'),{docType:'paper',formal:false,eventDate:day});
+  assert.equal(await k.admit(store.entry('https://x.test/A').sha256),'behalten');
+  // Leere Seite: wie ein Scan (eine Seite wartet auf OCR)
+  store.put('https://x.test/S',pdf(''),{docType:'attachment',formal:false,eventDate:day,role:'other'});
+  const sha=store.entry('https://x.test/S').sha256;
+  assert.equal(await k.admit(sha),'nicht besser');
+  assert.equal(store.entry('https://x.test/S').status,'text-only');
+  assert.equal(k.stats().ocrPages,0);assert.equal(k.stats().stuck,0);
+  assert.ok(!store.ocrQueue().includes(sha));
+  await k.close();
+ }finally{store.close();fs.rmSync(dir,{recursive:true,force:true});}
+});

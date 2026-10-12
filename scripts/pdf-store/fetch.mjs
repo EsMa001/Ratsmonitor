@@ -12,6 +12,10 @@
 //   node scripts/pdf-store/fetch.mjs --months 240 --budget-gb 100 [--ocr-workers 2] [--start-month 2025-11]
 //        feste Grenze mit Tausch (keeper in store-lib.mjs): lädt weiter, auch wenn die Ablage voll ist; jede neue Datei wird
 //        sofort bewertet und verdrängt die schlechteste, wenn sie besser ist, sonst fliegt sie selbst raus (Text bleibt immer)
+//   node scripts/pdf-store/fetch.mjs --others --months 240 --budget-gb 100
+//        statt der Hauptdokumente die übrigen PDFs der Berichte (Anlagen, Pläne …; nicht, was irgendwo Hauptdokument ist):
+//        eigener Lauf (Auftrag „Übrige PDFs laden“ im Admin-Reiter), gleiche Grenze mit Tausch, aber nur Textebene, kein OCR
+//        (role 'other' in der Ablage); was nicht in die Grenze passt, bleibt nur als Text
 //   node scripts/pdf-store/fetch.mjs --stats                       Stand der Ablage
 //   node scripts/pdf-store/fetch.mjs --errors [--csv datei.csv]    fehlgeschlagene Abrufe: je Dokument Fehler, HTTP-Code, Tag
 // Fehlgeschlagene Abrufe werden nicht erneut versucht (nur mit --retry-days N), sie stehen in der Fehlerliste.
@@ -68,7 +72,18 @@ if(!flag('all-hosts')&&!Number.isFinite(o.retryDays)){
  if(blocked.size)console.log(`${blocked.size} Server ausgelassen (mindestens ${BLOCK_MIN} Abrufe, davon mindestens ${BLOCK_SHARE*100} % fehlgeschlagen); ihre Dokumente bleiben offen`);
 }
 let skipped=0;
-// Aufträge eines Zeitraums sammeln: eine Adresse je Bericht, jede Adresse einmal, nach Server gruppiert (neueste zuerst).
+// --others: Adressen, die in irgendeinem Bericht Hauptdokument sind, lädt der normale Lauf (mit OCR)
+const others=flag('others'),primaryUrls=new Set();
+if(others){
+ const t0=Date.now();
+ for(const r of db.prepare("SELECT json_extract(payload,'$.documents') AS docs FROM topics WHERE payload LIKE '%application/pdf%'").iterate()){
+  try{const d=primaryPdf(JSON.parse(r.docs||'[]'));if(d?.url)primaryUrls.add(d.url);}catch{/* kaputte Angabe */}
+ }
+ console.log(`Übrige PDFs: ${primaryUrls.size} Hauptdokumente ausgenommen (${((Date.now()-t0)/1000).toFixed(0)} s)`);
+}
+const what=others?'übrige PDFs':'Hauptdokumente';
+// Aufträge eines Zeitraums sammeln: eine Adresse je Bericht (mit --others die übrigen PDFs), jede Adresse einmal, nach Server
+// gruppiert (neueste zuerst).
 function collect(from,to){
  const where=["payload LIKE '%application/pdf%'"],params=[];
  if(o.regions){where.push(`region_id IN (${o.regions.map(()=>'?').join(',')})`);params.push(...o.regions);}
@@ -76,15 +91,18 @@ function collect(from,to){
  if(to){where.push('event_date<?');params.push(to);}
  const seen=new Set(),hosts=new Map();let total=0,have=0,open=0;
  for(const r of db.prepare(`SELECT id,region_id AS region,event_date AS date,json_extract(payload,'$.documents') AS docs,${formalSql} AS formal FROM topics WHERE ${where.join(' AND ')} ORDER BY event_date DESC`).iterate(...params)){
-  let d;try{d=primaryPdf(JSON.parse(r.docs||'[]'));}catch{continue;}
-  if(!d?.url||seen.has(d.url))continue;
-  seen.add(d.url);total++;
-  if(!store.wants(d.url,{retryDays:o.retryDays})){have++;continue;}
-  if(o.limit&&open>=o.limit)continue;
-  let host;try{host=new URL(d.url).host;}catch{continue;}
-  if(blocked.has(host)){skipped++;continue;}
-  if(!hosts.has(host))hosts.set(host,{queue:[],busy:0,next:0,fails:0});
-  hosts.get(host).queue.push({url:d.url,region:r.region,topic:r.id,meta:{docType:documentType(d.title),formal:r.formal,eventDate:r.date}});open++;
+  let docs;try{docs=JSON.parse(r.docs||'[]');}catch{continue;}
+  const p=primaryPdf(docs);
+  for(const d of others?docs.filter(x=>x?.kind==='application/pdf'&&x.url&&x.url!==p?.url&&!primaryUrls.has(x.url)):[p]){
+   if(!d?.url||seen.has(d.url))continue;
+   seen.add(d.url);total++;
+   if(!store.wants(d.url,{retryDays:o.retryDays})){have++;continue;}
+   if(o.limit&&open>=o.limit)continue;
+   let host;try{host=new URL(d.url).host;}catch{continue;}
+   if(blocked.has(host)){skipped++;continue;}
+   if(!hosts.has(host))hosts.set(host,{queue:[],busy:0,next:0,fails:0});
+   hosts.get(host).queue.push({url:d.url,region:r.region,topic:r.id,meta:{docType:documentType(d.title),formal:r.formal,eventDate:r.date,...(others?{role:'other'}:{})}});open++;
+  }
  }
  return {hosts,total,have,open};
 }
@@ -138,7 +156,7 @@ for(const [from,to] of windows){
  if(stopping)break;
  month=(from||'alles').slice(0,7);
  const t0=Date.now(),{hosts,total,have,open}=collect(from,to);
- console.log(`${month}: ${total} Hauptdokumente, ${have} schon in der Ablage, ${open} zu laden von ${hosts.size} Servern (${((Date.now()-t0)/1000).toFixed(0)} s)`);
+ console.log(`${month}: ${total} ${what}, ${have} schon in der Ablage, ${open} zu laden von ${hosts.size} Servern (${((Date.now()-t0)/1000).toFixed(0)} s)`);
  if(flag('dry-run')){for(const [h,q] of [...hosts].sort((a,b)=>b[1].queue.length-a[1].queue.length).slice(0,15))console.log(String(q.queue.length).padStart(8),h);continue;}
  await work(hosts);
  report(month+' fertig: ');

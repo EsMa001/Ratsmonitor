@@ -3,9 +3,10 @@
  * Die Ablage selbst liegt nur auf dem Node-Server (server/node/pdf-store.mjs); die Seite liest deshalb nur, was die Skripte in
  * system_state hinterlegen: 'pdf-store-stats' (scripts/pdf-store/stats.mjs, nach jedem Lauf) und 'pdf-store-job' (Auftrag).
  * Ein Auftrag wird nur angelegt; ausgeführt wird er von scripts/pdf-store/job.mjs (Timer alle 10 Minuten auf dem Server,
- * lokal von Hand). Arten: 'run' (Lauf wie nachts) und 'retry' (dazu fehlgeschlagene Abrufe erneut versuchen).
+ * lokal von Hand). Arten: 'run' (Lauf wie nachts), 'retry' (dazu fehlgeschlagene Abrufe erneut versuchen) und 'others'
+ * (übrige PDFs der Berichte laden, nur Textebene).
  */
-export const STATS_KEY='pdf-store-stats',JOB_KEY='pdf-store-job',JOB_KINDS=['run','retry'];
+export const STATS_KEY='pdf-store-stats',JOB_KEY='pdf-store-job',JOB_KINDS=['run','retry','others'];
 const parse=v=>{try{return v?JSON.parse(v):null;}catch{return null;}};
 // Ein Auftrag, der so lange ohne Rückmeldung „läuft“, gilt als abgebrochen (der Lauf dauert höchstens drei Stunden)
 const STALE_MS=4*3600000;

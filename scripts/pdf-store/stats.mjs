@@ -1,7 +1,8 @@
 // Stand der PDF-Ablage für den Admin-Reiter „PDF-Ablage“ (server/integrations/pdf-store-admin.mjs): wie viele PDF-Dokumente
 // die Berichte verlinken (Hauptdokument je Bericht, wie fetch.mjs es lädt, und alle PDF-Dokumente), wie viele davon geladen,
 // nur als Text, fehlgeschlagen oder noch offen sind, Fehlergründe, Platz. Schreibt das Ergebnis nach system_state
-// ('pdf-store-stats'); läuft am Ende jedes Laufs (nightly.mjs) und braucht rund eine Minute.
+// ('pdf-store-stats'); läuft am Ende jedes Laufs (nightly.mjs) und braucht rund eine Minute. Die übrigen PDFs (verlinkt, aber
+// nirgends Hauptdokument; fetch.mjs --others) stehen getrennt unter `others`.
 //
 //   node scripts/pdf-store/stats.mjs [--budget-gb 100] [--print]
 // Ablage: RM_PDF_STORE (Standard tmp/pdf-store). Datenbank: DATABASE_FILE, sonst die Miniflare-Datei unter .wrangler/.
@@ -27,10 +28,18 @@ for(const r of db.prepare("SELECT event_date AS date,json_extract(payload,'$.doc
  for(const d of docs)if(d?.url&&d.kind==='application/pdf')all.add(d.url);
  const p=primaryPdf(docs),d=String(r.date||'').slice(0,10);if(p?.url&&(!primary.has(p.url)||d&&d<primary.get(p.url)))primary.set(p.url,d);
 }
-/* Stand je Adresse aus der Ablage, nur für verlinkte Hauptdokumente */
+/* Stand je Adresse aus der Ablage: Hauptdokumente und übrige PDFs (o) getrennt */
 const c={ok:0,'text-only':0,error:0,unsupported:0},reasons=new Map();let withText=0,textComplete=0,oldestLoaded='',oldestTried='';
-for(const r of store.db.prepare("SELECT p.url,p.status,p.http,p.error,t.status AS textStatus,t.ocr_needed AS ocrNeeded FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256").iterate()){
- if(!primary.has(r.url))continue;
+const o={ok:0,'text-only':0,error:0,unsupported:0,withText:0,scans:0},oReasons=new Map();
+for(const r of store.db.prepare("SELECT p.url,p.status,p.http,p.error,t.status AS textStatus,t.ocr_needed AS ocrNeeded,t.pages FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256").iterate()){
+ if(!primary.has(r.url)){
+  if(!all.has(r.url))continue;
+  o[r.status]=(o[r.status]||0)+1;
+  // Nur Textebene: mit Text, wenn wenigstens eine Seite Text hat; sonst ein Scan ohne Text
+  if(r.textStatus==='ok'){if((r.ocrNeeded||0)<r.pages)o.withText++;else o.scans++;}
+  if(r.status==='error'||r.status==='unsupported'){const k=errorReason(r);oReasons.set(k,(oReasons.get(k)||0)+1);}
+  continue;
+ }
  c[r.status]=(c[r.status]||0)+1;
  /* Wie weit der Lauf zurück ist: ältestes geladene Dokument und ältestes überhaupt versuchte */
  const d=primary.get(r.url);
@@ -39,7 +48,8 @@ for(const r of store.db.prepare("SELECT p.url,p.status,p.http,p.error,t.status A
  if(r.textStatus==='ok'){withText++;if(!(r.ocrNeeded>0))textComplete++;}
  if(r.status==='error'||r.status==='unsupported'){const k=errorReason(r);reasons.set(k,(reasons.get(k)||0)+1);}
 }
-const tx=store.db.prepare("SELECT COUNT(*) AS files,SUM(ocr_needed>0) AS waiting FROM texts WHERE status='ok'").get();
+// Auf OCR warten nur Hauptdokumente (übrige PDFs bekommen keins, wie store.ocrQueue)
+const tx=store.db.prepare("SELECT COUNT(*) AS files,SUM(ocr_needed>0 AND EXISTS(SELECT 1 FROM pdfs p WHERE p.sha256=t.sha256 AND COALESCE(p.role,'')<>'other')) AS waiting FROM texts t WHERE status='ok'").get();
 const pdfBytes=store.size(),text=textBytes(store);
 const stats={
  at:new Date().toISOString(),seconds:Math.round((Date.now()-t0)/1000),
@@ -49,8 +59,11 @@ const stats={
  reasons:[...reasons].sort((a,b)=>b[1]-a[1]).map(([reason,n])=>({reason,n})),
  bytes:{pdf:pdfBytes,text:Math.round(text),used:Math.round(pdfBytes+text)},budgetGb:Number(opt('budget-gb',100)),
  texts:{files:Number(tx.files||0),ocrWaiting:Number(tx.waiting||0),linked:withText,complete:textComplete},
+ others:{linked:all.size-primary.size,loaded:o.ok,textOnly:o['text-only'],failed:o.error+o.unsupported,
+  open:Math.max(0,all.size-primary.size-o.ok-o['text-only']-o.error-o.unsupported),withText:o.withText,scans:o.scans,
+  reasons:[...oReasons].sort((a,b)=>b[1]-a[1]).map(([reason,n])=>({reason,n}))},
 };
 db.prepare('INSERT INTO system_state(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').run(STATS_KEY,JSON.stringify(stats));
 db.close();store.close();
 if(flag('print'))console.log(JSON.stringify(stats,null,1));
-else console.log(`${stats.linked} Hauptdokumente verlinkt (${stats.allPdfs} PDF-Dokumente), ${stats.loaded} geladen, ${stats.textOnly} nur Text, ${stats.failed} fehlgeschlagen, ${stats.open} offen, ${withText} mit Text (${textComplete} vollständig) (${stats.seconds} s)`);
+else console.log(`${stats.linked} Hauptdokumente verlinkt (${stats.allPdfs} PDF-Dokumente), ${stats.loaded} geladen, ${stats.textOnly} nur Text, ${stats.failed} fehlgeschlagen, ${stats.open} offen, ${withText} mit Text (${textComplete} vollständig); übrige PDFs: ${stats.others.linked} verlinkt, ${o.ok+o['text-only']} geladen, ${o.withText} mit Text, ${stats.others.failed} fehlgeschlagen (${stats.seconds} s)`);
