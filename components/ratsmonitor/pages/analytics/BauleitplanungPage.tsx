@@ -149,7 +149,7 @@ export function BauleitplanungPage({ embedded }: { embedded?: boolean } = {}) {
   return (
     <Frame embedded={embedded}>
       {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">Welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo viel geplant wird und wo Gewerbe-, Industrie- und Energieflächen entstehen.</p> : <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/radar" className="text-teal-600">plenara.X Radar</Link> / Bauleitplanung</p>
+        <p className="text-[14px] text-slate-500"><Link href="/analytics/atlas" className="text-teal-600">plenara.X Atlas</Link> / Bauleitplanung</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Bauleitplanung</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo viel geplant wird und wo Gewerbe-, Industrie- und Energieflächen entstehen.</p>
       </PageBand>}

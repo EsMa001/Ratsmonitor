@@ -310,8 +310,8 @@ function Methodik({ group }: { group?: AnalyseGruppe }) {
   );
 }
 
-/** Übersicht einer Gruppe (plenara.X Tools, Politik, Finanzen oder Radar) */
-export function AnalyticsGroupPage({ group }: { group: AnalyseGruppe }) {
+/** Übersicht einer Gruppe (plenara.X Tools, Politik oder Finanzen) */
+export function AnalyticsGroupPage({ group }: { group: Exclude<AnalyseGruppe, "atlas"> }) {
   const g = GRUPPEN[group];
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-16 text-slate-900">
@@ -319,7 +319,6 @@ export function AnalyticsGroupPage({ group }: { group: AnalyseGruppe }) {
         <p className="m-0 text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / {g.kurz}</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{g.name}</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{g.text}</p>
-        {group === "radar" && <Link href="/analytics/atlas" className="mt-4 inline-block text-[16px] font-medium text-teal-600">Alle Themen auf einer Karte: plenara.X Atlas →</Link>}
       </PageBand>
       <Karten group={group} />
       <Methodik group={group} />
@@ -347,12 +346,11 @@ export function AnalyticsAbout() {
         </div>
       </PageBand>
 
-      {(["tool", "politik", "finanzen", "radar"] as const).map((group, gi) => (
+      {(["tool", "politik", "finanzen"] as const).map((group, gi) => (
         <section key={group} id={gi ? group : "analysen"} className="scroll-mt-24">
           <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2 className="text-[28px] font-semibold">{GRUPPEN[group].name}</h2>
             <span className="flex flex-wrap gap-x-6 gap-y-1">
-              {group === "radar" && <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-600">Alle Themen auf einer Karte: plenara.X Atlas →</Link>}
               <Link href={GRUPPEN[group].href} className="text-[16px] font-medium text-teal-600">Zu {GRUPPEN[group].name} →</Link>
             </span>
           </div>
@@ -360,7 +358,14 @@ export function AnalyticsAbout() {
           <Karten group={group} />
         </section>
       ))}
-      <p className="mt-10 text-[14px] text-slate-500">Weitere Radare sind in Planung.</p>
+      {/* Die Themenradare stehen nur im Atlas, nicht als eigene Karten */}
+      <section id="atlas" className="scroll-mt-24">
+        <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <h2 className="text-[28px] font-semibold">plenara.X Atlas</h2>
+          <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-600">Zum plenara.X Atlas →</Link>
+        </div>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was gebaut und geplant wird, alle Themen auf einer Karte: Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales, Klima und Energie, Haushalt, Gebühren, Vergaben und Beteiligung.</p>
+      </section>
 
       <Methodik />
     </main>

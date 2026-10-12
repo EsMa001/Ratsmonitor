@@ -83,7 +83,7 @@ export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
   return (
     <Frame embedded={embedded}>
       {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung.</p> : <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/radar" className="text-teal-600">plenara.X Radar</Link> / Kita-Radar</p>
+        <p className="text-[14px] text-slate-500"><Link href="/analytics/atlas" className="text-teal-600">plenara.X Atlas</Link> / Kita-Radar</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Kita-Radar</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung.</p>
       </PageBand>}

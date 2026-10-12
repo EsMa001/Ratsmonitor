@@ -6,7 +6,6 @@ import { ThemeRadarPage } from "./ThemeRadarPage";
 import { KitaRadarPage } from "./KitaRadarPage";
 import { BauleitplanungPage } from "./BauleitplanungPage";
 import { ScoreView } from "./ScoreView";
-import { GRUPPEN } from "../../info/branchen-enterprise";
 
 /** Themen des Atlas: Adresse (?bereich=…, gleich den früheren Seiten /analytics/<bereich>), Name in der Themenleiste;
     zuerst der plenara.X Score als Startfärbung */
@@ -45,7 +44,7 @@ export function AtlasPage({ initial }: { initial?: AtlasBereich }) {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href={GRUPPEN.radar.href} className="text-teal-600">{GRUPPEN.radar.name}</Link> / Atlas</p>
+        <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / Atlas</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">plenara.X Atlas</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Eine Karte für alle Themen: wie häufig ein Thema in den Räten vorkommt, verglichen mit ähnlichen Kommunen, und was dort beraten wird. Zuerst der plenara.X Score über alle Themen; Thema wählen, Ort anklicken oder suchen.</p>
       </PageBand>

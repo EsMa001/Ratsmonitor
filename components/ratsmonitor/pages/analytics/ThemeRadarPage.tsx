@@ -51,7 +51,7 @@ const ratOf = (p: string) => {
 /** id: Radar in shared/radars.mjs; analyse: Eintrag in ANALYSEN, falls er anders heißt (Haushalt und Steuern) */
 /** embedded: im plenara.X Atlas (AtlasPage.tsx) ohne eigenen Seitenkopf, nur mit Zwischenüberschrift */
 export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RADARS; analyse?: AnalyseId; embedded?: boolean }) {
-  const gruppe = GRUPPEN[ANALYSEN[analyse ?? (id as AnalyseId)].group];
+  const g = ANALYSEN[analyse ?? (id as AnalyseId)].group, gruppe = g === "atlas" ? { href: "/analytics/atlas", name: "plenara.X Atlas" } : GRUPPEN[g];
   const def = RADARS[id];
   const { query, search } = useAnalyticsQuery();
   /* Klick auf „Ort auswerten“ in der Karte: Ortsfilter setzen und auswerten, sobald die Abfrage den Ort enthält */
