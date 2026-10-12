@@ -9,6 +9,7 @@
 // Je Bericht höchstens ein gescheiterter Versuch: Ein Versuch ohne Zusammenfassung merkt sich Regelfassung und Prüfsumme des
 // Texts (ruleSummaryTried) und wird erst wieder gerechnet, wenn sich eins davon ändert; ein neuer Versuch ersetzt den alten
 // Eintrag in article_analyses, statt einen weiteren anzulegen (früher bis zu 5 Zeilen je Bericht, 12.10.2026).
+// Dazu Berichte, deren Zusammenfassung aus einem anderen Dokument stammt als dem heutigen Hauptdokument (ruleSummary.source).
 // Danach die Wortliste neu aufbauen: node scripts/refresh-search-words.mjs --full
 //
 //   node scripts/pdf-store/summaries.mjs --dry-run [--limit 300]   nur zählen und Beispiele zeigen, nichts schreiben
@@ -34,20 +35,26 @@ const db=new DatabaseSync(process.env.DATABASE_FILE||dir+local);db.exec('PRAGMA 
 // Ein Durchlauf über alle Berichte: wie oft hängt ein PDF an Berichten (Sitzungsunterlagen), und welche Berichte sind
 // Kandidaten (ohne ruleSummary, nicht von der KI) mit Hauptdokument und letztem Versuch (rund eine Minute)
 const uses=new Map(),cands=[];
-for(const r of db.prepare(`SELECT id,json_extract(payload,'$.documents') AS d,json_extract(payload,'$.ruleSummary') IS NULL
-  AND coalesce(json_extract(payload,'$.generatedBy'),'') NOT LIKE 'KI-Zusammenfassung%' AS open,json_extract(payload,'$.ruleSummaryTried') AS tried
-  FROM topics WHERE active=1 AND payload LIKE '%application/pdf%'`).iterate()){
+// Kandidat ist auch ein Bericht, dessen Zusammenfassung aus einem anderen Dokument stammt als dem heutigen Hauptdokument
+// (neue Regeln für primaryPdf, 12.10.2026); scheitert der neue Versuch, bleibt die alte Zusammenfassung (ruleSummaryTried)
+let stale=0;
+for(const r of db.prepare(`SELECT id,json_extract(payload,'$.documents') AS d,json_extract(payload,'$.ruleSummary.source.url') AS src,
+  json_extract(payload,'$.ruleSummary') IS NULL AS missing,coalesce(json_extract(payload,'$.generatedBy'),'') LIKE 'KI-Zusammenfassung%' AS ai,
+  json_extract(payload,'$.ruleSummaryTried') AS tried FROM topics WHERE active=1 AND payload LIKE '%application/pdf%'`).iterate()){
  let docs;try{docs=JSON.parse(r.d||'[]');}catch{continue;}
  for(const x of docs)if(x.kind==='application/pdf')uses.set(x.url,(uses.get(x.url)||0)+1);
- if(r.open)cands.push([r.id,primaryPdf(docs),r.tried]);
+ if(r.ai)continue;
+ const p=primaryPdf(docs);
+ if(r.missing)cands.push([r.id,p,r.tried]);
+ else if(p&&r.src&&r.src!==p.url){stale++;cands.push([r.id,p,r.tried]);}
 }
 const ids=cands;
 const get=db.prepare('SELECT region_id AS region,payload FROM topics WHERE id=?');
 const insert=db.prepare('INSERT INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)');
 const update=db.prepare('UPDATE topics SET payload=? WHERE id=?');
 const dropFailed=db.prepare("DELETE FROM article_analyses WHERE topic_id=? AND kind='summary' AND coalesce(json_extract(payload,'$.status'),'')<>'completed'");
-const started=new Date().toISOString(),t0=Date.now(),c={candidates:ids.length,session:0,unchanged:0,withText:0,summary:0,noSummary:0,unreadable:0,ocr:0,ocrSummary:0},examples=[];
-console.log(`${ids.length} Berichte ohne Regel-Zusammenfassung`);
+const started=new Date().toISOString(),t0=Date.now(),c={candidates:ids.length,stale,session:0,unchanged:0,withText:0,summary:0,noSummary:0,unreadable:0,ocr:0,ocrSummary:0},examples=[];
+console.log(`${ids.length-stale} Berichte ohne Regel-Zusammenfassung, ${stale} mit Zusammenfassung aus einem anderen als dem Hauptdokument`);
 let open=0;const flush=()=>{if(open){db.exec('COMMIT');open=0;}};
 for(const [id,d,lastTried] of ids){
  if(limit&&c.withText>=limit)break;
