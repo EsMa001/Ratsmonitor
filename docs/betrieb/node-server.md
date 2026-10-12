@@ -334,9 +334,9 @@ zuerst übrige PDFs, ein übriges PDF nie ein Hauptdokument. In der Ablage `pdfs
 getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dort weiter, wo der vorige aufgehört hat.
 
 **Texte erstellen** (Auftrag `texts`, `nightly.mjs --texts`): lädt nichts, liest die Textebene aller abgelegten PDFs ohne Text,
-danach OCR (nur Hauptdokumente), Zusammenfassungen, Fakten, Wortliste und Stand wie nachts. Die Kennzahl „PDFs ohne Text“
+danach Zusammenfassungen, Fakten, Wortliste und Stand wie nachts; keine OCR (die hält auf). Die Kennzahl „PDFs ohne Text“
 (`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten. **OCR starten** (Auftrag `ocr`, `nightly.mjs --ocr-only`):
-wie „Texte erstellen“, ohne Textebene. Ein von Hand gestarteter OCR-Dienst (`systemd-run`, Einheit `ratsmonitor-pdf-ocr`)
+keine Textebene, OCR (nur Hauptdokumente) mit der ganzen Zeit, dann dieselbe Auswertung. Ein von Hand gestarteter OCR-Dienst (`systemd-run`, Einheit `ratsmonitor-pdf-ocr`)
 hört nicht auf „Anhalten“; beenden mit `systemctl stop ratsmonitor-pdf-ocr`. Den Lauf der Aufträge selbst beendet
 `systemctl stop ratsmonitor-pdf-job` (der Dienst vermerkt den Auftrag als abgebrochen).
 

@@ -73,17 +73,19 @@ async function change(db,key,fn){
 const bad=msg=>Object.assign(Error(msg),{status:400});
 
 /** Auftrag anstellen. Dieselbe Art direkt hintereinander wird nicht doppelt angestellt (created:false). */
+/** Auftrag anlegen; dieselbe Art nie doppelt: läuft oder wartet sie schon, kein neuer (created:false, reason 'running'|'waiting') */
 export async function requestPdfJob(db,kind,now=new Date()){
  if(!JOB_KINDS.includes(kind))throw bad('Unbekannter Auftrag.');
- let created=false;
+ let created=false,reason=null;
  const jobs=await change(db,JOB_KEY,v=>{
   const j=normalizeJobs(v);
-  if(j.queue.at(-1)?.kind===kind)return undefined;
+  if(j.current?.state==='running'&&j.current.kind===kind){reason='running';return undefined;}
+  if(j.queue.some(x=>x.kind===kind)){reason='waiting';return undefined;}
   if(j.queue.length>=QUEUE_MAX)throw Object.assign(Error(`Es warten schon ${QUEUE_MAX} Aufträge.`),{status:409});
   created=true;
   return {...j,queue:[...j.queue,{id:now.getTime().toString(36)+Math.random().toString(36).slice(2,6),kind,state:'waiting',requestedAt:now.toISOString()}]};
  });
- return {jobs:normalizeJobs(jobs),created};
+ return {jobs:normalizeJobs(jobs),created,reason};
 }
 /** Wartenden Auftrag aus der Reihe nehmen */
 export async function removePdfJob(db,id){

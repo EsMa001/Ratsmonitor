@@ -15,9 +15,9 @@
 // --others (Auftrag „Übrige PDFs laden“): eigener Lauf für die übrigen PDFs der Berichte (fetch.mjs --others), nur Laden,
 // Textebene und Stand, kein OCR, keine Zusammenfassungen und Fakten (die lesen nur Hauptdokumente); Laden bekommt die ganze
 // Zeit bis auf 15 min. Dieselbe Sperre: nie zugleich mit dem normalen Lauf.
-// --texts (Auftrag „Texte erstellen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann OCR,
-// Zusammenfassungen, Fakten, Wortliste und Stand wie nachts (OCR nur Hauptdokumente).
-// --ocr-only (Auftrag „OCR starten“): wie --texts, aber ohne Textebene: OCR mit der ganzen Zeit bis auf die Reserve.
+// --texts (Auftrag „Texte erstellen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann
+// Zusammenfassungen, Fakten, Wortliste und Stand wie nachts; keine OCR (die hält auf; dafür „OCR starten“ oder die Nacht).
+// --ocr-only (Auftrag „OCR starten“): keine Textebene, OCR mit der ganzen Zeit bis auf die Reserve, dann Auswertung.
 // Admin-Reiter (state.mjs): Fortschritt je Schritt (die Schritte schreiben ihren eigenen jede Minute dazu), Protokoll des Laufs
 // am Ende ('pdf-store-runs', höchstens 50 Läufe, mit Zeit und Zusammenfassung je Schritt), Anhalten vor jedem Schritt (die
 // Schritte selbst prüfen jede Minute); angehalten endet der Lauf mit Exit-Code 3. --kind: Art im Protokoll (job.mjs setzt sie).
@@ -106,7 +106,8 @@ if(others){
 }
 if(!ocrOnly)step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-reserve)))]);
 const ocr=Math.floor(left()-reserve);
-if(ocr>=5||stopped)step('OCR','scripts/pdf-store/text.mjs',['--ocr','--workers',String(ocrWorkers),'--max-minutes',String(ocr)]);
+if(texts&&!ocrOnly){say('OCR ausgelassen (Texte erstellen)');steps.push({name:'OCR',seconds:0,ok:true,summary:{skipped:'bei „Texte erstellen“ keine OCR'}});}
+else if(ocr>=5||stopped)step('OCR','scripts/pdf-store/text.mjs',['--ocr','--workers',String(ocrWorkers),'--max-minutes',String(ocr)]);
 else{say(`OCR übersprungen (nur ${Math.max(0,ocr)} min übrig)`);steps.push({name:'OCR',seconds:0,ok:true,summary:{skipped:`nur ${Math.max(0,ocr)} min übrig`}});}
 step('Zusammenfassungen','scripts/pdf-store/summaries.mjs',[]);
 step('Fakten','scripts/pdf-store/facts.mjs',[]);

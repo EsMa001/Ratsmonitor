@@ -98,7 +98,7 @@ Knöpfe mit einem Satz Erklärung, was sie tun und wie lange es dauert:
 | Lauf starten | Kette wie nachts: neue und noch nicht versuchte Hauptdokumente, Texte, OCR, Auswertung |
 | Fehlgeschlagene erneut versuchen | wie oben, dazu fehlgeschlagene Abrufe und ausgelassene Server |
 | Übrige PDFs laden | nur die übrigen PDFs, nur Textebene |
-| Texte erstellen | nichts laden; Text aus schon abgelegten PDFs ohne Text, dann OCR und Auswertung (`nightly.mjs --texts`) |
+| Texte erstellen | nichts laden, keine OCR; Textebene der abgelegten PDFs ohne Text, dann Auswertung (`nightly.mjs --texts`) |
 | OCR starten | nur OCR und Auswertung (`nightly.mjs --ocr-only`) |
 | Stand neu zählen | nur `stats.mjs` (etwa 1 Minute), ohne Laden |
 | Anhalten | im Statuskasten, je laufendem Vorgang |

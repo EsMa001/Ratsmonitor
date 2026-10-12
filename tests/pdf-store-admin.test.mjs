@@ -11,7 +11,7 @@ import {diskDue,storageState,requestDiskCount} from '../server/integrations/serv
 
 const fresh=()=>{const sql=new DatabaseSync(':memory:');sql.exec('CREATE TABLE system_state(key TEXT PRIMARY KEY,value TEXT)');return {sql,db:sqliteAdapter(sql)};};
 
-test('Aufträge: Reihe, gleiche Art nicht doppelt hintereinander, Entfernen, Obergrenze, unbekannte Arten abgelehnt',async()=>{
+test('Aufträge: Reihe, gleiche Art nie doppelt (wartend oder laufend), Entfernen, Obergrenze, unbekannte Arten abgelehnt',async()=>{
  const {sql,db}=fresh();
  const s0=await pdfStoreState(db);
  assert.deepEqual(s0.jobs,{queue:[],current:null,recent:[]});assert.equal(s0.worker,false);
@@ -21,12 +21,13 @@ test('Aufträge: Reihe, gleiche Art nicht doppelt hintereinander, Entfernen, Obe
  const c=await requestPdfJob(db,'others');assert.equal(c.created,true);assert.deepEqual(c.jobs.queue.map(j=>j.kind),['retry','others']);
  await assert.rejects(requestPdfJob(db,'delete'),/Unbekannter Auftrag/);
  const r=await removePdfJob(db,c.jobs.queue[0].id);assert.deepEqual(r.jobs.queue.map(j=>j.kind),['others']);
- for(const k of ['run','retry','run','retry'])await requestPdfJob(db,k);
- await assert.rejects(requestPdfJob(db,'others'),new RegExp(`${QUEUE_MAX} Aufträge`));
- await removePdfJob(db,(await pdfStoreState(db)).jobs.queue.at(-1).id);
- assert.equal((await requestPdfJob(db,'texts')).jobs.queue.at(-1).kind,'texts','Auftrag „Texte erstellen“');
- await removePdfJob(db,(await pdfStoreState(db)).jobs.queue.at(-1).id);
- assert.equal((await requestPdfJob(db,'ocr')).jobs.queue.at(-1).kind,'ocr','Auftrag „OCR starten“');
+ for(const k of ['run','retry','texts','ocr'])assert.equal((await requestPdfJob(db,k)).created,true);
+ assert.equal((await pdfStoreState(db)).jobs.queue.length,QUEUE_MAX,'jede Art höchstens einmal, also nie mehr als QUEUE_MAX');
+ for(const k of ['run','others','ocr'])assert.equal((await requestPdfJob(db,k)).reason,'waiting','dieselbe Art nie doppelt in der Reihe');
+ const {sql:sql2,db:db2}=fresh(),at=new Date().toISOString();
+ sql2.prepare('INSERT INTO system_state VALUES(?,?)').run(JOB_KEY,JSON.stringify({queue:[],current:{id:'t',kind:'texts',state:'running',startedAt:at,updatedAt:at},recent:[]}));
+ const busy=await requestPdfJob(db2,'texts');assert.equal(busy.created,false);assert.equal(busy.reason,'running');
+ assert.equal((await requestPdfJob(db2,'ocr')).created,true,'andere Art wartet hinter dem laufenden');
  assert.equal((await pdfStoreState(db)).stats.linked,10);
 });
 

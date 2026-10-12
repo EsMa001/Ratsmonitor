@@ -34,7 +34,7 @@ function progressText(p:Progress){
 }
 
 export function AdminPdf(){
- const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[reasonsOf,setReasonsOf]=useState<'primary'|'others'>('primary');
+ const [data,setData]=useState<Data|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[note,setNote]=useState(''),[reasonsOf,setReasonsOf]=useState<'primary'|'others'>('primary');
  const load=useCallback(async()=>{
   try{const r=await fetch('/api/admin/pdf-ablage',{cache:'no-store'});const d=await r.json() as Data;if(!r.ok)throw Error(d.error||'Der Stand konnte nicht geladen werden.');setData(d);setError('');}
   catch(e){setError(e instanceof Error?e.message:'Der Stand konnte nicht geladen werden.');}
@@ -45,8 +45,10 @@ export function AdminPdf(){
  useEffect(()=>{if(!live)return;const t=setInterval(load,30000);return ()=>clearInterval(t);},[live,load]);
  const post=async(body:Record<string,unknown>,confirmText?:string)=>{
   if(confirmText&&!window.confirm(confirmText))return;
-  setBusy(true);
-  try{const r=await fetch('/api/admin/pdf-ablage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json() as {error?:string};if(!r.ok)throw Error(d.error||'Das ging nicht.');await load();}
+  setBusy(true);setNote('');
+  try{const r=await fetch('/api/admin/pdf-ablage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json() as {error?:string;created?:boolean;reason?:string|null};if(!r.ok)throw Error(d.error||'Das ging nicht.');
+   if(d.created===false&&d.reason)setNote(`„${JOB[String(body.kind)]??'Dieser Auftrag'}“ ${d.reason==='running'?'läuft schon':'wartet schon'}; kein zweiter angelegt.`);
+   await load();}
   catch(e){setError(e instanceof Error?e.message:'Das ging nicht.');}
   finally{setBusy(false);}
  };
@@ -94,7 +96,8 @@ export function AdminPdf(){
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'ocr'})}>OCR starten →</button>
     <button type="button" className={textBtn} disabled={!canAct||!!data?.count&&!data.count.finishedAt} onClick={()=>post({action:'count'})}>{data?.count&&!data.count.finishedAt?(data.count.startedAt?'Wird gezählt …':'Zählen angefordert …'):'Stand neu zählen →'}</button>
    </div>
-   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Kette wie nachts (neue und noch nicht versuchte Hauptdokumente, Text, OCR, Auswertung).':k==='retry'?'wie „Lauf starten“, dazu fehlgeschlagene Abrufe und ausgelassene Server.':k==='texts'?'nichts laden; Text aus schon abgelegten PDFs ohne Text, dann OCR und Auswertung wie nachts.':k==='ocr'?'nur Seiten ohne Text per OCR lesen (Hauptdokumente), dann Auswertung.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Jeder Lauf höchstens 3 Stunden; ist einer aktiv, wartet der nächste. „Stand neu zählen“ geht auch während eines Laufs (etwa eine Minute).</p>
+   {note&&<p role="status" className="mt-3 text-[14px] text-slate-900">{note}</p>}
+   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Kette wie nachts (neue und noch nicht versuchte Hauptdokumente, Text, OCR, Auswertung).':k==='retry'?'wie „Lauf starten“, dazu fehlgeschlagene Abrufe und ausgelassene Server.':k==='texts'?'nichts laden, keine OCR; Textebene der abgelegten PDFs ohne Text, dann Zusammenfassungen, Fakten, Wortliste und Stand.':k==='ocr'?'nur Seiten ohne Text per OCR lesen (Hauptdokumente), dann Auswertung.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Jeder Lauf höchstens 3 Stunden; ist einer aktiv, wartet der nächste. „Stand neu zählen“ geht auch während eines Laufs (etwa eine Minute).</p>
   </section>
 
   {/* B. Hauptdokumente */}

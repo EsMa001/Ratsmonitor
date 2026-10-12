@@ -8,7 +8,7 @@
 //  - Den ältesten wartenden Auftrag starten (höchstens einen je Aufruf, der Dienst darf 4 Stunden laufen; der nächste kommt
 //    beim nächsten Aufruf dran): 'run' Kette wie nachts (nightly.mjs), 'retry' dazu mit erneutem Versuch der
 //    fehlgeschlagenen Abrufe, 'others' die übrigen PDFs (nightly.mjs --others), 'texts' nur Texte
-//    aus schon abgelegten PDFs ohne Text, mit OCR und Auswertung (nightly.mjs --texts), 'ocr' nur OCR und Auswertung
+//    aus schon abgelegten PDFs ohne Text und Auswertung, ohne OCR (nightly.mjs --texts), 'ocr' nur OCR und Auswertung
 //    (nightly.mjs --ocr-only). Läuft die nächtliche Kette (Sperre
 //    nightly.lock), wartet er. Während er läuft, alle 30 Sekunden Lebenszeichen und Wünsche „neu zählen“.
 // Angehalten wird ein Lauf über 'pdf-store-stop' (die Skripte prüfen das selbst, nightly.mjs endet dann mit Exit-Code 3) oder
