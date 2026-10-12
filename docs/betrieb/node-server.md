@@ -255,8 +255,8 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
 
 **Nachts** (05:30, nach Import, Sicherung und Wortliste) führt `scripts/pdf-store/nightly.mjs` die Stufen 2 bis 6 in fester
 Reihenfolge aus, höchstens drei Stunden: Laden (bis 40 % der Zeit, Monat für Monat ab heute zurück) mit **fester Grenze
-von 100 GB** für PDFs und Texte zusammen: Ist sie erreicht, wird jede neue Datei sofort bewertet (Rang `shared/pdf-rank.mjs`,
-Textebene gleich gelesen, damit Scans erkannt sind) und verdrängt die schlechteste Datei der Ablage, wenn sie besser ist;
+von 100 GB** für PDFs und Texte zusammen: Ist sie erreicht, wird jede neue Datei sofort bewertet (Score 0 bis 100 % aus `shared/pdf-rank.mjs`,
+Textebene gleich gelesen, Seiten ohne Text vorläufig geschätzt) und verdrängt die schlechteste Datei der Ablage, wenn sie besser ist;
 sonst fliegt sie selbst raus. Der Text bleibt immer: vor jedem Löschen werden Seiten ohne Text sofort per OCR gelesen, auch bei
 vielen Seiten. So liegen in den 100 GB die besten Dokumente unter allen geladenen. Danach nur zur Sicherung das Kürzen
 (`budget.mjs --apply`, etwa nach einer gesenkten Grenze), Textebene, OCR (die verbleibende
@@ -317,9 +317,15 @@ getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dor
 danach OCR (nur Hauptdokumente), Zusammenfassungen, Fakten, Wortliste und Stand wie nachts. Die Kennzahl „PDFs ohne Text“
 (`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten.
 
-**Qualität der Ablage** (Abschnitt im Reiter, `quality` in `pdf-store-stats`, `storeQuality` in `store-lib.mjs`): Mittel des
-Werts aus `shared/pdf-rank.mjs` (Vorlage aus diesem Jahr = 1) je Datei und nach Größe gewichtet, je Dokumentart und Wertstufe,
-dazu das Mittel der Dateien, die nur als Text bleiben. Erscheint nach dem nächsten Zählen.
+**Score einer Datei** (`shared/pdf-rank.mjs`, Entscheidung 12.10.2026): 0 bis 100 % = Dokumentart (Vorlage und Beschluss 1,
+Niederschrift 0,7, Anlage und Sonstiges 0,4, Einladung 0,1) × Formalie (0,5, nicht bei Niederschriften) × Inhalt (voll ab
+4.000 Zeichen, darunter mit der Wurzel fallend; Seiten, die auf OCR warten, vorläufig 800 Zeichen) × Größe (voll bis 100 KB,
+darüber mit der Kubikwurzel fallend; über 10 MB, Vorlagen und Beschlüsse über 30 MB: 0, nur Text). Scan und Alter zählen nicht.
+Der Score wird bei jedem Lauf aus dem aktuellen Text gerechnet; nach der OCR gilt die echte Zeichenzahl.
+
+**Qualität der Ablage** (Abschnitt im Reiter, `quality` in `pdf-store-stats`, `storeQuality` in `store-lib.mjs`): Ø Score der
+als PDF abgelegten Dateien, getrennt nach Hauptdokumenten und übrigen, je Dokumentart und Scorestufe, dazu der Ø Score der
+Dateien, die nur als Text bleiben. Erscheint nach dem nächsten Zählen.
 
 **Wie lange der Aufbau dauert** (hochgerechnet aus dem lokalen Aufbau, 11.10.2026): Alle Hauptdokumente sind 65 bis 80 GB,
 etwa 300.000 bis 360.000 PDFs; lokal kamen 30 bis 60 PDFs je Sekunde, also einige Nächte Laden. Textebene lokal 87.600

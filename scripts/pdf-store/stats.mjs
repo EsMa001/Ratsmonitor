@@ -12,7 +12,6 @@ import {gzipSync} from 'node:zlib';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {primaryPdf} from '../../shared/document-type.mjs';
-import {MAX_BYTES_PAPER} from '../../shared/pdf-rank.mjs';
 import {textBytes,errorReason,rankedFiles,rankedTextOnly,storeQuality,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
 import {databaseFile} from './state.mjs';
 import {STATS_KEY,ERRORS_KEY} from '../../server/integrations/pdf-store-admin.mjs';
@@ -82,11 +81,9 @@ const completeThrough=rows=>{let last=null;for(const r of rows){if(r.month==='oh
 const files=rankedFiles(store),limit=budgetGb*1073741824,text=textBytes(store);
 let pdfPrimary=0,pdfOthers=0;for(const f of files){if(f.other)pdfOthers+=f.bytes;else pdfPrimary+=f.bytes;}
 const used=pdfPrimary+pdfOthers+text,kept=files.filter(f=>f.keep),worst=kept.at(-1);
-// Ablage voll (über 98 %): die schlechteste behaltene Datei bestimmt, was noch hineinkommt. Als Größe ausgedrückt: bis zu
-// welcher Größe eine Vorlage aus diesem Jahr (Wert 1) bzw. eine Anlage (0,4) noch als PDF bliebe.
-const threshold=used<limit*0.98||!worst?null:worst.other
- ?{others:true}
- :{others:false,paperMb:Math.round(Math.min(1/worst.score,MAX_BYTES_PAPER)/104857.6)/10,attachmentMb:Math.round(0.4/worst.score/104857.6)/10};
+// Ablage voll (über 98 %): der Score der schlechtesten behaltenen Datei bestimmt, was noch hineinkommt (neue Dateien darunter
+// bleiben nur als Text); ist es ein übriges PDF, verdrängt jedes neue Hauptdokument zuerst übrige PDFs.
+const threshold=used<limit*0.98||!worst?null:worst.other?{others:true}:{others:false,score:Math.round(worst.score*1000)/1000};
 const PRIMARY_SQL="EXISTS(SELECT 1 FROM pdfs p WHERE p.sha256=t.sha256 AND COALESCE(p.role,'')<>'other')";
 const tx=store.db.prepare(`SELECT COUNT(*) AS files,SUM(ocr_needed>0 AND ${PRIMARY_SQL}) AS waiting,SUM(CASE WHEN ocr_needed>0 AND ${PRIMARY_SQL} THEN ocr_needed ELSE 0 END) AS pages FROM texts t WHERE status='ok'`).get();
 const missing=store.db.prepare("SELECT COUNT(DISTINCT p.sha256) AS n FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok' AND t.sha256 IS NULL").get();

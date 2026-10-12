@@ -1,5 +1,5 @@
 // Gemeinsame Bausteine der PDF-Ablage (server/node/pdf-store.mjs) für text.mjs, budget.mjs und fetch.mjs:
-// Textebene und OCR einer Datei, Rang je Datei (shared/pdf-rank.mjs) und die feste Grenze mit Tausch (keeper).
+// Textebene und OCR einer Datei, Score je Datei (shared/pdf-rank.mjs) und die feste Grenze mit Tausch (keeper).
 import fs from 'node:fs';
 import os from 'node:os';
 import {getDocumentProxy,renderPageAsImage} from 'unpdf';
@@ -61,36 +61,36 @@ export async function ocrFile(store,sha,ocr){
 // (role 'other', fetch.mjs --others), dann gilt nur die Textebene, kein OCR.
 const FILES=`SELECT p.sha256 AS sha,MAX(p.bytes) AS bytes,GROUP_CONCAT(COALESCE(p.doc_type,'other')) AS types,MAX(COALESCE(p.formal,0)) AS formal,MIN(p.formal) AS minFormal,
  MIN(COALESCE(p.role,'')='other') AS other,
- MIN(p.event_date) AS eventDate,t.pages,t.ocr_pages AS ocrPages,t.ocr_needed AS ocrNeeded,t.chars
+ MIN(p.event_date) AS eventDate,t.pages,t.ocr_pages AS ocrPages,t.ocr_needed AS ocrNeeded,t.chars,t.status AS textStatus
  FROM pdfs p LEFT JOIN texts t ON t.sha256=p.sha256 WHERE p.status='ok'`;
 const ranked=f=>{
  const type=f.types.split(',').sort((a,b)=>(TYPE_VALUE[b]??0)-(TYPE_VALUE[a]??0))[0];
  const scan=f.pages>0&&((f.ocrPages||0)+(f.ocrNeeded||0))>=f.pages/2;
- const r=rankPdf({type,formal:f.minFormal===1,scan,eventDate:f.eventDate,bytes:f.bytes});
- /* Feste Regel: übrige PDFs stehen immer unter allen Hauptdokumenten (Wert je Byte liegt weit unter 1, also negativ):
-    ein neues Hauptdokument verdrängt zuerst übrige PDFs, ein übriges nie ein Hauptdokument */
- return {...f,type,scan,...r,score:f.other?r.score-1:r.score};
+ const r=rankPdf({type,formal:f.minFormal===1,chars:f.textStatus==='ok'?f.chars:null,ocrNeeded:f.ocrNeeded,bytes:f.bytes});
+ /* Feste Regel: übrige PDFs stehen immer unter allen Hauptdokumenten. order ist die Reihenfolge der Grenze (Score 0 bis 1,
+    bei übrigen PDFs minus 1); score bleibt der Score der Datei selbst (Anzeige). Ein neues Hauptdokument verdrängt zuerst
+    übrige PDFs, ein übriges nie ein Hauptdokument */
+ return {...f,type,scan,...r,order:f.other?r.score-1:r.score};
 };
-/** Alle geladenen Dateien mit Rang, beste zuerst */
-export const rankedFiles=store=>store.db.prepare(FILES+' GROUP BY p.sha256').all().map(ranked).sort((a,b)=>b.score-a.score);
+/** Alle geladenen Dateien mit Score, beste zuerst (übrige PDFs nach allen Hauptdokumenten) */
+export const rankedFiles=store=>store.db.prepare(FILES+' GROUP BY p.sha256').all().map(ranked).sort((a,b)=>b.order-a.order);
 /** Eine Datei mit Rang (oder null, wenn sie nicht geladen ist) */
-/** Dateien, die nur noch als Text vorliegen (aus der Grenze verdrängt), mit dem Rang, den sie als PDF hätten */
+/** Dateien, die nur noch als Text vorliegen (aus der Grenze verdrängt), mit dem Score, den sie als PDF hätten */
 export const rankedTextOnly=store=>store.db.prepare(FILES.replace("p.status='ok'","p.status='text-only'")+' GROUP BY p.sha256').all().map(ranked);
 const QUALITY_TYPES=['paper','decision','minutes','attachment','other','invitation'];
-const QUALITY_BANDS=[[1,Infinity],[0.5,1],[0.2,0.5],[0,0.2]];
+const QUALITY_BANDS=[[0.75,Infinity],[0.5,0.75],[0.25,0.5],[0,0.25]];
 /**
- * Qualität der Ablage (Admin-Reiter „PDF-Import“): Wert je Datei wie im Rang (shared/pdf-rank.mjs: Dokumentart × Formalie ×
- * Scan × Alter; Vorlage aus diesem Jahr = 1), als Mittel je Datei und nach Größe gewichtet (Mittel je Byte der Ablage), je
+ * Qualität der Ablage (Admin-Reiter „PDF-Import“): Mittel des Scores je Datei (shared/pdf-rank.mjs, 0 bis 1), je
  * Dokumentart und in Stufen; dazu das Mittel der Dateien, die nur als Text bleiben (zum Vergleich: was verdrängt wurde).
  */
 export function storeQuality(files,textOnly=[]){
- const avg=(list,w=()=>1)=>{let s=0,t=0;for(const f of list){const x=w(f);s+=f.value*x;t+=x;}return t?Math.round(s/t*100)/100:null;};
- const part=list=>({files:list.length,bytes:list.reduce((a,f)=>a+f.bytes,0),avg:avg(list),byBytes:avg(list,f=>f.bytes)});
+ const avg=list=>list.length?Math.round(list.reduce((a,f)=>a+f.score,0)/list.length*1000)/1000:null;
+ const part=list=>({files:list.length,bytes:list.reduce((a,f)=>a+f.bytes,0),avg:avg(list)});
  return {...part(files),
   primary:part(files.filter(f=>!f.other)),others:part(files.filter(f=>f.other)),
   formal:files.filter(f=>f.minFormal===1).length,scans:files.filter(f=>f.scan).length,
   types:QUALITY_TYPES.map(type=>({type,...part(files.filter(f=>f.type===type))})).filter(t=>t.files),
-  bands:QUALITY_BANDS.map(([lo,hi])=>({lo,hi:hi===Infinity?null:hi,...part(files.filter(f=>f.value>=lo&&f.value<hi))})),
+  bands:QUALITY_BANDS.map(([lo,hi])=>({lo,hi:hi===Infinity?null:hi,...part(files.filter(f=>f.score>=lo&&f.score<hi))})),
   textOnly:{files:textOnly.length,avg:avg(textOnly)}};
 }
 export const rankedFile=(store,sha)=>{const f=store.db.prepare(FILES+' AND p.sha256=? GROUP BY p.sha256').get(sha);return f?ranked(f):null;};
@@ -101,14 +101,14 @@ export const usedBytes=store=>store.size()+textBytes(store);
 
 /**
  * Feste Grenze mit Tausch (fetch.mjs --budget-gb): Solange Platz ist, bleibt jede neue Datei. Ist die Grenze erreicht, wird
- * die neue Datei sofort bewertet (Textebene gelesen, damit Scan bekannt ist) und mit der schlechtesten behaltenen verglichen:
+ * die neue Datei sofort bewertet (Textebene gelesen: Textmenge und Seiten, die auf OCR warten, gehen in den Score ein) und mit der schlechtesten behaltenen verglichen:
  * besser → die schlechteste fliegt raus, sonst die neue. Zu große Dateien (rankPdf keep:false) behalten nur den Text.
  * Vor dem Löschen ist der Text immer vollständig: fehlende Textebene wird gelesen, Seiten ohne Text per OCR (sofort, auch bei
  * vielen Seiten; nicht bei übrigen PDFs, die behalten nur die Textebene). Fehlen die OCR-Werkzeuge, bleibt ein Scan als PDF liegen (lieber kurz über der Grenze als Text verlieren).
  * Entscheidungen laufen nacheinander; überschritten wird die Grenze nur um gerade geladene, noch nicht entschiedene Dateien.
  */
 export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
- const all=rankedFiles(store),kept=all.filter(f=>f.keep).sort((a,b)=>a.score-b.score),have=new Set(kept.map(f=>f.sha));
+ const all=rankedFiles(store),kept=all.filter(f=>f.keep).sort((a,b)=>a.order-b.order),have=new Set(kept.map(f=>f.sha));
  const c={kept:0,swapped:0,rejected:0,tooBig:0,tooBigLater:0,ocrPages:0,stuck:0};
  let ocr,lock=Promise.resolve();
  /* Belegter Platz: einmal gezählt, dann fortgeschrieben (die volle Zählung liest alle Einträge der Ablage und wäre je Datei
@@ -132,7 +132,8 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   }finally{used+=textOf(f.sha)-before;}
  };
  const drop=async f=>{if(!await complete(f)){c.stuck++;log(`OCR nicht möglich, PDF bleibt: ${f.sha.slice(0,12)}`);return false;}store.dropPdf(f.sha);used-=f.bytes;return true;};
- const insert=f=>{let lo=0,hi=kept.length;while(lo<hi){const m=(lo+hi)>>1;if(kept[m].score<f.score)lo=m+1;else hi=m;}kept.splice(lo,0,f);have.add(f.sha);};
+ /* Gleicher Score: die neue Datei hinter die schon behaltenen (bei Gleichstand fliegt die älteste Entscheidung zuerst) */
+ const insert=f=>{let lo=0,hi=kept.length;while(lo<hi){const m=(lo+hi)>>1;if(kept[m].order<=f.order)lo=m+1;else hi=m;}kept.splice(lo,0,f);have.add(f.sha);};
  const decide=async(sha,before)=>{
   if(have.has(sha))return 'schon da';
   const f=rankedFile(store,sha);if(!f)return 'fehlt';
@@ -143,7 +144,7 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   if(!f.keep){if(f.ocrNeeded>0&&!f.other){c.tooBigLater++;return 'zu groß, OCR folgt';}await drop(f);c.tooBig++;return 'zu groß';}
   while(used>limit){
    const worst=kept[0];
-   if(!worst||worst.score>=f.score){await drop(f);c.rejected++;return 'nicht besser';}
+   if(!worst||worst.order>=f.order){await drop(f);c.rejected++;return 'nicht besser';}
    kept.shift();have.delete(worst.sha);
    if(!await drop(worst)){insert(worst);await drop(f);c.rejected++;return 'nicht besser';}
    c.swapped++;
@@ -151,7 +152,7 @@ export function keeper(store,limit,{ocrWorkers=2,log=()=>{}}={}){
   insert(f);c.kept++;return 'behalten';
  };
  return {
-  /** Neue Datei einordnen: Textebene sofort und parallel (sie zeigt, ob es ein Scan ist, und der Text bleibt in jedem Fall),
+  /** Neue Datei einordnen: Textebene sofort und parallel (Textmenge für den Score, und der Text bleibt in jedem Fall),
       die Entscheidung danach nacheinander in Aufrufreihenfolge */
   admit:async sha=>{
    if(have.has(sha))return 'schon da';

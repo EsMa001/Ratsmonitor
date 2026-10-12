@@ -67,7 +67,7 @@ Die Kette nach dem Laden, je Stufe ein Wert:
 - Ein Balken über 100 GB: PDFs der Hauptdokumente, PDFs der übrigen PDFs, Texte, frei.
 - **Tausch im letzten Lauf:** behalten, verdrängt, nicht besser, zu groß (nur Text), Seiten vor dem Löschen per OCR
   (aus `keeper.stats()`).
-- **Schwelle:** Wert je Byte der schlechtesten noch behaltenen Datei, als Satz erklärt („neue Dateien unter diesem Wert
+- **Schwelle:** Score der schlechtesten noch behaltenen Datei, als Satz erklärt („neue Dateien darunter
   bleiben nur als Text“). Hinweis auf die feste Regel: übrige PDFs stehen immer unter Hauptdokumenten.
 - **Festplatte des Servers:** frei in GB (Datenbank, Sicherungen und Ablage teilen sich die Platte). Warnung unter 20 GB.
 

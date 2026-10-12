@@ -557,7 +557,7 @@ topic design-styles.css:140
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
-- admin-pdf-parts.tsx (165, ⚠4): n, pct, gb, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, QualityTable, qualityValue
+- admin-pdf-parts.tsx (165, ⚠4): n, pct, gb, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
 - admin-pdf.tsx (224, ⚠16): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (243, ⚠25): AdminProcessing
@@ -729,6 +729,7 @@ topic design-styles.css:140
 - RadarThumbs.tsx (167): RADAR_THUMBS
 - RegionMap.tsx (65): RegionMap
 - Reveal.tsx (16): Reveal
+- ScoreView.tsx (133, ⚠4): ScoreView
 - ThemeRadarPage.tsx (214, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (209, ⚠6): TrendsPage

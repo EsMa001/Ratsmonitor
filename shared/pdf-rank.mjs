@@ -1,34 +1,37 @@
 /**
- * Rang eines Original-PDFs für die PDF-Ablage mit festem Budget (scripts/pdf-store/budget.mjs): Texte werden immer
- * gespeichert, PDFs nach Wert je Byte, bis das Budget voll ist (gieriges Rucksackverfahren: so viel Wert wie möglich
- * je Gigabyte). Was nicht hineinpasst, behält nur seinen Text; das Original bleibt über den Link bei der Quelle.
+ * Score eines Original-PDFs für die PDF-Ablage mit fester Grenze (keeper in scripts/pdf-store/store-lib.mjs, budget.mjs):
+ * Texte werden immer gespeichert; als PDF bleiben die Dateien mit dem höchsten Score, bis die Grenze voll ist. Was nicht
+ * hineinpasst, behält nur seinen Text; das Original bleibt über den Link bei der Quelle. Entscheidung 12.10.2026.
  *
- * Wert = Dokumentart × Formalie × Scan × Alter. Begründung:
- * - Vorlagen und Beschlusstexte tragen den Inhalt, Niederschriften die Ergebnisse, Anlagen sind oft Pläne und
- *   Gutachten Dritter (groß, rechtlich heikler), Einladungen wiederholen nur die Tagesordnung.
- * - Formalpunkte zählen weniger, außer ihr Dokument ist eine Niederschrift (die Ergebnisse der letzten Sitzung).
- * - Bei Scans ist der Text per OCR gelesen und kann Fehler haben: das Original wiegt mehr.
- * - Ältere Dokumente wiegen etwas mehr: Ratsinfosysteme löschen nach einigen Jahren, dann ist die Kopie die einzige.
+ * Score (0 bis 1, im Reiter als Prozent) = Dokumentart × Formalie × Inhalt × Größe:
+ * - Dokumentart: Vorlagen und Beschlusstexte tragen den Inhalt (1), Niederschriften die Ergebnisse (0,7), Anlagen und
+ *   Sonstiges sind oft Pläne und Gutachten Dritter (0,4), Einladungen wiederholen nur die Tagesordnung (0,1).
+ * - Formalie: halber Wert, außer bei Niederschriften (die Ergebnisse der letzten Sitzung).
+ * - Inhalt: voll ab FULL_CHARS Zeichen Text, darunter mit der Wurzel fallend (Deckblätter, Auszüge, Hinweise wiegen wenig).
+ *   Seiten, die noch auf OCR warten, zählen vorläufig mit OCR_PAGE_CHARS Zeichen (Mittel der per OCR gelesenen Vorlagen);
+ *   nach der OCR gilt die echte Zahl, der Score wird bei jedem Lauf aus dem aktuellen Text gerechnet. Ohne lesbaren Text
+ *   (Textebene fehlgeschlagen) zählt der Inhalt halb.
+ * - Größe: voll bis FULL_BYTES, darüber mit der Kubikwurzel fallend; über der harten Grenze (MAX_BYTES, Vorlagen und
+ *   Beschlüsse MAX_BYTES_PAPER) Score 0: die Datei bleibt nur als Text.
+ * Scan oder Textebene und Alter zählen nicht.
  */
-export const RANK_VERSION=1;
+export const RANK_VERSION=2;
 export const TYPE_VALUE=Object.freeze({paper:1,decision:1,minutes:0.7,attachment:0.4,other:0.4,invitation:0.1});
 /** Größte Datei, die als PDF gespeichert wird; Vorlagen und Beschlüsse dürfen größer sein. */
 export const MAX_BYTES=10*1048576,MAX_BYTES_PAPER=30*1048576;
-// Sehr kleine Dateien zählen wie 50 KB, sonst entschiede bei ihnen allein die Größe.
-const MIN_BYTES=50*1024;
+export const FULL_CHARS=4000,FULL_BYTES=100*1024,OCR_PAGE_CHARS=800;
 
 /**
- * @param {{type?:string,formal?:boolean|number,scan?:boolean,eventDate?:string|null,bytes:number}} d
- * @param {Date} [now]
- * @returns {{value:number,score:number,keep:boolean}} keep:false heißt: zu groß, nur Text
+ * @param {{type?:string,formal?:boolean|number,chars?:number|null,ocrNeeded?:number|null,bytes:number}} d
+ * @returns {{score:number,keep:boolean,content:number,size:number}} keep:false heißt: zu groß, nur Text
  */
-export function rankPdf(d,now=new Date()){
+export function rankPdf(d){
  const type=TYPE_VALUE[d.type]!=null?d.type:'other';
  let value=TYPE_VALUE[type];
  if(d.formal&&type!=='minutes')value*=0.5;
- if(d.scan)value*=1.5;
- const years=d.eventDate?(now-Date.parse(d.eventDate))/(365.25*864e5):0;
- if(years>0)value*=1+Math.min(years,5)*0.1;
+ const chars=d.chars==null?null:d.chars+(d.ocrNeeded||0)*OCR_PAGE_CHARS;
+ const content=chars==null?0.5:Math.min(1,Math.sqrt(chars/FULL_CHARS));
+ const size=d.bytes<=FULL_BYTES?1:Math.cbrt(FULL_BYTES/d.bytes);
  const keep=d.bytes<=((type==='paper'||type==='decision')?MAX_BYTES_PAPER:MAX_BYTES);
- return {value,score:keep?value/Math.max(d.bytes,MIN_BYTES):0,keep};
+ return {score:keep?value*content*size:0,keep,content,size};
 }

@@ -143,22 +143,22 @@ export function RunList({runs}:{runs:Run[]}){
 }
 
 /** Qualität der Ablage (stats.mjs, storeQuality in scripts/pdf-store/store-lib.mjs) */
-type QPart={files:number;bytes:number;avg:number|null;byBytes:number|null};
+type QPart={files:number;bytes:number;avg:number|null};
 export type Quality=QPart&{primary:QPart;others:QPart;formal:number;scans:number;types:(QPart&{type:string})[];bands:(QPart&{lo:number;hi:number|null})[];textOnly:{files:number;avg:number|null}};
 const TYPE_NAME:Record<string,string>={paper:'Vorlagen',decision:'Beschlüsse',minutes:'Niederschriften',attachment:'Anlagen',other:'Sonstige',invitation:'Einladungen'};
-const val=(v?:number|null)=>v==null?'–':v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
-const band=(b:{lo:number;hi:number|null})=>b.hi==null?`Wert ab ${val(b.lo)}`:b.lo===0?`unter ${val(b.hi)}`:`${val(b.lo)} bis unter ${val(b.hi)}`;
+/** Score 0–1 als Prozent */
+export const scorePct=(v?:number|null)=>v==null?'–':`${Math.round(v*100)} %`;
+const band=(b:{lo:number;hi:number|null})=>b.hi==null?`Score ab ${scorePct(b.lo)}`:b.lo===0?`Score unter ${scorePct(b.hi)}`:`Score ${Math.round(b.lo*100)} bis unter ${scorePct(b.hi)}`;
 export function QualityTable({q}:{q:Quality}){
  const rows:[string,QPart][]=[...q.types.map(t=>[TYPE_NAME[t.type]??t.type,t] as [string,QPart]),...q.bands.map(b=>[band(b),b] as [string,QPart])];
  return <div className="mt-5 max-w-[820px]">
-  <div className="hidden grid-cols-[minmax(0,1.4fr)_90px_90px_80px_minmax(0,1fr)] gap-x-3 border-b border-slate-200 pb-2 text-[12px] text-slate-500 md:grid"><span>Dokumentart, Wertstufe</span><span className="text-right">Dateien</span><span className="text-right">Platz</span><span className="text-right">Ø Wert</span><span>Anteil am Platz</span></div>
+  <div className="hidden grid-cols-[minmax(0,1.4fr)_90px_90px_80px_minmax(0,1fr)] gap-x-3 border-b border-slate-200 pb-2 text-[12px] text-slate-500 md:grid"><span>Dokumentart, Scorestufe</span><span className="text-right">Dateien</span><span className="text-right">Platz</span><span className="text-right">Ø Score</span><span>Anteil am Platz</span></div>
   <ul className="m-0 list-none p-0">{rows.map(([label,r],i)=><li key={label} className={'grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 border-b border-slate-200 py-2 text-[14px] md:grid-cols-[minmax(0,1.4fr)_90px_90px_80px_minmax(0,1fr)] md:items-center'+(i===q.types.length?' mt-4 border-t':'')}>
    <span className="truncate">{label}</span>
-   <span className="text-right tabular-nums text-slate-500 md:text-slate-900">{n(r.files)}<span className="md:hidden"> · {gb(r.bytes)} · Ø {val(r.avg)}</span></span>
+   <span className="text-right tabular-nums text-slate-500 md:text-slate-900">{n(r.files)}<span className="md:hidden"> · {gb(r.bytes)} · Ø {scorePct(r.avg)}</span></span>
    <span className="hidden text-right tabular-nums md:block">{gb(r.bytes)}</span>
-   <span className="hidden text-right font-semibold tabular-nums md:block">{val(r.avg)}</span>
+   <span className="hidden text-right font-semibold tabular-nums md:block">{scorePct(r.avg)}</span>
    <span className="col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 md:col-span-1"><span className="block h-full rounded-full bg-teal-600" style={{width:`${q.bytes?Math.max(1,r.bytes/q.bytes*100):0}%`}}/></span>
   </li>)}</ul>
  </div>;
 }
-export const qualityValue=val;

@@ -1,5 +1,5 @@
-// PDF-Ablage mit festem Budget (server/node/pdf-store.mjs, Rang: shared/pdf-rank.mjs): Texte bleiben immer, PDFs nach
-// Wert je Byte, bis das Budget voll ist. Ohne --apply wird nur gerechnet.
+// PDF-Ablage mit festem Budget (server/node/pdf-store.mjs, Score: shared/pdf-rank.mjs): Texte bleiben immer, PDFs nach
+// Score, bis das Budget voll ist. Ohne --apply wird nur gerechnet.
 //
 //   node scripts/pdf-store/budget.mjs --backfill           Dokumentart, Formalie, Sitzungstag aus der Datenbank nachtragen
 //   node scripts/pdf-store/budget.mjs [--budget-gb 100]    was passt hinein, was behält nur den Text

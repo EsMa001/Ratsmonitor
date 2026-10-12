@@ -67,20 +67,23 @@ test('a stored text version gives readDocument the same text as the PDF, without
  try{await assert.rejects(readDocument(url),/zu umfangreich/);}finally{useDocumentStore(null);t.close();}
 });
 
-test('rankPdf: value per byte by type, formal, scan and age; too large files keep only their text',async()=>{
- const {rankPdf,MAX_BYTES}=await import('../shared/pdf-rank.mjs');
- const now=new Date('2026-10-11'),mb=1048576,r=d=>rankPdf({bytes:mb,eventDate:'2026-10-11',...d},now);
- assert.ok(r({type:'paper'}).score>r({type:'minutes'}).score);
- assert.ok(r({type:'minutes'}).score>r({type:'attachment'}).score);
- assert.ok(r({type:'attachment'}).score>r({type:'invitation'}).score);
- assert.equal(r({type:'paper',formal:1}).value,0.5);
- assert.equal(r({type:'minutes',formal:1}).value,r({type:'minutes'}).value);
- assert.equal(r({type:'paper',scan:true}).value,1.5);
- assert.ok(r({type:'paper',eventDate:'2020-01-01'}).value>r({type:'paper'}).value);
- assert.equal(r({type:'paper',bytes:2*mb}).score,r({type:'paper'}).score/2);
+test('rankPdf: one score 0..1 from type, formal, text amount and size; too large files keep only their text',async()=>{
+ const {rankPdf,MAX_BYTES,FULL_CHARS,FULL_BYTES,OCR_PAGE_CHARS}=await import('../shared/pdf-rank.mjs');
+ const kb=1024,r=d=>rankPdf({type:'paper',chars:FULL_CHARS,bytes:50*kb,...d});
+ assert.equal(r({}).score,1,'Vorlage mit viel Text in kleiner Datei: 100 %');
+ assert.ok(r({type:'minutes'}).score>r({type:'attachment'}).score&&r({type:'attachment'}).score>r({type:'invitation'}).score);
+ assert.equal(r({formal:1}).score,0.5);
+ assert.equal(r({type:'minutes',formal:1}).score,0.7);
+ assert.equal(r({chars:FULL_CHARS/4}).score,0.5,'Inhalt mit der Wurzel');
+ assert.equal(r({chars:0,ocrNeeded:5}).score,Math.min(1,Math.sqrt(5*OCR_PAGE_CHARS/FULL_CHARS)),'Seiten, die auf OCR warten, vorläufig geschätzt');
+ assert.equal(r({chars:null}).score,0.5,'ohne lesbaren Text halb');
+ assert.equal(r({bytes:FULL_BYTES}).score,1);
+ assert.ok(Math.abs(r({bytes:8*FULL_BYTES}).score-0.5)<1e-9,'Größe mit der Kubikwurzel');
+ for(const d of [{},{chars:10},{bytes:MAX_BYTES},{type:'invitation'}])assert.ok(r(d).score>=0&&r(d).score<=1);
  assert.equal(r({type:'attachment',bytes:MAX_BYTES+1}).keep,false);
- assert.equal(r({type:'paper',bytes:MAX_BYTES+1}).keep,true);
- assert.equal(r({type:'nonsense'}).value,r({type:'other'}).value);
+ assert.equal(r({type:'attachment',bytes:MAX_BYTES+1}).score,0);
+ assert.equal(r({bytes:MAX_BYTES+1}).keep,true);
+ assert.equal(r({type:'nonsense'}).score,r({type:'other'}).score);
 });
 
 test('the AI batch reads the stored text version and does not go to the network',async()=>{
