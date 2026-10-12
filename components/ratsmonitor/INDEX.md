@@ -5,7 +5,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/admin.css (226 Zeilen, ⚠6)
+- app/admin.css (419 Zeilen, ⚠11)
 - app/analyse-admin.css (95 Zeilen, ⚠9)
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
@@ -149,6 +149,72 @@ admin-timeline-charts analyse-admin.css:78
 admin-timeline-controls analyse-admin.css:78
 admin-timeline-table admin.css:29
 admin-timeline-table analyse-admin.css:78
+admin-todo admin.css:228
+admin-todo-avatar admin.css:308
+admin-todo-backlog-rows admin.css:325
+admin-todo-board admin.css:388
+admin-todo-card admin.css:283
+admin-todo-card-actions admin.css:311
+admin-todo-card-owner admin.css:303
+admin-todo-card-top admin.css:287
+admin-todo-category admin.css:317
+admin-todo-category-empty admin.css:334
+admin-todo-category-head admin.css:318
+admin-todo-cell admin.css:280
+admin-todo-cell-empty admin.css:282
+admin-todo-choice admin.css:254
+admin-todo-column-heading admin.css:273
+admin-todo-columns admin.css:271
+admin-todo-conflicts admin.css:340
+admin-todo-dialog admin.css:347
+admin-todo-dialog-actions admin.css:359
+admin-todo-dialog-description admin.css:350
+admin-todo-dialog-head admin.css:348
+admin-todo-empty admin.css:315
+admin-todo-error admin.css:336
+admin-todo-error-actions admin.css:339
+admin-todo-field admin.css:352
+admin-todo-field--wide admin.css:354
+admin-todo-filters admin.css:250
+admin-todo-form admin.css:351
+admin-todo-head admin.css:235
+admin-todo-head-actions admin.css:240
+admin-todo-icon admin.css:242
+admin-todo-lane admin.css:276
+admin-todo-lane-columns admin.css:271
+admin-todo-lane-heading admin.css:277
+admin-todo-loading admin.css:345
+admin-todo-menu admin.css:258
+admin-todo-meta admin.css:292
+admin-todo-mobile-status admin.css:361
+admin-todo-order admin.css:313
+admin-todo-overdue admin.css:299
+admin-todo-overlay admin.css:346
+admin-todo-owner admin.css:304
+admin-todo-person admin.css:306
+admin-todo-plan admin.css:333
+admin-todo-primary admin.css:245
+admin-todo-priority admin.css:294
+admin-todo-priority-choice admin.css:296
+admin-todo-resolution admin.css:298
+admin-todo-row admin.css:327
+admin-todo-row-description admin.css:330
+admin-todo-row-main admin.css:328
+admin-todo-row-owner admin.css:331
+admin-todo-row-status admin.css:331
+admin-todo-save-state admin.css:241
+admin-todo-search admin.css:251
+admin-todo-spin admin.css:362
+admin-todo-status-choice admin.css:312
+admin-todo-summary admin.css:229
+admin-todo-swimlane admin.css:269
+admin-todo-tabs admin.css:236
+admin-todo-task-title admin.css:290
+admin-todo-text-action admin.css:247
+admin-todo-view-tools admin.css:268
+admin-todo-wait-filter admin.css:266
+admin-todo-waiting admin.css:300
+admin-todo-wip admin.css:279
 admin-zoom admin.css:70
 analysis-controls analyse-admin.css:30
 analysis-field analyse-admin.css:30
@@ -202,15 +268,23 @@ icon design-styles.css:22
 is-assumed admin.css:197
 is-assumed analyse-admin.css:80
 is-clean admin.css:121
+is-collapsed admin.css:322
 is-counted admin.css:197
 is-counted analyse-admin.css:83
 is-data admin.css:41
+is-done admin.css:335
+is-dragging admin.css:285
+is-drop-before admin.css:286
+is-drop-target admin.css:281
 is-failed analyse-admin.css:85
 is-found admin.css:120
 is-group admin.css:62
+is-high admin.css:295
 is-line analyse-admin.css:83
+is-max admin.css:309
 is-model admin.css:197
 is-model analyse-admin.css:81
+is-nico admin.css:310
 is-open analyse-admin.css:87
 is-sample admin.css:206
 is-sample analyse-admin.css:81
@@ -550,15 +624,15 @@ topic design-styles.css:140
 - admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠15): AdminDashboardView
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
 - admin-keywords.tsx (103, ⚠10): AdminKeywords
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
-- admin-pdf-parts.tsx (167, ⚠4): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
-- admin-pdf.tsx (250, ⚠18): AdminPdf
+- admin-pdf-parts.tsx (168, ⚠6): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
+- admin-pdf.tsx (272, ⚠19): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (243, ⚠25): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
@@ -631,7 +705,8 @@ topic design-styles.css:140
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
 - StartseitePage.tsx (529, ⚠5): StartseitePage
-- TodoPage.tsx (331, ⚠1): TodoPage
+- TodoControls.tsx (123, ⚠8): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
+- TodoPage.tsx (266, ⚠21): TodoPage
 - VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
@@ -639,6 +714,7 @@ topic design-styles.css:140
 - branchen-enterprise.ts (108): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
+- useTodoBoard.ts (205, ⚠2): TodoPatch, TodoCreate, useTodoBoard
 
 ### components/ratsmonitor/lib/
 - betreiber.ts (20): BETREIBER, betreiberAdresse
@@ -675,7 +751,7 @@ topic design-styles.css:140
 - testAuth.ts (149): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (99): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
-- todos.ts (49): TodoItem, TodoCategory, TodoData, TodoKind, TodoState, localToday, fmtShort, todoState
+- todos.ts (112): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
 - topicCache.ts (26): TopicError, loadTopic, prefetchDetail
 - useDarkMode.ts (40): useDarkMode
 - usePhone.ts (16): usePhone
@@ -707,7 +783,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (222, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (308, ⚠11): ComparePage
+- ComparePage.tsx (308, ⚠12): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (275, ⚠6): DiffusionPage
@@ -716,14 +792,14 @@ topic design-styles.css:140
 - FraktionenPage.tsx (175, ⚠5): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (201, ⚠3): GremiennetzPage
-- KitaRadarPage.tsx (190, ⚠7): KitaRadarPage
+- KitaRadarPage.tsx (190, ⚠8): KitaRadarPage
 - KnowledgeGraphPage.tsx (229, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (135, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (56): DrillItem, RadarDrill
-- RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
+- RadarExtra.tsx (153, ⚠8): Extra, RadarExtra
 - RadarMap.tsx (78, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS

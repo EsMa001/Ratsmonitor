@@ -7,7 +7,7 @@ export type Help={title:string;sub?:string;how?:string[];howLabel?:string;todo?:
 
 // ---- 6.1 Seitenköpfe und Fußzeilen --------------------------------------------------------------------------------
 export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
- todo:{title:'To-do-Liste',intro:'Alles, was vor dem Start noch zu tun ist. Abhaken, Termin eintragen, speichern; erledigte Einträge bleiben in der Liste.'},
+ todo:{title:'To-do-Liste',intro:'Aktuelle Aufgaben und nächste Vorhaben für Plenara.'},
  uebersicht:{title:'Übersicht',intro:'Zeigt, wie viele Gebiete und Einwohner Plenara erreicht: wo eine lesbare Quelle bekannt ist, wo schon Berichte gespeichert sind, wie weit sie zurückreichen und wie aktuell sie sind.'},
  abruf:{title:'Abruf & Verarbeitung',intro:'Zeigt je Gebiet, was gespeichert und aufbereitet ist, und startet die drei Stufen: Berichte abrufen, nach festen Regeln einordnen, mit KI aufbereiten. Jede Stufe startet nur auf Klick.'},
  atlas:{title:'Lückenatlas',intro:'Zeigt für alle Gebiete Deutschlands, ob Plenara ihre Ratsinformationen lesen kann, und wenn nicht, warum – mit dem nächsten Schritt, der die Lücke schließen könnte.'},
@@ -21,7 +21,7 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  stichwoerter:{title:'Stichwörter',intro:'Zeigt, an welchen Wörtern die festen Regeln Sachgebiete erkennen und welche Begriffe in den Titeln stehen. Die Seite zählt nur, was schon gespeichert ist.'},
 };
 export const FOOT:Record<AdminPage,string>={
- todo:'Einträge aus docs/todo/todos.json. Lokal speichert die Seite in die Datei, auf dem Server in die Datenbank; node scripts/pull-todos.mjs holt die Server-Stände in die Datei.',
+ todo:'Interne Projektplanung · Plenara',
  uebersicht:'Zahlen aus Quellenkatalog und Datenbank. Doppelt gelieferte Berichte, die zu einem Vorgang zusammengeführt wurden, zählen einmal.',
  abruf:'Doppelt gelieferte Berichte zählen einmal. Seitenaufrufe starten keinen Abruf.',
  atlas:'Anbindung und Gründe aus Quellenkatalog und Quellensuche, Berichte und Abrufe aus der Datenbank. Karten: © BKG (2026), dl-de/by-2-0.',

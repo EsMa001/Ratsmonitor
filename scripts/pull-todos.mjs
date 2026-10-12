@@ -1,45 +1,51 @@
 /**
- * Holt Abhaken und Termine der To-do-Liste vom Server in docs/todo/todos.json (Quelle der Liste, siehe
- * server/integrations/todos-store.mjs). Übernommen wird nur, was auf dem Server geändert wurde, und nur, wenn der
- * Eintrag in der Datei noch auf dem Stand ist, an dem die Änderung gemacht wurde; sonst gilt die Datei (Meldung).
+ * Pulls server task edits and board-created tasks into docs/todo/todos.json.
+ * Existing categories and IDs are retained; actual server overrides take precedence.
  *
- *   ssh -N -L 8080:127.0.0.1:8080 ratsmonitor      # Tunnel, in einem zweiten Terminal
- *   node scripts/pull-todos.mjs                     # Server über http://localhost:8080
- *   node scripts/pull-todos.mjs --url http://localhost:8080 --probe   # nur anzeigen, nichts schreiben
- *
- * Danach committen und ausrollen; auf dem Server gilt dann wieder die Datei, die alten Einträge räumt das nächste Speichern ab.
+ *   ssh -N -L 8080:127.0.0.1:8080 ratsmonitor
+ *   node scripts/pull-todos.mjs --url http://localhost:8080 --probe
+ *   node scripts/pull-todos.mjs
  */
 import {readFile,writeFile,rename} from 'node:fs/promises';
-import {mergeTodos} from '../server/integrations/todos-store.mjs';
+import {mergeTodos,normalizeTodos} from '../server/integrations/todos-store.mjs';
 
 const FILE='docs/todo/todos.json';
 const args=process.argv.slice(2);
 const url=(args.includes('--url')?args[args.indexOf('--url')+1]:'http://localhost:8080').replace(/\/$/,'');
 const probe=args.includes('--probe');
 
-const res=await fetch(url+'/api/admin/todos?aenderungen=1',{headers:{accept:'application/json'}}).catch(e=>{
- console.error(`Server nicht erreichbar (${url}): ${e.message}. Ist der Tunnel offen?`);process.exit(1);
+const res=await fetch(url+'/api/admin/todos?aenderungen=1',{headers:{accept:'application/json'}}).catch(error=>{
+ console.error(`Server nicht erreichbar (${url}): ${error.message}. Ist der Tunnel offen?`);process.exit(1);
 });
 const body=await res.json().catch(()=>({}));
-if(!res.ok){console.error(`Server antwortet ${res.status}: ${body.error||'ohne Begründung'}`);process.exit(1);}
-const changes=body.changes||{};
+if(!res.ok){console.error(`Server antwortet ${res.status}: ${body.error||'ohne Begruendung'}`);process.exit(1);}
+const stored=body.changes||{};
+const changes=stored.format===2?stored.changes:stored;
+const creates=stored.format===2?stored.creates:[];
 
 const local=JSON.parse(await readFile(FILE,'utf8'));
-const merged=mergeTodos(local,changes);
-const before=new Map(local.kategorien.flatMap(c=>c.items).map(i=>[i.id,i]));
-const state=i=>`${i.erledigt?'erledigt'+(i.erledigtAm?' am '+i.erledigtAm:''):'offen'}${i.faellig?', fällig '+i.faellig:''}`;
+const merged=mergeTodos(local,stored);
+delete merged.revision;
+const before=new Map(normalizeTodos(local).kategorien.flatMap(category=>category.items.map(item=>[item.id,{item,kategorieId:category.id}])));
+const categoryIds=new Set(local.kategorien.map(category=>category.id));
+const priorities={1:'hoch',2:'mittel',3:'niedrig'};
+const resolutions={done:'erledigt',wont_do:'wird nicht umgesetzt',duplicate:'Duplikat'};
+const state=item=>`${item.status}, Prioritaet ${priorities[item.prio]}${item.abschluss?', '+resolutions[item.abschluss]:''}${item.bearbeiter?', '+item.bearbeiter:''}${item.faellig?', faellig '+item.faellig:''}${item.erledigtAm?', geschlossen am '+item.erledigtAm:''}`;
 let taken=0,skipped=0;
-for(const item of merged.kategorien.flatMap(c=>c.items)){
+for(const category of merged.kategorien)for(const item of category.items){
  const old=before.get(item.id);
- if(old.erledigt!==item.erledigt||old.faellig!==item.faellig||old.erledigtAm!==item.erledigtAm){taken++;console.log(`übernommen  ${item.id}: ${state(old)} → ${state(item)}`);}
+ if(!old){taken++;console.log(`neu         ${item.id}: ${state(item)} (${category.name})`);continue;}
+ if(old.kategorieId!==category.id||JSON.stringify(old.item)!==JSON.stringify(item)){
+  taken++;console.log(`uebernommen ${item.id}: ${state(old.item)} -> ${state(item)} (${category.name})`);
+ }
 }
-for(const [id,change] of Object.entries(changes)){
- const item=before.get(id);
- if(!item){skipped++;console.log(`ausgelassen ${id}: steht nicht mehr in der Datei`);continue;}
- const same=item.erledigt===change.erledigt&&item.faellig===change.faellig&&item.erledigtAm===change.erledigtAm;
- if(!same&&(item.erledigt!==change.base?.erledigt||item.faellig!==change.base?.faellig)){skipped++;console.log(`ausgelassen ${id}: Datei seither geändert (${state(item)}), Server: ${state(change)}`);}
+for(const id of Object.keys(changes))if(!before.has(id)){
+ skipped++;console.log(`ausgelassen ${id}: steht nicht mehr in der Datei`);
 }
-console.log(`${taken} übernommen, ${skipped} ausgelassen${probe?' (nur angezeigt)':''}.`);
+for(const create of creates)if(!categoryIds.has(create.kategorieId)){
+ skipped++;console.log(`ausgelassen ${create.item.id}: Kategorie ${create.kategorieId} steht nicht mehr in der Datei`);
+}
+console.log(`${taken} uebernommen, ${skipped} ausgelassen${probe?' (nur angezeigt)':''}.`);
 if(taken&&!probe){
  const temp=FILE.replace(/todos\.json$/,'.todos.json.tmp');
  await writeFile(temp,JSON.stringify(merged,null,2)+'\n','utf8');

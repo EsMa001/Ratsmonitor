@@ -1,7 +1,7 @@
 'use client';
 import {AdminPageHead} from '@/components/admin-ui';
 import {TodoPage} from '@/components/ratsmonitor/info/TodoPage';
-/** Admin page "To-do-Liste": alles, was vor dem Start noch zu tun ist (Daten docs/todo/todos.json; lokal gespeichert in die Datei, auf dem Server in die Datenbank). */
+/** Gemeinsame Aufgabenplanung: aktuelles Board und kategorisierter Backlog. */
 export function AdminTodo(){
  return <>
   <AdminPageHead page="todo"/>

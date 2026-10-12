@@ -35,7 +35,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | E-Mails (Vorlagen: Willkommen, Passwort, Wochenbericht, Treffer, Vorgang, Sitzung) | `lib/mails.ts`; Test-Postfach: `pages/PostfachPage.tsx` |
 | Anmelden/Registrieren/Kontakt | `info/AccountPages.tsx`; Testkonten: `lib/testAuth.ts` |
 | Impressum/Datenschutz | `pages/LegalPage.tsx` |
-| Interne To-do-Liste: zweiter Reiter im Adminbereich (`/admin?seite=todo`, `components/admin-todo.tsx`; Daten `docs/todo/todos.json`; lokal speichert das Vite-Plugin `build/todo-dev-plugin.mjs` (`/__todos`) in die Datei, auf dem Server `/api/admin/todos` in `system_state`; `node scripts/pull-todos.mjs` holt die Server-Stände in die Datei) | `info/TodoPage.tsx`, Status/Datum: `lib/todos.ts` |
+| Interne To-do-Liste: Board und kategorisierter Backlog im Adminbereich (`/admin?seite=todo`, `components/admin-todo.tsx`), mit Status, Zuständigkeit, Pflichtpriorität (Hoch/Mittel/Niedrig), Abschlussgrund (Erledigt/Wird nicht umgesetzt/Duplikat), Termin und Wartegrund. Basis `docs/todo/todos.json`; lokal speichert `build/todo-dev-plugin.mjs` (`/__todos`) in die Datei, auf dem Server `/api/admin/todos` in `system_state`; `scripts/pull-todos.mjs` übernimmt den Server-Stand. | `info/TodoPage.tsx`, Daten und Status: `lib/todos.ts`; Stile `app/admin.css` |
 | Adminbereich (Rahmen, Bausteine, Stand, Speicher, Nachholen, Texte, Farben) | `components/admin-chrome.tsx` (AdminFrame, Reiter), `components/admin-ui.tsx`, `components/admin-stand.tsx`, `components/admin-store.ts`, `components/admin-catch-up.tsx`, `components/admin-texts.ts`, `components/admin-colors.ts`; Seiten: `components/admin-*.tsx`, `app/admin/page.tsx` |
 | Symbole | App: `components/icons.tsx`; Info-Seiten: `info/icons.tsx` |
 | Suchzustand + Abfrage an `/api/search` | `state/search.tsx`; Ortserkennung + Regionen: `lib/place.ts`; Logik: `lib/searchLogic.ts` |
@@ -45,7 +45,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 
 - `app/ratsmonitor.css`: App (Startseite, Karte, Milchglas `.rm-glass`, Filterfenster `#filter-body`).
 - `app/ratsmonitor-info.css`: Info- und Kontoseiten (Klassen `ri-…`). Achtung: Die Datei setzt Grundstile zurück; Tailwind-Klassen greifen dort manchmal nicht → dann Inline-Style.
-- Sonst Tailwind direkt im JSX. `app/analyse-admin.css`: Der Admin-Teil steht im Startseiten-Design am Dateiende (Block „Adminbereich im Design der Startseite“); ältere Admin-Regeln nicht erweitern, neue Admin-Stile dort anhängen. Die übrigen Regeln der Datei gehören den Analyse-Seiten. `app/globals.css` (nur Einstieg und Theme) nicht ändern. `app/design-styles.css` wirkt auch auf Admin/Analysen: Änderungen dort immer auch dort prüfen.
+- Sonst Tailwind direkt im JSX. `app/admin.css`: Stile der Administration, geladen von `app/admin/page.tsx`; neue Admin-Stile im bestehenden Design ergänzen. `app/analyse-admin.css` gehört den Analyse-Seiten. `app/globals.css` (nur Einstieg und Theme) nicht ändern. `app/design-styles.css` wirkt auch auf Admin/Analysen: Änderungen dort immer auch dort prüfen.
 
 ## Designregeln (vereinbart)
 

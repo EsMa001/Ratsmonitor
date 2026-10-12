@@ -1,330 +1,265 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { IS_DEV } from "../lib/tier";
-import { fmtShort, localToday, todoState, type TodoData, type TodoItem, type TodoKind } from "../lib/todos";
+import { useState, type DragEvent } from "react";
+import { ArrowRight, Check, ChevronDown, CircleAlert, Clock3, GripVertical, LayoutList, LoaderCircle, RefreshCw, Search, Undo2 } from "lucide-react";
+import { TODO_PEOPLE, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_STATUSES, fmtShort, localToday, taskResolution, taskStatus, todoPriority, todoState, type TodoItem, type TodoPersonId, type TodoResolution, type TodoStatus } from "../lib/todos";
 import { PageHead } from "./blocks";
-import { IconChevronDown } from "../components/icons";
+import { TodoChoice, TodoEditor, TodoOrder, TodoOwner, TodoPriorityChoice, TodoStatusChoice } from "./TodoControls";
+import { useTodoBoard, type TodoPatch } from "./useTodoBoard";
 
-type Edit = { erledigt: boolean; faellig: string | null };
-type Filter = "alle" | "offen" | "ueberfaellig" | "erledigt";
+type View = "board" | "backlog";
+type Swimlane = "work" | "person" | "none";
+type BacklogScope = "backlog" | "all" | "open" | "done";
+type DueFilter = "all" | "overdue" | "today" | "undated";
+type ResolutionFilter = "all" | "open" | TodoResolution;
+type Entry = { item: TodoItem; categoryId: string; category: string; index: number };
+type Lane = { id: string; name: string };
 
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: "alle", label: "Alle" },
-  { key: "offen", label: "Offen" },
-  { key: "ueberfaellig", label: "Überfällig" },
-  { key: "erledigt", label: "Erledigt" },
-];
-
-/* Überfällig bewusst als einzige Abweichung von der Textpalette (Rot wie bei Fehlermeldungen .ri-err) */
-const STATE_COLOR: Record<TodoKind, string> = {
-  done: "#0d9488",
-  overdue: "var(--rm-rose,#be123c)",
-  today: "var(--rm-c900,#0f172a)",
-  soon: "var(--rm-c900,#0f172a)",
-  planned: "var(--rm-c500,#64748b)",
-  open: "var(--rm-c500,#64748b)",
-};
-
-const PRIO_COLOR: Record<1 | 2 | 3, string> = { 1: "var(--rm-c900,#0f172a)", 2: "var(--rm-c600,#475569)", 3: "var(--rm-c400,#94a3b8)" };
-
+const BOARD_STATUSES = TODO_STATUSES.filter((status) => status.id !== "backlog");
+const WORK_LANES: Lane[] = [{ id: "tech", name: "Technik & Produkt" }, { id: "market", name: "Markt & Auftritt" }, { id: "company", name: "Unternehmen & Betrieb" }];
 const CLOSED_KEY = "ratsmonitor:todo-closed:v1";
-const readClosed = (): string[] => {
-  try {
-    const v = JSON.parse(localStorage.getItem(CLOSED_KEY) || "[]");
-    return Array.isArray(v) ? v.filter((x) => typeof x === "string") : [];
-  } catch {
-    return [];
-  }
+const workLane = (category: string) => ["frontend", "backend", "produkt", "ideen"].includes(category) ? "tech" : ["marketing", "marke"].includes(category) ? "market" : "company";
+const order = (a: Entry, b: Entry) => (a.item.reihenfolge ?? a.index) - (b.item.reihenfolge ?? b.index) || a.index - b.index;
+const recentDone = (item: TodoItem, today: string) => {
+  if (taskStatus(item) !== "done" || !item.erledigtAm) return false;
+  const days = Math.round((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${item.erledigtAm}T00:00:00Z`)) / 86_400_000);
+  return days >= 0 && days < 14;
 };
+const completionPatch = (item: TodoItem, status: TodoStatus, today: string, resolution?: TodoResolution): TodoPatch => ({ status, erledigt: status === "done", abschluss: status === "done" ? resolution ?? taskResolution(item) ?? "done" : null, erledigtAm: status === "done" ? taskStatus(item) === "done" ? item.erledigtAm : today : null });
 
-const sameEdit = (a: Edit, b: Edit) => a.erledigt === b.erledigt && a.faellig === b.faellig;
-
-/* Lokal liest und schreibt der Dev-Server die Datei direkt, auf dem Server die Admin-API (Datei des Deploys plus Datenbank). */
-const ENDPOINT = IS_DEV ? "/__todos" : "/api/admin/todos";
-
-/** embedded: Inhalt im Adminbereich, ohne eigenen Seitenkopf */
+/** Both views edit the same persisted tasks; scheduling onto the board is always explicit. */
 export function TodoPage({ embedded = false }: { embedded?: boolean } = {}) {
-  const [data, setData] = useState<TodoData | null>(null);
-  const [edits, setEdits] = useState<Record<string, Edit>>({});
-  const [filter, setFilter] = useState<Filter>("offen");
-  const [q, setQ] = useState("");
-  const [prioF, setPrioF] = useState<0 | 1 | 2 | 3>(0);
-  const [artF, setArtF] = useState<"alle" | "code" | "extern">("alle");
-  const [error, setError] = useState("");
-  const [note, setNote] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [today] = useState(() => localToday());
-  /* Eingeklappte Kategorien, im Browser gemerkt */
-  const [closed, setClosed] = useState<string[]>([]);
-  useEffect(() => setClosed(readClosed()), []);
-  const setClosedSaved = (next: string[]) => {
+  const store = useTodoBoard();
+  const [view, setView] = useState<View>("board");
+  const [swimlane, setSwimlane] = useState<Swimlane>("work");
+  const [scope, setScope] = useState<BacklogScope>("backlog");
+  const [query, setQuery] = useState("");
+  const [personFilter, setPersonFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
+  const [resolutionFilter, setResolutionFilter] = useState<ResolutionFilter>("all");
+  const [kindFilter, setKindFilter] = useState("all");
+  const [dueFilter, setDueFilter] = useState<DueFilter>("all");
+  const [waitingFilter, setWaitingFilter] = useState(false);
+  const [mobileStatus, setMobileStatus] = useState<TodoStatus>("ready");
+  const [closed, setClosed] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const value: unknown = JSON.parse(localStorage.getItem(CLOSED_KEY) || "[]");
+      return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+    } catch { return []; }
+  });
+  const [editor, setEditor] = useState<{ id?: string; categoryId: string; returnFocus: HTMLElement | null } | null>(null);
+  const [dragged, setDragged] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [today] = useState(localToday);
+
+  const changeClosed = (next: string[]) => {
     setClosed(next);
-    try {
-      localStorage.setItem(CLOSED_KEY, JSON.stringify(next));
-    } catch {}
-  };
-  const toggleCat = (id: string) => setClosedSaved(closed.includes(id) ? closed.filter((x) => x !== id) : [...closed, id]);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch(ENDPOINT, { cache: "no-store" })
-      .then(async (r) => {
-        const body = (await r.json().catch(() => ({}))) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Die Liste konnte nicht geladen werden.");
-        return body as TodoData;
-      })
-      .then((d) => !cancelled && setData(d))
-      .catch((e: Error) => !cancelled && setError(e.message));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const dirty = Object.keys(edits).length;
-  useEffect(() => {
-    if (!dirty) return;
-    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
-
-  const current = useCallback((item: TodoItem): TodoItem => ({ ...item, ...edits[item.id] }), [edits]);
-
-  /** `saved` ist der gespeicherte Stand; eine Änderung zählt nur, solange sie davon abweicht */
-  const change = (saved: TodoItem, patch: Partial<Edit>) => {
-    setNote("");
-    setEdits((prev) => {
-      const base = prev[saved.id] ?? saved;
-      const next: Edit = { erledigt: base.erledigt, faellig: base.faellig, ...patch };
-      const rest = { ...prev };
-      if (sameEdit(next, saved)) delete rest[saved.id];
-      else rest[saved.id] = next;
-      return rest;
-    });
+    try { localStorage.setItem(CLOSED_KEY, JSON.stringify(next)); } catch {}
   };
 
-  const save = async () => {
-    setSaving(true);
-    setError("");
-    setNote("");
-    try {
-      const updates = Object.entries(edits).map(([id, e]) => ({ id, erledigt: e.erledigt, faellig: e.faellig }));
-      const r = await fetch(ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ updates }),
-      });
-      const body = (await r.json().catch(() => ({}))) as { error?: string };
-      if (!r.ok) throw new Error(body.error || "Das Speichern ist fehlgeschlagen.");
-      setData(body as TodoData);
-      setEdits({});
-      setNote("Gespeichert.");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Das Speichern ist fehlgeschlagen.");
-    } finally {
-      setSaving(false);
+  let position = 0;
+  const entries: Entry[] = store.categories.flatMap((category) => category.items.map((item) => ({ item, categoryId: category.id, category: category.name, index: position++ })));
+  const board = entries.filter(({ item }) => taskStatus(item) !== "backlog" && (taskStatus(item) !== "done" || recentDone(item, today)));
+  const unfinished = entries.filter(({ item }) => taskStatus(item) !== "done");
+  const backlogCount = entries.filter(({ item }) => taskStatus(item) === "backlog").length;
+  const overdue = entries.filter(({ item }) => todoState(item, today).kind === "overdue").length;
+  const needle = query.trim().toLocaleLowerCase("de-DE");
+  const matches = ({ item, category }: Entry) => {
+    if (personFilter !== "all" && (item.bearbeiter ?? "unassigned") !== personFilter) return false;
+    if (priorityFilter !== "all" && String(todoPriority(item)) !== priorityFilter) return false;
+    const resolution = taskResolution(item);
+    if (resolutionFilter !== "all" && (resolutionFilter === "open" ? resolution !== null : resolution !== resolutionFilter)) return false;
+    if (kindFilter !== "all" && (item.art ?? "extern") !== kindFilter) return false;
+    if (waitingFilter && !item.wartetAuf) return false;
+    const due = todoState(item, today).kind;
+    if (dueFilter === "overdue" && due !== "overdue") return false;
+    if (dueFilter === "today" && due !== "today") return false;
+    if (dueFilter === "undated" && item.faellig) return false;
+    return !needle || [item.text, item.hinweis, item.wartetAuf, category, item.id, TODO_PEOPLE.find((person) => person.id === item.bearbeiter)?.name].filter(Boolean).join(" ").toLocaleLowerCase("de-DE").includes(needle);
+  };
+  const group = (entry: Entry) => swimlane === "work" ? workLane(entry.categoryId) : swimlane === "person" ? entry.item.bearbeiter ?? "unassigned" : "all";
+  const lanes: Lane[] = swimlane === "work" ? WORK_LANES : swimlane === "person" ? [...TODO_PEOPLE.map((person) => ({ id: person.id, name: person.name })), { id: "unassigned", name: "Nicht zugewiesen" }] : [{ id: "all", name: "Aktuelle Aufgaben" }];
+  const shownBoard = board.filter(matches);
+  const hasFilters = !!needle || personFilter !== "all" || priorityFilter !== "all" || resolutionFilter !== "all" || kindFilter !== "all" || dueFilter !== "all" || waitingFilter;
+  const changeResolutionFilter = (value: string) => {
+    const next = value as ResolutionFilter;
+    setResolutionFilter(next);
+    if (TODO_RESOLUTIONS.some((resolution) => resolution.id === next)) {
+      setScope("done");
+      setMobileStatus("done");
+    } else if (next === "open" && scope === "done") {
+      setScope("open");
+      setMobileStatus("ready");
     }
   };
-
-  const all = useMemo(() => (data ? data.kategorien.flatMap((c) => c.items.map(current)) : []), [data, current]);
-  const done = all.filter((i) => i.erledigt).length;
-  const overdue = all.filter((i) => todoState(i, today).kind === "overdue").length;
-  const counts: Record<Filter, number> = {
-    alle: all.length,
-    offen: all.length - done,
-    ueberfaellig: overdue,
-    erledigt: done,
+  const resetFilters = () => { setQuery(""); setPersonFilter("all"); setPriorityFilter("all"); setResolutionFilter("all"); setKindFilter("all"); setDueFilter("all"); setWaitingFilter(false); };
+  const openEditor = (entry?: Entry, categoryId?: string) => {
+    setEditor({ id: entry?.item.id, categoryId: entry?.categoryId ?? categoryId ?? store.categories[0]?.id ?? "", returnFocus: document.activeElement as HTMLElement | null });
   };
-  const needle = q.trim().toLowerCase();
-
-  const visible = (item: TodoItem) => {
-    const kind = todoState(item, today).kind;
-    const byFilter = filter === "alle" || (filter === "offen" && kind !== "done") || (filter === "ueberfaellig" && kind === "overdue") || (filter === "erledigt" && kind === "done");
-    const byPrio = !prioF || (item.prio === prioF && !item.erledigt);
-    const byArt = artF === "alle" || (item.art ?? "extern") === artF;
-    const byText = !needle || item.text.toLowerCase().includes(needle) || (item.hinweis ?? "").toLowerCase().includes(needle);
-    return byFilter && byPrio && byArt && byText;
+  const editorEntry = editor?.id ? entries.find(({ item }) => item.id === editor.id) : undefined;
+  const reload = async (preserve = false) => { setLoading(true); await store.load(preserve); setLoading(false); };
+  const updateOwner = (entry: Entry, person: TodoPersonId | null) => store.change([{ id: entry.item.id, patch: { bearbeiter: person } }]);
+  const updateStatus = (entry: Entry, status: TodoStatus, resolution?: TodoResolution) => {
+    if (taskStatus(entry.item) === status) {
+      if (status === "done" && resolution && taskResolution(entry.item) !== resolution) store.change([{ id: entry.item.id, patch: completionPatch(entry.item, status, today, resolution) }]);
+      return;
+    }
+    const peers = entries.filter((other) => taskStatus(other.item) === status && group(other) === group(entry) && other.item.id !== entry.item.id);
+    const last = peers.length ? Math.max(...peers.map((peer) => peer.item.reihenfolge ?? peer.index)) : -1;
+    store.change([{ id: entry.item.id, patch: { ...completionPatch(entry.item, status, today, resolution), reihenfolge: last + 1 } }]);
   };
-
-  /* Termin schnell setzen: heute plus n Tage */
-  const inDays = (n: number) => {
-    const d = new Date(today + "T00:00:00Z");
-    d.setUTCDate(d.getUTCDate() + n);
-    return d.toISOString().slice(0, 10);
+  const rearrange = (entry: Entry, status: TodoStatus, lane: string, beforeId?: string) => {
+    if (swimlane === "work" && group(entry) !== lane) return;
+    const peers = entries.filter((other) => taskStatus(other.item) === status && group(other) === lane && other.item.id !== entry.item.id).sort(order);
+    const before = beforeId ? peers.findIndex((other) => other.item.id === beforeId) : -1;
+    peers.splice(before >= 0 ? before : peers.length, 0, entry);
+    store.change(peers.map((peer, index) => ({ id: peer.item.id, patch: peer.item.id === entry.item.id ? { ...completionPatch(entry.item, status, today), ...(swimlane === "person" ? { bearbeiter: lane === "unassigned" ? null : lane as TodoPersonId } : {}), reihenfolge: index } : { reihenfolge: index } })));
   };
+  const reorder = (entry: Entry, offset: -1 | 1) => {
+    const status = taskStatus(entry.item);
+    const peers = entries.filter((other) => taskStatus(other.item) === status && group(other) === group(entry)).sort(order);
+    const index = peers.findIndex((other) => other.item.id === entry.item.id);
+    const target = index + offset;
+    if (target < 0 || target >= peers.length) return;
+    [peers[index], peers[target]] = [peers[target], peers[index]];
+    store.change(peers.map((peer, index) => ({ id: peer.item.id, patch: { reihenfolge: index } })));
+  };
+  const allowDrop = (lane: string) => {
+    const entry = entries.find(({ item }) => item.id === dragged);
+    return !!entry && (swimlane !== "work" || group(entry) === lane);
+  };
+  const dragOver = (event: DragEvent, lane: string, target: string) => {
+    if (!allowDrop(lane)) return;
+    event.preventDefault(); event.dataTransfer.dropEffect = "move"; setDropTarget(target);
+  };
+  const drop = (event: DragEvent, status: TodoStatus, lane: string, beforeId?: string) => {
+    event.preventDefault(); event.stopPropagation();
+    const entry = entries.find(({ item }) => item.id === dragged);
+    if (entry && entry.item.id !== beforeId) rearrange(entry, status, lane, beforeId);
+    setDragged(null); setDropTarget(null);
+  };
+  const taskMeta = (entry: Entry) => {
+    const state = todoState(entry.item, today);
+    const resolution = taskResolution(entry.item);
+    return <div className="admin-todo-meta">
+      <TodoPriorityChoice item={entry.item} onChange={(prio) => store.change([{ id: entry.item.id, patch: { prio } }])}/>
+      {resolution && <span className="admin-todo-resolution" data-resolution={resolution}>{TODO_RESOLUTIONS.find((option) => option.id === resolution)?.label}</span>}
+      <span>{entry.item.art === "code" ? "Code" : "Außerhalb Code"}</span>
+      {entry.item.faellig && taskStatus(entry.item) !== "done" && <span className={state.kind === "overdue" ? "admin-todo-overdue" : ""} title={state.label}><Clock3 size={12} aria-hidden="true"/>{fmtShort(entry.item.faellig)}</span>}
+      {taskStatus(entry.item) === "done" && entry.item.erledigtAm && <span title={`Geschlossen am ${fmtShort(entry.item.erledigtAm)}`}><Check size={12} aria-hidden="true"/>{fmtShort(entry.item.erledigtAm)}</span>}
+    </div>;
+  };
+  const waiting = (entry: Entry) => entry.item.wartetAuf ? <p className="admin-todo-waiting" title={entry.item.wartetAuf}><CircleAlert size={14} aria-hidden="true"/><span>Wartet auf: {entry.item.wartetAuf}</span></p> : null;
+  const saveMessage = store.saveState === "saving" ? "Speichert …" : store.saveState === "conflict" ? "Änderungen prüfen" : store.saveState === "error" ? "Nicht gespeichert" : store.dirty ? `${store.dirty} ${store.dirty === 1 ? "Änderung" : "Änderungen"} ausstehend` : store.saveState === "saved" ? "Gespeichert" : "Aktueller Stand";
 
-  const pct = all.length ? Math.round((done / all.length) * 100) : 0;
-  const pill = (active: boolean) =>
-    "inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-[14px] transition-colors " +
-    (active ? "border-teal-600 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900");
-
-  return (
-    <>
-      {!embedded && (
-        <PageHead
-          icon="circleCheck"
-          label="Intern"
-          name="To-Do-Liste"
-          lead="Alles, was vor dem Start noch zu tun ist. Abhaken, Termin eintragen und speichern; erledigte Einträge bleiben in der Liste."
-        />
-      )}
-      <section className="ri-sec ri-sec--tight" style={embedded ? { padding: 0, border: 0 } : undefined}>
-        <div className="max-w-[980px]">
-          {error && (
-            <p role="alert" className="ri-err" style={{ marginTop: 0, marginBottom: 18 }}>
-              {error}
-            </p>
-          )}
-          {!data && !error && <p className="m-0 text-[16px] text-slate-500">Lädt …</p>}
-          {data && (
-            <>
-              {/* Fortschritt */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-5">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <p className="m-0 text-[18px] text-slate-900">
-                    <strong className="font-semibold">{done} von {all.length}</strong> erledigt
-                    {overdue > 0 && <span className="ml-3 text-[15px] font-semibold" style={{ color: STATE_COLOR.overdue }}>{overdue} überfällig</span>}
-                  </p>
-                  <span className="text-[14px] text-slate-500">{pct} %</span>
-                </div>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Fortschritt">
-                  <div className="h-full rounded-full bg-teal-600 transition-[width]" style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-
-              {/* Werkzeugleiste: Suche, Filter, Alle ein-/ausklappen */}
-              <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Filter">
-                <input
-                  type="search"
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Suchen …"
-                  aria-label="In der Liste suchen"
-                  className="ri-input"
-                  style={{ width: 200, height: 36, fontSize: 14, marginRight: 4 }}
-                />
-                {FILTERS.map((f) => (
-                  <button key={f.key} type="button" onClick={() => setFilter(f.key)} aria-pressed={filter === f.key} className={pill(filter === f.key)}>
-                    {f.label}
-                    <span className={"text-[12px] " + (filter === f.key ? "text-white/80" : "text-slate-400")}>{counts[f.key]}</span>
-                  </button>
-                ))}
-                {([1, 2, 3] as const).map((p) => (
-                  <button key={p} type="button" onClick={() => setPrioF(prioF === p ? 0 : p)} aria-pressed={prioF === p} className={pill(prioF === p)} title={["vor dem Start nötig", "wichtig", "später"][p - 1]}>
-                    Priorität {p}
-                  </button>
-                ))}
-                {([["alle", "Alle Arten"], ["code", "Code"], ["extern", "Außerhalb Code"]] as const).map(([k, label]) => (
-                  <button key={k} type="button" onClick={() => setArtF(k)} aria-pressed={artF === k} className={pill(artF === k)}>
-                    {label}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setClosedSaved(closed.length ? [] : data.kategorien.map((c) => c.id))}
-                  className="ml-auto text-[14px] text-teal-600 hover:underline"
-                >
-                  {closed.length ? "Alle ausklappen" : "Alle einklappen"}
-                </button>
-              </div>
-
-              {data.kategorien.map((cat) => {
-                const rows = cat.items.map((saved) => ({ saved, item: current(saved) }));
-                /* Offene nach Priorität (1 vor 2 vor 3), erledigte und ohne Priorität ans Ende */
-                const rank = (i: TodoItem) => (i.erledigt ? 9 : i.prio ?? 9);
-                const shown = rows.filter((r) => visible(r.item)).sort((a, b) => rank(a.item) - rank(b.item));
-                if (!shown.length) return null;
-                const catDone = rows.filter((r) => r.item.erledigt).length;
-                const catPct = rows.length ? (catDone / rows.length) * 100 : 0;
-                const isClosed = closed.includes(cat.id);
-                return (
-                  <div key={cat.id} className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                    <h2 className="m-0">
-                      <button
-                        type="button"
-                        onClick={() => toggleCat(cat.id)}
-                        aria-expanded={!isClosed}
-                        className="flex w-full items-center gap-3 bg-transparent px-5 py-4 text-left hover:bg-slate-50"
-                      >
-                        <IconChevronDown size={18} style={{ flex: "none", color: "var(--rm-c500,#64748b)", transition: "transform .15s", transform: isClosed ? "rotate(-90deg)" : "none" }} />
-                        <span className="text-[18px] font-semibold text-slate-900">{cat.name}</span>
-                        <span className="ml-auto flex items-center gap-3">
-                          <span className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-slate-100 sm:block"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${catPct}%` }} /></span>
-                          <span className="text-[14px] font-normal tabular-nums text-slate-500">{catDone}/{cat.items.length}</span>
-                        </span>
-                      </button>
-                    </h2>
-                    <ul hidden={isClosed} className="m-0 list-none p-0">
-                      {shown.map(({ saved, item }) => {
-                        const state = todoState(item, today);
-                        const isDone = state.kind === "done";
-                        const changed = !!edits[item.id];
-                        return (
-                          <li key={item.id} className="group flex flex-wrap items-start gap-x-5 gap-y-2 border-t border-slate-100 px-5 py-3.5" style={changed ? { background: "#f0fdfa" } : undefined}>
-                            <label className="flex min-w-0 flex-[1_1_320px] cursor-pointer gap-3">
-                              <input
-                                type="checkbox"
-                                checked={item.erledigt}
-                                onChange={(e) => change(saved, { erledigt: e.target.checked })}
-                                className="mt-[3px] h-[18px] w-[18px] flex-none"
-                                style={{ accentColor: "#0d9488" }}
-                              />
-                              <span className="min-w-0">
-                                <span className="block text-[16px] font-medium leading-snug" style={{ color: isDone ? "var(--rm-c400,#94a3b8)" : "var(--rm-c900,#0f172a)", textDecoration: isDone ? "line-through" : "none" }}>
-                                  {item.text}
-                                </span>
-                                {item.hinweis && <span className="mt-0.5 block text-[14px] leading-snug text-slate-500">{item.hinweis}</span>}
-                              </span>
-                            </label>
-                            <div className="flex flex-none flex-wrap items-center gap-2.5">
-                              {item.prio && !isDone && (
-                                <span className="rounded-full px-2 py-0.5 text-[12px] font-semibold" style={{ background: item.prio === 1 ? "var(--rm-c900,#0f172a)" : "#f1f5f9", color: item.prio === 1 ? "#fff" : "var(--rm-c600,#475569)" }} title={`Priorität ${item.prio}`}>
-                                  P{item.prio}
-                                </span>
-                              )}
-                              <span className="text-[13px]" style={{ fontWeight: state.kind === "overdue" ? 600 : 400, color: STATE_COLOR[state.kind] }}>{state.label}</span>
-                              {!isDone && (
-                                <span className="hidden items-center gap-1 group-hover:flex group-focus-within:flex">
-                                  {[["Heute", 0], ["+7", 7]].map(([label, n]) => (
-                                    <button key={label} type="button" onClick={() => change(saved, { faellig: inDays(n as number) })} className="rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[12px] text-slate-600 hover:border-teal-600 hover:text-teal-600" title={n === 0 ? "Heute fällig" : "In 7 Tagen fällig"}>
-                                      {label}
-                                    </button>
-                                  ))}
-                                </span>
-                              )}
-                              <input
-                                type="date"
-                                className="ri-input"
-                                aria-label={`Geplant für: ${item.text}`}
-                                title={item.faellig ? `Geplant für ${fmtShort(item.faellig)}` : "Datum eintragen"}
-                                value={item.faellig ?? ""}
-                                onChange={(e) => change(saved, { faellig: e.target.value || null })}
-                                style={{ width: 150, height: 34, fontSize: 14 }}
-                              />
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              })}
-              {all.length > 0 && !data.kategorien.some((c) => c.items.some((i) => visible(current(i)))) && (
-                <p className="mt-6 text-[16px] text-slate-500">Nichts gefunden. Filter oder Suche anpassen.</p>
-              )}
-            </>
-          )}
+  return <>
+    {!embedded && <PageHead icon="circleCheck" label="Intern" name="To-do-Liste" lead="Aktuelle Arbeit und Aufgaben für den nächsten Schritt."/>}
+    <section className="admin-todo" aria-label="To-do-Liste">
+      {store.error && <div className="admin-todo-error" role="alert">
+        <p><CircleAlert size={18} aria-hidden="true"/><span>{store.error}</span></p>
+        <div className="admin-todo-error-actions">
+          {!store.data && <button type="button" className="admin-todo-text-action" disabled={loading} onClick={() => void reload()}>Erneut laden<RefreshCw size={14}/></button>}
+          {store.data && store.saveState === "error" && <button type="button" className="admin-todo-text-action" onClick={() => void store.save()}>Erneut speichern<RefreshCw size={14}/></button>}
+          {store.saveState === "conflict" && <>
+            <button type="button" className="admin-todo-text-action" disabled={loading} onClick={() => void reload(true)}>{loading ? "Lädt …" : "Aktuellen Stand laden"}<RefreshCw size={14}/></button>
+            {store.conflictFresh && <button type="button" className="admin-todo-text-action" onClick={() => void store.save()}>Eigene Änderungen speichern<ArrowRight size={14}/></button>}
+          </>}
         </div>
-      </section>
-      {data && (
-        <div style={{ position: "sticky", bottom: 0, zIndex: 20, display: "flex", alignItems: "center", flexWrap: "wrap", gap: 16, padding: "14px var(--ri-pad)", background: "var(--rm-white,#fff)", borderTop: "1px solid var(--rm-c200,#e2e8f0)" }}>
-          <button type="button" className="ri-btn ri-btn--dark" onClick={save} disabled={!dirty || saving} style={!dirty || saving ? { opacity: 0.45, cursor: "default" } : undefined}>
-            {saving ? "Speichert …" : "Speichern"}
-          </button>
-          <span style={{ fontSize: 14, color: "var(--rm-c500,#64748b)" }} aria-live="polite">
-            {dirty ? `${dirty} ungespeicherte ${dirty === 1 ? "Änderung" : "Änderungen"}` : note}
-          </span>
+        {store.conflictFresh && Object.keys(store.updates).length > 0 && <details className="admin-todo-conflicts"><summary>Ausstehende Änderungen ansehen</summary><ul>{Object.entries(store.updates).map(([id, patch]) => {
+          const saved = store.data?.kategorien.flatMap((category) => category.items).find((item) => item.id === id);
+          return <li key={id}><strong>{saved?.text ?? id}</strong>{Object.entries(patch).map(([field, value]) => {
+            const labels: Record<string, string> = { status: "Status", abschluss: "Abschluss", text: "Aufgabe", hinweis: "Beschreibung", prio: "Priorität", art: "Art", bearbeiter: "Bearbeiter", wartetAuf: "Wartet auf", faellig: "Termin", reihenfolge: "Reihenfolge" };
+            if (!labels[field]) return null;
+            const display = (v: unknown) => field === "status" ? TODO_STATUSES.find((s) => s.id === v)?.label ?? "Backlog" : field === "abschluss" ? TODO_RESOLUTIONS.find((option) => option.id === v)?.label ?? "Nicht geschlossen" : field === "prio" ? TODO_PRIORITIES.find((option) => option.id === v)?.label ?? "Mittel" : field === "bearbeiter" ? TODO_PEOPLE.find((p) => p.id === v)?.name ?? "Nicht zugewiesen" : String(v ?? "–");
+            const savedValue = saved ? field === "prio" ? todoPriority(saved) : field === "abschluss" ? taskResolution(saved) : field === "status" ? taskStatus(saved) : saved[field as keyof TodoItem] : null;
+            return <span key={field}>{labels[field]}: {display(savedValue)} → {display(value)}</span>;
+          })}</li>;
+        })}</ul></details>}
+      </div>}
+      {!store.data && !store.error && <p className="admin-todo-loading" role="status"><LoaderCircle size={18} className="admin-todo-spin" aria-hidden="true"/>Aufgaben werden geladen …</p>}
+      {store.data && <>
+        <dl className="admin-todo-summary" aria-label="Aufgabenübersicht">
+          <div><dt>Aktuell</dt><dd>{board.filter(({ item }) => taskStatus(item) !== "done").length}</dd></div>
+          <div><dt>Backlog</dt><dd>{backlogCount}</dd></div>
+          <div><dt>Geschlossen</dt><dd>{entries.length - unfinished.length}<span> / {entries.length}</span></dd></div>
+          <div><dt>Überfällig</dt><dd className={overdue ? "admin-todo-overdue" : ""}>{overdue}</dd></div>
+        </dl>
+        <div className="admin-todo-head">
+          <div role="tablist" aria-label="Aufgabenansicht" className="admin-todo-tabs">
+            <button type="button" role="tab" id="todo-board-tab" aria-controls="todo-board-view" aria-selected={view === "board"} tabIndex={view === "board" ? 0 : -1} onClick={() => setView("board")} onKeyDown={(event) => { if (["ArrowRight", "ArrowLeft"].includes(event.key)) { event.preventDefault(); setView("backlog"); document.getElementById("todo-backlog-tab")?.focus(); } }}>Board<span>{board.length}</span></button>
+            <button type="button" role="tab" id="todo-backlog-tab" aria-controls="todo-backlog-view" aria-selected={view === "backlog"} tabIndex={view === "backlog" ? 0 : -1} onClick={() => setView("backlog")} onKeyDown={(event) => { if (["ArrowRight", "ArrowLeft"].includes(event.key)) { event.preventDefault(); setView("board"); document.getElementById("todo-board-tab")?.focus(); } }}>Backlog<span>{backlogCount}</span></button>
+          </div>
+          <div className="admin-todo-head-actions">
+            <span className="admin-todo-save-state" role="status" aria-live="polite">{store.saveState === "saving" ? <LoaderCircle size={14} className="admin-todo-spin"/> : store.saveState === "saved" && !store.dirty ? <Check size={14}/> : null}{saveMessage}</span>
+            <button type="button" className="admin-todo-icon" title="Letzte Änderung rückgängig machen" aria-label="Letzte Änderung rückgängig machen" disabled={!store.canUndo} onClick={store.undo}><Undo2 size={18} aria-hidden="true"/></button>
+            <button type="button" className="admin-todo-icon" title="Aktualisieren" aria-label="Aufgaben aktualisieren" disabled={!!store.dirty || store.saveState === "saving" || loading} onClick={() => void reload()}><RefreshCw size={18} className={loading ? "admin-todo-spin" : ""} aria-hidden="true"/></button>
+            <button type="button" className="admin-todo-primary" onClick={() => openEditor()}>Neue Aufgabe<ArrowRight size={16} aria-hidden="true"/></button>
+          </div>
         </div>
-      )}
-    </>
-  );
+        <div className="admin-todo-filters" role="group" aria-label="Aufgaben filtern">
+          <label className="admin-todo-search"><Search size={16} aria-hidden="true"/><input type="search" aria-label="Aufgaben suchen" placeholder="Aufgaben suchen" value={query} onChange={(event) => setQuery(event.target.value)}/></label>
+          <TodoChoice label="Bearbeiter filtern" value={personFilter} onChange={setPersonFilter} options={[{ value: "all", label: "Alle Bearbeiter" }, ...TODO_PEOPLE.map((person) => ({ value: person.id, label: person.name })), { value: "unassigned", label: "Nicht zugewiesen" }]}/>
+          <TodoChoice label="Priorität filtern" value={priorityFilter} onChange={setPriorityFilter} options={[{ value: "all", label: "Alle Prioritäten" }, ...TODO_PRIORITIES.map((priority) => ({ value: String(priority.id), label: priority.label }))]}/>
+          <TodoChoice label="Abschluss filtern" value={resolutionFilter} onChange={changeResolutionFilter} options={[{ value: "all", label: "Alle Abschlüsse" }, { value: "open", label: "Nicht geschlossen" }, ...TODO_RESOLUTIONS.map((resolution) => ({ value: resolution.id, label: resolution.label }))]}/>
+          <TodoChoice label="Art filtern" value={kindFilter} onChange={setKindFilter} options={[{ value: "all", label: "Alle Arten" }, { value: "code", label: "Code" }, { value: "extern", label: "Außerhalb Code" }]}/>
+          <TodoChoice label="Termin filtern" value={dueFilter} onChange={(value) => setDueFilter(value as DueFilter)} options={[{ value: "all", label: "Alle Termine" }, { value: "overdue", label: "Überfällig" }, { value: "today", label: "Heute fällig" }, { value: "undated", label: "Ohne Termin" }]}/>
+          <label className="admin-todo-wait-filter"><input type="checkbox" checked={waitingFilter} onChange={(event) => setWaitingFilter(event.target.checked)}/><span>Wartende</span></label>
+          {hasFilters && <button type="button" className="admin-todo-text-action" onClick={resetFilters}>Filter zurücksetzen</button>}
+        </div>
+        {view === "board" ? <div role="tabpanel" id="todo-board-view" aria-labelledby="todo-board-tab">
+          <div className="admin-todo-view-tools"><div className="admin-todo-swimlane"><span>Swimlanes</span><TodoChoice label="Swimlanes" value={swimlane} onChange={(value) => { setSwimlane(value as Swimlane); setDragged(null); setDropTarget(null); }} options={[{ value: "work", label: "Arbeitsbereiche" }, { value: "person", label: "Bearbeiter" }, { value: "none", label: "Ohne Gruppierung" }]}/></div><span>Geschlossen: letzte 14 Tage</span></div>
+          <div className="admin-todo-mobile-status"><TodoChoice label="Boardspalte" value={mobileStatus} onChange={(value) => setMobileStatus(value as TodoStatus)} options={BOARD_STATUSES.map((status) => ({ value: status.id, label: `${status.label} (${shownBoard.filter(({ item }) => taskStatus(item) === status.id).length})` }))}/></div>
+          <div className="admin-todo-board" data-mobile-status={mobileStatus}>
+            <div className="admin-todo-columns" aria-hidden="true">{BOARD_STATUSES.map((status) => <div key={status.id} className="admin-todo-column-heading" data-status={status.id}><strong>{status.label}</strong><span>{shownBoard.filter(({ item }) => taskStatus(item) === status.id).length}</span></div>)}</div>
+            {shownBoard.length > 0 && lanes.map((lane) => {
+              const laneEntries = shownBoard.filter((entry) => group(entry) === lane.id);
+              const personWork = swimlane === "person" ? laneEntries.filter(({ item }) => taskStatus(item) === "doing").length : 0;
+              return <section className="admin-todo-lane" key={lane.id} aria-label={lane.name}>
+                <h2 className="admin-todo-lane-heading"><span>{lane.name}</span><span>{laneEntries.length}{swimlane === "person" && personWork > 0 ? ` · ${personWork} in Arbeit` : ""}</span>{swimlane === "person" && lane.id !== "unassigned" && personWork > 2 && <span className="admin-todo-wip"><CircleAlert size={12}/>{personWork} gleichzeitig</span>}</h2>
+                <div className="admin-todo-lane-columns">{BOARD_STATUSES.map((status) => {
+                  const column = laneEntries.filter(({ item }) => taskStatus(item) === status.id).sort(order);
+                  const cellId = `${lane.id}:${status.id}`;
+                  return <div className={`admin-todo-cell ${dropTarget === cellId ? "is-drop-target" : ""}`} key={status.id} role="group" data-status={status.id} data-lane={lane.id} aria-label={`${lane.name}, ${status.label}`} onDragOver={(event) => dragOver(event, lane.id, cellId)} onDrop={(event) => drop(event, status.id, lane.id)}>
+                    {column.map((entry) => {
+                      const peers = entries.filter((other) => group(other) === lane.id && taskStatus(other.item) === status.id).sort(order);
+                      const index = peers.findIndex((peer) => peer.item.id === entry.item.id);
+                      return <article key={entry.item.id} data-todo-id={entry.item.id} className={`admin-todo-card ${dragged === entry.item.id ? "is-dragging" : ""} ${dropTarget === entry.item.id ? "is-drop-before" : ""} ${taskStatus(entry.item) === "done" ? "is-done" : ""}`} draggable onDragStart={(event) => { setDragged(entry.item.id); event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", entry.item.id); }} onDragEnd={() => { setDragged(null); setDropTarget(null); }} onDragOver={(event) => { if (allowDrop(lane.id)) { event.stopPropagation(); dragOver(event, lane.id, entry.item.id); } }} onDrop={(event) => drop(event, status.id, lane.id, entry.item.id)}>
+                        <div className="admin-todo-card-top"><span>{entry.category}</span><GripVertical size={14} aria-hidden="true"/></div>
+                        <button type="button" className="admin-todo-task-title" onClick={() => openEditor(entry)}>{entry.item.text}</button>
+                        {taskMeta(entry)}{waiting(entry)}
+                        <div className="admin-todo-card-owner"><TodoOwner item={entry.item} onChange={(person) => updateOwner(entry, person)}/></div>
+                        <div className="admin-todo-card-actions"><TodoStatusChoice item={entry.item} onChange={(next, resolution) => updateStatus(entry, next, resolution)}/><TodoOrder canUp={index > 0} canDown={index >= 0 && index < peers.length - 1} onMove={(offset) => reorder(entry, offset)}/></div>
+                      </article>;
+                    })}
+                    {!column.length && <span className="admin-todo-cell-empty">Keine Aufgaben</span>}
+                  </div>;
+                })}</div>
+              </section>;
+            })}
+            {!shownBoard.length && <div className="admin-todo-empty"><LayoutList size={24} aria-hidden="true"/><p>{board.length ? "Keine Aufgaben für diese Filter." : "Aktuell sind keine Aufgaben eingeplant."}</p><button type="button" className="admin-todo-text-action" onClick={board.length ? resetFilters : () => setView("backlog")}>{board.length ? "Filter zurücksetzen" : "Zum Backlog"}<ArrowRight size={16}/></button></div>}
+          </div>
+        </div> : <div role="tabpanel" id="todo-backlog-view" aria-labelledby="todo-backlog-tab">
+          <div className="admin-todo-view-tools"><TodoChoice label="Backlog anzeigen" value={scope} onChange={(value) => setScope(value as BacklogScope)} options={[{ value: "backlog", label: "Nicht eingeplant" }, { value: "all", label: "Alle Aufgaben" }, { value: "open", label: "Offene Aufgaben" }, { value: "done", label: "Geschlossene Aufgaben" }]}/><button type="button" className="admin-todo-text-action" onClick={() => changeClosed(closed.length ? [] : store.categories.map((category) => category.id))}>{closed.length ? "Alle ausklappen" : "Alle einklappen"}<ChevronDown size={14}/></button></div>
+          <div className="admin-todo-backlog">{store.categories.map((category) => {
+            const rows = entries.filter((entry) => entry.categoryId === category.id);
+            const visible = rows.filter((entry) => matches(entry) && (scope === "all" || scope === "backlog" && taskStatus(entry.item) === "backlog" || scope === "open" && taskStatus(entry.item) !== "done" || scope === "done" && taskStatus(entry.item) === "done")).sort((a, b) => Number(taskStatus(a.item) === "done") - Number(taskStatus(b.item) === "done") || todoPriority(a.item) - todoPriority(b.item) || order(a, b));
+            const collapsed = closed.includes(category.id);
+            return <section key={category.id} className="admin-todo-category" aria-label={category.name}>
+              <div className="admin-todo-category-head"><h2><button type="button" onClick={() => changeClosed(collapsed ? closed.filter((id) => id !== category.id) : [...closed, category.id])} aria-expanded={!collapsed} aria-controls={`todo-category-${category.id}`}><ChevronDown size={16} className={collapsed ? "is-collapsed" : ""} aria-hidden="true"/>{category.name}<span>{visible.length}</span></button></h2><button type="button" className="admin-todo-text-action" aria-label={`Neue Aufgabe in ${category.name}`} onClick={() => openEditor(undefined, category.id)}>Neue Aufgabe<ArrowRight size={14}/></button></div>
+              <ul hidden={collapsed} id={`todo-category-${category.id}`} className="admin-todo-backlog-rows">
+                {visible.map((entry) => <li key={entry.item.id} data-todo-id={entry.item.id} className={`admin-todo-row ${entry.item.erledigt ? "is-done" : ""}`}>
+                  <div className="admin-todo-row-main"><button type="button" className="admin-todo-task-title" onClick={() => openEditor(entry)}>{entry.item.text}</button>{entry.item.hinweis && <p className="admin-todo-row-description">{entry.item.hinweis}</p>}{taskMeta(entry)}{waiting(entry)}</div>
+                  <div className="admin-todo-row-owner"><TodoOwner item={entry.item} onChange={(person) => updateOwner(entry, person)}/></div>
+                  <div className="admin-todo-row-status"><TodoStatusChoice item={entry.item} onChange={(next, resolution) => updateStatus(entry, next, resolution)}/></div>
+                  {taskStatus(entry.item) === "backlog" && <button type="button" className="admin-todo-text-action admin-todo-plan" onClick={() => updateStatus(entry, "ready")}>Aufs Board<ArrowRight size={14} aria-hidden="true"/></button>}
+                </li>)}
+                {!visible.length && <li className="admin-todo-category-empty">Keine Aufgaben in dieser Auswahl.</li>}
+              </ul>
+            </section>;
+          })}</div>
+        </div>}
+      </>}
+    </section>
+    {editor && store.data && <TodoEditor key={editor.id ?? "new"} item={editorEntry?.item} categoryId={editor.categoryId} categories={store.categories} returnFocus={editor.returnFocus} onApply={(patch) => { if (editor.id) store.change([{ id: editor.id, patch }]); }} onCreate={store.create} onClose={() => setEditor(null)}/>}
+  </>;
 }
