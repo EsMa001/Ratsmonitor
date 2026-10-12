@@ -1,4 +1,5 @@
 import {compactSummaryAttempt} from '../integrations/compact-summary.mjs';
+import {versionPayload} from '@/shared/article-version.mjs';
 import {invalidateReads} from './read-cache.mjs';
 import {importHealth} from '../integrations/import-health.mjs';
 import {mergeImport} from '../integrations/merge-import.mjs';
@@ -177,7 +178,7 @@ async function refreshMetadata(id: string, started: string,region:string,previou
         // Der Abrufzeitpunkt steht für das ganze Gebiet in source_coverage; so bleiben Revision und Suchkarten ruhig.
         if(unchanged){if(t.metadata&&metadataChanged(p?.metadata,t.metadata))touch.push(env.DB.prepare("UPDATE topics SET payload=json_set(payload,'$.metadata',json(?)) WHERE id=?").bind(JSON.stringify(t.metadata),t.id));continue;}
         const statements=[];
-        if(p)statements.push(env.DB.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),p.id,started,JSON.stringify(p)));
+        if(p)statements.push(env.DB.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),p.id,started,versionPayload(p,t)));
         statements.push(env.DB.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET event_date=excluded.event_date,updated_at=excluded.updated_at,status=excluded.status,payload=excluded.payload').bind(t.id,region,t.source,t.eventDate,t.updatedAt,t.status,JSON.stringify(t)));
         const group=t.identity?.mergedInto||t.id;groups.set(group,[...(groups.get(group)||[]),...statements]);
     }

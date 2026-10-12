@@ -2,6 +2,7 @@ import {mergeImport} from './merge-import.mjs';
 import {importHealth} from './import-health.mjs';
 import {preserveAnalysis} from '../../shared/analysis-state.mjs';
 import {metadataChanged,stableJson} from '../../shared/article-record.mjs';
+import {versionPayload} from '../../shared/article-version.mjs';
 /** Merge an offline backfill into the current database, never replace its snapshot. */
 export async function applyBackfill(db,bundle){
  const key='history-backfill-'+bundle.revision;
@@ -27,7 +28,7 @@ export async function applyBackfill(db,bundle){
     if(prior&&fields.every(k=>stableJson(prior[k])===stableJson(incoming[k]))){if(incoming.metadata&&metadataChanged(prior.metadata,incoming.metadata))groups.set('meta:'+incoming.id,[db.prepare("UPDATE topics SET payload=json_set(payload,'$.metadata',json(?)) WHERE id=?").bind(JSON.stringify(incoming.metadata),incoming.id)]);continue;}
     const t={...preserveAnalysis(incoming,prior),regionId:region};
     const group=t.identity?.mergedInto||t.id,statements=groups.get(group)||[];
-    if(prior)statements.push(db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),t.id,bundle.revision,JSON.stringify(prior)));
+    if(prior)statements.push(db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),t.id,bundle.revision,versionPayload(prior,t)));
     statements.push(db.prepare('INSERT INTO topics(id,region_id,source,event_date,updated_at,status,payload) VALUES(?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET event_date=excluded.event_date,updated_at=excluded.updated_at,status=excluded.status,payload=excluded.payload').bind(t.id,region,t.source,t.eventDate,t.updatedAt,t.status,JSON.stringify(t)));
     groups.set(group,statements);
    }

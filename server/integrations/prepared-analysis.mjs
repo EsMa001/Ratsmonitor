@@ -1,4 +1,5 @@
 import {analysisSignature,RECORD_VERSION} from '../../shared/article-record.mjs';
+import {versionPayload} from '../../shared/article-version.mjs';
 import {classifyTopic,LABELS} from '../../shared/labels.mjs';
 import {hasCurrentLabel} from '../../shared/analysis-state.mjs';
 import {features,MATCH_VERSION} from '../../shared/similarity.mjs';
@@ -40,7 +41,7 @@ export async function importPreparedAnalysis(db,bundle,{limit=75}={}){
    const versions=[['summary',next.contentAnalysis,{...next.contentAnalysis,shortSummary:a.shortSummary,longSummary:a.longSummary}],['rule-label',rule,rule],...(a.aiLabel?[['ai-label',a.aiLabel,a.aiLabel]]:[])];
    // Versionskopie nur, wenn das Bündel den Prozessstand ändert (Beratungsfolge, Status); die Analysen stehen in article_analyses.
    const sourceChanged=status!==t.status||JSON.stringify(events)!==JSON.stringify(t.events);
-   const statements=[...(sourceChanged?[db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),t.id,at,JSON.stringify(t))]:[]),...versions.map(([kind,v,payload])=>db.prepare('INSERT OR IGNORE INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(bundle.id+':'+t.id+':'+kind,t.id,kind,v.method||'unknown',v.inputHash||a.contentAnalysis.inputHash,v.generatedAt||at,JSON.stringify(payload))),db.prepare('UPDATE topics SET status=?,payload=? WHERE id=?').bind(status,JSON.stringify(next),t.id)];
+   const statements=[...(sourceChanged?[db.prepare('INSERT INTO article_versions(id,topic_id,captured_at,payload) VALUES(?,?,?,?)').bind(crypto.randomUUID(),t.id,at,versionPayload(t,next))]:[]),...versions.map(([kind,v,payload])=>db.prepare('INSERT OR IGNORE INTO article_analyses(id,topic_id,kind,method,input_hash,created_at,payload) VALUES(?,?,?,?,?,?,?)').bind(bundle.id+':'+t.id+':'+kind,t.id,kind,v.method||'unknown',v.inputHash||a.contentAnalysis.inputHash,v.generatedAt||at,JSON.stringify(payload))),db.prepare('UPDATE topics SET status=?,payload=? WHERE id=?').bind(status,JSON.stringify(next),t.id)];
    await db.batch(statements);processed++;
   }
   const stored=await db.prepare(`SELECT COUNT(*) AS total,
