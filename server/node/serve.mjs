@@ -72,7 +72,9 @@ server.requestTimeout = 0; // Abrufe im Adminbereich dauern Minuten; Grenzen set
 console.log(`[ratsmonitor] Node ${process.version}, NODE_ENV=${process.env.NODE_ENV ?? '(leer)'}, TZ=${process.env.TZ ?? '(System)'}`);
 
 // Startansichten der Auswertungen nacheinander abfragen, damit ihr Zwischenspeicher gefüllt ist (siehe oben).
-const WARM = ['decisions', 'news', 'network', 'foerderung', 'trends', 'score'].map((name) => `/api/analytics/${name}`);
+const RADARS = ['versorgung', 'verkehr', 'soziales', 'vergabe', 'klima', 'finanzen', 'beteiligung', 'gebuehren']; // shared/radars.mjs
+const WARM = [...['decisions', 'news', 'network', 'foerderung', 'trends', 'score'].map((name) => `/api/analytics/${name}`),
+  ...RADARS.map((id) => `/api/analytics/themenradar?radar=${id}`)];
 async function warm() {
   for (const path of WARM) {
     if (stopping) return;
