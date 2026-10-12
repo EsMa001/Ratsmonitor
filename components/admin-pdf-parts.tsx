@@ -13,7 +13,7 @@ export const day=(d?:string|null)=>d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(
 export const month=(m?:string|null)=>m&&/^\d{4}-\d{2}$/.test(m)?m.slice(5,7)+'.'+m.slice(2,4):m||'–';
 export const dur=(s?:number|null)=>s==null?'–':s<90?`${s} s`:s<5400?`${Math.round(s/60)} min`:`${(s/3600).toLocaleString('de-DE',{maximumFractionDigits:1})} h`;
 /** Arten der Läufe und Aufträge */
-export const KIND:Record<string,string>={nightly:'Nachtkette',run:'Lauf von Hand',retry:'Erneuter Versuch',others:'Übrige PDFs',fetch:'Laden von Hand',ocr:'OCR-Lauf von Hand',text:'Textebene von Hand'};
+export const KIND:Record<string,string>={nightly:'Nachtkette',run:'Lauf von Hand',retry:'Erneuter Versuch',others:'Übrige PDFs',texts:'Texte erstellen',fetch:'Laden von Hand',ocr:'OCR-Lauf von Hand',text:'Textebene von Hand'};
 
 export type MonthRow={month:string;linked:number;ok:number;textOnly:number;failed:number;open:number;openBlocked?:number};
 const SEG:[keyof MonthRow,string,string][]=[['ok','bg-teal-600','als PDF'],['textOnly','bg-teal-300','nur Text'],['failed','bg-slate-400','fehlgeschlagen'],['open','bg-slate-200','offen']];
@@ -141,3 +141,24 @@ export function RunList({runs}:{runs:Run[]}){
    </li>;})}
  </ul>;
 }
+
+/** Qualität der Ablage (stats.mjs, storeQuality in scripts/pdf-store/store-lib.mjs) */
+type QPart={files:number;bytes:number;avg:number|null;byBytes:number|null};
+export type Quality=QPart&{primary:QPart;others:QPart;formal:number;scans:number;types:(QPart&{type:string})[];bands:(QPart&{lo:number;hi:number|null})[];textOnly:{files:number;avg:number|null}};
+const TYPE_NAME:Record<string,string>={paper:'Vorlagen',decision:'Beschlüsse',minutes:'Niederschriften',attachment:'Anlagen',other:'Sonstige',invitation:'Einladungen'};
+const val=(v?:number|null)=>v==null?'–':v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const band=(b:{lo:number;hi:number|null})=>b.hi==null?`Wert ab ${val(b.lo)}`:b.lo===0?`unter ${val(b.hi)}`:`${val(b.lo)} bis unter ${val(b.hi)}`;
+export function QualityTable({q}:{q:Quality}){
+ const rows:[string,QPart][]=[...q.types.map(t=>[TYPE_NAME[t.type]??t.type,t] as [string,QPart]),...q.bands.map(b=>[band(b),b] as [string,QPart])];
+ return <div className="mt-5 max-w-[820px]">
+  <div className="hidden grid-cols-[minmax(0,1.4fr)_90px_90px_80px_minmax(0,1fr)] gap-x-3 border-b border-slate-200 pb-2 text-[12px] text-slate-500 md:grid"><span>Dokumentart, Wertstufe</span><span className="text-right">Dateien</span><span className="text-right">Platz</span><span className="text-right">Ø Wert</span><span>Anteil am Platz</span></div>
+  <ul className="m-0 list-none p-0">{rows.map(([label,r],i)=><li key={label} className={'grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 border-b border-slate-200 py-2 text-[14px] md:grid-cols-[minmax(0,1.4fr)_90px_90px_80px_minmax(0,1fr)] md:items-center'+(i===q.types.length?' mt-4 border-t':'')}>
+   <span className="truncate">{label}</span>
+   <span className="text-right tabular-nums text-slate-500 md:text-slate-900">{n(r.files)}<span className="md:hidden"> · {gb(r.bytes)} · Ø {val(r.avg)}</span></span>
+   <span className="hidden text-right tabular-nums md:block">{gb(r.bytes)}</span>
+   <span className="hidden text-right font-semibold tabular-nums md:block">{val(r.avg)}</span>
+   <span className="col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 md:col-span-1"><span className="block h-full rounded-full bg-teal-600" style={{width:`${q.bytes?Math.max(1,r.bytes/q.bytes*100):0}%`}}/></span>
+  </li>)}</ul>
+ </div>;
+}
+export const qualityValue=val;

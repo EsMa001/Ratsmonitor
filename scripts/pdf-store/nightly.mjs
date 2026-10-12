@@ -15,6 +15,8 @@
 // --others (Auftrag „Übrige PDFs laden“): eigener Lauf für die übrigen PDFs der Berichte (fetch.mjs --others), nur Laden,
 // Textebene und Stand, kein OCR, keine Zusammenfassungen und Fakten (die lesen nur Hauptdokumente); Laden bekommt die ganze
 // Zeit bis auf 15 min. Dieselbe Sperre: nie zugleich mit dem normalen Lauf.
+// --texts (Auftrag „Texte erstellen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann OCR,
+// Zusammenfassungen, Fakten, Wortliste und Stand wie nachts (OCR nur Hauptdokumente).
 // Admin-Reiter (state.mjs): Fortschritt je Schritt (die Schritte schreiben ihren eigenen jede Minute dazu), Protokoll des Laufs
 // am Ende ('pdf-store-runs', höchstens 50 Läufe, mit Zeit und Zusammenfassung je Schritt), Anhalten vor jedem Schritt (die
 // Schritte selbst prüfen jede Minute); angehalten endet der Lauf mit Exit-Code 3. --kind: Art im Protokoll (job.mjs setzt sie).
@@ -22,7 +24,7 @@
 // der Exit-Code ist dann 1. Zeit: --minutes (Standard 180) für alles; Laden höchstens --fetch-share (0.4) davon, OCR bekommt,
 // was bis auf --reserve (25 min für 5 bis 7) übrig ist.
 //
-//   node scripts/pdf-store/nightly.mjs [--minutes 180] [--budget-gb 100] [--months 240] [--ocr-workers 2] [--retry-errors] [--start-month JJJJ-MM] [--others] [--kind nightly|run|retry|others] [--dry-run]
+//   node scripts/pdf-store/nightly.mjs [--minutes 180] [--budget-gb 100] [--months 240] [--ocr-workers 2] [--retry-errors] [--start-month JJJJ-MM] [--others|--texts] [--kind nightly|run|retry|others|texts] [--dry-run]
 // Umgebung: DATABASE_FILE (Server), RM_PDF_STORE (Ablage), OCR_TOOLS/OCR_CACHE (text.mjs).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -82,10 +84,10 @@ function finish(result){
  progress('chain',null);
 }
 
-const others=flag('others');
-say(`Start${others?' (übrige PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
-step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare))),'--report-mb','1000']);
-if(sizeGb()>budgetGb){
+const others=flag('others'),texts=!others&&flag('texts');
+say(`Start${others?' (übrige PDFs)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
+if(!texts)step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),'--ocr-workers',String(ocrWorkers),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare))),'--report-mb','1000']);
+if(!texts&&sizeGb()>budgetGb){
  step('Rang nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
  step('Budget','scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
 }

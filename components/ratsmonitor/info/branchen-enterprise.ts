@@ -23,7 +23,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   gremien: { href: "/analytics/gremien", name: "Beratungswege", icon: "users", group: "tool" },
   fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "politik" },
   foerderung: { href: "/analytics/foerderung", name: "Förderradar", icon: "euro", group: "finanzen" },
-  bauleitplanung: { href: "/analytics/bauleitplanung", name: "Bauleitplanung", icon: "house", group: "radar" },
+  bauleitplanung: { href: "/analytics/atlas?bereich=bauleitplanung", name: "Bauleitplanung", icon: "house", group: "radar" },
   kita: { href: "/analytics/atlas?bereich=kita", name: "Kita-Radar", icon: "heart", group: "radar" },
   versorgung: { href: "/analytics/atlas?bereich=versorgung", name: "Versorgungsradar", icon: "droplet", group: "radar" },
   verkehr: { href: "/analytics/atlas?bereich=verkehr", name: "Verkehrsradar", icon: "bus", group: "radar" },

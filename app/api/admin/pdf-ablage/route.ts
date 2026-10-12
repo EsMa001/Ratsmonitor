@@ -4,7 +4,7 @@ import {requireSameOrigin,AdminError} from '@/server/integrations/admin-access.m
 import {pdfStoreState,requestPdfJob,removePdfJob,requestStop,requestCount} from '@/server/integrations/pdf-store-admin.mjs';
 // PDF-Import (server/integrations/pdf-store-admin.mjs): GET liest Stand, Fortschritt, Aufträge und Protokoll. POST legt nur
 // Wünsche ab, ausgeführt werden sie auf dem Server (scripts/pdf-store/job.mjs und die Skripte selbst):
-// {action:'queue',kind:'run'|'retry'|'others'} (früher nur {kind}), {action:'remove',id}, {action:'stop',lane:'chain'|'ocr'},
+// {action:'queue',kind:'run'|'retry'|'others'|'texts'} (früher nur {kind}), {action:'remove',id}, {action:'stop',lane:'chain'|'ocr'},
 // {action:'count'}.
 export async function GET(){try{await requireAdmin();return Response.json(await pdfStoreState(env.DB),{headers:ADMIN_HEADERS});}catch(e){return adminFailure(e);}}
 export async function POST(request:Request){try{

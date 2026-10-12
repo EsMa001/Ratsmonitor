@@ -11,6 +11,7 @@ import {atRevision} from './revision-cache.mjs';
  * Die Zahl sagt, wie oft ein Thema in den Ratsunterlagen vorkommt, nicht, was umgesetzt wurde.
  */
 const MONTHS=12,MIN_MONTHS=9,MIN_ITEMS=100,MIN_GROUP=15,MIN_TOPIC=5;
+export const NORM_RULE={minItems:MIN_ITEMS,minMonths:MIN_MONTHS,minTopic:MIN_TOPIC,minGroup:MIN_GROUP};
 const SIZES=[[0,10000,'unter 10.000'],[10000,20000,'10.000 bis 20.000'],[20000,50000,'20.000 bis 50.000'],[50000,100000,'50.000 bis 100.000'],[100000,Infinity,'ab 100.000']];
 export const LANDS={'01':'Schleswig-Holstein','02':'Hamburg','03':'Niedersachsen','04':'Bremen','05':'Nordrhein-Westfalen','06':'Hessen','07':'Rheinland-Pfalz','08':'Baden-Württemberg','09':'Bayern','10':'Saarland','11':'Berlin','12':'Brandenburg','13':'Mecklenburg-Vorpommern','14':'Sachsen','15':'Sachsen-Anhalt','16':'Thüringen'};
 const UNION=/Samtgemeinde|Verbandsgemeinde|Amt\b|Verwaltungsgemeinschaft|Verwaltungsverband/;
@@ -70,7 +71,7 @@ async function withFormal(db,sql,args){
  return db.prepare(sql(true)).bind(...args).all().catch(()=>db.prepare(sql(false)).bind(...args).all());
 }
 /* Sachvorgänge je Gebiet im Zeitfenster und Monate mit Sitzungen */
-async function base(db,w){
+export async function base(db,w){
  return atRevision(db,`radar-norm-base|${w.from}|${w.to}`,async()=>{
   const {results}=await withFormal(db,formal=>`SELECT region_id r,count(DISTINCT lower(title)) n,count(DISTINCT substr(date,1,7)) m FROM search_cards WHERE date>=? AND date<=? AND ${cleanCards('',formal)} GROUP BY region_id`,[w.from,w.to]);
   return new Map(results.map(x=>[x.r,{n:x.n,m:x.m}]));
@@ -122,7 +123,23 @@ export async function placeNorms(db,catalog,regionId,kind,names,{today}={}){
  * (Rang, gleiche Werte zur Hälfte); 0 = zu wenig Daten (Gebiet, Gruppe oder erwartete Zahl unter MIN_TOPIC).
  * Gemeindeverbände färben ihre Mitgliedsgemeinden (Kartenschlüssel wie mapKeys in shared/regions.ts).
  */
-const mapKeysOf=r=>r.members?r.members.map(m=>m.ags):r.formerAgs??[r.ags];
+export const mapKeysOf=r=>r.members?r.members.map(m=>m.ags):r.formerAgs??[r.ags];
+/** Gebiet mit genug Unterlagen für einen Vergleich (b aus base) */
+export const mapOk=b=>id=>{const x=b.get(id);return !!x&&x.n>=MIN_ITEMS&&x.m>=MIN_MONTHS&&!!POPULATION[id];};
+/** Vergleichsgruppen für alle Gebiete einer Ebene auf einmal (Regeln wie peerGroup): Gebiet → Liste ohne das Gebiet selbst, oder null */
+export function mapGroups(regs,ok){
+ const key=(r,size,land)=>`${typeOf(r).id}|${size}|${land}`;
+ const buckets=new Map(),add=(k,r)=>{if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(r);};
+ for(const r of regs)if(ok(r.id)){const size=sizeOf(POPULATION[r.id]);add(key(r,size,r.ags.slice(0,2)),r);add(key(r,size,''),r);}
+ return r=>{
+  const size=sizeOf(POPULATION[r.id]),land=r.ags.slice(0,2);
+  for(const [sizes,l] of [[[size],land],[[size],''],[[size-1,size,size+1],land],[[size-1,size,size+1],'']]){
+   const list=sizes.flatMap(s=>buckets.get(key(r,s,l))||[]).filter(x=>x.id!==r.id);
+   if(list.length>=MIN_GROUP)return list;
+  }
+  return null;
+ };
+}
 /* Mit Suchbegriff: Vorgänge des Radars (oder Unterthemas), die den Begriff treffen, je Gebiet; termWhere/termArgs aus
    searchFilters (nur Begriff, Zeitfenster, ohne Formalien) */
 export async function termCounts(db,kind,topic,termWhere,termArgs){
@@ -133,21 +150,11 @@ export async function radarMap(db,catalog,kind,{topic='',level='city',today,term
  const w=windowOf(today);
  return atRevision(db,`radar-map-${kind}-${topic}-${level}-${term?.key||''}|${w.from}|${w.to}`,async()=>{
   const [b,t,tot,hits]=await Promise.all([base(db,w),topics(db,kind,w),radarTotals(db,kind,w),term?termCounts(db,kind,topic,term.where,term.args):null]);
-  const ok=id=>{const x=b.get(id);return !!x&&x.n>=MIN_ITEMS&&x.m>=MIN_MONTHS&&!!POPULATION[id];};
+  const ok=mapOk(b);
   const regs=catalog.filter(r=>r.kind===level&&b.has(r.id));
   const kOf=id=>hits?(hits.get(id)||0):topic?(t.get(id)?.get(topic)||0):(tot.get(id)||0);
   const shareOf=id=>kOf(id)/b.get(id).n;
-  const key=(r,size,land)=>`${typeOf(r).id}|${size}|${land}`;
-  const buckets=new Map(),add=(k,r)=>{if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(r);};
-  for(const r of regs)if(ok(r.id)){const size=sizeOf(POPULATION[r.id]);add(key(r,size,r.ags.slice(0,2)),r);add(key(r,size,''),r);}
-  const groupOf=r=>{
-   const size=sizeOf(POPULATION[r.id]),land=r.ags.slice(0,2);
-   for(const [sizes,l] of [[[size],land],[[size],''],[[size-1,size,size+1],land],[[size-1,size,size+1],'']]){
-    const list=sizes.flatMap(s=>buckets.get(key(r,s,l))||[]).filter(x=>x.id!==r.id);
-    if(list.length>=MIN_GROUP)return list;
-   }
-   return null;
-  };
+  const groupOf=mapGroups(regs,ok);
   const items=[],counts=[0,0,0,0,0];
   for(const r of regs){
    const x=b.get(r.id),k=kOf(r.id);

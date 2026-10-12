@@ -5,6 +5,7 @@ import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
 import {where} from './analytics-radar-extra.mjs';
+import {radarMap,windowOf} from './analytics-radar-norms.mjs';
 
 /*
  * Plenara.X – Bauleitplanung: Welche Bebauungs- und Flächennutzungspläne sind in welchem Verfahrensschritt, wo wird viel
@@ -106,4 +107,19 @@ export async function planList(db,catalog,params){
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const list=[...plans.values()].filter(p=>by==='stage'?p.stage===value:by==='region'?p.region===value:by==='type'?p.type===value:p.uses.has(value)).sort((a,b)=>b.date.localeCompare(a.date));
  return {by,value,offset,size:LIST_SIZE,total:list.length,items:list.slice(offset,offset+LIST_SIZE).map(p=>({id:p.id,title:p.title,region:where(byId.get(p.region)?.name||p.region,p.title).label,date:p.date,status:p.status,times:p.topics,signal:p.stage,topics:[...p.uses]}))};
+}
+
+/* Karte (map=1): Anteil der Vorgänge zur Bauleitplanung (oder eines Verfahrensschritts) am Ratsgeschehen, wie in den Themenradaren */
+export const PLAN_MAP_STEPS=STAGES.map(([n])=>n);
+export async function planMap(db,catalog,params){
+ const topic=params.get('topic')||'',level=params.get('level')==='district'?'district':'city';
+ if(topic&&!PLAN_MAP_STEPS.includes(topic))throw new AnalyticsError('Unbekannter Verfahrensschritt.',400);
+ if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
+ const q=(params.get('q')||'').trim();let term=null;
+ if(q){
+  const w=windowOf(),p=new URLSearchParams({q,from:w.from,to:w.to,level,noformal:'1',...(params.get('exact')==='1'?{exact:'1'}:{})});
+  const {page}=await searchFilters(db,catalog,parseDecisions(p));
+  term={key:q.toLowerCase()+(params.get('exact')==='1'?'|exact':''),where:page.where,args:page.args};
+ }
+ return radarMap(db,catalog,'plan',{topic,level,term});
 }

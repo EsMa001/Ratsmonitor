@@ -74,6 +74,25 @@ const ranked=f=>{
 /** Alle geladenen Dateien mit Rang, beste zuerst */
 export const rankedFiles=store=>store.db.prepare(FILES+' GROUP BY p.sha256').all().map(ranked).sort((a,b)=>b.score-a.score);
 /** Eine Datei mit Rang (oder null, wenn sie nicht geladen ist) */
+/** Dateien, die nur noch als Text vorliegen (aus der Grenze verdrängt), mit dem Rang, den sie als PDF hätten */
+export const rankedTextOnly=store=>store.db.prepare(FILES.replace("p.status='ok'","p.status='text-only'")+' GROUP BY p.sha256').all().map(ranked);
+const QUALITY_TYPES=['paper','decision','minutes','attachment','other','invitation'];
+const QUALITY_BANDS=[[1,Infinity],[0.5,1],[0.2,0.5],[0,0.2]];
+/**
+ * Qualität der Ablage (Admin-Reiter „PDF-Import“): Wert je Datei wie im Rang (shared/pdf-rank.mjs: Dokumentart × Formalie ×
+ * Scan × Alter; Vorlage aus diesem Jahr = 1), als Mittel je Datei und nach Größe gewichtet (Mittel je Byte der Ablage), je
+ * Dokumentart und in Stufen; dazu das Mittel der Dateien, die nur als Text bleiben (zum Vergleich: was verdrängt wurde).
+ */
+export function storeQuality(files,textOnly=[]){
+ const avg=(list,w=()=>1)=>{let s=0,t=0;for(const f of list){const x=w(f);s+=f.value*x;t+=x;}return t?Math.round(s/t*100)/100:null;};
+ const part=list=>({files:list.length,bytes:list.reduce((a,f)=>a+f.bytes,0),avg:avg(list),byBytes:avg(list,f=>f.bytes)});
+ return {...part(files),
+  primary:part(files.filter(f=>!f.other)),others:part(files.filter(f=>f.other)),
+  formal:files.filter(f=>f.minFormal===1).length,scans:files.filter(f=>f.scan).length,
+  types:QUALITY_TYPES.map(type=>({type,...part(files.filter(f=>f.type===type))})).filter(t=>t.files),
+  bands:QUALITY_BANDS.map(([lo,hi])=>({lo,hi:hi===Infinity?null:hi,...part(files.filter(f=>f.value>=lo&&f.value<hi))})),
+  textOnly:{files:textOnly.length,avg:avg(textOnly)}};
+}
 export const rankedFile=(store,sha)=>{const f=store.db.prepare(FILES+' AND p.sha256=? GROUP BY p.sha256').get(sha);return f?ranked(f):null;};
 /** Platz der Textfassungen in Bytes (sie zählen mit in die Grenze und bleiben immer) */
 export const textBytes=store=>Number(store.db.prepare("SELECT COALESCE(SUM(chars),0) AS c FROM texts WHERE status='ok'").get().c)*1.05;

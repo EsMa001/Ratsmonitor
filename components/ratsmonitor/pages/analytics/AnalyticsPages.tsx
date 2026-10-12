@@ -9,7 +9,6 @@ import { KnowledgeGraphPage } from "./KnowledgeGraphPage";
 import { FraktionenPage } from "./FraktionenPage";
 import { FoerderradarPage } from "./FoerderradarPage";
 import { NewsradarPage } from "./NewsradarPage";
-import { BauleitplanungPage } from "./BauleitplanungPage";
 import { AtlasPage } from "./AtlasPage";
 import { RADARS } from "@/shared/radars.mjs";
 import { GRUPPEN } from "../../info/branchen-enterprise";
@@ -29,10 +28,10 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/fraktionen": FraktionenPage,
   "/analytics/foerderung": FoerderradarPage,
   "/analytics/news": NewsradarPage,
-  "/analytics/bauleitplanung": BauleitplanungPage,
   /* Themenradare: eine Seite, der plenara.X Atlas; die früheren Einzeladressen zeigen ihn mit ihrem Thema */
   "/analytics/atlas": () => <AtlasPage />,
   "/analytics/kita": () => <AtlasPage initial="kita" />,
+  "/analytics/bauleitplanung": () => <AtlasPage initial="bauleitplanung" />,
   "/analytics/versorgung": () => <AtlasPage initial="versorgung" />,
   "/analytics/verkehr": () => <AtlasPage initial="verkehr" />,
   "/analytics/soziales": () => <AtlasPage initial="soziales" />,

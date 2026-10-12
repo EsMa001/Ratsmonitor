@@ -8,6 +8,8 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
 import { RegionMap } from "./RegionMap";
+import { RadarMap } from "./RadarMap";
+import { Frame } from "./AtlasFrame";
 import { STATUS } from "../../lib/constants";
 
 interface Plan { id: string; title: string; region: string; date: string; stage: string; type: string; we: number | null }
@@ -100,9 +102,13 @@ function Uses({ uses, plans }: { uses: NonNullable<Result["uses"]>; plans: UsePl
    werden einzelnen Plänen zugeschrieben (Bewertung 11.10.2026). Die Daten liefert die Auswertung weiter. */
 const SHOW_HOUSING = false;
 
-/** plenara.X – Bauleitplanung: Pläne nach Verfahrensschritt, Gebiete mit viel Planung, geplanter Wohnungsbau */
-export function BauleitplanungPage() {
-  const { query } = useAnalyticsQuery();
+/** plenara.X – Bauleitplanung: Pläne nach Verfahrensschritt, Gebiete mit viel Planung, geplanter Wohnungsbau.
+    embedded: im plenara.X Atlas (AtlasPage.tsx) ohne eigenen Seitenkopf */
+export function BauleitplanungPage({ embedded }: { embedded?: boolean } = {}) {
+  const { query, search } = useAnalyticsQuery();
+  /* Klick auf „Ort auswerten“ in der Karte: Ortsfilter setzen und auswerten, sobald die Abfrage den Ort enthält */
+  const [runOnChange, setRunOnChange] = useState(false);
+  useEffect(() => { if (runOnChange) { setRunOnChange(false); setWant(true); } }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
   const [loading, setLoading] = useState(false);
@@ -141,15 +147,17 @@ export function BauleitplanungPage() {
   const maxR = Math.max(1, ...(res?.regions ?? []).map((r) => r.plansPer10k ?? 0));
 
   return (
-    <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
+    <Frame embedded={embedded}>
+      {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">Welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo viel geplant wird und wo Gewerbe-, Industrie- und Energieflächen entstehen.</p> : <PageBand>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/radar" className="text-teal-600">plenara.X Radar</Link> / Bauleitplanung</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Bauleitplanung</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo viel geplant wird und wo Gewerbe-, Industrie- und Energieflächen entstehen.</p>
-      </PageBand>
+      </PageBand>}
 
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
+      {(() => { const qp = new URLSearchParams(ranKey || query); return <RadarMap base="/api/analytics/bauleitplanung" topics={["Aufstellung", "Frühzeitige Beteiligung", "Offenlage", "Abwägung", "Satzungsbeschluss"]} topicLabel="Verfahrensschritt" allLabel="Alle Vorgänge zur Bauleitplanung" what="der Vorgänge zur Bauleitplanung"
+        q={qp.get("q") ?? ""} exact={qp.get("exact") === "1"} place={new URLSearchParams(query).get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); setRunOnChange(true); }} />; })()}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
@@ -251,6 +259,6 @@ export function BauleitplanungPage() {
           )}
         </div>
       )}
-    </main>
+    </Frame>
   );
 }

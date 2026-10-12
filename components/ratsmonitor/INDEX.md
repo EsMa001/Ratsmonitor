@@ -557,8 +557,8 @@ topic design-styles.css:140
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
-- admin-pdf-parts.tsx (144, ⚠2): n, pct, gb, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList
-- admin-pdf.tsx (209, ⚠15): AdminPdf
+- admin-pdf-parts.tsx (165, ⚠4): n, pct, gb, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, QualityTable, qualityValue
+- admin-pdf.tsx (224, ⚠16): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (243, ⚠25): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
@@ -699,10 +699,10 @@ topic design-styles.css:140
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (369, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (67, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (66, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (65): ATLAS_BEREICHE, AtlasBereich, isAtlasBereich, atlasHref, AtlasPage
-- BauleitplanungPage.tsx (257, ⚠8): BauleitplanungPage
+- AtlasPage.tsx (72): ATLAS_BEREICHE, AtlasBereich, isAtlasBereich, atlasHref, AtlasPage
+- BauleitplanungPage.tsx (265, ⚠9): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (222, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair

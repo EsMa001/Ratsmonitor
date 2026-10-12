@@ -313,6 +313,14 @@ zuerst übrige PDFs, ein übriges PDF nie ein Hauptdokument. In der Ablage `pdfs
 `text.mjs --ocr`) nur für Dateien, die auch als Hauptdokument verlinkt oder ohne Angabe sind. Der Admin-Reiter zeigt sie
 getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dort weiter, wo der vorige aufgehört hat.
 
+**Texte erstellen** (Auftrag `texts`, `nightly.mjs --texts`): lädt nichts, liest die Textebene aller abgelegten PDFs ohne Text,
+danach OCR (nur Hauptdokumente), Zusammenfassungen, Fakten, Wortliste und Stand wie nachts. Die Kennzahl „PDFs ohne Text“
+(`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten.
+
+**Qualität der Ablage** (Abschnitt im Reiter, `quality` in `pdf-store-stats`, `storeQuality` in `store-lib.mjs`): Mittel des
+Werts aus `shared/pdf-rank.mjs` (Vorlage aus diesem Jahr = 1) je Datei und nach Größe gewichtet, je Dokumentart und Wertstufe,
+dazu das Mittel der Dateien, die nur als Text bleiben. Erscheint nach dem nächsten Zählen.
+
 **Wie lange der Aufbau dauert** (hochgerechnet aus dem lokalen Aufbau, 11.10.2026): Alle Hauptdokumente sind 65 bis 80 GB,
 etwa 300.000 bis 360.000 PDFs; lokal kamen 30 bis 60 PDFs je Sekunde, also einige Nächte Laden. Textebene lokal 87.600
 Dateien in 18 Minuten. OCR braucht etwa jede zwanzigste Datei; lokal 4.612 Dateien (11.584 Seiten) in 3,2 Stunden mit 4 Workern, also rund

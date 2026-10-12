@@ -23,6 +23,8 @@ test('Aufträge: Reihe, gleiche Art nicht doppelt hintereinander, Entfernen, Obe
  const r=await removePdfJob(db,c.jobs.queue[0].id);assert.deepEqual(r.jobs.queue.map(j=>j.kind),['others']);
  for(const k of ['run','retry','run','retry'])await requestPdfJob(db,k);
  await assert.rejects(requestPdfJob(db,'others'),new RegExp(`${QUEUE_MAX} Aufträge`));
+ await removePdfJob(db,(await pdfStoreState(db)).jobs.queue.at(-1).id);
+ assert.equal((await requestPdfJob(db,'texts')).jobs.queue.at(-1).kind,'texts','Auftrag „Texte erstellen“');
  assert.equal((await pdfStoreState(db)).stats.linked,10);
 });
 

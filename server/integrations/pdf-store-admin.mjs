@@ -11,12 +11,12 @@
  *  - 'pdf-store-heartbeat' Lebenszeichen von job.mjs; fehlt es, führt niemand Aufträge aus (etwa lokal)
  *  - 'pdf-store-errors-csv:N'  Fehlerliste als gepacktes CSV in Stücken (stats.mjs)
  * GETs lesen nur. Aufträge: 'run' (Lauf wie nachts), 'retry' (dazu fehlgeschlagene Abrufe erneut versuchen), 'others'
- * (übrige PDFs der Berichte laden, nur Textebene). Es läuft immer nur einer; weitere warten in der Reihe.
+ * (übrige PDFs der Berichte laden, nur Textebene), 'texts' (nichts laden, Texte aus abgelegten PDFs ohne Text, OCR, Auswertung). Es läuft immer nur einer; weitere warten in der Reihe.
  */
 export const STATS_KEY='pdf-store-stats',JOB_KEY='pdf-store-job',RUNS_KEY='pdf-store-runs',STOP_KEY='pdf-store-stop',
  COUNT_KEY='pdf-store-count',HEARTBEAT_KEY='pdf-store-heartbeat',ERRORS_KEY='pdf-store-errors-csv',
  PROGRESS_KEYS=Object.freeze({chain:'pdf-store-progress-chain',ocr:'pdf-store-progress-ocr'}),
- JOB_KINDS=['run','retry','others'],LANES=['chain','ocr'];
+ JOB_KINDS=['run','retry','others','texts'],LANES=['chain','ocr'];
 /** Höchstens so viele wartende Aufträge; so viele beendete bleiben in der Liste */
 export const QUEUE_MAX=5,RECENT_MAX=10;
 /** Fortschritt älter als das gilt als beendet (geschrieben wird jede Minute) */
