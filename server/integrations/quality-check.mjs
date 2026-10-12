@@ -17,10 +17,12 @@ const GENERIC=['*tagesordnungspunkt*','*nicht vorab*','bereits behandelt*','*fra
 const generic=`(${GENERIC.map(g=>`lower(${title}) GLOB '${g}'`).join(' OR ')} OR length(${title})<25)`;
 const readJson=text=>{try{return JSON.parse(text||'null');}catch{return null;}};
 // A check over rows of topics: its condition, counted and sampled (id, region, title, date).
-const rows=condition=>async db=>({
- count:Number((await db.prepare(`SELECT count(*) n FROM topics WHERE ${condition}`).first()).n),
- samples:(await db.prepare(`SELECT id,region_id regionId,${title} title,event_date date FROM topics WHERE ${condition} ORDER BY region_id,event_date DESC LIMIT ?`).bind(SAMPLES).all()).results,
-});
+// Bedingungen auf active=1 lesen ohnehin die Nutzlast jeder Zeile: der Tabelle nach lesen (NOT INDEXED), nicht über einen
+// Index nach Gebiet, der die Zeilen kreuz und quer holt (tests/admin-query-plans.test.mjs)
+const rows=condition=>{const from=condition.startsWith(canonical+' ')?'topics NOT INDEXED':'topics';return async db=>({
+ count:Number((await db.prepare(`SELECT count(*) n FROM ${from} WHERE ${condition}`).first()).n),
+ samples:(await db.prepare(`SELECT id,region_id regionId,${title} title,event_date date FROM ${from} WHERE ${condition} ORDER BY region_id,event_date DESC LIMIT ?`).bind(SAMPLES).all()).results,
+});}
 // Conditions of the checks over rows of topics, shared by the check over the whole stock and the one in steps.
 const CONDITIONS={
  truncatedTitle:`${canonical} AND (${title} GLOB '*;' OR ${title} GLOB '*:' OR ${title} GLOB '*,')`,
