@@ -1,7 +1,8 @@
 // Zeitplaner der Server-Jobs (server/integrations/schedules.mjs, Admin-Reiter „Jobs & Zeitpläne“): Die Auslöser auf dem Server
-// (systemd-Timer, Cron) rufen alle 10 Minuten `node scripts/schedule.mjs <job>` auf. Ist der Job nach seiner Einstellung jetzt
+// (systemd-Timer, sofort auch über die .path-Einheiten der Knöpfe) rufen alle 10 Minuten `node scripts/schedule.mjs <job>` auf. Ist der Job nach seiner Einstellung jetzt
 // dran (täglich zur eingestellten Uhrzeit, nachgeholt bis 3 Stunden danach, oder alle N Minuten) oder wurde „jetzt
-// ausführen“ gewünscht, startet er ihn im Programmordner, gibt seine Ausgabe durch, vermerkt Start, Ende, Dauer und Ergebnis
+// ausführen“ oder eine andere Arbeit aus der Administration gewünscht (pendingWork, etwa „Stand neu zählen“; auch
+// ausgeschaltet), startet er ihn im Programmordner, gibt seine Ausgabe durch, vermerkt Start, Ende, Dauer und Ergebnis
 // ('schedule-runs') und endet mit dessen Exit-Code. Sonst endet er still. Ausgeschaltet: ein Vermerk „ausgelassen“, wenn der
 // Job dran gewesen wäre. Läuft der Job noch (Prozess lebt), wird nichts gestartet.
 //
@@ -12,7 +13,7 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {DatabaseSync} from 'node:sqlite';
-import {JOBS,SCHEDULES_KEY,SCHEDULE_RUNS_KEY,SCHEDULE_NOW_KEY,settingOf,dueNow,nextRun} from '../server/integrations/schedules.mjs';
+import {JOBS,SCHEDULES_KEY,SCHEDULE_RUNS_KEY,SCHEDULE_NOW_KEY,settingOf,dueNow,nextRun,pendingWork} from '../server/integrations/schedules.mjs';
 import {databaseFile} from './pdf-store/state.mjs';
 
 const args=process.argv.slice(2),root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -34,7 +35,7 @@ const job=JOBS.find(j=>j.id===args[0]);
 if(!job){console.error(`Unbekannter Job. Jobs: ${JOBS.map(j=>j.id).join(', ')}`);process.exit(2);}
 const setting=settingOf(job,get(SCHEDULES_KEY)),run=(get(SCHEDULE_RUNS_KEY)||{})[job.id]||{};
 const asked=(get(SCHEDULE_NOW_KEY)||{})[job.id],now=Date.now();
-const wanted=!!asked&&(!run.lastStart||Date.parse(asked)>Date.parse(run.lastStart));
+const wanted=!!asked&&(!run.lastStart||Date.parse(asked)>Date.parse(run.lastStart))||pendingWork(job.id,get);
 const {due}=dueNow(job,setting,run,now),force=args.includes('--force');
 if(run.running?.pid&&alive(run.running.pid)){if(force||wanted)console.log(`${job.id} läuft noch (Prozess ${run.running.pid})`);db.close();process.exit(0);}
 if(!force&&!wanted){

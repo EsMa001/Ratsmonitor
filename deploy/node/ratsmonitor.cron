@@ -1,6 +1,0 @@
-# /etc/cron.d/ratsmonitor (ersetzt ratsmonitor-backup und ratsmonitor-search-words): Sicherung und Wortliste über den
-# Zeitplaner (scripts/schedule.mjs). Er fragt alle 10 Minuten; ob der Job dran ist (Standard 03:30 und 04:20 Uhr), ein- oder
-# ausgeschaltet ist, steht im Admin-Reiter „Jobs & Zeitpläne“. Ohne fälligen Job endet er still (keine Zeilen im Protokoll).
-# Installieren: cp deploy/node/ratsmonitor.cron /etc/cron.d/ratsmonitor && rm /etc/cron.d/ratsmonitor-backup /etc/cron.d/ratsmonitor-search-words
-*/10 * * * * ratsmonitor cd /srv/ratsmonitor/app/current && DATABASE_FILE=/srv/ratsmonitor/data/ratsmonitor.sqlite node --no-warnings scripts/schedule.mjs backup >> /srv/ratsmonitor/backups/backup.log 2>&1
-*/10 * * * * ratsmonitor cd /srv/ratsmonitor/app/current && DATABASE_FILE=/srv/ratsmonitor/data/ratsmonitor.sqlite node --no-warnings scripts/schedule.mjs search-words >> /srv/ratsmonitor/backups/search-words.log 2>&1

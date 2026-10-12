@@ -1,5 +1,5 @@
 /**
- * Zeitpläne der Server-Jobs (Admin-Reiter „Jobs & Zeitpläne“). Die Auslöser auf dem Server (systemd-Timer, Cron) rufen alle
+ * Zeitpläne der Server-Jobs (Admin-Reiter „Jobs & Zeitpläne“). Die Auslöser auf dem Server (systemd-Timer; Knöpfe sofort über job-trigger.mjs und .path-Einheiten) rufen alle
  * 10 Minuten scripts/schedule.mjs <job> auf; der entscheidet nach der Einstellung hier, ob der Job jetzt dran ist, startet ihn
  * und vermerkt den Lauf. So lassen sich Jobs in der Administration ein- und ausschalten und ihre Zeit ändern, ohne die
  * Timer anzufassen. system_state:
@@ -76,6 +76,14 @@ export function dueNow(job,setting,run,now=Date.now()){
  if(setting.every)return {due:!last||now-last>=(setting.every-1)*60000,slot:null};
  const slot=slotAt(now,setting.time);
  return {due:now>=slot&&now-slot<CATCH_UP_MS&&last<slot,slot};
+}
+/** Offene Wünsche aus der Administration, die ein Job gleich erledigen soll, auch wenn er ausgeschaltet ist (ein Knopfdruck
+    zählt wie „jetzt ausführen“; der Schalter stoppt nur die geplanten Zeiten): beim Auftragsdienst „Stand neu zählen“,
+    „Neu messen“ und wartende Aufträge. get: Schlüssel aus system_state → Wert */
+export function pendingWork(id,get){
+ if(id!=='pdf-job')return false;
+ const open=x=>!!x?.requestedAt&&!x.startedAt,jobs=get('pdf-store-job');
+ return open(get('pdf-store-count'))||open(get('server-disk-count'))||(Array.isArray(jobs?.queue)?jobs.queue.length>0:jobs?.state==='waiting');
 }
 /** Nächster geplanter Start (ms) */
 export function nextRun(job,setting,run,now=Date.now()){

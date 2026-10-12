@@ -82,8 +82,8 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/app/current` | Verweis auf den laufenden Stand unter `releases/<commit>` (dazu bleiben die zwei neuesten anderen) |
 | `/srv/ratsmonitor/data/ratsmonitor.sqlite` | Datenbank |
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
-| `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, höchstens zwei Stände, auch während einer neuen (`/etc/cron.d/ratsmonitor-backup`) |
-| `/etc/cron.d/ratsmonitor-search-words` | Wortliste der Suche nachführen, 4:15 Uhr; baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
+| `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
+| `ratsmonitor-search-words.service` (früher `/etc/cron.d/ratsmonitor-search-words`) | Wortliste der Suche nachführen, 04:20 Uhr (Zeitplaner); baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
 | `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
@@ -289,7 +289,7 @@ stehen in `server/integrations/schedules.mjs` (`JOBS`): `import-nightly` (01:00)
 `pdf-nightly` (05:30), `import` und `pdf-job` (alle 10 Minuten). Die Auslöser fragen alle 10 Minuten; der Zeitplaner startet
 den Job, wenn er nach seiner Einstellung dran ist (`schedules` in `system_state`: ein/aus, Uhrzeit deutscher Zeit in
 10-Minuten-Schritten bzw. Abstand), ein täglicher Job wird bis 3 Stunden nach seiner Zeit nachgeholt; „Jetzt ausführen“
-(`schedule-now`) startet ihn beim nächsten Aufruf, auch ausgeschaltet. Jeder Lauf steht in `schedule-runs` (Start, Ende,
+(`schedule-now`) startet ihn sofort, auch ausgeschaltet. Jeder Lauf steht in `schedule-runs` (Start, Ende,
 Dauer, Ergebnis). Ohne fälligen Job endet der Zeitplaner still. Von Hand: `node scripts/schedule.mjs <job> --force`,
 Übersicht `node scripts/schedule.mjs --list`.
 
@@ -298,11 +298,31 @@ Zeiten weiter und die Seite sagt das):
 
 ```bash
 cp deploy/node/ratsmonitor-import.service deploy/node/ratsmonitor-import-nightly.service deploy/node/ratsmonitor-import-nightly.timer deploy/node/ratsmonitor-pdf-nightly.service deploy/node/ratsmonitor-pdf-nightly.timer deploy/node/ratsmonitor-pdf-job.service /etc/systemd/system/
-cp deploy/node/ratsmonitor.cron /etc/cron.d/ratsmonitor && rm /etc/cron.d/ratsmonitor-backup /etc/cron.d/ratsmonitor-search-words
 systemctl daemon-reload
 ```
 
 Die Timer selbst bleiben eingeschaltet (`systemctl list-timers`); ein- und ausgeschaltet wird in der Administration.
+
+**Sofortstart** (seit 12.10.2026): Jeder Knopf, der einen Job braucht („Jetzt ausführen“, PDF-Aufträge, „Stand neu zählen“,
+„Neu messen“), schreibt zusätzlich `/srv/ratsmonitor/data/trigger/<job>` (`server/integrations/job-trigger.mjs`; Ordner
+`RM_TRIGGER_DIR`, sonst `trigger` neben `DATABASE_FILE`). Je Job beobachtet eine `.path`-Einheit die Datei und startet den
+Dienst sofort; `schedule.mjs` führt ihn aus, wenn ein Wunsch offen ist (`schedule-now` oder `pendingWork`: beim Auftragsdienst
+Zählen, Messen, wartende Aufträge), auch ausgeschaltet. Läuft der Dienst schon, erledigt der laufende Auftragsdienst Zählen und
+Messen binnen 30 Sekunden; ein weiterer Auftrag startet beim nächsten Timer-Aufruf nach dem Ende. Sicherung und Wortliste
+laufen dafür nicht mehr über Cron, sondern über eigene Einheiten (Protokoll weiter in `backups/backup.log` und
+`backups/search-words.log`). Einrichten (einmal, als root):
+
+```bash
+cd /srv/ratsmonitor/app/current
+cp deploy/node/ratsmonitor-backup.service deploy/node/ratsmonitor-backup.timer deploy/node/ratsmonitor-search-words.service deploy/node/ratsmonitor-search-words.timer deploy/node/ratsmonitor-*.path /etc/systemd/system/
+rm /etc/cron.d/ratsmonitor
+systemctl daemon-reload
+systemctl enable --now ratsmonitor-backup.timer ratsmonitor-search-words.timer ratsmonitor-import.path ratsmonitor-import-nightly.path ratsmonitor-pdf-job.path ratsmonitor-pdf-nightly.path ratsmonitor-backup.path ratsmonitor-search-words.path
+```
+
+Von Hand, unabhängig vom Schalter: `systemd-run --unit ratsmonitor-pdf-job-now --uid=ratsmonitor --gid=ratsmonitor -p
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env -p WorkingDirectory=/srv/ratsmonitor/app/current /usr/bin/node --no-warnings
+scripts/schedule.mjs pdf-job --force` (Job-Name austauschbar).
 
 **Übrige PDFs** (Anlagen, Pläne …, in keinem Bericht Hauptdokument; Server 12.10.2026: rund 682.000): nur über den Knopf
 „Übrige PDFs laden“ (Auftrag `others`, `nightly.mjs --others`, `fetch.mjs --others`), nicht in der nächtlichen Kette. Ein

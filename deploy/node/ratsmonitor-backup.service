@@ -1,0 +1,21 @@
+# Nächtliche Sicherung (deploy/node/backup.sh) über den Zeitplaner (scripts/schedule.mjs backup, Admin-Reiter „Jobs &
+# Zeitpläne“, Standard 03:30 Uhr). Ersetzt den Eintrag in /etc/cron.d/ratsmonitor; Protokoll wie bisher in backups/backup.log.
+[Unit]
+Description=Ratsmonitor Sicherung der Datenbank
+After=ratsmonitor.service
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=3h
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs backup
+StandardOutput=append:/srv/ratsmonitor/backups/backup.log
+StandardError=append:/srv/ratsmonitor/backups/backup.log
+NoNewPrivileges=yes
+PrivateTmp=yes

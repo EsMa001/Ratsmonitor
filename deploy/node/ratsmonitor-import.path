@@ -1,0 +1,12 @@
+# Sofortstart aus der Administration (server/integrations/job-trigger.mjs): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/import, systemd startet dann ratsmonitor-import.service (scripts/schedule.mjs sieht den Wunsch).
+# Läuft der Dienst schon, passiert nichts; der laufende Job erledigt Wünsche selbst oder der nächste Timer-Aufruf.
+[Unit]
+Description=Ratsmonitor: import sofort starten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/import
+Unit=ratsmonitor-import.service
+
+[Install]
+WantedBy=multi-user.target

@@ -82,7 +82,7 @@ export function AdminPdf(){
      <div className="min-w-0"><b className="font-semibold">OCR-Lauf von Hand</b><span className="text-slate-500"> · seit {clock(ocr.startedAt)}</span><p className="mt-0.5 text-slate-700">{progressText(ocr)}</p></div>
      <div>{stopping('ocr',ocr)?<span className="text-slate-500">wird angehalten …</span>:<button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'stop',lane:'ocr'},'OCR-Lauf anhalten? Die Datei in Arbeit wird fertig gelesen, der Rest kommt in der Nachtkette.')}>Anhalten →</button>}</div>
     </li>}
-    {jobs&&jobs.queue.length>0&&<li><span className="text-slate-500">Warten (in dieser Reihenfolge, einer zur Zeit, Start binnen 10 Minuten nach dem vorigen):</span>
+    {jobs&&jobs.queue.length>0&&<li><span className="text-slate-500">Warten (in dieser Reihenfolge, einer zur Zeit; der nächste startet spätestens 10 Minuten nach dem vorigen):</span>
      <ol className="m-0 mt-1 list-decimal space-y-1 pl-5">{jobs.queue.map(j=><li key={j.id}><b className="font-semibold">{KIND[j.kind]}</b><span className="text-slate-500">, angefordert {when(j.requestedAt)}</span> <button type="button" className={textBtn+' ml-2'} disabled={busy} onClick={()=>post({action:'remove',id:j.id})}>Entfernen</button></li>)}</ol></li>}
     {jobs?.recent[0]&&<li className="text-slate-500">Zuletzt: {KIND[jobs.recent[0].kind]}, {when(jobs.recent[0].startedAt||jobs.recent[0].requestedAt)} bis {clock(jobs.recent[0].finishedAt)}: {jobs.recent[0].exit==='abgebrochen'?'abgebrochen':jobs.recent[0].state==='done'?'fertig':'mit Fehlern beendet'}</li>}
    </ul>

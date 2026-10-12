@@ -2,10 +2,11 @@ import {env} from 'cloudflare:workers';
 import {requireAdmin,adminFailure,ADMIN_HEADERS} from '@/server/services/admin-auth';
 import {requireSameOrigin,AdminError} from '@/server/integrations/admin-access.mjs';
 import {pdfStoreState,requestPdfJob,removePdfJob,requestStop,requestCount} from '@/server/integrations/pdf-store-admin.mjs';
+import {triggerJob} from '@/server/integrations/job-trigger.mjs';
 // PDF-Import (server/integrations/pdf-store-admin.mjs): GET liest Stand, Fortschritt, Aufträge und Protokoll. POST legt nur
 // Wünsche ab, ausgeführt werden sie auf dem Server (scripts/pdf-store/job.mjs und die Skripte selbst):
 // {action:'queue',kind:'run'|'retry'|'others'|'texts'|'ocr'} (früher nur {kind}), {action:'remove',id}, {action:'stop',lane:'chain'|'ocr'},
-// {action:'count'}.
+// {action:'count'}. Aufträge und Zählen stoßen den Auftragsdienst sofort an (job-trigger.mjs), statt auf den Timer zu warten.
 export async function GET(){try{await requireAdmin();return Response.json(await pdfStoreState(env.DB),{headers:ADMIN_HEADERS});}catch(e){return adminFailure(e);}}
 export async function POST(request:Request){try{
  requireSameOrigin(request);await requireAdmin();
@@ -13,10 +14,10 @@ export async function POST(request:Request){try{
  let body:{action?:unknown;kind?:unknown;id?:unknown;lane?:unknown};try{body=JSON.parse(text)||{};}catch{throw new AdminError(400,'Ungültige Anfrage.');}
  const action=body.action??'queue',str=(v:unknown)=>typeof v==='string'?v:'';
  const run=async()=>{
-  if(action==='queue')return requestPdfJob(env.DB,str(body.kind));
+  if(action==='queue'){const r=await requestPdfJob(env.DB,str(body.kind));await triggerJob('pdf-job');return r;}
   if(action==='remove')return removePdfJob(env.DB,str(body.id));
   if(action==='stop')return requestStop(env.DB,str(body.lane));
-  if(action==='count')return requestCount(env.DB);
+  if(action==='count'){const r=await requestCount(env.DB);await triggerJob('pdf-job');return r;}
   throw new AdminError(400,'Unbekannte Aktion.');
  };
  try{return Response.json(await run(),{headers:ADMIN_HEADERS});}

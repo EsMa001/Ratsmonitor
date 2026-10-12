@@ -29,8 +29,8 @@ export const FOOT:Record<AdminPage,string>={
  hochrechnung:'Die Hochrechnung liest nur den gespeicherten Bestand und startet keinen Abruf.',
  social:'Vorschläge aus den gespeicherten Berichten; vor einem Beitrag Zahl und Fundstellen prüfen. Die Seite startet keine Analyse.',
  regeltexte:'Zahlen aus der Datenbank; die Seite startet keine Analyse.',
- pdf:'Stand aus der letzten Zählung auf dem Server (scripts/pdf-store/stats.mjs), Fortschritt jede Minute. Die Knöpfe legen nur einen Auftrag an; der Server startet ihn binnen 10 Minuten.',
- zeitplaene:'Die Auslöser auf dem Server fragen alle 10 Minuten (scripts/schedule.mjs); Änderungen gelten ab dem nächsten Aufruf. Uhrzeiten in deutscher Zeit.',
+ pdf:'Stand aus der letzten Zählung auf dem Server (scripts/pdf-store/stats.mjs), Fortschritt jede Minute. Die Knöpfe legen einen Auftrag an und stoßen den Server sofort an; ein weiterer Auftrag wartet, bis der laufende fertig ist.',
+ zeitplaene:'Die Timer auf dem Server fragen alle 10 Minuten (scripts/schedule.mjs); „Jetzt ausführen“ und die Knöpfe der anderen Reiter starten den Job sofort, auch wenn er ausgeschaltet ist (der Schalter stoppt nur die geplanten Zeiten). Uhrzeiten in deutscher Zeit.',
  speicher:'Gemessen auf dem Server (scripts/server-disk.mjs) höchstens stündlich, Tabellen der Datenbank einmal am Tag. Die Seite löscht nichts.',
  stichwoerter:'Die Seite zählt nur, was frühere Schritte gespeichert haben; sie startet keine Analyse.',
 };

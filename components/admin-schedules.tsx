@@ -102,7 +102,7 @@ export function AdminSchedules(){
       <p><Status job={j}/></p>
       <p className="text-slate-500">{j.setting.enabled&&j.next?`Nächster Start ${when(j.next)}`:'Startet nicht von selbst'}</p>
       <button type="button" className="text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40" disabled={busy===j.id||!!j.run?.running||!!j.now&&(!j.run?.lastStart||j.now>j.run.lastStart)}
-       onClick={()=>post({action:'now',id:j.id},`„${j.label}“ jetzt einmal ausführen? Er startet binnen 10 Minuten.`)}>{j.now&&(!j.run?.lastStart||j.now>j.run.lastStart)?'Start angefordert …':'Jetzt ausführen →'}</button>
+       onClick={()=>post({action:'now',id:j.id},`„${j.label}“ jetzt einmal ausführen? Er startet sofort.`)}>{j.now&&(!j.run?.lastStart||j.now>j.run.lastStart)?'Start angefordert …':'Jetzt ausführen →'}</button>
      </div>
     </li>)}
    </ul>

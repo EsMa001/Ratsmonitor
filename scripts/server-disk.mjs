@@ -51,7 +51,7 @@ if(pdfStore)pdfStore.bytes=(pdfStore.pdfPrimary||0)+(pdfStore.pdfOthers||0)+(pdf
 /* Sicherungen: Datenbankkopien (backup.sh) und Sicherungen der Einstellungsdatei (nur Name und Größe, nie der Inhalt) */
 const backupDir=path.resolve(process.env.BACKUP_DIR||path.join(base,'backups'));
 let backups=[];try{backups=fs.readdirSync(backupDir).map(n=>({name:n,bytes:size(path.join(backupDir,n)),at:mtime(path.join(backupDir,n)),
- kind:/\.sqlite\.part$/.test(n)?'Unfertige Kopie':/\.sqlite$/.test(n)?'Datenbank':'Sonstiges'})).sort((a,b)=>(b.at||'').localeCompare(a.at||''));}catch{/* kein Ordner */}
+ kind:/\.sqlite(\.zst)?\.part$/.test(n)?'Unfertige Kopie':/\.sqlite\.zst$/.test(n)?'Datenbank':/\.sqlite$/.test(n)?'Datenbank, ungepackt':'Sonstiges'})).sort((a,b)=>(b.at||'').localeCompare(a.at||''));}catch{/* kein Ordner */}
 let envBackups=[];try{envBackups=fs.readdirSync(base).filter(n=>/\.env\.bak/.test(n)).map(n=>({name:n,bytes:size(path.join(base,n)),at:mtime(path.join(base,n))}));}catch{/* nichts */}
 
 /* Programmstände: releases/ über dem Arbeitsordner (auf dem Server app/current → app/releases/<Stand>) */
