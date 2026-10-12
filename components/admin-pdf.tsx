@@ -71,7 +71,7 @@ export function AdminPdf(){
     <button type="button" className={btn+' bg-slate-100 text-slate-800 hover:bg-slate-200'} disabled={busy||pending} onClick={()=>start('retry')}>Fehlgeschlagene erneut versuchen</button>
     <button type="button" className={btn+' bg-slate-100 text-slate-800 hover:bg-slate-200'} disabled={busy||pending} onClick={()=>start('others')}>Übrige PDFs laden</button>
    </div>
-   {job&&<p role="status" className="mt-3 text-[14px] text-slate-700">{KIND[job.kind]}, angefordert {when(job.requestedAt)}: <strong>{STATE[job.state]}</strong>{job.startedAt&&`, gestartet ${when(job.startedAt)}`}{job.finishedAt&&`, beendet ${when(job.finishedAt)}`}.</p>}
+   {job&&<p role="status" className="mt-3 text-[14px] text-slate-700">{KIND[job.kind]}, angefordert {when(job.requestedAt)}: <strong>{job.exit==='abgebrochen'?'abgebrochen':STATE[job.state]}</strong>{job.startedAt&&`, gestartet ${when(job.startedAt)}`}{job.finishedAt&&`, beendet ${when(job.finishedAt)}`}.</p>}
   </section>
 
   <section className="mt-10" aria-label="Gründe der Fehlschläge">
