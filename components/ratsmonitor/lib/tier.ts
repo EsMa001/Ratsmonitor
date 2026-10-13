@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { onOtherTab } from "./otherTab";
 
 /**
  * Nutzungsstufen. Solange es keine echte Anmeldung gibt, wird die Stufe nur im Browser
@@ -41,6 +42,11 @@ const KEY = "ratsmonitor:tier:v1";
 const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
 const listeners = new Set<() => void>();
 let current: Tier | null = null;
+/* Tarif in einem anderen Tab gewechselt (Testmodus): hier übernehmen */
+onOtherTab([KEY], () => {
+  current = null;
+  listeners.forEach((l) => l());
+});
 
 function read(): Tier {
   if (current) return current;

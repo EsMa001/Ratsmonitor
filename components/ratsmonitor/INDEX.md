@@ -639,7 +639,7 @@ topic design-styles.css:140
 - admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠15): AdminDashboardView
-- admin-estimate.tsx (355, ⚠52): AdminEstimate
+- admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
 - admin-loader.tsx (33): AdminLoader
@@ -690,7 +690,7 @@ topic design-styles.css:140
 - PlanCards.tsx (136, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (30): SaveArticleButton
 - SaveSearchDialog.tsx (16, ⚠2): SaveSearchDialog
-- SearchBox.tsx (542, ⚠1): isSearchInput, focusSearch, SearchBox
+- SearchBox.tsx (551, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (87): SearchFilterPanel
 - SearchOverlay.tsx (90): SearchOverlay
 - ShareButton.tsx (40): ShareButton
@@ -699,7 +699,7 @@ topic design-styles.css:140
 - icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (323, ⚠2): MapPanel
+- MapPanel.tsx (343, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (203, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
@@ -721,7 +721,7 @@ topic design-styles.css:140
 - QuellenPage.tsx (171, ⚠4): QuellenPage
 - StartseitePage.tsx (518, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
-- TodoPage.tsx (267, ⚠25): TodoPage
+- TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
@@ -760,15 +760,15 @@ topic design-styles.css:140
 - queue.ts (29): queue
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
-- savedArticles.ts (84): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, clearSavedArticles, useSavedArticles
+- savedArticles.ts (90): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, clearSavedArticles, useSavedArticles
 - savedSearch.ts (155, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - sha256.ts (47): sha256Fallback, sha256Hex
 - storage.ts (18): NO_STORAGE, clearStoredContent
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
-- testAuth.ts (149): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
+- testAuth.ts (152): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (106): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, todayLocal, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
-- tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
+- tier.ts (90): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (118): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TodoSubtask, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
 - topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
 - useClient.ts (12): useClient, useHydrated
@@ -802,7 +802,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (198, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (310, ⚠12): ComparePage
+- ComparePage.tsx (310, ⚠11): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
@@ -812,13 +812,13 @@ topic design-styles.css:140
 - GraphView.tsx (190, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (176, ⚠3): GremiennetzPage
 - KitaRadarPage.tsx (164, ⚠8): KitaRadarPage
-- KnowledgeGraphPage.tsx (225, ⚠2): KnowledgeGraphPage
+- KnowledgeGraphPage.tsx (207, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (180, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (79): DrillItem, RadarDrill
-- RadarExtra.tsx (153, ⚠8): Extra, RadarExtra
+- RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
 - RadarMap.tsx (79, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS
@@ -832,13 +832,13 @@ topic design-styles.css:140
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 
 ### components/ratsmonitor/services/
-- api.ts (8, ⚠1): readSavedSearches, writeSavedSearches
+- api.ts (9, ⚠1): SAVED_SEARCHES_KEY, readSavedSearches, writeSavedSearches
 
 ### components/ratsmonitor/state/
-- account.tsx (32): AccountProvider, useAccount, useSavedStats
+- account.tsx (35): AccountProvider, useAccount, useSavedStats
 - data.tsx (36, ⚠1): DataProvider, useData
 - nav.ts (12): View, viewOf, overviewScroll, useAppNav
-- search.tsx (590, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
+- search.tsx (603, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

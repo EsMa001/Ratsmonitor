@@ -2,7 +2,8 @@ import { newId } from '../lib/uuid';
 import {createContext,useCallback,useContext,useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
 import type {SavedSearch,NotifyFreq} from '../types';
 import {signature,type SearchSnapshot} from '../lib/savedSearch';
-import {readSavedSearches,writeSavedSearches} from '../services/api';
+import {readSavedSearches,writeSavedSearches,SAVED_SEARCHES_KEY} from '../services/api';
+import {onOtherTab} from '../lib/otherTab';
 import {todayLocal} from '../lib/text';
 type Account={saved:SavedSearch[];ready:boolean;addSaved:(snap:SearchSnapshot,name:string,notify?:{on:boolean;freq:NotifyFreq})=>SavedSearch;updateSaved:(id:string,patch:Partial<SavedSearch>)=>void;removeSaved:(id:string)=>void;restoreSaved:(s:SavedSearch,index:number)=>void;clearSaved:()=>void};
 const Context=createContext<Account|null>(null);
@@ -10,7 +11,9 @@ export function AccountProvider({children}:{children:ReactNode}){
  const [saved,setSaved]=useState<SavedSearch[]>([]),[ready,setReady]=useState(false);
  /* Aktueller Stand auch für mehrere Änderungen hintereinander (z. B. in einer Schleife): jede baut auf der vorigen auf */
  const list=useRef<SavedSearch[]>([]);
- useEffect(()=>{list.current=readSavedSearches();setSaved(list.current);setReady(true);},[]);
+ useEffect(()=>{list.current=readSavedSearches();setSaved(list.current);setReady(true);
+  /* Ein anderer Tab hat Suchen gespeichert, geändert oder entfernt: übernehmen, damit er sie hier nicht überschreibt */
+  return onOtherTab([SAVED_SEARCHES_KEY],()=>{list.current=readSavedSearches();setSaved(list.current);});},[]);
  /* Schreiben; false, wenn der Browser nichts dauerhaft speichern lässt (der Stand gilt dann bis zum Neuladen) */
  const save=useCallback((next:SavedSearch[])=>{list.current=next;setSaved(next);return writeSavedSearches(next);},[]);
  const addSaved=useCallback((snap:SearchSnapshot,name:string)=>{

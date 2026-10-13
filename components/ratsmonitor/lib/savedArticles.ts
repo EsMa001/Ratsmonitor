@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { onOtherTab } from "./otherTab";
 
 /** Gespeicherte Artikel (Lesezeichen), nur in diesem Browser */
 export interface SavedArticle {
@@ -16,6 +17,11 @@ const KEY = "ratsmonitor:saved-articles:v1";
 const listeners = new Set<() => void>();
 let cache: SavedArticle[] | null = null;
 const EMPTY: SavedArticle[] = [];
+/* Ein anderer Tab hat gespeichert oder entfernt: neu lesen und anzeigen */
+onOtherTab([KEY], () => {
+  cache = null;
+  listeners.forEach((l) => l());
+});
 
 function read(): SavedArticle[] {
   if (cache) return cache;

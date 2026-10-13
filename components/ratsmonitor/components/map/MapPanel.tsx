@@ -177,7 +177,9 @@ export function MapPanel({ active }: { active: boolean }) {
   const maxHits = counts.at(-1) ?? 0;
   const t1 = Math.max(1, Math.round(maxHits / 3)), t2 = Math.max(t1, Math.round((2 * maxHits) / 3));
 
+  /* Versteckt (andere Seite): nicht neu einfärben, abzeichnen oder zentrieren; beim Zeigen (active) holt die Karte es nach */
   useEffect(() => {
+    if (!active) return;
     const set = new Set(hits);
     /* Startseite (Kartenmodus noch nicht gestartet): Gemeinden unverändert eingefärbt, erst nach bestätigter Suche (Enter) nur die mit Treffern */
     const levels = Object.fromEntries(coverage.map((c) => [c.ags, !explore ? 3 : set.has(c.ags) ? hitLevel(areaCounts[c.ags] || 0, [t1, t2], filtered) : 0]));
@@ -185,7 +187,7 @@ export function MapPanel({ active }: { active: boolean }) {
     const level = state.area.length === 8 && state.scope === "with" && !state.radius ? "district" : state.level;
     engine?.update(levels, state.area, state.radius, coverage.map((c) => c.ags), level);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope, explore]);
+  }, [active, engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope, explore]);
 
   /* Kartenmodus, sobald eine Suche oder ein Filter bestätigt ist; sind alle entfernt, wieder der normale Modus.
      Beim Rendern nachgezogen, wenn sich das ändert (Freischalten per Tippen und „Schließen“ setzen explore selbst) */
@@ -219,9 +221,10 @@ export function MapPanel({ active }: { active: boolean }) {
   /* Kartenmodus: Abzeichen mit der Trefferzahl. Jede Karte zählt genau einmal (badgeCounts), damit die Zahlen auf der Karte
      zusammen die Trefferzahl ergeben; die Färbung nutzt weiter areaCounts, dort steht ein Samtgemeinde-Bericht bei jeder Mitgliedsgemeinde. */
   useEffect(() => {
+    if (!active) return;
     engine?.setExplore(explore, explore ? { ...badgeCounts } : null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, explore, badgeCounts]);
+  }, [active, engine, explore, badgeCounts]);
 
   /* Suchgesteuertes Zentrieren: Umkreis → Kreis; Ort → Ort bzw. Kreis bei „inkl. Kreis“; sonst alle Treffer; ohne Suche Deutschland */
   const hitsKey = hits.join(",");
@@ -238,6 +241,7 @@ export function MapPanel({ active }: { active: boolean }) {
     engine?.setBottomInset(explore ? barH + 20 : 0);
   }, [engine, explore, barH]);
   const moreKey = (snapshot.more ?? []).map((m) => m.ags).join(",");
+  const centeredFor = useRef("");
   const center = (toHits = false) => {
     if (!engine) return;
     if (state.radius) return engine.fitCircle(state.radius);
@@ -252,9 +256,14 @@ export function MapPanel({ active }: { active: boolean }) {
   };
   useEffect(() => {
     /* Erst nach Enter (Kartenmodus) auf die Treffer zentrieren; ohne Suche und Filter zurück auf Deutschland */
-    if (!loading && !pending && (explore || !filtered)) center();
+    if (!active || loading || pending || !(explore || !filtered)) return;
+    /* Nur bei geänderter Suche: wer die Karte verschoben hat und von einer anderen Seite zurückkommt, behält seinen Ausschnitt */
+    const key = [hitsKey, state.area, state.scope, state.radius ? `${state.radius.ags}@${state.radius.km}` : "", moreKey, filtered, explore].join("|");
+    if (centeredFor.current === key) return;
+    centeredFor.current = key;
+    center();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, loading, pending, hitsKey, state.area, state.scope, state.radius, moreKey, filtered, explore]);
+  }, [active, engine, loading, pending, hitsKey, state.area, state.scope, state.radius, moreKey, filtered, explore]);
 
   /* Platz für Vorschläge und Filter innerhalb der Karte (unterhalb der mittigen Suchleiste, im Kartenmodus oberhalb) */
   /* Suchleiste unten: im Kartenmodus und auf dem Handy, sobald gesucht oder gefiltert wurde */

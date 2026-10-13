@@ -1,5 +1,6 @@
 import { sha256Hex } from "./sha256";
 import { useSyncExternalStore } from "react";
+import { onOtherTab } from "./otherTab";
 import { resetMail, welcomeMail } from "./mails";
 import { setTier, type Tier } from "./tier";
 
@@ -55,6 +56,8 @@ const store = (key: string, v: unknown) => {
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 const subscribe = (l: () => void) => (listeners.add(l), () => listeners.delete(l));
+/* Anmelden, Abmelden oder neue Test-Mail in einem anderen Tab: hier übernehmen (die Snapshots lesen den Speicher neu) */
+onOtherTab([SESSION, MAILS], emit);
 
 async function accounts(): Promise<TestAccount[]> {
   const list = load<TestAccount[]>(ACCOUNTS, []);
