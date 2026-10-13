@@ -10,17 +10,15 @@
 // server/integrations/source-atlas.json (default run only): the Lückenatlas of the administration reads it and adds
 // what the database knows (reports, last import); the categories come from shared/atlas-categories.mjs.
 //
-// Reasons of open areas: the working files open.json of a search run (exact ids) where they exist
-// (tmp/source-discovery*/open.json, see scripts/source-discovery/build.mjs), otherwise the tables of the reports in
-// requirements/*-sources-report.md, matched by name within the Land.
+// Reasons of open areas: preserve the saved atlas evidence; compare work files and reports
+// using explicit check dates. Unknown chronology remains an auditable conflict.
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {CATALOG,POPULATION,landName} from '../../shared/catalog.mjs';
-import {NRW_SOURCES} from '../../server/integrations/source-catalog.mjs';
-import {SOURCES} from '../../server/integrations/regions.mjs';
+import {loadAtlasInputs,atlasEvidence,applyConsentEvidence} from '../source-discovery/atlas-inputs.mjs';
 import {consentFor,consentsOf} from '../../server/integrations/consents.mjs';
-import {ACCESS_STATUSES,accessOfSource,accessOfReason,channelOf,robotsNote,methodName} from '../../shared/source-access.mjs';
+import {ACCESS_STATUSES,accessOfSource,channelOf,robotsNote,methodName} from '../../shared/source-access.mjs';
 import {ATLAS_CATEGORIES} from '../../shared/atlas-categories.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
@@ -28,46 +26,16 @@ const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
 const exists=f=>fs.existsSync(path.join(root,f));
 const robots=read('server/integrations/source-robots.json').sources;
 
-// Connected: every source of the catalog that is not switched off, plus the first sources of regions.mjs.
-const sources=new Map(NRW_SOURCES.filter(s=>s.method!=='pending').map(s=>[s.id,s]));
-for(const id of ['billerbeck','coesfeld','steinfurt','borken','warendorf','recklinghausen','muenster'])if(!sources.has(id))sources.set(id,SOURCES.find(s=>s.id===id)||{id});
-
-const methodOf=methodName;
-
-// Open areas with their reason.
-const reasons=new Map();
-for(const dir of ['tmp/source-discovery/','tmp/source-discovery-nds/','tmp/source-discovery-de/'])
- if(exists(dir+'open.json'))for(const o of read(dir+'open.json'))reasons.set(o.id,{reason:o.reason,url:o.link||''});
-let reportDate='';const unmatched=[];
-// Switched-off entries of the catalog (method "pending") name their reason in the note, as in the report of build.mjs.
-const switchedOff=new Set();
-for(const s of NRW_SOURCES)if(s.method==='pending'&&s.note){reasons.set(s.id,{reason:s.note,url:s.system||s.base||'',kind:s.adapter?channelOf(s).kind:''});switchedOff.add(s.id);}
-for(const [file,lands] of [['requirements/statewide-sources-report.md',['05']],['requirements/nds-sources-report.md',['03']],['requirements/de-sources-report.md',null]]){
- const text=fs.readFileSync(path.join(root,file),'utf8');
- reportDate=reportDate||(text.match(/Stand: (\d{2}\.\d{2}\.\d{4})/)||[])[1]||'';
- const rows=text.slice(text.indexOf('## Nicht angebundene Gebiete')).split('\n').filter(l=>l.startsWith('| ')&&!l.startsWith('| Gebiet')).map(l=>l.split('|').map(c=>c.trim()));
- for(const c of rows){
-  const list=CATALOG.filter(r=>r.name===c[1]&&(lands?lands.includes(r.ags.slice(0,2)):!['03','05'].includes(r.ags.slice(0,2)))&&!sources.has(r.id));
-  const r=list.find(x=>!reasons.has(x.id))||list.find(x=>switchedOff.has(x.id));
-  if(!r){unmatched.push(c[1]);continue;}
-  if(!switchedOff.has(r.id))reasons.set(r.id,{reason:c[2],url:c[3]||''});
- }
+const inputs=loadAtlasInputs({root});
+const {sources,reportDate}=inputs;
+const consentPath='server/integrations/source-consents.json';
+for(const [id,resolution] of inputs.resolutions){
+ const consent=consentsOf(id)[0];
+ if(consent)inputs.resolutions.set(id,applyConsentEvidence(resolution,consent,{path:consentPath,pointer:`area:${id}`,sha256:inputs.manifest.find(m=>m.path===consentPath)?.sha256||null,consent}));
 }
-
-// Why an area is open. The texts cover the reasons of the reports and the newer ones of reasons.mjs.
-const CATEGORY=[
- ['ready',/Prüflauf vom Rechner des Projektinhabers ausstehend/],
- ['special',/^Stadtstaat/],
- ['shared',/Mitbenutztes System|nicht eindeutig|mehreren Gebieten|Demo-Mandanten|Mehrere Körperschaften/],
- // A reason with robots.txt comes from a check that still obeyed it (before 05.10.2026): "Neuprüfung ausstehend".
- ['robots',/robots\.txt/],
- ['blocked',/HTTP 403|Web-Firewall|Zugriffsprüfung|Zugriffsschutz/],
- ['website',/Sitzungen nur als Webseite oder PDF|Vorlese-, Teilen-/],
- ['nolink',/kein Link|Keine offizielle Website|antwortet Programmen nicht|Link auf der Website gefunden, noch nicht geprüft/i],
- ['noreader',/^ALLRIS 3|Kein unterstütztes|^SessionNet 6$|^KIC-RIS$|komfa|ohne erreichbare OParl|noch kein Leser/],
- ['readfail',/lieferte keine|keine verwertbaren|zu viele Zugriffe|Wartungsarbeiten|erwähnt|nicht erreichbar|antwortet Programmen mit HTTP|Vorlagenliste|HTTP 404|abgebrochen/],
-];
-const categoryOf=reason=>(CATEGORY.find(([,re])=>re.test(reason))||['other'])[0];
+const reasons=new Map([...inputs.resolutions].filter(([,r])=>r.selected).map(([id,r])=>[id,r.selected]));
+const unmatched=inputs.diagnostics.filter(d=>d.kind==='unmatched-report-row'||d.kind==='ambiguous-report-match');
+const methodOf=methodName;
 
 // Candidates of the research per Land and the list of areas to check again (scripts/source-discovery/candidates/).
 const cand='scripts/source-discovery/candidates/';
@@ -98,9 +66,8 @@ const areas=CATALOG.map(r=>{
  // only, in words that say whether it concerns HTML pages or an interface (for which it is not binding); a written
  // consent (source-consents.json) is shown there as well.
  else if(s){const c=robots[r.id]==='verboten'?consentFor(s.system||s.base):null;a.c='ok';a.v=methodOf(s);a.rb=robots[r.id]||'';a.rn=robotsNote(s,robots[r.id]);a.z=accessOfSource(s,robots[r.id]);a.zc=channelOf(s).name;a.at=s.verifiedAt||'';if(c)a.cs=c.date;}
- // An open area with a consent waits for its check (consents.mjs, then verify.mjs).
- else if(o&&consentsOf(r.id).length){const c=consentsOf(r.id)[0];a.c='consent';a.r=`Freigabe (${c.scope.join(', ')}) vom ${c.date.split('-').reverse().join('.')} liegt vor; Prüflauf ausstehend. Vorher: ${o.reason}`;a.cs=c.date;a.z=accessOfReason(o.reason,o.url,o.kind);}
- else if(o){a.c=categoryOf(o.reason);a.r=o.reason;a.z=accessOfReason(o.reason,o.url,o.kind);}
+ // Open evidence includes any consent overlay and preserves the original check.
+ else if(o){a.c=o.category;a.r=o.reason;a.z=o.access;if(o.category==='consent')a.cs=consentsOf(r.id)[0]?.date||inputs.atlas.areas?.[r.id]?.cs;}
  else{a.c='other';a.r='Kein Prüfergebnis im Bericht';a.z='none';}
  // Candidates of the research help an open area only; a connected area has its source (its candidates would only
  // repeat old notes, such as the robots.txt of the Hamburg district systems that the CKAN interface does not need).
@@ -130,10 +97,12 @@ if(!process.env.OUT){
  // (admin-atlas.mjs): category, access, reason and found address of an open area, consent, recheck notes, research
  // candidates. Reasons and recheck notes once each (texts), referenced by index.
  const texts=[],index=new Map(),text=t=>{if(!index.has(t)){index.set(t,texts.length);texts.push(t);}return index.get(t);};
- const lines=areas.map(a=>{const row={c:a.c,z:a.z};if(a.r)row.r=text(a.r);if(a.u&&!sources.has(a.id))row.u=a.u;if(a.cs)row.cs=a.cs;if(a.nc)row.nc=a.nc.map(text);if(a.rs)row.rs=a.rs;return ' '+JSON.stringify(a.id)+':'+JSON.stringify(row);});
+ const lines=areas.map(a=>{const row={c:a.c,z:a.z};if(a.r)row.r=text(a.r);if(!sources.has(a.id)&&reasons.get(a.id)?.url)row.u=reasons.get(a.id).url;if(a.cs)row.cs=a.cs;if(a.nc)row.nc=a.nc.map(text);if(a.rs)row.rs=a.rs;return ' '+JSON.stringify(a.id)+':'+JSON.stringify(row);});
  const target='server/integrations/source-atlas.json';
- fs.writeFileSync(path.join(root,target),'{"builtAt":'+JSON.stringify(data.builtAt)+',"reportDate":'+JSON.stringify(reportDate)+',"note":"Lückenatlas je Gebiet ohne Kartenformen (scripts/dashboard/build.mjs); Grund r und Neuprüfung nc als Index in texts.",\n"texts":'+JSON.stringify(texts)+',\n"areas":{\n'+lines.join(',\n')+'\n}}\n');
+ fs.writeFileSync(path.join(root,target),'{"builtAt":'+JSON.stringify(data.builtAt)+',"reportDate":'+JSON.stringify(reportDate)+',"note":"Lückenatlas je Gebiet ohne Kartenformen (scripts/dashboard/build.mjs); Grund r und Neuprüfung nc als Index in texts.",\n"texts":'+JSON.stringify(texts)+',\n"areas":{\n'+lines.join(',\n')+'\n},\n\"evidenceVersion\":1,\n\"evidence\":'+JSON.stringify(atlasEvidence(inputs.resolutions))+'\n}\n');
  console.log(target+': '+areas.length+' Gebiete, '+texts.length+' Texte, '+(fs.statSync(path.join(root,target)).size/1e3).toFixed(0)+' KB');
 }
 const count=areas.reduce((m,a)=>(m[a.c]=(m[a.c]||0)+1,m),{}),access=areas.reduce((m,a)=>(m[a.z]=(m[a.z]||0)+1,m),{});
 console.log(out+': '+areas.length+' Gebiete',JSON.stringify(count),'Zugang '+JSON.stringify(access),'ohne Kartenform '+missing,'Berichtszeilen ohne Gebiet '+unmatched.length,(fs.statSync(path.resolve(root,out)).size/1e6).toFixed(1)+' MB');
+
+console.log('Prüfbelege: '+[...inputs.resolutions.values()].filter(r=>r.conflict).length+' offene Konflikte, '+[...inputs.resolutions.values()].filter(r=>r.decision==='newer-evidence').length+' belegte Aktualisierungen; Details: source-atlas.json/evidence bzw. connection-worklist.mjs');

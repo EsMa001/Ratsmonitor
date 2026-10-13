@@ -3,8 +3,7 @@
 // Teilstand, Fehlschlag). Nur lesend. Die Kartenformen liest der Browser aus public/geo/.
 import {CATALOG,POPULATION} from '../../shared/catalog.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
-import {NRW_SOURCES} from './source-catalog.mjs';
-import {SOURCES} from './regions.mjs';
+import {configuredAtlasSources,atlasCategory} from './atlas-sources.mjs';
 import atlas from './source-atlas.json' with {type:'json'};
 import robots from './source-robots.json' with {type:'json'};
 import {ACCESS_STATUSES,accessOfSource,channelOf,robotsNote,methodName} from '../../shared/source-access.mjs';
@@ -15,10 +14,7 @@ let base=null;
 /** The part of every area that does not change between requests: catalog, catalog entry, atlas data. */
 function staticAreas(){
  if(base)return base;
- const sources=new Map(NRW_SOURCES.filter(s=>s.method!=='pending').map(s=>[s.id,s]));
- for(const s of SOURCES)if(!sources.has(s.id))sources.set(s.id,s);
- // Münster: the first source, read by its own OParl reader (server/integrations/oparl.mjs), in no catalog file.
- if(!sources.has('muenster'))sources.set('muenster',{id:'muenster',method:'oparl',system:'https://oparl.stadt-muenster.de/system'});
+ const sources=configuredAtlasSources();
  base=CATALOG.map(r=>{
   const s=sources.get(r.id),a=atlas.areas[r.id];
   const row={id:r.id,n:r.name,l:r.ags.slice(0,2),g:r.ags,t:TYPE[r.kind]||r.municipalityType||'Gemeinde',k:r.kind==='district'?'d':r.independent?'i':'c',p:POPULATION[r.id]||0};
@@ -27,9 +23,9 @@ function staticAreas(){
   // Of a connected source: reader, access, channel, robots.txt verdict in words, date of its check, address (from
   // the catalog entry, so a catalog newer than the atlas build shows its sources). Without a source an "ok" of an
   // older build does not count; an area in neither place is unchecked.
-  if(s){const rb=robots.sources?.[r.id]||'';Object.assign(row,{c:s.checkPending?'ready':'ok',v:methodName(s),z:accessOfSource(s,rb),zc:channelOf(s).name,rb,rn:robotsNote(s,rb),at:s.verifiedAt||'',u:s.system||s.base||s.pages?.[0]||''});if(s.checkPending)row.r=s.checkPending;}
-  else if(!a){row.c='other';row.z='none';}
-  else if(row.c==='ok'||row.c==='ready'){row.c='other';row.z='none';}
+  row.c=atlasCategory(r.id,a,sources);
+  if(s){const rb=robots.sources?.[r.id]||'';Object.assign(row,{v:methodName(s),z:accessOfSource(s,rb),zc:channelOf(s).name,rb,rn:robotsNote(s,rb),at:s.verifiedAt||'',u:s.system||s.base||s.pages?.[0]||''});if(s.checkPending)row.r=s.checkPending;}
+  else if(!a||a.c==='ok'||a.c==='ready')row.z='none';
   const host=(()=>{try{return new URL(row.u).hostname.replace(/^www\./,'');}catch{return '';}})();
   if(host)row.o=host.split('.').slice(-2).join('.').replace(/^more-rubin[0-9]*\.de$/,'more-rubin.de');
   return row;
