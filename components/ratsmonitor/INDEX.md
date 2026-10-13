@@ -702,7 +702,7 @@ topic design-styles.css:140
 - MapPanel.tsx (344, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
-- ArticleCard.tsx (203, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
+- ArticleCard.tsx (147, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
 - ResultsPanel.tsx (211): ResultsPanel
 
 ### components/ratsmonitor/info/

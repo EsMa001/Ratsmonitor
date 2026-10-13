@@ -1,4 +1,4 @@
-import { memo, useLayoutEffect, useRef, useState } from "react";
+import { memo, useRef } from "react";
 import { STATUS_BY_ID, shownThema } from "../../lib/constants";
 import { MONTH_SHORT, fmtDate, highlightSegments, todayLocal } from "../../lib/text";
 import type { Article } from "../../types";
@@ -34,61 +34,6 @@ interface Props {
 }
 
 /** Eintrag der Ergebnisliste: Überschrift, Unterzeile, Zusammenfassung; die ganze Karte ist klickbar */
-/** Handy: genau die ersten zwei Zeilen der Überschrift fett. Gemessen wird am ganz fetten Titel, wo Zeile 3 beginnt; ab dort normal. */
-function MobileTitle({ title, terms }: { title: string; terms: string[] }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const [cut, setCut] = useState(title.length);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const measure = () => {
-      if (!el.offsetParent) return;
-      /* Textknoten des fett gesetzten Titels einsammeln */
-      const nodes: Text[] = [];
-      const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-      while (tw.nextNode()) nodes.push(tw.currentNode as Text);
-      const total = nodes.reduce((t, n) => t + n.length, 0);
-      const r = document.createRange();
-      const top = (i: number) => {
-        for (const n of nodes) {
-          if (i < n.length) {
-            r.setStart(n, i);
-            r.setEnd(n, i + 1);
-            return r.getBoundingClientRect().top;
-          }
-          i -= n.length;
-        }
-        return Infinity;
-      };
-      const t0 = top(0), lh = parseFloat(getComputedStyle(el).lineHeight) || 21;
-      let lo = 0, hi = total;
-      while (lo < hi) {
-        const mid = (lo + hi) >> 1;
-        if (top(mid) >= t0 + 1.5 * lh) hi = mid;
-        else lo = mid + 1;
-      }
-      setCut(lo);
-    };
-    setCut(title.length);
-    requestAnimationFrame(measure);
-    let w = window.innerWidth;
-    const onResize = () => {
-      if (window.innerWidth === w) return;
-      w = window.innerWidth;
-      setCut(title.length);
-      requestAnimationFrame(measure);
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [title]);
-  return (
-    <span ref={ref} className="sm:hidden">
-      <strong className="font-semibold"><Highlight text={title.slice(0, cut)} terms={terms} /></strong>
-      <Highlight text={title.slice(cut)} terms={terms} />
-    </span>
-  );
-}
-
 export const ArticleCard = memo(function ArticleCard({ article: a, index, terms, onOpen, onHover, compact = false }: Props) {
   const [y, m, d] = a.date.split("-");
   const sub = [a.gemeinde, a.gremium].filter(Boolean).join(" · ");
@@ -119,7 +64,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
         <span className="text-[12px] text-slate-500">{y?.slice(2)}</span>
       </div>
       <div className="min-w-0">
-      <h3 lang="de" className="m-0 hyphens-auto break-words text-[16px] font-semibold max-sm:hyphens-none max-sm:line-clamp-4 max-sm:!font-normal leading-[1.35] tracking-[-.01em]">
+      <h3 lang="de" className="m-0 hyphens-auto break-words text-[16px] font-semibold max-sm:hyphens-none max-sm:line-clamp-2 leading-[1.35] tracking-[-.01em]">
         <a
           href={`/beschluss/${a.id}`}
           onClick={(e) => {
@@ -129,8 +74,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
           }}
           className="text-slate-900 no-underline outline-none transition-colors group-hover:text-teal-700"
         >
-          <span className="hidden sm:inline"><Highlight text={a.title} terms={terms} /></span>
-          <MobileTitle title={a.title} terms={terms} />
+          <Highlight text={a.title} terms={terms} />
         </a>
       </h3>
       {/* Datum für Bildschirmleser: die Datumsspalte links ist nur Gestaltung (aria-hidden) */}
