@@ -4,6 +4,27 @@ Stand: 13.10.2026. Ablage: `requirements/konten-konzept.md`. Pfade sind relativ 
 
 Grundlage sind fünf Bestandsaufnahmen, drei Entwürfe mit Gutachten, eine Nachprüfung im Repo und eine Prüfung durch fünf Gutachter (Sicherheit, Datenschutz, Code, Betrieb, Nutzer). Die Leitlinie: Die geschlossene Testphase soll mit wenig Neuem erreicht werden, ohne Abstriche bei der Sicherheit. Vorhandene Muster werden weiterverwendet. Nico muss lokal nichts Neues lernen.
 
+## Umsetzungsstand (13.10.2026, Branch `konten`, nicht ausgerollt)
+
+**Umgesetzt:** AP1 bis AP6 und AP8, aus AP9 der technische Teil (Pflegejob, verschlüsselte Sicherung, Einheiten, Caddy-Fassungen,
+`check-caddy.mjs`, Betriebsanleitung), AP10 mit 47 Kontotests und zwei Durchläufen gegen den Node-Build. Eine Sicherheitsprüfung
+durch ein zweites Modell (Opus; Fable war am Limit) fand 25 Punkte; die Pflichtpunkte und die meisten übrigen sind behoben.
+
+**Abweichungen vom Konzept:**
+- Konto ohne freigeschaltete Stufe hat Gastrechte (Abschnitt 9.1), nicht `basic`.
+- `accounts.env` liegt in `/etc/ratsmonitor/` (nicht im Kontenordner, den der Web-Benutzer besitzt).
+- Grenzen beim Anfordern je Adresse und Absender (3 in 15 min, 10 am Tag; 30 je Adresse), jeder neue Link bekommt einen neuen Ablauf.
+- Sicherung der Kontendatei mit eigenem Skript `deploy/node/accounts-backup.sh` statt `PREFIX` in `backup.sh`.
+- Ohne `RM_ACCESS` startet der Server nur, wenn keine Kontendatei eingerichtet ist (dann offen wie bisher).
+- Der alte Admin-Weg gilt automatisch, solange keine Kontendatei eingerichtet ist und `ADMIN_LEGACY_HEADER` fehlt.
+- `features.json` entfällt; `deploy.sh` prüft stattdessen `/api/internal/health` samt Zugang.
+- Admin-Protokoll zentral in der Middleware (je Admin, Pfad, Methode und Stunde), nicht je Route.
+
+**Offen:** AP0 und AP11 auf dem Server (Schritte in `docs/betrieb/node-server.md`, „Konten“), AP7 (Domain, Mailanbieter,
+`MAIL_TRANSPORT=http` an den gewählten Anbieter anpassen: `providerPayload` in `server/accounts/mail.mjs`), Rechtstexte
+(Datenschutz, AGB, FAQ; `PRIVACY_VERSION` erhöhen), Prüfung durch Fable und vor der Öffnung durch eine Fachperson (11.1),
+Gastgrenze über Filter (Gäste können mit Filtern weiterblättern), Push-Entscheidung, `weeklyDay` „täglich“.
+
 ## 1. Ziel und Abgrenzung
 
 **Ziel:** eine geschlossene Testphase mit 10 bis 30 eingeladenen Personen.
