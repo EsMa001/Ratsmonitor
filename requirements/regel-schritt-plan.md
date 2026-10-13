@@ -36,8 +36,8 @@ Feste Reihenfolge, jede Stufe nur aus Quellen:
 1. **Dokumente**: Hauptdokument `primaryPdf(documents,{uses,hasText})`, Sitzungsunterlage `sessionDocument` (Schritt 1).
 2. **Art des Punkts**: `itemKind(title)` (Schritt 2). Nicht `subject` → kein Thema, keine Fakten außer Fraktion.
 3. **Thema und Unterthemen**: `themeOf({title, subject:subjectOf(text)})`. Keine Zusammenfassung als Eingabe
-   (die entsteht erst in Stufe 4). Der Rückgriff auf den Text bekommt die Zählregel (mindestens 2 Treffer, 2 Abstand);
-   Messung dafür in diesem Schritt (siehe Prüfung).
+   (die entsteht erst in Stufe 4). Aus dem Text zählt nur Betreff/Beschlussvorschlag wie heute; eine Zählregel über den
+   Textanfang wurde gemessen und verworfen (siehe Prüfung 2).
 4. **Zusammenfassung kurz und lang**: `ruleSummary(text)` wie heute, nur wenn das Hauptdokument keine Sitzungsunterlage ist.
 5. **Fakten**: `factsOf(title, text)` wie heute (facts-v15).
 
@@ -77,6 +77,9 @@ Sitzungsunterlage ja/nein und Prüfsumme des Texts. Gleicher Schlüssel → nich
    wo Schritt 1 ein anderes Hauptdokument wählt; diese einzeln zählen und Stichproben ansehen.
 2. **Thema aus dem Text**: neue Stichprobe vom Server (200 Berichte, Titel ohne Thema und ohne Formalie, mit Text),
    Zählregel ohne und mit langem Text messen; nur übernehmen, wenn Genauigkeit ≥ 90 %.
+   **Ergebnis (13.10.2026, `scripts/theme-study/measure-text.mjs`, `tests/fixtures/theme-text.json`):** 120 der 200 haben
+   sicher ein Thema. Heutige Regel: 14 vergeben, 79 % richtig. Zählregel über die ersten 1.500/3.000 Zeichen: 49 bis 62 %
+   richtig bei 24 bis 49 % gefunden. Nicht übernommen; solche Berichte bleiben „noch nicht zugeordnet“.
 3. **Tests**: Einzelfälle für `readReport` (Reihenfolge, Sitzungsunterlage, ohne Text, KI-Felder bleiben); bestehende Tests
    von `summaries` und `facts` laufen gegen den neuen Weg.
 4. **Laufzeit**: lokal über alle Berichte mit Text (≈ 95.000) messen; Ziel: nicht langsamer als `summaries.mjs` + `facts.mjs`.
