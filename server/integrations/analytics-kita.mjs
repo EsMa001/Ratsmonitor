@@ -41,7 +41,7 @@ export async function kita(db,catalog,params){
  }
  /* Ein Projekt je Gebiet und Titel einmal (mit der größten genannten Zahl) */
  const projects=new Map();
- for(const r of places){const key=r.region+'|'+r.title.toLowerCase();const p=projects.get(key);if(!p||r.n>p.n||(r.n===p.n&&r.date>p.date))projects.set(key,r);}
+ for(const r of places){const key=r.region+'|'+r.n;/* gleiche Platzzahl je Gebiet ist dasselbe Vorhaben (Vergaben je Gewerk: „Neubau Kita … Gewerk 13“, „… Gewerk 14“) */const p=projects.get(key);if(!p||r.n>p.n||(r.n===p.n&&r.date>p.date))projects.set(key,r);}
  const placeRegions=new Map();
  for(const p of projects.values()){const g=placeRegions.get(p.region)||{places:0,projects:0};g.places+=p.n;g.projects++;placeRegions.set(p.region,g);}
  const pop=id=>POPULATION[id]||null;

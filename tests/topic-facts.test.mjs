@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,radarFactsOf} from '../shared/topic-facts.mjs';
+import {factionsOf,housingOf,kitaPlacesOf,kitaFeeOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,radarFactsOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -82,7 +82,8 @@ test('funding amounts: only the amount attached to a funding word, never costs, 
  assert.deepEqual(e('Für den Ganztagsausbau wurde eine Zuwendung in Höhe von 450.000 € bewilligt.'),[['Ganztagsausbau',450000]]);
  assert.deepEqual(e('Die Gesamtkosten betragen 2,4 Mio. €, die Fördermittel aus der Städtebauförderung 1,2 Mio. Euro.'),[['Städtebauförderung',1200000]]);
  assert.deepEqual(e('Es wurden 120.000 € Landesmittel beantragt.'),[['Sonstige Förderung',120000]]);
- assert.deepEqual(e('Der Zuschuss beträgt 350 TEUR.'),[['Sonstige Förderung',350000]]);
+ assert.deepEqual(e('Der Zuschuss des Landes beträgt 350 TEUR.'),[['Sonstige Förderung',350000]]);
+ assert.deepEqual(e('Der Zuschuss beträgt 350 TEUR.'),[],'Zuschuss ohne Geldgeber: meist von der Kommune selbst');
  assert.deepEqual(e('Die Förderquote beträgt 80 % der förderfähigen Kosten von 500.000 €.'),[],'förderfähige Kosten');
  assert.deepEqual(e('Die Förderung beträgt bis zu 200.000 €.'),[],'Höchstbetrag');
  assert.deepEqual(e('Finanzschwache Kommunen erhalten einen Fördersatz von 90 % (maximale Fördersumme 200.000 Euro).'),[],'Höchstbetrag vor dem Förderwort');
@@ -90,6 +91,17 @@ test('funding amounts: only the amount attached to a funding word, never costs, 
  assert.deepEqual(e('Für den Projektaufruf 2026 stehen Bundesmittel in Höhe von 250 Mio. Euro zur Verfügung.'),[],'Programmtopf');
  assert.deepEqual(e('Der städtische Zuschuss für den Ersatzneubau in Höhe von 60,5 Mio. € wird beschlossen.'),[],'Zuschuss der Kommune selbst');
  assert.deepEqual(e('Gesamtsumme 9,1 Mio. € Fördermittel 6,37 Mio. € Eigenanteil 2,73 Mio. €'),[['Sonstige Förderung',6370000]],'Tabelle: kein Betrag vor dem Förderwort');
+});
+
+test('funding amounts: outgoing grants, donations, ranges and per-unit amounts are not funding (Referenzsatz 13.10.2026)',()=>{
+ const e=t=>fundingEuroOf(t).map(x=>x.euro);
+ assert.deepEqual(e('Der Förderverein erhält somit auch im Jahr 2027 für den Badbetrieb einen jährlichen Zuschuss in Höhe von 70.000 €.'),[],'Zuschuss an Verein');
+ assert.deepEqual(e('Der Kreisausschuss ist zuständig für die Annahme von Spenden und ähnlichen Zuwendungen in einer Wertgrenze von über 1.000 EUR.'),[],'Spende, Wertgrenze');
+ assert.deepEqual(e('Pro Projekt ist eine Förderung des Bundes von 250.000 € bis 1,50 Mio. € vorgesehen.'),[],'Spanne');
+ assert.deepEqual(e('Damit kann mit einem Förderbetrag des Landes von 8.000 € pro Schuljahr gerechnet werden.'),[],'je Einheit, erwartet');
+ assert.deepEqual(e('Für die Kläranlage wurde der Gemeinde eine Zuwendung des Landes in Höhe von 22.000 € bewilligt.'),[22000]);
+ assert.deepEqual(e('Damit sind die Förder- mittel des Landes in Höhe von 5,125 Mio. € bis zum 30. Juni reserviert.'),[5125000],'Silbentrennung');
+ assert.deepEqual(e('Eine Förderung aus LuKIF-Mittel ist bisher in Höhe von 5,913 Mio. Euro vorgesehen.'),[5913000],'Mio. ist kein Satzende');
 });
 
 test('funding amount without program goes to the only program of the report',()=>{
@@ -190,4 +202,21 @@ test('Förderung: Hintergrund, alte Bescheide und Anfragen zählen nicht als bew
  assert.equal(fundingOf(now)[0].status,'granted');
  assert.deepEqual(fundingOf('Für das Feuerwehrhaus wurden Fördermittel der Städtebauförderung bewilligt.').map(x=>x.program),['Städtebauförderung']);
  assert.ok(factsOf('Anfrage zu Fördermitteln für die Ortsmitte','Fördermittel wurden beantragt.').filter(r=>r.kind==='funding').every(r=>r.detail==='mentioned'));
+});
+
+test('faction: amendment to another motion belongs to the amending factions; housing: existing units are no plan',()=>{
+ assert.deepEqual(factionsOf('AN/068/2025 Änderungsantrag der Fraktionen SPD und FDP zum Antrag der CDU-Fraktion (AN/067/2025)'),{parties:['SPD','FDP'],kind:'antrag'});
+ assert.equal(housingOf('Die vormals vorhandenen Wohngebäude mit insgesamt 104 Wohneinheiten mussten abgerissen werden.'),null);
+ assert.equal(housingOf('Insgesamt sind ca. 350 Wohnungen in unterschiedlichen Größen vorgesehen.'),350);
+});
+
+test('facts-v15: Kita-Plätze ohne Bestand und Senioren, Förderung ohne Geldgeber, alte Beitragsschritte, Ausschussnamen',()=>{
+ assert.equal(kitaPlacesOf('Beratung und Beschlussfassung über den Neubau der KiTa Altenglan','Die Kindertagesstätten Altenglan und Mühlbach verfügen derzeit insgesamt über 100 Betreuungsplätze. Mit dem Neubau entstehen 125 Plätze in der neuen Kita.'),125);
+ assert.equal(kitaPlacesOf('Erweiterungspläne für die Vita Tagespflege in Ochtrup','Durch die Erweiterung entstehen 11 neue Plätze in der Tagespflege.'),null);
+ assert.deepEqual(fundingOf('Der Stadtbezirksbeirat hat die Förderung von Projekten bewilligt. Die Fördermittel werden ausgezahlt.'),[]);
+ assert.deepEqual(fundingOf('Für den Mietwohnungsbau wurden Fördermittel des Landes bewilligt.'),[{program:'Wohnraumförderung',status:'granted'}]);
+ assert.equal(kitaFeeOf('Neufassung der Kostenbeitragssatzung für Kindertagesstätten','Beschlussvorschlag: Der Stadtrat beschließt die Neufassung der Kostenbeitragssatzung. In der Sitzung wurde damals die Erhöhung der Kostenbeiträge vertagt.').direction,'Neufassung');
+ assert.equal(kitaFeeOf('Abschluss von Qualitäts- und Finanzierungsvereinbarungen mit den Kita-Trägern','Beschlussvorschlag: Der Rat beschließt die Vereinbarungen. Die Benutzungsgebühr bleibt unverändert.'),null);
+ assert.deepEqual(radarFactsOf('Ausschuss für Daseinsvorsorge und Klimaschutz',''),[]);
+ assert.deepEqual(radarFactsOf('Vereidigung der ehrenamtlichen Gemeinderatsmitglieder',''),[]);
 });
