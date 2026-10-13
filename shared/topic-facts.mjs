@@ -8,6 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {RADARS} from './radars.mjs';
+import {itemKind} from './item-kind.mjs';
 export const FACTS_VERSION='facts-v15';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
@@ -281,10 +282,10 @@ const RADAR_SKIP=/Vereidigung|Amtseinführung|Bauantrag|Baugesuch|Antrag auf Bau
    Ortsnamen mit „Bad“ oder „Markt“ („Bad Honnef“ ist kein Schwimmbad) und die Floskel „Beratung und Beschlussfassung“ */
 const NOT_TOPIC=/[\wäöüß-]*(straße|strasse|str\.|gasse|allee)\b|[\wäöüß-]*[Aa]usschuss(es)?\b(\s+(für|der|des)\s+[^,;:()]{0,80})?|Fahrradleasing|Dienstrad|JobRad|\b(Bad|Markt)\s+[A-ZÄÖÜ][\wäöüß-]+|(Vor)?[Bb]eratung\s+(und|sowie)\s+(ggf\.?\s+)?Beschluss\w*|zur\s+(Vor)?[Bb]eratung|Beratungsfolge/g;
 export const topicText=t=>String(t||'').replace(NOT_TOPIC,' ');
-/** Routinepunkte ohne Sachthema für Begriffs- und Antragsauswertungen: Besetzungen und Wahlen in Gremien, stehende
-    Tagesordnungspunkte (Einwohnerfragestunde, Anregungen und Beschwerden), Formalien des Sitzungsbetriebs und einzeln
-    geführte Einwohnerfragen („Tore am Schulstandort - Herr Messing“) */
-export const routineTitle=t=>{const s=String(t||'');return PERSONNEL.test(s)||STANDING.test(s)||RADAR_SKIP.test(s)&&!/Bauantrag|Baugesuch|Baugenehmigung|Bauvoranfrage|Befreiung|Vorbescheid|Fl\.-?\s?Nr|Flurstück|Nutzungsänderung/i.test(s)||/\s[-–]\s*(Herr|Frau)\b/.test(s)||/^\W*(TOP\s*\S+\s*)?(\d+(\.\d+)*\.?\s+)?(Wahl|Wahlen|Neuwahl|Bestellung|Vereidigung|Ernennung|Verpflichtung|Einführung|Amtseinführung|Bildung der Ausschüsse|Besetzung)\b(?!\w*(kreis|bezirk|vorschlag|plakat|lokal|ergebnis|prüfung))/i.test(s)||/Umbesetzung|Ausschussumbesetzung|Nachbesetzung|Wahl (de[rs]|eines|einer) (stellvertretend|Vorsitz|Mitglied|Schrift|sachkundig|Ortsvorsteher|Beigeordnet)|Vereidigung|Einführung und Verpflichtung/i.test(s);};
+/** Punkte ohne Sachthema für Begriffs- und Antragsauswertungen: alles, was shared/item-kind.mjs nicht als Sachpunkt einordnet
+    (Formalien des Sitzungsbetriebs, Sammelpunkte, Routine wie Besetzungen, Wahlen, Fragestunden und einzeln geführte
+    Einwohnerfragen „Tore am Schulstandort - Herr Messing“). Dieselbe Regel wie payload.itemKind und „Ohne Formalien“ der Suche. */
+export const routineTitle=t=>itemKind(t)!=='subject';
 /** Private Bauanträge (Grundstück, Garage, Einfamilienhaus) sind für Begriffstrends kein Thema der Gemeinde */
 export const privateBuild=t=>/Bauantr(a|ä)g|Nutzungsänderung|Baugesuch|Antrag auf Baugenehmigung|Bauvoranfrage|Befreiung von den Festsetzungen|Vorbescheid|Fl\.-?\s?Nr|Flurstück|Gemarkung\s+\S+.{0,20}Flur/i.test(String(t||''));
 /** Derselbe Titel je Gebiet (mehrere Gremien) ist ein Vorgang */

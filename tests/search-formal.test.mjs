@@ -9,12 +9,13 @@ import {searchMonitor,searchCoverage,cachedSearch,cachedCoverage,FORMAL,NOT_FORM
 import {refreshSearchWords,SEARCH_REVISION_SQL} from '../server/integrations/search-words.mjs';
 
 const MIGRATION=fs.readFileSync(new URL('../drizzle/0017_search_formal_revision.sql',import.meta.url),'utf8');
+const ITEM_KIND=fs.readFileSync(new URL('../drizzle/0033_search_formal_item_kind.sql',import.meta.url),'utf8');
 const catalog=[{id:'billerbeck',kind:'city',name:'Billerbeck',ags:'05558008'},{id:'coesfeld',kind:'district',name:'Kreis Coesfeld',ags:'05558'},{id:'other',kind:'city',name:'Anderer Ort',ags:'05558012'}];
 /** Schema aus drizzle/, wahlweise ohne 0017 (Datenbank vor der Migration) */
 function fixture({withoutFormal=false}={}){
  const sql=new DatabaseSync(':memory:');
  for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort()){
-  if(withoutFormal&&file.startsWith('0017'))continue;
+  if(withoutFormal&&(file.startsWith('0017')||file.startsWith('0033')))continue;
   sql.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8'));
  }
  const put=(id,title,region='billerbeck')=>{const t={title,officialTitle:title,shortSummary:'Öffentliche Beratung',committee:'Rat',classification:{method:'title-rules-v2',version:'labels-v2',primary:'bildung',evidence:title}};sql.prepare('INSERT INTO topics VALUES(?,?,?,?,?,?,?)').run(id,'city','2026-09-20','2026-09-20','consulting',JSON.stringify(t),region);};
@@ -50,6 +51,27 @@ test('formal steht beim Einfügen fest und folgt dem Titel, wenn eine Karte erse
   retitle('t0','Bebauungsplan Nr. 7');retitle('t17','Niederschrift der Sitzung vom 3. März');
   assert.equal(sql.prepare("SELECT formal FROM search_cards WHERE id='t0'").get().formal,0);
   assert.equal(sql.prepare("SELECT formal FROM search_cards WHERE id='t17'").get().formal,1);
+ }finally{sql.close();}
+});
+
+test('Migration 0033: Rückfall ohne itemKind mit genau den Mustern der Suche',()=>{
+ const trigger=ITEM_KIND.slice(ITEM_KIND.indexOf('CREATE TRIGGER `trg_search_cards_formal`'),ITEM_KIND.indexOf('BEGIN',ITEM_KIND.indexOf('CREATE TRIGGER `trg_search_cards_formal`')));
+ const [formal,exceptions]=trigger.split('AND NOT (');
+ assert.deepEqual(patterns(formal),FORMAL);
+ assert.deepEqual(patterns(exceptions),NOT_FORMAL);
+});
+
+test('formal folgt der Art des Punkts (itemKind), wo sie da ist, auch wenn nur sie sich ändert',()=>{
+ const {sql,put}=fixture();try{
+  const kind=(id,k)=>sql.prepare("UPDATE topics SET payload=json_set(payload,'$.itemKind',?) WHERE id=?").run(k,id);
+  const formal=id=>sql.prepare('SELECT formal FROM search_cards WHERE id=?').get(id).formal;
+  put('a','Niederschrift über Sanierung der Grundschule');put('b','Wahl der Schiedsperson');put('c','Haushalt 2027');
+  assert.deepEqual(['a','b','c'].map(formal),[1,0,0],'ohne itemKind die alten Muster');
+  kind('a','subject');kind('b','routine');kind('c','subject');
+  assert.deepEqual(['a','b','c'].map(formal),[0,1,0],'itemKind gilt vor den Mustern');
+  sql.prepare("UPDATE topics SET payload=json_set(payload,'$.title','Niederschrift der letzten Sitzung','$.officialTitle','Niederschrift der letzten Sitzung') WHERE id='a'").run();
+  assert.equal(formal('a'),0,'neue Karte: weiter itemKind (subject), bis read-reports den Bericht neu liest');
+  kind('a','formal');assert.equal(formal('a'),1);
  }finally{sql.close();}
 });
 

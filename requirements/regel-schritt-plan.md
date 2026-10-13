@@ -66,8 +66,10 @@ Sitzungsunterlage ja/nein und Prüfsumme des Texts. Gleicher Schlüssel → nich
 
 ### 4. Was dieser Schritt nicht macht (folgt)
 
-- Schritt 4: Suchkarten lesen „Formalie“ aus `payload.itemKind` statt aus SQL-Mustern (Trigger-Migration, Rückfall auf die
-  alten Muster, wenn `itemKind` fehlt); `routineTitle` und Label `sitzung/allgemein` auf `itemKind` umstellen.
+- Schritt 4 (erledigt 14.10.2026): Suchkarten lesen „Formalie“ aus `payload.itemKind` (Migration `0033`, Rückfall auf die
+  alten Muster, wenn `itemKind` fehlt); `routineTitle` = kein Sachpunkt nach `itemKind`; einzeln geführte Einwohnerfragen
+  („… - Herr X“) sind jetzt Routine in `itemKind` (`item-kind-v2`). Label `sitzung/allgemein` bleibt bis Schritt 5, weil die
+  16 Labels dort ohnehin durch die 10 Themen ersetzt werden.
 - Schritt 5: 10 Themen in Suche, Lena und Labels (`labels-v3`, Trigger-Migration, Filter in der Oberfläche).
 - Schritt 6: plenara.X-Tabellen und `/api/x` aus `theme` und Fakten.
 

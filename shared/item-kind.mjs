@@ -6,7 +6,7 @@
 // Ein Sammelwort mit eigenem Gegenstand („Mitteilungen: Antrag … Böllerverbot“, „Information Sachstand Anbindung Carling“)
 // ist ein Sachpunkt. Nur der Titel zählt; nichts hängt von einem späteren Schritt ab.
 // Messen: node scripts/item-study/measure.mjs --set=item-dev [--fehler=neu]
-export const ITEM_KIND_VERSION='item-kind-v1';
+export const ITEM_KIND_VERSION='item-kind-v2';
 export const ITEM_KINDS=['formal','collection','routine','subject'];
 
 /** Titel ohne Nummerierung, Klammerzusätze am Anfang und Personen am Ende. */
@@ -63,6 +63,8 @@ export function itemKind(title){
  if(/^(?:eröffnung|begrüßung|wiedereröffnung)\b/.test(l)&&SESSION_OBJ.test(l))return 'formal';
  if(PROC.test(l)&&SESSION_OBJ.test(l.slice(0,140))&&!SUBJECT_CUE.test(l))return 'formal';
  if(FORMAL_ANY.test(l))return 'formal';
+// Einzeln geführte Einwohnerfragen („Tore am Schulstandort - Herr Messing“): Frage einer Person, kein eigener Sachpunkt
+ if(/\s[-–]\s*(?:Herr|Frau)\s+\p{Lu}[\p{L}.'-]*(?:\s+\p{Lu}[\p{L}.'-]*)?\s*$/u.test(t))return 'routine';
  if(ROUTINE.some(re=>re.test(t)))return 'routine';
  const parts=t.split(/\s*(?:,|;|\s[-–]\s)\s*/).filter(Boolean);
  if(parts.length>1&&parts.every(x=>x!==t&&itemKind(x)!=='subject')){const k=parts.map(itemKind);return k.includes('collection')?'collection':k[0];}

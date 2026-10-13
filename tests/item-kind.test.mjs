@@ -22,8 +22,10 @@ test('Routine: Personen, Gremien, Spenden',()=>expect('routine',[
  'Bestellen einer Protokollantin / eines Protokollanten','Annahme der Spende von Herrn Wolfgang Ohle','Annahme von Geldspenden',
  'Angelegenheiten der Gemeindewerke Brüggen GmbH hier: Abberufung und Bestellung eines Gesellschaftervertreters',
  'Einführung und Verpflichtung eines neuen Ratsmitglieds',
+ 'Tore am Schulstandort - Herr Messing','Parkplätze am Rathaus – Frau Dr. Meier',
 ]));
 test('Sachpunkte, auch mit Sammel- oder Verfahrenswort',()=>expect('subject',[
+ 'Bericht der Verwaltung - Herr Schulz zur Lage','Neubau Kita Sonnenschein - 2. Bauabschnitt',
  'Mitteilungen: Antrag der Fraktion der FDP zur Überprüfung eines "Böllerverbots"; Kenntnisnahme','Information zur Katastrophenschutzübung "Schwarzer Freitag"',
  'Bericht zur Umsetzung der Istanbul-Konvention und des Gewalthilfegesetzes in Wuppertal','Bericht des Fördermanagements Anfrage von Ratsmitglied Stamm',
  'Einführung eines Ampelmännchens mit dem Symbolbild Bote Veit','Bauvoranfragen (beschliessend)','Beschlussfassung über die Satzung über die Erhebung von Hundesteuer',
