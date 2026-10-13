@@ -36,7 +36,7 @@ export function AdminRuleTexts(){
   try{const r=await fetch('/api/admin/zeitplaene',{cache:'no-store'});const d=await r.json() as {jobs?:(JobState&{id:string})[];error?:string};if(!r.ok)throw Error(d.error||'Der Job konnte nicht geladen werden.');setJob(d.jobs?.find(j=>j.id==='rule-texts')||null);setJobError('');}
   catch(e){setJobError(e instanceof Error?e.message:'Der Job konnte nicht geladen werden.');}
  },[]);
- useEffect(()=>{loadJob();const t=setInterval(loadJob,60000);return ()=>clearInterval(t);},[loadJob]);
+ useEffect(()=>{loadJob();},[loadJob]);
  /* Berichte mit Text im Hauptdokument und wie viele davon eine Zusammenfassung haben (Zählung der PDF-Ablage, stats.mjs) */
  const [pdfSum,setPdfSum]=useState<{done:number;withText:number}|null>(null);
  useEffect(()=>{fetch('/api/admin/pdf-ablage',{cache:'no-store'}).then(r=>r.ok?r.json() as Promise<{stats?:{summaries?:{done:number;withText:number}}}>:null).then(d=>setPdfSum(d?.stats?.summaries||null)).catch(()=>{/* Kennzahl bleibt leer */});},[]);
@@ -49,6 +49,8 @@ export function AdminRuleTexts(){
   finally{setAsking(false);}
  };
  const running=!!job?.run?.running,requested=!!job?.now&&(!job.run?.lastStart||job.now>job.run.lastStart);
+ /* Stand nachladen: alle 5 s, solange ein Start angefordert ist oder der Job läuft, sonst jede Minute */
+ useEffect(()=>{const t=setInterval(loadJob,running||requested?5000:60000);return ()=>clearInterval(t);},[loadJob,running,requested]);
  const c=data?.counts;
  const total=c?.online??0,ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,docs=c?.pdfArticles??0;
  const aiL=c?.aiLabels??0,noL=c?.unlabelled??0;

@@ -64,11 +64,15 @@ const update=db.prepare('UPDATE topics SET payload=? WHERE id=?');
 const dropFailed=db.prepare("DELETE FROM article_analyses WHERE topic_id=? AND kind='summary' AND coalesce(json_extract(payload,'$.status'),'')<>'completed'");
 const started=new Date().toISOString(),t0=Date.now(),c={candidates:ids.length,stale,session:0,unchanged:0,withText:0,summary:0,noSummary:0,unreadable:0,ocr:0,ocrSummary:0,ai:0,aiSummary:0,dropped:0},examples=[];
 console.log(all?`Alle neu: ${ids.length} Berichte mit Hauptdokument`:`${ids.length-stale} Berichte ohne Regel-Zusammenfassung, ${stale} mit Zusammenfassung aus einem anderen als dem Hauptdokument`);
-let open=0;const flush=()=>{if(open){db.exec('COMMIT');open=0;}};
+/* Schreiben gesammelt: erst rechnen, dann je 200 Berichte in einer kurzen Transaktion (früher blieb sie offen, solange gerechnet
+   wurde; so lange scheiterten andere Leser, etwa die Adminseiten des Dev-Servers, der nicht auf Sperren wartet) */
+const pending=[];
+const flush=()=>{if(!pending.length)return;db.exec('BEGIN');try{for(const fn of pending)fn();db.exec('COMMIT');}catch(e){db.exec('ROLLBACK');throw e;}pending.length=0;};
+const write=fn=>{pending.push(fn);if(pending.length>=200)flush();};
 const drop=db.prepare("UPDATE topics SET payload=json_remove(payload,'$.ruleSummary') WHERE id=?");
 for(const [id,d,lastTried,ai,had] of ids){
  if(limit&&c.withText>=limit)break;
- if(d&&sessionDocument(d,uses.get(d.url)||0)){c.session++;if(had&&!dry){if(!open)db.exec('BEGIN');drop.run(id);c.dropped++;if(++open>=200)flush();}continue;}
+ if(d&&sessionDocument(d,uses.get(d.url)||0)){c.session++;if(had&&!dry){write(()=>drop.run(id));c.dropped++;}continue;}
  // Prüfsumme des Texts aus der Ablage (je Textfassung einmal gerechnet): Unveränderte ohne Lesen von Bericht und Datei
  const hash=d&&store.textHash(d.url);if(!hash)continue;
  const tried=`${RULE_SUMMARY_VERSION}:${hash.slice(0,16)}`;
@@ -86,17 +90,16 @@ for(const [id,d,lastTried,ai,had] of ids){
  else if(t.documentIssue)c.unreadable++;else c.noSummary++;
  if(!dry&&ai){
   // KI-Zusammenfassung: nur die Regel-Zusammenfassung dazu (oder den Versuch merken), sonst nichts anfassen
-  if(!open){db.exec('BEGIN');}
-  update.run(JSON.stringify(withRuleSummary(old,t,tried)),old.id);
-  if(++open>=200)flush();
+  const json=JSON.stringify(withRuleSummary(old,t,tried));
+  write(()=>update.run(json,old.id));
  }else if(!dry){
   const compact=await compactSummaryAttempt(old,t,started);
   if(t.ruleSummary)delete compact.topic.ruleSummaryTried;else compact.topic.ruleSummaryTried=tried;
-  if(!open){db.exec('BEGIN');}
-  dropFailed.run(old.id);
-  insert.run(compact.analysis.id,old.id,'summary',compact.analysis.method,compact.analysis.inputHash,started,JSON.stringify(compact.analysis));
-  update.run(JSON.stringify(compact.topic),old.id);
-  if(++open>=200)flush();
+  write(()=>{
+   dropFailed.run(old.id);
+   insert.run(compact.analysis.id,old.id,'summary',compact.analysis.method,compact.analysis.inputHash,started,JSON.stringify(compact.analysis));
+   update.run(JSON.stringify(compact.topic),old.id);
+  });
  }
  if(c.withText%5000===0)console.log(`${c.withText} mit Text: ${c.summary} Zusammenfassungen, ${((Date.now()-t0)/1000).toFixed(0)} s`);
 }
