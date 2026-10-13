@@ -309,7 +309,7 @@ CREATE INDEX mail_outbox_at ON mail_outbox(created_at);  -- 30 Tage, dient zugle
 CREATE TABLE dev_mail (id INTEGER PRIMARY KEY, at TEXT, "to" TEXT, subject TEXT, text TEXT, html TEXT);
 ```
 
-**Wirksame Stufe:** `effectiveTier(user, now)` nimmt die höchste Zeile in `plan_grants` mit `starts_at ≤ now < ends_at` (oder leerem `ends_at`). Gibt es keine solche Zeile, gilt `basic`. Ohne Sitzung gilt `guest`. Rechte entstehen nur über `entitlements(tier)`, und kein Code liest `plan_grants` direkt.
+**Wirksame Stufe:** `effectiveTier(user, now)` nimmt die höchste Zeile in `plan_grants` mit `starts_at ≤ now < ends_at` (oder leerem `ends_at`). Gibt es keine solche Zeile, gilt `ACCOUNT_DEFAULT_TIER` (`guest`, Abschnitt 9.1). Ohne Sitzung gilt `guest`. Rechte entstehen nur über `entitlements(tier)`, und kein Code liest `plan_grants` direkt.
 
 **Löschprotokoll:** Es liegt außerhalb der Datei und damit außerhalb ihrer Sicherung, in `/srv/ratsmonitor/accounts/deleted.log`. Je Löschung gibt es eine Zeile mit dem SHA-256 der Konto-ID und dem HMAC der Adresse, jeweils mit Datum. Geschrieben wird es über `ACCOUNTS_HOOKS.logDeletion`.
 
@@ -675,6 +675,31 @@ Ein Stripe-Webhook mit Signaturprüfung schreibt künftig nur Zeilen in `plan_gr
 - das Löschen des Kontos schließt den Stripe-Kunden ein (löschen oder sperren, soweit die Aufbewahrung es zulässt);
 - Stripe überträgt in die USA (DPF) und ist für die Zahlung teils eigener Verantwortlicher. Das wird in Thema 3 geklärt und in der Datenschutzerklärung genannt.
 
+### 9.1 Bezahlung und Freischaltung (Entscheidung 13.10.2026)
+
+Ein Konto wird erst freigeschaltet, wenn die Zahlung bestätigt ist. Ein Konto ohne gültige Zeile in `plan_grants` hat die
+Rechte eines Gasts, dazu Kontoverwaltung, Bezahlen, Datenauskunft und Löschen (`ACCOUNT_DEFAULT_TIER='guest'` in
+`shared/plans.mjs`, einstellbar, falls später doch eine kostenlose Stufe kommt). Testerinnen und Tester bekommen ihre
+Stufe über die Einladung (`source='beta'`, mit Ende).
+
+Ablauf mit dem Zahlungsdienst (Stripe, Mollie oder ein Merchant of Record; Entscheidung offen):
+
+1. Erst anmelden (E-Mail bestätigt), dann bezahlen. Der Server legt den Bezahlvorgang mit `users.id` als Bezug an; die
+   Zahlung läuft auf der Seite des Dienstleisters, Kartendaten berühren den Server nie.
+2. Die Rückkehr auf die Kontoseite schaltet **nichts** frei (fälschbar, abbrechbar); sie zeigt „Zahlung wird geprüft“.
+3. Freigeschaltet wird nur per Webhook (Server zu Server, Signatur geprüft): bezahlte Rechnung → Zeile in `plan_grants`
+   mit `source='stripe'`, Ende des bezahlten Zeitraums plus wenige Tage Kulanz. Jede bezahlte Folgerechnung verlängert;
+   Zahlungsausfall oder Kündigung → keine neue Zeile, die Stufe endet von selbst. Rücklastschrift oder Widerspruch beendet sie sofort.
+4. Meldungen werden mit ihrer ID gespeichert und nur einmal verarbeitet; ein täglicher Abgleich mit dem Dienstleister im
+   Zeitplaner fängt verpasste Meldungen auf.
+5. Die Zugangssperre und Caddy lassen `/api/billing/webhook` ohne Anmeldung durch; dafür braucht es die eigene Domain mit
+   https (hinter Basic-Auth kommen keine Webhooks an).
+
+„Geldeingang“ heißt die Bestätigung des Dienstleisters: Karte und PayPal in Sekunden (sofort freischalten), SEPA-Lastschrift
+nach 2 bis 5 Werktagen (Rücklastschrift bis 8 Wochen), Überweisung nach Tagen. Vorschlag: zum Start Karte und PayPal;
+Enterprise für Kommunen von Hand per Rechnung (oft XRechnung), der Admin vergibt die Stufe nach Zahlungseingang
+(`source='manual'`). Kündigen, Zahlart und Rechnungen über das Kundenportal des Dienstleisters.
+
 ## 10. Mailversand und Domain
 
 Thema 1 braucht den Versand schon für diese Vorlagen: Anmeldelink/Code, Einladung, Willkommen, Code gesperrt, Löschcode, Konto gelöscht, Exportcode, Daten exportiert, Adresswechsel (neu und alt), Testzugang endet, Hinweis auf lange Inaktivität und Betreiberwarnung.
@@ -769,6 +794,20 @@ Das Dev-Postfach (`pages/PostfachPage.tsx:74`) zeigt HTML nur in einem `<iframe 
 - **Logs:** SQL immer mit gebundenen Werten, denn das Protokoll langsamer Abfragen zeigt den SQL-Text (`d1-sqlite.mjs:123-126`). Fehlertexte ohne Adressen und Tokens.
 - **Ohne CAPTCHA** in der Testphase. Der Einladungsmodus schließt Fremde aus. Vor einer freien Registrierung (Entscheidung 12) kommen eine Missbrauchsprüfung (EU-Anbieter wie Friendly Captcha oder Proof-of-Work) und eine strengere Grenze je /64.
 - **Notzugang:** Fällt der Mailversand aus, erzeugt `ratsmonitor-accounts login-link` auf dem Server einen Link.
+
+### 11.1 Bedingungen für den Eigenbau
+
+Der Eigenbau ist nur unter diesen Bedingungen vertretbar (Abwägung vom 13.10.2026):
+
+1. Kleiner Umfang: keine Passwörter, keine eigene Kryptografie (nur WebCrypto), keine Anmeldung über Google oder Apple.
+2. Ein Test je Sicherheitsregel, abgeleitet aus OWASP ASVS Kapitel 2 und 3 (`tests/accounts-*.test.mjs`).
+3. Vor den ersten Testern: Prüfung durch ein stärkeres Modell und `/security-review`.
+4. Vor der öffentlichen Öffnung und vor der Bezahlung: Prüfung durch eine Fachperson (Pentest, einige Tage).
+5. Fehlgeschlagene Anmeldungen und erreichte Grenzen landen im Protokoll und in der Überwachung.
+
+Admin hängt nicht an der Anmeldung allein (Tunnel, SSH-Schlüssel); die geschützten Daten sind wenig sensibel (öffentliche
+Ratsdaten, gespeicherte Suchen, Adressen), Zahlungsdaten liegen beim Dienstleister. Wechsel zu einem Dienst (z. B. Zitadel)
+über `user_identities`, wenn Kommunen eigene Identitätsdienste verlangen oder ein zweiter Faktor für alle Pflicht wird.
 
 ## 12. Datenschutz
 

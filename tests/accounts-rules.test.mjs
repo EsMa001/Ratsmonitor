@@ -147,3 +147,16 @@ test('Übergang: ohne Kontendatei gilt der alte Admin-Weg weiter, mit Kontendate
  assert.equal(accountsConfig({DB:{},ACCOUNTS:{},ADMIN_LEGACY_HEADER:'1'},{dev:false}).legacyHeader,true);
  assert.equal(accountsConfig({DB:{},ADMIN_LEGACY_HEADER:'0'},{dev:false}).legacyHeader,false);
 });
+
+test('Admin-Protokoll: ändernde Admin-Aufrufe je Konto, Pfad und Stunde gezählt, nur IDs',async()=>{
+ const {auditAdmin}=await import('../server/accounts/access.mjs');
+ const h=setup();const id=await signedIn(h,'admin@example.org',{tier:'pro'});
+ const cookie='__Host-rm_session='+h.jar.get('__Host-rm_session');
+ const post=path=>new Request('https://plenara.test'+path,{method:'POST',headers:{cookie}});
+ for(let i=0;i<3;i++)await auditAdmin(post('/api/admin/refresh'),h.env,{cfg:h.cfg,now:h.now()});
+ await auditAdmin(new Request('https://plenara.test/api/admin/summary',{headers:{cookie}}),h.env,{cfg:h.cfg,now:h.now()});
+ await auditAdmin(post('/api/search'),h.env,{cfg:h.cfg,now:h.now()});
+ const rows=h.accounts.sql.prepare('SELECT user_id,path,method,count FROM admin_audit').all();
+ assert.deepEqual(rows.map(r=>[r.user_id,r.path,r.method,r.count]),[[id,'/api/admin/refresh','POST',3]]);
+ assert.ok(!JSON.stringify(rows).includes('@'));
+});
