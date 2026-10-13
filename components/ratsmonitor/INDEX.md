@@ -5,7 +5,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/admin.css (432 Zeilen, ⚠11)
+- app/admin.css (501 Zeilen, ⚠11)
 - app/analyse-admin.css (95 Zeilen, ⚠9)
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
@@ -16,6 +16,25 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 admin-access admin.css:6
 admin-activation admin.css:6
 admin-ai-kinds admin.css:10
+admin-ai-local admin.css:435
+admin-ai-local-article admin.css:459
+admin-ai-local-completed admin.css:463
+admin-ai-local-count admin.css:446
+admin-ai-local-details admin.css:466
+admin-ai-local-empty admin.css:472
+admin-ai-local-error admin.css:475
+admin-ai-local-feedback admin.css:473
+admin-ai-local-filters admin.css:440
+admin-ai-local-icon admin.css:443
+admin-ai-local-legacy admin.css:477
+admin-ai-local-list admin.css:447
+admin-ai-local-outputs admin.css:437
+admin-ai-local-pagination admin.css:469
+admin-ai-local-select admin.css:453
+admin-ai-local-spin admin.css:482
+admin-ai-local-table admin.css:449
+admin-ai-local-toolbar admin.css:441
+admin-ai-local-tools admin.css:442
 admin-ai-preview admin.css:224
 admin-ai-retry admin.css:10
 admin-app admin.css:13
@@ -129,6 +148,7 @@ admin-source-meta admin.css:10
 admin-stage admin.css:10
 admin-stage-ai admin.css:10
 admin-stage-grid admin.css:10
+admin-stage-grid-local admin.css:434
 admin-stage-number admin.css:10
 admin-state admin.css:6
 admin-status-row admin.css:6
@@ -279,6 +299,7 @@ is-done admin.css:335
 is-dragging admin.css:285
 is-drop-before admin.css:286
 is-drop-target admin.css:281
+is-error admin.css:474
 is-failed analyse-admin.css:85
 is-found admin.css:120
 is-group admin.css:62
@@ -483,6 +504,7 @@ ri-topnav ratsmonitor-info.css:392
 ri-two ratsmonitor-info.css:136
 rm-analytics ratsmonitor-info.css:468
 rm-chip ratsmonitor.css:99
+rm-dark admin.css:465
 rm-dark ratsmonitor-info.css:415
 rm-dark ratsmonitor.css:127
 rm-dots ratsmonitor.css:105
@@ -505,6 +527,7 @@ scroll-thin ratsmonitor.css:52
 section design-styles.css:249
 section-title design-styles.css:39
 select-active ratsmonitor.css:38
+select-base admin.css:464
 select-base ratsmonitor.css:35
 session design-styles.css:159
 session-details analyse-admin.css:71
@@ -627,7 +650,7 @@ topic design-styles.css:140
 - admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠15): AdminDashboardView
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
 - admin-keywords.tsx (103, ⚠10): AdminKeywords
@@ -637,7 +660,7 @@ topic design-styles.css:140
 - admin-pdf-parts.tsx (168, ⚠7): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
 - admin-pdf.tsx (275, ⚠21): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
-- admin-processing.tsx (243, ⚠25): AdminProcessing
+- admin-processing.tsx (186, ⚠21): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
 - admin-rule-texts.tsx (52): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
@@ -765,7 +788,7 @@ topic design-styles.css:140
 - MainMenu.tsx (229, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (138, ⚠3): DetailPage
+- DetailPage.tsx (171, ⚠10): DetailPage
 - KalenderPage.tsx (363, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
@@ -786,7 +809,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (222, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (308, ⚠11): ComparePage
+- ComparePage.tsx (308, ⚠12): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (275, ⚠6): DiffusionPage
@@ -795,14 +818,14 @@ topic design-styles.css:140
 - FraktionenPage.tsx (175, ⚠5): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (201, ⚠3): GremiennetzPage
-- KitaRadarPage.tsx (190, ⚠7): KitaRadarPage
+- KitaRadarPage.tsx (190, ⚠8): KitaRadarPage
 - KnowledgeGraphPage.tsx (229, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (135, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (56): DrillItem, RadarDrill
-- RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
+- RadarExtra.tsx (153, ⚠8): Extra, RadarExtra
 - RadarMap.tsx (78, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS

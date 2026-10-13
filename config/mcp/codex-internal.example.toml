@@ -1,0 +1,7 @@
+# Operator-owned configuration for INTERNAL data preparation, not for customers.
+# Replace the absolute checkout path as needed. Run scripts/mcp-demo.mjs first.
+[mcp_servers.ratsmonitor_internal]
+command = "node"
+args = ["C:/Git/vor-ort-quellcode/scripts/mcp-internal.mjs", "--config", "C:/Git/vor-ort-quellcode/config/mcp/internal.example.json"]
+startup_timeout_sec = 20
+tool_timeout_sec = 120

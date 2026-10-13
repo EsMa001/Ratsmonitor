@@ -1,0 +1,7 @@
+{
+  "mode": "internal",
+  "identity": "internal-local",
+  "databaseFile": "../../tmp/mcp-demo/reports.sqlite",
+  "sourceDirectory": "../../tmp/mcp-demo/pdf-store",
+  "requestsPerMinute": 120
+}

@@ -26,6 +26,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | Zeile über Trefferliste (Anzahl, Sortierung, Export, Ansicht) | `components/SearchFilterPanel.tsx` |
 | Trefferliste / Artikelzeile | `components/results/ResultsPanel.tsx`, `components/results/ArticleCard.tsx` |
 | Artikel-Detail | `pages/DetailPage.tsx` |
+| KI-Inhalte: offene IDs, Quellenabdeckung, Filter und Kopieren in Admin-Schritt 03; keine Export-/Importdateien. Artikelseite mit getrennten KI-/Originalauszug-Ansichten und belegten Zitaten. | `components/admin-ai-local.tsx`, `components/admin-processing.tsx`, `pages/DetailPage.tsx`; Vertrag: `requirements/ai-processing.md` |
 | Export-Fenster | `components/ExportMenu.tsx`; Treffer: `lib/exportResults.ts`; Artikel (PDF/Drucken/Excel/CSV): `lib/exportArticle.ts`; Excel/CSV-Erzeugung: `lib/xlsx.ts` |
 | Kontoseiten (Routing) | `pages/PersonalPage.tsx` → `SavedSearchesPage`, `SavedArticlesPage`, `KalenderPage`, `ProfilePage`, `PostfachPage` |
 | Lena (regelbasierte Assistentin, eigener Reiter `/lena`; Konzept `docs/produkt/lena-konzept.md`) | Dialog: `info/LenaPage.tsx`, Abruf und feste Texte: `lib/lena.ts`; Verstehen und Antworten im Backend (`shared/lena/`, `server/integrations/lena.mjs`, `POST /api/lena`, Test `tests/lena.test.mjs`, Messung `scripts/lena/measure.mjs`), Reiter: `menu/MainMenu.tsx` |

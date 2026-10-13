@@ -17,8 +17,10 @@ export interface TopicEvent {
     attendance?: {status:'available'|'not_collected'|'unavailable';sourceUrl?:string;fetchedAt?:string;people:{name:string;role:string;presence:'present'|'absent'|'unknown';sourceUrl:string}[]};
     decision?: {kind:'decision'|'recommendation'|'information'|'postponed'|'unknown';text:string;date:string;sourceUrl:string;votes?:{yes:number|null;no:number|null;abstentions:number|null;description?:string};implementationStatus:'unknown'|'reported_complete'};
 }
-export interface ContentEvidence {url:string;quote:string;location?:string}
-export interface ContentAnalysis {id:string;status:'completed'|'insufficient_source'|'failed'|'stale';method:string;generatedAt:string;inputHash:string;sourceSignature:string;basis:string;reason?:string;evidence:ContentEvidence[];sourceDocuments:{url:string;hash:string;fetchedAt:string}[];checks:{name:string;passed:boolean}[];reviewStatus:'not_independently_reviewed'|'reviewed'}
+export interface ContentEvidence {url:string;quote:string;location?:string;sourceId?:string;page?:number;paragraphIndex?:number}
+export interface ContentSourceDocument {url:string;hash:string;fetchedAt:string|null;id?:string;title?:string;method?:string;kind?:string;role?:string;pages?:number}
+export interface ContentSourceCoverage {total:number;available:number;missing:number;partial:number;complete:boolean}
+export interface ContentAnalysis {id:string;status:'completed'|'insufficient_source'|'failed'|'stale';method:string;generatedAt:string;inputHash:string;sourceSignature:string;basis:string;reason?:string;evidence:ContentEvidence[];sourceDocuments:ContentSourceDocument[];checks:{name:string;passed:boolean}[];reviewStatus:'not_independently_reviewed'|'reviewed';agent?:string;model?:string;contractVersion?:string;coverage?:ContentSourceCoverage;coveredSourceIds?:string[];gaps?:{url:string;title:string;reason:string}[]}
 export interface ArticleMetadata {version:string;firstImportedAt:string|null;sourceModifiedAt:string|null;lastFetchedAt:string|null;lastProcessedAt:string|null}
 export interface QualityResult {
     passed: boolean;

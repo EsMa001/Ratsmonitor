@@ -13,6 +13,10 @@
  * Lokal (npm run dev) wird dieses Modul nicht benutzt; dort kommt `env` weiter von Miniflare.
  */
 import { openD1 } from './d1-sqlite.mjs';
+import { createLocalSourceReader } from './ai-local-sources.mjs';
+
+let sourceReader;
+const localSources = () => sourceReader ??= createLocalSourceReader({directory:process.env.RM_PDF_STORE||'tmp/pdf-store'});
 
 const STATE = Symbol.for('ratsmonitor.node.database');
 const state = (globalThis[STATE] ??= { database: undefined, failedAt: 0, warned: false });
@@ -54,10 +58,12 @@ export const env = new Proxy(Object.create(null), {
   get(_target, key) {
     if (typeof key !== 'string') return undefined;
     if (key === 'DB') return db();
+    if (key === 'AI_LOCAL_SOURCES') return localSources();
     return value(key);
   },
   has(_target, key) {
     if (typeof key !== 'string') return false;
+    if (key === 'AI_LOCAL_SOURCES') return true;
     return key === 'DB' ? db() !== undefined : value(key) !== undefined;
   },
   set() { return false; },

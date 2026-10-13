@@ -1,0 +1,7 @@
+{
+  "mode": "customer",
+  "identity": "customer-local-demo",
+  "databaseFile": "../../tmp/mcp-demo/reports.sqlite",
+  "allowedRegionIds": ["billerbeck"],
+  "requestsPerMinute": 60
+}

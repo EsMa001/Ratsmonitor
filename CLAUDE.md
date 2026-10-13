@@ -3,6 +3,13 @@
 - Frontend-Arbeiten (Oberfläche, Texte, Stile): zuerst `components/ratsmonitor/FRONTEND.md` lesen. Dort stehen Dateikarte, Designregeln und Prüfbefehle.
 - Bei reinen Frontend-Aufgaben das Backend nicht ändern: `server/`, `shared/`, `app/api/`, `drizzle/`, `tests/`.
 
+## KI-Inhalte aus gespeicherten Quellen
+
+- MCP: getrennte lokale Startwege `scripts/mcp-internal.mjs` (KI-Aufbereitung) und `scripts/mcp-customer.mjs` (reine Recherche). Details und Startvorlagen in `requirements/ai-processing.md` und `config/mcp/`. Kundenrechte stammen ausschliesslich aus betreibereigener Startkonfiguration; keine interne Verbindung an Kunden geben. MCP migriert keine Datenbank und startet ohne ausdrueckliche Konfiguration nicht.
+- Neue Verarbeitung: `requirements/ai-processing.md`, `scripts/ai-local.mjs`. Immer Kurzfassung (ein Satz), Langfassung und KI-Label gemeinsam. Nur lokal gespeicherte Originaltexte lesen, keine Webseiten nachladen und keine Exportaufträge erzeugen.
+- Agentenablauf: `list`, `claim`, `read` (alle Quellen und Seiten), `renew`/`release`, `submit` über Standardeingabe. Reservierungen, Eingabehash und Originalzitate werden geprüft; keine freien SQL-Schreibbefehle für KI-Ergebnisse. Bestehende Regeltexte und manuelle Einordnungen bleiben erhalten.
+- Die alte `scripts/ai-job.mjs` ist nur noch für bereits vorbereitete Altaufträge gedacht. Keine automatische Modell-API im neuen Ablauf.
+
 ## Token sparen beim Suchen und Ändern
 
 - Nichts ganz lesen, was man nur nachschlagen will. Erst gezielt suchen, dann nur den Bereich lesen (`Read` mit `offset`/`limit`).

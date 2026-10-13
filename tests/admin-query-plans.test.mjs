@@ -27,6 +27,9 @@ const SERVER_STATS=[
  ['idx_topics_event_date','1586485 39'],
  ['sqlite_autoindex_topics_1','1585980 1'],
  ['idx_topics_inactive','15000 1'],
+ // New partial indexes: canonical row count and existing date/region selectivity, until production ANALYZE supplies measured values.
+ ['idx_topics_ai_local_date','1508379 39 1'],
+ ['idx_topics_ai_local_region_date','1508379 667 39 1'],
 ];
 
 /** Indizes auf topics ohne Teilbedingung auf active: mit active=1 in der Abfrage verboten */

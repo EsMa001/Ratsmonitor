@@ -1,0 +1,8 @@
+# Local demonstration of the restricted customer tool surface.
+# Do NOT add the internal connection to a customer's client configuration.
+# Not a remote customer login. Run scripts/mcp-demo.mjs first.
+[mcp_servers.ratsmonitor_customer]
+command = "node"
+args = ["C:/Git/vor-ort-quellcode/scripts/mcp-customer.mjs", "--config", "C:/Git/vor-ort-quellcode/config/mcp/customer.example.json"]
+startup_timeout_sec = 20
+tool_timeout_sec = 60

@@ -10,9 +10,12 @@
     "build": "node scripts/run-framework.mjs build",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .local-backups --ignore-pattern tmp",
     "build:node": "node scripts/build-node.mjs",
-    "start:node": "node dist/standalone/serve.mjs"
+    "start:node": "node dist/standalone/serve.mjs",
+    "mcp:internal": "node scripts/mcp-internal.mjs",
+    "mcp:customer": "node scripts/mcp-customer.mjs"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "^1.1.1",
@@ -23,7 +26,8 @@
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "tailwind-merge": "3.6.0",
-    "unpdf": "^1.8.1"
+    "unpdf": "^1.8.1",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",

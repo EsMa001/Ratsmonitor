@@ -16,7 +16,7 @@ const SERIES_SQL=`WITH t AS MATERIALIZED (
     substr(json_extract(payload,'$.metadata.firstImportedAt'),1,10) iday,
     (SELECT count(*) FROM json_each(payload,'$.documents') WHERE json_extract(value,'$.kind') IN ('application/pdf','pdf')) pdfs,
     (SELECT count(DISTINCT substr(json_extract(value,'$.date'),1,10)) FROM json_each(payload,'$.events')) days
-  FROM topics WHERE ${canonical} AND region_id IN (SELECT value FROM json_each(?)))
+  FROM topics INDEXED BY idx_topics_canonical_region_updated WHERE ${canonical} AND region_id IN (SELECT value FROM json_each(?)))
 SELECT region_id,eday,iday,count(*) n,sum(pdfs>0) wd,sum(pdfs) links,sum(days>1) fu,sum(days) cons
 FROM t GROUP BY region_id,eday,iday`;
 // INDEXED BY: active ist eine berechnete Spalte (json_extract der Nutzlast); ohne Hinweis nimmt der Planer den Index ohne

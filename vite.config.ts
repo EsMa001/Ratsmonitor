@@ -4,6 +4,7 @@ import { defineConfig, type Plugin } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
 import { todoDev } from "./build/todo-dev-plugin.mjs";
+import { aiLocalDev } from "./build/ai-local-dev-plugin.mjs";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
@@ -113,10 +114,12 @@ export default defineConfig(async ({ command }) => {
     },
     plugins: [
       todoDev(),
+      aiLocalDev(),
       vinextStaticNavigation(),
       vinext(),
       sites({ mockAuth: true }),
       cloudflare({
+        ...(process.env.RM_DEV_STATE ? { persistState: { path: process.env.RM_DEV_STATE } } : {}),
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         inspectorPort: false,
         config: localBindingConfig,
