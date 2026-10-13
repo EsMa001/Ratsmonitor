@@ -63,7 +63,7 @@ export { isAnalyticsPath } from "../../lib/routes";
 const FREE = new Set(["/analytics", "/analytics/ueber", "/analytics/tools", "/analytics/themen", "/analytics/politik", "/analytics/finanzen"]);
 
 export function AnalyticsPages({ path }: { path: string }) {
-  const { tier } = useTier();
+  const { tier, ready } = useTier();
   useEffect(() => {
     window.scrollTo(0, 0);
     const radar = RADARS[path.slice("/analytics/".length) as keyof typeof RADARS], gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
@@ -71,5 +71,8 @@ export function AnalyticsPages({ path }: { path: string }) {
   }, [path]);
   const Page = PAGES[path];
   if (!Page) return null;
-  return FREE.has(path) || tier === "enterprise" ? <Page /> : <AnalyticsLocked path={path} />;
+  if (FREE.has(path) || tier === "enterprise") return <Page />;
+  /* Bis /api/me antwortet: neutral laden, nicht sperren */
+  if (!ready) return <main id="inhalt" aria-busy="true" className="min-h-[60vh] w-full px-[max(1vw,16px)] pb-12" />;
+  return <AnalyticsLocked path={path} />;
 }

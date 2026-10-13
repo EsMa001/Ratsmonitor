@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AnalyticsLogo } from "../../components/Brand";
-import { IS_DEV, setTier } from "../../lib/tier";
+import { IS_DEV, setTier, UPGRADE_TEXT } from "../../lib/tier";
 import { PageBand } from "./PageBand";
 import { LiveThumb } from "../../info/BranchenLive";
 import { ANALYSEN, type AnalyseId } from "../../info/branchen-enterprise";
@@ -15,7 +15,7 @@ const VORSCHAU: Record<string, { id: AnalyseId; term: string; text: string }> = 
   "/analytics/gremien": { id: "gremien", term: "Photovoltaik", text: "Zeigt, welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
 };
 
-/** Hinweis statt Analyse für alle ohne Enterprise (nur Oberfläche: serverseitig gibt es noch keine Tarifprüfung) */
+/** Hinweis statt Analyse für alle ohne Enterprise (der Server antwortet ihnen mit 403) */
 export function AnalyticsLocked({ path = "" }: { path?: string }) {
   const v = VORSCHAU[path];
   return (
@@ -25,7 +25,7 @@ export function AnalyticsLocked({ path = "" }: { path?: string }) {
         <h1 className="mb-6 mt-4"><span className="sr-only">plenara.X</span><AnalyticsLogo size={56} /></h1>
         <p className="mt-3 max-w-[680px] text-[18px] text-slate-500">Die Analysen von plenara.X gehören zum Tarif Enterprise, für Organisationen, in denen mehrere Personen informiert werden sollen.</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Link href="/preise#tarif" className="btn-primary">Enterprise anfragen</Link>
+          <Link href="/kontakt" className="btn-primary">Enterprise: {UPGRADE_TEXT}</Link>
           <Link href="/analytics/ueber" className="btn-secondary">Was kann plenara.X?</Link>
           {IS_DEV && (
             <button type="button" onClick={() => setTier("enterprise")} className="ml-auto text-[12px] text-slate-500 underline underline-offset-2 hover:text-slate-700">

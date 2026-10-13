@@ -24,6 +24,13 @@ export interface SearchSnapshot {
   exact?: boolean;
 }
 
+const SNAPSHOT_KEYS = ["q", "text", "area", "areaSrc", "radius", "thema", "monat", "von", "bis", "scope", "more", "status", "level", "future", "noformal", "allterms", "exact"] as const;
+/** Nur die Felder der Suche (ohne id, name, notify, created, lastSeen): so speichert das Konto sie (state) */
+export function snapshotOf(s: SearchSnapshot): SearchSnapshot {
+  const out: Record<string, unknown> = {};
+  for (const k of SNAPSHOT_KEYS) if (s[k] !== undefined) out[k] = s[k];
+  return out as unknown as SearchSnapshot;
+}
 
 /** Signatur einer Suche, um gespeicherte Suchen wiederzuerkennen */
 export function signature(s: Pick<SearchSnapshot, "text" | "area" | "radius" | "thema" | "monat" | "von" | "bis" | "status" | "level" | "more"> & { future?: boolean; noformal?: boolean; allterms?: boolean; exact?: boolean }): string {

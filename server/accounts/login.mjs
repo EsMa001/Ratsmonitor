@@ -246,11 +246,14 @@ export async function accountState(ctx,session){
  const adminHere=roles.includes('admin')&&isAdminHost(ctx)&&Date.parse(session.auth_at)>ctx.now-ADMIN_AUTH_MAX_MS;
  return {tier,roles,adminHere};
 }
+/** Absenderadresse aus MAIL_FROM („Name <adresse>“), für den Hinweis auf der Anmeldeseite */
+const senderOf=from=>String(from||'').match(/<([^>]+)>/)?.[1]||(/^[^\s<>]+@[^\s<>]+$/.test(String(from||''))?String(from):null);
 export async function me(ctx){
  const session=await currentSession(ctx);
- if(!session)return {response:respond({accounts:true,tier:'guest',features:FEATURES.guest,limits:limitsJson('guest')})};
+ const common={accounts:true,access:ctx.cfg.access??'open',sender:senderOf(ctx.cfg.mail.from)};
+ if(!session)return {response:respond({...common,tier:'guest',features:FEATURES.guest,limits:limitsJson('guest')})};
  const {tier,roles,adminHere}=await accountState(ctx,session);
- return {response:respond({accounts:true,user:{id:session.user_id,email:session.email,name:session.name},
+ return {response:respond({...common,user:{id:session.user_id,email:session.email,name:session.name},
   tier:tier.tier,tierUntil:tier.until,tierSource:tier.source,roles,adminHere,
   features:FEATURES[tier.tier],limits:limitsJson(tier.tier),renewAfter:renewDue(session,ctx.now)})};
 }

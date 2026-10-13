@@ -5,7 +5,6 @@ import { useAccount, useSavedStats } from "../state/account";
 import { useData } from "../state/data";
 import { useSearch, useSearchResults } from "../state/search";
 import { useToast } from "../state/toast";
-import { NO_STORAGE } from "../lib/storage";
 import { IconFilter, IconHeart } from "./icons";
 import { SearchBox } from "./SearchBox";
 import { FilterPanel } from "./FilterPanel";
@@ -28,22 +27,20 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
   const filterCount = chips.filter((c) => !["q", "area", "more"].includes(c.key)).length + (search.state.future ? 1 : 0) + (search.state.noformal ? 0 : 1) + (search.state.allterms ? 1 : 0) + (search.state.exact ? 1 : 0);
 
   /* Ein Klick speichert die Suche unter einem automatisch erzeugten Namen; erneuter Klick entfernt sie */
-  const toggleSave = () => {
-    try {
-      if (savedHit) {
-        const index = saved.findIndex((x) => x.id === savedHit.id);
-        removeSaved(savedHit.id);
-        return toast("Gespeicherte Suche entfernt.", { label: "Rückgängig", run: () => restoreSaved(savedHit, index) });
-      }
-      if (!allow("searches")) return;
-      const base = suggestName(res.snapshot, geo);
-      let name = base;
-      for (let i = 2; saved.some((x) => x.name === name); i++) name = `${base} (${i})`;
-      addSaved(res.snapshot, name);
-      toast(`Gespeichert: ${name}`);
-    } catch {
-      toast(NO_STORAGE);
+  const toggleSave = async () => {
+    if (savedHit) {
+      const index = saved.findIndex((x) => x.id === savedHit.id);
+      const err = await removeSaved(savedHit.id);
+      if (err) return toast(err);
+      return toast("Gespeicherte Suche entfernt.", { label: "Rückgängig", run: () => void restoreSaved(savedHit, index).then((e) => e && toast(e)) });
     }
+    if (!allow("searches")) return;
+    const base = suggestName(res.snapshot, geo);
+    let name = base;
+    for (let i = 2; saved.some((x) => x.name === name); i++) name = `${base} (${i})`;
+    const err = await addSaved(res.snapshot, name);
+    if (err) toast(err);
+    else toast(`Gespeichert: ${name}`);
   };
 
   const round = "rm-glass relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12 transition-colors disabled:cursor-default disabled:opacity-50";
@@ -69,7 +66,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
       <button
         type="button"
         disabled={!active && !savedHit}
-        onClick={toggleSave}
+        onClick={() => void toggleSave()}
         aria-pressed={!!savedHit}
         title={savedHit ? "Gespeicherte Suche entfernen" : active ? "Suche speichern" : "Erst suchen oder filtern, dann speichern"}
         aria-label={savedHit ? "Gespeicherte Suche entfernen" : "Suche speichern"}

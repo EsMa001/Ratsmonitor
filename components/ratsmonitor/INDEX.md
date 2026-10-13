@@ -601,7 +601,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/registrieren/
-- page.tsx (2): Page
+- page.tsx (4): Page
 
 ### app/(monitor)/suche/
 - page.tsx (2): Page
@@ -616,7 +616,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/admin/
-- page.tsx (64, ⚠4): dynamic, metadata, AdminPage
+- page.tsx (72, ⚠6): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -636,10 +636,10 @@ topic design-styles.css:140
 - admin-ai-local.tsx (114, ⚠8): AdminAiLocal
 - admin-atlas.tsx (197, ⚠29): AdminAtlas
 - admin-catch-up.tsx (10): RegionCatchUp
-- admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
+- admin-chrome.tsx (66, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠15): AdminDashboardView
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
 - admin-loader.tsx (33): AdminLoader
@@ -653,6 +653,7 @@ topic design-styles.css:140
 - admin-rule-texts.tsx (52): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (115, ⚠4): AdminSchedules
+- admin-signout.tsx (13): AdminSignOut
 - admin-social.tsx (135, ⚠1): AdminSocial
 - admin-source-notes.tsx (21, ⚠1): SourceNotes
 - admin-stand.tsx (28): standText, StandLine
@@ -668,10 +669,10 @@ topic design-styles.css:140
 - process-progress.tsx (8, ⚠1): ProcessProgress
 
 ### components/ratsmonitor/
-- App.tsx (70, ⚠1): MonitorApp
+- App.tsx (71, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
-- AccountMenu.tsx (68, ⚠2): AccountMenu
+- AccountMenu.tsx (66, ⚠2): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
 - AreaBar.tsx (101, ⚠1): AreaBar
 - Brand.tsx (274): AnalyticsLogo, Brand
@@ -683,18 +684,18 @@ topic design-styles.css:140
 - ExportMenu.tsx (56, ⚠1): ExportOption, ExportMenu
 - FilterPanel.tsx (110, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
-- FollowButton.tsx (33): FollowButton
+- FollowButton.tsx (28): NOTIFY_LATER, FollowButton
 - Footer.tsx (59): Footer
-- GateDialog.tsx (127): GateFeature, openGate, GateDialog
+- GateDialog.tsx (148): GateFeature, openGate, openLimitGate, GateDialog
 - Header.tsx (38): Header
-- PlanCards.tsx (136, ⚠1): PlanCards, PlanSummary
-- SaveArticleButton.tsx (30): SaveArticleButton
-- SaveSearchDialog.tsx (16, ⚠2): SaveSearchDialog
+- PlanCards.tsx (153, ⚠1): PlanCards, PlanSummary
+- SaveArticleButton.tsx (29): SaveArticleButton
+- SaveSearchDialog.tsx (25, ⚠1): SaveSearchDialog
 - SearchBox.tsx (548, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (87): SearchFilterPanel
-- SearchOverlay.tsx (90): SearchOverlay
+- SearchOverlay.tsx (87): SearchOverlay
 - ShareButton.tsx (40): ShareButton
-- TierNotice.tsx (46): LoginRequired, UsagePill
+- TierNotice.tsx (67): AccountLoading, LoginRequired, UsagePill
 - TopicSeed.tsx (11): TopicSeed
 - icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
@@ -707,21 +708,21 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/info/
 - AboutPage.tsx (163): AboutPage
-- AccountPages.tsx (326): DoneScreen, RegisterPage, LoginPage, KontaktPage
+- AccountPages.tsx (534): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenLive.tsx (260): LiveThumb
 - BranchenPages.tsx (127): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (47): InfoPages
+- InfoPages.tsx (48): InfoPages
 - LegalText.tsx (20): H2, P, Ul
 - LenaPage.tsx (193): LenaPage
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (171, ⚠4): QuellenPage
-- StartseitePage.tsx (531, ⚠5): StartseitePage
+- StartseitePage.tsx (529, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
-- TodoPage.tsx (267, ⚠24): TodoPage
+- TodoPage.tsx (267, ⚠25): TodoPage
 - VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
@@ -738,7 +739,7 @@ topic design-styles.css:140
 - catalog.ts (22): loadCatalog, useCatalog
 - clipboard.ts (26): copyText
 - constants.ts (66, ⚠1): THEMEN, shownThema, StatusInfo, STATUS, STATUS_BY_ID, TEASER_MAX_SENTENCES, isCovered, MAP_COLORS, MAP_COLORS_DARK, colorForCoverageDark, colorForCoverage, colorForCount
-- entitlements.ts (41): useEntitlements
+- entitlements.ts (50): useEntitlements
 - exportArticle.ts (402): ArticleExport, exportArticleTable, printArticle, exportArticlePdf
 - exportResults.ts (35): EXPORT_MAX, ExportFormat, exportResults
 - favicon.ts (39, ⚠1): faviconHref, setFavicon
@@ -754,22 +755,20 @@ topic design-styles.css:140
 - iconStroke.ts (3): iconStroke
 - lena.ts (48): LENA_INTRO, LENA_EXAMPLES, LenaSource, LenaAnswer, askLena, germanDate
 - listView.ts (47): ListView, setListView, useListView
-- mails.ts (134, ⚠2): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
 - otherTab.ts (11): onOtherTab
-- pageTitle.ts (40): pageName, tabTitle
+- pageTitle.ts (41): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - queue.ts (29): queue
+- radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
-- savedArticles.ts (90): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, clearSavedArticles, useSavedArticles
-- savedSearch.ts (155, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
+- savedArticles.ts (166): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, useSavedArticles, useSavedArticlesReady
+- savedSearch.ts (162, ⚠1): SearchSnapshot, snapshotOf, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - sha256.ts (47): sha256Fallback, sha256Hex
-- storage.ts (18): NO_STORAGE, clearStoredContent
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
-- testAuth.ts (152): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (106): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, todayLocal, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
-- tier.ts (90): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
+- tier.ts (68): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, priceLabel, UPGRADE_TEXT, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (118): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TodoSubtask, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
 - topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
 - useClient.ts (12): useClient, useHydrated
@@ -783,19 +782,19 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (179, ⚠12): DetailPage
-- KalenderPage.tsx (367, ⚠3): KalenderPage
+- KalenderPage.tsx (378, ⚠1): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
-- PersonalPage.tsx (22): PersonalPage
-- PostfachPage.tsx (87): PostfachPage
-- ProfilePage.tsx (121): ProfileSettings, readProfile, ProfilePage
-- SavedArticlesPage.tsx (134, ⚠2): SavedArticlesPage
-- SavedSearchesPage.tsx (327): SavedSearchesPage
+- PersonalPage.tsx (24): PersonalPage
+- PostfachPage.tsx (64): PostfachPage
+- ProfilePage.tsx (440): ProfilePage
+- SavedArticlesPage.tsx (142, ⚠2): SavedArticlesPage
+- SavedSearchesPage.tsx (242): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (374, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (76, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (79, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (74): ATLAS_BEREICHE, AtlasBereich, isAtlasBereich, atlasHref, AtlasPage
 - BauleitplanungPage.tsx (239, ⚠9): BauleitplanungPage
@@ -803,7 +802,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (198, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (311, ⚠11): ComparePage
+- ComparePage.tsx (311, ⚠12): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
@@ -819,7 +818,7 @@ topic design-styles.css:140
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (79): DrillItem, RadarDrill
-- RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
+- RadarExtra.tsx (153, ⚠8): Extra, RadarExtra
 - RadarMap.tsx (79, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS
@@ -836,15 +835,15 @@ topic design-styles.css:140
 - api.ts (9, ⚠1): SAVED_SEARCHES_KEY, readSavedSearches, writeSavedSearches
 
 ### components/ratsmonitor/state/
-- account.tsx (35): AccountProvider, useAccount, useSavedStats
+- account.tsx (108): AccountProvider, useAccount, useSavedStats
 - data.tsx (36, ⚠1): DataProvider, useData
 - nav.ts (17): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
-- search.tsx (603, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
+- search.tsx (622, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 
 ### components/ratsmonitor/
-- types.ts (130): StatusId, ArticleData, Article, MapLayerData, MapData, AreaSource, Radius, SearchState, NotifyFreq, SavedSearch, Profile
+- types.ts (136): StatusId, ArticleData, Article, MapLayerData, MapData, AreaSource, Radius, SearchState, NotifyFreq, SavedSearch, Profile
 
 ### components/
 - region-select.tsx (10, ⚠1): RegionAvailability, RegionSelect

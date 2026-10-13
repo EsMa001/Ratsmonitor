@@ -1,4 +1,10 @@
-import { useTier } from "../lib/tier";
+import { UPGRADE_TEXT, useTier } from "../lib/tier";
+import { api, useMe } from "../lib/account";
+import { areaOwners, calendarAgs, cleanAreas, type CalArea } from "../lib/calendarAreas";
+import { AccountLoading, LoginRequired } from "../components/TierNotice";
+import { CalendarFeed } from "../components/CalendarFeed";
+import { NOTIFY_LATER } from "../components/FollowButton";
+import { useToast } from "../state/toast";
 import { IconCalendarSync, IconDownload } from "../components/icons";
 import { FilterSelect } from "../components/FilterSelect";
 import Link from "next/link";
@@ -10,22 +16,11 @@ import { useData } from "../state/data";
 import { useAccount } from "../state/account";
 import { norm } from "../lib/text";
 import { IconBell, IconChevronLeft, IconChevronRight, IconX } from "../components/icons";
-import type { NotifyFreq } from "../types";
 import { fetchJson } from "../lib/fetchJson";
 
-/* Gebiete und Benachrichtigung des Kalenders; vorerst nur in diesem Browser gespeichert */
-interface CalArea { ags: string; name: string; km: number }
-interface CalSettings { areas: CalArea[]; mail: boolean; freq: NotifyFreq }
+/* Gebiete des Kalenders stehen im Konto (/api/me/settings: calendar und die daraus gerechnete Schlüsselliste calendarAgs) */
+interface CalSettings { areas: CalArea[] }
 interface CalEvent { date: string; ags: string; place: string; committee: string; count: number; items: { id: string; title: string }[] }
-const KEY = "rm-calendar:v1";
-const EMPTY: CalSettings = { areas: [], mail: false, freq: "weekly" };
-const read = (): CalSettings => {
-  try {
-    return { ...EMPTY, ...JSON.parse(localStorage.getItem(KEY) || "{}") };
-  } catch {
-    return EMPTY;
-  }
-};
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 const RADII = [0, 10, 25, 50];
@@ -34,45 +29,62 @@ const AREA_COLORS = ["#0d9488", "#6366f1", "#f59e0b", "#e11d48", "#0ea5e9", "#8b
 
 /** Kalender: alle Sitzungstermine in den eigenen Gebieten (Orte, optional mit Umkreis), schlicht als Monatsansicht */
 export function KalenderPage() {
-  const { limits } = useTier();
+  const { limits, ready: tierReady } = useTier();
+  const me = useMe();
+  const toast = useToast();
   const { geo } = useData();
   const { saved } = useAccount();
-  const [cfg, setCfg] = useState<CalSettings>(EMPTY);
-  /* Einstellungen, Datum und Adresse gibt es erst im Browser: nach dem Hydrieren einmal beim Rendern übernehmen */
+  /* Gebiete aus dem Konto, je Konto und Kontostand geladen */
+  const key = me.user && limits.calendar ? `${me.user.id}:${me.rev}` : "";
+  const [stored, setStored] = useState<{ key: string; areas: CalArea[]; agsSent: string[] } | null>(null);
+  useEffect(() => {
+    if (!key) return;
+    let live = true;
+    api<{ calendar?: unknown; calendarAgs?: string[] }>("/api/me/settings").then(
+      (d) => live && setStored({ key, areas: cleanAreas(d.calendar), agsSent: Array.isArray(d.calendarAgs) ? d.calendarAgs : [] }),
+      () => live && setStored({ key, areas: [], agsSent: [] }),
+    );
+    return () => {
+      live = false;
+    };
+  }, [key]);
+  const loaded = !!key && stored?.key === key;
+  const cfg: CalSettings = useMemo(() => ({ areas: loaded && stored ? stored.areas : [] }), [loaded, stored]);
+  /* Speichern im Konto: Gebiete und die im Browser gerechnete Schlüsselliste (mit Umkreis); bei Fehler zurück */
+  const save = (next: CalSettings) => {
+    if (!stored) return;
+    const before = stored;
+    const ags = calendarAgs(next.areas, geo);
+    setStored({ ...stored, areas: next.areas, agsSent: ags });
+    api("/api/me/settings", { method: "PUT", body: { calendar: next.areas, calendarAgs: ags } }).catch((e: Error) => {
+      setStored(before);
+      toast(e.message);
+    });
+  };
+  /* Umkreise ohne Karte gespeichert (nur die Mitte): sobald die Karte da ist, die volle Liste nachtragen */
+  useEffect(() => {
+    if (!loaded || !stored || !geo || !stored.areas.some((a) => a.km)) return;
+    const ags = calendarAgs(stored.areas, geo);
+    if (ags.length === stored.agsSent.length && ags.every((x, i) => x === stored.agsSent[i])) return;
+    api("/api/me/settings", { method: "PUT", body: { calendarAgs: ags } }).then(() => setStored((s) => (s ? { ...s, agsSent: ags } : s)), () => {});
+  }, [loaded, stored, geo]);
+
+  /* Datum gibt es erst im Browser: nach dem Hydrieren einmal beim Rendern übernehmen */
   const hydrated = useHydrated();
   const [ready, setReady] = useState(false);
-  const save = (next: CalSettings) => {
-    setCfg(next);
-    try {
-      localStorage.setItem(KEY, JSON.stringify(next));
-    } catch {}
-  };
-
   /* Monat und gewählter Tag; erst im Browser bestimmen (Server kennt die Zeitzone der Nutzer nicht) */
   const today = useClient(() => iso(new Date()), "");
-  const host = useClient(() => window.location.host, "");
   const [month, setMonth] = useState(() => new Date(2000, 0, 1));
   const [day, setDay] = useState("");
   if (hydrated && !ready) {
     const d = new Date();
     setReady(true);
-    setCfg(read());
     setDay(iso(d));
     setMonth(new Date(d.getFullYear(), d.getMonth(), 1));
   }
 
   /* Alle Gebietsschlüssel inkl. Umkreis, jeweils dem eigenen Gebiet (Farbe) zugeordnet */
-  const owner = useMemo(() => {
-    const out = new Map<string, number>();
-    cfg.areas.forEach((a, i) => {
-      if (!out.has(a.ags)) out.set(a.ags, i);
-      if (a.km && geo) {
-        const c = geo.center(a.ags);
-        if (c) geo.within({ x: c.x, y: c.y, km: a.km }).set.forEach((x) => !out.has(x) && out.set(x, i));
-      }
-    });
-    return out;
-  }, [cfg.areas, geo]);
+  const owner = useMemo(() => areaOwners(cfg.areas, geo), [cfg.areas, geo]);
   const agsList = useMemo(() => [...owner.keys()], [owner]);
   /* Termin → Farbe: exakter Schlüssel, sonst der übergeordnete Kreis */
   const colorOf = (ags: string) => {
@@ -137,7 +149,11 @@ export function KalenderPage() {
   const regionName = (ags: string) => geo?.info(ags).name ?? regions?.find((r) => r.ags === ags)?.name ?? ags;
 
   /* Nur Enterprise: alle anderen sehen, was der Kalender kann, und den Weg zum Tarif */
+  const head = <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" />;
+  if (!tierReady) return <>{head}<section className="ri-sec ri-sec--tight"><AccountLoading /></section></>;
+  if (!me.user) return <>{head}<section className="ri-sec ri-sec--tight"><LoginRequired title="Sitzungskalender" text="Melden Sie sich an. Der Sitzungskalender ist Teil des Enterprise-Tarifs." /></section></>;
   if (!limits.calendar) return <KalenderTeaser />;
+  if (!loaded) return <>{head}<section className="ri-sec ri-sec--tight"><AccountLoading /></section></>;
   return (
     <>
       <PageHead icon="calendar" label="Kalender" name="Sitzungskalender" title={<>Alle Termine.<br />In Ihren Gebieten.</>} lead="Rats- und Ausschusssitzungen in den Orten, die Sie beobachten, auch mit Umkreis, etwa für Ihr Vertriebsgebiet." />
@@ -290,15 +306,12 @@ export function KalenderPage() {
                 Sie erhalten eine E-Mail, sobald in Ihren Gebieten <strong className="font-semibold text-slate-900">neue Sitzungen angesetzt</strong> werden, sofort, täglich oder wöchentlich.
               </p>
               <div className="mt-4 flex flex-wrap items-center gap-3 text-[14px]">
-                <button type="button" role="switch" aria-checked={cfg.mail} aria-label="Benachrichtigung per E-Mail" onClick={() => save({ ...cfg, mail: !cfg.mail })} className={`relative h-6 w-10 flex-none rounded-full transition-colors max-sm:after:absolute max-sm:after:-inset-2.5 max-sm:after:content-[''] ${cfg.mail ? "bg-teal-600" : "bg-slate-300/80"}`}>
-                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${cfg.mail ? "left-[18px]" : "left-0.5"}`} />
+                <button type="button" role="switch" aria-checked={false} aria-disabled="true" aria-label="Benachrichtigung per E-Mail" aria-describedby="cal-mail-later" className="relative h-6 w-10 flex-none cursor-default rounded-full bg-slate-200">
+                  <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" />
                 </button>
-                <span className="text-slate-900">{cfg.mail ? "An" : "Aus"}</span>
-                {cfg.mail && (
-                  <FilterSelect id="cal-freq" label="Häufigkeit" allLabel="" value={cfg.freq} options={[{ value: "instant", label: "Sofort" }, { value: "daily", label: "Täglich" }, { value: "weekly", label: "Wöchentlich" }]} onChange={(v) => save({ ...cfg, freq: v as NotifyFreq })} size="sm" highlight={false} />
-                )}
+                <span className="text-slate-500">Aus</span>
               </div>
-              <p className="m-0 mt-3 text-[12px] text-slate-500">Der E-Mail-Versand startet in Kürze; Ihre Auswahl ist gespeichert.</p>
+              <p id="cal-mail-later" className="m-0 mt-3 text-[12px] text-slate-500">{NOTIFY_LATER}.</p>
             </div>
 
             <div className="border-t border-slate-200 pt-5">
@@ -307,9 +320,7 @@ export function KalenderPage() {
               <p className="m-0 mt-1.5 text-[16px] leading-relaxed text-slate-500">
                 Ihre Sitzungen erscheinen als eigener Kalender in Ihrer App und <strong className="font-semibold text-slate-900">aktualisieren sich automatisch</strong>: neue oder verschobene Termine kommen von selbst dazu. Empfohlen.
               </p>
-              <a href={`webcal://${host}/api/calendar/ics?ags=${agsList.join(",")}`} className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white no-underline hover:opacity-85">
-                Kalender abonnieren →
-              </a>
+              <CalendarFeed />
             </div>
             <div className="border-t border-slate-200 pt-5">
               <IconDownload size={28} className="text-teal-700" />
@@ -353,8 +364,8 @@ function KalenderTeaser() {
           ))}
         </div>
         <div className="ri-actions" style={{ marginTop: 40 }}>
-          <Link href="/registrieren?tarif=enterprise" className="ri-btn ri-btn--dark">
-            Enterprise wählen
+          <Link href="/kontakt" className="ri-btn ri-btn--dark">
+            Enterprise: {UPGRADE_TEXT}
           </Link>
           <Link href="/preise" className="ri-btn ri-btn--light">
             Preise vergleichen

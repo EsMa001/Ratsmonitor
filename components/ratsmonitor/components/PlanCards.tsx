@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { IS_DEV, PLAN_MAX, PRO_PRICE, setTier, TIER_LABEL, useTier, type Tier } from "../lib/tier";
+import { IS_DEV, PLAN_MAX, priceLabel, setTier, TIER_LABEL, UPGRADE_TEXT, useTier, type Tier } from "../lib/tier";
+import { shortDate, useMe } from "../lib/account";
+import { useClient } from "../lib/useClient";
 
 /* Leistungen je Tarif: Text, wenn enthalten (je Stufe auch abweichend), sonst null = nicht aufgeführt (steht in der Vergleichstabelle) */
 const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
@@ -14,18 +16,19 @@ const FEATURES: { label: string; tiers: Record<Tier, string | null> }[] = [
   { label: "plenara.X", tiers: { guest: null, basic: null, pro: null, enterprise: "plenara.X: Analysen zu Ausbreitung, Beschlüssen und Trends" } },
   { label: "Bis zu 5 E-Mail-Empfänger", tiers: { guest: null, basic: null, pro: null, enterprise: "Bis zu 5 E-Mail-Empfänger je Benachrichtigung" } },
 ];
-const PLANS: { tier: Tier; price: string; note: string }[] = [
-  { tier: "guest", price: "0 €", note: "Ohne Anmeldung" },
-  { tier: "basic", price: "0 €", note: "Mit kostenlosem Konto" },
-  { tier: "pro", price: PRO_PRICE, note: "inkl. MwSt. · monatlich kündbar" },
-  { tier: "enterprise", price: "49,99 € / Monat", note: "inkl. MwSt. · für Teams · monatlich kündbar" },
+const PLANS: { tier: Tier; note: string }[] = [
+  { tier: "guest", note: "Ohne Anmeldung" },
+  { tier: "basic", note: "Mit Konto" },
+  { tier: "pro", note: "monatlich kündbar" },
+  { tier: "enterprise", note: "für Teams · monatlich kündbar" },
 ];
 
 /* Wie im übrigen Design: schwarze Pille mit Pfeil für die Hauptaktion, sonst Petrol-Text mit Pfeil */
 const PRIMARY = "mt-5 inline-flex h-11 items-center justify-center gap-2 self-start rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white no-underline transition-opacity after:content-['→'] hover:opacity-85";
 const SECONDARY = "mt-5 inline-flex h-11 items-center gap-1.5 self-start text-[14px] font-medium text-teal-700 no-underline after:content-['→'] after:transition-transform hover:after:translate-x-0.5 disabled:text-slate-400 disabled:after:content-none";
 
-/** Tarifübersicht für Konto und Preisseite; in der Entwicklung lässt sich die Stufe im Konto direkt umschalten */
+/** Tarifübersicht für Konto und Preisseite. Stufen gibt es in der Testphase auf Anfrage (Kontakt); in der Entwicklung
+ *  lässt sich im Konto als Testkonto der Stufe anmelden */
 export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
   const { tier } = useTier();
   /* Handy: ein Tarif auf einmal; seitlich wischen oder die Reiter antippen (beides bleibt abgeglichen) */
@@ -69,7 +72,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                 {current && <span className="rounded-full bg-teal-700 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihr Tarif"}</span>}
                 {publicPage && plan.tier === "pro" && <span className="text-[12px] font-semibold text-teal-700">Beliebt</span>}
               </div>
-              <p className="m-0 mt-2 text-[22px] font-bold tracking-tight">{plan.price}</p>
+              <p className="m-0 mt-2 text-[22px] font-bold tracking-tight">{priceLabel(plan.tier)}</p>
               <p className="m-0 text-[12px] text-slate-500">{plan.note}</p>
               <ul className="m-0 mt-4 flex-1 list-none space-y-1.5 p-0 text-[14px]">
                 {FEATURES.map((f) => {
@@ -83,22 +86,24 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                 })}
               </ul>
               {publicPage ? (
-                <Link href={plan.tier === "guest" ? "/suche" : `/registrieren?tarif=${plan.tier === "basic" ? "free" : plan.tier}`} className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
-                  {plan.tier === "guest" ? "Direkt suchen" : plan.tier === "basic" ? "Kostenlos starten" : plan.tier === "pro" ? "Pro wählen" : "Enterprise wählen"}
-                </Link>
+                plan.tier === "guest" ? (
+                  <Link href="/suche" className={SECONDARY}>
+                    Direkt suchen
+                  </Link>
+                ) : (
+                  <Link href="/kontakt" className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
+                    {UPGRADE_TEXT}
+                  </Link>
+                )
               ) : !current &&
                 (IS_DEV ? (
                   <button type="button" onClick={() => setTier(plan.tier)} className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
-                    {plan.tier === "guest" ? "Abmelden" : plan.tier === "basic" ? "Basic wählen" : plan.tier === "pro" ? "Auf Pro upgraden" : "Enterprise anfragen"} (Dev)
+                    {plan.tier === "guest" ? "Abmelden" : `Als ${TIER_LABEL[plan.tier]} anmelden`} (Dev)
                   </button>
-                ) : plan.tier === "guest" ? null : tier === "guest" ? (
-                  <Link href={`/registrieren?tarif=${plan.tier === "basic" ? "free" : plan.tier}`} className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
-                    {plan.tier === "basic" ? "Kostenlos registrieren" : plan.tier === "pro" ? "Pro wählen" : "Enterprise anfragen"}
+                ) : plan.tier === "guest" ? null : (
+                  <Link href="/kontakt" className={plan.tier === "pro" ? PRIMARY : SECONDARY}>
+                    {UPGRADE_TEXT}
                   </Link>
-                ) : (
-                  <button type="button" disabled className={SECONDARY}>
-                    Bald verfügbar
-                  </button>
                 ))}
             </div>
           );
@@ -108,16 +113,28 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
   );
 }
 
-/** Konto: nur der eigene Tarif mit seinen Leistungen; alle Tarife stehen auf der Preisseite */
+/** Konto: nur der eigene Tarif mit seinen Leistungen und dem Ende eines Testzugangs; alle Tarife stehen auf der Preisseite */
 export function PlanSummary() {
-  const { tier } = useTier();
+  const me = useMe();
+  const { tier, user, tierUntil, tierSource } = me;
   const plan = PLANS.find((p) => p.tier === tier) ?? PLANS[0];
+  const until = shortDate(tierUntil);
+  /* Hinweis ab 14 Tagen vor dem Ende (AGB: Testzugang endet) */
+  const ends = tierUntil ? Date.parse(tierUntil) : NaN;
+  const soon = useClient(() => Number.isFinite(ends) && ends - Date.now() < 14 * 86400000, false);
+  const name = tier === "guest" ? (user ? "Konto ohne freigeschaltete Stufe" : "Ohne Konto") : TIER_LABEL[tier];
   return (
     <section id="tarif" aria-labelledby="tarif-title" className="mt-6 scroll-mt-20">
       <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Tarif</h2>
       <p className="m-0 mt-3 text-[16px] font-semibold">
-        {tier === "guest" ? "Ohne Konto" : TIER_LABEL[tier]} <span className="font-normal text-slate-500">· {plan.price} · {plan.note}</span>
+        {name} {tier !== "guest" && <span className="font-normal text-slate-500">· {priceLabel(tier)} · {plan.note}</span>}
       </p>
+      {until && tier !== "guest" && (
+        <p className={`m-0 mt-1 text-[14px] ${soon ? "text-amber-800" : "text-slate-500"}`} role={soon ? "status" : undefined}>
+          {tierSource === "beta" ? `Testzugang ${TIER_LABEL[tier]} bis ${until}` : `${TIER_LABEL[tier]} bis ${until}`}
+          {soon && ". Danach gelten die Rechte ohne freigeschaltete Stufe; Verlängerung auf Anfrage über den Kontakt."}
+        </p>
+      )}
       <ul className="m-0 mt-3 list-none space-y-1.5 p-0 text-[14px]">
         {FEATURES.map((f) => {
           const text = f.tiers[tier];

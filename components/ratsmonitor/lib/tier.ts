@@ -1,10 +1,10 @@
-import { useSyncExternalStore } from "react";
-import { onOtherTab } from "./otherTab";
+import { PRICES } from "@/shared/plans.mjs";
+import { devLogin, getMe, useMe } from "./account";
 
 /**
- * Nutzungsstufen. Solange es keine echte Anmeldung gibt, wird die Stufe nur im Browser
- * gehalten und in der Entwicklung über den Dev-Switcher in der Kopfzeile gewechselt.
- * Die Grenzen hier sind reine Oberflächen-Logik; serverseitig wird (noch) nichts erzwungen.
+ * Nutzungsstufen. Die Stufe kommt vom Server (GET /api/me, lib/account.ts); dort werden die Grenzen auch durchgesetzt.
+ * Die Werte hier sind dieselben wie in shared/plans.mjs (tests/accounts-rules.test.mjs vergleicht) und dienen nur als
+ * Anzeige (Preisseite, Tarifkarten), solange es keine Antwort gibt.
  */
 export type Tier = "guest" | "basic" | "pro" | "enterprise";
 
@@ -33,54 +33,32 @@ export const LIMITS: Record<Tier, TierLimits> = {
 };
 
 export const TIER_LABEL: Record<Tier, string> = { guest: "Gast", basic: "Basic", pro: "Pro", enterprise: "Enterprise" };
-export const PRO_PRICE = "9,99 € / Monat";
+/** Preis je Stufe für die Anzeige; ohne festgelegten Preis (shared/plans.mjs PRICES = null) „Preis folgt“ */
+export function priceLabel(t: Tier): string {
+  if (t === "guest") return "0 €";
+  const p = (PRICES as Record<string, string | number | null>)[t];
+  return p === null || p === undefined ? "Preis folgt" : typeof p === "number" ? `${p.toLocaleString("de-DE", { minimumFractionDigits: 2 })} € / Monat` : p;
+}
+/** Text der Upgrade-Knöpfe, solange es keine Bezahlung gibt (verweist auf /kontakt) */
+export const UPGRADE_TEXT = "In der Testphase auf Anfrage";
 
-/** Dev-Switcher nur in der Entwicklung anzeigen */
+/** Dev-Umschalter und Dev-Abkürzungen nur in der Entwicklung anzeigen */
 export const IS_DEV = process.env.NODE_ENV !== "production";
 
-const KEY = "ratsmonitor:tier:v1";
-const TIERS: Tier[] = ["guest", "basic", "pro", "enterprise"];
-const listeners = new Set<() => void>();
-let current: Tier | null = null;
-/* Tarif in einem anderen Tab gewechselt (Testmodus): hier übernehmen */
-onOtherTab([KEY], () => {
-  current = null;
-  listeners.forEach((l) => l());
-});
-
-function read(): Tier {
-  if (current) return current;
-  try {
-    const v = localStorage.getItem(KEY) as Tier | null;
-    current = v && TIERS.includes(v) ? v : "guest";
-  } catch {
-    current = "guest";
-  }
-  return current;
-}
-
 export function getTier(): Tier {
-  return read();
+  return getMe().tier;
 }
 
+/** Nur Entwicklung: als Testkonto dieser Stufe anmelden (Gast = abmelden); in Produktion ohne Wirkung */
 export function setTier(t: Tier) {
-  current = t;
-  try {
-    localStorage.setItem(KEY, t);
-  } catch {}
-  listeners.forEach((l) => l());
+  if (!IS_DEV) return;
+  void devLogin(t);
 }
 
-export function useTier(): { tier: Tier; limits: TierLimits } {
-  const tier = useSyncExternalStore(
-    (l) => {
-      listeners.add(l);
-      return () => listeners.delete(l);
-    },
-    read,
-    () => "guest" as Tier,
-  );
-  return { tier, limits: LIMITS[tier] };
+/** Stufe und Grenzen vom Server; ready = /api/me ist beantwortet (vorher Gast-Grenzen, aber kein Sperrdialog) */
+export function useTier(): { tier: Tier; limits: TierLimits; ready: boolean } {
+  const me = useMe();
+  return { tier: me.tier, limits: me.limits, ready: me.ready };
 }
 
 /** Anzeige eines Limits, z. B. „1 von 1“ oder „3“ ohne feste Grenze (Treffer je Suche) */

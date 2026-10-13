@@ -28,13 +28,16 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | Artikel-Detail | `pages/DetailPage.tsx` |
 | KI-Inhalte: offene IDs, Quellenabdeckung, Filter und Kopieren in Admin-Schritt 03; keine Export-/Importdateien. Artikelseite mit getrennten KI-/Originalauszug-Ansichten und belegten Zitaten. | `components/admin-ai-local.tsx`, `components/admin-processing.tsx`, `pages/DetailPage.tsx`; Vertrag: `requirements/ai-processing.md` |
 | Export-Fenster | `components/ExportMenu.tsx`; Treffer: `lib/exportResults.ts`; Artikel (PDF/Drucken/Excel/CSV): `lib/exportArticle.ts`; Excel/CSV-Erzeugung: `lib/xlsx.ts` |
-| Kontoseiten (Routing) | `pages/PersonalPage.tsx` → `SavedSearchesPage`, `SavedArticlesPage`, `KalenderPage`, `ProfilePage`, `PostfachPage` |
+| Kontoseiten (Routing) | `pages/PersonalPage.tsx` → `SavedSearchesPage`, `SavedArticlesPage`, `KalenderPage`, `ProfilePage` (Angaben, Geräte, Kalender-Abo, Daten aus diesem Browser, Datenauskunft, Löschen), `PostfachPage` (nur Dev) |
+| Konto im Browser: `/api/me` (Stufe, Grenzen, Anmeldung), Abrufe der Kontorouten, Abgleich zwischen Tabs (`ratsmonitor:account-rev:v1`) | `lib/account.ts` (`useMe`, `api`, `logout`, `accountChanged`); Stufe: `lib/tier.ts` (`useTier` mit `ready`), Grenzen: `lib/entitlements.ts`; gespeicherte Suchen `state/account.tsx`, Artikel `lib/savedArticles.ts` (beide über `/api/me/*`, optimistisch mit Rücknahme) |
+| Übernahme der Browserdaten (Suchen, Artikel, Kalender, Wochenbericht, Name) ins Konto, als Datei sichern, Datei übernehmen | `lib/browserData.ts`, Dialog `components/ImportDialog.tsx`, Kontoseite `pages/ProfilePage.tsx` |
+| Kalender-Abo per Link (Token) | `components/CalendarFeed.tsx`; Gebiete und Umkreis: `lib/calendarAreas.ts` |
 | Lena (regelbasierte Assistentin, eigener Reiter `/lena`; Konzept `docs/produkt/lena-konzept.md`) | Dialog: `info/LenaPage.tsx`, Abruf und feste Texte: `lib/lena.ts`; Verstehen und Antworten im Backend (`shared/lena/`, `server/integrations/lena.mjs`, `POST /api/lena`, Test `tests/lena.test.mjs`, Messung `scripts/lena/measure.mjs`), Reiter: `menu/MainMenu.tsx` |
 | Info-Seiten (Routing) | `info/InfoPages.tsx`; Texte/Daten: `info/content.ts`; Bausteine (Seitenkopf, Abschlussband): `info/blocks.tsx` |
 | Use Cases | `info/BranchenPages.tsx` (+ Daten in `info/content.ts` → `BRANCHEN`) |
-| Preise | `info/PreisePage.tsx`, Tarifkarten: `components/PlanCards.tsx`, Grenzen je Tarif: `lib/tier.ts` |
-| E-Mails (Vorlagen: Willkommen, Passwort, Wochenbericht, Treffer, Vorgang, Sitzung) | `lib/mails.ts`; Test-Postfach: `pages/PostfachPage.tsx` |
-| Anmelden/Registrieren/Kontakt | `info/AccountPages.tsx`; Testkonten: `lib/testAuth.ts` |
+| Preise | `info/PreisePage.tsx`, Tarifkarten: `components/PlanCards.tsx`, Grenzen je Tarif: `lib/tier.ts` (gleich `shared/plans.mjs`), Preise: `PRICES` in `shared/plans.mjs` (`null` = „Preis folgt“), Upgrade-Knöpfe: „In der Testphase auf Anfrage“ (`/kontakt`) |
+| E-Mails: Vorlagen auf dem Server (`server/accounts/mail-templates.mjs`); Dev-Postfach (Postausgang des Dev-Servers, HTML im `<iframe sandbox>`) | `pages/PostfachPage.tsx` |
+| Anmelden (E-Mail, Wartebildschirm mit Code), Bestätigen (`/anmelden/bestaetigen#t=…`), Kontakt; `/registrieren` leitet auf `/anmelden` | `info/AccountPages.tsx` |
 | Impressum/Datenschutz | `pages/LegalPage.tsx` |
 | Interne To-do-Liste: Board und kategorisierter Backlog im Adminbereich (`/admin?seite=todo`, `components/admin-todo.tsx`), mit Status, Zuständigkeit, Pflichtpriorität (Hoch/Mittel/Niedrig), Abschlussgrund (Erledigt/Wird nicht umgesetzt/Duplikat), Startdatum, geplantem Enddatum, abhakenbaren Unteraufgaben und Wartegrund. Bestehende Termine bleiben als geplantes Enddatum (`faellig`) erhalten. Basis `docs/todo/todos.json`; lokal speichert `build/todo-dev-plugin.mjs` (`/__todos`) in die Datei, auf dem Server `/api/admin/todos` in `system_state`; `scripts/pull-todos.mjs` übernimmt den Server-Stand. | `info/TodoPage.tsx`, Daten und Status: `lib/todos.ts`; Stile `app/admin.css` |
 | Adminbereich (Rahmen, Bausteine, Stand, Speicher, Nachholen, Texte, Farben) | `components/admin-chrome.tsx` (AdminFrame, Reiter), `components/admin-ui.tsx`, `components/admin-stand.tsx`, `components/admin-store.ts`, `components/admin-catch-up.tsx`, `components/admin-texts.ts`, `components/admin-colors.ts`; Seiten: `components/admin-*.tsx`, `app/admin/page.tsx` |
@@ -66,7 +69,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 - Tests: `node --test tests/*.test.mjs` (gelegentlich zufällig rot: „marks of read meetings“, „every import leaves a record“)
 - Dev-Server: `npm run dev` (Port 5173, setzt `scripts/run-framework.mjs`), fürs Handy im WLAN: `RM_DEV_HOST=0.0.0.0 npm run dev`
 - Builds: `node scripts/build-node.mjs` (Server) und `npm run build` (Cloudflare; überschreibt `dist/`)
-- Gast/Tarif testen: Testkonten `basic|pro|enterprise@plenara.test`, Passwort `test1234`
+- Gast/Tarif testen (nur Dev-Server): DEV-Umschalter in der Kopfzeile oder „Dev: als …“ auf `/anmelden` meldet als `basic|pro|enterprise@plenara.test` an (`POST /api/dev/login`), Gast = abmelden; Mails im Dev-Postfach `/konto/postfach`
 
 ## Git
 

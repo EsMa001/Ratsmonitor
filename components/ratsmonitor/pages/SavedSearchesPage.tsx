@@ -1,23 +1,22 @@
-import { FilterSelect } from "../components/FilterSelect";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { IconBell, IconHeart, IconX } from "../components/icons";
+import { IconBell, IconHeart } from "../components/icons";
 import { filterChips } from "../lib/savedSearch";
 import { useAccount } from "../state/account";
-import { readProfile } from "./ProfilePage";
 import { useEntitlements } from "../lib/entitlements";
-import { LoginRequired, UsagePill } from "../components/TierNotice";
+import { AccountLoading, LoginRequired, UsagePill } from "../components/TierNotice";
+import { NOTIFY_LATER } from "../components/FollowButton";
 import { PageHead } from "../info/blocks";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { savedSearchQuery, useSearch } from "../state/search";
 import { fetchJson } from "../lib/fetchJson";
-import type { Article, NotifyFreq, SavedSearch } from "../types";
+import type { Article, SavedSearch } from "../types";
 import { MONTH_SHORT, todayLocal } from "../lib/text";
-import { digestMail, type DigestPart, type MailItem } from "../lib/mails";
 import { useToast } from "../state/toast";
 import { queue } from "../lib/queue";
-import { useHydrated } from "../lib/useClient";
+import { api, useMe } from "../lib/account";
+import { WEEK_DAYS } from "../lib/browserData";
 
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
 type Preview = { total: number; items: Item[] } | null;
@@ -28,13 +27,19 @@ const previews = queue(4);
 /** Die neuesten Treffer einer gespeicherten Suche, mit genau der Abfrage, die beim Öffnen läuft (savedSearchQuery) */
 function usePreview(s: SavedSearch): Preview | "error" {
   const { geo, place } = useData();
+  const { noteQuery } = useAccount();
   const [data, setData] = useState<Preview | "error">(null);
-  /* Neu laden, wenn sich die Suche ändert (nicht bei Benachrichtigung oder „zuletzt gesehen“) */
-  const what = JSON.stringify({ ...s, id: "", name: "", notify: null, lastSeen: "", created: "" });
+  /* Neu laden, wenn sich die Suche ändert (nicht bei Benachrichtigung, „zuletzt gesehen“ oder Kontofeldern) */
+  const what = JSON.stringify({ ...s, id: "", name: "", notify: null, lastSeen: "", created: "", active: null, position: null, query: null });
   useEffect(() => {
     if (!geo || !place) return;
     const ctrl = new AbortController();
     savedSearchQuery(s, geo, place)
+      /* Fehlte die Abfrage beim Speichern (Karte noch nicht geladen), wird sie jetzt im Konto nachgetragen */
+      .then((q) => {
+        if (q !== null && !s.query) noteQuery(s, q);
+        return q;
+      })
       .then((q) => (q === null ? Promise.reject(new Error("karte")) : previews(() => fetchJson<{ total?: number; articles?: Item[] }>(`/api/search?${q}&page=1`, { signal: ctrl.signal }), ctrl.signal)))
       .then((r) => setData({ total: r.total ?? 0, items: (r.articles ?? []).slice(0, 10) }))
       .catch(() => !ctrl.signal.aborted && setData("error"));
@@ -52,40 +57,30 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const { goOverview } = useAppNav();
   const preview = usePreview(s);
   const n = s.notify;
-  const set = (patch: Partial<SavedSearch["notify"]>) => updateSaved(s.id, { notify: { ...n, ...patch } });
-  const { allow, limits } = useEntitlements();
-  const profile = readProfile();
-  /* Weitere Empfänger gelten je Suche; ältere Einstellungen aus dem Konto werden übernommen */
-  const extra = limits.emails > 1 ? (n.recipients ?? profile.recipients ?? []) : [];
-  const [draft, setDraft] = useState("");
-  const addRecipient = () => {
-    const v = draft.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || extra.includes(v) || extra.length >= limits.emails - 1) return;
-    set({ recipients: [...extra, v] });
-    setDraft("");
-  };
   const chips = filterChips({ q: s.q, text: s.text, area: s.area, areaSrc: s.areaSrc, radius: s.radius, thema: s.thema, monat: s.monat, von: s.von, bis: s.bis, scope: s.scope, more: s.more, status: s.status, level: s.level }, geo);
   const ok = preview && preview !== "error" ? preview : null;
   const fresh = ok ? ok.items.filter((a) => a.date > s.lastSeen).length : 0;
   const open = () => {
     if (search.applySaved(s)) {
-      updateSaved(s.id, { lastSeen: todayLocal() });
+      void updateSaved(s.id, { lastSeen: todayLocal() });
       goOverview();
     }
   };
-  /* Entfernen mit „Rückgängig“: samt Benachrichtigung und Empfängern wiederherstellbar */
-  const remove = () => {
+  /* Entfernen mit „Rückgängig“: samt vorgemerkter Benachrichtigung und Listenplatz wiederherstellbar */
+  const remove = async () => {
     const index = saved.findIndex((x) => x.id === s.id);
-    removeSaved(s.id);
-    toast("Gespeicherte Suche entfernt.", { label: "Rückgängig", run: () => restoreSaved(s, index) });
+    const err = await removeSaved(s.id);
+    if (err) return toast(err);
+    toast("Gespeicherte Suche entfernt.", { label: "Rückgängig", run: () => void restoreSaved(s, index).then((e) => e && toast(e)) });
   };
+  const bell = `Bei neuen Treffern benachrichtigen: ${NOTIFY_LATER}`;
   const iconBtn = "grid h-9 w-9 flex-none place-items-center rounded-full transition-colors hover:bg-slate-100";
 
   return (
     <article className="border-b border-slate-200 py-4 last:border-b-0">
       {/* Kopf wie bei gespeicherten Artikeln: Herz entfernt die Suche, Glocke schaltet Benachrichtigungen */}
       <div className="flex items-start gap-3">
-        <button type="button" onClick={remove} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-700`}>
+        <button type="button" onClick={() => void remove()} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-700`}>
           <IconHeart size={20} filled />
         </button>
         <div className="min-w-0 flex-1">
@@ -97,18 +92,10 @@ function SavedCard({ s }: { s: SavedSearch }) {
             {fresh > 0 && <span className="text-teal-700"> · {fresh} neu</span>}
             {chips.length > 0 && <> · {chips.map((c) => c.value).join(" · ")}</>}
           </p>
+          {s.active === false && <p className="m-0 mt-0.5 text-[12px] text-amber-800">Nicht aktiv: über der Grenze Ihrer Stufe gespeichert.</p>}
         </div>
-        <button
-          type="button"
-          aria-pressed={!!n.mail}
-          title={n.mail ? "Benachrichtigung ausschalten" : "Bei neuen Treffern benachrichtigen"}
-          aria-label={n.mail ? "Benachrichtigung ausschalten" : "Bei neuen Treffern benachrichtigen"}
-          onClick={() => {
-            if (!n.mail && !allow("notifications")) return;
-            set({ mail: !n.mail, email: n.email || profile.email });
-          }}
-          className={`${iconBtn} -mr-2 ${n.mail ? "text-teal-700" : "text-slate-500"}`}
-        >
+        {/* Benachrichtigungen folgen mit Thema 2: Glocke sichtbar (auch eine vorgemerkte), aber ohne Wirkung */}
+        <button type="button" aria-disabled="true" aria-pressed={!!n.mail} title={bell} aria-label={bell} className={`${iconBtn} -mr-2 cursor-default text-slate-400 hover:bg-transparent`}>
           <IconBell size={20} filled={!!n.mail} />
         </button>
       </div>
@@ -140,41 +127,11 @@ function SavedCard({ s }: { s: SavedSearch }) {
       )}
       {ok && !ok.items.length && <p className="m-0 mt-2 pl-9 text-[14px] text-slate-500">Aktuell keine Treffer.</p>}
 
-      {/* Einstellungen der Benachrichtigung nur, wenn sie an ist */}
+      {/* Vorgemerkte Benachrichtigung (z. B. aus der Übernahme): Häufigkeit nur anzeigen, verschickt wird noch nichts */}
       {n.mail && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 pl-9 text-[14px] text-slate-500">
-          <FilterSelect
-            id={`freq-${s.id}`}
-            label="Häufigkeit"
-            allLabel=""
-            value={n.freq}
-            options={[
-              { value: "instant", label: "Sofort" },
-              { value: "daily", label: "Täglich" },
-              { value: "weekly", label: "Wöchentlich" },
-            ]}
-            onChange={(v) => set({ freq: v as NotifyFreq })}
-            size="sm"
-            highlight={false}
-          />
-          {profile.email && <span>an {profile.email}</span>}
-          {limits.emails > 1 && (
-            <>
-              {extra.map((r) => (
-                <button key={r} type="button" aria-label={`Empfänger ${r} entfernen`} onClick={() => set({ recipients: extra.filter((x) => x !== r) })} className="inline-flex h-7 items-center gap-1.5 rounded-full bg-teal-50 pl-2.5 pr-1.5 text-[12px] text-teal-700">
-                  {r}
-                  <IconX size={14} />
-                </button>
-              ))}
-              {extra.length < limits.emails - 1 && (
-                <form onSubmit={(e) => { e.preventDefault(); addRecipient(); }} className="flex items-center gap-1">
-                  <input type="email" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="weitere E-Mail" aria-label="Weitere E-Mail-Adresse" className="h-8 w-[170px] rounded-full bg-[#f8f9fa] px-3 text-[14px] outline-none focus:shadow-focus" />
-                  <button type="submit" className="h-8 rounded-full px-2.5 text-[14px] text-teal-700 hover:bg-slate-100">Hinzufügen</button>
-                </form>
-              )}
-            </>
-          )}
-        </div>
+        <p className="m-0 mt-3 pl-9 text-[14px] text-slate-500">
+          Vorgemerkt: {n.freq === "instant" ? "sofort" : n.freq === "weekly" ? "wöchentlich" : "täglich"}. {NOTIFY_LATER}.
+        </p>
       )}
     </article>
   );
@@ -182,26 +139,27 @@ function SavedCard({ s }: { s: SavedSearch }) {
 
 export function SavedSearchesPage() {
   const { saved, ready } = useAccount();
-  const { tier, used, max } = useEntitlements();
-  if (tier === "guest")
+  const { tier, ready: tierReady, signedIn, used, max } = useEntitlements();
+  /* Ohne Anmeldung bzw. ohne freigeschaltete Stufe: Hinweis; gespeicherte Suchen eines Kontos bleiben sichtbar */
+  if (!tierReady || (tier === "guest" && (!signedIn || (ready && !saved.length))))
     return (
       <>
         <PageHead icon="search" label="Suchen" name="Gespeicherte Suchen" />
         <section className="ri-sec ri-sec--tight">
-          <LoginRequired title="Suchen speichern" text="Melden Sie sich kostenlos an, um Suchen zu speichern und über neue Treffer informiert zu werden." />
+          {tierReady ? <LoginRequired title="Suchen speichern" text="Melden Sie sich an, um Suchen zu speichern und neue Treffer im Blick zu behalten." /> : <AccountLoading />}
         </section>
       </>
     );
   return (
     <>
-      <PageHead icon="search" label="Suchen" name={`Gespeicherte Suchen${ready && saved.length ? ` (${saved.length})` : ""}`} title={<>Ihre Themen.<br />Immer im Blick.</>} lead="Neue Treffer auf einen Blick. Benachrichtigungen und Empfänger legen Sie pro Suche fest.">
+      <PageHead icon="search" label="Suchen" name={`Gespeicherte Suchen${ready && saved.length ? ` (${saved.length})` : ""}`} title={<>Ihre Themen.<br />Immer im Blick.</>} lead="Neue Treffer auf einen Blick, gespeichert in Ihrem Konto.">
         <div className="mt-4 flex flex-wrap gap-2">
           <UsagePill label="Suchen" used={used.searches} max={max.searches} />
-          <UsagePill label="Benachrichtigungen" used={used.notifications} max={max.notifications} />
         </div>
       </PageHead>
       <section className="ri-sec ri-sec--tight">
-      {ready && saved.length > 0 && <WeeklyReport saved={saved} />}
+      {!ready && <AccountLoading />}
+      {ready && saved.length > 0 && <WeeklyReport />}
 
       {ready && !saved.length && (
         <div className="flex flex-col items-center px-6 py-10 text-center">
@@ -241,86 +199,43 @@ export function SavedSearchesPage() {
   );
 }
 
-const WEEKLY = "ratsmonitor:weekly:v1";
-const WEEKLY_DAY = "ratsmonitor:weekly-day:v1";
-const DAYS = ["Täglich", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
-/** Wochenbericht: täglich oder an einem frei wählbaren Wochentag (Standard Montag) eine Mail mit den neuen Treffern aller gespeicherten Suchen der letzten 7 Tage.
- *  Im Testmodus landet der Bericht im Test-Postfach (Knopf „Jetzt erzeugen“). */
-function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
-  const [on, setOn] = useState(false);
-  const [day, setDay] = useState("Montag");
-  const [busy, setBusy] = useState(false);
-  const toast = useToast();
-  const { geo, place } = useData();
-  const weekday = day;
-  /* Einstellung liegt im Browser-Speicher: nach dem Hydrieren einmal beim Rendern übernehmen */
-  const hydrated = useHydrated();
-  const [ready, setReady] = useState(false);
-  if (hydrated && !ready) {
-    setReady(true);
-    try {
-      setOn(localStorage.getItem(WEEKLY) === "1");
-      const d = localStorage.getItem(WEEKLY_DAY);
-      if (d && DAYS.includes(d)) setDay(d);
-    } catch {}
-  }
-  const pickDay = (d: string) => {
-    setDay(d);
-    try {
-      localStorage.setItem(WEEKLY_DAY, d);
-    } catch {}
-  };
-  const toggle = () => {
-    setOn(!on);
-    try {
-      localStorage.setItem(WEEKLY, on ? "0" : "1");
-    } catch {}
-  };
-  const build = async () => {
-    setBusy(true);
-    const day = (n: number) => todayLocal(-n);
-    const parts: DigestPart[] = [];
-    for (const s of saved) {
-      /* Dieselbe Abfrage wie beim Öffnen der Suche, nur auf die letzten 7 Tage begrenzt */
-      const q = geo && place ? await savedSearchQuery(s, geo, place) : null;
-      if (q === null) continue;
-      const p = new URLSearchParams(q);
-      p.set("from", day(7));
-      p.set("to", day(0));
-      p.delete("month");
-      p.set("sort", "desc");
-      p.set("page", "1");
-      try {
-        const r = await fetchJson<{ total?: number; articles?: MailItem[] }>("/api/search?" + p);
-        parts.push({ id: s.id, name: s.name, total: r.total ?? 0, top: (r.articles ?? []).slice(0, 3) });
-      } catch {}
-    }
-    try {
-      digestMail(readProfile().email || "Ihre Adresse", day(7), day(0), parts, weekday);
-      toast("Wochenbericht liegt im Test-Postfach.");
-    } catch {
-      toast("Der Wochenbericht konnte nicht erstellt werden.");
-    } finally {
-      setBusy(false);
-    }
-  };
+/** Wochenbericht: alle neuen Treffer der gespeicherten Suchen in einer E-Mail, täglich oder am gewählten Wochentag.
+ *  Folgt mit den E-Mail-Benachrichtigungen: die Einstellung aus dem Konto (/api/me/settings) wird nur angezeigt. */
+function WeeklyReport() {
+  const me = useMe();
+  const key = me.user ? `${me.user.id}:${me.rev}` : "";
+  const [got, setGot] = useState<{ key: string; weekly: boolean; day: number | null } | null>(null);
+  useEffect(() => {
+    if (!key) return;
+    let live = true;
+    api<{ weekly?: boolean; weeklyDay?: number | null }>("/api/me/settings").then(
+      (d) => live && setGot({ key, weekly: !!d.weekly, day: typeof d.weeklyDay === "number" ? d.weeklyDay : null }),
+      () => {},
+    );
+    return () => {
+      live = false;
+    };
+  }, [key]);
+  const s = got?.key === key ? got : null;
+  const day = s?.day ?? 1;
   return (
     <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-200 pb-5 text-[14px]">
       <span className="font-semibold text-slate-900">Wochenbericht</span>
       <span className="text-slate-500">Alle neuen Treffer Ihrer Suchen in einer E-Mail, täglich oder an dem Wochentag, den Sie wählen:</span>
-      <select aria-label="Rhythmus des Wochenberichts" value={day} onChange={(e) => pickDay(e.target.value)} className="h-8 rounded-md border border-slate-300 bg-white px-2 text-[14px] text-slate-800">
-        {DAYS.map((d) => (
-          <option key={d} value={d}>
-            {d === "Täglich" ? "Jeden Tag" : `Jeden ${d}`}
+      <select aria-label="Rhythmus des Wochenberichts" aria-describedby="weekly-later" disabled value={String(day)} className="h-8 rounded-md border border-slate-200 bg-slate-50 px-2 text-[14px] text-slate-500">
+        {[1, 2, 3, 4, 5, 6, 0].map((i) => (
+          <option key={i} value={String(i)}>
+            Jeden {WEEK_DAYS[i]}
           </option>
         ))}
       </select>
-      <button type="button" role="switch" aria-checked={on} aria-label="Wochenbericht" onClick={toggle} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${on ? "bg-teal-600" : "bg-slate-300/80"}`}>
-        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${on ? "left-[18px]" : "left-0.5"}`} />
+      <button type="button" role="switch" aria-checked={!!s?.weekly} aria-disabled="true" aria-label="Wochenbericht" aria-describedby="weekly-later" className={`relative h-6 w-10 flex-none cursor-default rounded-full ${s?.weekly ? "bg-teal-600/40" : "bg-slate-200"}`}>
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow ${s?.weekly ? "left-[18px]" : "left-0.5"}`} />
       </button>
-      <button type="button" disabled={busy} onClick={build} className="text-teal-700 hover:underline disabled:opacity-50">
-        {busy ? "Wird erstellt …" : "Jetzt erzeugen (Test-Postfach) →"}
-      </button>
+      <span id="weekly-later" className="text-slate-500">
+        {s?.weekly ? "Vorgemerkt. " : ""}
+        {NOTIFY_LATER}.
+      </span>
     </div>
   );
 }

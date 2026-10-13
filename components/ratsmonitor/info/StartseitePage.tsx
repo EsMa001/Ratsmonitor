@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { LIMITS, PRO_PRICE, useTier } from "../lib/tier";
 import { IconPin } from "../components/icons";
 import { useOpenSearch } from "./blocks";
 import { todayLocal } from "../lib/text";
@@ -230,7 +229,6 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
 
 export function StartseitePage() {
   const openSearch = useOpenSearch();
-  const { tier } = useTier();
   const [term, setTerm] = useState("");
   const [total, setTotal] = useState<number | null>(null);
   const [cov, setCov] = useState<Cov[] | null>(null);
