@@ -10,6 +10,8 @@
  */
 import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
 export const SCHEDULES_KEY='schedules',SCHEDULE_RUNS_KEY='schedule-runs',SCHEDULE_NOW_KEY='schedule-now',SCHEDULE_STOP_KEY='schedule-stop';
+/** Ergebnis des letzten Laufs von „Themen & Texte“ je Schritt (scripts/rule-texts.mjs schreibt es) */
+export const RULE_TEXTS_KEY='rule-texts-last';
 export const ZONE='Europe/Berlin',STEP_MIN=10;
 /** Ein täglicher Job, der zur Zeit nicht laufen konnte (Server aus), wird so lange danach noch nachgeholt */
 export const CATCH_UP_MS=3*3600000;
@@ -40,10 +42,15 @@ export const JOBS=Object.freeze([
   limits:'Wenige Minuten. Ohne diesen Job zeigt die Startseite den mitgelieferten Stand.',
   cmd:['node','--no-warnings','scripts/startseite-trends.mjs']},
  {id:'pdf-nightly',label:'PDF-Import, nachts',icon:'file',time:'05:30',
-  what:'Lädt die PDF-Hauptdokumente neuer Berichte, liest ihren Text und wertet ihn aus (Reiter PDF-Import).',
-  steps:[`PDFs laden, neueste Sitzungen zuerst, feste Grenze ${BUDGET_GB} GB`,'Textebene lesen, Scans per OCR','Zusammenfassungen, Fakten, Wortliste, Dokumentart nachtragen','Stand für den Reiter PDF-Import zählen'],
+  what:'Lädt die PDF-Hauptdokumente neuer Berichte und liest ihren Text (Reiter PDF-Import).',
+  steps:[`PDFs laden, neueste Sitzungen zuerst, feste Grenze ${BUDGET_GB} GB`,'Textebene lesen, Scans per OCR','Dokumentart nachtragen','Stand für den Reiter PDF-Import zählen'],
   limits:'Höchstens 3 Stunden, Laden höchstens 72 Minuten.',
   cmd:['node','--no-warnings','scripts/pdf-store/nightly.mjs','--kind','nightly','--minutes','180','--budget-gb',String(BUDGET_GB),'--ocr-workers','2']},
+ {id:'rule-texts',label:'Themen & Texte',icon:'text',time:'09:00',
+  what:'Erzeugt aus den Texten der PDF-Ablage, was sich nach festen Regeln ableiten lässt (Reiter Themen & Texte).',
+  steps:['Regel-Zusammenfassungen für Berichte, deren Hauptdokument als Text vorliegt','Fakten für plenara.X','Wortliste der Suche nachführen, wenn Zusammenfassungen dazukamen'],
+  limits:'Meist wenige Minuten; nach der PDF-Nachtkette (höchstens bis 08:30 Uhr).',
+  cmd:['node','--no-warnings','scripts/rule-texts.mjs']},
  {id:'import',label:'Abrufaufträge',icon:'download',every:10,
   what:'Arbeitet Abrufaufträge ab, die im Reiter „Abruf & Verarbeitung“ angelegt wurden („Im Hintergrund abrufen“).',
   steps:['Nachsehen, ob ein Auftrag offen ist','Wenn ja: abrufen wie nachts, sonst sofort fertig'],
@@ -103,11 +110,11 @@ export function nextRun(job,setting,run,now=Date.now()){
 
 /** Alle Jobs mit Einstellung, letztem Lauf, nächstem Start (nur lesen) */
 export async function schedulesState(db,now=Date.now()){
- const {results}=await db.prepare('SELECT key,value FROM system_state WHERE key IN (?,?,?,?)').bind(SCHEDULES_KEY,SCHEDULE_RUNS_KEY,SCHEDULE_NOW_KEY,SCHEDULE_STOP_KEY).all();
+ const {results}=await db.prepare('SELECT key,value FROM system_state WHERE key IN (?,?,?,?,?)').bind(SCHEDULES_KEY,SCHEDULE_RUNS_KEY,SCHEDULE_NOW_KEY,SCHEDULE_STOP_KEY,RULE_TEXTS_KEY).all();
  const by=new Map(results.map(r=>[r.key,parse(r.value)]));
  const saved=by.get(SCHEDULES_KEY)||{},runs=by.get(SCHEDULE_RUNS_KEY)||{},asked=by.get(SCHEDULE_NOW_KEY)||{},stops=by.get(SCHEDULE_STOP_KEY)||{};
  return {jobs:JOBS.map(({cmd,...job})=>{const setting=settingOf(job,saved),run=runs[job.id]||null;
-  return {...job,setting,run,now:asked[job.id]||null,stop:stops[job.id]||null,next:(n=>n&&new Date(n).toISOString())(nextRun(job,setting,run,now))};}),
+  return {...job,setting,run,...(job.id==='rule-texts'?{last:by.get(RULE_TEXTS_KEY)||null}:{}),now:asked[job.id]||null,stop:stops[job.id]||null,next:(n=>n&&new Date(n).toISOString())(nextRun(job,setting,run,now))};}),
   managed:Object.keys(runs).length>0};
 }
 

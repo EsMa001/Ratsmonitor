@@ -31,7 +31,7 @@ const laneOf=(kind:string):Lane=>kind==='ocr'?'ocr':'chain';
 
 /** Anteil 0–1 eines Vorgangs: im Schritt aus done/total (Text, OCR), beim Laden nach der Zeit bis zur Grenze des Schritts (es
     endet mit der Zeit oder wenn nichts mehr offen ist); über den Lauf: erledigte Schritte plus Anteil des laufenden, alle
-    Schritte gleich gewichtet. Schritte ohne Angabe (Zusammenfassungen, Fakten …) zählen bis zu ihrem Ende als 0. */
+    Schritte gleich gewichtet. Schritte ohne Angabe (Dokumentart, Stand) zählen bis zu ihrem Ende als 0. */
 function shares(p:Progress){
  const part=(d?:{done:number;total:number})=>d&&d.total>0?Math.min(1,d.done/d.total):null;
  const time=p.fetch&&p.stepStartedAt&&p.stepUntil?Math.min(0.99,Math.max(0,(Date.parse(p.at)-Date.parse(p.stepStartedAt))/(Date.parse(p.stepUntil)-Date.parse(p.stepStartedAt)))):null;
@@ -81,7 +81,6 @@ export function AdminPdf(){
  const v=<T,>(f:(x:Stats)=>T):T|string|undefined=>s?f(s):data?'–':undefined;
  const stopping=(lane:'chain'|'ocr',p?:Progress|null)=>!!p?.startedAt&&!!data?.stop[lane]&&Date.parse(data.stop[lane]!.requestedAt)>=Date.parse(p.startedAt);
  const lastRun=data?.runs[0],ocrRate=ocr?.ocr?.perHour||(()=>{const st=data?.runs.find(r=>r.steps.some(x=>x.name==='OCR'&&x.seconds>600))?.steps.find(x=>x.name==='OCR');const f=Number(st?.summary?.files||0);return st&&f?Math.round(f/(st.seconds/3600)):null;})();
- const factsRun=data?.runs.find(r=>r.steps.some(x=>x.name==='Fakten'));
  const loadStep=lastRun?.steps.find(x=>x.name==='Laden'),keep=(loadStep?.summary?.keeper||null) as Record<string,number>|null;
  const pill='inline-flex h-10 items-center gap-2 rounded-full px-5 text-[14px] font-medium disabled:opacity-40';
  const textBtn='text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40';
@@ -169,15 +168,14 @@ export function AdminPdf(){
    {s?.months&&s.months.others.some(r=>r.ok+r.textOnly+r.failed>0)&&<MonthBars rows={s.months.others} label="Übrige PDFs je Sitzungsmonat"/>}
   </section>
 
-  {/* C. Texte und Auswertung */}
-  <section className="mt-12" aria-label="Texte und Auswertung">
-   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="text" className="text-teal-600"/>Texte und Auswertung</h2>
-   <div className="mt-5"><Kpis label="Texte und Auswertung" items={[
+  {/* C. Texte */}
+  <section className="mt-12" aria-label="Texte">
+   <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="text" className="text-teal-600"/>Texte</h2>
+   <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Zusammenfassungen, Fakten und die Wortliste der Suche entstehen aus diesen Texten im Reiter <Link href={adminHref('regeltexte')} className="text-teal-600 hover:text-teal-700">Themen &amp; Texte</Link>, nicht hier.</p>
+   <div className="mt-5"><Kpis label="Texte" items={[
     {label:'Textfassungen',value:v(s=>n(s.texts.files)),note:'Dateien mit gelesenem Text (Textebene oder OCR)'},
     {label:'PDFs ohne Text',value:v(s=>s.texts.missing===undefined?'–':n(s.texts.missing)),note:s?.texts.missing?'abgelegt, Textebene noch nicht gelesen; mit „Texte erstellen“ nachholen':s?.texts.missing===0?'alle abgelegten PDFs haben Text':'nach dem nächsten Zählen'},
     {label:'Warten auf OCR',value:v(s=>n(s.texts.ocrWaitingAll??s.texts.ocrWaiting)),note:s?(()=>{const all=s.texts.ocrWaitingAll??s.texts.ocrWaiting;return `${n(s.texts.ocrPagesAll??s.texts.ocrPages)} Seiten; davon ${n(s.texts.ocrWaiting)} Hauptdokumente${ocrRate&&all?`; bei ${n(ocrRate)} Dateien je Stunde etwa ${dur(Math.round(all/ocrRate*3600))} OCR`:''}`;})():undefined},
-    {label:'Zusammenfassungen',value:v(s=>s.summaries?pct(s.summaries.done,s.summaries.withText):'–'),note:s?.summaries?`${n(s.summaries.done)} von ${n(s.summaries.withText)} Berichten mit Text im Hauptdokument; ohne: Sitzungsunterlagen und Texte, aus denen die Regeln nichts machen`:undefined},
-    {label:'Fakten und Wortliste',value:factsRun?(factsRun.steps.find(x=>x.name==='Fakten')?.ok===false?'Fehler':day(factsRun.finishedAt.slice(0,10))):v(()=>'–'),note:factsRun?`zuletzt berechnet im Lauf vom ${when(factsRun.startedAt)}`:data?.runs.length?'in den protokollierten Läufen noch nicht':undefined},
    ]}/></div>
   </section>
 
@@ -226,16 +224,13 @@ export function AdminPdf(){
      rules:['Seiten mit weniger als 20 Zeichen gelten als Scan und warten auf OCR'],
      value:s?`${pct(s.texts.linked??0,s.linked)} mit Text`:undefined},
     {icon:'scan',title:'OCR',what:'Liest Seiten ohne Textebene per Texterkennung (Deutsch), in der eigenen Bahn neben dem Laden.',
-     rules:['Hauptdokumente und übrige PDFs in einer Reihe: die mit den wenigsten Seiten zuerst, bei gleich vielen Hauptdokumente vor übrigen','Schon gelöschte PDFs werden kurz nachgeladen (dieselbe Datei), gelesen und gleich wieder gelöscht; scheitert das, kein neuer Versuch','Danach Zusammenfassungen, Fakten und Wortliste, wenn Hauptdokumente dabei waren','Große Seiten werden verkleinert gelesen (höchstens 12 Megapixel)'],
+     rules:['Hauptdokumente und übrige PDFs in einer Reihe: die mit den wenigsten Seiten zuerst, bei gleich vielen Hauptdokumente vor übrigen','Schon gelöschte PDFs werden kurz nachgeladen (dieselbe Datei), gelesen und gleich wieder gelöscht; scheitert das, kein neuer Versuch','Große Seiten werden verkleinert gelesen (höchstens 12 Megapixel)'],
      limits:['3 Worker, je eine Datei','Je Datei höchstens 5 Minuten, sonst ans Ende der Reihe','Je Lauf höchstens 3 Stunden; nachts stellt die Kette ihn nach dem Laden an'],
      value:s?`${n(s.texts.ocrWaitingAll??s.texts.ocrWaiting)} Dateien warten`:undefined},
-    {icon:'summary',title:'Zusammenfassung',what:'Je Bericht eine Zusammenfassung aus dem Text des Hauptdokuments, nach festen Regeln, ohne KI und ohne Internet.',
-     rules:['Nicht für Unterlagen der ganzen Sitzung: Niederschrift, Einladung, oder ein Dokument an 5 und mehr Berichten','Nur Berichte, die noch keine haben'],
-     value:s?.summaries?`${n(s.summaries.done)} Berichte`:undefined},
-    {icon:'facts',title:'Fakten und Suche',what:'Fakten für plenara.X (Beträge, Hebesätze, Gebühren, Beschlüsse) und die Wortliste der Suche werden nachgeführt.',
-     rules:['Fakten aus allen Berichten neu, wenige Minuten','Wortliste nur Neues']},
     {icon:'gauge',title:'Stand',what:'Zählt alles auf dieser Seite neu: verlinkt, geladen, Text, Fehler, Server, Platz.',
      rules:['Am Ende jedes Laufs und mit „Stand neu zählen“'],value:s?`zuletzt ${when(s.at)}`:undefined},
+    {icon:'summary',title:'Weiter: Themen & Texte',what:'Aus den abgelegten Texten entstehen Zusammenfassungen, Fakten für plenara.X und die Wortliste der Suche. Das ist nicht Teil des PDF-Imports, sondern ein eigener Job im Reiter Themen & Texte.',
+     rules:['Täglich zur Zeit aus Jobs & Zeitpläne (Standard 09:00 Uhr, nach der Nachtkette)','Oder dort per Knopf']},
    ]} when={['Nachtkette: täglich zur Zeit aus dem Reiter Jobs & Zeitpläne (Standard 05:30 Uhr), höchstens 3 Stunden; danach ist der Abruf der Nacht (Standard 01:00 Uhr) durch. Nach dem Laden stellt sie „OCR starten“ an.','Zwei Bahnen nebeneinander: Laden (alle Aufträge außer OCR, auch die Nachtkette) und OCR; je Bahn einer zur Zeit, weitere warten in der Reihe ihrer Bahn und starten, sobald sie frei ist.','Übrige PDFs: nur von Hand („Übrige PDFs laden“, Fehler mit „Fehlgeschlagene erneut versuchen“), jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
   </section>
 

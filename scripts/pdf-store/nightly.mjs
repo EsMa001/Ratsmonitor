@@ -7,23 +7,21 @@
 //      Danach stellt die Nachtkette (--kind nightly) einen Auftrag „OCR starten“ an: die OCR läuft in der eigenen Bahn neben
 //      dem Rest der Kette (Entscheidung 12.10.2026; vorher war sie Schritt 4 hier und im Tausch vor dem Löschen).
 //   3. text.mjs       Textebene der neuen PDFs
-//   4. summaries.mjs  Regel-Zusammenfassung für Berichte ohne, deren Text jetzt vorliegt
-//   5. facts.mjs      Fakten für plenara.X (alle Berichte, wenige Minuten)
-//   6. refresh-search-words.mjs  Wortliste nachführen (neue Zusammenfassungen ändern den Suchtext)
-//   7. stats.mjs      Stand für den Admin-Reiter „PDF-Ablage“ (system_state 'pdf-store-stats')
+//   4. budget.mjs --backfill  Dokumentart für den Score nachtragen
+//   5. stats.mjs      Stand für den Admin-Reiter „PDF-Ablage“ (system_state 'pdf-store-stats')
 // Fehlgeschlagene Abrufe werden nicht erneut versucht, außer mit --retry-errors (Auftrag „Fehlgeschlagene erneut versuchen“
 // im Admin-Reiter, scripts/pdf-store/job.mjs); dieser Auftrag versucht nach den Hauptdokumenten auch die übrigen PDFs erneut
 // (Schritt „Laden übrige“, je die Hälfte der Ladezeit).
 // --others (Auftrag „Übrige PDFs laden“): eigener Lauf für die übrigen PDFs der Berichte (fetch.mjs --others), nur Laden,
-// Textebene und Stand, keine Zusammenfassungen und Fakten (die lesen nur Hauptdokumente); Laden bekommt die ganze Zeit bis auf 15 min.
+// Textebene und Stand; Laden bekommt die ganze Zeit bis auf 15 min.
 // --texts (Auftrag „Texte erstellen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann
-// Zusammenfassungen, Fakten, Wortliste und Stand wie nachts.
+// Stand wie nachts.
 // --ocr-only (Auftrag „OCR starten“, Bahn „OCR“): OCR aller PDFs, Hauptdokumente und übrige (text.mjs --ocr: leichte zuerst,
-// verdrängte kurz nachgeladen, Zeitgrenze je Datei --file-minutes, Standard 5), mit der ganzen Zeit bis auf die Reserve; danach
-// die Auswertung, aber nur, wenn Hauptdokumente gelesen wurden (übrige PDFs gehen in keine Zusammenfassung ein).
+// verdrängte kurz nachgeladen, Zeitgrenze je Datei --file-minutes, Standard 5), mit der ganzen Zeit bis auf die Reserve.
+// Zusammenfassungen, Fakten und Wortliste gehören nicht hierher (Entscheidung 13.10.2026): Job „rule-texts“
+// (scripts/rule-texts.mjs, Reiter „Themen & Texte“) erzeugt sie aus den hier abgelegten Texten.
 // Zwei Bahnen laufen nebeneinander (je eine Sperre in der Ablage, LANE_LOCKS in pdf-store-admin.mjs): „Laden“ (alles außer
-// --ocr-only, auch die Nachtkette) und „OCR“ (--ocr-only). Die Auswertung (Zusammenfassungen, Fakten, Wortliste) schreibt
-// dieselben Berichte und hat deshalb eine eigene Sperre (eval.lock): hält die andere Bahn sie, wartet der Schritt.
+// --ocr-only, auch die Nachtkette) und „OCR“ (--ocr-only).
 // Admin-Reiter (state.mjs): Fortschritt je Schritt in der Bahn des Laufs (die Schritte schreiben ihren eigenen jede Minute
 // dazu), Protokoll des Laufs am Ende ('pdf-store-runs', höchstens 50 Läufe, mit Zeit und Zusammenfassung je Schritt), Anhalten
 // je Bahn vor jedem Schritt (die Schritte selbst prüfen alle 2 s); angehalten endet der Lauf mit Exit-Code 3. --kind: Art im
@@ -70,22 +68,6 @@ const release=()=>{if(mine(lock))try{fs.unlinkSync(lock);}catch{/* schon weg */}
 let child=null;
 process.on('exit',release);
 
-/* Sperre der Auswertung (Zusammenfassungen, Fakten, Wortliste schreiben dieselben Berichte): hält die andere Bahn sie, wartet
-   der Schritt (alle 5 s geprüft, Anhalten bricht das Warten ab) */
-const EVAL=new Set(['Zusammenfassungen','Fakten','Wortliste']),evalLock=path.join(dir,'eval.lock');
-async function takeEval(){
- for(let told=false;;){
-  try{fs.writeFileSync(evalLock,String(process.pid),{flag:'wx'});return true;}catch{/* belegt */}
-  let pid=0;try{pid=Number(fs.readFileSync(evalLock,'utf8'));}catch{continue;}
-  if(!pid||!alive(pid)){try{fs.unlinkSync(evalLock);}catch{/* schon weg */}continue;}
-  if(stopped)return false;
-  if(!told){say(`wartet auf die Auswertung der anderen Bahn (Prozess ${pid})`);told=true;}
-  await new Promise(r=>setTimeout(r,5000));
- }
-}
-const freeEval=()=>{if(mine(evalLock))try{fs.unlinkSync(evalLock);}catch{/* schon weg */}};
-process.on('exit',freeEval);
-
 const sizeGb=()=>{const s=openPdfStore(dir);try{return usedBytes(s)/1073741824;}finally{s.close();}};
 const failed=[],steps=[],dry=flag('dry-run'),kind=opt('kind','nightly');
 const base={kind,startedAt:new Date(t0).toISOString(),until:new Date(t0+minutes*60000).toISOString()};
@@ -100,7 +82,7 @@ const STOP_GRACE_MS=60000;
 onStop(dry?null:lane,t0,why=>{
  stopped=true;say(`angehalten (${why==='admin'?'Admin-Reiter':why}), laufender Schritt wird beendet`);
  try{child?.kill('SIGTERM');}catch{/* schon weg */}
- setTimeout(()=>{say('Schritt endet nicht, Lauf wird beendet');try{child?.kill('SIGKILL');}catch{/* schon weg */}finish('stopped');release();freeEval();process.exit(3);},STOP_GRACE_MS);
+ setTimeout(()=>{say('Schritt endet nicht, Lauf wird beendet');try{child?.kill('SIGKILL');}catch{/* schon weg */}finish('stopped');release();process.exit(3);},STOP_GRACE_MS);
 });
 /* Fortschritt für den Balken im Admin-Reiter: geplante Schritte (plan), laufender Schritt (stepIndex), Beginn und Zeitgrenze des
    Schritts (aus --max-minutes); die Schritte schreiben ihr done/total dazu */
@@ -112,7 +94,6 @@ async function step(name,script,stepArgs){
  const lim=stepArgs.includes('--max-minutes')?Number(stepArgs[stepArgs.indexOf('--max-minutes')+1]):0,now=Date.now();
  const stepBase={...base,plan,stepIndex,stepStartedAt:new Date(now).toISOString(),...(lim?{stepUntil:new Date(now+lim*60000).toISOString()}:{})};
  say(`${name} …`);progress(lane,{...stepBase,step:name});
- if(EVAL.has(name)&&!await takeEval()){say(`${name} übersprungen (angehalten)`);return;}
  try{fs.unlinkSync(summaryFile);}catch{/* keine */}
  const t=Date.now();
  const r=await new Promise(resolve=>{
@@ -121,7 +102,7 @@ async function step(name,script,stepArgs){
   child.on('exit',(status,signal)=>resolve({status,signal}));
   if(stopped)child.kill('SIGTERM');
  });
- child=null;freeEval();
+ child=null;
  const sec=Math.round((Date.now()-t)/1000);
  let summary=null;try{summary=JSON.parse(fs.readFileSync(summaryFile,'utf8'));fs.unlinkSync(summaryFile);}catch{/* Schritt ohne Zusammenfassung */}
  if(summary?.stopped)stopped=true;
@@ -150,7 +131,7 @@ const end=()=>{
  process.exit(stopped?3:failed.length?1:0);
 };
 
-const TAIL=['Zusammenfassungen','Fakten','Wortliste','Art nachtragen','Stand'];
+const TAIL=['Art nachtragen','Stand'];
 plan=others?['Laden','Textebene','Art nachtragen','Stand']:ocrOnly?['OCR',...TAIL]:texts?['Textebene',...TAIL]:['Laden',...(retryAll?['Laden übrige']:[]),'Textebene',...TAIL];
 say(`Start${others?' (übrige PDFs)':ocrOnly?' (OCR)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
 
@@ -158,14 +139,6 @@ if(ocrOnly){
  const ocr=Math.floor(left()-reserve);
  if(ocr>=5)await step('OCR','scripts/pdf-store/text.mjs',['--ocr','--workers',String(ocrWorkers),'--file-minutes',fileMinutes,'--max-minutes',String(ocr)]);
  else skip('OCR',`nur ${Math.max(0,ocr)} min übrig`);
- /* Auswertung nur, wenn Hauptdokumente gelesen wurden (übrige PDFs gehen in keine Zusammenfassung ein) */
- const read=steps.find(x=>x.name==='OCR')?.summary;
- if(!dry&&!stopped&&!(read?.primary>0)){
-  for(const name of ['Zusammenfassungen','Fakten','Wortliste'])skip(name,'kein Hauptdokument per OCR gelesen');
-  await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
-  await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
-  end();
- }
 }else if(!texts){
  await step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare*(retryAll?0.5:1)))),'--report-mb','1000']);
  if(retryAll&&!stopped)await step('Laden übrige','scripts/pdf-store/fetch.mjs',['--others','--months',String(months),'--budget-gb',String(budgetGb),'--retry-days','0',...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare*0.5))),'--report-mb','1000']);
@@ -187,13 +160,6 @@ if(others){
  end();
 }
 if(!ocrOnly)await step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes',String(Math.max(5,Math.floor(left()-reserve)))]);
-await step('Zusammenfassungen','scripts/pdf-store/summaries.mjs',[]);
-await step('Fakten','scripts/pdf-store/facts.mjs',[]);
-/* Die Wortliste hängt am Suchtext, den hier nur neue Zusammenfassungen ändern: ohne geschriebene Berichte auslassen
-   (nachts führt der Zeitplaner sie ohnehin nach, docs/betrieb/node-server.md) */
-const sum=steps.find(x=>x.name==='Zusammenfassungen')?.summary;
-if(sum&&!sum.stopped&&!sum.withText)skip('Wortliste','keine Zusammenfassung geschrieben');
-else await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
 /* Dokumentart und Art laut Textanfang für den Score (nur Fehlendes; nach neuen Regeln einmal alles) */
 await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
 await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);

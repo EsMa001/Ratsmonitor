@@ -12,9 +12,9 @@
  *  - 'pdf-store-errors-csv:N'  Fehlerliste als gepacktes CSV in Stücken (stats.mjs)
  * GETs lesen nur. Aufträge in zwei Bahnen, die nebeneinander laufen (je Bahn einer zur Zeit, weitere warten in der Reihe):
  *  - Bahn „Laden“ ('chain'): 'run' (Lauf wie nachts, ohne OCR), 'retry' (dazu fehlgeschlagene Abrufe erneut versuchen), 'others'
- *    (übrige PDFs der Berichte laden, nur Textebene), 'texts' (nichts laden, Texte aus abgelegten PDFs ohne Text, Auswertung)
- *  - Bahn „OCR“ ('ocr'): 'ocr' (OCR aller PDFs, leichte zuerst, verdrängte kurz nachgeladen; Auswertung, wenn Hauptdokumente dabei waren)
- * Sperren je Bahn in der Ablage (LANE_LOCKS); die Auswertung (Zusammenfassungen, Fakten, Wortliste) hat eine eigene (eval.lock).
+ *    (übrige PDFs der Berichte laden, nur Textebene), 'texts' (nichts laden, Texte aus abgelegten PDFs ohne Text)
+ *  - Bahn „OCR“ ('ocr'): 'ocr' (OCR aller PDFs, leichte zuerst, verdrängte kurz nachgeladen)
+ * Sperren je Bahn in der Ablage (LANE_LOCKS). Zusammenfassungen, Fakten und Wortliste: Job „rule-texts“ (scripts/rule-texts.mjs).
  */
 export const STATS_KEY='pdf-store-stats',JOB_KEY='pdf-store-job',RUNS_KEY='pdf-store-runs',STOP_KEY='pdf-store-stop',
  COUNT_KEY='pdf-store-count',HEARTBEAT_KEY='pdf-store-heartbeat',ERRORS_KEY='pdf-store-errors-csv',

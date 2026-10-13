@@ -84,6 +84,7 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
 | `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
 | `ratsmonitor-search-words.service` (früher `/etc/cron.d/ratsmonitor-search-words`) | Wortliste der Suche nachführen, 04:20 Uhr (Zeitplaner); baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
+| `ratsmonitor-rule-texts.service` | Themen & Texte, 09:00 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regel-Zusammenfassungen, Fakten und Wortliste aus den Texten der PDF-Ablage; Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
 | `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 04:50 Uhr (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
@@ -248,6 +249,11 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
 6. **Suche**: `refresh-search-words.mjs --full` nach Stufe 4 im Bestand (neue Zusammenfassungen ändern den Suchtext);
    im Import führt `runSync` die Wortliste und `rollCardDates` selbst nach.
 
+Die PDF-Kette (`nightly.mjs`, Aufträge im Reiter PDF-Import) macht nur die Stufen 2 und 3 (Laden, Textebene, OCR, Dokumentart,
+Stand). Die Stufen 4 bis 6 für den Bestand laufen getrennt davon im Job `rule-texts` (`scripts/rule-texts.mjs`, Reiter
+„Themen & Texte“, 09:00 Uhr nach der Kette; Entscheidung 13.10.2026): Zusammenfassungen, Fakten, Wortliste (nur wenn
+Zusammenfassungen dazukamen).
+
 **Einrichten** (einmal, als root; der Server hat noch keine PDFs, die Kette lädt sie selbst):
 
 1. Umgebung: `RM_PDF_STORE`, `OCR_TOOLS`, `OCR_CACHE` aus `deploy/node/ratsmonitor.env.example` in
@@ -297,7 +303,7 @@ aufgerufen von `job.mjs` höchstens stündlich und auf Wunsch („Neu messen“,
 
 Alle Jobs, die von selbst laufen, starten über `scripts/schedule.mjs <job>`; Befehle, Standardzeiten und Beschreibungen
 stehen in `server/integrations/schedules.mjs` (`JOBS`): `import-nightly` (01:00), `backup` (03:30), `search-words` (04:20),
-`pdf-nightly` (05:30), `import` und `pdf-job` (alle 10 Minuten). Die Auslöser fragen alle 10 Minuten; der Zeitplaner startet
+`pdf-nightly` (05:30), `rule-texts` (09:00), `import` und `pdf-job` (alle 10 Minuten). Die Auslöser fragen alle 10 Minuten; der Zeitplaner startet
 den Job, wenn er nach seiner Einstellung dran ist (`schedules` in `system_state`: ein/aus, Uhrzeit deutscher Zeit in
 10-Minuten-Schritten bzw. Abstand), ein täglicher Job wird bis 3 Stunden nach seiner Zeit nachgeholt; „Jetzt ausführen“
 (`schedule-now`) startet ihn sofort, auch ausgeschaltet. Jeder Lauf steht in `schedule-runs` (Start, Ende,
@@ -342,6 +348,15 @@ cp deploy/node/ratsmonitor-startseite-trends.service deploy/node/ratsmonitor-sta
 systemctl daemon-reload
 systemctl enable --now ratsmonitor-startseite-trends.timer ratsmonitor-startseite-trends.path ratsmonitor-stop-startseite-trends.path
 node scripts/schedule.mjs startseite-trends --force   # einmal sofort (als ratsmonitor, mit EnvironmentFile)
+```
+
+Themen & Texte (`rule-texts`, seit 13.10.2026; Zusammenfassungen, Fakten und Wortliste, vorher Teil der PDF-Kette), einrichten (einmal, als root):
+
+```bash
+cd /srv/ratsmonitor/app/current
+cp deploy/node/ratsmonitor-rule-texts.service deploy/node/ratsmonitor-rule-texts.timer deploy/node/ratsmonitor-rule-texts.path deploy/node/ratsmonitor-stop-rule-texts.path /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now ratsmonitor-rule-texts.timer ratsmonitor-rule-texts.path ratsmonitor-stop-rule-texts.path
 ```
 
 **Anhalten** (Knopf je laufendem Job im Reiter „Jobs & Zeitpläne“, seit 12.10.2026): schreibt `trigger/stop-<job>` und

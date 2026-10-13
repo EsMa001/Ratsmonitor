@@ -1,0 +1,12 @@
+# Alle 10 Minuten den Zeitplaner fragen (ratsmonitor-rule-texts.service); ob rule-texts dran ist, steht im Admin-Reiter „Jobs & Zeitpläne“.
+[Unit]
+Description=Ratsmonitor rule-texts, Zeitplaner
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=false
+AccuracySec=1min
+Unit=ratsmonitor-rule-texts.service
+
+[Install]
+WantedBy=timers.target

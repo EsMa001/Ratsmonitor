@@ -1,0 +1,11 @@
+# Anhalten aus der Administration (server/integrations/job-trigger.mjs, triggerStop): ein Knopfdruck schreibt
+# /srv/ratsmonitor/data/trigger/stop-rule-texts, systemd hält dann ratsmonitor-rule-texts.service an (ratsmonitor-stop@.service).
+[Unit]
+Description=Ratsmonitor: rule-texts anhalten, wenn die Administration es anfordert
+
+[Path]
+PathModified=/srv/ratsmonitor/data/trigger/stop-rule-texts
+Unit=ratsmonitor-stop@rule-texts.service
+
+[Install]
+WantedBy=multi-user.target

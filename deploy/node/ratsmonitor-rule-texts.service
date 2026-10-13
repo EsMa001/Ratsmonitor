@@ -1,0 +1,27 @@
+# Themen & Texte (scripts/rule-texts.mjs: Zusammenfassungen, Fakten, Wortliste) über den Zeitplaner (scripts/schedule.mjs rule-texts,
+# Admin-Reiter „Jobs & Zeitpläne“, Standard 09:00 Uhr). Protokoll
+# in backups/rule-texts.log.
+[Unit]
+Description=Ratsmonitor Themen & Texte
+After=ratsmonitor.service
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=3h
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs rule-texts
+StandardOutput=append:/srv/ratsmonitor/backups/rule-texts.log
+StandardError=append:/srv/ratsmonitor/backups/rule-texts.log
+MemoryHigh=7G
+MemoryMax=8G
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data /srv/ratsmonitor/backups
