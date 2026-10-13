@@ -4,6 +4,8 @@ import { alertMail, followMail, reminderMail, type MailItem } from "../lib/mails
 import { useSavedArticles } from "../lib/savedArticles";
 import { deleteMails, markMailsRead, useTestMails } from "../lib/testAuth";
 import { useAccount } from "../state/account";
+import { savedSearchQuery } from "../state/search";
+import { useData } from "../state/data";
 import { readProfile } from "./ProfilePage";
 import { todayLocal } from "../lib/text";
 
@@ -14,6 +16,7 @@ export function PostfachPage() {
   const [busy, setBusy] = useState(false);
   const saved = useSavedArticles();
   const { saved: savedSearches } = useAccount();
+  const { geo, place } = useData();
   /* Beispiele der Benachrichtigungen mit echten Daten: neuer Treffer, Fortschritt eines Vorgangs, Sitzungserinnerung */
   const samples = async () => {
     setBusy(true);
@@ -29,7 +32,9 @@ export function PostfachPage() {
     };
     /* Treffer-Mail zur ersten gespeicherten Suche, sonst zum Beispiel „Radweg“ */
     const sv = savedSearches[0];
-    const news = await get(sv ? { q: sv.text || "", area: sv.area || "", scope: sv.scope || "only", label: sv.thema || "", status: sv.status || "", level: sv.level || "city", sort: "desc" } : { q: "Radweg", sort: "desc", to: today });
+    /* Gespeicherte Suche: dieselbe Abfrage wie beim Öffnen (savedSearchQuery) */
+    const q = sv && geo && place ? await savedSearchQuery(sv, geo, place) : null;
+    const news = q !== null ? await get(Object.fromEntries(new URLSearchParams(q + "&sort=desc"))) : await get({ q: "Radweg", sort: "desc", to: today });
     if (news.length) alertMail(to, sv ? { id: sv.id, name: sv.name } : { name: "Radweg", text: "Radweg" }, news.slice(0, 2));
     const followed = saved.find((a) => a.follow) ?? saved[0] ?? news[2];
     if (followed) followMail(to, { ...followed, note: "Beschlossen" }, "Beschlossen");

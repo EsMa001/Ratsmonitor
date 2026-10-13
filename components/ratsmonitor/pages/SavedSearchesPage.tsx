@@ -2,8 +2,7 @@ import { FilterSelect } from "../components/FilterSelect";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IconBell, IconHeart, IconX } from "../components/icons";
-import { REGIONS } from "@/shared/regions";
-import { filterChips, queryText } from "../lib/savedSearch";
+import { filterChips } from "../lib/savedSearch";
 import { useAccount } from "../state/account";
 import { readProfile } from "./ProfilePage";
 import { useEntitlements } from "../lib/entitlements";
@@ -11,7 +10,8 @@ import { LoginRequired, UsagePill } from "../components/TierNotice";
 import { PageHead } from "../info/blocks";
 import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
-import { useSearch } from "../state/search";
+import { savedSearchQuery, useSearch } from "../state/search";
+import { fetchJson } from "../lib/fetchJson";
 import type { Article, NotifyFreq, SavedSearch } from "../types";
 import { MONTH_SHORT, todayLocal } from "../lib/text";
 import { digestMail, type DigestPart, type MailItem } from "../lib/mails";
@@ -20,35 +20,22 @@ import { useToast } from "../state/toast";
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
 type Preview = { total: number; items: Item[] } | null;
 
-/** Die drei neuesten Treffer einer gespeicherten Suche (Umkreissuchen ohne Umkreis-Einschränkung) */
-function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
+/** Die neuesten Treffer einer gespeicherten Suche, mit genau der Abfrage, die beim Öffnen läuft (savedSearchQuery) */
+function usePreview(s: SavedSearch): Preview | "error" {
+  const { geo, place } = useData();
   const [data, setData] = useState<Preview | "error">(null);
+  /* Neu laden, wenn sich die Suche ändert (nicht bei Benachrichtigung oder „zuletzt gesehen“) */
+  const what = JSON.stringify({ ...s, id: "", name: "", notify: null, lastSeen: "", created: "" });
   useEffect(() => {
+    if (!geo || !place) return;
     const ctrl = new AbortController();
-    const p = new URLSearchParams({
-      q: s.text || "",
-      area: within != null ? "" : s.area || "",
-      scope: s.scope || "only",
-      label: s.thema || "",
-      month: s.monat || "",
-      from: s.von || "",
-      to: s.bis || (s.future ? "" : todayLocal()),
-      status: s.status || "",
-      level: s.level || "city",
-      sort: "desc",
-      page: "1",
-    });
-    if (s.noformal) p.set("noformal", "1");
-    if (s.exact) p.set("exact", "1");
-    p.set("q", queryText(s.text || "", s.allterms));
-    /* Umkreissuche: alle Gebiete im Kreis, wie in der Übersicht */
-    if (within != null) p.set("within", within);
-    fetch("/api/search?" + p, { signal: ctrl.signal })
-      .then((r) => r.json() as Promise<{ total?: number; articles?: Item[] }>)
+    savedSearchQuery(s, geo, place)
+      .then((q) => (q === null ? Promise.reject(new Error("karte")) : fetchJson<{ total?: number; articles?: Item[] }>(`/api/search?${q}&page=1`, { signal: ctrl.signal })))
       .then((r) => setData({ total: r.total ?? 0, items: (r.articles ?? []).slice(0, 10) }))
       .catch(() => !ctrl.signal.aborted && setData("error"));
     return () => ctrl.abort();
-  }, [s.text, s.area, s.scope, s.thema, s.monat, s.von, s.bis, s.status, s.level, s.future, s.noformal, s.allterms, s.exact, within]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [what, geo, place]);
   return data;
 }
 
@@ -58,14 +45,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const toast = useToast();
   const search = useSearch();
   const { goOverview } = useAppNav();
-  /* Umkreis in Gebietsschlüssel umrechnen (Karte geladen) */
-  const within = s.radius && geo ? (() => {
-    const c = s.radius.x != null && s.radius.y != null ? { x: s.radius.x, y: s.radius.y } : geo.center(s.radius.ags);
-    if (!c) return null;
-    const set = geo.within({ x: c.x, y: c.y, km: s.radius.km }).set;
-    return REGIONS.filter((r) => r.kind === (s.level || "city") && set.has(r.ags)).map((r) => r.ags).join(",");
-  })() : null;
-  const preview = usePreview(s, within);
+  const preview = usePreview(s);
   const n = s.notify;
   const set = (patch: Partial<SavedSearch["notify"]>) => updateSaved(s.id, { notify: { ...n, ...patch } });
   const { allow, limits } = useEntitlements();
@@ -79,7 +59,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
     set({ recipients: [...extra, v] });
     setDraft("");
   };
-  const chips = filterChips({ q: s.q, text: s.text, area: s.area, areaSrc: s.areaSrc, radius: s.radius, thema: s.thema, monat: s.monat, von: s.von, bis: s.bis, scope: s.scope, status: s.status, level: s.level }, geo);
+  const chips = filterChips({ q: s.q, text: s.text, area: s.area, areaSrc: s.areaSrc, radius: s.radius, thema: s.thema, monat: s.monat, von: s.von, bis: s.bis, scope: s.scope, more: s.more, status: s.status, level: s.level }, geo);
   const ok = preview && preview !== "error" ? preview : null;
   const fresh = ok ? ok.items.filter((a) => a.date > s.lastSeen).length : 0;
   const open = () => {
@@ -266,6 +246,7 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
   const [day, setDay] = useState("Montag");
   const [busy, setBusy] = useState(false);
   const toast = useToast();
+  const { geo, place } = useData();
   const weekday = day;
   useEffect(() => {
     try {
@@ -291,12 +272,17 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
     const day = (n: number) => todayLocal(-n);
     const parts: DigestPart[] = [];
     for (const s of saved) {
-      const p = new URLSearchParams({ q: s.text || "", area: s.area || "", scope: s.scope || "only", label: s.thema || "", status: s.status || "", level: s.level || "city", from: day(7), to: day(0), sort: "desc", page: "1" });
-      if (s.noformal) p.set("noformal", "1");
-      if (s.exact) p.set("exact", "1");
-      p.set("q", queryText(s.text || "", s.allterms));
+      /* Dieselbe Abfrage wie beim Öffnen der Suche, nur auf die letzten 7 Tage begrenzt */
+      const q = geo && place ? await savedSearchQuery(s, geo, place) : null;
+      if (q === null) continue;
+      const p = new URLSearchParams(q);
+      p.set("from", day(7));
+      p.set("to", day(0));
+      p.delete("month");
+      p.set("sort", "desc");
+      p.set("page", "1");
       try {
-        const r = (await (await fetch("/api/search?" + p)).json()) as { total?: number; articles?: MailItem[] };
+        const r = await fetchJson<{ total?: number; articles?: MailItem[] }>("/api/search?" + p);
         parts.push({ id: s.id, name: s.name, total: r.total ?? 0, top: (r.articles ?? []).slice(0, 3) });
       } catch {}
     }

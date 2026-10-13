@@ -139,34 +139,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       const pq = parse(s.q, s);
       return pq.place ? { q: pq.rest } : {};
     };
-    /* Zustand einer gespeicherten Suche (ohne ihn anzuwenden), auch zum Vorausladen */
-    const savedState = (sv: SavedSearch): SearchState | null => {
-        let radius: Radius | null = null;
-        if (sv.radius) {
-          const c = sv.radius.x != null && sv.radius.y != null ? { x: sv.radius.x, y: sv.radius.y } : geo?.center(sv.radius.ags);
-          if (!c) return null;
-          radius = { ags: sv.radius.ags, km: sv.radius.km, x: c.x, y: c.y };
-        }
-        let q = sv.q || "";
-        /* Ältere gespeicherte Umkreise hatten kein Gebiet: das Zentrum wird zum Gebiet */
-        const area = sv.area || radius?.ags || "";
-        let areaSrc: AreaSource = sv.area ? sv.areaSrc || "ui" : area ? "ui" : "";
-        const overrides: Record<string, string> = {};
-        const ignored: Record<string, true> = {};
-        const pq = q && place ? place.parse(q, {}, {}) : null;
-        if (areaSrc === "search") {
-          if (pq?.place) {
-            if (pq.place.ags !== area && pq.key) overrides[pq.key] = area;
-          } else {
-            q = sv.text || "";
-            areaSrc = "ui";
-          }
-        } else if (pq?.place && pq.key) ignored[pq.key] = true;
-      return {
-          ...INITIAL_SEARCH, sort: ref.current.sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status, future: !!sv.future, noformal: !!sv.noformal, allterms: !!sv.allterms, exact: !!sv.exact,
-          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: radius ? [] : (sv.more || []).filter((m) => m.ags !== area),
-        };
-    };
+    const savedState = (sv: SavedSearch) => savedSearchState(sv, geo, place, ref.current.sort);
     const a: SearchActions = {
       applySearch(value, extra) {
         /* Ein bereits übernommener Ortsfilter bleibt stehen; neu getippte Orte kommen als weitere Orte dazu */
@@ -358,6 +331,55 @@ function warmSearch(local:{key:string;around:unknown}){
  const params=new URLSearchParams(local.key);params.delete('around');params.set('page','1');params.set('part','page');
  const job=fetchSearch(params.toString()).then(data=>{rememberSearch(requestKey,data);return data;}).finally(()=>INFLIGHT.delete(requestKey));
  INFLIGHT.set(requestKey,job);job.catch(()=>{});
+}
+/** Zustand einer gespeicherten Suche (ohne ihn anzuwenden): für applySaved, das Vorausladen und savedSearchQuery */
+export function savedSearchState(sv: SavedSearch, geo: DataValue["geo"], place: DataValue["place"], sort: SearchState["sort"] = "desc"): SearchState | null {
+        let radius: Radius | null = null;
+        if (sv.radius) {
+          const c = sv.radius.x != null && sv.radius.y != null ? { x: sv.radius.x, y: sv.radius.y } : geo?.center(sv.radius.ags);
+          if (!c) return null;
+          radius = { ags: sv.radius.ags, km: sv.radius.km, x: c.x, y: c.y };
+        }
+        let q = sv.q || "";
+        /* Ältere gespeicherte Umkreise hatten kein Gebiet: das Zentrum wird zum Gebiet */
+        const area = sv.area || radius?.ags || "";
+        let areaSrc: AreaSource = sv.area ? sv.areaSrc || "ui" : area ? "ui" : "";
+        const overrides: Record<string, string> = {};
+        const ignored: Record<string, true> = {};
+        const pq = q && place ? place.parse(q, {}, {}) : null;
+        if (areaSrc === "search") {
+          if (pq?.place) {
+            if (pq.place.ags !== area && pq.key) overrides[pq.key] = area;
+          } else {
+            q = sv.text || "";
+            areaSrc = "ui";
+          }
+        } else if (pq?.place && pq.key) ignored[pq.key] = true;
+      return {
+          ...INITIAL_SEARCH, sort, level:sv.level||"city", q, area, areaSrc, radius, thema: sv.thema, monat: sv.monat, von: sv.von||"", bis: sv.bis||"", scope: sv.scope||"only", status: sv.status, future: !!sv.future, noformal: !!sv.noformal, allterms: !!sv.allterms, exact: !!sv.exact,
+          placeOverrides: overrides, placeIgnored: ignored, placeScopes: Object.fromEntries((sv.more || []).map((m) => [m.ags, m.scope])), morePlaces: radius ? [] : (sv.more || []).filter((m) => m.ags !== area),
+        };
+    }
+
+/** Abfrage einer gespeicherten Suche, genau wie die Übersicht sie stellt (Orte, weitere Orte, Umkreis, Filter, Schalter):
+ *  für Vorschau, Wochenbericht und Beispiel-Mails. Ohne Seite und Teil; null, solange die Karte für einen Umkreis fehlt. */
+export async function savedSearchQuery(sv: SavedSearch, geo: DataValue["geo"], place: DataValue["place"]): Promise<string | null> {
+  const state = savedSearchState(sv, geo, place);
+  if (!state) return null;
+  const local = computeLocal(state, geo, place, 20);
+  const params = new URLSearchParams(local.key);
+  params.delete("around");
+  params.delete("size");
+  if (local.around) {
+    const { set, level } = local.around;
+    if (!set) params.set("within", "");
+    else {
+      const { REGIONS } = await loadCatalog();
+      const [name, keys] = radiusParam(REGIONS.filter((r) => r.kind === level), set, null);
+      params.set(name, keys);
+    }
+  }
+  return params.toString();
 }
 function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['place'],pageSize:number){
   const pq:ParseResult=place?place.parse(state.q,state.placeOverrides,state.placeIgnored):{place:null,alts:[],rest:state.q.trim(),key:'',phraseRaw:''};

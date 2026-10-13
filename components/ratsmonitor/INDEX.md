@@ -754,6 +754,7 @@ topic design-styles.css:140
 - exportArticle.ts (402): ArticleExport, exportArticleTable, printArticle, exportArticlePdf
 - exportResults.ts (35): EXPORT_MAX, ExportFormat, exportResults
 - favicon.ts (39, ⚠1): faviconHref, setFavicon
+- fetchJson.ts (44): ApiError, fetchJson, readJson, fetchOrFail, errorText
 - filter.ts (35): FilterSpec, FilterKey, matches, addCount, countBy
 - filtersOpen.ts (19): setFiltersOpen, useFiltersOpen
 
@@ -795,10 +796,10 @@ topic design-styles.css:140
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
 - PersonalPage.tsx (22): PersonalPage
-- PostfachPage.tsx (82): PostfachPage
+- PostfachPage.tsx (87): PostfachPage
 - ProfilePage.tsx (114): ProfileSettings, readProfile, ProfilePage
 - SavedArticlesPage.tsx (131, ⚠2): SavedArticlesPage
-- SavedSearchesPage.tsx (332): SavedSearchesPage
+- SavedSearchesPage.tsx (318): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (374, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
@@ -846,7 +847,7 @@ topic design-styles.css:140
 - account.tsx (32): AccountProvider, useAccount, useSavedStats
 - data.tsx (34, ⚠1): DataProvider, useData
 - nav.ts (12): View, viewOf, overviewScroll, useAppNav
-- search.tsx (568, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (590, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 
