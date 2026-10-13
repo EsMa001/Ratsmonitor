@@ -1,5 +1,6 @@
 import { regionSuggest } from "../lib/place";
 import { useEffect, useId, useRef, useState } from "react";
+import { useClient } from "../lib/useClient";
 import { PlaceIndex, type PlaceEntry } from "../lib/place";
 import { norm } from "../lib/text";
 import { hasScope } from "../lib/savedSearch";
@@ -40,6 +41,13 @@ export function focusSearch() {
   [...document.querySelectorAll<HTMLInputElement>('input[data-search="q"]')].find(shown)?.focus();
 }
 
+/* Text der zuletzt gewählten Zeile (Verlauf, gespeicherte Suche): bleibt im Feld stehen, bis der Chip erscheint. Gesetzt
+   im Klick, gelesen beim Bestätigen derselben Suche; nur das sichtbare Feld wählt, deshalb genügt eine Stelle. */
+let pickedText = "";
+const notePick = (text: string) => {
+  pickedText = text;
+};
+
 export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false, keepFocus = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean; /** Enter übernimmt Orte, der Cursor bleibt im Feld (z. B. für den zweiten Ort im Ortsvergleich) */ keepFocus?: boolean } = {}) {
   const { geo, place } = useData();
   const search = useSearch();
@@ -58,7 +66,9 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
   const [recent, setRecent] = useState<string[]>([]);
   /* Bestätigte Suche merken (nach dem Anwenden, daher kurz verzögert) */
   const qRef = useRef(state.q);
-  qRef.current = state.q;
+  useEffect(() => {
+    qRef.current = state.q;
+  });
   useEffect(() => {
     const on = () => shown(inputRef.current) && window.setTimeout(() => addRecent(qRef.current), 80);
     window.addEventListener("rm:search-confirmed", on);
@@ -68,33 +78,31 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
   const [hold, setHold] = useState("");
   /* Ladering erst nach Bestätigen (Enter oder Auswahl aus der Liste), nicht schon beim Tippen */
   const [awaiting, setAwaiting] = useState(false);
+  /* Ring: nur nach Bestätigen (Enter oder Auswahl), erst wenn die Suche über 0,5 s dauert (Provider: showRing) und bis auch
+     die genaue Trefferzahl da ist. Beim bloßen Tippen bleibt er aus. */
+  const [armed, setArmed] = useState(false);
+  if (armed && !searching) setArmed(false);
   const draftRef = useRef("");
-  const pickText = useRef("");
+
   useEffect(() => {
     const on = () => {
-      setHold(pickText.current || draftRef.current);
-      pickText.current = "";
+      setHold(pickedText || draftRef.current);
+      pickedText = "";
       setAwaiting(true);
       setArmed(true);
     };
     window.addEventListener("rm:search-confirmed", on);
     return () => window.removeEventListener("rm:search-confirmed", on);
   }, []);
-  useEffect(() => {
-    if (!pending && (hold || awaiting)) {
-      setHold("");
-      setAwaiting(false);
-    }
-  }, [pending, hold, awaiting]);
-  /* Ring: nur nach Bestätigen (Enter oder Auswahl), erst wenn die Suche über 0,5 s dauert (Provider: showRing) und bis auch
-     die genaue Trefferzahl da ist. Beim bloßen Tippen bleibt er aus. */
-  const [armed, setArmed] = useState(false);
-  useEffect(() => {
-    if (armed && !searching) setArmed(false);
-  }, [armed, searching]);
+  if (!pending && (hold || awaiting)) {
+    setHold("");
+    setAwaiting(false);
+  }
   const ring = armed && showRing;
   const draft = !focused ? "" : base && state.q.startsWith(base) ? state.q.slice(base.length).replace(/^[,;|]?\s*/, "") : state.q;
-  draftRef.current = draft;
+  useEffect(() => {
+    draftRef.current = draft;
+  });
   const shownDraft = pending && hold && (!focused || !draft) ? hold : draft;
   const join = (d: string) => (base && state.q.startsWith(base) ? (d ? `${base.replace(/[,;|]\s*$/, "")}, ${d}` : base) : d);
 
@@ -112,13 +120,15 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
     return ags.length === 5 ? `${nm} & Gemeinden` : `${nm} & ${geo!.info(ags.slice(0, 5)).name}`;
   };
 
+  /* Feld verlassen aus den Zeilen der Liste (über die ID statt über den Ref: die Zeilen entstehen beim Rendern) */
+  const blurField = () => document.getElementById(ids.q)?.blur();
   const rows = ((): Row[] => {
     /* Leere Suche, Feld im Fokus: zuletzt gesucht und gespeicherte Suchen */
     if (open && focused && !state.q.trim()) {
       const out: Row[] = [];
       const closeAndBlur = () => {
         setOpen(false);
-        inputRef.current?.blur();
+        blurField();
       };
       if (recent.length) {
         /* „Verlauf löschen“ steht in derselben Zeile rechts */
@@ -129,7 +139,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
             label: q,
             prefetch: () => search.prefetchText(q),
             pick: () => {
-              pickText.current = q;
+              notePick(q);
               apply(q);
               search.commitPlaces();
               closeAndBlur();
@@ -145,7 +155,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
             saved: true,
             prefetch: () => search.prefetchSaved(sv),
             pick: () => {
-              pickText.current = sv.text || sv.q || sv.name;
+              notePick(sv.text || sv.q || sv.name);
               if (search.applySaved(sv)) {
                 if (view !== "overview" && !stay) goOverview();
                 closeAndBlur();
@@ -258,7 +268,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
           if (keys.length) apply(state.q, { placeIgnored: { ...state.placeIgnored, ...Object.fromEntries(keys.map((k) => [k, true as const])) } });
           search.commitPlaces();
           setOpen(false);
-          inputRef.current?.blur();
+          blurField();
         },
       });
     return out;
@@ -279,8 +289,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
     return () => mq.removeEventListener("change", on);
   }, []);
   /* Strg+K bzw. ⌘K setzt den Cursor in die Suche */
-  const [mac, setMac] = useState(false);
-  useEffect(() => setMac(/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)), []);
+  const mac = useClient(() => /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), false);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!shown(inputRef.current)) return;
