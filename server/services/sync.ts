@@ -116,7 +116,7 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
         try { t = await enrichDocument({ ...old }, undefined, { uses: (url: string) => uses.get(url) || 0 }); }
         catch { /* Dokument nicht lesbar: als Versuch gemerkt */ }
         const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: (t as any).readText ? [(t as any).readText] : null, at: started });
-        await env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify({ ...withRuleSummary(old, t, `${RULE_SUMMARY_VERSION}:import`), itemKind: rules.itemKind, theme: rules.theme }), old.id).run();
+        await env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify({ ...withRuleSummary(old, t, `${RULE_SUMMARY_VERSION}:import`), itemKind: rules.itemKind, theme: rules.theme, stage: rules.stage }), old.id).run();
         processed++;
         if (processed >= 8)
             break;
@@ -144,7 +144,7 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
        später noch einmal mit dem Text der Ablage (report_rules kennt diesen Lauf nicht), mit gleichem Ergebnis. */
     const readText: string = (t as any).readText || '';
     const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: readText ? [readText] : null, at: started });
-    compact.topic.itemKind = rules.itemKind; compact.topic.theme = rules.theme;
+    compact.topic.itemKind = rules.itemKind; compact.topic.theme = rules.theme; compact.topic.stage = rules.stage;
     await env.DB.batch([
       // Keine Versionskopie: die Zusammenfassung steht in article_analyses (Art 'summary'). Gescheiterte Versuche ersetzen
       // einander (höchstens einer je Bericht), gelungene KI-Zusammenfassungen bleiben.

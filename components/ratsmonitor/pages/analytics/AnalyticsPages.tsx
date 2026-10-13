@@ -9,7 +9,6 @@ import { KnowledgeGraphPage } from "./KnowledgeGraphPage";
 import { FraktionenPage } from "./FraktionenPage";
 import { NewsradarPage } from "./NewsradarPage";
 import { AtlasPage } from "./AtlasPage";
-import { RADARS } from "@/shared/radars.mjs";
 import { GRUPPEN } from "../../info/branchen-enterprise";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
@@ -33,27 +32,14 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/beschluesse": BeschluessePage,
   "/analytics/gremien": GremiennetzPage,
   "/analytics/fraktionen": FraktionenPage,
-  "/analytics/foerderung": () => <AtlasPage initial="foerderung" />,
   "/analytics/news": NewsradarPage,
-  /* Themenradare: eine Seite, der plenara.X Atlas; die früheren Einzeladressen zeigen ihn mit ihrem Thema */
+  /* plenara.X Atlas: die 10 Themen auf der einen Abfrage /api/x */
   "/analytics/atlas": () => <AtlasPage />,
-  "/analytics/kita": () => <AtlasPage initial="kita" />,
-  "/analytics/bauleitplanung": () => <AtlasPage initial="bauleitplanung" />,
-  "/analytics/versorgung": () => <AtlasPage initial="versorgung" />,
-  "/analytics/verkehr": () => <AtlasPage initial="verkehr" />,
-  "/analytics/soziales": () => <AtlasPage initial="soziales" />,
-  "/analytics/vergabe": () => <AtlasPage initial="vergabe" />,
-  "/analytics/klima": () => <AtlasPage initial="klima" />,
-  "/analytics/finanzlage": () => <AtlasPage initial="finanzlage" />,
-  "/analytics/beteiligung": () => <AtlasPage initial="beteiligung" />,
-  "/analytics/gebuehren": () => <AtlasPage initial="gebuehren" />,
   "/analytics/tools": () => <AnalyticsGroupPage group="tool" />,
   "/analytics/themen": () => <AnalyticsGroupPage group="themen" />,
   // Frühere Gruppen plenara.X Politik und Finanzen
   "/analytics/politik": () => <Umleiten to="/analytics/themen" />,
   "/analytics/finanzen": () => <Umleiten to="/analytics/themen" />,
-  // Frühere Übersicht plenara.X Radar: die Themen stehen im Atlas
-  "/analytics/radar": () => <AtlasPage />,
 };
 
 // Die Adressen stehen in lib/routes.ts (App.tsx braucht sie, ohne diese Seiten zu laden); PAGES muss sie alle bedienen.
@@ -66,8 +52,11 @@ export function AnalyticsPages({ path }: { path: string }) {
   const { tier } = useTier();
   useEffect(() => {
     window.scrollTo(0, 0);
-    const radar = RADARS[path.slice("/analytics/".length) as keyof typeof RADARS], gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
-    document.title = path === "/analytics/atlas" || path === "/analytics/radar" ? "plenara.X Atlas" : path === "/analytics/finanzlage" ? "Haushalt und Steuern · plenara.X" : path === "/analytics/news" ? "Newsradar · plenara.X" : gruppe ? gruppe.name : radar ? `${radar.name} · plenara.X` : path === "/analytics/diffusion" ? "Ausbreitung · plenara.X" : path === "/analytics/graph" ? "Themennetz · plenara.X" : path === "/analytics/gremien" ? "Beratungswege · plenara.X" : path === "/analytics/beschluesse" ? "Beschlüsse · plenara.X" : path === "/analytics/vergleich" ? "Ortsvergleich · plenara.X" : path === "/analytics/trends" ? "Trends · plenara.X" : path === "/analytics/fraktionen" ? "Fraktionsprofil · plenara.X" : path === "/analytics/foerderung" ? "Förderradar · plenara.X" : path === "/analytics/bauleitplanung" ? "Bauleitplanung · plenara.X" : path === "/analytics/kita" ? "Kita-Radar · plenara.X" : path === "/analytics/tools" ? "plenara.X Tools" : path === "/analytics/radar" ? "plenara.X Radar" : "Über plenara.X · plenara";
+    const gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
+    const TITEL: Record<string, string> = { "/analytics/atlas": "plenara.X Atlas", "/analytics/news": "Newsradar · plenara.X", "/analytics/diffusion": "Ausbreitung · plenara.X",
+      "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Beratungswege · plenara.X", "/analytics/beschluesse": "Beschlüsse · plenara.X",
+      "/analytics/vergleich": "Ortsvergleich · plenara.X", "/analytics/trends": "Trends · plenara.X", "/analytics/fraktionen": "Fraktionsprofil · plenara.X", "/analytics/tools": "plenara.X Tools" };
+    document.title = TITEL[path] ?? (gruppe ? gruppe.name : "Über plenara.X · plenara");
   }, [path]);
   const Page = PAGES[path];
   if (!Page) return null;

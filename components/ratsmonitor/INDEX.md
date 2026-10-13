@@ -638,7 +638,7 @@ topic design-styles.css:140
 - admin-catch-up.tsx (10): RegionCatchUp
 - admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
-- admin-dashboard.tsx (129, ⚠15): AdminDashboardView
+- admin-dashboard.tsx (129, ⚠14): AdminDashboardView
 - admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
@@ -646,11 +646,11 @@ topic design-styles.css:140
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
 - admin-pdf-parts.tsx (168, ⚠7): n, pct, gb, size, when, clock, day, month, dur, KIND, MonthRow, MonthBars, SpaceBar, ProcessFlow, Host, HostList, RunStep, Run, RunList, Quality, scorePct, QualityTable
-- admin-pdf.tsx (275, ⚠21): AdminPdf
+- admin-pdf.tsx (270, ⚠20): AdminPdf
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (186, ⚠21): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (52): AdminRuleTexts
+- admin-rule-texts.tsx (110, ⚠3): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (115, ⚠4): AdminSchedules
 - admin-social.tsx (135, ⚠1): AdminSocial
@@ -658,7 +658,7 @@ topic design-styles.css:140
 - admin-stand.tsx (28): standText, StandLine
 - admin-storage.tsx (124, ⚠9): AdminStorage
 - admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (502, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, RAHMEN
+- admin-texts.ts (502, ⚠6): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
@@ -759,6 +759,7 @@ topic design-styles.css:140
 - pageTitle.ts (40): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - queue.ts (29): queue
+- radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (90): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, clearSavedArticles, useSavedArticles
@@ -782,7 +783,7 @@ topic design-styles.css:140
 - MainMenu.tsx (233, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (179, ⚠12): DetailPage
+- DetailPage.tsx (179, ⚠11): DetailPage
 - KalenderPage.tsx (367, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
@@ -795,38 +796,30 @@ topic design-styles.css:140
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (374, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (76, ⚠1): AnalyticsPages
+- AnalyticsPages.tsx (65): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (74): ATLAS_BEREICHE, AtlasBereich, isAtlasBereich, atlasHref, AtlasPage
-- BauleitplanungPage.tsx (239, ⚠9): BauleitplanungPage
+- AtlasPage.tsx (64): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (51): Befund, zuThema
 - BeschluessePage.tsx (198, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (311, ⚠11): ComparePage
+- ComparePage.tsx (307, ⚠11): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
-- FoerderradarPage.tsx (224, ⚠9): FoerderradarPage
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (190, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (176, ⚠3): GremiennetzPage
-- KitaRadarPage.tsx (164, ⚠8): KitaRadarPage
 - KnowledgeGraphPage.tsx (207, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (180, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (79): DrillItem, RadarDrill
-- RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
-- RadarMap.tsx (79, ⚠2): RadarMap
-- RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS
 - RegionMap.tsx (71): RegionMap
 - Reveal.tsx (16): Reveal
-- ScoreView.tsx (132, ⚠4): ScoreView
-- ThemeRadarPage.tsx (188, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (190, ⚠8): TrendsPage
 - useAnalysisRun.ts (53): useAnalysisRun

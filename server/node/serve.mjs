@@ -72,9 +72,10 @@ server.requestTimeout = 0; // Abrufe im Adminbereich dauern Minuten; Grenzen set
 console.log(`[ratsmonitor] Node ${process.version}, NODE_ENV=${process.env.NODE_ENV ?? '(leer)'}, TZ=${process.env.TZ ?? '(System)'}`);
 
 // Startansichten der Auswertungen nacheinander abfragen, damit ihr Zwischenspeicher gefüllt ist (siehe oben).
-const RADARS = ['versorgung', 'verkehr', 'soziales', 'vergabe', 'klima', 'finanzen', 'beteiligung', 'gebuehren']; // shared/radars.mjs
-const WARM = [...['decisions', 'news', 'network', 'foerderung', 'trends', 'score'].map((name) => `/api/analytics/${name}`),
-  ...RADARS.map((id) => `/api/analytics/themenradar?radar=${id}`)];
+// plenara.X Atlas: Startansicht und die 10 Themen (shared/themes.mjs) auf der einen Abfrage /api/x
+const THEMES = ['bauen', 'finanzen', 'mobilitaet', 'bildung', 'umwelt', 'soziales', 'kultur', 'sicherheit', 'verwaltung', 'wirtschaft'];
+const WARM = [...['decisions', 'news', 'network', 'trends'].map((name) => `/api/analytics/${name}`),
+  '/api/x?view=atlas&level=city', ...THEMES.map((id) => `/api/x?view=atlas&level=city&theme=${id}`)];
 async function warm() {
   for (const path of WARM) {
     if (stopping) return;

@@ -84,7 +84,7 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
 | `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
 | `ratsmonitor-search-words.service` (früher `/etc/cron.d/ratsmonitor-search-words`) | Wortliste der Suche nachführen, 04:20 Uhr (Zeitplaner); baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
-| `ratsmonitor-rule-texts.service` | Themen & Texte, 09:00 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regeln je Bericht (Art des Punkts, Thema, Regel-Zusammenfassung, Fakten; `read-reports.mjs`) und Wortliste aus den Texten der PDF-Ablage; Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
+| `ratsmonitor-rule-texts.service` | Themen & Texte, 09:00 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regeln je Bericht (Art des Punkts, Thema, Regel-Zusammenfassung, Fakten; `read-reports.mjs`), Wortliste aus den Texten der PDF-Ablage und Zahlen für plenara.X (`x_cases`, Migration 0036, `build-x-cases.mjs`); Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
 | `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 04:50 Uhr (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
@@ -257,7 +257,8 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
 Die PDF-Kette (`nightly.mjs`, Aufträge im Reiter PDF-Import) macht nur die Stufen 2 und 3 (Laden, Textebene, OCR, Dokumentart,
 Stand). Die Stufen 4 bis 6 für den Bestand laufen getrennt davon im Job `rule-texts` (`scripts/rule-texts.mjs`, Reiter
 „Themen & Texte“, 09:00 Uhr nach der Kette; Entscheidung 13.10.2026): Regeln je Bericht (`read-reports.mjs`), Wortliste
-(nur wenn Berichte neu gelesen wurden).
+(nur wenn Berichte neu gelesen wurden), Zahlen für plenara.X (`scripts/plenara-x/build-x-cases.mjs`, immer; ohne sie antwortet
+`/api/x` mit 503, nach dem Einspielen von Migration 0036 also einmal von Hand oder über „Jetzt erstellen“ bauen).
 
 **Einrichten** (einmal, als root; der Server hat noch keine PDFs, die Kette lädt sie selbst):
 

@@ -35,11 +35,12 @@ export async function atRevision(db,key,compute,{sources=false}={}){
 export const paramsKey=(kind,params)=>`${kind}|${new Date().toISOString().slice(0,10)}|${[...new URLSearchParams(params)].map(([k,v])=>k+'='+v).sort().join('&')}`;
 /* Requests by filter (paramsKey): up to KEEP_PER_KIND filters per kind, the oldest dropped first. After an import the
    last result of the same key is answered for up to STALE_MS while the new one is computed in the background, as in
-   the score (analytics-score.mjs); the first view after an import then does not wait for a scan. */
+   the first view after an import then does not wait for a scan. revisionSql: own revision instead of the content revision
+   (plenara.X: X_REVISION_SQL, the numbers change only with a new build of x_cases). */
 const byFilter=new WeakMap(),KEEP_PER_KIND=20,STALE_MS=6*3600e3;
-export async function atRevisionStale(db,key,compute){
- const row=await db.prepare(CONTENT_REVISION_SQL).first();
- const revision=Number(row?.revision||0);
+export async function atRevisionStale(db,key,compute,{revisionSql=''}={}){
+ const row=await db.prepare(revisionSql||CONTENT_REVISION_SQL).first();
+ const revision=revisionSql?String(row?.revision??''):Number(row?.revision||0);
  let entries=byFilter.get(db);if(!entries){entries=new Map();byFilter.set(db,entries);}
  const hit=entries.get(key);
  const fresh=()=>compute().then(value=>{

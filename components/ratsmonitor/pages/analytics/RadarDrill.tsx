@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
 import { ApiError, errorText, fetchOrFail } from "../../lib/fetchJson";
 
-/* Die Vorgänge hinter einer Zahl eines Themenradars (server/integrations/analytics-radar.mjs, radarList): Thema, Signal,
-   Monat, Gebiet oder Zweck eines Zuschusses. Lädt beim Öffnen, weitere Einträge auf Knopfdruck. */
+/* Die Vorgänge hinter einer Zahl einer Auswertung (Listenmodus by=…&value=…, etwa /api/x?list=1): Lädt beim Öffnen,
+   weitere Einträge auf Knopfdruck. */
 export interface DrillItem { id: string; title: string; region: string; date: string; status: string; times: number; signal?: string; topics?: string[]; euro?: number }
 interface List { total: number; size: number; items: DrillItem[] }
 
@@ -13,14 +13,14 @@ const n = (v: number) => v.toLocaleString("de-DE");
 const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "");
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
 
-/** radar: Themenradar (Liste über /api/analytics/themenradar); base: andere Auswertung mit Listenmodus (by=…), etwa die Bauleitplanung */
-export function RadarDrill({ radar, base, query, by, value, label, unit }: { radar?: string; base?: string; query: string; by: string; value: string; label: string; unit?: [string, string] }) {
+/** base: Adresse der Auswertung mit Listenmodus (by=…), etwa /api/x?list=1 */
+export function RadarDrill({ base, query, by, value, label, unit }: { base: string; query: string; by: string; value: string; label: string; unit?: [string, string] }) {
   const [items, setItems] = useState<DrillItem[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   /* Neue Liste (anderer Wert oder andere Abfrage): beim Rendern zurücksetzen, der Effekt lädt nur */
-  const listKey = [radar, base, query, by, value].join("|");
+  const listKey = [base, query, by, value].join("|");
   const [shown, setShown] = useState(listKey);
   if (shown !== listKey) {
     setShown(listKey);
@@ -34,7 +34,7 @@ export function RadarDrill({ radar, base, query, by, value, label, unit }: { rad
   const load = (offset: number) => {
     ctrl.current?.abort();
     const c = (ctrl.current = new AbortController());
-    fetchOrFail(`${base ?? `/api/analytics/themenradar?radar=${radar}`}&${query}&by=${by}&value=${encodeURIComponent(value)}&offset=${offset}`, { signal: c.signal })
+    fetchOrFail(`${base}&${query}&by=${by}&value=${encodeURIComponent(value)}&offset=${offset}`, { signal: c.signal })
       .then(async (r) => { const b = (await r.json().catch(() => ({}))) as List & { error?: string }; if (!r.ok || !Array.isArray(b.items)) throw new ApiError(b.error || "Die Liste konnte nicht geladen werden.", r.status); return b; })
       .then((b) => { setItems((old) => (offset ? [...old, ...b.items] : b.items)); setTotal(b.total); setLoading(false); })
       .catch((e) => { if (c.signal.aborted) return; setError(errorText(e, "Die Liste konnte nicht geladen werden.")); setLoading(false); });

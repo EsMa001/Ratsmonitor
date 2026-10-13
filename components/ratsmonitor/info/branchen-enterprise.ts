@@ -4,7 +4,7 @@ import type { IconName } from "./icons";
 
 export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "vergabe" | "klima" | "finanzlage" | "beteiligung" | "gebuehren" | "news";
 /** Tools funktionieren mit jedem Suchbegriff; Politik, Finanzen und Radar sind fertige Auswertungen, nach der Frage geordnet */
-/** atlas: Thema des plenara.X Atlas (/analytics/atlas), keine eigene Gruppe und kein eigener Eintrag in den Listen */
+/** atlas: Auswahl im plenara.X Atlas (/analytics/atlas: Thema, Unterthema oder „Was geschieht“), keine eigene Gruppe und kein eigener Eintrag in den Listen */
 export type AnalyseGruppe = "tool" | "themen" | "atlas";
 
 /* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
@@ -21,18 +21,18 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck", group: "tool" },
   gremien: { href: "/analytics/gremien", name: "Beratungswege", icon: "users", group: "tool" },
   fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "themen" },
-  foerderung: { href: "/analytics/atlas?bereich=foerderung", name: "Förderradar", icon: "euro", group: "atlas" },
-  bauleitplanung: { href: "/analytics/atlas?bereich=bauleitplanung", name: "Bauleitplanung", icon: "house", group: "atlas" },
-  kita: { href: "/analytics/atlas?bereich=kita", name: "Kita-Radar", icon: "heart", group: "atlas" },
-  versorgung: { href: "/analytics/atlas?bereich=versorgung", name: "Versorgungsradar", icon: "droplet", group: "atlas" },
-  verkehr: { href: "/analytics/atlas?bereich=verkehr", name: "Verkehrsradar", icon: "bus", group: "atlas" },
-  soziales: { href: "/analytics/atlas?bereich=soziales", name: "Vereins- und Sozialradar", icon: "handshake", group: "atlas" },
-  vergabe: { href: "/analytics/atlas?bereich=vergabe", name: "Vergaberadar", icon: "clipboardList", group: "atlas" },
-  klima: { href: "/analytics/atlas?bereich=klima", name: "Klima- und Energieradar", icon: "zap", group: "atlas" },
-  finanzlage: { href: "/analytics/atlas?bereich=finanzlage", name: "Haushalt und Steuern", icon: "layers", group: "atlas" },
-  beteiligung: { href: "/analytics/atlas?bereich=beteiligung", name: "Beteiligung", icon: "megaphone", group: "atlas" },
+  foerderung: { href: "/analytics/atlas?stage=foerderung", name: "Förderradar", icon: "euro", group: "atlas" },
+  bauleitplanung: { href: "/analytics/atlas?thema=bauen&sub=bauen.plan", name: "Bauleitplanung", icon: "house", group: "atlas" },
+  kita: { href: "/analytics/atlas?thema=bildung", name: "Kita-Radar", icon: "heart", group: "atlas" },
+  versorgung: { href: "/analytics/atlas?thema=umwelt", name: "Versorgungsradar", icon: "droplet", group: "atlas" },
+  verkehr: { href: "/analytics/atlas?thema=mobilitaet", name: "Verkehrsradar", icon: "bus", group: "atlas" },
+  soziales: { href: "/analytics/atlas?thema=soziales", name: "Vereins- und Sozialradar", icon: "handshake", group: "atlas" },
+  vergabe: { href: "/analytics/atlas?stage=vergabe", name: "Vergaberadar", icon: "clipboardList", group: "atlas" },
+  klima: { href: "/analytics/atlas?thema=umwelt", name: "Klima- und Energieradar", icon: "zap", group: "atlas" },
+  finanzlage: { href: "/analytics/atlas?thema=finanzen", name: "Haushalt und Steuern", icon: "layers", group: "atlas" },
+  beteiligung: { href: "/analytics/atlas?thema=verwaltung&sub=verwaltung.beteil", name: "Beteiligung", icon: "megaphone", group: "atlas" },
   news: { href: "/analytics/news", name: "Newsradar", icon: "newspaper", group: "themen" },
-  gebuehren: { href: "/analytics/atlas?bereich=gebuehren", name: "Gebührenradar", icon: "tag", group: "atlas" },
+  gebuehren: { href: "/analytics/atlas?stage=abgaben", name: "Gebührenradar", icon: "tag", group: "atlas" },
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */

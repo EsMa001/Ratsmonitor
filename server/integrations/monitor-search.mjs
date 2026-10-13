@@ -164,7 +164,7 @@ export async function searchFilters(db,catalog,f){
     gefragt (mit denselben Bedingungen wie sonst, das Ergebnis bleibt gleich), statt über alle. null: wie gewohnt über alle. */
  const nameHit=t=>catalog.some(r=>nameMatch(norm(r.name),t));
  const nameIds=t=>catalog.filter(r=>nameMatch(norm(r.name),t)).map(r=>r.id);
- const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part===''?await candidateCards(db,f.groups,{nameIds,exact:f.exact}):null;
+ const cand=f.part==='stream'||f.part==='page'||f.part==='facets'||f.part==='x'||f.part===''?await candidateCards(db,f.groups,{nameIds,exact:f.exact}):null;
  const candidates=cand?{sql:'id IN (SELECT value FROM json_each(?))',arg:JSON.stringify(cand)}:null;
  /* Häufiges Wort ohne Filter: Zähler kommen vorberechnet aus der Wortliste (searchMonitor), dann bleibt alles wie gewohnt;
     ist die Liste nicht aktuell (etwa direkt nach einem Import), springt der Index ein */
@@ -172,7 +172,7 @@ export async function searchFilters(db,catalog,f){
  const plainSearch=!f.label&&!f.status&&!f.month&&!f.from&&!f.noformal&&(placeScoped||(!f.area&&!f.more.length&&!f.within&&!f.without));
  const precomputable=(f.part==='facets'||f.part==='')&&plainSearch&&!f.exact&&f.groups.length===1&&f.groups[0].length===1;
  /* Begriffe, die über den Volltextindex eingeschränkt werden: ohne Kandidaten der Wortliste und unter der Obergrenze */
- const ftsTerms=new Set(),ftsMax=f.part==='facets'?FTS_FACETS_MAX:FTS_PAGE_MAX;
+ const ftsTerms=new Set(),ftsMax=f.part==='facets'||f.part==='x'?FTS_FACETS_MAX:FTS_PAGE_MAX; // x: Zählungen für plenara.X (plenara-x-query.mjs)
  if(ftsReady&&!cand&&!(precomputable&&await listCurrent(db)))for(const t of new Set((f.groups||[f.terms]).flat()))if(FTS_TERM.test(t)&&await ftsCount(db,t,ftsMax)<=ftsMax)ftsTerms.add(t);
  const labelId=f.label?LABELS.find(l=>l.name===f.label).id:null;
  /* Ergebnisseite: Gebiet, Thema und Status als Bedingung */

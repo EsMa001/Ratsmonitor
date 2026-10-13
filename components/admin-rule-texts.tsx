@@ -17,6 +17,7 @@ function stepNote(s:Step){
  if(!s.ok)return 'Fehler';
  if(s.name==='Zusammenfassungen'&&typeof x.summaries==='number')return n(x.summaries)+' neue von '+n(Number(x.withText)||0)+' mit Text';
  if(s.name==='Regeln je Bericht'&&typeof x.read==='number')return n(x.read)+' Berichte neu gelesen, davon '+n(Number(x.withText)||0)+' mit Text, '+n(Number(x.summaries)||0)+' mit Zusammenfassung';
+ if(s.name==='Zahlen für plenara.X'&&typeof x.cases==='number')return n(x.cases)+' Vorgänge'+(x.unread?', davon '+n(Number(x.unread))+' ungelesen':'');
  return 'fertig';
 }
 const n=(v:number)=>v.toLocaleString('de-DE');
@@ -78,7 +79,7 @@ export function AdminRuleTexts(){
   {!!data?.statsPending&&<p role="status" className="mt-4 text-[14px] text-slate-500">Die Gebietszahlen werden noch nachgeführt ({n(data.statsPending)} Gebiete offen); die Werte können noch steigen.</p>}
   <section id="regeltexte-job" className="admin-section">
    <div className="admin-section-heading"><h2>Erstellen</h2></div>
-   <p className="admin-note">Aus den Texten der PDF-Ablage entstehen nach festen Regeln, ohne KI: Zusammenfassungen für Berichte ohne, Fakten für plenara.X und die Wortliste der Suche (nur wenn Zusammenfassungen dazukamen; gesucht wird in deren Kurzfassung, nicht in der Langfassung). Der PDF-Import lädt und liest nur.</p>
+   <p className="admin-note">Aus den Texten der PDF-Ablage entstehen nach festen Regeln, ohne KI: Zusammenfassungen für Berichte ohne, Fakten für plenara.X und die Wortliste der Suche (nur wenn Zusammenfassungen dazukamen; gesucht wird in deren Kurzfassung, nicht in der Langfassung). Danach entstehen die Zahlen für plenara.X neu (eine Zeile je Vorgang), damit der Atlas nicht über alle Karten zählt. Der PDF-Import lädt und liest nur.</p>
    {jobError&&<Alert onRetry={loadJob}>{jobError}</Alert>}
    <ul className="m-0 mt-4 list-none space-y-1.5 p-0 text-[14px] text-slate-700">
     <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}${job.last?.all?' (alle neu)':''}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}

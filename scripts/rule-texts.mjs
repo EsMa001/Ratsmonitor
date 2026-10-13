@@ -4,6 +4,7 @@
 //   1. pdf-store/read-reports.mjs  alle Regeln je Bericht in einem Durchlauf (readReport): Art des Punkts, Thema,
 //                                  Regel-Zusammenfassung, Fakten; nur Berichte mit geänderten Eingaben (report_rules)
 //   2. refresh-search-words.mjs    Wortliste nachführen, nur wenn Berichte gelesen wurden (die Zusammenfassung ändert den Suchtext)
+//   3. plenara-x/build-x-cases.mjs Zahlen für plenara.X (x_cases) neu, immer (auch Thema von Hand, KI-Label und neue Karten)
 // Ergebnis je Schritt in system_state 'rule-texts-last' (Anzeige im Reiter). Scheitert ein Schritt, laufen die übrigen weiter
 // (Exit 1). Anhalten: SIGTERM/SIGINT (systemctl stop, Knopf „Anhalten“) geht an den laufenden Schritt, die übrigen entfallen (Exit 3).
 //
@@ -68,6 +69,7 @@ if(!dry){
  else if(sum&&!sum.read)skip('Wortliste','kein Bericht neu gelesen');
  else await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
 }else await step('Wortliste','scripts/refresh-search-words.mjs',all?['--quiet','--full']:['--quiet']);
+await step('Zahlen für plenara.X','scripts/plenara-x/build-x-cases.mjs',dry?['--dry-run']:[]);
 
 const result=stopped?'stopped':failed.length?'failed':'done';
 if(!dry)writeState(RULE_TEXTS_KEY,{startedAt:new Date(t0).toISOString(),finishedAt:new Date().toISOString(),result,all,steps,facts});
