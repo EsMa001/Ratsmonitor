@@ -4,7 +4,7 @@
 import {randomToken,sha256hex,randomCode,normalizeCode,hmacHex} from './crypto.mjs';
 import {AccountError,respond,requireSameOrigin,readJson,setCookie} from './http.mjs';
 import {currentSession,accountState} from './login.mjs';
-import {eventStatement} from './sessions.mjs';
+import {eventStatement,effectiveTier} from './sessions.mjs';
 import {sendMail,processOutbox} from './mail.mjs';
 import {siteBase} from './config.mjs';
 import {limited} from './rate-limit.mjs';
@@ -335,4 +335,41 @@ export async function collectUserData(db,userId,email){
   adminAktionen:await all('SELECT at,method,path,action,count FROM admin_audit WHERE user_id=? ORDER BY at',userId),
   offeneAnmeldungen:await all('SELECT purpose,created_at,expires_at FROM login_tokens WHERE (email=? OR user_id=?) AND used_at IS NULL',email,userId),
  };
+}
+
+// ---------------------------------------------------------------- Kalender-Abo per Token (Kalender-Apps schicken kein Cookie)
+/** GET: Abo vorhanden? POST: neuen Link erzeugen (alter wird ungültig). DELETE: Abo beenden. */
+export async function calendarFeed(ctx){
+ const method=ctx.request.method;
+ const user=await requireUser(ctx,{write:method!=='GET'}),uid=user.session.user_id;
+ const {db,now}=ctx,at=iso(now);
+ if(method==='GET'){
+  const row=await db.prepare('SELECT created_at FROM calendar_feeds WHERE user_id=? AND revoked_at IS NULL ORDER BY created_at DESC LIMIT 1').bind(uid).first();
+  return {response:respond({active:!!row,since:row?.created_at??null,allowed:!!user.features.calendar})};
+ }
+ if(method==='DELETE'){
+  await db.prepare('UPDATE calendar_feeds SET revoked_at=? WHERE user_id=? AND revoked_at IS NULL').bind(at,uid).run();
+  return {response:respond({ok:true})};
+ }
+ if(method!=='POST')throw new AccountError(405,'Methode nicht erlaubt.');
+ if(!user.features.calendar)throw new AccountError(403,'Der Kalender gehört zu einer höheren Stufe.',{feature:'calendar'});
+ const site=siteBase(ctx.cfg,ctx.request);
+ if(!site)throw new AccountError(503,'SITE_URL fehlt.');
+ const token=randomToken(32);
+ await db.batch([
+  db.prepare('UPDATE calendar_feeds SET revoked_at=? WHERE user_id=? AND revoked_at IS NULL').bind(at,uid),
+  db.prepare('INSERT INTO calendar_feeds(id,user_id,created_at) VALUES(?,?,?)').bind(await sha256hex(token),uid,at),
+ ]);
+ return {response:respond({ok:true,url:`${site}/api/calendar/feed/${token}.ics`})};
+}
+/** Gebiete zum Abo-Token, nur wenn Abo, Konto und Stufe (Kalender) gültig sind; sonst null */
+export async function feedAreas(db,token,{now=Date.now()}={}){
+ const value=String(token||'').replace(/\.ics$/,'');
+ if(!TOKEN_RE.test(value))return null;
+ const row=await db.prepare(`SELECT f.user_id,s.calendar_ags FROM calendar_feeds f JOIN users u ON u.id=f.user_id
+   LEFT JOIN user_settings s ON s.user_id=f.user_id WHERE f.id=? AND f.revoked_at IS NULL AND u.status='active'`).bind(await sha256hex(value)).first();
+ if(!row)return null;
+ const tier=await effectiveTier(db,row.user_id,{now});
+ if(!FEATURES[tier.tier]?.calendar)return null;
+ return JSON.parse(row.calendar_ags||'[]');
 }

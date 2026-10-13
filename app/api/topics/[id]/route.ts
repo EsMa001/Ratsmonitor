@@ -1,5 +1,7 @@
+import {gated} from '@/server/services/session';
 import { getTopic } from '@/server/repositories/topics';
-export async function GET(_request: Request, { params }: {
+export const GET=gated(topicGet);
+async function topicGet(_request: Request, { params }: {
     params: Promise<{
         id: string;
     }>;

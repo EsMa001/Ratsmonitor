@@ -1,0 +1,25 @@
+# Kontojob über den Zeitplaner (scripts/schedule.mjs accounts, Admin-Reiter „Jobs & Zeitpläne“, Standard 02:40):
+# Fristen, Hinweismails, Überwachung des Postausgangs, verschlüsselte Sicherung der Kontendatei (deploy/node/accounts-job.sh).
+# Nur diese Einheit und ratsmonitor.service sehen die Kontendatei; alle anderen haben InaccessiblePaths darauf.
+[Unit]
+Description=Ratsmonitor Konten: Pflege und Sicherung
+After=ratsmonitor.service
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+EnvironmentFile=-/srv/ratsmonitor/accounts/accounts.env
+TimeoutStartSec=30min
+UMask=0077
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs accounts
+StandardOutput=append:/srv/ratsmonitor/accounts/maintenance.log
+StandardError=append:/srv/ratsmonitor/accounts/maintenance.log
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data -/srv/ratsmonitor/accounts
+TemporaryFileSystem=/run/accounts-backup:mode=0700

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Kontenverwaltung auf dem Server (scripts/accounts/manage.mjs) mit den richtigen Rechten und Einstellungen.
+# Installieren: install -m 755 deploy/node/ratsmonitor-accounts /usr/local/bin/ratsmonitor-accounts
+# Beispiel (Adresse über die Eingabe, nicht als Argument): ratsmonitor-accounts invite --email-stdin --note "Gespräch 14.10."
+set -euo pipefail
+set -a; . /srv/ratsmonitor/ratsmonitor.env; . /srv/ratsmonitor/accounts/accounts.env; set +a
+cd /srv/ratsmonitor/app/current
+exec sudo -u ratsmonitor --preserve-env=ACCOUNTS_FILE,ACCOUNTS_SECRET,SITE_URL,MAIL_TRANSPORT,MAIL_API_URL,MAIL_API_KEY,MAIL_FROM,MAIL_REPLY_TO,OPERATOR_EMAIL \
+  node --no-warnings scripts/accounts/manage.mjs "$@"

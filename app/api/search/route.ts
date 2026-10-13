@@ -1,22 +1,32 @@
 import {env} from 'cloudflare:workers';
 import {REGIONS} from '@/shared/regions';
 import {cachedSearch,SearchError} from '@/server/integrations/monitor-search.mjs';
-// Öffentlich und für alle gleich: der Browser darf eine Antwort kurz wiederverwenden (Zurückblättern, Filter zurück).
-const CACHE='public, max-age=30, stale-while-revalidate=120';
+import {guard,requestTier,internalCall} from '@/server/services/session';
+import {guestPageBlocked,trimResult,trimStream} from '@/server/accounts/guest-search.mjs';
+// Der Zwischenspeicher der Suche ist für alle gleich; gekürzt wird für Gäste erst danach (shared/plans.mjs, Gast 10 Treffer).
+// Die Antwort hängt damit an der Sitzung: privat zwischenspeichern.
+const CACHE='private, max-age=30, stale-while-revalidate=120';
 export async function GET(request:Request){
  try {
-  const result=await cachedSearch(env.DB,REGIONS,new URL(request.url).searchParams);
+  const denied=await guard(request);
+  if(denied)return denied;
+  const params=new URL(request.url).searchParams;
+  const tier=await requestTier(request);
+  const guest=tier.accounts&&tier.tier==='guest'&&!(await internalCall(request));
+  if(guest&&guestPageBlocked(params))return Response.json({error:'Weitere Treffer gibt es mit einem Konto.',limit:'results'},{status:403,headers:{'Cache-Control':'private, no-store','Vary':'Cookie'}});
+  const result=await cachedSearch(env.DB,REGIONS,params);
   /* part=stream: Treffer zeilenweise (NDJSON), jede Etappe sofort; kein Zwischenspeichern */
   if(result.stream){
+   const stream=guest?trimStream(result.stream):result.stream;
    const encoder=new TextEncoder();
    const body=new ReadableStream({async start(controller){
-    try{for await(const part of result.stream)controller.enqueue(encoder.encode(JSON.stringify(part)+'\n'));}
+    try{for await(const part of stream)controller.enqueue(encoder.encode(JSON.stringify(part)+'\n'));}
     catch{controller.enqueue(encoder.encode(JSON.stringify({error:'Die Suche konnte nicht abgeschlossen werden.'})+'\n'));}
     controller.close();
    }});
    return new Response(body,{headers:{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store'}});
   }
-  return Response.json(result,{headers:{'Cache-Control':CACHE}});
+  return Response.json(guest?trimResult(result):result,{headers:{'Cache-Control':CACHE,'Vary':'Cookie'}});
  }
  catch(error){return Response.json({error:error instanceof SearchError?error.message:'Der Datenbestand ist gerade nicht erreichbar. Bitte erneut versuchen.'},{status:error instanceof SearchError?error.status:503,headers:{'Cache-Control':'no-store'}});}
 }

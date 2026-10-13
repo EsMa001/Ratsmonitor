@@ -12,6 +12,9 @@
  *   den letzten Stand und rechnet im Hintergrund neu, so wartet kein Besucher auf die erste Rechnung. Aus: RM_SKIP_WARM=1.
  * - Prüft vor dem Start die Datenbank. Ohne sie würden die Seiten still den mitgelieferten, alten Stand zeigen;
  *   deshalb startet der Server dann nicht (Ausnahme für Tests: RM_ALLOW_NO_DB=1).
+ * - Konten (requirements/konten-konzept.md, 6.5 und 13): RM_ACCESS ist open oder invite. Mit invite startet der Server
+ *   nur mit Kontendatei (ACCOUNTS_FILE, migriert), ACCOUNTS_SECRET und SITE_URL; fehlt RM_ACCESS, gilt open mit Warnung
+ *   (Stand vor den Konten, Basic-Auth davor). Jede Minute arbeitet er den Postausgang der Kontomails ab.
  */
 import fs from 'node:fs';
 import { isAbsolute, join } from 'node:path';
@@ -59,7 +62,36 @@ function checkDatabase() {
   } finally { db?.close(); }
   return null;
 }
-const problem = checkDatabase();
+function checkAccounts() {
+  const access = process.env.RM_ACCESS;
+  if (access && access !== 'open' && access !== 'invite') return `RM_ACCESS muss open oder invite sein, nicht ${access}.`;
+  if (!access) console.warn('[ratsmonitor] RM_ACCESS ist nicht gesetzt: die Seite ist offen (open), wie vor den Konten.');
+  const file = process.env.ACCOUNTS_FILE;
+  if (!file) return access === 'invite' ? 'RM_ACCESS=invite braucht ACCOUNTS_FILE (Kontendatei).' : null;
+  if (!isAbsolute(file) || !fs.existsSync(file)) return `Kontendatei fehlt: ${file}`;
+  let db;
+  try {
+    db = new DatabaseSync(file, { readOnly: true });
+    const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map((row) => row.name));
+    const missing = ['users', 'sessions', 'accounts_migrations'].filter((name) => !tables.has(name));
+    if (missing.length) return `Kontendatei ohne Tabellen ${missing.join(', ')} (Migration drizzle-accounts fehlt)`;
+  } catch (error) {
+    return `Kontendatei nicht lesbar: ${error.message}`;
+  } finally { db?.close(); }
+  if (access === 'invite' && (!process.env.ACCOUNTS_SECRET || process.env.ACCOUNTS_SECRET.length < 32)) return 'RM_ACCESS=invite braucht ACCOUNTS_SECRET (mindestens 32 Zeichen).';
+  if (access === 'invite' && !process.env.SITE_URL) return 'RM_ACCESS=invite braucht SITE_URL (Links in Mails).';
+  return null;
+}
+// Kontotabellen gehören nicht in die Inhaltsdatei (Entwicklerkopien, Export); nur warnen
+try {
+  const file = process.env.DATABASE_FILE;
+  if (file && fs.existsSync(file)) {
+    const db = new DatabaseSync(file, { readOnly: true });
+    if (db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name IN ('users','sessions') LIMIT 1").get()) console.warn('[ratsmonitor] Die Inhaltsdatei enthält Kontotabellen (users/sessions), etwa aus einer lokalen Kopie. Konten gehören in ACCOUNTS_FILE.');
+    db.close();
+  }
+} catch { /* nur ein Hinweis */ }
+const problem = checkDatabase() ?? checkAccounts();
 if (problem) {
   console.error(`[ratsmonitor] Start abgebrochen: ${problem}`);
   process.exit(1);
@@ -69,7 +101,10 @@ const { server } = await startProdServer({ port, host, outDir: join(import.meta.
 server.keepAliveTimeout = 65_000;
 server.headersTimeout = 66_000;
 server.requestTimeout = 0; // Abrufe im Adminbereich dauern Minuten; Grenzen setzt Caddy
-console.log(`[ratsmonitor] Node ${process.version}, NODE_ENV=${process.env.NODE_ENV ?? '(leer)'}, TZ=${process.env.TZ ?? '(System)'}`);
+console.log(`[ratsmonitor] Node ${process.version}, NODE_ENV=${process.env.NODE_ENV ?? '(leer)'}, TZ=${process.env.TZ ?? '(System)'}, Zugang ${process.env.RM_ACCESS || 'open'}`);
+const base = `http://${host === '::1' ? '[::1]' : host}:${port}`;
+// Interne Aufrufe weisen sich mit IMPORT_TOKEN aus: Zugangssperre und Stufen lassen sie durch
+const internal = process.env.IMPORT_TOKEN && process.env.IMPORT_TOKEN.length >= 16 ? { authorization: `Bearer ${process.env.IMPORT_TOKEN}` } : {};
 
 // Startansichten der Auswertungen nacheinander abfragen, damit ihr Zwischenspeicher gefüllt ist (siehe oben).
 const RADARS = ['versorgung', 'verkehr', 'soziales', 'vergabe', 'klima', 'finanzen', 'beteiligung', 'gebuehren']; // shared/radars.mjs
@@ -78,12 +113,20 @@ const WARM = [...['decisions', 'news', 'network', 'foerderung', 'trends', 'score
 async function warm() {
   for (const path of WARM) {
     if (stopping) return;
-    try { await (await fetch(`http://${host === '::1' ? '[::1]' : host}:${port}${path}`)).arrayBuffer(); } catch { /* nächster Lauf */ }
+    try { await (await fetch(`${base}${path}`, { headers: internal })).arrayBuffer(); } catch { /* nächster Lauf */ }
   }
 }
 if (process.env.RM_SKIP_WARM !== '1') {
   setTimeout(() => { warm(); setInterval(warm, 10 * 60e3).unref(); }, 30e3).unref();
 }
+// Postausgang der Kontomails: beim Start und jede Minute (Mails überstehen so einen Neustart)
+async function outbox() {
+  if (stopping) return;
+  try { await (await fetch(`${base}/api/internal/outbox`, { method: 'POST', headers: internal })).arrayBuffer(); } catch { /* nächster Lauf */ }
+}
+if (process.env.ACCOUNTS_FILE && internal.authorization) {
+  setTimeout(() => { outbox(); setInterval(outbox, 60e3).unref(); }, 5e3).unref();
+} else if (process.env.ACCOUNTS_FILE) console.warn('[ratsmonitor] IMPORT_TOKEN fehlt: Kontomails werden nur direkt nach der Anfrage verschickt, nicht nachgeholt.');
 
 let stopping = false;
 // Beim Beenden nimmt Node auf offenen Keep-alive-Verbindungen (Caddy) weiter Anfragen an. Diese bekommen
@@ -98,6 +141,7 @@ function stop(signal) {
     if (finished) return;
     finished = true;
     try { globalThis[Symbol.for('ratsmonitor.node.database')]?.database?.close(); } catch { /* schon zu */ }
+    try { globalThis[Symbol.for('ratsmonitor.node.accounts')]?.database?.close(); } catch { /* schon zu */ }
     process.exit(0);
   };
   server.close(done);

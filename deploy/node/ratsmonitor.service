@@ -12,6 +12,8 @@ User=ratsmonitor
 Group=ratsmonitor
 WorkingDirectory=/srv/ratsmonitor/app/current
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+# Konten: Kontendatei, Geheimnis, Mailschlüssel (nur dieser Dienst und der Kontojob; fehlt die Datei, ohne Konten)
+EnvironmentFile=-/srv/ratsmonitor/accounts/accounts.env
 ExecStart=/usr/bin/node dist/standalone/serve.mjs
 Restart=always
 RestartSec=3
@@ -22,12 +24,12 @@ TimeoutStopSec=30
 MemoryHigh=6G
 MemoryMax=8G
 LimitNOFILE=65536
-# Absicherung: nur der Datenordner ist beschreibbar
+# Absicherung: nur der Datenordner und der Kontenordner sind beschreibbar
 NoNewPrivileges=yes
 PrivateTmp=yes
 ProtectSystem=strict
 ProtectHome=yes
-ReadWritePaths=/srv/ratsmonitor/data
+ReadWritePaths=/srv/ratsmonitor/data -/srv/ratsmonitor/accounts
 ProtectKernelTunables=yes
 ProtectKernelModules=yes
 ProtectControlGroups=yes

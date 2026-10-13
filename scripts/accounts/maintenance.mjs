@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+/**
+ * Pflegejob der Kontendatei (requirements/konten-konzept.md, 12 und 13), nachts über den Zeitplaner (Job „accounts“):
+ * Fristen anwenden, „Testzugang endet“ 14 Tage vorher, Hinweis bei langer Inaktivität, Überwachung des Postausgangs.
+ * Danach sichert deploy/node/backup.sh die Kontendatei (PREFIX=accounts-, verschlüsselt).
+ *   ACCOUNTS_FILE=… node scripts/accounts/maintenance.mjs [--dry-run]
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {DatabaseSync} from 'node:sqlite';
+import {sqliteAdapter} from '../ai-job.mjs';
+import {accountsConfig} from '../../server/accounts/config.mjs';
+import {sendMail,processOutbox,warnOperator} from '../../server/accounts/mail.mjs';
+import {removeUser} from '../../server/accounts/account.mjs';
+import {TIER_LABEL} from '../../shared/plans.mjs';
+
+const DAY=86400000;
+/** Fristen (Platzhalter für Inaktivität und Sperre bis zur Entscheidung, konten-konzept.md Abschnitt 15) */
+export const RETENTION={tokensAfterExpiry:DAY,requests:DAY,flows:DAY,authEvents:90*DAY,mailOutbox:30*DAY,adminAudit:365*DAY,
+ inactive:730*DAY,inactiveGrace:30*DAY,blocked:365*DAY,tierNotice:14*DAY};
+const iso=ms=>new Date(ms).toISOString();
+
+export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.log}={}){
+ const report={};
+ const count=async(name,sql,...args)=>{
+  if(dryRun){report[name]=(await db.prepare(sql.replace(/^DELETE FROM/,'SELECT count(*) n FROM')).bind(...args).first())?.n??0;return;}
+  report[name]=Number((await db.prepare(sql).bind(...args).run())?.meta?.changes||0);
+ };
+ await count('loginTokens','DELETE FROM login_tokens WHERE expires_at<? OR (used_at IS NOT NULL AND used_at<?)',iso(now-RETENTION.tokensAfterExpiry),iso(now-RETENTION.tokensAfterExpiry));
+ await count('loginRequests','DELETE FROM login_requests WHERE at<?',iso(now-RETENTION.requests));
+ await count('loginFlows','DELETE FROM login_flows WHERE created_at<?',iso(now-RETENTION.flows));
+ await count('sessions','DELETE FROM sessions WHERE expires_at<? OR absolute_expires_at<?',iso(now),iso(now));
+ await count('invites','DELETE FROM invites WHERE expires_at<?',iso(now));
+ await count('authEvents','DELETE FROM auth_events WHERE at<?',iso(now-RETENTION.authEvents));
+ await count('mailOutbox',"DELETE FROM mail_outbox WHERE created_at<? AND status NOT IN ('queued','sending')",iso(now-RETENTION.mailOutbox));
+ await count('adminAudit','DELETE FROM admin_audit WHERE at<?',iso(now-RETENTION.adminAudit));
+ const site=cfg.siteUrl;
+ // Testzugang endet: einmal, 14 Tage vorher (AGB)
+ const ending=(await db.prepare(`SELECT g.id,g.user_id,g.tier,g.ends_at,u.email FROM plan_grants g JOIN users u ON u.id=g.user_id
+   WHERE g.source='beta' AND g.end_notice_at IS NULL AND g.ends_at IS NOT NULL AND g.ends_at>? AND g.ends_at<=? AND u.status='active'`).bind(iso(now),iso(now+RETENTION.tierNotice)).all()).results||[];
+ report.tierNotices=ending.length;
+ if(!dryRun)for(const g of ending){
+  await sendMail(db,cfg,{to:g.email,template:'tier_ending',data:{tier:TIER_LABEL[g.tier]||g.tier,until:g.ends_at},userId:g.user_id,quota:'account',now});
+  await db.prepare('UPDATE plan_grants SET end_notice_at=? WHERE id=?').bind(iso(now),g.id).run();
+ }
+ // Gesperrte Konten: nach der Frist löschen
+ const blocked=(await db.prepare("SELECT id,email FROM users WHERE status='blocked' AND blocked_at<?").bind(iso(now-RETENTION.blocked)).all()).results||[];
+ report.blockedDeleted=blocked.length;
+ if(!dryRun)for(const u of blocked)await removeUser({db,cfg,now,request:null},{userId:u.id,email:u.email,notify:false});
+ // Lange inaktiv: Hinweis, 30 Tage später löschen (Admins ausgenommen)
+ const stale=(await db.prepare(`SELECT id,email,inactive_notice_at FROM users u WHERE status='active' AND coalesce(last_login_at,created_at)<?
+   AND NOT EXISTS (SELECT 1 FROM user_roles r WHERE r.user_id=u.id AND r.role='admin')`).bind(iso(now-RETENTION.inactive)).all()).results||[];
+ report.inactiveNotices=0;report.inactiveDeleted=0;
+ if(!dryRun)for(const u of stale){
+  if(!u.inactive_notice_at){await sendMail(db,cfg,{to:u.email,template:'operator',data:{message:`Ihr Plenara-Konto wurde seit zwei Jahren nicht genutzt. Melden Sie sich in den nächsten 30 Tagen unter ${site}/anmelden an, wenn Sie es behalten möchten; sonst löschen wir es.`},userId:u.id,quota:'account',now});await db.prepare('UPDATE users SET inactive_notice_at=? WHERE id=?').bind(iso(now),u.id).run();report.inactiveNotices++;}
+  else if(u.inactive_notice_at<iso(now-RETENTION.inactiveGrace)){await removeUser({db,cfg,now,request:null},{userId:u.id,email:u.email,notify:false});report.inactiveDeleted++;}
+ }
+ // Wieder angemeldet: Hinweis zurücksetzen
+ if(!dryRun)await db.prepare('UPDATE users SET inactive_notice_at=NULL WHERE inactive_notice_at IS NOT NULL AND last_login_at>inactive_notice_at').run();
+ if(!dryRun&&site)report.outbox=await processOutbox(db,cfg,{site,now});
+ // Überwachung: hängende oder gescheiterte Mails
+ const stuck=await db.prepare("SELECT count(*) n FROM mail_outbox WHERE status IN ('queued','sending') AND created_at<?").bind(iso(now-30*60000)).first();
+ const failed=await db.prepare("SELECT count(*) n FROM mail_outbox WHERE status='failed' AND created_at>?").bind(iso(now-DAY)).first();
+ report.mailStuck=Number(stuck?.n||0);report.mailFailed24h=Number(failed?.n||0);
+ if(!dryRun&&(report.mailStuck||report.mailFailed24h))await warnOperator(db,cfg,`Postausgang der Konten: ${report.mailStuck} Mails hängen länger als 30 Minuten, ${report.mailFailed24h} sind in 24 Stunden gescheitert.`,now);
+ log(JSON.stringify({at:iso(now),dryRun,...report}));
+ return report;
+}
+
+if(process.argv[1]&&fs.realpathSync(path.resolve(process.argv[1]))===fs.realpathSync(fileURLToPath(import.meta.url))){
+ const file=process.env.ACCOUNTS_FILE;
+ if(!file||!fs.existsSync(file)){console.error('ACCOUNTS_FILE fehlt.');process.exit(1);}
+ const sql=new DatabaseSync(file);sql.exec('PRAGMA busy_timeout=10000');sql.exec('PRAGMA foreign_keys=ON');sql.exec('PRAGMA secure_delete=ON');
+ const db=sqliteAdapter(sql);
+ const cfg={...accountsConfig(process.env,{dev:false}),db,hooks:{
+  async logDeletion({userHash,emailHmac,at}){fs.appendFileSync(path.join(path.dirname(file),'deleted.log'),`${at} ${userHash} ${emailHmac}\n`,{mode:0o600});},
+  async checkpoint(){sql.exec('PRAGMA wal_checkpoint(TRUNCATE)');},
+ }};
+ try{await maintain(db,cfg,{dryRun:process.argv.includes('--dry-run')});sql.exec('PRAGMA wal_checkpoint(TRUNCATE)');}
+ finally{sql.close();}
+}

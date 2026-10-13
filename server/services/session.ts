@@ -8,6 +8,7 @@ import {failure} from '../accounts/http.mjs';
 import {getChatGPTUser} from '@/app/chatgpt-auth';
 import {AdminError,adminAccess} from '../integrations/admin-access.mjs';
 import {FEATURES} from '@/shared/plans.mjs';
+import {validBearer} from '../integrations/prepared-access.mjs';
 
 // Sitzung, Rollen und Rechte für Routen und Seiten (requirements/konten-konzept.md, Abschnitte 5.2, 6.1, 7).
 type Later=Array<()=>Promise<unknown>>;
@@ -80,14 +81,53 @@ export async function requireAdmin(){
  throw new AdminError(403,'Kein Zugriff auf die Administration.');
 }
 /** Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. */
+/**
+ * Stufe und Funktionen der Anfrage (Gäste ohne Sitzung). Liest nur. accounts:false heißt: auf dieser Umgebung gibt es
+ * keine Konten (Cloudflare-Build, Server ohne Kontendatei); dann gelten keine Stufengrenzen, alles bleibt wie früher.
+ */
 export async function requestTier(request:Request){
  const cfg=accountsConfig(env);
- if(!cfg.db||!cfg.secret)return {tier:'guest',features:FEATURES.guest,userId:null as string|null};
+ const guest={accounts:true,tier:'guest',features:FEATURES.guest,userId:null as string|null};
+ if(!cfg.db||!cfg.secret)return {...guest,accounts:false};
  try{
   const ctx=context(request,env,{cfg});
   const session=await currentSession(ctx);
-  if(!session)return {tier:'guest',features:FEATURES.guest,userId:null};
+  if(!session)return guest;
   const {tier}=await accountState(ctx,session);
-  return {tier:tier.tier,features:(FEATURES as Record<string,typeof FEATURES.guest>)[tier.tier],userId:session.user_id as string|null};
- }catch{return {tier:'guest',features:FEATURES.guest,userId:null};}
+  return {accounts:true,tier:tier.tier,features:(FEATURES as Record<string,typeof FEATURES.guest>)[tier.tier],userId:session.user_id as string|null};
+ }catch{return guest;}
+}
+
+// ---------------------------------------------------------------- Zugang (Einladungsmodus) und Stufen in Datenrouten
+const DENY={'Cache-Control':'private, no-store, max-age=0','Vary':'Cookie'};
+/** Interne Aufrufe (serve.mjs wärmt vor, Runner): Bearer IMPORT_TOKEN, mindestens 16 Zeichen */
+export async function internalCall(request:Request){
+ return validBearer(request.headers.get('authorization'),env.IMPORT_TOKEN,16);
+}
+/**
+ * Zweite Linie hinter der Middleware: im Einladungsmodus nur mit Sitzung; mit feature nur, wenn die Stufe es erlaubt.
+ * Liefert eine Antwort zum Abweisen oder null. Interne Aufrufe kommen immer durch.
+ */
+export async function guard(request:Request,{feature}:{feature?:'analytics'|'calendar'}={}){
+ if(await internalCall(request))return null;
+ const cfg=accountsConfig(env);
+ const t=await requestTier(request);
+ if(cfg.access==='invite'&&!t.userId&&!cfg.dev)return Response.json({error:'Bitte anmelden.'},{status:401,headers:DENY});
+ if(t.accounts&&feature&&!(t.features as Record<string,unknown>)[feature])return Response.json({error:'Diese Funktion gehört zu einer höheren Stufe.',feature,tier:t.tier},{status:403,headers:DENY});
+ return null;
+}
+/** Route mit Prüfung; öffentliche Zwischenspeicher-Angaben werden privat, weil die Antwort an der Stufe hängt */
+export function gated<A extends unknown[]>(handler:(request:Request,...rest:A)=>Promise<Response>,options:{feature?:'analytics'|'calendar'}={}){
+ return async(request:Request,...rest:A)=>{
+  const denied=await guard(request,options);
+  if(denied)return denied;
+  const response=await handler(request,...rest);
+  const cache=response.headers.get('Cache-Control');
+  if(cache&&/\bpublic\b/.test(cache)){
+   const headers=new Headers(response.headers);
+   headers.set('Cache-Control',cache.replace(/\bpublic\b/,'private'));headers.append('Vary','Cookie');
+   return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
+  }
+  return response;
+ };
 }

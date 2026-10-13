@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
 export function pendingMigrations(db, dir, table = 'd1_migrations') {
-  if (!/^[a-z_]+$/.test(table)) throw new Error(`Ungültiger Tabellenname: ${table}`);
+  if (!/^[a-z][a-z0-9_]*$/.test(table)) throw new Error(`Ungültiger Tabellenname: ${table}`);
   db.exec(`CREATE TABLE IF NOT EXISTS ${table}(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE,

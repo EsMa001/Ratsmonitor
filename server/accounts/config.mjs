@@ -26,7 +26,9 @@ export function accountsConfig(env,{dev=isDev()}={}){
   access:ACCESS.includes(env?.RM_ACCESS)?env.RM_ACCESS:(dev?'open':undefined),
   openSignup:dev||env?.ACCOUNTS_OPEN_SIGNUP==='1',
   adminHosts:list(env?.ADMIN_HOSTS||'127.0.0.1:8080,localhost:8080'),
-  legacyHeader:env?.ADMIN_LEGACY_HEADER==='1',
+  // Alter Admin-Weg (Caddy-Kopfzeilen): ausdrücklich mit 1; ohne Angabe nur, solange es keine Kontendatei gibt (sonst wäre
+  // die Administration nach dem Ausrollen gesperrt, bevor ein Admin-Konto existiert)
+  legacyHeader:env?.ADMIN_LEGACY_HEADER==='1'||(env?.ADMIN_LEGACY_HEADER===undefined&&!accountsDb(env,{dev})),
   mail:{
    transport:env?.MAIL_TRANSPORT||(dev?'outbox':'log'),
    apiUrl:env?.MAIL_API_URL, apiKey:env?.MAIL_API_KEY,
