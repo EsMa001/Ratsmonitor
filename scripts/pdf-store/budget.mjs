@@ -10,7 +10,7 @@
 import {existsSync,readdirSync,openSync,readSync,closeSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {documentType,documentTypeFromText,DOC_TYPE_VERSION} from '../../shared/document-type.mjs';
+import {reportTypes,documentTypeFromText,DOC_TYPE_VERSION} from '../../shared/document-type.mjs';
 import {TYPE_VALUE,BUDGET_GB} from '../../shared/pdf-rank.mjs';
 import {rankedFiles,textBytes as textBytesOf} from './store-lib.mjs';
 
@@ -30,8 +30,8 @@ if(flag('backfill')){
  const t0=Date.now();db.exec('BEGIN');
  rows.forEach((r,i)=>{
   const x=q.get(r.topic);if(!x)return;
-  let title='';try{title=JSON.parse(x.docs||'[]').find(d=>d.url===r.url)?.title||'';}catch{/* kaputtes JSON: Art bleibt 'other' */}
-  store.setMeta(r.url,{docType:documentType(title),formal:x.formal??null,eventDate:x.date});
+  let type='other';try{type=reportTypes(JSON.parse(x.docs||'[]')).get(r.url)||'other';}catch{/* kaputtes JSON: Art bleibt 'other' */}
+  store.setMeta(r.url,{docType:type,formal:x.formal??null,eventDate:x.date});
   if(i%20000===19999){db.exec('COMMIT;BEGIN');console.log(`${i+1}/${rows.length}`);}
  });
  db.exec('COMMIT');main.close();

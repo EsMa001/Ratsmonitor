@@ -12,15 +12,18 @@ export const DOCUMENT_TYPES=Object.freeze({
 });
 const RULES=[
  ['minutes',/niederschrift|protokoll/],
- ['invitation',/einladung|bekanntmachung|tagesordnung|nachtrag|nachlieferung|sitzungskalender|sammeldokument/],
+ // „Nachtrag“ nur als eigenes Wort („1. Nachtrag zur Tagesordnung“), nicht „Nachtragshaushalt“ (Messung 13.10.2026)
+ ['invitation',/einladung|bekanntmachung|tagesordnung|\bnachtrag\b|nachlieferung|sitzungskalender|sitzungsmappe/],
  // "anlage" only as a word of its own: "Kläranlage", "Sportanlage" in a subject are no attachments
  ['attachment',/\banlage|\banhang|präsentation|praesentation|stellungnahme|lageplan|übersicht/],
  // "Beschlussvorlage" and "Beschlussvorschlag" are papers; a decision text records what was decided.
  ['decision',/beschluss(?!vorlage|vorschlag|empfehlung)|auszug|infotext/],
- ['paper',/vorlage|antrag|anfrage|mitteilung|drucksache|beschlussvorschlag|beschlussempfehlung|bericht/],
+ // „Sammeldokument“ ist meist die Vorlage eines Punkts samt Anlagen (gleicher Text wie die Vorlage); hängt es an vielen
+ // Berichten, erkennt sessionDocument es als Unterlage der ganzen Sitzung.
+ ['paper',/vorlage|antrag|anfrage|mitteilung|drucksache|beschlussvorschlag|beschlussempfehlung|bericht|sammeldokument/],
 ];
 /** Version of the rules below; the PDF store re-reads all kinds when it changes (scripts/pdf-store/budget.mjs --backfill) */
-export const DOC_TYPE_VERSION=2;
+export const DOC_TYPE_VERSION=3;
 const typeOf=t=>RULES.find(([,pattern])=>pattern.test(t))?.[0]||null;
 /* The first word names the document ("Beschlussvorlage …", "Anlage 3 …"); words further on usually belong to the subject
    ("… Stellungnahme der Gemeinde zum Bauvorhaben", "… Genehmigung des Protokolls"). "Vorlage (Anlage 2)" is an attachment. */
@@ -69,9 +72,24 @@ export const primaryDocument=documents=>documents.find(d=>/vorlage/i.test(d.titl
    273.688 Berichten mit mehreren PDFs bekommen ein passenderes Hauptdokument). */
 const PRIMARY_RANK={paper:0,decision:1,other:1,attachment:2,minutes:3,invitation:3};
 const primaryRank=d=>{const t=String(d.title||'');return PRIMARY_RANK[documentType(t)]*3+(/vorlage/i.test(t)?0:/beschlussvorschlag|bericht/i.test(t)?1:2);};
-/** The PDF the import reads for a summary (enrichDocument) and the local PDF store keeps (scripts/pdf-store/fetch.mjs):
-    the best kind by PRIMARY_RANK, on a tie the first. */
-export const primaryPdf=documents=>{let best=null,rank=Infinity;for(const d of documents||[]){if(d.kind!=='application/pdf')continue;const r=primaryRank(d);if(r<rank){rank=r;best=d;}}return best;};
+/** Das Hauptdokument eines Berichts: die beste Art nach PRIMARY_RANK, bei Gleichstand das erste. Nie eine Unterlage der ganzen
+    Sitzung nach Zahl der Berichte (uses ab SESSION_DOCUMENT_USES), solange es ein anderes PDF gibt. Mit hasText: unter den
+    übrigen das beste mit Text, sonst wie ohne (Vorlage ohne Text, Sammeldokument mit Text). Ohne Optionen nur nach Titel, wie
+    der Abruf der Ablage (fetch.mjs) es braucht, bevor ein Text da ist.
+    @param {any[]} documents @param {{uses?:(url:string)=>number,hasText?:((url:string)=>boolean)|null}} [o] */
+export const primaryPdf=(documents,{uses=()=>0,hasText=null}={})=>{
+ let pdfs=(documents||[]).filter(d=>d?.kind==='application/pdf');
+ const own=pdfs.filter(d=>uses(d.url)<SESSION_DOCUMENT_USES);if(own.length)pdfs=own;
+ if(hasText){const read=pdfs.filter(d=>hasText(d.url));if(read.length)pdfs=read;}
+ let best=null,rank=Infinity;for(const d of pdfs){const r=primaryRank(d);if(r<rank){rank=r;best=d;}}return best;
+};
+/** Art jedes PDFs eines Berichts: wie documentType, aber hat der Bericht eine Vorlage, sind PDFs ohne erkennbare Art Anlagen
+    („Lageplan“, „Begründung“, „Ergebnisplan 2026“). @param {any[]} documents @returns {Map<string,string>} url → Art */
+export function reportTypes(documents){
+ const pdfs=(documents||[]).filter(d=>d?.kind==='application/pdf'),types=new Map(pdfs.map(d=>[d.url,documentType(d.title)]));
+ if([...types.values()].includes('paper'))for(const [u,t] of types)if(t==='other')types.set(u,'attachment');
+ return types;
+}
 /** Ab so vielen Berichten gilt ein Dokument als Unterlage der ganzen Sitzung (Probelauf 11.10.2026). */
 export const SESSION_DOCUMENT_USES=5;
 /**

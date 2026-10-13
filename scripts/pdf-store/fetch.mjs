@@ -27,9 +27,9 @@
 import {existsSync,readdirSync,writeFileSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
-import {primaryPdf,documentType} from '../../shared/document-type.mjs';
+import {primaryPdf,reportTypes} from '../../shared/document-type.mjs';
 import {MAX_BYTES} from '../../shared/pdf-rank.mjs';
-import {keeper as makeKeeper,usedBytes,errorReason,downloader,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
+import {keeper as makeKeeper,usedBytes,errorReason,downloader,pdfUses,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
 import {progress,onStop,stepSummary,lane} from './state.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
@@ -69,11 +69,13 @@ if(!flag('all-hosts')&&!Number.isFinite(o.retryDays)){
 }
 let skipped=0;
 // --others: Adressen, die in irgendeinem Bericht Hauptdokument sind, lädt der normale Lauf (mit OCR)
+// Hauptdokument wie in Zusammenfassung und Fakten: nie ein PDF, das an vielen Berichten hängt (Unterlage der ganzen Sitzung)
+const uses=pdfUses(db),usesOf=u=>uses.get(u)||0;
 const others=flag('others'),primaryUrls=new Set();
 if(others){
  const t0=Date.now();
  for(const r of db.prepare("SELECT json_extract(payload,'$.documents') AS docs FROM topics WHERE payload LIKE '%application/pdf%'").iterate()){
-  try{const d=primaryPdf(JSON.parse(r.docs||'[]'));if(d?.url)primaryUrls.add(d.url);}catch{/* kaputte Angabe */}
+  try{const d=primaryPdf(JSON.parse(r.docs||'[]'),{uses:usesOf});if(d?.url)primaryUrls.add(d.url);}catch{/* kaputte Angabe */}
  }
  console.log(`Übrige PDFs: ${primaryUrls.size} Hauptdokumente ausgenommen (${((Date.now()-t0)/1000).toFixed(0)} s)`);
 }
@@ -93,7 +95,7 @@ function collect(from,to){
  const seen=new Set(),hosts=new Map();let total=0,have=0,open=0;
  for(const r of db.prepare(`SELECT id,region_id AS region,event_date AS date,json_extract(payload,'$.documents') AS docs,${formalSql} AS formal FROM topics WHERE ${where.join(' AND ')} ORDER BY event_date DESC`).iterate(...params)){
   let docs;try{docs=JSON.parse(r.docs||'[]');}catch{continue;}
-  const p=primaryPdf(docs);
+  const p=primaryPdf(docs,{uses:usesOf}),types=reportTypes(docs);
   for(const d of others?docs.filter(x=>x?.kind==='application/pdf'&&x.url&&x.url!==p?.url&&!primaryUrls.has(x.url)):[p]){
    if(!d?.url||seen.has(d.url))continue;
    seen.add(d.url);total++;
@@ -102,7 +104,7 @@ function collect(from,to){
    let host;try{host=new URL(d.url).host;}catch{continue;}
    if(blocked.has(host)){skipped++;continue;}
    if(!hosts.has(host))hosts.set(host,{queue:[],busy:0,next:0,fails:0});
-   hosts.get(host).queue.push({url:d.url,region:r.region,topic:r.id,meta:{docType:documentType(d.title),formal:r.formal,eventDate:r.date,...(others?{role:'other'}:{})}});open++;
+   hosts.get(host).queue.push({url:d.url,region:r.region,topic:r.id,meta:{docType:types.get(d.url)||'other',formal:r.formal,eventDate:r.date,...(others?{role:'other'}:{})}});open++;
   }
  }
  return {hosts,total,have,open};

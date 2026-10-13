@@ -225,6 +225,16 @@ export function keeper(store,limit,{halt=()=>false}={}){
 
 /** Server, die nicht liefern (fetch.mjs lässt sie aus, stats.mjs zeigt sie): mindestens BLOCK_MIN Abrufe, davon mindestens
     BLOCK_SHARE fehlgeschlagen oder „kein PDF“ */
+/** An wie vielen Berichten jedes PDF hängt (aktive und inaktive, wie im Import): für primaryPdf und sessionDocument, die
+    Unterlagen der ganzen Sitzung erkennen. Ein Durchlauf über alle Berichte mit PDF. @returns {Map<string,number>} */
+export function pdfUses(db){
+ const uses=new Map();
+ for(const r of db.prepare("SELECT json_extract(payload,'$.documents') AS docs FROM topics WHERE payload LIKE '%application/pdf%'").iterate()){
+  let d;try{d=JSON.parse(r.docs||'[]');}catch{continue;}
+  for(const x of d)if(x?.kind==='application/pdf'&&x.url)uses.set(x.url,(uses.get(x.url)||0)+1);
+ }
+ return uses;
+}
 export const BLOCK_MIN=10,BLOCK_SHARE=0.9;
 
 /** Grund eines fehlgeschlagenen Abrufs in festen Gruppen (Admin-Reiter, fetch.mjs --errors) */

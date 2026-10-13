@@ -12,6 +12,7 @@ import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {primaryPdf,sessionDocument} from '../../shared/document-type.mjs';
 import {factsOf,FACTS_VERSION} from '../../shared/topic-facts.mjs';
 import {mergePages} from '../../server/integrations/documents.mjs';
+import {pdfUses} from './store-lib.mjs';
 
 const store=openPdfStore(process.env.RM_PDF_STORE||DEFAULT_PDF_STORE);
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
@@ -19,11 +20,10 @@ const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!==
 const db=new DatabaseSync(process.env.DATABASE_FILE||dir+local);db.exec('PRAGMA busy_timeout=60000');
 try{db.prepare('SELECT 1 FROM topic_facts LIMIT 0').all();}catch{console.error('Tabelle topic_facts fehlt: erst Migration 0025 einspielen (scripts/node-migrate.mjs).');process.exit(1);}
 
-const t0=Date.now(),list=[],uses=new Map();
+const t0=Date.now(),list=[],uses=pdfUses(db),hasText=u=>!!store.textMark(u);
 for(const r of db.prepare("SELECT id,json_extract(payload,'$.title') AS title,json_extract(payload,'$.documents') AS docs FROM topics WHERE active=1").iterate()){
  let docs=[];try{docs=JSON.parse(r.docs||'[]');}catch{/* ohne Dokumente */}
- for(const d of docs)if(d.kind==='application/pdf')uses.set(d.url,(uses.get(d.url)||0)+1);
- const p=primaryPdf(docs);list.push([r.id,r.title||'',p?.url||null,p?.title||'']);
+ const p=primaryPdf(docs,{uses:u=>uses.get(u)||0,hasText});list.push([r.id,r.title||'',p?.url||null,p?.title||'']);
 }
 console.log(`${list.length} Berichte gelesen (${((Date.now()-t0)/1000).toFixed(0)} s)`);
 const full=process.argv.includes('--full'),keys=full?new Map():store.factsKeys();

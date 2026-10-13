@@ -12,7 +12,7 @@ import {gzipSync} from 'node:zlib';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {primaryPdf} from '../../shared/document-type.mjs';
-import {textBytes,errorReason,rankedFiles,rankedTextOnly,storeQuality,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
+import {textBytes,errorReason,rankedFiles,rankedTextOnly,storeQuality,pdfUses,BLOCK_MIN,BLOCK_SHARE} from './store-lib.mjs';
 import {databaseFile} from './state.mjs';
 import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
 import {STATS_KEY,ERRORS_KEY} from '../../server/integrations/pdf-store-admin.mjs';
@@ -36,12 +36,12 @@ for(const r of store.db.prepare("SELECT p.url,p.status,p.http,p.error,p.fetched_
 }
 
 /* 2. Berichte: verlinkte PDFs mit frühestem Sitzungstag; Hauptdokument je Bericht (wie fetch.mjs); Zusammenfassungen */
-const linked=new Map(),primary=new Set();let sumText=0,sumDone=0;
+const linked=new Map(),primary=new Set(),uses=pdfUses(db);let sumText=0,sumDone=0;
 for(const r of db.prepare("SELECT event_date AS date,active,json_extract(payload,'$.documents') AS docs,json_extract(payload,'$.ruleSummary') IS NOT NULL AS sum FROM topics WHERE payload LIKE '%application/pdf%'").iterate()){
  let docs;try{docs=JSON.parse(r.docs||'[]');}catch{continue;}
  const d=String(r.date||'').slice(0,10);
  for(const x of docs)if(x?.url&&x.kind==='application/pdf'){const o=linked.get(x.url);if(o===undefined||d&&(!o||d<o))linked.set(x.url,d);}
- const p=primaryPdf(docs);if(!p?.url)continue;
+ const p=primaryPdf(docs,{uses:u=>uses.get(u)||0});if(!p?.url)continue;
  primary.add(p.url);
  // Berichte mit Text im Hauptdokument und davon mit Regel-Zusammenfassung (nur aktive, wie summaries.mjs)
  if(r.active===1&&at.get(p.url)?.textStatus==='ok'){sumText++;if(r.sum)sumDone++;}

@@ -29,6 +29,7 @@ import {useDocumentStore,enrichDocument} from '../../server/integrations/documen
 import {compactSummaryAttempt,withRuleSummary} from '../../server/integrations/compact-summary.mjs';
 import {primaryPdf,sessionDocument} from '../../shared/document-type.mjs';
 import {stepSummary} from './state.mjs';
+import {pdfUses} from './store-lib.mjs';
 import {RULE_SUMMARY_VERSION} from '../../server/integrations/rule-summary.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
@@ -42,7 +43,7 @@ const db=new DatabaseSync(process.env.DATABASE_FILE||dir+local);db.exec('PRAGMA 
 
 // Ein Durchlauf über alle Berichte: wie oft hängt ein PDF an Berichten (Sitzungsunterlagen), und welche Berichte sind
 // Kandidaten (ohne ruleSummary, auch mit KI-Zusammenfassung) mit Hauptdokument und letztem Versuch (rund eine Minute)
-const uses=new Map(),cands=[];
+const uses=pdfUses(db),cands=[],hasText=u=>!!store.textMark(u);
 // Kandidat ist auch ein Bericht, dessen Zusammenfassung aus einem anderen Dokument stammt als dem heutigen Hauptdokument
 // (neue Regeln für primaryPdf, 12.10.2026); scheitert der neue Versuch, bleibt die alte Zusammenfassung (ruleSummaryTried)
 let stale=0;
@@ -50,8 +51,7 @@ for(const r of db.prepare(`SELECT id,json_extract(payload,'$.documents') AS d,js
   json_extract(payload,'$.ruleSummary') IS NULL AS missing,coalesce(json_extract(payload,'$.generatedBy'),'') LIKE 'KI-Zusammenfassung%' AS ai,
   json_extract(payload,'$.ruleSummaryTried') AS tried FROM topics WHERE active=1 AND payload LIKE '%application/pdf%'`).iterate()){
  let docs;try{docs=JSON.parse(r.d||'[]');}catch{continue;}
- for(const x of docs)if(x.kind==='application/pdf')uses.set(x.url,(uses.get(x.url)||0)+1);
- const p=primaryPdf(docs);
+ const p=primaryPdf(docs,{uses:u=>uses.get(u)||0,hasText});
  if(all){if(p)cands.push([r.id,p,null,!!r.ai,!r.missing]);}
  else if(r.missing)cands.push([r.id,p,r.tried,!!r.ai]);
  // Mit KI-Zusammenfassung nur, wenn noch keine Regel-Zusammenfassung da ist (keine Neufassung aus einem anderen Dokument)
@@ -83,7 +83,7 @@ for(const [id,d,lastTried,ai,had] of ids){
  c.withText++;const ocr=text.method!=='text';if(ocr)c.ocr++;if(ai)c.ai++;
  // Alle neu: ohne die alte Regel-Zusammenfassung rechnen (sonst käme sie unverändert zurück)
  const input=all&&had?(({ruleSummary,...rest})=>rest)(old):old;
- let t;try{t=await enrichDocument(input);}catch(e){t={...input,documentIssue:e.message};}
+ let t;try{t=await enrichDocument(input,undefined,{uses:u=>uses.get(u)||0,hasText});}catch(e){t={...input,documentIssue:e.message};}
  // Liefern die heutigen Regeln nichts, gilt die alte nicht mehr; nur bei unlesbarem Text bleibt sie
  if(all&&had&&!t.ruleSummary&&!t.documentIssue){delete old.ruleSummary;c.dropped++;}
  if(t.ruleSummary){c.summary++;if(ocr)c.ocrSummary++;if(ai)c.aiSummary++;if(examples.length<5&&(ocr||examples.length<3))examples.push({titel:old.title,ocr,kurz:t.ruleSummary.short.sentences.join(' ').slice(0,300),güte:t.ruleSummary.score});}
