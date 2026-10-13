@@ -35,10 +35,10 @@ const STEP_COLOR: Record<string, string> = { Aufstellung: "#ccfbf1", "Frühzeiti
 function PlanRow({ p, right }: { p: Plan; right: string }) {
   return (
     <li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-      <a href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+      <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
         <span className="block truncate text-[16px]">{p.title}</span>
         <span className="block truncate text-[12px] text-slate-500">{p.region} · {p.stage} · {DAY.format(new Date(p.date))}</span>
-      </a>
+      </Link>
       <span className="self-center text-right text-[14px] font-semibold tabular-nums">{right}</span>
     </li>
   );
@@ -85,10 +85,10 @@ function Uses({ uses, plans }: { uses: NonNullable<Result["uses"]>; plans: UsePl
       <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
         {(all ? shown : shown.slice(0, 10)).map((p) => (
           <li key={p.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-            <a href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+            <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
               <span className="block text-[14px] leading-snug sm:truncate sm:text-[16px]">{p.title}</span>
               <span className="block truncate text-[12px] text-slate-500">{[p.region, DAY.format(new Date(p.date)), p.uses.join(", "), p.inter && "interkommunal"].filter(Boolean).join(" · ")}</span>
-            </a>
+            </Link>
             <span className="self-center text-right text-[12px] text-slate-500"><span className="block text-[14px] text-slate-900">{p.stage}</span>{statusLabel(p.status) && <span className="block">{statusLabel(p.status)}</span>}</span>
           </li>
         ))}

@@ -14,6 +14,7 @@ import {FollowButton} from '../components/FollowButton';
 import {ExportMenu} from '../components/ExportMenu';
 import {exportArticlePdf,exportArticleTable,printArticle} from '../lib/exportArticle';
 import {loadTopic,TopicError} from '../lib/topicCache';
+import {todayLocal} from '../lib/text';
 const sourceLink=(value?:string)=>{try{const url=new URL(value||'');return ['http:','https:'].includes(url.protocol)?url.href:undefined;}catch{return undefined;}};
 function OriginalQuote({evidence,topic}:{evidence:ContentEvidence;topic:TopicDetail}){
  const source=topic.contentAnalysis?.sourceDocuments?.find(document=>evidence.sourceId&&document.id===evidence.sourceId||document.url===evidence.url);
@@ -61,7 +62,7 @@ export function DetailPage(){
   const docs=t.documents.map((d,i)=>({...d,url:`${typeof window!=='undefined'?window.location.origin:''}/api/dokument?t=${encodeURIComponent(t.id)}&i=${i}`,src:d.url})).filter(d=>!isOparlData(d.src,d.title));
   const sorted=[...events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   /* Letzte Sitzung bis heute (-1: alle noch künftig); danach Kommendes grau */
-  const today=new Date().toISOString().slice(0,10),current=sorted.reduce((c,e,i)=>(e.date||'').slice(0,10)<=today?i:c,-1);
+  const today=todayLocal(),current=sorted.reduce((c,e,i)=>(e.date||'').slice(0,10)<=today?i:c,-1);
   const facts:[string,string][]=[['Sitzung',formatDate(t.eventDate)],['Gremium',t.committee||'Nicht dokumentiert'],['Vorlage',t.reference||'Nicht dokumentiert'],['Gebiet',region?.name||(regions?'Unbekannt':'…')],['Stand',status.label],['Quellenstand',formatDate(t.updatedAt)]];
   return (
     <main id="inhalt" className="mx-auto max-w-page py-[12px]">

@@ -28,28 +28,47 @@ function read(): SavedArticle[] {
   return cache;
 }
 
-function write(list: SavedArticle[]) {
+/** false: der Browser lässt nichts dauerhaft speichern (privates Fenster, voller Speicher); der Stand gilt bis zum Neuladen */
+function write(list: SavedArticle[]): boolean {
   cache = list;
+  let ok = true;
   try {
     localStorage.setItem(KEY, JSON.stringify(list));
-  } catch {}
+  } catch {
+    ok = false;
+  }
   listeners.forEach((l) => l());
+  return ok;
 }
 
-export function toggleSavedArticle(a: Omit<SavedArticle, "savedAt">) {
+export function toggleSavedArticle(a: Omit<SavedArticle, "savedAt">): boolean {
   const list = read();
-  write(list.some((x) => x.id === a.id) ? list.filter((x) => x.id !== a.id) : [{ ...a, savedAt: new Date().toISOString() }, ...list]);
+  return write(list.some((x) => x.id === a.id) ? list.filter((x) => x.id !== a.id) : [{ ...a, savedAt: new Date().toISOString() }, ...list]);
 }
 
 /** Vorgang folgen bzw. entfolgen; folgen speichert den Artikel mit */
-export function toggleFollow(a: Omit<SavedArticle, "savedAt" | "follow">) {
+export function toggleFollow(a: Omit<SavedArticle, "savedAt" | "follow">): boolean {
   const list = read();
   const hit = list.find((x) => x.id === a.id);
-  write(hit ? list.map((x) => (x.id === a.id ? { ...x, follow: !x.follow } : x)) : [{ ...a, savedAt: new Date().toISOString(), follow: true }, ...list]);
+  return write(hit ? list.map((x) => (x.id === a.id ? { ...x, follow: !x.follow } : x)) : [{ ...a, savedAt: new Date().toISOString(), follow: true }, ...list]);
 }
 
-export function removeSavedArticle(id: string) {
-  write(read().filter((x) => x.id !== id));
+/** Entfernt den Artikel und gibt ihn zurück (für „Rückgängig“) */
+export function removeSavedArticle(id: string): SavedArticle | undefined {
+  const list = read();
+  const hit = list.find((x) => x.id === id);
+  write(list.filter((x) => x.id !== id));
+  return hit;
+}
+
+/** Entfernten Artikel an seiner Stelle (nach Speicherdatum) wiederherstellen */
+export function restoreSavedArticle(a: SavedArticle) {
+  const list = read().filter((x) => x.id !== a.id);
+  write([...list, a].sort((x, y) => (y.savedAt || "").localeCompare(x.savedAt || "")));
+}
+
+export function clearSavedArticles() {
+  write([]);
 }
 
 export function useSavedArticles(): SavedArticle[] {

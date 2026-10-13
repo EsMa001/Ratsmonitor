@@ -145,10 +145,10 @@ export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.decisions.map((d) => (
                       <li key={d.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-                        <a href={`/beschluss/${d.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+                        <Link href={`/beschluss/${d.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
                           <span className="block truncate text-[16px]">{d.title}</span>
                           <span className="block truncate text-[12px] text-slate-500">{d.region} · {DAY.format(new Date(d.date))}{d.euro ? ` · genannt: ${d.euro} €` : ""}</span>
-                        </a>
+                        </Link>
                         <span className="self-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[12px] font-medium" style={{ background: d.direction === "Erhöhung" ? "#0f172a" : d.direction === "Verpflegung" ? "#e2e8f0" : "#ccfbf1", color: d.direction === "Erhöhung" ? "#fff" : "#0f172a" }}>{LABEL[d.direction]}</span>
                       </li>
                     ))}
@@ -164,7 +164,7 @@ export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
                     <ol className="m-0 list-none border-t border-slate-200 p-0">
                       {res.projects.map((p) => (
                         <li key={p.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-                          <a href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700"><span className="block truncate text-[16px]">{p.title}</span><span className="block truncate text-[12px] text-slate-500">{p.region} · {DAY.format(new Date(p.date))}</span></a>
+                          <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700"><span className="block truncate text-[16px]">{p.title}</span><span className="block truncate text-[12px] text-slate-500">{p.region} · {DAY.format(new Date(p.date))}</span></Link>
                           <span className="self-center text-right text-[14px] font-semibold tabular-nums">{n(p.places)} Plätze</span>
                         </li>
                       ))}

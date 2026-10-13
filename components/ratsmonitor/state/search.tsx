@@ -7,7 +7,7 @@ import type { MapEngine } from "../lib/geo/mapEngine";
 import type { ParseResult, PlaceHit } from "../lib/place";
 import { applySearchState, clearAreaState, commitPlacesState, deriveFilters } from "../lib/searchLogic";
 import { canonicalQuery, hasScope, queryText, signature, type SearchSnapshot } from "../lib/savedSearch";
-import { terms as toTerms } from "../lib/text";
+import { terms as toTerms, todayLocal } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
 import { useFiltersOpen } from "../lib/filtersOpen";
@@ -108,7 +108,6 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const ref = useRef(state);
   ref.current = state;
   const mapRef = useRef<MapEngine | null>(null);
-  const focusTimer = useRef(0);
   const geoRef = useRef(geo);
   geoRef.current = geo;
 
@@ -123,12 +122,6 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       place ? place.parse(q, s.placeOverrides, s.placeIgnored) : { place: null, alts: [], rest: q.trim(), key: "", phraseRaw: "" },
     [place],
   );
-
-  const schedFocus = useCallback((ags: string) => {
-    clearTimeout(focusTimer.current);
-    /* Zentrieren übernimmt die Karte selbst (MapPanel), auch bei mehreren Orten */
-    void ags;
-  }, []);
 
   /* Vorausladen: erste Seite der Suche für einen möglichen nächsten Zustand holen (Umkreissuchen ausgenommen) */
   const prefetchState = useCallback(
@@ -177,10 +170,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       applySearch(value, extra) {
         /* Ein bereits übernommener Ortsfilter bleibt stehen; neu getippte Orte kommen als weitere Orte dazu */
         const { next, focus } = applySearchState({ ...ref.current, ...extra }, value, parse);
-        if (focus !== undefined) {
-          if (focus) setPopupState("");
-          schedFocus(focus);
-        }
+        /* Zentrieren übernimmt die Karte selbst (MapPanel), auch bei mehreren Orten */
+        if (focus) setPopupState("");
         commit(next);
       },
       setArea(ags, src, opts = {}) {
@@ -188,7 +179,6 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         const next: SearchState = { ...s, ...(src !== "search" ? stripPlace(s) : {}), area: ags, areaSrc: ags ? src : "", level:ags.length===8?"city":s.level };
         if (opts.clearRadius) next.radius = null;
         if (src !== "map" && !opts.keepPopup) setPopupState("");
-        clearTimeout(focusTimer.current);
         commit(next);
         if (opts.zoom) mapRef.current?.focusArea(ags);
       },
@@ -246,7 +236,6 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       setAllterms: (v) => commit({ ...ref.current, allterms: v }),
       setExact: (v) => commit({ ...ref.current, exact: v }),
       resetAll() {
-        clearTimeout(focusTimer.current);
         commit({ ...INITIAL_SEARCH, sort: ref.current.sort });
         setPopupState("");
         mapRef.current?.focusArea("");
@@ -254,7 +243,6 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       applySaved(sv) {
         const next = savedState(sv);
         if (!next) return false;
-        clearTimeout(focusTimer.current);
         commit(next);
         setPopupState("");
         if (next.radius) mapRef.current?.fitCircle(next.radius);
@@ -272,9 +260,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       setPopup: (ags) => setPopupState(ags),
     };
     return a;
-  }, [commit, geo, parse, place, prefetchState, schedFocus]);
-
-  useEffect(() => () => clearTimeout(focusTimer.current), []);
+  }, [commit, geo, parse, place, prefetchState]);
 
   const value = useMemo<SearchValue>(() => ({ ...actions, state, popup, mapRef,derived:results }), [actions, state, popup,results]);
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>;
@@ -379,7 +365,7 @@ function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['pl
   /* Kreisfreie Städte (Kreisschlüssel ohne Umfangwahl) zählen immer mit ihrer Stadt; mit Umkreis ist das Gebiet nur dessen Mittelpunkt; gesucht wird in allen Gebieten im Umkreis */
   const area=state.radius?'':state.area;
   /* Ohne „inkl. Zukunft“ endet der Zeitraum heute (sofern kein eigenes Enddatum gesetzt ist) */
-  const today=new Date().toISOString().slice(0,10),to=state.bis||(state.future?'':today);
+  const today=todayLocal(),to=state.bis||(state.future?'':today);
   const params=new URLSearchParams({q:canonicalQuery(queryText(text,state.allterms)),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
   /* Ohne Suche und ohne Filter zeigt die Liste unter der Karte alle Einträge bis heute (jeder Status); Formalien bleiben sichtbar, bis „Formalien ausblenden“ eingeschaltet wird */
   const leer=!text.trim()&&!state.q.trim()&&!area&&!state.radius&&!state.thema&&!state.status&&!state.monat&&!state.von&&!state.bis&&!more.length&&!state.future&&!state.exact&&!state.allterms;
@@ -530,7 +516,6 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  },[active,pageReady,local.key,attempt,buildQuery]);
  /* Zähler der vorigen Suche wären falsch: bis die neuen da sind, bleiben Karte und Filter ohne Zahlen */
  const exact=facets.key===local.key?facets.data:null;
- const fx=exact;
  /* Liegt die Antwort schon im Zwischenspeicher, gilt sie sofort als fertig: kein „lädt“, kein Ring, kein Aufblitzen */
  const cached=active?freshSearch(requestKey):null;
  const rd=remote.key===requestKey?remote:null;
@@ -574,6 +559,6 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  },[active,pageReady,hasMore,loading,page,attempt,local.key,buildQuery]);
  /* Gibt es Treffer? ja: mindestens einer ist da; nein: die Suche ist zu Ende ohne Treffer; unbekannt: sie läuft noch */
  const hits:'yes'|'no'|'unknown'=loading||!data?'unknown':data.articles.length>0||(rd?.known==='yes'&&!rd.final)?'yes':(cached||rd?.final)?'no':'unknown';
- return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:spreadAuto(data?.articles,local.leer),total,totalPending:pendingTotal,hasMore,areaCounts:fx?.areaCounts??EMPTY_MAP,badgeCounts:fx?.badgeCounts??EMPTY_MAP,themaCounts:fx?.themaCounts??EMPTY_MAP,monatCounts:fx?.monatCounts??EMPTY_MAP,statusCounts:fx?.statusCounts??EMPTY_MAP,statusTotal:Object.values(fx?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,fx,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
+ return useMemo(()=>({...local,ringMode:loading&&modeNow==='ring',hits,results:spreadAuto(data?.articles,local.leer),total,totalPending:pendingTotal,hasMore,areaCounts:exact?.areaCounts??EMPTY_MAP,badgeCounts:exact?.badgeCounts??EMPTY_MAP,themaCounts:exact?.themaCounts??EMPTY_MAP,monatCounts:exact?.monatCounts??EMPTY_MAP,statusCounts:exact?.statusCounts??EMPTY_MAP,statusTotal:Object.values(exact?.statusCounts??{}).reduce((a,b)=>a+b,0),coverage:cover[state.level]?.coverage??EMPTY_COVERAGE,updatedAt:cover[state.level]?.updatedAt??null,loading,pending:false,error,page,setPage,retry}),[local,data,total,pendingTotal,hasMore,exact,modeNow,hits,loading,error,page,setPage,retry,cover,state.level]);
 }
 export function useSearchResults():SearchResults{return useSearch().derived;}

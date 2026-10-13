@@ -192,10 +192,10 @@ export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RAD
                   <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">
                     {recent.map((r) => (
                       <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-                        <a href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+                        <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
                           <span className="block truncate text-[16px]">{r.title}</span>
                           <span className="block truncate text-[12px] text-slate-500">{r.region} · {DAY.format(new Date(r.date))} · {r.topics.join(", ")}</span>
-                        </a>
+                        </Link>
                         <span className="self-center text-right text-[12px] text-slate-500">{r.signal !== "Sonstiges" && <span className="block">{r.signal}</span>}{statusLabel(r.status) && <span className="block">{statusLabel(r.status)}</span>}</span>
                       </li>
                     ))}

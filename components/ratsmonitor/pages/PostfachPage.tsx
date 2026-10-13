@@ -5,6 +5,7 @@ import { useSavedArticles } from "../lib/savedArticles";
 import { deleteMails, markMailsRead, useTestMails } from "../lib/testAuth";
 import { useAccount } from "../state/account";
 import { readProfile } from "./ProfilePage";
+import { todayLocal } from "../lib/text";
 
 /** Test-Postfach: E-Mails, die im echten Betrieb verschickt würden (Registrierung, Passwort, Benachrichtigungen) */
 export function PostfachPage() {
@@ -17,7 +18,7 @@ export function PostfachPage() {
   const samples = async () => {
     setBusy(true);
     const to = readProfile().email || "Ihre Adresse";
-    const today = new Date().toISOString().slice(0, 10);
+    const today = todayLocal();
     const get = async (q: Record<string, string>) => {
       try {
         const r = (await (await fetch("/api/search?" + new URLSearchParams({ q: "", area: "", scope: "only", level: "city", page: "1", ...q }))).json()) as { articles?: MailItem[] };
@@ -35,7 +36,7 @@ export function PostfachPage() {
     const soon = await get({ sort: "asc", from: today });
     if (soon.length) {
       const d = soon[0].date;
-      const tomorrow = new Date(Date.now() + 864e5).toISOString().slice(0, 10);
+      const tomorrow = todayLocal(1);
       reminderMail(to, d === today ? "Heute" : d === tomorrow ? "Morgen" : `Am ${d.slice(8, 10)}.${d.slice(5, 7)}.`, soon.filter((a) => a.date === d).slice(0, 3));
     }
     setBusy(false);

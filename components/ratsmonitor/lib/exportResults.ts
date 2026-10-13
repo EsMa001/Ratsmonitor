@@ -1,6 +1,7 @@
 import type { Article } from "../types";
 import { STATUS_BY_ID } from "./constants";
 import { download, makeCsv, makeXlsx } from "./xlsx";
+import { todayLocal } from "./text";
 
 /** Höchstzahl je Export: 25 Seiten × 20 Treffer */
 export const EXPORT_MAX = 500;
@@ -8,7 +9,7 @@ export type ExportFormat = "csv" | "xlsx";
 
 const HEAD = ["Datum", "Titel", "Ort", "Gremium", "Stand", "Thema", "Link"];
 const row = (a: Article & { gremium?: string }) => [a.date, a.title, a.gemeinde, a.gremium ?? "", STATUS_BY_ID[a.status]?.label ?? a.status, a.thema, `${window.location.origin}/beschluss/${a.id}`];
-const stamp = () => new Date().toISOString().slice(0, 10);
+const stamp = () => todayLocal();
 
 /** Trefferliste der aktuellen Suche als CSV oder Excel; key: Abfrage der Suche, withinAgs: Gebiete eines Umkreises */
 export async function exportResults(key: string, withinAgs: string[] | null, total: number, format: ExportFormat): Promise<number> {
@@ -21,7 +22,8 @@ export async function exportResults(key: string, withinAgs: string[] | null, tot
     p.set("size", "20"); /* Export immer in Seiten zu 20, auch wenn die Suche am Handy 15 je Seite zeigt */
     p.set("page", String(page));
     const r = await fetch("/api/search?" + p);
-    if (!r.ok) break;
+    /* Kein stiller Teil-Export: ein Fehler bricht ab, die Oberfläche meldet ihn */
+    if (!r.ok) throw new Error("Export fehlgeschlagen");
     const d = (await r.json()) as { articles?: Article[] };
     rows.push(...(d.articles ?? []));
     if (!d.articles?.length) break;

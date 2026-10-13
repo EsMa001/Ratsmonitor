@@ -1,4 +1,6 @@
 import { useEntitlements } from "../lib/entitlements";
+import { useToast } from "../state/toast";
+import { NO_STORAGE } from "../lib/storage";
 import { toggleSavedArticle, useSavedArticles, type SavedArticle } from "../lib/savedArticles";
 import { IconBookmark } from "./icons";
 
@@ -6,6 +8,7 @@ import { IconBookmark } from "./icons";
 export function SaveArticleButton({ article, size = 20, className = "", label = false }: { article: Omit<SavedArticle, "savedAt">; size?: number; className?: string; /** Beschriftung neben dem Symbol (am Desktop) */ label?: boolean }) {
   const saved = useSavedArticles().some((a) => a.id === article.id);
   const { allow } = useEntitlements();
+  const toast = useToast();
   return (
     <button
       type="button"
@@ -15,7 +18,7 @@ export function SaveArticleButton({ article, size = 20, className = "", label = 
       onClick={(e) => {
         e.stopPropagation();
         /* Entfernen ist immer erlaubt; neu speichern nur innerhalb des Limits */
-        if (saved || allow("bookmarks")) toggleSavedArticle(article);
+        if ((saved || allow("bookmarks")) && !toggleSavedArticle(article)) toast(NO_STORAGE);
       }}
       className={`${label ? "inline-flex items-center gap-1.5 px-2" : "grid w-9 max-sm:w-11 place-items-center"} h-9 max-sm:h-11 flex-none rounded-lg transition-colors ${saved ? "text-teal-600" : "text-teal-600 hover:bg-teal-50 hover:text-teal-700"} ${className}`}
     >

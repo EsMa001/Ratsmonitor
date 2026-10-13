@@ -13,7 +13,7 @@ import { useData } from "../state/data";
 import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
 import type { Article, NotifyFreq, SavedSearch } from "../types";
-import { MONTH_SHORT } from "../lib/text";
+import { MONTH_SHORT, todayLocal } from "../lib/text";
 import { digestMail, type DigestPart, type MailItem } from "../lib/mails";
 import { useToast } from "../state/toast";
 
@@ -32,7 +32,7 @@ function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
       label: s.thema || "",
       month: s.monat || "",
       from: s.von || "",
-      to: s.bis || (s.future ? "" : new Date().toISOString().slice(0, 10)),
+      to: s.bis || (s.future ? "" : todayLocal()),
       status: s.status || "",
       level: s.level || "city",
       sort: "desc",
@@ -54,7 +54,8 @@ function usePreview(s: SavedSearch, within: string | null): Preview | "error" {
 
 function SavedCard({ s }: { s: SavedSearch }) {
   const { geo } = useData();
-  const { updateSaved, removeSaved } = useAccount();
+  const { saved, updateSaved, removeSaved, restoreSaved } = useAccount();
+  const toast = useToast();
   const search = useSearch();
   const { goOverview } = useAppNav();
   /* Umkreis in Gebietsschlüssel umrechnen (Karte geladen) */
@@ -83,9 +84,15 @@ function SavedCard({ s }: { s: SavedSearch }) {
   const fresh = ok ? ok.items.filter((a) => a.date > s.lastSeen).length : 0;
   const open = () => {
     if (search.applySaved(s)) {
-      updateSaved(s.id, { lastSeen: new Date().toISOString().slice(0, 10) });
+      updateSaved(s.id, { lastSeen: todayLocal() });
       goOverview();
     }
+  };
+  /* Entfernen mit „Rückgängig“: samt Benachrichtigung und Empfängern wiederherstellbar */
+  const remove = () => {
+    const index = saved.findIndex((x) => x.id === s.id);
+    removeSaved(s.id);
+    toast("Gespeicherte Suche entfernt.", { label: "Rückgängig", run: () => restoreSaved(s, index) });
   };
   const iconBtn = "grid h-9 w-9 flex-none place-items-center rounded-full transition-colors hover:bg-slate-100";
 
@@ -93,7 +100,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
     <article className="border-b border-slate-200 py-4 last:border-b-0">
       {/* Kopf wie bei gespeicherten Artikeln: Herz entfernt die Suche, Glocke schaltet Benachrichtigungen */}
       <div className="flex items-start gap-3">
-        <button type="button" onClick={() => removeSaved(s.id)} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-600`}>
+        <button type="button" onClick={remove} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-600`}>
           <IconHeart size={20} filled />
         </button>
         <div className="min-w-0 flex-1">
@@ -281,7 +288,7 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
   };
   const build = async () => {
     setBusy(true);
-    const day = (n: number) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+    const day = (n: number) => todayLocal(-n);
     const parts: DigestPart[] = [];
     for (const s of saved) {
       const p = new URLSearchParams({ q: s.text || "", area: s.area || "", scope: s.scope || "only", label: s.thema || "", status: s.status || "", level: s.level || "city", from: day(7), to: day(0), sort: "desc", page: "1" });
@@ -293,9 +300,14 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
         parts.push({ id: s.id, name: s.name, total: r.total ?? 0, top: (r.articles ?? []).slice(0, 3) });
       } catch {}
     }
-    digestMail(readProfile().email || "Ihre Adresse", day(7), day(0), parts, weekday);
-    setBusy(false);
-    toast("Wochenbericht liegt im Test-Postfach.");
+    try {
+      digestMail(readProfile().email || "Ihre Adresse", day(7), day(0), parts, weekday);
+      toast("Wochenbericht liegt im Test-Postfach.");
+    } catch {
+      toast("Der Wochenbericht konnte nicht erstellt werden.");
+    } finally {
+      setBusy(false);
+    }
   };
   return (
     <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-200 pb-5 text-[14px]">

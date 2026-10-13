@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useUi } from "../state/ui";
+import { useEntitlements } from "../lib/entitlements";
 import { LENA_EXAMPLES, LENA_INTRO, askLena, germanDate, type LenaAnswer } from "../lib/lena";
 import { PageHead, useOpenSearch } from "./blocks";
 
@@ -20,6 +21,7 @@ interface Msg {
 export function LenaPage() {
   const openSearch = useOpenSearch();
   const { openSaveDialog } = useUi();
+  const { allow } = useEntitlements();
   const [msgs, setMsgs] = useState<Msg[]>([{ id: 0, from: "lena", text: LENA_INTRO, chips: LENA_EXAMPLES }]);
   const [text, setText] = useState("");
   const next = useRef(1);
@@ -57,6 +59,8 @@ export function LenaPage() {
   }, []);
 
   const saveAlarm = (term: string) => {
+    /* Gleiche Grenze wie das Herz an der Suche: Gäste und volle Tarife sehen den Hinweis statt des Dialogs */
+    if (!allow("searches")) return;
     openSearch(term);
     window.setTimeout(openSaveDialog, 700);
   };
@@ -118,7 +122,7 @@ export function LenaPage() {
                   {m.from === "lena" && <span className="mb-1 block text-[12px] font-semibold uppercase tracking-wide text-slate-500">Lena</span>}
                   {m.loading ? <p className="m-0 text-slate-500">Ich suche …</p> : m.text && <p className="m-0">{m.text}</p>}
                   {m.error && (
-                    <p role="alert" className="m-0 mt-2 text-rose-700">
+                    <p className="m-0 mt-2 text-rose-700">
                       {m.error}
                     </p>
                   )}

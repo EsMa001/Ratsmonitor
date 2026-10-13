@@ -7,6 +7,9 @@ import { confirmDialog } from "../components/ConfirmDialog";
 import { PlanSummary } from "../components/PlanCards";
 import { LoginRequired } from "../components/TierNotice";
 import { PageHead } from "../info/blocks";
+import { NO_STORAGE, clearStoredContent } from "../lib/storage";
+import { clearSavedArticles } from "../lib/savedArticles";
+import { deleteMails } from "../lib/testAuth";
 
 
 const KEY = "ratsmonitor:profile:v1";
@@ -32,7 +35,7 @@ export function readProfile(): ProfileSettings {
 /** Kontoeinstellungen; ohne Benutzerkonto vorerst nur in diesem Browser gespeichert */
 export function ProfilePage() {
   const toast = useToast();
-  const { saved, removeSaved } = useAccount();
+  const { clearSaved } = useAccount();
   const [p, setP] = useState<ProfileSettings>(EMPTY);
   const { tier } = useTier();
   useEffect(() => setP(readProfile()), []);
@@ -43,20 +46,20 @@ export function ProfilePage() {
       localStorage.setItem(KEY, JSON.stringify(p));
       toast("Kontoeinstellungen gespeichert.");
     } catch {
-      toast("Der Browser erlaubt derzeit keine dauerhafte Speicherung.");
+      toast(NO_STORAGE);
     }
   };
   const wipe = async () => {
     const ok = await confirmDialog({
       title: "Alle Daten löschen?",
-      text: "Alle gespeicherten Suchen und Kontoeinstellungen in diesem Browser werden gelöscht. Das lässt sich nicht rückgängig machen.",
+      text: "Gespeicherte Suchen und Artikel, Benachrichtigungen, Kalender, Wochenbericht, Suchverlauf, Test-Postfach und Kontoeinstellungen in diesem Browser werden gelöscht. Sie bleiben angemeldet. Das lässt sich nicht rückgängig machen.",
       confirmLabel: "Alles löschen",
     });
     if (!ok) return;
-    saved.forEach((s) => removeSaved(s.id));
-    try {
-      localStorage.removeItem(KEY);
-    } catch {}
+    clearSaved();
+    clearSavedArticles();
+    deleteMails();
+    clearStoredContent();
     setP(EMPTY);
     toast("Daten in diesem Browser gelöscht.");
   };

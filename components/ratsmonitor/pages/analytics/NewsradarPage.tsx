@@ -39,7 +39,7 @@ function Meldung({ i }: { i: Item }) {
   return (
     <article className="border-b border-slate-200 py-7">
       <p className="m-0 text-[12px] text-slate-500">{i.dateline.place}{i.dateline.committee ? ` · ${i.dateline.committee}` : ""} · {datum(i.dateline.date)}</p>
-      <h3 className="m-0 mt-1.5 text-[20px] font-semibold leading-snug sm:text-[22px]"><a href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-700">{i.headline}</a></h3>
+      <h3 className="m-0 mt-1.5 text-[20px] font-semibold leading-snug sm:text-[22px]"><Link href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-700">{i.headline}</Link></h3>
       <p className="m-0 mt-3 max-w-[820px] text-[16px] leading-relaxed text-slate-900">
         {i.lead} In der Vorlage heißt es: <q>{i.quote}</q>
         {i.more && <> Weiter heißt es dort: <q>{i.more}</q></>}
@@ -47,7 +47,7 @@ function Meldung({ i }: { i: Item }) {
       </p>
       <p className="m-0 mt-3 text-[12px] text-slate-500">Quelle: {i.source} · {HINWEIS}</p>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <a href={`/beschluss/${i.id}`} className="text-[14px] font-medium text-teal-600 no-underline">Zum Vorgang →</a>
+        <Link href={`/beschluss/${i.id}`} className="text-[14px] font-medium text-teal-600 no-underline">Zum Vorgang →</Link>
         <button type="button" onClick={copy} className="text-[14px] font-medium text-teal-600">{copied ? "Kopiert" : "Meldung kopieren"}</button>
         <span className="text-[12px] text-slate-500"><span className="sr-only">Nachrichtenwert </span>Wert {i.score}: {i.why.join(" · ")}</span>
       </div>

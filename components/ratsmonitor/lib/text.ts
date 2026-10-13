@@ -88,6 +88,13 @@ export function isoDay(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+/** Heutiges Datum (JJJJ-MM-TT) in der Ortszeit des Geräts, optional um Tage verschoben. Nicht toISOString: das ist UTC,
+ *  dort gilt zwischen 0 und 2 Uhr (Sommerzeit) noch der Vortag. */
+export function todayLocal(days = 0): string {
+  const d = new Date();
+  return isoDay(new Date(d.getFullYear(), d.getMonth(), d.getDate() + days));
+}
+
 export const MONTH_FMT = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" });
 export const MONTH_SHORT = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 export const DAY_FMT = new Intl.DateTimeFormat("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });

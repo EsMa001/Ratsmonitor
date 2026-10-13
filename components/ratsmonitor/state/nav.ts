@@ -7,6 +7,5 @@ export function useAppNav(){
  const router=useRouter(),view=viewOf(usePathname());
  const push=useCallback((to:string,id='')=>{if(view==='overview')overviewScroll.current={y:window.scrollY,list:overviewScroll.listEl?.scrollTop||0,id};router.push(to,{scroll:false});},[router,view]);
  const goOverview=useCallback(()=>router.push('/suche',{scroll:false}),[router]);
- const openKonto=useCallback((page:'profil'|'suchen'|'hilfe')=>push('/konto/'+page),[push]);
- return {view,push,goBack:goOverview,goOverview,openKonto};
+ return {view,push,goBack:goOverview,goOverview};
 }

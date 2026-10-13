@@ -5,6 +5,7 @@ import { useAccount, useSavedStats } from "../state/account";
 import { useData } from "../state/data";
 import { useSearch, useSearchResults } from "../state/search";
 import { useToast } from "../state/toast";
+import { NO_STORAGE } from "../lib/storage";
 import { IconFilter, IconHeart } from "./icons";
 import { SearchBox } from "./SearchBox";
 import { FilterPanel } from "./FilterPanel";
@@ -16,7 +17,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
   const search = useSearch();
   const res = useSearchResults();
   const { signatures } = useSavedStats();
-  const { saved, addSaved, removeSaved } = useAccount();
+  const { saved, addSaved, removeSaved, restoreSaved } = useAccount();
   const toast = useToast();
   const { allow, allowFeature } = useEntitlements();
   const open = useFiltersOpen();
@@ -30,8 +31,9 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
   const toggleSave = () => {
     try {
       if (savedHit) {
+        const index = saved.findIndex((x) => x.id === savedHit.id);
         removeSaved(savedHit.id);
-        return toast("Gespeicherte Suche entfernt.");
+        return toast("Gespeicherte Suche entfernt.", { label: "Rückgängig", run: () => restoreSaved(savedHit, index) });
       }
       if (!allow("searches")) return;
       const base = suggestName(res.snapshot, geo);
@@ -40,7 +42,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
       addSaved(res.snapshot, name);
       toast(`Gespeichert: ${name}`);
     } catch {
-      toast("Der Browser erlaubt derzeit keine dauerhafte Speicherung.");
+      toast(NO_STORAGE);
     }
   };
 

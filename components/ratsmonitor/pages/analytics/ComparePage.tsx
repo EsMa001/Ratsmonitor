@@ -12,6 +12,7 @@ import { FIELD, PlaceField } from "./CompareFields";
 import type { PlaceEntry } from "../../lib/place";
 import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
 import { RadarDrill } from "./RadarDrill";
+import { todayLocal } from "../../lib/text";
 
 interface Share { id: string; n: number; share: number }
 interface Place {
@@ -71,7 +72,7 @@ export function ComparePage() {
   const abortRef = useRef<AbortController | null>(null);
 
   const buildQuery = (a: PlaceEntry | null, b: PlaceEntry | null, t: string) =>
-    a && b ? new URLSearchParams({ q: t.trim(), area: a.ags, label: "", month: "", from: "", to: new Date().toISOString().slice(0, 10), scope: "only", status: "", level: "city", more: b.ags + ":only" }).toString() : "";
+    a && b ? new URLSearchParams({ q: t.trim(), area: a.ags, label: "", month: "", from: "", to: todayLocal(), scope: "only", status: "", level: "city", more: b.ags + ":only" }).toString() : "";
   const query = buildQuery(ort1, ort2, thema);
   /* „(Kreis)“ nur bei echten Landkreisen; eine kreisfreie Stadt heißt einfach wie die Stadt */
   const name = (ags: string, scope: string) => { const i = geo?.info(ags); return (i?.name ?? ags) + (ags.length === 5 && /^(Landkreis|Kreis|Stadtkreis) /.test(i?.meta ?? "") ? " (Kreis)" : ""); };

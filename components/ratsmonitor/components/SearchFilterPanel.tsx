@@ -2,6 +2,7 @@ import { setListView, useListView } from "../lib/listView";
 import { EXPORT_MAX, exportResults, type ExportFormat } from "../lib/exportResults";
 import { useSearch, useSearchResults } from "../state/search";
 import { useToast } from "../state/toast";
+import { useEntitlements } from "../lib/entitlements";
 import { ExportMenu } from "./ExportMenu";
 import { FilterSelect } from "./FilterSelect";
 import { CountDots } from "./CountDots";
@@ -15,6 +16,7 @@ export function SearchFilterPanel() {
   const res = useSearchResults();
   const listView = useListView();
   const toast = useToast();
+  const { allowFeature } = useEntitlements();
 
   return (
     <section aria-label="Suche und Filter" className="card-shell relative z-[3] flex flex-col gap-3 p-[12px] max-sm:px-4 max-sm:py-1">
@@ -55,6 +57,8 @@ export function SearchFilterPanel() {
             ]}
             note={res.total > EXPORT_MAX ? `Exportiert werden die ersten ${EXPORT_MAX} von ${res.total.toLocaleString("de-DE")} Treffern. Grenzen Sie die Suche ein, um alle zu erhalten.` : `Exportiert werden alle ${res.total.toLocaleString("de-DE")} Treffer (höchstens ${EXPORT_MAX}).`}
             onExport={async (f) => {
+              /* Gäste sehen nur die ersten Treffer: exportieren nur mit Konto (gleicher Hinweis wie beim Blättern) */
+              if (!allowFeature("results", res.total)) return;
               try {
                 const within = res.around?.set ? [...res.around.set] : null;
                 const n = await exportResults(res.key, within, res.total, f as ExportFormat);

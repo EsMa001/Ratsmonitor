@@ -19,6 +19,8 @@ export function AccountMenu({currentPage}:{currentPage:string}){
   const down=(e:MouseEvent)=>{if(!ref.current?.contains(e.target as Node))setOpen(false);};
   const key=(e:KeyboardEvent)=>{if(e.key!=='Escape')return;setOpen(false);/* Fokus zurück auf den Konto-Knopf */if(ref.current?.contains(document.activeElement))ref.current.querySelector<HTMLElement>('button[aria-haspopup]')?.focus();};
   document.addEventListener('mousedown',down);document.addEventListener('keydown',key);
+  /* Fokus auf den ersten Eintrag, damit die Pfeiltasten gleich wirken (Tastatur und Bildschirmleser) */
+  ref.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
   return()=>{document.removeEventListener('mousedown',down);document.removeEventListener('keydown',key);};
  },[open]);
  const base='relative grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-lg transition-colors';

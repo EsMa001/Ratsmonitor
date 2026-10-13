@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { FilterSelect } from "../components/FilterSelect";
 import { StepTimeline } from "../components/results/ArticleCard";
 import type { Article } from "../types";
-import { removeSavedArticle, useSavedArticles } from "../lib/savedArticles";
+import { removeSavedArticle, restoreSavedArticle, useSavedArticles } from "../lib/savedArticles";
+import { useToast } from "../state/toast";
 import { FollowButton } from "../components/FollowButton";
-import { MONTH_SHORT } from "../lib/text";
+import { MONTH_SHORT, fmtDate } from "../lib/text";
 import { useEntitlements } from "../lib/entitlements";
 import { LoginRequired, UsagePill } from "../components/TierNotice";
 import { PageHead } from "../info/blocks";
@@ -14,6 +15,11 @@ import { PageHead } from "../info/blocks";
 /** Liste der gespeicherten Artikel (Lesezeichen) */
 export function SavedArticlesPage() {
   const list = useSavedArticles();
+  const toast = useToast();
+  const remove = (id: string) => {
+    const hit = removeSavedArticle(id);
+    if (hit) toast("Artikel entfernt.", { label: "Rückgängig", run: () => restoreSavedArticle(hit) });
+  };
   /* Suchen, nach Benachrichtigung filtern und sortieren */
   const [find, setFind] = useState("");
   const [only, setOnly] = useState<"all" | "follow">("all");
@@ -84,6 +90,7 @@ export function SavedArticlesPage() {
                 {a.title}
               </Link>
               <p className="m-0 mt-0.5 text-[14px] font-medium text-slate-500">{a.gemeinde}</p>
+              {/^\d{4}-\d{2}-\d{2}/.test(a.date || "") && <p className="sr-only">Sitzung am {fmtDate(a.date)}</p>}
               {a.follow && <p className="m-0 mt-1 text-[12px] text-teal-600">Sie werden über Neuigkeiten informiert</p>}
               {/* Vorgangsverlauf: alle bisherigen Beratungen, der aktuelle Schritt rechts */}
               <Verlauf id={a.id} fallback={a.teaser} />
@@ -91,7 +98,7 @@ export function SavedArticlesPage() {
             <FollowButton article={a} />
             <button
               type="button"
-              onClick={() => removeSavedArticle(a.id)}
+              onClick={() => remove(a.id)}
               title="Entfernen"
               aria-label="Aus gespeicherten Artikeln entfernen"
               className="grid h-9 w-9 flex-none place-items-center rounded-lg text-teal-600 hover:bg-teal-50"

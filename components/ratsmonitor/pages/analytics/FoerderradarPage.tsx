@@ -215,7 +215,7 @@ export function FoerderradarPage({ embedded }: { embedded?: boolean } = {}) {
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.largest.map((a) => (
                       <li key={a.id + a.program} className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 border-b border-slate-200 py-3">
-                        <span className="min-w-0"><a href={`/beschluss/${a.id}`} className="block truncate text-[16px] text-slate-900 no-underline hover:text-teal-700">{a.title}</a><span className="block truncate text-[12px] text-slate-500">{a.region} · {new Date(a.date).toLocaleDateString("de-DE")} · {a.program}</span></span>
+                        <span className="min-w-0"><Link href={`/beschluss/${a.id}`} className="block truncate text-[16px] text-slate-900 no-underline hover:text-teal-700">{a.title}</Link><span className="block truncate text-[12px] text-slate-500">{a.region} · {new Date(a.date).toLocaleDateString("de-DE")} · {a.program}</span></span>
                         <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{eur(a.euro)}</b><span className="block text-[12px] text-slate-500">{a.status === "granted" ? "bewilligt" : "beantragt"}</span></span>
                       </li>
                     ))}

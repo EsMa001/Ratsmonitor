@@ -1,4 +1,6 @@
 import { useEntitlements } from "../lib/entitlements";
+import { useToast } from "../state/toast";
+import { NO_STORAGE } from "../lib/storage";
 import { toggleFollow, useSavedArticles, type SavedArticle } from "../lib/savedArticles";
 import { IconBell } from "./icons";
 
@@ -7,6 +9,7 @@ export function FollowButton({ article, size = 20, className = "", label = false
   const hit = useSavedArticles().find((a) => a.id === article.id);
   const on = !!hit?.follow;
   const { allow } = useEntitlements();
+  const toast = useToast();
   return (
     <button
       type="button"
@@ -15,10 +18,10 @@ export function FollowButton({ article, size = 20, className = "", label = false
       aria-label={on ? "Benachrichtigungen ausschalten" : "Benachrichtigungen einschalten"}
       onClick={(e) => {
         e.stopPropagation();
-        if (on) return toggleFollow(article);
+        if (on) return void (toggleFollow(article) || toast(NO_STORAGE));
         /* Folgen speichert den Artikel mit: dafür muss auch ein Lesezeichen frei sein */
         if (!hit && !allow("bookmarks")) return;
-        if (allow("notifications")) toggleFollow(article);
+        if (allow("notifications") && !toggleFollow(article)) toast(NO_STORAGE);
       }}
       className={`${label ? "inline-flex items-center gap-1.5 px-2" : "grid w-9 place-items-center"} h-9 max-sm:h-11 max-sm:min-w-11 flex-none rounded-lg text-teal-600 transition-colors hover:bg-teal-50 hover:text-teal-700 ${className}`}
     >

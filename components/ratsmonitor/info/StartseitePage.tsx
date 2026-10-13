@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { LIMITS, PRO_PRICE, useTier } from "../lib/tier";
 import { IconPin } from "../components/icons";
 import { useOpenSearch } from "./blocks";
+import { todayLocal } from "../lib/text";
 
 /* Startseite (Reiter rechts neben Lena, noch nicht die Landingpage).
    Kopf: Slogan, Artikelzahl, Karte. Auf der Karte laufen Zeitraffer und Live zusammen: Die Begriffe unten ploppen auf, sobald sie in einem Kreis
@@ -298,13 +299,13 @@ export function StartseitePage() {
   const [place, setPlace] = useState("");
   const [pick, setPick] = useState<Cov | null>(null);
   const [placeInfo, setPlaceInfo] = useState<{ total: number; upcoming: number; next: Hit[] } | null>(null);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayLocal();
 
   /* Artikelzahl und Abdeckungsliste (für die Ortsprüfung) */
   useEffect(() => {
     const ctl = new AbortController();
     /* Zahl der Einträge der letzten 30 Tage (nicht der Gesamtbestand) */
-    const from = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+    const from = todayLocal(-30);
     fetch(`/api/search?q=&area=&label=&month=&from=${from}&to=${today}&scope=with&status=&level=city`, { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : Promise.reject(new Error("gesamt"))))
       .then((d) => setTotal(typeof d.total === "number" ? d.total : null))

@@ -1,6 +1,6 @@
 import { memo, useLayoutEffect, useRef, useState } from "react";
 import { STATUS_BY_ID, shownThema } from "../../lib/constants";
-import { MONTH_SHORT, fmtDate, highlightSegments } from "../../lib/text";
+import { MONTH_SHORT, fmtDate, highlightSegments, todayLocal } from "../../lib/text";
 import type { Article } from "../../types";
 import { SaveArticleButton } from "../SaveArticleButton";
 import { prefetchDetail } from "../../lib/topicCache";
@@ -133,6 +133,8 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
           <MobileTitle title={a.title} terms={terms} />
         </a>
       </h3>
+      {/* Datum für Bildschirmleser: die Datumsspalte links ist nur Gestaltung (aria-hidden) */}
+      {/^\d{4}-\d{2}-\d{2}/.test(a.date) && <p className="sr-only">Sitzung am {fmtDate(a.date)}</p>}
       {/* Handy: Stadt, Gremium, Status und Thema nebeneinander, bei Platzmangel umbrechend */}
       <p className="m-0 mt-1 text-[12px] leading-[1.45] text-slate-500 sm:hidden">
         {[a.gemeinde, a.gremium, STATUS_BY_ID[a.status]?.label, thema].filter(Boolean).map((t, i) => (
@@ -163,7 +165,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
         <Highlight text={a.teaser} terms={terms} />
       </p>}
       {/* Verlauf: auch in der kompakten Ansicht */}
-      {a.steps && a.steps.length > 1 && a.steps[0].d < new Date().toISOString().slice(0, 10) && <StepTimeline steps={a.steps} />}
+      {a.steps && a.steps.length > 1 && a.steps[0].d < todayLocal() && <StepTimeline steps={a.steps} />}
       </div>
       {/* Eigene Spalte fürs Lesezeichen: der Text endet bündig mit dem Suchfeld (rechts davon Filter und Herz) */}
       <div className="flex w-6 justify-end sm:w-[56px]">
@@ -176,7 +178,7 @@ export const ArticleCard = memo(function ArticleCard({ article: a, index, terms,
 /** Kleine Timeline der Beratungen eines Vorgangs: die letzte bis heute in Petrol, künftige grau (hohler Punkt, gestrichelt) */
 export function StepTimeline({ steps }: { steps: NonNullable<Article["steps"]> }) {
   const shown = steps.slice(-5);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayLocal();
   const current = shown.reduce((c, st, i) => (st.d <= today ? i : c), -1);
   return (
     <ol aria-label="Verlauf des Vorgangs" className="mt-2.5 flex items-start overflow-x-auto pb-0.5 [scrollbar-width:none]">
