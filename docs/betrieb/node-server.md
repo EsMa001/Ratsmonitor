@@ -84,7 +84,7 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
 | `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
 | `ratsmonitor-search-words.service` (früher `/etc/cron.d/ratsmonitor-search-words`) | Wortliste der Suche nachführen, 04:20 Uhr (Zeitplaner); baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
-| `ratsmonitor-rule-texts.service` | Themen & Texte, 09:00 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regel-Zusammenfassungen, Fakten und Wortliste aus den Texten der PDF-Ablage; Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
+| `ratsmonitor-rule-texts.service` | Themen & Texte, 09:00 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regeln je Bericht (Art des Punkts, Thema, Regel-Zusammenfassung, Fakten; `read-reports.mjs`) und Wortliste aus den Texten der PDF-Ablage; Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
 | `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 04:50 Uhr (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
@@ -241,18 +241,23 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
    PDFs dort ab (`readDocument`). Bestand: `scripts/pdf-store/fetch.mjs`, Budget: `budget.mjs`.
 3. **Text** (`texts` in der Ablage, Seiten getrennt durch `\f`): `text.mjs` (Textebene), danach `text.mjs --ocr` (Seiten
    unter 20 Zeichen). Version `TEXT_VERSION`; eine neue Version liest alles neu.
-4. **Zusammenfassung** (Regel, ohne KI): im Import `refreshSummaries` (je Lauf höchstens 8 Berichte je Gebiet, nur
-   solche ohne Versuch), für den Bestand `summaries.mjs` (alle ohne `ruleSummary`, deren Text in der Ablage liegt).
-5. **Fakten** (`topic_facts`, `shared/topic-facts.mjs` und `shared/radars.mjs`, Version `FACTS_VERSION`): im Import
-   zusammen mit Stufe 4, für den Bestand und nach jeder Regeländerung `facts.mjs` (schreibt alle Berichte neu, lokal
-   rund 2 Minuten für 940.000 Berichte, in Stücken von 5.000, die App liest weiter).
-6. **Suche**: `refresh-search-words.mjs --full` nach Stufe 4 im Bestand (neue Zusammenfassungen ändern den Suchtext);
+4. **Regeln je Bericht** (ohne KI, seit 14.10.2026 ein Schritt, `readReport` in `server/integrations/report-rules.mjs`, Plan
+   `requirements/regel-schritt-plan.md`): in fester Reihenfolge Hauptdokument und Sitzungsunterlage, Art des Punkts
+   (`shared/item-kind.mjs`, `payload.itemKind`), Thema und Unterthemen (`shared/themes.mjs`, `payload.theme`, nur aus Titel,
+   Betreff und Beschlussvorschlag), Regel-Zusammenfassung (`ruleSummary`) und Fakten (`topic_facts`, `shared/topic-facts.mjs`,
+   `FACTS_VERSION`). Jede Regel liest nur Quellen, nie das Ergebnis einer anderen. Für den Bestand `read-reports.mjs`: nur
+   Berichte mit geänderten Eingaben (Schlüssel in `report_rules`, Migration `0032`, aus den Regelfassungen, Titel,
+   Hauptdokument, Sitzungsunterlage und Textstand), `--all` liest alle neu. KI-Felder bleiben unberührt. Im Import
+   `refreshSummaries` (je Lauf höchstens 8 Berichte je Gebiet) dieselbe Funktion mit dem dort gelesenen Text.
+   `summaries.mjs` und `facts.mjs` bleiben eine Fassung lang als Rückfall.
+5. (entfällt, in Stufe 4)
+6. **Suche**: `refresh-search-words.mjs` nach Stufe 4 im Bestand (neue Zusammenfassungen ändern den Suchtext);
    im Import führt `runSync` die Wortliste und `rollCardDates` selbst nach.
 
 Die PDF-Kette (`nightly.mjs`, Aufträge im Reiter PDF-Import) macht nur die Stufen 2 und 3 (Laden, Textebene, OCR, Dokumentart,
 Stand). Die Stufen 4 bis 6 für den Bestand laufen getrennt davon im Job `rule-texts` (`scripts/rule-texts.mjs`, Reiter
-„Themen & Texte“, 09:00 Uhr nach der Kette; Entscheidung 13.10.2026): Zusammenfassungen, Fakten, Wortliste (nur wenn
-Zusammenfassungen dazukamen).
+„Themen & Texte“, 09:00 Uhr nach der Kette; Entscheidung 13.10.2026): Regeln je Bericht (`read-reports.mjs`), Wortliste
+(nur wenn Berichte neu gelesen wurden).
 
 **Einrichten** (einmal, als root; der Server hat noch keine PDFs, die Kette lädt sie selbst):
 
@@ -350,7 +355,7 @@ systemctl enable --now ratsmonitor-startseite-trends.timer ratsmonitor-startseit
 node scripts/schedule.mjs startseite-trends --force   # einmal sofort (als ratsmonitor, mit EnvironmentFile)
 ```
 
-Themen & Texte (`rule-texts`, seit 13.10.2026; Zusammenfassungen, Fakten und Wortliste, vorher Teil der PDF-Kette), einrichten (einmal, als root):
+Themen & Texte (`rule-texts`, seit 13.10.2026; Regeln je Bericht und Wortliste, vorher Teil der PDF-Kette), einrichten (einmal, als root):
 
 ```bash
 cd /srv/ratsmonitor/app/current
@@ -422,8 +427,8 @@ zwei bis drei Wochen; die tatsächliche Rate steht nach dem ersten Lauf im Proto
 Dokumente; das Förderradar braucht die Volltexte.
 
 Lücken: Der Import legt das PDF ab, aber nicht den daraus gelesenen Text (die Kette holt ihn nachts nach), und macht kein
-OCR; Berichte, deren Zusammenfassung schon versucht wurde, bekommen ihre Fakten nur über `facts.mjs`. Nach einer Änderung
-an `FACTS_VERSION` läuft das von selbst in der nächsten Nacht; nach `TEXT_VERSION` liest die Kette alle Texte neu (Nächte).
+OCR; der Job `rule-texts` liest danach jeden Bericht mit dem Text der Ablage. Nach einer Änderung an einer Regelfassung
+(`READ_VERSION` setzt sich aus allen zusammen) läuft das von selbst beim nächsten Job; nach `TEXT_VERSION` liest die Kette alle Texte neu (Nächte).
 
 ## Vor dem Öffnen für andere
 

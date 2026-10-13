@@ -1,6 +1,7 @@
 # Ein Schritt für alle Regeln je Bericht (Plan, Schritt 3)
 
-Stand 14.10.2026, Zweig `plenara_x_nico`. Noch nichts umgebaut.
+Stand 14.10.2026, Zweig `plenara_x_nico`. Umgesetzt (Commits 1 bis 5), noch nicht auf dem Server. Ausrollen: Migration `0032`,
+einmal `read-reports.mjs --all`, danach Wortliste `--full`.
 
 ## Ziel
 
