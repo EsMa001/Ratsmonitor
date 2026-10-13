@@ -7,7 +7,8 @@ import type {Stand} from '@/shared/admin-types';
 type Counts={online:number;aiSummaries:number;ruleSummaries:number;ruleScoreSum:number;pdfArticles:number;aiLabels:number;unlabelled:number};
 type Summary={counts:Counts;stand?:Stand;statsPending?:number};
 type Step={name:string;seconds:number;ok:boolean;summary:Record<string,unknown>|null};
-type JobState={setting:{enabled:boolean;time?:string};run:{lastStart?:string;lastEnd?:string;seconds?:number;result?:string;running?:{startedAt:string}|null}|null;now:string|null;next:string|null;last?:{finishedAt:string;result:string;steps:Step[]}|null};
+type Facts={version:string;reports:number;fromText:number;stale:number};
+type JobState={setting:{enabled:boolean;time?:string};run:{lastStart?:string;lastEnd?:string;seconds?:number;result?:string;running?:{startedAt:string}|null}|null;now:string|null;next:string|null;last?:{finishedAt:string;result:string;steps:Step[];facts?:Facts|null}|null};
 const RESULT:Record<string,string>={ok:'fertig',done:'fertig',failed:'mit Fehler',stopped:'angehalten'};
 /** Kurzfassung eines Schritts aus seiner Zusammenfassung */
 function stepNote(s:Step){
@@ -48,22 +49,25 @@ export function AdminRuleTexts(){
  };
  const running=!!job?.run?.running,requested=!!job?.now&&(!job.run?.lastStart||job.now>job.run.lastStart);
  const c=data?.counts;
- const total=c?.online??0,ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,none=Math.max(0,total-ai-rule);
- const aiL=c?.aiLabels??0,noL=c?.unlabelled??0,ruleL=Math.max(0,total-aiL-noL);
+ const total=c?.online??0,ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,docs=c?.pdfArticles??0;
+ const aiL=c?.aiLabels??0,noL=c?.unlabelled??0;
  const avg=rule?Math.round((c?.ruleScoreSum||0)/rule):undefined;
- const sum=c?[
-  {label:'Mit KI-Zusammenfassung',value:pct(ai,total),note:n(ai)+' von '+n(total)+' Artikeln'},
-  {label:'Mit regelbasierter Zusammenfassung',value:pct(rule,total),note:n(rule)+' Artikel; '+n(c.pdfArticles)+' haben ein Dokument'},
-  {label:'Ohne Zusammenfassung',value:pct(none,total),note:n(none)+' Artikel (Platzhaltertext)'},
-  {label:'Ø Güte der regelbasierten Texte',value:avg===undefined?'–':avg,of:avg===undefined?undefined:'von 100',note:rule?'Mittel über '+n(rule)+' Artikel':'Noch keine gespeichert'},
- ]:['Mit KI-Zusammenfassung','Mit regelbasierter Zusammenfassung','Ohne Zusammenfassung','Ø Güte der regelbasierten Texte'].map(label=>({label,value:undefined}));
- const pdfItem=({label:'Aus PDF-Texten',value:pdfSum?pct(pdfSum.done,pdfSum.withText):'–',note:pdfSum?n(pdfSum.done)+' von '+n(pdfSum.withText)+' Berichten mit Text im Hauptdokument; ohne: Sitzungsunterlagen und Texte, aus denen die Regeln nichts machen':'Stand aus der Zählung der PDF-Ablage'});
- const lab=c?[
-  {label:'Artikel gesamt',value:n(total),note:'Grundlage der Anteile'},
-  {label:'Mit KI-Label',value:pct(aiL,total),note:n(aiL)+' Artikel'},
-  {label:'Nur regelbasiertes Label',value:pct(ruleL,total),note:n(ruleL)+' Artikel'},
-  {label:'Ohne Label',value:pct(noL,total),note:n(noL)+' Artikel („Noch nicht eingeordnet“)'},
- ]:['Artikel gesamt','Mit KI-Label','Nur regelbasiertes Label','Ohne Label'].map(label=>({label,value:undefined}));
+ const facts=job?.last?.facts;
+ /* Hauptzahl zuerst: Abdeckung der Berichte mit Text; der Anteil im Artikel bezogen auf Artikel mit Dokument (ohne Dokument
+    gibt es nichts zusammenzufassen) */
+ const sum=[
+  {label:'Aus PDF-Texten',value:pdfSum?pct(pdfSum.done,pdfSum.withText):undefined,note:pdfSum?n(pdfSum.done)+' von '+n(pdfSum.withText)+' Berichten mit Text im Hauptdokument haben eine Zusammenfassung; der Rest sind Sitzungsunterlagen und Texte, aus denen die Regeln nichts machen':undefined},
+  {label:'Im Artikel steht',value:c?pct(ai+rule,docs):undefined,note:c?'eine Zusammenfassung, bei '+n(docs)+' Artikeln mit Dokument: '+n(rule)+' regelbasiert, '+n(ai)+' von der KI; sonst und ohne Dokument der Platzhalter':undefined},
+  {label:'Ø Güte der regelbasierten Texte',value:c?(avg===undefined?'–':avg):undefined,of:avg===undefined?undefined:'von 100',note:c?(rule?'Mittel über '+n(rule)+' Artikel':'Noch keine gespeichert'):undefined},
+ ];
+ const fac=[
+  {label:'Berichte mit Fakten',value:facts?n(facts.reports):job?'–':undefined,note:facts?n(facts.fromText)+' davon aus dem Text des Hauptdokuments, die übrigen aus dem Titel':'nach dem nächsten Lauf'},
+  {label:'Fassung der Regeln',value:facts?facts.version:job?'–':undefined,note:facts?(facts.stale?n(facts.stale)+' Berichte noch mit älterer Fassung':'alle Berichte in dieser Fassung')+'; gezählt '+when(job?.last?.finishedAt):undefined},
+ ];
+ const lab=[
+  {label:'Ohne Label',value:c?pct(noL,total):undefined,note:c?n(noL)+' von '+n(total)+' Artikeln („Noch nicht eingeordnet“)':undefined},
+  {label:'Mit KI-Label',value:c?pct(aiL,total):undefined,note:c?n(aiL)+' Artikel; die übrigen tragen das Label nach festen Regeln':undefined},
+ ];
  return <>
   <AdminPageHead page="regeltexte"><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/></AdminPageHead>
   {error&&<Alert onRetry={load}>{error}</Alert>}
@@ -82,7 +86,12 @@ export function AdminRuleTexts(){
   <section id="regeltexte-zusammenfassungen" className="admin-section">
    <div className="admin-section-heading"><h2>Zusammenfassungen</h2></div>
    <p className="admin-note">Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst die regelbasierte, sonst der Platzhalter.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={[...sum,pdfItem]}/></div>
+   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={sum}/></div>
+  </section>
+  <section id="regeltexte-fakten" className="admin-section">
+   <div className="admin-section-heading"><h2>Fakten</h2></div>
+   <p className="admin-note">Beträge, Hebesätze, Gebühren, Förderungen und Fraktionsanträge für plenara.X, nach festen Regeln aus Titel und Hauptdokument. Gezählt am Ende jedes Laufs.</p>
+   <div className="mt-6"><Kpis label="Kennzahlen der Fakten" items={fac}/></div>
   </section>
   <section id="regeltexte-labels" className="admin-section">
    <div className="admin-section-heading"><h2>Labels</h2></div>

@@ -14,7 +14,9 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {writeState} from './pdf-store/state.mjs';
+import {DatabaseSync} from 'node:sqlite';
+import {writeState,databaseFile} from './pdf-store/state.mjs';
+import {FACTS_VERSION} from '../shared/topic-facts.mjs';
 import {RULE_TEXTS_KEY} from '../server/integrations/schedules.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const dry=process.argv.includes('--dry-run'),t0=Date.now();
@@ -48,12 +50,20 @@ const skip=(name,why)=>{say(`${name} ausgelassen (${why})`);steps.push({name,sec
 
 const sum=await step('Zusammenfassungen','scripts/pdf-store/summaries.mjs');
 await step('Fakten','scripts/pdf-store/facts.mjs');
+/* Stand der Fakten für den Reiter (einmal je Lauf gezählt, damit die Seite beim Öffnen nichts rechnet): Berichte mit Fakten,
+   davon aus dem Text des Hauptdokuments, in der aktuellen Fassung der Regeln */
+let facts=null;
+if(!dry)try{
+ const db=new DatabaseSync(databaseFile());
+ try{facts={version:FACTS_VERSION,...db.prepare("SELECT count(DISTINCT topic_id) reports,count(DISTINCT CASE WHEN method LIKE '%:text' THEN topic_id END) fromText,count(DISTINCT CASE WHEN method NOT LIKE ?||':%' THEN topic_id END) stale FROM topic_facts").get(FACTS_VERSION)};}
+ finally{db.close();}
+}catch(e){say('Fakten zählen:',e.message);}
 if(!dry){
  if(sum&&!sum.withText)skip('Wortliste','keine Zusammenfassung geschrieben');
  else await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
 }else await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
 
 const result=stopped?'stopped':failed.length?'failed':'done';
-if(!dry)writeState(RULE_TEXTS_KEY,{startedAt:new Date(t0).toISOString(),finishedAt:new Date().toISOString(),result,steps});
+if(!dry)writeState(RULE_TEXTS_KEY,{startedAt:new Date(t0).toISOString(),finishedAt:new Date().toISOString(),result,steps,facts});
 say(`Ende nach ${Math.round((Date.now()-t0)/1000)} s${failed.length?`, Fehler in: ${failed.join(', ')}`:''}`);
 process.exit(stopped?3:failed.length?1:0);
