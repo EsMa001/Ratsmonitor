@@ -15,7 +15,7 @@ import {existsSync,readdirSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {readReport,mainDocument,readKey,READ_VERSION} from '../../server/integrations/report-rules.mjs';
-import {FACTS_VERSION} from '../../shared/topic-facts.mjs';
+import {FACTS_VERSION,titleKey} from '../../shared/topic-facts.mjs';
 import {stepSummary} from './state.mjs';
 import {pdfUses} from './store-lib.mjs';
 
@@ -27,6 +27,7 @@ const local=existsSync(dir)?readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!==
 const db=new DatabaseSync(process.env.DATABASE_FILE||dir+local);db.exec('PRAGMA busy_timeout=60000');
 const has=t=>{try{db.prepare(`SELECT 1 FROM ${t} LIMIT 0`).all();return true;}catch{return false;}};
 // Probelauf auch ohne Migration 0032 (dann gilt jeder Bericht als neu)
+const hasCases=has('report_rules')&&db.prepare("SELECT 1 FROM pragma_table_info('report_rules') WHERE name='case_key'").get();
 for(const [table,mig] of [['report_rules','0032'],['topic_facts','0025']])
  if(!has(table)&&!(dry&&table==='report_rules')){console.error(`Tabelle ${table} fehlt: erst Migration ${mig} einspielen (scripts/node-migrate.mjs).`);process.exit(1);}
 
@@ -34,13 +35,13 @@ for(const [table,mig] of [['report_rules','0032'],['topic_facts','0025']])
 const t0=Date.now(),uses=pdfUses(db),U=u=>uses.get(u)||0,hasText=u=>!!store.textMark(u);
 const keys=all||!has('report_rules')?new Map():new Map(db.prepare('SELECT topic_id,key FROM report_rules').all().map(r=>[r.topic_id,r.key]));
 const todo=[];let total=0;
-for(const r of db.prepare(`SELECT id,coalesce(json_extract(payload,'$.officialTitle'),json_extract(payload,'$.title'),'') AS title,
+for(const r of db.prepare(`SELECT id,region_id,coalesce(json_extract(payload,'$.officialTitle'),json_extract(payload,'$.title'),'') AS title,
   json_extract(payload,'$.documents') AS docs FROM topics WHERE active=1`).iterate()){
  total++;let docs=[];try{docs=JSON.parse(r.docs||'[]');}catch{/* ohne Dokumente */}
  const {doc,session}=mainDocument(docs,{uses:U,hasText});
  const textSha=doc&&!session?store.textMark(doc.url)||'':'';
  const key=readKey({title:r.title,mainUrl:doc?.url,session,textSha});
- if(keys.get(r.id)!==key)todo.push([r.id,doc&&!session&&textSha?doc.url:null,textSha]);
+ if(keys.get(r.id)!==key)todo.push([r.id,doc&&!session&&textSha?doc.url:null,textSha,r.region_id+'|'+titleKey(r.title)]);
 }
 keys.clear();
 console.log(`${total} Berichte, ${todo.length} zu lesen (${READ_VERSION}, ${((Date.now()-t0)/1000).toFixed(0)} s)`);
@@ -49,7 +50,11 @@ const get=db.prepare('SELECT payload FROM topics WHERE id=?');
 const update=db.prepare('UPDATE topics SET payload=? WHERE id=?');
 const dropFacts=db.prepare("DELETE FROM topic_facts WHERE topic_id=? AND method LIKE 'facts-%'");
 const addFact=db.prepare('INSERT OR REPLACE INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)');
-const setKey=dry?null:db.prepare(`INSERT INTO report_rules(topic_id,key,version,summary_issue,read_at) VALUES(?,?,?,?,?)
+// Mit Migration 0035 auch die Ergebnisse als Spalten (Grundlage für plenara.X)
+const setKey=dry?null:hasCases?db.prepare(`INSERT INTO report_rules(topic_id,key,version,summary_issue,read_at,case_key,item_kind,theme,subs,stage) VALUES(?,?,?,?,?,?,?,?,?,?)
+ ON CONFLICT(topic_id) DO UPDATE SET key=excluded.key,version=excluded.version,summary_issue=excluded.summary_issue,read_at=excluded.read_at,
+ case_key=excluded.case_key,item_kind=excluded.item_kind,theme=excluded.theme,subs=excluded.subs,stage=excluded.stage`)
+ :db.prepare(`INSERT INTO report_rules(topic_id,key,version,summary_issue,read_at) VALUES(?,?,?,?,?)
  ON CONFLICT(topic_id) DO UPDATE SET key=excluded.key,version=excluded.version,summary_issue=excluded.summary_issue,read_at=excluded.read_at`);
 // Kurze Schreibvorgänge (je 500 Berichte), damit die laufende App zwischendurch lesen kann; erst rechnen, dann schreiben.
 // IMMEDIATE wartet (busy_timeout) auf andere Schreiber, statt sofort mit „database is locked“ zu scheitern.
@@ -59,7 +64,7 @@ const write=fn=>{pending.push(fn);if(pending.length>=500)flush();};
 // Gründe ohne Zusammenfassung, bei denen eine vorhandene bleibt: Text fehlt oder ist nicht lesbar
 const KEEP=new Set(['no-text','too-long','unreadable']);
 const at=new Date().toISOString(),c={read:0,withText:0,changed:0,summary:0,dropped:0,facts:0,issues:{},kinds:{},themes:{}};
-for(const [id,url,textSha] of todo){
+for(const [id,url,textSha,caseKey] of todo){
  if(limit&&c.read>=limit)break;
  const row=get.get(id);if(!row)continue;
  const old=JSON.parse(row.payload);
@@ -77,7 +82,8 @@ for(const [id,url,textSha] of todo){
  write(()=>{
   if(changed)update.run(json,id);
   dropFacts.run(id);for(const f of r.facts)addFact.run(id,f.kind,f.value,f.detail,method);
-  setKey.run(id,r.key,r.version,r.summaryIssue,at);
+  if(hasCases)setKey.run(id,r.key,r.version,r.summaryIssue,at,caseKey,r.itemKind,r.theme.id,r.theme.subs.join(','),r.stage);
+  else setKey.run(id,r.key,r.version,r.summaryIssue,at);
  });
  if(c.read%20000===0)console.log(`${c.read}/${todo.length}, ${((Date.now()-t0)/1000).toFixed(0)} s`);
 }

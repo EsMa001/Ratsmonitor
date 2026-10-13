@@ -40,3 +40,12 @@ test('Katalog: 10 Themen in der Reihenfolge von themes.mjs, dann unklar; Überse
  const c=classifyTopic({officialTitle:'Mitteilungen - Frau Schulze',sourceUrl:'https://example.org/1'});
  assert.equal(c.evidence,'Mitteilungen - Frau Schulze');assert.equal(c.sourceUrl,'https://example.org/1');assert.equal(c.version,'labels-v3');
 });
+test('Themenfilter aus alten Namen (gespeicherte Suchen): übersetzt, alte Sammellabels entfallen, Unbekanntes null',async()=>{
+ const {labelFilterName}=await import('../shared/labels.mjs');
+ assert.equal(labelFilterName('Klima & Energie'),'Umwelt, Klima & Energie');
+ assert.equal(labelFilterName('Sport & Freizeit'),'Kultur, Sport & Freizeit');
+ assert.equal(labelFilterName('Allgemeine Anfragen & Mitteilungen'),'');
+ assert.equal(labelFilterName('Bauen & Wohnen'),'Bauen & Wohnen');
+ assert.equal(labelFilterName(''),'');
+ assert.equal(labelFilterName('Erfunden'),null);
+});

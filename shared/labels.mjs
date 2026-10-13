@@ -22,6 +22,16 @@ export function labelOf(primary,version){
  if(version==='labels-v2')return LEGACY_LABELS[primary]||null;
  return null;
 }
+// Namen der 16 Labels aus labels-v2 (für gespeicherte Suchen und Links mit altem Themenfilter)
+const LEGACY_NAMES={'Umwelt & Natur':'umwelt','Klima & Energie':'klima','Soziales & Teilhabe':'soziales','Gesundheit & Pflege':'gesundheit',
+ 'Kultur':'kultur','Sport & Freizeit':'sport','Sitzungsablauf & Gremienarbeit':'sitzung','Allgemeine Anfragen & Mitteilungen':'allgemein'};
+/** Themenfilter der Suche aus einem (auch alten) Namen: heutiger Name, übersetzter Name, '' für alte Sammellabels
+ *  (Sitzung, Allgemein: dafür gibt es „Ohne Formalien“), sonst null (unbekannt). */
+export function labelFilterName(name){
+ if(!name||LABELS.some(l=>l.name===name))return name;
+ const old=LEGACY_NAMES[name];if(!old)return null;
+ const id=LEGACY_LABELS[old];return id==='unklar'?'':LABELS.find(l=>l.id===id).name;
+}
 /** Name eines Labels; alte Kennungen (labels-v2, etwa ein gespeichertes KI-Label „sport“) übersetzt. */
 export const labelName=id=>LABELS.find(x=>x.id===(LEGACY_LABELS[id]||id))?.name||'Noch nicht eingeordnet';
 /** Titelregel: Stufen 2 und 3 von readReport (server/integrations/report-rules.mjs) ohne Text, also Art des Punkts und Thema

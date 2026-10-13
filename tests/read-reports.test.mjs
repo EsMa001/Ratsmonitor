@@ -32,7 +32,7 @@ test('read-reports: alle Regeln in einem Lauf, KI-Felder bleiben, zweiter Lauf l
   const db=new DatabaseSync(file);
   db.exec(`CREATE TABLE topics(id TEXT PRIMARY KEY,region_id TEXT,active INTEGER,payload TEXT);
    CREATE TABLE data_revisions(id TEXT PRIMARY KEY,revision INTEGER);INSERT INTO data_revisions VALUES('content',1);`);
-  for(const m of ['0025','0032'])db.exec(fs.readFileSync('drizzle/'+fs.readdirSync('drizzle').find(f=>f.startsWith(m)),'utf8').replace(/CREATE TRIGGER[\s\S]*?END;/g,''));
+  for(const m of ['0025','0032','0035'])db.exec(fs.readFileSync('drizzle/'+fs.readdirSync('drizzle').find(f=>f.startsWith(m)),'utf8').replace(/CREATE TRIGGER[\s\S]*?END;/g,''));
   const store=openPdfStore(storeDir);
   const topic=(id,title,docs,extra={})=>{
    const payload={id,title,officialTitle:title,sourceText:'',shortSummary:'Überblick',longSummary:['Überblick'],
@@ -65,6 +65,10 @@ test('read-reports: alle Regeln in einem Lauf, KI-Felder bleiben, zweiter Lauf l
   const issues=Object.fromEntries(after.prepare('SELECT topic_id,summary_issue FROM report_rules').all().map(r=>[r.topic_id,r.summary_issue]));
   assert.deepEqual(issues,{ki:null,regel:null,sitzung:'session-document','ohne-text':'no-text',formal:'no-document',antrag:'no-document'});
   assert.ok(after.prepare('SELECT version FROM report_rules').all().every(r=>r.version===READ_VERSION));
+  // Ergebnisse als Spalten (0035): Vorgang, Art, Thema, Unterthemen, Was geschieht
+  const cols=id=>({...after.prepare('SELECT case_key,item_kind,theme,subs,stage FROM report_rules WHERE topic_id=?').get(id)});
+  assert.deepEqual(cols('regel'),{case_key:'r|finanzzwischenbericht 2025',item_kind:'subject',theme:'finanzen',subs:get('regel').theme.subs.join(','),stage:get('regel').stage});
+  assert.deepEqual(cols('formal'),{case_key:'r|genehmigung der niederschrift der letzten sitzung',item_kind:'formal',theme:'offen',subs:'',stage:null});
   assert.deepEqual(after.prepare("SELECT kind,value FROM topic_facts WHERE topic_id='antrag'").all().map(r=>[r.kind,r.value]),[['faction','SPD']]);
   assert.match(after.prepare("SELECT method FROM topic_facts WHERE topic_id='antrag'").get().method,/^facts-v\d+:title$/);
   after.close();
