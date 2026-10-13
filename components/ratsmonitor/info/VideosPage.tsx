@@ -70,7 +70,7 @@ function Player({ base, poster, label, onTime, seekRef }: { base: string; poster
 function ChapterList({ title, items, now, go }: { title: string; items: Chapter[]; now: number; go: (t: number) => void }) {
   return (
     <div>
-      <h3 className="m-0 mb-2 text-[13px] font-semibold uppercase tracking-wide text-slate-500">{title}</h3>
+      <h3 className="m-0 mb-2 text-[14px] font-semibold uppercase tracking-wide text-slate-500">{title}</h3>
       <ul className="m-0 list-none p-0">
         {items.map((c) => {
           const i = ALL.indexOf(c);
@@ -79,9 +79,9 @@ function ChapterList({ title, items, now, go }: { title: string; items: Chapter[
             <li key={c.t}>
               <button type="button" onClick={() => go(c.t)} aria-current={cur || undefined}
                 className={`flex w-full cursor-pointer items-baseline gap-3 rounded-lg border-0 px-3 py-2 text-left transition ${cur ? "bg-teal-50" : "bg-transparent hover:bg-slate-100"}`}>
-                <span className="w-10 shrink-0 text-[13px] tabular-nums text-slate-500">{mmss(c.t)}</span>
+                <span className="w-10 shrink-0 text-[14px] tabular-nums text-slate-500">{mmss(c.t)}</span>
                 <span className="min-w-0">
-                  <span className="block text-[15px] font-semibold text-slate-900">{c.title}</span>
+                  <span className="block text-[14px] font-semibold text-slate-900">{c.title}</span>
                   <span className="block text-[13.5px] text-slate-500">{c.what}</span>
                 </span>
               </button>
@@ -116,7 +116,7 @@ export function VideosPage() {
         <div className="grid items-center gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
           <Player base={variant(PITCH, dark)} poster={variant(PITCH, dark)} label="Kurzvideo abspielen: plenara in unter einer Minute" />
           <div>
-            <p className="m-0 text-[13px] font-semibold uppercase tracking-wide text-teal-700">Unter 45 Sekunden</p>
+            <p className="m-0 text-[14px] font-semibold uppercase tracking-wide text-teal-700">Unter 45 Sekunden</p>
             <h2 className="m-0 mt-1 text-[26px] font-semibold leading-tight max-md:text-[21px] text-slate-900">Was wird in Räten gerade beraten, das Ihr Vorhaben, Ihre Stadt oder Ihre Recherche betrifft?</h2>
             <p className="mb-0 mt-3 text-[16px] text-slate-600">Für Kommunen, Unternehmen, Verbände, Medien und Bürger: Ein Begriff genügt, die Karte zeigt, wo darüber beraten wird, und jede Angabe führt zur Originalunterlage.</p>
           </div>
@@ -130,13 +130,13 @@ export function VideosPage() {
             <button key={h.title} type="button" onClick={() => go(h.t)} className="cursor-pointer rounded-xl border border-slate-200 bg-white p-4 text-left transition hover:border-teal-600 hover:shadow-md">
               <span className="block text-[16px] font-semibold text-slate-900">{h.title}</span>
               <span className="mt-1 block text-[14px] text-slate-500">{h.text}</span>
-              <span className="mt-3 block text-[13px] font-semibold text-teal-700">Ab {mmss(h.t)} ansehen →</span>
+              <span className="mt-3 block text-[14px] font-semibold text-teal-700">Ab {mmss(h.t)} ansehen →</span>
             </button>
           ))}
         </div>
       </section>
       <section className="ri-sec" ref={full}>
-        <p className="m-0 text-[13px] font-semibold uppercase tracking-wide text-teal-700">Rund acht Minuten</p>
+        <p className="m-0 text-[14px] font-semibold uppercase tracking-wide text-teal-700">Rund acht Minuten</p>
         <h2 className="m-0 mt-1 text-[22px] font-semibold text-slate-900">Alle Funktionen von plenara und plenara.X</h2>
         <p className="mb-6 mt-1 text-[16px] text-slate-500">Von der ersten Suche bis zur Analyse. Untertitel lassen sich im Player zuschalten.</p>
         <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-10">

@@ -144,7 +144,7 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
           <div style={{ minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <PlacePill place={example.place} />
-              <span style={{ fontSize: 13, color: "var(--rm-c500,#64748b)" }}>{example.committee}</span>
+              <span style={{ fontSize: 14, color: "var(--rm-c500,#64748b)" }}>{example.committee}</span>
             </div>
             <p style={{ margin: "10px 0 0", fontSize: 16, fontWeight: 600, lineHeight: 1.35, color: "var(--rm-c900,#0f172a)" }}>{example.title}</p>
             {example.steps && <div style={{ marginTop: 10 }}><StepTimeline steps={example.steps} /></div>}
@@ -157,7 +157,7 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
           <span className="ri-pv__topics-label" style={{ display: "block", marginBottom: 8 }}>Auch im Blick</span>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {topics.map((t, i) => (
-            <button key={t + i} type="button" aria-pressed={active === i} onClick={() => (onPick ? onPick(i) : openSearch(t))} className={"rounded-full border px-3 py-1.5 text-[13px] " + (active === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{t}</button>
+            <button key={t + i} type="button" aria-pressed={active === i} onClick={() => (onPick ? onPick(i) : openSearch(t))} className={"rounded-full border px-3 py-1.5 text-[14px] " + (active === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{t}</button>
           ))}
           </div>
         </div>
