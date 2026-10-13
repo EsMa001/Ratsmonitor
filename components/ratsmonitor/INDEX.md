@@ -576,7 +576,7 @@ topic design-styles.css:140
 - page.tsx (9): Page
 
 ### app/(monitor)/beschluss/[id]/
-- page.tsx (21): generateMetadata, Page
+- page.tsx (35): generateMetadata, Page
 
 ### app/(monitor)/datenabdeckung/
 - page.tsx (2): Page
@@ -681,7 +681,7 @@ topic design-styles.css:140
 - process-progress.tsx (8, ⚠1): ProcessProgress
 
 ### components/ratsmonitor/
-- App.tsx (68, ⚠1): MonitorApp
+- App.tsx (69, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (68, ⚠2): AccountMenu
@@ -781,7 +781,7 @@ topic design-styles.css:140
 - text.ts (106): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, todayLocal, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (118): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TodoSubtask, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
-- topicCache.ts (26): TopicError, loadTopic, prefetchDetail
+- topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
 - useDarkMode.ts (40): useDarkMode
 - usePhone.ts (16): usePhone
 - uuid.ts (12): newId
@@ -791,7 +791,7 @@ topic design-styles.css:140
 - MainMenu.tsx (229, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (172, ⚠10): DetailPage
+- DetailPage.tsx (177, ⚠12): DetailPage
 - KalenderPage.tsx (363, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage

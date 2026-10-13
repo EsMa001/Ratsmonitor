@@ -13,8 +13,10 @@ import {SaveArticleButton} from '../components/SaveArticleButton';
 import {FollowButton} from '../components/FollowButton';
 import {ExportMenu} from '../components/ExportMenu';
 import {exportArticlePdf,exportArticleTable,printArticle} from '../lib/exportArticle';
-import {loadTopic,TopicError} from '../lib/topicCache';
+import {loadTopic,peekTopic,TopicError} from '../lib/topicCache';
+const NOT_FOUND_TEXT='Dieser Vorgang wurde nicht gefunden.';
 import {todayLocal} from '../lib/text';
+import {useBrand} from '../lib/brand';
 const sourceLink=(value?:string)=>{try{const url=new URL(value||'');return ['http:','https:'].includes(url.protocol)?url.href:undefined;}catch{return undefined;}};
 function OriginalQuote({evidence,topic}:{evidence:ContentEvidence;topic:TopicDetail}){
  const source=topic.contentAnalysis?.sourceDocuments?.find(document=>evidence.sourceId&&document.id===evidence.sourceId||document.url===evidence.url);
@@ -37,13 +39,16 @@ function Excerpt({text,source,size}:{text:{sentences:string[];gaps?:boolean[]};s
 }
 export function DetailPage(){
  const router=useRouter(),params=useParams(),id=String(params.id||''),{goBack}=useAppNav();
- const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>({id:'',topic:null,error:''}),[attempt,setAttempt]=useState(0),[summaryView,setSummaryView]=useState<{id:string;view:'ai'|'rule'}>({id:'',view:'ai'});
+ const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>(()=>{const s=peekTopic(id);return s===undefined?{id:'',topic:null,error:''}:{id,topic:s,error:s?'':NOT_FOUND_TEXT};}),[attempt,setAttempt]=useState(0),[summaryView,setSummaryView]=useState<{id:string;view:'ai'|'rule'}>({id:'',view:'ai'});
  // Der Vorgang kommt aus lib/topicCache.ts: aus der Trefferliste meist schon vorgeladen, bei der Rückkehr noch gehalten.
- useEffect(()=>{let live=true;loadTopic(id).then(t=>{if(live)setData({id,topic:t,error:''});}).catch(e=>{if(live)setData({id,topic:null,error:e instanceof TopicError?e.message:'Der Vorgang konnte nicht geladen werden.'});});window.scrollTo(0,0);return()=>{live=false;};},[id,attempt]);
+ useEffect(()=>{let live=true;const s=attempt?undefined:peekTopic(id);if(s!==undefined){setData({id,topic:s,error:s?'':NOT_FOUND_TEXT});window.scrollTo(0,0);return;}loadTopic(id).then(t=>{if(live)setData({id,topic:t,error:''});}).catch(e=>{if(live)setData({id,topic:null,error:e instanceof TopicError?e.message:'Der Vorgang konnte nicht geladen werden.'});});window.scrollTo(0,0);return()=>{live=false;};},[id,attempt]);
  // Gebietsname aus dem Katalog; der wird erst hier geladen (nicht schon mit dem Vorladen der Seite), der Name folgt dann.
  const [regions,setRegions]=useState<Region[]|null>(null);
  useEffect(()=>{let live=true;loadCatalog().then(m=>{if(live)setRegions(m.REGIONS);}).catch(()=>{});return()=>{live=false;};},[]);
  const t=data.id===id?data.topic:null,region=regions?.find(r=>r.id===t?.regionId);
+ // Tab-Titel wie vom Server (generateMetadata): Vorgangstitel · Marke; solange nichts da ist, „Vorgang“
+ const {name}=useBrand(),tabTitle=t?.title||(data.id===id&&data.error?'Vorgang nicht gefunden':'Vorgang');
+ useEffect(()=>{document.title=`${tabTitle} · ${name}`;},[tabTitle,name]);
  if(!t)return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><Link className="link-btn" href="/suche">Zur Übersicht</Link>{data.id===id&&data.error?<div role="alert" className="card-shell mt-6 p-6"><p>{data.error}</p><button className="btn-secondary mt-4" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></div>:<p role="status" className="mt-6">Vorgang wird geladen …</p>}</main>;
   const host=(u:string)=>{try{return new URL(u).host;}catch{return '';}},events=t.events.filter(e=>!t.sourceUrl||!e.url||!host(e.url)||host(e.url)===host(t.sourceUrl)),status=STATUS[t.status]||STATUS.unknown;
   const isAi=/^KI-Zusammenfassung/.test(t.generatedBy||'')||t.contentAnalysis?.status==='completed',rule=t.ruleSummary;
@@ -59,7 +64,7 @@ export function DetailPage(){
   /* Rohdaten der OParl-Schnittstelle (maschinenlesbares JSON) sind keine Unterlage für Menschen: ausblenden */
   const isOparlData=(u?:string,title?:string)=>/oparl-datensatz/i.test(title||'')||/\/oparl\/.*\/(papers|meetings|agendaitems|consultations)\//i.test(u||'');
   /* Unterlagen über den eigenen Durchreicher öffnen: PDFs erscheinen im Browser statt als Download */
-  const docs=t.documents.map((d,i)=>({...d,url:`${typeof window!=='undefined'?window.location.origin:''}/api/dokument?t=${encodeURIComponent(t.id)}&i=${i}`,src:d.url})).filter(d=>!isOparlData(d.src,d.title));
+  const docs=t.documents.map((d,i)=>({...d,url:`/api/dokument?t=${encodeURIComponent(t.id)}&i=${i}`,src:d.url})).filter(d=>!isOparlData(d.src,d.title));
   const sorted=[...events].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   /* Letzte Sitzung bis heute (-1: alle noch künftig); danach Kommendes grau */
   const today=todayLocal(),current=sorted.reduce((c,e,i)=>(e.date||'').slice(0,10)<=today?i:c,-1);
@@ -86,7 +91,7 @@ export function DetailPage(){
                 {id:'xlsx',label:'Excel (.xlsx)',desc:'Eckdaten, Verlauf und Unterlagen als Tabelle'},
                 {id:'csv',label:'CSV (.csv)',desc:'Für andere Programme, z. B. CRM'},
               ]}
-              onExport={async f=>{const a={t,place:region?.name||'',docs,events:sorted};if(f==='pdf')await exportArticlePdf(a);else if(f==='print')printArticle(a);else exportArticleTable(a,f as 'csv'|'xlsx');}}
+              onExport={async f=>{const a={t,place:region?.name||'',docs:docs.map(d=>({...d,url:window.location.origin+d.url})),events:sorted};if(f==='pdf')await exportArticlePdf(a);else if(f==='print')printArticle(a);else exportArticleTable(a,f as 'csv'|'xlsx');}}
             />
           </span>
         </div>

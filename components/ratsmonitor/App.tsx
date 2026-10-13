@@ -56,7 +56,8 @@ function useBrandTitle(p:string,notFound:boolean){
  const count=!res.loading&&!res.totalPending&&what?`${res.total.toLocaleString('de-DE')} Treffer`:'';
  useEffect(()=>{
   // Analyse-Seiten setzen ihren Titel selbst („Ausbreitung · plenara.X“); ein Überschreiben hier würde ihn zurücksetzen
-  if(!notFound&&isAnalyticsPath(p))return;
+  // … ebenso die Detailseite (Titel des Vorgangs, wie ihn auch der Server schickt)
+  if(!notFound&&(isAnalyticsPath(p)||p.startsWith('/beschluss/')||p.startsWith('/thema/')))return;
   document.title=notFound?`Seite nicht gefunden · ${name}`:p==='/suche'?[what,count,name].filter(Boolean).join(' · '):tabTitle(p,name,p.startsWith('/anwender/')?brancheBySlug(p.slice(10))?.name:undefined);
  },[brand,name,p,notFound,what,count]);
  useEffect(()=>{setFavicon(logo);},[logo,p]);
