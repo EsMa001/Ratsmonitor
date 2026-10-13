@@ -17,6 +17,7 @@ import { MONTH_SHORT, todayLocal } from "../lib/text";
 import { digestMail, type DigestPart, type MailItem } from "../lib/mails";
 import { useToast } from "../state/toast";
 import { queue } from "../lib/queue";
+import { useHydrated } from "../lib/useClient";
 
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
 type Preview = { total: number; items: Item[] } | null;
@@ -252,13 +253,17 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
   const toast = useToast();
   const { geo, place } = useData();
   const weekday = day;
-  useEffect(() => {
+  /* Einstellung liegt im Browser-Speicher: nach dem Hydrieren einmal beim Rendern übernehmen */
+  const hydrated = useHydrated();
+  const [ready, setReady] = useState(false);
+  if (hydrated && !ready) {
+    setReady(true);
     try {
       setOn(localStorage.getItem(WEEKLY) === "1");
       const d = localStorage.getItem(WEEKLY_DAY);
       if (d && DAYS.includes(d)) setDay(d);
     } catch {}
-  }, []);
+  }
   const pickDay = (d: string) => {
     setDay(d);
     try {

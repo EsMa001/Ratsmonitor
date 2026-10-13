@@ -15,19 +15,21 @@ export function DataProvider({children}:{children:ReactNode}){
  const [data,setData]=useState({geo:null as GeoModel|null,place:null as PlaceIndex|null,geoError:false});
  const pathname=usePathname();
  const [wanted,setWanted]=useState(pathname==='/suche');
+ /* Auf der Suchseite sofort (beim Rendern gemerkt, bleibt auch nach dem Wegnavigieren), sonst im Leerlauf */
+ if(!wanted&&pathname==='/suche')setWanted(true);
+ const want=wanted||pathname==='/suche';
  useEffect(()=>{
-  if(wanted)return;
-  if(pathname==='/suche'){setWanted(true);return;}
+  if(want)return;
   const w=window as Window&{requestIdleCallback?:(cb:()=>void,o?:{timeout:number})=>number;cancelIdleCallback?:(id:number)=>void};
   if(w.requestIdleCallback){const id=w.requestIdleCallback(()=>setWanted(true),{timeout:4000});return()=>w.cancelIdleCallback?.(id);}
   const t=setTimeout(()=>setWanted(true),2500);return()=>clearTimeout(t);
- },[pathname,wanted]);
+ },[want]);
  useEffect(()=>{
-  if(!wanted)return;
+  if(!want)return;
   const ctrl=new AbortController();
   fetch(MAP_URL,{signal:ctrl.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<MapData>}).then(d=>{if(ctrl.signal.aborted)return;const geo=new GeoModel(d);setData({geo,place:new PlaceIndex(d,geo),geoError:false});}).catch(()=>{if(!ctrl.signal.aborted)setData({geo:null,place:null,geoError:true});});
   return()=>ctrl.abort();
- },[wanted]);
+ },[want]);
  return <DataContext.Provider value={data}>{children}</DataContext.Provider>;
 }
 export const useData=()=>useContext(DataContext);

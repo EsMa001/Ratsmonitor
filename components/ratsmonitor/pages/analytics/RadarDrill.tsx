@@ -17,26 +17,38 @@ const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? ""
 export function RadarDrill({ radar, base, query, by, value, label, unit }: { radar?: string; base?: string; query: string; by: string; value: string; label: string; unit?: [string, string] }) {
   const [items, setItems] = useState<DrillItem[]>([]);
   const [total, setTotal] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  /* Neue Liste (anderer Wert oder andere Abfrage): beim Rendern zurücksetzen, der Effekt lädt nur */
+  const listKey = [radar, base, query, by, value].join("|");
+  const [shown, setShown] = useState(listKey);
+  if (shown !== listKey) {
+    setShown(listKey);
+    setItems([]);
+    setTotal(null);
+    setError("");
+    setLoading(true);
+  }
   /* Nur der jüngste Abruf zählt: wechselt die Liste, wird der laufende abgebrochen, damit keine alte Antwort die neue überschreibt */
   const ctrl = useRef<AbortController | null>(null);
   const load = (offset: number) => {
     ctrl.current?.abort();
     const c = (ctrl.current = new AbortController());
-    setLoading(true);
-    setError("");
-    if (!offset) { setItems([]); setTotal(null); }
     fetchOrFail(`${base ?? `/api/analytics/themenradar?radar=${radar}`}&${query}&by=${by}&value=${encodeURIComponent(value)}&offset=${offset}`, { signal: c.signal })
       .then(async (r) => { const b = (await r.json().catch(() => ({}))) as List & { error?: string }; if (!r.ok || !Array.isArray(b.items)) throw new ApiError(b.error || "Die Liste konnte nicht geladen werden.", r.status); return b; })
       .then((b) => { setItems((old) => (offset ? [...old, ...b.items] : b.items)); setTotal(b.total); setLoading(false); })
       .catch((e) => { if (c.signal.aborted) return; setError(errorText(e, "Die Liste konnte nicht geladen werden.")); setLoading(false); });
   };
+  const more = () => {
+    setLoading(true);
+    setError("");
+    load(items.length);
+  };
   useEffect(() => {
     load(0);
     return () => ctrl.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [radar, base, query, by, value]);
+  }, [listKey]);
   return (
     <div className="border-l-2 border-teal-600 bg-slate-50/70 px-3 pb-3 pt-2 sm:px-4" aria-live="polite">
       <p className="m-0 text-[12px] text-slate-500">{total === null ? `${label}: wird geladen …` : `${label}: ${n(total)} ${unit ? (total === 1 ? unit[0] : unit[1]) : by === "region" ? "Vorgänge (gleiche Titel einmal)" : total === 1 ? "Vorgang" : "Vorgänge"}`}</p>
@@ -59,7 +71,7 @@ export function RadarDrill({ radar, base, query, by, value, label, unit }: { rad
         </ol>
       )}
       {total !== null && items.length < total && (
-        <button type="button" disabled={loading} onClick={() => load(items.length)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{loading ? "Wird geladen …" : `Weitere ${n(Math.min(50, total - items.length))} laden`}</button>
+        <button type="button" disabled={loading} onClick={more} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{loading ? "Wird geladen …" : `Weitere ${n(Math.min(50, total - items.length))} laden`}</button>
       )}
     </div>
   );

@@ -77,7 +77,7 @@ const rule = { borderTop: "1px solid var(--rm-c200,#e2e8f0)" } as const;
 function CountUp({ value }: { value: number }) {
   const [v, setV] = useState(reduced() ? value : 0);
   useEffect(() => {
-    if (reduced()) return setV(value);
+    if (reduced()) return;
     let raf = 0;
     const t0 = performance.now();
     const step = (t: number) => {
@@ -88,7 +88,7 @@ function CountUp({ value }: { value: number }) {
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [value]);
-  return <>{nf.format(v)}</>;
+  return <>{nf.format(reduced() ? value : v)}</>;
 }
 
 /** Verlaufslinie ohne Achsen; Endpunkt als Punkt */
@@ -274,10 +274,11 @@ export function StartseitePage() {
     for (const d of Object.values(out)) d.firsts.sort((a, b) => a.t - b.t);
     return out;
   }, [raw]);
-  const [rT, setRT] = useState(0);
+  const [rTAnim, setRT] = useState(0);
   const [place, setPlace] = useState("");
   const [pick, setPick] = useState<Cov | null>(null);
-  const [placeInfo, setPlaceInfo] = useState<{ total: number; upcoming: number; next: Hit[] } | null>(null);
+  /* Ergebnis je Ort; ein anderer Ort zeigt sofort nichts, bis seins da ist */
+  const [placeGot, setPlaceInfo] = useState<{ ags: string; total: number; upcoming: number; next: Hit[] } | null>(null);
   const today = todayLocal();
 
   /* Artikelzahl und Abdeckungsliste (für die Ortsprüfung) */
@@ -334,9 +335,11 @@ export function StartseitePage() {
     for (const d of Object.values(data)) for (const e of d.firsts) { lo = Math.min(lo, e.t); hi = Math.max(hi, e.t); }
     return Number.isFinite(lo) && hi > lo ? { lo, hi } : null;
   })();
+  /* Reduzierte Bewegung: gleich der Endstand, ohne Ablauf */
+  const rT = span && reduced() ? span.hi : rTAnim;
   useEffect(() => {
     if (!span) return;
-    if (reduced()) return setRT(span.hi);
+    if (reduced()) return;
     const DUR = 96000;
     const HOLD = 4000;
     const t0 = performance.now();
@@ -403,15 +406,15 @@ export function StartseitePage() {
     return { topic: t, values, last3, prev3, ch, months: full.length, lastMonth: full[full.length - 1]?.month ?? "" };
   });
 
+  const placeInfo = placeGot && placeGot.ags === pick?.ags ? placeGot : null;
   /* Ortsprüfung: Ergebnis zum angeklickten Ort */
   useEffect(() => {
-    if (!pick?.ags) return setPlaceInfo(null);
-    const ctl = new AbortController();
-    setPlaceInfo(null);
+    if (!pick?.ags) return;
+    const ags = pick.ags, ctl = new AbortController();
     const get = (extra: string) =>
       fetch(`/api/search?area=${pick.ags}${extra}`, { signal: ctl.signal }).then((r) => (r.ok ? (r.json() as Promise<{ total: number; articles: Hit[] }>) : Promise.reject(new Error("ort"))));
     Promise.all([get(""), get(`&from=${today}&sort=asc&noformal=1`)])
-      .then(([all, up]) => setPlaceInfo({ total: all.total, upcoming: up.total, next: up.articles.slice(0, 3) }))
+      .then(([all, up]) => setPlaceInfo({ ags, total: all.total, upcoming: up.total, next: up.articles.slice(0, 3) }))
       .catch(() => {});
     return () => ctl.abort();
   }, [pick, today]);

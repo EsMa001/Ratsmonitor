@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePhone } from "../lib/usePhone";
 import { hasScope } from "../lib/savedSearch";
 import { plural } from "../lib/text";
@@ -25,9 +25,12 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
   if (phone && km > 200 && !wide) setWide(true);
   const maxKm = phone && !wide ? 200 : 500;
   const [pos, setPos] = useState(() => posFromKm(km, maxKm));
-  useEffect(() => {
-    setPos((p) => (kmFromPos(p, maxKm) === km ? p : posFromKm(km, maxKm)));
-  }, [km, maxKm]);
+  /* Umkreis von außen geändert (oder andere Skala): Regler nachziehen, beim Rendern statt im Effekt */
+  const [seen, setSeen] = useState({ km, maxKm });
+  if (seen.km !== km || seen.maxKm !== maxKm) {
+    setSeen({ km, maxKm });
+    if (kmFromPos(pos, maxKm) !== km) setPos(posFromKm(km, maxKm));
+  }
   /* Nach dem Loslassen den ganzen Kreis auf der Karte zeigen */
   const fit = () => {
     const r = search.state.radius;

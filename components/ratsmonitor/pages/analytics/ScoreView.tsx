@@ -35,17 +35,16 @@ function Bar({ value }: { value: number }) {
 /** onTheme: Thema im Atlas öffnen (nur Themen, die der Atlas führt) */
 export function ScoreView({ onTheme, atlasThemes }: { onTheme: (id: string) => void; atlasThemes: readonly string[] }) {
   const [level, setLevel] = useState<"city" | "district">("city");
-  const [data, setData] = useState<Data | null>(null);
-  const [error, setError] = useState("");
+  /* Ergebnis und Fehler je Ebene: beim Wechsel ist sofort nichts geladen, ohne Zurücksetzen im Effekt */
+  const [got, setGot] = useState<{ level: string; data: Data | null; error: string }>({ level: "", data: null, error: "" });
+  const data = got.level === level ? got.data : null, error = got.level === level ? got.error : "";
   const [picked, setPicked] = useState("");
   const [find, setFind] = useState("");
   useEffect(() => {
     const ctrl = new AbortController();
-    setError("");
-    setData(null);
     fetchJson<Data>(`/api/analytics/score?level=${level}`, { signal: ctrl.signal }, "Der Score konnte nicht berechnet werden.")
-      .then(setData)
-      .catch((e) => { if (!ctrl.signal.aborted) setError(errorText(e, "Der Score konnte nicht berechnet werden.")); });
+      .then((d) => setGot({ level, data: d, error: "" }))
+      .catch((e) => { if (!ctrl.signal.aborted) setGot({ level, data: null, error: errorText(e, "Der Score konnte nicht berechnet werden.") }); });
     return () => ctrl.abort();
   }, [level]);
 

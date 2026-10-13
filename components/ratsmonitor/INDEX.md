@@ -686,7 +686,7 @@ topic design-styles.css:140
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (68, ⚠2): AccountMenu
 - ActiveFilters.tsx (117, ⚠1): ActiveFilters
-- AreaBar.tsx (98, ⚠1): AreaBar
+- AreaBar.tsx (101, ⚠1): AreaBar
 - Brand.tsx (274): AnalyticsLogo, Brand
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - CountDots.tsx (9): CountDots
@@ -732,7 +732,7 @@ topic design-styles.css:140
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (171, ⚠4): QuellenPage
-- StartseitePage.tsx (515, ⚠5): StartseitePage
+- StartseitePage.tsx (518, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (154): VideosPage
@@ -790,18 +790,18 @@ topic design-styles.css:140
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 
 ### components/ratsmonitor/menu/
-- MainMenu.tsx (229, ⚠1): MainMenu
+- MainMenu.tsx (233, ⚠1): MainMenu
 
 ### components/ratsmonitor/pages/
-- DetailPage.tsx (177, ⚠12): DetailPage
-- KalenderPage.tsx (365, ⚠3): KalenderPage
+- DetailPage.tsx (179, ⚠12): DetailPage
+- KalenderPage.tsx (367, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
 - PersonalPage.tsx (22): PersonalPage
 - PostfachPage.tsx (87): PostfachPage
-- ProfilePage.tsx (114): ProfileSettings, readProfile, ProfilePage
+- ProfilePage.tsx (121): ProfileSettings, readProfile, ProfilePage
 - SavedArticlesPage.tsx (134, ⚠2): SavedArticlesPage
-- SavedSearchesPage.tsx (322): SavedSearchesPage
+- SavedSearchesPage.tsx (327): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (374, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
@@ -829,17 +829,18 @@ topic design-styles.css:140
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
-- RadarDrill.tsx (67): DrillItem, RadarDrill
+- RadarDrill.tsx (79): DrillItem, RadarDrill
 - RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
-- RadarMap.tsx (78, ⚠2): RadarMap
+- RadarMap.tsx (79, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS
 - RegionMap.tsx (65): RegionMap
 - Reveal.tsx (16): Reveal
-- ScoreView.tsx (133, ⚠4): ScoreView
+- ScoreView.tsx (132, ⚠4): ScoreView
 - ThemeRadarPage.tsx (188, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (205, ⚠6): TrendsPage
+- useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 
 ### components/ratsmonitor/services/
@@ -847,7 +848,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/state/
 - account.tsx (32): AccountProvider, useAccount, useSavedStats
-- data.tsx (34, ⚠1): DataProvider, useData
+- data.tsx (36, ⚠1): DataProvider, useData
 - nav.ts (12): View, viewOf, overviewScroll, useAppNav
 - search.tsx (590, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast

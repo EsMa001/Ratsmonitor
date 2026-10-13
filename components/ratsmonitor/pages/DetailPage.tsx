@@ -41,15 +41,17 @@ export function DetailPage(){
  const router=useRouter(),params=useParams(),id=String(params.id||''),{goBack}=useAppNav();
  const [data,setData]=useState<{id:string;topic:TopicDetail|null;error:string}>(()=>{const s=peekTopic(id);return s===undefined?{id:'',topic:null,error:''}:{id,topic:s,error:s?'':NOT_FOUND_TEXT};}),[attempt,setAttempt]=useState(0),[summaryView,setSummaryView]=useState<{id:string;view:'ai'|'rule'}>({id:'',view:'ai'});
  // Der Vorgang kommt aus lib/topicCache.ts: aus der Trefferliste meist schon vorgeladen, bei der Rückkehr noch gehalten.
- useEffect(()=>{let live=true;const s=attempt?undefined:peekTopic(id);if(s!==undefined){setData({id,topic:s,error:s?'':NOT_FOUND_TEXT});window.scrollTo(0,0);return;}loadTopic(id).then(t=>{if(live)setData({id,topic:t,error:''});}).catch(e=>{if(live)setData({id,topic:null,error:e instanceof TopicError?e.message:'Der Vorgang konnte nicht geladen werden.'});});window.scrollTo(0,0);return()=>{live=false;};},[id,attempt]);
+ useEffect(()=>{let live=true;if(!attempt&&peekTopic(id)!==undefined){window.scrollTo(0,0);return;}loadTopic(id).then(t=>{if(live)setData({id,topic:t,error:''});}).catch(e=>{if(live)setData({id,topic:null,error:e instanceof TopicError?e.message:'Der Vorgang konnte nicht geladen werden.'});});window.scrollTo(0,0);return()=>{live=false;};},[id,attempt]);
  // Gebietsname aus dem Katalog; der wird erst hier geladen (nicht schon mit dem Vorladen der Seite), der Name folgt dann.
  const [regions,setRegions]=useState<Region[]|null>(null);
  useEffect(()=>{let live=true;loadCatalog().then(m=>{if(live)setRegions(m.REGIONS);}).catch(()=>{});return()=>{live=false;};},[]);
- const t=data.id===id?data.topic:null,region=regions?.find(r=>r.id===t?.regionId);
+ /* Vom Server mitgelieferter Vorgang gilt sofort (auch nach einem Wechsel zu einem anderen mitgelieferten), ohne Setzen im Effekt */
+ const seeded=attempt?undefined:peekTopic(id),cur=seeded!==undefined?{id,topic:seeded,error:seeded?'':NOT_FOUND_TEXT}:data;
+ const t=cur.id===id?cur.topic:null,region=regions?.find(r=>r.id===t?.regionId);
  // Tab-Titel wie vom Server (generateMetadata): Vorgangstitel · Marke; solange nichts da ist, „Vorgang“
- const {name}=useBrand(),tabTitle=t?.title||(data.id===id&&data.error?'Vorgang nicht gefunden':'Vorgang');
+ const {name}=useBrand(),tabTitle=t?.title||(cur.id===id&&cur.error?'Vorgang nicht gefunden':'Vorgang');
  useEffect(()=>{document.title=`${tabTitle} · ${name}`;},[tabTitle,name]);
- if(!t)return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><Link className="link-btn" href="/suche">Zur Übersicht</Link>{data.id===id&&data.error?<div role="alert" className="card-shell mt-6 p-6"><p>{data.error}</p><button className="btn-secondary mt-4" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></div>:<p role="status" className="mt-6">Vorgang wird geladen …</p>}</main>;
+ if(!t)return <main id="inhalt" className="mx-auto max-w-page py-[12px]"><Link className="link-btn" href="/suche">Zur Übersicht</Link>{cur.id===id&&cur.error?<div role="alert" className="card-shell mt-6 p-6"><p>{cur.error}</p><button className="btn-secondary mt-4" onClick={()=>setAttempt(n=>n+1)}>Erneut versuchen</button></div>:<p role="status" className="mt-6">Vorgang wird geladen …</p>}</main>;
   const host=(u:string)=>{try{return new URL(u).host;}catch{return '';}},events=t.events.filter(e=>!t.sourceUrl||!e.url||!host(e.url)||host(e.url)===host(t.sourceUrl)),status=STATUS[t.status]||STATUS.unknown;
   const isAi=/^KI-Zusammenfassung/.test(t.generatedBy||'')||t.contentAnalysis?.status==='completed',rule=t.ruleSummary;
   const both=isAi&&!!rule,view=both&&summaryView.id===id?summaryView.view:isAi?'ai':'rule',showRule=!!rule&&view==='rule';

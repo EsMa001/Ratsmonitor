@@ -62,7 +62,11 @@ export function MainMenu() {
   }, []);
 
   /* Seitenwechsel (z. B. über die Symbole rechts) schließt das Menü */
-  useEffect(() => setOpen(false), [path]);
+  const [openedAt, setOpenedAt] = useState(path);
+  if (openedAt !== path) {
+    setOpenedAt(path);
+    setOpen(false);
+  }
 
   useEffect(() => {
     if (!open) return;

@@ -22,17 +22,18 @@ export function RadarMap({ radar, base, topics, q, exact, place, onPlace, topicL
   const [topic, setTopic] = useState("");
   const [level, setLevel] = useState<"city" | "district">("city");
   const [data, setData] = useState<MapData | null>(null);
-  const [error, setError] = useState("");
+  /* Fehler gilt nur für die Abfrage, bei der er auftrat (kein Zurücksetzen im Effekt) */
+  const [failed, setFailed] = useState({ key: "", error: "" });
   const [picked, setPicked] = useState("");
+  const qs = String(new URLSearchParams({ ...(radar ? { radar } : {}), map: "1", level, ...(topic ? { topic } : {}), ...(q ? { q } : {}), ...(exact ? { exact: "1" } : {}) }));
+  const error = failed.key === qs ? failed.error : "";
   useEffect(() => {
     const ctrl = new AbortController();
-    setError("");
-    const qs = new URLSearchParams({ ...(radar ? { radar } : {}), map: "1", level, ...(topic ? { topic } : {}), ...(q ? { q } : {}), ...(exact ? { exact: "1" } : {}) });
     fetchJson<MapData>(`${base ?? "/api/analytics/themenradar"}?${qs}`, { signal: ctrl.signal }, "Die Karte konnte nicht berechnet werden.")
       .then(setData)
-      .catch((e) => { if (!ctrl.signal.aborted) setError(errorText(e, "Die Karte konnte nicht berechnet werden.")); });
+      .catch((e) => { if (!ctrl.signal.aborted) setFailed({ key: qs, error: errorText(e, "Die Karte konnte nicht berechnet werden.") }); });
     return () => ctrl.abort();
-  }, [radar, base, topic, level, q, exact]);
+  }, [base, qs]);
 
   const byAgs = useMemo(() => { const m = new Map<string, MapItem>(); for (const i of data?.items ?? []) for (const a of i.ags) m.set(a, i); return m; }, [data]);
   const levels = useMemo(() => { const v: Record<string, number> = {}; for (const i of data?.items ?? []) if (i.level) for (const a of i.ags) v[a] = i.level; return v; }, [data]);

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useHydrated } from "../lib/useClient";
 import { useAccount } from "../state/account";
 import { useToast } from "../state/toast";
 import type { NotifyFreq } from "../types";
@@ -38,7 +39,13 @@ export function ProfilePage() {
   const { clearSaved } = useAccount();
   const [p, setP] = useState<ProfileSettings>(EMPTY);
   const { tier } = useTier();
-  useEffect(() => setP(readProfile()), []);
+  /* Profil liegt im Browser-Speicher: nach dem Hydrieren einmal beim Rendern übernehmen */
+  const hydrated = useHydrated();
+  const [ready, setReady] = useState(false);
+  if (hydrated && !ready) {
+    setReady(true);
+    setP(readProfile());
+  }
   const field = "h-11 w-full rounded-[10px] border border-slate-200 bg-white px-3 text-[14px] outline-none hover:border-slate-300 focus:border-teal-600 focus:shadow-focus";
   const label = "mb-1 block text-[12px] font-semibold uppercase tracking-wide text-slate-500";
   const save = () => {

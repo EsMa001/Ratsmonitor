@@ -3,6 +3,7 @@ import { IconCalendarSync, IconDownload } from "../components/icons";
 import { FilterSelect } from "../components/FilterSelect";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useClient, useHydrated } from "../lib/useClient";
 import { useCatalog } from "../lib/catalog";
 import { PageHead } from "../info/blocks";
 import { useData } from "../state/data";
@@ -37,7 +38,9 @@ export function KalenderPage() {
   const { geo } = useData();
   const { saved } = useAccount();
   const [cfg, setCfg] = useState<CalSettings>(EMPTY);
-  useEffect(() => setCfg(read()), []);
+  /* Einstellungen, Datum und Adresse gibt es erst im Browser: nach dem Hydrieren einmal beim Rendern übernehmen */
+  const hydrated = useHydrated();
+  const [ready, setReady] = useState(false);
   const save = (next: CalSettings) => {
     setCfg(next);
     try {
@@ -46,17 +49,17 @@ export function KalenderPage() {
   };
 
   /* Monat und gewählter Tag; erst im Browser bestimmen (Server kennt die Zeitzone der Nutzer nicht) */
-  const [today, setToday] = useState("");
-  const [host, setHost] = useState("");
-  useEffect(() => setHost(window.location.host), []);
+  const today = useClient(() => iso(new Date()), "");
+  const host = useClient(() => window.location.host, "");
   const [month, setMonth] = useState(() => new Date(2000, 0, 1));
   const [day, setDay] = useState("");
-  useEffect(() => {
+  if (hydrated && !ready) {
     const d = new Date();
-    setToday(iso(d));
+    setReady(true);
+    setCfg(read());
     setDay(iso(d));
     setMonth(new Date(d.getFullYear(), d.getMonth(), 1));
-  }, []);
+  }
 
   /* Alle Gebietsschlüssel inkl. Umkreis, jeweils dem eigenen Gebiet (Farbe) zugeordnet */
   const owner = useMemo(() => {
@@ -78,21 +81,20 @@ export function KalenderPage() {
   };
 
   /* Termine des sichtbaren Monats laden */
-  const [events, setEvents] = useState<CalEvent[]>([]);
-  const [state, setState] = useState<"idle" | "loading" | "error">("idle");
+  /* Ergebnis je Abfrage (Gebiete und Monat); solange die aktuelle fehlt, lädt sie */
+  const from = iso(month), to = iso(new Date(month.getFullYear(), month.getMonth() + 1, 0));
+  const calUrl = agsList.length && today ? `/api/calendar?ags=${agsList.join(",")}&from=${from}&to=${to}` : "";
+  const [got, setGot] = useState<{ url: string; events: CalEvent[]; error: boolean }>({ url: "", events: [], error: false });
+  const events = useMemo(() => (calUrl && got.url === calUrl ? got.events : []), [calUrl, got]);
+  const state = !calUrl ? "idle" : got.url !== calUrl ? "loading" : got.error ? "error" : "idle";
   useEffect(() => {
-    if (!agsList.length || !today) return setEvents([]);
+    if (!calUrl) return;
     const ctrl = new AbortController();
-    const from = iso(month), to = iso(new Date(month.getFullYear(), month.getMonth() + 1, 0));
-    setState("loading");
-    fetchJson<{ events?: CalEvent[] }>(`/api/calendar?ags=${agsList.join(",")}&from=${from}&to=${to}`, { signal: ctrl.signal })
-      .then((d) => {
-        setEvents(d.events ?? []);
-        setState("idle");
-      })
-      .catch(() => !ctrl.signal.aborted && setState("error"));
+    fetchJson<{ events?: CalEvent[] }>(calUrl, { signal: ctrl.signal })
+      .then((d) => setGot({ url: calUrl, events: d.events ?? [], error: false }))
+      .catch(() => !ctrl.signal.aborted && setGot({ url: calUrl, events: [], error: true }));
     return () => ctrl.abort();
-  }, [agsList, month, today]);
+  }, [calUrl]);
 
   const byDay = useMemo(() => {
     const m = new Map<string, CalEvent[]>();
