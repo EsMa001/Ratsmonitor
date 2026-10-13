@@ -167,7 +167,7 @@ export function DetailPage(){
             <h2 className="mb-3 text-[18px] font-semibold text-slate-900">Auf einen Blick</h2>
             <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-3 text-[14px] lg:grid-cols-1">
               {facts.map(([k,v])=><div key={k}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="m-0 text-slate-900">{v}</dd></div>)}
-              {t.labelAssessments?.ai&&<div><dt className="text-[12px] text-slate-500">KI-Sachgebiet</dt><dd className="m-0 text-slate-900">{labelName(t.labelAssessments.ai.primary)}{t.labelAssessments.ai.status==='stale'&&<span className="block text-[12px] text-slate-500">Veraltet</span>}</dd></div>}
+              {t.labelAssessments?.ai&&<div><dt className="text-[12px] text-slate-500">KI-Thema</dt><dd className="m-0 text-slate-900">{labelName(t.labelAssessments.ai.primary)}{t.labelAssessments.ai.status==='stale'&&<span className="block text-[12px] text-slate-500">Veraltet</span>}</dd></div>}
             </dl>
             <p className="mt-4 flex items-start gap-2 text-[14px] text-slate-500" title="Herkunft der Zusammenfassung (Symbol vorläufig)"><span className="mt-0.5 text-teal-700">{source.icon}</span><span><span className="block text-[12px]">Zusammenfassung</span>{source.label}</span></p>
           </aside>

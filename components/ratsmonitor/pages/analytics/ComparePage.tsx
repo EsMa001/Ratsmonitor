@@ -35,8 +35,6 @@ const asPlace = (o: { ags: string; name: string }): PlaceEntry => ({ ags: o.ags,
 const n = (v: number) => v.toLocaleString("de-DE");
 const STATUS_COLOR: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0", unknown: "#f1f5f9" };
 /* Wörter des Sitzungsbetriebs (Anfragen, Geschäftsordnung, Rollen), die eher die Schreibweise eines Ratsinformationssystems als die Themen eines Ortes zeigen */
-/** Sammelposten, die fast jeden Eintrag eines Ortes betreffen und das Themenprofil überdecken */
-const SAMMELTHEMEN = ["allgemein", "sitzung"];
 const SITZUNGSWORT = /^(eingang|eingäng|anregung|beantwort|mündlich|absatz|gemeindeordnung|landes$|land$|geschäftsordnung|regularien|mitunterzeichn|mitwirkungsverbot|nachtrag|hinweis|angelegenheit|benennung|unbesetzt|anhörung|verpflichtung|mitglied|entscheidung|empfehlung|gruppe|ratsmitglied|berichterstatter|entgegennahme|einführung|stadtbezirk|bezirksvertretung|fraktion|unbeantwortet|ausschussmitglied|sitzung|niederschrift|tagesordnung)/;
 const inhaltlich = (term: string) => !SITZUNGSWORT.test(term) && !/(fraktion|gruppe)/.test(term) && !/^(partei|wähler|früher|freie$)/.test(term);
 
@@ -71,8 +69,6 @@ export function ComparePage() {
   const [perHead, setPerHead] = useState(false);
   /* Geöffnete Liste hinter einer Zahl: Abschnitt (at), Art (all, label, committee, term), Wert und die Orte (Index) */
   const [drill, setDrill] = useState<{ at: string; by: string; value: string; label: string; idx: number[] } | null>(null);
-  /* Sammelposten („Allgemeine Anfragen“, „Sitzungsablauf“) sind zunächst aus dem Themenprofil und seiner Rechnung herausgenommen */
-  const [mitSammel, setMitSammel] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const buildQuery = (a: PlaceEntry | null, b: PlaceEntry | null, t: string) =>
@@ -105,16 +101,17 @@ export function ComparePage() {
   const names = res ? res.places.map((p) => name(p.ags, p.scope)) : [];
   const topicRows = useMemo(() => {
     if (!res) return [];
-    const aus = new Set(mitSammel ? [] : SAMMELTHEMEN);
-    /* Anteile neu auf die verbleibenden Themenfelder beziehen */
+    /* Anteile an den Vorgängen mit Thema: „Noch nicht eingeordnet“ (auch Formalien und Sammelpunkte, die kein Thema haben)
+       zählt nicht mit */
+    const aus = new Set(["unklar"]);
     const shareOf = (t: { list: Share[] }, id: string) => {
       const total = t.list.filter((x) => !aus.has(x.id)).reduce((sum, x) => sum + x.n, 0);
       return total ? ((t.list.find((x) => x.id === id)?.n ?? 0) / total) * 100 : 0;
     };
-    return LABELS.filter((l: { id: string }) => l.id !== "unklar" && !aus.has(l.id)).map((l: { id: string; name: string }) => ({
+    return LABELS.filter((l: { id: string }) => !aus.has(l.id)).map((l: { id: string; name: string }) => ({
       id: l.id, name: l.name, shares: res.places.map((p) => shareOf(p.topics, l.id)), base: shareOf(res.base.topics, l.id),
     })).filter((r) => Math.max(...r.shares, r.base) >= 1).sort((a, b) => Math.max(...b.shares) - Math.max(...a.shares));
-  }, [res, mitSammel]);
+  }, [res]);
   const maxTopic = Math.max(5, ...topicRows.flatMap((r) => [...r.shares, r.base]));
   const pick = (at: string, by: string, value: string, label: string, idx: number[]) =>
     setDrill(drill && drill.at === at && drill.by === by && drill.value === value && drill.idx.join() === idx.join() ? null : { at, by, value, label, idx });
@@ -208,10 +205,9 @@ export function ComparePage() {
           <Reveal>
           <section className="mt-12">
             <h2 className="text-[22px] font-semibold">Themenprofil</h2>
-            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themenfelder an den eingeordneten Vorgängen. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
+            <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Themen an den Vorgängen mit Thema; Formalien und noch nicht eingeordnete Vorgänge zählen nicht mit. Die senkrechte Marke zeigt den Wert für alle Gebiete.</p>
             {res.places.map((p, i) => { const d = datenlage(p).filter((x) => x.includes("Thema")); return d.length ? <p key={p.ags + p.scope} className="m-0 mt-3 border-l-2 border-slate-900 pl-3 text-[16px] text-slate-900"><b className="font-semibold">{names[i]}:</b> {d[0]}. Die Anteile sind deshalb nur eingeschränkt vergleichbar.</p> : null; })}
             {legend}
-            <label className="mt-3 flex w-fit cursor-pointer items-center gap-2 text-[14px] text-slate-700"><input type="checkbox" checked={mitSammel} onChange={(e) => setMitSammel(e.target.checked)} className="h-4 w-4 accent-teal-600" />„Allgemeine Anfragen“ und „Sitzungsablauf“ einbeziehen</label>
             <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">{topicRows.map((r) => <TopicPair key={r.id} name={r.name} a={r.shares[0]} b={r.shares[1]} base={r.base} max={maxTopic} onPick={() => pick("topics", "label", r.id, r.name, [0, 1])} />)}</ol>
             {!topicRows.length && <p className="py-4 text-[14px] text-slate-500">Zu wenige eingeordnete Vorgänge für ein Themenprofil.</p>}
             {drillAt("topics")}

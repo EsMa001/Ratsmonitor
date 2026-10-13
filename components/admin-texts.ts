@@ -155,8 +155,8 @@ export const HELP:Record<string,Help>={
 
  // Qualität & Betrieb
  'qualitaet.inhalt':{title:'Prüfliste und Einordnung',
-  sub:'Wie weit die Berichte aufbereitet sind, wie sie sich auf Sachgebiete und Verfahrensstände verteilen, und welche einen zweiten Blick brauchen.',
-  how:['Technische Prüfungen ersetzen keine fachliche Bewertung. Die Sachgebiete stammen aus den festen Regeln (Stufe 02). KI-Sachgebiete aus dem früheren Test mit Billerbeck werden getrennt gespeichert und auf den Berichtsseiten gegenübergestellt.',
+  sub:'Wie weit die Berichte aufbereitet sind, wie sie sich auf Themen und Verfahrensstände verteilen, und welche einen zweiten Blick brauchen.',
+  how:['Technische Prüfungen ersetzen keine fachliche Bewertung. Die Themen stammen aus den festen Regeln: zuerst aus dem Titel (Stufe 02), dann aus Titel und Unterlage (Job „Themen & Texte“). Themen der KI und Einordnungen von Hand gehen vor; alte Einordnungen mit 16 Sachgebieten werden auf die 10 Themen übertragen.',
    '„Alle, auch Titeltest“: Diese Zahlen enthalten Ergebnisse des früheren Tests, bei dem die KI nur den Titel sah. Auf der Seite „Abruf & Verarbeitung“ zählen nur Ergebnisse aus dem Inhalt.'],
   todo:[{label:'Offene Berichte nach Regeln einordnen',href:href('abruf')}]},
  'qualitaet.importe':{title:'Die letzten Abrufe',
@@ -196,7 +196,7 @@ export const TERMS:{term:string;text:string}[]=[
  {term:'Letzter Versuch',text:'Der letzte Abruf überhaupt, auch wenn er scheiterte.'},
  {term:'Teilstand',text:'Berichte sind gespeichert, aber der letzte Abruf hat nicht alles gelesen, etwa wegen eines Zeitlimits.'},
  {term:'Revision',text:'Laufende Nummer des Datenbestands. Sie steigt mit jeder Änderung an Berichten, früheren Fassungen und Analysen und mit jedem gespeicherten Abruf, auch wenn er nichts Neues brachte. Gleiche Nummer heißt: seitdem nichts gespeichert.'},
- {term:'Sachgebiet',text:'Thema eines Berichts, etwa Schule oder Verkehr. Feste Regeln vergeben es aus dem Titel (Stufe 02), die KI aus dem Inhalt (Stufe 03). Im Code heißt es „Label“.'},
+ {term:'Thema',text:'Eines der 10 Themen eines Berichts, etwa Bildung & Betreuung oder Mobilität & Verkehr. Feste Regeln vergeben es aus Titel und Unterlage, die KI aus dem Inhalt (Stufe 03). Formalien, Sammelpunkte und Routine haben keins. Im Code heißt es „Label“.'},
  {term:'Titeltest',text:'Früherer Versuch, bei dem die KI nur den Titel sah (Billerbeck). Seine Ergebnisse werden getrennt gespeichert und zählen bei „aus dem Inhalt“ nicht.'},
  {term:'Erster Tagesordnungstag',text:'Der Tag, an dem ein Bericht zum ersten Mal auf einer Tagesordnung stand.'},
  {term:'Rückreichweite',text:'Wie weit die gespeicherten Berichte eines Gebiets zurückreichen, gemessen an der ältesten Sitzung.'},
@@ -253,7 +253,7 @@ export const MAP_LEGEND={
 } as const;
 export const MAP_NAME:Record<string,string>={
  coverage:'Zustand des letzten Abrufs',reach:'Rückreichweite',fresh:'Jüngste Sitzung',access:'Zugang (OParl, API, HTML, Sperren)',count:'Anzahl Berichte',
- rules:'Anteil nach Regeln bearbeitet',summary:'Anteil mit KI-Zusammenfassung',aiLabel:'Anteil mit KI-Sachgebiet aus dem Inhalt',
+ rules:'Anteil nach Regeln bearbeitet',summary:'Anteil mit KI-Zusammenfassung',aiLabel:'Anteil mit KI-Thema aus dem Inhalt',
 };
 /** Zustände je Gebiet (Schlüssel = Text aus sourceHealth() in shared/admin.mjs). */
 export const STATE_HELP:Record<string,string>={
@@ -304,7 +304,7 @@ export const ATLAS_TEXT={
 
 // ---- 6.6 Qualität & Betrieb ---------------------------------------------------------------------------------------
 export const REVIEW_HELP:Record<string,string>={
- labels:'Kein Sachgebiet oder „unklar“: Die Regeln fanden im Titel kein Thema.',
+ labels:'Sachpunkt ohne Thema: Die Regeln fanden weder im Titel noch in der Unterlage ein Thema. Formalien zählen nicht dazu.',
  status:'Aus der Quelle geht nicht hervor, ob beraten, beschlossen oder abgelehnt wurde.',
  identity:'Quellen nennen für denselben Bericht verschiedene amtliche Vorgänge; er wurde deshalb nicht zusammengeführt.',
  summaries:'Eine Unterlage ist nicht lesbar, oder die KI-Analyse ist gescheitert, veraltet oder fand zu wenig Text.',
@@ -320,7 +320,7 @@ export const FIELD_HELP:Record<string,string>={
  summary:'KI-Analyse abgeschlossen, mit Kurz- und Langfassung und Belegstellen.',
  originals:'Mindestens ein https-Link zur Quelle oder zu einer Unterlage.',
  ruleLabel:'Die festen Regeln haben den Bericht eingeordnet; auch „unklar“ zählt.',
- aiLabel:'Die KI hat ein eigenes Sachgebiet vergeben.',
+ aiLabel:'Die KI hat ein eigenes Thema vergeben.',
 };
 export const FIELD_FOOT='Vorhanden: Berichte, die die Angabe erfüllen. Offen: Berichte, denen sie fehlt.';
 export const QUALITY_EXPLAIN:Record<string,string>={
@@ -341,11 +341,11 @@ export const QUALITY_FIGURE_HELP:Record<string,string>={
  'Zu wenig lesbarer Text':'Die Unterlagen enthielten zu wenig lesbaren Text, etwa nur einen Scan.',
  // geprüft: "stale" setzt article-record.mjs, wenn sich Titel, Verfahrensstand, Beratungen oder die verlinkten Unterlagen ändern (analysisSignature), nicht der Inhalt der Dateien.
  'KI-Analyse veraltet':'Titel, Verfahrensstand, Beratungen oder verlinkte Unterlagen des Berichts haben sich seit der KI-Analyse geändert.',
- 'KI-Sachgebiete (alle, auch Titeltest)':'Von der KI vergebenes Sachgebiet, getrennt von dem der Regeln gespeichert.',
+ 'KI-Sachgebiete (alle, auch Titeltest)':'Von der KI vergebenes Thema, getrennt von dem der Regeln gespeichert.',
 };
 export const QUALITY_TEXT={
- sachgebiete:'Sachgebiete',
- sachgebieteNotiz:'Nach den festen Regeln (Stufe 02), Anteil an allen Berichten. „Unklar“: Die Regeln fanden im Titel kein Sachgebiet.',
+ sachgebiete:'Themen',
+ sachgebieteNotiz:'Nach den festen Regeln aus dem Titel (Stufe 02), Anteil an allen Berichten. „Noch nicht eingeordnet“: Sachpunkte ohne Thema; Formalien sind nicht mitgezählt.',
  unbekannt:'Aus der Quelle geht nicht hervor, wie weit der Vorgang ist.',
  pruefliste:'Prüfliste',
  prueflisteNotiz:'Bis zu 25 zuletzt geänderte Berichte, die zum Prüfgrund passen. Die Links öffnen den Bericht in einem neuen Tab.',
@@ -405,7 +405,7 @@ export const UEBERSICHT_TEXT={
 
 // ---- Abruf & Verarbeitung: Stufen, Rückfragen, Protokoll ----------------------------------------------------------
 export const STUFEN={
- regeln:'Feste Regeln ordnen jeden Bericht anhand seines amtlichen Titels einem Sachgebiet zu und zerlegen den Titel in Begriffe für den Vergleich zwischen Gebieten. Ohne KI, ohne Kosten. Jedes Paket von 500 Berichten wird sofort gespeichert; Sie können jederzeit pausieren und später dort fortsetzen.',
+ regeln:'Feste Regeln ordnen jeden Bericht anhand seines amtlichen Titels einem der 10 Themen zu und zerlegen den Titel in Begriffe für den Vergleich zwischen Gebieten. Ohne KI, ohne Kosten. Jedes Paket von 500 Berichten wird sofort gespeichert; Sie können jederzeit pausieren und später dort fortsetzen.',
  regelnFortschritt:(a:number|string,b:number|string)=>`${a} von ${b} Berichten nach Regeln bearbeitet`,
  regelnKlein:(c:number|string)=>`${c} offen · gilt für den ganzen Bestand, nicht nur für Ihre Auswahl`,
  regelnKnopf:'Alle offenen Berichte einordnen',

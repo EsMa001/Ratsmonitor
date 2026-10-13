@@ -78,7 +78,7 @@ export function AdminAiLocal({sources,selected,revision,legacyJob}:{sources:Admi
 
  return <section className="admin-stage admin-stage-ai admin-ai-local" id="abruf-ki-lokal">
   <div className="admin-stage-number">03</div><h3>KI-Inhalte erarbeiten</h3>
-  <ul className="admin-ai-local-outputs" aria-label="Ergebnisse je KI-Bearbeitung">{['Kurzfassung','Inhaltszusammenfassung','KI-Sachgebiet'].map(name=><li key={name}><Check size={16} aria-hidden="true"/>{name}</li>)}</ul>
+  <ul className="admin-ai-local-outputs" aria-label="Ergebnisse je KI-Bearbeitung">{['Kurzfassung','Inhaltszusammenfassung','KI-Thema'].map(name=><li key={name}><Check size={16} aria-hidden="true"/>{name}</li>)}</ul>
   <div className="admin-ai-local-filters">
    <AdminChoice id="abruf-ki-gebiete" label="Welche Gebiete" value={filters.scope} onChange={value=>change('scope',value)} items={[["selection",`Ihre Auswahl (${number(chosen.length)} Gebiete, ${number(total)} Berichte)`],["all","Ganz Deutschland"]]}/>
    <AdminChoice id="abruf-ki-zeitraum" label="Zeitraum rückwirkend" value={filters.window} onChange={value=>change('window',value)} items={[["all","Alle gespeicherten Berichte"],...windows]}/>

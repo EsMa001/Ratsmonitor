@@ -22,7 +22,8 @@ export function labelOf(primary,version){
  if(version==='labels-v2')return LEGACY_LABELS[primary]||null;
  return null;
 }
-export const labelName=id=>LABELS.find(x=>x.id===id)?.name||'Noch nicht eingeordnet';
+/** Name eines Labels; alte Kennungen (labels-v2, etwa ein gespeichertes KI-Label „sport“) übersetzt. */
+export const labelName=id=>LABELS.find(x=>x.id===(LEGACY_LABELS[id]||id))?.name||'Noch nicht eingeordnet';
 /** Titelregel: Stufen 2 und 3 von readReport (server/integrations/report-rules.mjs) ohne Text, also Art des Punkts und Thema
  *  nur aus dem Titel. Gilt, bis read-reports.mjs den Bericht mit seinem Dokument gelesen hat (payload.theme).
  *  @param {any} t */
