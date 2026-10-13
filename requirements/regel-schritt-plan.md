@@ -95,3 +95,47 @@ Sitzungsunterlage ja/nein und Prüfsumme des Texts. Gleicher Schlüssel → nich
 3. Migration `0032` + `read-reports.mjs` + Gleichheitsprüfung.
 4. `rule-texts.mjs` und `sync.ts` umstellen.
 5. Doku (`CLAUDE.md`, `docs/betrieb/node-server.md`).
+
+# Schritt 5: Die 10 Themen ersetzen die 16 Labels (Plan, Entscheidung 14.10.2026: „Übersetzen“)
+
+Ein Katalog: `labels-v3` sind die 10 Themen aus `shared/themes.mjs` plus „noch nicht zugeordnet“ (`unklar`). Alles, was heute
+den Katalog aus `shared/labels.mjs` liest (Suche, Filter, Karte, Lena, Admin, plenara.X, Oberfläche), bekommt so die Themen.
+
+## Übersetzung der alten Labels (fest, für Prüfung von Hand und KI-Labels in `labels-v2`)
+
+bildung→bildung, bauen→bauen, mobilitaet→mobilitaet, umwelt→umwelt, klima→umwelt, soziales→soziales, gesundheit→soziales,
+wirtschaft→wirtschaft, kultur→kultur, sport→kultur, sicherheit→sicherheit, finanzen→finanzen, verwaltung→verwaltung,
+sitzung→unklar, allgemein→unklar, unklar→unklar. (Formalie erkennt die Suche seit Schritt 4 über `itemKind`, nicht über ein Label.)
+
+## Rangfolge des wirksamen Themas (View `topic_effective_labels`, Migration `0034`)
+
+1. Prüfung von Hand (`labelAssessments.review`), `labels-v2` übersetzt, `labels-v3` direkt.
+2. KI-Label (`labelAssessments.ai`), ebenso.
+3. Thema aus `readReport` (`payload.theme.id`, Fassung `THEMES_VERSION`), `offen` → `unklar`.
+4. Rückfall, solange ein Bericht noch nicht gelesen ist: Titelregel (`classification`), `labels-v2` übersetzt.
+
+Die Trigger der Suchkarten (0027) sehen zusätzlich Änderungen an `payload.theme.id`; die Migration setzt `search_cards.label`
+für alle Karten neu. Danach Wortliste `--full` (Zahlen je Label).
+
+## Code
+
+- `shared/labels.mjs`: `LABELS` = 10 Themen + `unklar` (Namen aus `themes.mjs`, Farben aus den alten Labels), `LABEL_VERSION`
+  `labels-v3`, `LEGACY_LABELS` (Übersetzung oben). `classifyTopic` nimmt das Thema aus `themeOf({title})` und `itemKind`
+  (Titelregel = Stufe 3 von `readReport` ohne Text), `CLASSIFIER_VERSION` `title-rules-v5`.
+- Lena: Themen-Synonyme aus den Wortlisten der Unterthemen statt `label-words.mjs`; Messung `scripts/lena/measure.mjs`.
+- KI-Aufbereitung (`ai-local-content.mjs`, `ai-job.mjs`): Katalog `labels-v3` (neue KI-Labels gleich in den 10 Themen).
+- Stellen mit festen alten Kennungen anpassen (Suche nach `klima`, `sport`, `gesundheit`, `sitzung`, `allgemein` als Label).
+- Oberfläche liest `LABELS` aus `shared/labels.mjs` und folgt von selbst; nur prüfen, nichts umgestalten.
+
+## Prüfung
+
+- Tests: Übersetzung, Rangfolge im View (alle vier Stufen), Trigger bei geändertem Thema, Lena-Fragen.
+- Lokal: Verteilung der Themen vorher/nachher, Suche mit Themenfilter, Lena-Messung.
+- Server: erst nach Zustimmung (Migrationen 0032 bis 0034, `read-reports.mjs --all`, Wortliste `--full`).
+
+## Commits
+
+1. `labels.mjs` (Katalog, Übersetzung, `classifyTopic`) + Tests.
+2. Migration `0034` (View, Trigger, Neubefüllung) + Tests.
+3. Lena und KI-Katalog.
+4. Feste Kennungen, Admin, Doku.

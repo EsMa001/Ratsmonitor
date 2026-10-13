@@ -1,6 +1,6 @@
 import {analysisSignature,RECORD_VERSION} from '../../shared/article-record.mjs';
 import {versionPayload} from '../../shared/article-version.mjs';
-import {classifyTopic,LABELS} from '../../shared/labels.mjs';
+import {classifyTopic,LEGACY_LABELS} from '../../shared/labels.mjs';
 import {hasCurrentLabel} from '../../shared/analysis-state.mjs';
 import {features,MATCH_VERSION} from '../../shared/similarity.mjs';
 import {invalidateReads} from '../services/read-cache.mjs';
@@ -12,7 +12,7 @@ export function validatePreparedArticle(a){
  if(!Array.isArray(c.evidence)||!c.evidence.every(e=>sourceUrl(e.url)&&typeof e.quote==='string'&&e.quote.length>0&&e.quote.length<=700)||c.status==='completed'&&!c.evidence.length)throw Error('Belege fehlen');
  if(!Array.isArray(c.sourceDocuments)||!c.sourceDocuments.every(d=>sourceUrl(d.url)&&/^[a-f0-9]{64}$/.test(d.hash)&&d.fetchedAt))throw Error('Quellenstand fehlt');
  if(a.shortSummary.split(/\s+/).length>65||a.longSummary.join(' ').length>6500)throw Error('Zusammenfassung zu lang');
- if(a.aiLabel&&!LABELS.some(l=>l.id===a.aiLabel.primary))throw Error('Unbekanntes KI-Label');
+ if(a.aiLabel&&!LEGACY_LABELS[a.aiLabel.primary])throw Error('Unbekanntes KI-Label');
  if(a.events&&!a.events.every(e=>sourceUrl(e.url)&&(!e.decision||sourceUrl(e.decision.sourceUrl))&&(!e.attendance||e.attendance.people.every(p=>sourceUrl(p.sourceUrl)&&['present','absent','unknown'].includes(p.presence)))))throw Error('Unbelegte Vorgangsdaten');
  return true;
 }

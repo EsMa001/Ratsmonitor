@@ -5,6 +5,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {storedClassification,hasCurrentLabel,hasCurrentAiLabel} from '../shared/analysis-state.mjs';
 import {analysisSignature} from '../shared/article-record.mjs';
 import {LABEL_VERSION,CLASSIFIER_VERSION} from '../shared/labels.mjs';
+import {THEMES_VERSION} from '../shared/themes.mjs';
 import {AI_LOCAL_METHOD} from '../shared/ai-local-content.mjs';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
 import {refreshSearchWords,precomputedFacets} from '../server/integrations/search-words.mjs';
@@ -13,7 +14,7 @@ const topic=overrides=>({id:'report',regionId:'r1',title:'Haushalt Spielplatz',o
  eventDate:'2026-09-17',updatedAt:'2026-10-12T08:00:00Z',sourceUrl:'https://example.test/report',shortSummary:'Die Verwaltung plant einen Spielplatz.',committee:'Rat',
  events:[{date:'2026-09-17',committee:'Rat',status:'consulting',result:''}],documents:[{url:'https://example.test/paper.pdf',kind:'application/pdf',title:'Vorlage'}],
  classification:{primary:'finanzen',secondary:[],version:LABEL_VERSION,method:CLASSIFIER_VERSION,evidence:'Haushalt Spielplatz',reason:'Titelregel'},...overrides});
-const ai=t=>({primary:'sport',secondary:[],reason:'Inhalt der Vorlage',status:'completed',version:LABEL_VERSION,method:AI_LOCAL_METHOD,
+const ai=t=>({primary:'kultur',secondary:[],reason:'Inhalt der Vorlage',status:'completed',version:LABEL_VERSION,method:AI_LOCAL_METHOD,
  sourceSignature:analysisSignature(t),classifiedAt:'2026-10-12T08:00:00Z',evidence:[{url:t.sourceUrl,quote:'Originalbeleg'}]});
 const review=()=>({primary:'bildung',reviewer:'Max',reviewedAt:'2026-10-12T08:00:00Z',reason:'Fachlich geprueft'});
 
@@ -33,11 +34,11 @@ function fixture(t,{beforeEffective=false}={}){
 test('effective classification uses reviewed content, then current local AI, then the stored rule',()=>{
  const value=topic();assert.equal(storedClassification(value).primary,'finanzen');
  value.labelAssessments={ai:ai(value)};
- assert.equal(storedClassification(value).primary,'sport');assert.equal(storedClassification(value).evidence,value.officialTitle);
+ assert.equal(storedClassification(value).primary,'kultur');assert.equal(storedClassification(value).evidence,value.officialTitle);
  assert.equal(hasCurrentLabel(value),true,'Displaying AI does not hide current title rules from the rule refresh');
  value.labelAssessments.review=review();assert.equal(storedClassification(value).primary,'bildung');
  assert.equal(storedClassification(value).method,'manual-review');
- value.labelAssessments.review.reviewer='';assert.equal(storedClassification(value).primary,'sport');
+ value.labelAssessments.review.reviewer='';assert.equal(storedClassification(value).primary,'kultur');
  value.labelAssessments.ai.status='stale';assert.equal(storedClassification(value).primary,'finanzen');
 });
 
@@ -75,22 +76,22 @@ test('a label-only AI save updates filters, keeps date/formal/text/FTS, and logs
  const f=fixture(t),value=topic();f.add(value);
  const before={...f.raw.prepare('SELECT * FROM search_cards WHERE id=?').get(value.id)};
  value.labelAssessments={ai:ai(value)};f.update(value);
- assert.equal(f.label(value.id),'sport');
+ assert.equal(f.label(value.id),'kultur');
  const after={...f.raw.prepare('SELECT * FROM search_cards WHERE id=?').get(value.id)};
  assert.deepEqual({...after,label:before.label},before);
- assert.equal(f.raw.prepare("SELECT count(*) n FROM search_cards WHERE label='sport' AND formal=0").get().n,1);
+ assert.equal(f.raw.prepare("SELECT count(*) n FROM search_cards WHERE label='kultur' AND formal=0").get().n,1);
  assert.equal(f.raw.prepare("SELECT count(*) n FROM search_fts WHERE search_fts MATCH 'spielplatz'").get().n,1);
  assert.deepEqual(f.raw.prepare('SELECT label FROM search_cards_gone').all().map(row=>row.label),['finanzen']);
  value.labelAssessments.review=review();f.update(value);assert.equal(f.label(value.id),'bildung');
- assert.deepEqual(f.raw.prepare('SELECT label FROM search_cards_gone').all().map(row=>row.label),['finanzen','sport']);
+ assert.deepEqual(f.raw.prepare('SELECT label FROM search_cards_gone').all().map(row=>row.label),['finanzen','kultur']);
 });
 
 test('events and document membership changes invalidate the AI filter category while fetch timestamps do not',t=>{
  const f=fixture(t),value=topic();value.labelAssessments={ai:ai(value)};f.add(value);
  value.metadata={lastFetchedAt:'2026-10-13T08:00:00Z'};value.events[0].attendance={fetchedAt:'2026-10-13T08:00:00Z'};
- f.update(value);assert.equal(f.label(value.id),'sport');assert.equal(f.raw.prepare('SELECT count(*) n FROM search_cards_gone').get().n,0);
+ f.update(value);assert.equal(f.label(value.id),'kultur');assert.equal(f.raw.prepare('SELECT count(*) n FROM search_cards_gone').get().n,0);
  value.events[0].result='Beschluss gefasst';f.update(value);assert.equal(f.label(value.id),'finanzen');
- value.labelAssessments.ai=ai(value);f.update(value);assert.equal(f.label(value.id),'sport');
+ value.labelAssessments.ai=ai(value);f.update(value);assert.equal(f.label(value.id),'kultur');
  value.documents.push({url:'https://example.test/attachment.pdf',kind:'application/pdf'});f.update(value);assert.equal(f.label(value.id),'finanzen');
 });
 
@@ -102,11 +103,12 @@ test('inactive reports never gain search cards when AI or manual classifications
 });
 
 test('migration reprojects existing AI labels and invalidates the old word-facet cache',t=>{
- const f=fixture(t,{beforeEffective:true}),value=topic();value.labelAssessments={ai:ai(value)};f.add(value);
+ const f=fixture(t,{beforeEffective:true}),value=topic({classification:{...topic().classification,version:'labels-v2',method:'title-rules-v4'}});
+ value.labelAssessments={ai:{...ai(value),version:'labels-v2',primary:'sport'}};f.add(value);
  assert.equal(f.label(value.id),'finanzen');
  f.raw.prepare("INSERT OR REPLACE INTO system_state(key,value) VALUES('search-words','{}')").run();
- f.raw.exec(fs.readFileSync(new URL('../drizzle/0027_search_effective_labels.sql',import.meta.url),'utf8'));
- assert.equal(f.label(value.id),'sport');assert.equal(f.raw.prepare("SELECT value FROM system_state WHERE key='search-words'").get(),undefined);
+ for(const file of fs.readdirSync(new URL('../drizzle/',import.meta.url)).filter(file=>file>='0027'&&file.endsWith('.sql')).sort())f.raw.exec(fs.readFileSync(new URL('../drizzle/'+file,import.meta.url),'utf8'));
+ assert.equal(f.label(value.id),'kultur');assert.equal(f.raw.prepare("SELECT value FROM system_state WHERE key='search-words'").get(),undefined);
 });
 
 test('label changes leave incremental word facets equivalent to a full rebuild',async t=>{
@@ -117,8 +119,30 @@ test('label changes leave incremental word facets equivalent to a full rebuild',
  await refreshSearchWords(f.db,options);
  const facets=await precomputedFacets(f.db,'haushalt',{level:'city',levelIds:['r1']});
  assert.deepEqual(facets.facets.sort((a,b)=>a.label.localeCompare(b.label)),[
-  {label:'finanzen',status:'consulting',n:2},{label:'sport',status:'consulting',n:1}]);
+  {label:'finanzen',status:'consulting',n:2},{label:'kultur',status:'consulting',n:1}]);
  const snapshot=f.raw.prepare('SELECT * FROM search_word_facets ORDER BY word,kind,label,status').all();
  await refreshSearchWords(f.db,{...options,full:true});
  assert.deepEqual(f.raw.prepare('SELECT * FROM search_word_facets ORDER BY word,kind,label,status').all(),snapshot);
+});
+
+test('labels-v2 (von Hand, KI, Titelregel) gelten übersetzt; das Thema aus readReport geht der Titelregel vor (0034)',t=>{
+ const f=fixture(t);let n=0;
+ const check=(value,want)=>{value.id='v-'+n++;f.add(value);assert.equal(storedClassification(value).primary,want,JSON.stringify(value));assert.equal(f.label(value.id),want);};
+ const old=topic({classification:{...topic().classification,version:'labels-v2',method:'title-rules-v4',primary:'klima'}});
+ check(old,'umwelt');
+ check({...old,classification:{...old.classification,primary:'sitzung'}},'unklar');
+ const withAi=topic();withAi.labelAssessments={ai:{...ai(withAi),version:'labels-v2',primary:'sport'}};check(withAi,'kultur');
+ const reviewed=topic();reviewed.labelAssessments={review:{...review(),primary:'gesundheit'}};check(reviewed,'soziales');
+ const theme={id:'kultur',subs:['kultur.sport'],source:'text',version:THEMES_VERSION,evidence:'Haushalt Spielplatz'};
+ check(topic({theme}),'kultur');
+ check(topic({theme:{...theme,id:'offen'}}),'unklar');
+ check(topic({theme:{...theme,evidence:'Alter Titel'}}),'finanzen');
+ check(topic({theme:{...theme,version:'themes-v0'}}),'finanzen');
+ const both=topic({theme});both.labelAssessments={ai:ai(both)};both.labelAssessments.ai.primary='bildung';check(both,'bildung');
+});
+
+test('ändert read-reports nur das Thema, folgt die Karte',t=>{
+ const f=fixture(t),value=topic();f.add(value);assert.equal(f.label(value.id),'finanzen');
+ value.theme={id:'kultur',subs:[],source:'title',version:THEMES_VERSION,evidence:'Haushalt Spielplatz'};f.update(value);
+ assert.equal(f.label(value.id),'kultur');
 });

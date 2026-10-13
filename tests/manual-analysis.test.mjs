@@ -41,7 +41,7 @@ test('one explicit run is bounded, skips aliases, isolates region, saves results
  assert.equal(sqlite.prepare("SELECT count(*) n FROM system_state WHERE key='import-lock'").get().n,0);
  sqlite.prepare("UPDATE topics SET payload=json_set(payload,'$.officialTitle','Sportförderung') WHERE id='a0000'").run();
  assert.equal((await analysePending(db,'all')).data.processed,1);
- assert.equal(JSON.parse(sqlite.prepare("SELECT payload FROM topics WHERE id='a0000'").get().payload).classification.primary,'sport');
+ assert.equal(JSON.parse(sqlite.prepare("SELECT payload FROM topics WHERE id='a0000'").get().payload).classification.primary,'kultur');
 });
 test('an active import or analysis rejects a second trigger before recording or modifying anything',async()=>{
  reset();insert(topic('one'));sqlite.prepare('INSERT INTO system_state VALUES(?,?)').run('import-lock',String(Date.now()+60000));

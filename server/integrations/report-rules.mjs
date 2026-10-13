@@ -13,7 +13,7 @@ import {factsOf,FACTS_VERSION} from '../../shared/topic-facts.mjs';
 import {buildRuleSummary,RULE_SUMMARY_VERSION} from './rule-summary.mjs';
 import {mergePages} from './documents.mjs';
 
-export const READ_VERSION=`read-v1:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;
+export const READ_VERSION=`read-v2:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;
 // Wie readDocument im Import: sehr lange Dokumente werden nicht zusammengefasst, der Text ist für die Zusammenfassung gekürzt
 const MAX_PAGES=150,MAX_SUMMARY_CHARS=65000,MIN_CHARS=100;
 // Fakten, die auch Punkte ohne Sachthema tragen (Fraktion im Titel eines Antrags)
@@ -69,7 +69,7 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  return {
   version:READ_VERSION,key:readKey({title,mainUrl:doc?.url,session,textSha}),
   mainUrl:doc?.url||null,session,itemKind:kind,
-  theme:{id:theme.theme,subs:theme.subs,source:theme.source,version:THEMES_VERSION},
+  theme:{id:theme.theme,subs:theme.subs,source:theme.source,version:THEMES_VERSION,evidence:title},
   ruleSummary,summaryIssue,facts,
  };
 }

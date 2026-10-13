@@ -18,11 +18,11 @@ test('trends separates rising, new and falling terms between two equal windows',
  const put=(age,region,label,title)=>{n++;sql.prepare("INSERT INTO search_cards (id,region_id,date,status,label,title,teaser,gremium,search) VALUES (?,?,?,'info',?,?, '', '', ?)").run('c'+n,region,day(age),label,title,title.toLowerCase());};
  /* Zeitraum davor (Tage 100 bis 190 zurück): Radweg häufig, Solarpark mittel, Wasserstoff nie */
  for(let i=0;i<40;i++)put(100+(i%80),'r'+(1+i%5),'mobilitaet','Radweg Ausbau Hauptstraße '+i);
- for(let i=0;i<12;i++)put(100+(i%80),'r'+(1+i%5),'klima','Solarpark Planung '+i);
+ for(let i=0;i<12;i++)put(100+(i%80),'r'+(1+i%5),'umwelt','Solarpark Planung '+i);
  for(let i=0;i<30;i++)put(100+(i%80),'r'+(1+i%5),'bauen','Bebauungsplan Gewerbegebiet '+i);
  /* Letzte 90 Tage: Wasserstoff neu in vier Gebieten, Solarpark deutlich mehr, Radweg weniger */
- for(let i=0;i<14;i++)put(i*5,'r'+(1+i%4),'klima','Wasserstoff Elektrolyseur Standort '+i);
- for(let i=0;i<36;i++)put(i*2,'r'+(1+i%5),'klima','Solarpark Freifläche '+i);
+ for(let i=0;i<14;i++)put(i*5,'r'+(1+i%4),'umwelt','Wasserstoff Elektrolyseur Standort '+i);
+ for(let i=0;i<36;i++)put(i*2,'r'+(1+i%5),'umwelt','Solarpark Freifläche '+i);
  for(let i=0;i<8;i++)put(i*9,'r'+(1+i%5),'mobilitaet','Radweg Ausbau Nebenstraße '+i);
  for(let i=0;i<30;i++)put(i*3,'r'+(1+i%5),'bauen','Bebauungsplan Gewerbegebiet '+(100+i));
  try{
@@ -33,7 +33,7 @@ test('trends separates rising, new and falling terms between two equal windows',
   assert.ok(t.falling.some(x=>x.term==='radweg'),'radweg is falling');
   assert.ok(![...t.rising,...t.falling,...t.emerging].some(x=>x.term==='bebauungsplan'),'steady term is not a trend');
   assert.equal(t.rising[0].series.length,t.weeks);
-  assert.ok(t.topics.find(x=>x.id==='klima').change>0);assert.ok(t.topics.find(x=>x.id==='mobilitaet').change<0);
+  assert.ok(t.topics.find(x=>x.id==='umwelt').change>0);assert.ok(t.topics.find(x=>x.id==='mobilitaet').change<0);
   /* Filter wie die Suche: nur ein Gebiet */
   const one=await trends(db,catalog,new URLSearchParams('area=05558001&scope=only'),NOW);
   assert.ok(one.totals.recent<t.totals.recent);

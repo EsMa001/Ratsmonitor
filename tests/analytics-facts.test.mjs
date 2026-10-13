@@ -21,8 +21,8 @@ const q=s=>new URLSearchParams('to=2999-01-01&'+s);
 
 test('faction profile counts motions and questions, success rate and topic index',async()=>{
  const {db,put}=setup();
- for(let i=0;i<8;i++)put('a','approved','klima',[['faction','Grüne','antrag']]);
- for(let i=0;i<2;i++)put('a','rejected','klima',[['faction','Grüne','antrag']]);
+ for(let i=0;i<8;i++)put('a','approved','umwelt',[['faction','Grüne','antrag']]);
+ for(let i=0;i<2;i++)put('a','rejected','umwelt',[['faction','Grüne','antrag']]);
  put('a','consulting','bildung',[['faction','Grüne','anfrage']]);
  for(let i=0;i<10;i++)put('b','approved','bildung',[['faction','SPD','antrag']]);
  put('b','approved','bildung',[['faction','SPD','antrag'],['faction','CDU/CSU','antrag']]);
@@ -32,8 +32,8 @@ test('faction profile counts motions and questions, success rate and topic index
  const g=r.parties.find(p=>p.name==='Grüne'),s=r.parties.find(p=>p.name==='SPD');
  assert.deepEqual([g.n,g.antrag,g.anfrage,g.decided,g.approved,g.rejected,g.rate],[11,10,1,10,8,2,80]);
  assert.deepEqual([s.n,s.rate],[11,100]);
- assert.equal(g.top[0].name,'Klima & Energie','Klima ist bei den Grünen überdurchschnittlich');
- assert.ok(g.profile.find(x=>x.id==='klima').index>100&&s.profile.find(x=>x.id==='bildung').index>100);
+ assert.equal(g.top[0].name,'Umwelt, Klima & Energie','Klima ist bei den Grünen überdurchschnittlich');
+ assert.ok(g.profile.find(x=>x.id==='umwelt').index>100&&s.profile.find(x=>x.id==='bildung').index>100);
  assert.deepEqual(r.small,[{name:'CDU/CSU',n:1}],'unter 10 Einträgen nicht einzeln');
  // Filter wie in der Suche: nur Gebiet b
  const only=await factions(db,catalog,q('area=03155012'));

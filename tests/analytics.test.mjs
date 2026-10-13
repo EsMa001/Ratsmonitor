@@ -7,9 +7,10 @@ const regions=[{id:'billerbeck',kind:'city',name:'Billerbeck'},{id:'muenster',ki
 const topic=(id,regionId,dates,title='Neubau einer Grundschule')=>analysed({id,regionId,title,officialTitle:title,events:dates.map(date=>analysed({date})),sourceUrl:'https://example.org/public',eventDate:dates.at(-1)});
 const coverage=regions.map(r=>({regionId:r.id,from:'2026-06-01',to:'2026-09-26',complete:r.id!=='borken'}));
 const q={region:'billerbeck',from:'2026-07-01',to:'2026-09-26',label:'bildung',now:new Date('2026-09-26T12:00:00Z')};
-test('13 labels separate culture and sport and leave ambiguous titles open',()=>{
- assert.equal(LABELS.length,16);assert.equal(classifyTopic({title:'Kulturförderung'}).primary,'kultur');assert.equal(classifyTopic({title:'Sportförderung'}).primary,'sport');
- assert.equal(classifyTopic({title:'Elternbeiträge für Kindertageseinrichtungen'}).primary,'bildung');assert.equal(classifyTopic({title:'Bebauungsplan Schulzentrum'}).primary,'bauen');assert.equal(classifyTopic({title:'Schul- und Sportförderung'}).primary,'unklar');
+test('10 themes plus open: culture and sport share a theme, formal items stay open',()=>{
+ assert.equal(LABELS.length,11);assert.equal(classifyTopic({title:'Kulturförderung'}).primary,'kultur');assert.equal(classifyTopic({title:'Sportförderung'}).primary,'kultur');
+ assert.equal(classifyTopic({title:'Elternbeiträge für Kindertageseinrichtungen'}).primary,'bildung');assert.equal(classifyTopic({title:'Bebauungsplan Schulzentrum'}).primary,'bauen');
+ assert.equal(classifyTopic({title:'Genehmigung der Niederschrift'}).primary,'unklar');assert.equal(classifyTopic({title:'Unbekanntes Projekt'}).primary,'unklar');
 });
 test('same matter counts once per month and once over a full period; future and undated do not enter totals',()=>{
  const items=[topic('a','billerbeck',['2026-07-03','2026-07-15','2026-08-10']),topic('b','billerbeck',['2026-08-11'],'Sportförderung'),topic('c','billerbeck',['2026-10-01']),topic('d','billerbeck',[])];

@@ -90,7 +90,7 @@ test('the overview reads the stored reports once; its figures per area equal the
  assert.deepEqual(light.review,{issue:'labels',total:2,articles:[]});assert.deepEqual({...light,review:0},{...full,review:0});
  assert.equal(full.review.total,2);assert.deepEqual(full.review.articles.map(a=>a.id).sort(),['b','d']);
  assert.equal(full.counts.online,4);assert.equal(full.counts.aliases,1);assert.equal(full.counts.unlabelled,2);assert.equal(full.counts.summaryStale,1);assert.equal(full.counts.summaryInsufficient,1);
- assert.deepEqual(full.labels.filter(l=>l.count).map(l=>[l.id,l.count]),[['bildung',1],['bauen',1],['unklar',2]]);
+ assert.deepEqual(full.labels.filter(l=>l.count).map(l=>[l.id,l.count]),[['bauen',1],['bildung',1],['unklar',2]]);
  const status=await processingStatus(db);assert.equal(status.regions.length,2);
  for(const area of status.regions){const shown=full.sources.find(s=>s.id===area.region_id);assert.equal(shown.count,area.total);assert.deepEqual(shown.processing,{...area},area.region_id);assert.equal(shown.pendingAnalysis,area.total-area.rules);}
  // A changed report is read again, only its area; "updated in the last seven days" moves with the clock without a scan.

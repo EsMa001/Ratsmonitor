@@ -1,4 +1,5 @@
 import {LABELS} from './labels.mjs';
+import {itemKind} from './item-kind.mjs';
 
 export const MAP_VIEWS=[
  {id:'share',name:'Themenanteil',question:'Wie stark ist das Thema vertreten?',description:'Blau zeigt den Anteil passender Vorgänge an allen erfassten Vorgängen eines Gebiets.',scope:'subject'},
@@ -26,7 +27,9 @@ export function mapFacts(items,matchedIds,periods){
   return {count,total:rows.length,share:rows.length?100*count/rows.length:null};
  };
  const first=periods?part(periods.first):null,second=periods?part(periods.second):null;
- return {unlabelled:counts.get('unklar')||0,dominant:{leaders,count:max,share:items.length?100*max/items.length:null},comparison:{first,second,delta:first&&second&&first.share!==null&&second.share!==null?second.share-first.share:null}};
+ // Offen sind nur Sachpunkte ohne Thema; Formalien, Sammelpunkte und Routine (itemKind) haben keins und fehlen nicht
+ const unlabelled=items.filter(t=>t.classification.primary==='unklar'&&itemKind(t.officialTitle||t.title||'')==='subject').length;
+ return {unlabelled,dominant:{leaders,count:max,share:items.length?100*max/items.length:null},comparison:{first,second,delta:first&&second&&first.share!==null&&second.share!==null?second.share-first.share:null}};
 }
 const shareColors=['#ffffff','#dbe7fb','#98b7e8','#537dc4','#183d80'];
 const openColors=['#ffffff','#fff1ce','#f2ce78','#cc8836','#855017'];
