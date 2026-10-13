@@ -9,7 +9,7 @@
 //                                                  übrigen. Verdrängte Dateien ('text-only') werden kurz nachgeladen, gelesen und
 //                                                  gleich wieder gelöscht (ocrWithRefetch in store-lib.mjs); ein Server mit 3
 //                                                  Fehlern in Folge fällt für den Lauf heraus. Je Worker eine Datei zur Zeit.
-//   --recycle N: nach je N Dateien frische OCR-Worker (Standard 150, gegen wachsenden Speicher)
+//   --recycle N: Paketgröße (Standard 150); jedes Paket läuft als eigener Prozess (--child), gegen wachsenden Speicher
 //   --file-minutes M (nightly.mjs setzt 5): Zeitgrenze je Datei; wer länger braucht, wird abgebrochen, nichts geschrieben und
 //                                                  ans Ende der Reihe gestellt (ocr_slow). Ohne: keine Grenze.
 //   node scripts/pdf-store/text.mjs --stats        Stand der Textfassungen
@@ -24,6 +24,8 @@
 // deren OCR lädt die Datei später kurz nach.
 import fs from 'node:fs';
 import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {openPdfStore,DEFAULT_PDF_STORE} from '../../server/node/pdf-store.mjs';
 import {TEXT_VERSION,readTextLayer,ocrScheduler,ocrFile,ocrWithRefetch,downloader,dropIfTooBig} from './store-lib.mjs';
 import {progress,onStop,stepSummary,lane} from './state.mjs';
@@ -35,11 +37,12 @@ const limit=Number(opt('limit',0)),maxMinutes=Number(opt('max-minutes',0)),start
 const myLane=lane(flag('ocr')?'ocr':'chain'),chained=!!process.env.RM_PROGRESS_BASE;
 // Anhalten (Admin-Reiter alle 2 s, Signal, Strg+C): Textebene nach der laufenden Datei, OCR nach der laufenden Seitengruppe;
 // fertige Textfassungen bleiben, eine halb gelesene Datei bleibt in der OCR-Reihe
-let halted=false;const halt=new AbortController();
-if(!flag('stats'))onStop(myLane,started,why=>{halted=true;halt.abort();console.log(`Angehalten (${why==='admin'?'Admin-Reiter':why})`);});
+let halted=false,child=null;const halt=new AbortController();
+if(!flag('stats'))onStop(myLane,started,why=>{halted=true;halt.abort();try{child?.kill('SIGTERM');}catch{/* schon weg */}console.log(`Angehalten (${why==='admin'?'Admin-Reiter':why})`);});
 const late=()=>halted||(maxMinutes>0&&Date.now()-started>maxMinutes*60000);
 let told=0;
-const tell=(detail,force)=>{if(!force&&Date.now()-told<60000)return;told=Date.now();
+// Ein OCR-Paket (--child) schreibt keinen eigenen Fortschritt, das macht der Treiber mit den Summen aller Pakete
+const tell=(detail,force)=>{if(process.env.RM_NO_PROGRESS||!force&&Date.now()-told<60000)return;told=Date.now();
  progress(myLane,{...(chained?{}:{kind:flag('ocr')?'ocr':'text',startedAt:new Date(started).toISOString()}),...detail});};
 const elapsed=t0=>((Date.now()-t0)/1000).toFixed(0)+' s';
 
@@ -65,11 +68,47 @@ if(!flag('ocr')){
 }else{
  // OCR: nur Seiten ohne Textebene, jede Seite einzeln gerendert; die übrigen Seiten bleiben, wie pdf.js sie liest.
  // Sperre: Datei mit der Prozessnummer; eine verwaiste (Prozess läuft nicht mehr) wird übernommen
- const lock=path.join(store.dir,'ocr.lock'),alive=pid=>{try{process.kill(pid,0);return true;}catch(e){return e.code==='EPERM';}};
- try{fs.writeFileSync(lock,String(process.pid),{flag:'wx'});}
- catch{const pid=Number(fs.readFileSync(lock,'utf8'));if(pid&&alive(pid)){console.log(`OCR läuft schon (Prozess ${pid}), nichts zu tun`);stepSummary({skipped:'OCR-Lauf von Hand läuft'});store.close();process.exit(0);}fs.writeFileSync(lock,String(process.pid));}
- const release=()=>{try{if(fs.readFileSync(lock,'utf8')===String(process.pid))fs.unlinkSync(lock);}catch{/* schon weg */}};
- process.on('exit',release);
+ // Die Sperre hält der Treiber; ein Paket (--child) läuft unter seiner Sperre
+ if(!flag('child')){
+  const lock=path.join(store.dir,'ocr.lock'),alive=pid=>{try{process.kill(pid,0);return true;}catch(e){return e.code==='EPERM';}};
+  try{fs.writeFileSync(lock,String(process.pid),{flag:'wx'});}
+  catch{const pid=Number(fs.readFileSync(lock,'utf8'));if(pid&&alive(pid)){console.log(`OCR läuft schon (Prozess ${pid}), nichts zu tun`);stepSummary({skipped:'OCR-Lauf von Hand läuft'});store.close();process.exit(0);}fs.writeFileSync(lock,String(process.pid));}
+  const release=()=>{try{if(fs.readFileSync(lock,'utf8')===String(process.pid))fs.unlinkSync(lock);}catch{/* schon weg */}};
+  process.on('exit',release);
+  /* Treiber: jedes Paket zu --recycle Dateien (Standard 150) läuft als eigener Prozess und endet danach. Beim Ende eines Prozesses
+     gibt das System allen Speicher frei; im selben Prozess wuchs die OCR über Stunden auf 5,8 GB und hing an der Grenze des
+     Auftragsdienstes (13.10.2026, auch mit frischen OCR-Workern je Paket). Fortschritt und Zusammenfassung sind die Summen. */
+  const per=Number(opt('recycle',150)),me=fileURLToPath(import.meta.url),fileMin=opt('file-minutes');
+  const tot={files:0,primary:0,pages:0,failed:0,changed:0,fetched:0,skipped:0,dropped:0,slow:0},t0=Date.now();
+  const total=store.ocrQueue().length,workers=Number(opt('workers',3));
+  console.log(`${total} Dateien mit Seiten ohne Textebene, in Paketen zu ${per} Dateien als eigene Prozesse`);
+  const show=force=>{const done=tot.files+tot.failed+tot.skipped+tot.slow,h=(Date.now()-t0)/3600000;
+   tell({step:'OCR',ocr:{done,total,pages:tot.pages,failed:tot.failed,workers,perHour:h>0.05?Math.round(done/h):null,fetched:tot.fetched,...(fileMin?{slow:tot.slow}:{})}},force);};
+  show(true);
+  let stoppedChild=false;
+  while(!late()){
+   const left=maxMinutes?Math.floor(maxMinutes-(Date.now()-started)/60000):0;
+   if(maxMinutes&&left<1)break;
+   const sumFile=path.join(store.dir,`ocr-paket-${process.pid}.json`);try{fs.unlinkSync(sumFile);}catch{/* keine */}
+   const code=await new Promise(resolve=>{
+    child=spawn(process.execPath,['--no-warnings','--max-old-space-size=2048',me,'--ocr','--child','--limit',String(per),'--workers',String(workers),'--timeout-ms',opt('timeout-ms','10000'),
+     ...(fileMin?['--file-minutes',fileMin]:[]),...(left?['--max-minutes',String(left)]:[])],{stdio:'inherit',env:{...process.env,RM_STEP_SUMMARY:sumFile,RM_NO_PROGRESS:'1'}});
+    child.on('error',()=>resolve(127));child.on('exit',(c,sig)=>resolve(c??sig));
+   });
+   child=null;
+   let r={};try{r=JSON.parse(fs.readFileSync(sumFile,'utf8'));fs.unlinkSync(sumFile);}catch{/* Paket ohne Zusammenfassung */}
+   for(const k of Object.keys(tot))if(typeof r[k]==='number')tot[k]+=r[k];
+   show(true);
+   if(halted||r.stopped){stoppedChild=true;break;}
+   const worked=(r.files||0)+(r.failed||0)+(r.slow||0);
+   if(!worked){if(code!==0)console.error(`OCR-Paket endete mit ${code} ohne Ergebnis, Lauf beendet`);break;}
+  }
+  const open=store.ocrQueue().length;
+  console.log(`fertig: ${tot.files} Dateien (${tot.primary} Hauptdokumente), ${tot.pages} Seiten per OCR, ${tot.failed} Fehler (davon ${tot.changed} geändert), ${tot.fetched} nachgeladen und wieder gelöscht, ${tot.skipped} Server ausgelassen${fileMin?`, ${tot.slow} über der Zeitgrenze (später)`:''}, ${tot.dropped} zu große PDFs gelöscht, ${open} offen (${elapsed(t0)})`);
+  stepSummary({...tot,open,seconds:Math.round((Date.now()-t0)/1000),stopped:halted||stoppedChild,...(fileMin?{}:{slow:undefined})});
+  if(!chained)progress(myLane,null);
+  store.close();process.exit(0);
+ }
  const workers=Number(opt('workers',3)),recycle=Number(opt('recycle',150));let ocr=await ocrScheduler(workers);
  if(!ocr){console.error('OCR-Werkzeuge fehlen (OCR_TOOLS).');process.exit(1);}
  const todo=store.ocrQueue().slice(0,limit||undefined),main=new Set(todo.filter(x=>x.main).map(x=>x.sha)),t0=Date.now();
