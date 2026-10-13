@@ -14,9 +14,9 @@ const evidence = z.object({sourceId:id,page:z.number().int().min(1),quote:text(A
 const evidenceList = z.array(evidence).min(1).max(AI_LOCAL_LIMITS.evidence);
 const tokens = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const usage = z.union([
-  z.object({basis:z.literal('unknown'),durationMs:z.number().int().min(0).max(43200000).optional()}).strict(),
-  z.object({basis:z.enum(['measured','estimated']),totalTokens:tokens,durationMs:z.number().int().min(0).max(43200000).optional()}).strict(),
-  z.object({basis:z.enum(['measured','estimated']),inputTokens:tokens,outputTokens:tokens,cachedTokens:tokens.optional(),totalTokens:tokens.optional(),durationMs:z.number().int().min(0).max(43200000).optional()}).strict(),
+  z.object({basis:z.literal('unknown')}).strict(),
+  z.object({basis:z.enum(['measured','estimated']),totalTokens:tokens}).strict(),
+  z.object({basis:z.enum(['measured','estimated']),inputTokens:tokens,outputTokens:tokens,cachedTokens:tokens.optional(),totalTokens:tokens.optional()}).strict(),
 ]);
 const result = z.object({
   agent:text(200),model:text(200),shortSummary:text(AI_LOCAL_LIMITS.shortChars),

@@ -22,7 +22,7 @@ const lease = {id:'report-1',token:'secret-claim-token'};
 const validResult = () => ({agent:'Codex',model:'unknown',shortSummary:'Der Rat beschliesst einen Radweg.',longSummary:['Der Rat beschliesst: "Der Radweg wird gebaut."'],
   coveredSourceIds:['source-1'],evidence:[{sourceId:'source-1',page:3,quote:'Der Radweg wird gebaut.',paragraphIndex:0}],
   aiLabel:{primary:LABELS[0].id,secondary:[],reason:'Das Sachgebiet ist im Originaltext belegt.'},
-  checks:['source_read','process','numbers','neutrality'].map(name => ({name,passed:true})),usage:{basis:'unknown',durationMs:12345}});
+  checks:['source_read','process','numbers','neutrality'].map(name => ({name,passed:true})),usage:{basis:'unknown'}});
 
 test('MCP connection mode is fixed and requires the complete intended service',() => {
   assert.throws(() => createRatsmonitorMcpServer(),/mode/u);
@@ -93,13 +93,13 @@ test('internal tools delegate exact three-output contract and retain opaque leas
   assert.deepEqual(calls,Object.entries(inputs).map(([name,args]) => ({name,args})));
 });
 
-test('internal MCP accepts a per-report elapsed duration while keeping tokens unknown',async t => {
+test('internal MCP takes no per-report duration: usage carries tokens only',async t => {
   let received;
   const client = await session(t,{mode:'internal',work:stub(workMethods,(name,args) => {if(name === 'submit') received=args;return {state:'completed'};})});
   const output = await call(client,'ai_submit',{...lease,inputHash:'a'.repeat(64),result:validResult()});
   assert.equal(output.isError,undefined);
-  assert.deepEqual(received.result.usage,{basis:'unknown',durationMs:12345});
-  const invalid = await call(client,'ai_submit',{...lease,inputHash:'a'.repeat(64),result:{...validResult(),usage:{basis:'unknown',durationMs:-1}}});
+  assert.deepEqual(received.result.usage,{basis:'unknown'});
+  const invalid = await call(client,'ai_submit',{...lease,inputHash:'a'.repeat(64),result:{...validResult(),usage:{basis:'unknown',durationMs:12345}}});
   assert.equal(invalid.isError,true);
 });
 
