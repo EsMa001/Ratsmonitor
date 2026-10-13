@@ -40,7 +40,7 @@ CREATE TABLE invites (
   invited_by TEXT, created_at TEXT NOT NULL, expires_at TEXT NOT NULL
 );
 CREATE TABLE login_requests (
-  email_hmac TEXT NOT NULL, at TEXT NOT NULL
+  email_hmac TEXT NOT NULL, ip_hmac TEXT, at TEXT NOT NULL
 );
 CREATE INDEX login_requests_email ON login_requests(email_hmac, at);
 CREATE TABLE login_flows (

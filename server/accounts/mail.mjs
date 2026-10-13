@@ -21,9 +21,9 @@ export async function sendMail(db,cfg,{to,template,data=null,userId=null,quota,d
    return {queued:false};
   }
  }
- await db.prepare('INSERT INTO mail_outbox(created_at,user_id,"to",template,data,status,attempts,next_at,discard_after,quota) VALUES(?,?,?,?,?,?,0,?,?,?)')
-  .bind(iso(now),userId,to,template,data?JSON.stringify(data):null,'queued',iso(now),discardAfterMs?iso(now+discardAfterMs):null,quota).run();
- return {queued:true};
+ const row=await db.prepare('INSERT INTO mail_outbox(created_at,user_id,"to",template,data,status,attempts,next_at,discard_after,quota) VALUES(?,?,?,?,?,?,0,?,?,?) RETURNING id')
+  .bind(iso(now),userId,to,template,data?JSON.stringify(data):null,'queued',iso(now),discardAfterMs?iso(now+discardAfterMs):null,quota).first();
+ return {queued:true,id:row?.id};
 }
 export async function warnOperator(db,cfg,message,now=Date.now()){
  if(!cfg.mail.operator)return;

@@ -20,9 +20,10 @@ export function checkCaddy(text){
  for(const b of blocks)if(/^\(.+\)$/.test(b.head))snippets.set(b.head.slice(1,-1),b.body);
  const expand=(body,seen=new Set())=>body.replace(/^import\s+(\S+)$/gm,(m,name)=>seen.has(name)||!snippets.has(name)?m:expand(snippets.get(name),new Set([...seen,name])));
  for(const b of blocks){
-  if(/^\(.+\)$/.test(b.head))continue;
+  if(/^\(.+\)$/.test(b.head)||!b.head)continue; // Snippets und globale Optionen
   const body=expand(b.body);
-  const loopback=/^bind\s+127\.0\.0\.1\b/m.test(b.body)&&b.head.split(',').every(a=>/^(http:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?$/.test(a.trim()));
+  const binds=(b.body.match(/^bind\s+(.+)$/m)?.[1]||'').split(/\s+/).filter(Boolean);
+  const loopback=binds.length>0&&binds.every(a=>/^(127\.0\.0\.1|::1|localhost)$/.test(a))&&b.head.split(',').every(a=>/^(http:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?$/.test(a.trim()));
   if(loopback)continue;
   if(/header_up\s+Oai-Authenticated/i.test(body))problems.push(`${b.head}: setzt die Admin-Kennung, ist aber von außen erreichbar`);
   if(!/^import\s+public_site$/m.test(b.body))problems.push(`${b.head}: importiert public_site nicht`);

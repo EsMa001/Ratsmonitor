@@ -13,7 +13,7 @@ Group=ratsmonitor
 WorkingDirectory=/srv/ratsmonitor/app/current
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
 # Konten: Kontendatei, Geheimnis, Mailschlüssel (nur dieser Dienst und der Kontojob; fehlt die Datei, ohne Konten)
-EnvironmentFile=-/srv/ratsmonitor/accounts/accounts.env
+EnvironmentFile=-/etc/ratsmonitor/accounts.env
 ExecStart=/usr/bin/node dist/standalone/serve.mjs
 Restart=always
 RestartSec=3

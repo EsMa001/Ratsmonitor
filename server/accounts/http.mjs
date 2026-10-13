@@ -20,8 +20,15 @@ export function requireSameOrigin(request){
 }
 /** JSON-Körper mit Größengrenze; leerer Körper ergibt {} */
 export async function readJson(request,maxBytes=16384){
- const text=await request.text();
- if(new TextEncoder().encode(text).byteLength>maxBytes)throw new AccountError(413,'Anfrage zu groß.');
+ if(Number(request.headers.get('content-length')||0)>maxBytes)throw new AccountError(413,'Anfrage zu groß.');
+ // Ohne Content-Length (chunked): stückweise lesen und abbrechen, sobald die Grenze überschritten ist
+ let size=0;const parts=[];
+ if(request.body){
+  const reader=request.body.getReader();
+  for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>maxBytes){await reader.cancel().catch(()=>{});throw new AccountError(413,'Anfrage zu groß.');}parts.push(value);}
+ }
+ const bytes=new Uint8Array(size);let offset=0;for(const p of parts){bytes.set(p,offset);offset+=p.byteLength;}
+ const text=new TextDecoder().decode(bytes);
  if(!text.trim())return {};
  try{const value=JSON.parse(text);if(!value||typeof value!=='object'||Array.isArray(value))throw 0;return value;}
  catch{throw new AccountError(400,'Ungültige Anfrage.');}

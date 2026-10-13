@@ -12,6 +12,8 @@ import {LIMITS,FEATURES} from '../../shared/plans.mjs';
 
 const iso=ms=>new Date(ms).toISOString();
 const DAY=86400000,CODE_MS=15*60000;
+/** Höchstzahl gespeicherter Einträge je Konto, aktiv oder nicht */
+export const MAX_STORED={searches:500,articles:1000};
 const TOKEN_RE=/^[A-Za-z0-9_-]{43}$/;
 
 /** Sitzung und Stufe; ohne Sitzung 401. Schreibende Aufrufe: Herkunft prüfen und je Konto begrenzen. */
@@ -194,6 +196,13 @@ export async function importData(ctx){
  const {db,now}=ctx,at=iso(now);
  const searches=Array.isArray(body.searches)?body.searches.slice(0,200):[];
  const articles=Array.isArray(body.articles)?body.articles.slice(0,500):[];
+ // Obergrenzen je Konto, auch für nicht aktive Einträge (wiederholte Übernahmen ließen die Datei sonst wachsen)
+ const stored=await db.prepare('SELECT (SELECT count(*) FROM saved_searches WHERE user_id=?1) s,(SELECT count(*) FROM saved_articles WHERE user_id=?1) a').bind(uid).first();
+ if(Number(stored.s)+searches.length>MAX_STORED.searches||Number(stored.a)+articles.length>MAX_STORED.articles)throw new AccountError(409,'Zu viele gespeicherte Einträge im Konto.',{limit:'stored'});
+ const notifyRow=await db.prepare('SELECT (SELECT count(*) FROM saved_searches WHERE user_id=?1 AND active=1 AND notify_mail=1)+(SELECT count(*) FROM saved_articles WHERE user_id=?1 AND active=1 AND follow=1) n').bind(uid).first();
+ let notifications=Number(notifyRow?.n||0);
+ /** Benachrichtigung nur, solange die Stufe sie erlaubt (Vormerkung, Thema 2) */
+ const allowNotify=wanted=>{if(!wanted||notifications>=user.limits.notifications)return 0;notifications++;return 1;};
  const result={searches:{added:[],existing:[],invalid:[]},articles:{added:[],existing:[],missing:[]}};
  const base=await db.prepare('SELECT coalesce(max(position),-1) p,(SELECT count(*) FROM saved_searches WHERE user_id=?1 AND active=1) n FROM saved_searches WHERE user_id=?1').bind(uid).first();
  let position=Number(base.p)+1,activeSearches=Number(base.n);
@@ -206,7 +215,7 @@ export async function importData(ctx){
    const state=cleanState(s.state);
    const active=activeSearches<user.limits.savedSearches;if(active)activeSearches++;
    statements.push({kind:'search',id,stmt:db.prepare('INSERT INTO saved_searches(user_id,id,signature,name,ui_state,query,query_version,position,active,notify_mail,notify_freq,created_at,updated_at,last_seen_at) VALUES(?,?,?,?,?,?,1,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING id')
-    .bind(uid,id,signature,name,state,cleanQuery(s.query),position++,active?1:0,s.notify?.mail===true?1:0,FREQ.includes(s.notify?.freq)?s.notify.freq:null,str(s.created,30)??at,at,str(s.lastSeen,30)??null)});
+    .bind(uid,id,signature,name,state,cleanQuery(s.query),position++,active?1:0,active?allowNotify(s.notify?.mail===true):0,FREQ.includes(s.notify?.freq)?s.notify.freq:null,str(s.created,30)??at,at,str(s.lastSeen,30)??null)});
   }catch{result.searches.invalid.push(id??null);}
  }
  const ids=articles.map(a=>str(a?.id,200)).filter(id=>id&&TOPIC_ID.test(id));
@@ -218,7 +227,7 @@ export async function importData(ctx){
   if(!snap){result.articles.missing.push(id??null);continue;}
   const active=activeArticles<user.limits.bookmarks;if(active)activeArticles++;
   statements.push({kind:'article',id,stmt:db.prepare('INSERT INTO saved_articles(user_id,topic_id,follow,active,snapshot,last_status,saved_at) VALUES(?,?,?,?,?,?,?) ON CONFLICT DO NOTHING RETURNING topic_id')
-   .bind(uid,snap.id,a.follow===true?1:0,active?1:0,JSON.stringify(snap),snap.status??null,str(a.savedAt,30)??at)});
+   .bind(uid,snap.id,active?allowNotify(a.follow===true):0,active?1:0,JSON.stringify(snap),snap.status??null,str(a.savedAt,30)??at)});
  }
  const settings=body.settings&&typeof body.settings==='object'?body.settings:null;
  const batch=statements.map(s=>s.stmt);
@@ -238,7 +247,9 @@ export async function importData(ctx){
 async function sendPurposeCode(ctx,session,purpose){
  const {db,cfg,now,names}=ctx,at=iso(now);
  const flowValue=randomToken(32),flowHash=await sha256hex(flowValue),code=randomCode();
- const emailHmac=await hmacHex(cfg.secret,'email-rate',session.email);
+ if(limited('purpose-code',session.user_id,{max:5,windowMs:3600000,now}))throw new AccountError(429,'Zu viele Codes angefordert. Bitte in einer Stunde erneut.');
+ // Eigener Zählschlüssel: Fehlversuche hier zählen nicht zur Sperre der Anmeldung per Code
+ const emailHmac=await hmacHex(cfg.secret,'purpose-rate',session.email);
  await db.batch([
   db.prepare('DELETE FROM login_tokens WHERE user_id=? AND purpose=? AND used_at IS NULL').bind(session.user_id,purpose),
   db.prepare('INSERT INTO login_flows(id,email_hmac,attempts,created_at,expires_at) VALUES(?,?,0,?,?)').bind(flowHash,emailHmac,at,iso(now+CODE_MS)),
@@ -290,10 +301,10 @@ export async function removeUser(ctx,{userId,email,notify=true,cookies=[]}){
  if(notify){
   const site=siteBase(cfg,ctx.request);
   later.push(async()=>{
-   await sendMail(db,cfg,{to:email,template:'deleted',quota:'account',now});
+   const mail=await sendMail(db,cfg,{to:email,template:'deleted',quota:'account',now});
    await processOutbox(db,cfg,{site,now});
-   // Die Adresse nicht im Postausgang liegen lassen, auch wenn der Versand scheiterte
-   await db.prepare("UPDATE mail_outbox SET \"to\"=NULL,data=NULL WHERE template='deleted' AND user_id IS NULL AND created_at>=?").bind(iso(now)).run();
+   // Die Adresse nicht im Postausgang liegen lassen, auch wenn der Versand scheiterte (nur diese Zeile)
+   if(mail.id)await db.prepare("UPDATE mail_outbox SET \"to\"=NULL,data=NULL,status=CASE WHEN status='sent' THEN status ELSE 'dropped' END WHERE id=?").bind(mail.id).run();
   });
  }
  return {response:respond({ok:true,deleted:true},{cookies}),later};

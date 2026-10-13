@@ -6,20 +6,23 @@ set -euo pipefail
 DB="${ACCOUNTS_FILE:?ACCOUNTS_FILE fehlt}"
 DIR="${ACCOUNTS_BACKUP_DIR:-$(dirname "$DB")/backups}"
 KEEP="${KEEP:-7}"
+PREFIX="${PREFIX:-accounts-}"
 TMP="${ACCOUNTS_BACKUP_TMP:-/run/accounts-backup}"
 RECIPIENT="${ACCOUNTS_AGE_RECIPIENT:-}"
 [ -f "$DB" ] || { echo "$(date -Is) keine Kontendatei unter $DB"; exit 1; }
 [ -n "$RECIPIENT" ] || { echo "$(date -Is) ACCOUNTS_AGE_RECIPIENT fehlt: keine unverschlüsselte Sicherung"; exit 1; }
 command -v age >/dev/null || { echo "$(date -Is) age ist nicht installiert (apt install age)"; exit 1; }
-mkdir -p "$DIR" "$TMP"; chmod 700 "$DIR"
+[ -d "$DIR" ] && [ ! -L "$DIR" ] || { echo "$(date -Is) Sicherungsordner fehlt oder ist ein Verweis: $DIR"; exit 1; }
+mkdir -p "$TMP"
 umask 077
 copy="$TMP/accounts-$$.sqlite"
 trap 'rm -f "$copy"' EXIT
 sqlite3 "$DB" ".timeout 60000" "VACUUM INTO '$copy'"
 check=$(sqlite3 -readonly "$copy" "PRAGMA quick_check;")
 [ "$check" = ok ] || { echo "$(date -Is) Prüfung der Kopie fehlgeschlagen: $check"; exit 1; }
-target="$DIR/accounts-$(date +%F-%H%M).sqlite.zst.age"
-zstd -q -c "$copy" | age -r "$RECIPIENT" > "$target.part"
+target="$DIR/${PREFIX}$(date +%F-%H%M%S).sqlite.zst.age"
+set -o pipefail
+zstd -q -c "$copy" | age -r "$RECIPIENT" > "$target.part" || { rm -f "$target.part"; echo "$(date -Is) Packen oder Verschlüsseln fehlgeschlagen"; exit 1; }
 mv "$target.part" "$target"
-ls -1t "$DIR"/accounts-*.sqlite.zst.age 2>/dev/null | tail -n +$(( KEEP + 1 )) | xargs -r rm -f
+ls -1t "$DIR"/"$PREFIX"*.sqlite.zst.age 2>/dev/null | tail -n +$(( KEEP + 1 )) | xargs -r rm -f
 echo "$(date -Is) Kontendatei gesichert: $target ($(du -h "$target" | cut -f1))"

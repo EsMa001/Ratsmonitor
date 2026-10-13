@@ -109,7 +109,7 @@ Eigene Tabellen für Stufen, Daten, Benachrichtigungen und Stripe braucht es ohn
 
 ### 3.2 Eigene Datei `accounts.sqlite`
 
-Konten und alles mit Personenbezug liegen in `/srv/ratsmonitor/accounts/accounts.sqlite`. Der Ordner hat die Rechte 700, die Datei 600, Eigentümer ist `ratsmonitor`. Die App sieht die Datei als `env.ACCOUNTS` (D1-Schnittstelle). Konfiguriert wird sie über `ACCOUNTS_FILE`, und zwar nur in `/srv/ratsmonitor/accounts/accounts.env` (root:root 600), nicht in `ratsmonitor.env`.
+Konten und alles mit Personenbezug liegen in `/srv/ratsmonitor/accounts/accounts.sqlite`. Der Ordner hat die Rechte 700, die Datei 600, Eigentümer ist `ratsmonitor`. Die App sieht die Datei als `env.ACCOUNTS` (D1-Schnittstelle). Konfiguriert wird sie über `ACCOUNTS_FILE`, und zwar nur in `/etc/ratsmonitor/accounts.env` (root:root 600), nicht in `ratsmonitor.env`.
 
 Gründe:
 
@@ -752,7 +752,7 @@ Zu prüfen sind etwa Scaleway TEM, Brevo, Mailjet und Lettermint (EU-Sitz jeweil
 
 Das Dev-Postfach (`pages/PostfachPage.tsx:74`) zeigt HTML nur in einem `<iframe sandbox srcdoc>`, nicht mehr über `dangerouslySetInnerHTML`.
 
-**Schlüssel:** `MAIL_API_KEY`, `ACCOUNTS_FILE` und `ACCOUNTS_SECRET` stehen in `/srv/ratsmonitor/accounts/accounts.env` (root:root 600). Nur `ratsmonitor.service` und `ratsmonitor-accounts.service` laden die Datei als zweites `EnvironmentFile`. Die übrigen Einheiten sehen sie nicht.
+**Schlüssel:** `MAIL_API_KEY`, `ACCOUNTS_FILE` und `ACCOUNTS_SECRET` stehen in `/etc/ratsmonitor/accounts.env` (root:root 600). Nur `ratsmonitor.service` und `ratsmonitor-accounts.service` laden die Datei als zweites `EnvironmentFile`. Die übrigen Einheiten sehen sie nicht.
 
 **Spam aus Sicht der Tester:**
 

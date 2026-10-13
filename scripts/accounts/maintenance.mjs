@@ -2,7 +2,7 @@
 /**
  * Pflegejob der Kontendatei (requirements/konten-konzept.md, 12 und 13), nachts über den Zeitplaner (Job „accounts“):
  * Fristen anwenden, „Testzugang endet“ 14 Tage vorher, Hinweis bei langer Inaktivität, Überwachung des Postausgangs.
- * Danach sichert deploy/node/backup.sh die Kontendatei (PREFIX=accounts-, verschlüsselt).
+ * Danach sichert deploy/node/accounts-backup.sh die Kontendatei verschlüsselt (deploy/node/accounts-job.sh).
  *   ACCOUNTS_FILE=… node scripts/accounts/maintenance.mjs [--dry-run]
  */
 import fs from 'node:fs';

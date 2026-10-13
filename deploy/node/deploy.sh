@@ -5,7 +5,7 @@
 # Übertragen wird nur, was committet ist (git archive). Gebaut wird auf dem Server (Linux), nicht lokal.
 # Voraussetzung: SSH-Alias "ratsmonitor" (root), Einrichtung nach docs/betrieb/node-server.md.
 # Fehlende Migrationen der Inhaltsdatei spielt das Skript NICHT ein; es bricht dann ab (erst sichern, dann
-# scripts/node-migrate.mjs). Ausnahme Kontendatei (ACCOUNTS_FILE in /srv/ratsmonitor/accounts/accounts.env): ihre
+# scripts/node-migrate.mjs). Ausnahme Kontendatei (ACCOUNTS_FILE in /etc/ratsmonitor/accounts.env): ihre
 # Migrationen (drizzle-accounts/) sind klein und nur additiv; das Skript sichert die Datei vorher und spielt sie ein.
 set -euo pipefail
 HOST="${RM_HOST:-ratsmonitor}"
@@ -29,7 +29,7 @@ trap 'rm -rf "$BUILD"' EXIT
 # Nur die zwei Werte lesen, die das Skript braucht (die Datei ist für systemd geschrieben, nicht für die Shell)
 envval() { sed -n "s/^$1=//p" "${2:-/srv/ratsmonitor/ratsmonitor.env}" 2>/dev/null | tail -1 | sed 's/^"\(.*\)"$/\1/'; }
 DATABASE_FILE="$(envval DATABASE_FILE)"; PORT="$(envval PORT)"; IMPORT_TOKEN="$(envval IMPORT_TOKEN)"; RM_ACCESS="$(envval RM_ACCESS)"
-ACCOUNTS_ENV=/srv/ratsmonitor/accounts/accounts.env
+ACCOUNTS_ENV=/etc/ratsmonitor/accounts.env
 ACCOUNTS_FILE="$(envval ACCOUNTS_FILE "$ACCOUNTS_ENV")"; ACCOUNTS_AGE_RECIPIENT="$(envval ACCOUNTS_AGE_RECIPIENT "$ACCOUNTS_ENV")"
 cd "$BUILD"
 # strict-dep-builds aus: core-js hat im Repo noch keine Freigabe (pnpm-workspace.yaml), sein Skript zeigt nur einen Spendenhinweis.
@@ -41,17 +41,16 @@ sudo -u ratsmonitor -H bash -lc "cd '$BUILD' && node scripts/build-node.mjs > bu
 if [ -n "${DATABASE_FILE:-}" ] && [ -f "$DATABASE_FILE" ]; then
   sudo -u ratsmonitor -H node "$BUILD/scripts/node-migrate.mjs" "$DATABASE_FILE" --check || { echo "Abbruch: Migrationen fehlen. Importprozess und Timer stoppen (systemctl stop ratsmonitor-import.timer ratsmonitor-import-nightly.timer ratsmonitor-import ratsmonitor-import-nightly), Dienst stoppen, sichern, dann: node scripts/node-migrate.mjs $DATABASE_FILE"; exit 1; }
 fi
-# Kontendatei: vorher sichern (verschlüsselt, wenn ein age-Empfänger eingetragen ist), dann Migrationen einspielen.
+# Kontendatei: vorher verschlüsselt sichern (deploy/node/accounts-backup.sh, tmpfs, age; ohne Empfänger Abbruch), dann
+# Migrationen einspielen. Alles als ratsmonitor, root schreibt nichts in den Kontenordner (der gehört dem Web-Benutzer).
 # Der laufende alte Stand arbeitet mit den neuen Spalten weiter (nur additiv).
 if [ -n "${ACCOUNTS_FILE:-}" ]; then
-  ADIR="$(dirname "$ACCOUNTS_FILE")"; mkdir -p "$ADIR/backups"; chown ratsmonitor:ratsmonitor "$ADIR/backups"; chmod 700 "$ADIR/backups"
   if [ -f "$ACCOUNTS_FILE" ]; then
-    PRE="$ADIR/backups/pre-$(basename "$REL").sqlite"
-    sudo -u ratsmonitor sqlite3 "$ACCOUNTS_FILE" ".timeout 20000" "VACUUM INTO '$PRE'" || { echo "Abbruch: Sicherung der Kontendatei fehlgeschlagen"; exit 1; }
-    if [ -n "${ACCOUNTS_AGE_RECIPIENT:-}" ] && command -v age >/dev/null; then
-      sudo -u ratsmonitor bash -c "zstd -q -c '$PRE' | age -r '$ACCOUNTS_AGE_RECIPIENT' > '$PRE.zst.age' && rm -f '$PRE'"
-    else chmod 600 "$PRE"; fi
-    ls -1t "$ADIR"/backups/pre-* 2>/dev/null | tail -n +3 | xargs -r rm -f
+    [ -n "${ACCOUNTS_AGE_RECIPIENT:-}" ] || { echo "Abbruch: ACCOUNTS_AGE_RECIPIENT fehlt in $ACCOUNTS_ENV (keine unverschlüsselte Sicherung)"; exit 1; }
+    TMPDIR_PRE="$(sudo -u ratsmonitor mktemp -d -p /dev/shm rm-accounts-XXXXXX)"
+    sudo -u ratsmonitor env ACCOUNTS_FILE="$ACCOUNTS_FILE" ACCOUNTS_AGE_RECIPIENT="$ACCOUNTS_AGE_RECIPIENT" ACCOUNTS_BACKUP_TMP="$TMPDIR_PRE" PREFIX=pre- KEEP=3 \
+      bash "$BUILD/deploy/node/accounts-backup.sh" || { rm -rf "$TMPDIR_PRE"; echo "Abbruch: Sicherung der Kontendatei fehlgeschlagen"; exit 1; }
+    rm -rf "$TMPDIR_PRE"
   fi
   sudo -u ratsmonitor -H node "$BUILD/scripts/node-migrate.mjs" "$ACCOUNTS_FILE" --dir drizzle-accounts --table accounts_migrations || { echo "Abbruch: Migration der Kontendatei fehlgeschlagen"; exit 1; }
 fi
@@ -68,7 +67,7 @@ for unit in ratsmonitor-import ratsmonitor-import-nightly; do systemctl is-activ
 systemctl restart ratsmonitor
 # Im Einladungsmodus (RM_ACCESS=invite) leitet die Startseite um (302) und die Suche verlangt eine Anmeldung; geprüft wird
 # dann mit dem internen Token (IMPORT_TOKEN), der Gesundheitsweg meldet Inhalts- und Kontendatei.
-AUTH=(); [ -n "${IMPORT_TOKEN:-}" ] && AUTH=(-H "Authorization: Bearer $IMPORT_TOKEN")
+AUTH=(); if [ -n "${IMPORT_TOKEN:-}" ]; then HF="$(mktemp)"; trap 'rm -f "$HF"' EXIT; printf 'Authorization: Bearer %s\n' "$IMPORT_TOKEN" > "$HF"; AUTH=(-H @"$HF"); fi
 for i in $(seq 1 30); do
   code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "http://127.0.0.1:${PORT:-3000}/" || true)
   { [ "$code" = 200 ] || { [ "${RM_ACCESS:-}" = invite ] && [ "$code" = 302 ]; }; } && { echo "läuft: $(readlink "$APP/current")"; break; }
@@ -82,6 +81,7 @@ if [ -n "${IMPORT_TOKEN:-}" ]; then
   health=$(curl -s --max-time 20 "${AUTH[@]}" "http://127.0.0.1:${PORT:-3000}/api/internal/health" || true)
   echo "Zustand: $health"
   case "$health" in *'"ok":true'*) ;; *) echo "Gesundheitsweg meldet ein Problem"; journalctl -u ratsmonitor -n 40 --no-pager; exit 1;; esac
+  if [ -n "${RM_ACCESS:-}" ]; then case "$health" in *"\"access\":\"$RM_ACCESS\""*) ;; *) echo "Zugang laut Server weicht von RM_ACCESS=$RM_ACCESS ab"; exit 1;; esac; fi
 fi
 journalctl -u ratsmonitor -n 20 --no-pager -o cat | grep -E "Datenbank|Node v" || true
 # Alte Stände aufräumen: der laufende und die zwei neuesten anderen bleiben, angefangene Bauten nicht anfassen

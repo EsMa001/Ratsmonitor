@@ -8,7 +8,7 @@ export const SITE='https://plenara.test';
 export function setup({access='invite',openSignup=false,extraEnv={}}={}){
  resetLimits();
  const accounts=accountsMemoryDb(),content=memoryDb();
- const env={ACCOUNTS:accounts.db,DB:content.db,ACCOUNTS_SECRET:'test-secret-0123456789abcdef0123456789abcdef',SITE_URL:SITE,RM_ACCESS:access,MAIL_TRANSPORT:'outbox',
+ const env={ACCOUNTS:accounts.db,DB:content.db,ACCOUNTS_SECRET:'test-secret-0123456789abcdef0123456789abcdef',SITE_URL:SITE,RM_ACCESS:access,MAIL_TRANSPORT:'outbox',ACCOUNTS_TEST_OUTBOX:'1',
   ...(openSignup?{ACCOUNTS_OPEN_SIGNUP:'1'}:{}),...extraEnv};
  const cfg=accountsConfig(env,{dev:false});
  const jar=new Map();

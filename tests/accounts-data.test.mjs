@@ -125,3 +125,20 @@ test('cleanState lehnt zu große oder kaputte Suchen ab',()=>{
  assert.equal(JSON.parse(cleanState({...state,more:[{ags:'evil',scope:'only'},{ags:'05558008',scope:'with'}]})).more.length,1);
  assert.equal(JSON.parse(cleanState({...state,radius:{ags:'05558008',km:10,x:1,y:2}})).radius.km,10);
 });
+
+test('Übernahme: Benachrichtigungen nur im Rahmen der Stufe, Obergrenze je Konto (Prüfbefund 8)',async()=>{
+ const h=setup();await signedIn(h,'a@example.org',{tier:'basic'});
+ const searches=Array.from({length:5},(_,i)=>({id:'s'+i,name:'S'+i,signature:'sig'+i,state,notify:{mail:true}}));
+ await h.call(importData,{body:{searches}});
+ assert.equal(h.accounts.sql.prepare('SELECT sum(notify_mail) n FROM saved_searches').get().n,1);
+ const many=Array.from({length:200},(_,i)=>({id:'m'+i,name:'M',signature:'msig'+i,state}));
+ await h.call(importData,{body:{searches:many}});await h.call(importData,{body:{searches:many.map(s=>({...s,id:s.id+'b',signature:s.signature+'b'}))}});
+ const r=await h.call(importData,{body:{searches:many.map(s=>({...s,id:s.id+'c',signature:s.signature+'c'}))}});
+ assert.equal(r.status,409);assert.equal(r.body.limit,'stored');
+});
+
+test('Codes für Löschen und Auskunft: höchstens 5 je Stunde und Konto (Prüfbefund 9)',async()=>{
+ const h=setup();await signedIn(h,'a@example.org');
+ for(let i=0;i<5;i++)assert.equal((await h.call(deleteAccount,{body:{}})).status,200);
+ assert.equal((await h.call(deleteAccount,{body:{}})).status,429);
+});

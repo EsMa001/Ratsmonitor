@@ -3,6 +3,7 @@ import {env} from 'cloudflare:workers';
 import '../admin.css';
 import {chatGPTSignInPath,chatGPTSignOutPath,chatGPTSignInAvailable} from '@/app/chatgpt-auth';
 import {adminState} from '@/server/services/session';
+import {accountsConfig} from '@/server/accounts/config.mjs';
 import {AdminActivation} from '@/components/admin-activation';
 import {AdminFrame,START_PAGE,type AdminPage} from '@/components/admin-chrome';
 import {BRAND_NAME,DEFAULT_BRAND} from '@/components/ratsmonitor/lib/brands';
@@ -38,12 +39,12 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
  const signInLink=<a className="btn-primary mt-6 inline-flex" href="/anmelden?weiter=/admin">Anmelden</a>;
  // Admin ist eine Rolle am Konto und gilt nur über den Tunnel (requirements/konten-konzept.md, 6.1). Auf Cloudflare
  // und im Übergang führt ein Knopf zur ChatGPT-Anmeldung (ADMIN_LEGACY_HEADER=1).
- const signIn=chatGPTSignInAvailable()&&env.ADMIN_LEGACY_HEADER==='1';
+ const signIn=chatGPTSignInAvailable()&&accountsConfig(env).legacyHeader;
  let state;
  try{state=await adminState();}
  catch{state={kind:'unavailable'} as const;}
  if(state.kind==='unavailable')return gate(<>{title('Administration nicht erreichbar')}<p role="alert" className="mt-3 text-[16px] text-slate-500">Die Zugangsprüfung hat gerade nicht geantwortet. Bitte versuchen Sie es gleich noch einmal.</p><a className="btn-primary mt-6 inline-flex" href="/admin">Erneut versuchen</a></>);
- if(state.kind==='anonymous')return gate(<>{title('Geschützter Bereich')}{signIn?<>{text('Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.')}<a target="_top" href={chatGPTSignInPath('/admin')} className="btn-primary mt-6 inline-flex">Mit ChatGPT anmelden</a></>:<>{text('Die Administration öffnet sich nach der Anmeldung mit einem Admin-Konto, nur über den Zugang auf dem Server selbst (Tunnel, http://127.0.0.1:8080).')}{signInLink}</>}</>);
+ if(state.kind==='anonymous')return gate(<>{title('Geschützter Bereich')}{signIn?<>{text('Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.')}<a target="_top" href={chatGPTSignInPath('/admin')} className="btn-primary mt-6 inline-flex">Mit ChatGPT anmelden</a></>:<>{text('Die Administration öffnet sich nach der Anmeldung mit einem Admin-Konto, nur über den Zugang auf dem Server selbst (Tunnel, http://127.0.0.1:8080). Im Tunnel mit dem Code aus der E-Mail anmelden; der Link darin führt zur öffentlichen Adresse.')}{signInLink}</>}</>);
  if(state.kind==='stale')return gate(<>{title('Bitte neu anmelden')}{text('Die Anmeldung für die Administration ist älter als sieben Tage.')}{signInLink}</>);
  if(state.kind==='setup')return gate(<>{title('Admin-Zugang einrichten')}{text(<>Angemeldet als <strong>{state.user?.displayName}</strong>. Der einmalige Freischaltcode verknüpft die Administration dauerhaft mit diesem Konto.</>)}{env.ADMIN_SETUP_HASH?<AdminActivation/>:<p role="status" className="mt-4 text-[14px] text-slate-500">Die Freischaltung ist noch nicht eingerichtet: Der Betreiber muss den Hash des Freischaltcodes als ADMIN_SETUP_HASH hinterlegen.</p>}</>);
  if(state.kind!=='admin'||!state.user)return gate(<>{title('Kein Admin-Zugriff')}{text('Dieses Konto ist nicht für die Administration freigeschaltet, oder die Anfrage kam nicht über den Zugang auf dem Server (Tunnel).')}{signIn&&state.legacy&&<a className="mt-6 inline-flex text-[14px] text-teal-600" target="_top" href={chatGPTSignOutPath('/admin')}>Konto wechseln →</a>}</>);

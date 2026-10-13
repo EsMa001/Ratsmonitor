@@ -138,10 +138,29 @@ test('Code mit fehlender Zustimmung wird nicht angerechnet und nicht verbraucht'
  assert.equal((await h.call(enterCode,{body:{code,agb:AGB_VERSION,adult:true}})).status,200);
 });
 
-test('Grenzen: 3 Links in 15 Minuten je Adresse, darüber still keine Mail',async()=>{
+test('Grenzen: 3 Links in 15 Minuten je Adresse und Absender, darüber still keine Mail',async()=>{
  const h=setup();h.addUser('a@example.org');
- for(let i=0;i<5;i++){const r=await link(h,'a@example.org',{ip:'198.51.100.'+i});assert.equal(r.status,202);}
+ for(let i=0;i<5;i++){const r=await link(h,'a@example.org');assert.equal(r.status,202);}
  assert.equal(h.mails('a@example.org').length,3);
+});
+
+test('Ein fremder Absender kann die Links einer Person nicht aufbrauchen (Prüfbefund 1)',async()=>{
+ const h=setup();h.addUser('victim@example.org');
+ for(let i=0;i<12;i++)await link(h,'victim@example.org',{ip:'203.0.113.66'});
+ assert.equal(h.accounts.sql.prepare('SELECT count(*) n FROM login_requests').get().n,5,'über der Absendergrenze wird nichts geschrieben');
+ h.jar.clear();
+ await link(h,'victim@example.org',{ip:'198.51.100.9'});
+ const {code}=h.lastMail('victim@example.org');
+ assert.equal((await h.call(enterCode,{body:{code},ip:'198.51.100.9'})).status,200);
+});
+
+test('Nach 5 Fehlversuchen gilt der Code eines neuen Links im selben Browser (Prüfbefund 2)',async()=>{
+ const h=setup();h.addUser('a@example.org');
+ await link(h,'a@example.org');const first=h.lastMail('a@example.org');
+ const wrong=String((Number(first.code)+1)%100000000).padStart(8,'0');
+ for(let i=0;i<5;i++)await h.call(enterCode,{body:{code:wrong}});
+ await link(h,'a@example.org');
+ assert.equal((await h.call(enterCode,{body:{code:h.lastMail('a@example.org').code}})).status,200);
 });
 
 test('Herkunft: fremde Origin 403, kein JSON 415',async()=>{
@@ -195,4 +214,41 @@ test('Sperre beendet den Zugang sofort',async()=>{
  await link(h,'a@example.org');const {code}=h.lastMail('a@example.org');await h.call(enterCode,{body:{code}});
  h.accounts.sql.prepare("UPDATE users SET status='blocked' WHERE id=?").run(id);
  assert.equal((await h.call(me,{method:'GET'})).body.user,undefined);
+});
+
+test('Neue Links setzen die Tagesgrenze der Codeversuche nicht zurück',async()=>{
+ const h=setup();h.addUser('a@example.org');
+ const wrongFor=code=>String((Number(code)+1)%100000000).padStart(8,'0');
+ for(let round=0;round<3;round++){
+  await link(h,'a@example.org');
+  const {code}=h.lastMail('a@example.org');
+  for(let i=0;i<4;i++)await h.call(enterCode,{body:{code:wrongFor(code)}});
+ }
+ h.tick(16*60000);
+ await link(h,'a@example.org');
+ assert.equal((await h.call(enterCode,{body:{code:h.lastMail('a@example.org').code}})).status,400,'nach 12 Fehlversuchen nur noch der Link');
+});
+
+test('Registrierung prüft die Einladung beim Einlösen erneut (Prüfbefund 18)',async()=>{
+ const h=setup();h.invite('new@example.org');
+ await link(h,'new@example.org');const {token}=h.lastMail('new@example.org');
+ h.accounts.sql.prepare('DELETE FROM invites').run();
+ assert.equal((await h.call(verify,{body:{token,agb:AGB_VERSION,adult:true}})).status,400);
+ assert.equal(h.accounts.sql.prepare('SELECT count(*) n FROM users').get().n,0);
+});
+
+test('Anfragekörper: zu groß wird abgewiesen, auch ohne Content-Length (Prüfbefund 10)',async()=>{
+ const {readJson}=await import('../server/accounts/http.mjs');
+ const big='{"x":"'+'a'.repeat(5000)+'"}';
+ const chunked=new Request('https://plenara.test/x',{method:'POST',body:new ReadableStream({start(c){c.enqueue(new TextEncoder().encode(big));c.close();}}),duplex:'half'});
+ await assert.rejects(readJson(chunked,2048),e=>e.status===413);
+ await assert.rejects(readJson(new Request('https://plenara.test/x',{method:'POST',body:big}),2048),e=>e.status===413);
+ assert.deepEqual(await readJson(new Request('https://plenara.test/x',{method:'POST',body:'{"a":1}'}),2048),{a:1});
+});
+
+test('Test-Postfach (Klartext) nur im Dev-Server oder ausdrücklich für Tests (Prüfbefund 16)',async()=>{
+ const {accountsConfig}=await import('../server/accounts/config.mjs');
+ assert.equal(accountsConfig({MAIL_TRANSPORT:'outbox'},{dev:false}).mail.transport,'log');
+ assert.equal(accountsConfig({MAIL_TRANSPORT:'outbox',ACCOUNTS_TEST_OUTBOX:'1'},{dev:false}).mail.transport,'outbox');
+ assert.equal(accountsConfig({},{dev:true}).mail.transport,'outbox');
 });

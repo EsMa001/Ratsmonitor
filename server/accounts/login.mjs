@@ -52,19 +52,28 @@ export async function requestLink(ctx){
  const next=safeNext(typeof body.next==='string'?body.next:'/');
  const {db,now,names}=ctx,at=iso(now);
  const emailHmac=await hmacHex(ctx.cfg.secret,'email-rate',email);
- const ipLimited=limitedAll('link',ctx.ip,[{max:5,windowMs:15*60000},{max:20,windowMs:DAY}],now);
- const counts=await db.prepare('SELECT coalesce(sum(at>?),0) recent,count(*) day FROM login_requests WHERE email_hmac=? AND at>?').bind(iso(now-15*60000),emailHmac,iso(now-DAY)).first();
- const overLimit=ipLimited||Number(counts?.recent||0)>=3||Number(counts?.day||0)>=10;
+ const response202=cookies=>respond({ok:true,message:SENT_TEXT},{status:202,cookies});
+ // Über der Grenze des Absenders: gleiche Antwort, aber nichts schreiben (sonst verbrauchte ein Absender das Kontingent
+ // einer fremden Adresse und entwertete laufend ihren Link)
+ if(limitedAll('link',ctx.ip,[{max:5,windowMs:15*60000},{max:20,windowMs:DAY}],now))return {response:response202([]),later:[]};
+ const ipHmac=await hmacHex(ctx.cfg.secret,'ip-rate',ctx.ip);
+ // Je Adresse und Absender 3 in 15 Minuten und 10 am Tag, je Adresse insgesamt 30 am Tag: ein fremder Absender kann
+ // die eigenen Links einer Person so nicht aufbrauchen
+ const counts=await db.prepare('SELECT coalesce(sum(at>? AND ip_hmac=?),0) recent,coalesce(sum(ip_hmac=?),0) mine,count(*) day FROM login_requests WHERE email_hmac=? AND at>?')
+  .bind(iso(now-15*60000),ipHmac,ipHmac,emailHmac,iso(now-DAY)).first();
+ const overLimit=Number(counts?.recent||0)>=3||Number(counts?.mine||0)>=10||Number(counts?.day||0)>=30;
  // Flow-Cookie: im selben Browser für dieselbe Adresse weiterverwenden (der Code gilt nur mit ihm)
  let flowValue=ctx.cookies.get(names.flow),flowHash=TOKEN_RE.test(flowValue||'')?await sha256hex(flowValue):null;
  const flow=flowHash?await db.prepare('SELECT email_hmac,expires_at FROM login_flows WHERE id=?').bind(flowHash).first():null;
- const statements=[db.prepare('INSERT INTO login_requests(email_hmac,at) VALUES(?,?)').bind(emailHmac,at)];
- if(!flow||flow.email_hmac!==emailHmac||flow.expires_at<=at){
+ const statements=[db.prepare('INSERT INTO login_requests(email_hmac,ip_hmac,at) VALUES(?,?,?)').bind(emailHmac,ipHmac,at)];
+ // Jeder neue Link bekommt einen neuen Ablauf (der Code gilt nur mit ihm); der alte behält seine Fehlversuche, die
+ // zur Tagesgrenze je Adresse zählen. Nur ohne neuen Link (Grenze erreicht) bleibt der bisherige Ablauf.
+ if(!flow||flow.email_hmac!==emailHmac||flow.expires_at<=at||!overLimit){
   flowValue=randomToken(32);flowHash=await sha256hex(flowValue);
   statements.push(db.prepare('INSERT INTO login_flows(id,email_hmac,attempts,created_at,expires_at) VALUES(?,?,0,?,?)').bind(flowHash,emailHmac,at,iso(now+FLOW_MS)));
  }else statements.push(db.prepare('UPDATE login_flows SET expires_at=? WHERE id=?').bind(iso(now+FLOW_MS),flowHash));
  await db.batch(statements);
- const response=respond({ok:true,message:SENT_TEXT},{status:202,cookies:[setCookie(names.flow,flowValue,{maxAge:FLOW_MS/1000,secure:names.secure,sameSite:'Strict'})]});
+ const response=response202([setCookie(names.flow,flowValue,{maxAge:FLOW_MS/1000,secure:names.secure,sameSite:'Strict'})]);
  const later=overLimit?[]:[()=>issueLoginToken(ctx,{email,next,flowHash,site})];
  return {response,later};
 }
@@ -180,9 +189,11 @@ async function completeLogin(ctx,used,consent){
  if(used.purpose==='login'){
   if(!user||user.status!=='active'||user.id!==used.user_id)throw new AccountError(400,EXPIRED);
  }else if(!user){
+  const invite=await db.prepare('SELECT tier,tier_until FROM invites WHERE email=? AND expires_at>?').bind(used.email,at).first();
+  // Einladung inzwischen abgelaufen oder zurückgezogen: kein Konto (außer bei offener Registrierung)
+  if(!invite&&!(cfg.access==='open'&&cfg.openSignup))throw new AccountError(400,EXPIRED);
   created=true;
   user={id:randomId('u_'),email:used.email,status:'active'};
-  const invite=await db.prepare('SELECT tier,tier_until FROM invites WHERE email=?').bind(used.email).first();
   statements.push(
    db.prepare('INSERT INTO users(id,email,email_verified_at,name,status,created_at) VALUES(?,?,?,?,?,?)').bind(user.id,user.email,at,consent.name??null,'active',at),
    db.prepare('INSERT INTO consents(user_id,doc,version,given_at,privacy_version) VALUES(?,?,?,?,?)').bind(user.id,'agb',AGB_VERSION,at,PRIVACY_VERSION),

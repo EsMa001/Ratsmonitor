@@ -422,7 +422,7 @@ Basic-Auth-Passwort, sobald sie geprüft ist.
 |---|---|
 | `/srv/ratsmonitor/accounts/` | Kontenordner, `ratsmonitor`, Rechte 700; nur Webdienst und Kontojob sehen ihn (`InaccessiblePaths` in allen anderen Einheiten) |
 | `/srv/ratsmonitor/accounts/accounts.sqlite` | Kontendatei (eigene Datei, nie in Entwicklerkopien, Export oder MCP) |
-| `/srv/ratsmonitor/accounts/accounts.env` | `ACCOUNTS_FILE`, `ACCOUNTS_SECRET`, `MAIL_API_KEY`, `ACCOUNTS_AGE_RECIPIENT`; root, 600; Vorlage `deploy/node/accounts.env.example` |
+| `/etc/ratsmonitor/accounts.env` | `ACCOUNTS_FILE`, `ACCOUNTS_SECRET`, `MAIL_API_KEY`, `ACCOUNTS_AGE_RECIPIENT`; root, 600; Vorlage `deploy/node/accounts.env.example` |
 | `/srv/ratsmonitor/accounts/backups/` | verschlüsselte Sicherungen (`accounts-*.sqlite.zst.age`, 7 Stände) und `pre-<commit>` vor jeder Kontomigration |
 | `/srv/ratsmonitor/accounts/deleted.log` | Löschprotokoll (Hash der Konto-ID, HMAC der Adresse), für `reapply-deletions` nach dem Rückspielen |
 | `/srv/ratsmonitor/accounts/maintenance.log` | Protokoll des Kontojobs |
@@ -431,9 +431,10 @@ Basic-Auth-Passwort, sobald sie geprüft ist.
 
 ```bash
 apt install age sqlite3
-mkdir -p /srv/ratsmonitor/accounts && chown ratsmonitor:ratsmonitor /srv/ratsmonitor/accounts && chmod 700 /srv/ratsmonitor/accounts
-cp /srv/ratsmonitor/app/current/deploy/node/accounts.env.example /srv/ratsmonitor/accounts/accounts.env
-chmod 600 /srv/ratsmonitor/accounts/accounts.env      # ACCOUNTS_SECRET: openssl rand -base64 48
+mkdir -p /srv/ratsmonitor/accounts/backups && chown -R ratsmonitor:ratsmonitor /srv/ratsmonitor/accounts && chmod -R 700 /srv/ratsmonitor/accounts
+mkdir -p /etc/ratsmonitor && chmod 700 /etc/ratsmonitor
+cp /srv/ratsmonitor/app/current/deploy/node/accounts.env.example /etc/ratsmonitor/accounts.env
+chmod 600 /etc/ratsmonitor/accounts.env      # ACCOUNTS_SECRET: openssl rand -base64 48
 # age-Schlüssel auf dem eigenen Rechner erzeugen (age-keygen -o plenara-konten.key), privaten Teil offline bei Max und
 # Nico ablegen, nur den öffentlichen (age1…) als ACCOUNTS_AGE_RECIPIENT eintragen
 sudo -u ratsmonitor node /srv/ratsmonitor/app/current/scripts/node-migrate.mjs /srv/ratsmonitor/accounts/accounts.sqlite --dir drizzle-accounts --table accounts_migrations

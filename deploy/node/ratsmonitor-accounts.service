@@ -11,7 +11,7 @@ User=ratsmonitor
 Group=ratsmonitor
 WorkingDirectory=/srv/ratsmonitor/app/current
 EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
-EnvironmentFile=-/srv/ratsmonitor/accounts/accounts.env
+EnvironmentFile=-/etc/ratsmonitor/accounts.env
 TimeoutStartSec=30min
 UMask=0077
 ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs accounts
@@ -22,4 +22,6 @@ PrivateTmp=yes
 ProtectSystem=strict
 ProtectHome=yes
 ReadWritePaths=/srv/ratsmonitor/data -/srv/ratsmonitor/accounts
-TemporaryFileSystem=/run/accounts-backup:mode=0700
+# tmpfs für die unverschlüsselte Zwischenkopie, gehört dem Dienstbenutzer (/run/accounts-backup)
+RuntimeDirectory=accounts-backup
+RuntimeDirectoryMode=0700

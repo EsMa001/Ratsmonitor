@@ -14,8 +14,8 @@ import {LIMITS,FEATURES,ACCOUNT_DEFAULT_TIER} from '../shared/plans.mjs';
 import {TRANSFER_TABLES} from '../shared/database-transfer.mjs';
 
 const root=new URL('../',import.meta.url);
-async function signedIn(h,email,{tier}={}){
- const id=h.addUser(email,{tier});
+async function signedIn(h,email,{tier,admin=false}={}){
+ const id=h.addUser(email,{tier,admin});
  await h.call(requestLink,{body:{email}});
  await h.call(enterCode,{body:{code:h.lastMail(email).code}});
  return id;
@@ -150,7 +150,13 @@ test('Übergang: ohne Kontendatei gilt der alte Admin-Weg weiter, mit Kontendate
 
 test('Admin-Protokoll: ändernde Admin-Aufrufe je Konto, Pfad und Stunde gezählt, nur IDs',async()=>{
  const {auditAdmin}=await import('../server/accounts/access.mjs');
- const h=setup();const id=await signedIn(h,'admin@example.org',{tier:'pro'});
+ const h=setup();
+ /* Ohne Rolle admin: nichts protokolliert (sonst füllte jede Sitzung die Tabelle) */
+ await signedIn(h,'user@example.org',{tier:'pro'});
+ const userCookie='__Host-rm_session='+h.jar.get('__Host-rm_session');
+ await auditAdmin(new Request('https://plenara.test/api/admin/x',{method:'POST',headers:{cookie:userCookie}}),h.env,{cfg:h.cfg,now:h.now()});
+ h.jar.clear();
+ const id=await signedIn(h,'admin@example.org',{tier:'pro',admin:true});
  const cookie='__Host-rm_session='+h.jar.get('__Host-rm_session');
  const post=path=>new Request('https://plenara.test'+path,{method:'POST',headers:{cookie}});
  for(let i=0;i<3;i++)await auditAdmin(post('/api/admin/refresh'),h.env,{cfg:h.cfg,now:h.now()});

@@ -65,8 +65,10 @@ function checkDatabase() {
 function checkAccounts() {
   const access = process.env.RM_ACCESS;
   if (access && access !== 'open' && access !== 'invite') return `RM_ACCESS muss open oder invite sein, nicht ${access}.`;
-  if (!access) console.warn('[ratsmonitor] RM_ACCESS ist nicht gesetzt: die Seite ist offen (open), wie vor den Konten.');
   const file = process.env.ACCOUNTS_FILE;
+  // Mit Konten muss der Zugang ausdrücklich gesetzt sein: eine verlorene Zeile darf die Seite nicht still öffnen
+  if (!access && file) return 'RM_ACCESS fehlt (open oder invite), obwohl Konten eingerichtet sind.';
+  if (!access) console.warn('[ratsmonitor] RM_ACCESS ist nicht gesetzt: die Seite ist offen (open), wie vor den Konten.');
   if (!file) return access === 'invite' ? 'RM_ACCESS=invite braucht ACCOUNTS_FILE (Kontendatei).' : null;
   if (!isAbsolute(file) || !fs.existsSync(file)) return `Kontendatei fehlt: ${file}`;
   let db;
@@ -88,6 +90,7 @@ try {
   if (file && fs.existsSync(file)) {
     const db = new DatabaseSync(file, { readOnly: true });
     if (db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name IN ('users','sessions') LIMIT 1").get()) console.warn('[ratsmonitor] Die Inhaltsdatei enthält Kontotabellen (users/sessions), etwa aus einer lokalen Kopie. Konten gehören in ACCOUNTS_FILE.');
+    if (process.env.ACCOUNTS_FILE && process.env.ADMIN_LEGACY_HEADER !== '1' && db.prepare("SELECT 1 FROM system_state WHERE key='admin-owner-v1'").get()) console.warn('[ratsmonitor] admin-owner-v1 (alter Admin-Weg) besteht noch, gilt aber nicht mehr (ADMIN_LEGACY_HEADER ist aus). Nach dem Übergang: ratsmonitor-accounts cleanup-legacy.');
     db.close();
   }
 } catch { /* nur ein Hinweis */ }

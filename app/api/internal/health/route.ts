@@ -14,6 +14,6 @@ export async function GET(request:Request){
    out.mails24h=Object.fromEntries((mails.results||[]).map((r:any)=>[r.status,r.n]));
   }
  }catch(error){out.error=error instanceof Error?error.message:String(error);}
- const ok=!!env.DB&&(!cfg.access||cfg.access==='open'||(!!cfg.db&&!!cfg.secret&&!!cfg.siteUrl))&&!out.error;
+ const ok=!!env.DB&&(!cfg.db||!!cfg.access)&&(!cfg.access||cfg.access==='open'||(!!cfg.db&&!!cfg.secret&&!!cfg.siteUrl))&&!out.error;
  return Response.json({ok,...out},{status:ok?200:503,headers:{'Cache-Control':'no-store'}});
 }

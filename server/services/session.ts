@@ -35,7 +35,7 @@ export function accountRoute(handler:Handler){
 async function requestFromHeaders(){
  const h=await headers();
  const proto=(h.get('x-forwarded-proto')||'http').split(',')[0].trim()==='https'?'https':'http';
- const host=(h.get('x-forwarded-host')||h.get('host')||'localhost').split(',')[0].trim();
+ const host=(h.get('host')||'localhost').trim();
  return new Request(`${proto}://${host}/`,{headers:{cookie:h.get('cookie')||'','user-agent':h.get('user-agent')||''}});
 }
 export type AdminState={kind:'admin'|'anonymous'|'stale'|'denied'|'setup'|'unavailable';user?:{userId:string;displayName:string;email:string};legacy?:boolean};
