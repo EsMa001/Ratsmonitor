@@ -23,7 +23,7 @@ function OriginalQuote({evidence,topic}:{evidence:ContentEvidence;topic:TopicDet
  const location=source?.kind==='page'&&(!evidence.location||/^Seite\s+\d+$/i.test(evidence.location))?numbered?'Textabschnitt '+evidence.page:undefined:evidence.location||(numbered?'Seite '+evidence.page:undefined);
  return <figure className="m-0 mb-5 min-w-0 border-l-2 border-teal-600 pl-4">
   <blockquote className="m-0 max-w-none break-words text-[16px] leading-relaxed text-slate-900">„{evidence.quote}“</blockquote>
-  <figcaption className="mt-2 break-words text-[12px] text-slate-500">{url?<a href={url} className="text-teal-600 no-underline hover:underline" target="_blank" rel="noopener noreferrer">{title} ↗</a>:title}{location&&' · '+location}</figcaption>
+  <figcaption className="mt-2 break-words text-[12px] text-slate-500">{url?<a href={url} className="text-teal-700 no-underline hover:underline" target="_blank" rel="noopener noreferrer">{title} ↗</a>:title}{location&&' · '+location}</figcaption>
  </figure>;
 }
 /* Auszug aus der Vorlage: nur Originalsätze, wörtlich; „[…]“ steht, wo im Dokument etwas dazwischen liegt */
@@ -32,7 +32,7 @@ function Excerpt({text,source,size}:{text:{sentences:string[];gaps?:boolean[]};s
   const url=sourceLink(source?.url);
   return <figure className="m-0">
     <blockquote className={`m-0 max-w-none border-l-2 border-teal-600 pl-4 leading-relaxed ${size==='short'?'text-[16px] text-slate-500 sm:text-[18px]':'text-[16px] text-slate-900'}`}>„{body}“</blockquote>
-    <figcaption className="mt-2 pl-4 text-[14px] text-slate-500">Auszug aus der Vorlage{url&&<> · <a className="text-teal-600 no-underline hover:underline" href={url} target="_blank" rel="noopener noreferrer">{source?.title||'Originaldokument'} ↗</a></>}</figcaption>
+    <figcaption className="mt-2 pl-4 text-[14px] text-slate-500">Auszug aus der Vorlage{url&&<> · <a className="text-teal-700 no-underline hover:underline" href={url} target="_blank" rel="noopener noreferrer">{source?.title||'Originaldokument'} ↗</a></>}</figcaption>
   </figure>;
 }
 export function DetailPage(){
@@ -71,7 +71,7 @@ export function DetailPage(){
 
         {/* Kopf: Ort, Thema, Stand als Textzeile; Aktionen rechts */}
         <div className="flex flex-wrap items-center gap-2 text-[14px] text-slate-500">
-          <span>{region?.name||(regions?'Gebiet nicht zugeordnet':'')} · {t.category} · <span className="text-teal-600">{status.label}</span></span>
+          <span>{region?.name||(regions?'Gebiet nicht zugeordnet':'')} · {t.category} · <span className="text-teal-700">{status.label}</span></span>
           {/* Aktionen als Symbole: Teilen, Folgen, Speichern, Exportieren */}
           <span className="ml-auto flex flex-wrap items-center gap-1">
             <ShareButton title={t.title} url={typeof window!=='undefined'?window.location.origin+'/beschluss/'+t.id:''}/>
@@ -79,7 +79,7 @@ export function DetailPage(){
             <SaveArticleButton article={article} size={20}/>
             <ExportMenu
               title="Exportieren"
-              tone="text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+              tone="text-teal-700 hover:bg-teal-50 hover:text-teal-800"
               options={[
                 {id:'pdf',label:'PDF',desc:'Übersicht mit Logo als Datei zum Weitergeben oder Ablegen'},
                 {id:'print',label:'Drucken',desc:'Druckfertige Seite mit Logo, direkt zum Drucker'},
@@ -107,7 +107,7 @@ export function DetailPage(){
                 {showRule?<div className="mb-4"><Excerpt text={rule.long} source={excerptSource} size="long"/></div>:<>
                   {isAi&&t.contentAnalysis?.status==='stale'&&<p role="status" className="mb-4 border-l-2 border-slate-300 pl-4 text-[14px] leading-relaxed text-slate-500">Die Quelldaten haben sich geändert. Diese KI-Zusammenfassung wurde noch nicht aktualisiert.</p>}
                   {isAi&&coverage&&(coverage.partial||coverage.missing>0)&&<div className="mb-5 border-l-2 border-slate-300 pl-4 text-[14px] leading-relaxed text-slate-500"><p className="m-0">Unvollständige Quellenlage: {coverage.available} von {coverage.total} Unterlagen mit gespeichertem Sachtext.{coverage.partial?' Einige Texte sind nur teilweise lesbar.':''}</p>
-                    {!!t.contentAnalysis?.gaps?.length&&<details className="mt-2"><summary className="cursor-pointer text-teal-600">Fehlende Unterlagen ({t.contentAnalysis.gaps.length})</summary><ul className="m-0 mt-2 list-none space-y-3 p-0">{t.contentAnalysis.gaps.map((gap,index)=>{const url=sourceLink(gap.url);return <li key={index}>{url?<a href={url} target="_blank" rel="noopener noreferrer" className="break-words text-teal-600 hover:underline">{gap.title||'Originalunterlage'} ↗</a>:<span className="break-words">{gap.title||'Originalunterlage'}</span>}<span className="block text-[12px]">{gap.reason}</span></li>;})}</ul></details>}
+                    {!!t.contentAnalysis?.gaps?.length&&<details className="mt-2"><summary className="cursor-pointer text-teal-700">Fehlende Unterlagen ({t.contentAnalysis.gaps.length})</summary><ul className="m-0 mt-2 list-none space-y-3 p-0">{t.contentAnalysis.gaps.map((gap,index)=>{const url=sourceLink(gap.url);return <li key={index}>{url?<a href={url} target="_blank" rel="noopener noreferrer" className="break-words text-teal-700 hover:underline">{gap.title||'Originalunterlage'} ↗</a>:<span className="break-words">{gap.title||'Originalunterlage'}</span>}<span className="block text-[12px]">{gap.reason}</span></li>;})}</ul></details>}
                   </div>}
                   <div className={'mb-4'+(!isAi||!evidence.length?' border-l-2 border-teal-600 pl-4':'')}>{t.longSummary?.map((paragraph,index)=><div key={index}><p className="mb-4 max-w-none break-words text-[16px] leading-relaxed text-slate-900">{paragraph}</p>{isAi&&evidence.filter(value=>value.paragraphIndex===index).map((value,quoteIndex)=><OriginalQuote key={quoteIndex} evidence={value} topic={t}/>)}</div>)}</div>
                   {isAi&&standaloneQuotes.length>0&&<div className="mb-5"><h3 className="mb-3 text-[16px] font-semibold text-slate-900">Originalzitate</h3>{standaloneQuotes.map((value,index)=><OriginalQuote key={index} evidence={value} topic={t}/>)}</div>}
@@ -131,8 +131,8 @@ export function DetailPage(){
                         <div className="flex flex-wrap items-baseline gap-x-2">
                           <time className="tabular-nums text-slate-500">{formatDate(e.date)}</time>
                           <strong className="font-semibold text-slate-900">{e.committee||'Gremium nicht dokumentiert'}</strong>
-                          <span className={last?'text-teal-600':'text-slate-500'}>{STATUS[e.status]?.label||'Stand offen'}</span>
-                          {e.url&&!isOparlData(e.url)&&<a className="relative ml-auto text-teal-600 no-underline hover:underline max-sm:after:absolute max-sm:after:-inset-x-2 max-sm:after:-inset-y-3.5 max-sm:after:content-['']" href={e.url} target="_blank" rel="noopener noreferrer" title="Öffentliche Sitzung öffnen">Sitzung ↗</a>}
+                          <span className={last?'text-teal-700':'text-slate-500'}>{STATUS[e.status]?.label||'Stand offen'}</span>
+                          {e.url&&!isOparlData(e.url)&&<a className="relative ml-auto text-teal-700 no-underline hover:underline max-sm:after:absolute max-sm:after:-inset-x-2 max-sm:after:-inset-y-3.5 max-sm:after:content-['']" href={e.url} target="_blank" rel="noopener noreferrer" title="Öffentliche Sitzung öffnen">Sitzung ↗</a>}
                         </div>
                         {e.description&&<p className="m-0 mt-1 text-[14px] text-slate-500">{e.description}</p>}
                         <div className="mt-1 text-[14px]"><SessionDetails event={e}/></div>
@@ -149,7 +149,7 @@ export function DetailPage(){
               <p className="mb-4 text-[13px] text-slate-500">Ohne Gewähr. Maßgeblich sind die Originalunterlagen.</p>
               {docs.length?(
                 <ul className="m-0 grid list-none gap-x-8 border-t border-slate-200 p-0 sm:grid-cols-2">
-                  {docs.map((d,i)=><li key={i} className="border-b border-slate-200"><a href={d.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 py-3 text-[16px] text-slate-900 no-underline"><IconDoc size={28} className="flex-none text-teal-600"/><span className="min-w-0 flex-1 break-words group-hover:text-teal-600">{d.title||'Dokument'}</span><span aria-hidden="true" className="flex-none text-teal-600">↗</span></a></li>)}
+                  {docs.map((d,i)=><li key={i} className="border-b border-slate-200"><a href={d.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 py-3 text-[16px] text-slate-900 no-underline"><IconDoc size={28} className="flex-none text-teal-700"/><span className="min-w-0 flex-1 break-words group-hover:text-teal-700">{d.title||'Dokument'}</span><span aria-hidden="true" className="flex-none text-teal-700">↗</span></a></li>)}
                 </ul>
               ):<p className="text-[14px] text-slate-500">Keine Unterlagen verlinkt.</p>}
             </section>
@@ -162,7 +162,7 @@ export function DetailPage(){
               {facts.map(([k,v])=><div key={k}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="m-0 text-slate-900">{v}</dd></div>)}
               {t.labelAssessments?.ai&&<div><dt className="text-[12px] text-slate-500">KI-Sachgebiet</dt><dd className="m-0 text-slate-900">{labelName(t.labelAssessments.ai.primary)}{t.labelAssessments.ai.status==='stale'&&<span className="block text-[12px] text-slate-500">Veraltet</span>}</dd></div>}
             </dl>
-            <p className="mt-4 flex items-start gap-2 text-[14px] text-slate-500" title="Herkunft der Zusammenfassung (Symbol vorläufig)"><span className="mt-0.5 text-teal-600">{source.icon}</span><span><span className="block text-[12px]">Zusammenfassung</span>{source.label}</span></p>
+            <p className="mt-4 flex items-start gap-2 text-[14px] text-slate-500" title="Herkunft der Zusammenfassung (Symbol vorläufig)"><span className="mt-0.5 text-teal-700">{source.icon}</span><span><span className="block text-[12px]">Zusammenfassung</span>{source.label}</span></p>
           </aside>
         </div>
       </article>

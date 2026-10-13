@@ -24,7 +24,7 @@ const SHOW = 8;
 function Row({ href, title, sub, right }: { href: string; title: string; sub: string; right: React.ReactNode }) {
   return (
     <li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-      <a href={href} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+      <a href={href} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
         <span className="block truncate text-[16px]">{title}</span>
         <span className="block truncate text-[12px] text-slate-500">{sub}</span>
       </a>
@@ -62,7 +62,7 @@ function Rates({ x }: { x: Extract<Extra, { kind: "hebesatz" | "fee_rate" }> }) 
         <div className="flex flex-wrap gap-2" role="group" aria-label={tax ? "Steuerart" : "Gebührenart"}>
           {x.blocks.map((k) => (
             <button key={k.name} type="button" aria-pressed={k.name === b.name} onClick={() => { setPick(k.name); setChange(""); }}
-              className={`h-9 rounded-full border px-4 text-[14px] transition-colors ${k.name === b.name ? "border-teal-600 bg-teal-600 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`}>{k.name}</button>
+              className={`h-9 rounded-full border px-4 text-[14px] transition-colors ${k.name === b.name ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`}>{k.name}</button>
           ))}
         </div>
       )}
@@ -71,7 +71,7 @@ function Rates({ x }: { x: Extract<Extra, { kind: "hebesatz" | "fee_rate" }> }) 
           <div key={k} className={`px-4 ${i % 2 ? "border-l border-slate-200" : ""} ${i ? "sm:border-l sm:border-slate-200" : "sm:pl-0"}`}><dt className="text-[12px] text-slate-500">{k}</dt><dd className="mt-1 text-[18px] font-semibold tabular-nums sm:text-[22px]">{v}</dd></div>
         ))}
         <div className="border-l border-slate-200 px-4"><dt className="text-[12px] text-slate-500">Erhöhung / Senkung</dt><dd className="mt-1 flex gap-1 text-[18px] font-semibold tabular-nums sm:text-[22px]">
-          {(["up", "down"] as const).map((c, i) => <span key={c}>{i > 0 && <span className="mr-1 text-slate-400">/</span>}<button type="button" aria-pressed={change === c} disabled={!(c === "up" ? b.up : b.down)} onClick={() => setChange(change === c ? "" : c)} className={`rounded px-1 ${change === c ? "bg-teal-600 text-white" : "text-teal-700 underline decoration-dotted underline-offset-4 disabled:text-slate-900 disabled:no-underline"}`}>{n(c === "up" ? b.up : b.down)}</button></span>)}
+          {(["up", "down"] as const).map((c, i) => <span key={c}>{i > 0 && <span className="mr-1 text-slate-400">/</span>}<button type="button" aria-pressed={change === c} disabled={!(c === "up" ? b.up : b.down)} onClick={() => setChange(change === c ? "" : c)} className={`rounded px-1 ${change === c ? "bg-teal-700 text-white" : "text-teal-700 underline decoration-dotted underline-offset-4 disabled:text-slate-900 disabled:no-underline"}`}>{n(c === "up" ? b.up : b.down)}</button></span>)}
         </dd></div>
       </dl>
       {b.lands.length > 1 && <p className="mt-4 text-[14px] text-slate-500"><span className="text-slate-700">Mitte je Land</span> (Grundsteuermodelle und Gebührenordnungen sind je Land verschieden, daher kein gemeinsamer Wert): {b.lands.map((l) => `${l.land} ${l.median === null ? "–" : fmt(l.median)} (${n(l.regions)})`).join(" · ")}</p>}

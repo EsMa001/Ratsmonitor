@@ -54,7 +54,7 @@ export function BenachrichtigungenPage() {
                 <td className="py-4 text-[16px] leading-relaxed text-slate-500">
                   {p}
                   <br />
-                  <Link href={href} className="text-[14px] text-teal-600 no-underline hover:underline">{link} →</Link>
+                  <Link href={href} className="text-[14px] text-teal-700 no-underline hover:underline">{link} →</Link>
                 </td>
               </tr>
             ))}

@@ -49,7 +49,7 @@ export function PostfachPage() {
     <>
       <PageHead icon="mail" label="Konto" name="Test-Postfach" title="Test-Postfach" lead="Hier landen alle E-Mails, die im echten Betrieb verschickt würden. Es wird nichts versendet." />
       <section className="ri-sec ri-sec--tight">
-        <button type="button" disabled={busy} onClick={samples} className="mb-6 text-[14px] text-teal-600 hover:underline disabled:opacity-50">
+        <button type="button" disabled={busy} onClick={samples} className="mb-6 text-[14px] text-teal-700 hover:underline disabled:opacity-50">
           {busy ? "Wird erstellt …" : "Beispiel-Benachrichtigungen erzeugen →"}
         </button>
         {!mails.length ? (
@@ -70,7 +70,7 @@ export function PostfachPage() {
                 </li>
               ))}
             </ul>
-            <button type="button" onClick={deleteMails} className="mt-6 text-[14px] text-teal-600 hover:underline">
+            <button type="button" onClick={deleteMails} className="mt-6 text-[14px] text-teal-700 hover:underline">
               Postfach leeren
             </button>
           </>

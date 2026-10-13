@@ -75,7 +75,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         )}
         <span className="text-[16px] font-semibold text-slate-900 max-sm:hidden">Filter</span>
         {active && !phone && (
-          <button type="button" onClick={() => { search.resetAll(); setFiltersOpen(false); }} className={`text-[14px] text-teal-600 hover:underline ${flip ? "mr-auto ml-4" : "ml-auto mr-4"}`}>
+          <button type="button" onClick={() => { search.resetAll(); setFiltersOpen(false); }} className={`text-[14px] text-teal-700 hover:underline ${flip ? "mr-auto ml-4" : "ml-auto mr-4"}`}>
             Zurücksetzen
           </button>
         )}
@@ -94,7 +94,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         </div>
         {/* Handy: „Zurücksetzen“ nicht in der Kopfzeile (dort sitzt die Zeitraum-Auswahl), sondern unten */}
         {phone && active && (
-          <button type="button" onClick={() => { search.resetAll(); setFiltersOpen(false); }} className="self-end text-[14px] text-teal-600 hover:underline">
+          <button type="button" onClick={() => { search.resetAll(); setFiltersOpen(false); }} className="self-end text-[14px] text-teal-700 hover:underline">
             Zurücksetzen
           </button>
         )}

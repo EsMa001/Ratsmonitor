@@ -122,7 +122,7 @@ export function ComparePage() {
       {drill.idx.map((i) => <RadarDrill key={i} base={`/api/analytics/compare?place=${res.places[i].ags}`} query={ranKey} by={drill.by} value={drill.value} label={`${names[i]}: ${drill.label}`} />)}
     </div>
   ) : null;
-  const linkCls = (on: boolean) => `text-left hover:text-teal-700 hover:underline ${on ? "text-teal-700 underline" : ""}`;
+  const linkCls = (on: boolean) => `text-left hover:text-teal-800 hover:underline ${on ? "text-teal-700 underline" : ""}`;
   const lines = useMemo(() => !res ? [] : res.places.map((p, i) => ({
     color: PLACE_COLORS[i], name: names[i],
     values: res.months.map((m) => { const v = p.months.find((x) => x.m === m)?.n ?? 0; return perHead && p.population ? (v / p.population) * 1000 : v; }),
@@ -145,7 +145,7 @@ export function ComparePage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-600">plenara.X Tools</Link> / Ortsvergleich</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Ortsvergleich</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Ortsvergleich</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Stellt zwei Orte nebeneinander: womit sie sich beschäftigen, wie Vorlagen ausgehen und was für den jeweiligen Ort typisch ist. Als Maßstab dienen alle Gebiete.</p>
       </PageBand>
@@ -300,7 +300,7 @@ export function ComparePage() {
           </details>
           </Reveal>
 
-          <p className="mt-10 text-[12px] text-slate-500">Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Vorgänge). Jeder Ort zählt nur seinen eigenen Rat (eine Gemeinde ohne Kreistag, ein Kreis ohne seine Gemeinden); derselbe Titel in mehreren Gremien zählt einmal, einzeln geführte Einwohnerfragen und Besetzungen zählen nicht. Zahlen und Verlauf sind exakt; Themenprofil, Stand der Vorlagen, gemeinsame und typische Begriffe stammen aus einer gleichmäßigen Stichprobe von höchstens 6.000 Vorgängen je Ort. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Vorgänge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">Maßstab sind alle Gebiete der Gemeindeebene mit denselben Filtern ({n(res.base.total)} Vorgänge). Jeder Ort zählt nur seinen eigenen Rat (eine Gemeinde ohne Kreistag, ein Kreis ohne seine Gemeinden); derselbe Titel in mehreren Gremien zählt einmal, einzeln geführte Einwohnerfragen und Besetzungen zählen nicht. Zahlen und Verlauf sind exakt; Themenprofil, Stand der Vorlagen, gemeinsame und typische Begriffe stammen aus einer gleichmäßigen Stichprobe von höchstens 6.000 Vorgängen je Ort. „Typisch“ verlangt mindestens den 1,8-fachen Anteil und einen deutlichen Unterschied (z-Wert ab 3). Unterschiede im Datenbestand (z. B. wie vollständig ein Ratsinformationssystem erfasst ist) wirken auf die Zahlen; Vorgänge je 1.000 Einwohner sind deshalb ein Anhaltspunkt, kein Maß für politische Aktivität. <Link href="/analytics/ueber" className="text-teal-700">Methode →</Link></p>
         </div>
       )}
     </main>

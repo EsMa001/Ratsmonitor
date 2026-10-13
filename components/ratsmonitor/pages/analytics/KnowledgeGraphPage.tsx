@@ -139,7 +139,7 @@ export function KnowledgeGraphPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-600">plenara.X Tools</Link> / Themennetz</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Themennetz</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Themennetz</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.</p>
       </PageBand>
@@ -160,9 +160,9 @@ export function KnowledgeGraphPage() {
         </div>
 
         <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
-          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconPlus size={16} /></button>
-          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconMinus size={16} /></button>
-          <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconCenter size={16} /></button>
+          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
+          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
+          <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
         </div>
 
         <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:inset-x-3 max-sm:top-auto max-sm:bottom-3">
@@ -184,9 +184,9 @@ export function KnowledgeGraphPage() {
             </div>
             {activePair && <p className="mt-2 text-[14px] text-slate-700">Verbindung mit „{byId.get(activePair.b)?.label}“: gemeinsam in {n(activePair.n)} Einträgen.</p>}
             {links.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500">Verbunden mit: {links.slice(0, 6).map((l) => l.other.label).join(", ")}</p>}
-            {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-600">Graph um „{sel.label}“ neu aufbauen →</button>}
-            {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-600">Auf dieses Thema eingrenzen →</button>}
-            {res.q && sel.type !== "center" && <button type="button" onClick={() => setShowList(!showList)} aria-expanded={showList} className="ml-4 mt-2 text-[14px] font-medium text-teal-600">{showList ? "Vorgänge ausblenden" : "Vorgänge zeigen"}</button>}
+            {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-700">Graph um „{sel.label}“ neu aufbauen →</button>}
+            {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-700">Auf dieses Thema eingrenzen →</button>}
+            {res.q && sel.type !== "center" && <button type="button" onClick={() => setShowList(!showList)} aria-expanded={showList} className="ml-4 mt-2 text-[14px] font-medium text-teal-700">{showList ? "Vorgänge ausblenden" : "Vorgänge zeigen"}</button>}
             {res.q && showList && sel.type !== "center" && <div className="mt-2 max-h-[50vh] overflow-auto"><RadarDrill base="/api/analytics/graph?list=1" query={ranKey} by="node" value={sel.id} label={`„${sel.label}“`} /></div>}
           </div>
         )}
@@ -196,7 +196,7 @@ export function KnowledgeGraphPage() {
         <>
 
           {!!res.partial?.length && (
-            <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); setWant(true); }} className="font-medium text-teal-600">Nur ganze Wörter →</button></p>
+            <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); setWant(true); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
           )}
           {strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
           <div className="mt-10 max-w-[820px]">
@@ -213,14 +213,14 @@ export function KnowledgeGraphPage() {
                         <span className="mt-1.5 block h-[3px] rounded-full bg-slate-100"><span className="block h-full rounded-full bg-teal-600" style={{ width: `${Math.max(4, Math.min(100, e.w * 100))}%` }} /></span>
                       </span>
                       <span className="text-[14px] tabular-nums text-slate-500">{n(e.n)} Einträge</span>
-                      <span className="text-[16px] text-teal-600 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                      <span className="text-[16px] text-teal-700 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
                     </button>
                   </li>
                 ))}
               </ol>
             </section>
           </div>
-          <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage ist eine gleichmäßig über den ganzen Bestand verteilte Stichprobe von ${n(res.total)} Einträgen${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind ${res.capped ? `die jüngsten ${n(res.sample)} von mehr passenden` : "alle passenden"} Einträge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">{res.q === "" ? `Grundlage ist eine gleichmäßig über den ganzen Bestand verteilte Stichprobe von ${n(res.total)} Einträgen${res.generated ? ` (Stand ${res.generated.split("-").reverse().join(".")})` : ""}.` : `Grundlage sind ${res.capped ? `die jüngsten ${n(res.sample)} von mehr passenden` : "alle passenden"} Einträge der Suche.`} Begriffe stammen aus den Titeln und sind nach ihrer Besonderheit gegenüber dem ganzen Bestand gewichtet; Formalien, Füllwörter, Anreden und Fraktionsnamen bleiben außen vor, ebenso Besetzungen und Fragestunden; derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Eine Verbindung heißt: Beides kommt im selben Eintrag vor, nicht, dass das eine das andere verursacht. <Link href="/analytics/ueber" className="text-teal-700">Methode →</Link></p>
         </>
       )}
     </main>

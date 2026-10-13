@@ -100,16 +100,16 @@ function SavedCard({ s }: { s: SavedSearch }) {
     <article className="border-b border-slate-200 py-4 last:border-b-0">
       {/* Kopf wie bei gespeicherten Artikeln: Herz entfernt die Suche, Glocke schaltet Benachrichtigungen */}
       <div className="flex items-start gap-3">
-        <button type="button" onClick={remove} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-600`}>
+        <button type="button" onClick={remove} title="Gespeicherte Suche entfernen" aria-label="Gespeicherte Suche entfernen" className={`${iconBtn} -ml-2 text-teal-700`}>
           <IconHeart size={20} filled />
         </button>
         <div className="min-w-0 flex-1">
-          <button type="button" onClick={open} className="block max-w-full truncate text-left text-[16px] font-semibold text-slate-900 hover:text-teal-600">
+          <button type="button" onClick={open} className="block max-w-full truncate text-left text-[16px] font-semibold text-slate-900 hover:text-teal-700">
             {s.name}
           </button>
           <p className="m-0 mt-0.5 text-[14px] text-slate-500">
             {ok ? `${ok.total.toLocaleString("de-DE")} Treffer` : preview === "error" ? "Treffer nicht verfügbar" : "Lädt …"}
-            {fresh > 0 && <span className="text-teal-600"> · {fresh} neu</span>}
+            {fresh > 0 && <span className="text-teal-700"> · {fresh} neu</span>}
             {chips.length > 0 && <> · {chips.map((c) => c.value).join(" · ")}</>}
           </p>
         </div>
@@ -122,7 +122,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
             if (!n.mail && !allow("notifications")) return;
             set({ mail: !n.mail, email: n.email || profile.email });
           }}
-          className={`${iconBtn} -mr-2 ${n.mail ? "text-teal-600" : "text-slate-500"}`}
+          className={`${iconBtn} -mr-2 ${n.mail ? "text-teal-700" : "text-slate-500"}`}
         >
           <IconBell size={20} filled={!!n.mail} />
         </button>
@@ -136,12 +136,12 @@ function SavedCard({ s }: { s: SavedSearch }) {
               <Link href={`/beschluss/${a.id}`} className="group flex gap-3 py-2.5 no-underline">
                 <span className="flex w-9 flex-none flex-col items-center border-r border-slate-200 pr-3 leading-tight">
                   <span className="text-[16px] font-semibold text-slate-900">{Number(a.date.slice(8, 10))}</span>
-                  <span className="text-[12px] font-semibold uppercase text-teal-600">{MONTH_SHORT[Number(a.date.slice(5, 7)) - 1]}</span>
+                  <span className="text-[12px] font-semibold uppercase text-teal-700">{MONTH_SHORT[Number(a.date.slice(5, 7)) - 1]}</span>
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline gap-2">
-                    <span className="min-w-0 flex-1 truncate text-[14px] font-semibold text-slate-900 group-hover:text-teal-600">{a.title}</span>
-                    {a.date > s.lastSeen && <span className="flex-none text-[12px] text-teal-600">neu</span>}
+                    <span className="min-w-0 flex-1 truncate text-[14px] font-semibold text-slate-900 group-hover:text-teal-700">{a.title}</span>
+                    {a.date > s.lastSeen && <span className="flex-none text-[12px] text-teal-700">neu</span>}
                   </span>
                   <span className="block truncate text-[12px] text-slate-500">
                     {[a.gemeinde, a.gremium].filter(Boolean).join(" · ")}
@@ -176,7 +176,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
           {limits.emails > 1 && (
             <>
               {extra.map((r) => (
-                <button key={r} type="button" aria-label={`Empfänger ${r} entfernen`} onClick={() => set({ recipients: extra.filter((x) => x !== r) })} className="inline-flex h-7 items-center gap-1.5 rounded-full bg-teal-50 pl-2.5 pr-1.5 text-[12px] text-teal-600">
+                <button key={r} type="button" aria-label={`Empfänger ${r} entfernen`} onClick={() => set({ recipients: extra.filter((x) => x !== r) })} className="inline-flex h-7 items-center gap-1.5 rounded-full bg-teal-50 pl-2.5 pr-1.5 text-[12px] text-teal-700">
                   {r}
                   <IconX size={14} />
                 </button>
@@ -184,7 +184,7 @@ function SavedCard({ s }: { s: SavedSearch }) {
               {extra.length < limits.emails - 1 && (
                 <form onSubmit={(e) => { e.preventDefault(); addRecipient(); }} className="flex items-center gap-1">
                   <input type="email" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="weitere E-Mail" aria-label="Weitere E-Mail-Adresse" className="h-8 w-[170px] rounded-full bg-[#f8f9fa] px-3 text-[14px] outline-none focus:shadow-focus" />
-                  <button type="submit" className="h-8 rounded-full px-2.5 text-[14px] text-teal-600 hover:bg-slate-100">Hinzufügen</button>
+                  <button type="submit" className="h-8 rounded-full px-2.5 text-[14px] text-teal-700 hover:bg-slate-100">Hinzufügen</button>
                 </form>
               )}
             </>
@@ -220,7 +220,7 @@ export function SavedSearchesPage() {
 
       {ready && !saved.length && (
         <div className="flex flex-col items-center px-6 py-10 text-center">
-          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-600">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-700">
             <IconHeart size={26} />
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Suchen</h2>
@@ -323,7 +323,7 @@ function WeeklyReport({ saved }: { saved: SavedSearch[] }) {
       <button type="button" role="switch" aria-checked={on} aria-label="Wochenbericht" onClick={toggle} className={`relative h-6 w-10 flex-none rounded-full transition-colors ${on ? "bg-teal-600" : "bg-slate-300/80"}`}>
         <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${on ? "left-[18px]" : "left-0.5"}`} />
       </button>
-      <button type="button" disabled={busy} onClick={build} className="text-teal-600 hover:underline disabled:opacity-50">
+      <button type="button" disabled={busy} onClick={build} className="text-teal-700 hover:underline disabled:opacity-50">
         {busy ? "Wird erstellt …" : "Jetzt erzeugen (Test-Postfach) →"}
       </button>
     </div>

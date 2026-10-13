@@ -4,7 +4,6 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useBrand } from "../lib/brand";
 import { PageHead, Rich, useOpenSearch } from "./blocks";
 import { PLANS, type PlanId } from "./content";
-import { FilterSelect } from "../components/FilterSelect";
 import { useRouter } from "next/navigation";
 import { login, register, requestReset, TEST_PASSWORD } from "../lib/testAuth";
 import { IS_DEV } from "../lib/tier";
@@ -293,44 +292,11 @@ export function LoginPage() {
   );
 }
 
-const SUBJECTS = ["Allgemeine Frage", "Konto und Tarif", "Enterprise"];
-
-/* TODO: Kontaktformular an das Backend anbinden (Doku Kap. 8); bisher nur Validierung im Frontend */
+/** Kontakt per E-Mail. Ein Formular gibt es erst, wenn es an das Backend angebunden ist (Doku Kap. 8):
+ *  vorher hätte es Nachrichten angenommen, die nie ankommen. */
+const CONTACT = "kontakt@plenara.de";
 export function KontaktPage() {
-  const openSearch = useOpenSearch();
   const { name } = useBrand();
-  const [f, setF] = useState({ name: "", email: "", subject: SUBJECTS[0], message: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [done, setDone] = useState(false);
-
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    const err: Record<string, string> = {};
-    if (!f.name.trim()) err.name = "Bitte geben Sie Ihren Namen ein.";
-    if (!EMAIL.test(f.email.trim())) err.email = "Bitte geben Sie eine gültige E-Mail-Adresse ein.";
-    if (!f.message.trim()) err.message = "Bitte schreiben Sie uns eine Nachricht.";
-    setErrors(err);
-    if (Object.keys(err).length) {
-      document.getElementById("kontakt-" + Object.keys(err)[0])?.focus();
-      return;
-    }
-    setDone(true);
-    window.scrollTo(0, 0);
-  };
-
-  if (done)
-    return (
-      <>
-        <PageHead icon="mail" label="Hilfe" name="Kontakt" title="Danke für Ihre Nachricht" lead="Wir melden uns in der Regel innerhalb eines Werktags." />
-        <section className="ri-sec">
-          <button type="button" className="ri-btn ri-btn--dark" onClick={() => openSearch()}>
-            Zur Suche
-          </button>
-          <span className="ri-proto">Prototyp: Es wurde nichts versendet.</span>
-        </section>
-      </>
-    );
-
   return (
     <>
       <PageHead
@@ -341,34 +307,18 @@ export function KontaktPage() {
         lead={`Fragen zu ${name}, Ihrem Konto oder Enterprise? Wir antworten in der Regel innerhalb eines Werktags.`}
       />
       <section className="ri-sec">
-        <form className="ri-form ri-form--center" noValidate onSubmit={submit} aria-label="Kontakt">
-          <Field id="kontakt-name" label="Name" value={f.name} onChange={(v) => setF((s) => ({ ...s, name: v }))} error={errors.name} autoComplete="name" />
-          <Field id="kontakt-email" label="E-Mail-Adresse" type="email" value={f.email} onChange={(v) => setF((s) => ({ ...s, email: v }))} error={errors.email} autoComplete="email" />
-          <div className="ri-field">
-            <label htmlFor="kontakt-subject">Betreff</label>
-            {/* Eigene Auswahlliste statt Browser-Dropdown */}
-            <FilterSelect id="kontakt-subject" label="Betreff" allLabel="" value={f.subject} options={SUBJECTS.map((x) => ({ value: x, label: x }))} onChange={(v) => setF((s) => ({ ...s, subject: v }))} highlight={false} className="[&_button]:!h-12 [&_button]:!w-full [&_button]:!max-w-none [&_button]:!text-[16px]" />
-          </div>
-          <div className="ri-field">
-            <label htmlFor="kontakt-message">Nachricht</label>
-            <textarea
-              id="kontakt-message"
-              className="ri-input"
-              value={f.message}
-              aria-invalid={errors.message ? true : undefined}
-              aria-describedby={errors.message ? "kontakt-message-err" : undefined}
-              onChange={(e) => setF((s) => ({ ...s, message: e.target.value }))}
-            />
-            {errors.message && (
-              <p id="kontakt-message-err" role="alert" className="ri-err">
-                {errors.message}
-              </p>
-            )}
-          </div>
-          <button type="submit" className="ri-btn ri-btn--dark ri-btn--block ri-submit">
-            Nachricht senden
-          </button>
-        </form>
+        <div className="ri-form ri-form--center">
+          <p style={{ margin: 0, fontSize: 16 }}>
+            Schreiben Sie uns eine E-Mail an{" "}
+            <a href={`mailto:${CONTACT}`} className="ri-link">
+              {CONTACT}
+            </a>
+            .
+          </p>
+          <a href={`mailto:${CONTACT}?subject=${encodeURIComponent(`Frage zu ${name}`)}`} className="ri-btn ri-btn--dark ri-btn--block ri-submit">
+            E-Mail schreiben
+          </a>
+        </div>
       </section>
     </>
   );

@@ -719,7 +719,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/info/
 - AboutPage.tsx (163): AboutPage
-- AccountPages.tsx (376, ⚠1): DoneScreen, RegisterPage, LoginPage, KontaktPage
+- AccountPages.tsx (326): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenLive.tsx (254): LiveThumb
@@ -731,7 +731,7 @@ topic design-styles.css:140
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
-- StartseitePage.tsx (530, ⚠5): StartseitePage
+- StartseitePage.tsx (513, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (154): VideosPage
@@ -774,6 +774,7 @@ topic design-styles.css:140
 - savedSearch.ts (134, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - sha256.ts (47): sha256Fallback, sha256Hex
+- storage.ts (18): NO_STORAGE, clearStoredContent
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem
 - testAuth.ts (149): TestAccount, TestMail, TEST_PASSWORD, sendTestMail, login, register, requestReset, logout, useTestSession, useTestMails, markMailsRead, deleteMails
 - text.ts (106): normChar, norm, FILLER, terms, Segment, highlightSegments, limitSentences, plural, parseDate, fmtDate, isoDay, todayLocal, MONTH_FMT, MONTH_SHORT, DAY_FMT, TIME_FMT, monthLabel, EMAIL_RE

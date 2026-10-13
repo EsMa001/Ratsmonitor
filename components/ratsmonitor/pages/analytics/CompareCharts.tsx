@@ -36,9 +36,9 @@ export function TopicRow({ name, shares, base, max, onPick }: { name: string; sh
   return (
     <li className="grid grid-cols-[minmax(0,1fr)] gap-2 border-b border-slate-200 py-3 sm:grid-cols-[220px_minmax(0,1fr)] sm:items-center sm:gap-6">
       {onPick ? (
-        <button type="button" onClick={onPick} title={`Nur „${name}“ vergleichen`} className="group flex min-w-0 items-center gap-1.5 text-left text-[16px] text-slate-900 hover:text-teal-600">
+        <button type="button" onClick={onPick} title={`Nur „${name}“ vergleichen`} className="group flex min-w-0 items-center gap-1.5 text-left text-[16px] text-slate-900 hover:text-teal-700">
           <span className="truncate group-hover:underline">{name}</span>
-          <span aria-hidden="true" className="shrink-0 text-teal-600 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100">→</span>
+          <span aria-hidden="true" className="shrink-0 text-teal-700 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100">→</span>
         </button>
       ) : (
         <span className="truncate text-[16px] text-slate-900">{name}</span>
@@ -75,9 +75,9 @@ export function TopicPair({ name, a, b, base, max, onPick }: { name: string; a: 
     <li className="grid grid-cols-1 gap-1.5 border-b border-slate-200 py-3 sm:grid-cols-[minmax(0,1fr)_190px_minmax(0,1fr)] sm:items-center sm:gap-5">
       <span className="sm:order-2 sm:text-center">
         {onPick ? (
-          <button type="button" onClick={onPick} title={`Vorgänge zu „${name}“ zeigen`} className="group inline-flex max-w-full items-center gap-1.5 text-left text-[16px] text-slate-900 hover:text-teal-600 sm:text-center">
+          <button type="button" onClick={onPick} title={`Vorgänge zu „${name}“ zeigen`} className="group inline-flex max-w-full items-center gap-1.5 text-left text-[16px] text-slate-900 hover:text-teal-700 sm:text-center">
             <span className="truncate group-hover:underline">{name}</span>
-            <span aria-hidden="true" className="shrink-0 text-teal-600 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100">→</span>
+            <span aria-hidden="true" className="shrink-0 text-teal-700 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:opacity-100">→</span>
           </button>
         ) : <span className="text-[16px] text-slate-900">{name}</span>}
       </span>

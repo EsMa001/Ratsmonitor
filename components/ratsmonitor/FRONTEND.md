@@ -51,7 +51,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 ## Designregeln (vereinbart)
 
 - Schrift IBM Plex Sans; Größen nur 12, 14, 16, 18, 22, 28, 44 px.
-- Textfarben: Schwarz `#0f172a` (slate-900), Grau `#64748b` (slate-500), Petrol `#0d9488` (teal-600).
+- Textfarben: Schwarz `#0f172a` (slate-900), Grau `#64748b` (slate-500), Petrol `#0f766e` (teal-700). Helles Petrol `#0d9488` (teal-600) nur für Flächen, Symbole und Schrift ab 24 px: als Textfarbe zu wenig Kontrast (3,7:1 statt mindestens 4,5:1, WCAG).
 - Weiß, Linien statt Kästen/Kacheln; keine bunten Abzeichen.
 - Hauptaktion: schwarze Pille mit „→“; Nebenaktion: Petrol-Text mit „→“.
 - Symbole ohne Beschriftung (Teilen, Folgen, Speichern, Exportieren).

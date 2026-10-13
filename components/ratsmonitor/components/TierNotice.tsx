@@ -5,7 +5,7 @@ import { IS_DEV, setTier, TIER_LABEL, useTier, usage } from "../lib/tier";
 export function LoginRequired({ title, text }: { title: string; text: string }) {
   return (
     <div className="flex flex-col items-center px-6 py-10 text-center">
-      <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-600">
+      <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-700">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <rect x="5" y="11" width="14" height="10" rx="2" />
           <path d="M8 11V8a4 4 0 0 1 8 0v3" />

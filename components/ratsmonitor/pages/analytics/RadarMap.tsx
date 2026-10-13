@@ -40,7 +40,7 @@ export function RadarMap({ radar, base, topics, q, exact, place, onPlace, topicL
   const count = data?.mode === "anzahl";
   const what = q ? `der Vorgänge mit „${q}“${topic ? ` (${topicLabel} „${topic}“)` : ""}` : topic ? `der Vorgänge mit ${topicLabel} „${topic}“` : whatAll;
   const peers = level === "district" ? "ähnlichen Kreisen" : "ähnlichen Gemeinden (gleiche Art und Größe, zuerst im selben Land)";
-  const chip = (on: boolean) => `h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-600 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
+  const chip = (on: boolean) => `h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
 
   return (
     <Reveal><section className="mt-8">

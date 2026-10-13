@@ -55,7 +55,7 @@ export function ScoreView({ onTheme, atlasThemes }: { onTheme: (id: string) => v
   const sel = picked ? byAgs.get(picked) : undefined;
   const scored = data ? data.counts.slice(1).reduce((a, b) => a + b, 0) : 0;
   const unit = level === "district" ? ["Kreis", "Kreise", "Kreisen"] : ["Gemeinde", "Gemeinden", "Gemeinden"];
-  const chip = (on: boolean) => `h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-600 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
+  const chip = (on: boolean) => `h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
   const legend = data ? data.bands.map((b, i) => (b ? `${QUARTER[i]}: ${b[0] === b[1] ? b[0] : `${b[0]} bis ${b[1]}`}` : QUARTER[i])) : QUARTER;
   const pickName = (name: string) => { setFind(name); const i = data?.items.find((x) => x.name === name); if (i) setPicked(i.ags[0]); };
 

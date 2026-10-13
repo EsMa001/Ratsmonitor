@@ -148,7 +148,7 @@ export function KalenderPage() {
                 <button type="button" aria-label="Vorheriger Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} className="grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
                   <IconChevronLeft size={20} />
                 </button>
-                <button type="button" onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setDay(today); }} className="h-9 w-[92px] max-sm:w-[76px] rounded-full text-center text-[14px] text-teal-600 hover:bg-slate-100" title="Zurück zu heute">
+                <button type="button" onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setDay(today); }} className="h-9 w-[92px] max-sm:w-[76px] rounded-full text-center text-[14px] text-teal-700 hover:bg-slate-100" title="Zurück zu heute">
                   {month.toLocaleDateString("de-DE", { month: "long" })}
                 </button>
                 <button type="button" aria-label="Nächster Monat" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} className="grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-full text-slate-600 hover:bg-slate-100">
@@ -169,7 +169,7 @@ export function KalenderPage() {
                 return (
                   <button key={d} type="button" onClick={() => setDay(d)} aria-pressed={sel} aria-label={`${d}: ${n} Sitzungen`}
                     className={`flex h-16 flex-col items-center justify-start gap-1 border-b border-slate-100 pt-2 transition-colors hover:bg-slate-50 ${sel ? "bg-teal-50/60" : ""}`}>
-                    <span className={`grid h-7 w-7 place-items-center rounded-full text-[14px] ${d === today ? "bg-slate-900 text-white" : sel ? "text-teal-600" : "text-slate-900"}`}>{Number(d.slice(8))}</span>
+                    <span className={`grid h-7 w-7 place-items-center rounded-full text-[14px] ${d === today ? "bg-slate-900 text-white" : sel ? "text-teal-700" : "text-slate-900"}`}>{Number(d.slice(8))}</span>
                     {n > 0 && (
                       <span className="flex items-center gap-0.5" aria-hidden="true">
                         {[...new Set((byDay.get(d) ?? []).map((e) => colorOf(e.ags)))].slice(0, 4).map((c) => <i key={c} className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />)}
@@ -189,7 +189,7 @@ export function KalenderPage() {
             {!cfg.areas.length && (
               <p className="mt-3 text-slate-500">
                 Noch keine Gebiete gewählt.{" "}
-                <button type="button" onClick={() => document.querySelector<HTMLInputElement>('[aria-label="Ort oder Kreis hinzufügen"]')?.focus()} className="text-teal-600 hover:underline">
+                <button type="button" onClick={() => document.querySelector<HTMLInputElement>('[aria-label="Ort oder Kreis hinzufügen"]')?.focus()} className="text-teal-700 hover:underline">
                   Erstes Gebiet hinzufügen →
                 </button>
               </p>
@@ -206,7 +206,7 @@ export function KalenderPage() {
                   <ul className="m-0 mt-1.5 list-none p-0">
                     {e.items.slice(0, 3).map((it) => (
                       <li key={it.id} className="truncate text-[14px]">
-                        <Link href={`/beschluss/${it.id}`} className="text-slate-600 no-underline hover:text-teal-600">{it.title}</Link>
+                        <Link href={`/beschluss/${it.id}`} className="text-slate-600 no-underline hover:text-teal-700">{it.title}</Link>
                       </li>
                     ))}
                   </ul>
@@ -280,7 +280,7 @@ export function KalenderPage() {
           <p className="m-0 mt-1 text-slate-500">Per E-Mail informiert werden oder alle Sitzungen Ihrer Gebiete in Apple Kalender, Outlook oder Google Kalender übernehmen.</p>
           <div className="mt-6 grid gap-x-10 gap-y-8 md:grid-cols-3">
             <div className="border-t border-slate-200 pt-5">
-              <IconBell size={28} className="text-teal-600" />
+              <IconBell size={28} className="text-teal-700" />
               <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Per E-Mail benachrichtigen</h3>
               <p className="m-0 mt-1.5 text-[16px] leading-relaxed text-slate-500">
                 Sie erhalten eine E-Mail, sobald in Ihren Gebieten <strong className="font-semibold text-slate-900">neue Sitzungen angesetzt</strong> werden, sofort, täglich oder wöchentlich.
@@ -298,7 +298,7 @@ export function KalenderPage() {
             </div>
 
             <div className="border-t border-slate-200 pt-5">
-              <IconCalendarSync size={28} className="text-teal-600" />
+              <IconCalendarSync size={28} className="text-teal-700" />
               <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Kalender abonnieren</h3>
               <p className="m-0 mt-1.5 text-[16px] leading-relaxed text-slate-500">
                 Ihre Sitzungen erscheinen als eigener Kalender in Ihrer App und <strong className="font-semibold text-slate-900">aktualisieren sich automatisch</strong>: neue oder verschobene Termine kommen von selbst dazu. Empfohlen.
@@ -308,12 +308,12 @@ export function KalenderPage() {
               </a>
             </div>
             <div className="border-t border-slate-200 pt-5">
-              <IconDownload size={28} className="text-teal-600" />
+              <IconDownload size={28} className="text-teal-700" />
               <h3 className="m-0 mt-3 text-[16px] font-semibold text-slate-900">Als Datei herunterladen</h3>
               <p className="m-0 mt-1.5 text-[16px] leading-relaxed text-slate-500">
                 Eine .ics-Datei mit den Terminen der letzten 30 Tage und der nächsten sechs Monate, zum einmaligen Import oder Weitergeben. Sie aktualisiert sich nicht; erneut importiert entstehen keine doppelten Termine.
               </p>
-              <a href={`/api/calendar/ics?download=1&ags=${agsList.join(",")}`} className="mt-4 inline-flex h-11 items-center gap-1.5 text-[14px] font-medium text-teal-600 no-underline hover:underline">
+              <a href={`/api/calendar/ics?download=1&ags=${agsList.join(",")}`} className="mt-4 inline-flex h-11 items-center gap-1.5 text-[14px] font-medium text-teal-700 no-underline hover:underline">
                 Datei herunterladen →
               </a>
             </div>

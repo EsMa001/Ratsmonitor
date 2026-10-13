@@ -103,7 +103,7 @@ export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RAD
   return (
     <Frame embedded={embedded}>
       {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">{def.kurz}</p> : <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href={gruppe.href} className="text-teal-600">{gruppe.name}</Link> / {def.name}</p>
+        <p className="text-[14px] text-slate-500"><Link href={gruppe.href} className="text-teal-700">{gruppe.name}</Link> / {def.name}</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{def.name}</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{def.kurz}</p>
       </PageBand>}
@@ -192,7 +192,7 @@ export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RAD
                   <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">
                     {recent.map((r) => (
                       <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-                        <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+                        <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
                           <span className="block truncate text-[16px]">{r.title}</span>
                           <span className="block truncate text-[12px] text-slate-500">{r.region} · {DAY.format(new Date(r.date))} · {r.topics.join(", ")}</span>
                         </Link>
@@ -203,7 +203,7 @@ export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RAD
                 )}
               </section></Reveal>
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Erkannt wird am Titel, bei sehr kurzen Titeln am Beschlussvorschlag. Bauanträge Privater, Formalpunkte, Besetzungen und Sammelpunkte wie Mitteilungen zählen nicht. Eine Beschlussquote steht hier bewusst nicht: Sie lag in allen Radaren zwischen 84 und 96 % und sagt wenig, weil „beschlossen“ nur heißt, dass der Beschlussvorschlag angenommen wurde. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Erkannt wird am Titel, bei sehr kurzen Titeln am Beschlussvorschlag. Bauanträge Privater, Formalpunkte, Besetzungen und Sammelpunkte wie Mitteilungen zählen nicht. Eine Beschlussquote steht hier bewusst nicht: Sie lag in allen Radaren zwischen 84 und 96 % und sagt wenig, weil „beschlossen“ nur heißt, dass der Beschlussvorschlag angenommen wurde. <Link href="/analytics/ueber#methodik" className="text-teal-700">Methode →</Link></p>
             </>
           )}
         </div>

@@ -46,13 +46,13 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
     <div role="group" aria-label={`Gebiet ${name}`} className="flex flex-col gap-1 text-[14px]">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         {!compact && <span className="inline-flex min-w-0 items-center gap-1.5 font-semibold text-slate-900">
-          <IconPin size={16} className="flex-none text-teal-600" />
+          <IconPin size={16} className="flex-none text-teal-700" />
           {name}
         </span>}
         {scoped && !compact && (
           <div role="group" aria-label="Gebietsumfang" title={km ? "Im Umkreis werden alle Gebiete im Kreis durchsucht" : undefined} className={`flex items-center gap-4 ${km ? "opacity-40" : ""}`}>
             {scopes.map(([v, label]) => (
-              <button key={v} type="button" disabled={!!km} aria-pressed={state.scope === v} onClick={() => search.setScope(v)} className={`whitespace-nowrap py-1 text-[14px] disabled:cursor-default ${state.scope === v ? "border-b-2 border-teal-600 text-teal-600" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
+              <button key={v} type="button" disabled={!!km} aria-pressed={state.scope === v} onClick={() => search.setScope(v)} className={`whitespace-nowrap py-1 text-[14px] disabled:cursor-default ${state.scope === v ? "border-b-2 border-teal-600 text-teal-700" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
                 {label}
               </button>
             ))}
@@ -84,7 +84,7 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
             onKeyUp={fit}
             className={`min-w-0 flex-1 cursor-pointer ${compact ? "h-5 accent-teal-600" : "h-7 accent-[#d1665a]"}`}
           />
-          <output className={`min-w-[52px] text-right text-[14px] tabular-nums ${compact ? "" : "font-bold"} ${km ? (compact ? "text-teal-600" : "text-[#b4493e]") : "text-slate-500"}`}>{km ? `${km} km` : "aus"}</output>
+          <output className={`min-w-[52px] text-right text-[14px] tabular-nums ${compact ? "" : "font-bold"} ${km ? (compact ? "text-teal-700" : "text-[#b4493e]") : "text-slate-500"}`}>{km ? `${km} km` : "aus"}</output>
         </div>
       </div>
       {km > 0 && (

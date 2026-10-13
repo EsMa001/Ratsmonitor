@@ -92,7 +92,7 @@ export function FoerderradarPage({ embedded }: { embedded?: boolean } = {}) {
   return (
     <Frame embedded={embedded}>
       {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">Welche Förderprogramme in den Ratsunterlagen auftauchen, wo sie beantragt und wo bewilligt werden.</p> : <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/atlas" className="text-teal-600">plenara.X Atlas</Link> / Förderradar</p>
+        <p className="text-[14px] text-slate-500"><Link href="/analytics/atlas" className="text-teal-700">plenara.X Atlas</Link> / Förderradar</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Förderradar</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Welche Förderprogramme in den Ratsunterlagen auftauchen, wo sie beantragt und wo bewilligt werden.</p>
       </PageBand>}
@@ -215,7 +215,7 @@ export function FoerderradarPage({ embedded }: { embedded?: boolean } = {}) {
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.largest.map((a) => (
                       <li key={a.id + a.program} className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 border-b border-slate-200 py-3">
-                        <span className="min-w-0"><Link href={`/beschluss/${a.id}`} className="block truncate text-[16px] text-slate-900 no-underline hover:text-teal-700">{a.title}</Link><span className="block truncate text-[12px] text-slate-500">{a.region} · {new Date(a.date).toLocaleDateString("de-DE")} · {a.program}</span></span>
+                        <span className="min-w-0"><Link href={`/beschluss/${a.id}`} className="block truncate text-[16px] text-slate-900 no-underline hover:text-teal-800">{a.title}</Link><span className="block truncate text-[12px] text-slate-500">{a.region} · {new Date(a.date).toLocaleDateString("de-DE")} · {a.program}</span></span>
                         <span className="text-right text-[14px] tabular-nums"><b className="font-semibold">{eur(a.euro)}</b><span className="block text-[12px] text-slate-500">{a.status === "granted" ? "bewilligt" : "beantragt"}</span></span>
                       </li>
                     ))}
@@ -239,7 +239,7 @@ export function FoerderradarPage({ embedded }: { embedded?: boolean } = {}) {
                 </section></Reveal>
               )}
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gelesen werden Sätze im Volltext der Hauptdokumente, die von Fördergeld sprechen (Fördermittel, Förderbescheid, Zuwendung, Bundes- oder Landesmittel); daraus Programm und Stand (bewilligt, beantragt). Beträge zählen nur, wenn sie unmittelbar an einem Förderwort stehen („Zuwendung in Höhe von …“), nicht Gesamtkosten, Eigenanteile, förderfähige Kosten, Höchstbeträge oder Programmtöpfe; je Gebiet derselbe Betrag zum selben Programm einmal. Sammelberichte wie Mitteilungen, Haushalt oder Sachstände zählen nicht, ebenso wenig verfallende, zurückzuzahlende, über Jahre erwartete oder in früheren Jahren bewilligte Mittel, Anfragen und abgelehnte Vorgänge. Alle Zahlen zählen Vorgänge: derselbe Titel in mehreren Gremien eines Gebiets einmal. Vorgänge einer Mitgliedsgemeinde stehen unter ihrem Namen; in den Ranglisten zählt ein Gemeindeverband nur mit seinen eigenen Gremien. Nennt ein Satz mehrere Programme, gilt das, das dem Förderwort am nächsten steht. Volltexte liegen nicht für alle Gebiete gleich vollständig vor. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gelesen werden Sätze im Volltext der Hauptdokumente, die von Fördergeld sprechen (Fördermittel, Förderbescheid, Zuwendung, Bundes- oder Landesmittel); daraus Programm und Stand (bewilligt, beantragt). Beträge zählen nur, wenn sie unmittelbar an einem Förderwort stehen („Zuwendung in Höhe von …“), nicht Gesamtkosten, Eigenanteile, förderfähige Kosten, Höchstbeträge oder Programmtöpfe; je Gebiet derselbe Betrag zum selben Programm einmal. Sammelberichte wie Mitteilungen, Haushalt oder Sachstände zählen nicht, ebenso wenig verfallende, zurückzuzahlende, über Jahre erwartete oder in früheren Jahren bewilligte Mittel, Anfragen und abgelehnte Vorgänge. Alle Zahlen zählen Vorgänge: derselbe Titel in mehreren Gremien eines Gebiets einmal. Vorgänge einer Mitgliedsgemeinde stehen unter ihrem Namen; in den Ranglisten zählt ein Gemeindeverband nur mit seinen eigenen Gremien. Nennt ein Satz mehrere Programme, gilt das, das dem Förderwort am nächsten steht. Volltexte liegen nicht für alle Gebiete gleich vollständig vor. <Link href="/analytics/ueber#methodik" className="text-teal-700">Methode →</Link></p>
             </>
           )}
         </div>

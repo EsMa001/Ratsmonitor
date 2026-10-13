@@ -59,7 +59,7 @@ function EnterpriseSection({ e, terms, slug }: { e: EnterpriseBlock; terms: stri
               <h3 className="m-0 text-[16px] font-semibold text-slate-900">{title}</h3>
               <div className="mt-3 w-full transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={id} term={terms[0]} /></div>
               <p className="m-0 mt-4 text-[16px] leading-relaxed text-slate-500">{text}</p>
-              <span className="mt-3 inline-flex items-center gap-1.5 text-[14px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
+              <span className="mt-3 inline-flex items-center gap-1.5 text-[14px] font-medium text-teal-700">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
             </button>
           </Reveal>
         ))}
@@ -101,7 +101,7 @@ export function BranchePage({ b }: { b: Branche }) {
                     <div key={title}>
                       <p className="m-0 text-[16px] font-semibold text-slate-900">{title}</p>
                       <p className="m-0 mt-1 text-[16px] leading-relaxed text-slate-500">{text}</p>
-                      <button type="button" onClick={() => openBenefit(term)} className="-mb-1.5 mt-0 py-1.5 text-[14px] text-teal-600 hover:underline">
+                      <button type="button" onClick={() => openBenefit(term)} className="-mb-1.5 mt-0 py-1.5 text-[14px] text-teal-700 hover:underline">
                         Suche „{term}“ →
                       </button>
                     </div>

@@ -276,9 +276,9 @@ function Karten({ group }: { group: AnalyseGruppe }) {
             <Link href={a.href} aria-label={`${a.name} öffnen`} className="group flex flex-col">
               <div className="overflow-hidden rounded-[18px] transition-transform duration-300 group-hover:-translate-y-1">{a.id in ANALYSE_THUMBS ? <LiveThumb id={a.id} term={a.id === "vergleich" ? VERGLEICH_BEISPIEL : BEISPIEL} showStand={false} /> : (
                 /* Analysen ohne Schnappschuss-Vorschau: ruhige Kachel mit Symbol */
-                <div aria-hidden="true" className="flex aspect-[16/10] items-center justify-center bg-slate-50 text-teal-600"><Icon name={ANALYSEN[a.id].icon} size={56} /></div>
+                <div aria-hidden="true" className="flex aspect-[16/10] items-center justify-center bg-slate-50 text-teal-700"><Icon name={ANALYSEN[a.id].icon} size={56} /></div>
               )}</div>
-              <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-600">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
+              <span className="mt-2 inline-flex items-center gap-1.5 text-[16px] font-medium text-teal-700">Öffnen <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span></span>
               {/* Auf dem Handy steht die Überschrift über dem Vorschaubild, sonst ist unklar, wozu das Bild gehört */}
               <h3 className="mt-2 text-[22px] font-semibold max-sm:order-first max-sm:mb-2 max-sm:mt-0">{a.name}</h3>
               <p className="mt-1 text-[16px] text-slate-500">{a.kurz}</p>
@@ -316,7 +316,7 @@ export function AnalyticsGroupPage({ group }: { group: Exclude<AnalyseGruppe, "a
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-16 text-slate-900">
       <PageBand>
-        <p className="m-0 text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-600">plenara.X</Link> / {g.kurz}</p>
+        <p className="m-0 text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / {g.kurz}</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">{g.name}</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{g.text}</p>
       </PageBand>
@@ -339,7 +339,7 @@ export function AnalyticsAbout() {
             <p className="mt-5 max-w-[560px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte, bei jeder Abfrage frisch berechnet.</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
               <Link href="/analytics/diffusion" className="inline-flex h-12 items-center gap-2 rounded-full bg-slate-900 px-7 text-[16px] font-medium text-white transition-opacity after:content-['→'] hover:opacity-85">Analyse starten</Link>
-              <a href="#analysen" className="text-[16px] font-medium text-teal-600">Alle Analysen ↓</a>
+              <a href="#analysen" className="text-[16px] font-medium text-teal-700">Alle Analysen ↓</a>
             </div>
           </div>
           <Link href="/analytics/diffusion" aria-label="Ausbreitung öffnen" className="hidden xl:block xl:w-full xl:max-w-[560px] xl:justify-self-end"><LiveThumb id="diffusion" term={BEISPIEL} /></Link>
@@ -351,7 +351,7 @@ export function AnalyticsAbout() {
           <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
             <h2 className="text-[28px] font-semibold">{GRUPPEN[group].name}</h2>
             <span className="flex flex-wrap gap-x-6 gap-y-1">
-              <Link href={GRUPPEN[group].href} className="text-[16px] font-medium text-teal-600">Zu {GRUPPEN[group].name} →</Link>
+              <Link href={GRUPPEN[group].href} className="text-[16px] font-medium text-teal-700">Zu {GRUPPEN[group].name} →</Link>
             </span>
           </div>
           <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{GRUPPEN[group].text}</p>
@@ -362,7 +362,7 @@ export function AnalyticsAbout() {
       <section id="atlas" className="scroll-mt-24">
         <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
           <h2 className="text-[28px] font-semibold">plenara.X Atlas</h2>
-          <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-600">Zum plenara.X Atlas →</Link>
+          <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-700">Zum plenara.X Atlas →</Link>
         </div>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was gebaut und geplant wird, alle Themen auf einer Karte: Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales, Klima und Energie, Haushalt, Gebühren, Vergaben, Förderung und Beteiligung.</p>
       </section>

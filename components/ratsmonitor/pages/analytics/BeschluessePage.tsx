@@ -90,7 +90,7 @@ export function BeschluessePage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-600">plenara.X Tools</Link> / Beschlüsse</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Beschlüsse</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Beschlüsse</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wie Gremien entscheiden: Beschlussquote, Vertagungen und Ablehnungen, Einigkeit und Dauer.</p>
       </PageBand>
@@ -209,7 +209,7 @@ export function BeschluessePage() {
                   {statusRows.map((s) => <li key={s.id} className="flex items-center justify-between gap-3 border-b border-slate-100 py-1"><span className="flex items-center gap-2"><i className="inline-block h-2.5 w-4 rounded-sm" style={{ background: STATUS_COLOR[s.id] }} />{STATUS.find((x) => x.id === s.id)?.label ?? s.id}</span><span className="tabular-nums text-slate-500">{n(s.n)} · {Math.round((s.n / statusTotal) * 100)} %</span></li>)}
                 </ul>
               </div>
-              <p className="mt-4 max-w-[900px] text-[12px] text-slate-500">Stand der Vorgänge, Verlauf und Aufteilungen zählen alle passenden Vorgänge genau; derselbe Titel eines Gebiets mit gleichem Stand zählt einmal. Abstimmung, Änderungen und Durchlaufzeit stammen aus einer gleichmäßigen Stichprobe der Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-4 max-w-[900px] text-[12px] text-slate-500">Stand der Vorgänge, Verlauf und Aufteilungen zählen alle passenden Vorgänge genau; derselbe Titel eines Gebiets mit gleichem Stand zählt einmal. Abstimmung, Änderungen und Durchlaufzeit stammen aus einer gleichmäßigen Stichprobe der Vorgänge mit Entscheidung. „Einstimmig“, „mehrheitlich“ und „geändert“ werden aus dem Ergebnistext der Beschlussstation gelesen; fehlt dort die Angabe, zählt der Vorgang nicht mit. Der Status ist nur bei einem Teil der Einträge bekannt, und Ablehnungen sind in den Quellen selten vermerkt; die Quoten sind deshalb ein Anhaltspunkt. Noch offene Vorgänge fehlen in der Durchlaufzeit, die dadurch eher zu kurz ausfällt. <Link href="/analytics/ueber" className="text-teal-700">Methode →</Link></p>
               </Fold>
               </div>
             </>

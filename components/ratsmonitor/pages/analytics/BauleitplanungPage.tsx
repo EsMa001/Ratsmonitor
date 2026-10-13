@@ -35,7 +35,7 @@ const STEP_COLOR: Record<string, string> = { Aufstellung: "#ccfbf1", "Frühzeiti
 function PlanRow({ p, right }: { p: Plan; right: string }) {
   return (
     <li className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-      <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+      <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
         <span className="block truncate text-[16px]">{p.title}</span>
         <span className="block truncate text-[12px] text-slate-500">{p.region} · {p.stage} · {DAY.format(new Date(p.date))}</span>
       </Link>
@@ -66,7 +66,7 @@ function Uses({ uses, plans }: { uses: NonNullable<Result["uses"]>; plans: UsePl
   }, [use, step, plans]);
   const shown = (picked ? list.filter((p) => p.ags.includes(picked)) : list);
   const chips: [string, number][] = [["Wirtschaft", plans.filter((p) => p.uses.some((u) => ECONOMY.includes(u))).length], ...uses.map((u) => [u.name, u.plans] as [string, number])];
-  const chip = (on: boolean) => `h-9 rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-600 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
+  const chip = (on: boolean) => `h-9 rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
   return (
     <Reveal><section className="mt-12">
       <h2 className="text-[22px] font-semibold">Gewerbe, Industrie, Energie: wo wird geplant?</h2>
@@ -85,7 +85,7 @@ function Uses({ uses, plans }: { uses: NonNullable<Result["uses"]>; plans: UsePl
       <ol className="m-0 mt-2 list-none border-t border-slate-200 p-0">
         {(all ? shown : shown.slice(0, 10)).map((p) => (
           <li key={p.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-            <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+            <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
               <span className="block text-[14px] leading-snug sm:truncate sm:text-[16px]">{p.title}</span>
               <span className="block truncate text-[12px] text-slate-500">{[p.region, DAY.format(new Date(p.date)), p.uses.join(", "), p.inter && "interkommunal"].filter(Boolean).join(" · ")}</span>
             </Link>
@@ -149,7 +149,7 @@ export function BauleitplanungPage({ embedded }: { embedded?: boolean } = {}) {
   return (
     <Frame embedded={embedded}>
       {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">Welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo viel geplant wird und wo Gewerbe-, Industrie- und Energieflächen entstehen.</p> : <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/atlas" className="text-teal-600">plenara.X Atlas</Link> / Bauleitplanung</p>
+        <p className="text-[14px] text-slate-500"><Link href="/analytics/atlas" className="text-teal-700">plenara.X Atlas</Link> / Bauleitplanung</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Bauleitplanung</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo viel geplant wird und wo Gewerbe-, Industrie- und Energieflächen entstehen.</p>
       </PageBand>}
@@ -254,7 +254,7 @@ export function BauleitplanungPage({ embedded }: { embedded?: boolean } = {}) {
                 </section></Reveal>
               )}
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Plan und Verfahrensschritt stammen aus dem Titel, sonst aus dem Beschlussvorschlag (nicht aus Verfahrensübersichten mit früheren Schritten). Bauanträge im Plangebiet, Stellungnahmen zu Plänen der Nachbargemeinden und Sammelberichte zählen nicht. Ein Plan wird je Gebiet über Nummer oder Namen zusammengefasst. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Plan und Verfahrensschritt stammen aus dem Titel, sonst aus dem Beschlussvorschlag (nicht aus Verfahrensübersichten mit früheren Schritten). Bauanträge im Plangebiet, Stellungnahmen zu Plänen der Nachbargemeinden und Sammelberichte zählen nicht. Ein Plan wird je Gebiet über Nummer oder Namen zusammengefasst. <Link href="/analytics/ueber#methodik" className="text-teal-700">Methode →</Link></p>
             </>
           )}
         </div>

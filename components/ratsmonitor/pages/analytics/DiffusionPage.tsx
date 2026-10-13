@@ -157,7 +157,7 @@ export function DiffusionPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-600">plenara.X Tools</Link> / Ausbreitung</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Ausbreitung</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Ausbreitung</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte, und wie es sich von dort ausbreitete.</p>
       </PageBand>
@@ -184,9 +184,9 @@ export function DiffusionPage() {
 
         {/* Zoom oben rechts */}
         <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
-          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconPlus size={16} /></button>
-          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconMinus size={16} /></button>
-          <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (res?.regions.length ? engine?.focusMany(res.regions.flatMap(keysOf)) : engine?.focusArea(""))} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconCenter size={16} /></button>
+          <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => engine?.zoomBy(1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
+          <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => engine?.zoomBy(1 / 1.6)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
+          <button type="button" title="Auf Ergebnis zentrieren" aria-label="Auf Ergebnis zentrieren" onClick={() => (res?.regions.length ? engine?.focusMany(res.regions.flatMap(keysOf)) : engine?.focusArea(""))} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
         </div>
 
         {/* Hinweise und Auswahl oben in der Mitte */}
@@ -266,7 +266,7 @@ export function DiffusionPage() {
               </ol>
             </section>
           </div>
-          <p className="mt-10 text-[12px] text-slate-500">Als erste Erwähnung gilt das Datum des frühesten Eintrags im Datenbestand, der zur Suche passt. Gebiete mit unvollständigem Datenbestand können später erscheinen, als das Thema dort tatsächlich aufkam. Der Bestand reicht rund ein Jahr zurück: Ein Datum zu Beginn dieses Zeitraums heißt „schon zu Beginn des Bestands“, nicht „zuerst überhaupt“. Samtgemeinden zählen für alle ihre Mitgliedsgemeinden. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+          <p className="mt-10 text-[12px] text-slate-500">Als erste Erwähnung gilt das Datum des frühesten Eintrags im Datenbestand, der zur Suche passt. Gebiete mit unvollständigem Datenbestand können später erscheinen, als das Thema dort tatsächlich aufkam. Der Bestand reicht rund ein Jahr zurück: Ein Datum zu Beginn dieses Zeitraums heißt „schon zu Beginn des Bestands“, nicht „zuerst überhaupt“. Samtgemeinden zählen für alle ihre Mitgliedsgemeinden. <Link href="/analytics/ueber" className="text-teal-700">Methode →</Link></p>
         </>
       )}
     </main>

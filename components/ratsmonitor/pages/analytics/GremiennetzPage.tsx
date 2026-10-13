@@ -78,7 +78,7 @@ export function GremiennetzPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-600">plenara.X Tools</Link> / Beratungswege</p>
+      <p className="text-[14px] text-slate-500"><Link href="/analytics/tools" className="text-teal-700">plenara.X Tools</Link> / Beratungswege</p>
       <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Beratungswege</h1>
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange der Weg dauert.</p>
       </PageBand>
@@ -103,9 +103,9 @@ export function GremiennetzPage() {
                   <p className="mt-1.5 text-slate-500">Größe: Durchsatz · Linie: Vorgänge</p>
                 </div>
                 <div className={`${glass} absolute right-3 top-3 z-[6] flex flex-col overflow-hidden rounded-full`}>
-                  <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconPlus size={16} /></button>
-                  <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconMinus size={16} /></button>
-                  <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-600"><IconCenter size={16} /></button>
+                  <button type="button" title="Vergrößern" aria-label="Vergrößern" onClick={() => zoomRef.current?.(1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconPlus size={16} /></button>
+                  <button type="button" title="Verkleinern" aria-label="Verkleinern" onClick={() => zoomRef.current?.(1 / 1.3)} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconMinus size={16} /></button>
+                  <button type="button" title="Ganzes Netz zeigen" aria-label="Ganzes Netz zeigen" onClick={() => zoomRef.current?.("fit")} className="grid h-10 w-10 place-items-center text-slate-700 hover:text-teal-700"><IconCenter size={16} /></button>
                 </div>
                 <div className="pointer-events-none absolute inset-x-16 top-3 z-[6] flex justify-center max-sm:hidden">
                   {!sel && <span className={`${glass} rounded-full px-4 py-2 text-[14px] text-slate-700`}>Von links (Einstieg) nach rechts (Entscheidung) · Gremium anklicken</span>}
@@ -163,7 +163,7 @@ export function GremiennetzPage() {
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.routes.map((r, i) => (
                       <li key={i} className="flex items-start justify-between gap-4 border-b border-slate-200 py-3 text-[14px]">
-                        <span className="min-w-0 text-slate-900">{r.path.map((p, j) => <span key={j}>{j > 0 && <span className="mx-1.5 text-teal-600">→</span>}{p}</span>)}</span>
+                        <span className="min-w-0 text-slate-900">{r.path.map((p, j) => <span key={j}>{j > 0 && <span className="mx-1.5 text-teal-700">→</span>}{p}</span>)}</span>
                         <span className="shrink-0 tabular-nums text-slate-500">{n(r.n)}</span>
                       </li>
                     ))}
@@ -192,7 +192,7 @@ export function GremiennetzPage() {
               </Reveal>
             </>
           )}
-          <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine. <Link href="/analytics/ueber" className="text-teal-600">Methode →</Link></p>
+          <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Grundlage sind {n(res.examined)}{res.capped ? ` gleichmäßig ausgewählte von ${n(res.pool)}` : ""} Vorgängen mit Beratung oder Entscheidung. Nur Vorgänge, die in mindestens zwei verschiedenen Gremien behandelt wurden, bilden Übergänge ({n(res.paths)}). Stationen werden nach Datum geordnet, aufeinanderfolgende Stationen im selben Gremium zählen einmal. {res.mode === "types" ? "Ohne einzelnen Ort sind die Gremien nach ihrer Art aus dem Namen zusammengefasst (zum Beispiel Haupt- und Verwaltungsausschuss), weil jeder Ort eigene Namen hat. " : "Mit einem Ort gelten dessen echte Gremiennamen. "}Wie vollständig die Stationen erfasst sind, hängt vom Ratsinformationssystem des Ortes ab; die Zeit je Übergang ist der Abstand der Sitzungstermine. <Link href="/analytics/ueber" className="text-teal-700">Methode →</Link></p>
         </div>
       )}
     </main>

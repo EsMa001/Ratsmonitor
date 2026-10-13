@@ -104,7 +104,7 @@ export function SearchTermButton({ term, light }: { term: string; light?: boolea
     >
       <Icon name="search" size={18} className="flex-none text-slate-500" />
       <span className="min-w-0 flex-1 truncate text-[16px] text-slate-900">{term}</span>
-      <span className="flex-none text-[14px] text-teal-600">Suchen <span className="inline-block transition-transform group-hover:translate-x-0.5">→</span></span>
+      <span className="flex-none text-[14px] text-teal-700">Suchen <span className="inline-block transition-transform group-hover:translate-x-0.5">→</span></span>
     </button>
   );
 }
@@ -136,7 +136,7 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
           {example.datum && (
             <div aria-hidden="true" style={{ display: "flex", flexDirection: "column", alignItems: "center", borderRight: "1px solid var(--rm-c200,#e2e8f0)", paddingRight: 10, textAlign: "center" }}>
               <span style={{ fontSize: 22, fontWeight: 600, lineHeight: 1 }}>{example.datum[0]}</span>
-              <span style={{ marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: ".06em", color: "#0d9488" }}>{example.datum[1]}</span>
+              <span style={{ marginTop: 4, fontSize: 12, fontWeight: 600, letterSpacing: ".06em", color: "#0f766e" }}>{example.datum[1]}</span>
               <span style={{ fontSize: 12, color: "var(--rm-c500,#64748b)" }}>{example.datum[2]}</span>
             </div>
           )}
@@ -156,7 +156,7 @@ export function HitPreview({ term, example, topics, active, onPick }: { term: st
           <span className="ri-pv__topics-label" style={{ display: "block", marginBottom: 8 }}>Auch im Blick</span>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {topics.map((t, i) => (
-            <button key={t + i} type="button" aria-pressed={active === i} onClick={() => (onPick ? onPick(i) : openSearch(t))} className={"rounded-full border px-3 py-1.5 text-[13px] " + (active === i ? "border-teal-600 bg-teal-600 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-600")}>{t}</button>
+            <button key={t + i} type="button" aria-pressed={active === i} onClick={() => (onPick ? onPick(i) : openSearch(t))} className={"rounded-full border px-3 py-1.5 text-[13px] " + (active === i ? "border-teal-600 bg-teal-700 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-teal-600 hover:text-teal-700")}>{t}</button>
           ))}
           </div>
         </div>
@@ -182,7 +182,7 @@ export function DarkCta({ title, sub, pills, action }: { title: string; sub?: st
                 <button key={p} type="button" aria-label={`Nach „${p}“ suchen`} className="group flex h-10 items-center gap-2 rounded-lg bg-white pl-3 pr-2.5 text-left shadow-card transition-shadow hover:shadow-pop" onClick={() => open(p)}>
                   <Icon name="search" size={15} className="flex-none text-slate-500" />
                   <span className="text-[14px] text-slate-900">{p}</span>
-                  <span className="text-[14px] text-teal-600 transition-transform group-hover:translate-x-0.5">→</span>
+                  <span className="text-[14px] text-teal-700 transition-transform group-hover:translate-x-0.5">→</span>
                 </button>
               ))}
             </div>

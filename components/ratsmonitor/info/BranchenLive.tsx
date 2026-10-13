@@ -182,7 +182,7 @@ function mini(id: AnalyseId, d: any, geo?: Snap["geo"]): ReactNode {
         {(d.rows as { term: string; ratio: number; series: number[] }[]).map((t) => (
           <li key={t.term} className="flex items-center justify-between gap-3 text-[14px] text-slate-900">
             <span className="truncate">{prettyTerm(t.term)}</span>
-            <span className="flex items-center gap-2"><span className="text-[13px] text-teal-600">×{String(t.ratio).replace(".", ",")}</span><Spark series={t.series} kind={"rising" as TrendKind} /></span>
+            <span className="flex items-center gap-2"><span className="text-[13px] text-teal-700">×{String(t.ratio).replace(".", ",")}</span><Spark series={t.series} kind={"rising" as TrendKind} /></span>
           </li>
         ))}
       </ul>
@@ -219,7 +219,7 @@ export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term:
   const [stand, setStand] = useState("");
   /* Neue Analysen haben noch keine gezeichnete Vorschau (AnalyticsAbout zeigt dann ein Symbol) */
   const Thumb = (ANALYSE_THUMBS as Partial<Record<AnalyseId, () => ReactNode>>)[id] ?? (() => (
-    <div aria-hidden="true" className="flex h-full min-h-[200px] items-center justify-center text-teal-600"><Icon name={ANALYSEN[id].icon} size={56} /></div>
+    <div aria-hidden="true" className="flex h-full min-h-[200px] items-center justify-center text-teal-700"><Icon name={ANALYSEN[id].icon} size={56} /></div>
   ));
   useEffect(() => {
     if (!ref.current || typeof IntersectionObserver === "undefined") return;

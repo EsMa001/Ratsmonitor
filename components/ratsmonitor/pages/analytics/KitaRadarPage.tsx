@@ -83,7 +83,7 @@ export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
   return (
     <Frame embedded={embedded}>
       {embedded ? <p className="mb-4 mt-6 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung.</p> : <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/atlas" className="text-teal-600">plenara.X Atlas</Link> / Kita-Radar</p>
+        <p className="text-[14px] text-slate-500"><Link href="/analytics/atlas" className="text-teal-700">plenara.X Atlas</Link> / Kita-Radar</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Kita-Radar</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung.</p>
       </PageBand>}
@@ -145,7 +145,7 @@ export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
                   <ol className="m-0 list-none border-t border-slate-200 p-0">
                     {res.decisions.map((d) => (
                       <li key={d.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-                        <Link href={`/beschluss/${d.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700">
+                        <Link href={`/beschluss/${d.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
                           <span className="block truncate text-[16px]">{d.title}</span>
                           <span className="block truncate text-[12px] text-slate-500">{d.region} · {DAY.format(new Date(d.date))}{d.euro ? ` · genannt: ${d.euro} €` : ""}</span>
                         </Link>
@@ -164,7 +164,7 @@ export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
                     <ol className="m-0 list-none border-t border-slate-200 p-0">
                       {res.projects.map((p) => (
                         <li key={p.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-                          <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-700"><span className="block truncate text-[16px]">{p.title}</span><span className="block truncate text-[12px] text-slate-500">{p.region} · {DAY.format(new Date(p.date))}</span></Link>
+                          <Link href={`/beschluss/${p.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800"><span className="block truncate text-[16px]">{p.title}</span><span className="block truncate text-[12px] text-slate-500">{p.region} · {DAY.format(new Date(p.date))}</span></Link>
                           <span className="self-center text-right text-[14px] font-semibold tabular-nums">{n(p.places)} Plätze</span>
                         </li>
                       ))}
@@ -179,7 +179,7 @@ export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
                 </section></Reveal>
               )}
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gelesen werden Titel und Volltext der Hauptdokumente: Elternbeiträge, Gebühren- und Beitragssatzungen nur mit Bezug zu Kita, Krippe oder Tagespflege (keine Straßen- oder Vereinsbeiträge); die Richtung aus Wörtern wie „erhöht“, „gesenkt“, „beitragsfrei“. Sammelpunkte wie Mitteilungen zählen nicht. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gelesen werden Titel und Volltext der Hauptdokumente: Elternbeiträge, Gebühren- und Beitragssatzungen nur mit Bezug zu Kita, Krippe oder Tagespflege (keine Straßen- oder Vereinsbeiträge); die Richtung aus Wörtern wie „erhöht“, „gesenkt“, „beitragsfrei“. Sammelpunkte wie Mitteilungen zählen nicht. <Link href="/analytics/ueber#methodik" className="text-teal-700">Methode →</Link></p>
             </>
           )}
         </div>

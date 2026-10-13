@@ -53,7 +53,7 @@ export function SavedArticlesPage() {
           <input type="search" value={find} onChange={(e) => setFind(e.target.value)} placeholder="Gespeicherte Artikel durchsuchen …" aria-label="Gespeicherte Artikel durchsuchen" className="h-11 min-w-0 flex-1 basis-[260px] rounded-xl border border-transparent bg-[#f8f9fa] px-4 text-[16px] outline-none placeholder:text-slate-400 focus:border-teal-600 focus:bg-white focus:shadow-focus" />
           <div role="group" aria-label="Filter" className="flex items-center gap-4">
             {([["all", "Alle"], ["follow", "Mit Benachrichtigung"]] as const).map(([v, label]) => (
-              <button key={v} type="button" aria-pressed={only === v} onClick={() => setOnly(v)} className={`py-1 text-[14px] ${only === v ? "border-b-2 border-teal-600 text-teal-600" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
+              <button key={v} type="button" aria-pressed={only === v} onClick={() => setOnly(v)} className={`py-1 text-[14px] ${only === v ? "border-b-2 border-teal-600 text-teal-700" : "border-b-2 border-transparent text-slate-500 hover:text-slate-900"}`}>
                 {label}
               </button>
             ))}
@@ -64,7 +64,7 @@ export function SavedArticlesPage() {
       {list.length > 0 && !shown.length && <p className="m-0 py-6 text-slate-500">Keine gespeicherten Artikel passen zu Ihrer Suche.</p>}
       {!list.length && (
         <div className="flex flex-col items-center px-6 py-10 text-center">
-          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-600">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-700">
             <IconBookmark size={26} />
           </span>
           <h2 className="mb-1 mt-4 text-[18px] font-semibold">Noch keine gespeicherten Artikel</h2>
@@ -82,16 +82,16 @@ export function SavedArticlesPage() {
             {/* Datumsblock wie in der Trefferliste */}
             <div aria-hidden="true" className="flex flex-col items-center border-r border-slate-200 pr-3 pt-0.5 text-center">
               <span className="text-[22px] font-semibold leading-none tracking-[-.02em]">{Number(a.date?.slice(8, 10)) || "—"}</span>
-              <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-600">{a.date ? MONTH_SHORT[Number(a.date.slice(5, 7)) - 1] : ""}</span>
+              <span className="mt-1 text-[12px] font-semibold uppercase tracking-[.06em] text-teal-700">{a.date ? MONTH_SHORT[Number(a.date.slice(5, 7)) - 1] : ""}</span>
               <span className="text-[12px] text-slate-500">{a.date?.slice(2, 4)}</span>
             </div>
             <div className="min-w-0">
-              <Link href={`/beschluss/${a.id}`} className="line-clamp-2 text-[16px] font-semibold leading-[1.35] tracking-[-.01em] text-slate-900 no-underline hover:text-teal-700">
+              <Link href={`/beschluss/${a.id}`} className="line-clamp-2 text-[16px] font-semibold leading-[1.35] tracking-[-.01em] text-slate-900 no-underline hover:text-teal-800">
                 {a.title}
               </Link>
               <p className="m-0 mt-0.5 text-[14px] font-medium text-slate-500">{a.gemeinde}</p>
               {/^\d{4}-\d{2}-\d{2}/.test(a.date || "") && <p className="sr-only">Sitzung am {fmtDate(a.date)}</p>}
-              {a.follow && <p className="m-0 mt-1 text-[12px] text-teal-600">Sie werden über Neuigkeiten informiert</p>}
+              {a.follow && <p className="m-0 mt-1 text-[12px] text-teal-700">Sie werden über Neuigkeiten informiert</p>}
               {/* Vorgangsverlauf: alle bisherigen Beratungen, der aktuelle Schritt rechts */}
               <Verlauf id={a.id} fallback={a.teaser} />
             </div>
@@ -101,7 +101,7 @@ export function SavedArticlesPage() {
               onClick={() => remove(a.id)}
               title="Entfernen"
               aria-label="Aus gespeicherten Artikeln entfernen"
-              className="grid h-9 w-9 flex-none place-items-center rounded-lg text-teal-600 hover:bg-teal-50"
+              className="grid h-9 w-9 flex-none place-items-center rounded-lg text-teal-700 hover:bg-teal-50"
             >
               <IconBookmark size={20} filled />
             </button>

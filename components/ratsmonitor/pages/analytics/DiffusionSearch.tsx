@@ -32,17 +32,17 @@ export function DiffusionSearch({ play, onPlay, onSubmit, startLabel = "Analyse 
         if (!open && !allowFeature("filters")) return;
         setFiltersOpen(!open);
       }}
-      className={`${open ? "relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12" : round} ${open || filterCount ? "text-teal-600" : "text-slate-700 hover:text-teal-600"}`}
+      className={`${open ? "relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12" : round} ${open || filterCount ? "text-teal-700" : "text-slate-700 hover:text-teal-700"}`}
     >
       <IconFilter size={20} />
-      {filterCount > 0 && !open && <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-600 px-1 text-[12px] font-semibold leading-none text-white">{filterCount}</span>}
+      {filterCount > 0 && !open && <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-700 px-1 text-[12px] font-semibold leading-none text-white">{filterCount}</span>}
     </button>
   );
   const label = play === "loading" ? "Wird berechnet" : play === "playing" ? "Pause" : startLabel;
   return (
     <div className="relative z-20">
       <div role="search" className="flex w-full items-center gap-2">
-        <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-600 disabled:cursor-default`}>
+        <button type="button" onClick={onPlay} disabled={play === "loading"} title={label} aria-label={label} className={`${round} text-teal-700 disabled:cursor-default`}>
           {play === "loading" ? (
             <span role="status" aria-label="Wird berechnet" className="rm-spinner" />
           ) : play === "playing" ? (

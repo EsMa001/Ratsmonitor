@@ -25,7 +25,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
  },[open]);
  const base='relative grid h-9 w-9 max-sm:h-11 max-sm:w-11 place-items-center rounded-lg transition-colors';
  const cls=(on:boolean)=>`${base} ${on?'bg-teal-50 text-teal-700':'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`;
- const badge='absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-600 px-[3px] text-[12px] font-semibold leading-none text-white';
+ const badge='absolute right-0 top-0 grid h-[14px] min-w-[14px] ring-[1.5px] ring-white place-items-center rounded-full bg-teal-700 px-[3px] text-[12px] font-semibold leading-none text-white';
  const item='block rounded-lg px-3 py-2 text-[14px] text-slate-900 no-underline hover:bg-slate-100';
  const loggedIn=tier!=='guest';
  /* Testmodus: Abmelden beendet die Testsitzung in diesem Browser */
@@ -59,7 +59,7 @@ export function AccountMenu({currentPage}:{currentPage:string}){
      <Link role="menuitem" href="/registrieren" className={item} onClick={()=>setOpen(false)}>Registrieren</Link>
     </>}
     <Link role="menuitem" href="/konto/profil" className={item} onClick={()=>setOpen(false)}>Konto</Link>
-    <Link role="menuitem" href="/konto/postfach" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Test-Postfach{unread>0&&<span className="text-[12px] text-teal-600">{unread} neu</span>}</Link>
+    <Link role="menuitem" href="/konto/postfach" className={`${item} flex items-center justify-between`} onClick={()=>setOpen(false)}>Test-Postfach{unread>0&&<span className="text-[12px] text-teal-700">{unread} neu</span>}</Link>
     {loggedIn&&<button role="menuitem" type="button" onClick={logout} className={`${item} w-full text-left`}>Abmelden</button>}
    </div>}
   </div>

@@ -58,10 +58,10 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
           if (!open && !allowFeature("filters")) return;
           setFiltersOpen(!open);
         }}
-        className={`${open ? "relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12" : round} ${open || filterCount ? "text-teal-600" : "text-slate-700 hover:text-teal-600"}`}
+        className={`${open ? "relative grid h-11 w-11 flex-none place-items-center rounded-full max-sm:h-12 max-sm:w-12" : round} ${open || filterCount ? "text-teal-700" : "text-slate-700 hover:text-teal-700"}`}
       >
         <IconFilter size={20} />
-        {filterCount > 0 && !open && <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-600 px-1 text-[12px] font-semibold leading-none text-white">{filterCount}</span>}
+        {filterCount > 0 && !open && <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-teal-700 px-1 text-[12px] font-semibold leading-none text-white">{filterCount}</span>}
       </button>
   );
   return (
@@ -74,7 +74,7 @@ export function SearchOverlay({ listMax, listUp, onSubmit }: { listMax?: number;
         title={savedHit ? "Gespeicherte Suche entfernen" : active ? "Suche speichern" : "Erst suchen oder filtern, dann speichern"}
         aria-label={savedHit ? "Gespeicherte Suche entfernen" : "Suche speichern"}
         /* Nicht ausgegraut: ohne Suche nur nicht klickbar, damit das Herz sichtbar bleibt */
-        className={`${round} disabled:!opacity-100 ${savedHit ? "text-teal-600" : "text-slate-700 enabled:hover:text-teal-600"}`}
+        className={`${round} disabled:!opacity-100 ${savedHit ? "text-teal-700" : "text-slate-700 enabled:hover:text-teal-700"}`}
       >
         <IconHeart size={20} filled={!!savedHit} />
       </button>

@@ -23,7 +23,7 @@ const PLANS: { tier: Tier; price: string; note: string }[] = [
 
 /* Wie im übrigen Design: schwarze Pille mit Pfeil für die Hauptaktion, sonst Petrol-Text mit Pfeil */
 const PRIMARY = "mt-5 inline-flex h-11 items-center justify-center gap-2 self-start rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white no-underline transition-opacity after:content-['→'] hover:opacity-85";
-const SECONDARY = "mt-5 inline-flex h-11 items-center gap-1.5 self-start text-[14px] font-medium text-teal-600 no-underline after:content-['→'] after:transition-transform hover:after:translate-x-0.5 disabled:text-slate-400 disabled:after:content-none";
+const SECONDARY = "mt-5 inline-flex h-11 items-center gap-1.5 self-start text-[14px] font-medium text-teal-700 no-underline after:content-['→'] after:transition-transform hover:after:translate-x-0.5 disabled:text-slate-400 disabled:after:content-none";
 
 /** Tarifübersicht für Konto und Preisseite; in der Entwicklung lässt sich die Stufe im Konto direkt umschalten */
 export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
@@ -54,7 +54,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
       {!publicPage && <h2 id="tarif-title" className="m-0 text-[18px] font-semibold">Tarif</h2>}
       <div role="tablist" aria-label="Tarif wählen" className="mt-3 flex border-b border-slate-200 sm:hidden">
         {PLANS.map((p) => (
-          <button key={p.tier} type="button" role="tab" aria-selected={pick === p.tier} onClick={() => { setPick(p.tier); goTo(p.tier, true); }} className={`-mb-px flex-1 border-b-2 py-2.5 text-[14px] ${pick === p.tier ? "border-teal-600 font-semibold text-teal-600" : "border-transparent text-slate-500"}`}>
+          <button key={p.tier} type="button" role="tab" aria-selected={pick === p.tier} onClick={() => { setPick(p.tier); goTo(p.tier, true); }} className={`-mb-px flex-1 border-b-2 py-2.5 text-[14px] ${pick === p.tier ? "border-teal-600 font-semibold text-teal-700" : "border-transparent text-slate-500"}`}>
             {p.tier === "guest" ? "Gast" : TIER_LABEL[p.tier]}
           </button>
         ))}
@@ -66,8 +66,8 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
             <div key={plan.tier} className={`flex flex-col max-sm:w-full max-sm:flex-none max-sm:snap-start border-t-2 pb-2 pt-5 lg:pr-2 ${current ? "border-teal-600" : plan.tier === "pro" && publicPage ? "border-slate-900 bg-slate-50 px-4 sm:-mt-2 sm:pt-7" : "border-slate-200"}`}>
               <div className="flex items-center justify-between gap-2">
                 <h3 className="m-0 text-[16px] font-semibold">{plan.tier === "guest" ? "Ohne Konto" : TIER_LABEL[plan.tier]}</h3>
-                {current && <span className="rounded-full bg-teal-600 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihr Tarif"}</span>}
-                {publicPage && plan.tier === "pro" && <span className="text-[12px] font-semibold text-teal-600">Beliebt</span>}
+                {current && <span className="rounded-full bg-teal-700 px-2 py-0.5 text-[12px] font-semibold text-white">{plan.tier === "guest" ? "Ihr Status" : "Ihr Tarif"}</span>}
+                {publicPage && plan.tier === "pro" && <span className="text-[12px] font-semibold text-teal-700">Beliebt</span>}
               </div>
               <p className="m-0 mt-2 text-[22px] font-bold tracking-tight">{plan.price}</p>
               <p className="m-0 text-[12px] text-slate-500">{plan.note}</p>
@@ -76,7 +76,7 @@ export function PlanCards({ publicPage = false }: { publicPage?: boolean }) {
                   const text = f.tiers[plan.tier];
                   return text ? (
                     <li key={f.label} className="flex gap-2 text-slate-900">
-                      <span aria-hidden="true" className="text-teal-600">✓</span>
+                      <span aria-hidden="true" className="text-teal-700">✓</span>
                       {text}
                     </li>
                   ) : null;
@@ -123,7 +123,7 @@ export function PlanSummary() {
           const text = f.tiers[tier];
           return text ? (
             <li key={f.label} className="flex gap-2 text-slate-900">
-              <span aria-hidden="true" className="text-teal-600">✓</span>
+              <span aria-hidden="true" className="text-teal-700">✓</span>
               {text}
             </li>
           ) : null;

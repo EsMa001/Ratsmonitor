@@ -39,7 +39,7 @@ function Meldung({ i }: { i: Item }) {
   return (
     <article className="border-b border-slate-200 py-7">
       <p className="m-0 text-[12px] text-slate-500">{i.dateline.place}{i.dateline.committee ? ` · ${i.dateline.committee}` : ""} · {datum(i.dateline.date)}</p>
-      <h3 className="m-0 mt-1.5 text-[20px] font-semibold leading-snug sm:text-[22px]"><Link href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-700">{i.headline}</Link></h3>
+      <h3 className="m-0 mt-1.5 text-[20px] font-semibold leading-snug sm:text-[22px]"><Link href={`/beschluss/${i.id}`} className="text-slate-900 no-underline hover:text-teal-800">{i.headline}</Link></h3>
       <p className="m-0 mt-3 max-w-[820px] text-[16px] leading-relaxed text-slate-900">
         {i.lead} In der Vorlage heißt es: <q>{i.quote}</q>
         {i.more && <> Weiter heißt es dort: <q>{i.more}</q></>}
@@ -47,8 +47,8 @@ function Meldung({ i }: { i: Item }) {
       </p>
       <p className="m-0 mt-3 text-[12px] text-slate-500">Quelle: {i.source} · {HINWEIS}</p>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <Link href={`/beschluss/${i.id}`} className="text-[14px] font-medium text-teal-600 no-underline">Zum Vorgang →</Link>
-        <button type="button" onClick={copy} className="text-[14px] font-medium text-teal-600">{copied ? "Kopiert" : "Meldung kopieren"}</button>
+        <Link href={`/beschluss/${i.id}`} className="text-[14px] font-medium text-teal-700 no-underline">Zum Vorgang →</Link>
+        <button type="button" onClick={copy} className="text-[14px] font-medium text-teal-700">{copied ? "Kopiert" : "Meldung kopieren"}</button>
         <span className="text-[12px] text-slate-500"><span className="sr-only">Nachrichtenwert </span>Wert {i.score}: {i.why.join(" · ")}</span>
       </div>
     </article>
@@ -92,7 +92,7 @@ export function NewsradarPage() {
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
-        <p className="text-[14px] text-slate-500"><Link href="/analytics/themen" className="text-teal-600">plenara.X Themen</Link> / Newsradar</p>
+        <p className="text-[14px] text-slate-500"><Link href="/analytics/themen" className="text-teal-700">plenara.X Themen</Link> / Newsradar</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">Newsradar</h1>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was in den Räten gerade berichtenswert ist: Vorgänge der letzten Wochen und der nächsten 10 Tage, nach Nachrichtenwert geordnet, je Vorgang eine Meldung mit wörtlichem Zitat aus der Vorlage und Quelle.</p>
       </PageBand>
@@ -106,7 +106,7 @@ export function NewsradarPage() {
             <span className="text-[14px] text-slate-500">Zeitraum:</span>
             {SPANS.map(([d, label]) => (
               <button key={d} type="button" aria-pressed={days === d} disabled={loading} onClick={() => { if (d !== days) { setDays(d); setWant(true); } }}
-                className={`h-9 rounded-full border px-4 text-[14px] transition-colors ${days === d ? "border-teal-600 bg-teal-600 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`}>{label}</button>
+                className={`h-9 rounded-full border px-4 text-[14px] transition-colors ${days === d ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`}>{label}</button>
             ))}
             <span className="text-[12px] text-slate-500">und die nächsten 10 Tage</span>
           </>
@@ -124,7 +124,7 @@ export function NewsradarPage() {
               <Reveal><section className="mt-6 border-t border-slate-200">
                 {res.items.map((i) => <Meldung key={i.id} i={i} />)}
               </section></Reveal>
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Nachrichtenwert nach festen Regeln: Konflikt (abgelehnt, vertagt, nur mit Mehrheit beschlossen), Tragweite (Fördergeld, Kita-Beiträge, Gebühren, Steuern, Bürgerbegehren), Alltagsnähe des Themas und Aktualität. Der Kern jeder Meldung ist ein wörtliches Zitat aus der Regel-Zusammenfassung der Vorlage; Gremium, Datum und Ausgang stammen aus den Sitzungsdaten. Vorgänge ohne zitierbaren Satz erscheinen nicht. <Link href="/analytics/ueber#methodik" className="text-teal-600">Methode →</Link></p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Nachrichtenwert nach festen Regeln: Konflikt (abgelehnt, vertagt, nur mit Mehrheit beschlossen), Tragweite (Fördergeld, Kita-Beiträge, Gebühren, Steuern, Bürgerbegehren), Alltagsnähe des Themas und Aktualität. Der Kern jeder Meldung ist ein wörtliches Zitat aus der Regel-Zusammenfassung der Vorlage; Gremium, Datum und Ausgang stammen aus den Sitzungsdaten. Vorgänge ohne zitierbaren Satz erscheinen nicht. <Link href="/analytics/ueber#methodik" className="text-teal-700">Methode →</Link></p>
             </>
           )}
         </div>

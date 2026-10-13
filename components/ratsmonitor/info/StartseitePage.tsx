@@ -4,13 +4,14 @@ import { LIMITS, PRO_PRICE, useTier } from "../lib/tier";
 import { IconPin } from "../components/icons";
 import { useOpenSearch } from "./blocks";
 import { todayLocal } from "../lib/text";
+import topicList from "./startseite-topics.json";
 
 /* Startseite (Reiter rechts neben Lena, noch nicht die Landingpage).
    Kopf: Slogan, Artikelzahl, Karte. Auf der Karte laufen Zeitraffer und Live zusammen: Die Begriffe unten ploppen auf, sobald sie in einem Kreis
-   zum ersten Mal beraten wurden, und der Kreis bleibt gefärbt. Darunter die Trends derselben Begriffe, alles aus /api/analytics/diffusion. */
+   zum ersten Mal beraten wurden. Darunter die Trends derselben Begriffe, alles aus /api/analytics/diffusion. */
 
 /** Begriffe, die auf der Karte aufploppen und deren Trend darunter steht */
-const TOPICS = ["Wärmeplanung", "Kita", "Hitzeschutz", "Photovoltaik", "Bebauungsplan", "Glasfaser", "Windenergie"];
+const TOPICS: string[] = topicList;
 
 interface Series {
   month: string;
@@ -28,38 +29,16 @@ interface TopicData {
   firsts: First[];
   series: Series[];
 }
-const hash = (str: string) => {
-  let h = 2166136261;
-  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
-  return ((h >>> 0) % 100000) / 100000;
-};
-
-/** Erzeugte Verteilung: je Begriff beraten etwa 45 bis 70 % der Kreise ihn, zeitlich über ein Jahr gestreut */
-function synthetic(regions: GeoRegion[]): Record<string, TopicData> {
-  const t0 = Date.UTC(2025, 9, 1);
-  const t1 = Date.UTC(2026, 9, 1);
-  const out: Record<string, TopicData> = {};
-  TOPICS.forEach((topic, ti) => {
-    const share = 0.45 + ti * 0.05;
-    const firsts: First[] = [];
-    for (const r of regions) {
-      if (hash(topic + r.ags + "p") > share) continue;
-      firsts.push({ k: r.ags, name: r.name, t: t0 + (t1 - t0) * Math.pow(hash(topic + r.ags + "t"), 0.8) });
-    }
-    firsts.sort((x, y) => x.t - y.t);
-    const series: Series[] = [];
-    let total = 0;
-    for (let m = 0; m < 12; m++) {
-      const base = 30 + ti * 7;
-      const wave = Math.sin(m / 2 + ti) * 12 + (ti % 2 === 0 ? m * 1.4 : -m * 0.9);
-      const added = Math.max(2, Math.round(base + wave + (hash(topic + m) - 0.5) * 14));
-      total += added;
-      series.push({ month: new Date(Date.UTC(2025, 9 + m, 1)).toISOString().slice(0, 7), added, total });
-    }
-    out[topic] = { firsts, series };
-  });
-  return out;
+/** public/data/startseite-trends.json (scripts/startseite-trends.mjs, aus /api/analytics/diffusion): je Begriff und Kreis die erste
+ *  Beratung [Kreis, Gemeinde, Datum] und je Monat die neu hinzugekommenen Gebiete */
+interface Snapshot {
+  stand: string;
+  topics: Record<string, { f: [string, string, string][]; series: Series[] }>;
 }
+const toTopic = (d: Snapshot["topics"][string]): TopicData => ({
+  firsts: d.f.map(([k, name, day]) => ({ k, name, t: Date.parse(day + "T00:00:00Z") })),
+  series: d.series,
+});
 
 interface Cov {
   ags?: string;
@@ -179,7 +158,7 @@ function TrendPops({ items, onPick }: { items: TrendItem[]; onPick: (t: string) 
   );
 }
 
-/** Deutschlandkarte der Kreise (public/geo/de-districts.json, © BKG). Gefärbt wird, was bis zum Zeitpunkt erstmals beraten wurde; die Pops tragen die Begriffe. */
+/** Deutschlandkarte der Kreise (public/geo/de-districts.json, © BKG), ganz eingefärbt; die Pops zeigen, wo ein Begriff zum ersten Mal beraten wurde. */
 function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, number> | null; litKey: number; stage: number; pops: Pop[]; onPick: (name: string) => void }) {
   const [geo, setGeo] = useState<{ regions: GeoRegion[]; states: { name: string; path: string }[] } | null>(null);
   const [tip, setTip] = useState("");
@@ -200,7 +179,7 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
   if (!geo) return <DotMap />;
   return (
     <div>
-      <svg role="img" aria-label="Deutschlandkarte der Kreise; farbig sind Kreise, in denen die Begriffe bereits beraten wurden" viewBox="12 8 560 758" style={{ width: "100%", height: "auto", display: "block" }} onMouseLeave={() => setTip("")} onMouseOver={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) setTip(n); }} onClick={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) onPick(n); }}>
+      <svg role="img" aria-label="Deutschlandkarte der Kreise; eingeblendet ist, wo Begriffe wie Wärmeplanung oder Photovoltaik zum ersten Mal beraten wurden" viewBox="12 8 560 758" style={{ width: "100%", height: "auto", display: "block" }} onMouseLeave={() => setTip("")} onMouseOver={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) setTip(n); }} onClick={(e) => { const n = (e.target as SVGElement).getAttribute?.("data-n"); if (n) onPick(n); }}>
         <style>{`.pl-pop{animation:plpop 5.6s ease-out both}@keyframes plpop{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}.pl-ping{transform-box:fill-box;transform-origin:center;animation:plping 1.6s ease-out infinite}@keyframes plping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.4);opacity:0}}@media (prefers-reduced-motion:reduce){.pl-pop,.pl-ping{animation:none}}`}</style>
         {paths}
         {geo.states.map((st) => (
@@ -321,8 +300,9 @@ export function StartseitePage() {
     return () => ctl.abort();
   }, []);
 
-  /* Animation und Trends sind Darstellung, keine Messung: Begriffe und Orte wirken echt, die Verteilung ist erzeugt (fester Startwert),
-     damit nichts nachgeladen werden muss. */
+  /* Animation und Trends aus echten Daten: welche Gemeinde einen Begriff wann zum ersten Mal beraten hat und wie viele Gebiete je
+     Monat dazukamen. Vorbereitet in public/data/startseite-trends.json (neu erzeugen: node scripts/startseite-trends.mjs), weil die
+     Auswertung je Begriff zu lange dauert. Die Karte selbst ist ganz eingefärbt. */
   useEffect(() => {
     const ctl = new AbortController();
     fetch("/geo/de-districts.json", { signal: ctl.signal })
@@ -336,8 +316,11 @@ export function StartseitePage() {
           if (xs.length) c[r.ags] = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2];
         }
         setCent(c);
-        setData(synthetic(d.regions));
       })
+      .catch(() => {});
+    fetch("/data/startseite-trends.json", { signal: ctl.signal })
+      .then((r) => (r.ok ? (r.json() as Promise<Snapshot>) : Promise.reject(new Error("trends"))))
+      .then((d) => setData(Object.fromEntries(TOPICS.filter((t) => d.topics[t]?.f.length).map((t) => [t, toTopic(d.topics[t])]))))
       .catch(() => {});
     return () => ctl.abort();
   }, []);
@@ -446,7 +429,7 @@ export function StartseitePage() {
         <div className="mx-auto pl-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "start" }}>
           <div className="pl-left" style={{ paddingTop: 40 }}>
             <h1 className="pl-h1" style={{ margin: 0, fontSize: "clamp(28px, 8vw, 44px)", lineHeight: 1.08, letterSpacing: "-0.02em", fontWeight: 600, color: "var(--rm-c900,#0f172a)" }}>
-              Deutschlands Kommunalpolitik<br /> <span style={{ color: "#0d9488" }}>in Echtzeit.</span>
+              Deutschlands Kommunalpolitik<br /> <span style={{ color: "#0f766e" }}>in Echtzeit.</span>
             </h1>
             <p className="pl-slogan" style={{ margin: "20px 0 0", fontSize: 18, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>Besser verstehen, was vor Ort beraten wird.</p>
             <p className="pl-num" style={{ margin: "28px 0 0", display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "4px 14px" }}>

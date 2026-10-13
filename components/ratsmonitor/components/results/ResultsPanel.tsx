@@ -116,32 +116,32 @@ export function ResultsPanel() {
               {/* Konkrete nächste Schritte statt nur „zurücksetzen“ */}
               <div className="mt-1 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[14px]">
                 {!search.state.future && !search.state.bis && (
-                  <button type="button" onClick={() => search.setFuture(true)} className="text-teal-600 hover:underline">
+                  <button type="button" onClick={() => search.setFuture(true)} className="text-teal-700 hover:underline">
                     Auch künftige Termine zeigen →
                   </button>
                 )}
                 {search.state.allterms && (
-                  <button type="button" onClick={() => search.setAllterms(false)} className="text-teal-600 hover:underline">
+                  <button type="button" onClick={() => search.setAllterms(false)} className="text-teal-700 hover:underline">
                     Begriffe nicht mehr kombinieren →
                   </button>
                 )}
                 {search.state.noformal && (
-                  <button type="button" onClick={() => search.setNoformal(false)} className="text-teal-600 hover:underline">
+                  <button type="button" onClick={() => search.setNoformal(false)} className="text-teal-700 hover:underline">
                     Formalien wieder zeigen →
                   </button>
                 )}
                 {search.state.thema && (
-                  <button type="button" onClick={() => search.setThema("")} className="text-teal-600 hover:underline">
+                  <button type="button" onClick={() => search.setThema("")} className="text-teal-700 hover:underline">
                     Thema-Filter entfernen →
                   </button>
                 )}
                 {search.state.status && (
-                  <button type="button" onClick={() => search.setStatus("")} className="text-teal-600 hover:underline">
+                  <button type="button" onClick={() => search.setStatus("")} className="text-teal-700 hover:underline">
                     Status-Filter entfernen →
                   </button>
                 )}
                 {search.state.area.length >= 5 && !search.state.radius && (
-                  <button type="button" onClick={() => search.setRadiusKm(25)} className="text-teal-600 hover:underline">
+                  <button type="button" onClick={() => search.setRadiusKm(25)} className="text-teal-700 hover:underline">
                     Umkreis 25 km einbeziehen →
                   </button>
                 )}
@@ -167,7 +167,7 @@ export function ResultsPanel() {
       {/* Paginierung mittig: „Zurück“ erst ab Seite 2, „Weiter“ nur wenn es weitere Treffer gibt */}
       <nav aria-label="Ergebnisseiten" className="flex flex-wrap items-center justify-center gap-3 border-t border-slate-200 p-2">
         {res.page > 1 && (
-          <button type="button" aria-label="Vorherige Seite" title="Vorherige Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-600 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page - 1)}>
+          <button type="button" aria-label="Vorherige Seite" title="Vorherige Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-700 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page - 1)}>
             <IconChevronLeft size={20} />
           </button>
         )}
@@ -175,7 +175,7 @@ export function ResultsPanel() {
           {active ? <>{res.totalPending ? (res.showDots ? <CountDots /> : "…") : res.total.toLocaleString("de-DE")} Treffer · Seite {res.page}{res.totalPending ? "" : ` von ${pages}`}</> : `Seite ${res.page}`}
         </span>
         {res.hasMore && res.page < MAX_PAGE && (
-          <button type="button" aria-label="Nächste Seite" title="Nächste Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-600 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
+          <button type="button" aria-label="Nächste Seite" title="Nächste Seite" className="grid h-9 w-9 place-items-center rounded-full text-slate-600 hover:bg-slate-100 hover:text-teal-700 disabled:opacity-40" disabled={res.loading} onClick={() => goPage(res.page + 1)}>
             <IconChevronRight size={20} />
           </button>
         )}

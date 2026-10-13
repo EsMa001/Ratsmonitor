@@ -23,7 +23,7 @@ export function FollowButton({ article, size = 20, className = "", label = false
         if (!hit && !allow("bookmarks")) return;
         if (allow("notifications") && !toggleFollow(article)) toast(NO_STORAGE);
       }}
-      className={`${label ? "inline-flex items-center gap-1.5 px-2" : "grid w-9 place-items-center"} h-9 max-sm:h-11 max-sm:min-w-11 flex-none rounded-lg text-teal-600 transition-colors hover:bg-teal-50 hover:text-teal-700 ${className}`}
+      className={`${label ? "inline-flex items-center gap-1.5 px-2" : "grid w-9 place-items-center"} h-9 max-sm:h-11 max-sm:min-w-11 flex-none rounded-lg text-teal-700 transition-colors hover:bg-teal-50 hover:text-teal-800 ${className}`}
     >
       <IconBell size={size} filled={on} />
       {label && <span className="hidden text-[14px] sm:inline">{on ? "Folge ich" : "Folgen"}</span>}

@@ -426,7 +426,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
                 <div key={"h" + i} className="flex items-center justify-between gap-3 px-2 pb-1 pt-1.5 text-[12px] font-semibold uppercase tracking-[.04em] text-slate-500">
                   <span>{r.label}</span>
                   {r.action && (
-                    <button type="button" onClick={r.action.run} className="text-[12px] font-medium normal-case tracking-normal text-teal-600 hover:underline">
+                    <button type="button" onClick={r.action.run} className="text-[12px] font-medium normal-case tracking-normal text-teal-700 hover:underline">
                       {r.action.label}
                     </button>
                   )}
@@ -512,7 +512,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
                   r.sel ? "bg-teal-50" : idx === active ? "bg-slate-100" : "hover:bg-slate-100"
                 }`}
               >
-                {r.sel ? <IconCheck className="text-teal-600" /> : <IconPin className="text-slate-500" />}
+                {r.sel ? <IconCheck className="text-teal-700" /> : <IconPin className="text-slate-500" />}
                 <span className="min-w-0">
                   <span className={`block truncate text-[14px] ${r.sel ? "font-semibold text-teal-700" : "font-medium"}`}>{scopeName(r.entry.ags, r.scope)}</span>
                   <span className="block text-[12px] text-slate-500">{r.scope === "with" ? (r.entry.ags.length === 5 ? "Kreis und alle Städte und Gemeinden im Kreis" : "Gemeinde und Beschlüsse ihres Kreises") : inf.meta}</span>
