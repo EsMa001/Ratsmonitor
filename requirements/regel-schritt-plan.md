@@ -96,7 +96,7 @@ Sitzungsunterlage ja/nein und Prüfsumme des Texts. Gleicher Schlüssel → nich
 4. `rule-texts.mjs` und `sync.ts` umstellen.
 5. Doku (`CLAUDE.md`, `docs/betrieb/node-server.md`).
 
-# Schritt 5: Die 10 Themen ersetzen die 16 Labels (Plan, Entscheidung 14.10.2026: „Übersetzen“)
+# Schritt 5: Die 10 Themen ersetzen die 16 Labels (erledigt 14.10.2026, Entscheidung: „Übersetzen“)
 
 Ein Katalog: `labels-v3` sind die 10 Themen aus `shared/themes.mjs` plus „noch nicht zugeordnet“ (`unklar`). Alles, was heute
 den Katalog aus `shared/labels.mjs` liest (Suche, Filter, Karte, Lena, Admin, plenara.X, Oberfläche), bekommt so die Themen.
@@ -135,7 +135,10 @@ für alle Karten neu. Danach Wortliste `--full` (Zahlen je Label).
 
 ## Commits
 
-1. `labels.mjs` (Katalog, Übersetzung, `classifyTopic`) + Tests.
-2. Migration `0034` (View, Trigger, Neubefüllung) + Tests.
-3. Lena und KI-Katalog.
-4. Feste Kennungen, Admin, Doku.
+1. `labels.mjs`, Rangfolge, Migration `0034` (View, Neubefüllung; die Trigger aus 0027 folgen dem View von selbst), Tests,
+   NRW-Testbestand neu eingeordnet (zusammen, weil JS- und SQL-Rangfolge gleich sein müssen).
+2. Lena (`themesIn`); KI-Aufbereitung und MCP lesen den Katalog schon zentral.
+3. Feste Kennungen (Social Media über `formal`, Fraktionsprofil), Admin (Zählung übersetzt, offen = Sachpunkt ohne Thema,
+   `FIGURES_VERSION` 6), Doku.
+Offen in der Oberfläche: Der Schalter für Sammelthemen im Ortsvergleich (`ComparePage.tsx`, `SAMMELTHEMEN`) wirkt nicht mehr,
+weil es die Labels Sitzung und Allgemein nicht mehr gibt.

@@ -4,7 +4,7 @@ import {atRevision} from './revision-cache.mjs';
 import {FIRST_DAY_SQL,LAST_DAY_SQL} from './admin-timeline.mjs';
 import {FIGURES_VERSION,readSeries} from './region-series.mjs';
 import {CATALOG as regions} from '../../shared/catalog.mjs';
-import {LABELS} from '../../shared/labels.mjs';
+import {LABELS,LEGACY_LABELS} from '../../shared/labels.mjs';
 import {sourceHealth,REVIEW_FILTERS} from '../../shared/admin.mjs';
 import {NRW_SOURCES} from './source-catalog.mjs';
 import {SOURCES} from './regions.mjs';
@@ -13,7 +13,7 @@ import {accessOfSource,accessLabel,channelOf} from '../../shared/source-access.m
 import robotsVerdicts from './source-robots.json' with {type:'json'};
 import atlas from './source-atlas.json' with {type:'json'};
 const canonical="active=1";
-const conditions={labels:"coalesce(json_extract(payload,'$.classification.primary'),'unklar')='unklar'",status:"status='unknown'",identity:"json_extract(payload,'$.identity.conflict')=1",summaries:"coalesce(json_extract(payload,'$.documentIssue'),'')!='' OR coalesce(json_extract(payload,'$.summaryIssue'),'')!='' OR json_extract(payload,'$.contentAnalysis.status') IN ('insufficient_source','failed','stale') OR json_extract(payload,'$.contentAnalysis.reason') IS NOT NULL"};
+const conditions={labels:'',status:"status='unknown'",identity:"json_extract(payload,'$.identity.conflict')=1",summaries:"coalesce(json_extract(payload,'$.documentIssue'),'')!='' OR coalesce(json_extract(payload,'$.summaryIssue'),'')!='' OR json_extract(payload,'$.contentAnalysis.status') IN ('insufficient_source','failed','stale') OR json_extract(payload,'$.contentAnalysis.reason') IS NOT NULL"};
 const configuredSources=[...SOURCES.map(s=>({...s,method:s.id==='recklinghausen'?'official-api':'scraper'})),...NRW_SOURCES,{id:'muenster',method:'oparl',system:'https://oparl.stadt-muenster.de/system'}];
 // The first entry of an area counts, as in the list above; the catalog holds several thousand areas.
 export const configuredById=new Map([...configuredSources].reverse().map(s=>[s.id,s]));
@@ -22,7 +22,10 @@ export const configuredById=new Map([...configuredSources].reverse().map(s=>[s.i
 // (source-robots.json), of an area without source from its last check (source-atlas.json, scripts/dashboard/build.mjs).
 export const accessFields=(id,config)=>{const connected=!!config&&config.method!=='pending',access=connected?accessOfSource(config,robotsVerdicts.sources?.[id]):atlas.areas?.[id]?.z||'none';return {access,accessLabel:accessLabel(access),channel:connected?channelOf(config).name:''};};
 const readJson=s=>{try{return JSON.parse(s||'{}');}catch{return {};}};
-const label="coalesce(json_extract(payload,'$.classification.primary'),'unklar')";
+/* Label der Titelregel im Katalog labels-v3: alte Einordnungen (labels-v2) übersetzt; Punkte ohne Sachthema (itemKind aus
+   read-reports.mjs) zählen als 'formal' und damit nicht als offen (Schritt 5, requirements/regel-schritt-plan.md) */
+const label=`CASE WHEN coalesce(json_extract(payload,'$.itemKind'),'subject')<>'subject' THEN 'formal' ELSE CASE coalesce(json_extract(payload,'$.classification.primary'),'unklar') ${Object.entries(LEGACY_LABELS).filter(([a,b])=>a!==b).map(([a,b])=>`WHEN '${a}' THEN '${b}'`).join(' ')} ELSE coalesce(json_extract(payload,'$.classification.primary'),'unklar') END END`;
+conditions.labels=`${label}='unklar'`;
 // Figure of region_stats that counts the reports of a review filter. "status" has none: it is counted on its index.
 const REVIEW_FIGURES={labels:'label_unklar',identity:'conflicts',summaries:'textIssues'};
 // Up to this many matches over all areas a reason counts as rare: it is read in the areas that hold it.

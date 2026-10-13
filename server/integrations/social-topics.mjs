@@ -479,7 +479,7 @@ export async function socialTopics(db,regions,{today=iso(Date.now()),days=30,per
  // extraNames: [[regionId,name],…] für Gebiete außerhalb des Katalogs (BKG-Liste in shared/de-regions.json)
  const names=new Map([...extraNames,...regions.map(r=>[r.id,r.kind==='district'&&!/kreis/i.test(r.shortName||'')?'Kreis '+(r.shortName||r.name.replace(/^(Landkreis|Kreis) /,'')):(r.shortName||r.name)])]);
  const from=shift(today,-(days-1));
- const {results}=await db.prepare("SELECT id,region_id,date,status,label,title,gremium FROM search_cards WHERE date BETWEEN ? AND ? AND label!='sitzung'").bind(from,today).all();
+ const {results}=await db.prepare("SELECT id,region_id,date,status,label,title,gremium FROM search_cards WHERE date BETWEEN ? AND ? AND formal=0").bind(from,today).all();
  const cards=results||[];
  const scored=[];
  // In wie vielen anderen Orten kam dasselbe Streitwort im Zeitraum vor? Einordnung, kein Auswahlkriterium.

@@ -28,7 +28,7 @@ Alle Antworten sind **Vorlagen mit eingesetzten Werten**. Lena formuliert nichts
 2. **Ort:** Namensliste der Gebiete (aus dem Gebietskatalog) mit Schreibvarianten und Ortsteilen („Köln-Esch“ → Köln).
 3. **Zeit:** „letzte 30 Tage“, „diese Woche“, „2026“, „seit Juli“.
 4. **Status:** „beschlossen“, „vertagt“, „abgelehnt“, „in Beratung“ (die Statuswörter der App).
-5. **Thema:** Rest der Frage ohne Füllwörter, dazu die Sachgebiets-Wörter der Regel-Labels als Synonyme (Wortliste aus `shared/labels.mjs`).
+5. **Thema:** Rest der Frage ohne Füllwörter, dazu die Themen, deren Begriffe treffen (`themesIn` in `shared/themes.mjs`, seit 14.10.2026 die 10 Themen).
 6. **Rückfrage statt Raten:** Fehlt der Ort bei einer Ortsfrage, fragt Lena mit Auswahlknöpfen („Welches Gebiet?“). Mehr als eine Rückfrage je Frage gibt es nicht.
 
 ## Was sie nicht tut

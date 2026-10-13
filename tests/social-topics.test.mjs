@@ -35,15 +35,15 @@ test('Status und Fraktionsantrag verstärken, Formales fällt weg', () => {
 
 test('Auswahl: je Tag und Ort höchstens ein Eintrag, Wiederholungen derselben Gruppe und Woche entfallen', async () => {
  const sql=new DatabaseSync(':memory:');
- sql.exec('CREATE TABLE search_cards (id text,region_id text,date text,status text,label text,title text,gremium text)');
+ sql.exec('CREATE TABLE search_cards (id text,region_id text,date text,status text,label text,title text,gremium text,formal integer DEFAULT 0)');
  sql.exec('CREATE TABLE topics (id text,payload text)');
  sql.prepare('INSERT INTO topics VALUES (?,?)').run('a',JSON.stringify({events:[{result:'mehrheitlich beschlossen'}]}));
- const ins=sql.prepare('INSERT INTO search_cards VALUES (?,?,?,?,?,?,?)');
+ const ins=sql.prepare('INSERT INTO search_cards (id,region_id,date,status,label,title,gremium) VALUES (?,?,?,?,?,?,?)');
  ins.run('a','r1','2026-10-05','rejected','mobilitaet','Antrag der CDU-Fraktion: Tempo 30 in der Dorfstraße','Rat');
  ins.run('b','r1','2026-10-05','announced','mobilitaet','Tempo 30 in der Dorfstraße (Vorlage)','Rat');
  ins.run('c','r1','2026-10-08','rejected','mobilitaet','Tempo 30 in der Dorfstraße, erneuter Antrag','Rat');
  ins.run('d','r2','2026-10-05','rejected','umwelt','Windkraftanlagen im Stadtwald, Antrag abgelehnt','Rat');
- ins.run('e','r3','2026-10-05','rejected','sitzung','Tempo 30 und Windkraft','Rat');
+ ins.run('e','r3','2026-10-05','rejected','unklar','Tempo 30 und Windkraft','Rat');sql.exec("UPDATE search_cards SET formal=1 WHERE id='e'");
  const r=await socialTopics(sqliteAdapter(sql),[{id:'r1',name:'Stadt Eins',shortName:'Eins'},{id:'r2',name:'Stadt Zwei',shortName:'Zwei'}],{today:'2026-10-11',days:10,minScore:2.5});
  const all=r.days.flatMap(d=>d.topics);
  assert.deepEqual(all.map(t=>t.id).sort(),['a','d']);
