@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { isSearchInput } from "../SearchBox";
 import { MapEngine, type MapStyle } from "../../lib/geo/mapEngine";
 import { hasFilters, hasScope } from "../../lib/savedSearch";
@@ -223,7 +223,9 @@ export function MapPanel({ active }: { active: boolean }) {
         .map((a) => `${geo?.info(a).name ?? a} (${areaCounts[a]})`)
         .join(", ")}`;
   /* Im Kartenmodus liegt die Suchleiste unten (20 px Abstand): beim Zentrieren bleibt dieser Streifen frei, die Gemeinden mit Treffern liegen darüber */
-  if (engine) engine.bottomInset = explore ? barH + 20 : 0;
+  useLayoutEffect(() => {
+    engine?.setBottomInset(explore ? barH + 20 : 0);
+  }, [engine, explore, barH]);
   const moreKey = (snapshot.more ?? []).map((m) => m.ags).join(",");
   const center = (toHits = false) => {
     if (!engine) return;

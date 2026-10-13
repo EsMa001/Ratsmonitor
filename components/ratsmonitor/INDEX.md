@@ -712,7 +712,7 @@ topic design-styles.css:140
 - icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (321, ⚠2): MapPanel
+- MapPanel.tsx (323, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (203, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
@@ -761,7 +761,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/lib/geo/
 - geoModel.ts (360): BBox, Layer, HierEntry, AreaInfo, decodeArc, GeoModel
-- mapEngine.ts (1005): MapEngineCallbacks, MapStyle, MapEngine
+- mapEngine.ts (1009): MapEngineCallbacks, MapStyle, MapEngine
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
@@ -818,16 +818,16 @@ topic design-styles.css:140
 - ComparePage.tsx (310, ⚠11): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
-- DiffusionPage.tsx (271, ⚠6): DiffusionPage
+- DiffusionPage.tsx (252, ⚠7): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
 - FoerderradarPage.tsx (224, ⚠9): FoerderradarPage
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
-- GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
+- GraphView.tsx (190, ⚠2): GNode, GEdge, KIND, GraphView
 - GremiennetzPage.tsx (176, ⚠3): GremiennetzPage
 - KitaRadarPage.tsx (164, ⚠8): KitaRadarPage
 - KnowledgeGraphPage.tsx (225, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
-- NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
+- NetView.tsx (180, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (79): DrillItem, RadarDrill

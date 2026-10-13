@@ -56,9 +56,11 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   const boxRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 800, h: 560 });
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
-  const [, bump] = useState(0);
-  const [hover, setHover] = useState("");
   const sim = useRef<P[]>([]);
+  /* Gezeichnet wird ein Abbild der Simulation (Zustand); gerechnet und gezogen wird in sim (Ref) */
+  const [shown, setShown] = useState<P[]>([]);
+  const draw = () => setShown(sim.current.map((n) => ({ ...n })));
+  const [hover, setHover] = useState("");
   const drag = useRef<{ id: string; moved: boolean } | { pan: true; sx: number; sy: number; vx: number; vy: number } | null>(null);
   const raf = useRef(0);
 
@@ -86,7 +88,9 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
     sim.current = nodes.map((n, i) => ({ ...n, r: 12 + 24 * Math.sqrt((n.in + n.out) / max), x: (n.stage - 0.5) * span, y: ((i % 6) - 2.5) * 110 + (Math.random() - 0.5) * 30, vx: 0, vy: 0, fixed: false }));
     layout(sim.current, edges, span, 460);
     fit();
-    bump((v) => v + 1);
+    /* Neue Daten: Startlage mit Zufall und Messung, einmal je Daten gerechnet; das Abbild folgt sofort */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges]);
   useEffect(() => fit(), [size.w, size.h, fit]);
@@ -96,11 +100,12 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
   }, [zoomRef, fit]);
 
   const pos = (id: string) => sim.current.find((n) => n.id === id);
+  const at = (id: string) => shown.find((n) => n.id === id);
   const toWorld = (cx: number, cy: number) => { const r = boxRef.current!.getBoundingClientRect(); return { x: (cx - r.left - size.w / 2 - view.x) / view.k, y: (cy - r.top - size.h / 2 - view.y) / view.k }; };
   const run = () => {
     cancelAnimationFrame(raf.current);
     let c = 0;
-    const step = () => { layout(sim.current, edges, 980, 1, 0.3); bump((v) => v + 1); if (++c < 40) raf.current = requestAnimationFrame(step); };
+    const step = () => { layout(sim.current, edges, 980, 1, 0.3); draw(); if (++c < 40) raf.current = requestAnimationFrame(step); };
     raf.current = requestAnimationFrame(step);
   };
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
@@ -147,7 +152,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
         </defs>
         <g transform={`translate(${size.w / 2 + view.x} ${size.h / 2 + view.y}) scale(${view.k})`}>
           {edges.map((e) => {
-            const a = pos(e.a), b = pos(e.b);
+            const a = at(e.a), b = at(e.b);
             if (!a || !b) return null;
             const on = !!focus && (e.a === focus || e.b === focus);
             const w = 1 + 5.5 * Math.sqrt(e.n / maxN);
@@ -155,7 +160,7 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
             if (!on && e.n < maxN * 0.06) return null;
             return <path key={e.a + e.b} d={path(a, b, 0.14)} fill="none" stroke={on ? "#0d9488" : "#94a3b8"} strokeOpacity={focus ? (on ? 0.9 : 0.06) : 0.45} strokeWidth={w} strokeLinecap="round" markerEnd={on ? "url(#net-arrow-on)" : "url(#net-arrow)"} style={{ pointerEvents: "none" }} />;
           })}
-          {sim.current.map((n) => {
+          {shown.map((n) => {
             const k = ROLE[n.role], on = !focus || near.has(n.id), sel = n.id === selected, lines = wrap(n.name);
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.2} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>

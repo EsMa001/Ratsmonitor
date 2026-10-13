@@ -3,7 +3,7 @@ import { PageBand } from "./PageBand";
 import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDarkMode } from "../../lib/useDarkMode";
 import { MapEngine } from "../../lib/geo/mapEngine";
 import { useData } from "../../state/data";
@@ -13,7 +13,7 @@ import { DiffusionSearch, type PlayState } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { prettyTerm } from "../../lib/terms";
 import { RadarDrill } from "./RadarDrill";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 /** members: Verband ohne erkennbare Mitgliedsgemeinde (zählt einmal, Karte bei allen Mitgliedern); atStart: schon in den ersten 14 Tagen des Bestands */
 interface Reg { ags: string; name: string; first: string; last: string; n: number; start?: string | null; atStart?: boolean; members?: string[] }
@@ -44,57 +44,35 @@ function levelAt(first: string, today: number) {
 export function DiffusionPage() {
   const params = useSearchParams();
   const { geo } = useData();
-  const [res, setRes] = useState<Result | null>(null);
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(false);
-  const [error, setError] = useState("");
   const [day, setDay] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [picked, setPicked] = useState("");
   const stageRef = useRef<HTMLDivElement>(null);
   const baseRef = useRef<HTMLCanvasElement>(null);
   const overRef = useRef<HTMLCanvasElement>(null);
-  const pickRef = useRef<(a: string) => void>(() => {});
-  pickRef.current = (a) => setPicked((p) => (p === a ? "" : a));
+  /* Klick auf einen Ort: wählen oder abwählen (setPicked ist stabil, die Karte braucht keinen Ref) */
+  const select = useCallback((a: string) => setPicked((p) => (p === a ? "" : a)), []);
 
   const { query, hasTerm, search } = useAnalyticsQuery();
+  const { res, ranKey, loading, error: runError, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/diffusion?${query}`, initial: false, fallback: "Die Analyse konnte nicht berechnet werden.", onDone: (r) => { if (r.stats.first) { setDay(toDay(r.stats.first)); setPlaying(true); } } });
+  /* Hinweis ohne Begriff; sonst der Fehler der Auswertung */
+  const [hint, setHint] = useState("");
+  const error = hint || runError;
+  /* Starten: Ablauf und Auswahl zurück; ohne Begriff warten, bis er in der Suche angekommen ist */
+  const start = () => { setHint(""); setPlaying(false); setPicked(""); if (hasTerm) run(); else runAfterChange(); };
 
   /* Beispiel- oder Direktlink (?thema=): Begriff in die Suche setzen und sofort starten */
   const given = useRef(params.get("thema"));
   useEffect(() => {
     /* Ohne Direktlink und ohne Begriff in der Suche: mit einem Beispiel starten, damit die Seite nicht leer ist */
     if (!given.current && !hasTerm) given.current = "Photovoltaik";
-    if (!given.current) { if (hasTerm) setWant(true); return; }
+    if (!given.current) { if (hasTerm) run(); return; }
     search.applySearch(given.current);
     given.current = null;
-    setWant(true);
+    runAfterChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    /* wartet, bis der Begriff (z. B. aus einem Beispiel) in der Suche angekommen ist */
-    if (!want || !hasTerm) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    setPlaying(false);
-    setPicked("");
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/diffusion?${query}`, { signal: ctrl.signal }, "Die Analyse konnte nicht berechnet werden.")
-      .then((r) => {
-        setRes(r);
-        setRanKey(query);
-        setLoading(false);
-        if (r.stats.first) { setDay(toDay(r.stats.first)); setPlaying(true); }
-      })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want, hasTerm]);
-  const abortRef = useRef<AbortController | null>(null);
-  useEffect(() => () => abortRef.current?.abort(), []);
 
   const firstDay = res?.stats.first ? toDay(res.stats.first) : 0;
   const lastDay = res?.stats.last ? toDay(res.stats.last) : 0;
@@ -102,7 +80,7 @@ export function DiffusionPage() {
   const firsts = useMemo(() => (res?.regions ?? []).map((r) => toDay(r.first)).sort((a, b) => a - b), [res]);
 
   /* Eigene Karte (eigene Engine, unabhängig von der Startseite) */
-  const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: (a) => pickRef.current(a), onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo]);
+  const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo, select]);
   const dark = useDarkMode()[0];
   useEffect(() => {
     engine?.setDark(dark);
@@ -112,7 +90,8 @@ export function DiffusionPage() {
     const detach = engine.attach(stageRef.current!, baseRef.current!, overRef.current!);
     engine.setLocked(false);
     engine.setExplore(true, null);
-    engine.bottomInset = 76;
+    /* Platz für die Zeitleiste unten */
+    engine.setBottomInset(76);
     return detach;
   }, [engine]);
   const allAgs = useMemo(() => (geo ? [...geo.gem.idx.keys()] : []), [geo]);
@@ -124,7 +103,9 @@ export function DiffusionPage() {
     engine.update(levels, picked, null, allAgs, "city");
   }, [engine, res, day, allAgs, picked]);
   useEffect(() => {
-    if (engine && res) res.regions.length ? engine.focusMany(res.regions.flatMap(keysOf)) : engine.focusArea("");
+    if (!engine || !res) return;
+    if (res.regions.length) engine.focusMany(res.regions.flatMap(keysOf));
+    else engine.focusArea("");
   }, [engine, res]);
 
   /* Zeitraffer */
@@ -138,8 +119,8 @@ export function DiffusionPage() {
   const stale = !!res && ranKey !== query;
   const onPlay = () => {
     if (loading) return;
-    if (!hasTerm) return setError("Bitte zuerst ein Thema in die Suche eingeben.");
-    if (!res || stale) return setWant(true);
+    if (!hasTerm) return setHint("Bitte zuerst ein Thema in die Suche eingeben.");
+    if (!res || stale) return start();
     if (day >= lastDay) setDay(firstDay);
     setPlaying((p) => !p);
   };
@@ -158,7 +139,7 @@ export function DiffusionPage() {
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, wann ein Thema in welchem Gebiet zum ersten Mal in den Räten auftauchte, und wie es sich von dort ausbreitete.</p>
       </PageBand>
 
-      <div className="print:hidden"><DiffusionSearch play={play} onPlay={onPlay} onSubmit={() => setWant(true)} /></div>
+      <div className="print:hidden"><DiffusionSearch play={play} onPlay={onPlay} onSubmit={() => start()} /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && !loading && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu analysieren.</p>}
 

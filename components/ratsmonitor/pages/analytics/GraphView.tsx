@@ -58,9 +58,11 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
   const boxRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 800, h: 560 });
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
-  const [, bump] = useState(0);
-  const [hover, setHover] = useState("");
   const sim = useRef<P[]>([]);
+  /* Gezeichnet wird ein Abbild der Simulation (Zustand); gerechnet und gezogen wird in sim (Ref) */
+  const [shown, setShown] = useState<P[]>([]);
+  const draw = () => setShown(sim.current.map((n) => ({ ...n })));
+  const [hover, setHover] = useState("");
   const drag = useRef<{ id: string; moved: boolean } | { pan: true; sx: number; sy: number; vx: number; vy: number } | null>(null);
   const raf = useRef(0);
 
@@ -98,7 +100,9 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
     });
     layout(sim.current, edges, 420);
     fit();
-    bump((v) => v + 1);
+    /* Neue Daten: Startlage mit Zufall und Messung, einmal je Daten gerechnet; das Abbild folgt sofort */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges]);
   useEffect(() => fit(), [size.w, size.h, fit]);
@@ -109,6 +113,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
   }, [zoomRef, fit]);
 
   const pos = (id: string) => sim.current.find((n) => n.id === id);
+  const at = (id: string) => shown.find((n) => n.id === id);
   const toWorld = (cx: number, cy: number) => {
     const r = boxRef.current!.getBoundingClientRect();
     return { x: (cx - r.left - size.w / 2 - view.x) / view.k, y: (cy - r.top - size.h / 2 - view.y) / view.k };
@@ -116,7 +121,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
   const run = () => {
     cancelAnimationFrame(raf.current);
     let n = 0;
-    const step = () => { layout(sim.current, edges, 1, 0.35); bump((v) => v + 1); if (++n < 40) raf.current = requestAnimationFrame(step); };
+    const step = () => { layout(sim.current, edges, 1, 0.35); draw(); if (++n < 40) raf.current = requestAnimationFrame(step); };
     raf.current = requestAnimationFrame(step);
   };
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
@@ -158,7 +163,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
       <svg width={size.w} height={size.h} role="img" aria-label="Themennetz: Begriffe, Themen, Gremien und Länder, die mit dem Suchbegriff zusammenhängen">
         <g transform={`translate(${size.w / 2 + view.x} ${size.h / 2 + view.y}) scale(${view.k})`}>
           {edges.map((e) => {
-            const a = pos(e.a), b = pos(e.b);
+            const a = at(e.a), b = at(e.b);
             if (!a || !b) return null;
             const on = pairOn ? e.a === pair!.a && e.b === pair!.b : focus && (e.a === focus || e.b === focus);
             /* Kanten zu Themen, Gremien und Ländern erscheinen erst, wenn man einen der Knoten wählt */
@@ -166,7 +171,7 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
             const op = e.center ? (on ? 0.5 : 0.07) : outer ? (on ? 0.8 : 0) : focus ? (on ? 0.85 : 0.07) : 0.3 + Math.min(0.45, e.w);
             return <line key={e.a + e.b} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={on ? "#0d9488" : "#94a3b8"} strokeOpacity={op} strokeWidth={e.center ? 1 : 1 + Math.min(4, e.w * 9)} strokeLinecap="round" />;
           })}
-          {sim.current.map((n) => {
+          {shown.map((n) => {
             const k = KIND[n.type], on = lit(n.id), sel = n.id === selected || (pairOn && (n.id === pair!.a || n.id === pair!.b));
             return (
               <g key={n.id} data-node={n.id} transform={`translate(${n.x} ${n.y})`} opacity={on ? 1 : 0.18} style={{ cursor: "pointer" }} onPointerEnter={() => setHover(n.id)} onPointerLeave={() => setHover("")}>

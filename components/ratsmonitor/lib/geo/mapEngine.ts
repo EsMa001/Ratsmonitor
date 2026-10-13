@@ -272,6 +272,10 @@ export class MapEngine {
 
   /** Unten verdeckter Streifen (px, z. B. Suchleiste mit Chips im Kartenmodus): beim Einpassen bleibt er frei, die Gebiete liegen darüber */
   bottomInset = 0;
+  /** Platz unten (px) für Leisten über der Karte, beim Einpassen frei gelassen */
+  setBottomInset(px: number) {
+    this.bottomInset = px;
+  }
 
   private fitView(bb: BBox, pad?: number): View {
     const small = this.W < 640;
