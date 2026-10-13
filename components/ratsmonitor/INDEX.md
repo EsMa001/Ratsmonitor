@@ -690,7 +690,7 @@ topic design-styles.css:140
 - Brand.tsx (274): AnalyticsLogo, Brand
 - ConfirmDialog.tsx (76): confirmDialog, ConfirmDialog
 - CountDots.tsx (9): CountDots
-- DateRangeFilter.tsx (114): DateRangeSelect, DateRangeFields, DateRangeFilter
+- DateRangeFilter.tsx (98): DateRangeSelect, DateRangeFields, DateRangeFilter
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
 - ExportMenu.tsx (55, ⚠1): ExportOption, ExportMenu
@@ -708,6 +708,7 @@ topic design-styles.css:140
 - SearchOverlay.tsx (90): SearchOverlay
 - ShareButton.tsx (40): ShareButton
 - TierNotice.tsx (46): LoginRequired, UsagePill
+- TopicSeed.tsx (11): TopicSeed
 - icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
@@ -747,7 +748,7 @@ topic design-styles.css:140
 - betreiber.ts (20): BETREIBER, betreiberAdresse
 - brand.ts (54): setLogo, useBrand, useBrandText, brandName
 - brands.ts (45): BrandId, BRAND_NAME, LogoId, LOGOS, LOGO_IDS, DEFAULT_LOGO, DEFAULT_BRAND, pageTitle
-- catalog.ts (9): loadCatalog
+- catalog.ts (22): loadCatalog, useCatalog
 - clipboard.ts (26): copyText
 - constants.ts (66, ⚠1): THEMEN, shownThema, StatusInfo, STATUS, STATUS_BY_ID, TEASER_MAX_SENTENCES, isCovered, MAP_COLORS, MAP_COLORS_DARK, colorForCoverageDark, colorForCoverage, colorForCount
 - entitlements.ts (41): useEntitlements
@@ -772,7 +773,7 @@ topic design-styles.css:140
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (84): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, clearSavedArticles, useSavedArticles
-- savedSearch.ts (134, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
+- savedSearch.ts (155, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
 - sha256.ts (47): sha256Fallback, sha256Hex
 - storage.ts (18): NO_STORAGE, clearStoredContent
@@ -792,14 +793,14 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/pages/
 - DetailPage.tsx (177, ⚠12): DetailPage
-- KalenderPage.tsx (363, ⚠3): KalenderPage
+- KalenderPage.tsx (365, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
 - OverviewPage.tsx (55): OverviewPage
 - PersonalPage.tsx (22): PersonalPage
 - PostfachPage.tsx (87): PostfachPage
 - ProfilePage.tsx (114): ProfileSettings, readProfile, ProfilePage
-- SavedArticlesPage.tsx (131, ⚠2): SavedArticlesPage
-- SavedSearchesPage.tsx (318): SavedSearchesPage
+- SavedArticlesPage.tsx (134, ⚠2): SavedArticlesPage
+- SavedSearchesPage.tsx (322): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
 - AnalyticsAbout.tsx (374, ⚠29): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
@@ -838,7 +839,7 @@ topic design-styles.css:140
 - ThemeRadarPage.tsx (210, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (205, ⚠6): TrendsPage
-- useAnalyticsQuery.ts (26): useAnalyticsQuery
+- useAnalyticsQuery.ts (28): useAnalyticsQuery
 
 ### components/ratsmonitor/services/
 - api.ts (8, ⚠1): readSavedSearches, writeSavedSearches

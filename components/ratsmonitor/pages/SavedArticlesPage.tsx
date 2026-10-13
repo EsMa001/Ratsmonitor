@@ -6,6 +6,8 @@ import { StepTimeline } from "../components/results/ArticleCard";
 import type { Article } from "../types";
 import { removeSavedArticle, restoreSavedArticle, useSavedArticles } from "../lib/savedArticles";
 import { useToast } from "../state/toast";
+import { queue } from "../lib/queue";
+import { loadTopic } from "../lib/topicCache";
 import { FollowButton } from "../components/FollowButton";
 import { MONTH_SHORT, fmtDate } from "../lib/text";
 import { useEntitlements } from "../lib/entitlements";
@@ -113,15 +115,16 @@ export function SavedArticlesPage() {
   );
 }
 
+const timelines = queue(4);
 type Step = NonNullable<Article["steps"]>[number];
 /** Lädt den Verlauf eines gespeicherten Vorgangs (Sitzungen mit Datum, Gremium und Stand) */
 function Verlauf({ id, fallback }: { id: string; fallback?: string }) {
   const [steps, setSteps] = useState<Step[] | null>(null);
   useEffect(() => {
     const ctrl = new AbortController();
-    fetch("/api/topics/" + encodeURIComponent(id), { signal: ctrl.signal })
-      .then((r) => (r.ok ? (r.json() as Promise<{ events?: { date?: string; status?: string; committee?: string }[] }>) : null))
-      .then((t) => setSteps((t?.events ?? []).filter((e) => e.date).map((e) => ({ d: e.date!.slice(0, 10), s: e.status ?? "", c: e.committee ?? "" })).sort((x, y) => (x.d < y.d ? -1 : 1))))
+    /* Über den Zwischenspeicher der Detailseite (lib/topicCache.ts), höchstens vier Abrufe zugleich */
+    timelines(() => loadTopic(id), ctrl.signal)
+      .then((t) => !ctrl.signal.aborted && setSteps(t.events.filter((e) => e.date).map((e) => ({ d: e.date!.slice(0, 10), s: e.status ?? "", c: e.committee ?? "" })).sort((x, y) => (x.d < y.d ? -1 : 1))))
       .catch(() => {});
     return () => ctrl.abort();
   }, [id]);

@@ -1,27 +1,9 @@
 import { useSyncExternalStore } from "react";
-import { rangeLabel } from "../lib/savedSearch";
+import { presetOf, RANGE_PRESETS, rangeLabel, resolveRange } from "../lib/savedSearch";
 import { useSearch } from "../state/search";
 import { FilterSelect } from "./FilterSelect";
 import { IconCalendar } from "./icons";
 
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-const daysAgo = (n: number) => iso(new Date(Date.now() - n * 864e5));
-
-interface Preset {
-  id: string;
-  label: string;
-  von: () => string;
-  bis: () => string;
-}
-const YEAR = new Date().getFullYear();
-const PRESETS: Preset[] = [
-  { id: "d7", label: "Letzte 7 Tage", von: () => daysAgo(7), bis: () => daysAgo(0) },
-  { id: "d30", label: "Letzte 30 Tage", von: () => daysAgo(30), bis: () => daysAgo(0) },
-  { id: "d91", label: "Letzte 3 Monate", von: () => daysAgo(91), bis: () => daysAgo(0) },
-  { id: "d365", label: "Letzte 12 Monate", von: () => daysAgo(365), bis: () => daysAgo(0) },
-  { id: "y0", label: `Dieses Jahr (${YEAR})`, von: () => `${YEAR}-01-01`, bis: () => `${YEAR}-12-31` },
-  { id: "y1", label: `Letztes Jahr (${YEAR - 1})`, von: () => `${YEAR - 1}-01-01`, bis: () => `${YEAR - 1}-12-31` },
-];
 const CUSTOM = "custom";
 
 /* „Zeitraum wählen“ ist offen: gemeinsam gemerkt, weil Auswahlfeld (Kopfzeile) und Datumsfelder (darunter) getrennt sitzen können */
@@ -42,7 +24,7 @@ function useZeitraum() {
   const search = useSearch();
   const { von, bis } = search.state;
   const custom = useCustom();
-  const preset = PRESETS.find((p) => von === p.von() && bis === p.bis());
+  const preset = presetOf(von);
   /* „Zeitraum wählen“ hat Vorrang, auch wenn die Daten zufällig zu einer Schnellauswahl passen */
   const value = custom ? CUSTOM : preset ? preset.id : von || bis ? CUSTOM : "";
   return { search, von, bis, value };
@@ -58,10 +40,10 @@ export function DateRangeSelect({ withIcon = true }: { withIcon?: boolean }) {
     } else if (v === CUSTOM) {
       setCustom(true);
     } else {
-      const p = PRESETS.find((x) => x.id === v);
+      const p = RANGE_PRESETS.find((x) => x.id === v);
       if (p) {
         setCustom(false);
-        search.setZeitraum(p.von(), p.bis());
+        search.setZeitraum("@" + p.id, "");
       }
     }
   };
@@ -74,7 +56,7 @@ export function DateRangeSelect({ withIcon = true }: { withIcon?: boolean }) {
           label="Zeitraum"
           allLabel="Gesamter Zeitraum"
           value={value}
-          options={[...PRESETS.map((p) => ({ value: p.id, label: p.label })), { value: CUSTOM, label: value === CUSTOM && (von || bis) ? rangeLabel(von, bis) : "Zeitraum wählen …" }]}
+          options={[...RANGE_PRESETS.map((p) => ({ value: p.id, label: p.id === "y0" || p.id === "y1" ? `${p.label} (${p.range()[0].slice(0, 4)})` : p.label })), { value: CUSTOM, label: value === CUSTOM && (von || bis) ? rangeLabel(...resolveRange(von, bis)) : "Zeitraum wählen …" }]}
           onChange={onChange}
           /* Pfeil etwas weiter links, damit er nicht am Rand klebt */
           className="min-w-0 [&_button]:!w-full [&_button]:!min-w-0 [&_button]:!max-w-none [&_svg]:!right-5"
@@ -86,8 +68,10 @@ export function DateRangeSelect({ withIcon = true }: { withIcon?: boolean }) {
 
 /** Von/Bis mit dem Datumswähler des Geräts, nur bei „Zeitraum wählen“ */
 export function DateRangeFields() {
-  const { search, von, bis, value } = useZeitraum();
+  const { search, value, ...raw } = useZeitraum();
   if (value !== CUSTOM) return null;
+  /* Nach einer Schnellauswahl zeigen die Felder deren Daten; geändert wird daraus ein fester Zeitraum */
+  const [von, bis] = resolveRange(raw.von, raw.bis);
   /* Von nach Bis (oder umgekehrt) angleichen, damit der Zeitraum nie leer läuft */
   const setVon = (v: string) => search.setZeitraum(v, bis && v && v > bis ? v : bis);
   const setBis = (v: string) => search.setZeitraum(von && v && v < von ? v : von, v);

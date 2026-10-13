@@ -6,7 +6,7 @@ import type { FilterSpec } from "../lib/filter";
 import type { MapEngine } from "../lib/geo/mapEngine";
 import type { ParseResult, PlaceHit } from "../lib/place";
 import { applySearchState, clearAreaState, commitPlacesState, deriveFilters } from "../lib/searchLogic";
-import { canonicalQuery, hasScope, queryText, signature, type SearchSnapshot } from "../lib/savedSearch";
+import { canonicalQuery, hasScope, queryText, resolveRange, signature, type SearchSnapshot } from "../lib/savedSearch";
 import { terms as toTerms, todayLocal } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
@@ -390,8 +390,8 @@ function computeLocal(state:SearchState,geo:DataValue['geo'],place:DataValue['pl
   /* Kreisfreie Städte (Kreisschlüssel ohne Umfangwahl) zählen immer mit ihrer Stadt; mit Umkreis ist das Gebiet nur dessen Mittelpunkt; gesucht wird in allen Gebieten im Umkreis */
   const area=state.radius?'':state.area;
   /* Ohne „inkl. Zukunft“ endet der Zeitraum heute (sofern kein eigenes Enddatum gesetzt ist) */
-  const today=todayLocal(),to=state.bis||(state.future?'':today);
-  const params=new URLSearchParams({q:canonicalQuery(queryText(text,state.allterms)),area,label:state.thema,month:state.monat,from:state.von,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
+  const today=todayLocal(),[from,bis]=resolveRange(state.von,state.bis),to=bis||(state.future?'':today);
+  const params=new URLSearchParams({q:canonicalQuery(queryText(text,state.allterms)),area,label:state.thema,month:state.monat,from,to,scope:area?(area.length===5&&!hasScope(area,geo)?"with":state.scope):"with",status:state.status,level:state.level,sort:state.sort});
   /* Ohne Suche und ohne Filter zeigt die Liste unter der Karte alle Einträge bis heute (jeder Status); Formalien bleiben sichtbar, bis „Formalien ausblenden“ eingeschaltet wird */
   const leer=!text.trim()&&!state.q.trim()&&!area&&!state.radius&&!state.thema&&!state.status&&!state.monat&&!state.von&&!state.bis&&!more.length&&!state.future&&!state.exact&&!state.allterms;
   if(state.noformal)params.set('noformal','1');

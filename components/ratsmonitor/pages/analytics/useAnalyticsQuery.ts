@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { REGIONS } from "@/shared/regions";
+import { useCatalog } from "../../lib/catalog";
 import { radiusParam } from "@/shared/radius-areas.mjs";
 import { useData } from "../../state/data";
 import { useSearch, useSearchResults } from "../../state/search";
@@ -9,17 +9,19 @@ export function useAnalyticsQuery() {
   const { geo } = useData();
   const search = useSearch();
   const results = useSearchResults();
+  /* Katalog nur mit Umkreis laden; bis er da ist, fragt die Seite ohne die Umkreisgrenze (wenige 100 ms) */
+  const regions = useCatalog(!!search.state.radius);
   const query = useMemo(() => {
     const p = new URLSearchParams(results.key);
     for (const k of ["around", "sort", "size", "page", "part"]) p.delete(k);
     p.set("level", "city");
     const r = search.state.radius;
-    if (r && geo) {
+    if (r && geo && regions) {
       const set = geo.within(r).set;
       if (!set) p.set("within", "");
-      else { const [name, keys] = radiusParam(REGIONS.filter((x) => x.kind === "city"), set, null); p.set(name, keys); }
+      else { const [name, keys] = radiusParam(regions.filter((x) => x.kind === "city"), set, null); p.set(name, keys); }
     }
     return p.toString();
-  }, [results.key, search.state.radius, geo]);
+  }, [results.key, search.state.radius, geo, regions]);
   return { query, hasTerm: results.text.trim().length > 0, search };
 }

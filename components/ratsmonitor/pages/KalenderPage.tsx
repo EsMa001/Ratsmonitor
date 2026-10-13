@@ -3,7 +3,7 @@ import { IconCalendarSync, IconDownload } from "../components/icons";
 import { FilterSelect } from "../components/FilterSelect";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { REGIONS } from "@/shared/regions";
+import { useCatalog } from "../lib/catalog";
 import { PageHead } from "../info/blocks";
 import { useData } from "../state/data";
 import { useAccount } from "../state/account";
@@ -111,11 +111,13 @@ export function KalenderPage() {
   /* Gebiet hinzufügen: Namenssuche über alle auswählbaren Gebiete */
   const [find, setFind] = useState("");
   const [km, setKm] = useState(0);
+  /* Gebietskatalog erst laden, wenn jemand ein Gebiet sucht oder Gebiete eingetragen sind (Namen ohne Karte) */
+  const regions = useCatalog(find.trim().length >= 2 || cfg.areas.length > 0);
   const matches = useMemo(() => {
     const q = norm(find.trim());
-    if (q.length < 2) return [];
-    return REGIONS.filter((r) => norm(r.name).includes(q)).slice(0, 6);
-  }, [find]);
+    if (q.length < 2 || !regions) return [];
+    return regions.filter((r) => norm(r.name).includes(q)).slice(0, 6);
+  }, [find, regions]);
   const add = (ags: string, name: string, radius = km) => {
     if (cfg.areas.some((a) => a.ags === ags && a.km === radius)) return;
     save({ ...cfg, areas: [...cfg.areas, { ags, name, km: radius }] });
@@ -130,7 +132,7 @@ export function KalenderPage() {
 
   const monthLabel = month.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
   const dayLabel = day ? new Date(day + "T00:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" }) : "";
-  const regionName = (ags: string) => geo?.info(ags).name ?? REGIONS.find((r) => r.ags === ags)?.name ?? ags;
+  const regionName = (ags: string) => geo?.info(ags).name ?? regions?.find((r) => r.ags === ags)?.name ?? ags;
 
   /* Nur Enterprise: alle anderen sehen, was der Kalender kann, und den Weg zum Tarif */
   if (!limits.calendar) return <KalenderTeaser />;

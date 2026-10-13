@@ -16,9 +16,13 @@ import type { Article, NotifyFreq, SavedSearch } from "../types";
 import { MONTH_SHORT, todayLocal } from "../lib/text";
 import { digestMail, type DigestPart, type MailItem } from "../lib/mails";
 import { useToast } from "../state/toast";
+import { queue } from "../lib/queue";
 
 type Item = { id: string; title: string; date: string; gemeinde: string; gremium: string; teaser: string; status: Article["status"] };
 type Preview = { total: number; items: Item[] } | null;
+
+/* Vorschauen nacheinander, höchstens vier zugleich */
+const previews = queue(4);
 
 /** Die neuesten Treffer einer gespeicherten Suche, mit genau der Abfrage, die beim Öffnen läuft (savedSearchQuery) */
 function usePreview(s: SavedSearch): Preview | "error" {
@@ -30,7 +34,7 @@ function usePreview(s: SavedSearch): Preview | "error" {
     if (!geo || !place) return;
     const ctrl = new AbortController();
     savedSearchQuery(s, geo, place)
-      .then((q) => (q === null ? Promise.reject(new Error("karte")) : fetchJson<{ total?: number; articles?: Item[] }>(`/api/search?${q}&page=1`, { signal: ctrl.signal })))
+      .then((q) => (q === null ? Promise.reject(new Error("karte")) : previews(() => fetchJson<{ total?: number; articles?: Item[] }>(`/api/search?${q}&page=1`, { signal: ctrl.signal }), ctrl.signal)))
       .then((r) => setData({ total: r.total ?? 0, items: (r.articles ?? []).slice(0, 10) }))
       .catch(() => !ctrl.signal.aborted && setData("error"));
     return () => ctrl.abort();

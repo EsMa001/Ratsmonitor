@@ -1,7 +1,7 @@
 import type { SavedSearch, StatusId } from "../types";
 import { STATUS_BY_ID } from "./constants";
 import type { GeoModel } from "./geo/geoModel";
-import { monthLabel, norm } from "./text";
+import { monthLabel, norm, todayLocal } from "./text";
 
 export interface SearchSnapshot {
   q: string;
@@ -89,8 +89,29 @@ export function filterChips(s: SearchSnapshot, geo: GeoModel | null): FilterChip
   return out;
 }
 
+/** Schnellauswahl des Zeitraums. Sie wird als Kürzel in „von“ gespeichert („@d7“, „bis“ leer) und erst bei der Abfrage in
+ *  Daten umgerechnet (resolveRange): So bleibt „Letzte 7 Tage“ in gespeicherten Suchen und Benachrichtigungen relativ. */
+export interface RangePreset { id: string; label: string; range: () => [string, string] }
+const thisYear = () => new Date().getFullYear();
+export const RANGE_PRESETS: RangePreset[] = [
+  { id: "d7", label: "Letzte 7 Tage", range: () => [todayLocal(-7), todayLocal()] },
+  { id: "d30", label: "Letzte 30 Tage", range: () => [todayLocal(-30), todayLocal()] },
+  { id: "d91", label: "Letzte 3 Monate", range: () => [todayLocal(-91), todayLocal()] },
+  { id: "d365", label: "Letzte 12 Monate", range: () => [todayLocal(-365), todayLocal()] },
+  { id: "y0", label: "Dieses Jahr", range: () => [`${thisYear()}-01-01`, `${thisYear()}-12-31`] },
+  { id: "y1", label: "Letztes Jahr", range: () => [`${thisYear() - 1}-01-01`, `${thisYear() - 1}-12-31`] },
+];
+export const presetOf = (von = "") => (von.startsWith("@") ? RANGE_PRESETS.find((p) => "@" + p.id === von) : undefined);
+/** Von und bis als Daten (JJJJ-MM-TT): Kürzel der Schnellauswahl umgerechnet, feste Daten unverändert */
+export function resolveRange(von = "", bis = ""): [string, string] {
+  const p = presetOf(von);
+  return p ? p.range() : von.startsWith("@") ? ["", bis] : [von, bis];
+}
+
 const deDate = (d: string) => d.split("-").reverse().join(".");
 export function rangeLabel(von = "", bis = ""): string {
+  const p = presetOf(von);
+  if (p) return p.label;
   return von && bis ? `${deDate(von)} – ${deDate(bis)}` : von ? `ab ${deDate(von)}` : `bis ${deDate(bis)}`;
 }
 
