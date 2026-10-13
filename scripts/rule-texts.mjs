@@ -1,15 +1,15 @@
 // Regelbasierte Texte (Job „rule-texts“, Admin-Reiter „Regelbasierte Texte“ und „Jobs & Zeitpläne“): erzeugt aus den Texten der
 // PDF-Ablage, was sich ohne KI daraus ableiten lässt. Getrennt vom PDF-Import (Entscheidung 13.10.2026): der lädt, speichert und
 // liest nur (Textebene, OCR); hier entstehen die Inhalte. Reihenfolge fest:
-//   1. pdf-store/summaries.mjs   Regel-Zusammenfassung für Berichte ohne, deren Hauptdokument als Text vorliegt
-//   2. pdf-store/facts.mjs       Fakten für plenara.X
-//   3. refresh-search-words.mjs  Wortliste nachführen, nur wenn Zusammenfassungen geschrieben wurden (sie ändern den Suchtext)
+//   1. pdf-store/read-reports.mjs  alle Regeln je Bericht in einem Durchlauf (readReport): Art des Punkts, Thema,
+//                                  Regel-Zusammenfassung, Fakten; nur Berichte mit geänderten Eingaben (report_rules)
+//   2. refresh-search-words.mjs    Wortliste nachführen, nur wenn Berichte gelesen wurden (die Zusammenfassung ändert den Suchtext)
 // Ergebnis je Schritt in system_state 'rule-texts-last' (Anzeige im Reiter). Scheitert ein Schritt, laufen die übrigen weiter
 // (Exit 1). Anhalten: SIGTERM/SIGINT (systemctl stop, Knopf „Anhalten“) geht an den laufenden Schritt, die übrigen entfallen (Exit 3).
 //
 //   node scripts/rule-texts.mjs [--all] [--dry-run]
-// --all oder Wunsch „Alle neu erstellen“ (system_state 'rule-texts-all'): alle Zusammenfassungen neu (summaries.mjs --all) und
-// die Wortliste voll neu (--full); der Wunsch wird beim Start gelöscht. Fakten schreibt facts.mjs ohnehin jedes Mal ganz.
+// --all oder Wunsch „Alle neu erstellen“ (system_state 'rule-texts-all'): alle Berichte neu lesen (read-reports.mjs --all) und
+// die Wortliste voll neu (--full); der Wunsch wird beim Start gelöscht.
 // Umgebung: DATABASE_FILE (Server), RM_PDF_STORE (Ablage).
 import fs from 'node:fs';
 import os from 'node:os';
@@ -54,8 +54,7 @@ async function step(name,script,stepArgs=[]){
 const skip=(name,why)=>{say(`${name} ausgelassen (${why})`);steps.push({name,seconds:0,ok:true,summary:{skipped:why}});};
 
 if(all)say('Alle neu erstellen');
-const sum=await step('Zusammenfassungen','scripts/pdf-store/summaries.mjs',all?['--all']:[]);
-await step('Fakten','scripts/pdf-store/facts.mjs');
+const sum=await step('Regeln je Bericht','scripts/pdf-store/read-reports.mjs',all?['--all']:[]);
 /* Stand der Fakten für den Reiter (einmal je Lauf gezählt, damit die Seite beim Öffnen nichts rechnet): Berichte mit Fakten,
    davon aus dem Text des Hauptdokuments, in der aktuellen Fassung der Regeln */
 let facts=null;
@@ -66,7 +65,7 @@ if(!dry)try{
 }catch(e){say('Fakten zählen:',e.message);}
 if(!dry){
  if(all)await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet','--full']);
- else if(sum&&!sum.withText)skip('Wortliste','keine Zusammenfassung geschrieben');
+ else if(sum&&!sum.read)skip('Wortliste','kein Bericht neu gelesen');
  else await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
 }else await step('Wortliste','scripts/refresh-search-words.mjs',all?['--quiet','--full']:['--quiet']);
 

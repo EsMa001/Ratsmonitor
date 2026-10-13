@@ -6,7 +6,6 @@
 //   4. Regel-Zusammenfassung kurz und lang (rule-summary.mjs), wie im Import
 //   5. Fakten für plenara.X (shared/topic-facts.mjs)
 // Der Schlüssel (key) fasst alle Eingaben zusammen; gleicher Schlüssel heißt: nichts neu zu rechnen.
-import {createHash} from 'node:crypto';
 import {primaryPdf,sessionDocument,DOC_TYPE_VERSION} from '../../shared/document-type.mjs';
 import {itemKind,ITEM_KIND_VERSION} from '../../shared/item-kind.mjs';
 import {themeOf,subjectOf,THEMES_VERSION} from '../../shared/themes.mjs';
@@ -27,9 +26,19 @@ export function mainDocument(documents,{uses=()=>0,hasText=null}={}){
  return doc?{doc,session:sessionDocument(doc,uses(doc.url))}:{doc:null,session:false};
 }
 
+// Prüfsumme ohne node:crypto (das Modul läuft auch im Import-Bundle): zwei 53-Bit-Hashes (cyrb53) mit verschiedenen Startwerten.
+// Dient nur dem Erkennen geänderter Eingaben, nicht der Sicherheit.
+function cyrb53(str,seed){
+ let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;
+ for(let i=0;i<str.length;i++){const ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}
+ h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+ h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+ return (4294967296*(2097151&h2)+(h1>>>0)).toString(16).padStart(14,'0');
+}
 /** Schlüssel aller Eingaben: Regelfassung, Titel, Hauptdokument, Sitzungsunterlage, Textstand. */
 export function readKey({title,mainUrl,session,textSha}){
- return createHash('sha256').update([READ_VERSION,title||'',mainUrl||'',session?1:0,textSha||''].join('\u0001')).digest('hex').slice(0,24);
+ const s=[READ_VERSION,title||'',mainUrl||'',session?1:0,textSha||''].join('\u0001');
+ return cyrb53(s,1)+cyrb53(s,2);
 }
 
 /**

@@ -16,6 +16,7 @@ function stepNote(s:Step){
  if(x.skipped)return 'ausgelassen ('+x.skipped+')';
  if(!s.ok)return 'Fehler';
  if(s.name==='Zusammenfassungen'&&typeof x.summaries==='number')return n(x.summaries)+' neue von '+n(Number(x.withText)||0)+' mit Text';
+ if(s.name==='Regeln je Bericht'&&typeof x.read==='number')return n(x.read)+' Berichte neu gelesen, davon '+n(Number(x.withText)||0)+' mit Text, '+n(Number(x.summaries)||0)+' mit Zusammenfassung';
  return 'fertig';
 }
 const n=(v:number)=>v.toLocaleString('de-DE');

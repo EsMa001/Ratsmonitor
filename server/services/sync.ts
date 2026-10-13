@@ -14,7 +14,8 @@ import {metadataChanged,stableJson} from '@/shared/article-record.mjs';
 import {batches} from '../integrations/batches.mjs';
 import {refreshSearchWords} from '../integrations/search-words.mjs';
 import {rollCardDates} from '../integrations/search-card-dates.mjs';
-import {factsOf,FACTS_VERSION} from '../../shared/topic-facts.mjs';
+import {FACTS_VERSION} from '../../shared/topic-facts.mjs';
+import {readReport} from '../integrations/report-rules.mjs';
 import {refreshRegionFacts} from '../integrations/region-facts.mjs';
 import {REGIONS} from '@/shared/regions';
 import { env } from 'cloudflare:workers';
@@ -107,14 +108,15 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
         continue;
     /* KI-Zusammenfassung: zusätzlich die Regel-Zusammenfassung aus dem Hauptdokument, ohne KI (Entscheidung 12.10.2026); nur
        ruleSummary wird geschrieben (withRuleSummary), einmal je Regelfassung. Die Nachtkette der PDF-Ablage versucht es mit
-       ihrem Text erneut (summaries.mjs merkt sich die Prüfsumme des Texts statt „import“). */
+       ihrem Text erneut (read-reports.mjs, Schlüssel in report_rules). */
     if (ai) {
         if (old.ruleSummary || String(old.ruleSummaryTried || '').startsWith(`${RULE_SUMMARY_VERSION}:`))
             continue;
         let t = old;
         try { t = await enrichDocument({ ...old }, undefined, { uses: (url: string) => uses.get(url) || 0 }); }
         catch { /* Dokument nicht lesbar: als Versuch gemerkt */ }
-        await env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(withRuleSummary(old, t, `${RULE_SUMMARY_VERSION}:import`)), old.id).run();
+        const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: (t as any).readText ? [(t as any).readText] : null, at: started });
+        await env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify({ ...withRuleSummary(old, t, `${RULE_SUMMARY_VERSION}:import`), itemKind: rules.itemKind, theme: rules.theme }), old.id).run();
         processed++;
         if (processed >= 8)
             break;
@@ -137,6 +139,12 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
         t.quality = await qualityCheck(t);
     const u=(t as any).aiUsage;
     const compact=await compactSummaryAttempt(old,t,started);
+    /* Art des Punkts, Thema und Fakten aus denselben Regeln wie der Job rule-texts (readReport, report-rules.mjs) mit dem hier
+       gelesenen Text; readText geht nicht in den Payload (compactSummaryAttempt übernimmt es nicht). Der Job liest den Bericht
+       später noch einmal mit dem Text der Ablage (report_rules kennt diesen Lauf nicht), mit gleichem Ergebnis. */
+    const readText: string = (t as any).readText || '';
+    const rules = readReport(old, { uses: (url: string) => uses.get(url) || 0, pages: readText ? [readText] : null, at: started });
+    compact.topic.itemKind = rules.itemKind; compact.topic.theme = rules.theme;
     await env.DB.batch([
       // Keine Versionskopie: die Zusammenfassung steht in article_analyses (Art 'summary'). Gescheiterte Versuche ersetzen
       // einander (höchstens einer je Bericht), gelungene KI-Zusammenfassungen bleiben.
@@ -145,12 +153,11 @@ async function refreshSummaries(id: string, started: string,region:string) { if 
       env.DB.prepare('UPDATE topics SET payload=? WHERE id=?').bind(JSON.stringify(compact.topic),old.id),
       ...(u?[insertUsage(env.DB,{...u,topicId:old.id,regionId:region})]:[])
     ]);
-    /* Fakten für plenara.X (Fraktion, Förderprogramme) aus Titel und gelesenem Text; readText geht nicht in den Payload
-       (compactSummaryAttempt übernimmt es nicht). Ohne Migration 0025 schlägt es fehl und wird übergangen. */
+    /* Fakten für plenara.X (readReport oben). Ohne Migration 0025 schlägt es fehl und wird übergangen. */
     try {
-      const db = env.DB!, text: string = (t as any).readText || '', facts = factsOf(old.officialTitle || old.title || '', text);
+      const db = env.DB!;
       await db.batch([db.prepare("DELETE FROM topic_facts WHERE topic_id=? AND method LIKE 'facts-%'").bind(old.id),
-        ...facts.map((x) => db.prepare('INSERT OR REPLACE INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)').bind(old.id, x.kind, x.value, x.detail, `${FACTS_VERSION}:${text ? 'text' : 'title'}`))]);
+        ...rules.facts.map((x) => db.prepare('INSERT OR REPLACE INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)').bind(old.id, x.kind, x.value, x.detail, `${FACTS_VERSION}:${readText ? 'text' : 'title'}`))]);
     } catch { /* nicht wichtig für die Zusammenfassung */ }
     processed++;
     if (processed >= 8)
