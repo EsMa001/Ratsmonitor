@@ -22,6 +22,14 @@ if (command === "dev" && !process.env.RM_SKIP_ADMIN_REFRESH) {
   } catch { /* Hilfe beim Start, kein Muss */ }
 }
 
+// Dev: Knöpfe der Administration, die Server-Jobs anfordern, lokal ausführen (scripts/dev-jobs.mjs, alle 15 s, endet mit
+// diesem Prozess; Ausgabe tmp/dev-jobs.log). Geplante Zeiten laufen lokal nicht. Mit RM_SKIP_DEV_JOBS=1 passiert nichts.
+if (command === "dev" && !process.env.RM_SKIP_DEV_JOBS) {
+  try {
+    spawn(process.execPath, ["--no-warnings", fileURLToPath(new URL("./dev-jobs.mjs", import.meta.url)), String(process.pid)], { stdio: "ignore", detached: true, cwd: fileURLToPath(new URL("..", import.meta.url)) }).unref();
+  } catch { /* Hilfe beim Start, kein Muss */ }
+}
+
 // Import in this process so the preview owner retains its PID and signals.
 const cli = new URL("../node_modules/vinext/dist/cli.js", import.meta.url);
 process.argv = [process.execPath, fileURLToPath(cli), command,

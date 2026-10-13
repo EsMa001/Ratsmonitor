@@ -8,7 +8,7 @@ type Counts={online:number;aiSummaries:number;ruleSummaries:number;ruleScoreSum:
 type Summary={counts:Counts;stand?:Stand;statsPending?:number};
 type Step={name:string;seconds:number;ok:boolean;summary:Record<string,unknown>|null};
 type Facts={version:string;reports:number;fromText:number;stale:number};
-type JobState={setting:{enabled:boolean;time?:string};run:{lastStart?:string;lastEnd?:string;seconds?:number;result?:string;running?:{startedAt:string}|null}|null;now:string|null;next:string|null;last?:{finishedAt:string;result:string;steps:Step[];facts?:Facts|null}|null};
+type JobState={setting:{enabled:boolean;time?:string};run:{lastStart?:string;lastEnd?:string;seconds?:number;result?:string;running?:{startedAt:string}|null}|null;now:string|null;next:string|null;last?:{finishedAt:string;result:string;all?:boolean;steps:Step[];facts?:Facts|null}|null;all?:{requestedAt:string}|null};
 const RESULT:Record<string,string>={ok:'fertig',done:'fertig',failed:'mit Fehler',stopped:'angehalten'};
 /** Kurzfassung eines Schritts aus seiner Zusammenfassung */
 function stepNote(s:Step){
@@ -40,10 +40,11 @@ export function AdminRuleTexts(){
  /* Berichte mit Text im Hauptdokument und wie viele davon eine Zusammenfassung haben (Zählung der PDF-Ablage, stats.mjs) */
  const [pdfSum,setPdfSum]=useState<{done:number;withText:number}|null>(null);
  useEffect(()=>{fetch('/api/admin/pdf-ablage',{cache:'no-store'}).then(r=>r.ok?r.json() as Promise<{stats?:{summaries?:{done:number;withText:number}}}>:null).then(d=>setPdfSum(d?.stats?.summaries||null)).catch(()=>{/* Kennzahl bleibt leer */});},[]);
- const start=async()=>{
-  if(!window.confirm('Zusammenfassungen, Fakten und Wortliste jetzt erstellen? Der Job startet sofort.'))return;
+ /* all: alle Zusammenfassungen neu (auch vorhandene) und die Wortliste voll neu, sonst nur Neues */
+ const start=async(all=false)=>{
+  if(!window.confirm(all?'Alle regelbasierten Zusammenfassungen, Fakten und die Wortliste neu erstellen? Vorhandene Regel-Zusammenfassungen werden ersetzt; liefern die heutigen Regeln nichts, fallen sie weg. KI-Texte bleiben. Das dauert deutlich länger als ein normaler Lauf.':'Zusammenfassungen, Fakten und Wortliste jetzt erstellen? Der Job startet sofort.'))return;
   setAsking(true);
-  try{const r=await fetch('/api/admin/zeitplaene',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'now',id:'rule-texts'})});const d=await r.json() as {error?:string};if(!r.ok)throw Error(d.error||'Das ging nicht.');await loadJob();}
+  try{const r=await fetch('/api/admin/zeitplaene',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:all?'all':'now',id:'rule-texts'})});const d=await r.json() as {error?:string};if(!r.ok)throw Error(d.error||'Das ging nicht.');await loadJob();}
   catch(e){setJobError(e instanceof Error?e.message:'Das ging nicht.');}
   finally{setAsking(false);}
  };
@@ -77,11 +78,13 @@ export function AdminRuleTexts(){
    <p className="admin-note">Aus den Texten der PDF-Ablage entstehen nach festen Regeln, ohne KI: Zusammenfassungen für Berichte ohne, Fakten für plenara.X und die Wortliste der Suche (nur wenn Zusammenfassungen dazukamen; gesucht wird in deren Kurzfassung, nicht in der Langfassung). Der PDF-Import lädt und liest nur.</p>
    {jobError&&<Alert onRetry={loadJob}>{jobError}</Alert>}
    <ul className="m-0 mt-4 list-none space-y-1.5 p-0 text-[14px] text-slate-700">
-    <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}
+    <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}${job.last?.all?' (alle neu)':''}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}
      {job&&(job.setting.enabled?` Nächster Start ${when(job.next)} (täglich ${job.setting.time} Uhr, einstellbar unter Jobs & Zeitpläne).`:' Zeitplan ausgeschaltet (Jobs & Zeitpläne).')}</li>
     {job?.last?.steps.map(st=><li key={st.name}><span className="text-slate-500">{st.name}: </span>{stepNote(st)}, {dur(st.seconds)}</li>)}
    </ul>
-   <button type="button" className="mt-4 inline-flex h-10 items-center rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white hover:bg-slate-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={start}>Jetzt erstellen →</button>
+   <button type="button" className="mt-4 inline-flex h-10 items-center rounded-full bg-slate-900 px-5 text-[14px] font-medium text-white hover:bg-slate-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start()}>Jetzt erstellen →</button>
+   <button type="button" className="ml-3 mt-4 inline-flex h-10 items-center rounded-full px-5 text-[14px] font-medium text-teal-600 hover:text-teal-700 disabled:opacity-40" disabled={!job||running||requested||asking} onClick={()=>start(true)}>Alle neu erstellen →</button>
+   <p className="mt-2 text-[12px] text-slate-500">„Jetzt erstellen“ fasst nur Neues an. „Alle neu erstellen“ rechnet jede Regel-Zusammenfassung mit den heutigen Regeln neu und baut die Wortliste ganz neu auf, etwa nach geänderten Regeln.{job?.all&&requested?' Neu erstellen angefordert.':''}</p>
   </section>
   <section id="regeltexte-zusammenfassungen" className="admin-section">
    <div className="admin-section-heading"><h2>Zusammenfassungen</h2></div>
