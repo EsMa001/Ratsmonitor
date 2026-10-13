@@ -2,18 +2,20 @@
 // liest nur Quellen (Titel, Dokumentliste, Text des Hauptdokuments), nie das Ergebnis einer anderen Regel, in fester Reihenfolge:
 //   1. Hauptdokument und Sitzungsunterlage (shared/document-type.mjs)
 //   2. Art des Punkts (shared/item-kind.mjs); nur Sachpunkte bekommen Thema und Sachfakten
-//   3. Thema und Unterthemen aus Titel, Betreff und Beschlussvorschlag (shared/themes.mjs), nicht aus der Zusammenfassung
+//   3. Thema und Unterthemen aus Titel, Betreff und Beschlussvorschlag (shared/themes.mjs), nicht aus der Zusammenfassung;
+//      „Was geschieht“ aus dem Titel (shared/stage.mjs)
 //   4. Regel-Zusammenfassung kurz und lang (rule-summary.mjs), wie im Import
 //   5. Fakten für plenara.X (shared/topic-facts.mjs)
 // Der Schlüssel (key) fasst alle Eingaben zusammen; gleicher Schlüssel heißt: nichts neu zu rechnen.
 import {primaryPdf,sessionDocument,DOC_TYPE_VERSION} from '../../shared/document-type.mjs';
 import {itemKind,ITEM_KIND_VERSION} from '../../shared/item-kind.mjs';
 import {themeOf,subjectOf,THEMES_VERSION} from '../../shared/themes.mjs';
+import {stageOf,STAGE_VERSION} from '../../shared/stage.mjs';
 import {factsOf,FACTS_VERSION} from '../../shared/topic-facts.mjs';
 import {buildRuleSummary,RULE_SUMMARY_VERSION} from './rule-summary.mjs';
 import {mergePages} from './documents.mjs';
 
-export const READ_VERSION=`read-v2:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;
+export const READ_VERSION=`read-v3:doc${DOC_TYPE_VERSION}:${ITEM_KIND_VERSION}:${THEMES_VERSION}:${STAGE_VERSION}:sum${RULE_SUMMARY_VERSION}:${FACTS_VERSION}`;
 // Wie readDocument im Import: sehr lange Dokumente werden nicht zusammengefasst, der Text ist für die Zusammenfassung gekürzt
 const MAX_PAGES=150,MAX_SUMMARY_CHARS=65000,MIN_CHARS=100;
 // Fakten, die auch Punkte ohne Sachthema tragen (Fraktion im Titel eines Antrags)
@@ -55,6 +57,8 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  const kind=itemKind(title);
  // 3. Thema
  const theme=kind==='subject'?themeOf({title,subject:text?subjectOf(text):''}):{theme:'offen',subs:[],source:'formal'};
+ // Was geschieht: nur bei Sachpunkten
+ const stage=kind==='subject'?stageOf({title}):null;
  // 4. Zusammenfassung
  let ruleSummary=null,summaryIssue=null;
  if(!doc)summaryIssue='no-document';
@@ -68,7 +72,7 @@ export function readReport(report,{uses=()=>0,hasText=null,pages=null,textSha=''
  const facts=factsOf(title,text).filter(f=>kind==='subject'||ALWAYS_FACTS.has(f.kind));
  return {
   version:READ_VERSION,key:readKey({title,mainUrl:doc?.url,session,textSha}),
-  mainUrl:doc?.url||null,session,itemKind:kind,
+  mainUrl:doc?.url||null,session,itemKind:kind,stage,
   theme:{id:theme.theme,subs:theme.subs,source:theme.source,version:THEMES_VERSION,evidence:title},
   ruleSummary,summaryIssue,facts,
  };

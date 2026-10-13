@@ -1,0 +1,906 @@
+{
+ "version": "stage-stage-b",
+ "note": "150 aktive Sachpunkte (item-kind-v2), verschiedene Titel, Betreff/Beschlussvorschlag wo Text vorliegt (Serverablage, nur lesend), aus 254 gezogenen; gold: eine Kennung aus shared/stage.mjs oder 'sonst'",
+ "rows": [
+  {
+   "id": "de-06532023-top-5987--3",
+   "title": "Beratung zur Geschäftsordnung des Ausländerbeirates / Abstimmung",
+   "subject": "",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-073335002-vo-9162",
+   "title": "Auftragsvergabe - Kanalsanierung, Bedarfsplanung für neue Bauabschnitte",
+   "subject": "Der Verbandsgemeinderat beschließt den Auftrag zur Erstellung der Bedarfsplanung für die kommenden Kanalsanierungen an das Ingenieurbüro Dilger aus Dahn zu vergeben. Die Kosten belaufen sich auf 48.480,60 €.",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-160755013-cs-128668-4620",
+   "title": "Beratung zum Haushaltsplan 2026 und Erlass der Haushaltssatzung der Gemeinde Wilhelmsdorf für das Haushaltsjahr 2026 (BSV 8/2026)",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-130755561-top-1029266",
+   "title": "Energie Vorpommern",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-08425039-vo-3043",
+   "title": "Baugesuche Ringingen, Flst. 242/3, 243, 246/1, 247, 249/1, 250/1 Antrag auf Zulassung eines neuen Haupbetriebsplans für den Betrieb der Quarzsandgrube Altheim-Nord Stellungnahme als Träger öffentl. Belange (TöB)",
+   "subject": "Baugesuche Ringingen, Flst. 242/3, 243, 246/1, 247, 249/1, 250/1 Antrag auf Zulassung eines neuen Haupbetriebsplans für den Betrieb der Quarzsandgrube Altheim-Nord Stellungnahme als Träger öffentl. Belange (TöB) Anlagen:",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-06534018-top-6932--20",
+   "title": "Organisation Resilienzrat Stadtallendorf",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-15089015-vo-8935",
+   "title": "Neufassung der Friedhofssatzung der Stadt Aschersleben",
+   "subject": "Der Stadtrat beschließt die in der",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-071335009-vo-20261106100281",
+   "title": "Änderung des Bebauungsplanes für das Teilgebiet \"Auf der Hahneck, Vor dem Eichacker, Im Eichacker\" 5. Änderung; Aufstellungsbeschluss",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-10041513-top-3173--10-3",
+   "title": "Zebrastreifen Ortsmitte Kutzhof",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-073375002-vo-240705101366",
+   "title": "Mitgliedsbeitrag Landeckverein",
+   "subject": "Der Gemeinderat beschließt, die Mitgliedschaft der Ortsgemeinde Pleisweiler- Oberhofen im Landeckverein e.V. Klingenmünster weiter fortzuführen oder alternativ die Mitgliedschaft zu kündigen. Im Auftrag (Oerther) (Dornick, Abteilungsleiter)",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-071335001-vo-15101303100565",
+   "title": "Beratung und Beschlussfassung über den Abschluss eines öffentlich-rechtlichen Vertrages zur Übernahme der Betriebsträgerschaft der Kindertagesstätte \"Zwergenburg\" der Ortsgemeinde Neu-Bamberg durch die Verbandsgemeinde Bad Kreuznach",
+   "subject": "Der Verbandsgemeinderat stimmt dem Abschluss des öffentlich-rechtlichen Vertrages ohne Berücksichtigung der Änderungsvorschläge der Ortsgemeinde zur Übernahme der Betriebsträgerschaft der Kindertagesstätte „Zwergenburg“ der Ortsgemeinde Neu-Bamberg durch die Verbandsgemeinde Bad Kreuznach zu.",
+   "gold": "vertrag"
+  },
+  {
+   "id": "de-09184131-vo-371583668-383376043",
+   "title": "Nutzungsänderung und Umbau von Gewerbeeinheiten zu Wohnungen mit Balkonen, Münchner Straße 1/Heimstettner Straße 2a",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "nds-03453007-vo-7276",
+   "title": "Raumbedarfsplanung der Schulen des Primarbereichs in städtischer Trägerschaft",
+   "subject": "Die dieser Beschlussvorlage als",
+   "gold": "planung"
+  },
+  {
+   "id": "nrw-05774028-vo-20261109100170",
+   "title": "Beschlussfassung über eine öffentlich-rechtliche Vereinbarung zwischen dem Kreisjugendamt und den kreisangehörigen Kommunen über die Wahrnehmung der Aufgaben zur Erfüllung des Rechtsanspruches auf Betreuung von Kindern im schulpflichtigen Alter nach § 24 Abs. 4 SGB VIII",
+   "subject": "Die Vereinbarung über die Wahrnehmung der Aufgaben zur Erfüllung des Rechtsanspruchs auf Betreuung von Kindern im schulpflichtigen Alter nach § 24 Absatz 4 SGB VIII durch die Kommunen im Kreisjugendamtsbereich wird beschlossen.",
+   "gold": "vertrag"
+  },
+  {
+   "id": "de-010585803-top-41491",
+   "title": "Projekt: Stärkung des Wir-Gefühls im Dorf als Dialogformat \"Sprechen & Zuhören\"",
+   "subject": "",
+   "gold": "beteiligung"
+  },
+  {
+   "id": "de-08327002-rp-vo-2647564",
+   "title": "Bebauungsplan \"Lindengasse II\", Aixheim - Beschluss über eine grundsätzliche Abweichung der planungsrechtlichen Festsetzungen (Punkt 2.4 Erdgeschossrohfussbodenhöhe)",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-010515166-vo-7780",
+   "title": "Stadtbücherei Marne; Nutzungsstatistik 2025",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-14627150-vo-2923",
+   "title": "Ergänzung ODV Ausbau K8014 Dorfstraße Steinbach 3. BA",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "de-06411000-vo-20252909100275",
+   "title": "Verzeichnis der zur Übertragung vorgesehenen Haushaltsausgabereste 2024 in den Haushalt 2025",
+   "subject": "Verzeichnis der zur Übertragung vorgesehenen Haushaltsausgabereste 2024 in den Haushalt 2025 Vorlage vom: 26.09.2025 | Die Aufstellung der Haushaltsausgabereste 2024, die im Kernhaushalt sowie den Eigenbetrieben Bäder und Darmstädter Werkstätten und Wohneinrichtungen der Wissenschaftsstadt Darmstadt in das Jahr 2025 übertragen wurden, wird zur Kenntnis genommen Anlagen: Gesamtübersicht_HAR_2024 Datenschutzrelevante",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-071345005-vo-14262204100008",
+   "title": "Beratung und Beschlussfassung über den Ausbau eines Forstwirtschaftsweges (NavLOG Klasse 1)",
+   "subject": "Das zuständige Forstamt Idarwald wird beauftragt, die Ausschreibung für den Ausbau laut der beigefügten Aufstellung der Einbaumaterialien in die Wege zu leiten und entsprechend einen Förderantrag beim Land Rheinland-Pfalz zu stellen. Anlagen: Aufstellung Einbaumaterialien",
+   "gold": "bau"
+  },
+  {
+   "id": "de-12054000-vo-2008010",
+   "title": "Benutzungs- und Gebührensatzung Unterbringung (Oberbürgermeisterin, Geschäftsbereich Ordnung, Sicherheit, Soziales und Gesundheit)",
+   "subject": "",
+   "gold": "abgaben"
+  },
+  {
+   "id": "de-08335100-rp-vo-2760328",
+   "title": "Antrag auf Baugenehmigung im vereinfachten Verfahren zur Errichtung einer Dachgaube auf dem Grundstück Flurstücknummer 3223/1, Gemarkung Worblingen, Am Burgstall 12 a, 78239 Rielasingen-Worblingen im Bebauungsplangebiet \"Neusatz-West-Änderung\"",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-12061433-top-23663",
+   "title": "Vorstellung Pflegekonzept Gutspark (Gast: Terra Urbana, Frau Schümann)",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-12072240-top-7035",
+   "title": "Anträge zur Verwendung der Fördergelder aus der Wind- und Solarenergie",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-01054-oparl-b295d647e60aa29dacfe",
+   "title": "Berichterstattung zum Beschluss des Seniorenbeirates vom 29.04.2025 - Handlungsempfehlungen aus dem Pflegebedarfsplan 2026-2029 zur Sicherstellung der pflegerischen Versorgung hilfebedürftiger Senioren insbesondere durch die ambulanten Dienste",
+   "subject": "Der Gesundheitsausschuss nimmt den Bericht der Verwaltung zum Beschluss des Kreisseniorenbeirates vom 29.04.2025 zur Kenntnis.",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-06533009-top-36579",
+   "title": "Informationsbesuch beim Mütterzentrum in den Räumen der Werkstadt (in der Nähe der Radiologie Praxis)",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nds-03405000-oparl-60e7050e234c9894c95c",
+   "title": "Freigabe gesperrter Mittel",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-12063056-vo-20250711100099",
+   "title": "Errichtung von Wohnraum im Gemeindegebiet",
+   "subject": "Errichtung von Wohnraum im Gemeindegebiet",
+   "gold": "bau"
+  },
+  {
+   "id": "de-120725204-vo-4394",
+   "title": "Beratung und Beschlussfassung zur Auftragsvergabe - Erweiterung und Sanierung Wirtschaftsgebäude Tiergehege im Schlosspark Dahme/Mark (Los 9 - Trockenbauarbeiten)",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-08216015-vo-5846",
+   "title": "Bebauungsplan „Kindergarten Straußgasse“ sowie örtliche Bauvorschriften im Stadtteil Sulzbach im beschleunigten Verfahren nach § 13a BauGB - Aufstellungsbeschluss -",
+   "subject": "Der Ortschaftsrat Sulzbach empfiehlt dem Gemeinderat folgende Beschlussfassung: Für den Bebauungsplan „Kindergarten Straußgasse“ in Sulzbach wird gemäß § 2 Abs. 1 i.V.m. § 13a BauGB der Aufstellungsbeschluss gefasst. Der Geltungsbereich des Bebauungsplans umfasst die auf dem als",
+   "gold": "planung"
+  },
+  {
+   "id": "de-09678174-vo-61542696-66148956",
+   "title": "Bauantrag für Sanierung eines Dachstuhls im Nebengebäude in Reichmannshausen, Alter Mühlweg 6",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-130755562-vo-1004488",
+   "title": "Beratung und Beschlussfassung über die Genehmigung der Eilentscheidung des Bürgermeisters zur Schulbuchbestellung 2026/2027 für die Grundschule Koserow",
+   "subject": "Die Gemeindevertretung der Gemeinde Koserow beschließt die Eilentscheidung des Bürgermeisters zur Auftragsvergabe der Schulbuchbestellung für das Schuljahr 2026/2027 für die Vineta Grundschule Koserow mit einer Gesamtsumme von 15.488,12 Euro zu genehmigen.",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-08215100-rp-vo-2476902",
+   "title": "Neuausschreibung der Gebäudeunterhalts- sowie Glas- und Rahmenreinigungsarbeiten für alle fremdgereinigten Objekte",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-01053-vo-1001391",
+   "title": "Aufnahme von Maßnahmen in den Bedarfsplan; hier geänderte Bedarfe des Amt Berkenthin",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-14522210-web-20260824-99b1fddb",
+   "title": "Information zur Auftragsvergabe",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-06432018-vo-nr-fr48-2026",
+   "title": "Flexpoller Schulen Anfrage des Stv. Schütz aus der SBI-Sitzung vom 10.2.2026",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-08136075-rp-vo-2409056",
+   "title": "Erstellung einer Biotopverbundplanung für die Gemeinde Unterschneidheim; hier: Beschlussfassung",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-06436002-vo-1001309",
+   "title": "Haushaltskonsolidierung",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-071385003-vo-20262905100121",
+   "title": "Städtebauförderung: Erstellung integriertes städtebauliches Entwicklungskonzept inkl. Voruntersuchungen; Ermächtigung zur Ausschreibung der Planungsleistungen und zur Auftragserteilung",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-09780124-top-7525--2",
+   "title": "Vorhabenbezogener Bebauungsplan Kirchplatz Quartier - Behandlung der eingegangenen Stellungnahmen sowie Satzungsbeschluss",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-010595974-rp-vo-2653646",
+   "title": "Beratung und Beschlussfassung über die Auftragsvergabe für Arbeiten in einem Nebenraum des Dorfgemeinschaftshauses Nies-Spuk",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-09187150-vo-822319031-846372629",
+   "title": "Beschaffung mobiles Heizgerät für den Katastrophenfall",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-06435027-top-6591",
+   "title": "Bericht von Maßnahmen u. Erörterung über offene/zu bearbeitende Themen: Schwimmbad, Beschilderung Baumgrabstätten, Standort Glascontainer, …",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-01053090-vo-1000971",
+   "title": "Satzung zur Änderung der Satzung über die Ehrung verdienter Persönlichkeiten durch die Stadt Mölln (Neufassung) sowie Einführung eines Musterformulars für Ehrungsvorschläge",
+   "subject": "",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-11000000-pardok-v446814",
+   "title": "Sicher unterwegs zu Fuß und mit dem Rad zwischen Rathaus Pankow, Rathaus-Center und Pankower Anger",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-02000000-hh-harburg-si02025273-62b7c97d",
+   "title": "Zusatzantrag CDU betr. Brückenstraße (zum Antrag 22-0272)",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "nrw-05913000-vo-538792",
+   "title": "Zustand Umfeld Bolmker Weg",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-093745330-vo-15668333-15646553",
+   "title": "Kostenlose Windelsäcke für Personen mit Inkontinenz",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-120645403-top-22355",
+   "title": "Beratung",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-15082180-top-20283",
+   "title": "Behandlung der öffentlichen TOPs",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-11000000-pardok-v453307",
+   "title": "Verordnung über die Veränderungssperre 3-75/22 im Bezirk Pankow, Ortsteil Heinersdorf",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "nrw-05154036-oparl-27635d1e352afab3f389",
+   "title": "Feststellung des Jahresabschlussberichtes der Technologie-Zentrum Kleve GmbH und Darstellung der wirtschaftlichen Grundlagen für das Geschäftsjahr 2025",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-09184146-vo-7474",
+   "title": "Antrag der CSU-Fraktion zur Reaktivierung des Brunnens am Rathausanger",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09176148-vo-1726450-1773473",
+   "title": "Neubau eines Einfamilienhauses mit Doppelgarage in Ensfeld",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-07332024-vo-11320",
+   "title": "Konzept für die Zukunftsfähigkeit des Stadtparks Ergebnispräsentation der Bürgerumfrage",
+   "subject": "",
+   "gold": "beteiligung"
+  },
+  {
+   "id": "de-08235084-top-142",
+   "title": "Glasfaserausbau",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "de-15085190-top-2815--6",
+   "title": "Information durch die Verwaltung",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-095755518-vo-81139742-85681586",
+   "title": "Gehaltsumwandlung zum Zwecke des Fahrradleasings",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-073375007-top-32035",
+   "title": "\"Gründung Wasser- und Bodenverband Südpfalz\"",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-01059-oparl-3431ec02e876967a71b1",
+   "title": "Bericht aus der Region Sønderjylland-Schleswig: „Kulturarbeit in der Region Sønderjylland-Schleswig“",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "nrw-05370-vo-3734",
+   "title": "Gesellschafterversammlung FUTURE Site InWest Entwicklungsgesellschaft mbH",
+   "subject": "Dem Beschlussvorschlag wird zugestimmt.",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-07133006-oparl-e6b2acc68b98c90a8108",
+   "title": "Gemeinsame Veranstaltung mit dem BMI des Landkreises: Treffen mit Fraktionen",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nds-032515403-top-16053--8",
+   "title": "Rundgang über das Marktgelände",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nrw-05334032-vo-1004887",
+   "title": "Jugendförderung; Richtlinien zur Förderung der Jugendarbeit: Pauschale Förderung der Jugendarbeit im Haushaltsjahr 2026",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-09464000-top-3528--1481",
+   "title": "Situation beim Anwesen Lorenzstraße 19 (frühere Filiale Woolworth)",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-09779115-vo-136935554-136939668",
+   "title": "Beschlussfassung zur Entschädigung für die weiteren Bürgermeister",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nds-034545405-vo-2025041311100052",
+   "title": "Bebauungsplan Nr. 14 \"Klein Tirol II\" 2. Änderung hier: Auslegungs- und Entwurfsbeschluss",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "nrw-05158028-vo-505_8666",
+   "title": "Fortsetzung des „Sprachförderkonzeptes Ratingen“ im Jahre 2026 und 2027",
+   "subject": "Fortsetzung des „Sprachförderkonzeptes Ratingen“ im Jahre 2026 und 2027 1. Finanzielle Auswirkungen: Nein Ja, siehe nächste Seite 2. Beteiligung Rechnungsprüfungsamt: Nein Ja Beanstandung: Keine / Ja, siehe",
+   "gold": "planung"
+  },
+  {
+   "id": "de-12061260-vo-22838",
+   "title": "Stellungnahme des OBR Zernsdorf zur Durchführung eines abfallrechtlichen Planfeststellungsverfahren für Vorhaben\"Errichtung u.-Betrieb einer Deponie DK 0 im Sandtagebau Niederlehme\"",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-08335015-rp-top-20261015-9e845233",
+   "title": "Bericht aus der Verwaltung",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08127071-top-25--10-4",
+   "title": "GR Wagner wegen Schulsportplatz",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "nrw-05124000-top-24567--12-3",
+   "title": "Antrag der ev. Kirchengemeinde Langerfeld",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "nds-03353031-top-1013068",
+   "title": "Barrierefreie Bushaltestellen",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "de-06631020-oparl-9c0e59d1a4c475184fb5",
+   "title": "Zusatzfragen aus Sitzung GVE v. 13.11.2025 zur Anfrage des Gemeindevertreters Christian Bug der CDU-Fraktion zu TOP 16.7",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09671134-top-1622--9",
+   "title": "dringliche Anfragen",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09184139-vo-6881",
+   "title": "Radverkehrskonzept Pullach – Vorstellung und Beratung unter Einbindung der Fraktionsanträge",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-12065144-top-22542",
+   "title": "Bearbeitungsstände beschlossener Anträge",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08317141-rp-vo-2781066",
+   "title": "Bekanntgabe: Aufstockung Gaststätte für Boardinghouse mit acht Gästezimmern, 1. Nachtrag/Tektur zur Baugenehmigung vom 28.11.2024, AZ 20240747",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08337096-cs-344-2300",
+   "title": "Erhöhung der Nutzungsgebühren für Dauerparkende der Parkgaragen Kursaal und Auplatz",
+   "subject": "",
+   "gold": "abgaben"
+  },
+  {
+   "id": "de-071435004-vo-120262207100053",
+   "title": "Einleitung des Vergabeverfahrens - Deckensanierung der Wirzenbornerstraße in der Stadt Montabaur",
+   "subject": "Einleitung des Vergabeverfahrens - Deckensanierung der Wirzenbornerstraße in der Stadt Montabaur",
+   "gold": "vergabe"
+  },
+  {
+   "id": "nds-03102000-top-1040134",
+   "title": "Bildung -Mitteilungsvorlagen der Verwaltung",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-12063252-vo-2431",
+   "title": "Bebauungsplan „SO Einzelhandel – Norma Rathenow Ost“ Pl.Nr. 085, Hier: Aufstellungsbeschluss",
+   "subject": "Die Stadtverordnetenversammlung der Stadt Rathenow beschließt, den Bebauungsplan SO Einzelhandel – Norma Rathenow Ost“ Pl.Nr. 085 gemäß § 2 i.V.m. § 8 BauGB aufzustellen.",
+   "gold": "planung"
+  },
+  {
+   "id": "nrw-05766052-vo-22587",
+   "title": "Rückschau der vergangenen Wahlperiode 2020-2025",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-09172111-vo-252585246-275092980",
+   "title": "c) Entlastung der Verwaltung 2024",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-09179142-top-3946--7-4",
+   "title": "Einladung zum Festzug",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-072355004-vo-12412",
+   "title": "Beratung und Beschlussfassung zur Übertragung von Ermächtigungen sog. Haushaltsausgabereste",
+   "subject": "enden Produktsachkonten des Haushaltsfolgejahres entsprechend. Anlagen: Übersicht Ermächtigungen der Aufwendungen Übersicht Ermächtigungen der Investitionen | Der Verbandsgemeinderat beschließt die Übertragung der Ermächtigungen gem. Übersicht.",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-08237054-rp-vo-2441856",
+   "title": "Darlehensgewährung des Eigenbetriebs Freizeitbad an den Eigenbetrieb Wasserversorgung (Verlängerung)",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-07320000-top-2208--8",
+   "title": "Anfrage von Ratsmitgliedern",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-08425108-vo-275",
+   "title": "Kenntnisgabeverfahren Schelklingen, Eugen-Hanold-Straße 6, Flst. 580/16, Neubau eines Einfamilienhauses mit Carport",
+   "subject": "7. Bearbeitet Sandra Teschner Hauptamt Anlagen: Bauvorlagen Eugen-Hanold-Strasse 6 Flst 580_16 Schelklingen, 03.12.2025 Ulrich Ruckh IV/2025/021 Seite 2 von 2 Bürgermeister",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-08435053-rp-vo-2332217",
+   "title": "Jahresabschluss 2023 Gemeindewerke",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-08335002-top-195--4",
+   "title": "Bedarfsplanung kommunaler Betreuungsangebote",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "nds-03451007-vo-2348",
+   "title": "Neufassung der Satzung der Stadt Westerstede über die Erhebung von Gebühren für die zentrale Schmutzwasserbeseitigung",
+   "subject": "Neufassung der Satzung der Stadt Westerstede über die Erhebung von Gebühren für die zentrale Schmutzwasserbeseitigung Sachbearbeitende Dienststelle: Amt für Finanzen | Die anliegende Neufassung der Satzung der Stadt Westerstede über die Erhebung von Gebühren für die zentrale Schmutzwasserbeseitigung wird beschlossen.",
+   "gold": "abgaben"
+  },
+  {
+   "id": "de-097755740-vo-222489175-225722049",
+   "title": "Antrag der FFW Bergenstetten auf Bezuschussung der Fu�bodenerneuerung nach Wasserschaden",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-15081135-vo-4445",
+   "title": "Entgelttarif für die Freibäder der Hansestadt Gardelegen",
+   "subject": "die Änderung des Entgelttarifs für die Freibäder in der Einheitsgemeinde Hansestadt Gardelegen Gesetzliche Grundlagen: §§ 8 und 45 des Kommunalverfassungsgesetzes LSA (KVG LSA) vom 17.06.2014, zuletzt geändert durch Gesetz vom 17. Dezember 2025 (GVBl. LSA S. 834)",
+   "gold": "abgaben"
+  },
+  {
+   "id": "nds-03241015-oparl-a4726205a87d569c30d7",
+   "title": "Satzungsangelegenheiten:",
+   "subject": "",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-12064336-top-1122--8",
+   "title": "3. Fortschreibung der Sportstättenkonzeption der Gemeinde Neuenhagen bei Berlin Hier: 1. Lesung",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-14524330-top-3249--2-2",
+   "title": "Informationen und Auswertungen der Stadtratssitzung",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-072355003-vo-1002098",
+   "title": "Erneuerung des Kunstrasenbelages sowie Ertüchtigung der Einrichtung am Sportplatz Konz-Kommlingen; - Ermächtigung des Bürgermeisters für alle Auftragserteilungen",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "de-071315001-top-4666",
+   "title": "Aktueller Sachstand Tagespflege \"mittendrin\"",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-06434007-oparl-5b71003f530d8d3c609b",
+   "title": "Wasserschaden in Hausener Rappelkiste",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-07211000-top-1007793",
+   "title": "Ortsteilbudget",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-09464000-top-3230--1413",
+   "title": "Dank und Weihnachtsgrüße 2025",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-071315002-vo-20241003100282",
+   "title": "Sachstandsbericht zur Wiederaufbaumaßnahme Anschluss an die Kläranlage Dümpelfeld",
+   "subject": "Die Vorlage dient lediglich der Information der Ratsmitglieder.",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-09188120-top-905--7",
+   "title": "Vorstellung Musikschule Gauting-Stockdorf e.V.",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-09775162-vo-432760814-442875702",
+   "title": "Anregung ökumenischer Gottesdienst beim Stadtfest; Anfrage Herr Thalhofer",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09362000-vo-22401",
+   "title": "Kanalsanierung \"Prüfeninger Straße West\"",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "nds-03102000-vo-1005387",
+   "title": "Nachfrage der AfD-Ratsfraktion; Präzisierung der Aussage zu „vor allem … Reichsbürger-Umfeld“ bei Rundfunkbeitragsvollstreckung",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "nrw-05978036-vo-721681",
+   "title": "Bebauungsplan UN 154 \"Öffentliche Verwaltung nördlich des Bahnhofs/südlich der Viktoriastraße“ 22. Änderung des Flächennutzungsplans Aufstellungsbeschluss",
+   "subject": "Bebauungsplan UN 154 \"Öffentliche Verwaltung nördlich des Bahnhofs/südlich der Viktoriastraße\" 22. Änderung des Flächennutzungsplans Aufstellungsbeschluss",
+   "gold": "planung"
+  },
+  {
+   "id": "de-093765342-web-20260427-bd8f42eb",
+   "title": "Laufende Baumaßnahmen; Informationen",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-071435002-top-9572",
+   "title": "Beratung und Beschlussfassung über den Beitritt zur gemeinsamen kommunalen Anstalt des öffentlichen Rechts sowie Zustimmung zur Satzung der \"Kommunale Energie VG Hachenburg AÖR\"",
+   "subject": "",
+   "gold": "vertrag"
+  },
+  {
+   "id": "de-08136045-vo-531",
+   "title": "Flst. 717/24, Gemarkung Elchingen, Distelweg 14 - Neubau Einfamilienhaus mit Doppelgarage",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-16069024-vo-8604",
+   "title": "Vergabe der Bauleistung „Erweiterter Rohbau“/ ÖPNV-Verknüpfungsanlage Bahnhof Hildburghausen - Umbau Busbahnhof - 1. BA Umbau Wasserturm zur Leitstelle und Mobilitätszentrum für den ÖPNV",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-09462000-top-1724--23",
+   "title": "Abordnung von 2 Stadtratsmitgliedern in die Verbandsversammlung des Zweckverbandes Müllverwertung Schwandorf",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-12054000-top-2028131",
+   "title": "Aufstellung Kunstwerk Entreeplatz Leipziger Dreieck",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nds-03355022-vo-1000389",
+   "title": "Anfrage \"Verkehrssituation und Zustand der Goseburgstraße\" (Anfrage der SPD-Fraktion vom 28.10.2025, eigegangen am 30.10.2025)",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-08116072-rp-top-20251208-586341cd",
+   "title": "Bekanntgabe - inklusiver Spielplatz / einheitliche Schließtage",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-150895052-vo-3886",
+   "title": "Beschluss zum Spielplatz Strummendorf - Anpassung Kostenrahmen",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-06440001-vo-20261805100148",
+   "title": "Satzung der Gemeinde Altenstadt zur Ergänzung baugestaltungsrechtlicher Vorschriften in rechtsgültigen Bebauungsplänen sowie in Bereichen, die nach § 34 BauGB zu beurteilen sind",
+   "subject": "Der beigefügte Entwurf, Stand 12.05.2026, zur Ergänzung baugestaltungsrechtlicher Vorschriften in rechtsgültigen Bebauungsplänen sowie in Bereichen, die nach § 34 BauGB zu beurteilen sind, wird als Satzung beschlossen.",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-09189120-top-1270--2",
+   "title": "Kurzberichte der gemeindlichen Referenten und Beauftragten zu ihren Tätigkeiten in der vergangenen Wahlperiode",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "nds-033595402-vo-1003678",
+   "title": "Änderung der Geschäftsordnung",
+   "subject": "",
+   "gold": "regelung"
+  },
+  {
+   "id": "nds-03241001-ds-0885-2026",
+   "title": "Dringlichkeitsantrag der Fraktion Bündnis 90/Die Grünen + Volt + Piratenpartei: Resolution des Jugendhilfeausschusses der Landeshauptstadt Hannover: Gegen Einschnitte in der Kinder- und Jugendhilfe",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09181128-vo-64457311-64878988",
+   "title": "Obdachlosenunterkunft Landrat-Müller-Hahl-Str; Beschluss",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-146285229-vo-12075",
+   "title": "Beauftragung der entsandten Mitglieder in den Gemeinschaftsausschuss Kreisstadt Pirna und der Gemeinde Dohma 5. Änderung des Flächennutzungsplanes der Verwaltungsgemeinschaft Pirna - Dohma: Aufstellungsbeschluss und Beschluss zur Billigung des Vorentwurfs und zur Durchführung der frühzeitigen Öffentlichkeits- und Behördenbeteiligung",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-08226063-vo-1695",
+   "title": "Bauvoranfrage zum Neubau eines Einfamilienwohnhauses mit Garage auf einer Teilfläche des Flurstücks 1513/7, Richard-Wagner-Str. 43 - Hier: Erneute Beurteilung vor Ersetzen des Einvernehmens durch das Baurechtsamt -",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-09780124-top-6417--2-2",
+   "title": "Wald- bzw. Naturkindergarten, Fl.Nr. 115, Gemarkung Eckarts, Mair (Bauvoranfrage)",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-09372124-top-243--3",
+   "title": "Erlass einer Geschäftsordnung",
+   "subject": "",
+   "gold": "regelung"
+  },
+  {
+   "id": "nrw-05913000-top-2001972--9",
+   "title": "Finanzen, Beteiligungen und Liegenschaften",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nrw-05358056-oparl-e120bc4a47b573c8ab2c",
+   "title": "Anregung nach § 24 Gemeindeordnung für das Land Nordrhein-Westfalen; hier: Verschiebung des Haushaltsbeschlusses",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "nrw-05762020-top-10763--3-1",
+   "title": "Antrag des TuS Lütmarsen e.V. Bestuhlung für Mehrzweckraum und Sitzgelegenheiten am Spielfeld",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-07317000-top-624--2-2-3",
+   "title": "Anfrage Ortsbeiratsmitglied Hofstadt vom 30.09.2026 bezüglich \"Ortsumgehung\"",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-08327018-vo-1962",
+   "title": "Haushalt und Wirtschaftspläne 2026 Verabschiedung des Haushaltplans 2026 Beschlussfassung über die Wirtschaftspläne der Eigenbetriebe Wasserversorgung und Abwasserbeseitigung 2026",
+   "subject": "1. Die Haushaltssatzung für das Jahr 2026 sowie der Wirtschaftspläne Abwasserbeseitigung und Wasserversorgung 2026 werden, wie in der beigefügten",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-01056050-top-1026119",
+   "title": "Öffentliche Anfragen",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-06437009-oparl-e3feb32cd80f305e88bc",
+   "title": "Gemeindevertreter Ande Eisenhauer fragt an,",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-160715007-rp-top-20260421-9a84ed2b",
+   "title": "Beratung und Beschlussfassung zur Erteilung des gemeindlichen Einvernehmens nach § 36 BauGB i.V.m. § 75 ThürBO auf dem Grundstück Flur 11 Flurstück 111/6 zur Bauvoranfrage Errichtung eines EFH und Ersatzneubau eines EFH sowie Abbruch eines bestehenden Gebäudes",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "nds-03462007-web-20260422-91fdbb39",
+   "title": "Wartungsvertrag Scharfenbergkupplungen der Inselbahn",
+   "subject": "",
+   "gold": "vertrag"
+  },
+  {
+   "id": "de-07315000-vo-38075",
+   "title": "Haushaltsangelegenheit; Gutenberg-Museum, Interimsunterbringung NHM, 7.001179 hier: Bereitstellung außerplanmäßiger Mittel in Höhe von 927.414,75 EUR im Haushaltsjahr 2026",
+   "subject": "Der Ausschuss für Finanzen und Beteiligungen empfiehlt, der Stadtrat beschließt die Bereitstellung der außerplanmäßigen Mittel in Höhe von 927.414,75 € beim Projekt „Gutenberg-Museum, Interims- unterbringung NHM“, 7.001179. Seite 2 von 5",
+   "gold": "haushalt"
+  },
+  {
+   "id": "nrw-05370028-vo-19195",
+   "title": "Beschluss des Klimaanpassungskonzepts",
+   "subject": "Der Rat der Stadt Übach-Palenberg beschließt das vorliegende Klimaanpassungskonzept als strategische Grundlage für die zukünftige Anpassung der Stadt an die Folgen des Klimawandels.",
+   "gold": "planung"
+  },
+  {
+   "id": "de-073345005-oparl-86386361db56f2e623b4",
+   "title": "Kanalsanierung Lustadt",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "nrw-05962040-top-29378--2-4",
+   "title": "Sachstand Umzug Bücherei",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-09574154-top-1302--8",
+   "title": "Antrag auf Befreiung zur Errichtung eines blickdichten Holzzaunes Gesamthöhe 2,0 m, Bierweg 8c, 90607 Rückersdorf Fl.Nr. 338/11 Gemarkung Rückersdorf",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-072315009-top-36608",
+   "title": "Tagesordnungspunkte für die kommende Sitzung des Ortsgemeinderates am 26.03.2026",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-09475142-top-143--4",
+   "title": "Bauanträge; Neubau eines Milchviehlaufstalles und einer Güllegrube",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-12051000-vo-7714",
+   "title": "Ab- und Neuberufung eines sachkundigen Einwohners im Ausschuss für Stadtentwicklung, Umwelt und Verkehr",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-08136065-top-8791--1",
+   "title": "Verwendung der Mittel für bürgerschaftliche Aktionen Anschaffung Radabstellanlage Eichenrainschule/Kindergarten Am Eichenrain - Eigenanteil zur Beschlussfassung",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-08336105-top-1619--1",
+   "title": "Ladung, Anwesenheit, Beschlussfähigkeit",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-091775121-vo-127782604-132350196",
+   "title": "Aktualisierung der Information über die zu erwartenden Förderungen und Beantragung des pauschalen Investitionsbudgets aus dem Sondervermögen des Bundes",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-010605043-rp-top-20260414-b66afd7d",
+   "title": "Ferienspaß 2026",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-130715162-vo-5144",
+   "title": "Einleitung und Ausgestaltung des Vergabeverfahrens \"Baumpflegearbeiten in der Gemeinde Jürgenstorf\"",
+   "subject": "Die Gemeindevertretung beschließt die Einleitung und Ausgestaltung des Vergabeverfahrens „Baumpflegearbeiten in der Gemeinde Jürgenstorf“ sowie der anschließenden Auftragsvergabe durch den Bürgermeister.",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-06634022-rp-top-20260818-71d43370",
+   "title": "Antrag der Fraktion Freie Wähler vom 31.07.2026 - Ärztenotstand in Schwalmstadt - frühzeitig handeln und medizinische Versorgung sichern",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "nrw-05570020-top-3537--4",
+   "title": "Anmerkungen zur Niederschrift - öffentlicher Teil",
+   "subject": "",
+   "gold": "sonst"
+  }
+ ]
+}

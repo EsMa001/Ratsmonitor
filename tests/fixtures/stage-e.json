@@ -1,0 +1,906 @@
+{
+ "version": "stage-stage-e",
+ "note": "150 aktive Sachpunkte (item-kind-v2), verschiedene Titel, Betreff/Beschlussvorschlag wo Text vorliegt (Serverablage, nur lesend), aus 260 gezogenen; gold: eine Kennung aus shared/stage.mjs oder 'sonst'",
+ "rows": [
+  {
+   "id": "nds-03154014-top-30653",
+   "title": "Sprachförderung",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nds-03455-top-2247--6-3",
+   "title": "- aus der Kreisausschuss-Sitzung vom 19.11.2025",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-08111000-top-1014109",
+   "title": "Bezirksbudget: BALANCE Konzertreihe - Tango Nuevo & Jazz in concert, Ameli in the Woods",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-12060-top-20260316-58afdf36",
+   "title": "Anlagen zum Protokoll",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nds-03459008-vo-934",
+   "title": "4. Teilaufhebung der Sanierungssatzung \"Belm Marktring\"",
+   "subject": "Die Satzung über die 4. Teilaufhebung der Sanierungssatzung \"Belm Marktring\" für den Bereich Powe, Flur 4 Flurstück 208/24 wird beschlossen.",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-130745459-vo-1005818",
+   "title": "Erläuterungen zum Stellenplan 2026",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-09274126-rp-top-20260709-446e9067",
+   "title": "Anfrage von MGR Pollner zum Badeverbot Isar",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-071435001-top-11058",
+   "title": "Feststellung des Jahresabschlusses 2024",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "nrw-05358040-oparl-9b6b46002b701ddf209c",
+   "title": "Nordrhein-Westfalen-Plan für gute Infrastruktur hier: Verteilung von pauschalen Zuweisungen",
+   "subject": "/ TOP: Nordrhein-Westfalen-Plan für gute Infrastruktur hier: Verteilung von pauschalen Zuweisungen",
+   "gold": "foerderung"
+  },
+  {
+   "id": "nds-03353005-vo-1012851",
+   "title": "Gemeinwohlorientierte Vergabe städtischer Grundstücke Antrag der Fraktion Buchholzer Liste im Rat der Stadt Buchholz i.d.N. vom 05.02.2026",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-01054168-vo-2026070207100048",
+   "title": "Beratung und Beschlussfassung über den erneuten Entwurfs- und Veröffentlichungsbeschluss zur 5. Änderung des Bebauungsplanes Nr. 28 der Gemeinde Sylt für das Gebiet nördlich Boy-Truels-Straße und Hoyerweg, östlich Kampstraße, südlich Apenrader Straße und westlich Wenningstedter Weg mit Ausnahme des Schulzentrums und der Grundstücke Apenrader Straße 28a+b und 30a-c, Wenningstedter Weg 41a-c, sowie Apenrader Straße 14 und Kollundweg 20, 22 und 24 im Ortsteil Westerland",
+   "subject": "e gefasst werden kann. Die Änderungen gegenüber der Varianten in der Sitzung vom 08.05.2026 be- treffen: - Textliche Festsetzung 2 (1): „Im Sondergebiet SO 1 sind in Gebäuden mit Wohnungen höchstens drei Wohnungen zulässig.“ -",
+   "gold": "planung"
+  },
+  {
+   "id": "de-08119076-rp-vo-2611245",
+   "title": "Jahresbericht 2025 des Jugendhauses \"JuZe\"",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-06532001-top-1006245",
+   "title": "Spielplatz \"Talweg\" und \"Am Dommert\"",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-091865156-vo-111014640-111018237",
+   "title": "1. Änderung des Bebauungsplanes Nr. 102 \"Sondergebiet Solarpark Engelbrechtsmünster II\"; Abwägung der Stellungnahmen aus der förmlichen Beteiligung der Öffentlichkeit und der Beteiligung der Behörden und sonstigen Träger öffentlicher Belange sowie Satzungsbeschluss",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "nds-03241005-vo-20250309100190",
+   "title": "Betriebsabrechnung 2024 für Obdachlosenunterkünfte im städtischen Mehrfamilienhaus \"Am Berge 9\"",
+   "subject": "Betriebsabrechnung 2024 für Obdachlosenunterkünfte im städtischen Mehrfamilienhaus \"Am Berge 9\" Information für den behandelt am TOP Ausschuss für Wirtschaft, Beschäftigung und Finanzen 02.12.2025",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-08111000-top-1029591",
+   "title": "Antrag der Bezirksverwaltung: Vortrag über Klimagerechtigkeit",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09162000-vo-8843837",
+   "title": "PERSPEKTIVE MÜNCHEN Fortschreibung des Innenstadtkonzeptes als integriertes Handlungsraumkonzept Münchner Innenstadt StR-Antrag und Bürgerversammlungsempfehlungen",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-120715107-vo-8983",
+   "title": "Einbringung Doppelhaushalt 2026/2027",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-06412000-vo-e-377-2026",
+   "title": "Produktbereich: 21 Kultur, Freizeit und Sport",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-08115010-rp-vo-2656584",
+   "title": "1. Satzung zur Änderung der Satzung über die Erhebung von Gebühren für öffentliche Leistungen (Verwaltungsgebührensatzung)",
+   "subject": "",
+   "gold": "abgaben"
+  },
+  {
+   "id": "de-071345005-vo-32262309100004",
+   "title": "Beratung und Beschlussfassung über den Forstwirtschaftsplan für das Haushaltsjahr 2027",
+   "subject": "Nach längerer Aussprache wird den Plänen in der vorliegenden Form zugestimmt. Anlagen: 032 Forstwirtschaftsplan 2027",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-09772145-top-548--11",
+   "title": "Weitere Beauftragung: Objektplanung Ortszentrum - Leistungsphase 3 und 4",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-010615168-top-1004877",
+   "title": "Gedankensammlung zur Überplanung des Geländes am alten Klärwerk / Bauhof",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-071335009-vo-202511709100456",
+   "title": "Bekanntgabe der Betriebsergebnisse im Gemeindewald 2024",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "nds-03404000-oparl-8442ca816a1d1f5be201",
+   "title": "Empfehlungen des Ausschusses für Feuerwehr und Ordnung; Berichterstatter: Ratsmitglied Herr Hasskamp",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nrw-05758036-oparl-ecf7568abd6262acbbdc",
+   "title": "Controllingbericht",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-06535009-oparl-9c40a006b7db28aae76a",
+   "title": "Antrag Fraktion BÜRGERFORUM betreffend Forderungskatalog zur Verbesserung des Lärmschutzes in den Anrainerstadtteilen der Stadt Homberg (Ohm) an der A 49",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-12053000-top-88000",
+   "title": "Beratungsschwerpunkte",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-13073011-vo-349",
+   "title": "Beschlussvorlage für den Wirtschaftsplan 2026 der Wohnungsverwaltung Binz GmbH",
+   "subject": "Die Gemeindevertretung beschließt in ihrer Sitzung am 04.12.2025 den Wirtschaftsplan 2026 der Wohnungsverwaltung Binz GmbH.",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-07137203-top-1452--1",
+   "title": "Rückblick Fest der Kulturen Das Fest hat allen gut gefallen, die Musik war gut und es gab viel Unterhaltung für Kinder. Es wurde angemerkt, zukünftig früher verschiedene Akteure anzusprechen. Es wurde vorgeschlagen, diverse Bendorfer Restaurants anzufragen, ob sie einen Stand aufbauen, sie kennen sich auch mit den Hygienebestimmungen aus. Vor der Bühne war eine zu große Lücke, daher der Vorschlag, die Stände mehr zusammenzurücken, oder nach Möglichkeit mehr Stände anzubieten. Da das Wetter im September nicht mehr gut war, soll das Fest der Kulturen in 2026 Ende August (nach den Sommerferien) stattfinden. Zukünftig sollen auch die Stadt Koblenz, der Landkreis Mayen-Koblenz, die VG Vallendar und der Landkreis Neuwied eingeladen werden.",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-15082-top-2653--8",
+   "title": "Bekanntgabe amtlicher Mitteilungen",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08417002-vo-11500",
+   "title": "Änderung der Satzung über die Erhebung von Gebühren für öffentliche Leistungen (Verwaltungsgebührensatzung)",
+   "subject": "Die Satzung zur Änderung der Satzung über die Erhebung von Gebühren für öffentliche Leistungen - Verwaltungsgebührensatzung - wird in dem in der",
+   "gold": "abgaben"
+  },
+  {
+   "id": "de-08118011-oparl-428d5207803980d98c74",
+   "title": "Bekanntgabe - Stellungnahme der Stadt Ditzingen im Rahmen der Beteiligung der Behörden und sonstigen Träger äffentlicher Belange nach § 4 Abs. 2 BauGB zum Bebauungsplan \"Gewerbegebiet Laiblinger Weg\"",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-130745454-vo-22067",
+   "title": "Satzung über den Bebauungsplan Nr. 52 „Tarnewitz-Wohnen am Kurhaus“ Hier: Aufstellungsbeschluss",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-13073088-vo-11445",
+   "title": "Zustimmung der Gemeinde nach § 36a BauGB zur Errichtung von sechs Einfamilienhäusern",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-073355001-top-22266",
+   "title": "Vorstellung Jobfux an der Adam-Müller-Schule",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-09181122-vo-490388295-496620654",
+   "title": "Immissionsschutzrechtliche Genehmigung Errichtung und Betrieb einer Anlage zur Aufbereitung für nicht gefährlichen Abfall mit zeitweiliger Lagerung in Nähe des Ortsteiles Wabern (Fl.Nr. 1426, 1427, 1428, Gem. Walleshausen) - Beteiligung",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "nds-03459-vo-3563",
+   "title": "Geänderter Beschlusstenor des Ausschusses für Soziales, Senioren und Gleichstellung",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-130735358-vo-24801812100078",
+   "title": "Beteiligungsbericht für das Haushaltsjahr 2024",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "nds-033605408-vo-2000591",
+   "title": "Städtebauförderung; Programm „Lebendige Zentren“ Kommunales Netzwerk Samtgemeinde Aue – Programmjahr 2025 hier: Maßnahme „Modernisierung und Instandsetzung des Sportzentrums in Wieren sowie Erweiterung um einen Multifunktionsraum“ Beschlussfassung über a) die Weiterleitung der Fördermittel an Dritte und b) die fortgeschriebene Kosten- und Finanzierungsübersicht mit Stand vom 08.02.2024",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-09184112-vo-20262602100105",
+   "title": "Zuschüsse Nachträgliche Bezuschussung von Tagesdienstkleidung für die Freiwillige Feuerwehr Aschheim e.V.",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-072315008-vo-2026390906100013",
+   "title": "Bauturbo; Information und Anwendung",
+   "subject": "Bauturbo; Information und Anwendung | Abweichender Beschluss",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08116033-top-6662--19-2",
+   "title": "Lob an die Waldarbeiter",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-010615153-top-1004977",
+   "title": "Beratung und Beschlussfassung über die Verkehrsführung (Radfahrweg) im Bereich Dorfstraße bis Kreuzungsbereich Christine-von-Halle-Ring",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nrw-05374052-vo-2004041547",
+   "title": "Erweiterung der OGS- und 8-1-Betreuungsgruppen an den Grundschulen",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "de-08336079-vo-76645935-87268968",
+   "title": "Bacharbeiten",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "de-130725260-vo-22242",
+   "title": "Beschluss der Gemeindevertretung Blankenhagen über die 1. Nachtragshaushaltssatzung 2026",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "nrw-05382-vo-2004141707",
+   "title": "Inklusions-Fachbeirat: Änderung der Geschäftsordnung",
+   "subject": "Der Kreisausschuss fasst folgenden Beschluss: Der Kreisausschuss beschließt die Änderung der „Geschäftsordnung für den Inklusions-Fachbeirat im Rhein-Sieg-Kreis“ in der anliegenden Fassung. Haushalt: Der",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-08136079-rp-top-20260326-e2f927f5",
+   "title": "Abbruch Kläranlage Waldstetten – Baubeschluss – Beratung und Beschlussfassung",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "de-02000000-hh-harburg-si02025248-b250a6db",
+   "title": "NEU Antrag CDU betr. Zustand der vorhandenen Spielplätze und geplante neue Spielplätze im Bezirk Harburg",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-08119085-oparl-77bfd1269c2a1804336c",
+   "title": "Bebauungsplan „Am Sonnenhang II\" in Winnenden-Birkmannsweiler und Satzung über örtliche Bauvorschriften gemäß § 74 der Landesbauordnung (LBO)",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-09189120-top-1260--5",
+   "title": "Altmülldeponie Stadlbauergrube; Auftragsvergabe für ein zweijähriges modifiziertes Grundwassermonitoring zur abschließenden Gefährdungsabschätzung",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "nds-03157007-top-15714",
+   "title": "Vergabe von Ortsratsmitteln",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-08128131-top-2341--12-5",
+   "title": "L 2310 Ortsdurchfahrt Bestenheid",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-091815140-vo-176967824-179327921",
+   "title": "Tektur zum Bauantrag: \"Umbau eines Einfamilienhauses mit Wirtschaftsteil zum Zweifamilienhaus\", hier: Verringerter Brandschutznachweis und Änderung der Stellplätze, Wendelinstraße 1a, 1b, Fl. Nr. 88, Gemarkung Prittriching",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "nds-03460007-vo-2426",
+   "title": "Kurze Information für die Ratsmitglieder zum Thema \"Bauturbo\"",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "nrw-05166032-vo-505_5492",
+   "title": "Gesetz zur Beschleunigung des Wohnungsbaus und zur Wohnraumsicherung, sog. „Bau-Turbo“ - Kenntnisnahme der Darstellung der Bedingungen und Vorgaben zur Anwendung des \"Bau-Turbos\" - Beschluss über die weitere Vorgehensweise",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08127091-rp-vo-2592944",
+   "title": "Aufstellungs- und Auslegungsbeschluss Klarstellungs- und Ergänzungssatzung \"Pfarrwiesen\" in Hengstfeld",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-06412000-vo-m-131-2026",
+   "title": "Ortsbeiratsmittel zur Förderung von zeitlich begrenzten Projekten von Vereinen und bürgerschaftlichen Initiativen mit gemeinnützigen Inhalten und Ideen auf das gesamte jährliche Ortsbeiratsbudget anwenden",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-09671156-vo-205831843-237769009",
+   "title": "Beitritt zum Projekt Feuerbeschau",
+   "subject": "",
+   "gold": "vertrag"
+  },
+  {
+   "id": "de-09275150-top-196--12",
+   "title": "Beratung und Beschlussfassung der Geschäftsordnung des Gemeinderats der Gemeinde Thyrnau (Geschäftsordnung - GeschO)",
+   "subject": "",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-08336004-vo-76645935-87268924",
+   "title": "Jahresfeier Gemeinde Aitern",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-07131007-oparl-38a947ca093ad5d210b7",
+   "title": "Flutbedingte Wiederherstellung der Hauptstraße - Abschnitt Hemmesser Straße bis Rathausstraße; Vorstellung der Planungsvarianten",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-09176123-top-1154--6-4",
+   "title": "Parksituation Residenzplatz",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-09576127-vo-422731408-422731427",
+   "title": "Antrag auf Vorbescheid",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-09184146-vo-7643",
+   "title": "Haushaltplan 2026; Vorberatung des Haushaltsentwurfs",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-07339-vo-12235",
+   "title": "Beschaffung von drei baugleichen Mehrzweckfahrzeugen 3 (MZF 3) für den Brand- und Katastrophenschutz des Landkreises Mainz-Bingen sowie Zustimmung zur Leistung einer überplanmäßigen Auszahlung",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "nds-03351-vo-6125",
+   "title": "Hermann-Billung-Gymnasium; Sporthalle Sanierung Gebäudehülle(s. KA v. 09.12.2025, TOP 12)",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "nrw-05120000-top-6484--9-5",
+   "title": "Baumfällung Spielplatz Reinwardtstraße Anfrage von Herrn Hahn",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-14521550-vo-50207100183",
+   "title": "Vergabe der Bauleistungen Los 22 - HLS-Installationen zur Maßnahme \"4. BA - Energetische und Brandschutztechnische Optimierung der Obergeschosse des Rathauses Schwarzenberg \"",
+   "subject": "Vergabe der Bauleistungen Los 22 - HLS-Installationen zur Maßnahme \"4. BA - Energetische und Brandschutztechnische Optimierung der Obergeschosse des Rathauses Schwarzenberg \"",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-010595974-rp-vo-2432767",
+   "title": "Beratung und Beschlussfassung über die Auftragsvergabe der gärtnerischen Pflege in der Gemeinde Loit",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "nrw-05117000-vo-1001202",
+   "title": "Sicherung von Veranstaltungen in Mülheim gegen Terroranschläge und Amoktaten Vorschlag der FDP/BAMH-Fraktion",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-01056-top-1005042",
+   "title": "Regularien",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-010565690-top-12139--15-1",
+   "title": "Müllsammelplatz am Gemeindezentrum",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-010515172-vo-1004040",
+   "title": "Prüfung des Jahresabschlusses 2025",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "nds-03241006-vo-6322",
+   "title": "Haushaltsplanentwurf 2026",
+   "subject": "Die Ausschüsse beschließen im Einzelnen: Der Ausschuss stimmt dem Entwurf der Haushaltssatzung und des Haushaltsplanes 2026 und der ggfs. aus der Veränderungsliste erfolgten Änderungen zu, soweit sie der Beschlussfassung dieses Ausschusses unterliegen.",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-02000000-hh-altona-si2026521-7b809d78",
+   "title": "Krötenwanderung zwischen Reemtsmapark und Jenischpark Beschlussempfehlung des Mobilitätsausschusses",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-06435019-vo-49975",
+   "title": "Fuß- und Radwegequerung am Ortseingang Wachenbuchen Süd",
+   "subject": "die Durchführung des Projekts als Ausnahme von der Haushaltssperre 2025.",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-091715102-vo-587338567-587338617",
+   "title": "Bekanntgabe Freisteller und isolierte Befreiungen",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-11000000-pardok-v454030",
+   "title": "Gedenkort Güterbahnhof Moabit / Deportationsrampe Gleis 69 (Teil 1)",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-147305601-cs-46-360",
+   "title": "Beschluss – Bauantrag Neubau Einfamilienhaus mit Doppelgarage in Zschepplin, Antragsteller: Lena Bergmann und Tommy Möbius aus Leipzig",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-08226012-vo-21561",
+   "title": "Bauantrag zum Umbau und Nutzungsänderung im Erdgeschoss auf dem Grundstück Flst.Nr. 507, Bahnhofstraße 26",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-073335006-vo-1856",
+   "title": "Radwegebau - Antrag auf Investitionsförderung Gemarkung Pfarrhöbel",
+   "subject": "",
+   "gold": "foerderung"
+  },
+  {
+   "id": "de-010615168-top-1005923",
+   "title": "Bericht und ggfs. Beschlussfassungen aus der Sitzung des Finanzausschusses vom 24.08.2026",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08126-vo-4225",
+   "title": "Einsparpotenziale und Begründung zwingend notwendiger Budgets",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-071345005-vo-28261305100007",
+   "title": "Beratung und Beschlussfassung über die Einleitung und Durchführung des Stromkonzessionsverfahrens für das Stromversorgungsnetz im Bereich der Nationalparkverbandsgemeinde Herrstein-Rhaunen betreffend des Empfehlungsbeschlusses für den Verbandsgemeinderat",
+   "subject": "end des Empfehlungsbeschlusses für den Verbandsgemeinderat | Der Ortsgemeinderat beschließt die Einleitung und Durchführung des Stromkonzessionsverfahren gemäß § 46 EnWG für das Stromversorgungsnetz der Ortsgemeinde. Die Nationalparkverbandsgemeinde wird mit der entsprechenden Veröffentlichung der in der",
+   "gold": "vertrag"
+  },
+  {
+   "id": "de-072315009-vo-2026990709100099",
+   "title": "Veräußerung von Feuerwehrfahrzeugen",
+   "subject": "Veräußerung von Feuerwehrfahrzeugen Rechtsgrundlage: | Abweichender Beschluss gesehen: gesehen: gesehen: Sachbearbeiter/in Fachbereichsleiter Zeichnungsberechtigter Julian Berneck Jürgen Trarbach i.A. Frank Koch",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-09563000-vo-65919",
+   "title": "Vorlage zum Antrag aus der Bürgerversammlung West der Stadt Fürth vom 20.11.2025 - Antrag auf Geschwindigkeitskontrollen Würzburger Straße",
+   "subject": "Der in der Bürgerversammlung am 20.11.2025 beschlossene Antrag zur konsequenten Überwa- chung der Geschwindigkeiten auf den Hauptverkehrsachsen rund um die Verkehrsknoten Billing-",
+   "gold": "antrag"
+  },
+  {
+   "id": "nrw-05766040-top-17030--4",
+   "title": "Nachtrag: 24.04.2026 Jahresbericht Tourismus 2025 - Bericht in der Sitzung",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "nrw-05711000-top-8204--3",
+   "title": "Festlegung der Zahl der stellvertretenden Bezirksbürgermeisterinnen/Bezirksbürgermeister",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-01055046-oparl-663ca3f346f6fdddf0e3",
+   "title": "1. Änderung des B-Plans Nr. 94 der Stadt Fehmarn für ein Gebiet im Ortsteil Burg a.F., nördlich der Bürgermeister-Lafrenz-Straße, östlich Niendorfer Weg (K 49), südlich des Wohn- und Pflegezentrums und westlich der Wohnbebauung an der Bürgermeister-Feilke-Straße - Realschule/ehemaliges Krankenhaus hier: 1. Verlängerung der Geltungsdauer der Veränderungssperre gemäß § 17 Abs. 1 Satz 3 BauGB",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "nds-032565408-vo-9213",
+   "title": "Entwurf des Haushalts 2027, Budgetberatung Teilhaushalt \"Schulen\" und \"Büchereien\"",
+   "subject": "Die Mittelanmeldungen lt.",
+   "gold": "haushalt"
+  },
+  {
+   "id": "nrw-05366032-oparl-6892ae3327865ce1c153",
+   "title": "Offene Kinder- und Jugendarbeit",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-093765343-vo-347436396-347774414",
+   "title": "Feststellung der weiteren Stellvertretung",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-09571226-top-1119--6",
+   "title": "Bauantrag Neubau eines Bürogebäudes mit Lagerhalle und Betriebsleiterwohnung; Fl. Nr. 912/26, Gemarkung Windsbach",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-13075039-vo-1139679",
+   "title": "Denkmal zu Ehren von Ernst Moritz Arndt (AfD-Fraktion in der Greifswalder Bürgerschaft)",
+   "subject": "a) Ein Spendenkonto bei der Stadt einzurichten oder b) Eine offizielle Zahlungsreferenz anzugeben, auf die Interessierte zweckgebunden spenden können. 5. Die Stadt soll öffentlich über die Möglichkeit der Unterstützung informieren und eine geeignete Anlaufstelle für Rückfragen bereitstellen.",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09473170-vo-7070564-8260500",
+   "title": "Wohnungsweise Umstellung des bisherigen Heizungssystems in der Immobilie Schloßstraße 1, Untersiemau",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-08115028-oparl-2cbee71331c3fdb7c9ac",
+   "title": "Sporthalle Bildungscampus Ezach ─ Genehmigung Vergabemodell „Planen und Bauen“",
+   "subject": "",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-07317000-top-533--10-6",
+   "title": "Erneuerbare Energien Pirmasens GmbH",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-12069604-top-62604",
+   "title": "Eichenallee Straßenschäden",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nds-03351004-top-31197",
+   "title": "Wegeausbesserung",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-15089175-vo-13876",
+   "title": "Bauleitplanung der Stadt Hecklingen - vorhabenbezogener Bebauungsplan \"Solarpark Gänsefurth\" hier: Beschluss über die Abwägung der zum Vorentwurf eingegangenen Stellungnahmen der Öffentlichkeit, Träger öffentlicher Belange und der Nachbargemeinden",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-091795131-vo-365087331-564501044",
+   "title": "Vorlage der Jahresrechnung 2024",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-06440003-oparl-f52996c5904122aa56a5",
+   "title": "Festlegung der Zahl und Wahl der stellvertretenden Ausschussvorsitzenden",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nrw-05315000-oparl-039ffe247973f31a09e2",
+   "title": "Aufhebung von Aufstellungsbeschlüssen sowie Einstellung von Bebauungsplan-Verfahren",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-09673-top-406--4",
+   "title": "Bekanntgabe von Entscheidungen",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-13076-top-7011--7",
+   "title": "Anfragen und Wortmeldungen der Kreistagsmitglieder aus aktuellem Anlass",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09174151-top-724--4",
+   "title": "Antrag auf isolierte Befreiung zur Errichtung einer Terrassenüberdachung an der bestehenden Doppelhaushälfte auf dem Grundstück Fl.Nr. 707/60 Gemkg. Weichs, Bgm.-Hailer-Str. 10 in Weichs",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-09189114-top-3106",
+   "title": "Bauleitplanung; 27. Änderung des Bebauungsplanes \"Ortsmitte\" für den Bereich der Grundstücke Flurnummern 27/4 und 42/1 der Gemarkung Chieming, Stötthamer Straße 10 a in Chieming; Satzungsbeschluss",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-09161000-vo-23387",
+   "title": "Inkraftsetzung der geänderten Einnahmenaufteilungsrichtlinie 2025",
+   "subject": "Die Zweckverbandsversammlung setzt die Einnahmenaufteilungsrichtlinie (Anlage) nach Maßgabe des Beschlusses des VGI-Rats vom 01. Oktober 2026 gemäß den in der",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-02000000-hh-wandsbek-2026509-e3a70292",
+   "title": "Refinanzierung Personalkostensteigerungen durch Tarifabschluss im Bereich SAJF",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "nds-03153019-top-982--9",
+   "title": "Blumentrog am Ortseingang B248",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-071435002-top-8700",
+   "title": "Beratung und Beschlussfassung über Erneuerungen an der Grillhütte",
+   "subject": "",
+   "gold": "bau"
+  },
+  {
+   "id": "de-09185113-vo-39740318-40204624",
+   "title": "Erlass einer Geschäftsordnung",
+   "subject": "",
+   "gold": "regelung"
+  },
+  {
+   "id": "de-010615168-top-1003877",
+   "title": "„Dorfkümmerer“ in der Gemeinde Wacken",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-09361000-top-2838--1-1",
+   "title": "Kulturreferat: aktuelle Haushaltslage 2026 / Ausblick 2027",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08215084-vo-17784",
+   "title": "Festlegung der Preise für Gabholz für die Saison 2025/2026",
+   "subject": "Der Gemeinderat beschließt die Erhöhung der Gabholzpreise auf 100 €/Doppelster für die Saison 2025/2026:",
+   "gold": "abgaben"
+  },
+  {
+   "id": "de-130715163-vo-1006493",
+   "title": "Kommunale Teilhabe § 6 EEG (WKA Bestandsanlagen)",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-09679-top-1638--5",
+   "title": "Änderung der Geschäftsordnung",
+   "subject": "",
+   "gold": "regelung"
+  },
+  {
+   "id": "nrw-05570048-vo-2003041168",
+   "title": "8 Mitglieder sowie deren Vertreter für die Verbandsversammlung des Sparkassenzweckverbandes Münsterland Ost",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-14628060-vo-3042811100114",
+   "title": "Beschlussfassung zur Veräußerung der 3-Raum-Eigentumswohnung WE 08 im EG links auf der Kirchgasse 2 in 01744 Dippoldiswalde OT Schmiedeberg",
+   "subject": "",
+   "gold": "liegenschaft"
+  },
+  {
+   "id": "de-120715107-top-3262--2",
+   "title": "Eventuelle Einwendungen gegen die Niederschrift über den öffentlichen Teil der 8. Sitzung der Gemeindevertretung",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nrw-05562024-vo-202520511100064",
+   "title": "Beschlussfassung der Abfallentsorgungsgebühren 2026 11. Änderung der Abfallentsorgungsgebührensatzung vom 16.12.2013",
+   "subject": "1. Der Rat billigt die unter Punkt zwei stehende Gebührenbedarfsermittlung für 2026. 2. Der Rat beschließt die als",
+   "gold": "abgaben"
+  },
+  {
+   "id": "de-09775152-vo-574832486-609032241",
+   "title": "Bauantrag Kostak, Tekturplanung zum Neubau eines Einfamilienhauses mit einer Doppelgarage und zwei Stellplätzen; Änderung der Geländehöhen, Am Hangelberg 7, Wullenstetten",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "nrw-05758008-oparl-c58fbd1d4add9657bf12",
+   "title": "Bestimmung eines Ausschussmitgliedes zur Mitunterzeichnung der Niederschrift",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-16069012-top-17642",
+   "title": "Bericht Frau Buff",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08116-oparl-0afab6ff6f00f23b2312",
+   "title": "Energiebericht 2024",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-12071160-top-4950--6",
+   "title": "Information Streetworking",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-09174126-rp-top-20251126-0e5f7bc4",
+   "title": "Straße \"An der Wögerwiese\"; - Versuchsphase mit Anbringung von fünf Beton-Legosteinen zur Verlangsamung der gefahrenen Geschwindigkeiten und Einhaltung der Regelungen für den ruhenden Verkehr -",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-130755560-vo-1001287",
+   "title": "B-Plan Nr. 4 \"Solarpark an der Bahn II\" Entwurfs- und Veröffentlichungsbeschluss",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-09572164-top-2390--3-3",
+   "title": "Neubau eines Einfamilienhauses sowie Errichtung einer Doppelgarage auf Flur-Nr. 402, Gemarkung Unterreichenbach, Dorfstraße 33a.",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "de-010615153-vo-1000471",
+   "title": "Beratung und Beschlussfassung über die Einrichtung eines Amtsbauhofes",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nrw-05315000-oparl-9cdcddcd1fe6cf0554d4",
+   "title": "Bericht der Behindertenbeauftragten der Stadt Köln 03/2026",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-13004000-top-11665--7",
+   "title": "Auswertungen AG Strandhotel / OB-Vorstellung vom 17.03.2026. Aktueller Stand",
+   "subject": "",
+   "gold": "bericht"
+  },
+  {
+   "id": "de-08436013-top-28--5",
+   "title": "Beratung und Beschlussfassung über den Jahresabschluss 2023",
+   "subject": "",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-09761000-oparl-c1567bee6814202e213d",
+   "title": "Antrag von Die Linke. Fraktion im Stadtrat Augsburg vom 26. September 2026: Rückzug Augsburgs aus der Olympiabewerbung München+ aufgrund der verhängten Haushaltssperre",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-10041516-top-1002752",
+   "title": "Deutsche Glasfaser",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "nds-033555406-vo-1001975",
+   "title": "Antrag zur Gründung eines Kleintierkrematorium im Gewerbegebiet Volkstorf",
+   "subject": "",
+   "gold": "antrag"
+  },
+  {
+   "id": "de-09176126-vo-44827578-53702498",
+   "title": "ÖPNV: VGI - Konsolidierungsmaßnahmen Linie 50",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-09179126-vo-23438",
+   "title": "Fl.-Nr. 3225/2: Neubau eines Mehrfamilienhauses mit neun Wohneinheiten und neun Stellplätzen, Klosterweg 1 - Antrag auf Baugenehmigung -",
+   "subject": "",
+   "gold": "bauantrag"
+  },
+  {
+   "id": "nds-031515405-vo-1000556",
+   "title": "Vermarktung der Wohnbaugebiete: Stellplatzpflicht in Grundstückskaufverträgen",
+   "subject": "",
+   "gold": "liegenschaft"
+  },
+  {
+   "id": "de-09672117-vo-9044409-9730928",
+   "title": "Hochbehälter Gefäll; Vorstellung und Freigabe der Ausführungsplanung",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-11000000-pardok-v432720",
+   "title": "Einführung des Wahlpflichtfachs \"Feuerwehrunterricht\" für die Jahrgangsstufen 9 und 10 an Berliner Sekundar- und Gemeinschaftsschulen",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-08115002-rp-top-20260210-8fb32269",
+   "title": "Sitzungsniederschriften",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-06634007-vo-20262805100141",
+   "title": "Gem. Antrag der CDU-Fraktion, der FWG-Fraktion und des fraktionslosen Stadtverordneten M. Heideloff: Aufhebung der Satzung zum Schutz der Grünbestände",
+   "subject": "Gem. Antrag der CDU-Fraktion, der FWG-Fraktion und des fraktionslosen Stadtverordneten M. Heideloff: Aufhebung der Satzung zum Schutz der Grünbestände | Die Stadtverordnetenversammlung möge beschließen: Außerkraftsetzung der Satzung zum Schutz der Grünbestände vom 21.11.2008 zum 01.10.2026. Inkraftsetzung der neuen Satzung, gem.",
+   "gold": "antrag"
+  },
+  {
+   "id": "nds-03358002-vo-2000710",
+   "title": "Bebauungsplan Nr. 173 \"Erweiterung Gewerbegebiet Gauß´scher Bogen Ost\" in Bispingen; Aufstellungsbeschluss gem. § 2 (1) BauGB",
+   "subject": "",
+   "gold": "planung"
+  },
+  {
+   "id": "de-071375009-vo-48977",
+   "title": "Beratung und Beschlussfassung über die Vergabe der Planungsleistungen für die Sanierung der Brücke „4“.",
+   "subject": "Beratung und Beschlussfassung über die Vergabe der Planungsleistungen für die Sanierung der Brücke „4“. Ausschließungsgründe: Ausschließungsgründe (§ 22 GemO) sind zu beachten! | Der Ortsgemeinderat beschließt, den Auftrag für die Planungsleistungen zum Angebotspreis von 5.375,35 € brutto, an das Ing.-Büro IBS Ingenieure aus Alflen zu vergeben.",
+   "gold": "vergabe"
+  },
+  {
+   "id": "de-071375004-vo-9220",
+   "title": "Haushaltsberatung 2026: Haushaltssatzung und Haushaltsplan 2026",
+   "subject": "Der Verbandsgemeinderat stimmt dem Haushaltsplan für das Haushaltsjahr 2026 unter Berücksichtigung der Beschlussfassung über die Vorschläge der Einwohner zu und beschließt den Erlass der Haushaltssatzung 2026. Abstimmungsergebnis: Einstimmig Zustimmungen Ablehnungen Stimmenenthaltungen",
+   "gold": "haushalt"
+  },
+  {
+   "id": "de-145245104-top-4626",
+   "title": "Beratung über den Vorschlag zur finanziellen Beteiligung an WEA",
+   "subject": "",
+   "gold": "sonst"
+  },
+  {
+   "id": "de-097755740-vo-216091815-220974485",
+   "title": "Bebauungsplan Nr. 3/2024 \"Ortskern Jedesheim\"; Beteiligung der Behörden uns sonstigen Träger öffentlicher Belange",
+   "subject": "",
+   "gold": "planung"
+  }
+ ]
+}

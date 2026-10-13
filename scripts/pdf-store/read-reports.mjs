@@ -1,5 +1,5 @@
 // Alle regelbasierten Ergebnisse je Bericht in einem Durchlauf (readReport, server/integrations/report-rules.mjs; Plan:
-// requirements/regel-schritt-plan.md): Art des Punkts und Thema (im Bericht: itemKind, theme), Regel-Zusammenfassung kurz und
+// requirements/regel-schritt-plan.md): Art des Punkts, Thema und „Was geschieht“ (im Bericht: itemKind, theme, stage), Regel-Zusammenfassung kurz und
 // lang (ruleSummary) und Fakten (topic_facts). Liest nur Quellen: Titel, Dokumentliste und den Text des Hauptdokuments aus der
 // PDF-Ablage, ohne Internet und ohne KI. Ersetzt summaries.mjs und facts.mjs.
 // Nur Berichte, deren Eingaben sich geändert haben: Schlüssel je Bericht in report_rules (Migration 0032), gebildet aus den
@@ -68,7 +68,7 @@ for(const [id,url,textSha] of todo){
  c.read++;if(pages)c.withText++;
  c.kinds[r.itemKind]=(c.kinds[r.itemKind]||0)+1;c.themes[r.theme.id]=(c.themes[r.theme.id]||0)+1;
  if(r.summaryIssue)c.issues[r.summaryIssue]=(c.issues[r.summaryIssue]||0)+1;else c.summary++;
- const next={...old,itemKind:r.itemKind,theme:r.theme};delete next.ruleSummaryTried;
+ const next={...old,itemKind:r.itemKind,theme:r.theme,stage:r.stage};delete next.ruleSummaryTried;
  if(r.ruleSummary)next.ruleSummary=r.ruleSummary;
  else if(next.ruleSummary&&!KEEP.has(r.summaryIssue)){delete next.ruleSummary;c.dropped++;}
  const json=JSON.stringify(next),changed=json!==row.payload;if(changed)c.changed++;

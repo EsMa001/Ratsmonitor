@@ -142,3 +142,53 @@ für alle Karten neu. Danach Wortliste `--full` (Zahlen je Label).
    `FIGURES_VERSION` 6), Doku.
 Offen in der Oberfläche: Der Schalter für Sammelthemen im Ortsvergleich (`ComparePage.tsx`, `SAMMELTHEMEN`) wirkt nicht mehr,
 weil es die Labels Sitzung und Allgemein nicht mehr gibt.
+
+# Schritt 6: plenara.X auf einer Methodik (Plan, 14.10.2026)
+
+Grundlage ist `requirements/plenara-x-konzept.md` (Abschnitte 4 bis 8), angepasst an das, was seit Schritt 3 schon steht:
+`readReport` liefert je Bericht Art des Punkts, Thema, Unterthemen, Zusammenfassung und Fakten, gespeichert einmal.
+
+## Heute (das Problem)
+
+- Zwei Themenkataloge: die 10 Themen mit 70 Unterthemen (`shared/themes.mjs`) und daneben 8 Themenradare mit eigenen
+  Unterthemen und Signalen (`shared/radars.mjs`, Fakten `radar:<id>`). Dasselbe Thema wird zweimal mit anderen Wörtern erkannt.
+- 16 Module (`server/integrations/analytics-*.mjs`), jedes mit eigener Abfrage: teils über Suchbegriffe im Suchtext, teils über
+  `topic_facts`, teils über Stichproben; doppelte Titel, Zeitfenster und Vergleichsgruppen je Modul eigens gezählt.
+
+## Soll
+
+1. **Ein Katalog.** Die Radare gehen auf: Versorgung, Verkehr, Soziales, Klima, Haushalt als Unterthemen der 10 Themen
+   (Konzept 5.2.1); Vergabe, Gebühren, Beteiligung (und die Signale der Radare) werden die Achse **„Was geschieht“**
+   (`stage`: Antrag, Planung, Vergabe, Bau, Gebühr, Förderung, Beteiligung, Beschluss, Bericht), eine eigene Stufe in
+   `readReport` aus Titel und Betreff/Beschlussvorschlag. `shared/radars.mjs` und die Fakten `radar:*` entfallen.
+2. **Ein Vorgang.** Je Bericht in `report_rules` zusätzlich: `case_key` (Vorlagennummer im Gebiet, sonst Gebiet + normalisierter
+   Titel, heute `titleKey`), `item_kind`, `theme`, `subs`, `stage` (Migration). Das ist die Tabelle, aus der plenara.X zählt;
+   gleiche Vorgänge einmal, Nicht-Sachpunkte nie, überall gleich.
+3. **Eine Abfrage** `GET /api/x` (`server/integrations/plenara-x-query.mjs`): Auswahl (Thema | Unterthema | Suche) × Gliederung
+   (Ort, Monat, Was geschieht, Status, Fraktion, Gremium, Wert) × Kennzahl (Anzahl, Anteil, Vergleich mit der Gruppe, Wert,
+   erste Erwähnung). Vergleichsgruppen und „viel oder wenig“ aus `analytics-radar-norms.mjs` übernommen; Liste hinter jeder Zahl.
+4. **Neuer Atlas** (Thema → Unterthema → Ort) auf `/api/x`; der plenara.X Score entfällt (Seite, Route, `analytics-score.mjs`).
+5. **Werkzeuge** (Trends, Ausbreitung, Ortsvergleich, Beschlüsse, Beratungswege, Themennetz, Fraktionsprofil, Förderung, Kita,
+   Bauleitplanung, Newsradar) als Einstellungen derselben Abfrage (Tabelle in Konzept 6); danach die alten Module weg.
+6. **Messen:** Unterthemen und „Was geschieht“ an neuen, ungesehenen Stichproben (Qualitätstor: Unterthemen ab 85 %, Werte ab
+   90 %, Konzept 7); darunter nur in der Administration.
+
+Nicht in Schritt 6: Werte je Dokument aus Anlagen und Niederschriften (Konzept 4.1, 5.3, Schritt 6 dort); das Ergebnis aus der
+Niederschrift auf den eigenen Tagesordnungspunkt schneiden.
+
+## Messung „Was geschieht“ (14.10.2026, `shared/stage.mjs`, `scripts/stage-study/`, `tests/fixtures/stage-a` bis `-e`)
+
+Von Hand eingeordnet, je Stichprobe frisch vom Server (Sachpunkte, verschiedene Titel). Ehrliche Zahl ist jeweils die erste
+Messung an einer Stichprobe, bevor an ihr abgestimmt wurde (Genauigkeit, wo ein Wert vergeben wird):
+- a (Hälfte 2) 83 %, b 83 %, c 82 %: ohne festen Leitfaden; Abstimmen hob nur die gesehenen Fälle.
+- Mit Leitfaden (Kopf von `shared/stage.mjs`, gilt für Regel und Einordnen von Hand): d 87 %, e 86 % (genau richtig 85 %).
+- Danach an allen fünf abgestimmt: 92 bis 98 % (geschönt). Schwach bleiben Bau, Förderung, Grundstücke (je 50 bis 75 %, selten).
+- Betreff/Beschlussvorschlag zusätzlich zum Titel senkte die Genauigkeit; nur der Titel zählt.
+
+## Commits (je für sich lauffähig, die heutigen Seiten laufen bis 6.5 weiter)
+
+1. Unterthemen der Radare in `themes.mjs`, Achse „Was geschieht“ in `readReport`, Messung an neuer Stichprobe.
+2. Migration: Spalten in `report_rules`, `read-reports.mjs` schreibt sie; Vergleich alt (Radare) gegen neu.
+3. `/api/x` mit Tests (gleiche Zahlen wie die Suche bei gleicher Auswahl).
+4. Atlas auf `/api/x`, Score entfernt (Oberfläche).
+5. Werkzeuge umstellen, alte Module und `radars.mjs` entfernen, Doku.
