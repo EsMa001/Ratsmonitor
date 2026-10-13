@@ -1,10 +1,11 @@
 import { useSyncExternalStore } from "react";
+import { isPhone, PHONE_QUERY } from "./usePhone";
 
 /** Ansicht der Trefferliste: ausführlich (mit Kurztext und Verlauf) oder kompakt; im Browser gemerkt.
  *  Web: Standard ausführlich, der Knopf macht kompakt. Handy: umgekehrt, Standard kompakt, der Knopf zeigt mehr (eigener Merker). */
 export type ListView = "full" | "compact";
 const listeners = new Set<() => void>();
-const phone = () => typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches;
+const phone = isPhone;
 const keyOf = () => (phone() ? "rm-list-view-phone" : "rm-list-view");
 let current: ListView | null = null;
 
@@ -30,7 +31,7 @@ export function setListView(v: ListView) {
 
 /* Beim Wechsel zwischen Handy- und Webbreite (Drehen, Fenster ändern) die passende Einstellung laden */
 if (typeof window !== "undefined") {
-  window.matchMedia("(max-width: 639px)").addEventListener("change", () => {
+  window.matchMedia(PHONE_QUERY).addEventListener("change", () => {
     current = null;
     listeners.forEach((l) => l());
   });

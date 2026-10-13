@@ -73,7 +73,8 @@ export function MapPanel({ active }: { active: boolean }) {
     let t = 0;
     const back = (e: Event) => {
       if (e.type === "focusout" && !isSearchInput(e.target)) return;
-      if (window.innerWidth >= 768) return;
+      /* Nur mit Bildschirmtastatur (Touch: Handy und Tablet), unabhängig von der Breite */
+      if (!window.matchMedia("(pointer: coarse)").matches) return;
       clearTimeout(t);
       t = window.setTimeout(() => {
         const el = sectionRef.current;
@@ -269,7 +270,7 @@ export function MapPanel({ active }: { active: boolean }) {
   /* Suchleiste unten: im Kartenmodus und auf dem Handy, sobald gesucht oder gefiltert wurde */
   const low = explore;
   /* Handy: Schalter unten links (Darstellung, klappt nach oben auf) und unten rechts (Zoom usw.) über der Suchleiste */
-  const mobile = mapW < 768;
+  const mobile = mapW < 640; /* dieselbe Grenze wie usePhone, hier an der Kartenbreite gemessen */
   /* Nicht weiter als bis kurz über die Suchleiste rücken */
   const topShift = Math.min(hidden, Math.max(0, mapH - barH - 230));
   const below = low ? mapH - 44 - 32 : Math.round(mapH / 2) - 22 - 16;

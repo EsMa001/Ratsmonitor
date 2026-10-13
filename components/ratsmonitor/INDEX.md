@@ -690,7 +690,7 @@ topic design-styles.css:140
 - PlanCards.tsx (136, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (30): SaveArticleButton
 - SaveSearchDialog.tsx (16, ⚠2): SaveSearchDialog
-- SearchBox.tsx (551, ⚠1): isSearchInput, focusSearch, SearchBox
+- SearchBox.tsx (545, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (87): SearchFilterPanel
 - SearchOverlay.tsx (90): SearchOverlay
 - ShareButton.tsx (40): ShareButton
@@ -699,7 +699,7 @@ topic design-styles.css:140
 - icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (343, ⚠2): MapPanel
+- MapPanel.tsx (344, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (203, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
@@ -719,7 +719,7 @@ topic design-styles.css:140
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (171, ⚠4): QuellenPage
-- StartseitePage.tsx (518, ⚠5): StartseitePage
+- StartseitePage.tsx (531, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (154): VideosPage
@@ -753,8 +753,9 @@ topic design-styles.css:140
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
 - lena.ts (48): LENA_INTRO, LENA_EXAMPLES, LenaSource, LenaAnswer, askLena, germanDate
-- listView.ts (46): ListView, setListView, useListView
+- listView.ts (47): ListView, setListView, useListView
 - mails.ts (134, ⚠2): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
+- otherTab.ts (11): onOtherTab
 - pageTitle.ts (40): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - queue.ts (29): queue
@@ -773,7 +774,7 @@ topic design-styles.css:140
 - topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
 - useClient.ts (12): useClient, useHydrated
 - useDarkMode.ts (40): useDarkMode
-- usePhone.ts (16): usePhone
+- usePhone.ts (19): PHONE_QUERY, isPhone, usePhone
 - uuid.ts (12): newId
 - xlsx.ts (97, ⚠6): makeXlsx, download, makeCsv
 

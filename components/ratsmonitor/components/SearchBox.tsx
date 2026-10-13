@@ -1,6 +1,7 @@
 import { regionSuggest } from "../lib/place";
 import { useEffect, useId, useRef, useState } from "react";
 import { useClient } from "../lib/useClient";
+import { usePhone } from "../lib/usePhone";
 import { PlaceIndex, type PlaceEntry } from "../lib/place";
 import { norm } from "../lib/text";
 import { hasScope } from "../lib/savedSearch";
@@ -279,15 +280,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
   /* „Ort erkannt“ nur, solange der erkannte Ort im Feld steht; danach zeigt ihn der Chip darüber */
   const placeOn = state.areaSrc === "search" && !!state.area && !!shownDraft;
 
-  /* Schmale Bildschirme: kürzerer Platzhalter, damit er nicht abgeschnitten wird */
-  const [narrow, setNarrow] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 480px)");
-    const on = () => setNarrow(mq.matches);
-    on();
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
+  /* Handy: kürzerer Platzhalter, damit er nicht abgeschnitten wird */
+  const narrow = usePhone();
   /* Strg+K bzw. ⌘K setzt den Cursor in die Suche */
   const mac = useClient(() => /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), false);
   useEffect(() => {

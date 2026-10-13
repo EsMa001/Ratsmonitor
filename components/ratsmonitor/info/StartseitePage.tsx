@@ -158,17 +158,29 @@ function TrendPops({ items, onPick }: { items: TrendItem[]; onPick: (t: string) 
   );
 }
 
+/* Kreisdatei einmal je Seitenaufruf laden: Karte und Mittelpunkte der Pops brauchen sie beide */
+type Districts = { regions: GeoRegion[]; states?: { name: string; path: string }[] };
+let districts: Promise<Districts> | null = null;
+const loadDistricts = () =>
+  (districts ??= fetch("/geo/de-districts.json")
+    .then((r) => (r.ok ? (r.json() as Promise<Districts>) : Promise.reject(new Error("geo"))))
+    .catch((e) => {
+      districts = null;
+      throw e;
+    }));
+
 /** Deutschlandkarte der Kreise (public/geo/de-districts.json, © BKG), ganz eingefärbt; die Pops zeigen, wo ein Begriff zum ersten Mal beraten wurde. */
 function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, number> | null; litKey: number; stage: number; pops: Pop[]; onPick: (name: string) => void }) {
   const [geo, setGeo] = useState<{ regions: GeoRegion[]; states: { name: string; path: string }[] } | null>(null);
   const [tip, setTip] = useState("");
   useEffect(() => {
-    const ctl = new AbortController();
-    fetch("/geo/de-districts.json", { signal: ctl.signal })
-      .then((r) => (r.ok ? (r.json() as Promise<{ regions: GeoRegion[]; states?: { name: string; path: string }[] }>) : Promise.reject(new Error("geo"))))
-      .then((d) => setGeo({ regions: d.regions, states: d.states ?? [] }))
+    let live = true;
+    loadDistricts()
+      .then((d) => live && setGeo({ regions: d.regions, states: d.states ?? [] }))
       .catch(() => {});
-    return () => ctl.abort();
+    return () => {
+      live = false;
+    };
   }, []);
   const paths = useMemo(() => {
     if (!geo) return null;
@@ -286,11 +298,12 @@ export function StartseitePage() {
     const ctl = new AbortController();
     /* Zahl der Einträge der letzten 30 Tage (nicht der Gesamtbestand) */
     const from = todayLocal(-30);
-    fetch(`/api/search?q=&area=&label=&month=&from=${from}&to=${today}&scope=with&status=&level=city`, { signal: ctl.signal })
+    /* Nur die Zähler (part=facets): dieselbe Zahl, ohne Trefferliste zu suchen */
+    fetch(`/api/search?q=&area=&label=&month=&from=${from}&to=${today}&scope=with&status=&level=city&part=facets`, { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : Promise.reject(new Error("gesamt"))))
       .then((d) => setTotal(typeof d.total === "number" ? d.total : null))
       .catch(() => {});
-    fetch("/api/search", { signal: ctl.signal })
+    fetch("/api/search?part=facets", { signal: ctl.signal })
       .then((r) => (r.ok ? (r.json() as Promise<{ total?: number }>) : Promise.reject(new Error("gesamt"))))
       .then((d) => setAllTotal(typeof d.total === "number" ? d.total : null))
       .catch(() => {});
@@ -306,9 +319,9 @@ export function StartseitePage() {
      Auswertung je Begriff zu lange dauert; ohne Eintrag gilt public/data/startseite-trends.json. Die Karte selbst ist ganz eingefärbt. */
   useEffect(() => {
     const ctl = new AbortController();
-    fetch("/geo/de-districts.json", { signal: ctl.signal })
-      .then((r) => (r.ok ? (r.json() as Promise<{ regions: GeoRegion[] }>) : Promise.reject(new Error("geo"))))
+    loadDistricts()
       .then((d) => {
+        if (ctl.signal.aborted) return;
         const c: Record<string, [number, number]> = {};
         for (const r of d.regions) {
           const nums = (r.path.match(/-?\d+\.?\d*/g) ?? []).map(Number);
