@@ -181,7 +181,7 @@ class Database {
  * Schreiber warten. busyTimeoutMs ist für den Server kurz: Während SQLite auf eine Sperre wartet, steht der Prozess.
  * Eine fehlende Datei wird nicht angelegt (ein Tippfehler im Pfad gäbe sonst eine leere Datenbank), außer mit create.
  */
-export function openD1(file, { readOnly = false, busyTimeoutMs = 5000, create = false } = {}) {
+export function openD1(file, { readOnly = false, busyTimeoutMs = 5000, create = false, secureDelete = false } = {}) {
   if (!create && !fs.existsSync(file)) throw new Error(`D1_ERROR: Datenbankdatei fehlt: ${file}`);
   let db;
   try { db = new DatabaseSync(file, { readOnly }); } catch (error) { throw d1Error(error); }
@@ -194,5 +194,7 @@ export function openD1(file, { readOnly = false, busyTimeoutMs = 5000, create = 
   }
   db.exec('PRAGMA foreign_keys=ON');
   db.exec('PRAGMA cache_size=-131072');
+  // Kontendatei: Gelöschtes wird überschrieben, nicht nur freigegeben (requirements/konten-konzept.md, 3.2)
+  if (secureDelete) db.exec('PRAGMA secure_delete=ON');
   return new Database(db);
 }
