@@ -12,7 +12,8 @@
 //   6. refresh-search-words.mjs  Wortliste nachführen (neue Zusammenfassungen ändern den Suchtext)
 //   7. stats.mjs      Stand für den Admin-Reiter „PDF-Ablage“ (system_state 'pdf-store-stats')
 // Fehlgeschlagene Abrufe werden nicht erneut versucht, außer mit --retry-errors (Auftrag „Fehlgeschlagene erneut versuchen“
-// im Admin-Reiter, scripts/pdf-store/job.mjs).
+// im Admin-Reiter, scripts/pdf-store/job.mjs); dieser Auftrag versucht nach den Hauptdokumenten auch die übrigen PDFs erneut
+// (Schritt „Laden übrige“, je die Hälfte der Ladezeit).
 // --others (Auftrag „Übrige PDFs laden“): eigener Lauf für die übrigen PDFs der Berichte (fetch.mjs --others), nur Laden,
 // Textebene und Stand, keine Zusammenfassungen und Fakten (die lesen nur Hauptdokumente); Laden bekommt die ganze Zeit bis auf 15 min.
 // --texts (Auftrag „Texte erstellen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann
@@ -46,6 +47,7 @@ const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const
 const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&!ocrOnly&&flag('texts');
 const lane=ocrOnly?'ocr':'chain';
 const minutes=Number(opt('minutes',180)),budgetGb=Number(opt('budget-gb',BUDGET_GB)),months=Number(opt('months',240));
+const retryAll=flag('retry-errors')&&!flag('others')&&!flag('ocr-only')&&!flag('texts');
 const fetchShare=Number(opt('fetch-share',0.4)),reserve=Number(opt('reserve',25)),ocrWorkers=Number(opt('ocr-workers',3));
 const fileMinutes=String(opt('file-minutes',5));
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
@@ -149,7 +151,7 @@ const end=()=>{
 };
 
 const TAIL=['Zusammenfassungen','Fakten','Wortliste','Art nachtragen','Stand'];
-plan=others?['Laden','Textebene','Art nachtragen','Stand']:ocrOnly?['OCR',...TAIL]:texts?['Textebene',...TAIL]:['Laden','Textebene',...TAIL];
+plan=others?['Laden','Textebene','Art nachtragen','Stand']:ocrOnly?['OCR',...TAIL]:texts?['Textebene',...TAIL]:['Laden',...(retryAll?['Laden übrige']:[]),'Textebene',...TAIL];
 say(`Start${others?' (übrige PDFs)':ocrOnly?' (OCR)':texts?' (nur Texte aus vorhandenen PDFs)':''}: Ablage ${dir}, ${sizeGb().toFixed(1)} GB (PDFs und Texte), feste Grenze ${budgetGb} GB, ${minutes} min`);
 
 if(ocrOnly){
@@ -165,7 +167,8 @@ if(ocrOnly){
   end();
  }
 }else if(!texts){
- await step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare))),'--report-mb','1000']);
+ await step('Laden','scripts/pdf-store/fetch.mjs',[...(others?['--others']:[]),'--months',String(months),'--budget-gb',String(budgetGb),...(flag('retry-errors')?['--retry-days','0']:[]),...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(others?minutes-15:minutes*fetchShare*(retryAll?0.5:1)))),'--report-mb','1000']);
+ if(retryAll&&!stopped)await step('Laden übrige','scripts/pdf-store/fetch.mjs',['--others','--months',String(months),'--budget-gb',String(budgetGb),'--retry-days','0',...(opt('start-month')?['--start-month',opt('start-month')]:[]),'--max-minutes',String(Math.max(5,Math.floor(minutes*fetchShare*0.5))),'--report-mb','1000']);
  if(sizeGb()>budgetGb){
   await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
   await step('Budget','scripts/pdf-store/budget.mjs',['--budget-gb',String(budgetGb),'--apply']);
