@@ -4,13 +4,13 @@ import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { Spark, TrendMap, type Trend, type TrendKind } from "./TrendViews";
 import { RadarDrill } from "./RadarDrill";
 import { isFiller, prettyTerm } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 interface Topic { id: string; name: string; recent: number; prev: number; change: number; n: number }
 interface Result {
@@ -40,45 +40,29 @@ export function TrendsPage() {
   const params = useSearchParams();
   const { query, hasTerm, search } = useAnalyticsQuery();
   const [days, setDays] = useState<number>(90);
-  const [res, setRes] = useState<Result | null>(null);
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const given = useRef(params.get("thema") || (hasTerm ? null : "Photovoltaik"));
-  const [want, setWant] = useState(!given.current);
-  const [error, setError] = useState("");
+  /* Beispielbegriff beim Öffnen (aus ?thema= oder Photovoltaik ohne eigenen Begriff); einmal festgelegt */
+  const [given] = useState(() => params.get("thema") || (hasTerm ? null : "Photovoltaik"));
   const [tab, setTab] = useState<"rising" | "emerging" | "falling">("rising");
   const [picked, setPicked] = useState("");
-  const abortRef = useRef<AbortController | null>(null);
-
-  useEffect(() => {
-    if (!given.current) return;
-    search.applySearch(given.current);
-    given.current = null;
-    setWant(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   /* Ohne Begriff gilt die ganze Auswahl; mit Begriff nur dessen Einträge. Bei einem Beispiel wartet der Start auf den Begriff. */
   const key = `${query}&window=${days}`;
-  useEffect(() => {
-    if (!want) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    setPicked("");
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/trends?${key}`, { signal: ctrl.signal }, "Die Analyse konnte nicht berechnet werden.")
-      .then((r) => { const ok = (l: Trend[]) => l.filter((t) => !isFiller(t.term)); /* Aufsteiger und Neues nur mit Mindestzahl Gebiete: ein einzelnes Dokument ist kein Trend */ const many = (l: Trend[]) => { const k = ok(l); const m = k.filter((t) => t.regions >= 3); return r.totals.regions >= 3 && m.length ? m : k; }; r = { ...r, rising: many(r.rising), emerging: many(r.emerging), falling: ok(r.falling), all: ok(r.all) }; setRes(r); setRanKey(key); setLoading(false); setTab(r.rising.length ? "rising" : r.emerging.length ? "emerging" : "falling"); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want]);
-  useEffect(() => () => abortRef.current?.abort(), []);
+  /* Füllwörter raus; Aufsteiger und Neues nur mit Mindestzahl Gebiete: ein einzelnes Dokument ist kein Trend */
+  const tidy = (r: Result): Result => { const ok = (l: Trend[]) => l.filter((t) => !isFiller(t.term)); const many = (l: Trend[]) => { const k = ok(l); const m = k.filter((t) => t.regions >= 3); return r.totals.regions >= 3 && m.length ? m : k; }; return { ...r, rising: many(r.rising), emerging: many(r.emerging), falling: ok(r.falling), all: ok(r.all) }; };
+  const { res: raw, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key, url: `/api/analytics/trends?${key}`, initial: !given, fallback: "Die Analyse konnte nicht berechnet werden.", onDone: (r) => { const t = tidy(r); setPicked(""); setTab(t.rising.length ? "rising" : t.emerging.length ? "emerging" : "falling"); } });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const res = useMemo(() => (raw ? tidy(raw) : null), [raw]);
 
-  const stale = !!res && ranKey !== key && !loading;
-  const onPlay = () => { if (!loading) setWant(true); };
-  const pickDays = (v: number) => { setDays(v); setWant(true); };
+  useEffect(() => {
+    if (!given) return;
+    search.applySearch(given);
+    run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+  const onPlay = () => { if (!loading) run(); };
+  const pickDays = (v: number) => { setDays(v); run(); };
 
   const items = useMemo(() => {
     if (!res) return [] as (Trend & { kind: TrendKind })[];
@@ -102,7 +86,7 @@ export function TrendsPage() {
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, welche Begriffe in den Räten gerade aufkommen, zunehmen oder verschwinden. Verglichen wird der aktuelle Zeitraum mit dem gleich langen davor.</p>
       </PageBand>
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Trends berechnen" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => run()} startLabel="Trends berechnen" /></div>
       <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
         <span className="text-slate-500">Zeitraum:</span>
         <div role="radiogroup" aria-label="Zeitraum" className="flex gap-1">

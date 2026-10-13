@@ -12,7 +12,10 @@ import { prettyTerm } from "../lib/terms";
    (leer, Ortsvergleich), bleibt das schematische Vorschaubild. */
 
 const nf = (v: number) => v.toLocaleString("de-DE");
-type Snap = { generated?: string; items: Record<string, any>; geo?: { w: number; h: number; pts: number[] } };
+/* Schnappschuss: je Analyse eine andere Form; mini() prüft beim Zeichnen, was da ist */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Loose = any;
+type Snap = { generated?: string; items: Record<string, Loose>; geo?: { w: number; h: number; pts: number[] } };
 let snapshot: Promise<Snap> | null = null;
 const getJson = (url: string) => fetch(url).then((r) => {
   if (!r.ok) throw new Error(String(r.status));
@@ -142,7 +145,7 @@ function MiniVergleich({ names, counts, rows }: { names: string[]; counts: numbe
 }
 
 /** Ausschnitt je Analyse; null, wenn der Schnappschuss dafür nichts enthält */
-function mini(id: AnalyseId, d: any, geo?: Snap["geo"]): ReactNode {
+function mini(id: AnalyseId, d: Loose, geo?: Snap["geo"]): ReactNode {
   if (!d) return null;
   if (id === "beschluesse") {
     const months = d.months as [number, number, number][];
@@ -212,15 +215,18 @@ function mini(id: AnalyseId, d: any, geo?: Snap["geo"]): ReactNode {
   return null;
 }
 
+/* Neue Analysen haben noch keine gezeichnete Vorschau: dann ihr Symbol (wie in AnalyticsAbout) */
+function IconThumb({ id }: { id: AnalyseId }) {
+  return <div aria-hidden="true" className="flex h-full min-h-[200px] items-center justify-center text-teal-700"><Icon name={ANALYSEN[id].icon} size={56} /></div>;
+}
+
 export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term: string; showStand?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
   const [node, setNode] = useState<ReactNode>(null);
   const [stand, setStand] = useState("");
   /* Neue Analysen haben noch keine gezeichnete Vorschau (AnalyticsAbout zeigt dann ein Symbol) */
-  const Thumb = (ANALYSE_THUMBS as Partial<Record<AnalyseId, () => ReactNode>>)[id] ?? (() => (
-    <div aria-hidden="true" className="flex h-full min-h-[200px] items-center justify-center text-teal-700"><Icon name={ANALYSEN[id].icon} size={56} /></div>
-  ));
+  const Thumb = (ANALYSE_THUMBS as Partial<Record<AnalyseId, () => ReactNode>>)[id];
   useEffect(() => {
     if (!ref.current || typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { setSeen(true); io.disconnect(); } }, { rootMargin: "200px" });
@@ -240,7 +246,7 @@ export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term:
       {node ? (
         <div className="h-[390px] overflow-hidden rounded-[18px] border border-slate-200 bg-white p-5 pt-12"><div className="flex h-full flex-col justify-center [&>svg]:max-h-full [&>svg]:min-h-0 [&>svg]:shrink">{node}</div></div>
       ) : (
-        <Thumb />
+        Thumb ? <Thumb /> : <IconThumb id={id} />
       )}
       {!radar && (
         <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[13px] text-slate-600 shadow-sm">

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useDarkMode } from "../../lib/useDarkMode";
 import { MapEngine } from "../../lib/geo/mapEngine";
 import { MAP_COLORS } from "../../lib/constants";
@@ -18,8 +18,14 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   const baseRef = useRef<HTMLCanvasElement>(null);
   const overRef = useRef<HTMLCanvasElement>(null);
   const pickRef = useRef(onPick);
-  pickRef.current = onPick;
-  const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: (a) => pickRef.current(a), onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo]);
+  useEffect(() => {
+    pickRef.current = onPick;
+  });
+  /* Stabiler Weg zum aktuellen onPick, die Karte wird nur einmal je Geodaten gebaut */
+  const select = useCallback((a: string) => pickRef.current(a), []);
+  // Die Karte ruft select erst bei einem Klick auf, nicht beim Rendern
+  // eslint-disable-next-line react-hooks/refs
+  const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo, select]);
   const dark = useDarkMode()[0];
   useEffect(() => { engine?.setDark(dark); }, [engine, dark]);
   useEffect(() => {

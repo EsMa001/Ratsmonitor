@@ -63,7 +63,9 @@ export function ComparePage() {
   const [thema, setThema] = useState("");
   const [res, setRes] = useState<Result | null>(null);
   const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
+  /* Beim Öffnen gleich vergleichen, wenn zwei verschiedene Orte vorbelegt sind */
+  const [opening] = useState(() => !!ort1 && !!ort2 && ort1.ags !== ort2.ags);
+  const [loading, setLoading] = useState(opening);
   const [error, setError] = useState("");
   const [perHead, setPerHead] = useState(false);
   /* Geöffnete Liste hinter einer Zahl: Abschnitt (at), Art (all, label, committee, term), Wert und die Orte (Index) */
@@ -81,9 +83,12 @@ export function ComparePage() {
   const run = (a = ort1, b = ort2, t = thema) => {
     if (!a || !b) return setError("Bitte beide Orte wählen.");
     if (a.ags === b.ags) return setError("Bitte zwei verschiedene Orte wählen.");
-    const q = buildQuery(a, b, t);
     setError("");
     setLoading(true);
+    fetchCompare(buildQuery(a, b, t));
+  };
+  /* Nur der Abruf (setzt erst mit der Antwort Zustand), auch für den Start beim Öffnen */
+  const fetchCompare = (q: string) => {
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
@@ -92,7 +97,7 @@ export function ComparePage() {
       .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
   };
   /* Beim Öffnen sofort mit den vorbelegten Orten vergleichen, damit die Seite nicht leer ist */
-  useEffect(() => { run(); return () => abortRef.current?.abort(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (opening) fetchCompare(query); return () => abortRef.current?.abort(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const stale = !!res && ranKey !== query && !loading;
 

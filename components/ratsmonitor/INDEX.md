@@ -723,7 +723,7 @@ topic design-styles.css:140
 - AccountPages.tsx (326): DoneScreen, RegisterPage, LoginPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
-- BranchenLive.tsx (254): LiveThumb
+- BranchenLive.tsx (260): LiveThumb
 - BranchenPages.tsx (127): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
 - InfoPages.tsx (47): InfoPages
@@ -784,6 +784,7 @@ topic design-styles.css:140
 - tier.ts (84): Tier, TierLimits, PLAN_MAX, LIMITS, TIER_LABEL, PRO_PRICE, IS_DEV, getTier, setTier, useTier, usage
 - todos.ts (118): TodoStatus, TodoPersonId, TodoResolution, TodoPriority, TodoSubtask, TODO_STATUSES, TODO_PRIORITIES, TODO_RESOLUTIONS, TODO_PEOPLE, TodoItem, TodoCategory, TodoData, taskStatus, todoPriority, taskResolution, normalizeTodoItem, TodoKind, TodoState, localToday, fmtShort, todoState
 - topicCache.ts (43): TopicError, seedTopic, peekTopic, loadTopic, prefetchDetail
+- useClient.ts (12): useClient, useHydrated
 - useDarkMode.ts (40): useDarkMode
 - usePhone.ts (16): usePhone
 - uuid.ts (12): newId
@@ -814,7 +815,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (198, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (305, ⚠11): ComparePage
+- ComparePage.tsx (310, ⚠11): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (271, ⚠6): DiffusionPage
@@ -834,12 +835,12 @@ topic design-styles.css:140
 - RadarMap.tsx (79, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS
-- RegionMap.tsx (65): RegionMap
+- RegionMap.tsx (71): RegionMap
 - Reveal.tsx (16): Reveal
 - ScoreView.tsx (132, ⚠4): ScoreView
 - ThemeRadarPage.tsx (188, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
-- TrendsPage.tsx (205, ⚠6): TrendsPage
+- TrendsPage.tsx (189, ⚠7): TrendsPage
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 
