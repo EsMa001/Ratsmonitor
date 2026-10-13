@@ -173,6 +173,15 @@ function subsOf(theme,hits){
  return [...new Set(subs.filter(s=>!(s.fallback&&subs.some(o=>o!==s&&o.family===s.family))).map(s=>s.id))];
 }
 
+/** Alle Themen, deren Begriffe in einem kurzen Text vorkommen (Lena: Thema einer Frage); schwache Themen (Finanzen,
+ *  Verwaltung) nur, wenn kein anderes Thema trifft. Reihenfolge wie THEMES. */
+export function themesIn(text){
+ const h=hitsOf(prepare(text||''));
+ const ids=new Set(h.map(x=>x.sub?.theme||x.theme)),strong=[...ids].filter(id=>!WEAK_THEMES.has(id));
+ const keep=strong.length?new Set(strong):ids;
+ return THEMES.map(t=>t.id).filter(id=>keep.has(id));
+}
+
 /** Thema und Unterthemen eines Vorgangs.
  *  @param {{title:string,subject?:string,summary?:string}} x  subject: subjectOf(text), summary: Regel-Kurzfassung
  *  @returns {{theme:string,subs:string[],source:'title'|'text'|'formal'|'none',word?:string}} */

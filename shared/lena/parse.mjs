@@ -1,6 +1,6 @@
 // Lena versteht eine Frage mit Regeln: Absicht, Ort, Zeit, Status, Thema. Keine Modelle, nichts wird geraten.
 // Konzept: docs/produkt/lena-konzept.md. Messung: node scripts/lena/measure.mjs [--fehler]
-import {LABEL_WORDS} from '../label-words.mjs';
+import {themesIn} from '../themes.mjs';
 import {LABELS} from '../labels.mjs';
 
 export const LENA_VERSION='lena-rules-v1';
@@ -82,7 +82,7 @@ export function findPlaces(text,catalog,{max=2}={}){
  return found;
 }
 
-/* Thema: Rest der Frage ohne Füllwörter, Absichts-, Zeit-, Status- und Ortswörter; dazu die Sachgebiete, deren Wörter treffen. */
+/* Thema: Rest der Frage ohne Füllwörter, Absichts-, Zeit-, Status- und Ortswörter; dazu die Themen (shared/themes.mjs), deren Begriffe treffen. */
 const FILLER=new Set(['beantragt','behandelt','diskutiert','beim','nimmt','als','wenn','geht','neue','neuen','neuer','steht','räten','kreises','durch','los','um','etwas','mitteilungen','anfragen','daten','portal','dabei','hast','habt','räte','kommt','kommen','seitdem','sich','sein','seine','seinem','seiner','ihre','ihrer','ihrem','unser','unsere','unserer','euch','dich','der','die','das','den','dem','des','ein','eine','einen','einem','einer','und','oder','aber','mit','von','vom','für','auf','aus','bei','nach','über','seit','bis','zum','zur','zu','in','im','an','am','ist','sind','war','waren','wird','werden','wurde','wurden','hat','haben','gibt','es','ich','du','sie','wir','ihr','mir','mich','uns','man','was','wie','wann','wo','wer','welche','welcher','welches','ob','dass','denn','noch','schon','bereits','auch','nur','sehr','mal','bitte','danke','hallo','hi','hey','lena','mein','meine','meinem','meiner','dort','hier','da','so','dazu','davon','darüber','etwas','alles','neues','aktuelles','aktuell','thema','themen','sache','sachen','vorgang','vorgänge','vorlage','vorlagen','beschluss','beschlüsse','antrag','anträge','sitzung','sitzungen','rat','ausschuss','gemeinde','stadt','kreis','kommune','region','gebiet','ort','jahr','jahre','monat','monate','woche','wochen','tag','tage','letzte','letzten','letzter','diese','diesem','dieser','dieses','diesen','gerade','zurzeit','derzeit','eigentlich','denn','doch','ja','nein','nicht','kein','keine','mehr','weniger','viel','viele','stand','status','dabei','daten','zeig','zeige','zeigen','finde','suche','such','liste','sag','sagen','gib','geben','bescheid','erzähl','erkläre','erklär','bedeutet','heißt','kostet','pro','basis','plenara','ratsmonitor','informier','informiere','benachrichtige','alarm','melde','vergleiche','vergleich','entwickelt','entwicklung','trend','zum','laufen','läuft','liegt','liegen','worden','geworden']);
 export function parseTopic(text,{drop=[],dropWords=new Set()}={}){
  let t=' '+text.toLowerCase()+' ';
@@ -91,7 +91,7 @@ export function parseTopic(text,{drop=[],dropWords=new Set()}={}){
  for(const [,re] of INTENT_RULES)if(!re.source.includes('.{'))t=t.replace(new RegExp(re.source,'gi'),' ');
  const words=t.replace(/[^\p{L}\p{N}\- ]+/gu,' ').split(/\s+/).filter(w=>(w.length>=3||/^\d{2,}$/.test(w))&&!FILLER.has(w));
  const topic=words.join(' ');
- const labels=Object.entries(LABEL_WORDS).filter(([,ws])=>new RegExp(ws.join('|'),'i').test(topic)).map(([id])=>id);
+ const labels=themesIn(topic);
  return {topic,labels};
 }
 export const labelName=id=>LABELS.find(l=>l.id===id)?.name||'';

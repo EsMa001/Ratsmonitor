@@ -22,7 +22,7 @@ function fixture(){
 
 test('lena understands intent, place, time and status with rules and never guesses an intent',()=>{
  const p=parseQuestion('Wurde Photovoltaik in Billerbeck in den letzten 30 Tagen beschlossen?',catalog,now);
- assert.equal(p.intent,'stand');assert.equal(p.place.regions[0].id,'billerbeck');assert.equal(p.status,'approved');assert.equal(p.time.from,'2026-09-10');assert.equal(p.topic,'photovoltaik');assert.deepEqual(p.labels,['klima']);
+ assert.equal(p.intent,'stand');assert.equal(p.place.regions[0].id,'billerbeck');assert.equal(p.status,'approved');assert.equal(p.time.from,'2026-09-10');assert.equal(p.topic,'photovoltaik');assert.deepEqual(p.labels,['umwelt']);
  assert.equal(parseQuestion('xyz',catalog,now).intent,'suche');
  assert.equal(parseQuestion('',catalog,now).intent,'');
  assert.equal(parseQuestion('Vergleiche Billerbeck und Wesel',catalog,now).places.length,2);
