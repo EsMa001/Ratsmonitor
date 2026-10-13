@@ -9,7 +9,7 @@
 //                                                  übrigen. Verdrängte Dateien ('text-only') werden kurz nachgeladen, gelesen und
 //                                                  gleich wieder gelöscht (ocrWithRefetch in store-lib.mjs); ein Server mit 3
 //                                                  Fehlern in Folge fällt für den Lauf heraus. Je Worker eine Datei zur Zeit.
-//   --recycle N: Paketgröße (Standard 150); jedes Paket läuft als eigener Prozess (--child), gegen wachsenden Speicher
+//   --recycle N: Paketgröße (Standard 25); --rss-mb N: Speichergrenze je Paket (Standard 2500); jedes Paket läuft als eigener Prozess (--child), gegen wachsenden Speicher
 //   --file-minutes M (nightly.mjs setzt 5): Zeitgrenze je Datei; wer länger braucht, wird abgebrochen, nichts geschrieben und
 //                                                  ans Ende der Reihe gestellt (ocr_slow). Ohne: keine Grenze.
 //   node scripts/pdf-store/text.mjs --stats        Stand der Textfassungen
@@ -75,10 +75,10 @@ if(!flag('ocr')){
   catch{const pid=Number(fs.readFileSync(lock,'utf8'));if(pid&&alive(pid)){console.log(`OCR läuft schon (Prozess ${pid}), nichts zu tun`);stepSummary({skipped:'OCR-Lauf von Hand läuft'});store.close();process.exit(0);}fs.writeFileSync(lock,String(process.pid));}
   const release=()=>{try{if(fs.readFileSync(lock,'utf8')===String(process.pid))fs.unlinkSync(lock);}catch{/* schon weg */}};
   process.on('exit',release);
-  /* Treiber: jedes Paket zu --recycle Dateien (Standard 150) läuft als eigener Prozess und endet danach. Beim Ende eines Prozesses
+  /* Treiber: jedes Paket zu --recycle Dateien (Standard 25) läuft als eigener Prozess und endet danach. Beim Ende eines Prozesses
      gibt das System allen Speicher frei; im selben Prozess wuchs die OCR über Stunden auf 5,8 GB und hing an der Grenze des
      Auftragsdienstes (13.10.2026, auch mit frischen OCR-Workern je Paket). Fortschritt und Zusammenfassung sind die Summen. */
-  const per=Number(opt('recycle',150)),me=fileURLToPath(import.meta.url),fileMin=opt('file-minutes');
+  const per=Number(opt('recycle',25)),me=fileURLToPath(import.meta.url),fileMin=opt('file-minutes');
   const tot={files:0,primary:0,pages:0,failed:0,changed:0,fetched:0,skipped:0,dropped:0,slow:0},t0=Date.now();
   const total=store.ocrQueue().length,workers=Number(opt('workers',3));
   console.log(`${total} Dateien mit Seiten ohne Textebene, in Paketen zu ${per} Dateien als eigene Prozesse`);
@@ -91,7 +91,7 @@ if(!flag('ocr')){
    if(maxMinutes&&left<1)break;
    const sumFile=path.join(store.dir,`ocr-paket-${process.pid}.json`);try{fs.unlinkSync(sumFile);}catch{/* keine */}
    const code=await new Promise(resolve=>{
-    child=spawn(process.execPath,['--no-warnings','--max-old-space-size=2048',me,'--ocr','--child','--limit',String(per),'--workers',String(workers),'--timeout-ms',opt('timeout-ms','10000'),
+    child=spawn(process.execPath,['--no-warnings','--max-old-space-size=2048',me,'--ocr','--child','--limit',String(per),'--workers',String(workers),'--timeout-ms',opt('timeout-ms','10000'),'--rss-mb',opt('rss-mb','2500'),
      ...(fileMin?['--file-minutes',fileMin]:[]),...(left?['--max-minutes',String(left)]:[])],{stdio:'inherit',env:{...process.env,RM_STEP_SUMMARY:sumFile,RM_NO_PROGRESS:'1'}});
     child.on('error',()=>resolve(127));child.on('exit',(c,sig)=>resolve(c??sig));
    });
@@ -109,7 +109,10 @@ if(!flag('ocr')){
   if(!chained)progress(myLane,null);
   store.close();process.exit(0);
  }
- const workers=Number(opt('workers',3)),recycle=Number(opt('recycle',150));let ocr=await ocrScheduler(workers);
+ const workers=Number(opt('workers',3)),recycle=Number(opt('recycle',25));
+ // Speicherwächter: nativer Speicher (Canvas, WebAssembly) wächst je Seite und gibt ihn im Prozess nicht zurück; über der Grenze
+ // beendet sich das Paket nach der laufenden Datei, der Treiber startet das nächste (13.10.2026: 6,6 GB bei 150 Dateien)
+ const rssMb=()=>process.memoryUsage.rss()/1048576,rssLimit=Number(opt('rss-mb',2500));let ocr=await ocrScheduler(workers);
  if(!ocr){console.error('OCR-Werkzeuge fehlen (OCR_TOOLS).');process.exit(1);}
  const todo=store.ocrQueue().slice(0,limit||undefined),main=new Set(todo.filter(x=>x.main).map(x=>x.sha)),t0=Date.now();
  let files=0,primary=0,pagesDone=0,failed=0,dropped=0,fetched=0,changed=0,skipped=0,slow=0;
@@ -142,16 +145,17 @@ if(!flag('ocr')){
  tell({step:'OCR',ocr:{done:0,total:todo.length,pages:0,failed:0,workers,perHour:null,fetched:0,...(fileMs?{slow:0}:{})}},true);
  // Je Worker eine Datei zur Zeit (bei den vielen Dateien mit einer Seite hätten sonst nicht alle Worker zu tun); so liegen
  // höchstens so viele nachgeladene Dateien wie Worker gleichzeitig da
- // In Paketen zu --recycle Dateien (Standard 150), danach frische OCR-Worker: tesseract.js gibt Speicher nicht vollständig
+ // In Paketen zu --recycle Dateien (Standard 25), danach frische OCR-Worker: tesseract.js gibt Speicher nicht vollständig
  // frei, ein Lauf über tausende Dateien wuchs auf 4 GB und brachte den Auftragsdienst an seine Grenze (12.10.2026)
  const queue=todo.map(x=>x.sha);
  while(queue.length&&!late()){
   const batch=queue.splice(0,recycle);
-  await Promise.all(Array.from({length:workers},async()=>{while(batch.length&&!late())await one(batch.shift());}));
+  await Promise.all(Array.from({length:workers},async()=>{while(batch.length&&!late()&&rssMb()<rssLimit)await one(batch.shift());}));
   if(batch.length)queue.unshift(...batch);
+  if(rssMb()>=rssLimit){console.log(`Speicher ${Math.round(rssMb())} MB über ${rssLimit} MB: Paket endet, der nächste Lauf übernimmt ${queue.length} Dateien`);break;}
   if(queue.length&&!late()){await ocr.terminate();ocr=await ocrScheduler(workers);}
  }
- if(queue.length)console.log(`${halted?'Angehalten':`Zeitgrenze erreicht (${maxMinutes} min)`}, ${queue.length} Dateien im nächsten Lauf`);
+ if(queue.length&&late())console.log(`${halted?'Angehalten':`Zeitgrenze erreicht (${maxMinutes} min)`}, ${queue.length} Dateien im nächsten Lauf`);
  await ocr.terminate();
  console.log(`fertig: ${files} Dateien (${primary} Hauptdokumente), ${pagesDone} Seiten per OCR, ${failed} Fehler (davon ${changed} geändert), ${fetched} nachgeladen und wieder gelöscht, ${skipped} Server ausgelassen${fileMs?`, ${slow} über der Zeitgrenze (später)`:''}, ${dropped} zu große PDFs gelöscht (${elapsed(t0)})`);
  stepSummary({files,primary,pages:pagesDone,failed,changed,fetched,skipped,dropped,open:queue.length+skipped+slow,seconds:Math.round((Date.now()-t0)/1000),stopped:halted,...(fileMs?{slow}:{})});
