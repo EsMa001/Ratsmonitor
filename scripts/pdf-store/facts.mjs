@@ -29,8 +29,10 @@ console.log(`${list.length} Berichte gelesen (${((Date.now()-t0)/1000).toFixed(0
 const full=process.argv.includes('--full'),keys=full?new Map():store.factsKeys();
 const deleteTopic=db.prepare("DELETE FROM topic_facts WHERE topic_id=? AND method LIKE 'facts-%'");
 const insert=db.prepare('INSERT OR REPLACE INTO topic_facts(topic_id,kind,value,detail,method) VALUES(?,?,?,?,?)');
-// Kurze Schreibvorgänge (je 5.000 Berichte), damit die laufende App zwischendurch lesen kann
-db.exec('BEGIN');store.db.exec('BEGIN');
+// Kurze Schreibvorgänge (je 5.000 Berichte), damit die laufende App zwischendurch lesen kann. IMMEDIATE: die Schleife liest
+// erst (Textstand, Text) und schreibt dann; ein einfaches BEGIN scheitert dabei sofort mit „database is locked“, sobald ein
+// anderer Prozess (OCR-Bahn) inzwischen geschrieben hat, ohne busy_timeout abzuwarten.
+db.exec('BEGIN IMMEDIATE');store.db.exec('BEGIN IMMEDIATE');
 const c={withText:0,topicsFaction:0,topicsFunding:0,unchanged:0};let n=0;
 for(const [id,title,url,docTitle] of list){
  const session=!!url&&sessionDocument({title:docTitle},uses.get(url)||0);
@@ -44,7 +46,7 @@ for(const [id,title,url,docTitle] of list){
  for(const r of rows){insert.run(id,r.kind,r.value,r.detail,method);c[r.kind]=(c[r.kind]||0)+1;}
  store.setFactsKey(id,key);
  if(rows.some(r=>r.kind==='faction'))c.topicsFaction++;if(rows.some(r=>r.kind==='funding'))c.topicsFunding++;
- if(++n%5000===0){db.exec('COMMIT;BEGIN');store.db.exec('COMMIT;BEGIN');if(n%100000===0)console.log(`${n}/${list.length}`);}
+ if(++n%5000===0){db.exec('COMMIT;BEGIN IMMEDIATE');store.db.exec('COMMIT;BEGIN IMMEDIATE');if(n%100000===0)console.log(`${n}/${list.length}`);}
 }
 db.exec('COMMIT');store.db.exec('COMMIT');
 // Analysen lesen neu (Zwischenspeicher hängen am Datenstand), nur wenn sich etwas geändert hat
