@@ -77,6 +77,12 @@ test('KIC agenda keeps only public items; the role appended to a title is remove
  // A broken part is skipped, not the meeting; a title is plain text, not HTML.
  const broken=json('eidertal-meeting-52376529.json');broken.parts.unshift(null,{protectedpart:false,agendaitems:[null,{id:'52376529-1',numbering:'0',name:'Lärm <55 dB und >45 dB\r\n(Beschließend)',restricted:false,downloadallowed:true}]});
  const noisy=parseKicMeeting(broken);assert.equal(noisy.items.length,9);assert.deepEqual([noisy.items[0].title,noisy.items[0].number],['Lärm <55 dB und >45 dB','0']);
+ // Some systems send every umlaut, ß and § as U+FFFD (Großostheim): restored in titles and committees, before the role is cut off.
+ const lost=json('eidertal-meeting-52376529.json');lost.committeename='Werkausschuss der Gemeindewerke Gro�ostheim';
+ lost.parts.unshift({protectedpart:false,agendaitems:[{id:'52376529-2',numbering:'9',name:'Aufnahme von Kosten f�r Hitzeschutzplanung gem. � 27 (Beschlie�end)',restricted:false}]});
+ const restored=parseKicMeeting(lost);assert.equal(restored.items[0].title,'Aufnahme von Kosten für Hitzeschutzplanung gem. § 27');assert.equal(restored.committee,'Werkausschuss der Gemeindewerke Großostheim');
+ // Such a committee changes the print once, so that a meeting read before is read again; other meetings keep theirs.
+ assert.ok(restored.changed.endsWith('|Werkausschuss der Gemeindewerke Großostheim'));assert.ok(!parseKicMeeting(json('eidertal-meeting-52376529.json')).changed.includes('Rumohr'));
  // An answer without parts is not an empty agenda.
  assert.throws(()=>parseKicMeeting({id:1,meetingdate:'2026-10-05T00:00:00',agenda:[]}),/Unbekanntes Format der Sitzung/);
 });

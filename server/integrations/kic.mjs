@@ -5,6 +5,7 @@ import {budgeted} from './request-budget.mjs';
 import {fetchText,allowed,MAX_MEETINGS} from './sessionnet.mjs';
 import {resultStatus} from './sdnet.mjs';
 import {category,hash,sourceSummary,parallel} from './oparl.mjs';
+import {restoreLostLetters,LOST} from '../../shared/lost-letters.mjs';
 // Public guest access of the KIC council information system (kiC RIS, React app such as ris.aschaffenburg.de/app/).
 // The page is an empty shell; the app reads /<version>/webconfig.json (serviceUrl, org_key) and then asks the JSON
 // interface named there, sending the headers x-orgkey (org_key), x-uniqueid (host name of the app, plus "/<name>"
@@ -18,8 +19,9 @@ import {category,hash,sourceSummary,parallel} from './oparl.mjs';
 // Links point to the pages of the app (app/sitzungen/…, app/download?url=…), which open for every visitor.
 // The catalog entry names the app (base) and its interface (api); both are the only hosts asked.
 const day=value=>String(value||'').slice(0,10);
-// The interface sends plain text, not HTML: only white space is tidied ("Lärm <55 dB" stays as it is).
-const plain=value=>String(value??'').replace(/\s+/g,' ').trim();
+// The interface sends plain text, not HTML: only white space is tidied ("Lärm <55 dB" stays as it is). Some systems
+// send every umlaut, ß or § as U+FFFD ("Kosten f�r …"); those characters are restored from their neighbours.
+const plain=value=>restoreLostLetters(String(value??'').replace(/\s+/g,' ').trim());
 // Flags of the guest view count only with an explicit value; a missing or unknown flag is neither yes nor no.
 const yes=value=>value===true||value==='true',no=value=>value===false||value==='false';
 // restricted of an item or consultation: false, or "ö" (öffentlich) as the consultation sequence writes it.
@@ -87,7 +89,10 @@ export function parseKicMeeting(json,meeting={}){
    items.push({key:String(a.id),number:plain(a.numbering),title,documents:Number(a.documentcount)||0,downloads:yes(a.downloadallowed),globalId:plain(a.globalid)});
   }
  }
- return {date,committee,items,unclear,changed:[m.state,m.op,m.opdatetime,m.snapdatetime].join('|')};
+ // A committee name with lost characters goes into the print of the meeting, so that meetings read before they were
+ // restored are read again once.
+ const lost=[m.committeename,m.committeename2,m.committeename3].some(v=>String(v??'').includes(LOST));
+ return {date,committee,items,unclear,changed:[m.state,m.op,m.opdatetime,m.snapdatetime].join('|')+(lost?'|'+committee:'')};
 }
 /** Published votes of one item, worded as the app shows them. */
 export function kicResult(votings){
