@@ -383,7 +383,7 @@ zuerst übrige PDFs, ein übriges PDF nie ein Hauptdokument. In der Ablage `pdfs
 Hauptdokumenten (bei gleicher Seitenzahl nach ihnen). Der Admin-Reiter zeigt sie
 getrennt (`others` in `pdf-store-stats`). Mehrere Läufe nötig; jeder macht dort weiter, wo der vorige aufgehört hat.
 
-**Texte erstellen** (Auftrag `texts`, `nightly.mjs --texts`): lädt nichts, liest die Textebene aller abgelegten PDFs ohne Text,
+**Textebene lesen** (Auftrag `texts`, `nightly.mjs --texts`): lädt nichts, liest die Textebene aller abgelegten PDFs ohne Text,
 danach Zusammenfassungen, Fakten, Wortliste und Stand wie nachts. Die Kennzahl „PDFs ohne Text“
 (`texts.missing` in `pdf-store-stats`) zeigt, wie viele darauf warten. **OCR starten** (Auftrag `ocr`, `nightly.mjs --ocr-only`,
 `text.mjs --ocr`, Bahn OCR): OCR aller PDFs, Hauptdokumente und übrige, in einer Reihe (`ocrQueue`): wenigste OCR-Seiten zuerst,

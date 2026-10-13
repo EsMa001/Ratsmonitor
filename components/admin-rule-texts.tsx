@@ -36,6 +36,9 @@ export function AdminRuleTexts(){
   catch(e){setJobError(e instanceof Error?e.message:'Der Job konnte nicht geladen werden.');}
  },[]);
  useEffect(()=>{loadJob();const t=setInterval(loadJob,60000);return ()=>clearInterval(t);},[loadJob]);
+ /* Berichte mit Text im Hauptdokument und wie viele davon eine Zusammenfassung haben (Zählung der PDF-Ablage, stats.mjs) */
+ const [pdfSum,setPdfSum]=useState<{done:number;withText:number}|null>(null);
+ useEffect(()=>{fetch('/api/admin/pdf-ablage',{cache:'no-store'}).then(r=>r.ok?r.json() as Promise<{stats?:{summaries?:{done:number;withText:number}}}>:null).then(d=>setPdfSum(d?.stats?.summaries||null)).catch(()=>{/* Kennzahl bleibt leer */});},[]);
  const start=async()=>{
   if(!window.confirm('Zusammenfassungen, Fakten und Wortliste jetzt erstellen? Der Job startet sofort.'))return;
   setAsking(true);
@@ -54,6 +57,7 @@ export function AdminRuleTexts(){
   {label:'Ohne Zusammenfassung',value:pct(none,total),note:n(none)+' Artikel (Platzhaltertext)'},
   {label:'Ø Güte der regelbasierten Texte',value:avg===undefined?'–':avg,of:avg===undefined?undefined:'von 100',note:rule?'Mittel über '+n(rule)+' Artikel':'Noch keine gespeichert'},
  ]:['Mit KI-Zusammenfassung','Mit regelbasierter Zusammenfassung','Ohne Zusammenfassung','Ø Güte der regelbasierten Texte'].map(label=>({label,value:undefined}));
+ const pdfItem=({label:'Aus PDF-Texten',value:pdfSum?pct(pdfSum.done,pdfSum.withText):'–',note:pdfSum?n(pdfSum.done)+' von '+n(pdfSum.withText)+' Berichten mit Text im Hauptdokument; ohne: Sitzungsunterlagen und Texte, aus denen die Regeln nichts machen':'Stand aus der Zählung der PDF-Ablage'});
  const lab=c?[
   {label:'Artikel gesamt',value:n(total),note:'Grundlage der Anteile'},
   {label:'Mit KI-Label',value:pct(aiL,total),note:n(aiL)+' Artikel'},
@@ -66,7 +70,7 @@ export function AdminRuleTexts(){
   {!!data?.statsPending&&<p role="status" className="mt-4 text-[14px] text-slate-500">Die Gebietszahlen werden noch nachgeführt ({n(data.statsPending)} Gebiete offen); die Werte können noch steigen.</p>}
   <section id="regeltexte-job" className="admin-section">
    <div className="admin-section-heading"><h2>Erstellen</h2></div>
-   <p className="admin-note">Aus den Texten der PDF-Ablage entstehen nach festen Regeln, ohne KI: Zusammenfassungen für Berichte ohne, Fakten für plenara.X und die Wortliste der Suche (nur wenn Zusammenfassungen dazukamen). Der PDF-Import lädt und liest nur.</p>
+   <p className="admin-note">Aus den Texten der PDF-Ablage entstehen nach festen Regeln, ohne KI: Zusammenfassungen für Berichte ohne, Fakten für plenara.X und die Wortliste der Suche (nur wenn Zusammenfassungen dazukamen; gesucht wird in deren Kurzfassung, nicht in der Langfassung). Der PDF-Import lädt und liest nur.</p>
    {jobError&&<Alert onRetry={loadJob}>{jobError}</Alert>}
    <ul className="m-0 mt-4 list-none space-y-1.5 p-0 text-[14px] text-slate-700">
     <li>{running?`Läuft seit ${when(job?.run?.running?.startedAt)}.`:requested?'Start angefordert …':job?.run?.lastStart?`Zuletzt ${when(job.run.lastStart)}, ${RESULT[job.run.result||'']||'–'}, ${dur(job.run.seconds)}.`:job?'Noch nicht gelaufen.':'–'}
@@ -78,7 +82,7 @@ export function AdminRuleTexts(){
   <section id="regeltexte-zusammenfassungen" className="admin-section">
    <div className="admin-section-heading"><h2>Zusammenfassungen</h2></div>
    <p className="admin-note">Ist eine KI-Zusammenfassung vorhanden, steht sie im Artikel; sonst die regelbasierte, sonst der Platzhalter.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={sum}/></div>
+   <div className="mt-6"><Kpis label="Kennzahlen der Zusammenfassungen" items={[...sum,pdfItem]}/></div>
   </section>
   <section id="regeltexte-labels" className="admin-section">
    <div className="admin-section-heading"><h2>Labels</h2></div>

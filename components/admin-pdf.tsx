@@ -7,7 +7,7 @@ import {Icon} from '@/components/admin-icons';
 import {n,pct,gb,when,clock,day,month,dur,KIND,MonthBars,SpaceBar,ProcessFlow,HostList,RunList,QualityTable,scorePct,type MonthRow,type Host,type Run,type Quality} from '@/components/admin-pdf-parts';
 
 /* Reiter „PDF-Import“ (requirements/admin-pdf-ablage-konzept.md): was gerade läuft, wie vollständig die Ablage ist, Texte und
-   Auswertung, Platz, wie der Import arbeitet, Fehler und Server, Protokoll. Daten: /api/admin/pdf-ablage
+   Texte, Platz, wie der Import arbeitet, Fehler und Server, Protokoll. Daten: /api/admin/pdf-ablage
    (server/integrations/pdf-store-admin.mjs); die Seite rechnet nichts, sie liest, was die Skripte auf dem Server ablegen. */
 type Reason={reason:string;n:number};
 type Stats={at:string;seconds:number;linked:number;allPdfs:number;loaded:number;textOnly:number;failed:number;open:number;openBlocked?:number;reasons:Reason[];
@@ -24,7 +24,7 @@ type Progress={kind?:string;startedAt?:string;until?:string;step?:string;at:stri
 type Lane='chain'|'ocr';
 type Data={stats:Stats|null;jobs:{queue:Job[];running:Record<Lane,Job|null>;recent:Job[]};progress:{chain:Progress|null;ocr:Progress|null};runs:Run[];
  stop:{chain?:{requestedAt:string};ocr?:{requestedAt:string}};count:{requestedAt:string;startedAt?:string;finishedAt?:string;ok?:boolean}|null;worker:boolean;error?:string};
-const JOB:Record<string,string>={run:'Lauf starten',retry:'Fehlgeschlagene erneut versuchen',others:'Übrige PDFs laden',texts:'Texte erstellen',ocr:'OCR starten'};
+const JOB:Record<string,string>={run:'Lauf starten',retry:'Fehlgeschlagene erneut versuchen',others:'Übrige PDFs laden',texts:'Textebene lesen',ocr:'OCR starten'};
 /** Zwei Bahnen laufen nebeneinander, je Bahn ein Auftrag (server/integrations/pdf-store-admin.mjs, laneOf) */
 const LANE:Record<Lane,string>={chain:'Laden',ocr:'OCR'};
 const laneOf=(kind:string):Lane=>kind==='ocr'?'ocr':'chain';
@@ -116,12 +116,12 @@ export function AdminPdf(){
     <button type="button" className={pill+' bg-slate-900 text-white hover:bg-slate-700'} disabled={!canAct} onClick={()=>post({action:'queue',kind:'run'})}><Icon name="play" size={16}/>Lauf starten →</button>
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'retry'})}>Fehlgeschlagene erneut versuchen →</button>
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'others'})}>Übrige PDFs laden →</button>
-    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'texts'})}>Texte erstellen →</button>
+    <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'texts'})}>Textebene lesen →</button>
     <button type="button" className={textBtn} disabled={!canAct} onClick={()=>post({action:'queue',kind:'ocr'})}>OCR starten →</button>
     <button type="button" className={textBtn} disabled={!canAct||!!data?.count&&!data.count.finishedAt} onClick={()=>post({action:'count'})}>{data?.count&&!data.count.finishedAt?(data.count.startedAt?'Wird gezählt …':'Zählen angefordert …'):'Stand neu zählen →'}</button>
    </div>
    {note&&<p role="status" className="mt-3 text-[14px] text-slate-900">{note}</p>}
-   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Kette wie nachts ohne OCR (neue und noch nicht versuchte Hauptdokumente, Textebene, Auswertung).':k==='retry'?'wie „Lauf starten“, dazu fehlgeschlagene Abrufe und ausgelassene Server; danach dasselbe für die übrigen PDFs (je die Hälfte der Ladezeit).':k==='texts'?'nichts laden; Textebene der abgelegten PDFs ohne Text, dann Zusammenfassungen, Fakten, Wortliste und Stand.':k==='ocr'?'Seiten ohne Text aller PDFs per OCR lesen, Hauptdokumente und übrige; die mit den wenigsten Seiten zuerst, bei gleich vielen Hauptdokumente vor übrigen; braucht eine Datei über 5 Minuten, kommt sie ans Ende; schon gelöschte PDFs werden kurz nachgeladen und gleich wieder gelöscht; danach Auswertung, wenn Hauptdokumente dabei waren.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Zwei Bahnen laufen nebeneinander: Laden (alle Knöpfe außer „OCR starten“) und OCR; je Bahn einer zur Zeit, höchstens 3 Stunden. „Stand neu zählen“ geht jederzeit (etwa eine Minute).</p>
+   <p className="mt-3 max-w-[820px] text-[12px] text-slate-500">{Object.entries(JOB).map(([k,l])=>`${l}: ${k==='run'?'Kette wie nachts ohne OCR (neue und noch nicht versuchte Hauptdokumente, Textebene, Stand).':k==='retry'?'wie „Lauf starten“, dazu fehlgeschlagene Abrufe und ausgelassene Server; danach dasselbe für die übrigen PDFs (je die Hälfte der Ladezeit).':k==='texts'?'nichts laden; Textebene der abgelegten PDFs ohne Text, dann Stand.':k==='ocr'?'Seiten ohne Text aller PDFs per OCR lesen, Hauptdokumente und übrige; die mit den wenigsten Seiten zuerst, bei gleich vielen Hauptdokumente vor übrigen; braucht eine Datei über 5 Minuten, kommt sie ans Ende; schon gelöschte PDFs werden kurz nachgeladen und gleich wieder gelöscht.':'nur die übrigen PDFs, nur Textebene.'}`).join(' ')} Zwei Bahnen laufen nebeneinander: Laden (alle Knöpfe außer „OCR starten“) und OCR; je Bahn einer zur Zeit, höchstens 3 Stunden. „Stand neu zählen“ geht jederzeit (etwa eine Minute).</p>
   </section>
 
   {/* Alle Dokumente: Hauptdokumente und übrige PDFs zusammen, je Adresse */}
@@ -174,7 +174,7 @@ export function AdminPdf(){
    <p className="mt-1 max-w-[820px] text-[14px] text-slate-500">Zusammenfassungen, Fakten und die Wortliste der Suche entstehen aus diesen Texten im Reiter <Link href={adminHref('regeltexte')} className="text-teal-600 hover:text-teal-700">Themen &amp; Texte</Link>, nicht hier.</p>
    <div className="mt-5"><Kpis label="Texte" items={[
     {label:'Textfassungen',value:v(s=>n(s.texts.files)),note:'Dateien mit gelesenem Text (Textebene oder OCR)'},
-    {label:'PDFs ohne Text',value:v(s=>s.texts.missing===undefined?'–':n(s.texts.missing)),note:s?.texts.missing?'abgelegt, Textebene noch nicht gelesen; mit „Texte erstellen“ nachholen':s?.texts.missing===0?'alle abgelegten PDFs haben Text':'nach dem nächsten Zählen'},
+    {label:'PDFs ohne Text',value:v(s=>s.texts.missing===undefined?'–':n(s.texts.missing)),note:s?.texts.missing?'abgelegt, Textebene noch nicht gelesen; mit „Textebene lesen“ nachholen':s?.texts.missing===0?'alle abgelegten PDFs haben Text':'nach dem nächsten Zählen'},
     {label:'Warten auf OCR',value:v(s=>n(s.texts.ocrWaitingAll??s.texts.ocrWaiting)),note:s?(()=>{const all=s.texts.ocrWaitingAll??s.texts.ocrWaiting;return `${n(s.texts.ocrPagesAll??s.texts.ocrPages)} Seiten; davon ${n(s.texts.ocrWaiting)} Hauptdokumente${ocrRate&&all?`; bei ${n(ocrRate)} Dateien je Stunde etwa ${dur(Math.round(all/ocrRate*3600))} OCR`:''}`;})():undefined},
    ]}/></div>
   </section>

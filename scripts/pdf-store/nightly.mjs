@@ -14,8 +14,8 @@
 // (Schritt „Laden übrige“, je die Hälfte der Ladezeit).
 // --others (Auftrag „Übrige PDFs laden“): eigener Lauf für die übrigen PDFs der Berichte (fetch.mjs --others), nur Laden,
 // Textebene und Stand; Laden bekommt die ganze Zeit bis auf 15 min.
-// --texts (Auftrag „Texte erstellen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann
-// Stand wie nachts.
+// --texts (Auftrag „Textebene lesen“): nichts laden, nur aus den schon abgelegten PDFs ohne Text die Textebene lesen, dann
+// den Stand.
 // --ocr-only (Auftrag „OCR starten“, Bahn „OCR“): OCR aller PDFs, Hauptdokumente und übrige (text.mjs --ocr: leichte zuerst,
 // verdrängte kurz nachgeladen, Zeitgrenze je Datei --file-minutes, Standard 5), mit der ganzen Zeit bis auf die Reserve.
 // Zusammenfassungen, Fakten und Wortliste gehören nicht hierher (Entscheidung 13.10.2026): Job „rule-texts“

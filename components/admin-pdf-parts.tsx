@@ -15,7 +15,7 @@ export const day=(d?:string|null)=>d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(
 export const month=(m?:string|null)=>m&&/^\d{4}-\d{2}$/.test(m)?m.slice(5,7)+'.'+m.slice(2,4):m||'–';
 export const dur=(s?:number|null)=>s==null?'–':s<90?`${s} s`:s<5400?`${Math.round(s/60)} min`:`${(s/3600).toLocaleString('de-DE',{maximumFractionDigits:1})} h`;
 /** Arten der Läufe und Aufträge */
-export const KIND:Record<string,string>={nightly:'Nachtkette',run:'Lauf von Hand',retry:'Erneuter Versuch',others:'Übrige PDFs',texts:'Texte erstellen',fetch:'Laden von Hand',ocr:'OCR',text:'Textebene von Hand'};
+export const KIND:Record<string,string>={nightly:'Nachtkette',run:'Lauf von Hand',retry:'Erneuter Versuch',others:'Übrige PDFs',texts:'Textebene lesen',fetch:'Laden von Hand',ocr:'OCR',text:'Textebene von Hand'};
 
 export type MonthRow={month:string;linked:number;ok:number;textOnly:number;failed:number;open:number;openBlocked?:number};
 const SEG:[keyof MonthRow,string,string][]=[['ok','bg-teal-600','als PDF'],['textOnly','bg-teal-300','nur Text'],['failed','bg-slate-400','fehlgeschlagen'],['open','bg-slate-200','offen']];
