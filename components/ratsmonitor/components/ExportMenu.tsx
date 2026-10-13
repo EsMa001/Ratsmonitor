@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { IconDownload } from "./icons";
+import { radioKeys, radioTab } from "../lib/radioKeys";
 
 export interface ExportOption {
   id: string;
@@ -31,9 +32,9 @@ export function ExportMenu({ options, note, onExport, disabled = false, title = 
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[300px] rounded-2xl border-slate-200 bg-white p-4 text-slate-900 shadow-pop">
         <p className="m-0 text-[16px] font-semibold">{title}</p>
-        <div role="radiogroup" aria-label="Format" className="mt-3 flex flex-col">
+        <div role="radiogroup" aria-label="Format" onKeyDown={radioKeys} className="mt-3 flex flex-col">
           {options.map((o) => (
-            <button key={o.id} type="button" role="radio" aria-checked={format === o.id} onClick={() => setFormat(o.id)} className="flex items-start gap-3 border-t border-slate-200 py-2.5 text-left first:border-t-0">
+            <button key={o.id} type="button" role="radio" aria-checked={format === o.id} tabIndex={radioTab(format === o.id)} onClick={() => setFormat(o.id)} className="flex items-start gap-3 border-t border-slate-200 py-2.5 text-left first:border-t-0">
               <span aria-hidden="true" className={`mt-1 grid h-4 w-4 flex-none place-items-center rounded-full border ${format === o.id ? "border-teal-600" : "border-slate-300"}`}>
                 {format === o.id && <span className="h-2 w-2 rounded-full bg-teal-600" />}
               </span>

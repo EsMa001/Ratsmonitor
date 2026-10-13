@@ -90,7 +90,7 @@ export function LenaPage() {
             </Link>
           ))}
         {a.ask?.options.map((o) => (
-          <button key={o.question} type="button" className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[13px] text-slate-700 hover:border-slate-500" onClick={() => ask(o.question)}>
+          <button key={o.question} type="button" className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[14px] text-slate-700 hover:border-slate-500" onClick={() => ask(o.question)}>
             {o.text}
           </button>
         ))}
@@ -115,8 +115,8 @@ export function LenaPage() {
                 <div
                   className={
                     m.from === "user"
-                      ? "max-w-[85%] rounded-2xl rounded-br-md bg-slate-900 px-4 py-3 text-[15px] text-white"
-                      : "w-full max-w-[92%] rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-[15px] text-slate-800"
+                      ? "max-w-[85%] rounded-2xl rounded-br-md bg-slate-900 px-4 py-3 text-[14px] text-white"
+                      : "w-full max-w-[92%] rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-[14px] text-slate-800"
                   }
                 >
                   {m.from === "lena" && <span className="mb-1 block text-[12px] font-semibold uppercase tracking-wide text-slate-500">Lena</span>}
@@ -134,7 +134,7 @@ export function LenaPage() {
                             <Link href={h.link} className="font-medium text-slate-900 underline-offset-2 hover:underline">
                               {h.title}
                             </Link>
-                            <span className="mt-0.5 block text-[13px] text-slate-500">
+                            <span className="mt-0.5 block text-[14px] text-slate-500">
                               {germanDate(h.date)}
                               {h.gemeinde ? " · " + h.gemeinde : ""}
                               {h.gremium ? " · " + h.gremium : ""} · {h.status}
@@ -149,7 +149,7 @@ export function LenaPage() {
                   {m.chips && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {m.chips.map((c) => (
-                        <button key={c} type="button" className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[13px] text-slate-700 hover:border-slate-500" onClick={() => ask(c)}>
+                        <button key={c} type="button" className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[14px] text-slate-700 hover:border-slate-500" onClick={() => ask(c)}>
                           {c}
                         </button>
                       ))}
@@ -175,14 +175,14 @@ export function LenaPage() {
                 onChange={(e) => setText(e.target.value)}
                 maxLength={200}
                 placeholder="Zum Beispiel: Was gibt es zu Photovoltaik in Billerbeck?"
-                className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-[15px] text-slate-900 placeholder:text-slate-400"
+                className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-[14px] text-slate-900 placeholder:text-slate-400"
               />
             </label>
             <button type="submit" className="ri-btn" disabled={!text.trim()}>
               Fragen
             </button>
           </form>
-          <p className="mt-4 text-[13px] text-slate-500">
+          <p className="mt-4 text-[14px] text-slate-500">
             Lena ist regelbasiert und versteht einfache Fragen. Sie gibt keine Rechts- oder Finanzberatung, maßgeblich sind die Originalunterlagen der Kommunen. Ihre Fragen werden nicht gespeichert.
           </p>
         </div>

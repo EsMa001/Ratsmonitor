@@ -14,12 +14,14 @@ function Toggle({ label, hint, on, set }: { label: string; hint: string; on: boo
   return (
     <div className="flex items-center justify-between gap-3 py-0.5 text-[14px] text-slate-900 max-sm:min-h-8 max-sm:py-0 sm:py-0" title={hint}>
       <span id={`t-${label.replace(/\W+/g, "-")}`}>{label}</span>
+      {/* Erklärung für Bildschirmleser (aria-description lesen die meisten nicht vor) */}
+      {hint && <span id={`t-${label.replace(/\W+/g, "-")}-hint`} className="sr-only">{hint}</span>}
       <button
         type="button"
         role="switch"
         aria-checked={on}
         aria-labelledby={`t-${label.replace(/\W+/g, "-")}`}
-        aria-description={hint}
+        aria-describedby={hint ? `${`t-${label.replace(/\W+/g, "-")}`}-hint` : undefined}
         onClick={() => set(!on)}
         className={`relative h-6 w-10 flex-none rounded-full transition-colors max-sm:after:absolute max-sm:after:-inset-x-2.5 max-sm:after:-inset-y-2.5 max-sm:after:content-[''] ${on ? "bg-teal-600" : "bg-slate-300/80"}`}
       >
@@ -49,6 +51,8 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
     const box = el?.closest("section")?.getBoundingClientRect();
     const edge = Math.min(box?.right ?? Infinity, document.documentElement.clientWidth);
     if (el) setFlip(el.getBoundingClientRect().right > edge - 12);
+    /* Fokus ins geöffnete Fenster (Tastatur, Bildschirmleser); Esc bringt ihn zurück auf den Filter-Knopf */
+    el?.focus({ preventScroll: true });
   }, []);
   const phone = usePhone();
   const full = "min-w-0 [&_button]:!w-full [&_button]:!min-w-0 [&_button]:!max-w-none";
@@ -58,6 +62,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
       id="filter-body"
       role="dialog"
       aria-label="Filter"
+      tabIndex={-1}
       onKeyDown={(e) => {
         /* Esc schließt das Filterfenster; der Fokus geht zurück auf den Filter-Knopf */
         if (e.key !== "Escape" || e.defaultPrevented) return;
@@ -65,7 +70,7 @@ export function FilterPanel({ toggle, up = false, maxH }: { toggle: ReactNode; u
         setFiltersOpen(false);
         requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-controls="filter-body"]')?.focus());
       }}
-      className={`rm-glass absolute z-20 flex w-[300px] max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
+      className={`rm-glass absolute z-20 flex w-[300px] outline-none max-sm:w-[calc(100vw-88px)] max-w-[calc(100vw-32px)] gap-2 max-sm:gap-0.5 rounded-[22px] ${up ? "bottom-0 flex-col-reverse pt-3.5 max-sm:pt-2 sm:pt-2.5" : "top-0 flex-col pb-3.5 max-sm:pb-2 sm:pb-2.5"} ${flip ? "right-0" : "left-0"} overflow-y-auto overscroll-contain`} style={maxH ? { maxHeight: maxH } : undefined}>
       <div className={`flex items-center gap-2 max-sm:pl-4 ${flip ? "flex-row-reverse" : ""}`}>
         {toggle}
         {phone && (

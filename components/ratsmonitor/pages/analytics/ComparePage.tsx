@@ -14,6 +14,7 @@ import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
 import { RadarDrill } from "./RadarDrill";
 import { todayLocal } from "../../lib/text";
 import { errorText, fetchJson } from "../../lib/fetchJson";
+import { radioKeys, radioTab } from "../../lib/radioKeys";
 
 interface Share { id: string; n: number; share: number }
 interface Place {
@@ -221,8 +222,8 @@ export function ComparePage() {
           <section className="mt-12">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div><h2 className="text-[22px] font-semibold">Verlauf</h2><p className="mt-1 text-[14px] text-slate-500">Vorgänge je Monat.</p></div>
-              <div role="radiogroup" aria-label="Maß" className="flex gap-1 text-[14px]">
-                {([[false, "Anzahl"], [true, "je 1.000 Einwohner"]] as const).map(([v, l]) => <button key={l} type="button" role="radio" aria-checked={perHead === v} onClick={() => setPerHead(v)} className={`h-8 rounded-full border px-3.5 ${perHead === v ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{l}</button>)}
+              <div role="radiogroup" aria-label="Maß" onKeyDown={radioKeys} className="flex gap-1 text-[14px]">
+                {([[false, "Anzahl"], [true, "je 1.000 Einwohner"]] as const).map(([v, l]) => <button key={l} type="button" role="radio" aria-checked={perHead === v} tabIndex={radioTab(perHead === v)} onClick={() => setPerHead(v)} className={`h-8 rounded-full border px-3.5 ${perHead === v ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{l}</button>)}
               </div>
             </div>
             <div className="my-3">{legend}</div>

@@ -11,6 +11,7 @@ import { RadarDrill } from "./RadarDrill";
 import { isFiller, prettyTerm } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
+import { radioKeys, radioTab } from "../../lib/radioKeys";
 
 interface Topic { id: string; name: string; recent: number; prev: number; change: number; n: number }
 interface Result {
@@ -89,9 +90,9 @@ export function TrendsPage() {
       <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => run()} startLabel="Trends berechnen" /></div>
       <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]">
         <span className="text-slate-500">Zeitraum:</span>
-        <div role="radiogroup" aria-label="Zeitraum" className="flex gap-1">
+        <div role="radiogroup" aria-label="Zeitraum" onKeyDown={radioKeys} className="flex gap-1">
           {WINDOWS.map(([v, l]) => (
-            <button key={v} type="button" role="radio" aria-checked={days === v} onClick={() => pickDays(v)} className={`h-8 rounded-full border px-3.5 ${days === v ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{l}</button>
+            <button key={v} type="button" role="radio" aria-checked={days === v} tabIndex={radioTab(days === v)} onClick={() => pickDays(v)} className={`h-8 rounded-full border px-3.5 ${days === v ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{l}</button>
           ))}
         </div>
       </div>

@@ -9,6 +9,7 @@ import { SearchOverlay } from "../SearchOverlay";
 import { ActiveFilters } from "../ActiveFilters";
 import { useDarkMode } from "../../lib/useDarkMode";
 import { IconCenter, IconMinus, IconPlus, IconReset } from "../icons";
+import { radioKeys, radioTab } from "../../lib/radioKeys";
 
 /** Trefferstufe: 0 keine, 1 wenige, 2 mittel, 3 viele (ohne Suche nur 0 oder 3) */
 function hitLevel(c: number, t: [number, number], graded: boolean) {
@@ -325,10 +326,10 @@ export function MapPanel({ active }: { active: boolean }) {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z" /><path d="m3 13 9 5 9-5" /></svg>
           </button>
           {styleOpen && (
-            <div role="radiogroup" aria-label="Darstellung" className="relative flex flex-col">
+            <div role="radiogroup" aria-label="Darstellung" onKeyDown={radioKeys} className="relative flex flex-col">
               <span aria-hidden="true" className="absolute left-1 h-9 w-9 rounded-full bg-white shadow transition-[top] duration-300 ease-out" style={{ top: si * 44 + 4 }} />
               {STYLES.map((o) => (
-                <button key={o.id} type="button" role="radio" title={o.label} aria-label={o.label} aria-checked={style === o.id} onClick={() => setStyle(o.id)} className={`relative grid h-11 w-11 place-items-center rounded-full ${style === o.id ? "text-teal-700" : "text-slate-600 hover:text-slate-900"}`}>
+                <button key={o.id} type="button" role="radio" title={o.label} aria-label={o.label} aria-checked={style === o.id} tabIndex={radioTab(style === o.id)} onClick={() => setStyle(o.id)} className={`relative grid h-11 w-11 place-items-center rounded-full ${style === o.id ? "text-teal-700" : "text-slate-600 hover:text-slate-900"}`}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{o.icon}</svg>
                 </button>
               ))}

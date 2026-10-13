@@ -35,7 +35,7 @@ function Bars({ rows }: { rows: [string, number][] }) {
   return (
     <ul className="m-0 list-none space-y-2 p-0">
       {rows.map(([label, n]) => (
-        <li key={label} className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_auto] items-center gap-3 text-[13px] text-slate-600">
+        <li key={label} className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_auto] items-center gap-3 text-[14px] text-slate-600">
           <span className="truncate">{label}</span>
           <span className="h-2 rounded bg-slate-100"><span className="block h-2 rounded bg-teal-600" style={{ width: `${(n / max) * 100}%` }} /></span>
           <span className="tabular-nums text-slate-500">{nf(n)}</span>
@@ -185,7 +185,7 @@ function mini(id: AnalyseId, d: Loose, geo?: Snap["geo"]): ReactNode {
         {(d.rows as { term: string; ratio: number; series: number[] }[]).map((t) => (
           <li key={t.term} className="flex items-center justify-between gap-3 text-[14px] text-slate-900">
             <span className="truncate">{prettyTerm(t.term)}</span>
-            <span className="flex items-center gap-2"><span className="text-[13px] text-teal-700">×{String(t.ratio).replace(".", ",")}</span><Spark series={t.series} kind={"rising" as TrendKind} /></span>
+            <span className="flex items-center gap-2"><span className="text-[14px] text-teal-700">×{String(t.ratio).replace(".", ",")}</span><Spark series={t.series} kind={"rising" as TrendKind} /></span>
           </li>
         ))}
       </ul>
@@ -195,7 +195,7 @@ function mini(id: AnalyseId, d: Loose, geo?: Snap["geo"]): ReactNode {
     const text = (
       <>
         <p className="m-0 text-[28px] font-semibold leading-none text-slate-900">{nf(d.count)}</p>
-        <p className="m-0 mt-1 text-[13px] text-slate-500">Kommunen, erstmals seit {d.first.slice(5, 7)}/{d.first.slice(0, 4)}</p>
+        <p className="m-0 mt-1 text-[14px] text-slate-500">Kommunen, erstmals seit {d.first.slice(5, 7)}/{d.first.slice(0, 4)}</p>
       </>
     );
     if (d.map && geo) return <div className="flex items-center justify-between gap-3"><div>{text}</div><DiffusionMap map={d.map} geo={geo} /></div>;
@@ -238,7 +238,7 @@ export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term:
   useEffect(() => {
     if (!seen || radar) return;
     let alive = true;
-    load().then((d) => { if (!alive) return; const m = mini(id, d.items[`${id}|${term}`], d.geo); setNode(m); if (m && d.generated) setStand(d.generated.split("-").reverse().join(".")); }).catch((e) => console.error("LiveThumb", id, e));
+    load().then((d) => { if (!alive) return; const m = mini(id, d.items[`${id}|${term}`], d.geo); setNode(m); if (m && d.generated) setStand(d.generated.split("-").reverse().join(".")); }).catch(() => {}); /* ohne Schnappschuss bleibt das Vorschaubild, kein Fehler */
     return () => { alive = false; };
   }, [seen, id, term, radar]);
   return (
@@ -249,7 +249,7 @@ export function LiveThumb({ id, term, showStand = true }: { id: AnalyseId; term:
         Thumb ? <Thumb /> : <IconThumb id={id} />
       )}
       {!radar && (
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[13px] text-slate-600 shadow-sm">
+        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[14px] text-slate-600 shadow-sm">
           {node ? "Daten" : "Beispiel"}: „{term}“
         </span>
       )}

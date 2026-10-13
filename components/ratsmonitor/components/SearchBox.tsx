@@ -439,7 +439,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
           {rows.map((r, i) => {
             if (r.kind === "head")
               return (
-                <div key={"h" + i} className="flex items-center justify-between gap-3 px-2 pb-1 pt-1.5 text-[12px] font-semibold uppercase tracking-[.04em] text-slate-500">
+                /* Zwischenüberschrift: keine Auswahl (presentation), damit die Liste nur aus Einträgen besteht */
+                <div key={"h" + i} role="presentation" className="flex items-center justify-between gap-3 px-2 pb-1 pt-1.5 text-[12px] font-semibold uppercase tracking-[.04em] text-slate-500">
                   <span>{r.label}</span>
                   {r.action && (
                     <button type="button" onClick={r.action.run} className="text-[12px] font-medium normal-case tracking-normal text-teal-700 hover:underline">
@@ -507,6 +508,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
                   key={"t" + i}
                   id={ids.opt(idx)}
                   type="button"
+                  role="option"
+                  aria-selected={idx === active}
                   onClick={() => { r.pick(); if (!r.silent) { confirmed(); dropKeyboard(); } }}
                   className={`mt-1 w-full border-0 border-t border-slate-200 bg-transparent px-2 pb-[5px] pt-[9px] text-left text-[12px] text-slate-500 hover:text-slate-900 hover:underline hover:underline-offset-2 ${
                     idx === active ? "text-slate-900 underline underline-offset-2" : ""

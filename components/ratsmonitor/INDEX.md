@@ -668,7 +668,7 @@ topic design-styles.css:140
 - process-progress.tsx (8, ⚠1): ProcessProgress
 
 ### components/ratsmonitor/
-- App.tsx (69, ⚠1): MonitorApp
+- App.tsx (70, ⚠1): MonitorApp
 
 ### components/ratsmonitor/components/
 - AccountMenu.tsx (68, ⚠2): AccountMenu
@@ -680,8 +680,8 @@ topic design-styles.css:140
 - DateRangeFilter.tsx (98): DateRangeSelect, DateRangeFields, DateRangeFilter
 - DevBrandSwitcher.tsx (30): DevBrandSwitcher
 - DevTierSwitcher.tsx (25): DevTierSwitcher
-- ExportMenu.tsx (55, ⚠1): ExportOption, ExportMenu
-- FilterPanel.tsx (105, ⚠1): FilterPanel
+- ExportMenu.tsx (56, ⚠1): ExportOption, ExportMenu
+- FilterPanel.tsx (110, ⚠1): FilterPanel
 - FilterSelect.tsx (122): FilterSelect
 - FollowButton.tsx (33): FollowButton
 - Footer.tsx (59): Footer
@@ -690,7 +690,7 @@ topic design-styles.css:140
 - PlanCards.tsx (136, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (30): SaveArticleButton
 - SaveSearchDialog.tsx (16, ⚠2): SaveSearchDialog
-- SearchBox.tsx (545, ⚠1): isSearchInput, focusSearch, SearchBox
+- SearchBox.tsx (548, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (87): SearchFilterPanel
 - SearchOverlay.tsx (90): SearchOverlay
 - ShareButton.tsx (40): ShareButton
@@ -699,7 +699,7 @@ topic design-styles.css:140
 - icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (344, ⚠2): MapPanel
+- MapPanel.tsx (345, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (147, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
@@ -803,7 +803,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (198, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (310, ⚠11): ComparePage
+- ComparePage.tsx (311, ⚠11): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
@@ -828,7 +828,7 @@ topic design-styles.css:140
 - ScoreView.tsx (132, ⚠4): ScoreView
 - ThemeRadarPage.tsx (188, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
-- TrendsPage.tsx (189, ⚠7): TrendsPage
+- TrendsPage.tsx (190, ⚠8): TrendsPage
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 
@@ -838,7 +838,7 @@ topic design-styles.css:140
 ### components/ratsmonitor/state/
 - account.tsx (35): AccountProvider, useAccount, useSavedStats
 - data.tsx (36, ⚠1): DataProvider, useData
-- nav.ts (12): View, viewOf, overviewScroll, useAppNav
+- nav.ts (17): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
 - search.tsx (603, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
