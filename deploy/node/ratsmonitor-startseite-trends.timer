@@ -1,0 +1,12 @@
+# Alle 10 Minuten den Zeitplaner fragen (ratsmonitor-startseite-trends.service); ob startseite-trends dran ist, steht im Admin-Reiter „Jobs & Zeitpläne“.
+[Unit]
+Description=Ratsmonitor startseite-trends, Zeitplaner
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=false
+AccuracySec=1min
+Unit=ratsmonitor-startseite-trends.service
+
+[Install]
+WantedBy=timers.target

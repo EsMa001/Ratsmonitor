@@ -731,7 +731,7 @@ topic design-styles.css:140
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (174, ⚠4): QuellenPage
-- StartseitePage.tsx (513, ⚠5): StartseitePage
+- StartseitePage.tsx (515, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (154): VideosPage

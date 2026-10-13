@@ -1,0 +1,27 @@
+# Karte und Trends der Startseite vorab rechnen (scripts/startseite-trends.mjs, legt system_state 'startseite-trends' an) über den
+# Zeitplaner (scripts/schedule.mjs startseite-trends, Admin-Reiter „Jobs & Zeitpläne“, Standard 04:50 Uhr). Protokoll in
+# backups/startseite-trends.log.
+[Unit]
+Description=Ratsmonitor Startseite Karte und Trends
+After=ratsmonitor.service
+
+[Service]
+Type=oneshot
+User=ratsmonitor
+Group=ratsmonitor
+WorkingDirectory=/srv/ratsmonitor/app/current
+EnvironmentFile=/srv/ratsmonitor/ratsmonitor.env
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=1h
+ExecStart=/usr/bin/node --no-warnings scripts/schedule.mjs startseite-trends
+StandardOutput=append:/srv/ratsmonitor/backups/startseite-trends.log
+StandardError=append:/srv/ratsmonitor/backups/startseite-trends.log
+MemoryHigh=3G
+MemoryMax=4G
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/ratsmonitor/data /srv/ratsmonitor/backups

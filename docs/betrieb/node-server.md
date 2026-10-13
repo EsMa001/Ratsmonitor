@@ -84,6 +84,7 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
 | `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
 | `ratsmonitor-search-words.service` (früher `/etc/cron.d/ratsmonitor-search-words`) | Wortliste der Suche nachführen, 04:20 Uhr (Zeitplaner); baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
+| `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 04:50 Uhr (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
 | `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
@@ -323,6 +324,19 @@ cp deploy/node/ratsmonitor-backup.service deploy/node/ratsmonitor-backup.timer d
 rm /etc/cron.d/ratsmonitor
 systemctl daemon-reload
 systemctl enable --now ratsmonitor-backup.timer ratsmonitor-search-words.timer ratsmonitor-import.path ratsmonitor-import-nightly.path ratsmonitor-pdf-job.path ratsmonitor-pdf-nightly.path ratsmonitor-backup.path ratsmonitor-search-words.path
+```
+
+**Startseite: Karte und Trends** (seit 13.10.2026, Job `startseite-trends`, 04:50 Uhr): rechnet je Beispielbegriff der Startseite
+die Ausbreitung (wie `/api/analytics/diffusion`, je Begriff bis etwa 10 s) und legt sie in `system_state` ab. Ohne Eintrag zeigt
+die Startseite den mitgelieferten Stand `public/data/startseite-trends.json` (lokal neu: `node scripts/startseite-trends.mjs --file`).
+Einrichten (einmal, als root):
+
+```bash
+cd /srv/ratsmonitor/app/current
+cp deploy/node/ratsmonitor-startseite-trends.service deploy/node/ratsmonitor-startseite-trends.timer deploy/node/ratsmonitor-startseite-trends.path deploy/node/ratsmonitor-stop-startseite-trends.path /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now ratsmonitor-startseite-trends.timer ratsmonitor-startseite-trends.path ratsmonitor-stop-startseite-trends.path
+node scripts/schedule.mjs startseite-trends --force   # einmal sofort (als ratsmonitor, mit EnvironmentFile)
 ```
 
 **Anhalten** (Knopf je laufendem Job im Reiter „Jobs & Zeitpläne“, seit 12.10.2026): schreibt `trigger/stop-<job>` und

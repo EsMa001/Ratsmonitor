@@ -301,8 +301,8 @@ export function StartseitePage() {
   }, []);
 
   /* Animation und Trends aus echten Daten: welche Gemeinde einen Begriff wann zum ersten Mal beraten hat und wie viele Gebiete je
-     Monat dazukamen. Vorbereitet in public/data/startseite-trends.json (neu erzeugen: node scripts/startseite-trends.mjs), weil die
-     Auswertung je Begriff zu lange dauert. Die Karte selbst ist ganz eingefärbt. */
+     Monat dazukamen. Täglich vorab gerechnet (scripts/startseite-trends.mjs, Job „startseite-trends“, /api/startseite-trends), weil die
+     Auswertung je Begriff zu lange dauert; ohne Eintrag gilt public/data/startseite-trends.json. Die Karte selbst ist ganz eingefärbt. */
   useEffect(() => {
     const ctl = new AbortController();
     fetch("/geo/de-districts.json", { signal: ctl.signal })
@@ -318,8 +318,10 @@ export function StartseitePage() {
         setCent(c);
       })
       .catch(() => {});
-    fetch("/data/startseite-trends.json", { signal: ctl.signal })
-      .then((r) => (r.ok ? (r.json() as Promise<Snapshot>) : Promise.reject(new Error("trends"))))
+    /* Täglich berechneter Stand (Job „startseite-trends“), sonst der mitgelieferte */
+    const load = (url: string) => fetch(url, { signal: ctl.signal }).then((r) => (r.ok ? (r.json() as Promise<Snapshot>) : Promise.reject(new Error("trends"))));
+    load("/api/startseite-trends")
+      .catch(() => (ctl.signal.aborted ? Promise.reject(new Error("abort")) : load("/data/startseite-trends.json")))
       .then((d) => setData(Object.fromEntries(TOPICS.filter((t) => d.topics[t]?.f.length).map((t) => [t, toTopic(d.topics[t])]))))
       .catch(() => {});
     return () => ctl.abort();
