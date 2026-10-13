@@ -102,7 +102,8 @@ Jeder Schritt einzeln auf `main`, mit Tests, Migrationen auf echten Daten gemess
     „Verarbeitung“, Dashboard-Zahl, Pflichtangabe der Vollständigkeitsprüfung (`complete-article-v2`, elf statt zwölf).
   - Nachtrag 13.10.2026: Die Seite „Stichwörter“ ist ganz entfernt (Reiter, `GET /api/admin/keywords`,
     `admin-keywords.mjs`, Bauziel `keywords`). Regelbegründungen („Erkannte Sachbegriffe: …“) und Titelbegriffe
-    (`analysisFeatures`, Themenvergleich) bleiben, sie werden nur nicht mehr gezählt.
+    (`analysisFeatures`, Themenvergleich) bleiben, sie werden nur nicht mehr gezählt. Migration 0031 löscht die alten
+    KI-Stichwortanalysen in `article_analyses` und den gespeicherten Zählstand.
   - Gebietswerte: `kw`/`bk` aus `FIGURES` und den Gebietszeilen, `FIGURES_VERSION` 4 → 5.
   - Suche: Migration `drizzle/0019_remove_keywords.sql` entfernt `weightedKeywords` (und `aiAttempts.keywords`) aus dem
     Payload, solange die Trigger aus 0017 noch darauf reagieren (Suchtext der betroffenen Vorgänge wird neu geschrieben,

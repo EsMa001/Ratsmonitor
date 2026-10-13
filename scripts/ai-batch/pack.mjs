@@ -135,7 +135,7 @@ for(const a of queue){
   for(const x of pick.shown)block.push(`[${no}.${x.i}] ${x.t.replace(/\s*\n\s*/g,' ')}`);
  }
  const hint=retry?.get(a.id);
- // Ältere Aufträge können noch Stichwörter verlangen: die erzeugt die KI nicht mehr
+ // Ältere Aufträge können Arten nennen, die es nicht mehr gibt: sie werden übergangen
  const kinds=(a.kinds||job.kinds).filter(k=>AI_KINDS.includes(k));
  const head=[`## ${a.id}`,`Schritte: ${kinds.join(',')}`,`Titel: ${a.title}`,events(a)?`Beratungsfolge: ${events(a)}`:null,`Quellen: ${refs.join(', ')}`,hint?`Hinweis: Die letzte Antwort zu diesem Artikel war ungültig (${hint.slice(0,200)}). Bitte Format und Regeln genau einhalten.`:null].filter(Boolean);
  cur.articles.push({id:a.id,kinds,words:aw,refs:refs.map(r=>Number(r.match(/\d+/)[0]))});
