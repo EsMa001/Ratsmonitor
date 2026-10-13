@@ -15,7 +15,7 @@ async function fixture({extra=0,gaps=[],ready=true,pages=[{number:1,text}],legac
   sql.exec(`CREATE TABLE topics(id TEXT PRIMARY KEY,region_id TEXT,event_date TEXT,active INTEGER DEFAULT 1,payload TEXT);
     CREATE TABLE system_state(key TEXT PRIMARY KEY,value TEXT);
     CREATE TABLE article_versions(id TEXT PRIMARY KEY,topic_id TEXT,captured_at TEXT,payload TEXT);`);
-  for (const file of ['0003_typical_mauler.sql','0007_ai_usage.sql','0028_ai_local_work.sql'])
+  for (const file of ['0003_typical_mauler.sql','0007_ai_usage.sql','0028_ai_local_work.sql','0029_ai_usage_duration.sql'])
     sql.exec(fs.readFileSync(new URL('../drizzle/' + file,import.meta.url),'utf8'));
   const topic = {id:'article-1',regionId:'billerbeck',officialTitle:'Ein neuer Radweg',title:'Ein neuer Radweg',status:'consulting',eventDate:'2026-10-01',reference:'VO/1',events:[],
     ruleSummary:{version:3,long:{sentences:['Unveraenderter Regeltext.']}},labelAssessments:{rule:{primary:'bauen'},review:{primary:'mobilitaet',reviewer:'Max'}},sourceText:text,
@@ -30,7 +30,7 @@ async function fixture({extra=0,gaps=[],ready=true,pages=[{number:1,text}],legac
   const result = {agent:'Codex',model:'unknown',shortSummary:'Die Verwaltung plant einen neuen Radweg fuer 120000 Euro.',
     longSummary:['Die Verwaltung plant einen neuen Radweg. Als Kosten nennt die Vorlage 120000 Euro.'],
     coveredSourceIds:['source-1'],evidence:[{sourceId:'source-1',page:pages[0].number,quote:pages[0].text.startsWith('Die Verwaltung') ? 'Die Verwaltung plant einen neuen Radweg.' : pages[0].text.slice(0,20)}],
-    aiLabel:{primary:'mobilitaet',secondary:[],reason:'Gegenstand ist ein Radweg.'},checks,usage:{basis:'measured',inputTokens:100,outputTokens:50}};
+    aiLabel:{primary:'mobilitaet',secondary:[],reason:'Gegenstand ist ein Radweg.'},checks,usage:{basis:'measured',inputTokens:100,outputTokens:50,durationMs:12345}};
   async function reserve(agent='Codex') { return (await work.claim({ids:[topic.id],agent})).claimed[0]; }
   async function readAll(claim) {
     const head = await work.read(claim);
@@ -56,6 +56,7 @@ test('all three outputs save atomically, retain rule/manual data and existing pr
   assert.equal(f.saved().labelAssessments.ai.primary,'mobilitaet');
   assert.equal(f.sql.prepare('SELECT count(*) n FROM article_analyses').get().n,3);
   assert.equal(f.sql.prepare('SELECT count(*) n FROM ai_usage').get().n,1);
+  assert.equal(f.sql.prepare('SELECT duration_ms FROM ai_usage WHERE topic_id=?').get(f.topic.id).duration_ms,12345);
   const versions=f.sql.prepare('SELECT payload FROM article_versions WHERE topic_id=? ORDER BY captured_at DESC').all(f.topic.id).map(row => JSON.parse(row.payload));
   assert.equal(versions.length,1);assert.equal(versions[0].format,VERSION_FORMAT);
   const prior=restoreVersions(f.saved(),versions)[0];
@@ -124,6 +125,9 @@ test('invalid outputs and forged quotes never partially change content or histor
     {checks:[]},
     {evidence:[{sourceId:'source-1',page:1,quote:'120000 Euro.',paragraphIndex:0}],longSummary:['Nur ein allgemeiner Satz.']},
   ]) await rejects(f.work.submit({...claim,result:{...f.result,...patch}}),400);
+  // The agent learns which rule failed (here: quote assigned to a paragraph that does not contain it).
+  await assert.rejects(f.work.submit({...claim,result:{...f.result,evidence:[{sourceId:'source-1',page:1,quote:'120000 Euro.',paragraphIndex:0}],longSummary:['Nur ein allgemeiner Satz.']}}),
+    error => error.status === 400 && /Absatz enthalten/u.test(error.detail));
   assert.equal(f.sql.prepare('SELECT count(*) n FROM article_analyses').get().n,0);
   assert.equal(f.sql.prepare('SELECT count(*) n FROM article_versions').get().n,0);
   assert.equal(f.sql.prepare('SELECT count(*) n FROM ai_usage').get().n,0);assert.deepEqual(f.saved(),f.topic);

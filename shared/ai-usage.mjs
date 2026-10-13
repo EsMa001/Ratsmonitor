@@ -1,30 +1,33 @@
 // Token usage per AI processing attempt and its evaluation per model.
 // Prices are never guessed: cost is only computed for models listed in the price table
 // (USD or EUR per 1 million tokens). Unknown tokens (NULL) are never estimated.
-const COLUMNS = 'id,topic_id,region_id,method,agent,model,kinds,created_at,outcome,token_basis,source_count,attachment_count,word_count,input_tokens,output_tokens,cached_tokens,total_tokens,summary_prompt_tokens,summary_completion_tokens,summary_cached_tokens,check_prompt_tokens,check_completion_tokens,check_cached_tokens';
+const COLUMNS = 'id,topic_id,region_id,method,agent,model,kinds,created_at,outcome,token_basis,source_count,attachment_count,word_count,duration_ms,input_tokens,output_tokens,cached_tokens,total_tokens,summary_prompt_tokens,summary_completion_tokens,summary_cached_tokens,check_prompt_tokens,check_completion_tokens,check_cached_tokens';
 const n = (v) => (Number.isFinite(v) ? v : null);
 
 /** Statement that stores one attempt. r.summary/r.check are the per-call usages of the OpenAI path ({prompt,completion,cached}). */
 export function insertUsage(db, r) {
   const s = r.summary, c = r.check;
   const values = [crypto.randomUUID(), r.topicId, r.regionId, r.method, r.agent, r.model, r.kinds, r.at, r.outcome, r.basis,
-    n(r.sources), n(r.attachments), n(r.words), n(r.input), n(r.output), n(r.cached), n(r.total),
+    n(r.sources), n(r.attachments), n(r.words), n(r.durationMs), n(r.input), n(r.output), n(r.cached), n(r.total),
     n(s?.prompt), n(s?.completion), n(s?.cached), n(c?.prompt), n(c?.completion), n(c?.cached)];
   return db.prepare(`INSERT INTO ai_usage(${COLUMNS}) VALUES(${values.map(() => '?').join(',')})`).bind(...values);
 }
 
 /** Normalizes the tokens an agent reported for an article; basis 'unknown' (or nothing reported) keeps the tokens NULL. */
 export function agentUsage(usage) {
-  if (!usage || usage.basis === 'unknown') return { basis: 'unknown', input: null, output: null, cached: null, total: null };
+  const durationMs = usage?.durationMs;
+  if (durationMs !== undefined && (!Number.isSafeInteger(durationMs) || durationMs < 0)) throw Error('usage: durationMs muss eine nichtnegative Ganzzahl sein.');
+  const duration = durationMs === undefined ? {} : { durationMs };
+  if (!usage || usage.basis === 'unknown') return { basis: 'unknown', input: null, output: null, cached: null, total: null, ...duration };
   const ok = (v) => Number.isInteger(v) && v >= 0;
   // Only a total known (e.g. subagent report without input/output split): store it, leave the split NULL.
   if (usage.totalTokens !== undefined && usage.inputTokens === undefined && usage.outputTokens === undefined) {
     if (!['measured', 'estimated'].includes(usage.basis) || !ok(usage.totalTokens)) throw Error('usage: basis und ganzzahliges totalTokens erforderlich.');
-    return { basis: usage.basis, input: null, output: null, cached: null, total: usage.totalTokens };
+    return { basis: usage.basis, input: null, output: null, cached: null, total: usage.totalTokens, ...duration };
   }
   if (!['measured', 'estimated'].includes(usage.basis) || !ok(usage.inputTokens) || !ok(usage.outputTokens) || (usage.cachedTokens !== undefined && !ok(usage.cachedTokens)))
     throw Error('usage: basis (measured|estimated|unknown) sowie ganzzahlige inputTokens und outputTokens erforderlich.');
-  return { basis: usage.basis, input: usage.inputTokens, output: usage.outputTokens, cached: usage.cachedTokens ?? 0, total: usage.inputTokens + usage.outputTokens };
+  return { basis: usage.basis, input: usage.inputTokens, output: usage.outputTokens, cached: usage.cachedTokens ?? 0, total: usage.inputTokens + usage.outputTokens, ...duration };
 }
 
 const sum = (rows, k) => rows.reduce((a, r) => a + (r[k] ?? 0), 0);
@@ -51,6 +54,7 @@ export function summarizeUsage(rows, unknownCount = 0, prices = {}) {
       withTokens: known.length, withoutTokens: list.length - known.length,
       inputTokens: input, cachedTokens: cached, outputTokens: output, totalTokens: sum(known, 'total_tokens'),
       avgTotalPerArticle: avg(known, 'total_tokens'),
+      avgDurationMs: avg(list, 'duration_ms'),
       avgWords: avg(list, 'word_count'), avgSources: avg(list, 'source_count'), avgAttachments: avg(list, 'attachment_count'),
       tokensPer1000Words: words.length ? Math.round(sum(words, 'total_tokens') / sum(words, 'word_count') * 1000) : null,
       cost: costRange ? null : cost, costRange, tokensWithoutSplit: sum(onlyTotal, 'total_tokens'), currency: p?.currency ?? null,

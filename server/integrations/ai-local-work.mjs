@@ -5,7 +5,7 @@ import {LABELS} from '../../shared/labels.mjs';
 import {hashText} from '../../shared/database-transfer.mjs';
 import {insertUsage} from '../../shared/ai-usage.mjs';
 import {versionPayload} from '../../shared/article-version.mjs';
-import {AI_LOCAL_METHOD,AI_LOCAL_CONTRACT,AI_LOCAL_LIMITS,localInputHash,prepareLocalResult,stableLocalJson} from '../../shared/ai-local-content.mjs';
+import {AI_LOCAL_METHOD,AI_LOCAL_CONTRACT,AI_LOCAL_LIMITS,LocalResultError,localInputHash,prepareLocalResult,stableLocalJson} from '../../shared/ai-local-content.mjs';
 import {invalidateReads} from '../services/read-cache.mjs';
 
 const LEASE_MS = 30 * 60 * 1000;
@@ -13,6 +13,8 @@ const validId = id => typeof id === 'string' && id.length > 0 && id.length <= 30
 const states = new Set(['open','all','pending','processing','completed','failed','insufficient_source','legacy','waiting_text','stale']);
 const reason = value => typeof value === 'string' && value.trim().length > 0 && value.length <= 1200;
 const conflict = message => new AdminError(409,message);
+// detail: a fixed validation text the internal MCP may return to the submitting agent.
+const invalidResult = message => Object.assign(new AdminError(400,message),{detail:message});
 const cursorFor = row => encodeURIComponent(JSON.stringify({date:row.event_date,id:row.id}));
 function parseCursor(value) {
   if (!value) return null;
@@ -192,9 +194,9 @@ export function createAiLocalWork(db,{loadSources,now=() => Date.now()}={}) {
     if (inputHash !== current.inputHash) throw conflict('Ergebnis gehoert zu einem anderen Eingabestand.');
     const reads = JSON.parse(work.read_state);
     if (loaded.sources.some(source => source.pages.some(page => page.text.length > 0 && Number(reads[source.id]?.[page.number] || 0) < page.text.length)))
-      throw new AdminError(400,'Vor dem Speichern muessen alle bereitgestellten lokalen Textseiten vollstaendig gelesen werden.');
+      throw invalidResult('Vor dem Speichern muessen alle bereitgestellten lokalen Textseiten vollstaendig gelesen werden.');
     let prepared;try { prepared = await prepareLocalResult(topic,loaded,result,inputHash,at()); }
-    catch (error) { throw new AdminError(400,error.message); }
+    catch (error) { throw error instanceof LocalResultError ? invalidResult(error.message) : new AdminError(400,error.message); }
     const confirmed = await currentClaim(id,token);
     if (confirmed.row.payload !== current.row.payload) prepared = await prepareLocalResult(confirmed.topic,confirmed.loaded,result,inputHash,prepared.topic.summaryGeneratedAt);
     const receipt = {id,state:'completed',method:AI_LOCAL_METHOD,inputHash,at:at(),coverage:loaded.coverage,analysisIds:prepared.analyses.map(analysis => analysis.payload.id)};

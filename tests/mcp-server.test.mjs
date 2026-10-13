@@ -22,7 +22,7 @@ const lease = {id:'report-1',token:'secret-claim-token'};
 const validResult = () => ({agent:'Codex',model:'unknown',shortSummary:'Der Rat beschliesst einen Radweg.',longSummary:['Der Rat beschliesst: "Der Radweg wird gebaut."'],
   coveredSourceIds:['source-1'],evidence:[{sourceId:'source-1',page:3,quote:'Der Radweg wird gebaut.',paragraphIndex:0}],
   aiLabel:{primary:LABELS[0].id,secondary:[],reason:'Das Sachgebiet ist im Originaltext belegt.'},
-  checks:['source_read','process','numbers','neutrality'].map(name => ({name,passed:true})),usage:{basis:'unknown'}});
+  checks:['source_read','process','numbers','neutrality'].map(name => ({name,passed:true})),usage:{basis:'unknown',durationMs:12345}});
 
 test('MCP connection mode is fixed and requires the complete intended service',() => {
   assert.throws(() => createRatsmonitorMcpServer(),/mode/u);
@@ -93,6 +93,16 @@ test('internal tools delegate exact three-output contract and retain opaque leas
   assert.deepEqual(calls,Object.entries(inputs).map(([name,args]) => ({name,args})));
 });
 
+test('internal MCP accepts a per-report elapsed duration while keeping tokens unknown',async t => {
+  let received;
+  const client = await session(t,{mode:'internal',work:stub(workMethods,(name,args) => {if(name === 'submit') received=args;return {state:'completed'};})});
+  const output = await call(client,'ai_submit',{...lease,inputHash:'a'.repeat(64),result:validResult()});
+  assert.equal(output.isError,undefined);
+  assert.deepEqual(received.result.usage,{basis:'unknown',durationMs:12345});
+  const invalid = await call(client,'ai_submit',{...lease,inputHash:'a'.repeat(64),result:{...validResult(),usage:{basis:'unknown',durationMs:-1}}});
+  assert.equal(invalid.isError,true);
+});
+
 test('internal nested schema rejects extra instructions, incomplete outputs and checks before touching service',async t => {
   let invoked = 0;
   const client = await session(t,{mode:'internal',work:stub(workMethods,() => {invoked++;return {};})});
@@ -128,6 +138,23 @@ test('service errors are status-based and never expose SQL, file paths or except
   assert.equal(events.length,6);
   assert.equal(JSON.stringify(events).includes(secret),false);
   assert.equal(events.every(event => event.identity === 'customer-one' && event.success === false),true);
+});
+
+test('only the internal connection returns marked validation details, never plain exception messages',async t => {
+  const detail = 'Ein zugeordnetes Originalzitat muss auch in diesem Absatz enthalten sein.',secret = 'SQLITE_ERROR C:\\secret\\db.sqlite';
+  let error;
+  const internal = await session(t,{mode:'internal',work:stub(workMethods,() => {throw error;})});
+  const submit = () => call(internal,'ai_submit',{...lease,inputHash:'a'.repeat(64),result:validResult()});
+  error = Object.assign(Error(detail),{status:400,detail});
+  assert.equal((await submit()).structuredContent.error.detail,detail);
+  error = Object.assign(Error(secret),{status:400});
+  assert.equal(JSON.stringify(await submit()).includes(secret),false);
+  for (const marked of [{status:409,detail:secret},{status:500,detail:secret},{status:400,detail:'x'.repeat(301)},{status:400,detail:'line\nbreak'}]) {
+    error = Object.assign(Error('x'),marked);
+    assert.equal((await submit()).structuredContent.error.detail,undefined,JSON.stringify(marked));
+  }
+  const customer = await session(t,{mode:'customer',customer:stub(customerMethods,() => {throw Object.assign(Error(detail),{status:400,detail});})});
+  assert.equal((await call(customer,'reports_get',{id:'report-1'})).structuredContent.error.detail,undefined);
 });
 
 test('audit contains only operation identity, result status and duration, never args or results',async t => {

@@ -14,9 +14,9 @@ const evidence = z.object({sourceId:id,page:z.number().int().min(1),quote:text(A
 const evidenceList = z.array(evidence).min(1).max(AI_LOCAL_LIMITS.evidence);
 const tokens = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const usage = z.union([
-  z.object({basis:z.literal('unknown')}).strict(),
-  z.object({basis:z.enum(['measured','estimated']),totalTokens:tokens}).strict(),
-  z.object({basis:z.enum(['measured','estimated']),inputTokens:tokens,outputTokens:tokens,cachedTokens:tokens.optional(),totalTokens:tokens.optional()}).strict(),
+  z.object({basis:z.literal('unknown'),durationMs:z.number().int().min(0).max(43200000).optional()}).strict(),
+  z.object({basis:z.enum(['measured','estimated']),totalTokens:tokens,durationMs:z.number().int().min(0).max(43200000).optional()}).strict(),
+  z.object({basis:z.enum(['measured','estimated']),inputTokens:tokens,outputTokens:tokens,cachedTokens:tokens.optional(),totalTokens:tokens.optional(),durationMs:z.number().int().min(0).max(43200000).optional()}).strict(),
 ]);
 const result = z.object({
   agent:text(200),model:text(200),shortSummary:text(AI_LOCAL_LIMITS.shortChars),
@@ -47,7 +47,10 @@ const errors = {
   500:['INTERNAL_ERROR','The data service could not complete this request. Contact its operator.'],
 };
 const response = (data,isError=false) => ({content:[{type:'text',text:JSON.stringify(data)}],structuredContent:data,...(isError ? {isError:true} : {})});
-const failure = status => {const [code,message] = errors[status];return response({error:{code,message,status}},true);};
+const failure = (status,detail) => {const [code,message] = errors[status];return response({error:{code,message,status,...(detail ? {detail} : {})}},true);};
+// Only fixed validation texts marked by the service (error.detail), never exception messages.
+const safeDetail = (mode,status,error) => mode === 'internal' && status === 400 && typeof error?.detail === 'string' &&
+  error.detail.length <= 300 && !/[\u0000-\u001f]/u.test(error.detail) ? error.detail : undefined;
 
 /** Mode and identity belong to the trusted connection configuration, never tool arguments. */
 export function createRatsmonitorMcpServer({mode,work,customer,identity='local',requestsPerMinute=60,audit}={}) {
@@ -87,7 +90,7 @@ export function createRatsmonitorMcpServer({mode,work,customer,identity='local',
           const customerStatus = error instanceof CustomerDataError ? (error.code === 'INVALID_INPUT' ? 400 : error.code === 'NOT_FOUND' ? 404 : undefined) : undefined;
           const status = customerStatus ?? (Object.hasOwn(errors,error?.status) ? error.status : 500);
           await record(name,false,status,started);
-          return failure(status);
+          return failure(status,safeDetail(mode,status,error));
         }
       });
       tail = pending.then(() => undefined,() => undefined);

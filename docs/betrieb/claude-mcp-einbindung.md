@@ -14,7 +14,7 @@ Der Weg ist: **Claude -> lokaler SSH-Client -> interner MCP-Prozess auf dem Serv
 
 **Wichtig: Das ist der interne, produktiv schreibberechtigte Zugang, kein Kundenzugang.** Ein Filter wie Billerbeck begrenzt den einzelnen Auftrag, nicht die Berechtigungen dieser Verbindung. Gelesene Texte werden Claude zur Verarbeitung uebergeben; SSH bedeutet nicht, dass die KI ausschliesslich lokal rechnet. Nur entsprechend freigegebene Inhalte verarbeiten.
 
-Die Codex-Konfiguration wird nicht automatisch zu einer Claude-Konfiguration. Fuer Claude ist eine der folgenden Einbindungen erforderlich. Diese Anleitung installiert selbst noch nichts.
+Die Codex-Konfiguration wird nicht automatisch zu einer Claude-Konfiguration. Fuer Claude ist eine der folgenden Einbindungen erforderlich. Diese Anleitung installiert selbst nichts; zum Stand auf Max' Rechner siehe „Geltungsbereich und Teststand“ am Ende.
 
 ## 2. Voraussetzungen
 
@@ -150,7 +150,7 @@ Der technische Ablauf fuer Claude:
 1. `ai_list` aufrufen und erforderlichenfalls mit `nextCursor` weiterblaettern. `open` kann auch aeltere KI-Fassungen enthalten, denen das neue vollstaendige Ergebnis fehlt. Das Zeitfenster allein schliesst zukuenftige Sitzungstage nicht aus.
 2. Wenige IDs mit `ai_claim` und `agent: "Claude"` reservieren. Zurueckgegebene Token und `inputHash` fuer den jeweiligen Bericht behalten; Token nicht im Chat ausgeben.
 3. Mit `ai_read` zunaechst das Manifest lesen. Anschliessend jede angebotene Quelle, alle `pageNumbers` und alle ueber `nextOffset` folgenden Textabschnitte lesen. Der erste Manifestaufruf allein liest noch keine Originaltexte.
-4. Nur daraus die drei Ergebnisse erzeugen. Vorgaben: Kurzfassung ein Satz mit maximal 40 Woertern; Langfassung maximal 1.200 Woerter in 1 bis 24 Absaetzen; Labels aus `labelCatalog`. Alle gelieferten Quellen in `coveredSourceIds` nennen. Zitate muessen exakt zum Text passen, einschliesslich vorhandener Zeilenumbrueche, und mit `sourceId` sowie Seite belegt werden.
+4. Nur daraus die drei Ergebnisse erzeugen. Vorgaben: Kurzfassung ein Satz mit maximal 40 Woertern; Langfassung maximal 1.200 Woerter in 1 bis 24 Absaetzen; Labels aus `labelCatalog`. Alle gelieferten Quellen in `coveredSourceIds` nennen. Zitate muessen exakt zum Text passen, einschliesslich vorhandener Zeilenumbrueche, und mit `sourceId` sowie Seite belegt werden. Ein Beleg mit `paragraphIndex` verlangt, dass dasselbe Zitat woertlich auch in diesem Absatz der Langfassung steht; bei frei formulierten Absaetzen `paragraphIndex` weglassen.
 5. Die Pruefungen `source_read`, `process`, `numbers` und `neutrality` erst nach tatsaechlicher Kontrolle bestaetigen. Agent korrekt als Claude angeben; unbekannte Modellversion oder Tokenzahl nicht erfinden (`model: "unknown"`, gegebenenfalls `usage: {"basis":"unknown"}`).
 6. `ai_submit` mit ID, Reservierungstoken, unveraendertem `inputHash` und dem vollstaendigen Ergebnis aufrufen. Das konkrete, vom Werkzeug gelieferte Schema ist verbindlich. Nur ein erfolgreicher Beleg mit `state: "completed"` und drei `analysisIds` bestaetigt die Speicherung.
 7. Bei laengerer Arbeit rechtzeitig `ai_renew` verwenden. Bei Abbruch `ai_release`; einen echten inhaltlichen Fehlschlag mit `ai_fail` dokumentieren. Bei einer geaenderten Quellenversion neu reservieren und lesen.
@@ -176,7 +176,8 @@ Kunden erhalten stattdessen den separaten Kundendienst mit eigener Identitaet un
 | Hostschluessel unbekannt oder geaendert | Fingerabdruck vom Betreiber pruefen lassen; `StrictHostKeyChecking` nicht deaktivieren. |
 | SSH verlangt ein Passwort oder lehnt den Schluessel ab | Autorisierten Schluessel beziehungsweise SSH-Agent fuer denselben Windows-Benutzer pruefen; kein Passwort in die MCP-Konfiguration schreiben. |
 | `sudo`, Skript oder Betreiberprofil nicht erreichbar | Betreiber prueft Pfade und Leserechte des Serverbenutzers; nicht auf einen beliebigen Root- oder Datenbankzugang ausweichen. |
-| Speichern liefert `INVALID_INPUT` | Alle Quellseiten und Textabschnitte lesen; drei Ausgaben, Quell-IDs, Labels, Zitate und die vier Pruefungen gegen das Werkzeug-Schema pruefen. |
+| Speichern liefert `INVALID_INPUT` | `error.detail` nennt die verletzte Regel (nur auf der internen Verbindung, ab dem Stand mit `LocalResultError`). Sonst: alle Quellseiten und Textabschnitte lesen; drei Ausgaben, Quell-IDs, Labels, Zitate, `paragraphIndex` und die vier Pruefungen gegen das Werkzeug-Schema pruefen. |
+| Claude Code (Auto-Modus) blockiert `ai_claim` oder `ai_submit` als Aenderung gemeinsamer Ressourcen | In `.claude/settings.local.json` (nicht in Git) die sieben Werkzeuge `mcp__ratsmonitor_internal__ai_*` unter `permissions.allow` eintragen. Nicht in die eingecheckte `.claude/settings.json`, das Repo ist oeffentlich. |
 | Reservierungskonflikt | Aktuellen Stand erneut laden; fremde Reservierungen nicht uebernehmen. Eigene abgelaufene Reservierung neu anfordern. |
 | `RATE_LIMITED` | Eine Minute warten und dann fortfahren. |
 
@@ -184,6 +185,8 @@ Claude-Desktop-Verbindungslogs liegen normalerweise unter `%APPDATA%\Claude\logs
 
 ### Geltungsbereich und Teststand
 
-Die SSH/MCP-Verbindung wurde auf diesem Rechner mit dem bestehenden Betreiberprofil erfolgreich getestet und fuer produktive KI-Aufbereitung verwendet. Die Claude-Einbindung selbst wird durch dieses Dokument nur beschrieben, nicht installiert oder als bereits erfolgreich getestet behauptet.
+Die SSH/MCP-Verbindung wurde auf diesem Rechner mit dem bestehenden Betreiberprofil erfolgreich getestet und fuer produktive KI-Aufbereitung verwendet.
+
+Am 13.10.2026 wurden Variante A (Claude Desktop) und Variante B (Claude Code, `--scope local`) auf diesem Rechner eingerichtet. In Claude Code lief der vollstaendige Ablauf an `billerbeck-vo-6180`: `ai_list`, `ai_claim`, `ai_read` (alle 3 Quellen, 4 Seiten), `ai_renew` und `ai_submit` mit `state: "completed"` und drei `analysisIds`; Fehlerfaelle (zu grosses `limit`, unbekanntes Gebiet, falsches Token, erneutes Reservieren nach Abschluss) wurden abgelehnt. `ai_fail` wurde nicht produktiv aufgerufen. Claude Desktop ist eingetragen, dort aber noch nicht im Chat getestet.
 
 Die gezeigte Verbindung verwendet SSH/STDIO, keine oeffentliche HTTP-MCP-Adresse. Sie ist deshalb nicht als URL in einen Browser-Connector einzutragen. Fuer eine reine Web-Anbindung waere eine gesondert abgesicherte, vom jeweiligen Client unterstuetzte Remote-Anbindung erforderlich.

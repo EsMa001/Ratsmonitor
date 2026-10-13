@@ -7,7 +7,9 @@ export const AI_LOCAL_METHOD = 'ai-local-content-v2';
 export const AI_LOCAL_CONTRACT = 'ratsmonitor-ai-local-v2';
 export const AI_LOCAL_LIMITS = Object.freeze({shortWords:40, shortChars:500, paragraphs:24, paragraphChars:8000, longWords:1200, evidence:40, quoteChars:1600, readChars:24000});
 const labels = new Set(LABELS.map(label => label.id));
-const assert = (value, message) => { if (!value) throw Error(message); };
+/** Raised only with the fixed validation texts below, so callers may show them to the submitting agent. */
+export class LocalResultError extends Error {}
+const assert = (value, message) => { if (!value) throw new LocalResultError(message); };
 const bounded = (value, max) => typeof value === 'string' && value.trim().length > 0 && value.length <= max;
 export const normalizeLocalText = text => String(text).normalize('NFC').replace(/\r\n?/g, '\n').trim();
 const words = text => text.trim().split(/\s+/u).filter(Boolean).length;
