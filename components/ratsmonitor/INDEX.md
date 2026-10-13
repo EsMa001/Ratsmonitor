@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (491 Zeilen, ⚠13)
-- app/ratsmonitor.css (204 Zeilen, ⚠13)
+- app/ratsmonitor.css (201 Zeilen, ⚠13)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -38,7 +38,7 @@ admin-ai-local-tools admin.css:442
 admin-ai-preview admin.css:224
 admin-ai-retry admin.css:10
 admin-app admin.css:13
-admin-app ratsmonitor.css:197
+admin-app ratsmonitor.css:194
 admin-atlas-block admin.css:99
 admin-atlas-canvas admin.css:72
 admin-atlas-chips admin.css:56
@@ -113,7 +113,7 @@ admin-next admin.css:42
 admin-next-link admin.css:43
 admin-note admin.css:6
 admin-notice admin.css:6
-admin-notice ratsmonitor.css:197
+admin-notice ratsmonitor.css:194
 admin-number admin.css:6
 admin-number analyse-admin.css:89
 admin-operations admin.css:6
@@ -246,8 +246,8 @@ analysis-provenance ratsmonitor.css:58
 back-btn ratsmonitor.css:20
 bg-slate-900 ratsmonitor.css:161
 bg-teal-50 ratsmonitor.css:90
-bg-teal-600 ratsmonitor.css:198
-bg-white ratsmonitor.css:185
+bg-teal-600 ratsmonitor.css:195
+bg-white ratsmonitor.css:182
 border-slate-100 ratsmonitor.css:148
 btn-danger ratsmonitor.css:14
 btn-primary admin.css:161
@@ -509,11 +509,11 @@ rm-dark ratsmonitor-info.css:415
 rm-dark ratsmonitor.css:127
 rm-dots ratsmonitor.css:105
 rm-flat ratsmonitor.css:71
-rm-gdot ratsmonitor.css:174
+rm-gdot ratsmonitor.css:171
 rm-glass ratsmonitor.css:80
 rm-glass-pop ratsmonitor.css:89
-rm-gtext ratsmonitor.css:172
-rm-gtopic ratsmonitor.css:173
+rm-gtext ratsmonitor.css:169
+rm-gtopic ratsmonitor.css:170
 rm-logo ratsmonitor-info.css:249
 rm-logo ratsmonitor.css:138
 rm-logo--big ratsmonitor-info.css:402
@@ -809,9 +809,9 @@ topic design-styles.css:140
 - AnalyticsPages.tsx (76, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (74): ATLAS_BEREICHE, AtlasBereich, isAtlasBereich, atlasHref, AtlasPage
-- BauleitplanungPage.tsx (261, ⚠9): BauleitplanungPage
+- BauleitplanungPage.tsx (239, ⚠9): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
-- BeschluessePage.tsx (218, ⚠7): BeschluessePage
+- BeschluessePage.tsx (198, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (305, ⚠11): ComparePage
@@ -819,15 +819,15 @@ topic design-styles.css:140
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (271, ⚠6): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
-- FoerderradarPage.tsx (246, ⚠9): FoerderradarPage
-- FraktionenPage.tsx (171, ⚠5): FraktionenPage
+- FoerderradarPage.tsx (224, ⚠9): FoerderradarPage
+- FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (197, ⚠3): GremiennetzPage
-- KitaRadarPage.tsx (186, ⚠8): KitaRadarPage
+- GremiennetzPage.tsx (176, ⚠3): GremiennetzPage
+- KitaRadarPage.tsx (164, ⚠8): KitaRadarPage
 - KnowledgeGraphPage.tsx (225, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (131, ⚠1): NewsradarPage
+- NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (67): DrillItem, RadarDrill
 - RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
@@ -837,7 +837,7 @@ topic design-styles.css:140
 - RegionMap.tsx (65): RegionMap
 - Reveal.tsx (16): Reveal
 - ScoreView.tsx (133, ⚠4): ScoreView
-- ThemeRadarPage.tsx (210, ⚠6): ThemeRadarPage
+- ThemeRadarPage.tsx (188, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (205, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (28): useAnalyticsQuery

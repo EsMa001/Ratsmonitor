@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
@@ -9,7 +9,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
 import { RadarMap } from "./RadarMap";
 import { Frame } from "./AtlasFrame";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 interface Program { name: string; other: boolean; granted: number; applied: number; mentioned: number; n: number; regions: number; euroGranted: number; euroApplied: number; amounts: number }
 interface EuroRegion { id: string; name: string; pop: number; amounts: number; granted: number; applied: number; perCapita: number; grantedPerCapita: number }
@@ -43,34 +43,12 @@ const SHOW_EURO_RANKING = false;
 /** embedded: im plenara.X Atlas (AtlasPage.tsx) ohne eigenen Seitenkopf */
 export function FoerderradarPage({ embedded }: { embedded?: boolean } = {}) {
   const { query, search } = useAnalyticsQuery();
+  const { res, ranKey, loading, error, stale, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/foerderung?${query}`, initial: true });
   /* Klick auf „Ort auswerten“ in der Karte: Ortsfilter setzen und auswerten, sobald die Abfrage den Ort enthält */
-  const [runOnChange, setRunOnChange] = useState(false);
-  useEffect(() => { if (runOnChange) { setRunOnChange(false); setWant(true); } }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [res, setRes] = useState<Result | null>(null);
   // Geöffnete Liste hinter einer Zahl („program:Ganztagsausbau“, „region:<Gebiet>“)
   const [open, setOpen] = useState("");
   const toggle = (k: string) => setOpen(open === k ? "" : k);
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(true);
-  const [error, setError] = useState("");
-  const abortRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    if (!want) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/foerderung?${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want]);
-  useEffect(() => () => abortRef.current?.abort(), []);
-  const stale = !!res && ranKey !== query && !loading;
   const drill = (by: "program" | "region", value: string, label: string) => open === `${by}:${value}` && <RadarDrill base="/api/analytics/foerderung?list=1" query={ranKey} by={by} value={value} label={label} />;
 
   const programs = res?.programs ?? [];
@@ -93,11 +71,11 @@ export function FoerderradarPage({ embedded }: { embedded?: boolean } = {}) {
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Welche Förderprogramme in den Ratsunterlagen auftauchen, wo sie beantragt und wo bewilligt werden.</p>
       </PageBand>}
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {/* Karte wie in den Themenradaren: Anteil der Vorgänge mit Förderung, wählbar je Förderprogramm (die häufigsten genannten) */}
       {(() => { const qp = new URLSearchParams(ranKey || query); return <RadarMap base="/api/analytics/foerderung" topics={named.slice(0, 8).map((p) => p.name)} topicLabel="Programm" allLabel="Alle Förderungen" what="der Vorgänge mit Förderung"
-        q={qp.get("q") ?? ""} exact={qp.get("exact") === "1"} place={new URLSearchParams(query).get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); setRunOnChange(true); }} />; })()}
+        q={qp.get("q") ?? ""} exact={qp.get("exact") === "1"} place={new URLSearchParams(query).get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); runAfterChange(); }} />; })()}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
@@ -9,7 +9,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
 import { RadarMap } from "./RadarMap";
 import { Frame } from "./AtlasFrame";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 type Direction = "Erhöhung" | "Senkung" | "Beitragsfreiheit" | "Verpflegung" | "Neufassung";
 interface Decision { id: string; title: string; region: string; date: string; direction: Direction; euro: string | null }
@@ -39,33 +39,11 @@ const SHOW_PLACES = false;
 /** embedded: im plenara.X Atlas (AtlasPage.tsx) ohne eigenen Seitenkopf */
 export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
   const { query, search } = useAnalyticsQuery();
+  const { res, ranKey, loading, error, stale, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/kita?${query}`, initial: true, onDone: () => setOpen("") });
   /* Klick auf „Ort auswerten“ in der Karte: Ortsfilter setzen und auswerten, sobald die Abfrage den Ort enthält */
-  const [runOnChange, setRunOnChange] = useState(false);
-  useEffect(() => { if (runOnChange) { setRunOnChange(false); setWant(true); } }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [res, setRes] = useState<Result | null>(null);
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(true);
-  const [error, setError] = useState("");
-  const abortRef = useRef<AbortController | null>(null);
   /* Aufgeklappte Liste hinter einer Richtung (Erhöhung, Senkung …) */
   const [open, setOpen] = useState("");
 
-  useEffect(() => {
-    if (!want) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/kita?${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(query); setOpen(""); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want]);
-  useEffect(() => () => abortRef.current?.abort(), []);
-  const stale = !!res && ranKey !== query && !loading;
 
   const count = (d: Direction) => res?.directions.find((x) => x.name === d)?.n ?? 0;
   const maxD = Math.max(1, ...(res?.directions ?? []).map((d) => d.n));
@@ -84,10 +62,10 @@ export function KitaRadarPage({ embedded }: { embedded?: boolean } = {}) {
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo über Elternbeiträge entschieden wird und in welche Richtung.</p>
       </PageBand>}
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {(() => { const qp = new URLSearchParams(ranKey || query); return <RadarMap base="/api/analytics/kita" topics={["Erhöhung", "Senkung", "Beitragsfreiheit", "Verpflegung"]} topicLabel="Richtung" allLabel="Alle Vorgänge zu Beiträgen" what="der Vorgänge zu Kita-Elternbeiträgen"
-        q={qp.get("q") ?? ""} exact={qp.get("exact") === "1"} place={new URLSearchParams(query).get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); setRunOnChange(true); }} />; })()}
+        q={qp.get("q") ?? ""} exact={qp.get("exact") === "1"} place={new URLSearchParams(query).get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); runAfterChange(); }} />; })()}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 

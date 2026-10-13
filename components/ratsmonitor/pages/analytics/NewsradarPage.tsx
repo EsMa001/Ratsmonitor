@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 interface Item {
   id: string; region: string; place: string; headline: string;
@@ -59,30 +59,9 @@ function Meldung({ i }: { i: Item }) {
 /** plenara.X – Newsradar: berichtenswerte Vorgänge der letzten 30 und nächsten 10 Tage als Meldung mit Zitat und Quelle */
 export function NewsradarPage() {
   const { query } = useAnalyticsQuery();
-  const [res, setRes] = useState<Result | null>(null);
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(true);
   const [days, setDays] = useState(30);
-  const [error, setError] = useState("");
-  const abortRef = useRef<AbortController | null>(null);
+  const { res, loading, error, stale, run } = useAnalysisRun<Result>({ key: `${query}&days=${days}`, url: `/api/analytics/news?${query}&days=${days}`, initial: true });
 
-  useEffect(() => {
-    if (!want) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    const key = `${query}&days=${days}`;
-    fetchJson<Result>(`/api/analytics/news?${key}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(key); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want]);
-  useEffect(() => () => abortRef.current?.abort(), []);
-  const stale = !!res && ranKey !== `${query}&days=${days}` && !loading;
   const own = !!new URLSearchParams(query).get("from");
 
   return (
@@ -93,7 +72,7 @@ export function NewsradarPage() {
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was in den Räten gerade berichtenswert ist: Vorgänge der letzten Wochen und der nächsten 10 Tage, nach Nachrichtenwert geordnet, je Vorgang eine Meldung mit wörtlichem Zitat aus der Vorlage und Quelle.</p>
       </PageBand>
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden" role="group" aria-label="Zeitraum">
         {own ? (
           <p className="m-0 text-[14px] text-slate-700">Zeitraum aus dem Filter{res?.own ? `: ${datum(res.from)} bis ${datum(res.to)}` : ""}</p>
@@ -101,7 +80,7 @@ export function NewsradarPage() {
           <>
             <span className="text-[14px] text-slate-500">Zeitraum:</span>
             {SPANS.map(([d, label]) => (
-              <button key={d} type="button" aria-pressed={days === d} disabled={loading} onClick={() => { if (d !== days) { setDays(d); setWant(true); } }}
+              <button key={d} type="button" aria-pressed={days === d} disabled={loading} onClick={() => { if (d !== days) { setDays(d); run(); } }}
                 className={`h-9 rounded-full border px-4 text-[14px] transition-colors ${days === d ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`}>{label}</button>
             ))}
             <span className="text-[12px] text-slate-500">und die nächsten 10 Tage</span>

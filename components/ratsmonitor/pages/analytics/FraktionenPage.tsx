@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
@@ -8,7 +8,7 @@ import { DEC_COLORS, DecisionRow } from "./DecisionCharts";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 interface Cell { id: string; name: string; n: number; share: number | null; index: number | null }
 interface Party {
@@ -31,31 +31,11 @@ const cellColor = (i: number | null) => (i === null ? "transparent" : i >= 100 ?
 /** plenara.X – Fraktionsprofil: Anträge und Anfragen je Fraktion, Themenprofil und was aus den Anträgen wird */
 export function FraktionenPage() {
   const { query } = useAnalyticsQuery();
-  const [res, setRes] = useState<Result | null>(null);
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/fraktionen?${query}`, initial: true });
   // Geöffnete Liste hinter einer Zahl („all:SPD“, „decided:SPD“)
   const [open, setOpen] = useState("");
   const toggle = (k: string) => setOpen(open === k ? "" : k);
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(true);
-  const [error, setError] = useState("");
-  const abortRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    if (!want) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/fraktionen?${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want]);
-  useEffect(() => () => abortRef.current?.abort(), []);
-  const stale = !!res && ranKey !== query && !loading;
   /* Liste hinter einer Zeile: alle Vorgänge der Fraktion (all) oder ihre Anträge mit Entscheidung (decided) */
   const drill = (outcome: "all" | "decided", party: string, label: string) => open === `${outcome}:${party}` && <RadarDrill base={`/api/analytics/fraktionen?${outcome === "decided" ? "outcome=decided" : "list=1"}`} query={ranKey} by="party" value={party} label={label} />;
 
@@ -74,7 +54,7 @@ export function FraktionenPage() {
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Welche Fraktionen Anträge und Anfragen stellen, zu welchen Themen, und was aus ihren Anträgen wird.</p>
       </PageBand>
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}

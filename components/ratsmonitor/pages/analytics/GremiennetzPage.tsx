@@ -9,7 +9,7 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { NetView, ROLE, type NEdge, type NNode } from "./NetView";
 import { RadarDrill } from "./RadarDrill";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 interface Result {
   q: string; mode: "types" | "names"; pool: number; examined: number; capped: boolean; paths: number;
@@ -20,16 +20,11 @@ const n = (v: number) => v.toLocaleString("de-DE");
 
 export function GremiennetzPage() {
   const { query, hasTerm, search } = useAnalyticsQuery();
-  const [res, setRes] = useState<Result | null>(null);
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(hasTerm);
-  const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/network?${query}`, initial: hasTerm, fallback: "Das Netz konnte nicht berechnet werden.", onDone: () => setSelected("") });
   // Geöffnete Liste hinter einem Übergang („Von|Nach“)
   const [edge, setEdge] = useState("");
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
 
   /* Ohne Begriff in der Suche: mit einem passenden Beispiel starten, damit die Seite nicht leer ist */
   const given = useRef<string | null>(hasTerm ? null : "Photovoltaik");
@@ -37,26 +32,10 @@ export function GremiennetzPage() {
     if (!given.current) return;
     search.applySearch(given.current);
     given.current = null;
-    setWant(true);
+    run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!want) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    setSelected("");
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/network?${query}`, { signal: ctrl.signal }, "Das Netz konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want]);
-  useEffect(() => () => abortRef.current?.abort(), []);
-  const stale = !!res && ranKey !== query && !loading;
 
   const byId = useMemo(() => new Map((res?.nodes ?? []).map((x) => [x.id, x])), [res]);
   const sel = selected ? byId.get(selected) : undefined;
@@ -79,7 +58,7 @@ export function GremiennetzPage() {
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, welchen Weg Vorgänge durch die Gremien nehmen: wo sie beginnen, welche Gremien dazwischen liegen, wo sie entschieden werden und wie lange der Weg dauert.</p>
       </PageBand>
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Netz berechnen" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Netz berechnen" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu berechnen.</p>}
       {loading && !res && <Laden text="Netz wird berechnet …" />}

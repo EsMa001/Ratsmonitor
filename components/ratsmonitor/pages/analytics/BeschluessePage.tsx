@@ -9,7 +9,7 @@ import { STATUS } from "../../lib/constants";
 import { DEC_COLORS, DecisionRow, MonthColumns, type Cut, type Month } from "./DecisionCharts";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 interface VRow { id: string; name: string; n: number; vote: number; unanimous: number | null; changeN: number; changed: number | null }
 interface Result {
@@ -42,15 +42,10 @@ function Fold({ title, children }: { title: string; children: React.ReactNode })
 
 export function BeschluessePage() {
   const { query, hasTerm, search } = useAnalyticsQuery();
-  const [res, setRes] = useState<Result | null>(null);
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/decisions?${query}`, initial: hasTerm });
   // Geöffnete Liste hinter einer Zeile („kind:rat“)
   const [open, setOpen] = useState("");
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(hasTerm);
-  const [error, setError] = useState("");
   const [cut, setCut] = useState<"topics" | "kinds" | "lands">("kinds");
-  const abortRef = useRef<AbortController | null>(null);
 
   /* Ohne Begriff in der Suche: mit einem passenden Beispiel starten, damit die Seite nicht leer ist */
   const given = useRef<string | null>(hasTerm ? null : "Haushalt");
@@ -58,25 +53,10 @@ export function BeschluessePage() {
     if (!given.current) return;
     search.applySearch(given.current);
     given.current = null;
-    setWant(true);
+    run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!want) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/decisions?${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want]);
-  useEffect(() => () => abortRef.current?.abort(), []);
-  const stale = !!res && ranKey !== query && !loading;
 
   const statusRows = useMemo(() => (res ? res.status.filter((s) => s.id !== "unknown" && s.n > 0) : []), [res]);
   const statusTotal = statusRows.reduce((a, s) => a + s.n, 0);
@@ -91,7 +71,7 @@ export function BeschluessePage() {
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wie Gremien entscheiden: Beschlussquote, Vertagungen und Ablehnungen, Einigkeit und Dauer.</p>
       </PageBand>
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}

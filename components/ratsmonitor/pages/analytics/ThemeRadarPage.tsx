@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
 import { Befund, zuThema } from "./Befund";
@@ -14,7 +14,7 @@ import { Frame } from "./AtlasFrame";
 import { STATUS } from "../../lib/constants";
 import { RADARS } from "@/shared/radars.mjs";
 import { ANALYSEN, GRUPPEN, type AnalyseId } from "../../info/branchen-enterprise";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 interface Topic { name: string; n: number; regions: number; decided: number; approved: number; rejected: number; postponed: number; open: number; rate: number | null; signals: { name: string; n: number }[] }
 interface Result {
@@ -55,35 +55,13 @@ export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RAD
   const g = ANALYSEN[analyse ?? (id as AnalyseId)].group, gruppe = g === "atlas" ? { href: "/analytics/atlas", name: "plenara.X Atlas" } : GRUPPEN[g];
   const def = RADARS[id];
   const { query, search } = useAnalyticsQuery();
+  const { res, ranKey, loading, error, stale, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/themenradar?radar=${id}&${query}`, initial: true, onDone: () => setOpen("") });
   /* Klick auf „Ort auswerten“ in der Karte: Ortsfilter setzen und auswerten, sobald die Abfrage den Ort enthält */
-  const [runOnChange, setRunOnChange] = useState(false);
-  useEffect(() => { if (runOnChange) { setRunOnChange(false); setWant(true); } }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
   const qp = new URLSearchParams(query);
-  const [res, setRes] = useState<Result | null>(null);
-  const [ranKey, setRanKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(true);
-  const [error, setError] = useState("");
   /* Aufgeklappte Liste hinter einer Zahl: "topic:Jugend", "signal:…", "month:2026-05", "region:<id>" */
   const [open, setOpen] = useState("");
   const toggle = (key: string) => setOpen(open === key ? "" : key);
-  const abortRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    if (!want) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/themenradar?radar=${id}&${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(query); setOpen(""); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want]);
-  useEffect(() => () => abortRef.current?.abort(), []);
-  const stale = !!res && ranKey !== query && !loading;
 
   const topics = [...(res?.topics ?? [])].sort((a, b) => b.n - a.n);
   const maxT = Math.max(1, ...topics.map((t) => t.n));
@@ -104,10 +82,10 @@ export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RAD
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">{def.kurz}</p>
       </PageBand>}
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && setWant(true)} onSubmit={() => setWant(true)} startLabel="Auswerten" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       <RadarMap radar={id} topics={[...def.topics.map(([t]) => String(t)), ...("fallback" in def && def.fallback ? [String(def.fallback)] : [])]} q={new URLSearchParams(ranKey || query).get("q") ?? ""} exact={new URLSearchParams(ranKey || query).get("exact") === "1"}
-        place={qp.get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); setRunOnChange(true); }} />
+        place={qp.get("area") ?? ""} onPlace={(ags) => { search.setArea(ags, "ui"); runAfterChange(); }} />
       {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
 
