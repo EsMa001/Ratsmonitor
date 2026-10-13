@@ -53,9 +53,7 @@ export function MapPanel({ active }: { active: boolean }) {
       window.removeEventListener("rm:search-confirmed", off);
     };
   }, []);
-  useEffect(() => {
-    if (!typing) setSettled(filtered);
-  }, [typing, filtered]);
+  if (!typing && settled !== filtered) setSettled(filtered);
   const sectionRef = useRef<HTMLElement>(null);
   /* Ist die Karte oben unter der angehefteten Kopfzeile verschwunden, rücken die Schalter oben mit nach unten */
   const [hidden, setHidden] = useState(0);
@@ -111,11 +109,13 @@ export function MapPanel({ active }: { active: boolean }) {
   const [styleOpen, setStyleOpen] = useState(false);
   /* Klick im Kartenmodus auf eine Gemeinde mit Treffern: diese Stadt (ohne Kreis) als Ort in die Suche übernehmen */
   const selectRef = useRef<(ags: string) => void>(() => {});
-  selectRef.current = (ags: string) => {
-    if (!ags) return;
-    search.setScope("only");
-    search.setArea(ags, "map");
-  };
+  useEffect(() => {
+    selectRef.current = (ags: string) => {
+      if (!ags) return;
+      search.setScope("only");
+      search.setArea(ags, "map");
+    };
+  });
   const [barH, setBarH] = useState(44);
   const overlayRef = useRef<HTMLDivElement>(null);
   /* Höhe von Suchleiste + Chips, damit die Leiste im Kartenmodus genau am unteren Rand landet */
@@ -130,7 +130,9 @@ export function MapPanel({ active }: { active: boolean }) {
   const engine = useMemo(
     () =>
       geo
-        ? new MapEngine(geo, { onSelect: (ags) => selectRef.current(ags), onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {}, onUnlock: () => setExplore(true) })
+        ? // Die Karte ruft onSelect erst bei einem Klick auf, nicht beim Rendern
+          // eslint-disable-next-line react-hooks/refs
+          new MapEngine(geo, { onSelect: (ags) => selectRef.current(ags), onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {}, onUnlock: () => setExplore(true) })
         : null,
     [geo],
   );
@@ -185,18 +187,27 @@ export function MapPanel({ active }: { active: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine, areaCounts, t1, t2, filtered, state.area, state.radius, coverage, state.level, inScope, explore]);
 
-  /* Kartenmodus, sobald eine Suche oder ein Filter bestätigt ist; sind alle entfernt, wieder der normale Modus */
-  useEffect(() => {
-    setExplore(settled && filtered);
-  }, [settled, filtered]);
-
-  /* Normaler Modus: Karte gesperrt. Tippen, Zwei-Finger-Zoom oder Mausrad (nur mit Suche/Filter) starten den Kartenmodus */
-  useEffect(() => {
-    engine?.setLocked(!explore);
+  /* Kartenmodus, sobald eine Suche oder ein Filter bestätigt ist; sind alle entfernt, wieder der normale Modus.
+     Beim Rendern nachgezogen, wenn sich das ändert (Freischalten per Tippen und „Schließen“ setzen explore selbst) */
+  const wantExplore = settled && filtered;
+  const [lastWant, setLastWant] = useState(false);
+  if (wantExplore !== lastWant) {
+    setLastWant(wantExplore);
+    setExplore(wantExplore);
+  }
+  /* Zurück im normalen Modus: Darstellung wieder Flächen, Auswahl zu */
+  const [lastExplore, setLastExplore] = useState(explore);
+  if (explore !== lastExplore) {
+    setLastExplore(explore);
     if (!explore) {
       setStyle("flaechen");
       setStyleOpen(false);
     }
+  }
+
+  /* Normaler Modus: Karte gesperrt. Tippen, Zwei-Finger-Zoom oder Mausrad (nur mit Suche/Filter) starten den Kartenmodus */
+  useEffect(() => {
+    engine?.setLocked(!explore);
   }, [engine, explore]);
   useEffect(() => {
     engine?.setDark(dark);

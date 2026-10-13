@@ -9,7 +9,7 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { GraphView, KIND, type GEdge, type GNode } from "./GraphView";
 import { isFiller, prettyTerm, termStem } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
-import { errorText, fetchJson } from "../../lib/fetchJson";
+import { useAnalysisRun } from "./useAnalysisRun";
 
 interface Result {
   /** Datum des vorab berechneten Gesamtgraphen (nur dort gesetzt) */
@@ -32,65 +32,47 @@ const pct = (v: number, total: number) => (total ? `${Math.max(1, Math.round((v 
 export function KnowledgeGraphPage() {
   const params = useSearchParams();
   const { query, hasTerm, search } = useAnalyticsQuery();
-  const [res, setRes] = useState<Result | null>(null);
-  const [ranKey, setRanKey] = useState("");
   // Liste der Vorgänge hinter dem gewählten Knoten
   const [showList, setShowList] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [want, setWant] = useState(false);
-  const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
   const [pair, setPair] = useState<GEdge | null>(null);
   const graphRef = useRef<HTMLElement | null>(null);
   const zoomRef = useRef<((f: number | "fit") => void) | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
 
-  const given = useRef(params.get("thema"));
-  const preRef = useRef(false);
+  /* Direktlink (?thema=) oder, ohne Link und ohne Begriff, das Beispiel „Photovoltaik“ mit vorab berechnetem Graphen (kein Warten) */
+  const [given] = useState(() => params.get("thema"));
+  const [example] = useState(() => !given && !hasTerm);
+  const [pre, setPre] = useState<{ res: Result | null; loading: boolean }>({ res: null, loading: example });
+  const { res: runRes, ranKey: runKey, loading: runLoading, error: runError, run, runAfterChange } = useAnalysisRun<Result>({ key: query, url: `/api/analytics/graph?${query}`, initial: false, fallback: "Der Graph konnte nicht berechnet werden.", onDone: () => { setSelected(""); setPair(null); } });
   /* Der vorab berechnete Graph gilt für die Suche, die beim Öffnen gesetzt wurde: nicht als veraltet anzeigen */
-  useEffect(() => { if (preRef.current && hasTerm) { setRanKey(query); preRef.current = false; } }, [query, hasTerm]);
+  const [preKey, setPreKey] = useState("");
+  if (pre.res && !preKey && hasTerm) setPreKey(query);
+  const res = runRes ?? pre.res, ranKey = runKey || preKey, loading = runLoading || pre.loading;
+  const [hint, setHint] = useState("");
+  const error = hint || runError;
+  /* Neu erstellen; ohne Begriff warten, bis er in der Suche angekommen ist */
+  const start = () => { setHint(""); if (hasTerm) run(); else runAfterChange(); };
+
   useEffect(() => {
-    /* Ohne Direktlink und ohne Begriff in der Suche: mit „Photovoltaik“ starten; der Graph liegt vorab berechnet bereit (kein Warten) */
-    if (!given.current && !hasTerm) {
-      preRef.current = true;
+    if (example) {
       search.applySearch("Photovoltaik");
-      setLoading(true);
       fetch("/data/graph-photovoltaik.json")
         .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<Result>; })
-        .then((r) => { setRes(r); setLoading(false); })
-        .catch(() => { preRef.current = false; setLoading(false); setWant(true); });
+        .then((r) => setPre({ res: r, loading: false }))
+        .catch(() => { setPre({ res: null, loading: false }); run(); });
       return;
     }
-    if (!given.current) { if (hasTerm) setWant(true); return; }
-    search.applySearch(given.current);
-    given.current = null;
-    setWant(true);
+    if (!given) { if (hasTerm) run(); return; }
+    search.applySearch(given);
+    runAfterChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    /* wartet, bis der Begriff (z. B. aus einem Beispiel) in der Suche angekommen ist */
-    if (!want || !hasTerm) return;
-    setWant(false);
-    setError("");
-    setLoading(true);
-    setSelected("");
-    setPair(null);
-    const ctrl = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = ctrl;
-    fetchJson<Result>(`/api/analytics/graph?${query}`, { signal: ctrl.signal }, "Der Graph konnte nicht berechnet werden.")
-      .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [want, hasTerm]);
-  useEffect(() => () => abortRef.current?.abort(), []);
 
   const stale = !!res && ranKey !== query;
   const onPlay = () => {
     if (loading) return;
-    if (!hasTerm) return setError("Bitte zuerst ein Thema in die Suche eingeben.");
-    setWant(true);
+    if (!hasTerm) return setHint("Bitte zuerst ein Thema in die Suche eingeben.");
+    start();
   };
 
   /* Nur Begriffe (und Themenfelder): keine Gremien, Länder oder Orte */
@@ -140,7 +122,7 @@ export function KnowledgeGraphPage() {
       <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Zeigt, womit ein Thema in den Räten zusammenhängt: verwandte Begriffe und Themenfelder als Netz.</p>
       </PageBand>
 
-      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => setWant(true)} startLabel="Graph erstellen" /></div>
+      <div className="print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={onPlay} onSubmit={() => start()} startLabel="Graph erstellen" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {stale && !loading && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu erstellen.</p>}
 
@@ -180,8 +162,8 @@ export function KnowledgeGraphPage() {
             </div>
             {activePair && <p className="mt-2 text-[14px] text-slate-700">Verbindung mit „{byId.get(activePair.b)?.label}“: gemeinsam in {n(activePair.n)} Einträgen.</p>}
             {links.length > 0 && <p className="mt-2 line-clamp-2 text-[14px] text-slate-500">Verbunden mit: {links.slice(0, 6).map((l) => l.other.label).join(", ")}</p>}
-            {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-700">Graph um „{sel.label}“ neu aufbauen →</button>}
-            {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); setWant(true); }} className="mt-2 text-[14px] font-medium text-teal-700">Auf dieses Thema eingrenzen →</button>}
+            {sel.type === "term" && <button type="button" onClick={() => { search.applySearch(sel.label); start(); }} className="mt-2 text-[14px] font-medium text-teal-700">Graph um „{sel.label}“ neu aufbauen →</button>}
+            {sel.type === "topic" && <button type="button" onClick={() => { search.setThema(sel.label); start(); }} className="mt-2 text-[14px] font-medium text-teal-700">Auf dieses Thema eingrenzen →</button>}
             {res.q && sel.type !== "center" && <button type="button" onClick={() => setShowList(!showList)} aria-expanded={showList} className="ml-4 mt-2 text-[14px] font-medium text-teal-700">{showList ? "Vorgänge ausblenden" : "Vorgänge zeigen"}</button>}
             {res.q && showList && sel.type !== "center" && <div className="mt-2 max-h-[50vh] overflow-auto"><RadarDrill base="/api/analytics/graph?list=1" query={ranKey} by="node" value={sel.id} label={`„${sel.label}“`} /></div>}
           </div>
@@ -192,7 +174,7 @@ export function KnowledgeGraphPage() {
         <>
 
           {!!res.partial?.length && (
-            <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); setWant(true); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
+            <p className="mt-4 max-w-[760px] text-[14px] text-slate-600">Der Begriff steckt auch in längeren Wörtern, etwa {res.partial.slice(0, 3).map((p) => `„${p.word}“ (${n(p.n)})`).join(", ")}. <button type="button" onClick={() => { search.setExact(true); start(); }} className="font-medium text-teal-700">Nur ganze Wörter →</button></p>
           )}
           {strongest[0] && <Befund>„{byId.get(strongest[0].a)?.label}“ und „{byId.get(strongest[0].b)?.label}“ kommen am häufigsten gemeinsam vor, in {n(strongest[0].n)} Einträgen.</Befund>}
           <div className="mt-10 max-w-[820px]">
