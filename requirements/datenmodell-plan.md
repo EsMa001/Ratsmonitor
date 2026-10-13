@@ -100,6 +100,9 @@ Jeder Schritt einzeln auf `main`, mit Tests, Migrationen auf echten Daten gemess
   - Vorbereitete Bündel übernehmen keine Stichwörter mehr; `preserveArticleContent` hält sie nicht mehr fest.
   - Administration: KI-Teil der Seite „Stichwörter“ (Regelwörter und Titelbegriffe bleiben), Stufe und Kartenfarbe in
     „Verarbeitung“, Dashboard-Zahl, Pflichtangabe der Vollständigkeitsprüfung (`complete-article-v2`, elf statt zwölf).
+  - Nachtrag 13.10.2026: Die Seite „Stichwörter“ ist ganz entfernt (Reiter, `GET /api/admin/keywords`,
+    `admin-keywords.mjs`, Bauziel `keywords`). Regelbegründungen („Erkannte Sachbegriffe: …“) und Titelbegriffe
+    (`analysisFeatures`, Themenvergleich) bleiben, sie werden nur nicht mehr gezählt.
   - Gebietswerte: `kw`/`bk` aus `FIGURES` und den Gebietszeilen, `FIGURES_VERSION` 4 → 5.
   - Suche: Migration `drizzle/0019_remove_keywords.sql` entfernt `weightedKeywords` (und `aiAttempts.keywords`) aus dem
     Payload, solange die Trigger aus 0017 noch darauf reagieren (Suchtext der betroffenen Vorgänge wird neu geschrieben,

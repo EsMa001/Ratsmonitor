@@ -11,7 +11,7 @@ const since=(s:Stand)=>s.pending>0?` · Kennzahlen für ${n(s.pending)} Gebiete 
  :s.changes===null?' · Bestand seither geändert'
  :s.changes>10000?' · viele Änderungen seither'
  :s.changes>0?` · ≈ ${n(s.changes)} geänderte Datensätze seither`:' · Bestand unverändert';
-/** stand undefined = lädt. action: „Neu berechnen“ (Server rechnet), „Aktualisieren“ (liest nur), „Neu zählen“ (Stichwörter). */
+/** stand undefined = lädt. action: „Neu berechnen“ (Server rechnet), „Aktualisieren“ (liest nur). */
 export function StandLine({stand,busy,action='Neu berechnen',onAction,extra,hint}:{stand:Stand|null|undefined;busy?:boolean;action?:string;onAction?:()=>void;extra?:ReactNode;hint?:string}){
  const b=stand?.build,pct=b?Math.round(100*b.done/Math.max(1,b.total)):0;
  const text=stand===undefined?'Stand wird geladen …'

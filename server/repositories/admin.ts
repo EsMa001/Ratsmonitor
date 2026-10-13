@@ -5,8 +5,6 @@ import {adminTimeline} from '../integrations/admin-timeline.mjs';
 import {adminCoverage} from '../integrations/admin-coverage.mjs';
 import {adminAtlas} from '../integrations/admin-atlas.mjs';
 import {computeEstimate,estimateHead,storedEstimateText} from '../integrations/admin-estimate-store.mjs';
-import {readStored,storedMeta} from '../integrations/admin-stored.mjs';
-import {buildStatus} from '../integrations/admin-builds.mjs';
 import {readDebug} from '../integrations/import-trace.mjs';
 import {refreshStep,refreshStatus} from '../integrations/admin-refresh.mjs';
 import {adminStand,derivedStand,storedStand,VERSIONS} from '../integrations/admin-stand.mjs';
@@ -57,15 +55,6 @@ export const qualityView=()=>{
  let kept:{checks:Record<string,{checkedAt?:string;stale?:boolean}>;currentRevision:number}={checks:{},currentRevision:0};
  const latest=()=>Object.values(kept.checks).map(c=>c.checkedAt||'').sort().at(-1)||null;
  return view(s=>['q1',latest(),s.stockSum,s.content,STATIC_VER],async(_db,s)=>({...kept,stand:{...storedStand(s,null),computedAt:latest(),stale:Object.values(kept.checks).some(c=>c.stale)}}),undefined,async db=>{kept=await storedQualityChecks(db) as typeof kept;});
-};
-// Keywords are counted by a build in steps (admin-builds.mjs, "Neu zählen") and stored; the page reads the stored text
-// unparsed, with the stand (and a running build) in front.
-export const keywordsView=()=>{
- let head:{computedAt:string;stockSum?:number}|null=null,build:Awaited<ReturnType<typeof buildStatus>>=null;
- return view(s=>['k1',head?.computedAt,head?.stockSum,s.stockSum,build?.state,build?.done],async(db,s)=>{
-  const stand=storedStand(s,head,build),stored=await readStored(db,'keywords');
-  return stored&&stored.text.length>2?'{"stand":'+JSON.stringify(stand)+',"computed":true,'+stored.text.slice(1):{computed:false,stand};
- },undefined,async db=>{[head,build]=await Promise.all([storedMeta(db,'keywords'),buildStatus(db,'keywords')]);});
 };
 // The list of areas in parts (admin-areas.mjs): static (cached for good under its version), areas (rows of figures) and
 // summary (counts, labels, statuses, runs, job; live, small).

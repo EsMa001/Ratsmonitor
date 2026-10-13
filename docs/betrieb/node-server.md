@@ -167,7 +167,10 @@ braucht 0020 (Spalte `active`), deshalb alle zusammen vor dem Ausrollen einspiel
 
 Danach: Wortliste voll aufbauen (`node scripts/refresh-search-words.mjs --full`, zuletzt 158 s; bis dahin sucht die App
 über den Volltextindex bzw. über alle Karten), Gebietswerte zählen wegen `FIGURES_VERSION` 5 einmal neu (Nachholschritte;
-bis dahin zeigt die Übersicht keine Zahlen), auf der Admin-Seite „Stichwörter“ einmal „Neu zählen“.
+bis dahin zeigt die Übersicht keine Zahlen). Die frühere Admin-Seite „Stichwörter“ gibt es seit 13.10.2026 nicht mehr;
+ihren gespeicherten Stand löscht einmalig:
+`DELETE FROM admin_agg WHERE build IN (SELECT json_extract(value,'$.id') FROM system_state WHERE key='admin-build:keywords');`
+`DELETE FROM system_state WHERE key='admin-build:keywords' OR key GLOB 'admin-stored:keywords*';`
 
 Am Ende eines Abrufauftrags erneuert der Server die Planerstatistik dort, wo sich Tabellen stark verändert haben
 (`PRAGMA optimize=0x10002` mit `analysis_limit=4000`, `pipeline-jobs.mjs`). Die Statistik von Hand zu erneuern

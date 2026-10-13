@@ -1,4 +1,4 @@
-// Stored evaluations of the administration (class C: keywords, estimate). They are computed only on request or by a
+// Stored evaluations of the administration (class C: estimate). They are computed only on request or by a
 // build, and pages read the stored text as it is. A row of D1 holds at most 2 MB and a bound value about 100 KB, so the
 // JSON is stored gzip-compressed (CompressionStream, available in Workers and Node) as base64 in parts of PART_CHARS
 // characters under 'admin-stored:<name>#000', '#001', …, with a head 'admin-stored:<name>' saying when, at which stock

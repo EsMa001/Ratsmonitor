@@ -18,7 +18,6 @@ export const PAGE_HEAD:Record<AdminPage,{title:string;intro:string}>={
  pdf:{title:'PDF-Import',intro:'Lädt die PDF-Dokumente der Berichte in die eigene Ablage, liest ihren Text und hält die feste Grenze von 80 GB ein. Zeigt, was gerade läuft, wie vollständig die Ablage ist, was fehlschlägt und warum, und startet Läufe von Hand.'},
  zeitplaene:{title:'Jobs & Zeitpläne',intro:'Zeigt alle Jobs, die auf dem Server von selbst laufen: was sie tun, wann sie zuletzt liefen, wie lange und mit welchem Ergebnis, wann sie das nächste Mal starten. Jobs lassen sich hier ein- und ausschalten, ihre Zeit ändern und einmal sofort starten.'},
  speicher:{title:'Speicher & Sicherungen',intro:'Zeigt, was auf der Festplatte des Servers wie viel Platz belegt: Datenbank und ihre größten Tabellen, PDF-Ablage, Sicherungen, Programmstände, OCR-Werkzeuge. Dazu, welche Sicherungen es gibt, wie groß und wie alt sie sind.'},
- stichwoerter:{title:'Stichwörter',intro:'Zeigt, an welchen Wörtern die festen Regeln Sachgebiete erkennen und welche Begriffe in den Titeln stehen. Die Seite zählt nur, was schon gespeichert ist.'},
 };
 export const FOOT:Record<AdminPage,string>={
  todo:'Interne Projektplanung · Plenara',
@@ -32,7 +31,6 @@ export const FOOT:Record<AdminPage,string>={
  pdf:'Stand aus der letzten Zählung auf dem Server (scripts/pdf-store/stats.mjs), Fortschritt jede Minute. Die Knöpfe legen einen Auftrag an und stoßen den Server sofort an; ein weiterer Auftrag wartet, bis der laufende fertig ist.',
  zeitplaene:'Die Timer auf dem Server fragen alle 10 Minuten (scripts/schedule.mjs); „Jetzt ausführen“ und die Knöpfe der anderen Reiter starten den Job sofort, auch wenn er ausgeschaltet ist (der Schalter stoppt nur die geplanten Zeiten). Uhrzeiten in deutscher Zeit.',
  speicher:'Gemessen auf dem Server (scripts/server-disk.mjs) höchstens stündlich, Tabellen der Datenbank einmal am Tag. Die Seite löscht nichts.',
- stichwoerter:'Die Seite zählt nur, was frühere Schritte gespeichert haben; sie startet keine Analyse.',
 };
 /** Stand-Zeile je Seite: Knopf, Hinweis und Zusatz hinter dem Datum („Stand … · Aktualisieren →“). */
 export const STAND_ZEILE:Partial<Record<AdminPage,{action?:string;hint?:string;extra?:string}>>={
@@ -42,7 +40,6 @@ export const STAND_ZEILE:Partial<Record<AdminPage,{action?:string;hint?:string;e
  qualitaet:{action:'Aktualisieren'},
  hochrechnung:{action:'Neu berechnen'},
  regeltexte:{action:'Aktualisieren'},
- stichwoerter:{action:'Neu zählen',hint:'Liest alle Berichte; kann einige Minuten dauern.'},
 };
 
 // ---- 6.2 Allgemeine Zustandstexte ---------------------------------------------------------------------------------
@@ -62,7 +59,6 @@ export const ZUSTAND={
 };
 /** 6.7 Stand-Zeilen der Seiten mit gespeichertem Stand */
 export const STAND_TEXT={
- stichwoerterOhneStand:'Noch kein Stand gespeichert. Das Zählen liest alle Berichte in Schritten und dauert etwa 2–3 Minuten; danach öffnet sich die Seite sofort.',
  jetztBerechnen:'Jetzt berechnen',
  bau:(p:number|string,done:number|string,total:number|string)=>`Wird neu berechnet: ${p} % (${done} von ${total} Gebieten) · Der bisherige Stand bleibt sichtbar, bis die Zählung fertig ist.`,
  angehalten:(p:number|string)=>`Angehalten bei ${p} %`,
@@ -186,11 +182,6 @@ export const HELP:Record<string,Help>={
   sub:'Die Berechnung nutzt die vorberechneten Zahlen je Gebiet und zieht die Spannen; das dauert wenige Sekunden. Danach zeigt die Seite das Ergebnis sofort, bis Sie neu rechnen lassen.'},
  'hochrechnung.ergebnis':{title:'Wie viele Berichte und wie viel Text fallen bundesweit pro Tag an?'},
 
- // Stichwörter
- 'stichwoerter.regeln':{title:'Welche Sachbegriffe haben die Regeln erkannt?',
-  sub:'Wörter im Originaltitel, an denen die festen Regeln ein Sachgebiet erkannt haben, und in wie vielen Berichten sie stehen.'},
- 'stichwoerter.titel':{title:'Welche Begriffe stehen in den Titeln?',
-  sub:'Begriffe, in die eine zweite Regel jeden Titel zerlegt; sie verbinden Berichte verschiedener Gebiete zum selben Thema.'},
 };
 
 // ---- 6.11 Begriffe ------------------------------------------------------------------------------------------------
@@ -502,12 +493,7 @@ export const HOCHRECHNUNG={
  neuRechnen:'bis Sie neu rechnen lassen',
 };
 
-// ---- 6.9 Stichwörter, 6.10 To-do und Anmeldung -------------------------------------------------------------------
-export const STICHWOERTER_NOTES={
- berichte:'Doppelungen einmal gezählt',
- sachbegriffe:(n:number|string)=>`in ${n} Berichten · Wörter, an denen die Regeln ein Sachgebiet erkannt haben`,
- titelbegriffe:(n:number|string)=>`aus ${n} ausgewerteten Berichten · verbinden gleiche Themen über Gebiete hinweg`,
-};
+// ---- 6.10 To-do und Anmeldung -----------------------------------------------------------------------------------
 export const RAHMEN={
  anmelden:{title:'Geschützter Bereich',text:'Melden Sie sich mit ChatGPT an, um die Administration zu öffnen.',knopf:'Mit ChatGPT anmelden'},
  keinZugriffLink:'Konto wechseln',

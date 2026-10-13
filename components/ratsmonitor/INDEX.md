@@ -5,8 +5,8 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 
 ## CSS-Klassen (Klasse Datei:Zeile)
 
-- app/admin.css (501 Zeilen, ⚠11)
-- app/analyse-admin.css (95 Zeilen, ⚠9)
+- app/admin.css (497 Zeilen, ⚠11)
+- app/analyse-admin.css (93 Zeilen, ⚠8)
 - app/design-styles.css (254 Zeilen)
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
@@ -16,26 +16,26 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 admin-access admin.css:6
 admin-activation admin.css:6
 admin-ai-kinds admin.css:10
-admin-ai-local admin.css:435
-admin-ai-local-article admin.css:459
-admin-ai-local-completed admin.css:463
-admin-ai-local-count admin.css:446
-admin-ai-local-details admin.css:466
-admin-ai-local-empty admin.css:472
-admin-ai-local-error admin.css:475
-admin-ai-local-feedback admin.css:473
-admin-ai-local-filters admin.css:440
-admin-ai-local-icon admin.css:443
-admin-ai-local-legacy admin.css:477
-admin-ai-local-list admin.css:447
-admin-ai-local-outputs admin.css:437
-admin-ai-local-pagination admin.css:469
-admin-ai-local-select admin.css:453
-admin-ai-local-spin admin.css:482
-admin-ai-local-table admin.css:449
-admin-ai-local-toolbar admin.css:441
-admin-ai-local-tools admin.css:442
-admin-ai-preview admin.css:224
+admin-ai-local admin.css:431
+admin-ai-local-article admin.css:455
+admin-ai-local-completed admin.css:459
+admin-ai-local-count admin.css:442
+admin-ai-local-details admin.css:462
+admin-ai-local-empty admin.css:468
+admin-ai-local-error admin.css:471
+admin-ai-local-feedback admin.css:469
+admin-ai-local-filters admin.css:436
+admin-ai-local-icon admin.css:439
+admin-ai-local-legacy admin.css:473
+admin-ai-local-list admin.css:443
+admin-ai-local-outputs admin.css:433
+admin-ai-local-pagination admin.css:465
+admin-ai-local-select admin.css:449
+admin-ai-local-spin admin.css:478
+admin-ai-local-table admin.css:445
+admin-ai-local-toolbar admin.css:437
+admin-ai-local-tools admin.css:438
+admin-ai-preview admin.css:220
 admin-ai-retry admin.css:10
 admin-app admin.css:13
 admin-app ratsmonitor.css:194
@@ -63,37 +63,36 @@ admin-atlas-why admin.css:50
 admin-attention admin.css:141
 admin-bar admin.css:6
 admin-bar-row admin.css:6
-admin-bar-row analyse-admin.css:89
 admin-charts admin.css:6
 admin-chip admin.css:57
 admin-empty admin.css:6
 admin-estimate admin.css:141
 admin-estimate analyse-admin.css:80
-admin-estimate-action admin.css:215
+admin-estimate-action admin.css:214
 admin-estimate-action analyse-admin.css:80
 admin-estimate-assumptions analyse-admin.css:80
-admin-estimate-basis admin.css:210
+admin-estimate-basis admin.css:209
 admin-estimate-basis analyse-admin.css:80
 admin-estimate-charts analyse-admin.css:81
 admin-estimate-class analyse-admin.css:80
 admin-estimate-explain analyse-admin.css:83
-admin-estimate-facts admin.css:201
+admin-estimate-facts admin.css:200
 admin-estimate-facts analyse-admin.css:83
 admin-estimate-figure analyse-admin.css:81
 admin-estimate-formula analyse-admin.css:81
-admin-estimate-key admin.css:206
+admin-estimate-key admin.css:205
 admin-estimate-key analyse-admin.css:81
 admin-estimate-share analyse-admin.css:81
 admin-estimate-step analyse-admin.css:81
 admin-estimate-subheading analyse-admin.css:80
 admin-estimate-table analyse-admin.css:80
-admin-estimate-tag admin.css:197
+admin-estimate-tag admin.css:196
 admin-estimate-tag analyse-admin.css:83
-admin-estimate-tags admin.css:215
+admin-estimate-tags admin.css:214
 admin-estimate-tags analyse-admin.css:83
 admin-estimate-wrap analyse-admin.css:81
 admin-gate admin.css:6
-admin-gate analyse-admin.css:94
+admin-gate analyse-admin.css:92
 admin-geography admin.css:10
 admin-job admin.css:10
 admin-job-counts admin.css:14
@@ -115,7 +114,6 @@ admin-note admin.css:6
 admin-notice admin.css:6
 admin-notice ratsmonitor.css:194
 admin-number admin.css:6
-admin-number analyse-admin.css:89
 admin-operations admin.css:6
 admin-overview-charts admin.css:22
 admin-overview-trend admin.css:29
@@ -125,7 +123,6 @@ admin-quality-checks admin.css:118
 admin-quality-group admin.css:116
 admin-quality-head admin.css:120
 admin-quality-samples admin.css:128
-admin-quality-stats admin.css:6
 admin-refresh admin.css:6
 admin-region-list admin.css:10
 admin-review-head admin.css:6
@@ -148,20 +145,12 @@ admin-source-meta admin.css:10
 admin-stage admin.css:10
 admin-stage-ai admin.css:10
 admin-stage-grid admin.css:10
-admin-stage-grid-local admin.css:434
+admin-stage-grid-local admin.css:430
 admin-stage-number admin.css:10
 admin-state admin.css:6
 admin-status-row admin.css:6
 admin-storage-status admin.css:10
 admin-table admin.css:6
-admin-terms admin.css:217
-admin-terms analyse-admin.css:89
-admin-terms-chips analyse-admin.css:89
-admin-terms-columns admin.css:220
-admin-terms-columns analyse-admin.css:89
-admin-terms-stats analyse-admin.css:89
-admin-terms-table admin.css:222
-admin-terms-table analyse-admin.css:89
 admin-territories admin.css:10
 admin-timeline admin.css:141
 admin-timeline analyse-admin.css:78
@@ -169,75 +158,75 @@ admin-timeline-charts analyse-admin.css:78
 admin-timeline-controls analyse-admin.css:78
 admin-timeline-table admin.css:29
 admin-timeline-table analyse-admin.css:78
-admin-todo admin.css:228
-admin-todo-avatar admin.css:308
-admin-todo-backlog-rows admin.css:325
-admin-todo-board admin.css:398
-admin-todo-card admin.css:283
-admin-todo-card-actions admin.css:311
-admin-todo-card-owner admin.css:303
-admin-todo-card-top admin.css:287
-admin-todo-category admin.css:317
-admin-todo-category-empty admin.css:334
-admin-todo-category-head admin.css:318
-admin-todo-cell admin.css:280
-admin-todo-cell-empty admin.css:282
-admin-todo-choice admin.css:254
-admin-todo-column-heading admin.css:273
-admin-todo-columns admin.css:271
-admin-todo-conflicts admin.css:340
-admin-todo-dialog admin.css:347
-admin-todo-dialog-actions admin.css:369
-admin-todo-dialog-description admin.css:350
-admin-todo-dialog-head admin.css:348
-admin-todo-empty admin.css:315
-admin-todo-error admin.css:336
-admin-todo-error-actions admin.css:339
-admin-todo-field admin.css:352
-admin-todo-field--wide admin.css:354
-admin-todo-filters admin.css:250
-admin-todo-form admin.css:351
-admin-todo-head admin.css:235
-admin-todo-head-actions admin.css:240
-admin-todo-icon admin.css:242
-admin-todo-lane admin.css:276
-admin-todo-lane-columns admin.css:271
-admin-todo-lane-heading admin.css:277
-admin-todo-loading admin.css:345
-admin-todo-menu admin.css:258
-admin-todo-meta admin.css:292
-admin-todo-mobile-status admin.css:371
-admin-todo-order admin.css:313
-admin-todo-overdue admin.css:299
-admin-todo-overlay admin.css:346
-admin-todo-owner admin.css:304
-admin-todo-person admin.css:306
-admin-todo-plan admin.css:333
-admin-todo-primary admin.css:245
-admin-todo-priority admin.css:294
-admin-todo-priority-choice admin.css:296
-admin-todo-resolution admin.css:298
-admin-todo-row admin.css:327
-admin-todo-row-description admin.css:330
-admin-todo-row-main admin.css:328
-admin-todo-row-owner admin.css:331
-admin-todo-row-status admin.css:331
-admin-todo-save-state admin.css:241
-admin-todo-search admin.css:251
-admin-todo-spin admin.css:372
-admin-todo-status-choice admin.css:312
-admin-todo-subtask-add admin.css:368
-admin-todo-subtask-check admin.css:364
-admin-todo-subtasks admin.css:359
-admin-todo-summary admin.css:229
-admin-todo-swimlane admin.css:269
-admin-todo-tabs admin.css:236
-admin-todo-task-title admin.css:290
-admin-todo-text-action admin.css:247
-admin-todo-view-tools admin.css:268
-admin-todo-wait-filter admin.css:266
-admin-todo-waiting admin.css:300
-admin-todo-wip admin.css:279
+admin-todo admin.css:224
+admin-todo-avatar admin.css:304
+admin-todo-backlog-rows admin.css:321
+admin-todo-board admin.css:394
+admin-todo-card admin.css:279
+admin-todo-card-actions admin.css:307
+admin-todo-card-owner admin.css:299
+admin-todo-card-top admin.css:283
+admin-todo-category admin.css:313
+admin-todo-category-empty admin.css:330
+admin-todo-category-head admin.css:314
+admin-todo-cell admin.css:276
+admin-todo-cell-empty admin.css:278
+admin-todo-choice admin.css:250
+admin-todo-column-heading admin.css:269
+admin-todo-columns admin.css:267
+admin-todo-conflicts admin.css:336
+admin-todo-dialog admin.css:343
+admin-todo-dialog-actions admin.css:365
+admin-todo-dialog-description admin.css:346
+admin-todo-dialog-head admin.css:344
+admin-todo-empty admin.css:311
+admin-todo-error admin.css:332
+admin-todo-error-actions admin.css:335
+admin-todo-field admin.css:348
+admin-todo-field--wide admin.css:350
+admin-todo-filters admin.css:246
+admin-todo-form admin.css:347
+admin-todo-head admin.css:231
+admin-todo-head-actions admin.css:236
+admin-todo-icon admin.css:238
+admin-todo-lane admin.css:272
+admin-todo-lane-columns admin.css:267
+admin-todo-lane-heading admin.css:273
+admin-todo-loading admin.css:341
+admin-todo-menu admin.css:254
+admin-todo-meta admin.css:288
+admin-todo-mobile-status admin.css:367
+admin-todo-order admin.css:309
+admin-todo-overdue admin.css:295
+admin-todo-overlay admin.css:342
+admin-todo-owner admin.css:300
+admin-todo-person admin.css:302
+admin-todo-plan admin.css:329
+admin-todo-primary admin.css:241
+admin-todo-priority admin.css:290
+admin-todo-priority-choice admin.css:292
+admin-todo-resolution admin.css:294
+admin-todo-row admin.css:323
+admin-todo-row-description admin.css:326
+admin-todo-row-main admin.css:324
+admin-todo-row-owner admin.css:327
+admin-todo-row-status admin.css:327
+admin-todo-save-state admin.css:237
+admin-todo-search admin.css:247
+admin-todo-spin admin.css:368
+admin-todo-status-choice admin.css:308
+admin-todo-subtask-add admin.css:364
+admin-todo-subtask-check admin.css:360
+admin-todo-subtasks admin.css:355
+admin-todo-summary admin.css:225
+admin-todo-swimlane admin.css:265
+admin-todo-tabs admin.css:232
+admin-todo-task-title admin.css:286
+admin-todo-text-action admin.css:243
+admin-todo-view-tools admin.css:264
+admin-todo-wait-filter admin.css:262
+admin-todo-waiting admin.css:296
+admin-todo-wip admin.css:275
 admin-zoom admin.css:70
 analysis-controls analyse-admin.css:30
 analysis-field analyse-admin.css:30
@@ -254,7 +243,7 @@ btn-primary admin.css:161
 btn-primary ratsmonitor.css:5
 btn-secondary admin.css:161
 btn-secondary ratsmonitor.css:8
-btn-sm admin.css:216
+btn-sm admin.css:215
 btn-sm ratsmonitor.css:11
 button design-styles.css:58
 button--primary design-styles.css:69
@@ -288,34 +277,33 @@ heading-m design-styles.css:44
 heading-m ratsmonitor.css:58
 hover ratsmonitor.css:161
 icon design-styles.css:22
-is-assumed admin.css:197
+is-assumed admin.css:196
 is-assumed analyse-admin.css:80
 is-clean admin.css:121
-is-collapsed admin.css:322
-is-counted admin.css:197
+is-collapsed admin.css:318
+is-counted admin.css:196
 is-counted analyse-admin.css:83
 is-data admin.css:41
-is-done admin.css:335
-is-dragging admin.css:285
-is-drop-before admin.css:286
-is-drop-target admin.css:281
-is-error admin.css:474
+is-done admin.css:331
+is-dragging admin.css:281
+is-drop-before admin.css:282
+is-drop-target admin.css:277
+is-error admin.css:470
 is-failed analyse-admin.css:85
 is-found admin.css:120
 is-group admin.css:62
-is-high admin.css:295
+is-high admin.css:291
 is-line analyse-admin.css:83
-is-max admin.css:309
-is-model admin.css:197
+is-max admin.css:305
+is-model admin.css:196
 is-model analyse-admin.css:81
-is-nico admin.css:310
+is-nico admin.css:306
 is-open analyse-admin.css:87
-is-sample admin.css:206
+is-sample admin.css:205
 is-sample analyse-admin.css:81
 is-selected admin.css:10
 is-static admin.css:111
 is-stored analyse-admin.css:81
-keyword-list analyse-admin.css:71
 legend design-styles.css:251
 link-btn ratsmonitor.css:17
 map-canvas analyse-admin.css:66
@@ -338,7 +326,7 @@ notice analyse-admin.css:13
 notice design-styles.css:245
 notification-panel analyse-admin.css:13
 page design-styles.css:34
-page-error-action analyse-admin.css:91
+page-error-action analyse-admin.css:89
 page-note design-styles.css:36
 page-note ratsmonitor.css:58
 pb-10 ratsmonitor-info.css:469
@@ -504,7 +492,7 @@ ri-topnav ratsmonitor-info.css:392
 ri-two ratsmonitor-info.css:136
 rm-analytics ratsmonitor-info.css:468
 rm-chip ratsmonitor.css:99
-rm-dark admin.css:465
+rm-dark admin.css:461
 rm-dark ratsmonitor-info.css:415
 rm-dark ratsmonitor.css:127
 rm-dots ratsmonitor.css:105
@@ -527,7 +515,7 @@ scroll-thin ratsmonitor.css:52
 section design-styles.css:249
 section-title design-styles.css:39
 select-active ratsmonitor.css:38
-select-base admin.css:464
+select-base admin.css:460
 select-base ratsmonitor.css:35
 session design-styles.css:159
 session-details analyse-admin.css:71
@@ -552,7 +540,7 @@ tabs design-styles.css:135
 tag analyse-admin.css:14
 tag design-styles.css:99
 text-link admin.css:6
-text-link analyse-admin.css:94
+text-link analyse-admin.css:92
 text-link design-styles.css:72
 text-link ratsmonitor.css:85
 text-slate-900 ratsmonitor.css:150
@@ -628,7 +616,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/admin/
-- page.tsx (66, ⚠4): dynamic, metadata, AdminPage
+- page.tsx (64, ⚠4): dynamic, metadata, AdminPage
 
 ### app/analysen/
 - page.tsx (5): Page
@@ -651,10 +639,9 @@ topic design-styles.css:140
 - admin-chrome.tsx (65, ⚠2): AdminPage, ADMIN_PAGES, START_PAGE, VISIBLE_PAGES, adminHref, AdminBar, AdminTabs, AdminFrame
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠15): AdminDashboardView
-- admin-estimate.tsx (355, ⚠51): AdminEstimate
+- admin-estimate.tsx (355, ⚠52): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
-- admin-keywords.tsx (103, ⚠10): AdminKeywords
 - admin-loader.tsx (33): AdminLoader
 - admin-mobile.tsx (43, ⚠1): AdminMobile
 - admin-overview.tsx (178, ⚠13): AdminOverview
@@ -671,7 +658,7 @@ topic design-styles.css:140
 - admin-stand.tsx (28): standText, StandLine
 - admin-storage.tsx (124, ⚠9): AdminStorage
 - admin-store.ts (96): ADMIN_REGIONS_DONE, CatchUp, useRegionCatchUp, setAdminStaticVersion, fetchDashboard
-- admin-texts.ts (516, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, STICHWOERTER_NOTES, RAHMEN
+- admin-texts.ts (502, ⚠4): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
 - admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
@@ -734,7 +721,7 @@ topic design-styles.css:140
 - QuellenPage.tsx (171, ⚠4): QuellenPage
 - StartseitePage.tsx (518, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
-- TodoPage.tsx (267, ⚠24): TodoPage
+- TodoPage.tsx (267, ⚠25): TodoPage
 - VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
@@ -815,7 +802,7 @@ topic design-styles.css:140
 - BeschluessePage.tsx (198, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (310, ⚠11): ComparePage
+- ComparePage.tsx (310, ⚠12): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
 - DiffusionPage.tsx (252, ⚠7): DiffusionPage
@@ -831,7 +818,7 @@ topic design-styles.css:140
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
 - RadarDrill.tsx (79): DrillItem, RadarDrill
-- RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
+- RadarExtra.tsx (153, ⚠8): Extra, RadarExtra
 - RadarMap.tsx (79, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
 - RadarThumbs.tsx (167): RADAR_THUMBS

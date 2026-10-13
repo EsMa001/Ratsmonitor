@@ -12,7 +12,6 @@ import {AdminOverview} from '@/components/admin-overview';
 import {AdminAtlas} from '@/components/admin-atlas';
 import {AdminMobile} from '@/components/admin-mobile';
 import {AdminForecast} from '@/components/admin-forecast';
-import {AdminKeywords} from '@/components/admin-keywords';
 import {AdminRuleTexts} from '@/components/admin-rule-texts';
 import {AdminTodo} from '@/components/admin-todo';
 import {AdminSocial} from '@/components/admin-social';
@@ -24,7 +23,7 @@ export const dynamic='force-dynamic';
 export const metadata={title:'Administration · '+BRAND_NAME[DEFAULT_BRAND],robots:{index:false,follow:false}};
 // Pages by name; the numbers of the first version still lead to their page. "auswahl" (areas handed over by the
 // estimate) and "filter" (a list filter) open the import page. Without a page: the overview (START_PAGE).
-const PAGES:Record<string,AdminPage>={todo:'todo',uebersicht:'uebersicht',abruf:'abruf',atlas:'atlas',qualitaet:'qualitaet',hochrechnung:'hochrechnung',stichwoerter:'stichwoerter',regeltexte:'regeltexte',social:'social',pdf:'pdf','pdf-import':'pdf',speicher:'speicher',zeitplaene:'zeitplaene',jobs:'zeitplaene','1':'abruf','2':'qualitaet','3':'hochrechnung','4':'stichwoerter'};
+const PAGES:Record<string,AdminPage>={todo:'todo',uebersicht:'uebersicht',abruf:'abruf',atlas:'atlas',qualitaet:'qualitaet',hochrechnung:'hochrechnung',regeltexte:'regeltexte',social:'social',pdf:'pdf','pdf-import':'pdf',speicher:'speicher',zeitplaene:'zeitplaene',jobs:'zeitplaene','1':'abruf','2':'qualitaet','3':'hochrechnung'};
 const FILTERS=['all','connected','data','empty','issues','partial','stale','failed','shallow','quiet','selected'];
 export default async function AdminPage({searchParams}:{searchParams:Promise<{seite?:string;auswahl?:string;filter?:string}>}){const {seite,auswahl,filter}=await searchParams;
  // "auswahl" preselects areas on the import page; only known area ids are accepted.
@@ -50,7 +49,6 @@ async function AdminContent({page,mobile,selection,filter}:{page:AdminPage;mobil
   // Abgespeckter Bereich fürs Handy (?seite=mobil): ohne Reiter, nur die Abdeckung des Lückenatlas.
   if(mobile)return <AdminFrame tabs={false} displayName={user.displayName} signOutPath={signOutPath}><AdminMobile/></AdminFrame>;
   if(page==='todo')return frame(<AdminTodo/>);
-  if(page==='stichwoerter')return frame(<AdminKeywords/>);
   if(page==='regeltexte')return frame(<AdminRuleTexts/>);
   if(page==='social')return frame(<AdminSocial/>);
   if(page==='pdf')return frame(<AdminPdf/>);

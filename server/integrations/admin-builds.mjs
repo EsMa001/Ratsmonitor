@@ -1,4 +1,4 @@
-// Builds of global evaluations of the administration (class C: keywords, quality checks), in chunks of areas. A build
+// Builds of global evaluations of the administration (class C: quality checks), in chunks of areas. A build
 // keeps its state in system_state['admin-build:<target>']: id, the stock it started at, a cursor (the last area id done,
 // areas in binary order of region_revisions), how many areas are done, partial sums and the time spent. Each step takes
 // chunks of at most CHUNK_ROWS reports until its budget is spent; the last step stores the result (admin-stored.mjs).
@@ -11,8 +11,7 @@
 // Deviation from requirements/admin-performance-konzept.md (3.4): the state holds a cursor instead of the list of all
 // areas, which kept it small (3,500 ids would come near the 100 KB of a bound value). Areas added during a build are
 // counted if they sort after the cursor.
-import {keywordChunk,keywordFinish} from './admin-keywords.mjs';
-import {writeStored,stockRevisions} from './admin-stored.mjs';
+import {stockRevisions} from './admin-stored.mjs';
 import {QUALITY_BUILDS} from './quality-check.mjs';
 import {nextChunk} from './build-chunks.mjs';
 const PREFIX='admin-build:';
@@ -25,7 +24,6 @@ const RESUME_MS=3600000;
 const PAUSE_MS=150;
 const FINISHING='\u0000finish';
 const GUARD="EXISTS(SELECT 1 FROM system_state s WHERE s.key=? AND json_extract(s.value,'$.id')=? AND json_extract(s.value,'$.next')=?)";
-const add=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b))out[k]=(out[k]||0)+v;return out;};
 /**
  * Targets: chunk(db,unit,{build,guard,guardArgs,state}) → {partial,statements}; finish(db,state,now) stores the result.
  * Optional: next(db,state,chunkRows) → {unit,cursor,areas,rows?,heavy?,total?}|null (default: the next chunk of areas,
@@ -33,20 +31,7 @@ const add=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b))out[k]=(
  * usesAgg (partial sums in admin_agg). rows lets a step estimate how long the next unit takes; a heavy unit (one query
  * over much of the stock) always starts a step of its own.
  */
-const TARGETS={
- ...QUALITY_BUILDS,
- keywords:{
-  usesAgg:true,
-  // Small chunks: every chunk writes in one transaction, during which the database serves nothing else.
-  chunkRows:8000,
-  async chunk(db,ids,{build,guard,guardArgs,state}){const {sums,statements}=await keywordChunk(db,ids,{build,guard,guardArgs});return {partial:add(state.partial,sums),statements};},
-  async finish(db,state,now){
-   // Partial sums gone (a cancel or restart during a slow finish): store nothing rather than counts without words.
-   const agg=await db.prepare('SELECT count(*) n FROM admin_agg WHERE build=?').bind(state.id).first();
-   if(!Number(agg?.n)&&Number(state.partial?.articles)>0)throw Error('Teilsummen des Stichwort-Baus fehlen; bitte neu zählen.');
-   const result=await keywordFinish(db,{build:state.id,sums:state.partial,now});await writeStored(db,'keywords',result,{stockSum:state.stockSum,content:state.content,ms:state.ms,computedAt:now.toISOString()});},
- },
-};
+const TARGETS={...QUALITY_BUILDS};
 export const isBuildTarget=target=>typeof target==='string'&&Object.hasOwn(TARGETS,target);
 export const buildTargets=()=>Object.keys(TARGETS);
 const stateKey=target=>PREFIX+target;

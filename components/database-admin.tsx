@@ -25,7 +25,7 @@ export function DatabaseAdmin({sources=[],disabled=false}:{sources?:{id:string;n
   <How label="Was bedeuten die Pflichtangaben?"><ul className="m-0 list-none space-y-1 p-0">{audit.fields.map(f=><li key={f.id}><span className="text-slate-900">{f.name}:</span> {FIELD_HELP[f.id]}</li>)}</ul></How>
   {audit.note&&<p className="admin-note">{audit.note}</p>}</div>}
  <h3 className="mt-10">{QUALITY_TEXT.exportTitel}</h3>
- <p className="admin-note">Enthält alle gespeicherten Berichte mit Metadaten, Zusammenfassungen, Sachgebieten, Stichwörtern, Sitzungsangaben und Originalverweisen sowie frühere Fassungen und Quellenstände. Fehlende Inhalte werden als solche mit übertragen.</p>
+ <p className="admin-note">Enthält alle gespeicherten Berichte mit Metadaten, Zusammenfassungen, Sachgebieten, Sitzungsangaben und Originalverweisen sowie frühere Fassungen und Quellenstände. Fehlende Inhalte werden als solche mit übertragen.</p>
  <div className="mt-3"><button type="button" className="btn-secondary btn-sm" onClick={download} disabled={!!busy||disabled}>{busy==='export'?'Export läuft …':'Vollständigen Datenexport herunterladen'}</button></div>
  <p className="admin-note">Während des Exports keine Abrufe starten. Änderungen am Bestand brechen die Kopie ab. Anmeldung, Zugangsschlüssel und Push-Abonnements werden nicht übertragen. Dies ist eine Sicherung zu einem Zeitpunkt, keine automatische Synchronisation.</p>
  {message&&<p role="status" className="admin-notice">{message}</p>}{error&&<Alert>{error}</Alert>}
