@@ -40,7 +40,7 @@ async function fixture({extra=0,gaps=[],ready=true,pages=[{number:1,text}],legac
     }
   }
   const saved = () => JSON.parse(sql.prepare('SELECT payload FROM topics WHERE id=?').get(topic.id).payload);
-  return {sql,db,work,topic,loaded,result,reserve,readAll,saved,advance:ms => { clock+=ms; },reads:() => reads};
+  return {sql,db,work,topic,loaded,result,reserve,readAll,saved,now:() => clock,advance:ms => { clock+=ms; },reads:() => reads};
 }
 const rejects = (promise,status) => assert.rejects(promise,error => error.status === status);
 
@@ -160,7 +160,7 @@ test('bounded read-only keyset pages expose sparse results without scanning ever
   const f=await fixture({extra:30});t.after(() => f.sql.close());
   const queries=[],base=f.db;
   const guarded={prepare(query){queries.push(query);assert.doesNotMatch(query,/^\s*(INSERT|UPDATE|DELETE|REPLACE)/iu);return base.prepare(query);},batch:statements => base.batch(statements)};
-  const work=createAiLocalWork(guarded,{loadSources:async () => f.loaded});
+  const work=createAiLocalWork(guarded,{loadSources:async () => f.loaded,now:f.now});
   const first=await work.list({limit:2,state:'completed'});assert.equal(first.items.length,0);assert.equal(first.checked,2);assert.ok(first.nextCursor);
   const second=await work.list({limit:2,state:'all',cursor:first.nextCursor});assert.equal(second.checked,2);assert.equal(second.items.length,2);
   assert.ok(queries.some(query => /INDEXED BY idx_topics_ai_local_date/u.test(query) && /LIMIT \?/u.test(query)));
@@ -183,11 +183,12 @@ test('missing migration or local source configuration returns a useful 503',asyn
 test('source content is checked again immediately before the final transaction',async t => {
   const f=await fixture();t.after(() => f.sql.close());const claim=await f.reserve();await f.readAll(claim);
   let calls=0;
-  const work=createAiLocalWork(f.db,{loadSources:async () => {
+  const work=createAiLocalWork(f.db,{now:f.now,loadSources:async () => {
     if (++calls===2) f.loaded.sources[0].pages[0].text+=' Der Text wurde gerade aktualisiert.';
     return f.loaded;
   }});
   await rejects(work.submit({...claim,result:f.result}),409);
+  assert.equal(calls,2);
   assert.equal(f.sql.prepare('SELECT count(*) n FROM article_analyses').get().n,0);
   assert.deepEqual(f.saved(),f.topic);
 });
@@ -198,7 +199,7 @@ test('failure transaction does not end another agent claim when ownership change
     f.sql.prepare("UPDATE ai_work_items SET claim_token='new-agent-token',agent='Claude Code' WHERE topic_id=?").run(claim.id);
     return f.db.batch(statements);
   }};
-  const work=createAiLocalWork(db,{loadSources:async () => f.loaded});
+  const work=createAiLocalWork(db,{loadSources:async () => f.loaded,now:f.now});
   await rejects(work.fail({...claim,reason:'Alter Agent wurde unterbrochen.'}),409);
   const saved=f.sql.prepare('SELECT state,claim_token FROM ai_work_items').get();
   assert.equal(saved.state,'processing');assert.equal(saved.claim_token,'new-agent-token');
