@@ -1,4 +1,5 @@
 import { useCallback, type ReactNode } from "react";
+import { focusSearch } from "../components/SearchBox";
 import { StepTimeline } from "../components/results/ArticleCard";
 import { useBrand, useBrandText } from "../lib/brand";
 import { useAppNav } from "../state/nav";
@@ -17,7 +18,7 @@ export function useOpenSearch() {
     (term?: string) => {
       if (term) applySearch(term);
       goOverview();
-      if (!term) setTimeout(() => document.getElementById("q")?.focus(), 80);
+      if (!term) setTimeout(() => focusSearch(), 80);
     },
     [applySearch, goOverview],
   );

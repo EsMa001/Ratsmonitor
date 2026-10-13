@@ -1,5 +1,5 @@
 import { regionSuggest } from "../lib/place";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { PlaceIndex, type PlaceEntry } from "../lib/place";
 import { norm } from "../lib/text";
 import { hasScope } from "../lib/savedSearch";
@@ -31,6 +31,15 @@ const dropKeyboard = () => {
 };
 
 /** stay: auf der aktuellen Seite bleiben (plenara.X), statt nach einer Suche zur Startseite zu springen */
+/* Suchfelder tragen data-search statt einer festen ID: Die Übersicht bleibt versteckt eingebunden, auf Analyse-Seiten gibt
+   es dann zwei Felder. Kürzel, Verlauf und Fokus gelten nur für das sichtbare. */
+export const isSearchInput = (el: EventTarget | null) => el instanceof HTMLInputElement && el.dataset.search === "q";
+const shown = (el: HTMLElement | null) => !!el && el.getClientRects().length > 0;
+/** Cursor in das sichtbare Suchfeld setzen */
+export function focusSearch() {
+  [...document.querySelectorAll<HTMLInputElement>('input[data-search="q"]')].find(shown)?.focus();
+}
+
 export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, stay = false, keepFocus = false }: { glass?: boolean; listMax?: number; listUp?: boolean; onSubmit?: () => void; stay?: boolean; /** Enter übernimmt Orte, der Cursor bleibt im Feld (z. B. für den zweiten Ort im Ortsvergleich) */ keepFocus?: boolean } = {}) {
   const { geo, place } = useData();
   const search = useSearch();
@@ -38,6 +47,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
   const { pq, placeActive, liveHits, pending, searching, showRing } = useSearchResults();
   const { view, goOverview } = useAppNav();
   const inputRef = useRef<HTMLInputElement>(null);
+  const uid = useId();
+  const ids = { q: uid + "q", list: uid + "list", opt: (i: number) => `${uid}o${i}` };
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   /* Bestätigte Suche (base) bleibt als Chips unter der Leiste; das Feld zeigt nur, was neu dazukommt */
@@ -49,7 +60,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
   const qRef = useRef(state.q);
   qRef.current = state.q;
   useEffect(() => {
-    const on = () => window.setTimeout(() => addRecent(qRef.current), 80);
+    const on = () => shown(inputRef.current) && window.setTimeout(() => addRecent(qRef.current), 80);
     window.addEventListener("rm:search-confirmed", on);
     return () => window.removeEventListener("rm:search-confirmed", on);
   }, []);
@@ -272,6 +283,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
   useEffect(() => setMac(/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)), []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (!shown(inputRef.current)) return;
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         inputRef.current?.focus();
@@ -340,12 +352,13 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
       ) : (
         <IconSearch size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
       )}
-      <label htmlFor="q" className="sr-only">
+      <label htmlFor={ids.q} className="sr-only">
         Beschlüsse und Artikel durchsuchen
       </label>
       <input
         ref={inputRef}
-        id="q"
+        id={ids.q}
+        data-search="q"
         type="search"
         autoComplete="off"
         autoCorrect="off"
@@ -355,9 +368,9 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
         placeholder={narrow ? "Thema oder Ort" : "Thema, Ort oder Region suchen"}
         role="combobox"
         aria-expanded={showList}
-        aria-controls="search-assist"
+        aria-controls={ids.list}
         aria-autocomplete="list"
-        aria-activedescendant={active >= 0 ? `sa-${active}` : undefined}
+        aria-activedescendant={active >= 0 ? ids.opt(active) : undefined}
         value={shownDraft}
         onChange={(e) => {
           setOpen(true);
@@ -413,7 +426,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
       </div>
       {showList && (
         <div
-          id="search-assist"
+          id={ids.list}
           role="listbox"
           aria-label="Erkannte Orte und Vorschläge"
           onMouseDown={(e) => e.preventDefault()}
@@ -438,7 +451,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
               return (
                 <button
                   key={"s" + i}
-                  id={`sa-${idx}`}
+                  id={ids.opt(idx)}
                   type="button"
                   role="option"
                   aria-selected={r.sel}
@@ -456,7 +469,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
               return (
                 <button
                   key={"q" + i}
-                  id={`sa-${idx}`}
+                  id={ids.opt(idx)}
                   type="button"
                   role="option"
                   aria-selected={idx === active}
@@ -472,7 +485,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
               return (
                 <button
                   key={"r" + i}
-                  id={`sa-${idx}`}
+                  id={ids.opt(idx)}
                   type="button"
                   role="option"
                   aria-selected={idx === active}
@@ -489,7 +502,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
               return (
                 <button
                   key={"t" + i}
-                  id={`sa-${idx}`}
+                  id={ids.opt(idx)}
                   type="button"
                   onClick={() => { r.pick(); if (!r.silent) { confirmed(); dropKeyboard(); } }}
                   className={`mt-1 w-full border-0 border-t border-slate-200 bg-transparent px-2 pb-[5px] pt-[9px] text-left text-[12px] text-slate-500 hover:text-slate-900 hover:underline hover:underline-offset-2 ${
@@ -503,7 +516,7 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
             return (
               <button
                 key={r.entry.ags + (r.scope ?? "") + i}
-                id={`sa-${idx}`}
+                id={ids.opt(idx)}
                 type="button"
                 role="option"
                 aria-selected={r.sel}

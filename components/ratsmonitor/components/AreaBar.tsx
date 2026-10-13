@@ -18,15 +18,15 @@ export function AreaBar({ compact = false }: { compact?: boolean } = {}) {
   const km = state.radius?.km ?? 0;
   const { total, kommunenInRadius, loading } = useSearchResults();
   /* Reglerposition lokal halten: kleine Schritte ändern den gerundeten km-Wert nicht sofort */
-  const maxKm = usePhone() ? 200 : 500;
+  /* Handy: Regler bis 200 km. Ein größerer, anderswo gewählter Umkreis (gespeicherte Suche, Desktop) bleibt aber stehen,
+     sonst änderte sich das Ergebnis ohne Hinweis; der Regler reicht dann bis 500 km, solange die Leiste offen ist */
+  const phone = usePhone();
+  const [wide, setWide] = useState(false);
+  if (phone && km > 200 && !wide) setWide(true);
+  const maxKm = phone && !wide ? 200 : 500;
   const [pos, setPos] = useState(() => posFromKm(km, maxKm));
   useEffect(() => {
     setPos((p) => (kmFromPos(p, maxKm) === km ? p : posFromKm(km, maxKm)));
-  }, [km, maxKm]);
-  /* Handy: ein größerer, anderswo gewählter Umkreis wird auf 200 km begrenzt */
-  useEffect(() => {
-    if (km > maxKm) search.setRadiusKm(maxKm);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [km, maxKm]);
   /* Nach dem Loslassen den ganzen Kreis auf der Karte zeigen */
   const fit = () => {

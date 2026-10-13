@@ -11,7 +11,7 @@ Neu erzeugen: `node scripts/frontend-index.mjs`. Ergänzt `FRONTEND.md` (Wo ist 
 - app/design-tokens.css (75 Zeilen)
 - app/globals.css (15 Zeilen, ⚠2)
 - app/ratsmonitor-info.css (491 Zeilen, ⚠13)
-- app/ratsmonitor.css (204 Zeilen, ⚠12)
+- app/ratsmonitor.css (204 Zeilen, ⚠13)
 
 admin-access admin.css:6
 admin-activation admin.css:6
@@ -703,7 +703,7 @@ topic design-styles.css:140
 - PlanCards.tsx (136, ⚠1): PlanCards, PlanSummary
 - SaveArticleButton.tsx (30): SaveArticleButton
 - SaveSearchDialog.tsx (16, ⚠2): SaveSearchDialog
-- SearchBox.tsx (529, ⚠1): SearchBox
+- SearchBox.tsx (542, ⚠1): isSearchInput, focusSearch, SearchBox
 - SearchFilterPanel.tsx (87): SearchFilterPanel
 - SearchOverlay.tsx (90): SearchOverlay
 - ShareButton.tsx (40): ShareButton
@@ -712,7 +712,7 @@ topic design-styles.css:140
 - icons.tsx (241): IconSearch, IconPin, IconTag, IconX, IconChevronDown, IconViewFull, IconViewCompact, IconCalendar, IconChevronUp, IconMap, IconChevronRight, IconChevronLeft, IconCheck, IconPlus, IconMinus, IconCenter, IconReset, IconArrowUp, IconUser, IconBookmark, IconHelp, IconLogout, IconMail, IconPhone, IconClock, IconReply, IconRadius, IconEmptySearch, IconBrand, IconDoc, IconSpark, IconRules, IconBell, IconFilter, IconHeart, IconDownload, IconCalendarSync
 
 ### components/ratsmonitor/components/map/
-- MapPanel.tsx (320, ⚠2): MapPanel
+- MapPanel.tsx (321, ⚠2): MapPanel
 
 ### components/ratsmonitor/components/results/
 - ArticleCard.tsx (203, ⚠1): Highlight, StatusBadge, ArticleCard, StepTimeline
@@ -738,7 +738,7 @@ topic design-styles.css:140
 - VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
-- blocks.tsx (211, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (107): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (426, ⚠29): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
@@ -770,6 +770,7 @@ topic design-styles.css:140
 - mails.ts (134, ⚠2): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
 - pageTitle.ts (40): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
+- queue.ts (29): queue
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
 - routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (84): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, clearSavedArticles, useSavedArticles

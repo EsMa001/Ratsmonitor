@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { isSearchInput } from "../SearchBox";
 import { MapEngine, type MapStyle } from "../../lib/geo/mapEngine";
 import { hasFilters, hasScope } from "../../lib/savedSearch";
 import { useData } from "../../state/data";
@@ -38,9 +39,9 @@ export function MapPanel({ active }: { active: boolean }) {
   const [typing, setTyping] = useState(false);
   const [settled, setSettled] = useState(filtered);
   useEffect(() => {
-    const on = (e: FocusEvent) => setTyping((e.target as HTMLElement | null)?.id === "q");
+    const on = (e: FocusEvent) => setTyping(isSearchInput(e.target));
     const off = () => setTyping(false);
-    const input = (e: Event) => (e.target as HTMLElement | null)?.id === "q" && setTyping(true);
+    const input = (e: Event) => isSearchInput(e.target) && setTyping(true);
     document.addEventListener("focusin", on);
     document.addEventListener("focusout", off);
     document.addEventListener("input", input);
@@ -73,7 +74,7 @@ export function MapPanel({ active }: { active: boolean }) {
        Nach dem Bestätigen der Suche die Karte wieder ganz unter die Kopfzeile holen. */
     let t = 0;
     const back = (e: Event) => {
-      if (e.type === "focusout" && (e.target as HTMLElement | null)?.id !== "q") return;
+      if (e.type === "focusout" && !isSearchInput(e.target)) return;
       if (window.innerWidth >= 768) return;
       clearTimeout(t);
       t = window.setTimeout(() => {
