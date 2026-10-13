@@ -2,7 +2,7 @@
 // Das Thema ist das Thema des zuerst genannten starken Begriffs, die Unterthemen sind alle Treffer innerhalb dieses Themas.
 // Quelle ist der Titel; nennt er kein Thema (und ist keine Formalie), Betreff und Beschlussvorschlag aus dem Text und die
 // Regel-Kurzfassung. Nie der ganze Text. Messen: node scripts/theme-study/measure.mjs --set=theme-dev [--fehler]
-import {classifyTopic} from './labels.mjs';
+import {itemKind} from './item-kind.mjs';
 
 export const THEMES_VERSION='themes-v1';
 export const THEMES=[
@@ -178,17 +178,15 @@ function subsOf(theme,hits){
  *  @returns {{theme:string,subs:string[],source:'title'|'text'|'formal'|'none',word?:string}} */
 export function themeOf({title,subject='',summary='',long=''}){
  const raw=String(title||'');const t=prepare(raw);
- const old=classifyTopic({officialTitle:raw,title:raw}).primary;
  let theme=null,source='title';
  if(PLAN.test(t.slice(0,120)))theme=PLAN_ENERGY.test(t)?'umwelt':'bauen';
  else if(BUDGET.test(t.slice(0,100)))theme='finanzen';
  else if(/\behem(?:alig\w*|\.)|\bareal\b|umnutzung|konversion/i.test(t)&&hitsOf(t).some(h=>h.theme==='bauen'))theme='bauen';
- else if(old==='sitzung'||ROUTINE.test(t)||(COLLECTION.test(t)&&!/:|\bhier\b|\bbetr|\bzu[mr]?\s/i.test(t)))return {theme:OPEN,subs:[],source:'formal'};
+ else if(itemKind(raw)!=='subject')return {theme:OPEN,subs:[],source:'formal'};
  const th=hitsOf(t);
  theme??=pickTheme(th);
  let subs=theme?subsOf(theme,th):[];
  if(!theme){
-  if(COLLECTION.test(t))return {theme:OPEN,subs:[],source:'formal'};
   // Stufen: Betreff/Beschlussvorschlag und kurze Fassung, dann (falls übergeben) die lange Fassung
   for(const [part,label] of [[[subject,summary],'text'],[[long],'long']]){
    const more=prepare(part.filter(Boolean).join(' | '));if(!more)continue;
