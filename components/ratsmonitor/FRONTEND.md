@@ -62,6 +62,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 ## Prüfen
 
 - Typcheck: `node node_modules/typescript/bin/tsc --noEmit --incremental false`
+- Lint: `node node_modules/eslint/bin/eslint.js components/ratsmonitor` muss 0 Fehler zeigen (Warnungen erlaubt). Regeln der React-Hooks: kein setState synchron im Effekt (beim Rendern nachziehen oder Ergebnis je Abfrage ablegen), keine Refs beim Rendern lesen oder setzen. Hilfen: `pages/analytics/useAnalysisRun.ts` (Auswertung auf Knopfdruck), `lib/useClient.ts` (Werte nur im Browser). Ausnahmen nur mit Begründung im Kommentar.
 - Tests: `node --test tests/*.test.mjs` (gelegentlich zufällig rot: „marks of read meetings“, „every import leaves a record“)
 - Dev-Server: `npm run dev` (Port 5173, setzt `scripts/run-framework.mjs`), fürs Handy im WLAN: `RM_DEV_HOST=0.0.0.0 npm run dev`
 - Builds: `node scripts/build-node.mjs` (Server) und `npm run build` (Cloudflare; überschreibt `dist/`)

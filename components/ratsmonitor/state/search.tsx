@@ -1,7 +1,7 @@
 import {radiusParam} from '@/shared/radius-areas.mjs';
 import {loadCatalog} from '../lib/catalog';
 import {usePathname,useSearchParams} from 'next/navigation';
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
 import type { FilterSpec } from "../lib/filter";
 import type { MapEngine } from "../lib/geo/mapEngine";
 import type { ParseResult, PlaceHit } from "../lib/place";
@@ -81,24 +81,26 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   // Gemeinde gewählt, die Suche ordnet diese ihnen zu.
   // Der Katalog wird dafür erst geladen, wenn die Adresse ein Gebiet nennt. Bis er da ist, wartet die Suche (regionWait),
   // sonst liefe zuerst eine Suche ohne Gebiet. Schlägt das Laden fehl, sucht sie ohne Gebiet.
-  const [regionWait,setRegionWait]=useState<string|null>(()=>params.get("region"));
-  useEffect(()=>{const id=params.get("region");if(!id){setRegionWait(null);return;}let live=true;setRegionWait(id);loadCatalog().then(({REGIONS,mapKeys})=>{const region=REGIONS.find(r=>r.id===id);if(live&&region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));}).catch(()=>{}).finally(()=>{if(live)setRegionWait(null);});return()=>{live=false;};},[params.get("region")]);
+  const regionId=params.get("region");
+  const [regionDone,setRegionDone]=useState<string|null>(null);
+  const regionWait=regionId&&regionDone!==regionId?regionId:null;
+  useEffect(()=>{const id=regionId;if(!id)return;let live=true;loadCatalog().then(({REGIONS,mapKeys})=>{const region=REGIONS.find(r=>r.id===id);if(live&&region)setState(s=>({...s,area:mapKeys(region)[0],areaSrc:"ui",level:region.kind}));}).catch(()=>{}).finally(()=>{if(live)setRegionDone(id);});return()=>{live=false;};},[regionId]);
   // Gesucht wird nur, solange die Übersicht zu sehen ist. Sie bleibt auf allen Seiten versteckt eingebunden (Karte und
   // Suchstand bleiben erhalten); ohne diese Bedingung löste jede Detail-, Info- und Kontoseite die volle Suche aus.
   /* Handy: Ändert man Filter im offenen Filterfenster, wird die Suche erst beim Schließen neu ausgeführt
      (die Ergebnisse bleiben bis dahin auf dem Stand beim Öffnen) */
   const filtersOpen=useFiltersOpen(),phone=usePhone(),hold=filtersOpen&&phone;
-  const frozen=useRef(state);
-  if(!hold)frozen.current=state;
+  const [frozen,setFrozen]=useState(state);
+  if(!hold&&frozen!==state)setFrozen(state);
   /* Handy: 15 statt 20 Treffer je Seite */
   const onHome=usePathname()==='/suche';
-  const live=useDerivedResults(hold?frozen.current:state,onHome&&!regionWait,phone?15:20);
+  const live=useDerivedResults(hold?frozen:state,onHome&&!regionWait,phone?15:20);
   /* Läuft eine Suche, bleibt die Übersicht auf dem letzten fertigen Stand (Leiste, Chips, Karte, Zahl, Liste) und
      wechselt erst, wenn die neuen Treffer da sind; pending zeigt nur den Ladebalken */
-  const shown=useRef(live);
-  if(!live.loading)shown.current=live;
+  const [shown,setShown]=useState(live);
+  if(!live.loading&&shown!==live)setShown(live);
   /* Außerhalb der Startseite wird nicht gesucht (loading bliebe wahr): Suche und Filter (Schlüssel, Chips) gelten live, z. B. für plenara.X */
-  const derived=useMemo(()=>onHome&&live.loading&&shown.current!==live?{...shown.current,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live,onHome]);
+  const derived=useMemo(()=>onHome&&live.loading&&shown!==live?{...shown,setPage:live.setPage,retry:live.retry,pending:true,ringMode:live.ringMode}:live,[live,onHome,shown]);
   /* Wann was zu sehen ist (siehe useDerivedResults): In den ersten 0,5 s passiert nichts. Sind die Treffer bis dahin da
      oder wenigstens schon im Kommen, wechseln Karte und Liste, und nur an der Trefferzahl laufen Punkte, bis die genaue Zahl
      feststeht. Ist nach 0,5 s noch kein Treffer da, steht der Ladering, bis die erste Seite fertig ist; fehlt dann noch
@@ -106,11 +108,16 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const searching=derived.pending||derived.totalPending;
   const results=useMemo<SearchResults>(()=>({...derived,searching,showRing:derived.pending&&derived.ringMode,showDots:!derived.pending&&derived.totalPending}),[derived,searching]);
   const [popup, setPopupState] = useState("");
+  /* Neuester Stand für die Aktionen (Klicks); im Layout-Effekt nachgeführt, commit setzt ihn zusätzlich sofort */
   const ref = useRef(state);
-  ref.current = state;
+  useLayoutEffect(() => {
+    ref.current = state;
+  });
   const mapRef = useRef<MapEngine | null>(null);
   const geoRef = useRef(geo);
-  geoRef.current = geo;
+  useLayoutEffect(() => {
+    geoRef.current = geo;
+  });
 
   const commit = useCallback((value: SearchState) => {
     const next = tieRadius(value, geoRef.current);
@@ -427,6 +434,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   const data=await response.json() as {coverage:CoverageEntry[];updatedAt:string|null};
   covered.current[level]=new Set(data.coverage.map(c=>c.ags));setCover(c=>({...c,[level]:data}));return data;
  },[]);
+ /* loadCover setzt erst nach dem Abruf (asynchron); die Regel erkennt das nicht */
+ // eslint-disable-next-line react-hooks/set-state-in-effect
  useEffect(()=>{if(!active||cover[state.level])return;const abort=new AbortController();loadCover(state.level,abort.signal).catch(()=>{});return()=>abort.abort();},[active,state.level,cover,loadCover]);
  /* Abfrage für Seite oder Zähler. Umkreis: nur Gebiete mit Berichten, als kürzere der beiden Listen (shared/radius-areas.mjs).
     Welche Gebiete Berichte haben, nennt jede Antwort; vor der ersten wird einmal danach gefragt. */
@@ -465,7 +474,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  useEffect(()=>{
   if(!active)return;
   const hit=freshSearch(requestKey);
-  if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};setRemote({key:requestKey,data:hit,error:'',final:true});return;}
+  /* Aus dem Zwischenspeicher: die Antwort liest das Rendern selbst (cached), hier nur der Stand fürs Blättern */
+  if(hit){lastText.current=local.text;revision.current={key:local.key,value:hit.revision};return;}
   const abort=new AbortController();let timer=0,decide=0,started=false,streamed=false,finished=false;
   const acc:Article[]=[];let knownNow:Known='unknown',knownTotal:number|undefined;
   /* Nach 0,5 s: schon Treffer da (Strom): zeigen und weitere einfliegen lassen; sonst Ring bis alles fertig ist */
@@ -526,7 +536,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  useEffect(()=>{
   if(!active||!pageReady)return;
   const hit=freshFacets(local.key);
-  if(hit){setFacets({key:local.key,data:hit});return;}
+  if(hit)return;
   const abort=new AbortController();
   (async()=>{
    try{
@@ -540,7 +550,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   return()=>abort.abort();
  },[active,pageReady,local.key,attempt,buildQuery]);
  /* Zähler der vorigen Suche wären falsch: bis die neuen da sind, bleiben Karte und Filter ohne Zahlen */
- const exact=facets.key===local.key?facets.data:null;
+ /* Zähler: geladen oder aus dem Zwischenspeicher (der wird beim Rendern gelesen, nicht im Effekt übernommen) */
+ const exact=facets.key===local.key?facets.data:active?freshFacets(local.key):null;
  /* Liegt die Antwort schon im Zwischenspeicher, gilt sie sofort als fertig: kein „lädt“, kein Ring, kein Aufblitzen */
  const cached=active?freshSearch(requestKey):null;
  const rd=remote.key===requestKey?remote:null;
@@ -550,10 +561,12 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
  /* Eine Antwort aus dem Zwischenspeicher gilt sofort als fertig. */
  const cachedReady=!!cached;
  const loading=!cachedReady&&!adoptable;
- const lastGood=useRef<ResponseData|null>(null);
- if(!loading&&(cached||remote.data))lastGood.current=cached??remote.data;
+ /* Letzte fertige Antwort: steht, solange die nächste lädt (beim Rendern nachgeführt, nicht im Ref) */
+ const [lastGood,setLastGood]=useState<ResponseData|null>(null);
+ const fresh=cached??remote.data;
+ if(!loading&&fresh&&lastGood!==fresh)setLastGood(fresh);
  /* Beim Nachladen die bisherigen Treffer stehen lassen, statt die Liste zu leeren */
- const data=loading?lastGood.current:(cached??remote.data);
+ const data=loading?lastGood:fresh;
  const setPage=useCallback((p:number)=>setNavigation({key:local.key,page:p}),[local.key]);
  const retry=useCallback(()=>{revision.current={key:'',value:''};setNavigation({key:local.key,page:1});setAttempt(a=>a+1);},[local.key]);
  /* Stabiles Ergebnisobjekt: ändert sich nur, wenn sich Suche oder Antwort ändern (sonst rendern alle Konsumenten neu) */
