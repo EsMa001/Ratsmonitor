@@ -11,6 +11,7 @@ import { terms as toTerms, todayLocal } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
 import { useFiltersOpen } from "../lib/filtersOpen";
+import { ApiError, errorText, fetchJson, fetchOrFail, readJson } from "../lib/fetchJson";
 import { usePhone } from "../lib/usePhone";
 
 export const INITIAL_SEARCH: SearchState = {
@@ -310,6 +311,7 @@ export interface SearchResults {
 }
 
 
+const SEARCH_FAILED='Die Suche konnte nicht geladen werden.';
 const EMPTY_LIST:Article[]=[],EMPTY_MAP:Record<string,number>={},EMPTY_COVERAGE:CoverageEntry[]=[];
 type ResponseData={articles:Article[];total:number;hasMore?:boolean;areaCounts:Record<string,number>;badgeCounts:Record<string,number>;themaCounts:Record<string,number>;monatCounts:Record<string,number>;statusCounts:Record<string,number>;revision:string};
 type DataValue=ReturnType<typeof useData>;
@@ -324,23 +326,24 @@ const searchKey=(key:string,page=1,attempt=0)=>key+'&page='+page+'&attempt='+att
 const freshSearch=(requestKey:string)=>{const hit=SEARCH_CACHE.get(requestKey);return hit&&Date.now()-hit.at<300000?hit.data:null;};
 function rememberSearch(requestKey:string,data:ResponseData){SEARCH_CACHE.delete(requestKey);SEARCH_CACHE.set(requestKey,{at:Date.now(),data});if(SEARCH_CACHE.size>40)SEARCH_CACHE.delete(SEARCH_CACHE.keys().next().value as string);}
 async function fetchSearch(query:string,signal?:AbortSignal):Promise<ResponseData>{
- const response=await fetch('/api/search?'+query,{signal});
- const data=await response.json() as ResponseData & {error?:string};
- if(!response.ok)throw Error(data.error||'Die Suche konnte nicht geladen werden.');
+ const data=await fetchJson<ResponseData>('/api/search?'+query,{signal},SEARCH_FAILED);
  return {...data,articles:data.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''}))};
 }
 /** Erste Seite als Strom (NDJSON): jede Etappe ruft onChunk auf, am Ende kommt end mit hasMore und Datenstand */
 type Known='yes'|'no'|'unknown';
 async function fetchStream(query:string,signal:AbortSignal,onChunk:(items:Article[],end:{hasMore:boolean;revision:string}|null,known?:Known,total?:number)=>void){
- const response=await fetch('/api/search?'+query,{signal});
- if(!response.ok||!response.body){const d=await response.json().catch(()=>({})) as {error?:string};throw Error(d.error||'Die Suche konnte nicht geladen werden.');}
+ const response=await fetchOrFail('/api/search?'+query,{signal});
+ /* Fehler: Text und Status wie bei fetchJson */
+ if(!response.ok||!response.body){await readJson(response,SEARCH_FAILED);throw new ApiError(SEARCH_FAILED,response.status);}
  const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='';
  for(;;){
   const {done,value}=await reader.read();if(done)break;
   buffer+=decoder.decode(value,{stream:true});
   for(let i=buffer.indexOf('\n');i>=0;i=buffer.indexOf('\n')){
-   const line=JSON.parse(buffer.slice(0,i)) as {articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string;known?:Known;total?:number};buffer=buffer.slice(i+1);
-   if(line.error)throw Error(line.error);
+   let line:{articles?:Article[];end?:boolean;hasMore?:boolean;revision?:string;error?:string;known?:Known;total?:number};
+   try{line=JSON.parse(buffer.slice(0,i));}catch{throw new ApiError(SEARCH_FAILED,response.status);}
+   buffer=buffer.slice(i+1);
+   if(line.error)throw new ApiError(line.error,response.status);
    if(line.known)onChunk([],null,line.known,line.total);
    if(line.articles)onChunk(line.articles.map((a:Article)=>({...a,month:a.date.slice(0,7),hay:''})),null);
    if(line.end)onChunk([],{hasMore:!!line.hasMore,revision:line.revision??''});
@@ -483,7 +486,7 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
      revision.current={key:local.key,value:ready.revision};
      rememberSearch(requestKey,ready);
      setRemote({key:requestKey,data:ready,error:'',final:true,known:knownNow,knownTotal});
-    }catch(e){if(!abort.signal.aborted){finished=true;setRemote({key:requestKey,data:null,error:e instanceof Error?e.message:'Netzwerkfehler.',final:true});}}
+    }catch(e){if(!abort.signal.aborted){finished=true;setRemote({key:requestKey,data:null,error:errorText(e,SEARCH_FAILED),final:true});}}
    })();
   };
   const typing=local.text!==lastText.current,t=local.text.trim();

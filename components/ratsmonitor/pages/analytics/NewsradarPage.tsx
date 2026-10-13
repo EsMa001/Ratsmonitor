@@ -6,6 +6,7 @@ import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 interface Item {
   id: string; region: string; place: string; headline: string;
@@ -75,14 +76,9 @@ export function NewsradarPage() {
     abortRef.current?.abort();
     abortRef.current = ctrl;
     const key = `${query}&days=${days}`;
-    fetch(`/api/analytics/news?${key}`, { signal: ctrl.signal })
-      .then(async (r) => {
-        const body = (await r.json()) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Die Auswertung konnte nicht berechnet werden.");
-        return body as unknown as Result;
-      })
+    fetchJson<Result>(`/api/analytics/news?${key}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
       .then((r) => { setRes(r); setRanKey(key); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
   useEffect(() => () => abortRef.current?.abort(), []);

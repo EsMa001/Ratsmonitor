@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Reveal } from "./Reveal";
 import { RegionMap } from "./RegionMap";
 import { Laden } from "./Laden";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 /* plenara.X Score im Atlas (server/integrations/analytics-score.mjs): je Gemeinde oder Kreis eine Zahl von 0 bis 100 aus der
    Befassung mit den Atlas-Themen (Rang in der Vergleichsgruppe) und der Arbeitsweise (Vertagungen), 50 = wie üblich.
@@ -42,10 +43,9 @@ export function ScoreView({ onTheme, atlasThemes }: { onTheme: (id: string) => v
     const ctrl = new AbortController();
     setError("");
     setData(null);
-    fetch(`/api/analytics/score?level=${level}`, { signal: ctrl.signal })
-      .then(async (r) => { const b = (await r.json()) as Data & { error?: string }; if (!r.ok) throw new Error(b.error || "Der Score konnte nicht berechnet werden."); return b; })
+    fetchJson<Data>(`/api/analytics/score?level=${level}`, { signal: ctrl.signal }, "Der Score konnte nicht berechnet werden.")
       .then(setData)
-      .catch((e) => { if (!ctrl.signal.aborted) setError(e.message); });
+      .catch((e) => { if (!ctrl.signal.aborted) setError(errorText(e, "Der Score konnte nicht berechnet werden.")); });
     return () => ctrl.abort();
   }, [level]);
 

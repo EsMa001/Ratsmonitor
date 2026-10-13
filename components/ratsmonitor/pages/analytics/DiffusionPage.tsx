@@ -13,6 +13,7 @@ import { DiffusionSearch, type PlayState } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { prettyTerm } from "../../lib/terms";
 import { RadarDrill } from "./RadarDrill";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 /** members: Verband ohne erkennbare Mitgliedsgemeinde (zählt einmal, Karte bei allen Mitgliedern); atStart: schon in den ersten 14 Tagen des Bestands */
 interface Reg { ags: string; name: string; first: string; last: string; n: number; start?: string | null; atStart?: boolean; members?: string[] }
@@ -82,19 +83,14 @@ export function DiffusionPage() {
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
-    fetch(`/api/analytics/diffusion?${query}`, { signal: ctrl.signal })
-      .then(async (r) => {
-        const body = (await r.json()) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Die Analyse konnte nicht berechnet werden.");
-        return body as unknown as Result;
-      })
+    fetchJson<Result>(`/api/analytics/diffusion?${query}`, { signal: ctrl.signal }, "Die Analyse konnte nicht berechnet werden.")
       .then((r) => {
         setRes(r);
         setRanKey(query);
         setLoading(false);
         if (r.stats.first) { setDay(toDay(r.stats.first)); setPlaying(true); }
       })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want, hasTerm]);
   const abortRef = useRef<AbortController | null>(null);

@@ -9,6 +9,7 @@ import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { RadarDrill } from "./RadarDrill";
 import { RadarMap } from "./RadarMap";
 import { Frame } from "./AtlasFrame";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 interface Program { name: string; other: boolean; granted: number; applied: number; mentioned: number; n: number; regions: number; euroGranted: number; euroApplied: number; amounts: number }
 interface EuroRegion { id: string; name: string; pop: number; amounts: number; granted: number; applied: number; perCapita: number; grantedPerCapita: number }
@@ -63,14 +64,9 @@ export function FoerderradarPage({ embedded }: { embedded?: boolean } = {}) {
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
-    fetch(`/api/analytics/foerderung?${query}`, { signal: ctrl.signal })
-      .then(async (r) => {
-        const body = (await r.json()) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Die Auswertung konnte nicht berechnet werden.");
-        return body as unknown as Result;
-      })
+    fetchJson<Result>(`/api/analytics/foerderung?${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
       .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
   useEffect(() => () => abortRef.current?.abort(), []);

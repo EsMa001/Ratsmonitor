@@ -14,6 +14,7 @@ import { Frame } from "./AtlasFrame";
 import { STATUS } from "../../lib/constants";
 import { RADARS } from "@/shared/radars.mjs";
 import { ANALYSEN, GRUPPEN, type AnalyseId } from "../../info/branchen-enterprise";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 interface Topic { name: string; n: number; regions: number; decided: number; approved: number; rejected: number; postponed: number; open: number; rate: number | null; signals: { name: string; n: number }[] }
 interface Result {
@@ -76,14 +77,9 @@ export function ThemeRadarPage({ id, analyse, embedded }: { id: keyof typeof RAD
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
-    fetch(`/api/analytics/themenradar?radar=${id}&${query}`, { signal: ctrl.signal })
-      .then(async (r) => {
-        const body = (await r.json()) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Die Auswertung konnte nicht berechnet werden.");
-        return body as unknown as Result;
-      })
+    fetchJson<Result>(`/api/analytics/themenradar?radar=${id}&${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
       .then((r) => { setRes(r); setRanKey(query); setOpen(""); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
   useEffect(() => () => abortRef.current?.abort(), []);

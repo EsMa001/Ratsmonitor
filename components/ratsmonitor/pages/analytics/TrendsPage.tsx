@@ -10,6 +10,7 @@ import { Spark, TrendMap, type Trend, type TrendKind } from "./TrendViews";
 import { RadarDrill } from "./RadarDrill";
 import { isFiller, prettyTerm } from "../../lib/terms";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 interface Topic { id: string; name: string; recent: number; prev: number; change: number; n: number }
 interface Result {
@@ -68,14 +69,9 @@ export function TrendsPage() {
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
-    fetch(`/api/analytics/trends?${key}`, { signal: ctrl.signal })
-      .then(async (r) => {
-        const body = (await r.json()) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Die Analyse konnte nicht berechnet werden.");
-        return body as unknown as Result;
-      })
+    fetchJson<Result>(`/api/analytics/trends?${key}`, { signal: ctrl.signal }, "Die Analyse konnte nicht berechnet werden.")
       .then((r) => { const ok = (l: Trend[]) => l.filter((t) => !isFiller(t.term)); /* Aufsteiger und Neues nur mit Mindestzahl Gebiete: ein einzelnes Dokument ist kein Trend */ const many = (l: Trend[]) => { const k = ok(l); const m = k.filter((t) => t.regions >= 3); return r.totals.regions >= 3 && m.length ? m : k; }; r = { ...r, rising: many(r.rising), emerging: many(r.emerging), falling: ok(r.falling), all: ok(r.all) }; setRes(r); setRanKey(key); setLoading(false); setTab(r.rising.length ? "rising" : r.emerging.length ? "emerging" : "falling"); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
   useEffect(() => () => abortRef.current?.abort(), []);

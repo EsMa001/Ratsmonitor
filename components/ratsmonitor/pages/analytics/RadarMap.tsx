@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Reveal } from "./Reveal";
 import { RegionMap } from "./RegionMap";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 /* Karte eines Themenradars (server/integrations/analytics-radar-norms.mjs, radarMap): jedes Gebiet eingeordnet in seiner
    Vergleichsgruppe nach dem Anteil des Radars, eines Unterthemas oder des Suchbegriffs an allen Sachvorgängen der letzten
@@ -27,10 +28,9 @@ export function RadarMap({ radar, base, topics, q, exact, place, onPlace, topicL
     const ctrl = new AbortController();
     setError("");
     const qs = new URLSearchParams({ ...(radar ? { radar } : {}), map: "1", level, ...(topic ? { topic } : {}), ...(q ? { q } : {}), ...(exact ? { exact: "1" } : {}) });
-    fetch(`${base ?? "/api/analytics/themenradar"}?${qs}`, { signal: ctrl.signal })
-      .then(async (r) => { const b = (await r.json()) as MapData & { error?: string }; if (!r.ok) throw new Error(b.error || "Die Karte konnte nicht berechnet werden."); return b; })
+    fetchJson<MapData>(`${base ?? "/api/analytics/themenradar"}?${qs}`, { signal: ctrl.signal }, "Die Karte konnte nicht berechnet werden.")
       .then(setData)
-      .catch((e) => { if (!ctrl.signal.aborted) setError(e.message); });
+      .catch((e) => { if (!ctrl.signal.aborted) setError(errorText(e, "Die Karte konnte nicht berechnet werden.")); });
     return () => ctrl.abort();
   }, [radar, base, topic, level, q, exact]);
 

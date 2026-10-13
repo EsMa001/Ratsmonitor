@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
+import { ApiError, errorText, fetchOrFail } from "../../lib/fetchJson";
 
 /* Die Vorgänge hinter einer Zahl eines Themenradars (server/integrations/analytics-radar.mjs, radarList): Thema, Signal,
    Monat, Gebiet oder Zweck eines Zuschusses. Lädt beim Öffnen, weitere Einträge auf Knopfdruck. */
@@ -26,10 +27,10 @@ export function RadarDrill({ radar, base, query, by, value, label, unit }: { rad
     setLoading(true);
     setError("");
     if (!offset) { setItems([]); setTotal(null); }
-    fetch(`${base ?? `/api/analytics/themenradar?radar=${radar}`}&${query}&by=${by}&value=${encodeURIComponent(value)}&offset=${offset}`, { signal: c.signal })
-      .then(async (r) => { const b = (await r.json().catch(() => ({}))) as List & { error?: string }; if (!r.ok || !Array.isArray(b.items)) throw new Error(b.error || "Die Liste konnte nicht geladen werden."); return b; })
+    fetchOrFail(`${base ?? `/api/analytics/themenradar?radar=${radar}`}&${query}&by=${by}&value=${encodeURIComponent(value)}&offset=${offset}`, { signal: c.signal })
+      .then(async (r) => { const b = (await r.json().catch(() => ({}))) as List & { error?: string }; if (!r.ok || !Array.isArray(b.items)) throw new ApiError(b.error || "Die Liste konnte nicht geladen werden.", r.status); return b; })
       .then((b) => { setItems((old) => (offset ? [...old, ...b.items] : b.items)); setTotal(b.total); setLoading(false); })
-      .catch((e) => { if (c.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (c.signal.aborted) return; setError(errorText(e, "Die Liste konnte nicht geladen werden.")); setLoading(false); });
   };
   useEffect(() => {
     load(0);

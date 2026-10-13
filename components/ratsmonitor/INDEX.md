@@ -730,7 +730,7 @@ topic design-styles.css:140
 - LenaPage.tsx (193): LenaPage
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
-- QuellenPage.tsx (174, ⚠4): QuellenPage
+- QuellenPage.tsx (171, ⚠4): QuellenPage
 - StartseitePage.tsx (515, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
 - TodoPage.tsx (267, ⚠24): TodoPage
@@ -806,27 +806,27 @@ topic design-styles.css:140
 - AnalyticsPages.tsx (76, ⚠1): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
 - AtlasPage.tsx (74): ATLAS_BEREICHE, AtlasBereich, isAtlasBereich, atlasHref, AtlasPage
-- BauleitplanungPage.tsx (265, ⚠9): BauleitplanungPage
+- BauleitplanungPage.tsx (261, ⚠9): BauleitplanungPage
 - Befund.tsx (51): Befund, zuThema
-- BeschluessePage.tsx (222, ⚠7): BeschluessePage
+- BeschluessePage.tsx (218, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
-- ComparePage.tsx (309, ⚠11): ComparePage
+- ComparePage.tsx (305, ⚠11): ComparePage
 - DecisionCharts.tsx (69, ⚠1): DEC_COLORS, Cut, Month, MonthColumns, DecisionRow
 - DiffusionChart.tsx (79, ⚠2): DiffusionChart
-- DiffusionPage.tsx (275, ⚠6): DiffusionPage
+- DiffusionPage.tsx (271, ⚠6): DiffusionPage
 - DiffusionSearch.tsx (66, ⚠1): PlayState, DiffusionSearch
-- FoerderradarPage.tsx (250, ⚠9): FoerderradarPage
-- FraktionenPage.tsx (175, ⚠5): FraktionenPage
+- FoerderradarPage.tsx (246, ⚠9): FoerderradarPage
+- FraktionenPage.tsx (171, ⚠5): FraktionenPage
 - GraphView.tsx (185, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (201, ⚠3): GremiennetzPage
-- KitaRadarPage.tsx (190, ⚠8): KitaRadarPage
-- KnowledgeGraphPage.tsx (229, ⚠2): KnowledgeGraphPage
+- GremiennetzPage.tsx (197, ⚠3): GremiennetzPage
+- KitaRadarPage.tsx (186, ⚠8): KitaRadarPage
+- KnowledgeGraphPage.tsx (225, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (175, ⚠1): NNode, NEdge, ROLE, NetView
-- NewsradarPage.tsx (135, ⚠1): NewsradarPage
+- NewsradarPage.tsx (131, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
-- RadarDrill.tsx (66): DrillItem, RadarDrill
+- RadarDrill.tsx (67): DrillItem, RadarDrill
 - RadarExtra.tsx (153, ⚠7): Extra, RadarExtra
 - RadarMap.tsx (78, ⚠2): RadarMap
 - RadarNorms.tsx (73, ⚠2): NormTopic, Norms, normsSentence, RadarNorms
@@ -834,9 +834,9 @@ topic design-styles.css:140
 - RegionMap.tsx (65): RegionMap
 - Reveal.tsx (16): Reveal
 - ScoreView.tsx (133, ⚠4): ScoreView
-- ThemeRadarPage.tsx (214, ⚠6): ThemeRadarPage
+- ThemeRadarPage.tsx (210, ⚠6): ThemeRadarPage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
-- TrendsPage.tsx (209, ⚠6): TrendsPage
+- TrendsPage.tsx (205, ⚠6): TrendsPage
 - useAnalyticsQuery.ts (26): useAnalyticsQuery
 
 ### components/ratsmonitor/services/
@@ -846,7 +846,7 @@ topic design-styles.css:140
 - account.tsx (32): AccountProvider, useAccount, useSavedStats
 - data.tsx (34, ⚠1): DataProvider, useData
 - nav.ts (12): View, viewOf, overviewScroll, useAppNav
-- search.tsx (565, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
+- search.tsx (568, ⚠4): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

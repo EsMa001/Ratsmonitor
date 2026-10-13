@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DarkCta, PageHead } from "./blocks";
 import { Icon } from "./icons";
 import { useSearch } from "../state/search";
+import { errorText, fetchJson } from "../lib/fetchJson";
 
 interface Source { id: string; name: string; kind: "city" | "district"; method: string; lastImport: string | null; articles: number; meetings: number; from: string | null; complete: boolean; failed: boolean }
 interface Land { id: string; name: string; total: number; covered: number; population: number; populationCovered: number }
@@ -42,13 +43,9 @@ export function QuellenPage() {
   };
   useEffect(() => {
     const ctrl = new AbortController();
-    fetch("/api/sources", { signal: ctrl.signal })
-      .then(async (r) => {
-        const d = (await r.json()) as Data & { error?: string };
-        if (!r.ok) throw Error(d.error || "Der Quellenstand ist gerade nicht erreichbar.");
-        setData(d);
-      })
-      .catch((e) => !ctrl.signal.aborted && setError(e instanceof Error ? e.message : "Netzwerkfehler."));
+    fetchJson<Data>("/api/sources", { signal: ctrl.signal }, "Der Quellenstand ist gerade nicht erreichbar.")
+      .then(setData)
+      .catch((e) => !ctrl.signal.aborted && setError(errorText(e, "Der Quellenstand ist gerade nicht erreichbar.")));
     return () => ctrl.abort();
   }, []);
   const q = find.trim().toLowerCase();

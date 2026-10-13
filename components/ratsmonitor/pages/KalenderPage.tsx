@@ -10,6 +10,7 @@ import { useAccount } from "../state/account";
 import { norm } from "../lib/text";
 import { IconBell, IconChevronLeft, IconChevronRight, IconX } from "../components/icons";
 import type { NotifyFreq } from "../types";
+import { fetchJson } from "../lib/fetchJson";
 
 /* Gebiete und Benachrichtigung des Kalenders; vorerst nur in diesem Browser gespeichert */
 interface CalArea { ags: string; name: string; km: number }
@@ -84,8 +85,7 @@ export function KalenderPage() {
     const ctrl = new AbortController();
     const from = iso(month), to = iso(new Date(month.getFullYear(), month.getMonth() + 1, 0));
     setState("loading");
-    fetch(`/api/calendar?ags=${agsList.join(",")}&from=${from}&to=${to}`, { signal: ctrl.signal })
-      .then((r) => r.json() as Promise<{ events?: CalEvent[] }>)
+    fetchJson<{ events?: CalEvent[] }>(`/api/calendar?ags=${agsList.join(",")}&from=${from}&to=${to}`, { signal: ctrl.signal })
       .then((d) => {
         setEvents(d.events ?? []);
         setState("idle");

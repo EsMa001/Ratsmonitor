@@ -9,6 +9,7 @@ import { STATUS } from "../../lib/constants";
 import { DEC_COLORS, DecisionRow, MonthColumns, type Cut, type Month } from "./DecisionCharts";
 import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 interface VRow { id: string; name: string; n: number; vote: number; unanimous: number | null; changeN: number; changed: number | null }
 interface Result {
@@ -69,14 +70,9 @@ export function BeschluessePage() {
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
-    fetch(`/api/analytics/decisions?${query}`, { signal: ctrl.signal })
-      .then(async (r) => {
-        const body = (await r.json()) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Die Auswertung konnte nicht berechnet werden.");
-        return body as unknown as Result;
-      })
+    fetchJson<Result>(`/api/analytics/decisions?${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
       .then((r) => { setRes(r); setRanKey(query); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
   useEffect(() => () => abortRef.current?.abort(), []);

@@ -11,6 +11,7 @@ import { RegionMap } from "./RegionMap";
 import { RadarMap } from "./RadarMap";
 import { Frame } from "./AtlasFrame";
 import { STATUS } from "../../lib/constants";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 interface Plan { id: string; title: string; region: string; date: string; stage: string; type: string; we: number | null }
 interface Region { id: string; name: string; pop: number | null; plans: number; adopted: number; started: number; we: number; weKnown: number; plansPer10k: number | null; wePer1k: number | null }
@@ -128,14 +129,9 @@ export function BauleitplanungPage({ embedded }: { embedded?: boolean } = {}) {
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
-    fetch(`/api/analytics/bauleitplanung?${query}`, { signal: ctrl.signal })
-      .then(async (r) => {
-        const body = (await r.json()) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Die Auswertung konnte nicht berechnet werden.");
-        return body as unknown as Result;
-      })
+    fetchJson<Result>(`/api/analytics/bauleitplanung?${query}`, { signal: ctrl.signal }, "Die Auswertung konnte nicht berechnet werden.")
       .then((r) => { setRes(r); setRanKey(query); setOpen(""); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [want]);
   useEffect(() => () => abortRef.current?.abort(), []);

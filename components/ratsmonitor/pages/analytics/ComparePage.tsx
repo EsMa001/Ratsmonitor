@@ -13,6 +13,7 @@ import type { PlaceEntry } from "../../lib/place";
 import { CompareLines, PLACE_COLORS, TopicPair } from "./CompareCharts";
 import { RadarDrill } from "./RadarDrill";
 import { todayLocal } from "../../lib/text";
+import { errorText, fetchJson } from "../../lib/fetchJson";
 
 interface Share { id: string; n: number; share: number }
 interface Place {
@@ -86,14 +87,9 @@ export function ComparePage() {
     const ctrl = new AbortController();
     abortRef.current?.abort();
     abortRef.current = ctrl;
-    fetch(`/api/analytics/compare?${q}`, { signal: ctrl.signal })
-      .then(async (r) => {
-        const body = (await r.json()) as { error?: string };
-        if (!r.ok) throw new Error(body.error || "Der Vergleich konnte nicht berechnet werden.");
-        return body as unknown as Result;
-      })
+    fetchJson<Result>(`/api/analytics/compare?${q}`, { signal: ctrl.signal }, "Der Vergleich konnte nicht berechnet werden.")
       .then((r) => { setRes(r); setRanKey(q); setDrill(null); setLoading(false); })
-      .catch((e) => { if (ctrl.signal.aborted) return; setError(e.message); setLoading(false); });
+      .catch((e) => { if (ctrl.signal.aborted) return; setError(errorText(e, "Die Auswertung konnte nicht berechnet werden.")); setLoading(false); });
   };
   /* Beim Öffnen sofort mit den vorbelegten Orten vergleichen, damit die Seite nicht leer ist */
   useEffect(() => { run(); return () => abortRef.current?.abort(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
