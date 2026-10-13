@@ -165,10 +165,7 @@ html.rm-dark .page-note{color:#9aa6b9}
 html.rm-dark .btn-primary,html.rm-dark .ri-btn--dark,html.rm-dark .bg-slate-900{background-color:#0f766e;background:#0f766e}
 html.rm-dark .btn-primary:hover,html.rm-dark .ri-btn--dark:hover,html.rm-dark .bg-slate-900:hover{background:#115e59;background-color:#115e59}
 /* Touch-Geräte: keine Fokus-Rahmen nach dem Antippen (Karten, Titelzeilen) */
-/* Fokusrahmen nur bei Tastaturbedienung (:focus-visible), auch auf Touch-Geräten: Tablets mit Tastatur und Schaltersteuerung brauchen ihn */
-.ratsmonitor :focus:not(:focus-visible){outline:none}
-/* Suchfeld: Fokus als Ring um die ganze Pille (das Feld selbst hat keinen Rahmen) */
-.ratsmonitor div:has(> input[role=combobox]:focus){outline:2px solid #0f766e;outline-offset:2px}
+@media (hover:none){.ratsmonitor :focus-visible,.ratsmonitor :focus-visible:not(input):not(textarea):not(select){outline:none!important}}
 html.rm-dark .rm-gtext{fill:#e2e8f0;stroke:#131b2b;stroke-width:3px}
 html.rm-dark .rm-gtopic{fill:#8a96ab;stroke:#8a96ab}
 html.rm-dark .rm-gdot{background:#8a96ab!important;border-color:#8a96ab!important}
