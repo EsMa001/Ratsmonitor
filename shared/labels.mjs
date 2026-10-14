@@ -5,7 +5,7 @@
 import {THEMES,OPEN,themeOf} from './themes.mjs';
 import {itemKind} from './item-kind.mjs';
 export const LABEL_VERSION='labels-v3';
-export const CLASSIFIER_VERSION='title-rules-v5';
+export const CLASSIFIER_VERSION='title-rules-v6';
 const COLORS={bauen:'#945432',finanzen:'#526086',mobilitaet:'#2b6f91',bildung:'#2352ad',umwelt:'#31774f',soziales:'#965775',
  kultur:'#a14a60',sicherheit:'#965134',verwaltung:'#64606e',wirtschaft:'#86682e'};
 export const LABELS=[

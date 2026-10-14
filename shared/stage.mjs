@@ -12,7 +12,7 @@
 //  3. bauantrag: Vorhaben Dritter, über das die Gemeinde als Behörde befindet (Bauantrag, Bauvoranfrage, Befreiung,
 //     Nutzungsänderung, Einvernehmen, wasser- oder immissionsschutzrechtliche Zulassung; Flurstück und Wohnhaus im Titel).
 //  4. antrag: Antrag oder Anfrage aus der Politik (Fraktion, Partei, Ratsmitglied) oder der Einwohnerschaft (Anregung,
-//     Eingabe, Frage im Titel); ein Antrag mit Partei, Fraktion oder Gruppe irgendwo im Titel. Nicht: Anträge der
+//     Eingabe, Einwohnerantrag, Bürgereingabe, Antrag eines Bürgers, Frage im Titel); ein Antrag mit Partei, Fraktion oder Gruppe irgendwo im Titel. Nicht: Anträge der
 //     Verwaltung oder des Bürgermeisters.
 //  5. foerderung: Geld an Dritte oder von Dritten: Zuschuss, Förderung, Sondermittel, Orts- und Bezirksmittel,
 //     Förderprogramm, auch der Antrag
@@ -29,7 +29,7 @@
 // 13. Danach das zuerst genannte Wort: Förderung, Planung (Konzept, Gutachten, Studie, Vorgehensweise), Bau (Neubau,
 //     Sanierung, Ausbau, Neugestaltung, Bauvorhaben), Vertrag, Regelung (Satzung, Verordnung, Richtlinie, Geschäftsordnung),
 //     Beteiligung (Bürgerbeteiligung, Befragung, Petition, Bürgerversammlung), Bericht, Anfrage.
-export const STAGE_VERSION='stage-v1';
+export const STAGE_VERSION='stage-v3';
 export const STAGES=[
  {id:'antrag',name:'Antrag und Anfrage'},
  {id:'planung',name:'Planung und Konzept'},
@@ -51,27 +51,27 @@ export const stageName=id=>STAGES.find(s=>s.id===id)?.name||'Sonstiges';
 const PARTY=String.raw`(?:spd|cdu|csu|fdp|afd|bsw|ödp|volt|grüne|grünen|linke|freie wähler|fwg|fw|uwg|piraten|bündnis)`;
 const FIRST=[
  [SONST,/straßen(?:be)?nennung|straßenname|hausnummer|tagesordnung|^\W*(?:verschiedenes|sonstiges|kleinere)\b|^\W*(?:anfragen|mitteilungen)\s+(?:und|oder)\s+(?:anfragen|mitteilungen)/i],
- ['bericht',new RegExp(String.raw`^\W*(?:zur\s+)?(?:mündliche[nr]?\s+)?(?:antwort|beantwortung|information(?:en)?\b|informatorisch|unterrichtung|sachst[aä]nd|bericht|mitteilung|vorstellung|bekanntgabe|bilanz|rückschau|rückblick|ergebnisse|auswertung|statistik|aktuelle[nrs]?\b|der aktuelle)|antwort (?:der verwaltung )?(?:auf|zu)|beantwortung|sachst[aä]nd|bearbeitungsst[aä]nd|quartalsbericht|finanzbericht|controllingbericht|beteiligungsbericht|jahresbericht|controlling|mündliche[nr]? bericht`,'i')],
+ ['bericht',new RegExp(String.raw`^\W*(?:zur\s+)?(?:mündliche[nr]?\s+)?(?:mv:|mitteilungsvorlage|antwort|beantwortung|information(?:en)?\b|informatorisch|unterrichtung|sachst[aä]nd|bericht|mitteilung|vorstellung|bekanntgabe|bilanz|rückschau|rückblick|ergebnisse|auswertung|statistik|aktuelle[nrs]?\b|der aktuelle)|antwort (?:der verwaltung )?(?:auf|zu)|beantwortung|sachst[aä]nd|bearbeitungsst[aä]nd|quartalsbericht|finanzbericht|budgetbericht|controllingbericht|beteiligungsbericht|jahresbericht|controlling|mündliche[nr]? bericht`,'i')],
  ['planung',/^\W*(?:\d+\.\s*)?(?:änderung des\s+)?(?:vorhabenbezogene[nr]?\s+)?(?:bebauungsplan|b-plan|bauleitplanung|flächennutzungsplan)/i],
- ['bauantrag',/\bbau(?:antr[aä]g|voranfrage|gesuch)|baugenehmigung|befreiung von den festsetzungen|isolierte befreiung|nutzungsänderung|vorbescheid|einvernehmen|§\s*36a?\s*baugb|immissionsschutzrechtlich|\bbimschg\b|wasserrechtlich|§\s*8\s*whg|\bfl(?:st)?\.?\s?-?\s?nr\.?|\bflnr\b|flur-?nr|flurnummer|(?:ein|zwei|mehr)familien(?:wohn)?haus|\befh\b|\bcarport|tektur|^\W*bausachen|bauangelegenheiten|baurechtliche angelegenheiten|\(b\d{4}\/\d+\)/i],
- ['antrag',new RegExp(String.raw`fraktion(?:en)?\b|-fraktion|\b${PARTY}\b.{0,40}\bantr|\bantr\w*\b.{0,40}\b(?:${PARTY}|gruppe)\b|[\[(][^\])]{0,30}\b${PARTY}\b[^\])]{0,30}[\])]|^\W*(?:wie|was|warum|wann|wo|wer|welche\w*)\b[^?]{0,150}\?|antr\w*\s+(?:der|des|von)\s+(?:${PARTY}|ratsmitglied|stadtverordnete|gemeindevertreter|ortsbeirat|abg)|\bverfasser(?:in)?:|anregung(?:\/beschwerde)?\s+(?:nach|gem(?:äß|\.))\s*§|\b(?:ratsherr|ratsfrau|ratsmitglied|abg\.)\s|\beingabe\b|prüf(?:auftrag|antrag)|anfrage|fragt an|^\W*(?:frau|herr)\s|^\W*(?:gr|stv\.?|gv|rm)\s+\p{Lu}\p{L}+|\?\s*$`,'iu')],
- ['foerderung',/sondermittel|(?:ortsrats|ortsbeirats|bezirks|stadtteil)mittel|bezirksbudget|zuschussantrag|förderantrag|bezuschussung|fördergeld|fördermittel|antrag auf (?:gewährung|förderung|zuschuss|zuwendung)|(?:jugend|sport|vereins|kultur)förderung|richtlinien? zur förderung|antr\w*\s+(?:(?:des|der|von)\s+)?[^,;:]{0,40}(?:e\.\s?v\.|verein|\btus\b|\bsv\b|\bffw\b|feuerwehr)|antrag auf \w*förderung/i],
+ ['bauantrag',/^(?!.*(?:widmung|einziehung|umstufung))(?:.*?)(?:\bbau(?:antr[aä]g|voranfrage|gesuch)|baugenehmigung|befreiung von den festsetzungen|isolierte befreiung|nutzungsänderung|vorbescheid|einvernehmen|§\s*36a?\s*baugb|immissionsschutzrechtlich|\bbimschg\b|wasserrechtlich|§\s*8\s*whg|\bfl(?:st)?\.?\s?-?\s?nr\.?|\bflnr\b|flur-?nr|flurnummer|(?:ein|zwei|mehr)familien(?:wohn)?haus|\befh\b|\bcarport|tektur|^\W*bausachen|bauangelegenheiten|baurechtliche angelegenheiten|\(b\d{4}\/\d+\)|umnutzung|\baz\.?\s*[\d][\d-]{4,}|§\s*17[23]\s*baugb)/i],
+ ['antrag',new RegExp(String.raw`fraktion(?:en)?\b|-fraktion|\b${PARTY}\b.{0,40}\bantr|\bantr\w*\b.{0,40}\b(?:${PARTY}|gruppe)\b|[\[(][^\])]{0,30}\b${PARTY}\b[^\])]{0,30}[\])]|^\W*(?:wie|was|warum|wann|wo|wer|welche\w*)\b[^?]{0,150}\?|antr\w*\s+(?:der|des|von)\s+(?:${PARTY}|ratsmitglied|stadtverordnete|gemeindevertreter|ortsbeirat|abg)|\bverfasser(?:in)?:|anregung(?:\/beschwerde)?\s+(?:nach|gem(?:äß|\.))\s*§|anregungen\s+(?:und|bzw\.?)\s+beschwerden|einwohnerantr|bürgerantr|bürgereingabe|antr(?:ag|äge)\s+(?:eine[rs]|von)\s+(?:bürger|einwohner)|\b(?:ratsherr|ratsfrau|ratsmitglied|abg\.)\s|\beingabe\b|antrag-?\s?nr|prüf(?:auftrag|antrag)|anfrage|fragt an|^\W*(?:frau|herr)\s|^\W*(?:gr|stv\.?|gv|rm)\s+\p{Lu}\p{L}+|\?\s*$`,'iu')],
+ ['foerderung',/sondermittel|förderprogramm|(?:ortsrats|ortsbeirats|bezirks|stadtteil)mittel|bezirksbudget|zuschussantrag|förderantrag|bezuschussung|fördergeld|fördermittel|antrag auf (?:[a-zäöüß]+ )?(?:gewährung|förderung|zuschuss|zuwendung)|förderbetrag|(?:jugend|sport|vereins|kultur)förderung|richtlinien? zur förderung|antr\w*\s+(?:(?:des|der|von)\s+)?[^,;:]{0,40}(?:e\.\s?v\.|verein|\btus\b|\bsv\b|\bffw\b|feuerwehr)|antrag auf \w*förderung/i],
  ['antrag',/^\W*(?:änderungs|zusatz|ergänzungs|dringlichkeits|erneuter |gemeinsamer )?antr(?:ag|äge)\b/i],
- ['vergabe',/vergabe|ausschreibung(?!\s+des\s+(?:flurstück|grundstück))|beauftragung|\bauftrag(?:s|es)?\b|zuschlag|beschaffung|anschaffung|submission|(?:bau|planungs|ingenieur|architekten|ausführungs)leistungen/i],
- ['abgaben',/gebühr|entgelt|elternbeitr|ausbaubeitr|erschließungsbeitr|anliegerbeitr|hebesatz|hebesätze|grundsteuer|gewerbesteuer|hundesteuer|steuersatzung|zweitwohnungsteuer|vergnügungssteuer|kalkulation|erhebung von abgaben|abwasserabgabe|abgabensatzung/i],
+ ['vergabe',/vergabe|auswahl (?:eines|des|der|von) [a-zäöüß-]*(?:büros?|dienstleister[a-zäöüß]*|anbieter[a-zäöüß]*)|nachtragsangebot|nachtragsauftrag|\bgewerk\b|ausschreibung(?!\s+des\s+(?:flurstück|grundstück))|beauftragung|\bauftrag(?:s|es)?\b|zuschlag|beschaffung|anschaffung|submission|(?:bau|planungs|ingenieur|architekten|ausführungs)leistungen/i],
+ ['abgaben',/gebühr|festlegung der preise|preisblatt|preisanpassung|entgelt|elternbeitr|ausbaubeitr|erschließungsbeitr|anliegerbeitr|hebesatz|hebesätze|grundsteuer|gewerbesteuer|hundesteuer|steuersatzung|zweitwohnungsteuer|vergnügungssteuer|kalkulation|erhebung von abgaben|abwasserabgabe|abgabensatzung/i],
  ['vertrag',/öffentlich-rechtliche[nr]? (?:vertrag|vereinbarung)|zweckvereinbarung|übertragung (?:der|von) aufgaben/i],
- ['haushalt',/haushalt|wirtschaftsplan|jahresabschl|gesamtabschl|jahresrechnung|jahresergebnis|jahresüberschuss|kommunaler abschlüsse|außerplanmäßig|überplanmäßig|finanzplanung|investitionsprogramm|produktbereich|kostenstelle|budget|finanzmittel|betriebsplan|veranschlagung|rahmenzuweisung|stellenplan|verwendung (?:der|von) mitteln|kostenerhöhung|kostenrahmen|mehrkosten|mehraufwendung|gesperrter mittel|darlehen|entlastung der|entschuldung|altschulden/i],
- ['liegenschaft',/grundstück|flurstück|vorkaufsrecht|erbbau|veräußerung|\bverkauf|\berwerb\b|\bpacht/i],
- ['planung',/bebauungsplan|flächennutzungsplan|bauleitplan|\bbaugb\b|träger öffentlicher belange|baugesetzbuch|veränderungssperre|planfeststellung|(?:ergänzungs|klarstellungs|innenbereichs|außenbereichs|entwicklungs|sanierungs)satzung|b-plan|bedarfsplan|entwurfsplanung|ausführungsplanung|vorplanung/i],
+ ['haushalt',/haushalt|\bmittel\b|\betat[a-zäöüß]*|umlage\b|\bausgaben\b|kassenprüf|belegprüf|kassen- und belegprüf|mittelbereitstellung|mittelfreigabe|finanzübersicht|bilanzierungshilfe|refinanzierung|schlussabrechnung|betriebsabrechnung|billigung der abrechnung|wirtschaftsplan|jahresabschl|gesamtabschl|jahresrechnung|jahresergebnis|jahresüberschuss|kommunaler abschlüsse|außerplanmäßig|überplanmäßig|finanzplanung|investitionsprogramm|produktbereich|kostenstelle|budget|finanzmittel|betriebsplan|veranschlagung|rahmenzuweisung|stellenplan|verwendung (?:der|von) mitteln|kostenerhöhung|kostenrahmen|mehrkosten|mehraufwendung|gesperrter mittel|darlehen|entlastung der|entschuldung|altschulden/i],
+ ['liegenschaft',/grundstück|flurstück|vorkaufsrecht|erbbau|(?:veräußerung|\bverkauf|\berwerb\b)(?!.{0,40}(?:fahrzeug|anteil|aktie|geschäftsanteil|gesellschaft|lizenz|software))|\bpacht/i],
+ ['planung',/bebauungsplan|flächennutzungsplan|bauleitplan|\bbaugb\b|träger öffentlicher belange|baugesetzbuch|veränderungssperre|planfeststellung|(?:ergänzungs|klarstellungs|innenbereichs|außenbereichs|entwicklungs|sanierungs)satzung|b-plan|f-plan|bedarfsplan|entwurfsplanung|ausführungsplanung|vorplanung/i],
 ];
 const WORDS=[
- ['foerderung',/förder|zuschuss|zuschüsse|zuwendung|projektaufruf|programm\b|programmgebiet/i],
- ['planung',/planung|konzept|strategie|gutachten|untersuchung|\bstudie\b|machbarkeit|leitbild|eckpunkte|anhörung|abwägung|rahmenplan|entwicklungsplan|vorgehensweise|\bvorgehen\b/i],
- ['bau',/neubau|sanierung|ausbau|umbau|erweiterung|baumaßnahme|baubeschluss|bauvorhaben|spatenstich|herstellung|instandsetzung|errichtung|neuanlage|\berneuerung|neugestaltung|erschließung(?!sbeitr)/i],
+ ['foerderung',/(?<!sprach|lese|wirtschafts|sprachstands|früh)förder|zuschuss|zuschüsse|zuwendung|projektaufruf|programms?\b|\bfonds\b|programmgebiet/i],
+ ['planung',/planung|konzept|strategie|gutachten|untersuchung|\w*studie\b|fortschreibung|regionalplan|machbarkeit|leitbild|eckpunkte|anhörung|abwägung|rahmenplan|entwicklungsplan|vorgehensweise|\bvorgehen\b/i],
+ ['bau',/neubau|sanierung|umgestaltung|rückbau|modernisierung|ersatz(?:neu)?bau|ersatzbrücke|ausbau|umbau|erweiterung|baumaßnahme|baubeschluss|bauvorhaben|spatenstich|herstellung|instandsetzung|errichtung|neuanlage|\berneuerung|neugestaltung|erschließung(?!sbeitr)/i],
  ['vertrag',/vertrag|vertrages|verträg|vereinbarung|konzession|beitritt/i],
  ['regelung',/satzung|verordnung|richtlinie|mietspiegel|neufassung|anordnung|geschäftsordnung/i],
  ['beteiligung',/petition|bürgerbegehren|einwohnerantrag|bürgerbeteiligung|öffentlichkeitsbeteiligung|befragung|bürgerumfrage|bürgerversammlung|einwohnerversammlung|workshop|bürgerdialog|bürgerwerkstatt|dialogformat/i],
- ['bericht',/bericht|\bstand\b|informationsvorlage|information(?:en)?\s+(?:zu|zur|über|der|des|durch|aus)|mitteilung|kenntnis|stellungnahme der verwaltung|ergebnisse/i],
+ ['bericht',/bericht|zwischenstand|präsentation|\breporte?s?\b|\bstand\b|informationsvorlage|information(?:en)?\s+(?:zu|zur|über|der|des|durch|aus)|mitteilung|kenntnis|stellungnahme der verwaltung|ergebnisse/i],
 ];
 /** @param {{title:string}} x  Nur der Titel: Betreff/Beschlussvorschlag senkte die Genauigkeit (Floskeln, gemessen 14.10.2026). */
 export function stageOf({title}){

@@ -260,6 +260,12 @@ Stand). Die Stufen 4 bis 6 für den Bestand laufen getrennt davon im Job `rule-t
 (nur wenn Berichte neu gelesen wurden), Zahlen für plenara.X (`scripts/plenara-x/build-x-cases.mjs`, immer; ohne sie antwortet
 `/api/x` mit 503, nach dem Einspielen von Migration 0036 also einmal von Hand oder über „Jetzt erstellen“ bauen).
 
+**Einführung plenara.X Atlas (Oktober 2026), einmal nach dem Deploy:** Migrationen bis `0037` einspielen
+(`0034` und `0037` setzen die Labels aller Karten neu, `0037` löscht die Fakten `radar:*`), dann
+`node scripts/reclassify-rules.mjs` (Titelregel `title-rules-v6`) und den Job „Themen & Texte“ mit „Alle neu erstellen“
+(`scripts/rule-texts.mjs --all`: alle Berichte neu lesen, lokal 30 Minuten für 941.000 Berichte, Wortliste voll,
+Zahlen für plenara.X). Bis der Job fertig ist, zeigen Suche und Themen die Titelregel und `/api/x` antwortet mit 503.
+
 **Einrichten** (einmal, als root; der Server hat noch keine PDFs, die Kette lädt sie selbst):
 
 1. Umgebung: `RM_PDF_STORE`, `OCR_TOOLS`, `OCR_CACHE` aus `deploy/node/ratsmonitor.env.example` in
