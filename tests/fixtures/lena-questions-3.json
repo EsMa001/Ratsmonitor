@@ -1,0 +1,22 @@
+{"note":"Dritter Fragensatz, 14.10.2026, Endmessung nach Runde 1 (nicht korrigieren)","rows":[
+{"q":"Was gibt es Neues zur Feuerwehr in Borken?","intent":"suche","place":"Stadt Borken"},
+{"q":"Beschlüsse zu Spielplätzen im Kreis Coesfeld","intent":"suche","place":"Kreis Coesfeld"},
+{"q":"Welche Anträge zur Straßenbeleuchtung gibt es in Essen?","intent":"suche","place":"Stadt Essen"},
+{"q":"Zeige Vorlagen zum Breitbandausbau in Steinfurt","intent":"suche","place":"Stadt Steinfurt"},
+{"q":"Was plant Recklinghausen beim Hochwasserschutz?","intent":"suche","place":"Stadt Recklinghausen"},
+{"q":"Wurde die Hundesteuer in Hamm erhöht?","intent":"stand","place":"Stadt Hamm"},
+{"q":"Ist der Bebauungsplan Sonnenhang in Telgte angenommen worden?","intent":"stand","place":"Stadt Telgte","status":"approved"},
+{"q":"Welcher Stand gilt beim Schwimmbad in Coesfeld?","intent":"stand","place":"Stadt Coesfeld"},
+{"q":"Was ist aus dem Antrag zur Videoüberwachung in Dresden geworden?","intent":"stand","place":"Stadt Dresden"},
+{"q":"Wird Bürgerbeteiligung seltener Thema?","intent":"entwicklung"},
+{"q":"Trend bei Freiflächen-Photovoltaik","intent":"entwicklung"},
+{"q":"Wie hat sich das Thema Ganztag seit 2024 entwickelt?","intent":"entwicklung","time":true},
+{"q":"Münster gegen Dresden beim Wohnungsbau","intent":"vergleich","place":"Stadt Münster","place2":"Stadt Dresden"},
+{"q":"Was unterscheidet Ahaus und Borken bei der Kita-Planung?","intent":"vergleich","place":"Stadt Ahaus","place2":"Stadt Borken"},
+{"q":"Sag mir Bescheid, wenn Telgte über Windräder berät","intent":"alarm","place":"Stadt Telgte"},
+{"q":"Ich will nichts zur Grundsteuer in Warendorf verpassen","intent":"alarm","place":"Stadt Warendorf"},
+{"q":"Ist der Kreis Paderborn bei euch dabei?","intent":"abdeckung","place":"Kreis Paderborn"},
+{"q":"Welche Räte von Bielefeld habt ihr?","intent":"abdeckung","place":"Stadt Bielefeld"},
+{"q":"Was bedeutet Vertagung?","intent":"hilfe","glossary":"Vertagung"},
+{"q":"Wo finde ich meine gespeicherten Suchen?","intent":"hilfe"}
+]}

@@ -2,8 +2,8 @@
 // Aufbau: Beschlussvorschlag (bis zu 2 Sätze), dann je ein Satz für Anlass, Zahlen/Kosten und Begründung.
 // Nur für Artikel mit verlinktem Dokument; ohne brauchbaren Text, ohne erkennbare Struktur (Mitteilungen, „Verschiedenes“, Protokollauszüge)
 // und für persönliche Schreiben gibt es keine Zusammenfassung (null).
-export const RULE_SUMMARY_VERSION = 2;
-const ABBR = /(?:^|[\s(])(?:z|d|u|v|bzw|ca|Nr|Abs|Art|Tel|ggf|evtl|inkl|einschl|max|min|vgl|Dr|Prof|St|Str|usw|etc|sog|zzgl|gem|lt|Mio|Mrd|Tsd|ff|Std|ggfls|ggfs|zt|zz|zzt|rd|insb|ehem|bspw|sog|Fa|Hr|Fr|[a-z])\.$/i;
+export const RULE_SUMMARY_VERSION = 3;
+const ABBR = /(?:^|[\s(])(?:z|d|u|v|bzw|ca|Nr|Abs|Art|Tel|ggf|evtl|inkl|einschl|max|min|vgl|Dr|Prof|St|Str|usw|etc|sog|zzgl|gem|lt|Mio|Mrd|Tsd|ff|Std|ggfls|ggfs|zt|zz|zzt|rd|insb|ehem|bspw|sog|Fa|Hr|Fr|Flst|Fl|Gmkg|Gemkg|Gmk|Gemarkung|Az|stellv|bzgl|allg|lfd|Lfd|[a-z])\.$/i;
 const DOTTED = /^[(„"]?(?:\p{L}\.){2,}$/u;
 const ANAPHORIC = /^(Dabei|Hierzu|Hierbei|Hiermit|Dazu|Dies|Diese[rsnm]?|Damit|Daher|Deshalb|Zudem|Außerdem|Ferner|Ebenso|Hinzu|Der Schwerpunkt|Inzwischen|Mittlerweile|Zwischenzeitlich|Nun|Danach|Anschließend|Darüber hinaus|Weiterhin|Ebenfalls|Hierfür|Hiervon|Davon|Dafür|Aufgrund dessen|Daraufhin|Allerdings|Jedoch|Dennoch|Trotzdem|Somit|Es geht (?:dabei|hierbei|hier))\b/;
 const LEGAL_ONLY = /^(Gemäß|Nach|Laut|Entsprechend) § /;
@@ -17,7 +17,7 @@ export function cleanText(text) {
     .replace(/(\p{L})-\n(?:\d{1,3}\n)?(\p{Ll})/gu, '$1$2')
     .replace(/\n\d{1,3}\n(?=\p{Ll})/gu, '\n')
     // Anrede („Sehr geehrter Herr Oberbürgermeister,“) gehört in keinen Auszug, auch nicht mitten im Satz
-    .replace(/\bSehr geehrte[rn]?\s[^,\n]{0,70},\s*/gu, '');
+    .replace(/\b[Ss]ehr geehrte[rn]?\s[^,\n]{0,70},\s*/gu, '');
 }
 
 // Abschnitte nach Überschriften, zeilenweise: Beschluss (Beschlussvorschlag, Beschlussempfehlung, Antrag …), Sachverhalt (Sachdarstellung,
@@ -80,7 +80,10 @@ export function splitSentences(block) {
     if (ends) { out.push(cur); cur = ''; }
   });
   if (cur.length > 20) out.push(cur);
-  return out.map(s => s.replace(/^\d{1,2}[.)]?\s+(?=\p{Lu})/u, '').replace(/^[•\-–]\s*/, '').trim());
+  // Kopfzeilen am Satzanfang („Seite 2 von 2 Antragstext: …“) gehören nicht zum Satz
+  return out.map(s => s.replace(/^\d{1,2}[.)]?\s+(?=\p{Lu})/u, '').replace(/^[•\-–]\s*/, '').trim()
+    .replace(/^(?:Seite\s*\d+\s*(?:von|\/)\s*\d+\s*)?(?:(?:Antragstext|Antrag|Beschlusstext|Text|Historie und Sachverhalt|(?:[IVX]+\.\s*)?Sachentscheidung|Inhalt und Begründung|Finanzielle Auswirkungen\s*:\s*Beschlussvorschlag|Beschlussvorschlag|Finanzielle Auswirkungen)\s*:?\s+)?(?=\p{L})/u, m => m && /Seite|:/.test(m) ? '' : m)
+    .replace(/^\p{Ll}/u, c => c.toUpperCase()));
 }
 
 // Nur vollständige, lesbare Sätze: Großbuchstabe am Anfang, Satzzeichen am Ende, kaum Zahlen/Tabellenreste
@@ -89,8 +92,10 @@ export function splitSentences(block) {
 const SALUTATION = /^(Sehr geehrte|Liebe[rn]? |Guten Tag|Hallo\b)/;
 const proseLike = s => { const w = s.match(/\p{L}{3,}/gu) || []; return w.length > 0 && w.filter(x => /^\p{Ll}/u.test(x)).length / w.length >= 0.25; };
 // Beschlusssätze enden im PDF oft ohne Punkt; im Beschlussabschnitt genügt ein vollständiger Satz ohne Schlusszeichen
-const usableDecision = s => proseLike(s) && !SALUTATION.test(s) && (usable(s) || s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && /[\p{L}\d)]$/u.test(s) && (s.match(/\d/g) || []).length / s.length < 0.15);
-const usable = s => s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && /[.!?]$/.test(s)
+const usableDecision = s => !FORM.test(s) && proseLike(s) && !SALUTATION.test(s) && (usable(s) || s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && /[\p{L}\d)]$/u.test(s) && (s.match(/\d/g) || []).length / s.length < 0.15);
+// Formularfelder im Satz (Kopf eines Vordrucks) und Sätze, die mitten im Gedanken abbrechen („… an die Firma“), taugen nicht
+const FORM = /\b(?:Betreff|Sachbearbeiter(?:\/-?in)?|Datum|Aktenzeichen|Vorlagen?-?(?:Nr|nummer)|Sachdarstellung\s*\/\s*Begründung|Alternative)\s*:|^Hier\s*:|^Siehe\b|\bbitte (?:lassen|nehmen|setzen|stellen) Sie\b|^(?:Er|Sie|Es) (?:hat|ist|wird)\b|\bTOP \d+\b.*\bTOP \d+\b|Kostenstelle\/Konto|^(?:Zur|Zum)\s.*[^.!?]$|\b(?:der|die|das|den|dem|des|an|zu|zur|zum|für|von|mit|gemäß|Firma|und|oder)$/i;
+const usable = s => !FORM.test(s) && s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && /[.!?]$/.test(s)
   && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && (s.match(/\d/g) || []).length / s.length < 0.15 && proseLike(s) && !SALUTATION.test(s);
 
 // Persönliche Schreiben (Einwendungen, Briefe, Beschwerden) haben keinen Beschluss und keinen Sachverhalt: eine Auswahl von Sätzen

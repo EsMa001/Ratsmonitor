@@ -3,17 +3,19 @@
 import {themesIn} from '../themes.mjs';
 import {LABELS} from '../labels.mjs';
 
-export const LENA_VERSION='lena-rules-v1';
+export const LENA_VERSION='lena-rules-v2';
 export const INTENTS=['suche','stand','entwicklung','vergleich','alarm','abdeckung','hilfe'];
 
 /* Absichten: Muster mit Gewicht; die höchste Summe gewinnt, unter 2 Punkten bleibt die Absicht offen (dann Suche, wenn ein Thema da ist). */
 const INTENT_RULES=[
- ['alarm',/sag(?:en sie)? (?:mir )?bescheid|gib (?:mir )?bescheid|bescheid (?:geben|sagen)|benachrichtig|alarm|informier\w* (?:sie )?mich|melde[nt]? (?:mir|mich)|auf dem laufenden|mitbekommen|verpassen|abonnier/i,3],
- ['vergleich',/vergleich|gegenüber|\bversus\b|\bvs\.?\b|\bgegen\b|unterschied|im verhältnis zu|wo (?:ist|gibt es) mehr|wo läuft mehr/i,3],
+ ['alarm',/sag(?:en sie)? (?:mir )?bescheid|gib (?:mir )?bescheid|bescheid (?:geben|sagen)|benachrichtig|alarm|informier\w* (?:sie )?mich|melde[nt]? (?:mir|mich)|auf dem laufenden|mitbekommen|verpassen|abonnier|informiert werden|benachrichtigt werden|hinweis bekommen/i,3],
+ ['vergleich',/vergleich|gegenüber|\bversus\b|\bvs\.?\b|\bgegen\b|unterschied|im verhältnis zu|wo (?:ist|gibt es) mehr|wo läuft mehr|unterscheide[tn]|wer (?:berät|redet|spricht|macht|beschließt) (?:mehr|öfter|häufiger)/i,3],
  ['entwicklung',/entwickel|entwicklung|trend|nimmt .{0,40}\b(?:zu|ab)\b|zunimmt|nimmt ab|abnimmt|mehr geworden|weniger geworden|häufiger|seltener|verbreitet|ausbreitung|im kommen|zunehmend|rückläufig|dynamik/i,3],
- ['abdeckung',/\bdabei\b|abgedeckt|abdeckung|erfasst|unterstützt|gibt es daten|hast du daten|habt ihr daten|haben sie daten|daten (?:zu|zum|zur|von|für|aus)\b|im portal|verfügbar|(?:kommune|gemeinde|stadt|kreis) (?:ist|gibt es|habt ihr|haben sie)/i,3],
- ['hilfe',/was (?:bedeutet|heißt|ist (?:ein|eine|der|die|das)\b)|bedeutung|erklär|was kostet|preis|tarif|kosten|wie funktioniert|wie läuft das|wie aktuell|wie kann ich|wie speicher|wie lege ich|wo finde ich|anleitung|hilfe/i,3],
- ['stand',/beschlossen|entschieden|abgelehnt|vertagt|angenommen|verabschiedet|wie steht es|(?:wie ist der|welcher|aktueller) (?:stand|status)|\bstand\b|\bstatus\b|wie weit|ergebnis|ausgang|durch\?$|wurde|ist .{0,40}(?:schon|bereits)/i,2],
+ ['entwicklung',/nehmen .{0,40}\b(?:zu|ab)\b|öfter .{0,40}\bals\b/i,3],
+ ['entwicklung',/wie oft/i,3],
+ ['abdeckung',/welche (?:räte|gremien|ausschüsse|orte|gemeinden|städte|kreise) .{0,40}(?:habt ihr|haben sie|gibt es bei euch)|\bdabei\b|abgedeckt|abdeckung|erfasst|unterstützt|gibt es daten|hast du daten|habt ihr daten|haben sie daten|daten (?:zu|zum|zur|von|für|aus)\b|im portal|verfügbar|(?:kommune|gemeinde|stadt|kreis) (?:ist|gibt es|habt ihr|haben sie)/i,3],
+ ['hilfe',/was (?:bedeutet|heißt|ist (?:ein|eine|der|die|das)\b)|bedeutung|erklär|was kostet|wie teuer|preis|tarif|kosten|wie funktioniert|wie läuft das|wie aktuell|wie kann ich|wie speicher|wie lege ich|wo finde ich|anleitung|hilfe/i,3],
+ ['stand',/beschlossen|entschieden|abgelehnt|vertagt|angenommen|verabschiedet|wie steht es|(?:wie ist der|welcher|aktueller) (?:stand|status)|\bstand\b|\bstatus\b|wie weit|ergebnis|ausgang|was ist aus .{0,80}geworden|durch\?$|wurde|ist .{0,40}(?:schon|bereits)/i,2],
  ['suche',/was gibt es|gibt es|was läuft|was liegt|suche|finde|zeig|liste|vorlagen|beschlüsse|anträge|themen|alles zu|neues zu|aktuelles|aktuell|welche/i,1],
 ];
 
@@ -63,7 +65,7 @@ function placeIndex(catalog){
  }
  placeIndexes.set(catalog,idx);return idx;
 }
-const PLACE_STOP=new Set(['bescheid','stand','status','trend','vergleich','thema','dabei','daten','pro','basis','plenara','ratsmonitor','lena','mir','mich','uns','sie','ich','ist','gibt','und','oder','wie','was','wann','wer','wo','der','die','das','den','dem','des','ein','eine','einen','einem','einer','mit','von','vom','für','auf','aus','bei','nach','über','seit','bis','zum','zur','zu','in','im','an','am']);
+const PLACE_STOP=new Set(['meine','meinen','meiner','meinem','bescheid','stand','status','trend','vergleich','thema','dabei','daten','pro','basis','plenara','ratsmonitor','lena','mir','mich','uns','sie','ich','ist','gibt','und','oder','wie','was','wann','wer','wo','der','die','das','den','dem','des','ein','eine','einen','einem','einer','mit','von','vom','für','auf','aus','bei','nach','über','seit','bis','zum','zur','zu','in','im','an','am']);
 export function findPlaces(text,catalog,{max=2}={}){
  const idx=placeIndex(catalog),words=norm(text).split(' ').filter(Boolean),found=[];const used=new Set();
  const wantKreis=/\b(?:land)?kreis(?:es)?\b/i.test(text);

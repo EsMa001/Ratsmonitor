@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {parseQuestion,LENA_VERSION} from '../../shared/lena/parse.mjs';
 import {lookupGlossary} from '../../shared/lena/glossary.mjs';
 import {CATALOG} from '../../shared/catalog.mjs';
-const ref=JSON.parse(fs.readFileSync(new URL('../../tests/fixtures/lena-questions.json',import.meta.url),'utf8'));
+const ref=JSON.parse(fs.readFileSync(new URL('../../tests/fixtures/'+(process.argv.find(a=>a.startsWith('--set='))?.slice(6)||'lena-questions')+'.json',import.meta.url),'utf8'));
 const rows=process.argv.includes('--alle')?ref.rows:ref.rows.slice(0,75);
 const now=Date.parse('2026-10-10T12:00:00Z');
 const c={intent:0,place:0,placeN:0,status:0,statusN:0,time:0,timeN:0,glossary:0,glossaryN:0,all:0};const bad=[];

@@ -1,0 +1,2542 @@
+{
+ "version": "doc-doc-v-server",
+ "note": "60 aktive Berichte mit mindestens 2 PDFs, davon mindestens ein übriges PDF in der Ablage, Serverdaten (nur lesend) 2026-10-14, SHA-256(id+'doc-v-server'); uses = Berichte derselben Sitzung mit diesem PDF; gold von Hand (Claude) vor dem Messen",
+ "rows": [
+  {
+   "id": "de-08116076-vo-625",
+   "title": "Nachfolgenutzung Bestandsgrundstück Kindergarten Aichschieß",
+   "docs": [
+    {
+     "title": "Vorlage GR",
+     "url": "https://ris.aichwald.de/buergerinfo/getfile.php?id=10888&type=do",
+     "uses": 1,
+     "head": "Sitzungsvorlage GRS Sitzungsvorlage GRS 2026/83 GR Seite 1 von 1 öffentlich Gemeinde Aichwald Amt/Sachgebiet: Hauptverwaltung GRS am: 27.07.2026 Aktenzeichen: 621.41 Vorlage: 2026/83 GR Sachbearbeiter/in: Felchle, Stefan Vorberatung am: im: [23.03.2026] Gemeinderat 2026/65.] Anlage/n: 2 Nachfolgenutzung Bestandsgrundstück Kindergarten Aichschieß Antrag: 1. Der Gemeinderat nimmt von den möglichen B"
+    },
+    {
+     "title": "Anlage1 Variante 1 A3-500",
+     "url": "https://ris.aichwald.de/buergerinfo/getfile.php?id=10893&type=do",
+     "uses": 1,
+     "head": "STSTST Kita II 2WEII 2WE 3,50 ca.354m² ca.349m² II 2WEII 2WE ca.413m² ca.391m² Btrg Wirtg Gar Whs Gar Whs SchuSchu Whs G Whs Schu Schu Schu Scheu Gar Whs Whs Schu Gar Gar Gar Whs Gar Whs Schu Gar Gar Whs Gar Whs WGhs Gar Gar Schu Whs Lagg Whs Gar Wirtg Hotel Whs Gar Whs Schu Whs Whs Gdehs Kiga Lagg Gar Gar Whs Gar Whs Whs Gar Whs Gar Whs Gar Gar Gar Gar 35 33 10 12 14 9 7 31 48 52 8 4 6 33 39 40 4"
+    },
+    {
+     "title": "Anlage2 Variante 2 A3-500",
+     "url": "https://ris.aichwald.de/buergerinfo/getfile.php?id=10894&type=do",
+     "uses": 1,
+     "head": "STSTST Kita St Cp Zugang Zugang Cp St II II ca.207m² ca.125m²ca.169m² ca.229m² ca.139m² ca.188m² Btrg Wirtg Gar Whs Gar Whs SchuSchu Whs G Whs Schu Schu Schu Scheu Gar Whs Whs Schu Gar Gar Gar Whs Gar Whs Schu Gar Gar Whs Gar Whs WGhs Gar Gar Schu Whs Lagg Whs Gar Wirtg Hotel Whs Gar Whs Schu Whs Whs Gdehs Kiga Lagg Gar Gar Whs Gar Whs Whs Gar Whs Gar Whs Gar Gar Gar Gar 35 33 10 12 14 9 7 31 48 5"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-14612000-vo-29936",
+   "title": "Installation des blindFind-Systems im Stadtforum",
+   "docs": [
+    {
+     "title": "Beschlussausfertigung SW A0144 26 mU",
+     "url": "https://ratsinfo.dresden.de/getfile.asp?id=902431&type=do",
+     "uses": 1,
+     "head": "LANDESHAUPTSTADT DRESDEN BESCHLUSSAUSFERTIGUNG Ausschuss für Soziales und Wohnen (SW/022/2026) Sitzung am; 18.08.2026 Beschluss zu: A0144/26 Gegenstand: Installation des blindFlnd-Systems im Stadtforum Beschluss; Der Stadtrat bittet den Oberbürgermeister, die Umsetzung folgender Maßnahmen zu veranlassen; 1. Installation und Inbetriebnahme des Systems blindFind im Stadtforum, um die barrierefreie O"
+    },
+    {
+     "title": "Antrag CDU",
+     "url": "https://ratsinfo.dresden.de/getfile.asp?id=868027&type=do",
+     "uses": 1,
+     "head": "Seite 1 von 3 Antrag Nr.: A0144/26 Datum: 03.02.2026 A N T R A G CDU-Fraktion Gegenstand: Installation des blindFind-Systems im Stadtforum Beschlussvorschlag: Der Stadtrat bittet den Oberbürgermeister, die Umsetzung folgender Maßnahmen zu veranlas- sen: 1. Installation und Inbetriebnahme des Systems blindFind im Stadtforum, um die barriere- freie Orientierung für blinde und sehbehinderte Menschen "
+    },
+    {
+     "title": "Beschlussempfehlung B A0144 26",
+     "url": "https://ratsinfo.dresden.de/getfile.asp?id=893148&type=do",
+     "uses": 1,
+     "head": " "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     1,
+     2
+    ],
+    "types": [
+     "d",
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-14729050-vo-20262503100041",
+   "title": "Vergabe zu folgender Maßnahme: Innovative Erneuerung der Security-Systeme der Stadtverwaltung Borna für Leistung: Firewall-Modernisierung inkl. E-Mail-Security",
+   "docs": [
+    {
+     "title": "Beschlussvorlage B/2026-0281 (Vergabe zu folgender Maßnahme:  Innovative Erneuerung der Security-Systeme der Stadtverwaltung Borna\r\nfür Leistung: Firewall-Modernisierung inkl. E-Mail-Security).pdf",
+     "url": "https://ris-borna.zv-kisa.de/api.php?document_type_id=4&document_relation_id=20262503100041&submission_id=20262503100041&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Stadt Borna Markt 1, 04552 Borna Beschlussvorschlag TOP _______________ Urban Oberbürgermeister Abstimmungsergebnis: Beschluss laut Vorlage Anwesend gesamt Beschluss abweichend vom Vorschlag davon Befangen (§ 20 SächsGemO) in den Ausschuss verwiesen davon Ja Stimmen davon Nein Stimmen davon Enthaltungen (§ 39 SächsGemO) Beschlussnummer: In öffentlicher Sitzung zu behandelnde Vorlagen tragen bis zu"
+    },
+    {
+     "title": "Beschluss  von TOP 6.8 15. Sitzung des Stadtrates",
+     "url": "https://ris-borna.zv-kisa.de/api.php?document_type_id=5&document_relation_id=ni_2026-SR-208%7C20262503100041%7C1&agenda_item_id=ni_2026-SR-208%7C20262503100041%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "TOP 6.8. Beschlussvorlage B/2026-0281 Vergabe zu folgender Maßnahme: Innovative Erneuerung der Security-Systeme der Stadtverwaltung Borna für Leistung: Firewall-Modernisierung inkl. E-Mail-Security Beschluss: Der Stadtrat beschließt die Vergabe von Lieferleistungen zu folgender Maßnahme: Innovative Erneuerung der Security-Systeme der Stadtverwaltung Borna für: Firewall-Modernisierung inkl. E-Mail-"
+    },
+    {
+     "title": "Auszug von TOP 6.8 15. Sitzung des Stadtrates",
+     "url": "https://ris-borna.zv-kisa.de/api.php?document_type_id=6&document_relation_id=ni_2026-SR-208%7C20262503100041%7C1&agenda_item_id=ni_2026-SR-208%7C20262503100041%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Stadt Borna Markt 1, 04552 Borna Beschlussauszug Beschluss Sitzung 15. Sitzung des Stadtrates Sitzungsdatum 27.04.2026 TOP 6.8. Beschlussvorlage B/2026-0281 Vergabe zu folgender Maßnahme: Innovative Erneuerung der Security-Systeme der Stadtverwaltung Borna für Leistung: Firewall-Modernisierung inkl. E-Mail-Security Beschluss: Der Stadtrat beschließt die Vergabe von Lieferleistungen zu folgender Ma"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-08119085-oparl-7bea3c0649f9c3038e4d",
+   "title": "Neufassung der Satzung über die Entschädigung für ehrenamtliche Tätigkeit",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://gr.winnenden.de/oparl/bodies/0001/downloadfiles/a/00067686.pdf",
+     "uses": 1,
+     "head": "Stadt Winnenden S i t z u n g s v o r l a g e Nr. 034/2026 - 1 - Federführendes Amt: Hauptamt Beratungsfolge Behandlung Termin Verwaltungsausschuss Vorberatung N 10.02.2026 Gemeinderat Beschlussfassung Ö 24.02.2026 Betreff: Neufassung der Satzung über die Entschädigung für ehrenamtliche Tätigkeit Beschlussvorschlag: Die Neufassung der Satzung über die Entschädigung für ehrenamtliche Tätigkeit gem."
+    },
+    {
+     "title": "Anlage 1: Entwurf neue Fassung der Satzung über die ehrenamtliche Entschädigung",
+     "url": "https://gr.winnenden.de/oparl/bodies/0001/downloadfiles/a/00067726.pdf",
+     "uses": 1,
+     "head": "Stadt Winnenden, Rems-Murr-Kreis Satzung über die Entschädigung für ehrenamtliche Tätigkeit Aufgrund von § 4 in Verbindung mit § 19 der Gemeindeordnung für Baden-Württemberg in der derzeit gültigen Fassung hat der Gemeinderat der Stadt Winnenden am 24. Februar 2026 folgende Satzung beschlossen: § 1 Festsetzung von Durchschnittssätzen und Ersatz des Verdienstausfalls (1) Ehrenamtlich tätige Bürgeri"
+    },
+    {
+     "title": "Anlage 2: Synopse zur Neufassung",
+     "url": "https://gr.winnenden.de/oparl/bodies/0001/downloadfiles/a/00067727.pdf",
+     "uses": 1,
+     "head": "Handlungs- bedarf Bisherige Regelung Zukünftige Regelung Rechtsgrundlage GemO § 5 Erstattung von Aufwendungen aufgrund einer Schwerbehinderung bei der Ausübung der ehrenamtlichen Tätigkeit Zusätzliche Aufwendungen, die aufgrund einer Schwerbehinderung nach § 2 Abs. 2 SGB IX bei der Ausübung der ehrenamtlichen Tätigkeit entstehen, sind zu erstatten. Die Erstattung umfasst insbesondere Unterstützung"
+    },
+    {
+     "title": "Öffentliche Bekanntmachung",
+     "url": "https://gr.winnenden.de/oparl/bodies/0001/downloadfiles/a/00067708.pdf",
+     "uses": 10,
+     "head": "E I N L A D U N G zur Sitzung d e s G e m e i n d e r a t e s am Dienstag, dem 24. Februar 2026, 18:00 Uhr, im Rathaus Winnenden, großer Sitzungssaal, Torstraße 10. T A G E S O R D N U N G : 1 Anschlussunterbringung in Winnenden - aktuelle Situation 2 Neubau von Räumen für die Schulkindbetreuung mit Mensa und Sporthalle an der Grundschule Hungerberg als Gesamtmaßnahme 3 Vergabe der Beschaffung ein"
+    },
+    {
+     "title": "Kurzprotokoll",
+     "url": "https://gr.winnenden.de/oparl/bodies/0001/downloadfiles/a/00067907.pdf",
+     "uses": 10,
+     "head": "Stadt Winnenden K u r z p r o t o k o l l Kurzprotokoll über die Verhandlungen des Gemeinderat am 24.02.2026 TOP 1 Anschlussunterbringung in Winnenden - aktuelle Situation Beschluss: Die anliegende Präsentation zur Situation der Anschlussunterbringung in Winnenden wird zur Kenntnis genommen. zur Kenntnis genommen TOP 2 Neubau von Räumen für die Schulkindbetreuung mit Mensa und Sporthalle an der Gr"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a",
+     "i",
+     "m"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "nrw-05113000-vo-505_64470",
+   "title": "Haushaltsplan-Entwurf 2027/2028",
+   "docs": [
+    {
+     "title": "Bezirksvertretung V 1558/2026/BV V 2. Nachtrag",
+     "url": "https://ris.essen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZYg_7Lg-TP0V7Cw0lqtVU0xzRpsRHZ4q9M_hBkVw7SVi/Bezirksvertretung_V_1558-2026-BV_V_2._Nachtrag.pdf",
+     "uses": 1,
+     "head": "Vorlage - öffentlich - lfd. Nummer 1558 Jahr 2026 Bezirksvertretung BV V Beratungsfolge Sitzungstermin Zuständigkeiten Bezirksvertretung für den Stadtbezirk V 22.09.2026 Empfehlung Betreff Haushaltsplan-Entwurf 2027/2028 Datum: 18.09.2026 gez.: de la Fuente Villar Beschlussvorschlag Die Bezirksvertretung V berät und empfiehlt die Umsetzung der bezirksbezogenen Pla nungen des Haushaltsplan-Entwurfs"
+    },
+    {
+     "title": "Haushaltsplant-entwurf S. 305 -316",
+     "url": "https://ris.essen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZcaBcEVO1Ka7kEPY3-jksi2Vi8_j3lMTAUXkyoSuLBWl/Haushaltsplant-entwurf_S._305_-316.pdf",
+     "uses": 1,
+     "head": "Stadt Essen Stadtkämmerei Haushaltsplan - Entwurf 2027 / 2028 0285 300.000205.812 374374 0285 300.374206.186 -300.374-205.901 1. Produkte Ergebnis 2025 7 + Sonstige ordentliche Erträge Erträge 13 - Aufwendungen für Sach- und Dienstleistungen 14 - Bilanzielle Abschreibungen Aufwendungen Jahresergebnis Stadtbezirk V gesamt Ansatz 2026 Ansatz 2027 Ansatz 2028 Planung 2029 Planung 2030 Planung 2031 0 "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-08115041-vo-1814",
+   "title": "Modal Split Erhebung Renningen",
+   "docs": [
+    {
+     "title": "Drucksache",
+     "url": "https://renningen-sitzungsdienst.komm.one/bi/getfile.asp?id=18551&type=do",
+     "uses": 1,
+     "head": "STADT RENNINGEN Drucksache 050/2026 Verfasser: Tayla Herrmann Telefon: Aktenzeichen: 690.14 Datum: 01.04.2026 Modal Split Erhebung Renningen Beschlussvorschlag: Der Durchführung einer Modal Split Erhebung in Renningen wird zugestimmt. Die Stadtverwaltung wird entsprechend angewiesen ein passendes Verkehrsplanungsbüro auszuwählen und zu beauftragen. gez. Melanie Hettmer Bürgermeisterin Beratungsfol"
+    },
+    {
+     "title": "Präsentation Modal Split T 2026-04-22",
+     "url": "https://renningen-sitzungsdienst.komm.one/bi/getfile.asp?id=18700&type=do",
+     "uses": 1,
+     "head": "Modal Split Erhebung Renningen Tayla Herrmann Klimaschutz, Stabsstelle Strategische Steuerung & Kommunikation 22.04.2026 Was ist ein Modal Split? = anteilige Verteilung des Verkehrs auf die einzelnen Verkehrsmittel (Modi)  welcher Anteil der Wege wird mit welchem Verkehrsmittel zurückgelegt 1 Wie wird der Modal Split erhoben? - repräsentative Haushaltsbefragungen an bestimmten Stichtagen - Sticht"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nds-03460007-vo-2421",
+   "title": "B-Plan Nr. 88 „Gewerbegebiet nördlich Feldbrügge“ in Neuenkirchen; hier: Aufstellungsbeschluss nach § 2 Abs. 1 BauGB",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://buergerinfo.neuenkirchen-voerden.de/getfile.asp?id=32918&type=do",
+     "uses": 1,
+     "head": "Seite 1 von 2 Gemeinde Neuenkirchen- Vörden Vorlage Nr. 004/2026 Bauamt x öffentlich Beratungsfolge Sitzungstermin Zuständigkeit Bauausschuss 03.02.2026 Zur Vorbereitung Beratungsfolge Sitzungstermin Zuständigkeit Verwaltungsausschuss 17.02.2026 Zur Vorbereitung Beratungsfolge Sitzungstermin Zuständigkeit Gemeinderat 24.02.2026 Zur Beschlussfassung TOP B-Plan Nr. 88 „Gewerbegebiet nördlich Feldbrü"
+    },
+    {
+     "title": "004-2026 Anlage Geltungsbereich BPlan 88",
+     "url": "https://buergerinfo.neuenkirchen-voerden.de/getfile.asp?id=32917&type=do",
+     "uses": 1,
+     "head": "Anlage zur Vorlage Nr. 004/2026 Geltungsbereich des Bebauungsplanes Nr. 88"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-08118048-vo-1015751",
+   "title": "Rückwirkende Änderung der Satzung über die Erhebung der Grundsteuer und Gewerbesteuer der Stadt Ludwigsburg (Hebesatzsatzung) zum 01.01.2026 (Vorberatung)",
+   "docs": [
+    {
+     "title": "Beschlussvorlage öffentlich",
+     "url": "https://ris.ludwigsburg.de/bi/getfile.php?id=232593&type=do",
+     "uses": 1,
+     "head": "Rückwirkende Änderung der Satzung über die Erhebung der Grundsteuer und Gewerbesteuer der Stadt Ludwigsburg (Hebesatzsatzung) zum 01.01.2026 Seite 1 von 4 BESCHLUSSVORLAGE Federführung: FB Finanzen Sachbearbeitung: Dolderer, Kristina VORL.NR. 095/26 Datum: 16.04.2026 Beratungsfolge Sitzungsdatum Sitzungsart Wirtschaftsausschuss 06.05.2026 ÖFFENTLICH Gemeinderat 20.05.2026 ÖFFENTLICH Betreff: Rückw"
+    },
+    {
+     "title": "Hebesatzsatzung rückwirkend 01.01.2026",
+     "url": "https://ris.ludwigsburg.de/bi/getfile.php?id=232575&type=do",
+     "uses": 1,
+     "head": "Anl. 1 – zur Vorlage Nr. 095/26 ENTWURF Satzung über die Erhebung der Grundsteuer und Gewer- besteuer der Stadt Ludwigsburg zum 01.01.2026 (Hebesatzsatzung) Aufgrund von § 4 der Gemeindeordnung für Baden-Württemberg und §§ 2 und 9 des Kommunalabgabengesetzes für Baden-Württemberg in Verbindung mit §§ 1, 50 und 52 des Landesgrundsteuergesetzes für Baden-Württemberg und §§ 1, 4 und 16 des Gewerbeste"
+    },
+    {
+     "title": "Vergleich Hebesätze Gewerbesteuer",
+     "url": "https://ris.ludwigsburg.de/bi/getfile.php?id=232642&type=do",
+     "uses": 1,
+     "head": "300 320 340 360 380 400 420 440 460 Hebesatz (v.H.) Hebesätze Gewerbesteuer 2026 der Städte über 50.000 Einwohner Mittelwert 404%"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nds-03460004-top-8545",
+   "title": "Anfragen und Anregungen",
+   "docs": [
+    {
+     "title": "Beschluss von TOP 8 36. Sitzung des Ausschusses für Haushalt, Feuerwehr, Touristik, Marktangelegenheiten, Wirtschaftsförderung und Zuschusswesen",
+     "url": "https://goldenstedt.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2025-HaushaltsA-39%7CAuAoe%7C1&agenda_item_id=ni_2025-HaushaltsA-39%7CAuAoe%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "8. Anfragen und Anregungen Herr Muhle begrüßt den Beginn der Abrissarbeiten am LIDL-Markt an der Hauptstraße, äu- ßert jedoch Bedauern darüber, dass dort nach aktuellem Stand kein Drogeriemarkt realisiert wird. Er bittet um Auskunft, ob die neu geschaffene zweite Zufahrt dauerhaft oder lediglich provisorisch angelegt wurde. Der Bürgermeister erläutert, dass die Zufahrt gem. bisheriger LIDL-Planung"
+    },
+    {
+     "title": "Auszug von TOP 8 36. Sitzung des Ausschusses für Haushalt, Feuerwehr, Touristik, Marktangelegenheiten, Wirtschaftsförderung und Zuschusswesen",
+     "url": "https://goldenstedt.gremien.info/api.php?document_type_id=6&document_relation_id=ni_2025-HaushaltsA-39%7CAuAoe%7C1&agenda_item_id=ni_2025-HaushaltsA-39%7CAuAoe%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Auszugsweise Abschrift aus der Niederschrift über die Sitzung des Ausschusses für Haushalt, Feuerwehr, Touristik, Marktangelegenheiten, Wirtschaftsförderung und Zuschusswesen am 15. Juni 2026 8. Anfragen und Anregungen Herr Muhle begrüßt den Beginn der Abrissarbeiten am LIDL-Markt an der Hauptstraße, äußert jedoch Bedauern darüber, dass dort nach aktuellem Stand kein Drogeriemarkt realisiert wird."
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-150905051-vo-12440",
+   "title": "Beschluss zur Friedhofssatzung der Gemeinde Hohenberg-Krusemark",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://ratsinfo.kitu-genossenschaft.de/arneburggoldbeck_bi/getfile.asp?id=464778&type=do",
+     "uses": 1,
+     "head": "Seite: 1/1 Gemeinde Hohenberg-Krusemark Der Bürgermeister Beschlussvorlage Federführend: Fachdienst \"Bauamt\" Vorlage-Nr: Status: Erstellungsdatum: Verfasser: 30/379/26 öffentlich 10.08.2026 Fleschner, Kathleen Beschluss zur Friedhofssatzung der Gemeinde Hohenberg-Krusemark Beratungsfolge: Sitzungsdatum Gremium 08.09.2026 Gemeinderat Hohenberg-Krusemark Beschluss: Der Gemeinderat der Gemeinde Hohen"
+    },
+    {
+     "title": "Friedhofssatzung der Gemeinde Hohenberg-Krusemark",
+     "url": "https://ratsinfo.kitu-genossenschaft.de/arneburggoldbeck_bi/getfile.asp?id=465294&type=do",
+     "uses": 1,
+     "head": "Seite 1 von 12 Friedhofssatzung der Gemeinde Hohenberg-Krusemark Auf der Grundlage der §§ 5, 8, 11 und 45 Abs. 2 Nr. 1 des Kommunalverfassungsgesetzes des Landes Sachsen-Anhalt (Kommunalverfassungsgesetz - KVG LSA) vom 17. Juni 2014 (GVBl. LSA S. 288), letzte berücksichtigte Änderung: zuletzt geändert durch Artikel 1 des Gesetzes vom 17. Dezember 2025 (GVBl. LSA S. 834), sowie des § 25 Abs. 1 des "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-146255218-cs-67-848",
+   "title": "Beratung und Beschluss zur Neufassung der Entschädigungssatzung der Stadt Königsbrück",
+   "docs": [
+    {
+     "title": "BV Entschädigungssatzung.pdf",
+     "url": "https://stadtverwaltung-koenigsbrueck.mein-intra.net/export/auth/6a67a729-e97bc0d3-30bd9772-b8b08ba0/data/file/councilservice/8/4/8/BV_Entschaedigungssatzung.pdf",
+     "uses": 1,
+     "head": "DES WAY Stadtverwaltung Königsbrück = - Bürgermeister - Königsbrück, 16.03.2026 Beschlussvorlage zur öffentlichen Sitzung des Stadtrates der Stadt Königsbrück am 24. März 2026 Bearbeiter: Herr Driesnack Thema: Beschluss der Satzung der Stadt Königsbrück über die Entschädigung ehrenamtlicher Tätigkeit Sachstand: Die Fraktion \"Königsbrück Gemeinsam\" regte die Fortschreibung der \"Satzung der Stadt Kö"
+    },
+    {
+     "title": "Entschädigungssatzung neu.pdf",
+     "url": "https://stadtverwaltung-koenigsbrueck.mein-intra.net/export/auth/6a67a729-e97bc0d3-30bd9772-b8b08ba0/data/file/councilservice/8/4/8/Entschaedigungssatzung_neu.pdf",
+     "uses": 1,
+     "head": " "
+    },
+    {
+     "title": "Entschädigungssatzung alt.pdf",
+     "url": "https://stadtverwaltung-koenigsbrueck.mein-intra.net/export/auth/6a67a729-e97bc0d3-30bd9772-b8b08ba0/data/file/councilservice/8/4/8/Entschaedigungssatzung_alt.pdf",
+     "uses": 1,
+     "head": " "
+    },
+    {
+     "title": "öffentliche Bekanntgabe 24.03.2026.pdf",
+     "url": "https://stadtverwaltung-koenigsbrueck.mein-intra.net/export/auth/6a67a729-e97bc0d3-30bd9772-b8b08ba0/data/file/councilservice/6/7/oeffentliche_Bekanntgabe_24.03.2026.pdf",
+     "uses": 15,
+     "head": "SS . Stadt Königsbrück Stadtverwaltung Königsbrück. Markt 20. 01936 Königsbrück Bürgermeister öffentliche Bekanntgabe Königsbrück, 16. März 2026 Einladung Sehr geehrte Einwohner der Stadt Königsbrück sowie der Ortsteile Gräfenhain u. Röhrs- dorf, ich möchte Sie hiermit herzlich zur öffentlichen Sitzung des Stadtrates der Stadt Kö- nigsbrück in der Wahlperiode 2024 - 2029 einladen. Datum: Dienstag,"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a",
+     "i"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "de-01059113-vo-nr-bv-130-2026",
+   "title": "Jahresabschluss und Lagebericht der Stadt Glücksburg (Ostsee) zum 31.12.2025 hier: Bestimmung von Prüfern/Prüferinnen für die Prüfung des Jahresabschlusses",
+   "docs": [
+    {
+     "title": "Beschlussvorlage BV-130/2026",
+     "url": "https://ratsinfo.gluecksburg.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZUxqfwZj60L4D_GVzHgQ6DFh9LeOGNkNALisi9uYWU0P/Beschlussvorlage_BV-130-2026.pdf",
+     "uses": 1,
+     "head": "Seite 1 von 1 Beschlussvorlage Kennung: öffentlich Vorlagennummer: BV-130/2026 Federführendes Amt: Finanzen Sachbearbeiter: Herr Krüger Telefonnummer: 0461 85-4143 Datum: 28.08.2026 Beratungsfolge Gremium Termin Beratungsaktion Finanz- und Hauptausschuss 15.09.2026 beschließend Betreff: Jahresabschluss und Lagebericht der Stadt Glücksburg (Ostsee) zum 31.12.2025 hier: Bestimmung von Prüfern/Prüfer"
+    },
+    {
+     "title": "Beschlusstext BV-130/2026 (öffentlich) Finanz- und Hauptausschuss 15.09.2026",
+     "url": "https://ratsinfo.gluecksburg.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZdlpUKXVfomM1L1W3AspiCdo9bpfbAX3O7WdSzinD9R1/Beschlusstext_BV-130-2026_-oeffentlich-_Finanz-_und_Hauptausschuss_15.09.2026.pdf",
+     "uses": 1,
+     "head": "Glücksburg, 06.10.2026 Beschluss 4. Sitzung 1 von 1 BESCHLUSS aus der 4. Sitzung des Finanz- und Hauptausschusses am Dienstag, 15.09.2026 Öffentliche Sitzung TOP 9: Jahresabschluss und Lagebericht der Stadt Glücksburg (Ostsee) zum 31.12.2025 hier: Bestimmung von Prüfern/Prüferinnen für die Prüfung des Jahresabschlusses BV-130/2026 Einstimmiger Beschluss, bei 0 Enthaltungen Die Stadtvertreter*innen"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05754040-oparl-948b0ffae7c58cd37853",
+   "title": "Anhörung zu dem von der Bezirksregierung geplanten Widerruf der Einrichtung des Gemeinsamen Lernens am Steinhagener Gymnasium zum Schuljahr 2026/2027",
+   "docs": [
+    {
+     "title": "Mitteilungsvorlage (Anhörung zu dem von der Bezirksregierung geplanten Widerruf der Einrichtung des Gemeinsamen Lernens am Steinhagener Gymnasium zum Schuljahr 2026/2027)",
+     "url": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1/files/UGhVM0hpd2NXNFdFcExjZaNy8EBOnF0LjTEBh8J092rvnfnD2BZIYhTHMjM1J3fL/Mitteilungsvorlage_VL-178-2025-2030.pdf",
+     "uses": 1,
+     "head": "Mitteilungsvorlage VL-178-2025/2030 Gemeinde Steinhagen Mitteilungsvorlage Die Bürgermeisterin - öffentlich - Drucksache VL-178-2025/2030 Aktenzeichen: 40 federführendes Amt: 40 Amt für Schulen, Jugend, Sport und Kultur Vorlagenersteller/in: Frau Schneegaß Datum: 17.06.2026 Beratungsfolge Termin Bemerkungen Ausschuss für Schulen, Jugend, Sport und Kultur 24.06.2026 Tagesordnungspunkt Anhörung zu d"
+    },
+    {
+     "title": "Mitteilungsvorlage (Runderlass des Ministeriums für Schule und Bildung-Inklusion-ABI.NRW. 12-18 S.38)",
+     "url": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1/files/UGhVM0hpd2NXNFdFcExjZY2yMEw1gQJS6o-LGYaNi8IziZE3o2AVHz7UIgrOeSA1/Runderlass_des_Ministeriums_fuer_Schule_und_Bildung-Inklusion-ABI.NRW._12-18_S.38.pdf",
+     "uses": 1,
+     "head": "13-41 Nr. 5 Neuausrichtung der Inklusion in den öffentlichen allgemeinbildenden weiterführenden Schulen Runderlass des Ministeriums für Schule und Bildung Vom 15. Oktober 2018 (ABl. NRW. 12/18 S. 38) 1. Grundlagen 1.1 Für eine spürbare Qualitätssteigerung der Angebote des Gemeinsa- men Lernens an allgemeinbildenden Schulen ist es erforderlich, die vor- handenen Ressourcen gezielt einzusetzen. 1.2 "
+    },
+    {
+     "title": "Mitteilungsvorlage (Schreiben Bez.reg.-Anhörung Widerruf Gemeinsames Lernen am Gymnasium Steinhagen)",
+     "url": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1/files/UGhVM0hpd2NXNFdFcExjZYP-mZEs4mWVMrSTiDmsm80Dn4zr6265oBsgBW9Mt1lW/Schreiben_Bez.reg.-Anhoerung_Widerruf_Gemeinsames_Lernen_am_Gymnasium_Steinhagen.pdf",
+     "uses": 1,
+     "head": " "
+    },
+    {
+     "title": "Mitteilungsvorlage (Stellungnahme Steinhagener Gymnasium zum Widerruf Gemeinsames Lernen)",
+     "url": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1/files/UGhVM0hpd2NXNFdFcExjZb4m8Ypgnqj5UBvMdX22mMYjs62n3EHg2R5dbQ9EY4d0/Stellungnahme_Steinhagener_Gymnasium_zum_Widerruf_Gemeinsames_Lernen.pdf",
+     "uses": 1,
+     "head": "Elterninformation Neuausrichtung der Inklusion in den öffentlichen allgemeinbil- denden weiterführenden Schulen gem. Runderlass des Ministe- riums für Schule und Bildung NRW vom 15.10.2018 Stellungnahme des Steinhagener Gymnasiums zum beabsichtigten Wider- ruf der Einrichtung des Gemeinsamen Lernens am Steinhagener Gymnasi- ums zum Schuljahr 2026/2027 Sehr geehrte Frau Schneegaß, sehr geehrte Dame"
+    },
+    {
+     "title": "Mitteilungsvorlage (Stellungnahme Realschule Steinhagen zum Widerruf GemeinsamesLernen)",
+     "url": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1/files/UGhVM0hpd2NXNFdFcExjZRgd5e1-yTU-FbTcXGRMpwQvrBwybcHDPXhFVeQmgO2z/Stellungnahme_Realschule_Steinhagen_zum_Widerruf_GemeinsamesLernen.pdf",
+     "uses": 1,
+     "head": "Neuausrichtung der Inklusion in den öffentlichen allgemeinbilden-den weiterführenden Schulen gem. Runderlass des Ministeriums für Schule und Bildung NRW vom 15.10.2018; Anhörung zum Widerruf der Einrichtung des Gemeinsamen Lernens am Gymnasium der Gemeinde Steinhagen zum Schuljahr 2026/27 17.06.2026 Sehr geehrte Frau Schneegaß, wir als Realschule Steinhagen stehen dieser Entscheidung kritisch gege"
+    },
+    {
+     "title": "Infotext (Anhörung zu dem von der Bezirksregierung geplanten Widerruf der Einrichtung des Gemeinsamen Lernens am Steinhagener Gymnasium zum Schuljahr 2026/2027)",
+     "url": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1/files/UGhVM0hpd2NXNFdFcExjZd_hXnFrd0Ww9syBNgqsn9x0GF9Yvl3mHuSjo7xF-xDK/Infotext_VL-178-2025-2030_-oeffentlich-_Ausschuss_fuer_Schulen-_Jugend-_Sport_und_Kultur_24.06.2026.pdf",
+     "uses": 1,
+     "head": "Auszug aus der Sitzung des Ausschusses für Schulen, Jugend, Sport und Kultur vom 24.06.2026 Seite 1 Gemeinde Steinhagen A u s z u g a u s d e r N i e d e r s c h r i f t über die Sitzung des Ausschusses für Schulen, Jugend, Sport und Kultur am 24.06.2026 Öffentliche Sitzung zu 7.: Anhörung zu dem von der Bezirksregierung geplanten Widerruf der Einrichtung des Ge meinsamen Lernens am Steinhagener G"
+    },
+    {
+     "title": "Einladung (Ausschuss für Schulen, Jugend, Sport und Kultur)",
+     "url": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1/files/UGhVM0hpd2NXNFdFcExjZfhv8CjmXB3CBKICdBYjHycNKFKdPN_dF_lSsYcpMxB1/Einladung_Ausschuss_fuer_Schulen-_Jugend-_Sport_und_Kultur_24.06.2026.pdf",
+     "uses": 11,
+     "head": "Einladung zur Sitzung des Ausschusses für Schulen, Jugend, Sport und Kultur am 24.06.2026 Gemeinde Steinhagen Die Bürgermeisterin Amt für Schulen, Jugend, Sport und Kultur Steinhagen, den 17.06.2026 Mitglieder des Ausschusses für Schulen, Jugend, Sport und Kultur des Rates der Gemeinde 33803 Steinhagen Verteiler: Bürgermeisterin Fraktionsvorsitzende Gleichstellungsbeauftragte Ämter 10, 32, 40, 50,"
+    },
+    {
+     "title": "Öffentliche Niederschrift (Ausschuss für Schulen, Jugend, Sport und Kultur)",
+     "url": "https://ratsinfo.steinhagen.de/webservice/oparl/v1.1/body/1/files/UGhVM0hpd2NXNFdFcExjZYTLIx-98fNPWgkJ4R6FTKEPBClgyABgDKa5Zx_eAa3Y/Oeffentliche_Niederschrift_Ausschuss_fuer_Schulen-_Jugend-_Sport_und_Kultur_24.06.2026.pdf",
+     "uses": 11,
+     "head": "Niederschrift über die Sitzung des Ausschusses für Schulen, Jugend, Sport und Kultur am 24.06.2026 Gemeinde Steinhagen N i e d e r s c h r i f t ( n u r ö f f e n t l i c h ) über die 5. Sitzung des Ausschusses für Schulen, Jugend, Sport und Kultur des Rates der Gemeinde Steinhagen in der Wahlperiode 2025/2030 am Mittwoch, dem 24.06.2026 Anwesend waren: Ausschussvorsitzender Herr Joachim Stritz Ra"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a",
+     "a",
+     "a",
+     "d",
+     "i",
+     "m"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "de-06531002-vo-7831",
+   "title": "Abweichungssatzung zur Erschließungsbeitragssatzung der Gemeinde Biebertal vom 07.05.2002",
+   "docs": [
+    {
+     "title": "Beschlussvorlage",
+     "url": "https://sessionnet.owl-it.de/biebertal/bi/getfile.asp?id=75210&type=do",
+     "uses": 1,
+     "head": "Gemeinde Biebertal Mühlbergstraße 9, 35444 Biebertal Tel.: 06409 / 69-0, Fax: 06409 / 69-11 Fachbereich: Bau- und Umweltamt DSNR: 3799/2026 Verfasser: Peter, Ralph Datum: 08.09.2026 Beschlussvorlage Abweichungssatzung zur Erschließungsbeitragssatzung der Gemeinde Biebertal vom 07.05.2002 Beratungsfolge: Gremium am Top Status Gemeindevorstand 14.09.2026 Haupt- und Finanzausschuss 24.09.2026 Gemeind"
+    },
+    {
+     "title": "Lageplan",
+     "url": "https://sessionnet.owl-it.de/biebertal/bi/getfile.asp?id=75286&type=do",
+     "uses": 1,
+     "head": "SSL N ZN | S N wi LE SE "
+    },
+    {
+     "title": "Abweichungssatzung Am Wingert",
+     "url": "https://sessionnet.owl-it.de/biebertal/bi/getfile.asp?id=75284&type=do",
+     "uses": 1,
+     "head": "Abweichungssatzung für die Erschließungsanlage „Am Wingert“ ______________________________________________________________________________________ Satzung über die Abweichung von den Merkmalen der endgültigen Herstellung der Erschließungsanlage „Am Wingert“ Aufgrund des § 132 des Baugesetzbuches (BauGB) in der Fassung der Bekanntmachung vom 03.11.2017 (BGBl. I S. 3634), zuletzt geändert durch Arti"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-09362000-vo-22640",
+   "title": "Ordentliche Gesellschafterversammlung der BioPark Regensburg GmbH",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://srv19.regensburg.de/bi/do027.asp?DOLFDNR=446377&options=64",
+     "uses": 1,
+     "head": "29.05.2026 1/5 Beschlussvorlage öffentlich Zuständig Bereich Unternehmensbeteiligungen Drucksachennummer VO/26/23158/DB2 Berichterstattung Oberbürgermeister Dr. Burger Gegenstand: Ordentliche Gesellschafterversammlung der BioPark Regensburg GmbH Beratungsfolge Datum Gremium 25.06.2026 Ausschuss für Verwaltung, Finanzen und Beteiligungen Beschlussvorschlag: Der Ausschuss beschließt: 1. Vom Bericht "
+    },
+    {
+     "title": "Vorlage-Sammeldokument",
+     "url": "https://srv19.regensburg.de/bi/do027.asp?DOLFDNR=446392&options=64&typ=130",
+     "uses": 1,
+     "head": "29.05.2026 1/5 Beschlussvorlage öffentlich Zuständig Bereich Unternehmensbeteiligungen Drucksachennummer VO/26/23158/DB2 Berichterstattung Oberbürgermeister Dr. Burger Gegenstand: Ordentliche Gesellschafterversammlung der BioPark Regensburg GmbH Beratungsfolge Datum Gremium 25.06.2026 Ausschuss für Verwaltung, Finanzen und Beteiligungen Beschlussvorschlag: Der Ausschuss beschließt: 1. Vom Bericht "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-073375003-top-35978",
+   "title": "Weinfest 2026",
+   "docs": [
+    {
+     "title": "Beschluss von TOP 2 2. Sitzung des Kultur- und Festausschusses Roschbach",
+     "url": "https://edenkoben.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-ROSCHKULTU-12%7Czt_1%7C1&agenda_item_id=ni_2026-ROSCHKULTU-12%7Czt_1%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "2. Weinfest 2026 Sach- und Rechtslage: Ortsbürgermeister Brutscher informiert, dass das Räumchen im Multifunktionsgebäude, welches im vergangenen Jahr vom Südhaardter SV genutzt wurde, nicht mehr zur Verfügung steht. Dieses wird von der Bäckerei benötigt. Der Gemeinderat hatte in seiner Sitzung einstimmig beschlossen, diese Räumlichkeiten dem Bäcker zur Verfügung zu stellen. Ausschussmitglied Piot"
+    },
+    {
+     "title": "Auszug von TOP 2 2. Sitzung des Kultur- und Festausschusses Roschbach",
+     "url": "https://edenkoben.gremien.info/api.php?document_type_id=6&document_relation_id=ni_2026-ROSCHKULTU-12%7Czt_1%7C1&agenda_item_id=ni_2026-ROSCHKULTU-12%7Czt_1%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "A U S Z U G aus dem Protokoll über die öffentliche Sitzung des Kultur- und Festausschusses Roschbach vom 28.04.2026 2. Weinfest 2026 Sach- und Rechtslage: Ortsbürgermeister Brutscher informiert, dass das Räumchen im Multifunktionsgebäude, welches im vergangenen Jahr vom Südhaardter SV genutzt wurde, nicht mehr zur Verfügung steht. Dieses wird von der Bäckerei benötigt. Der Gemeinderat hatte in sei"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nds-03454041-vo-20240806100220",
+   "title": "125. Änderung des Flächennutzungsplanes (Hauptkanal / Hermann-Lange-Straße) Bebauungsplan Nr. 282 \"Hauptkanal / Hermann-Lange-Straße\" - Entwurfsbeschluss / Veröffentlichung",
+   "docs": [
+    {
+     "title": "Beratungsvorlage 2024/076-1 (125. Änderung des Flächennutzungsplanes (Hauptkanal / Hermann-Lange-Straße)\r\nBebauungsplan Nr. 282 \"Hauptkanal / Hermann-Lange-Straße\"\r\n\r\n- Entwurfsbeschluss / Veröffentlichung).pdf",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=4&document_relation_id=20240806100220&submission_id=20240806100220&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Seite 1 von 4 Beratungsvorlage - öffentlich - Vorlagennummer: 2024/076-1 Fachbereich Fachbereich Planen/Umwelt (B4) Sachbearbeiter*in Tirrel, Maik Aktenzeichen 511.010.30.20.10/2024- 0003 08.06.2026 Nachstehender Beratungsgegenstand ist in folgenden Gremien der Stadt Papenburg in der angegebenen Reihenfolge zu behandeln: Beratungsfolge Beratungsstatus Ausschuss für Stadtentwicklung vorberatend Ver"
+    },
+    {
+     "title": "Geltungsbereich 125. Änderung FNP auf Luftbild",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101400-0.pdf%7C&submission_attachment_id=20240806100220%7C20260608101400-0.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Sichtdreieck 3 m x 70 m Friedhof Russellstraße Hauptkanal rechts Hauptkanal rechts Im Quadrätchen Hermann-Lange-Straße Hauptkanal links Hauptkanal links Gemarkung Papenburg Flur 004 Gemarkung Papenburg Flur 038 X X Die mit einem Keil versehenen Gebäudeteile sind nicht Bestandteil des Liegenschaftskatasters X X 112 15 238 4 63 3 152 9 177 76 168 9 95 15 106 1 67 5 127 11 163 14 129 11 80 2 67 4 75 "
+    },
+    {
+     "title": "Entwurf Planzeichnung 125. Änderung FNP",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101400-1.pdf%7C&submission_attachment_id=20240806100220%7C20260608101400-1.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "P R Ä A M B E L Aufgrund des § 1 Abs. 3 des Baugesetzbuches (BauGB) in Verbindung mit § 58 Abs. 1 Nr. 5 des Niedersäch- sischen Kommunalverfassungsgesetzes (NKomVG) hat der Rat der Stadt Papenburg diese 125. Änderung des Flächennutzungsplanes bestehend aus der Planzeichnung und der Begründung mit Umweltbericht und Anlagen beschlossen. Papenburg, ................................ ..................."
+    },
+    {
+     "title": "Entwurf Begründung inkl. Umweltbericht 125. Änderung FNP",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101401-2.pdf%7C&submission_attachment_id=20240806100220%7C20260608101401-2.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "- ENTWURF - BEGRÜNDUNG mit UMWELTBERICHT zur 125. ÄNDERUNG DES FLÄCHENNUTZUNGSPLANS STADT PAPENBURG Landkreis Emsland Stand: 04.06.2026 Übersichtskarte (unmaßstäblich, Geofachdaten NLSTBV 2024) Stadt Papenburg 125. Änderung des Flächennutzungsplans Begründung mit Umweltbericht regionalplan & uvp planungsbüro peter stelzer GmbH Seite 2 INHALTSVERZEICHNIS: TEIL I: BEGRÜNDUNG 6 1 ALLGEMEINES 6 2 PLAN"
+    },
+    {
+     "title": "Geltungsbereich BPL Nr. 282 auf Luftbild",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101103-1.pdf%7C&submission_attachment_id=20240806100220%7C20260608101103-1.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Sichtdreieck 3 m x 70 m Friedhof Russellstraße Hauptkanal rechts Hauptkanal rechts Im Quadrätchen Hermann-Lange-Straße Hauptkanal links Hauptkanal links Gemarkung Papenburg Flur 004 Gemarkung Papenburg Flur 038 X X Die mit einem Keil versehenen Gebäudeteile sind nicht Bestandteil des Liegenschaftskatasters X X 112 15 238 4 63 3 152 9 177 76 168 9 95 15 106 1 67 5 127 11 163 14 129 11 80 2 67 4 75 "
+    },
+    {
+     "title": "Entwurf Planzeichnung BPL Nr. 282",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101104-2.pdf%7C&submission_attachment_id=20240806100220%7C20260608101104-2.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Sichtdreieck 3 m x 70 m Hauptkanal rechts Hauptkanal rechts Im Quadrätchen Hermann-Lange-Straße Hauptkanal links Hauptkanal links Gemarkung Papenburg Flur 004 X X Die mit einem Keil versehenen Gebäudeteile sind nicht Bestandteil des Liegenschaftskatasters X X 238 4 152 177 76 168 9 67 5 163 14 67 4 75 4 104 11 108 50 205 7 162 19 171 9 149 49 200 13 187 51 187 45 162 18 187 60 163 24 156 33 387 67"
+    },
+    {
+     "title": "Entwurf Begründung inkl. Umweltbericht BPL Nr. 282",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101105-3.pdf%7C&submission_attachment_id=20240806100220%7C20260608101105-3.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "- ENTWURF - BEGRÜNDUNG mit UMWELTBERICHT zum BEBAUUNGSPLAN NR. 282 „HAUPTKANAL / HERMANN-LANGE-STRAßE“ einschließlich örtlicher Bauvorschriften gem. § 84 Abs. 3NBauO STADT PAPENBURG Landkreis Emsland Stand: 04.06.2026 Übersichtskarte (unmaßstäblich, Geofachdaten NLSTBV 2024) Stadt Papenburg Bebauungsplan Nr. 282 Begründung mit Umweltbericht „Hauptkanal / Hermann-Lange-Straße“ regionalplan & uvp pl"
+    },
+    {
+     "title": "Anlage 1 - Wasserwirtschaftliche Vorplanung, Orientierende Schadstoffuntersuchung und Versickerungsu",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101110-4.pdf%7C&submission_attachment_id=20240806100220%7C20260608101110-4.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Wasserwirtschaftliche Vorplanung für die Realisierung eines Wohnquartiers auf dem Werkstattareal Bunte in der Stadt Papenburg, Landkreis Emsland Einleitung, Rückhaltung bzw. Versickerung des Oberflächenwassers Aufgestellt: Papenburg, 24.04.2026 JOHANN BUNTE Bearbeitet: Papenburg, 24.04.2026 Ing.-Büro W. Grote GmbH JOHANN BUNTE Bauunternehmung SE & Co. KG Projektentwicklung & Immobilienverwaltung V"
+    },
+    {
+     "title": "Anlage 2 - Luftbildauswertung Kampfmittel",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101153-5.pdf%7C&submission_attachment_id=20240806100220%7C20260608101153-5.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Landesamt für Geoinformation LGLN und Landesvermessung Niedersachsen Regionaldirektion Hameln - Hannover Kampfmittelbeseitigungsdienst LGLN, Regionaldirektion Hameln - Hannover Dorfstraße 19, 30519 Hannover a Bearbeitet von Britta Neuenfeld Ihr Zeichen Ihre Nachricht vom Mein Zeichen (Bei Antwort angeben) Durchwahl 0511 30245 502/-503 Hannover 26.06.2025 +— 26.02.2025 BA-2025-00947 E-Mail kbd-post"
+    },
+    {
+     "title": "Anlage 3 - Verkehrsuntersuchung",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101154-6.pdf%7C&submission_attachment_id=20240806100220%7C20260608101154-6.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Stadt Papenburg Aktualisierung Verkehrsuntersuchung B-Plan „Werkstattareal BUNTE“ Papenburg – Aktualisierung Verkehrsuntersuchung B-Plan „Werkstattareal BUNTE“ Stadt Papenburg – Aktualisierung Verkehrsuntersuchung B-Plan „Werkstattareal BUNTE“ – Bericht zum Projekt Nr. 25092– Auftraggeber: JOHANN BUNTE Bauunternehmung SE & Co. KG Projektentwicklung & Immobilienverwaltung Hafenstr. 2a 26789 Leer De"
+    },
+    {
+     "title": "Anlage 4_1 - Schalltechnischer Bericht",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101647-0.pdf%7C&submission_attachment_id=20240806100220%7C20260608101647-0.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "DakkS-Logo Die Akkreditierung gilt nur f¸r den in der Urkundenanlage aufgef¸hrten Akkreditierungsumfang. Datum: 04.02.2026 Unsere Zeichen: IS-US-LIN/DL Dokument: BER_LL18902.1_01.docx Bericht Nr. LL18902.1/01 Die auszugsweise Wieder- gabe des Dokumentes und die Verwendung zu Werbe- zwecken bed¸rfen der schrift- lichen Genehmigung der T‹V S‹D Industrie Service GmbH. Die Pr¸fergebnisse beziehen sich"
+    },
+    {
+     "title": "Anlage 4_2 - Ergänzung zur schalltechnischen Untersuchung - Planung Parkpalette",
+     "url": "https://papenburg.gremien.info/api.php?document_type_id=13&document_relation_id=20240806100220%7C20260608101154-8.pdf%7C&submission_attachment_id=20240806100220%7C20260608101154-8.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": " Seite 2 von 5 Unsere Zeichen/Erstelldatum: IS-US-LIN/ LL18902.1 /02. Juni 2026 Parkplatzfrequentierungen der Parkdeckebnen - Je 36 Stellplätze in den Ebenen der Parkpaletten. - Ebene -1 bis Ebene 2: Mitarbeiterparkplätze (2-facher Wechsel tags) - Ebene 3 bis Ebene 6: Parkplätze für das Wohnquartier - Die Bewegungshäufigkeit für die Tageszeit wird mit maximal 0,15 Bewegungen je Stellplatz und Stun"
+    }
+   ],
+   "more": 4,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05958024-vo-nr-022-2026",
+   "title": "Bestellung von Herrn Andreas Dinkelmann zum Ortsheimatpfleger von Marsberg-Westheim",
+   "docs": [
+    {
+     "title": "Beschlussvorlage 022/2026",
+     "url": "https://ratsinfo.marsberg.com/sdnetrim/UGhVM0hpd2NXNFdFcExjZaIZhOEWBFPu5r5BBEF1zTEZNht53g8LSkoCcuJIfL4C/Beschlussvorlage_022-2026.pdf",
+     "uses": 1,
+     "head": "Vorlage Nr. 022/2026 für den Erstellungsdatum: 22.01.2026 Öffentliche Sitzung Stadtrat am 05.02.2026 (beschließend) Bestellung von Herrn Andreas Dinkelmann zum Ortsheimatpfleger von Marsberg- Westheim Zuständiges Amt: 10 Sachbearbeiter/in: Frau Vonstein Amtsleiter/in: Dirk Hartmann AZ: 10 43 - 05 AV: Beteiligte Ämter: I. Beschlussvorschlag Herr Andreas Dinkelmann, Diemeldamm 8, 34431 Marsberg, wir"
+    },
+    {
+     "title": "Beschlusstext 022/2026 (öffentlich) Stadtrat 05.02.2026",
+     "url": "https://ratsinfo.marsberg.com/sdnetrim/UGhVM0hpd2NXNFdFcExjZTm_hvvRWzqPWYwfYwnHwZE5ub1SY1UuYtON2sGDaxEF/Beschlusstext_022-2026_-oeffentlich-_Stadtrat_05.02.2026.pdf",
+     "uses": 1,
+     "head": "S t a d t M a r s b e r g Marsberg, 03.03.2026 Der Bürgermeister B E S C H L U S S der Sitzung des Rates vom Donnerstag, den 05.02.2026 um 18:00 Uhr 6. Bestellung von Herrn Andreas Dinkelmann zum Ortsheimatpfleger von Marsberg-Westheim 022/2026 Die Vorlage 022/2026 liegt den Mitgliedern des Rates der Stadt Marsberg vor. Beschluss: Herr Andreas Dinkelmann, Diemeldamm 8, 34431 Marsberg, wird ab dem "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-071345005-vo-28262804100006",
+   "title": "Beratung und Beschlussfassung über die Erneuerung der Dachfläche der Grillhütte in der Freizeitanlage \"Bolzplatz\" sowie die Anschaffung einer geeigneter Sitzgelegenheiten im Bereich der Basketballfläche",
+   "docs": [
+    {
+     "title": "Beschlussvorlage 2026/028/007 (Beratung und Beschlussfassung über die Erneuerung der Dachfläche der Grillhütte in der Freizeitanlage \"Bolzplatz\" sowie die Anschaffung einer geeigneter Sitzgelegenheiten im Bereich der Basketballfläche).pdf",
+     "url": "https://herrstein-rhaunen.gremien.info/api.php?document_type_id=4&document_relation_id=28262804100006&submission_id=28262804100006&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": ">>> Wahlperiode: 2024 – 2029 <<< Beschlussvorlage Ortsbürgermeister/in Vorlage-Nr.: 2026/028/007 Verantwortlich: Jörg Klein Aktenzeichen: Verfasser: Jörg Klein Datum: 28.04.2026 Beratungsfolge: Gremium Datum TOP-Nr. Status Ortsgemeinderat Gerach 11.05.2026 5 öffentlich Beratungsgegenstand: Beratung und Beschlussfassung über die Erneuerung der Dachfläche der Grillhütte in der Freizeitanlage \"Bolzpl"
+    },
+    {
+     "title": "Vorschlag Erneuerung Sitzgelegenheit Freizeitanlage Bolzplatz",
+     "url": "https://herrstein-rhaunen.gremien.info/api.php?document_type_id=13&document_relation_id=28262804100006%7C20260428073558-0.pdf%7C&submission_attachment_id=28262804100006%7C20260428073558-0.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "TOP 5 Ö Anlage 1 Vorschlag Erneuerung Sitzgelegenheit Freizeitanlage Bolzplatz Seite 1 von 9 TOP 5 Ö Anlage 1 Vorschlag Erneuerung Sitzgelegenheit Freizeitanlage Bolzplatz Seite 2 von 9 TOP 5 Ö Anlage 1 Vorschlag Erneuerung Sitzgelegenheit Freizeitanlage Bolzplatz Seite 3 von 9 TOP 5 Ö Anlage 1 Vorschlag Erneuerung Sitzgelegenheit Freizeitanlage Bolzplatz Seite 4 von 9 TOP 5 Ö Anlage 1 Vorschlag E"
+    },
+    {
+     "title": "Beschluss  von TOP 5 9. Sitzung des Ortsgemeinderates Gerach",
+     "url": "https://herrstein-rhaunen.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-OG_Rat019-9%7C28262804100006%7C1&agenda_item_id=ni_2026-OG_Rat019-9%7C28262804100006%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "9. Sitzung des Ortsgemeinderates Gerach vom 11.05.2026 - öffentlicher Teil 1 zu TOP 5 Beratung und Beschlussfassung über die Erneuerung der Dachfläche der Grillhütte in der Freizeitanlage \"Bolzplatz\" sowie die Anschaffung einer geeigneten Sitzgelegenheit im Bereich der Basketballfläche Sachverhalt/Rechtslage: Im Zuge der Neugestaltung der Freizeitanlage „Bolzplatz“ (siehe hierzu auch das Protokoll"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05154-vo-505_4734",
+   "title": "Aktualisierung Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kindertagespflege",
+   "docs": [
+    {
+     "title": "Vorlage 166/WP25",
+     "url": "https://kis.kreis-kleve.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZe3eVnEp5uBJfLTot-9RcZBAy5AZKF15z5McUlUlVoPv/Vorlage_166-WP25.pdf",
+     "uses": 1,
+     "head": "Seite 1 von 1 Vorlage - öffentlich - 166/WP25 Datum 08.04.2026 Beratungsfolge Termin Jugendhilfeausschuss 27.05.2026 Kreisausschuss 25.06.2026 Kreistag 16.07.2026 Betreff: Aktualisierung Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kinder tagespflege Sachverhalt: Zum 01.08.2024 ist die Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kinder- tagespflege in K"
+    },
+    {
+     "title": "Beschlusstext 166/WP25 (öffentlich) Kreistag 16.07.2026",
+     "url": "https://kis.kreis-kleve.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZS4cCWikFqDtEbok99jYQOENaP9lPN5wqPb6xiNNPLHB/Beschlusstext_166-WP25_-oeffentlich-_Kreistag_16.07.2026.pdf",
+     "uses": 1,
+     "head": "29.07.2026 1 von 1 B E S C H L U S S aus der 5. Sitzung des Kreistages am Donnerstag, 16.07.2026 Öffentliche Sitzung 18. Aktualisierung Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kindertagespflege 166/WP25 Beschluss Die als Anlage beigefügte Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kin dertagespflege wird beschlossen. Einstimmig, bei 0 Enthaltung(e"
+    },
+    {
+     "title": "Beschlusstext 166/WP25 (öffentlich) Kreisausschuss 25.06.2026",
+     "url": "https://kis.kreis-kleve.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZTvz10RYFREwV_XAWznNH9NXurcq9EjFSBCM5xw_hz-u/Beschlusstext_166-WP25_-oeffentlich-_Kreisausschuss_25.06.2026.pdf",
+     "uses": 1,
+     "head": "10.07.2026 1 von 1 B E S C H L U S S aus der 5. Sitzung des Kreisausschusses am Donnerstag, 25.06.2026 Öffentliche Sitzung 10. Aktualisierung Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kindertagespflege 166/WP25 Beschluss Die als Anlage beigefügte Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kin dertagespflege wird beschlossen. Einstimmig, bei 0 Enthal"
+    },
+    {
+     "title": "Richtlinie über die Förderung von Kindern in Kindertagespflege ab 01.08.2026",
+     "url": "https://kis.kreis-kleve.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZUgap2EormvhndG4VxMpDXREtaq8br4pigdz_I4SnAGr/Richtlinie_ueber_die_Foerderung_von_Kindern_in_Kindertagespflege_ab_01.08.2026.pdf",
+     "uses": 1,
+     "head": "Richtlinie des Kreisjugendamtes Kleve über die Förderung von Kindern in Kindertagespflege Inhaltsverzeichnis 1. Gesetzliche Grundlagen der Kindertagespflege ............................................... 4 2. Definitionen im Aufgabenfeld Kindertagespflege ............................................. 4 3. Erlaubnis zur Kindertagespflege ............................................................"
+    },
+    {
+     "title": "Beschlusstext 166/WP25 (öffentlich) Jugendhilfeausschuss 27.05.2026",
+     "url": "https://kis.kreis-kleve.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZfQwvYQZaWyphH_PqVYiOZjfufp1qwpftsQkwB1I47Gx/Beschlusstext_166-WP25_-oeffentlich-_Jugendhilfeausschuss_27.05.2026.pdf",
+     "uses": 1,
+     "head": "16.06.2026 1 von 1 B E S C H L U S S aus der 3. Sitzung des Jugendhilfeausschusses am Mittwoch, 27.05.2026 Öffentliche Sitzung 4. Aktualisierung Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kindertagespflege 166/WP25 Beschluss Die als Anlage beigefügte Richtlinie des Kreisjugendamtes Kleve zur Förderung von Kindern in Kin dertagespflege wird beschlossen. Einstimmig, bei 0 Ent"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d",
+     "d",
+     "a",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05154-vo-505_4724",
+   "title": "Geschäftsordnung des Inklusionsbeirates des Kreises Kleve",
+   "docs": [
+    {
+     "title": "Vorlage 158/WP25",
+     "url": "https://kis.kreis-kleve.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZYTtWHAArL5nxST204laFgd1_GY8frALmRewys7a9QIP/Vorlage_158-WP25.pdf",
+     "uses": 1,
+     "head": "Seite 1 von 2 Vorlage - öffentlich - 158/WP25 Datum 29.04.2026 Beratungsfolge Termin Inklusionsbeirat 26.05.2026 Betreff: Geschäftsordnung des Inklusionsbeirates des Kreises Kleve Sachverhalt: Der Inklusionsbeirat gibt sich eine Geschäftsordnung (§ 11 Absatz 1 der Sat- zung des Inklusionsbeirates des Kreises Kleve). Die Geschäftsordnung ist er- forderlich, um nähere Regelungen, insbesondere mit Bl"
+    },
+    {
+     "title": "ENTWURF_Geschäftsordnung_des_Inklusionsbeirates_im_Kreis_Kleve",
+     "url": "https://kis.kreis-kleve.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZVn8W_HRtCOPBAxNLH5aFAwdhkjXrH1-7_myuC6-FftG/ENTWURF_Geschaeftsordnung_des_Inklusionsbeirates_im_Kreis_Kleve.pdf",
+     "uses": 1,
+     "head": "Geschäftsordnung des Inklusionsbeirates des Kreises Kleve Inhaltsverzeichnis Geschäftsordnung des Inklusionsbeirates des Kreises Kleve ................................................ 1 Inhaltsverzeichnis ................................................................................................... 2 Geschäftsordnung ............................................................................"
+    },
+    {
+     "title": "Beschlusstext 158/WP25 (öffentlich) Inklusionsbeirat 26.05.2026",
+     "url": "https://kis.kreis-kleve.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZTTADxHjczXsWjgfo-cF5p_0uK9AdLUlHi8HiThQev-f/Beschlusstext_158-WP25_-oeffentlich-_Inklusionsbeirat_26.05.2026.pdf",
+     "uses": 1,
+     "head": "07.07.2026 1 von 1 B E S C H L U S S aus der 1. Sitzung des Inklusionsbeirates am Dienstag, 26.05.2026 Öffentliche Sitzung 4. Geschäftsordnung des Inklusionsbeirates des Kreises Kleve 158/WP25 Beschluss Die Geschäftsordnung des Inklusionsbeirates des Kreises Kleve wird in der vorgelegten Form beschlossen. Einstimmig, bei 0 Enthaltung(en)"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05334020-vo-3393",
+   "title": "Fragestunde für Einwohnerinnen und Einwohner im Rat der Stadt Monschau",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://ratsinfo.monschau.de/public/wicket/resource/org.apache.wicket.Application/doc94478.pdf",
+     "uses": 1,
+     "head": "2026/178 Informationsvorlage III.1 - Zentrale Dienste - Andrea Compes Fragestunde für Einwohnerinnen und Einwohner im Rat der Stadt Monschau Beratungsfolge Geplante Sitzungstermine Ö / N Stadtrat (Kenntnisnahme) 29.09.2026 Ö Sachverhalt 1. Nach § 18 Abs. 1 der Geschäftsordnung des Rates ist zu Beginn einer jeden Ratssitzung ein Tagesordnungspunkt „Fragestunde für Einwohner“ vorzusehen. 2. Es sind "
+    },
+    {
+     "title": "Sammeldokument öffentlich",
+     "url": "https://ratsinfo.monschau.de/public/wicket/resource/org.apache.wicket.Application/doc94475.pdf",
+     "uses": 1,
+     "head": "2026/178 Informationsvorlage III.1 - Zentrale Dienste - Andrea Compes Fragestunde für Einwohnerinnen und Einwohner im Rat der Stadt Monschau Beratungsfolge Geplante Sitzungstermine Ö / N Stadtrat (Kenntnisnahme) 29.09.2026 Ö Sachverhalt 1. Nach § 18 Abs. 1 der Geschäftsordnung des Rates ist zu Beginn einer jeden Ratssitzung ein Tagesordnungspunkt „Fragestunde für Einwohner“ vorzusehen. 2. Es sind "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05117000-vo-1002247",
+   "title": "Hitzeschutz | Konzept zur Errichtung öffentlicher Trinkbrunnen in Mülheim an der Ruhr – Antrag zum Tagesordnungspunkt 14.6 der Ratssitzung am 16.07.2026 der Fraktion BÜNDNIS 90/DIE GRÜNEN",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://ratsinfo.muelheim-ruhr.de/public/wicket/resource/org.apache.wicket.Application/doc1539389.pdf",
+     "uses": 1,
+     "head": "Drucksache Nr.: A 26/0761 / Seite 1 von 2 Antrag öffentlich Vorlagen-Nr. A 26/0761 Beratungsfolge Gremium Datum Status Zuständigkeit Rat der Stadt Mülheim an der Ruhr 16.07.2026 Ö Entscheidung Ausschuss für Klima, Umwelt und Landwirtschaft 22.09.2026 Ö Vorberatung Rat der Stadt Mülheim an der Ruhr 15.10.2026 Ö Entscheidung Freigabedatum: 17.07.2026 Gestellt von: Fraktion BÜNDNIS 90/DIE GRÜNEN Hitz"
+    },
+    {
+     "title": "Sammeldokument öffentlich",
+     "url": "https://ratsinfo.muelheim-ruhr.de/public/wicket/resource/org.apache.wicket.Application/doc1539390.pdf",
+     "uses": 1,
+     "head": "Drucksache Nr.: A 26/0761 / Seite 1 von 2 Antrag öffentlich Vorlagen-Nr. A 26/0761 Beratungsfolge Gremium Datum Status Zuständigkeit Rat der Stadt Mülheim an der Ruhr 16.07.2026 Ö Entscheidung Ausschuss für Klima, Umwelt und Landwirtschaft 22.09.2026 Ö Vorberatung Rat der Stadt Mülheim an der Ruhr 15.10.2026 Ö Entscheidung Freigabedatum: 17.07.2026 Gestellt von: Fraktion BÜNDNIS 90/DIE GRÜNEN Hitz"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-08127076-vo-423",
+   "title": "Schlussbericht des Fachbereichs Revision über die örtliche Prüfung des Jahresabschlusses der Stiftung \"der Hospital zum Heiligen Geist\" 2024",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://www.schwaebischhall.sitzung-online.de/integration/wicket/resource/org.apache.wicket.Application/doc13745.pdf",
+     "uses": 1,
+     "head": "Seite 1/2 Vorlagenummer: 065/26 Vorlageart: Informationsvorlage Öffentlichkeitsstatus: öffentlich Schlussbericht des Fachbereichs Revision über die örtliche Prüfung des Jahresabschlusses der Stiftung \"der Hospital zum Heiligen Geist\" 2024 Datum: 19.03.2026 Federführung: Fachbereich Revision (FB 14) Beratungsfolge Gremium Geplante Sitzungstermine Öffentlichkeitsstatus Hospitalausschuss (Kenntnisnah"
+    },
+    {
+     "title": "Sammeldokument öffentlich",
+     "url": "https://www.schwaebischhall.sitzung-online.de/integration/wicket/resource/org.apache.wicket.Application/doc13742.pdf",
+     "uses": 1,
+     "head": "Seite 1/2 Vorlagenummer: 065/26 Vorlageart: Informationsvorlage Öffentlichkeitsstatus: öffentlich Schlussbericht des Fachbereichs Revision über die örtliche Prüfung des Jahresabschlusses der Stiftung \"der Hospital zum Heiligen Geist\" 2024 Datum: 19.03.2026 Federführung: Fachbereich Revision (FB 14) Beratungsfolge Gremium Geplante Sitzungstermine Öffentlichkeitsstatus Hospitalausschuss (Kenntnisnah"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05113000-vo-505_63433",
+   "title": "Jahresberichte Stadtbibliothek 2024 / 2025",
+   "docs": [
+    {
+     "title": "Vorlage 0604/2026/4",
+     "url": "https://ris.essen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZZfttitXMsI6gMbPfT65VL2OfQx2o5658-ktExLMGMay/Vorlage_0604-2026-4.pdf",
+     "uses": 1,
+     "head": "Vorlage - öffentlich - lfd. Nummer 0604 Jahr 2026 Geschäftsbereich 4 Beratungsfolge Sitzungstermin Zuständigkeiten Kulturausschuss 06.05.2026 Kenntnisnahme Betreff Jahresberichte Stadtbibliothek 2024 / 2025 Datum: 10.04.2026 gez.: Beigeordneter Al Ghusain Beschlussvorschlag Der Kulturausschuss nimmt die Jahresberichte 2024 / 2025 der Stadtbibliothek zur Kenntnis. Sachverhaltsdarstellung Der Berich"
+    },
+    {
+     "title": "Anlage Jahresberichte Stadtbibliothek 2024 / 2025",
+     "url": "https://ris.essen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZWiY-YaJc4dmb8-9W00JCJllrudpTCmcL7ePyTyiTgSv/Anlage_Jahresberichte_Stadtbibliothek_2024_-_2025.pdf",
+     "uses": 1,
+     "head": "Stadtbibliothek Essen Jahresbericht 2024/2025 Inhaltsverzeichnis Vorwort ............................................................................................................................................ 4 1. Meilensteine und wichtige Zahlen ........................................................................................... 5 1.1. Meilensteine 2024 ..............................."
+    },
+    {
+     "title": "Beschlusstext 0604/2026/4 (öffentlich) Kulturausschuss 06.05.2026",
+     "url": "https://ris.essen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZaR09DMSLSIPqzuC0HnQVdlwY-Ttw4w_lQ_0AtXvgOph/Beschlusstext_0604-2026-4_-oeffentlich-_Kulturausschuss_06.05.2026.pdf",
+     "uses": 1,
+     "head": "Auszug aus der Niederschrift über die Sitzung des Kulturausschusses vom 06.05.2026 - Öffentlicher Teil - Tagesordnungspunkt: 4. Jahresberichte Stadtbibliothek 2024 / 2025 0604/2026/4 Bericht erstattet: Frau Beberweil (Direktorin Stadtbibliothek Essen) Keine Wortmeldungen Der Tagesordnungspunkt wird verwaltungsseitig zurückgezogen. Für die Richtigkeit: gez. Kortner"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05166032-vo-505_5937",
+   "title": "Annahme einer Schenkung zur Beschaffung von Verschattungselementen für städtische Kindertageseinrichtungen und die Jugendfreizeiteinrichtung HomeBase 42",
+   "docs": [
+    {
+     "title": "Sitzungsvorlage 2026/4965/FB 41/III",
+     "url": "https://ris.viersen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZULewHKKOsCPVVeB1GDJNpxn3AkxcL0woaLlN3oHeM71/Sitzungsvorlage_2026-4965-FB_41-III.pdf",
+     "uses": 1,
+     "head": "Öffentliche Sitzungsvorlage D e r B ü r g e r m e i s t e r Seite 1 von 2 Vorlagen-Nr.: 2026/4965/FB 41/III Aktenzeichen: FB41/III/06.01.01/Kü Datum: 07.05.2026 Tagesordnungspunkt: Annahme einer Schenkung zur Beschaffung von Verschattungselementen für städtische Kindertageseinrichtungen und die Jugendfreizeiteinrichtung HomeBase 42 Beratungsfolge: Sitzungsdatum: Zuständigkeit: Rat 12.05.2026 Entsc"
+    },
+    {
+     "title": "Beschlusstext 2026/4965/FB 41/III (öffentlich) Rat 12.05.2026",
+     "url": "https://ris.viersen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZfZbtLjVfbSc5ZdInpDhppcRL52ltvByRw16XhMYULMp/Beschlusstext_2026-4965-FB_41-III_-oeffentlich-_Rat_12.05.2026.pdf",
+     "uses": 1,
+     "head": "27.08.2026 1 von 1 B E S C H L U S S aus der Sitzung des Rates am 12.05.2026 Öffentliche Sitzung 22. Annahme einer Schenkung zur Beschaffung von Verschat tungselementen für städtische Kindertageseinrichtungen und die Jugendfreizeiteinrichtung HomeBase 42 2026/4965/FB 41/III Beschluss: Der Rat beschließt die Annahme zweckgebundener Spenden für die Beschaffung und den Aufbau von Verschattungselement"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05378016-vo-22888",
+   "title": "Antrag 009 - Antrag der SPD-Fraktion - Antrag auf Beendigung des Bebauungsplanverfahrens \"Dierath-West\" vom 12.02.2026",
+   "docs": [
+    {
+     "title": "Antragsvorlage",
+     "url": "https://sessionnet.owl-it.de/leichlingen/bi/getfile.asp?id=179987&type=do",
+     "uses": 1,
+     "head": "1. Der Rat der Blütenstadt Leichlingen (Rheinland) beschließt die Aufhebung des Aufstellungsbeschlusses des vorhabenbezogenen Bebauungsplans Nr. V 12 „Dierath West“ vom 17.02.2022. 2. Die Verwaltung wird beauftragt, den Aufhebungsbeschluss über die Aufstellung des vorhabenbezogenen Bebauungsplans Nr. V 12 „Dierath West“ ortsüblich bekannt zu machen. Mitzeichnung: Meves, Monika, Klimaschutzmanageme"
+    },
+    {
+     "title": "SPD-Antrag vom 12.02.2026",
+     "url": "https://sessionnet.owl-it.de/leichlingen/bi/getfile.asp?id=179998&type=do",
+     "uses": 1,
+     "head": "SPD FRAKTION IM RAT DER BLÜTENSTADT LEICHLINGEN SOZIALDEMOKRATISCHE PARTEI DEUTSCHLANDS Fraktion im Rat der Blütenstadt Leichlingen Bahnhofstraße 7 42799 Leichlingen Tel.: 02175 / 2377 Fax: 02175 / 73573 fraktion@spd-leichlingen.de www.spd-leichlingen.de Herrn Bürgermeister Maurice Winter Stadtverwaltung Leichlingen Per Mail Leichlingen, 12.02.2026 Antrag: Antrag auf Beendigung des Bebauungsplanve"
+    },
+    {
+     "title": "Anlage 1 - Niederschrift Rat Ö 17-02-2022",
+     "url": "https://sessionnet.owl-it.de/leichlingen/bi/getfile.asp?id=179993&type=do",
+     "uses": 1,
+     "head": "N i e d e r s c h r i f t über die 12. öffentliche Sitzung des Rates am 17.02.2022 in der Aula der Grundschule Flamerscheid, Schulweg 45, 42799 Leichlingen. Beginn: 17:30 Uhr Ende: 20:10 Uhr Anwesend sind Vorsitzender Frank Steffes Bürgermeister SPD Manfred Aust Ratsmitglied Christiana Bornmann Ratsmitglied Uwe Bräutigam Ratsmitglied Matthias Ebecke Ratsmitglied Yvonne Göckemeyer Ratsmitglied Wolf"
+    },
+    {
+     "title": "Anlage 3 - V 12 Plangebiet",
+     "url": "https://sessionnet.owl-it.de/leichlingen/bi/getfile.asp?id=179994&type=do",
+     "uses": 1,
+     "head": "EUER 0 ©. "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "p",
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-15089026-vo-bv-3-2026",
+   "title": "Berufung Ortswehrleiter Pömmelte BV 03/2026",
+   "docs": [
+    {
+     "title": "TOP 10-01 BV 03-2026 Berufung Ortswehrleiter Pömmelte.pdf",
+     "url": "https://stadt-barby.mein-intra.net/export/auth/8b7580fb-21a1acfa-610f0906-47edc3e0/data/file/councilservice/3/9/0/8/TOP_10-01_BV_03-2026_Berufung_Ortswehrleiter_Poemmelte.pdf",
+     "uses": 1,
+     "head": "Sitzungsvorlage Lfd. Nr. der Beschlussvorlage | TOP 10 Datum: Stadt Barby BV 03/2026 10.02.2026 Amt Stadtrat Telefon: Ordnungsamt Sitzungstag: 16.04.2026 039298/672-21 Beratungsfolge 2026 Beschlussvorschlag Tag Öffent- | nicht ange- abge- ge- lich öffentlich | nommen | lehnt ändert Oo Hauptausschuss 23.02.26 X o__ Stadtrat 16.04.26 X Betreff: Beschluss zur Berufung des Ortswehrleiters der Ortsfeue"
+    },
+    {
+     "title": "TOP 01-01 Einladung 16.04.2026.pdf",
+     "url": "https://stadt-barby.mein-intra.net/export/auth/8b7580fb-21a1acfa-610f0906-47edc3e0/data/file/councilservice/3/2/7/TOP_01-01_Einladung_16.04.2026.pdf",
+     "uses": 19,
+     "head": " "
+    },
+    {
+     "title": "TOP 11-01 BV 03-2026 Berufung Ortswehrleiter Pömmelte.pdf",
+     "url": "https://stadt-barby.mein-intra.net/export/auth/8b7580fb-21a1acfa-610f0906-47edc3e0/data/file/councilservice/3/8/1/6/TOP_11-01_BV_03-2026_Berufung_Ortswehrleiter_Poemmelte.pdf",
+     "uses": 1,
+     "head": "Sitzungsvorlage Lfd. Nr. der Beschlussvorlage | TOP 11 Datum: F Stadt Barb: BV 03/2026 10.02.2026 Amt Stadtrat Telefon: Ordnungsamt Sitzungstag: 05.03.2026 039298/672-21 Beratungsfolge 2026 Beschlussvorschlag Tag Ööffent- | nicht ange- abge- ge- lich öffentlich | nommen | lehnt ändert o Hauptausschuss 23.02.26 X Oo Stadtrat 05.03.26 X Betreff: Beschluss zur Berufung des Ortswehrleiters der Ortsfeu"
+    },
+    {
+     "title": "TOP 01-01 Einladung Stadtrat 05.03.2026.pdf",
+     "url": "https://stadt-barby.mein-intra.net/export/auth/8b7580fb-21a1acfa-610f0906-47edc3e0/data/file/councilservice/3/2/2/TOP_01-01_Einladung_Stadtrat_05.03.2026.pdf",
+     "uses": 3,
+     "head": " "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     2
+    ],
+    "types": [
+     "p",
+     "i",
+     "p",
+     "i"
+    ],
+    "session": [
+     false,
+     true,
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "nds-032565409-vo-1003155",
+   "title": "Bau-Turbo: Zustimmung der Gemeinde gem. § 36a BauGB hier: Bauvoranfrage zur Erichtung von 2 Wohnhäusern",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://www.hoya.sitzung-online.de/public/wicket/resource/org.apache.wicket.Application/doc1439856.pdf",
+     "uses": 1,
+     "head": "03/X/131 Seite 1 von 2 Gemeinde Hilgermissen Beschlussvorlage öffentlich 03/X/131 Bau-Turbo: Zustimmung der Gemeinde gem. § 36a BauGB hier: Bauvoranfrage zur Erichtung von 2 Wohnhäusern Organisationseinheit: FT Räumliche Planung u. Samtgemeindeentwicklung Datum 12.03.2026 Sachbearbeitung: Andrea Gähler Aktenzeichen 60 03 63 1301 Geplante Beratungsfolge Termine Ö / N Verwaltungsausschuss Hilgermiss"
+    },
+    {
+     "title": "Sammeldokument öffentlich",
+     "url": "https://www.hoya.sitzung-online.de/public/wicket/resource/org.apache.wicket.Application/doc1439853.pdf",
+     "uses": 1,
+     "head": "03/X/131 Seite 1 von 2 Gemeinde Hilgermissen Beschlussvorlage öffentlich 03/X/131 Bau-Turbo: Zustimmung der Gemeinde gem. § 36a BauGB hier: Bauvoranfrage zur Erichtung von 2 Wohnhäusern Organisationseinheit: FT Räumliche Planung u. Samtgemeindeentwicklung Datum 12.03.2026 Sachbearbeitung: Andrea Gähler Aktenzeichen 60 03 63 1301 Geplante Beratungsfolge Termine Ö / N Verwaltungsausschuss Hilgermiss"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-073375007-vo-20252611100578",
+   "title": "Bericht über abschließende Beschlüsse der Ausschüsse (Bornheim)",
+   "docs": [
+    {
+     "title": "Mitteilungsvorlage  2025/0511 (Bericht über abschließende Beschlüsse der Ausschüsse (Bornheim)).pdf",
+     "url": "https://offenbach-queich.gremien.info/api.php?document_type_id=4&document_relation_id=20252611100578&submission_id=20252611100578&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Verbandsgemeindeverwaltung Konrad-Lerch-Ring 6 76877 Offenbach a. d. Queich Mitteilungsvorlage Nr. 2025/0511 Fachbereich: Zentrale Dienste Datum: 26.11.2025 Verfasser/in: Cavalar, Diana AZ: F1/Cav. Beratungsfolge Termin Status Gemeinderat Bornheim 15.12.2025 öffentlich zur Kenntnis Betreff: Bericht über abschließende Beschlüsse der Ausschüsse (Bornheim) Rechts- und Sachlage: Landwirtschafts- und U"
+    },
+    {
+     "title": "Beschluss  von TOP 7 10. Sitzung des Gemeinderates Bornheim",
+     "url": "https://offenbach-queich.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2025-GRatBo24-9%7C20252611100578%7C1&agenda_item_id=ni_2025-GRatBo24-9%7C20252611100578%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "10. Sitzung des Gemeinderates Bornheim vom 15.12.2025 - öffentlicher Teil 7. Bericht über abschließende Beschlüsse der Ausschüsse (Bornheim) Landwirtschafts- und Umweltausschuss (14.11.2025): - Baumfällungen Der Landwirtschafts- und Umweltausschuss beschloss, notwendige Baumfällungen und Rückschnitte nach Sichtung mit einem Baumsachverständigen, im Rahmen der bereitgestellten Haushaltsmittel, durc"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "papers-vo-2004056289",
+   "title": "Westfälische Bauindustrie GmbH: Jahresabschluss 2025; Bestellung des Abschlussprüfers für den Jahresabschluss 2026",
+   "docs": [
+    {
+     "title": "Anlage1_V_0291_2026_Westfälische Bauindustrie GmbH 2025_kurz",
+     "url": "https://oparl.stadt-muenster.de/bodies/0001/downloadfiles/a/00584559.pdf",
+     "uses": 1,
+     "head": "\u001f\u0013\u001e\u0001-\u0014\u0013\u0015\u0017\u0012\u001b\u0014'\u0014\u0013\u0001/\u0001\u0002\u0011\u0013(#\u0014\u0013\u0001\b\u001b\u0016\u000e\u0001\u0001\u0001\u0001\u0001\u0001\u0001)'\u0013(\u0015\u0017\u0012\u0011*(\u00150\u0013.*\u0019#&\u0015&\u0014\u0015\u0014\u0018\u0018\u0015\u0017\u0012\u0011*(\u0001\u0001\u0001\u0001\u0001\u0001\u0001 (\u0014\u0019\u0014\u0013\u0016\u0014\u0013\u0011(\u0019#&\u0015&\u0014\u0015\u0014\u0018\u0018\u0015\u0017\u0012\u0011*(\u0001 \u0001 \u0001 \b\u0002 \u0002 \u0002 \u0002 \u0002 \u0002\u0002\u0002 \u000e\u000f\u0002\u0002\u0002\u0010\u0011\u0012\u0002\u0013\u0014 \u0014\u000f\u0015\u0014\u0016\u0002\u0017\u0018\u0017\u0019 \u001a\u0014\u001b\u001c\u001d\u001e \u001b\u001f \u0014\u0002\b \u000e !\u000e\u001b\u001c\u0016 \u0014\u0002\u0006\u000f\u0015\"#\u0002$% \u001b\u001c\u0014\u0016 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& 3\u00015\u0001(\u0001'\u00011\u0001\u0011 \u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001 (\u0011#$ \u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001 (\u0011#$ \u001c\u001d\u001e\u001d \u001e ! \" \u001c\u001d\u001e\u001d \u001e ! 6 \u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001G \u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001G 3\u001e 3#\u0018\u0011&\u00141\u0014\u0013\u001b>&\u0014# \u001e \u001b\u001b\u0011(\u0014\u0013'\u0014\u0018\u0018\u0014\u00014\u0014\u0013\u001b>&\u0014#\u0015&\u0014&\u0014#\u0015(+#$\u0014 \u001d\u001e\u0001 #(&\u0014\u0018(\u0018'\u0017\u0012\u0001\u0014\u0013<:\u0013\u0016\u0014#\u0014\u0001F"
+    },
+    {
+     "title": "Beschlussvorlage",
+     "url": "https://oparl.stadt-muenster.de/bodies/0001/downloadfiles/a/00584702.pdf",
+     "uses": 1,
+     "head": "V/0291/2026 V/0291/2026 Öffentliche Beschlussvorlage Betrifft Westfälische Bauindustrie GmbH: Jahresabschluss 2025; Bestellung des Abschlussprüfers für den Jahresabschluss 2026 Beratungsfolge 19.05.2026 Ausschuss für Wirtschaft, Finanzen, Liegenschaften und Digitali- sierung Entscheidung Beschlussvorschlag: I. Sachentscheidung: Die Vertretungen der Stadt Münster und der Stadtwerke Münster GmbH in "
+    },
+    {
+     "title": "Niederschrift öffentlich",
+     "url": "https://oparl.stadt-muenster.de/bodies/0001/downloadfiles/a/00586075.pdf",
+     "uses": 13,
+     "head": "1 Ausschuss für Wirtschaft, Finanzen, Liegenschaf- ten und Digitalisierung 19.05.2026 öffentlich Stadt Münster 10.06.2026 Niederschrift über die Sitzung (öffentlicher Teil) des Ausschusses für Wirtschaft, Finanzen, Liegenschaften und Digitalisierung am Dienstag, 19.05.2026, 17:00 Uhr - 18:21 Uhr, Hauptausschusszimmer, 1. Etage, Stadtweinhaus, Prinzipalmarkt 8-9, 48143 Münster Anwesend waren: von d"
+    },
+    {
+     "title": "Tagesordnung öffentlich",
+     "url": "https://oparl.stadt-muenster.de/bodies/0001/downloadfiles/a/00584335.pdf",
+     "uses": 13,
+     "head": "Stadt Münster 07.05.2026 An die Mitglieder des Ausschusses für Wirtschaft, Finanzen, Liegenschaften und Digitalisierung Tagesordnung für die Sitzung des Ausschusses für Wirtschaft, Finanzen, Liegenschaften und Digitalisierung am Dienstag, 19.05.2026, 17:00 Uhr, Hauptausschusszimmer, 1. Etage, Stadtweinhaus, Prinzipalmarkt 8-9, 48143 Münster Öffentlicher Sitzungsteil 1. Einführung und Verpflichtung"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     1
+    ],
+    "types": [
+     "a",
+     "p",
+     "m",
+     "i"
+    ],
+    "session": [
+     false,
+     false,
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "de-09563000-vo-66668",
+   "title": "Kündigungen in der Kursana Residenz – aktueller Sachstand",
+   "docs": [
+    {
+     "title": "Vorlage Stand Einladung FVA",
+     "url": "https://ratsinfo.fuerth.de/bi/getfile.asp?id=4319533&type=do",
+     "uses": 1,
+     "head": "Beschlussvorlage Seite 1 von 3 Rf. IV/0227/2026 I. Vorlage Beratungsfolge - Gremium Termin Status Finanz- und Verwaltungsausschuss 30.09.2026 öffentlich - Kenntnisnahme Kündigungen in der Kursana Residenz – aktueller Sachstand Aktenzeichen / Geschäftszeichen Anlagen: Antrag SPD-Stadtratsfraktion Kursana Residenz Beschlussvorschlag: Der Finanz- und Verwaltungsausschuss nimmt Kenntnis von den mündli"
+    },
+    {
+     "title": "26 07 22 Antrag SPD Kursana Residenz Kuendigungen",
+     "url": "https://ratsinfo.fuerth.de/bi/getfile.asp?id=4319539&type=do",
+     "uses": 1,
+     "head": "Stadt Fürth – Direktorium Herrn Oberbürgermeister Dr. Thomas Jung per Mail Fürth, den 22.07.2026 Antrag Kursana Residenz Kündigungen Sehr geehrter Herr Oberbürgermeister, die SPD -Stadtratsfraktion stellt zur nächsten Sitzung des Finanz - und Verwaltungs - ausschusses folgenden Antra g: Wir bitten die Verwaltung zeitnah mit den Verantwortlichen der Kursana Residenz Fürth bzw. deren Verpächtern, de"
+    },
+    {
+     "title": "Vorlage",
+     "url": "https://ratsinfo.fuerth.de/bi/getfile.asp?id=4320978&type=do",
+     "uses": 1,
+     "head": "Beschlussvorlage Seite 1 von 3 Rf. IV/0227/2026 I. Vorlage Beratungsfolge - Gremium Termin Status Finanz- und Verwaltungsausschuss 30.09.2026 öffentlich - Kenntnisnahme Kündigungen in der Kursana Residenz – aktueller Sachstand Aktenzeichen / Geschäftszeichen Anlagen: Antrag SPD-Stadtratsfraktion Kursana Residenz Beschlussvorschlag: Der Finanz- und Verwaltungsausschuss nimmt Kenntnis von den mündli"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1,
+     2
+    ],
+    "types": [
+     "p",
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05558040-vo-15683",
+   "title": "Gebührennachkalkulation 2025 und Prognose 2026 der Benutzungsgebühren für die Übergangsheime",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://sessionnet.owl-it.de/rosendahl/bi/getfile.asp?id=89007&type=do",
+     "uses": 1,
+     "head": "Gemeinde Rosendahl Rosendahl, den 07.09.2026 Der Bürgermeister S i t z u n g s v o r l a g e Nr. XI/144 öffentliche Sitzung Beratungsgang: Ver- und Entsorgungsausschuss 16.09.2026 Betreff: Gebührennachkalkulation 2025 und Prognose 2026 der Benutzungsgebühren für die Übergangsheime FB/Az.: I / 103.53 Produkt: 49/10.005 Unterkünfte für Aussiedler, Flüchtlinge und Asylbewerber Bezug: Finanzierung Höh"
+    },
+    {
+     "title": "Anlage I - Nachkalkulation 2025",
+     "url": "https://sessionnet.owl-it.de/rosendahl/bi/getfile.asp?id=89006&type=do",
+     "uses": 1,
+     "head": "Anlage zur Sitzungsvorlage XI/144 Teil A: Ermittlung der Grundkosten Teil B: Ermittlung der Verbrauchskosten Gebührennachkalkulation 2025 - Übergangsheime - Abrechnung der Kalkulation Benutzungsgebühren 2025 Übergangsheime Seite 2 A: Ermittlung der Grundkosten Soll Ist Differenz Nutzbare Fläche in qm 3.353 3.353 0,00 Durchschnittliche Belegung in qm 2.790 1.913,89 -876,11 1. Allgemeine Kosten 1.1 "
+    },
+    {
+     "title": "Anlage I - Nachkalkulation 2025 - Korrektur",
+     "url": "https://sessionnet.owl-it.de/rosendahl/bi/getfile.asp?id=89205&type=do",
+     "uses": 1,
+     "head": "Anlage zur Sitzungsvorlage XI/144 Teil A: Ermittlung der Grundkosten Teil B: Ermittlung der Verbrauchskosten Gebührennachkalkulation 2025 - Übergangsheime - Abrechnung der Kalkulation Benutzungsgebühren 2025 Übergangsheime Seite 2 A: Ermittlung der Grundkosten Soll Ist Differenz Nutzbare Fläche in qm 3.353 3.353 0,00 Durchschnittliche Belegung in qm 2.790 1.913,89 -876,11 1. Allgemeine Kosten 1.1 "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-07340-vo-20262403100051",
+   "title": "Gewährung einer Kreiszuwendung an die Ortsgemeinde Rieschweiler-Mühlbach für die Beschattung und Klimatisierung der Komm. Kindertagesstätte Rieschweiler-Mühlbach",
+   "docs": [
+    {
+     "title": "Sitzungsvorlage 2026/052 (Gewährung einer Kreiszuwendung an die Ortsgemeinde Rieschweiler-Mühlbach für die Beschattung und Klimatisierung der Komm. Kindertagesstätte Rieschweiler-Mühlbach).pdf",
+     "url": "https://lksuedwestpfalz.gremien.info/api.php?document_type_id=4&document_relation_id=20262403100051&submission_id=20262403100051&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Kreisverwaltung Südwestpfalz Pirmasens, den 24.03.2026 Abteilung/Referat: Abt. V - Jugend, Familie und Sport Sachbearbeiter: Mira Löffler Aktenzeichen: V/460/15 Vorlagen-Nr. 2026/052 Sitzungsvorlage Gremium: Datum: Status: TOP: Jugendhilfeausschuss 28.04.2026 öffentlich TOP: 6 Gewährung einer Kreiszuwendung an die Ortsgemeinde Rieschweiler-Mühlbach für die Beschattung und Klimatisierung der Komm. "
+    },
+    {
+     "title": "Beschluss  von TOP 6 8. Sitzung des Jugendhilfeausschusses",
+     "url": "https://lksuedwestpfalz.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-JHA-36%7C20262403100051%7C1&agenda_item_id=ni_2026-JHA-36%7C20262403100051%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "6. Gewährung einer Kreiszuwendung an die Ortsgemeinde Rieschweiler-Mühlbach für die Beschattung und Klimatisierung der Komm. Kindertagesstätte Rieschweiler-Mühlbach Beschluss: Der Ortsgemeinde Rieschweiler-Mühlbach wird zu den Kosten der Beschattung und Klimatisierung der Komm. Kindertagesstätte Rieschweiler-Mühlbach eine Kreiszuwendung in Höhe von 32.000,00 € (40% der zuwendungsfähigen Kosten in "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-071385001-oparl-7ba2080c62d7afdada40",
+   "title": "Annahme von Zuwendungen - Weihnachtsmarkt Neustadt (Wied) 2025",
+   "docs": [
+    {
+     "title": "VG-2026-104",
+     "url": "https://ratsinfo-vg-asbach.gremien.info/api.php?document_type_id=4&submission_id=202611504100107&id=69&inline=true",
+     "uses": 1,
+     "head": "Verbandsgemeindeverwaltung Asbach Vorlage Nummer VG-2026-104 Abt. 1 R 1.1 Steuerung und Organisation Datum 16.04.2026 Monika Heuser Vorlagenstatus öffentlich Tagesordnungspunkt: Annahme von Zuwendungen - Weihnachtsmarkt Neustadt (Wied) 2025 Beratungsfolge Termin Status Verbandsgemeinderat der Verbandsgemeinde As- bach 21.05.2026 öffentlich Sachverhalt: Der Weihnachtsmarkt Neustadt (Wied) hat der V"
+    },
+    {
+     "title": "Beschluss - Top 3.1",
+     "url": "https://ratsinfo-vg-asbach.gremien.info/api.php?id=69&inline=1&document_type_id=5&agenda_item_id=ni_2026-VRVGA-52%7C202611504100107%7C1",
+     "uses": 1,
+     "head": " Sitzung des Verbandsgemeinderates der Verbandsgemeinde Asbach am 21.05.2026 TOP 3.1 - öffentlich / Vorlagennr. VG-2026-104 3.1 Annahme von Zuwendungen - Weihnachtsmarkt Neustadt (Wied) 2025 Der Weihnachtsmarkt Neustadt (Wied) hat der Verbandsgemeinde Asbach aus dem Erlös des Weihnachtsmarktes 2025 eine Geldspende in Höhe von insgesamt 2.400,00 Euro für folgende Zwecke zukommen lassen:  800,00 Eu"
+    },
+    {
+     "title": "Bekanntmachung",
+     "url": "https://ratsinfo-vg-asbach.gremien.info/api.php?id=69&inline=1&document_type_id=1&meeting_id=ni_2026-VRVGA-52",
+     "uses": 10,
+     "head": "Verbandsgemeinde Asbach Bekanntmachung über eine Sitzung des Verbandsgemeinderates der Verbandsgemeinde Asbach Am Donnerstag, dem 21.05.2026, findet um 19:30 Uhr eine Sitzung des Verbandsgemeinderates der Verbandsgemeinde Asbach in der Wiedparkhalle Neustadt (Wied), Raiffeisenstraße 9, 53577 Neustadt (Wied), statt. T a g e s o r d n u n g - öffentlich - 1. Einwohnerfragestunde 2. Beschluss des kom"
+    },
+    {
+     "title": "oeffentliches Protokoll",
+     "url": "https://ratsinfo-vg-asbach.gremien.info/api.php?id=69&inline=1&document_type_id=8&meeting_id=ni_2026-VRVGA-52",
+     "uses": 10,
+     "head": "N i e d e r s c h r i f t - öffentlicher Teil - über die Sitzung des Verbandsgemeinderates der Verbandsgemeinde Asbach am Donnerstag, 21.05.2026, in der Wiedparkhalle Neustadt (Wied), Raiffeisen- straße 9, 53577 Neustadt (Wied) Beginn der Sitzung: 19:30 Uhr T a g e s o r d n u n g - öffentlicher Teil - 1. Einwohnerfragestunde Vorlage Nr. VG-2026-106 2. Beschluss des kommunalen Wärmeplans Vorlage N"
+    },
+    {
+     "title": "Kurzprotokoll zur Sitzung",
+     "url": "https://ratsinfo-vg-asbach.gremien.info/api.php?id=69&inline=1&document_type_id=11&meeting_attachment_id=ni_2026-VRVGA-52%7C20260601085237-0_ni_2026-VRVGA-52_1.pdf",
+     "uses": 10,
+     "head": "Verbandsgemeinde Asbach Informationen zur Sitzung des Verbandsgemeinderates der Verbandsgemeinde Asbach vom 21.05.2026 Da keine Einwohnerfragen vorlagen oder im Rahmen der Sitzung gestellt wurden, begann die Sitzung mit einem Vortrag der DSK Stadtentwicklung aus Düsseldorf, die den Abschlussbericht der Kommunalen Wärmeplanung vorstellte. Herr Broekmans und Herr Mertens gingen dabei auf mögliche Po"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d",
+     "i",
+     "m",
+     "m"
+    ],
+    "session": [
+     false,
+     false,
+     true,
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "de-071385005-vo-2026141401100002",
+   "title": "Festsetzung der Brennholzpreise ab dem Forstwirtschaftsjahr 2026",
+   "docs": [
+    {
+     "title": "Beschlussvorlage 2026/14/0003 (Festsetzung der Brennholzpreise ab dem Forstwirtschaftsjahr 2026).pdf",
+     "url": "https://puderbach.gremien.info/api.php?document_type_id=4&document_relation_id=2026141401100002&submission_id=2026141401100002&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Verbandsgemeindeverwaltung Puderbach Beschlussvorlage Fachbereich Finanzen Verfasser(in) Schüler, Frank öffentlich Datum 14.01.2026 2026/14/0003 Aktenzeichen Bezug-Nr. Beratungsfolge Gremium Termin Sitzungsbezeichnung Vorlagenstatus Ortsgemeinderat Steimel öffentlich Betreff: Festsetzung der Brennholzpreise ab dem Forstwirtschaftsjahr 2026 1. Brennholz in Selbstwerbung = liegendes (gefälltes) Holz"
+    },
+    {
+     "title": "Beschluss von TOP 5 Sitzung des Ortsgemeinderats Steimel",
+     "url": "https://puderbach.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-OGR_14-152%7C2026141401100002%7C1&agenda_item_id=ni_2026-OGR_14-152%7C2026141401100002%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "TOP 5: Festsetzung der Brennholzpreise ab dem Forstwirtschaftsjahr 2026 1. Brennholz in Selbstwerbung = liegendes (gefälltes) Holz/Flächenlos Baumart ab HJ 2023 Beschlussvorschlag Beschlussfassung Buche/Eiche/ 32,--€/rm 35,--€/rm Kirsche Birke/Ahorn/ 29,- €/rm 32,--€/rm Esche/Erle Weichlaubholz 20,--€/rm 20,--€/rm (Aspe + Weide) Nadelholz 20,--€/rm 20,--€/rm (Fichte+Kiefer+Lärche) 2. Brennholz in "
+    },
+    {
+     "title": "Auszug von TOP 5 Sitzung des Ortsgemeinderats Steimel",
+     "url": "https://puderbach.gremien.info/api.php?document_type_id=6&document_relation_id=ni_2026-OGR_14-152%7C2026141401100002%7C1&agenda_item_id=ni_2026-OGR_14-152%7C2026141401100002%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "BEGLAUBIGTER BESCHLUSSAUSZUG für zum Tagesordnungspunkt 5 der Sitzung des Ortsgemeinderats Steimel vom 10. März 2026 ÖFFENTLICHER TEIL: TOP 5: Festsetzung der Brennholzpreise ab dem Forstwirtschaftsjahr 2026 1. Brennholz in Selbstwerbung = liegendes (gefälltes) Holz/Flächenlos Baumart ab HJ 2023 Beschlussvorschlag Beschlussfassung Buche/Eiche/ 32,--€/rm 35,--€/rm Kirsche Birke/Ahorn/ 29,- €/rm 32,"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-130755561-vo-1004087",
+   "title": "Beratung und Beschlussfassung über die Einleitung und Ausgestaltung eines Vergabeverfahrens zur Beschaffung einer elektronischen Schließanlage für das Gebäude der Amtsverwaltung",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://usedomnord.sitzung-mv.de/public/wicket/resource/org.apache.wicket.Application/doc1333904.pdf",
+     "uses": 1,
+     "head": "Amt Usedom-Nord Amtsausschuss Beratung und Beschlussfassung über die Einleitung und Ausgestaltung eines Vergabeverfahrens zur Beschaffung einer elektronischen Schließanlage für das Gebäude der Amtsverwaltung Beschlussvorlagen-Nr.: Vorlagenart.: AAUN/079/2026 Beschlussvorlage Datum: Vorlagenstatus: 06.05.2026 öffentlich Fachamt: Bearbeiter: Bauamt Jörg Behrendt beteiligtes Fachamt: Verfasser.: Bera"
+    },
+    {
+     "title": "Sammeldokument öffentlich",
+     "url": "https://usedomnord.sitzung-mv.de/public/wicket/resource/org.apache.wicket.Application/doc1333901.pdf",
+     "uses": 1,
+     "head": "Amt Usedom-Nord Amtsausschuss Beratung und Beschlussfassung über die Einleitung und Ausgestaltung eines Vergabeverfahrens zur Beschaffung einer elektronischen Schließanlage für das Gebäude der Amtsverwaltung Beschlussvorlagen-Nr.: Vorlagenart.: AAUN/079/2026 Beschlussvorlage Datum: Vorlagenstatus: 06.05.2026 öffentlich Fachamt: Bearbeiter: Bauamt Jörg Behrendt beteiligtes Fachamt: Verfasser.: Bera"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05970016-vo-nr-142-2026",
+   "title": "5. qualifizierte Änderung des Bebauungsplanes der Stadt Freudenberg Nr. 65 „Gewerbegebiet Wilhelmshöhe II“ im Stadtteil Bühl 1. Beschluss zur Einleitung eines Bebauungsplan-Änderungsverfahrens 2. Abschluss einer Planungskostenvereinbarung",
+   "docs": [
+    {
+     "title": "Beschlussvorlage Klimaampel 142/2026",
+     "url": "https://ratsinfo.freudenberg-stadt.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZbLbEoikY71GWqx-5HaQcG84HQ6KH41Keh9WbOA5tceG/Beschlussvorlage_Klimaampel_142-2026.pdf",
+     "uses": 1,
+     "head": "Stadt Freudenberg Die Bürgermeisterin - Amt für Bauen, Stadtentwicklung und Liegenschaften - Az: 61/621.02.65.5 BESCHLUSSVORLAGE X öffentlich nichtöffentlich Vorlagen-Nr. Datum 142/2026 24.08.2026 Zuständiges Produkt Konto / Kostenstelle Invest-Nr. Ermächtigungsübertragung € Haushaltsansatz € Summe Haushaltsmittel € davon bereits verfügt € noch verfügbar € Abstimmungsergebnis Beratungsfolge Termin"
+    },
+    {
+     "title": "Anlage 1 - Übersichtsplan",
+     "url": "https://ratsinfo.freudenberg-stadt.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZbr55mNBzpX_iByJ52nzJvFXm-1oOg_BktNRTFXMaW_B/Anlage_1_-_Uebersichtsplan.pdf",
+     "uses": 1,
+     "head": "ÜBERSICHTSPLAN 5. qualifizierte Änderung des Bebauungsplanes der Stadt Freudenberg Nr. 65 „Gewerbegebiet Wilhelmshöhe II“Geltungsbereich der geplanten 5. qualifizierten Änderung"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-08335066-vo-1319",
+   "title": "Verlegung Parkplätze von Burgstraße zu Rathausplatz - Modifizierung der Planung",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://reichenau-sitzungsdienst.komm.one/bi/getfile.asp?id=10936&type=do",
+     "uses": 1,
+     "head": "Beschlussvorlage Verlegung Parkplätze von Burgstraße zu Rathausplatz - Modifizierung der Planung I. Sachvortrag 1. Sachstand Der Gemeinderat hatte in der Sitzung vom 29.09.2025 den Beschluss gefasst, die drei Parkflächen auf der Burgstraße aufzulösen und auf den Rathausplatz zu verlegen. Dies soll zum einen die Übersichtlichkeit des Straßenraums verbessern und gleichzeitig ein Kurzzeitparken für d"
+    },
+    {
+     "title": "Lageplan Rathausplatz Kurzzeitparken",
+     "url": "https://reichenau-sitzungsdienst.komm.one/bi/getfile.asp?id=10940&type=do",
+     "uses": 1,
+     "head": "Bu | “A 4 ® 7% y AT g | ] Oo fi DS J | | a a | ‘ A \\ FA | | (EC I 0 am I d 14 X a 7 8 J/ . Rs "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nds-03357039-vo-4931",
+   "title": "Erlass einer neuen Friedhofssatzung für die Friedhöfe der Stadt und der Ortschaften",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://www.rotenburg-wuemme.eu/sessionnet/bi/getfile.php?id=76233&type=do",
+     "uses": 1,
+     "head": "Stadt Rotenburg (Wümme) Der Bürgermeister Seite 1 von 3 Az.: 60.4 Rotenburg (Wümme), 02.10.2026 B e s c h l u s s v o r l a g e N r . : 1 1 1 4 / 2 0 2 1 - 2 0 2 6 Gremien Datum TOP beschlossen Bemerkungen Ausschuss für Finanzen, Digitalisie- rung, Feuerwehr und öffentliche Ord- nung 08.10.2026 Ortsrat Mulmshorn Ortsrat Unterstedt Ortsrat Waffensen Verwaltungsausschuss Rat Erlass einer neuen Fried"
+    },
+    {
+     "title": "Anlage 1 - neue Friedhofssatzung",
+     "url": "https://www.rotenburg-wuemme.eu/sessionnet/bi/getfile.php?id=76907&type=do",
+     "uses": 1,
+     "head": "Anlage 1 zur Vorlage-Nr. 1114/2021-2026 Stand: 28. Juli 2026 - 1 – 7 E 1 Friedhofssatzung der Stadt Rotenburg (Wümme) vom …...2026 (ABl. f.d. LK ROW vom …..2026) (Rechtskraft der Satzung = 01. Januar 2027) Aufgrund der §§ 10, 13 und 58 des Niedersächsischen Kommunalverfassungsgesetzes und des § 13a des Niedersächsischen Bestattungsgesetzes in den jeweils zurzeit geltenden Fassungen hat der Rat der"
+    },
+    {
+     "title": "Anlage 2 - Gegenüberstellung alte - neue Satzung",
+     "url": "https://www.rotenburg-wuemme.eu/sessionnet/bi/getfile.php?id=76908&type=do",
+     "uses": 1,
+     "head": "A n l a g e 2 z u r V o r l a g e - N r . 1 1 1 4 / 2 0 2 1 - 2 0 2 6 Stand: 28. Juli 2026 - 1 – G e g e n ü b e r s t e l l u n g d e r F r i e d h o f s s a t z u n g e n S t a d t – O r t s c h a f t e n – n e u e S a t z u n g Anmerkung: Neuerungen/Änderungen sind in rot und Erläuterungen in grün dargestellt! N e u f a s s u n g 2 0 2 6 Friedhofssatzung für die Friedhöfe Lindenstraße und Waldf"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-07331003-oparl-e0d8e5112cfa4b23be9b",
+   "title": "Bauanträge und Bauvoranfragen, die bereits an die Kreisverwaltung Alzey-Worms weitergeleitet wurden.",
+   "docs": [
+    {
+     "title": "2026/313",
+     "url": "https://alzey.gremien.info/api.php?document_type_id=4&submission_id=20261901100007&id=69&inline=true",
+     "uses": 1,
+     "head": "Mitteilungsvorlage 2026/313 Kreisstadt Alzey Stadtverwaltung Bauen, Umwelt und Klimaschutz 5.2 Bauleit- und Verkehrsplanung, Stadt- und Dorferneuerung Gremium: Az.: 5/611-21 Ausschuss für Bauen, Umwelt und Klimaschutz (öffentlich) Sitzungstermin: 29.01.2026 Betreff: Bauanträge und Bauvoranfragen, die bereits an die Kreisverwaltung Alzey-Worms weitergeleitet wurden. Mitteilung: Anbei die Tabelle al"
+    },
+    {
+     "title": "anlage 2",
+     "url": "https://alzey.gremien.info/api.php?id=69&inline=1&document_type_id=13&submission_attachment_id=20261901100007%7C20260119135503-0.pdf%7C",
+     "uses": 1,
+     "head": "Anlage zur Mitteilungsvorlage dem BUK am 29.01.2026 z. K. Bauanträge, die bereits an die Kreisverwaltung weitergeleitet wurden Lfd. Nr. Antragsart Straße Stadtteil HsNr. Bauvorhaben Ergebnis der Prüfung 1 Bauantrag Schafhäuser Straße Alzey Austausch von Werbeanlagen zugestimmt 2 Antrag gemäß Gestaltungssatzung Rossmarkt Alzey Austausch Fenster an denkmalgeschützten Gebäude zugestimmt 3 Bauantrag O"
+    },
+    {
+     "title": "Beschluss - Top 3.6",
+     "url": "https://alzey.gremien.info/api.php?id=69&inline=1&document_type_id=5&agenda_item_id=ni_2026-ABUK-23%7C20261901100007%7C1",
+     "uses": 1,
+     "head": "TOP 3.6 - Vorlagen-Nr. 2026/313 Bauanträge und Bauvoranfragen, die bereits an die Kreisverwaltung Alzey-Worms weitergeleitet wurden. Abstimmungsergebnis: Zur Kenntnis genommen"
+    },
+    {
+     "title": "Bekanntmachung",
+     "url": "https://alzey.gremien.info/api.php?id=69&inline=1&document_type_id=1&meeting_id=ni_2026-ABUK-23",
+     "uses": 13,
+     "head": "Öffentliche Bekanntmachung Kreisstadt Alzey Stadtverwaltung Bauen, Umwelt und Klimaschutz Bürgermeister Am Donnerstag, dem 29.01.2026, um 17:30 Uhr, findet in Alzey, Kreuznacher Straße 112, im Sitzungssaal der Feuerwehr, eine Sitzung des Ausschusses für Bauen, Umwelt und Klimaschutz statt. Tagesordnung I. Öffentlicher Teil 1. Auftragsvergaben 1.1 Barrierefreier Radweg auf dem Stammgleis 1.2 Neubau"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "d",
+     "i"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "id": "de-09565000-vo-52093",
+   "title": "KommunalBIT AöR; Vorlage des Jahresabschlusses 2025",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://ratsinfo.schwabach.de/getfile.asp?id=343848&type=do",
+     "uses": 1,
+     "head": "Seite 1 von 8 BESCHLUSSVORLAGE - öffentlich - A.30/019/2026 Sachvortragende/r Amt / Geschäftszeichen Stadtkämmerin Stefanie Rother Kämmereiamt Sachbearbeiter/in: Oleksandr Safarov KommunalBIT AöR; Vorlage des Jahresabschlusses 2025 Anlagen: 1) Bilanz zum 31.12.2025 2) Gewinn- und Verlustrechnung 2025 3) Prüfbericht 2025 Beratungsfolge Termin Status Beschlussart Hauptausschuss 30.09.2026 nicht öffe"
+    },
+    {
+     "title": "Beschlussvorschlag für Stadtrat",
+     "url": "https://ratsinfo.schwabach.de/getfile.asp?id=344184&type=do",
+     "uses": 1,
+     "head": "Seite 1 von 1 BESCHLUSSVORSCHLAG - öffentlich - A.30/019/2026 Sachvortragende/r Amt / Geschäftszeichen Rother, Stefanie, Stadtkämmerin Kämmereiamt Sachbearbeiter/in: Oleksandr Safarov KommunalBIT AöR; Vorlage des Jahresabschlusses 2025 Beratungsfolge Termin Status Beschlussart Hauptausschuss 30.09.2026 nicht öffentlich Beschlussvorschlag Stadtrat 02.10.2026 öffentlich Beschluss Beschlussvorschlag "
+    },
+    {
+     "title": "Bilanz Kbit 31.12.25",
+     "url": "https://ratsinfo.schwabach.de/getfile.asp?id=343933&type=do",
+     "uses": 1,
+     "head": "KommunalBIT AöR, Fürth Bilanz zum 31. Dezember 2025 AKTIVA EUR Geschäftsjahr EUR Vorjahr EUR A. Anlagevermögen I. Immaterielle Vermögensgegenstände 1. Entgeltlich erworbene Konzessionen, gewerbliche Schutzrechte und ähnliche Rechte und Werte sowie Lizenzen an solchen Rechten und Werten 2.056.367,00 2.626.813,00 II. Sachanlagen 1. Technische Anlagen und Maschinen 5.791.857,00 3.490.708,00 2. Betrie"
+    },
+    {
+     "title": "GuV KBit 31.12.25",
+     "url": "https://ratsinfo.schwabach.de/getfile.asp?id=343934&type=do",
+     "uses": 1,
+     "head": "KommunalBIT AöR, Fürth Gewinn- und Verlustrechnung für das Geschäftsjahr 2025 EUR Geschäftsjahr EUR Vorjahr EUR 1. Umsatzerlöse 30.206.066,04 27.307.208,95 2. sonstige betriebliche Erträge a) Erträge aus dem Abgang von Gegenständen des Anlagevermögens und aus Zuschreibungen zu Gegenständen des Anlagevermögens 23.379,96 12.925,82 b) Erträge aus der Auflösung von Rückstellungen 4.715,54 14.444,83 c)"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-071345005-vo-60250412100015",
+   "title": "Einleitung der Prüfungshandlung",
+   "docs": [
+    {
+     "title": "Informationsvorlage 2025/060/016 (Einleitung der Prüfungshandlung).pdf",
+     "url": "https://herrstein-rhaunen.gremien.info/api.php?document_type_id=4&document_relation_id=60250412100015&submission_id=60250412100015&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": ">>> Wahlperiode: 2024 – 2029 <<< Informationsvorlage Finanzen Vorlage-Nr.: 2025/060/016 Verantwortlich: Markus Ackermann Aktenzeichen: Verfasser: Sandra Schneberger-Schwinn Datum: 19.01.2026 Beratungsfolge: Gremium Datum TOP-Nr. Status Rechnungsprüfungsausschuss OG Niederwörresbach 09.02.2026 2 öffentlich Beratungsgegenstand: Einleitung der Prüfungshandlung Sachverhalt/Rechtslage: Der vom Ortsgeme"
+    },
+    {
+     "title": "Beschluss  von TOP 2 1. Sitzung des Rechnungsprüfungsausschusses der OG Niederwörresbach",
+     "url": "https://herrstein-rhaunen.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-RPA_060-0%7C60250412100015%7C1&agenda_item_id=ni_2026-RPA_060-0%7C60250412100015%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "1. Sitzung des Rechnungsprüfungsausschusses der OG Niederwörresbach vom 09.02.2026 - öffentlicher Teil 1 zu TOP 2 Einleitung der Prüfungshandlung Sachverhalt/Rechtslage: Der vom Ortsgemeinderat gewählte Ausschuss zur Prüfung der Jahresrechnung ist heute zusammen-getreten, um die vom Ortsbürgermeister vorgelegte Rechnung für das Haushaltsjahr 2021 zu prüfen. Dem Rechnungsprüfungsausschuss liegen vo"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05762004-vo-nr-0092-2026",
+   "title": "Bauvoranfrage (\"Bauturbo\") zur Sanierung und Aufstockung eines Mehrfamilienwohnhauses mit 5 Wohneinheiten",
+   "docs": [
+    {
+     "title": "Beschlussvorlage 0092-2026",
+     "url": "https://ratsinfo.bad-driburg.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZcB4t4fCCMQI9mdKurKMU6yABSTDMJ7NXMWQPXqorfr_/Beschlussvorlage_0092-2026.pdf",
+     "uses": 1,
+     "head": "Stadt Bad Driburg Stadtplanung 0092-2026 Beratungsvorlage (öffentlich) zur Sitzung Ausschuss für Bau, Straßen, Umwelt und Klimaschutz 28.05.2026 Bauvoranfrage (\"Bauturbo\") zur Sanierung und Aufstockung eines Mehrfamilienwohnhauses mit 5 Wohneinheiten finanzielle Auswirkungen: ☐ ja ☒ nein Mittelbereitstellung erfolgt: ☐ planmäßig ☐ überplanmäßig ☐ außerplanmäßig Anlass: Mit Eingang vom 11.05.2026 l"
+    },
+    {
+     "title": "Beschlusstext 0092-2026 (öffentlich) Ausschuss für Bau, Straßen, Umwelt und Klimaschutz 28.05.2026",
+     "url": "https://ratsinfo.bad-driburg.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZb-6Lq_U7MmYljD24W4WjY6OJBl0P2YsDxdYHJBXKHBs/Beschlusstext_0092-2026_-oeffentlich-_Ausschuss_fuer_Bau-_Strassen-_Umwelt_und_Klimaschutz_28.05.2026.pdf",
+     "uses": 1,
+     "head": "Bad Driburg, 11.06.2026 B E S C H L U S S A U S Z U G aus der 5. Sitzung des Ausschusses für Bau, Straßen, Umwelt und Klimaschutz am Donnerstag, 28.05.2026 A.8 Bauvoranfrage (\"Bauturbo\") zur Sanierung und Aufstockung eines Mehrfamilienwohnhauses mit 5 Wohneinheiten 0092-2026 Beschluss: Der Ausschuss für Bau, Straßen, Umwelt und Klimaschutz beschließt, für das Vorhaben „Sanierung und Aufstockung ei"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-12061-vo-202612509100033",
+   "title": "Anfrage an den Landrat hier: Entwicklung der Beamtenstellen sowie der daraus resultierenden Personal- und Versorgungslasten",
+   "docs": [
+    {
+     "title": "Anfrage 2026/Anfr./033 (Anfrage an den Landrat\r\nhier: Entwicklung der Beamtenstellen sowie der daraus resultierenden Personal- und Versorgungslasten).pdf",
+     "url": "https://ris.dahme-spreewald.de/documents.php?document_type_id=4&submission_id=202612509100033&id=69&json=1&platform=ris",
+     "uses": 1,
+     "head": "Landkreis Dahme-Spreewald Vorlagen- nummer: 2026/Anfr./033 Anfrage Fraktion : CDU/Bauern/FDP/StdD Mitglied des Kreistags : Benjamin Kaiser Gremium am TOP Beratungsstatus Öffentlichkeits- status Kreistag 07.10.2026 zur Beantwortung öffentlich Betrifft: Anfrage an den Landrat hier: Entwicklung der Beamtenstellen sowie der daraus resultierenden Personal- und Versorgungslasten Sehr geehrter Herr Landr"
+    },
+    {
+     "title": "Antwort des Landrates",
+     "url": "https://ris.dahme-spreewald.de/documents.php?document_type_id=13&submission_attachment_id=202612509100033%7C20261007123309-0.pdf%7C&id=69&json=1&platform=ris",
+     "uses": 1,
+     "head": "Hauptsitz Reutergasse 12 15907 Lübben (Spreewald) Postanschrift Postfach 14 41 15904 Lübben (Spreewald) Verwaltungsstandorte in 15907 Lübben (Spreewald) Beethovenweg 14 Weinbergstraße 1 und 30 Hauptstraße 51 Logenstraße 17 15926 Luckau Nonnengasse 3 Karl-Marx-Str. 21 Verwaltungsstandorte in 15711 Königs Wusterhausen Brückenstraße 41 Schulweg 1 b Fontaneplatz 10 Max-Werner-Straße 7a Zeesen Karl-Lie"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05954016-vo-505_16842",
+   "title": "Entwurf des Haushalts 2026/2027 und des Haushaltssicherungskonzepts hier: Etat Stadtentwicklung und Wohnen",
+   "docs": [
+    {
+     "title": "Vorlage der Verwaltung 23/2026",
+     "url": "https://sitzungsinfo.hattingen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZZms2L9ympg_HeMLBE9YakoHNZzw7TstNGo8qmUK20pQ/Vorlage_der_Verwaltung_23-2026.pdf",
+     "uses": 1,
+     "head": "Stadt Hattingen Drucksache 23/2026 Vorlage der Verwaltung Öffentliche Sitzung Fachbereich Datum 61 12.01.2026 Ausschuss für Stadtentwicklung und Wohnen 25.02.2026 Beratung Betreff: Entwurf des Haushalts 2026/2027 und des Haushaltssicherungskonzepts hier: Etat Stadtentwicklung und Wohnen Beschlussentwurf: Den Entwürfen des Haushaltsplanes 2026/2027 und des Haushaltssicherungskonzepts wird entsprech"
+    },
+    {
+     "title": "Beschlußtext 23/2026 (öffentlich) Ausschuss für Stadtentwicklung und Wohnen 25.02.2026",
+     "url": "https://sitzungsinfo.hattingen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZVerRHdpZmbrHv2PStNU9e-ymGq1uL9DJutR7BMJ1xHu/Beschlusstext_23-2026_-oeffentlich-_Ausschuss_fuer_Stadtentwicklung_und_Wohnen_25.02.2026.pdf",
+     "uses": 1,
+     "head": "Stadt Hattingen Drucksache 23/2026 Beschlussausfertigung Öffentliche Sitzung Fachbereich 61 Ausschuss für Stadtentwicklung und Wohnen 25.02.2026 Betreff: Entwurf des Haushalts 2026/2027 und des Haushaltssicherungskonzepts hier: Etat Stadtentwicklung und Wohnen Beschluss des Ausschusses für Stadtentwicklung und Wohnen vom 25.02.2026 Den Entwürfen des Haushaltsplanes 2026/2027 und des Haushaltssiche"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05113000-vo-505_62534",
+   "title": "Sicherung des Industriestandortes Deilbachtal",
+   "docs": [
+    {
+     "title": "Antrag Rat / Ausschüsse / BVen 1824/2025/GRÜNE",
+     "url": "https://ris.essen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZVZxPO80glJtikAIkdArXOv37Rj-oLQNqww__-yts3t5/Antrag_Rat_-_Ausschuesse_-_BVen_1824-2025-GRUeNE.pdf",
+     "uses": 1,
+     "head": "Vorlage Version 2025-11-13 Antrag Nr. 1824/2025/GRÜNE Fraktion in der Bezirksvertretung VIII - Essen-Ruhrhalbinsel - Herrn Bezirksbürgermeister Wilhelm Kohlmann Bezirksvertretung VIII Kupferdreher Straße 86 45257 Essen Iris Sarholz Mail i.sarholz@arcor.de 14.11.2025 Beratungsfolge Sitzungstermin Zuständigkeiten Bezirksvertretung für den Stadtbezirk VIII 02.12.2025 Entscheidung Bezirksvertretung fü"
+    },
+    {
+     "title": "Beschlusstext 1824/2025/GRÜNE (öffentlich) Bezirksvertretung für den Stadtbezirk VIII 03.02.2026",
+     "url": "https://ris.essen.de/sdnetrim/UGhVM0hpd2NXNFdFcExjZVINFa7BTv7LRxpS_WZBI2ikY80s9pOv0uGtDPtrBMvS/Beschlusstext_1824-2025-GRUeNE_-oeffentlich-_Bezirksvertretung_fuer_den_Stadtbezirk_VIII_03.02.2026.pdf",
+     "uses": 1,
+     "head": "Auszug aus der Niederschrift über die Sitzung der Bezirksvertretung für den Stadtbezirk VIII vom 03.02.2026 - Öffentlicher Teil - Tagesordnungspunkt: 7. Sicherung des Industriestandortes Deilbachtal 1824/2025/GRÜNE Bericht erstattet: Vertreter/in der Verwaltung Der Tagesordnungspunkt wurde in den nicht öffentlichen Teil verschoben. Für die Richtigkeit: gez. Norwidat-Altmann"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nds-03455015-top-4479--2",
+   "title": "Feststellung der ordnungsgemäßen Ladung und der Beschlussfähigkeit",
+   "docs": [
+    {
+     "title": "Beschlusstext",
+     "url": "https://buergerinfo.schortens.de/getfile.asp?id=138931&type=do",
+     "uses": 1,
+     "head": ""
+    },
+    {
+     "title": "Wortprotokoll",
+     "url": "https://buergerinfo.schortens.de/getfile.asp?id=138932&type=do",
+     "uses": 1,
+     "head": "Die ordnungsgemäße Ladung und die Beschlussfähigkeit werden festgestellt. Entschuldigt fehlt RM von Heynitz."
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-15002000-vo-32642",
+   "title": "1. Satzung zur Änderung der „Abfallwirtschaftssatzung der Stadt Halle (Saale) vom 22.11.2024",
+   "docs": [
+    {
+     "title": "Beschlussvorlage_aktuell 234 KB",
+     "url": "https://buergerinfo.halle.de/getfile.asp?id=340925&type=do&",
+     "uses": 1,
+     "head": "Beschlussvorlage Beratungsfolge Termin Status Ausschuss für Klimaschutz, Umwelt und Ordnung 15.10.2026 öffentlich Vorberatung Stadtrat 28.10.2026 öffentlich Entscheidung Betreff: 1. Satzung zur Änderung der „Abfallwirtschaftssatzung der Stadt Halle (Saale) vom 22.11.2024 Beschlussvorschlag: Der Stadtrat beschließt 1. Satzung zur Änderung der „Abfallwirtschaftssatzung der Stadt Halle (Saale) vom 22"
+    },
+    {
+     "title": "Anlage 1 - 1. Satzung zur Änderung der Abfallwirtschaftssatzung der Stadt Halle (Saale) 139 KB",
+     "url": "https://buergerinfo.halle.de/getfile.asp?id=341355&type=do&",
+     "uses": 1,
+     "head": "Öffentliche Einrichtungen 1. Änderung der Abfallwirtschaftssatzung 1. Satzung zur Änderung der „Abfallwirtschaftssatzung der Stadt Halle (Saale) vom 22.11.2024“ Aufgrund §§ 8 und 11 des Kommunalverfassungsgesetzes des Landes Sachsen-Anhalt (Kommunalverfassungsgesetz - KVG LSA) vom 17.06.2014 (GVBl. LSA 2014, S. 288), zuletzt geändert durch Artikel 1 des Gesetzes vom 17. Dezember 2025 (GVBl. LSA 20"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nds-03354-vo-7651",
+   "title": "Zukunftsentwicklungskonzept des Landkreises Lüchow-Dannenberg (Stand 2026)",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://ratsinfo.luechow-dannenberg.de/buergerinfo/getfile.asp?id=97447&type=do",
+     "uses": 1,
+     "head": "«voname» Seite 1 von 2 Landkreis Lüchow-Dannenberg 17.06.2026 Die Landrätin Erster Kreisrat Sitzungsvorlage Nr. 2026/875 Aussprache und ggf. Beschlussfassung Zukunftsentwicklungskonzept des Landkreises Lüchow-Dannenberg (Stand 2026) Kreisausschuss 23.06.2026 TOP 41 Kreistag 29.06.2026 TOP 26 Sachverhalt: Die Erarbeitung des Zukunftsentwicklungskonzepts für den Landkreis Lüchow-Dannenberg erfolgt s"
+    },
+    {
+     "title": "260610 Zukunftsentwicklungskonzept DAN KA",
+     "url": "https://ratsinfo.luechow-dannenberg.de/buergerinfo/getfile.asp?id=97470&type=do",
+     "uses": 1,
+     "head": "Zukunftsentwicklungskonzept Lüchow-Dannenberg 20261 ZUKUNFTSENTWICKLUNGS- KONZEPT 2026 IMPRESSUM HERAUSGEBER Landkreis Lüchow-Dannenberg Königsberger Straße 10 29439 Lüchow (Wendland) STAND Juni 2026 LEKTORAT Kathleen Fietz, Fietz & Feder LAYOUT Isabella Tober, transformationbydesign.de TITELBILD Dieter Damschen 3 Zukunftsentwicklungskonzept Lüchow-Dannenberg 2026 Die Region Wendland.Elbe hat in i"
+    },
+    {
+     "title": "260617 Zukunftsentwicklungskonzept final KT",
+     "url": "https://ratsinfo.luechow-dannenberg.de/buergerinfo/getfile.asp?id=97550&type=do",
+     "uses": 1,
+     "head": "Zukunftsentwicklungskonzept Lüchow-Dannenberg 20261 ZUKUNFTSENTWICKLUNGS- KONZEPT 2026 IMPRESSUM HERAUSGEBER Landkreis Lüchow-Dannenberg Königsberger Straße 10 29439 Lüchow (Wendland) STAND Juni 2026 LEKTORAT Kathleen Fietz, Fietz & Feder LAYOUT Isabella Tober, transformationbydesign.de TITELBILD Dieter Damschen 3 Zukunftsentwicklungskonzept Lüchow-Dannenberg 2026 Die Region Wendland.Elbe hat in i"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-08317034-vo-20250212100273",
+   "title": "Einbeziehungssatzung \"Fußbach Gewann Hohberg\", Gemarkung Gengenbach-Bermersbach Beratung und Beschlussfassung über die eingegangenen Stellungnahmen aus der Beteiligung der Behörden und sonstigen Träger öffentlicher Belange nach § 4 Abs. 2 BauGB sowie der Öffentlichkeit nach§ 3 Abs. 2 BauGB, Satzungsbeschluss über die Einbeziehungssatzung \"Fußbach Gewann Hohberg\"",
+   "docs": [
+    {
+     "title": "Beschlussvorlage 248/25 (Einbeziehungssatzung \"Fußbach Gewann Hohberg\", Gemarkung Gengenbach-Bermersbach\r\nBeratung und Beschlussfassung über die eingegangenen Stellungnahmen aus der Beteiligung der Behörden und sonstigen Träger öffentlicher Belange nach § 4 Abs. 2 BauGB sowie der Öffentlichkeit nach§ 3 Abs. 2 BauGB, \r\nSatzungsbeschluss über die Einbeziehungssatzung \"Fußbach Gewann Hohberg\").pdf",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=4&document_relation_id=20250212100273&submission_id=20250212100273&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "STADT GENGENBACH - Bauamt - Sachbearbeiter: Schmider, Nina Vortrag: Schmider, Nina Az: 621.41 Datum: 02.12.2025 Beschlussvorlage 248/25 Gremium Datum Status Ortschaftsrat Bermersbach 20.01.2026 öffentlich Gemeinderat 21.01.2026 öffentlich Geplante Beratungszeit 10 Minuten Tagesordnungspunkt: Einbeziehungssatzung \"Fußbach Gewann Hohberg\", Gemarkung Gengenbach- Bermersbach Beratung und Beschlussfass"
+    },
+    {
+     "title": "ES Fußbach-Gewann-Hohberg Satzung",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=13&document_relation_id=20250212100273%7C20260107121311-1.pdf%7C&submission_attachment_id=20250212100273%7C20260107121311-1.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Seite 1 von 2 S A T Z U N G der Stadt Gengenbach zur Einbeziehung von im Außenbereich liegenden Grundstücken in die im Zusammenhang bebauten Ortsteile Einbeziehungssatzung „Fußbach Gewann Hohberg“ Aufgrund des § 34 Abs. 4 Nr. 3 des Baugesetzbuchs (BauGB) in der Fassung der Bekanntmachung vom 3. November 2017 (BGBl. I S. 3634), zuletzt geändert durch Artikel 1 des Gesetzes vom 27. Oktober 2025 (BGB"
+    },
+    {
+     "title": "ES Fußbach-Gewann-Hohberg Zeichnerischer Teil",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=13&document_relation_id=20250212100273%7C20260107121311-0.pdf%7C&submission_attachment_id=20250212100273%7C20260107121311-0.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "890 884 891 892 894 619/7 619/5 637 674/1 739/5 619/3 620 621 622 635 633/7 636/1 633/11 633/13 679 661 674/3 675 676 738 738/1 633/10 633/15 635/1 698/6 633/4 633/6 636 633/9 678 680/1 681/1 677 2 701 739 739/3 700 701/2 633/17 633/16 633/2 698/5 698/8 698/7 739/6 2 79 9 60 53 69 80 62 85 3 72 81 64 55 58 83 6 74 70 68 78 4 76 66 73 75 7 57 77 Schu Whs Schu Whs Schu Schu Whs Whs Whs Schu Schu Sch"
+    },
+    {
+     "title": "ES Fußbach-Gewann-Hohberg Begründung",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=13&document_relation_id=20250212100273%7C20260107121312-2.pdf%7C&submission_attachment_id=20250212100273%7C20260107121312-2.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Projekt | 2024151 Stand: 19.12.2025 Anlage Nr. 3 Fassung: Entwurf zum Satzungsbeschluss Stadt Gengenbach ORTENAUKREIS Einbeziehungssatzung „Fußbach Gewann Hohberg“ Begründung Änderungen gegenüber der Offenlage vom 21.07.2025 bis zum 12.09.2025 Einbeziehungssatzung „Fußbach Gewann Hohberg“ Stadt Gengenbach Fassung: Entwurf zum Satzungsbeschluss Stand: 19.12.2025 Begründung Seite 2 von 13 Inhalt TEI"
+    },
+    {
+     "title": "ES Fußbach-Gewann-Hohberg Abwägungstabelle",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=13&document_relation_id=20250212100273%7C20260107121312-3.pdf%7C&submission_attachment_id=20250212100273%7C20260107121312-3.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Einbeziehungssatzung „Fußbach Gewann Hohberg“ Stadt: Gengenbach Fassung: Entwurf vom 18.06.2025 Bearbeitungsstand: 19.12.2025 Abwägungstabelle der eingegangenen Stellungnahmen vom 21.07.2025 bis 12.09.2025 Seite 1 von 13 Nr. Einwender Abwägungsvorschlag 1 Regierungspräsidium Freiburg Abt. 2 Raumordnung, Baurecht, Denkmalschutz Bissierstr. 7, 79114 Freiburg Keine Stellungnahme. 2 Regierungspräsidiu"
+    },
+    {
+     "title": "Beschluss von TOP 8 1. Sitzung des Gemeinderates",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-1-426%7C20250212100273%7C1&agenda_item_id=ni_2026-1-426%7C20250212100273%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "1. Sitzung des Gemeinderates vom 21.01.2026 - öffentlicher Teil TOP 8: - Bauamt - Sachbearbeiter: Schmider, Nina Vortrag: Schmider, Nina Az: 621.41 Datum: 02.12.2025 Beschlussvorlage 248/25 Gremium Datum Status Ortschaftsrat Bermersbach 20.01.2026 öffentlich Gemeinderat 21.01.2026 öffentlich Geplante Beratungszeit 10 Minuten Tagesordnungspunkt: Einbeziehungssatzung \"Fußbach Gewann Hohberg\", Gemark"
+    },
+    {
+     "title": "Gengenbach_EBZ_Fußbach Gewann Hohberg_Satzungsbeschluss_GR_20260121 bearbeitet",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=14&document_relation_id=ni_2026-1-426%7C20250212100273%7C1%7C20260122145951-0_20250212100273_1.pdf&agenda_item_attachment_id=ni_2026-1-426%7C20250212100273%7C1%7C20260122145951-0_20250212100273_1.pdf&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Stadt Gengenbach Einbeziehungssatzung „Fußbach Gewann Hohberg“ 22.01.20261 | EINBEZIEHUNGSSATZUNG „FUßBACH GEWANN HOHBERG“ Abwägung und Satzungsbilligung Beratung im Gemeinderat Gengenbach Stadt Gengenbach Einbeziehungssatzung „Fußbach Gewann Hohberg“ 22.01.20262 | Lage des Plangebiets • Am bisherigen Siedlungsrand im Ortsteil Fußbach Plangebiet und Umgebung • Teilweise bereits mit Nebenanlagen ba"
+    },
+    {
+     "title": "Beschluss von TOP 3 Sitzung des Ortschaftsrates Bermersbach",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-6-132%7C20250212100273%7C1&agenda_item_id=ni_2026-6-132%7C20250212100273%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Sitzung des Ortschaftsrates Bermersbach vom 20.01.2026 - öffentlicher Teil TOP 3: - Bauamt - Sachbearbeiter: Schmider, Nina Vortrag: Schmider, Nina Az: 621.41 Datum: 02.12.2025 Beschlussvorlage 248/25 Gremium Datum Status Ortschaftsrat Bermersbach 20.01.2026 öffentlich Gemeinderat 21.01.2026 öffentlich Geplante Beratungszeit 10 Minuten Tagesordnungspunkt: Einbeziehungssatzung \"Fußbach Gewann Hohbe"
+    },
+    {
+     "title": "Auszug von TOP 3 Sitzung des Ortschaftsrates Bermersbach",
+     "url": "https://gengenbach.gremien.info/api.php?document_type_id=6&document_relation_id=ni_2026-6-132%7C20250212100273%7C1&agenda_item_id=ni_2026-6-132%7C20250212100273%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Auszug auf Öffentlicher Sitzung des Ortschaftsrates Bermersbach vom 20.01.2026 TOP 3: - Bauamt - Sachbearbeiter: Schmider, Nina Vortrag: Schmider, Nina Az: 621.41 Datum: 02.12.2025 Beschlussvorlage 248/25 Gremium Datum Status Ortschaftsrat Bermersbach 20.01.2026 öffentlich Gemeinderat 21.01.2026 öffentlich Geplante Beratungszeit 10 Minuten Tagesordnungspunkt: Einbeziehungssatzung \"Fußbach Gewann H"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a",
+     "a",
+     "a",
+     "d",
+     "a",
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-073315001-oparl-d9349202a6da906497b1",
+   "title": "Neufassung des öffentlich-rechtlichen Vertrages für den weitergehenden Giganetzausbau",
+   "docs": [
+    {
+     "title": "24-29/00/0358",
+     "url": "https://alzey-land.gremien.info/api.php?document_type_id=4&submission_id=2024001006100363&id=69&inline=true",
+     "uses": 1,
+     "head": "Seite 1 von 4 Verbandsgemeinde Alzey-Land Beschlussvorlage 24-29/00/0358 für die Sitzung am Verbandsgemeinderat 22.06.2026 öffentlicher Teil Tagesordnungspunkt Nr. 9 Neufassung des öffentlich-rechtlichen Vertrages für den weitergehenden Giganetzausbau Sachverhalt / Erläuterungen / Begründung / Rechtsgrundlage: Eine leistungsfähige digitale Infrastruktur ist heute eine wesentliche Voraussetzung für"
+    },
+    {
+     "title": "anlage 1",
+     "url": "https://alzey-land.gremien.info/api.php?id=69&inline=1&document_type_id=13&submission_attachment_id=2024001006100363%7C20260605114618-0.pdf%7C",
+     "uses": 1,
+     "head": "1 Öffentlich-rechtlicher Vertrag über die Zusammenarbeit zum Ausbau der Gigabit-Breitbandversorgung im Landkreis Alzey-Worms zwischen dem Landkreis Alzey-Worms vertreten durch Herrn Landrat Heiko Sippel (nachstehend „Kreis“ genannt) und der Stadt Alzey vertreten durch Herrn Bürgermeister Steffen Jung der Verbandsgemeinde Alzey-Land vertreten durch Herrn Bürgermeister Steffen Unger der Verbandsgeme"
+    },
+    {
+     "title": "Beschluss - Top 9",
+     "url": "https://alzey-land.gremien.info/api.php?id=69&inline=1&document_type_id=5&agenda_item_id=ni_2026-VGRAT-65%7C2024001006100363%7C1",
+     "uses": 1,
+     "head": "Tagesordnungspunkt 9: Neufassung des öffentlich-rechtlichen Vertrages für den weitergehenden Giganetzausbau Der Vorsitzende führt unter Bezugnahme auf die Beschlussvorlage in den Tagesordnungs- punkt ein. Zusammenfassend erläutert er, dass im Landkreis zunächst ein gefördertes Ver- fahren zum Breitbandausbau für Unternehmen und Firmen durchgeführt wurde. Den weite- ren Ausbau der vergangenen Jahre"
+    },
+    {
+     "title": "Bekanntmachung",
+     "url": "https://alzey-land.gremien.info/api.php?id=69&inline=1&document_type_id=1&meeting_id=ni_2026-VGRAT-65",
+     "uses": 13,
+     "head": "Verbandsgemeinde Alzey-Land ÖFFENTLICHE BEKANNTMACHUNG Am Montag, dem 22. Juni 2026 um 18:00 Uhr, findet im Sitzungssaal der Verbandsgemeindeverwaltung eine Sitzung des Verbandsgemeinderates statt. Tagesordnung: Öffentlicher Teil 1. Einwohnerfragestunde 2. Einzelhandelskonzept der Verbandsgemeinde Alzey-Land; a) Beteiligung der Behörden und sonstigen Trägern öffentlicher Belange sowie der Nachbarg"
+    },
+    {
+     "title": "oeffentliches Protokoll",
+     "url": "https://alzey-land.gremien.info/api.php?id=69&inline=1&document_type_id=8&meeting_id=ni_2026-VGRAT-65",
+     "uses": 13,
+     "head": "Verbandsgemeinde Alzey-Land Öffentlicher Teil der Niederschrift über die 9. Sitzung des Verbandsgemeinderates der Wahlperiode 2024 – 2029 am 22. Juni 2026 im Sitzungssaal der Verbandsgemeindeverwaltung Beginn: 18:00 Uhr Ende: 19:57 Uhr SITZUNGSTEILNEHMER ANWESEND: Stimmrecht Name Funktion Bemerkung Unger, Steffen Bürgermeister und Vorsitzender ja Dieterich, Carsten Beigeordneter Vorsitzender TOP 1"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "d",
+     "i",
+     "m"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     true,
+     true
+    ]
+   }
+  },
+  {
+   "id": "de-14625600-vo-2612602100017",
+   "title": "Beschluss Sitzungstermine 2. Halbjahr 2026",
+   "docs": [
+    {
+     "title": "Beschlussvorlage 2026/018/HA (Beschluss Sitzungstermine 2. Halbjahr 2026).pdf",
+     "url": "https://ris-wachau.zv-kisa.de/api.php?document_type_id=4&document_relation_id=2612602100017&submission_id=2612602100017&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Gemeinde Wachau Ortsteil Feldschlößchen Ortsteil Leppersdorf Ortsteil Lomnitz Ortsteil Seifersdorf Ortsteil Wachau Seite 1 von 1 Beschlussvorlage Beschluss Nr.: 2026/018/HA Gremium Datum Status Beratungsergebnis anwesend ja nein enthalten vertagt Gemeinderat 13.05.2026 ö 12 12 0 0 Gegenstand der Beschlussvorlage: Beschluss Sitzungstermine 2. Halbjahr 2026 Beschlussvorschlag: Der Gemeinderat der Ge"
+    },
+    {
+     "title": "Sitzungstermine 2026 2. HJ",
+     "url": "https://ris-wachau.zv-kisa.de/api.php?document_type_id=13&document_relation_id=2612602100017%7C20260226131116-0.pdf%7C&submission_attachment_id=2612602100017%7C20260226131116-0.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Sitzungstermine des Gemeinderates und seiner Ausschüsse 2. Halbjahr 2026 Mittwoch 12.08.2026 Dienstag 25.08.2026 Donnerstag 27.08.2026 Mittwoch 09.09.2026 Dienstag 29.09.2026 Donnerstag 24.09.2026 Mittwoch 14.10.2026 Dienstag 27.10.2026 Donnerstag 29.10.2026 Mittwoch 11.11.2026 Dienstag 24.11.2026 Donnerstag 26.11.2026 Mittwoch 09.12.2026 Änderungen sind vorbehalten! Dezember entfällt Der Gemeinde"
+    },
+    {
+     "title": "Beschluss  von TOP 8 Sitzung des Gemeinderates",
+     "url": "https://ris-wachau.zv-kisa.de/api.php?document_type_id=5&document_relation_id=ni_2026-GR-60%7C2612602100017%7C1&agenda_item_id=ni_2026-GR-60%7C2612602100017%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Sitzung des Gemeinderates vom 13.05.2026 - öffentlicher Teil - Seite 1 von 1 Herr Opitz Die nachfolgenden Sachverhalte werden von Herrn Künzelmann erläutert: - Es gibt keine Freigabe, die Biberbauten in Leppersdorf zu entfernen. Ein ständiger Austausch mit dem Biberbeauftragten des Landratsamtes findet statt. - Im nichtöffentlichen Teil wird über die Unterstützung der Gemeinde bei der Sanierung de"
+    },
+    {
+     "title": "Auszug von TOP 8 Sitzung des Gemeinderates",
+     "url": "https://ris-wachau.zv-kisa.de/api.php?document_type_id=6&document_relation_id=ni_2026-GR-60%7C2612602100017%7C1&agenda_item_id=ni_2026-GR-60%7C2612602100017%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Gemeinde Wachau Ortsteil Feldschlößchen Ortsteil Leppersdorf Ortsteil Lomnitz Ortsteil Seifersdorf Ortsteil Wachau Seite 1 von 1 Beglaubigter Auszug aus der Niederschrift über die Sitzung des Gemeinderates am 13.05.2026 TOP 8. – öffentlicher Teil Gegenstand des Beschlusses Beschluss Sitzungstermine 2. Halbjahr 2026 Beschluss 2026/018/HA Der Gemeinderat der Gemeinde Wachau beschließt die Termine fü"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-15089305-vo-20260110100087",
+   "title": "Beschluss zur Festsetzung von Tarifen (Entgelte) für das Gesundheits- und Erholungsbad \"Solequell Bad Salzelmen\" ab dem 01.01.2027",
+   "docs": [
+    {
+     "title": "Beschlussvorlage 0292/2026 (Beschluss zur Festsetzung von Tarifen (Entgelte) für das Gesundheits- und Erholungsbad \"Solequell Bad Salzelmen\" ab dem 01.01.2027).pdf",
+     "url": "https://schoenebeck.gremien.info/api.php?document_type_id=4&document_relation_id=20260110100087&submission_id=20260110100087&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "STADT Schönebeck (Elbe) Der Oberbürgermeister Beschlussvorlage Nr. 0292/2026 Datum: 01.10.2026 Amt Eigenbetrieb SOLEPARK Schönebeck/Bad Salzelmen Beratungsfolge Termin Status TOP Ja Nein Ent. Betriebsausschuss Kur- und Gesundheitsverwaltung 15.10.2026 öffentlich beschließend Betreff: Beschluss zur Festsetzung von Tarifen (Entgelte) für das Gesundheits- und Erholungsbad \"Solequell Bad Salzelmen\" ab"
+    },
+    {
+     "title": "Eintrittspreise Solequell ab 01.01.2027",
+     "url": "https://schoenebeck.gremien.info/api.php?document_type_id=13&document_relation_id=20260110100087%7C20261001094927-0.pdf%7C&submission_attachment_id=20260110100087%7C20261001094927-0.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Anlage zur Beschlussvorlage BAKG am 15.10.2026 Eintrittspreise Solequell ab 01.01.2027 Preise = Bruttopreise ab 01.01.2027 nur Badebereich 2 Stunden Erwachsener 15,00 € 3 Stunden Erwachsener 17,00 € Familienkarte 3 Stunden (2 Erwachsene + 1 Kind bis 12 Jahre) 39,00 € jedes weitere Kind bis 12 Jahre 7,00 € Tageskarte Erwachsener 23,00 € Tageskarte Kinder von 0 bis 12 Jahre 7,00 € Familientageskarte"
+    },
+    {
+     "title": "Preise für Wohlfühlmassagen ab 01.01.2027",
+     "url": "https://schoenebeck.gremien.info/api.php?document_type_id=13&document_relation_id=20260110100087%7C20261001094928-1.pdf%7C&submission_attachment_id=20260110100087%7C20261001094928-1.pdf%7C&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Anlage zur Beschlussvorlage BAKG am 15.10.2026 Preise Wohlfühlmassagen im Solequell ab 01.01.2027 ab 01.01.2027 Dauer Brutto-Preis Massageangebote: Salz-Öl-Peeling 20 min 28,50 € Wohlfühlmassage 20 min 28,50 € Wohlfühlmassage 30 min 38,50 € Ganzkörpermassage 45 min 55,00 € Massage mit Schokolade 45 min 60,00 € Fußreflexzonenmassage 20 min 28,50 € Fußreflexzonenmassage 30 min 38,50 € Entspannende F"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05374004-vo-2007011324",
+   "title": "Aufhebung Bebauungsplan Nr. 52",
+   "docs": [
+    {
+     "title": "Vorlage",
+     "url": "https://sessionnet.owl-it.de/bergneustadt/BI/getfile.asp?id=51102&type=do",
+     "uses": 1,
+     "head": "Stadt Bergneustadt Der Bürgermeister Bergneustadt, 12.06.2026 Federführender Fachbereich / Aktenzeichen Beschlussvorlage Nr. 0148/2026 FB 4/ öffentlich òBeratungsfolge òSitzungstermin òZuständigkeit Bau-, Planungs- und Umweltausschuss 29.06.2026 Entscheidung Beschlussvorlage Aufhebung Bebauungsplan Nr. 52 – Bahnflächen Innenstadt hier: Abwägung der Anregungen und/oder Stellungnahmen aus der frühze"
+    },
+    {
+     "title": "Anlage 01 Geltungsbereich BP Nr. 52",
+     "url": "https://sessionnet.owl-it.de/bergneustadt/BI/getfile.asp?id=51113&type=do",
+     "uses": 1,
+     "head": "Stadt Bergneustadt Aufhebung des Bebauungsplans Nr. 52 N Quelle Kartengrundlage März 2025 Aufhebung Bebauungsplan Nr. 52 Geltungsbereich (M 1:2500)"
+    },
+    {
+     "title": "Anlage 02 Abwägung EXBP52 fruehz Bet Abwaegung 260528",
+     "url": "https://sessionnet.owl-it.de/bergneustadt/BI/getfile.asp?id=51114&type=do",
+     "uses": 1,
+     "head": "Aufhebung Bebauungsplan Nr. 52 „Bahnflächen Innenstadt“ der Stadt Bergneustadt I frühzeitige Beteiligung Abwägungsvorschläge der im Rahmen der Beteiligungsverfahren nach § 3 (1) und § 4 (1) Baugesetzbuch (BauGB) eingegangenen Stellungnahmen Stand: Mai 2026 Seite 1 A) Stellungnahmen der Öffentlichkeit im Rahmen der frühzeitigen Beteiligung nach § 3 Abs. 1 BauGB Es wurde keine Stellungnahme aus der "
+    },
+    {
+     "title": "Anlage 03 Einschaetzung der Rechtsgrundlage nach Aufhebung des BP Nr. 52 260528",
+     "url": "https://sessionnet.owl-it.de/bergneustadt/BI/getfile.asp?id=51115&type=do",
+     "uses": 1,
+     "head": "mengelage m. § 34 Abs. 1 Bau GB Außenbereich gem. § 35 BauGB § 34 Abs. 1 BauGB § 34 Abs. 1 BauGB § 34 Abs. 1 BauGB § 34 Abs. 2 BauGB § 34 Abs. 2 BauGB § 34 Abs. 1 BauGB § 34 Abs. 1 BauGB § 34 Abs. 1 BauGB Bahnstr. Südring Kölner Str./ B55 Othestr. Brückenstr. Südring WA GE GE GE Bebauungsplan Nr. 52 \"Bahnflächen Innenstadtbereich\" 2009, 1. Änd. 2017 Rechtsgrundlage zur Beurteilung von Vorhaben nac"
+    },
+    {
+     "title": "Anlage 04 Begründung zur Aufhebung des Bebauungsplanes Nr. 52",
+     "url": "https://sessionnet.owl-it.de/bergneustadt/BI/getfile.asp?id=51116&type=do",
+     "uses": 1,
+     "head": "Stadt Bergneustadt Aufhebungsverfahren Bebauungsplan Nr. 52 „Bahnflächen Innenstadt“ Entwurf Begründung Stand Mai 2026 Magnus Diekmann Dominik Geyer Köln, 27.05.2026 Geschäftsführende Gesellschafter:innen: Dipl.-Geogr. Ursula Mölders Stadt- und Regionalplanerin SRL Dipl.-Ing. Dominik Geyer Stadtplaner AK NW, Bauassessor Stadt- und Regionalplaner SRL Gesellschafter/Seniorpartner: Dr. Paul G. Jansen"
+    },
+    {
+     "title": "Anlage 05 Umweltbericht zur Aufhebung des Bebauungsplanes Nr. 52",
+     "url": "https://sessionnet.owl-it.de/bergneustadt/BI/getfile.asp?id=51117&type=do",
+     "uses": 1,
+     "head": "Stadt Bergneustadt BEGRÜNDUNG gemäß § 2a Baugesetzbuch (BauGB) zur Aufhebung des Bebauungsplanes Nr. 52 \"Bahnflächen Innenstadt\" Teil 2 – UMWELTBERICHT Stand: 28. Mai 2026 Bearbeitung: Umwelt ▪ Stadt ▪ Land Alte Rathausstraße 4 51545 Waldbröl Telefon: 02291-927803-0 E-mail: info@hkr-landschaftsarchitekten.de Begründung zur Aufhebung des Bebauungsplans Nr. 52 „Bahnflächen Innenstadt“, Stadt Bergneu"
+    },
+    {
+     "title": "Anlage 06 Nutzungskartierung BP9N BP52",
+     "url": "https://sessionnet.owl-it.de/bergneustadt/BI/getfile.asp?id=51118&type=do",
+     "uses": 1,
+     "head": "Bebauungsplan Nr. 68 \"GE Dreiort\" 18.02.2025 BP Nr. 65 \"Dreiort Ost\" 2021 Bebauungsplan Nr. 9 N \"Dreiort\" 1989, 7. Änd. 2017 Bebauungsplan Nr. 52 \"Bahnflächen Innenstadtbereich\" 2009, 1. Änd. 2017 Nutzungen Leerstand Wohngebäude Wohnnutzung im OG Laden Versorgung des Gebiets dienende Läden sowie Schank- und Speisewirtschaften Einzelhandelsbetrieb Großflächiger Einzelhandelsbetrieb Geschäfts- und B"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-08212000-oparl-c9ad1257e78e658060ab",
+   "title": "Versorgungs- bzw. Ausfallsicherheit der Medien, Strom-, Gas-, Wasser in den Höhenstadtteilen bzw. Wolfartsweier",
+   "docs": [
+    {
+     "title": "Anfrage Wolfartsweier",
+     "url": "https://web2.karlsruhe.de/ris/oparl/bodies/0001/downloadfiles/a/00675770.pdf",
+     "uses": 1,
+     "head": "Anfrage Gedruckt auf 100 Prozent Recyclingpapier Vorlage Nr.: 2026/0019 Eingang: 12.01.2026 Versorgungs- bzw. Ausfallsicherheit der Medien, Strom-, Gas-, Wasser in den Höhenstadtteilen bzw. Wolfartsweier Anfrage der SPD-Ortschaftsratsfraktion Gremien Termin TOP Ö / N Zuständigkeit Ortschaftsrat Wolfartsweier 11.03.2026 1 Ö Behandlung Anfrage: „Versorgungs- bzw. Ausfallsicherheit der Medien, Strom-"
+    },
+    {
+     "title": "2026-02_Stellungnahme Stadtwerke",
+     "url": "https://web2.karlsruhe.de/ris/oparl/bodies/0001/downloadfiles/a/00676651.pdf",
+     "uses": 1,
+     "head": " "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-09563000-top-49144--7",
+   "title": "Antrag der Stadtratsfraktion Bündnis90/Die Grünen vom 22.01.2026 - Einlagerung von vorübergehend abgebauten Kunstwerken",
+   "docs": [
+    {
+     "title": "Verfügung zum Antrag",
+     "url": "https://ratsinfo.fuerth.de/bi/getfile.asp?id=4309854&type=do",
+     "uses": 1,
+     "head": "Verfügung zum Antrag - öffentlich - Antragsteller Bündnis 90/Die Grünen-Stadtratsfraktion Antragsnummer AG-Ö/2492/2026 Antragsdatum 22.01.2026 Gegenstand des Antrags Antrag der Stadtratsfraktion Bündnis90/Die Grünen vom 22.01.2026 - Einlagerung von vorübergehend abgebauten Kunstwerken Bearbeiter Daniela Kögel I. Gemäß Rücksprache mit dem Oberbürgermeister wird der Antrag wie folgt behandelt: Kultu"
+    },
+    {
+     "title": "26.01.22 Grüne Einlagerung von Kunstwerken",
+     "url": "https://ratsinfo.fuerth.de/bi/getfile.asp?id=4309857&type=do",
+     "uses": 1,
+     "head": "Mathildenstr. 24 90762 Fürth stadtratsfraktion@gruene-fuerth.de Stadtratsfraktion GRÜNE • Mathildenstr. 24 • 90762 Fürth Kamran Salimi, 0911 732903 (Fraktionsvorsitzender) Gabriele Zapf, 0175 6919934 (Stellv. Fraktionsvorsitzende) Anna Botzenhardt, 01515 2161543 Felix Geismann, 0911 80199647 Xenia Hasenschwanz, 0170 5404264 Harald Riedel, 0911 7876333 Philipp Steffen, 0176 63493757 Christoph Walln"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "p",
+     "p"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-06438002-vo-111301100565",
+   "title": "Grundsatzbeschluss Zustimmung der Gemeinde § 36a BauGB (Bau-Turbo)",
+   "docs": [
+    {
+     "title": "Vorlage des Magistrats  (Grundsatzbeschluss Zustimmung der Gemeinde § 36a BauGB (Bau-Turbo)).pdf",
+     "url": "https://dreieich.gremien.info/api.php?document_type_id=4&document_relation_id=111301100565&submission_id=111301100565&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "DER MAGISTRAT Fachbereich Planung und Bau Dreieich, 19.01.2026 Vorlage des Magistrats Nummer: XVII/454 Datum: 19.01.2026 Beratungsfolge Termin: Status: Ausschuss für Stadtentwicklung, Umwelt und Energie 28.01.2026 öffentlich vorberatend Haupt- und Finanzausschuss 10.02.2026 öffentlich vorberatend Stadtverordnetenversammlung 24.02.2026 öffentlich beschließend Grundsatzbeschluss Zustimmung der Gemei"
+    },
+    {
+     "title": "Beschluss von TOP 14 33. Sitzung der Stadtverordnetenversammlung",
+     "url": "https://dreieich.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-12-385%7C111301100565%7C1&agenda_item_id=ni_2026-12-385%7C111301100565%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Seite 1 von 1 14. Grundsatzbeschluss Zustimmung der Gemeinde § 36a BauGB (Bau-Turbo) Vorlage des Magistrats XVII/454 Zur Sache sprechen Frau Bingenheimer, Herr Dr. Keller, Herr Wirth, Herr Honka und Frau Hein, die eine Sitzungsunterbrechung beantragt. Sitzungsunterbrechung von 20:40 bis 20:46 Uhr. Zur Sache sprechen weiterhin Herr Dr. Keller und Herr Zimmer. Abstimmungsergebnis: 37 Ja-Stimmen 8 Ne"
+    },
+    {
+     "title": "Auszug von TOP 14 33. Sitzung der Stadtverordnetenversammlung",
+     "url": "https://dreieich.gremien.info/api.php?document_type_id=6&document_relation_id=ni_2026-12-385%7C111301100565%7C1&agenda_item_id=ni_2026-12-385%7C111301100565%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Seite 1 von 1 Beschlussauszug Koordination FB/Referat: FB 3 Beteiligung FB/Referat: 7.01 Erledigungstermin: Sitzung: 33. Sitzung der Stadtverordnetenversammlung Sitzungsdatum: 24.02.2026 Tagesordnungspunkt: 14 Vorlagen-Nr.: XVII/454 14. Grundsatzbeschluss Zustimmung der Gemeinde § 36a BauGB (Bau-Turbo) Vorlage des Magistrats XVII/454 Zur Sache sprechen Frau Bingenheimer, Herr Dr. Keller, Herr Wirt"
+    },
+    {
+     "title": "Beschluss von TOP 5 29. Sitzung des Haupt- und Finanzausschusses",
+     "url": "https://dreieich.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-1-271%7C111301100565%7C1&agenda_item_id=ni_2026-1-271%7C111301100565%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Seite 1 von 2 Erneute Feststellung der Präsenz: CDU-Fraktion 4, GRÜNE-Fraktion 3, SPD-Fraktion 3, FDP-Fraktion 2, FWG-Fraktion 1 Frau Mandel stellt fest, dass der Ausschuss nunmehr mit 13 Stadtverordneten beschlussfähig ist. 5. Grundsatzbeschluss Zustimmung der Gemeinde § 36a BauGB (Bau-Turbo) Vorlage des Magistrats XVII/454 Es liegt ein Änderungsantrag der GRÜNE-Fraktion vor: Die Leitplanken für "
+    },
+    {
+     "title": "Auszug von TOP 5 29. Sitzung des Haupt- und Finanzausschusses",
+     "url": "https://dreieich.gremien.info/api.php?document_type_id=6&document_relation_id=ni_2026-1-271%7C111301100565%7C1&agenda_item_id=ni_2026-1-271%7C111301100565%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Seite 1 von 2 Beschlussauszug Koordination FB/Referat: 7.01 Beteiligung FB/Referat: Erledigungstermin: Sitzung: 29. Sitzung des Haupt- und Finanzausschusses Sitzungsdatum: 10.02.2026 Tagesordnungspunkt: 5 Vorlagen-Nr.: XVII/454 Erneute Feststellung der Präsenz: CDU-Fraktion 4, GRÜNE-Fraktion 3, SPD-Fraktion 3, FDP-Fraktion 2, FWG-Fraktion 1 Frau Mandel stellt fest, dass der Ausschuss nunmehr mit 1"
+    },
+    {
+     "title": "Beschluss von TOP 6 29. Sitzung des Ausschusses für Stadtentwicklung, Umwelt und Energie",
+     "url": "https://dreieich.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-STADTENT-220%7C111301100565%7C1&agenda_item_id=ni_2026-STADTENT-220%7C111301100565%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Seite 1 von 1 6. Grundsatzbeschluss Zustimmung der Gemeinde § 36a BauGB (Bau-Turbo) Vorlage des Magistrats XVII/454 Es liegen Änderungsanträge der Fraktionen von FDP und GRÜNE vor. Herr Dr. Keller erläutert den Änderungsantrag der FDP-Fraktion. Zur Sache sprechen Herr Dechert, Frau Bingenheimer, Frau Holste-Flinspach, Herr Wirth, Frau Borgwald und Herr Kurbel. Herr Wirth erläutert den Änderungsant"
+    },
+    {
+     "title": "Auszug von TOP 6 29. Sitzung des Ausschusses für Stadtentwicklung, Umwelt und Energie",
+     "url": "https://dreieich.gremien.info/api.php?document_type_id=6&document_relation_id=ni_2026-STADTENT-220%7C111301100565%7C1&agenda_item_id=ni_2026-STADTENT-220%7C111301100565%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Seite 1 von 2 Beschlussauszug Koordination FB/Referat: 7.01 Beteiligung FB/Referat: FB 3 Erledigungstermin: Sitzung: 29. Sitzung des Ausschusses für Stadtentwicklung, Umwelt und Energie Sitzungsdatum: 28.01.2026 Tagesordnungspunkt: 6 Vorlagen-Nr.: XVII/454 6. Grundsatzbeschluss Zustimmung der Gemeinde § 36a BauGB (Bau-Turbo) Vorlage des Magistrats XVII/454 Es liegen Änderungsanträge der Fraktionen"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "d",
+     "d",
+     "d",
+     "d",
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "de-073335003-top-6220",
+   "title": "Information und Beratung über Veranstaltungen unter Beteiligung der Gemeinde im Jahr 2026",
+   "docs": [
+    {
+     "title": "Beschluss  von TOP 2 Sitzung des Ausschusses für Kultur, Sport, gemeindliche Veranstaltungen und Kindergarten der Ortsgemeinde Albisheim (Pfrimm)",
+     "url": "https://goellheim.gremien.info/api.php?document_type_id=5&document_relation_id=ni_2026-AlbKuSpVe-7%7Czt_1%7C1&agenda_item_id=ni_2026-AlbKuSpVe-7%7Czt_1%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Sitzung des Ausschusses für Kultur, Sport, gemeindliche Veranstaltungen und Kindergarten der Ortsgemeinde Albisheim (Pfrimm) vom 14.01.2026 - TOP 2 - öffentlich 2. Information und Beratung über Veranstaltungen unter Beteiligung der Gemeinde im Jahr 2026 Ortsbürgermeister Zelt informierte über bevorstehende Veranstaltungen unter Beteiligung der Gemeinde. Die nächste Veranstaltung ist das Bahnhofsfe"
+    },
+    {
+     "title": "Auszug von TOP 2 Sitzung des Ausschusses für Kultur, Sport, gemeindliche Veranstaltungen und Kindergarten der Ortsgemeinde Albisheim (Pfrimm)",
+     "url": "https://goellheim.gremien.info/api.php?document_type_id=6&document_relation_id=ni_2026-AlbKuSpVe-7%7Czt_1%7C1&agenda_item_id=ni_2026-AlbKuSpVe-7%7Czt_1%7C1&id=69&json=1&platform=ris&system=ris",
+     "uses": 1,
+     "head": "Auszug aus der Niederschrift über die Sitzung in der Legislaturperiode 2024/2029 des Ausschusses für Kultur, Sport, gemeindliche Veranstaltungen und Kindergarten der Ortsgemeinde Albisheim (Pfrimm) vom 14.01.2026 A. Öffentlicher Teil: 2. Information und Beratung über Veranstaltungen unter Beteiligung der Gemeinde im Jahr 2026 Ortsbürgermeister Zelt informierte über bevorstehende Veranstaltungen un"
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0,
+     1
+    ],
+    "types": [
+     "d",
+     "d"
+    ],
+    "session": [
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "nrw-05974028-vo-12084",
+   "title": "Bau der Südtangente",
+   "docs": [
+    {
+     "title": "Beschlussvorlage",
+     "url": "https://sessionnet.owl-it.de/lippstadt/bi/getfile.asp?id=154767&type=do",
+     "uses": 1,
+     "head": "Beratungsergebnis Einstimmig Mit Stim- men- Mehrheit Ja Nein Enthaltung Laut Beschluss- vorschlag Abweichender Beschluss Unterschrift Vorlage Nr. 128/2026 öffentlich FB 6 / Stadtentwicklung und Bauen Auskunft erteilt: Herr Horstmann Telefon: 02941 980-425 Beratungsfolge Sitzungstermin Haupt- und Finanzausschuss 04.05.2026 Rat 18.05.2026 TOP Bau der Südtangente Beschlussvorschlag Der Rat der Stadt "
+    },
+    {
+     "title": "Anlage 1 - Landschaftsbauwerk Variante 1",
+     "url": "https://sessionnet.owl-it.de/lippstadt/bi/getfile.asp?id=154881&type=do",
+     "uses": 1,
+     "head": "23 35 \u0000\u0001\u0002 \u0000\u0001\u0003 \u0000 \u0001\u0002\u0003 Bökenförder Straße \u0001\u0002\u0003 \u0001\u0002\u0003 \u0001\u0002\u0003 H 37 29 28 36 38 39 40 27 26 25 24 22 21 20 19 16 15 14 13 12 11 10 9 8 18 17 34 33 +0.600 % 120.000 m -0.655 % 100.985 m km = 0+220.000 h TS = 79.563 -0.655 % 100.985 m +0.550 % 109.015 m +0.550 % 109.015 m 50.500 m -2.500 % 4.750 m km = 0+000.000 h TS = 78.993 -2.500 % 6.750 m +0.750 % 44.058 m km = 0+006.750 h TS = 78.824 6.750 m -2.500 % km = "
+    },
+    {
+     "title": "Anlage 2 - Landschaftsbauwerk Variante 2",
+     "url": "https://sessionnet.owl-it.de/lippstadt/bi/getfile.asp?id=154882&type=do",
+     "uses": 1,
+     "head": "23 35 \u0000\u0001\u0002 \u0000\u0001\u0003 \u0000 \u0001\u0002\u0003 Bökenförder Straße \u0001\u0002\u0003 \u0001\u0002\u0003 \u0001\u0002\u0003 H 37 29 28 36 38 39 40 27 26 25 24 22 21 20 19 16 15 14 13 12 11 10 9 8 18 17 34 33 +0.600 % 120.000 m -0.655 % 100.985 m km = 0+220.000 h TS = 79.563 -0.655 % 100.985 m +0.550 % 109.015 m +0.550 % 109.015 m 50.500 m -2.500 % 4.750 m km = 0+000.000 h TS = 78.993 -2.500 % 6.750 m +0.750 % 44.058 m km = 0+006.750 h TS = 78.824 6.750 m -2.500 % km = "
+    },
+    {
+     "title": "Anlage 2 a - Landschaftsbauwerk Variante 2 a",
+     "url": "https://sessionnet.owl-it.de/lippstadt/bi/getfile.asp?id=154885&type=do",
+     "uses": 1,
+     "head": "23 35 \u0000\u0001\u0002 \u0000\u0001\u0003 \u0000 \u0001\u0002\u0003 Bökenförder Straße \u0001\u0002\u0003 \u0001\u0002\u0003 \u0001\u0002\u0003 H 37 29 28 36 38 39 40 27 26 25 24 22 21 20 19 16 15 14 13 12 11 10 9 8 18 17 34 33 +0.600 % 120.000 m -0.655 % 100.985 m km = 0+220.000 h TS = 79.563 -0.655 % 100.985 m +0.550 % 109.015 m +0.550 % 109.015 m 50.500 m -2.500 % 4.750 m km = 0+000.000 h TS = 78.993 -2.500 % 6.750 m +0.750 % 44.058 m km = 0+006.750 h TS = 78.824 6.750 m -2.500 % km = "
+    }
+   ],
+   "more": 0,
+   "gold": {
+    "main": [
+     0
+    ],
+    "types": [
+     "p",
+     "a",
+     "a",
+     "a"
+    ],
+    "session": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ ]
+}

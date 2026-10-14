@@ -72,7 +72,14 @@ export function outcomeOf(text){
  if(/vertagt|zurückgestellt|abgesetzt|vertagung|ohne beschluss/.test(t))return 'vertagt';
  if(/verwiesen|überwiesen/.test(t))return 'verwiesen';
  if(/kenntnis/.test(t)&&!/beschlossen|zugestimmt|angenommen/.test(t))return 'zur Kenntnis genommen';
- const how=/einstimmig|ohne gegenstimme|einhellig/.test(t)?'einstimmig ':/mehrheitlich|mit mehrheit|gegenstimme|stimmenmehrheit|\d+ nein/.test(t)?'mit Mehrheit ':'';
+ // Stimmenzahlen („Ja: 21, Nein: 0“, „29 Ja-Stimme(n), 0 Gegenstimme(n)“, „20 Stimmen dafür 0 Stimmen dagegen“): ohne Nein-Stimme
+ // einstimmig, mehr Ja als Nein mit Mehrheit, sonst abgelehnt (Enthaltungen zählen nicht)
+ const yes=t.match(/(?:\bja\s*:?\s*(\d+)|(\d+)\s*(?:ja-stimme|ja\b|stimmen? dafür|stimme\(n\) dafür|dafür))/),no=t.match(/(?:\bnein\s*:?\s*(\d+)|(\d+)\s*(?:nein-stimme|nein\b|gegenstimme|stimmen? dagegen|stimme\(n\) dagegen|dagegen))/);
+ if(yes&&no&&!/abgelehnt|vertagt|zurückgezogen|verwiesen|kenntnis/.test(t)){const y=+(yes[1]??yes[2]),n=+(no[1]??no[2]);
+  if(y>n)return (n===0?'einstimmig ':'mit Mehrheit ')+(/empfohlen|empfiehlt|empfehlung/.test(t)&&!/beschlossen/.test(t)?'empfohlen':'beschlossen');
+  return 'abgelehnt';}
+ if(/^(?:zustimmung|befürwortet|antrag angenommen)\b/.test(t.trim()))return /befürwortet/.test(t)?'empfohlen':'beschlossen';
+ const how=/einstimmig|ohne gegenstimme|einhellig/.test(t)?'einstimmig ':/mehrheitlich|mit mehrheit|stimmenmehrheit|[1-9]\d* (?:nein|gegenstimme)/.test(t)?'mit Mehrheit ':'';
  if(/empfohlen|empfiehlt|empfehlung/.test(t)&&!/beschlossen/.test(t))return how+'empfohlen';
  if(/beschlossen|zugestimmt|angenommen|genehmigt/.test(t)||how)return how+'beschlossen';
  return null;
