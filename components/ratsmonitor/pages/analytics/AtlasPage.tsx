@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PageBand } from "./PageBand";
 import { XAtlasView } from "./XAtlasView";
@@ -32,10 +32,13 @@ export function AtlasPage() {
   const stageRaw = params.get("stage") ?? "";
   const stage = STAGE_IDS.has(stageRaw) ? stageRaw : "";
   const target = atlasHref({ thema, sub, stage });
-  // Ungültige Auswahl: auf die gültige Atlas-Adresse umstellen (ohne neuen Verlaufseintrag)
+  /* Suchbegriff aus einem geteilten Link (?q=, von „Link kopieren“): einmal beim Öffnen, XAtlasView übernimmt ihn in die Suche */
+  const [term] = useState(() => params.get("q")?.trim() || null);
+  // Ungültige Auswahl und ?q=: auf die gültige Atlas-Adresse umstellen (ohne neuen Verlaufseintrag)
   const current = path + (params.size ? "?" + params : "");
   useEffect(() => { if (current !== target) router.replace(target, { scroll: false }); }, [current, target, router]);
-  const pick = (next: { thema?: string; sub?: string; stage?: string }) => router.replace(atlasHref(next), { scroll: false });
+  /* Eine Wahl ist ein Schritt im Verlauf: Zurück führt zur vorigen Auswahl */
+  const pick = (next: { thema?: string; sub?: string; stage?: string }) => router.push(atlasHref(next), { scroll: false });
   const name = ATLAS_THEMEN.find(([id]) => id === thema)?.[1] ?? "";
   const stageName = STAGES.find((s: { id: string; name: string }) => s.id === stage)?.name;
   return (
@@ -49,15 +52,17 @@ export function AtlasPage() {
         <ul className="m-0 flex w-max list-none gap-2 p-0">
           {ATLAS_THEMEN.map(([id, label]) => (
             <li key={id || "alle"}>
-              <button type="button" aria-pressed={id === thema && !stage} onClick={() => pick({ thema: id })}
-                className={`h-9 whitespace-nowrap rounded-full px-4 text-[14px] ${id === thema && !stage ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>{label}</button>
+              {/* Ein Thema behält „Was geschieht“ (z. B. Förderung im Thema Bauen), „Alle Themen“ setzt alles zurück */}
+              <button type="button" aria-pressed={id === thema} onClick={() => pick(id ? { thema: id, stage } : {})}
+                className={`h-9 whitespace-nowrap rounded-full px-4 text-[14px] ${id === thema ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>{label}</button>
             </li>
           ))}
         </ul>
       </nav>
-      <h2 className="mt-8 text-[22px] font-semibold">{[name, sub && SUBTOPICS.find((s: { id: string; name: string }) => s.id === sub)?.name, stageName].filter(Boolean).join(" · ")}</h2>
+      {/* Ohne Auswahl keine Überschrift: „Alle Themen“ steht schon in der Themenleiste */}
+      {(thema || stage) && <h2 className="mt-8 text-[22px] font-semibold">{[name, sub && SUBTOPICS.find((s: { id: string; name: string }) => s.id === sub)?.name, stageName].filter(Boolean).join(" · ")}</h2>}
       {stage && <button type="button" onClick={() => pick({ thema, sub })} className="mt-1 text-[14px] font-medium text-teal-700 hover:underline">„{stageName}“ aufheben →</button>}
-      <XAtlasView key={target} theme={thema} sub={sub} stage={stage} onTheme={(id) => pick({ thema: id })} onSub={(id) => pick({ thema, sub: id, stage })} />
+      <XAtlasView theme={thema} sub={sub} stage={stage} term={term} onTheme={(id) => pick({ thema: id, stage })} onSub={(id) => pick({ thema, sub: id, stage })} />
     </main>
   );
 }

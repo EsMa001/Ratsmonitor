@@ -21,7 +21,8 @@ function AnalyseLeiste() {
   }, []);
   const kopieren = () => {
     const u = new URL(window.location.href);
-    if (text.trim()) u.searchParams.set("thema", text.trim());
+    /* Der Atlas nutzt ?thema= für eines der 10 Themen und liest den Suchbegriff aus ?q=; die übrigen Analysen lesen ihn aus ?thema= */
+    if (text.trim()) u.searchParams.set(u.pathname === "/analytics/atlas" ? "q" : "thema", text.trim());
     navigator.clipboard?.writeText(u.toString()).then(() => toast("Link kopiert.")).catch(() => toast("Der Link konnte nicht kopiert werden."));
   };
   return (

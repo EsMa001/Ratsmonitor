@@ -104,6 +104,9 @@ test('Ort im Vergleich: Anteil je Unterthema gegen die Viertel der Vergleichsgru
   assert.equal(rad.k,36);assert.equal(rad.share,30);assert.equal(rad.median,2.5);assert.equal(rad.class,'mehr');
   assert.equal(c.rows.find(r=>r.key==='mobilitaet.park').class,null,'unter 5 Vorgängen keine Einordnung');
   assert.equal((await xQuery(db,regions,new URLSearchParams('view=atlas&theme=mobilitaet&to=2026-12-31'),{pop})).compare,null,'ohne Ort kein Vergleich');
+  /* Kreisfreie Stadt mit dem 5-stelligen Schlüssel der Suche */
+  regions.push({id:'ks',kind:'city',name:'Kreisfreie Stadt',ags:'05999000'});pop.ks=150000;
+  assert.equal((await xQuery(db,regions,new URLSearchParams('view=atlas&theme=mobilitaet&area=05999&to=2026-12-31&today=2026-12-31'),{pop})).compare?.region,'Kreisfreie Stadt','5-stelliger Schlüssel einer kreisfreien Stadt');
  }finally{sql.close();}
 });
 test('Werte aus den Unterlagen: Gliederung je Wert, Summe je Vorgang einmal, Liste',async()=>{
