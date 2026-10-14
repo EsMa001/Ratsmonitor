@@ -18,7 +18,7 @@ for(const [i,r] of ref.rows.entries()){
  else{const p=primaryPdf(docs,opt),k=docs.indexOf(p);if(g.main.includes(k))c.mainOk++;else bad.push([i,'haupt',`${'abcdefghijkl'[k]} statt ${g.main.map(x=>'abcdefghijkl'[x]).join('')}`,r.title]);}
  docs.forEach((d,j)=>{
   c.docs++;const want=g.types[j];
-  const tt=CODE[types.get(d.url)],tx=d.head?documentTypeFromText(d.head):null,tb=CODE[effectiveType(types.get(d.url),tx)];
+  const tt=CODE[types.get(d.url)],tx=d.head?documentTypeFromText(d.head):null,tb=CODE[effectiveType(types.get(d.url),tx,d.title)];
   if(tt===want)c.tTitle++;if(tb===want)c.tBoth++;if(d.head){c.textDocs++;if(CODE[tx]===want)c.tText++;}
   if(tb!==want){const key=want+'→'+tb;conf[key]=(conf[key]||0)+1;}
   const s=sessionDocument(d,d.uses);if(g.session[j]){c.sessGold++;if(s)c.sessTP++;else{c.sessFN++;bad.push([i,'sitzung',`${'abcdefghijkl'[j]} nicht erkannt`,d.title]);}}else if(s){c.sessFP++;bad.push([i,'sitzung',`${'abcdefghijkl'[j]} fälschlich`,d.title]);}

@@ -39,7 +39,9 @@ test('effektive Art: Vorlage laut Text gilt, Titel ohne Art übernimmt den Text,
  assert.equal(effectiveType('attachment','paper'),'paper');
  assert.equal(effectiveType('invitation','paper'),'paper');
  assert.equal(effectiveType('decision','paper'),'decision');
- assert.equal(effectiveType('decision','minutes'),'minutes');
+ assert.equal(effectiveType('decision','minutes'),'decision');
+ assert.equal(effectiveType('attachment','paper','Anlage 1 - Beschlussvorschlag des ZV'),'attachment');
+ assert.equal(effectiveType('minutes','paper'),'minutes');
  assert.equal(effectiveType('other','invitation'),'invitation');
  assert.equal(effectiveType('paper','invitation'),'paper');
  assert.equal(effectiveType('attachment',null),'attachment');
