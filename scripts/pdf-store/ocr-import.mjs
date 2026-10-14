@@ -20,10 +20,8 @@ const res={geschrieben:0,nichtOffen:0,seitenPassenNicht:0,versionPasstNicht:0,un
 for(const name of fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort()){
  let j;
  try{j=JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));}catch{res.kaputt++;continue;}
- const {sha,pages,ocrPages}=j;
- if(!sha||!Array.isArray(pages)){res.kaputt++;continue;}
- // Methode fehlt in älteren Ergebnissen: aus der Zahl der OCR-Seiten ableiten (text, ocr, mixed wie in ocr-mac.mjs)
- const method=j.method||((ocrPages??0)===0?'text':(ocrPages===pages.length?'ocr':'mixed'));
+ const {sha,pages,method,ocrPages}=j;
+ if(!sha||!Array.isArray(pages)||!method){res.kaputt++;continue;}
  if(j.version!==TEXT_VERSION){res.versionPasstNicht++;continue;}
  if(!has.get(sha)){res.unbekannt++;continue;}
  const t=row.get(sha);
