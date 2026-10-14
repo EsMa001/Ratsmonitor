@@ -49,8 +49,9 @@ for(const r of db.prepare("SELECT event_date AS date,active,json_extract(payload
 
 /* 3. Je Dokument einordnen: Hauptdokument oder übriges PDF, Monat, Stand; offen bei ausgelassenen Servern (fetch.mjs) getrennt */
 const isBlocked=h=>{const x=hosts.get(h);return !!x&&x.n>=BLOCK_MIN&&x.bad/x.n>=BLOCK_SHARE;};
-const blank=()=>({linked:0,ok:0,textOnly:0,failed:0,open:0,openBlocked:0});
-const add=(c,s)=>{c.linked++;if(s==='ok')c.ok++;else if(s==='text-only')c.textOnly++;else if(s==='error'||s==='unsupported')c.failed++;else c.open++;};
+const blank=()=>({linked:0,ok:0,textOnly:0,failed:0,private:0,open:0,openBlocked:0});
+// 'private': nicht öffentlich (Anmeldeseite), weder gescheitert noch offen
+const add=(c,s)=>{c.linked++;if(s==='ok')c.ok++;else if(s==='text-only')c.textOnly++;else if(s==='error'||s==='unsupported')c.failed++;else if(s==='private')c.private++;else c.open++;};
 const P={...blank(),withText:0,complete:0,reasons:new Map(),oldestLoaded:'',oldestTried:'',oldestLinked:''};
 const O={...blank(),withText:0,scans:0,reasons:new Map()};
 const months={primary:new Map(),others:new Map()};
@@ -101,13 +102,13 @@ const stats={
  at:new Date().toISOString(),seconds:0,
  linked:P.linked,allPdfs:linked.size,
  oldest:{loaded:P.oldestLoaded||null,tried:P.oldestTried||null,linked:P.oldestLinked||null},completeThrough:completeThrough(pm),
- loaded:P.ok,textOnly:P.textOnly,failed:P.failed,open:P.open,openBlocked:P.openBlocked,reasons:list(P.reasons),
+ loaded:P.ok,textOnly:P.textOnly,failed:P.failed,private:P.private,open:P.open,openBlocked:P.openBlocked,reasons:list(P.reasons),
  quality:storeQuality(files,rankedTextOnly(store)),
  bytes:{pdf:pdfPrimary+pdfOthers,pdfPrimary,pdfOthers,text:Math.round(text),used:Math.round(used)},budgetGb,threshold,disk,
  // OCR (Auftrag „OCR starten“): alle Dateien; ocrWaiting/ocrPages nur Hauptdokumente
  texts:{files:Number(tx.files||0),ocrWaiting:Number(tx.waiting||0),ocrPages:Number(tx.pages||0),ocrWaitingAll:Number(tx.waitingAll||0),ocrPagesAll:Number(tx.pagesAll||0),missing:Number(missing.n||0),linked:P.withText,complete:P.complete},
  summaries:{withText:sumText,done:sumDone},
- others:{linked:O.linked,loaded:O.ok,textOnly:O.textOnly,failed:O.failed,open:O.open,openBlocked:O.openBlocked,withText:O.withText,scans:O.scans,reasons:list(O.reasons),completeThrough:completeThrough(om)},
+ others:{linked:O.linked,loaded:O.ok,textOnly:O.textOnly,failed:O.failed,private:O.private,open:O.open,openBlocked:O.openBlocked,withText:O.withText,scans:O.scans,reasons:list(O.reasons),completeThrough:completeThrough(om)},
  months:{primary:pm,others:om},
  hosts:{total:hostList.length,blocked:hostList.filter(h=>h.blocked).length,top:hostList.slice(0,100)},
 };

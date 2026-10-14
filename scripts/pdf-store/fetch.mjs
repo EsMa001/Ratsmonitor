@@ -59,13 +59,15 @@ const db=new DatabaseSync(file,{readOnly:true});
 
 // Formalie wie in der Suche (search_cards.formal, drizzle/0017); ohne Spalte unbekannt.
 const formalSql=db.prepare("SELECT 1 FROM pragma_table_info('search_cards') WHERE name='formal'").get()?'(SELECT formal FROM search_cards c WHERE c.id=topics.id)':'NULL';
-// Server, die nicht liefern: aus der Ablage (alle bisherigen Abrufe je Server)
-const blocked=new Set();
+// Server, die nicht liefern: aus der Ablage (alle bisherigen Abrufe je Server). Nicht öffentliche Dokumente zählen nicht als
+// Fehlschlag. Ein ausgelassener Server wird alle BLOCK_RETRY_DAYS Tage wieder versucht (oft sperrt er nur die Adresse des
+// Rechenzentrums, requirements/pdf-import-konzept.md); scheitert er wieder, gibt der Lauf ihn nach drei Fehlern im Monat auf.
+const BLOCK_RETRY_DAYS=7,blocked=new Set();let probed=0;
 if(!flag('all-hosts')&&!Number.isFinite(o.retryDays)){
  const by=new Map();
- for(const r of store.db.prepare('SELECT url,status FROM pdfs').iterate()){let h;try{h=new URL(r.url).host;}catch{continue;}const x=by.get(h)||{n:0,bad:0};x.n++;if(r.status==='error'||r.status==='unsupported')x.bad++;by.set(h,x);}
- for(const [h,x] of by)if(x.n>=BLOCK_MIN&&x.bad/x.n>=BLOCK_SHARE)blocked.add(h);
- if(blocked.size)console.log(`${blocked.size} Server ausgelassen (mindestens ${BLOCK_MIN} Abrufe, davon mindestens ${BLOCK_SHARE*100} % fehlgeschlagen); ihre Dokumente bleiben offen`);
+ for(const r of store.db.prepare('SELECT url,status,fetched_at AS at FROM pdfs').iterate()){let h;try{h=new URL(r.url).host;}catch{continue;}const x=by.get(h)||{n:0,bad:0,last:''};x.n++;if(r.status==='error'||r.status==='unsupported')x.bad++;if(r.at>x.last)x.last=r.at;by.set(h,x);}
+ for(const [h,x] of by)if(x.n>=BLOCK_MIN&&x.bad/x.n>=BLOCK_SHARE){if(Date.now()-Date.parse(x.last)>BLOCK_RETRY_DAYS*864e5)probed++;else blocked.add(h);}
+ if(blocked.size||probed)console.log(`${blocked.size} Server ausgelassen (mindestens ${BLOCK_MIN} Abrufe, davon mindestens ${BLOCK_SHARE*100} % fehlgeschlagen, letzter Versuch vor weniger als ${BLOCK_RETRY_DAYS} Tagen); ${probed} solche Server werden wieder versucht`);
 }
 let skipped=0;
 // --others: Adressen, die in irgendeinem Bericht Hauptdokument sind, lädt der normale Lauf (mit OCR)
@@ -140,6 +142,7 @@ async function one(h,job){
   if(maxBytes&&size>=maxBytes)stopping=true;
  }catch(e){
   if(halted)return;
+  if(e.private){c.private=(c.private||0)+1;store.private(job.url,{regionId:job.region,topicId:job.topic,role:job.meta?.role||null});return;}
   c.error++;h.fails++;store.fail(job.url,e.message,{http:e.http??null,regionId:job.region,topicId:job.topic,role:job.meta?.role||null});
   // Server bremst oder ist gestört: für diesen Zeitraum aufgeben (die Adressen bleiben offen für den nächsten Lauf).
   if(e.http===429||e.http===503||h.fails>=3)h.queue.length=0;
@@ -183,7 +186,7 @@ if(keeper){await keeper.close();const k=keeper.stats();console.log(`Grenze: ${k.
 if(maxBytes&&size>=maxBytes)console.log(`ZIEL ERREICHT: ${mb(size)} in der Ablage`);
 if(skipped)console.log(`${skipped} Dokumente von ausgelassenen Servern übersprungen`);
 for(const r of store.stats())console.log('Ablage:',r.status,r.n,r.bytes?mb(r.bytes):'');
-stepSummary({what:others?'others':'primary',ok:c.ok,unsupported:c.unsupported,error:c.error,bytes:c.bytes,skipped,lastMonth:month,stopped:halted,
+stepSummary({what:others?'others':'primary',ok:c.ok,unsupported:c.unsupported,error:c.error,private:c.private||0,bytes:c.bytes,skipped,lastMonth:month,stopped:halted,
  keeper:keeper?.stats()||null,used:Math.round(usedBytes(store))});
 if(live&&!process.env.RM_PROGRESS_BASE)progress(myLane,null);
 store.close();

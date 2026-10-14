@@ -13,10 +13,14 @@ import {SOURCE_USER_AGENT} from '../../server/integrations/no-redirect.mjs';
 
 /** Abruf wie /api/dokument (nur öffentliche https-Adressen, jede Weiterleitung geprüft), aber mit der Projektkennung (fetch.mjs,
     text.mjs --ocr --others). Die Zeitgrenze gilt je Abruf für Kopf und Inhalt zusammen; signal bricht ab (Anhalten). */
+/** Pfad einer Anmeldeseite, auf die ein nicht öffentliches Dokument weiterleitet */
+export const LOGIN_PAGE=/(?:^|\/)(?:noauth|login|logon|signin|anmeld\w*|auth)(?:\.\w+)?$/i;
 export function downloader({timeoutMs=10000,signal=null}={}){
  const request=(url,init)=>fetch(url,{...init,signal:AbortSignal.any([init.signal,AbortSignal.timeout(timeoutMs),signal].filter(Boolean)),headers:{'User-Agent':SOURCE_USER_AGENT}});
  return async url=>{
-  const {response:r}=await fetchDocument(url,{request});
+  const {response:r,url:final}=await fetchDocument(url,{request});
+  // Weiterleitung auf eine Anmeldeseite (sitzung-online: noauth.asp): das Dokument ist nicht öffentlich, kein Fehler
+  if(final!==url&&LOGIN_PAGE.test(new URL(final).pathname)){await r.body?.cancel().catch(()=>{});throw Object.assign(Error('nicht öffentlich'),{private:true});}
   if(!r.ok){await r.body?.cancel().catch(()=>{});throw Object.assign(Error('HTTP '+r.status),{http:r.status});}
   return bodyBytes(r,30*1048576,{message:'Dokument zu groß'});
  };
