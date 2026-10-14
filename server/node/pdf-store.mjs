@@ -8,9 +8,8 @@
  *   <dir>/files/<ab>/<sha256>.txt     Textfassung: Seiten roh, wie pdf.js sie liefert, getrennt durch \f (Seitenumbruch);
  *                                     Seiten ohne Textebene per OCR (scripts/pdf-store/text.mjs), Herkunft in Tabelle texts
  *
- * Status: 'ok' (Datei liegt), 'error' (HTTP-Fehler, Zeitüberschreitung, zu groß; endgültig, vorläufige Fehler siehe
- * temporaryFailure: nach 7 Tagen erneut, höchstens 3 Versuche; alle nach `retryDays`), 'private' (nicht öffentlich: der Abruf
- * endet auf einer Anmeldeseite; kein Fehler, nie erneut), 'unsupported' (Antwort ist kein PDF), 'text-only' (PDF fiel aus dem Budget, scripts/pdf-store/budget.mjs; nur die Textfassung bleibt). Gefüllt von scripts/pdf-store/fetch.mjs; gelesen von readDocument
+ * Status: 'ok' (Datei liegt), 'error' (HTTP-Fehler, Zeitüberschreitung, zu groß; wird nach `retryDays` erneut versucht),
+ * 'unsupported' (Antwort ist kein PDF), 'text-only' (PDF fiel aus dem Budget, scripts/pdf-store/budget.mjs; nur die Textfassung bleibt). Gefüllt von scripts/pdf-store/fetch.mjs; gelesen von readDocument
  * (server/integrations/documents.mjs, über useDocumentStore) und fetchSource (scripts/ai-batch/lib.mjs), wenn RM_PDF_STORE gesetzt ist.
  */
 import fs from 'node:fs';
@@ -21,13 +20,6 @@ import {documentTypeFromText} from '../../shared/document-type.mjs';
 
 export const DEFAULT_PDF_STORE='tmp/pdf-store';
 const isPdf=bytes=>bytes.byteLength>4&&bytes[0]===0x25&&bytes[1]===0x50&&bytes[2]===0x44&&bytes[3]===0x46&&bytes[4]===0x2d;
-
-/** Vorläufige Fehlschläge: Zeitüberschreitung, keine Verbindung, Überlastung, Serverfehler und 401/403 (oft die Sperre der
-    Rechenzentrumsadresse durch den Betreiber, requirements/pdf-import-konzept.md B1). Sie werden nach TEMP_RETRY_DAYS erneut
-    versucht, höchstens TEMP_MAX_ATTEMPTS-mal; 404/410, „kein PDF“ und „zu groß“ bleiben endgültig. */
-export const TEMP_RETRY_DAYS=7,TEMP_MAX_ATTEMPTS=3;
-export const temporaryFailure=({http,error})=>http?(http===401||http===403||http===408||http===425||http===429||http>=500)
- :/timeout|aborted|abgebrochen|Keine Antwort|fetch failed|ECONN|socket|ENOTFOUND|EAI_AGAIN|TLS|certificate|terminated/i.test(String(error||''));
 
 export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
  fs.mkdirSync(path.join(dir,'files'),{recursive:true});
@@ -57,12 +49,11 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
  // role: 'other' für PDFs, die nicht Hauptdokument sind (fetch.mjs --others); leer = Hauptdokument. Für die OCR zählen beide,
  // bei gleicher Seitenzahl gehen Hauptdokumente vor (ocrQueue).
  const cols=new Set(db.prepare('PRAGMA table_info(pdfs)').all().map(c=>c.name));
- for(const [c,t] of [['doc_type','TEXT'],['formal','INTEGER'],['event_date','TEXT'],['role','TEXT'],['attempts','INTEGER']])if(!cols.has(c))db.exec(`ALTER TABLE pdfs ADD COLUMN ${c} ${t}`);
+ for(const [c,t] of [['doc_type','TEXT'],['formal','INTEGER'],['event_date','TEXT'],['role','TEXT']])if(!cols.has(c))db.exec(`ALTER TABLE pdfs ADD COLUMN ${c} ${t}`);
  const fileOf=(sha,ext='.pdf')=>path.join(dir,'files',sha.slice(0,2),sha+ext);
  const write=(file,data)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file+'.tmp',data);fs.renameSync(file+'.tmp',file);};
  const q={
-  row:db.prepare('SELECT url,sha256,bytes,pages,status,http,error,fetched_at AS fetchedAt,role,attempts FROM pdfs WHERE url=?'),
-  bump:db.prepare('UPDATE pdfs SET attempts=COALESCE(attempts,0)+1 WHERE url=?'),
+  row:db.prepare('SELECT url,sha256,bytes,pages,status,http,error,fetched_at AS fetchedAt,role FROM pdfs WHERE url=?'),
   upsert:db.prepare(`INSERT INTO pdfs(url,sha256,bytes,pages,status,http,error,fetched_at,region_id,topic_id) VALUES(?,?,?,?,?,?,?,?,?,?)
    ON CONFLICT(url) DO UPDATE SET sha256=excluded.sha256,bytes=excluded.bytes,pages=COALESCE(excluded.pages,pdfs.pages),status=excluded.status,http=excluded.http,error=excluded.error,
    fetched_at=excluded.fetched_at,region_id=COALESCE(excluded.region_id,pdfs.region_id),topic_id=COALESCE(excluded.topic_id,pdfs.topic_id)`),
@@ -117,27 +108,16 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
   fail(url,error,{http=null,regionId=null,topicId=null,role=null}={}){
    if(q.row.get(url)?.status==='ok')return;
    q.upsert.run(url,null,null,null,'error',http,String(error).slice(0,300),new Date().toISOString(),regionId,topicId);
-   q.bump.run(url);
    // Rolle mitschreiben: Fehler übriger PDFs zählen sonst in Stand und Fehlerliste als Fehler bei Hauptdokumenten
    if(role)q.meta.run(null,null,null,role,url);
   },
-  /** Nicht öffentlich (Weiterleitung auf eine Anmeldeseite): kein Fehler, zählt weder als gescheitert noch als offen. */
-  private(url,{regionId=null,topicId=null,role=null}={}){
-   if(q.row.get(url)?.status==='ok')return;
-   q.upsert.run(url,null,null,null,'private',null,'nicht öffentlich (Anmeldung verlangt)',new Date().toISOString(),regionId,topicId);
-   if(role)q.meta.run(null,null,null,role,url);
-  },
-  /** Muss die Adresse (erneut) geladen werden? Nein bei 'ok', 'unsupported' und 'private'; bei 'error' nach retryDays, ein
-      vorläufiger Fehler (temporaryFailure) auch nach TEMP_RETRY_DAYS, solange weniger als TEMP_MAX_ATTEMPTS Versuche. textOnlyBelow:
+  /** Muss die Adresse (erneut) geladen werden? Nein bei 'ok' und 'unsupported', bei 'error' erst nach retryDays. textOnlyBelow:
       ein Hauptdokument, das nur noch als Text vorliegt und höchstens so groß ist, wieder laden (fetch.mjs, solange übrige PDFs
       verdrängt werden können). */
   wants(url,{retryDays=7,textOnlyBelow=0}={}){
    const r=q.row.get(url);if(!r)return true;
    if(r.status==='text-only')return textOnlyBelow>0&&r.role!=='other'&&r.bytes<=textOnlyBelow;
-   if(r.status!=='error')return false;
-   const age=Date.now()-Date.parse(r.fetchedAt);
-   if(age>retryDays*864e5)return true;
-   return temporaryFailure(r)&&(r.attempts||1)<TEMP_MAX_ATTEMPTS&&age>TEMP_RETRY_DAYS*864e5;
+   return r.status==='error'&&Date.now()-Date.parse(r.fetchedAt)>retryDays*864e5;
   },
   stats:()=>q.stats.all().map(r=>({...r})),
   /** Angaben für den Rang: {docType, formal, eventDate, role}; fehlende bleiben, wie sie sind. */

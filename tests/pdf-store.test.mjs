@@ -108,28 +108,3 @@ test('the AI batch reads the stored text version and does not go to the network'
   assert.match(r.text,/Erste Seite\.[\s\S]*Zweite Seite\./);assert.equal(r.pagesTotal,2);
  }finally{globalThis.fetch=fetch0;delete process.env.RM_PDF_STORE;}
 });
-
-test('vorläufige Fehlschläge nach 7 Tagen erneut, höchstens dreimal; nicht öffentlich nie erneut',async()=>{
- const {temporaryFailure}=await import('../server/node/pdf-store.mjs');
- assert.equal(temporaryFailure({http:403}),true);assert.equal(temporaryFailure({http:503}),true);assert.equal(temporaryFailure({http:404}),false);
- assert.equal(temporaryFailure({http:null,error:'The operation was aborted due to timeout'}),true);assert.equal(temporaryFailure({http:null,error:'Dokument zu groß'}),false);
- const s=tempStore(),old=new Date(Date.now()-8*864e5).toISOString();
- s.fail('https://a.example/t.pdf','The operation was aborted due to timeout');
- assert.equal(s.wants('https://a.example/t.pdf',{retryDays:Infinity}),false,'nicht vor 7 Tagen');
- s.db.prepare('UPDATE pdfs SET fetched_at=? WHERE url=?').run(old,'https://a.example/t.pdf');
- assert.equal(s.wants('https://a.example/t.pdf',{retryDays:Infinity}),true,'nach 7 Tagen');
- s.fail('https://a.example/t.pdf','timeout');s.fail('https://a.example/t.pdf','timeout');
- s.db.prepare('UPDATE pdfs SET fetched_at=? WHERE url=?').run(old,'https://a.example/t.pdf');
- assert.equal(s.entry('https://a.example/t.pdf').attempts,3);
- assert.equal(s.wants('https://a.example/t.pdf',{retryDays:Infinity}),false,'nach drei Versuchen endgültig');
- s.fail('https://a.example/404.pdf','HTTP 404',{http:404});s.db.prepare('UPDATE pdfs SET fetched_at=? WHERE url=?').run(old,'https://a.example/404.pdf');
- assert.equal(s.wants('https://a.example/404.pdf',{retryDays:Infinity}),false,'404 endgültig');
- s.private('https://a.example/p.pdf',{role:'other'});
- assert.equal(s.entry('https://a.example/p.pdf').status,'private');assert.equal(s.wants('https://a.example/p.pdf',{retryDays:-1}),false);
- s.close();
-});
-test('Weiterleitung auf eine Anmeldeseite heißt nicht öffentlich',async()=>{
- const {LOGIN_PAGE}=await import('../scripts/pdf-store/store-lib.mjs');
- for(const p of ['/BI/noauth.asp','/login','/ris/anmeldung','/auth'])assert.ok(LOGIN_PAGE.test(p),p);
- for(const p of ['/BI/do027.asp','/files/bericht.pdf','/author/x'])assert.ok(!LOGIN_PAGE.test(p),p);
-});

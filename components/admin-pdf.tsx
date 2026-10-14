@@ -10,7 +10,7 @@ import {n,pct,gb,when,clock,day,month,dur,KIND,MonthBars,SpaceBar,ProcessFlow,Ho
    Texte, Platz, wie der Import arbeitet, Fehler und Server, Protokoll. Daten: /api/admin/pdf-ablage
    (server/integrations/pdf-store-admin.mjs); die Seite rechnet nichts, sie liest, was die Skripte auf dem Server ablegen. */
 type Reason={reason:string;n:number};
-type Stats={at:string;seconds:number;linked:number;allPdfs:number;loaded:number;textOnly:number;failed:number;private?:number;open:number;openBlocked?:number;reasons:Reason[];
+type Stats={at:string;seconds:number;linked:number;allPdfs:number;loaded:number;textOnly:number;failed:number;open:number;openBlocked?:number;reasons:Reason[];
  oldest?:{loaded:string|null;tried:string|null;linked:string|null};completeThrough?:string|null;
  bytes:{pdf:number;pdfPrimary?:number;pdfOthers?:number;text:number;used:number};budgetGb:number;
  threshold?:{others:boolean;score?:number}|null;disk?:{free:number;total:number}|null;
@@ -238,9 +238,8 @@ export function AdminPdf(){
   <section className="mt-12" aria-label="Fehler und Server">
    <h2 className="flex items-center gap-2 text-[22px] font-semibold"><Icon name="alert" className="text-teal-600"/>Abrufe, Fehler und Server</h2>
    <div className="mt-5"><Kpis label="Stand der Abrufe" items={[
-    {label:'Fehlgeschlagen',value:v(s=>pct(s.failed,s.linked)),note:s?`${n(s.failed)} Hauptdokumente. Zeitüberschreitung, keine Verbindung, 401/403 und Serverfehler nach 7 Tagen erneut (höchstens 3 Versuche), sonst nur über „Fehlgeschlagene erneut versuchen“`:undefined},
-    {label:'Nicht öffentlich',value:v(s=>pct(s.private||0,s.linked)),note:s?`${n(s.private||0)} Hauptdokumente leiten auf eine Anmeldeseite; kein Fehler, nie erneut`:undefined},
-    {label:'Noch nicht versucht',value:v(s=>pct(s.open,s.linked)),note:s?`${n(s.open)} Hauptdokumente${s.openBlocked?`, davon ${n(s.openBlocked)} bei ausgelassenen Servern (alle 7 Tage wieder versucht)`:''}`:undefined},
+    {label:'Fehlgeschlagen',value:v(s=>pct(s.failed,s.linked)),note:s?`${n(s.failed)} Hauptdokumente, nur über „Fehlgeschlagene erneut versuchen“ erneut`:undefined},
+    {label:'Noch nicht versucht',value:v(s=>pct(s.open,s.linked)),note:s?`${n(s.open)} Hauptdokumente${s.openBlocked?`, davon ${n(s.openBlocked)} bei ausgelassenen Servern`:''}`:undefined},
     {label:'Vollständig bis',value:v(s=>s.completeThrough?month(s.completeThrough):'–'),note:s?`Sitzungsmonat, bis zu dem höchstens 5 % der Hauptdokumente offen sind (ohne ausgelassene Server). Ältestes geladenes Dokument ${day(s.oldest?.loaded)}, älteste verlinkte Sitzung ${day(s.oldest?.linked)}`:undefined},
     {label:'Übrige fehlgeschlagen',value:o?pct(o.failed,o.linked):v(()=>'–'),note:o?`${n(o.failed)} Dokumente`:undefined},
     {label:'Übrige noch nicht versucht',value:o?pct(o.open,o.linked):v(()=>'–'),note:o?`${n(o.open)} Dokumente`:undefined},

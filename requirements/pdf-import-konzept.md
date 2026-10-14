@@ -108,11 +108,9 @@ Server erreichbar“ getrennt von „gesperrt“ und „nicht öffentlich“ zei
 
 ## Entscheidungen (14.10.2026)
 
-- P2 und P3 umgesetzt; zusätzlich werden ausgelassene Server alle 7 Tage wieder versucht (Nico), damit eine aufgehobene
-  Sperre bemerkt wird.
+- P2, P3 und ein wöchentlicher neuer Versuch bei ausgelassenen Servern waren umgesetzt (`eb2512d`), wurden aber nicht
+  ausgerollt und auf Nicos Wunsch zurückgenommen. Fehlschläge bleiben endgültig, ausgelassene Server ausgelassen.
 - P5: übrige PDFs nicht grundsätzlich nur als Text; sie bleiben nach ihrem Wert als PDF (Score), dass derzeit kaum welche
-  bleiben, ist in Ordnung. Fortsetzen statt immer beim neuesten Monat zu beginnen bleibt sinnvoll.
+  bleiben, ist in Ordnung.
 - P6: OCR für alle PDFs, die sie brauchen, auch übrige; Ziel: möglichst alle PDFs einmal gelesen und als Text abgelegt.
-  Die Reihenfolge darf nach Bedeutung gehen, ausgelassen wird nichts.
-- Offen: P1 Betreiber anschreiben (wer, mit welchem Text); Abruf über eine andere Leitung nur mit Zustimmung des
-  Betreibers.
+- Offen: P1 (Betreiber fragen), P4 (KIC-Dateien), Fortsetzen statt Neubeginn beim neuesten Monat.
