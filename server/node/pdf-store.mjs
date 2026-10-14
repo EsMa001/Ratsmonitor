@@ -105,9 +105,11 @@ export function openPdfStore(dir=process.env.RM_PDF_STORE||DEFAULT_PDF_STORE){
    return 'ok';
   },
   /** Vermerkt einen Fehlschlag; eine früher geladene Datei bleibt dabei erhalten. */
-  fail(url,error,{http=null,regionId=null,topicId=null}={}){
+  fail(url,error,{http=null,regionId=null,topicId=null,role=null}={}){
    if(q.row.get(url)?.status==='ok')return;
    q.upsert.run(url,null,null,null,'error',http,String(error).slice(0,300),new Date().toISOString(),regionId,topicId);
+   // Rolle mitschreiben: Fehler übriger PDFs zählen sonst in Stand und Fehlerliste als Fehler bei Hauptdokumenten
+   if(role)q.meta.run(null,null,null,role,url);
   },
   /** Muss die Adresse (erneut) geladen werden? Nein bei 'ok' und 'unsupported', bei 'error' erst nach retryDays. textOnlyBelow:
       ein Hauptdokument, das nur noch als Text vorliegt und höchstens so groß ist, wieder laden (fetch.mjs, solange übrige PDFs

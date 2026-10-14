@@ -99,7 +99,11 @@ function collect(from,to){
   for(const d of others?docs.filter(x=>x?.kind==='application/pdf'&&x.url&&x.url!==p?.url&&!primaryUrls.has(x.url)):[p]){
    if(!d?.url||seen.has(d.url))continue;
    seen.add(d.url);total++;
-   if(!store.wants(d.url,{retryDays:o.retryDays,textOnlyBelow})){have++;continue;}
+   if(!store.wants(d.url,{retryDays:o.retryDays,textOnlyBelow})){
+    // Ältere Fehler übriger PDFs ohne Rolle (vor dem 14.10.2026) einmal nachtragen
+    if(others){const e=store.entry(d.url);if(e&&!e.role&&(e.status==='error'||e.status==='unsupported'))store.setMeta(d.url,{role:'other'});}
+    have++;continue;
+   }
    if(o.limit&&open>=o.limit)continue;
    let host;try{host=new URL(d.url).host;}catch{continue;}
    if(blocked.has(host)){skipped++;continue;}
@@ -136,7 +140,7 @@ async function one(h,job){
   if(maxBytes&&size>=maxBytes)stopping=true;
  }catch(e){
   if(halted)return;
-  c.error++;h.fails++;store.fail(job.url,e.message,{http:e.http??null,regionId:job.region,topicId:job.topic});
+  c.error++;h.fails++;store.fail(job.url,e.message,{http:e.http??null,regionId:job.region,topicId:job.topic,role:job.meta?.role||null});
   // Server bremst oder ist gestört: für diesen Zeitraum aufgeben (die Adressen bleiben offen für den nächsten Lauf).
   if(e.http===429||e.http===503||h.fails>=3)h.queue.length=0;
  }

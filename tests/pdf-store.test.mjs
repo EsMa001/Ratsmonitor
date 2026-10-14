@@ -32,6 +32,10 @@ test('answers that are no PDF are only noted; errors keep an earlier file and ar
  assert.equal(s.wants('https://a.example/2.pdf',{retryDays:Infinity}),false);
  assert.equal(s.wants('https://a.example/2.pdf',{retryDays:-1}),true);
  assert.equal(s.wants('https://a.example/3.pdf'),true);
+ // Fehler eines übrigen PDFs behalten ihre Rolle (sonst zählen sie als Fehler bei Hauptdokumenten)
+ s.fail('https://a.example/4.pdf','HTTP 404',{http:404,role:'other'});
+ assert.equal(s.entry('https://a.example/4.pdf').role,'other');
+ assert.equal(s.entry('https://a.example/2.pdf').role,null);
  s.close();
 });
 
