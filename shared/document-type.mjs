@@ -15,15 +15,15 @@ const RULES=[
  // „Nachtrag“ nur als eigenes Wort („1. Nachtrag zur Tagesordnung“), nicht „Nachtragshaushalt“ (Messung 13.10.2026)
  ['invitation',/einladung|bekanntmachung|tagesordnung|\bnachtrag\b|nachlieferung|sitzungskalender|sitzungsmappe/],
  // "anlage" only as a word of its own: "Kläranlage", "Sportanlage" in a subject are no attachments
- ['attachment',/\banlage|\banhang|präsentation|praesentation|stellungnahme|lageplan|übersicht/],
+ ['attachment',/(?:\b|_)anlage|\banhang|präsentation|praesentation|stellungnahme|lageplan|übersicht|skizze|planteil|schriftteil|\bplan a\d/],
  // "Beschlussvorlage" and "Beschlussvorschlag" are papers; a decision text records what was decided.
- ['decision',/beschlu(?:ss|ß)(?!vorlage|vorschlag|empfehlung)|auszug|infotext/],
+ ['decision',/beschlossene fassung|beschlüsse|abstimmungsergebnis|anhörungsergebnis|punktausz|beschlu(?:ss|ß)(?!-?\s?vorlage|vorschlag|empfehlung|kontroll|lauf|entwurf)|auszug|infotext/],
  // „Sammeldokument“ ist meist die Vorlage eines Punkts samt Anlagen (gleicher Text wie die Vorlage); hängt es an vielen
  // Berichten, erkennt sessionDocument es als Unterlage der ganzen Sitzung.
- ['paper',/vorlage|antrag|anfrage|mitteilung|drucksache|beschlussvorschlag|beschlussempfehlung|bericht|sammeldokument/],
+ ['paper',/vorlage|antrag|eilentscheidung|anfrage|mitteilung|drucksache|kurzinformation|beschlussvorschlag|beschlussempfehlung|bericht|sammeldokument/],
 ];
 /** Version of the rules below; the PDF store re-reads all kinds when it changes (scripts/pdf-store/budget.mjs --backfill) */
-export const DOC_TYPE_VERSION=4;
+export const DOC_TYPE_VERSION=5;
 const typeOf=t=>RULES.find(([,pattern])=>pattern.test(t))?.[0]||null;
 /* The first word names the document ("Beschlussvorlage …", "Anlage 3 …"); words further on usually belong to the subject
    ("… Stellungnahme der Gemeinde zum Bauvorhaben", "… Genehmigung des Protokolls"). "Vorlage (Anlage 2)" is an attachment. */
@@ -43,7 +43,7 @@ const HEAD_RULES=[
  ['minutes',/\b(niederschrift|sitzungsniederschrift|protokoll|ergebnisprotokoll|kurzprotokoll) (über|der|des|zur|vom|von)\b/],
  // Session documents only by their heading: "Tagesordnung" also stands in letters ("Antrag zur Tagesordnung")
  ['invitation',/^.{0,150}?\b(einladung (zur|zu der|zu einer)|öffentliche bekanntmachung|bekanntmachung (zur|der) sitzung)\b|^.{0,80}?\btagesordnung (für|der|zur)\b/],
- ['paper',/\b(beschlussvorlage|sitzungsvorlage|verwaltungsvorlage|informationsvorlage|mitteilungsvorlage|berichtsvorlage|vorlage der verwaltung|vorlagen?[- ]?(nr|nummer)|vorlage:? [a-z]{0,6}[-/ ]?\d+|drucksache|antrag der|antrag des|anfrage der|anfrage des|antwort (zur|auf die) anfrage|beantwortung der anfrage|stellungnahme der verwaltung)\b/],
+ ['paper',/\b(beschlussvorlage|sitzungsvorlage|verwaltungsvorlage|informationsvorlage|mitteilungsvorlage|berichtsvorlage|vorlage der verwaltung|vorlagen?[- ]?(nr|nummer)|vorlage:? [a-z]{0,6}[-/ ]?\d+|drucksache|antrag der|antrag des|antrag nr|^vorlage\s*-\s*öffentlich|anfrage der|anfrage des|antwort (zur|auf die) anfrage|beantwortung der anfrage|stellungnahme der verwaltung)\b/],
 ];
 export function documentTypeFromText(text){
  // Gesperrt gesetzte Überschriften („N i e d e r s c h r i f t“, „A U S Z U G“) zusammenziehen
@@ -56,10 +56,12 @@ export function documentTypeFromText(text){
 /* Kind used for the rank (shared/pdf-rank.mjs): the title, corrected by the start of the text. A paper by its text counts as
    a paper, whatever the title says (title without kind, attachment or session document by a subject word); a title without
    kind takes the kind of the text. Otherwise the title stands. */
-export function effectiveType(titleType,textType){
+export function effectiveType(titleType,textType,title=''){
  if(!textType||textType===titleType)return titleType;
- if(textType==='paper'&&titleType!=='decision')return 'paper';
- if(textType==='minutes'&&titleType==='decision')return 'minutes';
+ // Ein Titel, der mit „Anlage“ beginnt, bleibt Anlage, auch wenn ihr Kopf wie eine Vorlage aussieht (eingereichter Antrag,
+ // Vorlage eines anderen Gremiums, Formblatt; Messung doc-g, 14.10.2026)
+ if(titleType==='attachment'&&(/^[\W\d]*(?:\d+\s*-\s*)?anlage\b/i.test(String(title).trim())||FILE_NAME.test(String(title).match(/\((.+)\)\s*$/)?.[1]||'')))return 'attachment';
+  if(textType==='paper'&&!['decision','minutes'].includes(titleType))return 'paper';
  if(titleType==='other')return textType;
  return titleType;
 }
@@ -86,6 +88,8 @@ export const primaryPdf=(documents,{uses=()=>0,hasText=null}={})=>{
 };
 /** Art jedes PDFs eines Berichts: wie documentType, aber hat der Bericht eine Vorlage, sind PDFs ohne erkennbare Art Anlagen
     („Lageplan“, „Begründung“, „Ergebnisplan 2026“). @param {any[]} documents @returns {Map<string,string>} url → Art */
+// Dateiname in der Klammer: „AKEE_2026-05-28_WP …“, „2025_05 Städtetag …“, „Papierflieger-Route_Gemeinde_X“
+const FILE_NAME=/^[A-Z0-9]{2,}_|^\d{4}_\d{2}|^[^\s]*_[^\s]*$/;
 export function reportTypes(documents){
  const pdfs=(documents||[]).filter(d=>d?.kind==='application/pdf'),types=new Map(pdfs.map(d=>[d.url,documentType(d.title)]));
  // Ohne Vorlage nach Titel ist die erste Datei ohne erkennbare Art die Vorlage („2026-90-F“), die übrigen sind Anlagen
@@ -93,9 +97,15 @@ export function reportTypes(documents){
  if([...types.values()].includes('paper'))for(const [u,t] of types)if(t==='other')types.set(u,'attachment');
  // Portale, die jede Datei „<Art> (<Dateiname>)“ nennen („Mitteilungsvorlage (Stellungnahme Realschule …)“): nur die erste
  // Datei einer solchen Gruppe ist das Dokument dieser Art, die übrigen sind Anlagen (Messung doc-val, 14.10.2026)
+ // Steht in der Klammer ein Dateiname („Infotext (AKEE_2026-05-28_WP …)“, „Beschlusstext (Papierflieger-Route_Gemeinde_X)“)
+ // oder eine Anlagenart („Allgemeine Vorlage (Skizze …)“), ist es eine Anlage (Messung doc-f, 14.10.2026)
  const seen=new Set();
- for(const d of pdfs){const m=String(d.title||'').trim().match(/^([\p{L}-]+)\s*\(.+\)$/u);if(!m)continue;const k=m[1].toLowerCase();
-  if(seen.has(k)&&types.get(d.url)==='paper')types.set(d.url,'attachment');seen.add(k);}
+ for(const d of pdfs){const m=String(d.title||'').trim().match(/^([^()]+?)\s*\((.+)\)$/u);if(!m)continue;const k=m[1].toLowerCase(),inner=m[2].trim();
+  if(FILE_NAME.test(inner)||typeOf(inner.toLowerCase().match(/^[a-zäöüß-]+/)?.[0]||'')==='attachment')types.set(d.url,'attachment');
+  else if(seen.has(k)&&types.get(d.url)==='paper')types.set(d.url,'attachment');seen.add(k);}
+ // Ein zweiter „Bericht“ neben einer Vorlage ist deren Anlage („4 Finanzbericht 2025“, „12 - Bericht“, „Prüfungsbericht …“)
+ const firstPaper=pdfs.findIndex(d=>types.get(d.url)==='paper');
+ if(firstPaper>=0)pdfs.forEach((d,i)=>{if(i>firstPaper&&types.get(d.url)==='paper'&&/bericht|deckblatt/i.test(d.title||'')&&!/vorlage|antrag|anfrage|mitteilung|drucksache|beschlussvorschlag|beschlussempfehlung/i.test(d.title||''))types.set(d.url,'attachment');});
  return types;
 }
 /** Ab so vielen Berichten gilt ein Dokument als Unterlage der ganzen Sitzung (Probelauf 11.10.2026). */
