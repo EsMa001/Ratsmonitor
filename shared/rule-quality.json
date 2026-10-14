@@ -1,0 +1,37 @@
+{
+ "note": "Zuletzt gemessene Qualität der regelbasierten Teile, von Hand eingetragen nach jeder Messung (Admin „Themen & Texte“). Qualität = von dem, was die Regel liefert, ist richtig; Abdeckung = von dem, was laut Handeinordnung einen Wert haben sollte, bekommt ihn. Gezählt wird die ehrliche Messung auf einer frischen Stichprobe vom Server, nicht die geschönte nach einer Korrektur. Ziel: Qualität über 90 %, Abdeckung ab 80 %. Belege: docs/qualitaet/plenara-x/regeln-2026-10-14.md.",
+ "target": {"quality": 90, "coverage": 80},
+ "groups": [
+  {"id": "read", "name": "Regeln je Bericht", "rows": [
+   {"id": "item_kind", "name": "Art des Punkts (Formalie, Sammelpunkt, Routine, Sachpunkt)", "version": "item-kind-v4", "quality": 99, "coverage": 88, "sample": "IK9, 200 Karten", "date": "2026-10-14"},
+   {"id": "theme", "name": "Thema", "version": "themes-v3", "quality": 92, "coverage": 90, "sample": "TH-K Server, 87", "date": "2026-10-14", "note": "genau richtig einschließlich ohne Thema: 83 %"},
+   {"id": "subs", "name": "Unterthemen", "version": "themes-v3", "quality": 95, "coverage": null, "sample": "TH-K Server", "date": "2026-10-14", "note": "bei richtigem Thema"},
+   {"id": "stage", "name": "Was geschieht", "version": "stage-v4", "quality": 92, "coverage": 91, "sample": "stage-i Server, 150", "date": "2026-10-14"},
+   {"id": "main_doc", "name": "Hauptdokument", "version": "doc4", "quality": 98, "coverage": null, "sample": "doc-srv Server, 60 Berichte", "date": "2026-10-14"},
+   {"id": "doc_type", "name": "Dokumentart", "version": "doc4", "quality": 87, "coverage": null, "sample": "doc-srv Server, 195 PDFs", "date": "2026-10-14", "note": "nach Korrektur 90–95 % auf drei Sätzen (gesehen)"},
+   {"id": "summary", "name": "Regel-Zusammenfassung", "version": "sum3", "quality": 92, "coverage": 82, "sample": "sum-d Server, 49 und 50", "date": "2026-10-14", "note": "Abdeckung hochgerechnet"}
+  ]},
+  {"id": "facts", "name": "Werte aus den Unterlagen", "rows": [
+   {"id": "plan", "name": "Bauleitplanung (Verfahrensschritt)", "version": "facts-v19", "quality": 90, "coverage": null, "sample": "frühere Messung", "date": "2026-10-13", "gate": true},
+   {"id": "hebesatz", "name": "Hebesätze", "version": "facts-v19", "quality": 90, "coverage": null, "sample": "frühere Messung", "date": "2026-10-13", "gate": true},
+   {"id": "faction", "name": "Fraktion bei Anträgen", "version": "facts-v19", "quality": 90, "coverage": null, "sample": "frühere Messung", "date": "2026-10-13", "gate": true},
+   {"id": "annual_result", "name": "Jahresergebnis (Überschuss/Fehlbetrag)", "version": "facts-v19", "quality": 100, "coverage": 95, "sample": "JE3 Server, 40", "date": "2026-10-14", "gate": true},
+   {"id": "kita_fee", "name": "Kita-Gebühren", "version": "facts-v19", "quality": 88, "coverage": null, "sample": "R9 Server, 25", "date": "2026-10-14", "gate": false, "note": "als gut genug eingestuft, im Newsradar sichtbar"},
+   {"id": "grant", "name": "Zuschüsse an Vereine und Träger", "version": "facts-v19", "quality": 88, "coverage": null, "sample": "R6 Server, 25", "date": "2026-10-14", "gate": false},
+   {"id": "plan_use", "name": "Nutzungsart im Plangebiet", "version": "facts-v19", "quality": 95, "coverage": null, "sample": "R6 Server, 25 (grob)", "date": "2026-10-14", "gate": false},
+   {"id": "fee_rate", "name": "Wasser- und Abwassergebühren", "version": "facts-v19", "quality": 85, "coverage": null, "sample": "R6 Server, 25", "date": "2026-10-14", "gate": false, "note": "Abdeckung niedrig"},
+   {"id": "heat_plan", "name": "Wärmeplanung (Schritt)", "version": "facts-v19", "quality": 80, "coverage": null, "sample": "R6 Server, 25", "date": "2026-10-14", "gate": false},
+   {"id": "housing", "name": "Wohneinheiten", "version": "facts-v19", "quality": 80, "coverage": null, "sample": "R6 Server, 20", "date": "2026-10-14", "gate": false},
+   {"id": "kita_places", "name": "Kita-Plätze", "version": "facts-v19", "quality": 85, "coverage": null, "sample": "R6 Server, 20", "date": "2026-10-14", "gate": false},
+   {"id": "faction_advice", "name": "Empfehlung „Antrag ablehnen“", "version": "facts-v19", "quality": 85, "coverage": null, "sample": "R6 Server, 20", "date": "2026-10-14", "gate": false, "note": "im Fraktionsprofil sichtbar"},
+   {"id": "funding", "name": "Förderung (bewilligt/beantragt)", "version": "facts-v19", "quality": 36, "coverage": 67, "sample": "R12 Server, 30", "date": "2026-10-14", "gate": false, "note": "frisch je Stichprobe 36–64 %; aus dem Newsradar entfernt"},
+   {"id": "funding_euro", "name": "Förderbeträge", "version": "facts-v19", "quality": 70, "coverage": null, "sample": "R9 Server, 25", "date": "2026-10-14", "gate": false}
+  ]},
+  {"id": "other", "name": "Weitere Regeln", "rows": [
+   {"id": "member", "name": "Mitgliedsgemeinde im Gemeindeverband", "version": "", "quality": 97, "coverage": 85, "sample": "where-a Server, 120", "date": "2026-10-14", "note": "nach Korrektur Abdeckung ca. 95 % (gesehen)"},
+   {"id": "outcome", "name": "Ausgang der Sitzung (Newsradar)", "version": "", "quality": 92, "coverage": 78, "sample": "oc-a Server, 100", "date": "2026-10-14", "note": "nach Korrektur ca. 100 % / 98 % (gesehen)"},
+   {"id": "lena", "name": "Lena (Fragen verstehen)", "version": "lena-rules-v2", "quality": 80, "coverage": null, "sample": "Fragensatz 3, 20", "date": "2026-10-14", "note": "nach Korrektur 100 % (gesehen)"},
+   {"id": "social", "name": "Social Media (Eignung)", "version": "", "quality": null, "coverage": null, "sample": "261 bewertete Vorschläge", "date": "2026-10-10", "note": "Rangfolge, keine Trefferquote: Korrelation mit Bewertern 0,58"}
+  ]}
+ ]
+}
