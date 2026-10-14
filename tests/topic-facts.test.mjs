@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,housingOf,kitaPlacesOf,kitaFeeOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,parkFeeOf,eePowerOf,landPriceOf} from '../shared/topic-facts.mjs';
+import {factionsOf,housingOf,kitaPlacesOf,kitaFeeOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,parkFeeOf,eePowerOf,landPriceOf,plotPriceOf,annualResultOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -252,4 +252,19 @@ test('Gebührensätze: Art aus Einheit und Titel, Tabellen bisher/neu',()=>{
  assert.deepEqual(feeRateOf('Änderung der Gebührensatzung zur Entwässerungssatzung','Hieraus errechnet sich eine Gebühr in Höhe von 0,36 €/m² (Vorjahr 0,32 €/m²).').map(x=>x.kind+x.to+'|'+x.from),['Niederschlagswasser0.36|0.32']);
  assert.deepEqual(feeRateOf('Siebte Änderung der Abwassersatzung','Die Sätze ändern sich: bis 2025 2026 bis 2028 Schmutzwassergebühr 3,15 €/m³ 2,80 €/m³ Grundgebühr 8,00 €/Monat.').map(x=>x.to+'|'+x.from),['2.8|3.15']);
  assert.deepEqual(feeRateOf('Neukalkulation der Wasserverbrauchsgebühren','Festgesetzt: netto brutto Wasserverbrauchsgebühr 3,00 €/m³ 3,21 €/m³.').map(x=>x.to),['3']);
+});
+
+test('Bauplatzpreis Wohnen: festgesetzter Preis, keine Vergleiche, alten Preise oder Kalkulationen',()=>{
+ assert.equal(plotPriceOf('Festlegung des Verkaufspreises für gemeindliche Baugrundstücke im Baugebiet Wohr II','Der Rat beschließt, den Verkaufspreis auf 210,00 € je Quadratmeter einschließlich Erschließung festzusetzen.').euro,'210');
+ assert.equal(plotPriceOf('Bauplatzverkauf im Baugebiet Breitenwert','Finanzielle Auswirkungen: Verkaufserlös 225,00 €/qm.').euro,'225');
+ assert.equal(plotPriceOf('Anpassung Verkaufspreis für Baugrundstücke','Der aktuell festgesetzte Gesamtverkaufspreis beträgt 49,52 €/m².'),null);
+ assert.equal(plotPriceOf('Baugebiet In der Breite - Verkauf','Der Kaufpreis beträgt für das Wohngebiet Loh 115,00 €/m², für das Wohngebiet Wasserfuhr 98,00 €/m².'),null);
+ assert.equal(plotPriceOf('Verkauf Gewerbegrundstück im Gewerbegebiet','Der Kaufpreis beträgt 30,- €/m².'),null,'Gewerbe ist land_price');
+ assert.equal(landPriceOf('Neufestsetzung des Kaufpreises für das Gewerbegrundstück','Der Rat beschließt, das Gewerbegrundstück zu einem Preis von 30,- €/m² zu veräußern.').euro,'30');
+});
+
+test('Jahresergebnis: Überschuss/Fehlbetrag nach Vorzeichen, ordentliches Ergebnis nur ohne Jahresergebnis',()=>{
+ assert.deepEqual(annualResultOf('Feststellung des Jahresabschlusses 2024','Ergebnisrechnung: Jahresüberschuss/fehlbetrag (E 23) 641.626,49 €.'),{value:'Überschuss',euro:641626});
+ assert.deepEqual(annualResultOf('Jahresabschluss 2019','Der Fehlbetrag des ordentlichen Ergebnisses in Höhe von 90.611,84 € ist vorzutragen.'),{value:'Fehlbetrag',euro:90612});
+ assert.deepEqual(annualResultOf('Feststellung des Jahresabschlusses 2023','Zusammengefasst: Ergebnisrechnung Jahresergebnis -82 T € lt. Bilanz.'),{value:'Fehlbetrag',euro:82000});
 });

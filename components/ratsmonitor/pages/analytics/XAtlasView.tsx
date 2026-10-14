@@ -75,7 +75,7 @@ function Bars({ rows, mode, open = "", onOpen, drill = () => null, value = (r) =
    Bürger sind (Steuern, Gebühren, Beiträge, Preise), von grün nach rot. Gemeindeverbände färben ihre Mitgliedsgemeinden, die
    Kreise fassen alle Gebiete im Kreis zusammen (Summe, bei Kennzahlen der Median der Gebiete). */
 const STUFE = (c: number) => (c >= 5 ? 4 : c >= 3 ? 3 : c);
-const HIGH_BAD = new Set(["hebesatz", "fee_rate", "park_fee", "dog_tax", "kita_fee", "land_price"]);
+const HIGH_BAD = new Set(["hebesatz", "fee_rate", "park_fee", "dog_tax", "kita_fee", "land_price", "plot_price"]);
 const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
 const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };

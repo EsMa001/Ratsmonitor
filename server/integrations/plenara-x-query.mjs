@@ -36,22 +36,22 @@ import {where as placeOf} from './member-place.mjs';
 import {peerGroup,wilson,quantile,classify,windowOf,NORM_RULE} from './peer-norms.mjs';
 
 export const X_BY=['region','month','theme','sub','stage','status'];
-export const X_FACTS=['faction','annual_result','funding','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','park_fee','ee_power','land_price','dog_tax'];
+export const X_FACTS=['faction','annual_result','funding','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','park_fee','ee_power','land_price','plot_price','dog_tax'];
 export const X_SUMS={housing:'Wohneinheiten',kita_places:'Kita-Plätze',funding_euro:'Förderbeträge in Euro'};
 /* Werte aus den Unterlagen im Atlas je Thema, mit Qualitätstor (Konzept 7: gezeigt ab 90 % gemessener Genauigkeit).
    Messung 13.10.2026 (docs/qualitaet/plenara-x/): Verfahrensschritt Bauleitplanung, Hebesätze, Fraktion nahe 100 %;
    Förderprogramme 85 %, Förderbeträge 83 %, Kita-Beiträge 75 %, Kita-Plätze 68 %; übrige noch nicht gemessen. */
 export const X_FACT_NAMES={annual_result:'Jahresabschlüsse nach Ergebnis',plan:'Bauleitplanung nach Verfahrensschritt',plan_use:'Art des Plangebiets',hebesatz:'Hebesätze nach Steuerart',fee_rate:'Gebührensätze nach Art',
  heat_plan:'Kommunale Wärmeplanung nach Schritt',grant:'Zuschüsse an Vereine und Träger nach Zweck',kita_fee:'Kita-Beiträge nach Richtung',funding:'Förderprogramme',faction:'Anträge und Anfragen nach Fraktion',
- park_fee:'Parkgebühren je Stunde',ee_power:'Wind- und Solarvorhaben nach Art',land_price:'Preise für Gewerbegrundstücke',dog_tax:'Hundesteuer für den ersten Hund'};
-export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,annual_result:true,funding:false,kita_fee:false,plan_use:true,fee_rate:true,heat_plan:true,grant:true,park_fee:false,ee_power:false,land_price:true,dog_tax:false};
+ park_fee:'Parkgebühren je Stunde',ee_power:'Wind- und Solarvorhaben nach Art',land_price:'Preise für Gewerbegrundstücke',plot_price:'Preise für Wohnbauplätze',dog_tax:'Hundesteuer für den ersten Hund'};
+export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,annual_result:true,funding:false,kita_fee:false,plan_use:true,fee_rate:true,heat_plan:true,grant:true,park_fee:false,ee_power:false,land_price:true,plot_price:false,dog_tax:false};
 export const X_SUM_GATE={housing:false,kita_places:false,funding_euro:false};
-const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['ee_power']],mobilitaet:[['park_fee']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
+const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['ee_power']],mobilitaet:[['park_fee']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee','kita_places']],'':[['funding','funding_euro']]};
 export const X_LIST_SIZE=50;
 /* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
    Gebührensätze tragen die Einheit im dritten Feld (m³ oder m²). Ein Zuschuss ohne Betrag hat keine Zahl. */
-const X_FACT_NUM={hebesatz:'%',fee_rate:'€/',annual_result:'€',park_fee:'€ je Stunde',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',grant:'€',kita_fee:'€ im Monat'};
+const X_FACT_NUM={hebesatz:'%',fee_rate:'€/',annual_result:'€',park_fee:'€ je Stunde',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',plot_price:'€/m²',grant:'€',kita_fee:'€ im Monat'};
 const factNum=(kind,detail)=>{if(!X_FACT_NUM[kind])return null;const parts=String(detail??'').split('|'),v=Number(parts[0]);
  return parts[0]!==''&&Number.isFinite(v)&&!(kind==='grant'&&v===0)?{v,unit:kind==='fee_rate'?'€/'+(parts[2]||'m³'):X_FACT_NUM[kind]}:null;};
 const fmtNum=(v,unit)=>`${v.toLocaleString('de-DE',{maximumFractionDigits:Math.abs(v)>=100?0:2})} ${unit}`;

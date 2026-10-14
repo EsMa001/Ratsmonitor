@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v24';
+export const FACTS_VERSION='facts-v25';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -315,23 +315,27 @@ export function kitaFeeOf(title,text){
    Prüfaufträge, Prüfberichte ohne Feststellung oder Rechnungsprüfungsordnungen. */
 const RESULT_TITLE=/Jahresabschlu|Jahresrechnung|Gesamtabschlu|Jahresergebnis|Haushaltsrechnung/i;
 const NOT_RESULT_TITLE=/Wirtschaftsprüf|Abschlussprüfer|Rechnungsprüfungsordnung|Prüfungsamt|Prüfbericht|Bestellung|Bestimmung|Beauftragung/i;
-const RESULT_NUM=String.raw`(-\s?)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d{1,2})?)\s*(Mio\.?|Millionen|TEUR|TEuro|T€|Tsd\.?\s*(?:€|EUR|Euro))?\s*(€|EUR|Euro)?`;
-const RESULT_RE=new RegExp(String.raw`\b(Jahresüberschuss\w*|Jahresfehlbetrag\w*|Gesamtüberschuss\w*|Gesamtfehlbetrag\w*|Jahresgewinn\w*|Jahresverlust\w*|Jahresergebnis\w*|Bilanzgewinn\w*|Bilanzverlust\w*|(?:mit einem|einen|ein) (?:Überschuss|Fehlbetrag|Gewinn|Verlust))\b[^.;]{0,40}?(?:in Höhe von|von|:|betr[aä]g\w*|mit|(?<![\d.,])(?=\s*(?:EUR|€)?\s*-?\s?\d)(?!\s*(?:19|20)\d\d\b))\s*(?:EUR|€)?\s*`+RESULT_NUM,'gi');
+const RESULT_NUM=String.raw`(-\s?)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d{1,2})?)\s*(Mio\.?|Millionen|TEUR|TEuro|T\s?€|Tsd\.?\s*(?:€|EUR|Euro))?\s*(€|EUR|Euro)?`;
+const RESULT_RE=new RegExp(String.raw`\b(Jahresüberschuss\w*|Jahresfehlbetrag\w*|Gesamtüberschuss\w*|Gesamtfehlbetrag\w*|Jahresgewinn\w*|Jahresverlust\w*|Jahresergebnis\w*|Bilanzgewinn\w*|Bilanzverlust\w*|(?:mit einem|einen|ein) (?:Überschuss|Fehlbetrag|Gewinn|Verlust)|(?:Überschuss|Fehlbetrag|Defizit)\w* (?:des|im) ordentlichen Ergebnis\w*)\b[^.;]{0,40}?(?:in Höhe von|von|:|betr[aä]g\w*|mit|(?<![\d.,])(?=\s*(?:EUR|€)?\s*-?\s?\d)(?!\s*(?:19|20)\d\d\b))\s*(?:EUR|€)?\s*`+RESULT_NUM,'gi');
 const NOT_RESULT_SENT=/Vorjahr|Plan(?:ansatz|wert|ung)?\b|geplant|prognos|erwartet|voraussichtlich|Wirtschaftsplan|Haushaltsplan|Prognose|aus dem Jahr|Vortrag aus|Gewinnvortrag|Verlustvortrag|kumuliert|verbesser|verschlechter|Abweichung|gegenüber|im Vergleich/i;
 export function annualResultOf(title,text){
  const t=String(title||'');if(!RESULT_TITLE.test(t)||NOT_RESULT_TITLE.test(t))return null;
  // „i.H.v.“ würde den Satz an der Abkürzung trennen
- const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bi\.\s?H\.\s?v\./g,'in Höhe von').split(SENTENCE)){if(s.length>1500)continue;
+ const pick=src=>{let fallback=null;for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bi\.\s?H\.\s?v\./g,'in Höhe von').replace(/\s?\((?:[EF]\s?\d+|Zeile\s?\d+|Nr\.\s?\d+)\)/g,'').split(SENTENCE)){if(s.length>1500)continue;
   for(const m of s.matchAll(RESULT_RE)){const unit=m[4]||'',cur=m[5]||'';if(!unit&&!cur)continue;
    // Tabellen über mehrere Jahre („2019 2020 2021 … Jahresergebnis 298.923,20 €“) und lose „ein Fehlbetrag“ ohne Abschluss
    if(/(?:(?:19|20)\d\d\s+){3}/.test(s.slice(Math.max(0,m.index-120),m.index)))continue;
    if(/^(?:mit einem|einen|ein)\b/i.test(m[1])&&!/schließt|abgeschlossen|abschließt|Ergebnisrechnung|Wirtschaftsjahr|Geschäftsjahr|Haushaltsjahr/i.test(s.slice(Math.max(0,m.index-120),m.index+m[0].length+30)))continue;
    // Vorjahr, Plan, Prognose nur im Umfeld des Treffers prüfen (lange Sätze aus Tabellen)
    if(NOT_RESULT_SENT.test(s.slice(Math.max(0,m.index-80),m.index+m[0].length))||/^\s*(?:Vorjahr|im Vorjahr|gegenüber|im Vergleich)/i.test(s.slice(m.index+m[0].length,m.index+m[0].length+30)))continue;let v=Number(m[3].replace(/\./g,'').replace(',','.'));
-   if(/^(Mio|Millionen)/.test(unit))v*=1e6;else if(/^(TEUR|TEuro|T€|Tsd)/.test(unit))v*=1e3;
-   const neg=!!m[2]||/fehlbetrag|verlust/i.test(m[1]);if(!v||v>5e9)continue;
-   return {value:neg?'Fehlbetrag':'Überschuss',euro:Math.round(v)};}}
-  return null;};
+   if(/^(Mio|Millionen)/.test(unit))v*=1e6;else if(/^(TEUR|TEuro|T\s?€|Tsd)/.test(unit))v*=1e3;
+   // „Jahresüberschuss/-fehlbetrag 641.626,49 €“: das Vorzeichen entscheidet
+   const neg=!!m[2]||/fehlbetrag|verlust|defizit/i.test(m[1])&&!/überschuss|gewinn/i.test(m[1]);if(!v||v>5e9)continue;
+   const hit={value:neg?'Fehlbetrag':'Überschuss',euro:Math.round(v)};
+   // Überschuss oder Fehlbetrag des ordentlichen Ergebnisses nur, wenn kein Jahresergebnis genannt ist
+   if(/ordentlichen/i.test(m[1])){fallback??=hit;continue;}
+   return hit;}}
+  return fallback;};
  return pick(decision(text))||pick(text);
 }
 
@@ -394,7 +398,7 @@ export function eePowerOf(title,text){
    Spannen, Vergleichspreise anderer Orte, frühere Preise. */
 const LAND_TITLE=/Gewerbe|Industrie/i;
 const LAND_DEAL=/Verkauf|Veräußer|Kaufpreis|Grundstückspreis|Verkaufspreis|Preis|Erwerb|Ankauf/i;
-const LAND_RE=/(Kaufpreis\w*|Grundstückspreis\w*|Verkaufspreis\w*|Preis|Erwerb|Grundpreis)\b(?:[^.;]|\d\.\d)*?(?<![\d.,])(\d{1,3}(?:,\d{1,2})?)\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)\s*(?:m²|qm²?|m2|Quadratmeter)/gi;
+const LAND_RE=/(Kaufpreis\w*|Grundstückspreis\w*|Verkaufspreis\w*|Bauplatzpreis\w*|Verkaufserlös|Preis|Erwerb|Grundpreis)\b(?:[^.;]|\d\.\d)*?(?<![\d.,])(\d{1,3}(?:,\d{1,2})?)(?:,[-–]+)?\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)\s*(?:m²|qm²?|m2|Quadratmeter)/gi;
 const NOT_LAND=/Bodenrichtwert|Rückkauf|Erschließungs|Kostenrahmen|zwischen|bis \d|Vergleich|liegen bei|Jahr (19|20)\d\d|bisher|bislang|damals|Nachzahlung|würde/i;
 export function landPriceOf(title,text){
  const t=String(title||'');if(!LAND_TITLE.test(t)||!LAND_DEAL.test(t)||/Vergabekriterien|Richtlinie|Grundsätze|Leitlinie|Nutzungszweck|Sachstand|Status|Auflistung|Konzept/i.test(t))return null;
@@ -404,6 +408,23 @@ export function landPriceOf(title,text){
   return null;};
  const v=pick(decision(text))??pick(text);if(v===null)return null;
  return {value:v<50?'unter 50 € je m²':v<=100?'50 bis 100 € je m²':'über 100 € je m²',euro:String(v)};
+}
+
+/* Preis für Wohnbauplätze (Bauen, Baugebiete): Verkaufspreis in € je m², den die Kommune für ihre Bauplätze festsetzt oder verlangt,
+   zuerst aus dem Beschlussvorschlag. Wie bei Gewerbegrundstücken nicht Bodenrichtwerte, Erschließungskosten, Spannen, frühere
+   Preise; nicht Gewerbe (land_price), nicht Ausgleich von Mehr- oder Minderflächen, nicht Erbbau. */
+const PLOT_TITLE=/Bauplatz|Bauplätze|Baugrundst|Baugebiet|Wohnbau|Wohngebiet|Baulandpreis|Bauland|Parzelle/i;
+const PLOT_DEAL=/Verkauf|Veräußer|Kaufpreis|Verkaufspreis|Bauplatzpreis|Baulandpreis|Preis|Vergabe/i;
+export function plotPriceOf(title,text){
+ const t=String(title||'');if(!PLOT_TITLE.test(t)||!PLOT_DEAL.test(t)||LAND_TITLE.test(t)||/Erbbau|Erbpacht|Kalkulation|Vergabekriterien|Richtlinie|Aufhebung|Ausschreibung|Sachstand/i.test(t))return null;
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){if(s.length>1200||/Minderfläche|\bDM\b|angesetzt|[Nn]achlass|Abschlag|Ermäßigung|Rabatt|Kosten|[Aa]ktuell|[Dd]erzeit/.test(s)||/\b(?:19\d\d|20[01]\d|202[0-3])\b/.test(s))continue;
+  // Mehrere Preise im Satz sind Vergleiche (andere Baugebiete, sozialer Wohnungsbau, Grund und Boden ohne Erschließung)
+  if(new Set([...s.matchAll(/(\d{1,3}(?:,\d{1,2})?)(?:,[-–]+)?\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)\s*(?:m²|qm|m2|Quadratmeter)/g)].map(m=>m[1])).size>1)continue;
+  for(const m of s.matchAll(LAND_RE)){if(NOT_LAND.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+20)))continue;
+   const v=Number(m[2].replace(',','.'));if(v>=5&&v<=2000)return v;}}
+  return null;};
+ const v=pick(decision(text))??pick(text);if(v===null)return null;
+ return {value:v<100?'unter 100 € je m²':v<=250?'100 bis 250 € je m²':'über 250 € je m²',euro:String(v)};
 }
 
 /* Hundesteuer für den ersten Hund im Jahr (Finanzen, Steuern): neuer Satz bei Änderungen („von 60,00 € auf 96,00 € für den
@@ -430,8 +451,8 @@ const DOG_TABLE=/\balt\b.{0,80}\bneu\b|bisher.{0,60}\bneu\b|Satzung alt/i;
 const DOG_OLD=/\baktuell|derzeit|\bbisher|damals|wurde\b|seitdem|unverändert/i;
 const NOT_DOG=/zwischen|damals|zuletzt|letztmal|erfolgte|So beträgt|beträgt (?:die Hundesteuer )?in \p{Lu}|\bIn \p{Lu}[\p{L}-]+ beträgt|gefährlich|Kampfhund|ermäßig|Ermäßigung|Rasse|Listenhund|Aufkommen|Mehreinnahm|Mehrertr|erhöht\s+um|um\s*$|Vergleich|Kommunen|Nachbar|höchsten|Durchschnitt|Landkreis|gegenwärtige|bleibt/iu;
 export function dogTaxOf(title,text){
- const t=String(title||'');if(!DOG_TITLE.test(t)||/gefährlich|Kampfhund|Rückblick|Anfrage|Antrag (der|des)|Fraktion|Hebesatz|Gewerbesteuer|Grundsteuer|Hundekot|Hundewiese|Hundeauslauf|Hundetoilett/i.test(t))return null;
- const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').split(SENTENCE)){if(s.length>1500)continue;
+ const t=String(title||'');if(!DOG_TITLE.test(t)||/Hebesatz|Gewerbesteuer|Grundsteuer/i.test(t)&&!/Hundesteuer/i.test(t)||/gefährlich|Kampfhund|Rückblick|Anfrage|Antrag (der|des)|Fraktion|Hundekot|Hundewiese|Hundeauslauf|Hundetoilett/i.test(t))return null;
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').replace(/stever/g,'steuer').split(SENTENCE)){if(s.length>1500)continue;
   for(const [i,re] of DOG_RES.entries())for(const m of s.matchAll(re)){
    if(NOT_DOG.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+15))||i>5&&DOG_OLD.test(s.slice(Math.max(0,m.index-160),m.index+m[0].length)))continue;
    if(i===3&&!DOG_TABLE.test(s.slice(Math.max(0,m.index-300),m.index)))continue;
@@ -500,7 +521,7 @@ export function hebesatzOf(title,text){
  const budget=/Haushalt/i.test(t),out=new Map();
  const scan=(src,prio)=>{
   // „v.H.“ vor der nächsten Steuerart ist kein Satzende; Satzungen ohne Satzzeichen je Paragraf („§ 4 Steuersätze …“) („Grundsteuer B auf 650 v.H. Gewerbesteuer auf 400 v.H.“)
-  for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bv\.\s?H\.(?=\s+(?:Grundsteuer|Gewerbesteuer))/g,'v.H').split(SENTENCE).flatMap(x=>x.split(/\s(?=§\s?\d+\s)/))){
+  for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bv\.\s?H\.(?=\s+(?:Grundsteuer|Gewerbesteuer))/g,'v.H').replace(/stever/g,'steuer').split(SENTENCE).flatMap(x=>x.split(/\s(?=§\s?\d+\s)/))){
    if(s.length>(budget?900:500)||NOT_RATE.test(s)||budget&&!/Hebes|Steuers[aä]tze|Realsteuer/i.test(s))continue;
    const marks=TAXES.flatMap(([tax,re])=>[...s.matchAll(re)].map(m=>({tax,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
    // „Grundsteuer A und B von 350 auf 475 v.H.“: A bekommt den Abschnitt von B
@@ -695,6 +716,7 @@ export function factsOf(title,text){
  const ee=eePowerOf(title,text);if(ee)rows.push({kind:'ee_power',value:ee.value,detail:String(ee.mw)});
  const dog=dogTaxOf(title,text);if(dog)rows.push({kind:'dog_tax',value:dog.value,detail:dog.euro});
  const land=landPriceOf(title,text);if(land)rows.push({kind:'land_price',value:land.value,detail:land.euro});
+ const plot=plotPriceOf(title,text);if(plot)rows.push({kind:'plot_price',value:plot.value,detail:plot.euro});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
  return rows;
 }
