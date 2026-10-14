@@ -24,7 +24,10 @@ test('the outcome belongs to the named session, not to another committee',()=>{
  const card={id:'t1',date:'2026-10-05',status:'rejected',title:'Wärmeplanung',gremium:'Stadtrat'};
  const topic={title:'Kommunale Wärmeplanung',events:[{date:'2026-09-30',committee:'Ortschaftsrat Möringen',result:'abgelehnt'},{date:'2026-10-05',committee:'Stadtrat',result:''}]};
  const a=article({card,topic,facts:[],ev:{result:'rej'},sentences:['Der Stadtrat beschließt die kommunale Wärmeplanung.'],more:[],today:'2026-10-11',regionName:'Stadt Stendal'});
- assert.match(a.lead,/^Stendal\. Der Stadtrat der Stadt Stendal hat die Vorlage am Montag, 5\. Oktober, abgelehnt\.$/,'letzte Sitzung: Status des Vorgangs');
+ assert.match(a.lead,/über die Vorlage beraten/,'abgelehnt im Status stammt aus der Vorberatung, nicht vom Stadtrat');
+ assert.match(a.body.join(' '),/In einer Vorberatung war die Vorlage abgelehnt worden/);
+ const c=article({card,topic:{...topic,events:[topic.events[1]]},facts:[],ev:{result:'rej'},sentences:['x'],more:[],today:'2026-10-11',regionName:'Stadt Stendal'});
+ assert.match(c.lead,/hat die Vorlage am Montag, 5\. Oktober, abgelehnt\.$/,'ohne ablehnende Vorberatung: Status des Vorgangs');
  const b=article({card:{...card,status:'consulting'},topic,facts:[],ev:{result:'rej'},sentences:['x'],more:[],today:'2026-10-11',regionName:'Stadt Stendal'});
  assert.match(b.lead,/über die Vorlage beraten/,'Ablehnung im Ortschaftsrat ist kein Ausgang des Stadtrats');
  assert.match(b.body.join(' '),/Zuvor hatte sich der Ortschaftsrat Möringen der Stadt Stendal damit befasst/);

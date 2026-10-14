@@ -129,8 +129,8 @@ export function article({card,topic,facts,ev,sentences,more,today,regionName,mem
  /* Ausgang nur der genannten Sitzung (ein „abgelehnt“ im Ortschaftsrat ist kein Beschluss des Rats); der Status des Vorgangs
     gilt nur, wenn diese Sitzung die letzte ist */
  const last=!events.some(e=>e.date.slice(0,10)>cur.date.slice(0,10));
- // Eine künftige Sitzung hat noch keinen Ausgang
- const outcome=!past?null:outcomeOf(cur.result)||outcomeOf(cur.description)||(last?STATUS_OUTCOME[card.status]||null:null);
+ // Eine künftige Sitzung hat noch keinen Ausgang; hat eine Vorberatung abgelehnt, stammt ein „abgelehnt“ im Status von dort
+ const outcome=!past?null:outcomeOf(cur.result)||outcomeOf(cur.description)||(last&&!events.some(e=>e.date.slice(0,10)<cur.date.slice(0,10)&&(outcomeOf(e.result)||outcomeOf(e.description))==='abgelehnt')?STATUS_OUTCOME[card.status]||null:null);
  const parties=facts.filter(x=>x.kind==='faction').map(p=>PARTY[p.value]||`der Fraktion ${p.value}`);
  const what=parties.length?`einen Antrag ${parties.join(' und ')}`:'die Vorlage';
  const low=x=>x.replace(/^Der /,'der ').replace(/^Die /,'die ').replace(/^Ein /,'ein ');
