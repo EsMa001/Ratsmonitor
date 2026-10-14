@@ -11,10 +11,10 @@ const SEITEN:Record<string,[string,string]>={
  gremien:['Beratungswege · plenara.X','Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden.'],
  fraktionen:['Fraktionsprofil · plenara.X','Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird.'],
  news:['Newsradar · plenara.X','Was in den Räten gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle.'],
- tools:['plenara.X Tools','Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse, Beratungswege.'],
- themen:['plenara.X Themen','Fest vorgegebene Fragen ohne Suchbegriff: Fraktionsprofil und Newsradar, aus den Ratsunterlagen gelesen.'],
- politik:['plenara.X Themen','Fest vorgegebene Fragen ohne Suchbegriff: Fraktionsprofil und Newsradar, aus den Ratsunterlagen gelesen.'],
- finanzen:['plenara.X Themen','Fest vorgegebene Fragen ohne Suchbegriff: Fraktionsprofil und Newsradar, aus den Ratsunterlagen gelesen.'],
+ tools:['plenara.X Tools','Werkzeuge für eigene Fragen: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse und Beratungswege mit jedem Suchbegriff, dazu Fraktionsprofil und Newsradar.'],
+ politik:['plenara.X Tools','Werkzeuge für eigene Fragen: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse und Beratungswege mit jedem Suchbegriff, dazu Fraktionsprofil und Newsradar.'],
+ finanzen:['plenara.X Tools','Werkzeuge für eigene Fragen: Ausbreitung, Themennetz, Trends, Ortsvergleich, Beschlüsse und Beratungswege mit jedem Suchbegriff, dazu Fraktionsprofil und Newsradar.'],
+ signale:['plenara.X Signale','Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen, mit Stand und Kennzahlen.'],
  atlas:['plenara.X Atlas','Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, was geschieht, wo ein Thema viel Raum hat und ein Ort im Vergleich mit ähnlichen Gemeinden.'],
 };
 export async function generateMetadata({params}:{params:Promise<{section?:string[]}>}):Promise<Metadata>{

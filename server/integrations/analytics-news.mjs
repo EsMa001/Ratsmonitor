@@ -22,8 +22,7 @@ import {titleKey} from '../../shared/topic-facts.mjs';
  * kleiner Kreis) entsprechend mehr, sodass die Liste voll werden kann.
  */
 const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
-// Förderung (funding, funding_euro) vorerst nicht: Stand bewilligt/beantragt auf frischen Stichproben nur 36–64 % richtig
-// (docs/qualitaet/plenara-x/regeln-2026-10-14.md, Runde 7); die Werte bleiben in topic_facts
+// Förderung gibt es seit 15.10.2026 nicht mehr als Fakt (Stand bewilligt/beantragt war nur 36–64 % richtig)
 const FACT_KINDS=['faction','kita_fee','plan'];
 /* Signale aus readReport (report_rules, Migration 0035): Unterthemen und „Was geschieht“; Richtung und Art aus dem Titel */
 const UP=/Erhöhung|Anhebung|erhöht|angehoben/i,DOWN=/Senkung|gesenkt|Reduzierung|Absenkung/i;
@@ -37,7 +36,6 @@ const NOT_NEWS=/Schriftführ|Bestellung (einer|eines|des|der) |Wahl (der|des|ein
 const PDF_NOISE=/Seite\s*-?\s*\d+\s*-?\s*(von\s*\d+)?|^\s*-\s*\d+\s*-|Drucksache|DS Seite|Vorlage\s*(Nr\.?|Nummer)|Sitzungsvorlage|Beratungsfolge|☐|☒/i;
 export const PARTY={'CDU/CSU':'der CDU-Fraktion','SPD':'der SPD-Fraktion','Grüne':'der Fraktion der Grünen','FDP':'der FDP-Fraktion','AfD':'der AfD-Fraktion','Linke':'der Fraktion Die Linke','Freie Wähler und Wählergruppen':'einer Wählergemeinschaft','Volt':'der Volt-Fraktion','BSW':'der BSW-Fraktion','ÖDP':'der ÖDP-Fraktion','Die PARTEI':'der Fraktion Die PARTEI'};
 const longDay=d=>new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(d.slice(0,10)+'T12:00:00Z'));
-const eur=v=>v>=1e6?`${(v/1e6).toLocaleString('de-DE',{maximumFractionDigits:1})} Mio. Euro`:`${Math.round(v).toLocaleString('de-DE')} Euro`;
 
 /** Ortsangabe: Genitiv („der Stadt Coesfeld“) und kurz („Coesfeld“) */
 export function place(name){
@@ -95,9 +93,6 @@ function prescore(c,facts,today,week){
  const why=[];let score=0;const add=(n,text)=>{score+=n;why.push(text);};
  if(c.status==='rejected')add(25,'abgelehnt');else if(c.status==='postponed')add(15,'vertagt');
  const party=facts.filter(x=>x.kind==='faction');if(party.length)add(8,`Antrag ${party.map(p=>p.value).join(' und ')}`);
- const fund=facts.filter(x=>x.kind==='funding'&&x.detail!=='mentioned');
- if(fund.length){const g=fund.some(x=>x.detail==='granted');add(g?12:8,`Förderung ${g?'bewilligt':'beantragt'}: ${fund[0].value}`);}
- const money=Math.max(0,...facts.filter(x=>x.kind==='funding_euro').map(x=>Number(x.detail)||0));if(money>=100000&&fund.length)add(6,`Förderbetrag ${eur(money)}`);
  const fee=facts.find(x=>x.kind==='kita_fee');if(fee&&fee.value!=='Neufassung')add(18,`Kita-Beiträge: ${fee.value}`);
  const t=c.title||'',subs=','+(c.subs||'')+',',raise=UP.test(t)&&!/\bkeine[nr]?\s+(Erhöhung|Anhebung)|nicht\s+(zu\s+)?erhöh/i.test(t);
  if(c.stage==='abgaben'&&!subs.includes(',finanzen.steuer,')&&(raise||DOWN.test(t)))add(14,`Gebühren-${raise?'Erhöhung':'Senkung'}`);
@@ -137,11 +132,6 @@ export function article({card,topic,facts,ev,sentences,more,today,regionName,mem
  // Datum mit Wochentag als Einschub: „am Mittwoch, 30. September, beschlossen“
  const lead=past?(outcome==='zurückgezogen'?`${o.nom} hat am ${when}, über ${what} beraten; sie wurde zurückgezogen.`.replace('; sie wurde',what==='die Vorlage'?'; sie wurde':'; er wurde'):outcome?`${o.nom} hat ${what} am ${when}, ${outcome}.`:`${o.nom} hat am ${when}, über ${what} beraten.`):`${o.nom} berät am ${when}, über ${what}.`;
  const body=[];
- const fund=facts.filter(x=>x.kind==='funding'&&x.detail!=='mentioned');
- if(fund.length){const g=fund.some(x=>x.detail==='granted'),money=Math.max(0,...facts.filter(x=>x.kind==='funding_euro').map(x=>Number(x.detail)||0));
-  const named=[...fund.map(x=>x.value).filter(v=>v!=='Sonstige Förderung'),...(money>=1000?[`genannt werden ${eur(money)}`]:[])];
-  // Abgelehnt: kein „bewilligt“ (der Betrag kann aus dem Hintergrund stammen)
-  body.push(outcome==='abgelehnt'?`Die Unterlagen nennen Fördergeld${named.length?` (${named.join(', ')})`:''}.`:`Für das Vorhaben ist Fördergeld ${g?'bewilligt':'beantragt'}${named.length?` (${named.join(', ')})`:''}.`);}
  const before=events.filter(e=>e.date.slice(0,10)<cur.date.slice(0,10));
  /* Was die vorberatenden Gremien entschieden haben, wenn es vom Bild abweicht (Ablehnung, Vertagung) */
  const prior=before.map(e=>outcomeOf(e.result)||outcomeOf(e.description)),num=n=>['','ein','zwei','drei','vier','fünf','sechs','sieben','acht','neun','zehn','elf','zwölf'][n]||String(n);

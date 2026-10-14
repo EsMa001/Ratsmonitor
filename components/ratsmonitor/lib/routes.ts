@@ -5,7 +5,7 @@ import { brancheBySlug } from "../info/content";
 /* /lena ist seit 14.10.26 ausgeblendet (Seite bleibt in info/LenaPage.tsx); zum Wiedereinschalten hier, in InfoPages.tsx,
    im Menü (menu/MainMenu.tsx) und in app/(monitor)/lena/page.tsx zurücknehmen */
 export const INFO_PATHS = ["/", "/faq", "/videos", "/datenabdeckung", "/funktionen/benachrichtigungen", "/preise", "/anmelden", "/kontakt", "/agb", "/widerruf"] as const;
-export const ANALYTICS_PATHS = ["/analytics", "/analytics/ueber", "/analytics/diffusion", "/analytics/graph", "/analytics/trends", "/analytics/vergleich", "/analytics/beschluesse", "/analytics/gremien", "/analytics/fraktionen", "/analytics/tools", "/analytics/themen", "/analytics/politik", "/analytics/finanzen", "/analytics/news", "/analytics/atlas"] as const;
+export const ANALYTICS_PATHS = ["/analytics", "/analytics/ueber", "/analytics/diffusion", "/analytics/graph", "/analytics/trends", "/analytics/vergleich", "/analytics/beschluesse", "/analytics/gremien", "/analytics/fraktionen", "/analytics/tools", "/analytics/politik", "/analytics/finanzen", "/analytics/news", "/analytics/atlas", "/analytics/signale"] as const;
 export const brancheOf = (p: string) => (p.startsWith("/anwender/") ? brancheBySlug(p.slice(10)) : undefined);
 export const isInfoPath = (p: string) => (INFO_PATHS as readonly string[]).includes(p) || p === "/registrieren" || !!brancheOf(p);
 export const isAnalyticsPath = (p: string) => (ANALYTICS_PATHS as readonly string[]).includes(p);

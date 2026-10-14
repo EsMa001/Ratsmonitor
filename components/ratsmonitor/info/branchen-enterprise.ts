@@ -2,15 +2,14 @@
    Gleiches Gerüst für alle Branchen, Auswahl, Sätze und Anordnung je Branche. */
 import type { IconName } from "./icons";
 
-export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "atlas" | "vergabe" | "klima" | "finanzlage" | "beteiligung" | "gebuehren" | "news";
+export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "atlas" | "signale" | "vergabe" | "klima" | "finanzlage" | "beteiligung" | "gebuehren" | "news";
 /** Tools funktionieren mit jedem Suchbegriff; Themen sind fertige Auswertungen; der Atlas zeigt die 10 Themen (feste Auswahlen darin für die Branchenseiten) */
 /** atlas: Auswahl im plenara.X Atlas (/analytics/atlas: Thema, Unterthema oder „Was geschieht“), keine eigene Gruppe und kein eigener Eintrag in den Listen */
-export type AnalyseGruppe = "tool" | "themen" | "atlas";
+export type AnalyseGruppe = "tool" | "atlas";
 
 /* Gruppen mit Übersichtsseite (Menü „Analysen“, Brotkrumen der einzelnen Analysen) */
 export const GRUPPEN: Record<Exclude<AnalyseGruppe, "atlas">, { name: string; kurz: string; href: string; text: string }> = {
-  tool: { name: "plenara.X Tools", kurz: "Tools", href: "/analytics/tools", text: "Analysen, die mit jedem Suchbegriff funktionieren: Ausbreitung, Zusammenhänge, Trends, Ortsvergleich, Beschlüsse und Beratungswege." },
-  themen: { name: "plenara.X Themen", kurz: "Themen", href: "/analytics/themen", text: "Fest vorgegebene Fragen ohne Suchbegriff: welche Fraktionen welche Themen beantragen und was daraus wird, und was gerade berichtenswert ist." },
+  tool: { name: "plenara.X Tools", kurz: "Tools", href: "/analytics/tools", text: "Werkzeuge für eigene Fragen: Ausbreitung, Zusammenhänge, Trends, Ortsvergleich, Beschlüsse und Beratungswege mit jedem Suchbegriff, dazu Fraktionsprofil und Newsradar." },
 };
 
 export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: IconName; group: AnalyseGruppe }> = {
@@ -20,9 +19,10 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   vergleich: { href: "/analytics/vergleich", name: "Ortsvergleich", icon: "mapPin", group: "tool" },
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck", group: "tool" },
   gremien: { href: "/analytics/gremien", name: "Beratungswege", icon: "users", group: "tool" },
-  fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "themen" },
+  fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "tool" },
   /* plenara.X Atlas und feste Auswahlen darin (Thema, Unterthema oder „Was geschieht“; Namen wie im Atlas) */
   atlas: { href: "/analytics/atlas", name: "plenara.X Atlas", icon: "map", group: "atlas" },
+  signale: { href: "/analytics/signale", name: "plenara.X Signale", icon: "zap", group: "atlas" },
   foerderung: { href: "/analytics/atlas?stage=foerderung", name: "Förderung und Zuschüsse", icon: "euro", group: "atlas" },
   bauleitplanung: { href: "/analytics/atlas?thema=bauen&sub=bauen.plan", name: "Bauleitplanung", icon: "house", group: "atlas" },
   kita: { href: "/analytics/atlas?thema=bildung&sub=bildung.kitabetr", name: "Kitas: Betrieb, Träger und Beiträge", icon: "heart", group: "atlas" },
@@ -33,7 +33,7 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   klima: { href: "/analytics/atlas?thema=umwelt&sub=umwelt.klimaschutz", name: "Klimaschutz und Energieeffizienz", icon: "zap", group: "atlas" },
   finanzlage: { href: "/analytics/atlas?thema=finanzen", name: "Finanzen & Haushalt", icon: "layers", group: "atlas" },
   beteiligung: { href: "/analytics/atlas?thema=verwaltung&sub=verwaltung.beteil", name: "Bürgerbeteiligung und Beiräte", icon: "megaphone", group: "atlas" },
-  news: { href: "/analytics/news", name: "Newsradar", icon: "newspaper", group: "themen" },
+  news: { href: "/analytics/news", name: "Newsradar", icon: "newspaper", group: "tool" },
   gebuehren: { href: "/analytics/atlas?stage=abgaben", name: "Gebühren, Beiträge und Steuern", icon: "tag", group: "atlas" },
 };
 

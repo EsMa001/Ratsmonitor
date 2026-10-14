@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,housingOf,kitaPlacesOf,kitaFeeOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,parkFeeOf,eePowerOf,landPriceOf,plotPriceOf,annualResultOf} from '../shared/topic-facts.mjs';
+import {factionsOf,housingOf,kitaFeeOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,eePowerOf,landPriceOf,plotPriceOf,annualResultOf,dogTaxOf,wasteFeeOf,planAreaOf,windCountOf,projectsOf,roadWorkOf,houseTypesOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -20,28 +20,14 @@ test('parties named elsewhere do not count as applicants',()=>{
  assert.equal(factionsOf('Beantwortung der schriftlichen Stadtverordnetenanfragen','Anfrage der CDU-Fraktion … Anfrage der FDP-Fraktion'),null,'Sammelpunkt');
 });
 
-test('funding: program in a funding sentence, granted before applied before mentioned',()=>{
- const text='Die Stadt hat für den Ganztagsausbau einen Förderbescheid über 1,2 Mio. Euro erhalten. Für den Radweg wird ein Förderantrag im Programm Stadt und Land gestellt. Das Denkmal am Markt wird gereinigt. Die Sprachförderung in Kitas wird fortgesetzt.';
- assert.deepEqual(fundingOf(text),[{program:'Ganztagsausbau',status:'granted'},{program:'Radverkehr',status:'applied'}]);
- assert.deepEqual(fundingOf('Für die Sanierung wurde ein Zuwendungsbescheid erteilt.'),[{program:'Sonstige Förderung',status:'granted'}]);
- assert.deepEqual(fundingOf('Die Förderung von Langzeitarbeitslosen im Jobcenter wird ausgebaut.'),[],'Arbeitsförderung ist kein Fördergeld');
- assert.deepEqual(fundingOf('Eine Förderung ist grundsätzlich denkbar.'),[],'bloße Erwähnung ohne Programm zählt nicht');
- assert.deepEqual(fundingOf('Der Denkmalschutz wurde beteiligt. Die Feuerwehr rückte aus.'),[],'Programmwort ohne Förderung zählt nicht');
-});
 
-test('factsOf combines both kinds',()=>{
+test('factsOf: Fraktion, keine Förderung mehr',()=>{
  const only=(t,x)=>factsOf(t,x).filter(r=>!r.kind.startsWith('radar:'));
  assert.deepEqual(only('Antrag der CDU-Fraktion: Sportplatz','Wir beantragen Fördermittel aus der Sportstättenförderung.'),[
-  {kind:'faction',value:'CDU/CSU',detail:'antrag'},{kind:'funding',value:'Sportstätten',detail:'applied'}]);
+  {kind:'faction',value:'CDU/CSU',detail:'antrag'}],'Förderung ist kein Fakt mehr');
  assert.deepEqual(only('Antrag der CDU-Fraktion: Sportplatz',''),[{kind:'faction',value:'CDU/CSU',detail:'antrag'}]);
 });
 
-test('collective items yield no funding facts unless their title is about funding',()=>{
- const t='Für den Ganztagsausbau liegt ein Förderbescheid vor.';
- assert.deepEqual(factsOf('Mitteilungen der Verwaltung',t),[]);
- assert.deepEqual(factsOf('Einbringung des Haushaltes 2027',t),[]);
- assert.deepEqual(factsOf('Sachstand Fördermittel Ganztag',t),[{kind:'funding',value:'Ganztagsausbau',detail:'granted'}]);
-});
 
 test('plans: stage from the title or the decision, the furthest step wins, repeal apart',async()=>{
  const {planOf,housingOf}=await import('../shared/topic-facts.mjs');
@@ -59,7 +45,7 @@ test('plans: stage from the title or the decision, the furthest step wins, repea
 });
 
 test('Kita: fee decisions with direction, new places without years',async()=>{
- const {kitaFeeOf,kitaPlacesOf}=await import('../shared/topic-facts.mjs');
+ const {kitaFeeOf}=await import('../shared/topic-facts.mjs');
  assert.deepEqual(kitaFeeOf('Satzung über Elternbeiträge in Kindertageseinrichtungen','Beschlussvorschlag: Die Elternbeiträge für Kinder in der Kita werden zum 1.8. um 5 % erhöht.'),{direction:'Erhöhung',euro:''});
  assert.equal(kitaFeeOf('Satzung über Elternbeiträge in Kindertageseinrichtungen','Im Jahr 2023 wurden die Elternbeiträge der Kita erhöht. Beschlussvorschlag: Die Satzung wird neu gefasst.').direction,'Neufassung','Richtung nicht aus dem Hintergrund');
  assert.equal(kitaFeeOf('Information zu den Kita-Elternbeiträgen ab 01.01.2027','Beschlussvorschlag: Für Kinder in der Kita gelten die Absenkungsbeiträge, die Beiträge werden gesenkt.').direction,'Neufassung','Information ohne Richtung im Titel');
@@ -69,57 +55,14 @@ test('Kita: fee decisions with direction, new places without years',async()=>{
  assert.equal(kitaFeeOf('Beitragssatzung über wiederkehrende Straßenbeiträge','Die Beiträge werden erhöht.'),null,'Straßenbeiträge sind keine Kita-Beiträge');
  assert.equal(kitaFeeOf('Festsetzung der Elternbeiträge für die Verpflegung in den Kitas','Die Verpflegungspauschale beträgt 3,50 Euro.').direction,'Verpflegung');
  assert.equal(kitaFeeOf('Mitteilungen','Elternbeiträge in der Kita werden erhöht.'),null,'Sammelpunkt');
- assert.equal(kitaPlacesOf('Neubau Kita Siedlung Kohlheck','Für 2026 Kita-Plätze fehlen. In der neuen Kita entstehen 75 Plätze.'),75);
- assert.equal(kitaPlacesOf('Einheitliche Elternbeiträge','Mit dem Ausbau gibt es in den Kitas 564 Plätze.'),null,'kein Ausbau im Titel');
- assert.equal(kitaPlacesOf('Spielplatz','Es entstehen 12 neue Parkplätze.'),null);
- assert.equal(kitaPlacesOf('Schließung eines Kita-Standortes','In der Kita entfallen 77 Plätze durch die Schließung.'),null);
- assert.equal(kitaPlacesOf('Situationsbericht Kindertagesstätten','Durch den Ausbau stehen in den Kitas 928 Plätze zur Verfügung.'),null,'Gesamtbestand');
- assert.equal(kitaPlacesOf('Unterbringung von Geflüchteten','Neben der Kita entstehen 300 neue Plätze in der Unterkunft.'),null);
 });
 
-test('funding amounts: only the amount attached to a funding word, never costs, own share, limits or program pools',()=>{
- const e=t=>fundingEuroOf(t).map(x=>[x.program,x.euro]);
- assert.deepEqual(e('Für den Ganztagsausbau wurde eine Zuwendung in Höhe von 450.000 € bewilligt.'),[['Ganztagsausbau',450000]]);
- assert.deepEqual(e('Die Gesamtkosten betragen 2,4 Mio. €, die Fördermittel aus der Städtebauförderung 1,2 Mio. Euro.'),[['Städtebauförderung',1200000]]);
- assert.deepEqual(e('Es wurden 120.000 € Landesmittel beantragt.'),[['Sonstige Förderung',120000]]);
- assert.deepEqual(e('Der Zuschuss des Landes beträgt 350 TEUR.'),[['Sonstige Förderung',350000]]);
- assert.deepEqual(e('Der Zuschuss beträgt 350 TEUR.'),[],'Zuschuss ohne Geldgeber: meist von der Kommune selbst');
- assert.deepEqual(e('Die Förderquote beträgt 80 % der förderfähigen Kosten von 500.000 €.'),[],'förderfähige Kosten');
- assert.deepEqual(e('Die Förderung beträgt bis zu 200.000 €.'),[],'Höchstbetrag');
- assert.deepEqual(e('Finanzschwache Kommunen erhalten einen Fördersatz von 90 % (maximale Fördersumme 200.000 Euro).'),[],'Höchstbetrag vor dem Förderwort');
- assert.deepEqual(e('Der durch Zuwendungen nicht gedeckte Anteil von 303.750 € muss über den Haushalt finanziert werden.'),[],'Eigenanteil');
- assert.deepEqual(e('Für den Projektaufruf 2026 stehen Bundesmittel in Höhe von 250 Mio. Euro zur Verfügung.'),[],'Programmtopf');
- assert.deepEqual(e('Der städtische Zuschuss für den Ersatzneubau in Höhe von 60,5 Mio. € wird beschlossen.'),[],'Zuschuss der Kommune selbst');
- assert.deepEqual(e('Gesamtsumme 9,1 Mio. € Fördermittel 6,37 Mio. € Eigenanteil 2,73 Mio. €'),[['Sonstige Förderung',6370000]],'Tabelle: kein Betrag vor dem Förderwort');
-});
 
-test('funding amounts: outgoing grants, donations, ranges and per-unit amounts are not funding (Referenzsatz 13.10.2026)',()=>{
- const e=t=>fundingEuroOf(t).map(x=>x.euro);
- assert.deepEqual(e('Der Förderverein erhält somit auch im Jahr 2027 für den Badbetrieb einen jährlichen Zuschuss in Höhe von 70.000 €.'),[],'Zuschuss an Verein');
- assert.deepEqual(e('Der Kreisausschuss ist zuständig für die Annahme von Spenden und ähnlichen Zuwendungen in einer Wertgrenze von über 1.000 EUR.'),[],'Spende, Wertgrenze');
- assert.deepEqual(e('Pro Projekt ist eine Förderung des Bundes von 250.000 € bis 1,50 Mio. € vorgesehen.'),[],'Spanne');
- assert.deepEqual(e('Damit kann mit einem Förderbetrag des Landes von 8.000 € pro Schuljahr gerechnet werden.'),[],'je Einheit, erwartet');
- assert.deepEqual(e('Für die Kläranlage wurde der Gemeinde eine Zuwendung des Landes in Höhe von 22.000 € bewilligt.'),[22000]);
- assert.deepEqual(e('Damit sind die Förder- mittel des Landes in Höhe von 5,125 Mio. € bis zum 30. Juni reserviert.'),[5125000],'Silbentrennung');
- assert.deepEqual(e('Eine Förderung aus LuKIF-Mittel ist bisher in Höhe von 5,913 Mio. Euro vorgesehen.'),[5913000],'Mio. ist kein Satzende');
-});
 
-test('funding amount without program goes to the only program of the report',()=>{
- const t='Für die Mensa wurden Fördermittel aus dem Programm Ganztagsausbau bewilligt. Der Förderbescheid über 300.000 € liegt vor.';
- assert.deepEqual(factsOf('Neubau Mensa',t).filter(r=>r.kind.startsWith('funding')),[{kind:'funding',value:'Ganztagsausbau',detail:'granted'},{kind:'funding_granted',value:'Ganztagsausbau',detail:''},{kind:'funding_euro',value:'Ganztagsausbau',detail:'300000'}]);
-});
 
-test('funding: form fields and conditional grants are not funding facts',()=>{
- assert.deepEqual(fundingOf('Finanzielle Auswirkungen: Fördermittel beantragt: Nein Ja Haushaltsmittel stehen bereit.'),[],'Formularfeld');
- assert.deepEqual(fundingOf('Vorbehaltlich der Förderzusage durch das Land wird die Radverkehrsanlage gebaut.'),[{program:'Radverkehr',status:'mentioned'}],'bedingt ist nicht bewilligt');
- assert.deepEqual(fundingOf('Der Förderbescheid für die Radwege liegt vor.'),[{program:'Radverkehr',status:'granted',sure:true}]);
-});
 
-test('outgoing grants to clubs and carriers are no funding for the municipality; fee amounts are whole numbers',async()=>{
+test('kita fee amounts are whole numbers',async()=>{
  const {kitaFeeOf}=await import('../shared/topic-facts.mjs');
- assert.deepEqual(fundingOf('Der Karnevalsverein e. V. hat eine Zuwendung in Höhe von 3.000 EUR beantragt.'),[]);
- assert.deepEqual(fundingEuroOf('Der Karnevalsverein e. V. hat eine Zuwendung in Höhe von 3.000 EUR beantragt.'),[]);
- assert.deepEqual(fundingEuroOf('Für den Ganztagsausbau wurde eine Zuwendung in Höhe von 450.000 € bewilligt.').map(x=>x.euro),[450000]);
  assert.equal(kitaFeeOf('Erhöhung der Elternbeiträge Kita','Der Kita-Beitrag steigt ab August auf 1.000 € im Jahr und 95 € im Monat.').euro,'95');
 });
 
@@ -186,17 +129,9 @@ test('fehltreffer nach der bewertung vom 11.10.2026: personal, feste tagesordnun
 });
 
 test('Förderung: Hintergrund, alte Bescheide und Anfragen zählen nicht als bewilligt',async()=>{
- const {fundingOf,fundingEuroOf,factsOf}=await import('../shared/topic-facts.mjs');
- assert.deepEqual(fundingOf('Bei Verzögerung droht der Verfall von Fördermitteln in Höhe von 12,2 Mio. Euro, die bewilligt wurden.'),[]);
+ const {factsOf}=await import('../shared/topic-facts.mjs');
  const old='Vergabe der Fliesenarbeiten im Oktober 2026 im Rathaus. Mit Bescheid vom 18.12.2023 wurden Fördermittel in Höhe von 8.840.000 Euro bewilligt.';
- assert.deepEqual(fundingEuroOf(old),[]);
- assert.deepEqual(fundingEuroOf('Dem stehen voraussichtlich Fördermittel in Höhe von etwa 23 Mio. € gegenüber.'),[]);
- assert.equal(fundingOf(old)[0]?.status??'mentioned','mentioned');
  const now='Sitzung 2026. Die Fördermittel in Höhe von 450.000 Euro wurden bewilligt. Umsetzung bis 2030.';
- assert.deepEqual(fundingEuroOf(now),[{program:'Sonstige Förderung',euro:450000}]);
- assert.equal(fundingOf(now)[0].status,'granted');
- assert.deepEqual(fundingOf('Für das Feuerwehrhaus wurden Fördermittel der Städtebauförderung bewilligt.').map(x=>x.program),['Städtebauförderung']);
- assert.ok(factsOf('Anfrage zu Fördermitteln für die Ortsmitte','Fördermittel wurden beantragt.').filter(r=>r.kind==='funding').every(r=>r.detail==='mentioned'));
 });
 
 test('faction: amendment to another motion belongs to the amending factions; housing: existing units are no plan',()=>{
@@ -206,25 +141,11 @@ test('faction: amendment to another motion belongs to the amending factions; hou
 });
 
 test('facts-v15: Kita-Plätze ohne Bestand und Senioren, Förderung ohne Geldgeber, alte Beitragsschritte, Ausschussnamen',()=>{
- assert.equal(kitaPlacesOf('Beratung und Beschlussfassung über den Neubau der KiTa Altenglan','Die Kindertagesstätten Altenglan und Mühlbach verfügen derzeit insgesamt über 100 Betreuungsplätze. Mit dem Neubau entstehen 125 Plätze in der neuen Kita.'),125);
- assert.equal(kitaPlacesOf('Erweiterungspläne für die Vita Tagespflege in Ochtrup','Durch die Erweiterung entstehen 11 neue Plätze in der Tagespflege.'),null);
- assert.deepEqual(fundingOf('Der Stadtbezirksbeirat hat die Förderung von Projekten bewilligt. Die Fördermittel werden ausgezahlt.'),[]);
- assert.deepEqual(fundingOf('Für den Mietwohnungsbau wurden Fördermittel des Landes bewilligt.'),[{program:'Wohnraumförderung',status:'granted',sure:true}]);
  assert.equal(kitaFeeOf('Neufassung der Kostenbeitragssatzung für Kindertagesstätten','Beschlussvorschlag: Der Stadtrat beschließt die Neufassung der Kostenbeitragssatzung. In der Sitzung wurde damals die Erhöhung der Kostenbeiträge vertagt.').direction,'Neufassung');
  assert.equal(kitaFeeOf('Abschluss von Qualitäts- und Finanzierungsvereinbarungen mit den Kita-Trägern','Beschlussvorschlag: Der Rat beschließt die Vereinbarungen. Die Benutzungsgebühr bleibt unverändert.'),null);
 });
 
 test('park fee per hour: new value, half hours doubled, no deltas or comparisons',()=>{
- assert.equal(parkFeeOf('2. Änderung der Parkgebührenordnung','Erhöhung der Parkgebühr von bislang 2,00 € pro Stunde auf 2,50 € pro Stunde.').euro,'2.50');
- assert.equal(parkFeeOf('Parkgebührenordnung','Gebühren in Höhe von 0,60 Euro je angefangene halbe Stunde.').euro,'1.20');
- assert.equal(parkFeeOf('Parkgebühren','Die Gebühr wird um 0,50 Euro/Stunde erhöht.'),null);
- assert.equal(parkFeeOf('Gebühr für Anwohner-Parkausweis senken','Die Gebühr beträgt 1,00 € pro Stunde.'),null);
- assert.equal(parkFeeOf('Parkgebührenordnung','Die Gebühren betragen 1,20 EUR für eine Stunde.').euro,'1.20');
- assert.equal(parkFeeOf('Parkgebühren','Es gilt ein Preis von 2€ pro Stunde.').euro,'2.00');
- assert.equal(parkFeeOf('Parkgebühren','Das Parken kostet in der ersten Stunde 3,50 Euro.').euro,'3.50');
- assert.equal(parkFeeOf('Parkgebühren','Derzeit beträgt die Parkgebühr 2,00 € je Stunde.'),null,'geltender Satz');
- assert.equal(parkFeeOf('Parkgebühren','Damit müssten Parkgebühren von etwa 2,00 € pro Stunde erhoben werden.'),null,'Schätzung');
- assert.equal(parkFeeOf('Parkhaus','Mit Bescheid vom 03.02.2006 wurde für jede angefangene Stunde 0,50 € zugestimmt.'),null,'alter Bescheid');
 });
 
 test('wind and solar capacity in MW, not per turbine, storage or reference projects',()=>{
@@ -267,4 +188,63 @@ test('Jahresergebnis: Überschuss/Fehlbetrag nach Vorzeichen, ordentliches Ergeb
  assert.deepEqual(annualResultOf('Feststellung des Jahresabschlusses 2024','Ergebnisrechnung: Jahresüberschuss/fehlbetrag (E 23) 641.626,49 €.'),{value:'Überschuss',euro:641626});
  assert.deepEqual(annualResultOf('Jahresabschluss 2019','Der Fehlbetrag des ordentlichen Ergebnisses in Höhe von 90.611,84 € ist vorzutragen.'),{value:'Fehlbetrag',euro:90612});
  assert.deepEqual(annualResultOf('Feststellung des Jahresabschlusses 2023','Zusammengefasst: Ergebnisrechnung Jahresergebnis -82 T € lt. Bilanz.'),{value:'Fehlbetrag',euro:82000});
+});
+
+test('Gebühren: Einheit vor dem Satz, Niederschlag nach m³-Wert, Tabellen ohne Punkt, keine Mehrjahrestabelle (facts-v26)', () => {
+  assert.deepEqual(feeRateOf('Nachtragssatzung zur Gebührensatzung zur Entwässerungssatzung', '„Die Gebühr beträgt je m³ Schmutzwasser jährlich 4,35 €.“ § 2'), [{kind: 'Schmutzwasser', from: '', to: '4.35', unit: 'm³'}]);
+  assert.deepEqual(feeRateOf('Abwassergebührensatzung', 'Der Gemeinderat setzt für 2026 folgende Gebühr fest: Schmutzwassergebühr 3,46 €/m³ Niederschlagswassergebühr 1,25 €/m² j) weiter').map(x => x.kind + x.to), ['Schmutzwasser3.46', 'Niederschlagswasser1.25']);
+  const table = 'Übersicht ' + 'x '.repeat(400) + ' Schmutzwassergebühr 3,93 €/m³ 3,99 €/m³ 4,14 €/m³ 4,75 €/m³ Ende';
+  assert.deepEqual(feeRateOf('Abwassergebührensatzung', table), []);
+});
+
+test('Hebesatz: Steuerart nach dem Satz; Hundesteuer „Erhöhung des Steuersatzes von … auf …“ (facts-v26)', () => {
+  assert.deepEqual(hebesatzOf('Festlegung der Hebesätze', '§ 2 Die Hebesätze für die Grundsteuer werden wie folgt festgesetzt: 1. Für Betriebe der Land- und Forstwirtschaft auf 595 vom Hundert (Grundsteuer A) 2. Für Grundstücke auf 800 vom Hundert (Grundsteuer B) § 3 Inkrafttreten').map(x => x.tax + x.to), ['Grundsteuer A595', 'Grundsteuer B800']);
+  assert.equal(dogTaxOf('Änderung der Hundesteuersatzung', 'Beschlussvorschlag: Erhöhung des Steuersatzes von 70,00 € auf 90,00 € in § 2 Abs. 1.').euro, '90');
+  assert.equal(dogTaxOf('Änderung der Hundesteuersatzung', 'Beschlussvorschlag: Erhöhung der Steuer für den zweiten Hund von 70,00 € auf 90,00 €.'), null);
+});
+
+test('Abfallgebühren: Richtung aus Titel oder Beschluss, 120-l-Restabfall (facts-v26)', () => {
+  assert.equal(wasteFeeOf('Abfallgebühren 2027 - Kalkulation', 'Beschlussvorschlag: Der Rat beschließt die Erhöhung der Abfallgebühren.').value, 'Erhöhung');
+  assert.deepEqual(wasteFeeOf('Gebührenkalkulation 2026 für die Abfallentsorgung', 'a) je 120 l Restmüllbehälter jährlich 101,04 €'), {value: 'festgesetzt', euro: '101,04'});
+  assert.equal(wasteFeeOf('Änderungsantrag zur Abfallgebührensatzung', ''), null);
+  assert.equal(wasteFeeOf('Anfrage zu Müllgebühren', ''), null);
+});
+
+test('Hundesteuer aus Haushaltssatzung, keine Rassen/Kosten je Hund; Hebesatz ohne Vorjahr und Sammeltabelle; Kita-Essensgeld (facts-v26)', () => {
+  const hs = '§ 5 Steuersätze Die Steuersätze für die Gemeindesteuern werden wie folgt festgesetzt: - Grundsteuer A auf 300 v.H. - Grundsteuer B auf 365 v.H. - Gewerbesteuer auf 365 v.H. Die Hundesteuer beträgt für Hunde, die innerhalb des Gemeindegebietes gehalten werden, für den ersten Hund 60,00 €, für den zweiten Hund 90,00 €. § 6';
+  assert.equal(dogTaxOf('Beratung und Beschlussfassung über die Haushaltssatzung und -plan 2026', hs).euro, '60');
+  assert.equal(dogTaxOf('Haushaltssatzung 2026', '§ 5 Grundsteuer A auf 300 v.H. Die Gewerbesteuer beträgt 365 v.H. für den ersten Hund 60 €'), null);
+  assert.equal(dogTaxOf('Änderung der Hundesteuersatzung', 'Die Steuer für das Halten von Hunden bestimmter Rassen beträgt bei nur einem gehaltenen Hund 300,00 €.'), null);
+  assert.deepEqual(hebesatzOf('Haushaltssatzung 2026', '§ 5 Die Steuersätze werden für das Haushaltsjahr 2025 wie folgt festgesetzt: Grundsteuer A auf 600 v.H.'), []);
+  assert.deepEqual(hebesatzOf('Haushaltssatzung 2026', '§ 5 Die Hebesätze werden festgesetzt: 1. Grundsteuer A auf 1.2 Grundsteuer B auf 2. Gewerbesteuer auf 642 v.H. 577 v.H. 485 v.H. § 6').filter(x => x.tax === 'Gewerbesteuer'), []);
+  assert.deepEqual(kitaFeeOf('Erhöhung des Eigenanteils der Mittagsverpflegung in den Kindertagesstätten', 'Beschlussvorschlag: von 2,60 € auf 3,00 €.'), {direction: 'Verpflegung', euro: ''});
+});
+
+test('Fläche des Plangebiets (facts-v26)', () => {
+  assert.equal(planAreaOf('Das Plangebiet befindet sich im Ortsteil Großachsen und umfasst rund 6,4 ha.'), 6.4);
+  assert.equal(planAreaOf('Das Plangebiet umfasst eine Gesamtfläche von 1.500 m².'), 0.15);
+  assert.equal(planAreaOf('Die Gemarkungsfläche beträgt 1.411 ha.'), null);
+  assert.equal(planAreaOf('Im Plangebiet von 1,03 ha davon überbaubar 0,4 ha.'), null);
+});
+
+test('Windenergieanlagen und Vorhaben aus dem Titel (facts-v26)', () => {
+  assert.equal(windCountOf('B-Plan Nr. 32 „Sondergebiet Wind“', 'Im konkreten Fall sollen auf einer Fläche von ca. 159 ha acht neue Windenergieanlagen (WEA) errichtet werden.'), 8);
+  assert.equal(windCountOf('Windpark Nord - Einvernehmen', 'Im Landkreis bestehen bereits 120 Windenergieanlagen. Geplant sind 3 WEA am Standort.'), 3);
+  assert.equal(windCountOf('Windenergie Einvernehmen', 'Die bestehenden 4 Windenergieanlagen werden zurückgebaut.'), null);
+  assert.deepEqual(projectsOf('Einführung eines Bürgerbusses und Carsharing im Ortsteil'), ['Bürgerbus oder Rufbus', 'Carsharing']);
+  assert.deepEqual(projectsOf('Errichtung von E-Ladesäulen am Rathaus'), ['Ladesäulen']);
+  assert.deepEqual(projectsOf('Bebauungsplan Nr. 3'), []);
+});
+
+test('Straßenbau: Art aus dem Titel, Kosten aus dem Beschluss (facts-v26)', () => {
+  assert.deepEqual(roadWorkOf('Grundhafte Erneuerung der Hauptstraße; Vergabe der Bauleistungen', 'Beschlussvorschlag: Der Gemeinderat vergibt die Bauleistungen an die Firma X zum Angebotspreis von 412.300,00 € brutto.'), {value: 'Sanierung', euro: '412300'});
+  assert.equal(roadWorkOf('Neubau Radweg entlang der L 123', 'Beschlussvorschlag: Der Rat stimmt dem Bau mit Kosten von rund 1,2 Mio. € zu.').euro, '1200000');
+  assert.equal(roadWorkOf('Umbau Feuerwehrhaus Hauptstraße 5', ''), null);
+  assert.equal(roadWorkOf('Straßenreinigungssatzung', ''), null);
+});
+
+test('Art der Wohnbebauung (facts-v26)', () => {
+  assert.deepEqual(houseTypesOf('Bebauungsplan Wohngebiet Am Hang', 'Ziel der Planung ist die Bebauung mit Einfamilien- und Doppelhäusern. Östlich grenzen vorhandene Mehrfamilienhäuser an.'), ['Einfamilienhäuser', 'Doppel- und Reihenhäuser']);
+  assert.deepEqual(houseTypesOf('Bebauungsplan Nr. 12', 'Im Plangebiet sind Mehrfamilienhäuser mit geförderten Wohnungen vorgesehen.'), ['Mehrfamilienhäuser', 'Geförderter Wohnungsbau']);
+  assert.deepEqual(houseTypesOf('Bebauungsplan Nr. 12', 'Die angrenzende Bebauung besteht aus Reihenhäusern.'), []);
 });

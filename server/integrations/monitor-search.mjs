@@ -338,4 +338,11 @@ export async function cachedCoverage(db,catalog,level,{now=Date.now()}={}){
 
 /** Nur Stationen aus derselben Kommune: gleiche Quelle (Host) wie der Vorgang */
 export function sameHost(a,b){try{return new URL(a).host===new URL(b).host;}catch{return true;}}
+/** Karten nach ID in der Form der Trefferliste (für plenara.X Signale: dieselbe Artikelkarte wie in der Suche) */
+export async function cardsById(db,catalog,ids){
+ if(!ids.length)return [];
+ const byId=new Map(catalog.map(r=>[r.id,r]));
+ const {results}=await db.prepare(`${ROW_SELECT} WHERE id IN (SELECT value FROM json_each(?))`).bind(JSON.stringify(ids)).all();
+ return results.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
+}
 function sameCommune(steps,src){return src?steps.filter(x=>!x.u||sameHost(x.u,src)):steps;}
