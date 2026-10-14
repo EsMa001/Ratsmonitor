@@ -91,11 +91,23 @@ export class MapEngine {
   private pal: typeof MAP_COLORS = MAP_COLORS;
   private cov = colorForCoverage;
 
+  /* Eigene Farben für die Stufen 1 bis n (Atlas: grün bis rot für Kennzahlen); null: Farben der Abdeckung */
+  private palette: string[] | null = null;
+  private coverageColor() { const p = this.palette; return p ? (l: number) => p[Math.min(p.length, Math.max(1, l)) - 1] : this.pal === MAP_COLORS_DARK ? colorForCoverageDark : colorForCoverage; }
+
   setDark(d: boolean) {
     const pal = d ? MAP_COLORS_DARK : MAP_COLORS;
     if (pal === this.pal) return;
     this.pal = pal;
-    this.cov = d ? colorForCoverageDark : colorForCoverage;
+    this.cov = this.coverageColor();
+    this.cache = [];
+    if (this.W && this.view) this.drawAll();
+  }
+
+  setPalette(p: string[] | null) {
+    if ((p ?? []).join() === (this.palette ?? []).join()) return;
+    this.palette = p;
+    this.cov = this.coverageColor();
     this.cache = [];
     if (this.W && this.view) this.drawAll();
   }

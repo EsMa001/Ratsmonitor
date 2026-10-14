@@ -20,7 +20,7 @@ interface Item { id: string; title: string; region: string; date: string; status
 interface CompareRow { key: string; name: string; k: number; share: number; q1: number; median: number; q3: number; ratio: number | null; class: "mehr" | "weniger" | "ueblich" | null }
 interface Compare { region: string; from: string; to: string; n: number; months: number; insufficient?: "items" | "months" | "group"; rule: { minItems: number; minMonths: number; minTopic: number }; group?: { label: string; n: number }; rows?: CompareRow[] }
 interface Result { selection: { theme: string; sub: string; stage: string; q: string }; total: number; unread: number; parts: Row[]; stages: Row[]; months: Row[]; regions: Row[]; recent: Item[]; compare: Compare | null; facts: Fact[] }
-interface Fact { kind: string; name: string; sum: { kind: string; name: string } | null; rows: (Row & { sum?: number; median?: { median: number; unit: string; n: number } })[] }
+interface Fact { kind: string; name: string; sum: { kind: string; name: string } | null; rows: (Row & { sum?: number; median?: { median: number; unit: string; n: number } })[]; map: { key: string; n: number; v: Record<string, { n: number; median: number; unit: string }> }[] }
 
 const n = (v: number) => v.toLocaleString("de-DE");
 const num = (v: number) => v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 });
@@ -70,44 +70,81 @@ function Bars({ rows, mode, open = "", onOpen, drill = () => null, value = (r) =
   );
 }
 
-/* Karte der Orte: Vorgänge der Auswahl je Gemeinde (Gemeindeverbände färben ihre Mitgliedsgemeinden) oder je Kreis (Summe aller
-   Gebiete im Kreis). Stufen wie die frühere Karte der Radare: 1, 2, 3 bis 4, 5 und mehr Vorgänge. */
+/* Karte der Orte, oben unter der Suche. Ohne Fakt: Vorgänge der Auswahl je Gebiet. Mit Fakt: Vorgänge mit diesem Wert je Gebiet
+   oder, bei Beträgen und Sätzen, der Median im Gebiet, in Vierteln über alle Gebiete eingefärbt; wo hohe Werte Kosten für die
+   Bürger sind (Steuern, Gebühren, Beiträge, Preise), von grün nach rot. Gemeindeverbände färben ihre Mitgliedsgemeinden, die
+   Kreise fassen alle Gebiete im Kreis zusammen (Summe, bei Kennzahlen der Median der Gebiete). */
 const STUFE = (c: number) => (c >= 5 ? 4 : c >= 3 ? 3 : c);
-function AtlasMap({ regions, onList, listed, drill }: { regions: Row[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode }) {
+const HIGH_BAD = new Set(["hebesatz", "fee_rate", "park_fee", "dog_tax", "kita_fee", "land_price"]);
+const GREEN_RED = ["#2f9e44", "#a9c934", "#f59f00", "#e03131"];
+const mid = (vs: number[]) => { const s = [...vs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const quart = (vs: number[], q: number) => { const s = [...vs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
+function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; facts: Fact[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode }) {
   const [level, setLevel] = useState<"city" | "district">("city");
   const [picked, setPicked] = useState("");
-  const { levels, byAgs } = useMemo(() => {
-    const levels: Record<string, number> = {}, byAgs = new Map<string, Row>();
+  const [kind, setKind] = useState("");
+  const [metric, setMetric] = useState("");
+  const fact = facts.find((f) => f.kind === kind);
+  const metrics = fact ? [...new Set(fact.map.flatMap((m) => Object.keys(m.v)))].sort((a, b) => fact.map.filter((m) => m.v[b]).length - fact.map.filter((m) => m.v[a]).length) : [];
+  const metricOn = metrics.includes(metric) ? metric : "";
+  const { levels, byAgs, legend, unit, colors } = useMemo(() => {
+    const fact = facts.find((f) => f.kind === kind);
+    const unit = metricOn && fact ? fact.map.find((m) => m.v[metricOn])?.v[metricOn].unit ?? "" : "";
+    /* Wert je Gebiet (Schlüssel des Katalogs) */
+    const val = new Map<string, number>();
+    if (!fact) for (const r of regions) val.set(r.key, r.count);
+    else for (const m of fact.map) { const x = metricOn ? m.v[metricOn]?.median : m.n; if (x !== undefined) val.set(m.key, x); }
+    const rowOf = new Map(regions.map((r) => [r.key, r]));
+    /* Fläche (Gemeinde- oder Kreisschlüssel) → Wert, Name, Katalog-Schlüssel */
+    const area = new Map<string, { v: number; name: string; key: string; count: number; share: number | null; base: number }>();
     if (level === "district") {
-      const sum = new Map<string, number>();
-      for (const r of regions) if (r.ags && r.ags.length >= 5) sum.set(r.ags.slice(0, 5), (sum.get(r.ags.slice(0, 5)) ?? 0) + r.count);
-      for (const [k, c] of sum) { levels[k] = STUFE(c); const own = regions.find((r) => r.ags === k); byAgs.set(k, { key: own?.key ?? "", name: own?.name ?? `Kreis ${k}`, count: c, base: 0, share: null }); }
+      const acc = new Map<string, number[]>();
+      for (const [k, v] of val) { const a = rowOf.get(k)?.ags; if (a && a.length >= 5) acc.set(a.slice(0, 5), [...(acc.get(a.slice(0, 5)) ?? []), v]); }
+      for (const [a, vs] of acc) { const own = regions.find((r) => r.ags === a); area.set(a, { v: metricOn ? mid(vs) : vs.reduce((x, y) => x + y, 0), name: own?.name ?? `Kreis ${a}`, key: own?.key ?? "", count: vs.length, share: null, base: 0 }); }
     } else {
-      for (const r of regions) {
+      for (const [k, v] of val) {
+        const r = rowOf.get(k); if (!r) continue;
         const own = r.ags?.length === 8 ? [r.ags] : [];
-        for (const a of [...own, ...(r.members ?? []).filter((m) => m.length === 8)]) if (!byAgs.has(a) || own.includes(a)) { levels[a] = STUFE(r.count); byAgs.set(a, r); }
+        for (const a of [...own, ...(r.members ?? []).filter((m) => m.length === 8)]) if (!area.has(a) || own.includes(a)) area.set(a, { v, name: r.name, key: r.key, count: r.count, share: r.share, base: r.base });
       }
     }
-    return { levels, byAgs };
-  }, [regions, level]);
+    const vs = [...area.values()].map((x) => x.v);
+    let cut: number[] = [], legend = ["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"];
+    if (metricOn && vs.length) { cut = [quart(vs, 0.25), quart(vs, 0.5), quart(vs, 0.75)]; legend = [`bis ${num(cut[0])}`, `bis ${num(cut[1])}`, `bis ${num(cut[2])}`, `über ${num(cut[2])}`].map((l) => `${l} ${unit}`); }
+    const levels: Record<string, number> = {}, byAgs = new Map<string, { v: number; name: string; key: string; count: number; share: number | null; base: number }>();
+    for (const [a, x] of area) { levels[a] = metricOn ? (x.v <= cut[0] ? 1 : x.v <= cut[1] ? 2 : x.v <= cut[2] ? 3 : 4) : STUFE(x.v); byAgs.set(a, x); }
+    return { levels, byAgs, legend, unit, colors: metricOn && HIGH_BAD.has(kind) ? GREEN_RED : undefined };
+  }, [regions, facts, metricOn, level, kind]);
   const sel = picked ? byAgs.get(picked) : undefined;
   const chip = (on: boolean) => `h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
+  const row = "-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0";
   const listedRow = listed ? regions.find((r) => r.key === listed) : undefined;
+  const what = !fact ? "Vorgänge der Auswahl" : metricOn ? `Median „${metricOn}“ der Vorgänge` : `Vorgänge mit Wert „${fact.name}“`;
+  const valueText = (x: { v: number; count: number }) => metricOn ? `Median ${num(x.v)} ${unit}` : `${n(x.v)} ${plural(x.v, "Vorgang", "Vorgänge")}`;
   return (
-    <section className="mt-12">
-      <h2 className="text-[22px] font-semibold">Karte</h2>
-      <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge der Auswahl je {level === "district" ? "Kreis (alle Gebiete im Kreis zusammen)" : "Gemeinde; ein Gemeindeverband färbt seine Mitgliedsgemeinden"}. Klick auf ein Gebiet zeigt seine Zahl und die Vorgänge.</p>
-      <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label="Ebene der Karte">
+    <section className="mt-6">
+      <div className="relative">
+        <RegionMap level={level} levels={levels} picked={picked} onPick={(a) => setPicked(picked === a ? "" : a)} legend={legend} colors={colors}
+          note={metricOn ? `Viertel über alle Gebiete${HIGH_BAD.has(kind) ? "; rot: hoch" : ""}` : "ohne Farbe: keine Vorgänge"}
+          label={`Karte: ${what} je ${level === "district" ? "Kreis" : "Gemeinde"}`}
+          info={sel ? <>
+            <b className="font-semibold">{sel.name}</b><br />
+            <span className="text-slate-500">{valueText(sel)}</span>
+            {sel.key && <><br /><button type="button" onClick={() => onList(sel.key)} className="pointer-events-auto mt-1 text-[14px] font-medium text-teal-700 hover:underline">{listed === sel.key ? "Vorgänge ausblenden" : "Vorgänge zeigen →"}</button></>}
+          </> : picked ? <span className="text-slate-500">Hier gibt es keine Werte zur Auswahl.</span> : undefined} />
+      </div>
+      <p className="mb-2 mt-3 text-[14px] text-slate-500">Die Karte zeigt {what} je {level === "district" ? "Kreis" : "Gemeinde"}. Klick auf ein Gebiet zeigt den Wert und die Vorgänge.</p>
+      <div className={row} role="group" aria-label="Was die Karte zeigt">
+        <button type="button" aria-pressed={!fact} onClick={() => { setKind(""); setMetric(""); setPicked(""); }} className={chip(!fact)}>Alle Vorgänge</button>
+        {facts.filter((f) => f.map.length).map((f) => <button key={f.kind} type="button" aria-pressed={kind === f.kind} onClick={() => { setKind(f.kind); const m = [...new Set(f.map.flatMap((x) => Object.keys(x.v)))]; setMetric(m.length ? m.sort((a, b) => f.map.filter((x) => x.v[b]).length - f.map.filter((x) => x.v[a]).length)[0] : ""); setPicked(""); }} className={chip(kind === f.kind)}>{f.name}</button>)}
+      </div>
+      {fact && <div className={row + " mt-2"} role="group" aria-label="Kennzahl">
+        <button type="button" aria-pressed={!metricOn} onClick={() => setMetric("")} className={chip(!metricOn)}>Anzahl</button>
+        {metrics.map((m) => <button key={m} type="button" aria-pressed={metricOn === m} onClick={() => setMetric(m)} className={chip(metricOn === m)}>{m}</button>)}
+      </div>}
+      <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Ebene der Karte">
         {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
       </div>
-      <RegionMap level={level} levels={levels} picked={picked} onPick={(a) => setPicked(picked === a ? "" : a)}
-        legend={["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"]} note="ohne Farbe: keine Vorgänge"
-        label={`Karte der Vorgänge je ${level === "district" ? "Kreis" : "Gemeinde"}`}
-        info={sel ? <>
-          <b className="font-semibold">{sel.name}</b><br />
-          <span className="text-slate-500">{n(sel.count)} {plural(sel.count, "Vorgang", "Vorgänge")}{sel.share !== null && sel.base ? ` · ${pct(sel.share)} von ${n(sel.base)} Sachvorgängen` : ""}</span>
-          {sel.key && <><br /><button type="button" onClick={() => onList(sel.key)} className="pointer-events-auto mt-1 text-[14px] font-medium text-teal-700 hover:underline">{listed === sel.key ? "Vorgänge ausblenden" : "Vorgänge zeigen →"}</button></>}
-        </> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
       {listedRow && <div className="mt-3">{drill(listedRow)}</div>}
     </section>
   );
@@ -199,6 +236,8 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {res.total === 0 ? <p className="mt-10 text-[16px]">Für diese Auswahl gibt es keine Vorgänge.</p> : (
             <>
+              {allRegions.length > 0 && <AtlasMap regions={allRegions} facts={res.facts} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+
               <Befund>{`${n(res.total)} ${plural(res.total, "Vorgang", "Vorgänge")} ${where}${res.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}.`}</Befund>
 
               {res.compare && <Reveal><OrtImVergleich c={res.compare} theme={theme} /></Reveal>}
@@ -233,8 +272,6 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
                 ))}</div>
                 {month && <div className="mt-3">{drill("month", res.months.find((m) => m.key === month)!, monthLabel(month))}</div>}
               </section></Reveal>}
-
-              {allRegions.length > 0 && <Reveal><AtlasMap regions={allRegions} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} /></Reveal>}
 
               {res.facts.length > 0 && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Werte aus den Unterlagen</h2>

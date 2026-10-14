@@ -9,9 +9,9 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
    (levels: Gemeindeschlüssel → Stufe), Klick wählt eine Gemeinde. Lage nur auf Gemeindeebene. */
 const glass = "rm-glass";
 
-export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note }: {
+export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors }: {
   levels: Record<string, number>; legend: string[]; label: string; picked: string; onPick: (ags: string) => void; info?: React.ReactNode;
-  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string;
+  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[];
 }) {
   const { geo } = useData();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -28,6 +28,9 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   const engine = useMemo(() => (geo ? new MapEngine(geo, { onSelect: select, onHover: () => {}, onViewChange: () => {}, onWheelHint: () => {} }) : null), [geo, select]);
   const dark = useDarkMode()[0];
   useEffect(() => { engine?.setDark(dark); }, [engine, dark]);
+  const colorKey = colors?.join() ?? "";
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { engine?.setPalette(colors ?? null); }, [engine, colorKey]);
   useEffect(() => {
     if (!engine) return;
     const detach = engine.attach(stageRef.current!, baseRef.current!, overRef.current!);
@@ -55,7 +58,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
       </div>
       <div className={`${glass} absolute left-3 top-3 z-[6] rounded-2xl px-3 py-2 text-[12px] text-slate-700`}>
         <ul className="m-0 flex list-none flex-col gap-1 p-0">
-          {legend.map((l, i) => <li key={l} className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: MAP_COLORS.scale[i] }} />{l}</li>)}
+          {legend.map((l, i) => <li key={l} className="flex items-center gap-2"><i className="inline-block h-3 w-5 rounded-sm" style={{ background: colors?.[i] ?? MAP_COLORS.scale[i] }} />{l}</li>)}
         </ul>
         {note && <p className="m-0 mt-1 max-w-[180px] text-slate-500">{note}</p>}
       </div>
