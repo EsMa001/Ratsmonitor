@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,housingOf,kitaPlacesOf,kitaFeeOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf} from '../shared/topic-facts.mjs';
+import {factionsOf,housingOf,kitaPlacesOf,kitaFeeOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,parkFeeOf,eePowerOf,landPriceOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -212,4 +212,25 @@ test('facts-v15: Kita-Plätze ohne Bestand und Senioren, Förderung ohne Geldgeb
  assert.deepEqual(fundingOf('Für den Mietwohnungsbau wurden Fördermittel des Landes bewilligt.'),[{program:'Wohnraumförderung',status:'granted',sure:true}]);
  assert.equal(kitaFeeOf('Neufassung der Kostenbeitragssatzung für Kindertagesstätten','Beschlussvorschlag: Der Stadtrat beschließt die Neufassung der Kostenbeitragssatzung. In der Sitzung wurde damals die Erhöhung der Kostenbeiträge vertagt.').direction,'Neufassung');
  assert.equal(kitaFeeOf('Abschluss von Qualitäts- und Finanzierungsvereinbarungen mit den Kita-Trägern','Beschlussvorschlag: Der Rat beschließt die Vereinbarungen. Die Benutzungsgebühr bleibt unverändert.'),null);
+});
+
+test('park fee per hour: new value, half hours doubled, no deltas or comparisons',()=>{
+ assert.equal(parkFeeOf('2. Änderung der Parkgebührenordnung','Erhöhung der Parkgebühr von bislang 2,00 € pro Stunde auf 2,50 € pro Stunde.').euro,'2.50');
+ assert.equal(parkFeeOf('Parkgebührenordnung','Gebühren in Höhe von 0,60 Euro je angefangene halbe Stunde.').euro,'1.20');
+ assert.equal(parkFeeOf('Parkgebühren','Die Gebühr wird um 0,50 Euro/Stunde erhöht.'),null);
+ assert.equal(parkFeeOf('Gebühr für Anwohner-Parkausweis senken','Die Gebühr beträgt 1,00 € pro Stunde.'),null);
+});
+
+test('wind and solar capacity in MW, not per turbine, storage or reference projects',()=>{
+ assert.deepEqual(eePowerOf('Bebauungsplan Solarpark Grüner Weg','Die Anlage hat eine Nennleistung von rd. 12 MWp.'),{value:'Photovoltaik',mw:12});
+ assert.deepEqual(eePowerOf('PV-Anlage Kreissporthalle','Es wurde eine Anlagenleistung von 100kWp ermittelt.'),{value:'Photovoltaik',mw:0.1});
+ assert.equal(eePowerOf('Bericht zum Stand des Photovoltaik-Ausbaus','Die installierte Leistung lag bei 13,53 MW.'),null);
+ assert.equal(eePowerOf('Windpark Nord','Eine Anlage der 7 MW Klasse.'),null);
+});
+
+test('price of commercial land per m², not land values or buy-back prices',()=>{
+ assert.equal(landPriceOf('Veräußerung einer Gewerbefläche im Gewerbegebiet Middels III','Der Kaufpreis beträgt 35,00 €/m².').euro,'35');
+ assert.equal(landPriceOf('Verkauf eines Grundstücks im Gewerbegebiet','Kaufpreis in Höhe von 250.000,00 EUR (50 EUR/m²).').euro,'50');
+ assert.equal(landPriceOf('Verkauf Gewerbegrundstück','Der Bodenrichtwert liegt bei 85,00 Euro/qm.'),null);
+ assert.equal(landPriceOf('Vergabekriterien für Gewerbegrundstücke','Preis von 60 €/m².'),null);
 });

@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v19';
+export const FACTS_VERSION='facts-v20';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -324,6 +324,71 @@ export function annualResultOf(title,text){
  return pick(decision(text))||pick(text);
 }
 
+/* Parkgebühr je Stunde (Mobilität, Parken): ausdrücklich genannter Satz in € je Stunde (halbe Stunde verdoppelt), bei Änderungen
+   der neue Wert („von 1,00 € auf 1,50 €“, „1,00 €/Stunde → 1,20 €/Stunde“). Nicht Erhöhungsbeträge („um 0,50 €“), Mittelwerte,
+   Mindestgebühren der Park-App, Vergleiche mit anderen Städten, Bewohnerparken, Monats- und Tagestickets. */
+const PARK_TITLE=/Park(?:geb|raum|entgelt|schein|tarif|haus|platz|ticket|en\b)|Stellpl[aä]tz|Tiefgarage/i;
+const NOT_PARK_TITLE=/Bewohnerpark|Anwohnerpark|Betrug|Car-?Sharing|Fahrrad|Wohnmobil|Pacht|vermiet/i;
+const PARK_RE=/(?<![\d.,])(\d{1,2},\d{2})\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)\s*(angefangene[n]?\s+)?(halbe\s+Stunde|30\s*Min\w*|Stunde|Std\.?|h\b)/gi;
+// Umgekehrte Reihenfolge („je angefangene Stunde 1,00 €“, „für jede weitere 30 Minuten 0,50 €“, „bis 1 Stunde 1,00 €“);
+// zwei Beträge hintereinander sind Spalten „bisher | neu“, dann gilt der zweite
+const PARK_RE2=/(?:je|pro|für jede|(?<![\d,.])1)\s+(?:weitere\s+|angefangene[n]?\s+)*(halbe\s+Stunde|30\s*Min\w*|Stunde)\s*:?\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)(?:\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR))?/gi;
+const NOT_PARK_SENT=/\b(?:um|statt|bisher\w*|bislang|derzeit\w*|aktuell|bleibt bei|weiterhin|damit)\s*$|durchschnitt|im Mittel|mindestens|Vergleich|andere[nr]? (Städte|Kommunen)|Nachbar|Bewohner|Anwohner|Wohnmobil|Bus(se)?\b|Lkw|Fahrrad/i;
+export function parkFeeOf(title,text){
+ const t=String(title||'');if(!PARK_TITLE.test(t)||NOT_PARK_TITLE.test(t))return null;
+ const pick=src=>{let best=null;
+  for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){if(s.length>1500||/[Vv]ergleich|Unterschied|Differenz/.test(s))continue;
+   // Tabellen mit vielen Sätzen ohne Zone oder Parkplatz sind meist Vergleiche mit Nachbarorten
+   if([...s.matchAll(PARK_RE)].length>=4&&!/Zone|Tarif|Parkpl|Parkhaus|Tiefgarage|Parkdeck|Bereich/.test(s))continue;
+   for(const m of s.matchAll(PARK_RE)){const before=s.slice(Math.max(0,m.index-60),m.index),after=s.slice(m.index+m[0].length,m.index+m[0].length+40);
+    if(NOT_PARK_SENT.test(before)||/^\s*(?:→|->|auf\s+\d)/.test(after)&&!/^\s*auf\s*$/.test(before.slice(-5)))continue;
+    if(/^\s*(?:→|->)\s*\d/.test(after)||/\bvon\s*$/i.test(before)&&/^\s*auf\s*\d+,\d+\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)/i.test(after))continue;
+    const to=/\bvon\s*(?:derzeit\s*|bislang\s*|bisher\s*)?$/i.test(before)&&after.match(/^\s*auf\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)/);
+    let v=Number((to?to[1]:m[1]).replace(',','.'));if(/halbe|30/i.test(m[3]))v*=2;if(!v||v>10)continue;
+    best=Math.max(best||0,v);}
+   for(const m of s.matchAll(PARK_RE2)){if(NOT_PARK_SENT.test(s.slice(Math.max(0,m.index-60),m.index)))continue;
+    let v=Number((m[3]||m[2]).replace(',','.'));if(/halbe|30/i.test(m[1]))v*=2;if(v&&v<=10)best=Math.max(best||0,v);}
+   if(best!==null)return best;}
+  return best;};
+ const v=pick(decision(text))??pick(text);if(v===null)return null;
+ return {value:v<=1?'bis 1 € je Stunde':v<=2?'über 1 bis 2 € je Stunde':'über 2 € je Stunde',euro:v.toFixed(2)};
+}
+
+/* Leistung von Wind- und Solarvorhaben (Umwelt, Erneuerbare): ausdrücklich genannte installierte Leistung oder Nennleistung des
+   Vorhabens in MW (kWp umgerechnet). Nicht Strommengen (MWh), Leistung je Anlage, Leistungsklassen, Ziele, Netzanfragen. */
+const EE_TITLE=/Wind|Solar|Photovoltaik|\bPV\b|PV-|Agri-?PV|Freifläch/i;
+const EE_RE=/(?:\w*[Ll]eistung|installiert\w*)\b[^.;]{0,50}?(?<![\d.,])(\d{1,3}(?:\.\d{3})*(?:,\d+)?)\s*(MWp|MW|Megawatt(?:peak)?|kWp|kW)\b|(?<![\d.,])(\d{1,3}(?:\.\d{3})*(?:,\d+)?)\s*(MWp|MW|Megawatt(?:peak)?|kWp)\b(?!\s*-?\s*Klasse)/gi;
+const NOT_EE_SENT=/BESS|Referenz|Beispiel|besichtig|Inbetriebnahme|\blag\b|bestehende|vorhanden|je Anlage|pro Anlage|Klasse|Ziel|bis (19|20)\d\d|jährlich|bundesweit|Land(es)?\b|Netz\w*\s+(angefragt|anfrage)|Anfrage|Umspannwerk|Elektrolys|Wasserstoff/i;
+export function eePowerOf(title,text){
+ const t=String(title||'');if(!EE_TITLE.test(t)||/Bericht|Sachstand|Stand des|Anfrage|Balkon|Förderrichtlinie|Kriterien|Leitlinie|Potential|Potenzial|Studie|Konzept/i.test(t))return null;
+ const kind=/Wind/i.test(t)?'Wind':'Photovoltaik';
+ // Umfeld im ganzen Text prüfen: Aufzählungen („15,9 MWp; BESS …“) trennt SENTENCE am Semikolon
+ const all=String(text||'').replace(/\s+/g,' ');let at=0;
+ for(const s of all.split(SENTENCE)){const off=all.indexOf(s,at);at=off+s.length;if(s.length>1200)continue;
+  for(const m of s.matchAll(EE_RE)){const num=m[1]||m[3],unit=(m[2]||m[4]).toLowerCase(),i=off+m.index;
+   if(NOT_EE_SENT.test(all.slice(Math.max(0,i-80),i+m[0].length+30))||/Batterie|Speicher|BESS/i.test(all.slice(Math.max(0,i-25),i)+m[0].replace(/\d.*$/,'')))continue;
+   let v=Number(num.replace(/\./g,'').replace(',','.'));if(unit.startsWith('k'))v/=1000;
+   if(!v||v>2000)continue;return {value:kind,mw:Math.round(v*1000)/1000};}}
+ return null;
+}
+
+/* Preis für Gewerbegrundstücke (Wirtschaft, Gewerbeflächen): Kauf- oder Verkaufspreis in € je m², den die Kommune festsetzt,
+   verlangt oder zahlt, zuerst aus dem Beschlussvorschlag. Nicht Bodenrichtwerte, Rückkaufpreise, Erschließungskosten,
+   Spannen, Vergleichspreise anderer Orte, frühere Preise. */
+const LAND_TITLE=/Gewerbe|Industrie/i;
+const LAND_DEAL=/Verkauf|Veräußer|Kaufpreis|Grundstückspreis|Verkaufspreis|Preis|Erwerb|Ankauf/i;
+const LAND_RE=/(Kaufpreis\w*|Grundstückspreis\w*|Verkaufspreis\w*|Preis|Erwerb|Grundpreis)\b(?:[^.;]|\d\.\d)*?(?<![\d.,])(\d{1,3}(?:,\d{1,2})?)\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)\s*(?:m²|qm²?|m2|Quadratmeter)/gi;
+const NOT_LAND=/Bodenrichtwert|Rückkauf|Erschließungs|Kostenrahmen|zwischen|bis \d|Vergleich|liegen bei|Jahr (19|20)\d\d|bisher|bislang|damals|Nachzahlung|würde/i;
+export function landPriceOf(title,text){
+ const t=String(title||'');if(!LAND_TITLE.test(t)||!LAND_DEAL.test(t)||/Vergabekriterien|Richtlinie|Grundsätze|Leitlinie|Nutzungszweck|Sachstand|Status|Auflistung|Konzept/i.test(t))return null;
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){if(s.length>1200)continue;
+  for(const m of s.matchAll(LAND_RE)){if(NOT_LAND.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+20)))continue;
+   const v=Number(m[2].replace(',','.'));if(v>=1&&v<=1000)return v;}}
+  return null;};
+ const v=pick(decision(text))??pick(text);if(v===null)return null;
+ return {value:v<50?'unter 50 € je m²':v<=100?'50 bis 100 € je m²':'über 100 € je m²',euro:String(v)};
+}
+
 /** Neue Kita-Plätze (größte Zahl in einem Satz mit Kita-Bezug und Ausbau), sonst null */
 // Kein Ausbau: Schließung, Abbau, Unterkünfte für Geflüchtete (auch dort ist von Plätzen die Rede)
 const NOT_PLACES=/Rückbau|Ersatzneubau|Schließung|geschlossen|Abbau|abgebaut|Wegfall|Geflüchtete|Flüchtling|Asyl|Unterbringung|Unterkunft|Pflegeheim|Seniorenheim|Senior|Demenz|Pflegebedürft|Altenpflege|Tagespflege für (ältere|Senioren)/i;
@@ -404,8 +469,8 @@ export function hebesatzOf(title,text){
    Änderungen „um“, Wasserentnahmeentgelt. */
 const FEE_TITLE=/Gebühr|Entgelt|Kalkulation|Wasserpreis|Abgabensatzung|Entwässerungssatzung|Wasserversorgungssatzung|Abwassersatzung|Tarif/i;
 const FEE_KINDS=[
- ['Niederschlagswasser',/Niederschlags\s?wasser|Regenwasser|Oberflächenwasser|Oberflächenentwässerung|versiegelte/gi],
- ['Schmutzwasser',/Schmutzwasser|Abwassergebühr|Kanalbenutzungsgebühr|Einleit(?:ungs)?gebühr|Entwässerungsgebühr|Abwasserbeseitigung/gi],
+ ['Niederschlagswasser',/\bNSW\b|Niederschlags\s?wasser|Regenwasser|Oberflächenwasser|Oberflächenentwässerung|versiegelte/gi],
+ ['Schmutzwasser',/\bSW-Gebühr|Schmutzwasser|Abwassergebühr|Kanalbenutzungsgebühr|Einleit(?:ungs)?gebühr|Entwässerungsgebühr|Abwasserbeseitigung/gi],
  ['Trinkwasser',/Trinkwasser|Frischwasser(?!maßstab|menge|bezug|verbrauch)|(?<![\wäöüß])Wasser(?:preis|gebühr|verbrauchsgebühr|bezugsgebühr|entgelt|geld)/gi],
 ];
 // Ohne Art im Satz („Die Verbrauchsgebühr beträgt …“) gilt die einzige Art, die der Titel nennt
@@ -438,7 +503,7 @@ export function feeRateOf(title,text){
     const r=feeIn(s.slice(m.at,Math.min(m.at+160,marks[i+1]?.at??s.length)));if(!r||!r.unit)return;
     // Vorrang: Beschlussvorschlag, dann Änderung mit „bisher“, dann neu gesetzter Satz („auf 1,42 €“), dann bloße Nennung
     const eff=prio+(r.from?0.5:r.set?0.25:0);if(out.has(m.kind)&&out.get(m.kind).prio>=eff)return;
-    const unit=unitOf(r.unit);if(m.kind!=='Niederschlagswasser'&&unit!=='m³')return;
+    const unit=unitOf(r.unit);if((m.kind==='Niederschlagswasser')!==(unit==='m²'))return;
     const [lo,hi]=FEE_RANGE[m.kind],to=feeNum(r.to),from=r.from?feeNum(r.from):0;
     if(to<lo||to>hi||from&&(from<lo||from>hi||from===to||Math.abs(to/from-1)>1))return;
     out.set(m.kind,{kind:m.kind,from:from?String(from):'',to:String(to),unit,prio:eff});
@@ -455,13 +520,13 @@ export function feeRateOf(title,text){
 const HEAT=/Wärmeplan|Wärmeleitplan|\bKWP\b/i;
 export const HEAT_STEPS=[
  ['Entwurf und Beteiligung',/Entwurf|vorläufig|Stellungnahme|Auslegung|Offenlage|Einsichtnahme|Öffentlichkeitsbeteiligung|Beteiligung der Öffentlichkeit|Beteiligung gem/i],
- ['Wärmeplan vorgelegt',/Beschluss(fassung)?\s+((des|über\s+den|über\s+die|zum|der)\s+)?(kommunalen?\s+|kommunaler\s+)?(Wärmepl|KWP|Abschlussbericht)|Festsetzungsbeschluss|Abschluss der (kommunalen\s+)?Wärmeplanung|Billigung|beschließt (den|die)\s+(kommunalen?\s+)?Wärmeplan|Abschlussbericht|Endbericht|finale[nr]? Wärmeplan|Veröffentlichung des Wärmeplan/i],
- ['Start und Beauftragung',/Aufstellungsbeschluss|Aufstellung|Durchführung|Erstellung|Beauftragung|Vergabe|Auftrag|Übertragung|Konvoi|interkommunal|Zusammenarbeit|Förderantrag|Einleitung|Beginn|Zuständigkeit|planungsverantwortliche/i],
+ ['Wärmeplan vorgelegt',/Beschluss(fassung)?\s+((des|über\s+den|über\s+die|zum|der)\s+)?(vorliegenden\s+)?(kommunalen?\s+|kommunaler\s+)?(Wärmepl|KWP|Abschlussbericht)|Festsetzungsbeschluss|Feststellung|Selbstbindungsbeschluss|Abschluss (der\s+)?(kommunalen?\s+)?Wärmeplanung|Billigung|beschließt (den|die)\s+(kommunalen?\s+)?Wärmeplan|Abschlussbericht|Endbericht|finale[nr]? Wärmeplan|Veröffentlichung des Wärmeplan/i],
+ ['Start und Beauftragung',/Ablauf|Einführung in|Aufstellungsbeschluss|Aufstellung|Durchführung|Erstellung|Beauftragung|Vergabe|Auftrag|Übertragung|Konvoi|interkommunal|Zusammenarbeit|Förderantrag|Einleitung|Beginn|Zuständigkeit|planungsverantwortliche/i],
  ['Umsetzung und Fortschreibung',/Fortschreibung|Umsetzung|Monitoring|Maßnahmenkatalog|Maßnahmenumsetzung|Wärmenetz/i],
  ['Analyse und Zwischenstand',/Bestandsanalyse|Potenzialanalyse|Potentialanalyse|Zielszenario|Zielgebiet|Eignungsprüfung|Zwischenbericht|Zwischenergebnis|Sachstand|Vorstellung|Ergebnisse|Präsentation|Wärmewendestrategie|Bericht|Information|aktuelle[rn]? Stand|Stand der/i],
 ];
 // Im Beschlussvorschlag: der Beschluss des Plans zuerst; „Umsetzung“ steht dort oft nur als Auftrag und zählt nicht
-const HEAT_DECISION=[['Wärmeplan vorgelegt',/beschließt\b[^.]{0,250}(Wärmeplan\b|Wärmeplan\s|Abschlussbericht)|Wärmeplan[^.]{0,80}(beschlossen|gebilligt)/i],...HEAT_STEPS.filter(([n])=>n!=='Umsetzung und Fortschreibung'&&n!=='Wärmeplan vorgelegt')];
+const HEAT_DECISION=[['Wärmeplan vorgelegt',/beschließt\b[^.]{0,250}(Wärmeplan\b|Wärmeplan\s|Abschlussbericht|Endbericht)|(?:Abschlussbericht|Endbericht|vorliegende[n]?\s+(?:kommunalen?\s+)?Wärmeplan\w*)(?:[^.]|\.\d){0,120}(?:Kenntnis|gebilligt|zugestimmt)|beschließt das Konzept zur (kommunalen\s+)?Wärmeplanung|beschließt (den|die) [„"]?(kommunalen?\s+)?Wärmeplanung\b(?![^.]{0,80}(durchzuführen|aufzustellen|zu erstellen|zu beginnen|einzuleiten|abzubilden))|Wärmeplan[^.]{0,80}(beschlossen|gebilligt)/i],...HEAT_STEPS.filter(([n])=>n!=='Umsetzung und Fortschreibung'&&n!=='Wärmeplan vorgelegt')];
 /** Verfahrensschritt der kommunalen Wärmeplanung oder null */
 // „Umsetzung des Wärmeplanungsgesetzes“ und Grundsatzbeschlüsse beginnen die Planung; Widersprüche und Anträge sind kein Schritt
 const HEAT_START=/Umsetzung (des )?(Wärmeplanungsgesetz|WPG)|Grundsatzbeschluss|grundsätzliche[nr]? Beschluss|Planungsvariante/i;
@@ -469,7 +534,7 @@ const HEAT_START=/Umsetzung (des )?(Wärmeplanungsgesetz|WPG)|Grundsatzbeschluss
 const HEAT_LAW=/(Bundes)?[Gg]esetz(es)? für die Wärmeplanung und zur Dekarbonisierung der Wärmenetze(\s*\(WPG\))?/;
 export function heatPlanOf(title,text){
  const raw=String(title||''),t=raw.replace(HEAT_LAW,'WPG');
- if(!HEAT.test(t)&&!/Wärmeplanungsgesetz|\bWPG\b/i.test(t)||/\bAnfrage|Antrag (der|des|von)|Antrag Nr|Fraktion|Widerspruch|Beanstandung/i.test(t))return null;
+ if(!HEAT.test(t)&&!/Wärmeplanungsgesetz|\bWPG\b/i.test(t)||/\bAnfrage|Antrag (der|des|von)|Antrag Nr|\bAntrag\b[^)]{0,10}\(|Fraktion|Widerspruch|Beanstandung/i.test(t))return null;
  // Titel nach dem Muster „Kommunale Wärmeplanung nach dem Bundesgesetz … - Umsetzung in der Gemeinde X“: Übertragung der Aufgabe
  if(HEAT_START.test(t)||HEAT_LAW.test(raw)&&/Umsetzung|Übertragung|Aufgabe/i.test(t))return 'Start und Beauftragung';
  const dec=decision(text);
@@ -481,13 +546,13 @@ export function heatPlanOf(title,text){
    (Modernisierung), Unternehmen und Wirtschaftsförderung, Sammelpunkte. Zweck aus dem Titel; Betrag nur, wenn er an einem
    Zuschusswort hängt („Zuschuss in Höhe von 2.675,00 €“), zuerst im Beschlussvorschlag; nicht bei Höchstbeträgen, Beträgen je
    Mitglied oder Stunde und in Listen (drei und mehr Beträge). */
-const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein(?!barung)|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein(?!barung)|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?Zuschuss|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss|(?:Förderung von Projekten|Projektförderung) durch (?:den|die) (?:Stadtbezirks|Orts|Bezirks)beirat|^Zuschuss (?:für|an|zur|zum) (?!die Gemeinde|die Stadt|den Kreis)/i;
+const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein(?!barung)|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein(?!barung)|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?(Zuschuss|Zuwendung)|Antrag (des|der|von)\b.{0,60}\b(auf|zur) (Bezuschussung|Zuschuss|Zuwendung)|Zuschuss[\wäöüß]* an (den|die|das) (?!Gemeinde|Stadt|Kreis|Land)|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss|(?:Förderung von Projekten|Projektförderung) durch (?:den|die) (?:Stadtbezirks|Orts|Bezirks)beirat|^Zuschuss (?:für|an|zur|zum) (?!die Gemeinde|die Stadt|den Kreis)/i;
 // Keine neuen Zuschüsse: Ausschreibungen, Verwendungsnachweise, Vereinsauflösungen, Landesförderung (Katastrophenschutz)
 const NOT_GRANT=/Ausschreibung|Rahmenvereinbarung|Vereinbarung|Verwendungsnachweis|Abrechnung|Auflösung|Vermögen|Katastrophenschutz|Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|(?<!g)GmbH|Gewerbe|Dienstbarkeit|Fassade|Privat|Eigentümer/i;
 export const GRANT_PURPOSES=[
  ['Feuerwehr und Rettung',/Feuerwehr|Rettung|DRK|Rote[sn]? Kreuz|Malteser|Johanniter|THW|DLRG|Wasserwacht|Bergwacht/i],
  ['Kinder und Jugend',/Jugend|Kinder|Kita|KiTa|Kindergarten|Krippe|Schule|Schüler|Hausaufgaben|Ferien/i],
- ['Sport',/[Ss]port|Turn|Schütze|Fußball|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Ruder|Kanu|\b(SV|TSV|TuS|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
+ ['Sport',/[Ss]port|Turn|Schütze|Fußball|fußball|TSG|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Padel|Soccer|Bolzplatz|Kunstrasen|Ruder|Kanu|\b(SV|TSV|TuS|TUS|STK|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
  ['Kultur und Heimat',/Kultur|Kunst|Künstler|Musik|Chor|Kapelle|Theater|Heimat|Museum|Brauchtum|Karneval|Narren|Fastnacht|Kirmes|Fest\b|Feste|Denkmal|Bücherei|Geschicht|Orchester|Konzert|Jazz|Band\b|Music|Gesang|Sänger|Kerbe|Kirchweih|Maifeier|Mai-Feier|Tanz|Standarte|Fahne|Soldaten|Krieger|Kameradschaft|Dorf|Bürgerverein|Verschönerung|Partnerschaft|Städtepartner/i],
  ['Umwelt und Tiere',/Natur|Umwelt|Tier|Imker|Kleingarten|Garten|Angel|Jagd|Obst|Wald/i],
  ['Soziales und Senioren',/Senior|Sozial|Diakon|Caritas|AWO|Tafel|Hospiz|Beratung|Frauen|Familie|Mehrgenerationen|Behindert|Inklusion|Pflege|Wohlfahrt|Selbsthilfe|Lebenshilfe|Hilfe\b|-Hilfe|Blaues Kreuz|in Not\b|Sucht|Obdach|Migra|Integration/i],
@@ -515,7 +580,8 @@ function grantAmount(src){
 /** {purpose, euro} (euro 0, wenn kein Betrag erkannt) oder null */
 export function grantOf(title,text){
  const t=String(title||'');
- if(!GRANT_TITLE.test(t)||NOT_GRANT.test(t)||COLLECTIVE.test(t))return null;
+ // Änderungen an Förderrichtlinien sind kein Zuschuss („Zuschuss nach … der Sportförderrichtlinie an den X“ schon)
+ if(!GRANT_TITLE.test(t)||NOT_GRANT.test(t)||COLLECTIVE.test(t)||/\bAnfrage\b|(Änderung|Neufassung|Erlass|Fortschreibung|Ergänzung)\w*\s+(der|zur|einer)\s+[\wäöüß]*[Rr]ichtlinie|Richtlinien?\s+(über|zur|für)\b/i.test(t))return null;
  const purpose=(GRANT_PURPOSES.find(([,re])=>re.test(t))||['Sonstige Vereine und Träger'])[0];
  return {purpose,euro:/Richtlinie|Satzung/i.test(t)?0:grantAmount(decision(text))||grantAmount(text)};
 }
@@ -548,6 +614,9 @@ export function factsOf(title,text){
  for(const x of feeRateOf(title,text))rows.push({kind:'fee_rate',value:x.kind,detail:`${x.to}|${x.from}|${x.unit}`});
  const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});
  const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:String(result.euro)});
+ const park=parkFeeOf(title,text);if(park)rows.push({kind:'park_fee',value:park.value,detail:park.euro});
+ const ee=eePowerOf(title,text);if(ee)rows.push({kind:'ee_power',value:ee.value,detail:String(ee.mw)});
+ const land=landPriceOf(title,text);if(land)rows.push({kind:'land_price',value:land.value,detail:land.euro});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
  return rows;
 }
