@@ -83,8 +83,8 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/data/ratsmonitor.sqlite` | Datenbank |
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
 | `/srv/ratsmonitor/backups/` | nächtliche Sicherung 00:30 Uhr (vor dem Import), mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
-| `ratsmonitor-rule-texts.service` | Themen & Texte, 09:00 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regeln je Bericht (Art des Punkts, Thema, Regel-Zusammenfassung, Fakten; `read-reports.mjs`), Wortliste aus den Texten der PDF-Ablage und Zahlen für plenara.X (`x_cases`, Migration 0036, `build-x-cases.mjs`); Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
-| `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 05:05 Uhr (nach dem spätesten Ende des Imports) (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
+| `ratsmonitor-rule-texts.service` | Themen & Texte, direkt nach der PDF-Nachtkette (sie stößt ihn an), sonst 08:50 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regeln je Bericht (Art des Punkts, Thema, Regel-Zusammenfassung, Fakten; `read-reports.mjs`), Wortliste aus den Texten der PDF-Ablage und Zahlen für plenara.X (`x_cases`, Migration 0036, `build-x-cases.mjs`); Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
+| `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 05:10 Uhr (nach dem spätesten Ende des Imports) (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
 | `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
@@ -255,7 +255,7 @@ abgelegt hat, und lässt aus, was schon da ist (gleiche Adresse oder gleiche Pr�
 
 Die PDF-Kette (`nightly.mjs`, Aufträge im Reiter PDF-Import) macht nur die Stufen 2 und 3 (Laden, Textebene, OCR, Dokumentart,
 Stand). Die Stufen 4 bis 6 für den Bestand laufen getrennt davon im Job `rule-texts` (`scripts/rule-texts.mjs`, Reiter
-„Themen & Texte“, 09:00 Uhr nach der Kette; Entscheidung 13.10.2026): Regeln je Bericht (`read-reports.mjs`), Wortliste
+„Themen & Texte“, direkt nach der Kette, Rückfall 08:50 Uhr; Entscheidung 13.10.2026): Regeln je Bericht (`read-reports.mjs`), Wortliste
 (nur wenn Berichte neu gelesen wurden), Zahlen für plenara.X (`scripts/plenara-x/build-x-cases.mjs`, immer; ohne sie antwortet
 `/api/x` mit 503, nach dem Einspielen von Migration 0036 also einmal von Hand oder über „Jetzt erstellen“ bauen).
 
@@ -313,8 +313,8 @@ aufgerufen von `job.mjs` höchstens stündlich und auf Wunsch („Neu messen“,
 ### Zeitplaner (Admin-Reiter „Jobs & Zeitpläne“, seit 12.10.2026)
 
 Alle Jobs, die von selbst laufen, starten über `scripts/schedule.mjs <job>`; Befehle, Standardzeiten und Beschreibungen
-stehen in `server/integrations/schedules.mjs` (`JOBS`): `backup` (00:30), `import-nightly` (01:00, höchstens bis 05:00), `startseite-trends` (05:05),
-`pdf-nightly` (05:30, höchstens bis 08:30), `rule-texts` (09:00), `import` und `pdf-job` (alle 10 Minuten). Die Auslöser fragen alle 10 Minuten; der Zeitplaner startet
+stehen in `server/integrations/schedules.mjs` (`JOBS`): `backup` (00:30), `import-nightly` (01:00, höchstens bis 05:00), `startseite-trends` (05:10),
+`pdf-nightly` (05:30, höchstens bis 08:30), `rule-texts` (direkt nach `pdf-nightly`, die ihn anstößt, wenn er eingeschaltet ist; sonst 08:50), `import` und `pdf-job` (alle 10 Minuten). Die Auslöser fragen alle 10 Minuten; der Zeitplaner startet
 den Job, wenn er nach seiner Einstellung dran ist (`schedules` in `system_state`: ein/aus, Uhrzeit deutscher Zeit in
 10-Minuten-Schritten bzw. Abstand), ein täglicher Job wird bis 3 Stunden nach seiner Zeit nachgeholt; „Jetzt ausführen“
 (`schedule-now`) startet ihn sofort, auch ausgeschaltet. Jeder Lauf steht in `schedule-runs` (Start, Ende,
@@ -338,7 +338,7 @@ Dienst sofort; `schedule.mjs` führt ihn aus, wenn ein Wunsch offen ist (`schedu
 Zählen, Messen, wartende Aufträge), auch ausgeschaltet. Läuft der Dienst schon, erledigt der laufende Auftragsdienst Zählen und
 Messen binnen 30 Sekunden; ein weiterer Auftrag startet beim nächsten Timer-Aufruf nach dem Ende. Die Sicherung
 läuft dafür nicht mehr über Cron, sondern über eigene Einheiten (Protokoll weiter in `backups/backup.log`). Die Wortliste
-hat seit 14.10.2026 keinen eigenen Job mehr: Jeder Import und der Job „Themen & Texte“ (09:00) führen sie nach, auch das
+hat seit 14.10.2026 keinen eigenen Job mehr: Jeder Import und der Job „Themen & Texte“ führen sie nach, auch das
 Datum „Stand heute“ der Karten. Einrichten (einmal, als root):
 
 ```bash

@@ -230,7 +230,7 @@ export function AdminPdf(){
     {icon:'gauge',title:'Stand',what:'Zählt alles auf dieser Seite neu: verlinkt, geladen, Text, Fehler, Server, Platz.',
      rules:['Am Ende jedes Laufs und mit „Stand neu zählen“'],value:s?`zuletzt ${when(s.at)}`:undefined},
     {icon:'summary',title:'Weiter: Themen & Texte',what:'Aus den abgelegten Texten entstehen Zusammenfassungen, Fakten für plenara.X und die Wortliste der Suche. Das ist nicht Teil des PDF-Imports, sondern ein eigener Job im Reiter Themen & Texte.',
-     rules:['Täglich zur Zeit aus Jobs & Zeitpläne (Standard 09:00 Uhr, nach der Nachtkette)','Oder dort per Knopf']},
+     rules:['Direkt nach der Nachtkette (sie stößt den Job an), sonst zur Zeit aus Jobs & Zeitpläne (Standard 08:50 Uhr)','Oder dort per Knopf']},
    ]} when={['Nachtkette: täglich zur Zeit aus dem Reiter Jobs & Zeitpläne (Standard 05:30 Uhr), höchstens 3 Stunden; danach ist der Abruf der Nacht (Standard 01:00 Uhr) durch. Nach dem Laden stellt sie „OCR starten“ an.','Zwei Bahnen nebeneinander: Laden (alle Aufträge außer OCR, auch die Nachtkette) und OCR; je Bahn einer zur Zeit, weitere warten in der Reihe ihrer Bahn und starten, sobald sie frei ist.','Übrige PDFs: nur von Hand („Übrige PDFs laden“, Fehler mit „Fehlgeschlagene erneut versuchen“), jeder Lauf macht dort weiter, wo der vorige aufgehört hat.']}/>
   </section>
 

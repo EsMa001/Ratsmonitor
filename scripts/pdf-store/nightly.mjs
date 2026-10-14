@@ -4,6 +4,7 @@
 //                     --budget-gb (PDFs und Texte): ist sie erreicht, verdrängt eine neue Datei die schlechteste, wenn sie
 //                     besser ist (Rang shared/pdf-rank.mjs), sonst fliegt sie selbst raus; die Textebene bleibt immer
 //   2. budget.mjs     nur zur Sicherung, wenn die Ablage trotzdem über der Grenze liegt (etwa nach einer gesenkten Grenze)
+//      Am Ende stößt die Nachtkette „Themen & Texte“ an (Job rule-texts, nur eingeschaltet; seit 14.10.2026).
 //      Danach stellt die Nachtkette (--kind nightly) einen Auftrag „OCR starten“ an: die OCR läuft in der eigenen Bahn neben
 //      dem Rest der Kette (Entscheidung 12.10.2026; vorher war sie Schritt 4 hier und im Tausch vor dem Löschen).
 //   3. text.mjs       Textebene der neuen PDFs
@@ -40,6 +41,7 @@ import {BUDGET_GB} from '../../shared/pdf-rank.mjs';
 import {progress,stopRequested,onStop,readState,writeState,queueJob} from './state.mjs';
 import {RUNS_KEY,STATS_KEY,LANE_LOCKS} from '../../server/integrations/pdf-store-admin.mjs';
 import {triggerJob} from '../../server/integrations/job-trigger.mjs';
+import {JOBS,SCHEDULES_KEY,SCHEDULE_NOW_KEY,settingOf} from '../../server/integrations/schedules.mjs';
 
 const args=process.argv.slice(2),flag=n=>args.includes('--'+n),opt=(n,d)=>{const i=args.indexOf('--'+n);return i>=0?args[i+1]:d;};
 const others=flag('others'),ocrOnly=!others&&flag('ocr-only'),texts=!others&&!ocrOnly&&flag('texts');
@@ -163,4 +165,16 @@ if(!ocrOnly)await step('Textebene','scripts/pdf-store/text.mjs',['--max-minutes'
 /* Dokumentart und Art laut Textanfang für den Score (nur Fehlendes; nach neuen Regeln einmal alles) */
 await step('Art nachtragen','scripts/pdf-store/budget.mjs',['--backfill']);
 await step('Stand','scripts/pdf-store/stats.mjs',['--budget-gb',String(budgetGb)]);
+/* Nachts: danach gleich „Themen & Texte“ anstoßen (Regeln, Wortliste, Zahlen für plenara.X), statt bis zu seiner festen Zeit
+   zu warten; nur wenn er eingeschaltet ist. Die feste Zeit bleibt als Rückfall (etwa bei ausgeschalteter Nachtkette). */
+if(kind==='nightly'&&!dry&&!stopped){
+ try{
+  const job=JOBS.find(j=>j.id==='rule-texts');
+  if(settingOf(job,readState(SCHEDULES_KEY)).enabled){
+   writeState(SCHEDULE_NOW_KEY,{...(readState(SCHEDULE_NOW_KEY)||{}),'rule-texts':new Date().toISOString()});
+   await triggerJob('rule-texts');
+   say('„Themen & Texte“ angestoßen');
+  }else say('„Themen & Texte“ ist ausgeschaltet, nicht angestoßen');
+ }catch(e){say('„Themen & Texte“ nicht angestoßen:',e.message);}
+}
 end();
