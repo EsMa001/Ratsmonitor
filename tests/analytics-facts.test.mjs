@@ -1,4 +1,4 @@
-// plenara.X – Fraktionsprofil und Förderradar über topic_facts (drizzle/0025).
+// plenara.X – Fraktionsprofil über topic_facts (drizzle/0025).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

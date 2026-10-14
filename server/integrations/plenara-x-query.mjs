@@ -14,7 +14,7 @@
  * Sammelansicht für den Atlas: view=atlas (Unterthemen oder Themen, Was geschieht, Monate, Orte, jüngste Vorgänge in einer Antwort);
  *   mit einem Ort (area=<Schlüssel eines Gebiets>) zusätzlich „Ort im Vergleich“ (compare): Anteil je Unterthema (ohne Thema:
  *   je Thema) an allen Sachvorgängen des eigenen Rats in den letzten 12 Monaten, eingeordnet in der Vergleichsgruppe (gleiche
- *   Art und Größe, zuerst im Land) mit den Regeln aus analytics-radar-norms.mjs (Wilson-Spanne gegen die Viertel der Gruppe).
+ *   Art und Größe, zuerst im Land) mit den Regeln aus peer-norms.mjs (Wilson-Spanne gegen die Viertel der Gruppe).
  *
  * Feste Regeln, überall gleich:
  *  - Gezählt werden Vorgänge (report_rules.case_key: Gebiet + normalisierter Titel), nicht Karten, und zwar in x_cases
@@ -32,8 +32,8 @@ import {THEMES,SUBTOPICS,subtopicName} from '../../shared/themes.mjs';
 import {STAGES,SONST,stageName} from '../../shared/stage.mjs';
 import {labelName} from '../../shared/labels.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
-import {where as placeOf} from './analytics-radar-extra.mjs';
-import {peerGroup,wilson,quantile,classify,windowOf,NORM_RULE} from './analytics-radar-norms.mjs';
+import {where as placeOf} from './member-place.mjs';
+import {peerGroup,wilson,quantile,classify,windowOf,NORM_RULE} from './peer-norms.mjs';
 
 export const X_BY=['region','month','theme','sub','stage','status'];
 export const X_FACTS=['faction','funding','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate'];

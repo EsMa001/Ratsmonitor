@@ -3,13 +3,15 @@ import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
 import {cleanTitle,matchTitle,evidenceOf} from './social-topics.mjs';
-import {where} from './analytics-radar-extra.mjs';
+import {where} from './member-place.mjs';
+import {titleKey} from '../../shared/topic-facts.mjs';
 
 /*
  * Plenara.X – Newsradar: berichtenswerte Vorgänge der letzten 30 und nächsten 10 Tage (dieselben Filter wie die Suche),
  * nach Nachrichtenwert geordnet, je Vorgang eine Meldung im Agenturstil. Alles regelbasiert, ohne Modell: Ortsmarke,
  * Gremium und Datum aus den Sitzungen, der Kern nur aus wörtlichen Sätzen der Regel-Zusammenfassung (als Zitat), dazu
- * Fakten aus topic_facts (Fraktion, Förderung, Kita-Beiträge, Gebühren, Beteiligung). Wohnungszahlen sind wie in der
+ * Fakten aus topic_facts (Fraktion, Förderung, Kita-Beiträge, Bauleitplanung), Unterthemen und „Was geschieht“ aus report_rules
+ * (Gebühren, Haushaltssicherung, Steuern), Petitionen und Einwohneranträge aus dem Titel. Wohnungszahlen sind wie in der
  * Bauleitplanung ausgeblendet (zu oft Hintergrundwerte). Bei Gemeindeverbänden ist die Ortsmarke die Mitgliedsgemeinde,
  * deren Rat berät oder die der Titel nennt (where() wie in den Radaren).
  * Zwei Stufen: erst alle Vorgänge des Zeitraums aus search_cards und topic_facts vorbewerten (ohne Payload), dann nur für
@@ -20,7 +22,10 @@ import {where} from './analytics-radar-extra.mjs';
  * kleiner Kreis) entsprechend mehr, sodass die Liste voll werden kann.
  */
 const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
-const FACT_KINDS=['faction','funding','funding_euro','kita_fee','plan','radar:gebuehren','radar:finanzen','radar:beteiligung'];
+const FACT_KINDS=['faction','funding','funding_euro','kita_fee','plan'];
+/* Signale aus readReport (report_rules, Migration 0035): Unterthemen und „Was geschieht“; Richtung und Art aus dem Titel */
+const UP=/Erhöhung|Anhebung|erhöht|angehoben/i,DOWN=/Senkung|gesenkt|Reduzierung|Absenkung/i;
+const CITIZEN=/Petition|Einwohnerantr|Bürgerantr|Bürgerbegehren|Bürgerentscheid|Bürgereingabe|Anregungen und Beschwerden/i;
 const day=d=>new Date(Date.now()+d*864e5).toISOString().slice(0,10);
 // Private Bauanträge mit Grundstücksadresse sind keine Meldung
 const PRIVATE=/Bauantrag|Bauvorhaben|Bauvoranfrage|Flurstück|\bFlur\s+\d/i,ADDRESS=/\d+\s*(-\s*\d+)?\s*(,|$)|straße\s*\d|weg\s*\d/i;
@@ -85,10 +90,11 @@ function prescore(c,facts,today,week){
  if(fund.length){const g=fund.some(x=>x.detail==='granted');add(g?12:8,`Förderung ${g?'bewilligt':'beantragt'}: ${fund[0].value}`);}
  const money=Math.max(0,...facts.filter(x=>x.kind==='funding_euro').map(x=>Number(x.detail)||0));if(money>=100000&&fund.length)add(6,`Förderbetrag ${eur(money)}`);
  const fee=facts.find(x=>x.kind==='kita_fee');if(fee&&fee.value!=='Neufassung')add(18,`Kita-Beiträge: ${fee.value}`);
- const gb=facts.find(x=>x.kind==='radar:gebuehren'&&/Erhöhung|Senkung/.test(x.detail||''));if(gb)add(14,`${gb.value}: Gebühren-${gb.detail}`);
- if(facts.some(x=>x.kind==='radar:finanzen'&&x.value==='Haushaltssicherung'))add(8,'Haushaltssicherung');
- if(facts.some(x=>x.kind==='radar:finanzen'&&x.value==='Steuern und Hebesätze'&&/Erhöhung/.test(x.detail||''))&&!/\bkeine[nr]?\s+(Erhöhung|Anhebung)|nicht\s+(zu\s+)?erhöh/i.test(c.title||''))add(12,'Steuererhöhung');
- const bt=facts.find(x=>x.kind==='radar:beteiligung'&&/Petitionen|Einwohneranträge/.test(x.value));if(bt)add(12,bt.value);
+ const t=c.title||'',subs=','+(c.subs||'')+',',raise=UP.test(t)&&!/\bkeine[nr]?\s+(Erhöhung|Anhebung)|nicht\s+(zu\s+)?erhöh/i.test(t);
+ if(c.stage==='abgaben'&&!subs.includes(',finanzen.steuer,')&&(raise||DOWN.test(t)))add(14,`Gebühren-${raise?'Erhöhung':'Senkung'}`);
+ if(subs.includes(',finanzen.hsk,'))add(8,'Haushaltssicherung');
+ if(subs.includes(',finanzen.steuer,')&&raise)add(12,'Steuererhöhung');
+ const bt=t.match(CITIZEN);if(bt)add(12,/Petition/i.test(bt[0])?'Petition':/Bürger(begehren|entscheid)/i.test(bt[0])?'Bürgerbegehren':'Einwohnerantrag');
  if(facts.some(x=>x.kind==='plan'&&x.value==='Satzungsbeschluss'))add(8,'Bebauungsplan vor dem Satzungsbeschluss');
  const hits=matchTitle(c.title||'');if(hits.length)add(10,`Alltagsthema: ${hits[0].term}`);
  // Titel ohne Gegenstand („Anregung“, „Antrag“) ergeben keine verständliche Überschrift
@@ -164,6 +170,11 @@ export async function news(db,catalog,params){
  /* Stufe 1: alle Vorgänge des Zeitraums mit ihren Fakten, ohne Payload */
  const {results:rows}=await db.prepare(`SELECT c.id id,c.region_id region,c.date date,c.status status,c.title title,c.gremium gremium
   FROM search_cards c WHERE ${page.where} AND c.date<>''`).bind(...page.args).all();
+ /* Signale je Vorgang aus x_cases (schmal, einmal täglich gebaut; report_rules wird während eines Laufs der Regeln neu
+    geschrieben und ist dann langsam zu lesen): nur Gebühren (stage abgaben) und Finanz-Unterthemen. Ohne Tabelle keine Signale. */
+ let ruleRows=[];
+ try{({results:ruleRows}=await db.prepare("SELECT case_key k,subs,stage FROM x_cases WHERE stage='abgaben' OR subs LIKE '%finanzen.%'").all());}catch{/* vor Migration 0036 */}
+ const rulesOf=new Map(ruleRows.map(r=>[r.k,r]));
  const {results:factRows}=await db.prepare(`SELECT x.topic_id id,x.kind kind,x.value value,x.detail detail FROM topic_facts x WHERE x.kind IN (${FACT_KINDS.map(()=>'?').join(',')})
   AND x.topic_id IN (SELECT c.id FROM search_cards c WHERE ${page.where} AND c.date<>'')`).bind(...FACT_KINDS,...page.args).all();
  const factsOf=new Map();for(const x of factRows){const l=factsOf.get(x.id)||[];l.push({kind:x.kind,value:x.value,detail:x.detail});factsOf.set(x.id,l);}
@@ -171,7 +182,7 @@ export async function news(db,catalog,params){
  for(const c of rows){
   if(PRIVATE.test(c.title||'')&&ADDRESS.test(c.title||'')||NOT_NEWS.test(c.title||''))continue;
   const facts=factsOf.get(c.id)||[];
-  const s=prescore(c,facts,today,week);pre.push({c,facts,...s});
+  const s=prescore({...c,...rulesOf.get(c.region+'|'+titleKey(c.title))},facts,today,week);pre.push({c,facts,...s});
  }
  pre.sort((a,b)=>b.score-a.score);
  /* Stufe 2: Berichte der besten Kandidaten lesen */

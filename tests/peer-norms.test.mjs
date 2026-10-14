@@ -1,7 +1,7 @@
-// „Viel oder wenig“ für einen Ort: Spanne, Einordnung, Vergleichsgruppe (server/integrations/analytics-radar-norms.mjs)
+// „Viel oder wenig“ für einen Ort: Spanne, Einordnung, Vergleichsgruppe (server/integrations/peer-norms.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {wilson,classify,quantile,typeOf,peerGroup,windowOf} from '../server/integrations/analytics-radar-norms.mjs';
+import {wilson,classify,quantile,typeOf,peerGroup,windowOf} from '../server/integrations/peer-norms.mjs';
 
 test('wilson interval and cautious classification',()=>{
  const [lo,hi]=wilson(11,580);

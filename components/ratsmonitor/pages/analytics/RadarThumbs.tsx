@@ -1,11 +1,11 @@
-/* Vorschaubilder der Radare (plenara.X Radar). Gezeichnet, nicht aus dem Schnappschuss: Formen und Verhältnisse nach den
-   Auswertungen vom 11.10.2026 (Vorgänge je Thema, Beschlussquote je Fraktion, Programme, Verfahrensschritte), ohne Zahlen. */
-import { RADARS } from "@/shared/radars.mjs";
+/* Vorschaubilder der festen Auswahlen im Atlas und der Themen-Analysen. Gezeichnet, nicht aus dem Schnappschuss: Formen und
+   Verhältnisse nach den Auswertungen vom 11.10.2026 (Vorgänge je Unterthema, Beschlussquote je Fraktion, Programme,
+   Verfahrensschritte), ohne Zahlen. */
 
 const FRAME = "block h-auto w-full rounded-[18px] border border-slate-200 bg-white";
 const TEAL = "#0d9488", TEAL_LIGHT = "#5eead4", TEAL_DARK = "#0f766e", GRID = "#e2e8f0", MUTED = "#cbd5e1";
 
-/* Vorgänge je Thema des Radars, in der Reihenfolge von shared/radars.mjs */
+/* Vorgänge je Unterthema (Formen der früheren Themenradare vom 11.10.2026, nur als Bild) */
 const SHAPE: Record<string, number[]> = {
   versorgung: [996, 2911, 3730, 6693, 3583, 6173, 1535],
   verkehr: [7549, 4120, 5797, 5041, 3071, 1838, 1164],
@@ -14,12 +14,15 @@ const SHAPE: Record<string, number[]> = {
   klima: [2752, 4081, 2609, 1866, 3063, 1108, 682],
   finanzen: [12958, 1969, 3038, 1449, 11874, 673, 5268],
   beteiligung: [2726, 653, 794, 2878],
+  /* Förderung und Zuschüsse je Thema, Bildung je Unterthema (x_cases, 14.10.2026) */
+  foerderung: [1058, 1570, 546, 7069, 672, 472, 2163, 897, 2357, 437, 881],
+  kita: [1047, 3975, 2518, 7316, 4522, 9845, 2316],
   gebuehren: [317, 1420, 170, 517, 474, 953, 372, 425, 603, 411, 287, 257, 470, 410, 46],
 };
 
-/** Themenradar: Netzdiagramm der Themen, daneben die vier häufigsten als Balken */
-function ThemeRadarThumb({ id }: { id: keyof typeof RADARS }) {
-  const v = SHAPE[id] ?? RADARS[id].topics.map(() => 1);
+/** Thema im Atlas: Netzdiagramm der Unterthemen, daneben die vier häufigsten als Balken */
+function ThemeRadarThumb({ id, name }: { id: keyof typeof SHAPE; name: string }) {
+  const v = SHAPE[id];
   const max = Math.max(...v), cx = 96, cy = 78, R = 58, k = v.length;
   const at = (i: number, r: number) => {
     const a = -Math.PI / 2 + (i * 2 * Math.PI) / k;
@@ -29,7 +32,7 @@ function ThemeRadarThumb({ id }: { id: keyof typeof RADARS }) {
   const ring = (f: number) => v.map((_, i) => at(i, R * f).join(",")).join(" ");
   const top = [...v].sort((a, b) => b - a).slice(0, 4);
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label={`Vorschau ${RADARS[id].name}: Netz der Themen, daneben die häufigsten als Balken`} className={FRAME}>
+    <svg viewBox="0 0 320 156" role="img" aria-label={`Vorschau ${name}: Netz der Unterthemen, daneben die häufigsten als Balken`} className={FRAME}>
       {[1 / 3, 2 / 3, 1].map((f) => <polygon key={f} points={ring(f)} fill="none" stroke={GRID} />)}
       {v.map((_, i) => { const [x, y] = at(i, R); return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={GRID} />; })}
       <polygon points={pts.map((p) => p.join(",")).join(" ")} fill={TEAL} fillOpacity=".18" stroke={TEAL} strokeWidth="2" strokeLinejoin="round" />
@@ -63,34 +66,11 @@ function FactionThumb() {
   );
 }
 
-/** Förderradar: Säulen je Programm (bewilligt, beantragt, erwähnt) und eine Münze für die Beträge */
-function FundingThumb() {
-  const cols: [number, number, number][] = [[56, 53, 170], [47, 78, 147], [66, 82, 115], [52, 45, 154], [52, 36, 155], [32, 35, 129]];
-  const max = Math.max(...cols.map(([a, b, c]) => a + b + c)), H = 104;
-  return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Förderradars: Säulen je Förderprogramm, bewilligt, beantragt und erwähnt" className={FRAME}>
-      <path d="M28 132H230" stroke={GRID} />
-      {cols.map(([g, a, m], i) => {
-        const x = 34 + i * 33, s = H / max;
-        return (
-          <g key={i}>
-            <rect x={x} y={132 - (g + a + m) * s} width="22" height={m * s} rx="3" fill={GRID} />
-            <rect x={x} y={132 - (g + a) * s} width="22" height={a * s} fill={TEAL_LIGHT} />
-            <rect x={x} y={132 - g * s} width="22" height={g * s} fill={TEAL} />
-          </g>
-        );
-      })}
-      <circle cx="270" cy="66" r="30" fill="none" stroke={TEAL} strokeWidth="3" />
-      <text x="270" y="77" textAnchor="middle" fontSize="30" fontWeight="600" fill={TEAL_DARK}>€</text>
-    </svg>
-  );
-}
-
-/** Bauleitplanung: Pläne je Verfahrensschritt als Stufen, dazu Häuser für die geplanten Wohnungen */
+/** Bauleitplanung: Pläne je Verfahrensschritt als Stufen, dazu Häuser als Bild für Baugebiete */
 function PlanningThumb() {
   const steps = [2949, 1541, 1599, 423, 2648], max = Math.max(...steps);
   return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Bauleitplanung: Pläne je Verfahrensschritt bis zum Satzungsbeschluss, dazu Häuser" className={FRAME}>
+    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau der Bauleitplanung: Pläne je Verfahrensschritt bis zum Satzungsbeschluss" className={FRAME}>
       {steps.map((n, i) => {
         const x = 24 + i * 38, h = 16 + (70 * n) / max;
         return (
@@ -102,30 +82,6 @@ function PlanningThumb() {
       })}
       {[[226, 72, 1], [262, 60, 1.25], [238, 104, 0.9]].map(([x, y, f], i) => (
         <path key={i} transform={`translate(${x} ${y}) scale(${f})`} d="M0 14L14 2L28 14V32H0Z" fill={i === 1 ? TEAL : "none"} stroke={TEAL} strokeWidth="2" strokeLinejoin="round" />
-      ))}
-    </svg>
-  );
-}
-
-/** Kita-Radar: Richtung der Elternbeiträge (rauf, runter, frei) und neue Plätze als Kästchen */
-function KitaThumb() {
-  const dirs: [number, string, "up" | "down" | "zero"][] = [[144, "#0f172a", "up"], [42, TEAL, "down"], [89, TEAL_LIGHT, "zero"]];
-  return (
-    <svg viewBox="0 0 320 156" role="img" aria-label="Vorschau des Kita-Radars: Erhöhungen, Senkungen und Beitragsfreiheit, daneben neue Plätze" className={FRAME}>
-      <path d="M24 128H160" stroke={GRID} />
-      {dirs.map(([n, c, d], i) => {
-        const x = 34 + i * 44, h = (84 * n) / 144;
-        return (
-          <g key={i}>
-            <rect x={x} y={128 - h} width="26" height={h} rx="3" fill={c} />
-            {d === "up" && <path d={`M${x + 13} ${112 - h}l9 10h-18z`} fill={c} />}
-            {d === "down" && <path d={`M${x + 13} ${124 - h}l9-10h-18z`} fill={c} />}
-            {d === "zero" && <circle cx={x + 13} cy={116 - h} r="6" fill="none" stroke={c} strokeWidth="3" />}
-          </g>
-        );
-      })}
-      {Array.from({ length: 24 }, (_, i) => (
-        <rect key={i} x={186 + (i % 6) * 18} y={34 + Math.floor(i / 6) * 22} width="13" height="15" rx="3" fill={i < 17 ? TEAL : GRID} />
       ))}
     </svg>
   );
@@ -148,19 +104,19 @@ function NewsThumb() {
   );
 }
 
-/** Vorschaubilder je Radar (AnalyticsAbout führt sie mit den Tools in ANALYSE_THUMBS zusammen) */
+/** Vorschaubilder je Auswahl (AnalyticsAbout führt sie mit den Tools in ANALYSE_THUMBS zusammen) */
 export const RADAR_THUMBS = {
   fraktionen: FactionThumb,
   news: NewsThumb,
-  foerderung: FundingThumb,
+  foerderung: () => <ThemeRadarThumb id="foerderung" name="Förderung und Zuschüsse" />,
   bauleitplanung: PlanningThumb,
-  kita: KitaThumb,
-  versorgung: () => <ThemeRadarThumb id="versorgung" />,
-  verkehr: () => <ThemeRadarThumb id="verkehr" />,
-  soziales: () => <ThemeRadarThumb id="soziales" />,
-  vergabe: () => <ThemeRadarThumb id="vergabe" />,
-  klima: () => <ThemeRadarThumb id="klima" />,
-  finanzlage: () => <ThemeRadarThumb id="finanzen" />,
-  beteiligung: () => <ThemeRadarThumb id="beteiligung" />,
-  gebuehren: () => <ThemeRadarThumb id="gebuehren" />,
+  kita: () => <ThemeRadarThumb id="kita" name="Kitas: Betrieb, Träger und Beiträge" />,
+  versorgung: () => <ThemeRadarThumb id="versorgung" name="Umwelt, Klima & Energie" />,
+  verkehr: () => <ThemeRadarThumb id="verkehr" name="Mobilität & Verkehr" />,
+  soziales: () => <ThemeRadarThumb id="soziales" name="Soziales & Gesundheit" />,
+  vergabe: () => <ThemeRadarThumb id="vergabe" name="Ausschreibung und Vergabe" />,
+  klima: () => <ThemeRadarThumb id="klima" name="Klimaschutz und Energieeffizienz" />,
+  finanzlage: () => <ThemeRadarThumb id="finanzen" name="Finanzen & Haushalt" />,
+  beteiligung: () => <ThemeRadarThumb id="beteiligung" name="Bürgerbeteiligung und Beiräte" />,
+  gebuehren: () => <ThemeRadarThumb id="gebuehren" name="Gebühren, Beiträge und Steuern" />,
 };

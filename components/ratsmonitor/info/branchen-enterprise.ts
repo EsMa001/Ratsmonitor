@@ -2,8 +2,8 @@
    Gleiches Gerüst für alle Branchen, Auswahl, Sätze und Anordnung je Branche. */
 import type { IconName } from "./icons";
 
-export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "vergabe" | "klima" | "finanzlage" | "beteiligung" | "gebuehren" | "news";
-/** Tools funktionieren mit jedem Suchbegriff; Politik, Finanzen und Radar sind fertige Auswertungen, nach der Frage geordnet */
+export type AnalyseId = "diffusion" | "graph" | "trends" | "vergleich" | "beschluesse" | "gremien" | "fraktionen" | "foerderung" | "bauleitplanung" | "kita" | "versorgung" | "verkehr" | "soziales" | "atlas" | "vergabe" | "klima" | "finanzlage" | "beteiligung" | "gebuehren" | "news";
+/** Tools funktionieren mit jedem Suchbegriff; Themen sind fertige Auswertungen; der Atlas zeigt die 10 Themen (feste Auswahlen darin für die Branchenseiten) */
 /** atlas: Auswahl im plenara.X Atlas (/analytics/atlas: Thema, Unterthema oder „Was geschieht“), keine eigene Gruppe und kein eigener Eintrag in den Listen */
 export type AnalyseGruppe = "tool" | "themen" | "atlas";
 
@@ -21,18 +21,20 @@ export const ANALYSEN: Record<AnalyseId, { href: string; name: string; icon: Ico
   beschluesse: { href: "/analytics/beschluesse", name: "Beschlüsse", icon: "circleCheck", group: "tool" },
   gremien: { href: "/analytics/gremien", name: "Beratungswege", icon: "users", group: "tool" },
   fraktionen: { href: "/analytics/fraktionen", name: "Fraktionsprofil", icon: "landmark", group: "themen" },
-  foerderung: { href: "/analytics/atlas?stage=foerderung", name: "Förderradar", icon: "euro", group: "atlas" },
+  /* plenara.X Atlas und feste Auswahlen darin (Thema, Unterthema oder „Was geschieht“; Namen wie im Atlas) */
+  atlas: { href: "/analytics/atlas", name: "plenara.X Atlas", icon: "map", group: "atlas" },
+  foerderung: { href: "/analytics/atlas?stage=foerderung", name: "Förderung und Zuschüsse", icon: "euro", group: "atlas" },
   bauleitplanung: { href: "/analytics/atlas?thema=bauen&sub=bauen.plan", name: "Bauleitplanung", icon: "house", group: "atlas" },
-  kita: { href: "/analytics/atlas?thema=bildung", name: "Kita-Radar", icon: "heart", group: "atlas" },
-  versorgung: { href: "/analytics/atlas?thema=umwelt", name: "Versorgungsradar", icon: "droplet", group: "atlas" },
-  verkehr: { href: "/analytics/atlas?thema=mobilitaet", name: "Verkehrsradar", icon: "bus", group: "atlas" },
-  soziales: { href: "/analytics/atlas?thema=soziales", name: "Vereins- und Sozialradar", icon: "handshake", group: "atlas" },
-  vergabe: { href: "/analytics/atlas?stage=vergabe", name: "Vergaberadar", icon: "clipboardList", group: "atlas" },
-  klima: { href: "/analytics/atlas?thema=umwelt", name: "Klima- und Energieradar", icon: "zap", group: "atlas" },
-  finanzlage: { href: "/analytics/atlas?thema=finanzen", name: "Haushalt und Steuern", icon: "layers", group: "atlas" },
-  beteiligung: { href: "/analytics/atlas?thema=verwaltung&sub=verwaltung.beteil", name: "Beteiligung", icon: "megaphone", group: "atlas" },
+  kita: { href: "/analytics/atlas?thema=bildung&sub=bildung.kitabetr", name: "Kitas: Betrieb, Träger und Beiträge", icon: "heart", group: "atlas" },
+  versorgung: { href: "/analytics/atlas?thema=umwelt", name: "Umwelt, Klima & Energie", icon: "droplet", group: "atlas" },
+  verkehr: { href: "/analytics/atlas?thema=mobilitaet", name: "Mobilität & Verkehr", icon: "bus", group: "atlas" },
+  soziales: { href: "/analytics/atlas?thema=soziales", name: "Soziales & Gesundheit", icon: "handshake", group: "atlas" },
+  vergabe: { href: "/analytics/atlas?stage=vergabe", name: "Ausschreibung und Vergabe", icon: "clipboardList", group: "atlas" },
+  klima: { href: "/analytics/atlas?thema=umwelt&sub=umwelt.klimaschutz", name: "Klimaschutz und Energieeffizienz", icon: "zap", group: "atlas" },
+  finanzlage: { href: "/analytics/atlas?thema=finanzen", name: "Finanzen & Haushalt", icon: "layers", group: "atlas" },
+  beteiligung: { href: "/analytics/atlas?thema=verwaltung&sub=verwaltung.beteil", name: "Bürgerbeteiligung und Beiräte", icon: "megaphone", group: "atlas" },
   news: { href: "/analytics/news", name: "Newsradar", icon: "newspaper", group: "themen" },
-  gebuehren: { href: "/analytics/atlas?stage=abgaben", name: "Gebührenradar", icon: "tag", group: "atlas" },
+  gebuehren: { href: "/analytics/atlas?stage=abgaben", name: "Gebühren, Beiträge und Steuern", icon: "tag", group: "atlas" },
 };
 
 /* Was plenara.X leistet, vor den Beispielen jeder Branche: jeweils die passende Analyse als Vorschau */
@@ -57,9 +59,9 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     title: "Sehen, wo ein Thema schon angekommen ist",
     layout: "lead",
     analysen: [
-      ["bauleitplanung", "Sehen Sie, welche Bebauungspläne in welchem Verfahrensschritt sind und wo Gewerbe-, Industrie- und Energieflächen entstehen."],
+      ["bauleitplanung", "Sehen Sie, welche Bebauungs- und Flächennutzungspläne wo beraten werden und in welchem Verfahrensschritt sie sind."],
       ["graph", "Verknüpfen Sie Bauleitpläne, Veränderungssperren und Gewerbegebiete zu einem Netz."],
-      ["gebuehren", "Grundbesitzabgaben im Blick: wo Abfall-, Abwasser- und Niederschlagswassergebühren neu kalkuliert, erhöht oder gesenkt werden."],
+      ["gebuehren", "Grundbesitzabgaben im Blick: wo über Abfall-, Abwasser- und Niederschlagswassergebühren beraten wird, mit den Vorlagen dazu."],
     ],
     team: ["Für Ihr Projektteam", "Sitzungskalender mit Umkreis um Ihre Flächen; Hinweise gehen an bis zu fünf weitere Personen aus Entwicklung und Planung."],
   },
@@ -68,8 +70,8 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     layout: "cards",
     analysen: [
       ["versorgung", "Konzessionen, Gebühren, Ausschreibungen und Ausbau bei Energie, Wärme, Wasser, Abwasser und Abfall."],
-      ["bauleitplanung", "Erkennen Sie neue Baugebiete früh: Aufstellung, Offenlage und Satzungsbeschluss, mit geplanten Wohneinheiten."],
-      ["foerderung", "Sehen Sie, wo Fördermittel für Wärme, Energie und Breitband beantragt und bewilligt werden."],
+      ["bauleitplanung", "Erkennen Sie neue Baugebiete früh: Aufstellung, Offenlage und Satzungsbeschluss, je Gebiet und im Zeitverlauf."],
+      ["foerderung", "Sehen Sie, wo über Förderanträge und Zuschüsse beraten wird, auch für Wärme, Energie und Breitband."],
     ],
     team: ["Für Vertrieb und Netzplanung", "Der Sitzungskalender zeigt Termine Ihres Netzgebiets; bis zu fünf Kolleginnen und Kollegen erhalten dieselben Hinweise."],
   },
@@ -77,8 +79,8 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     title: "Entscheidungen einordnen",
     layout: "cards",
     analysen: [
-      ["foerderung", "Sehen Sie, welche Förderprogramme in den Kommunen Ihrer Mitglieder beantragt und bewilligt werden."],
-      ["finanzlage", "Wo Haushaltssicherung, Hebesätze, Kredite und Umlagen beraten werden und was daraus wird."],
+      ["foerderung", "Sehen Sie, wo in den Kommunen Ihrer Mitglieder über Förderanträge und Zuschüsse beraten wird."],
+      ["finanzlage", "Wo Haushaltssicherung, Hebesätze, Kredite und Umlagen beraten werden, mit den genannten Hebesätzen je Steuerart."],
       ["fraktionen", "Welche Fraktionen Anträge zu Ihren Themen stellen und was aus ihnen wird."],
     ],
     team: ["Für Geschäftsstelle und Mitglieder-Betreuung", "Sitzungskalender für Ihre Gebiete; bis zu fünf weitere Empfänger sehen jeden Alarm."],
@@ -89,7 +91,7 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     analysen: [
       ["vergabe", "Welche Planungs-, Ingenieur- und Gutachterleistungen Kommunen ausschreiben und vergeben."],
       ["bauleitplanung", "Welche Pläne in welchem Verfahrensschritt sind, je Gebiet und im Zeitverlauf."],
-      ["foerderung", "Welche Förderprogramme Kommunen nutzen, etwa Städtebauförderung oder Klimaanpassung."],
+      ["foerderung", "In welchen Kommunen Förderanträge und Zuschüsse beraten werden, etwa für Städtebau oder Klimaanpassung."],
     ],
     team: ["Für Gutachterteam und Projektleitung", "Sitzungskalender für Ihre Gebiete; bis zu fünf weitere Empfänger erhalten die Hinweise zu neuen Plänen."],
   },
@@ -98,7 +100,7 @@ export const ENTERPRISE: Record<string, EnterpriseBlock> = {
     layout: "lead",
     analysen: [
       ["fraktionen", "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird."],
-      ["kita", "Wo über Kita-Elternbeiträge entschieden wird und in welche Richtung."],
+      ["kita", "Wo über Kitas, Träger und Elternbeiträge beraten wird, mit den Vorlagen dazu."],
       ["news", "Was diese Woche berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat aus der Vorlage und Quelle."],
     ],
     team: ["Für Ihre Redaktion", "Der Sitzungskalender ist Ihre Wochenvorschau; bis zu fünf Kolleginnen und Kollegen bekommen dieselben Hinweise."],

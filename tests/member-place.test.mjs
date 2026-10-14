@@ -1,7 +1,7 @@
-// Kopfmodule der Themenradare: Gemeinde im Gemeindeverband (server/integrations/analytics-radar-extra.mjs)
+// Mitgliedsgemeinde im Gemeindeverband (server/integrations/member-place.mjs)
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {where} from '../server/integrations/analytics-radar-extra.mjs';
+import {where} from '../server/integrations/member-place.mjs';
 
 test('values of a member municipality are shown for it, not for the union',()=>{
  assert.deepEqual(where('Samtgemeinde Nord-Elm','Haushaltsplan und Haushaltssatzung der Gemeinde Warberg 2027'),{key:'Warberg',label:'Gemeinde Warberg (Samtgemeinde Nord-Elm)'});

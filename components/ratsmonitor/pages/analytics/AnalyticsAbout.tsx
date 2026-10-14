@@ -6,7 +6,6 @@ import type { ReactNode } from "react";
 import { AnalyticsLogo } from "../../components/Brand";
 import { ANALYSEN, GRUPPEN, type AnalyseId, type AnalyseGruppe } from "../../info/branchen-enterprise";
 import { Icon } from "../../info/icons";
-import { RADARS } from "@/shared/radars.mjs";
 import { RADAR_THUMBS } from "./RadarThumbs";
 
 /** Vorschaubild der Ausbreitung: Wellen von Punkten um einen Ursprung und die S-Kurve */
@@ -141,21 +140,11 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "beschluesse", name: "Beschlüsse", href: "/analytics/beschluesse", kurz: "Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer." },
   { id: "gremien", name: "Beratungswege", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   { id: "fraktionen", name: "Fraktionsprofil", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
-  { id: "finanzlage", name: RADARS.finanzen.name, href: ANALYSEN.finanzlage.href, kurz: RADARS.finanzen.kurz },
-  { id: "gebuehren", name: RADARS.gebuehren.name, href: ANALYSEN.gebuehren.href, kurz: RADARS.gebuehren.kurz },
-  { id: "foerderung", name: "Förderradar", href: ANALYSEN.foerderung.href, kurz: "Welche Förderprogramme wo beantragt und bewilligt werden." },
-  { id: "bauleitplanung", name: "Bauleitplanung", href: ANALYSEN.bauleitplanung.href, kurz: "Welche Bauleitpläne in welchem Schritt sind und wo Gewerbe-, Industrie- und Energieflächen geplant werden." },
-  { id: "kita", name: "Kita-Radar", href: ANALYSEN.kita.href, kurz: "Wo über Elternbeiträge entschieden wird und in welche Richtung." },
-  { id: "versorgung", name: RADARS.versorgung.name, href: ANALYSEN.versorgung.href, kurz: RADARS.versorgung.kurz },
-  { id: "verkehr", name: RADARS.verkehr.name, href: ANALYSEN.verkehr.href, kurz: RADARS.verkehr.kurz },
-  { id: "soziales", name: RADARS.soziales.name, href: ANALYSEN.soziales.href, kurz: RADARS.soziales.kurz },
-  { id: "vergabe", name: RADARS.vergabe.name, href: ANALYSEN.vergabe.href, kurz: RADARS.vergabe.kurz },
-  { id: "klima", name: RADARS.klima.name, href: ANALYSEN.klima.href, kurz: RADARS.klima.kurz },
-  { id: "beteiligung", name: RADARS.beteiligung.name, href: ANALYSEN.beteiligung.href, kurz: RADARS.beteiligung.kurz },
+  { id: "atlas", name: "plenara.X Atlas", href: "/analytics/atlas", kurz: "Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, was geschieht, wo ein Thema viel Raum hat und die Vorgänge hinter jeder Zahl." },
   { id: "news", name: "Newsradar", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
 ];
 
-const METHODIK: Record<AnalyseId, ReactNode> = {
+const METHODIK: Partial<Record<AnalyseId, ReactNode>> = {
   diffusion: (
     <>
       <p className="mt-3 text-[16px] text-slate-500">Zeigt, wie sich ein Thema über die Gebiete ausbreitet: wer zuerst dran war, wie schnell andere folgten und wo es noch fehlt. Als Zeitraffer auf der Karte, mit den gleichen Suchen und Filtern wie auf der Startseite.</p>
@@ -205,36 +194,15 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
           <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird nur, was ausdrücklich als Antrag einer Fraktion dasteht, ein kleiner Teil aller Einträge. Sammelpunkte wie „Beantwortung von Anfragen“ zählen nicht. Der Status ist nur bei einem Teil der Anträge bekannt; die Quote ist ein Anhaltspunkt, keine Bewertung einer Partei. Wie viele Volltexte vorliegen, unterscheidet sich je Gebiet.</p>
     </>
   ),
-  foerderung: (
+  atlas: (
     <>
-      <p className="mt-3 text-[16px] text-slate-500">Zeigt, welche Förderprogramme wo genannt, beantragt oder bewilligt werden, und welche Gebiete im Verhältnis zu ihrer Größe viele geförderte Vorhaben haben. Mit denselben Suchen und Filtern wie auf der Startseite.</p>
-      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gelesen werden Sätze, die von Fördergeld sprechen (Fördermittel, Förderbescheid, Zuwendung, Bundes- oder Landesmittel); darin wird das Programm erkannt (etwa Städtebauförderung, Ganztagsausbau, Klimaanpassung, LEADER) und ob die Förderung beantragt oder bewilligt ist. Gezählt werden Vorgänge, nicht Euro: Beträge stehen in den Unterlagen in verschiedenen Rollen (Förderbetrag, Gesamtkosten, Eigenanteil) und oft mehrfach. Je Gebiet zählen Vorgänge mit beantragter oder bewilligter Förderung je 10.000 Einwohner, nur für Gebiete ab 20.000 Einwohnern mit genügend Einträgen.</p>
-          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Grundlage ist der Volltext der Hauptdokumente, soweit er vorliegt; Sammelberichte (Mitteilungen, Haushalt, Sachstände) zählen nicht. Eine Rangfolge misst, wie oft Förderung in den Ratsunterlagen auftaucht, nicht die Höhe der Mittel.</p>
+      <p className="mt-3 text-[16px] text-slate-500">Zeigt, worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, was geschieht, den Verlauf je Monat, wo ein Thema viel Raum hat, einen Ort im Vergleich und die Vorgänge hinter jeder Zahl.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gezählt werden Vorgänge: Derselbe Titel in mehreren Gremien eines Gebiets ist ein Vorgang, er zählt im Monat seiner letzten Sitzung. Formalien, Sammelpunkte, Besetzungen, Wahlen und Fragestunden zählen nicht. Das Thema ist dasselbe wie im Themenfilter der Suche: von Hand eingeordnet, sonst von der KI, sonst nach festen Regeln aus Titel, Betreff und Beschlussvorschlag. Je Thema gibt es sieben Unterthemen aus denselben Quellen; ein Vorgang kann mehrere haben. „Was geschieht“ (etwa Antrag, Planung, Vergabe, Bau, Förderung, Gebühren) wird nach einem festen Leitfaden aus dem Titel gelesen. Die Zahlen werden einmal täglich neu berechnet.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gemessen an Stichproben, die von Hand eingeordnet wurden und den Regeln vorher nicht bekannt waren: Thema 91 bis 100 % richtig, Unterthemen 88 bis 93 %, „Was geschieht“ 86 bis 90 %. Werte aus den Unterlagen erscheinen nur, wenn eine solche Messung mindestens 90 % ergab; derzeit sind das der Verfahrensschritt der Bauleitplanung (Aufstellung, frühzeitige Beteiligung, Offenlage, Abwägung, Satzungsbeschluss), die Hebesätze je Steuerart und die Fraktion hinter Anträgen und Anfragen.</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ort im Vergleich: Mit einem gewählten Ort zeigt der Atlas den Anteil jedes Unterthemas an allen Sachvorgängen des eigenen Rats in den letzten 12 Monaten, verglichen mit Gebieten gleicher Art und Größenklasse, zuerst im selben Land. „Mehr“ oder „weniger“ steht nur, wenn die Unsicherheitsspanne des Anteils (Wilson) außerhalb der mittleren Hälfte der Vergleichsgruppe liegt, und erst ab 5 Vorgängen. Eingeordnet werden nur Räte mit mindestens 100 Sachvorgängen in mindestens 9 Monaten.</p>
+      <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird über Wörter; ein Vorgang ohne passendes Wort bleibt „Sonstiges“ oder „Noch nicht eingeordnet“, ein Wort in anderem Sinn zählt mit. Neue Vorgänge erscheinen mit der nächsten täglichen Berechnung. Der Status ist nur bei einem Teil der Vorgänge bekannt.</p>
     </>
   ),
-  bauleitplanung: (
-    <>
-      <p className="mt-3 text-[16px] text-slate-500">Zeigt, welche Bebauungs- und Flächennutzungspläne in welchem Verfahrensschritt sind, wo im Verhältnis zur Größe viel geplant wird und wo Gewerbe-, Industrie- und Energieflächen entstehen.</p>
-      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Plan und Verfahrensschritt werden aus dem Titel gelesen, sonst aus dem Beschlussvorschlag: Aufstellung, frühzeitige Beteiligung (§ 3 Abs. 1 BauGB), Offenlage (§ 3 Abs. 2 BauGB), Abwägung, Satzungsbeschluss (§ 10 BauGB; „beschlossen“ nur mit Status beschlossen, sonst „Satzungsbeschluss vorgelegt“) oder Aufhebung. Ein Plan läuft über mehrere Sitzungen und Gremien; er wird je Gebiet über Nummer oder Namen einmal gezählt, mit dem weitesten Schritt. Geplante Wohneinheiten stammen aus Sätzen mit Planungsbezug („rund 140 Wohneinheiten sollen entstehen“).</p>
-          <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Art des Plangebiets: aus Titel und Planname, sonst aus dem Beschlussvorschlag (Industrie, Gewerbe, Logistik, Einzelhandel, Energie wie Photovoltaik und Wind, Rechenzentrum, Mischgebiet, Wohnen; „interkommunal“, wenn der Titel es nennt). Die Karte zeigt die Gemeinde des Plans, bei Gemeindeverbänden die im Titel genannte Mitgliedsgemeinde; die Lage im Ort steht nur im Plannamen.</p>
-          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Bauanträge im Plangebiet, Stellungnahmen zu Plänen der Nachbargemeinden und Sammelberichte zählen nicht. Wohneinheiten stehen nur bei einem kleinen Teil der Pläne im Hauptdokument, oft erst in der Begründung; die Summe ist eine Untergrenze. Ohne erkennbare Art (etwa nur ein Straßenname als Planname) fehlt ein Plan in Karte und Liste der Arten.</p>
-    </>
-  ),
-  kita: (
-    <>
-      <p className="mt-3 text-[16px] text-slate-500">Zeigt, wo über Kita-Elternbeiträge entschieden wird und in welche Richtung (Erhöhung, Senkung, Beitragsfreiheit, Verpflegung).</p>
-      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Gelesen werden Titel und Volltext der Hauptdokumente: Elternbeiträge, Gebühren- und Beitragssatzungen nur mit Bezug zu Kita, Krippe oder Tagespflege, nicht Straßen- oder Vereinsbeiträge. Die Richtung ergibt sich aus Wörtern wie „erhöht“, „gesenkt“ oder „beitragsfrei“. Neue Plätze zählen nur, wenn der Titel einen Neubau, eine Erweiterung oder zusätzliche Gruppen nennt.</p>
-          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Die Höhe der Beiträge wird nicht verglichen, sie steht je Monat, Einkommensstufe, Alter und Betreuungszeit verschieden da. Bestand und Bedarfsplanungen zählen nicht als neue Plätze; nicht jeder Ausbau nennt eine Platzzahl.</p>
-    </>
-  ),
-  versorgung: <RadarMethodik id="versorgung" />,
-  verkehr: <RadarMethodik id="verkehr" />,
-  soziales: <RadarMethodik id="soziales" />,
-  vergabe: <RadarMethodik id="vergabe" />,
-  klima: <RadarMethodik id="klima" />,
-  finanzlage: <RadarMethodik id="finanzen" />,
-  gebuehren: <RadarMethodik id="gebuehren" />,
-  beteiligung: <RadarMethodik id="beteiligung" />,
   news: (
     <>
       <p className="mt-3 text-[16px] text-slate-500">Zeigt, was in den Räten gerade berichtenswert ist: Vorgänge der letzten 30 und der nächsten 10 Tage, nach Nachrichtenwert geordnet, je Vorgang eine kurze Meldung.</p>
@@ -243,28 +211,6 @@ const METHODIK: Record<AnalyseId, ReactNode> = {
     </>
   ),
 };
-
-/* Kopfmodule mit Werten aus den Unterlagen (shared/topic-facts.mjs, server/integrations/analytics-radar-extra.mjs) */
-const RADAR_WERTE: Partial<Record<keyof typeof RADARS, string>> = {
-  finanzen: "Hebesätze: aus Vorlagen zu Hebesätzen, Realsteuern oder der Haushaltssatzung wird je Steuerart (Grundsteuer A, Grundsteuer B, Gewerbesteuer) der genannte Satz gelesen, mit bisherigem Satz, wenn er dabeisteht („von 465 auf 500 v. H.“). Nicht gezählt werden aufkommensneutrale, empfohlene, Mindest- und Vergleichssätze sowie nach Grundstücksart unterschiedene Sätze. Je Gebiet gilt der zuletzt genannte Satz; ob er beschlossen ist, zeigt der Status.",
-  gebuehren: "Gebührensätze: aus Vorlagen zu Gebühren, Kalkulationen und Abgabensatzungen werden Schmutzwasser und Trinkwasser je m³ und Niederschlagswasser je m² gelesen, mit bisherigem Satz, wenn er dabeisteht. Nicht gezählt werden einmalige Beiträge, dezentrale Entsorgung (Gruben, Kleinkläranlagen), Vergleiche mit anderen Kommunen und Verbandsumlagen. Netto und brutto werden nicht unterschieden. Je Gebiet gilt der zuletzt genannte Satz.",
-  klima: "Wärmeplanung: aus dem Titel, sonst aus dem Beschlussvorschlag, wird der Schritt der kommunalen Wärmeplanung gelesen (Start und Beauftragung, Analyse und Zwischenstand, Entwurf und Beteiligung, Beschluss, Umsetzung und Fortschreibung). Je Gebiet zählt der weiteste Schritt; „beschlossen“ nur mit dem Status beschlossen. Anträge und Anfragen aus der Politik zählen nicht als Schritt.",
-  soziales: "Zuschüsse: Vorgänge, deren Titel einen Zuschuss der Kommune an einen Verein oder Träger oder die Vereins-, Sport- oder Kulturförderung nennt; nicht Fördermittel, die die Kommune selbst bekommt, und nicht Zuschüsse an Private oder Unternehmen. Der Zweck kommt aus dem Titel, ein Betrag nur, wenn er am Zuschusswort steht (ohne Höchstbeträge, Beträge je Mitglied und Listen). Derselbe Betrag in mehreren Gremien eines Gebiets zählt einmal; die Summe ist eine Untergrenze.",
-};
-
-/** Methodik eines Themenradars aus seiner Beschreibung (shared/radars.mjs) */
-function RadarMethodik({ id }: { id: keyof typeof RADARS }) {
-  const r = RADARS[id];
-  return (
-    <>
-      <p className="mt-3 text-[16px] text-slate-500">{r.kurz}</p>
-      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Ein Vorgang gehört zum Radar, wenn sein Titel eines dieser Themen nennt: {r.topics.map(([t]) => t).join(", ")}{"fallback" in r ? ` (sonst: ${r.fallback})` : ""}. Was geschieht, steht in Titel oder Beschlussvorschlag: {r.signals.map(([s]) => s).join(", ")}. Bei sehr kurzen Titeln wird der Beschlussvorschlag gelesen. Je Thema zeigt das Radar, in wie vielen Gebieten es vorkommt und was aus den Vorgängen wird (Anteil „beschlossen“ an den entschiedenen); je Gebiet die Vorgänge je 10.000 Einwohner.</p>
-          <p className="mt-3 text-[14px] text-slate-500">Grenzen: Erkannt wird über Wörter im Titel; ein Vorgang ohne passendes Wort fehlt, ein Wort in anderem Sinn zählt mit. Bauanträge Privater, Formalpunkte und Sammelpunkte wie Mitteilungen zählen nicht. Der Status ist nur bei einem Teil der Vorgänge bekannt.</p>
-      {RADAR_WERTE[id] && <p className="mt-3 text-[14px] leading-relaxed text-slate-700">{RADAR_WERTE[id]}</p>}
-      <p className="mt-3 text-[14px] leading-relaxed text-slate-700">Mit einem gewählten Ort zählen nur Vorgänge seines eigenen Rats (nicht die des Kreises). „Viel oder wenig“: Anteil eines Themas an allen Sachvorgängen des Rats in den letzten 12 Monaten (ohne Formalien, gleiche Titel einmal), verglichen mit Gebieten gleicher Art und Größenklasse, zuerst im selben Land. Verglichen werden nur Gebiete mit mindestens 100 Sachvorgängen in mindestens 9 Monaten. Zur Zahl gehört eine Spanne (95 %); „häufiger“ oder „seltener als üblich“ steht erst ab 5 Vorgängen und nur, wenn die Spanne ganz außerhalb der mittleren Hälfte der Vergleichsgebiete liegt. Gemessen wird, wie oft ein Thema in den Unterlagen vorkommt, nicht, was umgesetzt wurde. Jede Zahl lässt sich anklicken und zeigt die Vorgänge dahinter. Die Karte ordnet jedes Gebiet mit genug Unterlagen auf dieselbe Weise ein (Viertel seiner Vergleichsgruppe, nach Rang), für das ganze Radar, ein Thema oder den Suchbegriff; sind die Vorgänge zu selten für einen Vergleich, zeigt sie stattdessen ihre Zahl. Gemeindeverbände färben ihre Mitgliedsgemeinden.</p>
-    </>
-  );
-}
 
 function Karten({ group }: { group: AnalyseGruppe }) {
   const list = ANALYSEN_KARTEN.filter((a) => ANALYSEN[a.id].group === group);
@@ -336,7 +282,7 @@ export function AnalyticsAbout() {
             <span aria-hidden="true" className="mt-3 block max-sm:hidden"><AnalyticsLogo size={56} /></span>
             <span aria-hidden="true" className="mt-3 hidden max-sm:block"><AnalyticsLogo size={40} /></span>
             <h1 className="mt-6 max-w-[16ch] text-[28px] font-semibold leading-[1.1] sm:text-[44px]">Besser verstehen, was vor Ort beraten wird.</h1>
-            <p className="mt-5 max-w-[560px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte, bei jeder Abfrage frisch berechnet.</p>
+            <p className="mt-5 max-w-[560px] text-[18px] text-slate-500">Analysen auf dem gesamten Datenbestand der Räte, jede Zahl mit den Vorgängen und Originalquellen dahinter.</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
               <Link href="/analytics/diffusion" className="inline-flex h-12 items-center gap-2 rounded-full bg-slate-900 px-7 text-[16px] font-medium text-white transition-opacity after:content-['→'] hover:opacity-85">Analyse starten</Link>
               <a href="#analysen" className="text-[16px] font-medium text-teal-700">Alle Analysen ↓</a>
@@ -358,13 +304,13 @@ export function AnalyticsAbout() {
           <Karten group={group} />
         </section>
       ))}
-      {/* Die Themenradare stehen nur im Atlas, nicht als eigene Karten */}
+      {/* Der Atlas hat eine eigene Seite mit Themenleiste; hier nur der Verweis */}
       <section id="atlas" className="scroll-mt-24">
         <div className="mt-14 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
           <h2 className="text-[28px] font-semibold">plenara.X Atlas</h2>
           <Link href="/analytics/atlas" className="text-[16px] font-medium text-teal-700">Zum plenara.X Atlas →</Link>
         </div>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Was gebaut und geplant wird, alle Themen auf einer Karte: Bauleitplanung, Kitas, Versorgung, Verkehr, Vereine und Soziales, Klima und Energie, Haushalt, Gebühren, Vergaben, Förderung und Beteiligung.</p>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Worüber die Räte beraten, nach den 10 Themen der Suche: Bauen und Wohnen, Finanzen, Mobilität, Bildung, Umwelt und Energie, Soziales, Kultur und Sport, Sicherheit, Verwaltung, Wirtschaft. Je Thema Unterthemen, was geschieht und wo ein Thema viel Raum hat; mit einem Ort der Vergleich mit ähnlichen Gemeinden.</p>
       </section>
 
       <Methodik />

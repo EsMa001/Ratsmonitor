@@ -1,7 +1,7 @@
 import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {atRevision} from './revision-cache.mjs';
-import {where} from './analytics-radar-extra.mjs';
+import {where} from './member-place.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*

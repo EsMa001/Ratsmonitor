@@ -1,9 +1,9 @@
 import {titleKey} from '../../shared/topic-facts.mjs';
-import {where} from './analytics-radar-extra.mjs';
+import {where} from './member-place.mjs';
 
 /*
- * Plenara.X – Listen hinter den Zahlen (Fraktionsprofil, Beschlüsse, Förderradar, Trends, Ausbreitung, Beratungswege): dieselbe
- * Darstellung wie in den Themenradaren (RadarDrill.tsx). Jede Auswertung wählt ihre Vorgänge selbst (mit denselben Filtern wie ihre
+ * Plenara.X – Listen hinter den Zahlen (Fraktionsprofil, Beschlüsse, Trends, Ausbreitung, Beratungswege): dieselbe
+ * Darstellung wie im Atlas (RadarDrill.tsx). Jede Auswertung wählt ihre Vorgänge selbst (mit denselben Filtern wie ihre
  * Zahlen); hier werden sie wie dort gezählt: derselbe Titel je Gebiet einmal (mit seiner jüngsten Sitzung), die jüngsten zuerst,
  * LIST_SIZE je Abruf ab offset. Bei Gemeindeverbänden steht die Mitgliedsgemeinde dabei, wenn Gremium oder Titel sie nennen.
  */
