@@ -51,3 +51,14 @@ Zwei Läufe; eingetragen in `rule-quality.json` ist Lauf 2 (Seed 8282), gemessen
 - Nach Lauf 1 korrigiert: „LED“ nur als Wort (passte in „erledigenden“), „WA“, „GE“, „GI“ nur groß geschrieben, Abwägung eingegangener Stellungnahmen zählt als Planverfahren, Einzelgrundstücke und Aufhebungen sind kein neues Plangebiet, neuer Fakt `area_dev` (Bau- und Gewerbegebiete ohne Bebauungsplan im Titel), Solar-Filter „Sonstige PV“ statt Freiflächen als Rest, Wind-Filter „Regionalplanung“.
 - Nach Lauf 2 korrigiert, nicht neu gemessen: „Sanierung von Straßen“ als Tiefbau, Garage als Hochbau, „Beteiligung an Windenergieanlagen“, Raumordnungsplan Wind, „Agri PV“ mit Leerzeichen, Wärmeerzeugung, „…siedlung“ als Wohnen, „Baugebiet X“ allein, Einzelgrundstück-Verkäufe raus.
 - Schwach bleibt 2 (Wohnbau): viele Bebauungspläne nennen die Nutzung weder im Titel noch im Beschlussvorschlag.
+
+## Messung je Filter (15.10.2026, Server, ungesehen, Seed 6464, je Filter 20 zufällige Vorgänge)
+
+Richtig = gehört zur Kategorie und der Filter stimmt. Eingetragen in `rule-quality.json`; danach korrigiert, nicht neu gemessen.
+
+- Vergaben: Planung 100, Hochbau 90, Wasser 90, Tiefbau 85, IT 70 („server“ in „Wasserversorgung“), Sonstige 70, Fahrzeuge 60 („Fahrzeughalle“, Dienstleistungen)
+- Gewerbe: Rechenzentrum 100, Hotel/Camping 95, Batteriespeicher 90, Gewerbe 90, Grundstücksverkauf 90, Logistik 90, Industrie 75 (Zuwendungen, Wahlen, Ausgleichsflächen)
+- Wind: Bauleitplanung 100, BImSchG 100, Regionalplanung 95, Sonstiges 90, Bürgerbeteiligung 75, Einvernehmen 45 (Flächennutzungs- und Regionalpläne mit „Stellungnahme“; Reihenfolge der Regeln geändert)
+- Solar: Freiflächen 100, Batteriespeicher 100, Agri-PV 95, Dach-PV 70 (private Dächer), Sonstige PV 60 (kommunale Gebäude, Solarfreibad)
+- Wärme: Wärmeplanung 100, LED 95, Wärmenetz 90, Energetische Sanierung 85, Heizung 80 (private Häuser, Vereine)
+- Wohnbau: Bauplatzverkauf 100; Hausformen nur mit dem Vorlagentext prüfbar, noch offen
