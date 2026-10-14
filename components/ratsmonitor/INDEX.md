@@ -726,7 +726,7 @@ topic design-styles.css:140
 - VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
-- blocks.tsx (211, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (109): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (418, ⚠28): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
@@ -787,7 +787,7 @@ topic design-styles.css:140
 - DetailPage.tsx (179, ⚠11): DetailPage
 - KalenderPage.tsx (367, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
-- OverviewPage.tsx (56): OverviewPage
+- OverviewPage.tsx (64): OverviewPage
 - PersonalPage.tsx (22): PersonalPage
 - PostfachPage.tsx (87): PostfachPage
 - ProfilePage.tsx (121): ProfileSettings, readProfile, ProfilePage
@@ -834,7 +834,7 @@ topic design-styles.css:140
 - account.tsx (35): AccountProvider, useAccount, useSavedStats
 - data.tsx (36, ⚠1): DataProvider, useData
 - nav.ts (17): View, viewOf, noteRoute, cameFromApp, overviewScroll, useAppNav
-- search.tsx (605, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
+- search.tsx (635, ⚠3): INITIAL_SEARCH, SearchProvider, useSearch, CoverageEntry, SearchResults, savedSearchState, savedSearchQuery, useSearchResults
 - toast.tsx (66): ToastProvider, useToast
 - ui.tsx (29): UiProvider, useUi
 

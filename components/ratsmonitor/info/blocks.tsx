@@ -2,7 +2,7 @@ import { useCallback, type ReactNode } from "react";
 import { focusSearch } from "../components/SearchBox";
 import { StepTimeline } from "../components/results/ArticleCard";
 import { useBrandText } from "../lib/brand";
-import { useAppNav } from "../state/nav";
+import { cameFromApp, useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
 import { STATUS_LABEL, type Example, type Qa, type Rich as RichText, type Status } from "./content";
 import { Icon, type IconName } from "./icons";
@@ -58,8 +58,9 @@ export function PageHead({
 }) {
   const router = useRouter();
   const { goOverview } = useAppNav();
-  /* Dezenter Zurück-Pfeil auf allen Info- und Kontoseiten; ohne Vorgeschichte zur Übersicht */
-  const back = () => (window.history.length > 1 ? router.back() : goOverview());
+  /* Dezenter Zurück-Pfeil auf allen Info- und Kontoseiten: zur vorigen Seite der App; wer von außen kommt (Link aus E-Mail,
+     Suchmaschine), landet in der Suche statt wieder auf der fremden Seite (wie die Detailseite, state/nav.ts) */
+  const back = () => (cameFromApp() ? router.back() : goOverview());
   const main = (
     <div>
       <button type="button" onClick={back} className="back-btn -ml-1.5 mb-4">

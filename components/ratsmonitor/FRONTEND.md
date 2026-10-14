@@ -43,6 +43,7 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | Adminbereich (Rahmen, Bausteine, Stand, Speicher, Nachholen, Texte, Farben) | `components/admin-chrome.tsx` (AdminFrame, Reiter), `components/admin-ui.tsx`, `components/admin-stand.tsx`, `components/admin-store.ts`, `components/admin-catch-up.tsx`, `components/admin-texts.ts`, `components/admin-colors.ts`; Seiten: `components/admin-*.tsx`, `app/admin/page.tsx` |
 | Symbole | App: `components/icons.tsx`; Info-Seiten: `info/icons.tsx` |
 | Suchzustand + Abfrage an `/api/search` | `state/search.tsx`; Ortserkennung + Regionen: `lib/place.ts`; Logik: `lib/searchLogic.ts` |
+| Suche in der Adresse (`/suche?q=…&ort=…&thema=…`, Teilen, Lesezeichen, Zurück/Vor) | Schlüssel und Umwandlung: `lib/searchUrl.ts`; Lesen und Schreiben im `SearchProvider` (`state/search.tsx`), Kennzeichen `history.state.rmSearch`; gespeicherte Suchen per `?suche=<id>`: `pages/OverviewPage.tsx` |
 | Neue Route anlegen | Stub in `app/(monitor)/<pfad>/page.tsx` (gibt `null` zurück) + Eintrag in `info/InfoPages.tsx` bzw. `pages/PersonalPage.tsx`; Kontoseiten zusätzlich in `app/(monitor)/konto/[[...section]]/page.tsx` freischalten |
 
 ## Stile

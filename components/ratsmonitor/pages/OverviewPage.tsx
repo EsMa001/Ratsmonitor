@@ -15,27 +15,24 @@ export function OverviewPage({ active }: { active: boolean }) {
   const wasActive = useRef(active);
   const search = useSearch();
   const { saved, ready } = useAccount();
-  /* Links aus E-Mails und von Lena: /?suche=<id> öffnet eine gespeicherte Suche mit allen Einstellungen, /?q=… startet eine
-     Suche. App.tsx leitet / mit diesen Parametern nach /suche um; gelesen wird erst hier, sobald die Übersicht zu sehen ist
-     (sonst setzte sie die Suche schon auf / und löschte die Adresse vor der Umleitung). Andere Seiten lesen ?q= selbst
-     (Atlas, „Link kopieren“). Jeder Link wirkt einmal; derselbe Link später erneut geöffnet wirkt wieder. */
+  /* Links auf gespeicherte Suchen (E-Mails): /?suche=<id> öffnet sie mit allen Einstellungen. App.tsx leitet / nach /suche um;
+     gelesen wird erst hier, sobald die Übersicht zu sehen ist. Danach schreibt SearchProvider die Suche in die Adresse.
+     Alle übrigen Parameter (?q=, ?ort=, …) liest SearchProvider selbst (lib/searchUrl.ts). */
   const params = useSearchParams();
   const router = useRouter();
-  const linkQ = active ? params.get("q") : null;
   const linkId = active ? params.get("suche") : null;
   const handled = useRef("");
   useEffect(() => {
-    if (!linkQ && !linkId) {
+    if (!linkId) {
       handled.current = "";
       return;
     }
-    const key = `${linkId}|${linkQ}`;
-    if (handled.current === key || (linkId && !ready)) return;
-    const sv = linkId ? saved.find((x) => x.id === linkId) : undefined;
-    if (sv ? !search.applySaved(sv) : linkQ ? (search.applySearch(linkQ), false) : false) return;
-    handled.current = key;
+    if (handled.current === linkId || !ready) return;
+    const sv = saved.find((x) => x.id === linkId);
+    if (sv && !search.applySaved(sv)) return;
+    handled.current = linkId;
     router.replace("/suche", { scroll: false });
-  }, [linkQ, linkId, saved, ready, search, router]);
+  }, [linkId, saved, ready, search, router]);
 
   useEffect(() => {
     if (active && !wasActive.current) {

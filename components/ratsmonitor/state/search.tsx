@@ -7,6 +7,7 @@ import type { MapEngine } from "../lib/geo/mapEngine";
 import type { ParseResult, PlaceHit } from "../lib/place";
 import { applySearchState, clearAreaState, commitPlacesState, deriveFilters } from "../lib/searchLogic";
 import { canonicalQuery, hasScope, queryText, resolveRange, signature, type SearchSnapshot } from "../lib/savedSearch";
+import { onlyText, readableQuery, searchFromUrl, searchToUrl } from "../lib/searchUrl";
 import { terms as toTerms, todayLocal } from "../lib/text";
 import type { AreaSource, Article, Radius, SavedSearch, SearchState, StatusId } from "../types";
 import { useData } from "./data";
@@ -242,6 +243,35 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     };
     return a;
   }, [commit, geo, parse, place, prefetchState]);
+
+  /* Suche in der Adresse (lib/searchUrl.ts): Auf /suche spiegelt die Adresse den Suchstand. Eine fremde Adresse (Laden,
+     Zurück/Vor, Link) wird gelesen; sonst wird der Stand geschrieben, ein neuer Verlaufseintrag erst nach 1 s Pause (Tippen
+     ergibt einen Eintrag), davor wird ersetzt. Jeder geschriebene Eintrag trägt seinen Stand (history.state.rmSearch): Eine
+     Adresse ohne Suche und ohne dieses Kennzeichen (Menülink „Suche“, Weiterleitung) behält die laufende Suche, Zurück zu
+     einer leeren Suche leert sie. ?suche= übernimmt die Übersicht (gespeicherte Suche), ?region= die Zeilen oben. */
+  const urlNow=onHome?readableQuery(params.toString()):null;
+  const written=useRef<string|null>(null),fromUrl=useRef(false),wroteAt=useRef(0);
+  useEffect(()=>{
+    if(urlNow===null||regionWait||params.has('suche'))return;
+    const url=urlNow,enc=searchToUrl(state),region=params.has('region');
+    const mark=(history.state as {rmSearch?:unknown}|null)?.rmSearch,marked=typeof mark==='string';
+    if(url===enc){written.current=url;fromUrl.current=false;return;}
+    if(!region&&url!==written.current&&(url||marked)){
+      const p=new URLSearchParams(url);
+      if(onlyText(p))actions.applySearch(p.get('q')!,{...INITIAL_SEARCH});
+      else{const next=searchFromUrl(p,INITIAL_SEARCH,(ags)=>geo?.center(ags));if(!next)return;commit(next);}
+      written.current=url;fromUrl.current=true;
+      return;
+    }
+    /* Ersetzen statt neuer Eintrag: gleich nach dem Lesen, beim Aufräumen von ?region= und auf /suche ohne Kennzeichen (Menülink) */
+    const now=Date.now(),push=!fromUrl.current&&!region&&(url!==''||marked)&&now-wroteAt.current>1000;
+    fromUrl.current=false;wroteAt.current=now;written.current=enc;
+    const href=enc?`/suche?${enc}`:'/suche';
+    if(push){
+      if(!marked)history.replaceState({...history.state,rmSearch:url},'',location.href);
+      history.pushState({rmSearch:enc},'',href);
+    }else history.replaceState({...history.state,rmSearch:enc},'',href);
+  },[urlNow,state,regionWait,params,geo,actions,commit]);
 
   const value = useMemo<SearchValue>(() => ({ ...actions, state, popup, mapRef,derived:results }), [actions, state, popup,results]);
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>;
