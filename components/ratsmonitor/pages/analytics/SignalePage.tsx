@@ -164,7 +164,6 @@ export function SignalePage() {
           {res.signal.art && (res.arts ?? []).length > 0 && (
             <section className="mt-8" aria-label={res.signal.art}>
               <h3 className="text-[18px] font-semibold">{res.signal.art}</h3>
-              <p className="mt-1 text-[14px] text-slate-500">Aus Titel, Vorlage und Begründung gelesen; ein Vorgang kann mehrere Werte haben. Klick grenzt die Liste ein.</p>
               <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
                 <li><button type="button" aria-pressed={!art} onClick={() => pick({ art: "" })}
                   className={`inline-flex h-6 items-center rounded-full px-2.5 text-[12px] font-semibold ${!art ? "bg-slate-900 text-white" : "bg-white text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50"}`}>Alle</button></li>
