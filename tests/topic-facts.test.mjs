@@ -219,6 +219,12 @@ test('park fee per hour: new value, half hours doubled, no deltas or comparisons
  assert.equal(parkFeeOf('Parkgebührenordnung','Gebühren in Höhe von 0,60 Euro je angefangene halbe Stunde.').euro,'1.20');
  assert.equal(parkFeeOf('Parkgebühren','Die Gebühr wird um 0,50 Euro/Stunde erhöht.'),null);
  assert.equal(parkFeeOf('Gebühr für Anwohner-Parkausweis senken','Die Gebühr beträgt 1,00 € pro Stunde.'),null);
+ assert.equal(parkFeeOf('Parkgebührenordnung','Die Gebühren betragen 1,20 EUR für eine Stunde.').euro,'1.20');
+ assert.equal(parkFeeOf('Parkgebühren','Es gilt ein Preis von 2€ pro Stunde.').euro,'2.00');
+ assert.equal(parkFeeOf('Parkgebühren','Das Parken kostet in der ersten Stunde 3,50 Euro.').euro,'3.50');
+ assert.equal(parkFeeOf('Parkgebühren','Derzeit beträgt die Parkgebühr 2,00 € je Stunde.'),null,'geltender Satz');
+ assert.equal(parkFeeOf('Parkgebühren','Damit müssten Parkgebühren von etwa 2,00 € pro Stunde erhoben werden.'),null,'Schätzung');
+ assert.equal(parkFeeOf('Parkhaus','Mit Bescheid vom 03.02.2006 wurde für jede angefangene Stunde 0,50 € zugestimmt.'),null,'alter Bescheid');
 });
 
 test('wind and solar capacity in MW, not per turbine, storage or reference projects',()=>{

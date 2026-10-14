@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v22';
+export const FACTS_VERSION='facts-v23';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -340,24 +340,30 @@ export function annualResultOf(title,text){
    Mindestgebühren der Park-App, Vergleiche mit anderen Städten, Bewohnerparken, Monats- und Tagestickets. */
 const PARK_TITLE=/Park(?:geb|raum|entgelt|schein|tarif|haus|platz|ticket|en\b)|Stellpl[aä]tz|Tiefgarage/i;
 const NOT_PARK_TITLE=/Bewohnerpark|Anwohnerpark|Betrug|Car-?Sharing|Fahrrad|Wohnmobil|Pacht|vermiet/i;
-const PARK_RE=/(?<![\d.,])(\d{1,2},\d{2})\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)\s*(angefangene[n]?\s+)?(halbe\s+Stunde|30\s*Min\w*|Stunde|Std\.?|h\b)/gi;
+// „1,20 EUR für eine Stunde“, „0,50 € je angefangene ½ Stunde“, „2 Euro pro Stunde“ (ganze Euro nur mit Euro/EUR ausgeschrieben)
+const PARK_RE=/(?<![\d.,])(\d{1,2},\d{2}(?=\s*(?:€|Euro|EUR))|\d(?=\s*(?:€|Euro|EUR)\s*(?:\/|pro|je|für\s+eine)\s*Stunde))\s*(?:€|Euro|EUR)\s*(?:\/|pro|je|für\s+eine)\s*(angefangene[n]?\s+)?(halbe\s+Stunde|½\s*Stunde|30\s*Min\w*|Stunde|Std\.?|h\b)|(?<![\d.,])(\d{1,2},\d{2})\s*(?:€|Euro|EUR)\s*(in\s+der\s+ersten\s+Stunde)/gi;
 // Umgekehrte Reihenfolge („je angefangene Stunde 1,00 €“, „für jede weitere 30 Minuten 0,50 €“, „bis 1 Stunde 1,00 €“);
 // zwei Beträge hintereinander sind Spalten „bisher | neu“, dann gilt der zweite
-const PARK_RE2=/(?:je|pro|für jede|(?<![\d,.])1)\s+(?:weitere\s+|angefangene[n]?\s+)*(halbe\s+Stunde|30\s*Min\w*|Stunde)\s*:?\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)(?:\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR))?/gi;
+const PARK_RE2=/(?:je|pro|für jede|(?:in|für) de[nr] erste[n]?|(?<![\d,.])1)\s+(?:weitere\s+|angefangene[n]?\s+)*(halbe\s+Stunde|30\s*Min\w*|Stunden?)\s*(?:kosten\s*)?:?\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)(?:\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR))?/gi;
 const NOT_PARK_SENT=/\b(?:um|statt|bisher\w*|bislang|derzeit\w*|aktuell|bleibt bei|weiterhin|damit)\s*$|durchschnitt|im Mittel|mindestens|Vergleich|andere[nr]? (Städte|Kommunen)|Nachbar|Bewohner|Anwohner|Wohnmobil|Bus(se)?\b|Lkw|Fahrrad/i;
 export function parkFeeOf(title,text){
  const t=String(title||'');if(!PARK_TITLE.test(t)||NOT_PARK_TITLE.test(t))return null;
  const pick=src=>{let best=null;
   for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){if(s.length>1500||/[Vv]ergleich|Unterschied|Differenz/.test(s))continue;
+   // Alte Sätze: Bescheide und Änderungen früherer Jahre, „das bisherige Gebührensystem“
+   if(/\b(?:19\d\d|20[01]\d|202[0-3])\b/.test(s)||/\b(?:bisherige|derzeitige|geltende|alte)\w*\s+(?:Gebühr|Tarif|Satz|Sätze)/i.test(s))continue;
    // Tabellen mit vielen Sätzen ohne Zone oder Parkplatz sind meist Vergleiche mit Nachbarorten
    if([...s.matchAll(PARK_RE)].length>=4&&!/Zone|Tarif|Parkpl|Parkhaus|Tiefgarage|Parkdeck|Bereich/.test(s))continue;
-   for(const m of s.matchAll(PARK_RE)){const before=s.slice(Math.max(0,m.index-60),m.index),after=s.slice(m.index+m[0].length,m.index+m[0].length+40);
+   for(const m0 of s.matchAll(PARK_RE)){const m=m0[4]?[m0[0],m0[4],'',m0[5]]:m0;m.index=m0.index;const before=s.slice(Math.max(0,m.index-60),m.index),after=s.slice(m.index+m[0].length,m.index+m[0].length+40);
     if(NOT_PARK_SENT.test(before)||/^\s*(?:→|->|auf\s+\d)/.test(after)&&!/^\s*auf\s*$/.test(before.slice(-5)))continue;
     if(/^\s*(?:→|->)\s*\d/.test(after)||/\bvon\s*$/i.test(before)&&/^\s*auf\s*\d+,\d+\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)/i.test(after))continue;
     const to=/\bvon\s*(?:derzeit\s*|bislang\s*|bisher\s*)?$/i.test(before)&&after.match(/^\s*auf\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)/);
-    let v=Number((to?to[1]:m[1]).replace(',','.'));if(/halbe|30/i.test(m[3]))v*=2;if(!v||v>10)continue;
+    // Geltender Satz („Derzeit beträgt die Parkgebühr 2,00 € je Stunde“, Spalte „aktuell“) und Schätzungen („etwa 2 €“)
+    if(!to&&!/\bauf\s*$/i.test(before)&&(/\b(?:derzeit|zurzeit|aktuell|bisher|bislang)\b/i.test(s.slice(0,m.index))||/\b(?:etwa|ca\.|rund|circa)\s*$/i.test(before)))continue;
+    let v=Number((to?to[1]:m[1]).replace(',','.'));if(/halbe|½|30/i.test(m[3]))v*=2;if(!v||v>10)continue;
     best=Math.max(best||0,v);}
-   for(const m of s.matchAll(PARK_RE2)){if(NOT_PARK_SENT.test(s.slice(Math.max(0,m.index-60),m.index)))continue;
+   // Aufzählung der geltenden Sätze („derzeit folgende Gebühren erhoben: … je weitere 30 Minuten 0,50 €“) ist der alte Stand
+   for(const m of s.matchAll(PARK_RE2)){if(NOT_PARK_SENT.test(s.slice(Math.max(0,m.index-60),m.index))||/\b(derzeit|bisher|bislang|aktuell)\b[^.]{0,80}(erhoben|gelten|betragen)/i.test(s.slice(0,m.index)))continue;
     let v=Number((m[3]||m[2]).replace(',','.'));if(/halbe|30/i.test(m[1]))v*=2;if(v&&v<=10)best=Math.max(best||0,v);}
    if(best!==null)return best;}
   return best;};
