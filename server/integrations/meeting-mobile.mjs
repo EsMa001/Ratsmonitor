@@ -76,7 +76,7 @@ export function parseMmMeeting(html,base='https://example.invalid/'){
  return {committee,subject,kind,date,time,place,items,publicBlock:heads.some(h=>h.label==='öffentlich')};
 }
 // Items every meeting has; they carry no matter of their own.
-const ROUTINE=/^(?:eröffnung|begrüßung|genehmigung|feststellung|bekanntgaben?|mitteilungen?|anfragen|fragestunde|bürgerfragestunde|einwohnerfragestunde|verschiedenes|anregungen|niederschrift|protokoll|tagesordnung|wünsche|bürgerfrage|einwohnerfrage)\b/i;
+const ROUTINE=/^(?:eröffnung|begrüßung|genehmigung|feststellung|bekanntgaben?|mitteilung(?:en)?|anfragen|fragestunde|bürgerfragestunde|einwohnerfragestunde|verschiedenes|anregungen|niederschrift|protokoll|tagesordnung|wünsche|bürgerfrage|einwohnerfrage)\b/i;
 const routine=title=>ROUTINE.test(title)&&title.length<70;
 /** The reports of one meeting: a row per public item with a paper number or a paper; routine items are left out. */
 export function mmItems(parsed,meeting,source,now=new Date()){

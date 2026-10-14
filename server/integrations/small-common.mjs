@@ -14,7 +14,7 @@ const EXTRA={bdquo:'„',ldquo:'“',rdquo:'”',sbquo:'‚',lsquo:'‘',rsquo:'
 export const plain=html=>text(String(html).replace(/<br\s*\/?>/gi,' ').replace(/<\/p>/gi,' ').replace(/&(\w+);/g,(m,k)=>EXTRA[k]??m)).normalize('NFC').replace(/ /g,' ').replace(/\s+/g,' ').trim();
 export const clip=(value,max)=>value.length>max?value.slice(0,max).replace(/\s+\S*$/,'')+' …':value;
 /** Items every meeting has and that carry no matter of their own. */
-export const FORMAL=/^(?:eröffnung|begrüßung|feststellung|genehmigung|bekanntgaben?|mitteilungen?|anfragen?|anregungen?|verschiedenes|einwohner|bürgerfragestunde|fragestunde|fragen|niederschrift|protokoll|sitzungsniederschrift|kurzbericht|schließung|ende der sitzung|wünsche|tagesordnung|regularien|verpflichtung)/i;
+export const FORMAL=/^(?:eröffnung|begrüßung|feststellung|genehmigung|bekanntgaben?|mitteilung(?:en)?|anfragen?|anregung(?:en)?|verschiedenes|einwohner|bürgerfragestunde|fragestunde|fragen|niederschrift|protokoll|sitzungsniederschrift|kurzbericht|schließung|ende der sitzung|wünsche|tagesordnung|regularien|verpflichtung)/i;
 /** Status of an item from the resolution text of a past meeting. */
 export function resolutionStatus(result,committee){
  const decides=DECIDING_BODY.test(committee);

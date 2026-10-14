@@ -134,7 +134,7 @@ export function extraPages(html,source){
  for(const m of String(html).matchAll(/<a\s((?:[^>"']|"[^"]*"|'[^']*')*)>/gi)){
   if(!/(?:^|\s)menu-link(?:\s|$)/.test(attr(m[1],'class')))continue;
   const href=plain(decode(attr(m[1],'href')).replace(/^\.\//,'')),label=clean(attr(m[1],'data-link')),name=clean(attr(m[1],'data-name'));
-  const kind=/^ti_\d+__\d+_bv_\.php$/i.test(href)&&/^Sitzungsvorlagen$/i.test(label)?'papers':/^ti_\d+__\d+_bk_\.php$/i.test(href)&&/^(?:Archiv:?\s*)?Bekanntmachungen?\b/i.test(label)&&!/^Bekanntmachungen der /i.test(name)?'notices':null;
+  const kind=/^ti_\d+__\d+_bv_\.php$/i.test(href)&&/^Sitzungsvorlagen$/i.test(label)?'papers':/^ti_\d+__\d+_bk_\.php$/i.test(href)&&/^(?:Archiv:?\s*)?Bekanntmachung(?:en)?\b/i.test(label)&&!/^Bekanntmachungen der /i.test(name)?'notices':null;
   if(!kind)continue;
   let url;try{url=allowed(new URL('listen/'+href,source.base).href,source);}catch{continue;}
   const ended=`${name} ${label}`.match(/(?:\d{4}\s*[-–]\s*|\bbis\s+)(\d{4})\b/i)?.[1];
