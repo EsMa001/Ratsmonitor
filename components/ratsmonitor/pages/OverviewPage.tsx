@@ -14,8 +14,9 @@ export function OverviewPage({ active }: { active: boolean }) {
   const wasActive = useRef(active);
   const search = useSearch();
   const { saved, ready } = useAccount();
-  /* Links aus E-Mails: /?suche=<id> öffnet eine gespeicherte Suche mit allen Einstellungen, /?q=… startet eine Suche */
-  const fromMail = useRef<URLSearchParams | null>(typeof location === "undefined" ? null : new URLSearchParams(location.search));
+  /* Links aus E-Mails: /?suche=<id> öffnet eine gespeicherte Suche mit allen Einstellungen, /?q=… startet eine Suche.
+     Nur auf / und /suche: die Übersicht ist überall eingebunden, andere Seiten lesen ?q= selbst (Atlas, „Link kopieren“) */
+  const fromMail = useRef<URLSearchParams | null>(typeof location === "undefined" || !["/", "/suche"].includes(location.pathname) ? null : new URLSearchParams(location.search));
   useEffect(() => {
     const p = fromMail.current;
     if (!p || (!p.get("suche") && !p.get("q")) || (p.get("suche") && !ready)) return;

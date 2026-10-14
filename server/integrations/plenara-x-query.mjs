@@ -183,7 +183,9 @@ const pct1=v=>Math.round(v*1000)/10;
 /** Ort im Vergleich: nur mit genau einem Gebiet als Ort und ohne Suchbegriff (eine freie Suche hat keine Vergleichsgruppe) */
 async function xCompare(db,catalog,x,params,opts={}){
  const area=params.get('area')||'';if(!area||x.f.q||x.sub||x.stage)return null;
- const place=catalog.find(r=>r.ags===area&&!r.members)||catalog.find(r=>r.ags===area);if(!place)return null;
+ /* Kreisfreie Stadt: die Suche nennt sie mit dem Kreisschlüssel (05515), der Katalog mit dem Gemeindeschlüssel (05515000);
+    gibt es kein Gebiet mit dem 5-stelligen Schlüssel, ist die Stadt selbst gemeint (wie ownCity in monitor-search.mjs) */
+ const place=catalog.find(r=>r.ags===area&&!r.members)||catalog.find(r=>r.ags===area)||(area.length===5?catalog.find(r=>r.ags===area+'000'):null);if(!place)return null;
  const w=windowOf(params.get('today')?new Date(params.get('today')):undefined);
  const [b,parts]=await Promise.all([winBase(db,w),winParts(db,w,x.theme)]);
  const own=b.get(place.id)||{n:0,m:0};
