@@ -31,6 +31,8 @@ const Meter=({label,v,min}:{label:string;v:number|null;min:number})=><div classN
  <div className="flex justify-between text-[12px] text-slate-500"><span>{label}</span><span className={'tabular-nums '+(v===null?'':v<min?'text-amber-700':'text-slate-900')}>{v===null?'–':v+' %'}</span></div>
  <div className="relative mt-1 h-1.5 rounded-full bg-slate-100">{v!==null&&<span className={'block h-1.5 rounded-full '+(v<min?'bg-amber-500':'bg-teal-600')} style={{width:v+'%'}}/>}<span className="absolute -top-0.5 h-2.5 w-px bg-slate-400" style={{left:min+'%'}}/></div>
 </div>;
+/* Thema je Fakt wie im Atlas (ATLAS_FACTS in server/integrations/plenara-x-query.mjs) */
+const FACT_THEME:Record<string,string>={plan:'bauen',plan_use:'bauen',housing:'bauen',hebesatz:'finanzen',annual_result:'finanzen',heat_plan:'umwelt',fee_rate:'umwelt',ee_power:'umwelt',grant:'soziales',kita_fee:'bildung',kita_places:'bildung',park_fee:'mobilitaet',land_price:'wirtschaft'};
 const shortDate=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4);
 const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:string;name:string})=>[t.id,t.name])),unklar:'Ohne Thema (noch nicht eingeordnet)'};
 const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:a/b<.01?2:a/b<.1?1:0})+' %':'–';
@@ -124,9 +126,8 @@ export function AdminRuleTexts(){
   <section id="regeltexte-qualitaet" className="admin-section">
    <div className="admin-section-heading"><h2>Qualität der Regeln</h2></div>
    <p className="admin-note">Zuletzt gemessen an frischen Stichproben vom Server, von Hand eingetragen (shared/rule-quality.json). Qualität: von dem, was die Regel liefert, ist richtig. Abdeckung: von dem, was einen Wert haben sollte, bekommt ihn. Ziel: Qualität über {QT.quality} %, Abdeckung ab {QT.coverage} %. Im Atlas erscheinen Werte erst ab {QT.quality} %.</p>
-   {QUALITY.groups.map(g=><div key={g.id} className="mt-8">
-    <h3>{g.name}</h3>
-    <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{(g.rows as QualityRow[]).map(r=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+   {QUALITY.groups.map(g=>{
+    const row=(r:QualityRow)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>
        {g.id==='facts'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(r.gate?'bg-teal-50 text-teal-700':'bg-slate-100 text-slate-500')}>{r.gate?'im Atlas':'gesperrt'}</span>}</div>
@@ -134,8 +135,15 @@ export function AdminRuleTexts(){
      </div>
      <Meter label="Qualität" v={r.quality} min={QT.quality}/>
      <Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>
-    </li>)}</ul>
-   </div>)}
+    </li>;
+    const list=(rows:QualityRow[])=><ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{rows.map(row)}</ul>;
+    const rows=g.rows as QualityRow[];
+    /* Fakten nach dem Thema, unter dem sie im Atlas stehen; Fraktion und Förderung gelten für alle Themen */
+    const parts=g.id!=='facts'?null:[...THEMES.map((t:{id:string;name:string})=>[t.name,rows.filter(r=>FACT_THEME[r.id]===t.id)] as [string,QualityRow[]]),['Alle Themen',rows.filter(r=>!FACT_THEME[r.id])] as [string,QualityRow[]]].filter(([,x])=>x.length);
+    return <div key={g.id} className="mt-8">
+     <h3>{g.name}</h3>
+     {parts?parts.map(([name,x])=><div key={name} className="mt-5"><h4 className="mb-1 text-[13px] font-medium uppercase tracking-wide text-slate-500">{name}</h4>{list(x)}</div>):list(rows)}
+    </div>;})}
   </section>
  </>;
 }
