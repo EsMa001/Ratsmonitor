@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v23';
+export const FACTS_VERSION='facts-v24';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -481,14 +481,16 @@ const RATE_NUM=String.raw`(\d\.\d{3}|\d{3,4})`;
 const NOT_RATE=/Änderungsantrag|abgelehnt|gefordert|fordert|aufkommensneutral|Nivellierung|Kommunalaufsicht|Aufsichtsbehörde|mindestens|Mindest|Durchschnitt|Vergleich|fiktiv|Spanne|zwischen|empfohl|Empfehlung|Orientierung|Nichtwohn|Wohngrundst|unbebaut|differenziert|Grundsteuer\s*C|Umlage|Landkreis|Nachbar|Kommunen|Gemeinden|Städte/i;
 const TAX_RANGE={'Grundsteuer A':[100,3000],'Grundsteuer B':[100,3000],Gewerbesteuer:[200,1000]};
 const rateNum=x=>Number(String(x).replace('.',''));
-function ratesIn(seg){
+function ratesIn(seg,unitless=false){
  const R=(p,f)=>{const m=seg.match(new RegExp(p,'i'));return m?f(m):null;};
  return R(String.raw`von\s+(?:derzeit\s+|bisher\s+|zuletzt\s+|zuvor\s+)?`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`?\s+(?:um\s+[\d,]+\s*%?\s*)?auf\s+`+RATE_NUM,m=>({from:m[1],to:m[2]}))
   ||R(RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`\s*\(?\s*(?:bisher|vorher|derzeit|alt|vom bisherigen Hebesatz mit)\s*:?\s*`+RATE_NUM,m=>({from:m[2],to:m[1]}))
   ||R(String.raw`auf\s+`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`\s+(?:vom\s+)?(?:bisherigen Hebesatz mit|bisher)\s+`+RATE_NUM,m=>({from:m[2],to:m[1]}))
   ||R(String.raw`^\W{0,3}`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`\s+`+RATE_NUM+String.raw`\s*`+RATE_UNIT+String.raw`(?!\s*\d)`,m=>({from:m[1],to:m[2]}))
   ||R(String.raw`auf\s+`+RATE_NUM+String.raw`\s*`+RATE_UNIT,m=>({from:'',to:m[1],set:true}))
-  ||R(String.raw`(?:beträgt|betragen|von|mit|in Höhe von|:|^\W{0,3})\s*`+RATE_NUM+String.raw`\s*`+RATE_UNIT,m=>({from:'',to:m[1]}));
+  ||R(String.raw`(?:beträgt|betragen|von|mit|in Höhe von|liegt\s+(?:\w+\s+)?bei|:|^\W{0,3})\s*`+RATE_NUM+String.raw`\s*`+RATE_UNIT,m=>({from:'',to:m[1]}))
+  // Satzung mit der Einheit im Kopf („Hebesätze für Realsteuern v. H. … (Grundsteuer A) auf 400“)
+  ||(unitless?R(String.raw`^\W{0,3}auf\s+`+RATE_NUM+String.raw`(?![\d.,]|\s*(?:€|Euro|EUR|m))`,m=>({from:'',to:m[1],set:true})):null);
 }
 /** [{tax, from, to}] (Zahlen als Text, from '' wenn nicht genannt) oder [] */
 export function hebesatzOf(title,text){
@@ -497,12 +499,17 @@ export function hebesatzOf(title,text){
  if(!TAX_TITLE.test(t)||/Grundsteuer\s*C\b/.test(t)&&!/Grundsteuer\s*[AB]\b|Gewerbesteuer/.test(t)||/Brief|Petition|Anfrage|Beantwortung|Anregung|Einwohnerantrag/i.test(t))return [];
  const budget=/Haushalt/i.test(t),out=new Map();
  const scan=(src,prio)=>{
-  for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){
-   if(s.length>500||NOT_RATE.test(s)||budget&&!/Hebes/i.test(s))continue;
+  // „v.H.“ vor der nächsten Steuerart ist kein Satzende; Satzungen ohne Satzzeichen je Paragraf („§ 4 Steuersätze …“) („Grundsteuer B auf 650 v.H. Gewerbesteuer auf 400 v.H.“)
+  for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bv\.\s?H\.(?=\s+(?:Grundsteuer|Gewerbesteuer))/g,'v.H').split(SENTENCE).flatMap(x=>x.split(/\s(?=§\s?\d+\s)/))){
+   if(s.length>(budget?900:500)||NOT_RATE.test(s)||budget&&!/Hebes|Steuers[aä]tze|Realsteuer/i.test(s))continue;
    const marks=TAXES.flatMap(([tax,re])=>[...s.matchAll(re)].map(m=>({tax,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
+   // „Grundsteuer A und B von 350 auf 475 v.H.“: A bekommt den Abschnitt von B
+   const both=/Grundsteuer\s*A\s*(?:und|sowie|,)\s*B\b/.exec(s);if(both&&!marks.some(x=>x.tax==='Grundsteuer B')){marks.push({tax:'Grundsteuer B',at:both.index+both[0].length});marks.sort((a,b)=>a.at-b.at);}
+   const unitless=/Hebes/i.test(s)&&new RegExp(RATE_UNIT).test(s);
    marks.forEach((m,i)=>{
-    const seg=s.slice(m.at,Math.min(m.at+180,marks[i+1]?marks[i+1].at-14:s.length)).replace(/^\s*(\(.{0,60}?\)|für\s+\S+(\s+\S+)?\s+Grundstücke)?/,'');
-    const r=ratesIn(seg);if(!r)return;
+    if(both&&m.tax==='Grundsteuer A'&&m.at<=both.index+both[0].length)m={...m,at:both.index+both[0].length};
+    const seg=s.slice(m.at,Math.min(m.at+180,marks[i+1]&&marks[i+1].at>m.at?marks[i+1].at-14:s.length)).replace(/^\s*(\(.{0,60}?\)|für\s+\S+(\s+\S+)?\s+Grundstücke)?/,'');
+    const r=ratesIn(seg,unitless);if(!r)return;
     const eff=prio+(r.from?0.5:r.set?0.25:0);if(out.has(m.tax)&&out.get(m.tax).prio>=eff)return;
     const [lo,hi]=TAX_RANGE[m.tax],to=rateNum(r.to),from=r.from?rateNum(r.from):0;
     if(to<lo||to>hi||from&&(from<lo||from>hi||from===to))return;
@@ -527,17 +534,24 @@ const FEE_KINDS=[
 ];
 // Ohne Art im Satz („Die Verbrauchsgebühr beträgt …“) gilt die einzige Art, die der Titel nennt
 const FEE_GENERIC=/Verbrauchsgebühr|Mengengebühr|Gebührensatz|Benutzungsgebühr|Arbeitspreis/gi;
+// Ohne Art im Satz und im Titel („Die Gebühr beträgt 1,69 € pro m³“): Art aus Einheit und Gegenstand des Titels, m² ist
+// Niederschlagswasser, m³ Schmutzwasser (Abwasser, Entwässerung, Kanal) oder Trinkwasser (Wasserversorgung)
+const FEE_ANY=/(?<!Grund|Zähler|Bereitstellungs|Verwaltungs)(?:Gebühr(?:ensatz)?|Gebühren)\b/gi;
+const SEWER_TITLE=/Abwasser|Entwässerung|Kanal|Schmutzwasser|Niederschlag|Klär/i,WATER_TITLE=/Wasserversorgung|Wasser(?:verbrauch|bezug|lieferung)|Trinkwasser|Wassergebühr|Wasserpreis/i;
 const FEE_NUM=String.raw`(\d{1,2},\d{2,4})`;
 const FEE_UNIT=String.raw`\s*(?:€|Euro|EUR)?\s*(?:\(?(?:netto|brutto)\)?\s*)?(?:/|je|pro)\s*(m³|m3|Kubikmeter|cbm|m²|m2|Quadratmeter|qm)`;
-const NOT_FEE=/Beitr[aä]g|Gruben|Kleinkläranlage|abflusslos|dezentral|Fäkal|Sammelgrube|Grundstücksentwässerungsanlage|Vergleich|Spanne|zwischen|Durchschnitt|Landkreis|Kommunen|Gemeinden|Städte|Wassercent|Entnahmeentgelt|Lippeverband|Emschergenossenschaft|\bLV\b|Verbandsumlage|Umsatzsteuer von|Zuschlag|Gewinn|Abweichung|Differenz/i;
+const NOT_FEE=/Beitr[aä]g|Gruben|Kleinkläranlage|abflusslos|dezentral|Fäkal|Sammelgrube|Grundstücksentwässerungsanlage|Vergleich|Spanne|zwischen|Durchschnitt|Landkreis|Kommunen|Gemeinden|Städte|Wassercent|Entnahmeentgelt|Lippeverband|Emschergenossenschaft|\bLV\b|Verbandsumlage|Umsatzsteuer von|Zuschlag|Gewinn|Abweichung|Differenz|den (?:höchsten|niedrigsten)/i;
 const FEE_RANGE={Schmutzwasser:[0.3,12],Trinkwasser:[0.3,9],Niederschlagswasser:[0.05,6]};
 const unitOf=u=>/²|2$|Quadrat|qm/.test(u)?'m²':'m³';
 const feeNum=x=>Number(x.replace(',','.'));
-function feeIn(seg){
+function feeIn(seg,noPair=false,newFirst=false){
  const R=(p,f)=>{const m=seg.match(new RegExp(p,'i'));return m?f(m):null;};
  return R(String.raw`von\s+(?:derzeit\s+|bisher\s+|zuletzt\s+)?(?:\(?brutto\)?\s*)?`+FEE_NUM+String.raw`(?:\s*(?:€|Euro|EUR))?(?:`+FEE_UNIT+String.raw`)?\s*(?:\(?(?:netto|brutto)\)?\s*)?auf\s+(?:\(?(?:netto|brutto)\)?\s*)?`+FEE_NUM+String.raw`(?:\s*(?:€|Euro|EUR))?(?:`+FEE_UNIT+')?',m=>({from:m[1],to:m[3],unit:m[4]||m[2]||''}))
   ||R(FEE_NUM+FEE_UNIT+String.raw`\s*\(?\s*(?:bisher|bislang|vorher|derzeit|VJ|Vorjahr|alt)\s*:?\s*`+FEE_NUM,m=>({from:m[3],to:m[1],unit:m[2]}))
   ||R(String.raw`auf\s+`+FEE_NUM+FEE_UNIT,m=>({from:'',to:m[1],unit:m[2],set:true}))
+  // Tabelle mit zwei Spalten („2025 2026“, „Alt Neu“): „4,89 €/m³ 4,52 €/m³“ ist bisher und neu
+  // (nur genau zwei Werte, nicht „netto brutto“)
+  ||(noPair?null:R(String.raw`(?<!um\s|(?:m³|m3|m²|m2|cbm|qm)\s*)`+FEE_NUM+FEE_UNIT+String.raw`\s*`+FEE_NUM+FEE_UNIT+String.raw`(?!\s*\d)`,m=>newFirst?{from:m[3],to:m[1],unit:m[2]}:{from:m[1],to:m[3],unit:m[4]}))
   ||R(String.raw`(?<!um\s)`+FEE_NUM+FEE_UNIT,m=>({from:'',to:m[1],unit:m[2]}));
 }
 /** [{kind, from, to, unit}] (Euro mit Komma als Text, from '' wenn nicht genannt) oder [] */
@@ -546,16 +560,18 @@ export function feeRateOf(title,text){
  // Nachkalkulationen nennen den kostendeckenden Satz eines vergangenen Jahres, nicht die erhobene Gebühr
  if(!FEE_TITLE.test(t)||/Nachkalkulation|Betriebsabrechnung|Ergebnis|Kita|Kinder|Friedhof|Bestattung|Abfall|Müll|Parken|Markt|Sondernutzung|Obdach|Unterkunft|Musikschule|Bücherei/i.test(t))return [];
  const out=new Map(),named=FEE_KINDS.filter(([,re])=>t.match(re)),only=named.length===1?named[0][0]:null;
+ const sewer=SEWER_TITLE.test(t),water=WATER_TITLE.test(t);
  const scan=(src,prio)=>{
   for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){
    if(s.length>600||NOT_FEE.test(s))continue;
    // „… €/m³ Frischwasser“ nennt den Maßstab, nicht die Gebührenart
-   const marks=[...FEE_KINDS,...(only?[[only,FEE_GENERIC]]:[])].flatMap(([kind,re])=>[...s.matchAll(re)].filter(m=>!/(m³|m3|Kubikmeter)\s*$/.test(s.slice(Math.max(0,m.index-12),m.index))).map(m=>({kind,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
+   const marks=[...FEE_KINDS,...(only?[[only,FEE_GENERIC]]:[]),...(!only&&!FEE_KINDS.some(([,re])=>s.search(re)>=0)&&(sewer||water)?[['?',FEE_ANY]]:[])].flatMap(([kind,re])=>[...s.matchAll(re)].filter(m=>!/(m³|m3|Kubikmeter)\s*$/.test(s.slice(Math.max(0,m.index-12),m.index))).map(m=>({kind,at:m.index+m[0].length}))).sort((a,b)=>a.at-b.at);
    marks.forEach((m,i)=>{
-    const r=feeIn(s.slice(m.at,Math.min(m.at+160,marks[i+1]?.at??s.length)));if(!r||!r.unit)return;
+    const r=feeIn(s.slice(m.at,Math.min(m.at+160,marks[i+1]?.at??s.length)),/brutto|Variante|Alternative/i.test(s),/\bneu\w*\s+(?:\S+\s+){0,2}(?:bisherig|alt)/i.test(s));if(!r||!r.unit)return;
     // Vorrang: Beschlussvorschlag, dann Änderung mit „bisher“, dann neu gesetzter Satz („auf 1,42 €“), dann bloße Nennung
     const eff=prio+(r.from?0.5:r.set?0.25:0);if(out.has(m.kind)&&out.get(m.kind).prio>=eff)return;
-    const unit=unitOf(r.unit);if((m.kind==='Niederschlagswasser')!==(unit==='m²'))return;
+    const unit=unitOf(r.unit),kind=m.kind!=='?'?m.kind:unit==='m²'?(sewer?'Niederschlagswasser':null):sewer&&!water?'Schmutzwasser':water&&!sewer?'Trinkwasser':null;
+    if(!kind)return;m={...m,kind};if((m.kind==='Niederschlagswasser')!==(unit==='m²'))return;
     const [lo,hi]=FEE_RANGE[m.kind],to=feeNum(r.to),from=r.from?feeNum(r.from):0;
     if(to<lo||to>hi||from&&(from<lo||from>hi||from===to||Math.abs(to/from-1)>1))return;
     out.set(m.kind,{kind:m.kind,from:from?String(from):'',to:String(to),unit,prio:eff});

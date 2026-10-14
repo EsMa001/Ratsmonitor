@@ -240,3 +240,16 @@ test('price of commercial land per m², not land values or buy-back prices',()=>
  assert.equal(landPriceOf('Verkauf Gewerbegrundstück','Der Bodenrichtwert liegt bei 85,00 Euro/qm.'),null);
  assert.equal(landPriceOf('Vergabekriterien für Gewerbegrundstücke','Preis von 60 €/m².'),null);
 });
+
+test('Hebesätze in Haushaltssatzungen ohne Satzzeichen und für Grundsteuer A und B',()=>{
+ assert.deepEqual(hebesatzOf('Haushaltssatzung 2026','§ 3 Kassenkredite 3.000.000 € § 4 Steuersätze Die Steuersätze für die Gemeindesteuern werden wie folgt festgesetzt: Grundsteuer A auf 405 v.H. Grundsteuer B auf 650 v.H. Gewerbesteuer auf 400 v.H. Die Hundesteuer beträgt 60 Euro.').map(x=>x.to),['405','650','400']);
+ assert.deepEqual(hebesatzOf('Nachtragshaushaltssatzung','Es wurde beschlossen, die Hebesätze für die Grundsteuer A und B von 350 v.H. auf 475 v.H. anzuheben.').map(x=>x.tax+x.to),['Grundsteuer A475','Grundsteuer B475']);
+ assert.deepEqual(hebesatzOf('Haushaltssatzung','Hebesätze für Realsteuern v. H. 1. a) (Grundsteuer A) auf 400 b) (Grundsteuer B) auf 360 2. Gewerbesteuer auf 400 § 6 Stellen').map(x=>x.to),['400','360','400']);
+});
+
+test('Gebührensätze: Art aus Einheit und Titel, Tabellen bisher/neu',()=>{
+ assert.deepEqual(feeRateOf('Neufassung der Satzung über Benutzungsgebühren für die Wasserversorgung','Der neue Gebührensatz von 1,29 € je cbm Wasser gilt ab 2026.').map(x=>x.kind+x.to),['Trinkwasser1.29']);
+ assert.deepEqual(feeRateOf('Änderung der Gebührensatzung zur Entwässerungssatzung','Hieraus errechnet sich eine Gebühr in Höhe von 0,36 €/m² (Vorjahr 0,32 €/m²).').map(x=>x.kind+x.to+'|'+x.from),['Niederschlagswasser0.36|0.32']);
+ assert.deepEqual(feeRateOf('Siebte Änderung der Abwassersatzung','Die Sätze ändern sich: bis 2025 2026 bis 2028 Schmutzwassergebühr 3,15 €/m³ 2,80 €/m³ Grundgebühr 8,00 €/Monat.').map(x=>x.to+'|'+x.from),['2.8|3.15']);
+ assert.deepEqual(feeRateOf('Neukalkulation der Wasserverbrauchsgebühren','Festgesetzt: netto brutto Wasserverbrauchsgebühr 3,00 €/m³ 3,21 €/m³.').map(x=>x.to),['3']);
+});

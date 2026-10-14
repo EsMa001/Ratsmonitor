@@ -133,7 +133,7 @@ export function AdminRuleTexts(){
   </section>
   <section id="regeltexte-qualitaet" className="admin-section">
    <div className="admin-section-heading"><h2>Qualität der Regeln</h2></div>
-   <p className="admin-note">Zuletzt gemessen an frischen Stichproben vom Server, von Hand eingetragen (shared/rule-quality.json). Qualität: von dem, was die Regel liefert, ist richtig. Abdeckung: von dem, was einen Wert haben sollte, bekommt ihn; bei Fakten der Anteil der Gemeinden in Deutschland mit mindestens einem Wert (aus dem letzten Lauf). Ziel: Qualität über {QT.quality} %, Abdeckung ab {QT.coverage} %. Im Atlas erscheinen Werte erst ab {QT.quality} %.</p>
+   <p className="admin-note">Zuletzt gemessen an frischen Stichproben vom Server, von Hand eingetragen (shared/rule-quality.json). Qualität: von dem, was die Regel liefert, ist richtig. Abdeckung: von dem, was einen Wert haben sollte, bekommt ihn; bei Fakten der Anteil der Gemeinden in Deutschland mit mindestens einem Wert (aus dem letzten Lauf), bei der Zusammenfassung der Anteil der Artikel mit Dokument, die eine haben (gezählt). Ziel: Qualität über {QT.quality} %, Abdeckung ab {QT.coverage} %. Im Atlas erscheinen Werte erst ab {QT.quality} %.</p>
    {QUALITY.groups.map(g=>{
     const row=(r:QualityRow)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
@@ -142,7 +142,7 @@ export function AdminRuleTexts(){
       <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),g.id==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
      </div>
      <Meter label="Qualität" v={r.quality} min={QT.quality}/>
-     {g.id==='facts'&&xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={QT.coverage}/>:NO_COVERAGE.has(r.id)?<div/>:<Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>}
+     {g.id==='facts'&&xs?.factPlaces?<Meter label="Gemeinden" v={Math.round(1000*(xs.factPlaces.places[r.id]||0)/xs.factPlaces.total)/10} min={QT.coverage}/>:r.id==='summary'&&c&&docs?<Meter label="Abdeckung" v={Math.round(100*(ai+rule)/docs)} min={QT.coverage}/>:NO_COVERAGE.has(r.id)?<div/>:<Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>}
     </li>;
     const list=(rows:QualityRow[])=><ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{rows.map(row)}</ul>;
     const rows=g.rows as QualityRow[];
