@@ -156,8 +156,6 @@ export function SignalePage() {
       {loading && !res && <Laden text="Signale werden geladen …" />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
-          <h2 className="mt-8 text-[22px] font-semibold">{res.signal.name}</h2>
-          <p className="mt-1 text-[14px] text-slate-500">Für {res.signal.who}.</p>
 
           {res.signal.art && (res.arts ?? []).length > 0 && (
             <section className="mt-8" aria-label={res.signal.art}>
