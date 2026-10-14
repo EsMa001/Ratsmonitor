@@ -3,7 +3,7 @@
 @layer base {
 
 
-.skip-link{position:absolute;top:-80px;left:20px;background:var(--rm-white,#fff);color:#0d9488;padding:12px;z-index:100}.skip-link:focus{top:10px}
+.skip-link{position:absolute;top:-80px;left:20px;background:var(--rm-white,#fff);color:var(--rm-ac,#0f766e);padding:12px;z-index:100}.skip-link:focus{top:10px}
 
 
 

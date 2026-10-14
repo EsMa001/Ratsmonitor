@@ -416,7 +416,7 @@ html.rm-dark .ri::before,html.rm-dark body::before{background-image:radial-gradi
 html:not(.rm-search) .ri{background:transparent}
 
 /* Fußleiste der Startseite in Akzentfarbe */
-footer.pl-footer-accent{background:#0d9488 !important;border-color:#0f766e}
+footer.pl-footer-accent{background:#0f766e !important;border-color:#115e59}
 .pl-footer-accent,.pl-footer-accent *{color:#fff !important;border-color:rgba(255,255,255,.25) !important}
 .pl-footer-accent a:hover{text-decoration:underline}
 
@@ -425,7 +425,8 @@ html.rm-dark .pl-footer-accent,html.rm-dark .pl-footer-accent *{border-color:rgb
 html.rm-dark footer.pl-footer-accent{border-top-color:#0d9488 !important}
 
 /* Startknopf der Startseite im Dark Mode in Akzentfarbe */
-html.rm-dark .pl-cta{background:#0d9488 !important;color:#fff !important}
+html.rm-dark .pl-cta{background:#0f766e !important;color:#fff !important}
+html.rm-dark .ri-bid__label{color:#5eead4}
 
 /* Anwenderseiten auf dem Handy kompakter: weniger Weißraum zwischen Abschnitten und Kacheln */
 @media (max-width:640px){

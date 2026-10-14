@@ -65,7 +65,7 @@ body .font-semibold{font-weight:500}
 body .font-medium{font-weight:400}
 body h1,body h2,body h3{font-weight:600}
 /* Nur ein Schwarz, ein Grau und ein Petrol (Teal-600) für Text und Akzente; die Karte zeichnet eigene Farben */
-.ratsmonitor{--color-slate-400:#64748b;--color-slate-500:#64748b;--color-slate-600:#64748b;--color-slate-700:#64748b;--color-slate-800:#64748b;--color-slate-900:#0f172a;--color-slate-950:#0f172a;--color-teal-500:#0d9488;--color-teal-600:#0d9488;--color-teal-700:#0d9488;--color-teal-800:#0d9488;--color-teal-900:#0d9488}
+.ratsmonitor{--color-slate-400:#64748b;--color-slate-500:#64748b;--color-slate-600:#64748b;--color-slate-700:#64748b;--color-slate-800:#64748b;--color-slate-900:#0f172a;--color-slate-950:#0f172a;--color-teal-500:#0d9488;--color-teal-600:#0d9488;--color-teal-700:#0f766e;--color-teal-800:#115e59;--color-teal-900:#134e4a}
 /* Startseite ohne Kacheln (Variante zum Ausprobieren): weißer Hintergrund, Bereiche nur durch Linien getrennt.
    Zum Zurücknehmen die Klasse rm-flat in OverviewPage.tsx entfernen. */
 .rm-flat>section,.rm-flat .card-shell{border-radius:0;border-width:0;box-shadow:none}
@@ -152,10 +152,12 @@ html.rm-dark article h3 a,html.rm-dark h3 a.text-slate-900{color:#e2e8f0!importa
 html.rm-dark article p>span{color:#b6c0d0!important}html.rm-dark article p>span mark,html.rm-dark article mark{color:#e2e8f0}
 :root{--rm-page:#fff;--rm-rose:#be123c;--rm-link:#2352ad;--rm-warn:#8a5a00;--rm-ac:#0f766e;--rm-tint:#e6f3f1;--rm-tint2:#c4e5e0;--rm-c900:#0f172a;--rm-c800:#1e293b;--rm-c700:#334155;--rm-c600:#475569;--rm-c500:#64748b;--rm-c400:#94a3b8;--rm-c300:#cbd5e1;--rm-c200:#e2e8f0;--rm-c100:#f1f5f9;--rm-c50:#f8fafc;--rm-white:#fff}
 html.rm-dark{--rm-page:#0e1523;--rm-rose:#fb7185;--rm-link:#8ab4ff;--rm-warn:#fbbf24;--rm-ac:#5eead4;--rm-tint:#0f2a2c;--rm-tint2:#15504e;--rm-c900:#e2e8f0;--rm-c800:#d5dce8;--rm-c700:#c3ccda;--rm-c600:#b6c0d0;--rm-c500:#9aa6b9;--rm-c400:#8a96ab;--rm-c300:#37445f;--rm-c200:#27324a;--rm-c100:#1a2335;--rm-c50:#121a29;--rm-white:#131b2b}
-html.rm-dark .ratsmonitor{--color-slate-400:#8a96ab;--color-slate-500:#9aa6b9;--color-slate-600:#b6c0d0;--color-slate-700:#c3ccda;--color-slate-800:#d5dce8;--color-slate-900:#e2e8f0;--color-slate-950:#e6ebf2;--color-teal-500:#14b8a6;--color-teal-600:#0d9488;--color-teal-700:#0d9488;--color-teal-800:#5eead4;--color-teal-900:#99f6e4}
+html.rm-dark .ratsmonitor{--color-slate-400:#8a96ab;--color-slate-500:#9aa6b9;--color-slate-600:#b6c0d0;--color-slate-700:#c3ccda;--color-slate-800:#d5dce8;--color-slate-900:#e2e8f0;--color-slate-950:#e6ebf2;--color-teal-500:#14b8a6;--color-teal-600:#0d9488;--color-teal-700:#14b8a6;--color-teal-800:#5eead4;--color-teal-900:#99f6e4}
 html.rm-dark .ri-btn--dark{color:#0e1523}html.rm-dark .ri-btn--dark:hover{background:#fff}
-html.rm-dark .btn-primary,html.rm-dark .ri-btn--dark{background:#0d9488;color:#fff}
-html.rm-dark .btn-primary:hover,html.rm-dark .ri-btn--dark:hover{background:#0f766e;opacity:1}
+html.rm-dark .btn-primary,html.rm-dark .ri-btn--dark{background:#0f766e;color:#fff}
+html.rm-dark .btn-primary:hover,html.rm-dark .ri-btn--dark:hover{background:#115e59;opacity:1}
+/* Zähler und Abzeichen (bg-teal-700, weiße Schrift): im dunklen Modus ist teal-700 die helle Schriftfarbe, die Fläche bleibt dunkel */
+html.rm-dark .ratsmonitor .bg-teal-700{background-color:#0f766e}
 html.rm-dark{--color-rose-700:#fb7185;--color-red-600:#f87171;--color-red-700:#fca5a5;--color-amber-700:#fbbf24;--color-amber-800:#fcd34d;--color-rose-50:#2a1520;--color-red-50:#2a1520;--color-amber-50:#2a2110;--color-amber-100:#3a2e12}
 html.rm-dark .ratsmonitor{--color-rose-700:#fb7185;--color-red-700:#fca5a5}
 html.rm-dark .text-white{color:#fff}html.rm-dark .bg-slate-900{background-color:#0d9488}html.rm-dark .bg-slate-900:hover,html.rm-dark .hover\:bg-slate-800:hover{background-color:#0f766e}
