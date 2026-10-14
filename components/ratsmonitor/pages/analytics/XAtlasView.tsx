@@ -20,7 +20,7 @@ interface Item { id: string; title: string; region: string; date: string; status
 interface CompareRow { key: string; name: string; k: number; share: number; q1: number; median: number; q3: number; ratio: number | null; class: "mehr" | "weniger" | "ueblich" | null }
 interface Compare { region: string; from: string; to: string; n: number; months: number; insufficient?: "items" | "months" | "group"; rule: { minItems: number; minMonths: number; minTopic: number }; group?: { label: string; n: number }; rows?: CompareRow[] }
 interface Result { selection: { theme: string; sub: string; stage: string; q: string }; total: number; unread: number; parts: Row[]; stages: Row[]; months: Row[]; regions: Row[]; recent: Item[]; compare: Compare | null; facts: Fact[] }
-interface Fact { kind: string; name: string; sum: { kind: string; name: string } | null; rows: (Row & { sum?: number; median?: { median: number; unit: string; n: number } })[]; map: { key: string; n: number; v: Record<string, { n: number; median: number; unit: string }> }[] }
+interface Fact { kind: string; name: string; sum: { kind: string; name: string } | null; rows: (Row & { sum?: number; median?: { median: number; unit: string; n: number } })[]; map: { key: string; ags?: string; n: number; v: Record<string, { n: number; median: number; unit: string }> }[] }
 
 const n = (v: number) => v.toLocaleString("de-DE");
 const num = (v: number) => v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 });
@@ -91,9 +91,10 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
     const fact = facts.find((f) => f.kind === kind);
     const unit = metricOn && fact ? fact.map.find((m) => m.v[metricOn])?.v[metricOn].unit ?? "" : "";
     /* Wert je Gebiet (Schlüssel des Katalogs) */
-    const val = new Map<string, number>();
+    const val = new Map<string, number>(), memberVal: [string, string, number][] = [];
     if (!fact) for (const r of regions) val.set(r.key, r.count);
-    else for (const m of fact.map) { const x = metricOn ? m.v[metricOn]?.median : m.n; if (x !== undefined) val.set(m.key, x); }
+    /* Einträge mit ags gehören zu einer genannten Mitgliedsgemeinde eines Verbands und färben nur sie */
+    else for (const m of fact.map) { const x = metricOn ? m.v[metricOn]?.median : m.n; if (x === undefined) continue; if (m.ags) memberVal.push([m.key, m.ags, x]); else val.set(m.key, x); }
     const rowOf = new Map(regions.map((r) => [r.key, r]));
     /* Fläche (Gemeinde- oder Kreisschlüssel) → Wert, Name, Katalog-Schlüssel */
     const area = new Map<string, { v: number; name: string; key: string; count: number; share: number | null; base: number }>();
@@ -108,6 +109,7 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
         const own = r.ags?.length === 8 ? [r.ags] : [];
         for (const a of [...own, ...(r.members ?? []).filter((m) => m.length === 8)]) if (!area.has(a) || own.includes(a)) area.set(a, { v, name: r.name, key: r.key, count: r.count, share: r.share, base: r.base });
       }
+      for (const [k, a, v] of memberVal) { const r = rowOf.get(k); if (r && a.length === 8) area.set(a, { v, name: `${r.name}: Mitgliedsgemeinde`, key: r.key, count: r.count, share: r.share, base: r.base }); }
     }
     const vs = [...area.values()].map((x) => x.v);
     let cut: number[] = [], legend = ["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"];

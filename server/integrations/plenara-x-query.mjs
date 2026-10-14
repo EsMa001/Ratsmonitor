@@ -44,7 +44,7 @@ export const X_SUMS={housing:'Wohneinheiten',kita_places:'Kita-Plätze',funding_
 export const X_FACT_NAMES={annual_result:'Jahresabschlüsse nach Ergebnis',plan:'Bauleitplanung nach Verfahrensschritt',plan_use:'Art des Plangebiets',hebesatz:'Hebesätze nach Steuerart',fee_rate:'Gebührensätze nach Art',
  heat_plan:'Kommunale Wärmeplanung nach Schritt',grant:'Zuschüsse an Vereine und Träger nach Zweck',kita_fee:'Kita-Beiträge nach Richtung',funding:'Förderprogramme',faction:'Anträge und Anfragen nach Fraktion',
  park_fee:'Parkgebühren je Stunde',ee_power:'Wind- und Solarvorhaben nach Art',land_price:'Preise für Gewerbegrundstücke',dog_tax:'Hundesteuer für den ersten Hund'};
-export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,annual_result:true,funding:false,kita_fee:false,plan_use:false,fee_rate:true,heat_plan:true,grant:true,park_fee:false,ee_power:false,land_price:true,dog_tax:false};
+export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,annual_result:true,funding:false,kita_fee:false,plan_use:true,fee_rate:true,heat_plan:true,grant:true,park_fee:false,ee_power:false,land_price:true,dog_tax:false};
 export const X_SUM_GATE={housing:false,kita_places:false,funding_euro:false};
 const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['ee_power']],mobilitaet:[['park_fee']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee','kita_places']],'':[['funding','funding_euro']]};
@@ -182,23 +182,32 @@ async function xAtlas(db,catalog,params,x,opts,state){
  // Werte aus den Unterlagen: nur, was das Qualitätstor erreicht (gesperrte Summen entfallen, der Wert bleibt)
  const wanted=(ATLAS_FACTS[x.theme]||[]).filter(([k])=>X_FACT_GATE[k]).map(([k,sum])=>[k,sum&&X_SUM_GATE[sum]?sum:'']);
  const [parts,stages,months,regions,recent,maps,...facts]=await Promise.all([at(x.theme?'sub':'theme'),at('stage'),at('month'),at('region'),
-  xList(db,catalog,{...x,by:'region',value:'',offset:0},{count:false,src}),factMaps(db,src,x,wanted.map(([k])=>k)),...wanted.map(([k,sum])=>at('fact:'+k,sum))]);
+  xList(db,catalog,{...x,by:'region',value:'',offset:0},{count:false,src}),factMaps(db,catalog,src,x,wanted.map(([k])=>k)),...wanted.map(([k,sum])=>at('fact:'+k,sum))]);
  return {selection:parts.selection,total:stages.total,unread:stages.unread,builtAt:state.builtAt,parts:parts.rows,stages:stages.rows,months:months.rows,
   regions:regions.rows,recent:recent.items.slice(0,10),
   facts:facts.map((f,i)=>({kind:wanted[i][0],name:X_FACT_NAMES[wanted[i][0]],sum:f.sum||null,rows:f.rows,map:maps.get(wanted[i][0])||[]})).filter(f=>f.rows.length),compare:await xCompare(db,catalog,x,params,opts)};
 }
 
-/** Karte der Werte: je Fakt und Gebiet die Zahl der Vorgänge mit Wert (n) und je Wert mit Zahl der Median (v: Wert → {n, median, unit}) */
-async function factMaps(db,src,x,kinds){
+/** Karte der Werte: je Fakt und Gebiet die Zahl der Vorgänge mit Wert (n) und je Wert mit Zahl der Median (v: Wert → {n, median, unit}).
+    In Gemeindeverbänden gehört ein Vorgang zur Mitgliedsgemeinde, die Gremium oder Titel nennen (where, wie in den Listen): dann
+    ein eigener Eintrag mit ihrem Gemeindeschlüssel (ags), sonst gilt er für den Verband. */
+async function factMaps(db,catalog,src,x,kinds){
  const out=new Map();if(!kinds.length)return out;
- const sel=selection(x);
- const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.case_key,x.region_id FROM ${src.from} WHERE ${sel.where.join(' AND ')}) SELECT s.region_id g,rr.case_key ck,f.kind kind,f.value v,f.detail d FROM sel s JOIN report_rules rr ON rr.case_key=s.case_key JOIN topic_facts f ON f.topic_id=rr.topic_id WHERE f.kind IN (SELECT value FROM json_each(?))`).bind(...src.args,...sel.args,JSON.stringify(kinds)).all();
+ const sel=selection(x),byId=new Map(catalog.map(r=>[r.id,r]));
+ const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.case_key,x.region_id,x.card_id FROM ${src.from} WHERE ${sel.where.join(' AND ')}) SELECT s.region_id g,s.card_id card,rr.case_key ck,f.kind kind,f.value v,f.detail d FROM sel s JOIN report_rules rr ON rr.case_key=s.case_key JOIN topic_facts f ON f.topic_id=rr.topic_id WHERE f.kind IN (SELECT value FROM json_each(?))`).bind(...src.args,...sel.args,JSON.stringify(kinds)).all();
+ // Mitgliedsgemeinde je Vorgang, nur in Verbänden
+ const cards=[...new Set(results.filter(r=>byId.get(r.g)?.members?.length).map(r=>r.card))],member=new Map();
+ if(cards.length){
+  const {results:cs}=await db.prepare('SELECT id,region_id g,title,gremium FROM search_cards WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(cards)).all();
+  for(const c of cs){const r=byId.get(c.g),w=placeOf(r.name,c.title,c.gremium,r.members);const m=w.key&&r.members.find(x=>x.name===w.key||x.name.replace(/\s*\(.*\)$/,'')===w.key);if(m?.ags)member.set(c.id,m.ags);}
+ }
  const by=new Map();
  for(const r of results){
-  const k=by.get(r.kind)||new Map();by.set(r.kind,k);const g=k.get(r.g)||{cases:new Set(),v:new Map()};k.set(r.g,g);g.cases.add(r.ck);
+  const ags=member.get(r.card)||'',key=r.g+'|'+ags;
+  const k=by.get(r.kind)||new Map();by.set(r.kind,k);const g=k.get(key)||{g:r.g,ags,cases:new Set(),v:new Map()};k.set(key,g);g.cases.add(r.ck);
   const num=factNum(r.kind,r.d);if(!num)continue;const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,num);
  }
- for(const [kind,k] of by)out.set(kind,[...k].map(([g,{cases,v}])=>({key:g,n:cases.size,v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit}];}))})));
+ for(const [kind,k] of by)out.set(kind,[...k.values()].map(({g,ags,cases,v})=>({key:g,...(ags?{ags}:{}),n:cases.size,v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit}];}))})));
  return out;
 }
 
