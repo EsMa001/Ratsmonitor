@@ -1,7 +1,7 @@
 // Fakten für plenara.X: Fraktion als Antragsteller, Förderprogramme (shared/topic-facts.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factionsOf,housingOf,kitaPlacesOf,kitaFeeOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf,radarFactsOf} from '../shared/topic-facts.mjs';
+import {factionsOf,housingOf,kitaPlacesOf,kitaFeeOf,fundingOf,fundingEuroOf,factsOf,hebesatzOf,feeRateOf,heatPlanOf,grantOf,planUseOf} from '../shared/topic-facts.mjs';
 
 test('factions are read from the applicant phrase in title or head',()=>{
  assert.deepEqual(factionsOf('Antrag der SPD-Fraktion: Tempo 30 vor Schulen'),{parties:['SPD'],kind:'antrag'});
@@ -106,13 +106,13 @@ test('funding amounts: outgoing grants, donations, ranges and per-unit amounts a
 
 test('funding amount without program goes to the only program of the report',()=>{
  const t='Für die Mensa wurden Fördermittel aus dem Programm Ganztagsausbau bewilligt. Der Förderbescheid über 300.000 € liegt vor.';
- assert.deepEqual(factsOf('Neubau Mensa',t).filter(r=>r.kind.startsWith('funding')),[{kind:'funding',value:'Ganztagsausbau',detail:'granted'},{kind:'funding_euro',value:'Ganztagsausbau',detail:'300000'}]);
+ assert.deepEqual(factsOf('Neubau Mensa',t).filter(r=>r.kind.startsWith('funding')),[{kind:'funding',value:'Ganztagsausbau',detail:'granted'},{kind:'funding_granted',value:'Ganztagsausbau',detail:''},{kind:'funding_euro',value:'Ganztagsausbau',detail:'300000'}]);
 });
 
 test('funding: form fields and conditional grants are not funding facts',()=>{
  assert.deepEqual(fundingOf('Finanzielle Auswirkungen: Fördermittel beantragt: Nein Ja Haushaltsmittel stehen bereit.'),[],'Formularfeld');
  assert.deepEqual(fundingOf('Vorbehaltlich der Förderzusage durch das Land wird die Radverkehrsanlage gebaut.'),[{program:'Radverkehr',status:'mentioned'}],'bedingt ist nicht bewilligt');
- assert.deepEqual(fundingOf('Der Förderbescheid für die Radwege liegt vor.'),[{program:'Radverkehr',status:'granted'}]);
+ assert.deepEqual(fundingOf('Der Förderbescheid für die Radwege liegt vor.'),[{program:'Radverkehr',status:'granted',sure:true}]);
 });
 
 test('outgoing grants to clubs and carriers are no funding for the municipality; fee amounts are whole numbers',async()=>{
@@ -168,11 +168,6 @@ test('art des plangebiets: gewerbe, industrie, energie, einzelhandel; abkuerzung
 });
 
 test('fehltreffer nach der bewertung vom 11.10.2026: personal, feste tagesordnungspunkte, zuschuesse, waermeplanung, hebesaetze, gebuehren',()=>{
- assert.deepEqual(radarFactsOf('Besetzung des Ausschusses für Umwelt und Klimaschutz',''),[]);
- assert.deepEqual(radarFactsOf('Wahl der Mitglieder des Seniorenbeirats',''),[]);
- assert.deepEqual(radarFactsOf('Anregungen und Beschwerden nach § 24 GO NRW',''),[]);
- assert.ok(radarFactsOf('Anregung nach § 24 GO NRW: Tempo 30 in der Lindenstraße','').some(x=>x.kind==='radar:beteiligung'));
- assert.ok(!radarFactsOf('Haushaltssatzung der Stadt Zweibrücken 2027','').some(x=>x.value==='Straßen und Brücken'));
  assert.equal(grantOf('Kooperationsvereinbarung mit dem Förderverein der Grundschule zum Ganztag',''),null);
  assert.equal(grantOf('Technisch-methodische Unterstützung diverser Projekte / Ausschreibung Rahmenvereinbarung',''),null);
  assert.equal(grantOf('Verwendungsnachweis des Caritasverbandes e.V. über die Zuschussverwendung',''),null);
@@ -214,9 +209,7 @@ test('facts-v15: Kita-Plätze ohne Bestand und Senioren, Förderung ohne Geldgeb
  assert.equal(kitaPlacesOf('Beratung und Beschlussfassung über den Neubau der KiTa Altenglan','Die Kindertagesstätten Altenglan und Mühlbach verfügen derzeit insgesamt über 100 Betreuungsplätze. Mit dem Neubau entstehen 125 Plätze in der neuen Kita.'),125);
  assert.equal(kitaPlacesOf('Erweiterungspläne für die Vita Tagespflege in Ochtrup','Durch die Erweiterung entstehen 11 neue Plätze in der Tagespflege.'),null);
  assert.deepEqual(fundingOf('Der Stadtbezirksbeirat hat die Förderung von Projekten bewilligt. Die Fördermittel werden ausgezahlt.'),[]);
- assert.deepEqual(fundingOf('Für den Mietwohnungsbau wurden Fördermittel des Landes bewilligt.'),[{program:'Wohnraumförderung',status:'granted'}]);
+ assert.deepEqual(fundingOf('Für den Mietwohnungsbau wurden Fördermittel des Landes bewilligt.'),[{program:'Wohnraumförderung',status:'granted',sure:true}]);
  assert.equal(kitaFeeOf('Neufassung der Kostenbeitragssatzung für Kindertagesstätten','Beschlussvorschlag: Der Stadtrat beschließt die Neufassung der Kostenbeitragssatzung. In der Sitzung wurde damals die Erhöhung der Kostenbeiträge vertagt.').direction,'Neufassung');
  assert.equal(kitaFeeOf('Abschluss von Qualitäts- und Finanzierungsvereinbarungen mit den Kita-Trägern','Beschlussvorschlag: Der Rat beschließt die Vereinbarungen. Die Benutzungsgebühr bleibt unverändert.'),null);
- assert.deepEqual(radarFactsOf('Ausschuss für Daseinsvorsorge und Klimaschutz',''),[]);
- assert.deepEqual(radarFactsOf('Vereidigung der ehrenamtlichen Gemeinderatsmitglieder',''),[]);
 });

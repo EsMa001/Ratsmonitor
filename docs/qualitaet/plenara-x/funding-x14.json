@@ -1,0 +1,433 @@
+{
+ "stand": "14.10.2026",
+ "methode": "40 Treffer aus der lokalen Datenbank (Seed X14), je Treffer der Satz, aus dem die Regel liest; ganz richtig = Programm und Stand",
+ "ergebnis": "ganz richtig 17 von 39 (44 %), Programm richtig 29 von 39 (74 %)",
+ "faelle": [
+  {
+   "id": "nds-03459033-oparl-d4bb582bad9846d68689",
+   "titel": "Weiteres Vorgehen zur Umsetzung der Kommunalen Wärmeplanung / Antrag Bündnis 90 / Die Grünen",
+   "regel": [
+    "Energie und Wärme | granted"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Bewilligung erst geplant (Q3/Q4), beantragt"
+  },
+  {
+   "id": "nrw-05366020-vo-nr-58-2026",
+   "titel": "Denkmalschutzangelegenheiten; Hier: Verteilung der Fördermittel",
+   "regel": [
+    "Denkmalförderung | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "de-073405003-oparl-3a5dcbaa4aeceb283bf2",
+   "titel": "Änderung IKZ-Antrag; IKZ Sonderförderung - \"Gemeinsam sicher feiern in Rheinland-Pfalz\"",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "beantragt, nicht bewilligt"
+  },
+  {
+   "id": "de-15001000-vo-20371",
+   "titel": "Unternehmensangelegenheiten - Entlastung des Aufsichtsrates der WBD Industriepark Dessau GmbH für das Geschäftsjahr 2025",
+   "regel": [
+    "Breitband und Digitales | mentioned"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "keine Förderung (Aufsichtsrat)"
+  },
+  {
+   "id": "de-12068181-vo-nr-fv0197-26",
+   "titel": "FV: Sanierung und Wiedereröffnung des Aussichtsturmes Blumenthal",
+   "regel": [
+    "LEADER und ländliche Entwicklung | granted"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "LEADER nur als mögliche Quelle"
+  },
+  {
+   "id": "nrw-05334-vo-1003057",
+   "titel": "Maßnahmen zur Haushaltskonsolidierung: Freiwillige Förderung im Sozialbereich gekoppelt an Sozialplanung, Anpassung und Weiterentwicklung der Förderrichtlinie für die Förderperiode (A 58) ab 2028",
+   "regel": [
+    "Energie und Wärme | mentioned"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "eigene Förderrichtlinie der Kommune"
+  },
+  {
+   "id": "nrw-05117000-vo-1001735",
+   "titel": "Baubeschluss Brücke Heuweg im Verlauf der ehemaligen Unteren Ruhrtalbahn",
+   "regel": [
+    "Sonstige Förderung | applied"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "Nahmobilität hätte eine Kategorie"
+  },
+  {
+   "id": "de-073405006-top-10092",
+   "titel": "Information Friedhofsmauer; Vorstellung einer Alternative zur Verbauung von Sandstein",
+   "regel": [
+    "Sonstige Förderung | applied"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "Frage eines Ratsmitglieds"
+  },
+  {
+   "id": "nrw-05170052-vo-505_6699",
+   "titel": "Schulraumbedarfsplanung der Grundschulstandorte der Stadt Xanten und Handlungsansätze für die katholische Grundschule Lüttingen sowie den katholischen Teilstandort der Viktorgrundschule in Marienbaum",
+   "regel": [
+    "Ganztagsausbau | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "bereits bewilligt"
+  },
+  {
+   "id": "de-09775135-vo-2171308100012",
+   "titel": "Kindertagesstätte Gerlenhofen - Neubau mit zwei Kindergarten- und zwei Krippengruppen Aufhebung Bedarfsanerkennung Aufhebung Baudurchführungsbeschluss",
+   "regel": [
+    "Sonstige Förderung | applied"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nrw-05554020-oparl-4593a20b40e15802cc39",
+   "titel": "Zusammenarbeit mit der Verbraucherzentrale NRW ab dem Jahr 2027",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Bewilligung erst möglich"
+  },
+  {
+   "id": "nrw-05358-vo-nr-193-26",
+   "titel": "Rheinisches Radverkehrsrevier – Radschnellverbindung Aachen-Düren-Frechen",
+   "regel": [
+    "Radverkehr | applied"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nrw-05334012-vo-12915",
+   "titel": "Umbau und bauliche Erweiterung der KGS Bergrath; hier: Auswirkungen der Änderungen der Förderbedingungen des Rheinischen Reviers",
+   "regel": [
+    "Ganztagsausbau | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nrw-05966008-vo-nr-2026-146",
+   "titel": "Verschattung des SpielgelÃ¤ndes im Stadtpark - Pflanzung von BÃ¤umen",
+   "regel": [
+    "KfW | granted",
+    "Klimaanpassung | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Bescheid erst erwartet"
+  },
+  {
+   "id": "nrw-05566008-oparl-eab587234c1b0e192cba",
+   "titel": "Münsterstraße - Ausführungsplanung",
+   "regel": [
+    "EU-Fonds (EFRE, ELER, ESF) | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "erfolgreich aufgenommen = bewilligt"
+  },
+  {
+   "id": "nrw-05978028-vo-12292",
+   "titel": "Zukünftiges Nutzungskonzept für das Ensemble „Schwerter Mitte\" als Begegnungs- und Kulturort („Dritter Ort\")",
+   "regel": [
+    "Sonstige Förderung | applied"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Antrag erst künftig"
+  },
+  {
+   "id": "de-010615138-vo-6379",
+   "titel": "Neubau eines interkommunalen Multifunktionshauses mit Feuerwehrteil",
+   "regel": [
+    "Feuerwehr und Katastrophenschutz | applied",
+    "Wirtschaftsförderung (GRW) | mentioned"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "GAK statt GRW"
+  },
+  {
+   "id": "nds-03358021-vo-14011",
+   "titel": "Bebauungsplan Nr. 129 – Teilgebiet A „Kita Winsener Straße 92“ - Ergebnis der frühzeitigen Öffentlichkeitsbeteiligung und Beteiligung der Träger öffentlicher Belange als Synopse mit Würdigung - Billigung des Entwurfs - Beschluss der Veröffentlichung / öffentlichen Auslegung Bezug: Vorlage Nr. 0007/2025",
+   "regel": [
+    "Sportstätten | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Interessenbekundung gestellt = beantragt"
+  },
+  {
+   "id": "de-14522180-vo-20260207100181",
+   "titel": "Beschluss über die Vergabe von Planungsleistungen für die Planungsstufe 1 der Maßnahme \"SZP Sozialer Zusammenhalt - Erweiterte Bahnhofsvorstadt - Bahnhofsvorplatz, Teilfläche Straße Am Bahnhof und Bahnhofstraße\"",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "Sozialer Zusammenhalt = Städtebauförderung"
+  },
+  {
+   "id": "de-071405008-vo-20261004100186",
+   "titel": "Zusätzlicher Förderaufruf \"Sanierung kommunaler Sportstätten\" - Schwimmbäder",
+   "regel": [
+    "Sportstätten | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "de-071415007-vo-120261709100009",
+   "titel": "Sachstand Förderprogramm Regional Zukunft Nachhaltig (RZN)",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Stand unklar"
+  },
+  {
+   "id": "nds-03256022-vo-83705",
+   "titel": "Prüfungsergebnis über den Bedarf einer Mehrzweckhalle in der Mußriede",
+   "regel": [
+    "Sportstätten | applied"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "de-06431022-top-5738",
+   "titel": "Regularien",
+   "regel": [
+    "Feuerwehr und Katastrophenschutz | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nrw-05513000-vo-1008572",
+   "titel": "Planung und Neuerrichtung einer Vierfeldsporthalle auf dem Gelände des Annette-von-Droste-Hülshoff-Gymnasiums",
+   "regel": [
+    "Sonstige Förderung | applied"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nrw-05566008-oparl-d3c4db77149e8cf6aa6a",
+   "titel": "Information zur Neuaufstellung des „Integrierten Handlungskonzepts Innenstadt der Stadt Emsdetten „Zukunft findet INNENnnenstadt““",
+   "regel": [
+    "Städtebauförderung | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nrw-05124000-vo-36008",
+   "titel": "Geh- und Radverkehrsführung im Bereich der Autobahn A 46 an der Ausfahrt Katernberg Antrag der Fraktion Bündnis 90/Die Grünen vom 23.06.2026",
+   "regel": [
+    "Radverkehr | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "de-13072060-vo-2459",
+   "titel": "Sondervermögen des Bundes für Infrastruktur und Klimaneutralität und dessen Umsetzung im MV-Plan 2035 - Investitionsbudgets",
+   "regel": [
+    "Sportstätten | granted"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "Sondervermögen, kein Sportstättenprogramm"
+  },
+  {
+   "id": "nrw-05562032-vo-20261905100340",
+   "titel": "ISEK Hillerheide - Leitprojekt 3 \"Attraktive Mitte Gertrudisplatz\" Hier: Vorstellung Planungsleistung Leistungsphase 3 Entwurfsplanung zur Umgestaltung des Gertrudisplatzes durch das Büro frei[RAUM]planung (Freianlagenplanung) und die Verwaltung",
+   "regel": [
+    "Städtebauförderung | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Zuwendungsbescheid = bewilligt"
+  },
+  {
+   "id": "agendaitems-289292",
+   "titel": "Den Apostelgarten jetzt zum kühlen Aufenthaltsort machen (A-M/0010/2026) - Antrag in der BV-Mitte vom 15.09.2026",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "Städtebauförderantrag bewilligt"
+  },
+  {
+   "id": "nrw-05374020-vo-1001409",
+   "titel": "Aktueller Sachstand Städtebauförderung ISEK Lindlar Hauptort Antrag 2027",
+   "regel": [
+    "Städtebauförderung | applied"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nds-03159-vo-10695",
+   "titel": "KI-Strategie des Landkreises Göttingen – Beschlussfassung",
+   "regel": [
+    "Breitband und Digitales | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "de-07131-vo-2004100966",
+   "titel": "Beschluss des Konzeptes zur Bezuschussung kommunaler Einsatzfahrzeuge mit überörtlichem Einsatzzweck",
+   "regel": [
+    "Feuerwehr und Katastrophenschutz | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nrw-05562014-oparl-b7530af4710f46c39a7d",
+   "titel": "Förderanträge zur Bezuschussung von Projekten und Veranstaltungen in der Migration- und Integrationsarbeit",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": false,
+   "ganz_richtig": false,
+   "notiz": "Mittel der Kommune selbst"
+  },
+  {
+   "id": "de-14626610-vo-15629",
+   "titel": "Beschluss zur Vergabe eines Tanklöschfahrzeuges (TLF) für die Ortsfeuerwehr Innenstadt",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "de-130745458-vo-9120",
+   "titel": "Realisierung des Projektes „Röggelin 800 - Geschichte und Land(wirt)schaft“ in Dechow",
+   "regel": [
+    "LEADER und ländliche Entwicklung | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "nrw-05774032-top-20260701-1a4b9aa8",
+   "titel": "Information zu Förderungen im Sport",
+   "regel": [
+    "Sportstätten | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  },
+  {
+   "id": "de-09179-vo-7200",
+   "titel": "Förderprogramm SchulMobE - Bewilligung außerplanmäßiger Mittel",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Erhalt erst möglich"
+  },
+  {
+   "id": "de-15001000-vo-20344",
+   "titel": "Umsetzung der Rundbogenhalle auf das Gelände des Technikmuseums „Hugo Junkers“",
+   "regel": [
+    "Denkmalförderung | mentioned"
+   ],
+   "programm_richtig": null,
+   "ganz_richtig": null,
+   "notiz": "kein Beleg im Text gefunden, nicht gewertet"
+  },
+  {
+   "id": "nrw-05117000-vo-1002088",
+   "titel": "Integriertes Handlungskonzept \"Grüne Mitte Mülheim\" im Kontext der IGA 2027 in der Metropole Ruhr; hier: Aufnahme des 3. Bauabschnitts (Anbau /Neubau) des Heimatmuseums Tersteegenhauses in den STEP 2026 der Städtebauförderung",
+   "regel": [
+    "Städtebauförderung | mentioned",
+    "Denkmalförderung | mentioned"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": false,
+   "notiz": "Denkmalförderung bereits gefördert"
+  },
+  {
+   "id": "de-071375001-vo-41392",
+   "titel": "Auftragsvergabe Bodenbelagsarbeiten",
+   "regel": [
+    "Sonstige Förderung | granted"
+   ],
+   "programm_richtig": true,
+   "ganz_richtig": true,
+   "notiz": ""
+  }
+ ],
+ "nachbesserung": [
+  {
+   "stand": "14.10.2026",
+   "fassung": "facts-v16 Runde 1 (Leitfaden: Stand nur mit Beleg, Kopfzeilen, Bescheid für das eine Programm)",
+   "stichprobe": "F1, 40 frische Treffer aus allen Berichten mit Text (SHA-256, Seed F1)",
+   "ergebnis": "ganz richtig 20 von 39 (51 %)",
+   "fehlerarten": "Zuschüsse der Kommune an Vereine und Bürger, „Antrag geplant“ als gestellt, andere Bedeutung von „beantragt“, Sponsoring"
+  },
+  {
+   "stand": "14.10.2026",
+   "fassung": "facts-v16 Runde 2 (Titel mit Vereinszuschüssen ohne Fördermittel, geplante Anträge erwähnt, Tagesordnung, Sponsoring)",
+   "stichprobe": "F2, 40 frische Treffer (Seed F2)",
+   "ergebnis": "ganz richtig 22 von 38 (58 %)",
+   "fehlerarten": "Stand steht nur im Titel („bewilligter Leader-Antrag“, „Beschluss über Antragstellung“), „bei einer Förderzusage“, „geplante Maßnahme … beantragt“, Förderung Dritter (Träger, Biologische Station), Landesgesetze zur Infrastrukturförderung (MV-Plan, NKomInvest) ohne Programm"
+  },
+  {
+   "stand": "14.10.2026",
+   "fassung": "facts-v16 Runde 3 (je Bericht aus allen Belegen, Titel als Quelle nur mit Förderwort, Förderung Dritter nur erwähnt)",
+   "stichprobe": "F4, 40 frische Treffer (Seed F4; F3 diente der Fehlersuche beim Titel)",
+   "ergebnis": "ganz richtig 21 von 39 (54 %); nur Programm richtig etwa 33 von 39 (85 %)",
+   "fehlerarten": "Stand bleibt unscharf: Absichten und Aufträge („zu beantragen“, „Voraussetzung geschaffen“), Bedingungen („wenn eine Förderzusage“), Geld, das schon fließt, ohne Bescheidwort („erhaltene Zuwendungen“, „Abrechnung der Fördermittel“), Fraktionsanträge, die eine Förderung prüfen lassen; Programmwörter ohne Förderfall (Gesundheitsamt, Dialograum)"
+  }
+ ]
+}
