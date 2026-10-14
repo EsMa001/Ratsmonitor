@@ -592,7 +592,7 @@ topic design-styles.css:140
 - layout.tsx (3): MonitorLayout
 
 ### app/(monitor)/lena/
-- page.tsx (2): Page
+- page.tsx (4): Page
 
 ### app/(monitor)/
 - not-found.tsx (4): metadata, NotFound
@@ -762,10 +762,11 @@ topic design-styles.css:140
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
-- routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
+- routes.ts (12, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (90): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, clearSavedArticles, useSavedArticles
 - savedSearch.ts (155, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
+- searchUrl.ts (106): readableQuery, SEARCH_URL_KEYS, searchToUrl, onlyText, searchFromUrl
 - sha256.ts (47): sha256Fallback, sha256Hex
 - storage.ts (18): NO_STORAGE, clearStoredContent
 - terms.ts (24, ⚠2): isFiller, prettyTerm, termStem

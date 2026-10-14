@@ -14,7 +14,7 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
   { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
   { href: "/funktionen/benachrichtigungen", label: "Benachrichtigungen", icon: "bell" },
   { href: "/konto/kalender", label: "Kalender", icon: "calendar" },
-  { href: "/lena", label: "Assistentin Lena", icon: "circleHelp" },
+  /* Lena vorerst ausgeblendet (lib/routes.ts): { href: "/lena", label: "Assistentin Lena", icon: "circleHelp" }, */
 ];
 
 /* Unterpunkte von „Informationen“: Tarife, Videos, Datenabdeckung und häufige Fragen */
