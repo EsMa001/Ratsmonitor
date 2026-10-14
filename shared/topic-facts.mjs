@@ -389,6 +389,34 @@ export function landPriceOf(title,text){
  return {value:v<50?'unter 50 € je m²':v<=100?'50 bis 100 € je m²':'über 100 € je m²',euro:String(v)};
 }
 
+/* Hundesteuer für den ersten Hund im Jahr (Finanzen, Steuern): neuer Satz bei Änderungen („von 60,00 € auf 96,00 € für den
+   Ersthund“), sonst der genannte Satz. Nicht gefährliche Hunde, Ermäßigungen, Erhöhungsbeträge, Aufkommen, Vergleiche. */
+const DOG_TITLE=/Hund/i;
+const DOG_FIRST=String.raw`(?:Ersthund|erste[nr]?\s+Hund|1\.\s*Hund|für\s+(?:jeden|einen)\s+Hund|ein(?:en)?\s+Hund)`;
+const DOG_AMT=String.raw`(?<![\d.,])(\d{2,3})(?:,\d{2})?\s*(?:€|Euro|EUR)`;
+const DOG_RES=[
+ // von X auf Y … Ersthund / Ersthund … von X auf Y
+ new RegExp(String.raw`von\s+(?:derzeit\s+|bisher\s+|aktuell\s+)?`+DOG_AMT+String.raw`(?:\s*\/\s*Jahr)?\s+auf\s+(?:neu\s+)?`+DOG_AMT+String.raw`(?:\s*(?:pro|\/)\s*Jahr)?\s*(?:für\s+)?(?:den\s+)?`+DOG_FIRST,'gi'),
+ new RegExp(DOG_FIRST+String.raw`[^.;\d]{0,60}?von\s+(?:derzeit\s+|bisher\s+|aktuell\s+)?`+DOG_AMT+String.raw`(?:\s*\/\s*Jahr)?\s+auf\s+(?:neu\s+)?`+DOG_AMT,'gi'),
+ // „Ersthund wird ab 01.01.2026 auf 96,00 Euro …“: neuer Satz (Ziffern des Datums dazwischen); zweite Gruppe wie oben
+ new RegExp(DOG_FIRST+String.raw`(?:[^.;]|\.\d){0,50}?\bauf\s+()`+DOG_AMT,'gi'),
+ new RegExp(DOG_AMT+String.raw`\s*(?:\(\s*)?für\s+den\s+(?:ersten\s+Hund|Ersthund)`,'gi'),
+ new RegExp(DOG_FIRST+String.raw`[^.;\d]{0,40}?`+DOG_AMT,'gi'),
+];
+// Alte Sätze nur bei bloßen Beträgen ausschließen; „von derzeit X auf Y“ nennt den neuen
+const DOG_OLD=/\baktuell|derzeit|\bbisher|damals|wurde\b|seitdem|unverändert/i;
+const NOT_DOG=/zwischen|damals|zuletzt|letztmal|erfolgte|So beträgt|beträgt (?:die Hundesteuer )?in \p{Lu}|\bIn \p{Lu}[\p{L}-]+ beträgt|gefährlich|Kampfhund|ermäßig|Ermäßigung|Rasse|Listenhund|Aufkommen|Mehreinnahm|Mehrertr|erhöht\s+um|um\s*$|Vergleich|Kommunen|Nachbar|höchsten|Durchschnitt|Landkreis|gegenwärtige|bleibt/iu;
+export function dogTaxOf(title,text){
+ const t=String(title||'');if(!DOG_TITLE.test(t)||/gefährlich|Kampfhund|Rückblick|Anfrage|Antrag (der|des)|Fraktion|Hebesatz|Gewerbesteuer|Grundsteuer|Hundekot|Hundewiese|Hundeauslauf|Hundetoilett/i.test(t))return null;
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').split(SENTENCE)){if(s.length>1500)continue;
+  for(const [i,re] of DOG_RES.entries())for(const m of s.matchAll(re)){
+   if(NOT_DOG.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+15))||i>2&&DOG_OLD.test(s.slice(Math.max(0,m.index-160),m.index)))continue;
+   const v=Number(i<3?m[2]:m[1]);if(v>=10&&v<=300)return v;}}
+  return null;};
+ const v=pick(decision(text))??pick(text);if(v===null)return null;
+ return {value:v<=60?'bis 60 € im Jahr':v<=100?'61 bis 100 € im Jahr':'über 100 € im Jahr',euro:String(v)};
+}
+
 /** Neue Kita-Plätze (größte Zahl in einem Satz mit Kita-Bezug und Ausbau), sonst null */
 // Kein Ausbau: Schließung, Abbau, Unterkünfte für Geflüchtete (auch dort ist von Plätzen die Rede)
 const NOT_PLACES=/Rückbau|Ersatzneubau|Schließung|geschlossen|Abbau|abgebaut|Wegfall|Geflüchtete|Flüchtling|Asyl|Unterbringung|Unterkunft|Pflegeheim|Seniorenheim|Senior|Demenz|Pflegebedürft|Altenpflege|Tagespflege für (ältere|Senioren)/i;
@@ -520,13 +548,14 @@ export function feeRateOf(title,text){
 const HEAT=/Wärmeplan|Wärmeleitplan|\bKWP\b/i;
 export const HEAT_STEPS=[
  ['Entwurf und Beteiligung',/Entwurf|vorläufig|Stellungnahme|Auslegung|Offenlage|Einsichtnahme|Öffentlichkeitsbeteiligung|Beteiligung der Öffentlichkeit|Beteiligung gem/i],
- ['Wärmeplan vorgelegt',/Beschluss(fassung)?\s+((des|über\s+den|über\s+die|zum|der)\s+)?(vorliegenden\s+)?(kommunalen?\s+|kommunaler\s+)?(Wärmepl|KWP|Abschlussbericht)|Festsetzungsbeschluss|Feststellung|Selbstbindungsbeschluss|Abschluss (der\s+)?(kommunalen?\s+)?Wärmeplanung|Billigung|beschließt (den|die)\s+(kommunalen?\s+)?Wärmeplan|Abschlussbericht|Endbericht|finale[nr]? Wärmeplan|Veröffentlichung des Wärmeplan/i],
+ ['Wärmeplan vorgelegt',/Verabschiedung|Fertigstellung|Beschluss(fassung)?\s+((des|über\s+den|über\s+die|zum|der)\s+)?(vorliegenden\s+)?(kommunalen?\s+|kommunaler\s+)?(Wärmepl|KWP|Abschlussbericht)|Festsetzungsbeschluss|Feststellung|Selbstbindungsbeschluss|Abschluss (der\s+)?(kommunalen?\s+)?Wärmeplanung|Billigung|beschließt (den|die)\s+(kommunalen?\s+)?Wärmeplan|Abschlussbericht|Endbericht|finale[nr]? Wärmeplan|Veröffentlichung des Wärmeplan/i],
  ['Start und Beauftragung',/Ablauf|Einführung in|Aufstellungsbeschluss|Aufstellung|Durchführung|Erstellung|Beauftragung|Vergabe|Auftrag|Übertragung|Konvoi|interkommunal|Zusammenarbeit|Förderantrag|Einleitung|Beginn|Zuständigkeit|planungsverantwortliche/i],
  ['Umsetzung und Fortschreibung',/Fortschreibung|Umsetzung|Monitoring|Maßnahmenkatalog|Maßnahmenumsetzung|Wärmenetz/i],
  ['Analyse und Zwischenstand',/Bestandsanalyse|Potenzialanalyse|Potentialanalyse|Zielszenario|Zielgebiet|Eignungsprüfung|Zwischenbericht|Zwischenergebnis|Sachstand|Vorstellung|Ergebnisse|Präsentation|Wärmewendestrategie|Bericht|Information|aktuelle[rn]? Stand|Stand der/i],
 ];
 // Im Beschlussvorschlag: der Beschluss des Plans zuerst; „Umsetzung“ steht dort oft nur als Auftrag und zählt nicht
 const HEAT_DECISION=[['Wärmeplan vorgelegt',/beschließt\b[^.]{0,250}(Wärmeplan\b|Wärmeplan\s|Abschlussbericht|Endbericht)|(?:Abschlussbericht|Endbericht|vorliegende[n]?\s+(?:kommunalen?\s+)?Wärmeplan\w*)(?:[^.]|\.\d){0,120}(?:Kenntnis|gebilligt|zugestimmt)|beschließt das Konzept zur (kommunalen\s+)?Wärmeplanung|beschließt (den|die) [„"]?(kommunalen?\s+)?Wärmeplanung\b(?![^.]{0,80}(durchzuführen|aufzustellen|zu erstellen|zu beginnen|einzuleiten|abzubilden))|Wärmeplan[^.]{0,80}(beschlossen|gebilligt)/i],...HEAT_STEPS.filter(([n])=>n!=='Umsetzung und Fortschreibung'&&n!=='Wärmeplan vorgelegt')];
+const HEAT_DONE=/beschließt\b(?:[^.]|\.\d|\. ?§){0,120}?\b(?:den|die)\s+(?:vorliegenden?|erstellten?|finalen?|gemäß|gem\.)(?:[^.]|\.\d|\. ?§){0,80}?Wärmeplan|beschließt (?:den|die) (?:kommunalen?\s+)?Wärmeplan\w* (?:in (?:seiner|ihrer) finalen|in der (?:vorgestellten )?Endfassung)|Abschlussbericht\w*(?:[^.]|\.\d){0,120}?Kenntnis|Kenntnisnahme des Abschlussbericht|Verabschiedung der (?:kommunalen )?Wärmeplanung/i;
 /** Verfahrensschritt der kommunalen Wärmeplanung oder null */
 // „Umsetzung des Wärmeplanungsgesetzes“ und Grundsatzbeschlüsse beginnen die Planung; Widersprüche und Anträge sind kein Schritt
 const HEAT_START=/Umsetzung (des )?(Wärmeplanungsgesetz|WPG)|Grundsatzbeschluss|grundsätzliche[nr]? Beschluss|Planungsvariante/i;
@@ -538,6 +567,12 @@ export function heatPlanOf(title,text){
  // Titel nach dem Muster „Kommunale Wärmeplanung nach dem Bundesgesetz … - Umsetzung in der Gemeinde X“: Übertragung der Aufgabe
  if(HEAT_START.test(t)||HEAT_LAW.test(raw)&&/Umsetzung|Übertragung|Aufgabe/i.test(t))return 'Start und Beauftragung';
  const dec=decision(text);
+ // Beschließt der Beschlussvorschlag den fertigen Plan, gilt das vor dem Titel („Vorstellung der Ergebnisse“, „Beschluss
+ // interkommunaler Wärmeplan“); Einsichtnahme und Stellungnahme sind noch der Entwurf
+ if(HEAT.test(dec)&&!/Entwurf|Offenlage|Auslegung/i.test(t)){
+  if(/Einsichtnahme|Stellungnahme|Offenlage|Auslegung|Öffentlichkeitsbeteiligung/i.test(dec))return 'Entwurf und Beteiligung';
+  if(HEAT_DONE.test(dec))return 'Wärmeplan vorgelegt';
+ }
  return (HEAT_STEPS.find(([,re])=>re.test(t))||(HEAT.test(dec)?HEAT_DECISION.find(([,re])=>re.test(dec)):null)||[null])[0];
 }
 
@@ -548,13 +583,13 @@ export function heatPlanOf(title,text){
    Mitglied oder Stunde und in Listen (drei und mehr Beträge). */
 const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein(?!barung)|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein(?!barung)|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?(Zuschuss|Zuwendung)|Antrag (des|der|von)\b.{0,60}\b(auf|zur) (Bezuschussung|Zuschuss|Zuwendung)|Zuschuss[\wäöüß]* an (den|die|das) (?!Gemeinde|Stadt|Kreis|Land)|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss|(?:Förderung von Projekten|Projektförderung) durch (?:den|die) (?:Stadtbezirks|Orts|Bezirks)beirat|^Zuschuss (?:für|an|zur|zum) (?!die Gemeinde|die Stadt|den Kreis)/i;
 // Keine neuen Zuschüsse: Ausschreibungen, Verwendungsnachweise, Vereinsauflösungen, Landesförderung (Katastrophenschutz)
-const NOT_GRANT=/Ausschreibung|Rahmenvereinbarung|Vereinbarung|Verwendungsnachweis|Abrechnung|Auflösung|Vermögen|Katastrophenschutz|Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|(?<!g)GmbH|Gewerbe|Dienstbarkeit|Fassade|Privat|Eigentümer/i;
+const NOT_GRANT=/Beitritt|Mitgliedschaft|Aussetzung|Gründung|durch den (Kreis|Landkreis)|Ausschreibung|Rahmenvereinbarung|Vereinbarung|Verwendungsnachweis|Abrechnung|Auflösung|Vermögen|Katastrophenschutz|Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|(?<!g)GmbH|Gewerbe|Dienstbarkeit|Fassade|Privat|Eigentümer/i;
 export const GRANT_PURPOSES=[
  ['Feuerwehr und Rettung',/Feuerwehr|Rettung|DRK|Rote[sn]? Kreuz|Malteser|Johanniter|THW|DLRG|Wasserwacht|Bergwacht/i],
- ['Kinder und Jugend',/Jugend|Kinder|Kita|KiTa|Kindergarten|Krippe|Schule|Schüler|Hausaufgaben|Ferien/i],
- ['Sport',/[Ss]port|Turn|Schütze|Fußball|fußball|TSG|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Padel|Soccer|Bolzplatz|Kunstrasen|Ruder|Kanu|\b(SV|TSV|TuS|TUS|STK|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
- ['Kultur und Heimat',/Kultur|Kunst|Künstler|Musik|Chor|Kapelle|Theater|Heimat|Museum|Brauchtum|Karneval|Narren|Fastnacht|Kirmes|Fest\b|Feste|Denkmal|Bücherei|Geschicht|Orchester|Konzert|Jazz|Band\b|Music|Gesang|Sänger|Kerbe|Kirchweih|Maifeier|Mai-Feier|Tanz|Standarte|Fahne|Soldaten|Krieger|Kameradschaft|Dorf|Bürgerverein|Verschönerung|Partnerschaft|Städtepartner/i],
- ['Umwelt und Tiere',/Natur|Umwelt|Tier|Imker|Kleingarten|Garten|Angel|Jagd|Obst|Wald/i],
+ ['Kinder und Jugend',/Jugend|Kinder|Kita|KiTa|Kindergarten|Krippe|Spielkreis|(?<!Musik)Schule|Schüler|Hausaufgaben|Ferien/i],
+ ['Sport',/[Ss]port|Turn|Schütze|Fußball|fußball|TSG|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Padel|Soccer|Bolzplatz|Kunstrasen|Athlet|Freizeitmannschaft|Platzpflege|Ruder|Kanu|\b(SV|TSV|TuS|TUS|STK|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
+ ['Kultur und Heimat',/Kultur|Kunst|Künstler|Musik|Chor|Gesang|\bMGV\b|Kapelle|Theater|Heimat|Museum|Brauchtum|Karneval|Narren|Fastnacht|Kirmes|Fest\b|Feste|Denkmal|Bücherei|Geschicht|Orchester|Konzert|Jazz|Band\b|Music|Gesang|Sänger|Kerbe|Kirchweih|Maifeier|Mai-Feier|Tanz|Standarte|Fahne|Soldaten|Krieger|Kameradschaft|Dorf|Bürgerverein|Verschönerung|Partnerschaft|Städtepartner/i],
+ ['Umwelt und Tiere',/Natur|Umwelt|Tier|Imker|Vogel|Kleingarten|Garten|Angel|Jagd|Obst|Wald/i],
  ['Soziales und Senioren',/Senior|Sozial|Diakon|Caritas|AWO|Tafel|Hospiz|Beratung|Frauen|Familie|Mehrgenerationen|Behindert|Inklusion|Pflege|Wohlfahrt|Selbsthilfe|Lebenshilfe|Hilfe\b|-Hilfe|Blaues Kreuz|in Not\b|Sucht|Obdach|Migra|Integration/i],
  ['Kirche',/Kirche|Pfarr|\bkath\.|\bev\.|evangelisch|katholisch/i],
 ];
@@ -616,6 +651,7 @@ export function factsOf(title,text){
  const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:String(result.euro)});
  const park=parkFeeOf(title,text);if(park)rows.push({kind:'park_fee',value:park.value,detail:park.euro});
  const ee=eePowerOf(title,text);if(ee)rows.push({kind:'ee_power',value:ee.value,detail:String(ee.mw)});
+ const dog=dogTaxOf(title,text);if(dog)rows.push({kind:'dog_tax',value:dog.value,detail:dog.euro});
  const land=landPriceOf(title,text);if(land)rows.push({kind:'land_price',value:land.value,detail:land.euro});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
  return rows;
