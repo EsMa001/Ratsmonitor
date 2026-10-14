@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v18';
+export const FACTS_VERSION='facts-v19';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -299,6 +299,31 @@ export function kitaFeeOf(title,text){
  const eur=all.match(/(?<![\d.,])(\d{1,4}(?:,\d{2})?)\s*(?:€|Euro|EUR)/);
  return {direction,euro:eur?eur[1]:''};
 }
+/* Jahresergebnis eines Jahresabschlusses (Finanzen, Jahresabschluss und Prüfung): Überschuss oder Fehlbetrag mit Betrag, zuerst
+   aus dem Beschlussvorschlag, sonst aus dem Text. Nur der Abschluss selbst, nicht Vorjahre, Plan- oder Prognosewerte, nicht
+   Prüfaufträge, Prüfberichte ohne Feststellung oder Rechnungsprüfungsordnungen. */
+const RESULT_TITLE=/Jahresabschlu|Jahresrechnung|Gesamtabschlu|Jahresergebnis|Haushaltsrechnung/i;
+const NOT_RESULT_TITLE=/Wirtschaftsprüf|Abschlussprüfer|Rechnungsprüfungsordnung|Prüfungsamt|Prüfbericht|Bestellung|Bestimmung|Beauftragung/i;
+const RESULT_NUM=String.raw`(-\s?)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d{1,2})?)\s*(Mio\.?|Millionen|TEUR|TEuro|T€|Tsd\.?\s*(?:€|EUR|Euro))?\s*(€|EUR|Euro)?`;
+const RESULT_RE=new RegExp(String.raw`\b(Jahresüberschuss\w*|Jahresfehlbetrag\w*|Gesamtüberschuss\w*|Gesamtfehlbetrag\w*|Jahresgewinn\w*|Jahresverlust\w*|Jahresergebnis\w*|Bilanzgewinn\w*|Bilanzverlust\w*|(?:mit einem|einen|ein) (?:Überschuss|Fehlbetrag|Gewinn|Verlust))\b[^.;]{0,40}?(?:in Höhe von|von|:|betr[aä]g\w*|mit|(?<![\d.,])(?=\s*(?:EUR|€)?\s*-?\s?\d)(?!\s*(?:19|20)\d\d\b))\s*(?:EUR|€)?\s*`+RESULT_NUM,'gi');
+const NOT_RESULT_SENT=/Vorjahr|Plan(?:ansatz|wert|ung)?\b|geplant|prognos|erwartet|voraussichtlich|Wirtschaftsplan|Haushaltsplan|Prognose|aus dem Jahr|Vortrag aus|Gewinnvortrag|Verlustvortrag|kumuliert|verbesser|verschlechter|Abweichung|gegenüber|im Vergleich/i;
+export function annualResultOf(title,text){
+ const t=String(title||'');if(!RESULT_TITLE.test(t)||NOT_RESULT_TITLE.test(t))return null;
+ // „i.H.v.“ würde den Satz an der Abkürzung trennen
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bi\.\s?H\.\s?v\./g,'in Höhe von').split(SENTENCE)){if(s.length>1500)continue;
+  for(const m of s.matchAll(RESULT_RE)){const unit=m[4]||'',cur=m[5]||'';if(!unit&&!cur)continue;
+   // Tabellen über mehrere Jahre („2019 2020 2021 … Jahresergebnis 298.923,20 €“) und lose „ein Fehlbetrag“ ohne Abschluss
+   if(/(?:(?:19|20)\d\d\s+){3}/.test(s.slice(Math.max(0,m.index-120),m.index)))continue;
+   if(/^(?:mit einem|einen|ein)\b/i.test(m[1])&&!/schließt|abgeschlossen|abschließt|Ergebnisrechnung|Wirtschaftsjahr|Geschäftsjahr|Haushaltsjahr/i.test(s.slice(Math.max(0,m.index-120),m.index+m[0].length+30)))continue;
+   // Vorjahr, Plan, Prognose nur im Umfeld des Treffers prüfen (lange Sätze aus Tabellen)
+   if(NOT_RESULT_SENT.test(s.slice(Math.max(0,m.index-80),m.index+m[0].length))||/^\s*(?:Vorjahr|im Vorjahr|gegenüber|im Vergleich)/i.test(s.slice(m.index+m[0].length,m.index+m[0].length+30)))continue;let v=Number(m[3].replace(/\./g,'').replace(',','.'));
+   if(/^(Mio|Millionen)/.test(unit))v*=1e6;else if(/^(TEUR|TEuro|T€|Tsd)/.test(unit))v*=1e3;
+   const neg=!!m[2]||/fehlbetrag|verlust/i.test(m[1]);if(!v||v>5e9)continue;
+   return {value:neg?'Fehlbetrag':'Überschuss',euro:Math.round(v)};}}
+  return null;};
+ return pick(decision(text))||pick(text);
+}
+
 /** Neue Kita-Plätze (größte Zahl in einem Satz mit Kita-Bezug und Ausbau), sonst null */
 // Kein Ausbau: Schließung, Abbau, Unterkünfte für Geflüchtete (auch dort ist von Plätzen die Rede)
 const NOT_PLACES=/Rückbau|Ersatzneubau|Schließung|geschlossen|Abbau|abgebaut|Wegfall|Geflüchtete|Flüchtling|Asyl|Unterbringung|Unterkunft|Pflegeheim|Seniorenheim|Senior|Demenz|Pflegebedürft|Altenpflege|Tagespflege für (ältere|Senioren)/i;
@@ -522,6 +547,7 @@ export function factsOf(title,text){
  for(const x of hebesatzOf(title,text))rows.push({kind:'hebesatz',value:x.tax,detail:`${x.to}|${x.from}`});
  for(const x of feeRateOf(title,text))rows.push({kind:'fee_rate',value:x.kind,detail:`${x.to}|${x.from}|${x.unit}`});
  const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});
+ const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:String(result.euro)});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
  return rows;
 }
