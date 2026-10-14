@@ -11,24 +11,26 @@ export const DOCUMENT_TYPES=Object.freeze({
  other:'Sonstiges (Titel ohne erkennbare Art, meist Anlagen)',
 });
 const RULES=[
- ['minutes',/niederschrift|protokoll/],
+ ['minutes',/niederschrift|protokoll|beratungsergebnis/],
  // „Nachtrag“ nur als eigenes Wort („1. Nachtrag zur Tagesordnung“), nicht „Nachtragshaushalt“ (Messung 13.10.2026)
- ['invitation',/einladung|bekanntmachung|tagesordnung|\bnachtrag\b|nachlieferung|sitzungskalender|sitzungsmappe/],
+ ['invitation',/einladung|bekanntmachung|amtsblatt|tagesordnung|\bnachtrag\b|nachlieferung|sitzungskalender|sitzungsmappe/],
  // "anlage" only as a word of its own: "Kläranlage", "Sportanlage" in a subject are no attachments
  ['attachment',/(?:\b|_)anlage|\banhang|präsentation|praesentation|stellungnahme|lageplan|übersicht|skizze|planteil|schriftteil|\bplan a\d/],
  // "Beschlussvorlage" and "Beschlussvorschlag" are papers; a decision text records what was decided.
  ['decision',/beschlossene fassung|beschlüsse|abstimmungsergebnis|anhörungsergebnis|punktausz|beschlu(?:ss|ß)(?!-?\s?vorlage|vorschlag|empfehlung|kontroll|lauf|entwurf)|auszug|infotext/],
  // „Sammeldokument“ ist meist die Vorlage eines Punkts samt Anlagen (gleicher Text wie die Vorlage); hängt es an vielen
  // Berichten, erkennt sessionDocument es als Unterlage der ganzen Sitzung.
- ['paper',/vorlage|antrag|eilentscheidung|anfrage|mitteilung|drucksache|kurzinformation|beschlussvorschlag|beschlussempfehlung|bericht|sammeldokument/],
+ ['paper',/^information\b|vorlage|antrag|eilentscheidung|anfrage|mitteilung|drucksache|kurzinformation|beschlussvorschlag|beschlussempfehlung|bericht|sammeldokument/],
 ];
 /** Version of the rules below; the PDF store re-reads all kinds when it changes (scripts/pdf-store/budget.mjs --backfill) */
-export const DOC_TYPE_VERSION=5;
+export const DOC_TYPE_VERSION=6;
 const typeOf=t=>RULES.find(([,pattern])=>pattern.test(t))?.[0]||null;
 /* The first word names the document ("Beschlussvorlage …", "Anlage 3 …"); words further on usually belong to the subject
    ("… Stellungnahme der Gemeinde zum Bauvorhaben", "… Genehmigung des Protokolls"). "Vorlage (Anlage 2)" is an attachment. */
+// Falsch dekodiertes UTF-8 im Titel („BeschlÃ¼sse“, Messung doc-i, 14.10.2026)
+const demangle=t=>t.includes('Ã')?t.replace(/Ã¤/g,'ä').replace(/Ã¶/g,'ö').replace(/Ã¼/g,'ü').replace(/ÃŸ/g,'ß').replace(/Ã„/g,'Ä').replace(/Ã–/g,'Ö').replace(/Ãœ/g,'Ü'):t;
 export function documentType(title){
- const t=String(title||'').toLowerCase().trim();
+ const t=demangle(String(title||'')).toLowerCase().trim();
  if(/^\S+\s*\((anlage|anhang)\b/.test(t))return 'attachment';
  const first=t.match(/^[a-zäöüß-]+/)?.[0];
  return (first&&typeOf(first))||typeOf(t)||'other';
@@ -39,10 +41,10 @@ export function documentType(title){
 export const HEAD_CHARS=600;
 const HEAD_RULES=[
  ['attachment',/^.{0,60}?\b(anlage|anhang)\s*(nr\.?\s*)?\d|^.{0,40}?\b(anlage|anl\.)\s*(?:\d+\s*)?[–-]?\s*(?:zur|zu der)\b/],
- ['decision',/\b(auszug aus (der|dem) (niederschrift|protokoll|sitzungsprotokoll)|beschlussauszug|auszug aus dem beschlussbuch|beschlussausfertigung|beschlussabschrift|auszugsweise abschrift|beschluss aus (der|dem) (niederschrift|protokoll)|beglaubigter ?auszug|^.{0,30}?auszug \d+\. sitzung|auszug aus (der|dem) (öffentlichen )?(sitzung|protokoll))/],
+ ['decision',/\b(auszug aus (der|dem) (niederschrift|protokoll|sitzungsprotokoll)|beschlussauszug|auszug aus dem beschlussbuch|beschlussausfertigung|beschlussabschrift|auszugsweise abschrift|beschluss aus (der|dem) (niederschrift|protokoll)|beglaubigter ?auszug|^.{0,30}?auszug \d+\. sitzung|^.{0,80}?\bbeschluss (?:aus )?der (?:\d+\. )?sitzung|auszug aus (der|dem) (öffentlichen )?(sitzung|protokoll))/],
  ['minutes',/\b(niederschrift|sitzungsniederschrift|protokoll|ergebnisprotokoll|kurzprotokoll) (über|der|des|zur|vom|von)\b/],
  // Session documents only by their heading: "Tagesordnung" also stands in letters ("Antrag zur Tagesordnung")
- ['invitation',/^.{0,150}?\b(einladung (zur|zu der|zu einer)|öffentliche bekanntmachung|bekanntmachung (zur|der) sitzung)\b|^.{0,80}?\btagesordnung (für|der|zur)\b/],
+ ['invitation',/^.{0,150}?\b(einladung (zur|zu der|zu einer)|öffentliche bekanntmachung|bekanntmachung (zur|der) sitzung|bekanntmachung \d+\. sitzung|amtsblatt)\b|^.{0,80}?\btagesordnung (für|der|zur)\b/],
  ['paper',/\b(beschlussvorlage|sitzungsvorlage|verwaltungsvorlage|informationsvorlage|mitteilungsvorlage|berichtsvorlage|vorlage der verwaltung|vorlagen?[- ]?(nr|nummer)|vorlage:? [a-z]{0,6}[-/ ]?\d+|drucksache|antrag der|antrag des|antrag nr|^vorlage\s*-\s*öffentlich|anfrage der|anfrage des|antwort (zur|auf die) anfrage|beantwortung der anfrage|stellungnahme der verwaltung)\b/],
 ];
 export function documentTypeFromText(text){
@@ -61,7 +63,8 @@ export function effectiveType(titleType,textType,title=''){
  // Ein Titel, der mit „Anlage“ beginnt, bleibt Anlage, auch wenn ihr Kopf wie eine Vorlage aussieht (eingereichter Antrag,
  // Vorlage eines anderen Gremiums, Formblatt; Messung doc-g, 14.10.2026)
  if(titleType==='attachment'&&(/^[\W\d]*(?:\d+\s*-\s*)?anlage\b/i.test(String(title).trim())||FILE_NAME.test(String(title).match(/\((.+)\)\s*$/)?.[1]||'')))return 'attachment';
-  if(textType==='paper'&&!['decision','minutes'].includes(titleType))return 'paper';
+  // Eine Bekanntmachung nennt im Text die Anträge der Tagesordnung, bleibt aber Sitzungsunterlage (Messung doc-i, 14.10.2026)
+  if(textType==='paper'&&!['decision','minutes'].includes(titleType)&&!(titleType==='invitation'&&/^\W*(?:öffentliche\s+)?(?:bekanntmachung|einladung|amtsblatt|tagesordnung)/i.test(String(title).trim())))return 'paper';
  if(titleType==='other')return textType;
  return titleType;
 }

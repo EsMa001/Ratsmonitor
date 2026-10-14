@@ -48,7 +48,7 @@ test('effektive Art: Vorlage laut Text gilt, Titel ohne Art übernimmt den Text,
 });
 
 test('Fassung 3: „Nachtrag“ nur als Wort, Sammeldokument eines Punkts ist eine Vorlage',()=>{
- assert.equal(documentType('Information G/VIII/26/0119 (Vorberatung Nachtragshaushalt 2026).pdf'),'other');
+ assert.equal(documentType('Information G/VIII/26/0119 (Vorberatung Nachtragshaushalt 2026).pdf'),'paper'); // Fassung 6: „Information …“ als erstes Wort ist die Vorlage (doc-h, doc-i)
  assert.equal(documentType('Einladung 1. Nachtrag (Ausschuss für Planung)'),'invitation');
  assert.equal(documentType('Nachtrag zur Tagesordnung'),'invitation');
  assert.equal(documentType('Sammeldokument öffentlich'),'paper');

@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v20';
+export const FACTS_VERSION='facts-v21';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -25,29 +25,40 @@ export const PARTIES=[
  ['AfD',/\bAfD\b/],
  ['Linke',/\bDIE LINKE\b|\b[Dd]ie Linke\b|\bLinke\b|\bLINKE\b/],
  ['BSW',/\bBSW\b|Bündnis Sahra Wagenknecht/],
- ['Freie Wähler und Wählergruppen',/Freie\s+Wähler|\bFWG\b|\bUWG\b|\bUBG\b|\bFBI\b|Wählergemeinschaft|Wählergruppe|Bürgerliste|Bürgerforum|Unabhängige/i],
+ ['Freie Wähler und Wählergruppen',/Freien?\s+Wähler|Freie Liste|\bBfB\b|\bFWG\b|\bUWG\b|\bUBG\b|\bFBI\b|Wählergemeinschaft|Wählergruppe|Bürgerliste|Bürgerforum|Unabhängige/i],
  ['Volt',/\bVolt\b/],
  ['ÖDP',/\bÖDP\b/],
  ['Die PARTEI',/Die PARTEI\b/],
 ];
 // Der Antragsteller steht in einer festen Wendung: „Antrag der SPD-Fraktion“, „Anfrage der Fraktion BÜNDNIS 90/DIE GRÜNEN“,
 // „Antrag CDU-Fraktion“, „Fraktion DIE LINKE: Antrag …“. Nur diese Wendung wird nach Parteien abgesucht, nicht der ganze Text.
-const KIND='(Antrag|Anträge|Änderungsantrag|Ergänzungsantrag|Dringlichkeitsantrag|Prüfauftrag|Anfrage|Große Anfrage|Kleine Anfrage|Anregung)';
+const KIND='(Antrag|Anträge|Änderungsantrag|Prüfantrag|Haushaltsantrag|Eilantrag|Ergänzungsantrag|Dringlichkeitsantrag|Prüfauftrag|Anfrage|Große Anfrage|Kleine Anfrage|Anregung)';
 const WHO='(Fraktion(?:en)?|Ratsfraktion|Kreistagsfraktion|Gruppe|Fraktionsgemeinschaft)';
 const APPLICANT=[
- new RegExp(`${KIND}\\s*(?:der|des|von\\s+der|von|:)?\\s*([^\\n.;]{0,90}?${WHO}[^\\n.;]{0,70})`,'i'),
+ // Nicht mitten im Wort („Haushaltsbegleitantrag zur …“); zusammengesetzte Antragsarten stehen in KIND
+ new RegExp(`(?<![a-zäöüß])${KIND}\\s*(?:der|des|von\\s+der|von|:)?\\s*([^\\n.;]{0,90}?${WHO}[^\\n.;]{0,70})`,'i'),
  new RegExp(`([^\\n.;]{0,60}-${WHO}|${WHO}\\s+[^\\n.;]{2,60})\\s*[:,–-]?\\s*${KIND}`,'i'),
+ // Partei ohne „Fraktion“: „Antrag LINKE LISTE auf …“, „Antrag der SPD vom …“ (Messung CFA, 14.10.2026)
+ new RegExp(`${KIND}\\s+(?:der\\s+|des\\s+)?(?:[\\wäöü]+-)?(?:CDU|CSU|SPD|FDP|AfD|BSW|LINKE|Linken?|GRÜNEN|Grünen|Bündnis 90|Freien Wähler|FWG|UWG|Volt|ÖDP)\\b[^\\n.;:]{0,40}`),
+ // „Einreicherin: Maria X, Fraktion DIE LINKE.“
+ new RegExp(`Einreicher(?:in)?:[^\\n;]{0,80}?${WHO}[^\\n;]{0,40}`,'i'),
 ];
 /** Fraktionen als Antragsteller: {parties:[...], kind:'antrag'|'anfrage'} oder null. Mehrere bei gemeinsamen Anträgen. */
 export function factionsOf(title,head=''){
- if(COLLECTIVE.test(String(title||'')))return null;
- for(const source of [String(title||''),String(head||'').slice(0,1500)]){
+ // Nennt der Titel selbst den Antragsteller, zählt er auch bei Sammelwörtern („Sachstand … (Anfrage der Fraktion X)“,
+ // „Antrag der CDU-Fraktion - Maßnahmen zum Haushaltssicherungskonzept“, „Beantwortung der Anfrage …“; Messung CFA,
+ // 14.10.2026). Den Text liest nur, wer kein Sammelpunkt ist.
+ if(/\bAnfragen\b|\bAnträge\b|Verschiedenes|Eingänge|Niederschrift|Tagesordnung/i.test(String(title||'')))return null;
+ const collective=COLLECTIVE.test(String(title||''));
+ for(const source of collective?[String(title||'')]:[String(title||''),String(head||'').slice(0,1500)]){
   for(const re of APPLICANT){
-   const m=source.match(re);if(!m)continue;
-   // „Änderungsantrag der SPD zum Antrag der CDU-Fraktion“: nach „zum/zur“ steht der Antrag, auf den er sich bezieht
-   const phrase=m[0].split(/\s(?:zum|zur|zu dem|betreffend den)\s/i)[0];
-   const parties=PARTIES.filter(([,r])=>r.test(phrase)).map(([n])=>n);
-   if(parties.length)return {parties,kind:/anfrage/i.test(phrase)?'anfrage':'antrag'};
+   // Alle Fundstellen: „Haushaltsbegleitantrag zur … (Ergänzungsantrag der Fraktionen CDU, SPD …)“
+   for(const m of source.matchAll(new RegExp(re.source,re.flags+'g'))){
+    // „Änderungsantrag der SPD zum Antrag der CDU-Fraktion“: nach „zum/zur“ steht der Antrag, auf den er sich bezieht
+    const phrase=m[0].split(/\s(?:zum|zur|zu dem|betreffend den)\s/i)[0];
+    const parties=PARTIES.filter(([,r])=>r.test(phrase)).map(([n])=>n);
+    if(parties.length)return {parties,kind:/anfrage/i.test(phrase)?'anfrage':'antrag'};
+   }
   }
  }
  return null;
