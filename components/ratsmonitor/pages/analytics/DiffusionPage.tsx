@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
-import { Befund, zuThema } from "./Befund";
+import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

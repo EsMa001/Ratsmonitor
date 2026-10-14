@@ -101,7 +101,6 @@ export function GraphView({ nodes, edges, selected, pair, onSelect, zoomRef }: {
     layout(sim.current, edges, 420);
     fit();
     /* Neue Daten: Startlage mit Zufall und Messung, einmal je Daten gerechnet; das Abbild folgt sofort */
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges]);

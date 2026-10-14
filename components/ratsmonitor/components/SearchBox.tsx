@@ -284,6 +284,8 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
   const narrow = usePhone();
   /* Strg+K bzw. ⌘K setzt den Cursor in die Suche */
   const mac = useClient(() => /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), false);
+  /* Umschalt+Esc nutzt die aktuelle Fassung (die Aktionen ändern sich mit Karte und Ortsliste) */
+  const { resetAll } = search;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!shown(inputRef.current)) return;
@@ -295,13 +297,13 @@ export function SearchBox({ glass = false, listMax, listUp = false, onSubmit, st
       /* Umschalt+Esc: Suche und alle Filter zurücksetzen, überall auf der Seite */
       if (e.key === "Escape" && e.shiftKey && !document.querySelector("dialog[open]")) {
         e.preventDefault();
-        search.resetAll();
+        resetAll();
         setOpen(false);
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, []);
+  }, [resetAll]);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const n = picks.length;

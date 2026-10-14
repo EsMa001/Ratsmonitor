@@ -225,7 +225,6 @@ export function MapPanel({ active }: { active: boolean }) {
   useEffect(() => {
     if (!active) return;
     engine?.setExplore(explore, explore ? { ...badgeCounts } : null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, engine, explore, badgeCounts]);
 
   /* Suchgesteuertes Zentrieren: Umkreis → Kreis; Ort → Ort bzw. Kreis bei „inkl. Kreis“; sonst alle Treffer; ohne Suche Deutschland */

@@ -44,7 +44,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
     Object.assign(v, levels);
     engine.update(v, picked, null, all, level);
   }, [engine, levels, all, picked, level]);
-  useEffect(() => { if (engine) shown.length ? engine.focusMany(shown) : engine.focusArea(""); }, [engine, shown]);
+  useEffect(() => { if (!engine) return; if (shown.length) engine.focusMany(shown); else engine.focusArea(""); }, [engine, shown]);
 
   return (
     <div className="relative h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[540px]">

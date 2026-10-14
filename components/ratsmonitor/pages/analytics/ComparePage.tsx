@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prettyTerm } from "../../lib/terms";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
-import { Befund, zuThema } from "./Befund";
+import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { STATUS } from "../../lib/constants";
@@ -53,8 +53,6 @@ function datenlage(p: Place): string[] {
   return out;
 }
 
-const TOPIC_NAME = new Map<string, string>(LABELS.map((l: { id: string; name: string }) => [l.id, l.name]));
-
 export function ComparePage() {
   const { geo } = useData();
   const [ort1, setOrt1] = useState<PlaceEntry | null>(() => asPlace(ORT.koeln));
@@ -75,7 +73,7 @@ export function ComparePage() {
     a && b ? new URLSearchParams({ q: t.trim(), area: a.ags, label: "", month: "", from: "", to: todayLocal(), scope: "only", status: "", level: "city", more: b.ags + ":only" }).toString() : "";
   const query = buildQuery(ort1, ort2, thema);
   /* „(Kreis)“ nur bei echten Landkreisen; eine kreisfreie Stadt heißt einfach wie die Stadt */
-  const name = (ags: string, scope: string) => { const i = geo?.info(ags); return (i?.name ?? ags) + (ags.length === 5 && /^(Landkreis|Kreis|Stadtkreis) /.test(i?.meta ?? "") ? " (Kreis)" : ""); };
+  const name = (ags: string) => { const i = geo?.info(ags); return (i?.name ?? ags) + (ags.length === 5 && /^(Landkreis|Kreis|Stadtkreis) /.test(i?.meta ?? "") ? " (Kreis)" : ""); };
 
   const run = (a = ort1, b = ort2, t = thema) => {
     if (!a || !b) return setError("Bitte beide Orte wählen.");
@@ -98,7 +96,7 @@ export function ComparePage() {
 
   const stale = !!res && ranKey !== query && !loading;
 
-  const names = res ? res.places.map((p) => name(p.ags, p.scope)) : [];
+  const names = res ? res.places.map((p) => name(p.ags)) : [];
   const topicRows = useMemo(() => {
     if (!res) return [];
     /* Anteile an den Vorgängen mit Thema: „Noch nicht eingeordnet“ (auch Formalien und Sammelpunkte, die kein Thema haben)

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
-import { Befund, zuThema } from "./Befund";
+import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -51,7 +51,6 @@ export function TrendsPage() {
   /* Füllwörter raus; Aufsteiger und Neues nur mit Mindestzahl Gebiete: ein einzelnes Dokument ist kein Trend */
   const tidy = (r: Result): Result => { const ok = (l: Trend[]) => l.filter((t) => !isFiller(t.term)); const many = (l: Trend[]) => { const k = ok(l); const m = k.filter((t) => t.regions >= 3); return r.totals.regions >= 3 && m.length ? m : k; }; return { ...r, rising: many(r.rising), emerging: many(r.emerging), falling: ok(r.falling), all: ok(r.all) }; };
   const { res: raw, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key, url: `/api/analytics/trends?${key}`, initial: !given, fallback: "Die Analyse konnte nicht berechnet werden.", onDone: (r) => { const t = tidy(r); setPicked(""); setTab(t.rising.length ? "rising" : t.emerging.length ? "emerging" : "falling"); } });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const res = useMemo(() => (raw ? tidy(raw) : null), [raw]);
 
   useEffect(() => {

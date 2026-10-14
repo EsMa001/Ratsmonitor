@@ -37,7 +37,7 @@ function sameCounts(a: Record<string, number> | null, b: Record<string, number> 
   if (!a || !b) return false;
   let n = 0;
   for (const k in a) { if (a[k] !== b[k]) return false; n++; }
-  for (const _ in b) n--;
+  n -= Object.keys(b).length;
   return n === 0;
 }
 /** Gleiche Liste (gleiche Referenz oder dieselben Einträge in derselben Reihenfolge). */

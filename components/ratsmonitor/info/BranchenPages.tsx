@@ -7,10 +7,9 @@ import { AnalyticsLogo } from "../components/Brand";
 import { LiveThumb } from "./BranchenLive";
 import { Reveal } from "../pages/analytics/Reveal";
 import { useRouter } from "next/navigation";
-import { ANALYSEN, ENTERPRISE, PLENARAX_VORTEILE, type EnterpriseBlock } from "./branchen-enterprise";
+import { ANALYSEN, ENTERPRISE, PLENARAX_VORTEILE } from "./branchen-enterprise";
 
 function Timeline({ b }: { b: Branche }) {
-  const { name } = useBrand();
   const first = Math.min(...b.reported);
   const last = Math.max(...b.reported);
   return (
@@ -31,20 +30,8 @@ function Timeline({ b }: { b: Branche }) {
   );
 }
 
-function EnterpriseSection({ e, terms, slug }: { e: EnterpriseBlock; terms: string[]; slug: string }) {
-  const { name } = useBrand();
+function EnterpriseSection({ terms }: { terms: string[] }) {
   const router = useRouter();
-  const card = (id: keyof typeof ANALYSEN, text: string, term: string) => {
-    const a = ANALYSEN[id];
-    return (
-      <button key={id} type="button" onClick={() => router.push(a.href)} className="group flex flex-col text-left">
-        <div className="transition-transform duration-300 group-hover:-translate-y-1"><LiveThumb id={id} term={term} /></div>
-        {/* Handy: Überschrift über dem Vorschaubild */}
-        <h3 className="m-0 mt-4 text-[16px] font-semibold text-slate-900 max-sm:order-first max-sm:mb-3 max-sm:mt-0">{a.name}</h3>
-        <p className="m-0 mt-2 text-[16px] leading-relaxed text-slate-500">{text}</p>
-      </button>
-    );
-  };
   return (
     <section className="ri-sec" style={{ backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0) 40%, var(--rm-page,#ffffff) 100%), radial-gradient(circle, rgba(13,148,136,0.22) 1.3px, transparent 1.8px)", backgroundSize: "100% 100%, 22px 22px" }}>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2" style={{ marginTop: -40 }}>
@@ -76,7 +63,7 @@ export function BranchePage({ b }: { b: Branche }) {
   const beispiele = b.examples ?? [];
   return (
     <>
-      <PageHead icon={b.icon} label="Anwender" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview term={term} example={beispiele[pick] ?? b.example} topics={b.watch} active={pick} onPick={setPick} />}>
+      <PageHead icon={b.icon} label="Anwender" name={b.name} title={b.title} lead={b.intro} aside={<HitPreview example={beispiele[pick] ?? b.example} topics={b.watch} active={pick} onPick={setPick} />}>
         <div className="ri-actions">
           <SearchTermButton term={term} />
         </div>
@@ -119,7 +106,7 @@ export function BranchePage({ b }: { b: Branche }) {
         <Timeline b={b} />
       </section>
 
-      {ENTERPRISE[b.slug] && <EnterpriseSection e={ENTERPRISE[b.slug]} terms={b.keywords} slug={b.slug} />}
+      {ENTERPRISE[b.slug] && <EnterpriseSection terms={b.keywords} />}
 
     </>
   );

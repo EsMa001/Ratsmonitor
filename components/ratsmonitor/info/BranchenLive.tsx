@@ -30,21 +30,6 @@ function load(): Promise<Snap> {
   return snapshot;
 }
 
-function Bars({ rows }: { rows: [string, number][] }) {
-  const max = Math.max(...rows.map((r) => r[1]), 1);
-  return (
-    <ul className="m-0 list-none space-y-2 p-0">
-      {rows.map(([label, n]) => (
-        <li key={label} className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_auto] items-center gap-3 text-[14px] text-slate-600">
-          <span className="truncate">{label}</span>
-          <span className="h-2 rounded bg-slate-100"><span className="block h-2 rounded bg-teal-600" style={{ width: `${(n / max) * 100}%` }} /></span>
-          <span className="tabular-nums text-slate-500">{nf(n)}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 const STATUS_FARBE: Record<string, string> = { approved: "#0d9488", recommended: "#5eead4", consulting: "#99d6cf", announced: "#cbd5e1", rejected: "#0f172a", postponed: "#94a3b8", info: "#e2e8f0" };
 const STATUS_NAME: Record<string, string> = Object.fromEntries(STATUS.map((x: { id: string; label: string }) => [x.id, x.label]));
 const CLS = ["#b3dfda", "#8ccdc7", "#6ebfb8", "#0f766e"];
@@ -123,7 +108,7 @@ function MiniFlow({ nodes, edges }: { nodes: [string, number, number][]; edges: 
 }
 
 /** Mini-Themenprofil des Ortsvergleichs: links der erste Ort, rechts der zweite, in der Mitte das Themenfeld */
-function MiniVergleich({ names, counts, rows }: { names: string[]; counts: number[]; rows: [string, number, number][] }) {
+function MiniVergleich({ names, rows }: { names: string[]; rows: [string, number, number][] }) {
   const W = 260, RH = 23, TOP = 24, H = TOP + rows.length * RH + 2, MID = 130, HALF = 46, BAR = 80;
   const max = Math.max(...rows.flatMap((r) => [r[1], r[2]]), 1);
   return (
@@ -209,7 +194,7 @@ function mini(id: AnalyseId, d: Loose, geo?: Snap["geo"]): ReactNode {
       </div>
     );
   }
-  if (id === "vergleich") return d.rows ? <MiniVergleich names={d.names} counts={d.counts} rows={d.rows} /> : null;
+  if (id === "vergleich") return d.rows ? <MiniVergleich names={d.names} rows={d.rows} /> : null;
   if (id === "gremien") return d.nodes ? <MiniFlow nodes={d.nodes} edges={d.edges} /> : null;
   if (id === "graph") return d.nodes ? <MiniGraph nodes={d.nodes} edges={d.edges} /> : null;
   return null;

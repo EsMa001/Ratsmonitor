@@ -1,7 +1,7 @@
 import { useCallback, type ReactNode } from "react";
 import { focusSearch } from "../components/SearchBox";
 import { StepTimeline } from "../components/results/ArticleCard";
-import { useBrand, useBrandText } from "../lib/brand";
+import { useBrandText } from "../lib/brand";
 import { useAppNav } from "../state/nav";
 import { useSearch } from "../state/search";
 import { STATUS_LABEL, type Example, type Qa, type Rich as RichText, type Status } from "./content";
@@ -125,8 +125,7 @@ export function PlacePill({ place }: { place: string }) {
 }
 
 /** Dunkle Benachrichtigung über einem Beispiel-Treffer */
-export function HitPreview({ term, example, topics, active, onPick }: { term: string; example: Example; topics?: string[]; active?: number; onPick?: (i: number) => void }) {
-  const { name } = useBrand();
+export function HitPreview({ example, topics, active, onPick }: { example: Example; topics?: string[]; active?: number; onPick?: (i: number) => void }) {
   const openSearch = useOpenSearch();
   return (
     <Reveal delay={150}>

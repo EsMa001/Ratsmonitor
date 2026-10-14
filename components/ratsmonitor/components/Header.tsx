@@ -1,13 +1,11 @@
 import { usePathname, useRouter } from "next/navigation";
 import { usePhone } from "../lib/usePhone";
 import { MainMenu } from "../menu/MainMenu";
-import { useAppNav } from "../state/nav";
 import { AccountMenu } from "./AccountMenu";
 import { Brand } from "./Brand";
 import { DevTierSwitcher } from "./DevTierSwitcher";
 
 export function Header() {
-  const { view } = useAppNav();
   const pathname = usePathname();
   const router = useRouter();
   const kontoPage = pathname.startsWith("/konto/") ? pathname.split("/")[2] : "";
