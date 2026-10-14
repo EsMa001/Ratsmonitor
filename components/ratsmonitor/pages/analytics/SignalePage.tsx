@@ -126,8 +126,8 @@ export function SignalePage() {
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen. Mit Ort, Stand des Verfahrens, Kennzahlen und Originalquelle.</p>
       </PageBand>
 
-      <nav aria-label="Signal" className="-mx-[max(1vw,16px)] overflow-x-auto px-[max(1vw,16px)] print:hidden">
-        <ul className="m-0 flex w-max list-none gap-2 p-0">
+      <nav aria-label="Signal" className="print:hidden">
+        <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
           {SIGNALE.map(([id, label]) => {
             const c = res?.signals.find((s) => s.id === id)?.count;
             const Icon = ICONS[id];
