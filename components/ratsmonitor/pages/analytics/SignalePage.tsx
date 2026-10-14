@@ -182,7 +182,6 @@ export function SignalePage() {
           {res.phases.length > 0 && (
             <section className="mt-8" aria-label="Stand">
               <h3 className="text-[18px] font-semibold">Stand</h3>
-              <p className="mt-1 text-[14px] text-slate-500">{res.signal.phaseText} Klick grenzt die Liste ein.</p>
               <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
                 <li><button type="button" aria-pressed={!phase} onClick={() => pick({ phase: "" })}
                   className={`inline-flex h-6 items-center rounded-full px-2.5 text-[12px] font-semibold ${!phase ? "bg-slate-900 text-white" : "bg-white text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50"}`}>Alle <span className="ml-1 opacity-75">{n(res.phases.reduce((a, p) => a + p.count, 0))}</span></button></li>
@@ -201,12 +200,6 @@ export function SignalePage() {
             </section>
           )}
 
-          {res.places.length > 1 && (
-            <section className="mt-8" aria-label="Wo">
-              <h3 className="text-[18px] font-semibold">Wo am meisten</h3>
-              <p className="mt-1 text-[14px] text-slate-500">{res.places.slice(0, 12).map((p) => `${p.name} ${n(p.count)}`).join(" · ")}{(res.placeCount ?? 0) > 12 ? ` · und ${n((res.placeCount ?? 0) - 12)} weitere` : ""}</p>
-            </section>
-          )}
 
           {items.length > 0 && (
             <section className="mt-8" aria-label="Vorgänge">
