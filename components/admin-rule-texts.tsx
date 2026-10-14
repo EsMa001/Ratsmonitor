@@ -4,6 +4,8 @@ import {StandLine} from '@/components/admin-stand';
 import {AdminPageHead,Alert,Kpis} from '@/components/admin-ui';
 import {when,dur} from '@/components/admin-pdf-parts';
 import type {Stand} from '@/shared/admin-types';
+import {THEMES,SUBTOPICS} from '@/shared/themes.mjs';
+import QUALITY from '@/shared/rule-quality.json';
 type Counts={online:number;aiSummaries:number;ruleSummaries:number;ruleScoreSum:number;pdfArticles:number;aiLabels:number;unlabelled:number};
 type Summary={counts:Counts;stand?:Stand;statsPending?:number};
 type Step={name:string;seconds:number;ok:boolean;summary:Record<string,unknown>|null};
@@ -21,6 +23,12 @@ function stepNote(s:Step){
  return 'fertig';
 }
 const n=(v:number)=>v.toLocaleString('de-DE');
+type QualityRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;gate?:boolean};
+const QT=QUALITY.target;
+/** „12 %“ mit Hinweis, wenn unter dem Ziel */
+const goal=(v:number|null,min:number)=>v===null?'–':<>{v} %{v<min&&<span className="text-slate-500"> · unter Ziel</span>}</>;
+const shortDate=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4);
+const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:string;name:string})=>[t.id,t.name])),unklar:'Ohne Thema (noch nicht eingeordnet)'};
 const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:a/b<.01?2:a/b<.1?1:0})+' %':'–';
 /** Anteil der Artikel mit KI-Text, mit regelbasiertem Text und ohne, jeweils für Zusammenfassungen und Labels. */
 export function AdminRuleTexts(){
@@ -69,6 +77,11 @@ export function AdminRuleTexts(){
   {label:'Berichte mit Fakten',value:facts?n(facts.reports):job?'–':undefined,note:facts?n(facts.fromText)+' davon aus dem Text des Hauptdokuments, die übrigen aus dem Titel':'nach dem nächsten Lauf'},
   {label:'Fassung der Regeln',value:facts?facts.version:job?'–':undefined,note:facts?(facts.stale?n(facts.stale)+' Berichte noch mit älterer Fassung':'alle Berichte in dieser Fassung')+'; gezählt '+when(job?.last?.finishedAt):undefined},
  ];
+ /* Vorgänge je Thema und Berichte je Fakt aus dem letzten Lauf (Schritt „Zahlen für plenara.X“, scripts/plenara-x/build-x-cases.mjs) */
+ const xs=job?.last?.steps.find(st=>st.name==='Zahlen für plenara.X')?.summary as {themes?:Record<string,number>;subs?:Record<string,number>;facts?:Record<string,number>}|undefined;
+ const themeRows=xs?.themes?Object.entries(xs.themes).sort((a,b)=>b[1]-a[1]):[];
+ const themeTotal=themeRows.reduce((a,[,v])=>a+v,0);
+ const subsOf=(theme:string)=>SUBTOPICS.filter((u:{theme:string})=>u.theme===theme).map((u:{id:string;name:string})=>({name:u.name,n:xs?.subs?.[u.id]||0})).sort((a:{n:number},b:{n:number})=>b.n-a.n);
  const lab=[
   {label:'Ohne Label',value:c?pct(noL,total):undefined,note:c?n(noL)+' von '+n(total)+' Artikeln („Noch nicht eingeordnet“)':undefined},
   {label:'Mit KI-Label',value:c?pct(aiL,total):undefined,note:c?n(aiL)+' Artikel; die übrigen tragen das Label nach festen Regeln':undefined},
@@ -99,6 +112,31 @@ export function AdminRuleTexts(){
    <div className="admin-section-heading"><h2>Fakten</h2></div>
    <p className="admin-note">Beträge, Hebesätze, Gebühren, Förderungen und Fraktionsanträge für plenara.X, nach festen Regeln aus Titel und Hauptdokument. Gezählt am Ende jedes Laufs.</p>
    <div className="mt-6"><Kpis label="Kennzahlen der Fakten" items={fac}/></div>
+  </section>
+  <section id="regeltexte-themen" className="admin-section">
+   <div className="admin-section-heading"><h2>Themen</h2></div>
+   <p className="admin-note">Anteil der Sachvorgänge je Thema (Formalien, Sammelpunkte und Routine zählen nicht), darunter die Unterthemen; ein Vorgang kann mehrere Unterthemen haben. Gezählt am Ende jedes Laufs{job?.last?.finishedAt?', zuletzt '+when(job.last.finishedAt):''}.</p>
+   {!themeRows.length?<p className="admin-empty">Nach dem nächsten Lauf von „Themen & Texte“.</p>:<div className="mt-4">{themeRows.map(([id,v])=><div key={id} className="admin-bar-row">
+    <div><span>{THEME_NAME[id]||id}</span><span>{pct(v,themeTotal)} · {n(v)}</span></div>
+    <div className="admin-bar"><span style={{width:(100*v/themeTotal)+'%'}}/></div>
+    {id!=='unklar'&&<small className="mt-1 block text-[12px] text-slate-500">{subsOf(id).map((u:{name:string;n:number})=>u.name+' '+pct(u.n,v)).join(' · ')}</small>}
+   </div>)}</div>}
+  </section>
+  <section id="regeltexte-qualitaet" className="admin-section">
+   <div className="admin-section-heading"><h2>Qualität der Regeln</h2></div>
+   <p className="admin-note">Zuletzt gemessen an frischen Stichproben vom Server, von Hand eingetragen (shared/rule-quality.json). Qualität: von dem, was die Regel liefert, ist richtig. Abdeckung: von dem, was einen Wert haben sollte, bekommt ihn. Ziel: Qualität über {QT.quality} %, Abdeckung ab {QT.coverage} %. Im Atlas erscheinen Werte erst ab {QT.quality} %.</p>
+   {QUALITY.groups.map(g=><div key={g.id} className="mt-6 overflow-x-auto">
+    <h3>{g.name}</h3>
+    <table className="admin-table w-full"><thead><tr><th>Regel</th><th className="admin-number">Qualität</th><th className="admin-number">Abdeckung</th>{g.id==='facts'&&<th className="admin-number">Berichte</th>}{g.id==='facts'&&<th>Atlas</th>}<th>Stichprobe</th></tr></thead>
+     <tbody>{(g.rows as QualityRow[]).map(r=><tr key={r.id}>
+      <td>{r.name}{(r.version||r.note)&&<small>{[r.version,r.note].filter(Boolean).join(' · ')}</small>}</td>
+      <td className="admin-number">{goal(r.quality,QT.quality)}</td>
+      <td className="admin-number">{goal(r.coverage,QT.coverage)}</td>
+      {g.id==='facts'&&<td className="admin-number">{xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id]):'–'}</td>}
+      {g.id==='facts'&&<td>{r.gate?'freigegeben':'gesperrt'}</td>}
+      <td>{r.sample}<small>{shortDate(r.date)}</small></td>
+     </tr>)}</tbody></table>
+   </div>)}
   </section>
   <section id="regeltexte-labels" className="admin-section">
    <div className="admin-section-heading"><h2>Labels</h2></div>

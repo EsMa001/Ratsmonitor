@@ -17,13 +17,13 @@ const RULES=[
  // "anlage" only as a word of its own: "Kläranlage", "Sportanlage" in a subject are no attachments
  ['attachment',/\banlage|\banhang|präsentation|praesentation|stellungnahme|lageplan|übersicht/],
  // "Beschlussvorlage" and "Beschlussvorschlag" are papers; a decision text records what was decided.
- ['decision',/beschluss(?!vorlage|vorschlag|empfehlung)|auszug|infotext/],
+ ['decision',/beschlu(?:ss|ß)(?!vorlage|vorschlag|empfehlung)|auszug|infotext/],
  // „Sammeldokument“ ist meist die Vorlage eines Punkts samt Anlagen (gleicher Text wie die Vorlage); hängt es an vielen
  // Berichten, erkennt sessionDocument es als Unterlage der ganzen Sitzung.
  ['paper',/vorlage|antrag|anfrage|mitteilung|drucksache|beschlussvorschlag|beschlussempfehlung|bericht|sammeldokument/],
 ];
 /** Version of the rules below; the PDF store re-reads all kinds when it changes (scripts/pdf-store/budget.mjs --backfill) */
-export const DOC_TYPE_VERSION=3;
+export const DOC_TYPE_VERSION=4;
 const typeOf=t=>RULES.find(([,pattern])=>pattern.test(t))?.[0]||null;
 /* The first word names the document ("Beschlussvorlage …", "Anlage 3 …"); words further on usually belong to the subject
    ("… Stellungnahme der Gemeinde zum Bauvorhaben", "… Genehmigung des Protokolls"). "Vorlage (Anlage 2)" is an attachment. */
@@ -38,15 +38,16 @@ export function documentType(title){
    names the subject only. An attachment shows itself only right at the start ("Anlage 1 …"). null: no marker. */
 export const HEAD_CHARS=600;
 const HEAD_RULES=[
- ['attachment',/^.{0,60}?\b(anlage|anhang)\s*(nr\.?\s*)?\d/],
- ['decision',/\b(auszug aus (der|dem) (niederschrift|protokoll|sitzungsprotokoll)|beschlussauszug|auszug aus dem beschlussbuch|beschlussausfertigung|beschlussabschrift)/],
+ ['attachment',/^.{0,60}?\b(anlage|anhang)\s*(nr\.?\s*)?\d|^.{0,40}?\b(anlage|anl\.)\s*(?:\d+\s*)?[–-]?\s*(?:zur|zu der)\b/],
+ ['decision',/\b(auszug aus (der|dem) (niederschrift|protokoll|sitzungsprotokoll)|beschlussauszug|auszug aus dem beschlussbuch|beschlussausfertigung|beschlussabschrift|auszugsweise abschrift|beschluss aus (der|dem) (niederschrift|protokoll)|beglaubigter ?auszug|^.{0,30}?auszug \d+\. sitzung|auszug aus (der|dem) (öffentlichen )?(sitzung|protokoll))/],
  ['minutes',/\b(niederschrift|sitzungsniederschrift|protokoll|ergebnisprotokoll|kurzprotokoll) (über|der|des|zur|vom|von)\b/],
  // Session documents only by their heading: "Tagesordnung" also stands in letters ("Antrag zur Tagesordnung")
  ['invitation',/^.{0,150}?\b(einladung (zur|zu der|zu einer)|öffentliche bekanntmachung|bekanntmachung (zur|der) sitzung)\b|^.{0,80}?\btagesordnung (für|der|zur)\b/],
  ['paper',/\b(beschlussvorlage|sitzungsvorlage|verwaltungsvorlage|informationsvorlage|mitteilungsvorlage|berichtsvorlage|vorlage der verwaltung|vorlagen?[- ]?(nr|nummer)|vorlage:? [a-z]{0,6}[-/ ]?\d+|drucksache|antrag der|antrag des|anfrage der|anfrage des|antwort (zur|auf die) anfrage|beantwortung der anfrage|stellungnahme der verwaltung)\b/],
 ];
 export function documentTypeFromText(text){
- const head=String(text||'').slice(0,HEAD_CHARS*3).replace(/\s+/g,' ').trim().slice(0,HEAD_CHARS).toLowerCase();
+ // Gesperrt gesetzte Überschriften („N i e d e r s c h r i f t“, „A U S Z U G“) zusammenziehen
+ const head=String(text||'').slice(0,HEAD_CHARS*3).replace(/\s+/g,' ').replace(/(?<![\p{L}])(?:\p{L} ){3,}\p{L}(?![\p{L}])/gu,m=>m.replace(/ /g,'')).trim().slice(0,HEAD_CHARS).toLowerCase();
  let best=null,at=Infinity;
  // Position of the marker itself (rules anchored at the start match from 0): the earliest wins
  for(const [type,pattern] of HEAD_RULES){const m=pattern.exec(head);if(!m)continue;const g=m.slice(1).find(Boolean)||m[0],i=head.indexOf(g,m.index);if(i<at){at=i;best=type;}}
@@ -87,7 +88,14 @@ export const primaryPdf=(documents,{uses=()=>0,hasText=null}={})=>{
     („Lageplan“, „Begründung“, „Ergebnisplan 2026“). @param {any[]} documents @returns {Map<string,string>} url → Art */
 export function reportTypes(documents){
  const pdfs=(documents||[]).filter(d=>d?.kind==='application/pdf'),types=new Map(pdfs.map(d=>[d.url,documentType(d.title)]));
+ // Ohne Vorlage nach Titel ist die erste Datei ohne erkennbare Art die Vorlage („2026-90-F“), die übrigen sind Anlagen
+ if(!['paper','decision'].some(k=>[...types.values()].includes(k))){const first=pdfs.find(d=>types.get(d.url)==='other');if(first)types.set(first.url,'paper');}
  if([...types.values()].includes('paper'))for(const [u,t] of types)if(t==='other')types.set(u,'attachment');
+ // Portale, die jede Datei „<Art> (<Dateiname>)“ nennen („Mitteilungsvorlage (Stellungnahme Realschule …)“): nur die erste
+ // Datei einer solchen Gruppe ist das Dokument dieser Art, die übrigen sind Anlagen (Messung doc-val, 14.10.2026)
+ const seen=new Set();
+ for(const d of pdfs){const m=String(d.title||'').trim().match(/^([\p{L}-]+)\s*\(.+\)$/u);if(!m)continue;const k=m[1].toLowerCase();
+  if(seen.has(k)&&types.get(d.url)==='paper')types.set(d.url,'attachment');seen.add(k);}
  return types;
 }
 /** Ab so vielen Berichten gilt ein Dokument als Unterlage der ganzen Sitzung (Probelauf 11.10.2026). */

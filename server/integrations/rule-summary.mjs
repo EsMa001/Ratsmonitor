@@ -1,10 +1,11 @@
+import { itemKind } from '../../shared/item-kind.mjs';
 // Regelbasierte Zusammenfassung: wählt nur Originalsätze aus dem Dokumenttext, formuliert nichts neu.
 // Aufbau: Beschlussvorschlag (bis zu 2 Sätze), dann je ein Satz für Anlass, Zahlen/Kosten und Begründung.
 // Nur für Artikel mit verlinktem Dokument; ohne brauchbaren Text, ohne erkennbare Struktur (Mitteilungen, „Verschiedenes“, Protokollauszüge)
 // und für persönliche Schreiben gibt es keine Zusammenfassung (null).
-export const RULE_SUMMARY_VERSION = 2;
-const ABBR = /(?:^|[\s(])(?:z|d|u|v|bzw|ca|Nr|Abs|Art|Tel|ggf|evtl|inkl|einschl|max|min|vgl|Dr|Prof|St|Str|usw|etc|sog|zzgl|gem|lt|Mio|Mrd|Tsd|ff|Std|ggfls|ggfs|zt|zz|zzt|rd|insb|ehem|bspw|sog|Fa|Hr|Fr|[a-z])\.$/i;
-const DOTTED = /^[(„"]?(?:\p{L}\.){2,}$/u;
+export const RULE_SUMMARY_VERSION = 3;
+const ABBR = /(?:^|[\s(])(?:z|d|u|v|bzw|ca|Nr|Abs|Art|Tel|ggf|evtl|inkl|einschl|max|min|vgl|Dr|Prof|St|Str|usw|etc|sog|zzgl|gem|lt|Mio|Mrd|Tsd|ff|Std|ggfls|ggfs|zt|zz|zzt|rd|insb|ehem|bspw|sog|Fa|Hr|Fr|Flst|Fl|Gmkg|Gemkg|Gmk|Gemarkung|Az|stellv|bzgl|allg|lfd|Lfd|[a-z])\.$/i;
+const DOTTED = /^[(„"]?(?:\p{L}\.){2,}$|\.(?:Nr|Abs|Fl|Flst)\.$/u;
 const ANAPHORIC = /^(Dabei|Hierzu|Hierbei|Hiermit|Dazu|Dies|Diese[rsnm]?|Damit|Daher|Deshalb|Zudem|Außerdem|Ferner|Ebenso|Hinzu|Der Schwerpunkt|Inzwischen|Mittlerweile|Zwischenzeitlich|Nun|Danach|Anschließend|Darüber hinaus|Weiterhin|Ebenfalls|Hierfür|Hiervon|Davon|Dafür|Aufgrund dessen|Daraufhin|Allerdings|Jedoch|Dennoch|Trotzdem|Somit|Es geht (?:dabei|hierbei|hier))\b/;
 const LEGAL_ONLY = /^(Gemäß|Nach|Laut|Entsprechend) § /;
 const ROUTINE = /^(Die|Der) (Verwaltung|Kämmerin) wird .* (vorlegen|berichten)/;
@@ -17,7 +18,7 @@ export function cleanText(text) {
     .replace(/(\p{L})-\n(?:\d{1,3}\n)?(\p{Ll})/gu, '$1$2')
     .replace(/\n\d{1,3}\n(?=\p{Ll})/gu, '\n')
     // Anrede („Sehr geehrter Herr Oberbürgermeister,“) gehört in keinen Auszug, auch nicht mitten im Satz
-    .replace(/\bSehr geehrte[rn]?\s[^,\n]{0,70},\s*/gu, '');
+    .replace(/\b[Ss]ehr geehrte[rn]?\s[^,\n]{0,70},\s*/gu, '');
 }
 
 // Abschnitte nach Überschriften, zeilenweise: Beschluss (Beschlussvorschlag, Beschlussempfehlung, Antrag …), Sachverhalt (Sachdarstellung,
@@ -80,7 +81,11 @@ export function splitSentences(block) {
     if (ends) { out.push(cur); cur = ''; }
   });
   if (cur.length > 20) out.push(cur);
-  return out.map(s => s.replace(/^\d{1,2}[.)]?\s+(?=\p{Lu})/u, '').replace(/^[•\-–]\s*/, '').trim());
+  // Kopfzeilen am Satzanfang („Seite 2 von 2 Antragstext: …“) gehören nicht zum Satz
+  return out.map(s => s.replace(/^\d{1,2}[.)]?\s+(?=\p{Lu})/u, '').replace(/^[•\-–]\s*/, '').trim()
+    .replace(/^(?:Seite\s*\d+\s*(?:von|\/)\s*\d+\s*)?(?:(?:Antragstext|Antrag|Beschlusstext|Text|Historie und Sachverhalt|(?:[IVX]+\.\s*)?Sachentscheidung|Inhalt und Begründung|Finanzielle Auswirkungen\s*:\s*Beschlussvorschlag|Beschlussvorschlag|Finanzielle Auswirkungen)\s*:?\s+)?(?=\p{L})/u, m => m && /Seite|:/.test(m) ? '' : m)
+    .replace(/^.{0,80}?\b(?:Antragstext|Beschlusstext)\s*:\s*/u, '')
+    .replace(/^\p{Ll}/u, c => c.toUpperCase()));
 }
 
 // Nur vollständige, lesbare Sätze: Großbuchstabe am Anfang, Satzzeichen am Ende, kaum Zahlen/Tabellenreste
@@ -89,8 +94,12 @@ export function splitSentences(block) {
 const SALUTATION = /^(Sehr geehrte|Liebe[rn]? |Guten Tag|Hallo\b)/;
 const proseLike = s => { const w = s.match(/\p{L}{3,}/gu) || []; return w.length > 0 && w.filter(x => /^\p{Ll}/u.test(x)).length / w.length >= 0.25; };
 // Beschlusssätze enden im PDF oft ohne Punkt; im Beschlussabschnitt genügt ein vollständiger Satz ohne Schlusszeichen
-const usableDecision = s => proseLike(s) && !SALUTATION.test(s) && (usable(s) || s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && /[\p{L}\d)]$/u.test(s) && (s.match(/\d/g) || []).length / s.length < 0.15);
-const usable = s => s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && /[.!?]$/.test(s)
+const usableDecision = s => !FORM.test(s) && !CAPS(s) && proseLike(s) && !SALUTATION.test(s) && (usable(s) || s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && /[\p{L}\d)]$/u.test(s) && (s.match(/\d/g) || []).length / s.length < 0.15);
+// Formularfelder im Satz (Kopf eines Vordrucks) und Sätze, die mitten im Gedanken abbrechen („… an die Firma“), taugen nicht
+const FORM = /\b(?:Betreff|Sachbearbeiter(?:\/-?in)?|Datum|Aktenzeichen|Vorlagen?-?(?:Nr|nummer)|Sachdarstellung\s*\/\s*Begründung|Alternative)\s*:|^Hier\s*:|^Siehe\b|\bBeratungsfolge\b|\d{2}\.\d{2}\.\d{4}\s+(?:Vorberatung|Entscheidung|Kenntnisnahme)|bittet um Beantwortung|^Anfrage im\b|Bezeichnung des Tagesordnungspunktes|Abstimmungsergebnis\s*:|•|\s\d{1,2}\.\s[A-ZÄÖÜ][\s\S]{3,120}?\s\d{1,2}\.\s[A-ZÄÖÜ]|\bSitzungsdatum\b|\bnöf\b|^(?:Gemeindeordnung|Baugesetzbuch|Bauordnung|Kommunalverfassung|Landesbauordnung)\b|\bbitte (?:lassen|nehmen|setzen|stellen) Sie\b|^(?:Er|Sie|Es) (?:hat|ist|wird)\b|\bTOP \d+\b.*\bTOP \d+\b|Kostenstelle\/Konto|^(?:Zur|Zum)\s.*[^.!?]$|\b(?:der|die|das|den|dem|des|an|zu|zur|zum|für|von|mit|gemäß|Firma|und|oder)$/i;
+// Zeilen aus Folien und Plänen in Großbuchstaben („UNTERSUCHUNGSRAUM (RHEINAU-SÜD) AUSGANGSLAGE“)
+const CAPS = s => (s.match(/(?<![\p{L}])\p{Lu}{4,}(?![\p{L}])/gu) || []).length >= 3;
+const usable = s => !FORM.test(s) && !CAPS(s) && s.length >= 45 && s.length <= 420 && /^\p{Lu}/u.test(s) && /[.!?]$/.test(s)
   && (s.match(/\p{L}{3,}/gu) || []).length >= 6 && (s.match(/\d/g) || []).length / s.length < 0.15 && proseLike(s) && !SALUTATION.test(s);
 
 // Persönliche Schreiben (Einwendungen, Briefe, Beschwerden) haben keinen Beschluss und keinen Sachverhalt: eine Auswahl von Sätzen
@@ -163,7 +172,20 @@ export function ruleSummary(text, { target = 30, max = 40, title = '' } = {}) {
   if (isLetter(text, titleOf(text, title), head.length > 0) || isMinutes(text)) return null;
   // Ohne erkennbare Struktur (weder Beschlusstext noch Sachverhalt-Abschnitt) wäre die Auswahl geraten: keine Zusammenfassung
   const hasFacts = facts.length > 0 && facts !== cleanText(text);
-  if (!head.length && !hasFacts) return null;
+  // Ohne Gliederung (weder Beschluss noch Sachverhalt): nur bei Sachpunkten ein Satz, der eindeutig vom Gegenstand handelt
+  // (mindestens drei Wortstämme des Titels, aber keine bloße Wiederholung des Titels), unter den ersten zehn Sätzen
+  if (!head.length && !hasFacts) {
+    const t = titleOf(text, title);
+    if (!title || itemKind(title) !== 'subject' || target > 40 || /Ausführung (?:der|von) Beschl|Stand der Ausführung|Beschlusskontrolle/i.test(title)) return null;
+    const tw = stems(t), flatT = t.replace(/\W+/g, '').toLowerCase();
+    const hit = body.slice(0, 10).find(x => {
+      const own = [...stems(x)], shared = own.filter(w => tw.has(w)).length, fx = x.replace(/\W+/g, '').toLowerCase();
+      return tw.size >= 2 && shared >= Math.min(3, tw.size) && own.length - shared >= 4 && !fx.includes(flatT.slice(0, 40)) && !PRIOR.test(x) && !ANAPHORIC.test(x) && !ROUTINE.test(x) && !/führt aus|erläutert|berichtet,? dass|teilt mit|fragt nach|antwortet/i.test(x) && wordCount(x) <= max && wordCount(x) >= 10;
+    });
+    if (!hit) return null;
+    const score = scoreSummary({ compact: true, text, title: t, decision, head, intro: { i: -1, v: 0 }, sentences: [hit], words: wordCount(hit), target, hasFacts });
+    return { sentences: [hit], gaps: [false], words: wordCount(hit), ...score, version: RULE_SUMMARY_VERSION, generatedBy: 'Regelbasierte Zusammenfassung' };
+  }
   // Pflichtsätze dürfen das Ziel um höchstens ein Viertel überschreiten: Die Einleitung bekommt, was der Beschluss übrig lässt.
   const room = target <= 40 ? max : Math.round(max * 1.25) - (head[0] ? wordCount(head[0]) : 0);
   const intro = room >= 12 ? pickIntro(body, head, titleOf(text, title), false, room) : { i: -1, v: 0 };

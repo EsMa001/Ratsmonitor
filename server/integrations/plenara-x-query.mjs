@@ -36,16 +36,16 @@ import {where as placeOf} from './member-place.mjs';
 import {peerGroup,wilson,quantile,classify,windowOf,NORM_RULE} from './peer-norms.mjs';
 
 export const X_BY=['region','month','theme','sub','stage','status'];
-export const X_FACTS=['faction','funding','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate'];
+export const X_FACTS=['faction','annual_result','funding','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate'];
 export const X_SUMS={housing:'Wohneinheiten',kita_places:'Kita-Plätze',funding_euro:'Förderbeträge in Euro'};
 /* Werte aus den Unterlagen im Atlas je Thema, mit Qualitätstor (Konzept 7: gezeigt ab 90 % gemessener Genauigkeit).
    Messung 13.10.2026 (docs/qualitaet/plenara-x/): Verfahrensschritt Bauleitplanung, Hebesätze, Fraktion nahe 100 %;
    Förderprogramme 85 %, Förderbeträge 83 %, Kita-Beiträge 75 %, Kita-Plätze 68 %; übrige noch nicht gemessen. */
-export const X_FACT_NAMES={plan:'Bauleitplanung nach Verfahrensschritt',plan_use:'Art des Plangebiets',hebesatz:'Hebesätze nach Steuerart',fee_rate:'Gebührensätze nach Art',
+export const X_FACT_NAMES={annual_result:'Jahresabschlüsse nach Ergebnis',plan:'Bauleitplanung nach Verfahrensschritt',plan_use:'Art des Plangebiets',hebesatz:'Hebesätze nach Steuerart',fee_rate:'Gebührensätze nach Art',
  heat_plan:'Kommunale Wärmeplanung nach Schritt',grant:'Zuschüsse an Vereine und Träger nach Zweck',kita_fee:'Kita-Beiträge nach Richtung',funding:'Förderprogramme',faction:'Anträge und Anfragen nach Fraktion'};
-export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,funding:false,kita_fee:false,plan_use:false,fee_rate:false,heat_plan:false,grant:false};
+export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,annual_result:true,funding:false,kita_fee:false,plan_use:false,fee_rate:false,heat_plan:false,grant:false};
 export const X_SUM_GATE={housing:false,kita_places:false,funding_euro:false};
-const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use']],finanzen:[['hebesatz']],umwelt:[['heat_plan'],['fee_rate']],soziales:[['grant']],kultur:[['grant']],
+const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use']],finanzen:[['hebesatz'],['annual_result']],umwelt:[['heat_plan'],['fee_rate']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee','kita_places']],'':[['funding','funding_euro']]};
 export const X_LIST_SIZE=50;
 const THEME_IDS=new Set([...THEMES.map(t=>t.id),'unklar']),SUB_BY_ID=new Map(SUBTOPICS.map(s=>[s.id,s]));

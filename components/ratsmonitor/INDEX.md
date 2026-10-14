@@ -651,7 +651,7 @@ topic design-styles.css:140
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (186, ⚠21): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (110, ⚠3): AdminRuleTexts
+- admin-rule-texts.tsx (148, ⚠4): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (115, ⚠4): AdminSchedules
 - admin-social.tsx (135, ⚠1): AdminSocial
@@ -727,6 +727,8 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
+- blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
 - branchen-enterprise.ts (109): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (418, ⚠28): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
@@ -788,6 +790,8 @@ topic design-styles.css:140
 - DetailPage.tsx (179, ⚠11): DetailPage
 - KalenderPage.tsx (367, ⚠3): KalenderPage
 - LegalPage.tsx (213): LegalPage
+- OverviewPage.tsx (64): OverviewPage
+- OverviewPage.tsx (64): OverviewPage
 - OverviewPage.tsx (64): OverviewPage
 - PersonalPage.tsx (22): PersonalPage
 - PostfachPage.tsx (87): PostfachPage

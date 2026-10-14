@@ -22,7 +22,9 @@ import {titleKey} from '../../shared/topic-facts.mjs';
  * kleiner Kreis) entsprechend mehr, sodass die Liste voll werden kann.
  */
 const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
-const FACT_KINDS=['faction','funding','funding_euro','kita_fee','plan'];
+// Förderung (funding, funding_euro) vorerst nicht: Stand bewilligt/beantragt auf frischen Stichproben nur 36–64 % richtig
+// (docs/qualitaet/plenara-x/regeln-2026-10-14.md, Runde 7); die Werte bleiben in topic_facts
+const FACT_KINDS=['faction','kita_fee','plan'];
 /* Signale aus readReport (report_rules, Migration 0035): Unterthemen und „Was geschieht“; Richtung und Art aus dem Titel */
 const UP=/Erhöhung|Anhebung|erhöht|angehoben/i,DOWN=/Senkung|gesenkt|Reduzierung|Absenkung/i;
 const CITIZEN=/Petition|Einwohnerantr|Bürgerantr|Bürgerbegehren|Bürgerentscheid|Bürgereingabe|Anregungen und Beschwerden/i;
@@ -72,7 +74,14 @@ export function outcomeOf(text){
  if(/vertagt|zurückgestellt|abgesetzt|vertagung|ohne beschluss/.test(t))return 'vertagt';
  if(/verwiesen|überwiesen/.test(t))return 'verwiesen';
  if(/kenntnis/.test(t)&&!/beschlossen|zugestimmt|angenommen/.test(t))return 'zur Kenntnis genommen';
- const how=/einstimmig|ohne gegenstimme|einhellig/.test(t)?'einstimmig ':/mehrheitlich|mit mehrheit|gegenstimme|stimmenmehrheit|\d+ nein/.test(t)?'mit Mehrheit ':'';
+ // Stimmenzahlen („Ja: 21, Nein: 0“, „29 Ja-Stimme(n), 0 Gegenstimme(n)“, „20 Stimmen dafür 0 Stimmen dagegen“): ohne Nein-Stimme
+ // einstimmig, mehr Ja als Nein mit Mehrheit, sonst abgelehnt (Enthaltungen zählen nicht)
+ const yes=t.match(/(?:\bja\s*:?\s*(\d+)|(\d+)\s*(?:ja-stimme|ja\b|stimmen? dafür|stimme\(n\) dafür|dafür))/),no=t.match(/(?:\bnein\s*:?\s*(\d+)|(\d+)\s*(?:nein-stimme|nein\b|gegenstimme|stimmen? dagegen|stimme\(n\) dagegen|dagegen))/);
+ if(yes&&no&&!/abgelehnt|vertagt|zurückgezogen|verwiesen|kenntnis/.test(t)){const y=+(yes[1]??yes[2]),n=+(no[1]??no[2]);
+  if(y>n)return (n===0?'einstimmig ':'mit Mehrheit ')+(/empfohlen|empfiehlt|empfehlung/.test(t)&&!/beschlossen/.test(t)?'empfohlen':'beschlossen');
+  return 'abgelehnt';}
+ if(/^(?:zustimmung|befürwortet|antrag angenommen)\b/.test(t.trim()))return /befürwortet/.test(t)?'empfohlen':'beschlossen';
+ const how=/einstimmig|ohne gegenstimme|einhellig/.test(t)?'einstimmig ':/mehrheitlich|mit mehrheit|stimmenmehrheit|[1-9]\d* (?:nein|gegenstimme)/.test(t)?'mit Mehrheit ':'';
  if(/empfohlen|empfiehlt|empfehlung/.test(t)&&!/beschlossen/.test(t))return how+'empfohlen';
  if(/beschlossen|zugestimmt|angenommen|genehmigt/.test(t)||how)return how+'beschlossen';
  return null;

@@ -11,6 +11,13 @@ const COUNCIL=/^(?:Ortsgemeinderat|Gemeinderat|Stadtrat|Rat|Gemeindevertretung|S
 const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 export function where(regionName,title,gremium='',members=null){
  if(!UNION.test(regionName))return {key:'',label:regionName};
+ // Gremium einer Mitgliedsgemeinde, das sie beim Namen nennt („Sozialausschuss der Gemeinde Elmenhorst“, „Marktgemeinderat
+ // Massing“, „Gemeinderat (Moxa)“, „Stadtrat der Stadt Bad Marienberg“): genau eine Mitgliedsgemeinde als ganzes Wort
+ const base=x=>x.replace(/\s*\(.*\)$/,'');
+ // Der Verband trägt oft den Namen einer Mitgliedsgemeinde (VG Massing): deren Rat zählt, Ausschüsse des Verbands nicht
+ const ownCouncil=/^(?:Markt|Stadt|Orts)?gemeinderat\b|^Stadtrat\b|^Rat der (?:Stadt|Gemeinde)\b|^Gemeindevertretung\b|^Stadtverordneten|^SVV\b|^Stadtvertretung\b/i.test(gremium||'');
+ const inGremium=(members||[]).filter(x=>x.name&&(ownCouncil||!regionName.endsWith(' '+x.name)&&!regionName.endsWith(' '+base(x.name)))&&new RegExp(`(^|[^\\wäöüß])${esc(base(x.name))}($|[^\\wäöüß-])`).test(String(gremium||'')));
+ if(inGremium.length===1&&!/^(?:Samt|Verbands)gemeinderat|^Amtsausschuss|^Gemeinschaftsversammlung|^Rat der (?:Samt|Verbands)gemeinde|verband|^Werkausschuss der (?:Samt|Verbands)gemeinde/i.test(gremium)){const n=inGremium[0].name;return {key:n,label:`${/^Ortsgemeinderat/.test(gremium)?'Ortsgemeinde':/\bStadt\b|^Stadtrat|^SVV|Stadtverordneten/.test(gremium)?'Stadt':/^Markt/.test(gremium)?'Markt':'Gemeinde'} ${n} (${regionName})`};}
  const g=String(gremium||'').match(COUNCIL);
  if(g&&!/gemeinde$|^(Samt|Verbands)|^Amt/i.test(g[2]))return {key:g[2],label:`${/^Ortsgemeinderat/.test(gremium)?'Ortsgemeinde':g[1]||'Gemeinde'} ${g[2]} (${regionName})`};
  const m=String(title||'').match(MEMBER);

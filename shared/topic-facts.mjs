@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v17';
+export const FACTS_VERSION='facts-v19';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -64,38 +64,40 @@ export const PROGRAMS=[
  ['Sportstätten',/Sportstätte|Sportstättenförderung|Sportanlage|Investitionspakt Sport/i],
  ['Breitband und Digitales',/Breitband|Gigabit|Glasfaser|DigitalPakt|(?<!Bau und )Digitalisierung/i],
  ['EU-Fonds (EFRE, ELER, ESF)',/\bEFRE\b|\bELER\b|\bESF\+?\b|Europäische[nr]? Fonds|\bLIFE\b|\bInterreg\b/i],
- ['LEADER und ländliche Entwicklung',/LEADER|Dorferneuerung|Dorfentwicklung|ländliche[nr]? Entwicklung|GAK\b|Agrarstruktur|\bZILE\b|ländliche[nr]? Wegebau/i],
+ ['LEADER und ländliche Entwicklung',/LEADER|Dorferneuerung|Dorfbudget|Dorfentwicklung|ländliche[nr]? Entwicklung|GAK\b|Agrarstruktur|\bZILE\b|ländliche[nr]? Wegebau/i],
  ['KfW',/\bKfW\b/],
  ['ÖPNV und Straßenbau (GVFG u. a.)',/\bGVFG\b|ÖPNV-Förderung|Straßenbauförderung|Gemeindeverkehrsfinanzierung/i],
  ['Wirtschaftsförderung (GRW)',/\bGRW\b|Gemeinschaftsaufgabe(?![^.]{0,60}Agrarstruktur)|regionale[nr]? Wirtschaftsstruktur/i],
  ['Sondervermögen Infrastruktur',/Sondervermögen|Infrastrukturgesetz|Investitionsbudget|Infrastruktur und Klimaneutralität|MV-Plan|Kommunalinfrastruktur\w*|Infrastrukturförderungsgesetz|Infrastrukturfördergesetz|Kommunalinvestition\w*|NKomInvest|KInvFG/i],
  ['Kita und Schulbau',/Kita-Ausbau|Kindertagesbetreuung|Kitaausbau|Schulbau|Schulsanierung|Schulinfrastruktur/i],
  ['Wohnraumförderung',/Wohnraumförderung|soziale[nr]? Wohnungsbau|Mietwohnungsbau|Wohnungsbauförderung/i],
- ['Energie und Wärme',/Wärmeplanung|Wärmenetz|\bBEG\b|\bBEW\b|Energieeffizienz|Photovoltaik|Solar/i],
+ ['Energie und Wärme',/Wärmeplanung|Wärmenetz|Energiemanagement|\bBEG\b|\bBEW\b|Energieeffizienz|Photovoltaik|Solar/i],
  ['Feuerwehr und Katastrophenschutz',/Feuerwehr|Katastrophenschutz/i],
 ];
 // Nur Geldwörter: „Förderung“ allein meint oft Arbeits-, Sprach- oder Vereinsförderung
-const FUND=/(Fördermittel|Fördergeld|Förderprogramm|Förderantrag|Förderbescheid|Förderquote|Fördersumme|Förderbetrag|Förderzusage|Förderaufruf|Förderrichtlinie|Förderzuschuss|Zuwendungsbescheid|Zuwendung(?:en)? (?:des|der|aus|von|in Höhe)|Bundesmittel|Landesmittel|EU-Mittel|Bundesförderung|Landesförderung|Städtebaufördermittel|gefördert (?:mit|durch|aus|von))/i;
+const FUND=/(Antrag auf [\w-]*förderung|Förderung\w*\s+(?:wurde|ist|wurden)[^;!?]{0,40}(?:beantragt|bewilligt)|(?:beantragte|bewilligte|zugesagte)[nr]? Förderung|Förderung (?:in Höhe|von \d|zu beantragen|beantragt|bewilligt)|Fördermittel|Fördergeld|Förderprogramm|Förderantrag|Förderbescheid|Förderquote|Fördersumme|Förderbetrag|Förderzusage|Förderaufruf|Förderrichtlinie|Förderzuschuss|Zuwendungsbescheid|Zuwendung(?:en)? (?:des|der|aus|von|in Höhe)|Bundesmittel|Landesmittel|EU-Mittel|Bundesförderung|Landesförderung|Städtebaufördermittel|gefördert (?:mit|durch|aus|von))/i;
 /* Bewilligt: das Geld ist zugesagt oder fließt (Leitfaden 14.10.2026, docs/qualitaet/plenara-x/funding-x14.json); „erhalten“ nur mit
    Geldwort davor („Hinweis erhalten“ ist kein Bescheid), „Bewilligung“ allein ist oft ein Termin im Zeitplan */
-const GRANTED=/(bewilligt|Zuwendungsbescheid|Förderbescheid|Fördermittelbescheid|Bewilligungsbescheid|Förderzusage|zugesagt|(?:Mittel|Zuwendung|Zuschuss|Förderung|Zusage)[^.]{0,40}\berhalten\b|erfolgreich.{0,80}(?:aufgenommen|ausgewählt)|(?:wurden?|werden|wird).{0,80}\bgefördert|gefördert (?:mit|durch|aus)|in Anspruch (?:genommen|nahm)|nahm.{0,60}in Anspruch|\berhielt\b)/i;
+const GRANTED=/(bewilligt|Zuwendungsbescheid|Förderbescheid|Fördermittelbescheid|Bewilligungsbescheid|Förderzusage|zugesagt|(?:Mittel|Zuwendung|Zuschuss|Förderung|Zusage)[^.]{0,40}\berhalten\b|erfolgreich.{0,80}(?:aufgenommen|ausgewählt)|(?:wurden?|ist|sind)\s+(?:\S+\s+){0,6}?(?:mit|durch|aus)\s+(?:\S+\s+){0,4}?gefördert worden|\berhielt\b)/i;
 // Eindeutig bewilligt: Bescheid mit Datum oder Vorliegen, „wurde bewilligt“, „bereits bewilligt“ (gilt auch unter Bedingungen im Satz)
-const GRANTED_SURE=/(?:Zuwendungs|Förder|Bewilligungs|Fördermittel)bescheid.{0,30}(?:vom\b|liegt vor|wurde|ist)|(?:wurden?|hat|haben|ist|sind)\b.{0,60}\bbewilligt|bereits bewilligt|bewilligt (?:wurde|worden)/i;
-const APPLIED=/(beantragt|beantragen|Förderantrag|Antrag auf Förderung|Antragstellung|Antrag auf Zuwendung|Zuwendungsantrag|einzureichen|eingereicht|bewerben|Projektskizze|Interessenbekundung)/i;
+const GRANTED_SURE=/positiv beschieden|(?:Zuwendungs|Förder|Bewilligungs|Fördermittel)bescheid.{0,30}(?:vom\b|liegt vor|wurde|ist)|(?:wurden?|hat|haben|ist|sind)\b.{0,60}\bbewilligt|bereits bewilligt|bewilligt (?:wurde|worden)/i;
+// Beantragt: Antrag gestellt, eingereicht, beantragt oder die Antragstellung beschlossen; bloße Substantive („Antragstellung“,
+// „Förderantrag“) ohne Handlung zählen nicht (Workshops, „Frage einer Förderantragstellung“, Messung R11)
+const APPLIED=/(beantragt|\bbeantragen\b|(?:beschließt|beschlossen|erfolgt|wurde|z\.\s?Zt\.|derzeit|aktuell|läuft)[^.]{0,60}(?:Beantragung|Antragstellung|Antrag|Teilnahme|Interessenbekundung|zu beantragen|zu stellen)|Beantragung[^.]{0,80}(?:erfolgt|beschlossen|gestellt|eingereicht)|Antrag\w*\s+(?:\S+\s+){0,6}?(?:gestellt|eingereicht)|\bstell(?:t|en|te|ten)\b[^.]{0,80}[Aa]ntrag|\bzu beantragen\b|[Aa]ntrag\w* zu stellen|Mit (?:dem )?vorliegenden [^.]{0,40}soll[^.]{0,120}beantragt werden|eingereicht|Antragsfrist[^.]{0,40}(?:eingehalten|gewahrt))/i;
 const RANK={granted:3,applied:2,mentioned:1};
 // Formularfelder („Fördermittel beantragt: Nein Ja“, Ankreuzfelder) sagen nichts über den Vorgang
-const FUND_FORM=/☐|☒|\b(Nein\s+Ja|Ja\s+Nein)\b|:\s*(ja|nein)\b|\bja\s*\/\s*nein\b|fragt an|\?|Konten Bezeichnung|Plan \d{4} Prognose|\b\d{7}\s*-\s*Zuweisungen/i;
+const FUND_FORM=/☐|☒|Auswirkungen? auf den|beantragt\s*\/\s*bewilligt|\b(Nein\s+Ja|Ja\s+Nein)\b|:\s*(ja|nein)\b|\bja\s*\/\s*nein\b|fragt an|\?|Konten Bezeichnung|Plan \d{4} Prognose|\b\d{7}\s*-\s*Zuweisungen/i;
 // Kopfzeilen einer Vorlage (Titel, Nummer, Beratungsfolge) nennen das Programm, sagen aber nichts über den Stand
 const FUND_HEAD=/Tagesordnung|Seite \d+ von \d+|Vorlage-?(?:Nr|nummer)|Aktenzeichen|Beratungsfolge|Federführung|Sachgebiet:|Auskunft erteilt/i;
 // Bedingt bewilligt („vorbehaltlich der Förderzusage“, „sofern bewilligt“) ist noch nicht bewilligt
 // Ausgehende Zuschüsse (die Kommune fördert Vereine, Träger, Projekte) sind kein Fördergeld für die Kommune (Bewertung 11.10.2026)
-const OUTGOING=/\be\.\s?V\.|\bVerein\w*\s+(hat|haben|beantragt|beantragen|erhält|erhalten)|Antragsteller|Antragstellende|Zuschussantrag|Sponsor|Bürgerbudget|Vereinsförder|institutionelle[nr]? Förderung|Projektförderung|Förderrichtlinie der (Stadt|Gemeinde)|Mitteln? des Ausschusses|gemeinnützige[nr]? (Verbände|Vereine)|Förderplan|städtische[nr]? Zuschuss|Zuschuss der (Stadt|Gemeinde)|gewährt (die|der) (Stadt|Gemeinde|Kreis|Landkreis)|Zuweisung an/i;
-const CONDITIONAL=/vorbehaltlich|Vorbehalt|abhängig vo[mn]|sofern|falls|vorausgesetzt|im Falle|unter der Voraussetzung|nach Bewilligung|bei Bewilligung|nur nach|nach (?:Erhalt|Eingang|Vorliegen)|positive[nr]? (?:Förder)?(?:zusage|bescheid|bewilligung)|\bkann\b|\bkönnen\b|\bkönnte|\bsoll(?:en)?\b|\bwürde|zu erwarten|gerechnet|\bQ[1-4]\b|geplant|voraussichtlich|nicht bewilligt|zurückgefordert|mögliche[nr]?\b|Möglichkeit|beabsichtigt|\bbei einer\b|im Falle einer|einzuholen/i;
+const OUTGOING=/\be\.\s?V\.|Bürgerstiftung|Zuwendungsempfänger|Zuwendungsempfangende|\b(?:Kreissportbund|Sportbund|Stadtsportbund)\b|städtische\w*\s+[\w-]*Förder|kommunale[nr]? Förderprogramm|Volkssolidarität|Betriebskostenzuschuss|\bVerein\w*\s+(hat|haben|beantragt|beantragen|erhält|erhalten)|Antragsteller|Antragstellende|Zuschussantrag|Sponsor|Bürgerbudget|Vereinsförder|institutionelle[nr]? Förderung|Projektförderung|Förderrichtlinie der (Stadt|Gemeinde)|Mitteln? des Ausschusses|gemeinnützige[nr]? (Verbände|Vereine)|Förderplan|städtische[nr]? Zuschuss|Zuschuss der (Stadt|Gemeinde)|gewährt (die|der) (Stadt|Gemeinde|Kreis|Landkreis)|Zuweisung an/i;
+const CONDITIONAL=/noch nicht vor|\bum\b[^.]{0,160}\bzu erhalten\b|nicht vorliegt|steht noch aus|stehen noch aus|noch ausstehend|im Gegenzug|Mit Antragstellung|vorbehaltlich|Vorbehalt|abhängig vo[mn]|sofern|falls|vorausgesetzt|im Falle|unter der Voraussetzung|nach Bewilligung|bei Bewilligung|nur nach|nach (?:Erhalt|Eingang|Vorliegen)|positive[nr]? (?:Förder)?(?:zusage|bescheid|bewilligung)|\bkann\b|\bkönnen\b|\bkönnte|\bsoll(?:en)?\b|\bwürde|zu erwarten|gerechnet|\bQ[1-4]\b|geplant|voraussichtlich|nicht bewilligt|zurückgefordert|mögliche[nr]?\b|Möglichkeit|beabsichtigt|\bbei einer\b|im Falle einer|einzuholen/i;
 /* Hintergrund statt neuer Förderung (Bewertung 11.10.2026): verfallende oder zurückzuzahlende Mittel, über Jahre erwartete Mittel
    (Koblenz: Anteilsverkauf), und Bescheide aus früheren Jahren („Bescheid vom 18.12.2023“ in einer Vergabe 2026) */
-const BACKGROUND=/Verfall|verfallen|zurückzuzahlen|Rückforderung|Rückzahlung|erwartet|über (die nächsten )?\d+ Jahre|in den (kommenden|nächsten) \d+ Jahren|seinerzeit|damals/i;
+const BACKGROUND=/Verfall|Bislang wurde|Erfahrungen mit|am Beispiel|verfallen|zurückzuzahlen|Rückforderung|Rückzahlung|erwartet|über (die nächsten )?\d+ Jahre|in den (kommenden|nächsten) \d+ Jahren|seinerzeit|damals/i;
 // Nur bei Beträgen: geschätzte Mittel („Dem stehen voraussichtlich Fördermittel von etwa 23 Mio. € gegenüber“)
-const ESTIMATE=/voraussichtlich|gegenüberstehen|stehen[^.]{0,80}gegenüber|Schätzung|geschätzt|prognostiziert|\bggf\.|gegebenenfalls|gerechnet werden|wären\b|könnte/i;
+const ESTIMATE=/voraussichtlich|in Aussicht gestellt|[Mm]ögliche Förderung|gegenüberstehen|stehen[^.]{0,80}gegenüber|Schätzung|geschätzt|prognostiziert|\bggf\.|gegebenenfalls|gerechnet werden|wären\b|könnte/i;
 const yearsOf=s=>(String(s).match(/\b20[1-3]\d\b/g)||[]).map(Number);
 // Jüngstes genanntes Jahr bis heute (Zieljahre wie „bis 2030“ zählen nicht)
 const latestYear=t=>Math.max(0,...yearsOf(t).filter(y=>y<=new Date().getFullYear()));
@@ -107,14 +109,16 @@ const oldSentence=(s,latest)=>{const y=yearsOf(s);return !!y.length&&!!latest&&M
 const NEAR=150;
 const nearest=(s,names)=>{const at=s.search(FUND);const near=names.map(([n,re])=>[n,Math.abs(s.search(re)-at)]).filter(([,d])=>d<=NEAR).sort((a,b)=>a[1]-b[1]);return near.length?[near[0][0]]:[];};
 // Förderung Dritter (Träger, Vereine, Stationen beantragen oder erhalten selbst): für die Kommune nur eine Erwähnung
-const THIRD=/(?:Träger\w*|Verein\w*|Station|Initiative|Stiftung|Gesellschaft)\s+(?:\S+\s+){0,3}(?:hat|haben|stellt|stellen|stellte|beantragt|erhielt|erhalten|hat einen)|durch (?:die|den) (?:\p{Lu}{3,}|Träger)|seitens (?:der|des) (?:\w+ ){0,2}(?:Station|Träger|Vereins)/u;
+const THIRD=/(?:Universität|Hochschule|Träger\w*|Verein\w*|Station|Initiative|Stiftung|Gesellschaft)\s+(?:\S+\s+){0,3}(?:hat|haben|stellt|stellen|stellte|beantragt|erhielt|erhalten|hat einen)|durch (?:die|den) (?:\p{Lu}{3,}|Träger)|seitens (?:der|des) (?:\w+ ){0,2}(?:Station|Träger|Vereins)/u;
 // Stand aus dem Titel: „Umsetzung des bewilligten Leader-Antrags“, „Zuwendung aus dem Dorferneuerungsprogramm“, „Beschluss über Antragstellung“
-const TITLE_GRANTED=/bewilligte[nrs]?\b|Bewilligung|Zuwendungsbescheid|Förderbescheid|Zuwendung aus/i;
-const TITLE_APPLIED=/Antragstellung|Beantragung|Förderantrag|Antrag auf (?:Förderung|Zuwendung)|Einreichung|Bewerbung|Teilnahme am (?:Förder|Projekt)aufruf|Interessenbekundung|Projektskizze/i;
+const TITLE_GRANTED=/bewilligte[nrs]?\b|Bewilligung|Zuwendungsbescheid|Förderbescheid|Zuwendung aus(?!.*(?:Antrag|antragstellung))/i;
+const TITLE_APPLIED=/Beteiligung am (?:[\w-]+ )?Förderprogramm|Teilnahme am (?:Bundes|Landes)programm|Antragstellung|Beantragung|Förderantrag|Förderanträg|Antrag auf (?:Förderung|Zuwendung)|Einreichung|Bewerbung|Teilnahme am (?:Förder|Projekt)aufruf|Teilnahme (?:am|an der|an dem) [\w-]* ?[\w-]*Förder\w*|Interessenbekundung|Projektskizze/i;
 /** Förderprogramme eines Berichts: [{program, status:'granted'|'applied'|'mentioned'}], je Bericht aus allen Belegen bestimmt
  *  (Leitfaden 14.10.2026, docs/qualitaet/plenara-x/funding-x14.json): Belege je Satz (Programm, wenn genannt, und Stand), dazu
  *  der Titel als eigene Quelle; Belege ohne Programm gehören zu dem einen genannten Programm (bei mehreren zu dem im Titel);
  *  Förderung ohne erkennbares Programm als „Sonstige Förderung“, nur wenn bewilligt oder beantragt. */
+// Zuschüsse, Richtlinien und Förderpläne der Kommune selbst (an Vereine, Träger, Bürger) sind keine Förderung für sie
+const ownFunding=(title,text)=>!!grantOf(title,text)||/Richtlinie|Förderplan|Förderkonzept|Konzept zur Förderung|Betriebskostenzuschuss|Zuwendung zu[rm]?\b|Antrag auf Zuwendung|Kosten für den Erwerb|^Förderprogramme$|Institutionelle Förderung|Förderung von (?:Kultur|Kunst|Sport|Vereinen|Projekten)|für den Betrieb|Beratungsstelle|Kreiszuwendung|Bewilligungen von|Fördermittelmanagement|Fördermittelakquise|[Ff]örderantrag (?:des|der) |Behandlungsstelle|Selbsthilfe|Bewilligung des Zuschusses|Förderfonds|Innenentwicklungsfonds/i.test(String(title||'').trim());
 export function fundingOf(text,{title=''}={}){
  const found=new Map(),sureOf=new Set();let any=null,sure=false;
  const up=(name,status)=>{if(!found.has(name)||RANK[status]>RANK[found.get(name)])found.set(name,status);};
@@ -124,16 +128,21 @@ export function fundingOf(text,{title=''}={}){
   if(!FUND.test(s)||FUND_FORM.test(s)||OUTGOING.test(s))continue;
   const back=BACKGROUND.test(s)||oldSentence(s,latest)||FUND_HEAD.test(s)||THIRD.test(s);
   // Beantragt nur, wenn der Antrag gestellt oder beschlossen ist, nicht ein künftiger oder geplanter
-  const status=back?'mentioned':GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s)||GRANTED.test(s)&&!CONDITIONAL.test(s)?'granted':APPLIED.test(s)&&!/künftig|später|(?:Antrag|Beantragung|Förderantrag)\w*.{0,40}(?:geplant|\bplant\b)|\bplant\b.{0,60}(?:Antrag|zu beantragen|zu stellen)|erforderlich\w* (?:Förder|Zuwendungs)?[Aa]ntr/.test(s)?'applied':'mentioned';
+  // Künftiges, Mögliches und Aufgabenlisten sind weder bewilligt noch beantragt („Mit einem Förderbescheid ist … zu rechnen“, „sollten nach Möglichkeit Fördermittel beantragt werden“)
+  const future=/zu rechnen|wird erwartet|erwarten|sollten|nach Möglichkeit|gehören insbesondere|Aufgaben (?:der|des)|Voraussetzung (?:für|zur)|politischen Willen/i.test(s);
+  // Künftiges, Mögliches und Bedingungen sind weder bewilligt noch beantragt (Messung R7–R11, 14.10.2026)
+  const cond=/\b[Ss]ollte\b/.test(s)||!/beantragte[nr]? Förderung|Mit (?:dem )?vorliegenden/i.test(s)&&(future||/(?:vorgesehen|beabsichtigt|Ziel ist)[^.]{0,120}(?:zu beantragen|zu stellen|beantragt|Einreichung)|\bwelche\b|\bob\b|inwieweit|\?|\bwäre\b|sobald|bereits vor den|\bbei (?:einem )?positive|im Falle|sofern|falls|muss bis|\bkann\b|können|in Kürze|voraussichtlich|vorbehaltlich|soll geprüft|zu prüfen/i.test(s));
+  const condA=!/beantragte[nr]? Förderung|Mit (?:dem )?vorliegenden/i.test(s)&&(future||/(?:vorgesehen|beabsichtigt|Ziel ist)[^.]{0,120}(?:zu beantragen|zu stellen|beantragt|Einreichung)|\bwelche\b|\bob\b|inwieweit|\?|\bwäre\b|im Falle|sofern|falls|muss bis|soll geprüft|zu prüfen/i.test(s));
+  const status=back?'mentioned':!cond&&(GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s)||GRANTED.test(s)&&!CONDITIONAL.test(s))?'granted':!condA&&APPLIED.test(s)&&!/künftig|später|sobald|Mit Antragstellung|(?<!vorliegenden [^.]{0,60})soll(?:en)?\s+(?:\S+\s+){0,4}(?:gestellt|eingereicht|beantragt) werden|(?:Antrag|Beantragung|Förderantrag)\w*.{0,40}(?:geplant|\bplant\b)|\bplant\b.{0,60}(?:Antrag|zu beantragen|zu stellen)|erforderlich\w* (?:Förder|Zuwendungs)?[Aa]ntr/.test(s)?'applied':'mentioned';
   const names=nearest(s,PROGRAMS.filter(([,re])=>re.test(s))).map(x=>Array.isArray(x)?x[0]:x);
-  for(const name of names){up(name,status);if(!back&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sureOf.add(name);}
+  for(const name of names){up(name,status);if(!back&&!future&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sureOf.add(name);}
   // Ohne Programm nur mit Geldgeber außerhalb der Kommune (wie bei den Beträgen): sonst fördert meist die Kommune selbst
   if(!names.length&&EXTERNAL.test(s)&&(!any||RANK[status]>RANK[any]))any=status;
-  if(!names.length&&!back&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sure=true;
+  if(!names.length&&!back&&!future&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sure=true;
  }
  // Titel: Programm und Stand („Zuwendung aus dem Dorferneuerungsprogramm“); nur mit Förderwort oder Programm im Titel
  // Nur ein Titel, der selbst von Förderung spricht („Feuerwehrgerätehaus“ oder „Masterplan Radverkehr“ allein sind kein Förderfall)
- const t=/Förder|Zuwendung|Zuschuss|Zuschüsse/i.test(String(title||''))?String(title):'';
+ const t=/Förder|Zuwendung|Zuschuss|Zuschüsse|Bundesprogramm|Landesprogramm/i.test(String(title||''))?String(title):'';
  const tNames=PROGRAMS.filter(([,re])=>re.test(t)).map(([n])=>n);
  const tStatus=t?(TITLE_GRANTED.test(t)&&!/Erhöhung|Änderung|Verlängerung/i.test(t)?'granted':TITLE_APPLIED.test(t)?'applied':null):null;
  for(const n of tNames)up(n,tStatus||'mentioned');
@@ -148,7 +157,9 @@ export function fundingOf(text,{title=''}={}){
  const out=[...found].map(([program,status])=>({program,status,...(sureOf.has(program)?{sure:true}:{})}));
  // Förderung ohne Programmnamen zählt nur, wenn sie bewilligt oder beantragt ist (bloße Erwähnungen sind zu ungenau)
  const st=tStatus&&RANK[tStatus]>RANK[any||'mentioned']?tStatus:any;
- if(!out.length&&st&&st!=='mentioned')out.push({program:'Sonstige Förderung',status:st,...(sure?{sure:true}:{})});
+ const own=ownFunding(title,text);
+ // Nur erwähnte Programme verdecken nicht die eigene Antragstellung ohne Programmnamen
+ if(!out.some(x=>x.status!=='mentioned')&&st&&st!=='mentioned'&&!own)out.push({program:'Sonstige Förderung',status:st,...(sure?{sure:true}:{})});
  return out;
 }
 
@@ -164,15 +175,15 @@ const OWN_BEFORE=/städtisch|gemeindlich|kommunal|eigene|der Stadt\s*$|der Gemei
 // Davor: Höchst- und Mindestbeträge einer Richtlinie
 const LIMIT_BEFORE=/maximal|\bmax\.|möglich|mögl\.|Höchst|höchstens|bis zu|mindestens|Mindest|\bmin\.|Bagatell|Wertgrenze|mehr als|über\s*$|Eigenanteil|Kofinanzierung|ehemals|statt|bisherige|ursprünglich|jährlich|monatlich/i;
 // Danach: Spannen, Beträge je Einheit oder Zeitraum, Deckelungen, Eigenleistungen („250.000 € bis 1,5 Mio.“, „8.000 € pro Schuljahr“)
-const AFTER_NOT=/^\s*(bis\s+(zu\s+)?\d|pro\b|je\b|jährlich|monatlich|im (Monat|Jahr)\b|be-?\s?grenzt|aus Eigen)/i;
+const AFTER_NOT=/^\s*((?:Euro\s+)?Eigen[a-zäöü]+\b(?!\s*\d)|bis\s+(zu\s+)?\d|pro\b|je\b|jährlich|monatlich|im (Monat|Jahr)\b|be-?\s?grenzt|aus Eigen)/i;
 /* Wer zahlt: ein Betrag zählt nur, wenn der Satz einen Geldgeber außerhalb der Kommune oder ein Förderverfahren nennt
    (Land, Bund, EU, Ministerium, Bewilligungsbehörde, Bescheid, Förderprogramm). Ohne das ist „Zuschuss von 70.000 €“ fast immer
    ein Zuschuss der Kommune selbst an Verein, Bad, Kirche oder Gesellschaft (Referenzsatz 13.10.2026: 20 von 39 Fehltreffern). */
-const EXTERNAL=/Fördermittel|Fördergeld|Förderprogramm|Fördersumme|Förderbetrag|Förderquote|Förderbescheid|Fördermittelbescheid|Zuwendungsbescheid|Bescheid|Förderzusage|Förderantrag|Zuwendungsantrag|Antrag auf (Gewährung einer )?Zuwendung|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss|des Landes|vom Land|vom Bund|des Bundes|Freistaat|Bundesprogramm|Landesprogramm|Förderaufruf|Ministerium|Landratsamt|Bezirksregierung|Regierungspräsidium|Kreisverwaltung|Landesverwaltungsamt|Bewilligungsbehörde|Projektträger|NRW\.BANK|\bBank\b|Regionalbudget|gefördert (mit|durch|aus|von)|Förderung (aus|durch) |Zuschuss vom Land|beantragte[n]? (Zuwendung|Förderung)|bewilligte[n]? Zuwendung|Zuwendung\w*(?:[^.]|\.\d){0,60}bewilligt|bewilligte[n]? Fördermittel/i;
+const EXTERNAL=/Förderung\w*\s+(?:wurde|ist|wurden)[^;!?]{0,40}(?:beantragt|bewilligt)|(?:Förderung|Zuschuss|Zuwendung)\w*[^;!?]{0,60}zu beantragen|beantragte[nr]? Förderung|Fördermittel|Fördergeld|Förderprogramm|Fördersumme|Förderbetrag|Förderquote|Förderbescheid|Fördermittelbescheid|Zuwendungsbescheid|Bescheid|Förderzusage|Förderantrag|Zuwendungsantrag|Antrag auf (Gewährung einer )?Zuwendung|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss|des Landes|vom Land|vom Bund|des Bundes|Freistaat|Bundesprogramm|Landesprogramm|Förderaufruf|Ministerium|Landratsamt|Bezirksregierung|Regierungspräsidium|Kreisverwaltung|Landesverwaltungsamt|Bewilligungsbehörde|Projektträger|NRW\.BANK|\bBank\b|Regionalbudget|gefördert (mit|durch|aus|von)|Förderung (aus|durch) |Zuschuss vom Land|beantragte[n]? (Zuwendung|Förderung)|bewilligte[n]? Zuwendung|Zuwendung\w*(?:[^.]|\.\d){0,60}bewilligt|bewilligte[n]? Fördermittel/i;
 // Spenden und Sponsoring sind keine Förderung
 const DONATION=/Spende|Sponsoring|Schenkung/i;
 /* Ganze Sätze ohne Förderbetrag einer Kommune: Programmtöpfe und Aufrufe, Haushaltsformulare mit Ankreuzfeldern */
-const NOT_FUND_SENTENCE=/\bkeine (?:passenden |geeigneten )?(?:Förderprogramme|Fördermittel|Förderung|Fördermöglichkeit)|nicht förderfähig|Fördermittelberatung|stehen\b.{0,200}zur Verfügung|Projektaufruf|bundesweit|landesweit|Programmvolumen|Fördervolumen|Fördertopf|Gesamtvolumen|☐|☒|Sachkonto|Auszahlungen|Einzahlungen/i;
+const NOT_FUND_SENTENCE=/ohne Berücksichtigung der|Finanzbedarf|Gesamtinvestition|\bkeine (?:passenden |geeigneten )?(?:Förderprogramme|Fördermittel|Förderung|Fördermöglichkeit)|nicht förderfähig|Fördermittelberatung|stehen\b.{0,200}zur Verfügung|Projektaufruf|bundesweit|landesweit|Programmvolumen|Fördervolumen|Fördertopf|Gesamtvolumen|☐|☒|Sachkonto|Auszahlungen|Einzahlungen/i;
 const toEuro=(num,unit,cur)=>{
  let v=Number(num.replace(/\./g,'').replace(',','.'));
  if(/^(Mio|Millionen)/.test(unit||''))v*=1e6;else if(/^(Mrd|Milliarden)/.test(unit||''))v*=1e9;else if(/^(T€|TEUR|Tsd|Tausend)/.test(unit||''))v*=1e3;else if(!cur)return 0;
@@ -230,8 +241,8 @@ export const PLAN_USES=[
  ['Industrie',/Industrie(?!-?\s*und\s*Handelskammer)|\bGI\b/i],
  ['Gewerbe',/Gewerbe(?!steuer)|gewerblich|\bGE\b|Betriebserweiterung|Betriebsgelände|Firmengelände|Handwerkerhof|Bauhof/i],
  ['Logistik',/Logistik|Distributionszentrum|Verteilzentrum|Güterverkehrszentrum|\bGVZ\b|Speditio/i],
- ['Einzelhandel',/Einzelhandel|Nahversorg|Lebensmittel(markt|discounter|vollsortimenter)|Verbrauchermarkt|Fachmarkt|Supermarkt|Discounter|Einkaufszentrum|Baumarkt|Drogeriemarkt|großflächig/i],
- ['Energie',/Photovoltaik|Solar|PV-|\bPV\b|Agri-?PV|Windenergie|Windpark|Windkraft|SO Wind|Vorrangfläche für Wind|Konzentrationszone|Batteriespeicher|Energiespeicher|Speicheranlage|Umspannwerk|Biogas|Elektrolyse|Wasserstoff|Energiepark|Erneuerbare|Energiegewinnung/i],
+ ['Einzelhandel',/Einzelhandel|Nahversorg|Lebensmittel(markt|discounter|vollsortimenter)|Verbrauchermarkt|Fachmarkt|Supermarkt|Discounter|Einkaufszentrum|Baumarkt|Drogeriemarkt|großflächig|\b(?:EDEKA|REWE|Lidl|Aldi|Netto|Penny|Kaufland|Norma)\b/i],
+ ['Energie',/Photovoltaik|Fotovoltaik|Solar|PV-|\bPV\b|Agri-?PV|Windenergie|Windpark|Windkraft|SO Wind|Vorrangfläche für Wind|Konzentrationszone|Batteriespeicher|Energiespeicher|Speicheranlage|Umspannwerk|Biogas|Elektrolyse|Wasserstoff|Energiepark|Erneuerbare|Energiegewinnung/i],
  ['Rechenzentrum',/Rechenzentr|Data ?Cent(er|re)/i],
  ['Mischgebiet',/Mischgebiet|urbane[sn]? Gebiet|\bM[IUD]\b|Dorfgebiet/],
  ['Wohnen',/Wohn(gebiet|bau|baufläche|quartier|anlage|siedlung|park|ungen|en\b)|\bWA\b|Einfamilienh|Mehrfamilienh|Neubaugebiet|Baugebiet/i],
@@ -259,7 +270,7 @@ export function housingOf(text){
 
 /* Kita: Beiträge nur in Sätzen mit Kita-Bezug (sonst Straßen-, Abwasser- oder Vereinsbeiträge) */
 const KITA=/Kindertages|Kita|KiTa|Kindergarten|Krippe|Kinderkrippe|Tagespflege|Kinderbetreuung|U3|Ü3|Hort\b/;
-const FEE=/Elternbeitr|Elternentgelt|Kita-Gebühr|Kitagebühr|Kita-Beitr|Kitabeitr|Betreuungsgebühr|Benutzungsgebühr|Gebührensatzung|Beitragssatzung|Beitragstabelle|Beitragsstaffel|Kostenbeitr|Beitragsfreiheit|beitragsfrei|gebührenfrei/i;
+const FEE=/Elternbeitr|[Kk]ostenfreie[nr]? (?:Kita|Kindergarten)|Kindergartengebühr|Krippengebühr|Hortgebühr|Kindergartenbeitr|Elternentgelt|Kita-Gebühr|Kitagebühr|Kita-Beitr|Kitabeitr|Betreuungsgebühr|Benutzungsgebühr|Gebührensatzung|Beitragssatzung|Beitragstabelle|Beitragsstaffel|Kostenbeitr|Beitragsfreiheit|beitragsfrei|gebührenfrei/i;
 const MEAL=/Verpflegung|Essensgeld|Mittagessen|Verpflegungspauschale/i;
 const OLD_STEP=/damals|seinerzeit|vertagt|zu vertagen|zurückgestellt|im (Jahr|Jahre) 20\d\d beschlossen/i;
 // „Neufassung“ nur, wenn eine Beitrags- oder Gebührenregel selbst beraten wird (nicht Finanzierungsverträge mit Trägern)
@@ -268,23 +279,51 @@ const FEE_RULES=/[Ss]atzung|Gebührenordnung|Beitragsordnung|Entgeltordnung|Beit
 export function kitaFeeOf(title,text){
  const t=String(title||''),sents=[t,...String(text||'').replace(/\s+/g,' ').split(SENTENCE).slice(0,400)].filter(x=>FEE.test(x)&&(KITA.test(x)||KITA.test(t)));
  if(!sents.length||COLLECTIVE.test(t))return null;
+ // Nur Vorgänge über Kita-Gebühren selbst: Kita und Gebühr (oder Satzung) im Titel; nicht Mittelbereitstellung, Wirtschaftspläne
+ // oder Sammelpunkte, deren Text nebenbei Elternbeiträge nennt (Messung 14.10.2026: Digitalisierung, Umsatzsteuer, Bibliothek)
+ if(!(KITA.test(t)||/Kindertageseinr|Kinderbetreuungseinr|Tageseinrichtung|Elternbeitr|Kinderhaus/i.test(t))||!(FEE.test(t)||FEE_RULES.test(t)||/[Bb]eitr[aä]g|Gebühr|Entgelt/.test(t))||/Mittel\b|überplanmäßig|außerplanmäßig|Wirtschaftsplan|Bericht|Betriebskosten|Förderung der Kindertagespflege|Geldleistung|Rahmenvereinbarung|^(?:Anfrage|Bekanntgabe)\b/i.test(t))return null;
  // Schulkind- und Ganztagsbetreuung ist keine Kita (eigenes Unterthema)
- if(/Schul|OGS|Ganztag|Hort\b/i.test(t)&&!KITA_PLACES.test(t.replace(/Hort\b/,'')))return null;
+ if(/Schul|Schüler|OGS|Ganztag|Hort\b|Kernzeit/i.test(t)&&!KITA_PLACES.test(t.replace(/Hort\b/,'')))return null;
  const all=sents.join(' ');
  /* Richtung nur aus Titel und Beschlussvorschlag, nicht aus dem Hintergrund („die Beiträge stiegen 2023“); sächsische
     „Absenkungsbeiträge“ (gesetzliche Beträge bei verkürzter Betreuung) sind keine Senkung. Informationen, Berichte und
     Anfragen bekommen eine Richtung nur aus dem Titel. Der Titel hat Vorrang. */
  const DOWN=/Reduzierung|\bSenkung|Absenkung(?!sbeitr)|Entlastung|Ermäßigung/i;
- const byTitle=/beitragsfrei|Beitragsfreiheit|gebührenfrei/i.test(t)?'Beitragsfreiheit':/Erhöhung|Anhebung|Anpassung nach oben/i.test(t)?'Erhöhung':DOWN.test(t)?'Senkung':null;
+ const byTitle=/beitragsfrei|Beitragsfreiheit|gebührenfrei|kostenfrei|kostenlos|Abschaffung/i.test(t)?'Beitragsfreiheit':/(?:Rücknahme|Aussetzung|Verzicht auf)\b.{0,30}Erhöhung/i.test(t)?'Senkung':/Erhöhung|Anhebung|Anpassung nach oben/i.test(t)?'Erhöhung':DOWN.test(t)?'Senkung':null;
  const info=/^(Information|Bericht|Sachstand|Mitteilung|Anfrage|Beantwortung)|Bericht zu|Information zu|Maßnahmen zur Bedarfsplanung/i.test(t);
  // Frühere Vorgänge im Beschlussvorschlag („die damals vorliegende Erhöhung … zu vertagen“) geben keine Richtung
  const dec=info?'':[t,...decision(text).split(SENTENCE).filter(x=>!OLD_STEP.test(x))].filter(x=>FEE.test(x)||KITA.test(x)).join(' ');
- const direction=byTitle||(/beitragsfrei|Beitragsfreiheit|gebührenfrei/i.test(dec)?'Beitragsfreiheit':/Erhöhung|erhöht|Anhebung|angehoben|Steigerung/i.test(dec)?'Erhöhung':/\bSenkung|Absenkung(?!sbeitr)|gesenkt|Reduzierung|reduziert|Entlastung|Ermäßigung/i.test(dec)?'Senkung':sents.every(x=>MEAL.test(x))?'Verpflegung':FEE_RULES.test(t+' '+dec)?'Neufassung':null);
+ const direction=byTitle||(/beitragsfrei|Beitragsfreiheit|gebührenfrei/i.test(dec)?'Beitragsfreiheit':/Erhöhung|erhöht|Anhebung|angehoben|Steigerung/i.test(dec)?'Erhöhung':/\bSenkung|Absenkung(?!sbeitr)|gesenkt|Reduzierung|reduziert|Entlastung|Ermäßigung/i.test(dec)?'Senkung':sents.every(x=>MEAL.test(x))?'Verpflegung':FEE_RULES.test(t+' '+dec)||/[Bb]eitr[aä]g|Gebühr|Entgelt/.test(t)?'Neufassung':null);
  if(!direction)return null;
  // Ganze Zahl („1.000 €“ nicht als „000 €“), Monatsbeiträge bis 4 Stellen
  const eur=all.match(/(?<![\d.,])(\d{1,4}(?:,\d{2})?)\s*(?:€|Euro|EUR)/);
  return {direction,euro:eur?eur[1]:''};
 }
+/* Jahresergebnis eines Jahresabschlusses (Finanzen, Jahresabschluss und Prüfung): Überschuss oder Fehlbetrag mit Betrag, zuerst
+   aus dem Beschlussvorschlag, sonst aus dem Text. Nur der Abschluss selbst, nicht Vorjahre, Plan- oder Prognosewerte, nicht
+   Prüfaufträge, Prüfberichte ohne Feststellung oder Rechnungsprüfungsordnungen. */
+const RESULT_TITLE=/Jahresabschlu|Jahresrechnung|Gesamtabschlu|Jahresergebnis|Haushaltsrechnung/i;
+const NOT_RESULT_TITLE=/Wirtschaftsprüf|Abschlussprüfer|Rechnungsprüfungsordnung|Prüfungsamt|Prüfbericht|Bestellung|Bestimmung|Beauftragung/i;
+const RESULT_NUM=String.raw`(-\s?)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d{1,2})?)\s*(Mio\.?|Millionen|TEUR|TEuro|T€|Tsd\.?\s*(?:€|EUR|Euro))?\s*(€|EUR|Euro)?`;
+const RESULT_RE=new RegExp(String.raw`\b(Jahresüberschuss\w*|Jahresfehlbetrag\w*|Gesamtüberschuss\w*|Gesamtfehlbetrag\w*|Jahresgewinn\w*|Jahresverlust\w*|Jahresergebnis\w*|Bilanzgewinn\w*|Bilanzverlust\w*|(?:mit einem|einen|ein) (?:Überschuss|Fehlbetrag|Gewinn|Verlust))\b[^.;]{0,40}?(?:in Höhe von|von|:|betr[aä]g\w*|mit|(?<![\d.,])(?=\s*(?:EUR|€)?\s*-?\s?\d)(?!\s*(?:19|20)\d\d\b))\s*(?:EUR|€)?\s*`+RESULT_NUM,'gi');
+const NOT_RESULT_SENT=/Vorjahr|Plan(?:ansatz|wert|ung)?\b|geplant|prognos|erwartet|voraussichtlich|Wirtschaftsplan|Haushaltsplan|Prognose|aus dem Jahr|Vortrag aus|Gewinnvortrag|Verlustvortrag|kumuliert|verbesser|verschlechter|Abweichung|gegenüber|im Vergleich/i;
+export function annualResultOf(title,text){
+ const t=String(title||'');if(!RESULT_TITLE.test(t)||NOT_RESULT_TITLE.test(t))return null;
+ // „i.H.v.“ würde den Satz an der Abkürzung trennen
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/\bi\.\s?H\.\s?v\./g,'in Höhe von').split(SENTENCE)){if(s.length>1500)continue;
+  for(const m of s.matchAll(RESULT_RE)){const unit=m[4]||'',cur=m[5]||'';if(!unit&&!cur)continue;
+   // Tabellen über mehrere Jahre („2019 2020 2021 … Jahresergebnis 298.923,20 €“) und lose „ein Fehlbetrag“ ohne Abschluss
+   if(/(?:(?:19|20)\d\d\s+){3}/.test(s.slice(Math.max(0,m.index-120),m.index)))continue;
+   if(/^(?:mit einem|einen|ein)\b/i.test(m[1])&&!/schließt|abgeschlossen|abschließt|Ergebnisrechnung|Wirtschaftsjahr|Geschäftsjahr|Haushaltsjahr/i.test(s.slice(Math.max(0,m.index-120),m.index+m[0].length+30)))continue;
+   // Vorjahr, Plan, Prognose nur im Umfeld des Treffers prüfen (lange Sätze aus Tabellen)
+   if(NOT_RESULT_SENT.test(s.slice(Math.max(0,m.index-80),m.index+m[0].length))||/^\s*(?:Vorjahr|im Vorjahr|gegenüber|im Vergleich)/i.test(s.slice(m.index+m[0].length,m.index+m[0].length+30)))continue;let v=Number(m[3].replace(/\./g,'').replace(',','.'));
+   if(/^(Mio|Millionen)/.test(unit))v*=1e6;else if(/^(TEUR|TEuro|T€|Tsd)/.test(unit))v*=1e3;
+   const neg=!!m[2]||/fehlbetrag|verlust/i.test(m[1]);if(!v||v>5e9)continue;
+   return {value:neg?'Fehlbetrag':'Überschuss',euro:Math.round(v)};}}
+  return null;};
+ return pick(decision(text))||pick(text);
+}
+
 /** Neue Kita-Plätze (größte Zahl in einem Satz mit Kita-Bezug und Ausbau), sonst null */
 // Kein Ausbau: Schließung, Abbau, Unterkünfte für Geflüchtete (auch dort ist von Plätzen die Rede)
 const NOT_PLACES=/Rückbau|Ersatzneubau|Schließung|geschlossen|Abbau|abgebaut|Wegfall|Geflüchtete|Flüchtling|Asyl|Unterbringung|Unterkunft|Pflegeheim|Seniorenheim|Senior|Demenz|Pflegebedürft|Altenpflege|Tagespflege für (ältere|Senioren)/i;
@@ -419,7 +458,7 @@ export const HEAT_STEPS=[
  ['Wärmeplan vorgelegt',/Beschluss(fassung)?\s+((des|über\s+den|über\s+die|zum|der)\s+)?(kommunalen?\s+|kommunaler\s+)?(Wärmepl|KWP|Abschlussbericht)|Festsetzungsbeschluss|Abschluss der (kommunalen\s+)?Wärmeplanung|Billigung|beschließt (den|die)\s+(kommunalen?\s+)?Wärmeplan|Abschlussbericht|Endbericht|finale[nr]? Wärmeplan|Veröffentlichung des Wärmeplan/i],
  ['Start und Beauftragung',/Aufstellungsbeschluss|Aufstellung|Durchführung|Erstellung|Beauftragung|Vergabe|Auftrag|Übertragung|Konvoi|interkommunal|Zusammenarbeit|Förderantrag|Einleitung|Beginn|Zuständigkeit|planungsverantwortliche/i],
  ['Umsetzung und Fortschreibung',/Fortschreibung|Umsetzung|Monitoring|Maßnahmenkatalog|Maßnahmenumsetzung|Wärmenetz/i],
- ['Analyse und Zwischenstand',/Bestandsanalyse|Potenzialanalyse|Potentialanalyse|Zielszenario|Zielgebiet|Eignungsprüfung|Zwischenbericht|Zwischenergebnis|Sachstand|Vorstellung|Ergebnisse|Präsentation|Wärmewendestrategie|Bericht/i],
+ ['Analyse und Zwischenstand',/Bestandsanalyse|Potenzialanalyse|Potentialanalyse|Zielszenario|Zielgebiet|Eignungsprüfung|Zwischenbericht|Zwischenergebnis|Sachstand|Vorstellung|Ergebnisse|Präsentation|Wärmewendestrategie|Bericht|Information|aktuelle[rn]? Stand|Stand der/i],
 ];
 // Im Beschlussvorschlag: der Beschluss des Plans zuerst; „Umsetzung“ steht dort oft nur als Auftrag und zählt nicht
 const HEAT_DECISION=[['Wärmeplan vorgelegt',/beschließt\b[^.]{0,250}(Wärmeplan\b|Wärmeplan\s|Abschlussbericht)|Wärmeplan[^.]{0,80}(beschlossen|gebilligt)/i],...HEAT_STEPS.filter(([n])=>n!=='Umsetzung und Fortschreibung'&&n!=='Wärmeplan vorgelegt')];
@@ -442,17 +481,17 @@ export function heatPlanOf(title,text){
    (Modernisierung), Unternehmen und Wirtschaftsförderung, Sammelpunkte. Zweck aus dem Titel; Betrag nur, wenn er an einem
    Zuschusswort hängt („Zuschuss in Höhe von 2.675,00 €“), zuerst im Beschlussvorschlag; nicht bei Höchstbeträgen, Beträgen je
    Mitglied oder Stunde und in Listen (drei und mehr Beträge). */
-const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein(?!barung)|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein(?!barung)|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?Zuschuss|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss/i;
+const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein(?!barung)|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein(?!barung)|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?Zuschuss|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss|(?:Förderung von Projekten|Projektförderung) durch (?:den|die) (?:Stadtbezirks|Orts|Bezirks)beirat|^Zuschuss (?:für|an|zur|zum) (?!die Gemeinde|die Stadt|den Kreis)/i;
 // Keine neuen Zuschüsse: Ausschreibungen, Verwendungsnachweise, Vereinsauflösungen, Landesförderung (Katastrophenschutz)
-const NOT_GRANT=/Ausschreibung|Rahmenvereinbarung|Vereinbarung|Verwendungsnachweis|Abrechnung|Auflösung|Vermögen|Katastrophenschutz|Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|GmbH|Gewerbe|Fassade|Privat|Eigentümer/i;
+const NOT_GRANT=/Ausschreibung|Rahmenvereinbarung|Vereinbarung|Verwendungsnachweis|Abrechnung|Auflösung|Vermögen|Katastrophenschutz|Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|(?<!g)GmbH|Gewerbe|Dienstbarkeit|Fassade|Privat|Eigentümer/i;
 export const GRANT_PURPOSES=[
  ['Feuerwehr und Rettung',/Feuerwehr|Rettung|DRK|Rote[sn]? Kreuz|Malteser|Johanniter|THW|DLRG|Wasserwacht|Bergwacht/i],
  ['Kinder und Jugend',/Jugend|Kinder|Kita|KiTa|Kindergarten|Krippe|Schule|Schüler|Hausaufgaben|Ferien/i],
  ['Sport',/[Ss]port|Turn|Schütze|Fußball|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Ruder|Kanu|\b(SV|TSV|TuS|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
  ['Kultur und Heimat',/Kultur|Kunst|Künstler|Musik|Chor|Kapelle|Theater|Heimat|Museum|Brauchtum|Karneval|Narren|Fastnacht|Kirmes|Fest\b|Feste|Denkmal|Bücherei|Geschicht|Orchester|Konzert|Jazz|Band\b|Music|Gesang|Sänger|Kerbe|Kirchweih|Maifeier|Mai-Feier|Tanz|Standarte|Fahne|Soldaten|Krieger|Kameradschaft|Dorf|Bürgerverein|Verschönerung|Partnerschaft|Städtepartner/i],
+ ['Umwelt und Tiere',/Natur|Umwelt|Tier|Imker|Kleingarten|Garten|Angel|Jagd|Obst|Wald/i],
  ['Soziales und Senioren',/Senior|Sozial|Diakon|Caritas|AWO|Tafel|Hospiz|Beratung|Frauen|Familie|Mehrgenerationen|Behindert|Inklusion|Pflege|Wohlfahrt|Selbsthilfe|Lebenshilfe|Hilfe\b|-Hilfe|Blaues Kreuz|in Not\b|Sucht|Obdach|Migra|Integration/i],
  ['Kirche',/Kirche|Pfarr|\bkath\.|\bev\.|evangelisch|katholisch/i],
- ['Umwelt und Tiere',/Natur|Umwelt|Tier|Imker|Kleingarten|Garten|Angel|Jagd|Obst|Wald/i],
 ];
 const GRANT_AMOUNT=new RegExp(String.raw`(?:Zuschuss|Zuschüsse|Zuschusses|Zuwendung|Förderbetrag|Förderung|Investitionszuschuss|Zuschussbetrag|Zuschusshöhe|Betriebskostenzuschuss|Bezuschussung|bezuschusst|Betrag)([^.;€]{0,80}?)(?:in Höhe von|i\.\s?H\.\s?v\.|von|über|mit|:)\s*`+EURO_NUM,'g');
 const NOT_GRANT_GAP=/Gesamt|Kosten|Eigen|Restmittel|förderfähig|zuwendungsfähig|Anteil|Prozent|%|Haushalt|Ansatz|Budget|Mittel/i;
@@ -498,7 +537,7 @@ export function factsOf(title,text){
   for(const x of fund){rows.push({kind:'funding',value:x.program,detail:x.status});if(x.sure&&!asked)rows.push({kind:'funding_granted',value:x.program,detail:''});}
   /* Betrag ohne Programm im selben Satz gehört zum Programm des Berichts, wenn er nur eines nennt */
   const named=fund.filter(x=>x.program!=='Sonstige Förderung'),euro=new Map();
-  for(const x of fundingEuroOf(text)){const p=x.program==='Sonstige Förderung'&&named.length===1?named[0].program:x.program;if(x.euro>(euro.get(p)||0))euro.set(p,x.euro);}
+  if(!ownFunding(title,text))for(const x of fundingEuroOf(text)){const p=x.program==='Sonstige Förderung'&&named.length===1?named[0].program:x.program;if(x.euro>(euro.get(p)||0))euro.set(p,x.euro);}
   for(const [p,e] of euro)rows.push({kind:'funding_euro',value:p,detail:String(e)});
  }
  const plan=planOf(title,text);
@@ -508,6 +547,7 @@ export function factsOf(title,text){
  for(const x of hebesatzOf(title,text))rows.push({kind:'hebesatz',value:x.tax,detail:`${x.to}|${x.from}`});
  for(const x of feeRateOf(title,text))rows.push({kind:'fee_rate',value:x.kind,detail:`${x.to}|${x.from}|${x.unit}`});
  const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});
+ const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:String(result.euro)});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
  return rows;
 }
