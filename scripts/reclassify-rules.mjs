@@ -1,5 +1,5 @@
-/* Regel-Labels lokal neu einordnen (Titelregeln, shared/labels.mjs), ohne Admin-Anmeldung:
-     node scripts/reclassify-rules.mjs
+/* Regel-Labels neu einordnen (Titelregeln, shared/labels.mjs), ohne Admin-Anmeldung:
+     node scripts/reclassify-rules.mjs            (DATABASE_FILE oder lokale Datei unter .wrangler/)
    Ruft dieselbe Funktion wie die Adminseite auf (analysePending, manual-analysis.mjs) für alle Gebiete, in Paketen zu 500,
    jedes Paket in einer eigenen Transaktion. Verarbeitet nur Vorgänge mit veralteter oder fehlender Einordnung, ist also
    jederzeit abbrechbar (Strg+C) und fortsetzbar. Setzt eine Sperre (system_state 'import-lock', 10 Minuten).
@@ -8,8 +8,9 @@ import {DatabaseSync} from 'node:sqlite';
 import {readdirSync} from 'node:fs';
 import {sqliteAdapter} from './ai-job.mjs';
 import {analysePending} from '../server/integrations/manual-analysis.mjs';
+// Server: DATABASE_FILE (wie die übrigen Skripte), lokal die Datei des Dev-Servers unter .wrangler/
 const dir='.wrangler/state/v3/d1/miniflare-D1DatabaseObject/';
-const file=dir+readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite');
+const file=process.env.DATABASE_FILE||dir+readdirSync(dir).find(x=>x.endsWith('.sqlite')&&x!=='metadata.sqlite');
 const sql=new DatabaseSync(file);sql.exec('PRAGMA busy_timeout=60000');
 const db=sqliteAdapter(sql);const t0=Date.now();
 let after='',batches=0,total=0;
