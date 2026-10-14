@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v19';
+export const FACTS_VERSION='facts-v20';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -324,6 +324,71 @@ export function annualResultOf(title,text){
  return pick(decision(text))||pick(text);
 }
 
+/* Parkgebühr je Stunde (Mobilität, Parken): ausdrücklich genannter Satz in € je Stunde (halbe Stunde verdoppelt), bei Änderungen
+   der neue Wert („von 1,00 € auf 1,50 €“, „1,00 €/Stunde → 1,20 €/Stunde“). Nicht Erhöhungsbeträge („um 0,50 €“), Mittelwerte,
+   Mindestgebühren der Park-App, Vergleiche mit anderen Städten, Bewohnerparken, Monats- und Tagestickets. */
+const PARK_TITLE=/Park(?:geb|raum|entgelt|schein|tarif|haus|platz|ticket|en\b)|Stellpl[aä]tz|Tiefgarage/i;
+const NOT_PARK_TITLE=/Bewohnerpark|Anwohnerpark|Betrug|Car-?Sharing|Fahrrad|Wohnmobil|Pacht|vermiet/i;
+const PARK_RE=/(?<![\d.,])(\d{1,2},\d{2})\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)\s*(angefangene[n]?\s+)?(halbe\s+Stunde|30\s*Min\w*|Stunde|Std\.?|h\b)/gi;
+// Umgekehrte Reihenfolge („je angefangene Stunde 1,00 €“, „für jede weitere 30 Minuten 0,50 €“, „bis 1 Stunde 1,00 €“);
+// zwei Beträge hintereinander sind Spalten „bisher | neu“, dann gilt der zweite
+const PARK_RE2=/(?:je|pro|für jede|(?<![\d,.])1)\s+(?:weitere\s+|angefangene[n]?\s+)*(halbe\s+Stunde|30\s*Min\w*|Stunde)\s*:?\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)(?:\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR))?/gi;
+const NOT_PARK_SENT=/\b(?:um|statt|bisher\w*|bislang|derzeit\w*|aktuell|bleibt bei|weiterhin|damit)\s*$|durchschnitt|im Mittel|mindestens|Vergleich|andere[nr]? (Städte|Kommunen)|Nachbar|Bewohner|Anwohner|Wohnmobil|Bus(se)?\b|Lkw|Fahrrad/i;
+export function parkFeeOf(title,text){
+ const t=String(title||'');if(!PARK_TITLE.test(t)||NOT_PARK_TITLE.test(t))return null;
+ const pick=src=>{let best=null;
+  for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){if(s.length>1500||/[Vv]ergleich|Unterschied|Differenz/.test(s))continue;
+   // Tabellen mit vielen Sätzen ohne Zone oder Parkplatz sind meist Vergleiche mit Nachbarorten
+   if([...s.matchAll(PARK_RE)].length>=4&&!/Zone|Tarif|Parkpl|Parkhaus|Tiefgarage|Parkdeck|Bereich/.test(s))continue;
+   for(const m of s.matchAll(PARK_RE)){const before=s.slice(Math.max(0,m.index-60),m.index),after=s.slice(m.index+m[0].length,m.index+m[0].length+40);
+    if(NOT_PARK_SENT.test(before)||/^\s*(?:→|->|auf\s+\d)/.test(after)&&!/^\s*auf\s*$/.test(before.slice(-5)))continue;
+    if(/^\s*(?:→|->)\s*\d/.test(after)||/\bvon\s*$/i.test(before)&&/^\s*auf\s*\d+,\d+\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)/i.test(after))continue;
+    const to=/\bvon\s*(?:derzeit\s*|bislang\s*|bisher\s*)?$/i.test(before)&&after.match(/^\s*auf\s*(\d{1,2},\d{2})\s*(?:€|Euro|EUR)/);
+    let v=Number((to?to[1]:m[1]).replace(',','.'));if(/halbe|30/i.test(m[3]))v*=2;if(!v||v>10)continue;
+    best=Math.max(best||0,v);}
+   for(const m of s.matchAll(PARK_RE2)){if(NOT_PARK_SENT.test(s.slice(Math.max(0,m.index-60),m.index)))continue;
+    let v=Number((m[3]||m[2]).replace(',','.'));if(/halbe|30/i.test(m[1]))v*=2;if(v&&v<=10)best=Math.max(best||0,v);}
+   if(best!==null)return best;}
+  return best;};
+ const v=pick(decision(text))??pick(text);if(v===null)return null;
+ return {value:v<=1?'bis 1 € je Stunde':v<=2?'über 1 bis 2 € je Stunde':'über 2 € je Stunde',euro:v.toFixed(2)};
+}
+
+/* Leistung von Wind- und Solarvorhaben (Umwelt, Erneuerbare): ausdrücklich genannte installierte Leistung oder Nennleistung des
+   Vorhabens in MW (kWp umgerechnet). Nicht Strommengen (MWh), Leistung je Anlage, Leistungsklassen, Ziele, Netzanfragen. */
+const EE_TITLE=/Wind|Solar|Photovoltaik|\bPV\b|PV-|Agri-?PV|Freifläch/i;
+const EE_RE=/(?:\w*[Ll]eistung|installiert\w*)\b[^.;]{0,50}?(?<![\d.,])(\d{1,3}(?:\.\d{3})*(?:,\d+)?)\s*(MWp|MW|Megawatt(?:peak)?|kWp|kW)\b|(?<![\d.,])(\d{1,3}(?:\.\d{3})*(?:,\d+)?)\s*(MWp|MW|Megawatt(?:peak)?|kWp)\b(?!\s*-?\s*Klasse)/gi;
+const NOT_EE_SENT=/BESS|Referenz|Beispiel|besichtig|Inbetriebnahme|\blag\b|bestehende|vorhanden|je Anlage|pro Anlage|Klasse|Ziel|bis (19|20)\d\d|jährlich|bundesweit|Land(es)?\b|Netz\w*\s+(angefragt|anfrage)|Anfrage|Umspannwerk|Elektrolys|Wasserstoff/i;
+export function eePowerOf(title,text){
+ const t=String(title||'');if(!EE_TITLE.test(t)||/Bericht|Sachstand|Stand des|Anfrage|Balkon|Förderrichtlinie|Kriterien|Leitlinie|Potential|Potenzial|Studie|Konzept/i.test(t))return null;
+ const kind=/Wind/i.test(t)?'Wind':'Photovoltaik';
+ // Umfeld im ganzen Text prüfen: Aufzählungen („15,9 MWp; BESS …“) trennt SENTENCE am Semikolon
+ const all=String(text||'').replace(/\s+/g,' ');let at=0;
+ for(const s of all.split(SENTENCE)){const off=all.indexOf(s,at);at=off+s.length;if(s.length>1200)continue;
+  for(const m of s.matchAll(EE_RE)){const num=m[1]||m[3],unit=(m[2]||m[4]).toLowerCase(),i=off+m.index;
+   if(NOT_EE_SENT.test(all.slice(Math.max(0,i-80),i+m[0].length+30))||/Batterie|Speicher|BESS/i.test(all.slice(Math.max(0,i-25),i)+m[0].replace(/\d.*$/,'')))continue;
+   let v=Number(num.replace(/\./g,'').replace(',','.'));if(unit.startsWith('k'))v/=1000;
+   if(!v||v>2000)continue;return {value:kind,mw:Math.round(v*1000)/1000};}}
+ return null;
+}
+
+/* Preis für Gewerbegrundstücke (Wirtschaft, Gewerbeflächen): Kauf- oder Verkaufspreis in € je m², den die Kommune festsetzt,
+   verlangt oder zahlt, zuerst aus dem Beschlussvorschlag. Nicht Bodenrichtwerte, Rückkaufpreise, Erschließungskosten,
+   Spannen, Vergleichspreise anderer Orte, frühere Preise. */
+const LAND_TITLE=/Gewerbe|Industrie/i;
+const LAND_DEAL=/Verkauf|Veräußer|Kaufpreis|Grundstückspreis|Verkaufspreis|Preis|Erwerb|Ankauf/i;
+const LAND_RE=/(Kaufpreis\w*|Grundstückspreis\w*|Verkaufspreis\w*|Preis|Erwerb|Grundpreis)\b(?:[^.;]|\d\.\d)*?(?<![\d.,])(\d{1,3}(?:,\d{1,2})?)\s*(?:€|Euro|EUR)\s*(?:\/|pro|je)\s*(?:m²|qm²?|m2|Quadratmeter)/gi;
+const NOT_LAND=/Bodenrichtwert|Rückkauf|Erschließungs|Kostenrahmen|zwischen|bis \d|Vergleich|liegen bei|Jahr (19|20)\d\d|bisher|bislang|damals|Nachzahlung|würde/i;
+export function landPriceOf(title,text){
+ const t=String(title||'');if(!LAND_TITLE.test(t)||!LAND_DEAL.test(t)||/Vergabekriterien|Richtlinie|Grundsätze|Leitlinie|Nutzungszweck|Sachstand|Status|Auflistung|Konzept/i.test(t))return null;
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').split(SENTENCE)){if(s.length>1200)continue;
+  for(const m of s.matchAll(LAND_RE)){if(NOT_LAND.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+20)))continue;
+   const v=Number(m[2].replace(',','.'));if(v>=1&&v<=1000)return v;}}
+  return null;};
+ const v=pick(decision(text))??pick(text);if(v===null)return null;
+ return {value:v<50?'unter 50 € je m²':v<=100?'50 bis 100 € je m²':'über 100 € je m²',euro:String(v)};
+}
+
 /** Neue Kita-Plätze (größte Zahl in einem Satz mit Kita-Bezug und Ausbau), sonst null */
 // Kein Ausbau: Schließung, Abbau, Unterkünfte für Geflüchtete (auch dort ist von Plätzen die Rede)
 const NOT_PLACES=/Rückbau|Ersatzneubau|Schließung|geschlossen|Abbau|abgebaut|Wegfall|Geflüchtete|Flüchtling|Asyl|Unterbringung|Unterkunft|Pflegeheim|Seniorenheim|Senior|Demenz|Pflegebedürft|Altenpflege|Tagespflege für (ältere|Senioren)/i;
@@ -548,6 +613,9 @@ export function factsOf(title,text){
  for(const x of feeRateOf(title,text))rows.push({kind:'fee_rate',value:x.kind,detail:`${x.to}|${x.from}|${x.unit}`});
  const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});
  const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:String(result.euro)});
+ const park=parkFeeOf(title,text);if(park)rows.push({kind:'park_fee',value:park.value,detail:park.euro});
+ const ee=eePowerOf(title,text);if(ee)rows.push({kind:'ee_power',value:ee.value,detail:String(ee.mw)});
+ const land=landPriceOf(title,text);if(land)rows.push({kind:'land_price',value:land.value,detail:land.euro});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
  return rows;
 }
