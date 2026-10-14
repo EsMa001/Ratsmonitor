@@ -469,8 +469,8 @@ export function hebesatzOf(title,text){
    Änderungen „um“, Wasserentnahmeentgelt. */
 const FEE_TITLE=/Gebühr|Entgelt|Kalkulation|Wasserpreis|Abgabensatzung|Entwässerungssatzung|Wasserversorgungssatzung|Abwassersatzung|Tarif/i;
 const FEE_KINDS=[
- ['Niederschlagswasser',/Niederschlags\s?wasser|Regenwasser|Oberflächenwasser|Oberflächenentwässerung|versiegelte/gi],
- ['Schmutzwasser',/Schmutzwasser|Abwassergebühr|Kanalbenutzungsgebühr|Einleit(?:ungs)?gebühr|Entwässerungsgebühr|Abwasserbeseitigung/gi],
+ ['Niederschlagswasser',/\bNSW\b|Niederschlags\s?wasser|Regenwasser|Oberflächenwasser|Oberflächenentwässerung|versiegelte/gi],
+ ['Schmutzwasser',/\bSW-Gebühr|Schmutzwasser|Abwassergebühr|Kanalbenutzungsgebühr|Einleit(?:ungs)?gebühr|Entwässerungsgebühr|Abwasserbeseitigung/gi],
  ['Trinkwasser',/Trinkwasser|Frischwasser(?!maßstab|menge|bezug|verbrauch)|(?<![\wäöüß])Wasser(?:preis|gebühr|verbrauchsgebühr|bezugsgebühr|entgelt|geld)/gi],
 ];
 // Ohne Art im Satz („Die Verbrauchsgebühr beträgt …“) gilt die einzige Art, die der Titel nennt
@@ -503,7 +503,7 @@ export function feeRateOf(title,text){
     const r=feeIn(s.slice(m.at,Math.min(m.at+160,marks[i+1]?.at??s.length)));if(!r||!r.unit)return;
     // Vorrang: Beschlussvorschlag, dann Änderung mit „bisher“, dann neu gesetzter Satz („auf 1,42 €“), dann bloße Nennung
     const eff=prio+(r.from?0.5:r.set?0.25:0);if(out.has(m.kind)&&out.get(m.kind).prio>=eff)return;
-    const unit=unitOf(r.unit);if(m.kind!=='Niederschlagswasser'&&unit!=='m³')return;
+    const unit=unitOf(r.unit);if((m.kind==='Niederschlagswasser')!==(unit==='m²'))return;
     const [lo,hi]=FEE_RANGE[m.kind],to=feeNum(r.to),from=r.from?feeNum(r.from):0;
     if(to<lo||to>hi||from&&(from<lo||from>hi||from===to||Math.abs(to/from-1)>1))return;
     out.set(m.kind,{kind:m.kind,from:from?String(from):'',to:String(to),unit,prio:eff});
@@ -520,13 +520,13 @@ export function feeRateOf(title,text){
 const HEAT=/Wärmeplan|Wärmeleitplan|\bKWP\b/i;
 export const HEAT_STEPS=[
  ['Entwurf und Beteiligung',/Entwurf|vorläufig|Stellungnahme|Auslegung|Offenlage|Einsichtnahme|Öffentlichkeitsbeteiligung|Beteiligung der Öffentlichkeit|Beteiligung gem/i],
- ['Wärmeplan vorgelegt',/Beschluss(fassung)?\s+((des|über\s+den|über\s+die|zum|der)\s+)?(kommunalen?\s+|kommunaler\s+)?(Wärmepl|KWP|Abschlussbericht)|Festsetzungsbeschluss|Abschluss der (kommunalen\s+)?Wärmeplanung|Billigung|beschließt (den|die)\s+(kommunalen?\s+)?Wärmeplan|Abschlussbericht|Endbericht|finale[nr]? Wärmeplan|Veröffentlichung des Wärmeplan/i],
- ['Start und Beauftragung',/Aufstellungsbeschluss|Aufstellung|Durchführung|Erstellung|Beauftragung|Vergabe|Auftrag|Übertragung|Konvoi|interkommunal|Zusammenarbeit|Förderantrag|Einleitung|Beginn|Zuständigkeit|planungsverantwortliche/i],
+ ['Wärmeplan vorgelegt',/Beschluss(fassung)?\s+((des|über\s+den|über\s+die|zum|der)\s+)?(vorliegenden\s+)?(kommunalen?\s+|kommunaler\s+)?(Wärmepl|KWP|Abschlussbericht)|Festsetzungsbeschluss|Feststellung|Selbstbindungsbeschluss|Abschluss (der\s+)?(kommunalen?\s+)?Wärmeplanung|Billigung|beschließt (den|die)\s+(kommunalen?\s+)?Wärmeplan|Abschlussbericht|Endbericht|finale[nr]? Wärmeplan|Veröffentlichung des Wärmeplan/i],
+ ['Start und Beauftragung',/Ablauf|Einführung in|Aufstellungsbeschluss|Aufstellung|Durchführung|Erstellung|Beauftragung|Vergabe|Auftrag|Übertragung|Konvoi|interkommunal|Zusammenarbeit|Förderantrag|Einleitung|Beginn|Zuständigkeit|planungsverantwortliche/i],
  ['Umsetzung und Fortschreibung',/Fortschreibung|Umsetzung|Monitoring|Maßnahmenkatalog|Maßnahmenumsetzung|Wärmenetz/i],
  ['Analyse und Zwischenstand',/Bestandsanalyse|Potenzialanalyse|Potentialanalyse|Zielszenario|Zielgebiet|Eignungsprüfung|Zwischenbericht|Zwischenergebnis|Sachstand|Vorstellung|Ergebnisse|Präsentation|Wärmewendestrategie|Bericht|Information|aktuelle[rn]? Stand|Stand der/i],
 ];
 // Im Beschlussvorschlag: der Beschluss des Plans zuerst; „Umsetzung“ steht dort oft nur als Auftrag und zählt nicht
-const HEAT_DECISION=[['Wärmeplan vorgelegt',/beschließt\b[^.]{0,250}(Wärmeplan\b|Wärmeplan\s|Abschlussbericht)|Wärmeplan[^.]{0,80}(beschlossen|gebilligt)/i],...HEAT_STEPS.filter(([n])=>n!=='Umsetzung und Fortschreibung'&&n!=='Wärmeplan vorgelegt')];
+const HEAT_DECISION=[['Wärmeplan vorgelegt',/beschließt\b[^.]{0,250}(Wärmeplan\b|Wärmeplan\s|Abschlussbericht|Endbericht)|(?:Abschlussbericht|Endbericht|vorliegende[n]?\s+(?:kommunalen?\s+)?Wärmeplan\w*)(?:[^.]|\.\d){0,120}(?:Kenntnis|gebilligt|zugestimmt)|beschließt das Konzept zur (kommunalen\s+)?Wärmeplanung|beschließt (den|die) [„"]?(kommunalen?\s+)?Wärmeplanung\b(?![^.]{0,80}(durchzuführen|aufzustellen|zu erstellen|zu beginnen|einzuleiten|abzubilden))|Wärmeplan[^.]{0,80}(beschlossen|gebilligt)/i],...HEAT_STEPS.filter(([n])=>n!=='Umsetzung und Fortschreibung'&&n!=='Wärmeplan vorgelegt')];
 /** Verfahrensschritt der kommunalen Wärmeplanung oder null */
 // „Umsetzung des Wärmeplanungsgesetzes“ und Grundsatzbeschlüsse beginnen die Planung; Widersprüche und Anträge sind kein Schritt
 const HEAT_START=/Umsetzung (des )?(Wärmeplanungsgesetz|WPG)|Grundsatzbeschluss|grundsätzliche[nr]? Beschluss|Planungsvariante/i;
@@ -534,7 +534,7 @@ const HEAT_START=/Umsetzung (des )?(Wärmeplanungsgesetz|WPG)|Grundsatzbeschluss
 const HEAT_LAW=/(Bundes)?[Gg]esetz(es)? für die Wärmeplanung und zur Dekarbonisierung der Wärmenetze(\s*\(WPG\))?/;
 export function heatPlanOf(title,text){
  const raw=String(title||''),t=raw.replace(HEAT_LAW,'WPG');
- if(!HEAT.test(t)&&!/Wärmeplanungsgesetz|\bWPG\b/i.test(t)||/\bAnfrage|Antrag (der|des|von)|Antrag Nr|Fraktion|Widerspruch|Beanstandung/i.test(t))return null;
+ if(!HEAT.test(t)&&!/Wärmeplanungsgesetz|\bWPG\b/i.test(t)||/\bAnfrage|Antrag (der|des|von)|Antrag Nr|\bAntrag\b[^)]{0,10}\(|Fraktion|Widerspruch|Beanstandung/i.test(t))return null;
  // Titel nach dem Muster „Kommunale Wärmeplanung nach dem Bundesgesetz … - Umsetzung in der Gemeinde X“: Übertragung der Aufgabe
  if(HEAT_START.test(t)||HEAT_LAW.test(raw)&&/Umsetzung|Übertragung|Aufgabe/i.test(t))return 'Start und Beauftragung';
  const dec=decision(text);
@@ -546,13 +546,13 @@ export function heatPlanOf(title,text){
    (Modernisierung), Unternehmen und Wirtschaftsförderung, Sammelpunkte. Zweck aus dem Titel; Betrag nur, wenn er an einem
    Zuschusswort hängt („Zuschuss in Höhe von 2.675,00 €“), zuerst im Beschlussvorschlag; nicht bei Höchstbeträgen, Beträgen je
    Mitglied oder Stunde und in Listen (drei und mehr Beträge). */
-const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein(?!barung)|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein(?!barung)|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?Zuschuss|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss|(?:Förderung von Projekten|Projektförderung) durch (?:den|die) (?:Stadtbezirks|Orts|Bezirks)beirat|^Zuschuss (?:für|an|zur|zum) (?!die Gemeinde|die Stadt|den Kreis)/i;
+const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein(?!barung)|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein(?!barung)|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?(Zuschuss|Zuwendung)|Antrag (des|der|von)\b.{0,60}\b(auf|zur) (Bezuschussung|Zuschuss|Zuwendung)|Zuschuss[\wäöüß]* an (den|die|das) (?!Gemeinde|Stadt|Kreis|Land)|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss|(?:Förderung von Projekten|Projektförderung) durch (?:den|die) (?:Stadtbezirks|Orts|Bezirks)beirat|^Zuschuss (?:für|an|zur|zum) (?!die Gemeinde|die Stadt|den Kreis)/i;
 // Keine neuen Zuschüsse: Ausschreibungen, Verwendungsnachweise, Vereinsauflösungen, Landesförderung (Katastrophenschutz)
 const NOT_GRANT=/Ausschreibung|Rahmenvereinbarung|Vereinbarung|Verwendungsnachweis|Abrechnung|Auflösung|Vermögen|Katastrophenschutz|Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|(?<!g)GmbH|Gewerbe|Dienstbarkeit|Fassade|Privat|Eigentümer/i;
 export const GRANT_PURPOSES=[
  ['Feuerwehr und Rettung',/Feuerwehr|Rettung|DRK|Rote[sn]? Kreuz|Malteser|Johanniter|THW|DLRG|Wasserwacht|Bergwacht/i],
  ['Kinder und Jugend',/Jugend|Kinder|Kita|KiTa|Kindergarten|Krippe|Schule|Schüler|Hausaufgaben|Ferien/i],
- ['Sport',/[Ss]port|Turn|Schütze|Fußball|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Ruder|Kanu|\b(SV|TSV|TuS|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
+ ['Sport',/[Ss]port|Turn|Schütze|Fußball|fußball|TSG|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Padel|Soccer|Bolzplatz|Kunstrasen|Ruder|Kanu|\b(SV|TSV|TuS|TUS|STK|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
  ['Kultur und Heimat',/Kultur|Kunst|Künstler|Musik|Chor|Kapelle|Theater|Heimat|Museum|Brauchtum|Karneval|Narren|Fastnacht|Kirmes|Fest\b|Feste|Denkmal|Bücherei|Geschicht|Orchester|Konzert|Jazz|Band\b|Music|Gesang|Sänger|Kerbe|Kirchweih|Maifeier|Mai-Feier|Tanz|Standarte|Fahne|Soldaten|Krieger|Kameradschaft|Dorf|Bürgerverein|Verschönerung|Partnerschaft|Städtepartner/i],
  ['Umwelt und Tiere',/Natur|Umwelt|Tier|Imker|Kleingarten|Garten|Angel|Jagd|Obst|Wald/i],
  ['Soziales und Senioren',/Senior|Sozial|Diakon|Caritas|AWO|Tafel|Hospiz|Beratung|Frauen|Familie|Mehrgenerationen|Behindert|Inklusion|Pflege|Wohlfahrt|Selbsthilfe|Lebenshilfe|Hilfe\b|-Hilfe|Blaues Kreuz|in Not\b|Sucht|Obdach|Migra|Integration/i],
@@ -580,7 +580,8 @@ function grantAmount(src){
 /** {purpose, euro} (euro 0, wenn kein Betrag erkannt) oder null */
 export function grantOf(title,text){
  const t=String(title||'');
- if(!GRANT_TITLE.test(t)||NOT_GRANT.test(t)||COLLECTIVE.test(t))return null;
+ // Änderungen an Förderrichtlinien sind kein Zuschuss („Zuschuss nach … der Sportförderrichtlinie an den X“ schon)
+ if(!GRANT_TITLE.test(t)||NOT_GRANT.test(t)||COLLECTIVE.test(t)||/\bAnfrage\b|(Änderung|Neufassung|Erlass|Fortschreibung|Ergänzung)\w*\s+(der|zur|einer)\s+[\wäöüß]*[Rr]ichtlinie|Richtlinien?\s+(über|zur|für)\b/i.test(t))return null;
  const purpose=(GRANT_PURPOSES.find(([,re])=>re.test(t))||['Sonstige Vereine und Träger'])[0];
  return {purpose,euro:/Richtlinie|Satzung/i.test(t)?0:grantAmount(decision(text))||grantAmount(text)};
 }
