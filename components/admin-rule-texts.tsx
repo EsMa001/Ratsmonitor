@@ -23,7 +23,12 @@ function stepNote(s:Step){
  return 'fertig';
 }
 const n=(v:number)=>v.toLocaleString('de-DE');
-type QualityRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;gate?:boolean};
+type QualityRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;gate?:boolean;what?:string};
+/* „i“ neben dem Namen: was bei der Regel gemessen wird (what in rule-quality.json); Klick öffnet, für Tastatur und Touch */
+const Info=({text}:{text:string})=>{const [open,setOpen]=useState(false);return <>
+ <button type="button" aria-label="Was gemessen wird" aria-expanded={open} title={text} onClick={()=>setOpen(o=>!o)} className={'inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border text-[11px] font-semibold leading-none '+(open?'border-teal-600 bg-teal-600 text-white':'border-slate-300 text-slate-500 hover:border-teal-600 hover:text-teal-700')}>i</button>
+ {open&&<span className="basis-full rounded-md bg-slate-50 px-3 py-2 text-[13px] leading-snug text-slate-700">{text}</span>}
+</>;};
 const QT=QUALITY.target;
 /** „12 %“ mit Hinweis, wenn unter dem Ziel */
 /* Messwert als Balken mit Zielmarke; unter dem Ziel orange */
@@ -131,7 +136,7 @@ export function AdminRuleTexts(){
    {QUALITY.groups.map(g=>{
     const row=(r:QualityRow)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
-      <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>
+      <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
        {g.id==='facts'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(r.gate?'bg-teal-50 text-teal-700':'bg-slate-100 text-slate-500')}>{r.gate?'im Atlas':'gesperrt'}</span>}</div>
       <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),g.id==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
      </div>

@@ -5,7 +5,7 @@ import { ApiError, errorText, fetchOrFail } from "../../lib/fetchJson";
 
 /* Die Vorgänge hinter einer Zahl einer Auswertung (Listenmodus by=…&value=…, etwa /api/x?list=1): Lädt beim Öffnen,
    weitere Einträge auf Knopfdruck. */
-export interface DrillItem { id: string; title: string; region: string; date: string; status: string; times: number; signal?: string; topics?: string[]; euro?: number }
+export interface DrillItem { id: string; title: string; region: string; date: string; status: string; times: number; signal?: string; topics?: string[]; euro?: number; /* Wert aus den Unterlagen, schon formatiert („465 %“) */ value?: string }
 interface List { total: number; size: number; items: DrillItem[] }
 
 const n = (v: number) => v.toLocaleString("de-DE");
@@ -62,6 +62,7 @@ export function RadarDrill({ base, query, by, value, label, unit }: { base: stri
                 <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), by !== "topic" && r.topics?.join(", "), r.times > 1 && (unit ? `${r.times} Vorgänge` : `in ${r.times} Sitzungen`)].filter(Boolean).join(" · ")}</span>
               </Link>
               <span className="self-center text-right text-[12px] text-slate-500">
+                {r.value ? <b className="block text-[14px] font-semibold tabular-nums text-slate-900">{r.value}</b> : null}
                 {r.euro ? <b className="block text-[14px] font-semibold tabular-nums text-slate-900">{r.euro.toLocaleString("de-DE")} €</b> : null}
                 {r.signal && r.signal !== "Sonstiges" && by !== "signal" && <span className="block">{r.signal}</span>}
                 {statusLabel(r.status) && <span className="block">{statusLabel(r.status)}</span>}

@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v21';
+export const FACTS_VERSION='facts-v22';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -408,21 +408,28 @@ const DOG_AMT=String.raw`(?<![\d.,])(\d{2,3})(?:,\d{2})?\s*(?:€|Euro|EUR)`;
 const DOG_RES=[
  // von X auf Y … Ersthund / Ersthund … von X auf Y
  new RegExp(String.raw`von\s+(?:derzeit\s+|bisher\s+|aktuell\s+)?`+DOG_AMT+String.raw`(?:\s*\/\s*Jahr)?\s+auf\s+(?:neu\s+)?`+DOG_AMT+String.raw`(?:\s*(?:pro|\/)\s*Jahr)?\s*(?:für\s+)?(?:den\s+)?`+DOG_FIRST,'gi'),
- new RegExp(DOG_FIRST+String.raw`[^.;\d]{0,60}?von\s+(?:derzeit\s+|bisher\s+|aktuell\s+)?`+DOG_AMT+String.raw`(?:\s*\/\s*Jahr)?\s+auf\s+(?:neu\s+)?`+DOG_AMT,'gi'),
+ new RegExp(DOG_FIRST+String.raw`[^.;\d]{0,60}?von\s+(?:derzeit\s+|bisher\s+|aktuell\s+)?`+DOG_AMT+String.raw`(?:\s*\/\s*Jahr)?\s+auf\s+(?:neu\s+|jetzt\s+)?`+DOG_AMT,'gi'),
+ // Tabelle „alt neu“: „Ersthund 72,00 € 108,00 €“ (nur mit „alt … neu“ davor, DOG_TABLE); „bisher 75,00 € ab 2027 83,00 €“;
+ // „die Zahl „96,00“ durch die Zahl „120,00““ (HU3, 14.10.2026)
+ new RegExp(DOG_FIRST+String.raw`\s*`+DOG_AMT+String.raw`\s*`+DOG_AMT,'gi'),
+ new RegExp(String.raw`bisher\s+`+DOG_AMT+String.raw`\s+ab\s+(?:dem\s+)?(?:\d{1,2}\.\d{1,2}\.)?\d{4}\s+`+DOG_AMT,'gi'),
+ new RegExp(String.raw`Zahl\s+[„"](\d{2,3})(?:,\d{2})?\s*[“"]\s+durch\s+die\s+Zahl\s+[„"](\d{2,3})`,'gi'),
  // „Ersthund wird ab 01.01.2026 auf 96,00 Euro …“: neuer Satz (Ziffern des Datums dazwischen); zweite Gruppe wie oben
  new RegExp(DOG_FIRST+String.raw`(?:[^.;]|\.\d){0,50}?\bauf\s+()`+DOG_AMT,'gi'),
- new RegExp(DOG_AMT+String.raw`\s*(?:\(\s*)?für\s+den\s+(?:ersten\s+Hund|Ersthund)`,'gi'),
+ new RegExp(DOG_AMT+String.raw`\s*(?:\(\s*)?für\s+den\s+(?:ersten\s+Hund|Ersthund|1\.\s*Hund)`,'gi'),
  new RegExp(DOG_FIRST+String.raw`[^.;\d]{0,40}?`+DOG_AMT,'gi'),
 ];
 // Alte Sätze nur bei bloßen Beträgen ausschließen; „von derzeit X auf Y“ nennt den neuen
+const DOG_TABLE=/\balt\b.{0,80}\bneu\b|bisher.{0,60}\bneu\b|Satzung alt/i;
 const DOG_OLD=/\baktuell|derzeit|\bbisher|damals|wurde\b|seitdem|unverändert/i;
 const NOT_DOG=/zwischen|damals|zuletzt|letztmal|erfolgte|So beträgt|beträgt (?:die Hundesteuer )?in \p{Lu}|\bIn \p{Lu}[\p{L}-]+ beträgt|gefährlich|Kampfhund|ermäßig|Ermäßigung|Rasse|Listenhund|Aufkommen|Mehreinnahm|Mehrertr|erhöht\s+um|um\s*$|Vergleich|Kommunen|Nachbar|höchsten|Durchschnitt|Landkreis|gegenwärtige|bleibt/iu;
 export function dogTaxOf(title,text){
  const t=String(title||'');if(!DOG_TITLE.test(t)||/gefährlich|Kampfhund|Rückblick|Anfrage|Antrag (der|des)|Fraktion|Hebesatz|Gewerbesteuer|Grundsteuer|Hundekot|Hundewiese|Hundeauslauf|Hundetoilett/i.test(t))return null;
  const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').split(SENTENCE)){if(s.length>1500)continue;
   for(const [i,re] of DOG_RES.entries())for(const m of s.matchAll(re)){
-   if(NOT_DOG.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+15))||i>2&&DOG_OLD.test(s.slice(Math.max(0,m.index-160),m.index)))continue;
-   const v=Number(i<3?m[2]:m[1]);if(v>=10&&v<=300)return v;}}
+   if(NOT_DOG.test(s.slice(Math.max(0,m.index-60),m.index+m[0].length+15))||i>5&&DOG_OLD.test(s.slice(Math.max(0,m.index-160),m.index+m[0].length)))continue;
+   if(i===3&&!DOG_TABLE.test(s.slice(Math.max(0,m.index-300),m.index)))continue;
+   const v=Number(i<6?m[2]:m[1]);if(v>=10&&v<=300)return v;}}
   return null;};
  const v=pick(decision(text))??pick(text);if(v===null)return null;
  return {value:v<=60?'bis 60 € im Jahr':v<=100?'61 bis 100 € im Jahr':'über 100 € im Jahr',euro:String(v)};
@@ -566,7 +573,7 @@ export const HEAT_STEPS=[
 ];
 // Im Beschlussvorschlag: der Beschluss des Plans zuerst; „Umsetzung“ steht dort oft nur als Auftrag und zählt nicht
 const HEAT_DECISION=[['Wärmeplan vorgelegt',/beschließt\b[^.]{0,250}(Wärmeplan\b|Wärmeplan\s|Abschlussbericht|Endbericht)|(?:Abschlussbericht|Endbericht|vorliegende[n]?\s+(?:kommunalen?\s+)?Wärmeplan\w*)(?:[^.]|\.\d){0,120}(?:Kenntnis|gebilligt|zugestimmt)|beschließt das Konzept zur (kommunalen\s+)?Wärmeplanung|beschließt (den|die) [„"]?(kommunalen?\s+)?Wärmeplanung\b(?![^.]{0,80}(durchzuführen|aufzustellen|zu erstellen|zu beginnen|einzuleiten|abzubilden))|Wärmeplan[^.]{0,80}(beschlossen|gebilligt)/i],...HEAT_STEPS.filter(([n])=>n!=='Umsetzung und Fortschreibung'&&n!=='Wärmeplan vorgelegt')];
-const HEAT_DONE=/beschließt\b(?:[^.]|\.\d|\. ?§){0,120}?\b(?:den|die)\s+(?:vorliegenden?|erstellten?|finalen?|gemäß|gem\.)(?:[^.]|\.\d|\. ?§){0,80}?Wärmeplan|beschließt (?:den|die) (?:kommunalen?\s+)?Wärmeplan\w* (?:in (?:seiner|ihrer) finalen|in der (?:vorgestellten )?Endfassung)|Abschlussbericht\w*(?:[^.]|\.\d){0,120}?Kenntnis|Kenntnisnahme des Abschlussbericht|Verabschiedung der (?:kommunalen )?Wärmeplanung/i;
+const HEAT_DONE=/beschließt\b(?:[^.]|\.\d|\. ?§){0,120}?\b(?:den|die)\s+(?:vorliegenden?|erstellten?|finalen?|gemäß|gem\.)(?:[^.]|\.\d|\. ?§){0,80}?Wärmeplan|beschließt (?:den|die) (?:kommunalen?\s+)?Wärmeplan\w* (?:in (?:seiner|ihrer) finalen|in der (?:vorgestellten )?Endfassung)|Abschlussbericht\w*(?:[^.]|\.\d){0,120}?Kenntnis|Kenntnisnahme des Abschlussbericht|Verabschiedung der (?:kommunalen )?Wärmeplanung|beschließt\b[^.]{0,200}?\b(?:erarbeitete|vorliegende|erstellte)n?\s+(?:kommunalen?\s+)?Wärmeplan|beschließt (?:den|die) (?:Abschluss|Ergebnis|End)bericht\w* zur (?:kommunalen )?Wärmeplan|beschließt (?:den|die) kommunalen? Wärmeplan(?:ung)? (?:für|der|des)\b(?![^.]{0,80}(?:durchzuführen|aufzustellen|zu erstellen|zu beginnen|einzuleiten|abzubilden|zu übertragen))|(?:vorliegende[n]? )?(?:kommunalen? )?Wärmeplan\w*[^.]{0,120}(?:in der vorliegenden Fassung|als strategische Grundlage)?\s+zu beschließen/i;
 /** Verfahrensschritt der kommunalen Wärmeplanung oder null */
 // „Umsetzung des Wärmeplanungsgesetzes“ und Grundsatzbeschlüsse beginnen die Planung; Widersprüche und Anträge sind kein Schritt
 const HEAT_START=/Umsetzung (des )?(Wärmeplanungsgesetz|WPG)|Grundsatzbeschluss|grundsätzliche[nr]? Beschluss|Planungsvariante/i;
@@ -594,14 +601,14 @@ export function heatPlanOf(title,text){
    Mitglied oder Stunde und in Listen (drei und mehr Beträge). */
 const GRANT_TITLE=/(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Unterstützung|Defizitausgleich|Bezuschussung).{0,60}(Verein(?!barung)|e\.\s?V\.|Förderverein|Club|Initiative|Stiftung|Träger|Kirchengemeinde)|(Verein(?!barung)|e\.\s?V\.).{0,60}(Zuschuss|Zuschüsse|Zuwendung|Förderung|Beihilfe|Bezuschussung)|Vereinsförder|Sportförder|Kulturförder|Vereinszuschüss|Zuschussantrag|Antrag auf (Gewährung (eines|von) )?(Zuschuss|Zuwendung)|Antrag (des|der|von)\b.{0,60}\b(auf|zur) (Bezuschussung|Zuschuss|Zuwendung)|Zuschuss[\wäöüß]* an (den|die|das) (?!Gemeinde|Stadt|Kreis|Land)|Gewährung (eines|von) Zuschüss|Investitionszuschuss|Betriebskostenzuschuss|(?:Förderung von Projekten|Projektförderung) durch (?:den|die) (?:Stadtbezirks|Orts|Bezirks)beirat|^Zuschuss (?:für|an|zur|zum) (?!die Gemeinde|die Stadt|den Kreis)/i;
 // Keine neuen Zuschüsse: Ausschreibungen, Verwendungsnachweise, Vereinsauflösungen, Landesförderung (Katastrophenschutz)
-const NOT_GRANT=/Beitritt|Mitgliedschaft|Aussetzung|Gründung|durch den (Kreis|Landkreis)|Ausschreibung|Rahmenvereinbarung|Vereinbarung|Verwendungsnachweis|Abrechnung|Auflösung|Vermögen|Katastrophenschutz|Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|(?<!g)GmbH|Gewerbe|Dienstbarkeit|Fassade|Privat|Eigentümer/i;
+const NOT_GRANT=/Fraktion.{0,120}(?:Änderung|Einrichtung|Topf)|^Erlass\b|Beitritt|Mitgliedschaft|Aussetzung|Gründung|durch den (Kreis|Landkreis)|Ausschreibung|Rahmenvereinbarung|Vereinbarung|Verwendungsnachweis|Abrechnung|Auflösung|Vermögen|Katastrophenschutz|Spende|spendenähnlich|Entgegennahme|Annahme von|Verzicht|Wahl\b|Bestellung|Vertreter|öffentlich-rechtliche|Bericht|Entwicklungszusammenarbeit|Modernisierung|Fördermittel|Förderprogramm|Landes(mittel|förder|zuschuss)|Bundes(mittel|förder)|LEADER|Städtebauförder|Krankheitskosten|Wirtschaftsförder|Unternehmen|(?<!g)GmbH|Gewerbe|Dienstbarkeit|Fassade|Privat|Eigentümer/i;
 export const GRANT_PURPOSES=[
  ['Feuerwehr und Rettung',/Feuerwehr|Rettung|DRK|Rote[sn]? Kreuz|Malteser|Johanniter|THW|DLRG|Wasserwacht|Bergwacht/i],
- ['Kinder und Jugend',/Jugend|Kinder|Kita|KiTa|Kindergarten|Krippe|Spielkreis|(?<!Musik)Schule|Schüler|Hausaufgaben|Ferien/i],
- ['Sport',/[Ss]port|Turn|Schütze|Fußball|fußball|TSG|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Boxen|Ringen|Rad(sport|fahr)|Segel|Padel|Soccer|Bolzplatz|Kunstrasen|Athlet|Freizeitmannschaft|Platzpflege|Ruder|Kanu|\b(SV|TSV|TuS|TUS|STK|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
- ['Kultur und Heimat',/Kultur|Kunst|Künstler|Musik|Chor|Gesang|\bMGV\b|Kapelle|Theater|Heimat|Museum|Brauchtum|Karneval|Narren|Fastnacht|Kirmes|Fest\b|Feste|Denkmal|Bücherei|Geschicht|Orchester|Konzert|Jazz|Band\b|Music|Gesang|Sänger|Kerbe|Kirchweih|Maifeier|Mai-Feier|Tanz|Standarte|Fahne|Soldaten|Krieger|Kameradschaft|Dorf|Bürgerverein|Verschönerung|Partnerschaft|Städtepartner/i],
+ ['Kinder und Jugend',/Jugend|Kinder|Kita|KiTa|Kindergarten|Krippe|Spielkreis|(?<!Musik)Schule|Schüler|Hausaufgaben|Ferien|Waldorf|Pädagog/i],
+ ['Sport',/[Ss]port|Turn|Schütze|Fußball|fußball|TSG|Tennis|Reit|Schwimm|Kegel|Golf|Handball|Volleyball|Leichtathlet|Biathlon|Eis(zeit|halle|sport)|Taekwondo|Judo|Karate|Kampfsport|\bKSC\b|Boxen|Ringen|Rad(sport|fahr)|Segel|Padel|Soccer|Bolzplatz|Kunstrasen|Athlet|Freizeitmannschaft|Platzpflege|Ruder|Kanu|\b(SV|TSV|TuS|TUS|STK|SC|FC|VfB|VfL|VfR|SG|TV|SSV|FSV|DJK|Spvgg|SpVgg|TC|ASV|TTC|TTV)\b/],
+ ['Kultur und Heimat',/Kultur|Kunst|Künstler|Musik|Chor|Gesang|\bMGV\b|Kapelle|Theater|Heimat|Museum|Brauchtum|Karneval|Narren|Fastnacht|Kirmes|Fest\b|Feste|Denkmal|Bücherei|Geschicht|Orchester|Konzert|Jazz|Band\b|Music|Gesang|Sänger|Kerbe|Kirchweih|Maibaum|Maifeier|Mai-Feier|Tanz|Standarte|Fahne|Soldaten|Krieger|Kameradschaft|Dorf|Bürgerverein|Verschönerung|Partnerschaft|Städtepartner/i],
  ['Umwelt und Tiere',/Natur|Umwelt|Tier|Imker|Vogel|Kleingarten|Garten|Angel|Jagd|Obst|Wald/i],
- ['Soziales und Senioren',/Senior|Sozial|Diakon|Caritas|AWO|Tafel|Hospiz|Beratung|Frauen|Familie|Mehrgenerationen|Behindert|Inklusion|Pflege|Wohlfahrt|Selbsthilfe|Lebenshilfe|Hilfe\b|-Hilfe|Blaues Kreuz|in Not\b|Sucht|Obdach|Migra|Integration/i],
+ ['Soziales und Senioren',/Senior|Sozial|Diakon|Caritas|AWO|Tafel|Hospiz|Beratung|Frauen|Familie|Mehrgenerationen|Behindert|Inklusion|Pflege(?!ger)|Wohlfahrt|Selbsthilfe|Lebenshilfe|Hilfe\b|-Hilfe|Blaues Kreuz|in Not\b|Sucht|Obdach|Migra|Integration/i],
  ['Kirche',/Kirche|Pfarr|\bkath\.|\bev\.|evangelisch|katholisch/i],
 ];
 const GRANT_AMOUNT=new RegExp(String.raw`(?:Zuschuss|Zuschüsse|Zuschusses|Zuwendung|Förderbetrag|Förderung|Investitionszuschuss|Zuschussbetrag|Zuschusshöhe|Betriebskostenzuschuss|Bezuschussung|bezuschusst|Betrag)([^.;€]{0,80}?)(?:in Höhe von|i\.\s?H\.\s?v\.|von|über|mit|:)\s*`+EURO_NUM,'g');
@@ -628,7 +635,9 @@ export function grantOf(title,text){
  const t=String(title||'');
  // Änderungen an Förderrichtlinien sind kein Zuschuss („Zuschuss nach … der Sportförderrichtlinie an den X“ schon)
  if(!GRANT_TITLE.test(t)||NOT_GRANT.test(t)||COLLECTIVE.test(t)||/\bAnfrage\b|(Änderung|Neufassung|Erlass|Fortschreibung|Ergänzung)\w*\s+(der|zur|einer)\s+[\wäöüß]*[Rr]ichtlinie|Richtlinien?\s+(über|zur|für)\b/i.test(t))return null;
- const purpose=(GRANT_PURPOSES.find(([,re])=>re.test(t))||['Sonstige Vereine und Träger'])[0];
+ // Der Zweck steht beim Empfänger, nicht im Programm davor („Sportförderung - Zuschuss für die Tierfreunde“, GR4 14.10.2026)
+ const who=t.replace(/^(?:Sport|Vereins|Kultur)förderung\s*[-–:;]\s*/i,'');
+ const purpose=(GRANT_PURPOSES.find(([,re])=>re.test(who))||GRANT_PURPOSES.find(([,re])=>re.test(t))||['Sonstige Vereine und Träger'])[0];
  return {purpose,euro:/Richtlinie|Satzung/i.test(t)?0:grantAmount(decision(text))||grantAmount(text)};
 }
 

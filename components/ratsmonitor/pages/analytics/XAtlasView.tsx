@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -7,6 +7,7 @@ import { DiffusionSearch } from "./DiffusionSearch";
 import { useAnalyticsQuery } from "./useAnalyticsQuery";
 import { useAnalysisRun } from "./useAnalysisRun";
 import { RadarDrill } from "./RadarDrill";
+import { RegionMap } from "./RegionMap";
 import { STATUS } from "../../lib/constants";
 import { monthLabel, parseDate, plural } from "../../lib/text";
 import { prettyTerm } from "../../lib/terms";
@@ -14,14 +15,15 @@ import { prettyTerm } from "../../lib/terms";
 /* plenara.X Atlas auf der einen Abfrage (GET /api/x?view=atlas, server/integrations/plenara-x-query.mjs): je Thema die
    Unterthemen, was geschieht, der Verlauf, die Orte und die jüngsten Vorgänge; ohne Thema die 10 Themen. Gezählt werden
    Vorgänge (gleiche Titel je Gebiet einmal), Formalien nie; das Thema ist dasselbe wie im Themenfilter der Suche. */
-interface Row { key: string; name: string; count: number; base: number; share: number | null; ags?: string }
+interface Row { key: string; name: string; count: number; base: number; share: number | null; ags?: string; members?: string[] }
 interface Item { id: string; title: string; region: string; date: string; status: string; stage: string | null; subs: string[]; times: number }
 interface CompareRow { key: string; name: string; k: number; share: number; q1: number; median: number; q3: number; ratio: number | null; class: "mehr" | "weniger" | "ueblich" | null }
 interface Compare { region: string; from: string; to: string; n: number; months: number; insufficient?: "items" | "months" | "group"; rule: { minItems: number; minMonths: number; minTopic: number }; group?: { label: string; n: number }; rows?: CompareRow[] }
 interface Result { selection: { theme: string; sub: string; stage: string; q: string }; total: number; unread: number; parts: Row[]; stages: Row[]; months: Row[]; regions: Row[]; recent: Item[]; compare: Compare | null; facts: Fact[] }
-interface Fact { kind: string; name: string; sum: { kind: string; name: string } | null; rows: (Row & { sum?: number })[] }
+interface Fact { kind: string; name: string; sum: { kind: string; name: string } | null; rows: (Row & { sum?: number; median?: { median: number; unit: string; n: number } })[] }
 
 const n = (v: number) => v.toLocaleString("de-DE");
+const num = (v: number) => v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 2 });
 const pct = (v: number | null) => (v === null ? "–" : `${v.toLocaleString("de-DE")} %`);
 const MONTH = new Intl.DateTimeFormat("de-DE", { month: "short", year: "2-digit" });
 const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "");
@@ -41,7 +43,7 @@ function Bars({ rows, mode, open = "", onOpen, drill = () => null, value = (r) =
   value?: (r: Row) => number; label?: (r: Row) => string;
 }) {
   const max = Math.max(1, ...rows.map(value));
-  const grid = "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-2.5 text-left sm:grid-cols-[260px_minmax(0,1fr)_120px]";
+  const grid = "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-2.5 text-left sm:grid-cols-[260px_minmax(0,1fr)_minmax(120px,auto)]";
   return (
     <ol className="m-0 list-none border-t border-slate-200 p-0">
       {rows.map((r) => {
@@ -65,6 +67,49 @@ function Bars({ rows, mode, open = "", onOpen, drill = () => null, value = (r) =
         );
       })}
     </ol>
+  );
+}
+
+/* Karte der Orte: Vorgänge der Auswahl je Gemeinde (Gemeindeverbände färben ihre Mitgliedsgemeinden) oder je Kreis (Summe aller
+   Gebiete im Kreis). Stufen wie die frühere Karte der Radare: 1, 2, 3 bis 4, 5 und mehr Vorgänge. */
+const STUFE = (c: number) => (c >= 5 ? 4 : c >= 3 ? 3 : c);
+function AtlasMap({ regions, onList, listed, drill }: { regions: Row[]; onList: (id: string) => void; listed: string; drill: (r: Row) => React.ReactNode }) {
+  const [level, setLevel] = useState<"city" | "district">("city");
+  const [picked, setPicked] = useState("");
+  const { levels, byAgs } = useMemo(() => {
+    const levels: Record<string, number> = {}, byAgs = new Map<string, Row>();
+    if (level === "district") {
+      const sum = new Map<string, number>();
+      for (const r of regions) if (r.ags && r.ags.length >= 5) sum.set(r.ags.slice(0, 5), (sum.get(r.ags.slice(0, 5)) ?? 0) + r.count);
+      for (const [k, c] of sum) { levels[k] = STUFE(c); const own = regions.find((r) => r.ags === k); byAgs.set(k, { key: own?.key ?? "", name: own?.name ?? `Kreis ${k}`, count: c, base: 0, share: null }); }
+    } else {
+      for (const r of regions) {
+        const own = r.ags?.length === 8 ? [r.ags] : [];
+        for (const a of [...own, ...(r.members ?? []).filter((m) => m.length === 8)]) if (!byAgs.has(a) || own.includes(a)) { levels[a] = STUFE(r.count); byAgs.set(a, r); }
+      }
+    }
+    return { levels, byAgs };
+  }, [regions, level]);
+  const sel = picked ? byAgs.get(picked) : undefined;
+  const chip = (on: boolean) => `h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[14px] transition-colors ${on ? "border-teal-600 bg-teal-700 text-white" : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"}`;
+  const listedRow = listed ? regions.find((r) => r.key === listed) : undefined;
+  return (
+    <section className="mt-12">
+      <h2 className="text-[22px] font-semibold">Karte</h2>
+      <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Vorgänge der Auswahl je {level === "district" ? "Kreis (alle Gebiete im Kreis zusammen)" : "Gemeinde; ein Gemeindeverband färbt seine Mitgliedsgemeinden"}. Klick auf ein Gebiet zeigt seine Zahl und die Vorgänge.</p>
+      <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label="Ebene der Karte">
+        {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
+      </div>
+      <RegionMap level={level} levels={levels} picked={picked} onPick={(a) => setPicked(picked === a ? "" : a)}
+        legend={["1 Vorgang", "2 Vorgänge", "3 bis 4 Vorgänge", "5 und mehr"]} note="ohne Farbe: keine Vorgänge"
+        label={`Karte der Vorgänge je ${level === "district" ? "Kreis" : "Gemeinde"}`}
+        info={sel ? <>
+          <b className="font-semibold">{sel.name}</b><br />
+          <span className="text-slate-500">{n(sel.count)} {plural(sel.count, "Vorgang", "Vorgänge")}{sel.share !== null && sel.base ? ` · ${pct(sel.share)} von ${n(sel.base)} Sachvorgängen` : ""}</span>
+          {sel.key && <><br /><button type="button" onClick={() => onList(sel.key)} className="pointer-events-auto mt-1 text-[14px] font-medium text-teal-700 hover:underline">{listed === sel.key ? "Vorgänge ausblenden" : "Vorgänge zeigen →"}</button></>}
+        </> : picked ? <span className="text-slate-500">Hier gibt es keine Vorgänge zur Auswahl.</span> : undefined} />
+      {listedRow && <div className="mt-3">{drill(listedRow)}</div>}
+    </section>
   );
 }
 
@@ -189,14 +234,16 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
                 {month && <div className="mt-3">{drill("month", res.months.find((m) => m.key === month)!, monthLabel(month))}</div>}
               </section></Reveal>}
 
+              {allRegions.length > 0 && <Reveal><AtlasMap regions={allRegions} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} /></Reveal>}
+
               {res.facts.length > 0 && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Werte aus den Unterlagen</h2>
-                <p className="mb-1 mt-1 max-w-[760px] text-[14px] text-slate-500">Aus den Texten der Unterlagen gelesen; gezeigt wird nur, was in Stichproben zu mindestens 90 % stimmte. Klick zeigt die Vorgänge.</p>
+                <p className="mb-1 mt-1 max-w-[760px] text-[14px] text-slate-500">Aus den Texten der Unterlagen gelesen; gezeigt wird nur, was in Stichproben zu mindestens 90 % stimmte. Bei Beträgen und Sätzen steht der Median der Vorgänge dabei. Klick zeigt die Vorgänge mit ihrem Wert.</p>
                 {res.facts.map((f) => (
                   <div key={f.kind} className="mt-6">
                     <h3 className="mb-2 text-[16px] font-semibold">{f.name}</h3>
                     <Bars rows={restLast(f.rows)} mode="expand" open={opened("fact:" + f.kind)} onOpen={(k) => toggle(`fact:${f.kind}:${k}`)} drill={(r) => drill("fact:" + f.kind, r)}
-                      label={(r) => `${n(r.count)}${f.sum ? ` · ${n((r as Row & { sum?: number }).sum ?? 0)} ${f.sum.name}` : ""}`} />
+                      label={(r) => { const x = r as Fact["rows"][number]; return `${n(r.count)}${f.sum ? ` · ${n(x.sum ?? 0)} ${f.sum.name}` : ""}${x.median ? ` · Median ${num(x.median.median)} ${x.median.unit}` : ""}`; }} />
                   </div>
                 ))}
               </section></Reveal>}

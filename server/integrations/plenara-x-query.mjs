@@ -44,11 +44,18 @@ export const X_SUMS={housing:'Wohneinheiten',kita_places:'Kita-Plätze',funding_
 export const X_FACT_NAMES={annual_result:'Jahresabschlüsse nach Ergebnis',plan:'Bauleitplanung nach Verfahrensschritt',plan_use:'Art des Plangebiets',hebesatz:'Hebesätze nach Steuerart',fee_rate:'Gebührensätze nach Art',
  heat_plan:'Kommunale Wärmeplanung nach Schritt',grant:'Zuschüsse an Vereine und Träger nach Zweck',kita_fee:'Kita-Beiträge nach Richtung',funding:'Förderprogramme',faction:'Anträge und Anfragen nach Fraktion',
  park_fee:'Parkgebühren je Stunde',ee_power:'Wind- und Solarvorhaben nach Art',land_price:'Preise für Gewerbegrundstücke',dog_tax:'Hundesteuer für den ersten Hund'};
-export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,annual_result:true,funding:false,kita_fee:false,plan_use:false,fee_rate:true,heat_plan:false,grant:false,park_fee:false,ee_power:false,land_price:true,dog_tax:false};
+export const X_FACT_GATE={plan:true,hebesatz:true,faction:true,annual_result:true,funding:false,kita_fee:false,plan_use:false,fee_rate:true,heat_plan:true,grant:true,park_fee:false,ee_power:false,land_price:true,dog_tax:false};
 export const X_SUM_GATE={housing:false,kita_places:false,funding_euro:false};
 const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['ee_power']],mobilitaet:[['park_fee']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee','kita_places']],'':[['funding','funding_euro']]};
 export const X_LIST_SIZE=50;
+/* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
+   Gebührensätze tragen die Einheit im dritten Feld (m³ oder m²). Ein Zuschuss ohne Betrag hat keine Zahl. */
+const X_FACT_NUM={hebesatz:'%',fee_rate:'€/',annual_result:'€',park_fee:'€ je Stunde',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',grant:'€',kita_fee:'€ im Monat'};
+const factNum=(kind,detail)=>{if(!X_FACT_NUM[kind])return null;const parts=String(detail??'').split('|'),v=Number(parts[0]);
+ return parts[0]!==''&&Number.isFinite(v)&&!(kind==='grant'&&v===0)?{v,unit:kind==='fee_rate'?'€/'+(parts[2]||'m³'):X_FACT_NUM[kind]}:null;};
+const fmtNum=(v,unit)=>`${v.toLocaleString('de-DE',{maximumFractionDigits:Math.abs(v)>=100?0:2})} ${unit}`;
+const median=vs=>{const s=[...vs].sort((a,b)=>a-b),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
 const THEME_IDS=new Set([...THEMES.map(t=>t.id),'unklar']),SUB_BY_ID=new Map(SUBTOPICS.map(s=>[s.id,s]));
 const STAGE_IDS=new Set([...STAGES.map(s=>s.id),SONST]);
 const OWN=['theme','sub','stage','by','list','value','offset','view','sum'];
@@ -129,10 +136,18 @@ export async function xQuery(db,catalog,params,opts={}){
    :db.prepare(`${cte} SELECT ${key} k,count(*) n FROM sel x ${join} GROUP BY k`).bind(...args,...sel.args,...jargs)).all()).results;
  }
  // Summe eines Zahlenwerts: je Vorgang der größte Wert, je Gruppe summiert
+ // Zahlenwerte: je Vorgang und Wert die erste Zahl, je Gruppe der Median (nur Fakten mit Zahl)
+ let medians=null;
+ if(x.fact&&X_FACT_NUM[x.fact]){
+  const {results}=await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.* FROM ${from} WHERE ${cond}) SELECT f.value k,rr.case_key ck,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=? AND f.detail<>'' AND rr.case_key IN (SELECT case_key FROM sel)`).bind(...args,...sel.args,x.fact).all();
+  const per=new Map();for(const r of results){const num=factNum(x.fact,r.d);if(!num)continue;const g=per.get(r.k)||new Map();if(!g.has(r.ck))g.set(r.ck,num);per.set(r.k,g);}
+  medians=new Map([...per].map(([k,g])=>{const nums=[...g.values()],units=new Map();for(const u of nums)units.set(u.unit,(units.get(u.unit)||0)+1);
+   const unit=[...units].sort((a,b)=>b[1]-a[1])[0][0],vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [k,{median:median(vs),unit,n:vs.length}];}));
+ }
  const sums=x.sum?new Map((await db.prepare(`WITH sel AS MATERIALIZED (SELECT x.* FROM ${from} WHERE ${cond}) SELECT k,sum(v) v FROM (SELECT ${key} k,x.case_key cs,max(sv.v) v FROM sel x ${join} ${SUM_JOIN} GROUP BY k,cs) GROUP BY k`).bind(...args,...sel.args,...jargs,x.sum).all()).results.map(r=>[r.k,r.v])):null;
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const rows=hits.map(h=>{const b=perPart?Number(all?.n||0):h.b||0;
-  return {key:h.k??'',name:nameOf(x.by,h.k,byId),...(x.by==='region'?{ags:byId.get(h.k)?.ags||''}:{}),count:h.n,base:b,share:b?Math.round(1000*h.n/b)/10:null,...(sums?{sum:sums.get(h.k)??0}:{})};})
+  return {key:h.k??'',name:nameOf(x.by,h.k,byId),...(x.by==='region'?{ags:byId.get(h.k)?.ags||'',...(byId.get(h.k)?.members?.length?{members:byId.get(h.k).members.map(m=>m.ags).filter(Boolean)}:{})}:{}),count:h.n,base:b,share:b?Math.round(1000*h.n/b)/10:null,...(sums?{sum:sums.get(h.k)??0}:{}),...(medians?.has(h.k)?{median:medians.get(h.k)}:{})};})
   .sort((a,b)=>x.by==='month'?String(a.key).localeCompare(String(b.key)):b.count-a.count);
  return {selection:{theme:x.theme,sub:x.sub,stage:x.stage,q:x.f.q},by:x.by,...(x.sum?{sum:{kind:x.sum,name:X_SUMS[x.sum]}}:{}),total:Number(total?.n||0),unread:Number(total?.u||0),builtAt:state.builtAt,rows};
 }
@@ -145,13 +160,19 @@ async function xList(db,catalog,x,{count:counted=true,src=null}={}){
  const cond=sel.where.join(' AND '),distinct=x.fact?'DISTINCT ':'';
  const [{results},count]=await Promise.all([
   // Erst die Seite aus der schmalen Tabelle, dann Titel und Gremium nur für diese Vorgänge
-  db.prepare(`SELECT p.card_id id,p.region_id region,c.title,c.gremium,p.date,p.status,p.stage,p.subs,p.cards times FROM (SELECT ${distinct}x.* FROM ${from} ${join} WHERE ${cond} ORDER BY x.date DESC,x.case_key LIMIT ? OFFSET ?) p JOIN search_cards c ON c.id=p.card_id ORDER BY p.date DESC,p.case_key`).bind(...args,...jargs,...sel.args,X_LIST_SIZE,x.offset).all(),
+  db.prepare(`SELECT p.case_key ck,p.card_id id,p.region_id region,c.title,c.gremium,p.date,p.status,p.stage,p.subs,p.cards times FROM (SELECT ${distinct}x.* FROM ${from} ${join} WHERE ${cond} ORDER BY x.date DESC,x.case_key LIMIT ? OFFSET ?) p JOIN search_cards c ON c.id=p.card_id ORDER BY p.date DESC,p.case_key`).bind(...args,...jargs,...sel.args,X_LIST_SIZE,x.offset).all(),
   counted?db.prepare(`SELECT count(${distinct}x.case_key) n FROM ${from} ${join} WHERE ${cond}`).bind(...args,...jargs,...sel.args).first():null,
  ]);
  const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
+ // Wert des Vorgangs zum gewählten Fakt (bei mehreren, etwa Grundsteuer A und B, alle verschiedenen)
+ const values=new Map();
+ if(x.fact&&X_FACT_NUM[x.fact]&&results.length){
+  const {results:fs}=await db.prepare(`SELECT rr.case_key ck,f.value v,f.detail d FROM topic_facts f JOIN report_rules rr ON rr.topic_id=f.topic_id WHERE f.kind=? AND rr.case_key IN (SELECT value FROM json_each(?))${x.value!==''?' AND f.value=?':''}`).bind(x.fact,JSON.stringify(results.map(r=>r.ck)),...(x.value!==''?[x.value]:[])).all();
+  for(const f of fs){const num=factNum(x.fact,f.d);if(!num)continue;const t=fmtNum(num.v,num.unit),l=values.get(f.ck)||[];if(!l.includes(t))l.push(t);values.set(f.ck,l);}
+ }
  return {offset:x.offset,size:X_LIST_SIZE,total:Number(count?.n||0),
   items:results.map(r=>({id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,
-   stage:r.stage||null,subs:r.subs?r.subs.split(','):[],times:r.times}))};
+   stage:r.stage||null,subs:r.subs?r.subs.split(','):[],times:r.times,...(values.has(r.ck)?{value:values.get(r.ck).slice(0,3).join(' · ')}:{})}))};
 }
 
 /** Atlas: alle Gliederungen einer Auswahl in einer Antwort (ohne Thema: je Thema, mit Thema: je Unterthema) */
