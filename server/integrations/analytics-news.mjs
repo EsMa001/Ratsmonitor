@@ -22,7 +22,9 @@ import {titleKey} from '../../shared/topic-facts.mjs';
  * kleiner Kreis) entsprechend mehr, sodass die Liste voll werden kann.
  */
 const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
-const FACT_KINDS=['faction','funding','funding_euro','kita_fee','plan'];
+// Förderung (funding, funding_euro) vorerst nicht: Stand bewilligt/beantragt auf frischen Stichproben nur 36–64 % richtig
+// (docs/qualitaet/plenara-x/regeln-2026-10-14.md, Runde 7); die Werte bleiben in topic_facts
+const FACT_KINDS=['faction','kita_fee','plan'];
 /* Signale aus readReport (report_rules, Migration 0035): Unterthemen und „Was geschieht“; Richtung und Art aus dem Titel */
 const UP=/Erhöhung|Anhebung|erhöht|angehoben/i,DOWN=/Senkung|gesenkt|Reduzierung|Absenkung/i;
 const CITIZEN=/Petition|Einwohnerantr|Bürgerantr|Bürgerbegehren|Bürgerentscheid|Bürgereingabe|Anregungen und Beschwerden/i;
