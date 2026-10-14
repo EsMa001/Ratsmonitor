@@ -75,25 +75,27 @@ export const PROGRAMS=[
  ['Feuerwehr und Katastrophenschutz',/Feuerwehr|Katastrophenschutz/i],
 ];
 // Nur Geldwörter: „Förderung“ allein meint oft Arbeits-, Sprach- oder Vereinsförderung
-const FUND=/(Fördermittel|Fördergeld|Förderprogramm|Förderantrag|Förderbescheid|Förderquote|Fördersumme|Förderbetrag|Förderzusage|Förderaufruf|Förderrichtlinie|Förderzuschuss|Zuwendungsbescheid|Zuwendung(?:en)? (?:des|der|aus|von|in Höhe)|Bundesmittel|Landesmittel|EU-Mittel|Bundesförderung|Landesförderung|Städtebaufördermittel|gefördert (?:mit|durch|aus|von))/i;
+const FUND=/(Antrag auf [\w-]*förderung|Förderung\w*\s+(?:wurde|ist|wurden)[^;!?]{0,40}(?:beantragt|bewilligt)|(?:beantragte|bewilligte|zugesagte)[nr]? Förderung|Förderung (?:in Höhe|von \d|zu beantragen|beantragt|bewilligt)|Fördermittel|Fördergeld|Förderprogramm|Förderantrag|Förderbescheid|Förderquote|Fördersumme|Förderbetrag|Förderzusage|Förderaufruf|Förderrichtlinie|Förderzuschuss|Zuwendungsbescheid|Zuwendung(?:en)? (?:des|der|aus|von|in Höhe)|Bundesmittel|Landesmittel|EU-Mittel|Bundesförderung|Landesförderung|Städtebaufördermittel|gefördert (?:mit|durch|aus|von))/i;
 /* Bewilligt: das Geld ist zugesagt oder fließt (Leitfaden 14.10.2026, docs/qualitaet/plenara-x/funding-x14.json); „erhalten“ nur mit
    Geldwort davor („Hinweis erhalten“ ist kein Bescheid), „Bewilligung“ allein ist oft ein Termin im Zeitplan */
 const GRANTED=/(bewilligt|Zuwendungsbescheid|Förderbescheid|Fördermittelbescheid|Bewilligungsbescheid|Förderzusage|zugesagt|(?:Mittel|Zuwendung|Zuschuss|Förderung|Zusage)[^.]{0,40}\berhalten\b|erfolgreich.{0,80}(?:aufgenommen|ausgewählt)|(?:wurden?|ist|sind)\s+(?:\S+\s+){0,6}?(?:mit|durch|aus)\s+(?:\S+\s+){0,4}?gefördert worden|\berhielt\b)/i;
 // Eindeutig bewilligt: Bescheid mit Datum oder Vorliegen, „wurde bewilligt“, „bereits bewilligt“ (gilt auch unter Bedingungen im Satz)
 const GRANTED_SURE=/positiv beschieden|(?:Zuwendungs|Förder|Bewilligungs|Fördermittel)bescheid.{0,30}(?:vom\b|liegt vor|wurde|ist)|(?:wurden?|hat|haben|ist|sind)\b.{0,60}\bbewilligt|bereits bewilligt|bewilligt (?:wurde|worden)/i;
-const APPLIED=/(beantragt|beantragen|Förderantrag|Antrag auf Förderung|Antragstellung|Antrag auf Zuwendung|Zuwendungsantrag|einzureichen|eingereicht|bewerben|Projektskizze|Interessenbekundung)/i;
+// Beantragt: Antrag gestellt, eingereicht, beantragt oder die Antragstellung beschlossen; bloße Substantive („Antragstellung“,
+// „Förderantrag“) ohne Handlung zählen nicht (Workshops, „Frage einer Förderantragstellung“, Messung R11)
+const APPLIED=/(beantragt|\bbeantragen\b|(?:beschließt|beschlossen|erfolgt|wurde|z\.\s?Zt\.|derzeit|aktuell|läuft)[^.]{0,60}(?:Beantragung|Antragstellung|Antrag|Teilnahme|Interessenbekundung|zu beantragen|zu stellen)|Beantragung[^.]{0,80}(?:erfolgt|beschlossen|gestellt|eingereicht)|Antrag\w*\s+(?:\S+\s+){0,6}?(?:gestellt|eingereicht)|\bstell(?:t|en|te|ten)\b[^.]{0,80}[Aa]ntrag|\bzu beantragen\b|[Aa]ntrag\w* zu stellen|Mit (?:dem )?vorliegenden [^.]{0,40}soll[^.]{0,120}beantragt werden|eingereicht|Antragsfrist[^.]{0,40}(?:eingehalten|gewahrt))/i;
 const RANK={granted:3,applied:2,mentioned:1};
 // Formularfelder („Fördermittel beantragt: Nein Ja“, Ankreuzfelder) sagen nichts über den Vorgang
-const FUND_FORM=/☐|☒|beantragt\s*\/\s*bewilligt|\b(Nein\s+Ja|Ja\s+Nein)\b|:\s*(ja|nein)\b|\bja\s*\/\s*nein\b|fragt an|\?|Konten Bezeichnung|Plan \d{4} Prognose|\b\d{7}\s*-\s*Zuweisungen/i;
+const FUND_FORM=/☐|☒|Auswirkungen? auf den|beantragt\s*\/\s*bewilligt|\b(Nein\s+Ja|Ja\s+Nein)\b|:\s*(ja|nein)\b|\bja\s*\/\s*nein\b|fragt an|\?|Konten Bezeichnung|Plan \d{4} Prognose|\b\d{7}\s*-\s*Zuweisungen/i;
 // Kopfzeilen einer Vorlage (Titel, Nummer, Beratungsfolge) nennen das Programm, sagen aber nichts über den Stand
 const FUND_HEAD=/Tagesordnung|Seite \d+ von \d+|Vorlage-?(?:Nr|nummer)|Aktenzeichen|Beratungsfolge|Federführung|Sachgebiet:|Auskunft erteilt/i;
 // Bedingt bewilligt („vorbehaltlich der Förderzusage“, „sofern bewilligt“) ist noch nicht bewilligt
 // Ausgehende Zuschüsse (die Kommune fördert Vereine, Träger, Projekte) sind kein Fördergeld für die Kommune (Bewertung 11.10.2026)
 const OUTGOING=/\be\.\s?V\.|Bürgerstiftung|Zuwendungsempfänger|Zuwendungsempfangende|\b(?:Kreissportbund|Sportbund|Stadtsportbund)\b|städtische\w*\s+[\w-]*Förder|kommunale[nr]? Förderprogramm|Volkssolidarität|Betriebskostenzuschuss|\bVerein\w*\s+(hat|haben|beantragt|beantragen|erhält|erhalten)|Antragsteller|Antragstellende|Zuschussantrag|Sponsor|Bürgerbudget|Vereinsförder|institutionelle[nr]? Förderung|Projektförderung|Förderrichtlinie der (Stadt|Gemeinde)|Mitteln? des Ausschusses|gemeinnützige[nr]? (Verbände|Vereine)|Förderplan|städtische[nr]? Zuschuss|Zuschuss der (Stadt|Gemeinde)|gewährt (die|der) (Stadt|Gemeinde|Kreis|Landkreis)|Zuweisung an/i;
-const CONDITIONAL=/noch nicht vor|nicht vorliegt|steht noch aus|stehen noch aus|noch ausstehend|im Gegenzug|Mit Antragstellung|vorbehaltlich|Vorbehalt|abhängig vo[mn]|sofern|falls|vorausgesetzt|im Falle|unter der Voraussetzung|nach Bewilligung|bei Bewilligung|nur nach|nach (?:Erhalt|Eingang|Vorliegen)|positive[nr]? (?:Förder)?(?:zusage|bescheid|bewilligung)|\bkann\b|\bkönnen\b|\bkönnte|\bsoll(?:en)?\b|\bwürde|zu erwarten|gerechnet|\bQ[1-4]\b|geplant|voraussichtlich|nicht bewilligt|zurückgefordert|mögliche[nr]?\b|Möglichkeit|beabsichtigt|\bbei einer\b|im Falle einer|einzuholen/i;
+const CONDITIONAL=/noch nicht vor|\bum\b[^.]{0,160}\bzu erhalten\b|nicht vorliegt|steht noch aus|stehen noch aus|noch ausstehend|im Gegenzug|Mit Antragstellung|vorbehaltlich|Vorbehalt|abhängig vo[mn]|sofern|falls|vorausgesetzt|im Falle|unter der Voraussetzung|nach Bewilligung|bei Bewilligung|nur nach|nach (?:Erhalt|Eingang|Vorliegen)|positive[nr]? (?:Förder)?(?:zusage|bescheid|bewilligung)|\bkann\b|\bkönnen\b|\bkönnte|\bsoll(?:en)?\b|\bwürde|zu erwarten|gerechnet|\bQ[1-4]\b|geplant|voraussichtlich|nicht bewilligt|zurückgefordert|mögliche[nr]?\b|Möglichkeit|beabsichtigt|\bbei einer\b|im Falle einer|einzuholen/i;
 /* Hintergrund statt neuer Förderung (Bewertung 11.10.2026): verfallende oder zurückzuzahlende Mittel, über Jahre erwartete Mittel
    (Koblenz: Anteilsverkauf), und Bescheide aus früheren Jahren („Bescheid vom 18.12.2023“ in einer Vergabe 2026) */
-const BACKGROUND=/Verfall|verfallen|zurückzuzahlen|Rückforderung|Rückzahlung|erwartet|über (die nächsten )?\d+ Jahre|in den (kommenden|nächsten) \d+ Jahren|seinerzeit|damals/i;
+const BACKGROUND=/Verfall|Bislang wurde|Erfahrungen mit|am Beispiel|verfallen|zurückzuzahlen|Rückforderung|Rückzahlung|erwartet|über (die nächsten )?\d+ Jahre|in den (kommenden|nächsten) \d+ Jahren|seinerzeit|damals/i;
 // Nur bei Beträgen: geschätzte Mittel („Dem stehen voraussichtlich Fördermittel von etwa 23 Mio. € gegenüber“)
 const ESTIMATE=/voraussichtlich|in Aussicht gestellt|[Mm]ögliche Förderung|gegenüberstehen|stehen[^.]{0,80}gegenüber|Schätzung|geschätzt|prognostiziert|\bggf\.|gegebenenfalls|gerechnet werden|wären\b|könnte/i;
 const yearsOf=s=>(String(s).match(/\b20[1-3]\d\b/g)||[]).map(Number);
@@ -107,16 +109,16 @@ const oldSentence=(s,latest)=>{const y=yearsOf(s);return !!y.length&&!!latest&&M
 const NEAR=150;
 const nearest=(s,names)=>{const at=s.search(FUND);const near=names.map(([n,re])=>[n,Math.abs(s.search(re)-at)]).filter(([,d])=>d<=NEAR).sort((a,b)=>a[1]-b[1]);return near.length?[near[0][0]]:[];};
 // Förderung Dritter (Träger, Vereine, Stationen beantragen oder erhalten selbst): für die Kommune nur eine Erwähnung
-const THIRD=/(?:Träger\w*|Verein\w*|Station|Initiative|Stiftung|Gesellschaft)\s+(?:\S+\s+){0,3}(?:hat|haben|stellt|stellen|stellte|beantragt|erhielt|erhalten|hat einen)|durch (?:die|den) (?:\p{Lu}{3,}|Träger)|seitens (?:der|des) (?:\w+ ){0,2}(?:Station|Träger|Vereins)/u;
+const THIRD=/(?:Universität|Hochschule|Träger\w*|Verein\w*|Station|Initiative|Stiftung|Gesellschaft)\s+(?:\S+\s+){0,3}(?:hat|haben|stellt|stellen|stellte|beantragt|erhielt|erhalten|hat einen)|durch (?:die|den) (?:\p{Lu}{3,}|Träger)|seitens (?:der|des) (?:\w+ ){0,2}(?:Station|Träger|Vereins)/u;
 // Stand aus dem Titel: „Umsetzung des bewilligten Leader-Antrags“, „Zuwendung aus dem Dorferneuerungsprogramm“, „Beschluss über Antragstellung“
-const TITLE_GRANTED=/bewilligte[nrs]?\b|Bewilligung|Zuwendungsbescheid|Förderbescheid|Zuwendung aus/i;
-const TITLE_APPLIED=/Antragstellung|Beantragung|Förderantrag|Antrag auf (?:Förderung|Zuwendung)|Einreichung|Bewerbung|Teilnahme am (?:Förder|Projekt)aufruf|Interessenbekundung|Projektskizze/i;
+const TITLE_GRANTED=/bewilligte[nrs]?\b|Bewilligung|Zuwendungsbescheid|Förderbescheid|Zuwendung aus(?!.*(?:Antrag|antragstellung))/i;
+const TITLE_APPLIED=/Beteiligung am (?:[\w-]+ )?Förderprogramm|Teilnahme am (?:Bundes|Landes)programm|Antragstellung|Beantragung|Förderantrag|Förderanträg|Antrag auf (?:Förderung|Zuwendung)|Einreichung|Bewerbung|Teilnahme am (?:Förder|Projekt)aufruf|Teilnahme (?:am|an der|an dem) [\w-]* ?[\w-]*Förder\w*|Interessenbekundung|Projektskizze/i;
 /** Förderprogramme eines Berichts: [{program, status:'granted'|'applied'|'mentioned'}], je Bericht aus allen Belegen bestimmt
  *  (Leitfaden 14.10.2026, docs/qualitaet/plenara-x/funding-x14.json): Belege je Satz (Programm, wenn genannt, und Stand), dazu
  *  der Titel als eigene Quelle; Belege ohne Programm gehören zu dem einen genannten Programm (bei mehreren zu dem im Titel);
  *  Förderung ohne erkennbares Programm als „Sonstige Förderung“, nur wenn bewilligt oder beantragt. */
 // Zuschüsse, Richtlinien und Förderpläne der Kommune selbst (an Vereine, Träger, Bürger) sind keine Förderung für sie
-const ownFunding=(title,text)=>!!grantOf(title,text)||/Richtlinie|Förderplan|Förderkonzept|Konzept zur Förderung|Betriebskostenzuschuss|Zuwendung zu[rm]?\b|Antrag auf Zuwendung|Kosten für den Erwerb|^Förderprogramme$|Förderung von (?:Kultur|Kunst|Sport|Vereinen|Projekten)/i.test(String(title||'').trim());
+const ownFunding=(title,text)=>!!grantOf(title,text)||/Richtlinie|Förderplan|Förderkonzept|Konzept zur Förderung|Betriebskostenzuschuss|Zuwendung zu[rm]?\b|Antrag auf Zuwendung|Kosten für den Erwerb|^Förderprogramme$|Institutionelle Förderung|Förderung von (?:Kultur|Kunst|Sport|Vereinen|Projekten)|für den Betrieb|Beratungsstelle|Kreiszuwendung|Bewilligungen von|Fördermittelmanagement|Fördermittelakquise|[Ff]örderantrag (?:des|der) |Behandlungsstelle|Selbsthilfe|Bewilligung des Zuschusses|Förderfonds|Innenentwicklungsfonds/i.test(String(title||'').trim());
 export function fundingOf(text,{title=''}={}){
  const found=new Map(),sureOf=new Set();let any=null,sure=false;
  const up=(name,status)=>{if(!found.has(name)||RANK[status]>RANK[found.get(name)])found.set(name,status);};
@@ -126,16 +128,21 @@ export function fundingOf(text,{title=''}={}){
   if(!FUND.test(s)||FUND_FORM.test(s)||OUTGOING.test(s))continue;
   const back=BACKGROUND.test(s)||oldSentence(s,latest)||FUND_HEAD.test(s)||THIRD.test(s);
   // Beantragt nur, wenn der Antrag gestellt oder beschlossen ist, nicht ein künftiger oder geplanter
-  const status=back?'mentioned':GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s)||GRANTED.test(s)&&!CONDITIONAL.test(s)?'granted':APPLIED.test(s)&&!/künftig|später|zu prüfen|(?:Antrag|Beantragung|Förderantrag)\w*.{0,40}(?:geplant|\bplant\b)|\bplant\b.{0,60}(?:Antrag|zu beantragen|zu stellen)|erforderlich\w* (?:Förder|Zuwendungs)?[Aa]ntr/.test(s)?'applied':'mentioned';
+  // Künftiges, Mögliches und Aufgabenlisten sind weder bewilligt noch beantragt („Mit einem Förderbescheid ist … zu rechnen“, „sollten nach Möglichkeit Fördermittel beantragt werden“)
+  const future=/zu rechnen|wird erwartet|erwarten|sollten|nach Möglichkeit|gehören insbesondere|Aufgaben (?:der|des)|Voraussetzung (?:für|zur)|politischen Willen/i.test(s);
+  // Künftiges, Mögliches und Bedingungen sind weder bewilligt noch beantragt (Messung R7–R11, 14.10.2026)
+  const cond=/\b[Ss]ollte\b/.test(s)||!/beantragte[nr]? Förderung|Mit (?:dem )?vorliegenden/i.test(s)&&(future||/(?:vorgesehen|beabsichtigt|Ziel ist)[^.]{0,120}(?:zu beantragen|zu stellen|beantragt|Einreichung)|\bwelche\b|\bob\b|inwieweit|\?|\bwäre\b|sobald|bereits vor den|\bbei (?:einem )?positive|im Falle|sofern|falls|muss bis|\bkann\b|können|in Kürze|voraussichtlich|vorbehaltlich|soll geprüft|zu prüfen/i.test(s));
+  const condA=!/beantragte[nr]? Förderung|Mit (?:dem )?vorliegenden/i.test(s)&&(future||/(?:vorgesehen|beabsichtigt|Ziel ist)[^.]{0,120}(?:zu beantragen|zu stellen|beantragt|Einreichung)|\bwelche\b|\bob\b|inwieweit|\?|\bwäre\b|im Falle|sofern|falls|muss bis|soll geprüft|zu prüfen/i.test(s));
+  const status=back?'mentioned':!cond&&(GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s)||GRANTED.test(s)&&!CONDITIONAL.test(s))?'granted':!condA&&APPLIED.test(s)&&!/künftig|später|sobald|Mit Antragstellung|(?<!vorliegenden [^.]{0,60})soll(?:en)?\s+(?:\S+\s+){0,4}(?:gestellt|eingereicht|beantragt) werden|(?:Antrag|Beantragung|Förderantrag)\w*.{0,40}(?:geplant|\bplant\b)|\bplant\b.{0,60}(?:Antrag|zu beantragen|zu stellen)|erforderlich\w* (?:Förder|Zuwendungs)?[Aa]ntr/.test(s)?'applied':'mentioned';
   const names=nearest(s,PROGRAMS.filter(([,re])=>re.test(s))).map(x=>Array.isArray(x)?x[0]:x);
-  for(const name of names){up(name,status);if(!back&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sureOf.add(name);}
+  for(const name of names){up(name,status);if(!back&&!future&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sureOf.add(name);}
   // Ohne Programm nur mit Geldgeber außerhalb der Kommune (wie bei den Beträgen): sonst fördert meist die Kommune selbst
   if(!names.length&&EXTERNAL.test(s)&&(!any||RANK[status]>RANK[any]))any=status;
-  if(!names.length&&!back&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sure=true;
+  if(!names.length&&!back&&!future&&GRANTED_SURE.test(s)&&!/nicht bewilligt/i.test(s))sure=true;
  }
  // Titel: Programm und Stand („Zuwendung aus dem Dorferneuerungsprogramm“); nur mit Förderwort oder Programm im Titel
  // Nur ein Titel, der selbst von Förderung spricht („Feuerwehrgerätehaus“ oder „Masterplan Radverkehr“ allein sind kein Förderfall)
- const t=/Förder|Zuwendung|Zuschuss|Zuschüsse/i.test(String(title||''))?String(title):'';
+ const t=/Förder|Zuwendung|Zuschuss|Zuschüsse|Bundesprogramm|Landesprogramm/i.test(String(title||''))?String(title):'';
  const tNames=PROGRAMS.filter(([,re])=>re.test(t)).map(([n])=>n);
  const tStatus=t?(TITLE_GRANTED.test(t)&&!/Erhöhung|Änderung|Verlängerung/i.test(t)?'granted':TITLE_APPLIED.test(t)?'applied':null):null;
  for(const n of tNames)up(n,tStatus||'mentioned');
@@ -151,7 +158,8 @@ export function fundingOf(text,{title=''}={}){
  // Förderung ohne Programmnamen zählt nur, wenn sie bewilligt oder beantragt ist (bloße Erwähnungen sind zu ungenau)
  const st=tStatus&&RANK[tStatus]>RANK[any||'mentioned']?tStatus:any;
  const own=ownFunding(title,text);
- if(!out.length&&st&&st!=='mentioned'&&!own)out.push({program:'Sonstige Förderung',status:st,...(sure?{sure:true}:{})});
+ // Nur erwähnte Programme verdecken nicht die eigene Antragstellung ohne Programmnamen
+ if(!out.some(x=>x.status!=='mentioned')&&st&&st!=='mentioned'&&!own)out.push({program:'Sonstige Förderung',status:st,...(sure?{sure:true}:{})});
  return out;
 }
 
@@ -171,7 +179,7 @@ const AFTER_NOT=/^\s*((?:Euro\s+)?Eigen[a-zäöü]+\b(?!\s*\d)|bis\s+(zu\s+)?\d|
 /* Wer zahlt: ein Betrag zählt nur, wenn der Satz einen Geldgeber außerhalb der Kommune oder ein Förderverfahren nennt
    (Land, Bund, EU, Ministerium, Bewilligungsbehörde, Bescheid, Förderprogramm). Ohne das ist „Zuschuss von 70.000 €“ fast immer
    ein Zuschuss der Kommune selbst an Verein, Bad, Kirche oder Gesellschaft (Referenzsatz 13.10.2026: 20 von 39 Fehltreffern). */
-const EXTERNAL=/Fördermittel|Fördergeld|Förderprogramm|Fördersumme|Förderbetrag|Förderquote|Förderbescheid|Fördermittelbescheid|Zuwendungsbescheid|Bescheid|Förderzusage|Förderantrag|Zuwendungsantrag|Antrag auf (Gewährung einer )?Zuwendung|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss|des Landes|vom Land|vom Bund|des Bundes|Freistaat|Bundesprogramm|Landesprogramm|Förderaufruf|Ministerium|Landratsamt|Bezirksregierung|Regierungspräsidium|Kreisverwaltung|Landesverwaltungsamt|Bewilligungsbehörde|Projektträger|NRW\.BANK|\bBank\b|Regionalbudget|gefördert (mit|durch|aus|von)|Förderung (aus|durch) |Zuschuss vom Land|beantragte[n]? (Zuwendung|Förderung)|bewilligte[n]? Zuwendung|Zuwendung\w*(?:[^.]|\.\d){0,60}bewilligt|bewilligte[n]? Fördermittel/i;
+const EXTERNAL=/Förderung\w*\s+(?:wurde|ist|wurden)[^;!?]{0,40}(?:beantragt|bewilligt)|(?:Förderung|Zuschuss|Zuwendung)\w*[^;!?]{0,60}zu beantragen|beantragte[nr]? Förderung|Fördermittel|Fördergeld|Förderprogramm|Fördersumme|Förderbetrag|Förderquote|Förderbescheid|Fördermittelbescheid|Zuwendungsbescheid|Bescheid|Förderzusage|Förderantrag|Zuwendungsantrag|Antrag auf (Gewährung einer )?Zuwendung|Landesmittel|Bundesmittel|EU-Mittel|Landeszuschuss|Bundeszuschuss|des Landes|vom Land|vom Bund|des Bundes|Freistaat|Bundesprogramm|Landesprogramm|Förderaufruf|Ministerium|Landratsamt|Bezirksregierung|Regierungspräsidium|Kreisverwaltung|Landesverwaltungsamt|Bewilligungsbehörde|Projektträger|NRW\.BANK|\bBank\b|Regionalbudget|gefördert (mit|durch|aus|von)|Förderung (aus|durch) |Zuschuss vom Land|beantragte[n]? (Zuwendung|Förderung)|bewilligte[n]? Zuwendung|Zuwendung\w*(?:[^.]|\.\d){0,60}bewilligt|bewilligte[n]? Fördermittel/i;
 // Spenden und Sponsoring sind keine Förderung
 const DONATION=/Spende|Sponsoring|Schenkung/i;
 /* Ganze Sätze ohne Förderbetrag einer Kommune: Programmtöpfe und Aufrufe, Haushaltsformulare mit Ankreuzfeldern */
