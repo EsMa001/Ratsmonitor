@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { MapPanel } from "../components/map/MapPanel";
 import { SearchFilterPanel } from "../components/SearchFilterPanel";
 import { ResultsPanel } from "../components/results/ResultsPanel";
@@ -14,17 +15,27 @@ export function OverviewPage({ active }: { active: boolean }) {
   const wasActive = useRef(active);
   const search = useSearch();
   const { saved, ready } = useAccount();
-  /* Links aus E-Mails: /?suche=<id> öffnet eine gespeicherte Suche mit allen Einstellungen, /?q=… startet eine Suche.
-     Nur auf / und /suche: die Übersicht ist überall eingebunden, andere Seiten lesen ?q= selbst (Atlas, „Link kopieren“) */
-  const fromMail = useRef<URLSearchParams | null>(typeof location === "undefined" || !["/", "/suche"].includes(location.pathname) ? null : new URLSearchParams(location.search));
+  /* Links aus E-Mails und von Lena: /?suche=<id> öffnet eine gespeicherte Suche mit allen Einstellungen, /?q=… startet eine
+     Suche. App.tsx leitet / mit diesen Parametern nach /suche um; gelesen wird erst hier, sobald die Übersicht zu sehen ist
+     (sonst setzte sie die Suche schon auf / und löschte die Adresse vor der Umleitung). Andere Seiten lesen ?q= selbst
+     (Atlas, „Link kopieren“). Jeder Link wirkt einmal; derselbe Link später erneut geöffnet wirkt wieder. */
+  const params = useSearchParams();
+  const router = useRouter();
+  const linkQ = active ? params.get("q") : null;
+  const linkId = active ? params.get("suche") : null;
+  const handled = useRef("");
   useEffect(() => {
-    const p = fromMail.current;
-    if (!p || (!p.get("suche") && !p.get("q")) || (p.get("suche") && !ready)) return;
-    const sv = saved.find((x) => x.id === p.get("suche"));
-    if (sv ? !search.applySaved(sv) : p.get("q") ? (search.applySearch(p.get("q")!), false) : false) return;
-    fromMail.current = null;
-    history.replaceState(history.state, "", location.pathname);
-  }, [saved, ready, search]);
+    if (!linkQ && !linkId) {
+      handled.current = "";
+      return;
+    }
+    const key = `${linkId}|${linkQ}`;
+    if (handled.current === key || (linkId && !ready)) return;
+    const sv = linkId ? saved.find((x) => x.id === linkId) : undefined;
+    if (sv ? !search.applySaved(sv) : linkQ ? (search.applySearch(linkQ), false) : false) return;
+    handled.current = key;
+    router.replace("/suche", { scroll: false });
+  }, [linkQ, linkId, saved, ready, search, router]);
 
   useEffect(() => {
     if (active && !wasActive.current) {
