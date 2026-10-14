@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Factory, FileSignature, Flame, House, Bus, School, ShoppingCart, Stethoscope, Sun, Wind, type LucideIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
@@ -24,6 +25,8 @@ const SIGNALE: [string, string][] = [
   ["solar", "Solarenergie"], ["waerme", "Wärme und Effizienz"], ["schulen", "Schulen, Kitas, Sport"], ["pflege", "Pflege und Gesundheit"],
   ["handel", "Einzelhandel"], ["mobil", "Mobilität"],
 ];
+/* Symbol je Kategorie (Reihenfolge wie SIGNALE) */
+const ICONS: Record<string, LucideIcon> = { vergaben: FileSignature, wohnbau: House, gewerbe: Factory, wind: Wind, solar: Sun, waerme: Flame, schulen: School, pflege: Stethoscope, handel: ShoppingCart, mobil: Bus };
 const SIGNAL_IDS = new Set(SIGNALE.map(([id]) => id));
 const ZEITRAUM: [string, string][] = [["3", "3 Monate"], ["6", "6 Monate"], ["12", "12 Monate"], ["alle", "Alles"]];
 const n = (v: number) => v.toLocaleString("de-DE");
@@ -127,11 +130,12 @@ export function SignalePage() {
         <ul className="m-0 flex w-max list-none gap-2 p-0">
           {SIGNALE.map(([id, label]) => {
             const c = res?.signals.find((s) => s.id === id)?.count;
+            const Icon = ICONS[id];
             return (
               <li key={id}>
                 <button type="button" aria-pressed={id === signal} onClick={() => pick({ signal: id === "vergaben" ? "" : id, phase: "", art: "" })}
-                  className={`h-9 whitespace-nowrap rounded-full px-4 text-[14px] ${id === signal ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>
-                  {label}{c !== undefined && <span className={id === signal ? "text-slate-300" : "text-slate-500"}> {n(c)}</span>}
+                  className={`inline-flex h-7 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[12px] font-medium ${id === signal ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>
+                  {Icon && <Icon size={14} aria-hidden="true" />}{label}{c !== undefined && <span className={id === signal ? "text-slate-300" : "text-slate-500"}> {n(c)}</span>}
                 </button>
               </li>
             );
