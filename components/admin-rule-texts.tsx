@@ -52,14 +52,15 @@ export function AdminRuleTexts(){
   catch(e){setError(e instanceof Error?e.message:'Die Zahlen konnten nicht geladen werden.');}
   finally{setBusy(false);}
  },[]);
- useEffect(()=>{load();},[load]);
+ // Erstes Laden nach dem Rendern (setState nicht synchron im Effect)
+ useEffect(()=>{const t=setTimeout(load,0);return ()=>clearTimeout(t);},[load]);
  /* Job „Themen & Texte“ (scripts/rule-texts.mjs) über die Zeitpläne: Stand, letzter Lauf, sofort starten */
  const [job,setJob]=useState<JobState|null>(null),[jobError,setJobError]=useState(''),[asking,setAsking]=useState(false);
  const loadJob=useCallback(async()=>{
   try{const r=await fetch('/api/admin/zeitplaene',{cache:'no-store'});const d=await r.json() as {jobs?:(JobState&{id:string})[];error?:string};if(!r.ok)throw Error(d.error||'Der Job konnte nicht geladen werden.');setJob(d.jobs?.find(j=>j.id==='rule-texts')||null);setJobError('');}
   catch(e){setJobError(e instanceof Error?e.message:'Der Job konnte nicht geladen werden.');}
  },[]);
- useEffect(()=>{loadJob();},[loadJob]);
+ useEffect(()=>{const t=setTimeout(loadJob,0);return ()=>clearTimeout(t);},[loadJob]);
  /* Berichte mit Text im Hauptdokument und wie viele davon eine Zusammenfassung haben (Zählung der PDF-Ablage, stats.mjs) */
  const [pdfSum,setPdfSum]=useState<{done:number;withText:number}|null>(null);
  useEffect(()=>{fetch('/api/admin/pdf-ablage',{cache:'no-store'}).then(r=>r.ok?r.json() as Promise<{stats?:{summaries?:{done:number;withText:number}}}>:null).then(d=>setPdfSum(d?.stats?.summaries||null)).catch(()=>{/* Kennzahl bleibt leer */});},[]);
@@ -75,7 +76,7 @@ export function AdminRuleTexts(){
  /* Stand nachladen: alle 5 s, solange ein Start angefordert ist oder der Job läuft, sonst jede Minute */
  useEffect(()=>{const t=setInterval(loadJob,running||requested?5000:60000);return ()=>clearInterval(t);},[loadJob,running,requested]);
  const c=data?.counts;
- const total=c?.online??0,ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,docs=c?.pdfArticles??0;
+ const ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,docs=c?.pdfArticles??0;
  const avg=rule?Math.round((c?.ruleScoreSum||0)/rule):undefined;
  const facts=job?.last?.facts;
  /* Hauptzahl zuerst: Abdeckung der Berichte mit Text; der Anteil im Artikel bezogen auf Artikel mit Dokument (ohne Dokument
