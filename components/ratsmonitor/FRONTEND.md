@@ -30,6 +30,9 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 | Export-Fenster | `components/ExportMenu.tsx`; Treffer: `lib/exportResults.ts`; Artikel (PDF/Drucken/Excel/CSV): `lib/exportArticle.ts`; Excel/CSV-Erzeugung: `lib/xlsx.ts` |
 | Kontoseiten (Routing) | `pages/PersonalPage.tsx` → `SavedSearchesPage`, `SavedArticlesPage`, `KalenderPage`, `ProfilePage`, `PostfachPage` |
 | Lena (regelbasierte Assistentin, eigener Reiter `/lena`; Konzept `docs/produkt/lena-konzept.md`) | Dialog: `info/LenaPage.tsx`, Abruf und feste Texte: `lib/lena.ts`; Verstehen und Antworten im Backend (`shared/lena/`, `server/integrations/lena.mjs`, `POST /api/lena`, Test `tests/lena.test.mjs`, Messung `scripts/lena/measure.mjs`), Reiter: `menu/MainMenu.tsx` |
+| plenara.X (Analysen, Routing und Sperre je Tarif) | `pages/analytics/AnalyticsPages.tsx`, Adressen in `lib/routes.ts`, Übersicht `pages/analytics/AnalyticsAbout.tsx`, Kopf der Ergebnisse (Befund, Link kopieren, Drucken) `pages/analytics/Befund.tsx` |
+| plenara.X Atlas (`/analytics/atlas?thema=…&sub=…&stage=…`, Suchbegriff aus geteilten Links per `?q=`) | Rahmen und Themenleiste: `pages/analytics/AtlasPage.tsx`, Ansicht: `pages/analytics/XAtlasView.tsx`, Listen hinter den Zahlen: `pages/analytics/RadarDrill.tsx`; Daten aus `GET /api/x` (Backend `server/integrations/plenara-x-query.mjs`) |
+| Neue Auswertung auf Knopfdruck | `pages/analytics/useAnalysisRun.ts` (Ergebnis, Laden, Fehler, „veraltet“), Abfrage aus Suche und Filtern: `pages/analytics/useAnalyticsQuery.ts` |
 | Info-Seiten (Routing) | `info/InfoPages.tsx`; Texte/Daten: `info/content.ts`; Bausteine (Seitenkopf, Abschlussband): `info/blocks.tsx` |
 | Use Cases | `info/BranchenPages.tsx` (+ Daten in `info/content.ts` → `BRANCHEN`) |
 | Preise | `info/PreisePage.tsx`, Tarifkarten: `components/PlanCards.tsx`, Grenzen je Tarif: `lib/tier.ts` |
@@ -70,5 +73,5 @@ Genauer (alle Dateien mit Exporten, alle CSS-Klassen mit Zeile): `INDEX.md` – 
 
 ## Git
 
-- Arbeiten auf `nico-aenderungen`; nur auf ausdrückliche Ansage pushen.
+- Arbeiten auf `nico_front` (vor jedem Commit `git branch --show-current` prüfen: andere Chats arbeiten im selben Ordner); nach `main` nur auf ausdrückliche Ansage.
 - Vor dem Push: `origin/main` einmischen, Typcheck und Tests.

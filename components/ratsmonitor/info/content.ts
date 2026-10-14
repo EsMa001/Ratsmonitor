@@ -394,14 +394,6 @@ const ANWENDER_GRUPPEN: { slug: string; name: string; basis: string; icon?: Icon
   ] },
 ];
 import { BEISPIELE } from "./anwender-beispiele";
-/* Echte Treffer aus dem Bestand je Basisbranche (Stand 08.10.26) */
-const TREFFER_BASIS: Record<string, Example> = {
-  bauwesen: { place: "Verwaltungsgemeinschaft Fuchstal", committee: "Gemeinderat", status: "wait", statusText: "Angekündigt", statusId: "announced", datum: ["8", "OKT", "26"], title: "Bauleitplanung: Bebauungsplan „Sportgelände Mittelschule“; Aufstellungsbeschluss" },
-  energie: { steps: [{ d: "2026-09-08", c: "Ausschuss für Verkehr", s: "unknown" }, { d: "2026-10-08", c: "Gemeindevertretung", s: "consulting" }], place: "Gemeinde Rellingen", committee: "Gemeindevertretung", status: "wait", statusText: "In Beratung", statusId: "consulting", datum: ["8", "OKT", "26"], title: "Kommunale Wärmeplanung – Beschluss des Wärmeplans" },
-  umwelt: { place: "Verbandsgemeinde Selters (Westerwald)", committee: "Hauptausschuss VG", status: "wait", statusText: "Stand offen", statusId: "unknown", datum: ["1", "OKT", "26"], title: "Information über die Umsetzung von Ausgleichsmaßnahmen" },
-  wirtschaft: { place: "Gemeinde Achberg", committee: "Gemeinderat", status: "wait", statusText: "In Beratung", statusId: "consulting", datum: ["8", "OKT", "26"], title: "Nahwärmenetz Achberghalle; Ausführungsplanung und Auftrag Ausschreibungen" },
-  medien: { place: "Stadt Lübeck", committee: "Werkausschuss EBL", status: "wait", statusText: "Angekündigt", statusId: "announced", datum: ["8", "OKT", "26"], title: "Beschlussvorlagen" },
-};
 /* Schlagwörter und Ablauf kommen von der Basisbranche; Nutzen je Rolle, mit Rollenname */
 export const BRANCHEN: Branche[] = ANWENDER_GRUPPEN.map((g) => {
   const basis = BRANCHEN_QUELLE.find((b) => b.slug === g.basis)!;

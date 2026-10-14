@@ -526,6 +526,8 @@ function useDerivedResults(state:SearchState,active:boolean,pageSize=20):LiveRes
   /* 1 bis 2 neue Buchstaben: noch nicht suchen, nur bei Enter oder Auswahl (flush) */
   if(!(typing&&t.length>0&&t.length<3))timer=window.setTimeout(start,!sent.current?0:typing&&t?400:180);
   return()=>{clearTimeout(timer);clearTimeout(decide);abort.abort();if(flush.current===start)flush.current=null;if(confirm.current===onConfirm)confirm.current=null;};
+ /* local.text steckt in local.key (Suchparameter); ein eigener Eintrag hätte keine weitere Wirkung */
+ // eslint-disable-next-line react-hooks/exhaustive-deps
  },[active,local.key,page,attempt,requestKey,buildQuery]);
  /* Zähler: nach der Ergebnisseite, einmal je Suche (Blättern ändert sie nicht) */
  const [facets,setFacets]=useState<{key:string;data:Facets|null}>({key:'',data:null});

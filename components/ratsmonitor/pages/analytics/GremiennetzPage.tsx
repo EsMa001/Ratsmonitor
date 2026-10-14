@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PageBand } from "./PageBand";
 import { Laden } from "./Laden";
-import { Befund, zuThema } from "./Befund";
+import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCenter, IconMinus, IconPlus } from "../../components/icons";

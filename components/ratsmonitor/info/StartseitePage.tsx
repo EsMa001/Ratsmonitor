@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { LIMITS, PRO_PRICE, useTier } from "../lib/tier";
 import { IconPin } from "../components/icons";
 import { useOpenSearch } from "./blocks";
 import { todayLocal } from "../lib/text";
@@ -45,13 +44,6 @@ interface Cov {
   name: string;
   count: number;
   complete: boolean;
-}
-interface Hit {
-  id: string;
-  date: string;
-  title: string;
-  gemeinde?: string;
-  gremium?: string;
 }
 interface Pop {
   still?: boolean;
@@ -170,7 +162,7 @@ const loadDistricts = () =>
     }));
 
 /** Deutschlandkarte der Kreise (public/geo/de-districts.json, © BKG), ganz eingefärbt; die Pops zeigen, wo ein Begriff zum ersten Mal beraten wurde. */
-function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, number> | null; litKey: number; stage: number; pops: Pop[]; onPick: (name: string) => void }) {
+function GermanyMap({ pops, onPick }: { pops: Pop[]; onPick: (name: string) => void }) {
   const [geo, setGeo] = useState<{ regions: GeoRegion[]; states: { name: string; path: string }[] } | null>(null);
   const [tip, setTip] = useState("");
   useEffect(() => {
@@ -187,7 +179,7 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
     return geo.regions.map((r) => {
       return <path key={r.id} d={r.path} fill="#0d9488" fillOpacity={0.78} stroke="var(--rm-white,#fff)" strokeOpacity="0.5" strokeWidth="0.25" style={{ cursor: "pointer", transition: "fill .5s, fill-opacity .5s" }} data-n={r.name} />;
     });
-  }, [geo]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [geo]);
   if (!geo) return <DotMap />;
   return (
     <div>
@@ -230,7 +222,6 @@ function GermanyMap({ lit, litKey, stage, pops, onPick }: { lit: Record<string, 
 
 export function StartseitePage() {
   const openSearch = useOpenSearch();
-  const { tier } = useTier();
   const [term, setTerm] = useState("");
   const [total, setTotal] = useState<number | null>(null);
   const [cov, setCov] = useState<Cov[] | null>(null);
@@ -288,12 +279,9 @@ export function StartseitePage() {
   }, [raw]);
   const [rTAnim, setRT] = useState(0);
   const [place, setPlace] = useState("");
-  const [pick, setPick] = useState<Cov | null>(null);
-  /* Ergebnis je Ort; ein anderer Ort zeigt sofort nichts, bis seins da ist */
-  const [placeGot, setPlaceInfo] = useState<{ ags: string; total: number; upcoming: number; next: Hit[] } | null>(null);
   const today = todayLocal();
 
-  /* Artikelzahl und Abdeckungsliste (für die Ortsprüfung) */
+  /* Artikelzahl und Abdeckungsliste (für „Ist mein Ort dabei?“) */
   useEffect(() => {
     const ctl = new AbortController();
     /* Zahl der Einträge der letzten 30 Tage (nicht der Gesamtbestand) */
@@ -312,7 +300,7 @@ export function StartseitePage() {
       .then((d) => setCov(Array.isArray(d.coverage) ? d.coverage : null))
       .catch(() => {});
     return () => ctl.abort();
-  }, []);
+  }, [today]);
 
   /* Animation und Trends aus echten Daten: welche Gemeinde einen Begriff wann zum ersten Mal beraten hat und wie viele Gebiete je
      Monat dazukamen. Täglich vorab gerechnet (scripts/startseite-trends.mjs, Job „startseite-trends“, /api/startseite-trends), weil die
@@ -370,8 +358,6 @@ export function StartseitePage() {
     return () => cancelAnimationFrame(raf);
   }, [span?.lo, span?.hi]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const lit: Record<string, number> = {};
-  for (const d of Object.values(data)) for (const e of d.firsts) if (e.t <= rT && (lit[e.k] === undefined || e.t < lit[e.k])) lit[e.k] = e.t;
   /* Pops: je Begriff und Monat höchstens eines, vier gleichzeitig, jedes kurz sichtbar */
   const events = (() => {
     const out: { topic: string; k: string; name: string; t: number }[] = [];
@@ -396,17 +382,6 @@ export function StartseitePage() {
     const prev = [...events].reverse().find((e) => e.t <= rT) ?? events[0];
     return [{ still: true, key: `${prev.topic}-${prev.k}-still`, k: prev.k, label: prev.topic, sub: short(prev.name) }];
   })();
-  const realAt = (t: number) => {
-    let r = t;
-    let best = -Infinity;
-    for (const d of Object.values(data)) for (const e of d.firsts) if (e.t <= t && e.t > best) { best = e.t; r = e.r ?? e.t; }
-    return r;
-  };
-  const monthLabel = span ? new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(realAt(rT))) : "";
-  const litCount = Object.keys(lit).length;
-  const prog = span ? (rT - span.lo) / (span.hi - span.lo) : 0;
-  const stage = prog > 0.04 ? Math.min(10, Math.ceil(((prog - 0.04) / 0.5) * 10)) : 0;
-  const counts = TOPICS.filter((t) => data[t]).map((t) => ({ topic: t, n: data[t].firsts.filter((e) => e.t <= rT).length }));
 
   /* Trends: neu beratende Gebiete je Monat, ohne den ersten (Beginn der Erfassung) und den unvollständigen laufenden Monat */
   const trends = TOPICS.filter((t) => data[t]).map((t) => {
@@ -419,18 +394,6 @@ export function StartseitePage() {
     return { topic: t, values, last3, prev3, ch, months: full.length, lastMonth: full[full.length - 1]?.month ?? "" };
   });
 
-  const placeInfo = placeGot && placeGot.ags === pick?.ags ? placeGot : null;
-  /* Ortsprüfung: Ergebnis zum angeklickten Ort */
-  useEffect(() => {
-    if (!pick?.ags) return;
-    const ags = pick.ags, ctl = new AbortController();
-    const get = (extra: string) =>
-      fetch(`/api/search?area=${pick.ags}${extra}`, { signal: ctl.signal }).then((r) => (r.ok ? (r.json() as Promise<{ total: number; articles: Hit[] }>) : Promise.reject(new Error("ort"))));
-    Promise.all([get(""), get(`&from=${today}&sort=asc&noformal=1`)])
-      .then(([all, up]) => setPlaceInfo({ ags, total: all.total, upcoming: up.total, next: up.articles.slice(0, 3) }))
-      .catch(() => {});
-    return () => ctl.abort();
-  }, [pick, today]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -438,7 +401,6 @@ export function StartseitePage() {
   };
   const q = place.trim().toLocaleLowerCase("de");
   const found = cov && q.length >= 3 ? cov.filter((c) => c.name.toLocaleLowerCase("de").includes(q)).slice(0, 5) : [];
-  const monthName = (m: string) => (m ? new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(m + "-15T12:00:00Z")) : "");
 
   return (
     <>
@@ -519,7 +481,7 @@ export function StartseitePage() {
             </p>
           </div>
           <div className="pl-mapwrap" style={{ maxWidth: "min(679px, max(362px, calc((100vh - 230px) / 1.149)))", width: "100%", justifySelf: "start", marginTop: -50, marginLeft: 56 }}>
-            <GermanyMap lit={span ? lit : null} litKey={litCount} stage={stage} pops={pops} onPick={(n) => openSearch(n)} />
+            <GermanyMap pops={pops} onPick={(n) => openSearch(n)} />
           </div>
         </div>
       </section>

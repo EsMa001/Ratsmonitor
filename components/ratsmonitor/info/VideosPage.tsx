@@ -82,7 +82,7 @@ function ChapterList({ title, items, now, go }: { title: string; items: Chapter[
                 <span className="w-10 shrink-0 text-[14px] tabular-nums text-slate-500">{mmss(c.t)}</span>
                 <span className="min-w-0">
                   <span className="block text-[14px] font-semibold text-slate-900">{c.title}</span>
-                  <span className="block text-[13.5px] text-slate-500">{c.what}</span>
+                  <span className="block text-[14px] text-slate-500">{c.what}</span>
                 </span>
               </button>
             </li>

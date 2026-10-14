@@ -89,7 +89,6 @@ export function NetView({ nodes, edges, selected, onSelect, zoomRef }: { nodes: 
     layout(sim.current, edges, span, 460);
     fit();
     /* Neue Daten: Startlage mit Zufall und Messung, einmal je Daten gerechnet; das Abbild folgt sofort */
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges]);
