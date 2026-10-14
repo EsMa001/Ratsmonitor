@@ -82,10 +82,9 @@ journalctl -u ratsmonitor -f
 | `/srv/ratsmonitor/app/current` | Verweis auf den laufenden Stand unter `releases/<commit>` (dazu bleiben die zwei neuesten anderen) |
 | `/srv/ratsmonitor/data/ratsmonitor.sqlite` | Datenbank |
 | `/srv/ratsmonitor/ratsmonitor.env` | Umgebung, Rechte 600; Vorlage `deploy/node/ratsmonitor.env.example` |
-| `/srv/ratsmonitor/backups/` | nächtliche Sicherung 3:30 Uhr, mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
-| `ratsmonitor-search-words.service` (früher `/etc/cron.d/ratsmonitor-search-words`) | Wortliste der Suche nachführen, 04:20 Uhr (Zeitplaner); baut voll neu auf, wenn die vorberechneten Zahlen fehlen (Protokoll `backups/search-words.log`) |
+| `/srv/ratsmonitor/backups/` | nächtliche Sicherung 00:30 Uhr (vor dem Import), mit zstd gepackt (`ratsmonitor-<Datum>.sqlite.zst`, zurück mit `zstd -d … -o ratsmonitor.sqlite`), höchstens zwei Stände, auch während einer neuen (`ratsmonitor-backup.service`, Zeitplaner) |
 | `ratsmonitor-rule-texts.service` | Themen & Texte, 09:00 Uhr (Zeitplaner, `scripts/rule-texts.mjs`): Regeln je Bericht (Art des Punkts, Thema, Regel-Zusammenfassung, Fakten; `read-reports.mjs`), Wortliste aus den Texten der PDF-Ablage und Zahlen für plenara.X (`x_cases`, Migration 0036, `build-x-cases.mjs`); Ergebnis je Schritt in `system_state` `rule-texts-last` (Protokoll `backups/rule-texts.log`) |
-| `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 04:50 Uhr (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
+| `ratsmonitor-startseite-trends.service` | Karte und Trends der Startseite vorab rechnen, 05:05 Uhr (nach dem spätesten Ende des Imports) (Zeitplaner, `scripts/startseite-trends.mjs`, Ergebnis in `system_state` `startseite-trends`, gelesen über `/api/startseite-trends`; Protokoll `backups/startseite-trends.log`) |
 | `/etc/systemd/system/ratsmonitor.service` | Dienst; Vorlage `deploy/node/ratsmonitor.service` |
 | `/etc/caddy/Caddyfile`, `/etc/default/caddy` | Caddy und Admin-Kennung; Vorlage `deploy/node/Caddyfile` |
 | `/srv/ratsmonitor/data/pdf-store/` | PDF-Ablage (`RM_PDF_STORE`): Originale, Textfassungen, `index.sqlite`; gefüllt von der nächtlichen Kette |
@@ -154,7 +153,7 @@ den Datenstand `content` nur noch, wenn er Vorgänge schreibt; die Quellenständ
 
 Migration 0024 (Datum der Suchkarte „Stand heute“, Spalte `next_date`, lokal 3,8 s): Vorgänge mit früherer und künftiger
 Sitzung tragen das Datum der letzten Sitzung bis heute. Suchtext und Wortliste bleiben unverändert, kein Neuaufbau nötig.
-Danach rückt jeder Metadaten-Import und der nächtliche Lauf von `scripts/refresh-search-words.mjs` die Karten nach, deren
+Danach rückt jeder Metadaten-Import und jeder Lauf von `scripts/refresh-search-words.mjs` (im Job „Themen & Texte“) die Karten nach, deren
 nächste Sitzung erreicht ist. Ohne die Migration läuft alles wie vorher.
 
 Migrationen 0019 bis 0023 (Datenmodell, 11.10.2026; Plan und Messwerte in `requirements/datenmodell-plan.md`). Der Code
@@ -179,7 +178,7 @@ Am Ende eines Abrufauftrags erneuert der Server die Planerstatistik dort, wo sic
 (`PRAGMA optimize=0x10002` mit `analysis_limit=4000`, `pipeline-jobs.mjs`). Die Statistik von Hand zu erneuern
 (Abschnitt unten) braucht es damit nur noch nach neuen Indizes.
 
-Nachführen der Wortliste nachts (einmal anlegen):
+Früher: Nachführen der Wortliste nachts per Cron (seit 14.10.2026 nicht mehr anlegen; die Wortliste führt der Job „Themen & Texte“ nach):
 
 ```bash
 cat > /etc/cron.d/ratsmonitor-search-words <<'CRON'
@@ -314,8 +313,8 @@ aufgerufen von `job.mjs` höchstens stündlich und auf Wunsch („Neu messen“,
 ### Zeitplaner (Admin-Reiter „Jobs & Zeitpläne“, seit 12.10.2026)
 
 Alle Jobs, die von selbst laufen, starten über `scripts/schedule.mjs <job>`; Befehle, Standardzeiten und Beschreibungen
-stehen in `server/integrations/schedules.mjs` (`JOBS`): `import-nightly` (01:00), `backup` (03:30), `search-words` (04:20),
-`pdf-nightly` (05:30), `rule-texts` (09:00), `import` und `pdf-job` (alle 10 Minuten). Die Auslöser fragen alle 10 Minuten; der Zeitplaner startet
+stehen in `server/integrations/schedules.mjs` (`JOBS`): `backup` (00:30), `import-nightly` (01:00, höchstens bis 05:00), `startseite-trends` (05:05),
+`pdf-nightly` (05:30, höchstens bis 08:30), `rule-texts` (09:00), `import` und `pdf-job` (alle 10 Minuten). Die Auslöser fragen alle 10 Minuten; der Zeitplaner startet
 den Job, wenn er nach seiner Einstellung dran ist (`schedules` in `system_state`: ein/aus, Uhrzeit deutscher Zeit in
 10-Minuten-Schritten bzw. Abstand), ein täglicher Job wird bis 3 Stunden nach seiner Zeit nachgeholt; „Jetzt ausführen“
 (`schedule-now`) startet ihn sofort, auch ausgeschaltet. Jeder Lauf steht in `schedule-runs` (Start, Ende,
@@ -337,16 +336,17 @@ Die Timer selbst bleiben eingeschaltet (`systemctl list-timers`); ein- und ausge
 `RM_TRIGGER_DIR`, sonst `trigger` neben `DATABASE_FILE`). Je Job beobachtet eine `.path`-Einheit die Datei und startet den
 Dienst sofort; `schedule.mjs` führt ihn aus, wenn ein Wunsch offen ist (`schedule-now` oder `pendingWork`: beim Auftragsdienst
 Zählen, Messen, wartende Aufträge), auch ausgeschaltet. Läuft der Dienst schon, erledigt der laufende Auftragsdienst Zählen und
-Messen binnen 30 Sekunden; ein weiterer Auftrag startet beim nächsten Timer-Aufruf nach dem Ende. Sicherung und Wortliste
-laufen dafür nicht mehr über Cron, sondern über eigene Einheiten (Protokoll weiter in `backups/backup.log` und
-`backups/search-words.log`). Einrichten (einmal, als root):
+Messen binnen 30 Sekunden; ein weiterer Auftrag startet beim nächsten Timer-Aufruf nach dem Ende. Die Sicherung
+läuft dafür nicht mehr über Cron, sondern über eigene Einheiten (Protokoll weiter in `backups/backup.log`). Die Wortliste
+hat seit 14.10.2026 keinen eigenen Job mehr: Jeder Import und der Job „Themen & Texte“ (09:00) führen sie nach, auch das
+Datum „Stand heute“ der Karten. Einrichten (einmal, als root):
 
 ```bash
 cd /srv/ratsmonitor/app/current
-cp deploy/node/ratsmonitor-backup.service deploy/node/ratsmonitor-backup.timer deploy/node/ratsmonitor-search-words.service deploy/node/ratsmonitor-search-words.timer deploy/node/ratsmonitor-*.path /etc/systemd/system/
+cp deploy/node/ratsmonitor-backup.service deploy/node/ratsmonitor-backup.timer deploy/node/ratsmonitor-*.path /etc/systemd/system/
 rm /etc/cron.d/ratsmonitor
 systemctl daemon-reload
-systemctl enable --now ratsmonitor-backup.timer ratsmonitor-search-words.timer ratsmonitor-import.path ratsmonitor-import-nightly.path ratsmonitor-pdf-job.path ratsmonitor-pdf-nightly.path ratsmonitor-backup.path ratsmonitor-search-words.path
+systemctl enable --now ratsmonitor-backup.timer ratsmonitor-import.path ratsmonitor-import-nightly.path ratsmonitor-pdf-job.path ratsmonitor-pdf-nightly.path ratsmonitor-backup.path
 ```
 
 **Startseite: Karte und Trends** (seit 13.10.2026, Job `startseite-trends`, 04:50 Uhr): rechnet je Beispielbegriff der Startseite
@@ -379,7 +379,7 @@ das `systemctl stop ratsmonitor-<job>.service` ausführt; der Zeitplaner vermerk
 cd /srv/ratsmonitor/app/current
 cp deploy/node/ratsmonitor-stop@.service deploy/node/ratsmonitor-stop-*.path /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable --now ratsmonitor-stop-import.path ratsmonitor-stop-import-nightly.path ratsmonitor-stop-pdf-job.path ratsmonitor-stop-pdf-nightly.path ratsmonitor-stop-backup.path ratsmonitor-stop-search-words.path
+systemctl enable --now ratsmonitor-stop-import.path ratsmonitor-stop-import-nightly.path ratsmonitor-stop-pdf-job.path ratsmonitor-stop-pdf-nightly.path ratsmonitor-stop-backup.path
 ```
 
 Von Hand, unabhängig vom Schalter: `systemd-run --unit ratsmonitor-pdf-job-now --uid=ratsmonitor --gid=ratsmonitor -p
@@ -463,3 +463,7 @@ Phase 1 ist nur über den Tunnel erreichbar. Bevor die Seite unter einer Domain 
   Wortliste bis zum Ablauf der Sperre nicht nachführbar, die Suche läuft dann über alle Karten.
 - Fehlerzweige mancher Leser lesen die Antwort nicht zu Ende; in einem lange laufenden Prozess bleiben die
   Verbindungen dann bis zur nächsten Speicherbereinigung offen.
+
+**Wortlisten-Job entfernt (14.10.2026), einmal auf dem Server:** `systemctl disable --now ratsmonitor-search-words.timer
+ratsmonitor-search-words.path ratsmonitor-stop-search-words.path && rm /etc/systemd/system/ratsmonitor-search-words.*
+/etc/systemd/system/ratsmonitor-stop-search-words.path && systemctl daemon-reload`.

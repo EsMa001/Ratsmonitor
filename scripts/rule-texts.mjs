@@ -3,7 +3,8 @@
 // liest nur (Textebene, OCR); hier entstehen die Inhalte. Reihenfolge fest:
 //   1. pdf-store/read-reports.mjs  alle Regeln je Bericht in einem Durchlauf (readReport): Art des Punkts, Thema,
 //                                  Regel-Zusammenfassung, Fakten; nur Berichte mit geänderten Eingaben (report_rules)
-//   2. refresh-search-words.mjs    Wortliste nachführen, nur wenn Berichte gelesen wurden (die Zusammenfassung ändert den Suchtext)
+//   2. refresh-search-words.mjs    Wortliste nachführen, immer (Zusammenfassungen ändern den Suchtext; rückt auch das Datum
+//                                  „Stand heute“ der Karten nach; seit 14.10.2026 gibt es keinen eigenen Wortlisten-Job mehr)
 //   3. plenara-x/build-x-cases.mjs Zahlen für plenara.X (x_cases) neu, immer (auch Thema von Hand, KI-Label und neue Karten)
 // Ergebnis je Schritt in system_state 'rule-texts-last' (Anzeige im Reiter). Scheitert ein Schritt, laufen die übrigen weiter
 // (Exit 1). Anhalten: SIGTERM/SIGINT (systemctl stop, Knopf „Anhalten“) geht an den laufenden Schritt, die übrigen entfallen (Exit 3).
@@ -52,7 +53,6 @@ async function step(name,script,stepArgs=[]){
  say(`${name} ${stopped?'angehalten':ok?'fertig':`FEHLER (${status})`} (${seconds} s)`);
  return summary;
 }
-const skip=(name,why)=>{say(`${name} ausgelassen (${why})`);steps.push({name,seconds:0,ok:true,summary:{skipped:why}});};
 
 if(all)say('Alle neu erstellen');
 const sum=await step('Regeln je Bericht','scripts/pdf-store/read-reports.mjs',all?['--all']:[]);
@@ -66,7 +66,6 @@ if(!dry)try{
 }catch(e){say('Fakten zählen:',e.message);}
 if(!dry){
  if(all)await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet','--full']);
- else if(sum&&!sum.read)skip('Wortliste','kein Bericht neu gelesen');
  else await step('Wortliste','scripts/refresh-search-words.mjs',['--quiet']);
 }else await step('Wortliste','scripts/refresh-search-words.mjs',all?['--quiet','--full']:['--quiet']);
 await step('Zahlen für plenara.X','scripts/plenara-x/build-x-cases.mjs',dry?['--dry-run']:[]);

@@ -12,9 +12,9 @@ type Job={id:string;label:string;icon:string;time?:string;every?:number;what:str
 type Data={jobs:Job[];managed:boolean;error?:string};
 const EVERY=[10,20,30,60,120];
 /* Übliche Dauer, solange noch kein Lauf vermerkt ist (Minuten) */
-const TYPICAL:Record<string,number>={'import-nightly':170,backup:20,'search-words':5,'startseite-trends':2,'pdf-nightly':180,'rule-texts':10};
+const TYPICAL:Record<string,number>={'import-nightly':170,backup:20,'startseite-trends':2,'pdf-nightly':180,'rule-texts':10};
 // Schreiben beide viel in die Datenbank: überlappen sie, kann einer an einer Sperre scheitern (so am 12.10.2026 um 02:00)
-const CLASH=[['import-nightly','pdf-nightly'],['import-nightly','search-words'],['pdf-nightly','search-words']];
+const CLASH=[['import-nightly','pdf-nightly'],['import-nightly','backup'],['pdf-nightly','rule-texts']];
 const mins=(t:string)=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
 const hhmm=(m:number)=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
 
