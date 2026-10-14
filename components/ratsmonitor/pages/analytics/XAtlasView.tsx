@@ -83,6 +83,8 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
   const [level, setLevel] = useState<"city" | "district">("city");
   const [picked, setPicked] = useState("");
   const [kind, setKind] = useState("");
+  /* Fakt-, Kennzahl- und Ebenenwahl erst auf Wunsch einblenden */
+  const [more, setMore] = useState(false);
   const [metric, setMetric] = useState("");
   const fact = facts.find((f) => f.kind === kind);
   const metrics = fact ? [...new Set(fact.map.flatMap((m) => Object.keys(m.v)))].sort((a, b) => fact.map.filter((m) => m.v[b]).length - fact.map.filter((m) => m.v[a]).length) : [];
@@ -137,6 +139,10 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
           </> : picked ? <span className="text-slate-500">Hier gibt es keine Werte zur Auswahl.</span> : undefined} />
       </div>
       <p className="mb-2 mt-3 text-[14px] text-slate-500">Die Karte zeigt {what} je {level === "district" ? "Kreis" : "Gemeinde"}. Klick auf ein Gebiet zeigt den Wert und die Vorgänge.</p>
+      <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="mb-2 text-[14px] font-medium text-teal-700 hover:underline">
+        {more ? "Karte anpassen ausblenden" : `Karte anpassen: ${fact ? fact.name : "Alle Vorgänge"}, ${level === "district" ? "Kreise" : "Gemeinden"}`}
+      </button>
+      {more && <>
       <div className={row} role="group" aria-label="Was die Karte zeigt">
         <button type="button" aria-pressed={!fact} onClick={() => { setKind(""); setMetric(""); setPicked(""); }} className={chip(!fact)}>Alle Vorgänge</button>
         {facts.filter((f) => f.map.length).map((f) => <button key={f.kind} type="button" aria-pressed={kind === f.kind} onClick={() => { setKind(f.kind); const m = [...new Set(f.map.flatMap((x) => Object.keys(x.v)))]; setMetric(m.length ? m.sort((a, b) => f.map.filter((x) => x.v[b]).length - f.map.filter((x) => x.v[a]).length)[0] : ""); setPicked(""); }} className={chip(kind === f.kind)}>{f.name}</button>)}
@@ -148,8 +154,19 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
       <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Ebene der Karte">
         {([["city", "Gemeinden"], ["district", "Kreise"]] as const).map(([k, l]) => <button key={k} type="button" aria-pressed={level === k} onClick={() => { setLevel(k); setPicked(""); }} className={chip(level === k)}>{l}</button>)}
       </div>
+      </>}
       {listedRow && <div className="mt-3">{drill(listedRow)}</div>}
     </section>
+  );
+}
+
+/* Methodenhinweis eingeklappt: die Seite bleibt ruhig, wer es genau wissen will, klappt ihn auf */
+function Hint({ children }: { children: React.ReactNode }) {
+  return (
+    <details className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">
+      <summary className="inline-flex cursor-pointer select-none items-center gap-1 text-teal-700 hover:underline">So gelesen</summary>
+      <p className="mt-1">{children}</p>
+    </details>
   );
 }
 
@@ -166,7 +183,7 @@ function OrtImVergleich({ c, theme }: { c: Compare; theme: string }) {
   return (
     <section className="mt-10">
       <h2 className="text-[22px] font-semibold">{c.region} im Vergleich</h2>
-      <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil an allen {n(c.n)} Sachvorgängen des eigenen Rats in den letzten 12 Monaten, verglichen mit {n(c.group!.n)} {c.group!.label}. „Üblich“ ist die mittlere Hälfte der Gruppe; eingeordnet wird erst ab {n(c.rule.minTopic)} Vorgängen und nur bei klarem Abstand. Dieser Vergleich gilt immer für 12 Monate und nur den eigenen Rat; die Zahlen darunter folgen Zeitraum und Filtern der Suche und können deshalb abweichen.</p>
+      <Hint>Anteil an allen {n(c.n)} Sachvorgängen des eigenen Rats in den letzten 12 Monaten, verglichen mit {n(c.group!.n)} {c.group!.label}. „Üblich“ ist die mittlere Hälfte der Gruppe; eingeordnet wird erst ab {n(c.rule.minTopic)} Vorgängen und nur bei klarem Abstand. Dieser Vergleich gilt immer für 12 Monate und nur den eigenen Rat; die Zahlen darunter folgen Zeitraum und Filtern der Suche und können deshalb abweichen.</Hint>
       <ol className="m-0 list-none border-t border-slate-200 p-0">
         {rows.map((r) => (
           <li key={r.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 border-b border-slate-200 py-2.5 sm:grid-cols-[260px_minmax(0,1fr)_auto]">
@@ -200,6 +217,13 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
     setOpen("");
     run();
   }
+  /* Suche oder Filter geändert: nach kurzer Pause von selbst neu rechnen (Themenleiste und Filter verhalten sich gleich) */
+  useEffect(() => {
+    if (!stale || loading) return;
+    const t = setTimeout(() => run(), 900);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stale, loading, url]);
   /* Begriff aus dem Link: in die Suche übernehmen und mit ihm rechnen (wie run() zusammen mit applySearch im selben Klick) */
   useEffect(() => {
     if (!term) return;
@@ -233,7 +257,6 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
     <section aria-label="Auswertung des Themas">
       <div className="mt-4 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
-      {stale && <p className="mt-3 text-[14px] text-slate-500">Suche oder Filter wurden geändert. Mit dem Start-Knopf neu auswerten.</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
@@ -247,11 +270,11 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
 
               <Reveal><section className="mt-10">
                 <h2 className="text-[22px] font-semibold">{sub ? `Überschneidungen mit „${subName}“` : theme ? "Unterthemen" : "Themen"}</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">{sub
+                <Hint>{sub
                   ? `Wie viele der ${n(total)} Vorgänge zu „${subName}“ auch andere Unterthemen haben; Anteil an diesen ${n(total)} Vorgängen. Klick wählt ein anderes Unterthema.`
                   : theme
                     ? "Ein Vorgang kann mehrere Unterthemen haben; erkannt am Titel, sonst an Betreff und Beschlussvorschlag. Klick wählt das Unterthema."
-                    : "Vorgänge je Thema; das Thema ist dasselbe wie im Themenfilter der Suche. Klick wählt das Thema."}</p>
+                    : "Vorgänge je Thema; das Thema ist dasselbe wie im Themenfilter der Suche. Klick wählt das Thema."}</Hint>
                 {theme && sub && <button type="button" onClick={() => onSub("")} className="mb-3 text-[14px] font-medium text-teal-700 hover:underline">Alle Unterthemen zeigen →</button>}
                 <Bars rows={parts} mode="select" open={sub} onOpen={(k) => (theme ? onSub(k === sub ? "" : k) : onTheme(k))}
                   label={(r) => `${n(r.count)}${r.share !== null && theme ? ` · ${pct(r.share)}` : ""}`} />
@@ -259,7 +282,7 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
 
               {stages.length > 1 && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Was geschieht</h2>
-                <p className="mb-3 mt-1 text-[14px] text-slate-500">Art der Vorgänge, aus dem Titel gelesen (Antrag, Planung, Vergabe, Bau …). Klick zeigt die Vorgänge.</p>
+                <Hint>Art der Vorgänge, aus dem Titel gelesen (Antrag, Planung, Vergabe, Bau …). Klick zeigt die Vorgänge.</Hint>
                 <Bars rows={stages} mode="expand" open={opened("stage")} onOpen={(k) => toggle(`stage:${k}`)} drill={(r) => drill("stage", r)} />
               </section></Reveal>}
 
@@ -278,7 +301,7 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
 
               {res.facts.length > 0 && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Werte aus den Unterlagen</h2>
-                <p className="mb-1 mt-1 max-w-[760px] text-[14px] text-slate-500">Aus den Texten der Unterlagen gelesen; gezeigt wird nur, was in Stichproben zu mindestens 90 % stimmte. Bei Beträgen und Sätzen steht der Median der Vorgänge dabei. Klick zeigt die Vorgänge mit ihrem Wert.</p>
+                <Hint>Aus den Texten der Unterlagen gelesen; gezeigt wird nur, was in Stichproben zu mindestens 90 % stimmte. Bei Beträgen und Sätzen steht der Median der Vorgänge dabei. Klick zeigt die Vorgänge mit ihrem Wert.</Hint>
                 {res.facts.map((f) => (
                   <div key={f.kind} className="mt-6">
                     <h3 className="mb-2 text-[16px] font-semibold">{f.name}</h3>
@@ -287,10 +310,14 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
                   </div>
                 ))}
               </section></Reveal>}
+              {res.facts.length === 0 && <Reveal><section className="mt-12">
+                <h2 className="text-[22px] font-semibold">Werte aus den Unterlagen</h2>
+                <p className="mt-2 max-w-[760px] text-[14px] text-slate-500">{theme || sub || stage ? "Für diese Auswahl" : "Für diese Suche"} liegen noch keine geprüften Werte vor. Gezeigt werden nur Werte aus den Unterlagen, die in Stichproben zu mindestens 90 % stimmten.</p>
+              </section></Reveal>}
 
               {rankRegions && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Wo das Thema viel Raum hat</h2>
-                <p className="mb-3 mt-1 max-w-[760px] text-[14px] text-slate-500">Anteil an allen Sachvorgängen des Gebiets (gleiche Filter), nur Gebiete mit mindestens {MIN_BASE} Sachvorgängen. Klick zeigt die Vorgänge.</p>
+                <Hint>Anteil an allen Sachvorgängen des Gebiets (gleiche Filter), nur Gebiete mit mindestens {MIN_BASE} Sachvorgängen. Klick zeigt die Vorgänge.</Hint>
                 {regions.length ? <Bars rows={regions} mode="expand" open={opened("region")} onOpen={(k) => toggle(`region:${k}`)} drill={(r) => drill("region", r)} value={(r) => r.share ?? 0}
                   label={(r) => `${pct(r.share)} · ${n(r.count)}`} /> : <p className="text-[14px] text-slate-500">Kein Gebiet hat genug Sachvorgänge für einen Vergleich.</p>}
               </section></Reveal>}
