@@ -26,7 +26,11 @@ const n=(v:number)=>v.toLocaleString('de-DE');
 type QualityRow={id:string;name:string;version:string;quality:number|null;coverage:number|null;sample:string;date:string;note?:string;gate?:boolean};
 const QT=QUALITY.target;
 /** „12 %“ mit Hinweis, wenn unter dem Ziel */
-const goal=(v:number|null,min:number)=>v===null?'–':<>{v} %{v<min&&<span className="text-slate-500"> · unter Ziel</span>}</>;
+/* Messwert als Balken mit Zielmarke; unter dem Ziel orange */
+const Meter=({label,v,min}:{label:string;v:number|null;min:number})=><div className="min-w-0">
+ <div className="flex justify-between text-[12px] text-slate-500"><span>{label}</span><span className={'tabular-nums '+(v===null?'':v<min?'text-amber-700':'text-slate-900')}>{v===null?'–':v+' %'}</span></div>
+ <div className="relative mt-1 h-1.5 rounded-full bg-slate-100">{v!==null&&<span className={'block h-1.5 rounded-full '+(v<min?'bg-amber-500':'bg-teal-600')} style={{width:v+'%'}}/>}<span className="absolute -top-0.5 h-2.5 w-px bg-slate-400" style={{left:min+'%'}}/></div>
+</div>;
 const shortDate=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4);
 const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:string;name:string})=>[t.id,t.name])),unklar:'Ohne Thema (noch nicht eingeordnet)'};
 const pct=(a:number,b:number)=>b?(100*a/b).toLocaleString('de-DE',{maximumFractionDigits:a/b<.01?2:a/b<.1?1:0})+' %':'–';
@@ -63,7 +67,6 @@ export function AdminRuleTexts(){
  useEffect(()=>{const t=setInterval(loadJob,running||requested?5000:60000);return ()=>clearInterval(t);},[loadJob,running,requested]);
  const c=data?.counts;
  const total=c?.online??0,ai=c?.aiSummaries??0,rule=c?.ruleSummaries??0,docs=c?.pdfArticles??0;
- const aiL=c?.aiLabels??0,noL=c?.unlabelled??0;
  const avg=rule?Math.round((c?.ruleScoreSum||0)/rule):undefined;
  const facts=job?.last?.facts;
  /* Hauptzahl zuerst: Abdeckung der Berichte mit Text; der Anteil im Artikel bezogen auf Artikel mit Dokument (ohne Dokument
@@ -82,10 +85,6 @@ export function AdminRuleTexts(){
  const themeRows=xs?.themes?Object.entries(xs.themes).sort((a,b)=>b[1]-a[1]):[];
  const themeTotal=themeRows.reduce((a,[,v])=>a+v,0);
  const subsOf=(theme:string)=>SUBTOPICS.filter((u:{theme:string})=>u.theme===theme).map((u:{id:string;name:string})=>({name:u.name,n:xs?.subs?.[u.id]||0})).sort((a:{n:number},b:{n:number})=>b.n-a.n);
- const lab=[
-  {label:'Ohne Label',value:c?pct(noL,total):undefined,note:c?n(noL)+' von '+n(total)+' Artikeln („Noch nicht eingeordnet“)':undefined},
-  {label:'Mit KI-Label',value:c?pct(aiL,total):undefined,note:c?n(aiL)+' Artikel; die übrigen tragen das Label nach festen Regeln':undefined},
- ];
  return <>
   <AdminPageHead page="regeltexte"><StandLine stand={data?.stand} busy={busy} action="Aktualisieren" onAction={load}/></AdminPageHead>
   {error&&<Alert onRetry={load}>{error}</Alert>}
@@ -125,23 +124,18 @@ export function AdminRuleTexts(){
   <section id="regeltexte-qualitaet" className="admin-section">
    <div className="admin-section-heading"><h2>Qualität der Regeln</h2></div>
    <p className="admin-note">Zuletzt gemessen an frischen Stichproben vom Server, von Hand eingetragen (shared/rule-quality.json). Qualität: von dem, was die Regel liefert, ist richtig. Abdeckung: von dem, was einen Wert haben sollte, bekommt ihn. Ziel: Qualität über {QT.quality} %, Abdeckung ab {QT.coverage} %. Im Atlas erscheinen Werte erst ab {QT.quality} %.</p>
-   {QUALITY.groups.map(g=><div key={g.id} className="mt-6 overflow-x-auto">
+   {QUALITY.groups.map(g=><div key={g.id} className="mt-8">
     <h3>{g.name}</h3>
-    <table className="admin-table w-full"><thead><tr><th>Regel</th><th className="admin-number">Qualität</th><th className="admin-number">Abdeckung</th>{g.id==='facts'&&<th className="admin-number">Berichte</th>}{g.id==='facts'&&<th>Atlas</th>}<th>Stichprobe</th></tr></thead>
-     <tbody>{(g.rows as QualityRow[]).map(r=><tr key={r.id}>
-      <td>{r.name}{(r.version||r.note)&&<small>{[r.version,r.note].filter(Boolean).join(' · ')}</small>}</td>
-      <td className="admin-number">{goal(r.quality,QT.quality)}</td>
-      <td className="admin-number">{goal(r.coverage,QT.coverage)}</td>
-      {g.id==='facts'&&<td className="admin-number">{xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id]):'–'}</td>}
-      {g.id==='facts'&&<td>{r.gate?'freigegeben':'gesperrt'}</td>}
-      <td>{r.sample}<small>{shortDate(r.date)}</small></td>
-     </tr>)}</tbody></table>
+    <ul className="m-0 list-none divide-y divide-slate-200 border-y border-slate-200 p-0">{(g.rows as QualityRow[]).map(r=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
+     <div className="min-w-0">
+      <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>
+       {g.id==='facts'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(r.gate?'bg-teal-50 text-teal-700':'bg-slate-100 text-slate-500')}>{r.gate?'im Atlas':'gesperrt'}</span>}</div>
+      <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),g.id==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
+     </div>
+     <Meter label="Qualität" v={r.quality} min={QT.quality}/>
+     <Meter label="Abdeckung" v={r.coverage} min={QT.coverage}/>
+    </li>)}</ul>
    </div>)}
-  </section>
-  <section id="regeltexte-labels" className="admin-section">
-   <div className="admin-section-heading"><h2>Labels</h2></div>
-   <p className="admin-note">Jeder Artikel hat nach festen Regeln ein Label; die KI kann es ersetzen. „Ohne“ sind Artikel, die keiner Regel zugeordnet werden konnten.</p>
-   <div className="mt-6"><Kpis label="Kennzahlen der Labels" items={lab}/></div>
   </section>
  </>;
 }
