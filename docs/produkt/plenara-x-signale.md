@@ -14,7 +14,7 @@ Stand 14.10.2026, festgelegt mit Nico. plenara.X Signale ist eine Filterfunktion
 | # | Kategorie | Filter | Für wen | Stand |
 |---|---|---|---|---|
 | 1 | Ausschreibungen und Vergaben | Hochbau · Tiefbau und Straße · Wasser und Abwasser · Planungsleistungen · IT und Glasfaser · Fahrzeuge und Ausstattung | Bauindustrie, Ingenieurbüros, Lieferanten, IT | Regel `tenderOf` (nur Titel, Fakt `tender`, Stand Ausschreibung/Vergabe/Nachtrag); lokale Probe 3 (gesehen): Kategorie ca. 36/40, Filter ca. 38/40; danach Ausschlüsse Richtlinie, Mitteln, Konzeptvergabe, Bieterverfahren. Offen: ungesehene Server-Stichprobe, Signal-Seite auf die 10 Kategorien umstellen |
-| 2 | Neue Wohnbaugebiete | Einfamilienhäuser · Doppel- und Reihenhäuser · Mehrfamilienhäuser · geförderter Wohnungsbau · Seniorenwohnen · Bauplatzverkauf (mit €/m²) | Fertighaus, Bauträger, Makler, Banken | Hausform 1. Messung 53 %, Regeln verbessert |
+| 2 | Neue Wohnbaugebiete | Vorhaben: Neues Baugebiet · Erweiterung · Änderung · Erschließung · Bauplatzverkauf (Hausformen als Kennzahl) | Fertighaus, Bauträger, Makler, Banken | Hausform 1. Messung 53 %, Regeln verbessert |
 | 3 | Gewerbe- und Industrieflächen | Gewerbe · Industrie · Logistik · Rechenzentrum · Batteriespeicher und Wasserstoff · Hotel, Camping und Freizeit · Grundstücksverkauf (mit €/m²) | Projektentwicklung, Logistik, Handel, Wirtschaftsförderung | Nutzung vorhanden (plan_use) |
 | 4 | Windenergie | Genehmigungsantrag (BImSchG) · Einvernehmen · Bauleitplanung · Bürger- und Kommunalbeteiligung; Zahl der Anlagen | Projektierer, Stadtwerke, Netzbetreiber | Anlagenzahl 1. Messung 67–87 % |
 | 5 | Solarenergie | Freiflächen-PV · Agri-PV · Dach-PV auf kommunalen Gebäuden · Batteriespeicher | Projektierer, Landwirtschaft, Netzbetreiber, Handwerk | offen |
@@ -62,3 +62,7 @@ Richtig = gehört zur Kategorie und der Filter stimmt. Eingetragen in `rule-qual
 - Solar: Freiflächen 100, Batteriespeicher 100, Agri-PV 95, Dach-PV 70 (private Dächer), Sonstige PV 60 (kommunale Gebäude, Solarfreibad)
 - Wärme: Wärmeplanung 100, LED 95, Wärmenetz 90, Energetische Sanierung 85, Heizung 80 (private Häuser, Vereine)
 - Wohnbau: Bauplatzverkauf 100; Hausformen nur mit dem Vorlagentext prüfbar, noch offen
+
+## Wohnbau optimiert (15.10.2026)
+
+Neue Art „Vorhaben“ aus dem Titel (`wohnbau_art`: Neues Baugebiet, Erweiterung, Änderung, Erschließung, Bauplatzverkauf); Nutzung Wohnen auch aus dem Anfang der Vorlage, wenn Wohnwörter klar überwiegen; ausgeschlossen Einzelgrundstücke, Handwerkerplätze, Ferienwohnungen, Straßenbenennung. Server ungesehen: Lauf 1 (Seed 3131) Kategorie 27/30, Art 24/27, Trefferquote ca. 7/9; nach Korrektur Lauf 2 (Seed 4747) Kategorie 29/30, Art 27/29. Die Trefferquote bleibt unsicher: viele Bebauungspläne nennen die Nutzung nur im Text, am Titel nicht prüfbar.

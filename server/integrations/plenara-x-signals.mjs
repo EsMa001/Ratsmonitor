@@ -25,7 +25,7 @@ export const SIGNALS=[
   cases:`${F} f.kind='tender'`,art:A('tender'),artName:'Leistung',phase:P('tender','detail'),phaseText:'Ausschreibung, Vergabe oder Nachtrag, aus dem Titel.',show:[]},
  {id:'wohnbau',name:'Neue Wohnbaugebiete',who:'Fertighaus, Bauträger, Makler, Banken',
   cases:`${F} (f.kind='plan_use' AND f.value IN ('Wohnen','Mischgebiet')) OR f.kind='plot_price' OR (f.kind='area_dev' AND f.value='Wohnen')`,
-  art:`${A('house_type')} UNION ALL ${A('plot_price',{value:"'Bauplatzverkauf'"})}`,artName:'Hausform',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.',show:['house_type','plan_area','housing','plot_price']},
+  art:A('wohnbau_art'),artName:'Vorhaben',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.',show:['house_type','plan_area','housing','plot_price']},
  {id:'gewerbe',name:'Gewerbe- und Industrieflächen',who:'Projektentwicklung, Logistik, Handel, Wirtschaftsförderung',
   cases:`${F} (f.kind='plan_use' AND f.value IN ${GEWERBE}) OR f.kind='land_price' OR (f.kind='area_dev' AND f.value IN ('Gewerbe','Industrie'))`,
   art:`${A('plan_use',{where:'f.value IN '+GEWERBE})} UNION ALL ${A('area_dev',{where:"f.value IN ('Gewerbe','Industrie')"})} UNION ALL ${A('land_price',{value:"'Grundstücksverkauf'"})}`,artName:'Nutzung',phase:P('plan'),phaseText:'Schritt des Bauleitplanverfahrens, aus Titel und Vorlage.',show:['plan_use','plan_area','land_price']},

@@ -107,9 +107,9 @@ export const PLAN_USES=[
  ['Batteriespeicher und Wasserstoff',/Batteriespeicher|Energiespeicher|Stromspeicher|Großspeicher|\bBESS\b|Wasserstoff|Elektrolys/i],
  ['Hotel, Camping und Freizeit',/Hotel|Camping|Wohnmobil|Ferienhaus|Ferienhäuser|Ferienwohnanlage|Feriendorf|Ferienpark|Freizeitpark|Freizeitanlage|Tourismus/i],
  ['Mischgebiet',/Mischgebiet|urbane[sn]? Gebiet|\bM[IUD]\b|Dorfgebiet/],
- ['Wohnen',/Wohn(gebiet|bau|baufläche|quartier|anlage|siedlung|park|ungen|en\b)|[\p{L}]siedlung\b|Einfamilienh|Mehrfamilienh|Neubaugebiet|Baugebiet/iu,/\bWA\b/],
+ ['Wohnen',/Wohn(gebiet|bau|baufläche|quartier|anlage|siedlung|park|ungen|en\b)|[\p{L}]-?[Ss]iedlung\b|Einfamilienh|Mehrfamilienh|Neubaugebiet|Baugebiet|Wohnraum/iu,/\bWA\b/],
 ];
-const SINGLE_PLOT=/isolierte Abweichung|Antrag auf (?:Abweichung|Änderung|Befreiung)|Ausnahmeregelung|Abweichung vom Gestaltung|Errichtung eine[sr] (?:Einfamilien|Mehrfamilien|Doppel|Wohn|Carport|Garage)|Fl\.?\s?-?Nr|Flst|Flurstück|Grundstück [\p{L}-]+(?:straße|weg|str\.) \d/iu;
+const SINGLE_PLOT=/Ferienwohn|Ausschluss von|Straßenbezeichnung|Straßenname|Handwerk|Nachbargemeinde|isolierte Abweichung|Antrag auf (?:Abweichung|Änderung|Befreiung)|Ausnahmeregelung|Abweichung vom Gestaltung|Errichtung eine[sr] (?:Einfamilien|Mehrfamilien|Doppel|Wohn|Carport|Garage)|Fl\.?\s?-?Nr|Flst|Flurstück|Grundstück [\p{L}-]+(?:straße|weg|str\.) \d/iu;
 const INTERCOMMUNAL=/interkommunal|\bIKG\b|\bIGP\b|Zweckverband|gemeinsame[sn]? (Gewerbe|Industrie)/i;
 /** {uses:[…], inter} oder null */
 export function planUseOf(title,text=''){
@@ -119,8 +119,22 @@ export function planUseOf(title,text=''){
  const find=src=>PLAN_USES.filter(([,re,abbr])=>re.test(src)||abbr?.test(src)).map(([n])=>n);
  let uses=find(t);
  if(!uses.length)uses=find(decision(text).slice(0,400));
+ // Weder Titel noch Beschlussvorschlag nennen die Nutzung: Anfang der Vorlage, nur wenn Wohnen klar überwiegt
+ if(!uses.length&&text){const head=String(text).replace(/\s+/g,' ').slice(0,3000);
+  const wohn=(head.match(/allgemeine[ns]? Wohngebiet|reine[ns]? Wohngebiet|Wohnbaufläche|Wohnbebauung|Wohnbauland|Wohnhäuser|Einfamilienh|Doppelh|Reihenh|Bauplätze|\bWA\b/g)||[]).length;
+  const other=(head.match(/Gewerbe|Industrie|Sondergebiet|Photovoltaik|Solar|Wind|Einzelhandel|Logistik|Camping|Ferien/g)||[]).length;
+  if(wohn>=2&&wohn>2*other)uses=['Wohnen'];}
  return uses.length?{uses,inter:INTERCOMMUNAL.test(t)}:null;
 }
+/* plenara.X Signale 2 (Neue Wohnbaugebiete): Art des Vorgangs aus dem Titel */
+export const WOHNBAU_ARTS=[
+ ['Bauplatzverkauf',/Vergabekriterien|Ausschreibung (?:der|von) [\p{L}-]*grundstücke|Grundstücksverk|Bauplatz|Bauplätze|Baugrundst|Wohnbaugrundst|Grundstücksvergabe|Konzeptvergabe|Vermarktung|Verkauf|Veräußerung|Kaufpreis|Verkaufspreis|Bodenpreis|Baulandpreis|Losverfahren|Vergaberichtlinie|Bieterverfahren/iu],
+ ['Erschließung',/Endausbau|Asphalt|Straßenbeleuchtung|Erschließung(?!splan)|Umlegung|Erschließungsvertrag|Ausgleichsmaßnahme/i],
+ ['Änderung',/Änderung|Teiländerung|Deckblatt|Ergänzung/i],
+ ['Erweiterung',/Erweiterung/i],
+ ['Neues Baugebiet',/./],
+];
+export function wohnbauArtOf(title){return WOHNBAU_ARTS.find(([,re])=>re.test(String(title||'')))[0];}
 /** Geplante Wohneinheiten (größte genannte Zahl in einem Satz mit Planungsbezug), sonst null */
 export function housingOf(text){
  let best=null;
@@ -172,7 +186,7 @@ const AREA_DEV=[
  ['Wohnen',/Neubaugebiet|Wohn(?:bau)?gebiet|Baugebiet|Wohnbaufläche|Wohnquartier|Bauplätze|Bauplatz|Baugrundstücke|Wohnbaugrundstück/i],
 ];
 const AREA_ACT=/Erschließung|Entwicklung|Erweiterung|Vermarktung|Vergabe|Verkauf|Vorkaufsrecht|Ansiedlung|Ausweisung|Information|Gesellschaft|Zweckverband|neue[sn]?|Grunderwerb|Ankauf|Erwerb|Umlegung|Bauplatzpreis|Kaufpreis|Richtlinie/i;
-const AREA_NOT=/Bebauungsplan|B-Plan|Flächennutzungsplan|FNP|Feuerwehr|Regenrückhalt|Widmung|Straßenname|Benennung|Kanal|Befreiung|Bauvorhaben|Baugenehmigung|Spielplatz|Kita|Kindergarten|Schule|Gewerbesteuer|Gewerbe und Meldewesen|Haushaltsplan|Handwerk|eines Baugrundstück|Baugrundstückes Nr|Zuwendung|ÖPNV|Wahl d|Ausgleich|Ersatzmaßnahme|Los \d|Veräußerung des Regen|Ankauf Landwirtschaft/i;
+const AREA_NOT=/Ferienwohn|Straßenbezeichnung|Ausschluss von|Bebauungsplan|B-Plan|Flächennutzungsplan|FNP|Feuerwehr|Regenrückhalt|Widmung|Straßenname|Benennung|Kanal|Befreiung|Bauvorhaben|Baugenehmigung|Spielplatz|Kita|Kindergarten|Schule|Gewerbesteuer|Gewerbe und Meldewesen|Haushaltsplan|Handwerk|eines Baugrundstück|Baugrundstückes Nr|Zuwendung|ÖPNV|Wahl d|Ausgleich|Ersatzmaßnahme|Los \d|Veräußerung des Regen|Ankauf Landwirtschaft/i;
 export function areaDevOf(title){const t=String(title||'');if(!(AREA_ACT.test(t)||/^\s*(?:Neu)?[Bb]augebiet\b/.test(t))||AREA_NOT.test(t)||SIG_NOT.test(t))return null;return firstOf(AREA_DEV,t);}
 /* 7 Schulen, Kitas und Sportstätten: nur Bauvorhaben */
 const SCHOOL_BUILD=/Neubau|Ersatzneubau|Erweiterung|Sanierung|Generalsanierung|Umbau|Anbau|Modulbau|Container|Interim|Errichtung|Bau\s|Baumaßnahme|Neugestaltung|Modernisierung|Ertüchtigung/i;
@@ -744,5 +758,7 @@ export function factsOf(title,text){
  const plot=plotPriceOf(title,text);if(plot)rows.push({kind:'plot_price',value:plot.value,detail:plot.euro});
  const waste=wasteFeeOf(title,text);if(waste)rows.push({kind:'waste_fee',value:waste.value,detail:waste.euro});
  const grant=grantOf(title,text);if(grant)rows.push({kind:'grant',value:grant.purpose,detail:grant.euro?String(grant.euro):''});
+ // Signale 2: Art bei Wohnbaugebieten (Plan mit Wohnen, Baugebiet ohne Plan, Bauplatzpreis)
+ if(rows.some(r=>r.kind==='plan_use'&&(r.value==='Wohnen'||r.value==='Mischgebiet')||r.kind==='area_dev'&&r.value==='Wohnen'||r.kind==='plot_price'))rows.push({kind:'wohnbau_art',value:wohnbauArtOf(title),detail:''});
  return rows;
 }
