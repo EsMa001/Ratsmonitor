@@ -99,7 +99,8 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
     const area = new Map<string, { v: number; name: string; key: string; count: number; share: number | null; base: number }>();
     if (level === "district") {
       const acc = new Map<string, number[]>();
-      for (const [k, v] of val) { const a = rowOf.get(k)?.ags; if (a && a.length >= 5) acc.set(a.slice(0, 5), [...(acc.get(a.slice(0, 5)) ?? []), v]); }
+      /* Kennzahlen nur vom Kreis selbst (Kreistag), sonst färbte ein einzelner Ort den ganzen Kreis; Anzahl als Summe aller Gebiete */
+      for (const [k, v] of val) { const a = rowOf.get(k)?.ags; if (a && (metricOn ? a.length === 5 : a.length >= 5)) acc.set(a.slice(0, 5), [...(acc.get(a.slice(0, 5)) ?? []), v]); }
       for (const [a, vs] of acc) { const own = regions.find((r) => r.ags === a); area.set(a, { v: metricOn ? mid(vs) : vs.reduce((x, y) => x + y, 0), name: own?.name ?? `Kreis ${a}`, key: own?.key ?? "", count: vs.length, share: null, base: 0 }); }
     } else {
       for (const [k, v] of val) {
@@ -125,7 +126,7 @@ function AtlasMap({ regions, facts, onList, listed, drill }: { regions: Row[]; f
     <section className="mt-6">
       <div className="relative">
         <RegionMap level={level} levels={levels} picked={picked} onPick={(a) => setPicked(picked === a ? "" : a)} legend={legend} colors={colors}
-          note={metricOn ? `Viertel über alle Gebiete${HIGH_BAD.has(kind) ? "; rot: hoch" : ""}` : "ohne Farbe: keine Vorgänge"}
+          note={metricOn ? `Viertel über alle Gebiete${HIGH_BAD.has(kind) ? "; rot: hoch" : ""}${level === "district" ? "; nur Werte der Kreise selbst" : ""}` : "ohne Farbe: keine Vorgänge"}
           label={`Karte: ${what} je ${level === "district" ? "Kreis" : "Gemeinde"}`}
           info={sel ? <>
             <b className="font-semibold">{sel.name}</b><br />
