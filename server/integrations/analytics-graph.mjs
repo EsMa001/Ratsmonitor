@@ -4,6 +4,8 @@ import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {source,xState} from './plenara-x-query.mjs';
 import {parseSteps} from './x-cases.mjs';
+import {tokens,norm,parseTerms} from './x-terms.mjs';
+export {tokens};
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
@@ -16,25 +18,10 @@ import {listPage,offsetOf} from './analytics-lists.mjs';
 const TERMS=22,PER_KIND=6,MIN_DF=3;
 /* Gesamtgraph (all=1): mehr Knoten */
 const TERMS_ALL=40,PER_KIND_ALL=8;
-const STOP=new Set('aber alle allen aller alles als also auch auf aus bei beim bis dass dem den der des die diese diesem diesen dieser dieses doch durch ein eine einem einen einer eines für gegen hat haben ihre ihrem ihren ihrer ist kann mit nach nicht noch nur oder ohne sich sind über und unter vom von vor wird wurde zum zur zwischen sowie sowohl weitere weiteren weiterer weiteres neue neuen neuer neues dazu hierzu hierfür dafür dagegen darüber darauf daraus davon damit wegen innerhalb außerhalb bezüglich betreffend gemäß nr nummer vom im am an zu so wie was wer wo wenn dann denn mehr sehr schon bereits'.split(' '));
-/* Formalien tragen nichts zum Thema bei */
-const FORMAL=new Set('sitzung sitzungen niederschrift niederschriften protokoll tagesordnung tagesordnungspunkt mitteilung mitteilungen anfrage anfragen anfragen antrag anträge antrags beschluss beschlüsse beschlussvorlage vorlage vorlagen vorlagenummer verschiedenes bekanntgaben bekanntgabe genehmigung feststellung eröffnung öffentlich öffentliche öffentlichen nichtöffentlich nichtöffentlichen teil ortsrat ortsrates gemeinderat gemeinderates stadtrat stadtrates kreistag kreistages rat rates ausschuss ausschusses fachausschuss einwohnerfragestunde fragestunde top punkt hier änderung beteiligung stellungnahme beratung entwurf gemeinde stadt gmbh sachlichen aufstellung beschlussfassung kenntnisnahme bericht berichte information informationen verfahren januar februar märz april mai juni juli august september oktober november dezember montag dienstag mittwoch donnerstag freitag samstag sonntag informativ beschliessend beschließend beschließende beschließender flst herr herrn frau fraktion fraktionen grünen grüne bündnis linke linken freie freien wähler wählergemeinschaft wählergruppe'.split(' '));
-const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 /* Wörter des Sitzungsbetriebs, die über den ganzen Bestand ständig vorkommen und kein Thema sind (auch mit Begriff) */
 export const FORMAL_ALL=new Set('beschlussfähigkeit ordnungsgemäßen ordnungsgemäße ladung vorstellung öffentlicher öffentliche sachstand bürgermeisters bürgermeister begrüßung bestätigung wahl bestellung protokolls anwesenheit geschäftsordnung einladung fraktion fraktionen anregungen beschwerden verwaltung eröffnung feststellung genehmigung mitglieder mitglied beantwortung unterrichtung verpflichtung verabschiedung beschlussfassung ergänzung bekanntgabe entgegennahme sitzungsniederschrift gremium gremien ausschuss ausschusses rates gemeinderates stadtrates ortsgemeinderates verbandsgemeinde stadt gemeinde kreis ortsbeirat ortsbeirates niederschrift vorlage vorlagen beschluss beschlüsse bericht berichte aktuelle aktueller informationen information verschiedenes tagesordnungspunkte wortmeldungen einwohnerfragestunde einwohnerfrage teils letzten gefassten angelegenheiten sonstiges annahme nichtöffentlicher nichtöffentlichen sachstandsbericht ordnungsmäßigkeit änderungsanträge einwohner'.split(' ').map(w=>w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replaceAll('ß','ss')));
 /* Gremien eines Vorgangs aus seinen Stationen (x_cases.steps), ohne Platzhalter, je Gremium einmal */
 const gremienOf=steps=>[...new Set(parseSteps(steps).map(e=>e.g).filter(g=>g&&!PLACEHOLDER.test(g)).map(gremiumKey))];
-export const tokens=title=>{
- const found=new Map();
- for(const raw of String(title).split(/[^A-Za-zÀ-ÿ]+/)){
-  if(raw.length<4)continue;
-  const w=raw.toLowerCase();
-  if(STOP.has(w)||FORMAL.has(w))continue;
-  const key=norm(w);
-  if(!found.has(key))found.set(key,w);
- }
- return found;
-};
 const gremiumKey=g=>String(g||'').replace(/\s+/g,' ').trim();
 const PLACEHOLDER=/^Gremium\b|laut Originalquelle/i;
 const jaccard=(c,a,b)=>c/(a+b-c);
@@ -53,22 +40,22 @@ export async function knowledgeGraph(db,catalog,params){
  /* Wie überall in plenara.X: Auswahl über die Suche, gezählt werden Vorgänge (x_cases: ohne Formalien, gleiche Titel je Gebiet
     einmal); Titel und Gremium aus der Karte des Vorgangs */
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f,{steps:true});
+ const src=await source(db,catalog,f,{steps:true,terms:true});
  /* Alle Vorgänge der Auswahl, keine Stichprobe */
  const overall=!f.groups.length;
- const {results:rows}=await db.prepare(`SELECT x.region_id,x.label,x.steps,c.title FROM ${src.from} JOIN search_cards c ON c.id=x.card_id`).bind(...src.args).all();
+ const {results:rows}=await db.prepare(`SELECT x.region_id,x.label,x.steps,x.terms FROM ${src.from}`).bind(...src.args).all();
  const capped=false,limit=rows.length;
  const total=rows.length;
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const exclude=new Set(f.groups.flat()),parts=[...exclude].map(norm);
  /* Wörter, in denen der Begriff nur als Teil steckt: Hinweis auf „genaues Wort“ */
  const partial=new Map();
- if(!f.exact)for(const r of rows)for(const [k,w] of tokens(r.title))if(!exclude.has(k)&&parts.some(p=>k.includes(p)&&!k.startsWith(p+'s')&&k!==p))partial.set(w,(partial.get(w)||0)+1);
+ if(!f.exact)for(const r of rows)for(const [k,w] of parseTerms(r.terms))if(!exclude.has(k)&&parts.some(p=>k.includes(p)&&!k.startsWith(p+'s')&&k!==p))partial.set(w,(partial.get(w)||0)+1);
  /* Je Karte: Begriffe, Thema, Gremium, Land */
  const docs=rows.map(r=>{
   const region=byId.get(r.region_id),land=region?region.ags.slice(0,2):null;
   /* Wortteil-Treffer („vereinbarung“ bei „Verein“, „saarbrücken“ bei „Brücke“) sind kein eigener Begriff */
-  return {terms:new Map([...tokens(r.title)].filter(([k])=>!exclude.has(k)&&!FORMAL_ALL.has(k)&&!parts.some(p=>k.includes(p)))),label:r.label,gremien:gremienOf(r.steps),land};
+  return {terms:new Map([...parseTerms(r.terms)].filter(([k])=>!exclude.has(k)&&!FORMAL_ALL.has(k)&&!parts.some(p=>k.includes(p)))),label:r.label,gremien:gremienOf(r.steps),land};
  });
  /* Häufigkeit der Begriffe in der Auswahl; Gewichtung gegen den ganzen Bestand (search_words) */
  const df=new Map(),shown=new Map();

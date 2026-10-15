@@ -4,6 +4,7 @@ import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {tokens} from './analytics-graph.mjs';
+import {parseTerms} from './x-terms.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 import {source,xState} from './plenara-x-query.mjs';
 import {parseSteps} from './x-cases.mjs';
@@ -39,7 +40,7 @@ export function parseCompare(params){
 const gremienOf=r=>parseSteps(r.steps).filter(e=>e.g);
 /* Alle Vorgänge der Auswahl (keine Stichprobe); Gremien aus den Stationen (x_cases.steps): ein Vorgang aus Ausschuss und Rat zählt bei beiden */
 const sample=async(db,src)=>{
- const {results:rows}=await db.prepare(`SELECT x.case_key ck,x.region_id,x.label,x.status,x.steps,c.title FROM ${src.from} JOIN search_cards c ON c.id=x.card_id`).bind(...src.args).all();
+ const {results:rows}=await db.prepare(`SELECT x.case_key ck,x.region_id,x.label,x.status,x.steps,x.terms FROM ${src.from}`).bind(...src.args).all();
  const byGremium=new Map();
  for(const r of rows)for(const e of gremienOf(r)){const g=gremiumKey(e.g);if(!g)continue;if(!byGremium.has(g))byGremium.set(g,new Set());byGremium.get(g).add(r.ck);}
  return {total:rows.length,rows,capped:false,byGremium};
@@ -47,7 +48,7 @@ const sample=async(db,src)=>{
 const shares=(rows,pick,keys)=>{const m=new Map();let n=0;for(const r of rows){const v=pick(r);if(v!==null&&v!==undefined){m.set(v,(m.get(v)||0)+1);n++;}}return {n,list:keys.map(k=>({id:k,n:m.get(k)||0,share:n?Math.round(((m.get(k)||0)/n)*10000)/100:0}))};};
 const termStats=(rows,exclude)=>{
  const df=new Map(),shown=new Map();
- for(const r of rows)for(const [k,w] of tokens(r.title)){if(exclude.has(k))continue;df.set(k,(df.get(k)||0)+1);if(!shown.has(k))shown.set(k,w);}
+ for(const r of rows)for(const [k,w] of parseTerms(r.terms)){if(exclude.has(k))continue;df.set(k,(df.get(k)||0)+1);if(!shown.has(k))shown.set(k,w);}
  return {df,shown,n:rows.length};
 };
 /* Die Vergleichsbasis (alle Gebiete) hängt nur von den Filtern ab, nicht von den Orten: kurz im Speicher halten (5 Minuten, höchstens 20) */
@@ -68,13 +69,13 @@ export async function compare(db,catalog,params){
  const exclude=new Set(f.groups.flat());
  /* Vergleichsbasis: alle Gebiete (Gemeindeebene) mit denselben übrigen Filtern */
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const base=await cachedBase(db,await source(db,catalog,{...f,area:'',more:[],scope:'with',within:null,without:null},{steps:true}));
+ const base=await cachedBase(db,await source(db,catalog,{...f,area:'',more:[],scope:'with',within:null,without:null},{steps:true,terms:true}));
  const bt=termStats(base.rows,exclude);
  const baseTopics=shares(base.rows,r=>REAL.includes(r.label)?r.label:null,REAL),baseStatus=shares(base.rows,r=>r.status,STATUSES);
  const out=[];
  for(const p of places){
   const pf={...f,area:p.ags,scope:p.scope,more:[],within:null,without:null};
-  const [{scopedIds,byId},src]=await Promise.all([searchFilters(db,catalog,{...pf,part:'x'}),source(db,catalog,pf,{steps:true})]);
+  const [{scopedIds,byId},src]=await Promise.all([searchFilters(db,catalog,{...pf,part:'x'}),source(db,catalog,pf,{steps:true,terms:true})]);
   const s=await sample(db,src);
   const {results:monthRows}=await db.prepare(`SELECT x.month m,count(*) n FROM ${src.from} GROUP BY m ORDER BY m`).bind(...src.args).all();
   const regions=[...scopedIds].map(id=>byId.get(id)).filter(Boolean);

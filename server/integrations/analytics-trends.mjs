@@ -3,6 +3,7 @@ import {parseMonitorSearch} from './monitor-search.mjs';
 import {source,xState} from './plenara-x-query.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {tokens,FORMAL_ALL} from './analytics-graph.mjs';
+import {parseTerms} from './x-terms.mjs';
 import {privateBuild} from '../../shared/topic-facts.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
@@ -34,20 +35,16 @@ const labelName=id=>LABELS.find(l=>l.id===id)?.name||null;
 export async function trends(db,catalog,params,now=Date.now()){
  const {f,window:W}=parseTrends(params);
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f);
+ const src=await source(db,catalog,f,{terms:true});
  const end=iso(now+DAY),mid=iso(now+DAY-W*DAY),start=iso(now+DAY-2*W*DAY);
  /* Je Fenster: alle Vorgänge, dazu ihre Titel */
  const load=async(a,b)=>{
   const range='x.date>=? AND x.date<?';
   // Alle Vorgänge des Fensters, keine Stichprobe
-  const {results:pick}=await db.prepare(`SELECT x.card_id id,x.date,x.region_id,x.label FROM ${src.from} WHERE ${range}`).bind(...src.args,a,b).all();
+  // Begriffe und „privater Bauantrag“ liegen je Vorgang in x_cases (beim Bau aus dem Titel)
+  const {results:pick}=await db.prepare(`SELECT x.card_id id,x.date,x.region_id,x.label,x.terms,x.private_build pb FROM ${src.from} WHERE ${range}`).bind(...src.args,a,b).all();
   const total=pick.length,k=1;
-  const titles=new Map();
-  for(let i=0;i<pick.length;i+=5000){const ids=pick.slice(i,i+5000).map(r=>r.id);
-   const {results}=await db.prepare('SELECT id,title FROM search_cards WHERE id IN (SELECT value FROM json_each(?))').bind(JSON.stringify(ids)).all();
-   for(const r of results)titles.set(r.id,r.title);}
-  const rows=[];
-  for(const r of pick){const title=titles.get(r.id);if(!title||privateBuild(title))continue;rows.push({...r,title});}
+  const rows=pick.filter(r=>!r.pb);
   return {total,rows,k};
  };
  const [recent,prev]=[await load(mid,end),await load(start,mid)];
@@ -61,7 +58,7 @@ export async function trends(db,catalog,params,now=Date.now()){
  const scan=(rows,which)=>{
   for(const r of rows){
    const b=bucket(r.date);sizes[b]++;
-   for(const [key,word] of tokens(r.title)){
+   for(const [key,word] of parseTerms(r.terms)){
     // Wörter des Sitzungsbetriebs (Wahl, Bestellung, Sachstand …) sind kein Trend
     if(exclude.has(key)||FORMAL_ALL.has(key))continue;
     let s=stat.get(key);if(!s){s={word,nr:0,np:0,rr:new Set(),rp:new Set(),wk:Array(weeks).fill(0)};stat.set(key,s);}

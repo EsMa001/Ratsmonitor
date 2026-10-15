@@ -102,8 +102,8 @@ export async function xState(db){
 const X_COLS='case_key,region_id,date,month,label,stage,subs,status,card_id,cards,unread,first_date,days,vote,changed';
 export async function source(db,catalog,f,opts={}){
  const {page}=await searchFilters(db,catalog,{...f,noformal:false,part:'x'});
-// Schmale Spalten; die langen Stationen (steps) nur, wer sie braucht (steps:true)
- const cols=X_COLS+(opts.steps?',steps':'');
+// Schmale Spalten; die langen Stationen (steps) und Begriffe (terms) nur, wer sie braucht
+ const cols=X_COLS+(opts.steps?',steps':'')+(opts.terms?',terms,private_build':'');
  if(!f.q)return {from:`(SELECT ${cols} FROM x_cases WHERE ${page.where}) x`,args:page.args};
  // Die Suche einmal je Anfrage: Vorgänge der gefundenen Karten als Liste, alle Zählungen lesen nur noch sie
  const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...page.args).all();

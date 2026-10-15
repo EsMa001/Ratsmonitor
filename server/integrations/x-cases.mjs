@@ -5,6 +5,8 @@
 // (itemKind subject, ungelesen: keine Formalie nach search_cards.formal); Werte der Karte mit der letzten Sitzung bis zum Bautag.
 import {SIGNALS} from './plenara-x-signals.mjs';
 import {readResult} from './analytics-decisions.mjs';
+import {termsText} from './x-terms.mjs';
+import {privateBuild} from '../../shared/topic-facts.mjs';
 export const X_CASES_KEY='x-cases';
 /** Stand der Zahlen für den Zwischenspeicher der Route (atRevisionStale): ändert sich nur mit einem neuen Bau, nicht mit jedem Import */
 export const X_REVISION_SQL="SELECT coalesce((SELECT value FROM system_state WHERE key='x-cases'),'') AS revision";
@@ -59,10 +61,11 @@ export const parseSteps=s=>s?String(s).split('\n').map(l=>{const [d,st,g]=l.spli
 function buildXSteps(sql){
  const cols=new Set(sql.prepare("SELECT name FROM pragma_table_info('x_cases')").all().map(r=>r.name));
  if(!cols.has('steps'))return null;
- const up=sql.prepare('UPDATE x_cases SET first_date=?,steps=?,days=?,vote=?,changed=? WHERE case_key=?');let n=0;
- for(const r of sql.prepare("SELECT x.case_key k,x.date d,x.status st,c.gremium g,json_extract(t.payload,'$.events') ev FROM x_cases x LEFT JOIN topics t ON t.id=x.card_id LEFT JOIN search_cards c ON c.id=x.card_id").iterate()){
+ const terms=cols.has('terms');
+ const up=sql.prepare(`UPDATE x_cases SET first_date=?,steps=?,days=?,vote=?,changed=?${terms?',terms=?,private_build=?':''} WHERE case_key=?`);let n=0;
+ for(const r of sql.prepare("SELECT x.case_key k,x.date d,x.status st,c.gremium g,c.title ti,json_extract(t.payload,'$.events') ev FROM x_cases x LEFT JOIN topics t ON t.id=x.card_id LEFT JOIN search_cards c ON c.id=x.card_id").iterate()){
   let ev=[];try{ev=r.ev?JSON.parse(r.ev):[];}catch{/* kaputter Zeitstrahl: ohne Stationen */}
-  const c=caseSteps(ev,{date:r.d,status:r.st,gremium:r.g||''});up.run(c.first,c.steps,c.days,c.vote,c.changed,r.k);n++;
+  const c=caseSteps(ev,{date:r.d,status:r.st,gremium:r.g||''});const more=terms?[termsText(r.ti||''),privateBuild(r.ti)?1:0]:[];up.run(c.first,c.steps,c.days,c.vote,c.changed,...more,r.k);n++;
  }
  return n;
 }

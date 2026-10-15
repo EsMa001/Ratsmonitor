@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import {buildXCases} from '../server/integrations/x-cases.mjs';
 import {DatabaseSync} from 'node:sqlite';
 import {sqliteAdapter} from '../scripts/ai-job.mjs';
-import {knowledgeGraph,parseGraph} from '../server/integrations/analytics-graph.mjs';
+import {knowledgeGraph,parseGraph,tokens} from '../server/integrations/analytics-graph.mjs';
+import {parseTerms} from '../server/integrations/x-terms.mjs';
 
 const catalog=[{id:'a',kind:'city',name:'Alt',ags:'05558008'},{id:'b',kind:'city',name:'Bett',ags:'03155012'}];
 test('graph needs a term of at least three letters',()=>{
@@ -23,6 +24,8 @@ test('graph links terms, topics, committees and lands by co-occurrence and leave
  try{
   const g=await knowledgeGraph(db,catalog,new URLSearchParams('q=Windenergie&to=2999-01-01'));
   assert.equal(g.total,11);assert.equal(g.nodes[0].type,'center');
+  // Begriffe je Vorgang beim Bau abgelegt: dieselben wie aus dem Titel der Karte
+  for(const r of sql.prepare('SELECT x.terms,c.title FROM x_cases x JOIN search_cards c ON c.id=x.card_id').all())assert.deepEqual(parseTerms(r.terms),tokens(r.title));
   const labels=g.nodes.map(x=>x.label);
   assert.ok(labels.includes('flächennutzungsplan'));assert.ok(labels.includes('artenschutz'));
   assert.ok(!labels.some(l=>/^windenergie$/i.test(l)&&l!==g.q),'query is not a term');
