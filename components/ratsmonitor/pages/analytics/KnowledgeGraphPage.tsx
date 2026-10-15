@@ -137,11 +137,11 @@ export function KnowledgeGraphPage() {
         </div>
 
         {sel && res && (
-          <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] rounded-[22px] px-5 py-4 sm:inset-x-6`}>
+          <div className={`${glass} absolute inset-x-3 bottom-3 z-[6] rounded-[18px] px-4 py-3 sm:left-6 sm:right-auto sm:w-[420px]`}>
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-[12px] text-slate-500">{KIND[sel.type].label}</p>
-                <p className="truncate text-[18px] font-semibold">{sel.label}</p>
+                <p className="truncate text-[16px] font-semibold">{sel.label}</p>
                 <p className="text-[14px] text-slate-700">{n(sel.count)} von {n(res.total)} Einträgen ({pct(sel.count, res.total)})</p>
               </div>
               <button type="button" onClick={() => setSelected("")} aria-label="Auswahl schließen" className="text-[14px] text-slate-500 hover:text-slate-900">Schließen</button>
