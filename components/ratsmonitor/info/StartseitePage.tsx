@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { IconPin } from "../components/icons";
 import { useOpenSearch } from "./blocks";
 import { todayLocal } from "../lib/text";
+import { useMe } from "../lib/account";
 import topicList from "./startseite-topics.json";
 
 /* Startseite (noch nicht die Landingpage).
@@ -222,6 +223,7 @@ function GermanyMap({ pops, onPick }: { pops: Pop[]; onPick: (name: string) => v
 
 export function StartseitePage() {
   const openSearch = useOpenSearch();
+  const me = useMe();
   const [term, setTerm] = useState("");
   const [total, setTotal] = useState<number | null>(null);
   const [cov, setCov] = useState<Cov[] | null>(null);
@@ -473,7 +475,7 @@ export function StartseitePage() {
       )}
             <div className="pl-ctawrap" style={{ margin: "28px 0 0" }}>
               <Link href="/suche" className="ri-btn pl-cta" style={{ borderRadius: 999, border: 0, color: "var(--rm-white,#fff)", background: "var(--rm-c900,#0f172a)", minHeight: 48, padding: "0 22px", fontWeight: 600 }}>
-                Ohne Anmeldung starten →
+                {me.user ? "Suche starten →" : "Ohne Anmeldung starten →"}
               </Link>
             </div>
             <p className="pl-source" style={{ margin: "14px 0 0", maxWidth: 460, fontSize: 14, lineHeight: 1.5, color: "var(--rm-c500,#64748b)" }}>
