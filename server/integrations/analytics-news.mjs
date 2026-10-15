@@ -22,7 +22,8 @@ import {where} from './member-place.mjs';
  */
 const BACK=30,SPANS=[30,90,365],AHEAD=10,CANDIDATES=300,PER_REGION=2,DEFAULT_N=12,MAX_N=30;
 // Förderung gibt es seit 15.10.2026 nicht mehr als Fakt (Stand bewilligt/beantragt war nur 36–64 % richtig)
-const FACT_KINDS=['faction','kita_fee','plan'];
+// Fraktion aus x_cases (factions), die übrigen aus topic_facts über die Karten des Vorgangs
+const FACT_KINDS=['kita_fee','plan'];
 /* Signale aus readReport (report_rules, Migration 0035): Unterthemen und „Was geschieht“; Richtung und Art aus dem Titel */
 const UP=/Erhöhung|Anhebung|erhöht|angehoben/i,DOWN=/Senkung|gesenkt|Reduzierung|Absenkung/i;
 const CITIZEN=/Petition|Einwohnerantr|Bürgerantr|Bürgerbegehren|Bürgerentscheid|Bürgereingabe|Anregungen und Beschwerden/i;
@@ -164,10 +165,10 @@ export async function news(db,catalog,params){
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
  /* Wie überall in plenara.X: Auswahl über source() (Sachvorgänge in x_cases, ohne private Bauanträge, mit künftigen Vorgängen,
     weil der Zeitraum über heute hinausgeht); Unterthemen und „Was geschieht“ aus x_cases, Fakten aller Karten des Vorgangs */
- const src=await source(db,catalog,f,{noPrivate:true});
+ const src=await source(db,catalog,f,{noPrivate:true,factions:true});
  const today=day(0),week=day(-7);
  /* Stufe 1: alle Vorgänge des Zeitraums mit ihren Fakten, ohne Payload */
- const {results:rows}=await db.prepare(`SELECT x.card_id id,x.region_id region,x.date date,x.status status,x.stage stage,x.subs subs,c.title title,c.gremium gremium
+ const {results:rows}=await db.prepare(`SELECT x.card_id id,x.region_id region,x.date date,x.status status,x.stage stage,x.subs subs,x.factions factions,c.title title,c.gremium gremium
   FROM ${src.from} JOIN search_cards c ON c.id=x.card_id`).bind(...src.args).all();
  const {results:factRows}=await db.prepare(`SELECT DISTINCT x.card_id id,fa.kind kind,fa.value value,fa.detail detail FROM ${src.from}
   JOIN report_rules rr ON rr.case_key=x.case_key JOIN topic_facts fa ON fa.topic_id=rr.topic_id AND fa.kind IN (${FACT_KINDS.map(()=>'?').join(',')})`).bind(...src.args,...FACT_KINDS).all();
@@ -175,7 +176,7 @@ export async function news(db,catalog,params){
  const pre=[];
  for(const c of rows){
   if(NOT_NEWS.test(c.title||''))continue;
-  const facts=factsOf.get(c.id)||[];
+  const facts=[...(c.factions?c.factions.split('\n').map(l=>{const [value,detail]=l.split('\t');return {kind:'faction',value,detail};}):[]),...(factsOf.get(c.id)||[])];
   const s=prescore(c,facts,today,week);pre.push({c,facts,...s});
  }
  pre.sort((a,b)=>b.score-a.score);
