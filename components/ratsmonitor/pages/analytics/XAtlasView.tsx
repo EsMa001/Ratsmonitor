@@ -287,7 +287,10 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
   const parts = restLast(sub && siblings ? siblings : res?.parts ?? []);
   const firstPart = parts.find((p) => !isRest(p))?.key ?? "";
   /* Zahlen der Pillen: nur wenn die Antwort zum gewählten Thema gehört */
-  const pillCount = new Map(res?.selection.theme === theme ? parts.map((p) => [p.key, p.count] as [string, number]) : []);
+  /* Mit Unterthema: Größe des Themas (für den Anteil) und die Unterthemen, die im selben Vorgang mit vorkommen (Antwort der Auswahl) */
+  const themeTotal = sub && siblings?.length ? siblings[0].base : 0;
+  const together = sub && res?.selection.sub === sub ? restLast(res.parts).filter((p) => p.key !== sub && !isRest(p) && p.count > 0).slice(0, 6).map((p) => ({ ...p, share: total ? Math.round((1000 * p.count) / total) / 10 : null })) : [];
+  const pillCount = new Map(res?.selection.theme === theme && (!sub || siblings) ? parts.map((p) => [p.key, p.count] as [string, number]) : []);
   const openPart = part === null ? (sub || firstPart) : part;
   /* Liste hinter einer Zeile: dieselbe Auswahl, aber ohne das gewählte Unterthema (sonst nur die Überschneidung) */
   const partBase = `/api/x?list=1${theme ? "&theme=" + theme : ""}`;
@@ -340,7 +343,14 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
                 <div className="min-w-0 lg:col-span-5">
                   {res.compare && <OrtImVergleich c={res.compare} theme={theme} onPick={(k) => (theme ? onSub(sub === k ? "" : k) : onTheme(k))} />}
 
-                  <section className={res.compare ? "mt-10" : ""}>
+                  {sub ? <>
+                    {/* Mit Unterthema: rechts sein Inhalt statt der Liste aller Unterthemen (zum Wechseln dienen die Pillen oben) */}
+                    <section className={res.compare ? "mt-10" : ""}>
+                      <h2 className="flex items-center gap-2 text-[22px] font-semibold"><ThemeIcon theme={theme} size={24} className="shrink-0 text-teal-700" />{subName}</h2>
+                      <p className="mb-3 mt-1 text-[14px] text-slate-500">{n(total)} {plural(total, "Vorgang", "Vorgänge")}{themeTotal ? `, ${pct(Math.round((1000 * total) / themeTotal) / 10)} von ${themeName}` : ""}. Die neuesten:</p>
+                      <RadarDrill base={partBase} query={listQuery} by="sub" value={sub} label={subName} limit={5} onAll={() => showAll("sub", sub, [themeName, subName].join(" › "))} />
+                    </section>
+                  </> : <section className={res.compare ? "mt-10" : ""}>
                     <h2 className="flex items-center gap-2 text-[22px] font-semibold">{theme && <ThemeIcon theme={theme} size={24} className="text-teal-700" />}{theme ? `Unterthemen von ${themeName}` : "Themen"}</h2>
                     <p className="mb-3 mt-1 text-[14px] text-slate-500">Antippen zeigt die Vorgänge.</p>
                     <PartList rows={parts} icons={!theme} open={openPart} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
@@ -349,7 +359,7 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
                         onAll={() => showAll(partBy, r.key, [themeName, r.name].filter(Boolean).join(" › "))}
                         footer={isRest(r) ? null : <button type="button" onClick={() => (theme ? onSub(sub === r.key ? "" : r.key) : onTheme(r.key))} className="mt-2 block text-[14px] font-medium text-teal-700 hover:underline">
                           {theme && sub === r.key ? "Eingrenzung aufheben" : `Auf „${r.name}“ eingrenzen →`}</button>} />} />
-                  </section>
+                  </section>}
 
                   {rankRegions && <section className="mt-10">
                     <h2 className="text-[22px] font-semibold">Wo das Thema viel Raum hat</h2>
@@ -361,6 +371,11 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
                     </> : <p className="text-[14px] text-slate-500">Kein Gebiet hat genug Sachvorgänge für einen Vergleich.</p>}
                   </section>}
                   {!(theme || sub) && allRegions.length > 1 && <p className="mt-10 text-[14px] text-slate-500">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
+                  {sub && together.length > 0 && <section className="mt-10">
+                    <h2 className="text-[22px] font-semibold">Oft zusammen mit</h2>
+                    <p className="mb-3 mt-1 text-[14px] text-slate-500">Anteil der Vorgänge zu „{subName}“, die auch dieses Unterthema haben. Klick wechselt dorthin.</p>
+                    <Bars rows={together} mode="select" onOpen={(k) => onSub(k)} value={(r) => r.count} label={(r) => pct(r.share)} />
+                  </section>}
                 </div>
               </div>
 
