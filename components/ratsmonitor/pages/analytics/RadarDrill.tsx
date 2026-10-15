@@ -13,8 +13,9 @@ const n = (v: number) => v.toLocaleString("de-DE");
 const day = (iso: string) => (/^\d{4}-\d{2}-\d{2}/.test(iso || "") ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(2, 4)}` : "");
 const statusLabel = (id: string) => STATUS.find((s) => s.id === id)?.label ?? "";
 
-/** base: Adresse der Auswertung mit Listenmodus (by=…), etwa /api/x?list=1 */
-export function RadarDrill({ base, query, by, value, label, unit }: { base: string; query: string; by: string; value: string; label: string; unit?: [string, string] }) {
+/** base: Adresse der Auswertung mit Listenmodus (by=…), etwa /api/x?list=1. limit: nur so viele Einträge zeigen und statt
+    „Weitere laden“ den Weg zur ganzen Liste (onAll); footer: weitere Wege unter der Liste (etwa „Auf … eingrenzen“). */
+export function RadarDrill({ base, query, by, value, label, unit, limit, onAll, footer }: { base: string; query: string; by: string; value: string; label: string; unit?: [string, string]; limit?: number; onAll?: (total: number) => void; footer?: React.ReactNode }) {
   const [items, setItems] = useState<DrillItem[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +56,7 @@ export function RadarDrill({ base, query, by, value, label, unit }: { base: stri
       {error && <p role="alert" className="mt-2 text-[14px]">{error}</p>}
       {items.length > 0 && (
         <ol className="m-0 mt-2 list-none p-0">
-          {items.map((r) => (
+          {(limit ? items.slice(0, limit) : items).map((r) => (
             <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-t border-slate-200 py-2.5">
               <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
                 <span className="block text-[14px] leading-snug [overflow-wrap:anywhere] sm:truncate sm:text-[16px]">{r.title}</span>
@@ -71,9 +72,13 @@ export function RadarDrill({ base, query, by, value, label, unit }: { base: stri
           ))}
         </ol>
       )}
-      {total !== null && items.length < total && (
+      {limit && onAll && total !== null && total > limit && (
+        <button type="button" onClick={() => onAll(total)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">Alle {n(total)} Vorgänge zeigen →</button>
+      )}
+      {!limit && total !== null && items.length < total && (
         <button type="button" disabled={loading} onClick={more} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{loading ? "Wird geladen …" : `Weitere ${n(Math.min(50, total - items.length))} laden`}</button>
       )}
+      {footer}
     </div>
   );
 }

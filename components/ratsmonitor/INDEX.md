@@ -640,7 +640,7 @@ topic design-styles.css:140
 - admin-colors.ts (17): AC, HATCH_CSS, COVERAGE, shareColor, BUCKET_COLOR, bucketColor, ACCESS_COLOR
 - admin-dashboard.tsx (129, ⚠14): AdminDashboardView
 - admin-debug.tsx (160, ⚠9): AdminDebug
-- admin-estimate.tsx (355, ⚠52): AdminEstimate
+- admin-estimate.tsx (355, ⚠51): AdminEstimate
 - admin-forecast.tsx (9): AdminForecast
 - admin-icons.tsx (34): IconName, Icon
 - admin-loader.tsx (33): AdminLoader
@@ -664,6 +664,7 @@ topic design-styles.css:140
 - admin-texts.ts (506, ⚠5): href, Todo, Help, PAGE_HEAD, FOOT, STAND_ZEILE, ZUSTAND, STAND_TEXT, JOB_STATE_HELP, HELP, TERMS, FILTER_HELP, MAP_HELP, MAP_LEGEND, MAP_NAME, STATE_HELP, ATLAS_TODO, ATLAS_TEXT, REVIEW_HELP, FIELD_HELP, FIELD_FOOT, QUALITY_EXPLAIN, QUALITY_FIGURE_HELP, QUALITY_TEXT, COL_HELP, UEBERSICHT_TEXT, STUFEN, AUFTRAG_TITEL, CONFIRM, ABRUF_TEXT, PROTOKOLL, TITLES, HOCHRECHNUNG, RAHMEN
 - admin-timeline.tsx (88, ⚠4): AdminTimeline
 - admin-todo.tsx (11): AdminTodo
+- admin-totp.tsx (62): AdminTotp, AdminTotpSetup
 - admin-ui.tsx (87): dd, mm, short, AdminPageHead, Kpi, Kpis, How, SectionHelp, SectionTodo, Skeleton, PageSkeleton, Legend, Alert, AdminChoice, AdminAreaPick
 - article-analysis.tsx (6, ⚠2): SessionDetails
 - database-admin.tsx (34, ⚠3): DatabaseAdmin
@@ -712,7 +713,7 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/info/
 - AboutPage.tsx (163): AboutPage
-- AccountPages.tsx (535): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
+- AccountPages.tsx (536): LoginPage, ConfirmLoginPage, RegisterPage, KontaktPage
 - AgbPage.tsx (179, ⚠15): AgbPage
 - BenachrichtigungenPage.tsx (77): BenachrichtigungenPage
 - BranchenLive.tsx (245): LiveThumb
@@ -725,7 +726,7 @@ topic design-styles.css:140
 - QuellenPage.tsx (171, ⚠4): QuellenPage
 - StartseitePage.tsx (493, ⚠5): StartseitePage
 - TodoControls.tsx (139, ⚠12): TodoChoice, TodoPerson, TodoOwner, TodoPriorityChoice, TodoStatusChoice, TodoOrder, TodoEditor
-- TodoPage.tsx (267, ⚠25): TodoPage
+- TodoPage.tsx (267, ⚠24): TodoPage
 - VideosPage.tsx (154): VideosPage
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
@@ -802,9 +803,9 @@ topic design-styles.css:140
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (73): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (61): ATLAS_THEMEN, atlasHref, AtlasPage
+- AtlasPage.tsx (69): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (52): Befund, zuThema
-- BeschluessePage.tsx (198, ⚠7): BeschluessePage
+- BeschluessePage.tsx (189, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
 - CompareFields.tsx (71): FIELD, PlaceField
 - ComparePage.tsx (305, ⚠11): ComparePage
@@ -815,20 +816,20 @@ topic design-styles.css:140
 - FaktenPage.tsx (208, ⚠8): FaktenPage
 - FraktionenPage.tsx (151, ⚠5): FraktionenPage
 - GraphView.tsx (189, ⚠2): GNode, GEdge, KIND, GraphView
-- GremiennetzPage.tsx (176, ⚠3): GremiennetzPage
-- KnowledgeGraphPage.tsx (207, ⚠2): KnowledgeGraphPage
+- GremiennetzPage.tsx (167, ⚠3): GremiennetzPage
+- KnowledgeGraphPage.tsx (221, ⚠2): KnowledgeGraphPage
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
 - PageBand.tsx (17): PageBand
-- RadarDrill.tsx (80): DrillItem, RadarDrill
+- RadarDrill.tsx (85): DrillItem, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (74): RegionMap
 - Reveal.tsx (16): Reveal
 - SignalePage.tsx (255, ⚠2): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (347, ⚠3): XAtlasView
+- XAtlasView.tsx (441, ⚠3): XAtlasView
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 

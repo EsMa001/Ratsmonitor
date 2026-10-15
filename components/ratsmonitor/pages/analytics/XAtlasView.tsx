@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { THEMES, SUBTOPICS } from "@/shared/themes.mjs";
 import { Laden } from "./Laden";
 import { Befund } from "./Befund";
 import { Reveal } from "./Reveal";
@@ -43,14 +44,14 @@ function Bars({ rows, mode, open = "", onOpen, drill = () => null, value = (r) =
   value?: (r: Row) => number; label?: (r: Row) => string;
 }) {
   const max = Math.max(1, ...rows.map(value));
-  const grid = "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-2.5 text-left sm:grid-cols-[260px_minmax(0,1fr)_minmax(120px,auto)]";
+  const grid = "grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-2.5 text-left sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto]";
   return (
     <ol className="m-0 list-none border-t border-slate-200 p-0">
       {rows.map((r) => {
         const rest = isRest(r), on = open === r.key;
         const inner = (
           <>
-            <span className={`truncate text-[16px] ${rest ? "text-slate-500" : ""} ${mode === "select" && on ? "font-semibold" : ""}`}>{r.name}</span>
+            <span className={`text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${mode === "select" && on ? "font-semibold" : ""}`}>{r.name}</span>
             <span className="order-3 col-span-2 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1">
               <span className={`block h-full rounded-full ${rest ? "bg-slate-300" : mode === "select" && on ? "bg-slate-900" : "bg-teal-600"}`} style={{ width: `${(value(r) / max) * 100}%` }} />
             </span>
@@ -211,9 +212,14 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
   const { query, search } = useAnalyticsQuery();
   const sel = [theme && `theme=${theme}`, sub && `sub=${sub}`].filter(Boolean).join("&");
   const url = `/api/x?view=atlas${sel ? "&" + sel : ""}&${query}`;
-  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: !term, onDone: () => setOpen("") });
-  /* Aufgeklappte Liste: "month:2026-05", "region:<id>", "fact:plan:Aufstellung" */
+  const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: !term, onDone: () => { setOpen(""); setPart(null); setAll(null); } });
+  /* Aufgeklappte Liste: "month:2026-05", "region:<id>", "map:<id>" */
   const [open, setOpen] = useState("");
+  /* Aufgeklappte Zeile der Gliederung rechts: null = die erste (Start), "" = keine */
+  const [part, setPart] = useState<string | null>(null);
+  /* Ganze Liste unten statt der jüngsten Vorgänge: nach „Alle … zeigen“ */
+  const [all, setAll] = useState<{ by: string; value: string; label: string } | null>(null);
+  const bottomRef = useRef<HTMLElement>(null);
   /* Andere Auswahl (Thema, Unterthema): gleich neu rechnen; das alte Ergebnis bleibt abgeblendet stehen */
   const [ranSel, setRanSel] = useState(sel);
   if (ranSel !== sel) {
@@ -235,106 +241,125 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
     run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  /* Mit gewähltem Unterthema: alle Unterthemen des Themas mit ihren Zahlen (dieselbe Abfrage ohne Unterthema, Gliederung nach
+     Unterthema); die Antwort der Auswahl selbst zählte nur die Überschneidungen mit dem gewählten */
+  const [siblings, setSiblings] = useState<Row[] | null>(null);
+  const listQuery = (() => { const p = new URLSearchParams(ranKey.split("?")[1] ?? ""); for (const k of ["view", "theme", "sub"]) p.delete(k); return p.toString(); })();
+  useEffect(() => {
+    if (!sub || !theme || !res) { setSiblings(null); return; }
+    const c = new AbortController();
+    fetch(`/api/x?theme=${theme}&by=sub&${listQuery}`, { signal: c.signal }).then((r) => (r.ok ? (r.json() as Promise<{ rows?: Row[] }>) : null)).then((b) => setSiblings(Array.isArray(b?.rows) ? b.rows : null)).catch(() => {});
+    return () => c.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [res, sub, theme]);
   const toggle = (key: string) => setOpen(open === key ? "" : key);
   const listBase = `/api/x?list=1${sel ? "&" + sel : ""}`;
-  /* Filter der zuletzt ausgewerteten Abfrage ohne Auswahl und Ansicht (die stehen in listBase) */
-  const listQuery = (() => { const p = new URLSearchParams(ranKey.split("?")[1] ?? ""); for (const k of ["view", "theme", "sub"]) p.delete(k); return p.toString(); })();
   const drill = (by: string, r: Row, label = r.name) => <RadarDrill base={listBase} query={listQuery} by={by} value={r.key} label={label} />;
   const opened = (by: string) => (open.startsWith(by + ":") ? open.slice(by.length + 1) : "");
+  const [jump, setJump] = useState(0);
+  const showAll = (by: string, value: string, label: string) => { setAll({ by, value, label }); setJump((j) => j + 1); };
+  /* Nach „Alle … zeigen“ zur Liste unten springen, wenn sie gezeichnet ist */
+  useEffect(() => { if (jump) bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }, [jump]);
 
   const total = res?.total ?? 0;
-  /* Mit gewähltem Unterthema zeigt die Liste, wie oft die übrigen Unterthemen mit ihm zusammen vorkommen (Anteil an seinen Vorgängen) */
-  const subName = sub ? res?.parts.find((p) => p.key === sub)?.name ?? "" : "";
-  const parts = restLast(res?.parts ?? []).map((p) => (sub && total ? { ...p, share: Math.round((1000 * p.count) / total) / 10 } : p));
+  const themeName = theme ? THEMES.find((t: { id: string; name: string }) => t.id === theme)?.name ?? "" : "";
+  const subName = sub ? SUBTOPICS.find((s: { id: string; name: string }) => s.id === sub)?.name ?? "" : "";
+  /* Gliederung rechts: ohne Thema die Themen, mit Thema seine Unterthemen (mit gewähltem Unterthema dieselbe Liste, das gewählte hervorgehoben) */
+  const partBy = theme ? "sub" : "theme";
+  const parts = restLast(sub && siblings ? siblings : res?.parts ?? []);
+  const firstPart = parts.find((p) => !isRest(p))?.key ?? "";
+  const openPart = part === null ? (sub || firstPart) : part;
+  /* Liste hinter einer Zeile: dieselbe Auswahl, aber ohne das gewählte Unterthema (sonst nur die Überschneidung) */
+  const partBase = `/api/x?list=1${theme ? "&theme=" + theme : ""}`;
   const allRegions = res?.regions ?? [];
   /* Ohne Auswahl ist der Anteil überall 100 %, mit nur einem Gebiet (Ort gewählt) gibt es nichts zu vergleichen */
   const rankRegions = !!(theme || sub) && allRegions.length > 1;
-  const regions = rankRegions ? allRegions.filter((r) => r.base >= MIN_BASE).sort((a, b) => (b.share ?? 0) - (a.share ?? 0)).slice(0, 15) : [];
-  const maxM = Math.max(1, ...(res?.months ?? []).map((m) => m.count));
+  const regions = rankRegions ? allRegions.filter((r) => r.base >= MIN_BASE).sort((a, b) => (b.share ?? 0) - (a.share ?? 0)) : [];
+  const [moreRegions, setMoreRegions] = useState(false);
   const month = opened("month");
   /* Monatsachse: auf dem Handy nur jeder dritte Monat beschriftet (vom jüngsten aus gezählt), sonst wäre jeder Name abgeschnitten */
   const nMonths = res?.months.length ?? 0;
   const where = allRegions.length === 1 ? `in ${allRegions[0].name}` : `in ${n(allRegions.length)} ${plural(allRegions.length, "Gebiet", "Gebieten")}`;
+  /* Antwortzeile: Auswahl, Vorgänge, Gebiete und (mit Thema) Anteil an allen Sachvorgängen derselben Gebiete */
+  const base = allRegions.reduce((s, r) => s + (r.base || 0), 0);
+  /* Name und Zahlen aus derselben Antwort: während neu gerechnet wird, passt die Zeile weiter zu den abgeblendeten Zahlen */
+  const rt = res?.selection.theme ?? "", rs = res?.selection.sub ?? "";
+  const share = (rt || rs) && base ? Math.round((1000 * total) / base) / 10 : null;
+  const what = [rt && THEMES.find((t: { id: string; name: string }) => t.id === rt)?.name, rs && SUBTOPICS.find((s: { id: string; name: string }) => s.id === rs)?.name].filter(Boolean).join(" › ");
+  const answer = `${what ? what + ": " : ""}${n(total)} ${plural(total, "Vorgang", "Vorgänge")} ${where}${share !== null ? `, ${pct(share)} aller Sachvorgänge` : ""}${res?.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}.`;
 
   return (
     <section aria-label="Auswertung des Themas">
-      <div className="mt-4 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
+      <div className="mt-3 print:hidden"><DiffusionSearch play={loading ? "loading" : "idle"} onPlay={() => !loading && run()} onSubmit={() => run()} startLabel="Auswerten" /></div>
       {error && <p role="alert" className="mt-4 text-[14px] text-slate-900">{error}</p>}
       {loading && !res && <Laden text="Auswertung wird berechnet …" />}
       {res && (
         <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"} aria-busy={loading}>
           {res.total === 0 ? <p className="mt-10 text-[16px]">Für diese Auswahl gibt es keine Vorgänge.</p> : (
             <>
-              {allRegions.length > 0 && <AtlasMap regions={allRegions} facts={SHOW_FACTS ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+              <Befund>{answer}</Befund>
 
-              <Befund>{`${n(res.total)} ${plural(res.total, "Vorgang", "Vorgänge")} ${where}${res.selection.q ? ` zur Suche „${prettyTerm(res.selection.q)}“` : ""}.`}</Befund>
-
-              {res.compare && <Reveal><OrtImVergleich c={res.compare} theme={theme} /></Reveal>}
-
-              <Reveal><section className="mt-10">
-                <h2 className="text-[22px] font-semibold">{sub ? `Überschneidungen mit „${subName}“` : theme ? "Unterthemen" : "Themen"}</h2>
-                <Hint>{sub
-                  ? `Wie viele der ${n(total)} Vorgänge zu „${subName}“ auch andere Unterthemen haben; Anteil an diesen ${n(total)} Vorgängen. Klick wählt ein anderes Unterthema.`
-                  : theme
-                    ? "Ein Vorgang kann mehrere Unterthemen haben; erkannt am Titel, sonst an Betreff und Beschlussvorschlag. Klick wählt das Unterthema."
-                    : "Vorgänge je Thema; das Thema ist dasselbe wie im Themenfilter der Suche. Klick wählt das Thema."}</Hint>
-                {theme && sub && <button type="button" onClick={() => onSub("")} className="mb-3 text-[14px] font-medium text-teal-700 hover:underline">Alle Unterthemen zeigen →</button>}
-                <Bars rows={parts} mode="select" open={sub} onOpen={(k) => (theme ? onSub(k === sub ? "" : k) : onTheme(k))}
-                  label={(r) => `${n(r.count)}${r.share !== null && theme ? ` · ${pct(r.share)}` : ""}`} />
-              </section></Reveal>
-
-              {nMonths > 1 && <Reveal><section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Im Zeitverlauf</h2>
-                <p className="mb-3 mt-1 text-[14px] text-slate-500">Vorgänge je Monat der Sitzung. Klick auf einen Monat zeigt seine Vorgänge.</p>
-                <div className="flex h-[150px] items-end gap-1.5 border-b border-slate-200">
-                  {res.months.map((m) => <button type="button" key={m.key} onClick={() => toggle(`month:${m.key}`)} aria-expanded={month === m.key} aria-label={`${monthLabel(m.key)}: ${n(m.count)} Vorgänge`}
-                    className="flex h-full min-w-0 flex-1 items-end"><span className={`block w-full rounded-t ${month === m.key ? "bg-slate-900" : "bg-teal-600"}`} style={{ height: `${(m.count / maxM) * 100}%` }} /></button>)}
+              {/* Links die Bilder (Karte, Zeitverlauf), rechts die Listen zum Anklicken; ab 1024 px nebeneinander, die linke Spalte bleibt stehen */}
+              <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-10 lg:grid-cols-12">
+                <div className="min-w-0 lg:sticky lg:top-4 lg:col-span-7 lg:self-start">
+                  {allRegions.length > 0 && <AtlasMap regions={allRegions} facts={SHOW_FACTS ? res.facts : []} listed={opened("map")} onList={(id) => toggle(`map:${id}`)} drill={(r) => drill("region", r)} />}
+                  {nMonths > 1 && <section className="mt-8">
+                    <h2 className="text-[22px] font-semibold">Im Zeitverlauf</h2>
+                    <TimeLine months={res.months} share={!!(rt || rs)} open={month} onOpen={(k) => toggle(`month:${k}`)} />
+                    {month && <div className="mt-3">{drill("month", res.months.find((m) => m.key === month)!, monthLabel(month))}</div>}
+                  </section>}
                 </div>
-                <div aria-hidden="true" className="mt-1 flex gap-1.5 text-[12px] text-slate-500">{res.months.map((m, i) => (
-                  <span key={m.key} className={`min-w-0 flex-1 text-center sm:truncate ${(nMonths - 1 - i) % 3 === 0 ? "max-sm:flex max-sm:justify-center max-sm:whitespace-nowrap" : "max-sm:invisible"}`}>{MONTH.format(parseDate(m.key + "-01"))}</span>
-                ))}</div>
-                {month && <div className="mt-3">{drill("month", res.months.find((m) => m.key === month)!, monthLabel(month))}</div>}
-              </section></Reveal>}
 
-              {SHOW_FACTS && res.facts.length > 0 && <Reveal><section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Werte aus den Unterlagen</h2>
-                <Hint>Aus den Texten der Unterlagen gelesen; gezeigt wird nur, was in Stichproben zu mindestens 90 % stimmte. Bei Beträgen und Sätzen steht der Median der Vorgänge dabei. Klick zeigt die Vorgänge mit ihrem Wert.</Hint>
-                {res.facts.map((f) => (
-                  <div key={f.kind} className="mt-6">
-                    <h3 className="mb-2 text-[16px] font-semibold">{f.name}</h3>
-                    <Bars rows={restLast(f.rows)} mode="expand" open={opened("fact:" + f.kind)} onOpen={(k) => toggle(`fact:${f.kind}:${k}`)} drill={(r) => drill("fact:" + f.kind, r)}
-                      label={(r) => { const x = r as Fact["rows"][number]; return `${n(r.count)}${f.sum ? ` · ${n(x.sum ?? 0)} ${f.sum.name}` : ""}${x.median ? ` · Median ${num(x.median.median)} ${x.median.unit}` : ""}`; }} />
+                <div className="min-w-0 lg:col-span-5">
+                  {res.compare && <OrtImVergleich c={res.compare} theme={theme} />}
+
+                  <section className={res.compare ? "mt-10" : ""}>
+                    <h2 className="text-[22px] font-semibold">{theme ? `Unterthemen von ${themeName}` : "Themen"}</h2>
+                    <p className="mb-3 mt-1 text-[14px] text-slate-500">Antippen zeigt die Vorgänge.</p>
+                    <PartList rows={parts} open={openPart} selected={theme ? sub : ""} onOpen={(k) => setPart(openPart === k ? "" : k)}
+                      label={(r) => `${n(r.count)}${r.share !== null && theme && !sub ? ` · ${pct(r.share)}` : ""}`}
+                      drill={(r) => <RadarDrill base={partBase} query={listQuery} by={partBy} value={r.key} label={r.name} limit={5}
+                        onAll={() => showAll(partBy, r.key, [themeName, r.name].filter(Boolean).join(" › "))}
+                        footer={isRest(r) ? null : <button type="button" onClick={() => (theme ? onSub(sub === r.key ? "" : r.key) : onTheme(r.key))} className="mt-2 block text-[14px] font-medium text-teal-700 hover:underline">
+                          {theme && sub === r.key ? "Eingrenzung aufheben" : `Auf „${r.name}“ eingrenzen →`}</button>} />} />
+                  </section>
+
+                  {rankRegions && <section className="mt-10">
+                    <h2 className="text-[22px] font-semibold">Wo das Thema viel Raum hat</h2>
+                    <Hint>Anteil an allen Sachvorgängen des Gebiets (gleiche Filter), nur Gebiete mit mindestens {MIN_BASE} Sachvorgängen. Klick zeigt die Vorgänge.</Hint>
+                    {regions.length ? <>
+                      <Bars rows={regions.slice(0, moreRegions ? 15 : 5)} mode="expand" open={opened("region")} onOpen={(k) => toggle(`region:${k}`)} drill={(r) => drill("region", r)} value={(r) => r.share ?? 0}
+                        label={(r) => `${pct(r.share)} · ${n(r.count)}`} />
+                      {regions.length > 5 && <button type="button" onClick={() => setMoreRegions(!moreRegions)} className="mt-2 text-[14px] font-medium text-teal-700 hover:underline">{moreRegions ? "Weniger Orte" : "Weitere Orte →"}</button>}
+                    </> : <p className="text-[14px] text-slate-500">Kein Gebiet hat genug Sachvorgänge für einen Vergleich.</p>}
+                  </section>}
+                  {!(theme || sub) && allRegions.length > 1 && <p className="mt-10 text-[14px] text-slate-500">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
+                </div>
+              </div>
+
+              <section ref={bottomRef} className="mt-14 scroll-mt-4">
+                {all ? <>
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                    <h2 className="text-[22px] font-semibold">Vorgänge: {all.label}</h2>
+                    <button type="button" onClick={() => setAll(null)} className="text-[14px] font-medium text-teal-700 hover:underline">Jüngste Vorgänge zeigen</button>
                   </div>
-                ))}
-              </section></Reveal>}
-              {!SHOW_FACTS && <p className="mt-12 text-[14px] text-slate-500">Neue Baugebiete, Windparks, Wärmeplanung und mehr mit Stand und Kennzahlen: <Link href="/analytics/signale" className="font-medium text-teal-700 hover:underline">plenara.X Signale →</Link></p>}
-              {SHOW_FACTS && res.facts.length === 0 && <Reveal><section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Werte aus den Unterlagen</h2>
-                <p className="mt-2 max-w-[760px] text-[14px] text-slate-500">{theme || sub ? "Für diese Auswahl" : "Für diese Suche"} liegen noch keine geprüften Werte vor. Gezeigt werden nur Werte aus den Unterlagen, die in Stichproben zu mindestens 90 % stimmten.</p>
-              </section></Reveal>}
-
-              {rankRegions && <Reveal><section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Wo das Thema viel Raum hat</h2>
-                <Hint>Anteil an allen Sachvorgängen des Gebiets (gleiche Filter), nur Gebiete mit mindestens {MIN_BASE} Sachvorgängen. Klick zeigt die Vorgänge.</Hint>
-                {regions.length ? <Bars rows={regions} mode="expand" open={opened("region")} onOpen={(k) => toggle(`region:${k}`)} drill={(r) => drill("region", r)} value={(r) => r.share ?? 0}
-                  label={(r) => `${pct(r.share)} · ${n(r.count)}`} /> : <p className="text-[14px] text-slate-500">Kein Gebiet hat genug Sachvorgänge für einen Vergleich.</p>}
-              </section></Reveal>}
-              {!(theme || sub) && allRegions.length > 1 && <p className="mt-12 text-[14px] text-slate-500">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
-
-              <Reveal><section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Jüngste Vorgänge</h2>
-                <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">
-                  {res.recent.map((r) => (
-                    <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
-                      <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
-                        <span className="block truncate text-[16px]">{r.title}</span>
-                        <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), r.times > 1 && `in ${r.times} Sitzungen`].filter(Boolean).join(" · ")}</span>
-                      </Link>
-                      <span className="self-center text-right text-[12px] text-slate-500">{statusLabel(r.status)}</span>
-                    </li>
-                  ))}
-                </ol>
-              </section></Reveal>
+                  <div className="mt-3"><RadarDrill base={partBase} query={listQuery} by={all.by} value={all.value} label={all.label} /></div>
+                </> : <>
+                  <h2 className="text-[22px] font-semibold">Jüngste Vorgänge</h2>
+                  <ol className="m-0 mt-3 list-none border-t border-slate-200 p-0">
+                    {res.recent.map((r) => (
+                      <li key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 border-b border-slate-200 py-3">
+                        <Link href={`/beschluss/${r.id}`} className="min-w-0 text-slate-900 no-underline hover:text-teal-800">
+                          <span className="block truncate text-[16px]">{r.title}</span>
+                          <span className="block truncate text-[12px] text-slate-500">{[r.region, day(r.date), r.times > 1 && `in ${r.times} Sitzungen`].filter(Boolean).join(" · ")}</span>
+                        </Link>
+                        <span className="self-center text-right text-[12px] text-slate-500">{statusLabel(r.status)}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </>}
+              </section>
+              {!SHOW_FACTS && <p className="mt-10 text-[14px] text-slate-500">Neue Baugebiete, Windparks, Wärmeplanung und mehr mit Stand und Kennzahlen: <Link href="/analytics/signale" className="font-medium text-teal-700 hover:underline">plenara.X Signale →</Link></p>}
 
               <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gezählt werden Vorgänge: derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Formalien, Sammelpunkte, Besetzungen und Fragestunden zählen nicht.{res.unread ? ` ${n(res.unread)} Vorgänge sind noch nicht mit ihren Unterlagen gelesen; sie zählen beim Thema, aber noch ohne Unterthema.` : ""}</p>
             </>
@@ -342,5 +367,74 @@ export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string
         </div>
       )}
     </section>
+  );
+}
+
+/** Gliederung rechts: Zeilen zum Aufklappen (Pfeil, Zahl in Petrol, Zeile reagiert); das gewählte Unterthema ist hervorgehoben */
+function PartList({ rows, open, selected, onOpen, drill, label }: { rows: Row[]; open: string; selected: string; onOpen: (key: string) => void; drill: (r: Row) => React.ReactNode; label: (r: Row) => string }) {
+  const max = Math.max(1, ...rows.map((r) => r.count));
+  return (
+    <ol className="m-0 list-none border-t border-slate-200 p-0">
+      {rows.map((r) => {
+        const rest = isRest(r), on = open === r.key, picked = selected === r.key, dim = !!selected && !picked;
+        return (
+          <li key={r.key} className="border-b border-slate-200">
+            <button type="button" onClick={() => onOpen(r.key)} aria-expanded={on}
+              className={`grid w-full grid-cols-[minmax(0,1fr)_auto_16px] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-2.5 text-left hover:bg-slate-50 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto_16px] ${dim ? "opacity-70" : ""}`}>
+              <span className={`text-[16px] leading-snug ${rest ? "text-slate-500" : ""} ${on || picked ? "font-semibold" : ""}`}>{r.name}</span>
+              <span className="order-4 col-span-3 block h-[8px] overflow-hidden rounded-full bg-slate-100 sm:order-none sm:col-span-1">
+                <span className={`block h-full rounded-full ${rest ? "bg-slate-300" : picked ? "bg-slate-900" : "bg-teal-600"}`} style={{ width: `${(r.count / max) * 100}%` }} />
+              </span>
+              <span className={`text-right text-[14px] font-semibold tabular-nums ${rest ? "text-slate-500" : "text-teal-700"}`}>{label(r)}</span>
+              <span aria-hidden="true" className={`text-center text-[14px] ${rest ? "text-slate-500" : "text-teal-700"}`}>{on ? "▾" : "›"}</span>
+            </button>
+            {on && <div className="mb-3 ml-2">{drill(r)}</div>}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/* Zeitverlauf als Linie mit heller Fläche, ein Punkt je Monat (Klick zeigt die Vorgänge). Mit Thema der Anteil an allen
+   Sachvorgängen des Monats (unabhängig davon, wie viele Räte schon erfasst sind), sonst die Anzahl. Der laufende Monat ist
+   gestrichelt, weil er noch nicht vollständig ist; darüber der letzte vollständige Monat als Satz. */
+function TimeLine({ months, share, open, onOpen }: { months: Row[]; share: boolean; open: string; onOpen: (key: string) => void }) {
+  const W = 600, H = 140, P = 8;
+  const now = new Date().toISOString().slice(0, 7);
+  const v = (m: Row) => (share ? m.share ?? 0 : m.count);
+  /* Achse vom kleinsten bis zum größten Wert (mit etwas Rand), damit der Verlauf sichtbar ist; die Zahlen stehen am Punkt */
+  const vs = months.map(v), hi = Math.max(...vs), lo0 = Math.min(...vs), pad = (hi - lo0) * 0.25 || hi * 0.1 || 1;
+  const lo = Math.max(0, lo0 - pad), top = hi + pad;
+  const pts = months.map((m, i) => ({ m, x: P + (i * (W - 2 * P)) / Math.max(1, months.length - 1), y: P + (H - 2 * P) * (1 - (v(m) - lo) / (top - lo)) }));
+  const running = pts.length > 1 && pts[pts.length - 1].m.key === now;
+  const done = running ? pts.slice(0, -1) : pts;
+  const line = (p: typeof pts) => p.map((q, i) => `${i ? "L" : "M"}${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(" ");
+  const last = done[done.length - 1]?.m;
+  const fmt = (m: Row) => (share ? `${n(m.count)} ${plural(m.count, "Vorgang", "Vorgänge")}, ${pct(m.share)} aller Sachvorgänge` : `${n(m.count)} ${plural(m.count, "Vorgang", "Vorgänge")}`);
+  return (
+    <>
+      {last && <p className="mb-2 mt-1 text-[16px]"><b className="font-semibold">{monthLabel(last.key)}:</b> {fmt(last)}</p>}
+      <div className="relative">
+        <svg viewBox={`0 0 ${W} ${H}`} className="block h-[140px] w-full" preserveAspectRatio="none" aria-hidden="true">
+          <path d={`${line(done)} L${done[done.length - 1].x},${H} L${done[0].x},${H} Z`} className="fill-teal-50" />
+          <path d={line(done)} fill="none" className="stroke-teal-700" strokeWidth="2.5" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          {running && <path d={line(pts.slice(-2))} fill="none" className="stroke-teal-700" strokeWidth="2.5" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
+        </svg>
+        {/* Punkte als Knöpfe über der Linie (rund bleiben trotz gestreckter Grafik) */}
+        {pts.map((q, i) => {
+          const on = open === q.m.key, cur = running && i === pts.length - 1;
+          return <button key={q.m.key} type="button" onClick={() => onOpen(q.m.key)} aria-expanded={on}
+            aria-label={`${monthLabel(q.m.key)}${cur ? " (laufend)" : ""}: ${fmt(q.m)}`} title={`${monthLabel(q.m.key)}: ${fmt(q.m)}`}
+            className="group absolute grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center"
+            style={{ left: `${(q.x / W) * 100}%`, top: `${(q.y / H) * 100}%` }}>
+            <span className={`block rounded-full border-2 border-teal-700 transition-transform group-hover:scale-125 ${on ? "h-3.5 w-3.5 bg-slate-900" : cur ? "h-2.5 w-2.5 bg-white" : "h-2.5 w-2.5 bg-teal-700"}`} />
+          </button>;
+        })}
+      </div>
+      <p className="mt-1 flex justify-between text-[12px] text-slate-500"><span>{MONTH.format(parseDate(months[0].key + "-01"))}</span>
+        <span>{share ? "Anteil je Monat" : "Vorgänge je Monat"}{running ? " · gestrichelt: laufender Monat" : ""} · Punkt zeigt die Vorgänge</span>
+        <span>{MONTH.format(parseDate(months[months.length - 1].key + "-01"))}</span></p>
+    </>
   );
 }

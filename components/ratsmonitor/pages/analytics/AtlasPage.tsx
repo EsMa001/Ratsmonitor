@@ -34,13 +34,12 @@ export function AtlasPage() {
   useEffect(() => { if (current !== target) router.replace(target, { scroll: false }); }, [current, target, router]);
   /* Eine Wahl ist ein Schritt im Verlauf: Zurück führt zur vorigen Auswahl */
   const pick = (next: { thema?: string; sub?: string }) => router.push(atlasHref(next), { scroll: false });
-  const name = ATLAS_THEMEN.find(([id]) => id === thema)?.[1] ?? "";
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
       <PageBand>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Atlas</p>
         <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">plenara.X Atlas</h1>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und die jüngsten Vorgänge. Thema wählen, mit Ort oder Begriff eingrenzen.</p>
+        <p className="mt-1 max-w-[680px] text-[16px] text-slate-500">Worüber die Räte beraten, nach 10 Themen. Thema wählen, mit Ort oder Begriff eingrenzen.</p>
       </PageBand>
       <nav aria-label="Thema des Atlas" className="-mx-[max(1vw,16px)] mt-2 overflow-x-auto px-[max(1vw,16px)] print:hidden">
         <ul className="m-0 flex w-max list-none gap-2 p-0">
@@ -52,8 +51,17 @@ export function AtlasPage() {
           ))}
         </ul>
       </nav>
-      {/* Ohne Auswahl keine Überschrift: „Alle Themen“ steht schon in der Themenleiste */}
-      {thema && <h2 className="mt-8 text-[22px] font-semibold">{[name, sub && SUBTOPICS.find((s: { id: string; name: string }) => s.id === sub)?.name ].filter(Boolean).join(" · ")}</h2>}
+      {/* Unterthemen des gewählten Themas: gleich hier eingrenzen (dieselbe Auswahl wie in der Liste rechts) */}
+      {thema && <nav aria-label="Unterthema" className="-mx-[max(1vw,16px)] mt-2 overflow-x-auto px-[max(1vw,16px)] print:hidden">
+        <ul className="m-0 flex w-max list-none gap-1.5 p-0 sm:w-auto sm:flex-wrap">
+          {SUBTOPICS.filter((s: { theme: string }) => s.theme === thema).map((s: { id: string; name: string }) => (
+            <li key={s.id}>
+              <button type="button" aria-pressed={s.id === sub} onClick={() => pick({ thema, sub: s.id === sub ? "" : s.id })}
+                className={`h-8 whitespace-nowrap rounded-full px-3 text-[14px] ${s.id === sub ? "bg-teal-700 text-white" : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"}`}>{s.name}{s.id === sub ? " ✕" : ""}</button>
+            </li>
+          ))}
+        </ul>
+      </nav>}
       <XAtlasView theme={thema} sub={sub} term={term} onTheme={(id) => pick({ thema: id })} onSub={(id) => pick({ thema, sub: id })} />
     </main>
   );
