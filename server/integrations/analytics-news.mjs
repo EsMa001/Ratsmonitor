@@ -1,4 +1,4 @@
-import {source,xState} from './plenara-x-query.mjs';
+import {source,xState,PLACEHOLDER} from './plenara-x-query.mjs';
 import {parseDecisions} from './analytics-decisions.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {factsReady} from './analytics-factions.mjs';
@@ -83,8 +83,6 @@ export function outcomeOf(text){
  return null;
 }
 const STATUS_OUTCOME={approved:'beschlossen',rejected:'abgelehnt',postponed:'vertagt',info:'zur Kenntnis genommen',recommended:'empfohlen'};
-// Platzhalter statt Gremium („Gremium laut Originalquelle“)
-const PLACEHOLDER=/^Gremium\b|laut Originalquelle/i;
 
 /** Nachrichtenwert ohne Bericht (Stufe 1): Status, Fakten, Stichwörter, Datum */
 function prescore(c,facts,today,week){

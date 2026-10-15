@@ -301,3 +301,7 @@ async function xCompare(db,catalog,x,params,opts={}){
 export function xCached(db,kind,params,compute){
  return atRevisionStale(db,paramsKey(kind,params),compute,{revisionSql:X_REVISION_SQL});
 }
+
+/* Platzhalter statt Gremium: nur „Gremium“ oder „Gremium laut Originalquelle“, auch mehrfach mit Komma; echte Namen wie
+ * „Gremium für Verkehrsfragen“ bleiben. Eine Regel für Themennetz, Ortsvergleich, Gremiennetz und Newsradar. */
+export const PLACEHOLDER=/^\s*gremium(?: laut originalquelle)?(?:\s*,\s*gremium(?: laut originalquelle)?)*\s*$/i;

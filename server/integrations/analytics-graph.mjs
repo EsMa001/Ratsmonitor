@@ -2,7 +2,7 @@ import {LABELS} from '../../shared/labels.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
 import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
-import {source,xState} from './plenara-x-query.mjs';
+import {source,xState,PLACEHOLDER} from './plenara-x-query.mjs';
 import {parseSteps} from './x-cases.mjs';
 import {tokens,norm,parseTerms} from './x-terms.mjs';
 export {tokens};
@@ -23,7 +23,6 @@ export const FORMAL_ALL=new Set('beschlussfähigkeit ordnungsgemäßen ordnungsg
 /* Gremien eines Vorgangs aus seinen Stationen (x_cases.steps), ohne Platzhalter, je Gremium einmal */
 const gremienOf=steps=>[...new Set(parseSteps(steps).map(e=>e.g).filter(g=>g&&!PLACEHOLDER.test(g)).map(gremiumKey))];
 const gremiumKey=g=>String(g||'').replace(/\s+/g,' ').trim();
-const PLACEHOLDER=/^Gremium\b|laut Originalquelle/i;
 const jaccard=(c,a,b)=>c/(a+b-c);
 
 /** Gleiche Filter wie die Suche; Begriff erforderlich, außer für den Gesamtgraphen (all=1) */

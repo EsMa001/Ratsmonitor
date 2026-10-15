@@ -6,7 +6,7 @@ import {AnalyticsError} from './analytics-diffusion.mjs';
 import {tokens} from './analytics-graph.mjs';
 import {parseTerms} from './x-terms.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
-import {source,xState} from './plenara-x-query.mjs';
+import {source,xState,PLACEHOLDER} from './plenara-x-query.mjs';
 import {parseSteps} from './x-cases.mjs';
 
 /*
@@ -21,7 +21,6 @@ const MIN=4,Z_MIN=3,RATIO=1.8,TERMS=12,COMMON=10,COMMITTEES=6;
 const STATUSES=['announced','consulting','recommended','approved','rejected','postponed','info','unknown'];
 const norm=t=>t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replaceAll('ß','ss');
 const nameWords=names=>new Set(names.flatMap(n=>String(n).split(/[^A-Za-zÀ-ÿ]+/)).filter(w=>w.length>=3).map(norm));
-const PLACEHOLDER=/^gremium laut originalquelle$/i;
 const gremiumKey=g=>String(g||'').replace(/\s+/g,' ').trim();
 
 export function parseCompare(params){

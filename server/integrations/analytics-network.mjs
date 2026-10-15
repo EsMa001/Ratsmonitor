@@ -1,7 +1,7 @@
 import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
-import {source,xState} from './plenara-x-query.mjs';
+import {source,xState,PLACEHOLDER} from './plenara-x-query.mjs';
 import {parseSteps} from './x-cases.mjs';
 
 /*
@@ -59,7 +59,6 @@ async function sequences(db,catalog,f){
  /* Genau ein Ort: echte Namen; sonst nach Art zusammenfassen */
  const single=!!f.area&&f.more.length===0&&!f.within&&!f.without;
  const label=g=>single?String(g).replace(/\s+/g,' ').trim():gremiumType(g);
- const PLACEHOLDER=/^gremium laut originalquelle$/i;
  const byCard=new Map();
  for(const r of results){if(!r.g||(single&&PLACEHOLDER.test(String(r.g).trim())))continue;if(!byCard.has(r.id))byCard.set(r.id,[]);byCard.get(r.id).push({g:label(r.g),d:r.d,k:r.k});}
  const seqs=new Map();
