@@ -29,19 +29,19 @@ export async function factsReady(db){
 }
 
 /* Alle Fraktionsvorgänge der Suche, wie überall in plenara.X: Auswahl über source() (Sachvorgänge in x_cases, ohne private
-   Bauanträge), Fraktion aus den Fakten aller Karten des Vorgangs (report_rules.case_key); Status und Datum des Vorgangs.
+   Bauanträge), Fraktionen des Vorgangs aus x_cases (beim Bau aus den Fakten aller seiner Karten); Status und Datum des Vorgangs.
    status: „beschlossen“ mit Empfehlung „nicht folgen“ zählt als abgelehnt */
 async function load(db,catalog,params){
  const copy=new URLSearchParams(params);for(const k of ['by','value','offset','outcome'])copy.delete(k);
  const f=parseDecisions(copy);
  if(!await factsReady(db))throw new AnalyticsError('Für diese Auswertung fehlt noch die Tabelle der Fakten (Migration 0025).',503);
  if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
- const src=await source(db,catalog,f,{noPrivate:true,facts:['faction']});
- const {results}=await db.prepare(`SELECT x.case_key ck,x.card_id id,x.region_id region,x.label label,x.status status,x.date date,fa.value party,max(fa.detail) kind,
-  EXISTS(SELECT 1 FROM report_rules ra JOIN topic_facts a ON a.topic_id=ra.topic_id AND a.kind='faction_advice' WHERE ra.case_key=x.case_key) advice
-  FROM ${src.from} JOIN report_rules rr ON rr.case_key=x.case_key JOIN topic_facts fa ON fa.topic_id=rr.topic_id AND fa.kind='faction'
-  GROUP BY x.case_key,fa.value`).bind(...src.args).all();
- return {f,raw:results.map(r=>({...r,status:r.status==='approved'&&r.advice?'rejected':r.status}))};
+ const src=await source(db,catalog,f,{noPrivate:true,factions:true});
+ const {results}=await db.prepare(`SELECT x.case_key ck,x.card_id id,x.region_id region,x.label label,x.status status,x.date date,x.factions,x.faction_advice advice
+  FROM ${src.from} WHERE x.factions<>''`).bind(...src.args).all();
+ /* Je Vorgang und Fraktion eine Zeile */
+ const rows=results.flatMap(r=>r.factions.split('\n').map(l=>{const [party,kind]=l.split('\t');return {...r,party,kind};}));
+ return {f,raw:rows.map(r=>({...r,status:r.status==='approved'&&r.advice?'rejected':r.status}))};
 }
 
 /** Liste hinter einer Zahl: by=party&value=Fraktion, optional outcome=approved|rejected|postponed|decided|antrag|anfrage */
