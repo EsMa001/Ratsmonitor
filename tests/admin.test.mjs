@@ -183,7 +183,7 @@ test('CSV export neutralizes spreadsheet formulas and escapes delimiters and quo
 });
 
 const uri=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
-// Der alte Weg (Kopfzeilen, ChatGPT) gilt nur mit ADMIN_LEGACY_HEADER=1; Konten prüft tests/accounts-admin.test.mjs.
+// Der alte Weg (Kopfzeilen, ChatGPT) gilt nur mit ADMIN_LEGACY_HEADER=1; Konten prüft tests/accounts-login.test.mjs und tests/accounts-totp.test.mjs.
 globalThis.adminFixture={user:null,env:{DB:db,ADMIN_SETUP_HASH:hash,ADMIN_LEGACY_HEADER:'1'},reads:0,syncs:0,analyses:0,prepared:0};
 const stubs={
  '@/server/integrations/pipeline-jobs.mjs':'export async function pipelineAction(){globalThis.adminFixture.syncs++;return {status:"queued"};}',

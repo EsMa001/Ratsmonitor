@@ -1160,6 +1160,7 @@ Die Inhaltsdatei und der Importprozess werden in keinem Schritt angefasst.
 | Risiko | Folge | Gegenmittel |
 |---|---|---|
 | Eigene Fehler im Anmeldecode | Kontoübernahme | kleiner Umfang, Test je Regel, ASVS und `/security-review`, Kriterien für einen externen Dienst |
+| Fremde verbrauchen das Tageskontingent einer Adresse (30 Links, ab 3 Absendern) | Person bekommt bis morgen keinen neuen Link | akzeptiert: jede fremde Anforderung liefert ihr selbst einen gültigen Link ins eigene Postfach; Grenze je Absender 10 am Tag |
 | Raten des Codes | Kontoübernahme | 8 Stellen, ein offenes Token je Adresse, 5 Versuche je Flow, 10 je Adresse und Tag, atomares Zählen |
 | Kontenaufzählung | gezielter Missbrauch | gleiche Antworten und gleiche synchrone Arbeit, Zählung für alle Adressarten |
 | Offene Weiterleitung über `next` | Phishing | neues `safeNext` mit Prüfung nach der Normalisierung, Präfixliste, Tests |

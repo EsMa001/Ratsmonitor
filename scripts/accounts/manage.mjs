@@ -195,6 +195,7 @@ switch(command){
   // Per Kommandozeile gilt der Schlüssel sofort als bestätigt: die Person tippt ihn in die App und prüft den ersten Code in /admin
   sql.prepare('INSERT INTO user_totp(user_id,secret,created_at,confirmed_at,last_step) VALUES(?,?,?,?,0) ON CONFLICT(user_id) DO UPDATE SET secret=excluded.secret,created_at=excluded.created_at,confirmed_at=excluded.confirmed_at,last_step=0')
    .run(user.id,await sealSecret(cfg.secret,base32),iso(now),iso(now));
+  await db.batch(revokeAllStatements(db,{userId:user.id,email:user.email}));
   await audit(user.id,'totp_setup',{});
   // Nur aufs Terminal: nicht in Protokolle oder Chats kopieren
   process.stdout.write(`Schlüssel (in der Authenticator-App „manuell eingeben“): ${base32.match(/.{1,4}/g).join(' ')}\n${otpauthUri(base32,user.email)}\n`);

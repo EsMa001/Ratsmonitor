@@ -6,7 +6,10 @@ import {currentSession,accountState,isAdminHost} from './login.mjs';
 import {eventStatement} from './sessions.mjs';
 import {limited} from './rate-limit.mjs';
 import {newSecret,base32Encode,otpauthUri,sealSecret,openSecret,matchStep} from './totp.mjs';
-import {validTier} from '../../shared/plans.mjs';
+import {validTier,rank} from '../../shared/plans.mjs';
+import {warnOperator} from './mail.mjs';
+/** Fehlversuche je Konto und Tag, danach nur noch Zurücksetzen per Kommandozeile (übersteht Neustarts) */
+export const TOTP_DAILY_FAILS=20;
 
 const iso=ms=>new Date(ms).toISOString();
 const cleanCode=code=>String(code??'').replace(/[\s-]/g,'');
@@ -27,6 +30,11 @@ export async function totpVerify(ctx){
  if(!state.totpConfirmed)throw new AccountError(409,'Der zweite Faktor ist noch nicht eingerichtet.');
  const {db,now,cfg}=ctx;
  if(limited('totp',session.user_id,{max:5,windowMs:15*60000,now}))throw new AccountError(429,'Zu viele Versuche. Bitte in 15 Minuten erneut.');
+ const fails=await db.prepare("SELECT count(*) n FROM auth_events WHERE user_id=? AND kind='totp_failed' AND at>?").bind(session.user_id,iso(now-86400000)).first();
+ if(Number(fails?.n||0)>=TOTP_DAILY_FAILS){
+  await warnOperator(db,cfg,`Der zweite Faktor eines Admin-Kontos (${session.user_id}) ist nach ${TOTP_DAILY_FAILS} Fehlversuchen gesperrt. Falls unerwartet: Sitzungen beenden (ratsmonitor-accounts revoke) und Postfach prüfen.`,now);
+  throw new AccountError(429,'Zu viele Fehlversuche heute. Die Administration über die öffentliche Adresse ist bis morgen gesperrt; über den Tunnel geht sie weiter.');
+ }
  const {code}=await readJson(ctx.request,256);
  const row=await db.prepare('SELECT secret,last_step FROM user_totp WHERE user_id=? AND confirmed_at IS NOT NULL').bind(session.user_id).first();
  const step=row?await matchStep(await openSecret(cfg.secret,row.secret),cleanCode(code),{now,lastStep:row.last_step}):null;
@@ -71,9 +79,10 @@ export async function totpSetup(ctx){
 
 /** Admins: Seite mit den Rechten einer Stufe ansehen (null = eigene Stufe). Nur diese Sitzung. */
 export async function viewTier(ctx){
- const {session}=await adminSession(ctx);
+ const {session,state}=await adminSession(ctx);
  const {tier}=await readJson(ctx.request,256);
  if(tier!==null&&!validTier(tier))throw new AccountError(400,'Unbekannte Stufe.');
+ if(tier!==null&&!state.adminHere&&rank(tier)>rank(state.realTier.tier))throw new AccountError(403,'Höhere Stufen erst nach dem zweiten Faktor (/admin).');
  await ctx.db.prepare('UPDATE sessions SET view_tier=? WHERE id=?').bind(tier,session.id).run();
  return {response:respond({ok:true,viewTier:tier})};
 }

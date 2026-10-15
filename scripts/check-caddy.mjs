@@ -27,6 +27,7 @@ export function checkCaddy(text){
   if(loopback)continue;
   if(/header_up\s+Oai-Authenticated/i.test(body))problems.push(`${b.head}: setzt die Admin-Kennung, ist aber von außen erreichbar`);
   if(!/^import\s+public_site$/m.test(b.body))problems.push(`${b.head}: importiert public_site nicht`);
+  if(b.head.split(',').some(a=>a.trim().startsWith('http://')))problems.push(`${b.head}: öffentliche Site ohne https`);
  }
  return problems;
 }

@@ -2,8 +2,7 @@
 // Seiten auf /anmelden um, /api/* antwortet 401. Frei bleiben Anmeldung, Rechtstexte, interne Aufrufe (Bearer) und
 // Kalender-Abos (Token). Ohne Einladungsmodus (open) und im Dev-Server lässt die Sperre alles durch.
 import {accountsConfig} from './config.mjs';
-import {context,currentSession} from './login.mjs';
-import {rolesOf} from './sessions.mjs';
+import {context,currentSession,accountState} from './login.mjs';
 import {validBearer} from '../integrations/prepared-access.mjs';
 
 const FREE=[/^\/anmelden(\/|$)/,/^\/registrieren$/,/^\/api\/auth\//,/^\/api\/me$/,/^\/(impressum|datenschutz|agb|widerruf|kontakt)$/,
@@ -34,8 +33,9 @@ export async function auditAdmin(request,env,{cfg=accountsConfig(env),now=Date.n
  const url=new URL(request.url);
  if(!url.pathname.startsWith('/api/admin/')||['GET','HEAD','OPTIONS'].includes(request.method)||cfg.dev||!cfg.db||!cfg.secret)return false;
  try{
-  const session=await currentSession(context(request,env,{cfg,now}));
-  const user=session?((await rolesOf(cfg.db,session.user_id)).includes('admin')?session.user_id:null):(cfg.legacyHeader?'legacy':null);
+  const ctx=context(request,env,{cfg,now});
+  const session=await currentSession(ctx);
+  const user=session?((await accountState(ctx,session)).adminHere?session.user_id:null):(cfg.legacyHeader?'legacy':null);
   if(!user)return false;
   const at=new Date(now).toISOString(),hour=at.slice(0,13);
   await cfg.db.prepare(`INSERT INTO admin_audit(at,user_id,method,path,action,hour,count) VALUES(?,?,?,?,?,?,1)

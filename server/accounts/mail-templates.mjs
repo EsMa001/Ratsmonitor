@@ -80,6 +80,11 @@ const T={
   text:`Ihr Testzugang ${tier} bei Plenara endet am ${String(until).slice(0,10)}. Danach bleibt Ihr Konto bestehen, mit den Rechten ohne Stufe. Konto: ${site}/konto/profil`,
   html:page('Testzugang',[p(`Ihr Testzugang ${tier} bei Plenara endet am ${String(until).slice(0,10)}.`),p('Danach bleibt Ihr Konto bestehen, mit den Rechten ohne Stufe. Sie können es jederzeit löschen.'),button(site+'/konto/profil','Zum Konto')]),
  }),
+ inactive:(_d,{site})=>({
+  subject:'Ihr Plenara-Konto wird bald gelöscht',
+  text:`Ihr Plenara-Konto wurde seit zwei Jahren nicht genutzt. Melden Sie sich in den nächsten 30 Tagen unter ${site}/anmelden an, wenn Sie es behalten möchten; sonst löschen wir es mit allen gespeicherten Daten.`,
+  html:page('Konto nicht genutzt',[p('Ihr Plenara-Konto wurde seit zwei Jahren nicht genutzt.'),p('Melden Sie sich in den nächsten 30 Tagen an, wenn Sie es behalten möchten; sonst löschen wir es mit allen gespeicherten Daten.'),button(site+'/anmelden','Anmelden')]),
+ }),
  operator:({message})=>({
   subject:'Plenara: Hinweis aus dem Kontobetrieb',
   text:String(message||''),

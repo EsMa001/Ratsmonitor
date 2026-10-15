@@ -53,7 +53,7 @@ export async function maintain(db,cfg,{now=Date.now(),dryRun=false,log=console.l
    AND NOT EXISTS (SELECT 1 FROM user_roles r WHERE r.user_id=u.id AND r.role='admin')`).bind(iso(now-RETENTION.inactive)).all()).results||[];
  report.inactiveNotices=0;report.inactiveDeleted=0;
  if(!dryRun)for(const u of stale){
-  if(!u.inactive_notice_at){await sendMail(db,cfg,{to:u.email,template:'operator',data:{message:`Ihr Plenara-Konto wurde seit zwei Jahren nicht genutzt. Melden Sie sich in den nächsten 30 Tagen unter ${site}/anmelden an, wenn Sie es behalten möchten; sonst löschen wir es.`},userId:u.id,quota:'account',now});await db.prepare('UPDATE users SET inactive_notice_at=? WHERE id=?').bind(iso(now),u.id).run();report.inactiveNotices++;}
+  if(!u.inactive_notice_at){await sendMail(db,cfg,{to:u.email,template:'inactive',userId:u.id,quota:'account',now});await db.prepare('UPDATE users SET inactive_notice_at=? WHERE id=?').bind(iso(now),u.id).run();report.inactiveNotices++;}
   else if(u.inactive_notice_at<iso(now-RETENTION.inactiveGrace)){await removeUser({db,cfg,now,request:null},{userId:u.id,email:u.email,notify:false});report.inactiveDeleted++;}
  }
  // Wieder angemeldet: Hinweis zurücksetzen

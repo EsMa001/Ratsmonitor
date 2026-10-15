@@ -95,3 +95,18 @@ test('Ansehen als Stufe: Admin sieht und bekommt die Rechte der gewählten Stufe
  await login(h,'user@example.org');
  assert.equal((await h.call(viewTier,{body:{tier:'enterprise'}})).status,403);
 });
+
+test('Ohne zweiten Faktor (öffentliche Adresse) kein Ansehen als höhere Stufe; Sperre nach 20 Fehlversuchen am Tag',async()=>{
+ const h=setup();const id=h.addUser('max@example.org',{tier:'basic',admin:true});
+ await login(h,'max@example.org',TUNNEL);
+ const secret=(await h.call(totpSetup,{body:{},...TUNNEL})).body.secret.replace(/\s/g,'');
+ await h.call(totpSetup,{body:{code:await codeAt(secret,h.now())},...TUNNEL});
+ await login(h,'max@example.org');
+ assert.equal((await h.call(viewTier,{body:{tier:'enterprise'}})).status,403);
+ assert.equal((await h.call(viewTier,{body:{tier:'guest'}})).status,200,'niedrigere Stufe geht');
+ h.accounts.sql.prepare('UPDATE sessions SET view_tier=? WHERE user_id=?').run('enterprise',id);
+ assert.equal((await h.call(me,{method:'GET'})).body.tier,'basic','höhere Ansicht ohne Freigabe wirkt nicht');
+ for(let i=0;i<20;i++)h.accounts.sql.prepare("INSERT INTO auth_events(at,user_id,kind) VALUES(?,?,'totp_failed')").run(new Date(h.now()).toISOString(),id);
+ const r=await h.call(totpVerify,{body:{code:await codeAt(secret,h.now(),1)}});
+ assert.equal(r.status,429);assert.match(r.body.error,/bis morgen/);
+});

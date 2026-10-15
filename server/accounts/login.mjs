@@ -9,7 +9,7 @@ import {createSession,readSession,refreshSession,renewDue,effectiveTier,rolesOf,
 import {sendMail,processOutbox} from './mail.mjs';
 import {safeNext} from '../../shared/safe-next.mjs';
 import {AGB_VERSION,PRIVACY_VERSION} from '../../shared/legal-versions.mjs';
-import {FEATURES,limitsJson,validTier} from '../../shared/plans.mjs';
+import {FEATURES,limitsJson,validTier,rank} from '../../shared/plans.mjs';
 
 export const TOKEN_MS=15*60000,FLOW_MS=15*60000;
 const DAY=86400000;
@@ -252,7 +252,6 @@ export async function accountState(ctx,session){
  const realTier=await effectiveTier(ctx.db,session.user_id,{now:ctx.now});
  const roles=await rolesOf(ctx.db,session.user_id);
  const isAdmin=roles.includes('admin');
- const tier=isAdmin&&validTier(session.view_tier)?{tier:session.view_tier,until:null,source:'preview'}:realTier;
  let admin='none',totpConfirmed=false;
  if(isAdmin){
   totpConfirmed=!!(await ctx.db.prepare('SELECT confirmed_at FROM user_totp WHERE user_id=?').bind(session.user_id).first())?.confirmed_at;
@@ -261,6 +260,9 @@ export async function accountState(ctx,session){
   else if(!totpConfirmed)admin='setup';
   else admin=session.admin_verified_at&&Date.parse(session.admin_verified_at)>ctx.now-ADMIN_TOTP_MS?'ok':'totp';
  }
+ // Ansehen als: höhere Stufen als die eigene nur mit voller Admin-Freigabe (Rolle, frisch, Tunnel oder zweiter Faktor)
+ const preview=isAdmin&&validTier(session.view_tier)&&(admin==='ok'||rank(session.view_tier)<=rank(realTier.tier));
+ const tier=preview?{tier:session.view_tier,until:null,source:'preview'}:realTier;
  return {tier,realTier,roles,admin,adminHere:admin==='ok',totpConfirmed,adminHost:isAdminHost(ctx)};
 }
 /** Absenderadresse aus MAIL_FROM („Name <adresse>“), für den Hinweis auf der Anmeldeseite */

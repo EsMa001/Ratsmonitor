@@ -157,10 +157,17 @@ test('Admin-Protokoll: ändernde Admin-Aufrufe je Konto, Pfad und Stunde gezähl
  await auditAdmin(new Request('https://plenara.test/api/admin/x',{method:'POST',headers:{cookie:userCookie}}),h.env,{cfg:h.cfg,now:h.now()});
  h.jar.clear();
  const id=await signedIn(h,'admin@example.org',{tier:'pro',admin:true});
- const cookie='__Host-rm_session='+h.jar.get('__Host-rm_session');
- const post=path=>new Request('https://plenara.test'+path,{method:'POST',headers:{cookie}});
+ /* Über die öffentliche Adresse ohne zweiten Faktor: abgewiesen, nicht protokolliert */
+ const publicCookie='__Host-rm_session='+h.jar.get('__Host-rm_session');
+ await auditAdmin(new Request('https://plenara.test/api/admin/x',{method:'POST',headers:{cookie:publicCookie}}),h.env,{cfg:h.cfg,now:h.now()});
+ /* Über den Tunnel freigegeben: protokolliert */
+ h.jar.clear();
+ await h.call(requestLink,{body:{email:'admin@example.org'},proto:'http',host:'127.0.0.1:8080',ip:'198.51.100.5'});
+ await h.call(enterCode,{body:{code:h.lastMail('admin@example.org').code},proto:'http',host:'127.0.0.1:8080',ip:'198.51.100.5'});
+ const cookie='rm_session='+h.jar.get('rm_session');
+ const post=path=>new Request('http://127.0.0.1:8080'+path,{method:'POST',headers:{cookie}});
  for(let i=0;i<3;i++)await auditAdmin(post('/api/admin/refresh'),h.env,{cfg:h.cfg,now:h.now()});
- await auditAdmin(new Request('https://plenara.test/api/admin/summary',{headers:{cookie}}),h.env,{cfg:h.cfg,now:h.now()});
+ await auditAdmin(new Request('http://127.0.0.1:8080/api/admin/summary',{headers:{cookie}}),h.env,{cfg:h.cfg,now:h.now()});
  await auditAdmin(post('/api/search'),h.env,{cfg:h.cfg,now:h.now()});
  const rows=h.accounts.sql.prepare('SELECT user_id,path,method,count FROM admin_audit').all();
  assert.deepEqual(rows.map(r=>[r.user_id,r.path,r.method,r.count]),[[id,'/api/admin/refresh','POST',3]]);

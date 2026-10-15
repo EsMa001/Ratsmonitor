@@ -2,16 +2,17 @@
 # Kontenverwaltung auf dem Server (scripts/accounts/manage.mjs) mit den richtigen Rechten und Einstellungen.
 # Installieren: install -m 755 deploy/node/ratsmonitor-accounts /usr/local/bin/ratsmonitor-accounts
 # Beispiel (Adresse über die Eingabe, nicht als Argument): ratsmonitor-accounts invite --email-stdin --note "Gespräch 14.10."
-# Die Einstellungsdateien werden gelesen, nie als Shell ausgeführt (root ruft dieses Skript auf).
+# Die Einstellungsdateien werden gelesen, nie als Shell ausgeführt (root ruft dieses Skript auf). Geheimnisse gehen nur
+# über die Umgebung an das Skript, nie über die Befehlszeile (sonst stünden sie im sudo-Protokoll und in ps).
 set -euo pipefail
 KEYS="ACCOUNTS_FILE ACCOUNTS_SECRET SITE_URL MAIL_TRANSPORT MAIL_API_URL MAIL_API_KEY MAIL_FROM MAIL_REPLY_TO OPERATOR_EMAIL RM_ACCESS"
-ENVS=()
 for file in /srv/ratsmonitor/ratsmonitor.env /etc/ratsmonitor/accounts.env; do
   [ -f "$file" ] || continue
   for key in $KEYS; do
     value="$(sed -n "s/^$key=//p" "$file" | tail -1 | sed 's/^"\(.*\)"$/\1/')"
-    [ -n "$value" ] && ENVS+=("$key=$value")
+    if [ -n "$value" ]; then export "$key=$value"; fi
   done
 done
 cd /srv/ratsmonitor/app/current
-exec sudo -u ratsmonitor env "${ENVS[@]}" node --no-warnings scripts/accounts/manage.mjs "$@"
+# runuser (nur für root) behält die Umgebung und protokolliert keine Befehlszeile
+exec runuser -u ratsmonitor -- node --no-warnings scripts/accounts/manage.mjs "$@"

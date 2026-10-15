@@ -6,10 +6,11 @@ import { PageHead } from "./blocks";
 import { IS_DEV } from "../lib/tier";
 import { AccountApiError, accountChanged, api, devLogin, logout, useMe } from "../lib/account";
 import { postponeImport } from "../lib/browserData";
+import { safeNext } from "@/shared/safe-next.mjs";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-/** Ziel nach der Anmeldung (?weiter=): nur eigene Pfade; der Server prüft es noch einmal (safeNext) */
-const nextOf = (v: string | null) => (v && v.startsWith("/") && !v.startsWith("//") ? v : "/");
+/** Ziel nach der Anmeldung: dieselbe Prüfung wie auf dem Server (nach der Normalisierung, nur bekannte Pfade) */
+const nextOf = (v: string | null | undefined) => safeNext(v ?? "/");
 
 function Field({
   id,

@@ -82,6 +82,8 @@ function checkAccounts() {
   } finally { db?.close(); }
   if (access === 'invite' && (!process.env.ACCOUNTS_SECRET || process.env.ACCOUNTS_SECRET.length < 32)) return 'RM_ACCESS=invite braucht ACCOUNTS_SECRET (mindestens 32 Zeichen).';
   if (access === 'invite' && !process.env.SITE_URL) return 'RM_ACCESS=invite braucht SITE_URL (Links in Mails).';
+  // Hinter Caddy kommt https nur über X-Forwarded-Proto an; ohne Vertrauen setzten die Routen Cookies ohne Secure
+  if (String(process.env.SITE_URL || '').startsWith('https:') && process.env.VINEXT_TRUST_PROXY !== '1') return 'SITE_URL ist https, aber VINEXT_TRUST_PROXY ist nicht 1 (Caddy davor).';
   return null;
 }
 // Kontotabellen gehören nicht in die Inhaltsdatei (Entwicklerkopien, Export); nur warnen

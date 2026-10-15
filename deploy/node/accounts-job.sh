@@ -3,5 +3,8 @@
 # verschlüsselte Sicherung der Kontendatei (deploy/node/accounts-backup.sh). Ohne ACCOUNTS_FILE nichts zu tun.
 set -euo pipefail
 [ -n "${ACCOUNTS_FILE:-}" ] || { echo "$(date -Is) keine Kontendatei eingerichtet"; exit 0; }
-node --no-warnings scripts/accounts/maintenance.mjs
+# Die Sicherung läuft auch, wenn die Pflege scheitert; der Job meldet den Fehler danach
+status=0
+node --no-warnings scripts/accounts/maintenance.mjs || status=$?
 bash deploy/node/accounts-backup.sh
+exit "$status"
