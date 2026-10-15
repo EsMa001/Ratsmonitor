@@ -106,6 +106,9 @@ export async function source(db,catalog,f){
  const {results}=await db.prepare(`SELECT DISTINCT coalesce(r.case_key,c.region_id||'|'||lower(c.title)) k FROM (SELECT id,region_id,title FROM search_cards WHERE ${page.where}) c LEFT JOIN report_rules r ON r.topic_id=c.id`).bind(...page.args).all();
  return {from:'(SELECT rowid rid,* FROM x_cases WHERE case_key IN (SELECT value FROM json_each(?))) x',args:[JSON.stringify(results.map(r=>r.k))]};
 }
+/** Erste Sitzung eines Vorgangs (x_cases speichert die letzte): früheste Karte desselben Vorgangs, sonst die Karte selbst.
+    Für Auswertungen über den ersten Auftritt (Ausbreitung); nur im Ausdruck über x (Zeile aus source()). */
+export const FIRST_DATE=`coalesce((SELECT min(c1.date) FROM report_rules r1 JOIN search_cards c1 ON c1.id=r1.topic_id WHERE r1.case_key=x.case_key AND c1.date<>''),x.date)`;
 function selection(x){
  const where=['1'],args=[];
  if(x.theme){where.push('x.label=?');args.push(x.theme);}

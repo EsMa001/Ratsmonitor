@@ -1,8 +1,10 @@
 import {LABELS} from '../../shared/labels.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
-import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
+import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
-import {sqlList,offsetOf} from './analytics-lists.mjs';
+import {offsetOf,LIST_SIZE} from './analytics-lists.mjs';
+import {where as placeOf} from './member-place.mjs';
+import {source,xState} from './plenara-x-query.mjs';
 import {atRevisionStale,paramsKey} from './revision-cache.mjs';
 
 /*
@@ -11,7 +13,8 @@ import {atRevisionStale,paramsKey} from './revision-cache.mjs';
  * Aus einer gleichmäßigen Stichprobe beschlossener Vorgänge (Stationen in topics.payload): Abstimmungsverhalten (einstimmig oder
  * mehrheitlich), Änderungen am Beschlussvorschlag und Durchlaufzeit. Die Beschlussquote ist der Anteil „beschlossen“ an allen
  * Vorgängen mit Entscheidung (beschlossen, abgelehnt, vertagt). Die meisten Einträge haben keinen bekannten Status; das wird mit ausgewiesen.
- * Gezählt werden Vorgänge: derselbe Titel je Gebiet in mehreren Sitzungen desselben Status einmal. Ausschüsse empfehlen meist nur,
+ * Gezählt werden Vorgänge wie überall in plenara.X: Auswahl über die Suche (source), Vorgänge aus x_cases (ohne Formalien);
+ * ausgewertet werden alle Karten eines Vorgangs (Ausschuss und Rat), je Vorgang und Status einmal (cardsOf). Ausschüsse empfehlen meist nur,
  * deshalb keine Beschlussquote für sie. Je Themenfeld und Land steht dabei, ob die Quote vom Gesamtwert deutlich abweicht
  * (Wilson-Spanne 95 % schließt ihn aus); sonst gilt sie als üblich.
  */
@@ -48,12 +51,18 @@ export async function decisions(db,catalog,params){
  const f=parseDecisions(params);
  return atRevisionStale(db,paramsKey('decisions',params),()=>computeDecisions(db,catalog,f));
 }
+/* Karten der ausgewählten Vorgänge (alle Sitzungen bis zur letzten; ungelesene Vorgänge nur mit ihrer Karte) als CTE „cards“ */
+async function cardsOf(db,catalog,f){
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f),cols='x.case_key ck,c.id,c.date,c.label,c.status,c.gremium,c.region_id,c.title';
+ return {sql:`WITH cards AS MATERIALIZED (SELECT ${cols} FROM ${src.from} JOIN report_rules r ON r.case_key=x.case_key JOIN search_cards c ON c.id=r.topic_id WHERE c.date<>'' AND c.date<=x.date
+  UNION ALL SELECT ${cols} FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE x.unread=1)`,args:[...src.args,...src.args]};
+}
 async function computeDecisions(db,catalog,f){
- const {page}=await searchFilters(db,catalog,f);
- const where=page.where+" AND date<>''";
+ const C=await cardsOf(db,catalog,f);
  /* Eine Abfrage für Stand, Monat, Themenfeld und Gremienebene */
- const {results:cube}=await db.prepare(`SELECT substr(date,1,7) m,label,${KIND_SQL} kind,status,count(DISTINCT region_id||'|'||lower(title)) n FROM search_cards WHERE ${where} GROUP BY 1,2,3,4`).bind(...page.args).all();
- const {results:perRegion}=await db.prepare(`SELECT region_id,status,count(DISTINCT lower(title)) n FROM search_cards WHERE ${where} AND status IN ('approved','rejected','postponed') GROUP BY 1,2`).bind(...page.args).all();
+ const {results:cube}=await db.prepare(`${C.sql} SELECT substr(date,1,7) m,label,${KIND_SQL} kind,status,count(DISTINCT ck) n FROM cards GROUP BY 1,2,3,4`).bind(...C.args).all();
+ const {results:perRegion}=await db.prepare(`${C.sql} SELECT region_id,status,count(DISTINCT ck) n FROM cards WHERE status IN ('approved','rejected','postponed') GROUP BY 1,2`).bind(...C.args).all();
  const status=blank(),months=new Map(),topics=new Map(),kinds=new Map();
  for(const r of cube){
   status[r.status]=(status[r.status]||0)+r.n;
@@ -74,9 +83,9 @@ async function computeDecisions(db,catalog,f){
  const byId=new Map(catalog.map(r=>[r.id,r])),lands=new Map();
  for(const r of perRegion){const reg=byId.get(r.region_id);if(!reg)continue;const id=reg.ags.slice(0,2);if(!lands.has(id))lands.set(id,blank());lands.get(id)[r.status]+=r.n;}
  /* Stichprobe beschlossener Vorgänge: Stationen aus topics.payload (nur die nötigen Felder) */
- const decidedCount=(await db.prepare(`SELECT count(*) n FROM search_cards WHERE ${where} AND status IN ('approved','rejected','postponed')`).bind(...page.args).first())?.n||0;
+ const decidedCount=(await db.prepare(`${C.sql} SELECT count(*) n FROM cards WHERE status IN ('approved','rejected','postponed')`).bind(...C.args).first())?.n||0;
  const k=Math.max(1,Math.ceil(decidedCount/SAMPLE));
- const {results:events}=decidedCount?await db.prepare(`SELECT c.id id,c.label label,c.kind kind,c.status final,json_extract(e.value,'$.status') st,json_extract(e.value,'$.result') res,substr(json_extract(e.value,'$.date'),1,10) d FROM (SELECT id,label,status,${KIND_SQL} kind FROM search_cards WHERE ${where} AND status IN ('approved','rejected','postponed')${k>1?' AND rowid % ? = 0':''}) c JOIN topics t ON t.id=c.id, json_each(t.payload,'$.events') e`).bind(...page.args,...(k>1?[k]:[])).all():{results:[]};
+ const {results:events}=decidedCount?await db.prepare(`${C.sql} SELECT c.id id,c.label label,c.kind kind,c.status final,json_extract(e.value,'$.status') st,json_extract(e.value,'$.result') res,substr(json_extract(e.value,'$.date'),1,10) d FROM (SELECT id,label,status,kind FROM (SELECT id,label,status,${KIND_SQL} kind,row_number() OVER (ORDER BY id) rn FROM cards WHERE status IN ('approved','rejected','postponed'))${k>1?' WHERE rn % ? = 0':''}) c JOIN topics t ON t.id=c.id, json_each(t.payload,'$.events') e`).bind(...C.args,...(k>1?[k]:[])).all():{results:[]};
  const cards=new Map();
  for(const e of events){if(!cards.has(e.id))cards.set(e.id,{label:e.label,kind:e.kind,final:e.final,ev:[]});cards.get(e.id).ev.push(e);}
  const tally=()=>({n:0,vote:0,unanimous:0,change:0,changed:0});
@@ -123,9 +132,16 @@ export async function decisionList(db,catalog,params){
  if(!['label','kind','land'].includes(by)||!value||outcome&&!DECIDED.includes(outcome))throw new AnalyticsError('Unbekannte Liste.',400);
  const copy=new URLSearchParams(params);for(const k of ['by','value','offset','outcome'])copy.delete(k);
  const f=parseDecisions(copy);
- const {page}=await searchFilters(db,catalog,f);
+ const C=await cardsOf(db,catalog,f),offset=offsetOf(params);
  const ids=by==='land'?catalog.filter(r=>r.ags?.startsWith(value)).map(r=>r.id):[];
  const cond={label:'label=?',kind:`${KIND_SQL}=?`,land:`region_id IN (SELECT value FROM json_each(?))`}[by];
- return sqlList(db,catalog,`${page.where} AND date<>'' AND status IN (${(outcome?[outcome]:DECIDED).map(()=>'?').join(',')}) AND ${cond}`,
-  [...page.args,...(outcome?[outcome]:DECIDED),by==='land'?JSON.stringify(ids):value],offsetOf(params));
+ const sts=outcome?[outcome]:DECIDED,w=`status IN (${sts.map(()=>'?').join(',')}) AND ${cond}`,wa=[...sts,by==='land'?JSON.stringify(ids):value];
+ // Je Vorgang eine Zeile (jüngste passende Karte), wie die Zahl
+ const [{results},count]=await Promise.all([
+  db.prepare(`${C.sql} SELECT id,region_id region,title,gremium,max(date) date,status,count(*) times FROM cards WHERE ${w} GROUP BY ck ORDER BY date DESC LIMIT ? OFFSET ?`).bind(...C.args,...wa,LIST_SIZE,offset).all(),
+  db.prepare(`${C.sql} SELECT count(DISTINCT ck) n FROM cards WHERE ${w}`).bind(...C.args,...wa).first(),
+ ]);
+ const byId=new Map(catalog.map(r=>[r.id,r])),name=r=>byId.get(r)?.name||r;
+ return {offset,size:LIST_SIZE,total:Number(count?.n||0),
+  items:results.map(r=>({id:r.id,title:r.title,region:placeOf(name(r.region),r.title,r.gremium,byId.get(r.region)?.members).label,date:String(r.date).slice(0,10),status:r.status,times:r.times}))};
 }

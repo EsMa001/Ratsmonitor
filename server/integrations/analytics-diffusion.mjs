@@ -1,13 +1,14 @@
 import {ALL_LANDS} from '../../shared/lands.mjs';
-import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
+import {parseMonitorSearch} from './monitor-search.mjs';
 import {atRevision} from './revision-cache.mjs';
 import {where} from './member-place.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
+import {source,xState,FIRST_DATE} from './plenara-x-query.mjs';
 
 /*
  * Plenara.X – Ausbreitung: Wie breitet sich ein Thema über die Gebiete aus?
- * Grundlage ist allein die Datenbank (search_cards), nichts ist vorberechnet: Je Gebiet zählt das Datum der ersten Karte,
- * die den Begriff enthält. Änderungen am Datenbestand wirken so bei der nächsten Abfrage.
+ * Wie überall in plenara.X: Auswahl über die Suche (source), gezählt werden Vorgänge (x_cases, ohne Formalien, gleiche Titel je
+ * Gebiet einmal). Je Gebiet zählt die erste Sitzung des frühesten Vorgangs mit dem Begriff (FIRST_DATE).
  * Gemeindeverbände (Amt, Samtgemeinde, Verbandsgemeinde): Ein Bericht gehört zu der Mitgliedsgemeinde, deren Rat berät oder die
  * der Titel nennt (where() wie in den Radaren); sonst zählt der Verband als ein Gebiet (auf der Karte bei allen Mitgliedern).
  * Je Gebiet steht dabei, wann sein Bestand beginnt: Ein Thema, das in den ersten 14 Tagen des Bestands schon da ist, war
@@ -44,14 +45,15 @@ const quantile=(sorted,p)=>sorted.length?sorted[Math.min(sorted.length-1,Math.fl
 export async function diffusion(db,catalog,params){
  const f=parseDiffusion(params);
  const byId=new Map(catalog.filter(r=>r.kind==='city').map(r=>[r.id,r]));
- /* Filter und Begriff wie in der Suche: dieselben Karten, danach je Gebiet das früheste Datum */
- const {page}=await searchFilters(db,catalog,f);
+ /* Auswahl wie in der Suche, gezählt je Vorgang; danach je Gebiet die früheste erste Sitzung */
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f);
  const unions=[...byId.values()].filter(r=>r.members?.length).map(r=>r.id);
  // Verbände als ein JSON-Array (D1 erlaubt nur 100 gebundene Werte)
  const list=JSON.stringify(unions);
  const [{results},{results:cards},starts]=await Promise.all([
-  db.prepare('SELECT region_id,min(date) first,max(date) last,count(*) n FROM search_cards WHERE '+page.where+" AND date<>'' AND region_id NOT IN (SELECT value FROM json_each(?)) GROUP BY region_id").bind(...page.args,list).all(),
-  db.prepare('SELECT region_id,date,title,gremium FROM search_cards WHERE '+page.where+" AND date<>'' AND region_id IN (SELECT value FROM json_each(?))").bind(...page.args,list).all(),
+  db.prepare(`SELECT x.region_id,min(${FIRST_DATE}) first,max(x.date) last,count(*) n FROM ${src.from} WHERE x.region_id NOT IN (SELECT value FROM json_each(?)) GROUP BY x.region_id`).bind(...src.args,list).all(),
+  db.prepare(`SELECT x.region_id,${FIRST_DATE} date,c.title,c.gremium FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE x.region_id IN (SELECT value FROM json_each(?))`).bind(...src.args,list).all(),
   dataStarts(db),
  ]);
  /* Nur Gebiete der Gemeindeebene */
@@ -99,8 +101,8 @@ export async function diffusionList(db,catalog,params){
  const cities=catalog.filter(r=>r.kind==='city');
  const own=cities.find(r=>r.ags===ags),union=own?.members?.length?own:cities.find(r=>r.members?.some(m=>m.ags===ags));
  const region=own||union;if(!region)return listPage([],catalog,0);
- const {page}=await searchFilters(db,catalog,f);
- const {results}=await db.prepare(`SELECT id,region_id region,title,gremium,date,status FROM search_cards WHERE ${page.where} AND date<>'' AND region_id=?`).bind(...page.args,region.id).all();
+ const src=await source(db,catalog,f);
+ const {results}=await db.prepare(`SELECT c.id,x.region_id region,c.title,c.gremium,x.date,x.status FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE x.region_id=? ORDER BY x.date DESC`).bind(...src.args,region.id).all();
  /* Im Verband: nur die Vorgänge dieser Mitgliedsgemeinde bzw. (Verband selbst) die ohne erkennbare Mitgliedsgemeinde */
  const member=union&&!own?union.members.find(m=>m.ags===ags):null;
  const rows=!union?results:results.filter(r=>{const m=memberOf(union,r.title,r.gremium);return member?m?.ags===member.ags:!m;});

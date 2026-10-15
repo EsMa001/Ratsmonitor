@@ -21,16 +21,16 @@ plenara.X ist der Analyse-Teil von Plenara (Tarif Enterprise; frei sind nur die 
 | **Signale** | `/analytics/signale` | 11 Kategorien von Ereignissen (Vergaben, Wohnbau, Gewerbe, Wind, Solar, Wärme, Schulen, Straßen, Wasser, Breitband, Mobilität) mit Art (Filter) und Stand; Liste, ausklappbare Karte. Keine Kennzahlen, Zahlen gehören zu Fakten | `/api/x/signale` (`plenara-x-signals.mjs`) | `x_signals`, `x_cases`, `topic_facts` |
 | **Fakten** | `/analytics/fakten` | Werte je Gemeinde auf der Karte, rot bis grün: jüngster Wert oder Veränderung, Kreis- und Landesmedian, Abdeckung, Vorgänge hinter jedem Wert | `/api/x?view=fakten` (`plenara-x-query.mjs`) | `x_cases`, `topic_facts` |
 | **Atlas** | `/analytics/atlas` | die 10 Themen der Suche: Unterthemen, Verlauf, Orte, Ort im Vergleich, jüngste Vorgänge | `/api/x?view=atlas` | `x_cases`, `report_rules` |
-| Tools: Ausbreitung | `/analytics/diffusion` | wie sich ein Begriff über Orte und Zeit ausbreitet | `/api/analytics/diffusion` | `search_cards` |
-| Tools: Themennetz | `/analytics/graph` | welche Begriffe zusammen vorkommen | `/api/analytics/graph` | `search_cards`, `search_words` |
+| Tools: Ausbreitung | `/analytics/diffusion` | wie sich ein Begriff über Orte und Zeit ausbreitet | `/api/analytics/diffusion` | `x_cases` (Titel aus der Karte) |
+| Tools: Themennetz | `/analytics/graph` | welche Begriffe zusammen vorkommen | `/api/analytics/graph` | `x_cases`, `search_words` |
 | Tools: Trends | `/analytics/trends` | Begriffe, die zu- oder abnehmen | `/api/analytics/trends` | `x_cases` (Titel aus `search_cards`) |
-| Tools: Ortsvergleich | `/analytics/vergleich` | Orte nebeneinander | `/api/analytics/compare` | `search_cards` |
-| Tools: Beschlüsse | `/analytics/beschluesse` | Beschlussquote, Vertagungen, Dauer | `/api/analytics/decisions` | `search_cards`, `topics` |
-| Tools: Beratungswege | `/analytics/gremien` | Weg der Vorgänge durch die Gremien | `/api/analytics/network` | `search_cards` |
+| Tools: Ortsvergleich | `/analytics/vergleich` | Orte nebeneinander | `/api/analytics/compare` | `x_cases` (Titel aus der Karte) |
+| Tools: Beschlüsse | `/analytics/beschluesse` | Beschlussquote, Vertagungen, Dauer | `/api/analytics/decisions` | `x_cases`, Karten der Vorgänge, `topics` |
+| Tools: Beratungswege | `/analytics/gremien` | Weg der Vorgänge durch die Gremien | `/api/analytics/network` | `x_cases` (Titel aus der Karte) |
 | Tools: Fraktionsprofil | `/analytics/fraktionen` | Anträge je Fraktion und was aus ihnen wird | `/api/analytics/fraktionen` | `topic_facts` (`faction`, `faction_advice`) |
 | Tools: Newsradar | `/analytics/news` | berichtenswerte Vorgänge als Meldung mit Zitat | `/api/analytics/news` | `x_cases`, `report_rules`, `topic_facts` |
 
-Signale, Fakten und Atlas laufen über die vorberechneten Tabellen. Die Tools durchsuchen `search_cards` direkt; auch sie sind schnell (Server 15.10.2026: 0,1 bis 0,3 s mit einem seltenen Begriff, bis 3 s mit „Haushalt“; Newsradar und Fraktionsprofil 1 bis 3 s).
+Signale, Fakten und Atlas laufen über die vorberechneten Tabellen. Auch die Tools sind schnell (Server 15.10.2026: 0,1 bis 0,3 s mit einem seltenen Begriff, bis 3 s mit „Haushalt“; Newsradar und Fraktionsprofil 1 bis 3 s).
 
 Entfernt (14./15.10.2026): Themenradare, Kita-, Bauleitplanungs- und Förderseiten, plenara.X Score, Lena, „Was geschieht“ im Atlas.
 
@@ -68,7 +68,7 @@ Jede Auswertung in plenara.X geht denselben Weg, ohne eigenes Datenmodell je Sei
 2. **Zählen** in `x_cases`: Vorgänge, keine Suchkarten; Formalien nie; derselbe Titel in mehreren Gremien eines Gebiets einmal.
 3. **Anreichern** aus `report_rules` (Thema, Art des Vorgangs) und `topic_facts` (Werte, Einordnungen); Signale zusätzlich über `x_signals`, das aus beiden gebaut wird.
 
-So arbeiten Atlas, Signale, Fakten, Newsradar und seit 15.10.2026 Trends (lokal 28 s → 7 s ohne Begriff). Ausbreitung, Themennetz, Ortsvergleich, Beschlüsse und Beratungswege zählen noch Suchkarten; sie werden nach und nach umgestellt (Test je Tool). Der größte Teil der Zeit mit einem häufigen Begriff ist die Suche selbst und damit für alle Seiten gleich.
+So arbeiten seit 15.10.2026 alle Seiten: Atlas, Signale, Fakten, Newsradar und alle Tools. Besonderheiten: Die Ausbreitung nimmt je Vorgang die erste Sitzung (`FIRST_DATE`, aus den Karten des Vorgangs), Ortsvergleich und Beschlüsse werten alle Karten eines Vorgangs aus (Ausschuss und Rat, je Vorgang und Status einmal), die Beratungswege die Stationen der jüngsten Karte. Der größte Teil der Zeit mit einem häufigen Begriff ist die Suche selbst und damit für alle Seiten gleich.
 
 ## Bausteine und wer sie nutzt
 
@@ -99,7 +99,7 @@ Alles regelbasiert; Messung und Freigabe stehen im Admin „Themen & Texte“ (`
 
 **Gebraucht (Kern):** Import, PDF-Ablage mit Text und OCR, Job „Themen & Texte“ mit seinen drei Schritten, `report_rules`, `topic_facts`, `x_cases`, `x_signals`, die beiden Abfragen `/api/x` und `/api/x/signale`, Signale, Fakten, Atlas, Admin „Themen & Texte“.
 
-**Gebraucht, eigenständig:** die Tools. Sie hängen nicht an den Regeln, sondern an der Suche (Fraktionsprofil und Newsradar nutzen einzelne Regeln); ihre Ergebnisse sind Zählungen der Suche und brauchen keine eigene Messung.
+**Gebraucht:** die Tools. Sie zählen über denselben Weg (Suche → `x_cases`); Fraktionsprofil und Newsradar nutzen zusätzlich einzelne Regeln. Ihre Ergebnisse sind Zählungen und brauchen keine eigene Messung.
 
 **Nicht mehr gebraucht oder nur Rückfall:**
 - `scripts/pdf-store/summaries.mjs` und `facts.mjs`: alter Weg vor `read-reports.mjs`, nur noch Rückfall.

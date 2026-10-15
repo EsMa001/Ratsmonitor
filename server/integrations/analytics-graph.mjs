@@ -1,8 +1,8 @@
 import {LABELS} from '../../shared/labels.mjs';
 import {ALL_LANDS} from '../../shared/lands.mjs';
-import {parseMonitorSearch,searchFilters} from './monitor-search.mjs';
+import {parseMonitorSearch} from './monitor-search.mjs';
 import {AnalyticsError} from './analytics-diffusion.mjs';
-import {routineTitle,titleKey} from '../../shared/topic-facts.mjs';
+import {source,xState} from './plenara-x-query.mjs';
 import {listPage,offsetOf} from './analytics-lists.mjs';
 
 /*
@@ -47,20 +47,21 @@ export function parseGraph(params){
 
 export async function knowledgeGraph(db,catalog,params){
  const f=parseGraph(params);
- const {page}=await searchFilters(db,catalog,f);
- /* Gesamtgraph: jede n-te Karte statt der jüngsten, damit die Auswahl den ganzen Bestand abbildet */
+ /* Wie überall in plenara.X: Auswahl über die Suche, gezählt werden Vorgänge (x_cases: ohne Formalien, gleiche Titel je Gebiet
+    einmal); Titel und Gremium aus der Karte des Vorgangs */
+ if(!(await xState(db)))throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut. Bitte später erneut versuchen.',503);
+ const src=await source(db,catalog,f);
+ /* Gesamtgraph: jeder n-te Vorgang statt der jüngsten, damit die Auswahl den ganzen Bestand abbildet */
  const overall=!f.groups.length;
  const limit=overall?SAMPLE_ALL:SAMPLE;
- let where=page.where;const args=[...page.args];
+ let where='1';const args=[...src.args];
  if(overall){
-  const top=(await db.prepare('SELECT max(rowid) n FROM search_cards').first())?.n||0;
+  const top=(await db.prepare('SELECT max(rowid) n FROM x_cases').first())?.n||0;
   const step=Math.max(1,Math.floor(top/limit));
-  if(step>1){where='('+where+') AND (rowid % ? = 0)';args.push(step);}
+  if(step>1){where='x.rid % ? = 0';args.push(step);}
  }
- const {results:raw}=await db.prepare('SELECT region_id,label,gremium,title FROM search_cards WHERE '+where+' ORDER BY date DESC LIMIT ?').bind(...args,limit+1).all();
- const capped=raw.length>limit;if(capped)raw.pop();
- /* Routinepunkte (Besetzungen, Fragestunden, „– Herr X“) zählen nicht; derselbe Titel je Gebiet (mehrere Gremien) einmal */
- const seen=new Set(),rows=raw.filter(r=>{if(routineTitle(r.title))return false;const k=r.region_id+'|'+titleKey(r.title);if(seen.has(k))return false;seen.add(k);return true;});
+ const {results:rows}=await db.prepare(`SELECT x.region_id,x.label,c.gremium,c.title FROM ${src.from} JOIN search_cards c ON c.id=x.card_id WHERE ${where} ORDER BY x.date DESC LIMIT ?`).bind(...args,limit+1).all();
+ const capped=rows.length>limit;if(capped)rows.pop();
  const total=rows.length;
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const exclude=new Set(f.groups.flat()),parts=[...exclude].map(norm);
@@ -134,9 +135,9 @@ export async function graphList(db,catalog,params){
  const value=params.get('value')||'',kind=value[1]===':'?value[0]:'',id=value.slice(2);
  if(params.get('by')!=='node'||!'tkgl'.includes(kind)||!kind||!id)throw new AnalyticsError('Unbekannte Liste.',400);
  const f=parseGraph(params);
- const {page}=await searchFilters(db,catalog,f);
- const {results}=await db.prepare('SELECT id,region_id region,label,gremium,title,date,status FROM search_cards WHERE '+page.where+' ORDER BY date DESC LIMIT ?').bind(...page.args,SAMPLE).all();
+ const src=await source(db,catalog,f);
+ const {results}=await db.prepare(`SELECT c.id,x.region_id region,x.label,c.gremium,c.title,x.date,x.status FROM ${src.from} JOIN search_cards c ON c.id=x.card_id ORDER BY x.date DESC LIMIT ?`).bind(...src.args,SAMPLE).all();
  const land=new Map(catalog.map(r=>[r.id,r.ags?.slice(0,2)]));
  const hit={t:r=>tokens(r.title).has(id),k:r=>r.label===id,g:r=>gremiumKey(r.gremium)===id,l:r=>land.get(r.region)===id}[kind];
- return listPage(results.filter(r=>!routineTitle(r.title)&&hit(r)),catalog,offsetOf(params));
+ return listPage(results.filter(hit),catalog,offsetOf(params));
 }
