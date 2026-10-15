@@ -11,7 +11,8 @@
  * Kennzahl: Vorgänge (count) und Anteil an allen Sachvorgängen derselben Gruppe unter denselben Filtern ohne Thema,
  *   Unterthema und „Was geschieht“ (share).
  * Liste hinter einer Zahl: list=1&by=…&value=…&offset=…
- * Sammelansicht für den Atlas: view=atlas (Unterthemen oder Themen, Was geschieht, Monate, Orte, jüngste Vorgänge in einer Antwort);
+ * Sammelansicht für den Atlas: view=atlas (Unterthemen oder Themen, Monate, Orte, jüngste Vorgänge in einer Antwort);
+ * plenara.X Fakten: view=fakten (Orte und je freigegebenem Wert die Zahlen je Gebiet, MAP_FACTS);
  *   mit einem Ort (area=<Schlüssel eines Gebiets>) zusätzlich „Ort im Vergleich“ (compare): Anteil je Unterthema (ohne Thema:
  *   je Thema) an allen Sachvorgängen des eigenen Rats in den letzten 12 Monaten, eingeordnet in der Vergleichsgruppe (gleiche
  *   Art und Größe, zuerst im Land) mit den Regeln aus peer-norms.mjs (Wilson-Spanne gegen die Viertel der Gruppe).
@@ -48,6 +49,12 @@ export const X_FACT_GATE={house_type:false,road:false,project:false,wind_count:f
 export const X_SUM_GATE={housing:false};
 const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee']]};
+/* plenara.X Fakten (view=fakten): Werte für die Karte, Farbe nach Richtung (hoch ist schlecht: rot, hoch ist gut: grün).
+   Gezeigt nur ab 90 % gemessener Qualität (shared/rule-quality.json); die übrigen stehen bereit, bis sie das Ziel erreichen. */
+export const MAP_FACTS=[['hebesatz','bad',true],['fee_rate','bad',true],['annual_result','good',true],['land_price','bad',true],
+ ['kita_fee','bad',false],['dog_tax','bad',false],['plot_price','bad',false],['grant','good',false],['ee_power','good',false]];
+export const MAP_FACT_NAMES={hebesatz:'Hebesätze',fee_rate:'Wasser- und Abwassergebühren',annual_result:'Jahresergebnis',land_price:'Gewerbegrundstücke (€/m²)',
+ kita_fee:'Kita-Gebühren',dog_tax:'Hundesteuer',plot_price:'Wohnbauplätze (€/m²)',grant:'Zuschüsse',ee_power:'Wind und Solar (MW)'};
 export const X_LIST_SIZE=50;
 /* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
    Gebührensätze tragen die Einheit im dritten Feld (m³ oder m²). Ein Zuschuss ohne Betrag hat keine Zahl. */
@@ -118,6 +125,7 @@ export async function xQuery(db,catalog,params,opts={}){
  if(!state)throw new AnalyticsError('Die Zahlen für plenara.X werden gerade aufgebaut.',503);
  if(x.list)return xList(db,catalog,x,opts);
  if(params.get('view')==='atlas')return xAtlas(db,catalog,params,x,opts,state);
+ if(params.get('view')==='fakten')return xFakten(db,catalog,params,x,state);
  const {from,args}=opts.src||await source(db,catalog,x.f),sel=selection(x),{key,join,jargs,perPart}=grouping(x);
  const cond=sel.where.join(' AND '),hit=`CASE WHEN ${cond} THEN 1 ELSE 0 END`,unread=`CASE WHEN ${cond} THEN x.unread ELSE 0 END`;
  let hits,total,all=null;
@@ -181,11 +189,19 @@ async function xAtlas(db,catalog,params,x,opts,state){
  const at=(by,sum)=>{const p=new URLSearchParams(params);p.delete('view');p.set('by',by);if(sum)p.set('sum',sum);return xQuery(db,catalog,p,{src});};
  // Werte aus den Unterlagen: nur, was das Qualitätstor erreicht (gesperrte Summen entfallen, der Wert bleibt)
  const wanted=(ATLAS_FACTS[x.theme]||[]).filter(([k])=>X_FACT_GATE[k]).map(([k,sum])=>[k,sum&&X_SUM_GATE[sum]?sum:'']);
- const [parts,stages,months,regions,recent,maps,...facts]=await Promise.all([at(x.theme?'sub':'theme'),at('stage'),at('month'),at('region'),
+ const [parts,months,regions,recent,maps,...facts]=await Promise.all([at(x.theme?'sub':'theme'),at('month'),at('region'),
   xList(db,catalog,{...x,by:'region',value:'',offset:0},{count:false,src}),factMaps(db,catalog,src,x,wanted.map(([k])=>k)),...wanted.map(([k,sum])=>at('fact:'+k,sum))]);
- return {selection:parts.selection,total:stages.total,unread:stages.unread,builtAt:state.builtAt,parts:parts.rows,stages:stages.rows,months:months.rows,
+ return {selection:parts.selection,total:parts.total,unread:parts.unread,builtAt:state.builtAt,parts:parts.rows,months:months.rows,
   regions:regions.rows,recent:recent.items.slice(0,10),
   facts:facts.map((f,i)=>({kind:wanted[i][0],name:X_FACT_NAMES[wanted[i][0]],sum:f.sum||null,rows:f.rows,map:maps.get(wanted[i][0])||[]})).filter(f=>f.rows.length),compare:await xCompare(db,catalog,x,params,opts)};
+}
+
+/** plenara.X Fakten: Orte (für Schlüssel und Mitgliedsgemeinden) und je freigegebenem Fakt die Werte je Gebiet */
+async function xFakten(db,catalog,params,x,state){
+ const src=await source(db,catalog,x.f),kinds=MAP_FACTS.filter(([,,on])=>on);
+ const p=new URLSearchParams(params);p.delete('view');p.set('by','region');
+ const [regions,maps]=await Promise.all([xQuery(db,catalog,p,{src}),factMaps(db,catalog,src,x,kinds.map(([k])=>k))]);
+ return {builtAt:state.builtAt,regions:regions.rows,facts:kinds.map(([kind,dir])=>({kind,dir,name:MAP_FACT_NAMES[kind],map:maps.get(kind)||[]})).filter(f=>f.map.length)};
 }
 
 /** Karte der Werte: je Fakt und Gebiet die Zahl der Vorgänge mit Wert (n) und je Wert mit Zahl der Median (v: Wert → {n, median, unit}).

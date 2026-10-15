@@ -556,7 +556,7 @@ topic design-styles.css:140
 - page.tsx (2): Page
 
 ### app/(monitor)/analytics/[[...section]]/
-- page.tsx (26): generateMetadata, Page
+- page.tsx (27): generateMetadata, Page
 
 ### app/(monitor)/anmelden/
 - page.tsx (2): Page
@@ -590,11 +590,6 @@ topic design-styles.css:140
 
 ### app/(monitor)/
 - layout.tsx (3): MonitorLayout
-
-### app/(monitor)/lena/
-- page.tsx (4): Page
-
-### app/(monitor)/
 - not-found.tsx (4): metadata, NotFound
 - page.tsx (2): Page
 
@@ -651,7 +646,7 @@ topic design-styles.css:140
 - admin-processing-map.tsx (50, ⚠4): AdminProcessingMap
 - admin-processing.tsx (186, ⚠21): AdminProcessing
 - admin-quality-check.tsx (74, ⚠4): AdminQualityCheck
-- admin-rule-texts.tsx (214, ⚠9): AdminRuleTexts
+- admin-rule-texts.tsx (214, ⚠10): AdminRuleTexts
 - admin-run-debug.tsx (70, ⚠2): RunDebugView, AdminRunDebug
 - admin-schedules.tsx (115, ⚠4): AdminSchedules
 - admin-social.tsx (135, ⚠1): AdminSocial
@@ -714,9 +709,8 @@ topic design-styles.css:140
 - BranchenLive.tsx (245): LiveThumb
 - BranchenPages.tsx (114): BranchePage
 - FaqPage.tsx (45, ⚠1): FaqPage
-- InfoPages.tsx (47): InfoPages
+- InfoPages.tsx (45): InfoPages
 - LegalText.tsx (20): H2, P, Ul
-- LenaPage.tsx (193): LenaPage
 - NotFoundPage.tsx (36): NotFoundPage
 - PreisePage.tsx (92): PreisePage
 - QuellenPage.tsx (171, ⚠4): QuellenPage
@@ -727,7 +721,7 @@ topic design-styles.css:140
 - WiderrufPage.tsx (79): WiderrufPage
 - anwender-beispiele.ts (824): BEISPIELE
 - blocks.tsx (212, ⚠1): useOpenSearch, Rich, PageHead, SearchTermButton, StatusPill, PlacePill, HitPreview, DarkCta, QaItem
-- branchen-enterprise.ts (109): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
+- branchen-enterprise.ts (102): AnalyseId, AnalyseGruppe, GRUPPEN, ANALYSEN, PLENARAX_VORTEILE, EnterpriseBlock, ENTERPRISE
 - content.ts (418, ⚠28): Status, Example, Branche, STATUS_LABEL, Qa, FAQ, PRICE_FAQ, PlanId, Rich, Plan, PLANS, BRANCHEN, brancheBySlug
 - icons.tsx (128): IconName, Icon
 - useTodoBoard.ts (208, ⚠2): TodoPatch, TodoCreate, useTodoBoard
@@ -753,16 +747,15 @@ topic design-styles.css:140
 
 ### components/ratsmonitor/lib/
 - iconStroke.ts (3): iconStroke
-- lena.ts (48): LENA_INTRO, LENA_EXAMPLES, LenaSource, LenaAnswer, askLena, germanDate
 - listView.ts (47): ListView, setListView, useListView
 - mails.ts (134, ⚠2): MailItem, p, h, button, more, items, sendMail, welcomeMail, resetMail, DigestPart, digestMail, alertMail, followMail, reminderMail
 - otherTab.ts (11): onOtherTab
-- pageTitle.ts (40): pageName, tabTitle
+- pageTitle.ts (39): pageName, tabTitle
 - place.ts (291, ⚠1): PlaceEntry, PlaceHit, ParseResult, SuggestResult, regionSuggest, regionsIn, PlaceIndex, textPart, removePhrase
 - queue.ts (29): queue
 - radioKeys.ts (18): radioKeys, radioTab
 - recentSearches.ts (32): readRecent, addRecent, clearRecent
-- routes.ts (12, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
+- routes.ts (10, ⚠1): INFO_PATHS, ANALYTICS_PATHS, brancheOf, isInfoPath, isAnalyticsPath
 - savedArticles.ts (90): SavedArticle, toggleSavedArticle, toggleFollow, removeSavedArticle, restoreSavedArticle, clearSavedArticles, useSavedArticles
 - savedSearch.ts (155, ⚠1): SearchSnapshot, signature, queryText, canonicalQuery, hasFilters, FilterChip, placeLabel, filterChips, RangePreset, RANGE_PRESETS, presetOf, resolveRange, rangeLabel, scopeLabel, hasScope, splitTerms, suggestName
 - searchLogic.ts (104): Parse, isCommitted, applySearchState, commitPlacesState, isReplacement, clearAreaState, deriveFilters
@@ -796,11 +789,11 @@ topic design-styles.css:140
 - SavedSearchesPage.tsx (327): SavedSearchesPage
 
 ### components/ratsmonitor/pages/analytics/
-- AnalyticsAbout.tsx (330, ⚠21): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
+- AnalyticsAbout.tsx (340, ⚠21): ANALYSE_THUMBS, AnalyticsGroupPage, AnalyticsAbout
 - AnalyticsLocked.tsx (50): AnalyticsLocked
-- AnalyticsPages.tsx (67): AnalyticsPages
+- AnalyticsPages.tsx (70): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (69): ATLAS_THEMEN, atlasHref, AtlasPage
+- AtlasPage.tsx (61): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (52): Befund, zuThema
 - BeschluessePage.tsx (198, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
@@ -822,9 +815,10 @@ topic design-styles.css:140
 - RadarThumbs.tsx (123): RADAR_THUMBS
 - RegionMap.tsx (74): RegionMap
 - Reveal.tsx (16): Reveal
+- SignalePage.tsx (229, ⚠3): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (354, ⚠3): XAtlasView
+- XAtlasView.tsx (347, ⚠3): XAtlasView
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 

@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { BRANCHEN } from "../info/content";
 import { Icon } from "../info/icons";
 import { useTier } from "../lib/tier";
-import { IconChevronDown, IconSpark } from "../components/icons";
+import { IconChevronDown } from "../components/icons";
 
 /* Unterpunkte von „Funktionen“: Erklärseiten (Suche, Benachrichtigungen) und die Arbeitsbereiche */
 const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bell" | "calendar" | "fileText" | "circleHelp" }[] = [
@@ -14,7 +14,6 @@ const FUNKTIONEN: { href: string; label: string; icon: "search" | "heart" | "bel
   { href: "/konto/artikel", label: "Gespeicherte Artikel", icon: "fileText" },
   { href: "/funktionen/benachrichtigungen", label: "Benachrichtigungen", icon: "bell" },
   { href: "/konto/kalender", label: "Kalender", icon: "calendar" },
-  /* Lena vorerst ausgeblendet (lib/routes.ts): { href: "/lena", label: "Assistentin Lena", icon: "circleHelp" }, */
 ];
 
 /* Unterpunkte von „Informationen“: Tarife, Videos, Datenabdeckung und häufige Fragen */
@@ -30,6 +29,7 @@ const ANWENDER: { label: string; slug: string; icon?: "map" }[] = [
 const ANALYSE = [
   { href: "/analytics/ueber", label: "plenara.X Start", icon: "plenaraX" as const },
   { href: "/analytics/signale", label: "plenara.X Signale", icon: "zap" as const },
+  { href: "/analytics/fakten", label: "plenara.X Fakten", icon: "map" as const },
   { href: "/analytics/tools", label: "plenara.X Tools", icon: "layoutGrid" as const },
   { href: "/analytics/atlas", label: "plenara.X Atlas", icon: "map" as const },
 ];
@@ -175,7 +175,7 @@ export function MainMenu() {
                     {FUNKTIONEN.map((f) => (
                       <li key={f.href}>
                         <Link href={f.href} className="ri-menu__sub" aria-current={current(f.href)} onClick={pick}>
-                          {f.href === "/lena" ? <IconSpark size={15} /> : <Icon name={f.icon} size={15} />}
+                          <Icon name={f.icon} size={15} />
                           {f.label}
                         </Link>
                       </li>

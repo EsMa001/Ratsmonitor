@@ -4,7 +4,6 @@ const NAMES: Record<string, string> = {
   "/": "Startseite",
   "/suche": "Suche",
   "/funktionen/benachrichtigungen": "Benachrichtigungen",
-  "/lena": "Lena",
   "/faq": "FAQ",
   "/videos": "Videos",
   "/datenabdeckung": "Datenabdeckung",

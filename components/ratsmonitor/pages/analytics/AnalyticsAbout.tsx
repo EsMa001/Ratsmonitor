@@ -140,8 +140,9 @@ const ANALYSEN_KARTEN: { id: AnalyseId; name: string; href: string; kurz: string
   { id: "beschluesse", name: "Beschlüsse", href: "/analytics/beschluesse", kurz: "Wie Gremien entscheiden: Beschlussquote, Vertagungen und Dauer." },
   { id: "gremien", name: "Beratungswege", href: "/analytics/gremien", kurz: "Welchen Weg Vorgänge durch die Gremien nehmen und wo sie entschieden werden." },
   { id: "fraktionen", name: "Fraktionsprofil", href: "/analytics/fraktionen", kurz: "Welche Fraktionen welche Themen beantragen und was aus ihren Anträgen wird." },
-  { id: "atlas", name: "plenara.X Atlas", href: "/analytics/atlas", kurz: "Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, was geschieht, wo ein Thema viel Raum hat und die Vorgänge hinter jeder Zahl." },
+  { id: "atlas", name: "plenara.X Atlas", href: "/analytics/atlas", kurz: "Worüber die Räte beraten, nach den 10 Themen der Suche: Unterthemen, wo ein Thema viel Raum hat und die Vorgänge hinter jeder Zahl." },
   { id: "signale", name: "plenara.X Signale", href: "/analytics/signale", kurz: "Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, mit Stand des Verfahrens und Kennzahlen." },
+  { id: "fakten", name: "plenara.X Fakten", href: "/analytics/fakten", kurz: "Hebesätze, Gebühren, Jahresergebnisse und Preise aus den Vorlagen, je Gemeinde auf der Karte, rot bis grün." },
   { id: "news", name: "Newsradar", href: "/analytics/news", kurz: "Was gerade berichtenswert ist: Vorgänge nach Nachrichtenwert, je Vorgang eine Meldung mit Zitat und Quelle." },
 ];
 
@@ -300,6 +301,15 @@ export function AnalyticsAbout() {
           <Link href="/analytics/signale" className="text-[16px] font-medium text-teal-700">Zu den Signalen →</Link>
         </div>
         <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo gerade etwas entsteht: neue Wohn- und Gewerbegebiete, Windenergie und Solarparks, Wärmeplanung, Straßen und Mobilitätsangebote. Je Vorgang Ort, Stand des Verfahrens, Kennzahlen und Originalquelle.</p>
+      </section>
+
+      {/* Fakten: eigene Seite, hier nur der Verweis */}
+      <section id="fakten" className="scroll-mt-24">
+        <div className="mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <h2 className="text-[28px] font-semibold">plenara.X Fakten</h2>
+          <Link href="/analytics/fakten" className="text-[16px] font-medium text-teal-700">Zu den Fakten →</Link>
+        </div>
+        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Hebesätze, Wasser- und Abwassergebühren, Jahresergebnisse und Preise für Gewerbegrundstücke aus den Vorlagen der Räte, je Gemeinde auf der Karte. Nur Werte, die in Stichproben zu mindestens 90 % stimmten.</p>
       </section>
 
       {(["tool"] as const).map((group, gi) => (

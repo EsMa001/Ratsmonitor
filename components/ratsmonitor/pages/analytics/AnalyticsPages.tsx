@@ -10,6 +10,7 @@ import { FraktionenPage } from "./FraktionenPage";
 import { NewsradarPage } from "./NewsradarPage";
 import { AtlasPage } from "./AtlasPage";
 import { SignalePage } from "./SignalePage";
+import { FaktenPage } from "./FaktenPage";
 import { GRUPPEN } from "../../info/branchen-enterprise";
 import { AnalyticsLocked } from "./AnalyticsLocked";
 import { useTier } from "../../lib/tier";
@@ -38,6 +39,8 @@ const PAGES: Record<string, ComponentType> = {
   "/analytics/atlas": () => <AtlasPage />,
   /* plenara.X Signale: neue Ereignisse je Branche als Liste (/api/x/signale) */
   "/analytics/signale": SignalePage,
+  /* plenara.X Fakten: Werte aus den Unterlagen je Gemeinde auf der Karte (/api/x?view=fakten) */
+  "/analytics/fakten": FaktenPage,
   "/analytics/tools": () => <AnalyticsGroupPage group="tool" />,
   // Frühere Gruppen plenara.X Politik und Finanzen (Fraktionsprofil und Newsradar stehen jetzt bei den Tools)
   "/analytics/politik": () => <Umleiten to="/analytics/tools" />,
@@ -55,7 +58,7 @@ export function AnalyticsPages({ path }: { path: string }) {
   useEffect(() => {
     window.scrollTo(0, 0);
     const gruppe = Object.values(GRUPPEN).find((g) => g.href === path);
-    const TITEL: Record<string, string> = { "/analytics/atlas": "plenara.X Atlas", "/analytics/signale": "Signale · plenara.X", "/analytics/news": "Newsradar · plenara.X", "/analytics/diffusion": "Ausbreitung · plenara.X",
+    const TITEL: Record<string, string> = { "/analytics/atlas": "plenara.X Atlas", "/analytics/signale": "Signale · plenara.X", "/analytics/fakten": "Fakten · plenara.X", "/analytics/news": "Newsradar · plenara.X", "/analytics/diffusion": "Ausbreitung · plenara.X",
       "/analytics/graph": "Themennetz · plenara.X", "/analytics/gremien": "Beratungswege · plenara.X", "/analytics/beschluesse": "Beschlüsse · plenara.X",
       "/analytics/vergleich": "Ortsvergleich · plenara.X", "/analytics/trends": "Trends · plenara.X", "/analytics/fraktionen": "Fraktionsprofil · plenara.X", "/analytics/tools": "plenara.X Tools" };
     document.title = TITEL[path] ?? (gruppe ? gruppe.name : "Über plenara.X · plenara");

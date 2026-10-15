@@ -5,7 +5,7 @@ import { useOpenSearch } from "./blocks";
 import { todayLocal } from "../lib/text";
 import topicList from "./startseite-topics.json";
 
-/* Startseite (Reiter rechts neben Lena, noch nicht die Landingpage).
+/* Startseite (noch nicht die Landingpage).
    Kopf: Slogan, Artikelzahl, Karte. Auf der Karte laufen Zeitraffer und Live zusammen: Die Begriffe unten ploppen auf, sobald sie in einem Kreis
    zum ersten Mal beraten wurden. Darunter die Trends derselben Begriffe, alles aus /api/analytics/diffusion. */
 

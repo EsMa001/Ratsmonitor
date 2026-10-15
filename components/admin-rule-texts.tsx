@@ -57,15 +57,15 @@ const Meter=({label,v,min}:{label:string;v:number|null;min:number})=>{const [ope
 const FACT_THEME:Record<string,string>={plan:'bauen',plan_use:'bauen',housing:'bauen',hebesatz:'finanzen',annual_result:'finanzen',dog_tax:'finanzen',waste_fee:'umwelt',plan_area:'bauen',wind_count:'umwelt',project:'mobilitaet',road:'mobilitaet',house_type:'bauen',heat_plan:'umwelt',fee_rate:'umwelt',ee_power:'umwelt',grant:'soziales',kita_fee:'bildung',land_price:'wirtschaft'};
 /* Ohne Abdeckung: jeder Bericht oder jedes PDF bekommt einen Wert (Unterthemen, Hauptdokument, Dokumentart) oder es ist eine Rangfolge (Social Media) */
 const NO_COVERAGE=new Set(['subs','main_doc','doc_type','social']);
-/* Fakten nach Art (Konzept docs/produkt/plenara-x-fakten-konzept.md): Vergleichswerte brauchen Abdeckung (Anteil der Gemeinden),
-   Signale nicht (es zählt, dass jedes Ereignis erkannt wird; gezeigt wird die Zahl der Berichte), Profil gehört zum Fraktionsprofil */
-const SIGNAL_FACTS=new Set(['plan','plan_use','plan_area','housing','house_type','plot_price','land_price','ee_power','wind_count','heat_plan','road','project','grant']);
+/* Fakten nach Art: Werte für die Karte von plenara.X Fakten (Zahl je Gemeinde, Abdeckung zählt als Anteil der Gemeinden),
+   Bausteine der Signale (Einordnungen für Stand, Auswahl und Kennzahlen dort), Fraktionen (Fraktionsprofil) */
+const SIGNAL_FACTS=new Set(['plan','plan_use','heat_plan','house_type','project']);
 const PROFILE_FACTS=new Set(['faction','faction_advice']);
 const factArt=(id:string)=>SIGNAL_FACTS.has(id)?'signal':PROFILE_FACTS.has(id)?'profil':'vergleich';
 const FACT_ARTS:[string,string,string][]=[
- ['vergleich','Vergleichswerte','Wo liegt eine Gemeinde im Vergleich? Abdeckung zählt: Anteil der Gemeinden mit mindestens einem Wert. Ziel für die Karte ab 30 %.'],
- ['signal','Kennzahlen der Signale','Werte auf den Karten von plenara.X Signale (Stand, Fläche, Wohneinheiten, Leistung …). Abdeckung zählt hier nicht; gezeigt wird die Zahl der Berichte.'],
- ['profil','Profil','Fraktion und Empfehlung im Beschlussvorschlag, für das Fraktionsprofil.'],
+ ['vergleich','Werte für die Karte','Alle Zahlen für plenara.X Fakten (Karte rot bis grün), auch Kosten und ob Gebühren steigen oder fallen. Abdeckung: Anteil der Gemeinden mit mindestens einem Wert. Auf die Karte erst ab 90 % Qualität.'],
+ ['signal','Bausteine der Signale','Einordnungen für Stand und Auswahl in plenara.X Signale, keine Zahlen. Gezeigt wird die Zahl der Berichte.'],
+ ['profil','Fraktionen','Fraktion und Empfehlung im Beschlussvorschlag, für das Fraktionsprofil.'],
 ];
 const shortDate=(d:string)=>d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(2,4);
 const THEME_NAME:Record<string,string>={...Object.fromEntries(THEMES.map((t:{id:string;name:string})=>[t.id,t.name])),unklar:'Ohne Thema (noch nicht eingeordnet)'};
@@ -165,7 +165,7 @@ export function AdminRuleTexts(){
     const row=(r:QualityRow)=><li key={r.id} className="grid gap-x-6 gap-y-2 py-3 text-[14px] md:grid-cols-[minmax(0,1fr)_150px_150px]">
      <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2"><span className="font-medium text-slate-900">{r.name}</span>{r.what&&<Info text={r.what}/>}
-       {g.id==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(r.gate?'bg-teal-50 text-teal-700':'bg-slate-100 text-slate-500')}>{r.gate?'freigegeben':'gesperrt'}</span>}</div>
+       {g.id==='facts'&&factArt(r.id)==='vergleich'&&<span className={'rounded-full px-2 py-0.5 text-[12px] '+(r.quality!=null&&r.quality>=QT.quality?'bg-teal-50 text-teal-700':'bg-slate-100 text-slate-500')}>{r.quality==null?'nicht gemessen':r.quality>=QT.quality?'für die Karte':'unter '+QT.quality+' %'}</span>}</div>
       <small className="mt-1 block text-[12px] leading-snug text-slate-500">{[r.version,r.sample,shortDate(r.date),g.id==='facts'&&xs?.facts?.[r.id]!==undefined?n(xs.facts[r.id])+' Berichte':'',r.note].filter(Boolean).join(' · ')}</small>
      </div>
      <Meter label="Qualität" v={r.quality} min={QT.quality}/>

@@ -10,11 +10,9 @@ import { VideosPage } from "./VideosPage";
 import { PreisePage } from "./PreisePage";
 import { AgbPage } from "./AgbPage";
 import { WiderrufPage } from "./WiderrufPage";
-/* Lena vorerst ausgeblendet (lib/routes.ts): import { LenaPage } from "./LenaPage"; */
 import { StartseitePage } from "./StartseitePage";
 
 const PAGES: Record<string, ComponentType> = {
-  /* "/lena": LenaPage, */
   "/": StartseitePage,
   "/faq": FaqPage,
   "/videos": VideosPage,

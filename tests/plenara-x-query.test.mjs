@@ -72,7 +72,6 @@ test('Sammelansicht für den Atlas: dieselben Zahlen wie die einzelnen Abfragen'
  const {sql,db}=fixture();try{
   const a=await xQuery(db,catalog,q('view=atlas&theme=mobilitaet'));
   assert.equal(a.total,2);assert.deepEqual(Object.fromEntries(a.parts.map(x=>[x.key,x.count])),{'mobilitaet.rad':2,'mobilitaet.plan':1});
-  assert.deepEqual(Object.fromEntries(a.stages.map(x=>[x.key,x.count])),{bau:1,planung:1});
   assert.deepEqual(a.months.map(x=>[x.key,x.count]),[['2026-05',2]]);assert.equal(a.regions.length,2);assert.equal(a.recent.length,2);
   const all=await xQuery(db,catalog,q('view=atlas'));
   assert.deepEqual(Object.fromEntries(all.parts.map(x=>[x.key,x.count])),{mobilitaet:2,finanzen:1,bildung:1});

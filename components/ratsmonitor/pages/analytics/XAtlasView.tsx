@@ -13,13 +13,13 @@ import { monthLabel, parseDate, plural } from "../../lib/text";
 import { prettyTerm } from "../../lib/terms";
 
 /* plenara.X Atlas auf der einen Abfrage (GET /api/x?view=atlas, server/integrations/plenara-x-query.mjs): je Thema die
-   Unterthemen, was geschieht, der Verlauf, die Orte und die jüngsten Vorgänge; ohne Thema die 10 Themen. Gezählt werden
+   Unterthemen, der Verlauf, die Orte und die jüngsten Vorgänge; ohne Thema die 10 Themen. Gezählt werden
    Vorgänge (gleiche Titel je Gebiet einmal), Formalien nie; das Thema ist dasselbe wie im Themenfilter der Suche. */
 interface Row { key: string; name: string; count: number; base: number; share: number | null; ags?: string; members?: string[] }
 interface Item { id: string; title: string; region: string; date: string; status: string; stage: string | null; subs: string[]; times: number }
 interface CompareRow { key: string; name: string; k: number; share: number; q1: number; median: number; q3: number; ratio: number | null; class: "mehr" | "weniger" | "ueblich" | null }
 interface Compare { region: string; from: string; to: string; n: number; months: number; insufficient?: "items" | "months" | "group"; rule: { minItems: number; minMonths: number; minTopic: number }; group?: { label: string; n: number }; rows?: CompareRow[] }
-interface Result { selection: { theme: string; sub: string; stage: string; q: string }; total: number; unread: number; parts: Row[]; stages: Row[]; months: Row[]; regions: Row[]; recent: Item[]; compare: Compare | null; facts: Fact[] }
+interface Result { selection: { theme: string; sub: string; q: string }; total: number; unread: number; parts: Row[]; months: Row[]; regions: Row[]; recent: Item[]; compare: Compare | null; facts: Fact[] }
 interface Fact { kind: string; name: string; sum: { kind: string; name: string } | null; rows: (Row & { sum?: number; median?: { median: number; unit: string; n: number } })[]; map: { key: string; ags?: string; n: number; v: Record<string, { n: number; median: number; unit: string }> }[] }
 
 const n = (v: number) => v.toLocaleString("de-DE");
@@ -200,21 +200,21 @@ function OrtImVergleich({ c, theme }: { c: Compare; theme: string }) {
 }
 
 /**
- * theme: eines der 10 Themen oder "" (alle); sub: Unterthema oder ""; stage: Wert von „Was geschieht“ oder "".
+ * theme: eines der 10 Themen oder "" (alle); sub: Unterthema oder "".
  * term: Suchbegriff aus einem geteilten Link (?q=), wird beim Öffnen einmal in die Suche übernommen.
  */
 /* Werte aus den Unterlagen zeigt der Atlas seit 14.10.26 nicht mehr (Konzept docs/produkt/plenara-x-fakten-konzept.md): Signale
    haben die Seite /analytics/signale, Vergleichswerte kommen in den Ortsvergleich. Regeln, Daten und by=fact bleiben; true zeigt sie wieder. */
 const SHOW_FACTS = false;
 
-export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme: string; sub: string; stage: string; term: string | null; onTheme: (id: string) => void; onSub: (id: string) => void }) {
+export function XAtlasView({ theme, sub, term, onTheme, onSub }: { theme: string; sub: string; term: string | null; onTheme: (id: string) => void; onSub: (id: string) => void }) {
   const { query, search } = useAnalyticsQuery();
-  const sel = [theme && `theme=${theme}`, sub && `sub=${sub}`, stage && `stage=${stage}`].filter(Boolean).join("&");
+  const sel = [theme && `theme=${theme}`, sub && `sub=${sub}`].filter(Boolean).join("&");
   const url = `/api/x?view=atlas${sel ? "&" + sel : ""}&${query}`;
   const { res, ranKey, loading, error, stale, run } = useAnalysisRun<Result>({ key: url, url, initial: !term, onDone: () => setOpen("") });
-  /* Aufgeklappte Liste: "stage:bau", "month:2026-05", "region:<id>", "fact:plan:Aufstellung" */
+  /* Aufgeklappte Liste: "month:2026-05", "region:<id>", "fact:plan:Aufstellung" */
   const [open, setOpen] = useState("");
-  /* Andere Auswahl (Thema, Unterthema, „Was geschieht“): gleich neu rechnen; das alte Ergebnis bleibt abgeblendet stehen */
+  /* Andere Auswahl (Thema, Unterthema): gleich neu rechnen; das alte Ergebnis bleibt abgeblendet stehen */
   const [ranSel, setRanSel] = useState(sel);
   if (ranSel !== sel) {
     setRanSel(sel);
@@ -238,7 +238,7 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
   const toggle = (key: string) => setOpen(open === key ? "" : key);
   const listBase = `/api/x?list=1${sel ? "&" + sel : ""}`;
   /* Filter der zuletzt ausgewerteten Abfrage ohne Auswahl und Ansicht (die stehen in listBase) */
-  const listQuery = (() => { const p = new URLSearchParams(ranKey.split("?")[1] ?? ""); for (const k of ["view", "theme", "sub", "stage"]) p.delete(k); return p.toString(); })();
+  const listQuery = (() => { const p = new URLSearchParams(ranKey.split("?")[1] ?? ""); for (const k of ["view", "theme", "sub"]) p.delete(k); return p.toString(); })();
   const drill = (by: string, r: Row, label = r.name) => <RadarDrill base={listBase} query={listQuery} by={by} value={r.key} label={label} />;
   const opened = (by: string) => (open.startsWith(by + ":") ? open.slice(by.length + 1) : "");
 
@@ -248,9 +248,8 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
   const parts = restLast(res?.parts ?? []).map((p) => (sub && total ? { ...p, share: Math.round((1000 * p.count) / total) / 10 } : p));
   const allRegions = res?.regions ?? [];
   /* Ohne Auswahl ist der Anteil überall 100 %, mit nur einem Gebiet (Ort gewählt) gibt es nichts zu vergleichen */
-  const rankRegions = !!(theme || sub || stage) && allRegions.length > 1;
+  const rankRegions = !!(theme || sub) && allRegions.length > 1;
   const regions = rankRegions ? allRegions.filter((r) => r.base >= MIN_BASE).sort((a, b) => (b.share ?? 0) - (a.share ?? 0)).slice(0, 15) : [];
-  const stages = restLast((res?.stages ?? []).filter((s) => s.key !== ""));
   const maxM = Math.max(1, ...(res?.months ?? []).map((m) => m.count));
   const month = opened("month");
   /* Monatsachse: auf dem Handy nur jeder dritte Monat beschriftet (vom jüngsten aus gezählt), sonst wäre jeder Name abgeschnitten */
@@ -284,12 +283,6 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
                   label={(r) => `${n(r.count)}${r.share !== null && theme ? ` · ${pct(r.share)}` : ""}`} />
               </section></Reveal>
 
-              {stages.length > 1 && <Reveal><section className="mt-12">
-                <h2 className="text-[22px] font-semibold">Was geschieht</h2>
-                <Hint>Art der Vorgänge, aus dem Titel gelesen (Antrag, Planung, Vergabe, Bau …). Klick zeigt die Vorgänge.</Hint>
-                <Bars rows={stages} mode="expand" open={opened("stage")} onOpen={(k) => toggle(`stage:${k}`)} drill={(r) => drill("stage", r)} />
-              </section></Reveal>}
-
               {nMonths > 1 && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Im Zeitverlauf</h2>
                 <p className="mb-3 mt-1 text-[14px] text-slate-500">Vorgänge je Monat der Sitzung. Klick auf einen Monat zeigt seine Vorgänge.</p>
@@ -317,7 +310,7 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
               {!SHOW_FACTS && <p className="mt-12 text-[14px] text-slate-500">Neue Baugebiete, Windparks, Wärmeplanung und mehr mit Stand und Kennzahlen: <Link href="/analytics/signale" className="font-medium text-teal-700 hover:underline">plenara.X Signale →</Link></p>}
               {SHOW_FACTS && res.facts.length === 0 && <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Werte aus den Unterlagen</h2>
-                <p className="mt-2 max-w-[760px] text-[14px] text-slate-500">{theme || sub || stage ? "Für diese Auswahl" : "Für diese Suche"} liegen noch keine geprüften Werte vor. Gezeigt werden nur Werte aus den Unterlagen, die in Stichproben zu mindestens 90 % stimmten.</p>
+                <p className="mt-2 max-w-[760px] text-[14px] text-slate-500">{theme || sub ? "Für diese Auswahl" : "Für diese Suche"} liegen noch keine geprüften Werte vor. Gezeigt werden nur Werte aus den Unterlagen, die in Stichproben zu mindestens 90 % stimmten.</p>
               </section></Reveal>}
 
               {rankRegions && <Reveal><section className="mt-12">
@@ -326,7 +319,7 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
                 {regions.length ? <Bars rows={regions} mode="expand" open={opened("region")} onOpen={(k) => toggle(`region:${k}`)} drill={(r) => drill("region", r)} value={(r) => r.share ?? 0}
                   label={(r) => `${pct(r.share)} · ${n(r.count)}`} /> : <p className="text-[14px] text-slate-500">Kein Gebiet hat genug Sachvorgänge für einen Vergleich.</p>}
               </section></Reveal>}
-              {!(theme || sub || stage) && allRegions.length > 1 && <p className="mt-12 text-[14px] text-slate-500">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
+              {!(theme || sub) && allRegions.length > 1 && <p className="mt-12 text-[14px] text-slate-500">Thema wählen, um zu sehen, wo es viel Raum hat.</p>}
 
               <Reveal><section className="mt-12">
                 <h2 className="text-[22px] font-semibold">Jüngste Vorgänge</h2>
@@ -343,7 +336,7 @@ export function XAtlasView({ theme, sub, stage, term, onTheme, onSub }: { theme:
                 </ol>
               </section></Reveal>
 
-              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gezählt werden Vorgänge: derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Formalien, Sammelpunkte, Besetzungen und Fragestunden zählen nicht.{res.unread ? ` ${n(res.unread)} Vorgänge sind noch nicht mit ihren Unterlagen gelesen; sie zählen beim Thema, aber noch ohne Unterthema und ohne „Was geschieht“.` : ""}</p>
+              <p className="mt-10 max-w-[900px] text-[12px] text-slate-500">Gezählt werden Vorgänge: derselbe Titel in mehreren Gremien eines Gebiets zählt einmal. Formalien, Sammelpunkte, Besetzungen und Fragestunden zählen nicht.{res.unread ? ` ${n(res.unread)} Vorgänge sind noch nicht mit ihren Unterlagen gelesen; sie zählen beim Thema, aber noch ohne Unterthema.` : ""}</p>
             </>
           )}
         </div>
