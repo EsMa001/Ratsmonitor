@@ -501,6 +501,10 @@ Basic-Auth-Passwort, sobald sie geprüft ist.
 | `/srv/ratsmonitor/accounts/deleted.log` | Löschprotokoll (Hash der Konto-ID, HMAC der Adresse), für `reapply-deletions` nach dem Rückspielen |
 | `/srv/ratsmonitor/accounts/maintenance.log` | Protokoll des Kontojobs |
 
+**Sicherungsschlüssel:** öffentlicher age-Schlüssel `age1mdxuz50cc929xe6matw5c7y04xlt4hqnv2ma2j7wgywyc2frypgq2v0qr3`
+(seit 15.10.2026 in `/etc/ratsmonitor/accounts.env` als `ACCOUNTS_AGE_RECIPIENT`). Der private Teil liegt offline bei
+Max (Kopie für Nico); ohne ihn lassen sich die Kontosicherungen nicht wiederherstellen.
+
 **Einrichten (einmal, als root)**
 
 ```bash
