@@ -8,7 +8,7 @@
  * Neue Regeln: FACTS_VERSION erhöhen und das Skript erneut laufen lassen. Tests: tests/topic-facts.test.mjs.
  */
 import {itemKind} from './item-kind.mjs';
-export const FACTS_VERSION='facts-v26';
+export const FACTS_VERSION='facts-v27';
 // Satzende: Punkt, Semikolon, Frage- oder Ausrufezeichen, danach ein Großbuchstabe; nicht nach Ziffern („zum 1.8. um 5 %“)
 // und nicht nach Abkürzungen aus einem Buchstaben („e. V.“, „z. B.“)
 const SENTENCE=/(?<=[^0-9][.;!?])(?<!(?:^|[\s(])\p{L}\.)(?<!\b(?:Mio|Mrd|Tsd)\.)\s+(?=[A-ZÄÖÜ„"])/u;
@@ -381,6 +381,53 @@ const RESULT_RE=new RegExp(String.raw`\b(Jahresüberschuss\w*|Jahresfehlbetrag\w
 const NOT_RESULT_SENT=/Vorjahr|Plan(?:ansatz|wert|ung)?\b|geplant|prognos|erwartet|voraussichtlich|Wirtschaftsplan|Haushaltsplan|Prognose|aus dem Jahr|Vortrag aus|Gewinnvortrag|Verlustvortrag|kumuliert|verbesser|verschlechter|Abweichung|gegenüber|im Vergleich/i;
 // Lange „Sätze“ (Kopf der Vorlage ohne Punkt bis in den Beschluss): Fenster um jedes Ergebniswort statt den Satz zu verwerfen
 const resultWindows=s=>s.length<=1500?[s]:[...s.matchAll(/Jahresüberschuss|Jahresfehlbetrag|Jahresergebnis|Jahresgewinn|Jahresverlust|Bilanzgewinn|Bilanzverlust/gi)].slice(0,10).map(m=>s.slice(Math.max(0,m.index-150),m.index+250));
+/* Haushalt aus der Haushaltssatzung (§ 1, Ergebnishaushalt): Gesamtbetrag der Aufwendungen und Kredite für Investitionen in €.
+   Nachtragssatzungen nennen „bisher, Änderung, neu“: dann der neue Betrag. Nur Satzungen der Kommune selbst, keine Ortsgemeinden
+   (ohne Einwohnerzahl nicht vergleichbar), Eigenbetriebe, Zweckverbände, Genehmigungen oder Anträge. */
+const BUDGET_TITLE=/Haushaltssatzung|Haushaltsplan|Nachtragshaushalt/i;
+const NOT_BUDGET_TITLE=/Ortsgemeinde|\bOG\b|Genehmigung|Beanstandung|Widerspruch|Eckpunkte|Antrag|Anfrage|Stellungnahme|Kreisumlage|Zweckverband|Sondervermögen|Eigenbetrieb|Wirtschaftsplan|Stiftung|Schulverband|Bericht|Haushaltssicherung|Vollzug|Ausführung|Sachstand|Fraktion/i;
+const BUDGET_NUM=String.raw`(-?\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|-?\d{4,}(?:,\d{1,2})?)`;
+const AUFW_RE=new RegExp(String.raw`Gesamtbetrag der (?:ordentlichen )?Aufwendungen(?:\s+(?:auf|von|mit|in Höhe von))?\s*(?:EUR|Euro|€)?\s*`+BUDGET_NUM+String.raw`(?:\s*(?:EUR|Euro|€))?(?:\s+`+BUDGET_NUM+String.raw`\s+`+BUDGET_NUM+')?','i');
+const CREDIT_RE=new RegExp(String.raw`Kredite für Investitionen(?: und Investitionsförderungsmaßnahmen| und Investitionsfördermaßnahmen)?[^.§]{0,80}?(?:auf|in Höhe von|mit|von)\s*`+BUDGET_NUM+String.raw`\s*(?:EUR|Euro|€)`,'i');
+const euroOf=x=>Number(String(x).replace(/\./g,'').replace(',','.'));
+export function budgetOf(title,text){
+ const t=String(title||'');if(!BUDGET_TITLE.test(t)||NOT_BUDGET_TITLE.test(t))return null;
+ const src=String(text||'').replace(/\s+/g,' ').replace(/(\d)- (\d)/g,'$1$2').replace(/fest- ?gesetzt/g,'festgesetzt');
+ const out=[];
+ const a=src.match(AUFW_RE);
+ if(a){let v=euroOf(a[1]);
+  // Nachtrag: bisher + Änderung = neu
+  if(a[3]!==undefined){const b=euroOf(a[2]),c=euroOf(a[3]);if(Math.abs(v+b-c)<=2)v=c;}
+  if(v>=100000&&v<5e10)out.push({value:'Aufwendungen',euro:Math.round(v)});}
+ if(/Kredite für Investitionen[^.§]{0,80}?(?:werden )?nicht (?:veranschlagt|vorgesehen|festgesetzt)/i.test(src))out.push({value:'Investitionskredite',euro:0});
+ else{const c=src.match(CREDIT_RE);if(c&&!/Verpflichtungsermächtigung/i.test(src.slice(Math.max(0,c.index-80),c.index))){
+  // „ändert sich von bisher X auf Y“
+  const later=src.slice(c.index,c.index+c[0].length+80).match(new RegExp(String.raw`von bisher\s*`+BUDGET_NUM+String.raw`\s*(?:EUR|Euro|€)?\s*auf\s*`+BUDGET_NUM));
+  const v=euroOf(later?later[2]:c[1]);if(v>=0&&v<5e10)out.push({value:'Investitionskredite',euro:Math.round(v)});}}
+ return out.length?out:null;
+}
+
+/* Steuersätze der Zweitwohnungsteuer (% der Nettokaltmiete) und der Vergnügungssteuer auf Spielgeräte (% vom Spieleinsatz oder
+   vom Einspielergebnis), zuerst aus dem Beschlussvorschlag. „von X % auf Y %“: der neue Satz. Keine Vergleiche mit anderen
+   Kommunen, Empfehlungen, Spannen oder bisherigen Sätze; keine Anträge und Anfragen von Fraktionen. */
+const TAXRATE_NUM=String.raw`(\d{1,2}(?:,\d{1,2})?)\s*(?:%|v\.\s?H\.|vom Hundert|Prozent)`;
+const TAXRATE_RES=[new RegExp(String.raw`von\s*(?:bisher\s*)?`+TAXRATE_NUM+String.raw`\s*(?:netto|brutto)?\s*(?:auf|zu)\s*`+TAXRATE_NUM,'gi'),
+ new RegExp(String.raw`(?:Steuersatz|Steuer beträgt|Prozentsatz|Steuersätze?|beträgt die Steuer|Steuer wird)[^.;%]{0,80}?(?:auf|beträgt|in Höhe von|von|mit)\s*`+TAXRATE_NUM,'gi')];
+const NOT_TAXRATE=/vergleichbar|Vergleich|Umfrage|Städte|Kommunen|Gemeinden|Landkreis|Kreis \p{Lu}|empfohlen|empfiehlt|mindestens|höchstens|zwischen|bis zu|derzeit|bisher(?!\s*\d)|aktuell|damals|früher|Durchschnitt|Mittel|z\.\s?B\.|beispielsweise|Variante|Alternativ/iu;
+function rateOf(title,text,{titleRe,lo,hi,base}){
+ const t=String(title||'');if(!titleRe.test(t)||/Anfrage|Antrag (der|des)|Fraktion|Bericht|Aufkommen|Erlass von|Stundung/i.test(t))return null;
+ const pick=src=>{for(const s of String(src||'').replace(/\s+/g,' ').replace(/(\p{Ll})- (\p{Ll})/gu,'$1$2').split(SENTENCE)){if(s.length>1200)continue;
+  for(const [i,re] of TAXRATE_RES.entries())for(const m of s.matchAll(re)){
+   const near=s.slice(Math.max(0,m.index-120),m.index+m[0].length+40);if(NOT_TAXRATE.test(i===0?s.slice(Math.max(0,m.index-120),m.index):near))continue;
+   const v=Number((i===0?m[2]:m[1]).replace(',','.'));if(v<lo||v>hi)continue;
+   return {v,base:base?base(near,v):'Steuersatz'};}}
+  return null;};
+ const r=pick(decision(text))??pick(text);return r&&{value:r.base,rate:String(r.v)};
+}
+export const secondHomeTaxOf=(title,text)=>rateOf(title,text,{titleRe:/Zweitwohnung/i,lo:3,hi:40});
+export const amusementTaxOf=(title,text)=>rateOf(title,text,{titleRe:/Vergnügungssteuer/i,lo:2,hi:40,
+ base:(near,v)=>/Einspielergebnis|Bruttokasse/i.test(near)?'vom Einspielergebnis':/Spieleinsatz|Einsatz/i.test(near)?'vom Spieleinsatz':v<=10?'vom Spieleinsatz':'vom Einspielergebnis'});
+
 export function annualResultOf(title,text){
  const t=String(title||'');if(!RESULT_TITLE.test(t)||NOT_RESULT_TITLE.test(t))return null;
  // „i.H.v.“ würde den Satz an der Abkürzung trennen
@@ -790,6 +837,8 @@ export function factsOf(title,text){
  const road=roadWorkOf(title,text);if(road)rows.push({kind:'road',value:road.value,detail:road.euro});
  const wind=windCountOf(title,text);if(wind)rows.push({kind:'wind_count',value:wind===1?'1 Anlage':wind<=4?'2 bis 4 Anlagen':wind<=9?'5 bis 9 Anlagen':'10 und mehr Anlagen',detail:String(wind)});
  const heat=heatPlanOf(title,text);if(heat)rows.push({kind:'heat_plan',value:heat,detail:''});
+ for(const [kind,fn] of [['second_home_tax',secondHomeTaxOf],['amusement_tax',amusementTaxOf]]){const r=fn(title,text);if(r)rows.push({kind,value:r.value,detail:r.rate});}
+ for(const b of budgetOf(title,text)||[])rows.push({kind:'budget',value:b.value,detail:String(b.euro)});
  const result=annualResultOf(title,text);if(result)rows.push({kind:'annual_result',value:result.value,detail:String(result.euro)});
  const ee=eePowerOf(title,text);if(ee)rows.push({kind:'ee_power',value:ee.value,detail:String(ee.mw)});
  const dog=dogTaxOf(title,text);if(dog)rows.push({kind:'dog_tax',value:dog.value,detail:dog.euro});

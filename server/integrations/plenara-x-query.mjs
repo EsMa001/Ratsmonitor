@@ -38,28 +38,28 @@ import {POPULATION} from '../../shared/catalog.mjs';
 import {peerGroup,wilson,quantile,classify,windowOf,NORM_RULE} from './peer-norms.mjs';
 
 export const X_BY=['region','month','theme','sub','stage','status'];
-export const X_FACTS=['faction','annual_result','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','ee_power','land_price','plot_price','dog_tax','waste_fee','plan_area','wind_count','project','road','house_type','housing'];
+export const X_FACTS=['faction','annual_result','plan','plan_use','kita_fee','heat_plan','grant','hebesatz','fee_rate','ee_power','land_price','plot_price','dog_tax','waste_fee','plan_area','wind_count','project','road','house_type','housing','budget','second_home_tax','amusement_tax'];
 export const X_SUMS={housing:'Wohneinheiten'};
 /* Werte aus den Unterlagen im Atlas je Thema, mit Qualitätstor (Konzept 7: gezeigt ab 90 % gemessener Genauigkeit).
    Messung 13.10.2026 (docs/qualitaet/plenara-x/): Verfahrensschritt Bauleitplanung, Hebesätze, Fraktion nahe 100 %;
    Kita-Beiträge 75 %; übrige noch nicht gemessen. Förderung, Förderbeträge, Kita-Plätze und Parkgebühr seit 15.10.2026 verworfen. */
 export const X_FACT_NAMES={annual_result:'Jahresabschlüsse nach Ergebnis',plan:'Bauleitplanung nach Verfahrensschritt',plan_use:'Art des Plangebiets',hebesatz:'Hebesätze nach Steuerart',fee_rate:'Gebührensätze nach Art',
  heat_plan:'Kommunale Wärmeplanung nach Schritt',grant:'Zuschüsse an Vereine und Träger nach Zweck',kita_fee:'Kita-Beiträge nach Richtung',faction:'Anträge und Anfragen nach Fraktion',
- ee_power:'Wind- und Solarvorhaben nach Art',land_price:'Preise für Gewerbegrundstücke',plot_price:'Preise für Wohnbauplätze',dog_tax:'Hundesteuer für den ersten Hund',waste_fee:'Abfallgebühren',plan_area:'Fläche der Plangebiete',wind_count:'Zahl der Windenergieanlagen',project:'Vorhaben (Bürgerbus, Carsharing, WLAN, Ladesäulen)',road:'Straßenbau nach Art',house_type:'Art der Wohnbebauung'};
-export const X_FACT_GATE={house_type:false,road:false,project:false,wind_count:false,waste_fee:false,plan_area:false,plan:true,hebesatz:true,faction:true,annual_result:true,kita_fee:false,plan_use:true,fee_rate:true,heat_plan:true,grant:true,ee_power:false,land_price:true,plot_price:false,dog_tax:false};
+ ee_power:'Wind- und Solarvorhaben nach Art',land_price:'Preise für Gewerbegrundstücke',plot_price:'Preise für Wohnbauplätze',dog_tax:'Hundesteuer für den ersten Hund',waste_fee:'Abfallgebühren',plan_area:'Fläche der Plangebiete',wind_count:'Zahl der Windenergieanlagen',project:'Vorhaben (Bürgerbus, Carsharing, WLAN, Ladesäulen)',road:'Straßenbau nach Art',budget:'Haushalt (Aufwendungen, Investitionskredite)',second_home_tax:'Zweitwohnungsteuer',amusement_tax:'Vergnügungssteuer nach Maßstab',house_type:'Art der Wohnbebauung'};
+export const X_FACT_GATE={budget:false,second_home_tax:false,amusement_tax:false,house_type:false,road:false,project:false,wind_count:false,waste_fee:false,plan_area:false,plan:true,hebesatz:true,faction:true,annual_result:true,kita_fee:false,plan_use:true,fee_rate:true,heat_plan:true,grant:true,ee_power:false,land_price:true,plot_price:false,dog_tax:false};
 export const X_SUM_GATE={housing:false};
 const ATLAS_FACTS={bauen:[['plan','housing'],['plan_use'],['plan_area'],['plot_price']],finanzen:[['hebesatz'],['annual_result'],['dog_tax']],umwelt:[['heat_plan'],['fee_rate'],['waste_fee'],['ee_power'],['wind_count']],mobilitaet:[['project'],['road']],wirtschaft:[['land_price']],soziales:[['grant']],kultur:[['grant']],
  bildung:[['kita_fee']]};
 /* plenara.X Fakten (view=fakten): Werte für die Karte, Farbe nach Richtung (hoch ist schlecht: rot, hoch ist gut: grün).
    Gezeigt nur ab 90 % gemessener Qualität (shared/rule-quality.json); die übrigen stehen bereit, bis sie das Ziel erreichen. */
-export const MAP_FACTS=[['hebesatz','bad',true],['housing','amount',false],['fee_rate','bad',true],['annual_result','good',true],['land_price','bad',true],
+export const MAP_FACTS=[['hebesatz','bad',true],['housing','amount',false],['budget','amount',false],['second_home_tax','bad',false],['amusement_tax','bad',false],['fee_rate','bad',true],['annual_result','good',true],['land_price','bad',true],
  ['kita_fee','bad',false],['dog_tax','bad',false],['plot_price','bad',false],['grant','good',false],['ee_power','good',false]];
-export const MAP_FACT_NAMES={hebesatz:'Hebesätze',fee_rate:'Wasser- und Abwassergebühren',annual_result:'Jahresergebnis',land_price:'Gewerbegrundstücke (€/m²)',housing:'Geplante Wohneinheiten',
+export const MAP_FACT_NAMES={hebesatz:'Hebesätze',fee_rate:'Wasser- und Abwassergebühren',annual_result:'Jahresergebnis',land_price:'Gewerbegrundstücke (€/m²)',housing:'Geplante Wohneinheiten',budget:'Haushalt je Einwohner',second_home_tax:'Zweitwohnungsteuer',amusement_tax:'Vergnügungssteuer',
  kita_fee:'Kita-Gebühren',dog_tax:'Hundesteuer',plot_price:'Wohnbauplätze (€/m²)',grant:'Zuschüsse',ee_power:'Wind und Solar (MW)'};
 export const X_LIST_SIZE=50;
 /* Zahl hinter einem Wert (erstes Feld von detail) und ihre Einheit; Fakten ohne Eintrag sind nur Kategorien (Schritt, Fraktion).
    Gebührensätze tragen die Einheit im dritten Feld (m³ oder m²). Ein Zuschuss ohne Betrag hat keine Zahl. */
-const X_FACT_NUM={road:'€',plan_area:'ha',wind_count:'Anlagen',hebesatz:'%',fee_rate:'€/',annual_result:'€',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',plot_price:'€/m²',grant:'€',kita_fee:'€ im Monat',housing:'Wohneinheiten'};
+const X_FACT_NUM={road:'€',plan_area:'ha',wind_count:'Anlagen',hebesatz:'%',fee_rate:'€/',annual_result:'€',ee_power:'MW',dog_tax:'€ im Jahr',land_price:'€/m²',plot_price:'€/m²',grant:'€',kita_fee:'€ im Monat',housing:'Wohneinheiten',budget:'€',second_home_tax:'%',amusement_tax:'%'};
 const factNum=(kind,detail)=>{if(!X_FACT_NUM[kind])return null;const parts=String(detail??'').split('|'),v=Number(parts[0]);
  return parts[0]!==''&&Number.isFinite(v)&&!(kind==='grant'&&v===0)?{v,unit:kind==='fee_rate'?'€/'+(parts[2]||'m³'):X_FACT_NUM[kind]}:null;};
 const fmtNum=(v,unit)=>`${v.toLocaleString('de-DE',{maximumFractionDigits:Math.abs(v)>=100?0:2})} ${unit}`;
@@ -242,7 +242,9 @@ async function factMaps(db,catalog,src,x,kinds){
  for(const r of results){
   const ags=member.get(r.card)||'',key=r.g+'|'+ags;
   const k=by.get(r.kind)||new Map();by.set(r.kind,k);const g=k.get(key)||{g:r.g,ags,cases:new Set(),v:new Map()};k.set(key,g);g.cases.add(r.ck);
-  const num=factNum(r.kind,r.d);if(!num)continue;const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,{...num,dt:String(r.dt||'').slice(0,10)});
+  let num=factNum(r.kind,r.d);if(!num)continue;
+  // Haushalt je Einwohner: nur mit Einwohnerzahl des Gebiets, nicht für genannte Mitgliedsgemeinden
+  if(r.kind==='budget'){if(ags||!POPULATION[r.g])continue;num={v:Math.round(num.v/POPULATION[r.g]),unit:'€ je Einwohner'};}const vv=g.v.get(r.v)||new Map();g.v.set(r.v,vv);if(!vv.has(r.ck))vv.set(r.ck,{...num,dt:String(r.dt||'').slice(0,10)});
  }
  for(const [kind,k] of by)out.set(kind,[...k.values()].map(({g,ags,cases,v})=>({key:g,...(ags?{ags}:{}),n:cases.size,v:Object.fromEntries([...v].map(([val,m])=>{const nums=[...m.values()],unit=nums[0].unit,vs=nums.filter(u=>u.unit===unit).map(u=>u.v);return [val,{n:vs.length,median:median(vs),unit,...latest(nums.filter(u=>u.unit===unit))}];}))})));
  return out;

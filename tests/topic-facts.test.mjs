@@ -248,3 +248,14 @@ test('Art der Wohnbebauung (facts-v26)', () => {
   assert.deepEqual(houseTypesOf('Bebauungsplan Nr. 12', 'Im Plangebiet sind Mehrfamilienhäuser mit geförderten Wohnungen vorgesehen.'), ['Mehrfamilienhäuser', 'Geförderter Wohnungsbau']);
   assert.deepEqual(houseTypesOf('Bebauungsplan Nr. 12', 'Die angrenzende Bebauung besteht aus Reihenhäusern.'), []);
 });
+
+test('Haushalt, Zweitwohnungsteuer und Vergnügungssteuer: neuer Wert, keine Vergleiche',async()=>{
+ const {budgetOf,secondHomeTaxOf,amusementTaxOf}=await import('../shared/topic-facts.mjs');
+ assert.deepEqual(budgetOf('1. Nachtragshaushaltssatzung 2026','im Ergebnishaushalt der Gesamtbetrag der Aufwendungen auf 25.790.888 24.600 25.815.488 der Jahresüberschuss'),[{value:'Aufwendungen',euro:25815488}]);
+ assert.deepEqual(budgetOf('Haushaltssatzung 2026','Gesamtbetrag der Aufwendungen auf 12.345.678 EUR § 2 Kredite für Investitionen werden nicht veranschlagt.'),[{value:'Aufwendungen',euro:12345678},{value:'Investitionskredite',euro:0}]);
+ assert.equal(budgetOf('Nachtragshaushaltssatzung der Ortsgemeinde Schiersfeld','Gesamtbetrag der Aufwendungen 345.381'),null);
+ assert.deepEqual(secondHomeTaxOf('Zweitwohnungssteuersatzung','Die Satzung soll den Steuersatz der Zweitwohnungssteuer auf 14 % festsetzen.'),{value:'Steuersatz',rate:'14'});
+ assert.equal(secondHomeTaxOf('Zweitwohnungssteuer','Verwaltungsseitig wird ein Steuersatz von mindestens 15 % empfohlen.'),null);
+ assert.deepEqual(amusementTaxOf('Vergnügungssteuersatzung','Anpassung beim Spieleinsatz von 3,5 % auf 5,0 % vor.'),{value:'vom Spieleinsatz',rate:'5'});
+ assert.deepEqual(amusementTaxOf('Vergnügungssteuer','Der Steuersatz wurde von 23% netto auf 25 % netto erhöht.'),{value:'vom Einspielergebnis',rate:'25'});
+});
