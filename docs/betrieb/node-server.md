@@ -465,6 +465,8 @@ Schritte: `shared/pipeline-terms.mjs`.
   Einträge, lässt er aus. Die KI startet nie von selbst.
 - **Debug-Seite** (vorübergehend): `/admin?seite=debug`: Laufbuch des Zeitplaners (`schedule-log`), was die Läufe getan haben, Wege der
   Berichte, Fehlerspeicher des Tagesbereichs mit „freigeben“ und „erneut“.
+- **Nachtbericht** (nur lesend, ohne Deploy): `ssh ratsmonitor 'node --input-type=module - --hours 30' < scripts/pipeline-report.mjs`: Schalter,
+  Laufbuch je Job, Abruf, Extraktion, Verarbeitung, Nacharbeit, Fehlerspeicher (neu, fällig, Gründe), Server und auffällige Journalzeilen je Einheit.
 
 **Einrichten** (einmal, als root, nach dem Deploy des Stands):
 
