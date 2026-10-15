@@ -484,7 +484,18 @@ install -m 755 deploy/node/backup.sh /usr/local/bin/ratsmonitor-backup   # nur, 
 Danach die Jobs im Reiter „Jobs & Zeitpläne“ einschalten. Der erste Lauf von `fetch.mjs` oder `text.mjs` überträgt die alten
 Fehler (einige Sekunden). Sicherung außer Haus: `BACKUP_REMOTE` (rclone-Ziel) in `ratsmonitor.env`, rclone installieren.
 
-## Konten (Thema 1, seit 13.10.2026 im Code, auf dem Server noch nicht eingerichtet)
+## Konten (Thema 1, seit 13.10.2026 im Code, seit 15.10.2026 auf dem Server)
+
+**Stand auf dem Server (15.10.2026, d82b772):** Schritte 1 und 2 von „Umstellen ohne Ausfall“ erledigt (Caddy
+Schritt 0, `RM_ACCESS=open`, `ADMIN_LEGACY_HEADER=1`, `MAIL_TRANSPORT=log`, Stufengrenzen aktiv: wer nicht angemeldet
+ist, hat Gast-Rechte). Kontojob, Pfad- und Stopp-Einheiten aktiv, Sicherung mit age geprüft. Konto Max (Enterprise,
+admin) angelegt; Nico fehlt noch. Sicherungen vor dem Umbau: `ratsmonitor.env.bak-vor-konten-20261015-1801`,
+`/etc/caddy/Caddyfile.bak-vor-konten-20261015-1801`, `/root/units-bak-vor-konten-20261015-1801/`.
+
+**Anmelden ohne Mailanbieter:** Mit `MAIL_TRANSPORT=log` bietet die Anmeldeseite keine Anmeldung per Mail an. Admins
+melden sich mit `LOGIN_TOTP=1` (in `ratsmonitor.env`) über E-Mail-Adresse und Code aus der Authenticator-App an
+(Konzept, Nachtrag 15.10. abends). Den zweiten Faktor einrichten: im Tunnel unter `/admin` oder
+`ratsmonitor-accounts totp-setup --id u_…` (zeigt den Schlüssel einmal im Terminal). Alle anderen: `login-link`.
 
 Konzept: `requirements/konten-konzept.md`. Anmeldung per E-Mail-Link oder achtstelligem Code, ohne Passwort. Admin ist
 eine Rolle am Konto und gilt nur über den Tunnel (`ADMIN_HOSTS`). Die Zugangssperre `RM_ACCESS=invite` ersetzt das

@@ -35,10 +35,16 @@ export function accountsConfig(env,{dev=isDev()}={}){
    apiUrl:env?.MAIL_API_URL, apiKey:env?.MAIL_API_KEY,
    from:env?.MAIL_FROM||'Plenara <anmeldung@plenara.test>', replyTo:env?.MAIL_REPLY_TO, operator:env?.OPERATOR_EMAIL,
   },
+  // Anmelden mit E-Mail-Adresse und Code aus der Authenticator-App, ohne Mail (nur Konten mit eingerichtetem zweiten
+  // Faktor, also Admins): ausdrücklich mit 1. Das ist ein Faktor statt zwei (Link aus der Mail und App), gedacht für die
+  // Zeit ohne Mailanbieter hinter dem Passwort der Seite (requirements/konten-konzept.md 6.4)
+  totpLogin:env?.LOGIN_TOTP==='1',
   hooks:env?.ACCOUNTS_HOOKS,
   internalToken:env?.IMPORT_TOKEN,
  };
 }
+/** Anmelden per Link und Code aus der Mail: nur mit echtem Versand (Transport log verschickt nichts) */
+export const mailLogin=cfg=>cfg.mail.transport!=='log';
 /** Basisadresse für Links in Mails: nur SITE_URL, im Dev-Server die Origin der Anfrage (Handy im WLAN) */
 export function siteBase(cfg,request){
  if(cfg.siteUrl)return cfg.siteUrl;

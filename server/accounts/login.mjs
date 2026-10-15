@@ -3,7 +3,7 @@
 // alles, was von der Adresse abhängt, läuft nach der Antwort (later). Tokens und Codes nur als Hash, einmal einlösbar.
 import {randomToken,randomId,sha256hex,randomCode,normalizeCode,hmacHex} from './crypto.mjs';
 import {AccountError,respond,requireSameOrigin,readJson,parseCookies,cookieNames,setCookie,clientIp,deviceLabel} from './http.mjs';
-import {accountsConfig,siteBase} from './config.mjs';
+import {accountsConfig,siteBase,mailLogin} from './config.mjs';
 import {limitedAll} from './rate-limit.mjs';
 import {createSession,readSession,refreshSession,renewDue,effectiveTier,rolesOf,eventStatement,ADMIN_AUTH_MAX_MS} from './sessions.mjs';
 import {sendMail,processOutbox} from './mail.mjs';
@@ -44,6 +44,8 @@ export async function currentSession(ctx){
 // ---------------------------------------------------------------- Link anfordern
 export async function requestLink(ctx){
  requireSameOrigin(ctx.request);
+ // Ohne Mailversand käme nie eine Mail an (Notzugang: ratsmonitor-accounts login-link, Admins: Code aus der App)
+ if(!mailLogin(ctx.cfg))throw new AccountError(503,'Die Anmeldung per E-Mail ist noch nicht freigeschaltet.');
  const body=await readJson(ctx.request,2048);
  const email=normalizeEmail(body.email);
  if(!email)throw new AccountError(400,'Bitte eine gültige E-Mail-Adresse eingeben.');
@@ -181,8 +183,11 @@ async function noticeCodeLocked(ctx,flowHash){
  await processOutbox(db,cfg,{site,now});
 }
 
-/** Gemeinsamer Abschluss von Link und Code: Konto anlegen oder prüfen, neue Sitzung, Cookie */
-async function completeLogin(ctx,used,consent){
+/**
+ * Gemeinsamer Abschluss von Link, Code und App-Code: Konto anlegen oder prüfen, neue Sitzung, Cookie. adminVerified: der
+ * zweite Faktor ist mit dieser Anmeldung schon geprüft (Anmelden mit App-Code); extra: weitere Anweisungen im selben Batch.
+ */
+export async function completeLogin(ctx,used,consent,{adminVerified=false,extra=[]}={}){
  const {db,cfg,now,names}=ctx,at=iso(now);
  let user=await db.prepare('SELECT id,email,status FROM users WHERE email=?').bind(used.email).first();
  const statements=[];let created=false,grant=null;
@@ -211,7 +216,8 @@ async function completeLogin(ctx,used,consent){
  const session=await createSession(db,{userId:user.id,adminHost:isAdminHost(ctx),device:deviceLabel(ctx.request.headers.get('user-agent')),now});
  statements.push(session.statement,
   db.prepare('UPDATE users SET last_login_at=? WHERE id=?').bind(at,user.id),
-  eventStatement(db,{userId:user.id,kind:'login',now}));
+  eventStatement(db,{userId:user.id,kind:'login',now}),...extra);
+ if(adminVerified)statements.push(db.prepare('UPDATE sessions SET admin_verified_at=? WHERE id=?').bind(at,session.id));
  await db.batch(statements);
  const cookies=[setCookie(names.session,session.value,{maxAge:session.maxAge,secure:names.secure}),setCookie(names.flow,'',{maxAge:0,secure:names.secure,sameSite:'Strict'})];
  const response=respond({ok:true,created,next:safeNext(used.next||'/')},{cookies});
@@ -269,7 +275,8 @@ export async function accountState(ctx,session){
 const senderOf=from=>String(from||'').match(/<([^>]+)>/)?.[1]||(/^[^\s<>]+@[^\s<>]+$/.test(String(from||''))?String(from):null);
 export async function me(ctx){
  const session=await currentSession(ctx);
- const common={accounts:true,access:ctx.cfg.access??'open',sender:senderOf(ctx.cfg.mail.from)};
+ // login: welche Wege die Anmeldeseite anbietet (Link und Code per Mail, E-Mail-Adresse und Code aus der App)
+ const common={accounts:true,access:ctx.cfg.access??'open',sender:senderOf(ctx.cfg.mail.from),login:{mail:mailLogin(ctx.cfg),totp:!!ctx.cfg.totpLogin}};
  if(!session)return {response:respond({...common,tier:'guest',features:FEATURES.guest,limits:limitsJson('guest')})};
  const {tier,realTier,roles,admin,adminHere,totpConfirmed}=await accountState(ctx,session);
  return {response:respond({...common,user:{id:session.user_id,email:session.email,name:session.name},
