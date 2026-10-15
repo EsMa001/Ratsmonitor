@@ -9,9 +9,9 @@ import { IconCenter, IconMinus, IconPlus } from "../../components/icons";
    (levels: Gemeindeschlüssel → Stufe), Klick wählt eine Gemeinde. Lage nur auf Gemeindeebene. */
 const glass = "rm-glass";
 
-export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors }: {
+export function RegionMap({ levels, legend, label, picked, onPick, info, level = "city", note, colors, tall = false }: {
   levels: Record<string, number>; legend: string[]; label: string; picked: string; onPick: (ags: string) => void; info?: React.ReactNode;
-  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[];
+  /* Gemeinden (Schlüssel 8 Stellen) oder Kreise (5 Stellen) */ level?: "city" | "district"; /* Zusatz unter der Legende, z. B. „grau: zu wenig Daten“ */ note?: string; /* eigene Farben je Stufe (sonst Abdeckung) */ colors?: string[]; /* höher auf breiten Bildschirmen (Atlas: halbe Breite) */ tall?: boolean;
 }) {
   const { geo } = useData();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -50,7 +50,7 @@ export function RegionMap({ levels, legend, label, picked, onPick, info, level =
   useEffect(() => { if (!engine) return; if (shown.length) engine.focusMany(shown); else engine.focusArea(""); }, [engine, shown]);
 
   return (
-    <div className="relative h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[540px]">
+    <div className={`relative h-[420px] overflow-hidden rounded-[22px] border border-slate-200 sm:h-[540px] ${tall ? "lg:h-[720px]" : ""}`}>
       <div ref={stageRef} className="absolute inset-0 touch-none select-none overflow-hidden bg-map-ground">
         <canvas ref={baseRef} aria-hidden="true" className="absolute left-0 top-0 block h-full w-full" />
         <canvas ref={overRef} role="img" aria-label={label} className="absolute left-0 top-0 block h-full w-full" />

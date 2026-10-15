@@ -349,7 +349,7 @@ export const QUALITY_FIGURE_HELP:Record<string,string>={
 };
 export const QUALITY_TEXT={
  sachgebiete:'Themen',
- sachgebieteNotiz:'Nach den festen Regeln aus dem Titel (Stufe 02), Anteil an allen Berichten. „Noch nicht eingeordnet“: Sachpunkte ohne Thema; Formalien sind nicht mitgezählt.',
+ sachgebieteNotiz:'Nach den festen Regeln aus dem Titel (Stufe 02), Anteil an allen Berichten. „Sonstiges“: Sachpunkte ohne Thema; Formalien sind nicht mitgezählt.',
  unbekannt:'Aus der Quelle geht nicht hervor, wie weit der Vorgang ist.',
  pruefliste:'Prüfliste',
  prueflisteNotiz:'Bis zu 25 zuletzt geänderte Berichte, die zum Prüfgrund passen. Die Links öffnen den Bericht in einem neuen Tab.',

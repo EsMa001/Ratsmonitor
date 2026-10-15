@@ -146,22 +146,26 @@ export function SignalePage() {
 
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
+      <PageBand compact>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Signale</p>
-        <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">plenara.X Signale</h1>
-        <p className="mt-2 max-w-[680px] text-[16px] text-slate-500">Wo gerade etwas entsteht: neue Baugebiete, Windparks, Wärmeplanung und mehr, aus den Vorlagen der Räte gelesen. Mit Ort, Stand des Verfahrens und Originalquelle.</p>
+        <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <h1 className="text-[28px] font-semibold leading-tight">plenara.X Signale</h1>
+          <p className="text-[16px] text-slate-500">Wo gerade etwas entsteht, mit Ort, Stand und Quelle.</p>
+        </div>
       </PageBand>
 
+      {/* Kacheln wie im Atlas: Icon über dem Namen, nur die gewählte Kategorie mit heller Fläche; Handy 4 je Reihe */}
       <nav aria-label="Signal" className="print:hidden">
-        <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+        <ul className="m-0 grid list-none grid-cols-4 gap-1 p-0 sm:flex sm:flex-wrap">
           {SIGNALE.map(([id, label]) => {
-            const c = res?.signals.find((s) => s.id === id)?.count;
+            const on = id === signal;
             const Icon = ICONS[id];
             return (
-              <li key={id}>
-                <button type="button" aria-pressed={id === signal} onClick={() => pick({ signal: id === "vergaben" ? "" : id, phase: "", art: "" })}
-                  className={`inline-flex h-7 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[12px] font-medium ${id === signal ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>
-                  {Icon && <Icon size={14} aria-hidden="true" />}{label}{c !== undefined && <span className={id === signal ? "text-slate-300" : "text-slate-500"}> {n(c)}</span>}
+              <li key={id} className="sm:w-[104px]">
+                <button type="button" aria-pressed={on} onClick={() => pick({ signal: id === "vergaben" ? "" : id, phase: "", art: "" })}
+                  className={`flex h-[76px] w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[12px] leading-tight ${on ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-50"}`}>
+                  {Icon && <Icon size={24} strokeWidth={1.2} aria-hidden="true" className={on ? "text-teal-700" : "text-slate-500"} />}
+                  <span className="line-clamp-2">{label}</span>
                 </button>
               </li>
             );

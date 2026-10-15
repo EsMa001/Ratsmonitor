@@ -37,10 +37,12 @@ export function AtlasPage() {
   const pick = (next: { thema?: string; sub?: string }) => router.push(atlasHref(next), { scroll: false });
   return (
     <main id="inhalt" className="w-full px-[max(1vw,16px)] pb-10 text-slate-900">
-      <PageBand>
+      <PageBand compact>
         <p className="text-[14px] text-slate-500"><Link href="/analytics/ueber" className="text-teal-700">plenara.X</Link> / Atlas</p>
-        <h1 className="mt-1 text-[28px] font-semibold leading-tight sm:text-[44px]">plenara.X Atlas</h1>
-        <p className="mt-1 max-w-[680px] text-[16px] text-slate-500">Worüber die Räte beraten, nach 10 Themen. Thema wählen, mit Ort oder Begriff eingrenzen.</p>
+        <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <h1 className="text-[28px] font-semibold leading-tight">plenara.X Atlas</h1>
+          <p className="text-[16px] text-slate-500">Worüber die Räte beraten, nach 10 Themen.</p>
+        </div>
       </PageBand>
       {/* Handy: 4 Kacheln je Reihe untereinander, kein waagerechtes Scrollen; ab sm eine Reihe */}
       <nav aria-label="Thema des Atlas" className="mt-2 sm:-mx-[max(1vw,16px)] sm:overflow-x-auto sm:px-[max(1vw,16px)] print:hidden">

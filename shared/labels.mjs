@@ -10,7 +10,7 @@ const COLORS={bauen:'#945432',finanzen:'#526086',mobilitaet:'#2b6f91',bildung:'#
  kultur:'#a14a60',sicherheit:'#965134',verwaltung:'#64606e',wirtschaft:'#86682e'};
 export const LABELS=[
  ...THEMES.map(t=>({id:t.id,name:t.name,color:COLORS[t.id]})),
- {id:'unklar',name:'Noch nicht eingeordnet',color:'#777777'}
+ {id:'unklar',name:'Sonstiges',color:'#777777'}
 ];
 /** Übersetzung der 16 Labels aus labels-v2; Formalien erkennt die Suche über itemKind (drizzle/0033), nicht über ein Label. */
 export const LEGACY_LABELS={bildung:'bildung',bauen:'bauen',mobilitaet:'mobilitaet',umwelt:'umwelt',klima:'umwelt',soziales:'soziales',
@@ -33,7 +33,7 @@ export function labelFilterName(name){
  const id=LEGACY_LABELS[old];return id==='unklar'?'':LABELS.find(l=>l.id===id).name;
 }
 /** Name eines Labels; alte Kennungen (labels-v2, etwa ein gespeichertes KI-Label „sport“) übersetzt. */
-export const labelName=id=>LABELS.find(x=>x.id===(LEGACY_LABELS[id]||id))?.name||'Noch nicht eingeordnet';
+export const labelName=id=>LABELS.find(x=>x.id===(LEGACY_LABELS[id]||id))?.name||'Sonstiges';
 /** Titelregel: Stufen 2 und 3 von readReport (server/integrations/report-rules.mjs) ohne Text, also Art des Punkts und Thema
  *  nur aus dem Titel. Gilt, bis read-reports.mjs den Bericht mit seinem Dokument gelesen hat (payload.theme).
  *  @param {any} t */

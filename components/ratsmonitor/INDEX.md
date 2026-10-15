@@ -803,7 +803,7 @@ topic design-styles.css:140
 - AnalyticsLocked.tsx (50): AnalyticsLocked
 - AnalyticsPages.tsx (73): AnalyticsPages
 - AtlasFrame.tsx (7): Frame
-- AtlasPage.tsx (63): ATLAS_THEMEN, atlasHref, AtlasPage
+- AtlasPage.tsx (65): ATLAS_THEMEN, atlasHref, AtlasPage
 - Befund.tsx (52): Befund, zuThema
 - BeschluessePage.tsx (189, ⚠7): BeschluessePage
 - CompareCharts.tsx (89): PLACE_COLORS, CMonth, CompareLines, TopicRow, TopicPair
@@ -821,15 +821,15 @@ topic design-styles.css:140
 - Laden.tsx (25): Laden
 - NetView.tsx (179, ⚠1): NNode, NEdge, ROLE, NetView
 - NewsradarPage.tsx (110, ⚠1): NewsradarPage
-- PageBand.tsx (17): PageBand
-- RadarDrill.tsx (89): DrillItem, StatusDot, RadarDrill
+- PageBand.tsx (18): PageBand
+- RadarDrill.tsx (90): DrillItem, StatusDot, RadarDrill
 - RadarThumbs.tsx (123): RADAR_THUMBS
-- RegionMap.tsx (74): RegionMap
+- RegionMap.tsx (74, ⚠1): RegionMap
 - Reveal.tsx (16): Reveal
-- SignalePage.tsx (255, ⚠2): signaleHref, SignalePage
+- SignalePage.tsx (259, ⚠2): signaleHref, SignalePage
 - TrendViews.tsx (72): Trend, TrendKind, Spark, TrendMap
 - TrendsPage.tsx (189, ⚠8): TrendsPage
-- XAtlasView.tsx (429, ⚠2): XAtlasView
+- XAtlasView.tsx (475, ⚠2): XAtlasView
 - useAnalysisRun.ts (53): useAnalysisRun
 - useAnalyticsQuery.ts (28): useAnalyticsQuery
 

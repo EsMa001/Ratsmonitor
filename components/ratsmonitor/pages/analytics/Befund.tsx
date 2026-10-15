@@ -7,7 +7,7 @@ import { prettyTerm } from "../../lib/terms";
 const heute = () => { const d = new Date(); return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getFullYear()).slice(2)}`; };
 
 /** Link kopieren, Drucken und Herkunft der Zahlen: unter dem Befund jeder Auswertung */
-function AnalyseLeiste() {
+function AnalyseLeiste({ link = true }: { link?: boolean }) {
   const { text } = useSearchResults();
   const toast = useToast();
   /* Beim Drucken (auch mit Strg+P) alle eingeklappten Blöcke zeigen und danach wieder einklappen */
@@ -29,8 +29,7 @@ function AnalyseLeiste() {
     <>
     <p className="m-0 mt-2 hidden text-[14px] text-slate-500 print:block">{text.trim() ? `Suchbegriff „${prettyTerm(text.trim())}“ · ` : ""}Berechnet am {heute()} aus den Ratsinformationssystemen der Kommunen · plenara.X</p>
     <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] print:hidden">
-      <button type="button" onClick={kopieren} className="font-medium text-teal-700">Link kopieren</button>
-      <button type="button" onClick={() => window.print()} className="font-medium text-teal-700">Drucken oder als PDF</button>
+      {link && <button type="button" onClick={kopieren} className="font-medium text-teal-700">Link kopieren</button>}
       <span className="text-slate-500">Berechnet am {heute()} aus den Ratsinformationssystemen der Kommunen · <Link href="/analytics/ueber#methodik" className="text-teal-700">Methodik</Link></span>
     </div>
     </>
@@ -38,11 +37,12 @@ function AnalyseLeiste() {
 }
 
 /** Der Befund einer Auswertung in einem Satz, vor den Zahlen */
-export function Befund({ children }: { children: ReactNode }) {
+/** link: „Link kopieren“ zeigen (der Atlas verzichtet darauf) */
+export function Befund({ children, link = true, tight = false }: { children: ReactNode; link?: boolean; tight?: boolean }) {
   return (
-    <div className="mt-8">
-      <p className="m-0 max-w-[860px] text-[22px] font-medium leading-snug text-slate-900">{children}</p>
-      <AnalyseLeiste />
+    <div className={tight ? "mt-4" : "mt-8"}>
+      <p className={`m-0 text-[22px] font-medium leading-snug text-slate-900 ${tight ? "" : "max-w-[860px]"}`}>{children}</p>
+      <AnalyseLeiste link={link} />
     </div>
   );
 }

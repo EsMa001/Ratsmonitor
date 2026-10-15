@@ -198,7 +198,7 @@ export async function searchMonitor(db,catalog,params){
     es endet, sobald die Seite voll ist und ein weiterer Treffer zeigt, dass es weitergeht (oder alles gelesen ist). */
  if(f.part==='stream'){
   if(f.sort!=='desc'||f.page!==1)throw new SearchError('Der Strom liefert nur die erste Seite, neueste zuerst.');
-  const mapStream=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
+  const mapStream=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Sonstiges'}));
   return {stream:(async function*(){
    const revision=String((await db.prepare(REVISION_SQL).first())?.revision??0);
    /* Seltenes Wort: alle Treffer stehen in der Kandidatenliste, eine einzige Abfrage genügt */
@@ -253,7 +253,7 @@ export async function searchMonitor(db,catalog,params){
  const answers=await db.batch(statements);
  const rev=answers[0],rows=f.part==='facets'?{results:[]}:answers[1],placeRows=placeSql?answers[answers.length-1]:null,groups=pre?{results:[]}:answers[answers.length-1];
  const revision=String(rev.results[0].revision);
- const mapRows=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
+ const mapRows=list=>list.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Sonstiges'}));
  if(f.revision!==null&&f.revision!==revision)throw new SearchError('Der Datenstand wurde geändert. Bitte die Suche neu laden.',409);
  /* Ergebnisseite ohne Gesamtzahl: einen Treffer mehr gelesen als angezeigt, daran erkennt „Weiter“, ob es weitergeht */
  if(f.part==='page')return {articles:mapRows(rows.results.slice(0,limit)),hasMore:rows.results.length>limit,page:f.page,pageSize:limit,revision,storageAvailable:true};
@@ -267,7 +267,7 @@ export async function searchMonitor(db,catalog,params){
   /* Vorberechnet: ohne Filter liegt jedes Gebiet der Ebene im Umfang, Thema und Status sind die Summen der Wortliste */
   for(const [rid,n] of pre.regions){if(!byId.has(rid))continue;perRegion.set(rid,n);if(scopedIds.has(rid))total+=n;}
   for(const r of placeRows?placeRows.results:pre.facets){
-   const name=LABELS.find(l=>l.id===r.label)?.name||'Noch nicht eingeordnet';
+   const name=LABELS.find(l=>l.id===r.label)?.name||'Sonstiges';
    labelCounts[name]=(labelCounts[name]||0)+r.n;statusCounts[r.status]=(statusCounts[r.status]||0)+r.n;
   }
  }
@@ -276,7 +276,7 @@ export async function searchMonitor(db,catalog,params){
   const inScope=scopedIds.has(r.rid),labelOk=!labelId||r.label===labelId,statusOk=!f.status||r.status===f.status;
   if(inScope&&labelOk&&statusOk)total+=r.n;
   if(labelOk&&statusOk)perRegion.set(r.rid,(perRegion.get(r.rid)||0)+r.n);
-  if(inScope&&statusOk){const name=LABELS.find(l=>l.id===r.label)?.name||'Noch nicht eingeordnet';labelCounts[name]=(labelCounts[name]||0)+r.n;}
+  if(inScope&&statusOk){const name=LABELS.find(l=>l.id===r.label)?.name||'Sonstiges';labelCounts[name]=(labelCounts[name]||0)+r.n;}
   if(inScope&&labelOk)statusCounts[r.status]=(statusCounts[r.status]||0)+r.n;
  }
  for(const [rid,n] of perRegion)addArea(byId.get(rid),n);
@@ -343,6 +343,6 @@ export async function cardsById(db,catalog,ids){
  if(!ids.length)return [];
  const byId=new Map(catalog.map(r=>[r.id,r]));
  const {results}=await db.prepare(`${ROW_SELECT} WHERE id IN (SELECT value FROM json_each(?))`).bind(JSON.stringify(ids)).all();
- return results.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Noch nicht eingeordnet'}));
+ return results.map(({label,region_id,steps,src,...r})=>({...r,ags:byId.get(region_id)?.ags??'',gemeinde:byId.get(region_id)?.name??'',steps:sameCommune(JSON.parse(steps||'[]'),src).filter(x=>x.d).map(({u,...x})=>x).sort((x,y)=>x.d<y.d?-1:1),regionId:region_id,thema:LABELS.find(l=>l.id===label)?.name||'Sonstiges'}));
 }
 function sameCommune(steps,src){return src?steps.filter(x=>!x.u||sameHost(x.u,src)):steps;}
