@@ -4,6 +4,8 @@
  * Browser. Adressen nie als Argument (Shell-Historie, journald): --email-stdin liest sie von der Eingabe, sonst --id.
  *
  *   ratsmonitor-accounts invite --email-stdin --note "Gespräch 14.10." [--tier pro --until 2027-01-31] [--days 30] [--send]
+ *   ratsmonitor-accounts create --email-stdin --note "eigenes Konto" [--tier enterprise [--until …]] [--admin]
+ *                        Konto direkt anlegen (Betreiber, ohne Mail), danach Anmeldung mit login-link
  *   ratsmonitor-accounts role admin|user (--id u_… | --email-stdin)
  *   ratsmonitor-accounts tier basic|pro|enterprise [--until 2027-01-31] [--source manual|beta] (--id | --email-stdin)
  *   ratsmonitor-accounts block --note "Grund" | unblock | revoke | delete (--id | --email-stdin)
@@ -75,6 +77,24 @@ const untilDate=value=>{if(!value)return null;if(!/^\d{4}-\d{2}-\d{2}$/.test(val
 const site=()=>{if(!cfg.siteUrl)fail('SITE_URL ist nicht gesetzt.');return cfg.siteUrl;};
 
 switch(command){
+ case 'create':{
+  const note=option('--note'),tier=option('--tier'),until=untilDate(option('--until')),admin=flag('--admin');
+  if(!note)fail('--note mit Anlass ist Pflicht.');
+  if(tier&&(!validTier(tier)||tier==='guest'))fail('Stufe: basic, pro oder enterprise.');
+  const email=await readEmail();if(!email)fail('Bitte --email-stdin.');
+  if(sql.prepare('SELECT 1 FROM users WHERE email=?').get(email))fail('Für diese Adresse gibt es schon ein Konto.');
+  const id=randomId('u_'),at=iso(now);
+  const statements=[
+   db.prepare("INSERT INTO users(id,email,email_verified_at,status,created_at) VALUES(?,?,?,'active',?)").bind(id,email,at,at),
+   db.prepare('DELETE FROM invites WHERE email=?').bind(email),
+   eventStatement(db,{userId:id,kind:'created',detail:{by:'cli',note:note.slice(0,80)},now}),
+  ];
+  if(tier)statements.push(db.prepare("INSERT INTO plan_grants(user_id,tier,source,starts_at,ends_at,note,created_by) VALUES(?,?,'manual',?,?,?,'cli')").bind(id,tier,at,until,note.slice(0,200)));
+  if(admin)statements.push(db.prepare("INSERT INTO user_roles(user_id,role,granted_at,granted_by) VALUES(?,'admin',?,'cli')").bind(id,at));
+  await db.batch(statements);
+  console.log(`Konto ${id} für ${short(email)} angelegt${tier?`, Stufe ${tier}${until?' bis '+until.slice(0,10):''}`:''}${admin?', Rolle admin':''}. Anmelden: login-link --id ${id}`);
+  break;
+ }
  case 'invite':{
   const note=option('--note'),tier=option('--tier'),until=untilDate(option('--until')),days=Number(option('--days')||30),send=flag('--send');
   if(!note)fail('--note mit Anlass und Zustimmung ist Pflicht (Art. 6 Abs. 1 b).');
@@ -202,6 +222,6 @@ switch(command){
   break;
  }
  default:
-  fail('Befehle: invite, role, tier, block, unblock, revoke, delete, export, list, stats, login-link, reapply-deletions, totp-reset, totp-setup (Hilfe im Kopf der Datei).');
+  fail('Befehle: create, invite, role, tier, block, unblock, revoke, delete, export, list, stats, login-link, reapply-deletions, totp-reset, totp-setup (Hilfe im Kopf der Datei).');
 }
 sql.close();
